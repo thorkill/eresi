@@ -1,0 +1,588 @@
+
+
+				----------------------------
+				Libelfsh 0.43b API reference
+				----------------------------
+
+
+XXX: Need to be updated to 0.5 . For a complete list of the libelfsh 0.5 serie
+API calls, read ../libelfsh/include/libelfsh.h .
+
+
+-------
+
+
+This is the first documentation for libelfsh-0.43b . You should definitely look at
+the testsuite to understand how to do basic things .
+
+Structures has been created :
+
+- Elfsh32_Obj is the main object, describing the object itself, look at libelfsh.h for details .
+- Elfsh32_Sect describes a section in the binary, contains a field pointing to its SHT entry .
+- Elfsh32_Func describe a function . For the moment, Elf32_Func are created using .symtab .
+- All structures beginning with Elfsh32_ are not OS native, they are elfsh specifics .
+
+
+
+An ELFsh object look like that :
+
+
+/* ELF object structure */
+typedef struct	s_obj
+{
+  
+  int		fd;		/* File descriptor for the original file */
+  char		*name;		/* Object path */
+  int		type;		/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
+  
+  /* Elf headers */
+  Elf32_Ehdr	*hdr;
+  Elf32_Shdr	*sht;
+  Elf32_Phdr	*pht;
+
+  /* Section linked list */
+  Elfsh32_Sect	*sections;
+
+  /* Unlinked sections */
+  Elfsh32_Sect	*sections_bean;
+
+  /* ********************************************************************************** */
+  /* The following variables point to their respective entry in the section linked list */
+  /* ********************************************************************************** */
+
+  /* Symbol table related fields */
+  Elfsh32_Sect	*symtab;
+
+  /* Dynamic symbol table related fields */
+  Elfsh32_Sect	*dynsym;
+
+  /* Stab section fields (debugging symbols) */
+  Elfsh32_Sect	*stab;
+
+  /* Symbol Hash (.hash) table fields */
+  Elfsh32_Sect	*hash;
+
+  /* Dynamic structure fields (PT_DYNAMIC) */
+  Elfsh32_Sect	*dynamic;
+
+  /* Constructors */
+  Elfsh32_Sect	*ctors;
+
+  /* Destructors */
+  Elfsh32_Sect	*dtors;
+
+  /* Global Offset Table fields */
+  Elfsh32_Sect	*got;
+  
+  /* Procedure Linkage Table (.plt) object */
+  Elfsh32_Sect	*plt;
+
+  /* Interpretor section (PT_INTERP) */
+  Elfsh32_Sect	*interp;
+
+  /* Symbol string table (.strtab) */
+  Elfsh32_Sect	*strtab;
+
+  /* Stab string table (.stabstr) */
+  Elfsh32_Sect	*stab_strtab;
+  
+  /* Dynamic symbol string table (.dynstr) */
+  Elfsh32_Sect	*dyn_strtab;
+
+  /* Section string table (.shstrtab) */
+  Elfsh32_Sect	*sh_strtab;
+
+  /* Various internal fields for error handling */
+  char		buff[ELFSH_RULEZ_THE_WORLD];
+  const char	*error;
+
+  /* Has the object already been function scanned ? */
+  char		scanned;		
+
+  /* Do we include the sht in the output file ? Default is YES (1) */
+  char		remove_sht_on_exit;
+
+  /* The list is double linked */
+  void		*next;
+  void		*prev;
+
+}		Elfsh32_Obj;
+
+
+
+The Elfsh32_Sect object looks like this : 
+
+
+/* Section data type */
+typedef struct		s_sect
+{
+
+  /* Filled at creation */
+  Elf32_Phdr		*phdr;		/* the first parent segment					*/
+  Elf32_Shdr		*shdr;		/* section header for this section				*/
+  struct s_sect		*next;		/* next section in the list					*/
+  struct s_sect		*prev;		/* prev section in the list					*/
+  struct s_obj		*parent;	/* parent ELF object file					*/	
+  int			index;		/* Section index in sht						*/
+  char			flags;		/* Analysed/Raw, Orphelin/Child					*/
+  char			*name;		/* Cached name							*/
+
+  /* Filled at loading */
+  void			*data;		/* section's data cache						*/
+  int			nbr;		/* Number of units (section type dependant)			*/
+
+  /* Filled at analysing */
+  void			*altdata;	/* symtab stores a sorted table here, +x section stores the fht */
+  int			altnbr;		/* Number of units for altdata					*/
+
+}			Elfsh32_Sect;
+
+
+
+
+
+Now lets look at the API itself :
+
+
+
+##############
+ERROR HANDLING
+##############
+
+On errors, the incriminated API call will return (-1) or NULL, depending on the return type .
+
+Print the last error message on STDERR :
+
+void		elfsh_error();
+
+
+
+
+################################
+MAIN OBJECTS ACCESSIBILITY CALLS  
+################################
+
+
+These 2 first functions are used to create the Elfsh32_Obj entity in memory, if you plan
+to modify the file, then you have to use elfsh_map_obj() . If you just want to read things, 
+then use elfsh_load_obj() . The main difference between them is that elfsh_load_obj() fills
+data field on demand, whereas elfsh_map_obj() loads everything .
+
+Elfsh32_Obj	*elfsh_load_obj(char *name);
+Elfsh32_Obj	*elfsh_map_obj(char *name);
+
+
+Unload an object without saving :
+
+void		elfsh_unload_obj(Elfsh32_Obj *file);
+
+Save changes and unload an object :
+
+int		elfsh_save_obj(Elfsh32_Obj *file, char *name);
+
+
+Retreive the ELF header, the returned type is (Elf32_Ehdr *) :
+
+void		*elfsh_get_hdr(Elfsh32_Obj *file);
+
+
+Get/Set various ELF header fields :
+
+u_int		elfsh_get_objtype(Elf32_Ehdr *e);
+u_int		elfsh_get_arch(Elf32_Ehdr *e);
+void		elfsh_set_entry_point(Elfsh32_Obj *file, int addr);
+
+
+
+
+#####################
+SYMBOLS RELATED CALLS
+#####################
+
+
+
+Some calls are identical for .dynsym symbols and .symtab symbols . Here is the list :
+
+Elf32_Sym	*elfsh_create_symbol(int value, int size, int type, int binding, int visibility);
+Elf32_Sym	*elfsh_copy_symtab(void *addr, int size);
+Elf32_Sym	*elfsh_merge_symtabs(Elf32_Sym *one, Elf32_Sym *two, int size_one, int size_two);
+void		*elfsh_get_symbol_offset(Elf32_Sym *s);
+u_int		elfsh_get_symbol_bind(Elf32_Sym *s);
+u_int		elfsh_get_symbol_type(Elf32_Sym *s);
+int		elfsh_insert_symbol(Elfsh32_Sect *sect, Elf32_Sym *sym, char *name);
+int		elfsh_get_symbol_foffset(Elfsh32_Obj *file, Elf32_Sym *sym);
+int		elfsh_get_symbol_size(Elf32_Sym *s);
+
+There is 2 sorts possible : 
+  . ELFSH_SORT_BY_ADDR sort symbols by address .
+  . ELFSH_SORT_BY_SIZE sort symbols by size .
+
+int		elfsh_sort_symtab(Elf32_Sym *symtab, int size, int type);
+
+
+
+
+ * These are especialy for 'static' symbols (.symtab entries) :
+
+Useful function : It returns the nearest symbol name matching with sym_value and fill the
+difference in *offset :
+
+Elf32_Sym	*elfsh_get_symbol_by_name(Elfsh32_Obj *file, char *name);
+char		*elfsh_get_symbol_name(Elfsh32_Obj *file, Elf32_Sym *s);
+char		*elfsh_reverse_symbol(Elfsh32_Obj *file, u_int sym_value, int *offset);
+void		*elfsh_get_symtab(Elfsh32_Obj *file, int *num);
+
+
+
+ * These are especially for dynamic symbols (.dynsym entries) :
+
+
+Elf32_Sym	*elfsh_get_dynsymbol_by_name(Elfsh32_Obj *file, char *name);
+void		*elfsh_get_dynsymtab(Elfsh32_Obj *file, int *num);
+char		*elfsh_reverse_dynsymbol(Elfsh32_Obj *file, u_int sym_value, int *offset);
+char		*elfsh_get_dynsymbol_name(Elfsh32_Obj *file, Elf32_Sym *s);
+Elf32_Sym	*elfsh_get_symbol_from_reloc(Elfsh32_Obj *file, Elf32_Rel *s);
+
+
+
+
+################################
+SECTION HEADER TABLE (SHT) CALLS
+################################
+
+
+Return the section header giving a STT_SECTION symbols found in .symtab :
+
+Elf32_Shdr      *elfsh_get_shtentry_from_sym(Elfsh32_Obj *file, Elf32_Sym *sym);
+
+
+Return the section header table (Elf32_Shdr *) and fill the number of entries in *num :
+
+void		*elfsh_get_sht(Elfsh32_Obj *file, int *num);
+
+
+Theses calls returns info about a given section header :
+
+int		elfsh_section_is_executable(Elf32_Shdr *s);
+int		elfsh_section_is_writable(Elf32_Shdr *s);
+int		elfsh_section_is_allocatable(Elf32_Shdr *s);
+int		elfsh_section_is_mergeable(Elf32_Shdr *s);
+int		elfsh_section_is_strtab(Elf32_Shdr *s);
+int		elfsh_section_has_link(Elf32_Shdr *s);
+int		elfsh_section_has_order(Elf32_Shdr *s);
+int		elfsh_get_section_size(Elf32_Shdr *s);
+int		elfsh_get_section_align(Elf32_Shdr *s);
+int		elfsh_get_section_vaddr(Elf32_Shdr *s);
+int		elfsh_get_section_foffset(Elf32_Shdr *s);
+u_int		elfsh_get_section_type(Elf32_Shdr *s);
+u_int		elfsh_get_section_info(Elf32_Shdr *s);
+u_int		elfsh_get_section_entsize(Elf32_Shdr *s);
+u_int		elfsh_get_section_link(Elf32_Shdr *s);
+
+
+Returns the section names provided .shstrtab is loaded (true by default ;) :
+
+char		*elfsh_get_section_name(Elfsh32_Obj *file, Elf32_Shdr *s);
+
+
+Changes fields in a SHT entry :
+
+void		elfsh_set_sht_offset(Elfsh32_Obj *file, int num);
+void		elfsh_set_sht_nbr(Elfsh32_Obj *file, int num);
+void		elfsh_set_section_info(Elf32_Shdr *s, Elf32_Word info);
+void		elfsh_set_section_entsize(Elf32_Shdr *s, Elf32_Word entsize);
+void		elfsh_set_section_link(Elf32_Shdr *s, Elf32_Word link);
+void		elfsh_set_section_foffset(Elf32_Shdr *s, Elf32_Off offset);
+void		elfsh_set_section_addr(Elf32_Shdr *s, Elf32_Addr addr);
+
+
+These 2 calls exists because the section injection and the section header table entry injection
+are not the same . You need to insert a SHT entry before inserting the Section itself . Look at
+the testsuite to know the exact syntax for Section injection .
+
+Elf32_Shdr	elfsh_create_section_header(Elf32_Word name, Elf32_Word type, Elf32_Word flags,
+					    Elf32_Addr addr, Elf32_Off offset, Elf32_Word size,
+					    Elf32_Word link, Elf32_Word info, Elf32_Word align,
+					    Elf32_Word entsize);
+
+You shouldnt use this one except if you know exactly what you are doing . If you want to insert a section
+you should look at elfsh_insert_(un)mapped_section() in the next paragraph . This call insert a Section 
+header exactly where you want it to be inserted :
+
+int		elfsh_insert_section_header(Elfsh32_Obj *file, Elf32_Shdr hdr, u_int range, char *name);
+
+
+Rebuild a minimal Section header table if not present anymore . Very useful to disassemble
+using bfd based tools (BFD doesnt rekognize ELF binary without SHT ;( :
+
+int		elfsh_rebuild_sht(Elfsh32_Obj *file);
+
+
+Used to indicate elfsh not to insert SHT when relinking using elfsh_save_obj() :
+
+void		elfsh_remove_sht(Elfsh32_Obj *file);
+
+
+
+######################
+SECTION RELATED CALLS
+######################
+
+
+Search for a 'range'th section whoose type is 'type', filling the index, strindex and num field if ptr are non null :
+
+ - 'index' is the index for this section .
+ - 'strindex' is the section index for the linked string section (if one) .
+ - 'num' is the number of element for this section .
+
+Elfsh32_Sect	*elfsh_get_section_by_type(Elfsh32_Obj *, u_int type, int *index, int *strindex, int *num, int range);
+
+
+Search a section using its index in SHT :
+
+Elfsh32_Sect	*elfsh_get_section_by_index(Elfsh32_Obj *, int index, int *strindex, int *num);
+
+
+Search a section giving its name :
+
+
+Elfsh32_Sect	*elfsh_get_section_by_name(Elfsh32_Obj *, char *name, int *idx, int *strindex, int *num);
+
+
+Return the parent Section giving a virtual address . The difference is filled in *offset :
+
+Elfsh32_Sect	*elfsh_get_parent_section(Elfsh32_Obj *file, u_int value, int *offset);
+
+
+The same function, this time using a file offset (useful for non mapped sections) :
+
+Elfsh32_Sect	*elfsh_get_parent_section_by_foffset(Elfsh32_Obj *file, u_int value, int *offset);
+
+
+Create a section in order to inject it (or not) . Look at the testsuite for exact syntax :
+
+Elfsh32_Sect	*elfsh_create_section(char *name);
+
+
+Load (force read related data in the file) a section in the Elfsh32_Obj structure :
+
+void		*elfsh_get_anonymous_section(Elfsh32_Obj *file, Elfsh32_Sect *sect);
+
+
+Insert a memory mapped section in the binary, and inject byts pointed by 'data' in it . Inject the number 
+of byte indicated in hdr.sh_size . The difference between the 2 is that the last one have to put the .bss
+section physically in the file before (if not already done) .
+
+int		elfsh_insert_unmapped_section(Elfsh32_Obj *file, Elfsh32_Sect *sect, Elf32_Shdr hdr, void *data)
+int		elfsh_insert_mapped_section(Elfsh32_Obj *file, Elfsh32_Sect *sect, Elf32_Shdr hdr, void *data)
+
+Append random data to a section :
+
+int		elfsh_append_data_to_section(Elfsh32_Sect *sect, void *input, int len);
+
+
+
+###################################
+PROGRAM HEADER RELATED (PHT) CALLS
+###################################
+
+
+Return a (Elf32_Phdr *) and fill *num with the PHT entries number :
+
+void		*elfsh_get_pht(Elfsh32_Obj *file, int *num);
+Elf32_Phdr	*elfsh_get_segment_by_type(Elfsh32_Obj *file, int type, int range);
+Elf32_Phdr	*elfsh_get_parent_segment(Elfsh32_Obj *file, Elfsh32_Sect *new);
+int		elfsh_load_pht(Elfsh32_Obj *file);
+int		elfsh_segment_is_writable(Elf32_Phdr *p);
+int		elfsh_segment_is_readable(Elf32_Phdr *p);
+int		elfsh_segment_is_executable(Elf32_Phdr *p);
+int		elfsh_segment_is_parent(Elfsh32_Sect *new, Elf32_Phdr *p);
+u_int		elfsh_get_segment_type(Elf32_Phdr *p);
+
+This change values in the ELF header :
+
+void		elfsh_set_pht_offset(Elfsh32_Obj *file, int num);
+void		elfsh_set_pht_nbr(Elfsh32_Obj *file, int num);
+
+
+
+
+##############################
+.DYNAMIC SECTION RELATED CALLS
+##############################
+
+
+
+Elf32_Dyn	*elfsh_get_dynamic(Elfsh32_Obj *file, int *num);
+Elf32_Dyn	*elfsh_get_dynamic_entry_by_type(Elfsh32_Obj *file, char type);
+char		*elfsh_get_dynentry_info(Elfsh32_Obj *file, Elf32_Dyn *d);
+u_int		elfsh_get_dynentry_type(Elf32_Dyn *d);
+
+
+
+
+
+#################################
+GOT / DTORS / CTORS RELATED CALLS
+#################################
+
+In all cases, the 'num' parameter is filled by the called function and indicate the number
+of entries for this section (in this case, the number of 4 bytes dwords in the section, 
+in other word, section->sh_size / 4 .
+
+Modify an entry in the .got section, used to hijack library calls :
+
+void		*elfsh_get_got(Elfsh32_Obj *file, int *num);
+int		elfsh_set_got_entry_by_name(Elfsh32_Obj *file, char *name, int new_addr);
+int		elfsh_set_got_entry_by_index(Elfsh32_Obj *file, int index, int new_addr);
+
+
+Modify an entry in the .dtors section, used to hijack destructors functions :
+
+void		*elfsh_get_dtors(Elfsh32_Obj *file, int *num);
+int		elfsh_set_dtors_entry_by_index(Elfsh32_Obj *file, int index, int new_addr);
+int		elfsh_set_dtors_entry_by_name(Elfsh32_Obj *file, char *name, int new_addr);
+
+Modify an entry in the .ctors section, used to hijack constructors functions :
+
+void		*elfsh_get_ctors(Elfsh32_Obj *file, int *num);
+int		elfsh_set_ctors_entry_by_name(Elfsh32_Obj *file, char *name, int new_addr);
+int		elfsh_set_ctors_entry_by_index(Elfsh32_Obj *file, int index, int new_addr);
+
+
+
+
+###################
+STABS RELATED CALLS
+###################
+
+'Num' is filled by the called function with the number of stab entries in the
+returned section .
+
+Read-only interface for STABS :
+
+void		*elfsh_get_stab(Elfsh32_Obj *file, int *num);
+void		*elfsh_get_stab_offset(Elfsh32_Stab_ent *s);	       
+char		*elfsh_get_stab_name(Elfsh32_Obj *file, Elfsh32_Stab_ent *s);
+u_int		elfsh_get_stab_type(Elfsh32_Stab_ent *s);
+
+
+
+
+###################
+.HASH RELATED CALLS
+###################
+
+
+These implement a wrapper for .hash as described in the ELF reference .
+
+int		elfsh_get_symbol_hash(char *sym_name);
+int		elfsh_get_dynsymbol_by_hash(Elfsh32_Obj *file, char *sym_name);
+
+
+
+
+########################
+RELOCATION RELATED CALLS
+########################
+
+Elfsh32_Sect	*elfsh_get_reloc(Elfsh32_Obj *file, u_int range, char *name, u_int *num);
+void		*elfsh_get_reloffset(Elfsh32_Obj *file, Elf32_Rel *r);
+void		elfsh_free_reloc_list(Elfsh32_Obj *file);
+u_int		elfsh_get_reloc_type(Elf32_Rel *r);
+
+
+
+#####################
+.INTERP RELATED CALLS
+#####################
+
+char		*elfsh_get_interp(Elfsh32_Obj *file);
+
+
+
+####################
+.NOTES RELATED CALLS
+####################
+
+
+Elfsh32_Sect	*elfsh_get_notes(Elfsh32_Obj *file, u_int range, char *name);
+void		elfsh_free_notes_list(Elfsh32_Obj *file);
+
+
+
+#######################
+FUNCTIONS RELATED CALLS
+#######################
+
+You may not use for writing purpose since the interface for it is not clearly
+defined for the moment . The implementation of this is pretty weak since it
+relies on .symtab instead of parsing the code, but this is in the TODO list .
+
+Elfsh32_Func	*elfsh_get_function_by_addr(Elfsh32_Obj *file, int addr);
+Elfsh32_Func    *elfsh_get_function_by_name(Elfsh32_Obj *file, char *name);
+int		elfsh_get_function_len(Elfsh32_Func *func);
+int		elfsh_get_function_addr(Elfsh32_Func *func);
+
+
+
+###########################################
+PROCEDURE LINKAGE TABLE (PLT) RELATED CALLS
+###########################################
+
+
+Elfsh32_Sect	*elfsh_get_plt(Elfsh32_Obj *file, int *num);
+
+Useful to fingerprint STT_FUNCTION typed symbols and guess if its pointing in .plt :
+
+int		elfsh_is_pltentry(Elfsh32_Obj *file, Elf32_Sym *sym);
+int		elfsh_is_plt(Elfsh32_Obj *file, Elf32_Shdr *s);
+
+
+
+
+###################################
+RAW READ/WRITE ACCESS RELATED CALLS
+###################################
+
+
+Use this for multiple purpose :
+
+int		elfsh_raw_write(Elfsh32_Obj *file, u_int dst, void *src, int len);
+int		elfsh_raw_read(Elfsh32_Obj *file, u_int dst, void *src, int len);
+int		elfsh_get_foffset_from_vaddr(Elfsh32_Obj *file, u_int vaddr);
+
+
+
+######################### 
+.(SH)STRTAB RELATED CALLS
+#########################
+
+
+
+Useful to add a just-inserted symbol name in the binary :
+
+int		elfsh_insert_in_strtab(Elfsh32_Obj *file, char *name);
+
+Useful to add a just_inserted section name in the binary :
+
+int		elfsh_insert_in_shstrtab(Elfsh32_Obj *file, char *name);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

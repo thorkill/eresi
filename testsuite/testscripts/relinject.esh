@@ -1,0 +1,24 @@
+#!/usr/bin/elfsh
+
+exec cat func.c
+exec gcc -c func.c
+exec cat exec.c
+exec gcc exec.c
+exec /tmp/a.out
+
+load a.out
+s
+
+load func.o
+s
+
+relinject 1 2
+switch 1
+s
+
+got puts
+set 1.got[4] 1.sht[2].addr
+
+save /tmp/a.out.injected
+exec /tmp/a.out.injected
+quit
