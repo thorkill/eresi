@@ -1,0 +1,330 @@
+
+Last update Tue Apr  8 08:21:25 2003 mayhem
+
+
+				----------------------------------
+				ELFsh 0.5b6 INTERNAL API reference
+				----------------------------------
+
+
+1/ Command API
+2/ Object manipulation API
+3/ Object creation API
+4/ Hash API
+5/ Option API
+6/ Execution API
+
+
+
+The Full API can be used in modules . You should consider writing a module instead 
+of patching ELFsh when you need to extend it without patching it .
+
+
+
+
+1/ You want to add your own commands . You can register and unregister new 
+commands, or hijack an existing command handlers to your own routines . 
+vm_setcmd() is the same than vm_addcmd() except it doesnt create a new command, 
+but change an existing command parameters ; use special value ELFSH_ORIG for
+vm_setcmd() parameters to keep them to their original value .
+
+int			vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur);
+int			vm_addcmd(char *cmd, void *exec, void *reg, u_int needcur);
+int			vm_delcmd(char *cmd);
+
+- cmd			: Name of the command
+- exec			: Execution handler (see script API below)
+- reg			: Registration handler (see option API below)
+- needcur		: The command need a valid current ELF object
+
+Return value : 0 (OK), -1 (ERR)
+
+
+
+
+2/ You want to create, convert, lookup, register, or unregister ELFsh objects :
+
+
+int		vm_convert_object(elfshpath_t *obj, u_int objtype);
+
+- obj		: An existing abtract ELFsh object returned by vm_lookup_param()
+- objtype	: The requested output type
+
+		      ELFSH_OBJINT    (double word)
+		      ELFSH_OBJRAW    (raw data)
+		      ELFSH_OBJSTR    (string)
+
+
+Return : 0 (OK), -1 (ERR)
+
+
+int		vm_lookup_param(char *path, elfshpath_t *pobj, u_int mode);
+
+Returns the abstract object giving its path . See ELFsh 'info' command for 
+objects path format . Second parameter 'pobj' need to point on allocated
+memory . When 'mode' is 1, vm_lookup_param() do not print error in case
+of invalid path (PROBE MODE) . Returns 0 or -1 in case of error .
+
+
+elfshobj_t	*vm_getfile(u_int id);
+
+Returns the ELF object descriptor giving its object ID . Returns NULL in case 
+of error .
+
+
+elfshmod_t	*vm_getmod(u_int id);
+
+Returns the ELFsh module descriptor giving its object ID . Returns NULL in 
+case of error .
+
+
+int		vm_check_object(elfshpath_t *pobj);
+
+Check the object sanity (check handlers sanity depending on the object type) .
+Returns 0 (Sane), -1 (Corrupted)
+
+
+
+
+3/ You want to add your own object into the ELFsh hierarchy :
+
+
+
+elfshL1_t	 *vm_create_L1ENT(void		*(*get_obj)(elfshobj_t *file),
+				  void		*(*get_obj_idx)(elfshobj_t *file, u_int range, 
+								u_int *nbr)
+				  hash_t	*l2_hash,
+				  void		*(*get_entptr)(void *table, int index),
+				  u_int		*(*get_entval)(void *table)
+				  u_int		*(*set_entval)(void *table, u_int elem)
+				  u_int		elem_size);
+
+
+a - get_obj()	  : Returns a pointer on the L1 object table
+b - get_obj_idx() : Returns a pointer on the L1 object table giving its index
+c - l2_hash	  : Pointer on the child L2 objects hash table 
+d - get_entptr()  : Returns a pointer on the requested L1 object table entry
+e - get_entval()  : Returns the value of requested L1 object table entry
+f - set_entval()  : Change the requested L1 object table entry value
+g - elem_size	  : Size of table element
+
+
+You need : 
+
+    * Mandatory a (used by * except .rel*) OR mandatory b (used by .rel*)
+    * Mandatory c and g (used by *)
+    * Optional d/f/g (used by got/ctors/dtors)
+
+
+This function create a Level 1 object . Default L1 objects are : 
+
+	       - ELF header			   (label : 'hdr')
+	       - Program header table		   (label : 'pht')
+	       - Symbol table			   (label : 'symtab')
+	       - Dynamic symbol table		   (label : 'dynsym')
+	       - Dynamic section		   (label : 'dynamic')
+	       - Global Offset Table		   (label : 'got')
+	       - CTORS				   (label : 'ctors')
+	       - DTORS				   (label : 'dtors')
+	       - Relocation tables		   (label : 'rel')
+	       - Section list			   (lavel : 'section')
+
+
+elfshL2_t	*vm_create_L2ENT(u_int		(*get_obj)(void *ptr),
+				 u_int		(*set_obj)(void *ptr, u_int val),
+				 char		type,
+				 char		*(*get_name)(elfshobj_t *file, void *ptr),
+				 int		*(*set_name)(elfshobj_t *file, void *ptr, 
+							     char *name),
+				 void		*(*get_data)(elfshsect_t *obj, u_int off, 
+                                                             u_int sizelem),
+				 void		*(*set_data)(elfshsect_t *sect, u_int off, 
+                                                             char *data, u_int sz, 
+							     u_int szelem));
+							     
+
+Create a L2 object . Each L1 object has a family of L2 objects . See ELFsh 
+'info' command for a complete list of L2 objects . Returns the object or 
+NULL if error .
+
+
+a - get_obj  : Return the leaf object value [ptr: the parent L1 object ptr]
+b - set_obj  : Set the leaf object value
+c - type     : ELFSH_OBJINT, ELFSH_OBJSTR, ELFSH_OBJRAW
+d - get_name : Return the leaf object name [ptr: the actual L2 object ptr]
+e - set_name : Change the leaf object name
+f - get_data : Read data from object
+g - set_data : Write data in object
+
+You need :
+
+	 * Mandatory a, b, c
+	 * Optional d, e (used for symbol and sections names)
+	 * Optional f, g (used for reading/writing section's data)    
+
+
+
+
+4/ Modify ELFsh hash tables . ELFsh hashes everything, you need to register 
+objects using the hash table API :
+
+
+int	   hash_init(hash_t *h, int size);		/* Allocate new table */
+void	   hash_destroy(hash_t *h);			/* Free table */
+int	   hash_add(hash_t *h, char *key, void *data);	/* Add entry */
+int	   hash_del(hash_t *h, char *key);		/* Delete entry */
+
+- h    : The hash table
+- size : The hash table entry number (big tables are faster)
+- key  : The hash table entry name
+- data : The data object to be indexed
+
+See libhash/*.c for the complete hash code .
+
+
+
+Existing hash tables are :
+
+The command hash table : hash_t		cmd_hash;	
+Hash ELFsh command names and returns elfshcmd_t pointers.
+
+The constants hash table : hash_t	const_hash;
+Hash [elf.h/elfsh.h] constant names and returns elfshconst_t pointers.
+
+The ELFsh modules table : hash_t	mod_hash;
+Hash modules pathes and returns elfshmod_t pointers.
+
+The loaded ELF objects table : hash_t	file_hash;
+Hash Loaded ELF object pathes and returns elfshobj_t pointers.
+
+The Level 1 objects table : hash_t	L1_hash;
+Hash L1 objects labels and returns elfshL1_t pointers.
+
+Level2 ELF header table  : hash_t	elf_L2_hash;
+Hash ELF header field labels and returns elfshL2_t pointers.
+
+Level2 Section objects   : hash_t	sht_L2_hash;
+Hash SHT entry fields labels and returns elfshL2_t pointers.
+
+Level2 PHT objects	 : hash_t	pht_L2_hash;
+Hash PHT entry fields labels and returns elfshL2_t object pointers.	
+
+Level2 .symtab objects   : hash_t	 sym_L2_hash;
+Hash Symbol table entry fields labels and returns elfshL2_t object pointers.
+
+Level2 .rel* objects     : hash_t	 rel_L2_hash;
+Hash Relocation tables entry fields labels and returns elfshL2_t object pointers.
+
+Level2 .dynsym objects	 : hash_t	 dynsym_L2_hash;  
+Hash Dynamic symbol table entry fields names and returns elfshL2_t object pointers.	
+
+Level2 .dynamic objects  : hash_t	 dyn_L2_hash;
+Hash Dynamic Linker section entry fields labels and returns elfshL2_t pointers.
+
+Level2 Section data objs : hash_t	 sct_L2_hash;     
+Hash Sections elfshL2_t objects labels and returns elfshL2_t pointers.
+
+
+
+You should _not_ manipulate cmd_hash, mod_hash and file_hash manually, since
+a special command and ELF objects API is available (see 1/ and 2/) . 
+
+See elfsh/tables.c for initialization calls of those tables .
+
+
+
+
+
+5/ Option fetching API
+
+
+ELFsh provides many default commands parameters fetching registration handlers, 
+mainly used to specify the parameters number and type for a given command . The 
+'reg' command handler (see 1/) should be filled with one of those :
+
+- vm_getoption()	    .::. the command need 1 regular parameter
+- vm_getregxoption()	    .::. the command need 1 regex parameter
+- vm_getoption2()	    .::. the command need 2 regular parameters
+- vm_getoption3()	    .::. the command need 3 regular parameters
+- vm_getvarparams()	    .::. the command need at least 1 regular parameter
+
+See elfsh/opt.c
+
+
+
+
+6/ Execution API
+
+ELFsh provides one function per command, the execution handler 'exec' 
+is called _after_ the option fetching 'reg' handler (see 1/) . Here are
+the core commands execution handlers :
+
+int	   cmd_dyn();
+int	   cmd_sht();
+int	   cmd_rel();
+int	   cmd_dynsym();
+int	   cmd_symtab();
+int	   cmd_pht();
+int	   cmd_got();
+int	   cmd_dtors();
+int	   cmd_ctors();
+int	   cmd_elf();
+int	   cmd_interp();
+int	   cmd_list();
+int	   cmd_notes();
+int	   cmd_sym();
+int	   cmd_stab();
+int        cmd_hexa();
+int        cmd_disasm();
+int        cmd_shtrm();
+int        cmd_comments();
+int	   cmd_help();
+int	   cmd_quit();
+int	   cmd_load();
+int	   cmd_unload();
+int	   cmd_save();
+int	   cmd_dolist();
+int	   cmd_doswitch();
+int	   cmd_set();
+int	   cmd_get();
+int	   cmd_print();
+int        cmd_info();
+int	   cmd_add();
+int	   cmd_sub();
+int	   cmd_mul();
+int        cmd_div();
+int	   cmd_mod();
+int	   cmd_meta();
+int	   cmd_write();
+int        cmd_append();
+int	   cmd_extend();
+int	   cmd_fixup();
+int	   cmd_quiet();
+int	   cmd_verb();
+int	   cmd_exec();
+int	   cmd_findrel();
+int	   cmd_modload();
+int	   cmd_modunload();
+
+Your own execution handlers must have the same prototypes . See 'help'
+command output for complete description of existing commands .
+
+
+*EOF*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

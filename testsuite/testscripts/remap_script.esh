@@ -1,0 +1,9 @@
+#!/usr/bin/elfsh
+
+load /bin/ls
+modload modremap
+findrel
+remap  0x11223344
+save /tmp/ls.remapped
+exec /tmp/ls.remapped
+quit

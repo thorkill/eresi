@@ -1,0 +1,263 @@
+#!/usr/bin/elfsh
+#
+# Additional tests suite for shell commands .
+#
+# Danke to spendy for inspiring this filename
+# 
+# And please -dont- ask why 42 
+#
+
+
+# Start printing the help screens
+help
+info
+
+
+# Uncomment me for a quiet output log
+# quiet
+
+# Now load the files
+load 	/usr/bin/elfsh
+load 	/lib/libc.so.6
+list
+switch 1 
+
+exec ls -la
+
+# Playing with print and exec commands 
+print phnum is 1.hdr.phnum and got[21] is 1.got[21] 
+print 11th section is 1.section[11].name
+
+
+# Play with arithmetic ops
+print   phnum = 1.hdr.phnum
+add     1.hdr.phnum 42
+print   phnum = 1.hdr.phnum
+sub     1.hdr.phnum 41
+print   phnum = 1.hdr.phnum
+div     1.hdr.phnum 2
+print   phnum = 1.hdr.phnum
+mod     1.hdr.phnum 2
+print   phnum = 1.hdr.phnum
+mul     1.hdr.phnum 5
+print   phnum = 1.hdr.phnum
+
+
+
+# Playing a bit with the modules
+cmdtest
+modload ../../modules/modtest.so
+print hehe
+cmdtest
+modunload ../../modules/modtest.so
+print hehe
+
+
+# ELF header tests
+# Illustrate the object affectations between files
+
+e
+get 1.hdr.magic
+set 1.hdr.magic	0x42424242
+get 1.hdr.magic
+e
+
+set 1.hdr.type		  2.hdr.type
+set 1.hdr.machine	  0x43
+set 1.hdr.version	  0x44
+set 1.hdr.entry		  .data
+
+# Dont do those or you wont be able to see the change in the output file
+#set 1.hdr.shoff	  0x46
+#set 1.hdr.phoff	  0x47
+
+set 1.hdr.ehsize	  0x48
+set 1.hdr.shentsize 	  2.hdr.shentsize
+set 1.hdr.phentsize	  2.hdr.shentsize
+set 1.hdr.phnum	 	  3
+set 1.hdr.shnum		  30
+set 1.hdr.shstrndx	  31
+
+# PAX flags tests
+
+set 1.hdr.pax_pageexec            0				
+set 1.hdr.pax_segmexec		  1
+set 1.hdr.pax_emultramp		  0
+set 1.hdr.pax_mprotect		  1
+set 1.hdr.pax_randmmap		  0
+set 1.hdr.pax_randexec		  1
+
+e 
+
+get 1.hdr.magic
+get 1.hdr.type		
+get 1.hdr.machine	
+get 1.hdr.version	
+get 1.hdr.entry		
+get 1.hdr.phoff		
+get 1.hdr.shoff		
+get 1.hdr.ehsize	
+get 1.hdr.shentsize	
+get 1.hdr.phentsize	
+get 1.hdr.phnum		
+get 1.hdr.shnum	
+get 1.hdr.shstrndx	
+
+
+# PHT tests
+# Illustrate elf.h constants resolving as immediate value 
+
+p
+set 1.pht[0].type	 ET_DYN		
+set 1.pht[0].offset	 0x55		
+set 1.pht[0].vaddr	 0x56		
+set 1.pht[0].paddr	 0x57		
+set 1.pht[0].filesz	 0x58		
+set 1.pht[0].memsz	 0x59		
+set 1.pht[0].flags	 0x60		
+set 1.pht[0].align	 0x61		
+p
+
+get 1.pht[0].type
+get 1.pht[0].offset
+get 1.pht[0].vaddr
+get 1.pht[0].paddr
+get 1.pht[0].filesz
+get 1.pht[0].memsz
+get 1.pht[0].flags
+get 1.pht[0].align
+
+
+
+# SHT tests
+
+s 01
+set 	1.sht[1].type	 	0x54		
+set 	1.sht[1].addr	 	0x55		
+set 	1.sht[1].offset	 	0x56		
+set 	1.sht[1].size	 	0x57		
+set 	1.sht[1].link	 	0x58
+set 	1.sht[1].info 		0x59		
+set 	1.sht[1].align	 	0x60		
+set 	1.sht[1].entsize	 	0x61		
+set 	1.sht[1].a	 		 1
+set 	1.sht[1].w	 		 1
+set 	1.sht[1].x	 		 1
+set 	1.sht[1].s	 		 1
+set 	1.sht[1].m		 	 1
+set 	1.sht[1].l			 1
+set 	1.sht[1].o			 1
+s
+
+get 	1.sht[1].type	 	
+get 	1.sht[1].addr	 	
+get 	1.sht[1].offset	 	
+get 	1.sht[1].size	 	
+get 	1.sht[1].link	 	
+get 	1.sht[1].info 		
+get 	1.sht[1].align	 	
+get 	1.sht[1].entsize	 	
+get 	1.sht[1].a	 		
+get 	1.sht[1].w	 		
+get 	1.sht[1].x	 		
+get 	1.sht[1].s	 		
+get 	1.sht[1].m			
+get 	1.sht[1].l
+get 	1.sht[1].o
+
+
+
+
+# SYMTAB tests
+
+sym 03]
+set 1.symtab[3].value	 0x62
+set 1.symtab[3].size	 0x63		
+set 1.symtab[3].bind	 1
+set 1.symtab[3].type	 4
+set 1.symtab[3].other	 2
+sym 03]
+
+get 1.symtab[3].value
+get 1.symtab[3].size	 
+get 1.symtab[3].bind	
+get 1.symtab[3].type	
+get 1.symtab[3].other
+
+
+# DYNSYMTAB tests
+
+dynsym 12]
+set 1.dynsym[12].value	 0x67
+set 1.dynsym[12].size	 0x68		
+set 1.dynsym[12].bind	 1
+set 1.dynsym[12].type	 6
+set 1.dynsym[12].other	 2
+dynsym 12]
+
+get 1.dynsym[12].value
+get 1.dynsym[12].size	 
+get 1.dynsym[12].bind	
+get 1.dynsym[12].type	
+get 1.dynsym[12].other
+
+
+# .DYNAMIC tests
+
+dyn 07]
+set 1.dynamic[7].val 	0x72
+set 1.dynamic[7].tag 	0x73
+dyn 07]
+
+get 1.dynamic[7].val
+get 1.dynamic[7].tag
+
+
+# .GOT tests : you can also use filepath instead of their index
+
+got 05]|13]
+get 1.got[5]
+set 1.got[5] 		/usr/bin/elfsh.got[13]
+get 1.got[5]
+got 05]|13]
+
+
+# CTORS and DTORS tests
+# Illustrate the (dyn)symbol resolving as immediate value
+
+ctors
+set 1.ctors[0] 0x41424344
+set 1.ctors[1] malloc
+ctors
+
+dtors
+set 1.dtors[1] 0x4546
+set 1.dtors[0] free
+dtors
+
+
+# RELOCATION TABLE TESTS
+
+rel 062]
+set 1.rel[1][62].sym 		22
+set 1.rel[1][62].offset 	0x08044800
+set 1.rel[1][62].type   	R_386_GOTPC
+rel 062]
+
+
+
+# Now leave, unloaded files are closed without saving
+
+save /tmp/elfsh.dumped
+unload /usr/bin/elfsh
+quit
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,186 @@
+
+			-----------
+			ELFSH DRAFT
+			-----------
+
+
+This is not a documentation, but a draft paper for developers who
+want to take part of the development process of ELFsh . This file
+describes the present and future orientation of the ELF shell from
+an instruction based scripting point of view . The syntax is not
+definitive and may change if we need it, so please contact the 
+team if you plan to contribute to the project .
+
+For the current exhaustive ELFsh commands list and descriptions, use 
+'help' and 'info' commands from within the shell .
+
+
+Token :
+
+REGX	: REGEX_T:INDEX%SIZE
+OBJ	: ELFSHPATH_T | VALUE
+VALUE	: NAME | NUMBER
+NAME	: [a-zA-Z0-9-_]+
+NUMBER	: [0-9]+
+
+
+The shell scanner and parser need to be rewritten using flex and bison .
+
+
+List of commands :
+
+
+quit
+
+	Quit the shell without saving anything .
+
+help
+
+	Print the help scren .
+
+list
+	Print the list of loaded files, ELFsh modules, and variables
+	or the bean .
+
+info
+	Print detailed information about the commands syntax .
+
+
+exec	command with arguments
+
+	Execute a elfsh script or a command line .
+
+
+switch	VALUE 
+
+	Switch on another elf object (the object must have been loaded first) .
+
+
+load	NAME 
+
+	Load a new file in the shell .
+
+
+save	VALUE
+
+	Save the object in foreground .
+
+
+unload	VALUE
+
+	Unload the object from foreground without saving changes .
+
+
+get OBJ		      
+set OBJ OBJ
+add OBJ OBJ
+sub OBJ OBJ
+mul OBJ OBJ
+div OBJ OBJ
+mod OBJ OBJ
+		      SYMBOL/DYNSYMBOL/SECTION name	(lookup_immed)
+		      IMMEDIATE 1/2/4 bytes values	(lookup_immed)
+		      CONSTANT_FROM_ELF_H		(lookup_immed)
+		      hdr.field				(lookup3)
+		      got[index]			(lookup3_index)
+		      ctors[index]			(lookup3_index)
+		      dtors[index]			(lookup3_index)
+		      pht[index].field			(lookup4)
+		      sht[index].field			(lookup4)
+		      symtab[index].field		(lookup4)
+		      dynsym[index].field		(lookup4)
+		      dynamic[index].field		(lookup4)
+		      symtab[index].name		(lookup4)
+		      dynsym[index].name		(lookup4)
+		      section[index].name		(lookup4)			
+		      section[index].raw		(lookup4)
+		      section[index:byte_offset].raw	(lookup4)
+		      rel[index][index2].field		(lookup5_index)
+
+		      section[index].{byte,word,long}[index]			(4) no handler (good)
+		      section[index:byte_offset].{byte,word,long}[index]	(5) no handler (good)
+
+		      section[index].instr[index].field				(5) no handler (good)
+		      section[index:byte_offset].instr[index].field		(6) no handler (good)
+
+
+
+	GET print the field of the chosen object . 
+	SET modify the value of the first object by the value of the second one .
+	ADD/SUB/MUL/DIB/MOD are the usual arithmetic operations .
+
+
+write			
+
+	OBJ OBJ
+
+	Raw write in an object
+
+
+delete			
+	$OBJ
+
+	Delete an object from the bean .
+	
+
+insert			
+	OBJ NUM 
+
+	Insert an object from the bean to the current working file . $OBJ
+	can be typed the same as GET/SET parameters . NUM is the range to
+	be used for the insertion .
+
+
+mode	NAME		 
+
+	Switch to simple/expert mode . When elfsh runs in simple mode, implicit changes
+	are done and printed if the verbose mode is ON . For instance, if you add 
+	a function, the section size and the segment size are modified . 
+
+
+
+%$£%$£%$£%$£%$£%$£%$£%$£%$££%$£  LIST OF NECESSITY %$£%$£%$£%$£%$£%$£%$£%$£%$£%$£%$£%$£ 
+
+
+Everything has a name . We use a special prefix for each type of object followed
+by an underscore and the object name .
+
+Prefix:
+~~~~~~~
+
+Symbols 		: "SYM_"
+Dynamic symbols 	: "DSYM_"
+Sections		: "SCT_"
+Segments 		: "SEG_"
+Functions 		: "FCT_"
+Relocation entries 	: "REL_"
+Dynamic entries 	: "DYN_"
+Elf Header		: "HDR_"
+
+
+Dynamic variable allocation is needed .
+
+
+
+What is simple/expert mode ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to add or remove an object in the binary, like a function,
+there's many changes you have to do . Simple mode do the changes for you,
+
+Expert mode does only what you explicitely asked . By default, the ELF shell
+is in simple mode . Here is an exhaustive list of what the shell does for 
+you in simple mode, but not in expert mode :
+
+- Add .plt , .got, .rel.plt , .dynsym and .hash entries when accessing external functions .
+- Add .rel.got, .dynsym and .hash entries when accessing external data .
+- Relocate the code with our rebuilt .rel.text equilavent table when you insect a mapped section .
+- Modify the PT_LOAD size and addr when inserting a section .
+- Update the dynamic section with the new parameters .
+
+
+Comments : elfsh@devhell.org
+
+
+
+

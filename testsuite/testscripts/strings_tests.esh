@@ -1,0 +1,45 @@
+#!/usr/bin/elfsh
+#
+# Second regression test script
+#
+
+load /bin/ls
+
+# Print the interpretor section
+s 	01]|13]
+X	interp
+
+# Change section name
+get 	1.section[1].name
+set 	1.section[1].name	.pffffffffffff
+get 	1.section[1].name
+
+# Print 20 first bytes of .text
+X 	 ^\.text%20
+
+# Change 5 first byte of 13rd section
+write 	 1.section[13].raw		hehe\x42
+X 	 ^\.text%20
+
+# Change 5 bytes starting at byte 14th
+write 	 1.section[13:5].raw		\x43\x44\huhu\x00\x48
+X 	 ^\.text%20
+
+# Write the value of printf symbol (4 bytes) at offset 10 (2 * 5)
+write 	 1.section[13:2%5].raw		printf
+X 	 ^\.text%20
+
+s 	01]|13]
+
+# Change a symbol name
+get 1.symtab[1].name
+set 1.symtab[1].name heh
+get 1.symtab[1].name
+
+# Change a dynamic symbol name
+get 1.dynsym[2].name
+set 1.dynsym[2].name test_big_string_oh_yeah
+get 1.dynsym[2].name
+
+save /tmp/elfsh.modifs
+quit

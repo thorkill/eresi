@@ -1,0 +1,89 @@
+
+				----------------------
+				ELFSH TESTSUITE README
+				----------------------
+
+
+1) You have to compile and install libelfsh before compiling the testsuite . 
+Everything is compiled automatically if you do make in the root directory .
+
+2) Each test has a Makefile procuding 2 executables, one of them is using 
+libelfsh and modify the other one (a.out) which is just provided as a host 
+binary to illustrate the libelfsh API .
+
+3) The modified executable is produced in the current directory , and 
+called 'fake_aout' . Just launch a.out, then fake_aout, and spot the 
+differences . Watch them using elfsh to understand the exact modifications .
+
+
+List of tests :
+###############
+
+
+ctors_hijack  		: 
+			=> hijack the flow using .ctors entry modification .
+			=> $ elfsh -f a.out -ctors
+			=> $ elfsh -f fake_aout -ctors
+
+dtors_hijack  		: 
+			=> hijack the flow using .dtors entry modification .
+			=> $ elfsh -f a.out -dtors
+			=> $ elfsh -f fake_aout -dtors
+
+got_hijack    		: 
+			=> hijack sleep() using .got entry modification .
+			=> $ elfsh -f a.out -got
+			=> $ elfsh -f fake_aout -got
+
+hash_retreive 		: 
+			=> resolve a dynamic symbol name using .hash .
+
+sct_fillbss_injection: 
+			=> inject a mapped section after .bss
+			=> filling .bss physically in the file 
+			=> The entry point is modified to point on .devhell .
+			=> $ elfsh -f a.out -s -e (retreive SHT and ELF header)
+			=> $ elfsh -f fake_aout -s -e 
+
+sct_top_injection: 
+			=> inject a mapped section before .interp 
+			=> Move the PHT to the beginning of the file 
+			=> The entry point is modified to point on .devhell .
+			=> $ elfsh -f a.out -s -e (retreive SHT and ELF header)
+			=> $ elfsh -f fake_aout -s -e 
+
+section_unmapped_injection: 
+			=> inject a mapped section at the end of the binary
+			=> $ elfsh -f a.out -s -e (retreive SHT and ELF header)
+			=> $ elfsh -f fake_aout -s -e 
+
+sht_stripping  		: 
+			=> remove the section header table in a.out
+			=> $ elfsh -f a.out -s -e
+			=> $ elfsh -f fake_aout -s -e
+
+symtab_extend		: 
+			=> Add a symbol in .symtab (also add name in .strtab)
+			=> $ elfsh -f a.out -sym DH
+			=> $ elfsh -f fake_aout -sym DH			
+
+
+sht_rebuild		:
+			=> rebuild section header in a SHT stripped ELF object
+			=> $ objdump -D sht_stripped_file (see the error)
+			=> $ sht_rebuilder
+			=> $ objdump -D sht_rebuilt_file (see it work :)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

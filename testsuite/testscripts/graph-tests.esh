@@ -1,0 +1,6 @@
+#!/usr/bin/elfsh
+
+modload modules/modgraph.so
+load /usr/bin/elfsh
+graph
+graph /tmp/graph.desc

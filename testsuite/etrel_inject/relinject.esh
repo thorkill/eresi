@@ -1,0 +1,13 @@
+#!../../vm/elfsh
+
+
+load a.out
+e
+s
+load rel.o
+reladd 1 2
+redir puts puts_troj
+e
+s
+save fake_aout
+quit
