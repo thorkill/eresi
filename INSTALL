@@ -1,0 +1,4 @@
+1. edit vm/Makefile to enable libasm and/or libreadline and configure your built
+2. make
+3. make install
+4. cd testsuite && make
