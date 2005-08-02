@@ -2,14 +2,23 @@
 ** elfsh.h for elfsh
 **
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
-** Last update Fri Aug 15 22:43:41 2003 jv
 */
-
 #ifndef __ELFSH_H_
  #define __ELFSH_H_
 
+/* User defined configuration */
+#include "../../vars.h"
+
 #include <sys/types.h>
 #include <stdio.h>
+#include <termios.h>
+
+#ifdef __BSD__
+#include <util.h>
+#elif defined(__linux__)
+#include <pty.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -19,16 +28,37 @@
 #include <time.h>
 #include <ctype.h>
 #include <regex.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <dirent.h>
+
+
+#define __USE_GNU
+#include <sys/ucontext.h>
+
+#ifdef  __BEOS__
+#include <image.h>
+#include <bsd_mem.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <libelfsh.h>
 #include <libhash.h>
-
-
-/* Thanks to DH for libasm, choose to disable it in elfsh/elfsh/Makefile */
-#if defined(USE_LIBASM)
- #include <libasm.h>
- extern asm_processor	proc;
+#if defined(ELFSHNET)
+#include <libdump.h>
 #endif
+
+/* Thanks to sk from Devhell Labs we have a libasm */
+#include <libasm.h>
+
+/* The Embedded ELF debugger include file */
+#include <e2dbg.h>
+ 
+extern asm_processor	proc;
 
 /* Thanks to GNU we have readline */
 #if defined(USE_READLN)
@@ -42,11 +72,27 @@
 #define	__DEBUG_MODEL__		0
 #define	__DEBUG_SCANNER__	0
 #define	__DEBUG_ASLR__		0
+#define __DEBUG_NETWORK__	0
+#define __DEBUG_RESOLVE__	0
+#define __DEBUG_HIJACK__	0
+#define	__DEBUG_E2DBG__		0
+
+
+/* Network related defines */
+#define ELFSH_PORT		4444
+#define ELFSH_DUMP_PORT		4445
+#define MAX_CLIENTS		4
+#define MAX_SEND_SIZE		2048
+
+/* DUMP related defines */
+#define ELFSH_DUMP_CMD		1
+#define ELFSH_DUMP_MSG		2
+
 
 /* General usage macros */
-#define FATAL(a)		{ perror(a); exit(-1);			      }
-#define QUIT_ERROR(a)		{ elfsh_error(); exit(a);		      }
-#define RET(a)			{ /* elfsh_error(); */ return (a);	      }
+#define FATAL(a)		{ perror(a); vm_exit(-1);		      }
+#define QUIT_ERROR(a)		{ vm_exit(a);				      }
+#define RET(a)			do { /* elfsh_error(); */ return (a);	      } while (0)
 #define RETERR(a)		{ fprintf(stderr, "%s \n", a); return (-1);   }
 #define	PERROR_RET(a, b)	{ perror(a); return (b);		      }
 #define	PRINTABLE(c)		(c >= 32 && c <= 126)
@@ -54,27 +100,54 @@
 #define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	IS_BLANK(c)		(c == ' ' || c == '\t')
 
+#define	ELFSH_ARGVAR		"#"
+#define	ELFSH_VARPREF		'$'
+#define ELFSH_RESVAR		"_"
+#define	ELFSH_LOADVAR		"!"
+#define	ELFSH_ERRVAR		"ERR"
+
 /* Some useful macros */
-#define	CHOOSE_REGX(r)	r = (world.args.use_regx     ? &world.args.regx     : \
+#define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
+			     &world.curjob->curcmd->regx[idx] :               \
 			     world.state.vm_use_regx ? &world.state.vm_regx : \
 			     NULL)
+#define	FIRSTREGX(r)	     CHOOSE_REGX(r, 0)
+#define	SECONDREGX(r)	     CHOOSE_REGX(r, 1)
+
+
+/* 
+** Macros for declaring commands inside modules
+** Necessary for beeing able to use module commands
+** in script without loading the module during the
+** entire script
+*/
+#define	ELFSH_CMDEC(name)	char modcmd_##name = name
+
 
 
 /* Used to store ascii description for different structures types in data.c */
 #define ELFSH_SEGTYPE_MAX	7
-#define	ELFSH_SHTYPE_MAX	12
+#define	ELFSH_SHTYPE_MAX	13
 #define	ELFSH_OBJTYPE_MAX	5
 #define	ELFSH_SYMBIND_MAX	3
 #define	ELFSH_SYMTYPE_MAX	7
 #define	ELFSH_ENCODING_MAX	3
 #define	ELFSH_DYNAMIC_MAX	35
 #define	ELFSH_EXTDYN_MAX	19
-#define	ELFSH_ARCHTYPE_MAX	55
-#define	ELFSH_ARCHTYPE_MAX	55
+#define ELFSH_MIPSDYN_MAX	43
+#define	ELFSH_ARCHTYPE_MAX	56
 #define	ELFSH_STAB_MAX		256
+#define	ELFSH_EXTSEG_MAX	5
+
 
 #define	ELFSH_RELOC_i386_MAX	11
-#define	ELFSH_RELOC_SPARC_MAX	24
+#define	ELFSH_RELOC_IA64_MAX	81
+#define	ELFSH_RELOC_SPARC_MAX	55
+#define ELFSH_RELOC_SPARC64_MAX	55
+#define	ELFSH_RELOC_ALPHA_MAX	43
+#define	ELFSH_RELOC_MIPS_MAX	35
+
+
 #define ELFSH_RELOC_MAX(file)   vm_getmaxrelnbr(file)
 
 
@@ -82,6 +155,7 @@
 #define	ELFSH_POSFLAG_MAX	2
 #define	ELFSH_FLAGS_MAX		4
 #define	ELFSH_FLAGS1_MAX	15
+#define ELFSH_MIPSFLAGS_MAX	16
 
 /* ELFsh general parameters */
 #define	ELFSH_FIELD_SEP		"."
@@ -89,12 +163,13 @@
 #define ELFSH_MINUS		'-'
 #define	ELFSH_SLASH		'/'
 #define	ELFSH_SPACE		' '
-#define	ELFSH_VERSION		"0.51b3"
-#define ELFSH_PROMPT		"[ELFsh-"ELFSH_VERSION"]$ "
-#define	ELFSH_SHELL		"/bin/bash"
+#define	ELFSH_VERSION		"0.65"
+#define ELFSH_PROMPT		"(elfsh-"ELFSH_VERSION") "
+#define ELFSH_NAME		"ELF shell"
+
 #define	ELFSH_INIT		"elfsh_init"
 #define	ELFSH_FINI		"elfsh_fini"
-#define	ELFSH_MODPATH		"/usr/share/elfsh/"
+#define ELFSH_HELP		"elfsh_help"
 
 /* For elfsh/elfsh/disasm.c:display_object() */
 #define	ELFSH_HEXA_VIEW		0
@@ -102,6 +177,10 @@
 
 /* For elfsh/elfsh/modules.c:vm_change_handler() */
 #define	ELFSH_ORIG		((void *) -1)
+
+/* Return of an input function in case of ignorable input */
+#define ELFSH_VOID_INPUT -1
+#define ELFSH_EXIT_INPUT -2
 
 /* Commands */
 #define CMD_DISASM		"disasm"
@@ -159,12 +238,47 @@
 #define	CMD_FINDREL		"findrel"
 #define	CMD_MODLOAD		"modload"
 #define	CMD_MODULOAD		"modunload"
+#define CMD_MODHELP		"modhelp"
 #define	CMD_HELP		"help"
 #define	CMD_STRIP		"strip"
 #define	CMD_SSTRIP		"sstrip"
 #define	CMD_RELINJCT		"reladd"
 #define	CMD_STOP		"stop"
 #define	CMD_HIJACK		"redir"
+
+#define CMD_INSERT		"insert"
+#define	CMD_INSERT2		"ins"
+#define	CMD_REMOVE		"remove"
+#define	CMD_REMOVE2		"rm"
+#define	CMD_FLUSH		"flush"
+#define	CMD_VLIST		"vlist"
+#define	CMD_SOURCE		"source"
+#define CMD_SDIR		"sdir"
+#define	CMD_CLEANUP		"cleanup"
+#define CMD_LSCRIPTS		"lscripts"
+#define CMD_CAT			"cat"
+
+/* Network commands */
+#define	CMD_NETWORK		"net"
+#define	CMD_NETWORK2		"network"
+#define	CMD_NETLIST		"netlist"
+#define	CMD_NETKILL		"netkill"
+#define	CMD_SHARED		"shared"
+#define	CMD_CONNECT		"connect"
+#define	CMD_DISCON		"disconnect"
+#define	CMD_PEERSLIST		"peerslist"
+#define CMD_IP			"ip"
+
+/* Scripting only commands */
+#define CMD_CMP			"cmp"
+#define	CMD_CMP2		"compare"
+#define	CMD_JMP			"jmp"
+#define CMD_JE			"je"
+#define	CMD_JNE			"jne"
+#define	CMD_JL			"jl"
+#define	CMD_JG			"jg"
+#define	CMD_JLE			"jle"
+#define	CMD_JGE			"jge"
 
 /* Prefixes */
 #define	CMD_SORT		 "sort"
@@ -182,11 +296,24 @@
 #define	CMD_SAVE		 "save"
 #define	CMD_QUIT		 "quit"
 #define	CMD_QUIT2		 "exit"
+#define	CMD_CONTINUE		 "continue"
 #define	CMD_SWITCH		 "switch"
 #define	CMD_LIST		 "list"
 #define	CMD_LIST2		 "l"
+#define	CMD_WORKSPACE		 "workspace"
+#define	CMD_WORKSPACE2		 "w"
 
+/* Debugger commands */
+#define	CMD_MODE		"mode"
+#define	CMD_LINKMAP		"linkmap"
+#define	CMD_BT			"bt"
+#define	CMD_BP			"b"
+#define CMD_STACK		"stack"
+#define	CMD_DUMPREGS		"dumpregs"
+#define	CMD_STEP		"step"
+#define	CMD_DELETE		"delete"
 
+#define CMD_PROFILE		"profile"
 
 /* Regx option, a module of struct s_args */
 typedef struct		s_list
@@ -204,24 +331,58 @@ typedef struct		s_const
 {
   const char	        *desc;
   const char	        *name;
-  long			val;
+  elfsh_Addr	       	val;
 }			elfshconst_t;
+
+
+/* ELFsh command handlers */
+typedef struct	s_cmdhandler
+{
+  int		(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
+  int		(*exec)();				/* Execution handler */
+  char		*arg1;					/* Option activation variable ptr */
+  void		*arg2;					/* Option regex ptr */
+  char		*arg3;					/* Regex switch ptr */
+  char		wflags;					/* 1 if the cmd need a valid curfile */
+}		elfshcmd_t;
 
 
 /* Thats the command line options registering structure */
 typedef struct		s_args
 {
-  char			*param[256];	/* option parameters */
-  char			use_regx;	/* 1 if the option use a regx */
-  regex_t		regx;		/* regx */
-  elfshlist_t		disasm;		/* D/X parameters */
+  char			*param[10];	/* option parameters */
+  char			use_regx[2];	/* 1 if the option use a regx */
+  regex_t		regx[2];	/* regx */
+  elfshlist_t		disasm[2];	/* D/X parameters */
+  char			argc;		/* Number of args in param[] */
+  elfshcmd_t		*cmd;		/* Command descriptor */
+  char			*name;		/* Command name */
+  struct s_args		*next;
+  struct s_args		*prev;
 }			elfshargv_t;
+
+/* Take a elfshargv_t and fill its argc field */
+#define		ELFSH_CMDARGS_COUNT(cmd)	\
+do						\
+{						\
+  int		len;				\
+  for (len = 0; cmd->param[len] != 0; len++)	\
+    cmd->argc++;				\
+}						\
+while (0)
+
+
 
 /* ELFsh module structure */
 typedef struct		s_module
 {
   char			*path;		/* Name */
+#ifdef __BEOS__
+  image_id     handler;    /* Object handler */
+#else
   void			*handler;	/* Object handler */
+#endif
+  void			(*help)();	/* Help wrapper */
   void			(*init)();	/* Constructor pointer */
   void			(*fini)();	/* Destructor pointer */
   u_int			id;		/* Object ID */
@@ -230,7 +391,7 @@ typedef struct		s_module
 }			elfshmod_t;
 
 
-/* Hold all the VM flags, modifying the behavior or the shell */
+/* Hold all the VM flags, sort of global context */
 typedef struct	s_state
 {
   char		vm_quiet;	/* Quiet mode : 0 or 1 */
@@ -245,29 +406,105 @@ typedef struct	s_state
 #define	ELFSH_VMSTATE_CMDLINE	0
 #define	ELFSH_VMSTATE_SCRIPT	1
 #define	ELFSH_VMSTATE_IMODE	2
-  char		vm_mode;	/* Command line, scripting, or interactive ? */
+#define	ELFSH_VMSTATE_DEBUGGER	3
+  char		vm_mode;	/* Command line, scripting, interactive, debugger ? */
   char		vm_stopped;	/* We are in a signal handler */
+  char		vm_shared;	/* Next opened object must be shared */
+  char		vm_net;		/* We are a node connected to the elf network */
+  
   u_int		lastid;		/* Last Object ID */
 }		elfshstate_t;
+
+
+/* Input / Output template for ELFsh */
+typedef struct		s_elfsh_io
+{
+
+#define	ELFSH_IOSTD	1
+#define	ELFSH_IONET	2
+#define	ELFSH_IONUM	3
+#define ELFSH_IODUMP	4
+  char			type;			/* IO type	     */
+  int			input_fd;		/* Input file        */
+  int			output_fd;		/* Output file	     */
+  char			*(*input)();		/* Read Input data   */
+  int			(*output)(char *buf);	/* Write output data */
+  /* dump specific */
+#if defined(ELFSHNET)
+  pkt_t			*pkt;			/* dump received pkt */
+#endif
+  int			new;			/* 0 if already used */
+#if defined(USE_READLN)
+  char			*buf;			/* readline line */
+#endif
+}			elfshio_t;
+
+
+/* ELFsh's socket structure */
+typedef struct	     s_socket
+{
+  struct sockaddr_in addr;        /* sockaddr_in struct */
+  int                socket;      /* The socket */
+  char               **recvd;     /* List of received buffer */
+
+#define NEW	1
+#define OLD	0
+  int                recvd_f;     /* NEW if the buffer was not passed to the parser yet */
+#define YES 1
+#define NO  0
+  int                ready_f;     /* Have we received the trailing \n ? */
+  
+}                    elfshsock_t;
+
+
+
+/* ELFsh job structure, one per client */
+typedef struct		s_job
+{
+
+#define	ELFSH_INPUT     0
+#define	ELFSH_OUTPUT	1
+  elfshio_t	        io;               /* Current IO for this job */
+  
+  elfshsock_t		sock;		  /* Current socket, unused in initial job */
+
+#define	ELFSH_MAX_SOURCE_DEPTH	10
+  elfshargv_t		*script[ELFSH_MAX_SOURCE_DEPTH]; /* List of script commands */
+  elfshargv_t		*lstcmd[ELFSH_MAX_SOURCE_DEPTH]; /* Last command for each depth */
+  u_int			sourced;			 /* script depth (if beeing sourced) */
+
+  elfshargv_t		*curcmd;	  /* Next command to be executed */
+  elfshobj_t		*list;		  /* List of loaded ELF objects */
+  elfshobj_t		*current;	  /* Current working ELF object */
+
+  u_char		active;			
+  time_t		createtime;
+
+}			elfshjob_t;
+
 
 
 
 
 /* The ELF shell world */
-typedef struct		s_elfsh_world
+typedef struct	s_elfsh_world
 {
-  elfshargv_t		args;		/* Command line parameters */
-  elfshobj_t		*list;		/* List of loaded ELF objects */
-  elfshobj_t		*current;	/* current working ELF object */
-  elfshstate_t		state;		/* Flags structure */
-  elfshmod_t		*modlist;	/* ELFsh module list */
-  char			**cmds;		/* commands list for readline */
 
-#if defined(USE_LIBASM)
-  asm_processor		proc;		/* Libasm world */
-#endif
+  elfshmod_t	*modlist;	/* ELFsh loaded modules list */
+  elfshstate_t	state;		/* Flags structure */
+  char		**cmds;		/* Commands list for readline */
+  hash_t	jobs;		/* Hash table of jobs */
+  elfshjob_t	*initial;	/* Main initial job */
+  elfshjob_t	*curjob;	/* Current job */  
+  elfshobj_t	*shared;	/* List of shared descriptors */ 
+  char		*scriptsdir;	/* Directory which contains script commands */
 
-}			elfshworld_t;
+  asm_processor	proc;		/* Libasm world */
+  e2dbgworld_t	e2dbg;		/* Debugger world */
+
+}		elfshworld_t;
+
+
 
 
 /* Meta object : describe an object in a standard way, whatever its hierarchy level */
@@ -275,8 +512,8 @@ typedef struct		s_elfshpath
 {
 
   /* Handlers */
-  u_long		(*get_obj)(void *parent);
-  u_long		(*set_obj)(void *parent, long value);
+  elfsh_Addr		(*get_obj)(void *parent);
+  u_long		(*set_obj)(void *parent, elfsh_Addr value);
   char			*(*get_name)(elfshobj_t *, void *obj);
   int			(*set_name)(elfshobj_t *, void *, char *);
   char			*(*get_data)(elfshsect_t *, u_int off, u_int);
@@ -293,18 +530,25 @@ typedef struct		s_elfshpath
   /* Immediate value of immed flag is set */
   union			immval
   {
+    u_char		byte;
+    u_short		half;
+    u_int	       	word;
+    elfsh_Addr		ent;
     char		*str;
-    long		ent;
   }			immed_val;
 
   /* Here is the object type list */
-#define		ELFSH_OBJINT	0	/* Dword */
+#define		ELFSH_OBJINT	0	/* word : always 4 bytes */
 #define		ELFSH_OBJSTR	1	/* String */
 #define		ELFSH_OBJRAW	2	/* Raw */
 #define		ELFSH_OBJUNK	3	/* Unknown */
+#define		ELFSH_OBJLONG	4	/* Long object - 4 or 8 bytes */
+#define		ELFSH_OBJSHORT	5	/* Short : 2 bytes */
+#define		ELFSH_OBJBYTE	6	/* One byte */
   char			type;
 
-
+  /* TRUE if this object is a scripting variable */
+  char			perm;
 
 }			elfshpath_t;
 
@@ -314,8 +558,8 @@ typedef struct		s_L2handler
 {
 
   /* For fields */
-  int		(*get_obj)(void *obj);				/* Read object */
-  int		(*set_obj)(void *par, u_int arg);		/* Write object */
+  elfsh_Addr   	(*get_obj)(void *obj);				/* Read object */
+  int		(*set_obj)(void *par, elfsh_Addr arg);		/* Write object */
 
   /* For names */
   char		*(*get_name)(elfshobj_t *, void *obj);		/* Get name */
@@ -330,6 +574,7 @@ typedef struct		s_L2handler
 }			elfshL2_t;
 
 
+
 /* ELFsh Level 1 object (= parent object) structure */
 typedef struct	s_L1handler
 {
@@ -338,37 +583,25 @@ typedef struct	s_L1handler
 
   /* Handlers */
   void		*(*get_obj)(void *file, void *arg);		/* Read object */
-  void		*(*get_obj_idx)(void *file, u_int i, void *a);	/* Read handler for mutiple instanced L1 obj */
+  void		*(*get_obj_idx)(void *file, elfsh_Addr i, void *a); /* Read handler for mutiple instanced L1 obj */
   void		*(*get_obj_nam)(void *file, char *name);	/* Read handler by name */
-  void		*(*get_entptr)(void *file, u_int idx);		/* Get address */
-  u_int		(*get_entval)(void *ptr);			/* Get value */
-  u_int		(*set_entval)(void *ptr, u_int vaddr);		/* Set value */
+  void		*(*get_entptr)(void *file, elfsh_Addr idx);	/* Get address */
+  elfsh_Addr   	(*get_entval)(void *ptr);			/* Get value */
+  elfsh_Addr   	(*set_entval)(void *ptr, elfsh_Addr vaddr);     /* Set value */
 
 }		elfshL1_t;
-
-
-
-/* ELFsh command handlers */
-typedef struct	s_cmdhandler
-{
-  int		(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
-  int		(*exec)();				/* Execution handler */
-  char		*arg1;					/* Option activation variable ptr */
-  void		*arg2;					/* Option regex ptr */
-  char		*arg3;					/* Regex switch ptr */
-  char		wflags;					/* 1 if the cmd need a valid curfile */
-}		elfshcmd_t;
-
 
 
 /* The world */
 extern elfshworld_t	world;
 
 /* All the StandAlone hashtables */
-extern hash_t		cmd_hash;	/* commands handlers */
-extern hash_t		file_hash;	/* elfshobj_t pointers */
-extern hash_t		const_hash;	/* elf.h picked up constants values */
-extern hash_t		mod_hash;	/* Modules name hash table */
+extern hash_t		cmd_hash;	 /* commands handlers */
+extern hash_t		file_hash;	 /* elfshobj_t pointers */
+extern hash_t		const_hash;	 /* elf.h picked up constants values */
+extern hash_t		mod_hash;	 /* Modules name hash table */
+extern hash_t		vars_hash;	 /* Scripting variables hash table */
+extern hash_t		labels_hash[10]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
 extern hash_t		L1_hash;	/* For HDR, SHT, PHT, GOT, DTORS, CTORS, DYNAMIC, SECTIONS */
@@ -386,7 +619,12 @@ extern hash_t		sct_L2_hash;	/* For Section data access */
 extern hash_t		dynsym_L2_hash;	/* For .dynsym */
 extern hash_t		dyn_L2_hash;	/* For .dynamic */
 
+/* Lattice for I/O */
+extern char		*(*hooks_input[ELFSH_IONUM])();
+extern int		(*hooks_output[ELFSH_IONUM])(char *buf);
+
 /* Data value/string/description arrays */
+extern elfshconst_t	elfsh_extseg_type[ELFSH_EXTSEG_MAX];
 extern elfshconst_t	elfsh_seg_type[ELFSH_SEGTYPE_MAX];
 extern elfshconst_t	elfsh_sh_type[ELFSH_SHTYPE_MAX];
 extern elfshconst_t	elfsh_obj_type[ELFSH_OBJTYPE_MAX];
@@ -395,15 +633,25 @@ extern elfshconst_t	elfsh_sym_type[ELFSH_SYMTYPE_MAX];
 extern elfshconst_t	elfsh_dynentry_type[ELFSH_DYNAMIC_MAX];
 extern elfshconst_t	elfsh_encoding[ELFSH_ENCODING_MAX];
 extern elfshconst_t	elfsh_extdyn_type[ELFSH_EXTDYN_MAX];
+extern elfshconst_t	elfsh_mipsdyn_type[ELFSH_MIPSDYN_MAX];
 extern char		*elfsh_arch_type[ELFSH_ARCHTYPE_MAX];
 extern char		*elfsh_stab_type[ELFSH_STAB_MAX];
-extern elfshconst_t    elfsh_feature1[ELFSH_FEATURE_MAX];
-extern elfshconst_t    elfsh_posflag1[ELFSH_POSFLAG_MAX];
-extern elfshconst_t    elfsh_flags[ELFSH_FLAGS_MAX];
-extern elfshconst_t    elfsh_flags1[ELFSH_FLAGS1_MAX];
+extern elfshconst_t     elfsh_feature1[ELFSH_FEATURE_MAX];
+extern elfshconst_t     elfsh_posflag1[ELFSH_POSFLAG_MAX];
+extern elfshconst_t     elfsh_flags[ELFSH_FLAGS_MAX];
+extern elfshconst_t     elfsh_flags1[ELFSH_FLAGS1_MAX];
+extern elfshconst_t     elfsh_mipsflags[ELFSH_MIPSFLAGS_MAX];
 
-extern elfshconst_t    elfsh_rel_type_i386[ELFSH_RELOC_i386_MAX];
-extern elfshconst_t    elfsh_rel_type_sparc[ELFSH_RELOC_SPARC_MAX];
+extern elfshconst_t     elfsh_rel_type_i386[ELFSH_RELOC_i386_MAX];
+extern elfshconst_t     elfsh_rel_type_ia64[ELFSH_RELOC_IA64_MAX];
+extern elfshconst_t     elfsh_rel_type_sparc[ELFSH_RELOC_SPARC64_MAX];
+extern elfshconst_t     elfsh_rel_type_alpha[ELFSH_RELOC_ALPHA_MAX];
+extern elfshconst_t     elfsh_rel_type_mips[ELFSH_RELOC_MIPS_MAX];
+
+/* Network related variables */
+//extern hash_t      elfsh_net_client_list;  /* The client socket's list */
+extern int         elfsh_net_client_count; /* Number of clients connected */
+//extern elfshsock_t    elfsh_net_serv_sock;    /* The main socket structur */
 
 /* Commands execution handlers, each in their respective file */
 int		cmd_dyn();
@@ -425,6 +673,7 @@ int             cmd_hexa();
 int             cmd_disasm();
 int             cmd_shtrm();
 int		cmd_comments();
+int		cmd_modhelp();
 int		cmd_help();
 int		cmd_quit();
 int		cmd_load();
@@ -457,63 +706,166 @@ int		cmd_sstrip();
 int		cmd_relinject();
 int		cmd_stop();
 int		cmd_hijack();
+int		cmd_cmp();
+int		cmd_jmp();
+int		cmd_je();
+int		cmd_jne();
+int		cmd_jg();
+int		cmd_jl();
+int		cmd_jge();
+int		cmd_jle();
+
+int		cmd_insert();
+int		cmd_remove();
+int		cmd_sort();
+int		cmd_glregx();
+int		cmd_flush();
+int		cmd_vlist();
+int		cmd_source();
+int		cmd_scriptsdir();
+int		vm_add_script_cmd(char *dir_str);
+int		cmd_script();
+int		cmd_lscripts();
+int		cmd_cat();
+
+int		cmd_phtend();
+
+int		cmd_network();
+int		cmd_netlist();
+int		cmd_netkill();
+int		cmd_discon();
+int		cmd_connect();
+int		cmd_peerslist();
+int		cmd_ip();
+
+int		cmd_profile();
+int		cmd_shared();
+int		cmd_cleanup();
+
+/* Debugging functions */
+int		cmd_mode();
+int		vm_linkmap(elfshobj_t *file);
+int		cmd_linkmap();
+int		vm_bt();
+int		cmd_bt();
+int		cmd_bp();
+int		vm_bp_add(elfsh_Addr addr);
+int		vm_dumpstack(u_int32_t size);
+int		cmd_stack();
+int		cmd_dumpregs();
+int		cmd_delete();
+int		cmd_step();
+
+elfshobj_t	*vm_get_parent_object(elfsh_Addr addr);
 
 /* Registration handlers for options from opt.c */
 int		vm_getoption(u_int index, u_int argc, char **argv);
 int		vm_getoption2(u_int index, u_int argc, char **argv);
 int		vm_getoption3(u_int index, u_int argc, char **argv);
 int		vm_getregxoption(u_int index, u_int argc, char **argv);
-int		vm_getglregx(u_int index, u_int argc, char **argv);
 int		vm_getinput(u_int index, u_int argc, char **argv);
 int		vm_getoutput(u_int index, u_int argc, char **argv);
-int		vm_getsort(u_int index, u_int argc, char **argv);
 int		vm_getdisasm(u_int index, u_int argc, char **argv);
 int		vm_gethexa(u_int index, u_int argc, char **argv);
 int		vm_getvarparams(u_int index, u_int argc, char **argv);
 
-int		dprintf(int fd, char *format, ...);
-
-/* Libasm resolve handler */
+/* Libasm resolve handlers */
 void		do_resolve(void *data, u_int vaddr, char *, u_int);
 u_int		display_instr(int, u_int, u_int, u_int, u_int,
-			      char *, u_int, char *);
+			      char *, u_int, char *, char *, u_int *);
+char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roffset);
 
-/* Other VM functions */
+/* General VM functions */
+elfshpath_t	*vm_lookup_param(char *param, u_int mode);
+elfshpath_t	*vm_check_object(elfshpath_t *pobj);
 elfshobj_t	*vm_getfile(u_int index);
 elfshmod_t	*vm_getmod(u_int index);
-elfshmod_t	*vm_modprobe();
-char		*vm_filter_param(char *buf, char *ptr);
-char		**vm_getln(int *argc);
-char		*vm_build_unknown(char *buf, const char *str, u_long type);
 char		*vm_reverse(elfshobj_t *file, u_int vaddr);
-void		vm_load_cwfiles(char **argv);
-void		vm_setup_hashtables();
-void		vm_badparam(char *str);
-void		vm_unknown(char *str);
-void		vm_print_banner();
-void		vm_dynentinfo(elfshobj_t *f, Elf32_Dyn *ent, char *info);
-void		vm_filter_zero(elfshpath_t *obj);
-int		vm_implicit(elfshcmd_t *actual, char **argv);
-int	        vm_unload_cwfiles();
-int		vm_parseopt(int argc, char **argv);
-int		vm_lookup_param(char *param, elfshpath_t *pobj, u_int mode);
-int		vm_usage(char *str);
-int		vm_openscript(char *name, char *av0);
-int		vm_doerror(void (*fct)(char *str), char *str);
-int		vm_modlist();
-int		vm_convert_object(elfshpath_t *obj, u_int objtype);
-int		vm_check_object(elfshpath_t *pobj);
-int		vm_isnbr(char *string);
 
-/* cmdapi.c */
+/* Lookup functions */
+elfshobj_t	*vm_lookup_file(char *param);
+elfshpath_t	*vm_lookup_immed(char *param);
+elfsh_Addr	vm_lookup_index(char *param);
+char		*vm_lookup_var(char *param);
+char		*vm_lookup_string(char *param);
+
+/* Object functions */
+int		vm_convert2str(elfshpath_t *obj);
+int		vm_convert2int(elfshpath_t *obj);
+int		vm_convert2long(elfshpath_t *obj);
+int		vm_convert2raw(elfshpath_t *obj);
+int		vm_convert2byte(elfshpath_t *obj);
+int		vm_convert2short(elfshpath_t *obj);
+
+
+/* Command API */
 int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur);
 int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile);
 int		vm_delcmd(char *cmd);
 
-/* readline stuff (XXX: need to be prefixed) */
-char		**coustom_completion(const char* text, int start, int end);
+/* Parsing, Scanning, I/O functions */
+char		*vm_filter_param(char *buf, char *ptr);
+char		*vm_build_unknown(char *buf, const char *str, u_long type);
+void		vm_filter_zero(char *str);
+int		vm_parseopt(int argc, char **argv);
+void            vm_findhex(u_int argc, char **argv);
+char            *vm_getln(char *ptr);
+u_int           vm_findblanks(char *buf);
+char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
+int		vm_initio();
+char            **vm_input(int *argc);
+char		*vm_stdinput();
+int		vm_output(char *str);
+int		vm_output_bcast(char *str);
+int		vm_stdoutput(char *str);
+int		vm_display_prompt();
+void		vm_ln_handler (char *c);
+void		vm_setinput(elfshjob_t *j, int fd);
+void		vm_setoutput(elfshjob_t *j, int fd);
+char		*vm_basename(char *str);
 
-/* Object constructor functions */
+/* Internal functions */
+elfshmod_t	*vm_modprobe();
+void		vm_setup_hashtables();
+
+int		vm_doerror(void (*fct)(char *str), char *str);
+void		vm_error(char *label, char *param);
+void		vm_badparam(char *str);
+void		vm_unknown(char *str);
+void		vm_exit(int err);
+
+void		vm_print_banner();
+void		vm_dynentinfo(elfshobj_t *f, elfsh_Dyn *ent, char *info);
+int		vm_usage(char *str);
+int		vm_modlist();
+int		vm_isnbr(char *string);
+void		vm_load_cwfiles();
+int		vm_implicit(elfshcmd_t *actual);
+int	        vm_unload_cwfiles();
+int		dprintf(int fd, char *format, ...);
+void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
+int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
+int		vm_is_loaded(char *name);
+int		vm_doswitch(int nbr);
+
+int		vm_init() __attribute__((constructor)) ;
+int		vm_loop(int argc, char **argv);
+int		vm_config(int ac, char **av);
+int		vm_run(int ac, char **av);
+int		vm_main(int ac, char **av);
+
+/* Scripting flow functions */
+int		vm_execscript();
+int		vm_execmd();
+int		vm_move_pc(char *idx);
+int		vm_openscript(char **av);
+int		vm_testscript(int ac, char **av);
+
+/* Readline stuff (XXX: need to be prefixed) */
+char		**custom_completion(const char* text, int start, int end);
+
+/* Object creation/verification functions */
+int		vm_convert_object(elfshpath_t *obj, u_int objtype);
 elfshL1_t	*vm_create_L1ENT(void		*get_obj,
 				 void		*get_obj_idx,
 				 void		*get_obj_nam,
@@ -532,5 +884,36 @@ elfshL2_t	*vm_create_L2ENT(void	*get_obj,
 elfshcmd_t	*vm_create_CMDENT(int		(*exec)(void *file, void *av),
 				  int		(*reg)(u_int i, u_int ac, char **av),
 				  int		flags);
+elfshpath_t	*vm_create_IMMED(char type, char perm, u_int val);
+elfshpath_t	*vm_create_IMMEDSTR(char perm, char *str);
+elfshpath_t	*vm_create_LONG(char perm, elfsh_Addr val);
+
+/* Network related functions */
+int		vm_net_init();
+elfshjob_t	*vm_get_curlocaljob();
+int		vm_select();
+char		*vm_net_input();
+int		vm_net_output(char *buf);
+int		vm_net_recvd();
+int		vm_net_accept();
+int		vm_dump_accept();
+elfshjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr);
+int		vm_socket_del(char *inet_addr);
+int		vm_socket_get_nb_recvd(char *inet);
+int		vm_update_recvd(elfshsock_t *socket);
+char		*vm_socket_merge_recvd(elfshsock_t *socket);
+
+/* Interface related functions */
+int		vm_system(char *cmd);
+
+/* Workspace related functions*/
+int		cmd_workspace();
+int		vm_own_job(elfshjob_t *job);
+int		vm_valid_workspace(char *name);
+void		vm_switch_job(elfshjob_t *job);
+elfshjob_t	*vm_clone_job(elfshjob_t *job);
 
 #endif /* __ELFSH_H_ */
+
+
+

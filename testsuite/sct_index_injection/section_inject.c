@@ -68,8 +68,8 @@ char	*str = "stop looking at me ! \n";
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
-  Elf32_Shdr	hdr;
-  Elf32_Shdr	unmapped_hdr;
+  elfsh_Shdr	hdr;
+  elfsh_Shdr	unmapped_hdr;
   elfshsect_t	*new;
   elfshsect_t	*unmapped_new;
   int		ret;
@@ -96,7 +96,7 @@ int		main(int argc, char **argv)
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 0, 0, sizeof(sc), 0, 0, 0, 0);
 
   /* Insert the section at index 20 */
-  if (elfsh_insert_section(file, new, hdr, sc, 20) < 0)
+  if (elfsh_insert_section_idx(file, new, hdr, sc, 20) < 0)
     {
       elfsh_error();
       exit(-1);

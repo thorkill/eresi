@@ -1,0 +1,18 @@
+#!../../../vm/elfsh
+
+load a.out
+load rel.o
+
+#profile
+reladd 1 2
+#profile
+redir puts puts_troj
+redir legit_func hook_func
+
+# redir hook_func old_legit_func
+
+save fake_aout
+
+exec /sbin/paxctl -p -e -m -r -x -s ./fake_aout
+
+quit

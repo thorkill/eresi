@@ -1,0 +1,409 @@
+.\" define indentation for suboptions
+.nr SS 5
+.\" default indentation is 7, don't change!
+.nr IN 7
+.\" add new suboption
+.de IPs
+.IP "\\$1" \n(SS
+..
+.\" begin of first level suboptions, end with .RE
+.de RSs
+.RS \n(IN+3
+..
+.\" begin of 2nd level suboptions
+.de RSss
+.PD 0
+.RS \n(SS+3
+..
+.\" end of 2nd level suboptions
+.de REss
+.RE
+.PD 1
+..
+.TH ELFsh "1" "July 2004" "ELFsh 0.51b3" "User commands"
+.SH NAME
+ELFsh \- The ELF shell
+.SH SYNOPSIS
+.B elfsh 
+[\fIOPTION\fR...]
+.SH DESCRIPTION
+ELFsh is an interactive and scriptable ELF machine to play with executable 
+files, shared libraries and relocatable ELF32 objects. It is useful for daily 
+binary manipulations such as on-the-fly patching, code analysis, or embedded 
+code injection in research fields such as reverse engineering, security 
+auditing and intrusion detection.
+.SH OPTIONS
+
+.B
+.IP -f
+input file
+.B
+.IP -w
+output file
+
+.SH COMMANDS
+
+The following commands can be used on either the commandline when preceded by a - or on the ELFsh command prompt :
+
+.TP
+\fBinfo\fP
+Print the extra details help screen 
+
+.TP 
+\fBhelp\fP
+Print the help screen
+
+.TP
+\fBfixup\fP
+Insert BSS section in corefile
+
+.TP
+\fBfindrel\fP
+Dump absolute relocations list
+
+.TP
+\fBshtrm\fP
+Mark the Section Header Table (sht) as removed
+
+.TP
+\fBquit\fP
+Quit the shell without saving
+
+.TP
+\fBexit\fP
+Quit the shell without saving
+
+.TP
+\fBe elf\fP
+Print the ELF header
+
+.TP
+\fBi interp\fP
+Print the .interp section
+
+.TP
+\fBp pht\fP 
+Print the Program Header Table (PHT)
+
+.TP
+\fBg got\fP [\fIRegex\fR]
+Print the symbols in the Global Offset Table (GOT) matching \fIRegex\fR
+
+.TP
+\fBs sht\fP [\fIRegex\fR]
+Print the sections in the Section Header Table (SHT) matching \fIRegex\fR
+
+.TP
+\fBr rel\fP [\fIRegex\fR]
+Print the relocation entries matching \fIRegex\fR
+
+.TP
+\fBn notes\fP [\fIRegex\fR]
+Print the Notes sections entries matching \fIRegex\fR
+
+.TP
+\fBd dyn\fP [\fIRegex\fR]
+Print the .dynamic section entries matching \fIRegex\fR
+
+.TP
+\fBds dynsym\fP [\fIRegex\fR]
+Print dynamic symtab (.dynsym) entries matching \fIRegex\fR
+
+.TP
+\fBst sym\fP [\fIRegex\fR]
+Print the symtab (.symtab) entries matching \fIRegex\fR
+
+.TP
+\fBstab\fP [\fIRegex\fR]
+Print raw stab (.stabs) entries matching \fIRegex\fR
+
+.TP
+\fBct ctors\fP [\fIRegex\fR]
+Print .ctors section entries matching \fIRegex\fR
+
+.TP
+\fBdt dtors\fP [\fIRegex\fR]
+Print .dtors section entries matching \fIRegex\fR
+
+.TP
+\fBD disasm\fP [\fIRegex\fR[\fI:rva\fR[\fI%size\fR]]\fR]
+Disassemble \fIsize\fR bytes of the objects matching \fIRegex\fR starting at offset \fIrva\fR 
+
+.TP
+\fBX hexa\fP [\fIRegex\fR[\fI:rva\fR[\fI%size\fR]]\fR]
+Dump \fIsize\fR bytes of the objects matching \fIRegex\fR starting at offset \fIrva\fR
+
+.TP
+\fBreladd\fP \fIDestinationfileID\fR \fISourceFileID\fR
+Inject the ELF relocatable object \fISourceFileID\fR into the ELF executable object \fIDestinationFileID\fR 
+
+.TP
+\fIOP DestinationObjectPath OperandObjectPath\fR
+Perform arithemetic operation \fIOP\fR (add/sub/mul/div/mod) on \fIDestinationObjectPath\fR using operand \fIOperandObjectPath\fR
+
+.TP
+\fBset\fP \fIDestinationObjectPath SourceObjectPath\fR
+Set the value of object \fIDestinationObjectPath\fR to \fISourceObjectPath\fR
+
+.TP
+\fBget\fP \fISourceObjectPath\fR
+Get the value of object \fISourceObjectPath\fR
+
+.TP 
+\fBappend\fP \fISectionName\fR \fISourceObjectPath\fR
+Append the data of object \fISourceObjectPath\fR to section \fISectionName\fR
+
+.TP
+\fBextend\fP \fISectionName\fR \fIlength\fR
+Extend section \fISectionName\fR with \fIlength\fR zero bytes
+
+.TP
+\fBwrite\fP \fIDestinationObjectPath SourceObjectPath\fR
+Copy data from \fISourceObjectPath\fR to \fIDestinationObjectPath\fR
+
+.TP
+\fBprint\fP [\fIObjectPath1 ObjectPath2 ... ObjectPathN\fR]
+Print the values of objects \fIObjectPath1 ObjectPath2 ... ObjectPathN\fR
+
+.TP
+\fBredir\fP \fIfunc\fR (\fIfunc2\fR | \fIaddr\fR)
+Redirect calls to function \fIfunc\fR having a .plt entry to \fIfunc2\fR or address \fIaddr\fR.
+
+.TP
+\fBa all\fP \fIregex\fR
+Set a global regular expression. All commands which take a regular expression as a parameter will default to use this global regular expression.
+
+.TP
+\fBs sort\fP (\fIa\fR|\fIs\fR)
+Sort output by \fIa\fRddress or \fIs\fRize
+
+.TP
+\fBquiet\fP | \fBverbose\fP
+Toggle the verbosity flag
+
+.P
+The following commands can only be used on the ELFsh commandline :
+
+.TP 
+\fBload\fP \fIfilename\fR
+Load input file \fIfilename\fR
+
+.TP 
+\fBsave\fP \fIfilename\fR
+Dump output file \fIfilename\fR
+
+.TP 
+\fBunload\fP (\fIfilename\fR | \fIfileID\fR)
+Unload file \fIfilename\fR or \fIfileID\fR without saving
+
+.TP 
+\fBswitch\fP (\fIfilename\fR | \fIfileID\fR)
+Change the current file to work on to \fIfilename\fR or \fIfileID\fR
+
+.TP 
+\fBmodload\fP \fIfilename\fR
+Load the ELFsh module \fIfilename\fR
+
+.TP
+\fBlist\fP
+List the loaded files and their ID
+
+.SH OBJECT PATH FORMAT
+This section explains how to access different objects in an ELF file. For most commands the object can also be a decimal or hexadecimal number. In this case the ObjectPath is the number.
+
+.TP 
+\fBELF Header\fP
+filename.hdr.field
+
+ELF header fields are :
+.
+.RSs
+.IPs \fBmagic\fP
+Magic number
+.IPs \fBclass\fP
+File class
+.IPs \fBtype\fP
+Object file type
+.IPs \fBmachine\fP
+Architecture 
+.IPs \fBversion\fP
+Object file version
+.IPs \fBentry\fP
+Entry point virtual address
+.IPs \fBphoff\fP
+Program header table file offset
+.IPs \fBshoff\fP
+Section header table file offset
+.IPs \fBflags\fP
+Processor-specific Flags
+.IPs \fBehsize\fP
+Size of the ELF header in bytes
+.IPs \fBphentsize\fP
+Size of the program headers
+.IPs \fBshentsize\fP
+Size of the section headers
+.IPs \fBphnum\fP
+Number of program headers
+.IPs \fBshnum\fP
+Number of section headers
+.IPs \fBshstrndx\fP
+Section header string table index
+.IPs \fBpax_pageexec\fP
+PAX use paging based non-executable pages
+.IPs \fBpax_emultramp\fP
+PAX emulate trampolines 
+.IPs \fBpax_mprotect\fP
+PAX restrict mmap
+.IPs \fBpax_randmmap\fP
+PAX randomize mmap 
+.IPs \fBpax_randexec\fP
+PAX randomly map executable address
+.IPs \fBpax_segmexe\fP
+PAX use segmentation based non-executable pages
+.RE 
+
+.TP
+\fBgot/ctors/dtors tables\fP
+(filename | fileID).(got|ctors|dtors)[index]
+
+.TP
+\fBProgram segment header table\fP
+(filename | fileID).pht[index].field
+
+Program segment header table entry fields are :
+.
+.RSs
+.IPs \fBtype\fP
+Segment type
+.IPs \fBoffset\fP
+Segment file offset 
+.IPs \fBpaddr\fP
+Segment physical address
+.IPs \fBvaddr\fP
+Segment virtual address
+.IPs \fBfilesz\fP
+Segment size in file
+.IPs \fBmemsz\fP
+Segment size in memory
+.IPs \fBflags\fP
+Segment flags
+.IPs \fBalign\fP
+Segment alignment
+.RE
+
+.TP
+\fBSymbol/Dynamic symbol tables\fP
+(filename | fileID).(symtab|dynsym)[index].field
+
+Symbol/Dynamic symbol table entry fields are :
+.
+.RSs
+.IPs \fBname\fP
+Symbol name
+.IPs \fBvalue\fP
+Symbol value
+.IPs \fBsize\fP
+Symbol size
+.IPs \fBbind\fP
+Symbol binding
+.IPs \fBtype\fP
+Symbol type
+.IPs \fBother\fP
+Symbol visibility
+.RE
+
+.TP
+\fBDynamic table\fP
+(filename | fileID).dynamic[index].field
+
+dynamic table entry fields are :
+.
+.RSs
+.IPs \fBval\fP
+Integer or address value
+.IPs \fBtag\fP
+Dynamic entry type
+.RE
+
+.TP
+\fBSection header table\fP
+(filename | fileID).sht[index].field
+
+Section header table entry fields are :
+.
+.RSs
+.IPs \fBtype\fP
+Section type
+.IPs \fBoffset\fP
+Section Offset in ELF file
+.IPs \fBaddr\fP
+Section Address
+.IPs \fBsize\fP
+Section Size in bytes
+.IPs \fBlink\fP
+Link to another section
+.IPs \fBinfo\fP
+Additional Info
+.IPs \fBalign\fP
+Section Alignment
+.IPs \fBentsize\fP
+Entry size if section holds table
+.IPs \fBflags\fP 
+.RSss
+.IPs a 
+Occupies memory during execution
+.IPs w 
+Writeable
+.IPs x 
+Executable
+.IPs s 
+Contains nul-terminated strings
+.IPs m 
+Might be merged
+.IPs l
+Preserve order after combining
+.IPs o
+OS specific
+.REss
+.RE
+
+.TP
+\fBRelocation table\fP
+(filename | fileID).rel[indextable][indexentry].field
+
+relocation entry fields are :
+.
+.RSs
+.IPs \fBtype\fP
+Type
+.IPs \fBsym\fP
+Relocation symbol index
+.IPs \fBoffset\fP
+Address
+.RE
+
+.TP
+\fBSection table\fP
+(filename | fileID).section[sectionindex].field
+
+section fields are :
+.
+.RSs
+.IPs \fBname\fP
+Section name
+.IPs \fBraw\fP
+Section Raw data.
+To access use following path format :
+.
+.RSss
+.IPs filename.section[index[:offset[%elemsize]]].raw
+.REss
+.RE
+
+.SH AUTHOR
+The ELFsh was written by the ELFsh crew <elfsh@devhell.org>.
+
+This manual page was created by Peter De Schrijver <p2@mind.be> for the Debian GNU/Linux system (but may be used by others).
+
+.SH SEE ALSO
+readelf(1), objdump(1), objcopy(1)

@@ -4,24 +4,30 @@
 ## 
 ## Author  : sk at devhell dot org
 ## Started : Thu May 29 21:50:28 2003
-## Updated : Tue Jun 17 23:30:19 2003
+## Updated : Thu Nov 27 22:06:16 2003
 ##
+include ../../config.h
 
-SRCS = modflow.c \
-	control.c \
-	blocks.c \
-	inspect.c \
-	graph.c
+SRCS = modflow.c	\
+	control.c	\
+	blocks.c	\
+	inspect.c	\
+	graph.c		\
+	flowjack.c	\
+	libbtree.c
 
 OBJS = $(SRCS:.c=.o)
 
 NAME = modflow.so
 
-CFLAGS = -Wall -Werror -ggdb -I../../vm/include \
+CFLAGS = -Wall -Werror -ggdb -I../../vm/include -I../../libdump/include/ \
 	-I../../libelfsh/include -I../../libhash/include \
-	-fPIC -rdynamic -DELFSH_INTERN
+	-I../../libdump/include \
+	-fPIC -rdynamic -DELFSH_INTERN $(BITS) \
+	-I../../libasm/include/
 
 RM = rm -f
+CC = gcc
 
 all:	$(OBJS)
 	$(CC) -shared -o ../$(NAME) $(OBJS)

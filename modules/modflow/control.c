@@ -4,7 +4,7 @@
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Thu May 29 20:44:39 2003
-** Updated : Tue Jun 17 23:30:39 2003
+** Updated : Sun Oct 19 16:45:48 2003
 */
 
 #include "modflow.h"
@@ -24,7 +24,7 @@ u_int			trace_start(elfshobj_t *obj, char *buf,
 				    struct s_function **f_lst) 
 {
   int			stop;
-  Elf32_Sym		*sym;
+  elfsh_Sym		*sym;
   u_int			ilen;
   u_int			dis;
   u_int			main_addr;
@@ -64,12 +64,12 @@ u_int			trace_start(elfshobj_t *obj, char *buf,
 	case ASM_PUSH:
 	  if (dis && (arch_bin == BIN_LINUX) && 
 	      ins.op1.type == ASM_OTYPE_IMMEDIATE)
-	    asm_operand_get_immediate(&ins.op1, &main_addr);
+	    asm_operand_get_immediate(&ins, 1, 0, &main_addr);
 	  break;
 	case ASM_CALL:
 	  if (arch_bin == BIN_FREEBSD) 
 	    {
-	      asm_operand_get_immediate(&ins.op1, &main_addr);
+	      asm_operand_get_immediate(&ins, 1, 0, &main_addr);
 	      if (fetch_next)
 		stop = 1;
 	      main_addr += vaddr + dis + ilen;
@@ -175,7 +175,6 @@ void			trace_control(elfshobj_t *obj,
   if (!tmp)
     block_add_list(blk_list, g_curblock);
   
-
   /*
     depending on instruction type -based on IA32 instruction set-
     ASM_TYPE_CONDBRANCH: jcc, loop, MAY not break execution flow

@@ -2,17 +2,19 @@
 ** dyn.c for elfsh
 ** 
 ** Started on  Fri Nov  2 15:17:36 2001 mayhem
-** Last update Tue May 27 04:31:08 2003 mayhem
+**
 */
 #include "elfsh.h"
 
 
 /* Handlers for value for special tags */
-void		vm_do_feature1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
+void		vm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
   u_int		idx;
   char		buff[45];
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -24,11 +26,13 @@ void		vm_do_feature1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
 		      elfsh_feature1[idx].desc);
 }
 
-void      vm_do_posflag1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
+void      vm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
   u_int		idx;
   char		buff[45];
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -40,11 +44,13 @@ void      vm_do_posflag1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
 		      elfsh_posflag1[idx].desc);
 }
 
-void      vm_do_flags(elfshobj_t *file, Elf32_Dyn *entry, char *info)
+void      vm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
   u_int		idx;
   char		buff[45];
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -56,11 +62,13 @@ void      vm_do_flags(elfshobj_t *file, Elf32_Dyn *entry, char *info)
 		      elfsh_flags[idx].desc);
 }
 
-void      vm_do_flags1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
+void      vm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
   u_int		idx;
   char		buff[45];
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -72,16 +80,34 @@ void      vm_do_flags1(elfshobj_t *file, Elf32_Dyn *entry, char *info)
 		      elfsh_flags1[idx].desc);
 }
 
+void      vm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
+{
+  u_int		cnt;
+  u_int		idx;
+  char		buff[45];
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  *buff = '\n';
+  memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
+  buff[44] = 0x00;
+  for (cnt = idx = 0; idx < ELFSH_MIPSFLAGS_MAX; idx++)
+    if (entry->d_un.d_val & elfsh_mipsflags[idx].val)
+      cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
+		      (cnt ? buff : ""), 
+		      elfsh_mipsflags[idx].desc);
+}
 
 
 
 /* Provide human readable output for .dynamic entries */
 void		vm_dynentinfo(elfshobj_t	*file, 
-			      Elf32_Dyn		*entry, 
+			      elfsh_Dyn		*entry, 
 			      char		*info)
 {
   char		*str;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (entry->d_tag)
     {
@@ -91,8 +117,6 @@ void		vm_dynentinfo(elfshobj_t	*file,
     case DT_AUXILIARY:
     case DT_FILTER:
       str = elfsh_get_dynentry_string(file, entry);
-      if (str == NULL)
-	elfsh_error();
       snprintf(info, 99, "%s", (str != NULL ? str : ELFSH_NULL_STRING));
       break;
     case DT_SYMBOLIC:
@@ -111,7 +135,7 @@ void		vm_dynentinfo(elfshobj_t	*file,
     case DT_RELCOUNT:
     case DT_VERDEFNUM:
     case DT_VERNEEDNUM:
-      sprintf(info, "%d", (int) entry->d_un.d_val);
+      sprintf(info, UFMT, entry->d_un.d_val);
       break;
     case DT_PLTRELSZ:
     case DT_RELASZ:
@@ -123,7 +147,7 @@ void		vm_dynentinfo(elfshobj_t	*file,
     case DT_SYMINSZ:
     case DT_PLTPADSZ:
     case DT_MOVESZ:
-      sprintf(info, "%u bytes", (unsigned int) entry->d_un.d_val);
+      sprintf(info, UFMT " bytes", entry->d_un.d_val);
       break;
     case DT_PLTGOT:
     case DT_STRTAB:
@@ -139,7 +163,7 @@ void		vm_dynentinfo(elfshobj_t	*file,
     case DT_VERSYM:
     case DT_VERDEF:
     case DT_VERNEED:
-      sprintf(info, "0x%08X", (u_int) entry->d_un.d_ptr);
+      sprintf(info, XFMT, entry->d_un.d_ptr);
       break;
     case DT_FEATURE_1:
       vm_do_feature1(file, entry, info);
@@ -156,6 +180,84 @@ void		vm_dynentinfo(elfshobj_t	*file,
     case DT_NULL:
       sprintf(info, "END OF SECTION");
       break;
+      /* MIPS dynamic entry type */
+    case DT_MIPS_RLD_VERSION:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_TIME_STAMP:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_ICHECKSUM:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_IVERSION:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_FLAGS:
+      vm_do_mipsflags(file, entry, info);
+      break;
+    case DT_MIPS_BASE_ADDRESS:
+      sprintf(info, XFMT,  entry->d_un.d_ptr);
+      break;
+    case DT_MIPS_MSYM:
+      sprintf(info, XFMT,  entry->d_un.d_ptr);
+      break;
+    case DT_MIPS_CONFLICT:
+      sprintf(info, XFMT,  entry->d_un.d_ptr);
+      break;
+    case DT_MIPS_LIBLIST:
+      sprintf(info, XFMT,  entry->d_un.d_ptr);
+      break;
+    case DT_MIPS_LOCAL_GOTNO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_CONFLICTNO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_LIBLISTNO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_SYMTABNO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_UNREFEXTNO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_GOTSYM:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_HIPAGENO:
+      sprintf(info, UFMT,  entry->d_un.d_val);
+      break;
+    case DT_MIPS_RLD_MAP:
+      sprintf(info, XFMT,  entry->d_un.d_ptr);
+      break;
+    case DT_MIPS_DELTA_CLASS:
+    case DT_MIPS_DELTA_CLASS_NO:
+    case DT_MIPS_DELTA_INSTANCE:
+    case DT_MIPS_DELTA_INSTANCE_NO:
+    case DT_MIPS_DELTA_RELOC:
+    case DT_MIPS_DELTA_RELOC_NO:
+    case DT_MIPS_DELTA_SYM:
+    case DT_MIPS_DELTA_SYM_NO:
+    case DT_MIPS_DELTA_CLASSSYM:
+    case DT_MIPS_DELTA_CLASSSYM_NO:
+    case DT_MIPS_CXX_FLAGS:
+    case DT_MIPS_PIXIE_INIT:
+    case DT_MIPS_SYMBOL_LIB:
+    case DT_MIPS_LOCALPAGE_GOTIDX:
+    case DT_MIPS_LOCAL_GOTIDX:
+    case DT_MIPS_HIDDEN_GOTIDX:
+    case DT_MIPS_PROTECTED_GOTIDX:
+    case DT_MIPS_OPTIONS:
+    case DT_MIPS_INTERFACE:
+    case DT_MIPS_DYNSTR_ALIGN:
+    case DT_MIPS_INTERFACE_SIZE:
+    case DT_MIPS_RLD_TEXT_RESOLVE_ADDR:
+    case DT_MIPS_PERF_SUFFIX:
+    case DT_MIPS_COMPACT_SIZE:
+    case DT_MIPS_GP_VALUE:
+    case DT_MIPS_AUX_DYNAMIC:
     default:
       sprintf(info, "[?]");
       break;
@@ -171,6 +273,9 @@ char		*vm_getdyntype(u_int type)
   for (idx = 0; idx < ELFSH_EXTDYN_MAX; idx++)
     if (elfsh_extdyn_type[idx].val == type)
       return ((char *) elfsh_extdyn_type[idx].desc);
+  for (idx = 0; idx < ELFSH_MIPSDYN_MAX; idx++)
+    if (elfsh_mipsdyn_type[idx].val == type)
+      return ((char *) elfsh_mipsdyn_type[idx].desc);
   return ("[?]");
 }
 
@@ -180,9 +285,14 @@ char		*vm_getdyntype_short(u_int type)
 {
   u_int		idx;
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   for (idx = 0; idx < ELFSH_EXTDYN_MAX; idx++)
     if (elfsh_extdyn_type[idx].val == type)
       return ((char *) elfsh_extdyn_type[idx].name);
+  for (idx = 0; idx < ELFSH_MIPSDYN_MAX; idx++)
+    if (elfsh_mipsdyn_type[idx].val == type)
+      return ((char *) elfsh_mipsdyn_type[idx].name);
   return ("[?]");
 }
 
@@ -192,7 +302,7 @@ char		*vm_getdyntype_short(u_int type)
 /* Display the .dynamic section entries */
 int		cmd_dyn()
 {
-  Elf32_Dyn	*actual;
+  elfsh_Dyn	*actual;
   int		num;
   int		index;
   int		typenum;
@@ -203,11 +313,15 @@ int		cmd_dyn()
   char		type_unk[ELFSH_MEANING + 1];
   char		info[BUFSIZ];
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Fetch the section and init the regex */
-  if ((actual = elfsh_get_dynamic(world.current, &num)) == NULL)
+  if ((actual = elfsh_get_dynamic(world.curjob->current, &num)) == NULL)
     RET(-1);
-  CHOOSE_REGX(tmp);
-  printf(" [SHT_DYNAMIC]\n [Object %s]\n\n", world.current->name);
+  FIRSTREGX(tmp);
+  snprintf(info, BUFSIZ - 1, 
+	   " [SHT_DYNAMIC]\n [Object %s]\n\n", world.curjob->current->name);
+  vm_output(info);
 
   /* Loop on the section */
   for (index = 0; index < num && actual[index].d_tag != DT_NULL; index++)
@@ -222,24 +336,24 @@ int		cmd_dyn()
 	  if (type == NULL)
 	    type = type_short = vm_build_unknown(type_unk, "UNK", typenum);
 	}
-      else
+	else
 	{
 	  type       = (char *) elfsh_dynentry_type[typenum].desc;
 	  type_short = (char *) elfsh_dynentry_type[typenum].name;
 	}
-
+	
       bzero(info, sizeof(info));
-      vm_dynentinfo(world.current, actual + index, info);
+      vm_dynentinfo(world.curjob->current, actual + index, info);
 
       /* Print if the regex match */
-      snprintf(buff, sizeof(buff), " [%02u] %-33s => %19s {%s}", /* +43 */
+      snprintf(buff, sizeof(buff), " [%02u] %-33s => %19s {%s}\n", /* +43 */
 	       index, type, info, type_short);
 
       if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
-	puts(buff);
+	vm_output(buff);
     }
   
-  puts("");
+  vm_output("\n");
   return (0);
 }
 

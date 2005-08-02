@@ -1,0 +1,18 @@
+
+file ./fake_aout
+directory ~/glibc-2.3.4/elf/
+directory ~/glibc-2.3.4/sysdeps/mips/
+b main
+r
+display/1x $pc
+while 1
+stepi
+end
+
+#echo Printing relative offset from real GP value
+#x/26x $gp-0x8000+0x10
+#echo Printing original GOT
+#x/26x 0x10000050
+#echo Printing ALTGOT
+#x/26x 0x10000170
+quit

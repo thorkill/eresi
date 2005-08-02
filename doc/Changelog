@@ -6,6 +6,74 @@
 Intermediate betaversions changes are listed in the first public version
 they appear .
 
+0.65  :
+-------
+ - Added  : Support for variables (and $_ variable)
+ - Core   : Slighly modified vm_lookup_param() interface for variable support
+ - Added  : compare (cmp) command
+ - Added  : control flow (jmp, je, jne, jg, jl, jge, jle commands)
+ - Added  : Label support for jmp instructions
+ - Added  : Variable indexes capability
+ - Added  : Script parameters support
+ - Added  : implicit variable conversions from string to integer 
+ - Added  : flowjack command in modflow
+ - Added  : double variables ($$var) : assign variables to the names of others
+ - Added  : $# variable (argc)
+ - Core   : print without parameter now goes to next line
+ - Added  : Possible dynamic convertion into RAW object
+ - Core   : More checks before launching script (resolve bug reported by truff)
+ - Added  : insert command (can insert sections and symbols in scripting)
+ - Core   : OpenBSD fixes (by mjc) and BeoS patch (by zadig)
+ - Added  : remove command (can remove symbols and sections in scripting)
+ - Bugfix : Stripping now OK
+ - Added  : Flush command
+ - Added  : Optional size parameter to 'write' command
+ - Added  : Help handler for modules (with modhelp command)
+ - Added  : elfsh_symtab_endianize (for advanced cross endianness support)
+ - Added  : configure by hand
+ - Bugfix : Better cross-endianizing support
+ - Core   : ELF64 support
+ - Added  : Sparc64 relocation types ASCII tables
+ - Core   : ET_REL injection / PLT infection hooks support
+ - Core   : internal hook API (vm_register_plthook / vm_register_relhook)
+ - Added  : ELF binaries mere-OS fingerprinting
+ - Bugfix : Now copy file before saving (avoid unwanted stripping in CWF)
+ - Bugfix : SPARC ALTPLT 'relplt bug' fixed on solaris. (thx dvorak for help ;)
+ - Added  : Support for extended PHT types (recent pax/binutils compat)
+ - Added  : PHDR insertion API
+ - Bugfix : No more 'quit' at the end of script necessary
+ - Core   : Virtual interface for I/O (vm/io.c)
+ - Bugfix : Module commands were not well executed in loops (reported by yannmalcom)
+ - Added  : Network support (initiated by yannmalcom)
+ - Added  : Shared working files
+ - Bugfix : $_ value were not assigned correctly on non-immed types in atomic commands
+ - Core   : Lazy types for CHAR, SHORT, LONG (part of 32/64bits interface)
+ - Added  : ASCII tables relocations types for MIPS, ALPHA and IA64 
+ - Added  : PLT hijacking on ALPHA
+ - Core   : Extended elfsh hooks to static hijack and altplt hijack handlers
+ - Core   : Changed elfsh_insert_section() return type (now elfshsect_t *)
+ - Core   : Changed option handler for allowing multiple regexp for D command
+ - Added  : 'source' command now execute an external script in the same job 
+ - Added  : "$!' command now contain the last loaded file id
+ - Added  : remove command and API for PHT entries
+ - Added  : New PaX safe control flow hook for x86
+ - Added  : Now compute dynsym symbols vaddr when new version of ld let them blanks
+ - Core   : (sk) 20/04/2005 display_instr prototype and function modification
+ - Added  : CFLOW on MIPS
+ - Core   : In-process scripting capability
+ - Added  : Macros using the scriptsdir command
+ - Core   : Compatibility with the most recent binutils/glibc
+ - Added  : vm_exec_str() function API
+ - Core   : elfsh/e2dbg profiler implied changes in the error handling
+ - Added  : EXTPLT technique on x86
+ - Added  : workspace support
+ - Core   : Now 2 stage relocation engine
+ - Added  : EXTSTATIC technique (static files extension)
+ - Added  : ET_REL injection into memory
+ - Added  : EXTPLT is now compatible with ET_REL injection into memory
+ - Added  : Insertion and removing of breakpoints for x86
+
+
 0.51b3 (August, 21, 2003)
 ------------------------
  - Bugfix : Fixed 'Malloc problem' on Solaris when using postbss injection

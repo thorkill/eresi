@@ -1,0 +1,18 @@
+#!../../vm/elfsh
+
+load ../../openssl64
+
+print Parameter 1 : $1
+set $full 1.sht[.dynsym].size
+div $full 1.sht[.dynsym].entsize
+print Dynamic symtab contains $full entries
+cmp $full $1
+jle err
+print Entry $1 is 1.dynsym[$1].tag
+jmp end
+err:
+print Table is too small
+end:
+print End of scripts, listing variables :
+vtable
+quit

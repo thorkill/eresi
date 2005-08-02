@@ -1,0 +1,38 @@
+#!../../vm/elfsh
+
+# comment it for enabling trace mode
+quiet
+
+load /bin/ls
+set $index 0
+print Now try to find symbols with 4 bytes size :
+
+loop:
+cmp $index 1.hdr.shnum
+je endloop
+print Passing section 1.section[$index].name at addr 1.sht[$index].addr with index $index
+add $index 1
+jmp loop
+
+endloop:
+set $index 0
+set $lastsym 1.sht[.dynsym].size
+div $lastsym 1.sht[.dynsym].entsize
+print Now try to find symbols with 4 bytes size ( dynsymtab contains $lastsym entries ) :
+
+loop2:
+cmp $index $lastsym
+je end
+cmp 1.dynsym[$index].size 4
+jne rec
+print Found dword sized symbol : 1.dynsym[$index].name at addr 1.dynsym[$index].value
+rec:
+add $index 1
+jmp loop2
+
+end:
+vlist
+quit
+
+
+

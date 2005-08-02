@@ -1,0 +1,15 @@
+#!../../vm/elfsh
+
+
+load a.out
+load e2dbg_rel.o
+
+reladd 1 2
+redir puts puts_troj
+redir legit_func hook_func
+save fake_aout
+
+exec /home/tyler/paxctl-0.3/paxctl -c fake_aout
+exec /home/tyler/paxctl-0.3/paxctl -m fake_aout
+
+quit

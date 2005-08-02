@@ -1,0 +1,16 @@
+#!/usr/bin/elfsh
+
+load MISC/top64
+quiet
+p
+verb
+set 1.got[0] .plt
+save /tmp/top64new
+quiet
+p
+verb
+load /tmp/top64new
+quiet
+p
+verb
+quit

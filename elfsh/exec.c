@@ -2,29 +2,46 @@
 ** exec.c for elfsh 
 ** 
 ** Started on  Tue Feb 18 13:03:14 2003 mayhem
-** Last update Sun Apr  6 00:43:52 2003 mayhem
 */
 #include "elfsh.h"
 
 /* Fork and execve the stuff */
 int		cmd_exec()
 {
-  pid_t		pid;
-  int		status;
+  int       status;
+  char      buf[BUFSIZ] = "";
+  int       i = 0;
 
-  fflush(stdout);
-  pid = fork();
-  if (!pid)
-    exit(execvp(world.args.param[0], world.args.param));
-  waitpid(pid, &status, 0);
-  switch (status)
-    {
-    case 0:
-      puts("\n [*] Command executed successfully \n");
-      break;
-    default:
-      perror("\n [*] Command failed");
-      puts("");
-    }
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+
+#if defined(USE_READLN)
+  if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ||
+      world.state.vm_mode == ELFSH_VMSTATE_IMODE)
+    rl_deprep_terminal();
+#endif
+
+  while (world.curjob->curcmd->param[i])
+  {
+      strncat (buf, " ", BUFSIZ); 
+      strncat (buf, world.curjob->curcmd->param[i], BUFSIZ);
+      i++;
+  }
+  
+  switch (status = vm_system (buf))
+  {
+      case 0:
+          vm_output("\n [*] Command executed successfully \n\n");
+          break;
+      default:
+          vm_output("\n [E] Command failed\n\n");
+  }
+
+#if defined(USE_READLN)
+  if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ||
+      world.state.vm_mode == ELFSH_VMSTATE_IMODE)
+    rl_prep_terminal(1);
+#endif
+
   return (status);
 }

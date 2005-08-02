@@ -2,7 +2,7 @@
 ** stab.c for elfsh
 ** 
 ** Started on  Fri Nov  2 15:18:56 2001 mayhem
-** Last update Tue Feb 18 05:03:26 2003 mayhem
+**
 */
 #include "elfsh.h"
 
@@ -22,24 +22,26 @@ int			cmd_stab()
   u_int			typenum;
   char			buff[256];
 
-  entry = elfsh_get_stab(world.current, &num);
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  entry = elfsh_get_stab(world.curjob->current, &num);
   if (entry == NULL)
     RET(-1);
-  CHOOSE_REGX(tmp);
-  puts("\n[STAB TABLE]");
+  FIRSTREGX(tmp);
+  vm_output("\n[STAB TABLE]\n");
   
   for (index = 0; index < num; index++)
     {
-      if ((name = elfsh_get_stab_name(world.current, entry + index)) == NULL)
+      if ((name = elfsh_get_stab_name(world.curjob->current, entry + index)) == NULL)
 	RET(-1);
       typenum = elfsh_get_stab_type(entry + index);
       type = (typenum > ELFSH_STAB_MAX ? NULL : elfsh_stab_type[typenum]);
-      snprintf(buff, sizeof(buff), "%10p : \t %s \nType \t   : \t %s \n",
+      snprintf(buff, sizeof(buff), XFMT " : \t %s \nType \t   : \t %s \n\n",
 	       elfsh_get_stab_offset(entry + index),
 	       (!name || !name[0] ? "NULL" : name),
 	       (!type || !type[0] ? "NULL" : type));
       if (!tmp || (tmp && type && !regexec(tmp, buff, 0, 0, 0)))
-	puts(buff);
+	vm_output(buff);
     }
 
   return (0);

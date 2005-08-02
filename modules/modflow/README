@@ -1,0 +1,250 @@
+Date: Wed Apr 20 14:16:40 CEST 2005
+
+				=-=-=-=-=-=-=-=-=-=-=-=
+				!!!!!!!!MODFLOW!!!!!!!
+				!!!!!!!!READ ME!!!!!!!!
+				=-=-=-=-=-=-=-=-=-=-=-=
+
+ Here is modflow.
+
+[0] Introduction
+[1] Commands summary
+[2] Control flow analysis
+[3] Function hijacking
+[4] A modflow session for dummies.
+[5] Is modflow evil ?
+
+[0] Introduction
+
+  Modflow is an ELFsh module designed to perform control flow analysis on ELF binaries
+  code section. 
+
+[1] Commands summary
+
+	a. flow
+
+  flow is the command designed to launch control flow analysis.
+
+	b. inspect
+
+  inspect is the command designed to watch a specific block of control flow graph.
+
+	c. graph
+
+  graph is the command to dump a graphviz graph file to generate a "user friendly" view
+  of the control flow.
+
+	d. flowjack
+
+  flowjack is the hooking command designed to hijack all calls to a function to another
+  function.
+
+[2] Control flow analysis
+
+  To perform control flow analysis, you have to first load a binary and modflow.
+  Once a binary is loaded, use the flow command to launch control flow analysis.
+  It will browse each section, and for each executable one will disassemble its
+  data to build a control flow graph.
+  In addition, it will analyse the _start symbol to detect operating system for
+  which the binary has been compiled. Currently, it detects FreeBSD and Linux
+  binaries and can extract the main function address without any symbols.
+
+  This control flow graph is stored in the binary in a .control section so that
+  if you save the current binary with the save command of ELFsh, control flow
+  data may be available for a later usage.
+  For each block of instructions, a symbol named block_<address> where address is
+  the starting address of the block is added to the symbol table.
+  If the block was once called by another block, then block is assumed to be the
+  starting block of a function and is named function_<address> where address ...
+  st_value of the Elf32_Sym structure is the offset of the block data in ".control".
+  st_size of the Elf32_Sym structure is the size of the current block.
+
+  To browse the control flow graph, two methods are available.
+
+  - Inside ELFsh with the inspect command.
+  Its parameter is wether a symbol of the binary wether a virtual address.
+  It dump the block disassemby code and any block from where the block was
+  called or jumped to.
+  Do NOT use symbol of the control flow (block_XXXXXXXX or function_XXXXXXXX) with the 
+  inspect command as st_value of those symbols are offset in the .control section.
+
+  - Outside ELFsh with the graphviz graph visualization software : www.graphviz.org
+  You have to dump a graphviz source file with the graph command.
+  It takes three parameters : the file to dump the graph to, symbol or address of
+  the startng block of dump and wether the address in the binary to stop dumping
+  or the length of the code area to dump prefixed by '+'
+
+[3] Function hijacking
+
+  Hijacking static function in a binary may be usefull for many purposes up to the user.
+  With modflow, once control flow graph is built, it's possible to hijack all calls to a 
+  function to another function. It does it by patching call instructions operand.
+
+  How to proceed ?
+  a. You must first build control flow graph of the binary with the flow command.
+  b. Use flowjack command to hijack any function by another.
+
+  The flowjack command syntax is the following : 
+  flowjack origin_func hook_func where origin_func is the function to hijack and hook_func the hook.
+
+  What is nice is that you can use the reladd ELFsh command before hijacking a function.
+  In that way, you can hijack a function with a new function written externaly to the binary
+  that may be injected in the binary.
+
+[4] A modflow session for dummies.
+
+$ elfsh
+
+
+         Welcome to The ELF shell 0.62a (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org for information about Free Software
+
+(elfsh-0.62a) load main
+
+
+ [*] New object main loaded on Wed Apr 20 15:07:41 2005
+
+
+(elfsh-0.62a) modload modflow
+
+name : /usr/share/elfsh/modflow.so
+ [*] ELFsh modflow(Apr 20 2005/15:06:49) fini -OK-
+
+     Added commands:
+
+        flow                                               : process control flow analysis
+        graph    <file> <symbol/address> <address|+size>   : dump graphviz graph to file
+        inspect  <symbol/address>                          : inspect block at vaddr
+        flowjack <sym1> <sym2>                             : hijack xref from sym1 to sym2
+
+(elfsh-0.62a) flow
+
+ * 33 sections
+ * section name=(      .comment) index=(00) not allocatable ->skipping ...
+ * section name=(       .interp) index=(01)          allocatable  not executable -> skipping ...
+ * section name=( .note.ABI-tag) index=(02)          allocatable  not executable -> skipping ...
+ * section name=(         .hash) index=(03)          allocatable  not executable -> skipping ...
+ * section name=(       .dynsym) index=(04)          allocatable  not executable -> skipping ...
+ * section name=(       .dynstr) index=(05)          allocatable  not executable -> skipping ...
+ * section name=(  .gnu.version) index=(06)          allocatable  not executable -> skipping ...
+ * section name=(.gnu.version_r) index=(07)          allocatable  not executable -> skipping ...
+ * section name=(      .rel.dyn) index=(08)          allocatable  not executable -> skipping ...
+ * section name=(      .rel.plt) index=(09)          allocatable  not executable -> skipping ...
+ * section name=(         .init) index=(10)          allocatable  executable -> analysing
+[MODFLOW] loading code... vaddr = 08048274 foffset = 628 len = 25
+ [*] Entry point: 080482d0
+ [*] starting disassembly
+ * section name=(          .plt) index=(11)          allocatable  executable -> analysing
+[MODFLOW] loading code... vaddr = 08048290 foffset = 656 len = 64
+ [*] Entry point: 080482d0
+ [*] starting disassembly
+ * section name=(         .text) index=(12)          allocatable  executable -> analysing
+[MODFLOW] loading code... vaddr = 080482d0 foffset = 720 len = 752
+ [*] Entry point: 080482d0
+ [*] _start found at 080482d0
+ [*] Linux-like start
+ [*] main located at  80484ce
+ [*] starting disassembly
+ * section name=(         .fini) index=(13)          allocatable  executable -> analysing
+[MODFLOW] loading code... vaddr = 080485c0 foffset = 1472 len = 32
+ [*] Entry point: 080482d0
+ [*] starting disassembly
+ * section name=(       .rodata) index=(14)          allocatable  not executable -> skipping ...
+ * section name=(         .data) index=(15)          allocatable  not executable -> skipping ...
+ * section name=(     .eh_frame) index=(16)          allocatable  not executable -> skipping ...
+ * section name=(      .dynamic) index=(17)          allocatable  not executable -> skipping ...
+ * section name=(        .ctors) index=(18)          allocatable  not executable -> skipping ...
+ * section name=(        .dtors) index=(19)          allocatable  not executable -> skipping ...
+ * section name=(          .jcr) index=(20)          allocatable  not executable -> skipping ...
+ * section name=(          .got) index=(21)          allocatable  not executable -> skipping ...
+ * section name=(          .bss) index=(22)          allocatable  not executable -> skipping ...
+ * section name=(      .comment) index=(23) not allocatable ->skipping ...
+ * section name=(      .comment) index=(24) not allocatable ->skipping ...
+ * section name=(      .comment) index=(25) not allocatable ->skipping ...
+ * section name=(      .comment) index=(26) not allocatable ->skipping ...
+ * section name=(      .comment) index=(27) not allocatable ->skipping ...
+ * section name=(      .comment) index=(28) not allocatable ->skipping ...
+ * section name=(      .comment) index=(29) not allocatable ->skipping ...
+ * section name=(      .comment) index=(30) not allocatable ->skipping ...
+ * section name=(      .comment) index=(31) not allocatable ->skipping ...
+ * section name=(      .comment) index=(32) not allocatable ->skipping ...
+[MODFLOW] done
+
+(elfsh-0.62a) inspect main				We want to inspect the main block
+
+ * found block 080484ce : main + 0
+  -> call from 080482f1 : _start + 33			Here is one block calling the main function
+ -- block disassembly --
+ 80484ce:       push          %ebp
+ 80484cf:       mov           %esp,%ebp
+ 80484d1:       sub           $8,%esp
+ 80484d4:       and           $FFFFFFF0,%esp
+ 80484d7:       mov           $0,%eax
+ 80484dc:       sub           %eax,%esp
+ 80484de:       call          <aminches>		The call to aminches end the current block.
+ * done
+
+(elfsh-0.62a) inspect aminches				We inspect the first block of the aminches function.
+
+ * found block 080484a1 : aminches + 0
+  -> call from 080484de : main + 16			And we can verify that it was called by main
+ -- block disassembly --
+ 80484a1:       push          %ebp
+ 80484a2:       mov           %esp,%ebp
+ 80484a4:       sub           $8,%esp
+ 80484a7:       mov           $<_IO_stdin_used + 62>,(%esp,1)
+ 80484ae:       call          <printf>
+ * done
+
+(elfsh-0.62a) quiet sym block_				This way, we can list all control flow blocks
+
+ [SYMBOL TABLE]
+ [Object main]
+
+ [118] 0x00000054 BLOCK    block_0804827f  sz:000028 foff:000084 scop:Local
+ [119] 0x00000070 BLOCK    block_08048284  sz:000028 foff:000112 scop:Local
+ [120] 0x0000008C BLOCK    block_08048289  sz:000028 foff:000140 scop:Local
+ [121] 0x000000A8 BLOCK    block_08048290  sz:000044 foff:000168 scop:Local
+ [122] 0x000000D4 BLOCK    block_0804829c  sz:000020 foff:000212 scop:Local
+ [123] 0x000000E8 BLOCK    block_080482a6  sz:000020 foff:000232 scop:Local
+ [126] 0x00000134 BLOCK    block_080482b6  sz:000020 foff:002649 scop:Local
+ [128] 0x00000184 BLOCK    block_080482c6  sz:000020 foff:002729 scop:Local
+ [129] 0x00000198 BLOCK    block_080482d0  sz:000020 foff:002749 scop:Local
+...
+ [183] 0x00000758 BLOCK    block_08048569  sz:000028 foff:004221 scop:Local
+ [184] 0x00000774 BLOCK    block_0804857b  sz:000028 foff:004249 scop:Local
+ [185] 0x00000790 BLOCK    block_08048584  sz:000028 foff:004277 scop:Local
+ [186] 0x000007AC BLOCK    block_08048586  sz:000020 foff:004305 scop:Local
+ [188] 0x000007DC BLOCK    block_080485bc  sz:000028 foff:004353 scop:Local
+ [189] 0x000007F8 BLOCK    block_080485a6  sz:000028 foff:004381 scop:Local
+ [190] 0x00000814 BLOCK    block_080485b5  sz:000028 foff:004409 scop:Local
+ [191] 0x00000830 BLOCK    block_080485b0  sz:000028 foff:004437 scop:Local
+ [192] 0x0000084C BLOCK    block_080485ce  sz:000028 foff:004465 scop:Local
+ [193] 0x00000868 BLOCK    block_080485d9  sz:000028 foff:004493 scop:Local
+
+(elfsh-0.62a) sym function_				This way, we get all control flow block assumed to start
+							a new function
+ [SYMBOL TABLE]
+ [Object main]
+
+ [115] 0x00000000 BLOCK    function_08048274 sz:000028 foff:000000 scop:Local
+ [116] 0x0000001C BLOCK    function_00000000 sz:000028 foff:000028 scop:Local
+ [117] 0x00000038 BLOCK    function_080482f4 sz:000028 foff:000056 scop:Local
+ [124] 0x000000FC BLOCK    function_080482a0 sz:000028 foff:000252 scop:Local
+ [125] 0x00000118 BLOCK    function_080482b0 sz:000028 foff:002140 scop:Local
+ [127] 0x00000148 BLOCK    function_080482c0 sz:000060 foff:002669 scop:Local
+ [131] 0x000001C8 BLOCK    function_08048360 sz:000028 foff:002797 scop:Local
+ [132] 0x000001E4 BLOCK    function_0804831b sz:000052 foff:002825 scop:Local
+ [139] 0x000002B8 BLOCK    function_08048320 sz:000028 foff:003037 scop:Local
+ [145] 0x00000358 BLOCK    function_08048590 sz:000028 foff:003197 scop:Local
+ [146] 0x00000374 BLOCK    function_080484ce sz:000028 foff:003225 scop:Local
+ [167] 0x000005A0 BLOCK    function_080484a1 sz:000028 foff:003781 scop:Local
+ [187] 0x000007C0 BLOCK    function_080485c0 sz:000028 foff:004325 scop:Local
+
+(elfsh-0.62a)
+
+[5] Is modflow evil ?
+
+   Checkout README.flowjack :>

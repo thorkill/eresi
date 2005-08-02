@@ -13,7 +13,7 @@
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
-  Elf32_Sym	*new_dtors;
+  elfsh_Sym	*new_dtors;
   int		ret;
 
 

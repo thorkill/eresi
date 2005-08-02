@@ -6,15 +6,25 @@
 ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 **
 ** Started on  Tue Mar 26 19:07:23 2002 mayhem
-** Last update Sat May 10 04:18:26 2003 mayhem
+**
 */
 #include "libelfsh.h"
 
 
 
 
-/* INTERNAL FUNCTION : ELFsh SHT entry insertion algorithm */
-static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, char *name)
+
+/* 
+   This function insert a SHT entry without shifting the address space
+   I.E. it does truncate some sections for creating new ones.
+
+   This is necessary when we do SHT reconstruction or when we unmerge
+   the PLT section from the TEXT section on the MIPS architecture.
+*/
+int			elfsh_merge_shtentry(elfshobj_t *file, 
+					     int	phdr_index, 
+					     elfsh_Shdr shdr, 
+					     char	*name)
 {
   elfshsect_t		*sect;
   int			index;
@@ -22,10 +32,13 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
   int			len;
   int			off;
   char			buff[BUFSIZ];
+  void			*data;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   namelen = strlen(name);
 
-  printf("[libelfsh debug] Insertion section header *%s* \n", name);
+  printf("Insertion section header *%s* \n", name);
 
   for (index = 0; index < file->hdr->e_shnum; index++)
     {
@@ -33,7 +46,7 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
       /* Used to allow a 3 bytes padding for the current section */
       len = file->sht[index].sh_size - shdr.sh_size;
 
-      printf("[libelfsh debug] SHT rebuild: len = *%d* \n", len);
+      printf("SHT rebuild: len = *%d* \n", len);
 
       if (len < 0)
 	len = -len;
@@ -43,21 +56,21 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 	{
 
 	  /* In the rare case where both names have equal lenght, we can optimize a bit */
-	  len = (file->sht[index].sh_name ? 
-		 strlen(file->secthash[ELFSH_SECTION_SHSTRTAB]->data + file->sht[index].sh_name) : 0);
+	  data = elfsh_get_raw(file->secthash[ELFSH_SECTION_SHSTRTAB]);
+	  len = (file->sht[index].sh_name ? strlen(data + file->sht[index].sh_name) : 0);
 	  if (len == namelen)
 	    {
-	      printf("[libelfsh debug] SHT rebuild case 1.1 \n");
-	      memcpy(file->secthash[ELFSH_SECTION_SHSTRTAB]->data + file->sht[index].sh_name, name, len);
+	      printf("SHT rebuild case 1.1 \n");
+	      memcpy(data + file->sht[index].sh_name, name, len);
 	    }
 
 	  /* The off variable is used just to clean the code . This case is the common one . */
 	  else
 	    {
-	      printf("[libelfsh debug] SHT rebuild case 1.2 \n");
+	      printf("SHT rebuild case 1.2 \n");
 	      off = file->sht[index].sh_name + len + 1;
-	      memmove(file->secthash[ELFSH_SECTION_SHSTRTAB]->data + file->sht[index].sh_name, 
-		      file->secthash[ELFSH_SECTION_SHSTRTAB]->data + off, 
+	      memmove(data + file->sht[index].sh_name, 
+		      data + off, 
 		      file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr->sh_size - off);
 	      file->sht[index].sh_size -= len + 1;
 	      elfsh_update_nameidx(file, file->sht[index].sh_name, len + 1);
@@ -70,7 +83,7 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
       /* The new header defines a section matching the beginning area of an existing section */
       else if (file->sht[index].sh_offset == shdr.sh_offset)
 	{
-	  printf("[libelfsh debug] SHT rebuild case 2 \n");
+	  printf("SHT rebuild case 2 \n");
 	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 1, 
 		  file->sht + index, 
@@ -91,7 +104,8 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 
 	  XALLOC(sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    return (-1);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Unable to add section", -1);
 	  
 	  file->hdr->e_shnum++;
 	  elfsh_update_linkidx(file, index, 1);
@@ -102,7 +116,7 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
       /* The new header defines a section matching the end area of an existing section */
       else if (file->sht[index].sh_offset + file->sht[index].sh_size == shdr.sh_offset + shdr.sh_size)
 	{
-	  printf("[libelfsh debug] SHT rebuild case 3 \n");
+	  printf("SHT rebuild case 3 \n");
 	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 2, 
 		  file->sht + index + 1, 
@@ -117,7 +131,8 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 	  
 	  XALLOC(sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    return (-1);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Unable to add section", -1);
 
 	  file->hdr->e_shnum++;
 	  elfsh_update_linkidx(file, index + 1, 1);
@@ -129,7 +144,7 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
       else if (file->sht[index].sh_offset < shdr.sh_offset && 
 	       file->sht[index].sh_offset + file->sht[index].sh_size > shdr.sh_offset + shdr.sh_size)
 	{
-	  printf("[libelfsh debug] SHT rebuild case 4 \n");
+	  printf("SHT rebuild case 4 \n");
 
 	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 2) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 3, 
@@ -158,10 +173,13 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 
 	  XALLOC(sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    return (-1);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Unable to add section", -1);
+
 	  XALLOC(sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index + 2, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    return (-1);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Unable to add section", -1);
 
 	  file->hdr->e_shnum += 2;
 	  elfsh_update_linkidx(file, index, 1);
@@ -169,7 +187,7 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 	}
     }       
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -178,18 +196,21 @@ static int		add_sht_entry(elfshobj_t *file, int phdr_index, Elf32_Shdr shdr, cha
 /* INTERNAL FUNCTION : Rebuild an initial SHT and create .mapped, .unmapped, and .shstrtab */
 static int	init_sht(elfshobj_t *file, u_int num)
 {
-  Elf32_Phdr	*low;
-  Elf32_Phdr	*high;
-  Elf32_Shdr	shdr;
+  elfsh_Phdr	*low;
+  elfsh_Phdr	*high;
+  elfsh_Shdr	shdr;
   elfshsect_t	*sect;
   struct stat	st;
   char		buff[256];
   u_int		index;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Get the file size on disk */
   if (fstat(file->fd, &st) != 0)
-    return (-1);
-  file->hdr->e_shentsize = sizeof(Elf32_Shdr);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to fstat file", -1);
+  file->hdr->e_shentsize = sizeof(elfsh_Shdr);
 
   /* Do the first pass : guess the borders for .mapped and .unmapped */
   for (low = high = NULL, index = 0; index < num; index++)
@@ -212,7 +233,8 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->sht[0] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 0, NULL, ELFSH_SHIFTING_NONE) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to add section", -1);
 
   /* Insert the .unmapped section */
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, high->p_offset + high->p_filesz, 
@@ -220,14 +242,17 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->sht[1] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 1, NULL, ELFSH_SHIFTING_NONE) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to add section", -1);
 
   /* Insert the section header string table (.sh_strtab) */
   shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, st.st_size, 0, 0, 0, 0, 0);
   file->sht[2] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 2, NULL, ELFSH_SHIFTING_NONE) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to add section", -1);
+
   file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
 
   /* Insert names in .shstrtab */
@@ -237,7 +262,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->sht[1].sh_name = elfsh_insert_in_shstrtab(file, buff);
   file->sht[2].sh_name = elfsh_insert_in_shstrtab(file, ELFSH_SECTION_NAME_SHSTRTAB);
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -246,11 +271,13 @@ static int	init_sht(elfshobj_t *file, u_int num)
 static void	sht_first_round(elfshobj_t *file, u_int num)
 {
   /*
-    Elf32_Phdr	*dyn;
-    Elf32_Shdr	shdr;
+    elfsh_Phdr	*dyn;
+    elfsh_Shdr	shdr;
   */
   u_int		index;
   int		flags;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < num; index++)
     {
@@ -267,7 +294,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	    shdr = elfsh_create_section_header(0, SHT_DYNAMIC, flags , file->pht[index].p_vaddr,
 	    file->pht[index].p_offset, file->pht[index].p_filesz, 
 	    0, 0, 0, 0);
-	    add_sht_entry(file, index, shdr, ELFSH_SECTION_NAME_DYNAMIC);
+	    elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_DYNAMIC);
 	    break;
 	  */
 
@@ -277,7 +304,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	    shdr = elfsh_create_section_header(0, SHT_PROGBITS, flags, file->pht[index].p_vaddr,
 	    file->pht[index].p_offset, file->pht[index].p_filesz, 
 	    0, 0, 0, 0);
-	    add_sht_entry(file, index, shdr, ELFSH_SECTION_NAME_INTERP);
+	    elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_INTERP);
 	    break;
 	  */
 
@@ -287,7 +314,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	  shdr = elfsh_create_section_header(0, SHT_NOTE, flags, file->pht[index].p_vaddr,
 					     file->pht[index].p_offset, file->pht[index].p_filesz, 
 					     0, 0, 0, 0);
-	  add_sht_entry(file, index, shdr, ELFSH_SECTION_NAME_NOTES_ABI);
+	  elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_NOTES_ABI);
 	  break;
 	  */
 
@@ -301,7 +328,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 						 file->pht[index].p_offset + file->pht[index].p_filesz,
 						 file->pht[index].p_memsz - file->pht[index].p_filesz,
 						 0, 0, 0, 0);
-	      add_sht_entry(file, index, shdr, ELFSH_SECTION_NAME_BSS);
+	      elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_BSS);
 	    }
 	  break;
 	  */
@@ -316,15 +343,17 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 /* INTERNAL FUNCTION: guess .text, .data, .init, .fini, and .bss bounds */
 static void	sht_second_round(elfshobj_t *file, u_int num)
 {
-  /* Elf32_Phdr	*dyn; */
-  Elf32_Shdr	shdr;
+  /* elfsh_Phdr	*dyn; */
+  elfsh_Shdr	shdr;
   u_int		index;
   int		flags;
   char		*name;
   char		i;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Do not remove if first_round() is entirely working with section paddings */
-  return ;
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < num; index++)
     {
@@ -342,7 +371,7 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
 	  i = INTERVAL(file->pht[index].p_vaddr, file->hdr->e_entry, 
 		       file->pht[index].p_vaddr + file->pht[index].p_filesz);
 	  name = (i ? ELFSH_SECTION_NAME_TEXT : ELFSH_SECTION_NAME_DATA);
-	  add_sht_entry(file, index, shdr, name);
+	  elfsh_merge_shtentry(file, index, shdr, name);
 	default:
 	  break;
 	}
@@ -356,14 +385,17 @@ int		elfsh_rebuild_sht(elfshobj_t *file)
 {
   u_int		num;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Some preliminary stuffs */
   if (!elfsh_get_pht(file, &num) || init_sht(file, num) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get PHT or to init SHT", -1);
 
   sht_first_round(file, num);
   sht_second_round(file, num);
   file->shtrb = 1;
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

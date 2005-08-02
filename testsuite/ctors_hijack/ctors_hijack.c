@@ -14,7 +14,7 @@
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
-  Elf32_Sym	*new_ctors;
+  elfsh_Sym	*new_ctors;
   int		ret;
 
 

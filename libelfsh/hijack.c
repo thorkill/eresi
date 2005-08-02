@@ -2,182 +2,149 @@
 ** hijack.c in elfsh
 ** 
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
-** Last update Thu Jun 26 09:05:20 2003 mayhem
+**
 */
 #include "libelfsh.h"
-
-
-/* PLT hijacking on SPARC */
-int		elfsh_hijack_plt_sparc(elfshobj_t *file, 
-				       Elf32_Sym *symbol,
-				       Elf32_Addr addr)
-{
-  int		foffset;
-  uint32_t	addrh, addrl;
-  uint32_t	opcode[3];
-  
-  if (file->hdr->e_machine != ELFSH_HIJACK_CPU_SPARC)
-    ELFSH_SETERROR("[libelfsh:hijack_plt_sparc] requested "
-		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
-		   "SPARC\n", -1);
-
-  /* compute the sparc %hi(), %lo() address */
-  addrh = addr & 0xfffffc00;
-  addrl = addr & 0x3ff;
-
-  /* sethi %hi(addrh), %g1	*/
-  opcode[0] = 0x03000000 | addrh >> 10;
-
-  /* jmp %g1 + addrl	! addr	*/
-  opcode[1] = 0x81c06000 | addrl;
-
-  /* Add a nop for delay slot */
-  opcode[2] = 0x01000000;
-  
-  foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
-  return (0);
-}
-
-/* PLT hijacking on SPARC using %g2 instead of %g1 */
-/* Used for hijacking of first PLT entry, when %g1 needs to be kept */
-int		elfsh_hijack_plt_sparc_g2(elfshobj_t *file, 
-					  Elf32_Sym *symbol,
-					  Elf32_Addr addr)
-{
-  int		foffset;
-  uint32_t	addrh, addrl;
-  uint32_t	opcode[3];
-  
-  if (file->hdr->e_machine != ELFSH_HIJACK_CPU_SPARC)
-    ELFSH_SETERROR("[libelfsh:hijack_plt_sparc_g2] requested "
-		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
-		   "SPARC\n", -1);
-
-  /* compute the sparc %hi(), %lo() address */
-  addrh = addr & 0xfffffc00;
-  addrl = addr & 0x3ff;
-
-  /* sethi %hi(addrh), %g2	*/
-  opcode[0] = 0x05000000 | addrh >> 10;
-
-  /* jmp %g2 + addrl	! addr	*/
-  opcode[1] = 0x81c0a000 | addrl;
-
-  /* Add a nop for delay slot */
-  opcode[2] = 0x01000000;
-  
-  foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
-  return (0);
-}
-
-
-
-/* PLT hijacking on i386 */
-int		elfsh_hijack_plt_i86(elfshobj_t *file, 
-				     Elf32_Sym *symbol,
-				     Elf32_Addr addr)
-{
-  int		foffset;
-  uint8_t	opcode = 0xe9; /* direct jmp with full displacement */
-  uint32_t	displacement;
-  
-  if (file->hdr->e_machine != ELFSH_HIJACK_CPU_i86)
-    ELFSH_SETERROR("libelfsh: requested "
-		   "ELFSH_HIJACK_CPU_i86 while the elf file is not i86.\n",-1);
-
-  /* compute jmp displacement, 5 is the length of jmp opcode */
-  displacement = addr-symbol->st_value - 5;
-  foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, &opcode, sizeof(opcode));
-  elfsh_raw_write(file, foffset + sizeof(opcode), 
-		  &displacement, sizeof(displacement));
-  return (0);
-}
 
 
 /* Perform custom function hijack, return 0 on success -1 on error */
 int		elfsh_hijack_function_by_name(elfshobj_t *file, 
 					      uint32_t	 type,
 					      char	 *name, 
-					      Elf32_Addr addr)
+					      elfsh_Addr addr)
 {
-  Elf32_Sym	*symbol;
+  u_char	archtype;
+  u_char	objtype;
+  u_char	ostype;
+  elfsh_Sym	*symbol;
   int		ret;
+  int		ispltent;
+  elfshsect_t	*hooks;
+  uint32_t	pgsize;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
+  elfsh_setup_hooks();
+
   /* Sanity checks */
   if (file == NULL || name == NULL || addr == 0) 
-    ELFSH_SETERROR("[libelfsh:hijack_by_name] Invalid NULL parameter\n", -1);
-  if (elfsh_copy_plt(file) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
+  if (elfsh_copy_plt(file, elfsh_get_pagesize(file)) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to copy PLT", -1);
 
-  /* Guess the hijack mode */
-  switch (type & ELFSH_HIJACK_TYPE_MASK) 
+  archtype = elfsh_get_archtype(file);
+  objtype = elfsh_get_elftype(file);
+  ostype = elfsh_get_ostype(file);
+  if (archtype == ELFSH_ARCH_ERROR ||
+      objtype  == ELFSH_TYPE_ERROR ||
+      ostype   == ELFSH_OS_ERROR)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid target", -1);
+
+  /* Guess the hijack type */
+  switch (type) 
     {
       
-      /* fake hijack, huh? ;) */
-    case ELFSH_HIJACK_TYPE_NONE:
-      return (0);
-      
-      /* XXX: GOT implemented for i86 only... */
+      /* static function hijacking */
+      /* This type is general enough for redirecting on the good hijack technique
+	 if it finds that the current file architecture is not suited to the 
+	 requested hijack type.
+      */
+    case ELFSH_HIJACK_TYPE_FLOW:
+
+      /* If the hook section does not exist, create it */
+      hooks = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_HOOKS, 0, 0, 0); 
+      if (!hooks)
+	{
+	  pgsize = elfsh_get_pagesize(file);
+	  hooks = elfsh_insert_section(file, 
+				       ELFSH_SECTION_NAME_HOOKS, 
+				       NULL,
+				       ELFSH_CODE_INJECTION, 
+				       pgsize - 1, pgsize);
+	  if (!hooks)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Cannot get and inject .hooks", -1);
+	  hooks->curend = 0;
+	}
+
+      symbol = elfsh_get_symbol_by_name(file, name);
+
+      ispltent = elfsh_is_pltentry(file, symbol);
+#if __DEBUG_REDIR__
+      printf("[DEBUG_REDIR] 1 ispltent = %u for symbol %s resolved at %08X \n", 
+	     ispltent, name, symbol ? symbol->st_value : 0);
+#endif
+      if (NULL == symbol || ispltent == 1)
+	{
+	  symbol = elfsh_get_dynsymbol_by_name(file, name);
+	  if (!symbol)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Unknown function (no symbol)", -1);
+	  ispltent = elfsh_is_pltentry(file, symbol);
+	  
+#if __DEBUG_REDIR__
+	  printf("[DEBUG_REDIR] 2 ispltent = %u for symbol %s resolved at %08X \n",
+		 ispltent, name, symbol ? symbol->st_value : 0);
+#endif
+
+	  /* Use elfsh 0.6 hooks, redirect on a PLT hijack if necessary */
+	  if (ispltent <= 0)
+	    {
+	      ret = (*hook_cflow[archtype][objtype][ostype])(file, name, symbol, addr);
+	      if (ret < 0)
+		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+				  "Unable to perform CFLOW", -1);
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  0);
+	    }
+
+	  /* Temporary .. on MIPS */
+	  if (FILE_IS_MIPS(file))
+	    {
+	      ret = elfsh_set_got_entry_by_name(file, name, addr);
+	      if (ret < 0) 
+		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+				  "Unable to patch GOT entry", -1);
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	    }
+	  
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     ((*hook_plt[archtype][objtype][ostype])(file, symbol, addr)));
+	}
+
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (*hook_cflow[archtype][objtype][ostype])(file, name, symbol, addr));
+
+      /* GOT entry hijacking */
     case ELFSH_HIJACK_TYPE_GOT:
-      if (file->hdr->e_machine != ELFSH_HIJACK_CPU_i86) 
-	ELFSH_SETERROR("[libelfsh:hijack_function_by_name] GOT hijacking "
-		       "unsupported on this architecture\n", -1);
       ret = elfsh_set_got_entry_by_name(file, name, addr);
       if (ret < 0) 
-	return (-1);
-      return (0);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to patch GOT entry", -1);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       
       /* PLT hijack */
     case ELFSH_HIJACK_TYPE_PLT:
+      if (FILE_IS_MIPS(file))
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "There is not PLT to hijack on MIPS", -1);
+
       symbol = elfsh_get_dynsymbol_by_name(file, name);
       if (NULL == symbol)
-	ELFSH_SETERROR("[libelfsh:hijack_function_by_name] Unknown dynamic "
-		       "symbol\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unknown dynamic symbol", -1);
+
       if (!elfsh_is_pltentry(file, symbol))
-	ELFSH_SETERROR("[libelfsh:hijack_function_by_name] Symbol is not a "
-		       "Procedure Linkage Table entry\n",-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Symbol is not a PLT entry", -1);
       
-      /* if ELFSH_HIJACK_CPU_ANY the elf file type decides */
-      switch ((type & ELFSH_HIJACK_CPU_MASK) == ELFSH_HIJACK_CPU_ANY ?
-	      file->hdr->e_machine                                   :
-	      (type & ELFSH_HIJACK_CPU_MASK)) 
-	{
-	  
-	  /* SPARC LINUX and SOLARIS links objects the same way 
-	     I guess all SPARC OSes would do the same ;) */
-	case ELFSH_HIJACK_CPU_SPARC:
-	  
-	  switch (type & ELFSH_HIJACK_OS_MASK) 
-	    {
-	    case ELFSH_HIJACK_OS_SOLARIS:
-	    case ELFSH_HIJACK_OS_LINUX:
-	    case ELFSH_HIJACK_OS_ANY:
-	      return elfsh_hijack_plt_sparc(file, symbol, addr);
-	    default:
-	      ELFSH_SETERROR("[libelfsh:hijack_function_by_name] SPARC PLT "
-			     "hijacking unimplemented for this OS\n", -1);
-	    }
-	  
-	  /* i386/Linux */
-	case ELFSH_HIJACK_CPU_i86:
-
-	  switch (type & ELFSH_HIJACK_OS_MASK) 
-	    {
-	    case ELFSH_HIJACK_OS_LINUX:
-	    case ELFSH_HIJACK_OS_ANY:
-	      return elfsh_hijack_plt_i86(file, symbol, addr);
-	    default:
-	      ELFSH_SETERROR("[libelfsh:hijack_function_by_name] i386 PLT "
-			     "hijacking unimplemented for this OS\n", -1);
-	    }
-
-	}
-      
-      ELFSH_SETERROR("[libelfsh:hijack_function_by_name] PLT hijacking"
-		     "not unimplemented on this architecture\n", -1);
+      /* Now use ELFsh 0.6 hooks model */
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 ((*hook_plt[archtype][objtype][ostype])(file, symbol, addr)));
     }
-  return (-1);
+  
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    "Unknown redirection type", -1);
 }

@@ -1,0 +1,14 @@
+#!/usr/bin/elfsh
+
+exec rm /tmp/ls.new
+load /bin/ls
+e
+sht
+pht
+insert phdr PT_GNU_STACK .dynamic 1.sht[.dynamic].size
+e
+sht
+pht
+save /tmp/ls.new
+exec /tmp/ls.new
+quit

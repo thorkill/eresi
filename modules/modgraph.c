@@ -2,7 +2,7 @@
 ** modgraph.c for elfsh
 ** 
 ** Started on  Fri Mar  7 07:18:03 2003 mayhem
-** Last update Sat Jun  7 14:10:35 2003 mayhem
+** Updated on  Sat Jun  2 21:34:03 2005 mayhem
 */
 #include "elfsh.h"
 #include <libelfsh.h>
@@ -68,7 +68,7 @@ int		cmd_graph()
 {
   elfshblk_t	*blk;
   elfshsect_t	*sect;
-  Elf32_Sym	*symtab;
+  elfsh_Sym	*symtab;
   int		index;
   int		num;
   int		fd;
@@ -77,6 +77,7 @@ int		cmd_graph()
   int		offset;
   int		unresolved_pass;
   char		*blk_col;
+  void		*data;
 
   /* For each executable section, get the block list */
   
@@ -91,11 +92,14 @@ int		cmd_graph()
       
       symtab = elfsh_get_symtab(world.current, &num);
       unresolved_pass = 0;
+
       for (index = 0; index < num; index++)
 	{
 	  if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
 	    continue;
-	  if (!(blk = (sect->data + (symtab + index)->st_value)))
+
+	  data = elfsh_get_raw(sect);
+	  if (!(blk = (data + (symtab + index)->st_value)))
 	    break;
 	  name = elfsh_reverse_metasym(world.current, blk->vaddr, &offset);
 	  if ((name == NULL) && !unresolved_pass)

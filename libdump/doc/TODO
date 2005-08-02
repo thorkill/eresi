@@ -1,0 +1,23 @@
+	.:/ DUMP To DO list \:.
+	
+:: Created on Wed Mar 16 20:21:43 2005 ym ::
+
+
+A. Known issues :
+
+ - DUMP does not support NAT routers : 
+	The Id that the other know as being mine is not the Id that I think i 
+	have.
+	=> In order to solve this issue, we should exchange Id at the begining 
+	of the communication.
+
+B. Code modifications : 
+ 
+ - add negociation on connection.
+ - add authentication on connection.
+ - extend protocol to allow set of Id direct send (multicast) 
+   and all directed send (broadcast).
+ - allow easy definition of new message type, and corresponding handling 
+   function.
+ - allow to use other than TCP sockets (SSL, UDP, ...) -> add packet checksum
+ - struct dump_op_s, dump_register(dump_type_t, function) ... ? 

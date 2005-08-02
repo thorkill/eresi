@@ -5,14 +5,16 @@
 ## Last update Sun Dec 15 01:55:43 2002 mayhem
 ##
 
+include ../../config.h
+
 SRC	= got_hijack.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libhash/ -lhashelfsh
 NAM	= got_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -g3 -O2 -I../../libelfsh/include
+OPT	= -g3 -O2 -I../../libelfsh/include -I../../libhash/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

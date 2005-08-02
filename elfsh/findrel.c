@@ -2,7 +2,7 @@
 ** findrel.c for elfsh
 **
 ** Started on  Sat Feb 22 17:06:17 2003 mayhem
-** Last update Sun Jun 22 01:47:38 2003 mayhem
+**
 */
 #include "elfsh.h"
 
@@ -12,7 +12,9 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
 {
   char		*str;
   char		*new;
-  int		off;
+  elfsh_SAddr	off;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   str = elfsh_reverse_metasym(file, vaddr, &off);
   if (str == NULL)
@@ -24,7 +26,7 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
   if (off)
     {
       XALLOC(new, strlen(str) + 20, NULL);
-      sprintf(new, "%s + %u", str, off);
+      sprintf(new, "%s + %u", str, (u_int) off);
     }
   else
     new = strdup(str);
@@ -46,8 +48,10 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
 static int		vm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
 {
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
 #if __DEBUG_ASLR__
-  printf("[elfsh:vm_catch_fp] begin: %08X, totlen: %u, op1: %08X/%u, "
+ snprintf(logbuf, BUFSIZ - 1, "[elfsh:vm_catch_fp] begin: %08X, totlen: %u, op1: %08X/%u, "
 	 "op2: %08X/%u, op3: %08X/%u, dword: %08X \n",
 	 begin, len, 
 	 (i->op1 != NULL ? (u_int) i->op1->ptr : 0), (i->op1 != NULL ? i->op1->len : 0), 
@@ -74,6 +78,8 @@ static int	        vm_catch_relocfp(char *dat, u_int dword)
   u_int			ret;
   u_int			begin;
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   while (1)
     {
       begin = (u_int) dat;
@@ -81,7 +87,7 @@ static int	        vm_catch_relocfp(char *dat, u_int dword)
       if (!ret)
 	{
 #if __DEBUG_ASLR__
-	  fprintf(stderr, "[elfsh:catch_relocfp] Libasm bad fetching..\n");
+	 snprintf(logbuf, BUFSIZ - 1, "[elfsh:catch_relocfp] Libasm bad fetching..\n");
 #endif
 	  return (0);
 	}
@@ -115,31 +121,38 @@ int		cmd_findrel()
   u_int		count;
   u_int		dword;
   char		*reloc_type;
+  char		logbuf[BUFSIZ];
+  void		*data;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  file = world.current;
+  file = world.curjob->current;
   if (file == NULL)
     RETERR("[elfsh:findrel] Invalid NULL parameter\n");
   if (elfsh_read_obj(file) < 0)
     RETERR("[elfsh:findrel] Cannot read object\n");
 
-  printf(" [*] EXTRA relocs for %s \n\n", file->name);
+  snprintf(logbuf, BUFSIZ - 1,
+	   " [*] EXTRA relocs for %s \n\n", file->name);
+  vm_output(logbuf);
 
   /* For all sections of the current object */
   for (count = 0, cur = file->sectlist; cur; cur = cur->next)
     {
 
       /* Do not look for cross references on unmapped or void sections */
-      if (cur->data == NULL)
+      data = elfsh_get_raw(cur);
+      if (data == NULL)
 	{
 	  if (!world.state.vm_quiet)
-	    printf(" [*] Passing %-20s {NO DATA}\n", cur->name);
+	   snprintf(logbuf, BUFSIZ - 1, " [*] Passing %-20s {NO DATA}\n", cur->name);
 	  continue;
 	}
       if (cur->shdr->sh_addr == NULL)
 	{
 	  if (!world.state.vm_quiet)
-	    printf(" [*] Passing %-20s {UNMAPPED}\n", cur->name);
+	   snprintf(logbuf, BUFSIZ - 1, " [*] Passing %-20s {UNMAPPED}\n", cur->name);
 	  continue;
 	}
       
@@ -148,22 +161,22 @@ int		cmd_findrel()
       if (cur->rel == NULL || cur->srcref == 0)
 	{
 	  if (!world.state.vm_quiet)
-	    printf(" [*] Passing %-20s {NO RELOC ENTRY}\n", cur->name);
+	   snprintf(logbuf, BUFSIZ - 1, " [*] Passing %-20s {NO RELOC ENTRY}\n", cur->name);
 	  continue;
 	}
      
       /* Print the relocs for this section */
-      puts("");
+      vm_output("\n");
       for (index = 0; index < cur->srcref; index++)
 	{
 
 	  /* Detect false positives */
 	  if (elfsh_get_section_execflag(cur->shdr))
 	    {
-	      dword = (u_int) cur->data + cur->rel[index].off_src;
+	      dword = (u_int) data + cur->rel[index].off_src;
 
 	      /* Must be done here so that libelfsh stay libasm dependant */
-	      if (vm_catch_relocfp(cur->data, dword))
+	      if (vm_catch_relocfp(data, dword))
 		cur->rel[index].type = ELFSH_RELOC_FP;
 	    }
 	  
@@ -187,22 +200,26 @@ int		cmd_findrel()
 					   cur->rel[index].idx_dst, 
 					   NULL, 
 					   NULL);
-	  printf(" [%03u] FROM %15s %12s TO %15s %12s [ %08X -> %08X ] {%s} \n",
+	 snprintf(logbuf, BUFSIZ - 1, " [%03u] FROM %15s %12s TO %15s %12s [ %08X -> %08X ] {%s} \n",
 		 index, cur->name, soff, dst->name, doff, 
 		 (u_int) cur->shdr->sh_addr + cur->rel[index].off_src,
 	  	 (u_int) dst->shdr->sh_addr + cur->rel[index].off_dst,
 		 reloc_type); 
 	  count++;
 	}
-      puts("");
+      vm_output("\n");
     }
   
   /* Print final banner */
-  printf("\n [*] ET_EXEC relocation entries number : %u\n\n", count);
-  for (cur = world.current->sectlist; cur; cur = cur->next)
-    printf(" [*] Section %-20s srcref[%010u] dstref[%010u] \n", 
+ snprintf(logbuf, BUFSIZ - 1, "\n [*] ET_EXEC relocation entries number : %u\n\n", count);
+  for (cur = world.curjob->current->sectlist; cur; cur = cur->next)
+   snprintf(logbuf, BUFSIZ - 1, " [*] Section %-20s srcref[%010u] dstref[%010u] \n", 
 	   cur->name, cur->srcref, cur->dstref);
-  puts("");
+  vm_output("\n");
 
   return (0);
 }
+
+
+
+

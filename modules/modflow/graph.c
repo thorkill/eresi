@@ -4,7 +4,7 @@
 ** 
 ** Author  : <sk@devhell.org>
 ** Started : Fri Mar  7 07:18:03 2003 mayhem
-** Updated : Wed Jun 18 19:29:41 2003 sk
+** Updated : Fri Nov 28 02:04:19 2003
 */
 
 #include "elfsh.h"
@@ -19,9 +19,9 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
 {
   char		buf[BUFSIZ];
   char		*src_name;
-  int		src_offset;
+  elfsh_SAddr	src_offset;
   char		*dst_name;
-  int		dst_offset;
+  elfsh_SAddr	dst_offset;
   char		*col_arrow;
 
   if (cur->altype == CALLER_RET || cur->altype == CALLER_UNKN)
@@ -45,14 +45,14 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
       else
 	dst_name = NULL;
       if (dst_name == NULL)
-	snprintf(buf, sizeof(buf), "%s_%i -> unresolved "
+	snprintf(buf, sizeof(buf), "%s_" DFMT " -> unresolved "
 	       "[color=%s];\n",
 	       src_name, src_offset, col_arrow);
 	else
-	snprintf(buf, sizeof(buf), "%s_%i -> %s_%i "
+	snprintf(buf, sizeof(buf), "%s_" DFMT " -> %s_" DFMT
 	       "[color=%s];\n",
 	       src_name, src_offset,
-	       dst_name, dst_offset, col_arrow);
+		 dst_name, dst_offset, col_arrow);
       write(fd, buf, strlen(buf));
     }
   
@@ -77,14 +77,14 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
       
       dst_name = elfsh_reverse_metasym(file, cur->altern, &dst_offset);
       if (dst_name == NULL)
-      snprintf(buf, sizeof(buf), "%s_%i -> unresolved "
+      snprintf(buf, sizeof(buf), "%s_" DFMT " -> unresolved "
 	       "[color=%s];\n",
 	       src_name, src_offset, col_arrow);
 	else
-      snprintf(buf, sizeof(buf), "%s_%i -> %s_%i "
+	  snprintf(buf, sizeof(buf), "%s_" DFMT " -> %s_" DFMT
 	       "[color=%s];\n",
 	       src_name, src_offset,
-	       dst_name, dst_offset, col_arrow);
+		   dst_name, dst_offset, col_arrow);
       write(fd, buf, strlen(buf));
     }
   
@@ -97,96 +97,156 @@ int		cmd_graph(void)
 {
   elfshblk_t	*blk;
   elfshsect_t	*sect;
-  Elf32_Sym	*symtab;
+  struct s_iblock	*blk_list;
+  struct s_iblock	*iblk;
+  struct s_caller	*cal;
+  elfsh_Sym	*symtab;
   int		index;
   int		num;
   int		fd;
   char		buf[BUFSIZ];
   char		*name;
-  int		offset;
+  elfsh_SAddr	offset;
   int		unresolved_pass;
   char		*blk_col;
 
+  u_int min;
+  char	*ptr;
+  u_int max;
+  
+  if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
+    ELFSH_SETERROR(" [*] no \".control\" section found. Aborting\n", -1);
+  
+  
+  fd = open(world.curjob->curcmd->param[0], O_RDWR | O_CREAT, 0644);
+  if (fd == -1)
+    {
+      printf("cannot open %s\n", world.curjob->curcmd->param[0]);
+      return (-1);
+    }
+
+  if ((symtab = elfsh_get_metasym_by_name(world.curjob->current, 
+					  world.curjob->curcmd->param[1])))
+    min = symtab->st_value;
+    else
+      min = strtoul(world.curjob->curcmd->param[1], 0, 16);
+  
+  ptr = world.curjob->curcmd->param[2];
+  if (*ptr == '+')
+    max = min + atoi(++ptr);
+  else
+    max = strtoul(ptr, 0, 16);
+  
+  printf("min = %8x max =%8x\n", min, max);
+  
+  
   /* For each executable section, get the block list */
   
-  if (!(sect = elfsh_get_section_by_name(world.current, ".control", 0, 0, 0)))
-    puts(" [*] no \".control\" section found. Aborting\n");
-  else 
-    {
-      XOPEN(fd, world.args.param[0], O_RDWR | O_CREAT, 0644, -1);
-      sprintf(buf, "digraph prof {\n"
-	      "size=\"6,4\"; ratio = fill; node [style=filled];\n");
-      write(fd, buf, strlen(buf));
+  if (!(blk_list = sect->altdata))
+    load_blocks(world.curjob->current, &blk_list);
       
-      symtab = elfsh_get_symtab(world.current, &num);
-      unresolved_pass = 0;
-      for (index = 0; index < num; index++)
-	{
-	  if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
-	    continue;
-	  if (!(blk = (sect->data + (symtab + index)->st_value)))
-	    break;
-	  name = elfsh_reverse_metasym(world.current, blk->vaddr, &offset);
-	  if ((name == NULL) && !unresolved_pass)
-	    {
-	      unresolved_pass = 1;
-	      snprintf(buf, sizeof (buf), "unresolved [");
-	    }
-	  else
-	    snprintf(buf, sizeof (buf), 
-		     "%s_%i [shape=\"box\" label=\"", name, offset);
-		     
-	  write(fd, buf, strlen(buf));
-	  /* Write the block as a node */
-	  dump_assembly(fd, blk);
-	  if (blk->altype == CALLER_RET)
-	    blk_col = BLK_COLOR_RET;
-	  else
-	    {
-	      if (block_is_called(block_get_by_vaddr((struct s_iblock *) 
-						     sect->altdata, blk->vaddr, 0)))
-		blk_col = BLK_COLOR_FUNC;
-	      else
-		blk_col = BLK_COLOR_NORM;
-	    }
-	  snprintf(buf, sizeof(buf), "\" color=%s];\n", blk_col);
-	  write(fd, buf, strlen(buf));
-	  /* Write all graph links for the current block */
-	  vm_write_graphent(world.current, fd, blk);
-	}
+  sprintf(buf, "digraph prof {\n"
+	  "size=\"6,4\"; ratio = fill; node [style=filled];\n");
+  write(fd, buf, strlen(buf));
+      
+  symtab = elfsh_get_symtab(world.curjob->current, &num);
+  unresolved_pass = 0;
+  for (index = 0; index < num; index++)
+    {
+      /* if symbol is not of type STT_BLOCK skip it */
+      if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
+	continue;
 	  
-      write(fd, "}\n", 2);
-      XCLOSE(fd, -1);
-      printf(" [*] Graph description dumped in %s \n\n", 
-	     world.args.param[0]);
-    }
+      if (!(blk = (sect->data + (symtab + index)->st_value)))
+	break;
+      if (!(iblk = block_get_by_vaddr(blk_list ,  blk->vaddr, 0)))
+	break;
+      /*
+	check if block is inside interval parameter
+	parameter type:
+	min:max
+	min:+len
+      */
+      if ((blk->vaddr < min) || (max <= blk->vaddr))
+	{
+	  /* block doesn't belong to interval provided
+	   * check if it is called by a block belonging 
+	   * to another block
+	   */ 
+	  for (cal = iblk->caller; cal; cal = cal->next)
+	    if ((cal->vaddr >= min) && (max > cal->vaddr))
+	      min = min;	      
+	  continue;
+	}
+      // pouet:
+      printf("min = %8x blk = %8x max =%8x\n", min, blk->vaddr, max);
+	  
+      name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &offset);
+      if ((name == NULL) && !unresolved_pass)
+	{
+	  unresolved_pass = 1;
+	  snprintf(buf, sizeof (buf), "unresolved [");
+	}
+      else
+	snprintf(buf, sizeof (buf), 
+		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);
+	  
+      write(fd, buf, strlen(buf));
+      /* Write the block as a node */
+      if (name != NULL)
+	{
+	  dump_assembly(fd, blk);
+	  write(fd, "\"", 1);
+	}
+      if (blk->altype == CALLER_RET)
+	blk_col = BLK_COLOR_RET;
+      else
+	{
+	  if (block_is_called(iblk))
+	    blk_col = BLK_COLOR_FUNC;
+	  else
+	    blk_col = BLK_COLOR_NORM;
+	}
+      snprintf(buf, sizeof(buf), " color=%s];\n", blk_col);
+      write(fd, buf, strlen(buf));
+      /* Write all graph links for the current block */
+      if ((blk->vaddr < min) || (max <= blk->vaddr))
+	continue;
+      vm_write_graphent(world.curjob->current, fd, blk);
+    } /* !for */
+      
+  write(fd, "}\n", 2);
+  close(fd);
+  printf(" [*] Graph description dumped in %s \n\n", 
+	 world.curjob->curcmd->param[0]);
   return (0);
 }
 
 
 
-void	dump_assembly(int fd, elfshblk_t *blk)
+void		dump_assembly(int fd, elfshblk_t *blk)
 {
-  char	*buffer;
-  char	*name;
-  int	off;
-  u_int	index = 0;
-  int	vm_quiet;
+  char		*buffer;
+  char		*name;
+  elfsh_SAddr	off;
+  u_int		index = 0;
+  int		vm_quiet;
 
   vm_quiet = world.state.vm_quiet;
-  world.state.vm_quiet = 1;
+  world.state.vm_quiet = 0;
   buffer = malloc(blk->size);
-  if ((elfsh_raw_read(world.current, 
-		      elfsh_get_foffset_from_vaddr(world.current, 
+  if ((elfsh_raw_read(world.curjob->current, 
+		      elfsh_get_foffset_from_vaddr(world.curjob->current, 
 						   blk->vaddr), 
 		      buffer, blk->size)) > 0)
     {
-      name = elfsh_reverse_metasym(world.current, blk->vaddr, &off);
+      name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &off);
       // write(fd, "{", 1);
       while (index < blk->size)
 	{
 	  index += display_instr(fd, index, blk->vaddr, 0, blk->size, 
-				 name, index + off, buffer);
+				 name, index + off, buffer, NULL, NULL);
+	  //lseek(fd, -1, SEEK_CUR);
 	  write(fd, "\\l", 2);
 	}
       // Chawrite(fd, "}", 1);

@@ -2,60 +2,74 @@
 ** got.c for elfsh
 ** 
 ** Started on  Fri Nov  2 15:20:18 2001 mayhem
-** Last update Sun May 18 14:44:37 2003 mayhem
+**
 */
 #include "elfsh.h"
+
 
 
 /* Command handler for GOT command */
 int		cmd_got()
 {
   regex_t	*tmp;
-  u_long	*got;
+  elfshsect_t	*got;
   int		size;
   int		index;
-  int		offset;
-  int		doffset;
+  int		index2;
+  elfsh_SAddr	offset;
   char		*name;
-  char		*dname;
   char		off[30];
   char		buff[256];
-  
+  char		logbuf[BUFSIZ];
+  void		*data;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Get the regx and fetch the GOT data */
-  CHOOSE_REGX(tmp);
-  if ((got = elfsh_get_got(world.current, &size)) == NULL)
+  FIRSTREGX(tmp);
+
+  index2 = 0;
+  if ((got = elfsh_get_got_by_idx(world.curjob->current, index2, &size)) == NULL)
     RET(-1);
-  printf(" [Global Offset Table .::. GOT]\n [Object %s]\n\n", 
-	 world.current->name);
-  off[0] = 0;
 
-  /* Loop and print all entry and their resolve */
-  for (index = 0; index < size; index++)
+  
+  /* Loop on all .got */
+  for (index2 = 0; got; index2++)
     {
+  
+      data = elfsh_get_raw(got);
+    
+      snprintf(logbuf, BUFSIZ - 1, " [Global Offset Table .::. GOT : %s ]\n [Object %s]\n\n", 
+	       elfsh_get_section_name(world.curjob->current, got),
+	       world.curjob->current->name);
+      vm_output(logbuf);
+      off[0] = 0;
 
-      name = elfsh_reverse_symbol(world.current, got[index], &offset);
-      dname = elfsh_reverse_dynsymbol(world.current, got[index], &doffset);
-      if (dname && doffset < offset)
+      /* Loop and print all entry and their resolve */
+      for (index = 0; index < size; index++)
 	{
-	  name = dname;
-	  offset = doffset;
+
+	  name = vm_resolve(world.curjob->current, *((elfsh_Addr *) data + index), &offset);
+
+	  if (off != NULL)
+	    snprintf(off, sizeof(off), " %c %u", (offset < 0 ? '-' : '+'), 
+		     (u_int) (offset > 0 ? offset : offset - offset - offset));
+
+	  snprintf(buff, sizeof(buff), XFMT ": [%u] " XFMT " \t <%s%s>\n", 
+		   got->shdr->sh_addr + (index * sizeof(elfsh_Addr)),
+		   index, (elfsh_Addr) ((elfsh_Addr *) data)[index], (name != NULL ? name : "?"), 
+		   (off[0] && name && offset ? off : ""));
+
+	  if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
+	    vm_output(buff);
+
 	}
-
-      if (off != NULL)
-	snprintf(off, sizeof(off), " %c %u", (offset < 0 ? '-' : '+'), 
-		 (offset > 0 ? offset : offset - offset - offset));
-
-      snprintf(buff, sizeof(buff), " [%08X:%5u] 0x%08X \t <%s%s>", 
-	       world.current->secthash[ELFSH_SECTION_GOT]->shdr->sh_addr + (index * sizeof(u_long)),
-	       index, (u_int) got[index], (name != NULL ? name : "?"), 
-	       (off[0] && name && offset ? off : ""));
-
-      if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
-	puts(buff);
+      
+      got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, &size);
+      vm_output("\n");
 
     }
 
-  puts("\n");
   return (0); 
 }
 

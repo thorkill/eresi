@@ -1,0 +1,19 @@
+#!../../../vm/elfsh
+
+load main
+load simple.o
+
+reladd 1 2
+
+redir main fake_main
+redir __stack_smash_handler fake_stack_smash_handler
+redir __libc_start_main fake_libc_start_main
+redir strcpy fake_strcpy
+
+save fake_main
+
+# just for dev made easier
+#exec /sbin/paxctl -c fake_main
+#exec /sbin/paxctl -m -p -s -x -e -r fake_main
+
+quit

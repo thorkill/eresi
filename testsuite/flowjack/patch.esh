@@ -1,0 +1,20 @@
+#! /usr/bin/elfsh
+## 
+## patch.esh in 
+## 
+## Author  : <sk at devhell dot org>
+## Started : Tue Oct  7 02:32:30 2003
+## Updated : Tue Oct  7 02:39:15 2003
+##
+
+exec gcc -c infected.c
+exec gcc -o target target.c
+load target
+load infected.o
+modload modflow
+switch 1
+flow
+reladd 1 2
+flowjack subfunc hijacked
+save target.hijacked
+quit

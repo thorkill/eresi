@@ -5,7 +5,7 @@
 ** Login   <mayhem@devhell.org>
 ** 
 ** Started on  Sun Dec  1 09:22:45 2002 mayhem
-** Last update Mon Apr 14 16:55:54 2003 mayhem
+**
 */
 #include "libelfsh.h"
 
@@ -16,20 +16,28 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
   elfshsect_t		*new;
   u_int			size;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == file)
-    ELFSH_SETERROR("[libelfsh:get_comments] Invalid NULL paramater\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL paramater", NULL);
+
   new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_COMMENT, 
 				  NULL, NULL, &size);
   if (NULL == new)
-    return (NULL);
-  if (NULL == new->data)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get .comment by name", NULL);
+
+  if (NULL == elfsh_get_raw(new))
     {
       new->data = elfsh_load_section(file, new->shdr);
-      if (NULL == new->data)
-	return (NULL);
+      if (NULL == elfsh_get_raw(new))
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to load .comment", NULL);
     }
+
   file->secthash[ELFSH_SECTION_COMMENT] = new;
-  return (new);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -40,12 +48,16 @@ char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
   int			act;
   char			*data;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
 #define	CHECK_SZ	(index < file->secthash[ELFSH_SECTION_COMMENT]->shdr->sh_size)
 
   if (!file->secthash[ELFSH_SECTION_COMMENT] && !elfsh_get_comments(file))
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get .comments", NULL);
+
   index = act = 0;
-  data = file->secthash[ELFSH_SECTION_COMMENT]->data;
+  data = elfsh_get_raw(file->secthash[ELFSH_SECTION_COMMENT]);
   while (!data[index] && CHECK_SZ)
     index++;
   while (act != range && CHECK_SZ) 
@@ -61,6 +73,8 @@ char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
 #undef CHECK_SZ
 
   if (index < file->secthash[ELFSH_SECTION_COMMENT]->shdr->sh_size)
-    return (data + index);
-  return (NULL);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (data + index));
+
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unable to get .comments entry", NULL);
 }

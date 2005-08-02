@@ -16,7 +16,7 @@ int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
   int		ret;
-  Elf32_Sym	sym;
+  elfsh_Sym	sym;
   char		name[256];
   u_int		idx;
 

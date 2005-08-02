@@ -1,0 +1,21 @@
+#!/usr/bin/elfsh
+
+quiet
+
+print Parameters : $1 $2 $3
+print 
+
+set $index 1
+
+loop:
+cmp $index $#
+je end
+
+load $$index
+dynsym printf
+unload $$index
+add $index 1
+jmp loop
+
+end:
+quit

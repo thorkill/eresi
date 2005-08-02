@@ -5,14 +5,16 @@
 ## Last update Sun Dec 15 01:56:52 2002 mayhem
 ##
 
+include ../../config.h
+
 SRC	= sht_removing.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libhash/ -lhashelfsh
 NAM	= sht_remover
 RM	= rm -f 
 VULN	= main.c
-OPT	= -g3 -O2 -I../../libelfsh/include/
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

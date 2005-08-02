@@ -4,19 +4,19 @@
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Thu May 29 20:35:01 2003
-** Updated : Tue Jun 17 23:40:42 2003
+** Updated : Fri Nov 28 00:56:54 2003
 */
 
 #ifndef SKELET_H_
 #define SKELET_H_
 
 #include <stdio.h>
-#define USE_LIBASM
 #include <elfsh.h>
 #include <libelfsh.h>
 #include <libhash.h>
 #include <libasm.h>
 #include <libhash.h>
+#include "libbtree.h"
 
 
 #define GVZ_COLOR_BLUE  "\"blue\""
@@ -38,10 +38,15 @@
 
 
 
-#define	CMD_GRAPH		"graph"
+#define ELFSH_CMD_FLOWJACK	"flowjack"
+#define	ELFSH_CMD_GRAPH		"graph"
 #define ELFSH_CMD_FLOW		"flow"
 #define ELFSH_CMD_INSPECT	"inspect"
+#define ELFSH_CMD_FLOWLOAD	"flowload"
+#define ELFSH_CMD_FLOWSAVE	"flowsave"
+
 #define ELFSH_SECTION_BLOCKSTR	".control"
+
 
 /**
  * structure s_list used for arguments enumeration/
@@ -59,6 +64,21 @@ struct s_arglist {
   struct s_arglist	*next;
 };
 
+struct s_buf
+{
+  char	*data;
+  u_int	maxlen;
+  u_int	allocated;
+  u_int	block_counter;
+  elfshobj_t	*obj;
+};
+
+struct s_disopt
+{
+  elfshobj_t	*file;
+  u_int		counter;
+  int		level;
+};
 
 /**
  *
@@ -115,6 +135,7 @@ struct s_iblock {
   u_int			altype; /* alternative path invokation type	*/
   u_int			contig; /* vaddr of next block if continuing	*/
   struct s_iblock	*next;
+  btree_t		*btree;
   int			passed;
 };
 
@@ -150,10 +171,13 @@ struct s_function {
  *
  */
 
+int	cmd_flowload(void);
+int	cmd_flowsave(void);
 int	cmd_graph(void);
 int	inspect_cmd(void);
-int	modflow_cmd(void);
-
+int	cmd_flow(void);
+int	cmd_testflow(void);
+int	cmd_flowjack(void);
 /*	sk_data.c	*/
 /*
 struct s_list *list_get_arg_by_num(struct s_list *, int);
@@ -166,7 +190,9 @@ u_int	trace_start(elfshobj_t *, char *, u_int, u_int, struct s_iblock **,
 void	trace_control(elfshobj_t *, asm_instr *, u_int, struct s_iblock **);
 
 /*	sk_blocks.c	*/
-void	store_blocks(elfshobj_t *, struct s_iblock *);
+void	free_blocks(struct s_iblock *);
+int     load_blocks(elfshobj_t *, struct s_iblock **);
+int	store_blocks(elfshobj_t *, struct s_iblock *, int);
 struct s_iblock	*block_get_by_vaddr(struct s_iblock *, u_int, int);
 void	block_clean_passed(struct s_iblock *);
 void	block_add_caller(struct s_iblock *, u_int, int);
