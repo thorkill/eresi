@@ -2,29 +2,31 @@
 ** sht.c for libelfsh
 **
 ** Started on  Mon Feb 26 04:16:18 2001 mayhem
-** Last update Thu Aug 21 03:38:03 2003 mayhem
 */
 #include "libelfsh.h"
 
 
 
-
-/* Sort SHT by file offset */
+/* Sort SHT by file offset on ET_REL objects */
 /* Mandatory on gcc 2.95.2/2.96 generated bins, maybe others */
 int			elfsh_sort_sht(elfshobj_t *file)
 {
   elfshsect_t		*actual;
   elfshsect_t		*tmpsct;
   elfshsect_t		*next;
-  Elf32_Shdr		tmp;
+  elfsh_Shdr		tmp;
   u_int			index;
   u_int			pass;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:sort_sht] Invalid NULL parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   else if (file->sht == NULL && NULL == elfsh_get_sht(file, NULL))
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get SHT", -1);
 
   /* Basic bubble sort like : O(n2) */
   for (pass = 0; pass < file->hdr->e_shnum; pass++)
@@ -41,7 +43,7 @@ int			elfsh_sort_sht(elfshobj_t *file)
 	{
 
 #if __DEBUG_SORT__
-	  elfsh_print_sectlist(file);
+	  elfsh_print_sectlist(file, "sort_sht");
 #endif
 
 	  next = actual->next;
@@ -103,20 +105,21 @@ int			elfsh_sort_sht(elfshobj_t *file)
     }
 
 #if __DEBUG_SORT__
-  puts("Final state :");
-  elfsh_print_sectlist(file);
+  elfsh_print_sectlist(file, "final_state");
   puts("-------------------------------------------");
 #endif
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
-/* Duplicate names for sections */
-void		elfsh_assoc_name(elfshobj_t *file)
+/* Synchronize duplicated names for sections */
+void		elfsh_sync_sectnames(elfshobj_t *file)
 {
   elfshsect_t	*s;
   char		*name;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (s = file->sectlist; s != NULL; s = s->next)
     {
@@ -125,8 +128,27 @@ void		elfsh_assoc_name(elfshobj_t *file)
 	free(s->name);
       s->name = (name != NULL ? strdup(name) : NULL);
     }
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+
+
+/* Synchronize SHT (mostly used when removing sections) */
+void		elfsh_sync_sht(elfshobj_t *file)
+{
+  u_int		idx;
+  elfshsect_t	*cur;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  for (cur = file->sectlist, idx = 0; idx < file->hdr->e_shnum; idx++)
+    {
+      cur->shdr = file->sht + idx;
+      cur->index = idx;
+      cur = cur->next;
+    }
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
 
 
 /* Return a ptr on the section header table */
@@ -134,17 +156,22 @@ void		*elfsh_get_sht(elfshobj_t *file, int *num)
 {
   elfshsect_t	*s;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:get_sht] Invalid NULL parameter\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
   if (file->sht != NULL)
     goto end;
 
   /* Load the section header table and allocate every elfshsect_t */
   else if (elfsh_load_sht(file) < 0 && elfsh_rebuild_sht(file) < 0)
-    ELFSH_SETERROR("[libelfsh:get_sht] Cant load SHT\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cant load SHT", NULL);
 
-  /* Load .shstrtab if undone in rebuild_sht() continue w/o if we cant read it */
+  /* Load .shstrtab if undone in rebuild_sht() continue w/o if we cant 
+     read it */
   if (file->secthash[ELFSH_SECTION_SHSTRTAB] == NULL)
     {
       s = elfsh_get_section_by_index(file, file->hdr->e_shstrndx, NULL, NULL);
@@ -157,18 +184,54 @@ void		*elfsh_get_sht(elfshobj_t *file, int *num)
     }
 
   /* Sort SHT entries and section list by their file offset */
-  elfsh_assoc_name(file);
+  elfsh_sync_sectnames(file);
 
   /* Some final stuffs */
  end:
   if (num != NULL)
     *num = file->hdr->e_shnum;
-  return (file->sht);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->sht));
 }
 
 
+/* Change endianess of SHT */
+int		elfsh_endianize_sht(elfsh_Shdr *s, 
+				    char byteorder, 
+				    uint16_t shnum)			    
+{
+  int		i;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!s)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", -1);
+
+  /* Deal with cross-endianness binaries */
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  if (byteorder == ELFDATA2MSB) {
+#elif __BYTE_ORDER == __BIG_ENDIAN
+  if (byteorder == ELFDATA2LSB) {
+#else
+#error Unexpected __BYTE_ORDER !
+#endif
+    for (i = 0; i < shnum; i++)
+      {
+	s->sh_name      = swap32(s->sh_name);
+	s->sh_type      = swap32(s->sh_type);
+	s->sh_flags     = swaplong(s->sh_flags);
+	s->sh_addr      = swaplong(s->sh_addr);
+	s->sh_offset    = swaplong(s->sh_offset);
+	s->sh_size      = swaplong(s->sh_size);
+	s->sh_link      = swap32(s->sh_link);
+	s->sh_info      = swap32(s->sh_info);
+	s->sh_addralign = swaplong(s->sh_addralign);
+	s->sh_entsize   = swaplong(s->sh_entsize);
+	s++;
+      }
+  }
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
 
@@ -178,47 +241,28 @@ int		elfsh_load_sht(elfshobj_t *file)
   elfshsect_t	*new;
   int		size;
   int		index;
-  Elf32_Shdr	*s;
-  Elf32_Half	i;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   else if (file->sht != NULL)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Read table */
   size = file->hdr->e_shnum * file->hdr->e_shentsize;
   if (!file->hdr->e_shoff)
-    ELFSH_SETERROR("[libelfsh] SHT file offset is NULL\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "SHT file offset is NULL", -1);
   XSEEK(file->fd, file->hdr->e_shoff, SEEK_SET, -1);
   XALLOC(file->sht, size, -1);
   XREAD(file->fd, file->sht, size, -1);
-
-  /* Deal with cross-endianness binaries */
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-  if (file->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
-#elif __BYTE_ORDER == __BIG_ENDIAN
-  if (file->hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
-#else
-#error Unexpected __BYTE_ORDER !
-#endif
-    s = file->sht;
-    for (i = 0; i < file->hdr->e_shnum; i++)
-      {
-	s->sh_name = swap32(s->sh_name);
-	s->sh_type = swap32(s->sh_type);
-	s->sh_flags = swap32(s->sh_flags);
-	s->sh_addr = swap32(s->sh_addr);
-	s->sh_offset = swap32(s->sh_offset);
-	s->sh_size = swap32(s->sh_size);
-	s->sh_link = swap32(s->sh_link);
-	s->sh_info = swap32(s->sh_info);
-	s->sh_addralign = swap32(s->sh_addralign);
-	s->sh_entsize = swap32(s->sh_entsize);
-	s++;
-      }
-  }
+  
+  elfsh_endianize_sht(file->sht, 
+		      file->hdr->e_ident[EI_DATA], 
+		      file->hdr->e_shnum);
 
   /*
   ** Allocate a elfshsect_t per section and put it
@@ -227,11 +271,13 @@ int		elfsh_load_sht(elfshobj_t *file)
   for (index = 0; index < file->hdr->e_shnum; index++)
     {
       XALLOC(new, sizeof(elfshsect_t), -1);
-      size = elfsh_add_section(file, new, index, NULL, ELFSH_SHIFTING_COMPLETE);
+      size = elfsh_add_section(file, new, index, NULL,
+			       ELFSH_SHIFTING_COMPLETE);
       if (size < 0)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to add section", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -241,13 +287,15 @@ int		elfsh_load_sht(elfshobj_t *file)
 
 
 /* Retreive the section header giving the section symbol from .symtab */
-Elf32_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
-						     Elf32_Sym	*sym)
+elfsh_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
+						     elfsh_Sym	*sym)
 {
   elfshsect_t		*sect;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   sect = elfsh_get_section_from_sym(file, sym);
-  return (sect == NULL ? NULL : sect->shdr);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect == NULL ? NULL : sect->shdr));
 }
 
 
@@ -255,28 +303,34 @@ Elf32_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
 
 
 /* Retreive the symbol for the section giving the section header */
-Elf32_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
-						     Elf32_Shdr *hdr)
+elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
+						     elfsh_Shdr *hdr)
 {
-  Elf32_Sym		*current;
+  elfsh_Sym		*current;
   int			index;
   u_int			nbr;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (file == NULL || hdr == NULL)
-    ELFSH_SETERROR("[libelfsh:get_sym_from_shtentry] Invalid NULL parameter\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
   else if (file->sht == NULL && NULL == elfsh_get_sht(file, NULL))
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get SHT", NULL);
 
   /* Load symtab if necessary */
   else if (file->secthash[ELFSH_SECTION_SYMTAB] == NULL &&
 	   NULL == elfsh_get_symtab(file, NULL))
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get SYMTAB", NULL);
+
   else if (!file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size)
-    ELFSH_SETERROR("[libelfsh:get_sym_from_shtentry] Symtab is void\n",
-		   NULL);
-  nbr = file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(Elf32_Sym);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Symtab is void", NULL);
+  nbr = file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / 
+    sizeof(elfsh_Sym);
 
   /* Find the wanted symbol */
   index = 0;
@@ -284,9 +338,10 @@ Elf32_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
        index < nbr; index++)
     if (elfsh_get_symbol_type(current + index) == STT_SECTION &&
 	current[index].st_value == hdr->sh_addr)
-      return (current + index);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (current + index));
 
-  ELFSH_SETERROR("[libelfsh:get_sym_from_shtentry] Symbol not found\n", NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Symbol not found", NULL);
 }
 
 
@@ -296,18 +351,20 @@ Elf32_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 
 
 /* Create a section header */
-Elf32_Shdr		elfsh_create_shdr(Elf32_Word name,
-					  Elf32_Word type,
-					  Elf32_Word flags,
-					  Elf32_Addr addr,
-					  Elf32_Off offset,
-					  Elf32_Word size,
-					  Elf32_Word link,
-					  Elf32_Word info,
-					  Elf32_Word align,
-					  Elf32_Word entsize)
+elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
+					  elfsh_Word type,
+					  elfsh_Word flags,
+					  elfsh_Addr addr,
+					  elfsh_Off offset,
+					  elfsh_Word size,
+					  elfsh_Word link,
+					  elfsh_Word info,
+					  elfsh_Word align,
+					  elfsh_Word entsize)
 {
-  Elf32_Shdr		new;
+  elfsh_Shdr		new;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   new.sh_name = name;
   new.sh_type = type;
@@ -319,38 +376,44 @@ Elf32_Shdr		elfsh_create_shdr(Elf32_Word name,
   new.sh_info = info;
   new.sh_addralign = align;
   new.sh_entsize = entsize;
-  return (new);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
 
 
 /* Add a section header to the object */
-int		elfsh_insert_section_header(elfshobj_t	*file,
-					    Elf32_Shdr	hdr,
-					    u_int	range,
-					    char	*name)
+int		elfsh_insert_shdr(elfshobj_t	*file,
+				  elfsh_Shdr	hdr,
+				  u_int		range,
+				  char		*name,
+				  char		shiftflag)
 {
   elfshsect_t	*tmp;
   int		index;
   int		shname;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Preliminary checks */
   if (file == NULL ||
       (file->hdr == NULL && elfsh_get_hdr(file) == NULL) ||
       (file->sht == NULL && elfsh_get_sht(file, NULL) == NULL))
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get ELF header or SHT", -1);
 
   /* Fixup the range */
   if (range == ELFSH_SECTION_LAST)
     range = file->hdr->e_shnum;
   else if (range > file->hdr->e_shnum)
-    ELFSH_SETERROR("[libelfsh] Invalid range for injection\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid range for injection", -1);
 
   /* Insert the name string in .shstrtab */
   shname = elfsh_insert_in_shstrtab(file, name);
   if (shname < 0)
-    ELFSH_SETERROR("[libelfsh] Cannot inject data in .shstrtab\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot inject data in .shstrtab", -1);
   hdr.sh_name = (u_int) shname;
   if (range > file->secthash[ELFSH_SECTION_SHSTRTAB]->index)
     hdr.sh_offset += strlen(name) + 1;
@@ -367,7 +430,8 @@ int		elfsh_insert_section_header(elfshobj_t	*file,
   file->sht[range] = hdr;
   file->hdr->e_shnum++;
 
-  /* Update foffset for all section header whoose section is placed after SHT */
+  /* Update foffset for all section header whoose section is placed
+     after SHT */
   for (tmp = file->sectlist, index = 0; index < file->hdr->e_shnum; index++)
     {
 
@@ -384,19 +448,18 @@ int		elfsh_insert_section_header(elfshobj_t	*file,
 
       /* Now update the file offset for the actual section */
       if (file->sht[index].sh_offset >= file->hdr->e_shoff)
-	file->sht[index].sh_offset += file->hdr->e_shentsize;
-
+   	file->sht[index].sh_offset += file->hdr->e_shentsize;
     }
 
   /* If we have an influence on the sht file offset, update it */
-  if (hdr.sh_offset <= file->hdr->e_shoff)
+  if (hdr.sh_offset <= file->hdr->e_shoff && shiftflag)
     file->hdr->e_shoff += hdr.sh_size;
 
   /* Update the .shstrtab index in the ELF header if necessary */
   if (range <= file->hdr->e_shstrndx)
     file->hdr->e_shstrndx++;
 
-  return (range);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (range));
 }
 
 
@@ -408,15 +471,20 @@ char		*elfsh_get_section_name(elfshobj_t *file,
 {
   volatile char	*str;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity check */
   if (file == NULL || s == NULL ||
       file->secthash[ELFSH_SECTION_SHSTRTAB] == NULL ||
       (file->sht == NULL && NULL == elfsh_get_sht(file, NULL)))
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get SHSTRTAB", NULL);
 
   /* Return section's name */
   str = file->secthash[ELFSH_SECTION_SHSTRTAB]->data;
-  return ((char *) str + s->shdr->sh_name);
+
+  /* NULL str check added for supporting binaries without shstrrtab */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (str == NULL ? NULL : (char *) str + s->shdr->sh_name));
 }
 
 
@@ -431,11 +499,14 @@ int			elfsh_set_section_name(elfshobj_t	*file,
   u_int		len;
   u_int		new_len;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity check */
   if (file == NULL || s == NULL || name == NULL ||
       file->secthash[ELFSH_SECTION_SHSTRTAB] == NULL ||
       (file->sht == NULL && elfsh_get_sht(file, NULL) == NULL))
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get SHSTRTAB", -1);
 
   /* Return section's name */
   str = file->secthash[ELFSH_SECTION_SHSTRTAB]->data;
@@ -451,7 +522,7 @@ int			elfsh_set_section_name(elfshobj_t	*file,
   else
     s->shdr->sh_name = elfsh_insert_in_shstrtab(file, name);
 
-  return (s->shdr->sh_name);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->shdr->sh_name));
 }
 
 
@@ -460,150 +531,196 @@ int			elfsh_set_section_name(elfshobj_t	*file,
 /* Tell elfsh that we dont want the sht in the output file */
 void		elfsh_remove_sht(elfshobj_t *file)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   file->shtrm = 1;
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 
 
 /* SET/GET the allocatable flag */
-char	elfsh_get_section_allocflag(Elf32_Shdr *s)
+char	elfsh_get_section_allocflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_ALLOC));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_ALLOC)));
 }
 
-char	elfsh_set_section_allocflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_ALLOC;
   else
     s->sh_flags &= (~SHF_ALLOC);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* SET/GET the writable flag */
-char	elfsh_get_section_writableflag(Elf32_Shdr *s)
+char	elfsh_get_section_writableflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_WRITE));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_WRITE)));
 }
 
-char	elfsh_set_section_writableflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_WRITE;
   else
     s->sh_flags &= (~SHF_WRITE);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
 /* SET/GET the executable flag */
-char	elfsh_get_section_execflag(Elf32_Shdr *s)
+char	elfsh_get_section_execflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_EXECINSTR));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_EXECINSTR)));
 }
 
-char	elfsh_set_section_execflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_EXECINSTR;
   else
     s->sh_flags &= (~SHF_EXECINSTR);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* SET/GET the mergeable flag */
-char	elfsh_get_section_mergeableflag(Elf32_Shdr *s)
+char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_MERGE));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_MERGE)));
 }
 
-char	elfsh_set_section_mergeableflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_MERGE;
   else
     s->sh_flags &= (~SHF_MERGE);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* SET/GET the string flag */
-char	elfsh_get_section_strflag(Elf32_Shdr *s)
+char	elfsh_get_section_strflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_STRINGS));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_STRINGS)));
 }
 
-char	elfsh_set_section_strflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_STRINGS;
   else
     s->sh_flags &= (~SHF_STRINGS);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* SET/GET the link flag */
-char	elfsh_get_section_linkflag(Elf32_Shdr *s)
+char	elfsh_get_section_linkflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_INFO_LINK));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_INFO_LINK)));
 }
 
-char	elfsh_set_section_linkflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_INFO_LINK;
   else
     s->sh_flags &= (~SHF_INFO_LINK);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* SET/GET the order flag */
-char	elfsh_get_section_orderflag(Elf32_Shdr *s)
+char	elfsh_get_section_orderflag(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return ((s->sh_flags & SHF_LINK_ORDER));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((s->sh_flags & SHF_LINK_ORDER)));
 }
 
-char	elfsh_set_section_orderflag(Elf32_Shdr *s, char f)
+char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
   if (f)
     s->sh_flags |= SHF_LINK_ORDER;
   else
     s->sh_flags &= (~SHF_LINK_ORDER);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -611,128 +728,179 @@ char	elfsh_set_section_orderflag(Elf32_Shdr *s, char f)
 
 
 /* All the next functions are dumb read/write field access routine */
-Elf32_Word		elfsh_get_section_info(Elf32_Shdr *s)
+elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_info);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_info));
 }
 
-int		elfsh_set_section_info(Elf32_Shdr *s, Elf32_Word info)
+int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_info = info;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_info = (elfsh_Word) info;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-Elf32_Word		elfsh_get_section_entsize(Elf32_Shdr *s)
+elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_entsize);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_entsize));
 }
 
-int		elfsh_set_section_entsize(Elf32_Shdr *s, Elf32_Word entsize)
+int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_entsize = entsize;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_entsize = (elfsh_Word) entsize;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-Elf32_Word	elfsh_get_section_link(Elf32_Shdr *s)
+elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_link);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_link));
 }
 
-int		elfsh_set_section_link(Elf32_Shdr *s, Elf32_Word link)
+int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_link = link;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_link = (elfsh_Word) link;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
 
-Elf32_Off	elfsh_get_section_foffset(Elf32_Shdr *s)
+elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_offset);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_offset));
 }
 
-int	elfsh_set_section_foffset(Elf32_Shdr *s, Elf32_Off offset)
+int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_offset = offset;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_offset = (elfsh_Off) offset;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-Elf32_Addr	elfsh_get_section_addr(Elf32_Shdr *s)
+
+elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_addr);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_addr));
 }
 
-int	elfsh_set_section_addr(Elf32_Shdr *s, Elf32_Addr addr)
+
+
+int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
   s->sh_addr = addr;
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
-Elf32_Word	elfsh_get_section_align(Elf32_Shdr *s)
+elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_addralign);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_addralign));
 }
 
-int	elfsh_set_section_align(Elf32_Shdr *s, Elf32_Word align)
+int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_addralign = align;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_addralign = (elfsh_Word) align;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-Elf32_Word	elfsh_get_section_size(Elf32_Shdr *s)
+elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_size);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_size));
 }
 
-int	elfsh_set_section_size(Elf32_Shdr *s, Elf32_Word size)
+int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_size = size;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter ", -1);
+  s->sh_size = (elfsh_Word) size;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-Elf32_Word	elfsh_get_section_type(Elf32_Shdr *s)
+elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  return (s->sh_type);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_type));
 }
 
-int	elfsh_set_section_type(Elf32_Shdr *s, Elf32_Word type)
+int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (NULL == s)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter \n", -1);
-  s->sh_type = type;
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter ", -1);
+  s->sh_type = (elfsh_Word) type;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -749,35 +917,40 @@ int	elfsh_set_section_type(Elf32_Shdr *s, Elf32_Word type)
 
 
 /* Get SHT entry by index */
-Elf32_Shdr		*elfsh_get_sht_entry_by_index(Elf32_Shdr *s, u_int index)
+elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s, 
+						      elfsh_Addr index)
 {
-  return (s + index);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s + index));
 }
 
 
 /* Get SHT entry by name */
-Elf32_Shdr		*elfsh_get_sht_entry_by_name(elfshobj_t *file, char *name)
+elfsh_Shdr		*elfsh_get_sht_entry_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t		*sect;
   u_int			index;
   char			*curnam;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity check */
   if (file == NULL || name == NULL)
-    ELFSH_SETERROR("[elfsh:get_sht_entry_by_name] Invalid NULL parameter\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
   else if (file->sectlist == NULL && elfsh_read_obj(file) < 0)
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to read object", NULL);
 
   /* Find SHT entry */
   for (sect = file->sectlist, index = 0; sect != NULL; sect = sect->next)
     {
       curnam = elfsh_get_section_name(file, sect);
       if (curnam != NULL && !strcmp(curnam, name))
-	return (sect->shdr);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->shdr));
     }
 
   /* Not found */
-  ELFSH_SETERROR("[elfsh:get_sht_entry_by_name] Cannot find SHT entry\n",
-		 NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    "Cannot find SHT entry", NULL);
 }

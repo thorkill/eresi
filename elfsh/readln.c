@@ -2,7 +2,6 @@
 ** readlinestuff.c elfsh
 ** 
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
-** Last update Tue Jun 24 06:23:02 2003 mayhem
 */
 #include "elfsh.h"
 
@@ -38,13 +37,16 @@ char *command_generator(const char* text, int state)
 
 
 #if defined(USE_READLN)
-char** coustom_completion(const char* text, int start, int end) 
+char	**custom_completion(const char* text, int start, int end) 
 {
-  char** matches=(char**) NULL;
+  char	**matches = (char**) NULL;
   
   if (start == 0)
-    matches = rl_completion_matches (text, command_generator);
-
+#if defined(__OpenBSD__)
+    matches = completion_matches (text, command_generator);
+#else
+  matches = rl_completion_matches (text, command_generator);
+#endif
   return (matches);
 }
 #endif

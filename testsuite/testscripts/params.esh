@@ -1,0 +1,17 @@
+#!../../vm/elfsh
+
+load /bin/ls
+print Parameter 1 : $1
+set $full 1.sht[.dynsym].size
+div $full 1.sht[.dynsym].entsize
+print Dynamic symbol table contains $full entries
+print FULL = $full
+print ONE  = $1
+cmp $1 $full
+jle err
+print Symbol $1 is 1.dynsym[$1].name
+jmp end
+err:
+print Table is too small
+end:
+quit

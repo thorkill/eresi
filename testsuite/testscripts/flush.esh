@@ -1,0 +1,10 @@
+#!/usr/bin/elfsh
+
+load fake_aout
+remove sect .orig.plt
+remove sect rel.o.rodata.str1.1
+remove sect rel.o.rodata.str1.32
+remove sect rel.o.text
+remove sect rel.o.data
+save new_aout
+quit

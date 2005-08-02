@@ -12,11 +12,12 @@
 elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
 {
   elfshsect_t	*strtab;
-  Elf32_Shdr	hdr;
+  elfsh_Shdr	hdr;
 
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:rebuild_strtab] Invalid NULL parameter\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
 
   /* Create the table if it does not exist */
   if (file->secthash[ELFSH_SECTION_STRTAB] == NULL)
@@ -28,7 +29,7 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
       elfsh_insert_unmapped_section(file, strtab, hdr, NULL);
       file->secthash[ELFSH_SECTION_STRTAB] = strtab;
     }
-  return (file->secthash[ELFSH_SECTION_STRTAB]);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_STRTAB]));
 }
 
 
@@ -42,10 +43,11 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:get_strtab] Invalid NULL parameter\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
+
   else if (file->secthash[ELFSH_SECTION_STRTAB] != NULL)
-    return (file->secthash[ELFSH_SECTION_STRTAB]);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_STRTAB]));
   
   /* Read the string table */
   if (index > 0)
@@ -58,19 +60,20 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
   if (s != NULL)
     {
       file->secthash[ELFSH_SECTION_STRTAB] = s;
-      s->index = file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_link;
+      s->shdr->sh_link = file->secthash[ELFSH_SECTION_SYMTAB]->index;
       if (s->data == NULL)
 	{
 	  s->data = elfsh_load_section(file, s->shdr);
 	  if (s->data == NULL)
-	    return (NULL);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Unable to load STRTAB", NULL);
 	} 
-      return (s);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
     }
 
   /* Section is not present */
   s = elfsh_rebuild_strtab(file);
-  return (s);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 
 
@@ -83,20 +86,20 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
   u_int		index;
 
   if (file == NULL || name == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   sect = elfsh_get_strtab(file, -1);
   if (sect == NULL)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get STRTAB", -1);
 
   len = strlen(name);
   if (!len)
     for (index = 0; index < sect->shdr->sh_size; index++)
       if (*(char *) sect->data + index == 0x00)
-	return (index);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 
-  /* printf("[DEBUG_SOLBUG] Inserting *%s* into strtab section \n", name); */
-
-  return (elfsh_append_data_to_section(sect, name, len + 1));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(sect, name, len + 1)));
 }
 
 
@@ -106,11 +109,13 @@ int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
   elfshsect_t	*sect;
   
   if (file == NULL || name == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DYNSTR, NULL, NULL, NULL);
   if (sect == NULL)
-    ELFSH_SETERROR("[libelfsh] No .dynstr section\n", -1);
-  return (elfsh_append_data_to_section(sect, name, strlen(name) + 1));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to find DYNSTR by name", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(sect, name, strlen(name) + 1)));
 }
 
 
@@ -119,9 +124,10 @@ int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 {
   if (name == NULL || file == NULL || 
       file->secthash[ELFSH_SECTION_SHSTRTAB] == NULL)
-    ELFSH_SETERROR("[libelfsh:insert_in_shstrtab] Invalid NULL parameter\n", -1);  
-  return (elfsh_append_data_to_section(file->secthash[ELFSH_SECTION_SHSTRTAB], 
-				       name, strlen(name) + 1));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(file->secthash[ELFSH_SECTION_SHSTRTAB], 
+				       name, strlen(name) + 1)));
 }
 
 

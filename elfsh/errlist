@@ -1,0 +1,43 @@
+disasm.c: In function `cmd_disasm':
+disasm.c:372: warning: suggest explicit braces to avoid ambiguous `else'
+got.c: In function `cmd_got':
+got.c:51: warning: unsigned int format, different type arg (arg 4)
+got.c:51: warning: unsigned int format, different type arg (arg 4)
+pht.c: In function `cmd_pht':
+pht.c:57: warning: unsigned int format, different type arg (arg 5)
+pht.c:57: warning: unsigned int format, different type arg (arg 6)
+pht.c:57: warning: unsigned int format, different type arg (arg 10)
+pht.c:57: warning: unsigned int format, different type arg (arg 11)
+pht.c:57: warning: unsigned int format, different type arg (arg 12)
+pht.c:57: warning: unsigned int format, different type arg (arg 13)
+pht.c:57: warning: unsigned int format, different type arg (arg 5)
+pht.c:57: warning: unsigned int format, different type arg (arg 6)
+pht.c:57: warning: unsigned int format, different type arg (arg 10)
+pht.c:57: warning: unsigned int format, different type arg (arg 11)
+pht.c:57: warning: unsigned int format, different type arg (arg 12)
+pht.c:57: warning: unsigned int format, different type arg (arg 13)
+pht.c:69: warning: unsigned int format, different type arg (arg 5)
+pht.c:69: warning: unsigned int format, different type arg (arg 6)
+pht.c:69: warning: unsigned int format, different type arg (arg 10)
+pht.c:69: warning: unsigned int format, different type arg (arg 11)
+pht.c:69: warning: unsigned int format, different type arg (arg 12)
+pht.c:69: warning: unsigned int format, different type arg (arg 5)
+pht.c:69: warning: unsigned int format, different type arg (arg 6)
+pht.c:69: warning: unsigned int format, different type arg (arg 10)
+pht.c:69: warning: unsigned int format, different type arg (arg 11)
+pht.c:69: warning: unsigned int format, different type arg (arg 12)
+rel.c: In function `cmd_rel':
+rel.c:86: warning: int format, different type arg (arg 4)
+rel.c:86: warning: int format, different type arg (arg 4)
+rel.c:110: warning: cast to pointer from integer of different size
+rel.c:117: warning: cast to pointer from integer of different size
+sht.c: In function `cmd_sht':
+sht.c:57: warning: cast to pointer from integer of different size
+sht.c:72: warning: unsigned int format, different type arg (arg 14)
+sht.c:72: warning: unsigned int format, different type arg (arg 14)
+sht.c:76: warning: cast to pointer from integer of different size
+sht.c:87: warning: unsigned int format, different type arg (arg 14)
+sht.c:87: warning: unsigned int format, different type arg (arg 14)
+sym.c: In function `ds':
+sym.c:96: warning: cast to pointer from integer of different size
+sym.c:107: warning: cast to pointer from integer of different size

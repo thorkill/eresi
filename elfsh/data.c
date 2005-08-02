@@ -2,11 +2,9 @@
 ** data.c for elfsh
 ** 
 ** Started on  Mon Feb 26 04:06:38 2001 mayhem
-** Last update Mon Jun 23 05:47:27 2003 mayhem
+** Last update Wed Mar 10 12:14:24 2004 mayhem
 */
 #include "elfsh.h"
-
-
 
 
 
@@ -22,6 +20,18 @@ elfshconst_t			elfsh_seg_type[] =
   {"Program header table" , "PT_PHDR"   , PT_PHDR},
 };
 
+/* Extended program header types */
+elfshconst_t			elfsh_extseg_type[] = 
+{
+  {"Stack flags"               , "PT_GNU_STACK"   , PT_GNU_STACK},
+  {"Read-only after relocation", "PT_GNU_RELRO"   , PT_GNU_RELRO},
+  {"New PaX flags"             , "PT_PAX_FLAGS"   , PT_PAX_FLAGS},
+  {"GCC .eh_frame_hdr"         , "PT_GNU_EH_FRAME", PT_GNU_EH_FRAME},
+  {"MIPS Registers informations"    , "PT_MIPS_REGINFO", PT_MIPS_REGINFO},
+};
+
+
+
 
 /* Encoding type in ELF header */
 elfshconst_t			elfsh_encoding[] = 
@@ -34,7 +44,7 @@ elfshconst_t			elfsh_encoding[] =
 
 /* Section type strings */
 elfshconst_t			elfsh_sh_type[] = 
-  {
+{
   {"NULL section"           , "SHT_NULL"    , SHT_NULL},
   {"Program data"           , "SHT_PROGBITS", SHT_PROGBITS},
   {"Symbol table"           , "SHT_SYMTAB"  , SHT_SYMTAB},
@@ -47,6 +57,7 @@ elfshconst_t			elfsh_sh_type[] =
   {"Reloc. ent. w/o addends", "SHT_REL"     , SHT_REL},
   {"Reserved"               , "SHT_SHLIB"   , SHT_SHLIB},
   {"Dynamic linker symtab"  , "SHT_DYNSYM"  , SHT_DYNSYM},
+  {"MIPS Registers Information", "SHT_MIPS_REGINFO", SHT_MIPS_REGINFO},
 };
 
 
@@ -148,6 +159,67 @@ elfshconst_t			elfsh_extdyn_type[] =
   {"[?]"                              , "DT_MOVESZ"    , DT_MOVESZ},
 };
 
+/* MIPS dynamic types */
+elfshconst_t                    elfsh_mipsdyn_type[] = 
+{
+  {"Runtime linker interface version" ,	"DT_MIPS_RLD_VERSION"	, DT_MIPS_RLD_VERSION},
+  {"Timestamp"			      ,	"DT_MIPS_TIME_STAMP"	, DT_MIPS_TIME_STAMP},
+  {"Checksum"			      , "DT_MIPS_ICHECKSUM"	, DT_MIPS_ICHECKSUM},
+  {"Version string (string tbl index)", "DT_MIPS_IVERSION"	, DT_MIPS_IVERSION},
+  {"Flags"			      ,	"DT_MIPS_FLAGS"		, DT_MIPS_FLAGS},
+  {"Base address"		      ,	"DT_MIPS_BASE_ADDRESS"	, DT_MIPS_BASE_ADDRESS},
+  {"[?]"			      , "DT_MIPS_MSYM"		, DT_MIPS_MSYM},
+  {"Address of CONFLICT section"      , "DT_MIPS_CONFLICT"	, DT_MIPS_CONFLICT},
+  {"Address of LIBLIST section"	      , "DT_MIPS_LIBLIST"	, DT_MIPS_LIBLIST},
+  {"Number of local GOT entries"      , "DT_MIPS_LOCAL_GOTNO"	, DT_MIPS_LOCAL_GOTNO},
+  {"Number of CONFLICT entries"	      , "DT_MIPS_CONFLICTNO"	, DT_MIPS_CONFLICTNO},
+  {"Number of LIBLIST entries"	      , "DT_MIPS_LIBLISTNO"	, DT_MIPS_LIBLISTNO},
+  {"Number of DYNSYM entries"	      , "DT_MIPS_SYMTABNO"	, DT_MIPS_SYMTABNO},
+  {"First external DYNSYM"	      , "DT_MIPS_UNREFEXTNO"	, DT_MIPS_UNREFEXTNO},
+  {"First GOT entry in DYNSYM"	      , "DT_MIPS_GOTSYM"	, DT_MIPS_GOTSYM},
+  {"Number of GOT page table entries" , "DT_MIPS_HIPAGENO"	, DT_MIPS_HIPAGENO},
+  {"Address of run time loader map."  , "DT_MIPS_RLD_MAP"	, DT_MIPS_RLD_MAP},
+  {"Delta C++ class definition"	      , "DT_MIPS_DELTA_CLASS"	, DT_MIPS_DELTA_CLASS},
+  {"Number of entries in DT_MIPS_DELTA_CLASS"
+				      , "DT_MIPS_DELTA_CLASS_NO", DT_MIPS_DELTA_CLASS_NO},
+  {"Delta C++ class instances"	      , "DT_MIPS_DELTA_INSTANCE", DT_MIPS_DELTA_INSTANCE},
+  {"Number of entries in DT_MIPS_DELTA_INSTANCE"
+				      , "DT_MIPS_DELTA_INSTANCE_NO"
+								, DT_MIPS_DELTA_INSTANCE_NO},
+  {"Delta relocations", "DT_MIPS_DELTA_RELOC"			, DT_MIPS_DELTA_RELOC},
+  {"Number of entries in DT_MIPS_DELTA_RELOC", "DT_MIPS_DELTA_RELOC_NO"
+								, DT_MIPS_DELTA_RELOC_NO},
+  {"Delta symbols that Delta relocations refer to"
+				      , "DT_MIPS_DELTA_SYM"	, DT_MIPS_DELTA_SYM},
+  {"Number of entries in DT_MIPS_DELTA_SYM"
+				      , "DT_MIPS_DELTA_SYM_NO"	, DT_MIPS_DELTA_SYM_NO},
+  {"Delta symbols that hold the class declaration"
+				      , "DT_MIPS_DELTA_CLASSSYM", DT_MIPS_DELTA_CLASSSYM},
+  {"Number of entries in DT_MIPS_DELTA_CLASSSYM"
+				      , "DT_MIPS_DELTA_CLASSSYM_NO"
+								, DT_MIPS_DELTA_CLASSSYM_NO},
+  {"Flags indicating for C++ flavor"  , "DT_MIPS_CXX_FLAGS"	, DT_MIPS_CXX_FLAGS},
+  {"[?]"			      , "DT_MIPS_PIXIE_INIT"	, DT_MIPS_PIXIE_INIT},
+  {"[?]"			      , "DT_MIPS_SYMBOL_LIB"	, DT_MIPS_SYMBOL_LIB},
+  {"[?]"			      , "DT_MIPS_LOCALPAGE_GOTIDX"
+								, DT_MIPS_LOCALPAGE_GOTIDX},
+  {"[?]"			      , "DT_MIPS_LOCAL_GOTIDX"	, DT_MIPS_LOCAL_GOTIDX},
+  {"[?]"			      , "DT_MIPS_HIDDEN_GOTIDX"	, DT_MIPS_HIDDEN_GOTIDX},
+  {"[?]"			      , "DT_MIPS_PROTECTED_GOTIDX"
+								, DT_MIPS_PROTECTED_GOTIDX},
+  {"Address of .options"	      , "DT_MIPS_OPTIONS"	, DT_MIPS_OPTIONS},
+  {"Address of .interface"	      , "DT_MIPS_INTERFACE"	, DT_MIPS_INTERFACE},
+  {"[?]"			      , "DT_MIPS_DYNSTR_ALIGN"	, DT_MIPS_DYNSTR_ALIGN},
+  {"Size of the .interface section"   , "DT_MIPS_INTERFACE_SIZE", DT_MIPS_INTERFACE_SIZE},
+  {"Address of rld_text_rsolve function stored in GOT"
+				      , "DT_MIPS_RLD_TEXT_RESOLVE_ADDR"
+								, DT_MIPS_RLD_TEXT_RESOLVE_ADDR},
+  {"Default suffix of dso to be added by rld on dlopen() calls"
+				      , "DT_MIPS_PERF_SUFFIX"	, DT_MIPS_PERF_SUFFIX},
+  {"(O32)Size of compact rel section" , "DT_MIPS_COMPACT_SIZE"	, DT_MIPS_COMPACT_SIZE},
+  {"GP value for aux GOTs"	      , "DT_MIPS_GP_VALUE"	, DT_MIPS_GP_VALUE},
+  {"Address of aux .dynamic"	      , "DT_MIPS_AUX_DYNAMIC"	, DT_MIPS_AUX_DYNAMIC},
+};
 
 
 /* The next 4 arrays are special flag based DT entries */
@@ -191,23 +263,245 @@ elfshconst_t			elfsh_flags1[] =
   {"Option 4000: ENDFILTEE(?)"         , "DF_1_ENDFILTEE", DF_1_ENDFILTEE},	
 };
 
+/* mips DT_MIPSFLAGS flags */
+elfshconst_t                    elfsh_mipsflags[] =
+{
+  {"No flags"			       , "RHF_NONE"	 , RHF_NONE},
+  {"Use quickstart"		       , "RHF_QUICKSTART", RHF_QUICKSTART},  
+  {"Hash size not power of 2"	       , "RHF_NOTPOT"	 , RHF_NOTPOT}, 
+  {"Ignore LD_LIBRARY_PATH"	       , "RHF_NO_LIBRARY_REPLACEMENT"
+							 , RHF_NO_LIBRARY_REPLACEMENT},
+  {"[?]"			       , "RHF_NO_MOVE"	 , RHF_NO_MOVE},
+  {"[?]"			       , "RHF_SGI_ONLY"	 , RHF_SGI_ONLY},
+  {"[?]"			       , "RHF_GUARANTEE_INIT"
+							 , RHF_GUARANTEE_INIT},
+  {"[?]"			       , "RHF_DELTA_C_PLUS_PLUS"
+							 , RHF_DELTA_C_PLUS_PLUS},
+  {"[?]"			       , "RHF_GUARANTEE_START_INIT"
+							 , RHF_GUARANTEE_START_INIT},
+  {"[?]"			       , "RHF_PIXIE"	 , RHF_PIXIE},
+  {"[?]"			       , "RHF_DEFAULT_DELAY_LOAD"
+							 , RHF_DEFAULT_DELAY_LOAD},
+  {"[?]"			       , "RHF_REQUICKSTART"
+							 , RHF_REQUICKSTART},
+  {"[?]"			       , "RHF_REQUICKSTARTED"
+							 , RHF_REQUICKSTARTED},
+  {"[?]"			       , "RHF_CORD"	 , RHF_CORD},
+  {"[?]"			       , "RHF_NO_UNRES_UNDEF"
+							 , RHF_NO_UNRES_UNDEF},
+  {"[?]"			       , "RHF_RLD_ORDER_SAFE"	
+							 , RHF_RLD_ORDER_SAFE},
+  /*
+    // from http://www.iagu.net/docs/dec/AA-PS31D-TET1_html/asm10.html
 
+  {"Object may be quickstarted by loader" , "RHF_QUICKSTART" , RHF_QUICKSTART},
+  {"Hash size not a power of two "	  , "RHF_NOTPOT"     , RHF_NOTPOT},
+  {"[?]"				  , "RHF_NO_LIBRARY_", RHF_NO_LIBRARY_},
+  {"Use default system libraries only"	  , "REPLACEMENT"    , REPLACEMENT},
+  {"Do not relocate"			  , "RHF_NO_MOVE"    , RHF_NO_MOVE},
+  {"Symbol resolution same as DT_SYMBOLIC", "RHF_RING_SEARCH", RHF_RING_SEARCH},
+  {"Depth first symbol resolution "	  , "RHF_DEPTH_FIRST", RHF_DEPTH_FIRST},
+  {"[?]"				  , "RHF_USE_31BIT_" , RHF_USE_31BIT_},
+  {"TASO (Truncated Address Support Option) objects"
+                                          , "ADDRESSES"	     , ADDRESSES},
+  */
+};
 
 /* Relocation types strings */
 elfshconst_t			elfsh_rel_type_i386[] = 
-{
-  {"No relocation"                   , "R_386_NONE"    , R_386_NONE},
-  {"Direct 32 bit"                   , "R_386_32"      , R_386_32},
-  {"Relative 32 bit"                 , "R_386_PC32"    , R_386_PC32},
-  {"32 bit GOT entry"                , "R_386_GOT32"   , R_386_GOT32},
-  {"32 bit PLT entry"                , "R_386_PLT32"   , R_386_PLT32},
-  {"Copy symbol at runtime"          , "R_386_COPY"    , R_386_COPY},
-  {"Create GOT entry"                , "R_386_GLOB_DAT", R_386_GLOB_DAT},
-  {"Create PLT entry"                , "R_386_JMP_SLOT", R_386_JMP_SLOT},
-  {"Adjust by program base address"  , "R_386_RELATIVE", R_386_RELATIVE},
-  {"32 bit offset to GOT"            , "R_386_GOTOFF"  , R_386_GOTOFF},
-  {"32 bit PC relative offset to GOT", "R_386_GOTPC"   , R_386_GOTPC},
-};
+  {
+    {"No relocation"                   , "R_386_NONE"    , R_386_NONE},
+    {"Direct 32 bit"                   , "R_386_32"      , R_386_32},
+    {"Relative 32 bit"                 , "R_386_PC32"    , R_386_PC32},
+    {"32 bit GOT entry"                , "R_386_GOT32"   , R_386_GOT32},
+    {"32 bit PLT entry"                , "R_386_PLT32"   , R_386_PLT32},
+    {"Copy symbol at runtime"          , "R_386_COPY"    , R_386_COPY},
+    {"Create GOT entry"                , "R_386_GLOB_DAT", R_386_GLOB_DAT},
+    {"Create PLT entry"                , "R_386_JMP_SLOT", R_386_JMP_SLOT},
+    {"Adjust by program base address"  , "R_386_RELATIVE", R_386_RELATIVE},
+    {"32 bit offset to GOT"            , "R_386_GOTOFF"  , R_386_GOTOFF},
+    {"32 bit PC relative offset to GOT", "R_386_GOTPC"   , R_386_GOTPC},
+  };
+
+/* Relocation types for itanium */
+elfshconst_t			elfsh_rel_type_ia64[] =
+  {
+    {"none"				, "R_IA64_NONE"		, R_IA64_NONE},
+    {"symbol + addend, add imm14"	, "R_IA64_IMM14"	, R_IA64_IMM14}, 
+    {"symbol + addend, add imm22"	, "R_IA64_IMM22"	, R_IA64_IMM22}, 
+    {"symbol + addend, mov imm64"	, "R_IA64_IMM64"	, R_IA64_IMM64}, 
+    {"symbol + addend, data4 MSB"	, "R_IA64_DIR32MSB"	, R_IA64_DIR32MSB}, 
+    {"symbol + addend, data4 LSB"	, "R_IA64_DIR32LSB"	, R_IA64_DIR32LSB}, 
+    {"symbol + addend, data8 MSB"	, "R_IA64_DIR64MSB"	, R_IA64_DIR64MSB}, 
+    {"symbol + addend, data8 LSB"	, "R_IA64_DIR64LSB"	, R_IA64_DIR64LSB}, 
+    {"@gprel(sym + add), add imm22"	, "R_IA64_GPREL22"	, R_IA64_GPREL22}, 
+    {"@gprel(sym + add), mov imm64"	, "R_IA64_GPREL64I"	, R_IA64_GPREL64I}, 
+    {"@gprel(sym + add), data4 MSB"	, "R_IA64_GPREL32MSB"	, R_IA64_GPREL32MSB}, 
+    {"@gprel(sym + add), data4 LSB"	, "R_IA64_GPREL32LSB"	, R_IA64_GPREL32LSB}, 
+    {"@gprel(sym + add), data8 MSB"	, "R_IA64_GPREL64MSB"	, R_IA64_GPREL64MSB}, 
+    {"@gprel(sym + add), data8 LSB"	, "R_IA64_GPREL64LSB"	, R_IA64_GPREL64LSB},
+    {"@ltoff(sym + add), add imm22"	, "R_IA64_LTOFF22"	, R_IA64_LTOFF22}, 
+    {"@ltoff(sym + add), mov imm64"	, "R_IA64_LTOFF64I"	, R_IA64_LTOFF64I}, 
+    {"@pltoff(sym + add), add imm22"	, "R_IA64_PLTOFF22"	, R_IA64_PLTOFF22}, 
+    {"@pltoff(sym + add), mov imm64"	, "R_IA64_PLTOFF64I"	, R_IA64_PLTOFF64I}, 
+    {"@pltoff(sym + add), data8 MSB"	, "R_IA64_PLTOFF64MSB"	, R_IA64_PLTOFF64MSB}, 
+    {"@pltoff(sym + add), data8 LSB"	, "R_IA64_PLTOFF64LSB"	, R_IA64_PLTOFF64LSB}, 
+    {"@fptr(sym + add), mov imm64"	, "R_IA64_FPTR64I"	, R_IA64_FPTR64I}, 
+    {"@fptr(sym + add), data4 MSB"	, "R_IA64_FPTR32MSB"	, R_IA64_FPTR32MSB}, 
+    {"@fptr(sym + add), data4 LSB"	, "R_IA64_FPTR32LSB"	, R_IA64_FPTR32LSB}, 
+    {"@fptr(sym + add), data8 MSB"	, "R_IA64_FPTR64MSB"	, R_IA64_FPTR64MSB}, 
+    {"@fptr(sym + add), data8 LSB"	, "R_IA64_FPTR64LSB"	, R_IA64_FPTR64LSB}, 
+    {"@pcrel(sym + add), brl"		, "R_IA64_PCREL60B"	, R_IA64_PCREL60B}, 
+    {"@pcrel(sym + add), ptb, call"	, "R_IA64_PCREL21B"	, R_IA64_PCREL21B}, 
+    {"@pcrel(sym + add), chk.s"		, "R_IA64_PCREL21M"	, R_IA64_PCREL21M}, 
+    {"@pcrel(sym + add), fchkf"		, "R_IA64_PCREL21F"	, R_IA64_PCREL21F}, 
+    {"@pcrel(sym + add), data4 MSB"	, "R_IA64_PCREL32MSB"	, R_IA64_PCREL32MSB}, 
+    {"@pcrel(sym + add), data4 LSB"	, "R_IA64_PCREL32LSB"	, R_IA64_PCREL32LSB}, 
+    {"@pcrel(sym + add), data8 MSB"	, "R_IA64_PCREL64MSB"	, R_IA64_PCREL64MSB}, 
+    {"@pcrel(sym + add), data8 LSB"	, "R_IA64_PCREL64LSB"	, R_IA64_PCREL64LSB}, 
+    {"@ltoff(@fptr(s+a)), imm22"	, "R_IA64_LTOFF_FPTR22"	, R_IA64_LTOFF_FPTR22}, 
+    {"@ltoff(@fptr(s+a)), imm64"	, "R_IA64_LTOFF_FPTR64I", R_IA64_LTOFF_FPTR64I}, 
+    {"@ltoff(@fptr(s+a)), data4 MSB"	, "R_IA64_LTOFF_FPTR32MSB", R_IA64_LTOFF_FPTR32MSB}, 
+    {"@ltoff(@fptr(s+a)), data4 LSB"	, "R_IA64_LTOFF_FPTR32LSB", R_IA64_LTOFF_FPTR32LSB}, 
+    {"@ltoff(@fptr(s+a)), data8 MSB"	, "R_IA64_LTOFF_FPTR64MSB", R_IA64_LTOFF_FPTR64MSB}, 
+    {"@ltoff(@fptr(s+a)), data8 LSB"	, "R_IA64_LTOFF_FPTR64LSB", R_IA64_LTOFF_FPTR64LSB}, 
+    {"@segrel(sym + add), data4 MSB"	, "R_IA64_SEGREL32MSB"	, R_IA64_SEGREL32MSB}, 
+    {"@segrel(sym + add), data4 LSB"	, "R_IA64_SEGREL32LSB"	, R_IA64_SEGREL32LSB}, 
+    {"@segrel(sym + add), data8 MSB"	, "R_IA64_SEGREL64MSB"	, R_IA64_SEGREL64MSB}, 
+    {"@segrel(sym + add), data8 LSB"	, "R_IA64_SEGREL64LSB"	, R_IA64_SEGREL64LSB}, 
+    {"@secrel(sym + add), data4 MSB"	, "R_IA64_SECREL32MSB"	, R_IA64_SECREL32MSB}, 
+    {"@secrel(sym + add), data4 LSB"	, "R_IA64_SECREL32LSB"	, R_IA64_SECREL32LSB}, 
+    {"@secrel(sym + add), data8 MSB"	, "R_IA64_SECREL64MSB"	, R_IA64_SECREL64MSB}, 
+    {"@secrel(sym + add), data8 LSB"	, "R_IA64_SECREL64LSB"	, R_IA64_SECREL64LSB}, 
+    {"data 4 + REL"			, "R_IA64_REL32MSB"	, R_IA64_REL32MSB}, 
+    {"data 4 + REL"			, "R_IA64_REL32LSB"	, R_IA64_REL32LSB}, 
+    {"data 8 + REL"			, "R_IA64_REL64MSB"	, R_IA64_REL64MSB}, 
+    {"data 8 + REL"			, "R_IA64_REL64LSB"	, R_IA64_REL64LSB}, 
+    {"symbol + addend, data4 MSB"	, "R_IA64_LTV32MSB"	, R_IA64_LTV32MSB}, 
+    {"symbol + addend, data4 LSB"	, "R_IA64_LTV32LSB"	, R_IA64_LTV32LSB}, 
+    {"symbol + addend, data8 MSB"	, "R_IA64_LTV64MSB"	, R_IA64_LTV64MSB}, 
+    {"symbol + addend, data8 LSB"	, "R_IA64_LTV64LSB"	, R_IA64_LTV64LSB}, 
+    {"@pcrel(sym + add), 21bit inst"	, "R_IA64_PCREL21BI"	, R_IA64_PCREL21BI}, 
+    {"@pcrel(sym + add), 22bit inst"	, "R_IA64_PCREL22"	, R_IA64_PCREL22}, 
+    {"@pcrel(sym + add), 64bit inst"	, "R_IA64_PCREL64I"	, R_IA64_PCREL64I}, 
+    {"dynamic reloc, imported PLT, MSB"	, "R_IA64_IPLTMSB"	, R_IA64_IPLTMSB}, 
+    {"dynamic reloc, imported PLT, LSB"	, "R_IA64_IPLTLSB"	, R_IA64_IPLTLSB}, 
+    {"copy relocation"			, "R_IA64_COPY"		, R_IA64_COPY}, 
+    {"Addend and symbol difference"	, "R_IA64_SUB"		, R_IA64_SUB}, 
+    {"LTOFF22, relaxable"		, "R_IA64_LTOFF22X"	, R_IA64_LTOFF22X}, 
+    {"Use of LTOFF22X"			, "R_IA64_LDXMOV"	, R_IA64_LDXMOV}, 
+    {"@tprel(sym + add), imm14"		, "R_IA64_TPREL14"	, R_IA64_TPREL14}, 
+    {"@tprel(sym + add), imm22"		, "R_IA64_TPREL22"	, R_IA64_TPREL22}, 
+    {"@tprel(sym + add), imm64"		, "R_IA64_TPREL64I"	, R_IA64_TPREL64I}, 
+    {"@tprel(sym + add), data8 MSB"	, "R_IA64_TPREL64MSB"	, R_IA64_TPREL64MSB}, 
+    {"@tprel(sym + add), data8 LSB"	, "R_IA64_TPREL64LSB"	, R_IA64_TPREL64LSB}, 
+    {"@ltoff(@tprel(s+a)), imm2"	, "R_IA64_LTOFF_TPREL22", R_IA64_LTOFF_TPREL22}, 
+    {"@dtpmod(sym + add), data8 MSB"	, "R_IA64_DTPMOD64MSB"	, R_IA64_DTPMOD64MSB}, 
+    {"@dtpmod(sym + add), data8 LSB"	, "R_IA64_DTPMOD64LSB"	, R_IA64_DTPMOD64LSB}, 
+    {"@ltoff(@dtpmod(sym + add)), imm22", "R_IA64_LTOFF_DTPMOD22", R_IA64_LTOFF_DTPMOD22}, 
+    {"@dtprel(sym + add), imm14"	, "R_IA64_DTPREL14"	, R_IA64_DTPREL14},
+    {"@dtprel(sym + add), imm22"	, "R_IA64_DTPREL22"	, R_IA64_DTPREL22}, 
+    {"@dtprel(sym + add), imm64"	, "R_IA64_DTPREL64I"	, R_IA64_DTPREL64I}, 
+    {"@dtprel(sym + add), data4 MSB"	, "R_IA64_DTPREL32MSB"	, R_IA64_DTPREL32MSB}, 
+    {"@dtprel(sym + add), data4 LSB"	, "R_IA64_DTPREL32LSB"	, R_IA64_DTPREL32LSB}, 
+    {"@dtprel(sym + add), data8 MSB"	, "R_IA64_DTPREL64MSB"	, R_IA64_DTPREL64MSB}, 
+    {"@dtprel(sym + add), data8 LSB"	, "R_IA64_DTPREL64LSB"	, R_IA64_DTPREL64LSB}, 
+    {"@ltoff(@dtprel(s+a)), imm22"	, "R_IA64_LTOFF_DTPREL22", R_IA64_LTOFF_DTPREL22}, 
+  };
+
+
+/* MIPS relocs */
+elfshconst_t			elfsh_rel_type_mips[] =
+  {
+
+    {"No reloc"			,  "R_MIPS_NONE"	, R_MIPS_NONE},
+    {"Direct 16 bit"		,  "R_MIPS_16"		, R_MIPS_16},
+    {"Direct 32 bit"		,  "R_MIPS_32"		, R_MIPS_32},
+    {"PC relative 32 bit"	,  "R_MIPS_REL32"	, R_MIPS_REL32},
+    {"Direct 26 bit shifted"	,  "R_MIPS_26"		,  R_MIPS_26},
+    {"High 16 bit"		,  "R_MIPS_HI16"	, R_MIPS_HI16},
+    {"Low 16 bit"		,  "R_MIPS_LO16"	, R_MIPS_LO16},
+    {"GP relative 16 bit"	,  "R_MIPS_GPREL16"	, R_MIPS_GPREL16},
+    {"16 bit literal entry"	,  "R_MIPS_LITERAL"	, R_MIPS_LITERAL},
+    {"16 bit GOT entry"		,  "R_MIPS_GOT16"	, R_MIPS_GOT16},
+    {"PC relative 16 bit"	,  "R_MIPS_PC16"	,  R_MIPS_PC16},
+    {"16 bit GOT entry for function",  "R_MIPS_CALL16"	, R_MIPS_CALL16},
+    {"GP relative 32 bit"	,  "R_MIPS_GPREL32"	, R_MIPS_GPREL32}, 
+    {""				, "R_MIPS_SHIFT5"	, R_MIPS_SHIFT5},
+    {""				, "R_MIPS_SHIFT6"	, R_MIPS_SHIFT6},
+    {""				, "R_MIPS_64"		, R_MIPS_64},
+    {""				, "R_MIPS_GOT_DISP"	, R_MIPS_GOT_DISP},
+    {""				, "R_MIPS_GOT_PAGE"	, R_MIPS_GOT_PAGE},
+    {""				, "R_MIPS_GOT_OFST"	, R_MIPS_GOT_OFST},
+    {""				, "R_MIPS_GOT_HI16"	, R_MIPS_GOT_HI16},
+    {""				, "R_MIPS_GOT_LO16"	, R_MIPS_GOT_LO16},
+    {""				, "R_MIPS_SUB"		, R_MIPS_SUB},
+    {""				, "R_MIPS_INSERT_A"	, R_MIPS_INSERT_A},
+    {""				, "R_MIPS_INSERT_B"	, R_MIPS_INSERT_B},
+    {""				, "R_MIPS_DELETE"	, R_MIPS_DELETE},
+    {""				, "R_MIPS_HIGHER"	, R_MIPS_HIGHER}, 
+    {""				, "R_MIPS_HIGHEST"	, R_MIPS_HIGHEST}, 
+    {""				, "R_MIPS_CALL_HI16"	, R_MIPS_CALL_HI16},
+    {""				, "R_MIPS_CALL_LO16"	, R_MIPS_CALL_LO16},
+    {""				, "R_MIPS_SCN_DISP"	, R_MIPS_SCN_DISP}, 
+    {""				, "R_MIPS_REL16"	, R_MIPS_REL16},  
+    {""				, "R_MIPS_ADD_IMMEDIATE", R_MIPS_ADD_IMMEDIATE},
+    {""				, "R_MIPS_PJUMP"	, R_MIPS_PJUMP},
+    {""				, "R_MIPS_RELGOT"	, R_MIPS_RELGOT},
+    {""				, "R_MIPS_JALR"		, R_MIPS_JALR},
+    
+  };
+
+
+/* Alpha relocs.  */
+elfshconst_t                    elfsh_rel_type_alpha[] =
+  {
+    {"No reloc"				, "R_ALPHA_NONE"	, R_ALPHA_NONE},           
+    {"Direct 32 bit"			, "R_ALPHA_REFLONG"	, R_ALPHA_REFLONG},
+    {"Direct 64 bit"			, "R_ALPHA_REFQUAD"	, R_ALPHA_REFQUAD},
+    {"GP relative 32 bit"		, "R_ALPHA_GPREL32"	, R_ALPHA_GPREL32},
+    {"GP relative 16 bit w/optimization", "R_ALPHA_LITERAL"	, R_ALPHA_LITERAL},
+    {"Optimization hint for LITERAL"	, "R_ALPHA_LITUSE"	, R_ALPHA_LITUSE},
+    {"Add displacement to GP"		, "R_ALPHA_GPDISP"	, R_ALPHA_GPDISP},          
+    {"PC+4 relative 23 bit shifted"	, "R_ALPHA_BRADDR"	, R_ALPHA_BRADDR},
+    {"PC+4 relative 16 bit shifted"	, "R_ALPHA_HINT"	, R_ALPHA_HINT},
+    {"PC relative 16 bit"		, "R_ALPHA_SREL16"	, R_ALPHA_SREL16},
+    {"PC relative 32 bit"		, "R_ALPHA_SREL32"	, R_ALPHA_SREL32},
+    {"PC relative 64 bit"		, "R_ALPHA_SREL64"	, R_ALPHA_SREL64},
+    {"OP stack push"			, "R_ALPHA_OP_PUSH"	, R_ALPHA_OP_PUSH},
+    {"OP stack pop and store"		, "R_ALPHA_OP_STORE"	, R_ALPHA_OP_STORE},
+    {"OP stack subtract"		, "R_ALPHA_OP_PSUB"	, R_ALPHA_OP_PSUB},
+    {"OP stack right shift"		, "R_ALPHA_OP_PRSHIFT"	, R_ALPHA_OP_PRSHIFT},
+    {"Unknown"				, "R_ALPHA_GPVALUE"	, R_ALPHA_GPVALUE},
+    {"GP relative 32 bit, high 16 bits" , "R_ALPHA_GPRELHIGH"	, R_ALPHA_GPRELHIGH},
+    {"GP relative 32 bit, low 16 bits"  , "R_ALPHA_GPRELLOW"	, R_ALPHA_GPRELLOW},
+    {"GP relative 16 bit"		, "R_ALPHA_GPREL16"	, R_ALPHA_GPREL16},
+    {"Unknown"				, "R_ALPHA_IMMED_GP_16"	  , R_ALPHA_IMMED_GP_16},
+    {"Unknown"				, "R_ALPHA_IMMED_GP_HI32" , R_ALPHA_IMMED_GP_HI32},   
+    {"Unknown"				, "R_ALPHA_IMMED_SCN_HI32", R_ALPHA_IMMED_SCN_HI32},  
+    {"Unknown"				, "R_ALPHA_IMMED_BR_HI32" , R_ALPHA_IMMED_BR_HI32},   
+    {"Unknown"				, "R_ALPHA_IMMED_LO32"	  , R_ALPHA_IMMED_LO32}, 
+    {"Copy symbol at runtime"		, "R_ALPHA_COPY"	, R_ALPHA_COPY},
+    {"Create GOT entry"			, "R_ALPHA_GLOB_DAT"	, R_ALPHA_GLOB_DAT},
+    {"Create PLT entry"			, "R_ALPHA_JMP_SLOT"	, R_ALPHA_JMP_SLOT},
+    {"Adjust by program base"		, "R_ALPHA_RELATIVE"	, R_ALPHA_RELATIVE},
+    {"Unknown"				, "R_ALPHA_TLS_GD_HI"	, R_ALPHA_TLS_GD_HI},
+    {"Unknown"				, "R_ALPHA_TLSGD"	, R_ALPHA_TLSGD},
+    {"Unknown"				, "R_ALPHA_TLS_LDM"	, R_ALPHA_TLS_LDM},
+    {"Unknown"				, "R_ALPHA_DTPMOD64"	, R_ALPHA_DTPMOD64},
+    {"Unknown"				, "R_ALPHA_GOTDTPREL"	, R_ALPHA_GOTDTPREL},
+    {"Unknown"				, "R_ALPHA_DTPREL64"	, R_ALPHA_DTPREL64},
+    {"Unknown"				, "R_ALPHA_DTPRELHI"	, R_ALPHA_DTPRELHI},
+    {"Unknown"				, "R_ALPHA_DTPRELLO"	, R_ALPHA_DTPRELLO},
+    {"Unknown"				, "R_ALPHA_DTPREL16"	, R_ALPHA_DTPREL16},
+    {"Unknown"				, "R_ALPHA_GOTTPREL"	, R_ALPHA_GOTTPREL},
+    {"Unknown"				, "R_ALPHA_TPREL64"	, R_ALPHA_TPREL64},
+    {"Unknown"				, "R_ALPHA_TPRELHI"	, R_ALPHA_TPRELHI},
+    {"Unknown"				, "R_ALPHA_TPRELLO"	, R_ALPHA_TPRELLO},
+    {"Unknown"				, "R_ALPHA_TPREL16"	, R_ALPHA_TPREL16},
+  };
+    
+   
 
 /* Relocation types strings for SPARC */
 elfshconst_t                    elfsh_rel_type_sparc[] = 
@@ -236,7 +530,39 @@ elfshconst_t                    elfsh_rel_type_sparc[] =
   {"Create PLT entry"               , "R_SPARC_JMP_SLOT"  , R_SPARC_JMP_SLOT},
   {"Adjust by program base"         , "R_SPARC_RELATIVE"  , R_SPARC_RELATIVE}, 
   {"Direct 32 bit unaligned"        , "R_SPARC_UA32"      , R_SPARC_UA32},
+  {"Direct 32 bits ref to PLT entry"    , "R_SPARC_PLT32"   , R_SPARC_PLT32},
+  {"High 22 bits PLT entry"             , "R_SPARC_HIPLT22" , R_SPARC_HIPLT22},
+  {"Truncated 10 bits PLT entry"        , "R_SPARC_LOPLT10" , R_SPARC_LOPLT10},
+  {"PC rel 32 bits ref to PLT entry"    , "R_SPARC_PCPLT32" , R_SPARC_PCPLT32},
+  {"PC rel high 22 bits PLT entry"      , "R_SPARC_PCPLT22" , R_SPARC_PCPLT22},
+  {"PC rel trunc 10 bits PLT entry"     , "R_SPARC_PCPLT10" , R_SPARC_PCPLT10},
+  {"Direct 10 bits"                     , "R_SPARC_10"      , R_SPARC_10},
+  {"Direct 11 bits"                     , "R_SPARC_11"      , R_SPARC_11},
+  {"Direct 64 bits"                     , "R_SPARC_64"      , R_SPARC_64},
+  {"10bit with secondary 13 bits addend", "R_SPARC_OLO10"   , R_SPARC_OLO10},
+  {"Top 22 bits of direct 64 bits"      , "R_SPARC_HH22"    , R_SPARC_HH22},
+  {"High middle 10 bits"                , "R_SPARC_HM10"    , R_SPARC_HM10},
+  {"Low middle 22 bits"                 , "R_SPARC_LM22"    , R_SPARC_LM22},
+  {"Top 22 bits of pc rel 64 bits"      , "R_SPARC_PC_HH22" , R_SPARC_PC_HH22},
+  {"High middle 10 bits"                , "R_SPARC_PC_HM10" , R_SPARC_PC_HM10},
+  {"Low miggle 22 bits"                 , "R_SPARC_PC_LM22" , R_SPARC_PC_LM22},
+  {"PC relative 16 bits shifted"        , "R_SPARC_WDISP16" , R_SPARC_WDISP16},
+  {"PC relative 19 bits shifted"        , "R_SPARC_WDISP19" , R_SPARC_WDISP19},
+  {"Direct 7 bits"                      , "R_SPARC_7"       , R_SPARC_7},
+  {"Direct 5 bits"                      , "R_SPARC_5"       , R_SPARC_5},
+  {"Direct 6 bits"                      , "R_SPARC_6"       , R_SPARC_6},
+  {"PC relative 64 bits"                , "R_SPARC_DISP64"  , R_SPARC_DISP64},
+  {"Direct 64 bits ref to PLT entry"    , "R_SPARC_PLT64"   , R_SPARC_PLT64},
+  {"High 22 bits complemented"          , "R_SPARC_HIX22"   , R_SPARC_HIX22},
+  {"Truncated 11 bits complemented"     , "R_SPARC_LOX10"   , R_SPARC_LOX10},
+  {"Direct high 12 of 44 bits"          , "R_SPARC_H44"     , R_SPARC_H44},
+  {"Direct mid 22 of 44 bits"           , "R_SPARC_M44"     , R_SPARC_M44},
+  {"Direct low 10 of 44 bits"           , "R_SPARC_L44"     , R_SPARC_L44},
+  {"Global register usage"              , "R_SPARC_REGISTER", R_SPARC_REGISTER},
+  {"Direct 64 bits unaligned"           , "R_SPARC_UA64"    , R_SPARC_UA64},
+  {"Direct 16 bits unaligned"           , "R_SPARC_UA16"    , R_SPARC_UA16},
 };
+
 
 
 
@@ -252,9 +578,9 @@ char			*elfsh_arch_type[] =
   "Intel 80486"          ,
   "Intel 80860"          ,
   "MIPS R3000 big-endian",
-  "Amdahl"               ,
-  "MIPS R4000 big-endian",
-  "RS6000"               ,
+  "IBM system 370"       ,
+  "MIPS R3000 lil-endian",
+  "Unknown"              ,
   "Unknown"              ,
   "Unknown"              ,
   "Unknown"              ,
@@ -264,8 +590,8 @@ char			*elfsh_arch_type[] =
   "Sun's v8plus"         ,
   "Intel 80960"          ,
   "PowerPC"              ,
-  "Unknown"              ,
-  "Unknown"              ,
+  "PowerPC 64 bits"      ,
+  "IBM S390"             ,
   "Unknown"              ,
   "Unknown"              ,
   "Unknown"              ,
@@ -279,11 +605,10 @@ char			*elfsh_arch_type[] =
   "Unknown"              ,
   "Unknown"              ,
   "Unknown"              ,
-  "Unknown"              ,
   "NEC V800 series"      ,
   "Fujitsu FR20"         ,
   "TRW RH32"             ,
-  "Fujitsu MMA"          ,
+  "Motorola RCE"         ,
   "ARM"                  ,
   "Digital Alpha"        ,
   "Hitachi SH"           ,

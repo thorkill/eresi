@@ -54,8 +54,8 @@ char	*str = "stop looking at me ! \n";
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
-  Elf32_Shdr	hdr;
-  Elf32_Shdr	unmapped_hdr;
+  elfsh_Shdr	hdr;
+  elfsh_Shdr	unmapped_hdr;
   elfshsect_t	*new;
   elfshsect_t	*unmapped_new;
   int		ret;
@@ -86,9 +86,7 @@ int		main(int argc, char **argv)
 
   /* Hijack puts */
   ret = elfsh_hijack_function_by_name(file,
-                                      ELFSH_HIJACK_TYPE_PLT |  
-                                      ELFSH_HIJACK_OS_ANY   |  
-                                      ELFSH_HIJACK_CPU_ANY, 
+                                      ELFSH_HIJACK_TYPE_PLT,
                                       "puts", new->shdr->sh_addr);
   if (ret < 0)
     goto err;

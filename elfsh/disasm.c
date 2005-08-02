@@ -2,42 +2,144 @@
 ** disasm.c for elfsh
 ** 
 ** Started on  Fri Nov  2 15:41:34 2001 mayhem
-** Last update Wed Jun 25 08:53:57 2003 mayhem
+**
 */
 #include "elfsh.h"
 
 
+static elfshlist_t* second = NULL;
+
+/* Resolve symbol in one file or all (mapped) if we are in e2dbg */
+char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roffset)
+{
+  elfshobj_t	*actual;
+  char		*name = NULL;
+  char		*dname = NULL;
+  elfsh_SAddr	offset = 0;
+  elfsh_SAddr	doffset = 0;
+
+  char		*bestname = NULL;
+  elfsh_SAddr	bestoffset;
+  elfshobj_t	*bestfile;
+  char		buf[BUFSIZ];
+  
+  char		*str;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* XXX: ELFSH_PROFILE_ERR */
+  if (!file)
+    return (NULL);
+
+  actual = file;
+  name = elfsh_reverse_symbol(actual, addr, &offset);
+  dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+
+  if (!name || (dname && !strcmp(name, ELFSH_SECTION_NAME_PLT)) || 
+      (offset < 0) || (dname && doffset < offset && doffset >= 0))
+    {
+      name = dname;
+      offset = doffset;
+    }  
+  
+  bestname = name;
+  bestoffset = offset;
+  bestfile = actual;
+  
+
+#if __DEBUG_RESOLVE__
+  if (addr < 0x1000)
+    printf("[elfsh:resolve] file : %s name %s %d\n", actual->name, name, offset);
+#endif
+  
+  /* Find the best symbol by searching in all the objects of the process */
+  if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+    for (actual = world.curjob->list; actual != NULL; actual = actual->next)
+      {  
+	if (!actual->linkmap)
+	  continue;
+
+	name = elfsh_reverse_symbol(actual, addr, &offset);
+	dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+
+	if (!name || (offset < 0) || (dname && doffset < offset && doffset >= 0))
+	  {
+	    name = dname;
+	    offset = doffset;
+	  }  
+
+	if (!bestname || (bestoffset < 0) || (name && offset < bestoffset && offset >= 0))
+	  {
+	    bestname = name;
+	    bestoffset = offset;
+	    bestfile = actual;
+	  }
+
+#if __DEBUG_RESOLVE__
+  if (addr < 0x1000)
+	printf("[elfsh:resolve] file : %s name %s %d\n", 
+	       actual->name, name, offset);
+#endif
+ 
+      }
+  
+#if __DEBUG_RESOLVE__
+  if (addr < 0x1000)
+    printf("[elfsh:resolve] BEST name %s %d\n", bestname, bestoffset);
+#endif
+
+  if (roffset)
+    *roffset = bestoffset;
+  
+  if (bestname == NULL)
+    return (NULL);
+
+  if (elfsh_is_debug_mode())
+    {
+      str = vm_basename(bestfile->name);
+      snprintf(buf, BUFSIZ, "%s@%s", 
+	       bestname, (str ? str : "CORRUPTED"));
+    }
+  else
+    snprintf(buf, BUFSIZ, "%s", bestname);
+  
+  return (strdup(buf));
+}
 
 
-#if defined(USE_LIBASM)
 /* Symbol resolving handler for libasm */
 void		do_resolve(void *data, u_int vaddr, char *buf, u_int maxlen)
 {
   elfshobj_t	*file;
   elfshsect_t	*parent;
   char		*name;
-  int		off;
+  elfsh_SAddr	off;
   int		len;
 
 #if __DEBUG_DISASM__
-  printf("[DEBUG_DISASM:do_resolve] Resolving 0x%08X ... \n", vaddr);
+  char	logbuf[BUFSIZ];
+  
+  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_DISASM:do_resolve] Resolving 0x%08X ... \n", vaddr);
 #endif
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Retreive the nearest symbol */
   file = data;
   parent = elfsh_get_parent_section(file, vaddr, 0);
   if (NULL != parent && NULL != parent->shdr->sh_addr)
     {
-      name = elfsh_reverse_metasym(file, vaddr, &off);      
+      //      name = elfsh_reverse_metasym(file, vaddr, &off);      
+      name = vm_resolve(file, vaddr, &off);      
 #if __DEBUG_DISASM__
-      printf("[DEBUG_DISASM:do_resolve] Found parent section %s \n", parent->name);
+     snprintf(logbuf, BUFSIZ - 1, "[DEBUG_DISASM:do_resolve] Found parent section %s \n", parent->name);
 #endif
     }
   else
     name = NULL;
 
 #if __DEBUG_DISASM__
-  printf("[DEBUG_DISASM:do_resolve] Resolved *%s* \n", name);
+ snprintf(logbuf, BUFSIZ - 1, "[DEBUG_DISASM:do_resolve] Resolved *%s* \n", name);
 #endif
 
   /* Print the symbol name in 'buf' so that libasm can print it */
@@ -48,7 +150,7 @@ void		do_resolve(void *data, u_int vaddr, char *buf, u_int maxlen)
 		     (off > 0 ? " + " : off < 0 ? " - " : ""),
 		     (off ? "" : ">"));
       if (off)
-	snprintf(buf + len, maxlen - len -  1, "%u>", off);
+	snprintf(buf + len, maxlen - len -  1, "%u>", (u_int)off);
     }
   else
     snprintf(buf, maxlen - 1, "%X", vaddr);
@@ -63,7 +165,8 @@ void		do_resolve(void *data, u_int vaddr, char *buf, u_int maxlen)
 
 /* Display an instruction */
 u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset, 
-			      u_int size, char *name, u_int nindex, char *buff)
+			      u_int size, char *name, u_int nindex, char *buff,
+			      char *bigbuf, u_int *biglen)
 {
   char		*s;
   char		buf[256];
@@ -71,41 +174,64 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
   u_int		ret;
   asm_instr	ptr;
   char		base[16] = "0123456789ABCDEF";
- 
+
+  char		logbuf[BUFSIZ];
+
+
+#define	BIGBUFSZ (BUFSIZ * 64)
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
   ret = asm_read_instr(&ptr, buff + index, size - index + 10, &world.proc);
   s = (!ret ? "(bad)" : 
        asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
-  
-  /* Are we in quiet mode ? */
-  if (world.state.vm_quiet)
+  if (fd == -1)
     {
-      snprintf(buf, sizeof(buf), " %08X %s + %u", vaddr + index, name, nindex);
-      dprintf(fd, "%-40s %-30s ", buf, s);
+
+      /* Are we in quiet mode ? */
+      if (world.state.vm_quiet)
+	{
+	  snprintf(buf, sizeof(buf), " %08X %s + %u", vaddr + index, name, nindex);
+	  size = snprintf(logbuf, BUFSIZ - 1, "%-40s %-30s ", buf, s);
+
+	  *biglen += snprintf(bigbuf + *biglen, BIGBUFSZ - *biglen, "%s", logbuf);
+	}
+      else
+	{
+	  snprintf(buf, sizeof(buf), " %08X [foff: %u] %s + %u", 
+		   vaddr + index, foffset + index, name, nindex);
+	  size = snprintf(logbuf, BUFSIZ - 1, "%-60s %-50s ", buf, s);
+
+	  *biglen += snprintf(bigbuf + *biglen, BIGBUFSZ - *biglen, "%s\n", logbuf);
+	}
+      
+      /* Print bytes in hexa for this instruction */
+      ret = asm_instr_len(&ptr);
+      if (!ret)
+	ret++;
+
+      if (!world.state.vm_quiet)
+	for (idx_bytes = 0; idx_bytes < ret; idx_bytes++)
+	  size += snprintf(logbuf + size, sizeof(logbuf) - size, "%c%c ", 
+			   base[(buff[index + idx_bytes] >> 4) & 0x0F], 
+			   base[buff[index + idx_bytes] & 0x0F]);
+      
+      if ((world.curjob->curcmd->use_regx[1] == 0) || !regexec(&second->name, logbuf, 0, 0, 0))
+	{
+	  vm_output(logbuf);
+	  vm_output("\n");
+	}
+
+
     }
   else
-    {
-      snprintf(buf, sizeof(buf), " %08X [foff: %u] %s + %u", 
-	      vaddr + index, foffset + index, name, nindex);
-      dprintf(fd, "%-60s %-50s ", buf, s);
-    }
-  
-  /* Print bytes in hexa for this instruction */
-  ret = asm_instr_len(&ptr);
-  if (!ret)
-    ret++;
-  
-  if (!world.state.vm_quiet)
-    for (idx_bytes = 0; idx_bytes < ret; idx_bytes++)
-      dprintf(fd, "%c%c ", 
-	     base[(buff[index + idx_bytes] >> 4) & 0x0F], 
-	     base[buff[index + idx_bytes] & 0x0F]);
-  dprintf(fd, "\n");
+    write(fd, s, strlen(s));
+
+#undef BIGBUFSZ
+
   return (ret);
 }
-#endif	/* USE_LIBASM */
-
 
 
 
@@ -114,21 +240,27 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
 
 
 /* Disassemble a function */
-int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
-				 u_int off, u_int foffset, u_int vaddr, 
-				 char *name, char otype)
+int             display_object(elfshobj_t *file, elfsh_Sym *sym, int size,
+			       u_int off, u_int foffset, u_int vaddr, 
+			       char *name, char otype)
 {
   char		*buff;
   u_int		index;
-  u_int		idx_bytes;
+  elfsh_SAddr   idx_bytes;
   char		buf[256];
   char		base[16] = "0123456789ABCDEF";
   u_int		loff;
   char		str[256];
   elfshsect_t	*sect;
   char		*s;
-  u_int		sct_index;
+  elfsh_SAddr	sct_index;
   u_int		ret;
+  char		logbuf[BUFSIZ];
+
+  char		bigbuf[BUFSIZ * 64];
+  unsigned int	biglen = 0;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Special case if the symbol is a plt entry */
   if (sym && elfsh_is_pltentry(file, sym) == 1 && size > ELFSH_PLT_ENTRY_SIZE)
@@ -136,17 +268,19 @@ int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
   XALLOC(buff, size + 16, -1);
 
 #if __DEBUG_DISASM__
-  printf("[debug:display_object] %s off(%u) size(%u) vaddr(%08X) foffset(%u)\n", 
-	 name, off, size, vaddr, foffset);
+ snprintf(logbuf, BUFSIZ - 1, "[debug:display_object] %s off(%u) size(%u) vaddr(%08X) foffset(%u), off(%u) \n", 
+	 name, off, size, vaddr, foffset, off);
+ vm_output(logbuf);
 #endif
 
   /* Read raw data in the file */
   if (elfsh_raw_read(file, foffset, buff, size + 16) < 0)
     {
-      elfsh_error();
       free(buff);
-      printf(" [!] Cant read data for block %s (vaddr %08X, foff %u, size %u) \n\n", 
-	     name, vaddr, foffset, size + 16);
+      snprintf(logbuf, BUFSIZ - 1, 
+	       " [!] Cant read data for block %s (vaddr %08X, foff %u, size %u) \n\n", 
+	       name, vaddr, foffset, size + 16);
+      vm_output(logbuf);
       return (-1);
     }
 
@@ -168,6 +302,8 @@ int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
 			 elfsh_get_foffset_from_vaddr(file, vaddr + index * 4),
 			 &loff, sizeof(long));
 	  snprintf(buf, sizeof(buf), " %08X [foff: %u] \t %s[%0*u] = %08X", 
+		   elfsh_is_debug_mode() ? 
+		   file->base + vaddr + index * sizeof(long) :
 		   vaddr + index * sizeof(long), 
 		   foffset + index * sizeof(long), 
 		   name, 
@@ -199,15 +335,15 @@ int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
 		    idx_bytes = 0;
 		}
 	      if (idx_bytes)
-		snprintf(str, sizeof(str), "%s + %u", s, idx_bytes);
+		snprintf(str, sizeof(str), "%s + %u", s, (u_int) idx_bytes);
 	      else
 		snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
-	      printf("%-75s %s \n", buf, str);
+	      snprintf(logbuf, BUFSIZ - 1, "%-75s %s \n", buf, str);
 	    }
 	  
 	  /* If yes, print the pointed data too */
 	  else
-	    printf("%-75s \"%s\" \n", buf, str);
+	    snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
 	}
     }
 
@@ -215,19 +351,28 @@ int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
 
   /* We want asm + hexa output of the code */
   else if (otype == ELFSH_DISASM_VIEW)
-#if defined(USE_LIBASM)
-    while (index < size)
-      index += display_instr(1, index, vaddr, foffset, size, name, index, buff);
-#else
-  printf(" [!] LIBASM unavailable in this version, cant disasm %s\n",
-	 (name != NULL && *name ? name : ELFSH_NULL_STRING));
-#endif
+    {
+      if (elfsh_is_debug_mode())
+	vaddr += file->base;
 
+      while (index < size)
+	index += display_instr(-1, index, vaddr, foffset, size, name, 
+			       index, buff, bigbuf, &biglen);
 
+      //if ((world.curjob->curcmd->use_regx[1] == 0) || !regexec(&second->name, bigbuf, 0, 0, 0))
+      //vm_output(bigbuf);
+
+      if (world.curjob->curcmd->use_regx[1] == 0)
+	vm_output("\n [*] No binary pattern was specified \n");
+
+    }
 
   /* We want hexa + ascii output of the data */
   else if (ELFSH_HEXA_VIEW == otype)
     {
+
+      if (elfsh_is_debug_mode())
+	vaddr += file->base;
 
       if (name == NULL || !*name)
 	name = ELFSH_NULL_STRING;
@@ -240,45 +385,58 @@ int             display_object(elfshobj_t *file, Elf32_Sym *sym, int size,
 	    {
 	      sprintf(buf, " %08X %s + %u", 
 		      vaddr + index, name, index);
-	      printf("%-40s ", buf);
+	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
+	      vm_output(logbuf);
 	    }
 	  else
 	    {
 	      sprintf(buf, " %08X [foff: %08u] %s + %u", 
 		      vaddr + index, foffset + index, name, index);
-	      printf("%-60s ", buf);
+
+	      //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "%s", logbuf);
+	      //vm_output(logbuf);
+
+	      snprintf(logbuf, BUFSIZ - 1, "%-60s ", buf);
+
+	      //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "%s", logbuf);
+
+	      vm_output(logbuf);
 	    }
-	  fflush(stdout);
 
 	  ret = (world.state.vm_quiet ? 8 : 16);
 
 	  /* Print hexa */
 	  for (loff = 0; loff < ret; loff++)
 	    {
-	      printf("%c%c ", 
-		     (index + loff < size ? 
-		      (base[(buff[index + loff] >> 4) & 0x0F]) : ' '),
-		     (index + loff < size ? 
-		      (base[(buff[index + loff] >> 0) & 0x0F]) : ' '));
-	      fflush(stdout);
+	      snprintf(logbuf, BUFSIZ - 1, "%c%c ", 
+		       (index + loff < size ? 
+			(base[(buff[index + loff] >> 4) & 0x0F]) : ' '),
+		       (index + loff < size ? 
+			(base[(buff[index + loff] >> 0) & 0x0F]) : ' '));
+	      vm_output(logbuf);	     
 	    }
 
 	  /* Print ascii */
 	  for (loff = 0; loff < ret; loff++)
 	    {
-	      putchar(index + loff >= size ? ' ' : 
-		      PRINTABLE(buff[index + loff]) ? buff[index + loff] : '.');
-	      fflush(stdout);
+	      char	c[2];
+
+	      c[0] = buff[index + loff];
+	      c[1] = 0x00;
+	      vm_output(index + loff >= size ? " " :
+			PRINTABLE(buff[index + loff]) ? 
+			c : ".");
 	    }
 
-	  puts("");
+	  //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "\n");
+	  vm_output("\n");
 	  index += ret;
 
 	}
     }
 
   free(buff);
-  puts("");
+  vm_output("\n");
   return (0);
 }
 
@@ -298,18 +456,22 @@ int		display_section(elfshobj_t	*file,
 				u_int		reqsize, 
 				char		otype)
 {
-  Elf32_Sym	*actual;
+  elfsh_Sym	*actual;
   int		size;
   int		index;
-  int		offset;
+  elfsh_SAddr  	offset;
   int		tot;
   char		*symname;
+  char		logbuf[BUFSIZ];
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Hello message ;) */
-  printf(" [*] Analysing section %s [*] \n\n", name);
+  snprintf(logbuf, BUFSIZ - 1, " [*] Analysing section %s [*] \n\n", name);
+  vm_output(logbuf);
   actual = elfsh_get_symtab(file, &size);
   tot = 0;
-  if (s && !s->data)
+  if (s && !elfsh_get_raw(s))
     elfsh_get_anonymous_section(file, s);
   
   /* Display all symbols pointing in the section */
@@ -319,10 +481,10 @@ int		display_section(elfshobj_t	*file,
 	{
 	  symname = elfsh_get_symbol_name(file, actual + index);
 	  display_object(file, actual + index, 
-			   (reqsize ? reqsize : actual[index].st_size), off,
-			   s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr,
-			   actual[index].st_value, symname, otype);
-
+			 (reqsize ? reqsize : actual[index].st_size), off,
+			 s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr,
+			 actual[index].st_value, symname, otype);
+	  
 	  tot++;
 	}
 
@@ -351,40 +513,49 @@ int             cmd_disasm()
   elfshlist_t	*actual;
   elfshsect_t	*s;
   elfshobj_t	*file;
-  Elf32_Sym	*sym;
+  elfsh_Sym	*sym;
   char		*name;
   int		index;
   int		off;
   int		matchs;
   u_int		vaddr;
+  char		logbuf[BUFSIZ];
   char		special = 0; /* foffset or vaddr form */
 
-  elfsh_get_symtab(world.current, NULL);
-  elfsh_get_dynsymtab(world.current, NULL);
-  puts("");
+  unsigned int	saved_size;
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  elfsh_get_symtab(world.curjob->current, NULL);
+  elfsh_get_dynsymtab(world.curjob->current, NULL);
+  vm_output("\n");
 
   /* now walk the regex list for this option */
-  actual = &world.args.disasm;
+  actual = world.curjob->curcmd->disasm + 0;
+  second = world.curjob->curcmd->disasm + 1;
   matchs = vaddr = 0;
-  file = world.current;
+  file = world.curjob->current;
 
   /* If the regex contains a vaddr instead of a symbol name */
-  if (IS_VADDR(actual->rname))
+  if (actual->rname)
     {
-      if (sscanf(actual->rname + 2, "%X", &vaddr) != 1)
-	ELFSH_SETERROR("[elfsh:cmd_disasm] Invalid virtual address requested\n", 
-		       -1);
-      special = 1;
-    }
+      if (IS_VADDR(actual->rname))
+	{
+	  if (sscanf(actual->rname + 2, "%X", &vaddr) != 1)
+	    ELFSH_SETERROR("[elfsh:cmd_disasm] Invalid virtual address requested\n", 
+			   -1);
+	  special = 1;
+	}
   
-  /* else if it contains a file offset */
-  else if (isdigit((int) *actual->rname))
-    {
-      vaddr = elfsh_get_vaddr_from_foffset(file, atoi(actual->rname));
-      if (vaddr == 0xFFFFFFFF && sscanf(actual->rname + 2, "%X", &vaddr) != 1)
-	ELFSH_SETERROR("[elfsh:cmd_disasm] Invalid file offset requested\n",
-		       -1);
-      special = 1;
+      /* else if it contains a file offset */
+      else if (isdigit((int) *actual->rname))
+	{
+	  vaddr = elfsh_get_vaddr_from_foffset(file, atoi(actual->rname));
+	  if (vaddr == 0xFFFFFFFF && sscanf(actual->rname + 2, "%X", &vaddr) != 1)
+	    ELFSH_SETERROR("[elfsh:cmd_disasm] Invalid file offset requested\n",
+			   -1);
+	  special = 1;
+	}
     }
   
   /* If one of those special regex matched */
@@ -392,9 +563,11 @@ int             cmd_disasm()
     {
       sym = elfsh_get_symbol_by_value(file, vaddr, &off,
 				      ELFSH_LOWSYM);
-      if (sym == NULL)
+      
+      /*if (sym == NULL)
 	sym = elfsh_get_symbol_by_value(file, vaddr, &off,
-					ELFSH_HIGHSYM);
+	ELFSH_HIGHSYM);*/
+
       if (sym == NULL)
 	ELFSH_SETERROR("[elfsh] No matching symbol for offset\n", -1);
       actual->off += off;
@@ -403,11 +576,10 @@ int             cmd_disasm()
       actual->size += actual->off;
       name = elfsh_get_symbol_name(file, sym);
       matchs++;
-
+      
 #if __DEBUG_DISASM__
-      fprintf(stderr, 
-	      "[debug_disasm:cmd_disasm] Found special regx (%s) \n", 
-	      name);
+     snprintf(logbuf, BUFSIZ - 1, "[debug_disasm:cmd_disasm] Found special regx (%s) \n", name);
+     vm_output(logbuf);
 #endif
 
       display_object(file, sym, actual->size, actual->off,
@@ -427,9 +599,9 @@ int             cmd_disasm()
       matchs++;
       
 #if __DEBUG_DISASM__
-      fprintf(stderr, 
-	      "[debug_disasm:cmd_disasm] Found section regx (%s) \n", 
-	      name);
+     snprintf(logbuf, BUFSIZ - 1, 
+	      "[debug_disasm:cmd_disasm] Found section regx (%s) \n", name);
+     vm_output(logbuf);
 #endif
       
       display_section(file, s, name, actual->off, 
@@ -437,11 +609,11 @@ int             cmd_disasm()
 		      actual->otype);
     }
   
-  
+  saved_size = actual->size;
   /* Now find matches in the symbol table .symtab */
   if (file->secthash[ELFSH_SECTION_SYMTAB] != NULL)
     for (sym = file->secthash[ELFSH_SECTION_SYMTAB]->altdata, index = 0; 
-	 index < file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(Elf32_Sym); 
+	 index < file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(elfsh_Sym); 
 	 index++)
       {
 	name = elfsh_get_symbol_name(file, sym + index);
@@ -454,22 +626,24 @@ int             cmd_disasm()
 	    actual->size += actual->off;
 
 #if __DEBUG_DISASM__
-	    fprintf(stderr, 
-		    "[debug_disasm:cmd_disasm] Found symbol regx (%s) \n",
-		    name);
+	    snprintf(logbuf, BUFSIZ - 1, 
+		     "[debug_disasm:cmd_disasm] Found symbol regx (%s) as=(%i)\n", 
+		     name, actual->size);
+	    vm_output(logbuf);
 #endif
 
 	    display_object(file, sym + index, actual->size, actual->off,
 			     elfsh_get_foffset_from_vaddr(file, sym[index].st_value),
 			     sym[index].st_value, name, actual->otype);
+	    actual->size = saved_size;
 	  }
       }
   
 
   /* Now find matches in the dynamic symbol table .dynsym */
   if (file->secthash[ELFSH_SECTION_DYNSYM] != NULL)
-    for (sym = file->secthash[ELFSH_SECTION_DYNSYM]->altdata, index = 0; 
-	 index < file->secthash[ELFSH_SECTION_DYNSYM]->shdr->sh_size / sizeof(Elf32_Sym); 
+    for (sym = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]), index = 0; 
+	 index < file->secthash[ELFSH_SECTION_DYNSYM]->shdr->sh_size / sizeof(elfsh_Sym); 
 	 index++)
       {
 	name = elfsh_get_dynsymbol_name(file, sym + index);
@@ -482,9 +656,9 @@ int             cmd_disasm()
 	    actual->size += actual->off;
 
 #if __DEBUG_DISASM__
-	    fprintf(stderr, 
-		    "[debug_disasm:cmd_disasm] Found dynsym regx (%s) \n",
-		    name);
+	   snprintf(logbuf, BUFSIZ - 1, 
+		    "[debug_disasm:cmd_disasm] Found dynsym regx (%s) \n", name);
+	   vm_output(logbuf);
 #endif
 
 	    display_object(file, sym + index, 
@@ -496,6 +670,12 @@ int             cmd_disasm()
   
   /* Printing a warning message if we have no match */
   if (!world.state.vm_quiet && !matchs)
-    fprintf(stderr, "[elfsh] No match for request %s\n\n", actual->rname);
+    {
+      snprintf(logbuf, BUFSIZ - 1, "[elfsh] No match for request %s\n\n", actual->rname);
+      vm_output(logbuf);
+    }
   return (0);
 }
+
+
+

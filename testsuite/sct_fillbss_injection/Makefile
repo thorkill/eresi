@@ -5,14 +5,16 @@
 ## Last update Sun Dec 15 01:56:15 2002 mayhem
 ##
 
+include ../../config.h
+
 SRC	= section_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libhash -lhashelfsh
 NAM	= sct_injecter
 RM	= rm -f 
 VULN	= main.c
-OPT	= -g3 -O2 -I../../libelfsh/include/
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include/ $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

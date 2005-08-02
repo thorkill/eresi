@@ -12,7 +12,7 @@
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;
-  Elf32_Sym	*new_sleep;
+  elfsh_Sym	*new_sleep;
   int		ret;
 
   file = elfsh_map_obj(TROJANED_FILE);

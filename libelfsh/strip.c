@@ -14,45 +14,28 @@
 /* Tell elfsh to strip all unmapped sections */
 int		elfsh_strip(elfshobj_t *file)
 {
-  elfshsect_t	*unmapped1;
-  elfshsect_t	*shstrtab;
-  /* char		*name; */
+  elfshsect_t	*bss;
+  elfshsect_t	*next;
 
-  if (file == NULL || file->sectlist == NULL)
-    ELFSH_SETERROR("[libelfsh:strip] Invalid NULL parameter\n", -1);
+  bss = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_BSS,
+				  NULL, NULL, NULL);
+  if (file == NULL || file->sectlist == NULL || bss == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", -1);
 
-  /* XXX: strip buggy, put it implemented */
-  return (0);
-
-  /* Get elfshsect_t for .shstrtab */
-  shstrtab = elfsh_get_section_by_index(file, 
-					file->hdr->e_shstrndx,
-					NULL,
-					NULL);
-  
-  /* Find the first unmapped section which is not .shstrtab */
-  unmapped1 = file->sectlist; 
-  while (unmapped1 && unmapped1->shdr->sh_addr == NULL && 
-	 unmapped1->index != file->hdr->e_shstrndx)
-    unmapped1 = unmapped1->next;
-
-  /* Swap sections headers if act is before shstrtab */
-  if (unmapped1->shdr->sh_offset < shstrtab->shdr->sh_offset)
+  while (bss->shdr->sh_addr)
+    bss = bss->next;
+  while (bss)
     {
-      shstrtab->shdr->sh_offset = unmapped1->shdr->sh_offset;
-      *unmapped1->shdr = *shstrtab->shdr;
-    }
-  
-  /* Erase all unmapped sections */
-  unmapped1 = shstrtab->next;
-  for (shstrtab->next = NULL; unmapped1; unmapped1 = unmapped1->next)
-    {
-      free(unmapped1->data);
-      file->hdr->e_shnum--;
-      bzero(&file->sht[unmapped1->index], file->hdr->e_shentsize);
+      next = bss->next;
+      if (bss->index != file->hdr->e_shstrndx &&
+	  elfsh_remove_section(file, bss->name))
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to remove section", -1);
+      bss = next;
     }
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

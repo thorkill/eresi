@@ -8,14 +8,16 @@
 ## Last update Sun Dec 15 01:55:25 2002 mayhem
 ##
 
+include ../../config.h
+
 SRC	= dtors_hijack.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libhash/ -lhashelfsh
 NAM	= dtors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -g3 -O2 -I../../libelfsh/include
+OPT	= -g3 -O2 -I../../libelfsh/include -I../../libhash/include/ $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

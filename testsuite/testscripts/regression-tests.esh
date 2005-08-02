@@ -17,7 +17,7 @@ info
 # quiet
 
 # Now load the files
-load 	/usr/bin/elfsh
+load 	../../vm/elfsh
 load 	/lib/libc.so.6
 list
 switch 1 

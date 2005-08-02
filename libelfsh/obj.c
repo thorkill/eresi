@@ -12,14 +12,17 @@ elfshobj_t		*elfsh_load_obj(char *name)
 {
   elfshobj_t	*file;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   XALLOC(file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
   file->name = strdup(name);
   file->hdr = elfsh_get_hdr(file);
   file->rights = O_RDONLY;
   if (file->hdr == NULL || file->name == NULL)
-    return (NULL);
-  return (file);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get ELF header", NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
 
 
@@ -30,16 +33,25 @@ void		elfsh_unload_obj(elfshobj_t *file)
   elfshsect_t	*sect;
   elfshsect_t	*next;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  free(file->hdr);
   free(file->pht);
   free(file->sht);
   for (sect = file->sectlist; sect; sect = next)
     {
       free(sect->data);
+      if (sect->altdata)
+	free(sect->altdata);
+      if (sect->terdata)
+	free(sect->terdata);
       free(sect->name);
       next = sect->next;
       free(sect);
     }
-  close(file->fd);
+  if (file->fd)
+    close(file->fd);
   free(file->name);
   free(file);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

@@ -1,0 +1,125 @@
+
+                   .:| DUMP v0a3 |:.
+
+  Created on Mon Feb  7 16:38:21 2005 ym
+  Updated on Wed Mar 16 20:38:38 2005 ym
+
+:\ New direction ;/
+Instead of building a tree on top of existing connections we will use an 
+ad-hoc like routing protocol (very similar to Direct Source Routing)
+
+:\ Node knowledge :/
+Type socket
+Type id
+Type pkt_id
+Type port = (socket, id)
+Var myids = list of id
+Var ports = list of port 
+Enum MsgType = ...
+Var RRrecentlyUsed = list of (pkt_id)
+Var RrrecentlyUsed = list of (pkt_id)
+
+:\ Types of Messages /:
+- <RR,  src (id), path (list of id), dest (id), pkt_id, size = 0, data> : Route Request
+- <Rr,  src (id), path (list of id), dest (id), pkt_id, size = 0, data> : Route reply
+- <MSG, src (id), path (list of id), dest (id), pkt_id, size    , data> : Legacy Message
+
+
+:\ States /:
+- M : main state (listening state)
+- R : handle RR messages -> receive_RR(src, path, dest)
+- r : handle Rr messages -> receive_Rr(src, path, dest)
+              
+
+:\ Automaton /:		      
+                       
+                        |-[Rr received]--> r
+	              M |-[RR received]--> R
+                        |-[...]----------> ??
+
+		
+:\ Functions /:
+(for process i)
+
+== receive_RR : ==
+if (<src, dest> "in" RRrecentlyUsed)
+{
+   // nothing 
+}	
+else
+{
+   RRrecentlyUsed = RRrecentlyUsed + <src, dest, timestamp>
+   /* we are the destination */
+   if (dest == i)
+   {
+     /* get the previous node in the path */
+     prev = last (path)
+     /* send route reply */
+     send (<Rr, i, path+i, src>, prev)
+   }
+   /* we are only a node */
+   else
+   {
+     /* don't forward to sender */
+     forall (j "in" Ports\{last(path)})
+     {
+	send (<RR, src, path+i, dest>, j)
+     }
+   }
+}
+
+== receive_Rr: ==
+if (<src, dest> "in" RrrecentlyUsed)
+{
+   // nothing 
+}	
+else
+{
+   RrrecentlyUsed = RrrecentlyUsed + <src, dest, timestamp>
+   /* we are the destination */
+   if (dest == i)
+   {
+      // we received a path to the requested destination
+   }
+   /* we are only a node */
+   else
+   {
+      next = next (path, i);
+      send (<Rr, src, path, dest>, next)
+   }
+}
+
+== get_route (dest) ==
+/* create the first RR message and send it */
+recentlySeen = recentlySeen + <RR, src, dest, timestamp>
+forall (j "in" Ports)
+{ 
+   send (<RR, i, i, dest>, j)
+}
+// wait for an Rr, the first for exemple or the shorter or whatever
+
+== clean_recentlyUsed (date) ==
+/* clean the recentlyUsed table */
+forall (j "in" recentlyUsed)
+{
+   if (j.timestamp < date)
+     remove(j);
+}
+
+== last (path) ==
+/* return the last element (id) of the given path */
+
+== next (path, i) ==
+/* return the next node to i in the path */
+
+
+:\ Questions/Notes /:
+- what else ?
+ -> how to ensure communication reliability ?
+
+
+
+
+
+
+

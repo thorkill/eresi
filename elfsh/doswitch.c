@@ -2,29 +2,63 @@
 ** doswitch.c for elfsh
 ** 
 ** Started on  Sat Jan 25 11:20:49 2003 mayhem
-** Last update Wed Feb 26 15:56:41 2003 mayhem
 */
 #include "elfsh.h"
+
+/* Do the switch */
+int		vm_doswitch(int nbr)
+{
+  elfshobj_t	*actual; 
+
+  actual = (nbr ? vm_getfile(nbr) : 
+	    hash_get(&file_hash, world.curjob->curcmd->param[0]));
+					     
+  if (actual == NULL)
+    return (-1);
+    
+  world.curjob->current = actual;
+
+  if (!actual->linkmap)
+    elfsh_set_static_mode();
+
+
+  return (0);
+}
 
 
 /* Change the current object */
 int		cmd_doswitch()
 {
-  elfshobj_t	*actual;
+  char		logbuf[BUFSIZ];
+  int		ret;
   int		nbr;
 
-  if (world.args.param[0] == NULL)
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (world.curjob->curcmd->param[0] == NULL)
     return (-1);
-  nbr = atoi(world.args.param[0]);
-  actual = (nbr ? vm_getfile(nbr) : hash_get(&file_hash, world.args.param[0]));
-  if (actual == NULL)
+  nbr = atoi(world.curjob->curcmd->param[0]);
+
+  ret = vm_doswitch(nbr);
+
+  if (ret < 0)
     {
-      printf("\n [!] Cant switch on file object %s (use 'list') \n\n", 
-	     world.args.param[0]);
-      return (-1);
+      snprintf(logbuf, BUFSIZ - 1,
+	       "\n [!] Cant switch on file object %s (use 'list') \n\n", 
+	       world.curjob->curcmd->param[0]);
+      vm_output(logbuf);
     }
-  
-  printf("\n [*] Switched on object %u (%s) \n\n", actual->id, actual->name);
-  world.current = actual;
-  return (0);
+  else
+    {
+      snprintf(logbuf, BUFSIZ - 1, "\n [*] Switched on object %u (%s) \n\n",
+	       world.curjob->current->id, world.curjob->current->name);
+      vm_output(logbuf);
+      if (!world.curjob->current->linkmap)
+	vm_output("\n [!!] Loaded file is not the linkmap, "
+		  "switching to STATIC mode\n\n");
+
+    }
+
+
+  return (ret);
 }

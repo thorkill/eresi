@@ -17,21 +17,35 @@ int		elfsh_raw_write(elfshobj_t	*file,
   elfshsect_t	*sect;
   int		sect_off;
   void		*dst;
+  //int		prot;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid virtual address\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid virtual address", -1);
 
   sect_off = foffset - sect->shdr->sh_offset;
   if (sect_off + len > sect->shdr->sh_size)
-    ELFSH_SETERROR("[libelfsh] Section too short\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Section too short", -1);
 
   dst = elfsh_get_anonymous_section(file, sect);
   if (dst == NULL)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  if (elfsh_is_debug_mode())
+    {
+      //prot = elfsh_munprotect(dst + sect_off, len);
+      memcpy(dst + sect_off, src_buff, len);
+      //elfsh_mprotect(dst + sect_off, len, prot);
+    }
+  else
+    memcpy(dst + sect_off, src_buff, len);
+
   
-  memcpy(dst + sect_off, src_buff, len);
-  return (len);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
 
 
@@ -43,36 +57,41 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   void		*src;
   int		sect_off;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid virtual address\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid virtual address", -1);
 
   sect_off = foffset - sect->shdr->sh_offset;
-
   if (sect_off + len > sect->shdr->sh_size)
     len -= (sect_off + len - sect->shdr->sh_size);
   
   src = elfsh_get_anonymous_section(file, sect);
   if (src == NULL)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   memcpy(dest_buff, src + sect_off, len);
-  return (len);
-
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
 
 
 /* Retreive the file offset from the virtual address */
-int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, u_int vaddr)
+int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
 {
   elfshsect_t	*actual;
   
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!vaddr)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   for (actual = file->sectlist; actual; actual = actual->next)
-    if (INTERVAL(actual->shdr->sh_addr, vaddr, actual->shdr->sh_addr + actual->shdr->sh_size))
-      return (actual->shdr->sh_offset + (vaddr - actual->shdr->sh_addr));
-  return (0);
+    if (INTERVAL(actual->shdr->sh_addr, vaddr, 
+		 actual->shdr->sh_addr + actual->shdr->sh_size))
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (actual->shdr->sh_offset + (vaddr - actual->shdr->sh_addr)));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -81,8 +100,11 @@ int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset)
 {
   elfshsect_t	*root;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   root = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (root)
-    return (root->shdr->sh_addr + (foffset - root->shdr->sh_offset));
-  return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       (root->shdr->sh_addr + (foffset - root->shdr->sh_offset)));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

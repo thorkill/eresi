@@ -2,7 +2,6 @@
 ** symbol.c for libelfsh
 **
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
-** Last update Fri Aug 15 23:46:54 2003 jv
 */
 #include "libelfsh.h"
 
@@ -14,27 +13,31 @@
 ** No special case for SECTION symbol because the section names strings
 ** have been duplicated in the symbol table.
 */
-char		*elfsh_get_symbol_name(elfshobj_t *file, Elf32_Sym *s)
+char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
-  char		*str;
+  void		*data;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || s == NULL)
-    ELFSH_SETERROR("[libelfsh:get_symbol_name] Invalid NULL parameter\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
 
   /* Load symtab if needed */
   if (file->secthash[ELFSH_SECTION_SYMTAB] == NULL &&
       elfsh_get_symtab(file, NULL) == NULL)
-    ELFSH_SETERROR("[libelfsh:get_symbol_name] Cannot retreive symbol table\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot retreive symbol table", NULL);
 
   /* Else use the symbol string table */
-  if ((NULL == file->secthash[ELFSH_SECTION_STRTAB] ||
-       NULL == file->secthash[ELFSH_SECTION_STRTAB]->data) &&
+  data = file->secthash[ELFSH_SECTION_STRTAB]->data;
+  if ((NULL == file->secthash[ELFSH_SECTION_STRTAB] || NULL == data) && 
       NULL == elfsh_get_strtab(file, 0))
-    return (NULL);
-  str = file->secthash[ELFSH_SECTION_STRTAB]->data;
-  return (str + s->st_name);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get STRTAB", NULL);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + s->st_name));
 }
 
 
@@ -42,38 +45,44 @@ char		*elfsh_get_symbol_name(elfshobj_t *file, Elf32_Sym *s)
 
 /* Return the used offset in .strtab or -1 if failed */
 int			elfsh_set_symbol_name(elfshobj_t	*file,
-					      Elf32_Sym		*s,
+					      elfsh_Sym		*s,
 					      char		*name)
 {
   elfshsect_t		*sct;
   char			*str;
   u_int			len;
   u_int			new_len;
+  void			*data;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || s == NULL || name == NULL)
-    ELFSH_SETERROR("[libelfsh:set_symbol_name] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter", -1);
   if (file->secthash[ELFSH_SECTION_SYMTAB] == NULL &&
       elfsh_get_symtab(file, NULL) == NULL)
-    ELFSH_SETERROR("[libelfsh:get_symbol_name] Cannot retreive symbol table",
-		   -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive symbol table", -1);
 
   /* Also change the section name in .shstrtab if symbol is STT_SECTION */
   if (elfsh_get_symbol_type(s) == STT_SECTION)
     {
       sct = elfsh_get_section_from_sym(file, s);
       if (sct != NULL && elfsh_set_section_name(file, sct, name) < 0)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to get section from its symbol", -1);
     }
 
 
   /* Else use the symbol string table */
-  if (file->secthash[ELFSH_SECTION_STRTAB] == NULL ||
-      file->secthash[ELFSH_SECTION_STRTAB]->data == NULL)
-    return (NULL);
+  data = file->secthash[ELFSH_SECTION_STRTAB];
+  if (file->secthash[ELFSH_SECTION_STRTAB] == NULL || data == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No STRTAB available", NULL);
 
   /* Change the name */
-  str = file->secthash[ELFSH_SECTION_STRTAB]->data;
+  str = data;
   str += s->st_name;
   len = strlen(str);
   new_len = strlen(name);
@@ -85,7 +94,7 @@ int			elfsh_set_symbol_name(elfshobj_t	*file,
   else
     s->st_name = elfsh_insert_in_strtab(file, name);
 
-  return (s->st_name);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_name));
 }
 
 
@@ -98,11 +107,16 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
   int		index;
   int		nbr;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:get_symtab] Invalid NULL parameter\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter", NULL);
+
   else if (NULL == file->sht && NULL == elfsh_get_sht(file, NULL))
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get SHT", NULL);
 
   if (file->secthash[ELFSH_SECTION_SYMTAB] == NULL)
     {
@@ -116,10 +130,14 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 	  file->secthash[ELFSH_SECTION_SYMTAB] = s;
 	  s->data = elfsh_load_section(file, s->shdr);
 	  if (s->data == NULL)
-	    return (NULL);
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Unable to load SYMTAB", NULL);
+	  s->curend = s->shdr->sh_size;
 
 	  /* Now load the string table */
 	  s = elfsh_get_strtab(file, s->shdr->sh_link);
+	  s->parent = file;
+	  
 	}
 
       /*
@@ -131,9 +149,9 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 
   if (num != NULL)
     *num =
-      file->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(Elf32_Sym);
+      file->secthash[ELFSH_SECTION_SYMTAB]->curend / sizeof(elfsh_Sym);
 
-  return (file->secthash[ELFSH_SECTION_SYMTAB]->data);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_SYMTAB]->data));
 }
 
 
@@ -146,29 +164,39 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 ** Fill 'offset' with the difference between sym->st_value and 'value'
 */
 char		*elfsh_reverse_symbol(elfshobj_t	*file,
-				      u_int		value,
-				      int		*offset)
+				      elfsh_Addr       	value,
+				      elfsh_SAddr      	*offset)
 {
   elfshsect_t	*sect;
-  Elf32_Sym	*sorted;
+  elfsh_Sym	*sorted;
   int		num;
   int		index;
   char		*str;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (!value || value == 0xFFFFFFFF)
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", NULL);
   if (file == NULL)
-    ELFSH_SETERROR("[libelfsh:reverse_symbol] Invalid NULL parameter\n", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
+
+  /* handle dynamic case */
+  if (elfsh_is_debug_mode())
+    value -= file->base;
 
   /* If there is no symtab, resolve using SHT */
   if (elfsh_get_symtab(file, &num) == NULL)
     {
       sect = elfsh_get_parent_section(file, value, offset);
       if (sect == NULL)
-	ELFSH_SETERROR("[libelfsh:reverse_symbol] No parent section\n", NULL);
-      *offset = (int) sect->shdr->sh_addr - value;
-      return (elfsh_get_section_name(file, sect));
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "No parent section", NULL);
+
+      *offset = (elfsh_SAddr) (sect->shdr->sh_addr - value);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_section_name(file, sect)));
     }
 
   /* Else use the sorted-by-address symbol table to match what we want */
@@ -176,18 +204,20 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
     elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
   sorted = file->secthash[ELFSH_SECTION_SYMTAB]->altdata;
 
+
   for (index = 0; index < num; index++)
     if (sorted[index].st_value <= value && DUMPABLE(sorted + index) &&
 	(index + 1 >= num || sorted[index + 1].st_value > value))
       {
-	*offset = (int) (value - sorted[index].st_value);
+	*offset = (elfsh_SAddr) (value - sorted[index].st_value);
 	str = elfsh_get_symbol_name(file, sorted + index);
 	if (!*str)
 	  str = NULL;
-	return (str);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
       }
 
-  ELFSH_SETERROR("[libelfsh:reverse_symbol] No valid symbol interval\n", NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "No valid symbol interval", NULL);
 }
 
 
@@ -195,212 +225,294 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
 
 
 /* Return the symbol entry giving its name */
-Elf32_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
+elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
 {
-  Elf32_Sym	*sym;
+  elfsh_Sym	*sym;
   int		idx;
   int		size;
   char		*actual;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (file == NULL || name == NULL)
-    ELFSH_SETERROR("[libelfsh:get_symbol_by_name] Invalid NULL parameter\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", NULL);
   if (elfsh_get_symtab(file, &size) == NULL)
-    return (NULL);
-  sym = file->secthash[ELFSH_SECTION_SYMTAB]->data;
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get SYMTAB", NULL);
+
+  sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_SYMTAB]->data;
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_symbol_name(file, sym + idx);
       if (actual != NULL && !strcmp(actual, name))
-	return (sym + idx);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
     }
-  ELFSH_SETERROR("[libelfsh:get_symbol_by_name] Symbol not found\n",
-		 NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    "Symbol not found", NULL);
 }
 
 
 
 /* Shift usual symbols (mandatory on solaris) */
-void		elfsh_shift_usualsyms(elfshsect_t *sect, Elf32_Sym *sym)
+void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
 {
-  Elf32_Sym	*end;
+  elfsh_Sym	*end;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Change _end if necessary (solaris) */
   end = elfsh_get_dynsymbol_by_name(sect->parent, "_end");
   if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
+    {
+      //printf("Shift _end! \n");
+      end->st_value = sym->st_value + sym->st_size;
+    }
 
   /* Change _END_ if necessary (solaris) */
-    end = elfsh_get_dynsymbol_by_name(sect->parent, "_END_");
+  end = elfsh_get_dynsymbol_by_name(sect->parent, "_END_");
   if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
+    {
+      //printf("Shift _END_! \n");
+      end->st_value = sym->st_value + sym->st_size;
+    }
 
   /* Change _edata if necessary (solaris) */
-  end = elfsh_get_dynsymbol_by_name(sect->parent, "_edata");
-  if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
-
-  /* Change _end if necessary (solaris) */
-  end = elfsh_get_symbol_by_name(sect->parent, "_end");
-  if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
-
-  /* Change _END_ if necessary (solaris) */
-    end = elfsh_get_symbol_by_name(sect->parent, "_END_");
-  if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
-
-  /* Change _edata if necessary (solaris) */
-  end = elfsh_get_symbol_by_name(sect->parent, "_edata");
-  if (end != NULL && sym->st_value + sym->st_size > end->st_value)
-    end->st_value = sym->st_value + sym->st_size;
+  if (elfsh_get_ostype(sect->parent) == ELFSH_OS_SOLARIS)
+  if (elfsh_get_ostype(sect->parent) == ELFSH_OS_SOLARIS)
+    {
+      end = elfsh_get_dynsymbol_by_name(sect->parent, "_edata");
+      if (end != NULL && sym->st_value + sym->st_size > end->st_value)
+	{
+	  //printf("Shift _edata! \n");
+	  end->st_value = sym->st_value + sym->st_size;
+	}
+    }
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /* Insert a symbol in the given symbol table */
+/* This function is not e2dbg safe */
 int		elfsh_insert_symbol(elfshsect_t *sect,
-				    Elf32_Sym	*sym,
+				    elfsh_Sym	*sym,
 				    char	*name)
 {
-  Elf32_Sym	*orig;
+  elfsh_Sym	*orig;
   int		index;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (sect == NULL || sect->shdr == NULL ||
       (sect->shdr->sh_type != SHT_SYMTAB &&
        sect->shdr->sh_type != SHT_DYNSYM))
-    ELFSH_SETERROR("[libelfsh:insert_symbol] Input section is not SYMTAB\n",
-		   -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Input section is not SYMTAB", -1);
   if (name == NULL)
     name = ELFSH_NULL_STRING;
 
   /* Check if symbol already exists */
   orig = elfsh_get_symbol_by_name(sect->parent, name);
   if (orig != NULL && sym->st_value == orig->st_value)
-    return (((u_int) orig - (u_int) sect->data) / ELFSH_SYMTAB_ENTRY_SIZE);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       (((char *) orig - (char *) sect->data) /
+			ELFSH_SYMTAB_ENTRY_SIZE));
 
   /* Shift some special symbols */
+  //if (sect->shdr->sh_type == SHT_DYNSYM)
   elfsh_shift_usualsyms(sect, sym);
 
   /* Insert symbol name in .shstrtab */
   index = elfsh_insert_in_strtab(sect->parent, name);
   if (index < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to insert in SHSTRTAB", -1);
 
 #if __DEBUG_RELADD__
-  printf("[DEBUG_RELADD] Injected symbol %-20s [%08X] \n",
-	 name, (u_int) sym->st_value);
+  printf("[DEBUG_RELADD] Injected symbol %-20s [" AFMT "] \n",
+	 name, (elfsh_Addr) sym->st_value);
 #endif
 
   /* Insert symbol in .symtab */
   sym->st_name = index;
-  index = elfsh_append_data_to_section(sect, sym, sizeof(Elf32_Sym));
-  return (index);
+  index = elfsh_append_data_to_section(sect, sym, sizeof(elfsh_Sym));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }
+
+
+
+
+/* Remove a symbol */
+/* This function is not e2dbg safe */
+int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
+{
+  elfsh_Sym	*ret;
+  elfsh_Sym	*tab;
+  elfsh_Sym	*new;
+  u_int   	off;
+  u_int		movedsz;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (symtab == NULL || name == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", -1);
+  ret = elfsh_get_symbol_by_name(symtab->parent, name);
+  if (ret == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unknown symbol", -1);
+
+  /* Do it */
+  tab = symtab->data;
+  off = (u_long) ret - (u_long) tab;
+  movedsz = symtab->shdr->sh_size - off - sizeof(elfsh_Sym);
+  if (movedsz)
+    memcpy((char *) symtab->data + off, 
+	   (char *) symtab->data + off + sizeof(elfsh_Sym),
+	   movedsz);
+  symtab->shdr->sh_size -= sizeof(elfsh_Sym);
+  symtab->curend -= sizeof(elfsh_Sym);
+  XALLOC(new, symtab->shdr->sh_size, -1);
+  memcpy(new, tab, symtab->shdr->sh_size);
+  free(tab);
+  symtab->data = new;
+
+  /* We just cant remove the string because of ELF string table format */
+  elfsh_sync_sorted_symtab(symtab);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
 
 
 
 
 
 /* Retreive the file offset giving the virtual address */
-int		elfsh_get_symbol_foffset(elfshobj_t *file, Elf32_Sym *sym)
+int		elfsh_get_symbol_foffset(elfshobj_t *file, elfsh_Sym *sym)
 {
   elfshsect_t	*sect;
   char		*name;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the symbol is a section, then look at the sht instead */
   if (elfsh_get_symbol_type(sym) == STT_SECTION)
     {
       name = elfsh_get_symbol_name(file, sym);
       sect = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
-      return (sect ? elfsh_get_section_foffset(sect->shdr) : 0);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (sect ? elfsh_get_section_foffset(sect->shdr) : 0));
     }
 
   /* get our parent section and compute the file offset */
   if (sym == NULL || file == NULL || NULL == sym->st_value)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   sect = elfsh_get_parent_section(file, sym->st_value, NULL);
   if (sect == NULL)
-    return (0);
-  return (sect->shdr->sh_offset + (sym->st_value - sect->shdr->sh_addr));
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (sect->shdr->sh_offset + 
+		      (sym->st_value - sect->shdr->sh_addr)));
 }
 
 
 
 /* Get symtab entry by vaddr */
-Elf32_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
-					     u_int	vaddr,
+elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
+					     elfsh_Addr	vaddr,
 					     int	*off,
 					     int	mode)
 {
   int		  num;
+  void		 *data;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == elfsh_get_symtab(file, &num))
-    ELFSH_SETERROR("[libelfsh:get_symbol_by_value] Cannot retreive SYMTAB\n",
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive SYMTAB", NULL);
 
-  return (elfsh_get_sym_by_value(file->secthash[ELFSH_SECTION_SYMTAB]->data,
-				 num, vaddr, off, mode));
+  data = file->secthash[ELFSH_SECTION_SYMTAB];
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
 }
 
 
 
 /* Shift the symbol table */
-int		elfsh_shift_symtab(elfshobj_t *file, u_long limit, int inc)
+int		elfsh_shift_symtab(elfshobj_t *file, elfsh_Addr limit, int inc)
 {
   elfshsect_t	*actual;
-  u_int		nbr;
-  u_int		idx;
-  Elf32_Sym	*sym;
+  int		err;
 
-#if __DEBUG_RELADD__
-  static u_int	totshift = 0;
-  totshift += inc;
-  printf("[DEBUG_RELADD] Shifting symtab [LIM %08X .::. INC %08u .::. TOT %08u] \n",
-	 (u_int) limit, inc, totshift);
-#endif
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  actual = elfsh_get_section_by_type(file, SHT_SYMTAB, 0, NULL, NULL, &nbr);
-  if (actual == NULL || actual->data == NULL || !nbr)
-    return (-1);
-  sym = actual->data;
+  actual = elfsh_get_section_by_type(file, SHT_SYMTAB, 0, NULL, NULL, NULL);
+  if (actual == NULL || actual->data == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to find SYMTAB by type", -1);
 
-  for (idx = 0; idx < (nbr / ELFSH_SYMTAB_ENTRY_SIZE); idx++)
-    if (sym[idx].st_value >= limit && limit != 0)
-      {
+  err = elfsh_shift_syms(file, actual, limit, inc);
+  if (err < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to shift SYMTAB", -1);
 
-#if __DEBUG_RELADD__
-	printf("[DEBUG_RELADD] Shifted symbol *%-20s* [%08X -> %08X]\n",
-	       elfsh_get_symbol_name(file, sym),
-	       (u_int) sym[idx].st_value,
-	       (u_int) sym[idx].st_value + inc);
-#endif
-
-	sym[idx].st_value += inc;
-      }
-
-  elfsh_sync_sorted_symtab(actual);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 
 
 /* Insert STT_SECTION symbol */
 int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
 {
-  Elf32_Sym	new;
+  elfsh_Sym	new;
   int		ret;
 
-  new = elfsh_create_symbol(sect->shdr->sh_addr, sect->shdr->sh_size, STT_SECTION,
-			    STB_LOCAL, 0, sect->index);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  new = elfsh_create_symbol(sect->shdr->sh_addr, sect->curend,
+			    STT_SECTION, STB_LOCAL, 0, sect->index);
   ret = elfsh_insert_symbol(file->secthash[ELFSH_SECTION_SYMTAB],
 			    &new, sect->name);
-  elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
+  if (ret < 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  ret = elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
 
 #if __DEBUG_RELADD__
-  printf("[DEBUG_RELADD] Inserted STT_SECT symbol %s [%08X] \n",
-	 sect->name, (u_int) sect->shdr->sh_addr);
+  printf("[DEBUG_RELADD] Inserted STT_SECT symbol %s [" AFMT "] sz:%u cur:%u \n",
+	 sect->name, (elfsh_Addr) sect->shdr->sh_addr, 
+	 sect->shdr->sh_size, sect->curend);
 #endif
 
-  return (ret);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+}
+
+
+/* Insert STT_SECTION symbol */
+int		elfsh_insert_funcsym(elfshobj_t *file, char *name, 
+				     elfsh_Addr vaddr, 
+				     uint32_t sz, uint32_t sctidx)
+{
+  elfsh_Sym	new;
+  int		ret;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  new = elfsh_create_symbol(vaddr, sz, STT_FUNC, STB_LOCAL, 0, sctidx);
+  ret = elfsh_insert_symbol(file->secthash[ELFSH_SECTION_SYMTAB],
+			    &new, name);
+  if (ret < 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  ret = elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
+
+#if __DEBUG_RELADD__
+  printf("[DEBUG_RELADD] Inserted STT_FUNC symbol %s [" AFMT 
+	 "] sz:%u sctidx:%u \n",
+	 name, vaddr, sz, sctidx);
+#endif
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

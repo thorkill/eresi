@@ -1,0 +1,12 @@
+#!../../vm/elfsh
+
+print TWO  = $2
+print ONE  = $1
+cmp $1 $2
+je err
+print DIFF
+jmp end
+err:
+print EQU 
+end:
+quit

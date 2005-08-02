@@ -2,7 +2,7 @@
 ** interp.c for libelfsh
 ** 
 ** Started on  Sun Jun 10 20:29:18 2001 mayhem
-** Last update Sat Mar 22 15:21:56 2003 mayhem
+**
 */
 #include "libelfsh.h"
 
@@ -14,14 +14,20 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
   char          *actual;
   u_int         size1;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   actual = elfsh_get_interp(file);
   if (!actual)
-    ELFSH_SETERROR("[libelfsh] Cant find .interp section \n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cant find .interp section", -1);
+
   size1 = strlen(interp);
   if (size1 >= file->secthash[ELFSH_SECTION_INTERP]->shdr->sh_size)
-    ELFSH_SETERROR("[libelfsh] New INTERP path too long \n", -1);
-  strcpy(file->secthash[ELFSH_SECTION_INTERP]->data, interp);
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "New INTERP path too long", -1);
+
+  strcpy(elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP]), interp);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -32,12 +38,15 @@ char		*elfsh_get_interp(elfshobj_t *file)
 {
   elfshsect_t	*new = NULL;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (file->secthash[ELFSH_SECTION_INTERP] == NULL)
     {
       new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_INTERP, 
 				      NULL, NULL, NULL);
       if (new == NULL)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to get .interp by name", NULL);
       file->secthash[ELFSH_SECTION_INTERP] = new;
     }
 
@@ -46,9 +55,11 @@ char		*elfsh_get_interp(elfshobj_t *file)
       new->data = elfsh_load_section(file, 
 				     file->secthash[ELFSH_SECTION_INTERP]->shdr);
       if (new->data == NULL)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to load .interp", NULL);
     }
-  return ((char *) file->secthash[ELFSH_SECTION_INTERP]->data);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP])));
 }
 
 

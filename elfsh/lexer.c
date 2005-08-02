@@ -2,13 +2,14 @@
 ** lexer.c for elfsh
 ** 
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** Last update Wed Jun 25 08:47:37 2003 mayhem
+** Updated on  Fri Mar 11 18:47:41 2005 ym
 */
+
 #include "elfsh.h"
 
 
 /* Replace \xNUM by the value, I wished readline could have done that */
-static void		lexer_findhex(u_int argc, char **argv)
+void			vm_findhex(u_int argc, char **argv)
 {
   u_int			index;
   char			*buf;
@@ -29,61 +30,73 @@ static void		lexer_findhex(u_int argc, char **argv)
 
 
 /* Read a new line, avoiding comments and void lines */
-static char	*lexer_getln(char *ptr)
+char		*vm_getln(char *ptr)
 {
-  char		*buf = NULL;
+  char		*buf;
   char		*sav;
-  char		tmpbuf[BUFSIZ];
-  
+  char		logbuf[BUFSIZ];
+
   do
     {
-
-#if defined(USE_READLN)
-      if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
-	buf = readline(ptr);
-      else
-	{
-#endif
-	  printf("%s", ptr);
-	  fflush(stdout);
-	  if (fgets(tmpbuf, sizeof(tmpbuf) - 1, stdin) == NULL)
-	    {
-	      fprintf(stderr, "[!] Fatal parser error [cant read inputfile]\n\n");
-	      exit(-1);
-	    } 
-	  sav = strchr(tmpbuf, '\n');
-	  if (sav != NULL)
-	    *sav = 0x00;
-	  if (!*tmpbuf)
-	    continue;
-	  buf = strdup(tmpbuf);
-
-#if defined(USE_READLN)
-	}
-#endif
+      buf = world.curjob->io.input();
       
+      if (buf == ((char *) ELFSH_VOID_INPUT))
+        return ((char *) ELFSH_VOID_INPUT);
+
+      if (!buf || !*buf)
+	{
+	  if (buf)
+	    free(buf);
+	  return (NULL);
+	}
+
       if (buf == NULL)
 	{
-	  fprintf(stderr, "[!] Fatal readline error [cant read inputfile]\n\n");
-	  exit(-1);
+          snprintf(logbuf, BUFSIZ - 1,
+                   "[!] Fatal readline error [cant read inputfile]\n\n");
+          vm_output(logbuf);
+          vm_exit(-1);
 	}
-
+      
       sav = buf;
       while (IS_BLANK(*sav))
 	sav++;
+
+
       if (!*sav || *sav == ELFSH_COMMENT_START)
 	{
-
+	  
+	    
 #if defined(USE_READLN)
-	  if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
+          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
 #endif
 	    free(buf);
-	  
-	  buf = NULL;
-	  if (*sav)
+
+
+	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
+	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+	    return ((char *)ELFSH_VOID_INPUT); 
+
+          buf = NULL;
+
+          if (*sav)
 	    continue;	
 	}
-      putchar('\n');
+      
+      if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
+	{
+          vm_output("\n"); 
+          
+#if defined(USE_READLN)
+          /* avoid looping with readline */
+          if (buf == NULL)
+	    return ((char *)ELFSH_VOID_INPUT); 
+          break;
+#endif
+
+	}
+      
+
     }
   while (buf == NULL);
   return (buf);
@@ -91,25 +104,27 @@ static char	*lexer_getln(char *ptr)
 
 
 /* Count blanks, so that we can allocate argv */
-static u_int	lexer_findblanks(char *buf)
+u_int		vm_findblanks(char *buf)
 {
   int		index;
   int		len;
   int		nbr;
   char		*ptr;
   char		*sav;
+#if __DEBUG_SCANNER__
+  char		logbuf[BUFSIZ];
+#endif
 
-  if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
-    {
-      printf("~%s\n", buf);
-      fflush(stdout);
-    }
   len = strlen(buf);
   index = 0;
   nbr = 1;
   sav = buf;
   do
     {
+      while (IS_BLANK(*sav))
+	sav++;
+      if (!*sav)
+	break;
       ptr = strchr(sav, ' ');
       if (!ptr)
 	{
@@ -122,12 +137,13 @@ static u_int	lexer_findblanks(char *buf)
       if (!*ptr)
 	break;
       nbr++;
-      sav = ptr + 1;
+      sav = ptr;
     }
   while (ptr && sav < buf + len);
 
 #if __DEBUG_SCANNER__
-  printf("[DEBUG_SCANNER:findblanks] nbr = %u \n", nbr);
+  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_SCANNER:findblanks] nbr = %u \n", nbr);
+  vm_output(logbuf);
 #endif
 
   return (nbr);
@@ -135,26 +151,36 @@ static u_int	lexer_findblanks(char *buf)
 
 
 /* Cut words of the newline and create argv */
-static char	**lexer_doargv(u_int nbr, u_int *argc, char *buf)
+char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
 {
   u_int		index;
   char		*sav;
   char		**argv;
   char		*ptr;
+#if __DEBUG_SCANNER__
+  char		logbuf[BUFSIZ];
+#endif
 
   XALLOC(argv, sizeof(char *) * (nbr + 2), NULL);
   argv[0] = argv[nbr + 1] = NULL;
   sav = buf;
+
   for (index = 1; index < nbr + 1; index++)
     {
+
       assert(sav >= buf);
+
       while (IS_BLANK(*sav))
 	sav++;
       argv[index] = sav;
+
 #if __DEBUG_SCANNER__
-      printf("[DEBUG_SCANNER:lexer_doargv] Adding argv[%u] = *%s* \n", 
-	     index, sav);
+      snprintf(logbuf, BUFSIZ - 1,
+	       "[DEBUG_SCANNER:lexer_doargv] Adding argv[%u] = *%s* \n", 
+	       index, sav);
+      vm_output(logbuf);
 #endif 
+
       ptr = strchr(sav, ' ');
       if (!ptr)
 	ptr = strchr(sav, '\t');
@@ -166,43 +192,20 @@ static char	**lexer_doargv(u_int nbr, u_int *argc, char *buf)
     }
 
 #if __DEBUG_SCANNER__
-  puts("");
+  vm_output("\n");
   for (index = 0; index < nbr + 1; index++)
-    printf("[DEBUG_SCANNER:lexer_doargv] %u/ *%s* \n", index, argv[index]);
-  puts("");
+    if (argv[index])
+      {
+	snprintf(logbuf, BUFSIZ - 1, "[DEBUG_SCANNER:lexer_doargv] %u/ *%s* \n",
+		 index, argv[index]);
+	vm_output(logbuf);
+      }
+  vm_output("\n");
 #endif
 
   *argc = nbr + 1;
   return (argv);
 }
-
-
-
-/* I was too lazy to use flex for the moment, pardon me ;) */
-char		**vm_getln(int *argc)
-{
-  char		**argv;
-  char		*buf;
-  int		nbr;
-
-  /* Read, and sanitize a first time to avoid blank lines */
-  buf = (world.state.vm_mode == ELFSH_VMSTATE_IMODE ? ELFSH_PROMPT : "");
-  buf = lexer_getln(buf);
-#if defined(USE_READLN)
-  add_history (buf);
-#endif
-
-  /* Allocate the correct pointer array for argv */
-  nbr = lexer_findblanks(buf);
-  argv = lexer_doargv(nbr, argc, buf);
-
-  /* Find and replace "\xXX" sequences, then return the array */
-  lexer_findhex(*argc, argv);
-  return (argv);
-}
-
-
-
 
 
 

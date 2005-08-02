@@ -8,188 +8,233 @@
 
 
 /* Change the ELF header flags field */
-int		elfsh_set_paxflags(Elf32_Ehdr *hdr, Elf32_Word flags)
+int		elfsh_set_paxflags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  *pax_flags = flags;
-  return (0);
+  *pax_flags = (elfsh_Word) flags;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Return the ELF header flags field */
-Elf32_Word	elfsh_get_paxflags(Elf32_Ehdr *hdr)
+elfsh_Word	elfsh_get_paxflags(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return (*pax_flags);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (*pax_flags));
 }
 
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_pageexec(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_pageexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (off)
     *pax_flags |= ELFSH_PAX_PAGEEXEC;
   else
     *pax_flags &= (~ELFSH_PAX_PAGEEXEC);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_pageexec(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_pageexec(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return ((*pax_flags & ELFSH_PAX_PAGEEXEC) && 
-	  !(*pax_flags & ELFSH_PAX_SEGMEXEC));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((*pax_flags & ELFSH_PAX_PAGEEXEC) && 
+	  !(*pax_flags & ELFSH_PAX_SEGMEXEC)));
 }
 
 
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_emultramp(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_emultramp(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (off)
     *pax_flags |= ELFSH_PAX_EMULTRAMP;
   else
     *pax_flags &= (~ELFSH_PAX_EMULTRAMP);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_emultramp(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_emultramp(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return ((*pax_flags & ELFSH_PAX_EMULTRAMP));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     ((*pax_flags & ELFSH_PAX_EMULTRAMP)));
 }
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_mprotect(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_mprotect(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (!off)
     *pax_flags |= ELFSH_PAX_MPROTECT;
   else
     *pax_flags &= (~ELFSH_PAX_MPROTECT);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_mprotect(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_mprotect(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return (!(*pax_flags & ELFSH_PAX_MPROTECT));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (!(*pax_flags & ELFSH_PAX_MPROTECT)));
 }
 
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_randmmap(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_randmmap(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (!off)
     *pax_flags |= ELFSH_PAX_RANDMMAP;
   else
     *pax_flags &= (~ELFSH_PAX_RANDMMAP);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_randmmap(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_randmmap(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return (!(*pax_flags & ELFSH_PAX_RANDMMAP));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (!(*pax_flags & ELFSH_PAX_RANDMMAP)));
 }
 
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_randexec(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_randexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (off)
     *pax_flags |= ELFSH_PAX_RANDEXEC;
   else
     *pax_flags &= (~ELFSH_PAX_RANDEXEC);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_randexec(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_randexec(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return ((*pax_flags & ELFSH_PAX_RANDEXEC));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((*pax_flags & ELFSH_PAX_RANDEXEC)));
 }
 
 
 /* Change the section header table file offset */
-char		elfsh_set_pax_segmexec(Elf32_Ehdr *hdr, u_short off)
+char		elfsh_set_pax_segmexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   if (!off)
     *pax_flags |= ELFSH_PAX_SEGMEXEC;
   else
     *pax_flags &= (~ELFSH_PAX_SEGMEXEC);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the section header table file offset */
-char		elfsh_get_pax_segmexec(Elf32_Ehdr *hdr)
+char		elfsh_get_pax_segmexec(elfsh_Ehdr *hdr)
 {
   u_short	*pax_flags;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hdr)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
-  return (!(*pax_flags & ELFSH_PAX_SEGMEXEC));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (!(*pax_flags & ELFSH_PAX_SEGMEXEC)));
 }

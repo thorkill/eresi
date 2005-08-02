@@ -1,0 +1,19 @@
+#!../../../vm/elfsh
+
+exec gcc -g3 -static host.c 
+exec gcc -g3 -static rel2.c -c
+
+load a.out
+load rel2.o
+
+source ./load_lib.esh
+#list
+
+reladd 1 2
+
+redir puts puts_troj
+redir legit_func hook_func
+
+save fake_aout
+
+quit

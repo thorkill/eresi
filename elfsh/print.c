@@ -2,7 +2,7 @@
 ** quit.c for elfsh
 ** 
 ** Started on  Sat Jan 25 11:19:53 2003 mayhem
-** Last update Fri Mar 21 10:27:18 2003 mayhem
+** 
 */
 #include "elfsh.h"
 
@@ -10,24 +10,42 @@
 /* Print an object */
 void		vm_print_obj(elfshpath_t *obj)
 {
-  u_int		val;
+  char		byte;
+  uint16_t	half;
+  uint32_t	word;
+  elfsh_Addr   	val;
   char		*str;
+  char		logbuf[BUFSIZ];
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  bzero(logbuf, BUFSIZ);
   switch (obj->type)
     {
-    case ELFSH_OBJINT:
+    case ELFSH_OBJBYTE:
+      byte = (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));
+      snprintf(logbuf, BUFSIZ - 1, "%c (%hhd) ", byte, byte);
+    case ELFSH_OBJSHORT:
+      half = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
+      snprintf(logbuf, BUFSIZ - 1, "%04hx (%hd) ", half, half);
+    case ELFSH_OBJLONG:
       val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-      printf("%08X ", val);
+      snprintf(logbuf, BUFSIZ - 1, XFMT " (" DFMT ") ", val, val);
+    case ELFSH_OBJINT:
+      word = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
+      snprintf(logbuf, BUFSIZ - 1, "%08X (%d) ", word, word);
       break;
     case ELFSH_OBJSTR:
       str = (obj->immed ? obj->immed_val.str : 
 	     obj->get_name(obj->root, obj->parent));
-      printf("%s ", str);
+      snprintf(logbuf, BUFSIZ - 1, "%s ", str);
       break;
     default:
-      fprintf(stderr, "[elfsh:vm_print_obj] Unprintable object type\n");
+      snprintf(logbuf, BUFSIZ - 1,
+	       "[elfsh:vm_print_obj] Unprintable object type %u\n",
+	       obj->type);
     }
-  fflush(stdout);
+  vm_output(logbuf);
 }
 
 
@@ -35,24 +53,26 @@ void		vm_print_obj(elfshpath_t *obj)
 /* Print a string */
 int			cmd_print()
 {
-  elfshpath_t		obj;
+  elfshpath_t		*obj;
   volatile u_int	idx;
-  volatile int		ret;
+  char			logbuf[BUFSIZ];
 
-  for (idx = 0; world.args.param[idx] != NULL; idx++)
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
-      ret = vm_lookup_param(world.args.param[idx], &obj, 0);
-      if (ret == -1)
+      obj = vm_lookup_param(world.curjob->curcmd->param[idx], 1);
+      if (!obj)
 	{
-	  printf("%s ", world.args.param[idx]);
-	  fflush(stdout);
+	  snprintf(logbuf, BUFSIZ - 1, "%s ", world.curjob->curcmd->param[idx]);
+	  vm_output(logbuf);
+	  continue;
 	}
-      else
-	vm_print_obj(&obj);
+      vm_print_obj(obj);
     }
 
-  puts("");
+  vm_output("\n");
   if (!world.state.vm_quiet)
-    puts("");
+    vm_output("\n");
   return (0);
 }

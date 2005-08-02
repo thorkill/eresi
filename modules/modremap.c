@@ -9,7 +9,7 @@
 ** positives in the ET_EXEC relocation code . Finally
 ** merged in libelfsh/mapped.c
 **
-** Last update Tue Jun  3 09:40:17 2003 mayhem
+** Updated regulary by ELFsh crew to match the current interface
 */
 #include "elfsh.h"
 
@@ -32,10 +32,10 @@ int		remap_cmd()
   u_int		count_ent = 0;
 
   /* Sanity checks */
-  i = sscanf(world.args.param[0], "0x%X", &new_base);
+  i = sscanf(world.curjob->curcmd->param[0], "0x%X", &new_base);
   if (new_base == 0 || i != 1) 
     ELFSH_SETERROR("[elfsh] Invalid new base address\n", -1);
-  file = world.current;
+  file = world.curjob->current;
   if (elfsh_read_obj(file) < 0)
     return (-1);
   if (elfsh_get_symtab(file, NULL) < 0)
@@ -102,4 +102,6 @@ void elfsh_fini()
   puts(" [*] ELFsh modremap fini -OK- \n");
   vm_delcmd(CMD_REMAP);
 }
+
+
 

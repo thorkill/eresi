@@ -2,7 +2,7 @@
 ** debug.c for elfsh
 **
 ** Started on  Thu Apr  3 21:36:55 2003 mayhem
-** Last update Sat Aug 16 22:10:07 2003 jv
+
 */
 #include "libelfsh.h"
 
@@ -16,6 +16,8 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
   u_char	*data;
   char		*sctname;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   printf(" [SCTLIST][%s]\n", label);
   for (index = 0, actual = obj->sectlist;
        actual != NULL;
@@ -24,17 +26,20 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
       sctname = elfsh_get_section_name(obj, actual);
       if (sctname == NULL)
 	sctname = "UNK";
-      data = (actual->data == NULL ? "\xFF\xFF\xFF" : actual->data);
-      printf(" [%03u] %-15s HDRNAM: %-15s BYTES[%02X %02X %02X] P(%08X) "
-	     "A(%08X) N(%08X) SCTIDX(%03u) HDRFOFF:%08x SZ:%08x VADDR:%08X \n",
-	     index, (actual->name != NULL ? actual->name : "UNK"),
+      data = elfsh_get_raw(actual);
+      if (data == NULL)
+	data = "\xFF\xFF\xFF";
+      printf(" [%03u:%03u] %-15s HDRNAM: %-15s BYTES[%02X %02X %02X] P(%8p) "
+	     "A(%8p) N(%8p) SCTIDX(%03u) HDRFOFF:%010u SZ:%010u VADDR:%08X \n",
+	     index, actual->index, 
+	     (actual->name != NULL ? actual->name : "UNK"),
 	     sctname,
 	     (u_int) data[0],
 	     (u_int) data[1],
 	     (u_int) data[2],
-	     (u_int) actual->prev,
-	     (u_int) actual,
-	     (u_int) actual->next,
+	     actual->prev,
+	     actual,
+	     actual->next,
 	     actual->index,
 	     (u_int) actual->shdr->sh_offset,
 	     (u_int) actual->shdr->sh_size,
@@ -42,5 +47,5 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
     }
   puts(" [EOL]\n");
   fflush(stdout);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -8,23 +8,23 @@
 
 
 /* Filter \x00 in the OBJ_TYPESTR object */
-void			vm_filter_zero(elfshpath_t *obj)
+void			vm_filter_zero(char *buf)
 {
   char			*ptr;
-  char			*buf;
-  
-  buf = (obj->immed ? obj->immed_val.str : 
-	 obj->get_name(obj->root, obj->parent));
+  u_int			size;
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  size = strlen(buf);
   do
     {
       ptr = strstr(buf, "\\x00");
       if (ptr != NULL)
 	{
 	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 4, (u_int) obj->immed_val.str + obj->size - (u_int) (ptr + 4));
+	  memmove(ptr + 1, ptr + 4, (u_int) buf + size - (u_int) (ptr + 4));
 	  buf = ptr + 1;
-	  obj->size -= 3;
+	  size -= 3;
 	}
       else 
 	{
@@ -32,9 +32,9 @@ void			vm_filter_zero(elfshpath_t *obj)
 	  if (ptr == NULL)
 	    break;
 	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 3, (u_int) obj->immed_val.str + obj->size - (u_int) (ptr + 3));
+	  memmove(ptr + 1, ptr + 3, (u_int) buf + size - (u_int) (ptr + 3));
 	  buf = ptr + 1;
-	  obj->size -= 2;
+	  size -= 2;
 	}
     }
   while (ptr != NULL);
@@ -50,6 +50,8 @@ char		*vm_filter_param(char *buf, char *ptr)
   char		c;
   char		d;
   
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* if string ends with '\x', its over for this entry */
   if (*(ptr + 2) == 0x00)
     return (buf);

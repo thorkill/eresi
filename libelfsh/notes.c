@@ -1,8 +1,10 @@
 /*
 ** notes.c for libelfsh
+**
+** Functions of this files are not intended to be used with e2dbg
 ** 
 ** Started on  Sun Jun 10 22:57:09 2001 mayhem
-** Last update Tue Jun  3 12:37:56 2003 mayhem
+**
 */
 #include "libelfsh.h"
 
@@ -10,7 +12,7 @@
 
 
 /* Return the content of the 'range'th section of type SHT_NOTE */
-elfshsect_t		*elfsh_get_notes(elfshobj_t *file, u_int range)
+elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 {
   elfshsect_t		*notes;
   elfshnotent_t		*e;
@@ -18,16 +20,20 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, u_int range)
   int			offset;
   int			size;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Search and load the section if necessary */
   notes = elfsh_get_section_by_type(file, SHT_NOTE, range, 
 				    NULL, NULL, &size);
   if (notes == NULL)
-    return (NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot get .notes by type", NULL);
   if (notes->data == NULL)
     {
       notes->data = elfsh_load_section(file, notes->shdr);
       if (notes->data == NULL)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot get .notes data", NULL);
     }
   
   /* Parse all the note entries of the section */
@@ -41,8 +47,9 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, u_int range)
       e->descsz   += e->descsz % 4;
 
       /* Sanity check */
-      if (offset + sizeof(int) * 3 + e->namesz >= size)
-	ELFSH_SETERROR("[libelfsh_get_notes] Corrupted Notes section\n", NULL);
+      if (offset + sizeof(int) * 3 + e->namesz > size)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Corrupted Notes section", NULL);
 
       e->note      = strdup((char *) notes->data + offset + sizeof(int) * 3);
       e->desc      = strdup((char *) notes->data + offset + sizeof(int) * 3 
@@ -61,7 +68,7 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, u_int range)
 	}
     }
   
-  return (notes);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (notes));
 }
 
 
@@ -78,6 +85,8 @@ void			elfsh_free_notes(elfshobj_t *file)
   elfshnotent_t		*etmp;
   elfshsect_t		*sect;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   for (sect = file->sectlist; sect; sect = sect->next)
     if (sect->data && sect->shdr->sh_type == SHT_NOTE)
       {
@@ -90,6 +99,7 @@ void			elfsh_free_notes(elfshobj_t *file)
 	    free(e);
 	  }
       }
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 

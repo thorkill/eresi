@@ -19,7 +19,7 @@ int		main(int argc, char **argv)
   elfshobj_t	*file;
   int		ret;
   char		*name;
-  Elf32_Sym	*sym;
+  elfsh_Sym	*sym;
 
   file = elfsh_map_obj(TROJANED_FILE);
   if (!file)

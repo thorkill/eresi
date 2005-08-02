@@ -1,0 +1,29 @@
+
+Grammar : 1.graph[symbol|root].{truechild,falsechild}
+
+-> API graph (those stocked into .control section by ELFsh module modflow)
+-> Need a new ELFsh L1 object (graph)
+
+-----
+
+Grammar :  1.graph[symbol|root].instr[idx].{mnemonic,type,len,prefix}
+
+
+  int	asm_instruction_get(asm_instr *instr, int option, void *value);
+  int	asm_instruction_set(asm_instr *instr, int option, void *value);
+
+-> Need a new ELFsh L2 object (instr)
+-> Need a new ELFsh object type (L3 , for core instruction fields)
+
+-----
+
+Grammar :   1.graph[symbol|root].instr[idx].{dst|src|ter}[type|size|immediate|basereg|indexreg|scale]
+
+  int	asm_operand_get(asm_instr *instr, int num_operand, int option, void *value);
+  int	asm_operand_set(asm_instr *instr, int num_operand, int option, void *value);
+
+  num_operand : 1, 2, 3, 4 (src), 5 (dst)
+  option      : immediate(basereg,indexreg,scale)
+
+-> Need a new ELFsh object type (L3, same as previous grammar rule) for operands.
+

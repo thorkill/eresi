@@ -4,7 +4,7 @@
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Thu May 29 20:39:14 2003
-** Updated : Wed Jun 18 00:44:00 2003
+** Updated : Fri Nov 28 01:09:47 2003
 */
 
 #include "modflow.h"
@@ -18,14 +18,143 @@ char	*call_type_str[] =
   "UNKN"
 };
 
+/**
+ *
+ * btree stuff
+ *
+ */
+
+
+int	match_block(void *elem, void *match)
+{
+  struct s_iblock	*blk_elem;
+  struct s_iblock	*blk_match;
+  int			cmp;
+  
+  blk_match = (struct s_iblock *) match;
+  blk_elem = (struct s_iblock *) elem;
+  /*
+  printf("cur=(%08x) max=(%08x) match=(%08x)\n", 
+	 blk_elem->vaddr, blk_elem->vaddr + blk_elem->size, blk_match->vaddr);
+  */
+  cmp = blk_match->vaddr - blk_elem->vaddr;
+  return (cmp);
+}
+
+int	match_inblock(void *elem, void *match)
+{
+  struct s_iblock	*blk_elem;
+  struct s_iblock	*blk_match;
+  int			cmp;
+  blk_match = (struct s_iblock *) match;
+  blk_elem = (struct s_iblock *) elem;
+  cmp = blk_match->vaddr - blk_elem->vaddr;
+  /*
+  printf("cur=(%08x) max=(%08x) match=(%08x)", 
+	 blk_elem->vaddr, blk_elem->vaddr + blk_elem->size, blk_match->vaddr);
+  */
+  if (cmp > 0)
+    if (cmp < blk_elem->size)
+      {
+	// puts(" match !");
+	return (0);
+      }
+  // puts("");
+  return (cmp);
+}
+
+/*
+ *
+ * free linked list of struct s_iblock *
+ *
+ */
+
+void	free_blocks(struct s_iblock *blks)
+{
+  if (blks) 
+    {      
+      btree_free(blks->btree, 1);
+      free(blks);
+    }
+}
+
+/**
+ *
+ * load linked list
+ *
+ */
+
+int     load_blocks(elfshobj_t *obj, struct s_iblock **blist)
+{
+  elfsh_Sym             *symtab;
+  int                   num;
+  int                   index;
+  int                   i;
+  elfshsect_t           *sect;
+  struct s_iblock       *iblk;
+  elfshblk_t            *blk;
+  elfshblkref_t         *blkref;
+  int                   load;
+  void			*data;
+
+  //*blist = 0;
+  if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
+    {
+      puts(" * no \".control\" section\n");
+      return (-1);
+    }
+
+  data = elfsh_get_raw(sect);
+  if (!data)
+    {
+      puts(" * section \".control\" has no data\n");
+      return (-1);
+    }
+  
+  if (sect->altdata)
+    {
+      *blist = sect->altdata;
+      return (42);
+    }
+  
+  symtab = elfsh_get_symtab(world.curjob->current, &num);
+  
+  for (load = index = 0; index < num; index++)
+    {
+      if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
+        continue;
+      blk = (data + (symtab + index)->st_value);
+      
+      /* if block is already present present, skip it   */
+      if ((iblk = block_get_by_vaddr(*blist, blk->vaddr, 0)))
+        continue;
+      iblk = block_create(blk->vaddr, blk->size);
+      iblk->contig = blk->contig;
+      iblk->altern = blk->altern;
+      iblk->altype = blk->altype;       
+      for (i = sizeof (elfshblk_t); i < (symtab + index)->st_size; 
+           i += sizeof (elfshblkref_t))
+        {
+          blkref = data + (symtab + index)->st_value + i;
+          block_add_caller(iblk, blkref->vaddr, blkref->type);
+          
+        }
+      block_add_list(blist, iblk);
+      load++;
+    }
+  sect->altdata = blist;
+  return (load);
+}
+
 
 int	block_is_called(struct s_iblock *blk) 
 {
   struct s_caller	*cur;
   
-  for (cur = blk->caller; cur; cur = cur->next) {
-    if (cur->type == CALLER_CALL)
-      return (1);
+  if (blk)
+    for (cur = blk->caller; cur; cur = cur->next) {
+      if (cur->type == CALLER_CALL)
+	return (1);
   }
   return (0);
 }
@@ -33,101 +162,122 @@ int	block_is_called(struct s_iblock *blk)
 /*
 void	load_blocks()
 {
-  Elf32_Shdr		shdr;
+  elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   
-
 }
 */
 
-void	store_blocks(elfshobj_t *obj , struct s_iblock *blist) 
+int			build_data(void *elem, void *opt)
 {
-  Elf32_Shdr		shdr;
-  elfshsect_t		*sect;
-  Elf32_Sym		bsym;
-  elfshblk_t		curblock;
-  elfshblkref_t		blockref;
-  struct s_iblock	*cur;
-  struct s_caller	*cal;
   u_int		        blen;
-  u_int			maxlen;
   int			is_func;
   char			buffer[24];
-  char			*data;
-
-  maxlen = 0;
+  struct s_buf		*buf;
+  struct s_iblock	*cur;
+  struct s_caller	*cal;
+  elfsh_Sym		bsym;
+  elfshblk_t		*curblock;
+  elfshblkref_t		*blockref;
   
+  buf = (struct s_buf *) opt;
+  cur = (struct s_iblock *) elem;
+  
+  if (!buf->data) 
+    {
+      buf->allocated = 4096;
+      buf->data = malloc(4096);
+      buf->maxlen = 0;
+    }
+  else
+    if (buf->allocated  < (buf->maxlen + sizeof (elfshblk_t)))
+    {
+      buf->data = realloc(buf->data, buf->allocated + 4096);
+      buf->allocated += 4096;
+    }
+  
+  is_func = 0;
+  blen = sizeof (elfshblk_t);
+  
+  curblock = (elfshblk_t *) (buf->data + buf->maxlen);
+  curblock->vaddr = cur->vaddr;
+  curblock->contig = cur->contig;
+  curblock->altern = cur->altern;
+  curblock->size = cur->size;
+  curblock->altype = cur->altype;
+
+  snprintf(buffer, sizeof (buffer), "block_%08x", cur->vaddr);
+    
+  /*
+    for each caller, add a new blcok reference to section
+  */
+  
+  for (cal = cur->caller; cal; cal = cal->next) 
+    {
+      if (buf->allocated  < (buf->maxlen + blen + sizeof (elfshblkref_t)))
+	{
+	  buf->data = realloc(buf->data, buf->allocated + 4096);
+	  buf->allocated += 4096;
+	}
+      blockref = (elfshblkref_t *) (buf->data + buf->maxlen + blen);
+      blockref->vaddr = cal->vaddr;
+      blockref->type = cal->type;
+      if (!is_func && cal->type == CALLER_CALL) 
+	{
+	  is_func = 1;
+	  snprintf(buffer, sizeof (buffer), "function_%08x", cur->vaddr);
+	} 
+      // elfsh_append_data_to_section(sect, &blockref, sizeof (elfshblkref_t));
+      blen += sizeof (elfshblkref_t);
+      
+    }
+  
+  bsym = elfsh_create_symbol(buf->maxlen, blen, STT_BLOCK, 0, 0, 0);
+  elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB],
+		      &bsym, buffer);
+
+  buf->maxlen += blen;
+  buf->block_counter++;
+  return (0);
+}
+
+int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode) 
+{
+  elfsh_Shdr		shdr;
+  elfshsect_t		*sect;
+  struct s_buf		buf;
+    
   /*
     for each block, insert a new STT_BLOCK symbol
     and associated block in data of section
   */
-
-  
-  for (cur = blist; cur; cur = cur->next) 
-    {
-      if (!maxlen)
-	data = malloc(sizeof (elfshblk_t));
-      else
-	data = realloc(data, maxlen + sizeof (elfshblk_t));
-
-      /* dump_block(cur); */
-      is_func = 0;
-      blen = sizeof (elfshblk_t);
-      curblock.vaddr = cur->vaddr;
-      curblock.contig = cur->contig;
-      curblock.altern = cur->altern;
-      curblock.size = cur->size;
-      curblock.altype = cur->altype;
-      memcpy(data + maxlen, &curblock, sizeof (elfshblk_t));
-      /*
-      if (!maxlen)
-      else
-	elfsh_append_data_to_section(sect, &curblock, blen);
-      */
-      snprintf(buffer, sizeof (buffer), "block_%08x", cur->vaddr);
-
-      /*
-	for each caller, add a new blcok reference to section
-      */
-      
-      for (cal = cur->caller; cal; cal = cal->next) 
-	{
-	  blockref.vaddr = cal->vaddr;
-	  blockref.type = cal->type;
-	  if (!is_func && cal->type == CALLER_CALL) 
-	    {
-	      is_func = 1;
-	      snprintf(buffer, sizeof (buffer), "function_%08x", cur->vaddr);
-	    }
-	  data = realloc(data, maxlen + blen + sizeof (elfshblkref_t));
-	memcpy(data + maxlen + blen, &blockref, sizeof (elfshblkref_t));
-	  // elfsh_append_data_to_section(sect, &blockref, sizeof (elfshblkref_t));
-	  blen += sizeof (elfshblkref_t);
-	}
-      
-      /*
-	create symbol
-      */
-      /* printf("maxlen = %i blen = %i\n buffer=%s\n", maxlen, blen, buffer); */
-      
-      bsym = elfsh_create_symbol(maxlen, blen, STT_BLOCK, 0, 0, 0);
-      elfsh_insert_symbol(obj->secthash[ELFSH_SECTION_SYMTAB],
-			    &bsym, buffer);
-      
-      maxlen += blen;
-    }
-
-  
+    
   if (!(sect = elfsh_get_section_by_name(obj, ".control", 0, 0, 0)))
     {
+      buf.allocated = 0;
+      buf.maxlen = 0;
+      buf.block_counter = 0;
+      buf.data = 0;
+      buf.obj = obj;
+      if (mode)
+	btree_browse_prefix(blist->btree, build_data, &buf);
+      
       sect = elfsh_create_section(".control");
-      shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, maxlen,
+      shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen,
 			       0, 0, 0, 0);
-    }
-  
-  elfsh_insert_unmapped_section(obj, sect, shdr, data);
-  sect->altdata = blist;
+      sect->altdata = blist;
+      elfsh_insert_unmapped_section(obj, sect, shdr, buf.data);
+    } 
+  else
+    ELFSH_SETERROR("[elfsh:modflow] * \".control\" section already present\n", 
+		   -1);
+  return (buf.block_counter);
 }
+
+/*******************************************
+ *
+ *
+ */
 
 /**
  *
@@ -177,62 +327,73 @@ void	dump_block(struct s_iblock *b)
  *
  */
 
-int	display_blocks(elfshobj_t *file, struct s_iblock *blk_list, 
-		       int level) 
+int	apply_display(void *elem, void *opt)
 {
   struct s_iblock	*cur;
   struct s_caller	*ccal;
-  u_int			offset;
+  struct s_disopt	*disopt;
   char			*str;
-  int			num;
-
   char			*end_str;
-  u_int			end_offset;
-
+  elfsh_SAddr		offset;
+  elfsh_SAddr		end_offset;
   char			buf1[30];
   char			buf2[30];
+  
 
-  num = 0;
-  for (cur = blk_list; cur; cur = cur->next) 
+  cur = (struct s_iblock *) elem;
+  disopt = (struct s_disopt *) opt;
+
+
+  str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
+  end_str = elfsh_reverse_metasym(disopt->file, 
+				  cur->vaddr + cur->size, &end_offset);
+
+  if (str == NULL)
+    *buf1 = 0x00;
+  else
+    snprintf(buf1, sizeof (buf1), "<%s + " UFMT ">", str, offset);
+  if (end_str == NULL || !(cur->contig))
+    *buf2 = 0x00;
+  else
+    snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
+      
+  printf("[%08x:%05i:%08x:%08x] %-4s %-30s --> %-30s ", 
+	 cur->vaddr, cur->size, cur->contig, cur->altern, 
+	 call_type_str[cur->altype], buf1, buf2);
+      
+  if (cur->altern == 0xFFFFFFFF)
+    printf(" [?]");
+  else if (cur->altern != NULL)
     {
-
-      num++;
-      str = elfsh_reverse_metasym(file, cur->vaddr, &offset);
-      end_str = elfsh_reverse_metasym(file, cur->vaddr + cur->size, &end_offset);
-
-      if (str == NULL)
-	*buf1 = 0x00;
-      else
-	snprintf(buf1, sizeof (buf1), "<%s + %i>", str, offset);
-      if (end_str == NULL || !(cur->contig))
-	*buf2 = 0x00;
-      else
-	snprintf(buf2, sizeof (buf2), "<%s + %i>", end_str, end_offset);
-      
-      printf("[%08x:%05i:%08x:%08x] %-4s %-30s --> %-30s ", 
-	     cur->vaddr, cur->size, cur->contig, cur->altern, 
-	     call_type_str[cur->altype], buf1, buf2);
-      
-      if (cur->altern == 0xFFFFFFFF)
-	printf(" [?]");
-      else if (cur->altern != NULL)
-	{
-	  str = elfsh_reverse_metasym(file, cur->altern, &offset);
-	  printf(" [%s + %i]", (str ? str : ""), offset);
-	}
-      
-      printf("\n");
-      if (level > 0)
-	for (ccal = cur->caller; ccal; ccal = ccal->next) 
-	  {
-	    str = elfsh_reverse_metasym(file, ccal->vaddr, &offset);
-	    printf("\texecuted from: (%08x) <%s + %i> : %s\n",
-		   ccal->vaddr, (str ? str : ""), offset, 
-		   call_type_str[ccal->type]);
-	  }
+      str = elfsh_reverse_metasym(disopt->file, cur->altern, &offset);
+      printf(" [%s + " UFMT "]", (str ? str : ""), offset);
     }
-  return (num);
+      
+  printf("\n");
+  if (disopt->level > 0)
+    for (ccal = cur->caller; ccal; ccal = ccal->next) 
+      {
+	str = elfsh_reverse_metasym(disopt->file, ccal->vaddr, &offset);
+	printf("\texecuted from: (%08x) <%s + " UFMT "> : %s\n",
+	       ccal->vaddr, (str ? str : ""), (elfsh_SAddr) offset, 
+	       call_type_str[ccal->type]);
+      }
+  return (++disopt->counter);
 }
+
+int	display_blocks(elfshobj_t *file, struct s_iblock *blk_list, 
+		       int level) 
+{
+  struct s_disopt	disopt;
+  
+  disopt.counter = 0;
+  disopt.level = level;
+  disopt.file = file;
+  if (blk_list->btree)
+    btree_browse_infix(blk_list->btree, apply_display, &disopt);
+  return (disopt.counter);
+}
+
 
 /**
  * add a new block to blocks linked list.
@@ -241,72 +402,23 @@ int	display_blocks(elfshobj_t *file, struct s_iblock *blk_list,
  * and function return
  *
  */
-  
+
 void	block_add_list(struct s_iblock **list, struct s_iblock *n) 
 {
   struct s_iblock	*cur;
-  struct s_iblock	*nxt;
-  // char	buffer[12];
 
-  /*
-  printf("[@#$!#$ vaddr = %08x size = %3i] - ", n->vaddr, n->size);
-  snprintf(buffer, sizeof (buffer), "%08x", n->vaddr);
-  if ((cur = hash_get(&block_hash, buffer))) {
-    puts("skipped");
-    return;
-  } else
-    puts("added");
-  */
-  // hash_add(&block_hash, buffer, n);
-  if ((cur = *list)) 
+  // printf("vaddr = %8x\n", n->vaddr);
+  cur = *list;
+  if (!cur)
     {
-      if (n->vaddr < cur->vaddr) 
-	{
-	  n->next = *list;
-	  *list = n;
-	  return;
-	} 
-      else 
-	{
-	  /*
-	    we browse linked list until we find that vaddr of block to add
-	    is greater or equal to current block vaddr and lesser than next 
-	    block vaddr.
-	    if  both vaddr are equal, block is already present in linked list
-	    so we simply return. else, we add the new block between current 
-	    and next block of linked list
-	  */
-	  while (cur->next) 
-	    {
-	      nxt = cur->next;
-	      if ((n->vaddr >= cur->vaddr) && (n->vaddr < nxt->vaddr)) 
-		{
-		  if (n->vaddr != cur->vaddr)
-		    break;
-		  return;
-		}
-	      cur = cur->next;
-	    } 
-	  
-	  /* 
-	     new element position found :  
-	     cur -> new - > cur->next
-	  */
-	  if (n->vaddr != cur->vaddr) 
-	    {
-	      n->next = cur->next;
-	      cur->next = n;
-	    }
-	}
-
-    } /* !*list is empty. */
-  else 
-    {
-      n->next = *list;
-      *list = n;
+      cur = block_create(0, 0);
+      *list = cur;
     }
+  btree_insert_sort(&cur->btree, match_block, n);
 }
 
+
+  
 /**
  * add a caller
  * - vaddr is address of starting block
@@ -332,28 +444,29 @@ void	block_add_caller(struct s_iblock *blk, u_int vaddr, int type)
  */
 
 struct s_iblock	*block_get_by_vaddr(struct s_iblock *list, u_int vaddr, 
-				    int mode) 
+				    int mode)
 {
-  struct s_iblock	*cur;
-  char			buffer[12];
-  
-  snprintf(buffer, sizeof (buffer), "%08x", vaddr);
-  if (!(cur = hash_get(&block_hash, buffer)))
-    for (cur = list; cur; cur = cur->next) 
-      {
-	if (((cur->vaddr == vaddr)) || 
-	    (mode && ((cur->vaddr < vaddr) && (vaddr < (cur->vaddr + cur->size)))))
-	  break;
-	else
-	  if (vaddr <  (cur->vaddr + cur->size))
-	    return (0);
-      }
-  return (cur);
+  struct s_iblock	cur;
+  struct s_iblock	*elem;
+  cur.vaddr = vaddr;
+
+  if (list)
+    {
+      if (mode)
+	elem = (struct s_iblock *) btree_find_elem(list->btree, 
+						   match_inblock, &cur);
+      else
+	elem = (struct s_iblock *) btree_find_elem(list->btree, 
+						   match_block, &cur);
+    }
+  else
+    elem = 0;
+  return (elem);
 }
 
 
 /**
- * this function add a new element to the kinked list caller
+ * this function add a new element to the linked list caller
  * of the current block
  * this function resolve operand of instruction which may
  * modifiy execution path.
@@ -377,7 +490,7 @@ int	insert_destination_address(elfshobj_t *obj,
       !(ins->op1.content & ASM_OP_REFERENCE)) 
     {    
       ilen = asm_instr_len(ins);
-      asm_operand_get_immediate(&ins->op1, &dest);
+      asm_operand_get_immediate(ins, 1, 0, &dest);
       dest += ilen + vaddr;
 
       /* 

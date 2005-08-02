@@ -2,159 +2,99 @@
 ** grammar.c for elfsh
 ** 
 ** Need to use bison instead of vm_lookup_param()
-** 
+** but bison is not that light, particulary when
+** using an embedded elfsh ;>
+**
 ** Started on  Sun Feb  9 22:57:58 2003 mayhem
-** Last update Tue May 27 20:07:36 2003 mayhem
 */
 #include "elfsh.h"
 
-
-
-/* Get immediate value */
-static int	        lookup_immed(char *param, elfshpath_t *obj)
-{
-  Elf32_Sym		*sym;
-  elfshconst_t		*actual;
-  char			eol;
-  int			ret;
-  char			lbuf[4096];
-  char			isptr;
-
-#if __DEBUG_MODEL__
-  printf("[DEBUG_MODEL] Lookup immed : PARAM [ %s ] \n", param);
-#endif
-
-  /* Support pointers */
-  if (param != NULL && *param == '$')
-    {
-      isptr = 1;
-      param++;
-    }
-  else
-    isptr = 0;
-
-  /* Lookup .symtab */
-  sym = elfsh_get_symbol_by_name(world.current, param);
-  if (sym != NULL)
-    {
-      obj->immed_val.ent = sym->st_value;
-      obj->type = ELFSH_OBJINT;
-      goto good;
-    }
-
-  /* Lookup .dynsym */
-  sym = elfsh_get_dynsymbol_by_name(world.current, param);
-  if (sym != NULL)
-    {
-      obj->immed_val.ent = sym->st_value;
-      obj->type = ELFSH_OBJINT;
-      goto good;
-    }
-
-  /* Lookup a constant */
-  actual = hash_get(&const_hash, param);
-  if (actual != NULL)
-    {
-      obj->immed_val.ent = actual->val;
-      obj->type = ELFSH_OBJINT;
-      goto good;
-    }
-
-  /* Lookup hexadecimal numeric value */
-  ret = sscanf(param, "0x%lX%c", &obj->immed_val.ent, &eol);
-  if (ret == 1)
-    {
-      obj->type = ELFSH_OBJINT;
-      goto good;
-    }
-
-  /* Lookup decimal numeric value */
-  ret = sscanf(param, "%ld%c", &obj->immed_val.ent, &eol);
-  if (ret == 1)
-    {
-      obj->type = ELFSH_OBJINT;
-      goto good;
-    }
-
-  /* Lookup a supplied string */
-  bzero(lbuf, sizeof(lbuf));
-  ret = sscanf(param, "%[^\n]4095%c", lbuf, &eol);
-  if (ret == 1)
-    {
-      obj->type = ELFSH_OBJSTR;
-      obj->immed_val.str = strdup(lbuf);
-      obj->size = strlen(lbuf);
-      goto good;
-    }
-
-  /* No match */
-  return (-1);
-
-  /* Match */
- good:
-  obj->immed = 1;
-  if(obj->type == ELFSH_OBJSTR)
-    vm_filter_zero(obj);
-  return (0);
-}
 
 
 /* 
 ** Lookup a parameter with 3 fields, 3rd field beeing an index 
 ** Used by GOT, CTORS, DTORS 
 */
-static int	        lookup3_index(elfshpath_t *pobj, char *obj, 
-				      char *L1field, char *index)
+static elfshpath_t	*lookup3_index(char *obj, char *L1field, char *index)
+				      
 {
   elfshL1_t		*l1;
   void			*robj;
-  u_int			idx;
   void			*o1;
   u_int			size;
-  u_int			real_index = 0;
-  
+  elfsh_Addr		real_index = 0;
+  elfshpath_t		*pobj;
+
 #if __DEBUG_MODEL__
-  printf("[DEBUG_MODEL] Lookup3 index\n");
+  char			logbuf[BUFSIZ];
+  
+  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup3 index\n");
 #endif
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Let's ask the hash table for the current working file */
-  idx = atoi(obj);
-  robj = (idx ? vm_getfile(idx) : hash_get(&file_hash, obj));
+  robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3idx] Cannot find requested file object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3idx] Cannot find requested file object\n",
+		   NULL);
 
   /* Then, we ask the Level 1 object */
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3idx] Cannot find requested L1 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3idx] Cannot find requested L1 object\n",
+		   NULL);
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3idx] Bad object path\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3idx] Bad object path\n",
+		   NULL);
+  
+  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj->immed = 0;
 
   /* Lookup object */
   o1 = l1->get_obj(robj, &size);
-  if (vm_isnbr(index))
-    real_index = atoi(index);
-  else if (l1->get_obj_nam == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3idx] Cannot lookup by name\n", -1);
-  else
+
+  /* Lookup index */
+  real_index = vm_lookup_index(index);
+
+  printf("GOT real_index = " UFMT " " DFMT "\n", real_index, real_index);
+
+
+  if (((int) real_index) < 0)
     {
-      pobj->parent = l1->get_obj_nam(robj, index);
-      if (pobj->parent == NULL)
-	ELFSH_SETERROR("[elfsh:lookup3idx] No entry by that name\n", -1);
+      
+      if (l1->get_obj_nam == NULL)
+	ELFSH_SETERROR("[elfsh:lookup3idx] Invalid index\n",
+		       NULL);
+      else
+	{
+	  
+	  //printf("looking up get_obj_name in GOT ! \n");
+
+	  pobj->parent = l1->get_obj_nam(robj, index);
+
+	  //printf("GOT pobjparent = %p ! (with name = %s) \n", pobj->parent, index);
+	  //printf("got = %p \n", ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->data);
+
+	  if (pobj->parent == NULL)
+	    ELFSH_SETERROR("[elfsh:lookup3idx] No entry by that name\n",
+			   NULL);
+	}
     }
 
   /* Do index sanity */
   if (pobj->parent == NULL)
     {
       if (size <= real_index)
-	ELFSH_SETERROR("[elfsh:lookup3idx] Index too big\n", -1);
+	ELFSH_SETERROR("[elfsh:lookup3idx] Index too big\n",
+		       NULL);
       pobj->parent  = l1->get_entptr(o1, real_index);
     }
 
   /* Finally we fill the intermediate object format for the guessed object */
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
-  pobj->type    = ELFSH_OBJINT;
+  pobj->type    = ELFSH_OBJLONG;
 
   return (vm_check_object(pobj));
 }
@@ -166,37 +106,45 @@ static int	        lookup3_index(elfshpath_t *pobj, char *obj,
 ** Lookup a parameter with 3 fields, all fields beeing non indexed 
 ** Only used by ELF header 'til now
 */
-static int		lookup3(elfshpath_t *pobj, char *obj, 
-				char *L1field, char *L2field)
+static elfshpath_t	*lookup3(char *obj, char *L1field, char *L2field)
 {
   elfshL1_t		*l1;
   elfshL2_t		*l2;
   void			*robj;
-  u_int			idx;
+  elfshpath_t		*pobj;
 
 #if __DEBUG_MODEL__
-  printf("[DEBUG_MODEL] Lookup3 \n");
+  char			logbuf[BUFSIZ];
+  
+  snprintf(logbuf, BUFSIZ, "[DEBUG_MODEL] Lookup3 \n");
 #endif
 
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Let's ask the hash table for the current working file */
-  idx = atoi(obj);
-  robj = (idx ? vm_getfile(idx) : hash_get(&file_hash, obj));
+  robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested file object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested file object\n",
+		   NULL);
 
   /* Then, we ask the Level 1 object */
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested L1 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested L1 object\n",
+		   NULL);
   else if (l1->get_obj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3] Invalid object path\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3] Invalid object path\n",
+		   NULL);
 
   /* Then the Level 2 object */
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested L2 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup3] Cannot find requested L2 object\n",
+		   NULL);
 
   /* Finally we fill the intermediate object format for the guessed object */
+  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
   pobj->type    = l2->type;
@@ -207,63 +155,90 @@ static int		lookup3(elfshpath_t *pobj, char *obj,
 
 /* 
 ** Lookup a parameter with 4 fields, 3rd field beeing an index 
-** Used by SHT, PHT, SYMTAB, DYNSYM , Sections
+** Used by SHT, PHT, SYMTAB, DYNSYM , Sections, .dynamic
+**
+** Here need to add 1.rel[name].{L2fields} lookup
 */
-static int		lookup4(elfshpath_t *pobj,
-				char *obj, char *L1field, 
-				char *index, char *L2field, 
-				u_int off, u_int sizelem)
+static elfshpath_t	*lookup4(char *obj, char *L1field, 
+				 char *index, char *L2field, 
+				 u_int off, u_int sizelem)
 {
   elfshL1_t		*l1;
   elfshL2_t		*l2;
   void			*robj;
   void			*o1;
-  volatile int		real_index;
-  volatile u_int	idx;
-  volatile u_int	size;
+  int		  	real_index;
+  u_int			size;
+  elfshpath_t		*pobj;
 
 #if __DEBUG_MODEL__
-  printf("[DEBUG_MODEL] Lookup4 : off = %u \n", off);
+  char			logbuf[BUFSIZ];
 #endif
 
+#if __DEBUG_MODEL__
+ snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup4 : off = %u \n", off);
+#endif
+
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Let's ask the hash table for the current working file */
-  idx = atoi(obj);
-  robj = (idx ? vm_getfile(idx) : hash_get(&file_hash, obj));
+  robj = vm_lookup_file(obj);
   if (NULL == robj)
-    ELFSH_SETERROR("[elfsh:lookup4] Unknown file object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup4] Unknown file object\n",
+		   NULL);
 
   /* Then, we ask the Level 1 object */
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup4] Unknown L1 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup4] Unknown L1 object\n", 
+		   NULL);
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup4] Incorrect object path\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup4] Incorrect object path\n",
+		   NULL);
 
   /* Then the Level 2 object */
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup4] Unknown L2 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup4] Unknown L2 object\n", 
+		   NULL);
 
   /* Read object */
   o1 = l1->get_obj(robj, (void *) &size);
   if (o1 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup4] Cannot read object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup4] Cannot read object\n", 
+		   NULL);
   
+  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj->immed = 0;
+
   /* Do lookup by index or by name */
-  if (vm_isnbr(index))
-    real_index = atoi(index);
-  else if (l1->get_obj_nam == NULL)
-    ELFSH_SETERROR("[elfsh:lookup4] Cannot lookup by name\n", -1);
-  else
-    {
-      pobj->parent = l1->get_obj_nam(robj, index);
-      if (pobj->parent == NULL)
-	ELFSH_SETERROR("[elfsh:lookup4] No object by this name\n", -1);
+  real_index = vm_lookup_index(index);
+  
+  printf("SYM index = %s, real_index = %u (signed = %d) \n", 
+	 index, real_index, real_index);
+
+  if ((int) real_index < 0)
+  {
+
+      if (l1->get_obj_nam == NULL)
+	ELFSH_SETERROR("[elfsh:lookup4] Invalid index\n", 
+		       NULL);
+      else
+	{
+
+	  // pour etre utiliser avec ca
+	  pobj->parent = l1->get_obj_nam(robj, index);
+	  if (pobj->parent == NULL)
+	    ELFSH_SETERROR("[elfsh:lookup4] No index by this name\n", 
+			   NULL);
+	}
     }
+
   if (pobj->parent == NULL)
     {
       if (size <= real_index)
-	ELFSH_SETERROR("[elfsh:lookup4] L1 index too big\n", -1);
+	ELFSH_SETERROR("[elfsh:lookup4] L1 index too big\n", 
+		       NULL);
       pobj->parent   = l1->get_entptr(o1, real_index);
     }
 
@@ -283,73 +258,103 @@ static int		lookup4(elfshpath_t *pobj,
   pobj->root     = robj;
 
   /* Error checking */
-  return (vm_check_object(pobj));
+  //snprintf(logbuf, BUFSIZ, "calling checking pobj = %p \n", pobj);
+  //vm_output(logbuf);
+  pobj = vm_check_object(pobj);
+  //snprintf(logbuf, BUFSIZ, "returning pobj = %p \n", pobj);
+  //vm_output(logbuf);
+
+  return (pobj);
 }
 
 
 /* 
 ** Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
-** Only used for Relocation tables 'til now .
+** Used for Relocation tables and GOT tables.
 */
-static int		lookup5_index(elfshpath_t *pobj, char *obj, 
-				      char *L1field, char *index, 
-				      char *index2, char *L2field)
+static elfshpath_t	*lookup5_index(char *obj, char *L1field, char *index, 
+				       char *index2, char *L2field)
 {
   elfshL1_t		*l1;
   elfshL2_t		*l2;
   void			*robj;
   void			*o1;
-  volatile int		real_index;
-  volatile int		real_index2;
-  volatile u_int	idx;
+  volatile elfsh_Addr  	real_index;
+  volatile elfsh_Addr  	real_index2;
   volatile u_int	size;
+  elfshpath_t		*pobj;
+  elfshsect_t		*sect;
+#if 0
+  char			logbuf[BUFSIZ];
+#endif
 
-  real_index = atoi(index);
-  real_index2 = atoi(index2);
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_MODEL__
-  printf("[DEBUG_MODEL] Lookup5_index : index(%u) rindex(%u) \n", 
-	 real_index, real_index2);
+  real_index = vm_lookup_index(index);
+  real_index2 = vm_lookup_index(index2);
+
+#if 0
+ snprintf(logbuf, BUFSIZ - 1, 
+	  "[DEBUG_MODEL] Lookup5_index : index(" UFMT ") rindex(" UFMT ") \n", 
+	  real_index, real_index2);
+ vm_output(logbuf);
 #endif
 
   /* Let's ask the hash table for the current working file */
-  idx = atoi(obj);
-  robj = (idx ? vm_getfile(idx) : hash_get(&file_hash, obj));
+  robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested file object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested file object\n", 
+		   NULL);
 
   /* Then, we ask the Level 1 object */
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested L1 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested L1 object\n", 
+		   NULL);
   else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
-    ELFSH_SETERROR("[elfsh:lookup5idx] This object needs 2 indexes\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] This object needs 2 indexes\n", 
+		   NULL);
 
   /* Then the Level 2 object */
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested L2 object\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] Cannot find requested L2 object\n", 
+		   NULL);
   else if (l2->get_obj == NULL || l2->set_obj == NULL)
-    ELFSH_SETERROR("[elfsh:lookup5idx] Child object is invalid\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] Child object is invalid\n", 
+		   NULL);
 
   /* Do index sanity */
   o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
   if (size <= real_index2)
-    ELFSH_SETERROR("[elfsh:lookup5idx] Second index too big\n", -1);
+    ELFSH_SETERROR("[elfsh:lookup5idx] Second index too big\n", 
+		   NULL);
   
+  // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n", 
+  // o1, ((elfshsect_t*)o1)->data, ((elfshsect_t*)o1)->name);
+
   /* 
   ** This elfsh_get_reloc() returns a elfshsect_t *, 
   ** and we need to grab the ->data pointer, to avoid rewriting a 
   ** new handler (its not fair but it works .. ;) and its acceptable
   ** since only relocation tables use this rule.
   */
-  o1 = ((elfshsect_t *) o1)->data;
+  sect = (elfshsect_t *) o1;
+  o1 = elfsh_get_raw(sect);
 
   /* Finally we fill the intermediate object format for the guessed object */
+  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
   pobj->type    = l2->type;
+
+  /* ugly flag to put for dynamic Rel vs Rela information */
+  elfsh_setrel(IS_REL(sect));
   pobj->parent  = l1->get_entptr(o1, real_index2);
+
+  printf("[DEBUG_RELOCS_IDX2-AFTER] entptr = %p \n",
+	 pobj->parent);
 
   return (vm_check_object(pobj));
 }
@@ -361,9 +366,8 @@ static int		lookup5_index(elfshpath_t *pobj, char *obj,
 ** Parse the parameter and fill the elfshpath_t
 ** Change ELFSH_FIELD_SEP in elfsh/elfsh/include/elfsh.h
 */
-int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
+elfshpath_t		*vm_lookup_param(char *param, u_int m)
 {
-  int			ret;
   char			obj[ELFSH_MEANING];
   char			field1[ELFSH_MEANING];
   char			field2[ELFSH_MEANING];
@@ -371,13 +375,17 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
   char			index2[ELFSH_MEANING];
   char			off[ELFSH_MEANING];
   char			sizelem[ELFSH_MEANING];
+  elfshpath_t		*res;
+  int			ret;
 
 #if __DEBUG_MODEL__
-  printf("[debug_model] Looking up Parameter %s \n", param);
+  char			logbuf[BUFSIZ];
+
+ snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Looking up Parameter %s \n", param);
+ vm_output(logbuf);
 #endif
 
-  /* initialize pobj, it won't hurt */
-  bzero(pobj, sizeof(elfshpath_t));
+  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* RULE1 : 2 levels, with one index per level : 5 field */
   ret = sscanf(param, 
@@ -389,9 +397,9 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, index, index2, field2);
   if (ret == 5)
     {
-      ret = lookup5_index(pobj, obj, field1, index, index2, field2);
-      if (!ret)
-	return (0);
+      res = lookup5_index(obj, field1, index, index2, field2);
+      if (res)
+	return (res);
     }
 
   /* RULE2: 2 levels with index:offset%elemsize at level 1 : 4 fields */
@@ -404,9 +412,9 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, index, off, sizelem, field2);
   if (ret == 6)
     {
-      ret = lookup4(pobj, obj, field1, index, field2, atoi(off), atoi(sizelem));
-      if (!ret)
-	return (0);
+      res = lookup4(obj, field1, index, field2, atoi(off), atoi(sizelem));
+      if (res)
+	return (res);
     }
 
   /* RULE2 bis: 2 levels with index:offset at level 1 : 5 fields */
@@ -419,9 +427,9 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, index, off, field2);
   if (ret == 5)
     {
-      ret = lookup4(pobj, obj, field1, index, field2, atoi(off), 1);
-      if (!ret)
-	return (0);
+      res = lookup4(obj, field1, index, field2, atoi(off), 1);
+      if (res)
+	return (res);
     }
 
   /* RULE2 ter: 2 levels with index at level 1 : 4 fields */
@@ -434,9 +442,9 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, index, field2);
   if (ret == 4)
     {
-      ret = lookup4(pobj, obj, field1, index, field2, 0, 1);
-      if (!ret)
-	return (0);
+      res = lookup4(obj, field1, index, field2, 0, 1);
+      if (res)
+	return (res);
     }
 
   /* RULE3: Only 1 level with 1 index : 3 fields [got/ctors/dtors] */
@@ -447,9 +455,9 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, index);
   if (ret == 3)
     {
-      ret = lookup3_index(pobj, obj, field1, index);
-      if (!ret)
-	return (0);
+      res = lookup3_index(obj, field1, index);
+      if (res)
+	return (res);
     }
   
   /* RULE4: 2 level but no index : 3 fields */
@@ -462,24 +470,21 @@ int			vm_lookup_param(char *param, elfshpath_t *pobj, u_int m)
 	       obj, field1, field2);
   if (ret == 3)
     {
-      ret = lookup3(pobj, obj, field1, field2);
-      if (!ret)
-	return (0);
+      res = lookup3(obj, field1, field2);
+      if (res)
+	return (res);
     }
 
   /* RULE5: Try immediate value */
-  ret = lookup_immed(param, pobj);
-  if (!ret)
-    return (0);
-
-  /* No good syntax available, print error if we a not in probe mode */
+  /* If no good syntax is available, print error if we are not in probe mode */
+  /* Patched 30-08-2004 for catching more errors in the set command */
   if (m)
-    vm_badparam(param);
-  pobj->type = ELFSH_OBJUNK;
-  return (-1);
+    {
+      res = vm_lookup_immed(param);
+      if (res)
+	return (res);
+      vm_badparam(param);
+    }
+  
+  return (NULL);
 }
-
-
-
-
-
