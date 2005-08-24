@@ -1,4 +1,16 @@
-1. edit vm/Makefile to enable libasm and/or libreadline and configure your built
+
+Please consider this package as a symbolic release. It is preferable not to install
+it and to keep testing this from the uncompressed tarball source tree. The testsuite
+is not up2date, however all new features presented in the Embedded ELF Debugging
+articles are working and can be tested from testsuite/
+
+Please visit elfsh.devhell.org regulary, new versions, more packaged, are coming.
+
+For now :
+
+1. ./configure --help (select your options)
 2. make
 3. make install
 4. cd testsuite && make
+
+-elfsh crew
