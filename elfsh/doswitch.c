@@ -10,19 +10,22 @@ int		vm_doswitch(int nbr)
 {
   elfshobj_t	*actual; 
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   actual = (nbr ? vm_getfile(nbr) : 
 	    hash_get(&file_hash, world.curjob->curcmd->param[0]));
 					     
   if (actual == NULL)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unknown requested object", (-1));
     
   world.curjob->current = actual;
-
-  if (!actual->linkmap)
+  
+  /* Switch to static mode if current file is not mapped */
+  if (elfsh_is_debug_mode() && !actual->linkmap)
     elfsh_set_static_mode();
 
-
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -32,11 +35,13 @@ int		cmd_doswitch()
   char		logbuf[BUFSIZ];
   int		ret;
   int		nbr;
+  elfshobj_t	*cur;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->curcmd->param[0] == NULL)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", (-1));
   nbr = atoi(world.curjob->curcmd->param[0]);
 
   ret = vm_doswitch(nbr);
@@ -50,15 +55,17 @@ int		cmd_doswitch()
     }
   else
     {
+      cur = world.curjob->current;
+	
       snprintf(logbuf, BUFSIZ - 1, "\n [*] Switched on object %u (%s) \n\n",
-	       world.curjob->current->id, world.curjob->current->name);
+	       cur->id, cur->name);
       vm_output(logbuf);
-      if (!world.curjob->current->linkmap)
+      if (elfsh_is_debug_mode() && !cur->linkmap)
 	vm_output("\n [!!] Loaded file is not the linkmap, "
 		  "switching to STATIC mode\n\n");
 
     }
 
 
-  return (ret);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

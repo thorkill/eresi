@@ -37,6 +37,7 @@
 #define		__DEBUG_COPYPLT__		0
 #define		__DEBUG_BSS__			0
 #define		__DEBUG_REDIR__			0
+#define		__DEBUG_RUNTIME__		0
 #define		__DEBUG_CFLOW__			0
 #define		__DEBUG_STATIC__		0
 #define		__DEBUG_BREAKPOINTS__		0
@@ -53,7 +54,7 @@
 #define		ELFSH_ARCH_CRAY			7	/* no hooks yet */
 #define		ELFSH_ARCH_ALPHA64		8	
 #define		ELFSH_ARCH_MIPS32		9
-#define		ELFSH_ARCH_MIPS64		10
+#define		ELFSH_ARCH_MIPS64		10	/* No hooks yet */
 #define		ELFSH_ARCHNUM			11
 #define		ELFSH_ARCH_ERROR		0xFF
 
@@ -71,8 +72,15 @@
 #define		ELFSH_OS_SOLARIS		4
 #define		ELFSH_OS_UNICOS			5
 #define		ELFSH_OS_BEOS			6
-#define		ELFSH_OSNUM			7
+#define		ELFSH_OS_IOS			7
+#define		ELFSH_OSNUM			8
 #define		ELFSH_OS_ERROR			0xFF
+
+/* (k)e2dbg emory hosting types for the debugger hooks */
+#define		E2DBG_HOST_KERN		0
+#define		E2DBG_HOST_PROC		1
+#define		E2DBG_HOSTNUM		2
+#define		E2DBG_HOST_ERROR	0xFF
 
 /* libelfsh block hijack types */
 #define		ELFSH_HIJACK_TYPE_FLOW		0x000000
@@ -95,10 +103,13 @@
 #define		ELFSH_SECTION_NAME_START	".elfsh.start"
 #define		ELFSH_SECTION_NAME_PADGOT	".elfsh.padgot"
 #define		ELFSH_SECTION_NAME_HOOKS	".elfsh.hooks"
-#define		ELFSH_SECTION_NAME_RPHT		".elfsh.rpht"
 #define		ELFSH_SECTION_NAME_ALTDYNSYM	".elfsh.dynsym"
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
+
+//#define		ELFSH_SECTION_NAME_RPHT		".elfsh.rpht"
+#define		ELFSH_SECTION_NAME_RSHSTRTAB	".rshstrtab"
+#define		ELFSH_SECTION_NAME_RSYMTAB	".rsymtab"
 
 /* We need this for string based research, and for sht reconstruction */
 #define		ELFSH_SECTION_NAME_NULL		""
@@ -137,7 +148,9 @@
 #define		ELFSH_SECTION_HASH		3
 #define		ELFSH_SECTION_DYNSYM		4
 #define		ELFSH_SECTION_DYNSTR		5
-#define		ELFSH_SECTION_GNUVER		6
+#define         ELFSH_SECTION_GNUVERSYM         6
+#define         ELFSH_SECTION_GNUVERNEED        7
+#define         ELFSH_SECTION_GNUVERDEF         8
 #define		ELFSH_SECTION_INIT		10
 #define		ELFSH_SECTION_PLT		11
 #define		ELFSH_SECTION_TEXT		12
@@ -163,8 +176,11 @@
 #define		ELFSH_SECTION_GOTPLT		31
 #define		ELFSH_SECTION_MIPSTART		32
 #define		ELFSH_SECTION_EXTPLT		33
+#define		ELFSH_SECTION_RSHSTRTAB		34
+#define		ELFSH_SECTION_RSYMTAB		35
+#define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
-#define		ELFSH_SECTION_MAX		256
+
 
 /* Some constants */
 #define		ELFSH_PLT_ENTRY_SIZE	        16
@@ -208,7 +224,7 @@
 #define		ELFSH_UNMAPPED_INJECTION	2
 #define		ELFSH_UNKNOWN_INJECTION		3
 
-#define		STT_BLOCK			6
+#define		STT_BLOCK			(STT_NUM + 1)
 
 
 #define	DUMPABLE(sym)		(elfsh_get_symbol_type(sym) == STT_FUNC   || \
@@ -244,9 +260,28 @@
 #define		ELFSH_PAX_RANDEXEC         16   /* Randomize ET_EXEC base */
 #define	        ELFSH_PAX_SEGMEXEC         32   /* Segmentation based non-exec pages */
 
+
+
 /* EI_RPHT is not PaX related */
 #define		EI_PAX			   14   /* Index in e_ident[] where to read flags */
 #define		EI_RPHT			   10	/* Index in e_ident[] where to read rphtoff */
+
+
+
+/* ELFsh redirection abstract unit */
+typedef struct	s_redir
+{
+#define		ELFSH_REDIR_CFLOW	0
+#define		ELFSH_REDIR_ALTPLT	1
+#define		ELFSH_REDIR_ALTGOT	2
+  u_char	type;					/* Redirection type                */
+
+#define		ELFSH_ORIG_FUNC	        0
+#define		ELFSH_HOOK_FUNC		1
+  char		*name[2];				/* Name of involved functions      */
+  elfsh_Addr	 addr[2];				/* Redirection address             */
+}		elfshredir_t;
+
 
 
 /* ELFsh private stab entry */
@@ -272,6 +307,21 @@ typedef struct		s_nentry
   struct s_nentry	*next;
   struct s_nentry	*prev;
 }			elfshnotent_t;
+
+
+/* Version structures */
+typedef struct        s_hashneed
+{
+  elfsh_Verneed       *need;
+  elfsh_Vernaux       *aux;
+}		      hashneed_t;
+
+typedef struct        s_hashdef
+{
+     void             *ps;
+     elfsh_Verdef     *def;
+    elfsh_Word        *aux;
+}                     hashdef_t;
 
 
 /* ELFsh private relocation format */
@@ -322,15 +372,13 @@ typedef struct		s_sect
   struct s_sect		*next;		/* Next section in the list					*/
   struct s_sect		*prev;		/* Prev section in the list					*/
 
-  /* PEsh data structures :! to fill, your job sk ;) */
-
-
   /* ELFsh section state */
 #define		ELFSH_SECTION_ANALYZED		(1 << 0)
 #define		ELFSH_SECTION_INSERTED		(1 << 1)
 #define		ELFSH_SECTION_MOVED		(1 << 2)
 #define		ELFSH_SECTION_REMOVED		(1 << 3)
-  char			flags;		/* Analysed/Raw, Orphelin/Inserted, Moved, Removed	        */
+#define		ELFSH_SECTION_RUNTIME		(1 << 4)
+  char			flags;		/* Analysed/Raw, Orphelin/Inserted, Moved, Removed, Runtime/Static */
 
   /* Filled at loading */
   void			*data;		/* Section's data cache in file					*/
@@ -342,17 +390,13 @@ typedef struct		s_sect
   void			*altdata;	/* Type dependant internal format				*/
   void			*terdata;	/* Alternate type dependant internal format			*/
 
-  /* Filled at relocation : ELFSH PRIVATE FORMAT */
+  /* Filled at 'unrelocation' : ELFsh private relocs fmt only used in experimental features */
   elfshrel_t		*rel;		/* ELFsh private relocation table for this section		*/
   u_int			srcref;		/* Number of absolute reference FROM this section : sizeof(rel)	*/
   u_int			dstref;		/* Number of absolute reference TO this section			*/
 
-  /* Filled at merging (BSS only for the moment) */
-#if 0
-  elfshzone_t		*modzone;	/* Extra zone list, one zone per object */
-#endif
-
-  u_int			curend;		/* Current real end of section */
+  /* Changed during extension */
+  u_int			curend;		/* Current real end of section : we save room when possible */
 
 }			elfshsect_t;
 
@@ -370,21 +414,32 @@ typedef struct		s_link_map
 }			elfshlinkmap_t;
 
 
+/* The runtime ELF header (unofficial ELF extension) */
+/* This structure has been introduced since the Embedded ELF Debugger */
+typedef struct	s_rehdr
+{
+  uint16_t	 rphtnbr;		/* Number of entries in RPHT */
+  uint16_t	 rshtnbr;		/* Number of entries in RSHT */
+  elfsh_Addr	 base;			/* Base address (runtime ET_DYN object base) */
+
+}		elfshrhdr_t;
+
+
+
 /* ELF object structure */
 typedef struct	s_obj
 {
-  /* pesh structures */
-
-
-
   elfsh_Ehdr	 *hdr;				/* Elf header */
   elfsh_Shdr	 *sht;				/* Section header table */
   elfsh_Phdr	 *pht;				/* Program Header table */
   elfshsect_t	 *sectlist;			/* Section linked list */
-  elfshsect_t	 *secthash[ELFSH_SECTION_MAX];	/* Section hash table */
 
-  elfsh_Phdr	 *rpht;				/* The extra runtime PHT */
-  uint16_t	 rphtnbr;			/* Number of entries in RPHT */
+  elfshrhdr_t	 rhdr;				/* The Runtime header */
+  elfsh_Shdr	 *rsht;				/* The Runtime SHT */
+  elfsh_Phdr	 *rpht;				/* The Runtime PHT */
+  elfshsect_t	 *rsectlist;			/* Runtime Section linked list */
+
+  elfshsect_t	 *secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
 
   int		 fd;			/* File descriptor for the original file */
   char		 *name;			/* Object path */
@@ -401,7 +456,6 @@ typedef struct	s_obj
   uint32_t	 nbrm;			/* Number of section headers to remove at saving */
 
   char		 shtrb;			/* Reconstruct the SHT if non present */
-  elfsh_Addr	 base;			/* Base address (when object is ET_DYN process image) */
 
 #define		 ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
   struct s_obj	 *listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
@@ -411,7 +465,9 @@ typedef struct	s_obj
   const char	 *error;		/* Last error string */
   struct s_obj	 *next;			/* The list is simply linked */
 
+  hash_t	 redir_hash;		/* Redirections hash table */
   elfshlinkmap_t *linkmap;		/* Linkmap */
+
 }		 elfshobj_t;
 
 
@@ -426,23 +482,41 @@ typedef struct	s_libstate
 #define		LIBELFSH_MODE_E2DBG	2
   u_char	mode;				/* The current working mode (ondisk/memory) */
   u_char	indebug;			/* 1 when inside the debugger */
-  char		prof_enable;			/* libelfsh profiling switch */
+
+#define		ELFSH_NOPROF	0
+#define		ELFSH_ERRPROF	1
+#define		ELFSH_OUTPROF	2
+#define		ELFSH_DEBUGPROF	3
+  char		proflevel;	  		/* libelfsh profiling switch */
   int           (*profile)(char *);		/* Profiling output function */
+  int           (*profile_err)(char *);		/* Profiling output (error) function */
   
 
 }		libworld_t;
 
-/* Elfsh break points */
-typedef struct	s_bp {
 
+
+/* Elfsh break points */
+typedef struct	s_bp 
+{
+
+  /* XXX: To comment ! */
 #define		UNDEF	0
 #define		INSTR	1
   u_char	type;
 
-  u_char	savedinstr[16];
-  elfsh_Addr	addr;
-  elfshobj_t	*obj;
-  
+  u_char	savedinstr[16];	/* Saved bytes at breakpoints addr */
+  char		*cmd[10];	/* Commands to be executed on hit */
+  char		cmdnbr;		/* Next available cmd slot */
+  elfsh_Addr	addr;		/* Adresse of breakpoint */
+  uint32_t	id;		/* Breakpoint ID */
+  char		*symname;	/* Symbol match, if any */
+  elfshobj_t	*obj;		/* Parent object of breakpoint */
+
+#define	ELFSH_BP_BREAK	0	/* Classical breakpoint */
+#define	ELFSH_BP_WATCH	1	/* Do not get back to debugger */
+  u_char	flags;		/* Breakpoint flags */
+
 }		elfshbp_t;
 
 
@@ -469,7 +543,11 @@ extern int	(*hook_break[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t  
 									 elfshbp_t   *_new);
 
 /* Libelfsh error message */
-extern char	*elfsh_error;
+extern char	*elfsh_error_str;
+
+/* Profiling depth */
+extern int	elfsh_depth;
+
 
 /*
 **
@@ -478,7 +556,7 @@ extern char	*elfsh_error;
 ** Check elfsh/doc/libelfsh-api.txt for a complete description
 **
 ** XXX: libelfsh-api.txt not updated to 0.5 (it is for 0.43b)
-**
+** FIXME: Maybe doxygen soon ? ;)
 */
 
 /* dynamic.c */
@@ -616,6 +694,7 @@ u_int		elfsh_get_stab_type(elfshstabent_t *s);
 /* sht.c */
 elfsh_Shdr      *elfsh_get_shtentry_from_sym(elfshobj_t *file, elfsh_Sym *sym);
 void		*elfsh_get_sht(elfshobj_t *file, int *num);
+void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num);
 int		elfsh_load_sht(elfshobj_t *file);
 elfsh_Sym	*elfsh_get_sym_from_shtentry(elfshobj_t *file, elfsh_Shdr *hdr);
 elfsh_Word      elfsh_get_section_info(elfsh_Shdr *s);
@@ -656,6 +735,7 @@ elfsh_Shdr	elfsh_create_shdr(elfsh_Word name, elfsh_Word type, elfsh_Word flags,
 				  elfsh_Addr addr, elfsh_Off offset, elfsh_Word size,
 				  elfsh_Word link, elfsh_Word info, elfsh_Word align,
 				  elfsh_Word entsize);
+int		elfsh_insert_runtime_shdr(elfshobj_t *f, elfsh_Shdr hdr, u_int r, char *name, char sf);
 
 int		elfsh_sort_sht(elfshobj_t *file);
 void		elfsh_sync_sectnames(elfshobj_t *file);
@@ -767,9 +847,15 @@ elfshsect_t	*elfsh_get_tail_section(elfshobj_t *file);
 elfshsect_t	*elfsh_get_section_by_idx(elfshsect_t *list, elfsh_Addr index);
 void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, u_int sizelem);
 int		elfsh_add_section(elfshobj_t *file, elfshsect_t *sect, u_int index, void *data, int shift);
+int             elfsh_add_runtime_section(elfshobj_t *file, elfshsect_t *sct, u_int range, void *dat);
+
 int		elfsh_write_section_data(elfshsect_t *sect, u_int off, char *data, u_int size, u_int sizelem);
 elfshsect_t	*elfsh_get_section_by_nam(elfshobj_t *file, char *name);
 void		*elfsh_get_raw(elfshsect_t *sect);
+int		elfsh_section_is_runtime(elfshsect_t *sect);
+elfshsect_t     *elfsh_get_rsection_by_index(elfshobj_t *file, elfsh_Addr idx, int *stridx, int *num);
+
+
 
 /* inject.c */
 elfshsect_t	*elfsh_insert_section(elfshobj_t *file, char *name, char *data, char mode, u_int size, u_int mod);
@@ -781,6 +867,20 @@ int		elfsh_insert_code_section_up(elfshobj_t*, elfshsect_t*, elfsh_Shdr, void*, 
 int		elfsh_insert_section_idx(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, u_int index);
 int		elfsh_insert_static_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, u_int mod);
 int		elfsh_insert_runtime_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, u_int mod);
+
+
+/* version.c */
+int           elfsh_get_verdauxnamelist(elfshobj_t *f, hashdef_t *hdef, char **n, int nu);
+int           elfsh_load_needtable(hash_t *t, elfshsect_t *sect);
+int           elfsh_load_deftable(hash_t *t, elfshsect_t *sect);
+void          *elfsh_get_versymtab(elfshobj_t *f, int *n);
+void          *elfsh_get_verneedtab(elfshobj_t *f, int *n);
+void          *elfsh_get_verdeftab(elfshobj_t *f, int *n);
+elfshsect_t   *elfsh_get_verstrtable(elfshobj_t *f);
+char          *elfsh_get_verneedfile(elfshobj_t *f, elfsh_Verneed *n);
+char          *elfsh_get_vernauxname(elfshobj_t *f, elfsh_Vernaux *a);
+char          *elfsh_get_verdauxname(elfshobj_t *f, elfsh_Verdaux *a);
+
 
 
 /* reloc.c */
@@ -908,6 +1008,7 @@ int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name);
 int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name);
 elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index);
 elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file);
+int             elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name);
 
 /* fixup.c */
 elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex);
@@ -941,7 +1042,8 @@ char		*elfsh_get_comments_entry(elfshobj_t *file, u_int range);
 int		elfsh_hijack_function_by_name(elfshobj_t	*file,
 					      uint32_t		type,
 					      char		*name,
-					      elfsh_Addr	addr);
+					      elfsh_Addr	addr,
+					      elfsh_Addr	*hooked);
 
 /* debug.c */
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label);
@@ -950,15 +1052,6 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label);
 int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag);		
 elfshsect_t	*elfsh_fixup_bss(elfshobj_t *file);
 elfshsect_t	*elfsh_add_bss(elfshobj_t *file);
-
-/*
-elfshzone_t	*elfsh_create_bsszone(char *name, u_int off, u_int size);
-elfshzone_t	*elfsh_find_bsszone(elfshsect_t *bss, char *name);
-int		elfsh_add_bsszone(elfshsect_t *bss, elfshzone_t *zone, unsigned int padsize);
-*/
-
-
-
 int		elfsh_flush_bss(elfshobj_t *file);
 int		elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht);
 int		elfsh_find_bsslen(elfshobj_t *host, elfshobj_t *rel, char *name);
@@ -975,6 +1068,7 @@ int		elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type);
 
 /* hooks.c */
 u_char		elfsh_get_ostype(elfshobj_t *file);
+u_char		elfsh_get_hosttype(elfshobj_t *file);
 u_char		elfsh_get_elftype(elfshobj_t *file);
 u_char		elfsh_get_archtype(elfshobj_t *file);
 int		elfsh_default_plthandler(elfshobj_t *null, elfsh_Sym *null2,
@@ -1129,9 +1223,13 @@ int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot);
 
 /* error.c */
 void		elfsh_profile_reset(u_int sel);
-int		elfsh_profile_print(char *file, char *func, int line, char *msg);
-void		elfsh_profile_err(char *file, char *func, u_int32_t line, char *msg);
+int		elfsh_profile_print(char *file, char *func, u_int line, char *msg);
+void		elfsh_profile_err(char *file, char *func, u_int line, char *msg);
 void		elfsh_profile_out(char *file, char *func, u_int line);
+void		elfsh_error();
+void		elfsh_incdepth();
+void		elfsh_decdepth();
+void		elfsh_updir();
 
 /* state.c */
 u_char		elfsh_is_static_mode(); 
@@ -1140,11 +1238,13 @@ u_char		elfsh_is_debug_mode();
 void		elfsh_set_debug_mode();
 void		elfsh_set_mode(u_char mode);
 u_char		elfsh_get_mode();
+void		elfsh_toggle_mode();
 int		elfsh_is_prof_enable();
 int		elfsh_prof_disable();
-int		elfsh_prof_enable();
+int		elfsh_prof_enable_err();
+int		elfsh_prof_enable_out();
 u_char		elfsh_debugger_present();
-void		elfsh_set_profile(int (*profile)(char *));
+void		elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *));
 
 
 /* linkmap.c */
@@ -1166,6 +1266,6 @@ void		*elfsh_bt(void *frame);
 void		*elfsh_bt_get_frame();
 
 /* bp.c */
-int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, elfsh_Addr addr);
+int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, elfsh_Addr addr, u_char flags);
 
 #endif /* __LIBELFSH_H_ */

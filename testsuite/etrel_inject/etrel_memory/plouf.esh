@@ -1,0 +1,12 @@
+#!../../../vm/elfsh
+
+
+profile
+
+
+profile
+
+print coucou
+print coucou2
+
+

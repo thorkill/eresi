@@ -33,7 +33,7 @@ int		vm_convert2str(elfshpath_t *obj)
   elfsh_Addr	val64;
   char		tmp[30];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (obj->type)
     {
@@ -68,23 +68,25 @@ int		vm_convert2str(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     case ELFSH_OBJRAW:
-      ELFSH_SETERROR("[elfsh:vm_convert2str] Raw -> String is not a valid "
-		     "conversion \n", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Raw -> String is not a valid "
+			"conversion", -1);
     case ELFSH_OBJLONG:
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), DFMT, val64);
+      snprintf(tmp, sizeof(tmp), XFMT, val64);
       obj->immed_val.ent = 0;
       obj->immed_val.str = strdup(tmp);
       obj->type = ELFSH_OBJSTR;
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
+    case ELFSH_OBJSTR:
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2str] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Convert to 4 bytes object */
@@ -94,6 +96,8 @@ int		vm_convert2int(elfshpath_t *obj)
   u_int		val32;
   u_short	val16;
   u_char	val8;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (obj->type)
     {
@@ -137,10 +141,10 @@ int		vm_convert2int(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2int] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Convert to a long object */
@@ -148,7 +152,7 @@ int		vm_convert2long(elfshpath_t *obj)
 {
   elfsh_Addr	val64;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (obj->type)
     {
@@ -192,11 +196,11 @@ int		vm_convert2long(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2long] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Convert to a raw data object */
@@ -208,7 +212,7 @@ int		vm_convert2raw(elfshpath_t *obj)
   elfsh_Addr	val64;
   char		*str;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (obj->type)
     {
@@ -258,10 +262,10 @@ int		vm_convert2raw(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2raw] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Convert to a raw data object */
@@ -272,7 +276,7 @@ int		vm_convert2byte(elfshpath_t *obj)
   int		val32;
   elfsh_Addr	val64;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (obj->type)
     {
@@ -316,10 +320,10 @@ int		vm_convert2byte(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2byte] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Convert to a raw data object */
@@ -330,7 +334,7 @@ int		vm_convert2short(elfshpath_t *obj)
   int		val32;
   elfsh_Addr	val64;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (obj->type)
     {
@@ -374,9 +378,9 @@ int		vm_convert2short(elfshpath_t *obj)
       obj->sizelem = 0;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:vm_convert2short] Source type unknown \n",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Source type unknown", -1);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

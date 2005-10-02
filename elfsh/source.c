@@ -13,21 +13,20 @@ int		cmd_source()
   elfshpath_t	*tmp;
   char		*str;
   int		fd;
-  int		saved;
+  int		savedfd;
   char		savedmode;
   elfshargv_t	*savedcmd;
   char          *(*savedinput)();  
   char		**argv;
   char		**av;
   int		ac;
-  char		buf[BUFSIZ];
-
   int           idx;
   char          actual[16];
   elfshpath_t   *new;
   int		argc = 0 ;
+  int		ret;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
@@ -35,33 +34,37 @@ int		cmd_source()
       argc++;
     }
 
+  if (!idx)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid parameter", (-1));
+
   /* Resolve the parameter */
   str = world.curjob->curcmd->param[0];
   if (*str == ELFSH_VARPREF)
     {
       str = vm_lookup_var(++str);
       if (!str)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid parameter", (-1));
       tmp = hash_get(&vars_hash, str);
       if (!tmp || tmp->type != ELFSH_OBJSTR)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid parameter", (-1));
+
       str = tmp->immed_val.str;
     }
 
   /* Open the script file and pass its parameters */
   argv = alloca((2 + argc) * sizeof(char *));
-
   argv[0] = "#!elfsh";
   argv[1] = str;
   ac = 1;
   for (ac = 1; world.curjob->curcmd->param[ac]; ac++)
-    {
-      argv[ac + 1] = world.curjob->curcmd->param[ac]; 
-    }
+    argv[ac + 1] = world.curjob->curcmd->param[ac]; 
   argv[ac + 1] = NULL;
-
   if (!vm_testscript(2, argv))
-    ELFSH_SETERROR("[vm:cmd_source] Invalid script file", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid script file", -1);
 
   /* Add argument variables */
   for (idx = 1; argv[idx + 1]; idx++)
@@ -81,16 +84,16 @@ int		cmd_source()
   world.curjob->sourced++;
   hash_init(&labels_hash[world.curjob->sourced], 251);
 
-  saved     = world.curjob->io.input_fd;
-  savedinput= world.curjob->io.input;
-  savedmode = world.state.vm_mode;
-  savedcmd  = world.curjob->curcmd;
+  savedfd    = world.curjob->io.input_fd;
+  savedinput = world.curjob->io.input;
+  savedmode  = world.state.vm_mode;
+  savedcmd   = world.curjob->curcmd;
 
   /* Temporary takes input from the script file */
   vm_setinput(world.curjob, fd);
   world.curjob->io.input_fd = fd;
-  world.state.vm_mode = ELFSH_VMSTATE_SCRIPT;
-  world.curjob->io.input = vm_stdinput;
+  world.state.vm_mode       = ELFSH_VMSTATE_SCRIPT;
+  world.curjob->io.input    = vm_stdinput;
 
   /* A simple dedicated interpretation loop on the script file */
   do {
@@ -104,7 +107,8 @@ int		cmd_source()
     if (vm_parseopt(ac, av) < 0)
       {
 	free(av);
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid script", (-1));
       }
 
     if (!world.curjob->curcmd                           || 
@@ -117,12 +121,52 @@ int		cmd_source()
   
   /* We execute the parsed script and restore the original context */
   world.curjob->curcmd      = world.curjob->script[world.curjob->sourced];
-  vm_execscript();
-  world.curjob->io.input_fd = saved;
+
+  /* If we are executing a debugger script, do not clear everything yet */
+  if (vm_execscript() == E2DBG_SCRIPT_CONTINUE)
+    {
+      e2dbgworld.dbgcontext.savedfd    = savedfd;
+      e2dbgworld.dbgcontext.savedmode  = savedmode;
+      e2dbgworld.dbgcontext.savedcmd   = savedcmd;
+      e2dbgworld.dbgcontext.savedinput = savedinput;
+      e2dbgworld.dbgcontext.savedargv  = argv;
+      e2dbgworld.dbgcontext.savedname  = str;
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 E2DBG_SCRIPT_CONTINUE);
+    }
+  
+  /* Restore the context immediately if not inside a debugger script */
+  ret = vm_restore_dbgcontext(savedfd, 
+			      savedmode, 
+			      savedcmd, 
+			      savedinput, 
+			      argv, str);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+/* Restore the previous debugger control context */
+/* Mostly useful when using 'continue' command from a debugger script */
+int	       vm_restore_dbgcontext(int		savedfd, 
+				     char		savedmode, 
+				     elfshargv_t	*savedcmd, 
+				     void		*savedinput, 
+				     char		**argv,
+				     char		*savedname)
+{
+  char		buf[BUFSIZ];
+  u_int		idx;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Restore modified control context */
+  world.curjob->io.input_fd = savedfd;
   world.state.vm_mode       = savedmode;
   world.curjob->curcmd      = savedcmd;
   world.curjob->io.input    = savedinput;
-  snprintf(buf, BUFSIZ, "\n [*] %s sourcing -OK- \n\n", str);
+  snprintf(buf, BUFSIZ, "\n [*] %s sourcing -OK- \n\n", savedname);
   vm_output(buf);
   
   world.curjob->script[world.curjob->sourced] = NULL;
@@ -132,14 +176,17 @@ int		cmd_source()
   /* Del argument variables */
   for (idx = 1; argv[idx + 1]; idx++)
     {
-      snprintf(actual, sizeof(actual), "%u", idx);
-      hash_del(&vars_hash, actual);
+      snprintf(buf, sizeof(buf), "%u", idx);
+      hash_del(&vars_hash, buf);
     }
-
   hash_del(&vars_hash, ELFSH_ARGVAR);
 
-  return (0);
+  /* Return OK */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
 
 /* Execute a command given by a string in the current job */
 int	vm_exec_str(char *str)
@@ -148,35 +195,38 @@ int	vm_exec_str(char *str)
   char  **av;
   int	ac;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   nbr = vm_findblanks(str);
   av = vm_doargv(nbr, &ac, str);
-
   if (vm_parseopt(ac, av) < 0)
     {
       free(av);
-      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Command failed", (-1));
     }
+
   
-  return (0);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
 /* Script used as command function */
-int	cmd_script()
+int			cmd_script()
 {
   int                   idx;
   char                  data[BUFSIZ];
   u_int                 sz = BUFSIZ - 1;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.scriptsdir == NULL)
-    ELFSH_SETERROR("[vm:cmd_script] No scripts dir specified", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No scripts dir specified", -1);
 
-  snprintf(data, BUFSIZ - 1, "source %s/%s.esh",  world.scriptsdir, world.curjob->curcmd->name);
+  snprintf(data, BUFSIZ - 1, "source %s/%s.esh",  
+	   world.scriptsdir, world.curjob->curcmd->name);
 
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
@@ -192,7 +242,7 @@ int	cmd_script()
   
   vm_exec_str(data);
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -210,17 +260,16 @@ int	vm_add_script_cmd(char *dir_name)
   int	cnt = 0;
 
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   argv[0] = "#!elfsh";
 
   dir = opendir(dir_name);
   
   if (dir == NULL)
-    {
-      perror("opendir");
-      return (-1);
-    }
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Opendir failed", (-1));
+  
 
   /* scripts dir already specified so cleanup command set */
   if (world.scriptsdir != NULL)
@@ -252,8 +301,11 @@ int	vm_add_script_cmd(char *dir_name)
 	      
 	      snprintf(cmd_name, BUFSIZ - 1, "%s", dir_entry->d_name);
 	      cmd_name[len - 1 - 3] = '\0';
-	      vm_addcmd(strdup(cmd_name), (void *) cmd_script, (void *) vm_getvarparams, 0);
-	      snprintf(cmd_name, BUFSIZ - 1, "\t\t+ %s added\n", dir_entry->d_name);
+	      vm_addcmd(strdup(cmd_name), (void *) cmd_script, 
+			(void *) vm_getvarparams, 0, 
+			"Synthetic macro command");
+	      snprintf(cmd_name, BUFSIZ - 1, "\t\t+ %s added\n", 
+		       dir_entry->d_name);
 	      vm_output(cmd_name);
 	      cnt++;
 	    }
@@ -272,7 +324,7 @@ int	vm_add_script_cmd(char *dir_name)
     vm_output("\t\t!! No scripts found !!\n");
 
   closedir(dir);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -285,39 +337,42 @@ int	cmd_scriptsdir()
 #endif
 
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->curcmd->param[0] == NULL)
-      return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", (-1));
+      
 
-  snprintf(str, BUFSIZ - 1, "\t [Adding script commands from %s] \n", world.curjob->curcmd->param[0]);
+  snprintf(str, BUFSIZ - 1, "\t [Adding script commands from %s] \n", 
+	   world.curjob->curcmd->param[0]);
   vm_output(str);
   
   if (vm_add_script_cmd(world.curjob->curcmd->param[0]) < 0)
     {
       vm_output("\t failed\n\n");
-      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Macro command adding failed", (-1));
     }
   else
     {
 #if defined(USE_READLN)
-      world.cmds = hash_get_keys(&cmd_hash, &cmdnum);
+      world.comp.cmds[0] = hash_get_keys(&cmd_hash, &cmdnum);
 #endif
       vm_output("\t done\n\n");
     }
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int	cmd_lscripts()
+int		cmd_lscripts()
 {
-  char	str[BUFSIZ];
+  char		str[BUFSIZ];
   hashent_t     *actual;
   int           index;
   int		cnt = 1;
 
-
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* scripts dir already specified so cleanup command set */
   if (world.scriptsdir != NULL)
@@ -344,5 +399,5 @@ int	cmd_lscripts()
   else
     vm_output(" [!!] No script directory specified, use sdir command.\n\n");
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

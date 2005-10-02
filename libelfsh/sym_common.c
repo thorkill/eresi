@@ -7,6 +7,8 @@
 #include "libelfsh.h"
 
 
+
+
 /* Return the symbol size */
 elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
 {
@@ -80,7 +82,7 @@ u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
 /* Return the symbol type */
 u_char	elfsh_get_symbol_type(elfsh_Sym *s)
 {
-  //  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == s)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -308,8 +310,10 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 
   if (file->secthash[ELFSH_SECTION_PLT] != NULL &&
       parent->index == file->secthash[ELFSH_SECTION_PLT]->index)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reverse_dynsymbol(file, vaddr, off)));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reverse_symbol(file, vaddr, off)));
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       (elfsh_reverse_dynsymbol(file, vaddr, off)));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_reverse_symbol(file, vaddr, off)));
 }
 
 /* Endianize the table */
@@ -350,7 +354,8 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
   
 
 /* Shift the symbol table */
-int		elfsh_shift_syms(elfshobj_t *file, elfshsect_t *symtab, 
+int		elfsh_shift_syms(elfshobj_t *file, 
+				 elfshsect_t *symtab, 
 				 elfsh_Addr limit, int inc)
 {
   u_int		nbr;
@@ -362,7 +367,6 @@ int		elfsh_shift_syms(elfshobj_t *file, elfshsect_t *symtab,
   if (symtab == NULL || symtab->data == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid SYMTAB parameter", -1);
-
 
 #if	__DEBUG_RELADD__
   static u_int	totshift = 0;

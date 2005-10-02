@@ -10,11 +10,11 @@ include ../../config.h
 SRC	= symtab_extend.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libhash -lhashelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm
 NAM	= symtab_extend
 RM	= rm -f 
 VULN	= main.c
-OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include $(BITS)
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include -I../../libasm/include/ $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

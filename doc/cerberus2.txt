@@ -1,0 +1,3601 @@
+
+                             ==Phrack Inc.==
+
+              Volume 0x0b, Issue 0x3f, Phile #0x09 of 0x14
+
+|=------=[ Embedded ELF Debugging : the middle head of Cerberus ]=------=|
+|=----------------------------------------------------------------------=|
+|=------------=[ The ELF shell crew <elfsh@devhell.org> ]=--------------=|
+|=----------------------------------------------------------------------=|
+
+
+I. Hardened software debugging introduction
+     a. Previous work & limits
+     b. Beyond PaX and ptrace()		
+     c.	Interface improvements
+II. The embedded debugging playground
+     a. In-process injection
+     b. Alternate ondisk and memory ELF scripting (feat. linkmap)
+     c. Real debugging : dumping, backtrace, breakpoints
+     d. A note on dynamic analyzers generation 
+III. Better multiarchitecture ELF redirections
+     a. CFLOW: PaX-safe static functions redirection		
+     b. ALTPLT technique revised				
+     c. ALTGOT technique : the RISC complement			
+     d. EXTPLT technique : unknown function postlinking
+     e. IA32, SPARC32/64, ALPHA64, MIPS32 compliant algorithms		 
+V. Constrained Debugging
+     a. ET_REL relocation in memory				
+     b. ET_REL injection for Hardened Gentoo (ET_DYN + pie + ssp)
+     c. Extending static executables				
+     d. Architecture independant algorithms
+VI. Past and present
+VII. Greetings  
+VIII. References
+
+
+
+-------[ I. Hardened software debugging introduction
+	 
+	 
+	      In the past, binary manipulation work has focussed on virii
+	 writing, software cracking, backdoors deployment, or creation of 
+	 tiny or obfuscated executables. Besides the tools from the GNU 
+	 project such as the GNU binutils that includes the GNU debugger [1] 
+	 (which focus more on portability than functionalities), no major 
+	 binary manipulation framework does exist. For almost ten years, 
+	 the ELF format has been a success and most UNIX Operating Systems 
+	 and distributions rely on it. 
+
+	 However, the existing tools do not take advantage of the format 
+	 and most of the reverse engineering or debugging softwares are 
+	 either very architecture specific, or simply do not care about 
+	 binary internals for extracting and redirecting information.
+
+	 Since our first published work on the ELF shell, we improved so
+	 much the new framework that it is now time to publish a second
+	 deep article focussing on advances in static and runtime	
+	 ELF techniques. We will explain in great details the 8 new
+	 binary manipulation functionalities that intersect with the 
+	 existing reverse engineering methodology. Those techniques allow 
+	 for a new type of approach on debugging and extending closed 
+	 source software in hardened environments.
+
+	 We worked on many architectures (x86, alpha, sparc, mips) and 
+	 focussed on constrained environments where binaries are linked 
+	 for including security protections (such as hardened gentoo 
+	 binaries) in PaX [2] protected machines. It means that our 
+	 debugger can stay safe if it is injected inside a (local or) 
+	 remote process.
+
+
+----[ A. Previous work & limits
+
+
+	 In the first part of the Cerberus articles serie, we introduced 
+	 a new residency technique called ET_REL injection. It consisted 
+	 in compiling C code into relocatable (.o) files and injecting
+	 them into existing closed source binary programs. This technique 
+	 was proposed for INTEL and SPARC architectures on the ELF32 
+	 format. 
+
+	 We improved this technique so that both 32 and 64 bits binaries 
+	 are supported so we added alpha64 and sparc64 support. We also 
+	 worked on the MIPS r5000 architecture and now provide a nearly 
+	 complete environment for it as well. We now also allow for ET_REL
+	 injection into ET_DYN objects (shared libraries) so that our 
+	 technique is compatible with fully randomized environments such 
+	 as provided by Hardened Gentoo with the PaX protection enabled
+	 on the Linux Operating System. We also worked on other OS such as
+	 BSD based ones, Solaris, and HP-UX and the code was compiled and
+	 tested regulary on those as well.
+
+	 A major innovation of our binary manipulation based debugging 
+	 framework is the absence of ptrace. We do not use kernel residency 
+	 like in [8] so that even unprivilegied users can use this and it 
+	 is not Operating System dependent.
+
+	 Existing debuggers use to rely on the ptrace system call so that 
+	 the debugger process can attach the debuggee program and enable 
+	 various internal processes manipulations such as dumping memory, 
+	 putting breakpoints, backtracing, and so on. We propose the same 
+	 features without using the system call.
+	 
+	 The reasons why we do not use ptrace are multiple and simple. 
+	 First of all, a lot of hardened or embedded systems do not 
+	 implement it, or just disable it. That's the case for grsecurity 
+	 based systems, production systems, or phone systems whoose 
+	 Operating System is ELF based but without a ptrace interface. 
+
+	 The second major reason for not using ptrace is the performance 
+	 penalties of such a debugging system. We do not suffer from 
+	 performance penalties since the debugger resides in the same 
+	 process. We provide a full userland technique that does not have 
+	 to access the kernel memory, thus it is useful in all stages of 
+	 a penetration testing when debugging sensitive software on 
+	 hardened environment is needed and no system update is possible. 
+
+	 We allow for plain C code injection inside new binary files (in 
+	 the static perspective) and processes (in the runtime mode) using 
+	 a unified software. When requested, we only use ELF techniques that
+	 reduce forensics evidences on the disk and only works in memory.
+
+
+----[ B. Beyond PaX and ptrace
+
+
+	 Another key point in our framework are the greatly improved 
+	 redirection techniques. We can redirect almost all control flow, 
+	 wether or not the function code is placed inside the binary 
+	 itself (CFLOW technique) or in a library on which the binary 
+	 depends (Our previous work presented new hijacking techniques 
+	 such that ALTPLT). 
+
+	 We improved this techniques and passed through many rewrites 
+	 and now allow a complete architecture independant implementation. 
+	 We completed ALTPLT by a new technique called ALTGOT so that 
+	 hijacking a function and calling back the original copy from the 
+	 hooking function is possible on Alpha and Mips RISC machines as 
+	 well. 
+
+	 We also created a new technique called EXTPLT which allow for 
+	 unknown function (for which no dynamic linking information is 
+	 available at all in the ELF file) using a new postlinking 
+	 algorithm compatible with ET_EXEC and ET_DYN objets.
+
+
+----[ C. Interface improvements
+
+
+	 Our Embedded ELF debugger implementation is a prototype. 
+	 Understand that it is really usable but we are still in the 
+	 development process. All the code presented here is known to 
+	 work. However we are not omniscient and you might encounter a 
+	 problem. In that case, drop us an email so that we can figure 
+	 out how to create a patch. 
+
+	 The only assumption that we made is the ability to read the 
+	 debuggee program. In all case, you can also debug in memory 
+	 the unreadable binaries on disk by loading the debugger using
+	 the LD_PRELOAD variable.  Nevertheless, e2dbg is enhanced
+	 when binary files are readable. Because the debugger run in the 
+	 same address space, you can still read memory [3] [4] and 
+	 restore the binary program even though we do not implement it 
+	 yet.
+	 
+	 The central communication language in the Embedded ELF Debugger 
+	 (e2dbg) framework is the ELFsh scripting language. We augmented 
+	 it with loop and conditional control flow, transparent support 
+	 for lazy typed variables (like perl). The source command (for 
+	 executing a script inside the current session) and user-defined 
+	 macros (scriptdir command) are also supported.
+	 
+	 We also developed a peer2peer stack so called Distributed 
+	 Update Management Protocol - DUMP - that allow for linking 
+	 multiple debugger instances using the network, but this 
+	 capability is not covered by the article. For completeness, we
+	 now support multiusers (parallel or shared) sessions and 
+	 environment swapping using the workspace command.
+
+	 We will go through the use of such interface in the first part 
+	 of the paper. In the second part, we give technical details 
+	 about the implementation of such features on multiple 
+	 architectures. The last part is dedicated to the most recent 
+	 and advanced techniques we developed in the last weeks for
+	 constrained debugging in protected binaries. The last algorithms
+	 of the paper are architecture independant and constitute the
+	 core of the relocation engine in ELFsh.
+	 
+
+
+-------[ II. The embedded debugging playground
+     
+
+
+---[ A. In-process injection
+
+
+     
+	We have different techniques for injecting the debugger
+	inside the debuggee process. Thus it will share the address
+	space and the debugger will be able to read its own data 
+	and code for getting (and changing) information in the 
+	debuggee process.
+
+	Because the ELF shell is composed of 40000 lines of code, 
+	we did not want to recode everything for allowing process
+	modification. We used some trick that allow us to select
+	wether the modifications are done in memory or on disk. The
+	trick consists in 10 lines of code. Considering the PROFILE
+	macros not beeing mandatory, here is the exact stuff :
+
+
+ (libelfsh/section.c)
+
+
+ ========= BEGIN DUMP 0 =========
+
+ void                    *elfsh_get_raw(elfshsect_t *sect)
+ {
+   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+   /* sect->parent->base is always NULL for ET_EXEC */
+   if (elfsh_is_debug_mode())
+     {
+       sect->pdata = (void *) sect->parent->base + sect->shdr->sh_addr;
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->pdata));
+     }
+   if (sect)
+     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->data));
+
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+					"Invalid parameter", NULL);
+ }
+
+ ========= END DUMP 0 =========
+
+
+	What is the technique about ? It is quite simple : if the debugger
+	internal flag is set to static mode (on-disk modification), then we
+	return the pointer on the ELFsh internal data cache for the section 
+	data we want to access. 
+
+	However if we are in dynamic mode (process modification), then we 
+	just return the address of that section. The debugger runs in the 
+	same process and thus will think that the returned address is a 
+	readable (or writable) buffer. We can reuse all the ELF shell
+	API by just taking care of using the elfsh_get_raw() function when
+	accessing the ->data pointer. The process/ondisk selection is then
+	transparent for all the debugger/elfsh code.
+
+	The idea of injecting code directly inside the process is not
+	new and we studied it for some years now. Embedded code injection
+	is also used in the Windows cracking community [12] for bypassing 
+	most of the protections against tracing and debugging, but nowhere
+	else we have seen an implementation of a full debugger, capable
+	of such advanced features like ET_REL injection or function
+	redirection on multiple architectures, both on disk and in memory, 
+	with a single code.
+
+
+
+---[ B. Alternate ondisk and memory ELF scripting (feat. linkmap)
+
+
+
+	We have 2 approaches for inserting the debugger inside the debuggee
+	program. When using a DT_NEEDED entry and redirecting the main 
+	debuggee function onto the main entry point of the ET_DYN debugger,
+	we also inject various sections so that we can perform core 
+	techniques such as EXTPLT. That will be described in details in 
+	the next part. 
+
+	The second approach is about using LD_PRELOAD on the debuggee 
+	program and putting breakpoints (either by 0xCC opcode on x86 or 
+        the equivalent opcode on another architecture, or by function 
+        redirection which is available on many architectures and for many
+        kind of functions in the framework).
+
+	Since binary modification is needed anyway, we are using the 
+	DT_NEEDED technique for adding the library dependance, and all 
+	other sections injections or redirection described in this article,
+	before starting the real debugging.
+
+	The LD_PRELOAD technique is particulary more useful when you 
+        cannot read the binary you want to debug. It is left to the user
+        the choice of debugger injection technique, depending on the needs
+        of the moment.
+
+	Let's see how to use the embedded debugger and its 'mode' command
+	that does the memory/disk selection. Then we print the Global 
+	Offset Table (.got). First the memory GOT is displayed, then we 
+	get back in static mode and the ondisk GOT is printed :
+
+
+ ========= BEGIN DUMP 1 =========
+
+ (e2dbg-0.65) list
+
+ .::. Working files .::.
+ [001] Sun Jul 31 19:23:33 2005  D ID: 9 /lib/libncurses.so.5
+ [002] Sun Jul 31 19:23:33 2005  D ID: 8 /lib/libdl.so.2
+ [003] Sun Jul 31 19:23:33 2005  D ID: 7 /lib/libtermcap.so.2
+ [004] Sun Jul 31 19:23:33 2005  D ID: 6 /lib/libreadline.so.5
+ [005] Sun Jul 31 19:23:33 2005  D ID: 5 /lib/libelfsh.so
+ [006] Sun Jul 31 19:23:33 2005  D ID: 4 /lib/ld-linux.so.2
+ [007] Sun Jul 31 19:23:33 2005  D ID: 3 ./ibc.so.6    # e2dbg.so renamed
+ [008] Sun Jul 31 19:23:33 2005  D ID: 2 /lib/tls/libc.so.6
+ [009] Sun Jul 31 19:23:33 2005 *D ID: 1 ./a.out_e2dbg # debuggee
+
+ .::. ELFsh modules .::.
+ [*] No loaded module
+
+ (e2dbg-0.65) mode
+
+ [*] e2dbg is in DYNAMIC MODE
+
+ (e2dbg-0.65) got
+
+ [Global Offset Table .::. GOT : .got ]
+ [Object ./a.out_e2dbg]
+
+ 0x080498E4: [0] 0x00000000       <?>
+
+ [Global Offset Table .::. GOT : .got.plt ]
+ [Object ./a.out_e2dbg]
+
+ 0x080498E8: [0] 0x0804981C       <_DYNAMIC@a.out_e2dbg>
+ 0x080498EC: [1] 0x00000000       <?>
+ 0x080498F0: [2] 0x00000000       <?>
+ 0x080498F4: [3] 0x0804839E       <fflush@a.out_e2dbg>
+ 0x080498F8: [4] 0x080483AE       <puts@a.out_e2dbg>
+ 0x080498FC: [5] 0x080483BE       <malloc@a.out_e2dbg>
+ 0x08049900: [6] 0x080483CE       <strlen@a.out_e2dbg>
+ 0x08049904: [7] 0x080483DE       <__libc_start_main@a.out_e2dbg>
+ 0x08049908: [8] 0x080483EE       <printf@a.out_e2dbg>
+ 0x0804990C: [9] 0x080483FE       <free@a.out_e2dbg>
+ 0x08049910: [10] 0x0804840E      <read@a.out_e2dbg>
+
+ [Global Offset Table .::. GOT : .elfsh.altgot ]
+ [Object ./a.out_e2dbg]
+
+ 0x08049928: [0] 0x0804981C      <_DYNAMIC@a.out_e2dbg>
+ 0x0804992C: [1] 0xB7F4A4E8      <_r_debug@ld-linux.so.2 + 24>
+ 0x08049930: [2] 0xB7F3EEC0      <_dl_rtld_di_serinfo@ld-linux.so.2 + 477>
+ 0x08049934: [3] 0x0804839E      <fflush@a.out_e2dbg>
+ 0x08049938: [4] 0x080483AE      <puts@a.out_e2dbg>
+ 0x0804993C: [5] 0xB7E515F0      <__libc_malloc@libc.so.6>
+ 0x08049940: [6] 0x080483CE      <strlen@a.out_e2dbg>
+ 0x08049944: [7] 0xB7E01E50      <__libc_start_main@libc.so.6>
+ 0x08049948: [8] 0x080483EE      <printf@a.out_e2dbg>
+ 0x0804994C: [9] 0x080483FE      <free@a.out_e2dbg>
+ 0x08049950: [10] 0x0804840E     <read@a.out_e2dbg>
+ 0x08049954: [11] 0xB7DAFFF6     <e2dbg_run@ibc.so.6>
+
+ (e2dbg-0.65) mode static
+
+ [*] e2dbg is now in STATIC mode
+
+ (e2dbg-0.65) # Here we switched in ondisk perspective
+ (e2dbg-0.65) got
+
+ [Global Offset Table .::. GOT : .got ]
+ [Object ./a.out_e2dbg]
+
+ 0x080498E4: [0] 0x00000000       <?>
+
+ [Global Offset Table .::. GOT : .got.plt ]
+ [Object ./a.out_e2dbg]
+
+ 0x080498E8: [0] 0x0804981C       <_DYNAMIC>
+ 0x080498EC: [1] 0x00000000       <?>
+ 0x080498F0: [2] 0x00000000       <?>
+ 0x080498F4: [3] 0x0804839E       <fflush>
+ 0x080498F8: [4] 0x080483AE       <puts>
+ 0x080498FC: [5] 0x080483BE       <malloc>
+ 0x08049900: [6] 0x080483CE       <strlen>
+ 0x08049904: [7] 0x080483DE       <__libc_start_main>
+ 0x08049908: [8] 0x080483EE       <printf>
+ 0x0804990C: [9] 0x080483FE       <free>
+ 0x08049910: [10] 0x0804840E      <read>
+
+ [Global Offset Table .::. GOT : .elfsh.altgot ]
+ [Object ./a.out_e2dbg]
+
+ 0x08049928: [0] 0x0804981C       <_DYNAMIC>
+ 0x0804992C: [1] 0x00000000       <?>
+ 0x08049930: [2] 0x00000000       <?>
+ 0x08049934: [3] 0x0804839E       <fflush>
+ 0x08049938: [4] 0x080483AE       <puts>
+ 0x0804993C: [5] 0x080483BE       <malloc>
+ 0x08049940: [6] 0x080483CE       <strlen>
+ 0x08049944: [7] 0x080483DE       <__libc_start_main>
+ 0x08049948: [8] 0x080483EE       <printf>
+ 0x0804994C: [9] 0x080483FE       <free>
+ 0x08049950: [10] 0x0804840E      <read>
+ 0x08049954: [11] 0x0804614A      <e2dbg_run + 6>
+
+ =========  END DUMP 1 =========
+
+
+	   There are many things to notice in this dump. First you can 
+	   verify that it actually does what it is supposed to by 
+	   looking the first GOT entries which are reserved for the 
+	   linkmap and the rtld dl-resolve function. Those entries are 
+	   filled at runtime, so the static GOT version contains NULL 
+	   pointers for them. However the GOT which stands in memory has
+	   them filled. 
+
+	   Also, the new version of the GNU linker does insert multiple
+	   GOT sections inside ELF binaries. The .got section handles
+	   the pointer for external variables, while .got.plt handles 
+	   the external function pointers. In earlier versions of LD, 
+	   those 2 sections were merged. We support both conventions.
+
+	   Finally, you can see in last the .elfsh.altgot section.
+	   That is part of the ALTGOT technique and it will be 
+	   explained as a standalone algorithm in the next parts
+	   of this paper. The ALTGOT technique allow for a size
+	   extension of the Global Offset Table. It allows different
+	   things depending on the architecture. On x86, ALTGOT is
+	   only used when EXTPLT is used, so that we can add extra 
+	   function to the host file. On MIPS and ALPHA, ALTGOT
+	   allows to redirect an extern (PLT) function without losing
+	   the real function address. We will develop both of these
+	   techniques in the next parts.
+
+
+
+---[ C. Real debugging : dumping, backtrace, breakpoints
+
+
+          When performing debugging using a debugger embedded in the 
+	  debuggee process, we do not need ptrace so we cannot 
+	  modify so easily the process address space. That's why 
+	  we have to do small static changes : we add the debugger
+	  as a DT_NEEDED dependancy. The debugger will also overload some 
+	  signal handlers (SIGTRAP, SIGINT, SIGSEGV ..) so that it 
+	  can takes control on those events. 
+
+	  We can redirect functions as well using either the CFLOW or 
+	  ALTPLT technique using on-disk modification, so that we takes 
+	  control at the desired moment. Obviously we can also set 
+	  breakpoints in runtime but that need to mprotect the code zone 
+	  if it was not writable for the moment. We have idea about how
+	  to get rid of mprotect but this was not implemented in that
+	  version (0.65). Indeed, many uses of the mprotect system call
+	  are incompatible with one of the PaX option). Fortunately
+	  we assume for now that we have read access to the debuggee
+	  program, which means that we can copy the file and disable
+	  that option.
+
+	  This is how the DT_NEEDED dependence is added :
+
+
+ ========= BEGIN DUMP 2 =========
+
+ elfsh@WTH $ cat inject_e2dbg.esh
+ #!../../vm/elfsh
+ load a.out
+ set 1.dynamic[08].val 0x2
+ set 1.dynamic[08].tag DT_NEEDED
+ redir main e2dbg_run
+ save a.out_e2dbg
+
+ =========  END DUMP 2 =========
+
+
+	   Let's see the modified binary .dynamic section, where the
+	   extra DT_NEEDED entries were added using the DT_DEBUG
+	   technique that we published 2 years ago [0] :
+
+
+ ========= BEGIN DUMP 3 =========
+
+ elfsh@WTH $ ../../vm/elfsh -f ./a.out -d DT_NEEDED
+
+ [*] Object ./a.out has been loaded (O_RDONLY)
+
+ [SHT_DYNAMIC]
+ [Object ./a.out]
+
+ [00] Name of needed library => libc.so.6 {DT_NEEDED}
+
+ [*] Object ./a.out unloaded
+
+ elfsh@WTH $ ../../vm/elfsh -f ./a.out_e2dbg -d DT_NEEDED
+
+ [*] Object ./a.out_e2dbg has been loaded (O_RDONLY)
+
+ [SHT_DYNAMIC]
+ [Object ./a.out_e2dbg]
+
+ [00] Name of needed library => libc.so.6 {DT_NEEDED}
+ [08] Name of needed library => ibc.so.6 {DT_NEEDED}
+
+ [*] Object ./a.out_e2dbg unloaded
+
+ =========  END DUMP 3 =========
+
+
+     Let's see how we redirected the main function to the hook_main 
+     function. You can notice the overwritten bytes between the 2 jmp 
+     of the hook_main function. This technique is also available MIPS 
+     architecture, but this dump is from the IA32 implementation :
+
+
+ ========= BEGIN DUMP 4 =========
+
+ elfsh@WTH $ ../../vm/elfsh -f ./a.out_e2dbg -D main%40
+
+ [*] Object ./a.out_e2dbg has been loaded (O_RDONLY)
+
+ 08045134 [foff: 308] hook_main + 0  jmp   <e2dbg_run>
+ 08045139 [foff: 313] hook_main + 5  push  %ebp
+ 0804513A [foff: 314] hook_main + 6  mov   %esp,%ebp
+ 0804513C [foff: 316] hook_main + 8  push  %esi
+ 0804513D [foff: 317] hook_main + 9  push  %ebx
+ 0804513E [foff: 318] hook_main + 10 jmp   <main + 5>
+
+ 08045139 [foff: 313] old_main + 0   push  %ebp
+ 0804513A [foff: 314] old_main + 1   mov   %esp,%ebp
+ 0804513C [foff: 316] old_main + 3   push  %esi
+ 0804513D [foff: 317] old_main + 4   push  %ebx
+ 0804513E [foff: 318] old_main + 5   jmp   <main + 5>
+
+ 08048530 [foff: 13616] main + 0     jmp   <hook_main> 
+ 08048535 [foff: 13621] main + 5     sub   $2010,%esp
+ 0804853B [foff: 13627] main + 11    mov   8(%ebp),%ebx
+ 0804853E [foff: 13630] main + 14    mov   C(%ebp),%esi
+ 08048541 [foff: 13633] main + 17    and   $FFFFFFF0,%esp
+ 08048544 [foff: 13636] main + 20    sub   $10,%esp
+ 08048547 [foff: 13639] main + 23    mov   %ebx,4(%esp,1)
+ 0804854B [foff: 13643] main + 27    mov   $<_IO_stdin_used + 43>,(%esp,1)
+ 08048552 [foff: 13650] main + 34    call  <printf>
+ 08048557 [foff: 13655] main + 39    mov   (%esi),%eax
+
+ [*] No binary pattern was specified
+
+ [*] Object ./a.out_e2dbg unloaded
+
+ =========  END DUMP 4 =========
+
+	   
+	   Let's now execute the debuggee program, in which the 
+	   debugger was injected.
+
+
+ ========= BEGIN DUMP 5 =========
+
+ elfsh@WTH $ ./a.out_e2dbg
+
+
+         The Embedded ELF Debugger 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org 
+
+ [*] Sun Jul 31 17:56:52 2005 - New object ./a.out_e2dbg loaded
+ [*] Sun Jul 31 17:56:52 2005 - New object /lib/tls/libc.so.6 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object ./ibc.so.6 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/ld-linux.so.2 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/libelfsh.so loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/libreadline.so.5 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/libtermcap.so.2 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/libdl.so.2 loaded
+ [*] Sun Jul 31 17:56:53 2005 - New object /lib/libncurses.so.5 loaded
+
+ (e2dbg-0.65) b puts
+
+ [*] Breakpoint added at <puts@a.out_e2dbg> (0x080483A8)
+
+ (e2dbg-0.65) continue
+
+         [..: Embedded ELF Debugger returns to the grave :...]
+
+ [e2dbg_run] returning to 0x08045139
+ [host] main argc 1
+ [host] argv[0] is : ./a.out_e2dbg
+
+ First_printf test
+
+         The Embedded ELF Debugger 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org 
+
+ [*] Sun Jul 31 17:57:03 2005 - New object /lib/tls/libc.so.6 loaded
+
+ (e2dbg-0.65) bt
+
+ .:: Backtrace ::.
+ [00] 0xB7DC1EC5 <vm_bt@ibc.so.6 + 208>
+ [01] 0xB7DC207F <cmd_bt@ibc.so.6 + 152>
+ [02] 0xB7DBC88C <vm_execmd@ibc.so.6 + 174>
+ [03] 0xB7DAB4DE <vm_loop@ibc.so.6 + 578>
+ [04] 0xB7DAB943 <vm_run@ibc.so.6 + 271>
+ [05] 0xB7DA5FF0 <e2dbg_entry@ibc.so.6 + 110>
+ [06] 0xB7DA68D6 <e2dbg_genericbp_ia32@ibc.so.6 + 183>
+ [07] 0xFFFFE440 <_r_debug@ld-linux.so.2 + 1208737648>	# sigtrap retaddr
+ [08] 0xB7DF7F3B <__libc_start_main@libc.so.6 + 235>	
+ [09] 0x08048441 <_start@a.out_e2dbg + 33>
+
+ (e2dbg-0.65) b
+
+ .:: Breakpoints ::.
+
+ [00] 0x080483A8 <puts@a.out_e2dbg>
+
+ (e2dbg-0.65) delete 0x080483A8
+
+ [*] Breakpoint at 080483A8 <puts@a.out_e2dbg> removed
+
+ (e2dbg-0.65) b
+
+ .:: Breakpoints ::.
+
+ [*] No breakpoints
+
+ (e2dbg-0.65) b printf
+
+ [*] Breakpoint added at <printf@a.out_e2dbg> (0x080483E8)
+
+ (e2dbg-0.65) dumpregs
+
+ .:: Registers ::.
+
+         [EAX] 00000000 (0000000000) <unknown>
+         [EBX] 08203F48 (0136331080) <.elfsh.relplt@a.out_e2dbg + 1811272>
+         [ECX] 00000000 (0000000000) <unknown>
+         [EDX] B7F0C7C0 (3086010304) <__guard@libc.so.6 + 1656>
+         [ESI] BFE3B7C4 (3219371972) <_r_debug@ld-linux.so.2 + 133149428>
+         [EDI] BFE3B750 (3219371856) <_r_debug@ld-linux.so.2 + 133149312>
+         [ESP] BFE3970C (3219363596) <_r_debug@ld-linux.so.2 + 133141052>
+         [EBP] BFE3B738 (3219371832) <_r_debug@ld-linux.so.2 + 133149288>
+         [EIP] 080483A9 (0134513577) <puts@a.out_e2dbg>
+
+ (e2dbg-0.65) stack 20
+
+ .:: Stack ::.
+ 0xBFE37200 0x00000000 <(null)>
+ 0xBFE37204 0xB7DC2091 <vm_dumpstack@ibc.so.6>
+ 0xBFE37208 0xB7DDF5F0 <_GLOBAL_OFFSET_TABLE_@ibc.so.6>
+ 0xBFE3720C 0xBFE3723C <_r_debug@ld-linux.so.2 + 133131628>
+ 0xBFE37210 0xB7DC22E7 <cmd_stack@ibc.so.6 + 298>
+ 0xBFE37214 0x00000014 <_r_debug@ld-linux.so.2 + 1208744772>
+ 0xBFE37218 0xB7DDDD90 <__FUNCTION__.5@ibc.so.6 + 49>
+ 0xBFE3721C 0xBFE37230 <_r_debug@ld-linux.so.2 + 133131616>
+ 0xBFE37220 0xB7DB9DF9 <vm_implicit@ibc.so.6 + 304>
+ 0xBFE37224 0xB7DE1A7C <world@ibc.so.6 + 92>
+ 0xBFE37228 0xB7DA8176 <do_resolve@ibc.so.6>
+ 0xBFE3722C 0x080530B8 <.elfsh.relplt@a.out_e2dbg + 38072>
+ 0xBFE37230 0x00000014 <_r_debug@ld-linux.so.2 + 1208744772>
+ 0xBFE37234 0x08264FF6 <.elfsh.relplt@a.out_e2dbg + 2208758>
+ 0xBFE37238 0xB7DDF5F0 <_GLOBAL_OFFSET_TABLE_@ibc.so.6>
+ 0xBFE3723C 0xBFE3726C <_r_debug@ld-linux.so.2 + 133131676>
+ 0xBFE37240 0xB7DBC88C <vm_execmd@ibc.so.6 + 174>
+ 0xBFE37244 0x0804F208 <.elfsh.relplt@a.out_e2dbg + 22024>
+ 0xBFE37248 0x00000000 <(null)>
+ 0xBFE3724C 0x00000000 <(null)>
+
+ (e2dbg-0.65) continue
+
+         [..: Embedded ELF Debugger returns to the grave :...]
+
+ First_puts
+
+         The Embedded ELF Debugger 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org 
+
+ [*] Sun Jul 31 18:00:47 2005 - /lib/tls/libc.so.6 loaded
+ [*] Sun Jul 31 18:00:47 2005 - /usr/lib/gconv/ISO8859-1.so loaded
+
+ (e2dbg-0.65) dumpregs
+
+ .:: Registers ::.
+
+         [EAX] 0000000B (0000000011) <_r_debug@ld-linux.so.2 + 1208744763>
+         [EBX] 08203F48 (0136331080) <.elfsh.relplt@a.out_e2dbg + 1811272>
+         [ECX] 0000000B (0000000011) <_r_debug@ld-linux.so.2 + 1208744763>
+         [EDX] B7F0C7C0 (3086010304) <__guard@libc.so.6 + 1656>
+         [ESI] BFE3B7C4 (3219371972) <_r_debug@ld-linux.so.2 + 133149428>
+         [EDI] BFE3B750 (3219371856) <_r_debug@ld-linux.so.2 + 133149312>
+         [ESP] BFE3970C (3219363596) <_r_debug@ld-linux.so.2 + 133141052>
+         [EBP] BFE3B738 (3219371832) <_r_debug@ld-linux.so.2 + 133149288>
+         [EIP] 080483E9 (0134513641) <printf@a.out_e2dbg>
+
+ (e2dbg-0.65) linkmap
+
+ .::. Linkmap entries .::.
+ [01] addr : 0x00000000 dyn : 0x0804981C -
+ [02] addr : 0x00000000 dyn : 0xFFFFE590 -
+ [03] addr : 0xB7DE3000 dyn : 0xB7F0AD3C - /lib/tls/libc.so.6
+ [04] addr : 0xB7D95000 dyn : 0xB7DDF01C - ./ibc.so.6
+ [05] addr : 0xB7F29000 dyn : 0xB7F3FF14 - /lib/ld-linux.so.2
+ [06] addr : 0xB7D62000 dyn : 0xB7D93018 - /lib/libelfsh.so
+ [07] addr : 0xB7D35000 dyn : 0xB7D5D46C - /lib/libreadline.so.5
+ [08] addr : 0xB7D31000 dyn : 0xB7D34BB4 - /lib/libtermcap.so.2
+ [09] addr : 0xB7D2D000 dyn : 0xB7D2FEEC - /lib/libdl.so.2
+ [10] addr : 0xB7CEB000 dyn : 0xB7D2A1C0 - /lib/libncurses.so.5
+ [11] addr : 0xB6D84000 dyn : 0xB6D85F28 - /usr/lib/gconv/ISO8859-1.so
+
+ (e2dbg-0.65) exit
+
+ [*] Unloading object 1 (/usr/lib/gconv/ISO8859-1.so)
+ [*] Unloading object 2 (/lib/tls/libc.so.6)
+ [*] Unloading object 3 (/lib/tls/libc.so.6)
+ [*] Unloading object 4 (/lib/libncurses.so.5)
+ [*] Unloading object 5 (/lib/libdl.so.2)
+ [*] Unloading object 6 (/lib/libtermcap.so.2)
+ [*] Unloading object 7 (/lib/libreadline.so.5)
+ [*] Unloading object 8 (/home/elfsh/WTH/elfsh/libelfsh/libelfsh.so)
+ [*] Unloading object 9 (/lib/ld-linux.so.2)
+ [*] Unloading object 10 (./ibc.so.6)
+ [*] Unloading object 11 (/lib/tls/libc.so.6)
+ [*] Unloading object 12 (./a.out_e2dbg) *
+
+         .:: Bye -:: The Embedded ELF Debugger 0.65
+
+ =========  END DUMP 5 =========
+
+
+	   As you see, the use of the debugger is quite similar to other
+	   debuggers. The difference is about the implementation technique
+	   which allows for hardened and embedded systems debugging where
+	   ptrace is not present or disabled.
+
+	   We were told [9] that the sigaction system call enables the 
+	   possibility of doing step by step execution without using
+	   ptrace. We did not have time to implement it but we will 
+	   provide a step-capable debugger in the very near future. Since 
+	   that call is not filtered by grsecurity and seems to be quite 
+	   portable on Linux, BSD, Solaris and HP-UX, it is definitely 
+	   worth testing it.
+
+
+---[ D. Dynamic analyzers generation 
+
+
+           Obviously, tools like ltrace [7] can be now done in elfsh
+	   scripts for multiple architectures since all the redirection 
+	   stuff is available.     
+
+	   We also think that the framework can be used in dynamic 
+	   software instrumentation. Since we support multiple 
+	   architectures, we let the door open to other development 
+	   team to develop such modules or extension inside the ELF 
+	   shell framework.
+
+	   We did not have time to include an example script for now that 
+	   can do this, but we will soon. The kind of interresting stuff
+	   that could be done and improved using the framework would
+	   take its inspiration in projects like fenris [6]. That could
+	   be done for multiple architectures as soon as the instruction
+	   format type is integrated in the script engine, using the code
+	   abstraction of libasm (which is now included as sources in
+	   elfsh).
+
+	   We do not deal with encryption for now, but some promising API 
+	   [5] could be implemented as well for multiple architectures 
+	   very easily.
+
+
+
+-------[ III. Better multiarchitecture ELF redirections
+
+
+	 In the first issue of the Cerberus ELF interface [0], we 
+	 presented a redirection technique that we called ALTPLT. This 
+	 technique is not enough since it allows only for PLT 
+	 redirection on existing function of the binary program so
+	 the software extension usable functions set is limited.
+
+	 Morever, we noticed a bug in the previously released 
+	 implementation of the ALTPLT technique : On the SPARC
+	 architecture, when calling the original function, the 
+	 redirection was removed and the program continued to work as if
+	 no hook was installed. This bug came from the fact that Solaris
+	 does not use the r_offset field for computing its relocation 
+	 but get the file offset by multiplying the PLT entry size by the 
+	 pushed relocation offset on the stack at the moment of dynamic 
+	 resolution. 
+
+	 We found a solution for this problem. That solution consisted in
+	 adding some architecture specific fixes at the beginning of the 
+	 ALTPLT section. However, such a fix is too much architecture
+	 dependant and we started to think about an alternative technique
+	 for implementing ALTPLT. As we had implemented the DT_DEBUG 
+	 technique by modifying some entries in the .dynamic sections, we
+	 discovered that many other entries are erasable and allow for
+	 a very strong and architecture independant technique for 
+	 redirecting access to various sections. More precisely, when 
+	 patching the DT_PLTREL entry, we are able to provide our own 
+	 pointer. DT_PLTREL is an architecture dependant entry and the  
+	 documentation about it is quite weak, not to say inexistant. 
+
+	 It actually points on the section of the executable beeing   
+	 runtime relocated (e.g. GOT on x86 or mips, PLT on sparc and 
+	 alpha). By changing this entry we are able to provide our own 
+	 PLT or GOT, which leads to possibly extending it.
+
+	 Let's first have look at the CFLOW technique and then comes
+	 back on the PLT related redirections using the DT_PLTREL
+	 modification.
+
+
+
+---[ A. CFLOW: PaX-safe static functions redirection		
+
+
+	 CFLOW is a simple but efficient technique for function 
+	 redirection that are located in the host file and not
+	 having a PLT entry.                          
+	 
+	 Let's see the host file that we use for this test: 
+	 
+
+
+ ========= BEGIN DUMP 6 =========
+
+ elfsh@WTH $ cat host.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int     legit_func(char *str)
+ {
+   printf("legit func (%s) !\n", str);
+   return (0);
+ }
+
+ int	main()
+ {
+   char  *str;
+   char  buff[BUFSIZ];
+
+   read(0, buff, BUFSIZ-1);
+
+   str = malloc(10);
+   if (str == NULL)
+     goto err;
+   strcpy(str, "test");
+   printf("First_printf %s\n", str);
+   fflush(stdout);
+   puts("First_puts");
+   printf("Second_printf %s\n", str);
+
+   free(str);
+
+   puts("Second_puts");
+
+   fflush(stdout);
+   legit_func("test");
+   return (0);
+  err:
+   printf("Malloc problem\n");
+   return (-1);
+ }
+
+ =========  END DUMP 6 =========
+
+
+	   We will here redirect the function legit_func, which is located
+	   inside host.c by the hook_func function located in the 
+	   relocatable object.
+
+	   Let's look at the relocatable file that we are going to inject
+	   in the above binary.
+
+
+ ========= BEGIN DUMP 7 =========
+
+ elfsh@WTH $ cat rel.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int     glvar_testreloc = 42;
+ int     glvar_testreloc_bss;
+ char    glvar_testreloc_bss2;
+ short   glvar_testreloc_bss3;
+
+ int     hook_func(char *str)
+ {
+    printf("HOOK FUNC %s !\n", str);
+    return (old_legit_func(str));
+ }
+
+ int     puts_troj(char *str)
+ {
+   int   local = 1;
+   char  *str2;
+
+   str2 = malloc(10);
+   *str2 = 'Z';
+   *(str2 + 1) = 0x00;
+
+   glvar_testreloc_bss  = 43;
+   glvar_testreloc_bss2 = 44;
+   glvar_testreloc_bss3 = 45;
+
+   printf("Trojan injected ET_REL takes control now "
+          "[%s:%s:%u:%u:%hhu:%hu:%u] \n",
+         str2, str,
+         glvar_testreloc,
+         glvar_testreloc_bss,
+         glvar_testreloc_bss2,
+         glvar_testreloc_bss3,
+         local);
+
+   free(str2);
+
+   putchar('e');
+   putchar('x');
+   putchar('t');
+   putchar('c');
+   putchar('a');
+   putchar('l');
+   putchar('l');
+   putchar('!');
+   putchar('\n'); 
+
+   old_puts(str); 
+
+   write(1, "calling write\n", 14);
+   fflush(stdout);
+   return (0);
+ }
+
+ int     func2()
+ {
+   return (42);
+ }
+
+ =========  END DUMP 7 =========
+
+	  
+	  As you can see, the relocatable object use of unknown functions
+     like write and putchar. Those functions do not have a symbol, plt 
+     entry, got entry, or even relocatable entry in the host file.
+	   
+     We can call it however using the EXTPLT technique that will be 
+     described as a standalone technique in the next part of this paper. 
+     For now we focuss on the CFLOW technique that allow for redirection 
+     of the legit_func on the hook_func. This function does not have a 
+     PLT entry and we cannot use simple PLT infection for this. 
+
+     We developped a technique that is PaX safe for ondisk redirection of 
+     this kind of function. It consists of putting the good old jmp
+     instruction at the beginning of the legit_func and redirect the flow
+     on our own code. ELFsh will take care of executing the overwritten
+     bytes somewhere else and gives back control to the redirected
+     function, just after the jmp hook, so that no runtime restoration is
+     needed and it stays PaX safe on disk.
+
+     When these techniques are used in the debugger directly in memory
+     and not on disk, they all break the mprotect protection of PaX, 
+     which means that this flag must be disabled if you want to redirect
+     the flow directly into memory. We use use the mprotect syscall on
+     small code zone for beeing able to changes some specific instructions
+     for redirection. However, we think that this technique is mostly
+     interresting for debugging and not for other things, so it is not
+     our priority to improve this for now.
+	   
+     Let's see the small ELFsh script for this example :
+
+
+ ========= BEGIN DUMP 8 =========
+
+ elfsh@WTH $ file a.out
+ a.out: ELF 32-bit LSB executable, Intel 80386, dynamically linked, \
+ not stripped
+ elfsh@WTH $ cat relinject.esh
+ #!../../../vm/elfsh
+
+ load a.out
+ load rel.o
+
+ reladd 1 2
+
+ redir puts puts_troj
+ redir legit_func hook_func
+
+ save fake_aout
+
+ quit
+
+ =========  END  EXAMPLE 8 =========
+
+
+    The output of the ORIGINAL binary is as follow:
+
+
+ ========= BEGIN DUMP 9 =========
+
+ elfsh@WTH $ ./a.out
+
+ First_printf test
+ First_puts
+ Second_printf test
+ Second_puts
+ LEGIT FUNC
+ legit func (test) !
+
+ ========= END DUMP 9 ===========
+
+
+     Now let's inject the stuff:
+
+	   
+ ========= BEGIN DUMP 10 ========
+
+ elfsh@WTH $ ./relinject.esh
+
+
+         The ELF shell 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org 
+
+ ~load a.out
+
+ [*] Sun Jul 31 15:30:14 2005 - New object a.out loaded
+
+ ~load rel.o
+
+ [*] Sun Jul 31 15:30:14 2005 - New object rel.o loaded
+
+ ~reladd 1 2
+ Section Mirrored Successfully !
+
+ [*] ET_REL rel.o injected succesfully in ET_EXEC a.out
+
+ ~redir puts puts_troj
+
+ [*] Function puts redirected to addr 0x08047164 <puts_troj>
+
+ ~redir legit_func hook_func
+
+ [*] Function legit_func redirected to addr 0x08047134 <hook_func>
+
+ ~save fake_aout
+
+ [*] Object fake_aout saved successfully
+
+ ~quit
+
+ [*] Unloading object 1 (rel.o)
+ [*] Unloading object 2 (a.out) *
+         .:: Bye -:: The ELF shell 0.65
+
+ ========= END DUMP 10 =========
+
+
+	   Let's now execute the modified binary.
+
+	   
+ ========= BEGIN DUMP 11 =========
+
+ elfsh@WTH $ ./fake_aout
+
+ First_printf test
+ Trojan injected ET_REL takes control now [Z:First_puts:42:43:44:45:1]
+ extcall!
+ First_puts
+ calling write
+ Second_printf test
+ Trojan injected ET_REL takes control now [Z:Second_puts:42:43:44:45:1]
+ extcall!
+ Second_puts
+ calling write
+ HOOK FUNC test !
+ Trojan injected ET_REL takes control now [Z:LEGIT FUNC:42:43:44:45:1]
+ extcall!
+ calling write
+ legit func (test) !
+ elfsh@WTH $
+
+ =========  END DUMP 11 =========
+
+
+	   Fine. Clearly legit_func has been redirected on the hook 
+	   function, and hook_func takes care of calling back the
+	   legit_func using the old symbol technique described in
+	   the first issue of the Cerberus articles serie.
+
+	   Let's see the original legit_func code which is redirected
+	   using the CFLOW technique on the x86 architecture :
+	   
+
+ ========= BEGIN DUMP 12 =========
+
+ 080484C0 legit_func + 0        push   %ebp                             
+ 080484C1 legit_func + 1        mov    %esp,%ebp                        
+ 080484C3 legit_func + 3        sub    $8,%esp                          
+ 080484C6 legit_func + 6        mov    $<_IO_stdin_used + 4>,(%esp,1)   
+ 080484CD legit_func + 13       call   <.plt + 32>                      
+ 080484D2 legit_func + 18       mov    $<_IO_stdin_used + 15>,(%esp,1)  
+
+ ========= END DUMP 12 =========
+
+
+	   Now the modified code:
+
+
+ ========= BEGIN DUMP 13 =========
+
+ 080484C0 legit_func + 0        jmp    <hook_legit_func>               
+ 080484C5 legit_func + 5        nop                                    
+ 080484C6 legit_func + 6        mov    $<_IO_stdin_used + 4>,(%esp,1)  
+ 080484CD legit_func + 13       call   <puts>                          
+ 080484D2 legit_func + 18       mov    $<_IO_stdin_used + 15>,(%esp,1) 
+ 080484D9 legit_func + 25       mov    8(%ebp),%eax                    
+ 080484DC legit_func + 28       mov    %eax,4(%esp,1)                  
+ 080484E0 legit_func + 32       call   <printf>                        
+ 080484E5 legit_func + 37       leave                                  
+ 080484E6 legit_func + 38       xor    %eax,%eax                       
+
+ ========= END DUMP 13 =========
+
+ 
+	We create a new section .elfsh.hooks whoose data is an array 
+	of hook code stubs like this one:
+
+
+ ========= BEGIN DUMP 14 =========
+
+ 08042134 hook_legit_func + 0   jmp    <hook_func>                     
+ 08042139 old_legit_func  + 0   push   %ebp                            
+ 0804213A old_legit_func  + 1   mov    %esp,%ebp                       
+ 0804213C old_legit_func  + 3   sub    $8,%esp                         
+ 0804213F old_legit_func  + 6   jmp    <legit_func + 6>                
+
+ ========= END DUMP 14 =========
+
+
+	 Because we want to be able to recall the original function
+	 (legit_func), we add the erased bytes of it, just after the
+	 first jmp. Then we call back the legit_func at the good offset
+	 (so that we do not recurse inside the hook because the function
+	 was hijacked), as you can see starting at the old_legit_func 
+	 symbol of example 14.
+
+	 This old symbols technique is coherent with the ALTPLT technique
+	 that we published in the first article. We can as well use
+	 the old_funcname() call inside the injected C code for 
+	 calling back the good hijacked function, and we do that without
+	 a single byte restoration at runtime. That is why the CFLOW
+	 technique is PaX compatible.
+
+	 For the MIPS architecture, the CFLOW technique is quite similar, 
+	 we can see the result of it as well (DUMP 15 is the original
+	 binary and DUMP 16 the modified one):
+
+
+ ======== BEGIN DUMP 15 =========
+
+ 400400 <func>:        lui     gp,0xfc1
+ 400404 <func+4>:      addiu   gp,gp,-21696
+ 400408 <func+8>:      addu    gp,gp,t9
+ 40040c <func+12>:     addiu   sp,sp,-40
+ 400410 <func+16>:     sw      ra,36(sp)
+ [...]
+
+ ======== END DUMP 15 =========
+
+	  
+	  The modified func code is now :
+
+	 
+ ======== BEGIN DUMP 16 =========
+
+ <func>
+ 400400:       addi    t9,t9,104	 # Register T9 as target function
+ 400404:       j       0x400468 <func2>	 # Direct JMP on hook function 
+ 400408:       nop			 # Delay slot 
+ 40040c:       addiu   sp,sp,-40	 # The original func code 
+ 400410:       sw      ra,36(sp)
+ 400414:       sw      s8,32(sp)
+ 400418:       move    s8,sp
+ 40041c:       sw      gp,16(sp)
+ 400420:       sw      a0,40(s8)
+
+ ======== END DUMP 16 =========
+
+
+	  The func2 function can be anything we want, provided that it has
+	  the same number and type of parameters. When the func2 function
+	  wants to call the original function (func), then it jumps on 
+	  the old_func symbol that points inside the .elfsh.hooks section
+	  entry for this CFLOW hook. That is how looks like such a hooks
+	  entry on the MIPS architecture :
+
+
+ ======== BEGIN DUMP 17 ========= 
+ 
+ <old_func>
+ 3ff0f4         addi    t9,t9,4876
+ 3ff0f8         lui     gp,0xfc1
+ 3ff0fc         addiu   gp,gp,-21696
+ 3ff100         addu    gp,gp,t9
+ 3ff104         j       0x400408 <func + 8>
+ 3ff108         nop
+ 3ff10c         nop
+
+ ======== END DUMP 17 ===========
+
+
+	  As you can see, the three instructions that got erased for
+	  installing the CFLOW hook at the beginning of func() are
+	  now located in the hook entry for func(), pointed by
+	  the old_func symbol. The T9 register is also reset so that
+	  we can come back to a safe situation before jumping back
+	  on func + 8.
+
+
+
+---[ B. ALTPLT technique revised
+
+
+     ALTPLT technique v1 was presented in the Cerberus ELF Interface [0]
+     paper. As already stated, it was not satisfying because it was
+     removing the hook on SPARC at the first original function call. 
+
+     Since on SPARC the first 4 PLT entries are reserved, there is
+     room for 12 instructions that would fix anything needed (actually
+     the first PLT entry) at the moment when ALTPLT+0 takes control.
+     
+     ALTPLTv2 is working indeed in 12 instructions but it needed to	
+     reencode the first ALTPLT section entry with the code from PLT+0 
+     (which is relocated in runtime on SPARC before the main takes 
+     control, which explains why we cannot patch this on the disk 
+     statically).
+
+     By this behavior, it breaks PaX, and the implementation is
+     very architecture dependant since its SPARC assembly. For those
+     who want to see it, we let the code of this in the ELFsh source 
+     tree in libelfsh/sparc32.c .
+
+     For the ALPHA64 architecture, it gives pretty much the same in its
+     respective instructions set, and this time the implementation is
+     located in libelfsh/alpha64.c .
+
+     As you can see in the code (that we will not reproduce here for
+     clarity of the article), ALTPLTv2 is a real pain and we needed to 
+     get rid of all this assembly code that was requesting too much 
+     efforts for potential future ports of this technique to other 
+     architectures.
+
+     Then we found the .dynamic DT_PLTREL trick and we tried to see what
+     happened when changing this .dynamic entry inside the host binary.
+     Changing the DT_PLTREL entry is very attractive since this is
+     completely architecture independant so it works everywhere.
+
+     Let's see how look like the section header table and the .dynamic 
+     section used in the really simple ALTPLTv3 technique. We use the 
+     .elfsh.altplt section as a mirror of the original .plt as explained 
+     in our first paper. The other .elfsh.* sections has been explained 
+     already or will be just after the log.
+
+     The output (modified) binary looks like :
+
+
+ =============== BEGIN DUMP 18 ================
+
+ [SECTION HEADER TABLE .::. SHT is not stripped]
+ [Object fake_aout]
+
+ [000] 0x00000000 -------                 foff:00000000 sz:0000000 link:00
+ [001] 0x08042134 a-x---- .elfsh.hooks    foff:00000308 sz:0000016 link:00
+ [002] 0x08043134 a-x---- .elfsh.extplt   foff:00004404 sz:0000048 link:00
+ [003] 0x08044134 a-x---- .elfsh.altplt   foff:00008500 sz:0004096 link:00
+ [004] 0x08045134 a--ms-- rel.o.rodata.str1.32 foff:12596 sz:4096  link:00
+ [005] 0x08046134 a--ms-- rel.o.rodata.str1.1  foff:16692 sz:4096  link:00
+ [006] 0x08047134 a-x---- rel.o.text      foff:00020788 sz:0004096 link:00
+ [007] 0x08048134 a------ .interp         foff:00024884 sz:0000019 link:00
+ [008] 0x08048148 a------ .note.ABI-tag   foff:00024904 sz:0000032 link:00
+ [009] 0x08048168 a------ .hash           foff:00024936 sz:0000064 link:10
+ [010] 0x080481A8 a------ .dynsym         foff:00025000 sz:0000176 link:11
+ [011] 0x08048258 a------ .dynstr         foff:00025176 sz:0000112 link:00
+ [012] 0x080482C8 a------ .gnu.version    foff:00025288 sz:0000022 link:10
+ [013] 0x080482E0 a------ .gnu.version_r  foff:00025312 sz:0000032 link:11
+ [014] 0x08048300 a------ .rel.dyn        foff:00025344 sz:0000016 link:10
+ [015] 0x08048310 a------ .rel.plt        foff:00025360 sz:0000056 link:10
+ [016] 0x08048348 a-x---- .init           foff:00025416 sz:0000023 link:00
+ [017] 0x08048360 a-x---- .plt            foff:00025440 sz:0000128 link:00
+ [018] 0x08048400 a-x---- .text           foff:00025600 sz:0000736 link:00
+ [019] 0x080486E0 a-x---- .fini           foff:00026336 sz:0000027 link:00
+ [020] 0x080486FC a------ .rodata         foff:00026364 sz:0000116 link:00
+ [021] 0x08048770 a------ .eh_frame       foff:00026480 sz:0000004 link:00
+ [022] 0x08049774 aw----- .ctors          foff:00026484 sz:0000008 link:00
+ [023] 0x0804977C aw----- .dtors          foff:00026492 sz:0000008 link:00
+ [024] 0x08049784 aw----- .jcr            foff:00026500 sz:0000004 link:00
+ [025] 0x08049788 aw----- .dynamic        foff:00026504 sz:0000200 link:11
+ [026] 0x08049850 aw----- .got            foff:00026704 sz:0000004 link:00
+ [027] 0x08049854 aw----- .got.plt        foff:00026708 sz:0000040 link:00
+ [028] 0x0804987C aw----- .data           foff:00026748 sz:0000012 link:00
+ [029] 0x08049888 aw----- .bss            foff:00026760 sz:0000008 link:00
+ [030] 0x08049890 aw----- rel.o.bss       foff:00026768 sz:0004096 link:00
+ [031] 0x0804A890 aw----- rel.o.data      foff:00030864 sz:0000004 link:00
+ [032] 0x0804A894 aw----- .elfsh.altgot   foff:00030868 sz:0000048 link:00
+ [033] 0x0804A8E4 aw----- .elfsh.dynsym   foff:00030948 sz:0000208 link:34
+ [034] 0x0804AA44 aw----- .elfsh.dynstr   foff:00031300 sz:0000127 link:33
+ [035] 0x0804AB24 aw----- .elfsh.reldyn   foff:00031524 sz:0000016 link:00
+ [036] 0x0804AB34 aw----- .elfsh.relplt   foff:00031540 sz:0000072 link:00
+ [037] 0x00000000 ------- .comment        foff:00031652 sz:0000665 link:00
+ [038] 0x00000000 ------- .debug_aranges  foff:00032324 sz:0000120 link:00
+ [039] 0x00000000 ------- .debug_pubnames foff:00032444 sz:0000042 link:00
+ [040] 0x00000000 ------- .debug_info     foff:00032486 sz:0006871 link:00
+ [041] 0x00000000 ------- .debug_abbrev   foff:00039357 sz:0000511 link:00
+ [042] 0x00000000 ------- .debug_line     foff:00039868 sz:0000961 link:00
+ [043] 0x00000000 ------- .debug_frame    foff:00040832 sz:0000072 link:00
+ [044] 0x00000000 ---ms-- .debug_str      foff:00040904 sz:0008067 link:00
+ [045] 0x00000000 ------- .debug_macinfo  foff:00048971 sz:0029295 link:00
+ [046] 0x00000000 ------- .shstrtab       foff:00078266 sz:0000507 link:00
+ [047] 0x00000000 ------- .symtab         foff:00080736 sz:0002368 link:48
+ [048] 0x00000000 ------- .strtab         foff:00083104 sz:0001785 link:47
+
+ [SHT_DYNAMIC]
+ [Object ./testsuite/etrel_inject/etrel_original/fake_aout]
+
+ [00] Name of needed library            =>           libc.so.6 {DT_NEEDED}
+ [01] Address of init function          =>          0x08048348 {DT_INIT}
+ [02] Address of fini function          =>          0x080486E0 {DT_FINI}
+ [03] Address of symbol hash table      =>          0x08048168 {DT_HASH}
+ [04] Address of dynamic string table   =>          0x0804AA44 {DT_STRTAB}
+ [05] Address of dynamic symbol table   =>          0x0804A8E4 {DT_SYMTAB}
+ [06] Size of string table              =>      00000127 bytes {DT_STRSZ}
+ [07] Size of symbol table entry        =>      00000016 bytes {DT_SYMENT}
+ [08] Debugging entry (unknown)         =>          0x00000000 {DT_DEBUG}
+ [09] Processor defined value           =>          0x0804A894 {DT_PLTGOT}
+ [10] Size in bytes for .rel.plt        =>      000072 bytes {DT_PLTRELSZ}
+ [11] Type of reloc in PLT              =>            00000017 {DT_PLTREL}
+ [12] Address of .rel.plt               =>          0x0804AB34 {DT_JMPREL}
+ [13] Address of .rel.got section       =>          0x0804AB24 {DT_REL}
+ [14] Total size of .rel section        =>      00000016 bytes {DT_RELSZ}
+ [15] Size of a REL entry               =>      00000008 bytes {DT_RELENT}
+ [16] SUN needed version table          =>          0x80482E0 {DT_VERNEED}
+ [17] SUN needed version number         =>             001 {DT_VERNEEDNUM}
+ [18] GNU version VERSYM                =>          0x080482C8 {DT_VERSYM}
+
+ =============== END DUMP 18 ================
+     
+
+	As you can see, various sections has been copied and extended,	
+	and their entries in .dynamic changed. That holds for .got 
+	(DT_PLTGOT), .rel.plt (DT_JMPREL), .dynsym (DT_SYMTAB), and
+	.dynstr (DT_STRTAB). Changing those entries allow for the 
+	new ALTPLT technique without any line of assembly.
+
+	Of course the ALTPLT technique version 3 does not need any
+	non-mandatory information like debug sections. It may sound
+	obvious but some peoples really asked this question.
+
+
+
+---[ C. ALTGOT technique : the RISC complement			
+
+
+	       On the MIPS architecture, calls to PLT entries are 
+       done differently. Indeed, instead of a direct call instruction on 
+       the entry, an indirect jump is used for using the GOT entry linked
+       to the desired function. If such entry is filled, then the 
+       function is called directly. By default, the GOT entries contains 
+       the pointer on the PLT entries. During the execution eventually, 
+       the dynamic linker is called for relocating the GOT section (MIPS, 
+       x86) or the PLT section (on SPARC or ALPHA).
+
+       Here is the MIPS assembly log that prove this on some dumb 
+       helloworld program using printf :
+
+       00400790 <main>:
+       400790:  3c1c0fc0   lui     gp,0xfc0	  # Set GP to GOT base
+       400794:  279c78c0   addiu   gp,gp,30912    # address + 0x7ff0
+       400798:  0399e021   addu    gp,gp,t9	  # using t9 (= main)
+       40079c:  27bdffe0   addiu   sp,sp,-32	  
+       4007a0:  afbf001c   sw      ra,28(sp)
+       4007a4:  afbe0018   sw      s8,24(sp)
+       4007a8:  03a0f021   move    s8,sp
+       4007ac:  afbc0010   sw      gp,16(sp)
+       4007b0:  8f828018   lw      v0,-32744(gp)
+       4007b4:  00000000   nop
+       4007b8:  24440a50   addiu   a0,v0,2640
+       4007bc:  2405002a   li      a1,42
+       4007c0:  8f828018   lw      v0,-32744(gp)
+       4007c4:  00000000   nop
+       4007c8:  24460a74   addiu   a2,v0,2676
+       4007cc:  8f99803c   lw      t9,-32708(gp)  # Load printf GOT entry
+       4007d0:  00000000   nop			   
+       4007d4:  0320f809   jalr    t9		  # and jump on it
+       4007d8:  00000000   nop
+       4007dc:  8fdc0010   lw      gp,16(s8)
+       4007e0:  00001021   move    v0,zero
+       4007e4:  03c0e821   move    sp,s8
+       4007e8:  8fbf001c   lw      ra,28(sp)
+       4007ec:  8fbe0018   lw      s8,24(sp)
+       4007f0:  27bd0020   addiu   sp,sp,32
+       4007f4:  03e00008   jr      ra		  # return from the func
+       4007f8:  00000000   nop
+       4007fc:  00000000   nop
+
+       We note that the global pointer register %gp is always set
+       on the GOT section base address on MIPS, more or less some
+       fixed signed offset, in our case 0x7ff0 (0x8000 on ALPHA).
+
+       In order to call a function whoose address is unknown, the GOT
+       entries are filled and then the indirect jump instruction  
+       on MIPS does not use the PLT entry anymore. What do we learn
+       from this ? Simply that we cannot rely on a classical PLT 
+       hijacking because the PLT entry code wont be called if the GOT 
+       entry is already filled, which means that we will hijack the 
+       function only the first time.
+
+       Because of this, we will hijack functions using GOT patching
+       on MIPS. However it does not resolve the problem of recalling
+       the original function. In order to allow such recall, we will
+       just insert the old_ symbols on the real PLT entry, so that
+       we can still access the dynamic linking mechanism code stub
+       even if the GOT has been modified.
+
+       Let's see the detailed results of the ALTGOT technique on the 
+       ALPHA and MIPS architecture. It was done without a single
+       line of assembly code which makes it very portable :
+
+
+ ========= BEGIN DUMP 19 =========
+
+ elfsh@alpha$ cat host.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int main()
+ {
+   char  *str;
+
+   str = malloc(10);
+   if (str == NULL)
+     goto err;
+   strcpy(str, "test");
+   printf("First_printf %s\n", str);
+   fflush(stdout);
+   puts("First_puts");
+   printf("Second_printf %u\n", 42);
+   puts("Second_puts");
+   fflush(stdout);
+   return (0);
+  err:
+   printf("Malloc problem %u\n", 42);
+   return (-1);
+ }
+
+ elfsh@alpha$ gcc host.c -o a.out
+ elfsh@alpha$ file ./a.out
+ a.out: ELF 64-bit LSB executable, Alpha (unofficial), for NetBSD 2.0G,
+       dynamically linked, not stripped
+
+ ========= END DUMP 19 =========
+
+
+	   The original binary executes:
+
+
+ ========= BEGIN DUMP 20 =========
+
+ elfsh@alpha$ ./a.out
+ First_printf test
+ First_puts
+ Second_printf 42
+ Second_puts
+
+ ========= END DUMP 20 ==========
+
+
+	   Let's look again the relocatable object we are injecting:
+
+
+ ========= BEGIN DUMP 21 =========
+
+ elfsh@alpha$ cat rel.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int     glvar_testreloc = 42;
+
+ int     glvar_testreloc_bss;
+ char    glvar_testreloc_bss2;
+ short   glvar_testreloc_bss3;
+
+
+ int     puts_troj(char *str)
+ {
+   int   local = 1;
+   char  *str2;
+
+   str2 = malloc(10);
+   *str2 = 'Z';
+   *(str2 + 1) = 0x00;
+
+   glvar_testreloc_bss  = 43;
+   glvar_testreloc_bss2 = 44;
+   glvar_testreloc_bss3 = 45;
+
+   printf("Trojan injected ET_REL takes control now "
+         "[%s:%s:%u:%u:%hhu:%hu:%u] \n",
+         str2, str,
+         glvar_testreloc,
+         glvar_testreloc_bss,
+         glvar_testreloc_bss2,
+         glvar_testreloc_bss3,
+         local);
+
+   old_puts(str);
+   fflush(stdout);
+   return (0);
+ }
+
+ int     func2()
+ {
+   return (42);
+ }
+
+ ========= END DUMP 21 =========
+
+
+	   As you can see, the relocatable object rel.c uses old_ symbols
+	   which means that it relies on the ALTPLT technique. However
+	   we do not perform EXTPLT technique on ALPHA and MIPS yet so
+	   we are not able to call unknown function from the binary on 
+	   those architectures for now. Our rel.c is a copy from the one 
+	   in example 7 without the calls to the unknown functions
+	   write and putchar of example 7.
+
+	   Now we inject the stuff:
+
+
+ ========= BEGIN DUMP 22 =========
+
+ elfsh@alpha$ ./relinject.esh > relinject.out
+ elfsh@alpha$ ./fake_aout
+ First_printf test
+ Trojan injected ET_REL takes control now [Z:First_puts:42:43:44:45:1]
+ First_puts
+ Second_printf 42
+ Trojan injected ET_REL takes control now [Z:Second_puts:42:43:44:45:1]
+ Second_puts
+
+ ========= END DUMP 22 ==========
+
+
+	The section list on ALPHA is then as follow. A particular
+	look at the injected sections is recommended :	
+
+
+ ========= BEGIN DUMP 23 =========
+
+ elfsh@alpha$ elfsh -f fake_aout -s -p
+
+ [*] Object fake_aout has been loaded (O_RDONLY)
+
+ [SECTION HEADER TABLE .::. SHT is not stripped]
+ [Object fake_aout]
+
+ [000] 0x000000000 -------                     foff:00000 sz:00000
+ [001] 0x120000190 a------ .interp             foff:00400 sz:00023
+ [002] 0x1200001A8 a------ .note.netbsd.ident  foff:00424 sz:00024
+ [003] 0x1200001C0 a------ .hash               foff:00448 sz:00544
+ [004] 0x1200003E0 a------ .dynsym             foff:00992 sz:00552
+ [005] 0x120000608 a------ .dynstr             foff:01544 sz:00251
+ [006] 0x120000708 a------ .rela.dyn           foff:01800 sz:00096
+ [007] 0x120000768 a------ .rela.plt           foff:01896 sz:00168
+ [008] 0x120000820 a-x---- .init               foff:02080 sz:00128
+ [009] 0x1200008A0 a-x---- .text               foff:02208 sz:01312
+ [010] 0x120000DC0 a-x---- .fini               foff:03520 sz:00104
+ [011] 0x120000E28 a------ .rodata             foff:03624 sz:00162
+ [012] 0x120010ED0 aw----- .data               foff:03792 sz:00000
+ [013] 0x120010ED0 a------ .eh_frame           foff:03792 sz:00004
+ [014] 0x120010ED8 aw----- .dynamic            foff:03800 sz:00352
+ [015] 0x120011038 aw----- .ctors              foff:04152 sz:00016
+ [016] 0x120011048 aw----- .dtors              foff:04168 sz:00016
+ [017] 0x120011058 aw----- .jcr                foff:04184 sz:00008
+ [018] 0x120011060 awx---- .plt                foff:04192 sz:00116
+ [019] 0x1200110D8 aw----- .got                foff:04312 sz:00240
+ [020] 0x1200111C8 aw----- .sdata              foff:04552 sz:00024
+ [021] 0x1200111E0 aw----- .sbss               foff:04576 sz:00024
+ [022] 0x1200111F8 aw----- .bss                foff:04600 sz:00056
+ [023] 0x120011230 a-x---- rel.o.text          foff:04656 sz:00320
+ [024] 0x120011370 aw----- rel.o.sdata         foff:04976 sz:00008
+ [025] 0x120011378 a--ms-- rel.o.rodata.str1.1 foff:04984 sz:00072
+ [026] 0x1200113C0 a-x---- .alt.plt.prolog     foff:05056 sz:00048
+ [027] 0x1200113F0 a-x---- .alt.plt            foff:05104 sz:00120
+ [028] 0x120011468 a------ .alt.got            foff:05224 sz:00072
+ [029] 0x1200114B0 aw----- rel.o.got           foff:05296 sz:00080
+ [030] 0x000000000 ------- .comment            foff:05376 sz:00240
+ [031] 0x000000000 ------- .debug_aranges      foff:05616 sz:00048
+ [032] 0x000000000 ------- .debug_pubnames     foff:05664 sz:00027
+ [033] 0x000000000 ------- .debug_info         foff:05691 sz:02994
+ [034] 0x000000000 ------- .debug_abbrev       foff:08685 sz:00337
+ [035] 0x000000000 ------- .debug_line         foff:09022 sz:00373
+ [036] 0x000000000 ------- .debug_frame        foff:09400 sz:00048
+ [037] 0x000000000 ---ms-- .debug_str          foff:09448 sz:01940
+ [038] 0x000000000 ------- .debug_macinfo      foff:11388 sz:12937
+ [039] 0x000000000 ------- .ident              foff:24325 sz:00054
+ [040] 0x000000000 ------- .shstrtab           foff:24379 sz:00393
+ [041] 0x000000000 ------- .symtab             foff:27527 sz:02400
+ [042] 0x000000000 ------- .strtab             foff:29927 sz:00948
+
+ [Program header table .::. PHT]
+ [Object fake_aout]
+
+ [00] 0x120000040 -> 0x120000190 r-x  => Program header table
+ [01] 0x120000190 -> 0x1200001A7 r--  => Program interpreter
+ [02] 0x120000000 -> 0x120000ECA r-x  => Loadable segment
+ [03] 0x120010ED0 -> 0x120011510 rwx  => Loadable segment
+ [04] 0x120010ED8 -> 0x120011038 rw-  => Dynamic linking info
+ [05] 0x1200001A8 -> 0x1200001C0 r--  => Auxiliary information
+
+ [Program header table .::. SHT correlation]
+ [Object fake_aout]
+
+ [*] SHT is not stripped
+
+ [00] PT_PHDR
+ [01] PT_INTERP         .interp
+ [02] PT_LOAD           .interp .note.netbsd.ident .hash .dynsym .dynstr
+                        .rela.dyn .rela.plt .init .text .fini .rodata
+ [03] PT_LOAD           .data .eh_frame .dynamic .ctors .dtors .jcr .plt
+                        .got .sdata .sbss .bss rel.o.text rel.o.sdata
+                        rel.o.rodata.str1.1 .alt.plt.prolog .alt.plt
+                        .alt.got rel.o.got
+ [04] PT_DYNAMIC        .dynamic
+ [05] PT_NOTE           .note.netbsd.ident
+
+ [*] Object fake_aout unloaded
+
+ ========= END DUMP 23 =========
+
+
+	  Segments are extended the good way. We see this because of
+	  the correlation between SHT and PHT : all bounds are correct.
+	  the end. The .alt.plt.prolog section is there for implementing
+	  the ALTPLTv2 on ALPHA. This could will patch in runtime the
+	  first ALTPLT entry bytes with the first PLT entry bytes on
+	  the first time that ALTPLT first entry is called (when calling
+	  some original function from a hook function for the first time).
+	  
+	  When we discovered how to do the ALTPLTv3 (without a line
+	  of assembly), then .alt.plt.prolog just became a padding
+	  section so that GOT and ALTGOT were well aligned on some
+	  size that was necessary for setting up ALTPLT because of
+	  the ALPHA instruction encoding of indirect control flow
+	  jumps.
+
+
+---[ D. EXTPLT technique : unknown function postlinking
+
+
+	  This technique is one of the major one of the new ELFsh
+	  version. It works on ET_EXEC and ET_DYN files, including   
+	  when the injection is done directly in memory. EXTPLT	     
+	  consists in adding a new section (.elfsh.extplt) so that   
+	  we can add entries for new functions. 
+
+	  When coupled to .rel.plt, .got, .dynsym, and .dynstr mirroring 
+	  extensions, it allows for placing relocation entries that match 
+	  the needs of the new ALTPLT/ALTGOT couple. Let's look at the 
+	  additional relocation information using the elfsh -r command.
+ 
+	  First, let see the original binary relocation table:
+
+ 
+ ========= BEGIN DUMP 24 =========
+
+ [*] Object ./a.out has been loaded (O_RDONLY) 
+
+ [RELOCATION TABLES]
+ [Object ./a.out]
+
+ {Section .rel.dyn} 
+ [000] R_386_GLOB_DAT  0x08049850 sym[010] : __gmon_start__   
+ [001] R_386_COPY      0x08049888 sym[004] : stdout           
+
+ {Section .rel.plt} 
+ [000] R_386_JMP_SLOT  0x08049860 sym[001] : fflush           
+ [001] R_386_JMP_SLOT  0x08049864 sym[002] : puts             
+ [002] R_386_JMP_SLOT  0x08049868 sym[003] : malloc           
+ [003] R_386_JMP_SLOT  0x0804986C sym[005] : __libc_start_main
+ [004] R_386_JMP_SLOT  0x08049870 sym[006] : printf           
+ [005] R_386_JMP_SLOT  0x08049874 sym[007] : free             
+ [006] R_386_JMP_SLOT  0x08049878 sym[009] : read             
+
+ [*] Object ./testsuite/etrel_inject/etrel_original/a.out unloaded 
+	  
+ ========= END DUMP 24 =========
+
+
+	    Let's now see the modified binary relocation tables:
+
+
+ ========= BEGIN DUMP 25 =========
+	  
+ [*] Object fake_aout has been loaded (O_RDONLY) 
+
+ [RELOCATION TABLES]
+ [Object ./fake_aout]
+
+ {Section .rel.dyn} 
+ [000] R_386_GLOB_DAT  0x08049850 sym[010] : __gmon_start__   
+ [001] R_386_COPY      0x08049888 sym[004] : stdout           
+
+ {Section .rel.plt} 
+ [000] R_386_JMP_SLOT  0x0804A8A0 sym[001] : fflush           
+ [001] R_386_JMP_SLOT  0x0804A8A4 sym[002] : puts             
+ [002] R_386_JMP_SLOT  0x0804A8A8 sym[003] : malloc           
+ [003] R_386_JMP_SLOT  0x0804A8AC sym[005] : __libc_start_main
+ [004] R_386_JMP_SLOT  0x0804A8B0 sym[006] : printf           
+ [005] R_386_JMP_SLOT  0x0804A8B4 sym[007] : free             
+ [006] R_386_JMP_SLOT  0x0804A8B8 sym[009] : read             
+
+ {Section .elfsh.reldyn} 
+ [000] R_386_GLOB_DAT  0x08049850 sym[010] : __gmon_start__   
+ [001] R_386_COPY      0x08049888 sym[004] : stdout           
+
+ {Section .elfsh.relplt} 
+ [000] R_386_JMP_SLOT  0x0804A8A0 sym[001] : fflush           
+ [001] R_386_JMP_SLOT  0x0804A8A4 sym[002] : puts             
+ [002] R_386_JMP_SLOT  0x0804A8A8 sym[003] : malloc           
+ [003] R_386_JMP_SLOT  0x0804A8AC sym[005] : __libc_start_main
+ [004] R_386_JMP_SLOT  0x0804A8B0 sym[006] : printf           
+ [005] R_386_JMP_SLOT  0x0804A8B4 sym[007] : free             
+ [006] R_386_JMP_SLOT  0x0804A8B8 sym[009] : read             
+ [007] R_386_JMP_SLOT  0x0804A8BC sym[011] : _IO_putc         
+ [008] R_386_JMP_SLOT  0x0804A8C0 sym[012] : write            
+
+ [*] Object fake_aout unloaded 
+
+ =========  END DUMP 25 =========     
+
+
+	    As you see, _IO_putc (internal name for putchar) and write 
+	    functions has been used in the injected object. We had to 
+	    insert them inside the host binary so that the output binary 
+	    can work.
+	    
+	    The .elfsh.relplt section is copied from the .rel.plt
+	    section but with a doubled size so that we have room
+	    for additional entries. Even if we extend only one of the
+	    relocation table, both tables needs to be copied, because
+	    on ET_DYN files, the rtld will assume that both tables
+	    are adjacent in memory, so we cannot just copy .rel.plt
+	    but also need to keep .rel.dyn (aka .rel.got) near the
+	    .rel.plt copy. That is why you can see with .elfsh.reldyn
+	    and .elfsh.relplt .
+
+	    When extra symbols are needed, more sections are moved
+	    after the BSS, including .dynsym and .dynstr.
+
+
+---[ E. IA32, SPARC32/64, ALPHA64, MIPS32 compliant algorithms		 
+
+
+	  Let's now give all algorithms details about the techniques we
+	  introduced by the practice in the previous paragraphs. We
+	  cover here all pseudos algorithms for ELF redirections. More
+	  constrained debugging detailed algorithms are given at the end 
+	  of the next part.
+
+	  Because of ALTPLT and ALTGOT techniques are so complementary, 
+	  we implemented them inside only one algorithm that we give
+	  now. There is no conditions on the SPARC architecture since
+	  it is the default architecture case in the listing.
+
+	  The main ALTPLTv3 / ALTGOT algorithm (libelfsh/altplt.c) can be
+	  found in elfsh_build_plt() and elfsh_relink_plt(), is as 
+	  follow. 
+
+	  It could probably be cleaned if all the code go in architecture 
+	  dependant handlers but that would duplicate some code, so we 
+	  keep it like this :
+
+	  Multiarchitecture ALTPLT / ALTGOT algorithm
+	 +-------------------------------------------+
+
+	  0/ IF [ ARCH is MIPS AND PLT is not found AND File is dynamic ]
+	     [
+		- Get .text section base address
+		- Find MIPS opcodes fingerprint for embedded PLT 
+		  located inside .text
+		- Fixup SHT to include PLT section header
+	     ]
+
+	  1/ SWITCH on ELF architecture
+	  [
+             MIPS:
+		* Insert mapped .elfsh.gotprolog section
+		* Insert mapped .elfsh.padgot section
+	     ALPHA:
+	        * Insert mapped .elfsh.pltprolog section
+	     DEFAULT:
+	        * Insert mapped .elfsh.altplt section (copy of .plt)
+	  ]
+
+	  2/ IF [ ARCH is (MIPS or ALPHA or IA32) ]
+	  [
+		* Insert .elfsh.altgot section (copy of .got)
+	  ]
+
+	  3/ FOREACH (ALT)PLT ENTRY:
+	  [
+		IF [ FIRST PLT entry ]
+		[
+		   IF [ARCH is MIPS ]
+		   [
+			* Insert pairs of ld/st instructions in 
+			  .elfsh.gotprolog for copying extern variables 
+			  addresses fixed in GOT by the RTLD inside 
+			  ALTGOT section. See MIPS altplt handler
+			  in libelfsh/mips32.c
+		   ]
+		   ELSE IF [ ARCH is IA32 ]
+		   [
+			* Reencode the first PLT entry using GOT - ALTGOT
+			  address difference (so we relocate into ALTGOT
+			  instead of GOT)
+		   ]
+		]
+		
+		IF [ ARCH is MIPS ]
+		   * Inject OLD symbol on current PLT entry
+		ELSE
+		   * Inject OLD symbol on current ALTPLT entry
+
+		IF [ ARCH is ALPHA ]
+		   * Shift relocation entry pointing at current location
+		
+		IF [ ARCH is IA32 ]
+		   * Reencode PLT and ALTPLT current entry
+	  ]   
+
+	  4/ SWITCH on ELF architecture
+	  [
+	       MIPS:
+	       IA32:
+		 * Change DT_PLTGOT entry from GOT to ALTGOT address
+		 * Shift GOT related relocation
+	       SPARC:
+	         * Change DT_PLTGOT entry from PLT to ALTPLT address
+		 * Shift PLT related relocations
+	  ]
+
+	  
+
+	  On MIPS, there is no relocation tables inside ET_EXEC binaries.
+	  If we want to shift the relocations that make reference to GOT 
+	  inside the MIPS code, we need to fingerprint such code patterns
+	  so that we fix them using the ALTGOT - GOT difference. They are
+	  easily found since the needed patches are always on the same 
+	  binary instructions pattern :
+
+	  3c1c0000        lui     gp,0x0
+	  279c0000        addiu   gp,gp,0
+	  
+	  The zero fields in those instructions should be patched at
+	  linking time when they match HI16 and LO16 MIPS relocations. 
+	  However this information is not available in a table for 
+	  ET_EXEC files, so we had to find them back in the binary code. 
+	  It way easier to do this on RISC architectures since all 
+	  instructions are the same length so false positives are very 
+	  unlikely to happen. Once we found all those patterns, we fix 
+	  them using the ALTGOT-GOT difference in the relocatable fields.
+	  Of course, we wont change ALL references to GOT inside the 
+	  code, because that would result in just moving the GOT without
+	  performing any hijack. We just fix those references in the 
+	  first 0x100 bytes of .text, and in .init, .fini, that means 
+	  only the references at the reserved GOT entries (filled with 
+	  dl-resolve virtual address and linkmap address). That way, we 
+	  make the original code use the ALTGOT section when accessing 
+	  reserved entries (since they have been runtime relocated in 
+	  ALTGOT and not GOT) and the original GOT entries when accessing
+	  the function entries (so that we can hijack functions using 
+	  GOT modification).
+
+
+	  EXTPLT algorithm
+	 +----------------+
+	  
+	  The EXTPLT algorithm fits well in the previous algorithm. We 
+	  just needed to add 2 steps in the previous listing : 
+
+	  	  
+	  Step 2 BIS : Insert the EXTPLT (copy of PLT) section on 
+		       supported architectures.
+
+	  Step 5     : Mirror (and extend) dynamic linking sections on 
+		       supported architectures. Let's give more details
+		       about this algorithm implemented in 
+		       libelfsh/extplt.c.
+
+	  * Mirror .rel.got (.rel.dyn) and .rel.plt sections after BSS, 
+	  with a double sized mirror sections. Those 2 sections needs to
+	  stay adjacent in memory so that EXTPLT works on ET_DYN objects 
+	  as well.
+
+	  * Update DT_REL and DT_JMPREL entries in .dynamic
+
+	  * Mirror .dynsym and .dynstr sections with a double size
+	  
+	  * Update DT_SYMTAB and DT_STRTAB entries in .dynamic
+
+	  Once those operations are done, we have room in all the various
+	  dynamic linking oriented sections and we can add on-demand 
+	  dynamic symbols, symbols names, and relocation entry necessary 
+	  for adding extra PLT entries in the EXTPLT section.
+
+	  Then, each time we encounter a unknown symbol in the process of 
+	  relocating a ET_REL object inside a ET_EXEC or ET_DYN object, 
+	  we can use the REQUESTPLT algorithm, as implemented in 
+	  elfsh_request_pltent() function in the libelfsh/extplt.c file :
+
+	  * Check room in EXTPLT, RELPLT, DYNSYM, DYNSTR, and 
+	  ALTGOT sections.
+
+	  * Initialize ALTGOT entry to EXTPLT allocated new entry.
+
+	  * Encode EXTPLT entry for using the ALTGOT entry.
+
+	  * Insert relocation entry inside .elfsh.relplt for ALTGOT 
+	  new entry.
+
+	  * Add relocation entry size to DT_PLTRELSZ entry value in 
+	  .dynamic section.
+
+	  * Insert missing symbol in .elfsh.dynsym, with name inserted in 
+	  .elfsh.dynstr section.
+
+	  * Add symbol name length to DT_STRSZ entry value in .dynamic 
+	  section.
+
+	  This algorithm is called from the main ET_REL injection and 
+	  relocation algorithm each time the ET_REL object use an unknown
+	  function whoose symbol is not present in the host file. The 
+	  new ET_REL injection algorithm is given at the end of the 
+	  constrained debugging part of the article.	  
+
+
+	  CFLOW algorithm
+	 +----------------+
+
+	 This technique is implemented using an architecture dependant 
+	 backend but the global algorithm stays the same for all 
+	 architectures :
+
+	 - Create .elfsh.hooks sections (only 1 time)
+	 - Find number of bytes aligned on instruction size :
+		* Using libasm on IA32
+		* Manually on RISC machines
+	 - Insert HOOK entry on demand (see CFLOW dump for format)
+	 - Insert JMP to hook entry in hijacked function prolog
+	 - Align JUMP hook on instruction size with NOP in hijacked prolog
+	 - Insert hook_funcname and old_funcname symbols in hook entry for
+	   beeing able to call back the original function.
+
+
+	 The technique is PaX safe since it does not need any runtime 
+	 bytes restoration step. We can hook the address of our choice 
+	 using the CFLOW technique, however executing the original bytes 
+	 in the hook entry instead of their original place will not work 
+	 when placing hooks on relative branching instructions. Indeed, 
+	 relatives branching will be resolved to a wrong virtual address 
+	 if we execute their opcodes at the wrong place (inside 
+	 .elfsh.hooks instead of their original place) inside the 
+	 process. Remember this when placing CFLOW hooks : it is not 
+	 intended to hook relative branch instructions.
+
+
+
+-------[ V. Constrained Debugging
+
+
+	 In nowadays environment, hardened binaries are usually
+	 of type ET_DYN. We had to support this kind of injection
+	 since it allows for library files modification as much
+	 powerful as the the executable files modification. Moreover
+	 some distribution comes with a default binary set compiled
+	 in ET_DYN, such as hardened gentoo.
+
+	 Another improvement that we wanted to be done is the ET_REL
+	 relocation in memory. The algorithm for it is the same than
+	 the ondisk injection, but this time the disk is not changed
+	 so it reduces forensics evidences like in [12]. It is believed 
+	 that this kind of injection can be used in exploits and direct
+	 process backdooring without touching the hard disk. Evil eh ?
+
+	 We are aware of another implementation of the ET_REL injection	
+	 into memory [10]. Ours supports a wider range of architecture and
+	 couples with the EXTPLT technique directly in memory, which
+	 was not previously implemented to our knowledge.
+
+	 A last technique that we wanted to develop was about extending
+	 and debugging static executables. We developed this new technique
+	 that we called EXTSTATIC algorithm. It allows for static
+	 injections by taking parts of libc.a when functions or code is
+	 missing. The same ET_REL injection algorithm is used except
+	 that more than one relocatable file taken from libc.a is 
+	 injected at a time using a recursive dependency algorithm.
+
+
+---[ A. ET_REL relocation in memory				
+
+
+	 Because we want to be able to provide a handler for breakpoints
+	 as they are specified, we allow for direct mapping of an ET_REL
+	 object into memory. We use extra mmap zone for this, always
+	 taking care that it does not break PaX : we do not map any zone
+	 beeing both executable and writable.
+
+	 In e2dbg, breakpoints can be implemented in 2 ways. Either an
+	 architecture specific opcode (like 0xCC on IA32) is used on the
+	 desired redirected access, or the CFLOW/ALTPLT primitives can be
+	 used in runtime. In the second case, the mprotect system
+	 call must be used to be able to modify code at runtime. However
+	 we may be able to get rid of mprotect soon for runtime injections
+	 as the CFLOW techniques improves for beeing both static and
+	 runtime PaX safe.
+
+	 Let's look at some simple binary that does just use printf and
+	 and puts to understand more those concepts:
+
+
+ ========= BEGIN DUMP 26 =========
+
+ elfsh@WTH $ ./a.out
+ [host] main argc 1
+ [host] argv[0] is : ./a.out
+
+ First_printf test
+ First_puts
+ Second_printf test
+ Second_puts
+ LEGIT FUNC
+ legit func (test) !
+ ========= END DUMP 26 =========
+
+
+	   We use a small elfsh script as e2dbg so that it creates
+	   another file with the debugger injected inside it, using
+	   regular elfsh techniques. Let's look at it :
+
+
+
+ ========= BEGIN DUMP 27 =========	  
+ elfsh@WTH $ cat inject_e2dbg.esh
+ #!../../vm/elfsh
+ load a.out
+ set 1.dynamic[08].val 0x2			# entry for DT_DEBUG
+ set 1.dynamic[08].tag DT_NEEDED
+ redir main e2dbg_run
+ save a.out_e2dbg
+ ========= END DUMP 27 =========
+
+
+	   We then execute the modified binary.
+
+
+ ========= BEGIN DUMP 28 =========
+
+ elfsh@WTH $ ./aout_e2dbg
+
+
+         The Embedded ELF Debugger 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org
+
+ [*] Sun Jul 31 16:24:00 2005 - New object ./a.out_e2dbg loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/tls/libc.so.6 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object ./ibc.so.6 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/ld-linux.so.2 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/libelfsh.so loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/libreadline.so.5 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/libtermcap.so.2 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/libdl.so.2 loaded
+ [*] Sun Jul 31 16:24:00 2005 - New object /lib/libncurses.so.5 loaded
+
+ (e2dbg-0.65) quit
+
+         [..: Embedded ELF Debugger returns to the grave :...]
+
+ [e2dbg_run] returning to 0x08045139
+ [host] main argc 1
+ [host] argv[0] is : ./a.out_e2dbg
+
+ First_printf test
+ First_puts
+ Second_printf test
+ Second_puts
+ LEGIT FUNC
+ legit func (test) !
+
+ elfsh@WTH $
+
+========= END DUMP 28 =========
+
+
+	   Okay, that was easy. What if we want to do something more
+	   interresting like ET_REL object injection into memory. We
+	   will make use of the profile command so that we can see
+	   the autoprofiling feature of e2dbg. This command is always
+	   useful to learn more about the internals of the debugger, 
+	   and for internal debugging problems that may occur while
+	   developping it.
+
+	   Our cheap function calls pattern matching makes the output 
+	   more understandable than a raw print of profiling information
+	   and took only a few hours to implement using the 
+	   ELFSH_PROFILE_{OUT,ERR,ROUT} macros in libelfsh-internals.h
+	   and libelfsh/error.c 
+
+	   We will also print the linkmap list. The linkmap first fields
+	   are OS independant. There are a lot of other internal fields
+	   that we do not display here but a lot of information could
+	   be grabbed from there as well.
+
+	   See the stuff in action :
+	   
+
+ ========= BEGIN DUMP 29 =========
+
+ elfsh@WTH $ ./a.out_e2dbg
+
+         The Embedded ELF Debugger 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org 
+
+ [*] Sun Jul 31 16:12:48 2005 - New object ./a.out_e2dbg loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/tls/libc.so.6 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object ./ibc.so.6 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/ld-linux.so.2 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/libelfsh.so loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/libreadline.so.5 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/libtermcap.so.2 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/libdl.so.2 loaded
+ [*] Sun Jul 31 16:12:48 2005 - New object /lib/libncurses.so.5 loaded
+
+ (e2dbg-0.65) linkmap 
+
+ .::. Linkmap entries .::.
+ [01] addr : 0x00000000 dyn : 0x080497D4 -
+ [02] addr : 0x00000000 dyn : 0xFFFFE590 -
+ [03] addr : 0xB7E73000 dyn : 0xB7F9AD3C - /lib/tls/libc.so.6
+ [04] addr : 0xB7E26000 dyn : 0xB7E6F01C - ./ibc.so.6
+ [05] addr : 0xB7FB9000 dyn : 0xB7FCFF14 - /lib/ld-linux.so.2
+ [06] addr : 0xB7DF3000 dyn : 0xB7E24018 - /lib/libelfsh.so
+ [07] addr : 0xB7DC6000 dyn : 0xB7DEE46C - /lib/libreadline.so.5
+ [08] addr : 0xB7DC2000 dyn : 0xB7DC5BB4 - /lib/libtermcap.so.2
+ [09] addr : 0xB7DBE000 dyn : 0xB7DC0EEC - /lib/libdl.so.2
+ [10] addr : 0xB7D7C000 dyn : 0xB7DBB1C0 - /lib/libncurses.so.5
+
+ (e2dbg-0.65) list
+
+ .::. Working files .::.
+ [001] Sun Jul 31 16:24:00 2005  D ID: 9 /lib/libncurses.so.5
+ [002] Sun Jul 31 16:24:00 2005  D ID: 8 /lib/libdl.so.2
+ [003] Sun Jul 31 16:24:00 2005  D ID: 7 /lib/libtermcap.so.2
+ [004] Sun Jul 31 16:24:00 2005  D ID: 6 /lib/libreadline.so.5
+ [005] Sun Jul 31 16:24:00 2005  D ID: 5 /lib/libelfsh.so
+ [006] Sun Jul 31 16:24:00 2005  D ID: 4 /lib/ld-linux.so.2
+ [007] Sun Jul 31 16:24:00 2005  D ID: 3 ./ibc.so.6
+ [008] Sun Jul 31 16:24:00 2005  D ID: 2 /lib/tls/libc.so.6
+ [009] Sun Jul 31 16:24:00 2005 *D ID: 1 ./a.out_e2dbg
+
+ .::. ELFsh modules .::.
+ [*] No loaded module
+
+ (e2dbg-0.65) source ./etrelmem.esh
+
+ ~load myputs.o
+
+ [*] Sun Jul 31 16:13:32 2005 - New object myputs.o loaded
+
+ [!!] Loaded file is not the linkmap, switching to STATIC mode
+
+ ~switch 1
+
+ [*] Switched on object 1 (./a.out_e2dbg)
+
+ ~mode dynamic
+
+ [*] e2dbg is now in DYNAMIC mode
+
+ ~reladd 1 10
+
+ [*] ET_REL myputs.o injected succesfully in ET_EXEC ./a.out_e2dbg
+
+ ~profile
+         .:: Profiling enable
+
+ + <vm_print_actual@loop.c:38>
+ ~redir puts myputs
+ + <vm_implicit@implicit.c:91>
+ + <cmd_hijack@fcthijack.c:19>
+ + <elfsh_get_metasym_by_name@sym_common.c:283>
+ + <elfsh_get_dynsymbol_by_name@dynsym.c:255>
+ + <elfsh_get_dynsymtab@dynsym.c:87>
+ + <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_get_dynsymbol_name@dynsym.c:17>
+ [W]     <elfsh_get_dynsymbol_by_name@dynsym.c:274>      Symbol not found
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_get_dynsymbol_name@dynsym.c:17>
+ [P] --- Last 2 function(s) recalled 12 time(s) ---
+ + <elfsh_get_symbol_by_name@symbol.c:236>
+ + <elfsh_get_symtab@symbol.c:110>
+ + <elfsh_get_symbol_name@symbol.c:20>
+ [P] --[ <elfsh_get_symbol_name@symbol.c:20>
+ [P] --- Last 1 function(s) recalled 114 time(s) ---
+ + <elfsh_hijack_function_by_name@hijack.c:25>
+ + <elfsh_setup_hooks@hooks.c:199>
+ + <elfsh_get_pagesize@hooks.c:783>
+ + <elfsh_get_archtype@hooks.c:624>
+ + <elfsh_get_arch@elf.c:179>
+ + <elfsh_copy_plt@altplt.c:525>
+ + <elfsh_static_file@elf.c:491>
+ + <elfsh_get_segment_by_type@pht.c:215>
+ + <elfsh_get_pht@pht.c:364>
+ + <elfsh_get_segment_type@pht.c:174>
+ [P] --[ <elfsh_get_segment_type@pht.c:174>
+ [P] --- Last 1 function(s) recalled 4 time(s) ---
+ + <elfsh_get_arch@elf.c:179>
+ [P] --[ <elfsh_get_arch@elf.c:179>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_relink_plt@altplt.c:121>
+ + <elfsh_get_archtype@hooks.c:624>
+ [P] --[ <elfsh_get_arch@elf.c:179>
+ [P] --[ <elfsh_relink_plt@altplt.c:121>
+ [P] --[ <elfsh_get_archtype@hooks.c:624>
+ [P] --- Last 3 function(s) recalled 1 time(s) ---
+ + <elfsh_get_elftype@hooks.c:662>
+ + <elfsh_get_objtype@elf.c:204>
+ + <elfsh_get_ostype@hooks.c:709>
+ + <elfsh_get_real_ostype@hooks.c:679>
+ + <elfsh_get_interp@interp.c:41>
+ + <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_get_section_by_name@section.c:168>
+ + <elfsh_get_section_name@sht.c:474>
+ [P] --[ <elfsh_get_section_name@sht.c:474>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_get_symbol_by_name@symbol.c:236>
+ + <elfsh_get_symtab@symbol.c:110>
+ + <elfsh_get_symbol_name@symbol.c:20>
+ [W]     <elfsh_get_symbol_by_name@symbol.c:253>         Symbol not found
+ [P] --[ <elfsh_get_symbol_name@symbol.c:20>
+ [P] --- Last 1 function(s) recalled 114 time(s) ---
+ + <elfsh_is_pltentry@plt.c:73>
+ [W]     <elfsh_is_pltentry@plt.c:77>               Invalid NULL parameter
+ + <elfsh_get_dynsymbol_by_name@dynsym.c:255>
+ + <elfsh_get_dynsymtab@dynsym.c:87>
+ + <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_get_dynsymbol_name@dynsym.c:17>
+ [P] --[ <elfsh_is_pltentry@plt.c:73>
+ [P] --[ <elfsh_get_dynsymbol_by_name@dynsym.c:255>
+ [P] --[ <elfsh_get_dynsymtab@dynsym.c:87>
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_get_dynsymbol_name@dynsym.c:17>
+ [P] --- Last 5 function(s) recalled 1 time(s) ---
+ + <elfsh_get_plt@plt.c:16>
+ + <elfsh_is_plt@plt.c:49>
+ + <elfsh_get_section_name@sht.c:474>
+ + <elfsh_is_altplt@plt.c:62>
+ [P] --[ <elfsh_is_plt@plt.c:49>
+ [P] --[ <elfsh_get_section_name@sht.c:474>
+ [P] --[ <elfsh_is_altplt@plt.c:62>
+ [P] --- Last 3 function(s) recalled 3 time(s) ---
+ + <elfsh_get_anonymous_section@section.c:334>
+ + <elfsh_get_raw@section.c:691>
+ [P] --[ <elfsh_is_plt@plt.c:49>
+ [P] --[ <elfsh_get_section_name@sht.c:474>
+ [P] --[ <elfsh_is_altplt@plt.c:62>
+ [P] --[ <elfsh_get_anonymous_section@section.c:334>
+ [P] --[ <elfsh_get_raw@section.c:691>
+ [P] --- Last 5 function(s) recalled 44 time(s) ---
+ + <elfsh_get_arch@elf.c:179>
+ [P] --[ <elfsh_get_arch@elf.c:179>
+ [P] --- Last 1 function(s) recalled 1 time(s) ---
+ + <elfsh_hijack_plt_ia32@ia32.c:258>
+ + <elfsh_get_foffset_from_vaddr@raw.c:85>
+ + <elfsh_get_pltentsz@plt.c:94>
+ [P] --[ <elfsh_get_arch@elf.c:179>
+ [P] --[ <elfsh_hijack_plt_ia32@ia32.c:258>
+ [P] --[ <elfsh_get_foffset_from_vaddr@raw.c:85>
+ [P] --[ <elfsh_get_pltentsz@plt.c:94>
+ [P] --- Last 4 function(s) recalled 1 time(s) ---
+ + <elfsh_munprotect@runtime.c:97>
+ + <elfsh_get_parent_section@section.c:380>
+ + <elfsh_get_parent_segment@pht.c:304>
+ + <elfsh_segment_is_readable@pht.c:14>
+ + <elfsh_segment_is_writable@pht.c:21>
+ + <elfsh_segment_is_executable@pht.c:28>
+ + <elfsh_raw_write@raw.c:22>
+ + <elfsh_get_parent_section_by_foffset@section.c:416>
+ + <elfsh_get_sht@sht.c:159>
+ + <elfsh_get_section_type@sht.c:887>
+ + <elfsh_get_anonymous_section@section.c:334>
+ + <elfsh_get_raw@section.c:691>
+ + <elfsh_raw_write@raw.c:22>
+ + <elfsh_get_parent_section_by_foffset@section.c:416>
+ + <elfsh_get_sht@sht.c:159>
+ + <elfsh_get_section_type@sht.c:887>
+ + <elfsh_get_anonymous_section@section.c:334>
+ + <elfsh_get_raw@section.c:691>
+ + <elfsh_get_pltentsz@plt.c:94>
+ + <elfsh_get_arch@elf.c:179>
+ + <elfsh_mprotect@runtime.c:135>
+
+ [*] Function puts redirected to addr 0xB7FB6000 <myputs>
+
+ + <vm_print_actual@loop.c:38>
+ ~profile
+ + <vm_implicit@implicit.c:91>
+         .:: Profiling disable
+
+
+ [*] ./etrelmem.esh sourcing -OK-
+
+ (e2dbg-0.65) continue
+
+
+         [..: Embedded ELF Debugger returns to the grave :...]
+
+ [e2dbg_run] returning to 0x08045139
+ [host] main argc 1
+ [host] argv[0] is : ./a.out_e2dbg
+
+ First_printf test
+ Hijacked puts !!! arg = First_puts
+ First_puts
+ Second_printf test
+ Hijacked puts !!! arg = Second_puts
+ Second_puts
+ Hijacked puts !!! arg = LEGIT FUNC
+ LEGIT FUNC
+ legit func (test) !
+ elfsh@WTH $
+
+ ========= END DUMP 29 =========
+
+
+	  Really cool. We hijacked 2 functions (puts and legit_func) using
+	  the 2 different (ALTPLT and CFLOW) techniques. For this, we
+	  did not have to inject an additional ET_REL file inside the
+	  ET_EXEC host, but we directly injected the hook module inside
+	  memory using mmap.
+
+	  We could have printed the SHT and PHT as well just after the
+	  ET_REL injection into memory. We keep track of all mapping
+	  when we inject such relocatable objects, so that we can 
+	  eventually unmap them in the future or remap them later :
+
+
+ ========= BEGIN DUMP 30 =========
+	  
+ (e2dbg-0.65) s
+
+ [SECTION HEADER TABLE .::. SHT is not stripped]
+ [Object ./a.out_e2dbg]
+
+ [000] 0x00000000 -------                           foff:00000 size:00308
+ [001] 0x08045134 a-x---- .elfsh.hooks              foff:00308 size:00015
+ [002] 0x08046134 a-x---- .elfsh.extplt             foff:04404 size:00032
+ [003] 0x08047134 a-x---- .elfsh.altplt             foff:08500 size:04096
+ [004] 0x08048134 a------ .interp                   foff:12596 size:00019
+ [005] 0x08048148 a------ .note.ABI-tag             foff:12616 size:00032
+ [006] 0x08048168 a------ .hash                     foff:12648 size:00064
+ [007] 0x080481A8 a------ .dynsym                   foff:12712 size:00176
+ [008] 0x08048258 a------ .dynstr                   foff:12888 size:00112
+ [009] 0x080482C8 a------ .gnu.version              foff:13000 size:00022
+ [010] 0x080482E0 a------ .gnu.version_r            foff:13024 size:00032
+ [011] 0x08048300 a------ .rel.dyn                  foff:13056 size:00016
+ [012] 0x08048310 a------ .rel.plt                  foff:13072 size:00056
+ [013] 0x08048348 a-x---- .init                     foff:13128 size:00023
+ [014] 0x08048360 a-x---- .plt                      foff:13152 size:00128
+ [015] 0x08048400 a-x---- .text                     foff:13312 size:00800
+ [016] 0x08048720 a-x---- .fini                     foff:14112 size:00027
+ [017] 0x0804873C a------ .rodata                   foff:14140 size:00185
+ [018] 0x080487F8 a------ .eh_frame                 foff:14328 size:00004
+ [019] 0x080497FC aw----- .ctors                    foff:14332 size:00008
+ [020] 0x08049804 aw----- .dtors                    foff:14340 size:00008
+ [021] 0x0804980C aw----- .jcr                      foff:14348 size:00004
+ [022] 0x08049810 aw----- .dynamic                  foff:14352 size:00200
+ [023] 0x080498D8 aw----- .got                      foff:14552 size:00004
+ [024] 0x080498DC aw----- .got.plt                  foff:14556 size:00040
+ [025] 0x08049904 aw----- .data                     foff:14596 size:00012
+ [026] 0x08049910 aw----- .bss                      foff:14608 size:00008
+ [027] 0x08049918 aw----- .elfsh.altgot             foff:14616 size:00044
+ [028] 0x08049968 aw----- .elfsh.dynsym             foff:14696 size:00192
+ [029] 0x08049AC8 aw----- .elfsh.dynstr             foff:15048 size:00122
+ [030] 0x08049BA8 aw----- .elfsh.reldyn             foff:15272 size:00016
+ [031] 0x08049BB8 aw----- .elfsh.relplt             foff:15288 size:00064
+ [032] 0x00000000 ------- .comment                  foff:15400 size:00665
+ [033] 0x00000000 ------- .debug_aranges            foff:16072 size:00120
+ [034] 0x00000000 ------- .debug_pubnames           foff:16192 size:00042
+ [035] 0x00000000 ------- .debug_info               foff:16234 size:06904
+ [036] 0x00000000 ------- .debug_abbrev             foff:23138 size:00503
+ [037] 0x00000000 ------- .debug_line               foff:23641 size:00967
+ [038] 0x00000000 ------- .debug_frame              foff:24608 size:00076
+ [039] 0x00000000 ---ms-- .debug_str                foff:24684 size:08075
+ [040] 0x00000000 ------- .debug_macinfo            foff:32759 size:29295
+ [041] 0x00000000 ------- .shstrtab                 foff:62054 size:00496
+ [042] 0x00000000 ------- .symtab                   foff:64473 size:02256
+ [043] 0x00000000 ------- .strtab                   foff:66729 size:01665
+ [044] 0x40019000 aw----- myputs.o.bss              foff:68394 size:04096
+ [045] 0x00000000 ------- .elfsh.rpht               foff:72493 size:04096
+ [046] 0x4001A000 a-x---- myputs.o.text             foff:76589 size:04096
+ [047] 0x4001B000 a--ms-- myputs.o.rodata.str1.1    foff:80685 size:04096
+
+ (e2dbg-0.65) p
+
+ [Program Header Table .::. PHT]
+ [Object ./a.out_e2dbg]
+
+ [00] 0x08045034 -> 0x08045134 r-x memsz(00256) filesz(00256)
+ [01] 0x08048134 -> 0x08048147 r-- memsz(00019) filesz(00019)
+ [02] 0x08045000 -> 0x080487FC r-x memsz(14332) filesz(14332)
+ [03] 0x080497FC -> 0x08049C30 rw- memsz(01076) filesz(01068)
+ [04] 0x08049810 -> 0x080498D8 rw- memsz(00200) filesz(00200)
+ [05] 0x08048148 -> 0x08048168 r-- memsz(00032) filesz(00032)
+ [06] 0x00000000 -> 0x00000000 rw- memsz(00000) filesz(00000)
+ [07] 0x00000000 -> 0x00000000 --- memsz(00000) filesz(00000)
+
+ [SHT correlation]
+ [Object ./a.out_e2dbg]
+
+ [*] SHT is not stripped 
+ 
+ [00] PT_PHDR    
+ [01] PT_INTERP         .interp 
+ [02] PT_LOAD           .elfsh.hooks .elfsh.extplt .elfsh.altplt .interp 
+			.note.ABI-tag .hash .dynsym .dynstr .gnu.version 
+			.gnu.version_r .rel.dyn .rel.plt .init .plt 
+			.text .fini .rodata .eh_frame 
+ [03] PT_LOAD           .ctors .dtors .jcr .dynamic .got .got.plt .data 
+			.bss .elfsh.altgot .elfsh.dynsym .elfsh.dynstr 
+			.elfsh.reldyn .elfsh.relplt 
+ [04] PT_DYNAMIC        .dynamic 
+ [05] PT_NOTE           .note.ABI-tag 
+ [06] PT_GNU_STACK 
+ [07] PT_PAX_FLAGS 
+
+ [Runtime Program Header Table .::. RPHT]
+ [Object ./a.out_e2dbg]
+
+ [00] 0x40019000 -> 0x4001A000 rw- memsz(4096) filesz(4096)
+ [01] 0x4001A000 -> 0x4001B000 r-x memsz(4096) filesz(4096)
+ [02] 0x4001B000 -> 0x4001C000 r-x memsz(4096) filesz(4096)
+
+ [SHT correlation]
+ [Object ./a.out_e2dbg]
+
+ [*] SHT is not stripped 
+ 
+ [00] PT_LOAD           myputs.o.bss 
+ [01] PT_LOAD           myputs.o.text 
+ [02] PT_LOAD           myputs.o.rodata.str1.1 
+
+ (e2dbg-0.65) 
+
+
+ ========= BEGIN DUMP 30 =========
+
+
+
+	   Our algorithm is not really optimized since it allocates 
+	   a new PT_LOAD by section. Here, we created a new table RPHT 
+	   (Runtime PHT) which handle the list of all runtime injected
+	   pages. This table has no legal existance in the ELF file, 
+	   but that avoid to extend the real PHT with additional
+	   runtime memory areas. The technique does not break PaX
+	   since all zones are allocated using the strict necessary
+	   rights. However, if you want to redirect existing functions
+	   on the newly injected functions from myputs.o, then you
+	   will have to change some code in runtime, and then it
+	   becomes necessary to disable mprotect option to avoid
+	   breaking PaX. 
+
+
+
+---[ B. ET_REL relocation into ET_DYN				
+
+
+
+	  We ported the ET_REL injection and the EXTPLT technique to 
+	  ET_DYN files. The biggest difference is that ET_DYN files have 
+	  a relative address space ondisk. Of course, stripped binaries 
+	  have no effect on our algorithms and we dont need any	      
+	  non-mandatory information such as debug sections or anything
+	  (it may be obvious but some peoples really asked this).
+
+	  Let's see what happens on this ET_DYN host file:
+
+
+ ========= BEGIN DUMP 31 =========
+
+ elfsh@WTH $ file main
+ main: ELF 32-bit LSB shared object, Intel 80386, version 1 (SYSV), 
+ stripped
+
+ elfsh@WTH $ ./main
+ 0x800008c8 main(argc=0xbfa238d0, argv=0xbfa2387c, envp=0xbfa23878, 
+	         auxv=0xbfa23874) __guard=0xb7ef4148
+ ssp-all (Stack) Triggering an overflow by copying [20] of data into [10]
+ of space
+ main: stack smashing attack in function main()
+ Aborted
+
+ elfsh@WTH $ ./main AAAAA
+ 0x800008c8 main(argc=0xbf898e40, argv=0xbf898dec, envp=0xbf898de8, 
+	         auxv=0xbf898de4) __guard=0xb7f6a148
+ ssp-all (Stack) Copying [5] of data into [10] of space
+
+ elfsh@WTH $ ./main AAAAAAAAAAAAAAAAAAAAAAAAAAA
+ 0x800008c8 main(argc=0xbfd3c8e0, argv=0xbfd3c88c, envp=0xbfd3c888, 
+                 auxv=0xbfd3c884) __guard=0xb7f0b148
+ ssp-all (Stack) Copying [27] of data into [10] of space
+ main: stack smashing attack in function main()
+ Aborted
+
+ ========= END DUMP 31 =========
+
+
+	   For the sake of fun, we decided to study in priority  the
+	   hardened gentoo binaries [11] . Those comes with PIE (Position
+	   Independant Executable) and SSP (Stack Smashing Protection)
+	   built in. It does not change a line of our algorithm. Here
+	   are some tests done on a stack smashing protected binary
+	   with an overflow in the first parameter, triggering the
+	   stack smashing handler. We will redirect that handler
+	   to show that it is a normal function that use classical
+	   PLT mechanisms.
+
+	   This is the code that we are going to inject :
+	   
+
+ ========= BEGIN DUMP 32 =========
+
+ elfsh@WTH $ cat simple.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int     fake_main(int argc, char **argv)
+ {
+   old_printf("I am the main function, I have %d argc and my "
+  	      "argv is %08X yupeelala \n",
+              argc, argv); 
+
+   write(1, "fake_main is calling write ! \n", 30);
+
+   old_main(argc, argv);
+
+   return (0);
+ }
+
+ char*   fake_strcpy(char *dst, char *src)
+ {
+   printf("The fucker wants to copy %s at address %08X \n", src, dst);
+   return ((char *) old_strcpy(dst, src));
+ }
+
+ void    fake_stack_smash_handler(char func[], int damaged)
+ {
+   static int i = 0;
+   printf("calling printf from stack smashing handler %u\n", i++);
+   if (i>3)
+     old___stack_smash_handler(func, damaged);
+   else
+     printf("Same player play again [damaged = %08X] \n", damaged);
+   printf("A second (%d) printf from the handler \n", 2);
+ }
+
+ int fake_libc_start_main(void *one, void *two, void *three, void *four, 
+                          void *five, void *six, void *seven)
+ {
+   static int i = 0;
+
+   old_printf("fake_libc_start_main \n");
+   printf("start_main has been run %u \n", i++);
+   return (old___libc_start_main(one, two, three, four, 
+			         five, six, seven));
+ }
+
+ ========= END DUMP 32 =========
+
+	   
+	   The elfsh script that allow for the modification is :
+
+
+ ========= BEGIN DUMP 33 =========
+
+ elfsh@WTH $ cat relinject.esh
+ #!../../../vm/elfsh
+
+ load main
+ load simple.o
+
+ reladd 1 2
+
+ redir main fake_main
+ redir __stack_smash_handler fake_stack_smash_handler
+ redir __libc_start_main fake_libc_start_main
+ redir strcpy fake_strcpy
+
+ save fake_main
+
+ quit
+
+ ========= END DUMP 33 =========
+
+
+	   Now let's see this in action !
+
+
+ ========= BEGIN DUMP 34 =========
+ elfsh@WTH $ ./relinject.esh
+
+
+         The ELF shell 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org
+
+ ~load main
+
+ [*] Sun Jul 31 17:24:20 2005 - New object main loaded
+
+ ~load simple.o
+
+ [*] Sun Jul 31 17:24:20 2005 - New object simple.o loaded
+
+ ~reladd 1 2
+
+ [*] ET_REL simple.o injected succesfully in ET_DYN main
+
+ ~redir main fake_main
+
+ [*] Function main redirected to addr 0x00005154 <fake_main>
+
+ ~redir __stack_smash_handler fake_stack_smash_handler
+
+ [*] Function __stack_smash_handler redirected to addr 
+     0x00005203 <fake_stack_smash_handler>
+
+ ~redir __libc_start_main fake_libc_start_main
+
+ [*] Function __libc_start_main redirected to addr 
+     0x00005281 <fake_libc_start_main>
+
+ ~redir strcpy fake_strcpy
+
+ [*] Function strcpy redirected to addr 0x000051BD <fake_strcpy>
+
+ ~save fake_main
+
+ [*] Object fake_main saved successfully
+
+ ~quit
+
+ [*] Unloading object 1 (simple.o)
+ [*] Unloading object 2 (main) *
+         .:: Bye -:: The ELF shell 0.65
+ 
+ ========= END DUMP 34 =========
+
+
+	   What about the result ?
+
+
+ ========= BEGIN DUMP 35 =========
+
+ elfsh@WTH $ ./fake_main
+ fake_libc_start_main
+ start_main has been run 0
+ I am the main function, I have 1 argc and my argv is BF9A6F54 yupeelala
+ fake_main is calling write !
+ 0x800068c8 main(argc=0xbf9a6e80, argv=0xbf9a6e2c, envp=0xbf9a6e28, 
+ 	        auxv=0xbf9a6e24) __guard=0xb7f78148
+ ssp-all (Stack) Triggering an overflow by copying [20] of data into [10]
+ of space
+ The fucker wants to copy 01234567890123456789 at address BF9A6E50
+ calling printf from stack smashing handler 0
+ Same player play again [damaged = 39383736]
+ A second (2) printf from the handler
+
+ elfsh@WTH $ ./fake_main AAAA
+ fake_libc_start_main
+ start_main has been run 0
+ I am the main function, I have 2 argc and my argv is BF83A164 yupeelala
+ fake_main is calling write !
+ 0x800068c8 main(argc=0xbf83a090, argv=0xbf83a03c, envp=0xbf83a038, 
+	        auxv=0xbf83a034) __guard=0xb7f09148
+ ssp-all (Stack) Copying [4] of data into [10] of space
+ The fucker wants to copy AAAA at address BF83A060
+
+ elfsh@WTH $ ./fake_main AAAAAAAAAAAAAAA
+ fake_libc_start_main
+ start_main has been run 0
+ I am the main function, I have 2 argc and my argv is BF8C7F24 yupeelala
+ fake_main is calling write !
+ 0x800068c8 main(argc=0xbf8c7e50, argv=0xbf8c7dfc, envp=0xbf8c7df8, 
+                 auxv=0xbf8c7df4) __guard=0xb7f97148
+ ssp-all (Stack) Copying [15] of data into [10] of space
+ The fucker wants to copy AAAAAAAAAAAAAAA at address BF8C7E20
+
+ ========= END DUMP 35 =========
+
+
+	No problem there : strcpy, main, libc_start_main and
+	__stack_smash_handler are redirected on our own routines
+	as the output shows. We also call write that was not available
+	in the original binary, which show that EXTPLT also works on
+	ET_DYN objects, the cool stuff beeing that it worked without
+	any modification.
+
+	In the current release (0.65rc1) there is a limitation on ET_DYN
+	however. We have to avoid non-initialized variables because 
+	that would add some entries in relocation tables. This is not
+	a problem to add some since we also copy .rel.got (rel.dyn) in
+	EXTPLT on ET_DYN, but it is not implemented for now.
+
+
+
+---[ C. Extending static executables
+
+
+
+        Now we would like to be able to debug static binary the same way 
+	we do for dynamic ones. Since we cannot inject e2dbg using 
+	DT_NEEDED dependances on static binaries, the idea is to inject 
+	e2dbg as ET_REL into ET_EXEC since it is possible on static 
+	binaries. E2dbg as many more dependancies than a simple host.c 
+	program. The extended idea is to inject the missing part of 
+	static libraries when it is necessary.
+
+	We have to resolve dependancies on-the-fly while ET_REL injection
+        is performed. For that we will use a simple recursive algorithm
+	on the existing relocation code : when a symbol is not found
+	at relocation time, either it is a old_* symbol so it is delayed
+	in a second stage relocation time (Indeed, old symbols appears
+	at redirection time, which is done after the injection of the 
+	ET_REL file so we miss that symbol at first stage), or the 
+	function symbol is definitely unknown and we need to add 
+	information so that the rtld can resolve it as well.
+
+        To be able to find the suitable ET_REL to inject, ELFsh load all
+        the ET_REL from static library (.a) then the resolution is done
+        using this pool of binaries. The workspace feature of elfsh is
+	quite useful for this, when sessions are performed on more than
+	a thousand of ET_EXEC ELF files at a time (after extracting
+	modules from libc.a and others static librairies, for instance).
+
+        Circular dependancies are solved by using second stage relocation
+        when the required symbol is in a file that is being injected after
+	the current file. The same second stage relocation mechanism
+	is used when we need to relocate ET_REL objects that use OLD
+	symbols. Since OLD symbols are injected at redirection time and
+	ET_REL files should be injected before (so that we can use
+	functions from the ET_REL object as hook functions), we do not
+	have OLD symbols at relocation time. The second stage relocation
+	is then triggered at save time (for on disk modifications) or
+	recursively solved when injecting multiple ET_REL with circular
+	relocation dependances.
+
+        A problem is remaining, as for now we had one PT_LOAD by injected
+        section, we quickly reach more than 500 PT_LOAD. This seems to be
+        a bit too much for a regular ELF static file. We need to improve
+	the PT_LOAD allocation mechanism so that we can inject bigger
+	extension to such host binaries.
+
+        This technique provide the same features as EXTPLT but for static
+        binaries : we can inject what we want (regardless of what the host
+        binary contains).
+
+        So here is a smaller working example:
+
+
+ ========= BEGIN DUMP 36 =========
+
+ elfsh@WTH $ cat host.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+
+ int     legit_func(char *str)
+ {
+   puts("legit func !");
+   return (0);
+ }
+
+ int main()
+ {
+   char  *str;
+   char  buff[BUFSIZ];
+   read(0, buff, BUFSIZ-1);
+
+   puts("First_puts");
+
+   puts("Second_puts");
+
+   fflush(stdout);
+
+   legit_func("test");
+
+   return (0);
+ }
+
+ elfsh@WTH $ file a.out
+ a.out: ELF 32-bit LSB executable, Intel 80386, statically linked, 
+ not stripped
+
+ elfsh@WTH $ ./a.out
+
+ First_puts
+ Second_puts
+ legit func !
+
+ ========= END DUMP 36 =========
+
+	   
+	   The injected file source code is as follow :
+
+
+ ========= BEGIN DUMP 37 =========
+
+ elfsh@WTH $ cat rel2.c
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <string.h>
+ #include <netdb.h>
+
+
+ int     glvar_testreloc = 42;
+ int     glvar_testreloc_bss;
+ char    glvar_testreloc_bss2;
+ short   glvar_testreloc_bss3;
+
+
+ int     hook_func(char *str)
+ {
+   int sd;
+
+   printf("hook func %s !\n", str);
+
+   return (old_legit_func(str));
+ }
+
+
+ int     puts_troj(char *str)
+ {
+   int   local = 1;
+   char  *str2;
+   int   fd;
+   char  name[16];
+   void  *a;
+
+   str2 = malloc(10);
+   *str2 = 'Z';
+   *(str2 + 1) = 0x00;
+
+   glvar_testreloc_bss  = 43;
+   glvar_testreloc_bss2 = 44;
+   glvar_testreloc_bss3 = 45;
+
+   memset(name, 0, 16);
+
+   printf("Trojan injected ET_REL takes control now "
+          "[%s:%s:%u:%u:%hhu:%hu:%u] \n",
+          str2, str,
+          glvar_testreloc,
+          glvar_testreloc_bss,
+          glvar_testreloc_bss2,
+          glvar_testreloc_bss3,
+          local);
+
+  free(str2);
+
+  gethostname(name, 15);
+  printf("hostname : %s\n", name);
+
+  printf("printf called from puts_troj [%s] \n", str);
+
+  fd = open("/etc/services", 0, O_RDONLY);
+
+  if (fd)
+    {
+     if ((a = mmap(0, 100, PROT_READ, MAP_PRIVATE, fd, 0)) == (void *) -1)
+        {
+          perror("mmap");
+          close(fd);
+          printf("mmap failed : fd: %d\n", fd);
+          return (-1);
+        }
+      printf("-=-=-=-=-=- BEGIN /etc/services %d -=-=-=-=-=\n", fd);
+      printf("host : %.60s\n", (char *) a);
+      printf("-=-=-=-=-=- END   /etc/services %d -=-=-=-=-=\n", fd);
+      printf("mmap succeed fd : %d\n", fd);
+      close(fd);
+    }
+
+
+   old_puts(str);
+   fflush(stdout);
+   return (0);
+ }
+
+ ========= END DUMP 37 =========
+	   
+
+	   The load_lib.esh script, generated using a small bash
+	   script, looks like this :
+
+
+ ========= BEGIN DUMP 38 =========
+
+ elfsh@WTH $ head -n 10 load_lib.esh
+ #!../../../vm/elfsh
+ load libc/init-first.o
+ load libc/libc-start.o
+ load libc/sysdep.o
+ load libc/version.o
+ load libc/check_fds.o
+ load libc/libc-tls.o
+ load libc/elf-init.o
+ load libc/dso_handle.o
+ load libc/errno.o
+ 
+ ========= END DUMP 38 =========
+
+
+           Here is the injection ELFsh script:
+
+
+ ========= BEGIN DUMP 39 =========
+
+ elfsh@WTH $ cat relinject.esh
+ #!../../../vm/elfsh
+
+ exec gcc -g3 -static host.c
+ exec gcc -g3 -static rel2.c -c
+
+ load a.out
+ load rel2.o
+
+ source ./load_lib.esh
+
+ reladd 1 2
+
+ redir puts puts_troj
+ redir legit_func hook_func
+
+ save fake_aout
+
+ quit
+
+ ========= END DUMP 39 =========
+
+
+           Stripped output of the injection :
+
+
+ ========= BEGIN DUMP 40 =========
+ elfsh@WTH $ ./relinject.esh
+
+         The ELF shell 0.65 (32 bits built) .::.
+
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org
+
+ ~exec gcc -g3 -static host.c
+
+ [*] Command executed successfully
+
+ ~exec gcc -g3 -static rel2.c -c
+
+ [*] Command executed successfully
+
+ ~load a.out
+ [*] Sun Jul 31 16:37:32 2005 - New object a.out loaded
+
+ ~load rel2.o
+ [*] Sun Jul 31 16:37:32 2005 - New object rel2.o loaded
+
+ ~source ./load_lib.esh
+ ~load libc/init-first.o
+ [*] Sun Jul 31 16:37:33 2005 - New object libc/init-first.o loaded
+
+ ~load libc/libc-start.o
+ [*] Sun Jul 31 16:37:33 2005 - New object libc/libc-start.o loaded
+
+ ~load libc/sysdep.o
+ [*] Sun Jul 31 16:37:33 2005 - New object libc/sysdep.o loaded
+
+ ~load libc/version.o
+ [*] Sun Jul 31 16:37:33 2005 - New object libc/version.o loaded
+
+ [[... 1414 files later ...]]
+
+ [*] ./load_lib.esh sourcing -OK-
+
+ ~reladd 1 2
+
+ [*] ET_REL rel2.o injected succesfully in ET_EXEC a.out
+
+ ~redir puts puts_troj
+
+ [*] Function puts redirected to addr 0x080B7026 <puts_troj>
+
+ ~redir legit_func hook_func
+
+ [*] Function legit_func redirected to addr 0x080B7000 <hook_func>
+
+ ~save fake_aout
+
+ [*] Object fake_aout saved successfully
+
+ ~quit
+
+ [*] Unloading object 1 (libpthreadnonshared/pthread_atfork.oS)
+ [*] Unloading object 2 (libpthread/ptcleanup.o)
+ [*] Unloading object 3 (libpthread/pthread_atfork.o)
+ [*] Unloading object 4 (libpthread/old_pthread_atfork.o)
+
+ [[... 1416 files later ...]]
+
+         .:: Bye -:: The ELF shell 0.65
+
+ ========= END DUMP 40 =========
+
+
+           Does it works ?
+
+
+ ========= BEGIN DUMP 41 =========
+
+ elfsh@WTH $ ./fake_aout
+
+ Trojan injected ET_REL takes control now [Z:First_puts:42:43:44:45:1]
+ hostname : WTH
+ printf called from puts_troj [First_puts]
+ -=-=-=-=-=- BEGIN /etc/services 3 -=-=-=-=-=
+ host : # /etc/services
+ #
+ # Network services, Internet style
+ #
+ # Not
+ -=-=-=-=-=- END   /etc/services 3 -=-=-=-=-=
+ mmap succeed fd : 3
+ First_puts
+ Trojan injected ET_REL takes control now [Z:Second_puts:42:43:44:45:1]
+ hostname : WTH
+ printf called from puts_troj [Second_puts]
+ -=-=-=-=-=- BEGIN /etc/services 3 -=-=-=-=-=
+ host : # /etc/services
+ #
+ # Network services, Internet style
+ #
+ # Not
+ -=-=-=-=-=- END   /etc/services 3 -=-=-=-=-=
+ mmap succeed fd : 3
+ Second_puts
+ hook func test !
+ Trojan injected ET_REL takes control now [Z:legit func !:42:43:44:45:1]
+ hostname : WTH
+ printf called from puts_troj [legit func !]
+ -=-=-=-=-=- BEGIN /etc/services 3 -=-=-=-=-=
+ host : # /etc/services
+ #
+ # Network services, Internet style
+ #
+ # Not
+ -=-=-=-=-=- END   /etc/services 3 -=-=-=-=-=
+ mmap succeed fd : 3
+ legit func !
+ ========= END DUMP 41 ========= 
+
+
+           Yes, It's working. Now have a look at the fake_aout static
+	   file :
+
+
+
+ ========= BEGIN DUMP 42 =========
+
+ elfsh@WTH $ ../../../vm/elfsh  -f ./fake_aout -s
+
+ [*] Object ./fake_aout has been loaded (O_RDONLY)
+
+ [SECTION HEADER TABLE .::. SHT is not stripped]
+ [Object ./fake_aout]
+
+ [000] 0x00000000 -------                             foff:000000 sz:00000
+ [001] 0x080480D4 a------ .note.ABI-tag               foff:069844 sz:00032
+ [002] 0x08048100 a-x---- .init                       foff:069888 sz:00023
+ [003] 0x08048120 a-x---- .text                       foff:69920 sz:347364
+ [004] 0x0809CE10 a-x---- __libc_freeres_fn           foff:417296 sz:02222
+ [005] 0x0809D6C0 a-x---- .fini                       foff:419520 sz:00029
+ [006] 0x0809D6E0 a------ .rodata                     foff:419552 sz:88238
+ [007] 0x080B2F90 a------ __libc_atexit               foff:507792 sz:00004
+ [008] 0x080B2F94 a------ __libc_subfreeres           foff:507796 sz:00036
+ [009] 0x080B2FB8 a------ .eh_frame                   foff:507832 sz:03556
+ [010] 0x080B4000 aw----- .ctors                      foff:512000 sz:00012
+ [011] 0x080B400C aw----- .dtors                      foff:512012 sz:00012
+ [012] 0x080B4018 aw----- .jcr                        foff:512024 sz:00004
+ [013] 0x080B401C aw----- .data.rel.ro                foff:512028 sz:00044
+ [014] 0x080B4048 aw----- .got                        foff:512072 sz:00004
+ [015] 0x080B404C aw----- .got.plt                    foff:512076 sz:00012
+ [016] 0x080B4060 aw----- .data                       foff:512096 sz:03284
+ [017] 0x080B4D40 aw----- .bss                        foff:515380 sz:04736
+ [018] 0x080B5FC0 aw----- __libc_freeres_ptrs         foff:520116 sz:00024
+ [019] 0x080B6000 aw----- rel2.o.bss                  foff:520192 sz:04096
+ [020] 0x080B7000 a-x---- rel2.o.text                 foff:524288 sz:04096
+ [021] 0x080B8000 aw----- rel2.o.data                 foff:528384 sz:00004
+ [022] 0x080B9000 a------ rel2.o.rodata               foff:532480 sz:04096
+ [023] 0x080BA000 a-x---- .elfsh.hooks                foff:536576 sz:00032
+ [024] 0x080BB000 aw----- libc/printf.o.bss           foff:540672 sz:04096
+ [025] 0x080BC000 a-x---- libc/printf.o.text          foff:544768 sz:04096
+ [026] 0x080BD000 aw----- libc/gethostname.o.bss      foff:548864 sz:04096
+ [027] 0x080BE000 a-x---- libc/gethostname.o.text     foff:552960 sz:04096
+ [028] 0x080BF000 aw----- libc/perror.o.bss           foff:557056 sz:04096
+ [029] 0x080C0000 a-x---- libc/perror.o.text          foff:561152 sz:04096
+ [030] 0x080C1000 a--ms-- libc/perror.o.rodata.str1.1 foff:565248 sz:04096
+ [031] 0x080C2000 a--ms-- libc/perror.o.rodata.str4.4 foff:569344 sz:04096
+ [032] 0x080C3000 aw----- libc/dup.o.bss              foff:573440 sz:04096
+ [033] 0x080C4000 a-x---- libc/dup.o.text             foff:577536 sz:04096
+ [034] 0x080C5000 aw----- libc/iofdopen.o.bss         foff:581632 sz:04096
+ [035] 0x00000000 ------- .comment                    foff:585680 sz:20400
+ [036] 0x080C6000 a-x---- libc/iofdopen.o.text        foff:585728 sz:04096
+ [037] 0x00000000 ------- .debug_aranges              foff:606084 sz:00136
+ [038] 0x00000000 ------- .debug_pubnames             foff:606220 sz:00042
+ [039] 0x00000000 ------- .debug_info                 foff:606262 sz:01600
+ [040] 0x00000000 ------- .debug_abbrev               foff:607862 sz:00298
+ [041] 0x00000000 ------- .debug_line                 foff:608160 sz:00965
+ [042] 0x00000000 ------- .debug_frame                foff:609128 sz:00068
+ [043] 0x00000000 ------- .debug_str                  foff:609196 sz:00022
+ [044] 0x00000000 ------- .debug_macinfo              foff:609218 sz:28414
+ [045] 0x00000000 ------- .shstrtab                   foff:637632 sz:00632
+ [046] 0x00000000 ------- .symtab                     foff:640187 sz:30192
+ [047] 0x00000000 ------- .strtab                     foff:670379 sz:25442
+
+ [*] Object ./fake_aout unloaded
+
+ elfsh@WTH $ ../../../vm/elfsh  -f ./fake_aout -p
+
+ [*] Object ./fake_aout has been loaded (O_RDONLY)
+
+ [Program Header Table .::. PHT]
+ [Object ./fake_aout]
+
+ [00] 0x8037000 -> 0x80B3D9C r-x memsz(511388) foff(000000) =>Loadable seg
+ [01] 0x80B4000 -> 0x80B7258 rw- memsz(012888) foff(512000) =>Loadable seg
+ [02] 0x80480D4 -> 0x80480F4 r-- memsz(000032) foff(069844) =>Aux. info.
+ [03] 0x0000000 -> 0x0000000 rw- memsz(000000) foff(000000) =>Stackflags
+ [04] 0x0000000 -> 0x0000000 --- memsz(000000) foff(000000) =>New PaXflags
+ [05] 0x80B6000 -> 0x80B7000 rwx memsz(004096) foff(520192) =>Loadable seg
+ [06] 0x80B7000 -> 0x80B8000 rwx memsz(004096) foff(524288) =>Loadable seg
+ [07] 0x80B8000 -> 0x80B8004 rwx memsz(000004) foff(528384) =>Loadable seg
+ [08] 0x80B9000 -> 0x80BA000 rwx memsz(004096) foff(532480) =>Loadable seg
+ [09] 0x80BA000 -> 0x80BB000 rwx memsz(004096) foff(536576) =>Loadable seg
+ [10] 0x80BB000 -> 0x80BC000 rwx memsz(004096) foff(540672) =>Loadable seg
+ [11] 0x80BC000 -> 0x80BD000 rwx memsz(004096) foff(544768) =>Loadable seg
+ [12] 0x80BD000 -> 0x80BE000 rwx memsz(004096) foff(548864) =>Loadable seg
+ [13] 0x80BE000 -> 0x80BF000 rwx memsz(004096) foff(552960) =>Loadable seg
+ [14] 0x80BF000 -> 0x80C0000 rwx memsz(004096) foff(557056) =>Loadable seg
+ [15] 0x80C0000 -> 0x80C1000 rwx memsz(004096) foff(561152) =>Loadable seg
+ [16] 0x80C1000 -> 0x80C2000 rwx memsz(004096) foff(565248) =>Loadable seg
+ [17] 0x80C2000 -> 0x80C3000 rwx memsz(004096) foff(569344) =>Loadable seg
+ [18] 0x80C3000 -> 0x80C4000 rwx memsz(004096) foff(573440) =>Loadable seg
+ [19] 0x80C4000 -> 0x80C5000 rwx memsz(004096) foff(577536) =>Loadable seg
+ [20] 0x80C5000 -> 0x80C6000 rwx memsz(004096) foff(581632) =>Loadable seg
+ [21] 0x80C6000 -> 0x80C7000 rwx memsz(004096) foff(585728) =>Loadable seg
+
+ [SHT correlation]
+ [Object ./fake_aout]
+
+ [*] SHT is not stripped
+
+ [00] PT_LOAD            .note.ABI-tag .init .text __libc_freeres_fn .fini
+                         .rodata __libc_atexit __libc_subfreeres .eh_frame
+ [01] PT_LOAD           .ctors .dtors .jcr .data.rel.ro .got .got.plt 
+			.data
+                        .bss __libc_freeres_ptrs
+ [02] PT_NOTE           .note.ABI-tag
+ [03] PT_GNU_STACK
+ [04] PT_PAX_FLAGS
+ [05] PT_LOAD           rel2.o.bss
+ [06] PT_LOAD           rel2.o.text
+ [07] PT_LOAD           rel2.o.data
+ [08] PT_LOAD           rel2.o.rodata
+ [09] PT_LOAD           .elfsh.hooks
+ [10] PT_LOAD           libc/printf.o.bss
+ [11] PT_LOAD           libc/printf.o.text
+ [12] PT_LOAD           libc/gethostname.o.bss
+ [13] PT_LOAD           libc/gethostname.o.text
+ [14] PT_LOAD           libc/perror.o.bss
+ [15] PT_LOAD           libc/perror.o.text
+ [16] PT_LOAD           libc/perror.o.rodata.str1.1
+ [17] PT_LOAD           libc/perror.o.rodata.str4.4
+ [18] PT_LOAD           libc/dup.o.bss
+ [19] PT_LOAD           libc/dup.o.text
+ [20] PT_LOAD           libc/iofdopen.o.bss |.comment
+ [21] PT_LOAD           libc/iofdopen.o.text
+ [*] Object ./fake_aout unloaded
+
+ ========= END DUMP 42 =========
+
+
+         We can notice the ET_REL really injected : printf.o@libc,
+         dup.o@libc, gethostname.o@libc, perror.o@libc and
+         iofdopen.o@libc.
+
+         Each injected file create several PT_LOAD segments. For this
+	 example it is okay, but for injecting E2dbg that is really too 
+	 much.
+
+         This technique will be improved as soon as possible by reusing
+         PT_LOAD entry when this is possible.
+
+
+
+----[ D. Architecture independant algorithms
+
+
+
+      In this part, we give all the architecture independent algorithms
+      that were developed for the new residency techniques in memory, 
+      ET_DYN libraries, or static executables.
+
+      The new generic ET_REL injection algorithm is not that different 
+      from the one presented in the first Cerberus Interface article [0], 
+      that is why we only give it again in its short form. However, the 
+      new algorithm has improved in modularity and portability. We will 
+      detail some parts of the algorithm that were not explained in 
+      previous articles. The implementation mainly takes place in 
+      elfsh_inject_etrel() in the relinject.c file :
+
+      
+      New generic relocation algorithm
+     +--------------------------------+
+
+      1/ Inject ET_REL BSS after the HOST BSS in a dedicated section (new)
+
+      2/ FOREACH section in ET_REL object
+       [
+	  IF [ Section is allocatable and Section is not BSS ]
+	  [
+		- Inject section in Host file or memory
+	  ]
+       ]
+       
+      3/ Fuze ET_REL and host file symbol tables
+
+      4/ Relocate the ET_REL object (STAGE 1)
+
+      5/ At save time, relocate the ET_REL object 
+         (STAGE 2 for old symbols relocations)
+
+
+      We only had one relocation stage in the past. We had to use another
+      one since not all requested symbols are available (like old symbols
+      gained from CFLOW redirections that may happen after the ET_REL 
+      injection). For ondisk modifications, the second stage relocation 
+      is done at save time.
+
+      Some steps in this algorithm are quite straightforward, such as 
+      step 1 and step 3. They have been explained in the first Cerberus 
+      article [0], however the BSS algorithm has changed for compatibility
+      with ET_DYN files and multiple ET_REL injections. Now the BSS is 
+      injected just as other sections, instead of adding a complex BSS 
+      zones algorithm for always keeping one bss in the program.
+
+      
+       ET_DYN / ET_EXEC section injection algorithm
+      +--------------------------------------------+
+
+
+      Injection algorithm for DATA sections does not change between ET_EXEC
+      and ET_DYN files. However, code sections injection slighly changed 
+      for supporting both binaries and libraries host files. Here is the 
+      new algorithm for this operation :
+
+      * Find executable PT_LOAD
+      * Fix injected section size for page size congruence
+
+      IF [ Hostfile is ET_EXEC ]
+      [	 
+	* Set injected section vaddr to lowest mapped section vaddr
+	* Substract new section size to new section virtual address
+      ]
+      ELSE IF [ Hostfile is ET_DYN ]
+      [
+	* Set injected section vaddr to lowest mapped section vaddr
+      ]
+      
+      * Extend code segment size by newly injected section size
+
+      IF [ Hostfile is ET_EXEC ]
+      [
+        * Substract injected section vaddr to executable PT_LOAD vaddr
+      ] 
+
+      FOREACH [ Entry in PHT ]
+      [
+	 IF [ Segment is PT_PHDR and Hostfile is ET_EXEC ]
+	 [
+	   * Substract injected section size to segment p_vaddr / p_paddr
+	 ]
+	 ELSE IF [ Segment stands after extended PT_LOAD ]
+	 [
+	   * Add injected section size to segment p_offset
+	   IF [ Hostfile is ET_DYN ]
+	   [
+		* Add injected section size to segment p_vaddr and p_paddr
+	   ]
+	 ]
+      ]
+
+      IF [ Hostfile is ET_DYN ]
+      [
+	FOREACH [ Relocation entry in every relocation table ]
+	[
+	     IF [ Relocation offset points after injected section ]
+	     [
+	        * Shift relocation offset from injected section size
+	     ]
+	]
+
+	* Shift symbols from injected section size when pointing after it
+	* Shift dynamic syms from injected section size (same condition)
+	* Shift dynamic entries D_PTR's from injected section size
+	* Shift GOT entries from injected section size
+	* If existing, Shift ALTGOT entries from injected section size
+	* Shift DTORS and CTORS the same way
+	* Shift the entry point in ELF header the same way
+      ]
+
+      * Inject new SECTION symbol on injected code
+
+
+       Static ET_EXEC section injection algorithm
+      +------------------------------------------+
+
+
+      This algorithm is used to insert sections inside static binaries. It
+      can be found in libelfsh/inject.c in elfsh_insert_static_section() :
+
+      * Pad the injected section size to stay congruent to page size
+      * Create a new PT_LOAD program header whoose bounds match the 
+        new section bounds.
+      * Insert new section using classical algorithm
+      * Insert new program header in PHT
+
+
+       Runtime section injection algorithm in memory
+      +---------------------------------------------+
+      
+      
+      This algorithm can be found in libelfsh/inject.c in the function
+      elfsh_insert_runtime_section() :
+
+      * Create a new PT_LOAD program header 
+      * Insert SHT entry for new runtime section 
+        (so we keep a static map up-to-date)
+      * Insert new section using the classical algorithm
+      * Insert new PT_LOAD in Runtime PHT table (RPHT) with same bounds
+
+
+      Runtime PHT is a new table that we introduced so that we can 
+      separate segments regulary mapped by the dynamic linker (original
+      PHT segments) from runtime injected segments. This may lead to an 
+      easier algorithm for binary reconstruction from its memory image 
+      in the future.            
+
+      We will detail now the core (high level) relocation algorithm as 
+      implemented in elfsh_relocate_object() and 
+      elfsh_relocate_etrel_section() functions in libelfsh/relinject.c . 
+      This code is common for all types of host files and for all 
+      relocation stages. It is used at STEP 4 of the general algorithm:
+
+      
+      Core portable relocation algorithm
+     +----------------------------------+
+
+      This algorithm has never been explained in any paper. Here it is :
+
+
+      FOREACH Injected ET_REL sections inside the host file
+      [
+	FOREACH relocation entry in ET_REL file
+	[
+	   * Find needed symbol in ET_REL for this relocation
+	   IF [ Symbol is COMMON or NOTYPE ]
+	   [	   
+		   * Find the corresponding symbol in Host file.
+		   IF [ Symbol is NOT FOUND ]
+		   [
+		      IF [ symbol is OLD and RELOCSTAGE == 1 ]
+		      [
+			 * Delay relocation for it
+		      ]
+		      ELSE
+		      [
+		        IF [ ET_REL symbol type is NOTYPE ]
+			[
+			    * Request a new PLT entry and use its address
+			     for performing relocation (EXTPLT algorithm)
+			]
+			ELSE IF [ Host file is STATIC ]
+			[
+			    * Perform EXTSTATIC technique (next algorithm)
+			]
+			ELSE
+			[
+			    * Algorithm failed, return ERROR
+			]
+		      ]
+		   ]
+		   ELSE
+		   [
+		      * Use host file's symbol value
+		   ]
+	   ]
+	   ELSE
+	   [
+		* Use injected section base address as symbol value
+	   ]
+	   - Relocate entry (switch/case architecture dependant handler)
+	]
+      ]
+      
+
+      EXTSTATIC relocation extension algorithm
+     +----------------------------------------+
+
+      In case the host file is a static file, we can try to get the 
+      unknown symbol from relocatables files from static libraries that 
+      are available on disk. An example of use of this EXTSTATIC technique
+      is located in the testsuite/etrel_inject/ directory.
+
+      Here is the EXTSTATIC algorithm that comes at the specified place
+      in the  previous algorithm for providing the same functionality as
+      EXTPLT but for static binaries :
+
+      
+      FOREACH loaded ET_REL objects in ELFSH
+      [
+	 IF [ Symbol is found anywhere in current analyzed ET_REL ]
+	 [
+	     IF [ Found symbol is strongest than current result ]
+	     [
+	        * Update best symbol result and associated ET_REL file	
+	     ]
+	     ELSE
+	     [
+	        * Discard current iteration result
+	     ]
+	 ]
+      ]
+      * Inject the ET_REL dependency inside Host file
+      * Use newly injected symbol in hostfile as relocation symbol in core
+        relocation algorithm.
+
+
+       Strongest symbol algorithm
+      +--------------------------+
+
+      When we have to choose between multiple symbols that have the same
+      name in different objects (either during static or runtime 
+      injection), we use this simple algorithm to determine which one 
+      to use :
+
+
+      IF [ Current chosen symbol has STT_NOTYPE ]
+      [
+         * Symbol becomes temporary choice
+      ]
+      ELSE IF [ Candidate symbol has STT_NOTYPE ]
+      [
+         * Symbol becomes temporary choice
+      ]
+      ELSE IF [ Candidate symbol binding > Chosen symbol binding ]
+      [
+	 * Candidate symbol becomes Chosen symbol
+      ]
+
+
+
+-------[ VI. Past and present
+
+
+	 In the past we have shown that ET_REL injection into 
+	 non-relocatable ET_EXEC object is possible. This paper presented 
+	 multiple extensions and ports to this residency technique 
+	 (ET_DYN and static executables target). Coupled to the EXTPLT 
+	 technique that allow for a complete post-linking of the host 
+	 file, we can add function definitions and use unknown functions 
+	 in the software extension. All those static injection 
+	 techniques worse when all PaX options are enabled on the 
+	 modified binary. Of course, the position independant and stack 
+	 smashing protection features of hardened Gentoo does not protect
+	 anything when it comes to binary manipulation, either performed
+	 on disk or at runtime.
+
+	 We have also shown that it is possible to debug without using 
+	 the ptrace system call, which open the door for new reverse 
+	 engineering and embedded debugging methodology that bypass known 
+	 anti-debugging techniques. The embedded debugger is not 
+	 completely PaX proof and it is still necessary to disable the 
+	 mprotect flag. Even if it does not sound like a real problem, 
+	 we are still investigating on how to put breakpoints (e.g. 
+	 redirections) without disabling it.
+
+	 Our core techniques are portable to many architectures (x86, 
+	 alpha, mips, sparc) on both 32bits and 64bits files. However 
+	 our proof of concept debugger was done for x86 only. We believe 
+	 that our techniques are portable enough to be able to provide
+	 the debugger for other architectures without much troubles.
+
+	 Share and enjoy the framework, contributions are welcome.
+
+
+-------[ VII. Greetings  
+
+
+	 We thank all the peoples at the WhatTheHack party 2005 in 
+	 Netherlands. We add much fun with you guys and again we will 
+	 come in the future. 
+
+	 Special thanks go to andrewg for teaching us the sigaction 
+	 technique, dvorak for his interest in the optimization on the
+	 the ALTPLT technique version 2 for the SPARC architecture,
+	 sk for libasm, and solar for providing us the ET_DYN pie/ssp
+	 testsuite.
+
+	 Respects go to Devhell Labs, the PaX team, Phrackstaff, GOBBLES,
+	 MMHS, ADM, and Synnergy Networks. Final shoutouts to s/ash from 
+	 RTC for driving us to WTH and the Coconut Crew for everything 
+	 and the rest, you know who you are.
+
+
+-------[ VIII. References
+
+
+ [0] The Cerberus ELF Interface				mayhem
+     http://www.phrack.org/show.php?p=61&a=8
+
+ [1] The GNU debugger					GNU project
+     http://www.gnu.org/software/gdb/
+
+ [2] PaX / grsecurity					The PaX team
+     http://pax.grsecurity.net/
+
+ [3] binary reconstruction from a core image		Silvio Cesare
+     http://vx.netlux.org/lib/vsc03.html
+
+ [4] Antiforensic evolution: Self			Ripe & Pluf
+     http://www.phrack.org/show.php?p=63&a=11
+
+ [5] Next-Gen. Runtime binary encryption		Zeljko Vbra
+     http://www.phrack.org/show.php?p=63&a=13
+
+ [6] Fenris						Michal Zalewski
+     http://lcamtuf.coredump.cx/fenris/
+
+ [7] Ltrace						Ltrace team
+     http://freshmeat.net/projects/ltrace/
+
+ [8] The dude (replacement to ptrace)			Mammon
+     http://www.eccentrix.com/members/mammon/Text/d\
+     ude_paper.txt
+
+ [9] Binary protection schemes				Andrewg	
+     http://www.codebreakers-journal.com/viewar\
+     ticle.php?id=51&layout=abstract
+
+ [10] ET_REL injection in memory			JP
+      http://www.whatever.org.ar/~cuco/MERCANO.TXT
+      
+ [11] Hardened Gentoo project				Hardened team
+      http://www.gentoo.org/proj/en/hardened/
+
+ [12] Unpacking by Code Injection			Eduardo Labir
+      http://www.codebreakers-journal.com/viewart\
+      icle.php?id=36&layout=abstract
+      

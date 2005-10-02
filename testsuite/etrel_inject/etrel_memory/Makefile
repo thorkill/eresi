@@ -33,11 +33,11 @@ all	: $(OBJ)
 	/sbin/paxctl -m -s -p -r -x ../../../vm/elfsh
 	/sbin/paxctl -v ../../../vm/elfsh
 
-	cp ../../../vm/e2dbg.so ibc.so.6
+	cp ../../../e2dbg/e2dbg.so ibc.so.6
 
 	$(CC) $(OPT) $(RTSRC) -o $(RTOBJ) -c
 
-	./script.sh a.out
+	@echo Now run ./etrelmem.esh
 
 clean	:
 	$(RM) $(RTOBJ) $(OBJ) *~ \#* *\# $(RELOBJ) inject_e2dbg.esh 

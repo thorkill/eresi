@@ -17,6 +17,8 @@ int		elfsh_strip(elfshobj_t *file)
   elfshsect_t	*bss;
   elfshsect_t	*next;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   bss = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_BSS,
 				  NULL, NULL, NULL);
   if (file == NULL || file->sectlist == NULL || bss == NULL)

@@ -10,11 +10,11 @@ include	../../config.h
 SRC	= ctors_hijack.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libhash/ -lhashelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm
 NAM	= ctors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include/ $(BITS)
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libasm/include/ $(BITS)
 CFLAGS	= $(OPT) 
 
 all	: $(OBJ)

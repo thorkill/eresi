@@ -15,11 +15,11 @@ int		cmd_interp()
   char		*name;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if ((name = elfsh_get_interp(world.curjob->current)) == NULL)
     RET(-1);
   snprintf(logbuf, BUFSIZ - 1, "\n [SHT_INTERP] : %s \n\n", name);
   vm_output(logbuf);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

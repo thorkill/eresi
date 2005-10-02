@@ -17,7 +17,7 @@ void		vm_print_obj(elfshpath_t *obj)
   char		*str;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   bzero(logbuf, BUFSIZ);
   switch (obj->type)
@@ -45,7 +45,9 @@ void		vm_print_obj(elfshpath_t *obj)
 	       "[elfsh:vm_print_obj] Unprintable object type %u\n",
 	       obj->type);
     }
+
   vm_output(logbuf);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -57,14 +59,14 @@ int			cmd_print()
   volatile u_int	idx;
   char			logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
       obj = vm_lookup_param(world.curjob->curcmd->param[idx], 1);
       if (!obj)
 	{
-	  snprintf(logbuf, BUFSIZ - 1, "%s ", world.curjob->curcmd->param[idx]);
+	  snprintf(logbuf, BUFSIZ, "%s ", world.curjob->curcmd->param[idx]);
 	  vm_output(logbuf);
 	  continue;
 	}
@@ -74,5 +76,5 @@ int			cmd_print()
   vm_output("\n");
   if (!world.state.vm_quiet)
     vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

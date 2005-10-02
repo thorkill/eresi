@@ -14,18 +14,24 @@ char			*vm_lookup_var(char *param)
 {
   elfshpath_t		*ptr;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!param)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter", NULL);
+  
   if (*param == ELFSH_VARPREF)
     {
       ptr = (void *) hash_get(&vars_hash, ++param);
       if (ptr == NULL)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unknown variable", (NULL));
       if (vm_convert_object(ptr, ELFSH_OBJSTR) < 0)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Failed parameter string conversion", 
+			  (NULL));
       param = ptr->immed_val.str;
     }
-  return (param);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, param);
 }
 
 
@@ -43,24 +49,26 @@ elfshpath_t		*vm_lookup_immed(char *param)
 #if __DEBUG_MODEL__
   char			logbuf[BUFSIZ];
 
- snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup immed : PARAM [ %s ] \n", param);
+ snprintf(logbuf, BUFSIZ - 1, 
+	  "[DEBUG_MODEL] Lookup immed : PARAM [ %s ] \n", param);
  vm_output(logbuf);
 #endif
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL)
-	return (ptr);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
       ptr = vm_create_IMMED(ELFSH_OBJUNK, 1, 0);
       hash_add(&vars_hash, strdup(param), ptr);
-      return (ptr);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
   /* Lookup .symtab */
@@ -115,7 +123,8 @@ elfshpath_t		*vm_lookup_immed(char *param)
     }
 
   /* No match -- returns ERR */
-  return (NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unable to lookup object", (NULL));
   
   /* Match */
  good:
@@ -125,7 +134,7 @@ elfshpath_t		*vm_lookup_immed(char *param)
     vm_filter_zero(ptr->immed_val.str);
 
   /* We matched -- returns OK */
-  return (ptr);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
 }
 
 
@@ -146,14 +155,15 @@ elfsh_Addr     		vm_lookup_index(char *param)
   vm_output(logbuf);
 #endif
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to lookup variable", (-1));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL && 
 	  (ptr->type == ELFSH_OBJINT   || 
@@ -161,28 +171,32 @@ elfsh_Addr     		vm_lookup_index(char *param)
 	   ptr->type == ELFSH_OBJBYTE  || 
 	   ptr->type == ELFSH_OBJLONG 
 	   ))
-	return (ptr->immed_val.ent);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			   ptr->immed_val.ent);
       else
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid variable type", (-1));
     }
 
   /* Lookup a constant */
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
-    return (actual->val);
-
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       actual->val);
+  
   /* Lookup hexadecimal numeric value */
   ret = sscanf(param, XFMT "%c", &val, &eol);
   if (ret == 1)
-    return (val);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
 
   /* Lookup decimal numeric value */
   ret = sscanf(param, UFMT "%c", &val, &eol);
   if (ret == 1)
-    return (val);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
 
   /* We do not match -- returns ERR */
-  return (-1);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unable to lookup valid object", (-1));
 }
 
 
@@ -198,23 +212,27 @@ char			*vm_lookup_string(char *param)
 #if __DEBUG_MODEL__
   char			logbuf[BUFSIZ];
   
-  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup string : PARAM [ %s ] \n", param);
+  snprintf(logbuf, BUFSIZ - 1, 
+	   "[DEBUG_MODEL] Lookup string : PARAM [ %s ] \n", param);
   vm_output(logbuf);
 #endif
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL && ptr->type == ELFSH_OBJSTR)
-	return (ptr->immed_val.str);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			   ptr->immed_val.str);
       else
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unexpected object type", (NULL));
     }
 
   /* Lookup a supplied string */
@@ -223,11 +241,13 @@ char			*vm_lookup_string(char *param)
   if (ret == 1)
     {
       vm_filter_zero(lbuf);
-      return (strdup(lbuf));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 strdup(lbuf));
     }
 
   /* We do not match -- returns ERR */
-  return (NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unable to lookup string", (NULL));
 }
 
 
@@ -239,7 +259,7 @@ elfshobj_t		*vm_lookup_file(char *param)
   u_int			idx;
   elfshpath_t		*ptr;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for variable file lookup */
   idx = 0;
@@ -247,20 +267,24 @@ elfshobj_t		*vm_lookup_file(char *param)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
       if (!ptr)
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to get variable", (NULL));
       if (ptr->type == ELFSH_OBJINT)
 	idx = ptr->immed_val.ent;
       else if (ptr->type == ELFSH_OBJSTR)
 	param = ptr->immed_val.str;
       else
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unexpected variable type", (NULL));
     }
   else
     idx = atoi(param);
   
   /* Let's ask the hash table for the current working file */
-  return (idx ? vm_getfile(idx) : hash_get(&file_hash, param));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (idx ? vm_getfile(idx) : hash_get(&file_hash, param)));
 }

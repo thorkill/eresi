@@ -72,6 +72,8 @@ int		dump_add_RR_recently_seen(pkt_id_t id)
   char		*str;
   time_t	*date; 
 
+  ELFSH_NOPROFILE_IN();
+
   XALLOC(str, sizeof (char)*20, -1);
   XALLOC(date, sizeof (time_t), -1);
     
@@ -92,6 +94,9 @@ int		dump_add_Rr_recently_seen(pkt_id_t id)
 {
   char		*str;
   time_t	*date; 
+
+  ELFSH_NOPROFILE_IN();
+
 
   XALLOC(str, sizeof (char)*20, -1);
   XALLOC(date, sizeof (time_t), -1);
@@ -188,6 +193,8 @@ int		dump_add_send_queue(pkt_t *pkt)
 {
   pkt_wq_t	*tmp = dump_world.send_wq;
   pkt_wq_t	*new;
+
+  ELFSH_NOPROFILE_IN();
 
 #if __DEBUG_DUMP__
   printf("[DUMP] dump_add_send_queue \n");

@@ -18,7 +18,7 @@ int			cmd_comments()
   char			buff[256];
   char			*ent;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   vm_output("\n [SHT_COMMENT]\n");
   sect = elfsh_get_comments(world.curjob->current);
@@ -37,5 +37,5 @@ int			cmd_comments()
     }
 
   vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

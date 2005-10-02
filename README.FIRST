@@ -1,33 +1,54 @@
 
-not up2date.
-					------------
-					ELFSH 0.51b3
-					------------
+					-------------------
+					ELFSH 0.65rc2-linux
+					-------------------
 
 
-Hello dear ELFsh user, 
-
+Hello dear ELFsh & E2dbg user, 
 
 Try to read this README, its a precious information ressource for the ELF shell project . 
-
 
 For impatient people, this is a short list of provided features : 
 
 	. Analysis on nearly all types of sections
 	. Cool disasm/resolving engine with libelfsh and libasm
-	. Raw read/write capability into ELF32 objects
+	. Raw read/write capability into ELF32 AND ELF64 objects
 	. Modify ELF header, PHT, SHT, GOT, CTORS, DTORS, .dynamic, PAX bits
 	. Modify symbol table, dynamic symbol table and relocation tables
 	. Remove or reconstruct SHT
 	. Real interactive and scripting modes
 	. Many kind of section injection [even working in non-exec environments]
+	. Control flow graphs with graphviz output (i386) : see modflow
 	. ELFsh Module support and ELFsh internal API
-	. Quiet output [for tiny screens and shellcript friendship ;]
+	. Quiet output for tiny screens and shellcript friendship
 	. Experimental ET_EXEC relocation and remapping feature (INTEL)
-	. Full ET_REL injection into ET_EXEC (INTEL / SPARC)
-	. PLT infection (INTEL and SPARC)
-	. ALTPLT technique (INTEL and SPARC)
-	. Control flow graphs with graphviz output (i386)
+	. Full ET_REL injection into ET_EXEC (INTEL / SPARC / ALPHA)
+	. PLT infection (INTEL, SPARC, ALPHA, MIPS)
+	. ALTPLT technique (INTEL, SPARC, ALPHA)
+
+Major features of 0.65 are :
+
+	. 64 bits support
+	. A better scripting language with variables, conditions, and loops
+	. Support of ALPHA, MIPS, and SPARC64 architecture
+	. The Embedded ELF Debugging for Linux / IA32
+	. The DUMP protocol for connections between elfsh nodes
+	. The very first source release of libasm
+	. The EXTPLT technique for the X86 architecture
+	. The ALTGOT technique for the MIPS architecture
+	. The CFLOW technique for function redirection on IA32 and MIPS
+	. EXTSTATIC technique for extending static executables	
+
+
+The major features of the 0.65 releases are available both for static
+injections and memory injection, using the Embedded ELF Debugger (e2dbg)
+for now on the Linux / IA32 environment. 
+
+We succesfully tested the debugger on Solaris x86 but we are still in the 
+testing phase for it. BSD port is coming as well so stay tuned. If you are 
+running BSD or Solaris and want to test elfsh, then make sure to look at 
+elfsh 0.51rc3 that include a lot of the previously mentionned static features.
+
 
  [0] Introduction
  [1] Communicate with ELFsh
@@ -41,106 +62,52 @@ For impatient people, this is a short list of provided features :
 
  [0] Introduction
 
-     ELFsh is an interactive and scriptable ELF machine to play with executable files, 
-     shared libraries and relocatable ELF32 objects. It is useful for daily binary
-     manipulations such as on-the-fly patching, code analysis, or embedded code injection
-     in research fields such as reverse engineering, security auditing and intrusion
-     detection. ELFsh is composed of libelfsh and libasm, so that the API is really
-     usefull for opensource projects.
+ $ elfsh
 
-bash-2.05$ elfsh
+         The ELF shell 0.65rc2 (32 bits built) .::. 
 
-         Welcome to The ELF shell 0.51b3 .::. 
+         .::. This software is under the General Public License V.2 
+         .::. Please visit http://www.gnu.org 
 
-         .::. This software is under the General Public License 
-         .::. Please visit http://www.gnu.org to know about Free Software 
-
-[ELFsh-0.51b3]$ 
-
+ (elfsh-0.65rc2) 
 
 
 
  [1] ELFsh syntax
 
-
-
  You can choose to use ELFsh in interactive mode, script mode, or command line. 
 
-
- Interactive only commands :
-
- load          filepath       .::. Load input file
- save          outputfile     .::. Dump output file
- unload        obj{name,id}   .::. Unload object without saving
- switch        obj{name,id}   .::. Change the current working object
- modload       modpath        .::. Load an ELFsh module
- modunload     mod{name,id}   .::. Unload an ELFsh module
- list                         .::. List loaded objects
-
- Command line only :
-
- -f 	: Specify input file
- -w 	: Specify output file
+ $ elfsh
 
 
- Other commands (add '-' if called from command line) :
+         The ELF shell 0.65rc2 (32 bits built) .::.
 
+         .::. This software is under the General Public License V.2
+         .::. Please visit http://www.gnu.org
 
-[ELFsh-0.51b3]$ help
+ (elfsh-0.65rc2) help
 
+                 The ELF shell 0.65rc2 (compiled for 32 bits objects) 
 
-                 The ELF shell 0.51b3
+ Configuration commands     .::. help, info, cat, sdir, lscripts, profile, quit, exit 
+                                 load, unload, switch, list, workspace 
+ ELFsh modules commands     .::. modload, modunload, modhelp 
+ Ondisk/Memory ELF commands .::. elf, interp, pht, got, sht, rel, notes, dyn, dynsym 
+                                 findrel, ctors, disasm, hexa, set, get, write, print 
+                                 add, sub, mul, div, mod, cmp, reladd, redir 
+ Debugger commands          .::. break, delete, continue, dumpregs, stack, dbgstack 
+                                 backtrace, linkmap, step 
+ ELF objects flags          .::. fixup, shtrm, sstrip 
+ Ondisk only ELF commands   .::. flush, save, sym, stab, append, extend, insert, remove 
+ Network commands           .::. net, netlist, netkill, connect, disconnect, peerslist, rcmd 
 
- info                         .::. Extra details help screen info
- load          filepath       .::. Load input file
- save          outputfile     .::. Dump output file
- unload        obj{name,id}   .::. Unload object without saving
- switch        obj{name,id}   .::. Change the current working object
- modload       modpath        .::. Load an ELFsh module
- modunload     mod{name,id}   .::. Unload an ELFsh module
- list                         .::. List loaded objects
- help                         .::. Print this screen
- fixup                        .::. Insert BSS section in corefile
- findrel                      .::. Dump absolute references list
- shtrm                        .::. Mark the SHT as removed
- quit/exit                    .::. Quit the shell without saving
- elf    [e]                   .::. Print ELF header
- interp [i]                   .::. Print .interp section
- pht    [p]    regx           .::. Print Program Header Table (PHT)
- got    [g]    regx           .::. Print Global Offset Table (GOT)
- sht    [s]    regx           .::. Print Section Header Table (SHT)   
- rel    [r]    regx           .::. Print relocation tables entries    
- notes  [n]    regx           .::. Print Notes sections entries
- dyn    [d]    regx           .::. Print .dynamic section entries     
- dynsym [ds]   regx           .::. Print dynamic symbtab entries (.dynsym)   
- sym    [st]   regx           .::. Print symtab entries (.symtab)     
- stab   [sb]   regx           .::. Print raw stab entries (.stabs)    
- ctors  [ct]   regx           .::. Print .ctors section               
- dtors  [dt]   regx           .::. Print .dtors section               
- disasm [D]    regx:rva%size  .::. Disassembly the matching objects             
- hexa   [X]    regx:rva%size  .::. Dump in hexadecimal the matching objects
- reladd objdst objsrc         .::. Insert ET_REL into ET_EXEC
- OP     objdst objop          .::. Arithmetics on objects (add/sub/mul/div/mod)
- set    objdst objsrc         .::. Modify object value (see info)
- get    objdst                .::. Print object value
- append sctnam objsrc         .::. Append data to section
- extend sctnam size           .::. Extend section (fill with 0x00)
- write  objdst objsrc         .::. Transfer data between objects                
- print  obj1 obj2 ... objN    .::. Print sequence of objects or constants
- redir  func   func2|addr     .::. Redirect a function (need .plt entry)               
+ Available prefixes         .::. all, sort, quiet, verb 
+ Available Script jumps     .::. jmp, je, jne, jg, jl, jge, jle 
+ Available modules          .::. modtest, modremap, modflow 
 
- Available prefixes :
- all    [a]  regx             .::. Give a global weak regular expression
- sort   [sr] {a,s}            .::. Sort entries by address (a) or size (s)
- quiet/verb                   .::. Toggle the verbosity flag
+ Type 'help command' for specific information
 
- Available modules :
- modtest                      .::. Sample test module
- modremap                     .::. ET_EXEC immediate relocator
- modflow                      .::. Control flow blocks grapher
-
-[ELFsh-0.51b3]$ 
-
+ (elfsh-0.65rc2) 
 
  Since ELFsh support his own module format, you can inject code into the VM
  very easily, or choose to improve libelfsh, if the needed modifications are pure
@@ -197,19 +164,22 @@ bash-2.05$ elfsh
  [2] LIBELFSH AND BFD
 
 
- ELFsh mechanisms are not very similar to BFD since libelfsh is reverse
- engineering oriented, where BFD is binary translation oriented . Moreover
- libelfsh is ELF specific and contains IA32 and SPARC architecture dependant
- code.
+ ELFsh mechanisms are different from those of the GNU BFD project
+ since libelfsh is reverse engineering oriented, where BFD is binary 
+ translation oriented.
 
 
  [3] PORTABILITY
 
- 
- It's a beta version (0.51b3) and still a development version . Some
- features are still in progress like stripping and SHT reconstruction.
- It is still a beta version but it has been tested on Linux/i386, 
- Linux/sparc, FreeBSD/i386, NetBSD/i386, and Solaris/sparc.
+
+ The major features of the 0.65 releases are available both for ondisk
+ injections and memory injection, using the Embedded ELF Debugger (e2dbg)
+ for now on the Linux / IA32 environment.
+
+ We succesfully tested the debugger on Solaris x86 but we are still in the
+ testing phase for it. BSD port is coming as well so stay tuned. If you are
+ running BSD or Solaris and want to test elfsh, then make sure to look at
+ elfsh 0.51rc3 that include a lot of the previously mentionned static features.
 
 
  [4] MAJOR CHANGES
@@ -217,52 +187,105 @@ bash-2.05$ elfsh
 
  This version is a MAJOR update. Look at doc/Changelog for a complete list of changes.
  The internal descriptor of ELF objects has been complexified but clarified using an 
- internal hierarchy, and now everything is indexed using hash tables.
+ internal hierarchy, and everything is indexed using hash tables. We really care
+ about the modularity of our programs so a lot of general purpose macros make the
+ life easy in elfsh development. See vm/tables.c for an example of such interfaces.
 
  This package is now composed of :
 
-		elfsh		.::. The shell itself
-		libelfsh	.::. The ELF manipulation lib
-		libhash		.::. ELFsh hashing library
+		elfsh		.::. The scripting language interpreter
+		e2dbg		.::. The embedded ELF debugger
+		libdump		.::. ELFsh Distributed Update Management Protocol implementation
+		libasm		.::. Disassembly and analysis of IA32 opcodes
+		libelfsh	.::. The ELF manipulation library
 		testsuite	.::. Example programs using libelfsh
 		doc		.::. Documentation and information
 		modules		.::. ELFsh provided modules (see modtest.c for basic example)
  
  - ELFsh : 
 
-	* We now have a real interactive mode and a real scripting mode, with module support
-	and an object oriented architecture, with lazy typing like in perl. 
+	* We have interactive mode, scripting mode, command line mode. The scripting
+	language now support lazy type variables like in Perl. See examples of
+	scripts in testsuite/testscripts/ for example on the language syntax.
 
-	* We use readline (ELFsh doesnt work with other version than libreadline 4.3), find
-	it on ftp://ftp.gnu.org/gnu/readline/ and uncomment the readline option in 
-	vm/Makefile
+	* We use readline (version 5). Find it on ftp://ftp.gnu.org/gnu/readline/ 
 
-	* Check http://devhell.org/projects/elfsh/logs/ for detailed log and script samples 
-	working with this version of ELFsh. 
+	* Check http://elfsh.devhell.org/logs/ for detailed log and script samples 
+	results working with this version of ELFsh. 
+
+
+ - E2dbg : 
+
+	* The embedded ELF debugger is the very first UNIX userland debugger that 
+	does not use ptrace. It runs in the same process as the debuggee process
+	thus have much more better performance. The debugger is also fully
+	compatible with the PaX hardening Linux kernel patch that you can find
+	on pax.grsecurity.net, at the exception of the MPROTECT option, for which
+	we now know a solution but which is not available in this version of 
+	the project.
+
+	* Most ondisk commands works in the debugger. The 'mode' command let you
+	select between the inspection and change of the memory and the ondisk
+	version of the ELF program. ET_REL injection and function redirection is
+	known to work as well in memory.
+
+	* E2dbg is a real debugger. It has the important debugger features, such
+	as breakpoints, backtrace, step-by-step analysis, disassembly in memory.
+	E2dbg also provides a display command integrated in the scripting 
+	language of ELFsh, so you can execute on step or breakpoint more 
+	powerful things than you could do with gdb.
+
 
  - Libelfsh : 
 
- 	* The block scanning code has been cleared to provide architecture independant
- 	interface. 
+	* The library now support both 32 and 64 bits files with a single code. It
+	means that you have to compile 2 versions (one for 32bits, one for 64bits)
+	if you want to manipulate the 2 different formats at the same time. There
+	is no compatibility between these 2 built for now.
 
-	* All objects changed name (no more Elsh32_*, but elfsh*_t)
+	* We implemented a self-profiler for the whole project. Using the 'profile'
+	command of elfsh you can control its behavior. It is very useful for 
+	understanding more about the internal mechanisms of the code. The
+	self-profiler includes a cheap memory system for function call that makes
+	it capable of a very rudimentary pattern matching, which avoid too big
+	traces.
 
-	* New objects : elfshobj_t, elfshsect_t, elfshrel_t, elfshblock_t
+	* We kept our modularity by our hook system that allow for plugging new
+	supports for other architectures and OS in the future. Please do
+	contribute anything you can ! See libelfsh/hooks.c for more information.
 
-	* Libelfsh documentation is not yet updated to 0.5, find the libelfsh 0.43b
- 	documentation in doc/libelfsh-ref.txt
 
  - Libasm :
 
-	This is a new ressource used by ELFsh, designed for x86 binaries, 
-	find it on http://devhell.org/projects/libasm/ and uncomment the libasm
-	option lines in vm/Makefile.
+	This is a very first source code release of libasm. It now supports only
+	the IA32 architecture, but SPARC and MIPS supports are in the way. Libasm
+	is used at various places in elfsh, particulary useful for guessing 
+	the instructions length or plugging symbol resolution callbacks on
+	code fetching. The source is work in progress.
+
+ - Libdump : 
+
+	This is the very first release of libdump in the project. DUMP is
+	a protocol that we implemented in peer-to-peer style for communicating
+	between elfsh and e2dbg nodes. You can connect for starting a remote
+	debugging session or communicate widely over the network between
+	nodes. Some of the network commands of ELFsh rely on it.
 
  - Modules :
 
+	* modtest is a simple test module for those interrested in writing
+	elfsh or e2dbg modules.
+
+	* modremap is an old test written by spacewalker and adapted inside
+	elfsh by the ELFsh crew for trying to remap ET_EXEC ELF binaries
+	whoose relocation tables are stripped. It is known to work on small
+	binaries from /bin but wont work on bigger binaries.
+
 	* modflow now provides basic control flow graph with a good
-	looking output using graphviz (by ATT labs.) This feature is not
-	considered as stable and works only on i386. 
+	looking output using graphviz (by ATT labs.) This feature is known
+	to work for small binaries, but the graphing tool wont follow 
+	libasm on bigger binaries.
+
 
 
  [5] Module support
@@ -280,7 +303,7 @@ bash-2.05$ elfsh
 	
  From the modules, you can use the internal ELFsh API :
 
-	* All vm_* API (See doc/elfsh-ref.txt)
+	* All vm_* API (See vm/include/elfsh.h)
 
 
  [6] BUGS AND WIP
@@ -288,25 +311,22 @@ bash-2.05$ elfsh
 
   - The SHT reconstruction engine is rewritten at the moment to deal with 
  various special case of the 0.43b insertion based algorithm (use ELFsh
- 0.43b for this feature, waiting for the new implementation in the 0.5 serie).
+ 0.43b for this feature, waiting for the new implementation in this serie).
 
  - Changing sh_size and then display the section content may faults if data it not 
    appended (reported by emper0r)
 
- - BSD linking need to remove -ldl in vm/Makefile (still not get autoconf back ..)
+ - ET_REL injection on MIPS is work in progress.
 
- - Section pre-interp injection does not work with FreeBSD current dynamic linker, 
-   ('Killed'). Nevertheless, ET_REL injection works on all OS, since section 
-   injection is done in the allowed areas depending on the operating system. 
-
- - ALTPLT redirection on sparc/solaris is flushed if you call the original function
-   (solaris does not use r_offset field and breaks TIS standard).
+ - The debugger is for now only garanted to work on Linux / IA32. Other OS are
+   beeing tested (BSD, Solaris, HPUX) and other architectures are studied. See 
+   the doc/TODO file for a more complete view of the future plans.
 
 
  [7] CONTACT
 
- Many features are still planed (look at the TODO file) . If you have any requests (new features, 
- bugtracking, comments, or just to say hello) you can mail us :
+ If you have any requests (new features, bugtracking, comments, or just to say 
+ hello) you can mail us :
 
 	elfsh@devhell.org
 
@@ -314,7 +334,7 @@ bash-2.05$ elfsh
 
 	http://elfsh.devhell.org
 
- Enjoy ! ;)
+ Share & Enjoy !
 
 							
 								The ELF shell crew

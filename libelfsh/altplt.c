@@ -436,6 +436,8 @@ int		elfsh_build_plt(elfshobj_t *file)
   char		*tdata;
   unsigned int	idx;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* First checks */
   text = elfsh_get_parent_section(file, elfsh_get_entrypoint(file->hdr), &off);
   if (!text)

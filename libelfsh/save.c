@@ -53,6 +53,7 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   int			index;
   int			wrindex;
   uint32_t		newsize;
+  uint32_t		delsize;
   char			*first;
   char			*off;
 
@@ -81,6 +82,8 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
 	printf("[DEBUG_SAVE] Comparing current end from %s (%u vs %u) ! \n", 
 	       sect->name, sect->curend, sect->shdr->sh_size);
 #endif
+
+	/* Avoid incorrect data dumping on partially filled sections */
 	if (sect->curend)
 	  {
 #if __DEBUG_MAP__
@@ -100,11 +103,11 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
       off = elfsh_strstr(sect->data, first, sect->shdr->sh_size);
       if (off)
 	{
-	  newsize = sect->shdr->sh_size - ((char *) off - (char *) sect->data);
-	  memset(off, 0x00, newsize);
-	  sect->shdr->sh_size -= newsize;
+	  delsize = sect->shdr->sh_size - ((char *) off - (char *) sect->data);
+	  memset(off, 0x00, delsize);
+	  sect->shdr->sh_size -= delsize;
 	  XSEEK(fd, elfsh_get_section_foffset(sect->shdr), SEEK_SET, -1);
-	  XWRITE(fd, sect->data, sect->shdr->sh_size + newsize, -1);
+	  XWRITE(fd, sect->data, sect->shdr->sh_size, -1);
 	}
     }
 
@@ -118,6 +121,7 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
 #if __DEBUG_MAP__
   printf("[DEBUG_SAVE] Saved SHT -ok- \n");
 #endif
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 

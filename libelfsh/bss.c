@@ -197,6 +197,10 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
       XALLOC(bss->data, bss->shdr->sh_size + size2, -1);
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
+
+      printf("Allocated BSS data of %u bytes with %u bytes of padding \n", 
+	     bss->shdr->sh_size, size2);
+
     }
 
   /* Extend physical bss and the segment for .bss if PHT exists */
@@ -206,8 +210,8 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
       
-#if __DEBUG_BSS__
-      printf("[DEBUG_BSS] FILESZ now = %u \n", 
+#if 1 //__DEBUG_BSS__
+      printf("[DEBUG_BSS] PT_LOAD BSS FILESZ now = %u [bss reallocated] \n", 
 	     bss->shdr->sh_size + size2);
 #endif
       
@@ -282,8 +286,6 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   if (symtab == NULL || host_symtab == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find symbol tables", -1);
-
-
   
   snprintf(buff, sizeof(buff), "%s%s", rel->name, bssname);
   host_bss = elfsh_get_section_by_name(host, buff, 0, 0, 0);
@@ -333,7 +335,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 
 
 
-/* Map the BSS in the current process as an additional section */
+/* Map a new BSS in the current file or process as an additional section */
 elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 {
   elfshsect_t	*newbss;
@@ -341,11 +343,12 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
   char		buf[BUFSIZ];
   elfshsect_t	*current;
 
-  newbss = NULL;
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  newbss = NULL;
   current = rel->sectlist;
-  while((current = current->next))
+
+  while ((current = current->next))
     {
       if (elfsh_get_section_type(current->shdr) != SHT_NOBITS)
 	continue;
@@ -362,5 +365,6 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to find bss size", NULL);
     }
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (newbss));
 }

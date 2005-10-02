@@ -113,6 +113,8 @@ int		cmd_graph(void)
   u_int min;
   char	*ptr;
   u_int max;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
     ELFSH_SETERROR(" [*] no \".control\" section found. Aborting\n", -1);
@@ -219,7 +221,8 @@ int		cmd_graph(void)
   close(fd);
   printf(" [*] Graph description dumped in %s \n\n", 
 	 world.curjob->curcmd->param[0]);
-  return (0);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

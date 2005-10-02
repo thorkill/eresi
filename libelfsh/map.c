@@ -93,7 +93,7 @@ int		elfsh_read_obj(elfshobj_t *file)
 	      (actual->next != NULL &&
 	       actual->next->shdr->sh_offset == actual->shdr->sh_offset))
 	    continue;
-
+	  
 #if __DEBUG_MAP__
 	  printf("[LIBELFSH] Loading anonymous  section %15s \n",
 		 elfsh_get_section_name(file, actual));
@@ -104,8 +104,13 @@ int		elfsh_read_obj(elfshobj_t *file)
 
     }
 
+  /* Fixup various symbols like dynamic ones that are NULL */
+  /* Non fatal error */
+  if (file->secthash[ELFSH_SECTION_DYNSYM])
+    elfsh_fixup_dynsymtab(file->secthash[ELFSH_SECTION_DYNSYM]);
+
   /* We close the file descriptor after file mapping so we can open more files */
-  close(file->fd);
+  XCLOSE(file->fd, -1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -122,6 +127,8 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
   elfshsect_t	*sct;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //return (symtab); // XXX
 
   sym = symtab->data;
   shdr = symtab->parent->sht + symtab->index;
@@ -145,11 +152,14 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
 					       NULL);
 	      if (sct && elfsh_get_section_type(sct->shdr) == SHT_NOBITS)
 		{
-		  elfsh_set_symbol_link(sym + index, SHN_COMMON);
-#if	__DEBUG_MAP__		  
-		  printf(" [*] Symbol [%s] sctndx changed to SHN_COMMON\n", 
-			 elfsh_get_symbol_name(symtab->parent, sym + index));
+
+#if	__DEBUG_MAP__
+		  printf(" [*] Symbol [%s] sctndx changed from %u to SHN_COMMON\n", 
+			 elfsh_get_symbol_name(symtab->parent, sym + index), 
+			 elfsh_get_symbol_link(sym + index));
 #endif
+
+		  elfsh_set_symbol_link(sym + index, SHN_COMMON);
 		  continue;
 		}
 
@@ -184,5 +194,6 @@ elfshobj_t	*elfsh_map_obj(char *name)
 		      "Unable to load object", NULL);
   file->rights = O_RDWR;
   elfsh_read_obj(file);
+  hash_init(&file->redir_hash, 51);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }

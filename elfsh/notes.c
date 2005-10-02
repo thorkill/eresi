@@ -19,7 +19,7 @@ int			cmd_notes()
   int			range;
   char			buff[256];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(buff, sizeof(buff),
 	   " [SHT_NOTES]\n [Object %s]\n\n", 
@@ -30,7 +30,8 @@ int			cmd_notes()
   range = 0;
   sect = elfsh_get_notes(world.curjob->current, range);
   if (!sect)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get notes", (-1));
 
   while (sect)
     {
@@ -48,7 +49,7 @@ int			cmd_notes()
       range++;
       sect = elfsh_get_notes(world.curjob->current, range);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

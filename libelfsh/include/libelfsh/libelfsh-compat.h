@@ -19,7 +19,11 @@
 #elif defined(sun)
  #define __LITTLE_ENDIAN 1234
  #define __BIG_ENDIAN	 4321
+#if !defined(__i386)
  #define __BYTE_ORDER    __BIG_ENDIAN
+#else
+ #define __BYTE_ORDER    __LITTLE_ENDIAN
+#endif
 
 #elif defined(HPUX)
  #include <arpa/nameser_compat.h>
@@ -27,6 +31,18 @@
  #define __LITTLE_ENDIAN LITTLE_ENDIAN
  #define __BIG_ENDIAN    BIG_ENDIAN
  #define __BYTE_ORDER    BYTE_ORDER
+
+#elif defined(IRIX)
+ #include <standards.h>
+ #include <sys/endian.h>
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
+ #define __BIG_ENDIAN    BIG_ENDIAN
+ #define __BYTE_ORDER    BIG_ENDIAN
+#endif
+
+/* BSD patch */
+#ifndef MAP_ANONYMOUS
+ #define MAP_ANONYMOUS  MAP_ANON
 #endif
 
 #if !defined(__BEOS__)
@@ -41,6 +57,10 @@ typedef char uint8;
 #include "libelfsh-ppc.h"	/* PowerPC define sometimes not present */
 #include "libelfsh-cray.h"	/* CRAY define usually not present ;-) */
 
+#if defined(IRIX)
+#include "libelfsh-irix.h"	/* IRIX lakes somes recent ELF extension */
+#endif
+
 #if defined(sun)		/* SunOS has its own include */
  #include <strings.h>
  #include "libelfsh-sunos.h"
@@ -53,10 +73,10 @@ typedef char uint8;
 #endif
 
 /* We need it for .interp fingerprint base */
-#include "libhash.h"
+#include "libelfsh-hash.h"
 
 #ifndef swap32
-#define swap32(x)							\
+#define swap32(x)						\
 	((uint32_t)(						\
 	(((uint32_t)(x) & (uint32_t) 0x000000ffU) << 24) |	\
 	(((uint32_t)(x) & (uint32_t) 0x0000ff00U) <<  8) |	\
@@ -100,6 +120,15 @@ typedef char uint8;
  #define EM_ALPHA_EXP 0x9026
 #endif
 
+#ifndef EM_IA_64
+ #define EM_IA_64     50
+#endif
+
+#ifndef EM_PARISC
+ #define EM_PARISC    15
+#endif
+
+
 /* ELFOSABI index in e_ident[] */
 #ifndef EI_OSABI
 #define	EI_OSABI		7
@@ -136,10 +165,11 @@ typedef char uint8;
 
 
 /* Various printing macros */
-#define	XFMT18		"        0x%08X"
-#define UFMT14		"      %08u"
-#define UFMT18		"          %08u"
-
+#define	XFMT18	"        0x%08X"
+#define UFMT14  "    %010u"
+#define UFMT18  "        %010u"
+#define	UFMT10  "%010u"
+#define	DFMT11	"%011d"
 
 /* 64 bits support */
 #if defined(ELFSH64)
@@ -155,7 +185,10 @@ typedef Elf64_Off	elfsh_Off;
 typedef Elf64_Rel	elfsh_Rel;
 typedef Elf64_Rela	elfsh_Rela;
 typedef Elf64_Sword	elfsh_Sword;
-
+typedef Elf64_Verneed   elfsh_Verneed;
+typedef Elf64_Vernaux   elfsh_Vernaux;
+typedef Elf64_Verdef    elfsh_Verdef;
+typedef Elf64_Verdaux   elfsh_Verdaux;
 
 typedef int64_t		elfsh_SAddr;
 
@@ -198,6 +231,10 @@ typedef Elf32_Off	elfsh_Off;
 typedef Elf32_Rel	elfsh_Rel;
 typedef Elf32_Rela	elfsh_Rela;
 typedef Elf32_Sword	elfsh_Sword;
+typedef Elf32_Verneed   elfsh_Verneed;
+typedef Elf32_Vernaux   elfsh_Vernaux;
+typedef Elf32_Verdef    elfsh_Verdef;
+typedef Elf32_Verdaux   elfsh_Verdaux;
 
 /* We always want to manipulate 32bits in this build */
 typedef int32_t		elfsh_SAddr;
@@ -220,6 +257,8 @@ typedef int32_t		elfsh_SAddr;
 #define swaplong(x)	swap32(x)
 
 #endif	/* BITS */
+
+
 
 
 /* MIPS reginfo structure */

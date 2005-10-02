@@ -1,0 +1,53 @@
+
+
+	 The ELF shell 0.65 (32 bits built) .::. 
+
+ 	 .::. This software is under the General Public License V.2 
+	 .::. Please visit http://www.gnu.org 
+
+~quiet 
+ [*] Set ELFsh default color theme (use nocolor to disable) 
+ [*] Switched to verbose mode 
+
+ [*] /home/tyler/.elfshrc sourcing -OK- 
+
+~load main 
+
+ [*] Sat Oct  1 14:51:02 2005 - New object loaded : main
+
+~load simple.o 
+
+ [*] Sat Oct  1 14:51:02 2005 - New object loaded : simple.o
+
+~reladd 1 2 
+Allocated BSS data of 4 bytes with 0 bytes of padding 
+
+ [*] ET_REL simple.o injected succesfully in ET_DYN main
+
+~redir main fake_main 
+[DEBUG_CFLOW] Requesting hijack addr = 00005154, sym.st_value = 000068C8, name = main
+
+ [*] Function main redirected to addr 0x00005154 <fake_main> 
+
+~redir __stack_smash_handler fake_stack_smash_handler 
+
+ [*] Function __stack_smash_handler redirected to addr 0x00005203 <fake_stack_smash_handler> 
+
+~redir __libc_start_main fake_libc_start_main 
+
+ [*] Function __libc_start_main redirected to addr 0x00005281 <fake_libc_start_main> 
+
+~redir strcpy fake_strcpy 
+
+ [*] Function strcpy redirected to addr 0x000051BD <fake_strcpy> 
+
+~save fake_main 
+
+ [*] Object fake_main saved successfully 
+
+~quit 
+
+ [*] Unloading object 1 (simple.o)   
+ [*] Unloading object 2 (main) * 
+	 .:: Bye -:: The ELF shell 0.65 
+

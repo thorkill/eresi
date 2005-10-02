@@ -13,5 +13,5 @@
 int		cmd_step()
 {
   printf(" [*] No stepping in static mode\n\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

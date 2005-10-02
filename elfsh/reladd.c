@@ -15,33 +15,46 @@ int		cmd_relinject()
   int		idx;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Check to avoid non-runtime (static) injection from e2bdg the debugger 
+     that would desynchronize the memory perspective of the program. 
+     The debugger is not supposed to do that, it is a job for elfsh */
+  if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER &&
+      elfsh_is_static_mode())
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "E2dbg must inject in memory, switch to dynamic mode.", -1);
+  
   /* Load host file */
   idx = atoi(world.curjob->curcmd->param[0]);
-  host = (idx ? vm_getfile(idx) : hash_get(&file_hash, world.curjob->curcmd->param[0]));
+  host = (idx ? vm_getfile(idx) : 
+	  hash_get(&file_hash, world.curjob->curcmd->param[0]));
   if (host == NULL)
     {
       host = elfsh_map_obj(world.curjob->curcmd->param[0]);
       if (host == NULL)
-	ELFSH_SETERROR("[elfsh:cmd_relinject] Cannot map host file\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot map host file", -1);
     }
 
   /* Load relocatable file */
   idx = atoi(world.curjob->curcmd->param[1]);
-  rel = (idx > 0 ? vm_getfile(idx) : hash_get(&file_hash, world.curjob->curcmd->param[1]));
+  rel = (idx > 0 ? vm_getfile(idx) : 
+	 hash_get(&file_hash, world.curjob->curcmd->param[1]));
   if (rel == NULL)
     {
       rel = elfsh_map_obj(world.curjob->curcmd->param[1]);
       if (rel == NULL)
-	ELFSH_SETERROR("[elfsh:cmd_relinject] Cannot map relocatable file\n", 
-		       -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot map relocatable file", -1);
     }
 
   /* Call libelfsh relocatable object injector */
-  idx = elfsh_inject_etrel_withlist(host, rel, world.curjob->list, world.shared);
+  idx = elfsh_inject_etrel_withlist(host, rel, 
+				    world.curjob->list, world.shared);
   if (idx < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Failed to inject ET_REL with workspace", (-1));
 
   /* Success : put the modified object as current */
   world.curjob->current = host;
@@ -56,5 +69,5 @@ int		cmd_relinject()
 		host->name);
       vm_output(logbuf);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

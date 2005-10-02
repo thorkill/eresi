@@ -10,7 +10,8 @@
 
 
 /* Print the chosen symbol table */
-int		ds(elfshsect_t	*sect,
+int		ds(elfshobj_t	*file,
+		   elfshsect_t	*sect,
 		   elfsh_Sym	*tab,
 		   u_int        num,
 		   regex_t	*regx,
@@ -25,12 +26,12 @@ int		ds(elfshsect_t	*sect,
   u_int		foff;
   int		index;
   char		*sect_name;
-  char		buff[256];
+  char		buff[512];
   char		off[20];
   char		type_unk[ELFSH_MEANING + 1];
   char		bind_unk[ELFSH_MEANING + 1];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sort the table if necessary */
   if (world.state.sort != NULL)
@@ -43,7 +44,8 @@ int		ds(elfshsect_t	*sect,
 	table = sect->terdata;
 	break;
       default:
-	ELFSH_SETERROR("[elfsh:ds] Unknown sort mode\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unknown sort mode", -1);
       }
 
   /* Avoid reading inexistant memory in the process for .symtab */
@@ -89,7 +91,7 @@ int		ds(elfshsect_t	*sect,
 					   table[index].st_value));
 					
       if (sect && sect->shdr->sh_addr != table[index].st_value)
-	sprintf(off, " + %u", (u_int) (table[index].st_value - sect->shdr->sh_addr));
+	sprintf(off, " + %s", vm_colornumber("%u", (u_int) (table[index].st_value - sect->shdr->sh_addr)));
       else
 	*off = '\0';
 
@@ -97,32 +99,48 @@ int		ds(elfshsect_t	*sect,
       if (!world.state.vm_quiet)
 	{
 	  snprintf(buff, sizeof(buff), 
-		   " [%03u] " XFMT " %-8s %-40s size:%010u "
-		   "foffset:%06u scope:%-6s sctndx:%02u => %s%s\n",
-		   index, elfsh_get_symbol_value(table + index),
-		   type, name, elfsh_get_symbol_size(table + index), 
-		   foff, bind, 
-		   elfsh_get_symbol_link(table + index),
-		   sect_name, off);
+		   " %s %s %s %s %s%s "
+		   "%s%s %s%s %s%s => %s%s\n",
+		   vm_colornumber("[%03u]", index), 
+		   vm_coloraddress(XFMT, (elfsh_Addr) elfsh_get_symbol_value(table + index) + file->rhdr.base), 
+		   vm_colortypestr_fmt("%-8s", type), 
+		   vm_colorstr_fmt("%-40s", name),
+		   vm_colorfieldstr("size:"),
+		   vm_colornumber("%010u", elfsh_get_symbol_size(table + index)), 				  
+		   vm_colorfieldstr("foffset:"),
+		   vm_colornumber("%06u", foff),
+		   vm_colorfieldstr("scope:"),
+		   vm_colortypestr_fmt("%-6s", bind), 
+		   vm_colorfieldstr("sctndx:"),
+		   vm_colornumber("%02u", elfsh_get_symbol_link(table + index)),
+		   vm_colorstr(sect_name), off);
 	}
 
       else
 	{
 	  snprintf(buff, sizeof(buff), 
-		   " [%03u] " XFMT " %-8s %-15s sz:%06u foff:%06u scop:%-6s\n",
-		   index, elfsh_get_symbol_value(table + index),
-		   type, name, elfsh_get_symbol_size(table + index), 
-		   foff, bind);
+		   " %s %s %s %s %s%s %s%s %s%-6s\n",
+		   vm_colornumber("[%03u]", index), 
+		   vm_coloraddress(XFMT, (elfsh_Addr) elfsh_get_symbol_value(table + index) + file->rhdr.base),
+		   vm_colortypestr_fmt("%-8s", type), vm_colorstr_fmt("%-15s", name), 
+		   vm_colorfieldstr("sz:"),
+		   vm_colornumber("%06u", elfsh_get_symbol_size(table + index)),
+		   vm_colorfieldstr("foff:"),
+		   vm_colornumber("%06u", foff),
+		   vm_colorfieldstr("scop:"),
+		   vm_colortypestr_fmt("%-6s", bind));
 	}
       
       if (regx == NULL || 
 	  (regx != NULL && regexec(regx, buff, 0, 0, 0) == NULL))
 	vm_output(buff);
+
+      vm_endline();
 	  
     }
   
   vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -138,17 +156,20 @@ int		cmd_sym()
   u_int		num;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   symtab = elfsh_get_symtab(world.curjob->current, &num);
   if (symtab == NULL)
     RET(-1);
-  sct = elfsh_get_section_by_type(world.curjob->current, SHT_SYMTAB, NULL, NULL, NULL, 0);
+  sct = elfsh_get_section_by_type(world.curjob->current, 
+				  SHT_SYMTAB, NULL, NULL, NULL, 0);
   snprintf(logbuf, BUFSIZ - 1, " [SYMBOL TABLE]\n [Object %s]\n\n",
 	   world.curjob->current->name);
   vm_output(logbuf);
   FIRSTREGX(tmp);
-  return (ds(sct, symtab, num, tmp, elfsh_get_symbol_name));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     ds(world.curjob->current, sct, symtab, 
+			num, tmp, elfsh_get_symbol_name));
 }
 
 
@@ -163,7 +184,7 @@ int		cmd_dynsym()
   u_int		num;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   dynsym = elfsh_get_dynsymtab(world.curjob->current, &num);
   if (dynsym == NULL)
@@ -189,7 +210,9 @@ int		cmd_dynsym()
   
   vm_output(logbuf);
   FIRSTREGX(tmp);
-  return (ds(sct, dynsym, num, tmp, elfsh_get_dynsymbol_name));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     ds(world.curjob->current, sct, dynsym, 
+			num, tmp, elfsh_get_dynsymbol_name));
 }
 
 

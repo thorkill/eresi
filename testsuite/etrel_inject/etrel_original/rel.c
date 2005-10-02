@@ -46,26 +46,8 @@ int	puts_troj(char *str)
 	 glvar_testreloc_bss3,
 	 local);
 
-
   free(str2);
-
-  //printf("test intermediate %u\n", local);
-
-  putchar('e');
-  putchar('x');
-  putchar('t');
-  putchar('c');
-  putchar('a');
-  putchar('l');
-  putchar('l');
-  putchar('!');
-  putchar('\n');
-
   old_puts(str);
-  
-  write(1, "calling write\n", 14);
-  
-
   fflush(stdout);
   return (0);
 }

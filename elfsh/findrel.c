@@ -14,14 +14,14 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
   char		*new;
   elfsh_SAddr	off;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   str = elfsh_reverse_metasym(file, vaddr, &off);
   if (str == NULL)
     {
       XALLOC(new, 8, NULL);
       sprintf(new, "?");
-      return (new);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
     }
   if (off)
     {
@@ -30,7 +30,7 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
     }
   else
     new = strdup(str);
-  return (new);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -48,7 +48,7 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
 static int		vm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_ASLR__
  snprintf(logbuf, BUFSIZ - 1, "[elfsh:vm_catch_fp] begin: %08X, totlen: %u, op1: %08X/%u, "
@@ -62,8 +62,8 @@ static int		vm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
 #endif
 
   if (begin + len < dword + 4)
-    return (1);
-  return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* 
@@ -78,7 +78,7 @@ static int	        vm_catch_relocfp(char *dat, u_int dword)
   u_int			ret;
   u_int			begin;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (1)
     {
@@ -89,7 +89,7 @@ static int	        vm_catch_relocfp(char *dat, u_int dword)
 #if __DEBUG_ASLR__
 	 snprintf(logbuf, BUFSIZ - 1, "[elfsh:catch_relocfp] Libasm bad fetching..\n");
 #endif
-	  return (0);
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
       dat += ret;
       
@@ -99,7 +99,11 @@ static int	        vm_catch_relocfp(char *dat, u_int dword)
     }
 }
 #else
-static __inline__ int	vm_catch_relocfp(char *dat, u_int word) { return (0); }
+static __inline__ int	vm_catch_relocfp(char *dat, u_int word) 
+{ 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+}
 #endif
 
 
@@ -124,7 +128,7 @@ int		cmd_findrel()
   char		logbuf[BUFSIZ];
   void		*data;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   file = world.curjob->current;
@@ -217,7 +221,7 @@ int		cmd_findrel()
 	   cur->name, cur->srcref, cur->dstref);
   vm_output("\n");
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

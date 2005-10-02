@@ -1,0 +1,39 @@
+
+
+	 The ELF shell 0.65 (32 bits built) .::. 
+
+ 	 .::. This software is under the General Public License V.2 
+	 .::. Please visit http://www.gnu.org 
+
+~load a.out 
+
+ [*] Tue Sep 20 02:04:59 2005 - New object loaded : a.out
+
+~load rel.o 
+
+ [*] Tue Sep 20 02:04:59 2005 - New object loaded : rel.o
+
+~reladd 1 2 
+Allocated BSS data of 8 bytes with 0 bytes of padding 
+
+ [*] ET_REL rel.o injected succesfully in ET_EXEC a.out
+
+~redir puts puts_troj 
+
+ [*] Function puts redirected to addr 0x08047164 <puts_troj> 
+
+~redir legit_func hook_func 
+[DEBUG_CFLOW] Requesting hijack addr = 08047134, sym.st_value = 08048510, name = legit_func
+
+ [*] Function legit_func redirected to addr 0x08047134 <hook_func> 
+
+~save fake_aout 
+
+ [*] Object fake_aout saved successfully 
+
+~quit 
+
+ [*] Unloading object 1 (rel.o)   
+ [*] Unloading object 2 (a.out) * 
+	 .:: Bye -:: The ELF shell 0.65 
+

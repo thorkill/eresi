@@ -18,7 +18,7 @@ int		cmd_unload()
   u_int		id;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
    /* Get the file structure */
   id = atoi(world.curjob->curcmd->param[0]);
@@ -57,7 +57,8 @@ int		cmd_unload()
 
   /* Error msg */
  bad:
-  ELFSH_SETERROR("[elfsh:cmd_unload] Object not loaded \n", -1);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Object not loaded", -1);
   
   /* OK msg */
  end:
@@ -71,7 +72,7 @@ int		cmd_unload()
   hash_del(&file_hash, todel->name);
   elfsh_unload_obj(todel);
  end2:
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

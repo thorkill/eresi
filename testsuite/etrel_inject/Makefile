@@ -1,34 +1,30 @@
 ##
-## Makefile for elfsh
+## Makefile for elfsh testsuite/etrel_inject
+## 
+## Made by mayhem
+## Login   <mayhem@epita.fr>
+## 
+## Started on  Sun Dec 15 01:34:42 2002 mayhem
+## Last update Sat May 24 17:45:46 2003 mayhem
 ##
-## Started on  Sun Mar 10 01:19:24 2002 mayhem
-## Last update Thu Aug 21 02:24:39 2003 jv
-##
 
-SRC	= etrel_inject.c
-OBJ	= $(SRC:.c=.o)
-CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh
-NAM	= etrel_injecter
-
-HOSTSRC	= host.c
-RELSRC	= rel.c
-RELOBJ	= rel.o
-
-OPT	= -g3 -O2 -I../../libelfsh/include/
-RM	= rm -f
-CFLAGS	= $(OPT)
-
-all	: $(OBJ)
-	@$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM) -static
-	@$(CC) $(OPT) $(HOSTSRC)
-	strip a.out
-
-	@$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c
+all	:
+	@cd et_rel2static      && $(MAKE) 
+	@cd etrel_memory       && $(MAKE)  
+	@cd etrel_original     && $(MAKE) 
+	@cd etrel_pie-ssp      && $(MAKE) 
+	@cd etrel_static       && $(MAKE) 
 
 clean	:
-	$(RM) $(OBJ) *~ \#* *\# $(RELOBJ)
-
+	@cd et_rel2static      && $(MAKE) clean
+	@cd etrel_memory       && $(MAKE) clean
+	@cd etrel_original     && $(MAKE) clean
+	@cd etrel_pie-ssp      && $(MAKE) clean
+	@cd etrel_static       && $(MAKE) clean
 
 fclean	: clean
-	$(RM) $(NAM) a.out fake_aout
+	@cd et_rel2static      && $(MAKE) fclean
+	@cd etrel_memory       && $(MAKE) fclean
+	@cd etrel_original     && $(MAKE) fclean
+	@cd etrel_pie-ssp      && $(MAKE) fclean
+	@cd etrel_static       && $(MAKE) fclean

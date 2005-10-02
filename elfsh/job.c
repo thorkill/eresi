@@ -13,6 +13,8 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   elfshjob_t    *new;
   int		i;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   XALLOC(new, sizeof(elfshjob_t), NULL);
 
   memcpy(new, job, sizeof(elfshjob_t));
@@ -23,6 +25,9 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   new->curcmd = NULL;
   new->active = 0;
   new->sourced = 0;
+
+  new->screen.buf = new->screen.tail = new->screen.head = NULL;
+
   for (i = 0; i < ELFSH_MAX_SOURCE_DEPTH; i++)
     {
       new->script[i] = NULL;
@@ -31,53 +36,57 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
 
   new->createtime = time(&new->createtime);
 
-  return new;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
 void		vm_switch_job(elfshjob_t      *job)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  world.curjob->io.buf = NULL;
   world.curjob->active = 0;
   world.curjob = job;
   job->active = 1;
-
-  return;
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 int		vm_valid_workspace(char *name)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!name)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!name[0])
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (!strncmp(name, "net_init", 5))
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (isdigit(name[0]))
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  return (1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 
 int		vm_own_job(elfshjob_t *job)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!job)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.type != world.curjob->io.type)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.input_fd != world.curjob->io.input_fd)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.output_fd != world.curjob->io.output_fd)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
-  return (1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 
@@ -91,7 +100,8 @@ int		cmd_workspace()
   char		*nl;
   char		*time;
   elfshobj_t	*obj;
-  
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
 
   if (idx == 0)
@@ -136,7 +146,7 @@ int		cmd_workspace()
 	    }
 	}
       vm_output("\n");
-      return (0);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   else if (idx == 1)
     {
@@ -159,7 +169,7 @@ int		cmd_workspace()
 	  snprintf(logbuf, BUFSIZ - 1, "\n [+] Workspace : %s \n\n", world.curjob->curcmd->param[0]);
 	  vm_output(logbuf);
 	  vm_switch_job(job);
-	  return (0);
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
 	
@@ -167,5 +177,62 @@ int		cmd_workspace()
     }    
   else
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong arg number", -1);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+int		cmd_next_workspace()
+{
+  u_int		index;
+  hashent_t	*actual;
+  hashent_t	*next = NULL;
+  char		found = 0;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+
+ loop:
+  for (index = 0; index < world.jobs.size; index++)
+    {
+      for (actual = &world.jobs.ent[index];
+	   actual != NULL && actual->key != NULL;
+	   actual = actual->next)
+	{
+	  if (vm_own_job((elfshjob_t *) actual->data))
+	    {
+	      if (next)
+		{
+		  if (next != actual)
+		    {
+		      vm_switch_job(actual->data);
+		      found = 1;
+		      goto out;
+		    }
+		  else 
+		    {
+		      found = 0;
+		      goto out;
+		    }
+		}
+	      if (!next && (((elfshjob_t *) actual->data)->active))
+		{
+		  if (actual->next)
+		    {
+		      vm_switch_job(actual->next->data);
+		      found = 1;
+		      goto out;
+		    }
+		  else 
+		    next = actual;
+		  
+		}
+	    }
+	}
+    }
+
+  if (next)
+    goto loop;
+
+ out:
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, found);
+}
+

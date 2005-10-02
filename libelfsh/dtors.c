@@ -58,6 +58,7 @@ int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
   u_int		idx;
   elfsh_Addr	*addr;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   dtors = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DTORS, 
 				  NULL, NULL, &nbr);
   if (!dtors)
@@ -70,7 +71,7 @@ int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
       if (*addr && *addr != ELFSH_END_DTORS)
 	*addr += size;
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 

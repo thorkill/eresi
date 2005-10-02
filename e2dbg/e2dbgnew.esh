@@ -1,0 +1,107 @@
+#!vm/elfsh
+#
+# The Embedded ELF Debugger front-end script
+#
+# Made by ELFsh crew August 9 2005
+# 
+
+cmp 2 $#
+jle next
+
+quit:
+print usage $0 file [PRELOAD|DYNAMIC]
+quit
+
+next:
+cmp 0 $#
+jne quit
+
+
+BINNAME=`echo "$1 " | cut -d' ' -f1`
+ARGNAME=`echo "$1 " | cut -d' ' -f2-`
+
+ELFSHPATH=`find ../../../ -name elfsh`
+if [ "$ELFSHPATH" = "" ]; then
+  ELFSHPATH=`which elfsh 2>/dev/null`
+  if [ "$ELFSHPATH" = "" ]; then
+    echo "ELFsh not found. Please compile or install elfsh before using e2dbg."
+    echo "See the root INSTALL file for more information."
+    exit 1
+  fi
+fi
+
+if [ "`../../../vm/elfsh -f $BINNAME -e | grep Shared`" != "" ]; then
+ echo "ET_DYN debugging not available yet (next release ?) ";
+ exit 1
+fi
+
+if [ "`../../../vm/elfsh -f $BINNAME -d | grep DT_NEEDED`" = "" ]; then
+ echo "Static ET_EXEC debugging not available yet (next release ?) ";
+ exit 1
+fi
+
+mkdir -p $HOME/.e2dbg/ 
+if test ! -e $HOME/.e2dbg/e2dbg.so ; then
+
+    LIB=`find /usr/lib/ -name e2dbg.so`
+    # testing without make install
+    #LIB="./e2dbg/e2dbg.so"
+
+    test -z $LIB && echo " * e2dbg.so not found, exiting." && exit 1
+
+    ln -sf $LIB $HOME/.e2dbg/e2dbg.so
+fi
+
+
+if [ "$2" != "" ]; then
+
+case $2 in
+    
+    DYNAMIC*)
+	echo "* Starting debugging for $BINNAME"
+	echo "* Using parameters $ARGNAME"
+	echo "* Adding e2dbg.so dependance"
+	LIBNAME=`elfsh -f $BINNAME -d | awk ' /DT_NEEDED/ {print $7}' | head -n 1 | cut -c 2-`
+	echo "* Found new E2DBG name to $LIBNAME"
+	ln -sf $HOME/.e2dbg/e2dbg.so $HOME/.e2dbg/$LIBNAME
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.e2dbg/ 
+
+	cat > e2dbg.esh << END
+#!../../../vm/elfsh
+load  $BINNAME
+set   1.dynamic[DT_DEBUG].val  1.dynamic[DT_NEEDED].val
+set   1.dynamic[DT_DEBUG].tag  DT_NEEDED
+add   1.dynamic[DT_NEEDED].val 1
+save  $HOME/.e2dbg/`basename $BINNAME`_e2dbg
+print $HOME/.e2dbg/`basename $BINNAME`_e2dbg
+run   $HOME/.e2dbg/`basename $BINNAME`_e2dbg $ARGNAME 
+END
+	chmod +x ./e2dbg.esh
+	./e2dbg.esh 
+	rm ./e2dbg.esh
+	;;
+
+    PRELOAD*)
+	echo "* Preloading e2dbg.so"
+
+	export LD_PRELOAD=$HOME/.e2dbg/e2dbg.so
+	$1	
+	;;
+    
+esac
+
+else
+
+
+# No argument specified, we use the default method : LD_PRELOAD
+echo "* Preloading e2dbg.so"
+
+export LD_PRELOAD=$HOME/.e2dbg/e2dbg.so
+$1	
+
+
+fi
+
+
+
+

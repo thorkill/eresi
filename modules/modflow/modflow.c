@@ -21,7 +21,8 @@
  *
  ************************************************************************/
 
-void	elfsh_help() {
+void	elfsh_help() 
+{
   printf(" flow                                     \n"
 	 "  Launch control flow analysis.           \n"
 	 "                                          \n"
@@ -40,26 +41,32 @@ void	elfsh_help() {
 	 "                                          \n");
 }
 
-void	elfsh_init() {
-  puts(" [*] ELFsh modflow("__DATE__"/"__TIME__") fini -OK-\n");
-  puts("     Added commands:\n");
-  puts("\tflow                                               : process control flow analysis\n"
+void	elfsh_init() 
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output(" [*] ELFsh modflow("__DATE__"/"__TIME__") fini -OK-\n");
+  vm_output("     Added commands:\n");
+  vm_output("\tflow                                               : process control flow analysis\n"
        "\tgraph    <file> <symbol/address> <address|+size>   : dump graphviz graph to file\n"
        "\tinspect  <symbol/address>                          : inspect block at vaddr\n"
        "\tflowjack <sym1> <sym2>                             : hijack xref from sym1 to sym2\n");
 
-vm_addcmd(ELFSH_CMD_GRAPH, cmd_graph, vm_getoption3,1);
-  vm_addcmd(ELFSH_CMD_FLOW, cmd_flow, 0, 1);
-  vm_addcmd(ELFSH_CMD_INSPECT, inspect_cmd, vm_getoption, 1);
-  vm_addcmd("flowtest", cmd_testflow, 0, 1);
-vm_addcmd(ELFSH_CMD_FLOWJACK, cmd_flowjack, vm_getoption2, 1);
-//vm_addcmd(ELFSH_CMD_FLOWLOAD, cmd_flowload, 0, 1);
-//vm_addcmd(ELFSH_CMD_FLOWSAVE, cmd_flowsave, 0 ,1);
+  vm_addcmd(ELFSH_CMD_GRAPH, cmd_graph, vm_getoption3, 1, "FIXME");
+  vm_addcmd(ELFSH_CMD_FLOW, cmd_flow, 0, 1, "FIXME");
+  vm_addcmd(ELFSH_CMD_INSPECT, inspect_cmd, vm_getoption, 1, "FIXME");
+  vm_addcmd("flowtest", cmd_testflow, 0, 1, "FIXME");
+  vm_addcmd(ELFSH_CMD_FLOWJACK, cmd_flowjack, vm_getoption2, 1, "FIXME");
+  //vm_addcmd(ELFSH_CMD_FLOWLOAD, cmd_flowload, 0, 1, "FIXME");
+  //vm_addcmd(ELFSH_CMD_FLOWSAVE, cmd_flowsave, 0 ,1, "FIXME");
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
-void	elfsh_fini() {
-  puts(" [*] ELFsh modflow init -OK-\n");
+void	elfsh_fini() 
+{
+  vm_output(" [*] ELFsh modflow init -OK-\n");
   vm_delcmd(ELFSH_CMD_FLOW);
   vm_delcmd(ELFSH_CMD_FLOWJACK);
   vm_delcmd(ELFSH_CMD_GRAPH);
@@ -200,7 +207,9 @@ int	cmd_testflow(void)
 
 hash_t		block_hash;
 
-int	cmd_flow(void) 
+
+
+int			cmd_flow(void) 
 {
 
   char                  *buffer;
@@ -223,11 +232,12 @@ int	cmd_flow(void)
   struct s_iblock       *binary_blks;
   /* char		*str; */
   
-
   /*
     parse arguments
     load binary and resolve symbol 
   */
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
     {
       binary_blks = 0;
@@ -238,7 +248,9 @@ int	cmd_flow(void)
 	   "     current stored information\nContinue?[N/y]");
       ilen = getchar();
       if (ilen != 'y')
-	ELFSH_SETERROR("[elfsh:flow] Aborted", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Flow analysis Aborted", -1);
+
       if (sect->altdata)
 	binary_blks = (struct s_iblock *) sect->altdata;
       else
@@ -246,10 +258,9 @@ int	cmd_flow(void)
     }
   
   if (!(shtlist = elfsh_get_sht(world.curjob->current, &num_sht)))
-    {
-      printf("[MODFLOW] cannot get sectionlist\n");
-      return (-1);
-    }
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "[MODFLOW] cannot get sectionlist", -1);
+
   printf(" * %i sections\n", num_sht);
   
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
@@ -298,7 +309,7 @@ int	cmd_flow(void)
 	  printf(" [*] main located at %8x\n", main_addr);
 	}
   
-      printf(" [*] starting disassembly\n");
+      vm_output(" [*] starting disassembly");
   
       /*
 	main loop
@@ -330,7 +341,8 @@ int	cmd_flow(void)
 	save file.
       */
     }
-  puts("[MODFLOW] done\n");
+
+  vm_output("[MODFLOW] done");
   
   //btree_debug(binary_blks->btree, "flow.gvz", 0);
 

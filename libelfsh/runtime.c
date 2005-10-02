@@ -18,10 +18,10 @@ int		elfsh_set_phdr_prot(u_int mode)
   elfsh_Word	flags;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   flags = PF_R | PF_W;
-  // if (mode == ELFSH_CODE_INJECTION)
-    flags |= PF_X;
+  //  if (mode == ELFSH_CODE_INJECTION)
+  flags |= PF_X;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
 }
 
@@ -43,21 +43,42 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 #if	__DEBUG_RUNTIME__
   printf("[DEBUG_RUNTIME] MMAP: " XFMT " of %d bytes \n", segment->p_vaddr, segment->p_memsz);
 #endif
-  
-  addr = (elfsh_Addr) mmap((void *) 0, segment->p_memsz, 
+
+
+#if defined(IRIX)
+{
+ int	zero;
+
+ zero = fopen("/dev/zero", O_RDWR);
+ if (zero < 0)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Failed to open /dev/zero", 
+		      ELFSH_INVALID_ADDR);
+
+ addr = (elfsh_Addr) mmap((void *) 0, segment->p_memsz, 
 			   prot,
 			   //elfsh_get_segment_flags(segment), 
+			   MAP_PRIVATE, 
+			   zero, 0);
+ close(zero);
+}
+#else  
+  addr = (elfsh_Addr) mmap((void *) 0, segment->p_memsz, 
+			   prot,
 			   MAP_PRIVATE | MAP_ANONYMOUS, 
 			   0, 0);
-  
+#endif
+
+
   if (addr == 0 && segment->p_vaddr)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Mmap refused the mapping", 
 		      ELFSH_INVALID_ADDR);
+
 #if	__DEBUG_RUNTIME__
   else
-    printf("[DEBUG_RUNTIME] Section Mapped at addr %08X with prot %c%c%c\n", 
-	   addr,
+    printf("[DEBUG_RUNTIME] Section Mapped at addr %08X (%u) with prot %c%c%c\n", 
+	   addr, segment->p_memsz,
 	   (elfsh_segment_is_readable(segment)   ? 'R' : '-'),
 	   (elfsh_segment_is_writable(segment)   ? 'W' : '-'),
 	   (elfsh_segment_is_executable(segment) ? 'X' : '-'));
@@ -70,9 +91,37 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 /* Unmap a previously requested area */
 int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 {
+  int		ret;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (munmap((void *) segment->p_vaddr, segment->p_memsz)));
+  ret = munmap((void *) segment->p_vaddr, segment->p_memsz);
+
+  //if (!ret)
+  //memset(segment, 0x00, sizeof(elfsh_Phdr));
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+/* Remap an existing zone with a bigger size */
+int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
+{
+  elfsh_Addr	addr;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  elfsh_runtime_unmap(segment);
+  segment->p_memsz += moresize;
+  addr = elfsh_runtime_map(segment);
+  if (!addr)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Could not extend mmaped memory",
+                      ELFSH_INVALID_ADDR);
+  
+  segment->p_vaddr = segment->p_paddr = addr;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
 }
 
 
@@ -121,9 +170,11 @@ int		elfsh_munprotect(elfshobj_t *file,
 		    getpagesize(), PROT_READ | PROT_WRITE);
 
   if (retval != 0)
+    {
+      perror("mprotect");
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Failed mprotect", -1);
-
+    }
   /* Return the original rights */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     prot);

@@ -18,11 +18,12 @@ int			cmd_write()
   int			size;
   char			logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_write] Needs 2 parameters\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Needs 2 parameters", -1);
 
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
@@ -31,15 +32,18 @@ int			cmd_write()
 
   /* Type checking */
   if (o1->type != ELFSH_OBJRAW && o1->type != ELFSH_OBJSTR)
-    ELFSH_SETERROR("[elfsh:cmd_write] Parameters must be STR or RAW typed\n",
-		   -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameters must be STR or RAW typed",
+		      -1);
   else if (o1->immed)
-    ELFSH_SETERROR("[elfsh:cmd_write] Dest. param. must not be a constant\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Dest. param. must not be a constant", -1);
 
   /* Convert Integers into raw data */
   if (o2->type != ELFSH_OBJRAW && o2->type != ELFSH_OBJSTR)
     if (vm_convert_object(o2, ELFSH_OBJRAW) < 0)
-      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unable to convert dest object to RAW", (-1));
 
   /* Get the source buff */
   dat = (o2->immed                ? o2->immed_val.str                  : 
@@ -53,11 +57,13 @@ int			cmd_write()
 	  world.curjob->curcmd->param[2]   ? vm_lookup_index(world.curjob->curcmd->param[2]) : 
 	  cur->shdr->sh_size - o2->off);
   if (size <= 0)
-    ELFSH_SETERROR("[elfsh:cmd_write] Source offset too big\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Source offset too big", -1);
   
   /* Write the destination buff */
   if (o1->set_data(o1->parent, o1->off, dat, size, o1->sizelem) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to set data", (-1));
 
   /* Print stuff and return */
   if (!world.state.vm_quiet)
@@ -71,7 +77,7 @@ int			cmd_write()
   if (!o1->perm)
     free(o1);
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -86,27 +92,30 @@ int		cmd_append()
   int		index = -1;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch section using the first argument */
   if (vm_isnbr(world.curjob->curcmd->param[0])) 
     {
       index = atoi(world.curjob->curcmd->param[0]);
       if (!index)
-	ELFSH_SETERROR("[elfsh:cmd_extend] Cannot convert section value !\n", 
-		       -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot convert section value !", 
+			  -1);
       sect = elfsh_get_section_by_index(world.curjob->current, index, NULL, NULL);
     } 
   else
     sect = elfsh_get_section_by_name(world.curjob->current, world.curjob->curcmd->param[0], 
 				     NULL, NULL, NULL);
   if (sect == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_append] Cannot find requested section\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested section", -1);
   
   /* Object retreive */
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o2)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to lookup dest object", (-1));
 
   /* Convert Integers into string data */
   if (o2->type != ELFSH_OBJRAW && o2->type != ELFSH_OBJSTR)
@@ -123,11 +132,13 @@ int		cmd_append()
 	  o2->type == ELFSH_OBJSTR ? strlen(dat) :
 	  cur->shdr->sh_size - o2->off);
   if (size <= 0)
-    ELFSH_SETERROR("[elfsh:cmd_append] Source offset too big\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Source offset too big", -1);
 
   /* Append the data for real */
   if (elfsh_append_data_to_section(sect, dat, size) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to append data to section", (-1));
 
   /* Print msg */
   if (!world.state.vm_quiet) 
@@ -136,7 +147,7 @@ int		cmd_append()
 	       " [*] Appended %u bytes to section %s\n\n", size, sect->name);
       vm_output(logbuf);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -150,15 +161,16 @@ int		cmd_extend()
   int		index = -1;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch section using first argument */
   if (vm_isnbr(world.curjob->curcmd->param[0])) 
     {
       index = atoi(world.curjob->curcmd->param[0]);
       if (!index)
-	ELFSH_SETERROR("elfsh:cmd_extend] Cannot convert section value !\n", 
-		       -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot convert section value", 
+			  -1);
       sect = elfsh_get_section_by_index(world.curjob->current, index, NULL, NULL);
     } 
   else
@@ -166,23 +178,31 @@ int		cmd_extend()
 				     world.curjob->curcmd->param[0], 
 				     NULL, NULL, NULL);
   if (sect == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_extend] Cannot find requested section\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested section", -1);
   size = atoi(world.curjob->curcmd->param[1]);
 
   /* Extend the section with NUL bytes */
   if (!size)
-    ELFSH_SETERROR("[elfsh:cmd_extend] Extend size cannot be 0\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Extend size cannot be 0", -1);
   XALLOC(new_data, size, NULL);
+
   if (elfsh_append_data_to_section(sect, new_data, size) < 0)
-    err = -1;
-  free(new_data);
-  if (!world.state.vm_quiet && !err)
+    {
+      free(new_data);      
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unable to append data", -1);
+    }
+
+  if (!world.state.vm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1,
 	       " [*] Extended %s by %u bytes\n\n", sect->name, size);
       vm_output(logbuf);
     }
-  return (err);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -190,15 +210,17 @@ int		cmd_extend()
 int		cmd_fixup()
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->current == NULL)
-    ELFSH_SETERROR("[libelfsh] Invalid NULL parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
   if (elfsh_fixup_bss(world.curjob->current) != NULL)
     {
       vm_output(" [*] BSS fixed up\n");
-      return (0);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  return (-1);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Failed to fixup BSS", (-1));
 }
 

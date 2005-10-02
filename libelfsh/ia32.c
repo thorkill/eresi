@@ -23,13 +23,25 @@ int			elfsh_break_ia32(elfshobj_t *f,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
 #if __DEBUG_BREAKPOINTS__
-  printf("[ia32::break_ia32] bp->addr %08X \n", bp->addr);
+  printf("[DEBUG_BREAKPOINTS:ia32] bp->addr %08X \n", bp->addr);
 #endif
 
   bp->savedinstr[0] = (*(char *) bp->addr);
   prot = elfsh_munprotect(f, bp->addr, 4);
+  if (prot == (-1))
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
+  
+#if __DEBUG_BREAKPOINTS__
+  printf("[DEBUG_BREAKPOINTS:ia32] after munprotect\n");
+#endif
   (*(char *) bp->addr) = 0xCC;
+#if __DEBUG_BREAKPOINTS__
+  printf("[DEBUG_BREAKPOINTS:ia32] after write\n");
+#endif
   elfsh_mprotect(bp->addr, 4, prot);
+#if __DEBUG_BREAKPOINTS__
+  printf("[DEBUG_BREAKPOINTS:ia32] after mprotect\n");
+#endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -55,7 +67,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if	__DEBUG_CFLOW__      
+#if 1	//__DEBUG_CFLOW__      
   printf("[DEBUG_CFLOW] Requesting hijack addr = %08X, sym.st_value = %08X, name = %s\n", 
 	 addr, symbol->st_value, name);
 #endif
@@ -142,106 +154,6 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 }
 
 
-
-
-/* 
-   PLT hijacking on i386 dyn objects 
-   
-   Tested on BeoS only 
-
-   ***** Not used for ET_DYN manipulation on other OS than BeOS ******
-
-   Adapted by zagig for BeoS from libelfsh/hijack.c 
-   
-*/
-/*
-int		elfsh_hijack_plt_ia32_etdyn(elfshobj_t *file, 
-					    elfsh_Sym *symbol,
-					    elfsh_Addr addr)
-{
-  int		foffset;
-  uint8_t	opcode = 0xe9;
-  uint32_t	displacement;
-  elfshsect_t   *rel_plt;
-  elfshsect_t   *plt;
-  elfshsect_t	*symtab;
-  elfshsect_t	*dynsym;
-  u_int		off, index, plt_rel_index;
-  u_int		entsz;
-  int		plt_index;
-  char		*name;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  plt = elfsh_get_section_by_name(file,
-				  ELFSH_SECTION_NAME_PLT,
-				  &plt_index, NULL, NULL);
-  if (plt == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unable to get PLT", -1);
-  
-
-  entsz = elfsh_get_pltentsz(file);
-  if (entsz < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid PLT entry size", -1);
-  if (NULL == elfsh_get_dynsymtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to get DYNSYM", -1);
-  if (NULL == elfsh_get_symtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to get SYMTAB", -1);
-  
-  if (file->hdr->e_machine != EM_386)     
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "File is not IA32", -1);
-  
-  dynsym = file->secthash[ELFSH_SECTION_DYNSYM];
-  symtab = file->secthash[ELFSH_SECTION_SYMTAB];
-  
-  rel_plt = elfsh_get_section_by_index(file, plt_index, NULL, NULL);
-  if (rel_plt == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find .rel.plt section", -1);
-  
-  off = entsz;
-  for (index = 0; 
-       index < (rel_plt->shdr->sh_size / sizeof(elfsh_Rel)); 
-       off += entsz, index++)
-    {
-      elfsh_Rel *rel_entry;
-      
-      rel_entry = ((elfsh_Rel *) rel_plt->data + index);
-      
-      if (off == 0)
-	continue;
-      name  = elfsh_get_symname_from_reloc(file, rel_entry);
-      if (!name)
-	continue;
-      
-      if (!strcmp(name, elfsh_get_symbol_name(file, symbol)))
-	{
-
-          displacement = addr - (plt->shdr->sh_addr + off) - 5;
-          foffset = plt->shdr->sh_addr + off;
-          elfsh_raw_write(file, foffset, &opcode, sizeof(opcode));
-
-#if __BYTE_ORDER == __BIG_ENDIAN
-          displacement = swap32(displacement);
-          elfsh_raw_write(file, foffset + sizeof(opcode), 
-			  &displacement, sizeof(displacement));
-#else
-          elfsh_raw_write(file, foffset + sizeof(opcode), 
-			  &displacement, sizeof(displacement));
-#endif
-          ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	}
-    }
- 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Cannot find PLT entry to patch", -1);
-}
-*/
 
 
 

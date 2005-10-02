@@ -13,7 +13,7 @@ void			vm_filter_zero(char *buf)
   char			*ptr;
   u_int			size;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   size = strlen(buf);
   do
@@ -38,6 +38,7 @@ void			vm_filter_zero(char *buf)
 	}
     }
   while (ptr != NULL);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -50,17 +51,18 @@ char		*vm_filter_param(char *buf, char *ptr)
   char		c;
   char		d;
   
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* if string ends with '\x', its over for this entry */
   if (*(ptr + 2) == 0x00)
-    return (buf);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
   
   /* Do exception for \x00 which must not be resolved */
   c = *(ptr + 2);
   d = *(ptr + 3);
   if (c == '0' && !((d >= 'A' && d <= 'F') || (d >= '1' && d <= '9')))
-    return (buf + (d == '0' ? 4 : 3));
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       (buf + (d == '0' ? 4 : 3)));
   
   /* else read the hexadecimal value */
   else
@@ -71,6 +73,8 @@ char		*vm_filter_param(char *buf, char *ptr)
       
       /* and copy the data, strcpy put NUL at the end */
       strcpy(ptr + 1, buf);
-      return (ptr + 1);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
     }
+
+  assert(1);
 }

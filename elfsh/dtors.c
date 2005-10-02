@@ -20,11 +20,11 @@ int		cmd_dtors()
   elfsh_SAddr	doffset;
   char		*name;
   char		*dname;
-  char		off[30];
+  char		off[50];
   char		buff[256];
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   dtors = elfsh_get_dtors(world.curjob->current, &size);
   if (dtors == NULL)
@@ -48,21 +48,23 @@ int		cmd_dtors()
 	}
 
       if (off)
-	snprintf(off, sizeof(off), " %c %u", 
-		 (offset < 0 ? '-' : '+'), 
-		 (u_int) (offset > 0 ? offset : offset - offset - offset));
-      
-      snprintf(buff, sizeof(buff), " [%02u]  " XFMT " \t <%s%s>\n", 
-	       index, (elfsh_Addr) dtors[index], 
-	       (name ? name : "?"), 
+	snprintf(off, sizeof(off), " %s %s", 
+		 vm_colorstr((offset < 0 ? "-" : "+")), 
+		 vm_colornumber("%u", (u_int) (offset > 0 ? offset : offset - offset - offset)));
+
+      snprintf(buff, sizeof(buff), " %s  %s \t <%s%s>\n", 
+	       vm_colornumber("[%02u]", index), 
+	       vm_coloraddress(XFMT, (elfsh_Addr) dtors[index]), 
+	       (name ? vm_colorstr(name) : vm_colorwarn("?")), 
 	       (name && offset ? off : ""));
       
       if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
 	vm_output(buff);
 
+       vm_endline();
     }
 
 
   vm_output("\n");
-  return (0); 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }

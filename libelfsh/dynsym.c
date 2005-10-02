@@ -14,15 +14,17 @@
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
   char	*ret;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file || !s)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL && 
-      NULL == elfsh_get_dynsymtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get DYNSYM", NULL);
+
+  if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL)
+    if (NULL == elfsh_get_dynsymtab(file, NULL))
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unable to get DYNSYM", NULL);
 
   ret = (char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]) + s->st_name;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -83,6 +85,7 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   elfshsect_t	*new;
   int		strindex;
   int		nbr;
+  void		*ret;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -133,7 +136,12 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
       elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_DYNSYM]);
       new->curend = new->shdr->sh_size;
     }
-  
+
+  /*
+  else
+    puts("Not entered in NULL dynsym cond\n");
+  */  
+
   nbr = 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend ? 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend / sizeof(elfsh_Sym) : 
@@ -141,7 +149,18 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
     
   if (num != NULL)
     *num = nbr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM])));
+
+  /*
+  printf(__FUNCTION__ " has dynsym data = %08X pdata = %08X \n", 
+	 file->secthash[ELFSH_SECTION_DYNSYM]->data, 
+	 file->secthash[ELFSH_SECTION_DYNSYM]->pdata);
+  */
+
+  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
+  
+  //printf(__FUNCTION__ " has dynsym ret : %x\n", ret);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (ret));
 }
 
 
@@ -186,7 +205,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 
       /* handle dynamic case */
       if (elfsh_is_debug_mode())
-	value -= file->base;
+	value -= file->rhdr.base;
 
       if (offset)
 	*offset = (elfsh_SAddr) (sect->shdr->sh_addr - value);
@@ -216,7 +235,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 
   /* handle dynamic case */
   if (elfsh_is_debug_mode())
-    value -= file->base;
+    value -= file->rhdr.base;
 
   /* Else look in the table */
   for (index = 0; index < num; index++)
@@ -258,11 +277,11 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
-  if (NULL == elfsh_get_dynsymtab(file, &size))
+  ret = elfsh_get_dynsymtab(file, &size);
+  if (ret == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
   for (index = 0; index < size; index++)
     {
       actual = elfsh_get_dynsymbol_name(file, ret + index);

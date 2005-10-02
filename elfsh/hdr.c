@@ -15,7 +15,7 @@ static void	*vm_hdrfixup(elfsh_Ehdr *header)
   char		*h;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   h = (char *) header;
   if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
@@ -31,33 +31,36 @@ static void	*vm_hdrfixup(elfsh_Ehdr *header)
       if (c != 'y' && c != 'n')
 	goto again;
       else if (c == 'n')
-	return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "ELF header remained unfixed", (NULL));
     }
   elfsh_set_magic(header, *(u_int *) ELFMAG);
   h[EI_CLASS] = ELFCLASS32;
-  return (h);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (h));
 }
 
 
 static char	*vm_printostype(elfshobj_t *file)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   switch (elfsh_get_ostype(file))
     {
     case ELFSH_OS_LINUX:
-      return ("Linux");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("Linux"));
     case ELFSH_OS_NETBSD:
-      return ("NetBSD");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("NetBSD"));
     case ELFSH_OS_FREEBSD:
-      return ("FreeBSD");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("FreeBsd"));
     case ELFSH_OS_OPENBSD:
-      return ("OpenBSD");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("OpenBSD"));
     case ELFSH_OS_SOLARIS:
-      return ("Solaris");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("Solaris"));
     case ELFSH_OS_BEOS:
-      return ("BeoS");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("Beos"));
     case ELFSH_OS_ERROR:
     default:
-      return ("Unknown");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("Unknown"));
     }
 }
 
@@ -80,8 +83,8 @@ int		cmd_elf()
   u_int		magic;
   char		buf[BUFSIZ];
   char		logbuf[BUFSIZ];
-  
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch ELF header */
   header = elfsh_get_hdr(world.curjob->current);
@@ -101,7 +104,8 @@ int		cmd_elf()
   /* Resolve entry point */
   magic = elfsh_get_magic(header);
 
-  name = elfsh_reverse_metasym(world.curjob->current, header->e_entry, &offset);
+  //name = elfsh_reverse_metasym(world.curjob->current, header->e_entry, &offset);
+  name = NULL;
   if (name != NULL)
     {
       if (offset != 0)
@@ -130,31 +134,65 @@ int		cmd_elf()
 	   world.curjob->current->name, magic);
   vm_output(logbuf);
   
-  snprintf(logbuf, BUFSIZ - 1, " Architecture       : %18s   ELF Version        : %14u   \n"
-	   " Object type        : %18s   SHT strtab index   : %14u   \n"
-	   " Data encoding      : %18s   SHT foffset        : "UFMT14" \n"
-	   " PHT foffset        : "UFMT18"   SHT entries number : %14u   \n"
-	   " PHT entries number : %18u   SHT entry size     : %14u   \n"
-	   " PHT entry size     : %18u   ELF header size    : %14u   \n"
-	   " Runtime PHT offset : %18u   Fingerprinted OS   : %14s       \n"
-
-	   " Entry point        : "XFMT18"   [%s]   		           \n"
-	   " {OLD PAX FLAGS = 0x%X}			                   \n"
-	   " PAX_PAGEEXEC       : %18s   PAX_EMULTRAMP      : %14s   \n"
-	   " PAX_MPROTECT       : %18s   PAX_RANDMMAP       : %14s   \n"
-	   " PAX_RANDEXEC       : %18s   PAX_SEGMEXEC       : %14s   \n\n",
-	   arch, (u_int) header->e_version, type, header->e_shstrndx,
-	   enco, header->e_shoff, header->e_phoff, header->e_shnum,
-	   header->e_phnum, header->e_shentsize, header->e_phentsize,
-	   header->e_ehsize, elfsh_get_rphtoff(header), vm_printostype(world.curjob->current),
-	   header->e_entry, (name != NULL ? buf : "?"), (u_int) header->e_flags,
-	   (elfsh_get_pax_pageexec(header)  ? "Enabled"    : "Disabled"),
-	   (elfsh_get_pax_emultramp(header) ? "Emulated"   : "Not emulated"),
-	   (elfsh_get_pax_mprotect(header)  ? "Restricted" : "Not restricted"),
-	   (elfsh_get_pax_randmmap(header)  ? "Randomized" : "Not randomized"),
-	   (elfsh_get_pax_randexec(header)  ? "Randomized" : "Not randomized"),
-	   (elfsh_get_pax_segmexec(header)  ? "Enabled"    : "Disabled"));
+  snprintf(logbuf, BUFSIZ, 
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s\n"
+	   " {%s = %s}\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n"
+	   " %s : %s   %s : %s\n\n",
+	   vm_colorfieldstr_fmt("%-20s", "Architecture"),
+	   vm_colorstr_fmt("%18s", arch), 
+	   vm_colorfieldstr_fmt("%-20s", "ELF Version"),
+	   vm_colornumber("%14u", (u_int) header->e_version),
+	   vm_colorfieldstr_fmt("%-20s", "Object type"),
+	   vm_colorstr_fmt("%18s", type), 
+	   vm_colorfieldstr_fmt("%-20s", "SHT strtab index"),
+	   vm_colornumber("%14u", header->e_shstrndx),
+	   vm_colorfieldstr_fmt("%-20s", "Data encoding"),
+	   vm_colorstr_fmt("%18s", enco), 
+	   vm_colorfieldstr_fmt("%-20s", "SHT foffset"),
+	   vm_colornumber(UFMT14, header->e_shoff), 
+	   vm_colorfieldstr_fmt("%-20s", "PHT foffset"),
+	   vm_colornumber(UFMT18, header->e_phoff), 
+	   vm_colorfieldstr_fmt("%-20s", "SHT entries number"),
+	   vm_colornumber("%14u", header->e_shnum),
+	   vm_colorfieldstr_fmt("%-20s", "PHT entries number"),
+	   vm_colornumber("%18u", header->e_phnum), 
+	   vm_colorfieldstr_fmt("%-20s", "SHT entry size"),
+	   vm_colornumber("%14u", header->e_shentsize), 
+	   vm_colorfieldstr_fmt("%-20s", "PHT entry size"),
+	   vm_colornumber("%18u", header->e_phentsize),
+	   vm_colorfieldstr_fmt("%-20s", "ELF header size"),
+	   vm_colornumber("%14u", header->e_ehsize), 
+	   vm_colorfieldstr_fmt("%-20s", "Runtime PHT offset"),
+	   vm_colornumber("%18u", elfsh_get_rphtoff(header)),
+	   vm_colorfieldstr_fmt("%-20s", "Fingerprinted OS"),
+	   vm_colorstr_fmt("%14s", vm_printostype(world.curjob->current)),
+	   vm_colorfieldstr_fmt("%-20s", "Entry point"),
+	   vm_coloraddress(XFMT18, header->e_entry), 
+	   (name != NULL ? vm_colorstr_fmt("[%s]", buf) : vm_colorwarn("[?]")), 
+	   vm_colorstr("OLD PAX FLAGS"),
+	   vm_coloraddress("0x%X", header->e_flags),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_PAGEEXEC"),
+	   vm_colorstr_fmt("%18s", (elfsh_get_pax_pageexec(header)  ? "Enabled"    : "Disabled")),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_EMULTRAMP"),
+	   vm_colorstr_fmt("%14s", (elfsh_get_pax_emultramp(header) ? "Emulated"   : "Not emulated")),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_MPROTECT"),
+	   vm_colorstr_fmt("%18s", (elfsh_get_pax_mprotect(header)  ? "Restricted" : "Not restricted")),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_RANDMAP"),
+	   vm_colorstr_fmt("%14s", (elfsh_get_pax_randmmap(header)  ? "Randomized" : "Not randomized")),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_RANDEXEC"),
+	   vm_colorstr_fmt("%18s", (elfsh_get_pax_randexec(header)  ? "Randomized" : "Not randomized")),
+	   vm_colorfieldstr_fmt("%-20s", "PAX_SEGMEXEC"),
+	   vm_colorstr_fmt("%14s", (elfsh_get_pax_segmexec(header)  ? "Enabled"    : "Disabled")));
   vm_output(logbuf);
-
-  return (0);
+  vm_endline();
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

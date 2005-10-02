@@ -57,27 +57,45 @@ u_char	elfsh_debugger_present()
 }
 
 
-/* Here the function for the profiler buffer */
-int	elfsh_prof_enable()
+void	elfsh_toggle_mode()
 {
-  dbgworld.prof_enable = 1;
+  if (elfsh_is_debug_mode())
+    elfsh_set_static_mode();
+  else
+    elfsh_set_debug_mode();
+}
+
+
+
+/* Here the functions for the profiler option */
+int	elfsh_prof_enable_err()
+{
+  dbgworld.proflevel = ELFSH_ERRPROF;
+  return (0);
+}
+
+int	elfsh_prof_enable_out()
+{
+  dbgworld.proflevel = ELFSH_OUTPROF;
   return (0);
 }
 
 int	elfsh_prof_disable()
 {
-  dbgworld.prof_enable = 0;
+  dbgworld.proflevel = ELFSH_NOPROF;
   return 0;
 }
 
 int	elfsh_is_prof_enable()
 {
-  return (dbgworld.prof_enable);
+  return (dbgworld.proflevel);
 }
 
 /* Change the profiling output function */
 /* Usually vm_output located in elfsh VM */
-void	elfsh_set_profile(int (*profile)(char *))
+void	elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *))
 {
   dbgworld.profile = profile;
+  dbgworld.profile_err = profile_err;
+
 }

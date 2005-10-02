@@ -13,18 +13,16 @@
 int		cmd_info()
 {
   char		*str;
+  char		*alt;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  str = (world.state.vm_sregx ? world.state.vm_sregx : "NONE");
+  str = (world.state.vm_sregx  ? world.state.vm_sregx  : "NONE");
+  alt = (world.state.vm_salert ? world.state.vm_salert : "NONE");
+
   snprintf(logbuf, BUFSIZ - 1,
 	   "\t\t The ELF shell %s [extra help screen] \n\n"
-	   " [*] D and X parameter syntax						          \n\n"
-	   "   - Available formats             : regx, regx:rva, regx:rva%%size, regx%%size   \n"
-	   "   - regx                          : Regular expression (mandatory)		    \n"
-	   "   - rva                           : Byte offset from the beginning (optional)    \n"
-	   "   - size                          : Bytes number limit (optional)		  \n\n"
 	   " [*] Object access path format    					          \n\n"
 	   "   - ELF header                             : file{name,id}%shdr%sfield	        \n"
 	   "   - got/ctors/dtors tables                 : file{name,id}%stable[idx]		\n"
@@ -44,12 +42,13 @@ int		cmd_info()
 	   "   - got           [ value addr ]    							\n\n"
 	   " [*] Current field separator       : %s					    \n"
 	   " [*] Current global regular expr.  : %s					    \n"
+	   " [*] Current alert  regular expr.  : %s					    \n"
 	   " [*] Project page                  : http://elfsh.devhell.org		    \n"
 	   " [*] Official mirror               : http://elfsh.segfault.net		    \n"
 	   " [*] Contact point                 : elfsh@devhell.org			  \n\n",
 	   ELFSH_VERSION, ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, 
 	   ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, 
-	   ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, str);
+	   ELFSH_FIELD_SEP, ELFSH_FIELD_SEP, str, alt);
   vm_output(logbuf);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

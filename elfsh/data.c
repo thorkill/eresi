@@ -89,9 +89,19 @@ elfshconst_t			elfsh_sym_type[] =
   {"SECTION" , "STT_SECTION", STT_SECTION},
   {"FILENAME", "STT_FILE"   , STT_FILE},
   {"COMMON"  , "STT_COMMON" , STT_COMMON},
+  {"TLS"     , "STT_TLS"    , STT_TLS},
   {"BLOCK"   , "STT_BLOCK"  , STT_BLOCK},
 };
 
+
+/* Version entry type strings */
+elfshconst_t                  elfsh_verentry_type[] =
+{
+  {"NONE"          , "ELFSH_VERTYPE_NONE" , ELFSH_VERTYPE_NONE},
+  {"UNKNOWN"       , "ELFSH_VERTYPE_UNK"  , ELFSH_VERTYPE_UNK},
+  {"NEED"          , "ELFSH_VERTYPE_NEED" , ELFSH_VERTYPE_NEED},
+  {"DEF"           , "ELFSH_VERTYPE_DEF"  , ELFSH_VERTYPE_DEF},
+};
 
 
 /* Dynamic section entry type strings */

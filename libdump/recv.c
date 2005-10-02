@@ -18,6 +18,8 @@ pkt_t	*dump_recv_pkt(int s)
   pkt_t *msg;
   int	try = 0;
 
+  ELFSH_NOPROFILE_IN();
+
   XALLOC(msg, sizeof (pkt_t), NULL);
 
   /* read fixed size header part */
@@ -190,6 +192,8 @@ int		dump_receive_RR(pkt_t *pkt)
   hashent_t	*actual;
   int		index;
     
+  ELFSH_NOPROFILE_IN();
+
   if (dump_lookup_RR_recently_seen(pkt->id))
     {
       return (-1);

@@ -8,15 +8,16 @@
 
 
 
-
+/* XXX: arch dependant, some ifdef needed for multi-arch/OS support */
 void		*elfsh_bt_get_frame()
 {
-  void *frame;
+  void *frame=0;
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+#if !defined(IRIX)
   __asm__ volatile ("mov %%ebp, %0 \n"
 		    : "=m" (frame));
+#endif
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, frame);
 }

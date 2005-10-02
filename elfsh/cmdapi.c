@@ -9,19 +9,21 @@
 
 
 /* Create the cmdhandler passed to hash_add() */
-elfshcmd_t	*vm_create_CMDENT(int (*exec)(void *file, void *av),
-				  int (*reg)(u_int index, u_int argc, char **argv),
-				  int flags)
+elfshcmd_t	*vm_create_CMDENT(int  (*exec)(void *file, void *av),
+				  int  (*reg)(u_int index, u_int argc, char **argv),
+				  int  flags,
+				  char *help)
 {
   elfshcmd_t	*new;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XALLOC(new, sizeof(elfshcmd_t), NULL);
   new->exec   = exec;
   new->reg    = reg;
   new->wflags = flags;
-  return (new);
+  new->help   = help;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -32,7 +34,7 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
   elfshcmd_t	*act;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ent = hash_get_ent(&cmd_hash, cmd);
   if (!ent)
@@ -40,7 +42,8 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
       snprintf(logbuf, BUFSIZ - 1,
 	       "\n [!] Unknown command %s \n\n", world.curjob->curcmd->param[0]);
       vm_output(logbuf);
-      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Supplied handler invalid", (-1));
     }
   act = ent->data;
   if (reg != ELFSH_ORIG)
@@ -49,17 +52,16 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
     act->exec = exec;
   if (needcur != (u_int) ELFSH_ORIG)
     act->wflags = needcur;
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Add a command */
-int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile)
+int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile, 
+			  char *help)
 {
-
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  hash_add(&cmd_hash, cmd , (void *) vm_create_CMDENT(exec, reg, needfile));
-  return (0);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  hash_add(&cmd_hash, cmd , (void *) vm_create_CMDENT(exec, reg, needfile, help));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -67,8 +69,8 @@ int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile)
 int		vm_delcmd(char *cmd)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   hash_del(&cmd_hash, cmd);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

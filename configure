@@ -5,6 +5,7 @@
 # The ELFsh crew.
 #
 
+
 CHOSENBIT="0"
 STATIC="0"
 READLN="0"
@@ -70,12 +71,12 @@ STATIC="1"
 
 --enable-dmalloc*)
 echo  " [*] Enabling dmalloc linking"
-echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"            >> config.h
+echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"  >> config.h
 ;;
 
 --enable-m64*)
 echo  " [*] Enabling ELFsh 64bits binary built"
-echo  "BUILDOPT		= -m64 -DM64"				>> config.h
+echo  "BUILDOPT		= -m64 -DM64"		>> config.h
 M64="1"
 ;;
 
@@ -84,6 +85,13 @@ shift
 echo  " [*] Setting UNIX shell to " $1
 echo  "#define ELFSH_SHELL        " $1		>> vars.h
 SHELLSET="1"
+;;
+
+--set-editor*)
+shift
+echo  " [*] Setting editor to " $1
+echo  "#define ELFSH_EDITOR        " $1		>> vars.h
+EDITORSET="1"
 ;;
 
 --set-modpath*)
@@ -127,6 +135,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   Available variables :"
     echo
     echo "   --set-shell       : Set your UNIX shell path."
+    echo "   --set-editor      : Set your editor path."
     echo "   --set-modpath     : Set your ELFsh modules path."
     echo
     echo "   All options are disabled by default."
@@ -155,6 +164,10 @@ if [ "$SHELLSET" != "1" ]; then
     echo "#define ELFSH_SHELL      \"/bin/bash\""		>> vars.h
 fi
 
+if [ "$EDITORSET" != "1" ]; then
+    echo "#define ELFSH_EDITOR      \"emacs\""			>> vars.h
+fi
+
 if [ "$BUILDOP" != "1" ];  then
     echo "BUILDOP = -DM32"					>> config.h
 fi
@@ -165,6 +178,9 @@ echo  "LDASMOPT	= -lasm"		>> config.h
 
 # Now do the OS dependant configuration
 case `uname` in
+*BSD*)
+    echo "RANLIB  = ranlib"               >> config.h
+	;;
 
 SunOS*)
 
@@ -175,11 +191,13 @@ fi
 
     EXTRAOPT="$EXTRAOPT -lnsl -lsocket -lresolv"
     echo "EXTRAOPT = " $EXTRAOPT	  >> config.h
+    echo "RANLIB  = ranlib"               >> config.h
 
 	;;
 
 Linux*)
 
+    echo "RANLIB  = ranlib"               >> config.h
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
     echo  "DLOPT		= -ldl"       >> config.h
@@ -195,7 +213,12 @@ fi
 
 HP-UX*)
     echo "#define HPUX 1"		  >> libvars.h
+    echo "RANLIB  = ranlib"               >> config.h
     ;;
+IRIX*)
+    echo "#define IRIX 1" 		  >> libvars.h
+    echo "RANLIB  = /usr/bin/true"        >> config.h
+	;;
 
 *)
 
@@ -208,11 +231,9 @@ if [ "$ELFSHNET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
     echo "EXTRAOPT = " $EXTRAOPT		>> config.h
 fi
-
     ;;
 
 esac
-
 
 
 echo "##"							 > Makefile 
@@ -236,27 +257,22 @@ echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
 
 echo " "							>> Makefile
-echo "all     : world final modules tags"			>> Makefile
+echo "all     : world modules tags"				>> Makefile
 echo " "							>> Makefile
 
 echo "world   : "						>> Makefile
-echo "	@echo 'Builting libasm...' "				>> Makefile
+echo "	@echo 'Building libasm...' "				>> Makefile
 echo "	@cd libasm && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
 echo " "						       	>> Makefile
-echo "	@echo 'Builting libelfsh...' "				>> Makefile
+echo "	@echo 'Building libelfsh...' "				>> Makefile
 echo "	@cd libelfsh && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
 echo " "						       	>> Makefile
-echo "	@echo 'Builting libhashelfsh...' "			>> Makefile
-echo "	@cd libhash && \$(MAKE) -s "				>> Makefile
-echo "	@echo 'Libhash has been built successfully.' "		>> Makefile
-echo " "							>> Makefile
-
 
 if [ "$ELFSHNET" = "1" ]; then
 
-echo "	@echo 'Builting libdumpelfsh...' "			>> Makefile
+echo "	@echo 'Building libdumpelfsh...' "			>> Makefile
 echo "	@cd libdump && \$(MAKE) -s "				>> Makefile
 echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
 echo " "							>> Makefile
@@ -264,22 +280,36 @@ echo " "							>> Makefile
 
 fi
 
+echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
+echo "	@cd vm && \$(MAKE)			     	"       >> Makefile
+echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
+echo " "							>> Makefile
+
+echo "	@echo 'Building E2dbg' "				>> Makefile
+echo "	@cd e2dbg && \$(MAKE) all		     	"       >> Makefile
+echo "	@echo 'E2dbg has been built successfully.' "		>> Makefile
+echo " "							>> Makefile
+
+echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
 echo "	@echo 'Building ELFsh modules suite...' "		>> Makefile
 echo "	@cd modules && \$(MAKE) "				>> Makefile
 echo "	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
-echo "install : mod_install "					>> Makefile
+echo "install : all mod_install "				>> Makefile
 echo "	@cp vm/elfsh \$(BINPATH)/ "				>> Makefile
+echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
+echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
 echo "	@cp libasm/include/libasm.h \$(INCPATH)"		>> Makefile
 echo "	@cp libasm/include/libasm-i386.h \$(INCPATH) "		>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 755 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
+echo "	@chmod 755 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libelfsh.so "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)e2dbg.so "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
@@ -287,23 +317,8 @@ echo "	@chmod 755 \$(LIBPATH)libelfsh.a "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libasm.a "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libasm*.h "			>> Makefile
-echo "	@echo 'ELFsh, Libelfsh, and Libasm installed successfully .'"	>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Libelfsh, and Libasm installed successfully .'"	>> Makefile
 echo " "							>> Makefile 
-
-echo "final:					 	"	>> Makefile
-echo "	@echo 'Builting ELFsh ET_EXEC'			"	>> Makefile
-echo "	@cd vm && \$(MAKE)			     	"       >> Makefile
-echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
-echo " "							>> Makefile
-
-echo "e2dbg: world et_dyn modules tags			"	>> Makefile
-echo ""								>> Makefile
-
-echo "et_dyn:						"	>> Makefile
-echo "	@echo 'Builting ELFsh ET_DYN' "				>> Makefile
-echo "	@cd vm && \$(MAKE) et_dyn		     	"       >> Makefile
-echo "	@echo 'ELFsh ET_DYN has been built successfully.' "	>> Makefile
-echo " "							>> Makefile
 
 echo "mod_install: "						>> Makefile
 echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile
@@ -312,13 +327,14 @@ echo "	@chmod -R 755 \$(MODPATH) "				>> Makefile
 echo " "							>> Makefile
 
 echo "uninstall: "						>> Makefile
-echo "	rm -f \$(BINPATH)/elfsh "				>> Makefile
-echo "	rm -f \$(LIBPATH)/libelfsh* "				>> Makefile
-echo "	rm -f \$(LIBPATH)/e2dbg* "				>> Makefile
-echo "	rm -f \$(MODPATH) "					>> Makefile
-echo "	rm -f \$(MANPATH)/man1/elfsh.1 "			>> Makefile
-echo "	rm -f \$(LIBPATH)/libasm.a "				>> Makefile
-echo "	rm -f \$(INCPATH)/libasm*.h "				>> Makefile
+echo "	rm -f  \$(BINPATH)/elfsh "				>> Makefile
+echo "	rm -f  \$(BINPATH)/e2dbg "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
+echo "	rm -fr \$(MODPATH) "					>> Makefile
+echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
+echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
+echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
  
 
@@ -328,9 +344,9 @@ echo " "							>> Makefile
 echo "clean   : cleandoc "					>> Makefile
 echo "	@echo 'Cleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s clean "			>> Makefile
+echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libhash   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
@@ -339,9 +355,9 @@ echo " "							>> Makefile
 echo "fclean  : cleandoc "					>> Makefile
 echo "	@echo 'Fcleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libhash   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
@@ -357,10 +373,10 @@ echo " "							>> Makefile
 echo "tags    : "						>> Makefile
 echo "	@echo Doing tags ... "					>> Makefile
 echo "	@\$(ETAGS) vm/*.c vm/include/*.h libelfsh/*.c \\"	>> Makefile
-echo "	libelfsh/include/*.h libhash/*.c \\"			>> Makefile
-echo "	libhash/include/*.h libhash/*.c \\"			>> Makefile
-echo "	modules/*.c libdump/*.c \\"				>> Makefile
-echo "	libasm/src/*.c libasm/src/arch/ia32/*.c \\"		>> Makefile
+echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
+echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
+echo "	libasm/src/*.c libmalloc/include/*.h \\"		>> Makefile
+echo "  libasm/src/arch/ia32/*.c \\"				>> Makefile
 echo "	libasm/include/*.h \\"					>> Makefile
 echo "	libdump/include/*.h "					>> Makefile
 echo " "							>> Makefile
@@ -369,15 +385,17 @@ echo "info    : "						>> Makefile
 echo "	@echo '###############' Total '###############'"	>> Makefile
 echo "	wc -l vm/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
 echo "	vm/include/*.h modules/*.c libasm/src/*.c \\"		>> Makefile
-echo "  libasm/src/arch/ia32/*.c                         "      >> Makefile
+echo "  libasm/src/arch/ia32/*.c e2dbg/*.c e2dbg/include/*.h"   >> Makefile
 echo "	@echo '###############' Total w/o headers '###'"	>> Makefile
-echo "	wc -l vm/*.c libelfsh/*.c modules/*.c "			>> Makefile
+echo "	wc -l vm/*.c libelfsh/*.c modules/*.c e2dbg/*.c"	>> Makefile
 echo "	@echo '###############' Libelfsh only '#######'"	>> Makefile
 echo "	wc -l libelfsh/*.c "					>> Makefile
 echo "	@echo '###############' Libasm only ##########'"	>> Makefile
 echo "	wc -l libasm/src/*.c libasm/src/arch/ia32/*.c "		>> Makefile
 echo "	@echo '###############' VM only '#############'"	>> Makefile
 echo "	wc -l vm/*.c "						>> Makefile
+echo "	@echo '###############' E2DBG only '#############'"	>> Makefile
+echo "	wc -l e2dbg/*.c "				        >> Makefile
 echo "	@echo '###############' Modules only '########'"	>> Makefile
 echo "	wc -l modules/*.c "					>> Makefile
 echo " "							>> Makefile

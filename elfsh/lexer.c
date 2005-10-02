@@ -36,6 +36,7 @@ char		*vm_getln(char *ptr)
   char		*sav;
   char		logbuf[BUFSIZ];
 
+
   do
     {
       buf = world.curjob->io.input();
@@ -66,7 +67,9 @@ char		*vm_getln(char *ptr)
       if (!*sav || *sav == ELFSH_COMMENT_START)
 	{
 	  
-	    
+	  vm_log(sav);
+	  vm_log("\n");
+
 #if defined(USE_READLN)
           if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
 #endif
@@ -85,12 +88,12 @@ char		*vm_getln(char *ptr)
       
       if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
 	{
-          vm_output("\n"); 
+          vm_output_nolog("\n"); 
           
 #if defined(USE_READLN)
           /* avoid looping with readline */
           if (buf == NULL)
-	    return ((char *)ELFSH_VOID_INPUT); 
+	      return ((char *)ELFSH_VOID_INPUT); 
           break;
 #endif
 
@@ -161,6 +164,8 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
   char		logbuf[BUFSIZ];
 #endif
 
+  ELFSH_NOPROFILE_IN();
+
   XALLOC(argv, sizeof(char *) * (nbr + 2), NULL);
   argv[0] = argv[nbr + 1] = NULL;
   sav = buf;
@@ -204,7 +209,8 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
 #endif
 
   *argc = nbr + 1;
-  return (argv);
+
+  ELFSH_NOPROFILE_ROUT(argv);
 }
 
 

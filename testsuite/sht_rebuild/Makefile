@@ -10,10 +10,10 @@ include ../../config.h
 SRC	= sht_rebuild.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libhash -lhashelfsh
+LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm
 NAM	= sht_rebuilder
 RM	= rm -f 
-OPT	= -g3 -O2 -I../../libelfsh/include/ $(BITS)
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libasm/include/ $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

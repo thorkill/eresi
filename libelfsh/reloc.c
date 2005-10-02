@@ -229,7 +229,7 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
 			  "Unable to load reloc data", NULL);
       elfsh_endianize_relocs(s);
     }
-      
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 

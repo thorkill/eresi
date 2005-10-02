@@ -3,8 +3,8 @@
 **
 ** First remove functions for easy scripting
 **
-** Started      Nov 22 2003 mayhem
-
+** Started on Nov 22 2003 mayhem
+**
 */
 #include "elfsh.h"
 
@@ -19,11 +19,12 @@ int		cmd_remove()
   int		err;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Checks (needed because the command takes variable amount of params) */
   if (!world.curjob->curcmd->param[0] || !world.curjob->curcmd->param[1])
-    ELFSH_SETERROR("[elfsh:cmd_remove] Invalid parameters.\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", -1);
 
   /* Lookup object name */
   name = vm_lookup_string(world.curjob->curcmd->param[1]);
@@ -37,7 +38,8 @@ int		cmd_remove()
     {
       symtab = elfsh_get_symtab(world.curjob->current, NULL);
       if (!symtab)
-	ELFSH_SETERROR("[elfsh:cmd_remove] Cannot find symbol table.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot find symbol table", -1);
       symtab = world.curjob->current->secthash[ELFSH_SECTION_SYMTAB];
       err = elfsh_remove_symbol(symtab, name);
     }
@@ -48,7 +50,8 @@ int		cmd_remove()
 
   /* Error */
   else
-    ELFSH_SETERROR("[elfsh:cmd_remove] Unknown object type.\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unknown object type", -1);
 
   /* Report result */
   if (!world.state.vm_quiet)
@@ -58,5 +61,5 @@ int		cmd_remove()
 	       (err < 0 ? "failed" : "succesfull"));
       vm_output(logbuf);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
