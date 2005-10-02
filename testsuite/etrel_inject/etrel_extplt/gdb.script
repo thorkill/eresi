@@ -1,0 +1,12 @@
+
+file main
+directory ~/glibc-2.3.4/elf/
+directory ~/glibc-2.3.4/sysdeps/i386/
+b *0x4000660
+r
+display/1x $pc
+while 1
+stepi
+end
+
+quit

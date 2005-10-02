@@ -75,7 +75,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 	}
     }
 
-  /* Fixup all 0 lenght non-section-typed symbols */
+  /* Fixup all 0 length non-section-typed symbols */
   actual = symtab->data;
   for (index = 0; 
        index < symtab->shdr->sh_size / sizeof(elfsh_Sym); 
@@ -208,8 +208,8 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
     {
       
 #if __DEBUG_COPYPLT__
-      printf("[DEBUG_COPYPLT] Cannot find symbol at PLT OFFSET + %u (.plt + off = " XFMT " ) \n", 
-	     off, (elfsh_Addr) plt->shdr->sh_addr + off);
+      printf("[DEBUG_COPYPLT] Cannot find symbol at PLT OFFSET + %u (.plt + off = " XFMT " ) object %s \n", 
+	     off, (elfsh_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -217,8 +217,8 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
     }
 
 #if __DEBUG_COPYPLT__
-      printf("[DEBUG_COPYPLT] Found symbol [%s] for PLT OFFSET + %u (.plt + off = " XFMT " ) \n", 
-	     elfsh_get_dynsymbol_name(file, sym), off, (elfsh_Addr) plt->shdr->sh_addr + off);
+      printf("[DEBUG_COPYPLT] Found symbol [%s] for PLT OFFSET + %u (.plt + off = " XFMT " ) object %s\n", 
+	     elfsh_get_dynsymbol_name(file, sym), off, (elfsh_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
 
@@ -270,6 +270,4 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 

@@ -246,6 +246,8 @@ int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode)
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   struct s_buf		buf;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
     
   /*
     for each block, insert a new STT_BLOCK symbol

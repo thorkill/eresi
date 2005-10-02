@@ -50,6 +50,7 @@ int	elfsh_default_plthandler(elfshobj_t *null,
 				 elfsh_Sym  *null2, 
 				 elfsh_Addr null3)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
@@ -70,6 +71,7 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 				 elfsh_Addr   null4,
 				 elfshsect_t *null5)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
@@ -79,6 +81,7 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   elfsh_Sym    *null2,
 				   elfsh_Addr	null3)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
@@ -86,6 +89,7 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 int	elfsh_default_breakhandler(elfshobj_t   *null,
 				   elfshbp_t	*null3)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
@@ -590,10 +594,10 @@ void	elfsh_setup_hooks()
 
   elfsh_register_relhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			 ELFSH_OS_LINUX, elfsh_relocate_ia32);
-
+  
   elfsh_register_altplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			    ELFSH_OS_BEOS, elfsh_void_altplthandler);  
-
+  
 
   /***********************************/
   /* Now register break points hooks */
@@ -609,6 +613,16 @@ void	elfsh_setup_hooks()
   elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
 			   ELFSH_OS_OPENBSD, elfsh_break_ia32);
   elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_SOLARIS, elfsh_break_ia32);
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_LINUX, elfsh_break_ia32);
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_FREEBSD, elfsh_break_ia32);
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_NETBSD, elfsh_break_ia32);
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_OPENBSD, elfsh_break_ia32);
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			   ELFSH_OS_SOLARIS, elfsh_break_ia32);
 
   
@@ -695,6 +709,15 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
     default:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_ERROR));
     }
+}
+
+
+/* For now, always return the type of a userland process */
+/* Need to be extended for the kernel memory type */
+u_char		elfsh_get_hosttype(elfshobj_t *file)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (E2DBG_HOST_PROC));
 }
 
 

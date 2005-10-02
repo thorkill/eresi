@@ -14,7 +14,7 @@ int		cmd_quit()
   int		index;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do not unload files if we were sourcing a script */
   if (world.curjob->sourced == 0)
@@ -25,7 +25,8 @@ int		cmd_quit()
 	  if (!world.state.vm_quiet)
 	    {
 	      snprintf(logbuf, BUFSIZ - 1, " [*] Unloading object %u (%s) %c \n", 
-		       index, cur->name, (world.curjob->current == cur ? '*' : ' '));
+		       index, cur->name, 
+		       (world.curjob->current == cur ? '*' : ' '));
 	      vm_output(logbuf);
 	    }
 	  tmp = cur->next;
@@ -33,11 +34,13 @@ int		cmd_quit()
 	}
     }
 
+  /* The quit message */
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
 	   vm_get_mode_name(), 
 	   ELFSH_VERSION);
   vm_output(logbuf);
   
+  /* Now the ugly code depending on the compilation options */
 #if defined(ELFSHNET)
   if (world.curjob->io.type == ELFSH_IONET)
     {
@@ -54,11 +57,16 @@ int		cmd_quit()
 #if defined(USE_READLN)
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-	    rl_callback_handler_remove();
+	    {
+	      printf("Writting history ...\n");
+	      write_history("/tmp/elfsh_history");
+	      rl_callback_handler_remove();
+	    }
 #endif
+
 	  vm_exit(0);
 	}
     }
   
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

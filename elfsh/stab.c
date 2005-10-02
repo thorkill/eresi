@@ -22,7 +22,7 @@ int			cmd_stab()
   u_int			typenum;
   char			buff[256];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   entry = elfsh_get_stab(world.curjob->current, &num);
   if (entry == NULL)
@@ -44,7 +44,7 @@ int			cmd_stab()
 	vm_output(buff);
     }
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

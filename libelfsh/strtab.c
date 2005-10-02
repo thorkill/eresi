@@ -14,6 +14,8 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
   elfshsect_t	*strtab;
   elfsh_Shdr	hdr;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Sanity checks */
   if (file == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -40,6 +42,8 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
 elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 {
   elfshsect_t	*s;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL)
@@ -84,6 +88,9 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
   elfshsect_t	*sect;
   u_int		len;
   u_int		index;
+  int		ret;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || name == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -99,7 +106,12 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
       if (*(char *) sect->data + index == 0x00)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(sect, name, len + 1)));
+  ret = elfsh_append_data_to_section(sect, name, len + 1);
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Failed to append data to strtab", -1);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret); 
 }
 
 
@@ -107,7 +119,10 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
+  int		ret;
   
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (file == NULL || name == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
@@ -115,19 +130,59 @@ int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
   if (sect == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find DYNSTR by name", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(sect, name, strlen(name) + 1)));
+  ret = elfsh_append_data_to_section(sect, name, strlen(name) + 1);
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Failed to append data to dynstr", -1);
+  else
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
-/* Add a section name in .shstrtab */
+/* Add a section name in section string table */
 int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 {
+  int		ret;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (name == NULL || file == NULL || 
       file->secthash[ELFSH_SECTION_SHSTRTAB] == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);  
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_append_data_to_section(file->secthash[ELFSH_SECTION_SHSTRTAB], 
-				       name, strlen(name) + 1)));
+
+  ret = elfsh_append_data_to_section(file->secthash[ELFSH_SECTION_SHSTRTAB], 
+				     name, strlen(name) + 1);
+
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Failed to append data to shstrtab", -1);
+  else
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+/* Add a section name in runtime section string table */
+int		elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
+{
+  int		ret;
+  char		*str;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (name == NULL || file == NULL || 
+      file->secthash[ELFSH_SECTION_RSHSTRTAB] == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);  
+
+  ret = elfsh_append_data_to_section(file->secthash[ELFSH_SECTION_RSHSTRTAB],
+				     name, strlen(name) + 1);
+
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Failed to append data to rshstrtab", -1);
+  else
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

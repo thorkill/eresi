@@ -76,7 +76,7 @@ int		main(int argc, char **argv)
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 0, 0, sizeof(sc), 0, 0, 0, 0);
 
   /* Insert the section */
-  if (elfsh_insert_mapped_section(file, new, hdr, sc, ELFSH_CODE_INJECTION) < 0)
+  if (elfsh_insert_mapped_section(file, new, hdr, sc, ELFSH_CODE_INJECTION, 0) < 0)
     goto err;
 
   /* Retreive it again since the file offset and the vaddr may have been updated during insertion */
@@ -87,7 +87,7 @@ int		main(int argc, char **argv)
   /* Hijack puts */
   ret = elfsh_hijack_function_by_name(file,
                                       ELFSH_HIJACK_TYPE_PLT,
-                                      "puts", new->shdr->sh_addr);
+                                      "puts", new->shdr->sh_addr, NULL);
   if (ret < 0)
     goto err;
 

@@ -215,7 +215,7 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
   elfsh_Dyn	*dyn;
   u_int		nbr;
   u_int		idx;
-
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   dyn = elfsh_get_dynamic(file, &nbr);
   if (dyn == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -224,7 +224,7 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
     if (elfsh_shiftable_dynent(dyn + idx))
       elfsh_set_dynentry_val(dyn + idx,
 			     elfsh_get_dynentry_val(dyn + idx) + size);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 

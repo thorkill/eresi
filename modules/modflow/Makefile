@@ -17,14 +17,13 @@ SRCS = modflow.c	\
 	libbtree.c
 
 OBJS = $(SRCS:.c=.o)
-
 NAME = modflow.so
 
-CFLAGS = -Wall -Werror -ggdb -I../../vm/include -I../../libdump/include/ \
+CFLAGS = -Wall -Werror -g3 -fPIC -rdynamic \
+	-I../../vm/include -I../../libdump/include/ \
 	-I../../libelfsh/include -I../../libhash/include \
-	-I../../libdump/include \
-	-fPIC -rdynamic -DELFSH_INTERN $(BITS) \
-	-I../../libasm/include/
+	-I../../libdump/include -I../../e2dbg/include \
+	-I../../libasm/include/ -DELFSH_INTERN $(BITS)
 
 RM = rm -f
 CC = gcc

@@ -43,7 +43,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   copy->nbrm  = file->nbrm;
   copy->pending = file->pending;
   copy->linkmap = file->linkmap;
-  copy->base = file->base;
+  copy->rhdr.base = file->rhdr.base;
   
   /* Arrange sectlist. Partially ripped from elfsh_add_section() . */
   for (range = 0, cur = file->sectlist; cur; cur = cur->next, range++)
@@ -99,6 +99,8 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 	  copy->secthash[cnt] = new;
       
     }
+
+  /* XXX-runtimelist to copy as well */
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (copy));
 }

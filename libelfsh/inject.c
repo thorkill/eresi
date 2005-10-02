@@ -3,7 +3,6 @@
 **
 ** Contains all section injection API that can be used directly by the user
 **
-**
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 **
 */
@@ -483,10 +482,12 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   u_int		rsize;
   char		*rdata;
   elfshsect_t	*bss;
+  int		range;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Grab the BSS */
+  /*
   bss = elfsh_get_section_by_name(file,
 				  ELFSH_SECTION_NAME_BSS,
 				  NULL, NULL, NULL);
@@ -495,7 +496,8 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 		      "Cannot find ondisk BSS", -1);
   while (bss->next)
     bss = bss->next;
-  
+  */
+
   /* Pad the new section if needed */
   if (mod && (hdr.sh_size % mod))
     {
@@ -523,8 +525,6 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   /* Create and inject the new PT_LOAD in runtime */
   phdr = elfsh_create_phdr(PT_LOAD, 0, rsize, mod);
 
-  /* XXX: make additional check for it to work in non-runtime _static_ binary injection */
-  /* Runtime static mapping should already work with this */
   /* In runtime static binary injection, we need a safe p_vaddr each time we call this function */
   phdr.p_flags = elfsh_set_phdr_prot(mode);
   phdr.p_vaddr = elfsh_runtime_map(&phdr); 
@@ -534,48 +534,30 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 
   /* Copy the data in memory */
 #if	__DEBUG_RUNTIME__	      
-  printf("Writing data (%p) in memory at addr %08X (pid = %hu) \n", 
+  printf("[DEBUG_RUNTIME] Writing data (%p) in memory at addr %08X (pid = %hu) \n", 
 	 data, phdr.p_vaddr, getpid());
 #endif
-
+  
 
   memcpy((void *) phdr.p_vaddr, data, rsize);
-#if	__DEBUG_RUNTIME__
-  printf("Data written\n");
-#endif
 
   /* Modify some ondisk information */
   phdr.p_paddr  = phdr.p_vaddr;
   hdr.sh_addr   = phdr.p_vaddr;
-  hdr.sh_offset = bss->shdr->sh_offset + bss->shdr->sh_size;
+  //hdr.sh_offset = bss->shdr->sh_offset + bss->shdr->sh_size;
 
 #if	__DEBUG_RUNTIME__	      
   printf("[DEBUG_RUNTIME] Runtime injection of %s section data ! \n", sect->name);
 #endif
 
-  /* Synchronize the ondisk perspective */
-  if (elfsh_insert_shdr(file, hdr, bss->index + 1, sect->name, 1) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot insert shdr", -1);
 
-  if (elfsh_add_section(file, sect, bss->index + 1,
-			data, ELFSH_SHIFTING_PARTIAL) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot add section", -1);
-
-  /* Inject the SECT symbol */
-  if (elfsh_insert_sectsym(file, sect) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot insert sectsym", -1);
 
   /* Insert the new program header in the runtime PHDR */
   /* XXX: insert in real PHT if doing non-runtime _static file_ injection */
   /* Should already work on runtime static binary modification */
   /* Use elfsh_insert_phdr in this static case */
   /* After modification, should be OK at least on x86 */
-  phdr.p_offset = sect->shdr->sh_offset;
-
-  
+  //phdr.p_offset = sect->shdr->sh_offset;  
   sect->phdr = elfsh_insert_runtime_phdr(file, &phdr); 
   if (!sect->phdr)
     {
@@ -583,8 +565,29 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			    "Cannot insert RPHT entry", -1);
     }      
+
+  /* Synchronize the ondisk perspective */
+  range = elfsh_insert_runtime_shdr(file, hdr, file->rhdr.rshtnbr, sect->name, 1);
+  if (range < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot insert shdr", -1);
+
+  if (elfsh_add_runtime_section(file, sect, range, data) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot add section", -1);
   
-  
+  /* Inject the SECT symbol */
+  if (elfsh_insert_sectsym(file, sect) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot insert sectsym", -1);
+
+#if	__DEBUG_RUNTIME__	      
+  printf("[DEBUG_RUNTIME] Runtime injected %s at addr " XFMT "! \n", 
+	 sect->name, sect->shdr->sh_addr);
+#endif
+
+  /* Always force file offset 0 for runtime sections */
+  sect->shdr->sh_offset = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
 

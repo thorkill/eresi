@@ -1,8 +1,10 @@
 
 The release is WORK IN PROGRESS
 
-This is not intended to be published for now.
-
-If you have a source version, please keep it for you and do not distribute it.
+This is the version first public release of 
+libasm in source code. The source is not 
+perfect and we know about it. However it is
+better than a closed source library.
 
 -- The ELF shell crew
+

@@ -1,0 +1,35 @@
+#!/usr/bin/elfsh
+
+
+print Number of parameters : $#
+print Param 1 : $1
+
+cmp 2 $#
+jne bad
+
+print Parameter 1  = $1 
+
+b $1
+display 1 got $1
+display 1 print Reached breakpoint !
+
+cont
+step
+
+set $idx 0
+
+loop:
+cont
+add $idx 1
+cmp $idx 5
+je  end
+jmp loop
+
+
+end:
+print Stepped 5 instructions ! 
+quit
+
+bad:
+print You need a parameter
+quit

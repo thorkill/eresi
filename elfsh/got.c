@@ -18,12 +18,12 @@ int		cmd_got()
   int		index2;
   elfsh_SAddr	offset;
   char		*name;
-  char		off[30];
+  char		off[50];
   char		buff[256];
   char		logbuf[BUFSIZ];
   void		*data;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get the regx and fetch the GOT data */
   FIRSTREGX(tmp);
@@ -31,7 +31,6 @@ int		cmd_got()
   index2 = 0;
   if ((got = elfsh_get_got_by_idx(world.curjob->current, index2, &size)) == NULL)
     RET(-1);
-
   
   /* Loop on all .got */
   for (index2 = 0; got; index2++)
@@ -52,25 +51,29 @@ int		cmd_got()
 	  name = vm_resolve(world.curjob->current, *((elfsh_Addr *) data + index), &offset);
 
 	  if (off != NULL)
-	    snprintf(off, sizeof(off), " %c %u", (offset < 0 ? '-' : '+'), 
-		     (u_int) (offset > 0 ? offset : offset - offset - offset));
+	    snprintf(off, sizeof(off), " %s %s", 
+		     vm_colorstr((offset < 0 ? "-" : "+")), 
+		     vm_colornumber("%u", (u_int) (offset > 0 ? offset : offset - offset - offset)));
 
-	  snprintf(buff, sizeof(buff), XFMT ": [%u] " XFMT " \t <%s%s>\n", 
-		   got->shdr->sh_addr + (index * sizeof(elfsh_Addr)),
-		   index, (elfsh_Addr) ((elfsh_Addr *) data)[index], (name != NULL ? name : "?"), 
+
+	  snprintf(buff, sizeof(buff), "%s : %s %s \t <%s%s>\n", 
+		   vm_coloraddress(XFMT, got->shdr->sh_addr + (index * sizeof(elfsh_Addr))),
+		   vm_colornumber("[%02u]", index), 
+		   vm_coloraddress(XFMT, (elfsh_Addr) ((elfsh_Addr *) data)[index]), 
+		   (name != NULL ? vm_colorstr(name) : vm_colorwarn("?")), 
 		   (off[0] && name && offset ? off : ""));
 
 	  if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
 	    vm_output(buff);
 
+	  vm_endline();
 	}
       
       got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, &size);
       vm_output("\n");
-
     }
 
-  return (0); 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 
 

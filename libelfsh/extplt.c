@@ -42,12 +42,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 		      "Unable to find PLT relocation table", -1);
   relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELGOT, 0, 0, 0);
   if (!relgot)
-    {
-      relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELDYN, 0, 0, 0);
-      if (!relgot)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Unable to find GOT relocation table", -1);
-    }
+    relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELDYN, 0, 0, 0);
 
   /* Copy a double sized .dynsym somewhere else */
   new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
@@ -90,23 +85,26 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfsh_set_section_link(file->secthash[ELFSH_SECTION_DYNSYM]->shdr, new->index);
   elfsh_set_section_link(new->shdr, file->secthash[ELFSH_SECTION_DYNSYM]->index);
   
-  /* Same for .rel.got */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELGOT, NULL,
-                             ELFSH_DATA_INJECTION, relgot->shdr->sh_size,
-                             sizeof(elfsh_Addr));
-  if (!new)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unable to inject ALTRELGOT", -1);
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(relgot), relgot->shdr->sh_size);
-  dynent = elfsh_get_dynamic_entry_by_type(file, DT_REL);
-  if (!dynent)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  /* Same for .rel.got, if relgot is NULL then there is no .rel.got, its not an error */
+  if (relgot)
+    {
+      new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELGOT, NULL,
+				 ELFSH_DATA_INJECTION, relgot->shdr->sh_size,
+				 sizeof(elfsh_Addr));
+      if (!new)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to inject ALTRELGOT", -1);
+      memcpy(elfsh_get_raw(new), elfsh_get_raw(relgot), relgot->shdr->sh_size);
+      dynent = elfsh_get_dynamic_entry_by_type(file, DT_REL);
+      if (!dynent)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get DT_REL", -1);
-  elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
-  new->curend = relgot->shdr->sh_size;
-  new->shdr->sh_type = relgot->shdr->sh_type;
-  new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
-  
+      elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
+      new->curend = relgot->shdr->sh_size;
+      new->shdr->sh_type = relgot->shdr->sh_type;
+      new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
+    }
+
   /* Same for .rel.plt */
   new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELPLT, NULL,
 			     ELFSH_DATA_INJECTION, relplt->shdr->sh_size * 2, 

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+../../../vm/elfsh -f fake_aout -sym 'legit|hook'
+./relinject.esh > ./relinject.out
+grep CFLOW relinject.out
+../../../vm/elfsh -f fake_aout -D legit_func%5
+exit

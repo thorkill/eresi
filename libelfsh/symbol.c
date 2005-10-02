@@ -151,7 +151,8 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
     *num =
       file->secthash[ELFSH_SECTION_SYMTAB]->curend / sizeof(elfsh_Sym);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_SYMTAB]->data));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (file->secthash[ELFSH_SECTION_SYMTAB]->data));
 }
 
 
@@ -185,7 +186,7 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
 
   /* handle dynamic case */
   if (elfsh_is_debug_mode())
-    value -= file->base;
+    value -= file->rhdr.base;
 
   /* If there is no symtab, resolve using SHT */
   if (elfsh_get_symtab(file, &num) == NULL)
@@ -261,6 +262,8 @@ void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  //printf("Calling shift usual syms ! \n");
+
   /* Change _end if necessary (solaris) */
   end = elfsh_get_dynsymbol_by_name(sect->parent, "_end");
   if (end != NULL && sym->st_value + sym->st_size > end->st_value)
@@ -278,7 +281,6 @@ void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
     }
 
   /* Change _edata if necessary (solaris) */
-  if (elfsh_get_ostype(sect->parent) == ELFSH_OS_SOLARIS)
   if (elfsh_get_ostype(sect->parent) == ELFSH_OS_SOLARIS)
     {
       end = elfsh_get_dynsymbol_by_name(sect->parent, "_edata");
@@ -436,7 +438,8 @@ elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
 		      "Cannot retreive SYMTAB", NULL);
 
   data = file->secthash[ELFSH_SECTION_SYMTAB];
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
 }
 
 

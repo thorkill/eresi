@@ -11,37 +11,35 @@ int		vm_is_loaded(char *name)
 {
   elfshobj_t	*obj;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!name)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!world.curjob)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (!world.curjob->current)
-    return (0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  obj = world.curjob->current;
-  
-  while(obj)
+  obj = world.curjob->list;
+  while (obj)
     {
       if (!strcmp(name, obj->name))
-	return (1);
-      
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
       obj = obj->next;
     }
 
   obj = world.shared;
-  
-  while(obj)
+  while (obj)
     {
       if (!strcmp(name, obj->name))
-	return (1);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
       
       obj = obj->next;
     }
 
-
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -53,19 +51,17 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
   char		logbuf[BUFSIZ];
   char		*timec;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   if (!name)
-    ELFSH_SETERROR("[elfsh:load_file] invalid argument\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid argument", -1);
 
   /* Map the standard ELF object */
   new = elfsh_map_obj(name);
   if (NULL == new)
-    {
-      snprintf(logbuf, BUFSIZ - 1, " [!] Cannot load object ");
-      vm_output(logbuf);
-      PERROR_RET(name, -1);
-    }
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot load object", -1);
 
   /* Print a msg if not in quiet mode */
   new->loadtime = time(&new->loadtime);
@@ -73,23 +69,26 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
     {
       timec = ctime(&new->loadtime);
       timec[strlen(timec) - 1] = '\0';
-      snprintf(logbuf, BUFSIZ - 1, " [*] %s - New object %s loaded\n",
+      snprintf(logbuf, BUFSIZ - 1, " [*] %s - New object loaded : %s\n",
 	      timec , name);
       vm_output(logbuf);
     }
 
   /* Set base address */
-  new->base = base;
+  new->rhdr.base = base;
 
   /* Set linkmap address */
   new->linkmap = lm;
 
   /* Add the object to the list of opened objects */
   new->id = ++world.state.lastid;
+
   world.curjob->current = new;
+
   tmp = hash_get(&vars_hash, "!");
   if (!tmp)
-    ELFSH_SETERROR("[elfsh:cmd_load] TROUBLE : Last loaded file inexistant\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "TROUBLE : Last loaded file inexistant", -1);
   tmp->immed_val.word = new->id;
 
   /* Support shared objects */
@@ -105,11 +104,13 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
       world.curjob->list = new;
     }
 
+
   /* Add an entry into the loaded files hashtable */
   hash_add(&file_hash, new->name, (void *) new);
-
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
 
 
 /* Insert an object in the list of opened elfsh descriptors */
@@ -120,7 +121,7 @@ int		cmd_load()
   int		was_dynamic = 0;
   int		ret; 
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_is_debug_mode())
     {
@@ -128,15 +129,13 @@ int		cmd_load()
       elfsh_set_static_mode();
     }
 
-  /* Cannot use vm_lookup_file() here because the file is not yet loaded */
+  /* We cannot use vm_lookup_file() here because the file is not yet loaded */
   str = world.curjob->curcmd->param[0];
-
   if (*str == ELFSH_VARPREF)
     {
       str = vm_lookup_var(++str);
       if (!str)
-
-      tmp = hash_get(&vars_hash, str);
+	tmp = hash_get(&vars_hash, str);
       if (!tmp || tmp->type != ELFSH_OBJSTR)
 	goto err;
       str = tmp->immed_val.str;
@@ -146,22 +145,25 @@ int		cmd_load()
   ret = vm_load_file(str, NULL, NULL);
   vm_output("\n");
 
+  /* Restore dynamic mode */
   if (was_dynamic)
     {
-      if (world.curjob->current->linkmap)
+      if (world.curjob->current && world.curjob->current->linkmap)
 	elfsh_set_debug_mode();
       else 
-	vm_output("\n [!!] Loaded file is not the linkmap, switching to STATIC mode\n\n");
+	vm_output("\n [!] Loaded file not present in linkmap"
+		  ", switching to STATIC mode\n\n");
     }
   else 
       elfsh_set_static_mode();
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 
-  return (ret);
-
+  /* We were not able to resolve the parameter */
  err:
   if (was_dynamic)
     elfsh_set_debug_mode();
-  return (-1);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unknown file to load", (-1));
 }
 
 

@@ -11,29 +11,35 @@
 elfshconst_t    *vm_getrelascii(elfshobj_t *file)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (elfsh_get_arch(file->hdr))
     {
     case EM_386:
       /* XXX: case EM_486: */
-      return (elfsh_rel_type_i386);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_rel_type_i386));
     case EM_SPARC:
     case EM_SPARC32PLUS:
     case EM_SPARCV9:
-      return (elfsh_rel_type_sparc);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_rel_type_sparc));
     case EM_ALPHA:
 #if EM_ALPHA != EM_ALPHA_EXP
     case EM_ALPHA_EXP:
 #endif
-      return (elfsh_rel_type_alpha);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_rel_type_alpha));
     case EM_IA_64:
-      return (elfsh_rel_type_ia64);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_rel_type_ia64));
     case EM_MIPS:
     case EM_MIPS_RS3_LE:
-      return (elfsh_rel_type_mips);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_rel_type_mips));
     default:
-      return (NULL);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Relocations ASCII tables not available", (NULL));
     }
 }
 
@@ -42,30 +48,30 @@ elfshconst_t    *vm_getrelascii(elfshobj_t *file)
 int           vm_getmaxrelnbr(elfshobj_t *file)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (elfsh_get_arch(file->hdr))
     {
     case EM_386:
       /* XXX: case EM_486: */
-      return (ELFSH_RELOC_i386_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_i386_MAX));
     case EM_SPARC:
     case EM_SPARC32PLUS:
-      return (ELFSH_RELOC_SPARC_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_SPARC_MAX));
     case EM_SPARCV9:
-      return (ELFSH_RELOC_SPARC64_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_SPARC64_MAX));
     case EM_ALPHA:
 #if EM_ALPHA != EM_ALPHA_EXP
     case EM_ALPHA_EXP:
 #endif
-      return (ELFSH_RELOC_ALPHA_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_ALPHA_MAX));
     case EM_IA_64:
-      return (ELFSH_RELOC_IA64_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_IA64_MAX));
     case EM_MIPS:
     case EM_MIPS_RS3_LE:
-      return (ELFSH_RELOC_MIPS_MAX);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_RELOC_MIPS_MAX));
     default:
-      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown architecture", (-1));
     }
 }
 
@@ -89,7 +95,7 @@ int		cmd_rel()
   char		logbuf[BUFSIZ];
   void		*data;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   sect = elfsh_get_reloc(world.curjob->current, 0, &size);
@@ -120,8 +126,8 @@ int		cmd_rel()
 	    {
 
 	      rel = (void *) ((elfsh_Rela *) data + index);
-	      snprintf(addstr, sizeof(addstr), "add[%08u]",
-		       (unsigned int) ((elfsh_Rela *) rel)->r_addend);
+	      snprintf(addstr, sizeof(addstr), "add[%s]",
+		       vm_colornumber("%08u", (unsigned int) ((elfsh_Rela *) rel)->r_addend));
 	    }
 	  else
 	    {
@@ -143,24 +149,33 @@ int		cmd_rel()
 	  /* Output is different depending on the quiet flag */
 	  if (!world.state.vm_quiet)
 	    snprintf(buff, sizeof(buff),
-		     " [%03u] %-15s " XFMT " sym[%03u] : %-30s %s => %s\n",
-		     index, typeshort,
-		     elfsh_get_reloffset(rel),
-		     elfsh_get_relsym(rel),
-		     (name != NULL ? name : "<?>"), addstr, type);
+		     " [%s] %s %s %s%s%s : %s %s => %s\n",
+		     vm_colornumber("%03u", index), 
+		     vm_colortypestr_fmt("%-15s", typeshort),
+		     vm_coloraddress(XFMT, elfsh_get_reloffset(rel)),
+		     vm_colorfieldstr("sym["),
+		     vm_colornumber("%03u", elfsh_get_relsym(rel)),
+		     vm_colorfieldstr("]"),
+		     (name != NULL ? vm_colorstr_fmt("%-30s", name) : vm_colorwarn_fmt("%-30s", "<?>")), addstr, 
+		     vm_colortypestr(type));
 	  else
 	    snprintf(buff, sizeof(buff),
-		     " [%03u] %-15s " XFMT " sym[%03u] : %-22s %s\n",
-		     index, typeshort,
-		     elfsh_get_reloffset(rel),
-		     elfsh_get_relsym(rel),
-		     (name != NULL ? name : "<?>"),
+		     " [%s] %s %s %s%s%s : %s %s\n",
+		     vm_colornumber("%03u", index), 
+		     vm_colortypestr_fmt("%-15s", typeshort),
+		     vm_coloraddress(XFMT, elfsh_get_reloffset(rel)),
+		     vm_colorfieldstr("sym["),
+		     vm_colornumber("%03u", elfsh_get_relsym(rel)),
+		     vm_colorfieldstr("]"),
+		     (name != NULL ? vm_colorstr_fmt("%-22s", name) : vm_colorwarn_fmt("%-22s", "<?>")),
 		     addstr);
 
 	  /* Print it if it matchs the regex */
 	  if (NULL == tmp || (tmp != NULL && name != NULL &&
 			      NULL == regexec(tmp, buff, 0, 0, 0)))
 	    vm_output(buff);
+	  
+	  vm_endline();
 	}
       
        sect = elfsh_get_reloc(world.curjob->current, index2 + 1, &size);
@@ -168,5 +183,5 @@ int		cmd_rel()
     }
 
   vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

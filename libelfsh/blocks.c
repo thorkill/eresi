@@ -94,7 +94,8 @@ int			elfsh_sort_blocks(elfshobj_t *file)
 
   /* Sanity checks */
   if (!file->scanned && elfsh_scan_blocks(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"????", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Failed to scan blocks", -1);
   
   /* Sort block for each executable section, O(cn²) */
   for (s = file->sectlist; s; s = s->next)
@@ -170,7 +171,8 @@ elfshblock_t	*elfsh_get_block_by_addr(elfshobj_t *file, elfsh_Addr addr)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file->scanned && !elfsh_scan_blocks(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "????", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Failed to get scanned blocks", NULL);
 
   for (sct = file->sectlist; sct; sct = sct->next)
     for (blk = elfsh_get_raw(sct); blk; blk = blk->next)

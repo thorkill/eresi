@@ -1,0 +1,12 @@
+#!../../../vm/elfsh
+load myputs.o
+switch 1
+mode dynamic
+profile
+profile
+reladd 1 12
+profile
+#redir puts myputs
+quit
+
+

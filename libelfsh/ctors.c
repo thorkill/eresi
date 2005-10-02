@@ -59,6 +59,7 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
   u_int		nbr;
   u_int		idx;
   elfsh_Addr	*addr;
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ctors = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_CTORS, 
 				  NULL, NULL, &nbr);
@@ -72,7 +73,7 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
       if (*addr && *addr != ELFSH_END_CTORS)
 	*addr += size;
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
@@ -151,7 +152,8 @@ elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
   ctors = elfsh_get_ctors(file, &nbr);
   sym = elfsh_get_metasym_by_name(file, name);
   if (sym == NULL || ctors == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "????", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to find symbol with this name", NULL);
 
   /* Find the entry */
   for (idx = 0; idx < nbr; idx++)

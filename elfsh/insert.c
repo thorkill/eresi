@@ -22,19 +22,18 @@ int		cmd_insert()
   u_int		size;
   char		*name;
   char		type;
-  int		err;
   elfsh_Word	ptype;
   elfsh_Addr	val;
   u_int		modulo;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Checks (needed because the command takes variable amount of params) */
   if (!world.curjob->curcmd->param[0] || !world.curjob->curcmd->param[1] || 
       !world.curjob->curcmd->param[2])
-    ELFSH_SETERROR("[elfsh:cmd_insert] Invalid parameters.\n", -1);
-  err = 0;
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", -1);
 
   /* Lookup 2nd parameter depending on first parameter */
   if (strcmp(world.curjob->curcmd->param[0], "phdr") ||
@@ -42,7 +41,8 @@ int		cmd_insert()
     {
       obj = vm_lookup_param(world.curjob->curcmd->param[1], 1);
       if (!obj || obj->type != ELFSH_OBJSTR)
-	ELFSH_SETERROR("[elfsh:cmd_insert] Invalid object name.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid object name", -1);
       name = (obj->immed ? obj->immed_val.str : 
 	      obj->get_name(obj->root, obj->parent));
       ptype = 0;
@@ -51,7 +51,8 @@ int		cmd_insert()
     {
       obj = vm_lookup_param(world.curjob->curcmd->param[1], 1);
       if (!obj || (obj->type != ELFSH_OBJLONG && obj->type != ELFSH_OBJINT))
-	ELFSH_SETERROR("[elfsh:cmd_insert] Invalid phdr type.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid phdr type", -1);
       ptype = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       name = NULL;
     }
@@ -61,7 +62,8 @@ int		cmd_insert()
     {
       obj = vm_lookup_param(world.curjob->curcmd->param[3], 1);
       if (!obj || (obj->type != ELFSH_OBJINT && obj->type != ELFSH_OBJLONG))
-	ELFSH_SETERROR("[elfsh:cmd_insert] Invalid object size.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid object size", -1);
       size = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
     }
   else
@@ -82,11 +84,14 @@ int		cmd_insert()
 	      !strcmp(world.curjob->curcmd->param[2], "unmap") ?
 	      ELFSH_UNMAPPED_INJECTION : ELFSH_UNKNOWN_INJECTION);
       if (type == ELFSH_UNKNOWN_INJECTION)
-	ELFSH_SETERROR("[elfsh:cmd_insert] Unknown injection type.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unknown injection type", -1);
       sct = elfsh_insert_section(world.curjob->current, name, 
 				 NULL, type, size, modulo);
       if (!sct)
-	err = -1;
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Unable to insert new section", -1);
+
     }
   
   /* Insert a symbol after looking up symbol value */
@@ -95,16 +100,21 @@ int		cmd_insert()
     {
       obj = vm_lookup_param(world.curjob->curcmd->param[2], 1);
       if (!obj || (obj->type != ELFSH_OBJLONG && obj->type != ELFSH_OBJINT))
-	ELFSH_SETERROR("[elfsh:cmd_insert] Invalid symbol value.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid symbol value", -1);
 
       val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       if (!elfsh_get_symtab(world.curjob->current, NULL))
-	ELFSH_SETERROR("[elfsh:cmd_insert] Cannot retreive symbol table.\n",
-		       -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot retreive symbol table", -1);
 
       sym = elfsh_create_symbol(val, size, 0, 0, 0, 0);
-      err = elfsh_insert_symbol(world.curjob->current->secthash[ELFSH_SECTION_SYMTAB],
-				&sym, name);
+      if (elfsh_insert_symbol(world.curjob->current->secthash[ELFSH_SECTION_SYMTAB],
+			      &sym, name) < 0)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Cannot insert symbol", -1);
+
+
     }
 
   /* Insert PHT entries */
@@ -115,7 +125,8 @@ int		cmd_insert()
 
       obj = vm_lookup_param(world.curjob->curcmd->param[2], 1);
       if (!obj || (obj->type != ELFSH_OBJLONG && obj->type != ELFSH_OBJINT))
-	ELFSH_SETERROR("[elfsh:cmd_insert] Invalid PHDR base address.\n", -1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Invalid PHDR base address", -1);
       val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
 
       // type, addr, size, alignment 
@@ -123,24 +134,26 @@ int		cmd_insert()
       if (!strcmp(world.curjob->curcmd->param[0], "phdr"))
 	{
 	  if (NULL == elfsh_insert_phdr(world.curjob->current, &phdr))
-	    err = -1;
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Unable to insert new PHDR", -1);
 	}
       else if (NULL == elfsh_insert_runtime_phdr(world.curjob->current, &phdr))
-	err = -1;
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unable to insert new runtime PHDR", -1);
     }
   
   /* Error */
   else
-    ELFSH_SETERROR("[elfsh:cmd_insert] Unknown object type.\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unknown object type", -1);
 
   /* Report result */
   if (!world.state.vm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1,
-	       " [*] Object insertion %s.\n\n",
-	       (err < 0 ? "failed" : "succesfull"));
+	       " [*] Object insertion succesfull\n\n");
       vm_output(logbuf);
     }
   
-  return (err);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }

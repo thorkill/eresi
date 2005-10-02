@@ -1,90 +1,130 @@
 
-				################
-				ELFsh TODO phile
-				################
 
-IMPORTANT NOTE:
----------------
-
-Put your name on the feature you are implementing, so that we avoid 2 coders to
-do the same thing .
-
-
-[0.51b3]
+			        #     #    #   #  # # ##	
+					              ##			
+						    #### 
+                                                ########
+					################
+				########################
+				ELFsh TODO phile       #
+                                ########################
 
 
-	. 'Flush' command => flush the mods from a bin
-	. Be sure that LKM infection technique works with ELFsh
+[missing / bugs]
+. BUG : Do more tests on debugger scripts, sometimes it fucks
+. BUG : Make sure ET_REL injection in memory works again with redirections
+. BUG : testsuite pre-interp fuck (ld.so: address/offset not properly aligned)
+. BUG : see ~/dvr-elf/ for a bug on infecting netcat
 
-	. implement elfsh_strip()
-	. elfsh_save_obj() need file duplication
-	. Faults when 1/ changing sh_size and printing sect OR 2/ launching invalid script
-	. Clean disasm code and modflow code
-	. More tests on modremap
-	. 'stealth mode' (do not insert symbols and obfuscate SHT)
-	. Unified relocation engine and automatic relocation for ET_EXEC/ET_DYN
+. BUG : remove memleaks (VALGRIND!)
+. BUG : reported by emperor (shnum, phnum, shsize modifs without data insertion)
+. BUG : Check cmd_connect error handling
+. BUG : NET client's (private) objects aren't unloaded on disconnection
+. BUG : NET shell prompt displayed twice (! cmd) 
+. BUG : multiple workspace on DUMP connection (actual->data->active && network.c:761)
+. BUG : DUMP + e2dbg + cont/b/... 
 
-	. Update libelfsh REF and do manpages
-	. Integrate autoconf (skyper proposed to do it)
+MM	. Better rights than rwx for runtime injected phdr (try double-map)
+MM	. Clean 4 remaining hooks to do
+	. Colors in profiler, hexa, backtrace, linkmap, stack, dbgstack
+	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
+	. support X/x number types [regx] command and D regx regx commands
+	. be able to change the compiler and compiling options
 
-[0.51b4]
+	<----- Here release 0.65rc2-linux
+
+	. ET_REL injection fucked on Solaris
+	 	-> .data.rel.local  ?
+		-> .rel.bss
+		-> load a.out ; save plouf ; ./plouf -> "Malloc problem"
+	. EXTPLT fuck on BSD (preinterp injection to avoid on fbsd)
+	. No __libc_start_main on BSD
+	. where to find USER_ESP on BSD context ?
+	. 188 warnings on Solaris/BSD
+	. Compiles on HPUX
+
+	<----- Here release 0.65-portable
+
+	. Allow using of an alternate heap for the debugger
+!!!	. EXTSTATIC : re-use existing PT_LOADs
+!!!	. Multiple BSS : symbol injected many times in find_bsslen (fixup_sctndx really useful ?)
+	. Finish ET_REL for MIPS
+	. Complete MIPS SHT/DYNAMIC types ASCII's
+	. ltrace multiarch
+	. Be able to add new internal types using the script language
+	. TLS support ! (with decent multithread debugging example)
+!!!	. Put doxygen comments and generate the ELF shell reference manual
+!!!	. Update manpage
+	. add syntax explaination in help
+
+	<----- Here release 0.66 Final
+
+[future]
+	. Packer/Unpacker hook interface (Generalized hooking VM interface)
+	. Hook command (include hlist) : change a hook (0 or 4 params) 
+	. Use a runtime symtab/strtab for memory modifications
+	. Be able to breakpoint a debugger function
+	. Be able to chain signal handlers (for debugging a debugger)
+	. Replace all #ifdef __DEBUG*__ by ELFSH_PROFILE_DEBUG() calls
+	. e2dbg scripts from cmdline (filexist, $var1_blabla$var2 format)
+	. Better runtime EXTPLT (without mprotect)
+	. unredir and undisplay command
+	. b __guard@libc.so.6 format
+	. e2dbg VS gdb (undisplay, bt with core, frame command, call command)
+	. uuprint command
+	. Conditions on breakpoints 
+	. add ~ expansion
+	. Recode paxctl in elfsh script
+	. add vsyscall table support : http://lwn.net/Articles/30258/
+	. More high level control flow : while if else if endif end
+	. Hash tables working with 'foreachof' and 'eol'
+	. File reconstruction from memory
+      	. Support file building from scratch and support ET_REL injection on it			
+      	. GNU & SUN Version section rw API (and add it to the hierarchy)
+	. DWARF support and step in sources
+	. Execution of script located in .elfsh.d/ from IMODE 
+	. Leave command : exit the debugger by unmapping it
+	. Watchpoints on memory (problem: debug registers are ring0 only)
+
+[porting]
+	. Debug PaX-safe third-type injection on SPARC / ALPHA
+	. CFLOW for SPARC and ALPHA
+	. Dumpregs, Breakpoints, Backtrace on SPARC
+	. EXTPLT / ET_REL into ET_DYN for SPARC
+	. Dumpregs, Breakpoints, Backtrace on ALPHA
+	. EXTPLT / ET_REL to ET_DYN on ALPHA
+	. Dumpregs, Breakpoints, Backtrace on MIPS
+	. EXTPLT / ET_REL into ET_DYN for MIPS
+	. Full support for HPPA, PPC, ARM, IA64, AMD64
+
+[less important features TODO]
+	. LKM & static kernel infection
+	. Hash API (cmd + insertion) and DYNAMIC insertion API
+	. Be able to call dtrace on Solaris
+	. Support ELF32 / ELF64 at the same time
+	. Improve completion (do better tables in tables.c)
+	. CTORS, DTORS entry insertion API (need to change code references ..)
+	. Section data, got, ctors, dtors, dynamic, rel*, plt removing ELF API
+	. REMOVE VM commands for section data, dynsyms, got, ctors, dtors, dynamic, rel*, plt
+      	. md5 known blocks to rebuild true symbol names in static binaries
+	. SUN/x86 objets translation into GNU/x86
+	. Libasm handlers scripting
+	. Support 'addr' L2 field for got, ctors, dtors, rel, dynsym, sym (return the object address)	 
+	. Advanced relocation entries lookup in grammar.c						 
+	. INSERT VM commands for dynsyms, got, ctors, dtors, dynamic, rel*, plt, function
+	. elfsh_export_symbol() (copy .symtab entry as a .dynsym entry)
+
+[SHT RECONSTRUCTION]
 [SHT rebuilding : use ELFsh 0.43b for a better implem of this feature]
 
  	. Bad .dynamic insertion => .shstrtab sh_offset += 9 (why ?)
 	. fix bug in mapped_offset (offset not updated)
 	. Bad sh_off in elfsh_rebuild_sht() => bad output file (why ?)
 	. rebuild .text and .data using PHT (warn: size unknown!)
-	. rebuilt .init and .fini using .dynamic (warn: size unknown!)
+	. rebuild .init and .fini using .dynamic (warn: size unknown!)
 	. consider the padding (max 3 bytes) in SHT reconstruct .
 	. correct the '|' thing in PHT linking perspective .
 	. Reconstruct .shstrtab if missing but SHT is present
 	. SHT reconstruction paper
+	
 
-[0.51]
-	. PHT, PLT, DYNAMIC, GOT, CTORS, DTORS entry insertion API
-     	. Hash insertion API (synchronized with .dynsym/.dynstr modifs)
-	. INSERT VM commands for sections, symbols, dynsyms, got, ctors, dtors, dynamic, rel*, plt
-	. Variable automatic creation (UINT / STR)
-	. Special variable $_ (like in perl)
-  	. Variable Destructions, Bean Cleaning
-	. Loop and Condition capability (cmp, jmp, jz, jnz)
-      	. Support file building from scratch and support ET_REL injection on those
-
-[0.52]
-      	. Version section rw API
-	. Improve completion (do better tables in tables.c)
-	. Miss a last_errfile pointer in the world and arrange whole error system
-	. Support 'addr' L2 field for got, ctors, dtors, rel, dynsym, sym (return the object address)
-	. Advanced relocation entries lookup in grammar.c
-	. Support SET/GET byte/word/dword on RAW objects (address, foffset, and using symtab !)
-	. Section, Section data, got, ctors, dtors, dynamic, rel*, plt removing ELF API
-	. REMOVE VM commands for section data, sections, symbols, dynsyms, got, ctors, dtors, dynamic, rel*, plt
-
-[0.53]
-	. Eliminates more FP in the relocator
-	. Libasm handlers scripting
-	. ET_EXEC 2 ET_DYN [with relink command]
-	. ET_REL extraction from ET_EXEC [with reldel command]
-	. SUN/x86 objets translation into GNU/x86
-	. ET_REL insertion with additional PLT/GOT/REL/DYNSYM/DYNSTR entries
-	. ET_REL insertion into ET_DYN
-
-[0.6]
-	. ET_DYN 2 multiple ET_DYN (one per segment)
-      	. vmlinuz format support with ET_REL insertion/extraction
-      	. md5 known blocks to rebuild true symbol names in static binaries
-       	. ET_CORE 2 ET_EXEC
-	. elfsh_export_symbol() (copy .symtab entry as a .dynsym entry)
-	. Support NULL section raw modifs (need sync with ELFhdr and SHT)
-	. Obfuscation module
-      	. Advanced stabs API for local variable resolving
-      	. IA32, sparc32, sparc64, mips, alpha, pa-risc, PPC static function hooking
-      	. IA32, sparc32, sparc64, mips, alpha, pa-risc basic virus checking engine
-	(entry point, got/plt check, xrefs checks)
-	. ELF64 support
-
-[0.7]
-
- 	. RISC meta assembly
- 	. DFG graphs (Add .elfsh.dflow.xrefs section (filled by Elfsh32_Xrefs_ent))
- 	. PORT/DOC again

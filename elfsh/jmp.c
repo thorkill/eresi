@@ -13,92 +13,129 @@
 
 int		cmd_jmp()
 {
+  int		ret;
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  return (vm_move_pc(world.curjob->curcmd->param[0]));
+  ret = vm_move_pc(world.curjob->curcmd->param[0]);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 int		cmd_je()
 {
   elfshpath_t	*res;
+  int		ret;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   res = hash_get(&vars_hash, "_");
   if (!res)
-    ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive last result variable", -1);
   if (!res->immed_val.ent)
-    return (vm_move_pc(world.curjob->curcmd->param[0]));
-  return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_jne()
 {
   elfshpath_t	*res;
+  int		ret;
   
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   res = hash_get(&vars_hash, "_");
   if (!res)
-    ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive last result variable", -1);
   if (res->immed_val.ent)
-    return (vm_move_pc(world.curjob->curcmd->param[0]));
-  return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_jg()
 {
   elfshpath_t	*res;
+  int		ret;
   
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   res = hash_get(&vars_hash, "_");
   if (!res)
-    ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive last result variable", -1);
   if (res->immed_val.ent > 0)
-    return (vm_move_pc(world.curjob->curcmd->param[0]));
-  return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+    
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_jl()
 {
  elfshpath_t	*res;
+  int		ret;
 
- E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
 
  res = hash_get(&vars_hash, "_");
  if (!res)
-   ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Cannot retreive last result variable", -1);
  if (res->immed_val.ent < 0)
-   return (vm_move_pc(world.curjob->curcmd->param[0]));
- return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+   
+ ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_jge()
 {
   elfshpath_t	*res;
+  int		ret;
   
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   res = hash_get(&vars_hash, "_");
   if (!res)
-    ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive last result variable", -1);
   if (res->immed_val.ent >= 0)
-    return (vm_move_pc(world.curjob->curcmd->param[0]));
-  return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+    
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_jle()
 {
   elfshpath_t	*res;
+  int		ret;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   res = hash_get(&vars_hash, "_");
   if (!res)
-    ELFSH_SETERROR("[elfsh:cmd_jmp] Cannot retreive last result variable\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive last result variable", -1);
   if (res->immed_val.ent <= 0)
-    return (vm_move_pc(world.curjob->curcmd->param[0]));
-  return (0);
+    {
+      ret = vm_move_pc(world.curjob->curcmd->param[0]);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+    }
+    
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

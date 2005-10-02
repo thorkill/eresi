@@ -21,7 +21,7 @@ int		cmd_flush()
   elfsh_Phdr	*interp;
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Restore original PLT if any */
   plt = elfsh_get_plt(world.curjob->current, NULL);
@@ -32,7 +32,8 @@ int		cmd_flush()
   /* Remove pre-interp injected sections */
   interp = elfsh_get_segment_by_type(world.curjob->current, PT_INTERP, 0);
   if (!interp)
-    ELFSH_SETERROR("[elfsh:flush] Cannot find PT_INTERP.\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find PT_INTERP", -1);
   for (act = world.curjob->current->sectlist; act; act = next)
     {
       if (act->shdr->sh_addr >= interp->p_vaddr)
@@ -40,8 +41,10 @@ int		cmd_flush()
       next = act->next;
 
       /* Avoid removin the NULL section */
-      if (*act->name && elfsh_remove_section(world.curjob->current, act->name) < 0)
-	return (-1);
+      if (*act->name && 
+	  elfsh_remove_section(world.curjob->current, act->name) < 0)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Failed to remove section", (-1));
     }
   
   /* Remove post-bss injected sections */
@@ -49,18 +52,23 @@ int		cmd_flush()
 				  ELFSH_SECTION_NAME_BSS,
 				  NULL, NULL, NULL);
   if (!plt)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "PLT section not found", -1);
+
   act = plt->next;
   while (act && act->shdr->sh_addr)
     {
       next = act->next;
       if (elfsh_remove_section(world.curjob->current, act->name) < 0)
-	return (-1);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Section removal failed", -1);	
     }
 
   /* Remove excedentary BSS zones */
   if (elfsh_flush_bss(world.curjob->current) < 0)
-    return (-1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to flush BSS", -1);	
+
   if (!world.state.vm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1,
@@ -68,5 +76,5 @@ int		cmd_flush()
 	       world.curjob->current->name);
       vm_output(logbuf);
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

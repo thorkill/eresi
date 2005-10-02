@@ -1,13 +1,46 @@
 
-				------------------------
-				Changelog file for ELFsh
-				------------------------
+			------------------------
+			Changelog file for ELFsh
+			------------------------
 
-Intermediate betaversions changes are listed in the first public version
-they appear .
 
-0.65  :
--------
+Changes in intermediate beta versions are listed in the first public version
+they appear.
+
+
+0.65rc2 :
+---------
+ - Added  : Dynamic entries lookup by type
+ - Core   : Now hijack __libc_start_main instead of main (works on stripped)
+ - Added  : Full stepping support on x86
+ - Bugfix : Corrected backtrace onthefly (e2dbg/user separation)
+ - Added  : Registers as variables on breakpoint/step hit
+ - Added  : vm_lookup_bp (breakpoint lookup by symbol / id)
+ - Added  : display command
+ - Core   : Now 2 different commands for stack dumping (stack vs dbgstack)
+ - Core   : Now supporting static and runtime scripts
+ - Core   : New help system
+ - Added  : redir without parameters print redirections list in current file
+ - Core   : Included libhashelfsh in libelfsh
+ - Added  : Watchpoints
+ - Bugfix : Various bugs related to the variables type system
+ - Added  : Runtime SHT/PHT extension for the ELF format
+ - Added  : rsht/rpht commands and scripting objects
+ - Bugfix : corrected elfsh_error and io.buf accesses when not using readline
+ - Added  : --More--
+ - Added  : Colors (by mxatone)
+ - Added  : log command (can save sessions i/o)
+ - Bugfix : full testsuite working again
+ - Added  : a Real e2dbg command for the debugger
+ - Added  : More variable API (vm/variables.c)
+ - Added  : Added variable $SHELL and $EDITOR with adaptation of configure
+ - Added  : better completion (constants, ELF objects ..)
+ - Added  : Multiple workspaces with hotkey (^X)
+ - Added  : alert command for color events
+
+
+0.65rc1 (August 1st 2005) :
+---------------------------
  - Added  : Support for variables (and $_ variable)
  - Core   : Slighly modified vm_lookup_param() interface for variable support
  - Added  : compare (cmp) command

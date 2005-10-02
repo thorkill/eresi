@@ -14,7 +14,7 @@ void		vm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   u_int		idx;
   char		buff[45];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -24,6 +24,8 @@ void		vm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
       cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
 		      (cnt ? buff : ""), 
 		      elfsh_feature1[idx].desc);
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 void      vm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
@@ -32,7 +34,7 @@ void      vm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   u_int		idx;
   char		buff[45];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -42,6 +44,8 @@ void      vm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
       cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
 		      (cnt ? buff : ""), 
 		      elfsh_posflag1[idx].desc);
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 void      vm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
@@ -50,7 +54,7 @@ void      vm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   u_int		idx;
   char		buff[45];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -60,6 +64,8 @@ void      vm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
       cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
 		      (cnt ? buff : ""), 
 		      elfsh_flags[idx].desc);
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 void      vm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
@@ -68,7 +74,7 @@ void      vm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   u_int		idx;
   char		buff[45];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -78,6 +84,8 @@ void      vm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
       cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
 		      (cnt ? buff : ""), 
 		      elfsh_flags1[idx].desc);
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 void      vm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
@@ -86,7 +94,7 @@ void      vm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   u_int		idx;
   char		buff[45];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   *buff = '\n';
   memset(buff + 1, ELFSH_SPACE, sizeof(buff) - 2);
@@ -96,6 +104,8 @@ void      vm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
       cnt += snprintf(info + cnt, BUFSIZ, "%s%s", 
 		      (cnt ? buff : ""), 
 		      elfsh_mipsflags[idx].desc);
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -107,7 +117,7 @@ void		vm_dynentinfo(elfshobj_t	*file,
 {
   char		*str;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (entry->d_tag)
     {
@@ -262,6 +272,8 @@ void		vm_dynentinfo(elfshobj_t	*file,
       sprintf(info, "[?]");
       break;
     }
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -285,15 +297,19 @@ char		*vm_getdyntype_short(u_int type)
 {
   u_int		idx;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (idx = 0; idx < ELFSH_EXTDYN_MAX; idx++)
     if (elfsh_extdyn_type[idx].val == type)
-      return ((char *) elfsh_extdyn_type[idx].name);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 ((char *) elfsh_extdyn_type[idx].name));
+
   for (idx = 0; idx < ELFSH_MIPSDYN_MAX; idx++)
     if (elfsh_mipsdyn_type[idx].val == type)
-      return ((char *) elfsh_mipsdyn_type[idx].name);
-  return ("[?]");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 ((char *) elfsh_mipsdyn_type[idx].name));
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, "[?]");
 }
 
 
@@ -308,12 +324,13 @@ int		cmd_dyn()
   int		typenum;
   char		*type;
   char		*type_short;
+  char		*p;
   regex_t	*tmp;
   char		buff[256];
   char		type_unk[ELFSH_MEANING + 1];
   char		info[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch the section and init the regex */
   if ((actual = elfsh_get_dynamic(world.curjob->current, &num)) == NULL)
@@ -345,16 +362,32 @@ int		cmd_dyn()
       bzero(info, sizeof(info));
       vm_dynentinfo(world.curjob->current, actual + index, info);
 
+      p = NULL;
+      if (strlen(info) == 14)
+	p = info+10;
+
+      if (IS_VADDR(info))
+	vm_coloradv("address", "%19s", info);
+      else if ((p != NULL && !strcmp(p, "bytes")) || info[0] == '0')
+	vm_coloradv("number", "%19s", info);
+      else
+	vm_coloradv("string", "%19s", info);
+
       /* Print if the regex match */
-      snprintf(buff, sizeof(buff), " [%02u] %-33s => %19s {%s}\n", /* +43 */
-	       index, type, info, type_short);
+      snprintf(buff, sizeof(buff), " %s %s => %s {%s}\n", /* +43 */
+	       vm_colornumber("[%02u]", index), 
+	       vm_colortypestr_fmt("%-33s", type), 
+	       info, 
+	       vm_colortypestr(type_short));
 
       if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
 	vm_output(buff);
+
+      vm_endline();
     }
   
   vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

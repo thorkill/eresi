@@ -12,7 +12,7 @@ int		cmd_save()
 {
   char		logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_save_obj(world.curjob->current, 
 		     world.curjob->curcmd->param[0]) < 0)
@@ -22,5 +22,5 @@ int		cmd_save()
   snprintf(logbuf, BUFSIZ - 1, "\n [*] Object %s saved successfully \n\n", 
 	   world.curjob->curcmd->param[0]);
   vm_output(logbuf);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

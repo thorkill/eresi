@@ -34,7 +34,7 @@ void	elfsh_init()
 {
   puts(" [*] ELFsh modtest init -OK- \n");
   vm_setcmd(CMD_PRINT, mod_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
-  vm_addcmd(CMD_TEST, mod_newcmd, NULL, 0);
+  vm_addcmd(CMD_TEST, mod_newcmd, NULL, 0, "Simple example command");
 }
 
 void	elfsh_fini()

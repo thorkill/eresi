@@ -28,6 +28,8 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
   // 0xe8 (blt)
   // 0xec / 0xed (ble)
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);		 
+
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }

@@ -146,7 +146,9 @@ int			elfsh_shift_sparc_relocs(elfshobj_t	*file,
 						 elfsh_Addr	diff, 
 						 elfshsect_t	*relplt)
 {
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_shift_generic_relocs(file, diff, relplt)));
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_shift_generic_relocs(file, diff, relplt)));
 }
 					       
 

@@ -38,4 +38,4 @@ clean:
 fclean: clean
 	rm -f *~ \#* load_lib.esh libc/*.o* libcnonshared/*.o* \
 	libpthread/*.o* libpthreadnonshared/*.o* libnsl/*.o*
-	rmdir libc libnsl libpthread libcnonshared libpthreadnonshared
+	rm -fr libc libnsl libpthread libcnonshared libpthreadnonshared

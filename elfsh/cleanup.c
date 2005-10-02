@@ -16,19 +16,22 @@ int		cmd_cleanup()
   elfshsect_t	*sect;
   int		index;
   uint32_t	nbr;
+  char		buf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   obj = vm_lookup_file(world.curjob->curcmd->param[0]);
   if (!obj)
-    ELFSH_SETERROR("[vm:cmd_cleanup] Invalid argument", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid argument", -1);
 
   sect = world.curjob->current->sectlist;
   nbr = 0;
   for (index = 0; index < obj->hdr->e_shnum; index++, sect = sect->next)
     if (strstr(sect->name, ".o.") || strstr(sect->name, "elfsh"))
       {
-	printf("Set section header %u as removed \n", index);
+	snprintf(buf, BUFSIZ, "Set section header %u as removed \n", index);
+	vm_output(buf);
 	sect->flags = sect->flags | ELFSH_SECTION_REMOVED;
 	nbr++;
       }
@@ -37,5 +40,5 @@ int		cmd_cleanup()
   //world.curjob->current->strip = 1;
 
   vm_output("\n [*] File marked for cleanup-on-save \n\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -33,6 +33,7 @@ int main()
   legit_func("test");
   return (0);
  err:
+  perror("malloc");
   printf("Malloc problem\n");
   return (-1);
 }

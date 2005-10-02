@@ -4,6 +4,9 @@
 
 int	legit_func(char *str)
 {
+  char	buff[BUFSIZ];
+
+  snprintf(buff, BUFSIZ, "coucou %s\n", str);
   printf("LEGIT FUNC\n");
   printf("legit func (%s) !\n", str);
   return (0);

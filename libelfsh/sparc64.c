@@ -28,6 +28,7 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
 			    elfsh_Sym	*null2,
 			    elfsh_Addr	null3)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
@@ -43,6 +44,8 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
   uint32_t	addrh, addrl;
   uint32_t	opcode[3];
   
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (file->hdr->e_machine != EM_SPARCV9)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
 		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
@@ -93,6 +96,8 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
   int		foffset;
   uint32_t	addrh, addrl;
   uint32_t	opcode[11];
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARCV9)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
@@ -155,7 +160,9 @@ int       elfsh_relocate_sparc64(elfshsect_t       *new,
 				 elfsh_Addr        addr,
 				 elfshsect_t	   *mod)
 {
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_relocate_sparc32(new, cur, dword, addr, mod)));
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_relocate_sparc32(new, cur, dword, addr, mod)));
 }
 
 

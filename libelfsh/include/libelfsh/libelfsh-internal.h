@@ -34,12 +34,12 @@ do												\
 while (0)
 
 /* Safe open() */
-#define		XOPEN(a, b, c, d, e)	\
-do					\
-{					\
-  if ((a = open(b, c, d)) < 0)		\
-    return (e);				\
-}					\
+#define		XOPEN(a, b, c, d, e)							\
+do											\
+{											\
+  if ((a = open(b, c, d)) < 0)								\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot open file", e);		\
+}											\
 while (0)
      
 /* Safe read() */
@@ -81,16 +81,105 @@ do											\
 while (0)
 
 
-
 /* Simple useful macro */
 #define	INTERVAL(a, b, c) (a <= b && b < c)
 
 
 /* Profiling macros */
-#define	ELFSH_PROFILE_IN(file, func, line)	elfsh_profile_out(file, (char*) func, line)
-#define	ELFSH_PROFILE_OUT(file, func, line)     do { return; } while (0)
-#define	ELFSH_PROFILE_ROUT(file, f, l, ret)	do { return ret; } while (0)
-#define	ELFSH_PROFILE_ERR(file, f, l, m, r)	do { elfsh_error = m; elfsh_profile_err(file, (char*) f, l, m); return r; } while (0)
+#define	ELFSH_NOPROFILE_IN()    int profileme = 0
+#define	ELFSH_NOPROFILE_ROUT(r) return (r)
+
+#define	ELFSH_PROFILE_IN(file, func, line)	\
+int profileme = elfsh_depth;			\
+do {						\
+  elfsh_updir();				\
+  elfsh_profile_out(file, (char*) func, line);	\
+  elfsh_incdepth();				\
+} while (0)
+
+#define	ELFSH_PROFILE_OUT(file, func, line)     \
+do {						\
+  elfsh_decdepth();				\
+  if (profileme != elfsh_depth)			\
+  {						\
+    printf("a function called by the current "	\
+	   "forgot to decrement elfsh_depth"    \
+           "(%d %d)\n", profileme, elfsh_depth);\
+    printf("current FUNCTION %s@%s:%d\n",	\
+	   func, file, line);			\
+    exit(0);					\
+  }						\
+  elfsh_profile_out(file, (char*) func, line);	\
+  return;					\
+} while (0)
+
+#define	ELFSH_PROFILE_ROUT(file, f, l, ret)	\
+do {						\
+  elfsh_decdepth();				\
+  if (profileme != elfsh_depth)			\
+  {						\
+    printf("a function called by the current "	\
+	   "forgot to decrement elfsh_depth"	\
+           "(%d %d)\n", profileme, elfsh_depth);\
+    printf("current FUNCTION %s@%s:%d\n",	\
+	   f, file, l);				\
+    exit(0);					\
+  }						\
+  elfsh_profile_out(file, (char*) f, l);       	\
+  return ret;					\
+} while (0)					
+
+#define	ELFSH_PROFILE_ERR(file, f, l, m, r)	\
+do {						\
+  elfsh_decdepth();				\
+  if (profileme != elfsh_depth)			\
+  {						\
+    printf("a function called by the current "	\
+	   "one forgot to decrement "		\
+           "elfsh_depth\n");			\
+    printf("current FUNCTION %s@%s:%d\n",	\
+	   f, file, l);				\
+    exit(0);					\
+  }						\
+  elfsh_error_str = m;				\
+  elfsh_profile_err(file, (char*) f, l, m);	\
+  return r;					\
+} while (0)
+
+#define	ELFSH_PROFILE_NERR(file, f, l, m)	\
+do {						\
+  elfsh_decdepth();				\
+  if (profileme != elfsh_depth)			\
+  {						\
+    printf("a function called by the current "	\
+	   "one forgot to decrement "		\
+           "elfsh_depth\n");			\
+    printf("current FUNCTION %s@%s:%d\n",	\
+	   f, file, l);				\
+    exit(0);					\
+  }						\
+  elfsh_error_str = m;				\
+  elfsh_profile_err(file, (char*) f, l, m);	\
+} while (0)
+
+
+
+/* Debugging macro */
+#ifdef ELFSH_DEBUG						
+#define ELFSH_PROFILE_DEBUG(fi, f, l, fm, a...) do		\
+ {								\
+   if (dbgworld.proflevel >= ELFSH_DEBUGPROF)			\
+     {								\
+       char	dbg[BUFSIZ];					\
+       snprintf(dbg, BUFSIZ, " [D]<%s@%s:%d> ", f, fi, l);	\
+       dbgworld.profile(dbg);					\
+       snprintf(dbg, BUFSIZ, fm, ##a);				\
+       dbgworld.profile(dbg);					\
+       dbgworld.profile("\n");					\
+     }								\
+ while (0)
+#endif
+
 
 // To remove one day
 #define	ELFSH_SETERROR(msg, ret)	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, msg, ret)

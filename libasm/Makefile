@@ -6,10 +6,13 @@
 ## Updated : Sun Mar 21 00:03:07 2004
 ##
 
+
+include ../config.h
+
+
 #
 # Architecture source files
 #
-
 SRCS_libasm = src/arch/ia32/i386-0.c	\
 	src/arch/ia32/i386-1.c		\
 	src/arch/ia32/i386-2.c		\
@@ -56,7 +59,7 @@ SRCS_mydisasm = tools/mydisasm.c
 
 OBJS_mydisasm = ${SRCS_mydisasm:.c=.o}
 
-CFLAGS = -Iinclude
+CFLAGS = -Iinclude -fPIC
 
 RM = rm -f
 
@@ -64,7 +67,7 @@ LDFLAGS = -L. -lasm
 
 ETAGS = etags
 
-CC = gcc
+CC ?= gcc
 
 all:	lib
 
@@ -79,7 +82,7 @@ install:
 lib:	$(OBJS_libasm)
 	@echo Building library.
 	@ar rc libasm.a ${OBJS_libasm}
-	@ranlib libasm.a
+	@$(RANLIB) libasm.a
 
 clean:
 	@echo Cleaning sources tree.

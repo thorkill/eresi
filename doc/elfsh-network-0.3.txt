@@ -1,0 +1,129 @@
+
+   Created Wed Mar 10 18:39:35 CET 2004 yann malcom
+   Updated Fri Mar 12 14:12:48 CET 2004 mayhem
+
+   ________________________________________
+
+   ELFsh .::. Road to distributed computing
+ 
+   ________________________________________
+
+
+___________host1____________________   _________host2_________________
+|        ________________          |   |    ________________         | 
+|        |  elfsh       |   (3a,b) |   |    |  elfsh        |        | 
+|        |   parent     |- - - - - - - - - -|    parent     |        | 
+|        |              |          |   |  _/|               |        | 
+|        |______________|          |   |_/  |_______________|        | 
+|       /         |                |  _/      /       \              | 
+|      / (1)      | (1)            |_/ |     |   (1)   |             | 
+|   ___|___    ___|___            _/   |   -----     -----           | 
+|   |     |    |     |          _/ |   |  |     |   |     |          | 
+|   |child|    |child|---------/   |   |  |child|   |child|          | 
+|   |_____|    |_____|     (c)     |   |  |_____|   |_____|          | 
+|      |(2)       |(2)             |   |     |         |             | 
+|      |          |                |   |     |  (2)    |             | 
+|  [terminal]     |                |   |     .         .             | 
+|                 |                |   |     .         .             | 
+------------------|-----------------   -------------------------------
+                  |
+              [telnet/nc/whatever]
+
+(1) - The parent never act on elfsh object, he just handle request from
+      other elfsh parents. In that way all break the waiting state will
+      quickly be answered. The children act on elfsh object. They use shared
+      memory in order to do that. (1) is just a fork() .
+
+(2) - Children can be attached either to one terminal (using std{in,out}) either
+      across TCP sockets (remote client). If a child has to delegate a part of the
+      computing, he broadcast a UDP request on the peer2peer network, multiple remote
+      agents may compute the request, the fastest computer will reply in first (digital
+      darwinism) and will by the same time invalidate the computing request on the
+      peer to peer network using canal (3a) and a I_DID_COMPUTE message.
+
+(3) The elfsh parents are waiting for UDP requests, which can be either I_AM_HERE (a)
+    messages, I_DID_COMPUTE (b) messages, or I_NEED_TO_COMPUTE (c) messages. Messages
+    in this category may not block the source process for an answer, since they are
+    one-way canals. Actions in the process includes:
+
+    For (a), simply add the received information in the list of known nodes. This list
+    can be used when sending (3c) messages.
+
+    For (b), communicate computing answer to children using shared memory. In case the
+    child process havent got an answer to the computing he requested at the moment when
+    the necessity is critical, the child process which emmited the request may compute it
+    itself, and send (c) message to kill all the remote process that were created for
+    computing this request.
+
+    FIXME: how to associate a given request to the child process who did requested
+    it ? (without pipes would be better).
+
+    For (c), the receiver process checks its computing power, eventually create
+    a new child process and send a (b) message when the computing is over (if we
+    are not killed before)
+
+
+
+[:. Ideas  .:]
+
+    The followind ideas where inspired by 'A Unified Peer-to-Peer Database Framework 
+    for Scalable Service and Resource Discovery' by Wolfgang Hoschek.
+
+    [> Timeouts are important : <]
+	- Dynamic Abort Timeout is used to avoid that a request spread for
+        a while on the network.
+	- Static Loop Timeout is used to not proceed the same request
+	  more than one time.
+	
+    [> Several unique identifier : <]
+	- Request Identifier : They are needed to Loop detection.
+	- Object Identifier : To identify ELFsh Objects ( Note : one
+	  structure can be modified along its life )
+	- Node Identifier
+    FIXME : how to choose these unique identifiers ?	
+
+    
+    [> Objects spreading : <]
+	- Compute are done on object. To increase the number of nodes
+	  which can do this compute at a given time, it would be
+          interresting to spread objects over the network when nodes are unused
+          and network load is low.
+        - In order to do that, a broadcasting of aviable object could be done
+          at the same time of annoucing itself.
+        - So that each node can have a list of node which can handle a
+          request. This list is not complete because of objects
+          spreading but it can be a good approximation.
+        - Objects dependancy shall be translate into Object Identifier.
+	  So that, a node can ask another node do give him a result
+          concerning this object if he hasn't it.
+
+    [> Various : <]
+	- the protocol version should be announced to accpted futur
+	  modification.
+	- the same with the node version
+
+    [> Details : <]
+	- possibility to set a hook on the recv/send fonction in order
+	  to encapsulate data in another protocol like DNS :)
+
+    [> Future or no future ? <]
+	- Can we imagine a robust open protocol that another people may
+	  use to join our reversing network with nodes which have
+          another capabilities ? We can imagine of spreading
+	  Capabilities informations in additions of others.
+
+    
+    Multi-agent system is the future :)
+
+1) le fait que renvoyer les resultats par le meme chemin que les
+requetes offre l'avantage de moins de tracabilit	 ce qui peut etre un
+avantage.
+
+2) que l'id	e de requetes recursives est sympa aussi : 
+         genre chaque node peut decouper la tache en plus petites taches et
+demander a d'autres noeuds de faire le calculs, puis il rassemble les
+info qui correspondent au resultat qu'on lui a demand	 et le retourne a
+celui qui lui a demand	.
+    
+
+    

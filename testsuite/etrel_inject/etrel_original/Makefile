@@ -10,8 +10,7 @@ include ../../../config.h
 SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh -L../../../libhash/ -lhashelfsh \
-	  -L../../../libasm -lasm
+LIB	= -L../../../libelfsh/ -lelfsh -L../../../libasm -lasm
 NAM	= etrel_injecter
 
 HOSTSRC	= host.c
@@ -20,15 +19,14 @@ RELOBJ	= rel.o
 
 OPT	= -g3 -O2 -I../../../libelfsh/include/ $(BITS)
 RM	= rm -f
-CFLAGS	= $(OPT) -I../../../libhash/include/
+CFLAGS	= $(OPT)
 
 all	: $(OBJ)
-	@$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM) -static
-	$(CC) $(OPT) $(HOSTSRC) #-m64 -static
+	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
+	$(CC) $(OPT) $(HOSTSRC) #-m64
 	#@strip a.out
 	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c #-m64
 
-	/sbin/paxctl -c ../../../vm/elfsh
 	/sbin/paxctl -m -s -p -r -x ../../../vm/elfsh
 	/sbin/paxctl -v ../../../vm/elfsh
 

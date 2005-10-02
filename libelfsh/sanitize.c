@@ -18,7 +18,7 @@ void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
     if (file->sht[index].sh_name > offset)
       file->sht[index].sh_name -= len;
   
-  ELFSH_PROFILE_OUT(_FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Update the sh_link for all sections linked to a specific shifted one */
@@ -31,7 +31,7 @@ void		elfsh_update_linkidx(elfshobj_t *file, int low_index, int diff)
   for (index = 0; index < file->hdr->e_shnum; index++)
     if (file->sht[index].sh_link && file->sht[index].sh_link >= low_index)
       file->sht[index].sh_link += diff;
-  ELFSH_PROFILE_OUT(_FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Update the sh_link for all section linked to a specific one */
@@ -46,7 +46,7 @@ void		elfsh_update_linkidx_equ(elfshobj_t *file, int idx, int diff)
   for (index = 0; index < file->hdr->e_shnum; index++)
     if (file->sht[index].sh_link && file->sht[index].sh_link == idx)
       file->sht[index].sh_link += diff;
-  ELFSH_PROFILE_OUT(_FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Update the sh_link for all section linked to a specific one */
@@ -69,7 +69,7 @@ void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
 	if (sym[index].st_shndx && sym[index].st_shndx == idx)
 	  sym[index].st_shndx += diff;
     }
-  ELFSH_PROFILE_OUT(_FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -93,7 +93,7 @@ void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
 	if (sym[index].st_shndx && sym[index].st_shndx > idx)
 	  sym[index].st_shndx += diff;
     }
-  ELFSH_PROFILE_OUT(_FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 

@@ -54,15 +54,18 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
    symbols are in the same object, take care */
 elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_get_symbol_type(choice) == STT_NOTYPE)
-    return candidate;
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (candidate));
       
   if (elfsh_get_symbol_type(candidate) == STT_NOTYPE)
-    return choice;
-  
-  return (elfsh_get_symbol_bind(choice) < elfsh_get_symbol_bind(candidate) ?
-	  candidate : choice);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		     (elfsh_get_symbol_bind(choice) < 
+		      elfsh_get_symbol_bind(candidate) ?
+		      candidate : choice));
 }
 
 
@@ -396,14 +399,8 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 			      "Cant find extracted section in ET_REL", -1);
 
 	  /* Find corresponding inserted section in ET_EXEC */
-	  /*if (!strcmp(".bss", sect->name))
-	    sect = elfsh_get_section_by_name(new->parent, sect->name, NULL, NULL, NULL);
-	    else
-	    { */
 	  snprintf(tmpname, sizeof(tmpname), "%s%s", reltab->parent->name, sect->name);
 	  sect = elfsh_get_section_by_name(new->parent, tmpname, NULL, NULL, NULL);
-	      //}
-
 
 	  if (sect == NULL)
 	    {
@@ -712,6 +709,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
     {
       
       /* Get the current section */
+      /* XXX: use a sect current pointer .. */
       sect = elfsh_get_section_by_index(rel, index, NULL, NULL);
       if (sect == NULL)
 	{
@@ -765,11 +763,9 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
       hooks->curend = 0;
     }
   
-
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Entering intermediate symbol injection loop\n");
 #endif
-
 
   /* Intermediate pass 2 : Inject ET_REL symbol table into host file */
   if (elfsh_fuse_etrel_symtab(file, rel) < 0)
@@ -784,10 +780,10 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   printf("[DEBUG_RELADD] Entering final relocation loop\n");
 #endif
 
-  /* Everything ran OK */
+  /* Now call the relocation on the object's sections */
   ret = elfsh_relocate_object(file, rel, ELFSH_RELOC_STAGE1);
   rel->pending = 0;
-  depth --;
+  depth--;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
@@ -797,7 +793,16 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 int		elfsh_inject_etrel_withlist(elfshobj_t *host, elfshobj_t *rel, 
 					    elfshobj_t *listw, elfshobj_t *listsh)
 {
+  int		ret;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   list_workspace = listw;
   list_shared = listsh;
-  return (elfsh_inject_etrel(host, rel));
+  ret = elfsh_inject_etrel(host, rel);
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to inject ET_REL with list", ret);
+  else
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       (ret));
 }

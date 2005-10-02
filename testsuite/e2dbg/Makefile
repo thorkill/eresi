@@ -31,7 +31,7 @@ all	: $(OBJ)
 
 	cp ../../vm/e2dbg.so ibc.so.6
 
-	./script.sh
+	@echo "Now ./e2dbg ./a.out"
 
 clean	:
 	$(RM) $(OBJ) *~ \#* *\# $(RELOBJ) inject_e2dbg.esh 

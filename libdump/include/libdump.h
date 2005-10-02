@@ -9,11 +9,7 @@
 #ifndef _LIBDUMP_H_
 #define _LIBDUMP_H_ 1
 
-#if DUMP_INTERN
-  #include <libdump-internal.h>
-#endif
-
-#include <libhash.h>
+#include <libelfsh.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +24,12 @@
 #include <errno.h>
 
 #include <netdb.h>
+
+
+#ifndef __socklen_t_defined
+typedef uint32_t socklen_t;
+# define __socklen_t_defined
+#endif
 
 
 /* DUMP Recently Seen limit (s) */

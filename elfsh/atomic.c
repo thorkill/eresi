@@ -9,28 +9,31 @@
 /* Preconditions on atomic operations */
 int                     vm_preconds_atomics(elfshpath_t **o1, elfshpath_t **o2)
 {
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   *o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   *o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!*o1 || !*o2)
-    RET(-1);
-
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to lookup a parameter", -1);
 
   /* Lazy typing in action */
   if ((*o1)->type != (*o2)->type)
     {
       if ((*o2)->type == ELFSH_OBJUNK)
-        ELFSH_SETERROR("[elfsh:cmd_set] Source parameter undefined\n", -1);
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Source parameter undefined", -1);
       if ((*o1)->type == ELFSH_OBJUNK)
         vm_convert_object(*o1, (*o2)->type);
       else if (vm_convert_object(*o2, (*o1)->type) < 0)
-        ELFSH_SETERROR("[elfsh:cmd_set] SET parameters type are not compatible\n", -1);
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "SET parameters type are not compatible", -1);
     }
   else if ((*o1)->immed && !(*o1)->perm)
-    ELFSH_SETERROR("[elfsh:cmd_set] Dest. param. must not be a constant\n", -1);
-  return (0);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Dest. param. must not be a constant", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -48,12 +51,12 @@ int                     cmd_set()
   u_short               val16;
   int                   error;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks and conversions */
   if (vm_preconds_atomics(&o1, &o2) < 0)
-    return (-1);
-
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid variable transaction", (-1));
 
   /* Do the real assignation */
   switch (o1->type)
@@ -71,16 +74,10 @@ int                     cmd_set()
 
     case ELFSH_OBJBYTE:
       val8 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
-
-
-      //printf("set_obj with val8 before = %hhu \n", val8);
-
       if (o1->immed)
         o1->immed_val.byte = val8;
       else if (o1->set_obj(o1->parent, val8) < 0)
         goto err;
-
-      //printf("set_obj with val8 after = %hhu \n", val8);
 
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
@@ -93,16 +90,10 @@ int                     cmd_set()
 
     case ELFSH_OBJSHORT:
       val16 = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
-
-
-      //printf("set_obj with val16 before = %hu \n", val16);
-
       if (o1->immed)
 	o1->immed_val.half = val16;
       else if (o1->set_obj(o1->parent, val16) < 0)
 	goto err;
-
-      //printf("set_obj with val16 after = %u \n", val16);
 
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
@@ -115,16 +106,10 @@ int                     cmd_set()
 
     case ELFSH_OBJINT:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
-
-
-      //printf("set_obj with val32 before = %u \n", val32);
-
       if (o1->immed)
 	o1->immed_val.word = val32;
       else if (o1->set_obj(o1->parent, val32) < 0)
 	goto err;
-
-      //printf("set_obj with val32 after = %u \n", val32);
 
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
@@ -136,16 +121,10 @@ int                     cmd_set()
 
     case ELFSH_OBJLONG:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-
-
-      //printf("set_obj with val64 before = %hu \n", val64);
-
       if (o1->immed)
 	o1->immed_val.ent = val64;
       else if (o1->set_obj(o1->parent, val64) < 0)
 	goto err;
-
-      //printf("set_obj with val64 before = %hu \n", val64);
 
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
@@ -156,7 +135,8 @@ int                     cmd_set()
       break;
 
     default:
-      ELFSH_SETERROR("[elfsh:cmd_set] Unknown type for SET parameter\n", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unknown type for SET parameter", -1);
     }
 
   /* Print stuff and return */
@@ -171,7 +151,11 @@ int                     cmd_set()
     free(o2);
   if (!o1->perm)
     free(o1);
-  return (error);
+
+  if (error < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Error while setting $_", error);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 
@@ -188,11 +172,12 @@ int		cmd_get()
   int		error;
   elfshpath_t	*last;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_get] GET need a parameter\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "GET need a parameter", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   if (!o1)
     RET(-1);
@@ -256,7 +241,8 @@ int		cmd_get()
       break;
       
     default:
-      ELFSH_SETERROR("[elfsh:cmd_get] Unknown type for GET parameter\n", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unknown type for GET parameter", -1);
     }
 
   /* Print stuff and return OK */
@@ -268,7 +254,10 @@ int		cmd_get()
  err:
   if (!o1->perm)
     free(o1);
-  return (error);
+  if (error < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Error while setting $_", error);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 
@@ -280,11 +269,12 @@ int			cmd_add()
   elfshpath_t		*o2;
   elfsh_Addr		val;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_add] Need 2 parameters", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
@@ -300,7 +290,8 @@ int			cmd_add()
        o1->type != ELFSH_OBJSHORT && 
        o1->type != ELFSH_OBJLONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_SETERROR("[elfsh:cmd_add] Parameter has not INTEGER type\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
@@ -317,7 +308,7 @@ int			cmd_add()
     free(o2);
   if (!o1->perm)
     free(o1);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* SUB command */
@@ -327,11 +318,12 @@ int			cmd_sub()
   elfshpath_t		*o2;
   elfsh_Addr	       	val;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_sub] Need 2 parameters\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
@@ -343,7 +335,8 @@ int			cmd_sub()
        o1->type != ELFSH_OBJSHORT && 
        o1->type != ELFSH_OBJLONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_SETERROR("[elfsh:cmd_sub] Parameter has not INTEGER type\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
@@ -359,7 +352,7 @@ int			cmd_sub()
     free(o2);
   if (!o1->perm)
     free(o1);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -370,11 +363,12 @@ int			cmd_mul()
   elfshpath_t		*o2;
   elfsh_Addr		val;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_mul] Needs 2 parameters", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Needs 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
@@ -387,7 +381,8 @@ int			cmd_mul()
        o1->type != ELFSH_OBJSHORT && 
        o1->type != ELFSH_OBJLONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_SETERROR("[elfsh:cmd_mul] Parameter has not INTEGER type\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
@@ -403,7 +398,7 @@ int			cmd_mul()
     free(o2);
   if (!o1->perm)
     free(o1);
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* DIV command */
@@ -414,11 +409,12 @@ int			cmd_div()
   elfsh_Addr		val;
   elfsh_Addr		lav;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_div] Need 2 parameters", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
@@ -430,13 +426,15 @@ int			cmd_div()
        o1->type != ELFSH_OBJSHORT && 
        o1->type != ELFSH_OBJLONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_SETERROR("[elfsh:cmd_div] Parameter has not INTEGER type\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
   lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
   if (lav == 0)
-    ELFSH_SETERROR("[elfsh:cmd_div] Cannot divide by 0\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot divide by 0", -1);
   if (o1->immed)
     o1->immed_val.ent = val / lav;
   else
@@ -449,7 +447,7 @@ int			cmd_div()
   if (!o1->perm)
     free(o1);
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -461,11 +459,12 @@ int			cmd_mod()
   elfsh_Addr	       	val;
   elfsh_Addr	      	lav;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_SETERROR("[elfsh:cmd_mod] MOD needs 2 parameters", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "MOD needs 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
@@ -478,13 +477,15 @@ int			cmd_mod()
        o1->type != ELFSH_OBJSHORT && 
        o1->type != ELFSH_OBJLONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_SETERROR("[elfsh:cmd_mod] Parameter has not INTEGER type\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
   lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
   if (lav == 0)
-    ELFSH_SETERROR("[elfsh:cmd_mod] Cannot divide by 0\n", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot divide by 0", -1);
   if (o1->immed)
     o1->immed_val.ent = val % lav;
   else
@@ -497,7 +498,7 @@ int			cmd_mod()
   if (!o1->perm)
     free(o1);
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -514,7 +515,7 @@ int			cmd_cmp()
   int			error;
   char			logbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
@@ -533,7 +534,8 @@ int			cmd_cmp()
       snprintf(logbuf, BUFSIZ - 1, "o1type = %u, o2type = %u \n",
 	       o1->type, o2->type);
       vm_output(logbuf);
-      ELFSH_SETERROR("[elfsh:cmd_cmp] Invalid parameters\n", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Invalid parameters", -1);
     }
 
   error = -1;
@@ -559,17 +561,18 @@ int			cmd_cmp()
       val -= val2;
       break;
     default:
-      ELFSH_SETERROR("[elfsh:cmd_cmp] Unknown parameter type\n", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unknown parameter type", -1);
     }
 
   /* Set the last result variable */
-  //printf("setting lastres variable to %u \n", val);
-
   last = hash_get(&vars_hash, ELFSH_RESVAR);
   if (last == NULL)
     goto err;
   last->immed_val.ent = val;
   last->type = o1->type;
+  if (o1->type == ELFSH_OBJSTR)
+    last->type = ELFSH_OBJINT;
   error = 0;
 
  err:
@@ -584,8 +587,11 @@ int			cmd_cmp()
       snprintf(logbuf, BUFSIZ - 1, " [*] Objects are %s. \n\n", (!val ? "EQUALS" : "INEQUALS"));
       vm_output(logbuf);
     }
-
-  return (error);
+  
+  if (error < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Error while setting $_", error);
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 

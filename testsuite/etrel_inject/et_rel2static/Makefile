@@ -19,9 +19,7 @@ RM	= rm -f
 CFLAGS	= $(OPT) -I../../../libhash/include/
 
 all	: 
-	#@~/paxctl-0.3/paxctl -c etrel_injecter 
-#	@/sbin/paxctl -c ../../../vm/elfsh
-	#@~/paxctl-0.3/paxctl -m etrel_injecter 
+	$(MAKE) -C ../../../
 	@/sbin/paxctl -m ../../../vm/elfsh
 	$(CC) $(OPT) $(HOSTSRC) -static
 	#@strip a.out

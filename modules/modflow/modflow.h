@@ -13,9 +13,7 @@
 #include <stdio.h>
 #include <elfsh.h>
 #include <libelfsh.h>
-#include <libhash.h>
 #include <libasm.h>
-#include <libhash.h>
 #include "libbtree.h"
 
 

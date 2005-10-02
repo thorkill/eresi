@@ -16,14 +16,15 @@ int		cmd_dolist()
   char		c;
   char		c2;
   char		logbuf[BUFSIZ];
+  char		optbuf[BUFSIZ];
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   index = 1;
 
   /* Private descriptors */
-  if (world.curjob->list || !world.shared)
-    vm_output(" .::. Working files .::. \n");
+  if (world.curjob->list)
+    vm_output(" .::. Static Working files .::. \n");
   for (actual = world.curjob->list; actual != NULL; actual = actual->next, index++)
     {
       time = ctime(&actual->loadtime);
@@ -31,9 +32,19 @@ int		cmd_dolist()
       if (nl)
 	*nl = 0x00;
       c = (world.curjob->current == actual ? '*' : ' ');
-      c2 = ((actual->linkmap||actual->base) ? 'D' : ' ');
-     snprintf(logbuf, BUFSIZ - 1, " [%03u] %s %c%c ID: %u %s \n", 
-	     index, time, c, c2, actual->id, actual->name);
+      c2 = ((actual->linkmap || actual->rhdr.base) ? 'D' : ' ');
+      if (elfsh_is_debug_mode())
+	snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
+      else
+	snprintf(optbuf, BUFSIZ, "%s", "");
+
+     snprintf(logbuf, BUFSIZ - 1, " [%02u] %s %c%c %s ID: %2u %s %s \n", 
+	      index, time, c, c2, optbuf, actual->id, 
+	      elfsh_get_objtype(actual->hdr) == ET_REL  ? "ET_REL " : 
+	      elfsh_get_objtype(actual->hdr) == ET_DYN  ? "ET_DYN " : 
+	      elfsh_get_objtype(actual->hdr) == ET_EXEC ? "ET_EXEC" : 
+	      elfsh_get_objtype(actual->hdr) == ET_CORE ? "ET_CORE" : 
+	      "UNKNOWN", actual->name);
      vm_output(logbuf);
     }
 
@@ -48,15 +59,21 @@ int		cmd_dolist()
 	*nl = 0x00;
       c = (world.curjob->current == actual ? '*' : ' ');
       c2 = (actual->linkmap ? 'L' : ' ');
-     snprintf(logbuf, BUFSIZ - 1, " [%03u] %s %c%c ID: %u %s \n", 
-	     index, time, c, c2, actual->id, actual->name);
+      if (elfsh_is_debug_mode())
+	snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
+      else
+	snprintf(optbuf, BUFSIZ, "%s", "");
+
+     snprintf(logbuf, BUFSIZ - 1, " [%02u] %s %c%c %s ID: %02u %s \n", 
+	     index, time, c, c2, optbuf, actual->id, actual->name);
      vm_output(logbuf);
     }
 
+  
   if (!world.curjob->list && !world.shared)
     vm_output(" [*] No loaded file\n");
   vm_output("\n");
   vm_modlist();
   vm_output("\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

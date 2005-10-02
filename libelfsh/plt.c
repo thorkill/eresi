@@ -37,7 +37,8 @@ elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num)
 	file->secthash[ELFSH_SECTION_ALTPLT] = actual;
       }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_PLT]));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	                 (file->secthash[ELFSH_SECTION_PLT]));
 }
 
 

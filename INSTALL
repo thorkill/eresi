@@ -1,16 +1,16 @@
 
-Please consider this package as a symbolic release. It is preferable not to install
-it and to keep testing this from the uncompressed tarball source tree. The testsuite
-is not up2date, however all new features presented in the Embedded ELF Debugging
-articles are working and can be tested from testsuite/
+How to build elfsh, e2dbg, libasm and libelfsh :
 
-Please visit elfsh.devhell.org regulary, new versions, more packaged, are coming.
-
-For now :
 
 1. ./configure --help (select your options)
 2. make
-3. make install
-4. cd testsuite && make
+3. make install (optional, you can test from e2dbg/e2dbg and vm/elfsh)
 
--elfsh crew
+BETATESTERS: If you want to make install this tarball, be sure to edit 
+vm/e2dbg (its a script) and uncomment the 2 lines that you should find 
+easily for LD_PRELOAD path.
+
+4. cd testsuite && make (optional)
+
+
+Read each directory README file for more information.

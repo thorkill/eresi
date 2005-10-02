@@ -300,6 +300,7 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
 {
   elfsh_Phdr	*actual;
   int		index;
+  elfsh_Addr	addr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -309,13 +310,29 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
-  /* Find the parent segment */
+  /* Try to find in pht */
   for (index = 0, actual = new->parent->pht; index < new->parent->hdr->e_phnum;
        index++)
-    if (INTERVAL(actual[index].p_vaddr, new->shdr->sh_addr, 
+      if (INTERVAL(actual[index].p_vaddr, new->shdr->sh_addr,
 		 actual[index].p_vaddr + actual[index].p_memsz))
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (actual + index));
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (actual + index));
 
+  /* Fix the address we look for depending on the file type and context */
+  addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(new) ? 
+	  file->rhdr.base + new->shdr->sh_addr : new->shdr->sh_addr);
+  
+  /* Try to find in runtime pht */
+  for (index = 0, actual = new->parent->rpht; index < new->parent->rhdr.rphtnbr;
+       index++)
+    {
+
+      //printf("RPHT parent : Trying to match interval %08X <= %08X < %08X \n", 
+      //actual[index].p_vaddr, addr, actual[index].p_vaddr + actual[index].p_memsz);
+
+      if (INTERVAL(actual[index].p_vaddr, addr,
+		   actual[index].p_vaddr + actual[index].p_memsz))
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (actual + index));
+    }
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to get parent PHDR", NULL);
 }
@@ -325,9 +342,19 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
 int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* For SHT matchs */
+  if (p->p_offset && new->shdr->sh_offset)
+    {
+      if (INTERVAL(p->p_offset, new->shdr->sh_offset, p->p_offset + p->p_filesz))
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+    }
 
-  if (INTERVAL(p->p_offset, new->shdr->sh_offset, p->p_offset + p->p_filesz))
+  /* Added for RSHT matchs */
+  else if (new->shdr->sh_addr && 
+	   INTERVAL(p->p_vaddr, new->shdr->sh_addr, p->p_vaddr + p->p_memsz))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -352,9 +379,10 @@ elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
   for (index = 0; index < nbr; index++)
     if (file->pht[index].p_type == PT_LOAD && file->pht[index].p_vaddr < vaddr)
       vaddr = file->pht[index].p_vaddr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_objtype(file->hdr) == ET_DYN ? 
-	  vaddr + file->base : 
-	  vaddr));
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_get_objtype(file->hdr) == ET_DYN ? 
+		      vaddr + file->rhdr.base :  vaddr));
 }
 
 
@@ -371,42 +399,6 @@ void	*elfsh_get_pht(elfshobj_t *file, int *num)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->pht));
 }
-
-/* Return a ptr on the program header table */
-void	*elfsh_get_rpht(elfshobj_t *file, int *num)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (file->rpht == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Runtime PHT does not exist", NULL);
-  if (num != NULL)
-    *num = file->rphtnbr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->rpht));
-}
-
-/* Create and insert the Runtime PHT */
-int		elfsh_create_rpht(elfshobj_t *file)
-{
-  elfshsect_t	*sect;
-  
-  /* Create and insert the new unmapped section containing it */
-
-  sect = elfsh_insert_section(file, ELFSH_SECTION_NAME_RPHT, 
-			      NULL, ELFSH_UNMAPPED_INJECTION, 
-			      elfsh_get_pagesize(file), 0);
-  if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to insert Runtime PHT", -1);
-
-  elfsh_set_rphtoff(file->hdr, sect->shdr->sh_offset);
-  if (!sect->data)
-    XALLOC(sect->data, elfsh_get_pagesize(file), -1);
-  file->rpht = sect->data;
-  file->rphtnbr = 0;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 
 /* Return a entry giving its parent and its index */
 elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht, 
@@ -435,43 +427,6 @@ elfsh_Phdr	elfsh_create_phdr(elfsh_Word t,
   new.p_align = al;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
-
-
-/* Insert a PHT entry in the RPHT (e2dbg safe) */
-elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h)
-{
-  elfshsect_t	*rpht;
-  elfshsect_t	*cur;
-  elfsh_Phdr	*phdr;
- 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Some preliminary checks */
-  phdr = elfsh_get_rpht(file, NULL);
-  if (!phdr && elfsh_create_rpht(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to create Runtime PHT", NULL);
-
-  rpht = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RPHT, 0, 0, 0);
-  if (!rpht)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get Runtime PHT", NULL);
-
-  /* Update all section file offsets */
-  for (cur = rpht; cur != NULL; cur = cur->next)
-    if (cur->shdr->sh_offset)
-      cur->shdr->sh_offset += file->hdr->e_phentsize;
-
-  /* Fixup SHT file offset */
-  if (file->hdr->e_shoff >= rpht->shdr->sh_offset)
-    file->hdr->e_shoff += file->hdr->e_phentsize;
-
-  /* Everything OK */
-  file->rpht[file->rphtnbr++] = *h;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->rpht + file->rphtnbr - 1));
-}
-
 
 
 /* Insert a PHT entry ondisk */

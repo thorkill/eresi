@@ -17,6 +17,8 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
   u_int		idx;
   elfsh_Addr	*addr;
 
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #if	__DEBUG_ETRELintoETDYN__
   printf("[DEBUG_ETRELintoETDYN] Shifting GOT from %u bytes \n", size);
 #endif
@@ -33,7 +35,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
       if (*addr)
 	*addr += size;
     }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 /* Shift ALTGOT on ET_DYN */
@@ -44,6 +46,7 @@ int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
   u_int		idx;
   elfsh_Addr	*addr;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #if	__DEBUG_ETRELintoETDYN__
   printf("[DEBUG_ETRELintoETDYN] Shifting ALTGOT from %u bytes \n", size);
 #endif
@@ -144,6 +147,7 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
   {
     elfshsect_t *new;
+   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);    
     
     new = file->secthash[ELFSH_SECTION_GOT];
     if (new == NULL)
@@ -168,7 +172,7 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
 /* Return the 'range'th got - seems ok */
 elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, 
 				      elfsh_Addr range, 
-				      u_int *nbr)
+				      u_int	 *nbr)
 {
   elfshsect_t	*got;
   elfshsect_t	*cursect;

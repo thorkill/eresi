@@ -1,0 +1,37 @@
+
+
+Sous Linux/MIPS:
+
+- on load got+8 (= *[%gp - 0x8000 + 8]) dans un registre (ex: %a0)
+- on ajoute un offset pour arriver a la bonne entree de la got
+
+-> utilise pour les pointeurs passes en param (ex: ptr sur des .rodata)
+
+- on load la bonne entre de got dans un registre (ex: %t9)
+  Pour cela on fait : *[%gp - 0x8000 + off] calcule direct depuis .text
+
+-> on load l'addr de la func a appeler dans le registre
+
+   * Si on est pas deja resolve, on execute lentree de la plt pour la 
+   fonction:
+
+   0x400680 <hlt+36>:      lw      t9,-32752(gp)
+   0x400684 <hlt+40>:      move    t7,ra
+   0x400688 <hlt+44>:      jalr    t9
+   0x40068c <hlt+48>:      li      t8,9
+
+Il n'y a pas de vrai plt, cest juste ce morceau de code qui est duplique
+autant de fois qu'il le faut et ajoute dans .text juste apres le _start.
+
+       On fait une sauvegarde de $ra dans $t7 ce qui va identifier 
+       l'entree de la pseudo-plt au dynamic linker. L'offset dans $t8
+       est un offset dans .dynsym
+
+      
+
+   * Si on etait deja resolve (donc la .got deja remplie pour cette
+   fonction), alors on appelera directement la bonne fonction car
+   la got aura ete renseignee et le call indirect depuis .text ira
+   directement au bon endroit.
+
+

@@ -14,6 +14,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    elfsh_Sym	*symbol,
 					    elfsh_Addr  addr)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "CFLOW unimplemented yet for SPARC", -1);
 }

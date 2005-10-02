@@ -26,8 +26,11 @@ int	inspect_cmd() {
   asm_instr	ins;
   char		*str;
 
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
+  sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0);
+  if (!sect)
     {
       puts(" [*] no \".control\" section found. Aborting\n");
       return (-1);
@@ -101,6 +104,6 @@ int	inspect_cmd() {
     }
   free(buffer);
   puts(" * done\n");
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
   

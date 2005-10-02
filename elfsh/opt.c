@@ -9,80 +9,87 @@
 /* Read the input file parameter */
 int		vm_getoption(u_int index, u_int argc, char **argv)
 {
-
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    return (-1);				
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
-  return (1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Read the input file parameter */
 int		vm_getinput(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    return (-1);				
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter not available", (-1));				
   world.state.input = argv[index + 1];
-  return (1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Read the output file parameter */
 int		vm_getoutput(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    return (-1);				
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter not available", (-1));				
   world.state.output = argv[index + 1];
-  return (1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
 int		vm_getoption2(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 2 >= argc)			
-    return (-1);				
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
-  return (2);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
 int		vm_getoption3(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 3 >= argc)			
-    return (-1);				
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
   world.curjob->curcmd->param[2] = argv[index + 3];
-  return (3);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (3));
 }
 
 /* Activate a non-mandatory-regex-parameter option */
 int		vm_getregxoption(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 < argc && argv[index + 1][0] != ELFSH_MINUS)		
     {									
-      if (regcomp(&world.curjob->curcmd->regx[0], argv[index + 1], REG_EXTENDED) < 0)		
-	return (-1);						
+      if (regcomp(&world.curjob->curcmd->regx[0], argv[index + 1], 
+		  REG_EXTENDED) != 0 || *argv[index + 1] == '*')
+	  
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Parameter not available", (-1));
       world.curjob->curcmd->use_regx[0] = 1;
-      return (1);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
     }				
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Fetch parameters until we find NULL or something starting by '-' */
@@ -90,13 +97,12 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
 {
   u_int		idx;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   for (idx = 0; 
        idx < 254 && index + idx + 1 < argc;
        idx++)
     world.curjob->curcmd->param[idx] = argv[index + idx + 1];
-  return (idx);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
 /* Add an entry to the requested dump list */
@@ -107,7 +113,7 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
   elfshlist_t	*cur;
   char		*used;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (idx < index + 2)
     {
@@ -117,7 +123,8 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
       if (argv[idx + 1] == NULL)								
 	{
 	  *used = 0;
-	  return (idx == index ? -1 : 1);
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     (idx == index ? -1 : 1));
 	}
 
       cur->rname = argv[idx + 1];
@@ -138,34 +145,31 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
 	  *off = 0;								
 	}									
       
-      if (regcomp(&cur->name, argv[idx + 1], REG_EXTENDED) < 0 ||
-	  !cur->name.buffer)
-	{
-	  vm_output("[elfsh:vm_add2list] Regular expression failed \n");
-	  return (-1);
-	}
+      if (regcomp(&cur->name, argv[idx + 1], REG_EXTENDED | REG_ICASE) != 0 ||
+	  *cur->rname == '*')
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Regular computation failed", (-1));
       *used = 1;
       idx++;
     }
-  return (2);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
 /* Add an DISASM typed entry */
 int		vm_getdisasm(u_int index, u_int argc, char **argv)
 {
-
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  return (vm_add2list(ELFSH_DISASM_VIEW, index, argc, argv));
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     vm_add2list(ELFSH_DISASM_VIEW, index, argc, argv));
 }
 
 /* Add an HEXA typed entry */
 int		vm_gethexa(u_int index, u_int argc, char **argv)
 {
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  return (vm_add2list(ELFSH_HEXA_VIEW, index, argc, argv));
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		     vm_add2list(ELFSH_HEXA_VIEW, index, argc, argv));
 }
 
 /* Parse the commands */
@@ -173,14 +177,14 @@ int			vm_parseopt(int argc, char **argv)
 {
   u_int			index;
   int			ret;
-  elfshcmd_t		*actual;
+  volatile elfshcmd_t		*actual;
   char			*name;
   char			label[16];
   char			c;
   static u_int		pendinglabel = 0;
   static elfshargv_t	*new = NULL;
 
-  E2DBG_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Main option reading loop : using the command hash table */
   for (index = 1; index < argc; index++)
@@ -209,7 +213,7 @@ int			vm_parseopt(int argc, char **argv)
 	    {
 	      ret = actual->reg(index, argc, argv);
 	      if (ret < 0)
-              return (vm_doerror(vm_badparam, argv[index]));
+              ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Command not found", (vm_doerror(vm_badparam, argv[index])));
 	      index += ret;
 	    }
 	}
@@ -238,7 +242,7 @@ int			vm_parseopt(int argc, char **argv)
       
       /* We matched nothing known, error */
       else
-          return (vm_doerror(vm_unknown, argv[index]));
+          ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown parsing error", (vm_doerror(vm_unknown, argv[index])));
 
       /* Put the new command at the end of the list */
       new->name = name;
@@ -255,7 +259,7 @@ int			vm_parseopt(int argc, char **argv)
       
     }
 
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

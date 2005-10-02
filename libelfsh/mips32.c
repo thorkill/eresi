@@ -92,16 +92,18 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
 
   /* Determine the minimal aligned length */
   /* RISC's powa */
-  ret = 3*4; // 3 instructions : 1 add t9..., 1 jmp, 1 nop for delay slot
+  /* 3 instructions : 1 add t9..., 1 jmp, 1 nop for delay slot */
+  ret = 3 * 4; 
 
   /* Create the hook for this function */
   data = elfsh_get_raw(hooks);
   memset(data + hooks->curend, 0x00, 40); // nop 
 
-  /* addi $t, $s, imm : 0010 00ss ssst tttt iiii iiii iiii iiii*/
+  /* addi $t, $s, imm : 0010 00ss ssst tttt iiii iiii iiii iiii */
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x0)) = 0x23390000;
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x0)) |= 
     (((uint32_t) sym.st_value - (uint32_t)hook) & 0x0000ffff);
+
   /* first three hijacked function's instructions */
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x4)) = buff[0];
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x8)) = buff[1];
@@ -112,6 +114,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
      shited by 2 */
   memcpy(data + hooks->curend + 0x10, "\x08\x00\x00\x00", 4);
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x10)) |= ((symbol->st_value + 0x8) & (~ 0xe0000000 ))>>2;
+
   /* NOTE : there must be a NOP after this last jump */
 
   /* Insert the old symbol on the original saved bytes */
@@ -164,6 +167,7 @@ int		elfsh_hijack_plt_mips32(elfshobj_t *file,
 					elfsh_Sym *symbol,
 					elfsh_Addr addr)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS\n", 0);
 }
@@ -367,6 +371,8 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 							/* XXX what if there is no .got ? */
 #define GP	(elfsh_get_gpvalue_addr(new->parent)?(*(elfsh_get_gpvalue_addr(new->parent))):NULL)					
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   retval = 0;
   switch (elfsh_get_reltype(cur))
     {
@@ -482,7 +488,8 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       if (HI16_cur == NULL || HI16_dword == NULL)
 	{
 	  printf("[DEBUG] elfsh_relocate_mips32: You loose\n");
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"????", -1);
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			    "Invalid HI16 relocation context", -1);
 	}
 
       /* 
@@ -549,8 +556,8 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
 
-      printf("elfsh_relocate_mips32: Unknown relocation type \n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"????", -1);      
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			"Unknown relocation type", -1);      
       
     case  R_MIPS_GPREL16:
       break;
@@ -600,8 +607,8 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
 
-      printf("elfsh_relocate_mips32: Unknown relocation type \n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"????", -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			"Unknown MIPS relocation type", -1);
 
     case  R_MIPS_PC16:
       break;
@@ -641,8 +648,8 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
     case  R_MIPS_JALR:
       break;
     default:
-ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
-		     -1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unsupported relocation type", -1);
       break;
     }
 

@@ -337,6 +337,8 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	  break;
 	}
     }    
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 

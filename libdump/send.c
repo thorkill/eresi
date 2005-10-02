@@ -15,6 +15,8 @@ int	dump_send_real(int s, pkt_t *pkt)
   void  *data;
   int	len = HDR_SIZE + ntohl(pkt->path_len)*sizeof (dump_id_t) + ntohl(pkt->size);
     
+  ELFSH_NOPROFILE_IN();
+
   if (pkt == NULL)
     {
       /* ERROR error handling */
@@ -71,6 +73,8 @@ int	dump_send_RR(dump_id_t src,
   int	 ret;
   pkt_t	 *pkt;
 
+  ELFSH_NOPROFILE_IN();
+
   XALLOC(pkt, sizeof (pkt_t), -1);
 
   pkt->src = src;
@@ -103,6 +107,8 @@ int	dump_send_Rr(dump_id_t src,
 {
   int	ret;
   pkt_t *pkt;
+
+  ELFSH_NOPROFILE_IN();
 
   XALLOC(pkt, sizeof (pkt_t), -1);
    
@@ -139,6 +145,8 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
   int		index;
   hashent_t	*actual;
   pkt_t		*pkt;
+
+  ELFSH_NOPROFILE_IN();
 
   XALLOC(pkt, sizeof (pkt_t), -1);
   
