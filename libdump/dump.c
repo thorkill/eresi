@@ -287,7 +287,7 @@ int		dump_del_send_queue(pkt_t *pkt)
 	  else 
 	    prev->next = tmp->next;
 	    
-	  free(tmp);
+	  XFREE(tmp);
 	  /* XXX to improve : pkt never freed */
 	  return 0;
 	}
@@ -319,10 +319,10 @@ int	dump_free(pkt_t *pkt)
   if (pkt != NULL)
     {
       if (pkt->path != NULL)
-	free(pkt->path);
+	XFREE(pkt->path);
       if (pkt->data != NULL)
-	free(pkt->data);
-      free(pkt);
+	XFREE(pkt->data);
+      XFREE(pkt);
     }
   return 0;
 }

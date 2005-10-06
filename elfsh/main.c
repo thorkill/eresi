@@ -82,8 +82,8 @@ int		vm_loop(int argc, char **argv)
       {
 	if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
 	    {
-	      //free(argv[1]);
-	      free(argv);
+	      //XFREE(argv[1]);
+	      XFREE(argv);
 	      if (world.state.vm_mode != ELFSH_VMSTATE_IMODE && 
 		  world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
 		goto end;
@@ -252,7 +252,7 @@ int		vm_config()
       world.curjob->curcmd->param[0] = buff;
       ret = cmd_source();
       world.curjob->curcmd = NULL;
-      free(new);
+      XFREE(new);
     }
   if (ret < 0)
     vm_output("\n [*] No configuration in ~/.elfshrc \n\n");

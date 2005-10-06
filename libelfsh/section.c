@@ -823,7 +823,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   obj->hdr->e_shnum--;
   XALLOC(new, obj->hdr->e_shnum * sizeof(elfsh_Shdr), -1);
   memcpy(new, obj->sht, obj->hdr->e_shnum * sizeof(elfsh_Shdr));
-  free(obj->sht);
+  XFREE(obj->sht);
   obj->sht = new;
   elfsh_sync_sht(obj);
   elfsh_sync_sectnames(obj);
@@ -878,15 +878,15 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
     }
 
   /* Free deleted section */
-  free(todel->name);
-  free(todel->data);
+  XFREE(todel->name);
+  XFREE(todel->data);
   if (todel->altdata)
-    free(todel->altdata);
+    XFREE(todel->altdata);
   if (todel->terdata)
-    free(todel->terdata);
+    XFREE(todel->terdata);
   if (todel->rel)
-    free(todel->rel);
-  free(todel);
+    XFREE(todel->rel);
+  XFREE(todel);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

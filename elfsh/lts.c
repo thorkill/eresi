@@ -123,7 +123,7 @@ int		vm_convert2int(elfshpath_t *obj)
     case ELFSH_OBJRAW:
       val32 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
-	free(obj->immed_val.str);
+	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.word = val32;
       obj->type = ELFSH_OBJINT;
@@ -178,7 +178,7 @@ int		vm_convert2long(elfshpath_t *obj)
     case ELFSH_OBJRAW:
       val64 = atol(obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent));
       if (obj->immed && obj->immed_val.str)
-	free(obj->immed_val.str);
+	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.ent = val64;
       obj->type = ELFSH_OBJLONG;
@@ -293,7 +293,7 @@ int		vm_convert2byte(elfshpath_t *obj)
     case ELFSH_OBJSTR:
       val8 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
-	free(obj->immed_val.str);
+	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.byte = val8;
       obj->type = ELFSH_OBJBYTE;
@@ -351,7 +351,7 @@ int		vm_convert2short(elfshpath_t *obj)
     case ELFSH_OBJSTR:
       val16 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
-	free(obj->immed_val.str);
+	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.half = val16;
       obj->type = ELFSH_OBJSHORT;

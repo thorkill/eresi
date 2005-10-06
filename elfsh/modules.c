@@ -88,7 +88,7 @@ int		cmd_modload()
 
   /* Error handling */
  err:
-  free(new);
+  XFREE(new);
 #ifdef __BEOS__
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, errmsg, -1);
 #else
@@ -175,8 +175,8 @@ int		cmd_modunload()
 	   todel->path, ctime(&unload_time));
   vm_output(buf);
   hash_del(&mod_hash, todel->path);
-  free(todel->path);
-  free(todel);
+  XFREE(todel->path);
+  XFREE(todel);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

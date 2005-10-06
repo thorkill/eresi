@@ -35,7 +35,7 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	  printf("[WW] Connection closed by remote host (1)\n");
 #endif
-	  free(msg);
+	  XFREE(msg);
 	  return  (pkt_t *)(-1);
         }
 
@@ -48,7 +48,7 @@ pkt_t	*dump_recv_pkt(int s)
 	      try++;
 	      if (try > DUMP_MAXTRY)
 		{
-		  free (msg);
+		  XFREE (msg);
 		  return (pkt_t *)(-1);
 		}
 	      continue;
@@ -57,7 +57,7 @@ pkt_t	*dump_recv_pkt(int s)
 	  printf("[EE] Error while reading on socket (1)\n");
 	  perror("recv");
 #endif
-	  free(msg);
+	  XFREE(msg);
 	  return (pkt_t *)(-1);
         }
       
@@ -85,7 +85,7 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	      printf("[WW] Connection closed by remote host (2)\n");
 #endif
-	      free(msg);
+	      XFREE(msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -98,8 +98,8 @@ pkt_t	*dump_recv_pkt(int s)
 		  try++;
 		  if (try > DUMP_MAXTRY)
 		    {
-		      free(msg->path);
-		      free(msg);
+		      XFREE(msg->path);
+		      XFREE(msg);
 		      return (pkt_t *)(-1);
 		    }
 		  continue;
@@ -108,8 +108,8 @@ pkt_t	*dump_recv_pkt(int s)
 	      printf("[EE] Error while reading on socket (2)\n");
 	      perror("recv");
 #endif
-	      free(msg->path);
-	      free(msg);
+	      XFREE(msg->path);
+	      XFREE(msg);
 	      return  (pkt_t *)(-1);
             }
 
@@ -140,9 +140,9 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	      printf("[WW] Connection closed by remote host (3)\n");
 #endif
-	      free(msg->path);
-	      free(msg->data);
-	      free(msg);
+	      XFREE(msg->path);
+	      XFREE(msg->data);
+	      XFREE(msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -155,9 +155,9 @@ pkt_t	*dump_recv_pkt(int s)
 		  try++;
 		  if (try > DUMP_MAXTRY)
 		    {
-		      free(msg->path);
-		      free(msg->data);
-		      free(msg);
+		      XFREE(msg->path);
+		      XFREE(msg->data);
+		      XFREE(msg);
 		      return (pkt_t *)(-1);
 		    }
 		  continue;
@@ -166,9 +166,9 @@ pkt_t	*dump_recv_pkt(int s)
 	      printf("[EE] Error while reading on socket (3)\n");
 	      perror("recv");
 #endif
-	      free(msg->path);
-	      free(msg->data);
-	      free(msg);
+	      XFREE(msg->path);
+	      XFREE(msg->data);
+	      XFREE(msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -236,7 +236,7 @@ int		dump_receive_RR(pkt_t *pkt)
 #if !defined(ELFSH_INTERN)
 	  fprintf(stderr, "dump_send_Rr error (1)\n");
 #endif
-	  free(npath);
+	  XFREE(npath);
 	  return (-1);
         }
     }
@@ -274,7 +274,7 @@ int		dump_receive_RR(pkt_t *pkt)
 #if !defined(ELFSH_INTERN)
 		    printf("[EE] dump_send_RR error (2)\n");
 #endif
-		    free(npath);
+		    XFREE(npath);
 		    return (-1);
 		  }
 	      }
@@ -291,7 +291,7 @@ int		dump_receive_RR(pkt_t *pkt)
       
     }
     
-  free(npath);
+  XFREE(npath);
   return 0;
 }
 
@@ -349,8 +349,8 @@ int	dump_receive_Rr(pkt_t *pkt)
 	  dump_send_real(next_hop_socket, spkt);
 	  
 	  /* free pkt */
-	  free(spkt->data);
-	  free(spkt);
+	  XFREE(spkt->data);
+	  XFREE(spkt);
 
 	  /* remove it from wait queue */
 	  dump_del_send_queue(spkt);

@@ -254,7 +254,7 @@ void		dump_assembly(int fd, elfshblk_t *blk)
 	}
       // Chawrite(fd, "}", 1);
     }
-  free(buffer);
+  XFREE(buffer);
   world.state.vm_quiet = vm_quiet;
 }
 

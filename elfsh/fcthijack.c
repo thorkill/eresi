@@ -155,7 +155,7 @@ int		cmd_hijack()
       vm_output(logbuf);
     }
   if (rev != NULL)
-    free(rev);
+    XFREE(rev);
   
   /* Everything is ok */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

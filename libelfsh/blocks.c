@@ -149,9 +149,9 @@ void		elfsh_free_blocks(elfshobj_t *file)
 	for (blk = sct->altdata; blk; blk = tmpblk)
 	  {
 	    tmpblk = blk->next;
-	    free(blk);
+	    XFREE(blk);
 	  }
-	free(sct);
+	XFREE(sct);
       }
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

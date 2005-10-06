@@ -16,6 +16,8 @@ void			vm_log(char *str)
   u_int			delta;
   
 
+  ELFSH_NOPROFILE_IN();
+
   if (!str || !world.curjob || 
       !world.curjob->io.outcache.lines || 
       !world.curjob->io.outcache.cols)
@@ -34,8 +36,11 @@ void			vm_log(char *str)
     {
       //printf("x : %d y : %d\n", world.curjob->io.outcache.lines, world.curjob->io.outcache.cols);
 
-      world.curjob->screen.buf = malloc(world.curjob->io.outcache.lines * 
-					world.curjob->io.outcache.cols + 1);
+      XALLOC(world.curjob->screen.buf, 
+	     world.curjob->io.outcache.lines * 
+	     world.curjob->io.outcache.cols + 1, 
+	     -1);
+
       if (!world.curjob->screen.buf)
 	{
 	  perror("malloc");
@@ -56,6 +61,7 @@ void			vm_log(char *str)
       printf("resizing needed ...\n");
       return ;
       /*
+	XREALLOC !!
       world.curjob->screen.buf = realloc(world.curjob->screen.buf,
 					 world.curjob->io.outcache.cols *
 					 world.curjob->io.outcache.lines);
@@ -169,6 +175,8 @@ void			vm_log(char *str)
     world.curjob->screen.cur = scrsize;
     }
   */
+
+  //ELFSH_NOPROFILE_ROUT();
 }
 
 

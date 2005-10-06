@@ -219,14 +219,14 @@ int		 vm_socket_del(char *inet_addr)
 	  nbargc = vm_socket_get_nb_recvd(inet_ntoa(tmp->sock.addr.sin_addr));
 	  for (i = 0 ; i < nbargc ; i++)
             {
-	      free (tmp->sock.recvd[i]);
+	      XFREE (tmp->sock.recvd[i]);
             }
 #if __DEBUG_NETWORK__
 	  fprintf(stderr, "[DEBUG NETWORK] We are deleting a socket struct which has"
 		 "new received data.\n");
 #endif
         }
-      free(tmp->sock.recvd);
+      XFREE(tmp->sock.recvd);
       hash_del(&world.jobs, inet_addr);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -354,7 +354,7 @@ int		vm_update_recvd(elfshsock_t *socket)
 #endif
 
       perror("read");
-      free(buf);
+      XFREE(buf);
       vm_exit(-1);
     }
 
@@ -378,15 +378,15 @@ int		vm_update_recvd(elfshsock_t *socket)
 
 	  if (socket->recvd_f == OLD)
             {
-	      free(buf);
+	      XFREE(buf);
 	      vm_socket_del(inet_ntoa(socket->addr.sin_addr));
 	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
             }
 	  else
             {
-	      //TODO : free all buffer, if buffers are marked OLD,
+	      //TODO : XFREE all buffer, if buffers are marked OLD,
 	      //vm_net_input has been called so vm_socket_merge_recvd too.
-	      free (buf);
+	      XFREE (buf);
 	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
             }
         }
@@ -501,7 +501,7 @@ int	vm_dump_output(char *buf)
 
   ret = dump_send(world.curjob->io.pkt->src, tmp, strlen(buf) + 1 + 1);
 
-  //  free (tmp);
+  //  XFREE (tmp);
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -618,7 +618,7 @@ int			vm_net_accept()
 		  "decided to abort the connection\n");
 #endif
 	  close(temp_sock);
-	  free(temp_addr);
+	  XFREE(temp_addr);
 	  ret = -1;
         }
     }  
@@ -628,7 +628,7 @@ int			vm_net_accept()
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[DEBUG NETWORK] He might have been afraid.\n");
 #endif
-      free(temp_addr);
+      XFREE(temp_addr);
       ret = -1;
     }
 

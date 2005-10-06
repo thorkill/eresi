@@ -12,7 +12,7 @@ LD			= gcc
 RM			= rm -f 
 AR			= ar rc
 CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN      \
-			-I../libasm/include/ $(BITS) $(BUILDOP)
+			-I../libasm/include/ -I../libc $(BITS) $(BUILDOP)
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c error.c stab.c \
 			symbol.c notes.c reloc.c blocks.c ctors.c dtors.c   \
@@ -28,7 +28,7 @@ OBJ			= $(SRC:.c=.o)
 NAME			= libelfsh
 
 all			: $(OBJ)
-			@$(LD) $(BITS) -shared $(OBJ) -o $(NAME).so
+			@$(LD) -L../libc/ -lcelfsh $(BITS) -shared $(OBJ) -o $(NAME).so
 			@$(AR) $(NAME).a $(OBJ)
 			@$(RANLIB) $(NAME).a
 

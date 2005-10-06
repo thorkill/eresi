@@ -26,7 +26,9 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   new->active = 0;
   new->sourced = 0;
 
+#if defined(USE_READLN)
   new->screen.buf = new->screen.tail = new->screen.head = NULL;
+#endif
 
   for (i = 0; i < ELFSH_MAX_SOURCE_DEPTH; i++)
     {
@@ -43,7 +45,9 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
 void		vm_switch_job(elfshjob_t      *job)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+#if defined(USE_READLN)
   world.curjob->io.buf = NULL;
+#endif
   world.curjob->active = 0;
   world.curjob = job;
   job->active = 1;

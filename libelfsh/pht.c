@@ -523,7 +523,7 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
 
   /* Everything OK */
   file->hdr->e_phnum++;
-  free(file->pht);
+  XFREE(file->pht);
   file->pht = new;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, new + (file->hdr->e_phnum - 1));
 }

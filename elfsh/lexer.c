@@ -47,7 +47,7 @@ char		*vm_getln(char *ptr)
       if (!buf || !*buf)
 	{
 	  if (buf)
-	    free(buf);
+	    XFREE(buf);
 	  return (NULL);
 	}
 
@@ -73,7 +73,7 @@ char		*vm_getln(char *ptr)
 #if defined(USE_READLN)
           if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
 #endif
-	    free(buf);
+	    XFREE(buf);
 
 
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||

@@ -102,7 +102,7 @@ int	inspect_cmd() {
       printf("%8x:\t%s\n", blk->vaddr + index, str);
       
     }
-  free(buffer);
+  XFREE(buffer);
   puts(" * done\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

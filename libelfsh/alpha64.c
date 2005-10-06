@@ -269,7 +269,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   modgot = elfsh_get_section_by_name(infile->parent, buff, 0, 0, 0);
   if (modgot)
     {
-      free(buff);
+      XFREE(buff);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot));
     }
 

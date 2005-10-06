@@ -361,7 +361,7 @@ int			cmd_flow(void)
   */
 
   
-  // free(buffer);
+  // XFREE(buffer);
   
   return (0);
 }

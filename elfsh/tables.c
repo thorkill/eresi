@@ -40,6 +40,9 @@ hash_t		dynsym_L2_hash;	/* For .dynsym objects */
 hash_t		dyn_L2_hash;	/* For .dynamic objects */
 hash_t		sct_L2_hash;	/* Section data (byte/word/dword/instr arrays) */
 hash_t		got_L2_hash;	/* GOT objects */
+hash_t          vers_L2_hash;   /* For .gnu.version */
+hash_t          verd_L2_hash;   /* For .gnu.version_d */
+hash_t          vern_L2_hash;   /* For .gnu.version_r */
 
 /* Color hash */
 hash_t          fg_color_hash;
@@ -153,6 +156,32 @@ static void	setup_L1hash()
 							 elfsh_get_section_by_idx,
 							 NULL, NULL,
 							 sizeof (elfshsect_t)));
+
+  hash_add(&L1_hash, "version", (void *) vm_create_L1ENT(elfsh_get_versymtab,
+							 NULL,
+							 elfsh_get_versym_by_name,
+							 &vers_L2_hash,
+							 elfsh_get_versym_entry_by_index,
+							 NULL, NULL,
+							 sizeof (elfsh_Half)));
+  
+  hash_add(&L1_hash, "verdef", (void *) vm_create_L1ENT(elfsh_get_verdeftab,
+							elfsh_get_verdeftab_by_idx,
+							NULL,
+							&verd_L2_hash,
+							elfsh_get_verdef_entry_by_index,
+							NULL, NULL,
+							sizeof (elfsh_Verdef)));
+  
+  hash_add(&L1_hash, "verneed", (void *) vm_create_L1ENT(elfsh_get_verneedtab,
+							 NULL,
+							 elfsh_get_verneed_by_name,
+							 &vern_L2_hash,
+							 elfsh_get_verneed_entry_by_index, 
+							 NULL, NULL,
+							 sizeof (elfsh_Verneed)));
+  
+  
 }
 
 
@@ -524,6 +553,92 @@ static void	setup_scthash()
 
 
 
+/* Hash table for versions sections */
+static void   setup_vershash()
+{
+  
+  /* Version symbols */
+  hash_init(&vers_L2_hash, 11);
+  hash_add(&vers_L2_hash, "value", vm_create_L2ENT(elfsh_get_versym_val,
+						   elfsh_set_versym_val,
+						   ELFSH_OBJSHORT, NULL,
+						   NULL, NULL, NULL));
+  
+  /* Version def */
+  hash_init(&verd_L2_hash, 11);
+  hash_add(&verd_L2_hash, "index", vm_create_L2ENT(elfsh_get_verdef_ndx,
+						   elfsh_set_verdef_ndx,
+						   ELFSH_OBJSHORT, NULL,
+						   NULL, NULL, NULL));
+   hash_add(&verd_L2_hash, "count", vm_create_L2ENT(elfsh_get_verdef_cnt,
+						    elfsh_set_verdef_cnt,
+						    ELFSH_OBJSHORT, NULL,
+						    NULL, NULL, NULL));
+   hash_add(&verd_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verdef_hash, 
+						   elfsh_set_verdef_hash, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   hash_add(&verd_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verdef_flags, 
+						   elfsh_set_verdef_flags, 
+						   ELFSH_OBJSHORT, NULL, 
+						   NULL, NULL, NULL));
+   hash_add(&verd_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verdef_aux, 
+						  elfsh_set_verdef_aux, 
+						  ELFSH_OBJLONG, NULL, 
+						  NULL, NULL, NULL));
+   /* Child & parent */
+   hash_add(&verd_L2_hash, "next", vm_create_L2ENT(elfsh_get_verdef_next, 
+						   elfsh_set_verdef_next, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   /* Child */
+   hash_add(&verd_L2_hash, "name", vm_create_L2ENT(elfsh_get_verdef_cname, 
+						   elfsh_set_verdef_cname, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   
+   /* Version need */
+   hash_init(&vern_L2_hash, 11);
+   hash_add(&vern_L2_hash, "index", vm_create_L2ENT(elfsh_get_verneed_ndx, 
+						    elfsh_set_verneed_ndx, 
+						    ELFSH_OBJSHORT, NULL, 
+						    NULL, NULL, NULL));  
+   
+   hash_add(&vern_L2_hash, "name", vm_create_L2ENT(elfsh_get_verneed_name, 
+						   elfsh_set_verneed_name, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   
+   hash_add(&vern_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verneed_hash,
+						   elfsh_set_verneed_hash,
+						   ELFSH_OBJLONG, NULL,
+						   NULL, NULL, NULL));
+   hash_add(&vern_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verneed_flags, 
+						   elfsh_set_verneed_flags, 
+						   ELFSH_OBJSHORT, NULL, 
+						   NULL, NULL, NULL));
+   /* child && parent */
+   hash_add(&vern_L2_hash, "next", vm_create_L2ENT(elfsh_get_verneed_next, 
+						   elfsh_set_verneed_next, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   /* parent */
+   hash_add(&vern_L2_hash, "file", vm_create_L2ENT(elfsh_get_verneed_file, 
+						   elfsh_set_verneed_file, 
+						   ELFSH_OBJLONG, NULL, 
+						   NULL, NULL, NULL));
+   hash_add(&vern_L2_hash, "count", vm_create_L2ENT(elfsh_get_verneed_cnt, 
+						    elfsh_set_verneed_cnt, 
+						    ELFSH_OBJSHORT, NULL, 
+						    NULL, NULL, NULL));
+   hash_add(&vern_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verneed_aux, 
+						  elfsh_set_verneed_aux, 
+						  ELFSH_OBJLONG, NULL, 
+						  NULL, NULL, NULL));
+}
+
+
+
 /* Now comes Level 2 objects hash functions */
 static void	setup_L2hash()
 {
@@ -536,6 +651,7 @@ static void	setup_L2hash()
   setup_dynhash();
   setup_scthash();
   setup_gothash(); 
+  setup_vershash();
 }
 
 
@@ -669,9 +785,9 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_EXPORT  , (void *) cmd_export  , (void *) vm_getoption2   , 0, HLP_EXPORT);
   vm_addcmd(CMD_SHARED    , (void *) cmd_shared   , (void *) NULL         , 0, HLP_SHARED);
 
-  vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) NULL            , 1, HLP_VERSION);
-  vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) NULL            , 1, HLP_VERNEED);
-  vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) NULL            , 1, HLP_VERDEF);
+  vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption , 1, HLP_VERSION);
+  vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
+  vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
 
 #ifdef __DEBUG_TEST__
   vm_addcmd(CMD_TEST   , (void *) cmd_test  , (void *) NULL         , 0, "");

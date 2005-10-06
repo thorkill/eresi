@@ -33,6 +33,16 @@ do												\
 }												\
 while (0)
 
+/* Our free() */
+#define		XFREE(a)									\
+do												\
+{												\
+  free(a);											\
+}												\
+while (0)											
+
+
+
 /* Safe open() */
 #define		XOPEN(a, b, c, d, e)							\
 do											\

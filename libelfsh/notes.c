@@ -90,13 +90,13 @@ void			elfsh_free_notes(elfshobj_t *file)
   for (sect = file->sectlist; sect; sect = sect->next)
     if (sect->data && sect->shdr->sh_type == SHT_NOTE)
       {
-	free(sect->data);
+	XFREE(sect->data);
 	for (e = sect->altdata; e; e = etmp)
 	  {
 	    etmp = e->next;
-	    free(e->note);
-	    free(e->desc);
-	    free(e);
+	    XFREE(e->note);
+	    XFREE(e->desc);
+	    XFREE(e);
 	  }
       }
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);

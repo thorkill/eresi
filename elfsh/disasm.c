@@ -474,7 +474,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	}
     }
 
-  //free(buff);
+  //XFREE(buff);
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

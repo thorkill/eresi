@@ -870,18 +870,54 @@ int		elfsh_insert_runtime_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shd
 
 
 /* version.c */
+elfsh_Word    elfsh_get_verneed_aux(elfsh_Verneed *n);
+int           elfsh_set_verneed_aux(elfsh_Verneed *n, elfsh_Word v);
+elfsh_Half    elfsh_get_verneed_cnt(elfsh_Verneed *n);
+int           elfsh_set_verneed_cnt(elfsh_Verneed *n, elfsh_Half v);
+elfsh_Word    elfsh_get_verneed_file(elfsh_Verneed *n);
+int           elfsh_set_verneed_file(elfsh_Verneed *n, elfsh_Word v);
+elfsh_Word    elfsh_get_verneed_next(void *p);
+int           elfsh_set_verneed_next(void *p, elfsh_Word v);
+elfsh_Half    elfsh_get_verneed_flags(elfsh_Vernaux *n);
+int           elfsh_set_verneed_flags(elfsh_Vernaux *n, elfsh_Half v);
+elfsh_Word    elfsh_get_verneed_hash(elfsh_Vernaux *n);
+int           elfsh_set_verneed_hash(elfsh_Vernaux *n, elfsh_Word v);
+elfsh_Word    elfsh_get_verneed_name(elfsh_Vernaux *n);
+int           elfsh_set_verneed_name(elfsh_Vernaux *n, elfsh_Word v);
+elfsh_Half    elfsh_get_verneed_ndx(elfsh_Vernaux *n);
+int           elfsh_set_verneed_ndx(elfsh_Vernaux *n, elfsh_Half v);
+elfsh_Verneed *elfsh_get_verneed_by_name(elfshobj_t *f, char *n);
+elfsh_Vernaux *elfsh_get_verneed_entry_by_index(void *p, elfsh_Half i);
+elfsh_Word    elfsh_get_verdef_cname(elfsh_Verdaux *d);
+int           elfsh_set_verdef_cname(elfsh_Verdaux *d, elfsh_Word v);
+elfsh_Word    elfsh_get_verdef_next(void *d);
+int           elfsh_set_verdef_next(void *d, elfsh_Word v);
+elfsh_Word    elfsh_get_verdef_aux(elfsh_Verdef *d);
+int           elfsh_set_verdef_aux(elfsh_Verdef *d, elfsh_Word v);
+elfsh_Half    elfsh_get_verdef_flags(elfsh_Verdef *d);
+int           elfsh_set_verdef_flags(elfsh_Verdef *d, elfsh_Half v);
+elfsh_Word    elfsh_get_verdef_hash(elfsh_Verdef *d);
+int           elfsh_set_verdef_hash(elfsh_Verdef *d, elfsh_Word v);
+elfsh_Half    elfsh_get_verdef_cnt(elfsh_Verdef *d);
+int           elfsh_set_verdef_cnt(elfsh_Verdef *d, elfsh_Half v);
+elfsh_Half    elfsh_get_verdef_ndx(elfsh_Verdef *d);
+int           elfsh_set_verdef_ndx(elfsh_Verdef *d, elfsh_Half v);
+void          *elfsh_get_verdef_entry_by_index(void *p, elfsh_Half i);
+elfsh_Half    *elfsh_get_versym_entry_by_index(elfsh_Half *s, u_int i);
+elfsh_Half    elfsh_get_versym_val(elfsh_Half *s);
+int           elfsh_set_versym_val(elfsh_Half *s, elfsh_Half v);
+elfsh_Half    *elfsh_get_versym_by_name(elfshobj_t *f, char *n);
 int           elfsh_get_verdauxnamelist(elfshobj_t *f, hashdef_t *hdef, char **n, int nu);
-int           elfsh_load_needtable(hash_t *t, elfshsect_t *sect);
-int           elfsh_load_deftable(hash_t *t, elfshsect_t *sect);
+int           elfsh_load_needtable(hash_t *t, void *p, u_int s);
+int           elfsh_load_deftable(hash_t *t, void *p, u_int s);
 void          *elfsh_get_versymtab(elfshobj_t *f, int *n);
 void          *elfsh_get_verneedtab(elfshobj_t *f, int *n);
 void          *elfsh_get_verdeftab(elfshobj_t *f, int *n);
-elfshsect_t   *elfsh_get_verstrtable(elfshobj_t *f);
+elfshsect_t   *elfsh_get_verdeftab_by_idx(elfshobj_t *f, elfsh_Addr r, int *n);
+void          *elfsh_get_verstrtable(elfshobj_t *f);
 char          *elfsh_get_verneedfile(elfshobj_t *f, elfsh_Verneed *n);
 char          *elfsh_get_vernauxname(elfshobj_t *f, elfsh_Vernaux *a);
 char          *elfsh_get_verdauxname(elfshobj_t *f, elfsh_Verdaux *a);
-
-
 
 /* reloc.c */
 elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, elfsh_Addr range, u_int *num);

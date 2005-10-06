@@ -73,9 +73,9 @@ int			cmd_write()
     }
 
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -190,7 +190,7 @@ int		cmd_extend()
 
   if (elfsh_append_data_to_section(sect, new_data, size) < 0)
     {
-      free(new_data);      
+      XFREE(new_data);      
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to append data", -1);
     }

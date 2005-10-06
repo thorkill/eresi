@@ -35,23 +35,23 @@ void		elfsh_unload_obj(elfshobj_t *file)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  free(file->hdr);
-  free(file->pht);
-  free(file->sht);
+  XFREE(file->hdr);
+  XFREE(file->pht);
+  XFREE(file->sht);
   for (sect = file->sectlist; sect; sect = next)
     {
-      free(sect->data);
+      XFREE(sect->data);
       if (sect->altdata)
-	free(sect->altdata);
+	XFREE(sect->altdata);
       if (sect->terdata)
-	free(sect->terdata);
-      free(sect->name);
+	XFREE(sect->terdata);
+      XFREE(sect->name);
       next = sect->next;
-      free(sect);
+      XFREE(sect);
     }
   if (file->fd)
     close(file->fd);
-  free(file->name);
-  free(file);
+  XFREE(file->name);
+  XFREE(file);
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
