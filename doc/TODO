@@ -11,6 +11,8 @@
 
 
 [missing / bugs]
+
+. BUG : D is fucked again ! (also X simplevar doesnt work)
 . BUG : Do more tests on debugger scripts, sometimes it fucks
 . BUG : Make sure ET_REL injection in memory works again with redirections
 . BUG : testsuite pre-interp fuck (ld.so: address/offset not properly aligned)
@@ -24,12 +26,12 @@
 . BUG : multiple workspace on DUMP connection (actual->data->active && network.c:761)
 . BUG : DUMP + e2dbg + cont/b/... 
 
+MM	. Prefix heap allocator functions by e2dbg_ and use MMAP_FIXED mmaps
 MM	. Better rights than rwx for runtime injected phdr (try double-map)
 MM	. Clean 4 remaining hooks to do
-	. Colors in profiler, hexa, backtrace, linkmap, stack, dbgstack
-	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
-	. support X/x number types [regx] command and D regx regx commands
-	. be able to change the compiler and compiling options
+[quick]	. Colors in profiler, hexa, backtrace, linkmap, stack, dbgstack
+[quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
+[quick]	. be able to change the compiler and compiling options
 
 	<----- Here release 0.65rc2-linux
 
@@ -45,7 +47,6 @@ MM	. Clean 4 remaining hooks to do
 
 	<----- Here release 0.65-portable
 
-	. Allow using of an alternate heap for the debugger
 !!!	. EXTSTATIC : re-use existing PT_LOADs
 !!!	. Multiple BSS : symbol injected many times in find_bsslen (fixup_sctndx really useful ?)
 	. Finish ET_REL for MIPS
@@ -65,6 +66,7 @@ MM	. Clean 4 remaining hooks to do
 	. Use a runtime symtab/strtab for memory modifications
 	. Be able to breakpoint a debugger function
 	. Be able to chain signal handlers (for debugging a debugger)
+	. support X/x number types [regx] command and D regx regx commands
 	. Replace all #ifdef __DEBUG*__ by ELFSH_PROFILE_DEBUG() calls
 	. e2dbg scripts from cmdline (filexist, $var1_blabla$var2 format)
 	. Better runtime EXTPLT (without mprotect)

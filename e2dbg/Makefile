@@ -22,7 +22,7 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../vm/include/   \
 			-DELFSH_INTERN $(ASMOPT) $(READLNOPT) $(BITS)
 
-LDFLAGS			+= -L../libmalloc -lmalloc -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
+LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libasm/ -lasm -g3 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
 			-L/usr/freeware/lib32/	$(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT)
 

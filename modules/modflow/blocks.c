@@ -74,7 +74,7 @@ void	free_blocks(struct s_iblock *blks)
   if (blks) 
     {      
       btree_free(blks->btree, 1);
-      free(blks);
+      XFREE(blks);
     }
 }
 

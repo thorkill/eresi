@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: arena.c,v 1.1.1.1 2005-10-02 22:30:24 thor Exp $ */
+/* $Id: arena.c,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $ */
 
 /* Compile-time constants.  */
 
@@ -26,6 +26,8 @@
 #ifndef HEAP_MAX_SIZE
 #define HEAP_MAX_SIZE (1024*1024) /* must be a power of two */
 #endif
+
+#include "malloc.h"
 
 mstate  _int_new_arena(size_t);
 
@@ -107,11 +109,9 @@ int __malloc_initialized = -1;
    is just a hint as to how much memory will be required immediately
    in the new arena. */
 
-// Jai fait un patch de 9 lignes :P
-
 #define arena_get(ptr, size) do { \
   Void_t *vptr = NULL; \
- if (malloc_dbgpid_get() != getpid())              \
+ if (malloc_dbgpid_get() != pthread_self())        \
    ptr = (mstate)tsd_getspecific(arena_key, vptr); \
  else                                              \
   {                                                \
@@ -121,9 +121,7 @@ int __malloc_initialized = -1;
   }                                                \
   if (ptr && !mutex_trylock(&ptr->mutex)) { \
     THREAD_STAT(++(ptr->stat_lock_direct)); \
-    fprintf(stderr, "Thread stat called \n"); \
   } else { \
-    fprintf(stderr, "Used arena_get2 \n"); \
     ptr = arena_get2(ptr, (size)); } \
 } while(0)
 
@@ -137,10 +135,8 @@ int __malloc_initialized = -1;
 #else /* !USE_ARENAS */
 
 /* There is only one arena, main_arena. */
-
 #if THREAD_STATS
 #define arena_get(ar_ptr, sz) do { \
-  fprintf(stderr, "Using only 1 -main- arena \n"); \
   ar_ptr = &main_arena; \
   if(!mutex_trylock(&ar_ptr->mutex)) \
     ++(ar_ptr->stat_lock_direct); \
@@ -151,7 +147,6 @@ int __malloc_initialized = -1;
 } while(0)
 #else
 #define arena_get(ar_ptr, sz) do { \
-  fprintf(stderr, "Using only 1 -main- arena \n"); \
   ar_ptr = &main_arena; \
   (void)mutex_lock(&ar_ptr->mutex); \
 } while(0)

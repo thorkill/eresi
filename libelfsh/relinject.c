@@ -555,7 +555,7 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
  bad:
-  free(newname);
+  XFREE(newname);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Unable to inject ET_REL section", -1);
 }

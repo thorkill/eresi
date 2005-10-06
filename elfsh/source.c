@@ -106,7 +106,7 @@ int		cmd_source()
 
     if (vm_parseopt(ac, av) < 0)
       {
-	free(av);
+	XFREE(av);
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid script", (-1));
       }
@@ -200,7 +200,7 @@ int	vm_exec_str(char *str)
   av = vm_doargv(nbr, &ac, str);
   if (vm_parseopt(ac, av) < 0)
     {
-      free(av);
+      XFREE(av);
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Command failed", (-1));
     }
@@ -281,7 +281,7 @@ int	vm_add_script_cmd(char *dir_name)
 	  {
 	    if (((elfshcmd_t *) actual->data)->exec == cmd_script)
 	      {
-		free(actual->data);
+		XFREE(actual->data);
 		hash_del(&cmd_hash, actual->key);
 	      }
 	  }
@@ -315,7 +315,7 @@ int	vm_add_script_cmd(char *dir_name)
 
   if (world.scriptsdir != NULL)
     {
-      free(world.scriptsdir);
+      XFREE(world.scriptsdir);
       world.scriptsdir = NULL;
     }
   if (cnt)

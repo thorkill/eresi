@@ -654,7 +654,7 @@ typedef struct        s_elfshpath
 
   /* Handlers */
   elfsh_Addr          (*get_obj)(void *parent);
-  u_long              (*set_obj)(void *parent, elfsh_Addr value);
+  int	              (*set_obj)(void *parent, elfsh_Addr value);
   char                *(*get_name)(elfshobj_t *, void *obj);
   int                 (*set_name)(elfshobj_t *, void *, char *);
   char                *(*get_data)(elfshsect_t *, u_int off, u_int);
@@ -764,8 +764,12 @@ extern hash_t		sct_L2_hash;	/* For Section data access */
 extern hash_t		dynsym_L2_hash;	/* For .dynsym */
 extern hash_t		dyn_L2_hash;	/* For .dynamic */
 
-extern hash_t           bg_color_hash;      /* colors def */
-extern hash_t           fg_color_hash;      /* colors def */
+extern hash_t         vers_L2_hash;      /* For .gnu.version */
+extern hash_t         verd_L2_hash;      /* For .gnu.version_d */
+extern hash_t         vern_L2_hash;      /* For .gnu.version_r */
+
+extern hash_t           bg_color_hash;   /* colors def */
+extern hash_t           fg_color_hash;   /* colors def */
 extern hash_t           t_color_hash;    /* colors type */
 
 /* Lattice for I/O */
@@ -968,10 +972,11 @@ int		vm_addcmd(char *cmd, void *exec, void *reg,
 int		vm_delcmd(char *cmd);
 
 /* Versions functions */
-int           vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, char *n, char *t);
-int           vm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id, char *n, char *t);
-int           vm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
-
+int             vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
+				char *n, char *t, regex_t *r);
+int             vm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id, 
+				 char *n, char *t, regex_t *r);
+int             vm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
 
 /* Parsing, Scanning, I/O functions */
 char		*vm_filter_param(char *buf, char *ptr);

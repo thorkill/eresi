@@ -74,7 +74,7 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
 		      -1);
 
   if (sect->altdata != NULL)
-    free(sect->altdata);
+    XFREE(sect->altdata);
 
   nbr = sect->curend / sizeof(elfsh_Sym);
   //nbr = sect->shdr->sh_size / sizeof(elfsh_Sym);
@@ -82,7 +82,7 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
   elfsh_sort_symtab(sect->altdata, nbr, ELFSH_SORT_BY_ADDR);
   
   if (sect->terdata != NULL)
-    free(sect->terdata);
+    XFREE(sect->terdata);
   sect->terdata = elfsh_copy_symtab(sect->data, nbr);
   elfsh_sort_symtab(sect->terdata, nbr, ELFSH_SORT_BY_SIZE);
 

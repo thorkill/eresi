@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: malloc.c,v 1.1.1.1 2005-10-02 22:30:24 thor Exp $
+  $Id: malloc.c,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -605,16 +605,6 @@ extern Void_t*     sbrk();
 #endif
 #endif
 
-/*
-  MORECORE is the name of the routine to call to obtain more memory
-  from the system.  See below for general guidance on writing
-  alternative MORECORE functions, as well as a version for WIN32 and a
-  sample version for pre-OSX macos.
-*/
-
-#ifndef MORECORE
-#define MORECORE sbrk
-#endif
 
 /*
   MORECORE_FAILURE is the value returned upon failure of MORECORE
@@ -625,6 +615,20 @@ extern Void_t*     sbrk();
 
 #ifndef MORECORE_FAILURE
 #define MORECORE_FAILURE (-1)
+#endif
+
+/*
+  MORECORE is the name of the routine to call to obtain more memory
+  from the system.  See below for general guidance on writing
+  alternative MORECORE functions, as well as a version for WIN32 and a
+  sample version for pre-OSX macos.
+*/
+
+void  *e2dbg_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
+
+#ifndef MORECORE
+//#define MORECORE sbrk
+#define MORECORE e2dbg_sbrk
 #endif
 
 /*
@@ -1489,7 +1493,7 @@ int      __posix_memalign(void **, size_t, size_t);
 } /* end of extern "C" */
 #endif
 
-#include <malloc.h>
+#include "malloc.h"
 
 #ifndef BOUNDED_N
 #define BOUNDED_N(ptr, sz) (ptr)
@@ -1504,11 +1508,6 @@ int      __posix_memalign(void **, size_t, size_t);
 #ifndef internal_function
 # define internal_function
 #endif
-
-/* Forward declarations.  */
-struct malloc_chunk;
-typedef struct malloc_chunk* mchunkptr;
-typedef struct malloc_state * mstate;
 
 /* Internal routines.  */
 
@@ -2240,6 +2239,7 @@ struct malloc_state {
 };
 
 struct malloc_par {
+
   /* Tunable parameters */
   unsigned long    trim_threshold;
   INTERNAL_SIZE_T  top_pad;

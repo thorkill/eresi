@@ -202,7 +202,7 @@ int		vm_execmd()
   for (cur = world.curjob->script[world.curjob->sourced]; cur; cur = next)
   {
   next = cur->next;
-  free(cur); 
+  XFREE(cur); 
   }
   */
   

@@ -33,6 +33,7 @@ int                     vm_preconds_atomics(elfshpath_t **o1, elfshpath_t **o2)
   else if ((*o1)->immed && !(*o1)->perm)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Dest. param. must not be a constant", -1);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -50,10 +51,13 @@ int                     cmd_set()
   u_char                val8;
   u_short               val16;
   int                   error;
+  int			errvar;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks and conversions */
+  error  = -1;
+  errvar = 0;
   if (vm_preconds_atomics(&o1, &o2) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid variable transaction", (-1));
@@ -82,7 +86,7 @@ int                     cmd_set()
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
       if (last == NULL)
-        goto err;
+        { errvar = -1; goto err; }
       last->immed_val.word = val8;
       last->type = o1->type;
       break;
@@ -98,11 +102,10 @@ int                     cmd_set()
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
       if (last == NULL)
-	goto err;
+	{ errvar = -1; goto err; }
       last->immed_val.word = val16;
       last->type = o1->type;
       break;
-
 
     case ELFSH_OBJINT:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
@@ -114,7 +117,7 @@ int                     cmd_set()
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
       if (last == NULL)
-	goto err;
+	{ errvar = -1; goto err; }
       last->immed_val.word = val32;
       last->type = o1->type;
       break;
@@ -129,7 +132,7 @@ int                     cmd_set()
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
       if (last == NULL)
-	goto err;
+	{ errvar = -1; goto err; }
       last->immed_val.ent = val64;
       last->type = o1->type;
       break;
@@ -146,15 +149,20 @@ int                     cmd_set()
 
  err:
   if (o2->immed && o2->type == ELFSH_OBJSTR && str != NULL)
-    free(str);
+    XFREE(str);
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
 
-  if (error < 0)
+  /* We have 2 different possible errors here */
+  if (errvar < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Error while setting $_", error);
+		      "Error while setting $_", -1);
+  else if (error < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to set object", -1);
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
@@ -169,7 +177,7 @@ int		cmd_get()
   u_char	val8;
   u_short	val16;
   char		logbuf[BUFSIZ];
-  int		error;
+  int		error = -1;
   elfshpath_t	*last;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -189,13 +197,14 @@ int		cmd_get()
       str = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
       vm_output(str);
       if (o1->immed)
-	free(str);
+	XFREE(str);
       break;
 
     case ELFSH_OBJBYTE:
       val8 = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%c\n", val8);
       vm_output(logbuf);
+
       /* The $_ variable is updated as well */
       last = hash_get(&vars_hash, ELFSH_RESVAR);
       if (last == NULL)
@@ -253,10 +262,12 @@ int		cmd_get()
   
  err:
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
+
   if (error < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error while setting $_", error);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
@@ -305,9 +316,9 @@ int			cmd_add()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully\n\n");
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -349,9 +360,9 @@ int			cmd_sub()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -395,9 +406,9 @@ int			cmd_mul()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -443,9 +454,9 @@ int			cmd_div()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -494,9 +505,9 @@ int			cmd_mod()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -577,11 +588,11 @@ int			cmd_cmp()
 
  err:
   if (!o2->perm && o2->immed && o2->type == ELFSH_OBJSTR && str != NULL)
-    free(str);
+    XFREE(str);
   if (!o2->perm)
-    free(o2);
+    XFREE(o2);
   if (!o1->perm)
-    free(o1);
+    XFREE(o1);
   if (!world.state.vm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1, " [*] Objects are %s. \n\n", (!val ? "EQUALS" : "INEQUALS"));

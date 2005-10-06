@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.1.1.1 2005-10-02 22:30:24 thor Exp $
+  $Id: malloc.h,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
@@ -42,6 +42,16 @@
   `malloc.c'.
 */
 
+//#include "malloc-machine.h"
+
+/* Forward declarations.  */
+
+struct  malloc_chunk;
+typedef struct malloc_chunk* mchunkptr;
+typedef struct malloc_state * mstate;
+//typedef unsigned short pid_t;
+
+
 #if defined(__STDC__) || defined (__cplusplus)
 # include <stddef.h>
 # define __malloc_ptr_t  void *
@@ -54,6 +64,7 @@
 #endif
 
 #ifdef _LIBC
+
 /* Used by GNU libc internals. */
 # define __malloc_size_t size_t
 # define __malloc_ptrdiff_t ptrdiff_t

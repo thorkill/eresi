@@ -204,7 +204,7 @@ static elfshpath_t	*lookup4(char *obj, char *L1field,
   elfshL2_t		*l2;
   void			*robj;
   void			*o1;
-  int		  	real_index;
+  int		  	real_index, isversion;
   u_int			size;
   elfshpath_t		*pobj;
 
@@ -277,11 +277,21 @@ static elfshpath_t	*lookup4(char *obj, char *L1field,
 
       if (!strcmp(L1field, "dynamic") && !vm_isnbr(index))
 	real_index = vm_get_dynent_by_type(robj, o1, real_index);
-
-      if (size <= real_index)
+      
+      isversion = (!strcmp(L1field, "version") ||
+		   !strcmp(L1field, "verdef") ||
+		   !strcmp(L1field, "verneed"));
+      
+      if (!isversion && size <= real_index)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", 
-		       NULL);
-      pobj->parent   = l1->get_entptr(o1, real_index);
+	NULL);
+
+      pobj->parent = l1->get_entptr(o1, real_index);
+
+      if (isversion && pobj->parent == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unknown L2 object or Invalid L1 index", 
+			  NULL);
     }
 
   /* Finally we fill the intermediate object format for the guessed object */
@@ -324,6 +334,7 @@ static elfshpath_t	*lookup5_index(char *obj, char *L1field, char *index,
   volatile elfsh_Addr  	real_index;
   volatile elfsh_Addr  	real_index2;
   volatile u_int	size;
+  int			isversion;
   elfshpath_t		*pobj;
   elfshsect_t		*sect;
 #if 0
@@ -345,32 +356,42 @@ static elfshpath_t	*lookup5_index(char *obj, char *L1field, char *index,
   /* Let's ask the hash table for the current working file */
   robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find requested file object", 
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested file object", 
+		      NULL);
 
   /* Then, we ask the Level 1 object */
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find requested L1 object", 
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested L1 object", NULL);
   else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "This object needs 2 indexes", 
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "This object needs 2 indexes", NULL);
 
   /* Then the Level 2 object */
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find requested L2 object", 
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested L2 object", NULL);
   else if (l2->get_obj == NULL || l2->set_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Child object is invalid", 
-		   NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Child object is invalid", NULL);
+
+  /* Not clean .. need to ve virtualized */
+  isversion = (!strcmp(L1field, "version") ||
+	       !strcmp(L1field, "verdef") ||
+	       !strcmp(L1field, "verneed"));
 
   /* Do index sanity */
   o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
-  if (size <= real_index2)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Second index too big", 
-		   NULL);
+  if (!isversion && size <= real_index2)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Second index too big", NULL);
+
+  if (isversion && o1 == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid L1 index", NULL);    
   
   // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n", 
   // o1, ((elfshsect_t*)o1)->data, ((elfshsect_t*)o1)->name);
@@ -395,8 +416,13 @@ static elfshpath_t	*lookup5_index(char *obj, char *L1field, char *index,
   elfsh_setrel(IS_REL(sect));
   pobj->parent  = l1->get_entptr(o1, real_index2);
 
-  printf("[DEBUG_RELOCS_IDX2-AFTER] entptr = %p \n",
-	 pobj->parent);
+  if (isversion && pobj->parent == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unknown L2 object or Invalid L2 index", 
+		      NULL);
+
+  //printf("[DEBUG_RELOCS_IDX2-AFTER] entptr = %p \n",
+  // pobj->parent);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     vm_check_object(pobj));

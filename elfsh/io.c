@@ -539,9 +539,9 @@ int                   vm_clean_jobs()
 
 		  /* XXX can we free io.pkt ?? */
 
-		  //		  dump_free (((elfshjob_t *) actual->data)->io.pkt);
-		  //		  free (((elfshjob_t *) actual->data));
-		  //		  hash_del (&world.jobs, actual->key);
+		  //		  dump_free(((elfshjob_t *) actual->data)->io.pkt);
+		  //		  XFREE(((elfshjob_t *) actual->data));
+		  //		  hash_del(&world.jobs, actual->key);
 		}
 #endif
 	      break;

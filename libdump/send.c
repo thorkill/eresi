@@ -56,7 +56,7 @@ int	dump_send_real(int s, pkt_t *pkt)
       exit(-1);
     }
     
-  free(data);
+  XFREE(data);
     
   return ret;
 }
@@ -92,7 +92,7 @@ int	dump_send_RR(dump_id_t src,
   /* send it now */
   ret = dump_send_real(next_hop_socket, pkt);
 
-  free(pkt);
+  XFREE(pkt);
   return ret;
 }
 
@@ -130,7 +130,7 @@ int	dump_send_Rr(dump_id_t src,
   /* send it now */
   ret = dump_send_real(next_hop_socket, pkt);
 
-  free(pkt);
+  XFREE(pkt);
   return ret;
 }
  
@@ -188,7 +188,7 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
 		     0);
       }
 
-  free(path);
+  XFREE(path);
   return 0;
 }
 

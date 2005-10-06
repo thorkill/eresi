@@ -261,6 +261,14 @@ echo "all     : world modules tags"				>> Makefile
 echo " "							>> Makefile
 
 echo "world   : "						>> Makefile
+echo "	@echo 'Building e2dbg-libc ..' "			>> Makefile
+echo "	@cd libc && \$(MAKE) "					>> Makefile
+echo "	@echo 'Libc-elfsh has been built successfully.' "	>> Makefile
+echo " "						       	>> Makefile
+echo "	@echo 'Building e2dbg-libmalloc..' "			>> Makefile
+echo "	@cd libmalloc && \$(MAKE) "				>> Makefile
+echo "	@echo 'Libmalloc-elfsh has been built successfully.' "	>> Makefile
+echo " "						       	>> Makefile
 echo "	@echo 'Building libasm...' "				>> Makefile
 echo "	@cd libasm && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
@@ -346,7 +354,9 @@ echo "	@echo 'Cleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libc	     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libmalloc && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
@@ -357,7 +367,9 @@ echo "	@echo 'Fcleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libc      && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
@@ -378,7 +390,7 @@ echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c libmalloc/include/*.h \\"		>> Makefile
 echo "  libasm/src/arch/ia32/*.c \\"				>> Makefile
 echo "	libasm/include/*.h \\"					>> Makefile
-echo "	libdump/include/*.h "					>> Makefile
+echo "	libdump/include/*.h libc/*.h libc/*.c"			>> Makefile
 echo " "							>> Makefile
 
 echo "info    : "						>> Makefile

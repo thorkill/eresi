@@ -190,7 +190,7 @@ void	dump_assembly(int fd, elfshblk_t *blk)
       dprintf(fd, "%s_%08x", name, off);
 
       }
-  free(buffer);
+  XFREE(buffer);
   world.state.vm_quiet = vm_quiet;
 }
 

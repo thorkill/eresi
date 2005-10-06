@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libelfsh.h>
 
 #define BTREE_DEBUG_NODE	"\"btree_%08x\" [\n"\
 "label = \"<ptr> %8x| <L> %8x|<R> %8x\n"\

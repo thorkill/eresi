@@ -1,0 +1,35 @@
+#!/home/tyler/elfsh/vm/elfsh
+
+quiet
+setcolor address     fg green
+#setcolor address     bold 1
+setcolor string      fg cyan
+setcolor number      fg cyan
+setcolor fieldstring fg black
+setcolor fieldstring bold 1
+setcolor typestring  fg yellow
+setcolor typestring  bold 1
+setcolor endstring   fg blue
+setcolor warnstring  fg red
+setcolor warnstring  bold 1
+setcolor pspecial    fg black
+setcolor pspecial    bold 1
+setcolor psname      fg yellow
+setcolor psname      bold 1
+setcolor pversion    fg red
+setcolor pversion    bold 1
+setcolor prelease    fg red
+setcolor prelease    bold 1
+setcolor pedition    fg green
+setcolor pedition    bold 1
+
+setcolor instr       fg blue
+setcolor instr       bold 1
+
+print \x20[*] Set ELFsh default color theme (use nocolor to disable)
+verb
+profile
+profile
+
+
+

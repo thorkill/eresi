@@ -21,7 +21,7 @@ int	hash_init(hash_t *h, int size)
 /* Destroy a hash table */
 void	hash_destroy(hash_t *h)
 {
-  free(h->ent);
+  XFREE(h->ent);
 }
 
 
@@ -75,7 +75,7 @@ int		hash_del(hash_t *h, char *key)
 	{
 	  todel = actual->next;
 	  *actual = *actual->next;
-	  free(todel);
+	  XFREE(todel);
 	}
       else
 	bzero(actual, sizeof (hashent_t));
@@ -95,7 +95,7 @@ int		hash_del(hash_t *h, char *key)
   /* Found */
   todel = actual->next;
   actual->next = actual->next->next;
-  free(todel);
+  XFREE(todel);
   return (0);
 }
 

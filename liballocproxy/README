@@ -1,0 +1,13 @@
+ELFsh allocator library README file
+
+This allocator is ptmalloc2 (http://www.malloc.de/malloc/ptmalloc2.tar.gz) patched
+in quite a straightforward manner to allow only using mmap and no sbrk. The second
+feature added is the ability to register a thread ID that will use a separate arena
+and will leave the original process use the original heap as if the current thread
+was not existing.
+
+The implementation is independant of any thread library (it was tested on Solaris, 
+BSD, and Linux with different thread implementations) and allow the Embedded ELF
+Debugger (e2dbg) to be non-intrusive on the legit program heap management.
+
+-crew

@@ -378,7 +378,7 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
   symtab->curend -= sizeof(elfsh_Sym);
   XALLOC(new, symtab->shdr->sh_size, -1);
   memcpy(new, tab, symtab->shdr->sh_size);
-  free(tab);
+  XFREE(tab);
   symtab->data = new;
 
   /* We just cant remove the string because of ELF string table format */

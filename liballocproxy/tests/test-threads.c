@@ -1,9 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <signal.h>
 
-void *print_message_function( void *ptr );
+void *print_message_function(void *ptr);
+
 extern void *print_message_function_lib(void *);
+
+typedef void (*sighandler_t)(int);
+
+
+void	     sigtrap_handler(int num)
+{
+  printf("Received a SIGTRAP ! Waiting 5 secondes and continue ... \n");
+  sleep(5);
+}
 
 main()
 {
@@ -12,8 +23,9 @@ main()
      char *message2 = "Thread 2";
      char *message3 = "Thread 3";
      int  iret1, iret2, iret3;
-    /* Create independant threads each of which will execute function */
-
+ 
+   /* Create independant threads each of which will execute function */
+     signal(SIGTRAP, (sighandler_t) sigtrap_handler);
      iret1 = pthread_create( &thread1, NULL, print_message_function, (void*) message1);
      iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);
      iret3 = pthread_create( &thread3, NULL, print_message_function_lib, (void*) message3);
@@ -31,6 +43,9 @@ main()
      exit(0);
 }
 
+
+
+
 // Ceci est le test
 // Jai rajoute une petite func dans le heap allocator
 // malloc_dbgpid_set/get
@@ -40,14 +55,14 @@ void *print_message_function( void *ptr )
 
   // Here uncomment this to register the debugger pid and select a new arena for it
   if (malloc_dbgpid_get() == 0)
-    malloc_dbgpid_set(getpid());
+    malloc_dbgpid_set(pthread_self());
 
   while (1)
   {
     message = malloc(42);
     printf("%s: (pid = %u %s) message addr %08X \n", 
 	   ptr, getpid(), 
-	   (getpid() == malloc_dbgpid_get() ? "DEBUGGER" : "OTHER"),
+	   (pthread_self() == malloc_dbgpid_get() ? "DEBUGGER" : "OTHER"),
 	   message);
     //free(message);
     sleep(1);

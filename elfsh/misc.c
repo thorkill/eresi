@@ -6,7 +6,9 @@
 */
 #include "elfsh.h"
 
-rl_command_func_t *rl_ctrll = NULL;
+#if defined(USE_READLN)
+ rl_command_func_t *rl_ctrll = NULL;
+#endif
 
 /* return the right prompt */
 char	*vm_get_prompt()
@@ -475,7 +477,7 @@ int		cmd_glregx()
 		      "Failed to compute regex", -1);
   world.state.vm_use_regx = 1;
   if (world.state.vm_sregx)
-    free(world.state.vm_sregx);
+    XFREE(world.state.vm_sregx);
   world.state.vm_sregx = str;
   if (!world.state.vm_quiet)
     {
@@ -523,7 +525,7 @@ int		cmd_alert()
 		      "Failed to compute regex", -1);
   world.state.vm_use_alert = 1;
   if (world.state.vm_salert)
-    free(world.state.vm_salert);
+    XFREE(world.state.vm_salert);
   world.state.vm_salert = str;
   if (!world.state.vm_quiet)
     {
@@ -915,14 +917,14 @@ int		vm_clearscreen(int i, char c)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  free(world.curjob->screen.buf);
+  XFREE(world.curjob->screen.buf);
   world.curjob->screen.head = world.curjob->screen.tail = world.curjob->screen.buf = NULL;
   
-  if(rl_ctrll)
+#if defined(USE_READLN)
+  if (rl_ctrll)
     rl_ctrll(i, c);
-  
   world.curjob->io.buf = NULL;
-
+#endif
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -930,18 +932,20 @@ int		vm_clearscreen(int i, char c)
 
 int		vm_install_clearscreen()
 {
+#if defined(USE_READLN)
   Keymap	    map;
+#endif
   char		    keyseq[2];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if defined(USE_READLN)
   map = rl_get_keymap();
   keyseq[0] = CTRL('l');
   keyseq[1] = '\0';
   rl_ctrll = rl_function_of_keyseq(keyseq, map, NULL);
-
-
   rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_clearscreen); 
+#endif
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -958,7 +962,9 @@ int		cmd_test()
   if (!cmd_next_workspace())
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
+#if defined(USE_READLN)
   world.curjob->io.buf = NULL;
+#endif
 
   vm_flush();
 
@@ -974,6 +980,7 @@ int		cmd_test()
   
   //printf("head : %x tail %x\n", world.curjob->screen.head, world.curjob->screen.tail);
 
+#if defined(USE_READLN)
   if (world.curjob->screen.buf == NULL)
     {
       vm_output_nolog(vm_get_prompt());
@@ -994,10 +1001,11 @@ int		cmd_test()
 	       "%s", world.curjob->screen.head);
       strcat(buf, world.curjob->screen.buf);
     }
-  
+#endif  
 
   vm_output_nolog(buf);
   vm_output_nolog(" ");
+
 
   /*
   {

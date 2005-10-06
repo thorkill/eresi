@@ -191,10 +191,10 @@ void	btree_free(btree_t *root, int mode)
   if (root)
     {
       if (mode)
-	free(root->elem);
+	XFREE(root->elem);
       btree_free(root->left, mode);
       btree_free(root->right, mode);
-      free(root);
+      XFREE(root);
     }
 }
 
