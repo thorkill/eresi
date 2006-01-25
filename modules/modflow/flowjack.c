@@ -38,7 +38,7 @@ int			cmd_flowjack(void)
   if (!sect->altdata)
   {
     printf(" * .control section unloaded ... Loading\n");
-    new_blk_list = malloc(sizeof (struct s_iblock *));
+    new_blk_list = elfsh_malloc(sizeof (struct s_iblock *));
     *new_blk_list = 0;
     load_blocks(world.curjob->current, new_blk_list);
     sect->altdata = &new_blk_list;
@@ -88,7 +88,7 @@ int			cmd_flowjack(void)
       name = elfsh_reverse_metasym(world.curjob->current, addr, &off);
       printf(" * patching block %s + " DFMT "\n", name, off);
       to_hijack = block_get_by_vaddr(blk_list, cal->vaddr, 1);
-      buffer = realloc(buffer, to_hijack->size - (cal->vaddr - to_hijack->vaddr));
+      buffer = elfsh_realloc(buffer, to_hijack->size - (cal->vaddr - to_hijack->vaddr));
       elfsh_raw_read(world.curjob->current, 
 		     elfsh_get_foffset_from_vaddr(world.curjob->current, cal->vaddr),
 		     buffer, to_hijack->size - (cal->vaddr - to_hijack->vaddr));

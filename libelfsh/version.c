@@ -864,7 +864,7 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
 	  XALLOC(pneed, sizeof(hashneed_t), -1);
 	  pneed->need = table;
 	  pneed->aux = tableaux;
-	  hash_add(t, strdup(s_temp), (void*) pneed);
+	  hash_add(t, elfsh_strdup(s_temp), (void*) pneed);
 
 	  auxset += tableaux->vna_next;
 	}
@@ -887,24 +887,19 @@ int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
   char			s_temp[8];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   for (index = 0, offset = 0; offset < size; index++)
     {
       table = ps + offset;
-
       snprintf(s_temp, 8, "%u", table->vd_ndx);
       XALLOC(pdef, sizeof(hashdef_t), -1);
-      pdef->ps = ps;
+      pdef->ps  = ps;
       pdef->def = table;
-      pdef->aux = (((elfsh_Word) offset) + table->vd_aux);
-      hash_add(t, strdup(s_temp), (void*) pdef);
-
+      pdef->aux = (elfsh_Word) offset + table->vd_aux;
+      hash_add(t, elfsh_strdup(s_temp), (void *) pdef);
       if (table->vd_next == NULL)
 	break;
-
       offset += table->vd_next;
     }
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

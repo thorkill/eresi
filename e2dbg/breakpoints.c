@@ -15,11 +15,28 @@ static u_char	watchflag;
 int		vm_bp_add(elfsh_Addr addr, u_char flags)
 {
   int		err;
+  char		buf[BUFSIZ];
+  char		*name;
+  int		off;
+  elfshobj_t	*file;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  err = elfsh_bp_add(&e2dbgworld.bp, world.curjob->current, 
-		     addr, flags);
+
+  /* Resolve source file */
+  file = vm_get_parent_object(addr);
+  if (file == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot resolve parent file for bp", -1);
+
+  /* Resolve breakpoint address */
+  name = vm_resolve(file, addr, &off);
+  if (off)
+    snprintf(buf, BUFSIZ, "<%s + %d>", name, off);
+  else
+    snprintf(buf, BUFSIZ, "<%s>", name);
+
+  /* Really put the breakpoint */
+  err = elfsh_bp_add(&e2dbgworld.bp, file, buf, addr, flags);
   if (err < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot add breakpoint", -1);
@@ -108,12 +125,10 @@ elfshbp_t	*vm_lookup_bp(char *name)
 				      name);
       if (!sym || sym->st_value == NULL)
 	{
-	  /***** * ******* * * ** * *  * * * * */
 	  elfsh_toggle_mode();
 	  sym = elfsh_get_metasym_by_name(world.curjob->current,
 					  name);
 	  elfsh_toggle_mode();
-	  /***** * ******* * * ** * *  * * * * */
 	}
       if (!sym)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -248,11 +263,16 @@ int		cmd_bp()
 	  addr = sym->st_value;
 	  if (elfsh_get_objtype(world.curjob->current->hdr) == ET_DYN)
 	    {
-	      printf("Adding base addr %08X \n", world.curjob->current->rhdr.base);
+#if __DEBUG_BP__
+	      printf(" [*] Adding base addr %08X \n", world.curjob->current->rhdr.base);
+#endif
 	      addr += world.curjob->current->rhdr.base;
 	    }
 
-	  printf("Set breakpoint on %08X \n", addr);
+#if __DEBUG_BP__
+	  printf(" [*] Set breakpoint on %08X \n", addr);
+#endif
+
 	}
 
       /* Add the breakpoint */
@@ -298,78 +318,3 @@ int		cmd_watch()
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (err));
 }
-
-
-
-
-
-/* Add a breakpoint */
-/* Assez high level et lowlevel a la fois */
-
-int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
-			     elfsh_Addr addr, u_char flags)
-{
-  u_char	archtype;
-  u_char	objtype;
-  u_char	ostype;
-  elfshbp_t	*bp;
-  char		tmp[32];
-  int		ret;
-  static int	lastbpid = 1;
-  char		buf[BUFSIZ];
-  char		*name;
-  int		off;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (file == NULL || addr == 0 || bps == 0) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameter", -1);
-
-  /* Breakpoints handlers must be initialized */
-  elfsh_setup_hooks();
-  archtype = elfsh_get_archtype(file);
-  objtype = elfsh_get_elftype(file);
-  ostype = elfsh_get_ostype(file);
-  if (archtype == ELFSH_ARCH_ERROR ||
-      objtype  == ELFSH_TYPE_ERROR ||
-      ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid target", -1);
-
-  /* Resolve breakpoint address */
-  // XXX: This part should be in vm_bp_add 
-  // XXX: so that we can move this function to libelfsh
-  name = vm_resolve(file, addr, &off);
-  if (off)
-    snprintf(buf, BUFSIZ, "<%s + %d>", name, off);
-  else
-    snprintf(buf, BUFSIZ, "<%s>", name);
-
-  XALLOC(bp , sizeof(elfshbp_t), (-1));
-  bp->obj     = vm_get_parent_object(addr); // XXX: Need to be resolved before
-  bp->type    = INSTR;
-  bp->addr    = addr;
-  bp->symname = strdup(buf);
-
-  bp->flags   = flags;
-  if (!bp->obj)
-    vm_output("Warning : Unknown parent object for breakpoint\n");
-
-  snprintf(tmp, 32, XFMT, addr);   
-  if (hash_get(bps, tmp))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Breakpoint already exist", -1);
-
-  /* Call the architecture dependent hook for backtrace */
-  ret = (*hook_break[archtype][objtype][ostype])(file, bp);
-  if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Breakpoint insertion failed", (-1));
-
-  /* Add new breakpoint to hash table */
-  bp->id = lastbpid++;
-  hash_add(bps, strdup(tmp), bp); 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-

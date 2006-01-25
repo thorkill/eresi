@@ -91,10 +91,10 @@
 				"\033[00mwhite"			       
 
 #define HLP_NOCOLOR             "Toggle color status"
-
-#define HLP_VERSION             "Version symbole table with informations"
-#define HLP_VERDEF              "Version definition table"
-#define HLP_VERNEED             "Version need table"
+#define HLP_VERSION             "Print the version table with symbol information"
+#define HLP_VERDEF              "Print the defined versions table"
+#define HLP_VERNEED             "Print the needed versions table"
+#define HLP_HASH                "Print the dynsymbols ELF hash table (.hash)"
 
 /* Configuration commands */
 #define	HLP_HIJACK		"Redirect a function to another function \n\n\t" \
@@ -161,6 +161,7 @@
 #define HLP_DBGSTACK		"Dump N words on debugger stack"
 #define	HLP_DUMPREGS		"Dump registers of debuggee at breakpoint or step"
 #define	HLP_STEP		"Enable stepping of debuggee program"
+#define	HLP_START		"Start the debuggee program"
 #define	HLP_DELETE		"Delete breakpoint by symbol, addr, or ID"
 #define	HLP_CONTINUE		"Continue executing debuggee program after break"
 #define	HLP_RUN			"Erase existing process by new execution (no fork)"

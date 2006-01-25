@@ -44,6 +44,8 @@
 #include <dlfcn.h>
 #endif
 
+#include <pthread.h>
+
 #include <libelfsh.h>
 
 #if defined(ELFSHNET)
@@ -73,7 +75,7 @@ extern asm_processor	proc;
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_HIJACK__	0
-#define __DEBUG_TEST__		1
+#define __DEBUG_TEST__		0
 
 /* Network related defines */
 #define ELFSH_PORT		4444
@@ -172,8 +174,8 @@ extern asm_processor	proc;
 
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
-#define	ELFSH_VERSION		"0.65"
-#define	ELFSH_RELEASE		"rc2"
+#define	ELFSH_VERSION		"0.7"
+#define	ELFSH_RELEASE		"a3"
 #define ELFSH_EDITION		"devhell"
 
 /* Unused, feel free to try it ;) */
@@ -311,9 +313,10 @@ char prompt_token[128];
 #define	CMD_EDIT		"edit"
 
 /* ELF Version commands */
-#define CMD_VERSION           "version"
-#define CMD_VERNEED           "verneed"
-#define CMD_VERDEF            "verdef"
+#define CMD_VERSION		"version"
+#define CMD_VERNEED		"verneed"
+#define CMD_VERDEF		"verdef"
+#define	CMD_HASH		"hash"
 
 /* Network commands */
 #define	CMD_NETWORK		"net"
@@ -497,6 +500,7 @@ typedef struct          s_color
   
 }                       color_t;
 
+extern u_int		nocolor;
 
 /* Elfsh Output Caching structure */
 typedef struct          s_elfsh_outbuf
@@ -572,15 +576,15 @@ typedef struct        s_job
   
 #define       ELFSH_INPUT     0
 #define       ELFSH_OUTPUT    1
-  elfshio_t           io;			       /* Current IO for this job */
-  elfshsock_t         sock;			       /* Current socket, unused in initial job */
+  elfshio_t           io;		 /* Current IO for this job */
+  elfshsock_t         sock;		 /* Current socket, unused in initial job */
   
 #define		      ELFSH_MAX_SOURCE_DEPTH  10
   elfshargv_t	      *script[ELFSH_MAX_SOURCE_DEPTH]; /* List of script commands */
   elfshargv_t         *lstcmd[ELFSH_MAX_SOURCE_DEPTH]; /* Last command for each depth */
   u_int               sourced;                         /* script depth (if beeing sourced) */ 
   
-  elfshargv_t         *curcmd;          /* Next command to be executed */
+  elfshargv_t	      *curcmd;          /* Next command to be executed */
   elfshobj_t          *list;            /* List of loaded ELF objects */
   elfshobj_t          *current;         /* Current working ELF object */
 
@@ -591,9 +595,13 @@ typedef struct        s_job
   time_t              createtime;
   int                 logfd;            /* Log file descriptor */
   elfshscreen_t       screen;           /* Last printed screen */
-  
+ 
+  char		      *oldline;		/* Previous command line */
+
 #define       ELFSH_JOB_LOGGED (1 << 0)
   u_char              state;            /* Job state flags */
+  
+  asm_processor*      proc;		/* Processor structure */
   
 }                     elfshjob_t;
 
@@ -644,6 +652,7 @@ typedef struct        s_elfsh_world
   elfshobj_t	      *shared;        /* List of shared descriptors */
   char                *scriptsdir;    /* Directory which contains script commands */
   asm_processor       proc;           /* Libasm world */
+  asm_processor	      proc_sparc;     /* Libasm Sparc */	
   e2dbgworld_t        e2dbg;          /* Debugger world */
 }		      elfshworld_t;
 
@@ -764,9 +773,11 @@ extern hash_t		sct_L2_hash;	/* For Section data access */
 extern hash_t		dynsym_L2_hash;	/* For .dynsym */
 extern hash_t		dyn_L2_hash;	/* For .dynamic */
 
-extern hash_t         vers_L2_hash;      /* For .gnu.version */
-extern hash_t         verd_L2_hash;      /* For .gnu.version_d */
-extern hash_t         vern_L2_hash;      /* For .gnu.version_r */
+extern hash_t		vers_L2_hash;   /* For .gnu.version */
+extern hash_t		verd_L2_hash;   /* For .gnu.version_d */
+extern hash_t		vern_L2_hash;   /* For .gnu.version_r */
+extern hash_t		hashb_L2_hash;  /* For .hash (bucket) */
+extern hash_t		hashc_L2_hash;  /* For .hash (chain) */
 
 extern hash_t           bg_color_hash;   /* colors def */
 extern hash_t           fg_color_hash;   /* colors def */
@@ -904,13 +915,25 @@ int		cmd_cleanup();
 int             cmd_verneed();
 int             cmd_verdef();
 int             cmd_version();
+int             cmd_hashx();
 
 int		vm_add_script_cmd(char *dirstr);
 int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();
+
+
 #ifdef __DEBUG_TEST__
 int		cmd_test();
 #endif
+
+int		vm_screen_switch();
+
+
+/* Hash functions */
+int           vm_hashunk(int i);
+int           vm_hashbucketprint(int t, int i, int s, char *n, int r, int h, int c);
+int           vm_hashchainprint(int i, int s, char *n, int r, int h);
+
 
 /* Debugging functions */
 int		cmd_mode();
@@ -1123,6 +1146,8 @@ char		*vm_socket_merge_recvd(elfshsock_t *socket);
 
 /* Interface related functions */
 int		vm_system(char *cmd);
+void		vm_dbgid_set(u_int pid);
+u_int		vm_dbgid_get();
 
 /* Workspace related functions*/
 int		cmd_workspace();
@@ -1131,6 +1156,8 @@ int		vm_own_job(elfshjob_t *job);
 int		vm_valid_workspace(char *name);
 void		vm_switch_job(elfshjob_t *job);
 elfshjob_t	*vm_clone_job(elfshjob_t *job);
+
+void		wait4exit(void *);
 
 #endif /* __ELFSH_H_ */
 

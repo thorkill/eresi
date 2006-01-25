@@ -30,9 +30,7 @@ int		cmd_source()
 
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
-    {
-      argc++;
-    }
+    argc++;
 
   if (!idx)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -54,6 +52,11 @@ int		cmd_source()
       str = tmp->immed_val.str;
     }
 
+  /* Switch to debugger script mode when sourcing */
+  /* This does not include the debugger .elfshrc */
+  if (!strstr(str, "elfshrc") && world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+    e2dbgworld.sourcing = 1;
+
   /* Open the script file and pass its parameters */
   argv = alloca((2 + argc) * sizeof(char *));
   argv[0] = "#!elfsh";
@@ -70,9 +73,9 @@ int		cmd_source()
   for (idx = 1; argv[idx + 1]; idx++)
     {
       snprintf(actual, sizeof(actual), "%u", idx);
-      new = vm_create_IMMEDSTR(1, strdup(argv[idx + 1]));
+      new = vm_create_IMMEDSTR(1, elfsh_strdup(argv[idx + 1]));
       hash_del(&vars_hash, actual);
-      hash_add(&vars_hash, strdup(actual), new);
+      hash_add(&vars_hash, elfsh_strdup(actual), new);
     }
 
   new = vm_create_IMMED(ELFSH_OBJINT, 1, idx);
@@ -115,7 +118,10 @@ int		cmd_source()
 	(world.curjob->curcmd->name                     &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
-      break;
+      {
+	e2dbgworld.sourcing = 0;
+	break;
+      }
 
   } while (1);
   
@@ -301,27 +307,29 @@ int	vm_add_script_cmd(char *dir_name)
 	      
 	      snprintf(cmd_name, BUFSIZ - 1, "%s", dir_entry->d_name);
 	      cmd_name[len - 1 - 3] = '\0';
-	      vm_addcmd(strdup(cmd_name), (void *) cmd_script, 
+	      vm_addcmd(elfsh_strdup(cmd_name), (void *) cmd_script, 
 			(void *) vm_getvarparams, 0, 
 			"Synthetic macro command");
-	      snprintf(cmd_name, BUFSIZ - 1, "\t\t+ %s added\n", 
-		       dir_entry->d_name);
-	      vm_output(cmd_name);
+	      if (!world.state.vm_quiet)
+		{
+		  snprintf(cmd_name, BUFSIZ - 1, "\t\t+ %s added\n", 
+			   dir_entry->d_name);
+		  vm_output(cmd_name);
+		}
 	      cnt++;
 	    }
 	}
     }
       
-
   if (world.scriptsdir != NULL)
     {
       XFREE(world.scriptsdir);
       world.scriptsdir = NULL;
     }
   if (cnt)
-    world.scriptsdir = strdup(dir_name);
+    world.scriptsdir = elfsh_strdup(dir_name);
   else 
-    vm_output("\t\t!! No scripts found !!\n");
+    vm_output("\t\t [!] No scripts found \n");
 
   closedir(dir);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -336,17 +344,18 @@ int	cmd_scriptsdir()
   int   cmdnum;
 #endif
 
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->curcmd->param[0] == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", (-1));
       
-
-  snprintf(str, BUFSIZ - 1, "\t [Adding script commands from %s] \n", 
-	   world.curjob->curcmd->param[0]);
-  vm_output(str);
+  if (!world.state.vm_quiet)
+    {
+      snprintf(str, BUFSIZ - 1, "\t [Adding script commands from %s] \n", 
+	       world.curjob->curcmd->param[0]);
+      vm_output(str);
+    }
   
   if (vm_add_script_cmd(world.curjob->curcmd->param[0]) < 0)
     {
@@ -359,7 +368,8 @@ int	cmd_scriptsdir()
 #if defined(USE_READLN)
       world.comp.cmds[0] = hash_get_keys(&cmd_hash, &cmdnum);
 #endif
-      vm_output("\t done\n\n");
+      if (!world.state.vm_quiet)
+	vm_output("\t done\n\n");
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

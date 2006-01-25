@@ -35,7 +35,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
     {
       XALLOC(symtab, sizeof (elfshsect_t), NULL);
       hdr = elfsh_create_shdr(0, SHT_SYMTAB, 0, 0, 0, 0, 0, 0, 0, sizeof(elfsh_Sym));
-      symtab->name = strdup(ELFSH_SECTION_NAME_SYMTAB);
+      symtab->name = elfsh_strdup(ELFSH_SECTION_NAME_SYMTAB);
       index = elfsh_insert_unmapped_section(file, symtab, hdr, NULL);
       if (index < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 

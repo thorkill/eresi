@@ -1,6 +1,5 @@
 #!/usr/bin/elfsh
 
-
 print Number of parameters : $#
 print Param 1 : $1
 
@@ -13,10 +12,9 @@ b $1
 display 1 got $1
 display 1 print Reached breakpoint !
 
-cont
-step
-
+start
 set $idx 0
+step
 
 loop:
 cont
@@ -24,7 +22,6 @@ add $idx 1
 cmp $idx 5
 je  end
 jmp loop
-
 
 end:
 print Stepped 5 instructions ! 

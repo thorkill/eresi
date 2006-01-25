@@ -1,9 +1,11 @@
 
 NAME	= malloc-e2dbg
+CC	?= gcc
 
 all:
-	$(CC) -fPIC -g3 -gstabs+ libtest.c -Iinclude -L. -ltest -shared -o libtest.so -L../ -l$(NAME)
-	$(CC) -fPIC -g3 -gstabs+ test-threads.c -Iinclude -L. -ltest -lpthread -L../ -l$(NAME)
+	$(CC) -fPIC libtest.c -Iinclude -c 
+	$(CC) libtest.o -L. -shared -o libtest.so -L../ -l$(NAME)
+	$(CC) -fPIC test-threads.c -Iinclude -L. -ltest -lpthread -L../ -l$(NAME)
 
 clean: 
 	rm -f *.o *~ 

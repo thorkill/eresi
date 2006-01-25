@@ -10,11 +10,14 @@ include ../../config.h
 SRC	= sht_removing.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm
+LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm \
+	-L../../libc/ -lcelfsh -L../../libmalloc/ -lmalloc-e2dbg \
+	-L../usr/pkg/lib/ -lpthread
 NAM	= sht_remover
 RM	= rm -f 
 VULN	= main.c
-OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include -I../../libasm/include/  $(BITS)
+OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libhash/include \
+	-I../../libasm/include/ -I../../libc/include  $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

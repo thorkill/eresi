@@ -26,7 +26,9 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
     {
       XALLOC(strtab, sizeof (elfshsect_t), NULL);
       hdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, 0, 0, 0, 0, 0, 0);
-      strtab->name = strdup(ELFSH_SECTION_NAME_STRTAB);
+
+      /* Use elfsh_strdup from libcelfsh */
+      strtab->name = elfsh_strdup(ELFSH_SECTION_NAME_STRTAB);
       strtab->parent = file;
       elfsh_insert_unmapped_section(file, strtab, hdr, NULL);
       file->secthash[ELFSH_SECTION_STRTAB] = strtab;

@@ -3,11 +3,15 @@
 load a.out
 load rel.o
 
+profile
+profile
+log session
+
 reladd 1 2
 
 redir puts puts_troj
 redir legit_func hook_func
-
 save fake_aout
+log stop
 
 quit

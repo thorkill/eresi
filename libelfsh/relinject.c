@@ -1,6 +1,10 @@
 /*
 ** relinject.c for libelfsh
 **
+** This file contains all functions for relocating a ET_REL
+** object. It calls the relocation hook for keeping an abstraction
+** on various routines.
+**
 ** BeoS fixes by zadig
 **
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
@@ -17,7 +21,6 @@ static elfshobj_t	*list_shared = NULL;
 
 
 
-
 /* Perform relocation on entry (Now use ELFsh 0.6 hooks model) */
 static int      elfsh_relocate_entry(elfshsect_t        *new,
                                      void               *reloc,
@@ -25,26 +28,14 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
                                      elfsh_Addr         addr,
 				     elfshsect_t	*mod)
 {
-  u_char	archtype;
-  u_char	objtype;
-  u_char	ostype;
-
+  int		ret;
+  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  archtype = elfsh_get_archtype(new->parent);
-  objtype = elfsh_get_elftype(new->parent);
-  ostype = elfsh_get_ostype(new->parent);
-  if (archtype == ELFSH_ARCH_ERROR || 
-      objtype  == ELFSH_TYPE_ERROR || 
-      ostype   == ELFSH_OS_ERROR)
+  ret = elfsh_rel(new->parent, new, reloc, dword, addr, mod);
+  if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid target", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     ((*hook_rel[archtype][objtype][ostype])(new, 
-							     reloc, 
-							     dword, 
-							     addr, 
-							     mod)));
+		      "Unable to relocate object", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -137,13 +128,11 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
 
   /* If the selected et_rel is beeing injected warn caller */
   if (choice->pending)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL) ;
-
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
   /* If we found something in the local list, do not search in the shared one */
   if (symchoice != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice)) ;
-
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
   
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Object not found", ((void *) -1));
@@ -401,9 +390,10 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  /* Find corresponding inserted section in ET_EXEC */
 	  snprintf(tmpname, sizeof(tmpname), "%s%s", reltab->parent->name, sect->name);
 	  sect = elfsh_get_section_by_name(new->parent, tmpname, NULL, NULL, NULL);
-
+	  
 	  if (sect == NULL)
 	    {
+
 #if	__DEBUG_RELADD__
 	      printf("[DEBUG_RELADD] Did not found %s section (sym = %s) \n", 
 		     tmpname, name);

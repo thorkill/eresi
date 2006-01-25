@@ -51,6 +51,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!new)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSYM", -1);
+  new->shdr->sh_entsize = sizeof(elfsh_Sym);
 
   memcpy(elfsh_get_raw(new), elfsh_get_raw(dynsym), dynsym->shdr->sh_size);
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_SYMTAB);
@@ -126,26 +127,20 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 }
 
 
-
 /* Insert a new function entry point for dynamic resolution */
 /* Return the symbol pointing on this new definition (its .plt entry) */
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)	
 {
-  char		*ent;
   u_int		sz;
-  int		*reloc;
   elfshsect_t	*relplt;
   elfshsect_t	*extplt;
   elfshsect_t	*altgot;
   elfshsect_t	*dynsym;
   elfshsect_t	*dynstr;
   u_int		relentsz;
-  elfsh_Rel	r;
   elfsh_Sym	sym;
   u_int		len;
-  elfsh_Addr	gotent;
   elfsh_Dyn	*dynent;
-  int		prot;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -191,8 +186,6 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   if (!dynstr)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find DYNSTR section", NULL);
-  
-  /* XXX: PLT encoding hook needed */
 
   /* Check room inside sections */
   sz = elfsh_get_pltentsz(file);
@@ -245,36 +238,10 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 			  "No room anymore in ALTGOT", NULL);
     }
 
-  /* ALTGOT entry allocation */
-  /* 6 is the size of the first instruction of a .plt entry on x86 */
-  gotent = extplt->shdr->sh_addr + extplt->curend + 6;
-  memcpy(elfsh_get_raw(altgot) + altgot->curend, 
-	 (char *) &gotent, sizeof(gotent));
-  altgot->curend += sizeof(gotent);
- 
-#if __DEBUG_EXTPLT__
-  printf("[DEBUG_EXTPLT] Set ALTGOT entry " XFMT " to value " XFMT "\n", 
-	 altgot->shdr->sh_addr + altgot->curend, gotent);
-#endif
-
-  /* Make available a new EXTPLT entry -ok */
-  /* 7 is the offset for the relocation offset location, encoded in GOT */
-  ent = elfsh_get_raw(extplt) + extplt->curend;
-  reloc  = (int *) ((char *) ent + 7);
-  prot = elfsh_munprotect(extplt->parent, 
-			  (elfsh_Addr) reloc, 
-			  (char *) reloc - (char *) elfsh_get_raw(extplt));
-  *reloc = relplt->curend;
-  elfsh_mprotect((elfsh_Addr) reloc, 
-		 (char *) reloc - (char *) elfsh_get_raw(extplt), prot);
-  extplt->curend += elfsh_get_pltentsz(file);
-
-  /* Insert relocation entry pointing on the new PLT entry */
-  r = elfsh_create_relent(R_386_JMP_SLOT, 
-			  dynsym->curend / sizeof(elfsh_Sym), 
-			  altgot->shdr->sh_addr + altgot->curend - sizeof(gotent));
-  memcpy(elfsh_get_raw(relplt) + relplt->curend, &r, relentsz);
-  relplt->curend += relentsz;
+  /* The EXTPLT hook will allocate a new relentry and gotentry */
+  if (elfsh_extplt(extplt, altgot, dynsym, relplt) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to satisfy EXTPLT handler", NULL);
 
   /* Change RELPLT size in .dynamic */
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_PLTRELSZ);
@@ -282,7 +249,6 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get DT_PLTRELSZ", NULL);
   elfsh_set_dynentry_val(dynent, elfsh_get_dynentry_val(dynent) + relentsz);
-
 
   /* Insert symbol referenced by previous injected reloc entry */
   sym = elfsh_create_symbol(extplt->shdr->sh_addr + extplt->curend - elfsh_get_pltentsz(file),
@@ -293,12 +259,10 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   memcpy(elfsh_get_raw(dynsym) + dynsym->curend, &sym, sizeof(sym));
   dynsym->curend += sizeof(elfsh_Sym);
 
-
   /* Insert string referenced by the previous injected symbol */
   memcpy(elfsh_get_raw(dynstr) + dynstr->curend, name, len + 1);
   dynstr->curend += len + 1;
   elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_DYNSYM]);
-
 
   /* Change DYNSTR size in .dynamic */
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
@@ -306,7 +270,6 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DT_STRSZ", NULL);
   elfsh_set_dynentry_val(dynent, elfsh_get_dynentry_val(dynent) + len + 1);
-
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     elfsh_get_raw(dynsym) + dynsym->curend - sizeof(elfsh_Sym));

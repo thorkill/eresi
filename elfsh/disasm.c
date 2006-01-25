@@ -103,7 +103,7 @@ char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roffset)
   else
     snprintf(buf, BUFSIZ, "%s", bestname);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, strdup(buf));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, elfsh_strdup(buf));
 }
 
 
@@ -151,12 +151,12 @@ void		do_resolve(void *data, u_int vaddr, char *buf, u_int maxlen)
 
 
 
+/*------------------ to clean !! ******/
 
 
 
 
-
-/* Display an instruction */
+/* Display An instruction */
 /* Runtime compatible */
 u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset, 
 			      u_int size, char *name, u_int nindex, char *buff,
@@ -173,14 +173,16 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
   char		c2[2];
   u_int		strsz;
   
-
   //#define	BIGBUFSZ (BUFSIZ * 64)
-
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!buff)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid argument", (-1));    
+
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, buff + index, size - index + 10, &world.proc);
+  ret = asm_read_instr(&ptr, buff + index, size - index + 10, 
+		       world.curjob->proc);
   s = (!ret ? "(bad)" : 
        asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
 
@@ -286,33 +288,45 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   /* Special case if the symbol is a plt entry */
   if (sym && elfsh_is_pltentry(file, sym) == 1 && size > ELFSH_PLT_ENTRY_SIZE)
     size = ELFSH_PLT_ENTRY_SIZE;
-  
+
+
 #if __DEBUG_DISASM__
   snprintf(logbuf, BUFSIZ - 1, 
-	   "[debug:display_object] %s off(%u) size(%u) vaddr(%08X) foffset(%u), off(%u) \n", 
-	   name, off, size, vaddr, foffset, off);
+	   "[debug:display_object] %s off(%u) size(%u) vaddr(%08X) foffset(%u), parent(%p, %s) \n",
+	   name, off, size, vaddr, foffset, parent, (parent ? parent->name : "UNK"));
   vm_output(logbuf);
 #endif
 
   buff = elfsh_get_raw(parent);
   index = off;
-
+  
+  /* Filter requests on void sections (ex: bss) */
+  if (!parent || !parent->data)
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			"No data at this address", -1);
+  
   /* If the regex match a pointers array, print the pointed elements too */
   if (sym && 
       (elfsh_get_symbol_type(sym) == STT_OBJECT  ||
        elfsh_get_symbol_type(sym) == STT_COMMON) && 
       !(sym->st_size % sizeof(elfsh_Addr)))
-    {
+      {
 
-      //if (sym->st_size > 5000 * sizeof(elfsh_Addr))
-	for (index = 0; (index + 1) * sizeof(elfsh_Addr) < sym->st_size; index++)
-	  {
+	  for (index = 0; index * sizeof(elfsh_Addr) < sym->st_size; index++)
+	      {
+
+		  /* Do not print more than 250 entries at a time */
+		  /* Use an offset for more dumping */
+		  if (index >= 250)
+		      {
+			  vm_output("-- symbol size is bigger (use an offset) --\n");
+			  break;
+		      }
 	    
-	    
-	    //printf("Now array looping on size %u \n", sym->st_size);
-	    
-	    /* For each entry of the array */
-	    loff = *(elfsh_Addr *) ((char *) elfsh_get_raw(parent) + (index * sizeof(elfsh_Addr)));
+		  /* For each entry of the array */
+		  /* Dont forget the section offset at the end */
+		  loff = *(elfsh_Addr *) (char*) elfsh_get_raw(parent) + 
+		      index * sizeof(elfsh_Addr) + (vaddr - parent->shdr->sh_addr);
 	    
 	    //printf("second step passed \n");
 	    
@@ -380,7 +394,6 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	    vm_output(logbuf);
 	    
 	    //printf("fourth step passed \n");
-	    
 	  }
     }
   
@@ -393,8 +406,17 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	vaddr += file->rhdr.base;
 
       while (index < size)
-	index += display_instr(-1, index, vaddr, foffset, size, name, 
-			       index, buff, bigbuf, &biglen);
+	  {
+
+	    if (index >= 1000)
+		{
+		    vm_output("-- symbol size is bigger (use an offset) --\n");
+		    break;
+		}
+
+	      index += display_instr(-1, index, vaddr, foffset, size, name, 
+				     index, buff, bigbuf, &biglen);
+	  }
 
       // To uncomment one day
       // Second pattern in action
@@ -418,6 +440,12 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 
       while (index < size)
 	{
+
+	    if (index >= 1000)
+		{
+		    vm_output("-- symbol size is bigger (use an offset) --\n");
+		    break;
+		}
 
 	  /* Take care of quiet mode */
 	  if (world.state.vm_quiet)
@@ -478,9 +506,6 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 
 
@@ -565,10 +590,22 @@ int             cmd_disasm()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
+  switch(elfsh_get_arch(world.curjob->current->hdr))
+    {
+    case EM_386:
+      world.curjob->proc = &world.proc;
+      break;
+    case EM_SPARC:
+      world.curjob->proc = &world.proc_sparc;
+      break;
+    default:
+      vm_output("Architecture not supported. No disassembly available\n");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
   elfsh_get_symtab(world.curjob->current, NULL);
   elfsh_get_dynsymtab(world.curjob->current, NULL);
   vm_output("\n");
-
+  
   /* now walk the regex list for this option */
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
@@ -612,6 +649,7 @@ int             cmd_disasm()
       if (sym == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No matching symbol for offset", -1);
+
       actual->off += off;
       if (!actual->size)
 	actual->size = elfsh_get_symbol_size(sym);
@@ -620,11 +658,19 @@ int             cmd_disasm()
       matchs++;
       
 #if __DEBUG_DISASM__
-     snprintf(logbuf, BUFSIZ - 1, "[debug_disasm:cmd_disasm] Found special regx (%s) \n", name);
-     vm_output(logbuf);
+      snprintf(logbuf, BUFSIZ - 1, 
+	       "[debug_disasm:cmd_disasm] Found special regx (%s with off %d)  sym = %08X\n", 
+	       name, off, sym->st_value);
+      vm_output(logbuf);
 #endif
 
-      display_object(file, NULL, sym, actual->size, actual->off,
+      s = elfsh_get_parent_section(file, vaddr, NULL);
+      if (!s)
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			    "No matching section for address", -1);
+
+      display_object(file, 
+		     s, sym, actual->size, actual->off,
 		     elfsh_get_foffset_from_vaddr(file, vaddr),
 		     vaddr, name, actual->otype);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -644,7 +690,7 @@ int             cmd_disasm()
 		   s->index, s->name, actual->rname, s->shdr, s->shdr->sh_addr);
           vm_output(logbuf);
 #endif
-
+	  
 	  continue;
 	}
       matchs++;
@@ -690,7 +736,6 @@ int             cmd_disasm()
 		      actual->size + actual->off, 
 		      actual->otype);
     }
-
 
   
   saved_size = actual->size;
@@ -756,13 +801,25 @@ int             cmd_disasm()
 #endif
 
 	   printf("st_value : %x\n", elfsh_get_symbol_value(sym + index));
+	   if (elfsh_get_symbol_value(sym + index) == 0)
+	     {
+		 elfsh_toggle_mode();
+	       sym = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
+	       elfsh_toggle_mode();
+	       printf("toggled st_value with base : %x\n", 
+		      elfsh_get_symbol_value(sym + index));
+	       s = elfsh_get_parent_section(file, 
+					    file->rhdr.base + sym[index].st_value, NULL);
+	     }
+	   else
+	     s = elfsh_get_parent_section(file, sym[index].st_value, NULL);
 
-	    s = elfsh_get_parent_section(file, sym[index].st_value, NULL);
-	    if (!s)
-	      {
-		//printf("Passed DYNSYM match without section %s [%08X] \n", name, sym[index].st_value);
-		continue;
-	      }
+	   if (!s)
+	     {
+	       printf("Passed DYNSYM match without section %s [%08X] \n", 
+		      name, sym[index].st_value);
+	       continue;
+	     }
 
 	    display_object(file, s, sym + index, 
 			   actual->size, actual->off,

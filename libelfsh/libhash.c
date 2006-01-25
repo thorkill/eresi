@@ -175,14 +175,14 @@ char		**hash_get_keys(hash_t *h, int *n)
 #if __DEBUG__
 	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
 #endif
-	  keys = realloc(keys, (i + 1) * sizeof(char *));
+	  keys = elfsh_realloc(keys, (i + 1) * sizeof(char *));
 	  keys[i] = entry->key;
 	  entry = entry->next;
 	  i++;
 	}
     }
   
-  keys = realloc(keys, (i + 1) * sizeof(char *));
+  keys = elfsh_realloc(keys, (i + 1) * sizeof(char *));
   keys[i] = NULL;
   *n = i;
   return (keys);

@@ -186,7 +186,7 @@ int		vm_execmd()
 	    goto end;
 	  }
 
-	/* We are executing 'cont' from an e2dbg script */
+	/* We are executing 'cont' from e2dbg */
 	else if (ret == E2DBG_SCRIPT_CONTINUE)
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     E2DBG_SCRIPT_CONTINUE);

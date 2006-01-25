@@ -6,6 +6,252 @@
 ** Last update Mon Feb 26 05:05:27 2005 mayhem
 */
 
+// TODO USE GOOD ELFSH TYPE
+#include "libelfsh-irix.h"
+#include <sys/queue.h>		// NEEDED BY Obj_Entry
+
+/* Lists of shared object dependencies */
+typedef struct Struct_Needed_Entry 
+{
+  struct Struct_Needed_Entry *next;
+  struct Struct_Obj_Entry *obj;
+    unsigned long name;         /* Offset of name in string table */
+} Needed_Entry;
+
+struct Struct_Obj_Entry;
+
+typedef struct link_map {
+        caddr_t         l_addr;                 /* Base Address of library */
+#ifdef __mips__
+        caddr_t         l_offs;                 /* Load Offset of library */
+#endif
+        const char      *l_name;                /* Absolute Path to Library */
+        const void      *l_ld;                  /* Pointer to .dynamic in memory */
+        struct link_map *l_next, *l_prev;       /* linked list of of mapped libs */
+} Link_map;
+
+
+/* Lists of shared objects */
+typedef struct Struct_Objlist_Entry {
+    STAILQ_ENTRY(Struct_Objlist_Entry) link;
+    struct Struct_Obj_Entry *obj;
+} Objlist_Entry;
+
+typedef STAILQ_HEAD(Struct_Objlist, Struct_Objlist_Entry) Objlist;
+
+/*
+ * Shared object descriptor.
+ *
+ * Items marked with "(%)" are dynamically allocated, and must be freed
+ * when the structure is destroyed.
+ *
+ * CAUTION: It appears that the JDK port peeks into these structures.
+ * It looks at "next" and "mapbase" at least.  Don't add new members
+ * near the front, until this can be straightened out.
+ */
+typedef struct Struct_Obj_Entry {
+    /*
+     * These two items have to be set right for compatibility with the
+     * original ElfKit crt1.o.
+     */
+    u_int32_t magic;             /* Magic number (sanity check) */
+    u_int32_t version;           /* Version number of struct format */
+
+    struct Struct_Obj_Entry *next;
+    char *path;                 /* Pathname of underlying file (%) */
+    char *origin_path;          /* Directory path of origin file */
+    int refcount;
+    int dl_refcount;            /* Number of times loaded by dlopen */
+
+    /* These items are computed by map_object() or by digest_phdr(). */
+    caddr_t mapbase;            /* Base address of mapped region */
+    size_t mapsize;             /* Size of mapped region in bytes */
+    size_t textsize;            /* Size of text segment in bytes */
+    u_int32_t vaddrbase;         /* Base address in shared object file */
+    caddr_t relocbase;          /* Relocation constant = mapbase - vaddrbase */
+    const u_int32_t *dynamic;     /* Dynamic section */
+    caddr_t entry;              /* Entry point */
+    const u_int32_t *phdr;       /* Program header if it is mapped, else NULL */
+    size_t phsize;              /* Size of program header in bytes */
+    const char *interp;         /* Pathname of the interpreter, if any */
+
+    /* TLS information */
+    int tlsindex;               /* Index in DTV for this module */
+    void *tlsinit;              /* Base address of TLS init block */
+    size_t tlsinitsize;         /* Size of TLS init block for this module */
+    size_t tlssize;             /* Size of TLS block for this module */
+    size_t tlsoffset;           /* Offset of static TLS block for this module */
+    size_t tlsalign;            /* Alignment of static TLS block */
+    /* Items from the dynamic section. */
+    u_int32_t *pltgot;           /* PLT or GOT, depending on architecture */
+    const u_int32_t *rel;         /* Relocation entries */
+    unsigned long relsize;      /* Size in bytes of relocation info */
+    const u_int32_t *rela;       /* Relocation entries with addend */
+    unsigned long relasize;     /* Size in bytes of addend relocation info */
+    const u_int32_t *pltrel;      /* PLT relocation entries */
+    unsigned long pltrelsize;   /* Size in bytes of PLT relocation info */
+    const u_int32_t *pltrela;    /* PLT relocation entries with addend */
+    unsigned long pltrelasize;  /* Size in bytes of PLT addend reloc info */
+    const u_int32_t *symtab;      /* Symbol table */
+    const char *strtab;         /* String table */
+    unsigned long strsize;      /* Size in bytes of string table */
+
+    const u_int32_t *buckets; /* Hash table buckets array */
+    unsigned long nbuckets;     /* Number of buckets */
+    const u_int32_t *chains;  /* Hash table chain array */
+    unsigned long nchains;      /* Number of chains */
+
+    const char *rpath;          /* Search path specified in object */
+    Needed_Entry *needed;       /* Shared objects needed by this one (%) */
+
+    u_int32_t init;              /* Initialization function to call */
+    u_int32_t fini;              /* Termination function to call */
+
+    int mainprog;              /* True if this is the main program */
+    int rtld;                  /* True if this is the dynamic linker */
+    int textrel;               /* True if there are relocations to text seg */
+    int symbolic;              /* True if generated with "-Bsymbolic" */
+    int bind_now;              /* True if all relocations should be made first */
+    int traced;                /* Already printed in ldd trace output */
+    int jmpslots_done;         /* Already have relocated the jump slots */
+    int init_done;             /* Already have added object to init list */
+    int tls_done;              /* Already allocated offset for static TLS */
+
+    struct link_map linkmap;    /* for GDB and dlinfo() */
+    Objlist dldags;             /* Object belongs to these dlopened DAGs (%) */
+    Objlist dagmembers;         /* DAG has these members (%) */
+    dev_t dev;                  /* Object's filesystem's device */
+    ino_t ino;                  /* Object's inode number */
+    void *priv;                 /* Platform-dependant */
+} Obj_Entry;
+
+
+#ifndef STT_TLS
+  #define STT_TLS  6
+  #undef  STT_NUM
+  #define STT_NUM  7
+#endif
+
+
+#define SHT_GNU_verdef	  0x6ffffffd	/* Version definition section.  */
+#define SHT_GNU_verneed	  0x6ffffffe	/* Version needs section.  */
+#define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
+
+
+/* Version definition sections.  */
+typedef struct
+{
+  Elf32_Half	vd_version;		/* Version revision */
+  Elf32_Half	vd_flags;		/* Version information */
+  Elf32_Half	vd_ndx;			/* Version Index */
+  Elf32_Half	vd_cnt;			/* Number of associated aux entries */
+  Elf32_Word	vd_hash;		/* Version name hash value */
+  Elf32_Word	vd_aux;			/* Offset in bytes to verdaux array */
+  Elf32_Word	vd_next;		/* Offset in bytes to next verdef
+					   entry */
+} Elf32_Verdef;
+
+typedef struct
+{
+  Elf64_Half	vd_version;		/* Version revision */
+  Elf64_Half	vd_flags;		/* Version information */
+  Elf64_Half	vd_ndx;			/* Version Index */
+  Elf64_Half	vd_cnt;			/* Number of associated aux entries */
+  Elf64_Word	vd_hash;		/* Version name hash value */
+  Elf64_Word	vd_aux;			/* Offset in bytes to verdaux array */
+  Elf64_Word	vd_next;		/* Offset in bytes to next verdef
+					   entry */
+} Elf64_Verdef;
+
+
+/* Legal values for vd_version (version revision).  */
+#define VER_DEF_NONE	0		/* No version */
+#define VER_DEF_CURRENT	1		/* Current version */
+#define VER_DEF_NUM	2		/* Given version number */
+
+/* Legal values for vd_flags (version information flags).  */
+#define VER_FLG_BASE	0x1		/* Version definition of file itself */
+#define VER_FLG_WEAK	0x2		/* Weak version identifier */
+
+/* Versym symbol index values.  */
+#define	VER_NDX_LOCAL		0	/* Symbol is local.  */
+#define	VER_NDX_GLOBAL		1	/* Symbol is global.  */
+#define	VER_NDX_LORESERVE	0xff00	/* Beginning of reserved entries.  */
+#define	VER_NDX_ELIMINATE	0xff01	/* Symbol is to be eliminated.  */
+
+/* Auxialiary version information.  */
+
+typedef struct
+{
+  Elf32_Word	vda_name;		/* Version or dependency names */
+  Elf32_Word	vda_next;		/* Offset in bytes to next verdaux
+					   entry */
+} Elf32_Verdaux;
+
+typedef struct
+{
+  Elf64_Word	vda_name;		/* Version or dependency names */
+  Elf64_Word	vda_next;		/* Offset in bytes to next verdaux
+					   entry */
+} Elf64_Verdaux;
+
+
+/* Version dependency section.  */
+
+typedef struct
+{
+  Elf32_Half	vn_version;		/* Version of structure */
+  Elf32_Half	vn_cnt;			/* Number of associated aux entries */
+  Elf32_Word	vn_file;		/* Offset of filename for this
+					   dependency */
+  Elf32_Word	vn_aux;			/* Offset in bytes to vernaux array */
+  Elf32_Word	vn_next;		/* Offset in bytes to next verneed
+					   entry */
+} Elf32_Verneed;
+
+typedef struct
+{
+  Elf64_Half	vn_version;		/* Version of structure */
+  Elf64_Half	vn_cnt;			/* Number of associated aux entries */
+  Elf64_Word	vn_file;		/* Offset of filename for this
+					   dependency */
+  Elf64_Word	vn_aux;			/* Offset in bytes to vernaux array */
+  Elf64_Word	vn_next;		/* Offset in bytes to next verneed
+					   entry */
+} Elf64_Verneed;
+
+
+/* Legal values for vn_version (version revision).  */
+#define VER_NEED_NONE	 0		/* No version */
+#define VER_NEED_CURRENT 1		/* Current version */
+#define VER_NEED_NUM	 2		/* Given version number */
+
+/* Auxiliary needed version information.  */
+
+typedef struct
+{
+  Elf32_Word	vna_hash;		/* Hash value of dependency name */
+  Elf32_Half	vna_flags;		/* Dependency specific information */
+  Elf32_Half	vna_other;		/* Unused */
+  Elf32_Word	vna_name;		/* Dependency name string offset */
+  Elf32_Word	vna_next;		/* Offset in bytes to next vernaux
+					   entry */
+} Elf32_Vernaux;
+
+typedef struct
+{
+  Elf64_Word	vna_hash;		/* Hash value of dependency name */
+  Elf64_Half	vna_flags;		/* Dependency specific information */
+  Elf64_Half	vna_other;		/* Unused */
+  Elf64_Word	vna_name;		/* Dependency name string offset */
+  Elf64_Word	vna_next;		/* Offset in bytes to next vernaux
+					   entry */
+} Elf64_Vernaux;
+
+
+/* Legal values for vna_flags.  */
+#define VER_FLG_WEAK	0x2		/* Weak version identifier */
+
 /* Advanced .dynamic entries : Undefined on BSD */
 #ifndef O_SYNC			
  #define O_SYNC O_FSYNC
@@ -277,4 +523,8 @@
 
 #if !defined(PT_GNU_EH_FRAME)
  #define PT_GNU_EH_FRAME      0x6474e550
+#endif
+
+#if !defined(STT_NUM)
+ #define STT_NUM	7
 #endif

@@ -32,9 +32,17 @@ enum {
   INTEL_PROT
 } e_asm_proc_mode;
 
+
 int		asm_int_pow2(int);
 
 int		fetch_i386(asm_instr *, u_char *, u_int, asm_processor *);
+
+void    asm_resolve_immediate(asm_processor *proc, u_int val, char *buffer, u_int len);
+
+
+char	*asm_ia32_display_instr_att(asm_instr *ins, int addr);
+char	*asm_sparc_display_instr(asm_instr *, int addr);
+
 
 int		asm_proc_oplen(asm_processor *proc);
 int		asm_proc_vector_size(asm_processor *proc);

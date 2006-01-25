@@ -157,8 +157,8 @@ int		vm_openscript(char **av)
   for (idx = 1; av[idx]; idx++)
     {
       snprintf(actual, sizeof(actual), "%u", idx);
-      new = vm_create_IMMEDSTR(1, strdup(av[idx]));
-      hash_add(&vars_hash, strdup(actual), new);
+      new = vm_create_IMMEDSTR(1, elfsh_strdup(av[idx]));
+      hash_add(&vars_hash, elfsh_strdup(actual), new);
     }
 
   new = vm_create_IMMED(ELFSH_OBJINT, 1, idx);
@@ -175,7 +175,7 @@ int		vm_testscript(int ac, char **av)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (ac < 2 || av[1][0] == ELFSH_MINUS)
+  if (ac < 2 || (av[1] && av[1][0] == ELFSH_MINUS))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   XOPEN(fd, av[1], O_RDONLY, 0, 0);
   XREAD(fd, buff, 30, 0);
@@ -471,7 +471,7 @@ int		cmd_glregx()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  str = strdup(world.curjob->curcmd->param[0]);
+  str = elfsh_strdup(world.curjob->curcmd->param[0]);
   if (regcomp(&world.state.vm_regx, str, REG_EXTENDED) < 0)	
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to compute regex", -1);
@@ -519,7 +519,7 @@ int		cmd_alert()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  str = strdup(world.curjob->curcmd->param[0]);
+  str = elfsh_strdup(world.curjob->curcmd->param[0]);
   if (regcomp(&world.state.vm_alert, str, REG_EXTENDED) < 0)	
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to compute regex", -1);
@@ -802,7 +802,7 @@ int			cmd_rcmd()
 
   data[0] = ELFSH_DUMP_CMD;
 
-  ret = dump_send(serv_addr.sin_addr, strdup(data), 1 + strlen(data + 1) + 1);
+  ret = dump_send(serv_addr.sin_addr, elfsh_strdup(data), 1 + strlen(data + 1) + 1);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 #else 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -955,6 +955,16 @@ int		vm_install_clearscreen()
 #ifdef __DEBUG_TEST__
 int		cmd_test()
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+#endif
+
+
+int		vm_screen_switch()
+{
   char		    buf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1021,4 +1031,3 @@ int		cmd_test()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-#endif

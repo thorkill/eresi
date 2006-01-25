@@ -156,10 +156,6 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 }
 
 
-
-
-
-
 /*
 ** Return the dynamic symbol name giving its value,
 ** Fill 'offset' with the difference between sym->st_value and 'value'
@@ -429,15 +425,15 @@ elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
 					     int	mode)
 {
   int		  num;
-  void		 *data;
+  elfsh_Sym	  *data;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (NULL == elfsh_get_symtab(file, &num))
+  data = elfsh_get_symtab(file, &num);
+  if (data == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive SYMTAB", NULL);
 
-  data = file->secthash[ELFSH_SECTION_SYMTAB];
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
 }

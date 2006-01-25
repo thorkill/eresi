@@ -6,12 +6,16 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/**
+/**\file generic.c */
+
+/** Fetch instruction using asm_processor handler
+ * func asm_read_instr
  * fetch instruction stored in buffer of max length len
  * according to specified processor.
- * return -1 on error.
- * return
- * return number of fetched bytes on success.
+ *\param i instruction to fill.
+ *\param buf pointer to opcode to disassemble
+ *\param len maximum length of opcode to disassemble
+ *\return -1 on error or instruction fetched length
  */
 
 int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
@@ -20,9 +24,9 @@ int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
   return (proc->fetch(i, buf, len, proc));
 }
 
-/*
-
-
+/**
+ *
+ *
 */
 
 int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {

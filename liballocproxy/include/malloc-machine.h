@@ -21,9 +21,18 @@
 #ifndef _GENERIC_MALLOC_MACHINE_H
 #define _GENERIC_MALLOC_MACHINE_H
 
-#include <asm/atomic.h>
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+ #include <machine/atomic.h>
+#elif !defined(IRIX)
+ #include <asm/atomic.h>
+#endif
 
-#ifndef mutex_init /* No threads, provide dummy macros */
+#include <pthread.h>
+
+#if 0
+#ifndef pthread_mutex_init /* No threads, provide dummy macros */
+
+# error "No thread !"
 
 # define NO_THREADS
 
@@ -48,6 +57,24 @@ typedef void *tsd_key_t;
 # define thread_atfork(prepare, parent, child) do {} while(0)
 
 #endif /* !defined mutex_init */
+#else
+typedef  pthread_mutex_t mutex_t;
+
+# define mutex_init(m)              pthread_mutex_init(m, NULL) 
+# define mutex_lock(m)              pthread_mutex_lock(m)
+# define mutex_trylock(m)           pthread_mutex_trylock(m)
+# define mutex_unlock(m)            pthread_mutex_unlock(m)
+
+typedef void *tsd_key_t;
+
+# define tsd_key_create(key, destr) do {} while(0)
+# define tsd_setspecific(key, data) ((key) = (data))
+# define tsd_getspecific(key, vptr) (vptr = (key))
+# define thread_atfork(prepare, parent, child) do {} while(0)
+
+
+
+#endif
 
 #ifndef atomic_full_barrier
 # define atomic_full_barrier() __asm ("" ::: "memory")

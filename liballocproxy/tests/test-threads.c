@@ -30,6 +30,8 @@ main()
      iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);
      iret3 = pthread_create( &thread3, NULL, print_message_function_lib, (void*) message3);
 
+     test_lib();
+
      /* Wait till threads are complete before main continues. Unless we  */
      /* wait we run the risk of executing an exit which will terminate   */
      /* the process and all threads before the threads have completed.   */
@@ -46,25 +48,15 @@ main()
 
 
 
-// Ceci est le test
-// Jai rajoute une petite func dans le heap allocator
-// malloc_dbgpid_set/get
-void *print_message_function( void *ptr )
+void	*print_message_function( void *ptr )
 {
-  char *message;
-
-  // Here uncomment this to register the debugger pid and select a new arena for it
-  if (malloc_dbgpid_get() == 0)
-    malloc_dbgpid_set(pthread_self());
+  char	*message;
 
   while (1)
   {
     message = malloc(42);
-    printf("%s: (pid = %u %s) message addr %08X \n", 
-	   ptr, getpid(), 
-	   (pthread_self() == malloc_dbgpid_get() ? "DEBUGGER" : "OTHER"),
-	   message);
-    //free(message);
+    printf("%s: (thread id = %u LIBTHREAD) message addr %08X message var: %08X\n", 
+	   ptr, pthread_self(), message, &message);
     sleep(1);
   }
 }

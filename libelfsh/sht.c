@@ -126,7 +126,7 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
       name = elfsh_get_section_name(file, s);
       if (s->name != NULL)
 	XFREE(s->name);
-      s->name = (name != NULL ? strdup(name) : NULL);
+      s->name = (name != NULL ? elfsh_strdup(name) : NULL);
     }
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

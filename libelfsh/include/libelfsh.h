@@ -20,6 +20,11 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#define __USE_GNU
+#include <sys/ucontext.h>
+
+#include "libc.h"
+
 #include <elf.h>
 
 #ifdef __BEOS__
@@ -90,6 +95,16 @@
 /* The Various relocation stages */
 #define		ELFSH_RELOC_STAGE1		1
 #define		ELFSH_RELOC_STAGE2		2
+
+/* The builtin hooks vectors list */
+#define		ELFSH_HOOK_CFLOW		"hook_cflow"
+#define		ELFSH_HOOK_REL			"hook_rel"
+#define		ELFSH_HOOK_PLT			"hook_plt"
+#define		ELFSH_HOOK_ENCODEPLT		"hook_encodeplt"
+#define		ELFSH_HOOK_ENCODEPLT1		"hook_encodeplt1"
+#define		ELFSH_HOOK_BREAK		"hook_setbreak"
+#define		ELFSH_HOOK_EXTPLT		"hook_extplt"
+#define		ELFSH_HOOK_ALTPLT		"hook_altplt"
 
 /* Some defined values */
 #define		ELFSH_SECTION_NAME_MAPPED	".mapped"
@@ -448,6 +463,7 @@ typedef struct	s_obj
   time_t	 loadtime;		/* Time of Loading */
   u_int		 id;			/* Object ID */
 
+  char		 running;		/* Is the process running ? */
   char		 scanned;		/* Has the object already been block scanned ? */
   char		 read;			/* Has the object already been read ? */
   char		 shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
@@ -523,24 +539,6 @@ typedef struct	s_bp
 
 /* Extern data */
 extern libworld_t	dbgworld;
-
-extern int	(*hook_plt[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f, 
-								       elfsh_Sym  *s,
-								       elfsh_Addr a);
-extern int	(*hook_altplt[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f, 
-									  elfsh_Sym  *s,
-									  elfsh_Addr a);
-extern int	(*hook_rel[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshsect_t *s, 
-								       elfsh_Rel   *r, 
-								       elfsh_Addr  *l,
-								       elfsh_Addr  a,
-								       elfshsect_t *mod);
-extern int	(*hook_cflow[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t  *s,
-									 char      *name,
-									 elfsh_Sym   *old,
-									 elfsh_Addr  _new);
-extern int	(*hook_break[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t  *s,
-									 elfshbp_t   *_new);
 
 /* Libelfsh error message */
 extern char	*elfsh_error_str;
@@ -781,12 +779,26 @@ void		*elfsh_get_rpht(elfshobj_t *file, int *num);
 int		elfsh_create_rpht(elfshobj_t *file);
 elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h);
 
-
-
 /* hash.c */
-void		*elfsh_get_hashtable(elfshobj_t *file);
-int		elfsh_get_symbol_hash(char *sym_name);
-int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *sym_name);
+int           elfsh_get_hashchain_num(int *c);
+int           elfsh_set_hashchain_num(int *c, int v);
+int           elfsh_get_hashbucket_num(int *b);
+int           elfsh_set_hashbucket_num(int *b, int v);
+int           elfsh_get_hashchain_value(int *c);
+int           elfsh_set_hashchain_value(int *c, int v);
+int           elfsh_get_hashbucket_value(int *b);
+int           elfsh_set_hashbucket_value(int *b, int v);
+int           *elfsh_get_hashchain_by_name(elfshobj_t *f, char *s);
+int           *elfsh_get_hashchain_by_index(void *p, int i);
+int           *elfsh_get_hashbucket_by_name(elfshobj_t *f, char *s);
+int           *elfsh_get_hashbucket_by_index(void *p, int i);
+int           *elfsh_get_hashchain(const void *d);
+int           elfsh_get_hashnchain(const void *d);
+int           *elfsh_get_hashbucket(const void *d);
+int           elfsh_get_hashnbucket(const void *d);
+void          *elfsh_get_hashtable(elfshobj_t *file, int *n);
+int	      elfsh_get_symbol_hash(char *sym_name);
+int	      elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *sym_name);
 
 /* got.c */
 elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num);
@@ -1107,19 +1119,41 @@ u_char		elfsh_get_ostype(elfshobj_t *file);
 u_char		elfsh_get_hosttype(elfshobj_t *file);
 u_char		elfsh_get_elftype(elfshobj_t *file);
 u_char		elfsh_get_archtype(elfshobj_t *file);
-int		elfsh_default_plthandler(elfshobj_t *null, elfsh_Sym *null2,
-					 elfsh_Addr null3);
-int		elfsh_default_relhandler(elfshsect_t *null, elfsh_Rel *null2,
-					 elfsh_Addr *null3, elfsh_Addr n4, elfshsect_t *n5);
+int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, elfsh_Addr n3);
+int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, elfsh_Addr *n3, elfsh_Addr n4, elfshsect_t *n5);
 int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, elfsh_Addr n3);
-int		elfsh_register_plthook(u_char archtype, u_char objtype,
-				       u_char ostype, void *fct);
-int		elfsh_register_relhook(u_char archtype, u_char objtype,
-				       u_char ostype, void *fct);
-int		elfsh_register_cflowhook(u_char archtype, u_char objtype, u_char ostype,
-					 void *fct);
+
+int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
+int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
+int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
+int		elfsh_register_breakhook(u_char a, u_char o, u_char os, void *fct);
+
+int             elfsh_register_vector(char      *name,
+                                      void      *registerfunc,
+                                      void      *defaultfunc,
+                                      u_int     *dimensions,
+                                      u_int     dimsz);
+
 int		elfsh_get_pagesize(elfshobj_t *file);
+u_int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
+
+int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new);
+int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new);
+int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
+			    elfsh_Addr new);
+int             elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
+			  elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m);
+int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);
+int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
+				elfsh_Addr diff, u_int off);
+int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
+				 elfshsect_t *extplt, elfsh_Addr diff);
+int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
+			     elfshsect_t *dynsym, elfshsect_t *relplt);
+
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,
@@ -1225,6 +1259,27 @@ int		elfsh_relocate_mips64(elfshsect_t  *_new,
 
 
 /* ia32.c */
+int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
+					     elfshsect_t  *plt, 
+					     uint32_t     diff, 
+					     u_int	     off);
+int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
+						   elfshsect_t *plt, 
+						   uint32_t	diff);
+
+int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
+				      elfshsect_t *plt, 
+				      elfshsect_t *extplt,
+				      elfsh_Addr diff);
+int		elfsh_encodeplt_ia32(elfshobj_t *file, 
+				     elfshsect_t *plt, 
+				     elfsh_Addr diff,
+				     u_int	off);
+void		*elfsh_getret_ia32(void *frame);
+void		*elfsh_bt_ia32(void *frame);
+
+int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
+				  elfshsect_t *dynsym, elfshsect_t *relplt);
 int		elfsh_break_ia32(elfshobj_t *f,
 				 elfshbp_t  *bp);
 
@@ -1297,11 +1352,12 @@ void		elfsh_linkmap_set_lprev(elfshlinkmap_t *lm, elfshlinkmap_t *lprev);
 elfshlinkmap_t	*elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name);
 
 /* bt.c */
-void		*elfsh_bt_ia32(void *frame);
 void		*elfsh_bt(void *frame);
-void		*elfsh_bt_get_frame();
+void		*elfsh_bt_get_frame(ucontext_t *);
 
 /* bp.c */
-int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, elfsh_Addr addr, u_char flags);
+int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
+			     char *resolv, elfsh_Addr addr, 
+			     u_char flags);
 
 #endif /* __LIBELFSH_H_ */

@@ -39,7 +39,7 @@ int	inspect_cmd() {
     if (!sect->altdata)
       {
 	puts(" [*] \".control\" section found but unloaded\n");
-	new_blk_list = malloc(sizeof (struct s_iblock *));
+	new_blk_list = elfsh_malloc(sizeof (struct s_iblock *));
 	*new_blk_list = 0;
 	num = load_blocks(world.curjob->current, new_blk_list);
 	sect->altdata = *new_blk_list;
@@ -87,7 +87,7 @@ int	inspect_cmd() {
     }
   /*	dump assembly */
   puts(" -- block disassembly --");
-  buffer = malloc(blk->size);
+  buffer = elfsh_malloc(blk->size);
   elfsh_raw_read(world.curjob->current, 
 		 elfsh_get_foffset_from_vaddr(world.curjob->current, 
 					      blk->vaddr), 

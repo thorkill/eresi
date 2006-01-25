@@ -9,28 +9,10 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		0
-
-/* Some internal defined values */
-//#define	E2DBG_PROMPT		"(e2dbg-"ELFSH_VERSION") "
-
-/*
-#define E2DBG_PROMPT            "\033[00;01;30m("         \
-                                "\033[00;01;31m"          \
-				E2DBG_ARGV0		  \
-                                "\033[00;01;30xbm-"       \
-                                "\033[00;01;33m"          \
-                                ELFSH_VERSION             \
-                                "\033[00;01;300m-"        \
-                                "\033[00;01;33m"          \
-                                ELFSH_RELEASE             \
-                                "\033[00;01;300m-"        \
-                                "\033[00;901;32mdevhell"  \
-                                "\033[00;01;30m) "        \
-                                "\033[00m"
-*/
-
-
+#define		__DEBUG_E2DBG__		1
+#define		__DEBUG_MUTEX__		0
+#define		__DEBUG_BP__		0
+#define		__DEBUG_EMALLOC__	0
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -39,7 +21,7 @@
 #define		E2DBG_SCRIPT_CONTINUE	1
 
 /* Kernel related defines */
-#define		E2DBG_VSYSCALL_RETADDR	((void *) 0xFFFFE420)
+#define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
 #define		E2DBG_KERNELBASE	((elfsh_Addr) 0xC0000000)
 
 /* Generic register names */
@@ -71,8 +53,6 @@
 #define		REG_EDI		EDI
 #endif
 
-
-
 /* Debugger commands */
 #define		CMD_MODE		"mode"
 #define		CMD_LINKMAP		"linkmap"
@@ -85,6 +65,7 @@
 #define		CMD_DBGSTACK		"dbgstack"
 #define		CMD_DUMPREGS		"dumpregs"
 #define		CMD_STEP		"step"
+#define		CMD_START		"start"
 #define		CMD_DELETE		"delete"
 #define		CMD_CONTINUE		"continue"
 #define		CMD_CONTINUE2		"cont"
@@ -93,8 +74,6 @@
 #define		CMD_UNDISPLAY		"undisplay"
 #define		CMD_RSHT		"rsht"
 #define		CMD_RPHT		"rpht"
-
-//sigaction(SIGSEGV, &ac, NULL);			    
 
 
 /* Signal handling for debugger */
@@ -116,7 +95,7 @@
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
  /*ac.sa_sigaction   = e2dbg_sigsegv_handler;*/		\
- /*sigaction(SIGSEGV, &ac, NULL);*/				\
+ /*sigaction(SIGSEGV, &ac, NULL);*/			\
  ac.sa_sigaction   = e2dbg_sigint_handler;		\
  sigaction(SIGINT, &ac, NULL);				\
 }		while (0);
@@ -157,6 +136,30 @@ while (0)
 
 
 
+typedef u_char elfshmutex_t;
+
+
+
+
+/* The internal object descriptor for e2dbg when resolving symbols */
+typedef	struct	s_eobj
+{
+  int		fd;
+  elfsh_Ehdr	e;
+  elfsh_Off	dynoff;
+  elfsh_Off	symoff;
+  elfsh_Off	stroff;
+  elfsh_Off	strsz;
+}		e2dbgobj_t;
+
+/* The parameter structure for e2dbg_entry in a dedicated thread */
+typedef struct		s_e2dbgparams
+{
+  char			**av;
+  u_int			ac;
+}			e2dbgparams_t;
+
+
 /* This structure contains the internal data of the debugger placed in the VM */
 typedef struct		s_e2dbgworld
 {
@@ -174,8 +177,24 @@ typedef struct		s_e2dbgworld
   u_char		step;				/* Stepping flag */
   u_char		sourcing;			/* We are executing a debugger script */
 
-}			e2dbgworld_t;
+  /* Shared values between handlers */
+  void			*libchandle;			/* Standard library handle */
+  u_int			dbgpid;				/* Thread ID for the debugger */
+  elfsh_Addr		mallocsym;			/* Resolved libc malloc */
+  elfsh_Addr		callocsym;			/* Resolved libc calloc */
+  elfsh_Addr		reallocsym;			/* Resolved libc realloc */
+  elfsh_Addr		freesym;			/* Resolved libc free */
 
+  /* Synchronization values */
+#define			ELFSH_MUTEX_UNLOCKED	0
+#define			ELFSH_MUTEX_LOCKED	1
+  elfshmutex_t		dbgsyn;				/* Dialog between debugger and debuggee */
+  elfshmutex_t		dbgack;				/* Dialog between debugger and debuggee */
+  int			exited;				/* Debugger exited */
+
+  int			(*real_main)(int argc, char **argv);
+
+}			e2dbgworld_t;
 
 /* The Debugger world in the VM */
 extern e2dbgworld_t	e2dbgworld;
@@ -207,8 +226,14 @@ int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
+int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
+int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
+int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
+elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr);
+elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr);
+elfsh_Addr*     e2dbg_getfp();
 
-/* e2dbg API */
+/* e2dbg API located inside the main VM */
 elfshbp_t	*vm_get_bp_by_id(uint32_t bpid);
 int		vm_linkmap(elfshobj_t *file);
 int		vm_bt();
@@ -219,20 +244,36 @@ int		vm_display(char **cmd, u_int nbr);
 char		*vm_get_prompt();
 char		*vm_get_mode_name();
 int		vm_restore_dbgcontext(int, char, elfshargv_t*, void *, char **, char*);
-void		e2dbg_set_regvars();
-void		e2dbg_get_regvars();
 int		vm_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*vm_lookup_bp(char *name);
 
-/* e2dbg context switching fonctions */
+/* e2dbg API */
 void		e2dbg_init(void) __attribute__((constructor));
+int		e2dbg_dlsym_init();
 int		e2dbg_setup(char *name);
-int		e2dbg_entry(int ac, char **av);
+int		e2dbg_entry(e2dbgparams_t *);
 void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *context);
 void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info, void *pcontext);
 void            e2dbg_sigint_handler(int signum, siginfo_t *info, void *context);
 void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *context);
+void            e2dbg_sigusr1_handler(int signum);
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
+int		e2dbg_mutex_init(elfshmutex_t *m);
+int		e2dbg_mutex_lock(elfshmutex_t *m);
+int		e2dbg_mutex_unlock(elfshmutex_t *m);
+void		e2dbg_start_proc();
+
+/*
+elfsh_Addr	e2dbg_dlsym(elfshobj_t *file, char *symname);
+void		*e2dbg_dlopen(char *objname, elfsh_Addr refaddr, char *refsym);
+void		e2dbg_dlclose(elfshobj_t *file);
+*/
+
+elfsh_Addr	e2dbg_dlsym(char *objname, char *sym2resolve, 
+			    elfsh_Addr refaddr, char *refsym);
+
+
+int		e2dbg_load_linkmap(char *name);
 
 /* e2dbg commands */
 int             cmd_mode();
@@ -247,6 +288,8 @@ int             cmd_display();
 int             cmd_undisplay();
 int             cmd_delete();
 int             cmd_step();
+int		cmd_start();
 int		cmd_dumpregs();
+int		cmd_cont();
 
 #endif

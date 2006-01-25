@@ -3,6 +3,7 @@
 load a.out
 load rel.o
 
+#stop
 reladd 1 2
 
 redir puts puts_troj

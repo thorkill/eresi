@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: arena.c,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $ */
+/* $Id: arena.c,v 1.1.1.3 2006-01-25 22:58:11 thor Exp $ */
 
 /* Compile-time constants.  */
 
@@ -77,13 +77,6 @@ typedef struct _heap_info {
 static tsd_key_t arena_key;
 static mutex_t list_lock;
 
-/* Debug Thread specific data */
-static tsd_key_t debug_key = 0;		/* The arena for the debugger */
-static pid_t	 dbgpid    = 0;		/* Thread ID for the debugger */
-
-void  malloc_dbgpid_set(pid_t pid) { dbgpid = pid; }
-pid_t malloc_dbgpid_get()          { return (dbgpid); }	
-
 #if THREAD_STATS
 static int stat_n_heaps;
 #define THREAD_STAT(x) x
@@ -111,14 +104,14 @@ int __malloc_initialized = -1;
 
 #define arena_get(ptr, size) do { \
   Void_t *vptr = NULL; \
- if (malloc_dbgpid_get() != pthread_self())        \
+ /*if (malloc_dbgpid_get() != pthread_self())*/        \
    ptr = (mstate)tsd_getspecific(arena_key, vptr); \
- else                                              \
-  {                                                \
+ /*else                                              \
+    {                                                \
    if (!debug_key)                                 \
      debug_key = _int_new_arena(size);             \
    ptr = (mstate)tsd_getspecific(debug_key, vptr); \
-  }                                                \
+   } */                                              \
   if (ptr && !mutex_trylock(&ptr->mutex)) { \
     THREAD_STAT(++(ptr->stat_lock_direct)); \
   } else { \

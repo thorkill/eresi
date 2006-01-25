@@ -36,12 +36,15 @@ elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym,
 				     elfsh_Addr off, elfsh_Addr add)
 {
   elfsh_Rela	r;
-  
+  elfsh_Rela	*enta;
+  elfsh_Rel	*ent;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
- 
-  elfsh_set_reltype(((elfsh_Rel *)   &r), type);
-  elfsh_set_relsym(((elfsh_Rel *)    &r), sym);
-  elfsh_set_reloffset(((elfsh_Rel *) &r), off);
+  enta = &r;
+  ent  = (elfsh_Rel *) enta;
+  elfsh_set_reltype(ent, type);
+  elfsh_set_relsym(ent, sym);
+  elfsh_set_reloffset(ent, off);
   elfsh_set_reladdend(&r, add);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
 }

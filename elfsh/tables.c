@@ -38,11 +38,13 @@ hash_t		sym_L2_hash;	/* For symbol object field */
 hash_t		rel_L2_hash;	/* For relocation entry fields */
 hash_t		dynsym_L2_hash;	/* For .dynsym objects */
 hash_t		dyn_L2_hash;	/* For .dynamic objects */
-hash_t		sct_L2_hash;	/* Section data (byte/word/dword/instr arrays) */
+hash_t		sct_L2_hash;	/* Sections names and data */
 hash_t		got_L2_hash;	/* GOT objects */
 hash_t          vers_L2_hash;   /* For .gnu.version */
 hash_t          verd_L2_hash;   /* For .gnu.version_d */
 hash_t          vern_L2_hash;   /* For .gnu.version_r */
+hash_t          hashb_L2_hash;  /* For .hash (bucket) */
+hash_t          hashc_L2_hash;  /* For .hash (chain) */
 
 /* Color hash */
 hash_t          fg_color_hash;
@@ -180,8 +182,22 @@ static void	setup_L1hash()
 							 elfsh_get_verneed_entry_by_index, 
 							 NULL, NULL,
 							 sizeof (elfsh_Verneed)));
-  
-  
+
+  hash_add(&L1_hash, "hashbucket", (void *) vm_create_L1ENT(elfsh_get_hashtable,
+							    NULL,
+							    elfsh_get_hashbucket_by_name,
+							    &hashb_L2_hash,
+							    elfsh_get_hashbucket_by_index,
+							    NULL, NULL,
+							    sizeof (int)));
+
+  hash_add(&L1_hash, "hashchain", (void *) vm_create_L1ENT(elfsh_get_hashtable,
+							   NULL,
+							   elfsh_get_hashchain_by_name,
+							   &hashc_L2_hash,
+							   elfsh_get_hashchain_by_index,
+							   NULL, NULL,
+							   sizeof (int)));
 }
 
 
@@ -586,6 +602,8 @@ static void   setup_vershash()
 						  elfsh_set_verdef_aux, 
 						  ELFSH_OBJLONG, NULL, 
 						  NULL, NULL, NULL));
+
+
    /* Child & parent */
    hash_add(&verd_L2_hash, "next", vm_create_L2ENT(elfsh_get_verdef_next, 
 						   elfsh_set_verdef_next, 
@@ -596,6 +614,7 @@ static void   setup_vershash()
 						   elfsh_set_verdef_cname, 
 						   ELFSH_OBJLONG, NULL, 
 						   NULL, NULL, NULL));
+
    
    /* Version need */
    hash_init(&vern_L2_hash, 11);
@@ -639,6 +658,35 @@ static void   setup_vershash()
 
 
 
+
+static void   setup_hashhash()
+{
+
+  /* Hash bucket */
+  hash_init(&hashb_L2_hash, 11);
+  hash_add(&hashb_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashbucket_value, 
+						    elfsh_set_hashbucket_value, 
+						    ELFSH_OBJINT, NULL, 
+						    NULL, NULL, NULL));  
+  hash_add(&hashb_L2_hash, "nbucket", vm_create_L2ENT(elfsh_get_hashbucket_num, 
+						      elfsh_set_hashbucket_num, 
+						      ELFSH_OBJINT, NULL, 
+						      NULL, NULL, NULL)); 
+  /* Hash chain */
+  hash_init(&hashc_L2_hash, 11);
+  hash_add(&hashc_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashchain_value, 
+						    elfsh_set_hashchain_value, 
+						    ELFSH_OBJINT, NULL, 
+						    NULL, NULL, NULL));  
+  hash_add(&hashc_L2_hash, "nchain", vm_create_L2ENT(elfsh_get_hashchain_num, 
+						     elfsh_set_hashchain_num, 
+						     ELFSH_OBJINT, NULL, 
+						     NULL, NULL, NULL));   
+}
+
+
+
+
 /* Now comes Level 2 objects hash functions */
 static void	setup_L2hash()
 {
@@ -652,6 +700,7 @@ static void	setup_L2hash()
   setup_scthash();
   setup_gothash(); 
   setup_vershash();
+  setup_hashhash();
 }
 
 
@@ -664,19 +713,19 @@ static void	setup_cmdhash()
   /* Interactive mode / Scripting mode commands */
   if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
     {
-      vm_addcmd(CMD_LOAD    , (void *) cmd_load     , (void *) vm_getoption, 0, HLP_LOAD);
-      vm_addcmd(CMD_UNLOAD  , (void *) cmd_unload   , (void *) vm_getoption, 0, HLP_UNLOAD);
-      vm_addcmd(CMD_SAVE    , (void *) cmd_save     , (void *) vm_getoption, 1, HLP_SAVE);
-      vm_addcmd(CMD_SWITCH  , (void *) cmd_doswitch , (void *) vm_getoption, 0, HLP_SWITCH);
-      vm_addcmd(CMD_METACMD , (void *) cmd_meta     , (void *) NULL, 0, HLP_METACMD);
-      vm_addcmd(CMD_QUIT    , (void *) cmd_quit     , (void *) NULL, 0, HLP_QUIT);
-      vm_addcmd(CMD_QUIT2   , (void *) cmd_quit     , (void *) NULL, 0, HLP_QUIT);
-      vm_addcmd(CMD_LIST    , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
-      vm_addcmd(CMD_LIST2   , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
-      vm_addcmd(CMD_STOP    , (void *) cmd_stop     , (void *) NULL, 0, HLP_STOP);
-      vm_addcmd(CMD_WORKSPACE , (void *) cmd_workspace   , (void *) vm_getvarparams, 0, HLP_WORKSPACE);
-      vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace   , (void *) vm_getvarparams, 0, HLP_WORKSPACE);
-      vm_addcmd(CMD_RUN       , (void *) cmd_run         , (void *) vm_getvarparams, 0, HLP_RUN);
+      vm_addcmd(CMD_LOAD      , (void *) cmd_load     , (void *) vm_getoption   , 0, HLP_LOAD);
+      vm_addcmd(CMD_UNLOAD    , (void *) cmd_unload   , (void *) vm_getoption   , 0, HLP_UNLOAD);
+      vm_addcmd(CMD_SAVE      , (void *) cmd_save     , (void *) vm_getoption   , 1, HLP_SAVE);
+      vm_addcmd(CMD_SWITCH    , (void *) cmd_doswitch , (void *) vm_getoption   , 0, HLP_SWITCH);
+      vm_addcmd(CMD_METACMD   , (void *) cmd_meta     , (void *) NULL           , 0, HLP_METACMD);
+      vm_addcmd(CMD_QUIT      , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
+      vm_addcmd(CMD_QUIT2     , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
+      vm_addcmd(CMD_LIST      , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
+      vm_addcmd(CMD_LIST2     , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
+      vm_addcmd(CMD_STOP      , (void *) cmd_stop     , (void *) NULL           , 0, HLP_STOP);
+      vm_addcmd(CMD_WORKSPACE , (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
+      vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
+      vm_addcmd(CMD_RUN       , (void *) cmd_run      , (void *) vm_getvarparams, 0, HLP_RUN);
     }
 
   /* Command line only commands */
@@ -788,19 +837,20 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption , 1, HLP_VERSION);
   vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
+  vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption, 0, HLP_HASH);
 
 #ifdef __DEBUG_TEST__
-  vm_addcmd(CMD_TEST   , (void *) cmd_test  , (void *) NULL         , 0, "");
+  vm_addcmd(CMD_TEST   , (void *) cmd_test  , (void *) NULL         , 0, "Test command");
 #endif 
 
 #if defined(ELFSHNET)
-  vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL         , 0, HLP_NETWORK);
-  vm_addcmd(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL         , 0, HLP_NETWORK);
-  vm_addcmd(CMD_NETLIST   , (void *) cmd_netlist  , (void *) NULL         , 0, HLP_NETLIST);
-  vm_addcmd(CMD_NETKILL   , (void *) cmd_netkill  , (void *) vm_getoption , 0, HLP_NETKILL);
-  vm_addcmd(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL         , 0, HLP_PEERSLIST);
-  vm_addcmd(CMD_CONNECT   , (void *) cmd_connect  , (void *) vm_getoption , 0, HLP_CONNECT);
-  vm_addcmd(CMD_DISCON    , (void *) cmd_discon   , (void *) vm_getoption , 0, HLP_DISCON);
+  vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
+  vm_addcmd(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
+  vm_addcmd(CMD_NETLIST   , (void *) cmd_netlist  , (void *) NULL            , 0, HLP_NETLIST);
+  vm_addcmd(CMD_NETKILL   , (void *) cmd_netkill  , (void *) vm_getoption    , 0, HLP_NETKILL);
+  vm_addcmd(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL            , 0, HLP_PEERSLIST);
+  vm_addcmd(CMD_CONNECT   , (void *) cmd_connect  , (void *) vm_getoption    , 0, HLP_CONNECT);
+  vm_addcmd(CMD_DISCON    , (void *) cmd_discon   , (void *) vm_getoption    , 0, HLP_DISCON);
   vm_addcmd(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) vm_getvarparams , 0, HLP_RCMD);
 #endif
   
@@ -825,6 +875,7 @@ static void	setup_varshash()
   s = vm_create_IMMEDSTR(1, ELFSH_SHELL);
   e = vm_create_IMMEDSTR(1, ELFSH_EDITOR);
 
+  hash_init(&vars_hash, 251);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
   hash_add(&vars_hash, ELFSH_LOADVAR, g);
   hash_add(&vars_hash, ELFSH_ERRVAR, r);
@@ -968,8 +1019,7 @@ void setup_color_type()
   hash_add(&t_color_hash, "pversion"   , (void *) vm_colorblank());
   hash_add(&t_color_hash, "prelease"   , (void *) vm_colorblank());
   hash_add(&t_color_hash, "pedition"   , (void *) vm_colorblank());
-
-  hash_add(&t_color_hash, "instr"   , (void *) vm_colorblank());
+  hash_add(&t_color_hash, "instr"      , (void *) vm_colorblank());
 }
    
 /* Setup all hash tables */

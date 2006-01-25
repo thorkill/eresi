@@ -11,11 +11,23 @@
 /* Step command */
 int		cmd_step()
 {
+  int		err;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
+  printf("entering stepped ! \n");
+  err = 0;
+
+ retry:
   if (!e2dbgworld.context)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "You must be in a SIGTRAP handler", -1);
+    {
+      if (e2dbgworld.sourcing)
+	goto retry;
+      else
+	printf("wasnt sourcing ... existing \n");
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"You must be in a SIGTRAP handler", -1);
+    }
 
   if (e2dbgworld.step)
     {
@@ -33,5 +45,9 @@ int		cmd_step()
       vm_output("\n [*] Enabled stepping (now 'cont' to step) \n\n");
       e2dbgworld.step = 1;
     }
+
+  printf("stepped ! \n");
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+

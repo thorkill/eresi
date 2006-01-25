@@ -24,9 +24,6 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
   elfsh_Sym	newsym;
   elfsh_Sym	*sym;
   elfsh_Addr	addr;
-  u_char	archtype;
-  u_char	objtype;
-  u_char	ostype;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -36,15 +33,6 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
   if (elfsh_insert_symbol(symtab, &newsym, "old_dlresolve") < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to insert old_dlresolve symbol", -1);
-  
-  /* Fingerprint binary */
-  archtype = elfsh_get_archtype(file);
-  objtype = elfsh_get_elftype(file);
-  ostype = elfsh_get_ostype(file);
-  if (archtype == ELFSH_ARCH_ERROR ||
-      objtype  == ELFSH_TYPE_ERROR ||
-      ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid target", -1);
   
   *off = *off - entsz + elfsh_get_first_pltentsz(file);
   
@@ -58,8 +46,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
       
 #if __DEBUG_COPYPLT__	      
       printf("[DEBUG_COPYPLT] Found __libc_start_main MIPS at addr "
-	     XFMT "\n", 
-	     sym->st_value);
+	     XFMT "\n", sym->st_value);
 #endif	      
       
       addr = sym->st_value;
@@ -68,25 +55,22 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
     addr = plt->shdr->sh_addr;
 
   /* Call the libelfsh hook ALTPLT */
-  if ((*hook_altplt[archtype][objtype][ostype])(file, &newsym, addr) < 0)
+  if (elfsh_altplt(file, &newsym, addr) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "ALTPLT failed", -1);
   
-  
   /* On IA32, reencode the PLT and EXTPLT entries to use the ALTGOT */
+  /* The hook does nothing on other archs for now */
   if (FILE_IS_IA32(file))
-    {
-      if (elfsh_reencode_first_pltentry(file, plt, diff) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Reencoding of PLT+0 failed", -1);
-
-      if (elfsh_reencode_first_pltentry(file, extplt, diff) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Reencoding of EXTPLT+0 failed", -1);
-    }
+    if (elfsh_encodeplt1(file, plt, extplt, diff) < 0)
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			"Reencoding of (EXT)PLT+0 failed", -1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
 
 
 
@@ -117,6 +101,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   u_int		sz;
   char		*name;
   u_char	ostype;
+  elfsh_Addr	diff;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -253,6 +238,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 				      ELFSH_DATA_INJECTION, mod) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.got insertion failed", -1);
+
       altgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTGOT, 
 				      NULL, NULL, NULL);
       if (altgot == NULL)
@@ -275,7 +261,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       memcpy(prologdata, elfsh_get_raw(plt), plt->shdr->sh_size);
 
       if (elfsh_insert_mapped_section(file, extplt, hdr, prologdata, 
-				      ELFSH_CODE_INJECTION, mod) < 0)
+				      mode, mod) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".ext.plt insertion failed", -1);
       extplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_EXTPLT, 
@@ -294,7 +280,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
     {
 
       /* Special case for the first plt entry */
-      if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, plt, extplt,
+      if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, extplt, plt,
 					    (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.plt on first entry failed", -1);
@@ -344,30 +330,25 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 #endif
 
       /* On ALPHA, shift the relocation offset from .got to .alt.got to avoid 
-	 hooks removing we calling back the original function. */
+	 hooks removing when calling back the original function. */
       if (FILE_IS_ALPHA64(file) && 
 	  elfsh_shift_alpha_relocs(file, name, altgot, off) < 0)
 	continue;
-      
-      /* On IA32, reencode the PLT entry to use the alternative GOT */
-      /* If that turn too much architecture dependant, a new elfsh hook will be
-	 created for it */
+
+      /* Reencode the PLT entry to use the alternative GOT */
+      /* This condition is for compatibility with other archs where EXTPLT
+	 is not yet supported. For those we do not enter the hook */
       if (FILE_IS_IA32(file))
 	{
-	  elfsh_reencode_pltentry(file, plt, 
-				  (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr, 
-				  off);
-	  
+	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
+	  elfsh_encodeplt(file, plt, diff, off);
 	  if (file->hdr->e_type == ET_DYN)
-	    elfsh_reencode_pltentry(file, file->secthash[ELFSH_SECTION_ALTPLT],
-				    (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr,
-				    off);
-	  
-	  elfsh_reencode_pltentry(file, extplt, 
-				  (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr + got->shdr->sh_size, 
-				  off);
+	    elfsh_encodeplt(file, file->secthash[ELFSH_SECTION_ALTPLT], 
+			    diff, off);
+	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr + 
+	    got->shdr->sh_size;
+	  elfsh_encodeplt(file, extplt, diff, off);
 	}
-
     }
 
   /* Activate ALTGOT */
@@ -497,11 +478,11 @@ int		elfsh_build_plt(elfshobj_t *file)
 
   /* .plt */
   lsize = pltend - pltaddr;
-  size = (unsigned int) lsize;
-  plt  = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC,
-			   start.sh_addr + start.sh_size, 
-			   start.sh_offset + start.sh_size,
-			   size, 0, 0, 0, 0);
+  size  = (unsigned int) lsize;
+  plt   = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC,
+			    start.sh_addr + start.sh_size, 
+			    start.sh_offset + start.sh_size,
+			    size, 0, 0, 0, 0);
   new = elfsh_create_section(ELFSH_SECTION_NAME_PLT);
   XALLOC(data, size, -1);
   memcpy(data, tdata + start.sh_size, size);

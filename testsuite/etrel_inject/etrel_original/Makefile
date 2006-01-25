@@ -10,14 +10,14 @@ include ../../../config.h
 SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh -L../../../libasm -lasm
+LIB	= -L../../../libelfsh/ -lelfsh -L../../../libasm -lasm -L../../../libc/ -lcelfsh -L../../../libmalloc -lmalloc-e2dbg -lpthread
 NAM	= etrel_injecter
 
 HOSTSRC	= host.c
 RELSRC	= rel.c
 RELOBJ	= rel.o
 
-OPT	= -g3 -O2 -I../../../libelfsh/include/ $(BITS)
+OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libc/include $(BITS)
 RM	= rm -f
 CFLAGS	= $(OPT)
 

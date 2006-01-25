@@ -12,6 +12,183 @@
 static asm_processor	proc;
 
 
+/* Start of hook code for EXTPLT */
+int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
+				  elfshsect_t *dynsym, elfshsect_t *relplt)
+{
+  int		prot;
+  int		*reloc;
+  elfsh_Addr	gotent;
+  elfsh_Rel	r;
+  char		*ent;
+  u_int		relentsz;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* 6 is the size of the first instruction of a .plt entry on x86 */
+  gotent = extplt->shdr->sh_addr + extplt->curend + 6;
+  memcpy(elfsh_get_raw(altgot) + altgot->curend, 
+	 (char *) &gotent, sizeof(gotent));
+  altgot->curend += sizeof(gotent);
+ 
+#if __DEBUG_EXTPLT__
+  printf("[DEBUG_EXTPLT] Set ALTGOT entry " XFMT " to value " XFMT "\n", 
+	 altgot->shdr->sh_addr + altgot->curend, gotent);
+#endif
+
+  /* 7 is the offset for the relocation offset location, encoded in GOT */
+  ent = elfsh_get_raw(extplt) + extplt->curend;
+  reloc  = (int *) ((char *) ent + 7);
+  prot = elfsh_munprotect(extplt->parent, 
+			  (elfsh_Addr) reloc, 
+			  (char *) reloc - (char *) elfsh_get_raw(extplt));
+  *reloc = relplt->curend;
+  elfsh_mprotect((elfsh_Addr) reloc, 
+		 (char *) reloc - (char *) elfsh_get_raw(extplt), prot);
+  extplt->curend += elfsh_get_pltentsz(extplt->parent);
+
+  /* Insert relocation entry pointing on the new PLT entry */
+  relentsz = IS_REL(extplt) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
+  r = elfsh_create_relent(R_386_JMP_SLOT, dynsym->curend / sizeof(elfsh_Sym), 
+			  altgot->shdr->sh_addr + altgot->curend - sizeof(elfsh_Addr));
+  memcpy(elfsh_get_raw(relplt) + relplt->curend, &r, relentsz);
+  relplt->curend += relentsz;
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+/* On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got */
+/* Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp) */
+int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
+					     elfshsect_t  *plt, 
+					     uint32_t     diff, 
+					     u_int	     off)
+{
+  char		*pltent;
+  uint32_t	*got;
+  elfshsect_t	*relplt;
+  u_int		resoff;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (file == NULL || plt == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
+
+  /* 12 is the size of 3 reserved PLT entries on x86 */
+  resoff = (!strcmp(plt->name, ELFSH_SECTION_NAME_EXTPLT) ? 12 : 0);
+
+  /* Add ALTGOT addr difference to the GOT offset encoded in PLT */
+  pltent = plt->data + off + 2;
+  got = (uint32_t *) pltent;
+  *got += diff - resoff;
+
+  /* If thats EXTPLT we are reencoding, shift the pushed reloc offsets as well */
+  if (!strcmp(plt->name, ELFSH_SECTION_NAME_EXTPLT))
+    {
+      relplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELPLT, 0, 0, 0);
+      if (relplt == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot retreive .rel.plt", -1);
+      
+      pltent = plt->data + off + 7;
+      got  = (uint32_t *) pltent;
+      *got = relplt->shdr->sh_size;
+    }
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got */ 
+/* Should work on both ET_EXEC and ET_DYN */
+int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
+						   elfshsect_t *plt, 
+						   uint32_t	diff)
+{
+  char		*pltent;
+  uint32_t	*got;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (file == NULL || plt == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL parameter", -1);
+      
+  /* The first GOT address is at offset .plt+2 on IA32 */
+  pltent = plt->data + 2;
+  got = (uint32_t *) pltent;
+  *got += diff;
+  
+  /* The second GOT address is at offset .plt+8 on IA32 */
+  pltent = plt->data + 8;
+  got = (uint32_t *) pltent;
+  *got += diff;		
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* Hook for ENCODEPLT1 on IA32 : Simple wrapper for both calls */
+int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
+				      elfshsect_t *plt, 
+				      elfshsect_t *extplt,
+				      elfsh_Addr diff)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (elfsh_reencode_first_pltentry_ia32(file, plt, diff) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Reencoding of PLT+0 failed", -1);
+  
+  if (elfsh_reencode_first_pltentry_ia32(file, extplt, diff) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Reencoding of EXTPLT+0 failed", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+/* Hook for ENCODEPLT on IA32 */
+int		elfsh_encodeplt_ia32(elfshobj_t *file, 
+				     elfshsect_t *plt, 
+				     elfsh_Addr diff, 
+				     u_int      off)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (elfsh_reencode_pltentry_ia32(file, plt, diff, off) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Reencoding of PLT+0 failed", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* Get the next frame pointer given the current one */
+void		*elfsh_bt_ia32(void *frame)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+
+  if (!frame)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     ((void *) *(long*) frame));
+}
+
+/* Get the return address giving the current frame pointer */
+void		*elfsh_getret_ia32(void *frame)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  if (!frame)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (void *) (*((long *) frame + 1)));
+}
+
 
 /* Write a breakpoint 0xCC in memory */
 /* One of the 2 breakpoint technique of e2dbg */
@@ -126,7 +303,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   //prot = elfsh_munprotect(hookbuf, 16);
   memcpy(hookbuf, "\xe9\x00\x00\x00\x00", 5);
-  *(uint32_t *) ((char *) hookbuf + 1) = (hooks->shdr->sh_addr + hooks->curend) - (symbol->st_value + 5);
+  *(uint32_t *) ((char *) hookbuf + 1) = (hooks->shdr->sh_addr + hooks->curend) - (symbol->st_value + 5); 
   memset(hookbuf + 5, 0x90, ret - 5);
   len = elfsh_raw_write(file, off, hookbuf, ret);
   if (len != ret)
@@ -141,6 +318,8 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   snprintf(bufname, BUFSIZ, "hook_%s", name);
   elfsh_insert_funcsym(file, bufname, hooks->shdr->sh_addr + hooks->curend,
 		       ret + 10, hooks->index);
+
+
 
 #if	__DEBUG_CFLOW__      
   printf("[DEBUG_CFLOW] hook_legit_func = %08X, old_legit_func = %08X \n", 

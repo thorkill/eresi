@@ -67,7 +67,7 @@ elfshpath_t		*vm_lookup_immed(char *param)
       if (ptr != NULL)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
       ptr = vm_create_IMMED(ELFSH_OBJUNK, 1, 0);
-      hash_add(&vars_hash, strdup(param), ptr);
+      hash_add(&vars_hash, elfsh_strdup(param), ptr);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
@@ -118,7 +118,7 @@ elfshpath_t		*vm_lookup_immed(char *param)
   ret = sscanf(param, "%[^\n]4095%c", lbuf, &eol);
   if (ret == 1)
     {
-      ptr = vm_create_IMMEDSTR(0, strdup(lbuf));
+      ptr = vm_create_IMMEDSTR(0, elfsh_strdup(lbuf));
       goto good;
     }
 
@@ -242,7 +242,7 @@ char			*vm_lookup_string(char *param)
     {
       vm_filter_zero(lbuf);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			 strdup(lbuf));
+			 elfsh_strdup(lbuf));
     }
 
   /* We do not match -- returns ERR */

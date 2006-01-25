@@ -186,13 +186,13 @@ int			build_data(void *elem, void *opt)
   if (!buf->data) 
     {
       buf->allocated = 4096;
-      buf->data = malloc(4096);
+      buf->data = elfsh_malloc(4096);
       buf->maxlen = 0;
     }
   else
     if (buf->allocated  < (buf->maxlen + sizeof (elfshblk_t)))
     {
-      buf->data = realloc(buf->data, buf->allocated + 4096);
+      buf->data = elfsh_realloc(buf->data, buf->allocated + 4096);
       buf->allocated += 4096;
     }
   
@@ -216,7 +216,7 @@ int			build_data(void *elem, void *opt)
     {
       if (buf->allocated  < (buf->maxlen + blen + sizeof (elfshblkref_t)))
 	{
-	  buf->data = realloc(buf->data, buf->allocated + 4096);
+	  buf->data = elfsh_realloc(buf->data, buf->allocated + 4096);
 	  buf->allocated += 4096;
 	}
       blockref = (elfshblkref_t *) (buf->data + buf->maxlen + blen);
@@ -302,7 +302,7 @@ struct s_iblock	*block_create(u_int vaddr, u_int size)
 {
   struct s_iblock	*t;
   
-  t = malloc(sizeof (struct s_iblock));
+  t = elfsh_malloc(sizeof (struct s_iblock));
   memset(t, 0, sizeof (struct s_iblock));
   t->vaddr = vaddr;
   t->size = size;
@@ -430,7 +430,7 @@ void	block_add_caller(struct s_iblock *blk, u_int vaddr, int type)
 {
   struct s_caller	*n;
   
-  n = malloc(sizeof (struct s_caller));
+  n = elfsh_malloc(sizeof (struct s_caller));
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;
