@@ -29,7 +29,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 
   /* Do copy */
   XALLOC(copy, sizeof(elfshobj_t), NULL);
-  copy->name = strdup(file->name);
+  copy->name = elfsh_strdup(file->name);
   XALLOC(copy->hdr, sizeof(elfsh_Ehdr), NULL);
   memcpy(copy->hdr, file->hdr, sizeof(elfsh_Ehdr));
   copy->rights = file->rights;
@@ -52,7 +52,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
       new->shdr = copy->sht + range;
       new->parent = copy;
       new->index = range;
-      new->name = strdup(cur->name);
+      new->name = elfsh_strdup(cur->name);
       new->flags = cur->flags;
 
       if (new->shdr->sh_size && cur->data)

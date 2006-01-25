@@ -295,17 +295,22 @@ int 			cmd_version()
 
   /* free need table */
   keys = hash_get_keys(&t_need, &knum);
+
   for (index = 0; keys[index] != NULL; index++)
     hash_del(&t_need, keys[index]);
   hash_destroy(&t_need);
-  free(keys);
+
+  if (keys != NULL)
+    free(keys);
 
   /* free def table */
   keys = hash_get_keys(&t_def, &knum);
   for (index = 0; keys[index] != NULL; index++)
     hash_del(&t_def, keys[index]);
   hash_destroy(&t_def);
-  free(keys);
+
+  if (keys != NULL)
+    free(keys);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

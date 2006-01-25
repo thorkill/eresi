@@ -62,6 +62,13 @@ echo  "READLNOPT	= -DUSE_READLN"		>> config.h
 echo  "LDREADLNOPT	= -lreadline -ltermcap" >> config.h
 ;;
 
+--enable-ncurses*)
+echo  " [*] Enabling ncurses support"
+READLN="1"
+echo  "NCURSESLNOPT	= -DUSE_UI"		>> config.h
+echo  "LDNCURSESLNOPT	= -lncurses"		>> config.h
+;;
+
 --enable-static*)
 echo  " [*] Enabling static linking"
 echo  "STATOPT		= -static"              >> config.h
@@ -243,9 +250,10 @@ echo "## Started on  Fri Dec  7 06:54:35 2001 mayhem "		>> Makefile
 echo "## Automatically generated from the configure script"	>> Makefile
 echo "## "							>> Makefile
 echo ""								>> Makefile
-echo ""								>> Makefile
+#echo ""								>> Makefile
 echo "include ./config.h "					>> Makefile
 echo " "							>> Makefile
+echo "CC      = gcc "						>> Makefile
 echo "RM      = rm -f "						>> Makefile
 echo "ETAGS   = etags "					        >> Makefile
 echo "CTAGS   = ctags "						>> Makefile
@@ -258,35 +266,40 @@ echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
 
 echo " "							>> Makefile
 echo "all     : world modules tags"				>> Makefile
-echo " "							>> Makefile
+#echo " "							>> Makefile
 
 echo "world   : "						>> Makefile
 echo "	@echo 'Building e2dbg-libc ..' "			>> Makefile
 echo "	@cd libc && \$(MAKE) "					>> Makefile
 echo "	@echo 'Libc-elfsh has been built successfully.' "	>> Makefile
-echo " "						       	>> Makefile
+#echo " "						       	>> Makefile
 echo "	@echo 'Building e2dbg-libmalloc..' "			>> Makefile
 echo "	@cd libmalloc && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libmalloc-elfsh has been built successfully.' "	>> Makefile
-echo " "						       	>> Makefile
+#echo " "						       	>> Makefile
 echo "	@echo 'Building libasm...' "				>> Makefile
 echo "	@cd libasm && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
-echo " "						       	>> Makefile
+#echo " "						       	>> Makefile
 echo "	@echo 'Building libelfsh...' "				>> Makefile
 echo "	@cd libelfsh && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
-echo " "						       	>> Makefile
+#echo " "						       	>> Makefile
 
 if [ "$ELFSHNET" = "1" ]; then
 
 echo "	@echo 'Building libdumpelfsh...' "			>> Makefile
 echo "	@cd libdump && \$(MAKE) -s "				>> Makefile
 echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
-echo " "							>> Makefile
-echo " "							>> Makefile
+
+#echo " "							>> Makefile
+#echo " "							>> Makefile
 
 fi
+
+echo "	@echo 'Building libui...'			"      	>> Makefile	
+echo "	@cd libui && \$(MAKE) 				"	>> Makefile
+echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
 
 echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
 echo "	@cd vm && \$(MAKE)			     	"       >> Makefile
@@ -311,21 +324,26 @@ echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
 echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
+echo "	@cp libui/libui.a libui/libui.so \$(LIBPATH) "		>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
 echo "	@cp libasm/include/libasm.h \$(INCPATH)"		>> Makefile
 echo "	@cp libasm/include/libasm-i386.h \$(INCPATH) "		>> Makefile
+echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 755 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libelfsh.so "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)e2dbg.so "			>> Makefile
+echo "	@chmod 755 \$(LIBPATH)libui.so "			>> Makefile
+echo "	@chmod 755 \$(LIBPATH)libui.a "				>> Makefile
+echo "	@chmod 755 \$(INCPATH)libui.h "				>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libelfsh.a "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libasm.a "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libasm*.h "			>> Makefile
-echo "	@echo 'ELFsh, E2dbg, Libelfsh, and Libasm installed successfully .'"	>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libui and Libasm installed successfully .'"	>> Makefile
 echo " "							>> Makefile 
 
 echo "mod_install: "						>> Makefile
@@ -339,6 +357,8 @@ echo "	rm -f  \$(BINPATH)/elfsh "				>> Makefile
 echo "	rm -f  \$(BINPATH)/e2dbg "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libui.so "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libui.a "				>> Makefile
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
@@ -346,7 +366,7 @@ echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
  
 
-echo "	@echo 'ELFsh, Libelfsh and Libasm uninstalled successfully' "	>> Makefile
+echo "	@echo 'ELFsh, Libelfsh, Libui and Libasm uninstalled successfully' "	>> Makefile
 echo " "							>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
@@ -355,6 +375,7 @@ echo "	cd vm        && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libc	     && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
@@ -371,7 +392,10 @@ echo "	cd libc      && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libui   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
+
 echo "	@echo 'Tree cleaned .' "				>> Makefile
 echo " "							>> Makefile
 
@@ -389,8 +413,8 @@ echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
 echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c libmalloc/include/*.h \\"		>> Makefile
 echo "  libasm/src/arch/ia32/*.c \\"				>> Makefile
-echo "	libasm/include/*.h \\"					>> Makefile
-echo "	libdump/include/*.h libc/*.h libc/*.c"			>> Makefile
+echo "	libasm/include/*.h libui/*.c libui/include/*.h\\" 	>> Makefile
+echo "	libdump/include/*.h libc/include/*.h libc/*.c"		>> Makefile
 echo " "							>> Makefile
 
 echo "info    : "						>> Makefile
@@ -404,6 +428,8 @@ echo "	@echo '###############' Libelfsh only '#######'"	>> Makefile
 echo "	wc -l libelfsh/*.c "					>> Makefile
 echo "	@echo '###############' Libasm only ##########'"	>> Makefile
 echo "	wc -l libasm/src/*.c libasm/src/arch/ia32/*.c "		>> Makefile
+echo "	@echo '###############' Libui only ##########'"		>> Makefile
+echo "	wc -l libui/*.c "					>> Makefile
 echo "	@echo '###############' VM only '#############'"	>> Makefile
 echo "	wc -l vm/*.c "						>> Makefile
 echo "	@echo '###############' E2DBG only '#############'"	>> Makefile

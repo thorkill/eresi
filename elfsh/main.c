@@ -38,71 +38,61 @@ int		vm_loop(int argc, char **argv)
     /* Fill argv from stdin if we are in interactive mode */
     if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net == 1)
       {
-          if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
-          {
-              if (vm_select() < 0)
-              {
-                  fprintf(stderr,"vm_select : failed \n");
-                  vm_exit(-1);
-              };
-          }
-
-          argv = vm_input(&argc);
-          if (world.state.vm_mode == ELFSH_VMSTATE_IMODE     || 
-	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER  || 
-	      world.state.vm_mode == ELFSH_VMSTATE_SCRIPT    || 
-	      world.state.vm_net)
-	    {
-	      if (argv == ((char **) ELFSH_VOID_INPUT))
-		continue;
-	    }
-
-	  /* CTRL-D -> !argv */
-	  if (!argv)
-	    {
-	      /* when debugging -> back to main program */
-	      if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-                {
-                  vm_output("\n");
-                  goto e2dbg_cleanup;
-                }
-	      
-	      /* if net is enable but we are not in e2dbg -> ignore */
-	      if (world.state.vm_net)
-		continue;
-
-	      /* othewise exit */
-	      break;
-
-	    }
+	if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
+	  {
+	    if (vm_select() < 0)
+	      {
+		fprintf(stderr,"vm_select : failed \n");
+		vm_exit(-1);
+	      }
+	  }
+	
+	/* Take a line, execute old command if void line */
+	argv = vm_input(&argc);
+	if (world.state.vm_mode == ELFSH_VMSTATE_IMODE     || 
+	    world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER  || 
+	    world.state.vm_mode == ELFSH_VMSTATE_SCRIPT    || 
+	    world.state.vm_net)
+	  {
+	    if (argv == ((char **) ELFSH_VOID_INPUT))
+	      continue;
+	  }
+	
+	/* CTRL-D -> !argv */
+	if (!argv)
+	  {
+	    /* when debugging -> back to main program */
+	    if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+	      {
+		vm_output("\n");
+		goto e2dbg_cleanup;
+	      }
+	    
+	    /* if net is enable but we are not in e2dbg -> ignore */
+	    if (world.state.vm_net)
+	      continue;
+	    
+	    /* othewise exit */
+	    break;
+	    
+	  }
       }
-
+    
     /* Fetch the command through hash */
     if (vm_parseopt(argc, argv) < 0)
       {
 	if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
-	    {
-	      //XFREE(argv[1]);
-	      XFREE(argv);
-	      if (world.state.vm_mode != ELFSH_VMSTATE_IMODE && 
-		  world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
-		goto end;
-	    }
+	  {
+	    //XFREE(argv[1]);
+	    XFREE(argv);
+	    if (world.state.vm_mode != ELFSH_VMSTATE_IMODE && 
+		world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
+	      goto end;
+	  }
 	else if(!world.state.vm_net)
 	  vm_exit(-1);
       }
     
-    /* Quit parsing if necessary */
-    if (world.curjob->io.type != ELFSH_IONET && 
-	world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER && 
-	world.curjob->curcmd && world.curjob->curcmd->name &&
-	(!strcmp(world.curjob->curcmd->name, CMD_CONTINUE) ||
-	 !strcmp(world.curjob->curcmd->name, CMD_CONTINUE2)))
-	{
-	  printf("entered continue-cleanup test \n");
-	  goto e2dbg_cleanup;
-	}
-
     /* Keep the parsing/executing behavior if we are not scripting */
     if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
       {
@@ -110,7 +100,7 @@ int		vm_loop(int argc, char **argv)
 	switch (vm_execmd())
 	  {
 	  case E2DBG_SCRIPT_CONTINUE:
-	  printf("E2dbg continue on execmd ! \n");
+	    printf(" [*] e2dbg continue from vm_execcmd \n");
 	    goto e2dbg_continue;
 	  case -1:
 	    elfsh_error();
@@ -118,7 +108,7 @@ int		vm_loop(int argc, char **argv)
 	    break;
 	  }
       }
-
+    
     /* Quit parsing if necessary */
     if ((!world.curjob->curcmd && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
@@ -127,22 +117,22 @@ int		vm_loop(int argc, char **argv)
       break;
   }
   while (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net);
-
+  
   /* If we are in scripting, execute commands queue now */
   if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
       vm_execscript();
     }
- 
+  
  end:
   if (!world.state.vm_quiet && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     vm_output("\n [*] Script execution ended. \n\n");
-
+  
   /* Implicit unload or save if we are not in interactive mode */
   if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && world.curjob->current)
     ret = vm_unload_cwfiles();
-
+  
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
@@ -163,7 +153,7 @@ int		vm_loop(int argc, char **argv)
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
-
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
@@ -172,13 +162,12 @@ int		vm_loop(int argc, char **argv)
 /* Called from CTORS */
 int		vm_init() 
 {
-
-  /* Must be here in case of script params presence */
+ /* Must be here in case of script params presence */
   bzero(&world, sizeof (world));
-  hash_init(&vars_hash, 251);
 
   /* Set the world up */
   asm_init_i386(&world.proc);
+  asm_init_sparc(&world.proc_sparc);
   vm_initio();
 
   /* setting libelfsh profile function */
@@ -188,12 +177,11 @@ int		vm_init()
 }
 
 
-
 /* Setup ELFsh/e2dbg hash tables and structures */
 int		vm_setup(int ac, char **av)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+ 
   /* Detect the mode we are running in */
   if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
     {
@@ -214,11 +202,12 @@ int		vm_setup(int ac, char **av)
 	world.state.vm_mode = ELFSH_VMSTATE_IMODE;
       else if (vm_testscript(ac, av))
 	{
+	  world.state.vm_mode = ELFSH_VMSTATE_SCRIPT;
+	  vm_setup_hashtables();
 	  if (vm_openscript(&av[1]) < 0)
 	    QUIT_ERROR(-1);
 	  ac = 1;
 	  av[1] = NULL;
-	  world.state.vm_mode = ELFSH_VMSTATE_SCRIPT;
 	}
     }
 
@@ -307,7 +296,7 @@ int		vm_run(int ac, char **av)
       using_history();
       rl_attempted_completion_function = custom_completion;
       rl_callback_handler_install (vm_get_prompt(), vm_ln_handler);
-      rl_bind_key(CTRL('x'), cmd_test); 
+      rl_bind_key(CTRL('x'), vm_screen_switch); 
       vm_install_clearscreen();
     }
   else

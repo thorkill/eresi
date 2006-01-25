@@ -5,7 +5,6 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-void    asm_resolve_immediate(void *, u_int, char *, u_int);
 void	init_instr_table(asm_processor *);
 
 /**
@@ -37,10 +36,11 @@ void asm_init_i386(asm_processor *proc) {
 
   init_instr_table(proc);
   
-  proc->resolve_immediate = asm_resolve_immediate;
+  proc->resolve_immediate = asm_resolve_ia32;
   proc->resolve_data = 0;
   // proc->get_operand = create_i386_operand;
   proc->fetch = fetch_i386;
+  proc->display_handle = asm_ia32_display_instr_att;
   inter = proc->internals = malloc(sizeof (struct s_asm_proc_i386));
   inter->oplen = inter->addlen = 0;
   inter->mode = INTEL_PROT;

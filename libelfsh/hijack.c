@@ -14,9 +14,6 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 					      elfsh_Addr addr,
 					      elfsh_Addr *hooked)
 {
-  u_char	archtype;
-  u_char	objtype;
-  u_char	ostype;
   elfsh_Sym	*symbol;
   int		ret;
   int		ispltent;
@@ -34,15 +31,6 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
   if (elfsh_copy_plt(file, elfsh_get_pagesize(file)) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to copy PLT", -1);
-
-  archtype = elfsh_get_archtype(file);
-  objtype = elfsh_get_elftype(file);
-  ostype = elfsh_get_ostype(file);
-  if (archtype == ELFSH_ARCH_ERROR ||
-      objtype  == ELFSH_TYPE_ERROR ||
-      ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid target", -1);
 
   /* Guess the hijack type */
   switch (type) 
@@ -106,7 +94,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 	    {
 	      if (hooked)
 		*hooked = symbol->st_value;
-	      ret = (*hook_cflow[archtype][objtype][ostype])(file, name, symbol, addr);
+	      ret = elfsh_cflow(file, name, symbol, addr);
 	      if (ret < 0)
 		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 				  "Unable to perform CFLOW", -1);
@@ -128,7 +116,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 	  /* Hook using ALTPLT technique */
 	  if (hooked)
 	    *hooked = symbol->st_value;
-	  ret = (*hook_plt[archtype][objtype][ostype])(file, symbol, addr);
+	  ret = elfsh_plt(file, symbol, addr);
 	  if (ret < 0)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to perform ALTPLT", -1);
@@ -138,7 +126,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
       
       if (hooked)
 	*hooked = symbol->st_value;
-      ret = (*hook_cflow[archtype][objtype][ostype])(file, name, symbol, addr);
+      ret = elfsh_cflow(file, name, symbol, addr);
       if (ret < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to perform CFLOW redir", -1);
@@ -173,7 +161,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
       /* Now use ELFsh 0.6 hooks model */
       if (hooked)
 	*hooked = symbol->st_value;
-      ret = (*hook_plt[archtype][objtype][ostype])(file, symbol, addr);
+      ret = elfsh_plt(file, symbol, addr);
       if (ret < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Unable to do ALTPLT", -1);

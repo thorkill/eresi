@@ -14,34 +14,36 @@
  #define		ELFSH_ERR_ARRAY		sys_errlist[sys_nerr]
 #endif
 
+/* Some calls defined in libmalloc */
+void		*elfsh_calloc(size_t, char);
+void		*elfsh_realloc(void *, size_t);
+void		*elfsh_malloc(size_t);
+void		elfsh_free(void *);
 
 /* Safe calloc() */
 #define		XALLOC(a, b, c)									\
 do												\
 {												\
-  if ((a = calloc(b, 1)) == NULL)								\
+  if ((a = (void *) elfsh_calloc(b, 1)) == NULL)						\
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Out of memory .", c);			\
 }												\
 while (0)
+  //printf("Allocated %u bytes at address %08X \n", b, (elfsh_Addr) a);				
+
 
 /* Safe realloc() */
 #define		XREALLOC(a, b, c, d)								\
 do												\
 {												\
-  if ((a = realloc(b, c)) == NULL)								\
+  if ((a = (void *) elfsh_realloc(b, c)) == NULL)						\
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Out of memory .", d);			\
 }												\
 while (0)
+  //printf("ReAllocated %u bytes at address %08X \n", c, (elfsh_Addr) a);			   
+
 
 /* Our free() */
-#define		XFREE(a)									\
-do												\
-{												\
-  free(a);											\
-}												\
-while (0)											
-
-
+#define		XFREE(a)	elfsh_free(a)
 
 /* Safe open() */
 #define		XOPEN(a, b, c, d, e)							\
@@ -97,7 +99,22 @@ while (0)
 
 /* Profiling macros */
 #define	ELFSH_NOPROFILE_IN()    int profileme = 0
-#define	ELFSH_NOPROFILE_ROUT(r) return (r)
+
+#define	ELFSH_NOPROFILE_OUT()	\
+do				\
+{				\
+  profileme = 0;		\
+  return;			\
+}				\
+while (0)
+
+#define	ELFSH_NOPROFILE_ROUT(r) \
+do				\
+{				\
+  profileme = 0;		\
+  return (r);			\
+}				\
+while (0)
 
 #define	ELFSH_PROFILE_IN(file, func, line)	\
 int profileme = elfsh_depth;			\
@@ -112,10 +129,10 @@ do {						\
   elfsh_decdepth();				\
   if (profileme != elfsh_depth)			\
   {						\
-    printf("a function called by the current "	\
+    printf(" [!] A function called by current"	\
 	   "forgot to decrement elfsh_depth"    \
            "(%d %d)\n", profileme, elfsh_depth);\
-    printf("current FUNCTION %s@%s:%d\n",	\
+    printf("     Current FUNCTION %s@%s:%d\n",	\
 	   func, file, line);			\
     exit(0);					\
   }						\
@@ -128,10 +145,10 @@ do {						\
   elfsh_decdepth();				\
   if (profileme != elfsh_depth)			\
   {						\
-    printf("a function called by the current "	\
+    printf(" [!] A function called by current "	\
 	   "forgot to decrement elfsh_depth"	\
            "(%d %d)\n", profileme, elfsh_depth);\
-    printf("current FUNCTION %s@%s:%d\n",	\
+    printf("     Current FUNCTION %s@%s:%d\n",	\
 	   f, file, l);				\
     exit(0);					\
   }						\
@@ -144,10 +161,10 @@ do {						\
   elfsh_decdepth();				\
   if (profileme != elfsh_depth)			\
   {						\
-    printf("a function called by the current "	\
+    printf(" [!] A function called by current "	\
 	   "one forgot to decrement "		\
            "elfsh_depth\n");			\
-    printf("current FUNCTION %s@%s:%d\n",	\
+    printf("     Current FUNCTION %s@%s:%d\n",	\
 	   f, file, l);				\
     exit(0);					\
   }						\

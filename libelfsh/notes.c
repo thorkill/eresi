@@ -51,8 +51,8 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Corrupted Notes section", NULL);
 
-      e->note      = strdup((char *) notes->data + offset + sizeof(int) * 3);
-      e->desc      = strdup((char *) notes->data + offset + sizeof(int) * 3 
+      e->note      = elfsh_strdup((char *) notes->data + offset + sizeof(int) * 3);
+      e->desc      = elfsh_strdup((char *) notes->data + offset + sizeof(int) * 3 
 			    + e->namesz);
       
       /* Put the note entry at the end of the list */

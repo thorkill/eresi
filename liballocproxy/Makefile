@@ -6,27 +6,27 @@
 # Started Tue Oct 04 15:13:19 2005 mm
 # 
 
+include ../config.h
+
+CC	?= gcc
 SRC	= malloc.c
 OBJ	= $(SRC:.c=.o)
-CC	?= gcc
-CFLAGS	+= -D__STD_C -DUSE_ARENAS -fPIC -g3 -gstabs+ -Iinclude
-AR	?= ar
-RANLIB	?= ranlib
+CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -fPIC -g3 -Iinclude 
 NAME	= malloc-e2dbg
 
 all	: heap ex
 
 heap	: $(OBJ)
 	$(AR) rc lib$(NAME).a $(OBJ)
-	ranlib lib$(NAME).a
+	$(RANLIB) lib$(NAME).a
 
 ex	: 
-	make -C tests all
+	$(MAKE) -C tests all
 
 clean	:
 	rm -f $(OBJ) *~ \#* *\#
-	make -C tests clean
+	$(MAKE) -C tests clean
 
 fclean	: clean
 	rm -f lib$(NAME).a
-	make -C tests fclean
+	$(MAKE) -C tests fclean

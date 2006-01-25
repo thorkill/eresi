@@ -42,6 +42,8 @@ int		cmd_info()
 	   "   - version       [ value ]                                                                \n"
 	   "   - verneed       [ index name hash flag next file count aux ]                             \n"
 	   "   - verdef        [ index count hash flag aux next name ]                                  \n"
+	   "   - hashbucket    [ value nbucket ]                                                        \n"
+	   "   - hashchain     [ value nchain ]                                                         \n"
 	   "   - got           [ value addr ]    							\n\n"
 	   " [*] Current field separator       : %s					    \n"
 	   " [*] Current global regular expr.  : %s					    \n"

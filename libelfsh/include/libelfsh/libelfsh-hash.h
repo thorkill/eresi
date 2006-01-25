@@ -22,7 +22,7 @@
 #define		HASHALLOC(a, b, c)			\
 do							\
 {							\
-  if ((a = calloc(b, 1)) == NULL)			\
+  if ((a = elfsh_calloc(b, 1)) == NULL)			\
     {							\
       perror("libhashelfsh[calloc]");			\
       return (c);					\

@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: hooks.c,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $ */
+/* $Id: hooks.c,v 1.1.1.3 2006-01-25 22:58:11 thor Exp $ */
 
 /* What to do if the standard debugging hooks are in place and a
    corrupt pointer is detected: do nothing (0), print an error message

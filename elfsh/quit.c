@@ -58,12 +58,12 @@ int		cmd_quit()
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
 	    {
-	      printf("Writting history ...\n");
-	      write_history("/tmp/elfsh_history");
+	      printf(" [*] Writting history (.elfsh_history) \n");
+	      write_history(".elfsh_history");
 	      rl_callback_handler_remove();
 	    }
 #endif
-
+	  
 	  vm_exit(0);
 	}
     }

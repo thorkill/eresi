@@ -291,7 +291,7 @@ int			cmd_flow(void)
       foff = elfsh_get_foffset_from_vaddr(world.curjob->current, vaddr);
 
       printf("[MODFLOW] loading code... vaddr = %08x foffset = %i len = %i\n", vaddr, foff, max_len);
-      buffer = malloc(max_len);
+      buffer = elfsh_malloc(max_len);
       elfsh_raw_read(world.curjob->current, foff, buffer, max_len);
 
       hash_init(&block_hash, max_len);

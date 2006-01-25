@@ -68,7 +68,7 @@ int		elfsh_read_obj(elfshobj_t *file)
   elfsh_get_dtors(file, NULL);
   elfsh_get_got(file, NULL);
   elfsh_get_interp(file);
-  elfsh_get_hashtable(file);
+  elfsh_get_hashtable(file, NULL);
   elfsh_get_comments(file);
   elfsh_get_plt(file, NULL);
 

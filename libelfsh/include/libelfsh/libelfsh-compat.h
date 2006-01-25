@@ -66,7 +66,9 @@ typedef char uint8;
  #include "libelfsh-sunos.h"
 #endif
 
-#include "libelfsh-bsd.h"	/* Various BSD need this */
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+ #include "libelfsh-bsd.h"	/* Various BSD need this */
+#endif
 
 #if defined(ELFSH_INTERN)
  #include "libelfsh-internal.h"

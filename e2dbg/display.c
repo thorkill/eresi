@@ -91,7 +91,7 @@ int		vm_display(char **cmd, u_int nbr)
 	vm_output(buf);
 	
 	/* Register displayed command in the script control flow */
-	str = strdup(cmd[idx]);
+	str = elfsh_strdup(cmd[idx]);
 	if (vm_exec_str(cmd[idx]) < 0)
 	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Display execrequest failed", -1);

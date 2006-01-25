@@ -237,7 +237,7 @@ void		dump_assembly(int fd, elfshblk_t *blk)
 
   vm_quiet = world.state.vm_quiet;
   world.state.vm_quiet = 0;
-  buffer = malloc(blk->size);
+  buffer = elfsh_malloc(blk->size);
   if ((elfsh_raw_read(world.curjob->current, 
 		      elfsh_get_foffset_from_vaddr(world.curjob->current, 
 						   blk->vaddr), 

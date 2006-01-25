@@ -41,7 +41,7 @@ int		vm_convert2str(elfshpath_t *obj)
       val8 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%hhd", val8);
       obj->immed_val.byte = 0;
-      obj->immed_val.str = strdup(tmp);
+      obj->immed_val.str = elfsh_strdup(tmp);
       obj->type = ELFSH_OBJSTR;
       obj->immed = 1;
       obj->size = strlen(tmp);
@@ -51,7 +51,7 @@ int		vm_convert2str(elfshpath_t *obj)
       val16 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%hd", val16);
       obj->immed_val.half = 0;
-      obj->immed_val.str = strdup(tmp);
+      obj->immed_val.str = elfsh_strdup(tmp);
       obj->type = ELFSH_OBJSTR;
       obj->immed = 1;
       obj->size = strlen(tmp);
@@ -61,7 +61,7 @@ int		vm_convert2str(elfshpath_t *obj)
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%d", val32);
       obj->immed_val.word = 0;
-      obj->immed_val.str = strdup(tmp);
+      obj->immed_val.str = elfsh_strdup(tmp);
       obj->type = ELFSH_OBJSTR;
       obj->immed = 1;
       obj->size = strlen(tmp);
@@ -75,7 +75,7 @@ int		vm_convert2str(elfshpath_t *obj)
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), XFMT, val64);
       obj->immed_val.ent = 0;
-      obj->immed_val.str = strdup(tmp);
+      obj->immed_val.str = elfsh_strdup(tmp);
       obj->type = ELFSH_OBJSTR;
       obj->immed = 1;
       obj->size = strlen(tmp);

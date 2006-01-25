@@ -32,14 +32,14 @@ int		cmd_dolist()
       if (nl)
 	*nl = 0x00;
       c = (world.curjob->current == actual ? '*' : ' ');
-      c2 = ((actual->linkmap || actual->rhdr.base) ? 'D' : ' ');
+      c2 = ((actual->linkmap || actual->rhdr.base) ? 'M' : ' ');
       if (elfsh_is_debug_mode())
 	snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
       else
 	snprintf(optbuf, BUFSIZ, "%s", "");
 
-     snprintf(logbuf, BUFSIZ - 1, " [%02u] %s %c%c %s ID: %2u %s %s \n", 
-	      index, time, c, c2, optbuf, actual->id, 
+     snprintf(logbuf, BUFSIZ - 1, " %s %c%c %s ID: %2u %s %s \n", 
+	      time, c, c2, optbuf, actual->id, 
 	      elfsh_get_objtype(actual->hdr) == ET_REL  ? "ET_REL " : 
 	      elfsh_get_objtype(actual->hdr) == ET_DYN  ? "ET_DYN " : 
 	      elfsh_get_objtype(actual->hdr) == ET_EXEC ? "ET_EXEC" : 

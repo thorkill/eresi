@@ -177,7 +177,7 @@ int			vm_parseopt(int argc, char **argv)
 {
   u_int			index;
   int			ret;
-  volatile elfshcmd_t		*actual;
+  volatile elfshcmd_t	*actual;
   char			*name;
   char			label[16];
   char			c;
@@ -213,7 +213,9 @@ int			vm_parseopt(int argc, char **argv)
 	    {
 	      ret = actual->reg(index, argc, argv);
 	      if (ret < 0)
-              ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Command not found", (vm_doerror(vm_badparam, argv[index])));
+              ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+				"Command not found", 
+				(vm_doerror(vm_badparam, argv[index])));
 	      index += ret;
 	    }
 	}
@@ -226,9 +228,9 @@ int			vm_parseopt(int argc, char **argv)
 
 	  if (ret == 2 && c == ':')
 	    {
-	      hash_add(&labels_hash[world.curjob->sourced], strdup(label), new); 
+	      hash_add(&labels_hash[world.curjob->sourced], elfsh_strdup(label), new); 
 
-	      printf("Found label %s \n", label);
+	      printf(" [*] Found label %s \n", label);
 
 	      pendinglabel = 1;
 	      continue;
@@ -242,12 +244,14 @@ int			vm_parseopt(int argc, char **argv)
       
       /* We matched nothing known, error */
       else
-          ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown parsing error", (vm_doerror(vm_unknown, argv[index])));
+          ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			    "Unknown parsing error", 
+			    (vm_doerror(vm_unknown, argv[index])));
 
       /* Put the new command at the end of the list */
       new->name = name;
-      new->cmd = actual;
-
+      new->cmd  = (elfshcmd_t *) actual;
+      
       if (!world.curjob->lstcmd[world.curjob->sourced])
 	world.curjob->lstcmd[world.curjob->sourced] = new;
       else

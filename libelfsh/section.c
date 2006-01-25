@@ -516,7 +516,7 @@ elfshsect_t	*elfsh_create_section(char *name)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL name", NULL);
   XALLOC(new, sizeof(elfshsect_t), NULL);
-  new->name = strdup(name);
+  new->name = elfsh_strdup(name);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 

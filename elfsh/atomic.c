@@ -69,7 +69,7 @@ int                     cmd_set()
       str = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
       if (o1->immed)
         {
-          o1->immed_val.str = strdup(str);
+          o1->immed_val.str = elfsh_strdup(str);
           o1->size = o2->size;
         }
       else if (o1->set_name(o1->root, o1->parent, str) < 0)

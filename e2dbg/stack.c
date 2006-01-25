@@ -74,7 +74,8 @@ int		cmd_stack()
       if (sscanf(param, UFMT, &size) != 1)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid argument", (-1));
-      return (vm_dumpstack(size, ssp->immed_val.ent));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 vm_dumpstack(size, ssp->immed_val.ent));
     }  
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Invalid parameter", -1);
@@ -108,7 +109,8 @@ int		cmd_dbgstack()
       if (sscanf(param, UFMT, &size) != 1)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid argument", (-1));
-      return (vm_dumpstack(size, (elfsh_Addr) &param));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+			 vm_dumpstack(size, (elfsh_Addr) &param));
     }  
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Invalid parameter", -1);

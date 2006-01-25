@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: malloc.c,v 1.1.1.2 2005-10-06 15:17:37 thor Exp $
+  $Id: malloc.c,v 1.1.1.3 2006-01-25 22:58:11 thor Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -227,6 +227,9 @@
   with it.
 */
 
+
+#include "../libvars.h"
+
 /*
 ** for MREMAP_MAYMOVE
 */
@@ -296,7 +299,9 @@ extern "C" {
 #include <errno.h>    /* needed for optional MALLOC_FAILURE_ACTION */
 
 /* For uintptr_t.  */
+#if !defined(IRIX)
 #include <stdint.h>
+#endif
 
 /* For va_arg, va_start, va_end.  */
 #include <stdarg.h>
@@ -502,23 +507,23 @@ Void_t * __default_morecore (ptrdiff_t);
 Void_t *(*__morecore)(ptrdiff_t) = __default_morecore;
 
 #else /* !_LIBC */
-#define public_cALLOc    calloc
-#define public_fREe      free
-#define public_cFREe     cfree
-#define public_mALLOc    malloc
-#define public_mEMALIGn  memalign
-#define public_rEALLOc   realloc
-#define public_vALLOc    valloc
-#define public_pVALLOc   pvalloc
-#define public_mALLINFo  mallinfo
-#define public_mALLOPt   mallopt
-#define public_mTRIm     malloc_trim
-#define public_mSTATs    malloc_stats
-#define public_mUSABLe   malloc_usable_size
-#define public_iCALLOc   independent_calloc
-#define public_iCOMALLOc independent_comalloc
-#define public_gET_STATe malloc_get_state
-#define public_sET_STATe malloc_set_state
+#define public_cALLOc    elfsh_calloc 
+#define public_fREe      elfsh_free
+#define public_cFREe     elfsh_cfree
+#define public_mALLOc    elfsh_malloc
+#define public_mEMALIGn  elfsh_memalign
+#define public_rEALLOc   elfsh_realloc
+#define public_vALLOc    elfsh_valloc
+#define public_pVALLOc   elfsh_pvalloc
+#define public_mALLINFo  elfsh_mallinfo
+#define public_mALLOPt   elfsh_mallopt
+#define public_mTRIm     elfsh_malloc_trim
+#define public_mSTATs    elfsh_malloc_stats
+#define public_mUSABLe   elfsh_malloc_usable_size
+#define public_iCALLOc   elfsh_independent_calloc
+#define public_iCOMALLOc elfsh_independent_comalloc
+#define public_gET_STATe elfsh_malloc_get_state
+#define public_sET_STATe elfsh_malloc_set_state
 #endif /* _LIBC */
 #endif /* USE_DL_PREFIX */
 
@@ -594,7 +599,6 @@ Void_t* memcpy();
   MORECORE-related declarations. By default, rely on sbrk
 */
 
-
 #ifdef LACKS_UNISTD_H
 #if !defined(__FreeBSD__) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 #if __STD_C
@@ -624,11 +628,11 @@ extern Void_t*     sbrk();
   sample version for pre-OSX macos.
 */
 
-void  *e2dbg_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
+void  *elfsh_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
 
 #ifndef MORECORE
 //#define MORECORE sbrk
-#define MORECORE e2dbg_sbrk
+#define MORECORE elfsh_sbrk
 #endif
 
 /*
@@ -714,7 +718,8 @@ void  *e2dbg_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
 */
 
 #ifndef MMAP_AS_MORECORE_SIZE
-#define MMAP_AS_MORECORE_SIZE (1024 * 1024)
+  //#define MMAP_AS_MORECORE_SIZE (1024 * 1024)
+#define MMAP_AS_MORECORE_SIZE (1024 * 4096)
 #endif
 
 /*
@@ -2973,6 +2978,9 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
     /* Don't try if size wraps around 0 */
     if ((unsigned long)(size) > (unsigned long)(nb)) {
 
+
+      // Here change to fix the address of MMAP
+
       char *mbrk = (char*)(MMAP(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE));
 
       if (mbrk != MAP_FAILED) {
@@ -3338,7 +3346,7 @@ mremap_chunk(p, new_size) mchunkptr p; size_t new_size;
 /*------------------------ Public wrappers. --------------------------------*/
 
 Void_t*
-public_mALLOc(size_t bytes)
+public_mALLOc(size_t bytes) 
 {
   mstate ar_ptr;
   Void_t *victim;
@@ -4567,6 +4575,8 @@ _int_realloc(mstate av, Void_t* oldmem, size_t bytes)
   const char *errstr = NULL;
   INTERNAL_SIZE_T       nextsize;
 
+  //char			intbuf[256];
+  //int			intlen;
 
   checked_request2size(bytes, nb);
 
@@ -4581,9 +4591,17 @@ _int_realloc(mstate av, Void_t* oldmem, size_t bytes)
       malloc_printerr (check_action, errstr, oldmem);
       return NULL;
     }
+
+  //intlen = snprintf(intbuf, sizeof(intbuf), "oldsize = %u, av->system_mem = %u \n", oldsize, av->system_mem); 
+  //write(1, intbuf, intlen);
+
   if (__builtin_expect (oldp->size <= 2 * SIZE_SZ, 0)
       || __builtin_expect (oldsize >= av->system_mem, 0))
     {
+
+      //intlen = snprintf(intbuf, sizeof(intbuf), "FAILURE WITH: oldsize = %u, av->system_mem = %u \n", oldsize, av->system_mem); 
+      //write(1, intbuf, intlen);
+
       errstr = "realloc(): invalid size";
       goto errout;
     }

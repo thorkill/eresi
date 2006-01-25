@@ -8,8 +8,8 @@ Changes in intermediate beta versions are listed in the first public version
 they appear.
 
 
-0.65rc2 :
----------
+0.7a :
+------
  - Added  : Dynamic entries lookup by type
  - Core   : Now hijack __libc_start_main instead of main (works on stripped)
  - Added  : Full stepping support on x86
@@ -37,7 +37,12 @@ they appear.
  - Added  : better completion (constants, ELF objects ..)
  - Added  : Multiple workspaces with hotkey (^X)
  - Added  : alert command for color events
-
+ - Added  : Full support (elf + scripting) for version tables (by mxatone)
+ - Core   : Dedicated heap for the debugger (now link with libmalloc-e2dbg.a)
+ - Core   : Dedicated thread for the debugger
+ - Added  : start command for starting the debuggee program
+ - Added  : empty line will now repeat the last command
+ - Core   : Support of aspect vectors (array of hooks) saved in vectors hash table
 
 0.65rc1 (August 1st 2005) :
 ---------------------------

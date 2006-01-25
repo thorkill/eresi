@@ -6,96 +6,88 @@
 ## Updated : Sun Mar 21 00:03:07 2004
 ##
 
-
-include ../config.h
-
+#DBGFLAGS	=	-ggdb -DDEBUG_SPARC
 
 #
 # Architecture source files
 #
-SRCS_libasm = src/arch/ia32/i386-0.c	\
-	src/arch/ia32/i386-1.c		\
-	src/arch/ia32/i386-2.c		\
-	src/arch/ia32/i386-3.c		\
-	src/arch/ia32/i386-4.c		\
-	src/arch/ia32/i386-5.c		\
-	src/arch/ia32/i386-6.c		\
-	src/arch/ia32/i386-7.c		\
-	src/arch/ia32/i386-8.c		\
-	src/arch/ia32/i386-9.c		\
-	src/arch/ia32/i386-a.c		\
-	src/arch/ia32/i386-b.c		\
-	src/arch/ia32/i386-c.c		\
-	src/arch/ia32/i386-d.c		\
-	src/arch/ia32/i386-e.c		\
-	src/arch/ia32/i386-f.c		\
-	src/arch/ia32/ei386-0.c		\
-	src/arch/ia32/ei386-1.c		\
-	src/arch/ia32/ei386-2.c		\
-	src/arch/ia32/ei386-4.c		\
-	src/arch/ia32/ei386-8.c		\
-	src/arch/ia32/ei386-9.c		\
-	src/arch/ia32/ei386-a.c		\
-	src/arch/ia32/ei386-b.c		\
-	src/arch/ia32/init_i386.c	\
-	src/generic.c			\
-	src/operand_ia32.c		\
-	src/instr_table.c		\
-	src/output.c			\
-	src/error.c			\
-	src/operand.c			\
-	src/instruction.c
+SRCS_libasm 	=				\
+		src/arch/ia32/i386-0.c		\
+		src/arch/ia32/i386-1.c		\
+		src/arch/ia32/i386-2.c		\
+		src/arch/ia32/i386-3.c		\
+		src/arch/ia32/i386-4.c		\
+		src/arch/ia32/i386-5.c		\
+		src/arch/ia32/i386-6.c		\
+		src/arch/ia32/i386-7.c		\
+		src/arch/ia32/i386-8.c		\
+		src/arch/ia32/i386-9.c		\
+		src/arch/ia32/i386-a.c		\
+		src/arch/ia32/i386-b.c		\
+		src/arch/ia32/i386-c.c		\
+		src/arch/ia32/i386-d.c		\
+		src/arch/ia32/i386-e.c		\
+		src/arch/ia32/i386-f.c		\
+		src/arch/ia32/ei386-0.c		\
+		src/arch/ia32/ei386-1.c		\
+		src/arch/ia32/ei386-2.c		\
+		src/arch/ia32/ei386-4.c		\
+		src/arch/ia32/ei386-8.c		\
+		src/arch/ia32/ei386-9.c		\
+		src/arch/ia32/ei386-a.c		\
+		src/arch/ia32/ei386-b.c		\
+		src/arch/ia32/init_i386.c	\
+		src/arch/ia32/tables_i386.c	\
+		src/arch/ia32/operand_ia32.c	\
+		src/arch/sparc/init_sparc.c	\
+		src/arch/sparc/tables_sparc.c	\
+		src/arch/sparc/sparc_decode.c	\
+		src/arch/sparc/sparc_convert.c	\
+		src/arch/sparc/sparc_synthetic.c\
+		src/arch/ia32/output_ia32.c	\
+		src/arch/sparc/output_sparc.c	\
+		src/generic.c			\
+		src/output.c			\
+		src/error.c			\
+		src/operand.c			\
+		src/instruction.c
 
+OBJS_libasm 	=	${SRCS_libasm:.c=.o}
+NAME_libasm 	= 	libasm.a
 
-OBJS_libasm =	${SRCS_libasm:.c=.o}
+SRCS_sparc	=	tools/sparc_mydisasm.c
+OBJS_sparc	=	${SRCS_sparc:.c=.o}
+NAME_sparc	=	test_sparc
 
-NAME_libasm = libasm.a
-
-#
-# debug source files
-#
-
-SRCS_mydisasm = tools/mydisasm.c
-
-OBJS_mydisasm = ${SRCS_mydisasm:.c=.o}
-
-CFLAGS = -Iinclude -fPIC
-
-RM = rm -f
-
-LDFLAGS = -L. -lasm
-
-ETAGS = etags
-
-CC ?= gcc
+CFLAGS 		= 	-Iinclude -Isrc/include -Wall -Werror -ggdb -fPIC
+RM 		= 	rm -f
+ETAGS 		= 	etags
+CC 		= 	gcc
+CP 		= 	cp
 
 all:	lib
 
-mydisasm: ${OBJS_mydisasm}
-	$(CC) -o mydisasm ${OBJS_mydisasm} ${LDFLAGS} -lelfsh
 
 install:
-	cp libasm.a /usr/lib
-	cp include/libasm.h /usr/include
-	cp include/libasm-i386.h /usr/include
+	${CP} ${NAME_libasm} /usr/lib
+	${CP} include/libasm.h /usr/include
+	${CP} include/libasm-i386.h /usr/include
+	${CP} include/libasm-sparc.h /usr/include
 
 lib:	$(OBJS_libasm)
-	@echo Building library.
-	@ar rc libasm.a ${OBJS_libasm}
-	@$(RANLIB) libasm.a
+	ar rc ${NAME_libasm} ${OBJS_libasm}
+	ranlib ${NAME_libasm}
 
 clean:
-	@echo Cleaning sources tree.
-	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} 
-	@find . -name '*~' -exec rm -f {} \;
+	$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump}
+	find . -name '*~' -exec rm -f {} \;
 
 fclean: clean
-	@echo Removing builds.
-	@$(RM) mydisasm libasm.a 
+	$(RM) ${NAME_libasm} ${NAME_mydisasm} ${NAME_cmpdump} 
 tags:
 	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
 	@echo TAGS generated succesfully
 
 .c.o:
-	$(CC) $(CFLAGS) -c $*.c -o $*.o
+	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
 

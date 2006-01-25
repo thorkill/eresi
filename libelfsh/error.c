@@ -76,7 +76,8 @@ int		elfsh_profile_print(char *file, char *func, u_int line, char *msg)
     if (hit[sel][idx])
       {
 	dbgworld.profile("\n");
-       
+
+	/*
 	for (idx2 = idx; idx2 >= 0; idx2--)
 	  {
 	    snprintf(buf, BUFSIZ, " %s [%c] --[ (%u hit%s) %-50s \n", 
@@ -95,6 +96,8 @@ int		elfsh_profile_print(char *file, char *func, u_int line, char *msg)
 		 hit[sel][idx]);
 
 	dbgworld.profile(mesg);
+	*/
+
 	for (idx = 0; idx < ELFSH_MAX_PATTERN; idx++)
 	  hit[sel][idx] = 0;
 	break;

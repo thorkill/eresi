@@ -9,84 +9,78 @@
 				ELFsh TODO phile       #
                                 ########################
 
+. ELFSH BUG : D on ET_DYN .. hum ..
+. E2DBG BUG : D does not print in dynamic mode (please correct toggle !)
+. E2DBG BUG : BT -> no context
+. E2DBG BUG : 'cont' and 'step' in debugging scripts are bugged
+. E2DBG BUG : start/step on PIE makes a big segfault after 2 bp hits
+. E2DBG BUG : Make sure ET_REL injection in memory works again with redirections
+. E2DBG BUG : quit not very good (when dbggee finished, e2dbg is bloked)
 
-[missing / bugs]
+	. Use MMAP_FIXED mappings in debugger heap
+	. Better rights than rwx for runtime injected phdr (try double-map)
+	. Hook command (include hlist)
 
-. BUG : D is fucked again ! (also X simplevar doesnt work)
-. BUG : Do more tests on debugger scripts, sometimes it fucks
-. BUG : Make sure ET_REL injection in memory works again with redirections
-. BUG : testsuite pre-interp fuck (ld.so: address/offset not properly aligned)
-. BUG : see ~/dvr-elf/ for a bug on infecting netcat
+	<----- Here release 0.7-linux
 
-. BUG : remove memleaks (VALGRIND!)
-. BUG : reported by emperor (shnum, phnum, shsize modifs without data insertion)
-. BUG : Check cmd_connect error handling
-. BUG : NET client's (private) objects aren't unloaded on disconnection
-. BUG : NET shell prompt displayed twice (! cmd) 
-. BUG : multiple workspace on DUMP connection (actual->data->active && network.c:761)
-. BUG : DUMP + e2dbg + cont/b/... 
-
-MM	. Prefix heap allocator functions by e2dbg_ and use MMAP_FIXED mmaps
-MM	. Better rights than rwx for runtime injected phdr (try double-map)
-MM	. Clean 4 remaining hooks to do
-[quick]	. Colors in profiler, hexa, backtrace, linkmap, stack, dbgstack
-[quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
-[quick]	. be able to change the compiler and compiling options
-
-	<----- Here release 0.65rc2-linux
-
+	. EXTPLT fuck on BSD (preinterp injection to avoid on fbsd)
+	. where to find USER_ESP on BSD context ?
 	. ET_REL injection fucked on Solaris
 	 	-> .data.rel.local  ?
 		-> .rel.bss
 		-> load a.out ; save plouf ; ./plouf -> "Malloc problem"
-	. EXTPLT fuck on BSD (preinterp injection to avoid on fbsd)
-	. No __libc_start_main on BSD
-	. where to find USER_ESP on BSD context ?
 	. 188 warnings on Solaris/BSD
 	. Compiles on HPUX
+	. find a reliable way to enter e2dbg under IRIX (main got entry ? (a0=argc a1=argv))
 
-	<----- Here release 0.65-portable
+	<----- Here release 0.7-portable
 
+[Main TODO]
+	. Support step over, step into, step in sources
+[quick]	. Colors in profiler, hexa, stepping, backtrace, linkmap, stack, dbgstack
+[quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
+[quick]	. be able to change the compiler and compiling options
 !!!	. EXTSTATIC : re-use existing PT_LOADs
 !!!	. Multiple BSS : symbol injected many times in find_bsslen (fixup_sctndx really useful ?)
-	. Finish ET_REL for MIPS
-	. Complete MIPS SHT/DYNAMIC types ASCII's
-	. ltrace multiarch
-	. Be able to add new internal types using the script language
-	. TLS support ! (with decent multithread debugging example)
 !!!	. Put doxygen comments and generate the ELF shell reference manual
 !!!	. Update manpage
-	. add syntax explaination in help
 
-	<----- Here release 0.66 Final
-
-[future]
-	. Packer/Unpacker hook interface (Generalized hooking VM interface)
-	. Hook command (include hlist) : change a hook (0 or 4 params) 
-	. Use a runtime symtab/strtab for memory modifications
+	. Conditions on breakpoints 
+	. Multithread/TLS support
+	. Add ALTGOT vector (need a small fix in the alpha algorithm)
+	. Finish ET_REL for MIPS
+	. Complete MIPS SHT/DYNAMIC types ASCII's
+	. Better function hijacking to replace breakpoint opcodes
+	. Be able to add new internal types using the script language
 	. Be able to breakpoint a debugger function
-	. Be able to chain signal handlers (for debugging a debugger)
+	. More high level control flow : while if else if endif end
+	. Hash tables working with 'foreachof' and 'eol'
+	. File reconstruction from memory
+      	. Support file building from scratch and support ET_REL injection on it
+      	. SUN Version section rw API (and add it to the hierarchy)
+	. DWARF support and step in sources
+	. Packer/Unpacker hook interface (Generalized hooking VM interface)
+
+	. Watchpoints on memory (problem: debug registers are ring0 only)
+	. Use a runtime symtab/strtab for memory modifications
+	. Signal proxying (when the debuggee set signals)
 	. support X/x number types [regx] command and D regx regx commands
 	. Replace all #ifdef __DEBUG*__ by ELFSH_PROFILE_DEBUG() calls
 	. e2dbg scripts from cmdline (filexist, $var1_blabla$var2 format)
 	. Better runtime EXTPLT (without mprotect)
 	. unredir and undisplay command
 	. b __guard@libc.so.6 format
+	. Be able to bt without fp
+	. Include hooks in scripting language
+	. ltrace multiarch
+	. add syntax explaination in help
 	. e2dbg VS gdb (undisplay, bt with core, frame command, call command)
 	. uuprint command
-	. Conditions on breakpoints 
 	. add ~ expansion
 	. Recode paxctl in elfsh script
 	. add vsyscall table support : http://lwn.net/Articles/30258/
-	. More high level control flow : while if else if endif end
-	. Hash tables working with 'foreachof' and 'eol'
-	. File reconstruction from memory
-      	. Support file building from scratch and support ET_REL injection on it			
-      	. GNU & SUN Version section rw API (and add it to the hierarchy)
-	. DWARF support and step in sources
 	. Execution of script located in .elfsh.d/ from IMODE 
 	. Leave command : exit the debugger by unmapping it
-	. Watchpoints on memory (problem: debug registers are ring0 only)
 
 [porting]
 	. Debug PaX-safe third-type injection on SPARC / ALPHA
@@ -99,9 +93,19 @@ MM	. Clean 4 remaining hooks to do
 	. EXTPLT / ET_REL into ET_DYN for MIPS
 	. Full support for HPPA, PPC, ARM, IA64, AMD64
 
+[minor bugs]	
+. BUG : remove memleaks (VALGRIND!)
+. BUG : reported by emperor (shnum, phnum, shsize modifs without data insertion)
+. BUG : Check cmd_connect error handling
+. BUG : NET client's (private) objects aren't unloaded on disconnection
+. BUG : NET shell prompt displayed twice (! cmd) 
+. BUG : multiple workspace on DUMP connection (actual->data->active && network.c:761)
+. BUG : DUMP + e2dbg + cont/b/... 
+. BUG : Cannot list notes anymore
+
 [less important features TODO]
 	. LKM & static kernel infection
-	. Hash API (cmd + insertion) and DYNAMIC insertion API
+	. DYNAMIC insertion API
 	. Be able to call dtrace on Solaris
 	. Support ELF32 / ELF64 at the same time
 	. Improve completion (do better tables in tables.c)

@@ -8,7 +8,7 @@ include ../config.h
 
 SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
 			signal.c mode.c stack.c step.c linkmap.c dumpregs.c \
-			vmhooks.c
+			vmhooks.c mutex.c continue.c xmalloc.c resolv.c
 OBJ			= $(SRC:.c=.o)
 VMOBJ			= ../vm/*.o
 CC			?= gcc
@@ -20,15 +20,17 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../libdump/include/  \
 			-I../libasm/include/   \
 			-I../vm/include/   \
-			-DELFSH_INTERN $(ASMOPT) $(READLNOPT) $(BITS)
+			-I../libc/include/   \
+			-I../libui/include/ \
+			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT) $(BITS)
 
-LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
-			-L../libasm/ -lasm -g3 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
-			-L/usr/freeware/lib32/	$(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT)
-
+LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm -lpthread \
+			-g3 -L../libc/ -lcelfsh -L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT) 
 
 all                     : ${OBJ}
-			$(CC) $(VMOBJ) $(OBJ) -o $(DBGNAME).so $(LDFLAGS) -shared
+			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 
 
 # This target is work in progress (static files debugger)
 et_rel			: ${OBJ}
@@ -36,6 +38,7 @@ et_rel			: ${OBJ}
 			$(LD) ${OBJ_DYN} ${OBJ}		   		               \
 			../libasm/libasm.a				               \
 			../libelfsh/libelfsh.a                                         \
+			../libmalloc-e2dbg.a					       \
 			/usr/lib/libreadline.a                                         \
 			/usr/lib/libdl.a /usr/lib/libtermcap.a /usr/lib/libhistory.a   \
 			/usr/lib/libc.a -r -o $(DBGNAME)_rel.o	  

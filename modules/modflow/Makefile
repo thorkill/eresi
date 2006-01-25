@@ -8,25 +8,17 @@
 ##
 include ../../config.h
 
-SRCS = modflow.c	\
-	control.c	\
-	blocks.c	\
-	inspect.c	\
-	graph.c		\
-	flowjack.c	\
+SRCS 	= modflow.c control.c blocks.c inspect.c graph.c flowjack.c \
 	libbtree.c
-
-OBJS = $(SRCS:.c=.o)
-NAME = modflow.so
-
-CFLAGS = -Wall -Werror -g3 -fPIC -rdynamic \
+OBJS 	= $(SRCS:.c=.o)
+NAME 	= modflow.so
+CFLAGS 	= -Wall -Werror -g3 -fPIC -rdynamic -DELFSH_INTERN $(BITS) \
 	-I../../vm/include -I../../libdump/include/ \
 	-I../../libelfsh/include -I../../libhash/include \
 	-I../../libdump/include -I../../e2dbg/include \
-	-I../../libasm/include/ -DELFSH_INTERN $(BITS)
-
-RM = rm -f
-CC = gcc
+	-I../../libasm/include/ -I../../libc/include/
+RM 	= rm -f
+CC 	?= gcc
 
 all:	$(OBJS)
 	$(CC) -shared -o ../$(NAME) $(OBJS)

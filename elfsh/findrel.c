@@ -29,7 +29,7 @@ char		*vm_reverse(elfshobj_t *file, u_int vaddr)
       sprintf(new, "%s + %u", str, (u_int) off);
     }
   else
-    new = strdup(str);
+    new = elfsh_strdup(str);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
