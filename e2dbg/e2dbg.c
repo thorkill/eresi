@@ -18,8 +18,12 @@ void		e2dbg_init(void)
   // FIXME: take care before malloc pointers were filled at first malloc
   // calls, so we cant erase all the e2dbgworld at this moment
   //memset((void *) &e2dbgworld, 0, sizeof(e2dbgworld_t));
+  write(1, "Calling DLSYM_INIT from e2dbg init !\n", 37);
   e2dbg_dlsym_init();
+  vm_dbgid_set(0);
+  e2dbgworld.context = NULL;
   SETSIG; 
+  write(1, "Finished e2dbg ctor \n", 21);
 }
 
 

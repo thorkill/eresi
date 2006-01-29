@@ -9,10 +9,11 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		1
+#define		__DEBUG_E2DBG__		0
 #define		__DEBUG_MUTEX__		0
 #define		__DEBUG_BP__		0
-#define		__DEBUG_EMALLOC__	0
+#define		__DEBUG_EMALLOC__	1
+#define		__DEBUG_LINKMAP__	0
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -181,8 +182,10 @@ typedef struct		s_e2dbgworld
   void			*libchandle;			/* Standard library handle */
   u_int			dbgpid;				/* Thread ID for the debugger */
   elfsh_Addr		mallocsym;			/* Resolved libc malloc */
+  elfsh_Addr		vallocsym;			/* Resolved libc valloc */
   elfsh_Addr		callocsym;			/* Resolved libc calloc */
   elfsh_Addr		reallocsym;			/* Resolved libc realloc */
+  elfsh_Addr		memalignsym;			/* Resolved libc memalign*/
   elfsh_Addr		freesym;			/* Resolved libc free */
 
   /* Synchronization values */
@@ -191,6 +194,7 @@ typedef struct		s_e2dbgworld
   elfshmutex_t		dbgsyn;				/* Dialog between debugger and debuggee */
   elfshmutex_t		dbgack;				/* Dialog between debugger and debuggee */
   int			exited;				/* Debugger exited */
+  int			debuggee_exited;		/* Debuggee exited */
 
   int			(*real_main)(int argc, char **argv);
 
@@ -221,6 +225,9 @@ void            e2dbg_setstep_bsd_ia32();
 void            e2dbg_setstep_sysv_ia32();
 void            e2dbg_resetstep_sysv_ia32();
 void            e2dbg_resetstep_bsd_ia32();
+elfsh_Addr*	e2dbg_getfp_sysv_ia32();
+elfsh_Addr*	e2dbg_getfp_bsd_ia32();
+
 int		e2dbg_register_sregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);

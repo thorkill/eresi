@@ -304,12 +304,21 @@ int			e2dbg_fake_main(int argc, char **argv)
   pthread_t		dbg;
   e2dbgparams_t		params;
   char			*args[3];
+  int			idx;
 
   write(1, "Calling e2dbg_fake_main ! \n", 27);
 
+  for (idx = 0; argv[idx]; idx++)
+    {
+      write(1, "argv = ", 7);
+      write(1, argv[idx], strlen(argv[idx]));
+      write(1, "\n", 1);
+    }
+
   /* Create the debugger thread */
   args[0] = E2DBG_ARGV0;
-  args[1] = argv[0]; 
+  //args[1] = "/home/may/ELFSH/elfsh-current/libmalloc/tests/a.out"; 
+  args[1] = argv[0];
   args[2] = NULL;
   params.ac = 2;
   params.av = args;
@@ -412,7 +421,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   e2dbg_mutex_init(&e2dbgworld.dbgsyn);
   e2dbg_mutex_init(&e2dbgworld.dbgack);
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
-    printf("Cannot lock initial dbgack mutex ! \n");
+    write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] there 3\n", 35);
@@ -537,6 +546,7 @@ void			__fpstart(int argc, char**ubp_av)
 
   /* Load the debugger */
   argv[0] = E2DBG_ARGV0;
+  //argv[1] = ubp_av[0]; 
   argv[1] = ubp_av[0]; 
   argv[2] = NULL;
   params.ac = 2;

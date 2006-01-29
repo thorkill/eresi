@@ -90,7 +90,8 @@ int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
     if (INTERVAL(actual->shdr->sh_addr, vaddr, 
 		 actual->shdr->sh_addr + actual->shdr->sh_size))
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			 (actual->shdr->sh_offset + (vaddr - actual->shdr->sh_addr)));
+			 (actual->shdr->sh_offset + 
+			  (vaddr - actual->shdr->sh_addr)));
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

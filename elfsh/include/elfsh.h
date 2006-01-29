@@ -175,10 +175,10 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a3"
+#define	ELFSH_RELEASE		"a4"
 #define ELFSH_EDITION		"devhell"
 
-/* Unused, feel free to try it ;) */
+/* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT	"\033[00;01;30m(" \
 				"\033[00;01;31me" \
 				"\033[00;01;32ml" \
@@ -195,12 +195,7 @@ char prompt_token[128];
 				"\033[00m " 
 
 /* The ELF shell crew prompt */
-/* Be original, do your own */
-
-//#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
-
-
-#define ELFSH_PROMPT		"\033[00;01;30m("         \
+#define ELFSH_CREW_PROMPT	"\033[00;01;30m("         \
 				"\033[00;01;31melfsh"     \
 				"\033[00;01;30m-"         \
 				"\033[00;01;33m"          \
@@ -212,6 +207,11 @@ char prompt_token[128];
 				"\033[00;01;32mdevhell"   \
 				"\033[00;01;30m)"         \
 				"\033[00m " 
+
+/* Be original, do your own */
+//#define	  ELFSH_PROMPT ELFSH_CREW_PROMPT
+#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
+
 
 #define ELFSH_NAME		"ELF shell"
 

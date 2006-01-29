@@ -2,11 +2,8 @@
 load myputs.o
 switch 1
 mode dynamic
+reladd 1 10
 profile
+redir puts myputs
 profile
-reladd 1 12
-profile
-#redir puts myputs
-quit
-
 

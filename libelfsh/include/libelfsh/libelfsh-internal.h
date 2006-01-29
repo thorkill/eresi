@@ -18,6 +18,8 @@
 void		*elfsh_calloc(size_t, char);
 void		*elfsh_realloc(void *, size_t);
 void		*elfsh_malloc(size_t);
+void		*elfsh_valloc(size_t t);
+void		*elfsh_memalign(size_t t, u_int nbr);
 void		elfsh_free(void *);
 
 /* Safe calloc() */
@@ -25,7 +27,11 @@ void		elfsh_free(void *);
 do												\
 {												\
   if ((a = (void *) elfsh_calloc(b, 1)) == NULL)						\
+  {												\
+    write(1, "Out of memory\n", 14);								\
+    exit(1);											\
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Out of memory .", c);			\
+  }												\
 }												\
 while (0)
   //printf("Allocated %u bytes at address %08X \n", b, (elfsh_Addr) a);				
@@ -36,7 +42,11 @@ while (0)
 do												\
 {												\
   if ((a = (void *) elfsh_realloc(b, c)) == NULL)						\
+  {												\
+    write(1, "Out of memory\n", 14);								\
+    exit(1);											\
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Out of memory .", d);			\
+  }												\
 }												\
 while (0)
   //printf("ReAllocated %u bytes at address %08X \n", c, (elfsh_Addr) a);			   

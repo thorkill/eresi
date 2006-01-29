@@ -13,7 +13,8 @@ static elfshlist_t* second = NULL;
 
 /* Resolve symbol in one file or all (mapped) if we are in e2dbg */
 /* Runtime compatible */
-char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roffset)
+char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, 
+			    elfsh_SAddr *roffset)
 {
   elfshobj_t	*actual;
   char		*name = NULL;
@@ -31,7 +32,8 @@ char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roffset)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL argument", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL argument", NULL);
 
   actual = file;
   name = elfsh_reverse_symbol(actual, addr, &offset);
@@ -178,7 +180,8 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!buff)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid argument", (-1));    
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid argument", (-1));    
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
   ret = asm_read_instr(&ptr, buff + index, size - index + 10, 
@@ -203,16 +206,24 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
 	}
       else
 	{
-	  snprintf(buf, sizeof(buf), " %s [%s %s] %s + %s", 
-		   vm_coloraddress(XFMT, vaddr + index), 
-		   vm_colorfieldstr("foff:"), 
-		   vm_colornumber("%u", foffset + index), 
-		   vm_colorstr(name), 
-		   vm_colornumber("%u", nindex));
-
+	  size = snprintf(buf, sizeof(buf), " %s [%s %s] %s + %s", 
+			  vm_coloraddress(XFMT, vaddr + index), 
+			  vm_colorfieldstr("foff:"), 
+			  vm_colornumber("%u", foffset + index), 
+			  vm_colorstr(name), 
+			  vm_colornumber("%u", nindex));
+	  
 	  strsz = strlen(s);
-	  size = snprintf(logbuf, BUFSIZ, "%-100s %-*s ", buf,
-			  (strsz > 95 ? 125 : strsz > 87 ? 100 : strsz > 75 ? 108 : strsz > 50 ? 88 : 55),
+	  size = snprintf(logbuf, BUFSIZ, "%-*s %-*s ", 
+			  (size > 95 ? 125 : 
+			   size > 87 ? 100 : 
+			   size > 75 ? 108 : 
+			   size > 50 ? 88 : 55),
+			  buf,
+			  (strsz > 95 ? 125 : 
+			   strsz > 87 ? 100 : 
+			   strsz > 75 ? 108 : 
+			   strsz > 50 ? 88 : 55),
 			  vm_colorinstr(s));
 
 	  //*biglen += snprintf(bigbuf + *biglen, BIGBUFSZ - *biglen, 
@@ -289,7 +300,6 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   if (sym && elfsh_is_pltentry(file, sym) == 1 && size > ELFSH_PLT_ENTRY_SIZE)
     size = ELFSH_PLT_ENTRY_SIZE;
 
-
 #if __DEBUG_DISASM__
   snprintf(logbuf, BUFSIZ - 1, 
 	   "[debug:display_object] %s off(%u) size(%u) vaddr(%08X) foffset(%u), parent(%p, %s) \n",
@@ -297,8 +307,10 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   vm_output(logbuf);
 #endif
 
+  /* Get the pointer on relevant data */
   buff = elfsh_get_raw(parent);
   index = off;
+  buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
   
   /* Filter requests on void sections (ex: bss) */
   if (!parent || !parent->data)
@@ -310,91 +322,91 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
       (elfsh_get_symbol_type(sym) == STT_OBJECT  ||
        elfsh_get_symbol_type(sym) == STT_COMMON) && 
       !(sym->st_size % sizeof(elfsh_Addr)))
-      {
-
-	  for (index = 0; index * sizeof(elfsh_Addr) < sym->st_size; index++)
-	      {
-
-		  /* Do not print more than 250 entries at a time */
-		  /* Use an offset for more dumping */
-		  if (index >= 250)
-		      {
-			  vm_output("-- symbol size is bigger (use an offset) --\n");
-			  break;
-		      }
-	    
-		  /* For each entry of the array */
-		  /* Dont forget the section offset at the end */
-		  loff = *(elfsh_Addr *) (char*) elfsh_get_raw(parent) + 
-		      index * sizeof(elfsh_Addr) + (vaddr - parent->shdr->sh_addr);
-	    
-	    //printf("second step passed \n");
-	    
-	    snprintf(buf, sizeof(buf), " %08X [foff: %u] \t %s[%0*u] = %08X", 
-		     elfsh_is_debug_mode() ? 
-		     file->rhdr.base + vaddr + index * sizeof(elfsh_Addr) :
-		     vaddr   + index * sizeof(elfsh_Addr), 
-		     foffset + index * sizeof(elfsh_Addr), 
-		     name, 
-		     ((sym->st_size / sizeof(elfsh_Addr)) < 100  ? 2 : 
+    {
+      
+      for (index = 0; index * sizeof(elfsh_Addr) < sym->st_size; index++)
+	{
+	  
+	  /* Do not print more than 250 entries at a time */
+	  /* Use an offset for more dumping */
+	  if (index >= 250)
+	    {
+	      vm_output("-- symbol size is bigger (use an offset) --\n");
+	      break;
+	    }
+	  
+	  /* For each entry of the array */
+	  /* Dont forget the section offset at the end */
+	  loff = *(elfsh_Addr *) (char*) elfsh_get_raw(parent) + 
+	    index * sizeof(elfsh_Addr) + (vaddr - parent->shdr->sh_addr);
+	  
+	  //printf("second step passed \n");
+	  
+	  snprintf(buf, sizeof(buf), " %08X [foff: %u] \t %s[%0*u] = %08X", 
+		   elfsh_is_debug_mode() ? 
+		   file->rhdr.base + vaddr + index * sizeof(elfsh_Addr) :
+		   vaddr   + index * sizeof(elfsh_Addr), 
+		   foffset + index * sizeof(elfsh_Addr), 
+		   name, 
+		   ((sym->st_size / sizeof(elfsh_Addr)) < 100  ? 2 : 
 		    (sym->st_size / sizeof(elfsh_Addr)) < 1000 ? 3 : 4),
-		     index,
-		     loff);
-	    
-	    //printf("third step passed, trying parent section on addr %08X \n", loff);
-	    
-	    /* If the target pointer is not valid */
-	    targ = elfsh_get_parent_section(file, loff, &off);
-	    if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
-	      {
-		//printf("Step 3A \n");
-
-		s = elfsh_reverse_symbol(file, loff, &idx_bytes);
-		if (NULL == s || idx_bytes > 1000)
-		  s = elfsh_reverse_dynsymbol(file, loff, &idx_bytes);
-
-		//printf("Step 3A2 (sect->name = %08X) \n", sect->name);
-
-		if (NULL == s || idx_bytes > 1000)
-		  {
-		    if (targ != NULL)
-		      {
-			s = targ->name;
-			idx_bytes = off;
-		      }
-		    else
-		      idx_bytes = 0;
-		  }
-
-		//printf("Step 3A3 (%s = %08X) \n", s);
-
-		if (idx_bytes)
-		  snprintf(str, sizeof(str), "%s + %u", 
-			   (s ? s : "<?>"), (u_int) idx_bytes);
-		else
-		  snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
-		snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
-
-		//printf("Step 3A4 \n");
-	      }
-	    
-	    /* else if yes, print the pointed data too */
-	    else
-	      {
-		//printf("Step 3B \n");
-
-		s = elfsh_get_raw(targ);
-		s += off;
-		memcpy(str, s, 
-		       (sizeof(str) > (targ->shdr->sh_size - off)) ?
-		       targ->shdr->sh_size - off : sizeof(str));   
-		snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
-	      }
-	    
-	    vm_output(logbuf);
-	    
-	    //printf("fourth step passed \n");
-	  }
+		   index,
+		   loff);
+	  
+	  //printf("third step passed, trying parent section on addr %08X \n", loff);
+	  
+	  /* If the target pointer is not valid */
+	  targ = elfsh_get_parent_section(file, loff, &off);
+	  if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
+	    {
+	      //printf("Step 3A \n");
+	      
+	      s = elfsh_reverse_symbol(file, loff, &idx_bytes);
+	      if (NULL == s || idx_bytes > 1000)
+		s = elfsh_reverse_dynsymbol(file, loff, &idx_bytes);
+	      
+	      //printf("Step 3A2 (sect->name = %08X) \n", sect->name);
+	      
+	      if (NULL == s || idx_bytes > 1000)
+		{
+		  if (targ != NULL)
+		    {
+		      s = targ->name;
+		      idx_bytes = off;
+		    }
+		  else
+		    idx_bytes = 0;
+		}
+	      
+	      //printf("Step 3A3 (%s = %08X) \n", s);
+	      
+	      if (idx_bytes)
+		snprintf(str, sizeof(str), "%s + %u", 
+			 (s ? s : "<?>"), (u_int) idx_bytes);
+	      else
+		snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
+	      snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
+	      
+	      //printf("Step 3A4 \n");
+	    }
+	  
+	  /* else if yes, print the pointed data too */
+	  else
+	    {
+	      //printf("Step 3B \n");
+	      
+	      s = elfsh_get_raw(targ);
+	      s += off;
+	      memcpy(str, s, 
+		     (sizeof(str) > (targ->shdr->sh_size - off)) ?
+		     targ->shdr->sh_size - off : sizeof(str));   
+	      snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
+	    }
+	  
+	  vm_output(logbuf);
+	  
+	  //printf("fourth step passed \n");
+	}
     }
   
   
@@ -406,18 +418,15 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	vaddr += file->rhdr.base;
 
       while (index < size)
+	if (index >= 1000)
 	  {
-
-	    if (index >= 1000)
-		{
-		    vm_output("-- symbol size is bigger (use an offset) --\n");
-		    break;
-		}
-
-	      index += display_instr(-1, index, vaddr, foffset, size, name, 
-				     index, buff, bigbuf, &biglen);
+	    vm_output("-- symbol size is bigger (use an offset) --\n");
+	    break;
 	  }
-
+	else
+	  index += display_instr(-1, index, vaddr, foffset, size, name, 
+				 index, buff, bigbuf, &biglen);
+      
       // To uncomment one day
       // Second pattern in action
       //if ((world.curjob->curcmd->use_regx[1] == 0) || !regexec(&second->name, bigbuf, 0, 0, 0))
@@ -432,21 +441,19 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   else if (ELFSH_HEXA_VIEW == otype)
     {
 
-      if (elfsh_is_debug_mode())
-	vaddr += file->rhdr.base;
-
       if (name == NULL || !*name)
 	name = ELFSH_NULL_STRING;
 
       while (index < size)
 	{
 
-	    if (index >= 1000)
-		{
-		    vm_output("-- symbol size is bigger (use an offset) --\n");
-		    break;
-		}
-
+	  /* Keep a limit to avoid output overflow */
+	  if (index >= 1000)
+	    {
+	      vm_output("-- symbol size is bigger (use an offset) --\n");
+	      break;
+	    }
+	  
 	  /* Take care of quiet mode */
 	  if (world.state.vm_quiet)
 	    {
@@ -590,7 +597,7 @@ int             cmd_disasm()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  switch(elfsh_get_arch(world.curjob->current->hdr))
+  switch (elfsh_get_arch(world.curjob->current->hdr))
     {
     case EM_386:
       world.curjob->proc = &world.proc;
@@ -602,6 +609,7 @@ int             cmd_disasm()
       vm_output("Architecture not supported. No disassembly available\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+
   elfsh_get_symtab(world.curjob->current, NULL);
   elfsh_get_dynsymtab(world.curjob->current, NULL);
   vm_output("\n");
@@ -628,7 +636,8 @@ int             cmd_disasm()
       else if (isdigit((int) *actual->rname))
 	{
 	  vaddr = elfsh_get_vaddr_from_foffset(file, atoi(actual->rname));
-	  if (vaddr == 0xFFFFFFFF && sscanf(actual->rname + 2, "%X", &vaddr) != 1)
+	  if (vaddr == 0xFFFFFFFF && 
+	      sscanf(actual->rname + 2, "%X", &vaddr) != 1)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid file offset requested",
 			      -1);
@@ -639,8 +648,21 @@ int             cmd_disasm()
   /* If one of those special regex matched */
   if (special)
     {
+
+#if __DEBUG_DISASM__
+      snprintf(logbuf, BUFSIZ - 1, 
+	       "[debug:cmd_disasm] SPECIAL with vaddr(%08X) \n", vaddr);
+      vm_output(logbuf);
+#endif
+      
+      if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+	vaddr -= file->rhdr.base;
+
       sym = elfsh_get_symbol_by_value(file, vaddr, &off,
 				      ELFSH_LOWSYM);
+      
+      if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+	vaddr += file->rhdr.base;
       
       /*if (sym == NULL)
 	sym = elfsh_get_symbol_by_value(file, vaddr, &off,
@@ -728,7 +750,8 @@ int             cmd_disasm()
       
 #if __DEBUG_DISASM__
      snprintf(logbuf, BUFSIZ - 1, 
-	      "[debug_disasm:cmd_disasm] Found runtime section regx (%s) \n", name);
+	      "[debug_disasm:cmd_disasm] Found runtime section regx (%s) \n", 
+	      name);
      vm_output(logbuf);
 #endif
       
@@ -747,7 +770,8 @@ int             cmd_disasm()
 	 index++)
       {
 	name = elfsh_get_symbol_name(file, sym + index);
-	if (name != NULL && *name && DUMPABLE(sym + index) && elfsh_get_symbol_type(sym + index) != STT_SECTION &&
+	if (name != NULL && *name && DUMPABLE(sym + index) && 
+	    elfsh_get_symbol_type(sym + index) != STT_SECTION &&
 	    !regexec(&actual->name, name, 0, 0, 0))
 	  {
 	    matchs++;
@@ -809,7 +833,8 @@ int             cmd_disasm()
 	       printf("toggled st_value with base : %x\n", 
 		      elfsh_get_symbol_value(sym + index));
 	       s = elfsh_get_parent_section(file, 
-					    file->rhdr.base + sym[index].st_value, NULL);
+					    file->rhdr.base + sym[index].st_value, 
+					    NULL);
 	     }
 	   else
 	     s = elfsh_get_parent_section(file, sym[index].st_value, NULL);
@@ -831,7 +856,8 @@ int             cmd_disasm()
   /* Printing a warning message if we have no match */
   if (!world.state.vm_quiet && !matchs)
     {
-      snprintf(logbuf, BUFSIZ - 1, " [E] No match for request %s\n\n", actual->rname);
+      snprintf(logbuf, BUFSIZ - 1, " [E] No match for request %s\n\n", 
+	       actual->rname);
       vm_output(logbuf);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

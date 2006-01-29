@@ -8,27 +8,28 @@
 
 // TODO USE GOOD ELFSH TYPE
 #include "libelfsh-irix.h"
+
 #include <sys/queue.h>		// NEEDED BY Obj_Entry
 
 /* Lists of shared object dependencies */
-typedef struct Struct_Needed_Entry 
+typedef struct			Struct_Needed_Entry 
 {
-  struct Struct_Needed_Entry *next;
-  struct Struct_Obj_Entry *obj;
-    unsigned long name;         /* Offset of name in string table */
-} Needed_Entry;
+  struct Struct_Needed_Entry	*next;
+  struct Struct_Obj_Entry	*obj;
+  unsigned long			name;         /* Offset in string table */
+}				Needed_Entry;
 
 struct Struct_Obj_Entry;
 
-typedef struct link_map {
-        caddr_t         l_addr;                 /* Base Address of library */
+typedef struct	link_map {
+  caddr_t         l_addr;                 /* Base Address of library */
 #ifdef __mips__
-        caddr_t         l_offs;                 /* Load Offset of library */
+  caddr_t         l_offs;                 /* Load Offset of library */
 #endif
-        const char      *l_name;                /* Absolute Path to Library */
-        const void      *l_ld;                  /* Pointer to .dynamic in memory */
-        struct link_map *l_next, *l_prev;       /* linked list of of mapped libs */
-} Link_map;
+  const char      *l_name;                /* Absolute Path to Library */
+  const void      *l_ld;                  /* Pointer to .dynamic in memory */
+  struct link_map *l_next, *l_prev;       /* linked list of of mapped libs */
+}		Link_map;
 
 
 /* Lists of shared objects */
