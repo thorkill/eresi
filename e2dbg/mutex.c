@@ -20,7 +20,11 @@ int		e2dbg_mutex_init(elfshmutex_t *m)
 int		e2dbg_mutex_lock(elfshmutex_t *m)
 {
   while (*m == ELFSH_MUTEX_LOCKED)
-    usleep(200);
+    {
+      if (e2dbgworld.exited)
+	_exit(0);
+      usleep(200);
+    }
   *m = ELFSH_MUTEX_LOCKED;
   return (0);
 }
@@ -28,6 +32,8 @@ int		e2dbg_mutex_lock(elfshmutex_t *m)
 /* Return an error if already unlocked */
 int		e2dbg_mutex_unlock(elfshmutex_t *m)
 {
+  if (e2dbgworld.exited)
+    _exit(0);
   if (*m == ELFSH_MUTEX_UNLOCKED)
     return (-1);
   *m = ELFSH_MUTEX_UNLOCKED;

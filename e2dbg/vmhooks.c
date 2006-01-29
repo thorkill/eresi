@@ -348,6 +348,32 @@ void		e2dbg_setup_hooks()
   e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			   ELFSH_OS_SOLARIS, elfsh_bt_ia32);
 
+  /************************************/
+  /* Now getfp break points hooks     */
+  /***********************************/
+  
+  /* Usual getfp targets for ET_EXEC/ET_DYN on IA32 */
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_ia32);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_ia32);
+
 
   /***********************************/
   /* Now register getret points hooks*/
@@ -478,11 +504,7 @@ elfsh_Addr*     e2dbg_getfp()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);
@@ -509,11 +531,7 @@ int		  e2dbg_setstep()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);
@@ -536,11 +554,7 @@ int		  e2dbg_resetstep()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);
@@ -566,11 +580,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
   hosttype = elfsh_get_hosttype(file);
   ostype = elfsh_get_ostype(file);
@@ -578,13 +588,15 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "SETBREAK handler unexistant for this ARCH/OS", -1);
-  
+		      "BACKTRACE (nextfp) handler unexistant for this ARCH/OS", 
+		      -1);
+
   ret = (*hook_nextfp[archtype][hosttype][ostype])(addr);
-  if (ret < 0)
+
+  if (ret == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Breakpoint handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+		      "Backtrace handler failed", (-1));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -609,10 +621,11 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
 		      "GETRET handler unexistant for this ARCH/OS", -1);
   
   ret = (*hook_getret[archtype][hosttype][ostype])(addr);
-  if (ret < 0)
+
+  if (ret == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "GetRet handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

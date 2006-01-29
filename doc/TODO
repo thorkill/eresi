@@ -9,17 +9,15 @@
 				ELFsh TODO phile       #
                                 ########################
 
-. ELFSH BUG : D on ET_DYN .. hum ..
-. E2DBG BUG : D does not print in dynamic mode (please correct toggle !)
-. E2DBG BUG : BT -> no context
-. E2DBG BUG : 'cont' and 'step' in debugging scripts are bugged
+. E2DBG BUG : regexec is buggy with heap separation
+. E2DBG BUG : Multithread programs segfault in TLS init
 . E2DBG BUG : start/step on PIE makes a big segfault after 2 bp hits
 . E2DBG BUG : Make sure ET_REL injection in memory works again with redirections
-. E2DBG BUG : quit not very good (when dbggee finished, e2dbg is bloked)
+. E2DBG BUG : 'cont' and 'step' in debugging scripts are bugged
+. ELFSH BUG : Colors sequences should not be counted in readline size
 
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)
-	. Hook command (include hlist)
 
 	<----- Here release 0.7-linux
 
@@ -46,7 +44,6 @@
 !!!	. Update manpage
 
 	. Conditions on breakpoints 
-	. Multithread/TLS support
 	. Add ALTGOT vector (need a small fix in the alpha algorithm)
 	. Finish ET_REL for MIPS
 	. Complete MIPS SHT/DYNAMIC types ASCII's
@@ -60,7 +57,7 @@
       	. SUN Version section rw API (and add it to the hierarchy)
 	. DWARF support and step in sources
 	. Packer/Unpacker hook interface (Generalized hooking VM interface)
-
+	. Hook command (include hlist)
 	. Watchpoints on memory (problem: debug registers are ring0 only)
 	. Use a runtime symtab/strtab for memory modifications
 	. Signal proxying (when the debuggee set signals)

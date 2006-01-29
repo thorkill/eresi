@@ -474,9 +474,38 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
+  e2dbgworld.vallocsym = (elfsh_Addr) e2dbg_dlsym(name, "valloc", 
+						  symref, refstr);
+  if (!e2dbgworld.vallocsym)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig valloc not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc VALLOC() sym = %08X \n", e2dbgworld.vallocsym);
+  write(1, buf, len);
+#endif
+
+
+  e2dbgworld.memalignsym = (elfsh_Addr) e2dbg_dlsym(name, "memalign", 
+						    symref, refstr);
+  if (!e2dbgworld.memalignsym)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig memalign not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc MEMALIGN() sym = %08X \n", e2dbgworld.memalignsym);
+  write(1, buf, len);
+#endif
+
   //e2dbg_dlclose(handle);
 
+  vm_dbgid_set(0);
   done = 1;
+
+  write(1, "DLSYM INIT FINISHED\n", 20);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 

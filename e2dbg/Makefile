@@ -27,7 +27,8 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm -lpthread \
 			-g3 -L../libc/ -lcelfsh -L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
-			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT) 
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT) \
+			--exclude-symbols ptmalloc_init
 
 all                     : ${OBJ}
 			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 
