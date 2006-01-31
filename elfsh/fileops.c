@@ -157,7 +157,6 @@ int		cmd_extend()
   elfshsect_t	*sect;
   u_int		size;
   char		*new_data;
-  int		err = 0;
   int		index = -1;
   char		logbuf[BUFSIZ];
 

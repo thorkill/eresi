@@ -9,9 +9,10 @@
 include ../config.h
 
 CC	?= gcc
-SRC	= malloc.c
+SRC	= elfsh_malloc.c
 OBJ	= $(SRC:.c=.o)
-CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -fPIC -g3 -Iinclude 
+CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -DSHARED -DUSE_TLS \
+	-fPIC -g3 -Iinclude 
 NAME	= malloc-e2dbg
 
 all	: heap ex

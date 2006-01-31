@@ -21,6 +21,7 @@ void		*elfsh_malloc(size_t);
 void		*elfsh_valloc(size_t t);
 void		*elfsh_memalign(size_t t, u_int nbr);
 void		elfsh_free(void *);
+void		__elfsh_libc_malloc_pthread_startup(int first_time);
 
 /* Safe calloc() */
 #define		XALLOC(a, b, c)									\

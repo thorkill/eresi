@@ -168,7 +168,6 @@ int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 int		elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
 {
   int		ret;
-  char		*str;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -44,9 +44,9 @@ int		elfsh_profile_print(char *file, char *func, u_int line, char *msg)
 {
   char		buff[80];
   char		buf[BUFSIZ];
-  char		mesg[100];
+  //  char		mesg[100];
   volatile int  idx;
-  volatile int  idx2;
+  //  volatile int  idx2;
   char		flag;
   char		*fill;
 

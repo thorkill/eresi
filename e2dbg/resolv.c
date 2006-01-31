@@ -499,6 +499,52 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
+  e2dbgworld.memalignhooksym = (elfsh_Addr) e2dbg_dlsym(name, 
+							"__memalign_hook", 
+							symref, refstr);
+  if (!e2dbgworld.memalignhooksym)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig __memalign_hook not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc __MEMALIGN_HOOK() sym = %08X \n", 
+		 e2dbgworld.memalignhooksym);
+  write(1, buf, len);
+#endif
+
+
+  e2dbgworld.mallochooksym = (elfsh_Addr) e2dbg_dlsym(name, "__malloc_hook", 
+						      symref, refstr);
+  if (!e2dbgworld.mallochooksym)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig __malloc_hook not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc __MALLOC_HOOK() sym = %08X \n", 
+		 e2dbgworld.mallochooksym);
+  write(1, buf, len);
+#endif
+
+
+  e2dbgworld.pthstartupsym = (elfsh_Addr) 
+    e2dbg_dlsym(name, 
+		"__libc_malloc_pthread_startup",
+		symref, refstr);
+
+  if (!e2dbgworld.pthstartupsym)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig pthread_startup not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc PTHREAD_STARTUP() sym = %08X \n", 
+		 e2dbgworld.pthstartupsym);
+  write(1, buf, len);
+#endif
+
+
   //e2dbg_dlclose(handle);
 
   vm_dbgid_set(0);
