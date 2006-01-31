@@ -299,39 +299,39 @@ int			func(void *params)
 }
 
 /* Our fake main function */
-int			e2dbg_fake_main(int argc, char **argv)
+int			e2dbg_fake_main(int argc, char **argv, char **aux)
 {
   pthread_t		dbg;
   e2dbgparams_t		params;
   char			*args[3];
   int			idx;
 
+#if __DEBUG_E2DBG__
   write(1, "Calling e2dbg_fake_main ! \n", 27);
-
   for (idx = 0; argv[idx]; idx++)
     {
       write(1, "argv = ", 7);
       write(1, argv[idx], strlen(argv[idx]));
       write(1, "\n", 1);
     }
+  write(1, "__progname_full = ", 18);
+  write(1, __progname_full, strlen(__progname_full));
+  write(1, "\n", 1);
+#endif
 
   /* Create the debugger thread */
   args[0] = E2DBG_ARGV0;
-  //args[1] = "/home/may/ELFSH/elfsh-current/libmalloc/tests/a.out"; 
-  args[1] = argv[0];
+  args[1] = __progname_full;
+  //args[1] = argv[0];
   args[2] = NULL;
   params.ac = 2;
   params.av = args;
-
-  __asm__(".long 0x90909090");
 
   if (pthread_create(&dbg, NULL, (void *) e2dbg_entry, &params))
     {
       write(2, "Unable to create debugger thread\n", 33);
       return (-1);
     }
-
-  __asm__(".long 0x90909090");
 
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] Locking ACK mutex \n", 46);
@@ -357,7 +357,7 @@ int			e2dbg_fake_main(int argc, char **argv)
 #endif
 
   /* Call the original main */
-  return (*e2dbgworld.real_main)(argc, argv);
+  return (*e2dbgworld.real_main)(argc, argv, aux);
 }
 
 
@@ -427,7 +427,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   write(1, "[(e2dbg)__libc_start_main] there 3\n", 35);
 #endif
 
-  e2dbgworld.real_main = (elfsh_Addr) main;
+  e2dbgworld.real_main = main;
   ret = libcstartmain(e2dbg_fake_main, argc, ubp_av, init, 
 		      fini, rtld_fini, stack_end);
 
@@ -546,7 +546,6 @@ void			__fpstart(int argc, char**ubp_av)
 
   /* Load the debugger */
   argv[0] = E2DBG_ARGV0;
-  //argv[1] = ubp_av[0]; 
   argv[1] = ubp_av[0]; 
   argv[2] = NULL;
   params.ac = 2;

@@ -12,7 +12,7 @@
 #define		__DEBUG_E2DBG__		0
 #define		__DEBUG_MUTEX__		0
 #define		__DEBUG_BP__		0
-#define		__DEBUG_EMALLOC__	1
+#define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
@@ -187,6 +187,9 @@ typedef struct		s_e2dbgworld
   elfsh_Addr		reallocsym;			/* Resolved libc realloc */
   elfsh_Addr		memalignsym;			/* Resolved libc memalign*/
   elfsh_Addr		freesym;			/* Resolved libc free */
+  elfsh_Addr		mallochooksym;			/* Resolved libc malloc hook */
+  elfsh_Addr		memalignhooksym;		/* Resolved libc memalign hook */
+  elfsh_Addr		pthstartupsym;			/* Resolved __libc_malloc_pthread_startup */
 
   /* Synchronization values */
 #define			ELFSH_MUTEX_UNLOCKED	0
@@ -196,12 +199,15 @@ typedef struct		s_e2dbgworld
   int			exited;				/* Debugger exited */
   int			debuggee_exited;		/* Debuggee exited */
 
-  int			(*real_main)(int argc, char **argv);
+  int			(*real_main)(int argc, char **argv, char **aux);
 
 }			e2dbgworld_t;
 
 /* The Debugger world in the VM */
 extern e2dbgworld_t	e2dbgworld;
+
+/* Some libc extern */
+extern char*		__progname_full;
 
 /* e2dbg hooks */
 void            e2dbg_default_getregs();

@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.1.1.3 2006-01-25 22:58:11 thor Exp $
+  $Id: malloc.h,v 1.1.1.4 2006-01-31 20:43:33 thor Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
@@ -228,22 +228,22 @@ extern int malloc_set_state __MALLOC_P ((__malloc_ptr_t __ptr));
 /* Called once when malloc is initialized; redefining this variable in
    the application provides the preferred way to set up the hook
    pointers. */
-extern void (*__malloc_initialize_hook) __MALLOC_PMT ((void));
+extern void (*__elfsh_malloc_initialize_hook) __MALLOC_PMT ((void));
 /* Hooks for debugging and user-defined versions. */
-extern void (*__free_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
+extern void (*__elfsh_free_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 					__const __malloc_ptr_t));
-extern __malloc_ptr_t (*__malloc_hook) __MALLOC_PMT ((size_t __size,
+extern __malloc_ptr_t (*__elfsh_malloc_hook) __MALLOC_PMT ((size_t __size,
 						    __const __malloc_ptr_t));
-extern __malloc_ptr_t (*__realloc_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
+extern __malloc_ptr_t (*__elfsh_realloc_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 						     size_t __size,
 						     __const __malloc_ptr_t));
-extern __malloc_ptr_t (*__memalign_hook) __MALLOC_PMT ((size_t __alignment,
+extern __malloc_ptr_t (*__elfsh_memalign_hook) __MALLOC_PMT ((size_t __alignment,
 						      size_t __size,
 						      __const __malloc_ptr_t));
-extern void (*__after_morecore_hook) __MALLOC_PMT ((void));
+extern void (*__elfsh_after_morecore_hook) __MALLOC_PMT ((void));
 
 /* Activate a standard set of debugging hooks. */
-extern void __malloc_check_init __MALLOC_P ((void));
+extern void __elfsh_malloc_check_init __MALLOC_P ((void));
 
 
 #ifdef __cplusplus
