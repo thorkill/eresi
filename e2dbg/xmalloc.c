@@ -167,7 +167,7 @@ void		*calloc(size_t t, u_int nbr)
 
       //write(1, "Calling libc calloc \n", 20);
 
-#if 1
+#if __DEBUG_EMALLOC__
       {
 	char buff[256];
 	len = snprintf(buff, sizeof(buff), "Calling LIBC calloc at addr %08X\n", 
@@ -194,7 +194,7 @@ void		*calloc(size_t t, u_int nbr)
       //memset(chunk, 0x00, t * nbr);
     }
 
-#if 1
+#if __DEBUG_EMALLOC__
   if (!chunk)
     {
       char buff[256];
