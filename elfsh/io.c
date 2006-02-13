@@ -7,8 +7,6 @@
 #include "elfsh.h"
 
 
-
-
 /* Display str on all term */
 int		vm_output_bcast(char *str)
 {
@@ -16,7 +14,7 @@ int		vm_output_bcast(char *str)
   int		index;
   int		ret = 0;
   elfshjob_t	*old;
-
+  
   /* Saving current output parameters */
   old = world.curjob;
   
@@ -37,7 +35,6 @@ int		vm_output_bcast(char *str)
 	      
 	      world.curjob = actual->data;
 	      ret |= vm_output(str);
-	      vm_flush();
             }
         }
     }
@@ -51,121 +48,29 @@ int		vm_output_bcast(char *str)
   
   /* Restore */
   world.curjob = old;
-  return (ret);
+  return ret;
 }
-
 
 /* Display the prompt */
 int		vm_display_prompt()
 {
   char		*buf;
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   buf = ((world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	  world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER || 
 	  (world.state.vm_net && world.curjob->io.type != ELFSH_IOSTD)) ? 
 	 vm_get_prompt() : "");
   vm_output(buf);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  return 0;
 }
 
-
-/* Reset lines counters and ignore output state */
-int		vm_flush()
-{
-  unsigned int  lines = 50;
-  unsigned int  cols = 160;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Cache output only in IMODE/DEBUGGER mode */
-  if (world.state.vm_mode != ELFSH_VMSTATE_IMODE &&
-      world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER) 
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-#ifdef USE_READLN
-  rl_get_screen_size(&lines, &cols);
-#endif
-
-  //printf("rl_get_screen_size x : %d y : %d\n", lines, cols);
-
-  world.curjob->io.outcache.lines = lines;
-  world.curjob->io.outcache.cols  = cols;
-  world.curjob->io.outcache.nblines = lines;
-  world.curjob->io.outcache.ignore  = 0;
-  
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
-}
 
 /* OUTPUT handler for stdout */
 int		vm_output(char *str)
 {
-  char		*tmp;
-  char		c;
-  int		ret;
-
-  vm_log(str);
-
-  /* No -- more -- in some modes */
-  if ((world.state.vm_mode != ELFSH_VMSTATE_IMODE &&
-       world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
-      || world.curjob->io.type == ELFSH_IODUMP
-      || !world.curjob->io.outcache.lines 
-      || world.curjob->sourced)
-    return (world.curjob->io.output(str));
-
-  /* Discard outputs */
-  if (world.curjob->io.outcache.ignore)
-    return (0);
-
-  /* Counts lines */
-  tmp = strchr(str, '\n');
-  while (tmp)
-    {
-      world.curjob->io.outcache.nblines--;
-      if (*tmp == '\0')
-	break;
-      tmp ++;
-      tmp = strchr(tmp, '\n'); 
-    }
-  
-  
-  /* Do the output */
-  ret = world.curjob->io.output(str);  
-  
-  /* Is there any lines remaining ? */
-  if (world.curjob->io.outcache.nblines < 0)
-    {
-      vm_flush();
-      world.curjob->io.output("-- press key for more ('q' to quit) --\n");
-      if ((read(world.curjob->io.input_fd, &c, 1) == 1) 
-	  && c == 'q')
-	/* We decided to discard further output (until next vm_flush) */
-	{
-	  world.curjob->io.outcache.ignore = 1;
-	  world.curjob->io.output("\n");
-	}
-    }
-  
-  
-  return ret;
+  return (world.curjob->io.output(str));
 }
 
-/* Output without buffering/log */
-int		vm_output_nolog(char *str)
-{
-  return world.curjob->io.output(str);
-}
-
-
-/* ERR output function (stderr) */
-int		vm_outerr(char *str)
-{
-  vm_log(str);
-  fprintf(stderr, str);
-  return 0;
-}
 
 /* I was too lazy to use flex for the moment, pardon me ;) */
 char		**vm_input(int *argc)
@@ -179,58 +84,19 @@ char		**vm_input(int *argc)
 	  world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER) ? 
 	 vm_get_prompt() : "");
   buf = vm_getln(buf);
-
   if (!buf)
     return (NULL);
 
-
   /* Blank Line*/
-  if (buf == (char *) ELFSH_VOID_INPUT)
-      return ((char **) ELFSH_VOID_INPUT);
+  if (buf == (char *)ELFSH_VOID_INPUT)
+    return ((char **)ELFSH_VOID_INPUT);
+
   
 #if defined(USE_READLN)
+  //    printf ("[READLN] history : [%s]\n", buf);
   if ( world.state.vm_mode != ELFSH_VMSTATE_SCRIPT && 
        world.curjob->io.type == ELFSH_IOSTD)
-    {
-#if 0
-      HISTORY_STATE	*state;
-      HIST_ENTRY	*entry;
-      int		i;
-
-      printf ("[READLN] history : [%s]\n", buf); 
-
-      state = history_get_history_state();
-      printf("== HISTORY STATE ==\n");
-      printf("   offset : %d\n", state->offset);
-      printf("   length : %d\n", state->length);
-      printf("   size : %d\n", state->size);
-      printf("===================\n");
-      
-#endif
-      add_history(buf);
-      vm_log(buf);
-      vm_log("\n");
-      using_history();
-#if 0
-      state = history_get_history_state();
-      printf("== HISTORY STATE ==\n");
-      printf("   offset : %d\n", state->offset);
-      printf("   length : %d\n", state->length);
-      printf("   size : %d\n", state->size);
-      printf("===================\n");
-      
-      printf("-- entries --\n");
-      for (i = 0; i <= state->length + 1; i++)
-	{
-	  entry = history_get(i);
-	  if (entry)
-	    printf("-- entry %d [%s] (%x) \n", i, entry->line, entry->line);
-	  else 
-	    printf("-- entry %d NULL \n", i);
-	}
-      printf("-------------\n\n");
-#endif
-    }
+    add_history(buf);
 #endif
   
   /* Allocate the correct pointer array for argv */
@@ -295,17 +161,23 @@ char		*vm_stdinput()
     }
   else
     {
-      /* input in progress */
+      /* input in progress */ 
       if (world.curjob->io.buf == NULL)
-	return ((char *) ELFSH_VOID_INPUT);
-      
+	{
+          return ((char *)ELFSH_VOID_INPUT);
+	}
+       
       /* CTRL-D case */
-      if (world.curjob->io.buf == (char *) ELFSH_EXIT_INPUT)
-	return (NULL);
+      if (world.curjob->io.buf == (char *)ELFSH_EXIT_INPUT)
+	{
+          return (NULL);
+	}
       
       /* empty string */
       if (strlen(world.curjob->io.buf) == 0)
-	return ((char *) ELFSH_VOID_INPUT);
+	{
+          return ((char *)ELFSH_VOID_INPUT);
+	}
       
       return (strdup(world.curjob->io.buf));
     }
@@ -319,10 +191,7 @@ int		vm_initio()
 {
   elfshjob_t	*initial;
   
-  ELFSH_NOPROFILE_IN();
-
   XALLOC(initial, sizeof(elfshjob_t), -1);
-  memset(initial, 0, sizeof(elfshjob_t));
   initial->io.type      = ELFSH_IOSTD;
   initial->io.input_fd  = 0;
   initial->io.input     = vm_stdinput;
@@ -333,14 +202,11 @@ int		vm_initio()
   world.initial = world.curjob = initial;
 
   hash_init(&world.jobs, 11);
+
   hash_add(&world.jobs, "local", initial);
 
-  
-  ELFSH_NOPROFILE_ROUT(0);
+  return (0);
 }
-
-
-
 
 /* Return the greatest socket from the elfsh_net_client_list and sock. */
 int             elfsh_getmaxfd()
@@ -370,15 +236,14 @@ int             elfsh_getmaxfd()
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  //	  if (!((elfshjob_t *) actual->data)->active)
-	  //	    continue;
-
+	  if (!((elfshjob_t *) actual->data)->active)
+	    continue;
 #if __DEBUG_NETWORK__
           fprintf(stderr,
 		  "[DEBUG NETWORK] Socket (DUMP) [%u] \n",
 		  (int) actual->data);
+           
 #endif
-
 	  if ((long) actual->data > ret)
 	    ret = (long) actual->data;
 	}
@@ -394,7 +259,6 @@ int             elfsh_getmaxfd()
 	  
 	  if (!((elfshjob_t *) actual->data)->active)
 	    continue;
-
 #if __DEBUG_NETWORK__
           fprintf(stderr,
 		  "[DEBUG NETWORK] Socket [%u] key = %10s ; next = %p\n",
@@ -408,7 +272,7 @@ int             elfsh_getmaxfd()
     }
 #endif
 
-  return (ret);
+  return ret;
 }
 
 /*
@@ -428,8 +292,8 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  //	  if (!((elfshjob_t *) actual->data)->active)
-	  //	    continue;
+	  if (!((elfshjob_t *) actual->data)->active)
+	    continue;
 
 #if __DEBUG_NETWORK__
           fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : %d \n",
@@ -447,8 +311,6 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-
-	  // Please elfshjob_t *cur here instead of casting so much times
 	  if (!((elfshjob_t *) actual->data)->active)
 	    continue;
 
@@ -469,13 +331,12 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
 	}
       
     }
-  return (elfsh_getmaxfd());
+  return elfsh_getmaxfd();
 }
 
 /* Set IO to the choosen socket */
 int			vm_socket_getnew()
 {
-  elfshjob_t		*cur;
   hashent_t		*actual;
   int			index;
 
@@ -485,30 +346,29 @@ int			vm_socket_getnew()
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         { 
-	  cur = (elfshjob_t *) actual->data;
-	  if (!cur || !cur->active)
+	  if (!((elfshjob_t *) actual->data)->active)
 	    continue;
 
-	  if (cur->io.type == ELFSH_IODUMP && 
-	      cur->io.new != 0)
+	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IODUMP && 
+	      ((elfshjob_t *) actual->data)->io.new != 0)
 	    {
-	      world.curjob = cur;
-	      return (1);
+	      world.curjob = (elfshjob_t *) actual->data;
+	      return 1;
 	    }
 	  
-	  if (cur->io.type == ELFSH_IONET)
+	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IONET)
 	    {
 	      
-	      if (cur->sock.recvd_f == NEW &&
-		  cur->sock.ready_f == YES)
+	      if (((elfshjob_t *) actual->data)->sock.recvd_f == NEW &&
+		  ((elfshjob_t *) actual->data)->sock.ready_f == YES)
 		{
-		  world.curjob = cur;
-		  return (1);
+		  world.curjob = (elfshjob_t *) actual->data;
+		  return 1;
 		}
 	    }
 	}
     }
-  return (0);
+  return 0;
 }
 
 /* Clean jobs */
@@ -539,9 +399,9 @@ int                   vm_clean_jobs()
 
 		  /* XXX can we free io.pkt ?? */
 
-		  //		  dump_free(((elfshjob_t *) actual->data)->io.pkt);
-		  //		  XFREE(((elfshjob_t *) actual->data));
-		  //		  hash_del(&world.jobs, actual->key);
+		  //		  dump_free (((elfshjob_t *) actual->data)->io.pkt);
+		  //		  free (((elfshjob_t *) actual->data));
+		  //		  hash_del (&world.jobs, actual->key);
 		}
 #endif
 	      break;
@@ -550,7 +410,7 @@ int                   vm_clean_jobs()
 	    }
         }
     }
-  return (0);
+  return 0;
 }
 
 /* Return the current local job */
@@ -569,12 +429,12 @@ elfshjob_t		*vm_get_curlocaljob()
 	    continue;
 
 	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IOSTD)
-	      return actual->data;
+	    return actual->data;
 
 	}
     }
   
-  return (NULL);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No active local job", NULL);
 }
 
 /* Wait for all input */
@@ -585,17 +445,15 @@ int                     vm_select()
   int                   cont;
   elfshjob_t            *init;
 
+
+
   // By default do only one select.
   init = hash_get(&world.jobs, "net_init");
   cont = 0;
 
-  /* Flush pending outputs */
-  vm_flush();
-
-
   /* In case of not already handle data */
   if (vm_socket_getnew())
-    return (0);
+    return 0;
 
   /* clean jobs hash table */
   vm_clean_jobs();
@@ -632,7 +490,6 @@ int                     vm_select()
 		  if (world.curjob->io.buf != NULL)
 		    {
 		      rl_forced_update_display(); 
-		      vm_log(vm_get_prompt());
 		    }
 		}
 	      else
@@ -677,8 +534,9 @@ int                     vm_select()
                 {
 		  world.curjob = vm_get_curlocaljob();
 		  if (!world.curjob)
-		    return (-1);
-				
+		    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+				      "Local job not found",
+				      -1);		    
 
 #if defined (USE_READLN)
 		  world.curjob->io.buf = NULL;
@@ -690,14 +548,11 @@ int                     vm_select()
 		      /* restore prompt that will be display
 		       * on next  rl_forced_update_display()
 		       * or rl_callback_read_char() */
-		      //vm_log("\n");
 		      rl_restore_prompt();
-		      return (0);
+		      return 0;
                     }
-
-
 #endif
-		  return (0);
+		  return 0;
                 }
             }
 
@@ -705,7 +560,9 @@ int                     vm_select()
           if (world.state.vm_net)
             {
               if (vm_socket_getnew())
-		  return (0);
+                {
+                  return 0;
+                }
               else
                 {
 #if __DEBUG_NETWORK__
@@ -718,8 +575,8 @@ int                     vm_select()
             }
 	} 
     } while (cont);
-
-  return (0);
+  
+  return 0;
 }
 
 /* readline line handler */
@@ -730,8 +587,6 @@ void    vm_ln_handler(char *c)
   world.curjob->io.buf = c;
   if (c != NULL)
     {
-      if (!c[0])
-	vm_log("\n");
       /* save (remove) prompt if a complete line was typed 
        * so that the line is not displayed on return */
       rl_save_prompt();
@@ -739,11 +594,11 @@ void    vm_ln_handler(char *c)
   if (c == NULL)
     {
       /* special to enable exit on CTRL-D */
-      world.curjob->io.buf = (char *) ELFSH_EXIT_INPUT;
+      world.curjob->io.buf = (char *)ELFSH_EXIT_INPUT;
       rl_save_prompt();
     }
 #endif
-
+  return;
 }
 
 
