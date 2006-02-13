@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.1.1.4 2006-01-31 20:43:33 thor Exp $
+  $Id: malloc.h,v 1.1.1.5 2006-02-13 22:07:44 thor Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 

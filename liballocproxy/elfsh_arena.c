@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: elfsh_arena.c,v 1.1.1.1 2006-01-31 20:43:33 thor Exp $ */
+/* $Id: elfsh_arena.c,v 1.1.1.2 2006-02-13 22:07:44 thor Exp $ */
 
 /* Compile-time constants.  */
 
