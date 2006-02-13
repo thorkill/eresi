@@ -13,7 +13,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#else
 #include <endian.h>
+#endif
 
 /*
   typedef
@@ -211,7 +216,4 @@ enum {
 #include <libasm-sparc.h>
 
 #endif
-
-
-
 
