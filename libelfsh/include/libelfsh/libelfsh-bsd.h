@@ -10,7 +10,6 @@
 /* #include "libelfsh-irix.h" */
 
 #include <sys/queue.h>		// NEEDED BY Obj_Entry
-#include <pthread.h>
 
 /* Lists of shared object dependencies */
 typedef struct			Struct_Needed_Entry 
