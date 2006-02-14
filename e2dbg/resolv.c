@@ -14,9 +14,9 @@ extern int		(*main)(int argc, char **argv);
 /* Load linkmap in PIE based process */
 static int		e2dbg_load_linkmap_pie(char *name)
 {
-  elfshobj_t		*handle;
 
   /*
+  elfshobj_t		*handle;
   elfshsect_t		*sct;
   u_int			bindnum;
   u_int			typenum;
@@ -395,8 +395,10 @@ int		e2dbg_dlsym_init()
   elfsh_Addr	symref;
   char		*refstr;
 
+#if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
   u_int		len;
+#endif
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
