@@ -481,9 +481,7 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   elfsh_Phdr	phdr;
   u_int		rsize;
   char		*rdata;
-/*
   elfshsect_t	*bss;
- */
   int		range;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

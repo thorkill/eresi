@@ -20,6 +20,8 @@
 #define SHT_GNU_verneed	  0x6ffffffe	/* Version needs section.  */
 #define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
 
+
+
 /* Version definition sections.  */
 
 typedef struct
