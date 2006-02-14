@@ -45,7 +45,7 @@ int                     cmd_set()
   elfshpath_t           *o1;
   elfshpath_t           *o2;
   elfshpath_t           *last;
-  char                  *str=NULL;
+  char                  *str;
   elfsh_Addr            val64;
   u_int                 val32;
   u_char                val8;

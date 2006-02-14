@@ -116,7 +116,7 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
 /* Insert an object in the list of opened elfsh descriptors */
 int		cmd_load()
 {
-  elfshpath_t	*tmp = NULL;
+  elfshpath_t	*tmp;
   char		*str;
   int		was_dynamic = 0;
   int		ret; 

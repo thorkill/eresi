@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: elfsh_malloc.c,v 1.1.1.2 2006-02-13 22:07:44 thor Exp $
+  $Id: elfsh_malloc.c,v 1.1.1.3 2006-02-14 20:17:03 thor Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 

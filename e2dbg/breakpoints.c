@@ -168,7 +168,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
 int		cmd_bp()
 {
   char		*str;
-  int		ret=0;
+  int		ret;
   elfsh_Addr	addr;
   elfsh_Sym	*sym;
   char		logbuf[BUFSIZ];

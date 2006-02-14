@@ -304,10 +304,9 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   pthread_t		dbg;
   e2dbgparams_t		params;
   char			*args[3];
-
-#if __DEBUG_E2DBG__
   int			idx;
 
+#if __DEBUG_E2DBG__
   write(1, "Calling e2dbg_fake_main ! \n", 27);
   for (idx = 0; argv[idx]; idx++)
     {

@@ -59,7 +59,7 @@ char		*vm_get_mode_name()
 int		vm_system(char *cmd)
 {
   char		buf[BUFSIZ];
-  int		ret=0;
+  int		ret;
   char		**av;
   int		nbr;
   int		argc;
@@ -934,8 +934,8 @@ int		vm_install_clearscreen()
 {
 #if defined(USE_READLN)
   Keymap	    map;
-  char		    keyseq[2];
 #endif
+  char		    keyseq[2];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

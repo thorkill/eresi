@@ -25,6 +25,8 @@ void    *elfsh_get_rpht(elfshobj_t *file, int *num)
 /* Create and insert the Runtime PHT */
 int             elfsh_create_rpht(elfshobj_t *file)
 {
+  elfshsect_t   *sect;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Create and insert the new unmapped section containing it */
@@ -40,10 +42,8 @@ int             elfsh_create_rpht(elfshobj_t *file)
 /* Insert a PHT entry in the RPHT (e2dbg safe) */
 elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h)
 {
- /* XXX: Fixme
   elfshsect_t	*rpht;
   elfshsect_t	*cur;
-  */
   elfsh_Phdr	*phdr;
  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
