@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <pthread.h>
 
-
 void *print_message_function_lib( void *ptr )
 {
   char *message;
