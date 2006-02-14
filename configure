@@ -5,11 +5,11 @@
 # The ELFsh crew.
 #
 
-
 CHOSENBIT="0"
 STATIC="0"
 READLN="0"
 ELFSHNET="0"
+PREFIX="/"
 
 echo > libvars.h
 echo > vars.h
@@ -69,6 +69,12 @@ echo  "NCURSESLNOPT	= -DUSE_UI"		>> config.h
 echo  "LDNCURSESLNOPT	= -lncurses"		>> config.h
 ;;
 
+--enable-termcap*)
+echo " [*] Enabling termcap support"
+TERMCAP="1"
+echo  "LDREADLNOPT  += -ltermcap" >> config.h
+;;
+
 --enable-static*)
 echo  " [*] Enabling static linking"
 echo  "STATOPT		= -static"              >> config.h
@@ -85,6 +91,11 @@ echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"  >> config.h
 echo  " [*] Enabling ELFsh 64bits binary built"
 echo  "BUILDOPT		= -m64 -DM64"		>> config.h
 M64="1"
+;;
+
+--use-etags*)
+echo  " [*] Enabling etags support"
+ETAGS="1"
 ;;
 
 --set-shell*)
@@ -106,6 +117,12 @@ shift
 echo " [*] Setting ELFsh modules path to " $1
 echo "#define ELFSH_MODPATH              " $1   >> vars.h
 MODPATHSET="1"
+;;
+
+--prefix*)
+shift
+echo " [*] Prefix:  " $1
+PREFIX=$1
 ;;
 
 --help*)
@@ -138,12 +155,15 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-static   : Link in static."
     echo "   --enable-dmalloc  : Link with Electric Fence."
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
+    echo "   --use-etags       : Use etags"
+    echo "   --use-ctags       : Use ctags"
     echo
     echo "   Available variables :"
     echo
     echo "   --set-shell       : Set your UNIX shell path."
     echo "   --set-editor      : Set your editor path."
     echo "   --set-modpath     : Set your ELFsh modules path."
+    echo "   --prefix          : Set prefix."
     echo
     echo "   All options are disabled by default."
     echo
@@ -161,33 +181,10 @@ fi
 
 
 
-# Set default variables in case it was not precised
-
-if [ "$MODPATHSET" != "1" ]; then
-    echo "#define ELFSH_MODPATH    \"/usr/share/elfsh/\"" 	>> vars.h
-fi
-
-if [ "$SHELLSET" != "1" ]; then
-    echo "#define ELFSH_SHELL      \"/bin/bash\""		>> vars.h
-fi
-
-if [ "$EDITORSET" != "1" ]; then
-    echo "#define ELFSH_EDITOR      \"emacs\""			>> vars.h
-fi
-
-if [ "$BUILDOP" != "1" ];  then
-    echo "BUILDOP = -DM32"					>> config.h
-fi
-
-echo  " [*] Enabling libasm support"
-echo  "LDASMOPT	= -lasm"		>> config.h
 
 
 # Now do the OS dependant configuration
 case `uname` in
-*BSD*)
-    echo "RANLIB  = ranlib"               >> config.h
-	;;
 
 SunOS*)
 
@@ -216,16 +213,41 @@ if [ "$ELFSHNET" = "1" ]; then
     echo  "EXTRAOPT = " $EXTRAOPT	  >> config.h
 fi
 
-    ;;
+;;
+
+FreeBSD*)
+echo "#define __FREEBSD__ 1"             >> libvars.h
+
+    echo "RANLIB  = ranlib"               >> config.h
+if [ "$STATIC" = "0" ]; then
+    echo  " [*] Enabling dynamic linking."
+    echo  "DYNOPT		= -rdynamic"  >> config.h
+fi
+
+if [ "$ELFSHNET" = "1" ]; then
+    EXTRAOPT="$EXTRAOPT -lutil"
+    echo  "EXTRAOPT = " $EXTRAOPT	  >> config.h
+fi
+
+echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"          "   >> vars.h
+
+MODPATHSET="1";
+FREEBSD="1";
+;;
+
+*BSD*)
+    echo "RANLIB  = ranlib"               >> config.h
+;;
 
 HP-UX*)
     echo "#define HPUX 1"		  >> libvars.h
     echo "RANLIB  = ranlib"               >> config.h
-    ;;
+;;
+
 IRIX*)
     echo "#define IRIX 1" 		  >> libvars.h
     echo "RANLIB  = /usr/bin/true"        >> config.h
-	;;
+;;
 
 *)
 
@@ -238,10 +260,30 @@ if [ "$ELFSHNET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
     echo "EXTRAOPT = " $EXTRAOPT		>> config.h
 fi
-    ;;
+;;
 
 esac
 
+# Set default variables in case it was not precised
+
+if [ "$MODPATHSET" != "1" ]; then
+    echo "#define ELFSH_MODPATH    \"/usr/share/elfsh/\"" 	>> vars.h
+fi
+
+if [ "$SHELLSET" != "1" ]; then
+    echo "#define ELFSH_SHELL      \"/bin/bash\""		>> vars.h
+fi
+
+if [ "$EDITORSET" != "1" ]; then
+    echo "#define ELFSH_EDITOR      \"emacs\""			>> vars.h
+fi
+
+if [ "$BUILDOP" != "1" ];  then
+    echo "BUILDOP = -DM32"					>> config.h
+fi
+
+echo  " [*] Enabling libasm support"
+echo  "LDASMOPT	= -lasm"		>> config.h
 
 echo "##"							 > Makefile 
 echo "## Makefile "						>> Makefile
@@ -253,16 +295,25 @@ echo ""								>> Makefile
 #echo ""								>> Makefile
 echo "include ./config.h "					>> Makefile
 echo " "							>> Makefile
-echo "CC      = gcc "						>> Makefile
-echo "RM      = rm -f "						>> Makefile
-echo "ETAGS   = etags "					        >> Makefile
-echo "CTAGS   = ctags "						>> Makefile
-echo "BASEPATH = \$(DESTDIR)/usr"				>> Makefile
-echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
-echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile
-echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
-echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
-echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
+echo "CC      = gcc "                                           >> Makefile
+echo "RM      = rm -f "                                         >> Makefile
+echo "ETAGS   = etags "                                         >> Makefile
+echo "CTAGS   = ctags "                                         >> Makefile
+echo "DESTDIR = $PREFIX"                       			>> Makefile
+
+if [ "$FREEBSD" = "1" ]; then
+echo "BASEPATH = \$(DESTDIR)/usr/local"                >> Makefile
+echo "MANPATH = \$(BASEPATH)/man"                      >> Makefile
+else
+echo "BASEPATH = \$(DESTDIR)/usr/local"                >> Makefile
+echo "MANPATH = \$(BASEPATH)/share/man"                >> Makefile
+fi
+
+echo "MODPATH = \$(BASEPATH)/share/elfsh/"                      >> Makefile
+echo "BINPATH = \$(BASEPATH)/bin/"                              >> Makefile
+echo "LIBPATH = \$(BASEPATH)/lib/"                              >> Makefile
+echo "INCPATH = \$(BASEPATH)/include/"                          >> Makefile
+echo "RM      = rm -f "                                		>> Makefile
 
 echo " "							>> Makefile
 echo "all     : world modules tags"				>> Makefile
@@ -297,7 +348,7 @@ echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
 
 fi
 
-echo "	@echo 'Building libui...'			"      	>> Makefile	
+echo "	@echo 'Building libui...'			"      	>> Makefile
 echo "	@cd libui && \$(MAKE) 				"	>> Makefile
 echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
 
@@ -318,7 +369,7 @@ echo "	@cd modules && \$(MAKE) "				>> Makefile
 echo "	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
-echo "install : all mod_install "				>> Makefile
+echo "install : all prepareDir mod_install "				>> Makefile
 echo "	@cp vm/elfsh \$(BINPATH)/ "				>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
@@ -343,8 +394,22 @@ echo "	@chmod 755 \$(LIBPATH)libelfsh.a "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libasm.a "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libasm*.h "			>> Makefile
+
+echo " "                        					>> Makefile
+echo "prepareDir: " 								>> Makefile
+echo "	@mkdir -p \$(DESTDIR) || true"  			>> Makefile
+echo "	@mkdir -p \$(BINPATH) || true"  			>> Makefile
+echo "	@mkdir -p \$(LIBPATH) || true"  			>> Makefile
+echo "	@mkdir -p \$(INCPATH) || true"  			>> Makefile
+echo "	@mkdir -p \$(MANPATH)/man1/ || true"    	>> Makefile
+echo "	@mkdir -p \$(MODPATH) || true"  			>> Makefile
+
+if [ "$FREEBSD" = "1" ]; then
+echo "	@ldconfig -R"                               >> Makefile
+fi
+
 echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libui and Libasm installed successfully .'"	>> Makefile
-echo " "							>> Makefile 
+echo " "							>> Makefile
 
 echo "mod_install: "						>> Makefile
 echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile
@@ -363,6 +428,7 @@ echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
 echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
+echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
  
 
@@ -394,7 +460,7 @@ echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
+echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile
 
 echo "	@echo 'Tree cleaned .' "				>> Makefile
 echo " "							>> Makefile
@@ -408,6 +474,7 @@ echo " "							>> Makefile
 
 echo "tags    : "						>> Makefile
 echo "	@echo Doing tags ... "					>> Makefile
+if [ "$ETAGS" = "1" ]; then
 echo "	@\$(ETAGS) vm/*.c vm/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
 echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
@@ -416,6 +483,7 @@ echo "  libasm/src/arch/ia32/*.c \\"				>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h\\" 	>> Makefile
 echo "	libdump/include/*.h libc/include/*.h libc/*.c"		>> Makefile
 echo " "							>> Makefile
+fi
 
 echo "info    : "						>> Makefile
 echo "	@echo '###############' Total '###############'"	>> Makefile
@@ -441,11 +509,6 @@ echo " "							>> Makefile
 
 echo
 echo " Now make && make install"
-echo 
-
-
-
-
-
+echo
 
 
