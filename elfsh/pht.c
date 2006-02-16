@@ -238,13 +238,14 @@ int             cmd_rpht()
   /* Fetch and Print Runtime (alternative) PHT */
   if ((phdr = elfsh_get_rpht(world.curjob->current, &num)) == 0)
     RET(-1);
-  snprintf(logbuf, BUFSIZ, 
+  snprintf(logbuf, BUFSIZ,
 	   "\n [Runtime Program Header Table .::. RPHT]\n [Object %s]\n\n", 
 	   world.curjob->current->name);
   vm_output(logbuf);
   vm_print_pht(phdr, num, world.curjob->current->rhdr.base);
-  
+
   /* End */
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
