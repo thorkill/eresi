@@ -14,7 +14,6 @@ extern int		(*main)(int argc, char **argv);
 /* Load linkmap in PIE based process */
 static int		e2dbg_load_linkmap_pie(char *name)
 {
-
   /*
   elfshobj_t		*handle;
   elfshsect_t		*sct;
@@ -36,78 +35,78 @@ static int		e2dbg_load_linkmap_pie(char *name)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  elfsh_set_static_mode();  
+  elfsh_set_static_mode();
 
   /* replace by self dlopen technique */
   /*
   handle = e2dbg_dlopen(name, (elfsh_Addr) main, "main");
   if (!handle)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "e2dbg_dlopen failed", -1);    
+		      "e2dbg_dlopen failed", -1);
   */
 
   /*
   dynsymtab = elfsh_get_dynsymtab(world.curjob->current, &num);
   if (!dynsymtab)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsymtab", -1);    
-      
+		      "Cannot get dynsymtab", -1);
+
   sct = elfsh_get_section_by_name(world.curjob->current, 
 				  ELFSH_SECTION_NAME_ALTDYNSYM, 
 				  NULL, NULL, &num);
-  
+
   if (!sct)
-    sct = elfsh_get_section_by_type(world.curjob->current, SHT_DYNSYM, 
+    sct = elfsh_get_section_by_type(world.curjob->current, SHT_DYNSYM,
 				    NULL, NULL, NULL, &num);
-  
+
   if (!sct)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsym section", -1);    
-  
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot get dynsym section", -1);
+
   num = num / sizeof(elfsh_Sym);
-  
+
   table = (elfsh_Sym *) (sct->shdr->sh_addr ? elfsh_get_raw(sct) : sct->data);
   if (!table)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsym data", -1);     
-  
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Cannot get dynsym data", -1);
+
   gotseg = elfsh_get_parent_segment(world.curjob->current, got);
-  
+
   for (index = 0; index < num; index++)
     {
       typenum = elfsh_get_symbol_type(table + index);
       bindnum = elfsh_get_symbol_bind(table + index);
       symname = elfsh_get_dynsymbol_name(world.curjob->current, table + index);
-      
-      sct = elfsh_get_parent_section(world.curjob->current, 
-				     table[index].st_value, 
+
+     sct = elfsh_get_parent_section(world.curjob->current,
+				     table[index].st_value,
 				     NULL);
-      
+
       if (sct == NULL && table[index].st_shndx)
 	sct = elfsh_get_section_by_index(world.curjob->current, 
 					 table[index].st_shndx,
 					 NULL, NULL);
-      
+
       if (symname != NULL && *symname)
 	{
 	  symaddr = e2dbg_dlsym(handle, symname);
 	  sctseg = elfsh_get_parent_segment(world.curjob->current, sct);
 	  symvalue = elfsh_get_symbol_value(table + index);
-	  
+
 	  if (symaddr && sctseg == gotseg && symvalue)
 	    {
 	      world.curjob->current->rhdr.base = (elfsh_Addr) symaddr - symvalue;
 	      break;
 	    }
 	}
-      
+
     }
   */
 
-  /*  
+  /*
   if (!handle->rhdr.base)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Base address not found", -1);    
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Base address not found", -1);
   */
 
   elfsh_set_debug_mode();
@@ -556,5 +555,4 @@ int		e2dbg_dlsym_init()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
