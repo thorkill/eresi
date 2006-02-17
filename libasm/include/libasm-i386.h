@@ -632,6 +632,7 @@ enum asm_instr {
   ASM_WAIT,
   ASM_FWAIT,
   ASM_BSR,
+  ASM_BSF,
   ASM_RCR,
   ASM_CLI,
   ASM_CWTL,
@@ -694,6 +695,7 @@ enum asm_instr {
   ASM_CMOVAE,
   ASM_MOVSBL,
   ASM_MOVSWL,
+  ASM_BSWAP,
 
   /*
    * FPU INSTRUCTIONS

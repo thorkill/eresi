@@ -39,7 +39,6 @@ int	op_btr_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   return (new->len);
 }
 
-
 /*
   <i386 func="i386_movzbl_rv_rmb" opcode="0xb6"/>
 */
@@ -58,7 +57,6 @@ int i386_movzbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor 
     return (new->len);
 }
 
-
 /*
   <i386 func="i386_movzwl_rv_rm2" opcode="0xb7"/>
 */
@@ -72,6 +70,18 @@ int i386_movzwl_rv_rm2(asm_instr *new, u_char *opcode, u_int len, asm_processor 
   return (new->len);
 }
 
+/*
+ <i386 func="i386_bsf" opcode"0xbc"/>
+*/
+
+int i386_bsf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+  new->len += 1;
+  new->instr = ASM_BSF;
+  new->op1.type = ASM_OTYPE_GENERAL;
+  new->op2.type = ASM_OTYPE_ENCODED;
+  operand_rv_rm2(new, opcode + 1, len - 1, proc);
+  return (new->len);
+}
 
 /*
   <i386 func="i386_bsr_rv_rmb" opcode="0xbd"/>
@@ -119,5 +129,4 @@ int i386_movswl_rv_rm2(asm_instr *new, u_char *opcode, u_int len, asm_processor 
   operand_rv_rm2(new, opcode + 1, len - 1, proc);
   return (new->len);
 }
-
 
