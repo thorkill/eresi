@@ -58,8 +58,8 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
     } else {
       ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE;
       ins->op2.ptr = opcode + 2;
-	ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.len = 4;
+	  ins->op2.regset = ASM_REGSET_R32;
+      ins->op2.len = 5;
       
       ins->op2.base_reg = modrm->m;
     }

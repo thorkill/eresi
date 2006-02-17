@@ -36,6 +36,7 @@ SRCS_libasm 	=				\
 		src/arch/ia32/ei386-9.c		\
 		src/arch/ia32/ei386-a.c		\
 		src/arch/ia32/ei386-b.c		\
+		src/arch/ia32/ei386-c.c     \
 		src/arch/ia32/init_i386.c	\
 		src/arch/ia32/tables_i386.c	\
 		src/arch/ia32/operand_ia32.c	\
