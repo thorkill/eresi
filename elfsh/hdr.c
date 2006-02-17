@@ -51,7 +51,7 @@ static char	*vm_printostype(elfshobj_t *file)
     case ELFSH_OS_NETBSD:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("NetBSD"));
     case ELFSH_OS_FREEBSD:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("FreeBsd"));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("FreeBSD"));
     case ELFSH_OS_OPENBSD:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ("OpenBSD"));
     case ELFSH_OS_SOLARIS:
