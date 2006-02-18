@@ -21,8 +21,11 @@
  *
  ************************************************************************/
 
-void	elfsh_help() 
-{
+hash_t *s_goto;
+struct s_elfshstng mf_settings;
+
+
+void	elfsh_help() {
   printf(" flow                                     \n"
 	 "  Launch control flow analysis.           \n"
 	 "                                          \n"
@@ -38,39 +41,57 @@ void	elfsh_help()
 	 " flowjack <oldsymbol> <newsymbol>         \n"
 	 "     All relative call to oldsymbol       \n"
 	 "     are hijacked to newsymbol            \n"
+	 "                                          \n"
+	 " addgoto <vaddr> <func_addr>              \n"
+	 "     'redirect' for functions called      \n"
+	 "     trough a pointer                     \n"
 	 "                                          \n");
 }
 
-void	elfsh_init() 
-{
+void	elfsh_init() {
+  hash_t *s_gt;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  mf_settings.rec_ptr_fnc = 0;
+  mf_settings.use_goto_hash = 0;
+  mf_settings.graph_verbose_level = 0; /* default */
 
   vm_output(" [*] ELFsh modflow("__DATE__"/"__TIME__") fini -OK-\n");
   vm_output("     Added commands:\n");
   vm_output("\tflow                                               : process control flow analysis\n"
        "\tgraph    <file> <symbol/address> <address|+size>   : dump graphviz graph to file\n"
        "\tinspect  <symbol/address>                          : inspect block at vaddr\n"
-       "\tflowjack <sym1> <sym2>                             : hijack xref from sym1 to sym2\n");
-
-  vm_addcmd(ELFSH_CMD_GRAPH, cmd_graph, vm_getoption3, 1, "FIXME");
+       "\tflowjack <sym1> <sym2>                             : hijack xref from sym1 to sym2\n"
+	   "\taddgoto  <vaddr> <func_addr>                       : bleble\n"
+	   "\tset_ptrfnc  <0/1>                                  : automagic call *\%eax recogn.\n"
+	   "\tset_gvl  <0-5>                                     : graph verbose level\n"
+	   );
+  vm_addcmd(ELFSH_CMD_GRAPH, cmd_graph, vm_getoption3,1, "FIXME");
   vm_addcmd(ELFSH_CMD_FLOW, cmd_flow, 0, 1, "FIXME");
   vm_addcmd(ELFSH_CMD_INSPECT, inspect_cmd, vm_getoption, 1, "FIXME");
   vm_addcmd("flowtest", cmd_testflow, 0, 1, "FIXME");
   vm_addcmd(ELFSH_CMD_FLOWJACK, cmd_flowjack, vm_getoption2, 1, "FIXME");
+  vm_addcmd("addgoto",cmd_addgoto, vm_getoption2, 1, "FIXME");
+  vm_addcmd("set_ptrfnc", cmd_set_ptrfnc, vm_getoption, 1, "FIXME");
+  vm_addcmd("set_usegoto", cmd_set_gotohash, vm_getoption, 1, "FIXME");
+  vm_addcmd("set_gvl", cmd_set_graphverbose, vm_getoption, 1, "FIXME");
+  hash_init(s_gt,100);
+  s_goto = s_gt;
+
   //vm_addcmd(ELFSH_CMD_FLOWLOAD, cmd_flowload, 0, 1, "FIXME");
   //vm_addcmd(ELFSH_CMD_FLOWSAVE, cmd_flowsave, 0 ,1, "FIXME");
 
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-void	elfsh_fini() 
-{
+void	elfsh_fini() {
   vm_output(" [*] ELFsh modflow init -OK-\n");
   vm_delcmd(ELFSH_CMD_FLOW);
   vm_delcmd(ELFSH_CMD_FLOWJACK);
   vm_delcmd(ELFSH_CMD_GRAPH);
   vm_delcmd(ELFSH_CMD_INSPECT);
+  vm_delcmd(ELFSH_CMD_FLOWSAVE);
   vm_delcmd("testflow");
 }
 
@@ -106,6 +127,24 @@ int	cmd_flowload(void)
   blk = 0;
   load_blocks(world.curjob->current, &blk);
   return (0);
+}
+
+
+int cmd_addgoto(void)
+{
+
+ if (!world.curjob->curcmd->param[0] || !world.curjob->curcmd->param[1]) {
+  return (-1);
+ }
+
+ printf(" [*] at %s goto %s\n",
+  world.curjob->curcmd->param[0],
+  world.curjob->curcmd->param[1]);
+
+  hash_del(s_goto,world.curjob->curcmd->param[0]);
+  hash_add(s_goto,world.curjob->curcmd->param[0],world.curjob->curcmd->param[1]);
+
+ return (0);
 }
 
 int	cmd_testflow(void)
@@ -207,9 +246,7 @@ int	cmd_testflow(void)
 
 hash_t		block_hash;
 
-
-
-int			cmd_flow(void) 
+int	cmd_flow(void) 
 {
 
   char                  *buffer;
@@ -231,13 +268,13 @@ int			cmd_flow(void)
   char                  *str;
   struct s_iblock       *binary_blks;
   /* char		*str; */
-  
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+
   /*
     parse arguments
     load binary and resolve symbol 
   */
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
     {
       binary_blks = 0;
@@ -248,19 +285,20 @@ int			cmd_flow(void)
 	   "     current stored information\nContinue?[N/y]");
       ilen = getchar();
       if (ilen != 'y')
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Flow analysis Aborted", -1);
-
-      if (sect->altdata)
-	binary_blks = (struct s_iblock *) sect->altdata;
+	   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    "Flow analysis Aborted", -1);
+    
+	  if (sect->altdata)
+	   binary_blks = (struct s_iblock *) sect->altdata;
       else
-	load_blocks(world.curjob->current, (struct s_iblock **) &binary_blks);
+	   load_blocks(world.curjob->current, (struct s_iblock **) &binary_blks);
     }
-  
-  if (!(shtlist = elfsh_get_sht(world.curjob->current, &num_sht)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "[MODFLOW] cannot get sectionlist", -1);
 
+  if (!(shtlist = elfsh_get_sht(world.curjob->current, &num_sht)))
+    {
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	                  "[MODFLOW] cannot get sectionlist", -1);	  
+    }
   printf(" * %i sections\n", num_sht);
   
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
@@ -281,10 +319,10 @@ int			cmd_flow(void)
       
       if (!(elfsh_get_section_execflag(shdr)))
         {
-          printf("%s", "not executable -> skipping ...\n");
+          printf("%22s", "not executable -> skipping ...\n");
           continue;
         }
-      printf("%s", "executable -> analysing\n");
+      printf("%22s", "executable -> analysing\n");
       
       max_len = elfsh_get_symbol_size(sym);
       vaddr = sym->st_value;
@@ -306,10 +344,10 @@ int			cmd_flow(void)
 	{
 	  main_addr = trace_start(world.curjob->current, buffer, max_len, e_point,
 				  &binary_blks, 0);
-	  printf(" [*] main located at %8x\n", main_addr);
+	  printf(" [*] main located at %08x\n", main_addr);
 	}
   
-      vm_output(" [*] starting disassembly");
+      printf(" [*] starting disassembly\n");
   
       /*
 	main loop
@@ -321,17 +359,20 @@ int			cmd_flow(void)
   
       for (disassembled = 0; disassembled < max_len; disassembled += ilen) 
 	{
+
 	  if ((ilen = asm_read_instr(&instr, buffer + disassembled, 
 				     max_len - disassembled, &world.proc))) 
 	    {
+
+		  vaddr_hist_shift(instr);
 	  
 	      /*
 		str = asm_display_instr_att(&instr, vaddr + disassembled);
 		printf("%8x:\t%s\n", vaddr + disassembled, str);
 	      */
 	      trace_control(world.curjob->current, &instr, vaddr + disassembled, 
-			    &binary_blks);
-	    } 
+			    &binary_blks);				
+	    }
 	  else
 	    ilen = 1;
 	}
@@ -341,8 +382,7 @@ int			cmd_flow(void)
 	save file.
       */
     }
-
-  vm_output("[MODFLOW] done");
+  vm_output("[MODFLOW] done\n");
   
   //btree_debug(binary_blks->btree, "flow.gvz", 0);
 
@@ -361,10 +401,45 @@ int			cmd_flow(void)
   */
 
   
-  // XFREE(buffer);
-  
-  return (0);
+  // free(buffer);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
+
+/* lazy style :] */
+
+void vaddr_hist_shift(asm_instr vaddr) {
+
+ vaddr_hist[0] = vaddr_hist[1];
+ vaddr_hist[1] = vaddr_hist[2];
+ vaddr_hist[2] = vaddr_hist[3];
+ vaddr_hist[3] = vaddr_hist[4];
+ vaddr_hist[4] = vaddr;
+
+}
+
+int cmd_set_ptrfnc(void) {
+
+ if (!world.curjob->curcmd->param[0]) {
+  return (-1);
+ }
+
+  mf_settings.rec_ptr_fnc=atoi(world.curjob->curcmd->param[0]);
+ return 0;
+}
+
+int cmd_set_graphverbose(void) {
+ mf_settings.graph_verbose_level = atoi(world.curjob->curcmd->param[0]);
+ return 0;
 }
 
 
+
+int cmd_set_gotohash(void) {
+ if (!world.curjob->curcmd->param[0]) {
+  return (-1);
+ } 
+
+ mf_settings.use_goto_hash=atoi(world.curjob->curcmd->param[0]);
+ return 0;
+}
 

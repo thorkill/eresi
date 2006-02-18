@@ -14,8 +14,8 @@
 #include <elfsh.h>
 #include <libelfsh.h>
 #include <libasm.h>
+#include <sys/types.h>
 #include "libbtree.h"
-
 
 #define GVZ_COLOR_BLUE  "\"blue\""
 #define GVZ_COLOR_CORAL "\"coral\""
@@ -97,7 +97,6 @@ struct s_condition {
 
 extern  hash_t		block_hash;
 
-
 /**	struct s_caller is to reference blocks calling block
  * field type may help us to analyse blocks to build higher
  * logical structure.
@@ -164,6 +163,14 @@ struct s_function {
 };
 
 
+/* some settings */
+struct s_elfshstng {
+ int	rec_ptr_fnc; 		/* automagic ptr-function recognition */
+ int  use_goto_hash; 	/* use s_goto hash/addgoto function */ 
+ int  graph_verbose_level;
+};
+
+asm_instr vaddr_hist[5];
 
 /*
  *
@@ -176,6 +183,13 @@ int	inspect_cmd(void);
 int	cmd_flow(void);
 int	cmd_testflow(void);
 int	cmd_flowjack(void);
+int cmd_addgoto(void);
+void vaddr_hist_shift(asm_instr vaddr);
+int cmd_set_ptrfnc(void);
+int cmd_set_gotohash(void);
+int cmd_set_graphverbose(void);
+
+
 /*	sk_data.c	*/
 /*
 struct s_list *list_get_arg_by_num(struct s_list *, int);
@@ -201,7 +215,6 @@ void	dump_block(struct s_iblock *b);
 struct s_iblock	*block_create(u_int, u_int);
 int insert_destination_address(elfshobj_t *, asm_instr *, u_int, 
 			       struct s_iblock **);
-
 
 /*	sk_functions.c	*/
 /*

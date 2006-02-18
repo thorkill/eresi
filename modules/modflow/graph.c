@@ -12,6 +12,8 @@
 #include "modflow.h"
 
 
+extern struct s_elfshstng mf_settings;
+
 void	dump_assembly(int fd, elfshblk_t *blk);
 
 /* Add a link entry to the graph */
@@ -119,6 +121,10 @@ int		cmd_graph(void)
   if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
     ELFSH_SETERROR(" [*] no \".control\" section found. Aborting\n", -1);
   
+  if (!world.curjob->curcmd) {
+   printf("[*] no \"world.curjob->curcmd\"\n");
+   return (-1);
+  }
   
   fd = open(world.curjob->curcmd->param[0], O_RDWR | O_CREAT, 0644);
   if (fd == -1)
@@ -147,8 +153,8 @@ int		cmd_graph(void)
   if (!(blk_list = sect->altdata))
     load_blocks(world.curjob->current, &blk_list);
       
-  sprintf(buf, "digraph prof {\n"
-	  "size=\"6,4\"; ratio = fill; node [style=filled];\n");
+  snprintf(buf, sizeof(buf),"digraph prof {\n"
+	  "ratio = fill; node [style=filled];\n");
   write(fd, buf, strlen(buf));
       
   symtab = elfsh_get_symtab(world.curjob->current, &num);
@@ -181,7 +187,7 @@ int		cmd_graph(void)
 	  continue;
 	}
       // pouet:
-      printf("min = %8x blk = %8x max =%8x\n", min, blk->vaddr, max);
+      printf("min = %08x blk = %08x max =%08x\n", min, blk->vaddr, max);
 	  
       name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &offset);
       if ((name == NULL) && !unresolved_pass)
@@ -189,10 +195,18 @@ int		cmd_graph(void)
 	  unresolved_pass = 1;
 	  snprintf(buf, sizeof (buf), "unresolved [");
 	}
-      else
-	snprintf(buf, sizeof (buf), 
+      else {
+	  if (mf_settings.graph_verbose_level == 0) {
+  	   snprintf(buf, sizeof (buf), 
 		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);
-	  
+	  } else if (mf_settings.graph_verbose_level == 1) {
+	   snprintf(buf, sizeof (buf), 
+		 "%s_" DFMT " [shape=\"box\" label=\"<%s+%x>:\\l", name, offset, name, offset);
+	  } else {
+	   snprintf(buf, sizeof (buf), 
+		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);	   
+	  }
+	}
       write(fd, buf, strlen(buf));
       /* Write the block as a node */
       if (name != NULL)
@@ -213,7 +227,8 @@ int		cmd_graph(void)
       write(fd, buf, strlen(buf));
       /* Write all graph links for the current block */
       if ((blk->vaddr < min) || (max <= blk->vaddr))
-	continue;
+	   continue;
+
       vm_write_graphent(world.curjob->current, fd, blk);
     } /* !for */
       
