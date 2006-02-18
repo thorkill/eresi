@@ -1,8 +1,8 @@
 /*
 ** readln.c elfsh
-** 
+**
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
-** Updated on  Mon Sep 19 06:57:03 2005 maym
+** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 */
 #include "libui.h"
 
@@ -16,6 +16,8 @@ char		*command_generator(const char *text, int state)
   static int	i, len, tab;
   char		*name;
   const char    *baq;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   baq = text;
   for (name = strchr(baq, '.'); name; name = strchr(baq, '.'))
@@ -43,12 +45,12 @@ char		*command_generator(const char *text, int state)
 	{
 	  name = world.comp.cmds[tab][i];
 	  if (!strncmp(name, text, len))
-	    return (elfsh_strdup(name));
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_strdup(name)));
 	}
-  
+
   /* If no names matched, then return NULL. */
   i = tab = len = 0;
-  return ((char *) NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  ((char *) NULL));
 }
 
 
@@ -58,7 +60,8 @@ char	**custom_completion(const char* text, int start, int end)
   char	**matches = (char**) NULL;
   char	*baq, *baq2;
   char	buf[50];
-  int	len;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if defined(__OpenBSD__)
   matches = completion_matches(text, command_generator);
@@ -67,7 +70,7 @@ char	**custom_completion(const char* text, int start, int end)
 #endif
 
   if (!matches)
-    return (NULL);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
   baq2 = NULL;
   baq = strchr(text, '.');
@@ -76,6 +79,7 @@ char	**custom_completion(const char* text, int start, int end)
       baq2 = baq + 1;
       baq = strchr(baq2, '.');
     }
+
   if (baq2 && *baq2)
     {
       memcpy(buf, text, baq2 - text);
@@ -83,12 +87,12 @@ char	**custom_completion(const char* text, int start, int end)
       XFREE(matches[0]);
       matches[0] = elfsh_strdup(buf);
     }
-  
+
   switch (rl_completion_append_character)
     {
     case ' ':
       if (baq2 && *baq2)
-	rl_completion_append_character = '[';
+      rl_completion_append_character = '[';
       break;
     case '[':
       rl_completion_append_character = ']';
@@ -99,7 +103,7 @@ char	**custom_completion(const char* text, int start, int end)
       break;
     }
 
-  return (matches);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, matches);
 }
 
 
