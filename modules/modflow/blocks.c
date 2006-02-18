@@ -9,6 +9,9 @@
 
 #include "modflow.h"
 
+extern hash_t *s_goto;
+extern struct s_elfshstng mf_settings;
+
 char	*call_type_str[] = 
 {
   "CONT",
@@ -248,7 +251,6 @@ int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode)
   struct s_buf		buf;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-    
   /*
     for each block, insert a new STT_BLOCK symbol
     and associated block in data of section
@@ -262,7 +264,7 @@ int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode)
       buf.data = 0;
       buf.obj = obj;
       if (mode)
-	btree_browse_prefix(blist->btree, build_data, &buf);
+	   btree_browse_prefix(blist->btree, build_data, &buf);
       
       sect = elfsh_create_section(".control");
       shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen,
@@ -271,15 +273,11 @@ int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode)
       elfsh_insert_unmapped_section(obj, sect, shdr, buf.data);
     } 
   else
-    ELFSH_SETERROR("[elfsh:modflow] * \".control\" section already present\n", 
-		   -1);
-  return (buf.block_counter);
-}
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "[elfsh:modflow] * \".control\" section already present\n", -1);
 
-/*******************************************
- *
- *
- */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
+}
 
 /**
  *
@@ -485,9 +483,11 @@ int	insert_destination_address(elfshobj_t *obj,
   struct s_iblock	*dst;
   struct s_iblock	*dst_end;
   int			new_size;
-  
-  dest = 0;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  dest = 0;
+  
   if ((ins->op1.content & ASM_OP_VALUE) && 
       !(ins->op1.content & ASM_OP_REFERENCE)) 
     {    
@@ -509,7 +509,6 @@ int	insert_destination_address(elfshobj_t *obj,
 	  dst->altype = CALLER_UNKN;
 	  block_add_list(blk_list, dst);
 	} 
-    
 
       /* 
 	 we have to truncate block found unless destination
@@ -560,9 +559,99 @@ int	insert_destination_address(elfshobj_t *obj,
 	printf("Insertion failed\n");
       */
     }
+
+  /* 
+   y2k6 <thorolf@grid.einherjar.de>
+   handle something like this
+   call  *%eax 
+   check goto table and fixup destination
+   - start gdb, set breakpoint on any "pointer function at [%x]
+   - check register value
+   - start elfsh
+   - load modflow
+   - addgoto <vaddr of call *%eax> <daddr value of *%eax>   
+  */
+
+  else if (ins->op1.content & ASM_OP_BASE) {
+   char tmp[255];
+   char *ret;
+   printf("[***] pointer function at [%x]\n",vaddr);
+   snprintf(tmp,250,"%x",vaddr);
+   dst_end = *blk_list;
+
+   if (mf_settings.rec_ptr_fnc &&
+       vaddr_hist[4].instr == ASM_CALL &&
+	   vaddr_hist[3].instr == ASM_MOV &&
+  	   vaddr_hist[2].instr == ASM_MOV) {
+	dest = vaddr_hist[2].op2.imm;
+
+	if ((dest < elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current))) || (dest < 0)) {return -1;}	
+     printf("[!!!] 0x%08x possible simple ptr function at [%x/%d] detected\n",vaddr,dest,dest);
+
+  	 dst = block_get_by_vaddr(dst_end, dest, 1);
+
+      if (!dst) 
+	{
+	  dst = block_create(dest, 1);
+	  dst->altype = CALLER_UNKN;
+	  block_add_list(blk_list, dst);
+	} 
+      else if (dst->vaddr != dest) 
+	{
+	  new_size = dst->size - (dest - dst->vaddr);
+	  dst->size -= new_size;
+	  dst_end = block_create(dest, new_size);
+	  dst_end->contig = dst->contig;
+	  dst_end->altern = dst->altern;
+	  dst_end->altype = dst->altype;
+	  dst->contig = dest;
+	  dst->altype = CALLER_CONT;
+	  dst->altern = 0;
+	  block_add_list(blk_list, dst_end);
+	  dst = dst_end;
+	}
+
+      block_add_caller(dst, vaddr, 
+		       (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
+
+   } else {
+    ret = (char *)hash_get(s_goto,tmp);
+    if (ret) {
+     dest = strtol(ret,(char **)NULL,16);
+     if (dest) {
+      printf("[***] extended routing table found 0x%08x -> 0x%08x\n",vaddr,dest);
+      dst = block_get_by_vaddr(dst_end, dest, 1);
+
+      if (!dst) 
+	{
+	  dst = block_create(dest, 1);
+	  dst->altype = CALLER_UNKN;
+	  block_add_list(blk_list, dst);
+	} 
+      else if (dst->vaddr != dest) 
+	{
+	  new_size = dst->size - (dest - dst->vaddr);
+	  dst->size -= new_size;
+	  dst_end = block_create(dest, new_size);
+	  dst_end->contig = dst->contig;
+	  dst_end->altern = dst->altern;
+	  dst_end->altype = dst->altype;
+	  dst->contig = dest;
+	  dst->altype = CALLER_CONT;
+	  dst->altern = 0;
+	  block_add_list(blk_list, dst_end);
+	  dst = dst_end;
+	}
+
+      block_add_caller(dst, vaddr, 
+		       (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
+     }
+    }
+   }
+  }
   else
     dest = -1;
-  return (dest);
-}
 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+}
 
