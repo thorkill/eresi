@@ -1,7 +1,7 @@
 /*
 ** network.c for elfsh
-** 
-** Started on  Wed Feb 25 22:22:35 2004 yann_malcom 
+**
+** Started on  Wed Feb 25 22:22:35 2004 yann_malcom
 */
 
 #include "elfsh.h"
@@ -30,34 +30,34 @@ elfshjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[DEBUG NETWORK] Already connected from that addr.\n");
 #endif
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (NULL));    
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (NULL));
     }
-  
+
 #if __DEBUG_NETWORK__
   fprintf(stderr, "[DEBUG NETWORK] adding client on socket %d .\n", socket);
-#endif  
+#endif
 
   XALLOC(new, sizeof (elfshjob_t), NULL);
-  
+
   new->sock.addr    = *addr;
   new->sock.socket  = socket;
   new->sock.recvd   = NULL;
   new->sock.recvd_f = OLD;
   elfsh_net_client_count++;
-  
+
   new->io.type      = ELFSH_IONET;
   new->io.input_fd  = socket;
   new->io.output_fd = socket;
   new->io.input     = vm_net_input;
   new->io.output    = vm_net_output;
-  
+
   new->createtime   = time(&new->createtime);
   new->active	    = 1;
 
   hash_add(&world.jobs, inet_ntoa(addr->sin_addr), new);
-  
+
   world.curjob = new;
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
@@ -69,12 +69,12 @@ int		vm_socket_get_nb_recvd(char *inet)
   int		index;
   elfshjob_t	*old;
   hashent_t	*actual;
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Is there a socket by that name */
   tmp = hash_get(&world.jobs, inet);
-  
+
   if (tmp != NULL)
     {
       if (!tmp->active)
@@ -84,19 +84,19 @@ int		vm_socket_get_nb_recvd(char *inet)
 	      for (actual = &world.jobs.ent[index];
 		   actual != NULL && actual->key != NULL;
 		   actual = actual->next)
-		{ 
+		{
 		  old = world.curjob;
 		  world.curjob = tmp;
-		  
+
 		  if (vm_own_job((elfshjob_t *) actual->data) && ((elfshjob_t *) actual->data)->active)
 		    {
 		      world.curjob = old;
 		      tmp = (elfshjob_t *) actual->data;
 		    }
-		  
+
 		  world.curjob = old;
 		}
-	}	  
+	}
 
 
 	}
@@ -137,7 +137,7 @@ int		vm_socket_get_nb_recvd(char *inet)
     {
 #if __DEBUG_NETWORK__ 
       fprintf(stderr, "[DEBUG NETWORK] No socket by that inet addr.\n");
-#endif      
+#endif
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
     }
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
@@ -170,9 +170,9 @@ int elfsh_socket_close(int socket)
 }
 
 
-/* 
+/*
 ** Remove a client socket from the list and close it, return (-1) if socket 
-** not found. 
+** not found
 */
 int		 vm_socket_del(char *inet_addr)
 {
@@ -188,14 +188,14 @@ int		 vm_socket_del(char *inet_addr)
 
   tmp = hash_get(&world.jobs, inet_addr);
   if (tmp != NULL)
-    {   
+    {
 
       for (index = 0; index < world.jobs.size; index++)
 	{
 	  for (actual = &world.jobs.ent[index];
 	       actual != NULL && actual->key != NULL;
 	       actual = actual->next)
-	    { 
+	    {
 	      old = world.curjob;
 	      world.curjob = tmp;
 
@@ -203,12 +203,12 @@ int		 vm_socket_del(char *inet_addr)
 		{
 		  hash_del(&world.jobs, actual->key);
 		}
-	      
+
 	      world.curjob = old;
 
 	    }
 	}
-      
+
       if (elfsh_socket_close(tmp->sock.socket) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
       //      elfsh_net_client_count--;
@@ -243,7 +243,7 @@ int elfsh_net_send(char *buf, unsigned int len)
   if (len > strlen(buf))
     {
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] specified len beyond the end of buf on socket %d\n", 
+      fprintf(stderr, "[DEBUG NETWORK] specified len beyond the end of buf on socket %d\n",
 	      world.curjob->io.output_fd);
 #endif
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
@@ -251,7 +251,7 @@ int elfsh_net_send(char *buf, unsigned int len)
   if (send(world.curjob->io.output_fd, (void *) buf, len, NULL) < 0)
     {
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] send failed on socket %d\n", 
+      fprintf(stderr, "[DEBUG NETWORK] send failed on socket %d\n",
 	      world.curjob->io.output_fd);
 #endif
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
@@ -272,7 +272,7 @@ int	vm_net_output(char *buf)
       fprintf(stderr, "[DEBUG NETWORK] Socket [%u] attempt to "
 	      "send too much data.\n",
 	      world.curjob->io.output_fd);
-#endif	  
+#endif
       if (elfsh_net_send(buf, MAX_SEND_SIZE) >= 0)
 	{
 	  ret = vm_net_output((char *) (buf + MAX_SEND_SIZE));
@@ -282,7 +282,7 @@ int	vm_net_output(char *buf)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "???", (-1));
     }
 
-  ret = elfsh_net_send(buf, strlen(buf));    
+  ret = elfsh_net_send(buf, strlen(buf));
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
@@ -313,12 +313,12 @@ int	elfsh_net_create_serv_socket(int			*serv_sock,
   addr->sin_port   = htons(port);
   inet_aton("0.0.0.0", &addr->sin_addr);
 
-  if (bind((*serv_sock), (struct sockaddr *) addr, 
+  if (bind((*serv_sock), (struct sockaddr *) addr,
 	   sizeof (struct sockaddr_in)) < 0)
     {
       close((*serv_sock));
       FATAL("bind");
-    } 
+    }
 
   if (listen((*serv_sock), 5) < 0) 
     {
@@ -349,7 +349,7 @@ int		vm_update_recvd(elfshsock_t *socket)
     {
 
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DBG_NETWORK] read(%d) failed with ret = %d \n", 
+      fprintf(stderr, "[DBG_NETWORK] read(%d) failed with ret = %d \n",
 	      socket->socket, size);
 #endif
 
@@ -363,7 +363,7 @@ int		vm_update_recvd(elfshsock_t *socket)
     {
 
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DBG_NETWORK] read(%d) [OK] with ret = %d \n", 
+      fprintf(stderr, "[DBG_NETWORK] read(%d) [OK] with ret = %d \n",
 	      socket->socket, size);
 #endif
 
@@ -371,8 +371,8 @@ int		vm_update_recvd(elfshsock_t *socket)
         {
 
 #if __DEBUG_NETWORK__
-	  fprintf(stderr, 
-		  "[DBG_NETWORK] connection to %s closed by remote host.\n", 
+	  fprintf(stderr,
+		  "[DBG_NETWORK] connection to %s closed by remote host.\n",
 		  inet_ntoa(socket->addr.sin_addr));
 #endif
 
@@ -395,7 +395,7 @@ int		vm_update_recvd(elfshsock_t *socket)
 	  buf[size] = '\0';
 	  /* Remove the last char in case of telnet client */
 	  if (size > 0)
-            { 
+            {
 	      /* We want a trailing \n to handle the line */
 	      socket->ready_f = NO;
 	      if(buf[size-1] == 0x0a)
@@ -414,8 +414,8 @@ int		vm_update_recvd(elfshsock_t *socket)
 		  socket->ready_f = YES;
                 }
             }
-	  /* In case of multiple command pasted at once, we want to 
-	     handle them at once */ 
+	  /* In case of multiple command pasted at once, we want to
+	     handle them at once */
 	  while ((c = strchr(buf, '\n')))
 	    (*c) = ' ';
 
@@ -494,7 +494,7 @@ int	vm_dump_output(char *buf)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XALLOC(tmp, strlen(buf) + 1 + 1, NULL);
-  
+
   tmp[0] = ELFSH_DUMP_MSG;
 
   memcpy(tmp + 1, buf, strlen(buf) + 1);
@@ -515,7 +515,7 @@ char	*vm_dump_input()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   tmp = elfsh_strdup((char *)(world.curjob->io.pkt->data) + 1);
-  
+
   world.curjob->io.new = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmp));
 #endif
@@ -551,7 +551,7 @@ int			vm_dump_accept()
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[+] add new id \n");
 #endif
-      
+
       dump_add_myid(((struct sockaddr_in *) &loc)->sin_addr, new_sd);
 
 #if __DEBUG_NETWORK__
@@ -621,7 +621,7 @@ int			vm_net_accept()
 	  XFREE(temp_addr);
 	  ret = -1;
         }
-    }  
+    }
   else
     {
       // Maybe he was afraid of us
@@ -701,7 +701,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 
   // scan dump
   for (index = 0; index < dump_world.ports.size; index++)
-    { 
+    {
       for (actual = &dump_world.ports.ent[index];
            actual != NULL && actual->key != NULL;
            actual = actual->next)
@@ -724,13 +724,13 @@ int			vm_net_recvd(fd_set *sel_sockets)
                   fprintf(stderr, " socket %d considered as close \n", sd);
 #endif
 		  /* XXX delete pending jobs */
-		  
+
                   continue;
                 }
 #if __DEBUG_NETWORK__
 	      dump_print_pkt((pkt_t *) data);
 #endif
-	      
+
 	      /* we have something to do */
 	      if (data != NULL)
                 {
@@ -745,7 +745,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 		  /* sanity check */
 		  if (ntohl(data->size) != 0)
 		    {
-		      
+
 		      if (ntohl(data->size) > 0)
 			((char *)data->data)[ntohl(data->size) - 1] = '\0';
 
@@ -760,9 +760,9 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			  /* elfsh cmd, pass it to vm_input() */
 			case ELFSH_DUMP_CMD:
 			  snprintf(tmp, sizeof (tmp)-1, "DUMP_%s", inet_ntoa(((pkt_t *)data)->src)); 
-			  
+
 			  new = hash_get(&world.jobs, tmp);
-			  
+
 			  if (new == NULL)
 			    {
 			      XALLOC(new, sizeof (elfshjob_t), NULL);
@@ -775,7 +775,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 				}
 			      hash_del(&world.jobs, tmp);
 			    }
-			  
+
 			  new->io.type      = ELFSH_IODUMP;
 			  new->io.input_fd  = (-1);
 			  new->io.output_fd = (-1);
@@ -810,7 +810,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 
 
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);            
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -854,7 +854,7 @@ char	*vm_socket_merge_recvd(elfshsock_t *socket)
         }
       /* Important because we do not copy the last '\0'*/
       ret[size] = '\0';
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret)); 
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
 }
 
