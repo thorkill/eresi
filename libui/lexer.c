@@ -15,17 +15,20 @@ void			vm_findhex(u_int argc, char **argv)
   char			*buf;
   char			*ptr;
 
+  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+
   /* For each of the argv[] entry */
   for (index = 0; index < argc; index++)
     {
       if (argv[index] == NULL)
 	continue;
       buf = argv[index];
-      
+
       /* Find "\x" sequences */
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
 	buf = vm_filter_param(buf, ptr);
     }
+   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 
@@ -36,18 +39,20 @@ char		*vm_getln(char *ptr)
   char		*sav;
   char		logbuf[BUFSIZ];
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   do
     {
       buf = world.curjob->io.input();
-      
+
       if (buf == ((char *) ELFSH_VOID_INPUT))
-        return ((char *) ELFSH_VOID_INPUT);
+        ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+         (char*) ELFSH_VOID_INPUT);
 
       if (!buf || !*buf)
 	{
 	  if (buf)
 	    XFREE(buf);
-	  return (NULL);
+	  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,NULL);
 	}
 
       if (buf == NULL)
@@ -57,42 +62,46 @@ char		*vm_getln(char *ptr)
           vm_output(logbuf);
           vm_exit(-1);
 	}
-      
+
       sav = buf;
       while (IS_BLANK(*sav))
 	sav++;
 
       if (!*sav || *sav == ELFSH_COMMENT_START)
 	{
-	  
+
 	  vm_log(sav);
 	  vm_log("\n");
 
 #if defined(USE_READLN)
-          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
+/* XXX: FIXME check this XFREE! thorkill */
+          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
 #endif
 	    XFREE(buf);
 
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-	    return ((char *) ELFSH_VOID_INPUT); 
+               ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+                (char*) ELFSH_VOID_INPUT);
+
 
           buf = NULL;
 
           if (*sav)
-	    continue;	
+	    continue;
 	}
-      
+
       if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
 	{
-          vm_output_nolog("\n"); 
+          vm_output_nolog("\n");
 
           /* avoid looping with readline */
 #if defined(USE_READLN)
           if (buf == NULL)
 	    {
 	      printf("Entered readline test .. returning void input \n");
-	      return ((char *) ELFSH_VOID_INPUT); 
+              ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+	       (char*) ELFSH_VOID_INPUT);
 	    }
           break;
 #endif
@@ -100,7 +109,8 @@ char		*vm_getln(char *ptr)
 	}
     }
   while (buf == NULL);
-  return (buf);
+
+  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,buf);
 }
 
 
