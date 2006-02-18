@@ -7,6 +7,20 @@
 Changes in intermediate beta versions are listed in the first public version
 they appear.
 
+0.7a6p2:
+--------
+
+ - Bugfix  : Modflow profiling errors
+ - Added   : New opperands in libasm on x86 i386_bswap/i386_shld_rmv_rv_cl/
+    => i386_bsf
+ - Bugfix  : libui/color.c vm_colorget segfaults if curtok > COLOR_TOKENS
+ - Added   : Prototype of recognisince of pointer functions in modflow
+ - Bugfix  : vm/disasm.c display_instr, world.curjob->proc was not initialised
+ - Core    : small code cleanup 
+
+0.7a6p1:
+--------
+ - Added  : Support for FreeBSD
 
 0.7a :
 ------
