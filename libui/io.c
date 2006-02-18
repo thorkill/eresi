@@ -302,11 +302,11 @@ char		*vm_stdinput()
       /* input in progress */
       if (world.curjob->io.buf == NULL)
 	return ((char *) ELFSH_VOID_INPUT);
-      
+
       /* CTRL-D case */
       if (world.curjob->io.buf == (char *) ELFSH_EXIT_INPUT)
 	return (NULL);
-      
+
       /* empty string */
       if (strlen(world.curjob->io.buf) == 0)
 	{
@@ -314,7 +314,7 @@ char		*vm_stdinput()
 	  if (world.curjob->oldline)
 	    return (elfsh_strdup(world.curjob->oldline));
 	  return ((char *) ELFSH_VOID_INPUT);
-	}      
+	}
 
       return (elfsh_strdup(world.curjob->io.buf));
     }
@@ -328,7 +328,7 @@ char		*vm_stdinput()
 int		vm_initio()
 {
   elfshjob_t	*initial;
-  
+
   ELFSH_NOPROFILE_IN();
   XALLOC(initial, sizeof(elfshjob_t), -1);
   memset(initial, 0, sizeof(elfshjob_t));

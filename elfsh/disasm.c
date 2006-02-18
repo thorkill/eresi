@@ -181,7 +181,24 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
 
   if (!buff)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid argument", (-1));    
+		      "Invalid argument", (-1));
+
+  /* Init proc */			  
+  if (!world.curjob->proc) {
+  
+    switch (elfsh_get_arch(world.curjob->current->hdr))
+    {
+    case EM_386:
+      world.curjob->proc = &world.proc;
+      break;
+    case EM_SPARC:
+      world.curjob->proc = &world.proc_sparc;
+      break;
+    default:
+      vm_output("Architecture not supported. No disassembly available\n");
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+   }
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
   ret = asm_read_instr(&ptr, buff + index, size - index + 10, 
@@ -284,12 +301,10 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   char		base[16] = "0123456789ABCDEF";
   elfsh_Addr    loff;
   char		str[256];
+  elfshsect_t	*sect;
   elfshsect_t	*targ;
   char		*s;
-  /* XXX: Fixme - not used
-  elfshsect_t	*sect;
   elfsh_SAddr	sct_index;
-  */
   u_int		ret;
   char		logbuf[BUFSIZ];
 
