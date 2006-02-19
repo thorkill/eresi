@@ -10,7 +10,7 @@
 
 /* Debugger Thread specific information */
 void		vm_dbgid_set(u_int pid) { e2dbgworld.dbgpid = pid; }
-u_int		vm_dbgid_get()          { return (e2dbgworld.dbgpid); }	
+u_int		vm_dbgid_get()          { return (e2dbgworld.dbgpid); }
 
 
 /* Wrapper for malloc */
@@ -19,10 +19,10 @@ void		*malloc(size_t t)
   void		*(*mallocptr)();
   void		*chunk;
 
-#if 0
+#if __DEBUG_EMALLOC__
   write(1, "Calling HOOKED malloc\n", 22);
 #endif
-  
+
   //e2dbg_self();
 
   if (!e2dbgworld.mallocsym)
@@ -30,7 +30,7 @@ void		*malloc(size_t t)
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
-#if 0 //__DEBUG_EMALLOC__
+#if __DEBUG_EMALLOC__
       write(1, "\033[1;41m", 7);
       write(1, "LIBC malloc used\n", 17);
       write(1, "\033[00m", 5);
@@ -45,16 +45,16 @@ void		*malloc(size_t t)
     }
   else
     {
-#if 0 //__DEBUG_EMALLOC__
+#if __DEBUG_EMALLOC__
       write(1, "E2DBG malloc used\n", 18);
 #endif
       chunk = elfsh_malloc(t);
     }
-  
+
   if (!chunk)
     write(1, " [!] Malloc failed \n", 20);
 
-#if 0 //__DEBUG_EMALLOC__
+#if __DEBUG_EMALLOC__
   write(1, "Finished HOOKED malloc\n", 23);
 #endif
 
@@ -99,7 +99,7 @@ void		*valloc(size_t t)
 #endif
       chunk = (void *) elfsh_valloc(t);
     }
-  
+
   if (!chunk)
     write(1, " [!] Valloc failed \n", 20);
 
@@ -170,14 +170,14 @@ void		*calloc(size_t t, u_int nbr)
 #if __DEBUG_EMALLOC__
       {
 	char buff[256];
-	len = snprintf(buff, sizeof(buff), "Calling LIBC calloc at addr %08X\n", 
+	len = snprintf(buff, sizeof(buff), "Calling LIBC calloc at addr %08X\n",
 		       callocptr);
 	write(1, buff, len);
-      } 
+      }
 #endif
 
       chunk = callocptr(t * nbr);
-      sleep(10);
+//      sleep(10);
       write(1, "Libc m/calloc returned\n", 23);
       if (chunk)
 	memset(chunk, 0x00, t * nbr);
@@ -198,14 +198,14 @@ void		*calloc(size_t t, u_int nbr)
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " ! Calloc failed (%u * %u sz) \n", 
+      len = snprintf(buff, sizeof(buff), " ! Calloc failed (%u * %u sz) \n",
 		     t, nbr);
       write(1, buff, len);
     }
   else
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " Calloc (%u * %u sz) returned %08X\n", 
+      len = snprintf(buff, sizeof(buff), " Calloc (%u * %u sz) returned %08X\n",
 		     t, nbr, chunk);
       write(1, buff, len);
     }
@@ -250,9 +250,9 @@ void		*memalign(size_t t, u_int nbr)
 	}
       else
       */
-      
+
       memalignptr = (void *) e2dbgworld.memalignsym;
-      
+
       if (!memalignptr)
 	{
 	  write(1, " [!] Unable to use original memalign \n", 36);
@@ -323,10 +323,10 @@ void	*realloc(void *a, size_t t)
 #endif
       b = elfsh_realloc(a, t);
     }
-  
+
   if (!b)
     write(1, " [!] Realloc failed \n", 20);
-  
+
 #if __DEBUG_EMALLOC__
   write(1, "Finished HOOKED realloc\n", 24);
 #endif

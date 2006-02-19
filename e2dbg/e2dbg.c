@@ -9,8 +9,6 @@
 #include "elfsh.h"
 
 
-
-
 /* Debugger library initialisation */
 /* Only useful when debugger takes control by .ctors */
 void		e2dbg_init(void)
@@ -194,6 +192,5 @@ char	*vm_get_string(char **params)
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Empty display", NULL);
 }
-
 
 
