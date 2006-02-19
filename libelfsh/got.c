@@ -183,6 +183,10 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
+  if (file == 0x0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No file selected", NULL);
+  
   if (file->sectlist == NULL && elfsh_get_sht(file, NULL) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get SHT", NULL);
