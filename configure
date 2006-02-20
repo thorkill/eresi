@@ -216,7 +216,6 @@ fi
 ;;
 
 FreeBSD*)
-echo "#define __FREEBSD__ 1"             >> libvars.h
 
     echo "RANLIB  = ranlib"               >> config.h
 if [ "$STATIC" = "0" ]; then
@@ -352,6 +351,10 @@ echo "	@echo 'Building libui...'			"      	>> Makefile
 echo "	@cd libui && \$(MAKE) 				"	>> Makefile
 echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
 
+echo "	@echo 'Building libmjollnir...'			"      	>> Makefile
+echo "	@cd libmjollnir && \$(MAKE) 				"	>> Makefile
+echo "	@echo 'Libmjollnir has been built successfully.' 	"	>> Makefile
+
 echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
 echo "	@cd vm && \$(MAKE)			     	"       >> Makefile
 echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
@@ -374,12 +377,14 @@ echo "	@cp vm/elfsh \$(BINPATH)/ "				>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
+echo "	@cp libmjollnir/libmjollnir.a \$(LIBPATH) "			>> Makefile
 echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
 echo "	@cp libui/libui.a libui/libui.so \$(LIBPATH) "		>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
 echo "	@cp libasm/include/libasm.h \$(INCPATH)"		>> Makefile
 echo "	@cp libasm/include/libasm-i386.h \$(INCPATH) "		>> Makefile
 echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
+echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 755 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
@@ -424,10 +429,12 @@ echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui.so "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui.a "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libmjollnir.a "				>> Makefile
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
 echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
+echo "	rm -f  \$(INCPATH)/libmjollnir*.h "				>> Makefile
 echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
  
@@ -442,6 +449,7 @@ echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libc	     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libmjollnir     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
@@ -457,6 +465,7 @@ echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libc      && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libmjollnir     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
