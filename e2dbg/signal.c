@@ -2,13 +2,11 @@
 ** signal.c for e2dbg
 **
 ** The debugger file for signal handlers and various entry points
-** 
+**
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 */
 #include "elfsh.h"
-
-
 
 /* Signal handler for SIGSEGV */
 void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontext)
@@ -162,15 +160,15 @@ void			e2dbg_sigusr1_handler(int signum)
 
 	  vm_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	}
-      
+
       /* Here starts the real stuff 
       **
       ** count == 1 -> execute restored instruction
       ** count == 2 -> restore breakpoint
       ** count >  2 -> antidebug
       */
-      count++;	
-      
+      count++;
+
       /* execute the previously restored instruction */
       if (count == 1 && !e2dbgworld.step)
 	{
@@ -304,7 +302,14 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   pthread_t		dbg;
   e2dbgparams_t		params;
   char			*args[3];
+  char			*pn;
   int			idx;
+
+#if defined(__FreeBSD__)
+  pn = __progname;
+#else
+  pn = __progname_full;
+#endif
 
 #if __DEBUG_E2DBG__
   write(1, "Calling e2dbg_fake_main ! \n", 27);
@@ -315,13 +320,13 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
       write(1, "\n", 1);
     }
   write(1, "__progname_full = ", 18);
-  write(1, __progname_full, strlen(__progname_full));
+  write(1, pn, strlen(pn));
   write(1, "\n", 1);
 #endif
 
   /* Create the debugger thread */
   args[0] = E2DBG_ARGV0;
-  args[1] = __progname_full;
+  args[1] = pn;
   //args[1] = argv[0];
   args[2] = NULL;
   params.ac = 2;
@@ -340,10 +345,10 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   /* Wait for the right to run */
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, " [*] Debuggee Cannot lock final dbgack mutex ! \n", 48);
-  
+
   /* Recall the original function */
   SETSIG;
-  
+
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] Calling ON_EXIT \n", 46);
 #endif
@@ -367,10 +372,10 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 int	__libc_start_main(int (*main) (int, char **, char **aux),
 			  int argc, char **ubp_av,
 			  // FIXME on PPC
-			  //ElfW(auxv_t) *__unbounded auxvec, 
+			  //ElfW(auxv_t) *__unbounded auxvec,
 			  void (*init) (void),
 			  void (*fini) (void),
-			  void (*rtld_fini) (void), 
+			  void (*rtld_fini) (void),
 			  void *__unbounded stack_end)
 {
   elfsh_Addr		orig;
@@ -451,11 +456,11 @@ int				atexit(void (*fini)(void))
   e2dbgparams_t			params;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit] there\n");
 #endif
-  
+
   e2dbgworld.libchandle = dlopen("/usr/lib/libc.so", RTLD_NOW);
   if (!e2dbgworld.libchandle)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -470,7 +475,7 @@ int				atexit(void (*fini)(void))
 			"Orig atexit", (-1));
     }
   libc_atexit = (void *) orig;
-  
+
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit 2\n");
 #endif
@@ -498,11 +503,11 @@ int				atexit(void (*fini)(void))
       e2dbg_entry(&params); 
       SETSIG;
     }
-  
+
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit 3] there 3\n");
 #endif
-  
+
   /* Recall the original function */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     libc_atexit(fini));
@@ -517,7 +522,7 @@ void			__fpstart(int argc, char**ubp_av)
   int			(*realfpstart)();
   char			*argv[3];
   e2dbgparams_t		params;
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
