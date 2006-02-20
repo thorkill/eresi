@@ -1407,6 +1407,10 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
 u_char		elfsh_get_archtype(elfshobj_t *file)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (file == NULL)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "Invalid file argument!", (ELFSH_ARCH_ERROR));
 
   switch (elfsh_get_arch(file->hdr))
     {

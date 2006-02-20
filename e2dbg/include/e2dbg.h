@@ -207,7 +207,11 @@ typedef struct		s_e2dbgworld
 extern e2dbgworld_t	e2dbgworld;
 
 /* Some libc extern */
+#ifdef __FreeBSD__
+extern char*		__progname;
+#else
 extern char*		__progname_full;
+#endif
 
 /* e2dbg hooks */
 void            e2dbg_default_getregs();

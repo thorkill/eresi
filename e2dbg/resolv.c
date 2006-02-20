@@ -128,6 +128,7 @@ int			e2dbg_load_linkmap(char *name)
   u_int			elftypenum;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (done)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
