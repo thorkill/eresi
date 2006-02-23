@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: hunter.c,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+ * $Id: hunter.c,v 1.1.1.2 2006-02-23 22:42:25 thor Exp $
  */
 
 #include <libmjollnir.h>
@@ -13,18 +13,17 @@
  */
 
 int mjr_find_calls_raw(
- elfshobj_t *obj,
+ Mjr_CTX *ctx,
  hash_t	*hs,
  char *section,
- char *prefix,
- int *cnt
+ char *prefix
  ) {
   elfshsect_t 	*sct;
   unsigned char 			*ptr;
   int 			vaddr,dest,ilen,n;
   unsigned long curr,len;
   asm_processor proc;
-  asm_instr     instr,instr_hist[3];
+  asm_instr     instr;
   char			buff[BSIZE];
   char			*md5sum;
   Mjr_fsym		*fl;
@@ -32,16 +31,16 @@ int mjr_find_calls_raw(
   n = 0;
 
   hash_init(hs,MJR_MAX_FNG);
-  sct = elfsh_get_section_by_name(obj, section, NULL, NULL, NULL);
+  sct = elfsh_get_section_by_name(ctx->obj, section, NULL, NULL, NULL);
 
 #if __DEBUG__
   fprintf(stderr,"%x %d %d\n", sct->shdr->sh_addr, sct->shdr->sh_size, sct->shdr->sh_offset);
 #endif
 
-  ptr = malloc(sct->shdr->sh_size);
+  ptr = elfsh_malloc(sct->shdr->sh_size);
   memset(ptr,0,sct->shdr->sh_size);
 
-  elfsh_raw_read(obj, sct->shdr->sh_offset, ptr, sct->shdr->sh_size);
+  elfsh_raw_read(ctx->obj, sct->shdr->sh_offset, ptr, sct->shdr->sh_size);
   asm_init_i386(&proc);
 
   len = sct->shdr->sh_size;
@@ -70,7 +69,7 @@ int mjr_find_calls_raw(
 		    snprintf(buff,BSIZE-1,"%s%x",prefix,dest);
 
 			  if (hash_get(hs,buff) == NULL) {
-               fl = malloc(sizeof(Mjr_fsym));
+               fl = elfsh_malloc(sizeof(Mjr_fsym));
 
   			   md5sum = mjr_fingerprint_function(ptr+dest,FNG_TYPE_MD5,30);
 
@@ -90,12 +89,12 @@ int mjr_find_calls_raw(
 			} else if (
 			     (instr.instr == ASM_INT) 
 			  && (instr.op1.content & ASM_OP_VALUE)
-			  && (instr_hist[0].instr == ASM_MOV)
-			  && (instr_hist[0].op2.content == ASM_OP_VALUE)
+			  && (ctx->ihist[0].instr == ASM_MOV)
+			  && (ctx->ihist[0].op2.content == ASM_OP_VALUE)
 			 ) {
 			 u_int val;
 			 asm_operand_get_immediate(&instr, 1, 0, &dest);
-			 asm_operand_get_immediate(&instr_hist[0], 2, 0, &val);
+			 asm_operand_get_immediate(&ctx->ihist[0], 2, 0, &val);
 
 			 if (dest != 0x80) {continue;}
 
@@ -105,16 +104,16 @@ int mjr_find_calls_raw(
 
              if (hash_get(hs,buff) == NULL) {
 
-			  fl = malloc(sizeof(Mjr_fsym));
+			  fl = elfsh_malloc(sizeof(Mjr_fsym));
 
 			  fl->name = strdup(buff);
 			  fl->type = F_TYPE_SYSCALL;
-			  fl->vaddr = (vaddr + curr) - instr_hist[0].len;
+			  fl->vaddr = (vaddr + curr) - ctx->ihist[0].len;
 			  fl->epoint = val;
 			  fl->md5sum = NULL;
 
 #if __DEBUG__
-			 fprintf(stderr,"syscall found at %x %x %d \n", (vaddr + curr) - instr_hist[0].len, dest, val);
+			 fprintf(stderr,"syscall found at %x %x %d \n", (vaddr + curr) - ctx->ihist[0].len, dest, val);
 #endif
 
 			  hash_add(hs,fl->name,fl);
@@ -129,13 +128,13 @@ int mjr_find_calls_raw(
         *(ptr + curr + 2), *(ptr + curr + 3));
 	  ilen = 1;
 	 }
-   instr_hist[1] = instr_hist[0];
-   instr_hist[0] = instr;
+	 
+   mjr_ihist(ctx,instr);
+
    curr += ilen;
   }
 
-  free(ptr);
-  *cnt = n;
+  elfsh_free(ptr);
   return 0;
 }
 
@@ -146,8 +145,7 @@ int mjr_find_calls_raw(
 
 int mjr_find_calls_symtab(
  elfshobj_t *obj,
- hash_t	*hs,
- int *cnt
+ hash_t	*hs
  ) {
   elfshsect_t 	*sct,*sct2;
   elfsh_Sym		*symtab;
@@ -197,7 +195,6 @@ int mjr_find_calls_symtab(
   }
 
   free(ptr);
-  *cnt = n;
   return 0;
 }
 
