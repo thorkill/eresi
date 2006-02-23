@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: fngengine.c,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+ * $Id: fngengine.c,v 1.1.1.2 2006-02-23 20:25:15 thor Exp $
  */
 
 #include <libmjollnir.h>
@@ -13,8 +13,9 @@
 
 void * mjr_fingerprint_function(unsigned char *buff,int type, int mlen) {
  MD5_CTX md5ctx;
+ unsigned char *fbuf,digest[16],*pt;
  void *ret;
- unsigned char *fbuf;
+ u_int i;
  
  ret = NULL;
  
@@ -30,15 +31,23 @@ void * mjr_fingerprint_function(unsigned char *buff,int type, int mlen) {
 
    if (mlen <= 0) {free(fbuf); return NULL;}
 
-   MD5Init(&md5ctx); 
-   MD5Update(&md5ctx,fbuf,mlen);
-   ret = MD5End(&md5ctx,NULL);
+   MD5_Init(&md5ctx); 
+   MD5_Update(&md5ctx,fbuf,mlen);
+   MD5_Final(digest,&md5ctx);
    free(fbuf);
+   
+   ret = malloc(32+1);
+    if (!ret)
+	 return NULL;
+   
+   pt = ret;
 
+   for(i=0;i<16;i++){
+    sprintf(pt,"%02x",digest[i]);
+	pt += 2;
+   }
    break;
- 
  }
  
  return ret;
 }
-
