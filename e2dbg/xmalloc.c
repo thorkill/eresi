@@ -274,7 +274,7 @@ void		*memalign(size_t t, u_int nbr)
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " ! Memalign failed (%u * %u sz) \n", 
+      len = snprintf(buff, sizeof(buff), " ! Memalign failed (%u * %u sz) \n",
 		     t, nbr);
       write(1, buff, len);
     }
@@ -403,7 +403,7 @@ void		_exit(int err)
 	e2dbgworld.exited = 1;
 	write(1, " [*] Debugger exited\n", 21);
 	syscall(1, 0);
-	raise(SIGKILL); 
+	raise(SIGKILL);
       }
 }
 
@@ -436,5 +436,5 @@ void*		_int_valloc(size_t p)             { return (valloc(p));      }
 void*		_int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
 void*		_int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
 void*		_int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
-void		_int_free(void *p)                { free(p);                 }  
+void		_int_free(void *p)                { free(p);                 } 
 */
