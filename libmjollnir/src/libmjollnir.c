@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.c,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+ * $Id: libmjollnir.c,v 1.1.1.2 2006-02-23 22:35:33 thor Exp $
  */
 
 #include <libmjollnir.h>
@@ -61,4 +61,29 @@ int mjr_add_symbol(elfshobj_t *obj,char *section,u_int vaddr,char *fname) {
  elfsh_insert_symbol(obj->secthash[ELFSH_SECTION_SYMTAB], &sym, fname);
 
  return 0;
+}
+
+
+/*
+ Context init
+ */
+
+int mjr_init(Mjr_CTX *x) {
+  x->obj = NULL;
+  x->md5db = NULL;
+ return 1;
+}
+
+/*
+ History manager
+ */
+
+int mjr_ihist(Mjr_CTX *x,asm_instr inst) {
+
+ x->ihist[3]=x->ihist[2];
+ x->ihist[2]=x->ihist[1];
+ x->ihist[1]=x->ihist[0];
+ x->ihist[0]=inst;
+
+ return 1;
 }
