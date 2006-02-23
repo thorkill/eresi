@@ -3,3 +3,25 @@
 - main symbol
 - ptr functions
 
+
+Symbol table reconstruction:
+app. 1) file scan from entry point till end of section
+app. 2) using e2dbg
+
+Fingerprinting:
+ - creating DB 
+  - using symboltable resolver
+  - on request
+
+ROADMAP: (* - means real live tests)
+ - add type context for a scan so we'll be able to trace last
+   instructions, access db etc where we need it (*)
+
+ - ptr_functions - some generic signatures (advenced
+   stuff should be detected/traced by e2dbg) (*)
+   
+ - call-references for every function (calling/calledby) (*)
+  - maybe some additional fingerprint here?!
+
+ - flow analisis (*)
+

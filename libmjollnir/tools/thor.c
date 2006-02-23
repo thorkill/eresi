@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: thor.c,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+ * $Id: thor.c,v 1.1.1.2 2006-02-23 22:13:43 thor Exp $
  *
  * Since this library is build on top of libasm and elfsh
  * I decided to use mydisasm.c from libasm as a prototype
@@ -37,16 +37,16 @@ int	usage(char *p) {
 }
 
 int	main(int ac, char **av) {
-  elfshobj_t	*obj;
-  int cnt,cnt2,x,nr;
+  int cnt2,x,nr;
   char **ret;
   char *infile,*outfile,*os,*srcFile,*arch,*osRel;
   int opt_cdb;
   Mjr_fingerPrint *fng;
   Mjr_fsym *fs;
-  hash_t *hs,*db;
+  hash_t *hs;
+  Mjr_CTX ctx;
 
- hs=db=NULL;
+ hs=NULL;
 
  infile = NULL; 		/* input file */
  outfile = NULL;		/* new recovered file */
@@ -93,10 +93,12 @@ int	main(int ac, char **av) {
  }
 
 
-  /* load obj */
-  obj = elfsh_map_obj(infile);
+  mjr_init(&ctx);
 
-  if (!obj)
+  /* load obj */
+  ctx.obj = elfsh_map_obj(infile);
+
+  if (!ctx.obj)
     {
       printf("failed opening %s\n", infile);
       return -1;
@@ -105,12 +107,12 @@ int	main(int ac, char **av) {
   if (opt_cdb == 0) {
 
    /* load the MD5 database */
-   if (mjr_load_md5_db("./share/mjollnirMD5.db",(hash_t *)&db) == -1) {
+   if (mjr_load_md5_db("./share/mjollnirMD5.db",(hash_t *)&ctx.md5db) == -1) {
     printf("can't load DB\n");return -1;
    }
 
   /* scan the raw data for functions */
-  mjr_find_calls_raw(obj,(hash_t *)&hs,".text","sub_",&cnt);
+  mjr_find_calls_raw(&ctx,(hash_t *)&hs,".text","sub_");
 
   ret = hash_get_keys((hash_t *)&hs,&cnt2);
 
@@ -118,7 +120,7 @@ int	main(int ac, char **av) {
    fs = hash_get((hash_t *)&hs,ret[x]);
    if (fs->type == F_TYPE_CALL) {
 
-    fng = hash_get((hash_t *)&db,fs->md5sum);
+    fng = hash_get((hash_t *)&ctx.md5db,fs->md5sum);
 
     /* We found it */
     if (fng != NULL) {
@@ -132,7 +134,7 @@ int	main(int ac, char **av) {
 	   fng->rel);
 
      if (outfile != NULL)
-	  mjr_add_symbol(obj,".text",fs->vaddr,fng->fname);
+	  mjr_add_symbol(ctx.obj,".text",fs->vaddr,fng->fname);
 
     /* it sucks - no fingerprint matched*/
     } else {
@@ -147,7 +149,7 @@ int	main(int ac, char **av) {
 	  );
 
      if (outfile != NULL)
-      mjr_add_symbol(obj,".text",fs->vaddr,ret[x]);
+      mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
     }
 	
 	/* do the syscall stuff */
@@ -159,7 +161,7 @@ int	main(int ac, char **av) {
 	 );
 
      if (outfile != NULL)
-      mjr_add_symbol(obj,".text",fs->vaddr,ret[x]);
+      mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
 	 
    }
 
@@ -168,7 +170,7 @@ int	main(int ac, char **av) {
   } else if (opt_cdb == 1) {
 
    /* fill the hash using symbol table lookup */
-   mjr_find_calls_symtab(obj,(hash_t *)&hs,&cnt);
+   mjr_find_calls_symtab(ctx.obj,(hash_t *)&hs);
 
    ret = hash_get_keys((hash_t *)&hs,&cnt2);
    for(x=0;x<cnt2;x++) {
@@ -189,8 +191,8 @@ int	main(int ac, char **av) {
 
   /* save new object */
   if (outfile != NULL)
-   elfsh_save_obj(obj,outfile);
+   elfsh_save_obj(ctx.obj,outfile);
 
-  elfsh_unload_obj(obj);
+  elfsh_unload_obj(ctx.obj);
   return (0);
 }
