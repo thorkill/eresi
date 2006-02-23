@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.h,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+ * $Id: libmjollnir.h,v 1.1.1.2 2006-02-23 22:13:43 thor Exp $
  *
  */
 
@@ -15,7 +15,7 @@
 #include <libelfsh.h>
 
 /* For fingerprinting */
-#include <md5.h>
+#include <openssl/md5.h>
 
 #define BSIZE 4096
 
@@ -31,6 +31,7 @@
 #define FNG_TYPE_DFLOW 3
 
 typedef struct _Mjr_fsym Mjr_fsym;
+typedef struct _mjr_ctx Mjr_CTX;
 typedef struct _fingerPrint Mjr_fingerPrint;
 typedef struct _fingerPrintList Mjr_fprintList;
 
@@ -67,6 +68,13 @@ struct _fingerPrintList {
  Mjr_fingerPrint *cur;
  Mjr_fingerPrint *next;
  Mjr_fingerPrint *prev;
+};
+
+
+struct _mjr_ctx {
+ elfshobj_t *obj;			/* elfsh obj */
+ hash_t 	*md5db;			/* md5 db */
+ asm_instr  ihist[4];		/* instruction history */
 };
 
 #include <libmjollnir-int.h>

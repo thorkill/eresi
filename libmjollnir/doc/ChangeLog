@@ -4,4 +4,6 @@ libMjollnir - Hail To The Hammer!
 20060120 - Start
 20060130 - First working version (WIP) for MD5 fingerprints
 20060220 - Ported into elfsh-0.7a6p2 - WIP
+20060223 - Changed dependecy from libmd to openssl for md5 checksums
+
 
