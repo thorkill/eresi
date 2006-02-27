@@ -2,7 +2,7 @@
 
 # (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
 # BSD License
-# $Id: desDiff.pl,v 1.1.1.1 2006-02-20 23:25:27 thor Exp $
+# $Id: desDiff.pl,v 1.1.1.2 2006-02-27 22:36:33 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
@@ -38,7 +38,7 @@ while($l1 = <X1>) {
   $x = $a1;
   $x =~ s/$a2//g;
   x2();
-  if ($x ne $a2) {print $tmp;}
+  if ($x ne $a2) {print $tmp;exit(1);}
  }
 
 }
@@ -47,6 +47,7 @@ while($l1 = <X1>) {
 sub x2 {
 
  $l2 = <X2>;
+ if (!$l2) {exit();}
  chomp($l2);
  if ($l2 !~ /^\s+/) {x2();}
  @d2 = split("\t",$l2);
