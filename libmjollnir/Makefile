@@ -2,12 +2,13 @@
 # LibMjollnir Makefile
 # (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
 # BSD License 
-# $Id: Makefile,v 1.1.1.2 2006-02-23 20:25:15 thor Exp $
+# $Id: Makefile,v 1.1.1.3 2006-02-28 23:30:03 thor Exp $
 #
 
 SRC= src/fngdb.c \
      src/fngengine.c \
      src/hunter.c \
+     src/bifrost.c \
      src/libmjollnir.c
 
 OBJ=${SRC:.c=.o}
