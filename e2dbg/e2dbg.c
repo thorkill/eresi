@@ -55,7 +55,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 2\n");
-#endif
+#endif  
 
   /* If the breakpoint is a watchpoint, do not call the debugger */
   /* Displays have been executed already so its no problem to ret */
@@ -67,7 +67,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #endif
 
   vm_setup(ac, av);
-
+  
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 4\n");
 #endif
@@ -103,10 +103,6 @@ int		e2dbg_entry(e2dbgparams_t *params)
   if (ac == 2 && !e2dbgworld.step)
     vm_print_banner(av[1]);
 
-#if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] ac=%d av[1]=%s\n", ac, av[1]);
-#endif
-
   if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER && e2dbg_setup(av[1]) < 0)
     {
       elfsh_error();
@@ -129,7 +125,7 @@ int			e2dbg_setup(char *name)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
-  fprintf(stderr,"[e2dbg_setup] Starting %s\n",name);
+  printf("[e2dbg_setup] Starting \n");
 #endif
 
   e2dbg_setup_hooks();

@@ -1,7 +1,7 @@
 /*
-**
-** instruction.c in
-**
+** 
+** instruction.c in 
+** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Mon Mar 15 13:58:52 2004
 ** Updated : Mon Mar 22 01:35:03 2004
@@ -12,17 +12,17 @@
 
 int	asm_instruction_get_len(asm_instr *ins, int opt, void *valptr) {
   int	*val;
-
+  
   val = (int *) valptr;
   if (ins && val)
     *val = ins->len;
   return (ins->len);
 }
 
-int	asm_instruction_get_mnemonic(asm_instr *ins, int opt, void *valptr)
+int	asm_instruction_get_mnemonic(asm_instr *ins, int opt, void *valptr) 
 {
   char	**ptr;
-
+  
   if (valptr)
     {
       ptr = valptr;
@@ -35,7 +35,7 @@ int	asm_instruction_get_mnemonic(asm_instr *ins, int opt, void *valptr)
 int	asm_instruction_get_type(asm_instr *ins, int opt, void *valptr)
 {
   int	*val;
-
+  
   if (valptr)
     {
       val = valptr;
@@ -48,7 +48,7 @@ int	asm_instruction_get_type(asm_instr *ins, int opt, void *valptr)
 int	asm_instruction_get_prefix(asm_instr *ins, int opt, void *valptr)
 {
   int	*val;
-
+  
   if (valptr)
     {
       val = valptr;
@@ -59,7 +59,7 @@ int	asm_instruction_get_prefix(asm_instr *ins, int opt, void *valptr)
 
 /**
  * get number of operand of instruction
- *
+ *  
  */
 
 int	asm_instruction_get_nbop(asm_instr *ins, int opt, void *valptr)

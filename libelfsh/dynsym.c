@@ -165,12 +165,12 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 
 
 
-/*
-** Return the dynamic symbol name giving its value,
+/* 
+** Return the dynamic symbol name giving its value, 
 ** Fill 'offset' with the difference between sym->st_value and 'value'
 */
 char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
-					 elfsh_Addr	value,
+					 elfsh_Addr	value, 
 					 elfsh_SAddr    *offset)
 {
   elfshsect_t	*sect;
@@ -181,26 +181,26 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 
   elfsh_Sym	*pltsym;
   elfshsect_t	*plt;
-
+  
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (!value || value == (elfsh_Addr) -1)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid parameters", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", NULL);  
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   if (offset)
     *offset = 0;
 
   /* If there is no symtab, resolve using SHT */
-  if (elfsh_get_dynsymtab(file, &num) == NULL)
+  if (elfsh_get_dynsymtab(file, &num) == NULL) 
     {
       sect = elfsh_get_parent_section(file, value, offset);
       if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No parent section", NULL);
 
       /* handle dynamic case */
@@ -218,9 +218,9 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
     elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_DYNSYM]);
   sorted = file->secthash[ELFSH_SECTION_DYNSYM]->altdata;
 
-  /* Restore dynsym if pointing inside PLT and we did not find it */
+  /* Restore dynsym if pointing inside PLT and we did not find it */ 
   plt = file->secthash[ELFSH_SECTION_PLT];
-  sect = elfsh_get_parent_section(file, value, offset);
+  sect = elfsh_get_parent_section(file, value, offset); 
   if (plt && sect && sect->name && !strcmp(sect->name, ELFSH_SECTION_NAME_PLT))
     {
       pltsym = elfsh_restore_dynsym(file, plt, *offset,
@@ -230,7 +230,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 	  *offset = 0;
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 			     (elfsh_get_dynsymbol_name(file, pltsym)));
-	}
+	}                                                                                                                                   
     }
 
   /* handle dynamic case */
@@ -242,19 +242,19 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
     if (sorted[index].st_value <= value && DUMPABLE(sorted + index) &&
 	(index + 1 >= num || sorted[index + 1].st_value > value))
       {
-
+	
 	if (offset)
 	    *offset = (elfsh_SAddr) (value - sorted[index].st_value);
 	str = elfsh_get_dynsymbol_name(file, sorted + index);
 	if (!*str)
 	  str = NULL;
-
-
+	
+	
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
       }
-
+  
   /* Not found */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No valid symbol interval", NULL);
 }
 
@@ -274,12 +274,12 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   ret = elfsh_get_dynsymtab(file, &size);
   if (ret == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
 
   for (index = 0; index < size; index++)
@@ -288,8 +288,8 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
       if (actual && !strcmp(actual, name))
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + index));
     }
-
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Symbol not found", NULL);
 }
 

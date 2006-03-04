@@ -181,7 +181,7 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
 
   if (!buff)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid argument", (-1));
+		      "Invalid argument", (-1));    
 
   /* Init proc */			  
   if (!world.curjob->proc) {

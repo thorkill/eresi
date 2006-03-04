@@ -15,17 +15,17 @@
 char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* Used by SHT reconstruction engine */
   if (mode >= ELFSH_SHIFTING_NONE &&
       tmp->shdr->sh_link && (sct->index <= tmp->shdr->sh_link))
     tmp->shdr->sh_link++;
-
+  
   /* Used by MIPS/PLT reconstruction */
   /* No shifting except an incrementation of index for .plt */
   if (mode >= ELFSH_SHIFTING_MIPSPLT)
     tmp->index++;
-
+  
   /* File perspective section shifting */
   if (mode >= ELFSH_SHIFTING_PARTIAL)
     tmp->shdr->sh_offset += sct->shdr->sh_size;
@@ -49,7 +49,7 @@ char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
 ** SHOULD -NOT- manipulation symbol table because we are called from
 ** elfsh_load_sht() which has not loaded symtab yet.
 **
-** This function is used for constructing the map (elfshobj_t) of a
+** This function is used for constructing the map (elfshobj_t) of a 
 0** binary file in memory. It is called as well at each new section
 ** injection.
 **
@@ -67,19 +67,19 @@ int		elfsh_add_section(elfshobj_t	*file,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-
+  
 #if __DEBUG_RUNTIME__
-  printf("[DEBUG_RUNTIME] Adding section with range = %u, file->rhdr.rshtnbr = %u, shnum = %u (%s) \n",
+  printf("[DEBUG_RUNTIME] Adding section with range = %u, file->rhdr.rshtnbr = %u, shnum = %u (%s) \n", 
 	 range, file->rhdr.rshtnbr, file->hdr->e_shnum, sct->name);
 #endif
 
   /* Load the ELF header if not done */
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (file->sht == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SHT not loaded", -1);
 
   else if (elfsh_section_is_runtime(sct) && !file->rsht)
@@ -89,14 +89,14 @@ int		elfsh_add_section(elfshobj_t	*file,
   /* Refuse to insert a section for some conditions */
   if ((elfsh_section_is_runtime(sct) && range >= file->rhdr.rshtnbr) ||
       range >= file->hdr->e_shnum)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown requested section slot", -1);
 
   else if (sct->flags & ELFSH_SECTION_INSERTED)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Already inserted", -1);
   else if (sct->data != NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is not empty", -1);
 
   sct->shdr   = (elfsh_section_is_runtime(sct) ? file->rsht : file->sht) + range;
@@ -109,9 +109,9 @@ int		elfsh_add_section(elfshobj_t	*file,
   sct->index  = range;
   sct->data   = dat;
   inserted    = 0;
-
+  
   /* We cannot print the name here because some sects do not have one yet */
-#if __DEBUG_SECTS__
+#if __DEBUG_SECTS__ 
   printf("[DEBUG:add_section] Adding section at index = %u from file %s \n",
 	 sct->index, file->name);
 #endif
@@ -151,8 +151,8 @@ int		elfsh_add_section(elfshobj_t	*file,
 	}
       else
 	{
-	  file->rsectlist = sct;
-	  file->rsectlist->prev = sct;
+	  file->rsectlist = sct;      
+	  file->rsectlist->prev = sct;                                  
 	}
     }
 
@@ -164,7 +164,7 @@ int		elfsh_add_section(elfshobj_t	*file,
       if (!elfsh_section_is_runtime(sct))
 	file->sectlist->prev = sct;
       else
-	file->rsectlist->prev = sct;
+	file->rsectlist->prev = sct; 
     }
 
   /* shift the last section if the insertion has already been done */
@@ -209,13 +209,13 @@ int             elfsh_add_runtime_section(elfshobj_t    *file,
 
 
 /* Internal function */
-static
-elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
-						    char         *name,
-						    int          *idx,
-						    int          *strindex,
+static 
+elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,                
+						    char         *name,                     
+						    int          *idx,                      
+						    int          *strindex,                 
 						    int          *num,
-						    elfshsect_t	 *sectlist)
+						    elfshsect_t	 *sectlist)   
 {
   elfshsect_t	*section;
   char		*sname;
@@ -235,14 +235,14 @@ elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
 	  if (idx != NULL)
 	    *idx = index;
 	  if (num != NULL)
-	    *num = (section->curend ?
+	    *num = (section->curend ? 
 		    section->curend : section->shdr->sh_size);
 	  if (strindex != NULL)
 	    *strindex = section->shdr->sh_link;
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (section));
 	}
     }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Section not found", NULL);
 }
 
@@ -267,14 +267,14 @@ elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No SHT", NULL);
 
-  sect = elfsh_get_section_by_name_withlist(file, name, idx, strindex, num,
+  sect = elfsh_get_section_by_name_withlist(file, name, idx, strindex, num, 
 					    file->sectlist);
   if (!sect && file->rsectlist)
-    sect = elfsh_get_section_by_name_withlist(file, name, idx, strindex,
+    sect = elfsh_get_section_by_name_withlist(file, name, idx, strindex, 
 					      num, file->rsectlist);
 
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section not found", NULL);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect));
@@ -305,11 +305,11 @@ elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
        section != NULL && local_index < shnum;
        local_index++, section = section->next)
     {
-
+      
       if (local_index == shnum)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Section not found", NULL);
-
+      
       if (section->shdr->sh_type == type && ++number > range)
 	{
 	  if (strindex != NULL)
@@ -324,7 +324,7 @@ elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
 
     }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Section not found ..", NULL);
 }
 
@@ -348,27 +348,27 @@ elfshsect_t		*elfsh_get_section_by_type(elfshobj_t	*file,
 
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-
+		      
   else if (elfsh_get_sht(file, &nbr) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive SHT", NULL);
 
   /* Parse the section lists */
   section = elfsh_get_section_by_type_withlist(file, type, range, index, strindex,
 					       num, file->sectlist, nbr);
   if (!section && file->rsectlist)
-    section = elfsh_get_section_by_type_withlist(file, type, range, index,
+    section = elfsh_get_section_by_type_withlist(file, type, range, index, 
 						 strindex, num, file->sectlist,
 						 nbr);
 
   /* Result or error */
   if (!section)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section remained unfound", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (section));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (section));  
 }
 
 
@@ -388,11 +388,11 @@ elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   else if (NULL == elfsh_get_sht(file, num))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive SHT", NULL);
 
   for (section = file->sectlist, local = 0;
@@ -400,7 +400,7 @@ elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
     section = section->next;
 
   if (section == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find section", NULL);
 
   if (strindex != NULL)
@@ -426,11 +426,11 @@ elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   else if (NULL == elfsh_get_runtime_sht(file, num))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive RSHT", NULL);
 
   for (section = file->rsectlist, local = 0;
@@ -438,7 +438,7 @@ elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
     section = section->next;
 
   if (section == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find runtime section", NULL);
 
   if (strindex != NULL)
@@ -467,7 +467,7 @@ void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (shdr == NULL || !shdr->sh_size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot load NULL section", NULL);
 
   XSEEK(file->fd, shdr->sh_offset, SEEK_SET, NULL);
@@ -488,7 +488,7 @@ void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 
   /* Bad parameter checking */
   if (file == NULL || sect == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* If the section is already loaded */
@@ -513,7 +513,7 @@ elfshsect_t	*elfsh_create_section(char *name)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL name", NULL);
   XALLOC(new, sizeof(elfshsect_t), NULL);
   new->name = elfsh_strdup(name);
@@ -530,13 +530,13 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
   elfshsect_t	*s;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   if (file == NULL || NULL == value)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid parameter", NULL);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", NULL);    
 
   if (NULL == file->sht && !elfsh_get_sht(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get SHT", NULL);
 
   /* ET_DYN objects have a relative addressing inside the ELF file */
@@ -567,7 +567,7 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
       }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to get parent section", NULL);
 }
 
@@ -588,7 +588,7 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || elfsh_get_sht(file, NULL) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get parent section", NULL);
 
   for (s = file->sectlist; s; s = s->next)
@@ -603,7 +603,7 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 	}
     }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Parent section remained unfound", NULL);
 }
 
@@ -611,7 +611,7 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 
 
 /* Retreive the section giving the section symbol from .symtab */
-elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file,
+elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file, 
 						    elfsh_Sym *sym)
 {
   elfshsect_t		*current;
@@ -619,7 +619,7 @@ elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || sym == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   if (NULL == elfsh_get_sht(file, NULL))
@@ -642,7 +642,7 @@ elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file,
 
 
 /* This function appends a single char to a section by extending it */
-int		elfsh_fill_section(elfshsect_t	*sect,
+int		elfsh_fill_section(elfshsect_t	*sect, 
 				   char		c,
 				   u_int	size)
 {
@@ -655,7 +655,7 @@ int		elfsh_fill_section(elfshsect_t	*sect,
   memset(str, c, size);
   ret = elfsh_append_data_to_section(sect, str, size);
   if (ret <= 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to append data to section", NULL);
   else
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -664,7 +664,7 @@ int		elfsh_fill_section(elfshsect_t	*sect,
 
 
 
-/*
+/* 
    This function is quite context dependant and should be rewritten.
    Symbol table shifting might be avoided in some obscure
    not-yet-encountered cases. For now it works as requested quite
@@ -672,7 +672,7 @@ int		elfsh_fill_section(elfshsect_t	*sect,
 
    Note : Section placed before non-relocatable sections should
    not use this function because all mapped following sections
-   virtual addresses will change. Be sure to have decent
+   virtual addresses will change. Be sure to have decent 
    (recovered) relocation tables before using it on those sections.
 
    Only strong dataflow engine seems to be the solution for those.
@@ -686,14 +686,14 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
   elfshsect_t	*actual;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* Sanity checks */
   if (sect == NULL || input == NULL || !len)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   /*
-  printf("Extending %s section from %u bytes (curend = %u) \n",
+  printf("Extending %s section from %u bytes (curend = %u) \n", 
 	 sect->name, len, sect->curend);
   fflush(stdout);
   */
@@ -710,12 +710,12 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
 	XREALLOC(sect->data, sect->data, sect->shdr->sh_size + len, -1);
       else
 	XALLOC(sect->data, len, -1);
-
+      
       memcpy(sect->data + sect->shdr->sh_size, input, len);
       sect->shdr->sh_size += len;
       sect->curend += len;
     }
-
+  
   /* Enough room in the section to put our data */
   else
     {
@@ -728,7 +728,7 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
   if (sect->parent->rights == O_RDONLY ||
       elfsh_section_is_runtime(sect))
     goto end;
-
+  
   /* Modify the section header table file offset if necessary */
   if (sect->parent->hdr->e_shoff >= sect->shdr->sh_offset)
     sect->parent->hdr->e_shoff += len;
@@ -737,16 +737,16 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
   for (actual = sect; actual != NULL; actual = actual->next)
     if (actual != sect)
       {
-
+	
 	/*
-	printf("Shifted section %s from %08X to %08X (foff : %u -> %u) \n",
-	       actual->name, actual->shdr->sh_addr,
-	       actual->shdr->sh_addr + len,
-	       actual->shdr->sh_offset,
+	printf("Shifted section %s from %08X to %08X (foff : %u -> %u) \n", 
+	       actual->name, actual->shdr->sh_addr, 
+	       actual->shdr->sh_addr + len, 
+	       actual->shdr->sh_offset, 
 	       actual->shdr->sh_offset + len);
 	fflush(stdout);
 	*/
-
+	
 	/* Do not shift virtual address for mapped sections located
 	   after an unmapped section */
 	if (sect->shdr->sh_addr != NULL && actual->shdr->sh_addr != NULL)
@@ -772,7 +772,7 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
     }
 
   /* Return section offset where the data has been inserted */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (sect->shdr->sh_size - len));
 }
 
@@ -796,17 +796,17 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
 
   /* Sanity checks */
   if (obj == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);
 
   todel = elfsh_get_section_by_name(obj, name, NULL, NULL, NULL);
   if (todel == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown section to remove", -1);
 
   if ((todel->prev && todel->prev->shdr->sh_addr) &&
       (todel->next && todel->next->shdr->sh_addr))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section not removable", -1);
 
   /* Unlink */
@@ -850,7 +850,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   /* Modify segments if removed section was mapped */
   if (todel->phdr)
     {
-
+      
       /* Reset PT_PHDR segment is section was pre-interp injected */
       for (idx = 0, pht = obj->pht; idx < obj->hdr->e_phnum; idx++)
 	if (elfsh_segment_is_executable(todel->phdr) &&
@@ -861,11 +861,11 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
 	  }
 	else if (todel->phdr != pht + idx && pht[idx].p_offset >= shdr.sh_offset)
 	  pht[idx].p_offset -= shdr.sh_size;
-
+      
       /* Truncate the removed section size to the segment size */
       todel->phdr->p_filesz -= shdr.sh_size;
       todel->phdr->p_memsz -= shdr.sh_size;
-
+  
       /* Delete symbols pointing on the removed section */
       cur = obj->secthash[ELFSH_SECTION_SYMTAB];
       sym = cur->data;
@@ -933,7 +933,7 @@ elfshsect_t		*elfsh_get_tail_section(elfshobj_t *file)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || file->hdr == NULL || file->sectlist == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   s = elfsh_get_section_by_index(file, file->hdr->e_shnum - 1, NULL, NULL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
@@ -947,7 +947,7 @@ elfshsect_t		*elfsh_get_tail_rsection(elfshobj_t *file)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || file->hdr == NULL || file->rsectlist == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   s = elfsh_get_rsection_by_index(file, file->rhdr.rshtnbr - 1, NULL, NULL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
@@ -973,13 +973,13 @@ elfshsect_t		*elfsh_get_section_list(elfshobj_t *file, int *num)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   if (NULL == elfsh_get_sht(file, num))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get SHT", NULL);
   if (file->hdr == NULL && NULL == elfsh_get_hdr(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get ELF header", NULL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->sectlist));
 }
@@ -992,20 +992,20 @@ elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   if (NULL == elfsh_get_sht(file, num))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get SHT", NULL);
   if (file->hdr == NULL && NULL == elfsh_get_hdr(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get ELF header", NULL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->rsectlist));
 }
 
 
 /* Return the section giving its index */
-elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list,
+elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list, 
 						  elfsh_Addr index)
 {
   u_int			cur;
@@ -1022,12 +1022,12 @@ elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_get_section_by_name(file, name, NULL, NULL, NULL)));
 }
 
 /* Section objects 'raw' child read access */
-void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
+void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, 
 					u_int sizelem)
 {
   char		*data;
@@ -1036,14 +1036,14 @@ void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
 
   /* Sanity checks */
   if (obj == NULL || obj->shdr == NULL || obj->data == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   if (sizelem == 0)
     sizelem = 1;
 
   if (obj->shdr->sh_size <= off * sizelem)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Offset too big", NULL);
 
   /* Return the data */
@@ -1064,13 +1064,13 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL || sect->data == NULL || data == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", -1);
 
   if (sizelem == 0)
     sizelem = 1;
   if ((off * sizelem) + size > sect->shdr->sh_size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is too small", -1);
 
   rdata = elfsh_get_raw(sect);
@@ -1082,9 +1082,9 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
 int		elfsh_section_is_runtime(elfshsect_t *sect)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   if (sect && (sect->flags & ELFSH_SECTION_RUNTIME))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

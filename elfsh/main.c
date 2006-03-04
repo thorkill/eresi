@@ -92,7 +92,7 @@ int		vm_loop(int argc, char **argv)
 	else if(!world.state.vm_net)
 	  vm_exit(-1);
       }
-
+    
     /* Keep the parsing/executing behavior if we are not scripting */
     if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
       {
@@ -108,7 +108,7 @@ int		vm_loop(int argc, char **argv)
 	    break;
 	  }
       }
-
+    
     /* Quit parsing if necessary */
     if ((!world.curjob->curcmd && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
@@ -117,27 +117,27 @@ int		vm_loop(int argc, char **argv)
       break;
   }
   while (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net);
-
+  
   /* If we are in scripting, execute commands queue now */
   if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
       vm_execscript();
     }
-
+  
  end:
   if (!world.state.vm_quiet && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     vm_output("\n [*] Script execution ended. \n\n");
-
+  
   /* Implicit unload or save if we are not in interactive mode */
   if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && world.curjob->current)
     ret = vm_unload_cwfiles();
-
+  
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-
+  
   /* Clean the script machine state when a script is over */
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = world.curjob->curcmd = NULL;
@@ -147,20 +147,20 @@ int		vm_loop(int argc, char **argv)
       snprintf(msg, BUFSIZ - 1, "\t [-: E2DBG now in BG :-] \n\n");
       vm_output_bcast(msg);
     }
-
+  
   /* We arrive here when we execute a continue command from a debugger script */
  e2dbg_continue:
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
-
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
 /* Only one time initialisations */
 /* Called from CTORS */
-int		vm_init()
+int		vm_init() 
 {
  /* Must be here in case of script params presence */
   bzero(&world, sizeof (world));
@@ -181,7 +181,7 @@ int		vm_init()
 int		vm_setup(int ac, char **av)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+ 
   /* Detect the mode we are running in */
   if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
     {
@@ -237,7 +237,7 @@ int		vm_config()
       snprintf(buff, sizeof(buff), "%s/.elfshrc", home);
       XALLOC(new, sizeof(elfshargv_t), -1);
       memset(new, 0, sizeof(elfshargv_t));
-      world.curjob->curcmd = new;
+      world.curjob->curcmd = new; 
       world.curjob->curcmd->param[0] = buff;
       ret = cmd_source();
       world.curjob->curcmd = NULL;

@@ -294,10 +294,10 @@ echo ""								>> Makefile
 #echo ""								>> Makefile
 echo "include ./config.h "					>> Makefile
 echo " "							>> Makefile
-echo "CC      = gcc "                                           >> Makefile
-echo "RM      = rm -f "                                         >> Makefile
-echo "ETAGS   = etags "                                         >> Makefile
-echo "CTAGS   = ctags "                                         >> Makefile
+echo "CC      = gcc "						>> Makefile
+echo "RM      = rm -f "						>> Makefile
+echo "ETAGS   = etags "					        >> Makefile
+echo "CTAGS   = ctags "						>> Makefile
 echo "DESTDIR = $PREFIX"                       			>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
@@ -308,10 +308,10 @@ echo "BASEPATH = \$(DESTDIR)/usr/local"                >> Makefile
 echo "MANPATH = \$(BASEPATH)/share/man"                >> Makefile
 fi
 
-echo "MODPATH = \$(BASEPATH)/share/elfsh/"                      >> Makefile
-echo "BINPATH = \$(BASEPATH)/bin/"                              >> Makefile
-echo "LIBPATH = \$(BASEPATH)/lib/"                              >> Makefile
-echo "INCPATH = \$(BASEPATH)/include/"                          >> Makefile
+echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
+echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile
+echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
+echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "RM      = rm -f "                                		>> Makefile
 
 echo " "							>> Makefile
@@ -347,7 +347,7 @@ echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
 
 fi
 
-echo "	@echo 'Building libui...'			"      	>> Makefile
+echo "	@echo 'Building libui...'			"      	>> Makefile	
 echo "	@cd libui && \$(MAKE) 				"	>> Makefile
 echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
 
@@ -414,7 +414,7 @@ echo "	@ldconfig -R"                               >> Makefile
 fi
 
 echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libui and Libasm installed successfully .'"	>> Makefile
-echo " "							>> Makefile
+echo " "							>> Makefile 
 
 echo "mod_install: "						>> Makefile
 echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile
@@ -469,7 +469,7 @@ echo "	cd libmjollnir     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
 
 echo "	@echo 'Tree cleaned .' "				>> Makefile
 echo " "							>> Makefile
@@ -518,6 +518,6 @@ echo " "							>> Makefile
 
 echo
 echo " Now make && make install"
-echo
+echo 
 
 

@@ -8,7 +8,7 @@
 #include <libasm.h>
 
 int init_instr_table(asm_processor *proc) {
-
+  
   /* valgrind complained about mem leaks */
   proc->instr_table = malloc(sizeof(char *) * ASM_BAD + 4);
   

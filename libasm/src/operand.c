@@ -15,7 +15,7 @@
 
 int     asm_operand_get_immediate(asm_instr *ins, int num,
 				  int opt, void *valptr) 
-{
+{  
 
   asm_operand	*op;
   /*
@@ -24,7 +24,7 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
   int		*i;
   */
 
-  switch(num)
+  switch(num) 
     {
     case 1: op = &ins->op1; break;
     case 2: op = &ins->op2; break;
@@ -32,7 +32,7 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
     default:
       return (-1);
     }
-
+  
   memset(valptr, 0, 4);
   memcpy(valptr, &op->imm, 4);
   /*
@@ -59,7 +59,7 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
       memcpy(valptr, &opt, 4);
       break;
     }
-  */
+  */  
   return (1);
 }
 

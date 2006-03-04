@@ -1,6 +1,6 @@
 /*
 ** readln.c elfsh
-**
+** 
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 */
@@ -47,7 +47,7 @@ char		*command_generator(const char *text, int state)
 	  if (!strncmp(name, text, len))
 	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_strdup(name)));
 	}
-
+  
   /* If no names matched, then return NULL. */
   i = tab = len = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  ((char *) NULL));
@@ -87,12 +87,12 @@ char	**custom_completion(const char* text, int start, int end)
       XFREE(matches[0]);
       matches[0] = elfsh_strdup(buf);
     }
-
+  
   switch (rl_completion_append_character)
     {
     case ' ':
       if (baq2 && *baq2)
-      rl_completion_append_character = '[';
+	rl_completion_append_character = '[';
       break;
     case '[':
       rl_completion_append_character = ']';
