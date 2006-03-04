@@ -18,7 +18,7 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   XALLOC(new, sizeof(elfshjob_t), NULL);
 
   memcpy(new, job, sizeof(elfshjob_t));
-  
+
   /* empt?? new job */
   new->list = NULL;
   new->current = NULL;
@@ -60,7 +60,7 @@ int		vm_valid_workspace(char *name)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!name)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
+
   if (!name[0])
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
@@ -89,7 +89,7 @@ int		vm_own_job(elfshjob_t *job)
 
   if (job->io.output_fd != world.curjob->io.output_fd)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
