@@ -148,13 +148,12 @@ int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
 /* Change endianess of relocation tables */
 int		elfsh_endianize_relocs(elfshsect_t *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   u_int		idx;
   elfsh_Rel	*rel;
   elfsh_Rela	*rela;
   u_int		sz;
-  
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!s)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);

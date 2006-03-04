@@ -264,7 +264,7 @@ int			store_blocks(elfshobj_t *obj , struct s_iblock *blist, int mode)
       buf.data = 0;
       buf.obj = obj;
       if (mode)
-	   btree_browse_prefix(blist->btree, build_data, &buf);
+	btree_browse_prefix(blist->btree, build_data, &buf);
       
       sect = elfsh_create_section(".control");
       shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen,
@@ -483,11 +483,11 @@ int	insert_destination_address(elfshobj_t *obj,
   struct s_iblock	*dst;
   struct s_iblock	*dst_end;
   int			new_size;
-
+  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   dest = 0;
-  
+
   if ((ins->op1.content & ASM_OP_VALUE) && 
       !(ins->op1.content & ASM_OP_REFERENCE)) 
     {    
@@ -509,7 +509,7 @@ int	insert_destination_address(elfshobj_t *obj,
 	  dst->altype = CALLER_UNKN;
 	  block_add_list(blk_list, dst);
 	} 
-
+    
       /* 
 	 we have to truncate block found unless destination
 	 address is block starting address in 2 new blocks:

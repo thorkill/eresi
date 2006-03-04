@@ -12,11 +12,11 @@
 void			vm_log(char *str)
 {
   u_int			len = 0;
-
+  
   ELFSH_NOPROFILE_IN();
 
-  if (!str || !world.curjob ||
-      !world.curjob->io.outcache.lines ||
+  if (!str || !world.curjob || 
+      !world.curjob->io.outcache.lines || 
       !world.curjob->io.outcache.cols)
     return;
 
@@ -28,15 +28,15 @@ void			vm_log(char *str)
   /* Allocate the screen buffer */
   if (world.curjob->screen.buf == NULL)
     {
-      XALLOC(world.curjob->screen.buf,
-	     world.curjob->io.outcache.lines *
+      XALLOC(world.curjob->screen.buf, 
+	     world.curjob->io.outcache.lines * 
 	     world.curjob->io.outcache.cols + 1, );
 
-      world.curjob->screen.x = world.curjob->io.outcache.cols;
+      world.curjob->screen.x = world.curjob->io.outcache.cols; 
       world.curjob->screen.y = world.curjob->io.outcache.lines;
-
-      world.curjob->screen.head = world.curjob->screen.tail =
-      world.curjob->screen.buf;
+      
+      world.curjob->screen.head = world.curjob->screen.tail = 
+	world.curjob->screen.buf;
 
     }
 
@@ -45,15 +45,15 @@ void			vm_log(char *str)
 	   world.curjob->screen.y != world.curjob->io.outcache.lines)
     {
       XFREE(world.curjob->screen.buf);
-
-      XALLOC(world.curjob->screen.buf,
-	     world.curjob->io.outcache.lines *
+      
+      XALLOC(world.curjob->screen.buf, 
+	     world.curjob->io.outcache.lines * 
 	     world.curjob->io.outcache.cols + 1, );
 
       world.curjob->screen.x = world.curjob->io.outcache.cols;
       world.curjob->screen.y = world.curjob->io.outcache.lines;
 
-      world.curjob->screen.head = world.curjob->screen.tail =
+      world.curjob->screen.head = world.curjob->screen.tail = 
 	world.curjob->screen.buf;
     }
 
@@ -62,7 +62,7 @@ void			vm_log(char *str)
 #define buf	world.curjob->screen.buf
 #define tail	world.curjob->screen.tail
 #define head	world.curjob->screen.head
-
+    
   if (tail >= head)
     {
       // [head] ... [tail]
@@ -91,7 +91,7 @@ void			vm_log(char *str)
 	  head = buf + ((tail - buf) + strlen(str))%scrsize;
 	  sprintf(tail,"%s", str);
 	  tail += strlen(str);
-
+	  
 	}
       else
 	{
@@ -103,7 +103,7 @@ void			vm_log(char *str)
 
 	      if (tail > head)
 		head = tail + 1;
-	    }
+	    }  
 	  else
 	    {
 	      sprintf(tail, "%s", str);
@@ -128,7 +128,7 @@ int			vm_closelog()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XCLOSE(world.curjob->logfd, -1);
-
+  
   if (!world.state.vm_quiet)
     vm_output(" [*] Saved logging session \n\n");
   world.curjob->state &= (~ELFSH_JOB_LOGGED);

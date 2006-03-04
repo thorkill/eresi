@@ -102,7 +102,7 @@ int		vm_execscript()
 	  e2dbgworld.dbgcontext.curcmd = next;
 	  e2dbgworld.sourcing = 1;
 	  printf("Found continue in script, saving context & sourcing flag \n");
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     E2DBG_SCRIPT_CONTINUE);
 	}
 
@@ -112,10 +112,10 @@ int		vm_execscript()
 	  if (!world.state.vm_quiet)
 	    vm_print_actual(cur);
 	  if (vm_implicit(cur->cmd) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Implicit operations failed", -1);
 	  if (cur->cmd->exec() < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Command execution failed", -1);
 	}
       else
@@ -145,7 +145,7 @@ int		vm_execscript()
       e2dbgworld.sourcing = 0;
       printf("Restoring e2dbg context from sourced script \n");
     }
-
+      
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -165,7 +165,7 @@ int		vm_execmd()
   curjob = world.curjob;
 
   /* Curcmd acts like a $PC register */
-  for (err = 0, cur = curjob->script[curjob->sourced]; cur;
+  for (err = 0, cur = curjob->script[curjob->sourced]; cur; 
        curjob->curcmd = cur = cur->next)
     if (cur->cmd != NULL && cur->cmd->exec != NULL)
       {
@@ -188,24 +188,24 @@ int		vm_execmd()
 
 	/* We are executing 'cont' from e2dbg */
 	else if (ret == E2DBG_SCRIPT_CONTINUE)
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     E2DBG_SCRIPT_CONTINUE);
       }
-
+  
 
    end:
-
-  /*
+  
+  /* 
   ** Free the chain. We can do that in interactive mode 
   ** because there is no loop support
   **
   for (cur = world.curjob->script[world.curjob->sourced]; cur; cur = next)
   {
   next = cur->next;
-  XFREE(cur);
+  XFREE(cur); 
   }
   */
-
+  
   curjob->script[curjob->sourced] = curjob->curcmd = NULL;
   curjob->lstcmd[curjob->sourced] = NULL;
 
@@ -225,7 +225,7 @@ int		vm_move_pc(char *param)
   int		index;
   int		jmp;
   elfshargv_t	*next;
-
+  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* check if we match a label */
@@ -238,14 +238,14 @@ int		vm_move_pc(char *param)
       world.curjob->curcmd = next;
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-
+  
   /* Use the parameter as a numerical index */
   jmp = atoi(param);
   if (jmp < 0)
     for (index = 0, jmp = -jmp; index != jmp; index++)
       {
 	if (!world.curjob->curcmd->prev)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid backward branchement", -1);
 	world.curjob->curcmd = world.curjob->curcmd->prev;
       }
@@ -253,14 +253,14 @@ int		vm_move_pc(char *param)
     for (index = 0; index != jmp; index++)
       {
 	if (!world.curjob->curcmd->next)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid forward branchement", -1);
 	world.curjob->curcmd = world.curjob->curcmd->next;
       }
   else
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid null branchement", -1);
-
+  
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

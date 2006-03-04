@@ -246,7 +246,7 @@ int	cmd_testflow(void)
 
 hash_t		block_hash;
 
-int	cmd_flow(void) 
+int			cmd_flow(void) 
 {
 
   char                  *buffer;
@@ -268,7 +268,7 @@ int	cmd_flow(void)
   char                  *str;
   struct s_iblock       *binary_blks;
   /* char		*str; */
-
+  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   /*
@@ -285,19 +285,19 @@ int	cmd_flow(void)
 	   "     current stored information\nContinue?[N/y]");
       ilen = getchar();
       if (ilen != 'y')
-	   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-	    "Flow analysis Aborted", -1);
-    
-	  if (sect->altdata)
-	   binary_blks = (struct s_iblock *) sect->altdata;
-      else
-	   load_blocks(world.curjob->current, (struct s_iblock **) &binary_blks);
-    }
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Flow analysis Aborted", -1);
 
+      if (sect->altdata)
+	binary_blks = (struct s_iblock *) sect->altdata;
+      else
+	load_blocks(world.curjob->current, (struct s_iblock **) &binary_blks);
+    }
+  
   if (!(shtlist = elfsh_get_sht(world.curjob->current, &num_sht)))
     {
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-	                  "[MODFLOW] cannot get sectionlist", -1);	  
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "[MODFLOW] cannot get sectionlist", -1);
     }
   printf(" * %i sections\n", num_sht);
   
@@ -363,7 +363,7 @@ int	cmd_flow(void)
 	  if ((ilen = asm_read_instr(&instr, buffer + disassembled, 
 				     max_len - disassembled, &world.proc))) 
 	    {
-
+	  
 		  vaddr_hist_shift(instr);
 	  
 	      /*
@@ -371,8 +371,8 @@ int	cmd_flow(void)
 		printf("%8x:\t%s\n", vaddr + disassembled, str);
 	      */
 	      trace_control(world.curjob->current, &instr, vaddr + disassembled, 
-			    &binary_blks);				
-	    }
+			    &binary_blks);
+	    } 
 	  else
 	    ilen = 1;
 	}
@@ -414,7 +414,7 @@ void vaddr_hist_shift(asm_instr vaddr) {
  vaddr_hist[2] = vaddr_hist[3];
  vaddr_hist[3] = vaddr_hist[4];
  vaddr_hist[4] = vaddr;
-
+  
 }
 
 int cmd_set_ptrfnc(void) {

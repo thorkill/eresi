@@ -197,7 +197,7 @@ int		cmd_graph(void)
 	}
       else {
 	  if (mf_settings.graph_verbose_level == 0) {
-  	   snprintf(buf, sizeof (buf), 
+	snprintf(buf, sizeof (buf), 
 		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);
 	  } else if (mf_settings.graph_verbose_level == 1) {
 	   snprintf(buf, sizeof (buf), 
@@ -227,7 +227,7 @@ int		cmd_graph(void)
       write(fd, buf, strlen(buf));
       /* Write all graph links for the current block */
       if ((blk->vaddr < min) || (max <= blk->vaddr))
-	   continue;
+	continue;
 
       vm_write_graphent(world.curjob->current, fd, blk);
     } /* !for */

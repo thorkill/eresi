@@ -10,7 +10,7 @@ void	init_instr_table(asm_processor *);
 /**
  * handler to disassemble ia32 code.
  * fetch in asm_i386_processor structure points to this function
- *
+ * 
  */
 
 int     fetch_i386(asm_instr *instr, u_char *buf, u_int len, asm_processor *proc) {
@@ -35,7 +35,7 @@ void asm_init_i386(asm_processor *proc) {
   struct s_asm_proc_i386 *inter;
 
   init_instr_table(proc);
-
+  
   proc->resolve_immediate = asm_resolve_ia32;
   proc->resolve_data = 0;
   // proc->get_operand = create_i386_operand;
@@ -318,7 +318,6 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0x87] = i386_ja;
   inter->cisc_i386[0x88] = i386_js;
   inter->cisc_i386[0x89] = i386_jns;
-  inter->cisc_i386[0x8a] = i386_jp;
   inter->cisc_i386[0x8c] = i386_jl;
   inter->cisc_i386[0x8d] = i386_jge;
   inter->cisc_i386[0x8e] = i386_jle;
@@ -358,7 +357,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xbe] = i386_movsbl_rv_rmb;
   inter->cisc_i386[0xbf] = i386_movswl_rv_rm2;
   inter->cisc_i386[0xc8] = i386_bswap;
-
+  
 }
 
 void asm_free_i386(asm_processor *proc) {
