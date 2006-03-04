@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: thor.c,v 1.1.1.2 2006-02-23 22:13:43 thor Exp $
+ * $Id: thor.c,v 1.1.1.3 2006-03-04 23:52:54 thor Exp $
  *
  * Since this library is build on top of libasm and elfsh
  * I decided to use mydisasm.c from libasm as a prototype
@@ -85,7 +85,7 @@ int	main(int ac, char **av) {
  }
 
  if (infile == NULL) {
-	  return(usage(av[0])); 
+	  return(usage(av[0]));
  }
 
  if (srcFile == NULL) {
@@ -94,6 +94,7 @@ int	main(int ac, char **av) {
 
 
   mjr_init(&ctx);
+  asm_init_i386(&ctx.proc);
 
   /* load obj */
   ctx.obj = elfsh_map_obj(infile);
@@ -112,7 +113,9 @@ int	main(int ac, char **av) {
    }
 
   /* scan the raw data for functions */
-  mjr_find_calls_raw(&ctx,(hash_t *)&hs,".text","sub_");
+  if (mjr_find_calls_raw(&ctx,(hash_t *)&hs,".text","sub_") == -1) {
+    printf("raw read failed\n");return -1;
+  }
 
   ret = hash_get_keys((hash_t *)&hs,&cnt2);
 
@@ -151,7 +154,7 @@ int	main(int ac, char **av) {
      if (outfile != NULL)
       mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
     }
-	
+
 	/* do the syscall stuff */
 	} else if (fs->type == F_TYPE_SYSCALL) {
 	 printf("[S] VADDR:0x%08x SYSCALL NR: %d SYMBOL:%s\n",
@@ -162,7 +165,7 @@ int	main(int ac, char **av) {
 
      if (outfile != NULL)
       mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
-	 
+
    }
 
   }
@@ -170,7 +173,7 @@ int	main(int ac, char **av) {
   } else if (opt_cdb == 1) {
 
    /* fill the hash using symbol table lookup */
-   mjr_find_calls_symtab(ctx.obj,(hash_t *)&hs);
+   mjr_find_calls_symtab(&ctx,(hash_t *)&hs);
 
    ret = hash_get_keys((hash_t *)&hs,&cnt2);
    for(x=0;x<cnt2;x++) {
@@ -186,7 +189,7 @@ int	main(int ac, char **av) {
 	 srcFile
 	 );
    }
-  
+
   }
 
   /* save new object */
@@ -194,5 +197,9 @@ int	main(int ac, char **av) {
    elfsh_save_obj(ctx.obj,outfile);
 
   elfsh_unload_obj(ctx.obj);
+
+  printf("Stats: CALLs seen: %d Recognized: %d\n",
+   ctx.stats_calls_seen,
+   ctx.stats_calls_found);
   return (0);
 }

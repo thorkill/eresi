@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.h,v 1.1.1.2 2006-02-23 22:13:43 thor Exp $
+ * $Id: libmjollnir.h,v 1.1.1.3 2006-03-04 23:52:54 thor Exp $
  *
  */
 
@@ -11,8 +11,8 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <libasm.h>
 #include <libelfsh.h>
+#include <libasm.h>
 
 /* For fingerprinting */
 #include <openssl/md5.h>
@@ -73,8 +73,13 @@ struct _fingerPrintList {
 
 struct _mjr_ctx {
  elfshobj_t *obj;			/* elfsh obj */
+ asm_processor proc;		/* proc */
  hash_t 	*md5db;			/* md5 db */
+ u_int		cvaddr;			/* current vaddr */
  asm_instr  ihist[4];		/* instruction history */
+ int		tr_eax,tr_ebx,tr_ecx,tr_edx; /* registers tracking system WIP!*/
+ u_int stats_calls_seen;
+ u_int stats_calls_found;
 };
 
 #include <libmjollnir-int.h>
