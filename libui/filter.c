@@ -50,27 +50,27 @@ char		*vm_filter_param(char *buf, char *ptr)
   u_int		nbr;
   char		c;
   char		d;
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* if string ends with '\x', its over for this entry */
   if (*(ptr + 2) == 0x00)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
-  
+
   /* Do exception for \x00 which must not be resolved */
   c = *(ptr + 2);
   d = *(ptr + 3);
   if (c == '0' && !((d >= 'A' && d <= 'F') || (d >= '1' && d <= '9')))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       (buf + (d == '0' ? 4 : 3)));
-  
+
   /* else read the hexadecimal value */
   else
     {
       sscanf(ptr + 2, "%X", &nbr);
       *ptr = (char) nbr;
       buf = ptr + 4;
-      
+
       /* and copy the data, strcpy put NUL at the end */
       strcpy(ptr + 1, buf);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));

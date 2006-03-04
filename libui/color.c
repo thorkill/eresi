@@ -21,7 +21,7 @@ color_t 	*vm_colorblank()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XALLOC(c, sizeof(color_t), NULL);
- 
+
   c->fground = COLOR_NONE;
   c->bground = COLOR_NONE;
   c->bold = COLOR_NONE;
@@ -39,7 +39,7 @@ color_t 	*vm_colortable(char *type, char *text)
       regexec(&world.state.vm_alert, text, 0, 0, 0) == NULL)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       hash_get(&t_color_hash, "warnstring"));
- 
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     hash_get(&t_color_hash, type)); 
 }
@@ -49,7 +49,7 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
   char		bo[16], ul[16], fg[16], bg[16];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   if (t->bground == NULL && t->fground == NULL && 
       t->bold == NULL && t->underline == NULL)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);  
@@ -58,30 +58,30 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
     snprintf(bo, 15, "\e[%u", COLOR_BOLD);
 
   if (t->underline != NULL)
-    snprintf(ul, 15, "%s%u", 
+    snprintf(ul, 15, "%s%u",
 	     (t->bold == NULL ? "\e[" : COLOR_SEPARE), 
-	     COLOR_UNDERLINE);    
-    
+	     COLOR_UNDERLINE);
+
   if (t->fground != NULL)
-    snprintf(fg, 15, "%s%u", 
-	     (t->bold == NULL && t->underline == NULL ? "\e[" : COLOR_SEPARE), 
-	     t->fground); 
+    snprintf(fg, 15, "%s%u",
+	     (t->bold == NULL && t->underline == NULL ? "\e[" : COLOR_SEPARE),
+	     t->fground);
 
   if (t->bground != NULL)
-    snprintf(bg, 15, "%s%u", 
-	     (t->bold == NULL && t->underline == NULL && 
-	      t->fground == NULL ? "\e[" : COLOR_SEPARE), 
-	     t->bground); 
+    snprintf(bg, 15, "%s%u",
+	     (t->bold == NULL && t->underline == NULL &&
+	      t->fground == NULL ? "\e[" : COLOR_SEPARE),
+	     t->bground);
 
   snprintf(pattern, COLOR_TOKEN_LEN - 1,
-	   "%%s%s%s%s%sm%%s\e[%um%%s", 
-	   (t->bold != NULL ? bo : ""), 
+	   "%%s%s%s%s%sm%%s\e[%um%%s",
+	   (t->bold != NULL ? bo : ""),
 	   (t->underline != NULL ? ul : ""),
-	   (t->fground != NULL ? fg : ""), 
-	   (t->bground != NULL ? bg : ""), 
+	   (t->fground != NULL ? fg : ""),
+	   (t->bground != NULL ? bg : ""),
 	   COLOR_NONE);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Build color text */
@@ -106,7 +106,7 @@ char 		*vm_colorget(char *sp, char *type, void *object)
     snprintf(text, COLOR_TOKEN_LEN - 1, sp, *(long *) object);
   else
     snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
-  
+
 
   if (!nocolor)
     {
@@ -156,7 +156,7 @@ char 		*vm_colorget(char *sp, char *type, void *object)
   for(i=(strlen(text)-1), num=0; IS_BLANK(text[i]); i--, num++)
     white_e[num] = text[i];
   white_e[num] = 0;
-  
+
   if (num > 0)
     text[strlen(text)-num] = 0;
 
