@@ -23,7 +23,7 @@ void			vm_findhex(u_int argc, char **argv)
       if (argv[index] == NULL)
 	continue;
       buf = argv[index];
-      
+
       /* Find "\x" sequences */
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
 	buf = vm_filter_param(buf, ptr);
@@ -43,7 +43,7 @@ char		*vm_getln(char *ptr)
   do
     {
       buf = world.curjob->io.input();
-      
+
       if (buf == ((char *) ELFSH_VOID_INPUT))
         ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
          (char*) ELFSH_VOID_INPUT);
@@ -62,20 +62,20 @@ char		*vm_getln(char *ptr)
           vm_output(logbuf);
           vm_exit(-1);
 	}
-      
+
       sav = buf;
       while (IS_BLANK(*sav))
 	sav++;
 
       if (!*sav || *sav == ELFSH_COMMENT_START)
 	{
-	  
+
 	  vm_log(sav);
 	  vm_log("\n");
 
 #if defined(USE_READLN)
 /* XXX: FIXME check this XFREE! thorkill */
-          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)  
+          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
 #endif
 	    XFREE(buf);
 
@@ -88,12 +88,12 @@ char		*vm_getln(char *ptr)
           buf = NULL;
 
           if (*sav)
-	    continue;	
+	    continue;
 	}
-      
+
       if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
 	{
-          vm_output_nolog("\n"); 
+          vm_output_nolog("\n");
 
           /* avoid looping with readline */
 #if defined(USE_READLN)
