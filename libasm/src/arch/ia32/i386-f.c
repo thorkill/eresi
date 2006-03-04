@@ -1,6 +1,6 @@
 /*
 ** private - do not distribute
-** 
+**
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 17:06:33 2002
 ** Updated : Mon Mar 15 14:04:44 2004
@@ -91,8 +91,8 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     case 0:
       new->instr = ASM_TEST;
       new->op1.type = ASM_OTYPE_ENCODED;
-      
-      operand_rmb(&new->op1, opcode + 1, len - 1, proc);    
+
+      operand_rmb(&new->op1, opcode + 1, len - 1, proc);
       new->op2.type = ASM_OTYPE_IMMEDIATE;
       new->op2.size = ASM_OSIZE_BYTE;
       new->op2.content = ASM_OP_VALUE;
@@ -140,7 +140,7 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 
 int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   struct s_modrm	*modrm;
-  
+
   modrm = (struct s_modrm *) (opcode + 1);
   new->ptr_instr = opcode;
   new->len += 1;
@@ -178,7 +178,7 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
       new->op2.len = asm_proc_vector_len(proc);
       new->op2.content = ASM_OP_VALUE;
       new->op2.ptr = opcode + 1 + new->op1.len;
-      memcpy(&new->op2.imm, opcode + 1 + new->op1.len, 
+      memcpy(&new->op2.imm, opcode + 1 + new->op1.len,
 	     asm_proc_vector_len(proc));
       new->len += new->op2.len;
     }
@@ -317,7 +317,7 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     new->type = ASM_TYPE_CALLPROC;
     new->instr = ASM_CALL;
     new->op1.type = ASM_OTYPE_MEMORY;
-      
+
     break;
   case 4:
     new->type = ASM_TYPE_IMPBRANCH;
@@ -342,13 +342,13 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   default:
     break;
   } /* switch */
-  if ((new->op1.type == ASM_OTYPE_ENCODED) || 
+  if ((new->op1.type == ASM_OTYPE_ENCODED) ||
       (new->op1.type == ASM_OTYPE_MEMORY)) {
     operand_rmv(&new->op1, opcode + 1, len - 1, proc);
     if (new->op1.type == ASM_OTYPE_MEMORY)
       new->op1.content |= ASM_OP_ADDRESS;
   }
-  new->len += new->op1.len;  
+  new->len += new->op1.len;
   return (new->len);
 }
 
