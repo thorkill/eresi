@@ -1,7 +1,7 @@
 /*
-** 
-** i386.h in 
-** 
+**
+** i386.h in
+**
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
 ** Updated : Thu Dec  4 01:17:26 2003
@@ -25,20 +25,20 @@ struct s_asm_proc_i386 {
   /* compatibility				*/
   /* processor state: oplen actived or not	*/
   int			mode;
-  
+
   int			vect_size;
   int			addlen;
   int			oplen;
-  
+
   int			type;
   int			(*get_vect_size)(asm_processor *);
-  
+
   /* handlers for x86 instructions referenced by opcode	*/
-  int			(*cisc_set[256])(asm_instr *, u_char *, u_int, 
+  int			(*cisc_set[256])(asm_instr *, u_char *, u_int,
 					 asm_processor *);
-  
+
 /* handlers for i386 instr. prefixed by 0xff by second opcode	*/
-  int			(*cisc_i386[256])(asm_instr *, u_char *, u_int, 
+  int			(*cisc_i386[256])(asm_instr *, u_char *, u_int,
 					  asm_processor *);
   /*	internal opcode tables	*/
   asm_i386_table	*table_1byte;
@@ -71,9 +71,9 @@ struct s_asm_proc_i386 {
 };
 
 
-/** 
+/**
  * operand type
- * 
+ *
  */
 
 #define ASM_OP_VALUE		1	/*!< immediate value present	*/
@@ -88,11 +88,11 @@ struct s_asm_proc_i386 {
 
 /**
  * prefix
- * |F|E|D|C|B|A|9|8|7|6|5|4|3|2|1|0| 
- * 
+ * |F|E|D|C|B|A|9|8|7|6|5|4|3|2|1|0|
+ *
  * 0: rep
  * 1: repne
- * 2345: 
+ * 2345:
  * 0001: DS
  * 0010: ES
  * 0011: SS
@@ -124,87 +124,87 @@ struct s_asm_proc_i386 {
 
 
 enum {
-  /* no operand				
+  /* no operand
    */
-  ASM_OTYPE_NONE,	
+  ASM_OTYPE_NONE,
   /* operand is fixed in instruction coded by this opcode;
    */
-  ASM_OTYPE_FIXED,	
+  ASM_OTYPE_FIXED,
   /* register is coded in mod field of instruction opcode.
    */
-  ASM_OTYPE_OPMOD,	
-  /* direct address; no mod R/M byte; 
+  ASM_OTYPE_OPMOD,
+  /* direct address; no mod R/M byte;
    * address of operand is encoded in instruction;
    * no base register, index register, or scaling factor can be applied
    */
-  ASM_OTYPE_ADDRESS,	
+  ASM_OTYPE_ADDRESS,
   /* reg field of mod R/M byte selects a control register
    */
-  ASM_OTYPE_CONTROL,	
+  ASM_OTYPE_CONTROL,
   /* reg field of mod R/M byte selects a debug register
    */
-  ASM_OTYPE_DEBUG,	
-  /* mod R/M byte follows opcode and specifies operand; 
+  ASM_OTYPE_DEBUG,
+  /* mod R/M byte follows opcode and specifies operand;
    * operand is either a general register or a memory address;
-   * if it is a memory address, the address is computed from 
+   * if it is a memory address, the address is computed from
    * a segment register and any of the following values:
    * a base register, an index register, a scaling factor, a displacement
    */
-  ASM_OTYPE_ENCODED,	
+  ASM_OTYPE_ENCODED,
   /* flags registers
    */
-  ASM_OTYPE_FLAGS,	
-  /* reg field of mod R/M byte selelcts a general register. 
+  ASM_OTYPE_FLAGS,
+  /* reg field of mod R/M byte selelcts a general register.
    */
-  ASM_OTYPE_GENERAL,	
-  /* immediate data; value of operand is encoded in subsequent bytes 
+  ASM_OTYPE_GENERAL,
+  /* immediate data; value of operand is encoded in subsequent bytes
    * of instruction
    */
-  ASM_OTYPE_IMMEDIATE,	
-  /* instruction contains a relative offset to be added 
+  ASM_OTYPE_IMMEDIATE,
+  /* instruction contains a relative offset to be added
    * to the instruction pointer register
    */
-  ASM_OTYPE_JUMP,	
-  /* mod R/M only refer to memory		
+  ASM_OTYPE_JUMP,
+  /* mod R/M only refer to memory
    */
-  ASM_OTYPE_MEMORY,	
-  /* instruction has no mod R/M byte;                                                                                                            |   
-   * offset of operand is coded as a word or double word (depending on 
-   * address size attribute) in instruction;                                   |   
-   * no base register, index register, or scaling factor can be applied; 
-   * eg. MOV (A0..A3h)                          
+  ASM_OTYPE_MEMORY,
+  /* instruction has no mod R/M byte;                                                                                                            |
+   * offset of operand is coded as a word or double word (depending on
+   * address size attribute) in instruction;                                   |
+   * no base register, index register, or scaling factor can be applied;
+   * eg. MOV (A0..A3h)
    */
-  ASM_OTYPE_OFFSET,	
+  ASM_OTYPE_OFFSET,
   /* reg field of mod R/M byte selects a packed quadword MMX register
    */
-  ASM_OTYPE_PMMX,	
-  /* mod R/M byte follows opcode and specifies operand; operand is 
+  ASM_OTYPE_PMMX,
+  /* mod R/M byte follows opcode and specifies operand; operand is
    * either an MMX register or a memory address;
-   * if it is a memory address, the address is computed 
+   * if it is a memory address, the address is computed
    * from a segment register and any of the following values:
    * |a base register, an index register, a scaling factor, a displacement
    */
-  ASM_OTYPE_QMMX,	
+  ASM_OTYPE_QMMX,
   /*
    * mod field of mod R/M byte may refer only to a general register
    */
   ASM_OTYPE_REGISTER,
   /* reg field of mod R/M byte selects a segment register
    */
-  ASM_OTYPE_SEGMENT,	
-  /* no operand				
+  ASM_OTYPE_SEGMENT,
+  /* no operand
    */
-  ASM_OTYPE_TEST,	
-  /* no operand				
+  ASM_OTYPE_TEST,
+  /* no operand
    */
-  ASM_OTYPE_VSFP,	
-  /* no operand				
+  ASM_OTYPE_VSFP,
+  /* no operand
    */
-  ASM_OTYPE_WSFP,	
-  /* memory addressed by ds:si		
+  ASM_OTYPE_WSFP,
+  /* memory addressed by ds:si
    */
-  ASM_OTYPE_XSRC,	
-  /* memory addressed by es:di		
+  ASM_OTYPE_XSRC,
+  /* memory addressed by es:di
    */
   ASM_OTYPE_YDEST,
   /* immediate value encoded in instruction
@@ -218,7 +218,7 @@ enum {
   ASM_OTYPE_REG5,
   ASM_OTYPE_REG6,
   ASM_OTYPE_REG7,
-  
+
   ASM_OTYPE_ST,
   ASM_OTYPE_ST_0,
   ASM_OTYPE_ST_1,
@@ -300,7 +300,7 @@ enum {
 
 /**
  * regset
- * 
+ *
  */
 
 #define ASM_REGSET_R8		256		/* al,cl,dl...		*/
@@ -418,7 +418,7 @@ enum {
 
 
 enum asm_instr {
-  ASM_NONE,  
+  ASM_NONE,
   /* special instr id	*/
   ASM_IPREFIX_MIN,
   ASM_IPREFIX_CS,
@@ -458,9 +458,9 @@ enum asm_instr {
   ASM_ESC7,
   ASM_GROUP_MAX,
   ASM_2BYTES,
-  
+
   /* instructions	*/
-  
+
   ASM_CALL,
   ASM_BRANCH,
   ASM_BRANCH_U_LESS,
@@ -666,7 +666,7 @@ enum asm_instr {
   ASM_CMPXCHG,
   ASM_LIDT,
   ASM_LGDT,
-  
+
   ASM_FXSAVE,
   ASM_FXRSTOR,
   ASM_LDMXCSR,
@@ -674,13 +674,13 @@ enum asm_instr {
   ASM_LFENCE,
   ASM_MLENCE,
   ASM_SLENCE,
-  
+
   ASM_PREFETCH_NTA,
   ASM_PREFETCH_T0,
   ASM_PREFETCH_T1,
   ASM_PREFETCH_T2,
   ASM_HINT_NOP,
-  
+
   ASM_SGDT,
   ASM_SIDT,
   ASM_STR,
@@ -813,10 +813,10 @@ enum asm_instr {
   ASM_FRINEAR,
   ASM_FCOMIP,
   /**
-   * keep this in last position unless 
-   * you know what you are doing 
+   * keep this in last position unless
+   * you know what you are doing
    **/
-  ASM_BAD    
+  ASM_BAD
 
 };
 
@@ -899,21 +899,21 @@ int	asm_is_group(int);
 struct s_asm_i386_processor {
   /*	handler to resolving function		*/
   void                  (*resolve_immediate)(void *, u_int, char *, u_int);
-  
+
   /*	handler data pointer	*/
   void                  *resolve_data;
-  
+
   /*	processor type	. I386 supports only	*/
   int                   type;
-  
+
   /*						*/
   char                  **instr_table;
-  
-  int			(*fetch)(asm_instr *, u_char *, u_int, 
+
+  int			(*fetch)(asm_instr *, u_char *, u_int,
 				 asm_processor *);
   /*    output handler. print instruction in a readable string		*/
   char			*(*display_handle)(asm_instr *instr, int addr);
-  
+
   /*	pointer to an internal structure.	*/
   struct s_asm_proc_i386                  *internals;
 };
