@@ -4,7 +4,7 @@
 ** Updated : Thu Dec  4 02:46:23 2003
 */
 
-/* 
+/*
  * this tool is designed to disassemble binary with the same output as
  * objdump (except symbols.)
  */
@@ -21,7 +21,7 @@
 
 
 int	usage(char *p) {
-  printf("Usage: %s <binary> <sym/vaddr> <[len]>\n", 
+  printf("Usage: %s <binary> <sym/vaddr> <[len]>\n",
 	  p);
   return (-1);
 }
@@ -43,7 +43,7 @@ int	main(int ac, char **av) {
 
   if (ac < 3)
     return (usage(av[0]));
-  
+
   obj = elfsh_load_obj(av[1]);
   if (!obj)
     {
@@ -61,16 +61,16 @@ int	main(int ac, char **av) {
     vaddr = strtoul(av[2], 0, 16);
   else
     vaddr = sym->st_value;
-  
+
   if (!vaddr)
     {
       printf("invalid start %s: null or cannot find symbol\n", av[2]);
       elfsh_unload_obj(obj);
       return (-1);
     }
-  
+
   /* fetching third argument if present L: <len> */
-  
+
   if (av[3])
     len = atol(av[3]);
   else
@@ -80,16 +80,16 @@ int	main(int ac, char **av) {
 	  printf("len required with no symbol information\n");
 	  elfsh_unload_obj(obj);
 	  return (-1);
-	} 
+	}
       else
 	len = sym->st_size;
     }
-  
-  
+
+
   end = vaddr + len;
-  
+
   /* select arch */
-  
+
   switch(arch)
     {
     case EM_SPARC:
@@ -102,17 +102,17 @@ int	main(int ac, char **av) {
       elfsh_unload_obj(obj);
       return (-1);
     }
-  
+
   /*
     filling buffer
   */
-  
+
   ptr = malloc(len + 1);
   memset(ptr, 0, len + 1);
   start = elfsh_get_foffset_from_vaddr(obj, vaddr);
 
-  
-  
+
+
   curr = elfsh_raw_read(obj, start, ptr, len);
   if (curr != len)
     {
@@ -120,11 +120,11 @@ int	main(int ac, char **av) {
       elfsh_unload_obj(obj);
       return (-1);
     }
- 
+
   /* disassembling loop */
 
   curr = 0;
-  
+
   while(curr < len) {
     if (asm_read_instr(&instr, ptr + curr, len - curr, &proc) > 0) {
       att_dump = asm_display_instr_att(&instr, (int) vaddr + curr);
@@ -140,8 +140,8 @@ int	main(int ac, char **av) {
     } else {
       printf("0x%08x: .byte 0x%02x\n", (int) vaddr + curr, *(ptr + curr));
       printf(";; error reading instruction at %p\n", ptr + curr);
-      printf(";; dumping opcodes: %02x %02x %02x %02x\n", 
-	     *(ptr + curr), *(ptr + curr + 1), 
+      printf(";; dumping opcodes: %02x %02x %02x %02x\n",
+	     *(ptr + curr), *(ptr + curr + 1),
 	     *(ptr + curr + 2), *(ptr + curr + 3));
       curr++;
     }
@@ -150,6 +150,6 @@ int	main(int ac, char **av) {
   elfsh_unload_obj(obj);
   return (0);
 }
-  
+
 
 
