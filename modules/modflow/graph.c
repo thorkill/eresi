@@ -1,7 +1,7 @@
 /*
-** 
+**
 ** graph.c in modflow
-** 
+**
 ** Author  : <sk@devhell.org>
 ** Started : Fri Mar  7 07:18:03 2003 mayhem
 ** Updated : Fri Nov 28 02:04:19 2003
@@ -28,18 +28,18 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
 
   if (cur->altype == CALLER_RET || cur->altype == CALLER_UNKN)
     return;
-  
+
   src_name = elfsh_reverse_metasym(file, cur->vaddr, &src_offset);
   if (src_name == NULL)
     src_name = ELFSH_NULL_STRING;
-  
-  if (cur->contig) 
+
+  if (cur->contig)
     {
       if (cur->altype == CALLER_JUMP)
 	col_arrow = BLK_COLOR_FALSE;
       else
 	col_arrow = BLK_COLOR_CONT;
-      
+
       dst_offset = 0;
 
       if (cur->contig != -1)
@@ -57,8 +57,8 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
 		 dst_name, dst_offset, col_arrow);
       write(fd, buf, strlen(buf));
     }
-  
-  if (cur->altern) 
+
+  if (cur->altern)
     {
       if (cur->altype == CALLER_JUMP)
 	{
@@ -69,14 +69,14 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
 	}
       else
 	col_arrow = BLK_COLOR_CALL;
-      
+
       dst_offset = 0;
 
       if (cur->contig != -1)
 	dst_name = elfsh_reverse_metasym(file, cur->altern, &dst_offset);
       else
 	dst_name = NULL;
-      
+
       dst_name = elfsh_reverse_metasym(file, cur->altern, &dst_offset);
       if (dst_name == NULL)
       snprintf(buf, sizeof(buf), "%s_" DFMT " -> unresolved "
@@ -89,7 +89,7 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshblk_t *cur)
 		   dst_name, dst_offset, col_arrow);
       write(fd, buf, strlen(buf));
     }
-  
+
 }
 
 
@@ -117,46 +117,46 @@ int		cmd_graph(void)
   u_int max;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   if (!(sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0)))
     ELFSH_SETERROR(" [*] no \".control\" section found. Aborting\n", -1);
-  
+
   if (!world.curjob->curcmd) {
    printf("[*] no \"world.curjob->curcmd\"\n");
-   return (-1);
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
   }
-  
+
   fd = open(world.curjob->curcmd->param[0], O_RDWR | O_CREAT, 0644);
   if (fd == -1)
     {
       printf("cannot open %s\n", world.curjob->curcmd->param[0]);
-      return (-1);
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  if ((symtab = elfsh_get_metasym_by_name(world.curjob->current, 
+  if ((symtab = elfsh_get_metasym_by_name(world.curjob->current,
 					  world.curjob->curcmd->param[1])))
     min = symtab->st_value;
     else
       min = strtoul(world.curjob->curcmd->param[1], 0, 16);
-  
+
   ptr = world.curjob->curcmd->param[2];
   if (*ptr == '+')
     max = min + atoi(++ptr);
   else
     max = strtoul(ptr, 0, 16);
-  
+
   printf("min = %8x max =%8x\n", min, max);
-  
-  
+
+
   /* For each executable section, get the block list */
-  
+
   if (!(blk_list = sect->altdata))
     load_blocks(world.curjob->current, &blk_list);
-      
+
   snprintf(buf, sizeof(buf),"digraph prof {\n"
 	  "ratio = fill; node [style=filled];\n");
   write(fd, buf, strlen(buf));
-      
+
   symtab = elfsh_get_symtab(world.curjob->current, &num);
   unresolved_pass = 0;
   for (index = 0; index < num; index++)
@@ -164,7 +164,7 @@ int		cmd_graph(void)
       /* if symbol is not of type STT_BLOCK skip it */
       if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
 	continue;
-	  
+
       if (!(blk = (sect->data + (symtab + index)->st_value)))
 	break;
       if (!(iblk = block_get_by_vaddr(blk_list ,  blk->vaddr, 0)))
@@ -178,17 +178,17 @@ int		cmd_graph(void)
       if ((blk->vaddr < min) || (max <= blk->vaddr))
 	{
 	  /* block doesn't belong to interval provided
-	   * check if it is called by a block belonging 
+	   * check if it is called by a block belonging
 	   * to another block
-	   */ 
+	   */
 	  for (cal = iblk->caller; cal; cal = cal->next)
 	    if ((cal->vaddr >= min) && (max > cal->vaddr))
-	      min = min;	      
+	      min = min;
 	  continue;
 	}
       // pouet:
       printf("min = %08x blk = %08x max =%08x\n", min, blk->vaddr, max);
-	  
+
       name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &offset);
       if ((name == NULL) && !unresolved_pass)
 	{
@@ -197,14 +197,14 @@ int		cmd_graph(void)
 	}
       else {
 	  if (mf_settings.graph_verbose_level == 0) {
-	snprintf(buf, sizeof (buf), 
+  	   snprintf(buf, sizeof (buf),
 		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);
 	  } else if (mf_settings.graph_verbose_level == 1) {
-	   snprintf(buf, sizeof (buf), 
+	   snprintf(buf, sizeof (buf),
 		 "%s_" DFMT " [shape=\"box\" label=\"<%s+%x>:\\l", name, offset, name, offset);
 	  } else {
-	   snprintf(buf, sizeof (buf), 
-		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);	   
+	   snprintf(buf, sizeof (buf),
+		 "%s_" DFMT " [shape=\"box\" label=\"", name, offset);
 	  }
 	}
       write(fd, buf, strlen(buf));
@@ -227,14 +227,14 @@ int		cmd_graph(void)
       write(fd, buf, strlen(buf));
       /* Write all graph links for the current block */
       if ((blk->vaddr < min) || (max <= blk->vaddr))
-	continue;
+	   continue;
 
       vm_write_graphent(world.curjob->current, fd, blk);
     } /* !for */
-      
+
   write(fd, "}\n", 2);
   close(fd);
-  printf(" [*] Graph description dumped in %s \n\n", 
+  printf(" [*] Graph description dumped in %s \n\n",
 	 world.curjob->curcmd->param[0]);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -253,16 +253,16 @@ void		dump_assembly(int fd, elfshblk_t *blk)
   vm_quiet = world.state.vm_quiet;
   world.state.vm_quiet = 0;
   buffer = elfsh_malloc(blk->size);
-  if ((elfsh_raw_read(world.curjob->current, 
-		      elfsh_get_foffset_from_vaddr(world.curjob->current, 
-						   blk->vaddr), 
+  if ((elfsh_raw_read(world.curjob->current,
+		      elfsh_get_foffset_from_vaddr(world.curjob->current,
+						   blk->vaddr),
 		      buffer, blk->size)) > 0)
     {
       name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &off);
       // write(fd, "{", 1);
       while (index < blk->size)
 	{
-	  index += display_instr(fd, index, blk->vaddr, 0, blk->size, 
+	  index += display_instr(fd, index, blk->vaddr, 0, blk->size,
 				 name, index + off, buffer, NULL, NULL);
 	  //lseek(fd, -1, SEEK_CUR);
 	  write(fd, "\\l", 2);
