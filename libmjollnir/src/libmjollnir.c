@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.c,v 1.1.1.3 2006-03-06 22:35:22 thor Exp $
+ * $Id: libmjollnir.c,v 1.1.1.4 2006-03-15 21:46:43 thor Exp $
  */
 
 #include <libmjollnir.h>
@@ -129,6 +129,7 @@ mjr_call_dest(Mjr_CTX * ctx, int *dst)
 		   !(ctx->ihist[2].op2.content & ASM_OP_REFERENCE) &&
 		   ctx->ihist[2].op2.imm != 0x0) {
 
+
 #if __DEBUG_OPERAND__
 		asm_debug_operand(&ctx->ihist[0].op1);
 		asm_debug_operand(&ctx->ihist[0].op2);
@@ -137,8 +138,11 @@ mjr_call_dest(Mjr_CTX * ctx, int *dst)
 #endif
 
 		dst = (int *)ctx->ihist[2].op2.imm;
+
+#if __DEBUG__
 		fprintf(D_DESC, "mjr_call_dest: PTR FUNCTION ! %x %x\n",
 			ctx->cvaddr, (int)dst);
+#endif
 		ret = 1;
 	} else {
 		fprintf(D_DESC, "mjr_call_dest: not supported! 0x%08x %d\n",
