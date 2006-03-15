@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: hunter.c,v 1.1.1.3 2006-03-06 22:35:22 thor Exp $
+ * $Id: hunter.c,v 1.1.1.4 2006-03-15 21:46:43 thor Exp $
  *
  */
 
@@ -104,8 +104,10 @@ mjr_find_calls_raw(
 				break;
 
 			case ASM_TYPE_CONDBRANCH:
+#if __DEBUG__
 				fprintf(D_DESC, "mjr_find_calls_raw: %x ASM_TYPE_CONDBRANCH not supported\n",
 					ctx->cvaddr);
+#endif
 				break;
 
 			default:
