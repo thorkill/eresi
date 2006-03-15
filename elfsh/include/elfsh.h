@@ -130,9 +130,6 @@ extern asm_processor	proc;
 */
 #define	ELFSH_CMDEC(name)	char modcmd_##name = name
 
-
-#define ELFSH_EDITION		"devhell"
-
 /* Used to store ascii description for different structures types in data.c */
 #define ELFSH_SEGTYPE_MAX	7
 #define	ELFSH_SHTYPE_MAX	13
@@ -175,7 +172,7 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a7"
+#define	ELFSH_RELEASE		"a7p1"
 #define ELFSH_EDITION		"brz"
 
 /* Unused, feel free to try it, its awesome */
