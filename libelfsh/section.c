@@ -848,6 +848,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
     obj->hdr->e_shstrndx--;
 
   /* Modify segments if removed section was mapped */
+  todel->phdr = elfsh_get_parent_segment(obj, todel);
   if (todel->phdr)
     {
       
