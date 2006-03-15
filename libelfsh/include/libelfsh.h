@@ -458,6 +458,7 @@ typedef struct	s_obj
 
   int		 fd;			/* File descriptor for the original file */
   char		 *name;			/* Object path */
+  struct stat	fstat;		/* File stat */
   int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
   int		 rights;		/* 0 = RO, 1 = WR */
   time_t	 loadtime;		/* Time of Loading */

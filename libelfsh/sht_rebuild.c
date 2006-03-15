@@ -206,10 +206,6 @@ static int	init_sht(elfshobj_t *file, u_int num)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Get the file size on disk */
-  if (fstat(file->fd, &st) != 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to fstat file", -1);
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
 
   /* Do the first pass : guess the borders for .mapped and .unmapped */
@@ -223,7 +219,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
 
   /* Create the initial SHT */
   XALLOC(file->sht, file->hdr->e_shentsize * 3, -1);
-  file->hdr->e_shoff = st.st_size;
+  file->hdr->e_shoff = file->fstat.st_size;
   file->hdr->e_shnum = 3;
   file->hdr->e_shstrndx = 2;
 
@@ -238,7 +234,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
 
   /* Insert the .unmapped section */
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, high->p_offset + high->p_filesz, 
-			   st.st_size - (high->p_offset + high->p_filesz), 0, 0, 0, 0);
+			   file->fstat.st_size - (high->p_offset + high->p_filesz), 0, 0, 0, 0);
   file->sht[1] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 1, NULL, ELFSH_SHIFTING_NONE) < 0)
@@ -246,7 +242,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
 		      "Unable to add section", -1);
 
   /* Insert the section header string table (.sh_strtab) */
-  shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, st.st_size, 0, 0, 0, 0, 0);
+  shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, file->fstat.st_size, 0, 0, 0, 0, 0);
   file->sht[2] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 2, NULL, ELFSH_SHIFTING_NONE) < 0)
