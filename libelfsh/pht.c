@@ -282,6 +282,10 @@ int		elfsh_load_pht(elfshobj_t *file)
   else if (!file->hdr->e_phoff)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No PHT", -1);
   
+  if (file->hdr->e_phoff > file->fstat.st_size)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+ 	 "PHT file offset is larger than the file itself", -1);
+  
   size = file->hdr->e_phentsize * file->hdr->e_phnum;
   XSEEK(file->fd, file->hdr->e_phoff, SEEK_SET, -1);
   XALLOC(file->pht, size, -1);

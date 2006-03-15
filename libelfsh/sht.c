@@ -295,11 +295,16 @@ int		elfsh_load_sht(elfshobj_t *file)
   if (!file->hdr->e_shoff)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SHT file offset is NULL", -1);
+
+  if (file->hdr->e_shoff > file->fstat.st_size)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "SHT file offset is larger than the file itself", -1);
+
   XSEEK(file->fd, file->hdr->e_shoff, SEEK_SET, -1);
   XALLOC(file->sht, size, -1);
   XREAD(file->fd, file->sht, size, -1);
   
-  elfsh_endianize_sht(file->sht, 
+  elfsh_endianize_sht(file->sht,
 		      file->hdr->e_ident[EI_DATA], 
 		      file->hdr->e_shnum);
 

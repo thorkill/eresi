@@ -11,12 +11,19 @@
 elfshobj_t		*elfsh_load_obj(char *name)
 {
   elfshobj_t	*file;
-
+ 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XALLOC(file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
+
   file->name = elfsh_strdup(name);
+
+  /* Get the file size on disk */
+  if (0 != fstat(file->fd,&file->fstat))
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to get fstat(2)", NULL);
+
   file->hdr = elfsh_get_hdr(file);
   file->rights = O_RDONLY;
   if (file->hdr == NULL || file->name == NULL)
