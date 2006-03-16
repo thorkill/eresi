@@ -2,7 +2,7 @@
 # LibMjollnir Makefile
 # (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
 # BSD License 
-# $Id: Makefile,v 1.1.1.4 2006-03-16 12:56:51 thor Exp $
+# $Id: Makefile,v 1.1.1.5 2006-03-16 19:34:24 thor Exp $
 #
 
 SRC= src/fngdb.c \
