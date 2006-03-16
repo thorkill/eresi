@@ -27,17 +27,19 @@ int		elfsh_strip(elfshobj_t *file)
 
   while (bss->shdr->sh_addr)
     bss = bss->next;
+
   while (bss)
     {
       next = bss->next;
-      if (bss->index != file->hdr->e_shstrndx &&
-	  elfsh_remove_section(file, bss->name))
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  if ((bss->index != 0) || (
+	      (bss->index != file->hdr->e_shstrndx) &&
+	       elfsh_remove_section(file, bss->name)))
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to remove section", -1);
+
       bss = next;
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
