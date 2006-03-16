@@ -7,6 +7,16 @@
 Changes in intermediate beta versions are listed in the first public version
 they appear.
 
+0.7a7p1:
+ - Bugfix  : Added missing libmjollnir
+ - Bugfix  : Removed double definition of ELFSH_EDITION
+ - Bugfix  : Fixed SIGSEGV after strip/save (by zg)
+ - Added   : New opperand in libasm - i386_jp/0x8a
+ - Core    : elfshobj_t contains struct stat for fstat() of the object
+ - Core    : switched sht_rebuild.c to file->fstat.st_size
+ - Bugfix  : Fixed SIGSEGV on set 1.hdr.arch 3 on corrupted binaries
+ - Bugfix  : Fixed SIGSEGV after sstrip/save
+
 0.7a6p3:
  - Added   : libmjollnir for dress-like features and other usefull stuff (WIP)
 
