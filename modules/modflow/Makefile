@@ -12,7 +12,7 @@ SRCS 	= modflow.c control.c blocks.c inspect.c graph.c flowjack.c \
 	libbtree.c
 OBJS 	= $(SRCS:.c=.o)
 NAME 	= modflow.so
-CFLAGS 	= -Wall -Werror -g3 -fPIC -rdynamic -DELFSH_INTERN $(BITS) \
+CFLAGS 	= -Wall -g3 -fPIC -rdynamic -DELFSH_INTERN $(BITS) \
 	-I../../vm/include -I../../libdump/include/ \
 	-I../../libelfsh/include -I../../libhash/include \
 	-I../../libdump/include -I../../e2dbg/include \

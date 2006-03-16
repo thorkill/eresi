@@ -11,12 +11,14 @@ CC      = gcc
 RM      = rm -f 
 ETAGS   = etags 
 CTAGS   = ctags 
-BASEPATH = $(DESTDIR)/usr
+DESTDIR = /
+BASEPATH = $(DESTDIR)/usr/local
+MANPATH = $(BASEPATH)/share/man
 MODPATH = $(BASEPATH)/share/elfsh/
 BINPATH = $(BASEPATH)/bin/
 LIBPATH = $(BASEPATH)/lib/
 INCPATH = $(BASEPATH)/include/
-MANPATH = $(BASEPATH)/share/man
+RM      = rm -f 
  
 all     : world modules tags
 world   : 
@@ -35,6 +37,9 @@ world   :
 	@echo 'Building libui...'			
 	@cd libui && $(MAKE) 				
 	@echo 'Libui has been built successfully.' 	
+	@echo 'Building libmjollnir...'			
+	@cd libmjollnir && $(MAKE) 				
+	@echo 'Libmjollnir has been built successfully.' 	
 	@echo 'Building ELFsh ET_EXEC'			
 	@cd vm && $(MAKE)			     	
 	@echo 'ELFsh ET_EXEC has been built successfully.' 
@@ -49,17 +54,19 @@ modules:
 	@cd modules && $(MAKE) 
 	@echo 'ELFsh modules suite built successfully.' 
  
-install : all mod_install 
+install : all prepareDir mod_install 
 	@cp vm/elfsh $(BINPATH)/ 
 	@cp e2dbg/e2dbg $(BINPATH)/ 
 	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so $(LIBPATH) 
 	@cp libasm/libasm.a $(LIBPATH) 
+	@cp libmjollnir/libmjollnir.a $(LIBPATH) 
 	@cp e2dbg/e2dbg.so $(LIBPATH) 
 	@cp libui/libui.a libui/libui.so $(LIBPATH) 
 	@cp -R libelfsh/include/* $(INCPATH) 
 	@cp libasm/include/libasm.h $(INCPATH)
 	@cp libasm/include/libasm-i386.h $(INCPATH) 
 	@cp libui/include/libui.h $(INCPATH) 
+	@cp libmjollnir/include/libmjollnir*.h $(INCPATH) 
 	@cp doc/elfsh.1 $(MANPATH)/man1/ 
 	@chmod 755 $(MANPATH)/man1/elfsh.1 
 	@chmod 755 $(BINPATH)/elfsh 
@@ -74,6 +81,14 @@ install : all mod_install
 	@chmod 755 $(LIBPATH)libasm.a 
 	@chmod 755 $(INCPATH)libelfsh*.h 
 	@chmod 755 $(INCPATH)libasm*.h 
+ 
+prepareDir: 
+	@mkdir -p $(DESTDIR) || true
+	@mkdir -p $(BINPATH) || true
+	@mkdir -p $(LIBPATH) || true
+	@mkdir -p $(INCPATH) || true
+	@mkdir -p $(MANPATH)/man1/ || true
+	@mkdir -p $(MODPATH) || true
 	@echo 'ELFsh, E2dbg, Libelfsh, Libui and Libasm installed successfully .'
  
 mod_install: 
@@ -88,10 +103,13 @@ uninstall:
 	rm -f  $(LIBPATH)/e2dbg* 
 	rm -f  $(LIBPATH)/libui.so 
 	rm -f  $(LIBPATH)/libui.a 
+	rm -f  $(LIBPATH)/libmjollnir.a 
 	rm -fr $(MODPATH) 
 	rm -f  $(MANPATH)/man1/elfsh.1 
 	rm -f  $(LIBPATH)/libasm.a 
 	rm -f  $(INCPATH)/libasm*.h 
+	rm -f  $(INCPATH)/libmjollnir*.h 
+	rm -f  $(INCPATH)/libui.h 
 	rm -fr $(INCPATH)/libelfsh*
 	@echo 'ELFsh, Libelfsh, Libui and Libasm uninstalled successfully' 
  
@@ -102,6 +120,7 @@ clean   : cleandoc
 	cd libelfsh  && $(MAKE) -s clean 
 	cd libc	     && $(MAKE) -s clean 
 	cd libui     && $(MAKE) -s clean 
+	cd libmjollnir     && $(MAKE) -s clean 
 	cd libasm    && $(MAKE) -s clean 
 	cd libmalloc && $(MAKE) -s clean 
 	cd libdump   && $(MAKE) -s clean 
@@ -116,6 +135,7 @@ fclean  : cleandoc
 	cd libc      && $(MAKE) -s fclean 
 	cd libasm    && $(MAKE) -s fclean 
 	cd libmalloc && $(MAKE) -s fclean 
+	cd libmjollnir     && $(MAKE) -s clean 
 	cd libdump   && $(MAKE) -s fclean 
 	cd libui   && $(MAKE) -s fclean 
 	cd modules   && $(MAKE) -s fclean 
@@ -130,14 +150,6 @@ cleandoc:
  
 tags    : 
 	@echo Doing tags ... 
-	@$(ETAGS) vm/*.c vm/include/*.h libelfsh/*.c \
-	libelfsh/include/*.h e2dbg/include/*.h \
-	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \
-	libasm/src/*.c libmalloc/include/*.h \
-  libasm/src/arch/ia32/*.c \
-	libasm/include/*.h libui/*.c libui/include/*.h\
-	libdump/include/*.h libc/include/*.h libc/*.c
- 
 info    : 
 	@echo '###############' Total '###############'
 	wc -l vm/*.c libelfsh/*.c libelfsh/include/*.h \

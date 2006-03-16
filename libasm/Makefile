@@ -60,7 +60,7 @@ SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
-CFLAGS 		= 	-Iinclude -Isrc/include -Wall -Werror -ggdb -fPIC
+CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		= 	gcc
