@@ -466,6 +466,7 @@ typedef struct	s_obj
 
   char		 running;		/* Is the process running ? */
   char		 scanned;		/* Has the object already been block scanned ? */
+  char		 hdr_broken;	/* Is the header broken/corrupted ? */
   char		 read;			/* Has the object already been read ? */
   char		 shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
   char		 strip;			/* Mark file as stripped */
