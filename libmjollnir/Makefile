@@ -2,7 +2,7 @@
 # LibMjollnir Makefile
 # (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
 # BSD License 
-# $Id: Makefile,v 1.1.1.3 2006-02-28 23:30:03 thor Exp $
+# $Id: Makefile,v 1.1.1.4 2006-03-16 12:56:51 thor Exp $
 #
 
 SRC= src/fngdb.c \
@@ -32,7 +32,7 @@ LDFLAGS= -L. -L../libasm/ \
          -L../libmalloc/ \
          -L/usr/lib/ \
          -L/usr/local/lib/ \
-         -lelfsh -lasm -lssl -lcelfsh -lmalloc-e2dbg -lmjollnir
+         -lelfsh -lasm -lssl -lcelfsh -lmalloc-e2dbg -lmjollnir -lpthread
 
 CC=gcc -ggdb -g3
 
