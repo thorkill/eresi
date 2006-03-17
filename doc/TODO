@@ -9,24 +9,9 @@
 				ELFsh TODO phile       #
                                 ########################
 
-. E2DBG BUG : regexec is buggy with heap separation
-. E2DBG BUG : Multithread programs segfault in TLS init
-. E2DBG BUG : start/step on PIE makes a big segfault after 2 bp hits
-. E2DBG BUG : Make sure ET_REL injection in memory works again with redirections
-. E2DBG BUG : 'cont' and 'step' in debugging scripts are bugged
-. ELFSH BUG : Colors sequences should not be counted in readline size
-
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)
-
-	<----- Here release 0.7-linux
-
-	. EXTPLT fuck on BSD (preinterp injection to avoid on fbsd)
 	. where to find USER_ESP on BSD context ?
-	. ET_REL injection fucked on Solaris
-	 	-> .data.rel.local  ?
-		-> .rel.bss
-		-> load a.out ; save plouf ; ./plouf -> "Malloc problem"
 	. 188 warnings on Solaris/BSD
 	. Compiles on HPUX
 	. find a reliable way to enter e2dbg under IRIX (main got entry ? (a0=argc a1=argv))
