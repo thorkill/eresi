@@ -20,18 +20,14 @@
 .RE
 .PD 1
 ..
-.TH ELFsh "1" "July 2004" "ELFsh 0.51b3" "User commands"
+.TH ELFsh "1" "March 2006" "ELFsh 0.7" "User commands"
 .SH NAME
 ELFsh \- The ELF shell
 .SH SYNOPSIS
-.B elfsh 
+.B ELFsh 
 [\fIOPTION\fR...]
 .SH DESCRIPTION
-ELFsh is an interactive and scriptable ELF machine to play with executable 
-files, shared libraries and relocatable ELF32 objects. It is useful for daily 
-binary manipulations such as on-the-fly patching, code analysis, or embedded 
-code injection in research fields such as reverse engineering, security 
-auditing and intrusion detection.
+The ELF shell is an interactive, modular, independent, unified and scriptable ELF (Executable & Linking Format) machine designed for executable files, shared libraries and relocatable ELF objects manipulation. Its innovative features make it usable by reverse engineers and security analysts for embedded debugging and plain C code injection in binary programs and processes, execution flow redirection that allow for dynamic analyzers generation and testing on binary programs. ELFsh is composed of libelfsh and libasm, it does provide a modular and reusable interface for external projects that is compatible with kernel hardening patches : It can perform operational modifications on non-executable stack and heap based systems for multiple architectures. 
 .SH OPTIONS
 
 .B
@@ -46,120 +42,178 @@ output file
 The following commands can be used on either the commandline when preceded by a - or on the ELFsh command prompt :
 
 .TP
-\fBinfo\fP
-Print the extra details help screen 
+\fBGeneral purpose commands\fP
 
-.TP 
-\fBhelp\fP
-Print the help screen
+\fIcat edit exec exit help info list load lscripts nocolor profile quit sdir setcolor switch unload workspace\fR
 
 .TP
-\fBfixup\fP
-Insert BSS section in corefile
+\fBcat\fP
+print the file argument
 
 .TP
-\fBfindrel\fP
-Dump absolute relocations list
+\fBedit\fP
+Edit the file given in parameter
 
 .TP
-\fBshtrm\fP
-Mark the Section Header Table (sht) as removed
-
-.TP
-\fBquit\fP
-Quit the shell without saving
+\fBexec\fP
+Fork and execute parameter command (with args)
 
 .TP
 \fBexit\fP
 Quit the shell without saving
 
 .TP
-\fBe elf\fP
-Print the ELF header
+\fBhelp\fP
+Print the help screen
 
 .TP
-\fBi interp\fP
-Print the .interp section
+\fBinfo\fP
+Print the extra details help screen 
 
 .TP
-\fBp pht\fP 
-Print the Program Header Table (PHT)
+\fBlist\fP
+List the loaded files and their ID
 
 .TP
-\fBg got\fP [\fIRegex\fR]
-Print the symbols in the Global Offset Table (GOT) matching \fIRegex\fR
+\fBload\fP \fIfilename\fR
+Load input file \fIfilename\fR
 
 .TP
-\fBs sht\fP [\fIRegex\fR]
-Print the sections in the Section Header Table (SHT) matching \fIRegex\fR
+\fBlscripts\fP
+List macro commands
 
 .TP
-\fBr rel\fP [\fIRegex\fR]
-Print the relocation entries matching \fIRegex\fR
+\fBnocolor\fP
+Toggle color status
 
 .TP
-\fBn notes\fP [\fIRegex\fR]
-Print the Notes sections entries matching \fIRegex\fR
+\fBprofile\fP
+Change the ELFsh profiling behavior
 
 .TP
-\fBd dyn\fP [\fIRegex\fR]
-Print the .dynamic section entries matching \fIRegex\fR
+\fBquit\fP
+Quit the shell without saving
 
 .TP
-\fBds dynsym\fP [\fIRegex\fR]
-Print dynamic symtab (.dynsym) entries matching \fIRegex\fR
+\fBsdir\fP
+Change the script directory
 
 .TP
-\fBst sym\fP [\fIRegex\fR]
-Print the symtab (.symtab) entries matching \fIRegex\fR
+\fBsetcolor\fP \fIAssociates data types to colors\fR
+
+\fBsetcolor\fP \fItype [bg,fg] color\fR
+
+\fBsetcolor\fP \fItype [underline,bold] (1=on,0=off)\fR
+
+\fBAvailable types  :\fP \fIaddress, number, string, endstring, warnstring typestring, fieldstring, instr, pspecial, psname pspecial, pversion, prelease, pedition\fR
+
+\fBAvailable colors :\fP \fIblack red green yellow blue magenta cyan white\fR
 
 .TP
-\fBstab\fP [\fIRegex\fR]
-Print raw stab (.stabs) entries matching \fIRegex\fR
+\fBswitch\fP (\fIfilename\fR | \fIfileID\fR)
+Change the current file to work on to \fIfilename\fR or \fIfileID\fR
+
+.TP
+\fBunload\fP (\fIfilename\fR | \fIfileID\fR)
+Unload file \fIfilename\fR or \fIfileID\fR without saving
+
+.TP
+\fBworkspace\fP
+List existing workspaces
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBOndisk/Memory ELF commands\fP
+
+\fIadd cmp ctors disasm div dtors dyn dynsym elf findrel get got hexa interp mod mul notes pht print redir rel reladd set sht sub write\fR
+
+.TP
+\fBadd\fP
+Add the 2 parameters
+
+.TP
+\fBcmp\fP
+Compare 2 parameters (modify $_ variable)
 
 .TP
 \fBct ctors\fP [\fIRegex\fR]
 Print .ctors section entries matching \fIRegex\fR
 
 .TP
+\fBdisasm\fP
+Disassemble matching binary objects in current file
+
+\fBdisasm parameter\fP
+
+ParamFormat : \fIregx regx:rva regx:rva%%size regx%%size\fR
+ - regx : Regular expression (mandatory)
+ - rva  : Byte offset from the beginning (optional)
+ - size : Bytes number limit (optional)
+
+.TP
+\fBdiv\fP
+Divide first param by second one
+
+.TP
 \fBdt dtors\fP [\fIRegex\fR]
 Print .dtors section entries matching \fIRegex\fR
 
 .TP
-\fBD disasm\fP [\fIRegex\fR[\fI:rva\fR[\fI%size\fR]]\fR]
-Disassemble \fIsize\fR bytes of the objects matching \fIRegex\fR starting at offset \fIrva\fR 
+\fBdyn\fP
+Print the ELF dynamic section
 
 .TP
-\fBX hexa\fP [\fIRegex\fR[\fI:rva\fR[\fI%size\fR]]\fR]
-Dump \fIsize\fR bytes of the objects matching \fIRegex\fR starting at offset \fIrva\fR
+\fBds dynsym\fP [\fIRegex\fR]
+Print dynamic symtab (.dynsym) entries matching \fIRegex\fR
 
 .TP
-\fBreladd\fP \fIDestinationfileID\fR \fISourceFileID\fR
-Inject the ELF relocatable object \fISourceFileID\fR into the ELF executable object \fIDestinationFileID\fR 
+\fBe elf\fP
+Print the ELF header
 
 .TP
-\fIOP DestinationObjectPath OperandObjectPath\fR
-Perform arithemetic operation \fIOP\fR (add/sub/mul/div/mod) on \fIDestinationObjectPath\fR using operand \fIOperandObjectPath\fR
+\fBfindrel\fP
+Try to find back stripped relocation information
 
 .TP
-\fBset\fP \fIDestinationObjectPath SourceObjectPath\fR
-Set the value of object \fIDestinationObjectPath\fR to \fISourceObjectPath\fR
+\fBget\fP
+Print parameter object value
 
 .TP
-\fBget\fP \fISourceObjectPath\fR
-Get the value of object \fISourceObjectPath\fR
-
-.TP 
-\fBappend\fP \fISectionName\fR \fISourceObjectPath\fR
-Append the data of object \fISourceObjectPath\fR to section \fISectionName\fR
+\fBg got\fP [\fIRegex\fR]
+Print the symbols in the Global Offset Table (GOT) matching \fIRegex\fR
 
 .TP
-\fBextend\fP \fISectionName\fR \fIlength\fR
-Extend section \fISectionName\fR with \fIlength\fR zero bytes
+\fBhexa\fP
+Dump matching binary objects in current file
+
+\fBX parameter\fP
+
+ParamFormat : \fIregx regx:rva regx:rva%%size regx%%size\fR
+ - regx : Regular expression (mandatory)
+ - rva  : Byte offset from the beginning (optional)
+ - size : Bytes number limit (optional)
 
 .TP
-\fBwrite\fP \fIDestinationObjectPath SourceObjectPath\fR
-Copy data from \fISourceObjectPath\fR to \fIDestinationObjectPath\fR
+\fBinterp\fP
+Print ELF interpreter path
+
+.TP
+\fBmod\fP
+Modulo operation between 2 parameters
+
+.TP
+\fBmul\fP
+Multiply the 2 parameters
+
+.TP
+\fBn notes\fP [\fIRegex\fR]
+Print the Notes sections entries matching \fIRegex\fR
+
+.TP
+\fBp pht\fP
+Print the Program Header Table (PHT)
 
 .TP
 \fBprint\fP [\fIObjectPath1 ObjectPath2 ... ObjectPathN\fR]
@@ -170,43 +224,291 @@ Print the values of objects \fIObjectPath1 ObjectPath2 ... ObjectPathN\fR
 Redirect calls to function \fIfunc\fR having a .plt entry to \fIfunc2\fR or address \fIaddr\fR.
 
 .TP
+\fBr rel\fP [\fIRegex\fR]
+Print the relocation entries matching \fIRegex\fR
+
+.TP
+\fBreladd\fP \fIDestinationfileID\fR \fISourceFileID\fR
+Inject the ELF relocatable object \fISourceFileID\fR into the ELF executable object \fIDestinationFileID\fR
+
+.TP
+\fBset\fP \fIDestinationObjectPath SourceObjectPath\fR
+Set the value of object \fIDestinationObjectPath\fR to \fISourceObjectPath\fR
+
+.TP
+\fBs sht\fP [\fIRegex\fR]
+Print the sections in the Section Header Table (SHT) matching \fIRegex\fR
+
+.TP
+\fBsub\fP
+Substract 2nd parameter to the first one
+
+.TP
+\fBwrite\fP \fIDestinationObjectPath SourceObjectPath\fR
+Copy data from \fISourceObjectPath\fR to \fIDestinationObjectPath\fR
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBDebugger commands\fP
+
+\fIbacktrace break continue dbgstack delete dumpregs linkmap stack step\fR
+
+.TP
+\fBbacktrace\fR
+Print backtrace (needs frame pointer)
+
+.TP
+\fBbreak\fR
+Put a breakpoint on symbol or address (0xADDR)
+
+.TP
+\fBcontinue\fR
+Continue executing debuggee program after break
+
+.TP
+\fBdbgstack\fR
+Dump N words on debugger stack
+
+.TP
+\fBdelete\fR
+Delete breakpoint by symbol, addr, or ID
+
+.TP
+\fBdumpregs\fR
+Dump registers of debuggee at breakpoint or step
+
+.TP
+\fBlinkmap\fR
+Print Linkmap list for this process
+
+.TP
+\fBstack\fR
+Dump N words on debuggee stack
+
+.TP
+\fBstep\fR
+Enable stepping of debuggee program
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBELFsh modules commands\fP
+
+\fImodhelp modload modunload\fR
+
+.TP
+\fBmodhelp\fP
+Print the ELFsh/E2dbg modules help information
+
+.TP
+\fBmodload\fP
+Load an ELFsh/E2dbg module
+
+.TP
+\fBmodunload\fP
+Unload an ELFsh/E2dbg module
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBELF objects flags\fP
+
+\fIfixup shtrm sstrip\fR
+
+.TP
+\fBfixup\fP
+Mark BSS section to be included in disk file
+
+.TP
+\fBshtrm\fP
+Mark Section Header Table as removed
+
+.TP
+\fBsstrip\fP
+Mark the Section Header Table (SHT) and Symbol Table (.symtab) as stripped
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBOndisk only ELF commands\fP
+
+\fIappend extend flush insert remove save stab sym\fR
+
+.TP
+\fBappend\fP \fISectionName\fR \fISourceObjectPath\fR
+Append the data of object \fISourceObjectPath\fR to section \fISectionName\fR
+
+.TP
+\fBextend\fP \fISectionName\fR \fIlength\fR
+Extend section \fISectionName\fR with \fIlength\fR zero bytes
+
+.TP
+\fBflush\fP
+Flush all injected .o files from current file
+
+.TP
+\fBinsert\fP
+Inject new object in current working file
+
+insert sect  name code|data|unmap [sz] [align]
+       sym   name value           [sz]
+       phdr  type vaddr           [sz]
+
+.TP
+\fBremove\fP
+Remove ELF object from current working file
+
+remove params
+
+Parameter format : sect name
+                   sym  name
+                   phdr index
+
+.TP
+\fBsave\fP \fIfilename\fR
+Dump output file \fIfilename\fR
+
+.TP
+\fBstab\fP [\fIRegex\fR]
+Print raw stab (.stabs) entries matching \fIRegex\fR
+
+.TP
+\fBst sym\fP [\fIRegex\fR]
+Print the symtab (.symtab) entries matching \fIRegex\fR
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBNetwork commands\fP
+
+\fIconnect disconnect net netkill netlist peerslist rcmd\fR
+
+.TP
+\fBconnect\fR
+Add a DUMP connection to given host
+
+.TP
+\fBdisconnect\fR
+Kill the DUMP connection from IP
+
+.TP
+\fBnet\fR
+Activate networking capabilities
+
+.TP
+\fBnetkill\fR
+Kill a network client by IP
+
+.TP
+\fBnetlist\fR
+List connected network clients
+
+.TP
+\fBpeerslist\fR
+List connected DUMP peers
+
+.TP
+\fBrcmd\fR
+Execute a command on a remote machine
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBAvailable prefixes\fP
+
+\fIalert all quiet sort verb\fR
+
+.TP
+\fBalert\fP
+Alert prefix : change alert regular expression
+
+.TP
 \fBa all\fP \fIregex\fR
 Set a global regular expression. All commands which take a regular expression as a parameter will default to use this global regular expression.
 
 .TP
-\fBs sort\fP (\fIa\fR|\fIs\fR)
-Sort output by \fIa\fRddress or \fIs\fRize
+\fBquiet\fP
+Toggle quiet flag (do not print executed commands)
 
 .TP
-\fBquiet\fP | \fBverbose\fP
-Toggle the verbosity flag
+\fBsort\fP
+Sorting prefix (use a -addr- or s -size-)
+
+
+.TP
+\fBverb\fP
+Toggle verbose flag (undo the quiet flag)
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBAvailable Script jumps\fP
+
+\fIje jg jge jl jle jmp jne\fR
+
+.TP
+\fBje\fP
+Jump on label if equal (use last cmp result)
+
+.TP
+\fBjg\fP
+Jump on label if greater (use last cmp result)
+
+.TP
+\fBjge\fP
+Jump on label if greater or equal (use last cmp result)
+
+.TP
+\fBjl\fP
+Jump on label if lower (use last cmp result)
+
+.TP
+\fBjle\fP
+Jump on label if lower or equal (use last cmp result)
+
+.TP
+\fBjmp\fP
+Unconditional jump to script label
+
+.TP
+\fBjne\fP
+Jump on label if nont equal (use last cmp result)
+
+.TP
+\fB========================================================================\fP
+
+.TP
+\fBAvailable modules\fP
+
+\fImodflow modremap modtest\fR
+
+.TP
+\fBmodflow\fR
+Modflow is an ELFsh module designed to perform control flow analysis on ELF binaries
+for detailed examples and usage see README in ELFsh/modules/modflow
+
+.TP
+\fBmodremap\fR
+Modflow is an ELFsh module designed to perform remapping sections in Elf binaries see ELFsh/modules/modremap for further details
+
+.TP
+\fBmodtest\fR
+Modtest is a ElFsh module designed to show the usage of adding new commands to ELFsh see ELFsh/modules/modtest for further details
+
+.TP
+\fB========================================================================\fP
+
 
 .P
-The following commands can only be used on the ELFsh commandline :
-
-.TP 
-\fBload\fP \fIfilename\fR
-Load input file \fIfilename\fR
-
-.TP 
-\fBsave\fP \fIfilename\fR
-Dump output file \fIfilename\fR
-
-.TP 
-\fBunload\fP (\fIfilename\fR | \fIfileID\fR)
-Unload file \fIfilename\fR or \fIfileID\fR without saving
-
-.TP 
-\fBswitch\fP (\fIfilename\fR | \fIfileID\fR)
-Change the current file to work on to \fIfilename\fR or \fIfileID\fR
-
-.TP 
-\fBmodload\fP \fIfilename\fR
-Load the ELFsh module \fIfilename\fR
-
-.TP
-\fBlist\fP
-List the loaded files and their ID
+The following commands can only be used on the ELFsh interactive mode:
 
 .SH OBJECT PATH FORMAT
 This section explains how to access different objects in an ELF file. For most commands the object can also be a decimal or hexadecimal number. In this case the ObjectPath is the number.
@@ -313,10 +615,10 @@ Symbol visibility
 .RE
 
 .TP
-\fBDynamic table\fP
+\fBDynamic section\fP
 (filename | fileID).dynamic[index].field
 
-dynamic table entry fields are :
+dynamic section entry fields are :
 .
 .RSs
 .IPs \fBval\fP
@@ -383,7 +685,7 @@ Address
 .RE
 
 .TP
-\fBSection table\fP
+\fBAdditional section information\fP
 (filename | fileID).section[sectionindex].field
 
 section fields are :
@@ -404,6 +706,9 @@ To access use following path format :
 The ELFsh was written by the ELFsh crew <elfsh@devhell.org>.
 
 This manual page was created by Peter De Schrijver <p2@mind.be> for the Debian GNU/Linux system (but may be used by others).
+
+This manual was updated to ELFsh version 0.7 by stingduk.
+
 
 .SH SEE ALSO
 readelf(1), objdump(1), objcopy(1)
