@@ -125,7 +125,7 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
 	elfsh_fixup_bss_real(file, bss, fixflag);
       }
 #if	__DEBUG_BSS__
-  printf("[DEBUG_BSS] RETURNED %s as last bss \n", last->name); 
+  printf("[DEBUG_BSS] RETURNED %s as last bss \n", (last != 0x0) ? last->name: "null"); 
   fflush(stdout);
 #endif
 
