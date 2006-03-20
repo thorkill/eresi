@@ -8,7 +8,7 @@
 #ifndef __LIBELFSH_INTERN_
  #define __LIBELFSH_INTERN_
 
-#if defined(sun) || defined(__linux__) || defined(__BEOS__) || defined(HPUX)
+#if defined(sun) || defined(__linux__) || defined(__BEOS__) || defined(HPUX) || defined(__FreeBSD__)
  #define		ELFSH_ERR_ARRAY		strerror(errno)
 #else
  #define		ELFSH_ERR_ARRAY		sys_errlist[sys_nerr]
@@ -31,7 +31,7 @@ do												\
   {												\
     write(1, "Out of memory\n", 14);								\
     exit(1);											\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Out of memory .", c);			\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)"Out of memory .", c);			\
   }												\
 }												\
 while (0)
@@ -70,7 +70,7 @@ while (0)
 do											\
 {											\
   if (read(a, b, c) != c)								\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, d);		\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, d);		\
 }											\
 while (0)
 
@@ -79,7 +79,7 @@ while (0)
 do											\
 {											\
   if (lseek(a, b, c) == (off_t) -1)							\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, d);		\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, d);		\
 }											\
 while (0)
 
@@ -88,9 +88,9 @@ while (0)
 do											\
 {											\
   if (write(a, b, c) != c)								\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, d);		\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, d);		\
  if (fsync(a))										\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, d);		\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, d);		\
 }											\
 while (0)
 
@@ -99,7 +99,7 @@ while (0)
 do											\
 {											\
   if (close(a))										\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, b);		\
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, b);		\
 }											\
 while (0)
 
