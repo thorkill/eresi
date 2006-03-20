@@ -275,16 +275,17 @@ int		elfsh_load_pht(elfshobj_t *file)
 
   if (NULL == file)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameter", -1);
+		      (char *)"Invalid NULL parameter", -1);
 
   else if (file->pht != NULL)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   else if (!file->hdr->e_phoff)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No PHT", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)"No PHT", -1);
   
   if (file->hdr->e_phoff > file->fstat.st_size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
- 	 "PHT file offset is larger than the file itself", -1);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+ 	 (char *)"PHT file offset is larger than the file itself", -1);
   
   size = file->hdr->e_phentsize * file->hdr->e_phnum;
   XSEEK(file->fd, file->hdr->e_phoff, SEEK_SET, -1);
