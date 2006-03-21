@@ -110,8 +110,16 @@ int		elfsh_read_obj(elfshobj_t *file)
     elfsh_fixup_dynsymtab(file->secthash[ELFSH_SECTION_DYNSYM]);
 
   /* We close the file descriptor after file mapping so we can open more files */
-  XCLOSE(file->fd, -1);
+  if (file->fd >= 0) {
+#if __DEBUG_MAP__
+	  printf("[LIBELFSH] Closing descriptor %d \n",
+		 file->fd);
+#endif
 
+   XCLOSE(file->fd, -1);
+   /* neutralize file descriptor */
+   file->fd = -1;
+  }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
