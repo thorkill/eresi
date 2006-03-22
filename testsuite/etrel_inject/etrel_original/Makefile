@@ -27,8 +27,8 @@ all	: $(OBJ)
 	#@strip a.out
 	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c #-m64
 
-	/sbin/paxctl -m -s -p -r -x ../../../vm/elfsh
-	/sbin/paxctl -v ../../../vm/elfsh
+#	/sbin/paxctl -m -s -p -r -x ../../../vm/elfsh
+#	/sbin/paxctl -v ../../../vm/elfsh
 
 clean	:
 	$(RM) $(OBJ) *~ \#* *\# $(RELOBJ)

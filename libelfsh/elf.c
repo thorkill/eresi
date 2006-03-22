@@ -440,6 +440,98 @@ void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder)
 
  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
+
+int elfsh_check_hdr_type(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+ switch (file->hdr->e_type) {
+  case ET_NONE: break;
+  case ET_REL:  break;
+  case ET_EXEC: break;
+  case ET_DYN:  break;
+  case ET_CORE: break;
+  default:
+   file->hdr->e_type = ET_NONE;
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_type is not valid", NULL);
+   break;
+ }
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int elfsh_check_hdr_machine(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ 
+ if (file->hdr->e_machine > 16) {
+   file->hdr->e_machine = ET_NONE;
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_machine is not valid", NULL);
+ }
+
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int elfsh_check_hdr_version(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ 
+ if (file->hdr->e_version != EV_CURRENT) {
+   file->hdr->e_version = EV_CURRENT;
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_version is not valid", NULL);
+ }
+
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int elfsh_check_hdr_phoff(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ 
+ if (file->hdr->e_phoff > file->fstat.st_size) {
+   file->hdr->e_phoff = ET_NONE;
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_phoff > file length", NULL);
+ }
+
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int elfsh_check_hdr_shoff(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ 
+ if (file->hdr->e_shoff > file->fstat.st_size) {
+ /*
+   file->hdr->e_shoff = 0;
+   file->hdr->e_shentsize = 0;
+   file->hdr->e_shnum = 0;
+   file->hdr->e_shstrndx = 0;
+ */
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_shoff > file length", NULL);
+ }
+
+   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* perform some sanity checks on ELF header */
+int		elfsh_check_hdr(elfshobj_t *file) {
+
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+ elfsh_check_hdr_type(file);
+ elfsh_check_hdr_machine(file);
+ elfsh_check_hdr_version(file);
+ elfsh_check_hdr_phoff(file);
+ elfsh_check_hdr_shoff(file);
+
+ ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+}
   
   /* Load the ELF header */
 int		elfsh_load_hdr(elfshobj_t *file)
@@ -450,9 +542,12 @@ int		elfsh_load_hdr(elfshobj_t *file)
 
   if (file->hdr != NULL)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sizeof(elfsh_Ehdr)));
+
   XALLOC(file->hdr, sizeof(elfsh_Ehdr), -1);
   if ((len = read(file->fd, file->hdr, sizeof(elfsh_Ehdr))) <= 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, ELFSH_ERR_ARRAY, len);
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, len);
+
+  elfsh_check_hdr(file);
 
   elfsh_endianize_elfhdr(file->hdr, file->hdr->e_ident[EI_DATA]);
 
