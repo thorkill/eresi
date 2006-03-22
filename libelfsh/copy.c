@@ -25,7 +25,10 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   if (!file)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  elfsh_read_obj(file);
+  if (elfsh_read_obj(file) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Can't copy file object", NULL);
+   
 
   /* Do copy */
   XALLOC(copy, sizeof(elfshobj_t), NULL);
@@ -39,8 +42,11 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   memcpy(copy->sht, file->sht, sizeof(elfsh_Shdr) * file->hdr->e_shnum);
   copy->read  = file->read;
   copy->shtrm = file->shtrm;
+  copy->shtrb = file->shtrb;
   copy->strip = file->strip;
   copy->nbrm  = file->nbrm;
+  copy->fstat = file->fstat;
+  copy->fd = file->fd;
   copy->pending = file->pending;
   copy->linkmap = file->linkmap;
   copy->rhdr.base = file->rhdr.base;
