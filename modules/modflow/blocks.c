@@ -585,7 +585,9 @@ int	insert_destination_address(elfshobj_t *obj,
   	   vaddr_hist[2].instr == ASM_MOV) {
 	dest = vaddr_hist[2].op2.imm;
 
-	if ((dest < elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current))) || (dest < 0)) {return -1;}	
+	if ((dest < elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current))) || (dest < 0)) {
+	   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+	  }	
      printf("[!!!] 0x%08x possible simple ptr function at [%x/%d] detected\n",vaddr,dest,dest);
 
   	 dst = block_get_by_vaddr(dst_end, dest, 1);

@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.c,v 1.1.1.4 2006-03-15 21:46:43 thor Exp $
+ * $Id: libmjollnir.c,v 1.1.1.5 2006-03-23 23:35:42 thor Exp $
  */
 
 #include <libmjollnir.h>
@@ -46,7 +46,7 @@ mjr_i386_cut_function(Mjr_CTX * ctx, unsigned char *src, unsigned char *dst, int
 
 /**
  * This function inserts new symbol as a function.
- * shortcut for insert/se
+ * shortcut for insert/set
  */
 
 int
