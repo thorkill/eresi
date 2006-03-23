@@ -7,6 +7,15 @@
 Changes in intermediate beta versions are listed in the first public version
 they appear.
 
+0.7a7p2:
+ - Bugfix  : bss.c - Fixed SIGSEGV on fixup with enabled debugging
+ - Bugfix  : libelfsh/include/libelfsh-internat.h - fixed ELFSH_PROFILE_ERR and XCLOSE
+             - removed compilation warnings
+             - added support for strerror for FreeBSD
+ - Bugfix  : copy.c - added missing file->fstat, file->fd, file->shtrb
+ - Bugfix  : bug #3 fixed
+ - Bugfix  : Modflow - fixed profiling error when recognition of ptr functions was enabled
+
 0.7a7p1:
  - Bugfix  : Added missing libmjollnir
  - Bugfix  : Removed double definition of ELFSH_EDITION

@@ -172,7 +172,7 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a7p1"
+#define	ELFSH_RELEASE		"a7p3rc1"
 #define ELFSH_EDITION		"brz"
 
 /* Unused, feel free to try it, its awesome */

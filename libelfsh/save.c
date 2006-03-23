@@ -2,7 +2,7 @@
 ** save.c for elfsh
 ** 
 ** Started on  Tue Mar  4 01:14:01 2003 mayhem
-** Last update Thu Aug 21 03:36:22 2003 mayhem
+** Last update Thu Mar 23 23:21:08 2006 thorkill
 */
 #include "libelfsh.h"
 
@@ -172,7 +172,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 #endif
 
   /* First reset the endianess */
-  if (elfsh_dynamic_file(file))
+  if (!file->shtrb && elfsh_dynamic_file(file))
     {
       if (elfsh_endianize_got(file->secthash[ELFSH_SECTION_GOT]) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -232,7 +232,11 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
     }
   
   /* Nullify the first section size, so that we dont write it in the corefile */
-  if (file->sectlist)
+#if __DEBUG_MAP__
+  printf("[DEBUG_SAVE] Rebuild SHT flag is set: %d\n",file->shtrb);
+#endif
+
+  if ((file->sectlist) && !file->shtrb)
     file->sectlist->shdr->sh_size = 0;
 
   /* Write each sections in the destination file at their respective offset */
@@ -263,9 +267,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 	  /* Write the section */
 	  XSEEK(fd, elfsh_get_section_foffset(actual->shdr), SEEK_SET, -1);
 	  XWRITE(fd, actual->data, actual->shdr->sh_size, -1);
-		 
-
-	}
+	 }
 
 #if __DEBUG_MAP__      
       else

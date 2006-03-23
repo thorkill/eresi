@@ -6,6 +6,7 @@
 ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 **
 ** Started on  Tue Mar 26 19:07:23 2002 mayhem
+** Updated on  Thu Mar 23 23:21:08 2006 thorkill
 **
 */
 #include "libelfsh.h"
@@ -200,7 +201,6 @@ static int	init_sht(elfshobj_t *file, u_int num)
   elfsh_Phdr	*high;
   elfsh_Shdr	shdr;
   elfshsect_t	*sect;
-  struct stat	st;
   char		buff[256];
   u_int		index;
 
@@ -224,7 +224,10 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->hdr->e_shstrndx = 2;
 
   /* Insert the .mapped section */
-  shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC, low->p_vaddr, low->p_offset, 
+  shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC, low->p_vaddr, 
+   /* We need to shift it otherwise elfsh_save_sht will
+    overwrite new header */
+   ( low->p_offset == 0) ? 52 : low->p_offset , 
 			   high->p_offset + high->p_filesz, 0, 0, 0, 0);
   file->sht[0] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
