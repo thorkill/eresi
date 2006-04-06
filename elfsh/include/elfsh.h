@@ -155,7 +155,6 @@ extern asm_processor	proc;
 
 #define ELFSH_RELOC_MAX(file)   vm_getmaxrelnbr(file)
 
-
 #define	ELFSH_FEATURE_MAX	2
 #define	ELFSH_POSFLAG_MAX	2
 #define	ELFSH_FLAGS_MAX		4
