@@ -1,7 +1,0 @@
-#!../../vm/elfsh
-load a.out
-set 1.dynamic[08].val 0x2
-set 1.dynamic[08].tag DT_NEEDED
-redir main e2dbg_run
-save a.out_e2dbg
-
