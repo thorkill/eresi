@@ -79,14 +79,27 @@ int			elfsh_sort_sht(elfshobj_t *file)
 	      /* If not in first position */
 	      else
 		{
-		  tmpsct = actual->prev;
-		  actual->prev->next = actual->prev = actual->next;
-		  actual->next->prev = tmpsct;
-		  if (actual->next->next != NULL)
-		    actual->next->next->prev = actual;
+
+		  actual->prev->next = actual->next;
+		  actual->next->prev = actual->prev;
 		  tmpsct = actual->next->next;
 		  actual->next->next = actual;
+		  actual->prev = actual->next;
 		  actual->next = tmpsct;
+		  if (tmpsct)
+		    tmpsct->prev = actual;
+
+		  /* this is buggy, spot the difference ... 
+		     tmpsct = actual->prev;
+		     actual->prev->next = actual->prev = actual->next;
+		     actual->next->prev = tmpsct;
+		     if (actual->next->next != NULL)
+		     actual->next->next->prev = actual;
+		     tmpsct = actual->next->next;
+		     actual->next->next = actual;
+		     actual->next = tmpsct;
+		  */
+
 		}
 
 	      /* Update links in SHT and symlinksidx in symtab */
