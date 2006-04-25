@@ -7,7 +7,7 @@
  #define __ELFSH_H_
 
 /* User defined configuration */
-#include "../../vars.h"
+#include "elfsh-vars.h"
 
 #include <sys/types.h>
 #include <stdio.h>

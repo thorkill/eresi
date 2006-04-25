@@ -11,9 +11,13 @@ READLN="0"
 ELFSHNET="0"
 PREFIX="/"
 
-echo > libvars.h
-echo > vars.h
-echo > config.h
+CONFIGFILE="config.h"
+VARSFILE="vm/include/elfsh-vars.h"
+LIBVARSFILE="libelfsh/include/libvars.h"
+
+echo > $LIBVARSFILE
+echo > $VARSFILE
+echo > $CONFIGFILE
 
 while [ $# -ne 0 ]; do
 
@@ -24,12 +28,12 @@ if [ $CHOSENBIT = "1" ]; then
     echo
     echo "Error: enable-32 and enable-64 are incompatible."
     echo
-    rm -f config.h
+    rm -f $CONFIGFILE
     exit
 fi
 echo  " [*] Enabling ELF64 support"
 BITS="-DELFSH64"
-echo  "BITS		= -DELFSH64"		>> config.h
+echo  "BITS		= -DELFSH64"		>> $CONFIGFILE
 CHOSENBIT="1"
 ;;
 
@@ -38,58 +42,59 @@ if [ $CHOSENBIT = "1" ]; then
     echo
     echo "Error: enable-32 and enable-64 are incompatible."
     echo
-    rm -f config.h
+    rm -f $CONFIGFILE
     exit
 fi
 echo  " [*] Enabling ELF32 support"
 BITS="-DELFSH32"
-echo  "BITS = -DELFSH32"		>> config.h
+echo  "BITS = -DELFSH32"		>> $CONFIGFILE
+echo  "#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"
 ;;
 
 --enable-network*)
 echo  " [*] Enable distributed ELFsh"
 ELFSHNET="1"
-echo  "LDDUMPOPT		= -ldumpelfsh"		>> config.h
+echo  "LDDUMPOPT		= -ldumpelfsh"		>> $CONFIGFILE
 BITS=$BITS" -DELFSHNET"
-echo "BITS = " $BITS			>> config.h
+echo "BITS = " $BITS			>> $CONFIGFILE
 ;;
 
 --enable-readline*)
 echo  " [*] Enabling readline support"
 READLN="1"
-echo  "READLNOPT	= -DUSE_READLN"		>> config.h
-echo  "LDREADLNOPT	= -lreadline -ltermcap" >> config.h
+echo  "READLNOPT	= -DUSE_READLN"		>> $CONFIGFILE
+echo  "LDREADLNOPT	= -lreadline -ltermcap" >> $CONFIGFILE
 ;;
 
 --enable-ncurses*)
 echo  " [*] Enabling ncurses support"
 READLN="1"
-echo  "NCURSESLNOPT	= -DUSE_UI"		>> config.h
-echo  "LDNCURSESLNOPT	= -lncurses"		>> config.h
+echo  "NCURSESLNOPT	= -DUSE_UI"		>> $CONFIGFILE
+echo  "LDNCURSESLNOPT	= -lncurses"		>> $CONFIGFILE
 ;;
 
 --enable-termcap*)
 echo " [*] Enabling termcap support"
 TERMCAP="1"
-echo  "LDREADLNOPT  += -ltermcap" >> config.h
+echo  "LDREADLNOPT  += -ltermcap" >> $CONFIGFILE
 ;;
 
 --enable-static*)
 echo  " [*] Enabling static linking"
-echo  "STATOPT		= -static"              >> config.h
-echo  "STATOPT2		= -DUSE_STATIC"		>> config.h
+echo  "STATOPT		= -static"              >> $CONFIGFILE
+echo  "STATOPT2		= -DUSE_STATIC"		>> $CONFIGFILE
 STATIC="1"
 ;;
 
 --enable-dmalloc*)
 echo  " [*] Enabling dmalloc linking"
-echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"  >> config.h
+echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"  >> $CONFIGFILE
 ;;
 
 --enable-m64*)
 echo  " [*] Enabling ELFsh 64bits binary built"
-echo  "BUILDOPT		= -m64 -DM64"		>> config.h
+echo  "BUILDOPT		= -m64 -DM64"		>> $CONFIGFILE
 M64="1"
 ;;
 
@@ -101,21 +106,21 @@ ETAGS="1"
 --set-shell*)
 shift
 echo  " [*] Setting UNIX shell to " $1
-echo  "#define ELFSH_SHELL        " $1		>> vars.h
+echo  "#define ELFSH_SHELL        " $1		>> $VARSFILE
 SHELLSET="1"
 ;;
 
 --set-editor*)
 shift
 echo  " [*] Setting editor to " $1
-echo  "#define ELFSH_EDITOR        " $1		>> vars.h
+echo  "#define ELFSH_EDITOR        " $1		>> $VARSFILE
 EDITORSET="1"
 ;;
 
 --set-modpath*)
 shift
 echo " [*] Setting ELFsh modules path to " $1
-echo "#define ELFSH_MODPATH              " $1   >> vars.h
+echo "#define ELFSH_MODPATH              " $1   >> $VARSFILE
 MODPATHSET="1"
 ;;
 
@@ -133,7 +138,7 @@ break;
 *)
 echo "Invalid configure option. Try --help."
 echo
-rm -f config.h Makefile
+rm -f $CONFIGFILE Makefile
 exit
 
 esac;
@@ -167,7 +172,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo
     echo "   All options are disabled by default."
     echo
-    rm -f config.h vars.h Makefile
+    rm -f $CONFIGFILE $VARSFILE Makefile
     exit
 fi
 
@@ -175,7 +180,7 @@ fi
 #    echo
 #    echo "Error: Readline and Distributed ELFsh are incompatible."
 #    echo
-#    rm -f config.h vars.h
+#    rm -f $CONFIGFILE $VARSFILE
 #    exit
 #fi
 
@@ -190,74 +195,74 @@ SunOS*)
 
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
-    echo  "DLOPT		= -ldl"   >> config.h
+    echo  "DLOPT		= -ldl"   >> $CONFIGFILE
 fi
 
     EXTRAOPT="$EXTRAOPT -lnsl -lsocket -lresolv"
-    echo "EXTRAOPT = " $EXTRAOPT	  >> config.h
-    echo "RANLIB  = ranlib"               >> config.h
+    echo "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
+    echo "RANLIB  = ranlib"               >> $CONFIGFILE
 
 	;;
 
 Linux*)
 
-    echo "RANLIB  = ranlib"               >> config.h
+    echo "RANLIB  = ranlib"               >> $CONFIGFILE
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
-    echo  "DLOPT		= -ldl"       >> config.h
-    echo  "DYNOPT		= -rdynamic"  >> config.h
+    echo  "DLOPT		= -ldl"       >> $CONFIGFILE
+    echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
 fi
 
 if [ "$ELFSHNET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
-    echo  "EXTRAOPT = " $EXTRAOPT	  >> config.h
+    echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
 
 ;;
 
 FreeBSD*)
 
-    echo "RANLIB  = ranlib"               >> config.h
+    echo "RANLIB  = ranlib"               >> $CONFIGFILE
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
-    echo  "DYNOPT		= -rdynamic"  >> config.h
+    echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
 fi
 
 if [ "$ELFSHNET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
-    echo  "EXTRAOPT = " $EXTRAOPT	  >> config.h
+    echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
 
-echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"          "   >> vars.h
+echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"          "   >> $VARSFILE
 
 MODPATHSET="1";
 FREEBSD="1";
 ;;
 
 *BSD*)
-    echo "RANLIB  = ranlib"               >> config.h
+    echo "RANLIB  = ranlib"               >> $CONFIGFILE
 ;;
 
 HP-UX*)
-    echo "#define HPUX 1"		  >> libvars.h
-    echo "RANLIB  = ranlib"               >> config.h
+    echo "#define HPUX 1"		  >> $LIBVARSFILE
+    echo "RANLIB  = ranlib"               >> $CONFIGFILE
 ;;
 
 IRIX*)
-    echo "#define IRIX 1" 		  >> libvars.h
-    echo "RANLIB  = /usr/bin/true"        >> config.h
+    echo "#define IRIX 1" 		  >> $LIBVARSFILE
+    echo "RANLIB  = /usr/bin/true"        >> $CONFIGFILE
 ;;
 
 *)
 
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
-    echo  "DYNOPT                = -rdynamic"   >> config.h
+    echo  "DYNOPT                = -rdynamic"   >> $CONFIGFILE
 fi
 
 if [ "$ELFSHNET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
-    echo "EXTRAOPT = " $EXTRAOPT		>> config.h
+    echo "EXTRAOPT = " $EXTRAOPT		>> $CONFIGFILE
 fi
 ;;
 
@@ -266,23 +271,23 @@ esac
 # Set default variables in case it was not precised
 
 if [ "$MODPATHSET" != "1" ]; then
-    echo "#define ELFSH_MODPATH    \"/usr/share/elfsh/\"" 	>> vars.h
+    echo "#define ELFSH_MODPATH    \"/usr/share/elfsh/\"" 	>> $VARSFILE
 fi
 
 if [ "$SHELLSET" != "1" ]; then
-    echo "#define ELFSH_SHELL      \"/bin/bash\""		>> vars.h
+    echo "#define ELFSH_SHELL      \"/bin/bash\""		>> $VARSFILE
 fi
 
 if [ "$EDITORSET" != "1" ]; then
-    echo "#define ELFSH_EDITOR      \"emacs\""			>> vars.h
+    echo "#define ELFSH_EDITOR      \"emacs\""			>> $VARSFILE
 fi
 
 if [ "$BUILDOP" != "1" ];  then
-    echo "BUILDOP = -DM32"					>> config.h
+    echo "BUILDOP = -DM32"					>> $CONFIGFILE
 fi
 
 echo  " [*] Enabling libasm support"
-echo  "LDASMOPT	= -lasm"		>> config.h
+echo  "LDASMOPT	= -lasm"		>> $CONFIGFILE
 
 echo "##"							 > Makefile 
 echo "## Makefile "						>> Makefile
@@ -292,7 +297,7 @@ echo "## Automatically generated from the configure script"	>> Makefile
 echo "## "							>> Makefile
 echo ""								>> Makefile
 #echo ""								>> Makefile
-echo "include ./config.h "					>> Makefile
+echo "include ./$CONFIGFILE " 					>> Makefile
 echo " "							>> Makefile
 echo "CC      = gcc "						>> Makefile
 echo "RM      = rm -f "						>> Makefile
@@ -375,15 +380,17 @@ echo " "							>> Makefile
 echo "install : all prepareDir mod_install "				>> Makefile
 echo "	@cp vm/elfsh \$(BINPATH)/ "				>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
+echo "	@cp libc/libcelfsh.a \$(LIBPATH) "			>> Makefile
+echo "	@cp libmalloc/libmalloc-e2dbg.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libmjollnir/libmjollnir.a \$(LIBPATH) "			>> Makefile
 echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
 echo "	@cp libui/libui.a libui/libui.so \$(LIBPATH) "		>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
-echo "	@cp libasm/include/libasm.h \$(INCPATH)"		>> Makefile
-echo "	@cp libasm/include/libasm-i386.h \$(INCPATH) "		>> Makefile
+echo "	@cp libasm/include/*.h \$(INCPATH)"		>> Makefile
 echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
+echo "	@cp libc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 755 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
@@ -391,12 +398,13 @@ echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libelfsh.so "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)e2dbg.so "			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libcelfsh.a "			>> Makefile
 echo "	@chmod 755 \$(LIBPATH)libui.so "			>> Makefile
-echo "	@chmod 755 \$(LIBPATH)libui.a "				>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libui.a "				>> Makefile
 echo "	@chmod 755 \$(INCPATH)libui.h "				>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
-echo "	@chmod 755 \$(LIBPATH)libelfsh.a "			>> Makefile
-echo "	@chmod 755 \$(LIBPATH)libasm.a "			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libelfsh.a "			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libasm.a "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libasm*.h "			>> Makefile
 
@@ -429,7 +437,9 @@ echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui.so "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui.a "				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libmjollnir.a "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg.a "			>> Makefile
+echo "	rm -f  \$(LIBPATH)/libcelfsh.a "			>> Makefile
+echo "	rm -f  \$(LIBPATH)/libmjollnir.a "			>> Makefile
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile

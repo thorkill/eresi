@@ -8,7 +8,7 @@
 #ifndef __LIBELFSH_H_
  #define __LIBELFSH_H_
 
-#include "../../libvars.h"
+#include "libvars.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,7 +23,7 @@
 #define __USE_GNU
 #include <sys/ucontext.h>
 
-#include "libc.h"
+#include "elfsh-libc.h"
 
 #include <elf.h>
 
