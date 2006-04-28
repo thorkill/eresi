@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: thor.c,v 1.1.1.3 2006-03-04 23:52:54 thor Exp $
+ * $Id: thor.c,v 1.2 2006-04-28 06:56:33 thor Exp $
  *
  * Since this library is build on top of libasm and elfsh
  * I decided to use mydisasm.c from libasm as a prototype
@@ -39,11 +39,15 @@ int	usage(char *p) {
 int	main(int ac, char **av) {
   int cnt2,x,nr;
   char **ret;
-  char *infile,*outfile,*os,*srcFile,*arch,*osRel;
+  char *infile,*outfile,*os,*srcFile,*arch,*osRel,*shtName;
   int opt_cdb;
+  u_int num_sht,idx_sht;
   Mjr_fingerPrint *fng;
   Mjr_fsym *fs;
   hash_t *hs;
+  elfsh_Shdr *shtlist;
+  elfsh_Shdr *shdr;
+  elfsh_Sym  *sym;
   Mjr_CTX ctx;
 
  hs=NULL;
@@ -101,7 +105,7 @@ int	main(int ac, char **av) {
 
   if (!ctx.obj)
     {
-      printf("failed opening %s\n", infile);
+      printf("faild opening %s\n", infile);
       return -1;
     }
 
@@ -112,32 +116,49 @@ int	main(int ac, char **av) {
     printf("can't load DB\n");return -1;
    }
 
-  /* scan the raw data for functions */
-  if (mjr_find_calls_raw(&ctx,(hash_t *)&hs,".text","sub_") == -1) {
-    printf("raw read failed\n");return -1;
+
+  if (!(shtlist = elfsh_get_sht(ctx.obj, &num_sht))) {
+    printf("faild to get sht!\n");
+	return -1;
   }
+
+   printf("[i] Found %d sections.\n",num_sht);
+
+
+  for (idx_sht = 0; idx_sht < num_sht; idx_sht++) {
+   shdr = (shtlist + idx_sht);
+   sym = elfsh_get_sym_from_shtentry(ctx.obj, shdr);
+   shtName = elfsh_get_symbol_name(ctx.obj, sym);
+
+   if (elfsh_get_section_execflag(shdr)) {
+    printf("[i] Section name=(%14s) index=(%02i)\n", shtName, idx_sht);
+
+    /* scan the raw data for functions */
+    if (mjr_find_calls_raw(&ctx,(hash_t *)&hs,shtName,"sub_") == -1) {
+      printf("raw read failed\n");return -1;
+    }
 
   ret = hash_get_keys((hash_t *)&hs,&cnt2);
 
-  for(x=0;x<cnt2;x++) {
-   fs = hash_get((hash_t *)&hs,ret[x]);
-   if (fs->type == F_TYPE_CALL) {
+   for(x=0;x<cnt2;x++) {
+    fs = hash_get((hash_t *)&hs,ret[x]);
+    if (fs->type == F_TYPE_CALL) {
 
-    fng = hash_get((hash_t *)&ctx.md5db,fs->md5sum);
+     fng = hash_get((hash_t *)&ctx.md5db,fs->md5sum);
 
-    /* We found it */
-    if (fng != NULL) {
-      printf("[!] VADDR:0x%08x (0x%08x) MD5:%s TMP:%s SYMBOL:%s OS:%s REL:%s\n",
-	   fs->epoint,
-	   fs->vaddr,
-	   (char *)fng->data,
-	   ret[x],
+     /* We found it */
+     if (fng != NULL) {
+       printf("[!] VADDR:0x%08x (0x%08x) MD5:%s TMP:%s SYMBOL:%s OS:%s REL:%s\n",
+ 	   fs->epoint,
+ 	   fs->vaddr,
+ 	   (char *)fng->data,
+ 	   ret[x],
 	   fng->fname,
 	   fng->os,
 	   fng->rel);
 
      if (outfile != NULL)
-	  mjr_add_symbol(ctx.obj,".text",fs->vaddr,fng->fname);
+	  mjr_add_symbol(ctx.obj,shtName,fs->vaddr,fng->fname);
 
     /* it sucks - no fingerprint matched*/
     } else {
@@ -152,7 +173,7 @@ int	main(int ac, char **av) {
 	  );
 
      if (outfile != NULL)
-      mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
+      mjr_add_symbol(ctx.obj,shtName,fs->vaddr,ret[x]);
     }
 
 	/* do the syscall stuff */
@@ -164,10 +185,11 @@ int	main(int ac, char **av) {
 	 );
 
      if (outfile != NULL)
-      mjr_add_symbol(ctx.obj,".text",fs->vaddr,ret[x]);
+      mjr_add_symbol(ctx.obj,shtName,fs->vaddr,ret[x]);
 
+     }
+	}
    }
-
   }
 
   } else if (opt_cdb == 1) {

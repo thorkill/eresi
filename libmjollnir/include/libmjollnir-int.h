@@ -2,12 +2,13 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir-int.h,v 1.1.1.3 2006-03-06 22:35:22 thor Exp $
+ * $Id: libmjollnir-int.h,v 1.2 2006-04-28 06:56:33 thor Exp $
  */
 
 #define __DEBUG__ 				0
 #define __DEBUG_READ__			0
 #define __DEBUG_OPERAND__		0
+#define __DEBUG_NAVI__			1
 
 /* debug output stdout/stderr */
 #define D_DESC stdout

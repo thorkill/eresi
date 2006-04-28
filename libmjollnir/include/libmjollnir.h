@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir.h,v 1.1.1.3 2006-03-04 23:52:54 thor Exp $
+ * $Id: libmjollnir.h,v 1.2 2006-04-28 06:56:33 thor Exp $
  *
  */
 
@@ -17,10 +17,13 @@
 /* For fingerprinting */
 #include <openssl/md5.h>
 
+#include <libmjollnir-flow.h>
+
 #define BSIZE 4096
 
 #define MJR_DB_LINE_MAX_LENGTH	1024
 #define MJR_MAX_FNG 1000000
+#define MJR_MAX_BLOCKS 1000000
 
 /* Just to prevent allocation of unlimited memmory */
 #define	MAX_FUNCTION_LEN 1024*1024
@@ -83,6 +86,5 @@ struct _mjr_ctx {
 };
 
 #include <libmjollnir-int.h>
-#include <libmjollnir-flow.h>
 
 #endif /* _LIB_MJR_H_ */

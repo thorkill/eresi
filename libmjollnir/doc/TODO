@@ -1,11 +1,10 @@
 
-This shouldbe a library for 'recovering symbol table'
+This should be a library for 'recovering symbol table'
 with fingerprinting features and flow analisis
 of a executable.
 
 todo:
 
-- syscalls !
 - main symbol
 - ptr functions
 
@@ -20,9 +19,6 @@ Fingerprinting:
   - on request
 
 ROADMAP: (* - means real live tests)
- - add type context for a scan so we'll be able to trace last
-   instructions, access db etc where we need it (*)
-
  - ptr_functions - some generic signatures (advenced
    stuff should be detected/traced by e2dbg) (*)
    - I need simple stack tracer!
