@@ -11,6 +11,7 @@
 
 #include <sys/queue.h>		// NEEDED BY Obj_Entry
 #include <sys/stat.h>
+#include <sys/signal.h>
 
 /* Lists of shared object dependencies */
 typedef struct			Struct_Needed_Entry 

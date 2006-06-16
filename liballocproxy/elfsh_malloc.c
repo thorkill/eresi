@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: elfsh_malloc.c,v 1.3 2006-04-28 06:56:33 thor Exp $
+  $Id: elfsh_malloc.c,v 1.4 2006-06-16 20:05:44 thor Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -299,7 +299,7 @@ extern "C" {
 #include <errno.h>    /* needed for optional MALLOC_FAILURE_ACTION */
 
 /* For uintptr_t.  */
-#if !defined(IRIX)
+#if !defined(IRIX) && !defined(__FreeBSD__)
 #include <stdint.h>
 #endif
 

@@ -20,18 +20,22 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#define __USE_GNU
-#include <sys/ucontext.h>
 
 #include "elfsh-libc.h"
 
 #include <elf.h>
 
+#include <libelfsh/libelfsh-compat.h>
+
 #ifdef __BEOS__
  #include <bsd_mem.h>
 #endif
 
-#include <libelfsh/libelfsh-compat.h>
+
+#define __USE_GNU
+#include <sys/ucontext.h>
+
+
 
 /* Configure the DEBUG modes for various part of the code */
 #define		__DEBUG_MAP__			0

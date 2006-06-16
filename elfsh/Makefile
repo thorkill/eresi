@@ -28,7 +28,7 @@ CFLAGS			+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) $(BITS) $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
-			-lpthread -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
+			$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
 			-L../libmalloc -lmalloc-e2dbg -g3 $(LDASMOPT) \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
