@@ -136,8 +136,10 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 
 	  /* Now load the string table */
 	  s = elfsh_get_strtab(file, s->shdr->sh_link);
+	  if (NULL == s)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Unable to load STRTAB", NULL);	  
 	  s->parent = file;
-	  
 	}
 
       /*
