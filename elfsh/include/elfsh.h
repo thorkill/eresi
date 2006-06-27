@@ -359,10 +359,6 @@ char prompt_token[128];
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"
 
-#ifdef __DEBUG_TEST__
-#define CMD_TEST		 "test"
-#endif
-
 /* Regx option, a module of struct s_args */
 typedef struct		s_list
 {

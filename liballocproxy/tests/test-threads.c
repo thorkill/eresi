@@ -24,8 +24,8 @@ main()
      char *message3 = "Thread 3";
      int  iret1, iret2, iret3;
  
-   /* Create independant threads each of which will execute function */
-     signal(SIGTRAP, (sighandler_t) sigtrap_handler);
+     /* Create independant threads each of which will execute function */
+     //signal(SIGTRAP, (sighandler_t) sigtrap_handler);
      iret1 = pthread_create( &thread1, NULL, print_message_function, (void*) message1);
      iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);
      iret3 = pthread_create( &thread3, NULL, print_message_function_lib, (void*) message3);

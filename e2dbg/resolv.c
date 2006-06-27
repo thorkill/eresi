@@ -8,7 +8,7 @@
 #include "elfsh.h"
 
 
-extern int		(*main)(int argc, char **argv);
+//extern int		(*main)(int argc, char **argv);
 
 
 /* Load linkmap in PIE based process */
@@ -272,30 +272,39 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
   u_int			nbr, nbr2;
   elfsh_Sym		cursym;
   char			*strtab;
+  elfsh_Addr		*got;
   u_int			curoff;
   elfsh_Addr		found_ref = 0;
   elfsh_Addr		found_sym = 0;
 
+  elfsh_Addr		gotent[3];
+  u_int			gotoff;
+  u_int			dataoff;
+  elfsh_Addr		dataddr;
+
+#if __DEBUG_E2DBG__
+  char		buf[BUFSIZ];
+  u_int		len;
+#endif
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /*
   write(1, "e2dbg_dlsym called for resolving ", 34);
   write(1, sym2resolve, strlen(sym2resolve));
   write(1, " in ", 4);
+
   write(1, objname, strlen(objname));
   write(1, "\n", 1);
-  */
 
   memset(&obj, 0x00, sizeof(obj));
   XOPEN(obj.fd, objname, O_RDONLY, 0, NULL);
   XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), NULL);
-
-  //write(1, "1", 1);
+  write(1, "1", 1);
 
   XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, NULL);
   pht = alloca(obj.e.e_phnum * sizeof(elfsh_Phdr));
 
-  //write(1, "2", 1);
+  write(1, "2", 1);
 
   XREAD(obj.fd, pht, obj.e.e_phnum * sizeof(elfsh_Phdr), NULL);
   for (nbr = 0; nbr < obj.e.e_phnum; nbr++)
@@ -304,27 +313,48 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
 	obj.dynoff = pht[nbr].p_offset;
 	break;
       }
+    else if (pht[nbr].p_type == PT_LOAD && (pht[nbr].p_flags & PF_W))
+      {
+	dataoff = pht[nbr].p_offset;
+	dataddr = pht[nbr].p_vaddr;
+      }
 
-  //write(1, "3", 1);
+  write(1, "3", 1);
 
   XSEEK(obj.fd, obj.dynoff, SEEK_SET, NULL);
   dyn = alloca(pht[nbr].p_filesz);
 
-  //write(1, "4", 1);
+  write(1, "4", 1);
 
   XREAD(obj.fd, dyn, pht[nbr].p_filesz, NULL);
   for (nbr2 = 0; nbr2 < pht[nbr].p_filesz / sizeof(elfsh_Dyn); nbr2++)
     {
-      //write(1, "|", 1);
+      write(1, "|", 1);
       if (dyn[nbr2].d_tag == DT_SYMTAB)
 	obj.symoff = dyn[nbr2].d_un.d_val;
       else if (dyn[nbr2].d_tag == DT_STRTAB)
 	obj.stroff = dyn[nbr2].d_un.d_val;
       else if (dyn[nbr2].d_tag == DT_STRSZ)
 	obj.strsz = dyn[nbr2].d_un.d_val;
+      else if (dyn[nbr2].d_tag == DT_PLTGOT)
+	got = (elfsh_Addr *) dyn[nbr2].d_un.d_val;
     }
 
-  //write(1, "5", 1);
+  write(1, "5", 1);
+  
+  // XXX: try to do this on the main object ...
+  gotoff = dataoff + ((elfsh_Addr) got - (elfsh_Addr) dataddr);
+  XSEEK(obj.fd, gotoff, SEEK_SET, NULL);
+  XREAD(obj.fd, &gotent, sizeof(elfsh_Addr) * 3, NULL);
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] GOT = %08X GOT[0] = %08X GOT[1] = %08X GOT[2] = %08X \n",
+		 (elfsh_Addr) got, gotent[0], gotent[1], gotent[2]);
+  write(1, buf, len);
+#endif
+  
+  write(1, "6", 1);
 
   strtab = alloca(obj.strsz);
   if (!strtab)
@@ -350,12 +380,19 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
       return (-1);
     }
   
-  //write(1, "6", 1);
+  if (!got)
+    {
+      write(1, " Unable to find PLTGOT from PT_DYNAMIC\n", 39);
+      return (-1);
+    }
+
+  
+  write(1, "7", 1);
 
   XSEEK(obj.fd, obj.stroff, SEEK_SET, NULL);
   XREAD(obj.fd, strtab, obj.strsz, NULL);
 
-  //write(1, "7", 1);
+  write(1, "8", 1);
 
   /* XXX: Assume that strtab is always just after symtab */
   for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
@@ -370,7 +407,7 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
 	found_sym = cursym.st_value;
     }
 
-  //write(1, "8", 1);
+  write(1, "9", 1);
 
   if (!found_sym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -379,7 +416,14 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find reference symbol in object", NULL);
 
-  //write(1, " Success !\n", 11);
+  write(1, " Success !\n", 11);
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] REFADDR = %08X and FOUNDREF = %08X \n", 
+		 refaddr, found_ref);
+  write(1, buf, len);
+#endif
 
   /* The reference addr is useful to deduce library base addresses */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
@@ -414,11 +458,11 @@ int		e2dbg_dlsym_init()
   refstr = "read";
 
 #if defined(linux)
-  name = "/lib/libc.so.6";
+  name = E2DBG_UBUNTU_LIBC_DBG;
 #elif (defined(sun) && defined(__i386))
-  name = "/lib/libc.so.6";
+  name = E2DBG_SOLARISX86_LIBC;
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-  name = "/usr/lib/libc.so";
+  name = E2DBG_BSD_LIBC;
 #else
   #error "No libc default path specified"
 #endif
@@ -548,8 +592,7 @@ int		e2dbg_dlsym_init()
 
 
   //e2dbg_dlclose(handle);
-
-  vm_dbgid_set(0);
+  //vm_dbgid_set(0);
   done = 1;
 
   write(1, "DLSYM INIT FINISHED\n", 20);

@@ -301,10 +301,10 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   char		base[16] = "0123456789ABCDEF";
   elfsh_Addr    loff;
   char		str[256];
-  elfshsect_t	*sect;
+  //elfshsect_t	*sect;
   elfshsect_t	*targ;
   char		*s;
-  elfsh_SAddr	sct_index;
+  //elfsh_SAddr	sct_index;
   u_int		ret;
   char		logbuf[BUFSIZ];
 

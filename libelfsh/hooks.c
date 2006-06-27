@@ -1439,6 +1439,8 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
     case EM_MIPS:
     case EM_MIPS_RS3_LE:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_MIPS32));
+    case EM_ARM:
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ARM));
     default:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ERROR));
     }

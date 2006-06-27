@@ -9,8 +9,8 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		0
-#define		__DEBUG_MUTEX__		0
+#define		__DEBUG_E2DBG__		1
+#define		__DEBUG_MUTEX__		1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
@@ -20,6 +20,13 @@
 #define		E2DBG_ARGV0		"e2dbg"
 #define		E2DBG_PROFILER_BUFLEN	256
 #define		E2DBG_SCRIPT_CONTINUE	1
+
+/* Various LIBC paths */
+#define		E2DBG_UBUNTU_LIBC      "/lib/tls/i686/cmov/libc-2.3.5.so"
+//#define		E2DBG_UBUNTU_LIBC_DBG  "/usr/lib/debug/libpthread.so.0"
+#define		E2DBG_UBUNTU_LIBC_DBG  "/usr/lib/debug/libc.so.6"
+#define		E2DBG_SOLARISX86_LIBC  "/lib/libc.so.6"
+#define		E2DBG_BSD_LIBC         "/usr/lib/libc.so.6"
 
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)

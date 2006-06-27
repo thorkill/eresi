@@ -22,7 +22,7 @@ void			vm_log(char *str)
 
   len = strlen(str);
   if (world.curjob->state & ELFSH_JOB_LOGGED)
-    XWRITE(world.curjob->logfd, str, len, -1);
+    XWRITE(world.curjob->logfd, str, len, );
 
 
   /* Allocate the screen buffer */

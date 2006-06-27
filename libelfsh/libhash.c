@@ -227,4 +227,36 @@ int		hash_apply(hash_t *h, void *ptr, int (*func)(hashent_t *ph, void *pptr))
 }
 
 
+/* Compare 2 hash tables */
+/* Contributed by zorgon, can be used to compare ELF in memory and ELF in file */
+int		hash_compare(hash_t *first, hash_t *two)
+{
+  int		index;
+  int		m;
+  hashent_t	*actual;
+  hashent_t	*bis;
+
+  if (first->size != two->size) 
+    return (-1);
+  
+  for (m = index = 0; index < first->size; index++) 
+    {
+      for (actual = &first->ent[index]; actual != NULL && actual->key != NULL; actual = actual->next) 
+	{
+	  bis = hash_get_ent(two, actual->key);
+	  if (actual->data != bis->data) 
+	    {
+	      printf("FIRST  key = %s ; data = %p", actual->key, actual->data);
+	      printf("SECOND key = %s ; data = %p", bis->key, bis->data);
+	      m++;
+	    }
+	  //misused API
+	  //hash_destroy(bis);
+	}
+    }
+  if (m)
+    return (-1);
+  return (0);
+}
+
 

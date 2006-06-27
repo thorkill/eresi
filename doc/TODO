@@ -1,5 +1,4 @@
 
-
 			        #     #    #   #  # # ##	
 					              ##			
 						    #### 
@@ -9,17 +8,15 @@
 				ELFsh TODO phile       #
                                 ########################
 
+	. Intelligent malloc resolver (not libpath hardcoded)
+	. TLS API (+ stop all threads on breakpoint)
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)
 	. where to find USER_ESP on BSD context ?
-	. 188 warnings on Solaris/BSD
+	. Fix all warnings on all OS
 	. Compiles on HPUX
 	. find a reliable way to enter e2dbg under IRIX (main got entry ? (a0=argc a1=argv))
 
-	<----- Here release 0.7-portable
-
-[Main TODO]
-	. Support step over, step into, step in sources
 [quick]	. Colors in profiler, hexa, stepping, backtrace, linkmap, stack, dbgstack
 [quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
 [quick]	. be able to change the compiler and compiling options
@@ -28,6 +25,10 @@
 !!!	. Put doxygen comments and generate the ELF shell reference manual
 !!!	. Update manpage
 
+	<----- Here release 0.7-portable
+
+[Main TODO]
+	. Support step over, step into, step in sources
 	. Conditions on breakpoints 
 	. Add ALTGOT vector (need a small fix in the alpha algorithm)
 	. Finish ET_REL for MIPS
@@ -39,6 +40,7 @@
 	. Hash tables working with 'foreachof' and 'eol'
 	. File reconstruction from memory
       	. Support file building from scratch and support ET_REL injection on it
+	. Signal proxying working in multithreads
       	. SUN Version section rw API (and add it to the hierarchy)
 	. DWARF support and step in sources
 	. Packer/Unpacker hook interface (Generalized hooking VM interface)

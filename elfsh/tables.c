@@ -839,10 +839,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
   vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption, 0, HLP_HASH);
 
-#ifdef __DEBUG_TEST__
-  vm_addcmd(CMD_TEST   , (void *) cmd_test  , (void *) NULL         , 0, "Test command");
-#endif 
-
 #if defined(ELFSHNET)
   vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
   vm_addcmd(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);

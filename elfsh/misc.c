@@ -951,29 +951,6 @@ int		vm_install_clearscreen()
 }
 
 
-
-#ifdef __DEBUG_TEST__
-int		cmd_test()
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  raise(SIGILL);
-  // alors la je voulais ajouter une commande pour que ca break dans gdb quand
-  // on l'utilise mais ca marche pas, le prog se fait kill,
-  // j'ai essaye SIGTRAP, __asm__.., SIGSEGV, de mettre un signal(..., SIG_DFL); 
-  // devant et ca se termine toujours en process killed
-  // en multithread c assez chelou surtout que ce gdb na pas le 'breakpoint 
-  // pending'
-  // en fait a l'origine je voulais trouver pk dans e2dbg quand on fait un 
-  // dynsym malloc le process se fait killed
-  // recemment ca marchait beaucoup mileuxmais jai changer des trucs
-  // dans xmalloc.c, je me rapelle plus quoi :)
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-#endif
-
-
 int		vm_screen_switch()
 {
   char		    buf[BUFSIZ];

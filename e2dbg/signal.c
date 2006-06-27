@@ -8,6 +8,8 @@
 */
 #include "elfsh.h"
 
+
+
 /* Signal handler for SIGSEGV */
 void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontext)
 {
@@ -399,10 +401,9 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
     }
   */
 
-
-
   /* Find the real symbol in libc */
-  orig = (elfsh_Addr) e2dbg_dlsym("/lib/libc.so.6", 
+  orig = (elfsh_Addr) e2dbg_dlsym(E2DBG_UBUNTU_LIBC,
+				  //ubp_av[0],
 				  "__libc_start_main", 
 				  (elfsh_Addr) read, "read");
   if (!orig)
@@ -428,9 +429,13 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 
+  //__asm__(".long 0xCCCCCCCC");
+  //raise(SIGSTOP);
+
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] there 3\n", 35);
 #endif
+
 
   e2dbgworld.real_main = main;
   ret = libcstartmain(e2dbg_fake_main, argc, ubp_av, init, 
@@ -441,9 +446,6 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 }
 
 #elif defined(__FreeBSD__)
-
-#undef  LIBC_PATH
-#define LIBC_PATH "/usr/lib/libc.so"
 
 int				atexit(void (*fini)(void))
 {
@@ -461,7 +463,7 @@ int				atexit(void (*fini)(void))
   printf("[(e2dbg)atexit] there\n");
 #endif
   
-  e2dbgworld.libchandle = dlopen("/usr/lib/libc.so", RTLD_NOW);
+  e2dbgworld.libchandle = dlopen(E2DBG_BSD_LIBC, RTLD_NOW);
   if (!e2dbgworld.libchandle)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Libc not found", -1);
@@ -529,7 +531,7 @@ void			__fpstart(int argc, char**ubp_av)
   printf("[e2dbg__fpstart] Start\n");
 #endif
 
-  e2dbgworld.libchandle = dlopen("/lib/libc.so.6", RTLD_NOW);
+  e2dbgworld.libchandle = dlopen(E2DBG_SOLARISX86_LIBC, RTLD_NOW);
   if (!e2dbgworld.libchandle)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Libc not found", -1);

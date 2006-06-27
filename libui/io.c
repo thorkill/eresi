@@ -162,7 +162,7 @@ int		vm_output_nolog(char *str)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-   world.curjob->io.output(str));
+		     world.curjob->io.output(str));
 }
 
 
@@ -171,6 +171,7 @@ int		vm_outerr(char *str)
 {
   vm_log(str);
   fprintf(stderr, str);
+  return (0);
 }
 
 /* Its lighter than flex ... */
