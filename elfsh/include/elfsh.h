@@ -1071,6 +1071,7 @@ int             vm_setvar_long(char *varname, u_long val);
 
 /* Readline stuff (XXX: need to be prefixed) */
 char		**custom_completion(const char* text, int start, int end);
+int		update_col();
 
 /* Color functions */
 color_t         *vm_colortable(char *t, char *te);

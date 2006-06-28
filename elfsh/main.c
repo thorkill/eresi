@@ -2,6 +2,7 @@
 ** elfsh.c for elfsh
 ** 
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
+** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 */
 
 #include "elfsh.h"
@@ -298,6 +299,13 @@ int		vm_run(int ac, char **av)
       rl_callback_handler_install (vm_get_prompt(), vm_ln_handler);
       rl_bind_key(CTRL('x'), vm_screen_switch); 
       vm_install_clearscreen();
+
+      update_col(0);
+
+      /* We will handle SIGWINCH */
+      signal(SIGWINCH, update_col);
+      rl_catch_sigwinch = 0;
+      rl_set_signals();
     }
   else
     rl_bind_key ('\t', rl_insert);

@@ -28,6 +28,7 @@ int		cmd_run()
 
 #if defined(USE_READLN)
   rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  update_col();
 #endif
 
   if (ret)

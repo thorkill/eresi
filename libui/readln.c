@@ -3,6 +3,7 @@
 **
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
+** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 */
 #include "libui.h"
 
@@ -114,6 +115,41 @@ char	**custom_completion(const char* text, int start, int end)
 }
 
 
+/* Change col size if we have a colored prompt */
+int 	update_col(int sig) 
+{
+  char	*prompt;
+  int 	i, c, sub = 0;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  rl_resize_terminal();
+    
+  prompt = vm_get_prompt();
+
+  for (i = 0; prompt && prompt[i] != 0; i++)
+    {
+      if (prompt[i] == '\e' && prompt[i+1] == '[')
+	{
+	  sub++;
+	  while (prompt && prompt[i] != 0 && prompt[i] != 'm') 
+	    {
+	      sub++;
+	      i++;
+	    }
+	}
+    }
+
+  if (sub > 0)
+    {
+      rl_get_screen_size(NULL, &c);
+      rl_set_screen_size(NULL, c+sub);
+    }
+
+  rl_clear_message();
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
 #endif

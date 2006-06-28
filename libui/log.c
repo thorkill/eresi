@@ -11,7 +11,7 @@
 /* Log a line */
 void			vm_log(char *str)
 {
-  u_int			len = 0;
+  u_int			i, pos, len = 0;
 
   ELFSH_NOPROFILE_IN();
 
@@ -20,7 +20,30 @@ void			vm_log(char *str)
       !world.curjob->io.outcache.cols)
     return;
 
+  /* Clean color parts */
   len = strlen(str);
+  if (len > 0 && strchr(str, '\e') != NULL)
+    {
+      char tmp[len+1];
+      for (pos = 0, i = 0; i < len; i++)
+	{
+	  if (str[i] == '\e')
+	    {
+	      while (i < len && str[i] != 'm')
+		i++;
+	    }
+	  else
+	    tmp[pos++] = str[i];
+	}
+
+      tmp[pos] = 0;
+
+      str = tmp;
+
+      /* reset length */
+      len = strlen(str);
+    }
+
   if (world.curjob->state & ELFSH_JOB_LOGGED)
     XWRITE(world.curjob->logfd, str, len, );
 
