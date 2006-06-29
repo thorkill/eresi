@@ -171,8 +171,8 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a7p3rc2"
-#define ELFSH_EDITION		"brz"
+#define	ELFSH_RELEASE		"a8"
+#define ELFSH_EDITION		"moto"
 
 /* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT	"\033[00;01;30m(" \
