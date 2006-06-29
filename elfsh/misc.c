@@ -953,7 +953,8 @@ int		vm_install_clearscreen()
 
 int		vm_screen_switch()
 {
-  char		    buf[BUFSIZ];
+  unsigned int	    var = 0x42424242;
+  char		    buf[BUFSIZ * 4];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1017,5 +1018,10 @@ int		vm_screen_switch()
 
   //rl_forced_update_display(); 
 
+  if (var != 0x42424242)
+    {
+      printf("Buffer overflow detected on screen buffer \n");
+      exit(0);
+    }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

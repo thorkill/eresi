@@ -54,7 +54,7 @@ while (0)
 
 
 /* Our free() */
-#define		XFREE(a)	elfsh_free(a)
+#define		XFREE(a)	elfsh_free(a); a = 0
 
 /* Safe open() */
 #define		XOPEN(a, b, c, d, e)							\

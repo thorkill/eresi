@@ -402,7 +402,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   */
 
   /* Find the real symbol in libc */
-  orig = (elfsh_Addr) e2dbg_dlsym(E2DBG_UBUNTU_LIBC,
+  orig = (elfsh_Addr) e2dbg_dlsym(E2DBG_UBUNTU_LIBC_DBG,
 				  //ubp_av[0],
 				  "__libc_start_main", 
 				  (elfsh_Addr) read, "read");
