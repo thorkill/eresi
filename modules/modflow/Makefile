@@ -8,8 +8,8 @@
 ##
 include ../../config.h
 
-SRCS 	= modflow.c control.c blocks.c inspect.c graph.c flowjack.c \
-	libbtree.c
+SRCS 	= modflow.c control.c blocks.c inspect.c graph.c flowjack.c
+
 OBJS 	= $(SRCS:.c=.o)
 NAME 	= modflow.so
 CFLAGS 	= -Wall -g3 -fPIC -rdynamic -DELFSH_INTERN $(BITS) \

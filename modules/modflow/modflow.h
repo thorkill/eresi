@@ -15,7 +15,6 @@
 #include <libelfsh.h>
 #include <libasm.h>
 #include <sys/types.h>
-#include "libbtree.h"
 
 #define GVZ_COLOR_BLUE  "\"blue\""
 #define GVZ_COLOR_CORAL "\"coral\""

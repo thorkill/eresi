@@ -13,7 +13,7 @@ RM			= rm -f
 AR			= ar rc
 CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN      \
 			-I../libasm/include/ -I../libc/include $(BITS) $(BUILDOP) 
-SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
+SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c libbtree.c \
 			interp.c pht.c plt.c section.c sht.c error.c stab.c \
 			symbol.c notes.c reloc.c blocks.c ctors.c dtors.c   \
 			raw.c map.c strtab.c sht_rebuild.c comment.c        \

@@ -7,11 +7,7 @@
 ** Updated : Thu Nov 27 23:29:29 2003
 */
 
-#include <sys/types.h>
-
-#include "libbtree.h"
-
-
+#include "libelfsh.h"
 
 /**
  * insert element in tree using id to sort it
