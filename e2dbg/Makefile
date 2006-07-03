@@ -7,8 +7,8 @@
 include ../config.h
 
 SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
-			signal.c mode.c stack.c step.c linkmap.c dumpregs.c \
-			vmhooks.c mutex.c continue.c xmalloc.c resolv.c
+			signal.c mode.c stack.c step.c linkmap.c dumpregs.c    \
+			vmhooks.c mutex.c continue.c xmalloc.c resolv.c rlheapdbg.c
 OBJ			= $(SRC:.c=.o)
 VMOBJ			= ../vm/*.o
 CC			?= gcc
@@ -19,13 +19,13 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../libelfsh/include/ \
 			-I../libdump/include/  \
 			-I../libasm/include/   \
-			-I../vm/include/   \
-			-I../libc/include/   \
-			-I../libui/include/ \
+			-I../vm/include/       \
+			-I../libc/include/     \
+			-I../libui/include/    \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT) $(BITS)
 
-LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
-			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm $(LPTHREAD) \
+LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh                       \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm $(LPTHREAD)                  \
 			-g3 -L../libc/ -lcelfsh -L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT)
 

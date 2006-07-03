@@ -8,7 +8,6 @@
 				ELFsh TODO phile       #
                                 ########################
 
-	. Intelligent malloc resolver (not libpath hardcoded)
 	. TLS API (+ stop all threads on breakpoint)
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)

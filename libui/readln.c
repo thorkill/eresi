@@ -15,7 +15,7 @@
 char		*command_generator(const char *text, int state)
 {
   static int	i, len, tab;
-  char		*name;
+  char		*name, *name2;
   const char    *baq;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -46,7 +46,11 @@ char		*command_generator(const char *text, int state)
 	{
 	  name = world.comp.cmds[tab][i];
 	  if (!strncmp(name, text, len))
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_strdup(name)));
+	    {
+	      name2 = vm_readline_malloc(strlen(name) + 1);
+	      strcpy(name2, name);
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
+	    }
 	}
 
   /* If no names matched, then return NULL. */

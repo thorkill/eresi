@@ -14,8 +14,8 @@ SRC			= grammar.c disasm.c dyn.c hdr.c main.c got.c interp.c \
 			  implicit.c exec.c modules.c findrel.c objects.c \
 			  cmdapi.c  reladd.c fcthijack.c loop.c jmp.c color.c \
 			  insert.c remove.c flush.c vlist.c lts.c source.c \
-			  cleanup.c run.c trace.c variables.c version.c hash.c
-
+			  cleanup.c run.c trace.c variables.c version.c hash.c \
+			  rlheap.c
 OBJ			= $(SRC:.c=.o)
 CC			?= gcc
 RM			= rm -f
@@ -29,12 +29,14 @@ CFLAGS			+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 
 LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
 			$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
-			-L../libmalloc -lmalloc-e2dbg -g3 $(LDASMOPT) \
+			-g3 $(LDASMOPT) -L../libmalloc -lmalloc-e2dbg \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
+
 all		       	: $(OBJ)
 			$(CC) $(OBJ) -o $(NAME) $(LDFLAGS) $(STATOPT)
+			@$(RM) rlheap.o # make sure we dont link this file into e2dbg
 
 clean		       :
 		       @$(RM) $(OBJ) *~ \#* *\# .\#*

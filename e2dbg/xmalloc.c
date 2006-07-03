@@ -455,12 +455,12 @@ void	__libc_malloc_pthread_startup (int first_time)
 }
 
 
-
-
 /* Not sure it is useful / bugless, just a try */
+/*
 void*		_int_malloc(size_t p)             { return (malloc(p));      }
 void*		_int_valloc(size_t p)             { return (valloc(p));      }
 void*		_int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
 void*		_int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
 void*		_int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
 void		_int_free(void *p)                { free(p);                 }  
+*/

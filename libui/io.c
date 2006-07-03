@@ -243,8 +243,12 @@ char		**vm_input(int *argc)
 
   /* Save the line for future references */
   if (world.curjob->oldline)
-    XFREE(world.curjob->oldline);
-  world.curjob->oldline = elfsh_strdup(buf);
+    {
+      vm_readline_free(world.curjob->oldline);
+      world.curjob->oldline = NULL;
+    }
+  world.curjob->oldline = vm_readline_malloc(strlen(buf) + 1);
+  strcpy(world.curjob->oldline, buf);
 
   /* Allocate the correct pointer array for argv */
   nbr = vm_findblanks(buf);
@@ -252,8 +256,7 @@ char		**vm_input(int *argc)
 
   /* Find and replace "\xXX" sequences, then return the array */
   vm_findhex(*argc, argv);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-   (argv));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (argv));
 }
 
 
@@ -737,8 +740,6 @@ int                     vm_select()
 		      rl_restore_prompt();
 		      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
                     }
-
-
 #endif
 		  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
                 }
@@ -752,8 +753,7 @@ int                     vm_select()
               else
                 {
 #if __DEBUG_NETWORK__
-                  fprintf(stderr, "[DEBUG NETWORK] Select broken by"
-			  " a new connexion.\n");
+                  fprintf(stderr, "[DEBUG NETWORK] Select broken by a new connexion.\n");
 #endif
                   // Let's re-select
                   cont = 1;
