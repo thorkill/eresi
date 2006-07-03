@@ -310,14 +310,17 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
   if (instr->prefix & ASM_PREFIX_REPNE)
     strcat(buffer, "repnz ");
   
-  if (instr->instr >= 0 && instr->instr <= ASM_BAD) {
-    sprintf(buffer + strlen(buffer), "%s", 
-	  instr->proc->instr_table[instr->instr]);
-  }
-  else {
-    sprintf(buffer + strlen(buffer), "int_err");
-    return (buffer);
-  }
+  if (instr->instr >= 0 && instr->instr <= ASM_BAD && 
+      instr->proc->instr_table[instr->instr] != NULL) 
+    {
+      snprintf(buffer + strlen(buffer), strlen(instr->proc->instr_table[instr->instr]),
+	       "%s", instr->proc->instr_table[instr->instr]);
+    }
+  else 
+    {
+      sprintf(buffer + strlen(buffer), "int_err");
+      return (buffer);
+    }
   
   
   if (instr->op1.type) {
