@@ -11,12 +11,8 @@
 	. TLS API (+ stop all threads on breakpoint)
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)
-	. where to find USER_ESP on BSD context ?
-	. Fix all warnings on all OS
-	. Compiles on HPUX
-	. find a reliable way to enter e2dbg under IRIX (main got entry ? (a0=argc a1=argv))
+	. Fix all warnings on all OS and (re)compile on HPUX
 
-[quick]	. Colors in profiler, hexa, stepping, backtrace, linkmap, stack, dbgstack
 [quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
 [quick]	. be able to change the compiler and compiling options
 !!!	. EXTSTATIC : re-use existing PT_LOADs

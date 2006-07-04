@@ -458,7 +458,7 @@ int		e2dbg_dlsym_init()
   refstr = "read";
 
 #if defined(linux)
-  name = E2DBG_UBUNTU_LIBC_DBG;
+  name = E2DBG_UBUNTU_LIBP_DBG;
 #elif (defined(sun) && defined(__i386))
   name = E2DBG_SOLARISX86_LIBC;
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)

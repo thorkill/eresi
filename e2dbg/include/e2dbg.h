@@ -23,7 +23,7 @@
 
 /* Various LIBC paths */
 #define		E2DBG_UBUNTU_LIBC      "/lib/tls/i686/cmov/libc-2.3.5.so"
-//#define		E2DBG_UBUNTU_LIBC_DBG  "/usr/lib/debug/libpthread.so.0"
+#define		E2DBG_UBUNTU_LIBP_DBG  "/usr/lib/debug/libpthread.so.0"
 #define		E2DBG_UBUNTU_LIBC_DBG  "/usr/lib/debug/libc.so.6"
 #define		E2DBG_SOLARISX86_LIBC  "/lib/libc.so.6"
 #define		E2DBG_BSD_LIBC         "/usr/lib/libc.so.6"
