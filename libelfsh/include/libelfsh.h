@@ -272,6 +272,21 @@
 				 FILE_IS_IA64((scn)->parent)    || \
 				 FILE_IS_ALPHA64((scn)->parent) ? 0 : 1)
 
+
+#define ELFSH_SELECT_INJECTION(a, b, d)	\
+		do {	\
+    		if ((elfsh_get_ostype(a) == ELFSH_OS_FREEBSD || \
+    		    elfsh_get_ostype(a) == ELFSH_OS_BEOS || \
+		    elfsh_get_ostype(a) == ELFSH_OS_SOLARIS || \
+    		    FILE_IS_ALPHA64(a) || \
+		    FILE_IS_MIPS(a) || \
+    		    FILE_IS_SPARC(a)) || (b)) { \
+    		    d = ELFSH_DATA_INJECTION; \
+		} else { \
+		    d = ELFSH_CODE_INJECTION; \
+		}\
+	    } while (0)
+
 /* Old Pax flags (to be read in elfhdr.e_flags) */
 #define		ELFSH_PAX_PAGEEXEC         1    /* Paging based non-exec pages */
 #define		ELFSH_PAX_EMULTRAMP        2    /* Emulate trampolines */

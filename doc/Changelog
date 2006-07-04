@@ -7,6 +7,10 @@
 Changes in intermediate beta versions are listed in the first public version
 they appear.
 
+0.7a8-moto:
+ - Bugfix  : fixed pre-interp issues on relinjection (bug #18)
+ - Added   : ELFSH_SELECT_INJECTION macro
+
 0.7a7p2:
  - Bugfix  : bss.c - Fixed SIGSEGV on fixup with enabled debugging
  - Bugfix  : libelfsh/include/libelfsh-internat.h - fixed ELFSH_PROFILE_ERR and XCLOSE

@@ -513,25 +513,14 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   writable = elfsh_get_section_writableflag(sect->shdr);
 
   /* FreeBSD is incompatible with pre-interp injection */
-  if (elfsh_get_ostype(file) == ELFSH_OS_FREEBSD ||
-      elfsh_get_ostype(file) == ELFSH_OS_BEOS ||
-      FILE_IS_ALPHA64(file) ||
-      FILE_IS_SPARC(file))
-    {
-      mode   = ELFSH_DATA_INJECTION;
+  ELFSH_SELECT_INJECTION(file,writable,mode);
+
+   if (mode == ELFSH_DATA_INJECTION)
       modulo = 4;
-    }
-  else if (writable)
-    {
-      mode   = ELFSH_DATA_INJECTION;
-      modulo = 4; 
-    }
-  else
-    {
-      mode = ELFSH_CODE_INJECTION;
+   else
       /* modulo = mod; (to be uncommented one day) */
       modulo = elfsh_get_pagesize(file);	
-    }
+
 
 #if	__DEBUG_RELADD__
   printf("[DEBUG_RELADD] Mapping new section %s with data = %p \n", new->name, data);
@@ -738,11 +727,16 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   hooks = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_HOOKS, 0, 0, 0); 
   if (!hooks)
     {
+      int mode;
+
+      /* get injection mode */
+      ELFSH_SELECT_INJECTION(file,NULL,mode);
+
       pgsize = elfsh_get_pagesize(file);
       hooks = elfsh_insert_section(file, 
 				   ELFSH_SECTION_NAME_HOOKS, 
 				   NULL,
-				   ELFSH_CODE_INJECTION, 
+				   mode, 
 				   pgsize - 1, pgsize);
       if (!hooks)
 	{

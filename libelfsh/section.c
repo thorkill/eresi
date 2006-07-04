@@ -50,7 +50,7 @@ char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
 ** elfsh_load_sht() which has not loaded symtab yet.
 **
 ** This function is used for constructing the map (elfshobj_t) of a 
-0** binary file in memory. It is called as well at each new section
+** binary file in memory. It is called as well at each new section
 ** injection.
 **
 ** See libelfsh/inject.c for the user-friendly section injection API
