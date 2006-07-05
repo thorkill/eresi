@@ -244,7 +244,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if 1	//__DEBUG_CFLOW__      
+#if 	__DEBUG_CFLOW__      
   printf("[DEBUG_CFLOW] Requesting hijack addr = %08X, sym.st_value = %08X, name = %s\n", 
 	 addr, symbol->st_value, name);
 #endif
@@ -487,4 +487,204 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 		     "Unsupported relocation type", -1);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+typedef struct s_int
+{
+  int		value;
+  struct s_int  *prec;
+  struct s_int	*next;
+}		s_sint;
+
+/* Personnal func / define for args_count */
+static int            is_arg_ebp(asm_operand *op)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (op->base_reg == ASM_REG_EBP && op->imm > 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+static int    is_arg_esp(asm_operand *op, int sub)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (op->base_reg == ASM_REG_ESP && op->imm > sub)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+static int    largs_add(s_sint *args, int add)
+{
+  s_sint	      *p, *n;
+  int                 i;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (add == 0 || args == NULL)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+
+  if (args->value == 0)
+    {
+      args->value = add;
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  while (args->prec)
+    args = args->prec;
+
+  for (i = 0, p = args; i < ELFSH_TRACE_MAX_ARGS 
+	 && p != NULL; i++, p = p->next)
+    {
+      /* Already add ? */
+      if (p->value == add)
+	break;
+
+      /* We sort result */
+      if (p->value > add)
+	{
+	  XALLOC(n, sizeof(s_sint), -1);
+	  n->value = add;
+	  
+	  n->prec = p->prec;
+	  p->prec = n;
+
+	  n->next = p;
+	  break;
+	}
+
+      /* Add at the tail */
+      if (p->next == NULL)
+	{
+	  XALLOC(n, sizeof(s_sint), -1);
+	  n->value = add;
+	  
+	  p->next = n;
+	  n->prec = p;
+	  break;
+	}
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
+{
+  int         index;
+  int         ret;
+  int	      reserv = 0;
+  int	      ffp = 0;
+  int         len = 1024;
+  s_sint      *args, *p;
+  int	      *final_args;
+  asm_instr   i;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Reset args */
+  XALLOC(final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
+
+  asm_init_i386(&proc);
+
+  /* Find all arguments */
+  for (index = 0; index < len; index += ret)
+    {
+      if ((ret = asm_read_instr(&i, (char *) (foffset + index), len -  index, &proc)))
+	{
+	  if (i.instr == ASM_RET)
+	    break;
+
+	  if (index == 0)
+	    {
+	      /* Do we have a normal schema ? */
+	      if (i.instr == ASM_PUSH && i.op1.base_reg == ASM_REG_EBP)
+		{
+		  /*
+		  ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc);
+
+		  if (!ret)
+		    goto err;
+		  
+		  if (i.instr != ASM_MOV || i.op2.base_reg != ASM_REG_ESP 
+		      || i.op1.base_reg != ASM_REG_EBP)
+		    {
+		      index += ret;
+		      ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc);
+
+		      if (!ret)
+			goto err;
+		  
+		      if (i.instr != ASM_MOV || i.op2.base_reg != ASM_REG_ESP 
+			  || i.op1.base_reg != ASM_REG_EBP)
+			goto err;
+		   }
+		  */
+		}
+	      else if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP) /* fomit frame pointer */
+		{
+		  reserv = i.op2.imm;
+		  ffp = 1;
+		}
+	      else
+		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+				  "Unable to determine function type", NULL);
+
+	      XALLOC(args, sizeof(s_sint), -1);
+	      args->value = 0;
+	    }
+	  else
+	    {
+	      if (ffp == 0)
+		{
+		  /* EBP argument */
+		  largs_add(args, is_arg_ebp(&i.op1));
+		  largs_add(args, is_arg_ebp(&i.op2));
+		}
+	      else
+		{
+		  /* ESP argument */
+		  largs_add(args, is_arg_esp(&i.op1, reserv));
+		  largs_add(args, is_arg_esp(&i.op2, reserv));
+		}
+	    }
+	}
+      else
+	goto err;
+    }
+
+  while (args->next)
+    args = args->next;
+
+  final_args[0] = NULL;
+
+  /* Fill structure to return */
+  for (index = 0, p = args; index < ELFSH_TRACE_MAX_ARGS
+	 && p != NULL && p->value > 0; index++, p = p->prec)
+    {
+      if (p->next == NULL)
+	{
+	  if (ffp)
+	    final_args[index] = reserv - p->value + 20;
+	  else
+	    {
+	      final_args[index] = p->value - 16;
+
+	      /* Main ? */
+	      if (final_args[index] < 0)
+		final_args[index] = 4;
+	    }
+	  continue;
+	}
+
+      final_args[index] = p->next->value - p->value;
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
+
+ err:
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Error during asm parsing", NULL);
 }

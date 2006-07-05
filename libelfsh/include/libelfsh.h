@@ -50,6 +50,7 @@
 #define		__DEBUG_STATIC__		0
 #define		__DEBUG_BREAKPOINTS__		0
 #define		__DEBUG_ETRELintoETDYN__	0
+#define		__DEBUG_EXTPLT__		0
 
 /* ELFsh architecture types */
 #define		ELFSH_ARCH_IA32			0
@@ -109,6 +110,7 @@
 #define		ELFSH_HOOK_BREAK		"hook_setbreak"
 #define		ELFSH_HOOK_EXTPLT		"hook_extplt"
 #define		ELFSH_HOOK_ALTPLT		"hook_altplt"
+#define		ELFSH_HOOK_ARGC			"hook_argc"
 
 /* Some defined values */
 #define		ELFSH_SECTION_NAME_MAPPED	".mapped"
@@ -242,6 +244,8 @@
 #define		ELFSH_CODE_INJECTION		1
 #define		ELFSH_UNMAPPED_INJECTION	2
 #define		ELFSH_UNKNOWN_INJECTION		3
+
+#define		ELFSH_TRACE_MAX_ARGS		30
 
 #define		STT_BLOCK			(STT_NUM + 1)
 
@@ -1143,6 +1147,7 @@ u_char		elfsh_get_archtype(elfshobj_t *file);
 int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, elfsh_Addr n3);
 int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, elfsh_Addr *n3, elfsh_Addr n4, elfshsect_t *n5);
 int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, elfsh_Addr n3);
+int		elfsh_default_argchandler(elfsh_Addr addr);
 
 int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
 int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
@@ -1150,6 +1155,7 @@ int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
 int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
 int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
 int		elfsh_register_breakhook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_argchook(u_char a, u_char o, u_char os, void *fct);
 
 int             elfsh_register_vector(char      *name,
                                       void      *registerfunc,
@@ -1174,6 +1180,8 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 				 elfshsect_t *extplt, elfsh_Addr diff);
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
 			     elfshsect_t *dynsym, elfshsect_t *relplt);
+int		*elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
+
 
 
 /* sparc32.c */
@@ -1319,6 +1327,7 @@ int		elfsh_relocate_ia32(elfshsect_t	*_new,
 				    elfsh_Addr	*dword,
 				    elfsh_Addr	addr,
 				    elfshsect_t *mod);
+int           *elfsh_args_count_ia32(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
 
 /* reginfo.c */
 elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file);

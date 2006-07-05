@@ -213,7 +213,12 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+int	elfsh_default_argchandler(elfsh_Addr addr)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unsupported Arch, ELF type, or OS", -1);
+}
 
 
 
@@ -490,6 +495,39 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Register a args counting redirection handler */
+int	elfsh_register_argchook(u_char archtype, u_char objtype, 
+				 u_char ostype, void *fct)
+{
+  elfshvector_t	*argcp;
+  u_int		*dim;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  argcp = hash_get(&vector_hash, ELFSH_HOOK_ARGC);
+
+  if (archtype >= ELFSH_ARCHNUM)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Architecture type", -1);
+  if (objtype >= ELFSH_TYPENUM)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Object type", -1);
+  if (ostype >= ELFSH_OSNUM)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Operating System type", -1);
+
+  dim = alloca(sizeof(u_int) * 4);
+  dim[0] = archtype;
+  dim[1] = objtype;
+  dim[2] = ostype;
+  elfsh_project_vectdim(argcp, dim, 3, (elfsh_Addr) fct);
+  //puts("----------------- ARGC ----------------------");
+
+  //hook = argcp->hook;
+  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 
 
@@ -539,6 +577,10 @@ int		elfsh_init_vectors()
   elfsh_register_vector(ELFSH_HOOK_ENCODEPLT1, 
 			elfsh_register_encodeplt1hook, 
 			elfsh_default_encodeplt1handler, 
+			dims, 3);
+  elfsh_register_vector(ELFSH_HOOK_ARGC, 
+			elfsh_register_argchook, 
+			elfsh_default_argchandler, 
 			dims, 3);  
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1052,6 +1094,22 @@ void	elfsh_setup_hooks()
 			    ELFSH_OS_OPENBSD, elfsh_extplt_ia32);
   elfsh_register_extplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			    ELFSH_OS_SOLARIS, elfsh_extplt_ia32);
+
+  /***************************************/
+  /****** ARGC arguments counting  ******/
+  /**************************************/
+
+  /* Usual ARGC targets for ET_EXEC/i386 */
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			    ELFSH_OS_LINUX, elfsh_args_count_ia32);
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			    ELFSH_OS_FREEBSD, elfsh_args_count_ia32);
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			    ELFSH_OS_NETBSD, elfsh_args_count_ia32);
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			    ELFSH_OS_OPENBSD, elfsh_args_count_ia32);
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+			    ELFSH_OS_SOLARIS, elfsh_args_count_ia32);
   
   puts("Finished initialisations of vectorized hooks ");
   
@@ -1398,6 +1456,42 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Breakpoint handler failed", (-1));
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Call the arg count hook */
+int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
+{
+  elfshvector_t	*argch;
+  u_char        archtype;
+  u_char        elftype;
+  u_char        ostype;
+  int		ret;
+  int		(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
+  //elfsh_Addr	***hook;
+  u_int		dim[3];
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  argch = (elfshvector_t *) hash_get(&vector_hash, ELFSH_HOOK_ARGC);
+
+  /* Fingerprint binary */
+  archtype = elfsh_get_archtype(file);
+  elftype = elfsh_get_elftype(file);
+  ostype = elfsh_get_ostype(file);
+  if (archtype == ELFSH_ARCH_ERROR ||
+      elftype  == ELFSH_TYPE_ERROR ||
+      ostype   == ELFSH_OS_ERROR)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "ARGC handler unexistant for this ARCH/OS", -1);
+  
+  dim[0] = archtype;
+  dim[1] = elftype;
+  dim[2] = ostype;
+  fct    = elfsh_project_coords(argch, dim, 3);
+
+  //hook = argch->hook;
+  //fct  = (void *) hook[archtype][elftype][ostype];
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
 }
 
 

@@ -291,6 +291,7 @@ char prompt_token[128];
 #define	CMD_HIJACK		"redir"
 #define CMD_COLOR               "setcolor"
 #define CMD_NOCOLOR             "nocolor"
+#define CMD_TRACE		"trace"
 
 #define CMD_INSERT		"insert"
 #define	CMD_INSERT2		"ins"
@@ -900,6 +901,7 @@ int		cmd_profile();
 int		cmd_log();
 int		cmd_export();  
 int		cmd_edit();
+int		cmd_trace();
 
 int		cmd_shared();
 int		cmd_cleanup();
@@ -912,7 +914,6 @@ int             cmd_hashx();
 int		vm_add_script_cmd(char *dirstr);
 int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();
-
 
 #ifdef __DEBUG_TEST__
 int		cmd_test();

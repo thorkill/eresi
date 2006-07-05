@@ -75,6 +75,7 @@
 #define	HLP_SSTRIP		"Mark the Section Header Table (SHT) and Symbol Table (.symtab) as stripped"
 #define	HLP_RELINJCT		"Relocate a new .o file inside the current file or process"
 #define	HLP_STOP		"Raise a SIGSTOP to the current process"
+#define HLP_TRACE		"Trace functions"
 
 #define HLP_COLOR               "Associates data types to colors \n\n\t"				 \
 				CMD_COLOR" type [bg,fg] color     \n\n\t"				 \
