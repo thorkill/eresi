@@ -129,8 +129,8 @@ void			e2dbg_sigusr1_handler(int signum)
   pc = e2dbg_getpc();
 
   /* Print variables and registers on breakpoints */
-  if (!world.state.vm_quiet)
-    cmd_vlist();
+  //if (!world.state.vm_quiet)
+  //cmd_vlist();
 
   /* Try to find the breakpoint at current instruction pointer */
   snprintf(buf, sizeof(buf), XFMT, *pc - 1);
@@ -305,7 +305,6 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   e2dbgparams_t		params;
   char			*args[3];
   char			*pn;
-  int			idx;
 
 #if defined(__FreeBSD__)
   pn = __progname;
@@ -390,22 +389,8 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   write(1, "[(e2dbg)__libc_start_main] there\n", 33);
 #endif
 
-  /*
-  e2dbgworld.libchandle = dlopen("/lib/libc.so.6", RTLD_NOW);
-  if (!e2dbgworld.libchandle)
-    {
-      write(1, "Error : LIBC HANDLE not found\n", 30);
-      return (-1);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			"Libc not found", -1);
-    }
-  */
-
   /* Find the real symbol in libc */
-  orig = (elfsh_Addr) e2dbg_dlsym(E2DBG_UBUNTU_LIBC_DBG,
-				  //ubp_av[0],
-				  "__libc_start_main", 
-				  (elfsh_Addr) read, "read");
+  orig = (elfsh_Addr) e2dbg_dlsym("__libc_start_main");
   if (!orig)
     {
       write(1, "Error : Orig __libc_start_main not found\n", 41);

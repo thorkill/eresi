@@ -9,10 +9,10 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		1
-#define		__DEBUG_MUTEX__		1
+#define		__DEBUG_E2DBG__		0
+#define		__DEBUG_MUTEX__		0
 #define		__DEBUG_BP__		0
-#define		__DEBUG_EMALLOC__	1
+#define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
@@ -20,13 +20,6 @@
 #define		E2DBG_ARGV0		"e2dbg"
 #define		E2DBG_PROFILER_BUFLEN	256
 #define		E2DBG_SCRIPT_CONTINUE	1
-
-/* Various LIBC paths */
-#define		E2DBG_UBUNTU_LIBC      "/lib/tls/i686/cmov/libc-2.3.5.so"
-#define		E2DBG_UBUNTU_LIBP_DBG  "/usr/lib/debug/libpthread.so.0"
-#define		E2DBG_UBUNTU_LIBC_DBG  "/usr/lib/debug/libc.so.6"
-#define		E2DBG_SOLARISX86_LIBC  "/lib/libc.so.6"
-#define		E2DBG_BSD_LIBC         "/usr/lib/libc.so.6"
 
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
@@ -198,6 +191,9 @@ typedef struct		s_e2dbgworld
   elfsh_Addr		memalignhooksym;		/* Resolved libc memalign hook */
   elfsh_Addr		pthstartupsym;			/* Resolved __libc_malloc_pthread_startup */
 
+  /* Early resolved linkmap when malloc is not available */
+  elfshlinkmap_t	*map;
+
   /* Synchronization values */
 #define			ELFSH_MUTEX_UNLOCKED	0
 #define			ELFSH_MUTEX_LOCKED	1
@@ -287,17 +283,10 @@ int		e2dbg_mutex_lock(elfshmutex_t *m);
 int		e2dbg_mutex_unlock(elfshmutex_t *m);
 void		e2dbg_start_proc();
 
-/*
-elfsh_Addr	e2dbg_dlsym(elfshobj_t *file, char *symname);
-void		*e2dbg_dlopen(char *objname, elfsh_Addr refaddr, char *refsym);
-void		e2dbg_dlclose(elfshobj_t *file);
-*/
-
-elfsh_Addr	e2dbg_dlsym(char *objname, char *sym2resolve, 
-			    elfsh_Addr refaddr, char *refsym);
-
-
-int		e2dbg_load_linkmap(char *name);
+/* Early symbol resolving API */
+int			e2dbg_load_linkmap(char *name);
+elfshlinkmap_t*		e2dbg_linkmap_getaddr();
+elfsh_Addr		e2dbg_dlsym(char *sym2resolve);
 
 /* e2dbg commands */
 int             cmd_mode();

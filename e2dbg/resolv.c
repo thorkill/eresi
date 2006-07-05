@@ -7,8 +7,8 @@
 */
 #include "elfsh.h"
 
-
-//extern int		(*main)(int argc, char **argv);
+/* Reference symbol for the debugger */
+int			reference = 42;
 
 
 /* Load linkmap in PIE based process */
@@ -259,12 +259,12 @@ int			e2dbg_load_linkmap(char *name)
   done = 1;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-  
 
-/* Our own dlsym without malloc */
+
+/* Our own dlsect without malloc */
 /* Useful in the early stage of mapping when malloc symbol is not yet known */
-elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve, 
-				    elfsh_Addr refaddr, char *refsym)
+elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve, 
+				     elfsh_Addr refaddr, char *refsym)
 {
   e2dbgobj_t		obj;
   elfsh_Phdr		*pht;
@@ -272,15 +272,9 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
   u_int			nbr, nbr2;
   elfsh_Sym		cursym;
   char			*strtab;
-  elfsh_Addr		*got;
+  elfsh_Addr		got;
   u_int			curoff;
   elfsh_Addr		found_ref = 0;
-  elfsh_Addr		found_sym = 0;
-
-  elfsh_Addr		gotent[3];
-  u_int			gotoff;
-  u_int			dataoff;
-  elfsh_Addr		dataddr;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -289,22 +283,28 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  write(1, "e2dbg_dlsym called for resolving ", 34);
-  write(1, sym2resolve, strlen(sym2resolve));
+#if __DEBUG_E2DBG__
+  write(1, "e2dbg_dlsect called for resolving ", 34);
+  write(1, sect2resolve, strlen(sect2resolve));
   write(1, " in ", 4);
-
   write(1, objname, strlen(objname));
   write(1, "\n", 1);
+#endif
 
   memset(&obj, 0x00, sizeof(obj));
   XOPEN(obj.fd, objname, O_RDONLY, 0, NULL);
   XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), NULL);
+
+#if __DEBUG_E2DBG__
   write(1, "1", 1);
+#endif
 
   XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, NULL);
   pht = alloca(obj.e.e_phnum * sizeof(elfsh_Phdr));
 
+#if __DEBUG_E2DBG__
   write(1, "2", 1);
+#endif
 
   XREAD(obj.fd, pht, obj.e.e_phnum * sizeof(elfsh_Phdr), NULL);
   for (nbr = 0; nbr < obj.e.e_phnum; nbr++)
@@ -313,23 +313,21 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
 	obj.dynoff = pht[nbr].p_offset;
 	break;
       }
-    else if (pht[nbr].p_type == PT_LOAD && (pht[nbr].p_flags & PF_W))
-      {
-	dataoff = pht[nbr].p_offset;
-	dataddr = pht[nbr].p_vaddr;
-      }
 
+#if __DEBUG_E2DBG__
   write(1, "3", 1);
+#endif
 
   XSEEK(obj.fd, obj.dynoff, SEEK_SET, NULL);
   dyn = alloca(pht[nbr].p_filesz);
 
+#if __DEBUG_E2DBG__
   write(1, "4", 1);
+#endif
 
   XREAD(obj.fd, dyn, pht[nbr].p_filesz, NULL);
   for (nbr2 = 0; nbr2 < pht[nbr].p_filesz / sizeof(elfsh_Dyn); nbr2++)
     {
-      write(1, "|", 1);
       if (dyn[nbr2].d_tag == DT_SYMTAB)
 	obj.symoff = dyn[nbr2].d_un.d_val;
       else if (dyn[nbr2].d_tag == DT_STRTAB)
@@ -337,25 +335,13 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
       else if (dyn[nbr2].d_tag == DT_STRSZ)
 	obj.strsz = dyn[nbr2].d_un.d_val;
       else if (dyn[nbr2].d_tag == DT_PLTGOT)
-	got = (elfsh_Addr *) dyn[nbr2].d_un.d_val;
+	got = (elfsh_Addr) dyn[nbr2].d_un.d_val;
     }
 
-  write(1, "5", 1);
-  
-  // XXX: try to do this on the main object ...
-  gotoff = dataoff + ((elfsh_Addr) got - (elfsh_Addr) dataddr);
-  XSEEK(obj.fd, gotoff, SEEK_SET, NULL);
-  XREAD(obj.fd, &gotent, sizeof(elfsh_Addr) * 3, NULL);
-
 #if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] GOT = %08X GOT[0] = %08X GOT[1] = %08X GOT[2] = %08X \n",
-		 (elfsh_Addr) got, gotent[0], gotent[1], gotent[2]);
-  write(1, buf, len);
+  write(1, "5", 1);
 #endif
-  
-  write(1, "6", 1);
-
+ 
   strtab = alloca(obj.strsz);
   if (!strtab)
     {
@@ -385,14 +371,17 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
       write(1, " Unable to find PLTGOT from PT_DYNAMIC\n", 39);
       return (-1);
     }
-
-  
-  write(1, "7", 1);
+ 
+#if __DEBUG_E2DBG__
+  write(1, "6", 1);
+#endif
 
   XSEEK(obj.fd, obj.stroff, SEEK_SET, NULL);
   XREAD(obj.fd, strtab, obj.strsz, NULL);
 
-  write(1, "8", 1);
+#if __DEBUG_E2DBG__
+  write(1, "7", 1);
+#endif
 
   /* XXX: Assume that strtab is always just after symtab */
   for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
@@ -403,41 +392,170 @@ elfsh_Addr		e2dbg_dlsym(char *objname, char *sym2resolve,
 	continue;
       if (!strcmp(strtab + cursym.st_name, refsym))
 	found_ref = cursym.st_value;
-      else if (!strcmp(strtab + cursym.st_name, sym2resolve))
-	found_sym = cursym.st_value;
     }
 
-  write(1, "9", 1);
+#if __DEBUG_E2DBG__
+  write(1, "8", 1);
+#endif
 
-  if (!found_sym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to find looked up symbol in object", NULL);
   if (!found_ref)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find reference symbol in object", NULL);
 
-  write(1, " Success !\n", 11);
-
 #if __DEBUG_E2DBG__
+  write(1, " Success !\n", 11);
   len = snprintf(buf, sizeof(buf), 
-		 " [*] REFADDR = %08X and FOUNDREF = %08X \n", 
-		 refaddr, found_ref);
+		 " [*] REFADDR = %08X and FOUNDREF = %08X and GOT = %08X \n", 
+		 refaddr, found_ref, got);
   write(1, buf, len);
 #endif
 
   /* The reference addr is useful to deduce library base addresses */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     found_sym + (refaddr - found_ref));
+		     got + refaddr - found_ref);
 }
+
+
+
+
+  
+
+/* Our own dlsym without malloc */
+/* Useful in the early stage of mapping when malloc symbol is not yet known */
+elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
+{
+  e2dbgobj_t		obj;
+  elfsh_Dyn		*dyn;
+  u_int			nbr2;
+  elfsh_Sym		cursym;
+  char			*strtab;
+  u_int			curoff;
+  elfsh_Addr		found_sym = 0;
+  elfshlinkmap_t	*curobj;
+
+#if __DEBUG_E2DBG__
+  char		buf[BUFSIZ];
+  u_int		len;
+#endif
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* First go after the e2dbg and the binary linkmap entries */
+  curobj = e2dbgworld.map;
+  while (curobj->lname == NULL || strstr(curobj->lname, "e2dbg") || *curobj->lname == 0x00)
+    curobj = curobj->lnext;
+
+  /* Iterate on the linkmap to resolve symbols in library priority order */
+  for (; curobj; curobj = curobj->lnext)
+    {
+
+#if __DEBUG_E2DBG__
+      write(1, "e2dbg_dlsym called for resolving ", 33);
+      write(1, sym2resolve, strlen(sym2resolve));
+      write(1, " in ", 4);
+      write(1, curobj->lname, strlen(curobj->lname));
+      write(1, "\n", 1);
+#endif
+      
+      memset(&obj, 0x00, sizeof(obj));
+      XOPEN(obj.fd, curobj->lname, O_RDONLY, 0, NULL);
+      dyn = curobj->lld;
+      
+      /* Getting needed address in the memory mapped PT_DYNAMIC segment */
+      for (nbr2 = 0; dyn[nbr2].d_tag != DT_NULL; nbr2++)
+	{
+	  if (dyn[nbr2].d_tag == DT_SYMTAB)
+	    obj.symoff = dyn[nbr2].d_un.d_val;
+	  else if (dyn[nbr2].d_tag == DT_STRTAB)
+	    obj.stroff = dyn[nbr2].d_un.d_val;
+	  else if (dyn[nbr2].d_tag == DT_STRSZ)
+	    obj.strsz = dyn[nbr2].d_un.d_val;
+	}
+      strtab = (char *) obj.stroff;
+
+      /* Checking if everything is ok */
+      if (!obj.symoff)
+	{
+	  write(1, " Unable to find SYMOFF from PT_DYNAMIC\n", 39);
+	  return (-1);
+	}
+      
+      if (!obj.stroff)
+	{
+	  write(1, " Unable to find STROFF rom PT_DYNAMIC\n", 39);
+	  return (-1);
+	}
+      
+      if (!obj.strsz)
+	{
+	  write(1, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
+	  return (-1);
+	}
+      
+#if __DEBUG_E2DBG__
+      len = snprintf(buf, sizeof(buf), " [*] SYMOFF = %u (%08X), STROFF = %u (%08X), STRSZ = %u \n",
+		     obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
+      write(1, buf, len);
+#endif
+
+      XCLOSE(obj.fd, NULL);
+      
+      /* XXX: Assume that strtab is always just after symtab */
+      for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
+	{
+	  memcpy(&cursym, (void *) obj.symoff + curoff, sizeof(elfsh_Sym));
+	  if (cursym.st_name >= obj.strsz)
+	    continue;
+	  if (!strcmp(strtab + cursym.st_name, sym2resolve) && cursym.st_value)
+	    {
+	      found_sym = cursym.st_value;
+      
+#if __DEBUG_E2DBG__
+	      len = snprintf(buf, sizeof(buf), " [*] FOUNDSYM (%s) = %08X \n", 
+			     strtab + cursym.st_name, found_sym);
+	      write(1, buf, len);
+#endif
+
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, curobj->laddr + found_sym);
+	    }
+	}
+    }
+
+  /* We did not find the symbol in the linkmap ... */
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    "Unable to find looked up symbol in object", NULL);
+}
+
+
+
+/* Get the address of the linkmap without any malloc, for early stage resolving */
+elfshlinkmap_t*		e2dbg_linkmap_getaddr()
+{
+  elfsh_Addr		baseaddr;
+  char			path[BUFSIZ];
+  char			*home;
+  elfsh_Addr		*got;
+
+  home = getenv("HOME");
+  snprintf(path, BUFSIZ, "%s/.e2dbg/e2dbg.so", home);
+  baseaddr = e2dbg_dlsect(path, ".got.plt", (elfsh_Addr) &reference, "reference");
+  if (baseaddr == NULL)
+    baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
+  got = (elfsh_Addr *) baseaddr;
+
+#if __DEBUG_E2DBG__
+  printf("Guessed Linkmap address = %08X \n--------------\n", got[1]);
+#endif
+
+  return ((elfshlinkmap_t *) got[1]);
+}
+
 
 
 /* Resolve malloc/realloc/free from standard libc */
 int		e2dbg_dlsym_init()
 {
   static int	done = 0;
-  char		*name;
-  elfsh_Addr	symref;
-  char		*refstr;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -451,25 +569,13 @@ int		e2dbg_dlsym_init()
   if (done)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 
-  write(1, "DLSYM INIT BACKED\n", 18);
+  write(1, "DLSYM INIT EXECUTED\n", 20);
 
-  /* We use this as a reference symbol */
-  symref = (elfsh_Addr) read;
-  refstr = "read";
-
-#if defined(linux)
-  name = E2DBG_UBUNTU_LIBP_DBG;
-#elif (defined(sun) && defined(__i386))
-  name = E2DBG_SOLARISX86_LIBC;
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-  name = E2DBG_BSD_LIBC;
-#else
-  #error "No libc default path specified"
-#endif
+  /* Get the address of the linkmap without calling malloc */
+  e2dbgworld.map = e2dbg_linkmap_getaddr();
 
   /* Only use our own dlsym here, do not use the libc handler */
-  e2dbgworld.mallocsym = (elfsh_Addr) e2dbg_dlsym(name, "malloc", 
-						  symref, refstr);
+  e2dbgworld.mallocsym = (elfsh_Addr) e2dbg_dlsym("malloc");
   if (!e2dbgworld.mallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig malloc not found", (-1));
@@ -480,8 +586,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
-  e2dbgworld.callocsym = (elfsh_Addr) e2dbg_dlsym(name, "calloc",
-						  symref, refstr);
+  e2dbgworld.callocsym = (elfsh_Addr) e2dbg_dlsym("calloc");
   if (!e2dbgworld.callocsym)
     {
       dlerror();
@@ -495,9 +600,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
-
-  e2dbgworld.reallocsym = (elfsh_Addr) e2dbg_dlsym(name, "realloc", 
-						   symref, refstr);
+  e2dbgworld.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
   if (!e2dbgworld.reallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig realloc not found", (-1));
@@ -508,8 +611,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
-  e2dbgworld.freesym = (elfsh_Addr) e2dbg_dlsym(name, "free", 
-						symref, refstr);
+  e2dbgworld.freesym = (elfsh_Addr) e2dbg_dlsym("free");
   if (!e2dbgworld.freesym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig free not found", (-1));
@@ -520,8 +622,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
-  e2dbgworld.vallocsym = (elfsh_Addr) e2dbg_dlsym(name, "valloc", 
-						  symref, refstr);
+  e2dbgworld.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
   if (!e2dbgworld.vallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig valloc not found", (-1));
@@ -533,8 +634,7 @@ int		e2dbg_dlsym_init()
 #endif
 
 
-  e2dbgworld.memalignsym = (elfsh_Addr) e2dbg_dlsym(name, "memalign", 
-						    symref, refstr);
+  e2dbgworld.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
   if (!e2dbgworld.memalignsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig memalign not found", (-1));
@@ -545,9 +645,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
-  e2dbgworld.memalignhooksym = (elfsh_Addr) e2dbg_dlsym(name, 
-							"__memalign_hook", 
-							symref, refstr);
+  e2dbgworld.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
   if (!e2dbgworld.memalignhooksym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __memalign_hook not found", (-1));
@@ -560,8 +658,7 @@ int		e2dbg_dlsym_init()
 #endif
 
 
-  e2dbgworld.mallochooksym = (elfsh_Addr) e2dbg_dlsym(name, "__malloc_hook", 
-						      symref, refstr);
+  e2dbgworld.mallochooksym = (elfsh_Addr) e2dbg_dlsym("__malloc_hook");
   if (!e2dbgworld.mallochooksym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __malloc_hook not found", (-1));
@@ -574,19 +671,14 @@ int		e2dbg_dlsym_init()
 #endif
 
 
-  e2dbgworld.pthstartupsym = (elfsh_Addr) 
-    e2dbg_dlsym(name, 
-		"__libc_malloc_pthread_startup",
-		symref, refstr);
-
+  e2dbgworld.pthstartupsym = (elfsh_Addr) e2dbg_dlsym("__libc_malloc_pthread_startup");
   if (!e2dbgworld.pthstartupsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig pthread_startup not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc PTHREAD_STARTUP() sym = %08X \n", 
-		 e2dbgworld.pthstartupsym);
+		 " [*] Libc PTHREAD_STARTUP() sym = %08X \n", e2dbgworld.pthstartupsym);
   write(1, buf, len);
 #endif
 
