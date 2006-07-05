@@ -447,19 +447,15 @@ int				atexit(void (*fini)(void))
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit] there\n");
 #endif
-  
-  e2dbgworld.libchandle = dlopen(E2DBG_BSD_LIBC, RTLD_NOW);
-  if (!e2dbgworld.libchandle)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Libc not found", -1);
 
-  /* Find the real symbol in libc */
-  orig = (elfsh_Addr) dlsym(e2dbgworld.libchandle, "atexit");
+  /* Find the real symbol */
+  orig = (elfsh_Addr) e2dbg_dlsym("atexit");
   if (!orig)
     {
-      dlerror();
+      write(1, "Error : Orig atexit not found\n", 30);
+      return (-1);
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Orig atexit", (-1));
+			"Orig atexit not found", (-1));
     }
   libc_atexit = (void *) orig;
   
@@ -492,7 +488,7 @@ int				atexit(void (*fini)(void))
     }
   
 #if __DEBUG_E2DBG__
-  printf("[(e2dbg)atexit 3] there 3\n");
+  printf("[(e2dbg)atexit 3]\n");
 #endif
   
   /* Recall the original function */
@@ -516,24 +512,19 @@ void			__fpstart(int argc, char**ubp_av)
   printf("[e2dbg__fpstart] Start\n");
 #endif
 
-  e2dbgworld.libchandle = dlopen(E2DBG_SOLARISX86_LIBC, RTLD_NOW);
-  if (!e2dbgworld.libchandle)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Libc not found", -1);
-
-  /* Find the real symbol in libc */
-  orig = (elfsh_Addr) dlsym(e2dbgworld.libchandle, "__fpstart");
+  /* Find the real symbol */
+  orig = (elfsh_Addr) e2dbg_dlsym("__fpstart");
   if (!orig)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig __fpstart not found", (-1));
+    {
+      write(1, "Error : Orig __fpstart not found\n", 33);
+      return (-1);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Orig __fpstart not found", (-1));
+    }  
   realfpstart = (void *) orig;
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] 2\n");
-#endif
-
-#if __DEBUG_E2DBG__
-  printf("[e2dbg__fpstart] 3\n");
 #endif
 
   /* Load the debugger */
