@@ -23,22 +23,24 @@ typedef struct			Struct_Needed_Entry
 
 struct Struct_Obj_Entry;
 
-typedef struct	link_map {
-  caddr_t         l_addr;                 /* Base Address of library */
+typedef struct		link_map 
+{
+  caddr_t		l_addr;                 /* Base Address of library */
 #ifdef __mips__
-  caddr_t         l_offs;                 /* Load Offset of library */
+  caddr_t		l_offs;                 /* Load Offset of library */
 #endif
-  const char      *l_name;                /* Absolute Path to Library */
-  const void      *l_ld;                  /* Pointer to .dynamic in memory */
-  struct link_map *l_next, *l_prev;       /* linked list of of mapped libs */
-}		Link_map;
+  const char		*l_name;                /* Absolute Path to Library */
+  const void		*l_ld;                  /* Pointer to .dynamic in memory */
+  struct link_map	*l_next, *l_prev;       /* linked list of of mapped libs */
+}			Link_map;
 
 
 /* Lists of shared objects */
-typedef struct Struct_Objlist_Entry {
-    STAILQ_ENTRY(Struct_Objlist_Entry) link;
-    struct Struct_Obj_Entry *obj;
-} Objlist_Entry;
+typedef struct				Struct_Objlist_Entry 
+{
+  STAILQ_ENTRY(Struct_Objlist_Entry)	link;
+  struct Struct_Obj_Entry		*obj;
+}					Objlist_Entry;
 
 typedef STAILQ_HEAD(Struct_Objlist, Struct_Objlist_Entry) Objlist;
 

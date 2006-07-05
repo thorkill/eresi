@@ -36,7 +36,6 @@
 #include <sys/ucontext.h>
 
 
-
 /* Configure the DEBUG modes for various part of the code */
 #define		__DEBUG_MAP__			0
 #define		__DEBUG_SECTS__			0

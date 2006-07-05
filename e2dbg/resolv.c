@@ -535,6 +535,10 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   char			path[BUFSIZ];
   char			*home;
   elfsh_Addr		*got;
+  elfshlinkmap_t	*lm;
+#if defined(__FreeBSD__)
+  Needed_Entry		*nent;
+#endif
 
   home = getenv("HOME");
   snprintf(path, BUFSIZ, "%s/.e2dbg/e2dbg.so", home);
@@ -543,11 +547,19 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
     baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
   got = (elfsh_Addr *) baseaddr;
 
-#if __DEBUG_E2DBG__
-  printf("Guessed Linkmap address = %08X \n--------------\n", got[1]);
+  /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
+#if defined(__FreeBSD__)
+  nent = (Needed_Entry *) got[1];
+  lm   = (elfshlinkmap_t *) nent->obj;
+#else
+  lm   = (elfshlinkmap_t *) got[1];
 #endif
 
-  return ((elfshlinkmap_t *) got[1]);
+#if __DEBUG_E2DBG__
+  printf("Guessed Linkmap address = %08X \n--------------\n", (elfsh_Addr) lm);
+#endif
+
+  return (lm);
 }
 
 
