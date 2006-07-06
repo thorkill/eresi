@@ -305,6 +305,10 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   e2dbgparams_t		params;
   char			*args[3];
   char			*pn;
+#if __DEBUG_E2DBG__
+  int idx;
+#endif
+
 
 #if defined(__FreeBSD__)
   pn = __progname;

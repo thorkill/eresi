@@ -284,7 +284,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
-  write(1, "e2dbg_dlsect called for resolving ", 34);
+  write(1, " [*] e2dbg_dlsect called for resolving ", 39);
   write(1, sect2resolve, strlen(sect2resolve));
   write(1, " in ", 4);
   write(1, objname, strlen(objname));
@@ -296,7 +296,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), NULL);
 
 #if __DEBUG_E2DBG__
-  write(1, "1", 1);
+  write(1, " [*] 1", 6);
 #endif
 
   XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, NULL);
@@ -450,7 +450,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
     {
 
 #if __DEBUG_E2DBG__
-      write(1, "e2dbg_dlsym called for resolving ", 33);
+      write(1, " [*] e2dbg_dlsym called for resolving ", 38);
       write(1, sym2resolve, strlen(sym2resolve));
       write(1, " in ", 4);
       write(1, curobj->lname, strlen(curobj->lname));
@@ -540,12 +540,44 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   Needed_Entry		*nent;
 #endif
 
+#if __DEBUG_E2DBG__
+  char      buf[BUFSIZ];
+  u_int     len;
+#endif	
+
+#if __DEBUG_E2DBG__
+  len = sprintf(buf, " [*] e2dbg_linkmap_getaddr called\n");
+  write(1, buf, len);
+#endif
+
   home = getenv("HOME");
   snprintf(path, BUFSIZ, "%s/.e2dbg/e2dbg.so", home);
   baseaddr = e2dbg_dlsect(path, ".got.plt", (elfsh_Addr) &reference, "reference");
-  if (baseaddr == NULL)
+
+#if __DEBUG_E2DBG__
+  len = sprintf(buf, " [*] Base address - 1st = %08X\n", baseaddr);
+  write(1, buf, len);
+#endif
+
+/*
+ XXX
+ FIXME: is this realy needed? the first try resolves .got
+ too even if we asked for .got.plt
+  if (baseaddr == NULL) {
     baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
+#if __DEBUG_E2DBG__
+  len = sprintf(buf, " [*] Base address - 2nd = %08X\n", baseaddr);
+  write(1, buf, len);
+#endif
+  }
+ */
+
   got = (elfsh_Addr *) baseaddr;
+
+#if __DEBUG_E2DBG__
+  len = sprintf(buf, " [*] GOT address = %08X\n", got);
+  write(1, buf, len);
+#endif
 
   /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
 #if defined(__FreeBSD__)
@@ -556,13 +588,12 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  printf("Guessed Linkmap address = %08X \n--------------\n", (elfsh_Addr) lm);
+  len = sprintf(buf, " [*] Guessed Linkmap address = %08X \n--------------\n", (elfsh_Addr) lm);
+  write(1, buf, len);
 #endif
 
   return (lm);
 }
-
-
 
 /* Resolve malloc/realloc/free from standard libc */
 int		e2dbg_dlsym_init()
