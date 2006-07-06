@@ -37,7 +37,9 @@ int		cmd_dumpregs()
   
   vm_output(" .:: Registers ::. \n\n");
 
-#if defined(__FreeBSD__)
+#if defined(__amd64__) && defined(__FreeBSD__)
+
+#elif defined(__FreeBSD__)
   vm_dumpreg("EAX", e2dbgworld.context->uc_mcontext.mc_eax);
   vm_dumpreg("EBX", e2dbgworld.context->uc_mcontext.mc_ebx);
   vm_dumpreg("ECX", e2dbgworld.context->uc_mcontext.mc_ecx);

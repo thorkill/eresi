@@ -144,7 +144,11 @@ void		*valloc(size_t t)
 
 
 /* Wrapper for calloc */
+#if __FreeBSD__ > 5
+void		*calloc(size_t t, size_t nbr)
+#else
 void		*calloc(size_t t, u_int nbr)
+#endif
 {
   void		*(*callocptr)();
   void		*chunk;

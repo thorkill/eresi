@@ -634,7 +634,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
 void		  e2dbg_get_regvars_ia32_bsd()
 { 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   VM_GETREG(ELFSH_EAXVAR, e2dbgworld.context->uc_mcontext.mc_eax);
   VM_GETREG(ELFSH_EBXVAR, e2dbgworld.context->uc_mcontext.mc_ebx);
   VM_GETREG(ELFSH_ECXVAR, e2dbgworld.context->uc_mcontext.mc_ecx);
@@ -673,7 +673,7 @@ void		  e2dbg_get_regvars_ia32_sysv()
 void		  e2dbg_set_regvars_ia32_bsd()
 { 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   VM_SETREG(ELFSH_EAXVAR, e2dbgworld.context->uc_mcontext.mc_eax);
   VM_SETREG(ELFSH_EBXVAR, e2dbgworld.context->uc_mcontext.mc_ebx);
   VM_SETREG(ELFSH_ECXVAR, e2dbgworld.context->uc_mcontext.mc_ecx);
@@ -714,7 +714,7 @@ void		  e2dbg_set_regvars_ia32_sysv()
 elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.context->uc_mcontext.mc_eip);
 #endif
@@ -738,7 +738,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.context->uc_mcontext.mc_ebp);
 #endif
@@ -761,7 +761,7 @@ elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 void		  e2dbg_setstep_bsd_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.context->uc_mcontext.mc_eflags |= 0x100;
 #endif
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -791,7 +791,7 @@ void		  e2dbg_resetstep_sysv_ia32()
 void		  e2dbg_resetstep_bsd_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.context->uc_mcontext.mc_eflags &= ~0x100;
 #endif
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);

@@ -37,6 +37,7 @@ fi
 echo  " [*] Enabling ELF64 support"
 BITS="-DELFSH64"
 echo  "BITS		= -DELFSH64"		>> $CONFIGFILE
+echo  "#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 ;;
 
