@@ -6,9 +6,10 @@
 
 include ../config.h
 
-SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
-			signal.c mode.c stack.c step.c linkmap.c dumpregs.c    \
-			vmhooks.c mutex.c continue.c xmalloc.c resolv.c rlheapdbg.c
+SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c      \
+			signal.c mode.c stack.c step.c linkmap.c dumpregs.c         \
+			vmhooks.c mutex.c continue.c xmalloc.c resolv.c rlheapdbg.c \
+			threads.c
 OBJ			= $(SRC:.c=.o)
 VMOBJ			= ../vm/*.o
 CC			?= gcc

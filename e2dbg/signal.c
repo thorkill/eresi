@@ -114,7 +114,6 @@ void			e2dbg_sigusr1_handler(int signum)
   elfsh_Addr		*pc; 
   u_int			bpsz;
 
-
 #if __DEBUG_MUTEX__
   char			buf2[BUFSIZ];
   snprintf(buf2, BUFSIZ, " [*] SigUSR1, E2dbg in action ... (count : %u)\n", count);
@@ -250,14 +249,18 @@ void			e2dbg_generic_breakpoint(int		signum,
   ucontext_t		*context;
 
 #if __DEBUG_MUTEX__
-  printf("\n [*] %s entering generic breakpoint \n",
-	 vm_dbgid_get() != pthread_self() ?
-	 "Debuggee" : "Debugger");
+  printf("\n [*] %s entering generic breakpoint (ID %u) \n",
+	 (vm_dbgid_get() != pthread_self() ? "Debuggee" : "Debugger"), 
+	 pthread_self());
 #endif
 
   context = (ucontext_t *) pcontext;
   CLRSIG;
   e2dbgworld.context = context;
+
+  /* We stop all threads */
+  e2dbgworld.stoppedpid = pthread_self();
+  e2dbg_thread_stopall();
 
   /* We call the debugger */
   pthread_kill(e2dbgworld.dbgpid, SIGUSR1);
@@ -283,11 +286,12 @@ void			e2dbg_generic_breakpoint(int		signum,
   else
     vm_output(" [*] Debuggee continuing & unlocking mutex SYN -> will wait start in the future\n");
 #endif
-
+  
   SETSIG;
 }
 
 
+/*
 int			func(void *params)
 {
   while (1)
@@ -297,6 +301,8 @@ int			func(void *params)
     }
   return (0);
 }
+*/
+
 
 /* Our fake main function */
 int			e2dbg_fake_main(int argc, char **argv, char **aux)

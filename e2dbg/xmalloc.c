@@ -422,6 +422,14 @@ void	wait4exit(void *a)
 /* Wrapper for _exit */
 void		_exit(int err)
 {
+  /* If another thread did an exit, just signal it and return */
+  if (pthread_self() != vm_dbgid_get())
+    {
+      printf(" [*] Thread ID %u exited \n", (unsigned int) pthread_self());
+      while (1)
+	sleep(1);
+    }
+
   while (1)
     if (e2dbgworld.exited)
       {

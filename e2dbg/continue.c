@@ -17,7 +17,9 @@ void		e2dbg_start_proc()
   else
     printf(" [*] Debugger unlocked MUTEX-ACK and allow the debuggee to continue\n");
 #endif
-  
+  /* We unblock all threads */
+  e2dbg_thread_contall();
+
   /* We lock here so that we can wait for the debuggee to unlock dbgsyn */
   if (e2dbg_mutex_lock(&e2dbgworld.dbgsyn) < 0)
     printf(" [*] Debugger failed lock on DBGSYN\n");

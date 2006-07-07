@@ -719,16 +719,19 @@ int		e2dbg_dlsym_init()
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig pthread_startup not found", (-1));
 
+  e2dbgworld.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
+  e2dbgworld.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
+
+
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc PTHREAD_STARTUP() sym = %08X \n", e2dbgworld.pthstartupsym);
   write(1, buf, len);
 #endif
 
-
-  //e2dbg_dlclose(handle);
-  //vm_dbgid_set(0);
+  /* Now we can use malloc cause all symbols are resolved */
   done = 1;
+  hash_init(&e2dbgworld.threads, 29);
 
   write(1, "DLSYM INIT FINISHED\n", 20);
 

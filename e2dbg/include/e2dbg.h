@@ -14,6 +14,7 @@
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
+#define		__DEBUG_THREADS__	0
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -31,7 +32,7 @@
 #define		ELFSH_FPVAR		"fp"
 #define	        ELFSH_PCVAR		"pc"
 
-/* IA32 registers namse */
+/* IA32 registers names */
 #define		ELFSH_EAXVAR		"eax"
 #define		ELFSH_EBXVAR		"ebx"
 #define		ELFSH_ECXVAR		"ecx"
@@ -161,11 +162,33 @@ typedef struct		s_e2dbgparams
 }			e2dbgparams_t;
 
 
+/* The structure representing a thread */
+typedef struct		s_thread
+{
+  pthread_t		tid;			/* Key identification of that thread */
+
+#define			E2DBG_THREAD_INIT     0
+#define			E2DBG_THREAD_STARTED  1
+#define			E2DBG_THREAD_FINISHED 2
+  char			state;			/* Initiliazing, Running, Finished */
+
+  void			*(*entry)(void *);	/* Entry point */
+  time_t		stime;			/* Creation time */
+  time_t		etime;			/* Ending time */
+  elfsh_Addr		tlsaddr;		/* Address of TLS data */
+  unsigned int		tlsize;			/* Size of TLS data */
+  elfsh_Addr		stackaddr;		/* Address of stack */
+  unsigned int		stacksize;		/* Size of stack */
+}			e2dbgthread_t;
+
+
+
 /* This structure contains the internal data of the debugger placed in the VM */
 typedef struct		s_e2dbgworld
 {
   char			preloaded;			/* Say if we were preloaded */
   hash_t		bp;				/* Breakpoints hash table */
+  hash_t		threads;			/* Threads hash table */
   
 #define			E2DBG_STEPCMD_MAX	50
   char			*displaycmd[E2DBG_STEPCMD_MAX];	/* Commands to be executed on step */
@@ -177,10 +200,10 @@ typedef struct		s_e2dbgworld
   elfshbp_t		*curbp;				/* Current breakpoint if any */
   u_char		step;				/* Stepping flag */
   u_char		sourcing;			/* We are executing a debugger script */
+  u_int			dbgpid;				/* Thread ID for the debugger */
+  u_int			stoppedpid;			/* Thread ID for the stopped thread */
 
   /* Shared values between handlers */
-  void			*libchandle;			/* Standard library handle */
-  u_int			dbgpid;				/* Thread ID for the debugger */
   elfsh_Addr		mallocsym;			/* Resolved libc malloc */
   elfsh_Addr		vallocsym;			/* Resolved libc valloc */
   elfsh_Addr		callocsym;			/* Resolved libc calloc */
@@ -190,8 +213,10 @@ typedef struct		s_e2dbgworld
   elfsh_Addr		mallochooksym;			/* Resolved libc malloc hook */
   elfsh_Addr		memalignhooksym;		/* Resolved libc memalign hook */
   elfsh_Addr		pthstartupsym;			/* Resolved __libc_malloc_pthread_startup */
+  elfsh_Addr		pthreadcreate;			/* Resolved pthread_create */
+  elfsh_Addr		pthreadexit;			/* Resolved pthread_exit */
 
-  /* Early resolved linkmap when malloc is not available */
+  /* Early resolved linkmap when alloc/free is not yet available */
   elfshlinkmap_t	*map;
 
   /* Synchronization values */
@@ -282,6 +307,12 @@ int		e2dbg_mutex_init(elfshmutex_t *m);
 int		e2dbg_mutex_lock(elfshmutex_t *m);
 int		e2dbg_mutex_unlock(elfshmutex_t *m);
 void		e2dbg_start_proc();
+
+/* e2dbg thread API */
+void		e2dbg_thread_stopall();
+void		e2dbg_thread_contall();
+
+
 
 /* Early symbol resolving API */
 int			e2dbg_load_linkmap(char *name);
