@@ -2,7 +2,7 @@
 # LibMjollnir Makefile
 # (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
 # BSD License 
-# $Id: Makefile,v 1.3 2006-06-16 20:05:45 thor Exp $
+# $Id: Makefile,v 1.4 2006-07-07 08:49:44 thor Exp $
 #
 
 include ../config.h
@@ -50,7 +50,6 @@ all: $(OBJ)
 	$(CC) $(CFLAGS) $(SRCM) -o $(OBJM) $(LDFLAGS)
 # comment this out if you don't want to make unittests 
 #	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
-
 
 clean:
 	rm -f src/*.o $(NAME) $(OBJT) $(OBJM)
