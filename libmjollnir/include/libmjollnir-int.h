@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf a grid.einherjar.de
  * BSD License
- * $Id: libmjollnir-int.h,v 1.2 2006-04-28 06:56:33 thor Exp $
+ * $Id: libmjollnir-int.h,v 1.3 2006-07-07 12:30:49 thor Exp $
  */
 
 #define __DEBUG__ 				0
@@ -24,6 +24,7 @@ int mjr_i386_cut_function(Mjr_CTX *,unsigned char *src,unsigned char *dst, int m
 int mjr_add_symbol(elfshobj_t *,char *section,u_int vaddr,char *fname);
 int mjr_ihist(Mjr_CTX *,asm_instr);
 int mjr_call_dest(Mjr_CTX *, int *);
+int mjr_init(Mjr_CTX * x);
 char *asm_display_instr_att(asm_instr *,int);
 
 /* fngdb.c */
