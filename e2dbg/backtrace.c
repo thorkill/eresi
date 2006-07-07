@@ -13,9 +13,10 @@
 /* Display backtrace with sym resolution */
 int		vm_bt()
 {
+  e2dbgthread_t	*t;
   elfsh_Addr	frame;
   elfsh_Addr	ret;
-  char		*name;
+  char		*name, *name2;
   int		off;
   char		logbuf[BUFSIZ];
   int		i = 0;
@@ -48,6 +49,22 @@ int		vm_bt()
       if (!name)
 	name = "?";
 
+      /* Just insert the real entry point where we reach the thread entry point of e2dbg */
+      if (strstr(name, "e2dbg_thread_start"))
+	{
+	  snprintf(logbuf, BUFSIZ - 1, "%u", e2dbgworld.stoppedpid);
+	  t = hash_get(&e2dbgworld.threads, logbuf);
+	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, NULL);
+	  if (name2)
+	    {
+	      snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" <%s>\n", i, 
+		       (elfsh_Addr) t->entry, name2);
+	      vm_output(logbuf);
+	      i++;
+	    }
+	}
+      
+      /* Print the current level frame */
       if (off)
 	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" <%s + %d>\n", i, 
 		 (elfsh_Addr) ret, name, off);
