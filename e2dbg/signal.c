@@ -247,6 +247,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 						 void		*pcontext)
 {
   ucontext_t		*context;
+  char			key[15];
 
 #if __DEBUG_MUTEX__
   printf("\n [*] %s entering generic breakpoint (ID %u) \n",
@@ -258,8 +259,10 @@ void			e2dbg_generic_breakpoint(int		signum,
   CLRSIG;
   e2dbgworld.context = context;
 
-  /* We stop all threads */
+  /* We stop all threads and update the current thread information */
   e2dbgworld.stoppedpid = pthread_self();
+  snprintf(key, sizeof(key), "%u", e2dbgworld.stoppedpid);
+  e2dbgworld.curthread  = hash_get(&e2dbgworld.threads, key);
   e2dbg_thread_stopall();
 
   /* We call the debugger */
@@ -289,19 +292,6 @@ void			e2dbg_generic_breakpoint(int		signum,
   
   SETSIG;
 }
-
-
-/*
-int			func(void *params)
-{
-  while (1)
-    {
-      sleep(1);
-      printf("func thread\n");
-    }
-  return (0);
-}
-*/
 
 
 /* Our fake main function */
@@ -421,6 +411,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   /* Initalize mutexes */
   e2dbg_mutex_init(&e2dbgworld.dbgsyn);
   e2dbg_mutex_init(&e2dbgworld.dbgack);
+  e2dbg_mutex_init(&e2dbgworld.dbgter);
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 

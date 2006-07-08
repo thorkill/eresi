@@ -170,6 +170,6 @@
 #define	HLP_RUN			"Erase existing process by new execution (no fork)"
 #define	HLP_DISPLAY		"List or add displayed commands on breakpoints hits or step"
 #define	HLP_UNDISPLAY		"UNIMPLEMENTED : Remove a display command"
-
+#define HLP_THREADS		"Print existing threads list or switch to a given thread view"
 
 #endif

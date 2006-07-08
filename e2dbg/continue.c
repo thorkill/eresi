@@ -67,5 +67,8 @@ int	cmd_cont()
       e2dbg_start_proc();
     }
   vm_output("\n");
+
+
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

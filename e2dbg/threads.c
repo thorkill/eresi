@@ -131,6 +131,54 @@ void	pthread_exit(void *retval)
 }
 
 
+/* Print all threads */
+void		cmd_threads()
+{
+  hashent_t     *actual;
+  e2dbgthread_t	*cur;
+  u_int         index;
+  char		logbuf[BUFSIZ];
+  char		*time, *nl, *state, *entry;
+  char		c;
 
+#if __DEBUG_THREADS__
+  printf(" [*] Continuing all threads \n");
+#endif
+
+  for (index = 0; index < e2dbgworld.threads.size; index++)
+    for (actual = &e2dbgworld.threads.ent[index]; 
+	 actual != NULL && actual->key != NULL; actual = actual->next)
+      {
+	cur = actual->data;
+	time = ctime(&cur->stime);
+	nl = strchr(time, '\n');
+	if (nl)
+	  *nl = 0x00;
+	c = (e2dbgworld.curthread == cur ? '*' : ' ');
+	switch (cur->state)
+	  {
+	  case E2DBG_THREAD_INIT:
+	    state = "INIT";
+	    break;
+	  case E2DBG_THREAD_STARTED:
+	    state = "STARTED";
+	    break;
+	  case E2DBG_THREAD_FINISHED:
+	    state = "FINISHED";
+	    break;
+	  default:
+	    state = "UNKNOWN";
+	  }
+	entry = vm_resolve(world.curjob->current, (elfsh_Addr) cur->entry, NULL);
+	snprintf(logbuf, BUFSIZ, " Thread ID %5u %c %8s --[ started on %s from %s \n", 
+		 (unsigned int) cur->tid, c, state, time, entry);
+	vm_output(logbuf);
+      }
+
+  if (index == 0)
+    vm_output("\n [*] No threads in this process \n\n");
+  else
+    vm_output("\n");
+}
 
 

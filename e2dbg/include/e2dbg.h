@@ -76,6 +76,7 @@
 #define		CMD_UNDISPLAY		"undisplay"
 #define		CMD_RSHT		"rsht"
 #define		CMD_RPHT		"rpht"
+#define		CMD_THREADS		"threads"
 
 
 /* Signal handling for debugger */
@@ -189,6 +190,7 @@ typedef struct		s_e2dbgworld
   char			preloaded;			/* Say if we were preloaded */
   hash_t		bp;				/* Breakpoints hash table */
   hash_t		threads;			/* Threads hash table */
+  e2dbgthread_t		*curthread;			/* Currently working thread */
   
 #define			E2DBG_STEPCMD_MAX	50
   char			*displaycmd[E2DBG_STEPCMD_MAX];	/* Commands to be executed on step */
@@ -224,6 +226,7 @@ typedef struct		s_e2dbgworld
 #define			ELFSH_MUTEX_LOCKED	1
   elfshmutex_t		dbgsyn;				/* Dialog between debugger and debuggee */
   elfshmutex_t		dbgack;				/* Dialog between debugger and debuggee */
+  elfshmutex_t		dbgwait;			/* Dialog between debugger and debuggee */
   int			exited;				/* Debugger exited */
   int			debuggee_exited;		/* Debuggee exited */
 
@@ -335,5 +338,6 @@ int             cmd_step();
 int		cmd_start();
 int		cmd_dumpregs();
 int		cmd_cont();
+void		cmd_threads();
 
 #endif
