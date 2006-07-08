@@ -45,6 +45,10 @@ int    		cmd_trace()
   elfsh_Addr	addr;
   elfsh_Sym	*dst;
   int		entries = 0;
+  char 		tfname[] = "/tmp/tracingXXXXXX";
+  char		sofname[] = "/tmp/tracingsoXXXXXX";
+  char		rsofname[strlen(sofname)+3];
+  char		rtfname[strlen(tfname)+3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -56,8 +60,26 @@ int    		cmd_trace()
 
   /* Do we have symbols ? */
   if ((symtab = elfsh_get_symtab(world.curjob->current, &symnum)) != NULL && symnum > 0)
-    {
-      fp = fopen("/tmp/tracing.c", "w");
+  {
+      if (mktemp(tfname) == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot create temporary file", (-1));
+
+      if (mktemp(sofname) == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot create temporary file", (-1));
+
+      snprintf(rtfname, strlen(sofname)+3, "%s.c", tfname);
+      snprintf(rsofname, strlen(sofname)+3, "%s.o", sofname);
+
+#if 1 //__DEBUG_TRACE__
+      printf("[DEBUG TRACE] Open trace temporary filename: %s\n", rtfname);
+      printf("[DEBUG TRACE] Relocatable filename: %s\n", rsofname);
+#endif
+
+      if ((fp = fopen(rtfname, "w")) == NULL)
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			    "Cannot use temporary file", (-1));
 
       snprintf(buf, BUFSIZ, 
 	       "#include <stdio.h>\n\n"
@@ -214,11 +236,11 @@ int    		cmd_trace()
 			  "No function found", (-1));
 
       snprintf(buf, BUFSIZ,
-	       "gcc -c /tmp/tracing.c -o /tmp/tracing.o");
+	       "gcc -c %s -o %s", rtfname, rsofname);
 
       vm_system(buf);
 
-      tobj = elfsh_map_obj("/tmp/tracing.o");
+      tobj = elfsh_map_obj(rsofname);
 
       if (!tobj)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -279,16 +301,3 @@ int    		cmd_trace()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-int	vm_validtrace(elfshobj_t *file, elfsh_Sym *sym, 
-		      elfshsect_t *sect, char *func_name,
-		      char *sect_name)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-

@@ -411,7 +411,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   /* Initalize mutexes */
   e2dbg_mutex_init(&e2dbgworld.dbgsyn);
   e2dbg_mutex_init(&e2dbgworld.dbgack);
-  e2dbg_mutex_init(&e2dbgworld.dbgter);
+  e2dbg_mutex_init(&e2dbgworld.dbgwait);
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 
