@@ -12,10 +12,14 @@
 /* Hooked start routine for all threads */
 static void*		e2dbg_thread_start(void *param)
 {
-  e2dbgthread_t	*cur;
-  void*		(*start)(void *param);
-  char		key[15];
-  
+  e2dbgthread_t		*cur;
+  void*			(*start)(void *param);
+  char			key[15];
+  pthread_attr_t	attr;
+  int			ret;
+  char			logbuf[BUFSIZ];
+
+
   snprintf(key, sizeof(key), "%u", (unsigned int) pthread_self());
   cur = hash_get(&e2dbgworld.threads, key);
 
@@ -25,6 +29,21 @@ static void*		e2dbg_thread_start(void *param)
 
   cur->state = E2DBG_THREAD_STARTED;
 
+  pthread_getattr_np(cur->tid, &attr);
+  ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
+
+#if __DEBUG_THREADS__
+  if (ret)
+    write(1, "Problem during pthread_attr_getstack\n", 37);
+  else
+    {
+      ret = snprintf(logbuf, BUFSIZ, "Thread ID %u has stack at addr %08X with size %u \n",
+		     (unsigned int) cur->tid, cur->stackaddr, cur->stacksize);
+      write(1, logbuf, ret);
+    }
+#endif
+    
+  /* Call the real entry point */
   start = (void *) cur->entry;
   return ((*start)(param));
 }
@@ -180,5 +199,3 @@ void		cmd_threads()
   else
     vm_output("\n");
 }
-
-
