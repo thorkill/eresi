@@ -2,11 +2,11 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-int.h,v 1.5 2006-07-08 21:24:15 thor Exp $
+ * $Id: libmjollnir-int.h,v 1.6 2006-07-09 17:04:29 thor Exp $
  *
  */
 
-#define __DEBUG__ 			1
+#define __DEBUG__ 		0
 #define __DEBUG_CALLS__		0
 #define __DEBUG_READ__		0
 #define __DEBUG_PTR__		0

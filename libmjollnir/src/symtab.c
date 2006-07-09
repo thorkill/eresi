@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.1 2006-07-08 21:24:21 thor Exp $
+ * $Id: symtab.c,v 1.2 2006-07-09 17:04:33 thor Exp $
  *
  */
 
@@ -19,6 +19,10 @@ int mjrSymtabRebuild(mjrSession *sess) {
 
  for(x=0;x<cn;x++) {
   n = hash_get(&sess->blocks,tab[x]);
+
+  if (n->type != MJR_TYPE_FUNCT && n->type != MJR_TYPE_SECT_START)
+   continue;
+
   memset(s,0x00,BSIZE);
   snprintf(s,BSIZE,"%s%s", MJR_CALL_PREFIX,(char *)_vaddr2string(n->vaddr));
   mjrSymbolAdd(sess,n->section,n->vaddr,s);
