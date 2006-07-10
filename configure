@@ -112,6 +112,11 @@ echo  " [*] Enabling etags support"
 ETAGS="1"
 ;;
 
+--use-ctags*)
+echo  " [*] Enabling etags support"
+CTAGS="1"
+;;
+
 --set-shell*)
 shift
 echo  " [*] Setting UNIX shell to " $1
@@ -529,6 +534,24 @@ echo "	libasm/src/arch/ia32/*.c \\"				>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h\\" 	>> Makefile
 echo "	libdump/include/*.h libc/include/*.h libc/*.c"		>> Makefile
 echo " "							>> Makefile
+fi
+
+if [ "$CTAGS" = "1" ]; then
+echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
+echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
+echo "  libasm/src/arch/ia32/*.c \\"    			>> Makefile
+echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
+echo "	libc/include/*.h libc/*.c\\"				>> Makefile
+echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
+echo "  libelfsh/include/*.h \\"    				>> Makefile
+echo "  libelfsh/include/libelfsh/*.h\\"    			>> Makefile
+echo "  libelfsh/*.c \\" 					>> Makefile
+echo "  libmalloc/*.c libmalloc/include/*.h \\" 		>> Makefile
+echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
+echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
+echo "  vm/*.c vm/include/*.h \\" 				>> Makefile
+echo " "							>> Makefile
+
 fi
 
 echo "info    : "						>> Makefile
