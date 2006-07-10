@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: blocks.c,v 1.1 2006-07-08 21:24:19 thor Exp $
+ * $Id: blocks.c,v 1.2 2006-07-10 20:21:51 thor Exp $
  *
  */
 
@@ -17,6 +17,7 @@ mjrBlock * mjrCreateBlock(u_int vaddr,char *section,u_int type) {
 
  nblk->vaddr = vaddr;
  nblk->type = type;
+ nblk->name = NULL;
  nblk->section = strdup(section);
  nblk->flowTo = NULL;
  nblk->flowRet = NULL;

@@ -9,6 +9,7 @@ typedef struct _mjrBlock mjrBlock;
 struct _mjrBlock {
  u_int vaddr;
  u_int type;
+ char *name;
  u_int flowTo;
  u_int flowRet;
  char *section;
