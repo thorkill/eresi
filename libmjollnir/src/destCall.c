@@ -2,13 +2,13 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: destCall.c,v 1.1 2006-07-08 21:24:21 thor Exp $
+ * $Id: destCall.c,v 1.2 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-int mjrGetCallDst(mjrSession *sess,int *dest) {
+int mjr_get_call_dst(mjrSession *sess,int *dest) {
 	int		ret = 0;
 
 	if (sess->ihist[0].instr != ASM_CALL) {

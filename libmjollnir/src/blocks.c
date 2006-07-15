@@ -2,18 +2,18 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: blocks.c,v 1.2 2006-07-10 20:21:51 thor Exp $
+ * $Id: blocks.c,v 1.3 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include <libmjollnir.h>
 
-mjrBlock * mjrCreateBlock(u_int vaddr,char *section,u_int type) {
- mjrBlock *nblk;
+mjr_block * mjr_create_block(u_int vaddr,char *section,u_int type) {
+ mjr_block *nblk;
 
  ELFSH_NOPROFILE_IN();
- 
- XALLOC(nblk,sizeof(mjrBlock),-1);
+
+ XALLOC(nblk,sizeof(mjr_block),-1);
 
  nblk->vaddr = vaddr;
  nblk->type = type;

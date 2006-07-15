@@ -2,16 +2,17 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: elfThor.c,v 1.2 2006-07-10 20:21:46 thor Exp $
+ * $Id: elfThor.c,v 1.3 2006-07-15 17:06:06 thor Exp $
  *
  */
 
 #include <libmjollnir.h>
 
 void usage() {
- printf("./elfThor [-AR -o <outfile> -r <old_symbol:new_symbol> ] -i <infile>\n\
+ printf("./elfThor [-AR -o <outfile> -d <symbol> -r <old_symbol:new_symbol> ] -i <infile>\n\
  -A\t- perform analize\n\
  -R\t- rebuild symtab\n\
+ -d\t- delete symbol\n\
  -r\t- rename symbol\n\
  -o\t- output file\n\
  ");
@@ -58,7 +59,7 @@ int main(int ac, char **av) {
   return 1;
  }
 
- if (!mjrInitSession(&sess)) {
+ if (!mjr_init_session(&sess)) {
   printf("mjrInitSession faild.\n");
   exit(1);
   }
@@ -70,19 +71,19 @@ int main(int ac, char **av) {
   exit(1);
  }
 
- mjrSetupProcessor(&sess);
+ mjr_setup_processor(&sess);
 
  if (opt_A) {
-  mjrAnalize(&sess,NULL);
+  mjr_analize(&sess,NULL);
  }
 
  if (opt_R) {
-  mjrSymtabRebuild(&sess);
+  mjr_symtab_rebuild(&sess);
  }
 
 /* just for tests */
  if (delsym) {
-  if (mjrSymbolDeleteByName(&sess,delsym))
+  if (mjr_symbol_delete_by_name(&sess,delsym))
    printf("deleted %s\n",delsym);
  }
 
@@ -91,7 +92,7 @@ int main(int ac, char **av) {
   o = strtok_r(rensym, ":", &brk);
   n = strtok_r(NULL, ":", &brk);
   printf("Rename %s -> %s\n", o, n);
-  mjrSymbolRename(&sess,o,n);
+  mjr_symbol_rename(&sess,o,n);
  }
 
  if (outfile)

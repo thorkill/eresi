@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir.h,v 1.4 2006-07-08 21:24:16 thor Exp $
+ * $Id: libmjollnir.h,v 1.5 2006-07-15 17:06:06 thor Exp $
  *
  */
 
@@ -30,19 +30,29 @@ struct _mjrSession {
 #include "libmjollnir-blocks.h"
 #include "libmjollnir-int.h"
 
-mjrBlock * mjrCreateBlock(u_int vaddr,char *section,u_int type);
+/* blocks.c */
+mjr_block * mjr_create_block(u_int,char *,u_int);
 
-int mjrAnalize(mjrSession *sess,int flags);
-int mjrFindCalls(mjrSession *sess,char *section_name);
+/* core.c */
+int mjr_analize(mjrSession *,int);
+int mjr_find_calls(mjrSession *,char *);
 
-int mjrGetCallDst(mjrSession *sess,int *dest);
+/* dstCall.c */
+int mjr_get_call_dst(mjrSession *,int *);
 
-int mjrHistoryUpdate(mjrSession *x, asm_instr inst);
+/* history.c */
+int mjr_history_update(mjrSession *, asm_instr);
 
-int mjrInitSession(mjrSession *sess);
-int mjrSetupProcessor(mjrSession *sess);
+/* init.c */
+int mjr_init_session(mjrSession *);
+int mjr_setup_processor(mjrSession *);
 
-char *_vaddr2string(u_int vaddr);
+/* internal.c */
+char *_vaddr2string(u_int);
 
-int mjrSymtabRebuild(mjrSession *sess);
-int mjrSymbolAdd(mjrSession *sess, char *section, u_int vaddr, char *fname);
+/* symtab.c */
+int mjr_symtab_rebuild(mjrSession *);
+int mjr_symbol_add(mjrSession *, char *, u_int, char *);
+int mjr_symbol_delete_by_name(mjrSession *, char *);
+int mjr_symbol_rename(mjrSession *,char *,char *);
+

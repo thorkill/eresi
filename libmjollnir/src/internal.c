@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: internal.c,v 1.1 2006-07-08 21:24:21 thor Exp $
+ * $Id: internal.c,v 1.2 2006-07-15 17:06:07 thor Exp $
  *
  */
 
@@ -15,8 +15,8 @@ char *_vaddr2string(u_int vaddr) {
 
  XALLOC(str,BSIZE ,-1);
  memset(str, 0x00, BSIZE);
- snprintf(str, BSIZE - 1, "0x%x", vaddr);
+ snprintf(str, BSIZE - 1, "0x%08x", vaddr);
 
- ELFSH_NOPROFILE_ROUT(str);
+ ELFSH_NOPROFILE_ROUT((char *)str);
 
 }

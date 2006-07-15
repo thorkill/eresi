@@ -2,13 +2,13 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: history.c,v 1.1 2006-07-08 21:24:21 thor Exp $
+ * $Id: history.c,v 1.2 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-int mjrHistoryUpdate(mjrSession *x, asm_instr inst)
+int mjr_history_update(mjrSession *x, asm_instr inst)
 {
 
 

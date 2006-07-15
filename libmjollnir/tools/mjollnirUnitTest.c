@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: mjollnirUnitTest.c,v 1.3 2006-07-08 21:24:26 thor Exp $
+ * $Id: mjollnirUnitTest.c,v 1.4 2006-07-15 17:06:08 thor Exp $
  *
  */
 
@@ -14,13 +14,13 @@ START_TEST (test_create)
 {
  char *infile = "ptrfnc";
  mjrSession sess;
- fail_unless(mjrInitSession(&sess) == 1,"mjrInitSession faild.");
+ fail_unless(mjr_init_session(&sess) == 1,"mjrInitSession faild.");
  sess.obj = elfsh_map_obj(infile);
  fail_unless(sess.obj != NULL, "elfsh_map_obj faild.");
- fail_unless(mjrSetupProcessor(&sess) == 1, "mjrSetupProcessor faild.");
+ fail_unless(mjr_setup_processor(&sess) == 1, "mjrSetupProcessor faild.");
 // fail_unless(mjrFindCalls(&sess,".abstractSection") != NULL, "mjrFindCalls on abstract section returned without error.");
- fail_unless(mjrFindCalls(&sess,".text") == NULL, "mjrFindCalls on .text section faild.");
- fail_unless(mjrAnalize(&sess,NULL) == 1, "mjrAnalize faild.");
+ fail_unless(mjr_find_calls(&sess,".text") == NULL, "mjrFindCalls on .text section faild.");
+ fail_unless(mjr_analize(&sess,NULL) == 1, "mjrAnalize faild.");
 }
 END_TEST
 

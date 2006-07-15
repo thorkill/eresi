@@ -2,13 +2,13 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.1 2006-07-08 21:24:19 thor Exp $
+ * $Id: core.c,v 1.2 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-int mjrAnalize(mjrSession *sess,int flags) {
+int mjr_analize(mjrSession *sess,int flags) {
  char *shtName;
  elfsh_Shdr *shtlist,*shdr;
  elfsh_Sym  *sym;
@@ -20,22 +20,22 @@ int mjrAnalize(mjrSession *sess,int flags) {
  }
 
 #if __DEBUG__
- fprintf(D_DESC,"[__DEBUG__] mjrAnalize: Found %d sections.\n",num_sht);
+ fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
 #endif
-					 
+
  for (idx_sht = 0; idx_sht < num_sht; idx_sht++) {
   shdr = (shtlist + idx_sht);
   sym = elfsh_get_sym_from_shtentry(sess->obj, shdr);
   shtName = elfsh_get_symbol_name(sess->obj, sym);
-							
+
   if (elfsh_get_section_execflag(shdr)) {
 #if __DEBUG__
-   fprintf(D_DESC,"[__DEBUG__] mjrAnalize: Executable section name=(%14s) index=(%02i)\n", shtName, idx_sht);
+   fprintf(D_DESC,"[__DEBUG__] mjr_analize: Executable section name=(%14s) index=(%02i)\n", shtName, idx_sht);
 #endif
-   mjrFindCalls(sess,shtName);
+   mjr_find_calls(sess,shtName);
   }
  }
-  
+
  return NULL;
 }
 
@@ -44,16 +44,15 @@ int mjrAnalize(mjrSession *sess,int flags) {
  calls trought a pointer
  */
 
-int mjrFindCalls(mjrSession *sess,char *section_name) {
+int mjr_find_calls(mjrSession *sess,char *section_name) {
 
  elfshsect_t    *sct;
  asm_instr       instr;
  unsigned char  *ptr;
- u_int           vaddr, ilen, dest;
  unsigned long   curr,len;
+ u_int           vaddr, ilen, dest;
  char 			*tmp;
-
- mjrBlock		*newBlock;
+ mjr_block		*newBlock;
 
 #if __DEBUG__
  char *_d_type;
@@ -89,15 +88,15 @@ int mjrFindCalls(mjrSession *sess,char *section_name) {
  len = sct->shdr->sh_size;
  curr = 0;
  vaddr = sct->shdr->sh_addr;
- 
- newBlock = mjrCreateBlock(vaddr,section_name,MJR_TYPE_SECT_START);
+
+ newBlock = mjr_create_block(vaddr,section_name,MJR_TYPE_SECT_START);
  tmp = _vaddr2string(vaddr);
  hash_add(&sess->blocks,tmp,newBlock);
 
  while (curr < len) {
 
   if ((ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->proc)) > 0) {
-   mjrHistoryUpdate(sess, instr);
+   mjr_history_update(sess, instr);
    sess->curVaddr = vaddr + curr;
    dest = 0;
 
@@ -115,20 +114,20 @@ int mjrFindCalls(mjrSession *sess,char *section_name) {
      fprintf(D_DESC, "[__DEBUG_CALLS__] mjrFindCalls: CALL v:0x%lx\n", vaddr + curr);
 #endif
 
-     if (mjrGetCallDst(sess,&dest)>0) {
+     if (mjr_get_call_dst(sess,&dest)>0) {
 	  dest += curr + ilen;
 	  if (vaddr + dest != 0x00) {
 	   tmp = _vaddr2string(vaddr+dest);
 	   if (hash_get(&sess->blocks,tmp) == NULL) {
 #if __DEBUG__
 		_d_type = "NEW";
-#endif	    
-		newBlock = mjrCreateBlock(vaddr+dest,section_name,MJR_TYPE_FUNCT);
+#endif
+		newBlock = mjr_create_block(vaddr+dest,section_name,MJR_TYPE_FUNCT);
 		hash_add(&sess->blocks,tmp,newBlock);
 	   } else {
 #if __DEBUG__
 		_d_type = "OLD";
-#endif	    
+#endif
 	   }
 
 #if __DEBUG__
@@ -159,7 +158,7 @@ int mjrFindCalls(mjrSession *sess,char *section_name) {
  curr += ilen;
  /* end of while */
  }
- 
+
  elfsh_free(ptr);
  ELFSH_NOPROFILE_ROUT(NULL);
 }

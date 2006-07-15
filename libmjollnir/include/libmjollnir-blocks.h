@@ -4,7 +4,7 @@
 #define MJR_TYPE_SECT_START 0
 #define MJR_TYPE_FUNCT		1
 
-typedef struct _mjrBlock mjrBlock;
+typedef struct _mjrBlock mjr_block;
 
 struct _mjrBlock {
  u_int vaddr;

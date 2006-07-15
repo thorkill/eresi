@@ -2,13 +2,17 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.1 2006-07-08 21:24:21 thor Exp $
+ * $Id: init.c,v 1.2 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-int mjrInitSession(mjrSession *sess) {
+/*
+ Init stuff
+ */
+
+int mjr_init_session(mjrSession *sess) {
 
 
  ELFSH_NOPROFILE_IN();
@@ -18,9 +22,10 @@ int mjrInitSession(mjrSession *sess) {
  hash_init(&sess->blocks,mjrHashLarge);
 
  ELFSH_NOPROFILE_ROUT(1);
+
 }
 
-int mjrSetupProcessor(mjrSession *sess) {
+int mjr_setup_processor(mjrSession *sess) {
  u_int         arch;
  arch =  elfsh_get_arch(sess->obj->hdr);
  switch(arch)
@@ -38,4 +43,3 @@ int mjrSetupProcessor(mjrSession *sess) {
 
  return 1;
 }
-

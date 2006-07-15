@@ -2,17 +2,17 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.3 2006-07-10 20:21:51 thor Exp $
+ * $Id: symtab.c,v 1.4 2006-07-15 17:06:07 thor Exp $
  *
  */
 
 #include <libmjollnir.h>
 
-int mjrSymtabRebuild(mjrSession *sess) {
+int mjr_symtab_rebuild(mjrSession *sess) {
 
  int cn,x;
  char **tab;
- mjrBlock *n;
+ mjr_block *n;
  char s[BSIZE];
 
  tab = hash_get_keys(&sess->blocks,&cn);
@@ -25,7 +25,7 @@ int mjrSymtabRebuild(mjrSession *sess) {
 
   memset(s,0x00,BSIZE);
   snprintf(s,BSIZE,"%s%s", MJR_CALL_PREFIX,(char *)_vaddr2string(n->vaddr));
-  mjrSymbolAdd(sess,n->section,n->vaddr,s);
+  mjr_symbol_add(sess,n->section,n->vaddr,s);
  }
 
  return 1;
@@ -36,7 +36,7 @@ int mjrSymtabRebuild(mjrSession *sess) {
  * shortcut for insert/set
  */
 
-int mjrSymbolAdd(mjrSession *sess, char *section, u_int vaddr, char *fname)
+int mjr_symbol_add(mjrSession *sess, char *section, u_int vaddr, char *fname)
 {
 	elfshsect_t *sct;
 	elfsh_Sym	sym;
@@ -58,48 +58,44 @@ int mjrSymbolAdd(mjrSession *sess, char *section, u_int vaddr, char *fname)
 	return 1;
 }
 
-int mjrSymbolDeleteByName(mjrSession *sess, char *symbol) {
+/*
+ Remove symbol by name
+ */
 
- fprintf(D_DESC,"[__DEBUG__] mjrSymbolDeleteByName: <%s>\n", symbol);
+int mjr_symbol_delete_by_name(mjrSession *sess, char *symbol) {
+
+#if __DEBUG__
+ fprintf(D_DESC,"[__DEBUG__] mjr_symbol_deleteByName: <%s>\n", symbol);
+#endif
+
  elfsh_remove_symbol(sess->obj->secthash[ELFSH_SECTION_SYMTAB], symbol);
- return 1;
-}
-
-int mjrSymbolDeleteByVaddr(mjrSession *sess, u_int *vaddr) {
-
  return 1;
 }
 
 /**
  * Rename symbol
  * FIXME:
- * you have to use -R at this moment couse blocks are not stored into binary itself
- * nor in external db.
  */
  
-int mjrSymbolRename(mjrSession *sess,char *old_name,char *new_name) {
+int mjr_symbol_rename(mjrSession *sess,char *old_name,char *new_name) {
 
- mjrBlock *n;
  elfsh_Sym *sm;
- 
+ elfshsect_t *s;
+
  sm = elfsh_get_symbol_by_name(sess->obj, old_name);
 
  if (!sm)
   return 0;
 
-#if __DEBUG__
- fprintf(D_DESC,"[__DEBUG__] mjrSymbolRename: %s (st_value: 0x%08x) -> %s\n", old_name, sm->st_value, new_name);
-#endif
- 
- n = hash_get(&sess->blocks, _vaddr2string(sm->st_value));
+ s = elfsh_get_section_by_index(sess->obj,sm->st_shndx,NULL,NULL);
 
- if (n) {
-  if (!mjrSymbolDeleteByName(sess,old_name))
-   printf("Can't delete %s\n",old_name);
-   mjrSymbolAdd(sess,n->section,n->vaddr,new_name);
- } else {
-   fprintf(D_DESC,"[__DEBUG__] mjrSymbolRename: <%s> not found\n", old_name);
- }
- 
+#if __DEBUG__
+ fprintf(D_DESC,"[__DEBUG__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s <%s>\n", old_name, sm->st_value, new_name, s->name);
+#endif
+
+ mjr_symbol_add(sess,s->name,sm->st_value,new_name);
+ mjr_symbol_delete_by_name(sess,old_name); 
+
  return 1;
 }
+
