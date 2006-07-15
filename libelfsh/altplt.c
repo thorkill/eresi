@@ -284,13 +284,21 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 				   dynsym->shdr->sh_size / sizeof(elfsh_Sym),
 				   plt->shdr->sh_addr + off, 
 				   NULL, ELFSH_EXACTSYM);
-				   
 
       /* New versions of ld do not fill the vaddr of dynamic symbols,
 	 do it ourself. Do not insert old symbol in emergency cases */
-      if (sym == NULL && 
-	  (sym = elfsh_restore_dynsym(file, plt, off, dynsym)) == NULL)
-	continue;
+      if (sym == NULL)
+      {
+	  if ((sym = elfsh_restore_dynsym(file, plt, off, dynsym)) == NULL)
+	      continue;
+
+	  name = elfsh_get_dynsymbol_name(file, sym);
+	  
+	  /* __gmon_start__ should not be resolved 
+	     if it was not already done by gcc */
+	  if (name && !strcmp(name, "__gmon_start__"))
+	      sym->st_value = 0x0;
+      }
       
       /* ... and we inject the 'old' occurence symbol pointing in 
 	 .alt.plt (.plt on MIPS) */

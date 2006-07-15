@@ -103,6 +103,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
       new->curend = relgot->shdr->sh_size;
       new->shdr->sh_type = relgot->shdr->sh_type;
+      new->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
       new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
     }
 
@@ -121,6 +122,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
   new->curend = relplt->shdr->sh_size;
   new->shdr->sh_type = relplt->shdr->sh_type;
+  new->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
   new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -46,9 +46,9 @@ int    		cmd_trace()
   elfsh_Sym	*dst;
   int		entries = 0;
   char 		tfname[] = "/tmp/tracingXXXXXX";
-  char		sofname[] = "/tmp/tracingsoXXXXXX";
-  char		rsofname[strlen(sofname)+3];
-  char		rtfname[strlen(tfname)+3];
+  int		osize = strlen(tfname)+3;
+  char		rsofname[osize];
+  char		rtfname[osize];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -61,16 +61,19 @@ int    		cmd_trace()
   /* Do we have symbols ? */
   if ((symtab = elfsh_get_symtab(world.curjob->current, &symnum)) != NULL && symnum > 0)
   {
+
+  fretry:
       if (mktemp(tfname) == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot create temporary file", (-1));
 
-      if (mktemp(sofname) == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot create temporary file", (-1));
+      snprintf(rtfname, osize, "%s.c", tfname);
+      snprintf(rsofname, osize, "%s.o", tfname);
 
-      snprintf(rtfname, strlen(sofname)+3, "%s.c", tfname);
-      snprintf(rsofname, strlen(sofname)+3, "%s.o", sofname);
+      if (lstat(rtfname, NULL) == 0 || lstat(rsofname, NULL) == 0)
+	  goto fretry;
+
+      
 
 #if 1 //__DEBUG_TRACE__
       printf("[DEBUG TRACE] Open trace temporary filename: %s\n", rtfname);
