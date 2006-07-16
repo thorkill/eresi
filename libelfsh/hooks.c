@@ -1465,8 +1465,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
-  int		ret;
-  int		(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
+  int		*(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
   //elfsh_Addr	***hook;
   u_int		dim[3];
 
@@ -1481,7 +1480,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "ARGC handler unexistant for this ARCH/OS", -1);
+		      "ARGC handler unexistant for this ARCH/OS", NULL);
   
   dim[0] = archtype;
   dim[1] = elftype;

@@ -233,8 +233,8 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   elfshsect_t		*hooks;
   elfshsect_t		*source;
   asm_instr		instrs[5];
-  char			buff[32];
-  int			ret, len;
+  u_char		buff[32];
+  u_int			ret, len;
   int			off;
   int			idx;
   char			*hookbuf;
@@ -497,7 +497,7 @@ typedef struct s_int
 }		s_sint;
 
 /* Personnal func / define for args_count */
-static int            is_arg_ebp(asm_operand *op)
+static int    elfsh_is_arg_ebp(asm_operand *op)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -507,7 +507,7 @@ static int            is_arg_ebp(asm_operand *op)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static int    is_arg_esp(asm_operand *op, int sub)
+static int    elfsh_is_arg_esp(asm_operand *op, int sub)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -517,7 +517,7 @@ static int    is_arg_esp(asm_operand *op, int sub)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static int    largs_add(s_sint *args, int add)
+static int    elfsh_largs_add(s_sint *args, int add)
 {
   s_sint	      *p, *n;
   int                 i;
@@ -533,6 +533,7 @@ static int    largs_add(s_sint *args, int add)
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
+  /* First entry */
   while (args->prec)
     args = args->prec;
 
@@ -578,7 +579,7 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
   int	      reserv = 0;
   int	      ffp = 0;
   int         len = 1024;
-  s_sint      *args, *p;
+  s_sint      *args = NULL, *p = NULL;
   int	      *final_args;
   asm_instr   i;
 
@@ -589,72 +590,50 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
 
   asm_init_i386(&proc);
 
-  /* Find all arguments */
+  /* Enumerate all arguments */
   for (index = 0; index < len; index += ret)
     {
-      if ((ret = asm_read_instr(&i, (char *) (foffset + index), len -  index, &proc)))
+      /* Read an instruction */
+      if ((ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc)))
 	{
+	  /* We don't want to read another function */
 	  if (i.instr == ASM_RET)
 	    break;
 
+	  /* Check init form of the function */
 	  if (index == 0)
 	    {
-	      /* Do we have a normal schema ? */
-	      if (i.instr == ASM_PUSH && i.op1.base_reg == ASM_REG_EBP)
-		{
-		  /*
-		  ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc);
-
-		  if (!ret)
-		    goto err;
-		  
-		  if (i.instr != ASM_MOV || i.op2.base_reg != ASM_REG_ESP 
-		      || i.op1.base_reg != ASM_REG_EBP)
-		    {
-		      index += ret;
-		      ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc);
-
-		      if (!ret)
-			goto err;
-		  
-		      if (i.instr != ASM_MOV || i.op2.base_reg != ASM_REG_ESP 
-			  || i.op1.base_reg != ASM_REG_EBP)
-			goto err;
-		   }
-		  */
-		}
-	      else if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP) /* fomit frame pointer */
+	      /* %esp based (-fomit-frame-pointer) */
+	      if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP)
 		{
 		  reserv = i.op2.imm;
 		  ffp = 1;
 		}
-	      else
-		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-				  "Unable to determine function type", NULL);
 
-	      XALLOC(args, sizeof(s_sint), -1);
+	      XALLOC(args, sizeof(s_sint), NULL);
 	      args->value = 0;
 	    }
 	  else
 	    {
 	      if (ffp == 0)
 		{
-		  /* EBP argument */
-		  largs_add(args, is_arg_ebp(&i.op1));
-		  largs_add(args, is_arg_ebp(&i.op2));
+		  /* EBP based argument */
+		  elfsh_largs_add(args, elfsh_is_arg_ebp(&i.op1));
+		  elfsh_largs_add(args, elfsh_is_arg_ebp(&i.op2));
 		}
 	      else
 		{
-		  /* ESP argument */
-		  largs_add(args, is_arg_esp(&i.op1, reserv));
-		  largs_add(args, is_arg_esp(&i.op2, reserv));
+		  /* ESP based argument */
+		  elfsh_largs_add(args, elfsh_is_arg_esp(&i.op1, reserv));
+		  elfsh_largs_add(args, elfsh_is_arg_esp(&i.op2, reserv));
 		}
 	    }
 	}
       else
-	goto err;
+	break;
     }
 
+  /* Go at the end */
   while (args->next)
     args = args->next;
 
@@ -664,6 +643,7 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
   for (index = 0, p = args; index < ELFSH_TRACE_MAX_ARGS
 	 && p != NULL && p->value > 0; index++, p = p->prec)
     {
+      /* Last entry */
       if (p->next == NULL)
 	{
 	  if (ffp)
@@ -672,19 +652,17 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
 	    {
 	      final_args[index] = p->value - 16;
 
-	      /* Main ? */
+	      /* XXX: wrong readed argument */
 	      if (final_args[index] < 0)
 		final_args[index] = 4;
 	    }
+
 	  continue;
 	}
 
+      /* Stock argument size which depend of the next entrie */
       final_args[index] = p->next->value - p->value;
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
-
- err:
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Error during asm parsing", NULL);
 }

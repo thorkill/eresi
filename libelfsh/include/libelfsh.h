@@ -356,9 +356,9 @@ typedef struct        s_hashneed
 
 typedef struct        s_hashdef
 {
-     void             *ps;
-     elfsh_Verdef     *def;
-    elfsh_Word        *aux;
+  void                *ps;
+  elfsh_Verdef        *def;
+  elfsh_Word          *aux;
 }                     hashdef_t;
 
 

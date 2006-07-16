@@ -76,6 +76,7 @@ extern asm_processor	proc;
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
+#define __DEBUG_TRACE__		1
 
 /* Network related defines */
 #define ELFSH_PORT		4444
@@ -920,6 +921,9 @@ int		cmd_test();
 #endif
 
 int		vm_screen_switch();
+
+FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname);
+int		vm_trace_add(FILE *fp, int *argcount, char *func_name);
 
 
 /* Hash functions */

@@ -322,7 +322,8 @@ elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Verneed		*table;
   char			*filename;
-  u_int			offset = 0, versize;
+  u_int			offset = 0;
+  int			versize;
   void			*ps;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -894,7 +895,7 @@ int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
       XALLOC(pdef, sizeof(hashdef_t), -1);
       pdef->ps  = ps;
       pdef->def = table;
-      pdef->aux = (elfsh_Word) offset + table->vd_aux;
+      pdef->aux = (elfsh_Word *) offset + table->vd_aux;
       hash_add(t, elfsh_strdup(s_temp), (void *) pdef);
       if (table->vd_next == NULL)
 	break;
