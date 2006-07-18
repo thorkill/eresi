@@ -17,7 +17,7 @@ int		vm_bt()
   elfsh_Addr	frame;
   elfsh_Addr	ret;
   char		*name, *name2;
-  int		off;
+  int		off, off2;
   char		logbuf[BUFSIZ];
   int		i = 0;
 
@@ -39,6 +39,17 @@ int		vm_bt()
   /* Backtrace frames */
   while (frame && frame != 0xFFFFFFFF)
     {
+      /* Check if the next frame is pointing on our stack */
+      if (e2dbgworld.curthread->stackaddr > frame ||
+	  e2dbgworld.curthread->stackaddr + e2dbgworld.curthread->stacksize < frame)
+	{
+	  snprintf(logbuf, BUFSIZ, 
+		   " [*] Invalid next frame address %08X (stackaddr = %08X, size = %u)\n\n", 
+		   frame, e2dbgworld.curthread->stackaddr, e2dbgworld.curthread->stacksize);
+	  vm_output(logbuf);
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+
       /* Call the getret hook */
       ret = (elfsh_Addr) e2dbg_getret(world.curjob->current, (elfsh_Addr) frame);
 
@@ -54,29 +65,35 @@ int		vm_bt()
 	{
 	  snprintf(logbuf, BUFSIZ - 1, "%u", e2dbgworld.stoppedpid);
 	  t = hash_get(&e2dbgworld.threads, logbuf);
-	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, NULL);
+	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, &off2);
 	  if (name2)
 	    {
-	      snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" <%s>\n", i, 
-		       (elfsh_Addr) t->entry, name2);
+	      if (off2)
+		snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s + %u> -ENTRY-\n", i, 
+			 ret, (elfsh_Addr) t->entry, name2, off2);
+	      else
+		snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT " <%s> -ENTRY-\n", i, 
+			 ret, (elfsh_Addr) t->entry, name2);
 	      vm_output(logbuf);
 	      i++;
 	    }
 	}
+
+      /* Filter the name in case we have a known-pattern address */
+      if (ret == E2DBG_VSYSCALL_RETADDR)
+	name = "KERNEL VSYSCALL PAGE : one function missing";
+      else if (ret == E2DBG_SIGTRAMP_RETADDR)
+	name = "KERNEL SIGNAL TRAMPOLINE";
       
       /* Print the current level frame */
       if (off)
-	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" <%s + %d>\n", i, 
-		 (elfsh_Addr) ret, name, off);
+	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s + %d>\n", i, 
+		 (elfsh_Addr) ret, ret - off, name, off);
       else
-	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" <%s>\n", i, 
-		 (elfsh_Addr) ret, name);
+	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s>\n", i, 
+		 (elfsh_Addr) ret, ret, name);
       vm_output(logbuf);
-      
-      /* This seems to be the signal vsyscall return address */
-      if (ret == E2DBG_VSYSCALL_RETADDR)
-	vm_output(" [**] Detected VSYSCALL retaddr : one function missing\n");
-      
+
       /* Call the nextfp hook */
       frame = e2dbg_nextfp(world.curjob->current, (elfsh_Addr) frame);    
       i++;
@@ -98,9 +115,9 @@ int		cmd_bt()
   if (!elfsh_is_debug_mode())
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Not in dynamic or debugger mode", -1);
-  if (e2dbgworld.context == 0)
+  if (e2dbgworld.curthread == NULL || e2dbgworld.curthread->context == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No context available", -1);    
+		      "No current thread context available", -1);    
   vm_output(" .:: Backtrace ::. \n");
   ret = vm_bt();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));

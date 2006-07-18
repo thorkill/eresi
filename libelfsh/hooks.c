@@ -1101,17 +1101,15 @@ void	elfsh_setup_hooks()
 
   /* Usual ARGC targets for ET_EXEC/i386 */
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			    ELFSH_OS_LINUX, elfsh_args_count_ia32);
+			  ELFSH_OS_LINUX, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			    ELFSH_OS_FREEBSD, elfsh_args_count_ia32);
+			  ELFSH_OS_FREEBSD, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			    ELFSH_OS_NETBSD, elfsh_args_count_ia32);
+			  ELFSH_OS_NETBSD, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			    ELFSH_OS_OPENBSD, elfsh_args_count_ia32);
+			  ELFSH_OS_OPENBSD, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			    ELFSH_OS_SOLARIS, elfsh_args_count_ia32);
-  
-  puts("Finished initialisations of vectorized hooks ");
+			  ELFSH_OS_SOLARIS, elfsh_args_count_ia32);
   
   done++;
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);

@@ -13,15 +13,11 @@
 /* Only useful when debugger takes control by .ctors */
 void		e2dbg_init(void)
 {
-  // FIXME: take care before malloc pointers were filled at first malloc
-  // calls, so we cant erase all the e2dbgworld at this moment
-  //memset((void *) &e2dbgworld, 0, sizeof(e2dbgworld_t));
-  write(1, "Calling DLSYM_INIT from e2dbg init !\n", 37);
+  write(1, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
   e2dbg_dlsym_init();
   vm_dbgid_set(0);
-  e2dbgworld.context = NULL;
   SETSIG; 
-  write(1, "Finished e2dbg ctor \n", 21);
+  write(1, " [D] Finished e2dbg ctors \n", 26);
 }
 
 
@@ -101,7 +97,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
     }
 
 
-  if (ac == 2 && !e2dbgworld.step)
+  if (ac == 2 && (!e2dbgworld.curthread || !e2dbgworld.curthread->step))
     vm_print_banner(av[1]);
 
   if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER && e2dbg_setup(av[1]) < 0)

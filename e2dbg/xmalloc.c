@@ -54,7 +54,7 @@ void		*malloc(size_t t)
   
   //e2dbg_self();
 
-  if (!e2dbgworld.mallocsym)
+  if (!e2dbgworld.syms.mallocsym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -64,8 +64,8 @@ void		*malloc(size_t t)
       write(1, "LIBC malloc used\n", 17);
       write(1, "\033[00m", 5);
 #endif
-      mallocptr = (void *) e2dbgworld.mallocsym;
-      if (!e2dbgworld.mallocsym)
+      mallocptr = (void *) e2dbgworld.syms.mallocsym;
+      if (!e2dbgworld.syms.mallocsym)
 	{
 	  write(1, " [!] Unable to use original malloc \n", 36);
 	  return (NULL);
@@ -103,7 +103,7 @@ void		*valloc(size_t t)
   write(1, "Calling HOOKED valloc\n", 22);
 #endif
 
-  if (!e2dbgworld.vallocsym)
+  if (!e2dbgworld.syms.vallocsym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -113,8 +113,8 @@ void		*valloc(size_t t)
       write(1, "LIBC valloc used\n", 17);
       write(1, "\033[00m", 5);
 #endif
-      vallocptr = (void *) e2dbgworld.vallocsym;
-      if (!e2dbgworld.vallocsym)
+      vallocptr = (void *) e2dbgworld.syms.vallocsym;
+      if (!e2dbgworld.syms.vallocsym)
 	{
 	  write(1, " [!] Unable to use original valloc \n", 36);
 	  return (NULL);
@@ -171,7 +171,7 @@ void		*calloc(size_t t, u_int nbr)
 
   //e2dbg_self();
 
-  if (!e2dbgworld.callocsym)
+  if (!e2dbgworld.syms.callocsym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -190,7 +190,7 @@ void		*calloc(size_t t, u_int nbr)
 	}
       else
       */
-      callocptr = (void *) e2dbgworld.mallocsym;
+      callocptr = (void *) e2dbgworld.syms.mallocsym;
 
       if (!callocptr)
 	{
@@ -210,7 +210,6 @@ void		*calloc(size_t t, u_int nbr)
 #endif
 
       chunk = callocptr(t * nbr);
-//      sleep(10);
       write(1, "Libc m/calloc returned\n", 23);
       if (chunk)
 	memset(chunk, 0x00, t * nbr);
@@ -264,7 +263,7 @@ void		*memalign(size_t t, u_int nbr)
   write(1, "Calling HOOKED memalign \n", 23);
 #endif
 
-  if (!e2dbgworld.memalignsym)
+  if (!e2dbgworld.syms.memalignsym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -284,7 +283,7 @@ void		*memalign(size_t t, u_int nbr)
       else
       */
       
-      memalignptr = (void *) e2dbgworld.memalignsym;
+      memalignptr = (void *) e2dbgworld.syms.memalignsym;
       
       if (!memalignptr)
 	{
@@ -331,7 +330,7 @@ void	*realloc(void *a, size_t t)
   write(1, "Calling HOOKED realloc\n", 23);
 #endif
 
-  if (!e2dbgworld.reallocsym)
+  if (!e2dbgworld.syms.reallocsym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -341,8 +340,8 @@ void	*realloc(void *a, size_t t)
       write(1, "LIBC realloc used\n", 18);
       write(1, "\033[00m", 5);
 #endif
-      reallocptr = (void *) e2dbgworld.reallocsym;
-      if (!e2dbgworld.reallocsym)
+      reallocptr = (void *) e2dbgworld.syms.reallocsym;
+      if (!e2dbgworld.syms.reallocsym)
 	{
 	  write(1, " [!] Unable to use original realloc \n", 37);
 	  return (NULL);
@@ -378,7 +377,7 @@ void	free(void *a)
   write(1, "Calling HOOKED free\n", 20);
 #endif
 
-  if (!e2dbgworld.freesym)
+  if (!e2dbgworld.syms.freesym)
     e2dbg_dlsym_init();
 
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
@@ -388,8 +387,8 @@ void	free(void *a)
       write(1, "LIBC free used\n", 15);
       write(1, "\033[00m", 5);
 #endif
-      freeptr = (void *) e2dbgworld.freesym;
-      if (!e2dbgworld.freesym)
+      freeptr = (void *) e2dbgworld.syms.freesym;
+      if (!e2dbgworld.syms.freesym)
 	{
 	  write(1, " [!] Unable to use original free \n", 34);
 	  return;
@@ -450,14 +449,15 @@ void		_exit(int err)
 
 
 /* Wrapper for heap initialisation */
+/*
 void	__libc_malloc_pthread_startup (int first_time)
 {
   void	(*pthstartupptr)();
 
-  if (!e2dbgworld.pthstartupsym)
+  if (!e2dbgworld.syms.pthstartupsym)
     e2dbg_dlsym_init();
 
-  pthstartupptr = (void *) e2dbgworld.pthstartupsym;
+  pthstartupptr = (void *) e2dbgworld.syms.pthstartupsym;
   write(1, "Calling __libc_malloc_pthread_startup HOOK ! \n", 46);
   pthstartupptr(first_time);
   write(1, "Finished LIBC pthread startup ! \n", 33);
@@ -465,6 +465,7 @@ void	__libc_malloc_pthread_startup (int first_time)
   __elfsh_libc_malloc_pthread_startup (first_time);
   write(1, "Finished OURS pthread startup ! \n", 33);
 }
+*/
 
 
 /* Not sure it is useful / bugless, just a try */

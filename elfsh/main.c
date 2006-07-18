@@ -143,7 +143,7 @@ int		vm_loop(int argc, char **argv)
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = world.curjob->curcmd = NULL;
   world.curjob->lstcmd[world.curjob->sourced] = NULL;
-  if (!e2dbgworld.step)
+  if (!e2dbgworld.curthread || !e2dbgworld.curthread->step)
     {
       snprintf(msg, BUFSIZ - 1, "\t [-: E2DBG now in BG :-] \n\n");
       vm_output_bcast(msg);

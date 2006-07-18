@@ -441,7 +441,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First go after the e2dbg and the binary linkmap entries */
-  curobj = e2dbgworld.map;
+  curobj = e2dbgworld.syms.map;
   while (curobj->lname == NULL || strstr(curobj->lname, "e2dbg") || *curobj->lname == 0x00)
     curobj = curobj->lnext;
 
@@ -559,23 +559,10 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   write(1, buf, len);
 #endif
 
-/*
- XXX
- FIXME: is this realy needed? the first try resolves .got
- too even if we asked for .got.plt
-  if (baseaddr == NULL) {
-    baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
-#if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] Base address - 2nd = %08X\n", baseaddr);
-  write(1, buf, len);
-#endif
-  }
- */
-
   got = (elfsh_Addr *) baseaddr;
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] GOT address = %08X\n", got);
+  len = sprintf(buf, " [*] GOT address = %08X\n", (elfsh_Addr) got);
   write(1, buf, len);
 #endif
 
@@ -595,6 +582,8 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   return (lm);
 }
 
+
+
 /* Resolve malloc/realloc/free from standard libc */
 int		e2dbg_dlsym_init()
 {
@@ -607,30 +596,30 @@ int		e2dbg_dlsym_init()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  write(1, "DLSYM INIT CALLED\n", 18);
+  write(1, " [D] e2dbg_dlsym_init CALLED\n", 29);
 
   if (done)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-
-  write(1, "DLSYM INIT EXECUTED\n", 20);
+  
+  write(1, " [D] e2dbg_dlsym_init EXECUTED\n", 31);
 
   /* Get the address of the linkmap without calling malloc */
-  e2dbgworld.map = e2dbg_linkmap_getaddr();
+  e2dbgworld.syms.map = e2dbg_linkmap_getaddr();
 
   /* Only use our own dlsym here, do not use the libc handler */
-  e2dbgworld.mallocsym = (elfsh_Addr) e2dbg_dlsym("malloc");
-  if (!e2dbgworld.mallocsym)
+  e2dbgworld.syms.mallocsym = (elfsh_Addr) e2dbg_dlsym("malloc");
+  if (!e2dbgworld.syms.mallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig malloc not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc MALLOC() sym = %08X \n", e2dbgworld.mallocsym);
+		 " [*] Libc MALLOC() sym = %08X \n", e2dbgworld.syms.mallocsym);
   write(1, buf, len);
 #endif
 
-  e2dbgworld.callocsym = (elfsh_Addr) e2dbg_dlsym("calloc");
-  if (!e2dbgworld.callocsym)
+  e2dbgworld.syms.callocsym = (elfsh_Addr) e2dbg_dlsym("calloc");
+  if (!e2dbgworld.syms.callocsym)
     {
       dlerror();
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -639,101 +628,113 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc CALLOC() sym = %08X \n", e2dbgworld.callocsym);
+		 " [*] Libc CALLOC() sym = %08X \n", e2dbgworld.syms.callocsym);
   write(1, buf, len);
 #endif
 
-  e2dbgworld.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
-  if (!e2dbgworld.reallocsym)
+  e2dbgworld.syms.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
+  if (!e2dbgworld.syms.reallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig realloc not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc REALLOC() sym = %08X \n", e2dbgworld.reallocsym);
+		 " [*] Libc REALLOC() sym = %08X \n", e2dbgworld.syms.reallocsym);
   write(1, buf, len);
 #endif
 
-  e2dbgworld.freesym = (elfsh_Addr) e2dbg_dlsym("free");
-  if (!e2dbgworld.freesym)
+  e2dbgworld.syms.freesym = (elfsh_Addr) e2dbg_dlsym("free");
+  if (!e2dbgworld.syms.freesym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig free not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc FREE() sym = %08X \n", e2dbgworld.freesym);
+		 " [*] Libc FREE() sym = %08X \n", e2dbgworld.syms.freesym);
   write(1, buf, len);
 #endif
 
-  e2dbgworld.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
-  if (!e2dbgworld.vallocsym)
+  e2dbgworld.syms.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
+  if (!e2dbgworld.syms.vallocsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig valloc not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc VALLOC() sym = %08X \n", e2dbgworld.vallocsym);
+		 " [*] Libc VALLOC() sym = %08X \n", e2dbgworld.syms.vallocsym);
   write(1, buf, len);
 #endif
 
 
-  e2dbgworld.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
-  if (!e2dbgworld.memalignsym)
+  e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
+  if (!e2dbgworld.syms.memalignsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig memalign not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc MEMALIGN() sym = %08X \n", e2dbgworld.memalignsym);
+		 " [*] Libc MEMALIGN() sym = %08X \n", e2dbgworld.syms.memalignsym);
   write(1, buf, len);
 #endif
 
-  e2dbgworld.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
-  if (!e2dbgworld.memalignhooksym)
+  e2dbgworld.syms.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
+  if (!e2dbgworld.syms.memalignhooksym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __memalign_hook not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc __MEMALIGN_HOOK() sym = %08X \n", 
-		 e2dbgworld.memalignhooksym);
+		 e2dbgworld.syms.memalignhooksym);
   write(1, buf, len);
 #endif
 
 
-  e2dbgworld.mallochooksym = (elfsh_Addr) e2dbg_dlsym("__malloc_hook");
-  if (!e2dbgworld.mallochooksym)
+  e2dbgworld.syms.mallochooksym = (elfsh_Addr) e2dbg_dlsym("__malloc_hook");
+  if (!e2dbgworld.syms.mallochooksym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __malloc_hook not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc __MALLOC_HOOK() sym = %08X \n", 
-		 e2dbgworld.mallochooksym);
+		 e2dbgworld.syms.mallochooksym);
   write(1, buf, len);
 #endif
 
 
-  e2dbgworld.pthstartupsym = (elfsh_Addr) e2dbg_dlsym("__libc_malloc_pthread_startup");
-  if (!e2dbgworld.pthstartupsym)
+  /*
+    e2dbgworld.syms.pthstartupsym = (elfsh_Addr) e2dbg_dlsym("__libc_malloc_pthread_startup");
+    if (!e2dbgworld.syms.pthstartupsym)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig pthread_startup not found", (-1));
+    "Orig pthread_startup not found", (-1));
+    #if __DEBUG_E2DBG__
+    len = snprintf(buf, sizeof(buf), 
+    " [*] Libc PTHREAD_STARTUP() sym = %08X \n", e2dbgworld.syms.pthstartupsym);
+    write(1, buf, len);
+    #endif
+  */
 
-  e2dbgworld.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
-  e2dbgworld.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
+  e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
+  if (!e2dbgworld.syms.pthreadcreate)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig pthread_create not found", (-1));
 
+  e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
+  if (!e2dbgworld.syms.pthreadexit)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig pthread_exit not found", (-1));
 
-#if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc PTHREAD_STARTUP() sym = %08X \n", e2dbgworld.pthstartupsym);
-  write(1, buf, len);
-#endif
+  e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
+  if (!e2dbgworld.syms.signal)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Orig signal not found", (-1));
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
   hash_init(&e2dbgworld.threads, 29);
 
-  write(1, "DLSYM INIT FINISHED\n", 20);
+  write(1, " [D] e2dbg_dlsym_init FINISHED\n", 31);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }

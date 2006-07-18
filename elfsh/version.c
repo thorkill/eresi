@@ -302,7 +302,7 @@ int 			cmd_version()
   hash_destroy(&t_need);
 
   if (keys != NULL)
-    free(keys);
+    XFREE(keys);
 
   /* free def table */
   keys = hash_get_keys(&t_def, &knum);
@@ -311,7 +311,7 @@ int 			cmd_version()
   hash_destroy(&t_def);
 
   if (keys != NULL)
-    free(keys);
+    XFREE(keys);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

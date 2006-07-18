@@ -5,8 +5,8 @@
 #
 #
 
-NAME	= malloc-e2dbg
 CC	?= gcc
+NAME	= malloc-e2dbg
 BINAME	= test-multithread
 
 all:

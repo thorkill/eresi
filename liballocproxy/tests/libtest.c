@@ -21,7 +21,11 @@ void *print_message_function_lib( void *ptr )
 
 void print_lib()
 {
-  printf("coucou\n");
+  while (1)
+    {
+      printf("coucou print_lib\n");
+      sleep(1);
+    }
 }
 
 
@@ -36,6 +40,4 @@ void test_lib()
   pthread_join( thread4, NULL);
 
   printf("end test_lib\n");
-
-
 }

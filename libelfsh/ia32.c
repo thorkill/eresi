@@ -382,7 +382,7 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
 
 
 /* Perform relocation on entry for INTEL architecture */
-/* not endianess independant - ym */
+/* XXX: not endianess independant - ym */
 int      elfsh_relocate_ia32(elfshsect_t	*new,
 			     elfsh_Rel		*cur,
 			     elfsh_Addr		*dword,

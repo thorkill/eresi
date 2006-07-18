@@ -199,6 +199,7 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
     case DT_REL:
     case DT_VERNEED:
     case DT_VERSYM:
+    case DT_VERDEF:
     case DT_PLTGOT:
       return (1);
     default:

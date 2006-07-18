@@ -11,31 +11,26 @@
 /* Step command */
 int		cmd_step()
 {
-  int		err;
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  printf("entering stepped ! \n");
-  err = 0;
 
  retry:
-  if (!e2dbgworld.context)
+  if (!e2dbgworld.curthread || !e2dbgworld.curthread->context)
     {
       if (e2dbgworld.sourcing)
 	goto retry;
       else
 	printf("wasnt sourcing ... existing \n");
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"You must be in a SIGTRAP handler", -1);
+			"You must be in a SIGTRAP handler to step", -1);
     }
 
-  if (e2dbgworld.step)
+  if (e2dbgworld.curthread->step)
     {
       if (e2dbg_resetstep() < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Failed to disable stepping", -1);
       vm_output("\n [*] Disabled stepping\n\n");
-      e2dbgworld.step = 0;
+      e2dbgworld.curthread->step = 0;
     }
   else
     {
@@ -43,10 +38,8 @@ int		cmd_step()
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Failed to enable stepping", -1);
       vm_output("\n [*] Enabled stepping (now 'cont' to step) \n\n");
-      e2dbgworld.step = 1;
+      e2dbgworld.curthread->step = 1;
     }
-
-  printf("stepped ! \n");
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
