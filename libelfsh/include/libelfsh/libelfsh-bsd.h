@@ -112,15 +112,15 @@ typedef struct Struct_Obj_Entry {
     u_int32_t init;              /* Initialization function to call */
     u_int32_t fini;              /* Termination function to call */
 
-    int mainprog;              /* True if this is the main program */
-    int rtld;                  /* True if this is the dynamic linker */
-    int textrel;               /* True if there are relocations to text seg */
-    int symbolic;              /* True if generated with "-Bsymbolic" */
-    int bind_now;              /* True if all relocations should be made first */
-    int traced;                /* Already printed in ldd trace output */
-    int jmpslots_done;         /* Already have relocated the jump slots */
-    int init_done;             /* Already have added object to init list */
-    int tls_done;              /* Already allocated offset for static TLS */
+    unsigned char mainprog;              /* True if this is the main program */
+    unsigned char rtld;                  /* True if this is the dynamic linker */
+    unsigned char textrel;               /* True if there are relocations to text seg */
+    unsigned char symbolic;              /* True if generated with "-Bsymbolic" */
+    unsigned char bind_now;              /* True if all relocations should be made first */
+    unsigned char traced;                /* Already printed in ldd trace output */
+    unsigned char jmpslots_done;         /* Already have relocated the jump slots */
+    unsigned char init_done;             /* Already have added object to init list */
+    unsigned char tls_done;              /* Already allocated offset for static TLS */
 
     struct link_map linkmap;    /* for GDB and dlinfo() */
     Objlist dldags;             /* Object belongs to these dlopened DAGs (%) */
@@ -129,7 +129,6 @@ typedef struct Struct_Obj_Entry {
     ino_t ino;                  /* Object's inode number */
     void *priv;                 /* Platform-dependant */
 } Obj_Entry;
-
 
 #ifndef STT_TLS
   #define STT_TLS  6
