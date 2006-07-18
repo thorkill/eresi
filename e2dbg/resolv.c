@@ -10,7 +10,6 @@
 /* Reference symbol for the debugger */
 int			reference = 42;
 
-
 /* Load linkmap in PIE based process */
 static int		e2dbg_load_linkmap_pie(char *name)
 {
@@ -465,9 +464,17 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       for (nbr2 = 0; dyn[nbr2].d_tag != DT_NULL; nbr2++)
 	{
 	  if (dyn[nbr2].d_tag == DT_SYMTAB)
+#if defined(__FreeBSD__)
+	    obj.symoff = curobj->laddr + dyn[nbr2].d_un.d_val;
+#else
 	    obj.symoff = dyn[nbr2].d_un.d_val;
+#endif
 	  else if (dyn[nbr2].d_tag == DT_STRTAB)
+#if defined(__FreeBSD__)
+	    obj.stroff = curobj->laddr + dyn[nbr2].d_un.d_val;
+#else
 	    obj.stroff = dyn[nbr2].d_un.d_val;
+#endif
 	  else if (dyn[nbr2].d_tag == DT_STRSZ)
 	    obj.strsz = dyn[nbr2].d_un.d_val;
 	}
@@ -537,7 +544,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   elfsh_Addr		*got;
   elfshlinkmap_t	*lm;
 #if defined(__FreeBSD__)
-  Needed_Entry		*nent;
+  Obj_Entry		*oe;
 #endif
 
 #if __DEBUG_E2DBG__
@@ -568,8 +575,8 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
   /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
 #if defined(__FreeBSD__)
-  nent = (Needed_Entry *) got[1];
-  lm   = (elfshlinkmap_t *) nent->obj;
+  oe = (Obj_Entry *) got[1];
+  lm = (elfshlinkmap_t *) &oe->linkmap;
 #else
   lm   = (elfshlinkmap_t *) got[1];
 #endif
