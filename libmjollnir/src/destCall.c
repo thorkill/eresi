@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: destCall.c,v 1.2 2006-07-15 17:06:07 thor Exp $
+ * $Id: destCall.c,v 1.3 2006-07-20 17:27:11 thor Exp $
  *
  */
 
@@ -11,8 +11,10 @@
 int mjr_get_call_dst(mjrSession *sess,int *dest) {
 	int		ret = 0;
 
+    ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
 	if (sess->ihist[0].instr != ASM_CALL) {
-		return ret;
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
 	}
 
 #if __DEBUG_CALLS__
@@ -26,7 +28,8 @@ int mjr_get_call_dst(mjrSession *sess,int *dest) {
 		if (asm_operand_get_immediate(&sess->ihist[0], 1, 0, dest) != -1) {
 			ret = 1;
 		} else {
-			fprintf(D_DESC, "[NOTICE] mjrGetCallDst: get_immediete returned -1!\n");
+		 ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	                       "get_immediete returned -1", -1);
 		}
 	} else if ((sess->ihist[0].op1.content & ASM_OP_ADDRESS) &&
 		   sess->ihist[1].instr == ASM_MOV &&
@@ -50,8 +53,13 @@ int mjr_get_call_dst(mjrSession *sess,int *dest) {
 #endif
 		ret = 1;
 	} else {
+		 ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	                       "Operand content not supported.", -1);
+
+#if __DEBUG_OPERAND__
 		fprintf(D_DESC, "[NOTICE] mjrGetCallDst: not supported! 0x%08x %d\n",
 			sess->curVaddr, sess->ihist[0].op1.content);
+#endif
 	}
 
 #if __DEBUG_CALLS__
@@ -60,7 +68,7 @@ int mjr_get_call_dst(mjrSession *sess,int *dest) {
 		*dest);
 #endif
 
-	return ret;
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
 }
 
 int

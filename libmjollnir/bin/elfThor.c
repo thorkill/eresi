@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: elfThor.c,v 1.3 2006-07-15 17:06:06 thor Exp $
+ * $Id: elfThor.c,v 1.4 2006-07-20 17:27:09 thor Exp $
  *
  */
 
@@ -10,7 +10,7 @@
 
 void usage() {
  printf("./elfThor [-AR -o <outfile> -d <symbol> -r <old_symbol:new_symbol> ] -i <infile>\n\
- -A\t- perform analize\n\
+ -A\t- perform analyse\n\
  -R\t- rebuild symtab\n\
  -d\t- delete symbol\n\
  -r\t- rename symbol\n\
@@ -74,7 +74,7 @@ int main(int ac, char **av) {
  mjr_setup_processor(&sess);
 
  if (opt_A) {
-  mjr_analize(&sess,NULL);
+  mjr_analyse(&sess,NULL);
  }
 
  if (opt_R) {

@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.2 2006-07-15 17:06:07 thor Exp $
+ * $Id: init.c,v 1.3 2006-07-20 17:27:11 thor Exp $
  *
  */
 
@@ -14,14 +14,13 @@
 
 int mjr_init_session(mjrSession *sess) {
 
-
- ELFSH_NOPROFILE_IN();
+ ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
  sess->obj = NULL;
  sess->curVaddr = 0;
  hash_init(&sess->blocks,mjrHashLarge);
 
- ELFSH_NOPROFILE_ROUT(1);
+ ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 
 }
 

@@ -2,17 +2,20 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.2 2006-07-15 17:06:07 thor Exp $
+ * $Id: core.c,v 1.3 2006-07-20 17:27:11 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-int mjr_analize(mjrSession *sess,int flags) {
+int mjr_analyse(mjrSession *sess,int flags) {
  char *shtName;
  elfsh_Shdr *shtlist,*shdr;
  elfsh_Sym  *sym;
  int num_sht,idx_sht;
+
+ if (NULL == sess)
+  return -1;
 
  if (!(shtlist = elfsh_get_sht(sess->obj, &num_sht))) {
   printf("faild to get sht!\n");
@@ -119,11 +122,18 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 	  if (vaddr + dest != 0x00) {
 	   tmp = _vaddr2string(vaddr+dest);
 	   if (hash_get(&sess->blocks,tmp) == NULL) {
+	    char *md5;
+	    mjrFunction *fun;
 #if __DEBUG__
 		_d_type = "NEW";
 #endif
 		newBlock = mjr_create_block(vaddr+dest,section_name,MJR_TYPE_FUNCT);
+		fun = mjr_function_create(vaddr+dest);
+
 		hash_add(&sess->blocks,tmp,newBlock);
+		md5 = mjr_fingerprint_function(sess,ptr+dest,MJR_FNG_TYPE_MD5);
+		fun->md5 = strdup(md5);
+
 	   } else {
 #if __DEBUG__
 		_d_type = "OLD";

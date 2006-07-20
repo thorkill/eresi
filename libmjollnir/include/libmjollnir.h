@@ -2,12 +2,15 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir.h,v 1.5 2006-07-15 17:06:06 thor Exp $
+ * $Id: libmjollnir.h,v 1.6 2006-07-20 17:27:10 thor Exp $
  *
  */
 
 #include <libelfsh.h>
 #include <libasm.h>
+
+/* For fingerprinting */
+#include <openssl/md5.h>
 
 /* size of temp buffers */
 #define BSIZE 4096 
@@ -29,16 +32,21 @@ struct _mjrSession {
 
 #include "libmjollnir-blocks.h"
 #include "libmjollnir-int.h"
+#include "libmjollnir-fprint.h"
 
 /* blocks.c */
 mjr_block * mjr_create_block(u_int,char *,u_int);
 
 /* core.c */
-int mjr_analize(mjrSession *,int);
+int mjr_analyse(mjrSession *,int);
 int mjr_find_calls(mjrSession *,char *);
 
 /* dstCall.c */
 int mjr_get_call_dst(mjrSession *,int *);
+
+/* function.c */
+mjrFunction *mjr_function_create(u_int);
+void *mjr_fingerprint_function(mjrSession *, unsigned char *, int );
 
 /* history.c */
 int mjr_history_update(mjrSession *, asm_instr);

@@ -1,3 +1,9 @@
+/*
+ * (C) 2006 Asgard Labs, thorolf
+ * BSD License
+ * $Id: libmjollnir-blocks.h,v 1.4 2006-07-20 17:27:10 thor Exp $
+ *
+ */
 
 /* this covers at this moment only calls */
 
