@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir.h,v 1.6 2006-07-20 17:27:10 thor Exp $
+ * $Id: libmjollnir.h,v 1.7 2006-07-20 18:07:30 thor Exp $
  *
  */
 
@@ -22,11 +22,16 @@ typedef struct _mjrSession mjrSession;
 
 struct _mjrSession {
 
- elfshobj_t *obj;     	/* elfsh object */
- asm_processor proc;  	/* proc */
- u_int curVaddr;      	/* current vaddr (while searching/analizing...) */
+ elfshobj_t *obj;     		/* elfsh object */
+ asm_processor proc;  		/* proc */
+ u_int curVaddr;      		/* current vaddr (while searching/analizing...) */
  hash_t blocks;	  		/* blocks */
- asm_instr  ihist[4]; 	/* instruction history */
+ asm_instr  ihist[4]; 		/* instruction history */
+ 
+ /* analysis stuff */
+ unsigned char analysed_calls; 	/* do we analysed it */
+ u_int st_calls_seen;                                                                                                                                              
+ u_int st_calls_found;
 
 };
 

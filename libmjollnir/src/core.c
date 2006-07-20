@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.3 2006-07-20 17:27:11 thor Exp $
+ * $Id: core.c,v 1.4 2006-07-20 18:07:30 thor Exp $
  *
  */
 
@@ -38,8 +38,11 @@ int mjr_analyse(mjrSession *sess,int flags) {
    mjr_find_calls(sess,shtName);
   }
  }
+ 
+ /* set the flag */
+ sess->analysed_calls = 1;
 
- return NULL;
+ return 1;
 }
 
 /*
@@ -116,10 +119,13 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 #if __DEBUG_CALLS__
      fprintf(D_DESC, "[__DEBUG_CALLS__] mjrFindCalls: CALL v:0x%lx\n", vaddr + curr);
 #endif
-
+	sess->st_calls_seen++;
      if (mjr_get_call_dst(sess,&dest)>0) {
 	  dest += curr + ilen;
 	  if (vaddr + dest != 0x00) {
+
+	   sess->st_calls_found++;
+
 	   tmp = _vaddr2string(vaddr+dest);
 	   if (hash_get(&sess->blocks,tmp) == NULL) {
 	    char *md5;

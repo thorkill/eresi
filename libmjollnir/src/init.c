@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.3 2006-07-20 17:27:11 thor Exp $
+ * $Id: init.c,v 1.4 2006-07-20 18:07:30 thor Exp $
  *
  */
 
@@ -18,6 +18,9 @@ int mjr_init_session(mjrSession *sess) {
 
  sess->obj = NULL;
  sess->curVaddr = 0;
+ sess->analysed_calls = 0;
+ sess->st_calls_seen = 0;
+ sess->st_calls_found = 0;
  hash_init(&sess->blocks,mjrHashLarge);
 
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
