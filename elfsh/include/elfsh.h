@@ -361,6 +361,14 @@ char prompt_token[128];
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"
 
+/* Mjollnir bindings */
+#if defined(USE_MJOLLNIR)
+#define CMD_ANALYSE		"analyse"
+#define CMD_UNSTRIP		"unstrip"
+#define CMD_RENAME		"rename"
+#endif
+
+
 /* Regx option, a module of struct s_args */
 typedef struct		s_list
 {
@@ -438,6 +446,9 @@ typedef struct		s_e2dbgcontext
 /* The Embedded ELF debugger include file comes here */
 #include <e2dbg.h>
 
+#if defined(USE_MJOLLNIR)
+#include <libmjollnir.h>
+#endif
 
 /* ELFsh module structure */
 typedef struct	      s_module
@@ -585,18 +596,22 @@ typedef struct        s_job
   elfshobj_t          *dbglist;         /* List of objects loaded into e2dbg */
   elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
   
-  u_char              active;                 
+  u_char              active;            
   time_t              createtime;
   int                 logfd;            /* Log file descriptor */
   elfshscreen_t       screen;           /* Last printed screen */
  
   char		      *oldline;		/* Previous command line */
 
+#if defined(USE_MJOLLNIR)
+  mjrSession		*mjr_session;	/* Context session for mjollnir */
+#endif
+
 #define       ELFSH_JOB_LOGGED (1 << 0)
   u_char              state;            /* Job state flags */
   
   asm_processor*      proc;		/* Processor structure */
-  
+
 }                     elfshjob_t;
 
 
@@ -931,6 +946,12 @@ int           vm_hashunk(int i);
 int           vm_hashbucketprint(int t, int i, int s, char *n, int r, int h, int c);
 int           vm_hashchainprint(int i, int s, char *n, int r, int h);
 
+#if defined(USE_MJOLLNIR)
+/* libmjollnir functions */
+int		cmd_analyse();
+int		cmd_unstrip();
+int 		cmd_rename();
+#endif
 
 /* Debugging functions */
 int		cmd_mode();

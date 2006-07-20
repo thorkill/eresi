@@ -16,7 +16,7 @@ CFLAGS 	= -Wall -g3 -fPIC -rdynamic -DELFSH_INTERN $(BITS) \
 	-I../../vm/include -I../../libdump/include/ \
 	-I../../libelfsh/include -I../../libhash/include \
 	-I../../libdump/include -I../../e2dbg/include \
-	-I../../libasm/include/ -I../../libc/include/
+	-I../../libasm/include/ -I../../libc/include/ -I../../libmjollnir/include/
 RM 	= rm -f
 CC 	?= gcc
 

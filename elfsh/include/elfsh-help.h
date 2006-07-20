@@ -172,4 +172,10 @@
 #define	HLP_UNDISPLAY		"UNIMPLEMENTED : Remove a display command"
 #define HLP_THREADS		"Print existing threads list or switch to a given thread view"
 
+#if defined(USE_MJOLLNIR)
+#define HLP_ANALYSE		"Analyse the binary (needed for unstrip)"
+#define HLP_UNSTRIP		"Unstrip the binary."
+#define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
+#endif
+
 #endif

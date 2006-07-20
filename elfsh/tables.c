@@ -850,6 +850,12 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_DISCON    , (void *) cmd_discon   , (void *) vm_getoption    , 0, HLP_DISCON);
   vm_addcmd(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) vm_getvarparams , 0, HLP_RCMD);
 #endif
+
+#if defined(USE_MJOLLNIR)
+  vm_addcmd(CMD_ANALYSE	  , (void *) cmd_analyse  , (void *) NULL	     , 0, HLP_ANALYSE);
+  vm_addcmd(CMD_UNSTRIP	  , (void *) cmd_unstrip  , (void *) NULL	     , 0, HLP_UNSTRIP);
+  vm_addcmd(CMD_RENAME	  , (void *) cmd_rename  , (void *) vm_getvarparams , 2, HLP_RENAME);
+#endif
   
 }
 

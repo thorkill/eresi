@@ -68,6 +68,9 @@ int		cmd_help()
 	       "                                 add, sub, mul, div, mod, cmp, reladd, redir \n"
 	       " Debugger commands          .::. break, delete, continue, dumpregs, stack, dbgstack \n"
 	       "                                 backtrace, linkmap, step \n"
+#if defined(USE_MJOLLNIR)
+	       " Mjollnir commands          .::. analyse, unstrip, rename \n\n"
+#endif
 	       " ELFsh modules commands     .::. modload, modunload, modhelp \n"
 	       " ELF objects flags          .::. fixup, shtrm, sstrip \n"                        
 	       " Ondisk only ELF commands   .::. flush, save, sym, stab, append, extend, insert, remove \n"

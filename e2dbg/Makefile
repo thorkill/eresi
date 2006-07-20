@@ -23,10 +23,12 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../vm/include/       \
 			-I../libc/include/     \
 			-I../libui/include/    \
+			-I../libmjollnir/include/ \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT) $(BITS)
 
 LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh                       \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm $(LPTHREAD)                  \
+			-L../libmjollnir/ $(LDMJOLLNIR)\
 			-g3 -L../libc/ -lcelfsh -L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT)
 

@@ -15,7 +15,7 @@ SRC			= grammar.c disasm.c dyn.c hdr.c main.c got.c interp.c \
 			  cmdapi.c  reladd.c fcthijack.c loop.c jmp.c color.c \
 			  insert.c remove.c flush.c vlist.c lts.c source.c \
 			  cleanup.c run.c trace.c variables.c version.c hash.c \
-			  rlheap.c
+			  rlheap.c hammer.c
 OBJ			= $(SRC:.c=.o)
 CC			?= gcc
 RM			= rm -f
@@ -24,14 +24,14 @@ NAME			= elfsh
 CFLAGS			+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			 -I../libelfsh/include/ -I../libc/include/ -I../libdump/include/ \
 			 -I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
-			 -I../libui/include/ \
+			 -I../libui/include/ -I../libmjollnir/include/ \
 			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) $(BITS) $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
 			$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
-			-g3 $(LDASMOPT) -L../libmalloc -lmalloc-e2dbg \
+			-g3 $(LDASMOPT) -L../libmalloc -L../libmjollnir/ -lmalloc-e2dbg $(LDMJOLLNIR)\
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) \
-			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
+			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) -lssl
 
 
 all		       	: $(OBJ)

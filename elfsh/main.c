@@ -211,6 +211,9 @@ int		vm_setup(int ac, char **av)
 	  av[1] = NULL;
 	}
     }
+#if defined(USE_MJOLLNIR)
+ 
+#endif
 
   vm_setup_hashtables();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -22,7 +22,7 @@ NAM3	= modremap.so
 CFLAGS	= -I../vm/include/ -I../libhash/include/        \
 	  -I../libdump/include/ -I../libelfsh/include/  \
 	  -I../libasm/include/ -I../e2dbg/include/      \
-	  -I../libc/include/ -Wall -g3 -O2 -fPIC \
+	  -I../libc/include/ -I../libmjollnir/include/ -Wall -g3 -O2 -fPIC \
 	  -DELFSH_INTERN $(DYNOPT) $(BITS)
 
 CC	= gcc

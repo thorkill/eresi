@@ -104,6 +104,9 @@ M64="1"
 
 --enable-mjollnir*)
 echo  " [*] Enabling libmjollnir"
+echo  "#define USE_MJOLLNIR 1"		>> $LIBVARSFILE
+echo  "#define USE_MJOLLNIR 1"		>> $VARSFILE
+echo  "LDMJOLLNIR	= -lmjollnir -lssl"	>> $CONFIGFILE
 LIBMJOLLNIR="1"
 ;;
 
@@ -406,6 +409,7 @@ echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
 if [ "$LIBMJOLLNIR" = "1" ]; then
 echo "	@cp libmjollnir/libmjollnir.a \$(LIBPATH) "			>> Makefile
+echo "	@cp libmjollnir/libmjollnir.so \$(LIBPATH) "			>> Makefile
 fi
 echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
 echo "	@cp libui/libui.a libui/libui.so \$(LIBPATH) "		>> Makefile
@@ -465,6 +469,7 @@ echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libcelfsh.a "			>> Makefile
 if [ "$LIBMJOLLNIR" = "1" ]; then
 echo "	rm -f  \$(LIBPATH)/libmjollnir.a "			>> Makefile
+echo "	rm -f  \$(LIBPATH)/libmjollnir.so "			>> Makefile
 fi
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
