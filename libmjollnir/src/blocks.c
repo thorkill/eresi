@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: blocks.c,v 1.4 2006-07-20 17:27:11 thor Exp $
+ * $Id: blocks.c,v 1.5 2006-07-21 18:26:46 thor Exp $
  *
  */
 
@@ -18,7 +18,7 @@ mjr_block * mjr_create_block(u_int vaddr,char *section,u_int type) {
  nblk->vaddr = vaddr;
  nblk->type = type;
  nblk->name = NULL;
- nblk->section = strdup(section);
+ nblk->section = elfsh_strdup(section);
  nblk->flowTo = NULL;
  nblk->flowRet = NULL;
  nblk->listNext = NULL;

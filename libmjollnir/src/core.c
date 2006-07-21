@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.4 2006-07-20 18:07:30 thor Exp $
+ * $Id: core.c,v 1.5 2006-07-21 18:26:46 thor Exp $
  *
  */
 
@@ -138,7 +138,8 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 
 		hash_add(&sess->blocks,tmp,newBlock);
 		md5 = mjr_fingerprint_function(sess,ptr+dest,MJR_FNG_TYPE_MD5);
-		fun->md5 = strdup(md5);
+		if (md5)
+ 		 fun->md5 = elfsh_strdup(md5);
 
 	   } else {
 #if __DEBUG__
