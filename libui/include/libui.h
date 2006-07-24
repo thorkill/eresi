@@ -8,4 +8,17 @@
 
 #include "elfsh.h"
 
+#define	VM_OUTPUT(str)						\
+do								\
+{								\
+  int er;							\
+  er = vm_output(str);						\
+  if (er < 0)							\
+  {								\
+     vm_output("\n");						\
+     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
+  }								\
+}								\
+while (0)
+
 #endif

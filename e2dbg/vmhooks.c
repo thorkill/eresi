@@ -416,11 +416,7 @@ int		  e2dbg_getregs()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);
@@ -429,7 +425,8 @@ int		  e2dbg_getregs()
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETREGS handler unexistant for this ARCH/OS", -1);
-  
+
+  /* This hook is non-fatal, we just wont have registers as variables if it fails */
   (*hook_getregs[archtype][hosttype][ostype])();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -444,11 +441,7 @@ int		  e2dbg_setregs()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);
@@ -457,12 +450,13 @@ int		  e2dbg_setregs()
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETREGS handler unexistant for this ARCH/OS", -1);
-  
+
+  /* This hook is non-fatal, we just wont have modified registers if it fails. */
   (*hook_setregs[archtype][hosttype][ostype])();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Call the getregs hook */
+/* Call the getpc hook */
 elfsh_Addr*     e2dbg_getpc()
 {
   elfsh_Addr	*pc;
@@ -472,11 +466,7 @@ elfsh_Addr*     e2dbg_getpc()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Fingerprint binary
-  **
-  ** This hook is non-fatal, we just wont have registers as
-  ** variables if it fails.
-  */
+  /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
   hosttype = elfsh_get_hosttype(world.curjob->current);
   ostype = elfsh_get_ostype(world.curjob->current);

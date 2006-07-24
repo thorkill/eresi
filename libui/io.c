@@ -143,16 +143,18 @@ int		vm_output(char *str)
   if (world.curjob->io.outcache.nblines < 0)
     {
       vm_flush();
-      world.curjob->io.output("-- press key for more ('q' to quit) --\n");
+      world.curjob->io.output("-- press enter for more ('q/n' to quit / next) --\n");
 
       /* We decided to discard further output (until next vm_flush) */
-      if ((read(world.curjob->io.input_fd, &c, 1) == 1) && c == 'q')
+      if ((read(world.curjob->io.input_fd, &c, 1) == 1) && (c == 'q' || c == 'n'))
 	{
-	  world.curjob->io.outcache.ignore = 1;
+	  if (c == 'q')
+	    world.curjob->io.outcache.ignore = 1;
 	  world.curjob->io.output("\n");
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  
+			     (c == 'q' ? -1 : -2));
 	}
     }
-
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  ret);
 }
@@ -170,7 +172,7 @@ int		vm_output_nolog(char *str)
 int		vm_outerr(char *str)
 {
   vm_log(str);
-  fprintf(stderr, str);
+  fprintf(stderr, "%s", str);
   return (0);
 }
 

@@ -267,8 +267,8 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
       if ((world.curjob->curcmd->use_regx[1] == 0) || 
 	  !regexec(&second->name, logbuf, 0, 0, 0))
 	{
-	  vm_output(logbuf);
-	  vm_output("\n");
+	  VM_OUTPUT(logbuf);
+	  VM_OUTPUT("\n");
 	}
       vm_endline();
 
@@ -329,7 +329,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   index = off;
   buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
   
-  /* Filter requests on void sections (ex: bss) */
+  /* Filter requests on void sections (ex: bss when not inserted in file) */
   if (!parent || !parent->data)
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"No data at this address", -1);
@@ -348,7 +348,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  /* Use an offset for more dumping */
 	  if (index >= 250)
 	    {
-	      vm_output("-- symbol size is bigger (use an offset) --\n");
+	      VM_OUTPUT("-- symbol size is bigger (use an offset) --\n");
 	      break;
 	    }
 	  
@@ -420,7 +420,8 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	      snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
 	    }
 	  
-	  vm_output(logbuf);
+	  /* maybe the user asked to quit the display */
+	  VM_OUTPUT(logbuf);
 	  
 	  //printf("fourth step passed \n");
 	}
@@ -437,7 +438,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
       while (index < size)
 	if (index >= 1000)
 	  {
-	    vm_output("-- symbol size is bigger (use an offset) --\n");
+	    VM_OUTPUT("-- symbol size is bigger (use an offset) --\n");
 	    break;
 	  }
 	else
@@ -450,7 +451,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
       //vm_output(bigbuf);
 
       if (world.curjob->curcmd->use_regx[1] == 0)
-	vm_output("\n [*] No binary pattern was specified \n");
+	VM_OUTPUT("\n [*] No binary pattern was specified \n");
 
     }
 
@@ -467,7 +468,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  /* Keep a limit to avoid output overflow */
 	  if (index >= 1000)
 	    {
-	      vm_output("-- symbol size is bigger (use an offset) --\n");
+	      VM_OUTPUT("-- symbol size is bigger (use an offset) --\n");
 	      break;
 	    }
 	  
@@ -477,7 +478,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	      sprintf(buf, " %08X %s + %u", 
 		      vaddr + index, name, index);
 	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
-	      vm_output(logbuf);
+	      VM_OUTPUT(logbuf);
 	    }
 	  else
 	    {
@@ -491,7 +492,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 
 	      //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "%s", logbuf);
 
-	      vm_output(logbuf);
+	      VM_OUTPUT(logbuf);
 	    }
 
 	  ret = (world.state.vm_quiet ? 8 : 16);
@@ -511,23 +512,23 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  for (loff = 0; loff < ret; loff++)
 	    {
 	      char	c[2];
+	      char	*str;
 
 	      c[0] = buff[index + loff];
 	      c[1] = 0x00;
-	      vm_output(index + loff >= size ? " " :
-			PRINTABLE(buff[index + loff]) ? 
-			c : ".");
+	      str = (index + loff >= size ? " " : (PRINTABLE(buff[index + loff]) ? c : "."));
+	      VM_OUTPUT(str);
 	    }
 
 	  //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "\n");
-	  vm_output("\n");
+	  VM_OUTPUT("\n");
 	  index += ret;
 
 	}
     }
-
+  
   //XFREE(buff);
-  vm_output("\n");
+  VM_OUTPUT("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -551,6 +552,7 @@ int		display_section(elfshobj_t	*file,
   int		tot;
   char		*symname;
   char		logbuf[BUFSIZ];
+  int		err;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -568,11 +570,12 @@ int		display_section(elfshobj_t	*file,
       if (elfsh_get_parent_section(file, actual[index].st_value, &offset) == s)
 	{
 	  symname = elfsh_get_symbol_name(file, actual + index);
-	  display_object(file, s, actual + index, 
-			 (reqsize ? reqsize : actual[index].st_size), off,
-			 s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr,
-			 actual[index].st_value, symname, otype);
-	  
+	  err = display_object(file, s, actual + index, 
+			       (reqsize ? reqsize : actual[index].st_size), off,
+			       s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr,
+			       actual[index].st_value, symname, otype);
+	  if (err == -1)
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
 	  tot++;
 	}
 
@@ -580,8 +583,11 @@ int		display_section(elfshobj_t	*file,
   if (!tot)
     {
       actual = elfsh_get_symbol_by_name(file, name);
-      display_object(file, s, actual, (reqsize ? reqsize : s->shdr->sh_size), 
-		     off, s->shdr->sh_offset, s->shdr->sh_addr, name, otype);
+      err = display_object(file, s, actual, (reqsize ? reqsize : s->shdr->sh_size), 
+			   off, s->shdr->sh_offset, s->shdr->sh_addr, name, otype);
+      if (err == -1)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
+      
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -740,9 +746,10 @@ int             cmd_disasm()
      vm_output(logbuf);
 #endif
       
-      display_section(file, s, name, actual->off, 
-		      actual->size + actual->off, 
-		      actual->otype);
+     if (display_section(file, s, name, actual->off, 
+			 actual->size + actual->off, 
+			 actual->otype) < 0)
+       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
 
@@ -772,9 +779,10 @@ int             cmd_disasm()
      vm_output(logbuf);
 #endif
       
-      display_section(file, s, name, actual->off, 
-		      actual->size + actual->off, 
-		      actual->otype);
+     if (display_section(file, s, name, actual->off, 
+			 actual->size + actual->off, 
+			 actual->otype) < 0)
+       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   
@@ -810,9 +818,10 @@ int             cmd_disasm()
 		continue;
 	      }
 
-	    display_object(file, s, sym + index, actual->size, actual->off,
-			   elfsh_get_foffset_from_vaddr(file, sym[index].st_value),
-			   sym[index].st_value, name, actual->otype);
+	    if (display_object(file, s, sym + index, actual->size, actual->off,
+			       elfsh_get_foffset_from_vaddr(file, sym[index].st_value),
+			       sym[index].st_value, name, actual->otype) == -1)
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	    actual->size = saved_size;
 	  }
       }
@@ -863,10 +872,11 @@ int             cmd_disasm()
 	       continue;
 	     }
 
-	    display_object(file, s, sym + index, 
-			   actual->size, actual->off,
-			   elfsh_get_foffset_from_vaddr(file, sym[index].st_value),
-			   sym[index].st_value, name, actual->otype);
+	   if (display_object(file, s, sym + index, 
+			      actual->size, actual->off,
+			      elfsh_get_foffset_from_vaddr(file, sym[index].st_value),
+			      sym[index].st_value, name, actual->otype) == -1)
+	     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	  }
       }
   

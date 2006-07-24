@@ -30,11 +30,12 @@ static void*		e2dbg_thread_start(void *param)
   printf(" [*] Starting thread ID %u \n", (unsigned int) pthread_self());
 #endif
 
+  /* Register the thread as started */
   if (pthread_self() != vm_dbgid_get())
     e2dbgworld.threadnbr++;
-
   cur->state = E2DBG_THREAD_STARTED;
 
+  /* Get stack information for this thread */
   pthread_getattr_np(cur->tid, &attr);
   ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
 
@@ -55,71 +56,22 @@ static void*		e2dbg_thread_start(void *param)
 }
 
 
-/* Stop all threads when a breakpoint happens */
-void		e2dbg_thread_stopall(int signum)
+/* Only called when running a monothread program */
+int		e2dbg_curthread_init(void *start)
 {
-  hashent_t     *actual;
-  e2dbgthread_t	*cur;
-  u_int         index;
-  u_int	called = rand() % 1000;
+  e2dbgthread_t	*new;
+  char		*key;
 
-#if __DEBUG_THREADS__
-  printf(" [*] Stopping all user threads \n");
-#endif
-
-#if __DEBUG_THREADS__
-  printf("******** [%u] STOPALL (%u) threads [cur = %u [cnt = %u] dbg = %u ] ******* \n", 
-	 called, e2dbgworld.threadnbr, (unsigned int) e2dbgworld.stoppedpid, 
-	 e2dbgworld.curthread->count, vm_dbgid_get());
-#endif
-
-  for (index = 0; index < e2dbgworld.threads.size; index++)
-    for (actual = &e2dbgworld.threads.ent[index]; 
-	 actual != NULL && actual->key != NULL; actual = actual->next)
-      {
-	cur = actual->data;
-	if (cur->tid != vm_dbgid_get() && cur->tid != e2dbgworld.stoppedpid)
-	  {
-#if __DEBUG_THREADS__
-	    printf(" [%u] Sending %s to thread ID %u \n", called,
-		   (signum == SIGSTOP ? "SIGSTOP" : "SIGUSR2"),
-		   (unsigned int) cur->tid);
-#endif
-	    pthread_kill(cur->tid, signum);
-	  }
-      }
-
-#if __DEBUG_THREADS__
-  printf("--------- END OF STOPALL %u ------------ \n", called);
-#endif
-}
-
-
-/* Continue all threads after a breakpoint */
-void		e2dbg_thread_contall()
-{
-  hashent_t     *actual;
-  e2dbgthread_t	*cur;
-  u_int         index;
-
-#if __DEBUG_THREADS__
-  printf(" [*] Continuing all threads (curthread count = %u) \n",
-	 e2dbgworld.curthread ? e2dbgworld.curthread->count : 42);
-#endif
-
-  for (index = 0; index < e2dbgworld.threads.size; index++)
-    for (actual = &e2dbgworld.threads.ent[index]; 
-	 actual != NULL && actual->key != NULL; actual = actual->next)
-      {
-	cur = actual->data;
-	if (cur->tid != vm_dbgid_get())
-	  {
-#if __DEBUG_THREADS__
-	    printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
-#endif
-	    pthread_kill(cur->tid, SIGCONT);
-	  }
-      }
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(new, sizeof(e2dbgthread_t), -1);
+  XALLOC(key, 15, -1);
+  snprintf(key, 15, "%u", (unsigned int) getpid());
+  new->tid   = (unsigned int) getpid();
+  new->entry = (void *) e2dbgworld.real_main;
+  time(&new->stime);
+  hash_add(&e2dbgworld.threads, key, new);
+  e2dbgworld.curthread = new;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -211,7 +163,11 @@ int		cmd_threads()
       if (!cur)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown thread", (-1));
+
+      /* Save modified registers in the current thread, and load the new registers set */
+      e2dbg_setregs();
       e2dbgworld.curthread = cur;
+      e2dbg_getregs();
       snprintf(logbuf, BUFSIZ, " [*] Switched to thread %u \n\n", 
 	       atoi(world.curjob->curcmd->param[0]));
       vm_output(logbuf);
@@ -273,3 +229,107 @@ int		cmd_threads()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+
+/* Stop all threads when a breakpoint happens */
+void		e2dbg_thread_stopall(int signum)
+{
+  hashent_t     *actual;
+  e2dbgthread_t	*cur;
+  u_int         index;
+
+#if __DEBUG_THREADS__
+  u_int	called = rand() % 1000;
+
+  printf(" [*] Stopping all user threads \n");
+  printf("******** [%u] STOPALL (%u) threads [cur = %u [cnt = %u] dbg = %u ] ******* \n", 
+	 called, e2dbgworld.threadnbr, (unsigned int) e2dbgworld.stoppedthread->tid, 
+	 e2dbgworld.curthread->count, vm_dbgid_get());
+#endif
+
+  for (index = 0; index < e2dbgworld.threads.size; index++)
+    for (actual = &e2dbgworld.threads.ent[index]; 
+	 actual != NULL && actual->key != NULL; actual = actual->next)
+      {
+	cur = actual->data;
+
+	/* Do not get the context of initializing threads */
+	if (cur->state == E2DBG_THREAD_INIT && signum == SIGUSR2)
+	  signum = SIGSTOP;
+
+	/* Do not kill the debugger or the breaking thread */
+	if (cur->tid != vm_dbgid_get() && cur->tid != e2dbgworld.stoppedthread->tid)
+	  {
+#if __DEBUG_THREADS__
+	    printf(" [%u] Sending %s to thread ID %u \n", called,
+		   (signum == SIGSTOP ? "SIGSTOP" : "SIGUSR2"),
+		   (unsigned int) cur->tid);
+#endif
+	    /* If we want to send a SIGUSR2, increment the number of contexts to get */
+	    /* In case the thread is already stopped, send a CONT signal first */
+	    if (signum == SIGUSR2)
+	      {
+		e2dbgworld.threadgotnbr++;
+		if (cur->state == E2DBG_THREAD_STOPPING || cur->state == E2DBG_THREAD_BREAKUSR2)
+		  {
+		    cur->state = E2DBG_THREAD_RUNNING;
+		    pthread_kill(cur->tid, SIGCONT);
+		  }
+	      }
+
+	    /* Else change the state of the thread */
+	    else if (signum == SIGSTOP)
+	      cur->state = E2DBG_THREAD_STOPPING;
+
+	    /* Send the signal */
+	    pthread_kill(cur->tid, signum);
+	  }
+      }
+
+#if __DEBUG_THREADS__
+  printf("--------- END OF STOPALL %u ------------ \n", called);
+#endif
+}
+
+
+
+
+
+/* Continue all threads after a breakpoint */
+void		e2dbg_thread_contall()
+{
+  hashent_t     *actual;
+  e2dbgthread_t	*cur;
+  u_int         index;
+
+#if 1 //__DEBUG_THREADS__
+  printf(" [*] Continuing all threads (curthread count = %u) \n",
+	 e2dbgworld.curthread ? e2dbgworld.curthread->count : 42);
+#endif
+
+  /* Wake up the breaking thread in first */
+  pthread_kill(e2dbgworld.curthread->tid, SIGCONT);
+
+#if __DEBUG_THREADS__
+  printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
+#endif
+
+  /* Wake up all other threads after */
+  for (index = 0; index < e2dbgworld.threads.size; index++)
+    for (actual = &e2dbgworld.threads.ent[index]; 
+	 actual != NULL && actual->key != NULL; actual = actual->next)
+      {
+	cur = actual->data;
+	if (cur->tid != vm_dbgid_get() && cur->tid != e2dbgworld.curthread->tid)
+	  {
+#if __DEBUG_THREADS__
+	    printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
+#endif
+	    cur->state = E2DBG_THREAD_RUNNING;
+	    pthread_kill(cur->tid, SIGCONT);
+	  }
+      }
+}
+

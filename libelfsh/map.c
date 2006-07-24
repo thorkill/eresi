@@ -86,12 +86,13 @@ int		elfsh_read_obj(elfshobj_t *file)
 	  actual->next->shdr->sh_offset - actual->shdr->sh_offset;
       
       /* If the section data has to be loaded, load it */
+      /* In case of bss, only load if BSS data is inserted in the file */
       if (actual->data == NULL && actual->shdr->sh_size)
 	{
-
-	  if (actual->shdr->sh_type == SHT_NOBITS ||
-	      (actual->next != NULL &&
-	       actual->next->shdr->sh_offset == actual->shdr->sh_offset))
+	  
+	  if ((actual->shdr->sh_type == SHT_NOBITS && 
+	       actual->shdr->sh_offset == actual->next->shdr->sh_offset) ||
+	      (actual->next != NULL && actual->next->shdr->sh_offset == actual->shdr->sh_offset))
 	    continue;
 	  
 #if __DEBUG_MAP__
@@ -122,6 +123,9 @@ int		elfsh_read_obj(elfshobj_t *file)
   }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
 
 
 /* Called from elfsh_fixup_symtab */
@@ -187,6 +191,8 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, symtab);
 }
+
+
 
 
 /* Map in memory all ressources for this file */

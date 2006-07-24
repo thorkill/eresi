@@ -25,6 +25,7 @@ void		vm_dbgid_set(u_int pid)
 #endif
 }
 
+/* Get the Debugger thread ID */
 u_int		vm_dbgid_get()          
 { 
 #if __DEBUG_E2DBG__
@@ -47,12 +48,14 @@ void		*malloc(size_t t)
 {
   void		*(*mallocptr)();
   void		*chunk;
+#if __DEBUG_EMALLOC__
+  char		buf[256];
+  u_int		len;
+#endif
 
 #if __DEBUG_EMALLOC__
-  write(1, "Calling HOOKED malloc\n", 22);
+  write(2, "Calling HOOKED malloc\n", 22);
 #endif
-  
-  //e2dbg_self();
 
   if (!e2dbgworld.syms.mallocsym)
     e2dbg_dlsym_init();
@@ -60,31 +63,33 @@ void		*malloc(size_t t)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;41m", 7);
-      write(1, "LIBC malloc used\n", 17);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;41m", 7);
+      write(2, "LIBC malloc used\n", 17);
+      write(2, "\033[00m", 5);
 #endif
       mallocptr = (void *) e2dbgworld.syms.mallocsym;
       if (!e2dbgworld.syms.mallocsym)
 	{
-	  write(1, " [!] Unable to use original malloc \n", 36);
+	  write(2, " [!] Unable to use original malloc \n", 36);
 	  return (NULL);
 	}
       chunk = mallocptr(t);
     }
   else
     {
-#if __DEBUG_EMALLOC__
-      write(1, "E2DBG malloc used\n", 18);
-#endif
       chunk = elfsh_malloc(t);
+#if __DEBUG_EMALLOC__
+      len = snprintf(buf, sizeof(buf), "E2DBG malloc used [ret = %08X, len = %u] \n", 
+		     (elfsh_Addr) chunk, t);
+      write(2, buf, len);
+#endif
     }
   
   if (!chunk)
-    write(1, " [!] Malloc failed \n", 20);
+    write(2, " [!] Malloc failed \n", 20);
 
 #if __DEBUG_EMALLOC__
-  write(1, "Finished HOOKED malloc\n", 23);
+  write(2, "Finished HOOKED malloc\n", 23);
 #endif
 
   return (chunk);
@@ -100,7 +105,7 @@ void		*valloc(size_t t)
   void		*chunk;
 
 #if __DEBUG_EMALLOC__
-  write(1, "Calling HOOKED valloc\n", 22);
+  write(2, "Calling HOOKED valloc\n", 22);
 #endif
 
   if (!e2dbgworld.syms.vallocsym)
@@ -109,14 +114,14 @@ void		*valloc(size_t t)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;41m", 7);
-      write(1, "LIBC valloc used\n", 17);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;41m", 7);
+      write(2, "LIBC valloc used\n", 17);
+      write(2, "\033[00m", 5);
 #endif
       vallocptr = (void *) e2dbgworld.syms.vallocsym;
       if (!e2dbgworld.syms.vallocsym)
 	{
-	  write(1, " [!] Unable to use original valloc \n", 36);
+	  write(2, " [!] Unable to use original valloc \n", 36);
 	  return (NULL);
 	}
       chunk = vallocptr(t);
@@ -124,16 +129,16 @@ void		*valloc(size_t t)
   else
     {
 #if __DEBUG_EMALLOC__
-      write(1, "E2DBG valloc used\n", 18);
+      write(2, "E2DBG valloc used\n", 18);
 #endif
       chunk = (void *) elfsh_valloc(t);
     }
   
   if (!chunk)
-    write(1, " [!] Valloc failed \n", 20);
+    write(2, " [!] Valloc failed \n", 20);
 
 #if __DEBUG_EMALLOC__
-  write(1, "Finished HOOKED valloc\n", 23);
+  write(2, "Finished HOOKED valloc\n", 23);
 #endif
 
   return (chunk);
@@ -158,7 +163,7 @@ void		*calloc(size_t t, u_int nbr)
 #if __DEBUG_EMALLOC__
   u_int		len;
 
-  write(1, "Calling HOOKED calloc \n", 23);
+  write(2, "Calling HOOKED calloc \n", 23);
 #endif
 
   /*
@@ -177,9 +182,9 @@ void		*calloc(size_t t, u_int nbr)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;32m", 7);
-      write(1, "LIBC calloc used\n", 17);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;32m", 7);
+      write(2, "LIBC calloc used\n", 17);
+      write(2, "\033[00m", 5);
 #endif
 
       /*
@@ -194,36 +199,37 @@ void		*calloc(size_t t, u_int nbr)
 
       if (!callocptr)
 	{
-	  write(1, " [!] Unable to use original calloc \n", 36);
+	  write(2, " [!] Unable to use original calloc \n", 36);
 	  return (NULL);
 	}
 
-      //write(1, "Calling libc calloc \n", 20);
+      //write(2, "Calling libc calloc \n", 20);
 
 #if __DEBUG_EMALLOC__
       {
 	char buff[256];
 	len = snprintf(buff, sizeof(buff), "Calling LIBC calloc at addr %08X\n", 
-		       callocptr);
-	write(1, buff, len);
+		       (elfsh_Addr) callocptr);
+	write(2, buff, len);
       } 
 #endif
 
       chunk = callocptr(t * nbr);
-      write(1, "Libc m/calloc returned\n", 23);
+      write(2, "Libc m/calloc returned\n", 23);
       if (chunk)
 	memset(chunk, 0x00, t * nbr);
     }
   else
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;31m", 7);
-      write(1, "E2DBG calloc used\n", 18);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;31m", 7);
+      write(2, "E2DBG calloc used\n", 18);
+      write(2, "\033[00m", 5);
 #endif
-      chunk = elfsh_calloc(t, nbr);
-      //if (chunk)
-      //memset(chunk, 0x00, t * nbr);
+      //chunk = elfsh_calloc(t, nbr);
+      chunk = elfsh_malloc(t * nbr);
+      if (chunk)
+	memset(chunk, 0x00, t * nbr);
     }
 
 #if __DEBUG_EMALLOC__
@@ -232,16 +238,16 @@ void		*calloc(size_t t, u_int nbr)
       char buff[256];
       len = snprintf(buff, sizeof(buff), " ! Calloc failed (%u * %u sz) \n", 
 		     t, nbr);
-      write(1, buff, len);
+      write(2, buff, len);
     }
   else
     {
       char buff[256];
       len = snprintf(buff, sizeof(buff), " Calloc (%u * %u sz) returned %08X\n", 
-		     t, nbr, chunk);
-      write(1, buff, len);
+		     t, nbr, (elfsh_Addr) chunk);
+      write(2, buff, len);
     }
-  write(1, "Finished HOOKED calloc \n", 24);
+  write(2, "Finished HOOKED calloc \n", 24);
 #endif
 
   return (chunk);
@@ -260,7 +266,7 @@ void		*memalign(size_t t, u_int nbr)
 #if __DEBUG_EMALLOC__
   u_int		len;
 
-  write(1, "Calling HOOKED memalign \n", 23);
+  write(2, "Calling HOOKED memalign \n", 23);
 #endif
 
   if (!e2dbgworld.syms.memalignsym)
@@ -269,9 +275,9 @@ void		*memalign(size_t t, u_int nbr)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;32m", 7);
-      write(1, "LIBC memalign used\n", 17);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;32m", 7);
+      write(2, "LIBC memalign used\n", 17);
+      write(2, "\033[00m", 5);
 #endif
 
       /*
@@ -287,7 +293,7 @@ void		*memalign(size_t t, u_int nbr)
       
       if (!memalignptr)
 	{
-	  write(1, " [!] Unable to use original memalign \n", 36);
+	  write(2, " [!] Unable to use original memalign \n", 36);
 	  return (NULL);
 	}
       chunk = (void *) memalignptr(t, nbr);
@@ -295,9 +301,9 @@ void		*memalign(size_t t, u_int nbr)
   else
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;31m", 7);
-      write(1, "E2DBG memalign used\n", 18);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;31m", 7);
+      write(2, "E2DBG memalign used\n", 18);
+      write(2, "\033[00m", 5);
 #endif
       chunk = (void *) elfsh_memalign(t, nbr);
     }
@@ -308,9 +314,9 @@ void		*memalign(size_t t, u_int nbr)
       char buff[256];
       len = snprintf(buff, sizeof(buff), " ! Memalign failed (%u * %u sz) \n", 
 		     t, nbr);
-      write(1, buff, len);
+      write(2, buff, len);
     }
-  write(1, "Finished HOOKED memalign \n", 24);
+  write(2, "Finished HOOKED memalign \n", 24);
 #endif
 
   return (chunk);
@@ -327,7 +333,7 @@ void	*realloc(void *a, size_t t)
   //e2dbg_self();
 
 #if __DEBUG_EMALLOC__
-  write(1, "Calling HOOKED realloc\n", 23);
+  write(2, "Calling HOOKED realloc\n", 23);
 #endif
 
   if (!e2dbgworld.syms.reallocsym)
@@ -336,14 +342,14 @@ void	*realloc(void *a, size_t t)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;41m", 7);
-      write(1, "LIBC realloc used\n", 18);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;41m", 7);
+      write(2, "LIBC realloc used\n", 18);
+      write(2, "\033[00m", 5);
 #endif
       reallocptr = (void *) e2dbgworld.syms.reallocsym;
       if (!e2dbgworld.syms.reallocsym)
 	{
-	  write(1, " [!] Unable to use original realloc \n", 37);
+	  write(2, " [!] Unable to use original realloc \n", 37);
 	  return (NULL);
 	}
       b = reallocptr(a, t);
@@ -351,16 +357,16 @@ void	*realloc(void *a, size_t t)
   else
     {
 #if __DEBUG_EMALLOC__
-      write(1, "E2DBG realloc used\n", 19);
+      write(2, "E2DBG realloc used\n", 19);
 #endif
       b = elfsh_realloc(a, t);
     }
   
   if (!b)
-    write(1, " [!] Realloc failed \n", 20);
+    write(2, " [!] Realloc failed \n", 20);
   
 #if __DEBUG_EMALLOC__
-  write(1, "Finished HOOKED realloc\n", 24);
+  write(2, "Finished HOOKED realloc\n", 24);
 #endif
 
   return (b);
@@ -374,7 +380,7 @@ void	free(void *a)
   //e2dbg_self();
 
 #if __DEBUG_EMALLOC__
-  write(1, "Calling HOOKED free\n", 20);
+  write(2, "Calling HOOKED free\n", 20);
 #endif
 
   if (!e2dbgworld.syms.freesym)
@@ -383,14 +389,14 @@ void	free(void *a)
   if (!vm_dbgid_get() || vm_dbgid_get() != pthread_self())
     {
 #if __DEBUG_EMALLOC__
-      write(1, "\033[1;41m", 7);
-      write(1, "LIBC free used\n", 15);
-      write(1, "\033[00m", 5);
+      write(2, "\033[1;41m", 7);
+      write(2, "LIBC free used\n", 15);
+      write(2, "\033[00m", 5);
 #endif
       freeptr = (void *) e2dbgworld.syms.freesym;
       if (!e2dbgworld.syms.freesym)
 	{
-	  write(1, " [!] Unable to use original free \n", 34);
+	  write(2, " [!] Unable to use original free \n", 34);
 	  return;
 	}
       freeptr(a);
@@ -398,13 +404,13 @@ void	free(void *a)
   else
     {
 #if __DEBUG_EMALLOC__
-      write(1, "E2DBG free used\n", 16);
+      write(2, "E2DBG free used\n", 16);
 #endif
       XFREE(a);
     }
 
 #if __DEBUG_EMALLOC__
-  write(1, "Finished HOOKED free\n", 21);
+  write(2, "Finished HOOKED free\n", 21);
 #endif
 }
 
@@ -433,7 +439,7 @@ void		_exit(int err)
     if (e2dbgworld.exited)
       {
 	if (!e2dbgworld.debuggee_exited)
-	  write(1, " [*] Legit program terminating\n\n", 32);
+	  write(2, " [*] Legit program terminating\n\n", 32);
 	e2dbgworld.debuggee_exited = 1;
 	syscall(1, 0);
 	raise(SIGKILL);
@@ -441,7 +447,7 @@ void		_exit(int err)
     else
       {
 	e2dbgworld.exited = 1;
-	write(1, " [*] Debugger exited\n", 21);
+	write(2, " [*] Debugger exited\n", 21);
 	syscall(1, 0);
 	raise(SIGKILL); 
       }
@@ -458,12 +464,12 @@ void	__libc_malloc_pthread_startup (int first_time)
     e2dbg_dlsym_init();
 
   pthstartupptr = (void *) e2dbgworld.syms.pthstartupsym;
-  write(1, "Calling __libc_malloc_pthread_startup HOOK ! \n", 46);
+  write(2, "Calling __libc_malloc_pthread_startup HOOK ! \n", 46);
   pthstartupptr(first_time);
-  write(1, "Finished LIBC pthread startup ! \n", 33);
-  write(1, "Calling __elfsh_libc_malloc_pthread_startup HOOK ! \n", 52);
+  write(2, "Finished LIBC pthread startup ! \n", 33);
+  write(2, "Calling __elfsh_libc_malloc_pthread_startup HOOK ! \n", 52);
   __elfsh_libc_malloc_pthread_startup (first_time);
-  write(1, "Finished OURS pthread startup ! \n", 33);
+  write(2,g "Finished OURS pthread startup ! \n", 33);
 }
 */
 

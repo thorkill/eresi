@@ -9,12 +9,12 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		0
-#define		__DEBUG_MUTEX__		0
+#define		__DEBUG_E2DBG__		1
+#define		__DEBUG_MUTEX__		1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
-#define		__DEBUG_THREADS__	0
+#define		__DEBUG_THREADS__	1
 
 #define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -93,7 +93,7 @@
  signal(SIGUSR2, SIG_IGN);				\
 }		while (0);
 
-#define		CLRSIG_USR1 do {				\
+#define		CLRSIG_USR1 do {			\
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
@@ -112,8 +112,8 @@
  ac.sa_flags       = SA_SIGINFO;			\
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
- /*ac.sa_sigaction   = e2dbg_sigsegv_handler;*/		\
- /*sigaction(SIGSEGV, &ac, NULL);*/			\
+ ac.sa_sigaction   = e2dbg_sigsegv_handler;      	\
+ sigaction(SIGSEGV, &ac, NULL);			        \
  ac.sa_sigaction   = e2dbg_sigint_handler;		\
  sigaction(SIGINT, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_sigstop_handler;		\
@@ -168,12 +168,11 @@ while (0)
 
 
 
+/* A mutex is just an unsigned char */
 typedef u_char elfshmutex_t;
 
 
-
-
-/* The internal object descriptor for e2dbg when resolving symbols */
+/* The internal object descriptor for e2dbg when resolving symbols before malloc is available */
 typedef	struct	s_eobj
 {
   int		fd;
@@ -256,12 +255,13 @@ typedef struct		s_e2dbgworld
   char			*displaycmd[E2DBG_STEPCMD_MAX];	/* Commands to be executed on step */
   u_short		displaynbr;			/* Number of global display cmd */
 
-  /* Current debuggee information */ 
+  /* Current debuggee threads information */ 
   elfshbp_t		*curbp;				/* Current breakpoint if any */
   e2dbgthread_t		*curthread;			/* Currently working thread */
-  u_int			stoppedpid;			/* Latest stopped thread id */
+  e2dbgthread_t		*stoppedthread;			/* Latest stopped thread */
   u_int			threadnbr;			/* Number of existing threads */
   u_int			threadsyncnbr;			/* Number of threads with contexts */
+  u_int			threadgotnbr;			/* Number of threads with retreived contexts */
 
   /* Synchronization values */
 #define			ELFSH_MUTEX_UNLOCKED	0
@@ -359,6 +359,7 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 /* e2dbg thread API */
 void		e2dbg_thread_stopall(int signum);
 void		e2dbg_thread_contall();
+int		e2dbg_curthread_init();
 int		pthread_attr_getstack(__const pthread_attr_t *__restrict __attr,
 				      void **__restrict __stackaddr,
 				      size_t *__restrict __stacksize);

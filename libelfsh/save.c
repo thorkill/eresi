@@ -225,7 +225,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
     {
       pht = alloca(file->hdr->e_phnum * file->hdr->e_phentsize);
       memcpy(pht, file->pht, file->hdr->e_phnum * file->hdr->e_phentsize);
-      elfsh_cleanup_bss(file, pht);
+      //elfsh_cleanup_bss(file, pht);
       elfsh_endianize_pht(pht, file->hdr->e_ident[EI_DATA], file->hdr->e_phnum);
       XSEEK(fd, file->hdr->e_phoff, SEEK_SET, -1);
       XWRITE(fd, pht, file->hdr->e_phentsize * file->hdr->e_phnum, -1);

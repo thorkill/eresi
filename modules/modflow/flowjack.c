@@ -26,6 +26,9 @@ int			cmd_flowjack(void)
   unsigned long		new_addr;
   u_int			value;
 
+  elfshobj_t		*file;
+  char			*param;
+
   sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0);
   if (!sect)
     {
@@ -48,7 +51,10 @@ int			cmd_flowjack(void)
     puts(" * .control section already loaded\n");
   blk_list = sect->altdata;
 
-  if ((sym = elfsh_get_metasym_by_name(world.curjob->current, world.curjob->curcmd->param[0])))
+  file  = world.curjob->current;
+  param = world.curjob->curcmd->param[0];
+  sym = elfsh_get_metasym_by_name(file, param);
+  if (sym)
     addr = sym->st_value;
   else
     addr = strtoul(world.curjob->curcmd->param[0], 0, 16);

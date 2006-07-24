@@ -18,10 +18,9 @@ void		e2dbg_start_proc()
     printf(" [*] Debugger unlocked MUTEX-ACK and allow the debuggee to continue\n");
 #endif
 
-  //if (e2dbgworld.curthread && e2dbgworld.curthread->count == 0)
-    e2dbg_thread_contall();
-
   /*
+  if (e2dbgworld.curthread && e2dbgworld.curthread->count == 2)
+    e2dbg_thread_contall();
   else if (!e2dbgworld.curthread)
     printf(" [*] e2dbg_start_proc -NOT- doing CONTALL because curthread = NULL\n");
   else
@@ -39,6 +38,7 @@ void		e2dbg_start_proc()
   
   world.curjob->current->running = 1;
 }
+
 
 /* Start cmd */
 int		cmd_start()
@@ -68,9 +68,18 @@ int	cmd_cont()
 
   if (!world.state.vm_quiet)
     vm_output(" [*] Continuing process\n");
-  e2dbg_setregs();
+
+  /* Set back the current thread to the stopped thread */
+  if (e2dbgworld.stoppedthread->tid != e2dbgworld.curthread->tid)
+    {
+      e2dbg_setregs();
+      e2dbgworld.curthread = e2dbgworld.stoppedthread;
+    }
+  else
+    e2dbg_setregs();
+
+  /* Restart the debuggee */
   e2dbg_start_proc();
- 
   if (!e2dbgworld.curthread->step)
     {
       e2dbg_start_proc();

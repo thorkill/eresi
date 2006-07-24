@@ -8,14 +8,13 @@
 				ELFsh TODO phile       #
                                 ########################
 
-	. TLS API (+ stop all threads on breakpoint)
+	. TLS variables API
 	. Use MMAP_FIXED mappings in debugger heap
 	. Better rights than rwx for runtime injected phdr (try double-map)
 	. Fix all warnings on all OS and (re)compile on HPUX
 
 [quick]	. Use sigaction's context to populate reg's var on SIGINT/SIGSEGV
 [quick]	. be able to change the compiler and compiling options
-!!!	. EXTSTATIC : re-use existing PT_LOADs
 !!!	. Multiple BSS : symbol injected many times in find_bsslen (fixup_sctndx really useful ?)
 !!!	. Put doxygen comments and generate the ELF shell reference manual
 !!!	. Update manpage

@@ -18,10 +18,13 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   e2dbgparams_t		params;
   char			*args[3];
   char			*pn;
+
+  char			logbuf[BUFSIZ];
+  unsigned int		len;
+
 #if __DEBUG_E2DBG__
   int idx;
 #endif
-
 
 #if defined(__FreeBSD__)
   pn = __progname;
@@ -64,19 +67,24 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, " [*] Debuggee Cannot lock final dbgack mutex ! \n", 48);
   
-  /* Recall the original function */
-  SETSIG;
-  
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] Calling ON_EXIT \n", 46);
 #endif
 
+  /* Initialize current thread information if we are debugging a monothread program */
+  if (e2dbgworld.curthread == NULL)
+    e2dbg_curthread_init();
+
   /* Wait for debuggee exit */
   on_exit((void *) wait4exit, NULL);
+  SETSIG;
 
-
-#if __DEBUG_E2DBG__
-  write(1, "[(e2dbg)__libc_start_main] Calling back main \n", 46);
+#if 1 //__DEBUG_E2DBG__
+  len = snprintf(logbuf, BUFSIZ, 
+		 "[(e2dbg)__libc_start_main] Calling main (%08X) with curthread = %08X (id = %u) \n", 
+		 (elfsh_Addr) e2dbgworld.real_main, (elfsh_Addr) e2dbgworld.curthread, 
+		 (unsigned int) getpid());
+  write(1, logbuf, len);
 #endif
 
   /* Call the original main */
@@ -133,13 +141,9 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
     write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 
-  //__asm__(".long 0xCCCCCCCC");
-  //raise(SIGSTOP);
-
 #if __DEBUG_E2DBG__
-  write(1, "[(e2dbg)__libc_start_main] there 3\n", 35);
+  write(1, "[(e2dbg)__libc_start_main] there 3 \n", 35);
 #endif
-
 
   e2dbgworld.real_main = main;
   ret = libcstartmain(e2dbg_fake_main, argc, ubp_av, init, 

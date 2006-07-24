@@ -64,11 +64,21 @@ int		cmd_got()
 		   (off[0] && name && offset ? off : ""));
 
 	  if (!tmp || (tmp && !regexec(tmp, buff, 0, 0, 0)))
-	    vm_output(buff);
-
+	    switch (vm_output(buff))
+	      {
+	      case -1:
+		vm_endline();
+		vm_output("\n");
+		ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	      case -2:
+		vm_endline();
+		goto next;
+	      }
+	  
 	  vm_endline();
 	}
       
+    next:
       got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, &size);
       vm_output("\n");
     }

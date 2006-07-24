@@ -18,7 +18,7 @@ void			vm_log(char *str)
   if (!str || !world.curjob ||
       !world.curjob->io.outcache.lines ||
       !world.curjob->io.outcache.cols)
-    return;
+    ELFSH_NOPROFILE_OUT();
 
   /* Clean color parts */
   len = strlen(str);
@@ -141,7 +141,7 @@ void			vm_log(char *str)
 #undef head
 
 
-  //ELFSH_NOPROFILE_ROUT();
+  ELFSH_NOPROFILE_OUT();
 }
 
 

@@ -47,6 +47,7 @@
 #include <pthread.h>
 
 #include <libelfsh.h>
+#include <libui.h>
 
 #if defined(ELFSHNET)
  #include <libdump.h>
@@ -172,8 +173,8 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a8"
-#define ELFSH_EDITION		"moto"
+#define	ELFSH_RELEASE		"a9"
+#define ELFSH_EDITION		"anjo"
 
 /* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT	"\033[00;01;30m(" \

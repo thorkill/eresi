@@ -87,6 +87,7 @@ typedef struct Struct_Obj_Entry {
     size_t tlssize;             /* Size of TLS block for this module */
     size_t tlsoffset;           /* Offset of static TLS block for this module */
     size_t tlsalign;            /* Alignment of static TLS block */
+
     /* Items from the dynamic section. */
     u_int32_t *pltgot;           /* PLT or GOT, depending on architecture */
     const u_int32_t *rel;         /* Relocation entries */

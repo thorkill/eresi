@@ -165,7 +165,7 @@ int		vm_execmd()
   curjob = world.curjob;
 
   /* Curcmd acts like a $PC register */
-  for (err = 0, cur = curjob->script[curjob->sourced]; cur; 
+  for (err = 0, curjob->curcmd = cur = curjob->script[curjob->sourced]; cur; 
        curjob->curcmd = cur = cur->next)
     if (cur->cmd != NULL && cur->cmd->exec != NULL)
       {

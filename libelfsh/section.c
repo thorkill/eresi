@@ -1066,7 +1066,7 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
 
   if (sect == NULL || sect->shdr == NULL || sect->data == NULL || data == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL paramater", -1);
+		      "Invalid NULL parameter", -1);
 
   if (sizelem == 0)
     sizelem = 1;
