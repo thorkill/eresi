@@ -59,7 +59,7 @@ int		vm_bt()
       /* Just insert the real entry point where we reach the thread entry point of e2dbg */
       if (strstr(name, "e2dbg_thread_start"))
 	{
-	  snprintf(logbuf, BUFSIZ - 1, "%u", e2dbgworld.stoppedthread->tid);
+	  snprintf(logbuf, BUFSIZ - 1, "%u", (unsigned int) e2dbgworld.stoppedthread->tid);
 	  t = hash_get(&e2dbgworld.threads, logbuf);
 	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, &off2);
 	  if (name2)

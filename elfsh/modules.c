@@ -218,6 +218,7 @@ int		vm_modlist()
 
 void * dlopen(const char *pathname, int mode)
 {
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "DLOPEN unavailable in static built", (NULL));
 }
