@@ -12,6 +12,7 @@
 void			vm_log(char *str)
 {
   u_int			i, pos, len = 0;
+	int				check = 0;
 
   ELFSH_NOPROFILE_IN();
 
@@ -62,13 +63,11 @@ void			vm_log(char *str)
       world.curjob->screen.buf;
 
     }
-
   /* reallocate the screen buffer when term size changes */
   else if (world.curjob->screen.x != world.curjob->io.outcache.cols ||
 	   world.curjob->screen.y != world.curjob->io.outcache.lines)
     {
       XFREE(world.curjob->screen.buf);
-
       XALLOC(world.curjob->screen.buf,
 	     world.curjob->io.outcache.lines *
 	     world.curjob->io.outcache.cols + 1, );
@@ -92,7 +91,11 @@ void			vm_log(char *str)
       if (tail + strlen(str) > buf + scrsize)
 	{
 	  snprintf(tail, scrsize - (tail - buf), "%s", str);
-	  snprintf(buf, strlen(str) - scrsize - (tail - buf), "%s", str);
+		check = strlen(str) - (scrsize - (tail - buf));
+		if(check < 0) return;
+
+	  snprintf(buf, check, "%s", str);
+
 	  tail = buf + strlen(str) - ((scrsize + buf) - tail);
 
 
@@ -121,7 +124,9 @@ void			vm_log(char *str)
 	  if (tail + strlen(str) > buf + scrsize)
 	    {
 	      snprintf(tail, scrsize - (tail - buf), "%s", str);
-	      snprintf(buf, strlen(str) - scrsize - (tail - buf), "%s", str);
+				check = strlen(str) - (scrsize - (tail - buf));
+				if(check < 0) return;
+	      snprintf(buf, check, "%s", str);
 	      tail = buf + strlen(str) - ((scrsize + buf) - tail);
 
 	      if (tail > head)
