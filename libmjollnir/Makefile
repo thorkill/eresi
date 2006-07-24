@@ -2,7 +2,7 @@
 # LibMjollnir Makefile
 # (C) 2006 Asgard Labs, thorolf
 # BSD License 
-# $Id: Makefile,v 1.9 2006-07-20 17:27:02 thor Exp $
+# $Id: Makefile,v 1.10 2006-07-24 18:47:52 thor Exp $
 #
 
 include ../config.h
@@ -44,10 +44,10 @@ CC=gcc -ggdb -g3
 NAME=libmjollnir
 
 all: $(OBJ)
-	@ar rc ${NAME}.a ${OBJ} 
 	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so
+	@ar rc ${NAME}.a ${OBJ} 
 	@ranlib ${NAME}.a
-	$(CC) $(CFLAGS) $(SRCT) -o $(OBJT) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(SRCT) -o $(OBJT) $(LDFLAGS) $(STATOPT)
 # comment this out if you don't want to make unittests 
 #	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
 

@@ -214,7 +214,7 @@ int		vm_modlist()
 
 
 /* In case linked in static */
-#if USE_STATIC
+#if USE_STATIC && !defined(__FreeBSD__)
 
 void * dlopen(const char *pathname, int mode)
 {

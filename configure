@@ -106,7 +106,7 @@ M64="1"
 echo  " [*] Enabling libmjollnir"
 echo  "#define USE_MJOLLNIR 1"		>> $LIBVARSFILE
 echo  "#define USE_MJOLLNIR 1"		>> $VARSFILE
-echo  "LDMJOLLNIR	= -lmjollnir -lssl"	>> $CONFIGFILE
+echo  "LDMJOLLNIR	= -lmjollnir -lcrypto "	>> $CONFIGFILE
 LIBMJOLLNIR="1"
 ;;
 

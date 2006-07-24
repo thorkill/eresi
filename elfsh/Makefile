@@ -31,7 +31,7 @@ LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
 			$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
 			-g3 $(LDASMOPT) -L../libmalloc -L../libmjollnir/ -lmalloc-e2dbg $(LDMJOLLNIR)\
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) \
-			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) -lssl
+			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 
 all		       	: $(OBJ)
