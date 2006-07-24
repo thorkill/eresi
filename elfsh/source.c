@@ -203,7 +203,7 @@ int	vm_exec_str(char *str)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   nbr = vm_findblanks(str);
-  av = vm_doargv(nbr, &ac, str);
+  av = vm_doargv(nbr, (u_int *)&ac, str);
   if (vm_parseopt(ac, av) < 0)
     {
       XFREE(av);

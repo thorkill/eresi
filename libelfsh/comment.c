@@ -14,7 +14,7 @@
 elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 {
   elfshsect_t		*new;
-  u_int			size;
+  int			size;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

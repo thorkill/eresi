@@ -367,9 +367,9 @@ int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 /* Get the base virtual address for an object */
 elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
 {
-  u_int		nbr;
-  u_int		index;
-  elfsh_Addr   	vaddr;
+  int					nbr;
+  u_int				index;
+  elfsh_Addr  vaddr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

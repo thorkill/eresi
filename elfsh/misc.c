@@ -73,7 +73,7 @@ int		vm_system(char *cmd)
   
   /* If the user shell is unspecified we use system */
   nbr = vm_findblanks(cmd);
-  av = vm_doargv(nbr, &argc, cmd);
+  av = vm_doargv(nbr, (u_int *)&argc, cmd);
   av++;
   if (!fork())
     ret = execvp(av[0], av);

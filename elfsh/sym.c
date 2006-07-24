@@ -153,7 +153,7 @@ int		cmd_sym()
   elfshsect_t	*sct;
   elfsh_Sym	*symtab;
   regex_t	*tmp;
-  u_int		num;
+  int		num;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -181,7 +181,7 @@ int		cmd_dynsym()
   elfshsect_t	*sct;
   elfsh_Sym	*dynsym;
   regex_t	*tmp;
-  u_int		num;
+  int		num;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

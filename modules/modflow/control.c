@@ -42,7 +42,7 @@ u_int			trace_start(elfshobj_t *obj, char *buf,
   for (dis = stop = 0; !stop; dis += ilen) 
     {
 
-      ilen = asm_read_instr(&ins, buf + dis, len - dis, &world.proc);
+      ilen = asm_read_instr(&ins, (u_char *)buf + dis, len - dis, &world.proc);
 
       if (!dis) {
 	switch(ins.instr) 

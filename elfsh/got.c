@@ -29,7 +29,8 @@ int		cmd_got()
   FIRSTREGX(tmp);
 
   index2 = 0;
-  if ((got = elfsh_get_got_by_idx(world.curjob->current, index2, &size)) == NULL)
+  if ((got = elfsh_get_got_by_idx(world.curjob->current, index2, (u_int *)&size))
+		 	== NULL)
     RET(-1);
   
   /* Loop on all .got */
@@ -79,7 +80,7 @@ int		cmd_got()
 	}
       
     next:
-      got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, &size);
+      got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, (u_int *)&size);
       vm_output("\n");
     }
 

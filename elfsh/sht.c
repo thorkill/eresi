@@ -118,7 +118,7 @@ int		vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag)
 int		cmd_sht()
 {
   elfsh_Shdr	*shdr;
-  u_int		num;
+  int		num;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -141,7 +141,7 @@ int		cmd_sht()
 int		cmd_rsht()
 {
   elfsh_Shdr	*shdr;
-  u_int		num;
+  int		num;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

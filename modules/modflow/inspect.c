@@ -96,7 +96,7 @@ int	inspect_cmd() {
     {
       
       
-      num = asm_read_instr(&ins, buffer + index, 
+      num = asm_read_instr(&ins, (u_char *)buffer + index, 
 			   blk->size - index, &world.proc);
       str = asm_display_instr_att(&ins, blk->vaddr + index);
       printf("%8x:\t%s\n", blk->vaddr + index, str);

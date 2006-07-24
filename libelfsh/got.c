@@ -13,7 +13,7 @@
 int		elfsh_shift_got(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*got;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
   elfsh_Addr	*addr;
 
@@ -42,8 +42,8 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
 int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*got;
-  u_int		nbr;
-  u_int		idx;
+  int					nbr;
+  u_int				idx;
   elfsh_Addr	*addr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -302,7 +302,7 @@ elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got,
 /* Return a entry giving its parent and its index */
 elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 {
-  u_int		nbr;
+  int		nbr;
   u_int		index;
   elfsh_Addr	*got;
   elfsh_Sym	*sym;

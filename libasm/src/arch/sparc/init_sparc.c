@@ -40,18 +40,18 @@ int     fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
     {
       if (MGETBIT(converted, 30) == 1)
 	{
-	  return sparc_decode_call(ins, (char*) &converted, len, proc);
+	  return sparc_decode_call(ins, (u_char *)&converted, len, proc);
 	}
       else
 	{
 	  if (MGETBIT(converted, 24) == 1)
-	    return sparc_decode_sethi(ins, (char*) &converted, len, proc);
+	    return sparc_decode_sethi(ins, (u_char*) &converted, len, proc);
 	  else
 	    {
 	      if (MGETBIT(converted, 23) == 1)
-		return sparc_decode_branch(ins, (char*) &converted, len, proc);
+		return sparc_decode_branch(ins, (u_char*) &converted, len, proc);
 	      else
-		return sparc_decode_other(ins, (char*) &converted, len, proc);
+		return sparc_decode_other(ins, (u_char*) &converted, len, proc);
 	    }
 	  
 	}
@@ -59,9 +59,9 @@ int     fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   else
     {
       if (MGETBIT(converted, 13))
-	return (sparc_decode_format3_imm(ins, (char*) &converted, len, proc));
+	return (sparc_decode_format3_imm(ins, (u_char*) &converted, len, proc));
       else
-	return (sparc_decode_format3_rs(ins, (char*) &converted, len, proc));
+	return (sparc_decode_format3_rs(ins, (u_char*) &converted, len, proc));
     }
   printf("[DEBUG_SPARC] fetch_sparc:impossible execution path\n");
   return (-1);

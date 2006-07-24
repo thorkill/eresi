@@ -717,7 +717,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) || defined(sun)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     &e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
+		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
@@ -741,7 +741,7 @@ elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) || defined(sun)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     &e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
+		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }

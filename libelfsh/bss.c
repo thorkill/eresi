@@ -266,7 +266,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   elfshsect_t	*host_symtab;
   elfsh_Sym	*symtab;
   elfsh_Sym	new;
-  u_int		size;
+  int		size;
   u_int		index;
   char		*name;
   char		buff[BUFSIZ];

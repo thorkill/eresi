@@ -98,7 +98,7 @@ int			cmd_flowjack(void)
       elfsh_raw_read(world.curjob->current, 
 		     elfsh_get_foffset_from_vaddr(world.curjob->current, cal->vaddr),
 		     buffer, to_hijack->size - (cal->vaddr - to_hijack->vaddr));
-      asm_read_instr(&ins, buffer, 
+      asm_read_instr(&ins, (u_char *)buffer, 
 		     to_hijack->size - (cal->vaddr - to_hijack->vaddr),
 		     &world.proc);
       puts(" * would patch -> ");

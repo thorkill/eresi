@@ -306,7 +306,7 @@ int		vm_run(int ac, char **av)
       update_col(0);
 
       /* We will handle SIGWINCH */
-      signal(SIGWINCH, update_col);
+      signal(SIGWINCH, (void*)update_col);
       rl_catch_sigwinch = 0;
       rl_set_signals();
     }

@@ -54,7 +54,7 @@ elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*dtors;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
   elfsh_Addr	*addr;
 
@@ -74,14 +74,9 @@ int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
-
-
-
 /* Modify a DTORS entry */
 int		elfsh_set_dtors_entry_by_index(elfshobj_t	*file, 
-					       int		index, 
-					       elfsh_Addr      	addr)
+					       int		index, elfsh_Addr      	addr)
 {
   int		nbr;
   elfsh_Addr	*dtors;
@@ -130,7 +125,7 @@ elfsh_Addr     	*elfsh_get_dtors_entry_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
   elfsh_Addr	*dtors;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

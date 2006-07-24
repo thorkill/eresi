@@ -37,9 +37,9 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 void		*elfsh_get_stab(elfshobj_t *file, int *num)
 {
   elfshsect_t	*sect;
-  u_int		strindex;
-  u_int		index;
-  u_int		nbr;
+  int		strindex;
+  int		index;
+  int		nbr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   /* Fill the stab table */
@@ -47,7 +47,7 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
     {
 
       sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_STAB,
-				       &index, &strindex, &nbr);
+					&index, &strindex, &nbr);
       if (NULL == sect)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get STABS by name", NULL);

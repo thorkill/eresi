@@ -201,7 +201,7 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
    }
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, buff + index, size - index + 10, 
+  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + 10, 
 		       world.curjob->proc);
   s = (!ret ? "(bad)" : 
        asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
@@ -373,7 +373,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  //printf("third step passed, trying parent section on addr %08X \n", loff);
 	  
 	  /* If the target pointer is not valid */
-	  targ = elfsh_get_parent_section(file, loff, &off);
+	  targ = elfsh_get_parent_section(file, loff, (elfsh_SAddr *) &off);
 	  if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
 	    {
 	      //printf("Step 3A \n");

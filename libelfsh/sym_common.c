@@ -246,6 +246,7 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
   new.st_info  = ELFSH_ST_INFO(binding, type);
   new.st_other = vis;
   new.st_shndx = sctidx;
+	new.st_name  = NULL;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 

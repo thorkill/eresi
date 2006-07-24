@@ -76,8 +76,8 @@ int		vm_display_prompt()
 /* Reset lines counters and ignore output state */
 int		vm_flush()
 {
-  unsigned int  lines = 50;
-  unsigned int  cols = 160;
+  int  lines = 50;
+  int  cols = 160;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -254,7 +254,7 @@ char		**vm_input(int *argc)
 
   /* Allocate the correct pointer array for argv */
   nbr = vm_findblanks(buf);
-  argv = vm_doargv(nbr, argc, buf);
+  argv = vm_doargv(nbr, (u_int *)argc, buf);
 
   /* Find and replace "\xXX" sequences, then return the array */
   vm_findhex(*argc, argv);

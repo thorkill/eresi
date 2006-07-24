@@ -384,7 +384,7 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
 /* Recreate the section header table examining the program header table */
 int		elfsh_rebuild_sht(elfshobj_t *file)
 {
-  u_int		num;
+  int		num;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

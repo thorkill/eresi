@@ -257,7 +257,7 @@ int			cmd_flow(void)
   elfsh_Shdr            *shdr;
   elfsh_Sym             *sym;
   u_int                 idx_sht;
-  u_int                 num_sht;
+  int                 num_sht;
   u_int                 disassembled;
   u_int                 ilen;
   u_int                 max_len;
@@ -360,7 +360,7 @@ int			cmd_flow(void)
       for (disassembled = 0; disassembled < max_len; disassembled += ilen) 
 	{
 
-	  if ((ilen = asm_read_instr(&instr, buffer + disassembled, 
+	  if ((ilen = asm_read_instr(&instr, (u_char *)buffer + disassembled, 
 				     max_len - disassembled, &world.proc))) 
 	    {
 	  

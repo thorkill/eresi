@@ -32,7 +32,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   int			off;
   char			*hookbuf;
   char			*hook;
-  elfsh_Sym		sym;
+  //elfsh_Sym		sym;
   char			bufname[BUFSIZ];
   void			*data;
 
@@ -102,7 +102,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   /* addi $t, $s, imm : 0010 00ss ssst tttt iiii iiii iiii iiii */
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x0)) = 0x23390000;
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x0)) |= 
-    (((uint32_t) sym.st_value - (uint32_t)hook) & 0x0000ffff);
+    (((uint32_t) symbol->st_value - (uint32_t)hook) & 0x0000ffff);
 
   /* first three hijacked function's instructions */
   *((uint32_t *) ((char *) (data + hooks->curend) + 0x4)) = buff[0];

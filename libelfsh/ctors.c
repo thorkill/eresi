@@ -56,7 +56,7 @@ elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*ctors;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
   elfsh_Addr	*addr;
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -140,7 +140,7 @@ elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
   elfsh_Addr	*ctors;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

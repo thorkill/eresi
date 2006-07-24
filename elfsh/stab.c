@@ -17,7 +17,7 @@ int			cmd_stab()
   regex_t		*tmp;
   char			*name;
   char			*type;
-  u_int			num;
+  int				num;
   u_int			index;
   u_int			typenum;
   char			buff[256];

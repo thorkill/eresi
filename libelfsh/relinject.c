@@ -553,7 +553,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
   u_int		index;
   char		sctname[BUFSIZ];
   elfsh_Sym	*sym;
-  u_int		symnbr;
+  int		symnbr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

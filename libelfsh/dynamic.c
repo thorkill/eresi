@@ -214,7 +214,7 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 {
   elfsh_Dyn	*dyn;
-  u_int		nbr;
+  int		nbr;
   u_int		idx;
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   dyn = elfsh_get_dynamic(file, &nbr);

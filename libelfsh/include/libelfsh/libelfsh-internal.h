@@ -27,7 +27,7 @@ void		__elfsh_libc_malloc_pthread_startup(int first_time);
 #define		XALLOC(a, b, c)									\
 do												\
 {												\
-  if ((a = (void *) elfsh_calloc(b, 1)) == NULL)						\
+  if ((a = (void *)elfsh_calloc(b, 1)) == NULL)						\
   {												\
     write(1, "Out of memory\n", 14);								\
     exit(1);											\

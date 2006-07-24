@@ -91,7 +91,12 @@ int		elfsh_recursive_vectalloc(elfsh_Addr *tab, u_int *dims, u_int depth, u_int 
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   for (idx = 0; idx < dims[depth - 1]; idx++)
     {
-      XALLOC(tab[idx], dims[depth] * sizeof(elfsh_Addr), -1);
+			tab[idx] = (elfsh_Addr)elfsh_calloc(dims[depth] * sizeof(elfsh_Addr), 1);
+			if(tab[idx] == NULL) {
+				write(1, "Out of memory\n", 14);
+				ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)"Out of memory .", -1);
+			}
+      //XALLOC(tab[idx], dims[depth] * sizeof(elfsh_Addr), -1);
       elfsh_recursive_vectalloc((elfsh_Addr *) tab[idx], dims, depth + 1, dimsz);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

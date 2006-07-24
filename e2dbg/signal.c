@@ -205,7 +205,7 @@ void			e2dbg_sigusr1_handler(int signum)
       /* We are stepping, display  the instruction at $pc */
       if (e2dbgworld.curthread->step)
 	{
-	  ret = asm_read_instr(&ptr, (char *) ((elfsh_Addr) *pc), 16, 
+	  ret = asm_read_instr(&ptr, (u_char *)((elfsh_Addr) *pc), 16, 
 			       &world.proc);
 	  if (!ret)
 	    s = "(bad)";
