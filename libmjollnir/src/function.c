@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.1 2006-07-20 17:28:48 thor Exp $
+ * $Id: function.c,v 1.2 2006-07-24 18:50:02 thor Exp $
  *
  */
 
@@ -50,7 +50,7 @@ void * mjr_fingerprint_function(mjrSession * ctx, unsigned char *buff, int type)
  void           *ret;
  u_int		i;
  int 		mlen;
- mjr_block	*blk;
+// mjr_block	*blk;
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -60,7 +60,7 @@ void * mjr_fingerprint_function(mjrSession * ctx, unsigned char *buff, int type)
 
   case MJR_FNG_TYPE_MD5:
 
-   XALLOC(fbuf, MJR_MAX_FUNCTION_LEN, -1);
+   XALLOC(fbuf, MJR_MAX_FUNCTION_LEN, NULL);
    memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
 
    mlen = mjr_i386_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
@@ -75,7 +75,7 @@ void * mjr_fingerprint_function(mjrSession * ctx, unsigned char *buff, int type)
    MD5_Final(digest, &md5ctx);
    XFREE(fbuf);
 
-   XALLOC(ret,33,-1);
+   XALLOC(ret,33, NULL);
    if (!ret)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 
@@ -97,7 +97,7 @@ mjrFunction * mjr_function_create(u_int vaddr) {
  
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
  
- XALLOC(fun, sizeof(mjrFunction), -1);
+ XALLOC(fun, sizeof(mjrFunction), NULL);
  
  fun->vaddr = vaddr;
 

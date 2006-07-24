@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: blocks.c,v 1.5 2006-07-21 18:26:46 thor Exp $
+ * $Id: blocks.c,v 1.6 2006-07-24 18:50:02 thor Exp $
  *
  */
 
@@ -13,7 +13,7 @@ mjr_block * mjr_create_block(u_int vaddr,char *section,u_int type) {
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
- XALLOC(nblk,sizeof(mjr_block),-1);
+ XALLOC(nblk,sizeof(mjr_block),NULL);
 
  nblk->vaddr = vaddr;
  nblk->type = type;

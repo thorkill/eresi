@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.5 2006-07-21 18:26:46 thor Exp $
+ * $Id: core.c,v 1.6 2006-07-24 18:50:02 thor Exp $
  *
  */
 
@@ -85,7 +85,7 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 #endif
 
  /* allocate memory for in-memory copy */
- XALLOC(ptr,sct->shdr->sh_size,-1);
+ XALLOC(ptr,sct->shdr->sh_size, NULL);
  memset(ptr, 0, sct->shdr->sh_size);
 
  /* load it */
