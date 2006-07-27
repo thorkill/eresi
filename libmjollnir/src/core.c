@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.6 2006-07-24 18:50:02 thor Exp $
+ * $Id: core.c,v 1.7 2006-07-27 16:50:53 thor Exp $
  *
  */
 
@@ -17,7 +17,7 @@ int mjr_analyse(mjrSession *sess,int flags) {
  if (NULL == sess)
   return -1;
 
- if (!(shtlist = elfsh_get_sht(sess->obj, &num_sht))) {
+ if (!(shtlist = elfsh_get_sht(sess->cur->obj, &num_sht))) {
   printf("faild to get sht!\n");
   return -1;
  }
@@ -28,8 +28,8 @@ int mjr_analyse(mjrSession *sess,int flags) {
 
  for (idx_sht = 0; idx_sht < num_sht; idx_sht++) {
   shdr = (shtlist + idx_sht);
-  sym = elfsh_get_sym_from_shtentry(sess->obj, shdr);
-  shtName = elfsh_get_symbol_name(sess->obj, sym);
+  sym = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
+  shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
 
   if (elfsh_get_section_execflag(shdr)) {
 #if __DEBUG__
@@ -38,9 +38,9 @@ int mjr_analyse(mjrSession *sess,int flags) {
    mjr_find_calls(sess,shtName);
   }
  }
- 
+
  /* set the flag */
- sess->analysed_calls = 1;
+ sess->cur->analysed_calls = 1;
 
  return 1;
 }
@@ -71,7 +71,7 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
  fprintf(D_DESC, "[__DEBUG__] mjrFindCalls: loading %s\n",section_name);
 #endif
 
- sct = elfsh_get_section_by_name(sess->obj, section_name, NULL, NULL, NULL);
+ sct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
 
  if (!sct) {
   ELFSH_NOPROFILE_ROUT(NULL);
@@ -89,7 +89,7 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
  memset(ptr, 0, sct->shdr->sh_size);
 
  /* load it */
- elfsh_raw_read(sess->obj, sct->shdr->sh_offset, ptr, sct->shdr->sh_size);
+ elfsh_raw_read(sess->cur->obj, sct->shdr->sh_offset, ptr, sct->shdr->sh_size);
 
  len = sct->shdr->sh_size;
  curr = 0;
@@ -97,13 +97,13 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 
  newBlock = mjr_create_block(vaddr,section_name,MJR_TYPE_SECT_START);
  tmp = _vaddr2string(vaddr);
- hash_add(&sess->blocks,tmp,newBlock);
+ hash_add(&sess->cur->blocks,tmp,newBlock);
 
  while (curr < len) {
 
-  if ((ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->proc)) > 0) {
+  if ((ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc)) > 0) {
    mjr_history_update(sess, instr);
-   sess->curVaddr = vaddr + curr;
+   sess->cur->curVaddr = vaddr + curr;
    dest = 0;
 
 #if __DEBUG_READ__
@@ -119,15 +119,15 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 #if __DEBUG_CALLS__
      fprintf(D_DESC, "[__DEBUG_CALLS__] mjrFindCalls: CALL v:0x%lx\n", vaddr + curr);
 #endif
-	sess->st_calls_seen++;
+	sess->cur->st_calls_seen++;
      if (mjr_get_call_dst(sess,&dest)>0) {
 	  dest += curr + ilen;
 	  if (vaddr + dest != 0x00) {
 
-	   sess->st_calls_found++;
+	   sess->cur->st_calls_found++;
 
 	   tmp = _vaddr2string(vaddr+dest);
-	   if (hash_get(&sess->blocks,tmp) == NULL) {
+	   if (hash_get(&sess->cur->blocks,tmp) == NULL) {
 	    char *md5;
 	    mjrFunction *fun;
 #if __DEBUG__
@@ -136,7 +136,7 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 		newBlock = mjr_create_block(vaddr+dest,section_name,MJR_TYPE_FUNCT);
 		fun = mjr_function_create(vaddr+dest);
 
-		hash_add(&sess->blocks,tmp,newBlock);
+		hash_add(&sess->cur->blocks,tmp,newBlock);
 		md5 = mjr_fingerprint_function(sess,ptr+dest,MJR_FNG_TYPE_MD5);
 		if (md5)
  		 fun->md5 = elfsh_strdup(md5);
@@ -149,7 +149,7 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 
 #if __DEBUG__
 	 fprintf(D_DESC, "[__DEBUG__] Found %s CALL at v:0x%x -> [0x%08x] \n",
-	  _d_type,sess->curVaddr,vaddr+dest);
+	  _d_type,sess->cur->curVaddr,vaddr+dest);
 #endif
 	  }
      }

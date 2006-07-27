@@ -105,13 +105,9 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
     }
     
 #if defined(USE_MJOLLNIR)
-  XALLOC(world.curjob->mjr_session,sizeof(mjrSession),-1);
-  if (!mjr_init_session(world.curjob->mjr_session))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-    		      "mjollnir session can't be initialized.", -1);
-      world.curjob->mjr_session->obj = new;
 
-   mjr_setup_processor(world.curjob->mjr_session);
+   mjr_create_context_as_current(&world.mjr_session, new);
+   mjr_setup_processor(&world.mjr_session);
 #endif
 
   /* Add an entry into the loaded files hashtable */

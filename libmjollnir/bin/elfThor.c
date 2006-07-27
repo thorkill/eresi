@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: elfThor.c,v 1.4 2006-07-20 17:27:09 thor Exp $
+ * $Id: elfThor.c,v 1.5 2006-07-27 16:50:44 thor Exp $
  *
  */
 
@@ -64,17 +64,22 @@ int main(int ac, char **av) {
   exit(1);
   }
 
- sess.obj = elfsh_map_obj(infile);
+ mjr_create_context_as_current(&sess, elfsh_map_obj(infile));
 
- if (sess.obj == NULL) {
+/*
+ if (sess->cur->obj == NULL) {
   printf("elfsh_map_obj faild.\n");
   exit(1);
  }
+*/
 
  mjr_setup_processor(&sess);
 
  if (opt_A) {
   mjr_analyse(&sess,NULL);
+  printf("seen: %d found %d\n",
+  sess.cur->st_calls_seen,
+  sess.cur->st_calls_found);
  }
 
  if (opt_R) {
@@ -96,7 +101,7 @@ int main(int ac, char **av) {
  }
 
  if (outfile)
-     elfsh_save_obj(sess.obj,outfile);
+     elfsh_save_obj(sess.cur->obj,outfile);
 
  return 0;
 }

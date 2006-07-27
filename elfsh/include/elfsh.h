@@ -604,9 +604,6 @@ typedef struct        s_job
  
   char		      *oldline;		/* Previous command line */
 
-#if defined(USE_MJOLLNIR)
-  mjrSession		*mjr_session;	/* Context session for mjollnir */
-#endif
 
 #define       ELFSH_JOB_LOGGED (1 << 0)
   u_char              state;            /* Job state flags */
@@ -662,7 +659,10 @@ typedef struct        s_elfsh_world
   elfshobj_t	      *shared;        /* List of shared descriptors */
   char                *scriptsdir;    /* Directory which contains script commands */
   asm_processor       proc;           /* Libasm world */
-  asm_processor	      proc_sparc;     /* Libasm Sparc */	
+  asm_processor	      proc_sparc;     /* Libasm Sparc */
+#if defined(USE_MJOLLNIR)
+  mjrSession	      mjr_session;	/* Session holding contexts for mjollnir */
+#endif
   e2dbgworld_t        e2dbg;          /* Debugger world */
 }		      elfshworld_t;
 

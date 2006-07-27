@@ -56,7 +56,11 @@ int		cmd_doswitch()
   else
     {
       cur = world.curjob->current;
-	
+
+#if defined(USE_MJOLLNIR)
+	mjr_set_current_context(&world.mjr_session, cur->name);
+#endif
+
       snprintf(logbuf, BUFSIZ - 1, "\n [*] Switched on object %u (%s) \n\n",
 	       cur->id, cur->name);
       vm_output(logbuf);

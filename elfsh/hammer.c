@@ -29,13 +29,13 @@ int cmd_unstrip() {
  snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : unstrip procedure started\n");
  vm_output(logbuf);
 
- if (!world.curjob->mjr_session->analysed_calls)
+ if (!world.mjr_session.cur->analysed_calls)
   cmd_analyse();
 
   memset(logbuf,0x0,BUFSIZ);
 
   snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : unstrip procedure %s\n",
-   (mjr_symtab_rebuild(world.curjob->mjr_session)) ? "completed successfully" : "faild");
+   (mjr_symtab_rebuild(&world.mjr_session)) ? "completed successfully" : "faild");
 
   vm_output(logbuf);
 
@@ -62,14 +62,14 @@ int cmd_analyse() {
 
  memset(logbuf,0x0,BUFSIZ);
  snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : object analysis %s\n",
- (mjr_analyse(world.curjob->mjr_session, NULL)) ? "completed successfully" : "faild");
+ (mjr_analyse(&world.mjr_session, NULL)) ? "completed successfully" : "faild");
 
  vm_output(logbuf);
 
  memset(logbuf,0x0,BUFSIZ);
  snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : calls seen: %d, recognized destination: %d\n",
-  world.curjob->mjr_session->st_calls_seen,
-  world.curjob->mjr_session->st_calls_found
+  world.mjr_session.cur->st_calls_seen,
+  world.mjr_session.cur->st_calls_found
   );
  vm_output(logbuf);
 
@@ -87,7 +87,7 @@ int cmd_rename() {
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
- mjr_symbol_rename(world.curjob->mjr_session,
+ mjr_symbol_rename(&world.mjr_session,
   world.curjob->curcmd->param[0],
   world.curjob->curcmd->param[1]
   );

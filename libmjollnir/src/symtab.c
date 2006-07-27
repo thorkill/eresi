@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.4 2006-07-15 17:06:07 thor Exp $
+ * $Id: symtab.c,v 1.5 2006-07-27 16:50:53 thor Exp $
  *
  */
 
@@ -15,10 +15,10 @@ int mjr_symtab_rebuild(mjrSession *sess) {
  mjr_block *n;
  char s[BSIZE];
 
- tab = hash_get_keys(&sess->blocks,&cn);
+ tab = hash_get_keys(&sess->cur->blocks,&cn);
 
  for(x=0;x<cn;x++) {
-  n = hash_get(&sess->blocks,tab[x]);
+  n = hash_get(&sess->cur->blocks,tab[x]);
 
   if (n->type != MJR_TYPE_FUNCT && n->type != MJR_TYPE_SECT_START)
    continue;
@@ -46,14 +46,14 @@ int mjr_symbol_add(mjrSession *sess, char *section, u_int vaddr, char *fname)
    section, vaddr, fname);
 #endif
 
-	sct = elfsh_get_section_by_name((elfshobj_t *)sess->obj, (char *)section, NULL, NULL, NULL);
+	sct = elfsh_get_section_by_name((elfshobj_t *)sess->cur->obj, (char *)section, NULL, NULL, NULL);
 	
 	if (!sct) {
 	 return 0;
 	}
 
 	sym = elfsh_create_symbol(vaddr, 0, STT_FUNC, 0, 0, sct->index);
-	elfsh_insert_symbol(sess->obj->secthash[ELFSH_SECTION_SYMTAB], &sym, fname);
+	elfsh_insert_symbol(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB], &sym, fname);
 
 	return 1;
 }
@@ -68,7 +68,7 @@ int mjr_symbol_delete_by_name(mjrSession *sess, char *symbol) {
  fprintf(D_DESC,"[__DEBUG__] mjr_symbol_deleteByName: <%s>\n", symbol);
 #endif
 
- elfsh_remove_symbol(sess->obj->secthash[ELFSH_SECTION_SYMTAB], symbol);
+ elfsh_remove_symbol(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB], symbol);
  return 1;
 }
 
@@ -82,12 +82,12 @@ int mjr_symbol_rename(mjrSession *sess,char *old_name,char *new_name) {
  elfsh_Sym *sm;
  elfshsect_t *s;
 
- sm = elfsh_get_symbol_by_name(sess->obj, old_name);
+ sm = elfsh_get_symbol_by_name(sess->cur->obj, old_name);
 
  if (!sm)
   return 0;
 
- s = elfsh_get_section_by_index(sess->obj,sm->st_shndx,NULL,NULL);
+ s = elfsh_get_section_by_index(sess->cur->obj,sm->st_shndx,NULL,NULL);
 
 #if __DEBUG__
  fprintf(D_DESC,"[__DEBUG__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s <%s>\n", old_name, sm->st_value, new_name, s->name);

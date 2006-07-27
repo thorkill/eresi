@@ -1,6 +1,6 @@
 /*
 ** elfsh.c for elfsh
-** 
+**
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 */
@@ -33,7 +33,7 @@ int		vm_loop(int argc, char **argv)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = 0;
-  
+
   do {
 
     /* Fill argv from stdin if we are in interactive mode */
@@ -47,18 +47,18 @@ int		vm_loop(int argc, char **argv)
 		vm_exit(-1);
 	      }
 	  }
-	
+
 	/* Take a line, execute old command if void line */
 	argv = vm_input(&argc);
-	if (world.state.vm_mode == ELFSH_VMSTATE_IMODE     || 
-	    world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER  || 
-	    world.state.vm_mode == ELFSH_VMSTATE_SCRIPT    || 
+	if (world.state.vm_mode == ELFSH_VMSTATE_IMODE     ||
+	    world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER  ||
+	    world.state.vm_mode == ELFSH_VMSTATE_SCRIPT    ||
 	    world.state.vm_net)
 	  {
 	    if (argv == ((char **) ELFSH_VOID_INPUT))
 	      continue;
 	  }
-	
+
 	/* CTRL-D -> !argv */
 	if (!argv)
 	  {
@@ -68,17 +68,17 @@ int		vm_loop(int argc, char **argv)
 		vm_output("\n");
 		goto e2dbg_cleanup;
 	      }
-	    
+
 	    /* if net is enable but we are not in e2dbg -> ignore */
 	    if (world.state.vm_net)
 	      continue;
-	    
+
 	    /* othewise exit */
 	    break;
-	    
+
 	  }
       }
-    
+
     /* Fetch the command through hash */
     if (vm_parseopt(argc, argv) < 0)
       {
@@ -86,14 +86,14 @@ int		vm_loop(int argc, char **argv)
 	  {
 	    //XFREE(argv[1]);
 	    XFREE(argv);
-	    if (world.state.vm_mode != ELFSH_VMSTATE_IMODE && 
+	    if (world.state.vm_mode != ELFSH_VMSTATE_IMODE &&
 		world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
 	      goto end;
 	  }
 	else if(!world.state.vm_net)
 	  vm_exit(-1);
       }
-    
+
     /* Keep the parsing/executing behavior if we are not scripting */
     if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
       {
@@ -109,7 +109,7 @@ int		vm_loop(int argc, char **argv)
 	    break;
 	  }
       }
-    
+
     /* Quit parsing if necessary */
     if ((!world.curjob->curcmd && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
@@ -118,27 +118,27 @@ int		vm_loop(int argc, char **argv)
       break;
   }
   while (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net);
-  
+
   /* If we are in scripting, execute commands queue now */
   if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
       vm_execscript();
     }
-  
+
  end:
   if (!world.state.vm_quiet && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     vm_output("\n [*] Script execution ended. \n\n");
-  
+
   /* Implicit unload or save if we are not in interactive mode */
   if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && world.curjob->current)
     ret = vm_unload_cwfiles();
-  
+
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-  
+
   /* Clean the script machine state when a script is over */
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = world.curjob->curcmd = NULL;
@@ -148,20 +148,20 @@ int		vm_loop(int argc, char **argv)
       snprintf(msg, BUFSIZ - 1, "\t [-: E2DBG now in BG :-] \n\n");
       vm_output_bcast(msg);
     }
-  
+
   /* We arrive here when we execute a continue command from a debugger script */
  e2dbg_continue:
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
 /* Only one time initialisations */
 /* Called from CTORS */
-int		vm_init() 
+int		vm_init()
 {
  /* Must be here in case of script params presence */
   bzero(&world, sizeof (world));
@@ -182,7 +182,7 @@ int		vm_init()
 int		vm_setup(int ac, char **av)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
- 
+
   /* Detect the mode we are running in */
   if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
     {
@@ -212,7 +212,9 @@ int		vm_setup(int ac, char **av)
 	}
     }
 #if defined(USE_MJOLLNIR)
- 
+    if (!mjr_init_session(&world.mjr_session))
+     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "mjollnir session can't be initialized.", -1);
 #endif
 
   vm_setup_hashtables();
@@ -241,7 +243,7 @@ int		vm_config()
       snprintf(buff, sizeof(buff), "%s/.elfshrc", home);
       XALLOC(new, sizeof(elfshargv_t), -1);
       memset(new, 0, sizeof(elfshargv_t));
-      world.curjob->curcmd = new; 
+      world.curjob->curcmd = new;
       world.curjob->curcmd->param[0] = buff;
       ret = cmd_source();
       world.curjob->curcmd = NULL;
@@ -276,7 +278,7 @@ int		vm_run(int ac, char **av)
 #endif
 
 #if defined(USE_READLN)
-  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE || 
+  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
       world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
     {
 
@@ -300,7 +302,7 @@ int		vm_run(int ac, char **av)
       using_history();
       rl_attempted_completion_function = custom_completion;
       rl_callback_handler_install (vm_get_prompt(), vm_ln_handler);
-      rl_bind_key(CTRL('x'), vm_screen_switch); 
+      rl_bind_key(CTRL('x'), vm_screen_switch);
       vm_install_clearscreen();
 
       update_col(0);

@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir.h,v 1.7 2006-07-20 18:07:30 thor Exp $
+ * $Id: libmjollnir.h,v 1.8 2006-07-27 16:50:48 thor Exp $
  *
  */
 
@@ -19,8 +19,14 @@
 #define MJR_CALL_PREFIX		"sub_"
 
 typedef struct _mjrSession mjrSession;
+typedef struct _mjrContext mjrContext;
 
 struct _mjrSession {
+ mjrContext 	*cur;
+ hash_t		ctx;
+};
+
+struct _mjrContext {
 
  elfshobj_t *obj;     		/* elfsh object */
  asm_processor proc;  		/* proc */
@@ -58,6 +64,8 @@ int mjr_history_update(mjrSession *, asm_instr);
 
 /* init.c */
 int mjr_init_session(mjrSession *);
+int mjr_create_context_as_current(mjrSession *, elfshobj_t *);
+mjrContext * mjr_create_context(elfshobj_t *);
 int mjr_setup_processor(mjrSession *);
 
 /* internal.c */

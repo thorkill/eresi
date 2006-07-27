@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.2 2006-07-24 18:50:02 thor Exp $
+ * $Id: function.c,v 1.3 2006-07-27 16:50:53 thor Exp $
  *
  */
 
@@ -16,7 +16,7 @@ mjr_i386_function_copy(mjrSession *ctx, unsigned char *src, unsigned char *dst, 
         p = 0;
         ilen = 0;
         for (n = 0; n < mlen; n += ilen) {
-                ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
+                ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->cur->proc);
                 if (ilen <= 0) {
                         return p;
                 }
