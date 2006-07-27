@@ -132,6 +132,8 @@ int		cmd_load()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  tmp = NULL;
+
   if (elfsh_is_debug_mode())
     {
       was_dynamic = 1;
