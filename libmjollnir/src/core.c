@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.7 2006-07-27 16:50:53 thor Exp $
+ * $Id: core.c,v 1.8 2006-08-02 09:17:33 thor Exp $
  *
  */
 
@@ -57,8 +57,9 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
  unsigned char  *ptr;
  unsigned long   curr,len;
  u_int           vaddr, ilen, dest;
- char 			*tmp;
+ char 			*tmp,*md5;
  mjr_block		*newBlock;
+ mjrFunction 		*fun;
 
 #if __DEBUG__
  char *_d_type;
@@ -128,8 +129,6 @@ int mjr_find_calls(mjrSession *sess,char *section_name) {
 
 	   tmp = _vaddr2string(vaddr+dest);
 	   if (hash_get(&sess->cur->blocks,tmp) == NULL) {
-	    char *md5;
-	    mjrFunction *fun;
 #if __DEBUG__
 		_d_type = "NEW";
 #endif
