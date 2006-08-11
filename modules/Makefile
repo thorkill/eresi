@@ -19,7 +19,7 @@ SRC3	= modremap.c
 OBJ3	= $(SRC3:.c=.o)
 NAM3	= modremap.so
 
-CFLAGS	= -I../vm/include/ -I../libhash/include/        \
+CFLAGS	= -I../vm/include/ -I../libhash/include/ -I../libui/include/       \
 	  -I../libdump/include/ -I../libelfsh/include/  \
 	  -I../libasm/include/ -I../e2dbg/include/      \
 	  -I../libc/include/ -I../libmjollnir/include/ -Wall -g3 -O2 -fPIC \
