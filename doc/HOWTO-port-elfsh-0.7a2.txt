@@ -1,0 +1,283 @@
+
+
+ $ HOWTO-port-ELFsh/E2dbg version 0.7a2 Fri Oct 14 17:13:18 2005 mm
+
+ ------------------------------------------------------------------
+
+
+ELF monkeys, ugh
+
+Since The ELF shell and the Embedded ELF debugger starts to be
+really modular and we now have all the handlers we are looking for, 
+let's see how to port it on a new architecture or a new OS.
+
+Both E2DBG and ELFSH have internal hooks that can be registered
+for a given architecture, OS, or object type. Each feature has
+a dedicated hook. Some hooks are directly inside libelfsh, others
+are inside the debugger library directly when they are not purely
+ELF related.
+
+Here is the list of hooks to be implemented as backends in order to 
+complete a full port on some unsupported OS or architecture :
+
+
+I. LIBELFSH
+-----------
+
+
+/* 3 dimensional matrixes for PLT infection and ET_REL injection techniques */
+int     (*hook_altplt[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f,
+                                                                  elfsh_Sym  *s,
+                                                                  elfsh_Addr a);
+int     (*hook_plt[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f,
+                                                               elfsh_Sym  *s,
+                                                               elfsh_Addr a);
+int     (*hook_rel[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshsect_t *s,
+                                                               elfsh_Rel   *r,
+                                                               elfsh_Addr  *l,
+                                                               elfsh_Addr  a,
+                                                               elfshsect_t *m);
+int     (*hook_cflow[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f,
+                                                                 char       *name,
+                                                                 elfsh_Sym   *old,
+                                                                 elfsh_Addr  new);
+int     (*hook_break[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfshobj_t *f,
+                                                                 elfshbp_t *b);
+
+
+Those 5 hooks are used respectively for :
+
+- Adding the ALTPLT handler for ALTPLT redirection for an architecture/OS/filetype
+- Adding the PLT handler for PLT redirection for extern functions for an architecture/OS/filetype
+- Adding the ET_REL relocation function for an architecture/OS/filetype
+- Adding the CFLOW (static) function redirection handler for the architecture/OS/filetype
+- Adding the Breakpoint installation handler for the architecture/OS/filetype
+
+Be also sure to add a 'case' in those information switch located in the functions :
+
+int       elfsh_get_pagesize(elfshobj_t *file)
+u_int     elfsh_get_breaksize(elfshobj_t *file)
+
+If you add the support for a new OS, do the same in :
+
+u_char          elfsh_get_ostype(elfshobj_t *file)
+u_char          elfsh_get_real_ostype(elfshobj_t *file)
+
+and add your OS in :
+
+u_char  elfsh_ostype[5] = {
+  ELFOSABI_LINUX,
+  [....]
+  ADD YOUR OS HERE
+};
+
+If you add the support for a new architecture, do the same in :
+
+u_char          elfsh_get_archtype(elfshobj_t *file);
+
+
+All of this beeing located in libelfsh/hooks.c.
+
+
+You can use this internal API for adding your own hooks entries directly in the 
+elfsh_setup_hooks() function :
+
+int     elfsh_register_breakhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_cflowhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_altplthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+
+
+In the libelfsh code, the registered features handlers are called using those functions, and from
+those functions (you should NOT have to modify this) :
+
+libelfsh/relinject.c:31:  ret = elfsh_rel(new->parent, new, reloc, dword, addr, mod);
+
+libelfsh/hijack.c:119:    ret = elfsh_plt(file, symbol, addr);
+libelfsh/hijack.c:164:    ret = elfsh_plt(file, symbol, addr);
+
+libelfsh/altplt.c:59:     if (elfsh_altplt(file, &newsym, addr) < 0)
+
+libelfsh/bp.c:43:         ret = elfsh_setbreak(file, bp);
+
+libelfsh/hijack.c:97:     ret = elfsh_cflow(file, name, symbol, addr);
+libelfsh/hijack.c:129:    ret = elfsh_cflow(file, name, symbol, addr);
+
+
+
+II. E2DBG
+---------
+
+
+Now we have a certain number of hooks inside e2dbg directly. Those are most related
+to the scripting language and the relations with stepping and access to registers
+context or processor state for all architectures. The list of hooks in e2dbg/vmhooks 
+is as follow :
+
+elfsh_Addr*     (*hook_getpc[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+elfsh_Addr*     (*hook_getfp[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+elfsh_Addr      (*hook_nextfp[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfsh_Addr bp);
+elfsh_Addr      (*hook_getret[ELFSH_ARCHNUM][ELFSH_TYPENUM][ELFSH_OSNUM])(elfsh_Addr bp);
+void            (*hook_setregs[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+void            (*hook_getregs[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+void            (*hook_setstep[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+void            (*hook_resetstep[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
+
+Those hooks are used for :
+
+- Returning a pointer on the Program Counter context entry for later read or write
+- Returning a pointer on the Frame Pointer context entry for later read or write
+- Returning the next Frame Pointer giving the actual Frame Pointer
+- Returning the current Return Value depending on the actual Frame Pointer
+- Update the ucontext registers entries for further reuse by the debuggee program
+- Obtain the ucontext registers entries for further modifications in the debugger
+- Enable the singlestep mode on the processor
+- Disable the singlestep mode on the processor
+
+Again, we have an API that allow for registering hooks for a given architecture, host type
+(user, kernel ..) and OS type :
+
+int      e2dbg_register_sregshook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a setreg handler
+int      e2dbg_register_gregshook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a getreg handler
+int      e2dbg_register_getpchook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a getpc handler
+int      e2dbg_register_setstephook(u_char   archtype, u_char hosttype, u_char ostype, void *fct); # register a setstep handler
+int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char ostype, void *fct); # register a resetstep handler
+int      e2dbg_register_nextfphook(u_char    archtype, u_char hosttype, u_char ostype, void *fct); # register a nextfp handler
+int      e2dbg_register_getrethook(u_char    archtype, u_char hosttype, u_char ostype, void *fct); # register a getret handler                                  
+
+
+Those e2dbg hooks, once registered, are called from e2dbg at various place, that you should not have to modify :
+
+
+e2dbg/signal.c:58:        e2dbg_getregs();
+e2dbg/signal.c:128:       e2dbg_getregs();
+
+e2dbg/continue.c:60:      e2dbg_setregs();
+
+e2dbg/signal.c:129:       pc = e2dbg_getpc();
+
+e2dbg/backtrace.c:34:     frame = (elfsh_Addr) e2dbg_getfp();
+
+e2dbg/signal.c:235:       e2dbg_setstep();
+e2dbg/step.c:42:          if (e2dbg_setstep() < 0)
+
+e2dbg/signal.c:213:       e2dbg_resetstep();
+e2dbg/step.c:34:          if (e2dbg_resetstep() < 0)
+
+e2dbg/backtrace.c:61:     frame = e2dbg_nextfp(world.curjob->current, (elfsh_Addr) frame);    
+
+e2dbg/backtrace.c:42:     ret = (elfsh_Addr) e2dbg_getret(world.curjob->current, (elfsh_Addr) frame);
+
+
+                                  
+You can add your registers in e2dbg/vmhooks.c:e2dbg_setup_hooks() .
+
+
+
+
+III. LIST OF REFERENCE, SUPPORTED, UNTESTED, UNSUPPORTED ARCHITECTURES
+----------------------------------------------------------------------
+
+
+In this section you can find the list of ALL hooks (libelfsh + e2dbg) with their
+respective porting state. The reference architecture is the one where the feature
+has been proved to work the first time. 
+
+A SUPPORTED architecture means that the feature is known to work on this arch.
+
+A UNTESTED archiecture means that the feature should work without (or few) 
+modification but it is still work in progress or in testing phase. Modifications
+may range to nothing until small arch dependant fixes like adding entries in 
+the various architecture switch's, or at worse, adding a hook entry in an existing
+hook interface for a particular feature.
+
+A UNSUPPORTED architecture means there is no support at all for this architecture
+on this feature and remains in the TODO. 
+
+If an architecture appears no where in the list, it means the feature is not useful
+or not revelant on this architecture.
+
+The number in the beginning of the line range over 1-4 for the complexity level of
+the feature
+
+4 ET_REL    injection	  : REFERENCE(ia32), SUPPORTED(alpha, sparc32, sparc64), UNTESTED(mips), UNSUPPORTED(ppc, hppa, arm, ia64, amd64)
+3 ALTPLT    redirection   : REFERENCE(ia32), SUPPORTED(alpha, sparc32, sparc64, mips),           UNSUPPORTED(ppc, hppa, arm, ia64, amd64)
+2 PLT       redirection   : REFERENCE(ia32), SUPPORTED(alpha, sparc32),                          UNSUPPORTED(ppc, hppa, arm, ia64, amd64)
+2 CFLOW     redirection   : REFERENCE(ia32), SUPPORTED(mips),                                    UNSUPPORTED(sparc, alpha, ppc, hppa, arm, ia64, amd64)
+
+1 GETPC     dbghook
+1 GETFP     dbghook
+1 NEXTFP    dbghook	
+1 GETREGS   dbghook		ALL : REFERENCE(ia32), UNSUPPORTED(sparc32, sparc64, alpha, mips, ppc, hppa, arm, ia64, amd64)
+1 SETREGS   dbghook
+1 SETSTEP   dbghook
+1 RESETSTEP dbghook
+1 GETRET    dbghook
+
+
+V. MAIN ALGORITHMS SOURCE CODE LOCATION INFORMATION
+---------------------------------------------------
+
+Some features like ALTGOT, ALTPLT, and EXTPLT are kind of complementary and more easily implemented
+in a single algorithm. This algorithm is located in libelfsh/altplt.c:elfsh_relink_plt() and more
+generally the functions located in that file are used for it. It is work in progress to think how
+this function could be modularized more than how it currently done. If you feel like adding small
+fixes for your architecture, please do it in proper conditions, respecting the convention used in
+the file.
+
+- ALTGOT redirection (see altplt.c + libelfsh/altgot.c for that), works on MIPS & ALPHA for now, 
+and UNTESTED ALL RISC architectures. Should not need a dedicated hook.
+
+- EXTPLT postlinking (see altplt.c + libelfsh/extplt.c for that), works on IA32, UNTESTED on all 
+other architectures, one hook will be added to virtualize the PLT reencoding.
+
+In libelfsh, all architecture dependant hooks entry are located in a file dedicated to the 
+architecture. You can find those in libelfsh/ia*,mips*,sparc*,alpha64.c files. Please place
+your hooks functions entries there in libelfsh.
+
+In e2dbg, if you do the support for a new architecture, create a new file and add it in the Makefile
+of the local directory.
+
+
+VI. SPECIAL ELFSH/E2DBG PORTING CONSIDERATIONS
+----------------------------------------------
+
+You may want to know special considerations on porting stuff on exotic architectures:
+
+* If the architecture does not support singlestepping natively (like MIPS), you may need to add a state
+to the counter variable in the generic breakpoint handler for obtaining the correct result in the debugger. 
+This is located in e2dbg/signal.c:e2dbg_generic_breakpoint() .
+
+* ALTGOT and ALTPLT are complementary, if you implement one of them on an architecture, you dont need the
+other one.
+
+* All quoted features works on both ET_EXEC and ET_DYN ELF objects. Please verify that your handlers
+works on both types as well, or precise which kind of ELF object your handlers are manipulating while
+you register them.
+
+* Be careful with the difference between a libelfsh hook and a e2dbg hook. The first is parametrised by a 
+ELF file type (ET_EXEC, ET_DYN, ..), the second is parametrized by a HOST type (for now, only PROC, but
+will be used in the future for the KERNEL target. We could imagine more specialized target as well, like
+the NOFP target, or stuff like that).
+
+* If you want to add a hook, there is not yet an API to do that but you can copy an existing one, located
+in libelfsh/hooks.c or e2dbg/vmhooks.c, depending on the interaction level of it (pure ELF vs DEBUG hooks).
+
+The new framework following exactly this interface will be ported on the elfdev mailing list hosted
+on Devhell in the next days. It will be compatible with Linux and start to be compatible again with
+BSD and Solaris. HPUX and IRIX compilation are confirmed but no special support was done on them
+for now. If you received this file, wish to participate in the porting, and you are not subscribed
+on this list, mail elfsh@devhell.org and ask for your duty.
+
+Thats all for now. This small paper is not public for now. It will be published when 0.7 is
+released. Soon I hope ;)
+
+Enjoy the framework and happy ELF hacking $
+
+
+-elfsh crew
+
+
+
+
