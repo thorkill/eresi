@@ -21,6 +21,8 @@ typedef struct 	s_trace
   
 } e2dbgtraced_t;
 
+
+/* XXX: Need to use libgcc and not gcc directly */
 FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
 {
   int		rs = 0, fd;
@@ -87,6 +89,8 @@ FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fp);
 }
+
+
 
 int		vm_trace_add(FILE *fp, int *argcount, char *func_name)
 {
@@ -157,6 +161,21 @@ int		vm_trace_add(FILE *fp, int *argcount, char *func_name)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, z);
 }
 
+
+
+
+
+
+/* XXX: The good syntax should be : 
+** 
+** trace <add>     funcname  [optional_trace_name]
+** trace <rm>      funcname  [optional_trace_name]
+** trace <enable>  funcname  [optional_trace_name]
+** trace <disable> funcname  [optional_trace_name]
+** trace <create>  tracename <optionals funcnames>
+** trace <delete>  tracename
+**
+*/                                  
 int    		cmd_trace()
 {
   int		z;
@@ -213,6 +232,15 @@ int    		cmd_trace()
     is_plt[index] = 0;
   }
 
+
+  /*
+    To factorise !
+    
+    elfsh_trace_function(elfsh_Sym *symtab, unsigned int size, );
+  */
+
+
+
   for (index = 0, count = 1; index < symnum; index++)
   {
     /* Only function symbols */
@@ -233,8 +261,9 @@ int    		cmd_trace()
     sect_name = elfsh_get_section_name(world.curjob->current, sect);
 	  
     /* Only global, plt & text */
-    if (elfsh_get_symbol_bind(symtab + index) != STB_GLOBAL
-	|| (!strstr(sect_name, "plt") && !strstr(sect_name, "text")))
+    /* Make sure we look at the beginning of the name, including the .*/
+  if (elfsh_get_symbol_bind(symtab + index) != STB_GLOBAL
+	|| (!strncmp(sect_name, ".plt", 4) && !strncmp(sect_name, ".text", 5)))
       continue;
 
     func_name = elfsh_get_symbol_name(world.curjob->current, symtab + index);
@@ -244,12 +273,12 @@ int    		cmd_trace()
     if (strstr(func_name, "."))
       continue;
 
-    /* Do we have choosed which function will be traced ? */
+    /* have we chosen which function will be traced ? */
     if (entries > 0)
-    {
-      for (z = 0; z < entries; z++)
-	if (!strcmp(world.curjob->curcmd->param[z], func_name))
-	  break;
+      {
+	for (z = 0; z < entries; z++)
+	  if (!strcmp(world.curjob->curcmd->param[z], func_name))
+	    break;
 
       /* This function should not be traced */
       if (z >= entries)
