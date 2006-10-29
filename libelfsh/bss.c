@@ -133,6 +133,7 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
 }
 
 
+
 /* The real function that fixup the bss */
 /* fixflag indicate if the section was nullsized and fixed */
 /* This file is not DBG safe */
@@ -158,6 +159,20 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
       for (next = bss; next != NULL; next = next->next)
 	next->shdr->sh_offset -= size;
     }
+
+  /* Make sure the virtual address difference and the file offset difference is identical
+     from the section before bss, and bss */
+  if (bss->prev != NULL && bss->shdr->sh_offset - bss->prev->shdr->sh_offset != 
+      bss->shdr->sh_addr - bss->prev->shdr->sh_addr)
+    {
+      unsigned int diff = 
+	(bss->shdr->sh_addr - bss->prev->shdr->sh_addr) - 
+	(bss->shdr->sh_offset - bss->prev->shdr->sh_offset);
+	
+      for (next = bss; next != NULL; next = next->next)
+	next->shdr->sh_offset += diff;
+    }
+
 
   /* Fixup file offset for section after bss in case they overlap.
      It happens on Solaris 8.0 with ld solaris-ELF 4.0

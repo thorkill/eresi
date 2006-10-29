@@ -77,7 +77,7 @@ extern asm_processor	proc;
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
-#define __DEBUG_TRACE__		1
+#define __DEBUG_TRACE__		0
 
 /* Network related defines */
 #define ELFSH_PORT		4444

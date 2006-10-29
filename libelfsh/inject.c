@@ -367,6 +367,7 @@ int		elfsh_insert_code_section_up(elfshobj_t		*file,
 
 /* Insert a data section in the object */
 /* This function is not e2dbg safe and should only be used with ondisk files */
+/* Use elfsh_insert_runtime_section() for runtime injections */
 int		elfsh_insert_data_section(elfshobj_t	*file,
 					  elfshsect_t	*sect,
 					  elfsh_Shdr	hdr,
@@ -390,7 +391,7 @@ int		elfsh_insert_data_section(elfshobj_t	*file,
   if (elfsh_fixup_bss(file) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot fixup .bss", -1);
-  
+
   /* Find the PHDR */
   range = 0;
   do

@@ -688,7 +688,6 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
     {
       
       /* Get the current section */
-      /* XXX: use a sect current pointer .. */
       sect = elfsh_get_section_by_index(rel, index, NULL, NULL);
       if (sect == NULL)
 	{

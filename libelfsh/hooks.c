@@ -1469,7 +1469,6 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   u_char        elftype;
   u_char        ostype;
   int		*(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1489,9 +1488,6 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = elfsh_project_coords(argch, dim, 3);
-
-  //hook = argch->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
 }
