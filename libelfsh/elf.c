@@ -457,6 +457,8 @@ int elfsh_check_hdr_type(elfshobj_t *file) {
     "file->hdr->e_type is not valid", NULL);
    break;
  }
+ 
+
    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -523,6 +525,7 @@ int		elfsh_check_hdr(elfshobj_t *file) {
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+
  elfsh_check_hdr_type(file);
  elfsh_check_hdr_machine(file);
  elfsh_check_hdr_version(file);
@@ -546,6 +549,14 @@ int		elfsh_load_hdr(elfshobj_t *file)
   XALLOC(file->hdr, sizeof(elfsh_Ehdr), -1);
   if ((len = read(file->fd, file->hdr, sizeof(elfsh_Ehdr))) <= 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, len);
+
+  if (!file->hdr->e_shnum)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_shnum is not valid", -1); 
+ 
+ if (!file->hdr->e_shentsize)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    "file->hdr->e_shentsize is not valid", -1); 
 
   elfsh_check_hdr(file);
 
