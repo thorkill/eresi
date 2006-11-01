@@ -173,8 +173,8 @@ extern asm_processor	proc;
 char prompt_token[128];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.7"
-#define	ELFSH_RELEASE		"a9"
-#define ELFSH_EDITION		"anjo"
+#define	ELFSH_RELEASE		"a10"
+#define ELFSH_EDITION		"cela"
 
 /* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT	"\033[00;01;30m(" \
@@ -535,14 +535,13 @@ typedef struct           s_elfsh_io
   
   /* dump specific */
 #if defined(ELFSHNET)
-  pkt_t       *pkt;                   /* dump received pkt */
+  pkt_t        *pkt;                   /* dump received pkt */
 #endif
-  int          new;                   /* 0 if already used */
+  int           new;                   /* 0 if already used */
 #if defined(USE_READLN)
-  char         *buf;                  /* readline line */
+  char	        *buf;                  /* readline line */
 #endif
-  
-  elfshoutbuf_t       outcache;
+  elfshoutbuf_t	outcache;
 }                     elfshio_t;
 
 

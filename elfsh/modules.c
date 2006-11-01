@@ -22,11 +22,6 @@ int		cmd_modload()
       snprintf(buf, sizeof(buf), "%s%s", ELFSH_MODPATH, world.curjob->curcmd->param[0]);
       if (access(buf, R_OK) != 0)
 	{
-
-
-	  //fprintf(stderr, "Failed to load %s, trying to load next match .. \n", buf);
-
-
 	  snprintf(buf, sizeof(buf), "%s%s.so",
 		   ELFSH_MODPATH, world.curjob->curcmd->param[0]);
 	  if (access(buf, R_OK) != 0)
@@ -50,7 +45,6 @@ int		cmd_modload()
   new->handler = load_add_on(name);
   if (new->handler == B_ERROR)
 #else
-  fprintf(stderr, "name : %s\n",name);
   new->handler = dlopen(name, RTLD_NOW);
   if (new->handler == NULL)
 #endif

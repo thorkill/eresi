@@ -109,7 +109,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 
   /* Same for .rel.plt */
   new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELPLT, NULL,
-			     ELFSH_DATA_INJECTION, relplt->shdr->sh_size * 2, 
+			     ELFSH_DATA_INJECTION, relplt->shdr->sh_size * 4, 
 			     sizeof(elfsh_Addr));
   if (!new)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 

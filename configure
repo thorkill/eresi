@@ -290,7 +290,7 @@ esac
 # Set default variables in case it was not precised
 
 if [ "$MODPATHSET" != "1" ]; then
-    echo "#define ELFSH_MODPATH    \"/usr/share/elfsh/\"" 	>> $VARSFILE
+    echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"" >> $VARSFILE
 fi
 
 if [ "$SHELLSET" != "1" ]; then

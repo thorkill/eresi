@@ -41,14 +41,16 @@ int	fake_main(int argc, char **argv)
   return (0);
 }
 
+/*
 char*	fake_strcpy(char *dst, char *src)
 {
   printf("The fucker wants to copy %s at address %08X \n", src, dst);
   return ((char *) old_strcpy(dst, src));
 }
+*/
 
 
-
+/*
 void	fake_stack_smash_handler(char func[], int damaged)
 {
   static int i = 0;
@@ -59,6 +61,7 @@ void	fake_stack_smash_handler(char func[], int damaged)
     printf("Same player play again [damaged = %08X] \n", damaged);
   printf("A second (%d) printf from the handler \n", 2);
 }
+*/
 
 
 int fake_libc_start_main(void *one, void *two, void *three, void *four, void *five, void *six, void *seven)

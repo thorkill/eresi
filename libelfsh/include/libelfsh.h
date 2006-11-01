@@ -47,7 +47,7 @@
 #define		__DEBUG_REDIR__			0
 #define		__DEBUG_RUNTIME__		0
 #define		__DEBUG_CFLOW__			0
-#define		__DEBUG_STATIC__		0
+#define		__DEBUG_STATIC__		1
 #define		__DEBUG_BREAKPOINTS__		0
 #define		__DEBUG_ETRELintoETDYN__	0
 #define		__DEBUG_EXTPLT__		0
@@ -127,6 +127,7 @@
 #define		ELFSH_SECTION_NAME_ALTDYNSYM	".elfsh.dynsym"
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
+#define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
 
 //#define		ELFSH_SECTION_NAME_RPHT		".elfsh.rpht"
 #define		ELFSH_SECTION_NAME_RSHSTRTAB	".rshstrtab"

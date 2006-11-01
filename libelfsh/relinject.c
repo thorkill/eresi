@@ -516,11 +516,13 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   ELFSH_SELECT_INJECTION(file,writable,mode);
 
    if (mode == ELFSH_DATA_INJECTION)
-      modulo = 4;
+      modulo = sizeof(elfsh_Addr);
    else
-      /* modulo = mod; (to be uncommented one day) */
-      modulo = elfsh_get_pagesize(file);	
-
+     {
+       /* modulo = mod; (to be uncommented one day) */
+       //modulo = elfsh_get_pagesize(file);
+       modulo = sizeof(elfsh_Addr);
+     }
 
 #if	__DEBUG_RELADD__
   printf("[DEBUG_RELADD] Mapping new section %s with data = %p \n", new->name, data);
@@ -631,8 +633,6 @@ int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
 
 
 
-
-
 /* Inject a ET_REL object into a ET_EXEC object */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 {
@@ -713,6 +713,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   
   /* compute the inject modulo */
   mod = elfsh_get_pagesize(file);
+  //mod = sizeof(elfsh_Addr);
       
   /* Do a copy of the procedure linkage table for eventual redirection */
   if (!elfsh_static_file(file) && elfsh_copy_plt(file, mod) < 0)
@@ -749,6 +750,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Entering intermediate symbol injection loop\n");
 #endif
+
 
   /* Intermediate pass 2 : Inject ET_REL symbol table into host file */
   if (elfsh_fuse_etrel_symtab(file, rel) < 0)

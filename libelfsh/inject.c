@@ -597,18 +597,22 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 
 
 
-/* Static binary injection : the standard process injection */
+/* Static binary injection : section injection for static binaries */
 int		elfsh_insert_static_section(elfshobj_t	 *file,
-					     elfshsect_t *sect,
-					     elfsh_Shdr	 hdr,
-					     void	 *data,
-					     int	 mode,
-					     u_int	 mod)
+					    elfshsect_t  *sect,
+					    elfsh_Shdr	 hdr,
+					    void	 *data,
+					    int		 mode,
+					    u_int	 mod)
 {
   elfsh_Phdr	phdr;
+  elfsh_Phdr	*curphdr;
   u_int		rsize;
   char		*rdata;
   elfshsect_t	*lastsect;
+  elfshsect_t	*cursect;
+  unsigned int	phtnew;
+  unsigned int  totsize;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -639,25 +643,59 @@ int		elfsh_insert_static_section(elfshobj_t	 *file,
   else
     rsize = hdr.sh_size;
 
-  /* Create and inject the new PT_LOAD in runtime */
-  phdr = elfsh_create_phdr(PT_LOAD, 0, rsize, mod);
-  phdr.p_flags = elfsh_set_phdr_prot(mode);
-  phdr.p_vaddr = lastsect->shdr->sh_addr + lastsect->shdr->sh_size;
-  if (phdr.p_vaddr % elfsh_get_pagesize(file)) 
-    phdr.p_vaddr += elfsh_get_pagesize(file) - phdr.p_vaddr % elfsh_get_pagesize(file);
+  /* Find an existing PT_LOAD for loading the new section, if possible */
+  phtnew = 0;
+  curphdr = &file->pht[file->hdr->e_phnum - 1];
+  for (totsize = 0, cursect = file->sectlist; cursect; cursect = cursect->next)
+    if (cursect->phdr == curphdr)
+      totsize += cursect->shdr->sh_size;
 
-  /* Modify some ondisk information */
-  phdr.p_paddr  = phdr.p_vaddr;
-  hdr.sh_addr   = phdr.p_vaddr;
-  hdr.sh_offset = lastsect->shdr->sh_offset + lastsect->shdr->sh_size;
- 
- /* align section's foffset */
-  if (hdr.sh_offset % elfsh_get_pagesize(file))
-    hdr.sh_offset += elfsh_get_pagesize(file) - hdr.sh_offset %  elfsh_get_pagesize(file);
+  /* If the latest injected PT_LOAD is not big enough or does not match the rights create a new one */
+  if (curphdr->p_type != PT_LOAD || totsize + rsize > curphdr->p_filesz) // ||
+      /* (elfsh_segment_is_executable(curphdr) && elfsh_get_section_writableflag(&hdr)) ||
+	 (elfsh_segment_is_writable(curphdr) && elfsh_get_section_execflag(&hdr))) */
+    phtnew = 1;
+  else
+    {
+      curphdr->p_filesz += rsize;
+      curphdr->p_memsz  += rsize;
+    }
+
+  /* Case where we inject in a new segment */
+  if (phtnew)
+    {
+      
+      /* Create and inject the new PT_LOAD */
+      phdr = elfsh_create_phdr(PT_LOAD, 0, elfsh_get_pagesize(file), mod);
+      phdr.p_flags = elfsh_set_phdr_prot(mode);
+      phdr.p_vaddr = lastsect->shdr->sh_addr + lastsect->shdr->sh_size;
+      if (phdr.p_vaddr % elfsh_get_pagesize(file)) 
+	phdr.p_vaddr += elfsh_get_pagesize(file) - phdr.p_vaddr % elfsh_get_pagesize(file);
+      
+      /* Modify some ondisk information */
+      phdr.p_paddr  = phdr.p_vaddr;
+      hdr.sh_addr   = phdr.p_vaddr;
+      hdr.sh_offset = lastsect->shdr->sh_offset + lastsect->shdr->sh_size;
+      
+      /* align section's foffset */
+      if (hdr.sh_offset % elfsh_get_pagesize(file))
+	hdr.sh_offset += elfsh_get_pagesize(file) - hdr.sh_offset %  elfsh_get_pagesize(file);
+      
+#if __DEBUG_STATIC__
+      printf("[DEBUG_STATIC] Static injection of %s section data in NEW PHDR! \n", sect->name);
+#endif
+    }
+
+  /* Case where we reuse a PT_LOAD */
+  else
+    {
+      hdr.sh_addr   = curphdr->p_vaddr  + curphdr->p_memsz - rsize;
+      hdr.sh_offset = curphdr->p_offset + curphdr->p_memsz - rsize;
 
 #if __DEBUG_STATIC__
-  printf("[DEBUG_STATIC] Static injection of %s section data ! \n", sect->name);
+      printf("[DEBUG_STATIC] Static injection of %s section data with EXISTING PHDR! \n", sect->name);
 #endif
+    }
 
   /* Synchronize the ondisk perspective */
   if (elfsh_insert_shdr(file, hdr, lastsect->index + 1, sect->name, 1) < 0)
@@ -675,11 +713,16 @@ int		elfsh_insert_static_section(elfshobj_t	 *file,
 		      "Cannot insert sectsym", -1);
 
   /* Insert the new program header in the runtime PHDR */
-  phdr.p_offset = sect->shdr->sh_offset;
-  sect->phdr = elfsh_insert_phdr(file, &phdr); 
-  if (!sect->phdr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot insert PHT entry", -1);
+  if (phtnew)
+    {
+      phdr.p_offset = sect->shdr->sh_offset;
+      sect->phdr = elfsh_insert_phdr(file, &phdr); 
+      if (!sect->phdr)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Cannot insert PHT entry", -1);
+    }
+  else
+    sect->phdr = curphdr;
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }

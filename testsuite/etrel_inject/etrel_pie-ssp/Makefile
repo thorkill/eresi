@@ -11,19 +11,22 @@ PAXCTL	= /sbin/paxctl
 CC	= gcc
 RELSRC	= simple.c
 RELOBJ	= simple.o
+PIESRC	= host.c
+PIEOBJ	= host.o
 
 RM	= rm -f
 CFLAGS	= $(OPT) -I../../libhash/include/
 
 all	: 
+	$(CC) $(PIESRC) -pie #-ssp
 	$(CC) $(RELSRC) -o $(RELOBJ) -c -fPIC
 
-	$(PAXCTL) -s -p -m -r -x ../../../vm/elfsh
+	$(PAXCTL) -permxs ../../../vm/elfsh
 	$(PAXCTL) -v ../../../vm/elfsh
 
 clean	:
-	$(RM) *~ \#* *\# $(RELOBJ)
-
+	$(RM) *~ \#* *\# $(RELOBJ) $(PIEOBJ)
 
 fclean	: clean
-	$(RM) $(RELOBJ) fake_main
+	$(RM) a.out fake_aout
+

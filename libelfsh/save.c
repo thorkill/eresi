@@ -135,8 +135,8 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   int		index;
   elfsh_Ehdr	header;
   elfsh_Phdr	*pht;
+  unsigned int	totsize;
   
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
@@ -156,6 +156,20 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
       if (elfsh_relocate_object(file, file->listrel[index], ELFSH_RELOC_STAGE2) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Final stage relocation failed", -1);
+    }
+
+  /* Insert a padding section to make the latest top-injected code section starting on a page bound */
+  actual = file->sectlist;
+  while (!actual->shdr->sh_addr)
+    actual = actual->next;
+  totsize = actual->shdr->sh_addr - sizeof(elfsh_Ehdr) - (sizeof(elfsh_Phdr) * file->hdr->e_phnum);
+  if (totsize % elfsh_get_pagesize(file))
+    {
+      actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, NULL, ELFSH_CODE_INJECTION,
+				    totsize % elfsh_get_pagesize(file), 0);
+      if (!actual)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to inject page padding section", -1);
     }
 
   /* Copy the object before saving (so that we dont strip the working file) */

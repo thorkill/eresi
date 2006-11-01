@@ -178,7 +178,9 @@ int			vm_trace_functions(FILE *fp, elfsh_Sym *symtab,
   char			*func_name;
   int			*argcount;
   unsigned int		numargs;
+#if 0
   char			buf[BUFSIZ];
+#endif
 
   /* Some preliminaries checks */
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

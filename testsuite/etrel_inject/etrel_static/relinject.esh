@@ -11,6 +11,9 @@ source ./load_lib.esh
 
 reladd 1 2
 
+profile
+profile
+
 redir puts puts_troj
 redir legit_func hook_func
 
