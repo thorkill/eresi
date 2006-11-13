@@ -164,6 +164,7 @@ int		vm_trace_add(FILE *fp, int *argcount, char *func_name)
 
 
 
+
 /* Prepare to trace functions */
 int			vm_trace_functions(FILE *fp, elfsh_Sym *symtab, 
 					   unsigned int symnum, char **selfuncs)
@@ -268,12 +269,14 @@ int			vm_trace_functions(FILE *fp, elfsh_Sym *symtab,
 
 /* XXX: The good syntax should be : 
 ** 
-** trace <add>     funcname  [optional_trace_name]
-** trace <rm>      funcname  [optional_trace_name]
-** trace <enable>  funcname  [optional_trace_name]
-** trace <disable> funcname  [optional_trace_name]
-** trace <create>  tracename <optionals funcnames>
-** trace <delete>  tracename
+** trace <add>     funcname     [optional_trace_name]  : add a function to a given trace
+** trace <rm>      funcname     [optional_trace_name]  : remove a function from a given trace
+** trace <enable>  funcname|all [optional_trace_name]  : enable tracing for a function in a given trace (enabled by default after a add)
+** trace <disable> funcname|all [optional_trace_name]  : disable tracing for a function in a given trace
+** trace <create>  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default
+** trace <delete>  tracename                           : delete a trace
+** trace <flush>   tracename                           : remove all functions from a given trace
+** trace <list>                                        : list all available traces
 **
 */                                  
 int    		cmd_trace()
