@@ -8,7 +8,6 @@
 */
 #include "elfsh.h"
 
-
 #define TRACE_CFLOW 	1
 #define TRACE_PLT 	2
 #define TRACE_GOT 	3
@@ -21,6 +20,18 @@ typedef struct 	s_trace
   
 } e2dbgtraced_t;
 
+/* XXX: The good syntax should be : 
+** 
+** trace <add>     funcname     [optional_trace_name]  : add a function to a given trace
+** trace <rm>      funcname     [optional_trace_name]  : remove a function from a given trace
+** trace <enable>  funcname|all [optional_trace_name]  : enable tracing for a function in a given trace (enabled by default after a add)
+** trace <disable> funcname|all [optional_trace_name]  : disable tracing for a function in a given trace
+** trace <create>  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default
+** trace <delete>  tracename                           : delete a trace
+** trace <flush>   tracename                           : remove all functions from a given trace
+** trace <list>                                        : list all available traces
+**
+*/                             
 
 /* XXX: Need to use libgcc and not gcc directly */
 FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
@@ -260,30 +271,17 @@ int			vm_trace_functions(FILE *fp, elfsh_Sym *symtab,
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, count - 1);
 }
 
-
-
-
-
-
-
-
-/* XXX: The good syntax should be : 
-** 
-** trace <add>     funcname     [optional_trace_name]  : add a function to a given trace
-** trace <rm>      funcname     [optional_trace_name]  : remove a function from a given trace
-** trace <enable>  funcname|all [optional_trace_name]  : enable tracing for a function in a given trace (enabled by default after a add)
-** trace <disable> funcname|all [optional_trace_name]  : disable tracing for a function in a given trace
-** trace <create>  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default
-** trace <delete>  tracename                           : delete a trace
-** trace <flush>   tracename                           : remove all functions from a given trace
-** trace <list>                                        : list all available traces
-**
-*/                                  
-int    		cmd_trace()
+/*
+** TODO: 
+**  - Module more
+**  - Support arguments
+**  - use libgcc and not gcc with file
+*/
+int		trace_add(const char *name, const char *optarg)
 {
   int	       	index;
-  int		symnum;
-  int		dynsymnum;
+  int		symnum = 0;
+  int		dynsymnum = 0;
   int		count = 0;
   elfsh_Sym	*symtab;
   elfsh_Sym	*dynsym;
@@ -300,6 +298,7 @@ int    		cmd_trace()
   char		rtfname[osize];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   elfsh_setup_hooks();
 
   vm_output(" .: Tracing Functions :.\n\n");
@@ -307,6 +306,7 @@ int    		cmd_trace()
   /* Do we have symbols ? */
   symtab = elfsh_get_symtab(world.curjob->current, &symnum);
   dynsym = elfsh_get_dynsymtab(world.curjob->current, &dynsymnum);
+
   if (symnum + dynsymnum == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No symbols found", (-1));
@@ -345,6 +345,7 @@ int    		cmd_trace()
   if (rename(tfname, rtfname) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Rename failed", (-1));
+
   snprintf(buf, BUFSIZ, "gcc -c %s -o %s", rtfname, rsofname);
   vm_system(buf);
 
@@ -353,6 +354,7 @@ int    		cmd_trace()
   if (!tobj)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to load relocatable file", (-1));
+
   idx = elfsh_inject_etrel(world.curjob->current, tobj);	  
   if (idx < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -385,5 +387,164 @@ int    		cmd_trace()
   }
   
   vm_output("\n [*] Binary ready to be traced. You can now save and run it.\n\n");
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_rm(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: rm\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_enable(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: enable\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_disable(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: disable\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_create(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: create\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_delete(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: delete\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_flush(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: flush\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* TODO: make it ! */
+int		trace_list(const char *name, const char *optarg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  vm_output("trace: list\n\n");
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Create the structure that store trace cmd informations */
+elfshtracecmd_t   *trace_create_CMDENT(int	(*exec)(char *name, char *optarg),
+				       char	flagName,
+				       char 	flagArg)
+{
+  elfshtracecmd_t *new;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  XALLOC(new, sizeof(elfshtracecmd_t), NULL);
+  new->exec	= exec;
+  new->flagName	= flagName;
+  new->flagArg	= flagArg;
+ 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+}
+
+/* Add a command */
+int 		trace_addcmd(char *cmd, void *exec, char flagName, char flagArg)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  hash_add(&trace_cmd_hash, cmd, (void *) trace_create_CMDENT(exec, flagName, flagArg));
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int 			cmd_trace()
+{
+  elfshtracecmd_t	*cmd;
+  char			logbuf[BUFSIZ];
+  char			*fArg, *sArg;
+  int			ret = 0;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* classic msg */
+  if (!world.curjob->curcmd->param[0])
+    {
+      snprintf(logbuf, BUFSIZ - 1,
+	       "\t Trace command options: \n\n"
+	       " add     funcname     [optional_trace_name]  : add a function to a given trace\n"
+	       " rm      funcname     [optional_trace_name]  : remove a function from a given trace\n"
+	       " enable  funcname|all [optional_trace_name]  : enable tracing for a function in a given trace (enabled by default after a add)\n"
+	       " disable funcname|all [optional_trace_name]  : disable tracing for a function in a given trace\n"
+	       " create  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default\n"
+	       " delete  tracename                           : delete a trace\n"
+	       " flush   tracename                           : remove all functions from a given trace\n"
+	       " list                                        : list all available traces\n\n");
+      
+      vm_output(logbuf);
+    }
+  else
+    {
+      cmd = hash_get(&trace_cmd_hash, world.curjob->curcmd->param[0]);
+      
+      if (!cmd)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unknown command", -1);
+
+      fArg = sArg = NULL;
+
+      if (cmd->flagName > 0)
+	{
+	  /* First argument is needed and doesn't submited */
+	  if (!world.curjob->curcmd->param[1] && cmd->flagName == 2)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "First argument is needed", -1);
+
+	  sArg = world.curjob->curcmd->param[1];
+
+	  if (cmd->flagArg > 0)
+	    {
+	      /* Second argument is needed and doesn't submited */
+	      if (!world.curjob->curcmd->param[2] && cmd->flagArg == 2)
+		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+				  "Second argument is needed", -1);
+
+	      fArg = world.curjob->curcmd->param[2];
+	    }
+	}
+
+      ret = cmd->exec(fArg, sArg);
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

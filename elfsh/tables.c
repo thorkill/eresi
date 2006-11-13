@@ -51,6 +51,8 @@ hash_t          fg_color_hash;
 hash_t          bg_color_hash;
 hash_t          t_color_hash;
 
+/* Trace hash */
+hash_t		trace_cmd_hash;
 
 /* Fill all the Level 1 Objects hash tables */
 static void	setup_L1hash()
@@ -1024,6 +1026,21 @@ void setup_color_type()
   hash_add(&t_color_hash, "pedition"   , (void *) vm_colorblank());
   hash_add(&t_color_hash, "instr"      , (void *) vm_colorblank());
 }
+
+
+/* Setup all used sub functions */
+void setup_trace_table()
+{
+  trace_addcmd("add", 		(void *) trace_add, 	2, 1);
+  trace_addcmd("rm",		(void *) trace_rm,     	2, 1);
+  trace_addcmd("enable",	(void *) trace_enable,	2, 1);
+  trace_addcmd("disable",	(void *) trace_disable,	2, 1);
+  trace_addcmd("create",	(void *) trace_create,	2, 1);
+  trace_addcmd("delete",	(void *) trace_delete,	2, 0);
+  trace_addcmd("flush",		(void *) trace_flush,	2, 0);
+  trace_addcmd("list",		(void *) trace_list,	0, 0);
+}
+
    
 /* Setup all hash tables */
 void		vm_setup_hashtables()
@@ -1041,6 +1058,7 @@ void		vm_setup_hashtables()
   hash_init(&fg_color_hash, 12);
   hash_init(&bg_color_hash, 12);
   hash_init(&t_color_hash, 6);
+  hash_init(&trace_cmd_hash, 10);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();
@@ -1048,4 +1066,5 @@ void		vm_setup_hashtables()
   setup_L2hash();
   setup_color();
   setup_color_type();
+  setup_trace_table();
 }

@@ -749,6 +749,21 @@ typedef struct        s_L1handler
 
 }		elfshL1_t;
 
+/* Trace structures */
+typedef struct 	s_elfshtracecmd
+{
+  int 		(*exec)(char *name, char *optarg);	/* Function used */
+
+  /* Code for this options:
+  ** 0: doesn't exist
+  ** 1: optional
+  ** 2: needed
+  */
+  char		flagName;	/* Need a first argument */
+  char		flagArg;       	/* Need a second argument */
+}		elfshtracecmd_t;
+
+
 #if defined(USE_READLN)
 extern rl_command_func_t *rl_ctrll;
 #endif
@@ -788,9 +803,11 @@ extern hash_t		vern_L2_hash;   /* For .gnu.version_r */
 extern hash_t		hashb_L2_hash;  /* For .hash (bucket) */
 extern hash_t		hashc_L2_hash;  /* For .hash (chain) */
 
-extern hash_t           bg_color_hash;   /* colors def */
-extern hash_t           fg_color_hash;   /* colors def */
-extern hash_t           t_color_hash;    /* colors type */
+extern hash_t           bg_color_hash; 	/* colors def */
+extern hash_t           fg_color_hash; 	/* colors def */
+extern hash_t           t_color_hash;  	/* colors type */
+
+extern hash_t		trace_cmd_hash;	/* trace cmd table */
 
 /* Lattice for I/O */
 extern char		*(*hooks_input[ELFSH_IONUM])();
@@ -937,9 +954,20 @@ int		cmd_test();
 
 int		vm_screen_switch();
 
-FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname);
-int		vm_trace_add(FILE *fp, int *argcount, char *func_name);
+/* Trace functions */
+FILE		  *vm_trace_init(char *tfname, char *rsofname, char *rtfname);
+int		  vm_trace_add(FILE *fp, int *argcount, char *func_name);
+int 	          trace_addcmd(char *cmd, void *exec, char flagName, char flagArg);
 
+/* Trace cmds */
+int		trace_add(const char *name, const char *optarg);
+int		trace_rm(const char *name, const char *optarg);
+int		trace_enable(const char *name, const char *optarg);
+int		trace_disable(const char *name, const char *optarg);
+int		trace_create(const char *name, const char *optarg);
+int		trace_delete(const char *name, const char *optarg);
+int		trace_flush(const char *name, const char *optarg);
+int		trace_list(const char *name, const char *optarg);
 
 /* Hash functions */
 int           vm_hashunk(int i);
