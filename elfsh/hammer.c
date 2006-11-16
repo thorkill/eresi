@@ -53,6 +53,7 @@ int cmd_unstrip() {
 int cmd_analyse() {
 
  char logbuf[BUFSIZ];
+ int ret = 0;
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -61,17 +62,20 @@ int cmd_analyse() {
  vm_output(logbuf);
 
  memset(logbuf,0x0,BUFSIZ);
+ ret = mjr_analyse(&world.mjr_session, NULL);
  snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : object analysis %s\n",
- (mjr_analyse(&world.mjr_session, NULL)) ? "completed successfully" : "faild");
+ (ret) ? "completed successfully" : "faild");
 
  vm_output(logbuf);
-
+ 
+ if (ret) {
  memset(logbuf,0x0,BUFSIZ);
  snprintf(logbuf, BUFSIZ - 1, " .: mjollnir : calls seen: %d, recognized destination: %d\n",
   world.mjr_session.cur->st_calls_seen,
   world.mjr_session.cur->st_calls_found
   );
  vm_output(logbuf);
+ }
 
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 

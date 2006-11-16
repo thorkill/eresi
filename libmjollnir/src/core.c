@@ -2,7 +2,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.8 2006-08-02 09:17:33 thor Exp $
+ * $Id: core.c,v 1.9 2006-11-16 09:28:38 thor Exp $
  *
  */
 
@@ -14,12 +14,12 @@ int mjr_analyse(mjrSession *sess,int flags) {
  elfsh_Sym  *sym;
  int num_sht,idx_sht;
 
- if (NULL == sess)
-  return -1;
+ if ((NULL == sess) || (NULL == sess->cur))
+  return 0;
 
  if (!(shtlist = elfsh_get_sht(sess->cur->obj, &num_sht))) {
   printf("faild to get sht!\n");
-  return -1;
+  return 0;
  }
 
 #if __DEBUG__
