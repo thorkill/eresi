@@ -6,7 +6,39 @@
 */
 #include "elfsh.h"
 
+/* Unload all dependence for an object */
+static int	vm_unload_dep(elfshobj_t *obj)
+{
+  elfshobj_t	*actual;
+  elfshobj_t	*tmp;
+  char		logbuf[BUFSIZ];
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Unload each dependence */
+  for (actual = obj->deplist; actual != NULL; actual = actual->next)
+    {
+      if (!world.state.vm_quiet)
+	{
+	  snprintf(logbuf, BUFSIZ - 1, "\n [*] Object dependence %s unloaded\n",
+		   actual->name);
+	  vm_output(logbuf);	  
+	}
+
+      /* A dependence can't be on the main list */
+      if (world.curjob->current && world.curjob->current->id == actual->id)
+	  world.curjob->current = world.curjob->list;
+
+      hash_del(&obj->child_hash, actual->name);
+
+      /* A dependence can have its own dependences */
+      vm_unload_dep(actual);
+
+      elfsh_unload_obj(actual);
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 /* Unload a file from the shell */
 int		cmd_unload()
@@ -25,6 +57,10 @@ int		cmd_unload()
   cur = vm_lookup_file(world.curjob->curcmd->param[0]);
   if (cur == NULL)
     goto bad;
+
+  if (cur->parent != NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "You can't unload a dependence, you have to unload the main file", -1);
 
   /* If the element is the first of the list, update the head pointer ... */
   if (world.curjob->list && world.curjob->list->id == cur->id)
@@ -65,12 +101,14 @@ int		cmd_unload()
   time(&uloadt);
   if (!world.state.vm_quiet)
     {
-      snprintf(logbuf, BUFSIZ - 1, "\n [*] Object %s unloaded on %s \n\n",
+      snprintf(logbuf, BUFSIZ - 1, "\n [*] Object %s unloaded on %s \n",
 	       todel->name, ctime(&uloadt));
       vm_output(logbuf);
     }
   hash_del(&file_hash, todel->name);
+  vm_unload_dep(todel);
   elfsh_unload_obj(todel);
+  vm_output("\n");
  end2:
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -510,6 +510,23 @@ typedef struct	s_obj
   hash_t	 redir_hash;		/* Redirections hash table */
   elfshlinkmap_t *linkmap;		/* Linkmap */
 
+  /* Every object can have childs
+  The number 0 is used as a seperator:
+  	1: (Father)
+	|-> 101 Child1
+	|-> ....
+	|-> 1012 Child12
+
+  Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
+  */
+#define 	ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
+#define 	ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
+#define 	ELFSH_CHILD_MAX 	99
+  hash_t	 child_hash;		/* Childs hash table */
+  struct s_obj	 *parent;		/* Object Parent */
+  int		lastchildid;	      	/* Last id */
+  struct s_obj	*deplist;		/* Dependence list (using next pointer)*/
+  struct s_obj	*deplistlast;		/* Last element of the list */
 }		 elfshobj_t;
 
 

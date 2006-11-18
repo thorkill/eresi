@@ -107,6 +107,7 @@ extern asm_processor	proc;
 #define	ELFSH_ERRVAR		"ERR"
 #define	ELFSH_SHELLVAR		"SHELL"
 #define	ELFSH_EDITVAR		"EDITOR"
+#define ELFSH_LIBPATHVAR	"LPATH"
 
 /* ELF Versions */
 #define ELFSH_VERTYPE_NONE    0
@@ -845,6 +846,9 @@ extern elfshconst_t   elfsh_verentry_type[ELFSH_VERENTRY_MAX];
 extern int         elfsh_net_client_count; /* Number of clients connected */
 //extern elfshsock_t    elfsh_net_serv_sock;    /* The main socket structur */
 
+/* Lib path */
+extern char		elfsh_libpath[BUFSIZ];
+
 /* Commands execution handlers, each in their respective file */
 int		cmd_dyn();
 int		cmd_sht();
@@ -1096,6 +1100,11 @@ int		dprintf(int fd, char *format, ...);
 void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
 int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
+int		vm_load_enumdep(elfshobj_t *obj);
+int		vm_load_dep(elfshobj_t *parent, char *name, elfsh_Addr base, elfshlinkmap_t *lm);
+char	     	*vm_load_searchlib(char *name);
+elfshobj_t	*vm_is_dep(elfshobj_t *obj, char *path);
+elfshobj_t	*vm_is_depid(elfshobj_t *obj, int id);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
 

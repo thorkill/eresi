@@ -234,15 +234,28 @@ char		*vm_build_unknown(char *buf, const char *str, u_long type)
 elfshobj_t	*vm_getfile(u_int index)
 {
   elfshobj_t	*cur;
+  elfshobj_t	*subcur;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (cur = world.curjob->list; cur; cur = cur->next)
-    if (cur->id == index)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+    {
+      if (cur->id == index)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+
+      if ((subcur = vm_is_depid(cur, index)) != NULL)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+    }
+
   for (cur = world.shared; cur; cur = cur->next)
-    if (cur->id == index)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+    {
+      if (cur->id == index)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+
+      if ((subcur = vm_is_depid(cur, index)) != NULL)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+    }
+
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to find file", (NULL));
 }

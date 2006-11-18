@@ -54,6 +54,9 @@ hash_t          t_color_hash;
 /* Trace hash */
 hash_t		trace_cmd_hash;
 
+/* Lib path store variable */
+char	       elfsh_libpath[BUFSIZ];
+
 /* Fill all the Level 1 Objects hash tables */
 static void	setup_L1hash()
 {
@@ -861,6 +864,35 @@ static void	setup_cmdhash()
   
 }
 
+/* Mix default library path with LD_LIBRARY_PATH variable */
+static char	*get_libpath()
+{
+  int		len;
+  char		*ldenv;
+
+  /* Set default value */
+  strncpy(elfsh_libpath, ELFSH_LIBPATH, BUFSIZ);
+  elfsh_libpath[BUFSIZ - 1] = '\0';
+
+  len = strlen(elfsh_libpath);
+
+  ldenv = getenv("LD_LIBRARY_PATH");
+
+  /* Check if we use LD_LIBRARY_PATH */
+  if (ldenv != NULL && len+strlen(ldenv)+2 < BUFSIZ)
+    {
+      /* We separate each path with ; */
+      if (ldenv[0] != ';' && elfsh_libpath[len - 1] != ';')
+	  strcat(elfsh_libpath, ";");
+      else if (ldenv[0] == ';' && elfsh_libpath[len - 1] == ';')
+	  ldenv++;
+
+      strcat(elfsh_libpath, ldenv);
+    }
+
+  return elfsh_libpath;
+}
+
 
 /* Setup variables hash :
  * - Initialize $_ (last result variable) to 0 
@@ -873,12 +905,14 @@ static void	setup_varshash()
   elfshpath_t	*r;
   elfshpath_t	*s;
   elfshpath_t	*e;
+  elfshpath_t	*l;
 
   f = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
   g = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
   r = vm_create_IMMED(ELFSH_OBJINT, 1, 0xFFFFFFFF);
   s = vm_create_IMMEDSTR(1, ELFSH_SHELL);
   e = vm_create_IMMEDSTR(1, ELFSH_EDITOR);
+  l = vm_create_IMMEDSTR(1, get_libpath());
 
   hash_init(&vars_hash, 251);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
@@ -886,6 +920,7 @@ static void	setup_varshash()
   hash_add(&vars_hash, ELFSH_ERRVAR, r);
   hash_add(&vars_hash, ELFSH_SHELLVAR, s);
   hash_add(&vars_hash, ELFSH_EDITVAR, e);
+  hash_add(&vars_hash, ELFSH_LIBPATHVAR, l);
 }
 
 
