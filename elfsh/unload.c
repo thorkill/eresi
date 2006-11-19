@@ -10,7 +10,6 @@
 static int	vm_unload_dep(elfshobj_t *obj)
 {
   elfshobj_t	*actual;
-  elfshobj_t	*tmp;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
