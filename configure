@@ -141,6 +141,13 @@ echo "#define ELFSH_MODPATH              " $1   >> $VARSFILE
 MODPATHSET="1"
 ;;
 
+--set-lib-path*)
+shift
+echo " [*] Setting ELFsh library search path to " $1
+echo "#define ELFSH_LIBPATH    		 " $1  >> $VARSFILE
+LIBPATHSET="1"
+;;
+
 --prefix*)
 shift
 echo " [*] Prefix:  " $1
@@ -291,6 +298,10 @@ esac
 
 if [ "$MODPATHSET" != "1" ]; then
     echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"" >> $VARSFILE
+fi
+
+if [ "$LIBPATHSET" != "1" ]; then
+    echo "#define ELFSH_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
 fi
 
 if [ "$SHELLSET" != "1" ]; then
