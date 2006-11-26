@@ -47,6 +47,7 @@ typedef struct          s_hash
 {
   hashent_t             *ent;
   int                   size;
+  int			elmnbr;
 }                       hash_t;
 
 /* hash.c */
@@ -60,8 +61,11 @@ hashent_t 	*hash_get_ent(hash_t *h, char *key);	/* Get an entry metadata */
 void		hash_print(hash_t *h);			/* Print the hash table */
 char**		hash_get_keys(hash_t *h, int* n);	/* XXX: need comment */
 int             hash_apply(hash_t *h, void *ptr, 
-			   int (*func)(hashent_t *ph, void *pptr)); /* apply function */
-
-
+			   int (*f)(hashent_t *e, void *p)); /* Apply function */
+int		hash_merge(hash_t *dst, hash_t *src);	/* Fuse hashes */
+int		hash_unmerge(hash_t *dst, hash_t *src); /* Quotient hashes */
+int		hash_size(hash_t *hash);		/* Return the elm nbr */
+void*		hash_get_one(hash_t *hash);		/* Get any object */
+void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
 
 #endif /* _LIBHASH_H_ */

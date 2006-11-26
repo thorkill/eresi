@@ -7,11 +7,30 @@
 Changes in intermediate beta versions are listed in the first public version
 they appear.
 
+0.71a1:
+-------
+ - Added    : Now loads dependences when loading a file (also added deps API)
+ - Core     : Change in the id naming scheme of objects
+ - Core     : Changed elfsh_inject_etrel_withlist for using hashes
+ - Core     : Removed lists a bit everywhere (elfshjob, elfshobj) to use hashes
+ - Added    : Improved libhash API (5 more functions !)
+
+0.7a10-cela:
+------------
+ - Bugfix   : Added sanity checks to elfsh_load_hdr()
+ - Core     : Now save memory as much as possible when top-injecting sections
+
+0.7a9-anjo:
+-----------
+ - Core     : Improved the symbol priority resolving using linkmap in e2dbg
+
 0.7a8-moto:
+-----------
  - Bugfix  : fixed pre-interp issues on relinjection (bug #18)
  - Added   : ELFSH_SELECT_INJECTION macro
 
 0.7a7p2:
+--------
  - Bugfix  : bss.c - Fixed SIGSEGV on fixup with enabled debugging
  - Bugfix  : libelfsh/include/libelfsh-internat.h - fixed ELFSH_PROFILE_ERR and XCLOSE
              - removed compilation warnings
@@ -21,6 +40,7 @@ they appear.
  - Bugfix  : Modflow - fixed profiling error when recognition of ptr functions was enabled
 
 0.7a7p1:
+--------
  - Bugfix  : Added missing libmjollnir
  - Bugfix  : Removed double definition of ELFSH_EDITION
  - Bugfix  : Fixed SIGSEGV after strip/save (by zg)
@@ -31,6 +51,7 @@ they appear.
  - Bugfix  : Fixed SIGSEGV after sstrip/save
 
 0.7a6p3:
+--------
  - Added   : libmjollnir for dress-like features and other usefull stuff (WIP)
 
 0.7a6p2:

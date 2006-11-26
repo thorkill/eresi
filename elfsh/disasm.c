@@ -16,6 +16,9 @@ static elfshlist_t* second = NULL;
 char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, 
 			    elfsh_SAddr *roffset)
 {
+  hashent_t	*ent;
+  int		index;
+
   elfshobj_t	*actual;
   char		*name = NULL;
   char		*dname = NULL;
@@ -26,8 +29,8 @@ char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr,
   elfsh_SAddr	bestoffset;
   elfshobj_t	*bestfile;
   char		buf[BUFSIZ];
-  
   char		*str;
+
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -57,33 +60,38 @@ char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr,
   
   /* Find the best symbol by searching in all the objects of the process */
   if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-    for (actual = world.curjob->list; actual != NULL; actual = actual->next)
-      {  
-	if (!actual->linkmap)
-	  continue;
-
-	name = elfsh_reverse_symbol(actual, addr, &offset);
-	dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
-
-	if (!name || (offset < 0) || (dname && doffset < offset && doffset >= 0))
+      for (index = 0; index < world.curjob->loaded.size; index++)
+	for (ent = &world.curjob->loaded.ent[index];
+	     ent != NULL && ent->key != NULL;
+	     ent = ent->next)
 	  {
-	    name = dname;
-	    offset = doffset;
-	  }  
-
-	if (!bestname || (bestoffset < 0) || (name && offset < bestoffset && offset >= 0))
-	  {
-	    bestname = name;
-	    bestoffset = offset;
-	    bestfile = actual;
-	  }
-
+	    actual = ent->data;
+	    if (!actual->linkmap)
+	      continue;
+	    
+	    name = elfsh_reverse_symbol(actual, addr, &offset);
+	    dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+	    
+	    if (!name || (offset < 0) || 
+		(dname && doffset < offset && doffset >= 0))
+	      {
+		name = dname;
+		offset = doffset;
+	      }  
+	    
+	    if (!bestname || 
+		(bestoffset < 0) || (name && offset < bestoffset && offset >= 0))
+	      {
+		bestname = name;
+		bestoffset = offset;
+		bestfile = actual;
+	      }
+	    
 #if __DEBUG_RESOLVE__
-	printf("[elfsh:resolve] file : %s name %s %d\n", 
-	       actual->name, name, offset);
+	    printf("[elfsh:resolve] file : %s name %s %d\n", 
+		   actual->name, name, offset);
 #endif
- 
-      }
+	  }
   
 #if __DEBUG_RESOLVE__
   printf("[elfsh:resolve] BEST name %s %d\n", bestname, bestoffset);

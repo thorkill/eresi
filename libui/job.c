@@ -16,16 +16,20 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XALLOC(new, sizeof(elfshjob_t), NULL);
-
   memcpy(new, job, sizeof(elfshjob_t));
 
-  /* empt?? new job */
-  new->list = NULL;
-  new->current = NULL;
-  new->curcmd = NULL;
-  new->active = 0;
-  new->sourced = 0;
+  bzero(&new->loaded, sizeof(hash_t));
+  bzero(&new->dbgloaded, sizeof(hash_t));
+  hash_init(&new->loaded, 51);
+  hash_init(&new->dbgloaded, 11);
 
+  /* empty new job */
+  /* XXX: Should we clear the elfshscreen_t inside this new job ? */
+  new->curcmd         = NULL;
+  new->active         = 0;
+  new->sourced        = 0;
+  new->oldline        = NULL;
+  
 #if defined(USE_READLN)
   new->screen.buf = new->screen.tail = new->screen.head = NULL;
 #endif
@@ -35,9 +39,7 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
       new->script[i] = NULL;
       new->lstcmd[i] = NULL;
     }
-
   new->createtime = time(&new->createtime);
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 

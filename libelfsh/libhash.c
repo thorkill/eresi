@@ -13,7 +13,8 @@
 int	hash_init(hash_t *h, int size)
 {
   HASHALLOC(h->ent, size * sizeof(hashent_t), -1);
-  h->size = size;
+  h->size   = size;
+  h->elmnbr = 0;
   return (0);
 }
 
@@ -54,6 +55,7 @@ int		hash_add(hash_t *h, char *key, void *data)
 	actual = actual->next;
       actual->next = new;
     }
+  h->elmnbr++;
   return (0);
 }
 
@@ -79,6 +81,7 @@ int		hash_del(hash_t *h, char *key)
 	}
       else
 	bzero(actual, sizeof (hashent_t));
+      h->elmnbr--;
       return (0);
     }
 
@@ -96,6 +99,7 @@ int		hash_del(hash_t *h, char *key)
   todel = actual->next;
   actual->next = actual->next->next;
   XFREE(todel);
+  h->elmnbr--;
   return (0);
 }
 
@@ -206,10 +210,10 @@ void            hash_print(hash_t *h)
    }
 }
 
-
-
 /* Apply func all entries */
-int		hash_apply(hash_t *h, void *ptr, int (*func)(hashent_t *ph, void *pptr))
+int		hash_apply(hash_t	*h, 
+			   void		*ptr, 
+			   int		(*func)(hashent_t *ph, void *pptr))
 {
   hashent_t     *actual;
   int           index;
@@ -260,3 +264,77 @@ int		hash_compare(hash_t *first, hash_t *two)
 }
 
 
+/* Merge hash tables in the first one */
+/* We cannot use hash_get_keys() because we dont know the type of hashed objects */
+int		hash_merge(hash_t	*dst,
+			   hash_t	*src)
+{
+  hashent_t     *actual;
+  int           index;
+  int		ret;
+
+  /* Make sure we dont inject element already presents */
+  if (!src || !dst || src->elmnbr == 0)
+    return (0);
+  for (ret = index = 0; index < src->size; index++)
+    for (actual = &src->ent[index];
+	 actual != NULL && actual->key != NULL;
+	 actual = actual->next)
+      if (!hash_get(dst, actual->key))
+	ret += hash_add(dst, actual->key, actual->data);
+  return ret;
+}
+
+
+/* Merge hash tables in the first one */
+/* We cannot use hash_get_keys() because we dont know the type of hashed objects */
+int		hash_unmerge(hash_t	*dst,
+			     hash_t	*src)
+{
+  hashent_t	*actual;
+  int           index;
+  int		ret;
+  
+  /* Make sure we dont inject element already presents */
+  if (!src || !dst || src->elmnbr == 0)
+    return (0);
+  for (ret = index = 0; index < src->size; index++)
+    for (actual = &src->ent[index];
+	 actual != NULL && actual->key != NULL;
+	 actual = actual->next)
+      if (hash_get(dst, actual->key))
+	ret += hash_del(dst, actual->key);
+  return ret;
+}
+
+
+/* Return the hash size */
+int		hash_size(hash_t *hash)
+{
+  return (hash ? hash->elmnbr : 0);
+}
+
+/* Return the only element of this hash */
+void*		hash_get_single(hash_t *hash)
+{
+  char		**keys;
+  int		idx;
+
+  if (!hash || hash_size(hash) != 1)
+    return (NULL);
+  keys = hash_get_keys(hash, &idx);
+  return (hash_get(hash, keys[0]));
+}
+
+/* Return an element of this hash */
+/* The choice is non-deterministic */
+void*		hash_get_one(hash_t *hash)
+{
+  char		**keys;
+  int		index;
+
+  if (!hash || !hash_size(hash))
+    return (NULL);
+  keys = hash_get_keys(hash, &index);
+  return (hash_get(hash, keys[0]));
+}

@@ -380,6 +380,9 @@ typedef struct		s_rel
 struct			s_sect;
 struct			s_obj;
 
+typedef struct s_sect elfshsect_t;
+typedef struct s_obj  elfshobj_t;
+
 
 /* Block type */
 typedef struct		s_block
@@ -397,7 +400,7 @@ typedef elfshblock_t	elfshpltent_t;
 
 
 /* Section data type */
-typedef struct		s_sect
+struct			s_sect
 {
 
   /* Filled at creation */
@@ -410,7 +413,7 @@ typedef struct		s_sect
   int			index;		/* Section index in sht						*/
   struct s_sect		*next;		/* Next section in the list					*/
   struct s_sect		*prev;		/* Prev section in the list					*/
-
+  
   /* ELFsh section state */
 #define		ELFSH_SECTION_ANALYZED		(1 << 0)
 #define		ELFSH_SECTION_INSERTED		(1 << 1)
@@ -437,7 +440,7 @@ typedef struct		s_sect
   /* Changed during extension */
   u_int			curend;		/* Current real end of section : we save room when possible */
 
-}			elfshsect_t;
+};
 
 
 /* Link map structure */
@@ -466,7 +469,7 @@ typedef struct	s_rehdr
 
 
 /* ELF object structure */
-typedef struct	s_obj
+struct		 s_obj
 {
   elfsh_Ehdr	 *hdr;				/* Elf header */
   elfsh_Shdr	 *sht;				/* Section header table */
@@ -482,7 +485,7 @@ typedef struct	s_obj
 
   int		 fd;			/* File descriptor for the original file */
   char		 *name;			/* Object path */
-  struct stat	fstat;		/* File stat */
+  struct stat	 fstat;			/* File stat */
   int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
   int		 rights;		/* 0 = RO, 1 = WR */
   time_t	 loadtime;		/* Time of Loading */
@@ -490,7 +493,7 @@ typedef struct	s_obj
 
   char		 running;		/* Is the process running ? */
   char		 scanned;		/* Has the object already been block scanned ? */
-  char		 hdr_broken;	/* Is the header broken/corrupted ? */
+  char		 hdr_broken;		/* Is the header broken/corrupted ? */
   char		 read;			/* Has the object already been read ? */
   char		 shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
   char		 strip;			/* Mark file as stripped */
@@ -510,24 +513,24 @@ typedef struct	s_obj
   hash_t	 redir_hash;		/* Redirections hash table */
   elfshlinkmap_t *linkmap;		/* Linkmap */
 
-  /* Every object can have childs
-  The number 0 is used as a seperator:
-  	1: (Father)
-	|-> 101 Child1
-	|-> ....
-	|-> 1012 Child12
-
-  Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
+  /* 
+  ** Every object can have childs
+  ** The number 0 is used as a seperator:
+  ** 1: (Father)
+  ** |-> 101 Child1
+  ** |-> ....
+  ** |-> 1012 Child12
+  ** 
+  ** Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
   */
 #define 	ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
 #define 	ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
 #define 	ELFSH_CHILD_MAX 	99
   hash_t	 child_hash;		/* Childs hash table */
-  struct s_obj	 *parent;		/* Object Parent */
-  int		lastchildid;	      	/* Last id */
-  struct s_obj	*deplist;		/* Dependence list (using next pointer)*/
-  struct s_obj	*deplistlast;		/* Last element of the list */
-}		 elfshobj_t;
+  hash_t	 parent_hash;		/* Immediate parent hash table */
+  hash_t	 root_hash;		/* Root ELF objects for this file */
+  int		 lastchildid;	      	/* Last child id */
+};
 
 
 
@@ -1153,6 +1156,12 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel);
 int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage);
 int		elfsh_inject_etrel_withlist(elfshobj_t *host, elfshobj_t *rel, 
 					    elfshobj_t *listw, elfshobj_t *listsh);
+
+/* search.c */
+int		elfsh_register_working_objects(hash_t *prvhash,hash_t *sharedhash);
+elfshobj_t	*elfsh_find_obj_by_symbol(char *name);
+elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate);
+
 /* sort.c */
 int		elfsh_sync_sorted_symtab(elfshsect_t *sect);
 int		elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type);

@@ -144,6 +144,7 @@
 #define	HLP_VERB		 "Toggle verbose flag (undo the quiet flag)"
 #define HLP_ALL			 "All prefix : set global regular expression"
 #define	HLP_ALERT		 "Alert prefix : change alert regular expression"
+#define	HLP_FORCE		 "Force sanity checks to be disabled for the command"
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"

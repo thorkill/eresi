@@ -9,13 +9,13 @@ include ../config.h
 SRC			= grammar.c disasm.c dyn.c hdr.c main.c got.c interp.c \
 			  notes.c pht.c rel.c sht.c stab.c sym.c quit.c data.c \
 			  ctors.c dtors.c fileops.c comment.c save.c load.c \
-			  unload.c list.c doswitch.c tables.c help.c info.c \
-			  print.c misc.c atomic.c opt.c lookup.c job.c log.c \
-			  implicit.c exec.c modules.c findrel.c objects.c \
-			  cmdapi.c  reladd.c fcthijack.c loop.c jmp.c color.c \
+			  tables.c help.c info.c print.c atomic.c opt.c lookup.c \
+			  log.c exec.c modules.c findrel.c objects.c rlheap.c \
+			  cmdapi.c fcthijack.c loop.c jmp.c color.c hammer.c \
 			  insert.c remove.c flush.c vlist.c lts.c source.c \
 			  cleanup.c run.c trace.c variables.c version.c hash.c \
-			  rlheap.c hammer.c
+			  unload.c list.c doswitch.c misc.c implicit.c deps.c \
+			  reladd.c job.c
 OBJ			= $(SRC:.c=.o)
 CC			?= gcc
 RM			= rm -f

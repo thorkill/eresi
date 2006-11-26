@@ -1,4 +1,4 @@
-#!/usr/bin/elfsh
+#!../../vm/elfsh
 #
 # Additional tests suite for shell commands .
 #

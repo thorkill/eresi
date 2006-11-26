@@ -54,6 +54,9 @@ elfshjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
   new->createtime   = time(&new->createtime);
   new->active	    = 1;
 
+  hash_init(&new->loaded, 51);
+  hash_init(&new->dbgloaded, 11);
+
   hash_add(&world.jobs, inet_ntoa(addr->sin_addr), new);
 
   world.curjob = new;
@@ -766,6 +769,8 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			  if (new == NULL)
 			    {
 			      XALLOC(new, sizeof (elfshjob_t), NULL);
+			      hash_init(&new->loaded, 51);
+			      hash_init(&new->dbgloaded, 11);
 			    }
 			  else
 			    {

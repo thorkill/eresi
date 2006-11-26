@@ -20,17 +20,19 @@ void				vm_load_cwfiles()
       vm_exit (-1);
     }
   world.curjob->current = (world.state.output != NULL ? 
-		   elfsh_map_obj(world.state.input) :
-		   elfsh_load_obj(world.state.input));
+			   elfsh_map_obj(world.state.input) :
+			   elfsh_load_obj(world.state.input));
   if (world.curjob->current == NULL)				
     {								
       perror(world.state.input);					
       vm_exit(-1);						
-    }								
-  world.curjob->current->next = world.curjob->list;
-  world.curjob->list = world.curjob->current;
+    }					
+
+  hash_add(&world.curjob->loaded, world.curjob->current->name,
+	   world.curjob->current);
   hash_add(&file_hash, world.curjob->current->name, 
 	   (void *) world.curjob->current);
+
   if (!world.state.vm_quiet)	
     {
       snprintf(logbuf, BUFSIZ - 1, "\n [*] Object %s has been loaded (%s) \n\n", 

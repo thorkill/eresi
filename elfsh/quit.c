@@ -10,9 +10,10 @@
 int		cmd_quit()
 {
   elfshobj_t	*cur;
-  elfshobj_t	*tmp;
   int		index;
   char		logbuf[BUFSIZ];
+  hashent_t	*actual;
+  int		hashidx;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -20,20 +21,26 @@ int		cmd_quit()
   if (world.curjob->sourced == 0)
     {
       vm_output("\n");
-      for (index = 1, cur = world.curjob->list; cur; cur = tmp, index++)
-	{
-	  if (!world.state.vm_quiet)
-	    {
-	      snprintf(logbuf, BUFSIZ - 1, " [*] Unloading object %u (%s) %c \n", 
-		       index, cur->name, 
-		       (world.curjob->current == cur ? '*' : ' '));
-	      vm_output(logbuf);
-	    }
-	  tmp = cur->next;
-	  elfsh_unload_obj(cur);
-	}
-    }
 
+      for (index = 1, hashidx = 0; 
+	   hashidx < world.curjob->loaded.size; hashidx++)
+	for (actual = &world.curjob->loaded.ent[hashidx];
+	     actual != NULL && actual->key != NULL;
+	     actual = actual->next, index++)
+	  {
+	    cur = actual->data;
+	    if (!world.state.vm_quiet)
+	      {
+		snprintf(logbuf, BUFSIZ - 1, 
+			 " [*] Unloading object %u (%s) %c \n", 
+			 index, cur->name, 
+			 (world.curjob->current == cur ? '*' : ' '));
+		vm_output(logbuf);
+	      }
+	    elfsh_unload_obj(cur);
+	  }
+    }
+  
   /* The quit message */
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
 	   vm_get_mode_name(), 

@@ -148,11 +148,16 @@ elfshobj_t	*vm_get_parent_object(elfsh_Addr addr)
   elfsh_Phdr	*cur;
   elfshobj_t	*curfile;
   elfshsect_t	*cursect;
+  char		**keys;
+  int		index;
+  int		keynbr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  for (curfile = world.curjob->list; curfile != NULL; curfile = curfile->next)
+  keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+  for (index = 0; index < keynbr; index++)
     {
+      curfile = hash_get(&world.curjob->loaded, keys[index]);
       cursect = elfsh_get_parent_section(curfile, addr, NULL);
       if (cursect)
 	{

@@ -50,8 +50,10 @@ int		cmd_relinject()
     }
 
   /* Call libelfsh relocatable object injector */
-  idx = elfsh_inject_etrel_withlist(host, rel, 
-				    world.curjob->list, world.shared);
+  idx = elfsh_inject_etrel_hash(host, rel, 
+				&world.curjob->loaded, 
+				&world.shared_hash);
+				
   if (idx < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to inject ET_REL with workspace", (-1));

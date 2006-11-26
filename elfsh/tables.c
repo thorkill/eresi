@@ -792,6 +792,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SHTRM   , (void *) cmd_shtrm   , (void *) NULL            , 1, HLP_SHTRM);
   vm_addcmd(CMD_QUIET   , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
   vm_addcmd(CMD_QUIET2  , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
+  vm_addcmd(CMD_FORCE   , (void *) cmd_force   , (void *) NULL            , 0, HLP_FORCE);
   vm_addcmd(CMD_VERB    , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
   vm_addcmd(CMD_VERB2   , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
   vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
@@ -1090,10 +1091,11 @@ void		vm_setup_hashtables()
   hash_init(&mod_hash, 51);
   hash_init(&labels_hash[0], 51);
   hash_init(&e2dbgworld.bp, 51);
-  hash_init(&fg_color_hash, 12);
-  hash_init(&bg_color_hash, 12);
-  hash_init(&t_color_hash, 6);
-  hash_init(&trace_cmd_hash, 10);
+  hash_init(&fg_color_hash, 13);
+  hash_init(&bg_color_hash, 13);
+  hash_init(&t_color_hash, 11);
+  hash_init(&trace_cmd_hash, 11);
+  hash_init(&world.shared_hash, 11);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();

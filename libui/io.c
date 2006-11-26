@@ -370,6 +370,8 @@ int		vm_initio()
   world.initial = world.curjob = initial;
   hash_init(&world.jobs, 11);
   hash_add(&world.jobs, "local", initial);
+  hash_init(&initial->loaded, 51);
+  hash_init(&initial->dbgloaded, 11);
   ELFSH_NOPROFILE_ROUT(0);
 }
 

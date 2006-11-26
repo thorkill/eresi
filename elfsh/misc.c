@@ -231,29 +231,44 @@ char		*vm_build_unknown(char *buf, const char *str, u_long type)
 
 
 /* Retreive a file object giving its unique ID */
-elfshobj_t	*vm_getfile(u_int index)
+elfshobj_t	*vm_getfile(u_int id)
 {
   elfshobj_t	*cur;
   elfshobj_t	*subcur;
+  char		**keys;
+  int		idx;
+  int		keynbr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  for (cur = world.curjob->list; cur; cur = cur->next)
+  /* Check in private objects of the workspace */
+  if (hash_size(&world.curjob->loaded))
     {
-      if (cur->id == index)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
-
-      if ((subcur = vm_is_depid(cur, index)) != NULL)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+      keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+      for (idx = 0; idx < keynbr; idx++)
+	{
+	  cur = hash_get(&world.curjob->loaded, keys[idx]);
+	  if (cur->id == id)
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+	  
+	  if ((subcur = vm_is_depid(cur, id)) != NULL)
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+	}
     }
 
-  for (cur = world.shared; cur; cur = cur->next)
+  /* Check in shared objects */
+  if (hash_size(&world.shared_hash))
     {
-      if (cur->id == index)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
-
-      if ((subcur = vm_is_depid(cur, index)) != NULL)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+      keys = hash_get_keys(&world.shared_hash, &keynbr);
+      for (idx = 0; idx < keynbr; idx++)
+	{
+	  cur = hash_get(&world.shared_hash, keys[idx]);
+	  if (cur->id == id)
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+	  
+	  if ((subcur = vm_is_depid(cur, id)) != NULL)
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+	}
     }
 
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -289,6 +304,7 @@ int		vm_doerror(void (*fct)(char *str), char *str)
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Bypassed error printing", (-1));
 }
+
 
 /* Mark the current object SHT to be removed on savnig */
 int             cmd_shtrm()
@@ -389,6 +405,17 @@ int		cmd_verb()
   world.state.vm_quiet = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+/* Turn on the FORCE flag */
+int             cmd_force()
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  world.state.vm_force = 1;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /* Useful when you have only one terminal */
 int		cmd_meta()
