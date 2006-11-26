@@ -513,6 +513,8 @@ enum asm_instr {
   /* 25 */
   ASM_SUB,
   ASM_XOR,
+  ASM_XADD,
+  ASM_CLFLUSH,
   ASM_CMP,
   ASM_IN,
   ASM_INC,

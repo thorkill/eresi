@@ -390,6 +390,7 @@ int op_scasb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   return (new->len);
 }
 
+
 /*
   <instruction func="op_scasd" opcode="0xaf"/>
 */

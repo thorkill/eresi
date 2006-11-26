@@ -85,10 +85,18 @@ clean:
 
 fclean: clean
 	$(RM) ${NAME_libasm} ${NAME_mydisasm} ${NAME_cmpdump} 
+
 tags:
 	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
 	@echo TAGS generated succesfully
 
 .c.o:
 	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
+
+mydisasm:
+	$(CC) -I../libelfsh/include/ -I./include/ \
+	-I../libc/include/ -L./ -L../libelfsh/ \
+	-L../libc/ -L../libmalloc/ \
+	tools/mydisasm.c -o ./mydisasm -lasm -lelfsh -lcelfsh -lmalloc-e2dbg
+
 

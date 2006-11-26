@@ -367,6 +367,8 @@ int i386_push_fs(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_pop_fs(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_cpuid(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_bt_rm_r(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_xadd(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_clflush(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_bswap(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_shld(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_shld_rmv_rv_cl(asm_instr *, u_char *, u_int, asm_processor *);

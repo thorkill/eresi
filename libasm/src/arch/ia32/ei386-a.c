@@ -207,6 +207,16 @@ int i386_shrd_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor
 }
 
 
+/*
+  <instruction func="i386_clflush" opcode="0xae"/>
+ */
+
+int i386_clflush(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+  new->len += 1;
+  new->instr = ASM_CLFLUSH;
+  new->op1.type = ASM_OTYPE_GENERAL;
+  return (new->len);
+}
 
 /*
   <i386 func="i386_imul_rv_rmv" opcode="0xaf"/>
@@ -222,8 +232,3 @@ int i386_imul_rv_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *p
     operand_rv_rmv(new, opcode + 1, len - 1, proc);
     return (new->len);
 }
-
-
-
-
-

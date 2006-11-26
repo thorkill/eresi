@@ -348,6 +348,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xab] = i386_bts;
   inter->cisc_i386[0xac] = i386_shrd_rmv_rv_ib;
   inter->cisc_i386[0xad] = i386_shrd_rmv_rv_cl;
+  inter->cisc_i386[0xae] = i386_clflush;
   inter->cisc_i386[0xaf] = i386_imul_rv_rmv;
   inter->cisc_i386[0xb2] = op_lss_rv_rmv;
   inter->cisc_i386[0xb3] = op_btr_rmv_rv;
@@ -357,6 +358,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xbd] = i386_bsr_rv_rmb;
   inter->cisc_i386[0xbe] = i386_movsbl_rv_rmb;
   inter->cisc_i386[0xbf] = i386_movswl_rv_rm2;
+  inter->cisc_i386[0xc1] = i386_xadd;
   inter->cisc_i386[0xc8] = i386_bswap;
 
 }
