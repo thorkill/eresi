@@ -153,6 +153,11 @@ int		cmd_load()
       str = tmp->immed_val.str;
     }
 
+  if (hash_get(&world.curjob->loaded, str) ||
+      hash_get(&world.shared_hash, str))
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot load file many times in the same workspace", (-1));
+
   vm_output("\n");
   ret = vm_load_file(str, NULL, NULL);
   vm_output("\n");
