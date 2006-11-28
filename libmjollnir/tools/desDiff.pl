@@ -2,7 +2,7 @@
 
 # (C) 2006 Asgard Labs, thorolf
 # BSD License
-# $Id: desDiff.pl,v 1.3 2006-07-08 21:24:25 thor Exp $
+# $Id: desDiff.pl,v 1.4 2006-11-28 17:04:51 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
@@ -13,14 +13,18 @@ if (!$ARGV[0]) {print "usage: ./desDiff.pl test.so\n";exit();}
 
 $b = $ARGV[0];
 
+$tmpFile = $b;
+$tmpFile =~ s/\//\###/g;
+$tmpFile = $$.".$tmpFile";
+
 print "[i] Checking: $b\n";
 print "[x] Objdump \n";
-system("objdump -d -j .text $b > $$.$b.objdump");
+system("objdump -d -j .text $b > $tmpFile.objdump");
 print "[x] Mydisasm \n";
-system("./mydisasm $b .text > $$.$b.mydisasm");
+system("./mydisasm $b .text > $tmpFile.mydisasm");
 
-open(X1, "$$.$b.mydisasm");
-open(X2, "$$.$b.objdump");
+open(X1, "$tmpFile.mydisasm");
+open(X2, "$tmpFile.objdump");
 
 print "[i] Analisis started...\n";
 while($l1 = <X1>) {
