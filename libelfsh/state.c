@@ -43,6 +43,8 @@ void	elfsh_set_debug_mode()
 
 void	elfsh_set_mode(u_char mode)
 {
+  //fprintf(stderr, "Changed for %s mode ! \n",
+  //(mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
   dbgworld.mode = mode;
 }
 

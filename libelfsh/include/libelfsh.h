@@ -553,7 +553,6 @@ typedef struct	s_libstate
   int           (*profile)(char *);		/* Profiling output function */
   int           (*profile_err)(char *);		/* Profiling output (error) function */
   
-
 }		libworld_t;
 
 
@@ -1154,8 +1153,9 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel);
 /* relinject.c */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel);
 int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage);
-int		elfsh_inject_etrel_withlist(elfshobj_t *host, elfshobj_t *rel, 
-					    elfshobj_t *listw, elfshobj_t *listsh);
+int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel, 
+					hash_t *first, hash_t *second);
+
 
 /* search.c */
 int		elfsh_register_working_objects(hash_t *prvhash,hash_t *sharedhash);

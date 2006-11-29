@@ -21,6 +21,9 @@ int		cmd_workspace()
   int		loadedkeynbr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+
+  printf("workspace argc %u \n", world.curjob->curcmd->argc);
+
   switch (world.curjob->curcmd->argc)
     {
       

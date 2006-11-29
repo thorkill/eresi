@@ -237,6 +237,7 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   u_int			entsz;
   elfsh_Sym		*sym;
   char			*name;
+  int			mode;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -245,6 +246,9 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   if (!plt)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get PLT", -1);
+
+  mode = elfsh_get_mode();
+  elfsh_set_static_mode();
 
   entsz = elfsh_get_pltentsz(plt->parent);
 
@@ -282,7 +286,8 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 	  }
       }
     }
-  
+
+  elfsh_set_mode(mode);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

@@ -905,7 +905,8 @@ void			*elfsh_get_raw(elfshsect_t *sect)
     {
       //printf("entering raw debug mode (sect = %08X) \n", sect);
       //fflush(stdout);
-      //printf("%08X + base %08X \n", sect->shdr->sh_addr, sect->parent->rhdr.base);
+      //fprintf(stderr, "RAW Returning %08X + base %08X \n", 
+      //     sect->shdr->sh_addr, sect->parent->rhdr.base);
 
       sect->pdata = (void *) sect->shdr->sh_addr;
       if (!elfsh_section_is_runtime(sect))

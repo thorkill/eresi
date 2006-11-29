@@ -425,6 +425,7 @@ typedef struct		s_args
 }			elfshargv_t;
 
 /* Take a elfshargv_t and fill its argc field */
+/* Only used when the command is unknown (module) and tries to be determined */
 #define		ELFSH_CMDARGS_COUNT(cmd)	\
 do						\
 {						\

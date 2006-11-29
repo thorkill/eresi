@@ -56,7 +56,6 @@ int		elfsh_profile_print(char *file, char *func, u_int line, char *msg)
   snprintf(buf, sizeof(buf), "<%s@%s:%u>", func, file, line);
   snprintf(buff, sizeof(buff), "%-50s %s", buf, (msg ? msg : ""));
   flag = 0;
-
   
   for (idx = 0; idx < ELFSH_MAX_PATTERN; idx++)
     if (!strcmp(buff, mem[sel][idx]))

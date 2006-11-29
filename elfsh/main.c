@@ -330,6 +330,7 @@ int		vm_main(int ac, char **av)
   if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
     vm_print_banner(av[1]);
   vm_config();
+  vm_output(" [*] Type help for regular commands \n\n");
   return (vm_run(ac, av));
 }
 

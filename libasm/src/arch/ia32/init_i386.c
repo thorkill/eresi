@@ -7,12 +7,12 @@
 
 void	init_instr_table(asm_processor *);
 
+
 /**
  * handler to disassemble ia32 code.
  * fetch in asm_i386_processor structure points to this function
  *
  */
-
 int     fetch_i386(asm_instr *instr, u_char *buf, u_int len, asm_processor *proc) {
   asm_i386_processor	*i386p;
 

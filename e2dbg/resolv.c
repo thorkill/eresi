@@ -33,7 +33,7 @@ static int		e2dbg_load_linkmap_pie(char *name)
   */
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   elfsh_set_static_mode();  
 
   /* replace by self dlopen technique */
@@ -131,8 +131,12 @@ int			e2dbg_load_linkmap(char *name)
   if (done)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
+  fprintf(stderr, "[e2dbg] Starting Loading LINKMAP !! \n");
+
   e2dbg_setup_hooks();
   vm_config();
+
+  //elfsh_set_static_mode();
 
   /* Load debugged file */
   if (name != NULL)
@@ -144,7 +148,7 @@ int			e2dbg_load_linkmap(char *name)
 			  "Cannot load file", -1);
       
 #if __DEBUG_LINKMAP__
-      printf("[e2dbg_setup] file %s loaded\n", name);
+      fprintf(stderr, "[e2dbg_load_linkmap] file %s loaded\n", name);
 #endif
 
       world.curjob->current->linkmap = E2DBG_DYNAMIC_LINKMAP;
@@ -168,8 +172,8 @@ int			e2dbg_load_linkmap(char *name)
   
   
 #if __DEBUG_LINKMAP__
-  printf("[e2dbg_setup] %s section at " XFMT "\n",
-	 got->name, (elfsh_Addr) got);
+  fprintf(stderr, "[e2dbg_load_linkmap] %s section at " XFMT "\n",
+	  got->name, (elfsh_Addr) got);
 #endif
   
   
@@ -201,12 +205,12 @@ int			e2dbg_load_linkmap(char *name)
     }
   
 #if __DEBUG_LINKMAP__
-  printf("[e2dbg_setup] LINKMAP Found at " XFMT "\n", 
+  fprintf(stderr, "[e2dbg_load_linkmap] LINKMAP Found at " XFMT "\n", 
 	 world.curjob->current->linkmap);
 #endif
   
   vm_doswitch(1);
-  elfsh_set_static_mode();
+
   
   /* now load all linkmap's files */
   for (actual = elfsh_linkmap_get_lprev(world.curjob->current->linkmap);
@@ -215,7 +219,7 @@ int			e2dbg_load_linkmap(char *name)
     {
       
 #if __DEBUG_LINKMAP__
-      printf("[e2dbg_setup] Running on LINKMAP PREV " XFMT "\n", 
+      fprintf(stderr, "[e2dbg_setup] Running on LINKMAP PREV " XFMT "\n", 
 	     actual);
 #endif
       
@@ -229,7 +233,7 @@ int			e2dbg_load_linkmap(char *name)
     }
 
 #if __DEBUG_LINKMAP__
-  printf("[e2dbg_setup] Running on LINKMAP NEXT\n");
+  fprintf(stderr, "[e2dbg_load_linkmap] Running on LINKMAP NEXT\n");
 #endif
   
   for (actual = elfsh_linkmap_get_lnext(world.curjob->current->linkmap);
@@ -238,7 +242,7 @@ int			e2dbg_load_linkmap(char *name)
     {
      
 #if __DEBUG_LINKMAP__
-	  printf("[e2dbg_setup] Running on LINKMAP NEXT " XFMT "\n", 
+	  printf("[e2dbg_load_linkmap] Running on LINKMAP NEXT " XFMT "\n", 
 		 actual);
 #endif
 
@@ -253,7 +257,7 @@ int			e2dbg_load_linkmap(char *name)
 
   /* Everything was OK */
   vm_output("\n");
-  elfsh_set_debug_mode();
+  //elfsh_set_debug_mode();
   vm_doswitch(1);
   done = 1;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -414,10 +418,6 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 		     got + refaddr - found_ref);
 }
 
-
-
-
-  
 
 /* Our own dlsym without malloc */
 /* Useful in the early stage of mapping when malloc symbol is not yet known */

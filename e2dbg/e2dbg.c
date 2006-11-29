@@ -16,7 +16,7 @@ void		e2dbg_init(void)
   write(1, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
   e2dbg_dlsym_init();
   vm_dbgid_set(0);
-  SETSIG; 
+  SETSIG_USR1; 
   write(1, " [D] Finished e2dbg ctors \n", 26);
 }
 
@@ -35,7 +35,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
   vm_dbgid_set(pthread_self());
   ac = params->ac;
   av = params->av;
-  signal(SIGUSR1, e2dbg_sigusr1_handler);
+  SETSIG_USR1;
+  //signal(SIGUSR1, e2dbg_sigusr1_handler);
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 1\n");

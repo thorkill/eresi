@@ -45,6 +45,8 @@ int		vm_is_loaded(char *name)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+
 /* Load a file in elfsh */
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
 {
@@ -115,7 +117,14 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
   /* Load dependances */
   if (new->hdr->e_type == ET_EXEC)
     hash_add(&new->root_hash, new->name, new);
-  vm_load_enumdep(new);
+
+  /* We use a different dependences technique for mapped files in the debugger */
+  /* Just load dependences here for unmapped files */
+  if (!elfsh_is_debug_mode())
+    {
+      printf("We are not in debug mode anymore\n");
+      vm_load_enumdep(new);
+    }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -172,7 +181,8 @@ int		cmd_load()
 		  ", switching to STATIC mode\n\n");
     }
   else 
-      elfsh_set_static_mode();
+    elfsh_set_static_mode();
+
   world.state.vm_shared = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 

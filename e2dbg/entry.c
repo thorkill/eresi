@@ -79,7 +79,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   on_exit((void *) wait4exit, NULL);
   SETSIG;
 
-#if 1 //__DEBUG_E2DBG__
+#if __DEBUG_E2DBG__
   len = snprintf(logbuf, BUFSIZ, 
 		 "[(e2dbg)__libc_start_main] Calling main (%08X) with curthread = %08X (id = %u) \n", 
 		 (elfsh_Addr) e2dbgworld.real_main, (elfsh_Addr) e2dbgworld.curthread, 

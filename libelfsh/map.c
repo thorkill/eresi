@@ -32,6 +32,7 @@ int		elfsh_read_obj(elfshobj_t *file)
 {
   elfshsect_t	*actual;
   int		index;
+  int		mode;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -68,7 +69,13 @@ int		elfsh_read_obj(elfshobj_t *file)
   elfsh_get_dtors(file, NULL);
   elfsh_get_got(file, NULL);
   elfsh_get_interp(file);
+
+  mode = elfsh_get_mode();
+  elfsh_set_static_mode();
   elfsh_get_hashtable(file, NULL);
+  elfsh_set_mode(mode);
+
+
   elfsh_get_comments(file);
   elfsh_get_plt(file, NULL);
 

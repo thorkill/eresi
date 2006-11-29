@@ -17,6 +17,7 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+
   if (!file || !s)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
@@ -26,7 +27,12 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to get DYNSYM", NULL);
 
+  //fprintf(stderr, "USING sym with addr %08X \n", (unsigned int) s);
+  
   ret = (char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]) + s->st_name;
+
+  //fprintf(stderr, "READ sym with addr %08X ! \n", (unsigned int) s);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -93,6 +99,8 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
+  //fprintf(stderr, "Calling get_dynsymtab ! \n");
+
   /* Load the .dynsym */
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL)
     {
@@ -137,11 +145,6 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
       new->curend = new->shdr->sh_size;
     }
 
-  /*
-  else
-    puts("Not entered in NULL dynsym cond\n");
-  */  
-
   nbr = 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend ? 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend / sizeof(elfsh_Sym) : 
@@ -150,16 +153,16 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   if (num != NULL)
     *num = nbr;
 
+  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
+
   /*
-  printf("elfsh_get_dynsymtab has dynsym data (%08x) = %08X pdata = %08X\n", 
-	 ret,
-	 file->secthash[ELFSH_SECTION_DYNSYM]->data, 
-	 file->secthash[ELFSH_SECTION_DYNSYM]->pdata);
+  fprintf(stderr,
+	  "elfsh_get_dynsymtab has dynsym data (%08x) = %08X pdata = %08X\n", 
+	 (unsigned int) ret,
+	 (unsigned int) file->secthash[ELFSH_SECTION_DYNSYM]->data, 
+	 (unsigned int) file->secthash[ELFSH_SECTION_DYNSYM]->pdata);
   */
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
-  
-  //printf("elfsh_get_dynsymtab has dynsym ret : %x\n", ret);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (ret));
 }
@@ -282,6 +285,8 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   if (ret == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
+
+  //printf("DYNsymtab retreived with data pointer = %08X \n", (unsigned int) ret);
 
   for (index = 0; index < size; index++)
     {

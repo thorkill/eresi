@@ -9,7 +9,7 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
-#define		__DEBUG_E2DBG__		1
+#define		__DEBUG_E2DBG__		0
 #define		__DEBUG_MUTEX__		1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
@@ -105,15 +105,17 @@
  signal(SIGUSR1, SIG_IGN);				\
 }		while (0);
 
+// Etait dans SETSIG
+// ac.sa_sigaction   = e2dbg_sigsegv_handler;      	
+// sigaction(SIGSEGV, &ac, NULL);			        
+
 #define		SETSIG	do {				\
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
- ac.sa_flags       = SA_SIGINFO;			\
+ ac.sa_flags       = SA_SIGINFO | SA_NODEFER ;		\
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
- ac.sa_sigaction   = e2dbg_sigsegv_handler;      	\
- sigaction(SIGSEGV, &ac, NULL);			        \
  ac.sa_sigaction   = e2dbg_sigint_handler;		\
  sigaction(SIGINT, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_sigstop_handler;		\
@@ -126,11 +128,13 @@
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
- ac.sa_flags       = SA_SIGINFO;			\
+ ac.sa_flags       = SA_SIGINFO | SA_NODEFER ;		\
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_sigusr1_handler;		\
  sigaction(SIGUSR1, &ac, NULL);				\
+ signal(SIGSTOP, SIG_IGN);				\
+ signal(SIGUSR2, SIG_IGN);				\
 }		while (0);
 
 
@@ -357,6 +361,7 @@ void            e2dbg_sigusr1_handler(int signum);
 void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext);
 
 /* e2dbg thread API */
+void		e2dbg_threads_print();
 void		e2dbg_thread_stopall(int signum);
 void		e2dbg_thread_contall();
 int		e2dbg_curthread_init();

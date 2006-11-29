@@ -401,7 +401,7 @@ int		cmd_network()
 int		cmd_verb()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  vm_output(" [*] Switched to verbose mode \n");
+  vm_output(" [*] Switched to verbose mode \n\n");
   world.state.vm_quiet = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

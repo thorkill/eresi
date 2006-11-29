@@ -21,10 +21,13 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
   context = (ucontext_t *) pcontext;
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
-  vm_output(" [!] Segfault, entering E2dbg ...\n");
+
+  fprintf(stderr, "\n\n ******* Segfault, entering E2dbg ******** \n\n");
+  sleep(1);
+
   params.ac = 1;
   params.av = argv;
-  e2dbg_entry(&params);
+  //e2dbg_entry(&params);
   SETSIG;
 }
 
@@ -326,18 +329,21 @@ void			e2dbg_generic_breakpoint(int		signum,
   e2dbg_mutex_lock(&e2dbgworld.dbgbp);
   
 #if __DEBUG_MUTEX__
-  vm_output(" [*] BP MUTEX LOCKED \n");
+  vm_output("------------------------------------->\n");
+  vm_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
+  e2dbg_threads_print();
 #endif
   
   /* Get the current thread */
   stopped = pthread_self();
   snprintf(key, sizeof(key), "%u", (unsigned int) stopped);
-  e2dbgworld.stoppedthread = e2dbgworld.curthread = hash_get(&e2dbgworld.threads, key);
+  e2dbgworld.stoppedthread = e2dbgworld.curthread = hash_get(&e2dbgworld.threads, 
+							     key);
   
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__)
   printf("\n [*] %s entering generic breakpoint (ID %u) \n",
-	 (vm_dbgid_get() != e2dbgworld.stoppedthread->tid ? "Debuggee" : "Debugger"), 
-	 (unsigned int) e2dbgworld.stoppedthread->tid);
+	 (vm_dbgid_get() != e2dbgworld.stoppedthread->tid ? 
+	  "Debuggee" : "Debugger"), (unsigned int) e2dbgworld.stoppedthread->tid);
   fflush(stdout);
 #endif
 
@@ -345,7 +351,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   context = (ucontext_t *) pcontext;
   e2dbgworld.curthread->context = context;
 
-  /* We first get contexts for all other threads (except the debugger) using SIGUSR2 */
+  /* We first get contexts for all other threads (except debugger) using SIGUSR2 */
   /* Then we stop all threads */
   /* We do this only at the first state (count = 0) of the breakpoint */
   if (!e2dbgworld.curthread->count)
@@ -356,8 +362,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 #if __DEBUG_THREADS__
 	  printf(" [*] Waiting for synchronization (we have %u / %u) \n", 
 		 e2dbgworld.threadsyncnbr, e2dbgworld.threadgotnbr);
-	  //usleep(1000);
-	  sleep(1);
+	  usleep(500000);
 #endif
 	}
       e2dbgworld.threadgotnbr = e2dbgworld.threadsyncnbr = 0;
@@ -365,7 +370,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   else
     e2dbg_thread_stopall(SIGSTOP);
 
-  /* XXX: if the debugger is breaking , we need a new CLRSIG_BUT_USR1; macro */
+  /* XXX: if the debugger itself is breaking we need a new CLRSIG_BUT_USR1 macro */
   /* We call the debugger */
   pthread_kill(e2dbgworld.dbgpid, SIGUSR1);
 
@@ -388,7 +393,8 @@ void			e2dbg_generic_breakpoint(int		signum,
     vm_output(" [*] Debuggee Cannot unlock dbgSYN ! \n");
 #if __DEBUG_MUTEX__
   else
-    vm_output(" [*] Debuggee continuing & unlocking mutex SYN -> will wait start in the future\n");
+    vm_output(" [*] Debuggee continuing & unlocking mutex SYN"
+	      " -> will wait start in the future\n");
 #endif
   
   /* Allow another breakpoint to be processed */
@@ -396,13 +402,17 @@ void			e2dbg_generic_breakpoint(int		signum,
     vm_output(" [*] Debuggee Cannot unlock dbgBP ! \n");
 #if __DEBUG_MUTEX__
   else
-    vm_output(" [*] BP MUTEX UNLOCKED \n");
+    {
+      vm_output(" [*] BP MUTEX UNLOCKED [e2dbg_generic_breakpoint] \n");
+      e2dbg_threads_print();
+      vm_output("<-------------------------------------\n");
+    }
 #endif
 
   /* Continue all threads */
   if (e2dbgworld.curthread->count == 2)
     e2dbg_thread_contall();
-#if 1 //__DEBUG_THREADS__
+#if __DEBUG_THREADS__
   else
     printf("Not continuing because count = %u \n", e2dbgworld.curthread->count);
 #endif

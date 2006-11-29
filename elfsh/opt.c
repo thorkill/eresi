@@ -15,6 +15,7 @@ int		vm_getoption(u_int index, u_int argc, char **argv)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
+  world.curjob->curcmd->argc = 1;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
@@ -55,6 +56,7 @@ int		vm_getoption2(u_int index, u_int argc, char **argv)
 		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
+  world.curjob->curcmd->argc = 2;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
@@ -70,6 +72,7 @@ int		vm_getoption3(u_int index, u_int argc, char **argv)
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
   world.curjob->curcmd->param[2] = argv[index + 3];
+    world.curjob->curcmd->argc = 3;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (3));
 }
 
@@ -98,10 +101,14 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
   u_int		idx;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  for (idx = 0; 
+  for (world.curjob->curcmd->argc = idx = 0; 
        idx < 254 && index + idx + 1 < argc;
        idx++)
-    world.curjob->curcmd->param[idx] = argv[index + idx + 1];
+    {
+      world.curjob->curcmd->param[idx] = argv[index + idx + 1];
+      world.curjob->curcmd->argc++;
+    }
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 

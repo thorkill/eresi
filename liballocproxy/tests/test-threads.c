@@ -16,6 +16,16 @@ void	     sigtrap_handler(int num)
   sleep(5);
 }
 
+void	     sigstop_handler(int num)
+{
+  printf("Received a SIGSTOP ! \n");
+}
+
+void	     sigusr2_handler(int num)
+{
+  printf("Received a SIGUSR2 ! \n");
+}
+
 main()
 {
      pthread_t thread1, thread2, thread3;
@@ -26,6 +36,9 @@ main()
  
      /* Create independant threads each of which will execute function */
      //signal(SIGTRAP, (sighandler_t) sigtrap_handler);
+     signal(SIGSTOP, (sighandler_t) sigstop_handler);
+     signal(SIGUSR2, (sighandler_t) sigusr2_handler);
+
      iret1 = pthread_create( &thread1, NULL, print_message_function, (void*) message1);
      iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);
      iret3 = pthread_create( &thread3, NULL, print_message_function_lib, (void*) message3);
