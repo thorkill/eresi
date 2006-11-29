@@ -71,7 +71,7 @@ extern asm_processor	proc;
 #define	__DEBUG_DISASM__	0
 #define	__DEBUG_SIGHANDLER__	0
 #define	__DEBUG_MODEL__		0
-#define	__DEBUG_SCANNER__	1
+#define	__DEBUG_SCANNER__	0
 #define	__DEBUG_ASLR__		0
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
