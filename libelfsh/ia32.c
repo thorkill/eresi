@@ -572,6 +572,7 @@ static int    elfsh_largs_add(s_sint *args, int add)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* TODO: implement forward / backward */
 int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
 {
   int         index;
@@ -665,4 +666,54 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
+}
+
+/* Find arguments from a call */
+int 		elfsh_args_count_forward(elfshobj_t *obj, u_int func, u_int call)
+{
+  u_int		current;
+  u_int		ret;
+  u_int		addr = 0;
+  short		safeCheck = 0;
+  short		foundBreak = 0;
+  asm_instr	i;
+  u_int		diff = func - call;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if we found the call just after saved registers */
+  for (current = func; current < diff; current += ret)
+    {
+      ret = asm_read_instr(&i, (u_char *) current, diff - current, &proc);
+      
+      /* Wrong disassemble */
+      if (!ret)
+	break; // Return an error ? We should be not for the moment
+      
+      /* Those instruction make our system much more easier ! */
+      if (i.type == ASM_TYPE_IMPBRANCH ||
+	  i.type == ASM_TYPE_CONDBRANCH ||
+	  i.type == ASM_TYPE_CALLPROC)
+	{
+	  foundBreak = 1;
+	  
+	  /* Save last separate addr */
+	  addr = current;
+	}
+    }
+  
+  /* We "directly" call our function without any difference from register save */
+  if (!foundBreak)
+    safeCheck = 1;
+  
+  /* saveCheck found last save register push */
+  if (safeCheck)
+    {
+      /* TODO: check */
+    }
+
+  /* TODO: add a check on addr if needed ! */
+
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

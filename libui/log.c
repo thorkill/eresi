@@ -7,28 +7,20 @@
 */
 #include "libui.h"
 
-
-/* Log a line */
-void			vm_log(char *str)
+static void		logtofile(char *str)
 {
   u_int			i, pos, len = 0;
-	int				check = 0;
 
   ELFSH_NOPROFILE_IN();
 
-  if (!str || !world.curjob ||
-      !world.curjob->io.outcache.lines ||
-      !world.curjob->io.outcache.cols)
-    ELFSH_NOPROFILE_OUT();
-
   /* Clean color parts */
   len = strlen(str);
-  if (len > 0 && strchr(str, '\e') != NULL)
+  if (len > 0 && strchr(str, C_STARTCOLOR) != NULL)
     {
       char tmp[len+1];
       for (pos = 0, i = 0; i < len; i++)
 	{
-	  if (str[i] == '\e')
+	  if (str[i] == C_STARTCOLOR)
 	    {
 	      while (i < len && str[i] != 'm')
 		i++;
@@ -48,6 +40,26 @@ void			vm_log(char *str)
   if (world.curjob->state & ELFSH_JOB_LOGGED)
     XWRITE(world.curjob->logfd, str, len, );
 
+  ELFSH_NOPROFILE_OUT();
+}
+
+
+/* Log a line */
+void			vm_log(char *str)
+{
+  int			check = 0;
+  int			count = 0;
+
+  ELFSH_NOPROFILE_IN();
+
+  if (!str || !world.curjob ||
+      !world.curjob->io.outcache.lines ||
+      !world.curjob->io.outcache.cols)
+    ELFSH_NOPROFILE_OUT();
+
+  logtofile(str);
+
+  count = vm_color_count(str);
 
   /* Allocate the screen buffer */
   if (world.curjob->screen.buf == NULL)
@@ -67,9 +79,10 @@ void			vm_log(char *str)
   else if (world.curjob->screen.x != world.curjob->io.outcache.cols ||
 	   world.curjob->screen.y != world.curjob->io.outcache.lines)
     {
+      
       XFREE(world.curjob->screen.buf);
       XALLOC(world.curjob->screen.buf,
-	     world.curjob->io.outcache.lines *
+	     (world.curjob->io.outcache.lines+count) *
 	     world.curjob->io.outcache.cols + 1, );
 
       world.curjob->screen.x = world.curjob->io.outcache.cols;

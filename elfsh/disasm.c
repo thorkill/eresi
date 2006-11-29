@@ -266,7 +266,7 @@ u_int		display_instr(int fd, u_int index, u_int vaddr, u_int foffset,
 	    c1[0] = base[(buff[index + idx_bytes] >> 4) & 0x0F];
 	    c2[0] = base[buff[index + idx_bytes] & 0x0F];
 	    c1[1] = c2[1] = 0x00;
-	    
+    
 	    size += snprintf(logbuf + size, sizeof(logbuf) - size, "%s%s ", 
 			     vm_colorfieldstr(c1), 
 			     vm_colorfieldstr(c2));
@@ -315,6 +315,9 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
   //elfsh_SAddr	sct_index;
   u_int		ret;
   char		logbuf[BUFSIZ];
+  char		tmp[BUFSIZ];
+  char		c1[2], c2[2];
+  char		*pStr;
 
   char		bigbuf[BUFSIZ * 64];
   unsigned int	biglen = 0;
@@ -483,60 +486,81 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  /* Take care of quiet mode */
 	  if (world.state.vm_quiet)
 	    {
-	      sprintf(buf, " %08X %s + %u", 
-		      vaddr + index, name, index);
+	      sprintf(buf, " %s %s + %s", 
+		      vm_coloraddress("%08x", (elfsh_Addr) vaddr + index), 
+		      vm_colorstr(name), vm_colornumber("%u", index));
 	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
-	      VM_OUTPUT(logbuf);
+	      vm_output(logbuf);
 	    }
 	  else
 	    {
-	      sprintf(buf, " %08X [foff: %08u] %s + %u", 
-		      vaddr + index, foffset + index, name, index);
+	      sprintf(buf, " %s [%s %s] %s + %s", 
+		      vm_coloraddress("%08x", (elfsh_Addr) vaddr + index), 
+		      vm_colorfieldstr("foff:"),
+		      vm_colornumber("%08u", foffset + index), 
+		      vm_colorstr(name), vm_colornumber("%u", index));
 
 	      //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "%s", logbuf);
 	      //vm_output(logbuf);
 
-	      snprintf(logbuf, BUFSIZ - 1, "%-60s ", buf);
+	      snprintf(logbuf, BUFSIZ - 1, "%-*s", 
+		60 + vm_color_size(buf), buf);
 
 	      //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "%s", logbuf);
 
-	      VM_OUTPUT(logbuf);
+	      vm_output(logbuf);
 	    }
 
+	  vm_endline();
+
 	  ret = (world.state.vm_quiet ? 8 : 16);
+
+	  tmp[0] = c1[1] = c2[1] = 0x00;
 
 	  /* Print hexa */
 	  for (loff = 0; loff < ret; loff++)
 	    {
-	      snprintf(logbuf, BUFSIZ - 1, "%c%c ", 
-		       (index + loff < size ? 
-			(base[(buff[index + loff] >> 4) & 0x0F]) : ' '),
-		       (index + loff < size ? 
-			(base[(buff[index + loff] >> 0) & 0x0F]) : ' '));
-	      vm_output(logbuf);	     
+	      c1[0] = c2[0] = ' ';
+	      if (index + loff < size)
+		{
+		  c1[0] = base[(buff[index + loff] >> 4) & 0x0F];
+		  c2[0] = base[(buff[index + loff] >> 0) & 0x0F];
+		}
+
+	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", 
+		       c1, c2);
+	      
+	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
+		strcat(tmp, logbuf);
 	    }
+
+	  vm_output(vm_colorfieldstr(tmp));
+
+	  vm_endline();
+
+	  tmp[0] = 0x00;
 
 	  /* Print ascii */
 	  for (loff = 0; loff < ret; loff++)
 	    {
-	      char	c[2];
-	      char	*str;
-
-	      c[0] = buff[index + loff];
-	      c[1] = 0x00;
-	      str = (index + loff >= size ? " " : (PRINTABLE(buff[index + loff]) ? c : "."));
-	      VM_OUTPUT(str);
+	      c1[0] = buff[index + loff];
+	      pStr = (index + loff >= size ? " " : (PRINTABLE(buff[index + loff]) ? c1 : "."));
+	      if (strlen(tmp) + 1 < BUFSIZ)
+		strcat(tmp, pStr);
 	    }
 
-	  //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "\n");
-	  VM_OUTPUT("\n");
-	  index += ret;
+	  vm_output(vm_colorstr(tmp));
 
+	  vm_endline();
+
+	  //biglen += snprintf(bigbuf + biglen, sizeof(bigbuf) - biglen, "\n");
+	  vm_output("\n");
+	  index += ret;
 	}
     }
   
   //XFREE(buff);
-  VM_OUTPUT("\n");
+  vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

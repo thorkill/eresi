@@ -553,6 +553,24 @@ typedef struct	s_libstate
   int           (*profile)(char *);		/* Profiling output function */
   int           (*profile_err)(char *);		/* Profiling output (error) function */
   
+  /* libui pointers */
+  void	     	(*endline)();
+  /* Simple */
+  char		*(*colorinstr)(char *text);
+  char        	*(*colorstr)(char *t);
+  char         	*(*colorfieldstr)(char *t);
+  char         	*(*colortypestr)(char *t);
+  char		*(*colorend)(char *text); 
+  char		*(*colorwarn)(char *text);
+  /* Advanced */
+  char 		*(*coloradv)(char *ty, char *p, char *te);
+  char		*(*colorinstr_fmt)(char* p, char *t);
+  char          *(*coloraddress)(char *p, elfsh_Addr a);
+  char          *(*colornumber)(char *p, u_int n);
+  char          *(*colorstr_fmt)(char *p, char *t);
+  char          *(*colorfieldstr_fmt)(char *p, char *t);
+  char          *(*colortypestr_fmt)(char *p, char *t);
+  char		*(*colorwarn_fmt)(char *pattern, char *text);
 }		libworld_t;
 
 
@@ -1393,7 +1411,18 @@ int		elfsh_prof_enable_err();
 int		elfsh_prof_enable_out();
 u_char		elfsh_debugger_present();
 void		elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *));
-
+void		elfsh_set_color_simple(void (*endline)(), char *(*colorinstr)(char *text),
+				       char *(*colorstr)(char *t), char *(*colorfieldstr)(char *t),
+				       char *(*colortypestr)(char *t), char *(*colorend)(char *text),
+				       char *(*colorwarn)(char *text));
+void		elfsh_set_color_advanced(char *(*coloradv)(char *ty, char *p, char *te),
+					 char *(*colorinstr_fmt)(char* p, char *t),
+					 char *(*coloraddress)(char *p, elfsh_Addr a),
+					 char *(*colornumber)(char *p, u_int n),
+					 char *(*colorstr_fmt)(char *p, char *t),
+					 char *(*colorfieldstr_fmt)(char *p, char *t),
+					 char *(*colortypestr_fmt)(char *p, char *t),
+					 char *(*colorwarn_fmt)(char *pattern, char *text));
 
 /* linkmap.c */
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm);

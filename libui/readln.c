@@ -123,7 +123,7 @@ char	**custom_completion(const char* text, int start, int end)
 int 	update_col(int sig) 
 {
   char	*prompt;
-  int 	i, c, sub = 0;
+  int 	c, sub = 0;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -131,18 +131,7 @@ int 	update_col(int sig)
     
   prompt = vm_get_prompt();
 
-  for (i = 0; prompt && prompt[i] != 0; i++)
-    {
-      if (prompt[i] == '\e' && prompt[i+1] == '[')
-	{
-	  sub++;
-	  while (prompt && prompt[i] != 0 && prompt[i] != 'm') 
-	    {
-	      sub++;
-	      i++;
-	    }
-	}
-    }
+  sub = vm_color_count(prompt);
 
   if (sub > 0)
     {

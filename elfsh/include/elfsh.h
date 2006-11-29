@@ -71,7 +71,7 @@ extern asm_processor	proc;
 #define	__DEBUG_DISASM__	0
 #define	__DEBUG_SIGHANDLER__	0
 #define	__DEBUG_MODEL__		0
-#define	__DEBUG_SCANNER__	0
+#define	__DEBUG_SCANNER__	1
 #define	__DEBUG_ASLR__		0
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
@@ -475,46 +475,6 @@ typedef struct	      s_module
   time_t              loadtime;       /* Load time stamp */
   struct s_module     *next;          /* Next module of the list */
 }                     elfshmod_t;
-
-
-  /* ELFsh color structure */
-typedef struct          s_color
-{
-
-#define COLOR_NONE         0
-#define COLOR_BOLD         1
-#define COLOR_UNDERLINE    4
-#define COLOR_RESET        160
-#define COLOR_SEPARE       ";"
-
-#define COLOR_TOKENS       50
-#define COLOR_TOKEN_LEN    140
-
-#define COLOR_FG_BLACK     30
-#define COLOR_FG_RED       31
-#define COLOR_FG_GREEN     32
-#define COLOR_FG_YELLOW    33
-#define COLOR_FG_BLUE      34
-#define COLOR_FG_MAGENTA   35
-#define COLOR_FG_CYAN      36
-#define COLOR_FG_WHITE     37
-
-#define COLOR_BG_BLACK     40
-#define COLOR_BG_RED       41
-#define COLOR_BG_GREEN     42
-#define COLOR_BG_YELLOW    43
-#define COLOR_BG_BLUE      44
-#define COLOR_BG_MAGENTA   45
-#define COLOR_BG_CYAN      46
-#define COLOR_BG_WHITE     47
-  u_int                 fground;
-  u_int                 bground;
-  u_int                 bold;
-  u_int                 underline;                                            
-  
-}                       color_t;
-
-extern u_int		nocolor;
 
 /* Elfsh Output Caching structure */
 typedef struct          s_elfsh_outbuf
@@ -1142,29 +1102,6 @@ char		**custom_completion(const char* text, int start, int end);
 int		update_col();
 void		*vm_readline_malloc(unsigned int sz);
 void		vm_readline_free(void *ptr);
-
-/* Color functions */
-color_t         *vm_colortable(char *t, char *te);
-int             vm_colorpattern(color_t *t, char *te, char *p);
-color_t         *vm_colorblank();
-char            *vm_colorget(char *p, char *ty, void *o);
-void            vm_endline();
-char 		*vm_coloradv(char *ty, char *p, char *te);
-char            *vm_colorstr(char *t);
-char            *vm_colorfieldstr(char *t);
-char            *vm_colortypestr(char *t);
-char            *vm_coloraddress(char *p, elfsh_Addr a);
-char            *vm_colornumber(char *p, u_int n);
-char            *vm_colorsends(char *t); 
-char            *vm_colorwarn(char *t);
-char		*vm_colorstring(char *text);
-char		*vm_colorsends(char *text); 
-char		*vm_colorwarn(char *text);
-char            *vm_colorstr_fmt(char *p, char *t);
-char            *vm_colorfieldstr_fmt(char *p, char *t);
-char            *vm_colortypestr_fmt(char *p, char *t);
-char		*vm_colorwarn_fmt(char *pattern, char *text);
-char		*vm_colorinstr(char *text);
 
 /* Object creation/verification functions */
 int		vm_convert_object(elfshpath_t *obj, u_int objtype);

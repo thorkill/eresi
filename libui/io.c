@@ -372,6 +372,11 @@ int		vm_initio()
   hash_add(&world.jobs, "local", initial);
   hash_init(&initial->loaded, 51);
   hash_init(&initial->dbgloaded, 11);
+  elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, vm_colorfieldstr,
+			 vm_colortypestr, vm_colorend, vm_colorwarn);
+  elfsh_set_color_advanced(vm_coloradv, vm_colorinstr_fmt, vm_coloraddress,
+			   vm_colornumber, vm_colorstr_fmt, vm_colorfieldstr_fmt, 
+			   vm_colortypestr_fmt, vm_colorwarn_fmt);
   ELFSH_NOPROFILE_ROUT(0);
 }
 
