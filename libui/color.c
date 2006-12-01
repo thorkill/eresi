@@ -100,15 +100,13 @@ static char	*vm_colornothing(char *sp, void *object)
 /* Trim a string from blank char and copy it on to argument */
 static int	trim(char *from, char *to, u_int size, char *start, char *end)
 {
-  u_int		len, istart, iend, i;
+  u_int		len, istart, iend;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   if (size == 0 || size > COLOR_TOKEN_LEN || from == NULL || to == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);
-
-  istart = iend = 0;
 
   len = strlen(from);
 
@@ -117,25 +115,32 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* Before */
-  for (i = 0; i < len && IS_BLANK(from[i]); i++)
-    istart++;
+  for (istart = 0; istart < len && IS_BLANK(from[istart]); istart++);
 
   /* All blank, no modifications */
-  if (i == len)
+  if (istart == len)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* After */
-  for (i = len; i > 0 && IS_BLANK(from[i]); i--)
-    iend++;
+  for (iend = len; iend > 0 && IS_BLANK(from[iend]); iend--);
+
+  iend = len - iend;
 
   /* Copy the right char on to argument */
   strncpy(to, from + istart, len - istart - iend);
+  to[len - istart - iend] = 0x00;
 
   if (start)
-    strncpy(start, from, istart);
+    {
+      strncpy(start, from, istart);
+      start[istart] = 0x00;
+    }
 
   if (end)
-    strncpy(end, from + len - iend, iend);
+    {
+      strncpy(end, from + len - iend, iend);
+      end[iend] = 0x00;
+    }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -192,7 +197,7 @@ char 		*vm_colorget(char *sp, char *type, void *object)
       pText = trim_text;
 
   snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, 
-	   pattern, white_s, text, white_e);
+	   pattern, white_s, pText, white_e);
 
   //printf("curtok = %d\n", curtok);
 
