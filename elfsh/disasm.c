@@ -447,13 +447,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	vaddr += file->rhdr.base;
 
       while (index < size)
-	if (index >= 1000)
-	  {
-	    VM_OUTPUT("-- symbol size is bigger (use an offset) --\n");
-	    break;
-	  }
-	else
-	  index += display_instr(-1, index, vaddr, foffset, size, name, 
+	  	index += display_instr(-1, index, vaddr, foffset, size, name, 
 				 index, buff, bigbuf, &biglen);
       
       // To uncomment one day
@@ -476,13 +470,6 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
       while (index < size)
 	{
 
-	  /* Keep a limit to avoid output overflow */
-	  if (index >= 1000)
-	    {
-	      VM_OUTPUT("-- symbol size is bigger (use an offset) --\n");
-	      break;
-	    }
-	  
 	  /* Take care of quiet mode */
 	  if (world.state.vm_quiet)
 	    {
@@ -557,7 +544,7 @@ int             display_object(elfshobj_t *file, elfshsect_t *parent,
 	  vm_output("\n");
 	  index += ret;
 	}
-    }
+  }
   
   //XFREE(buff);
   vm_output("\n");
@@ -578,7 +565,7 @@ int		display_section(elfshobj_t	*file,
 				char		otype)
 {
   elfsh_Sym	*actual;
-  int		size;
+  int		size, symtab_size;
   int		index;
   elfsh_SAddr  	offset;
   int		tot;
@@ -591,36 +578,51 @@ int		display_section(elfshobj_t	*file,
   /* Hello message ;) */
   snprintf(logbuf, BUFSIZ - 1, " [*] Analysing section %s [*] \n\n", name);
   vm_output(logbuf);
-  actual = elfsh_get_symtab(file, &size);
+  actual = elfsh_get_symtab(file, &symtab_size);
   tot = 0;
   if (s && !elfsh_get_raw(s))
     elfsh_get_anonymous_section(file, s);
-  
+
   /* Display all symbols pointing in the section */
   if (actual)
-    for (index = 0; index < size; index++)
+    for (index = 0; index < symtab_size; index++)
       if (elfsh_get_parent_section(file, actual[index].st_value, &offset) == s)
-	{
-	  symname = elfsh_get_symbol_name(file, actual + index);
-	  err = display_object(file, s, actual + index, 
-			       (reqsize ? reqsize : actual[index].st_size), off,
+	  {
+		if (reqsize)
+		  size = (reqsize+off) > actual[index].st_size ? 
+			  			actual[index].st_size :
+						reqsize+off;
+		else
+		  size = actual[index].st_size;
+		  
+	    symname = elfsh_get_symbol_name(file, actual + index);
+	    err = display_object(file, s, actual + index, size, off,
 			       s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr,
 			       actual[index].st_value, symname, otype);
-	  if (err == -1)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
-	  tot++;
-	}
+		
+	    if (err == -1)
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
+	    tot++;
+	  }
 
   /* If no symbol points to our section, we display it as a whole */
   if (!tot)
-    {
-      actual = elfsh_get_symbol_by_name(file, name);
-      err = display_object(file, s, actual, (reqsize ? reqsize : s->shdr->sh_size), 
-			   off, s->shdr->sh_offset, s->shdr->sh_addr, name, otype);
-      if (err == -1)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
+  {
+	if (reqsize)
+	  size = (reqsize+off) > s->shdr->sh_size ? 
+		  			s->shdr->sh_size :
+					reqsize+off;
+	else
+	  size = s->shdr->sh_size;
+		
+    actual = elfsh_get_symbol_by_name(file, name);
+    err = display_object(file, s, actual, size, off, 
+			s->shdr->sh_offset, s->shdr->sh_addr, name, otype);
+	
+    if (err == -1)
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
       
-    }
+  }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -728,9 +730,14 @@ int             cmd_disasm()
 			  "No matching symbol for offset", -1);
 
       actual->off += off;
+	  
       if (!actual->size)
-	actual->size = elfsh_get_symbol_size(sym);
-      actual->size += actual->off;
+		actual->size = elfsh_get_symbol_size(sym);
+	  else
+		actual->size = (actual->size+actual->off) > elfsh_get_symbol_size(sym)?
+							elfsh_get_symbol_size(sym) : 
+							actual->size+actual->off;
+	  
       name = elfsh_get_symbol_name(file, sym);
       matchs++;
       
@@ -779,7 +786,7 @@ int             cmd_disasm()
 #endif
       
      if (display_section(file, s, name, actual->off, 
-			 actual->size + actual->off, 
+			 actual->size, 
 			 actual->otype) < 0)
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -812,7 +819,7 @@ int             cmd_disasm()
 #endif
       
      if (display_section(file, s, name, actual->off, 
-			 actual->size + actual->off, 
+			 actual->size, 
 			 actual->otype) < 0)
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -834,7 +841,11 @@ int             cmd_disasm()
 	    matchs++;
 	    if (!actual->size)
 	      actual->size = elfsh_get_symbol_size(sym + index);
-	    actual->size += actual->off;
+	    else
+		  actual->size = (actual->size+actual->off) > 
+			  					elfsh_get_symbol_size(sym+index) ?
+								elfsh_get_symbol_size(sym+index) : 
+			 					actual->size+actual->off;
 
 #if __DEBUG_DISASM__
 	    snprintf(logbuf, BUFSIZ - 1, 
@@ -874,7 +885,11 @@ int             cmd_disasm()
 	    matchs++;
 	    if (!actual->size)
 	      actual->size = elfsh_get_symbol_size(sym + index);
-	    actual->size += actual->off;
+	    else
+		  actual->size = (actual->size+actual->off) > 
+			  					elfsh_get_symbol_size(sym+index) ?
+								elfsh_get_symbol_size(sym+index) : 
+			 					actual->size+actual->off;
 
 #if 1//__DEBUG_DISASM__
 	   snprintf(logbuf, BUFSIZ - 1, 

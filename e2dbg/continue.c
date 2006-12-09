@@ -18,7 +18,6 @@ void		e2dbg_start_proc()
     printf(" [*] Debugger unlocked MUTEX-ACK and allow the debuggee to continue\n");
 #endif
 
-  /*
   if (e2dbgworld.curthread && e2dbgworld.curthread->count == 2)
     e2dbg_thread_contall();
   else if (!e2dbgworld.curthread)
@@ -26,7 +25,6 @@ void		e2dbg_start_proc()
   else
     printf(" [*] e2dbg_start_proc -NOT- doing CONTALL (count = %u)\n",
 	   e2dbgworld.curthread->count);
-  */
 
   /* We lock here so that we can wait for the debuggee to unlock dbgsyn */
   if (e2dbg_mutex_lock(&e2dbgworld.dbgsyn) < 0)

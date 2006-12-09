@@ -307,9 +307,23 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0x20] = i386_mov_rm_cr;
   inter->cisc_i386[0x22] = i386_mov_cr_rm;
   inter->cisc_i386[0x23] = i386_mov_dr_rm;
+  inter->cisc_i386[0x31] = i386_rdtsc;
+  inter->cisc_i386[0x40] = i386_cmovo;
+  inter->cisc_i386[0x41] = i386_cmovno;
+  inter->cisc_i386[0x42] = i386_cmovb;
   inter->cisc_i386[0x43] = i386_cmovae;
+  inter->cisc_i386[0x44] = i386_cmove;
   inter->cisc_i386[0x45] = i386_cmovne;
-  inter->cisc_i386[0x47] = op_cmova;
+  inter->cisc_i386[0x46] = i386_cmovbe;
+  inter->cisc_i386[0x47] = i386_cmova;
+  inter->cisc_i386[0x48] = i386_cmovs;
+  inter->cisc_i386[0x49] = i386_cmovns;
+  inter->cisc_i386[0x4a] = i386_cmovp;
+  inter->cisc_i386[0x4b] = i386_cmovnp;
+  inter->cisc_i386[0x4c] = i386_cmovl;
+  inter->cisc_i386[0x4d] = i386_cmovnl;
+  inter->cisc_i386[0x4e] = i386_cmovle;
+  inter->cisc_i386[0x4f] = i386_cmovnle;
   inter->cisc_i386[0x82] = i386_jb;
   inter->cisc_i386[0x83] = i386_jae;
   inter->cisc_i386[0x84] = i386_je;
@@ -348,8 +362,9 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xab] = i386_bts;
   inter->cisc_i386[0xac] = i386_shrd_rmv_rv_ib;
   inter->cisc_i386[0xad] = i386_shrd_rmv_rv_cl;
-  inter->cisc_i386[0xae] = i386_clflush;
+  inter->cisc_i386[0xae] = i386_group15;
   inter->cisc_i386[0xaf] = i386_imul_rv_rmv;
+  inter->cisc_i386[0xb1] = op_cmp_xchg;
   inter->cisc_i386[0xb2] = op_lss_rv_rmv;
   inter->cisc_i386[0xb3] = op_btr_rmv_rv;
   inter->cisc_i386[0xb6] = i386_movzbl_rv_rmb;
@@ -360,6 +375,13 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xbf] = i386_movswl_rv_rm2;
   inter->cisc_i386[0xc1] = i386_xadd;
   inter->cisc_i386[0xc8] = i386_bswap;
+  inter->cisc_i386[0xc9] = i386_bswap;
+  inter->cisc_i386[0xca] = i386_bswap;
+  inter->cisc_i386[0xcb] = i386_bswap;
+  inter->cisc_i386[0xcc] = i386_bswap;
+  inter->cisc_i386[0xcd] = i386_bswap;
+  inter->cisc_i386[0xce] = i386_bswap;
+  inter->cisc_i386[0xcf] = i386_bswap;
 
 }
 

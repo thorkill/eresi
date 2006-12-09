@@ -10,14 +10,14 @@
 /* Commands */
 #define HLP_DISASM		"Disassemble matching binary objects in current file\n\n"         \
 				"disasm parameter\n\n"					          \
-				"Parameter format : regx, regx:rva, regx:rva%%size, regx%%size\n" \
+				"Parameter format : regx, regx:rva, regx:rva%size, regx%size\n" \
 	                        " - regx : Regular expression (mandatory)		\n"       \
 	                        " - rva  : Byte offset from the beginning (optional)    \n"       \
 	                        " - size : Bytes number limit (optional)	      \n\n"       \
 
 #define HLP_HEXA		"Dump matching binary objects in current file\n\n"		  \
 				"X parameter\n\n"					          \
-				"Parameter format : regx, regx:rva, regx:rva%%size, regx%%size\n" \
+				"Parameter format : regx, regx:rva, regx:rva%size, regx%size\n" \
 	                        " - regx : Regular expression (mandatory)		\n"       \
 	                        " - rva  : Byte offset from the beginning (optional)    \n"       \
 	                        " - size : Bytes number limit (optional)	      \n\n"       \

@@ -105,7 +105,7 @@ void			vm_log(char *str)
 	{
 	  snprintf(tail, scrsize - (tail - buf), "%s", str);
 		check = strlen(str) - (scrsize - (tail - buf));
-		if(check < 0) return;
+		if(check < 0)   ELFSH_NOPROFILE_OUT();
 
 	  snprintf(buf, check, "%s", str);
 
@@ -138,7 +138,7 @@ void			vm_log(char *str)
 	    {
 	      snprintf(tail, scrsize - (tail - buf), "%s", str);
 				check = strlen(str) - (scrsize - (tail - buf));
-				if(check < 0) return;
+				if(check < 0)   ELFSH_NOPROFILE_OUT();
 	      snprintf(buf, check, "%s", str);
 	      tail = buf + strlen(str) - ((scrsize + buf) - tail);
 

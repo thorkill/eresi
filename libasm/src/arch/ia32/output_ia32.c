@@ -305,6 +305,8 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
     return (0);
   memset(buffer, 0, 1024);
   
+  if (instr->prefix & ASM_PREFIX_LOCK)
+	  strcat(buffer, "lock");
   if (instr->prefix & ASM_PREFIX_REP)
     strcat(buffer, "repz ");
   if (instr->prefix & ASM_PREFIX_REPNE)

@@ -214,7 +214,8 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
       if (offset)
 	*offset = (elfsh_SAddr) (sect->shdr->sh_addr - value);
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_section_name(file, sect)));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 (elfsh_get_section_name(file, sect)));
     }
 
   /* Else use the sorted-by-address symbol table to match what we want */

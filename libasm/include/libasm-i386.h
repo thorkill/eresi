@@ -37,7 +37,7 @@ struct s_asm_proc_i386 {
   int			(*cisc_set[256])(asm_instr *, u_char *, u_int, 
 					 asm_processor *);
   
-/* handlers for i386 instr. prefixed by 0xff by second opcode	*/
+  /* handlers for i386 instr. prefixed by 0x0f by second opcode	*/
   int			(*cisc_i386[256])(asm_instr *, u_char *, u_int, 
 					  asm_processor *);
   /*	internal opcode tables	*/
@@ -691,10 +691,24 @@ enum asm_instr {
   ASM_SLDT,
   ASM_INVLPG,
   /* 150 */
+  ASM_RDTSC,
   ASM_LLDT,
   ASM_LBRANCH,
   ASM_CMOVA,
+  ASM_CMOVE,
   ASM_CMOVAE,
+  ASM_CMOVO,
+  ASM_CMOVNO,
+  ASM_CMOVB,
+  ASM_CMOVBE,
+  ASM_CMOVS,
+  ASM_CMOVNS,
+  ASM_CMOVP,
+  ASM_CMOVNP,
+  ASM_CMOVL,
+  ASM_CMOVNL,
+  ASM_CMOVLE,
+  ASM_CMOVNLE,
   ASM_MOVSBL,
   ASM_MOVSWL,
   ASM_BSWAP,

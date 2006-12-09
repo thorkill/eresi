@@ -145,7 +145,7 @@ do {						\
            "(%d %d)\n", profileme, elfsh_depth);\
     printf("     Current FUNCTION %s@%s:%d\n",	\
 	   func, file, line);			\
-    exit(0);					\
+  ; \
   }						\
   elfsh_profile_out(file, (char*) func, line);	\
   return;					\
@@ -161,7 +161,7 @@ do {						\
            "(%d %d)\n", profileme, elfsh_depth);\
     printf("     Current FUNCTION %s@%s:%d\n",	\
 	   f, file, l);				\
-    exit(0);					\
+  ; \
   }						\
   elfsh_profile_out(file, (char*) f, l);       	\
   return ret;					\
@@ -177,7 +177,7 @@ do {						\
            "elfsh_depth\n");			\
     printf("     Current FUNCTION %s@%s:%d\n",	\
 	   f, file, l);				\
-    exit(0);					\
+  ; \
   }						\
   elfsh_error_str = m;				\
   elfsh_profile_err(file, (char*) f, l, m);	\

@@ -115,7 +115,9 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 {
   e2dbgthread_t	*curthread;
   char		key[15];
-
+  sigset_t	mask;
+  sigset_t	oldmask;
+  
   e2dbgworld.curthread->state = E2DBG_THREAD_SIGUSR2;
   
   /* Get the current thread */
@@ -124,13 +126,28 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
   curthread->context = (ucontext_t *) pcontext;
 
 #if __DEBUG_THREADS__
-  printf(" [*] SIGUSR2 received by thread %u \n", (unsigned int) pthread_self());
+  fprintf(stderr,
+	  " [*] SIGUSR2 received by thread %u \n", (unsigned int) pthread_self());
 #endif
   
   e2dbgworld.threadsyncnbr++;
   e2dbgworld.curthread->state = E2DBG_THREAD_BREAKUSR2;
 
-  pthread_kill(pthread_self(), SIGSTOP);
+  sigemptyset (&mask);
+  sigaddset (&mask, SIGUSR2);
+  sigprocmask (SIG_BLOCK, &mask, &oldmask);
+  sigsuspend (&oldmask);
+  sigprocmask (SIG_UNBLOCK, &mask, NULL);
+
+#if 1 //__DEBUG_THREADS__
+  fprintf(stderr, " [T] Getting out of SIGUSR2 handler \n");
+#endif
+
+  //pthread_kill(pthread_self(), SIGSTOP);
+  //pause();
+  /* Make it wait until the breakpoint is finished to process */
+  //e2dbg_mutex_lock(&e2dbgworld.dbgbp);
+  //e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
 }
 
 
@@ -331,7 +348,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 #if __DEBUG_MUTEX__
   vm_output("------------------------------------->\n");
   vm_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
-  e2dbg_threads_print();
+  //e2dbg_threads_print();
 #endif
   
   /* Get the current thread */
@@ -367,8 +384,8 @@ void			e2dbg_generic_breakpoint(int		signum,
 	}
       e2dbgworld.threadgotnbr = e2dbgworld.threadsyncnbr = 0;
     }
-  else
-    e2dbg_thread_stopall(SIGSTOP);
+  //else
+  //e2dbg_thread_stopall(SIGSTOP);
 
   /* XXX: if the debugger itself is breaking we need a new CLRSIG_BUT_USR1 macro */
   /* We call the debugger */
@@ -404,7 +421,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   else
     {
       vm_output(" [*] BP MUTEX UNLOCKED [e2dbg_generic_breakpoint] \n");
-      e2dbg_threads_print();
+      //e2dbg_threads_print();
       vm_output("<-------------------------------------\n");
     }
 #endif

@@ -73,7 +73,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_BRANCH_NOT_OVERFLOW] = "jno";
   proc->instr_table[ASM_BRANCH_SIGNED] = "js";
   proc->instr_table[ASM_BRANCH_NOT_SIGNED] = "jns";
-  proc->instr_table[ASM_BRANCH_CXZ] = "jcxz";
+  proc->instr_table[ASM_BRANCH_CXZ] = "jecxz";
 
   proc->instr_table[ASM_LEA] = "lea";
   proc->instr_table[ASM_LOAD] = "ld";
@@ -151,6 +151,8 @@ int init_instr_table(asm_processor *proc) {
   /* i386 */
   
   proc->instr_table[ASM_SET_U_LESS] = "setb";
+  proc->instr_table[ASM_CMPXCHG] = "cmpxchg";
+  proc->instr_table[ASM_RDTSC] = "rdtsc";
   proc->instr_table[ASM_BTR] = "btr";
   proc->instr_table[ASM_SET_U_LESS_EQUAL] = "setbe";
   proc->instr_table[ASM_SET_S_LESS] = "setl";
@@ -175,6 +177,19 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_CMOVNE] = "cmovne";
   proc->instr_table[ASM_CMOVA] = "cmova";
   proc->instr_table[ASM_CMOVAE] = "cmovae";
+  proc->instr_table[ASM_CMOVE] = "cmove";
+  proc->instr_table[ASM_CMOVO] = "cmovo";
+  proc->instr_table[ASM_CMOVNO] = "cmovno";
+  proc->instr_table[ASM_CMOVB] = "cmovb";
+  proc->instr_table[ASM_CMOVBE] = "cmovbe";
+  proc->instr_table[ASM_CMOVS] = "cmovs";
+  proc->instr_table[ASM_CMOVNS] = "cmovns";
+  proc->instr_table[ASM_CMOVP] = "cmovp";
+  proc->instr_table[ASM_CMOVNP] = "cmovnp";
+  proc->instr_table[ASM_CMOVL] = "cmovl";
+  proc->instr_table[ASM_CMOVNL] = "cmovnl";
+  proc->instr_table[ASM_CMOVLE] = "cmovle";
+  proc->instr_table[ASM_CMOVNLE] = "cmovnle";
   proc->instr_table[ASM_LSS] = "lss";
   proc->instr_table[ASM_UD2A] = "ud2a";
   proc->instr_table[ASM_LGDT] = "lgdt";
@@ -184,6 +199,8 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_STR] = "str";
   proc->instr_table[ASM_LTR] = "ltr";
   proc->instr_table[ASM_LLDT] = "lldt";
+  proc->instr_table[ASM_STMXCSR] = "stmxcsr";
+  proc->instr_table[ASM_LDMXCSR] = "ldmxcsr";
   
   /* FPU */
   proc->instr_table[ASM_FILD] = "fild";

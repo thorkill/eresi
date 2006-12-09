@@ -550,9 +550,11 @@ int		elfsh_load_hdr(elfshobj_t *file)
   if ((len = read(file->fd, file->hdr, sizeof(elfsh_Ehdr))) <= 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)ELFSH_ERR_ARRAY, len);
 
-  if (!file->hdr->e_shnum)
-   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-    "file->hdr->e_shnum is not valid", -1); 
+  /* This check will not make elfsh able to reconstruct SHT
+  ** if (!file->hdr->e_shnum)
+  ** ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  ** "file->hdr->e_shnum is not valid", -1); 
+  */
  
  if (!file->hdr->e_shentsize)
    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,

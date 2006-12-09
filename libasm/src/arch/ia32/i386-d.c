@@ -260,29 +260,51 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
       new->op1.scale = modrm->m;
       break;
     case 2:
-      new->instr = ASM_FLDZ; break;
+      new->instr = ASM_FNOP; break;
     case 4:
       switch(modrm->m) {
       case 0: new->instr = ASM_FCHS; break;
       case 1: new->instr = ASM_FABS; break;
+	  case 4: new->instr = ASM_FTST; break;
+	  case 5: new->instr = ASM_FXAM; break;
       default: new->instr = ASM_BAD; break;
       }
       break;
     case 5:
       switch(modrm->m) {
       case 0: new->instr = ASM_FLD1; break;
+      case 1: new->instr = ASM_FLDL2T; break;
+      case 2: new->instr = ASM_FLDL2E; break;
+      case 3: new->instr = ASM_FLDPI; break;
+      case 4: new->instr = ASM_FLDLG2; break;
+      case 5: new->instr = ASM_FLDLN2; break;
       case 6: new->instr = ASM_FLDZ; break;
       }
       break;
     case 6:
-      new->instr = ASM_FPATAN; break;
+	  switch(modrm->m) {
+      case 0: new->instr = ASM_F2XM1; break;
+      case 1: new->instr = ASM_FYL2X; break;
+      case 2: new->instr = ASM_FPTAN; break;
+      case 3: new->instr = ASM_FPATAN; break;
+      case 4: new->instr = ASM_FXTRACT; break;
+      //case 5: new->instr = ASM_FPREM1; break;
+	  case 6: new->instr = ASM_FDECSTP; break;
+	  case 7: new->instr = ASM_FINCSTP; break;
+	  }
+	  break;
     case 7:
       switch(modrm->m) {
       case 0: new->instr = ASM_FPREM; break;
+	  case 1: new->instr = ASM_FYL2XP1; break;
       case 2: new->instr = ASM_FSQRT; break;
+	  case 3: new->instr = ASM_FSINCOS; break;
       case 4: new->instr = ASM_FRNDINT; break;
       case 5: new->instr = ASM_FSCALE; break;
+	  //case 6: new->instr = ASM_SIN; break;
+	  //case 7: new->instr = ASM_COS; break;
       }
+	  break;
     }
   else /* modrm != 3 */
     switch(modrm->r) {
@@ -290,7 +312,7 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
       new->instr = ASM_FLD;
       break;
     case 1:
-      new->instr = ASM_FXCH;
+      new->instr = ASM_BAD;
       break;
     case 2:
       new->instr = ASM_FST;
