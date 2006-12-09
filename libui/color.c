@@ -254,10 +254,7 @@ int		vm_color_count(char *string)
   int		len;
   int		i;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   len = strlen(string);
-
   for (i = 0; i < len; i++)
     {
       if (string[i] == C_STARTCOLOR)
@@ -267,8 +264,7 @@ int		vm_color_count(char *string)
 	    i++;
 	}
     }
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, count);
+  return (0);
 }
 
 /* Return total size of colors on a string */
@@ -278,10 +274,7 @@ int		vm_color_size(char *string)
   int		len;
   int		i;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   len = strlen(string);
-
   for (i = 0; i < len; i++)
     {
       if (string[i] == C_STARTCOLOR)
@@ -294,7 +287,6 @@ int		vm_color_size(char *string)
 	    }
 	}      
     }
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
+  return (size);
 }
 
