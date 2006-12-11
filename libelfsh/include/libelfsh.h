@@ -128,6 +128,7 @@
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
 #define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
+#define		ELFSH_SECTION_NAME_CONTROL	".elfsh.control"
 
 //#define		ELFSH_SECTION_NAME_RPHT		".elfsh.rpht"
 #define		ELFSH_SECTION_NAME_RSHSTRTAB	".rshstrtab"
@@ -162,6 +163,8 @@
 #define		ELFSH_SECTION_NAME_RODATA	".rodata"
 #define		ELFSH_SECTION_NAME_STAB		".stab"
 #define		ELFSH_SECTION_NAME_EHFRAME	".eh_frame"
+#define		ELFSH_SECTION_NAME_INIT		".init"
+#define		ELFSH_SECTION_NAME_FINI		".fini"
 
 /* Section index in the secthash */
 #define		ELFSH_SECTION_NULL		0
@@ -379,24 +382,8 @@ typedef struct		s_rel
 /* forward declaration */
 struct			s_sect;
 struct			s_obj;
-
 typedef struct s_sect elfshsect_t;
 typedef struct s_obj  elfshobj_t;
-
-
-/* Block type */
-typedef struct		s_block
-{
-  elfsh_Sym		*sym;
-  struct s_sect		*section;	/* section the block belongs to	*/
-  int			offset;		/* Section offset for this block	*/
-  int			len;		/* block real lenght			*/
-  struct s_block	*next;
-}			elfshblock_t;
-
-
-/* Also use the same format for PLT entries */
-typedef elfshblock_t	elfshpltent_t;
 
 
 /* Section data type */
@@ -1026,16 +1013,6 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp);
 elfshsect_t	*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range);
 
 void		elfsh_free_notes_list(elfshobj_t *file);
-
-/* blocks.c */
-elfshblock_t	*elfsh_get_block_by_addr(elfshobj_t *file, elfsh_Addr addr);
-elfshblock_t    *elfsh_get_block_by_name(elfshobj_t *file, char *name);
-elfsh_Addr	elfsh_get_block_addr(elfshblock_t *func);
-u_int		elfsh_get_block_len(elfshblock_t *func);
-int		elfsh_insert_block(elfshsect_t *sct, elfshblock_t *fct, int range);
-int		elfsh_scan_blocks(elfshobj_t *file);
-
-int		elfsh_print_blocks(elfshsect_t *sect);
 
 /* plt.c */
 elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num);

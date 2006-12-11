@@ -798,12 +798,9 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_SORT2   , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_TRACE   , (void *) cmd_trace   , (void *) vm_getvarparams , 0, HLP_TRACE);
-
   vm_addcmd(CMD_ALL	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALL2	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALERT	, (void *) cmd_alert   , (void *) vm_getoption    , 0, HLP_ALERT);
-
-
   vm_addcmd(CMD_FINDREL , (void *) cmd_findrel , (void *) NULL            , 1, HLP_FINDREL);
   vm_addcmd(CMD_STRIP   , (void *) cmd_strip   , (void *) NULL            , 1, HLP_STRIP);
   vm_addcmd(CMD_SSTRIP  , (void *) cmd_sstrip  , (void *) NULL            , 1, HLP_SSTRIP);
@@ -821,7 +818,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_FLUSH   , (void *) cmd_flush   , (void *) NULL            , 1, HLP_FLUSH);
   vm_addcmd(CMD_COLOR   , (void *) cmd_color   , (void *) vm_getoption3   , 0, HLP_COLOR);
   vm_addcmd(CMD_NOCOLOR , (void *) cmd_nocolor , (void *) NULL            , 0, HLP_NOCOLOR);
-
   vm_addcmd(CMD_JMP     , (void *) cmd_jmp     , (void *) vm_getoption    , 0, HLP_JMP);
   vm_addcmd(CMD_JE      , (void *) cmd_je      , (void *) vm_getoption    , 0, HLP_JE);
   vm_addcmd(CMD_JNE     , (void *) cmd_jne     , (void *) vm_getoption    , 0, HLP_JNE);
@@ -829,7 +825,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_JL      , (void *) cmd_jl      , (void *) vm_getoption    , 0, HLP_JL);
   vm_addcmd(CMD_JGE     , (void *) cmd_jge     , (void *) vm_getoption    , 0, HLP_JGE);
   vm_addcmd(CMD_JLE     , (void *) cmd_jle     , (void *) vm_getoption    , 0, HLP_JLE);
-
   vm_addcmd(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) vm_getoption  , 0, HLP_SDIR);
   vm_addcmd(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
   vm_addcmd(CMD_SOURCE  , (void *) cmd_source  , (void *) vm_getvarparams , 0, HLP_SOURCE);
@@ -840,13 +835,13 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_LOG     , (void *) cmd_log     , (void *) vm_getvarparams , 0, HLP_LOG);
   vm_addcmd(CMD_EXPORT  , (void *) cmd_export  , (void *) vm_getoption2   , 0, HLP_EXPORT);
   vm_addcmd(CMD_SHARED    , (void *) cmd_shared   , (void *) NULL         , 0, HLP_SHARED);
-
   vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption , 1, HLP_VERSION);
   vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
   vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption, 0, HLP_HASH);
 
 #if defined(ELFSHNET)
+  /* DUMP network commands */
   vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
   vm_addcmd(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
   vm_addcmd(CMD_NETLIST   , (void *) cmd_netlist  , (void *) NULL            , 0, HLP_NETLIST);
@@ -857,12 +852,16 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) vm_getvarparams , 0, HLP_RCMD);
 #endif
 
-#if defined(USE_MJOLLNIR)
-  vm_addcmd(CMD_ANALYSE	  , (void *) cmd_analyse  , (void *) NULL	     , 0, HLP_ANALYSE);
-  vm_addcmd(CMD_UNSTRIP	  , (void *) cmd_unstrip  , (void *) NULL	     , 0, HLP_UNSTRIP);
-  vm_addcmd(CMD_RENAME	  , (void *) cmd_rename  , (void *) vm_getvarparams , 2, HLP_RENAME);
-#endif
-  
+  /* Flow analysis commands */
+  vm_addcmd(CMD_FLOW      , cmd_flow          , NULL,            1, HLP_FLOW);
+  vm_addcmd(CMD_ANALYSE	  , cmd_analyse       , NULL,            0, HLP_ANALYSE);
+  vm_addcmd(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            0, HLP_UNSTRIP);
+  vm_addcmd(CMD_GRAPH     , cmd_graph         , vm_getoption3,   1, HLP_GRAPH);
+  vm_addcmd(CMD_INSPECT   , cmd_inspect       , vm_getoption,    1, HLP_INSPECT);
+  vm_addcmd(CMD_FLOWJACK  , cmd_flowjack      , vm_getoption2,   1, HLP_FLOWJACK);
+  vm_addcmd(CMD_ADDGOTO   , cmd_addgoto       , vm_getoption2,   1, HLP_ADDGOTO);
+  vm_addcmd(CMD_SETGVL    , cmd_setgvl        , vm_getoption,    1, HLP_SETGVL);
+  vm_addcmd(CMD_RENAME	  , cmd_rename        , vm_getvarparams, 2, HLP_RENAME);  
 }
 
 /* Mix default library path with LD_LIBRARY_PATH variable */

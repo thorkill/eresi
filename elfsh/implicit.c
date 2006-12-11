@@ -122,7 +122,7 @@ int		vm_implicit(elfshcmd_t *actual)
     }
 
   /* We need to set it here since the CURRENT object can change */
-  asm_set_resolve_handler(&world.proc, do_resolve, world.curjob->current);
+  asm_set_resolve_handler(&world.proc, asm_do_resolve, world.curjob->current);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

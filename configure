@@ -9,7 +9,7 @@ CHOSENBIT="0"
 STATIC="0"
 READLN="0"
 ELFSHNET="0"
-LIBMJOLLNIR="0"
+LIBMJOLLNIR="1"
 PREFIX="/"
 OSVER=`uname -r | cut -d "." -f1`
 
@@ -102,14 +102,6 @@ echo  "BUILDOPT		= -m64 -DM64"		>> $CONFIGFILE
 M64="1"
 ;;
 
---enable-mjollnir*)
-echo  " [*] Enabling libmjollnir"
-echo  "#define USE_MJOLLNIR 1"		>> $LIBVARSFILE
-echo  "#define USE_MJOLLNIR 1"		>> $VARSFILE
-echo  "LDMJOLLNIR	= -lmjollnir -lcrypto "	>> $CONFIGFILE
-LIBMJOLLNIR="1"
-;;
-
 --use-etags*)
 echo  " [*] Enabling etags support"
 ETAGS="1"
@@ -184,7 +176,6 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-static   : Link in static."
     echo "   --enable-dmalloc  : Link with Electric Fence."
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
-    echo "   --enable-mjollnir : Build libmjollnir."
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
     echo
@@ -294,6 +285,7 @@ fi
 
 esac
 
+
 # Set default variables in case it was not precised
 
 if [ "$MODPATHSET" != "1" ]; then
@@ -387,12 +379,9 @@ fi
 echo "	@echo 'Building libui...'			"      	>> Makefile	
 echo "	@cd libui && \$(MAKE) 				"	>> Makefile
 echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
-
-if [ "$LIBMJOLLNIR" = "1" ]; then
 echo "	@echo 'Building libmjollnir...'			"      	>> Makefile
-echo "	@cd libmjollnir && \$(MAKE) 				"	>> Makefile
-echo "	@echo 'Libmjollnir has been built successfully.' 	"	>> Makefile
-fi
+echo "	@cd libmjollnir && \$(MAKE) 			"	>> Makefile
+echo "	@echo 'Libmjollnir has been built successfully.'"	>> Makefile
 
 echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
 echo "	@cd vm && \$(MAKE)			     	"       >> Makefile
@@ -411,26 +400,22 @@ echo "	@cd modules && \$(MAKE) "				>> Makefile
 echo "	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
-echo "install : all prepareDir mod_install "				>> Makefile
+echo "install : all prepareDir mod_install "			>> Makefile
 echo "	@cp vm/elfsh \$(BINPATH)/ "				>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libc/libcelfsh.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libmalloc/libmalloc-e2dbg.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh.a libelfsh/libelfsh.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
-echo "	@cp libmjollnir/libmjollnir.a \$(LIBPATH) "			>> Makefile
-echo "	@cp libmjollnir/libmjollnir.so \$(LIBPATH) "			>> Makefile
-fi
+echo "	@cp libmjollnir/libmjollnir.a \$(LIBPATH) "		>> Makefile
+echo "	@cp libmjollnir/libmjollnir.so \$(LIBPATH) "		>> Makefile
 echo "	@cp e2dbg/e2dbg.so \$(LIBPATH) "			>> Makefile
 echo "	@cp libui/libui.a libui/libui.so \$(LIBPATH) "		>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
-echo "	@cp libasm/include/*.h \$(INCPATH)"		>> Makefile
+echo "	@cp libasm/include/*.h \$(INCPATH)"		        >> Makefile
 echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
 echo "	@cp libc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
-fi
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 755 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
@@ -446,21 +431,20 @@ echo "	@chmod 644 \$(LIBPATH)libelfsh.a "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libasm.a "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 755 \$(INCPATH)libasm*.h "			>> Makefile
-
-echo " "                        					>> Makefile
-echo "prepareDir: " 								>> Makefile
+echo " "                        				>> Makefile
+echo "prepareDir: " 						>> Makefile
 echo "	@mkdir -p \$(DESTDIR) || true"  			>> Makefile
 echo "	@mkdir -p \$(BINPATH) || true"  			>> Makefile
 echo "	@mkdir -p \$(LIBPATH) || true"  			>> Makefile
 echo "	@mkdir -p \$(INCPATH) || true"  			>> Makefile
-echo "	@mkdir -p \$(MANPATH)/man1/ || true"    	>> Makefile
+echo "	@mkdir -p \$(MANPATH)/man1/ || true"    	        >> Makefile
 echo "	@mkdir -p \$(MODPATH) || true"  			>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
-echo "	@ldconfig -R"                               >> Makefile
+    echo "	@ldconfig -R"                                   >> Makefile
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libui and Libasm installed successfully .'"	>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libmjollnir, Libui and Libasm installed successfully .'"	>> Makefile
 echo " "							>> Makefile 
 
 echo "mod_install: "						>> Makefile
@@ -478,22 +462,18 @@ echo "	rm -f  \$(LIBPATH)/libui.so "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui.a "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libcelfsh.a "			>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
 echo "	rm -f  \$(LIBPATH)/libmjollnir.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libmjollnir.so "			>> Makefile
-fi
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
 echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
-echo "	rm -f  \$(INCPATH)/libmjollnir*.h "				>> Makefile
-fi
+echo "	rm -f  \$(INCPATH)/libmjollnir*.h "		        >> Makefile
 echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
  
 
-echo "	@echo 'ELFsh, Libelfsh, Libui and Libasm uninstalled successfully' "	>> Makefile
+echo "	@echo 'ELFsh, Libelfsh, Libmjollnir, Libui and Libasm uninstalled successfully' "	>> Makefile
 echo " "							>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
@@ -503,9 +483,7 @@ echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libc	     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
-echo "	cd libmjollnir     && \$(MAKE) -s clean "			>> Makefile
-fi
+echo "	cd libmjollnir     && \$(MAKE) -s clean "		>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
@@ -521,9 +499,7 @@ echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libc      && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
-if [ "$LIBMJOLLNIR" = "1" ]; then
-echo "	cd libmjollnir     && \$(MAKE) -s clean "			>> Makefile
-fi
+echo "	cd libmjollnir     && \$(MAKE) -s clean "		>> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
@@ -546,9 +522,10 @@ echo "	@\$(ETAGS) vm/*.c vm/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
 echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c libmalloc/include/*.h \\"		>> Makefile
-echo "	libasm/src/arch/ia32/*.c \\"				>> Makefile
-echo "	libasm/include/*.h libui/*.c libui/include/*.h\\" 	>> Makefile
-echo "	libdump/include/*.h libc/include/*.h libc/*.c"		>> Makefile
+echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
+echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
+echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
+echo "  libc/include/*.h libc/*.c"			        >> Makefile
 echo " "							>> Makefile
 fi
 
@@ -567,7 +544,6 @@ echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  vm/*.c vm/include/*.h \\" 				>> Makefile
 echo " "							>> Makefile
-
 fi
 
 echo "info    : "						>> Makefile

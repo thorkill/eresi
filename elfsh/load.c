@@ -100,11 +100,10 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
     hash_add(&world.shared_hash, new->name, new);
   else
     hash_add(&world.curjob->loaded, new->name, new);
-    
-#if defined(USE_MJOLLNIR)
-   mjr_create_context_as_current(&world.mjr_session, new);
-   mjr_setup_processor(&world.mjr_session);
-#endif
+
+  /* Create libmjollnir context for this binary */
+  mjr_create_context_as_current(&world.mjr_session, new);
+  mjr_setup_processor(&world.mjr_session);
 
   /* Add an entry into the loaded files hashtable */
   hash_add(&file_hash, new->name, (void *) new);

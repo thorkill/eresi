@@ -1,19 +1,15 @@
-/*
+/* 
+** libbtree.c in libmjollnir for elfsh
 ** 
-** libbtree.c in 
-** 
-** Author  : <087432084750432042>
+** Author  : sk at devhell dot org
+**
 ** Started : Fri Oct 17 14:29:24 2003
 ** Updated : Thu Nov 27 23:29:29 2003
 */
+#include "libmjollnir.h"
 
-#include "libelfsh.h"
 
-/**
- * insert element in tree using id to sort it
- *
- */
-
+/* Insert element in tree using id to sort it */
 void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
 		     u_int id,			/* element id		*/
 		     void *elem)		/* ptr to element	*/
@@ -38,6 +34,8 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
     }
 }
 
+
+
 /**
  * insert element in tree using a function to sort it.
  * depending on function return value, element is insert
@@ -49,9 +47,7 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
  * element is inserted on right path
  * if apply function return a negative value,
  * element is inserted on left path
- * 
  */
-
 void	btree_insert_sort(btree_t **proot,		/* ptr to root	*/
 			  int (*apply)(void *, void *), /* cmp handler	*/
 			  void *elem)			/* element	*/
@@ -97,6 +93,8 @@ void	*btree_get_elem(btree_t *root,	/* ptr to root		*/
   return (NULL);
 }
 
+
+
 /**
  * return an element by providing a matching function
  * this matching function is used to follow path
@@ -108,14 +106,13 @@ void	*btree_get_elem(btree_t *root,	/* ptr to root		*/
  * if return value is positive, element is searched in left path
  *
  */
-
-void	*btree_find_elem(btree_t *root, 
-			 int (*match)(void *, void *), 
-			 void *ptr)
+void		*btree_find_elem(btree_t *root, 
+				 int	 (*match)(void *, void *), 
+				 void	 *ptr)
 {
   int		ret;
   void		*to_ret;
-
+  
   if (root)
     {
       ret = match(root->elem, ptr);

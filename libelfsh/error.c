@@ -6,7 +6,7 @@
 */
 #include "libelfsh.h"
 
-#define		ELFSH_MAX_PATTERN	50			/* Maximum patterns depth */
+#define		ELFSH_MAX_PATTERN	80			/* Maximum patterns depth */
 
 
 static char	mem[2][ELFSH_MAX_PATTERN][80] = {{{0,0,0}}};	/* Patterns memory */

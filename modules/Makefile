@@ -2,7 +2,7 @@
 ## Makefile for modules in elfsh
 ## 
 ## Started on  Wed Feb 19 08:20:54 2003 mayhem
-## Last update Wed Apr 20 11:47:58 2005 kahmm
+## Last update Wed Dec 10 14:47:58 2006 mayhem
 ##
 
 include ../config.h
@@ -11,15 +11,11 @@ SRC	= modtest.c
 OBJ	= $(SRC:.c=.o)
 NAM	= modtest.so
 
-SRC2	= modgraph.c
-OBJ2	= $(SRC2:.c=.o)
-NAM2	= modgraph.so
-
 SRC3	= modremap.c
 OBJ3	= $(SRC3:.c=.o)
 NAM3	= modremap.so
 
-CFLAGS	= -I../vm/include/ -I../libhash/include/ -I../libui/include/       \
+CFLAGS	= -I../vm/include/ -I../libhash/include/ -I../libui/include/ \
 	  -I../libdump/include/ -I../libelfsh/include/  \
 	  -I../libasm/include/ -I../e2dbg/include/      \
 	  -I../libc/include/ -I../libmjollnir/include/ -Wall -g3 -O2 -fPIC \
@@ -28,7 +24,7 @@ CFLAGS	= -I../vm/include/ -I../libhash/include/ -I../libui/include/       \
 CC	= gcc
 LD	= gcc
 
-all	: test remap flow
+all	: test remap
 
 test	: $(OBJ)
 	@$(LD) $(BITS) -shared $(OBJ) -o $(NAM)
@@ -36,13 +32,8 @@ test	: $(OBJ)
 remap	: $(OBJ3)
 	@$(LD) $(BITS) -shared $(OBJ3) -o $(NAM3)
 
-flow 	: 
-	cd modflow && $(MAKE)
-
 clean	:
-	@rm -f $(OBJ) $(OBJ2) $(OBJ3) *~ *\# \#* .\#*
-	cd modflow && $(MAKE) clean
+	@rm -f $(OBJ) $(OBJ3) *~ *\# \#* .\#*
 
 fclean	: clean
 	@rm -f *.so
-	cd modflow && $(MAKE) fclean

@@ -1,4 +1,3 @@
-
 /*
 ** libelfsh-compat.h for libelfsh
 ** 
@@ -80,9 +79,6 @@ typedef char uint8;
 
 /* We need it for .interp fingerprint base */
 #include "libelfsh-hash.h"
-
-/* We need it for modflow/libmjollnir */
-#include "libelfsh-btree.h"
 
 #ifndef swap32
 #define swap32(x)						\

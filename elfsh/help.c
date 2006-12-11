@@ -62,17 +62,16 @@ int		cmd_help()
 	       "\n\t\t The ELF shell %s (compiled for %s objects) \n\n"
 	       " General purpose commands   .::. help, info, cat, exec, edit, sdir, lscripts, profile \n"
 	       "                                 quit, exit, load, unload, switch, list, workspace    \n"
-	       "                                 setcolor, nocolor				      \n"
-	       " Ondisk/Memory ELF commands .::. elf, interp, pht, got, sht, rel, notes, dyn, dynsym \n"
+	       "                                 setcolor, nocolor                                    \n"
+	       " Ondisk/Memory ELF commands .::. elf, interp, pht, got, sht, rel, notes, dyn, dynsym  \n"
 	       "                                 findrel, ctors, disasm, hexa, set, get, write, print \n"
-	       "                                 add, sub, mul, div, mod, cmp, reladd, redir \n"
-	       " Debugger commands          .::. break, delete, continue, dumpregs, stack, dbgstack \n"
-	       "                                 backtrace, linkmap, step \n"
-#if defined(USE_MJOLLNIR)
-	       " Mjollnir commands          .::. analyse, unstrip, rename \n\n"
-#endif
+	       "                                 add, sub, mul, div, mod, cmp, reladd, redir          \n"
+	       " Debugger commands          .::. break, delete, continue, dumpregs, stack, dbgstack   \n"
+	       "                                 backtrace, linkmap, step                             \n"
+	       " Analysis commands          .::. analyse, unstrip, rename, graph, flow, inspect       \n"
+	       "                                 flowjack, addgoto, setgvl                            \n"
 	       " ELFsh modules commands     .::. modload, modunload, modhelp \n"
-	       " ELF objects flags          .::. fixup, shtrm, sstrip \n"                        
+	       " ELF objects flags          .::. fixup, shtrm, sstrip \n"
 	       " Ondisk only ELF commands   .::. flush, save, sym, stab, append, extend, insert, remove \n"
 	       " Network commands           .::. net, netlist, netkill, connect, disconnect, peerslist, rcmd \n\n"
 	       " Available prefixes         .::. all, sort, quiet, verb, alert \n"
@@ -81,7 +80,7 @@ int		cmd_help()
 	       
 	       " Type 'help command' for specific information\n\n",
 	       
-	   ELFSH_VERSION, 
+	       ELFSH_VERSION, 
 #if defined(ELFSH32)
 	       "32 bits"
 #elif defined(ELFSH64)

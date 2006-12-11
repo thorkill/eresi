@@ -1,53 +1,56 @@
 /*
-** 
-** inspect.c in 
+** inspect.c in elfsh
 ** 
 ** Author  : <sk at devhell dot org>
-** Started : Fri Jun  6 18:52:31 2003
-** Updated : Fri Nov 28 01:33:51 2003
+**
+** December 10 2006 : Merged from modflow to the ELFsh vm -may
 */
-#include "modflow.h"
+#include "elfsh.h"
 
 
-
-int	inspect_cmd() {
-  elfshsect_t	*sect;
-  elfsh_Sym	*sym;
-  struct s_iblock	**new_blk_list;
-  struct s_iblock	*blk_list;
-  struct s_iblock	*blk;
-  struct s_caller	*cal;
+/* Inspect command for basic blocks */
+int			cmd_inspect() 
+{
+  elfshsect_t		*sect;
+  elfsh_Sym		*sym;
+  elfshiblock_t		**new_blk_list;
+  elfshiblock_t		*blk_list;
+  elfshiblock_t		*blk;
+  elfshcaller_t		*cal;
   char			*name;
   elfsh_SAddr		off;
-  int		index;
-  int		num;
-  u_int		vaddr;
-  char		*buffer;
-  asm_instr	ins;
-  char		*str;
-
+  int			index;
+  int			num;
+  u_int			vaddr;
+  char			*buffer;
+  asm_instr		ins;
+  char			*str;
+  char			buflog[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  sect = elfsh_get_section_by_name(world.curjob->current, ".control", 0, 0, 0);
+  sect = elfsh_get_section_by_name(world.curjob->current, 
+				   ELFSH_SECTION_NAME_CONTROL, 
+				   0, 0, 0);
   if (!sect)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "No control flow section found", -1);
+
+  if (!sect->altdata)
     {
-      puts(" [*] no \".control\" section found. Aborting\n");
-      return (-1);
-    }
+      snprintf(buflog, sizeof(buflog), 
+	       " [*] %s section found but unloaded\n",
+	       ELFSH_SECTION_NAME_CONTROL);
+      new_blk_list  = elfsh_malloc(sizeof(elfshiblock_t *));
+      *new_blk_list = 0;
+      num           = mjr_load_blocks(world.curjob->current, new_blk_list);
+      sect->altdata = *new_blk_list;
+      printf(" [*] Loaded %i blocks\n", num);
+    } 
   else
-    if (!sect->altdata)
-      {
-	puts(" [*] \".control\" section found but unloaded\n");
-	new_blk_list = elfsh_malloc(sizeof (struct s_iblock *));
-	*new_blk_list = 0;
-	num = load_blocks(world.curjob->current, new_blk_list);
-	sect->altdata = *new_blk_list;
-	printf(" * loaded %i blocks\n", num);
-      } 
-    else
-      blk_list = sect->altdata;
-  blk_list = (struct s_iblock *) sect->altdata;
+    blk_list = sect->altdata;
+
+  blk_list = (elfshiblock_t *) sect->altdata;
   
   if ((sym = elfsh_get_metasym_by_name(world.curjob->current, 
 				       world.curjob->curcmd->param[0])))
@@ -59,7 +62,7 @@ int	inspect_cmd() {
     ELFSH_SETERROR(" * cannot find symbol/address null\n", -1);
   
   name = elfsh_reverse_metasym(world.curjob->current, vaddr, &off);
-  blk = block_get_by_vaddr(blk_list, vaddr, 1);
+  blk = mjr_block_get_by_vaddr(blk_list, vaddr, 1);
   if (!blk)
     {
       printf(" * cannot find block at %08x\n", vaddr);
@@ -85,7 +88,8 @@ int	inspect_cmd() {
 	  printf("  -> ??? from %08x : %s + " DFMT "\n", cal->vaddr, name, off);
 	}
     }
-  /*	dump assembly */
+  
+  /* Dump ASM */
   puts(" -- block disassembly --");
   buffer = elfsh_malloc(blk->size);
   elfsh_raw_read(world.curjob->current, 

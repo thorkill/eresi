@@ -15,7 +15,7 @@ SRC			= grammar.c disasm.c dyn.c hdr.c main.c got.c interp.c \
 			  insert.c remove.c flush.c vlist.c lts.c source.c \
 			  cleanup.c run.c trace.c variables.c version.c hash.c \
 			  unload.c list.c doswitch.c misc.c implicit.c deps.c \
-			  reladd.c job.c
+			  reladd.c job.c flow.c inspect.c flowjack.c graph.c
 OBJ			= $(SRC:.c=.o)
 CC			?= gcc
 RM			= rm -f
@@ -27,8 +27,8 @@ CFLAGS			+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			 -I../libui/include/ -I../libmjollnir/include/ \
 			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) $(BITS) $(NCURSESLNOPT) $(READLNOPT)
 
-LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ \
-			$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
+LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/\
+			-lmjollnir $(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm -L../libui/ -lui \
 			-g3 $(LDASMOPT) -L../libmalloc -L../libmjollnir/ -lmalloc-e2dbg $(LDMJOLLNIR)\
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
