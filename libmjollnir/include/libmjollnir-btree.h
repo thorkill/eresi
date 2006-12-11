@@ -7,9 +7,6 @@
 ** Updated : Thu Nov 27 23:27:49 2003
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <libelfsh.h>
 
 #define BTREE_DEBUG_NODE	"\"btree_%08x\" [\n"\

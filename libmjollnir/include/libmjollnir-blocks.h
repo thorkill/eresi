@@ -1,13 +1,12 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-blocks.h,v 1.5 2006-12-11 13:57:34 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.6 2006-12-11 17:15:57 thor Exp $
  *
  */
-#include <stdio.h>
+
 #include <libelfsh.h>
 #include <libasm.h>
-#include <sys/types.h>
 
 /* Structure s_list used for arguments enumeration */
 
