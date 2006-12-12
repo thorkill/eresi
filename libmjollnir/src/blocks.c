@@ -235,7 +235,7 @@ int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist,
   buf.data = 0;
   buf.obj = obj;
   if (mode)
-    btree_browse_prefix(blist->btree, build_data, &buf);
+    btree_browse_prefix(blist->btree, mjr_save_block, &buf);
 
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
