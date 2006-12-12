@@ -235,7 +235,7 @@ int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist,
   buf.data = 0;
   buf.obj = obj;
   if (mode)
-    btree_browse_prefix(blist->btree, mjr_save_block, &buf);
+    btree_browse_prefix(blist->btree, (void *) mjr_save_block, &buf);
 
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
@@ -362,7 +362,7 @@ void		mjr_block_add_list(elfshiblock_t **list, elfshiblock_t *n)
       cur = mjr_block_create(0, 0);
       *list = cur;
     }
-  btree_insert_sort(&cur->btree, mjr_match_block, n);
+  btree_insert_sort(&cur->btree, (void *) mjr_match_block, n);
 }
 
 
@@ -394,8 +394,9 @@ elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode
   if (!list)
     return (NULL);
   cur.vaddr = vaddr;
-  bcur = btree_find_elem(list->btree, 
-			 (mode ? mjr_match_inblock : mjr_match_block), &cur);
+  bcur = btree_find_elem(list->btree, (mode ? 
+				       (void *) mjr_match_inblock : 
+				       (void *) mjr_match_block), &cur);
   return (bcur);
 }
 

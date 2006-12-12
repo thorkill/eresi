@@ -109,7 +109,9 @@
 // ac.sa_sigaction   = e2dbg_sigsegv_handler;      	
 // sigaction(SIGSEGV, &ac, NULL);			        
 
-#define		SETSIG	do {				\
+#define		SETSIG					\
+do							\
+{							\
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
@@ -122,9 +124,11 @@
  sigaction(SIGSTOP, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_thread_sigusr2;		\
  sigaction(SIGUSR2, &ac, NULL);				\
-}		while (0);
+} while (0)
 
-#define		SETSIG_USR1	do {			\
+#define		SETSIG_USR1				\
+do							\
+{							\
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
@@ -135,7 +139,7 @@
  sigaction(SIGUSR1, &ac, NULL);				\
  signal(SIGSTOP, SIG_IGN);				\
  signal(SIGUSR2, SIG_IGN);				\
-}		while (0);
+} while (0)
 
 
 /* Create variable from register value */
@@ -357,7 +361,7 @@ void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info, void
 void            e2dbg_sigint_handler(int signum, siginfo_t *info, void *context);
 void            e2dbg_sigstop_handler(int signum, siginfo_t *info, void *pcontext);
 void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *context);
-void            e2dbg_sigusr1_handler(int signum);
+void            e2dbg_sigusr1_handler(int signum, siginfo_t *info, void *pcontext);
 void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext);
 
 /* e2dbg thread API */

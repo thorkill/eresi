@@ -182,7 +182,8 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
 
 
 /* Signal handler for SIGUSR1 in debugger */
-void			e2dbg_sigusr1_handler(int signum)
+void			e2dbg_sigusr1_handler(int signum,
+					      siginfo_t *info, void *pcontext)
 {
   char			*argv[2];
   char			buf[32];

@@ -19,11 +19,10 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   char			*args[3];
   char			*pn;
 
+#if __DEBUG_E2DBG__
   char			logbuf[BUFSIZ];
   unsigned int		len;
-
-#if __DEBUG_E2DBG__
-  int idx;
+  int			idx;
 #endif
 
 #if defined(__FreeBSD__)
