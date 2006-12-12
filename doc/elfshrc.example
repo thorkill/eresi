@@ -26,6 +26,9 @@ setcolor pedition    bold 1
 setcolor instr       fg blue
 setcolor instr       bold 1
 
+setcolor function    fg red
+setcolor filename    fg green
+
 print \x20[*] Set ELFsh default color theme (use nocolor to disable)
 verb
 #profile

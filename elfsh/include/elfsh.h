@@ -109,6 +109,7 @@ extern asm_processor	proc;
 #define	ELFSH_SHELLVAR		"SHELL"
 #define	ELFSH_EDITVAR		"EDITOR"
 #define ELFSH_LIBPATHVAR	"LPATH"
+#define ELFSH_SLOGVAR		"SLOG"
 
 /* ELF Versions */
 #define ELFSH_VERTYPE_NONE    0
@@ -172,7 +173,7 @@ extern asm_processor	proc;
 #define	ELFSH_SLASH		'/'
 #define	ELFSH_SPACE		' '
 
-char prompt_token[128];
+char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.72"
 #define	ELFSH_RELEASE		"a1"

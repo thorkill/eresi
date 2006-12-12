@@ -133,11 +133,17 @@ int		ds(elfshobj_t	*file,
       
       if (regx == NULL || 
 	  (regx != NULL && regexec(regx, buff, 0, 0, 0) == NULL))
-	vm_output(buff);
+	{
+	  /* If the user ask quit, we just break */
+	  if (vm_output(buff) == -1)
+	    break;
+	}
 
       vm_endline();
 	  
     }
+
+  vm_endline();
   
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

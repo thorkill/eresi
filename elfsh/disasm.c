@@ -266,8 +266,8 @@ u_int		vm_display_instr(int fd, u_int index, elfsh_Addr vaddr,
       if ((world.curjob->curcmd->use_regx[1] == 0) || 
 	  !regexec(&second->name, logbuf, 0, 0, 0))
 	{
-	  VM_OUTPUT(logbuf);
-	  VM_OUTPUT("\n");
+	  VM_OUTPUT_Q(logbuf);
+	  VM_OUTPUT_Q("\n");
 	}
       vm_endline();
     }
@@ -297,6 +297,7 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
   elfshsect_t	*targ;
   char		*s;
   u_int		ret;
+  int		value;
   char		logbuf[BUFSIZ];
   char		tmp[BUFSIZ];
   char		c1[2], c2[2];
@@ -411,9 +412,17 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
     {
       if (elfsh_is_debug_mode())
 	vaddr += parent->parent->rhdr.base;
-      while (index < size)
-	index += vm_display_instr(-1, index, vaddr, foffset, size, name,
-				  index, buff);
+
+      while (index < size && size > 0)
+	{
+	  value = vm_display_instr(-1, index, vaddr, foffset, size, name,
+				   index, buff);
+
+	  if (value <= 0)
+	    break;
+	  
+	  index += value;
+	}
     }
 
   /* We want hexa + ascii output of the data */
@@ -421,9 +430,9 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
     {
       if (name == NULL || !*name)
 	name = ELFSH_NULL_STRING;
-      while (index < size)
-	{
 
+      while (index < size && size > 0)
+	{
 	  /* Take care of quiet mode */
 	  if (world.state.vm_quiet)
 	    {

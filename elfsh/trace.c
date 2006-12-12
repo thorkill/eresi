@@ -498,7 +498,7 @@ int 			cmd_trace()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* classic msg */
-  if (!world.curjob->curcmd->param[0])
+  if (world.curjob->curcmd->argc < 1)
     {
       snprintf(logbuf, BUFSIZ - 1,
 	       "\t Trace command options: \n\n"

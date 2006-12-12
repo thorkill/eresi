@@ -19,7 +19,7 @@ OBJT 	= elfThor
 SRCUT 	= tools/mjollnirUnitTest.c
 OBJUT 	= mjollnirUnitTest
 
-CFLAGS	= -I./include/ -I../libc/include/ -I../libasm/include/ \
+CFLAGS	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
         -I../libelfsh/include/ -I../libhash/include/ -Wall $(BITS) -DELFSH_INTERN
 
 LDFLAGS = -L../ -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \

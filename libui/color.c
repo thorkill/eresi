@@ -217,7 +217,9 @@ char *vm_colorstr(char *text) 		{ return vm_colorget("%s", "string"     , text);
 char *vm_colorfieldstr(char *text) 	{ return vm_colorget("%s", "fieldstring", text); }
 char *vm_colortypestr(char *text) 	{ return vm_colorget("%s", "typestring" , text); }
 char *vm_colorend(char *text) 		{ return vm_colorget("%s", "endstring"  , text); }
-char *vm_colorwarn(char *text) 		{ return vm_colorget("%s", "warnstring ", text); }
+char *vm_colorwarn(char *text) 		{ return vm_colorget("%s", "warnstring" , text); }
+char *vm_colorfunction(char *text) 	{ return vm_colorget("%s", "function"   , text); }
+char *vm_colorfilename(char *text) 	{ return vm_colorget("%s", "filename"   , text); }
 
 /* Special functions */
 char 		*vm_coloradv(char *type, char *pattern, char *text)
@@ -264,7 +266,8 @@ int		vm_color_count(char *string)
 	    i++;
 	}
     }
-  return (0);
+
+  return (count);
 }
 
 /* Return total size of colors on a string */
@@ -279,7 +282,7 @@ int		vm_color_size(char *string)
     {
       if (string[i] == C_STARTCOLOR)
 	{
-	  size++;
+	  //size++;
 	  while (i < len && string[i] != 'm')
 	    {
 	      size++;
@@ -289,4 +292,3 @@ int		vm_color_size(char *string)
     }
   return (size);
 }
-

@@ -304,7 +304,7 @@ int		vm_run(int ac, char **av)
       rl_bind_key(CTRL('x'), vm_screen_switch);
       vm_install_clearscreen();
 
-      update_col(0);
+      update_col();
 
       /* We will handle SIGWINCH */
       signal(SIGWINCH, (void*)update_col);

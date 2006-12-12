@@ -108,7 +108,8 @@ void	elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *))
 void	elfsh_set_color_simple(void (*endline)(), char *(*colorinstr)(char *text),
 			       char *(*colorstr)(char *t), char *(*colorfieldstr)(char *t),
 			       char *(*colortypestr)(char *t), char *(*colorend)(char *text),
-			       char *(*colorwarn)(char *text))
+			       char *(*colorwarn)(char *text), char *(*colorfunction)(char *text),
+			       char *(*colorfilename)(char *text))
 {
   dbgworld.endline = endline;
   dbgworld.colorinstr = colorinstr;
@@ -117,6 +118,8 @@ void	elfsh_set_color_simple(void (*endline)(), char *(*colorinstr)(char *text),
   dbgworld.colortypestr = colortypestr;
   dbgworld.colorend = colorend;
   dbgworld.colorwarn = colorwarn;
+  dbgworld.colorfunction = colorfunction;
+  dbgworld.colorfilename = colorfilename;
 }
 
 /* Change advanced color functions */

@@ -29,6 +29,12 @@ char	*vm_get_prompt()
 	       vm_colorget("%s", "pspecial", "-"),
 	       vm_colorget("%s", "pedition", ELFSH_EDITION),
 	       vm_colorget("%s", "pspecial", ")"));
+
+#if defined(USE_READLN)
+      /* Prompt on readline need some modifications */
+      vm_rl_update_prompt(prompt_token, sizeof(prompt_token));
+#endif
+
       vm_endline();
       return prompt_token;
     }

@@ -134,7 +134,7 @@ void		elfsh_profile_err(char *file, char *func, u_int line, char *msg)
       if (dbgworld.endline != NULL)
 	{
 	  snprintf(buff, sizeof(buff), " <%s@%s:%s>", 
-		   dbgworld.colorstr(func), dbgworld.colorstr(file), 
+		   dbgworld.colorfunction(func), dbgworld.colorfilename(file), 
 		   dbgworld.colornumber("%u", line));
 	  snprintf(buf, BUFSIZ, " %s %s %-50s %s \n", 
 		   dbgworld.colorwarn("[W]"), fill, buff, dbgworld.colorwarn(msg)); 
@@ -189,7 +189,7 @@ void		elfsh_profile_out(char *file, char *func, u_int line)
 	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s> \n", 
 		   space, dbgworld.colornumber("%u", elfsh_depth), 
 		   dbgworld.colorfieldstr(b_dir), 
-		   dbgworld.colorstr(func), dbgworld.colorstr(file),
+		   dbgworld.colorfunction(func), dbgworld.colorfilename(file),
 		   dbgworld.colornumber("%u", line));
 	}
       else

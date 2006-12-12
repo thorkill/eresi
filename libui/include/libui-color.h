@@ -65,6 +65,8 @@ char            *vm_colorfieldstr(char *t);
 char            *vm_colortypestr(char *t);
 char		*vm_colorend(char *text); 
 char		*vm_colorwarn(char *text);
+char 		*vm_colorfunction(char *text);
+char 		*vm_colorfilename(char *text);
 
 /* Advanced */
 char 		*vm_coloradv(char *ty, char *p, char *te);
@@ -80,5 +82,7 @@ char		*vm_colorwarn_fmt(char *pattern, char *text);
 int		vm_color_count(char *string);
 int		vm_color_size(char *string);
 
+/* Readline functions */
+int		vm_rl_update_prompt(char *ptr, int size);
 
 #endif

@@ -549,6 +549,8 @@ typedef struct	s_libstate
   char         	*(*colortypestr)(char *t);
   char		*(*colorend)(char *text); 
   char		*(*colorwarn)(char *text);
+  char		*(*colorfunction)(char *text);
+  char		*(*colorfilename)(char *text);
   /* Advanced */
   char 		*(*coloradv)(char *ty, char *p, char *te);
   char		*(*colorinstr_fmt)(char* p, char *t);
@@ -1391,7 +1393,8 @@ void		elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *));
 void		elfsh_set_color_simple(void (*endline)(), char *(*colorinstr)(char *text),
 				       char *(*colorstr)(char *t), char *(*colorfieldstr)(char *t),
 				       char *(*colortypestr)(char *t), char *(*colorend)(char *text),
-				       char *(*colorwarn)(char *text));
+				       char *(*colorwarn)(char *text), char *(*colorfunction)(char *text),
+				       char *(*colorfilename)(char *text));
 void		elfsh_set_color_advanced(char *(*coloradv)(char *ty, char *p, char *te),
 					 char *(*colorinstr_fmt)(char* p, char *t),
 					 char *(*coloraddress)(char *p, elfsh_Addr a),

@@ -140,6 +140,13 @@ echo "#define ELFSH_LIBPATH    		 " $1  >> $VARSFILE
 LIBPATHSET="1"
 ;;
 
+--enable-stripped-log*)
+shift
+echo " [*] Enable stripped log"
+echo "#define ELFSH_SLOG 1" 		      >> $VARSFILE
+SLOGSET="1";
+;;
+
 --prefix*)
 shift
 echo " [*] Prefix:  " $1
@@ -294,6 +301,10 @@ fi
 
 if [ "$LIBPATHSET" != "1" ]; then
     echo "#define ELFSH_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
+fi
+
+if [ "$SLOGSET" != "1" ]; then
+    echo "#define ELFSH_SLOG 0" 				>> $VARSFILE
 fi
 
 if [ "$SHELLSET" != "1" ]; then

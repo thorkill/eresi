@@ -92,8 +92,9 @@ int		vm_flush()
 
   //printf("rl_get_screen_size x : %d y : %d\n", lines, cols);
 
-  world.curjob->io.outcache.lines = lines;
-  world.curjob->io.outcache.cols  = cols;
+  /* We * 2 because color take a lot of place !!! */
+  world.curjob->io.outcache.lines = lines * 2;
+  world.curjob->io.outcache.cols  = cols * 2;
   world.curjob->io.outcache.nblines = lines;
   world.curjob->io.outcache.ignore  = 0;
 
@@ -123,7 +124,7 @@ int		vm_output(char *str)
 
   /* Discard outputs */
   if (world.curjob->io.outcache.ignore)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* Counts lines */
   tmp = strchr(str, '\n');
@@ -373,7 +374,8 @@ int		vm_initio()
   hash_init(&initial->loaded, 51);
   hash_init(&initial->dbgloaded, 11);
   elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, vm_colorfieldstr,
-			 vm_colortypestr, vm_colorend, vm_colorwarn);
+			 vm_colortypestr, vm_colorend, vm_colorwarn, vm_colorfunction,
+			 vm_colorfilename);
   elfsh_set_color_advanced(vm_coloradv, vm_colorinstr_fmt, vm_coloraddress,
 			   vm_colornumber, vm_colorstr_fmt, vm_colorfieldstr_fmt, 
 			   vm_colortypestr_fmt, vm_colorwarn_fmt);

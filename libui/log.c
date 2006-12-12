@@ -7,38 +7,92 @@
 */
 #include "libui.h"
 
-static void		logtofile(char *str)
+/* Strip a char from a string */
+static void		__strip_char(char *str, char c)
 {
-  u_int			i, pos, len = 0;
+  u_int			len, pos;
+  char			*search;
 
   ELFSH_NOPROFILE_IN();
 
-  /* Clean color parts */
   len = strlen(str);
-  if (len > 0 && strchr(str, C_STARTCOLOR) != NULL)
+
+  for (search = str; (search = strchr(search, c)) != NULL;)
     {
-      char tmp[len+1];
-      for (pos = 0, i = 0; i < len; i++)
-	{
-	  if (str[i] == C_STARTCOLOR)
-	    {
-	      while (i < len && str[i] != 'm')
-		i++;
-	    }
-	  else
-	    tmp[pos++] = str[i];
-	}
+      pos = search - str;
 
-      tmp[pos] = 0;
-
-      str = tmp;
-
-      /* reset length */
-      len = strlen(str);
+      /* Realign others */
+      memmove(search, search+1, len - (pos + 1));
+      len--;
     }
 
-  if (world.curjob->state & ELFSH_JOB_LOGGED)
-    XWRITE(world.curjob->logfd, str, len, );
+  ELFSH_NOPROFILE_OUT();
+}
+
+/* Strip a group of char */
+static void		__strip_group_char(char *str, char s, char e)
+{
+  u_int			len, diff, pos;
+  char			*search, *search_end;
+
+  ELFSH_NOPROFILE_IN();
+
+  len = strlen(str) + 1;
+  for (search = str; (search = strchr(search, s)) != NULL;)
+    {
+      search_end = strchr(search+1, e);
+
+      /* Error !! */
+      if (!search_end)
+	ELFSH_NOPROFILE_OUT();
+
+      diff = search_end - search + 1;
+      pos = search - str;
+
+      /* Realign others */
+      memmove(search, search_end+1, len - (pos + diff));
+
+      len -= diff;
+    }
+
+  ELFSH_NOPROFILE_OUT();
+}
+
+static void		logtofile(char *str)
+{
+  
+  elfshpath_t		*stripvar;
+  u_int			len;
+
+  ELFSH_NOPROFILE_IN();
+
+  len = strlen(str);
+
+  /* Do we want to log ? */
+  if (!(world.curjob->state & ELFSH_JOB_LOGGED) || len <= 0)
+    ELFSH_NOPROFILE_OUT();
+
+  /* We made only local modifications */
+  char tmp[len+1];
+  strcpy(tmp, str);
+
+  stripvar = hash_get(&vars_hash, ELFSH_SLOGVAR);
+  
+  /* We strip depending of $SLOG variable value */
+  if (stripvar != NULL && stripvar->immed_val.word != 0)
+    {
+      /* Clean color parts */
+      __strip_group_char(tmp, C_STARTCOLOR, 'm');
+    }
+
+#if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
+  /* Strip RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE */
+  __strip_char(tmp, RL_PROMPT_START_IGNORE);
+  __strip_char(tmp, RL_PROMPT_END_IGNORE);
+#endif
+
+  len = strlen(tmp);
+  XWRITE(world.curjob->logfd, tmp, len, );
 
   ELFSH_NOPROFILE_OUT();
 }
@@ -47,19 +101,20 @@ static void		logtofile(char *str)
 /* Log a line */
 void			vm_log(char *str)
 {
-  int			check = 0;
-  int			count = 0;
+  int			check = 0, size = 0;
 
   ELFSH_NOPROFILE_IN();
 
-  if (!str || !world.curjob ||
-      !world.curjob->io.outcache.lines ||
-      !world.curjob->io.outcache.cols)
+  /* Nothing possible */
+  if (!str || !world.curjob)
     ELFSH_NOPROFILE_OUT();
 
   logtofile(str);
 
-  count = vm_color_count(str);
+  /* We could log before return */
+  if(!world.curjob->io.outcache.lines ||
+     !world.curjob->io.outcache.cols)
+    ELFSH_NOPROFILE_OUT();
 
   /* Allocate the screen buffer */
   if (world.curjob->screen.buf == NULL)
@@ -82,7 +137,7 @@ void			vm_log(char *str)
       
       XFREE(world.curjob->screen.buf);
       XALLOC(world.curjob->screen.buf,
-	     (world.curjob->io.outcache.lines+count) *
+	     world.curjob->io.outcache.lines *
 	     world.curjob->io.outcache.cols + 1, );
 
       world.curjob->screen.x = world.curjob->io.outcache.cols;
@@ -92,64 +147,53 @@ void			vm_log(char *str)
 	world.curjob->screen.buf;
     }
 
-  /* We fill the buffer */
 #define scrsize (world.curjob->io.outcache.cols * world.curjob->io.outcache.lines)
 #define buf	world.curjob->screen.buf
 #define tail	world.curjob->screen.tail
 #define head	world.curjob->screen.head
 
-  if (tail >= head)
+  /* We could have to loop many time before full fill all the buffer */
+  for (size = strlen(str), check = 0; size > 0; size -= check, str += check)
     {
-      // [head] ... [tail]
-      if (tail + strlen(str) > buf + scrsize)
+      check = 0;
+      /* Tail is after head or we can fill tail without change (or not a lot) the head */
+      if (tail >= head || (tail + strlen(str) <= head && head < buf + scrsize))
 	{
-	  snprintf(tail, scrsize - (tail - buf), "%s", str);
-		check = strlen(str) - (scrsize - (tail - buf));
-		if(check < 0)   ELFSH_NOPROFILE_OUT();
-
-	  snprintf(buf, check, "%s", str);
-
-	  tail = buf + strlen(str) - ((scrsize + buf) - tail);
-
-
-	  if (tail > head)
-	    head = tail + 1;
-
-	}
-      else
-	{
-	  sprintf(tail, "%s", str);
-	  tail += strlen(str);
-	}
-    }
-  else 
-    // [tail] ... [head]
-    {
-      if (tail + strlen(str) > head)
-	{
-	  head = buf + ((tail - buf) + strlen(str))%scrsize;
-	  sprintf(tail,"%s", str);
-	  tail += strlen(str);
-
-	}
-      else
-	{
+	  /* There is not enough space ! */
 	  if (tail + strlen(str) > buf + scrsize)
 	    {
-	      snprintf(tail, scrsize - (tail - buf), "%s", str);
-				check = strlen(str) - (scrsize - (tail - buf));
-				if(check < 0)   ELFSH_NOPROFILE_OUT();
-	      snprintf(buf, check, "%s", str);
-	      tail = buf + strlen(str) - ((scrsize + buf) - tail);
+	      /* We can copy a part of the buffer */
+	      check = scrsize - (tail - buf);
+	      snprintf(tail, check, "%s", str);
 
-	      if (tail > head)
+	      /* Tail is know at the beginning */
+	      tail = buf;
+
+	      /* If head is on the beginning */
+	      if (tail >= head)
 		head = tail + 1;
 	    }
 	  else
 	    {
-	      sprintf(tail, "%s", str);
+	      /* We can copy the whole buffer */
+	      snprintf(tail, scrsize, "%s", str);
 	      tail += strlen(str);
+	      break;
 	    }
+	}
+      else
+	{
+	  /* What size we can use for the moment ? */
+	  check = buf + scrsize - tail;
+
+	  /* May be we need less */
+	  if (check > strlen(str))
+	    check = strlen(str);
+
+	  /* Adjust head pointer */
+	  head = buf + ((tail - buf) + check)%scrsize;
+	  snprintf(tail, check, "%s", str);
+	  tail += check;
 	}
     }
 

@@ -907,6 +907,7 @@ static void	setup_varshash()
   elfshpath_t	*s;
   elfshpath_t	*e;
   elfshpath_t	*l;
+  elfshpath_t	*o;
 
   f = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
   g = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
@@ -914,6 +915,7 @@ static void	setup_varshash()
   s = vm_create_IMMEDSTR(1, ELFSH_SHELL);
   e = vm_create_IMMEDSTR(1, ELFSH_EDITOR);
   l = vm_create_IMMEDSTR(1, get_libpath());
+  o = vm_create_IMMED(ELFSH_OBJINT, 1, ELFSH_SLOG);
 
   hash_init(&vars_hash, 251);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
@@ -922,6 +924,7 @@ static void	setup_varshash()
   hash_add(&vars_hash, ELFSH_SHELLVAR, s);
   hash_add(&vars_hash, ELFSH_EDITVAR, e);
   hash_add(&vars_hash, ELFSH_LIBPATHVAR, l);
+  hash_add(&vars_hash, ELFSH_SLOGVAR, o);
 }
 
 
@@ -1061,6 +1064,8 @@ void setup_color_type()
   hash_add(&t_color_hash, "prelease"   , (void *) vm_colorblank());
   hash_add(&t_color_hash, "pedition"   , (void *) vm_colorblank());
   hash_add(&t_color_hash, "instr"      , (void *) vm_colorblank());
+  hash_add(&t_color_hash, "function"   , (void *) vm_colorblank());
+  hash_add(&t_color_hash, "filename"   , (void *) vm_colorblank());
 }
 
 

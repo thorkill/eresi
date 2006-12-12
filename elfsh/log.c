@@ -27,7 +27,7 @@ int			cmd_log()
       else
 	{
 	  XOPEN(fd, world.curjob->curcmd->param[0], 
-		O_WRONLY | O_CREAT, 0600, -1);
+		O_WRONLY | O_CREAT | O_TRUNC, 0600, -1);
 	  world.curjob->state |= ELFSH_JOB_LOGGED;
 	  world.curjob->logfd = fd;
 	  if (!world.state.vm_quiet)

@@ -7,7 +7,6 @@
 */
 #include "libui.h"
 
-
 #if defined(USE_READLN)
 
 
@@ -119,31 +118,95 @@ char	**custom_completion(const char* text, int start, int end)
 }
 
 
-/* Change col size if we have a colored prompt */
-int 	update_col(int sig) 
+/* This function was used to update columns on a readline colored prompt
+   another solution has been found that work well (see vm_rl_update_prompt).
+   We keep this function because it can be useful later. */
+int 	update_col() 
 {
-  char	*prompt;
-  int 	c, sub = 0;
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Ask readline to retrieve console size */
   rl_resize_terminal();
-    
-  prompt = vm_get_prompt();
-
-  sub = vm_color_count(prompt);
-
-  if (sub > 0)
-    {
-      rl_get_screen_size(NULL, &c);
-      rl_set_screen_size(NULL, c+sub);
-    }
-
-  rl_clear_message();
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* A prompt need some update to fit correctly on readline (with color) */
+int		vm_rl_update_prompt(char *ptr, int size)
+{
+  int		i, tmpi;
+  char		tmp[size];
+#if defined(RL_PROMPT_START_IGNORE)
+  int		open = 0;
+#endif
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If no color on the prompt */
+  if (strchr(ptr, C_STARTCOLOR) == NULL)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  tmp[0] = '\0';
+
+  /* Parse every char */
+  for (i = 0, tmpi = 0; i < size && tmpi < size && ptr[i]; i++)
+    {
+      /* A color will always start with C_STARTCOLOR */
+      if (ptr[i] == C_STARTCOLOR)
+	{
+#if defined(RL_PROMPT_START_IGNORE)
+	  /* This work only with readline >= 4.x, damn you if you don't have it !!
+	     We will use RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE that indicate 
+	     to readline that chars (here color) must be ignored in count procedure */
+	  tmp[tmpi++] = RL_PROMPT_START_IGNORE;
+	  open++;
+
+	  while(ptr[i] != 'm' && i < size && tmpi < size)
+	      tmp[tmpi++] = ptr[i++];
+
+	  if (i < size && ptr[i])
+	    {
+	      tmp[tmpi++] = ptr[i++];
+	      tmp[tmpi++] = RL_PROMPT_END_IGNORE;
+	      open--;
+	    }
+#else
+	  /* If you don't have the right version, I strip ! */
+	  while(ptr[i] != 'm' && i < size)
+	    i++;
+	  
+	  if (i < size)
+	    i++;
+#endif
+
+	  if (i >= size || ptr[i] == '\0')
+	    break;
+
+	  /* Support followed tags */
+	  if (ptr[i] == C_STARTCOLOR)
+	    {
+	      i--;
+	      continue;
+	    }
+	}
+
+      tmp[tmpi++] = ptr[i];
+    }
+
+#if defined(RL_PROMPT_START_IGNORE)
+  /* We didn't close an ignore sign */
+  if (open > 0)
+    tmp[(tmpi < size ? tmpi : size - 1)] = RL_PROMPT_END_IGNORE;
+#endif
+
+  /* Add the last char */
+  tmp[(tmpi < size ? tmpi : size)] = '\0';
+
+  /* Update the submited variable */
+  memcpy(ptr, tmp, size);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 #endif
 

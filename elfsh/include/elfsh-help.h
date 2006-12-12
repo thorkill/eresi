@@ -82,7 +82,8 @@
 				CMD_COLOR" type [underline,bold] (1=on,0=off)\n\n\t"			 \
 				"Available types  : address, number, string, endstring, warnstring \n\t" \
 				"                   typestring, fieldstring, instr, pspecial, psname \n\t" \
-				"                   pspecial, pversion, prelease, pedition          \n\t" \
+				"                   pspecial, pversion, prelease, pedition, function \n\t" \
+				"                   filename \n\t" \
 				"Available colors : "							 \
 				"\033[00;01;30mblack "							 \
 				"\033[00;01;31mred "							 \
