@@ -38,7 +38,6 @@ void	elfsh_help()
 	 "                                          \n"
 	 " inspect  <symbol/address>                \n"
 	 "                                          \n"
-	 "                                          \n"
 	 " flowjack <oldsymbol> <newsymbol>         \n"
 	 "     All relative call to oldsymbol       \n"
 	 "     are hijacked to newsymbol            \n"
@@ -241,6 +240,14 @@ int			cmd_flow()
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "[MODFLOW] cannot get sectionlist", -1);
 
+  /* Fetch main from entry point */
+  e_point = elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current));
+  printf(" [*] Entry point: %08x\n", e_point);
+  main_addr = mjr_trace_start(world.mjr_session.cur,
+			      world.curjob->current, buffer, 
+			      max_len, e_point, &binary_blks);
+  printf(" [*] main located at %08x\n", main_addr);
+
   /* Parse SHT */
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
     {
@@ -257,18 +264,7 @@ int			cmd_flow()
       elfsh_raw_read(world.curjob->current, foff, buffer, max_len);
 
       //hash_init(&block_hash, max_len); (this hash doesnt exist anymore)
-      
-      /* Fetch main from entry point */
-      e_point = elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current));
-      if (vaddr == e_point) 
-	{
-	  printf(" [*] Entry point: %08x\n", e_point);
-	  main_addr = mjr_trace_start(world.mjr_session.cur,
-				      world.curjob->current, buffer, 
-				      max_len, e_point, &binary_blks);
-	  printf(" [*] main located at %08x\n", main_addr);
-	}
-  
+
       /*
       ** Main loop : For each instruction disassembled, pass it to
       ** the trace_control function which may build dynamically
@@ -295,16 +291,30 @@ int			cmd_flow()
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store blocks in file", -1);    
 
-  /* 
-     display_blocks(world.curjob->current, binary_blks, 1);
-     free_blocks(binary_blks);
-     puts(" - done\n[blocks path recursion]"); 
-     trace_functions(world.curjob->current, &binary_functions, binary_blk);
-     puts("-done\n[Functions]")
-     display_functions(world.curjob->current, binary_functions);
-     free(buffer);
-  */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
 
+
+/* Print the control information */
+int		cmd_control()
+{
+  elfshsect_t	*sect;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  sect = elfsh_get_section_by_name(world.curjob->current, 
+				   ELFSH_SECTION_NAME_CONTROL,
+				   0, 0, 0);
+  if (!sect || !sect->altdata)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "No control flow section found", -1);
+
+  mjr_display_blocks(world.curjob->current, sect->altdata, 1);
+  
+  vm_output("\n [*] Control flow information dumped \n\n");
+
+  //mjr_trace_functions(world.curjob->current, &binary_functions, binary_blk);
+  //vm_outpout(" [*] Blocks printed\n\n");
+  //display_functions(world.curjob->current, binary_functions);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 

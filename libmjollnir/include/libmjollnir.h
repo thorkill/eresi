@@ -92,6 +92,8 @@ u_int		mjr_trace_start(mjrcontext_t *c, elfshobj_t *, char *,
 				u_int, u_int, elfshiblock_t **);
 
 /* blocks.c */
+int		mjr_display_blocks(elfshobj_t *, elfshiblock_t *, int);
+void		mjr_dump_block(elfshiblock_t *b);
 void            mjr_history_shift(mjrcontext_t *cur, asm_instr vaddr);
 int		mjr_free_blocks(elfshiblock_t *blks);
 int		mjr_load_blocks(elfshobj_t *, elfshiblock_t **);
@@ -104,19 +106,14 @@ int		mjr_block_is_funcstart(elfshiblock_t *);
 int		mjr_insert_destaddr(mjrcontext_t *c, elfshobj_t *, 
 				    asm_instr *, u_int, elfshiblock_t **);
 
-/* MERGE !!!!!!!!!!!!!! core.c / control.c */
+/* MERGE !!! core.c / control.c */
 int		mjr_find_calls(mjrsession_t *,char *);				
 void		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
 				  asm_instr *, u_int, elfshiblock_t **);
-
-// MERGE !!!
+// Use this function in cmd_flow ! !!!
 int		mjr_analyse(mjrsession_t *,int);
 
-// MERGE ?????
-int		mjr_display_blocks(elfshobj_t *, elfshiblock_t *, int);
-void		mjr_dump_block(elfshiblock_t *b);
-
-// MERGE !!!!!!
+// MERGE !!!
 elfshiblock_t	*mjr_block_create(u_int, u_int);
 mjrblock_t	*mjr_create_block(u_int,char *,u_int);
 

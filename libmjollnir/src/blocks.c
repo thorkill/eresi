@@ -35,48 +35,29 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr vaddr)
 }
 
 
-/* Binary tree functions */
-int			mjr_match_block(void *elem, void *match)
+/* Say if 2 blocks are starting at the same address */
+int			mjr_match_block(elfshiblock_t *elem, elfshiblock_t *match)
 {
-  elfshiblock_t		*blk_elem;
-  elfshiblock_t		*blk_match;
   int			cmp;
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  blk_match = (elfshiblock_t *) match;
-  blk_elem  = (elfshiblock_t *) elem;
-
-  /*
-  ** printf("cur=(%08x) max=(%08x) match=(%08x)\n", 
-  ** blk_elem->vaddr, blk_elem->vaddr + blk_elem->size, blk_match->vaddr);
-  */
-
-  cmp = blk_match->vaddr - blk_elem->vaddr;
+  cmp = match->vaddr - elem->vaddr;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, cmp);
 }
 
 
-int		mjr_match_inblock(void *elem, void *match)
+/* Say if the the block 'match' starts inside block 'elem' */
+int		mjr_match_inblock(elfshiblock_t *elem, elfshiblock_t *match)
 {
-  elfshiblock_t	*blk_elem;
-  elfshiblock_t	*blk_match;
   elfsh_Addr	cmp;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  blk_match = (elfshiblock_t *) match;
-  blk_elem = (elfshiblock_t *) elem;
-  cmp = blk_match->vaddr - blk_elem->vaddr;
-
-  /*
-  ** printf("cur=(%08x) max=(%08x) match=(%08x)", 
-  ** blk_elem->vaddr, blk_elem->vaddr + blk_elem->size, blk_match->vaddr);
-  */
-
-  if (cmp > 0 && cmp < blk_elem->size)
+  cmp = match->vaddr - elem->vaddr;
+  if (cmp > 0 && cmp < elem->size)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, cmp);
 }
+
 
 /* Free linked list of elfshiblock_t (file representation of blocks) */
 int	mjr_free_blocks(elfshiblock_t *blks)
@@ -90,7 +71,8 @@ int	mjr_free_blocks(elfshiblock_t *blks)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Load linked list of iblocks from file */
+
+/* Create the control flow graph using the information stored in .elfsh.control */
 int			mjr_load_blocks(elfshobj_t *obj, elfshiblock_t **blist)
 {
   elfsh_Sym             *symtab;
@@ -126,12 +108,12 @@ int			mjr_load_blocks(elfshobj_t *obj, elfshiblock_t **blist)
   symtab = elfsh_get_symtab(obj, &num);
   for (load = index = 0; index < num; index++)
     {
-      if ((elfsh_get_symbol_type(symtab + index) != STT_BLOCK))
+      if (elfsh_get_symbol_type(symtab + index) != STT_BLOCK)
         continue;
-      blk = data + symtab[index].st_value;
+      blk          = data + symtab[index].st_value;
       if ((iblk = mjr_block_get_by_vaddr(*blist, blk->vaddr, 0)))
         continue;
-      iblk = mjr_block_create(blk->vaddr, blk->size);
+      iblk         = mjr_block_create(blk->vaddr, blk->size);
       iblk->contig = blk->contig;
       iblk->altern = blk->altern;
       iblk->altype = blk->altype;       
@@ -162,13 +144,13 @@ int		 mjr_block_is_funcstart(elfshiblock_t *blk)
 }
 
 
-int			build_data(void *elem, void *opt)
+/* Create the block information to be saved in file */
+int			mjr_save_block(elfshiblock_t *cur, void *opt)
 {
   u_int		        blen;
   int			is_func;
   char			buffer[24];
   elfshbuf_t		*buf;
-  elfshiblock_t		*cur;
   elfshcaller_t		*cal;
   elfsh_Sym		bsym;
   elfshblk_t		*curblock;
@@ -177,8 +159,6 @@ int			build_data(void *elem, void *opt)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   buf = (struct s_buf *) opt;
-  cur = (elfshiblock_t *) elem;
-  
   if (!buf->data) 
     {
       buf->allocated = 4096;
@@ -258,8 +238,7 @@ int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist,
     btree_browse_prefix(blist->btree, build_data, &buf);
 
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
-  shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen,
-			   0, 0, 0, 0);
+  shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
   sect->altdata = blist;
   
   err = elfsh_insert_unmapped_section(obj, sect, shdr, buf.data);
@@ -297,7 +276,7 @@ elfshiblock_t	*mjr_block_create(u_int vaddr, u_int size)
 
 
 /* Print block */
-void		mjr_dump_block(elfshiblock_t *b) 
+void		mjr_block_dump(elfshiblock_t *b) 
 {
   printf("[B]=(%08x) [V]=(%08x) sz=(%04u) [N]=(%08x)\n",
 	 (int) b, b->vaddr, b->size, (int) b->next);
@@ -355,6 +334,7 @@ int			mjr_apply_display(void *elem, void *opt)
   return (++disopt->counter);
 }
 
+/* Print the content of the control flow section */
 int			mjr_display_blocks(elfshobj_t		*file, 
 					   elfshiblock_t	*blk_list, 
 					   int			level) 
@@ -414,8 +394,8 @@ elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode
   if (!list)
     return (NULL);
   cur.vaddr = vaddr;
-  bcur = btree_find_elem(list->btree, (mode ? mjr_match_inblock : mjr_match_block), 
-			 &cur);
+  bcur = btree_find_elem(list->btree, 
+			 (mode ? mjr_match_inblock : mjr_match_block), &cur);
   return (bcur);
 }
 

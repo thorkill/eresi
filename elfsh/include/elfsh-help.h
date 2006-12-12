@@ -141,6 +141,7 @@
 #define	HLP_RENAME		"Rename a symbol with a new supplied name"
 #define	HLP_FLOWTEST		"Test command for graph analysis features"
 #define	HLP_ANALYSE		"Perform libmjollnir analysis"
+#define	HLP_CONTROL		"Print stored control flow information"
 
 /* Scripting only commands */
 #define HLP_CMP			"Compare 2 parameters (modify $_ variable)"

@@ -392,20 +392,21 @@ char prompt_token[128];
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
 #define	CMD_GRAPH		"graph"
-#define CMD_FLOW		"flow"    // duplicate
 #define CMD_INSPECT		"inspect"
-#define CMD_FLOWLOAD		"flowload"
-#define CMD_FLOWSAVE		"flowsave"
-#define	CMD_FLOWTEST		"flowtest"
 #define CMD_ADDGOTO		"addgoto"
-
-#define	CMD_SETFCTPTR		"setfuncptr"
-#define	CMD_USEGOTO		"usegoto"
-
 #define	CMD_SETGVL		"setgvl"
-#define CMD_ANALYSE		"analyse" // duplicate
 #define CMD_UNSTRIP		"unstrip"
 #define CMD_RENAME		"rename"
+#define	CMD_CONTROL		"control"
+
+#define CMD_FLOW		"flow"    // duplicate
+#define CMD_ANALYSE		"analyse" // duplicate
+
+#define CMD_FLOWLOAD		"flowload" // ???
+#define CMD_FLOWSAVE		"flowsave" // ???
+#define	CMD_FLOWTEST		"flowtest" // ???
+
+
 
 /* Regx option, a module of struct s_args */
 typedef struct		s_list
@@ -950,6 +951,7 @@ int		cmd_setgvl(void);
 int		cmd_analyse();
 int		cmd_unstrip();
 int 		cmd_rename();
+int		cmd_control();
 
 #ifdef __DEBUG_TEST__
 int		cmd_test();

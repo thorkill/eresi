@@ -113,22 +113,15 @@ void		*btree_find_elem(btree_t *root,
   int		ret;
   void		*to_ret;
   
-  if (root)
-    {
-      ret = match(root->elem, ptr);
-      if (!ret)
-	to_ret = root->elem;
-      else
-	{
-	  if (ret > 0)
-	    to_ret = btree_find_elem(root->right, match, ptr);
-	  else
-	    to_ret = btree_find_elem(root->left, match, ptr);
-	}
-    }
+  if (!root)
+    return (NULL);
+  ret = match(root->elem, ptr);
+  if (!ret)
+    return (ret);
+  else if (ret > 0)
+    return (btree_find_elem(root->right, match, ptr));
   else
-    to_ret = NULL;
-  return (to_ret);
+    return (btree_find_elem(root->left, match, ptr));
 }
 
 /**

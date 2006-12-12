@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.10 2006-12-11 13:57:39 may Exp $
+ * $Id: core.c,v 1.11 2006-12-12 10:34:21 may Exp $
  *
  */
 #include "libmjollnir.h"
@@ -39,7 +39,7 @@ int		mjr_analyse(mjrsession_t *sess,int flags)
      
      if (elfsh_get_section_execflag(shdr)) 
        {
-#if 1 //__DEBUG_MJOLLNIR__
+#if __DEBUG_MJOLLNIR__
 	 fprintf(D_DESC, 
 		 "[__DEBUG__] mjr_analize: Executable section name=(%14s) "
 		 "index=(%02i)\n", shtName, idx_sht);

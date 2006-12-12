@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-blocks.h,v 1.6 2006-12-11 17:15:57 thor Exp $
+ * $Id: libmjollnir-blocks.h,v 1.7 2006-12-12 10:34:21 may Exp $
  *
  */
 
@@ -91,22 +91,27 @@ typedef			struct s_caller
 }			elfshcaller_t;
 
 
-/* Structure used to describe blocks */
+/* Structure used to describe blocks in memory */
+/* This format is never saved ondisk */
 typedef struct		s_iblock 
 {
   char			*symstr;
   u_int			vaddr;	/* block starting virtual address	*/
   u_int			size;	/* block size				*/
   struct s_caller	*caller;/* linked list of invvoking instr.      */
+
   u_int			altern;	/* vaddr of alternate path		*/
   u_int			altype; /* alternative path invokation type	*/
+
   u_int			contig; /* vaddr of next block if continuing	*/
   struct s_iblock	*next;
   btree_t		*btree;
+
   int			passed;
 }			elfshiblock_t;
 
-/* Concrete block representation as it is stored in ".control" section */
+/* Concrete header of block representation */
+/* as it is stored in .elfsh.control section */
 typedef struct	s_elfshblock 
 {
   u_int		vaddr;		/* virtual address of block  */
@@ -117,7 +122,8 @@ typedef struct	s_elfshblock
 }		elfshblk_t;
 
 /* Abstract block reference representation */
-typedef struct s_elfshblref 
+/* An array of them comes after the block header representation, for each block */
+typedef struct	s_elfshbref 
 {
   u_int		vaddr;		/* address of instruction invoking block	*/
   u_int		type;		/* type of invokation				*/

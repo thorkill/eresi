@@ -116,9 +116,9 @@ void			mjr_trace_control(mjrcontext_t	*context,
 					  elfshiblock_t **blk_list) 
 {
   int			ilen;
-  elfshiblock_t		*tmp;
+  elfshiblock_t		*tmp = NULL;
   
-  tmp = 0;
+  /* Initialy enter here */
   if (!g_curblock) 
     {
 
@@ -140,10 +140,11 @@ void			mjr_trace_control(mjrcontext_t	*context,
     }
   
   /* 
-     If previous block is not finished, search for a block
-     which begin at current virtual addresss.
-     if found, then, current instruction is the first of a previously
-     detected block. NOTE: this may help in obfuscated code detection
+     If previous block is not finished, search for a block which begin at current
+     virtual address. If found, then current instruction is the first of a 
+     previously detected block. 
+     
+     NOTE: this may help in obfuscated code detection
   */
   else if ((tmp = mjr_block_get_by_vaddr(*blk_list, vaddr, 0))) 
     {
