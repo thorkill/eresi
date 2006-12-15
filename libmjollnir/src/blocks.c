@@ -403,6 +403,120 @@ elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode
 
 
 
+/* 
+** Support function pointers computations
+**
+** Handle something like this : call  *%eax 
+**     
+**  -> Check goto table and fixup destination
+**
+**  - start gdb, set breakpoint on any "pointer function at [%x]
+**  - check register value
+**  - start elfsh
+**  - load modflow
+**  - addgoto <vaddr of call *%eax> <daddr value of *%eax>   
+*/
+int		mjr_compute_fctptr(mjrcontext_t		*context,
+				   elfshobj_t		*obj, 
+				   asm_instr		*ins, 
+				   u_int		vaddr,
+				   elfshiblock_t	**blk_list) 
+{
+  char		tmp[255];
+  char		*ret;
+  elfshiblock_t	*dst;
+  elfshiblock_t	*dst_end;  
+  int		dest;
+  int		new_size;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  printf(" [*] Found function pointer at %x\n",vaddr);
+  snprintf(tmp, sizeof(tmp), "%x", vaddr);
+  dst_end = *blk_list;
+
+  /* We deal with a constructed address */
+  if (context->vaddr_hist[4].instr == ASM_CALL &&
+      context->vaddr_hist[3].instr == ASM_MOV  &&
+      context->vaddr_hist[2].instr == ASM_MOV) 
+    {
+      dest = context->vaddr_hist[2].op2.imm;
+      
+      if (dest < elfsh_get_entrypoint(elfsh_get_hdr(obj)) || dest < 0) 
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+      
+      printf(" [*] 0x%08x Detected possible FUNCPTR at [%x/%d] \n",
+	     vaddr, dest, dest);
+      
+      dst = mjr_block_get_by_vaddr(dst_end, dest, 1);
+      if (!dst) 
+	{
+	  dst = mjr_block_create(dest, 1);
+	  dst->altype = CALLER_UNKN;
+	  mjr_block_add_list(blk_list, dst);
+	} 
+      else if (dst->vaddr != dest) 
+	{
+	  new_size = dst->size - (dest - dst->vaddr);
+	  dst->size -= new_size;
+	  dst_end = mjr_block_create(dest, new_size);
+	  dst_end->contig = dst->contig;
+	  dst_end->altern = dst->altern;
+	  dst_end->altype = dst->altype;
+	  dst->contig = dest;
+	  dst->altype = CALLER_CONT;
+	  dst->altern = 0;
+	  mjr_block_add_list(blk_list, dst_end);
+	  dst = dst_end;
+	}
+      
+      mjr_block_add_caller(dst, vaddr, (ins->instr == ASM_CALL ? CALLER_CALL : 
+					CALLER_JUMP));
+    } 
+
+  
+  else 
+    {
+      ret = (char *) hash_get(&goto_hash, tmp);
+      if (ret) 
+	{
+	  dest = strtol(ret,(char **)NULL,16);
+	  if (dest) 
+	    {
+	      printf(" [*] Extended routing table found 0x%08x -> 0x%08x\n",
+		     vaddr,dest);
+	      dst = mjr_block_get_by_vaddr(dst_end, dest, 1);
+	      if (!dst) 
+		{
+		  dst = mjr_block_create(dest, 1);
+		  dst->altype = CALLER_UNKN;
+		  mjr_block_add_list(blk_list, dst);
+		} 
+	      else if (dst->vaddr != dest) 
+		{
+		  new_size = dst->size - (dest - dst->vaddr);
+		  dst->size -= new_size;
+		  dst_end = mjr_block_create(dest, new_size);
+		  dst_end->contig = dst->contig;
+		  dst_end->altern = dst->altern;
+		  dst_end->altype = dst->altype;
+		  dst->contig = dest;
+		  dst->altype = CALLER_CONT;
+		  dst->altern = 0;
+		  mjr_block_add_list(blk_list, dst_end);
+		  dst = dst_end;
+		}
+		  
+	      mjr_block_add_caller(dst, vaddr, 
+				   (ins->instr == ASM_CALL ? CALLER_CALL : 
+				    CALLER_JUMP));
+	    }
+	}
+    }
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+}
+
+
+
 /*
  * This function add a new element to the linked list of callers 
  * of the current block.
@@ -474,131 +588,16 @@ int		mjr_insert_destaddr(mjrcontext_t	*context,
 
       mjr_block_add_caller(dst, vaddr, 
 			   (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
-
-      /*
-       * insert new block into symbol table
-       */
-      /*
-      if (ins->instr == ASM_CALL) 
-	{
-	  sprintf(buffer, "function_%08x", dest);
-	  newsym = elfsh_create_symbol(dest, 0, STT_FUNC, 0, 0, 0);
-	  elfsh_insert_symbol(obj->secthash[ELFSH_SECTION_SYMTAB],
-			      &newsym, buffer);
-	}
-
-      sprintf(buffer, "%s_%08x", ins->proc->instr_table[ins->instr], vaddr);
-      newsym = elfsh_create_symbol(dest, -1, STT_BLOCK, 0, 0, 0);
-      if ((0 > elfsh_insert_symbol(obj->secthash[ELFSH_SECTION_SYMTAB], 
-				   &newsym, buffer)))
-	printf("Insertion failed\n");
-      */
     }
-
-  /* 
-     Handle something like this : call  *%eax 
-     
-     -> Check goto table and fixup destination
-
-     - start gdb, set breakpoint on any "pointer function at [%x]
-     - check register value
-     - start elfsh
-     - load modflow
-     - addgoto <vaddr of call *%eax> <daddr value of *%eax>   
-  */
   
   else if (ins->op1.content & ASM_OP_BASE) 
-    {
-      char tmp[255];
-      char *ret;
-
-      printf(" [*] Found function pointer at %x\n",vaddr);
-      snprintf(tmp,250, "%x", vaddr);
-      dst_end = *blk_list;
-      
-      if (context->vaddr_hist[4].instr == ASM_CALL &&
-	  context->vaddr_hist[3].instr == ASM_MOV  &&
-	  context->vaddr_hist[2].instr == ASM_MOV) 
-	{
-	  dest = context->vaddr_hist[2].op2.imm;
-	  
-	  if ((dest < elfsh_get_entrypoint(elfsh_get_hdr(obj))) 
-	      || (dest < 0)) 
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-
-	  printf(" [*] 0x%08x Detected possible FUNCPTR at [%x/%d] \n",
-		 vaddr, dest, dest);
-	  
-	  dst = mjr_block_get_by_vaddr(dst_end, dest, 1);
-	  if (!dst) 
-	    {
-	      dst = mjr_block_create(dest, 1);
-	      dst->altype = CALLER_UNKN;
-	      mjr_block_add_list(blk_list, dst);
-	    } 
-	  else if (dst->vaddr != dest) 
-	    {
-	      new_size = dst->size - (dest - dst->vaddr);
-	      dst->size -= new_size;
-	      dst_end = mjr_block_create(dest, new_size);
-	      dst_end->contig = dst->contig;
-	      dst_end->altern = dst->altern;
-	      dst_end->altype = dst->altype;
-	      dst->contig = dest;
-	      dst->altype = CALLER_CONT;
-	      dst->altern = 0;
-	      mjr_block_add_list(blk_list, dst_end);
-	      dst = dst_end;
-	    }
-	  
-	  mjr_block_add_caller(dst, vaddr, 
-			       (ins->instr == ASM_CALL ? CALLER_CALL : 
-				CALLER_JUMP));
-	} 
-      else 
-	{
-	  ret = (char *) hash_get(&goto_hash, tmp);
-	  if (ret) 
-	    {
-	      dest = strtol(ret,(char **)NULL,16);
-	      if (dest) 
-		{
-		  printf(" [*] Extended routing table found 0x%08x -> 0x%08x\n",
-			 vaddr,dest);
-		  dst = mjr_block_get_by_vaddr(dst_end, dest, 1);
-		  if (!dst) 
-		    {
-		      dst = mjr_block_create(dest, 1);
-		      dst->altype = CALLER_UNKN;
-       		      mjr_block_add_list(blk_list, dst);
-		    } 
-		  else if (dst->vaddr != dest) 
-		    {
-		      new_size = dst->size - (dest - dst->vaddr);
-		      dst->size -= new_size;
-		      dst_end = mjr_block_create(dest, new_size);
-		      dst_end->contig = dst->contig;
-		      dst_end->altern = dst->altern;
-		      dst_end->altype = dst->altype;
-		      dst->contig = dest;
-		      dst->altype = CALLER_CONT;
-		      dst->altern = 0;
-		      mjr_block_add_list(blk_list, dst_end);
-		      dst = dst_end;
-		    }
-		  
-		  mjr_block_add_caller(dst, vaddr, 
-				       (ins->instr == ASM_CALL ? CALLER_CALL : 
-					CALLER_JUMP));
-		}
-	    }
-	}
-    }
+    dest = mjr_compute_fctptr(context, obj, ins, vaddr, blk_list);
   else
     dest = -1;
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
+
 
 
 /*---------- Original libmjollnir block format !!!!!! --------- */
