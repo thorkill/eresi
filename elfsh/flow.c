@@ -48,6 +48,7 @@ void	elfsh_help()
 	 "                                          \n");
 }
 
+
 /* Flowsave command */
 int		cmd_flowsave(void)
 {
@@ -242,11 +243,6 @@ int			cmd_flow()
 
   /* Fetch main from entry point */
   e_point = elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current));
-  printf(" [*] Entry point: %08x\n", e_point);
-  main_addr = mjr_trace_start(world.mjr_session.cur,
-			      world.curjob->current, buffer, 
-			      max_len, e_point, &binary_blks);
-  printf(" [*] main located at %08x\n", main_addr);
 
   /* Parse SHT */
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
@@ -257,6 +253,7 @@ int			cmd_flow()
       if (!elfsh_get_section_allocflag(shdr) ||
 	  !elfsh_get_section_execflag(shdr))
 	continue;
+
       max_len = elfsh_get_symbol_size(sym);
       vaddr   = sym->st_value;
       foff    = elfsh_get_foffset_from_vaddr(world.curjob->current, vaddr);
@@ -264,6 +261,14 @@ int			cmd_flow()
       elfsh_raw_read(world.curjob->current, foff, buffer, max_len);
 
       //hash_init(&block_hash, max_len); (this hash doesnt exist anymore)
+      if (shdr->sh_addr == e_point)
+	{
+	  printf(" [*] Entry point: %08x\n", e_point);
+	  main_addr = mjr_trace_start(world.mjr_session.cur,
+				      world.curjob->current, buffer, 
+				      max_len, e_point, &binary_blks);
+	  printf(" [*] main located at %08x\n", main_addr);
+	}
 
       /*
       ** Main loop : For each instruction disassembled, pass it to

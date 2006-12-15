@@ -112,13 +112,12 @@ int		cmd_next_workspace()
   keys = hash_get_keys(&world.jobs, &keynbr);
   if (keynbr <= 1)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
   for (index = 0; index < keynbr; index++)
     {
       curjob = hash_get(&world.jobs, keys[index]);
       if (vm_own_job(curjob) && curjob != world.curjob)
 	{
-	  next = hash_get(&world.jobs, keys[index + 1 >= keynbr ? 0 : index + 1]);
+	  //next = hash_get(&world.jobs, keys[index + 1 >= keynbr ? 0 : index + 1]);
 	  vm_switch_job(next);
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 	}

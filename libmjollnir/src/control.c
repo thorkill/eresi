@@ -119,6 +119,7 @@ void			mjr_trace_control(mjrcontext_t	*context,
   elfshiblock_t		*tmp = NULL;
   
   /* Initialy enter here */
+  /* If the last instrution was a jmp/call/ret, g_curblock will be NULL here */
   if (!g_curblock) 
     {
 
@@ -175,7 +176,7 @@ void			mjr_trace_control(mjrcontext_t	*context,
   /*
     Depending on instruction type -based on IA32 instruction set-
 
-    ASM_TYPE_CONDBRANCH: jcc, loop, MAY not break execution flow
+    ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
     ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
     ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
 
