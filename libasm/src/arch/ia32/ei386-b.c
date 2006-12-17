@@ -59,7 +59,7 @@ int	op_btr_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
 
 int i386_movzbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->len += 1;
-    if (asm_proc_oplen(proc))
+    if (asm_proc_opsize(proc))
       new->instr = ASM_MOVZBW;
     else
       new->instr = ASM_MOVZBL;
@@ -116,7 +116,7 @@ int i386_bsr_rv_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *pr
 
 int i386_movsbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
 
-  if (asm_proc_oplen(proc))
+  if (asm_proc_opsize(proc))
     new->instr = ASM_MOVSBW;
   else
     new->instr = ASM_MOVSBL;
@@ -133,7 +133,7 @@ int i386_movsbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor 
 
 
 int i386_movswl_rv_rm2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
-  if (asm_proc_oplen(proc))
+  if (asm_proc_opsize(proc))
     new->instr = ASM_MOVSBW;
   else
     new->instr = ASM_MOVSWL;

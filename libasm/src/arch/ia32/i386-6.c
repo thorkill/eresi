@@ -101,23 +101,27 @@ int	op_prefix_gs(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 }
 
 /*
-  <instruction func="op_oplen" opcode="0x66"/>
+  <instruction func="op_opsize" opcode="0x66"/>
  */
 
-int	op_oplen(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int	op_opsize(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   asm_i386_processor	*i386p;
 
   if (!new->ptr_prefix)
     new->ptr_prefix = opcode;
   i386p = (asm_i386_processor *) proc;
 
-  i386p->internals->oplen = !i386p->internals->oplen;
+  i386p->internals->opsize = !i386p->internals->opsize;
   new->len += 1;
   new->prefix |= ASM_PREFIX_OPSIZE;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
-  i386p->internals->oplen = !i386p->internals->oplen;
+  i386p->internals->opsize = !i386p->internals->opsize;
   return (len);
 }
+
+/*
+  <instruction func="op_addsize" opcode="0x67"/>
+ */
 
 int	op_addsize(asm_instr *new, u_char *opcode, u_int len, 
 		   asm_processor *proc) {
@@ -125,11 +129,13 @@ int	op_addsize(asm_instr *new, u_char *opcode, u_int len,
   
   if (!new->ptr_prefix)
     new->ptr_prefix = opcode;
+  
   i386p = (asm_i386_processor *) proc;
   new->prefix |= ASM_PREFIX_ADDSIZE;
-    i386p->internals->addlen = !i386p->internals->addlen;
+  
+  i386p->internals->addsize = !i386p->internals->addsize;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
-  i386p->internals->addlen = !i386p->internals->addlen;
+  i386p->internals->addsize = !i386p->internals->addsize;
   return (len);
 }
 
@@ -227,6 +233,60 @@ int	op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *p
 }
 
 /*
+  <instruction func="op_insb" opcode="0x6b"/>
+*/
+
+int	op_insb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+  new->len += 1;
+  new->instr = ASM_INSB;
+  new->ptr_instr = opcode;
+
+
+  new->op2.type = ASM_OTYPE_FIXED;
+  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op2.regset = ASM_REGSET_R16;
+  new->op2.base_reg = ASM_REG_EDX;
+
+  new->op1.type = ASM_OTYPE_YDEST;
+  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op1.prefix = ASM_PREFIX_DS;
+  new->op1.base_reg = ASM_REG_EDI;
+  new->op1.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 : 
+    ASM_REGSET_R32;
+  return (new->len);
+}
+
+/*
+  <instruction func="op_insw" opcode="0x6d"/>
+  <instruction func="op_insd" opcode="0x6d"/>
+*/
+
+int	op_insw(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+  new->len += 1;
+  new->ptr_instr = opcode;
+  
+  if (!asm_proc_opsize(proc))
+    new->instr = ASM_INSW;
+  else
+    new->instr = ASM_INSD;
+  new->ptr_instr = opcode;
+
+  new->op2.type = ASM_OTYPE_FIXED;
+  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op2.regset = ASM_REGSET_R16;
+  new->op2.base_reg = ASM_REG_DX;
+
+  new->op1.type = ASM_OTYPE_YDEST;
+  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op1.base_reg = ASM_REG_EDI;
+  new->op1.prefix = ASM_PREFIX_DS;
+  new->op1.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 : 
+    ASM_REGSET_R32;
+  
+  return (new->len);
+}
+
+/*
   <instruction func="op_outsb" opcode="0x6e"/>
 */
 
@@ -236,37 +296,42 @@ int op_outsb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->ptr_instr = opcode;
 
   new->op1.type = ASM_OTYPE_FIXED;
+  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
   new->op1.regset = ASM_REGSET_R16;
   new->op1.base_reg = ASM_REG_EDX;
 
   new->op2.type = ASM_OTYPE_XSRC;
-  new->op2.regset = ASM_REGSET_R32;
+  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
   new->op2.prefix = ASM_PREFIX_DS;
   new->op2.base_reg = ASM_REG_ESI;
+  new->op2.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 : 
+    ASM_REGSET_R32;
   return (new->len);
 } 
 
 /*
-
- */
+  <instruction func="op_outsw" opcode="0x6f"/>
+  <instruction func="op_outsd" opcode="0x6f"/>
+*/
 
 int op_outsw(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->ptr_instr = opcode;
   new->len += 1;
-  if (!asm_proc_oplen(proc))
+
+  if (!asm_proc_opsize(proc))
     new->instr = ASM_OUTSW;
   else
     new->instr = ASM_OUTSD;
 
   new->op1.type = ASM_OTYPE_FIXED;
-  new->op1.content = ASM_OP_BASE;
+  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
   new->op1.regset = ASM_REGSET_R16;
   new->op1.base_reg = ASM_REG_DX;
 
   new->op2.type = ASM_OTYPE_XSRC;
-  new->op2.content = ASM_OP_BASE;
-  new->op2.base_reg = ASM_REG_EDI;
-  new->op2.regset = asm_proc_oplen(proc) ? ASM_REGSET_R32 : 
-    ASM_REGSET_R16;
+  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op2.base_reg = ASM_REG_ESI;
+  new->op2.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 : 
+    ASM_REGSET_R32;
   return (new->len);
 }

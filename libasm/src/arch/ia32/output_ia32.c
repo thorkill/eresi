@@ -134,13 +134,13 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
 
 
   // if (op->content & ASM_OP_VALUE)
-  asm_operand_get_immediate(ins, num, addr, &imm);
-  // if (op->content & ASM_OP_BASE)
-  asm_operand_get_basereg(ins, num, addr, &base_reg);
-  // if (op->content & ASM_OP_INDEX)
-  asm_operand_get_indexreg(ins, num, addr, &index_reg);
-  // if (op->content & ASM_OP_SCALE)
-  asm_operand_get_scale(ins, num, addr, &scale);
+    asm_operand_get_immediate(ins, num, addr, &imm);
+    // if (op->content & ASM_OP_BASE)
+    asm_operand_get_basereg(ins, num, addr, &base_reg);
+    // if (op->content & ASM_OP_INDEX)
+    asm_operand_get_indexreg(ins, num, addr, &index_reg);
+    // if (op->content & ASM_OP_SCALE)
+    asm_operand_get_scale(ins, num, addr, &scale);
   
   if (ASM_OP_ADDRESS & op->content) {
     if (ASM_OP_REFERENCE & op->content) 
@@ -303,10 +303,11 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
 
   if (!instr)
     return (0);
+
   memset(buffer, 0, 1024);
   
   if (instr->prefix & ASM_PREFIX_LOCK)
-	  strcat(buffer, "lock");
+    strcat(buffer, "lock ");
   if (instr->prefix & ASM_PREFIX_REP)
     strcat(buffer, "repz ");
   if (instr->prefix & ASM_PREFIX_REPNE)

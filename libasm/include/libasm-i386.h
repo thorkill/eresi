@@ -23,13 +23,13 @@ void	asm_resolve_ia32(void *d, u_int, char *, u_int);
 
 struct s_asm_proc_i386 {
   /* compatibility				*/
-  /* processor state: oplen actived or not	*/
+  /* processor state: opsize actived or not	*/
   int			mode;
   
   int			vect_size;
-  int			addlen;
-  int			oplen;
-  
+  int			addsize;
+  int			opsize;
+    
   int			type;
   int			(*get_vect_size)(asm_processor *);
   
@@ -538,6 +538,7 @@ enum asm_instr {
   ASM_XCHG,
   ASM_INSB,
   ASM_INSW,
+  ASM_INSD,
   ASM_PUSHA,
   ASM_POPA,
   /* 45 */
@@ -711,7 +712,24 @@ enum asm_instr {
   ASM_CMOVNLE,
   ASM_MOVSBL,
   ASM_MOVSWL,
+  ASM_MOVD,
+  ASM_MOVQ,
   ASM_BSWAP,
+  ASM_PAND,
+  ASM_POR,
+  ASM_PXOR,
+  ASM_PSLLQ,
+  ASM_PSRLQ,
+  ASM_PSRLW,
+  ASM_PSRAW,
+  ASM_PSLLW,
+  ASM_PMULLW,
+  ASM_PADDUSW,
+  ASM_PADDUSB,
+  ASM_PUNPCKLBW,
+  ASM_PUNPCKHBW,
+  ASM_PACKUSWB,
+  ASM_EMMS,
 
   /*
    * FPU INSTRUCTIONS

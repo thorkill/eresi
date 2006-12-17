@@ -150,6 +150,7 @@ int	main(int ac, char **av) {
       curr++;
     }
   }
+  asm_free_i386(&proc);
   free(ptr);
   elfsh_unload_obj(obj);
   return (0);

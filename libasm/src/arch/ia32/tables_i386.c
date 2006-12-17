@@ -9,7 +9,8 @@
 
 int init_instr_table(asm_processor *proc) {
   
-  proc->instr_table = malloc(sizeof(char *) * ASM_BAD + 1);
+  proc->instr_table = malloc(sizeof(char *) * (ASM_BAD + 1));
+  memset(proc->instr_table, 0, sizeof(char *) * (ASM_BAD + 1));
   
   proc->instr_table[ASM_ADC] = "adc";
   proc->instr_table[ASM_ADD] = "add";
@@ -40,6 +41,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_DIV] = "div";
   proc->instr_table[ASM_DEC] = "dec";
   
+  proc->instr_table[ASM_EMMS] = "emms";
   proc->instr_table[ASM_ENTER] = "enter";
   
   proc->instr_table[ASM_FWAIT] = "fwait";
@@ -52,6 +54,9 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_INT3] = "int3";
   proc->instr_table[ASM_INT1] = "int1";
   proc->instr_table[ASM_IN] = "in";
+  proc->instr_table[ASM_INSB] = "insb";
+  proc->instr_table[ASM_INSW] = "insw";
+  proc->instr_table[ASM_INSD] = "insd";
   proc->instr_table[ASM_INC] = "inc";
   proc->instr_table[ASM_IMUL] = "imul";
   proc->instr_table[ASM_IDIV] = "idiv";
@@ -100,6 +105,8 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_MOVZBL] = "movzbl";
   proc->instr_table[ASM_MUL] = "mull";
   proc->instr_table[ASM_MOV] = "mov";
+  proc->instr_table[ASM_MOVD] = "movd";
+  proc->instr_table[ASM_MOVQ] = "movq";
 
   proc->instr_table[ASM_NEG] = "neg";
   proc->instr_table[ASM_NOT] = "not";
@@ -109,6 +116,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_ORB] = "orb";
   proc->instr_table[ASM_OUT] = "out";
   proc->instr_table[ASM_OUTSB] = "outsb";
+  proc->instr_table[ASM_OUTSW] = "outsw";
   
   proc->instr_table[ASM_PUSH] = "push";
   proc->instr_table[ASM_POP] = "pop";
@@ -116,6 +124,20 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_POPF] = "popf";
   proc->instr_table[ASM_PUSHA] = "pusha";
   proc->instr_table[ASM_POPA] = "popa";
+  proc->instr_table[ASM_PAND] = "pand";
+  proc->instr_table[ASM_POR] = "por";
+  proc->instr_table[ASM_PXOR] = "pxor";
+  proc->instr_table[ASM_PUNPCKLBW] = "punpcklbw";
+  proc->instr_table[ASM_PUNPCKHBW] = "punpckhbw";
+  proc->instr_table[ASM_PACKUSWB] = "packuswb";
+  proc->instr_table[ASM_PSLLQ] = "psllq";
+  proc->instr_table[ASM_PSRLQ] = "psrlq";
+  proc->instr_table[ASM_PSRLW] = "psrlw";
+  proc->instr_table[ASM_PSRAW] = "psraw";
+  proc->instr_table[ASM_PSLLW] = "psllw";
+  proc->instr_table[ASM_PMULLW] = "pmullw";
+  proc->instr_table[ASM_PADDUSW] = "paddusw";
+  proc->instr_table[ASM_PADDUSB] = "paddusb";
 
   proc->instr_table[ASM_RET] = "ret";
   proc->instr_table[ASM_REPNZ] = "repnz";

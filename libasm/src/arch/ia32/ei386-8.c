@@ -162,7 +162,25 @@ int i386_jns(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
 
 int i386_jp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
 // new->type = IS_COND_BRANCH;
-  new->instr = ASM_BRANCH_NOT_SIGNED;
+  new->instr = ASM_BRANCH_PARITY;
+
+  new->op1.type = ASM_OTYPE_JUMP;
+  new->op1.content = ASM_OP_VALUE | ASM_OP_ADDRESS;
+  new->op1.ptr = opcode + 1;
+  new->op1.len = 4;
+  memcpy(&new->op1.imm, opcode + 1, 4);
+  new->len += 5;
+return (new->len);
+}
+
+/*
+<i386 func="i386_jnp" opcode="0x8b"/>
+*/
+
+
+int i386_jnp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+// new->type = IS_COND_BRANCH;
+  new->instr = ASM_BRANCH_NOT_PARITY;
 
   new->op1.type = ASM_OTYPE_JUMP;
   new->op1.content = ASM_OP_VALUE | ASM_OP_ADDRESS;

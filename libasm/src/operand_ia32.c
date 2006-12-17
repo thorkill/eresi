@@ -177,7 +177,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
   } 
 	
   ins->op1.ptr = opcode;
-	ins->op1.regset = asm_proc_oplen(proc) ? 
+	ins->op1.regset = asm_proc_opsize(proc) ? 
 	  ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.content = ASM_OP_BASE;
   ins->op1.len = 0;
@@ -261,7 +261,7 @@ int	operand_rmv_rv(asm_instr *ins, u_char *opcode, int len,
   operand_rmv(&ins->op1, opcode, len, proc);
   
   ins->op2.content = ASM_OP_BASE;
-  ins->op2.regset = asm_proc_oplen(proc) ?
+  ins->op2.regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op2.ptr = opcode;
   ins->op2.len = 0;
@@ -294,7 +294,7 @@ int	operand_rv_rmv(asm_instr *ins, u_char *opcode, int len,
   operand_rmv(&ins->op2, opcode, len, proc);
   
   ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_oplen(proc) ? 
+  ins->op1.regset = asm_proc_opsize(proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.ptr = opcode;
   ins->op1.len = 0;
@@ -319,7 +319,7 @@ int	operand_rv_rmb(asm_instr *ins, u_char *opcode, int len,
 
   
   ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_oplen(proc) ? 
+  ins->op1.regset = asm_proc_opsize(proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.len = 0;
   ins->op1.ptr = opcode;
@@ -882,7 +882,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
     op->content = ASM_OP_BASE;
     op->len = 1;
     op->ptr = opcode;
-    op->regset = asm_proc_oplen(proc) ?
+    op->regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
     op->base_reg = modrm->m;
     break;

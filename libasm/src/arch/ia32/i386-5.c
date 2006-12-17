@@ -29,7 +29,7 @@ int op_push_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->instr = ASM_PUSH;
   new->op1.type = ASM_OTYPE_OPMOD;
   // new->type = IS_MEM_WRITE;
-  new->op1.regset = asm_proc_oplen(proc) ? 
+  new->op1.regset = asm_proc_opsize(proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.content = ASM_OP_BASE;
   new->op1.ptr = opcode;
@@ -60,7 +60,7 @@ int op_pop_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   // new->type = IS_MEM_READ;
   new->op1.type = ASM_OTYPE_OPMOD;
   new->op1.content = ASM_OP_BASE;
-  new->op1.regset = asm_proc_oplen(proc) ?
+  new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.ptr = opcode;
 

@@ -42,7 +42,7 @@ void asm_init_i386(asm_processor *proc) {
   proc->fetch = fetch_i386;
   proc->display_handle = asm_ia32_display_instr_att;
   inter = proc->internals = malloc(sizeof (struct s_asm_proc_i386));
-  inter->oplen = inter->addlen = 0;
+  inter->opsize = inter->addsize = 0;
   inter->mode = INTEL_PROT;
   // inter->get_vect_size = get_i386_vect_size;
   for (i = 0; i< 256; i++) {
@@ -152,13 +152,16 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_set[0x63] = op_arpl_ew_rw;
   inter->cisc_set[0x64] = op_prefix_fs;
   inter->cisc_set[0x65] = op_prefix_gs;
-  inter->cisc_set[0x66] = op_oplen;
+  inter->cisc_set[0x66] = op_opsize;
   inter->cisc_set[0x67] = op_addsize;
   inter->cisc_set[0x68] = op_push_iv;
   inter->cisc_set[0x69] = op_imul_rv_rmv_iv;
   inter->cisc_set[0x6a] = op_push_ib;
   inter->cisc_set[0x6b] = op_imul_gv_ev_ib;
+  inter->cisc_set[0x6c] = op_insb;
+  inter->cisc_set[0x6d] = op_insw;
   inter->cisc_set[0x6e] = op_outsb;
+  inter->cisc_set[0x6f] = op_outsw;
   inter->cisc_set[0x70] = op_jo;
   inter->cisc_set[0x71] = op_jno;
   inter->cisc_set[0x72] = op_jb;
@@ -324,6 +327,15 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0x4d] = i386_cmovnl;
   inter->cisc_i386[0x4e] = i386_cmovle;
   inter->cisc_i386[0x4f] = i386_cmovnle;
+  inter->cisc_i386[0x60] = i386_punpcklbw_pq_qd;
+  inter->cisc_i386[0x67] = i386_packuswb_pq_qq;
+  inter->cisc_i386[0x68] = i386_punpckhbw_pq_qq;
+  inter->cisc_i386[0x6e] = i386_movd_pd_qd;
+  inter->cisc_i386[0x6f] = i386_movq_pq_qq;
+  inter->cisc_i386[0x71] = i386_group12;
+  inter->cisc_i386[0x73] = i386_group14;
+  inter->cisc_i386[0x77] = i386_emms;
+  inter->cisc_i386[0x7f] = i386_movq_qq_pq;
   inter->cisc_i386[0x82] = i386_jb;
   inter->cisc_i386[0x83] = i386_jae;
   inter->cisc_i386[0x84] = i386_je;
@@ -333,6 +345,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0x88] = i386_js;
   inter->cisc_i386[0x89] = i386_jns;
   inter->cisc_i386[0x8a] = i386_jp;
+  inter->cisc_i386[0x8b] = i386_jnp;
   inter->cisc_i386[0x8c] = i386_jl;
   inter->cisc_i386[0x8d] = i386_jge;
   inter->cisc_i386[0x8e] = i386_jle;
@@ -382,6 +395,12 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xcd] = i386_bswap;
   inter->cisc_i386[0xce] = i386_bswap;
   inter->cisc_i386[0xcf] = i386_bswap;
+  inter->cisc_i386[0xd5] = i386_pmullw_pq_qq;
+  inter->cisc_i386[0xdb] = i386_pand_pq_qq;
+  inter->cisc_i386[0xdc] = i386_paddusb_pq_qq;
+  inter->cisc_i386[0xdd] = i386_paddusw_pq_qq;
+  inter->cisc_i386[0xeb] = i386_por_pq_qq;
+  inter->cisc_i386[0xef] = i386_pxor_pq_qq;
 
 }
 

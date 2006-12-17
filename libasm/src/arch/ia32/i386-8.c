@@ -316,7 +316,7 @@ int op_lea_rv_m(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->op1.size = ASM_OSIZE_VECTOR;
   new->op2.type = ASM_OTYPE_MEMORY;
   
-  operand_rv_m(new, opcode + 1, len - 1, proc);
+  operand_rv_rmv(new, opcode + 1, len - 1, proc);
   return (new->len);
 }
 

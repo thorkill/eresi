@@ -77,15 +77,29 @@ int     asm_proc_is_protected(asm_processor *proc) {
 
 
 /**
- *
- *
+ * returns the value of the processor's current
+ * operand length
  */
 
-int     asm_proc_oplen(asm_processor *proc) {
+int     asm_proc_opsize(asm_processor *proc) {
   asm_i386_processor       *i386p;
   
   i386p = (asm_i386_processor *) proc;
-  if (i386p->internals->oplen)
+  if (i386p->internals->opsize)
+    return (1);
+  return (0);
+}
+
+/**
+ * returns the value of the processor's current
+ * address size
+ */
+
+int     asm_proc_addsize(asm_processor *proc) {
+  asm_i386_processor       *i386p;
+  
+  i386p = (asm_i386_processor *) proc;
+  if (i386p->internals->addsize)
     return (1);
   return (0);
 }
@@ -95,7 +109,7 @@ int     asm_proc_oplen(asm_processor *proc) {
  */
 
 int     asm_proc_vector_len(asm_processor *proc) {
-  if (asm_proc_oplen(proc))
+  if (asm_proc_opsize(proc))
     return (2);
   else
     return (4);
@@ -107,7 +121,7 @@ int     asm_proc_vector_len(asm_processor *proc) {
  */
 
 int	asm_proc_vector_size(asm_processor *proc) {
-  if (asm_proc_oplen(proc))
+  if (asm_proc_opsize(proc))
     return (ASM_OSIZE_WORD);
   else
     return (ASM_OSIZE_DWORD);

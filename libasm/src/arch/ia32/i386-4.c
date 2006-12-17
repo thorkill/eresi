@@ -31,7 +31,7 @@ int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->op1.type = ASM_OTYPE_OPMOD;
 
   new->op1.content = ASM_OP_BASE;
-  new->op1.regset = asm_proc_oplen(proc) ?
+  new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.ptr = opcode;
   
@@ -60,7 +60,7 @@ int op_dec_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->op1.type = ASM_OTYPE_OPMOD;
     new->op1.content = ASM_OP_BASE;
     new->op1.ptr = opcode;
-    new->op1.regset = asm_proc_oplen(proc) ?
+    new->op1.regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;    
     new->op1.base_reg = modrm->m;
   return (new->len);  

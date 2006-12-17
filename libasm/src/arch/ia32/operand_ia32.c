@@ -11,187 +11,13 @@
 /*
   CommonType:int
   CommonProto:(struct s_instr *, u_char *, int, struct dis_i386 *)
-  FunctionName:operand_rv_m
-
-  destination operand is a register.
   
-  @param ...
-  @param length of opcode
-  @param a pointer to a processor structure.
-*/
-
-
-int	operand_rv_m(asm_instr *ins, u_char *opcode, int len, 
-		     asm_processor *proc) {
-  asm_modrm	*modrm;
-  asm_sidbyte	*sidbyte;
-
-  modrm = (struct s_modrm *) opcode;
-  sidbyte = (struct s_sidbyte *) opcode + 1;
-  
-  switch(modrm->mod) {
-  case 0:
-
-    
-    if (modrm->m == ASM_REG_ESP) {
-      if (sidbyte->base != ASM_REG_EBP) {
-	ins->op2.content = 
-	  ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.len = 2;
-	
-	ins->op2.base_reg  = sidbyte->base;
-	ins->op2.index_reg  = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-      } else {
-	// lea 0x0(,%eax,4),%ebx 8d 1c 85 00 00 00 00
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.ptr = opcode;
-	ins->op2.len = 6;
-	
-	ins->op2.index_reg = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-	
-	memcpy(&ins->op2.imm, opcode + 2, 4);
-      }     
-    } else {
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE;
-      ins->op2.ptr = opcode + 2;
-	ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.len = 4;
-      
-      ins->op2.base_reg = modrm->m;
-    }
-    break;
-    
-  case 1:
-    
-    
-    if (modrm->m == ASM_REG_ESP) {
-      if (sidbyte->index == ASM_REG_ESP) {
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
-	ins->op2.ptr = opcode + 1;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.len = 3;
-	
-	if (*(opcode + 2) > 0x80u)
-	  memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-	else
-	  ins->op2.imm = 0;
-	memcpy(&ins->op2.imm, opcode + 2, 1);
-	
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.scale = 1;
-	
-	
-      } else {
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.len = 3;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.ptr = opcode + 1;
-
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.index_reg = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-
-	if (*(opcode + 2) > 0x80u)
-	  memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-	else
-	  ins->op2.imm = 0;
-	memcpy(&ins->op2.imm, opcode + 2, 1);
-      }
-    } else {
-      // lea 0xffffff80(%ebp),%ebx ; opcode = '8d 5d 80'      
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
-      ins->op2.len = 2;
-	ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.ptr = opcode;
-	
-      ins->op2.base_reg = modrm->m;
-
-	
-      ins->op2.imm = 0;
-      if (*(opcode + 1) >= 0x80u)
-	memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-      memcpy(&ins->op2.imm, opcode + 1, 1);
-    }
-    break;
-    
-  case 2:
-    
-    
-
-    if (modrm->m == ASM_REG_ESP) {
-      if (sidbyte->index == ASM_REG_ESP) {
-	
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
-	ins->op2.len = 6;
-	
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-	memcpy(&ins->op2.imm, opcode + 2, 4);
-	
-
-      } else {
-      
-	ins->op2.ptr = opcode;
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.len = 6;
-
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-
-	ins->op2.imm = 0;
-	memcpy(&ins->op2.imm, opcode + 2, 4);
-      
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.index_reg = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid); 
-      
-      }    
-    } else /* modrm->m != ASM_REG_ESP */ {
-      
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
-      ins->op2.ptr = opcode;
-	ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.len = 5;
-      ins->op2.base_reg = modrm->m;
-
-      
-      ins->op2.imm = 0;
-      memcpy(&ins->op2.imm, opcode + 1, 4);
-      
-    }
-    break;
-  case 3:
-    
-    ins->op2.ptr = opcode;
-    ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE;
-	ins->op2.regset = ASM_REGSET_R32;
-    ins->op2.len = 1;
-
-    ins->op2.base_reg = modrm->m;
-    break;
-  } 
-	
-  ins->op1.ptr = opcode;
-	ins->op1.regset = asm_proc_oplen(proc) ? 
-	  ASM_REGSET_R16 : ASM_REGSET_R32;
-  ins->op1.content = ASM_OP_BASE;
-  ins->op1.len = 0;
-
-  ins->op1.base_reg = modrm->r;
-  
-  ins->len += ins->op1.len + ins->op2.len;
-  
-  return (1);
-}
-
-/*
   FunctionName:operand_rb_rmb
   
+  @param a pointer to the current instruction structure
+  @param a pointer to the current opcode structure
+  @param length of opcode
+  @param a pointer to a processor structure.
 */
 
 int	operand_rb_rmb(asm_instr *ins, u_char *opcode, int len, 
@@ -261,7 +87,7 @@ int	operand_rmv_rv(asm_instr *ins, u_char *opcode, int len,
   operand_rmv(&ins->op1, opcode, len, proc);
   
   ins->op2.content = ASM_OP_BASE;
-  ins->op2.regset = asm_proc_oplen(proc) ?
+  ins->op2.regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op2.ptr = opcode;
   ins->op2.len = 0;
@@ -294,7 +120,7 @@ int	operand_rv_rmv(asm_instr *ins, u_char *opcode, int len,
   operand_rmv(&ins->op2, opcode, len, proc);
   
   ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_oplen(proc) ? 
+  ins->op1.regset = asm_proc_opsize(proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.ptr = opcode;
   ins->op1.len = 0;
@@ -319,7 +145,7 @@ int	operand_rv_rmb(asm_instr *ins, u_char *opcode, int len,
 
   
   ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_oplen(proc) ? 
+  ins->op1.regset = asm_proc_opsize(proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.len = 0;
   ins->op1.ptr = opcode;
@@ -558,27 +384,7 @@ int	operand_rmb_ib(asm_instr *ins, u_char *opcode, int len,
 }
 
 /*
-  FunctionName:operand_rv_m
-
-  destination is a register.
-
-  if Mod == 00, source operand is a memory reference.
-  
-  if Mod == 01, source operand
-    if source reg is ESP, reference is scalar.
-  
-  if Mod == 02, source operand is
-    if source reg is ESP, reference is scalar.
-    else source operand is a register reference with a
-    
-  if Mod == 03, source operand is
-
-
- */
-/*
   FunctionName:operand_iv
-
-  
 */
 
 int operand_rmb(asm_operand *op, u_char *opcode, u_int len, 
@@ -882,7 +688,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
     op->content = ASM_OP_BASE;
     op->len = 1;
     op->ptr = opcode;
-    op->regset = asm_proc_oplen(proc) ?
+    op->regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
     op->base_reg = modrm->m;
     break;
