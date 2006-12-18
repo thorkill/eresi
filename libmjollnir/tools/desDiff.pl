@@ -2,7 +2,7 @@
 
 # (C) 2006 Asgard Labs, thorolf
 # BSD License
-# $Id: desDiff.pl,v 1.4 2006-11-28 17:04:51 thor Exp $
+# $Id: desDiff.pl,v 1.5 2006-12-18 21:03:36 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
@@ -47,6 +47,11 @@ while($l1 = <X1>) {
 
 }
 
+close(X1);
+close(X2);
+
+unlink("$tmpFile.objdump");
+unlink("$tmpFile.mydisasm");
 
 sub x2 {
 
