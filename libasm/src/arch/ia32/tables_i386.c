@@ -22,7 +22,8 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_ARPL] = "arpl";
   
   proc->instr_table[ASM_BOUND] = "bound";
-  
+  proc->instr_table[ASM_BSWAP] = "bswap";
+
   proc->instr_table[ASM_CMPSB] = "cmpsb";
   proc->instr_table[ASM_CMPSD] = "cmpsd";
   proc->instr_table[ASM_CALL] = "call";
