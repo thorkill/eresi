@@ -1,3 +1,8 @@
+/**
+ * $Id: libasm-int.h,v 1.5 2006-12-19 02:37:06 heroine Exp $
+ *
+ *
+ */
 #ifndef LIBASM_INT_H
 #define LIBASM_INT_H
 
@@ -420,5 +425,7 @@ int i386_punpckhbw_pq_qq(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_packuswb_pq_qq(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_emms(asm_instr *, u_char *, u_int, asm_processor *);
 int op_addsize(asm_instr *, u_char *, u_int, asm_processor *);
-
+int i386_wbinvd(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_rdmsr(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_btrl(asm_instr *, u_char *, u_int, asm_processor *);
 #endif
