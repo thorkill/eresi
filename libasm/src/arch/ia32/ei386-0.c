@@ -1,5 +1,5 @@
 /*
-** $Id: ei386-0.c,v 1.2 2006-12-19 02:43:17 heroine Exp $
+** $Id: ei386-0.c,v 1.3 2006-12-19 17:57:59 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Feb 17 11:26:17 2003
@@ -74,6 +74,9 @@ int	op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     switch(modrm->r) {
     case 0:
       new->instr = ASM_SGDT;
+      new->op1.type = ASM_OTYPE_ENCODED;
+      operand_rmv(&new->op1, opcode + 1, len - 1, proc);
+      new->len += new->op1.len;
       break;
     case 1:
       new->instr = ASM_SIDT;

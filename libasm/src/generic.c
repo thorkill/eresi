@@ -116,15 +116,14 @@ int     asm_proc_vector_len(asm_processor *proc) {
 }
 
 /**
- *
- *
+ * Return vector size depending on prefix
  */
 
 int	asm_proc_vector_size(asm_processor *proc) {
   if (asm_proc_opsize(proc))
-    return (ASM_OSIZE_WORD);
+    return (2);
   else
-    return (ASM_OSIZE_DWORD);
+    return (4);
 }
 
 /*
