@@ -1,5 +1,5 @@
 /*
-** $Id: tables_i386.c,v 1.7 2006-12-19 11:03:22 heroine Exp $
+** $Id: tables_i386.c,v 1.8 2006-12-19 18:17:59 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 22:42:50 2002
@@ -226,7 +226,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_UD2A] = "ud2a";
   proc->instr_table[ASM_LGDT] = "lgdt";
   proc->instr_table[ASM_LIDT] = "lidt";
-  proc->instr_table[ASM_SGDT] = "sgdt";
+  proc->instr_table[ASM_SGDT] = "sgdtl";
   proc->instr_table[ASM_SIDT] = "sidt";
   proc->instr_table[ASM_STR] = "str";
   proc->instr_table[ASM_LTR] = "ltr";
