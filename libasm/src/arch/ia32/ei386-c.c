@@ -1,5 +1,5 @@
 /*
-** private
+** $Id: ei386-c.c,v 1.4 2006-12-19 02:38:11 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Tue Feb 18 12:09:31 2003
@@ -14,11 +14,21 @@
 */
 
 int i386_xadd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
-
+  struct s_modrm	*modrm;
+  modrm = (struct s_modrm *) opcode;
   new->instr = ASM_XADD;
   new->len += 1;
-  new->op1.type = ASM_OTYPE_GENERAL;
+  /*
+  new->op1.regset = modrm->m;
+  new->op1.content = ASM_OP_BASE;
+  new->op1.regset = ASM_REGSET_R32;
+    
   new->op2.type = ASM_OTYPE_ENCODED;
+  new->op2.content = ASM_OP_IMM
+  memcpy(&new->op2.imm, opcode + 1, 4);
+  */
+  new->op1.type = ASM_OTYPE_GENERAL;
+  new->op2.type = ASM_OTYPE_GENERAL;
   operand_rmv_rv(new, opcode + 1, len - 1, proc);
   return (new->len);
 }
