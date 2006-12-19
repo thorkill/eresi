@@ -1,6 +1,6 @@
 /*
 ** 
-** i386.h in 
+** $Id: libasm-i386.h,v 1.5 2006-12-19 02:35:09 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -123,6 +123,10 @@ struct s_asm_proc_i386 {
 #define ASM_PREFIX_ADDSIZE	256
 
 
+/**
+ * Content of the struct s_operand type field
+ */
+
 enum {
   /* no operand				
    */
@@ -230,6 +234,11 @@ enum {
   ASM_OTYPE_ST_7
 } e_asm_operand_type;
 
+/**
+ * Content of the struct s_operand size field
+ *
+ */
+
 enum {
   ASM_OSIZE_NONE,
   ASM_OSIZE_BYTE,
@@ -244,6 +253,10 @@ enum {
   ASM_OSIZE_6BYTES
 } e_asm_operand_size;
 
+
+/**
+ * Currently unsupported.
+ */
 enum {
   ASM_ENC_NONE,
   ASM_ENC_ADDRESS,
@@ -320,6 +333,10 @@ enum {
  *
  **/
 
+/**
+ * 8 bits registers set.
+ */
+
 enum {
   ASM_REG_AL,	/* 000	*/
   ASM_REG_CL,	/* 001	*/
@@ -330,6 +347,10 @@ enum {
   ASM_REG_DH,	/* 110	*/
   ASM_REG_BH	/* 111	*/
 } e_asm_reg8;
+
+/**
+ * 16 bits registers set.
+ */
 
 enum {
   ASM_REG_AX,	/* 000	*/
@@ -342,6 +363,10 @@ enum {
   ASM_REG_DI	/* 111	*/
 } e_asm_reg16;
 
+/**
+ * 32 bits registers set.
+ */
+
 enum e_regset_r32 {
   ASM_REG_EAX,	/* 000	*/
   ASM_REG_ECX,	/* 001	*/
@@ -353,6 +378,10 @@ enum e_regset_r32 {
   ASM_REG_EDI	/* 111	*/
  } e_asm_reg32;
 
+/**
+ * MM registers set.
+ */
+
 enum {
   ASM_REG_MM0,	/* 110	*/
   ASM_REG_MM1,	/* 110	*/
@@ -363,6 +392,9 @@ enum {
   ASM_REG_MM7	/* 110	*/
 } e_asm_regmm;
 
+/**
+ * XMMS registers set.
+ */
 enum {
   ASM_REG_XMM0,	/* 110	*/
   ASM_REG_XMM1,	/* 110	*/
@@ -373,6 +405,10 @@ enum {
   ASM_REG_XMM6,	/* 110	*/
   ASM_REG_XMM7	/* 110	*/
 } e_asm_regxmm;
+
+/**
+ * Segment registers set.
+ */
 
 enum {
   ASM_REG_ES,	/* 000	*/
@@ -386,6 +422,10 @@ enum {
 
 } e_asm_sreg;
 
+/**
+ * Control registers set.
+ */
+
 enum {
   ASM_REG_CR0,	/* 000	*/
   ASM_REG_CR1,	/* 001	*/
@@ -396,6 +436,10 @@ enum {
   ASM_REG_CR6,	/* 110	*/
   ASM_REG_CR7	/* 111	*/
 } e_asm_creg;
+
+/**
+ * Debug registers set
+ */
 
 enum {
   ASM_REG_DR0,	/* 000	*/
@@ -409,13 +453,12 @@ enum {
 } e_asm_dreg;
 
 /**
- * instruction list.
- *
- *
- *
+ * Instruction list.
  * Last instruction must be ASM_BAD
+ * If NOT, this may produce allocation error as ASM_BAD is used to allocate 
+ * size of the instruction label array.
+ * Refer to init_instr_table in tables_i386.c
  */
-
 
 enum asm_instr {
   ASM_NONE,  
@@ -677,7 +720,11 @@ enum asm_instr {
   ASM_LFENCE,
   ASM_MLENCE,
   ASM_SLENCE,
-  
+
+  ASM_WBINVD,
+  ASM_RDMSR,
+  ASM_BTRL,
+
   ASM_PREFETCH_NTA,
   ASM_PREFETCH_T0,
   ASM_PREFETCH_T1,
