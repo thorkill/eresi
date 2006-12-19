@@ -1,5 +1,5 @@
 /*
-** private - do not distribute
+** $Id: tables_i386.c,v 1.5 2006-12-19 02:40:13 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 22:42:50 2002
@@ -23,6 +23,7 @@ int init_instr_table(asm_processor *proc) {
   
   proc->instr_table[ASM_BOUND] = "bound";
   proc->instr_table[ASM_BSWAP] = "bswap";
+  proc->instr_table[ASM_BTRL] = "btrl";
 
   proc->instr_table[ASM_CMPSB] = "cmpsb";
   proc->instr_table[ASM_CMPSD] = "cmpsd";
@@ -147,6 +148,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_ROR] = "ror";
   proc->instr_table[ASM_RCR] = "rcr";
   proc->instr_table[ASM_RETF] = "retf";
+  proc->instr_table[ASM_RDMSR] = "rdmsr";
 
   proc->instr_table[ASM_STORE] = "st";
   proc->instr_table[ASM_STI] = "sti";
@@ -167,9 +169,12 @@ int init_instr_table(asm_processor *proc) {
 
   proc->instr_table[ASM_TEST] = "test";
 
+  proc->instr_table[ASM_XADD] = "xadd";
   proc->instr_table[ASM_XOR] = "xor";
   proc->instr_table[ASM_XCHG] = "xchg";
   proc->instr_table[ASM_XLATB] = "xlatb";
+  
+  proc->instr_table[ASM_WBINVD] = "wbinvd";
   
   /* i386 */
   
