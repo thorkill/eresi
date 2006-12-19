@@ -1,5 +1,5 @@
 /*
-** private - do not distribute
+** $Id: output_ia32.c,v 1.7 2006-12-19 02:42:14 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -15,10 +15,22 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
+/**
+ * Default resolving handler for virtual address
+ * 
+ */
+
 void	asm_resolve_ia32(void *d, u_int val, char *buf, u_int len)
 {
-  sprintf(buf, "0x%x", len);
+  snprintf(buf, len, "0x%x",  val);
 }
+
+/**
+ * Instruction label handler.
+ * Return ia32 instruction label
+ *
+ *
+ */
 
 char	*asm_get_instr_name(asm_instr *i) {
   return (i->proc->instr_table[i->instr]);
@@ -61,7 +73,12 @@ void	output_instr(asm_instr *instr) {
   puts("");
     
 }
-  
+
+/**
+ * Return register ascii string
+ * @param r Register
+ * @param regset Register Set (32 bits registers, 16 bits, control ...)
+ */  
 
 char *get_reg_intel(u_int r, int regset) {
   char	*rsub[8] ={ "al", "cl", "dl", "bl", "ah", "ch", "dh", "bh" };
@@ -99,10 +116,11 @@ char *get_reg_intel(u_int r, int regset) {
 }
 
 
-/*********
- *
- *
- *
+/**
+ * @param instr Pointer to instruction structure
+ * @param num Number of operand to dump
+ * @param addr Virtual address of instruction
+ * @param bufptr Buffer to dump operand to
  */
 
 void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
@@ -277,12 +295,11 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
   }
 }
 
-/**********88
+/**
  *
  *
  *
  */
-
 
 int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
 {
@@ -293,8 +310,10 @@ int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
 
 
 
-/*
-
+/**
+ *
+ *
+ *
  */
 
 char	*asm_ia32_display_instr_att(asm_instr *instr, 
