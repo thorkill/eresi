@@ -1,5 +1,5 @@
 /*
-** private - do not distribute
+** $Id: ei386-b.c,v 1.4 2006-12-19 02:44:32 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Wed Jul 24 19:52:01 2002
@@ -81,6 +81,22 @@ int i386_movzwl_rv_rm2(asm_instr *new, u_char *opcode, u_int len, asm_processor 
   new->op1.type = ASM_OTYPE_GENERAL;
   new->op2.type = ASM_OTYPE_ENCODED;
   operand_rv_rm2(new, opcode + 1, len - 1, proc);
+  return (new->len);
+}
+
+/*
+ <i386 func="i386_btrl" opcode="0xba"/>
+*/
+
+int	i386_btrl(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+{
+  new->len += 1;
+  new->instr = ASM_BTRL;
+  new->op1.type = ASM_OTYPE_ENCODED;
+  new->op1.size = ASM_OSIZE_VECTOR;
+  new->op2.type = ASM_OTYPE_GENERAL;
+  new->op2.size = ASM_OSIZE_VECTOR;
+  operand_rmv_ib(new, opcode + 1, len - 1, proc);
   return (new->len);
 }
 
