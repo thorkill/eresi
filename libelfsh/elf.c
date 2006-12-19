@@ -466,11 +466,14 @@ int elfsh_check_hdr_machine(elfshobj_t *file) {
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
  
+ /** /usr/include/elf.h e_machine may be > 18. 
+  *  disabling this check for the moment.
  if (file->hdr->e_machine > 16) {
    file->hdr->e_machine = ET_NONE;
    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
     "file->hdr->e_machine is not valid", NULL);
  }
+ */
 
    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

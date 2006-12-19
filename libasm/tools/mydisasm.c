@@ -95,6 +95,7 @@ int	main(int ac, char **av) {
   
   switch(arch)
     {
+    case EM_SPARC32PLUS:
     case EM_SPARC:
       asm_init_sparc(&proc);
       break;
@@ -102,7 +103,7 @@ int	main(int ac, char **av) {
       asm_init_i386(&proc);
       break;
     default:
-      printf("unsupported architecture\n");
+      printf("unsupported architecture : %i\n", arch);
       elfsh_unload_obj(obj);
       return (-1);
     }
