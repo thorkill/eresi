@@ -1,5 +1,5 @@
 /**
- * $Id: init_i386.c,v 1.6 2006-12-19 02:45:21 heroine Exp $
+ * $Id: init_i386.c,v 1.7 2006-12-19 10:24:36 heroine Exp $
  *
  */
 #ifndef I386_H_
@@ -377,6 +377,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xa3] = i386_bt_rm_r;
   inter->cisc_i386[0xa4] = i386_shld;
   inter->cisc_i386[0xa5] = i386_shld_rmv_rv_cl;
+  inter->cisc_i386[0xa7] = i386_xstorenrg;
   inter->cisc_i386[0xab] = i386_bts;
   inter->cisc_i386[0xac] = i386_shrd_rmv_rv_ib;
   inter->cisc_i386[0xad] = i386_shrd_rmv_rv_cl;

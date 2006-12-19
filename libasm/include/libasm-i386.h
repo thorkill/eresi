@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: libasm-i386.h,v 1.5 2006-12-19 02:35:09 heroine Exp $
+** $Id: libasm-i386.h,v 1.6 2006-12-19 10:24:36 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -723,6 +723,7 @@ enum asm_instr {
 
   ASM_WBINVD,
   ASM_RDMSR,
+  ASM_XSTORENRG,
   ASM_BTRL,
 
   ASM_PREFETCH_NTA,

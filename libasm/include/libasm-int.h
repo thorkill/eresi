@@ -1,5 +1,5 @@
 /**
- * $Id: libasm-int.h,v 1.5 2006-12-19 02:37:06 heroine Exp $
+ * $Id: libasm-int.h,v 1.6 2006-12-19 10:24:36 heroine Exp $
  *
  *
  */
@@ -428,4 +428,5 @@ int op_addsize(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_wbinvd(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_rdmsr(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_btrl(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_xstorenrg(asm_instr *, u_char *, u_int, asm_processor *);
 #endif

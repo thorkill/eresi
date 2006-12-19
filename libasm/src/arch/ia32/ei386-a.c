@@ -148,6 +148,18 @@ int i386_shld_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor
 }
 
 /*
+  <i386 func="i386_shld_rmv_rv_cl" opcode="0xa7"/>
+*/
+
+int	i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+{
+  new->instr = ASM_XSTORENRG;
+  new->len += 2;
+  return (new->len);
+}
+
+
+/*
   <i386 func="i386_bts" opcode="0xab"/>
  */
 
