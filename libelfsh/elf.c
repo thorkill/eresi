@@ -560,9 +560,9 @@ int		elfsh_load_hdr(elfshobj_t *file)
    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
     "file->hdr->e_shentsize is not valid", -1); 
 
-  elfsh_check_hdr(file);
-
   elfsh_endianize_elfhdr(file->hdr, file->hdr->e_ident[EI_DATA]);
+
+  elfsh_check_hdr(file);
 
 #if defined(ELFSH32)
   if (file->hdr->e_ident[EI_CLASS] != ELFCLASS32)
