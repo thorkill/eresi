@@ -317,6 +317,10 @@ int		vm_run(int ac, char **av)
 
   vm_flush();
 
+#if defined (USE_READLN)
+  vm_log(vm_get_prompt());
+#endif
+
   /* Now run f0r3st */
   return (vm_loop(ac, av));
 }

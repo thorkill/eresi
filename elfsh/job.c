@@ -10,7 +10,7 @@ int		cmd_workspace()
   elfshjob_t	*job;
   u_int		idx;
   u_int		index;
-  hashent_t	*actual;
+  u_short	new = 0;
   char		logbuf[BUFSIZ];
   char		*nl;
   char		*time;
@@ -33,15 +33,14 @@ int		cmd_workspace()
       keys = hash_get_keys(&world.jobs, &keynbr);
       for (index = 0; index < keynbr; index++)
 	{
-	  actual = hash_get(&world.jobs, keys[index]);
-	  job = (elfshjob_t *) actual->data;
+	  job = (elfshjob_t *) hash_get(&world.jobs, keys[index]);
 	  if (vm_own_job(job))
 	    {
 	      time = ctime(&job->createtime);
 	      nl = strchr(time, '\n');
 	      if (nl)
 		*nl = 0x00;
-	      snprintf(logbuf, BUFSIZ - 1, " [%s] %s %c \n", actual->key, 
+	      snprintf(logbuf, BUFSIZ - 1, " [%s] %s %c \n", keys[index], 
 		       time, (job->active ? '*' : ' '));
 	      vm_output(logbuf);
 	      
@@ -69,26 +68,52 @@ int		cmd_workspace()
       
       /* $ workspace name */      
     case 1:
-      if (vm_valid_workspace(world.curjob->curcmd->param[0]))
+      if (!vm_valid_workspace(world.curjob->curcmd->param[0]))
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Incorrect workspace name", -1);
+
+      job = hash_get(&world.jobs, world.curjob->curcmd->param[0]);
+      if (!job)
 	{
-	  job = hash_get(&world.jobs, world.curjob->curcmd->param[0]);
-	  if (!job)
+	  /* create a new workspace */
+	  job = vm_clone_job(world.curjob);
+	  job->name = elfsh_strdup(world.curjob->curcmd->param[0]);
+	  hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);
+	  new = 1;
+	}
+      else
+	{
+	  if (job->active)
 	    {
-	      /* create a new workspace */
-	      job = vm_clone_job(world.curjob);
-	      hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);
+	      snprintf(logbuf, BUFSIZ - 1,
+		       "\n [+] Already in workspace : %s\n\n", world.curjob->curcmd->param[0]);
+	      vm_output(logbuf);
+
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	    }
 	}
-      job = hash_get(&world.jobs, world.curjob->curcmd->param[0]); 
+
       if (vm_own_job(job))
 	{
 	  /* switch */
 	  snprintf(logbuf, BUFSIZ - 1, 
 		   "\n [+] Workspace : %s \n\n", world.curjob->curcmd->param[0]);
 	  vm_output(logbuf);
+
+#if defined (USE_READLN)
+	  /* Add a prompt for return */
+	  vm_log(vm_get_prompt());
+#endif
+
+	  /* Switch to the new job */
 	  vm_switch_job(job);
+
+	  /* Update the screen */
+	  vm_screen_update(new, 0);
+
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
+
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Incorrect workspace name", -1);
 
@@ -101,24 +126,39 @@ int		cmd_workspace()
 /* Switch to the next workspace */
 int		cmd_next_workspace()
 {
-  u_int		index;
+  u_int		index, entrie;
   char	        **keys;
   int		keynbr;
   elfshjob_t	*curjob;
-  elfshjob_t	*next;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   keys = hash_get_keys(&world.jobs, &keynbr);
   if (keynbr <= 1)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Search the current index */
   for (index = 0; index < keynbr; index++)
     {
       curjob = hash_get(&world.jobs, keys[index]);
-      if (vm_own_job(curjob) && curjob != world.curjob)
+      if (vm_own_job(curjob) && curjob == world.curjob)
 	{
-	  //next = hash_get(&world.jobs, keys[index + 1 >= keynbr ? 0 : index + 1]);
-	  vm_switch_job(next);
+	  entrie = index;
+	  break;
+	}
+    }
+
+  /* Search the next entrie */
+  for (entrie = (entrie+1) % keynbr; entrie < keynbr; entrie = (entrie+1) % keynbr)
+    {
+      curjob = hash_get(&world.jobs, keys[entrie]);
+      if (vm_own_job(curjob))
+	{
+	  /* If we found the current job, we made a loop, so we break */
+	  if (curjob == world.curjob)
+	    break;
+
+	  vm_switch_job(curjob);
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 	}
     }

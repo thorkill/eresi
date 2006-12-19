@@ -17,7 +17,7 @@ char	*vm_get_prompt()
       world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER) 
     {
       snprintf(prompt_token, sizeof(prompt_token), 
-	       "%s%s%s%s%s%s%s%s%s ",
+	       "%s%s%s%s%s%s%s%s%s %s ",
 	       vm_colorget("%s", "pspecial", "("),
 	       (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
 		vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
@@ -28,14 +28,15 @@ char	*vm_get_prompt()
 	       vm_colorget("%s", "prelease", ELFSH_RELEASE),
 	       vm_colorget("%s", "pspecial", "-"),
 	       vm_colorget("%s", "pedition", ELFSH_EDITION),
-	       vm_colorget("%s", "pspecial", ")"));
+	       vm_colorget("%s", "pspecial", ") ~"),
+	       vm_colorget("%s", "psname", world.curjob->name));
+      vm_endline();
 
 #if defined(USE_READLN)
       /* Prompt on readline need some modifications */
       vm_rl_update_prompt(prompt_token, sizeof(prompt_token));
 #endif
 
-      vm_endline();
       return prompt_token;
     }
 
@@ -996,78 +997,74 @@ int		vm_install_clearscreen()
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-int		vm_screen_switch()
+/* Update the screen depending of the actual job */
+int		vm_screen_update(u_short new, u_short prompt_display)
 {
-  unsigned int	    var = 0x42424242;
-  char		    buf[BUFSIZ * 4];
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (!cmd_next_workspace())
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-#if defined(USE_READLN)
-  world.curjob->io.buf = NULL;
-#endif
-
-  vm_flush();
 
   /* clear screen */
   vm_output_nolog("\033[2J");
   vm_output_nolog("\033[0;0H");
 
-  /*
-  if (rl_ctrll)
-    rl_ctrll(1, (int) CTRL('l'));
-  */
-  //world.curjob->io.output(world.curjob->screen.buf);
-  
-  //printf("head : %x tail %x\n", world.curjob->screen.head, world.curjob->screen.tail);
-
 #if defined(USE_READLN)
-  if (world.curjob->screen.buf == NULL)
+  if (new)
+    world.curjob->io.buf = NULL;
+#endif
+
+  vm_flush();
+
+  /* Rebuild the current screen */
+  if (world.curjob->screen.buf != NULL)
     {
-      vm_output_nolog(vm_get_prompt());
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      vm_output_nolog(world.curjob->screen.head);
+      if (world.curjob->screen.head >= world.curjob->screen.tail)
+	{
+	  vm_output_nolog(world.curjob->screen.head);
+	  vm_output_nolog(world.curjob->screen.buf);
+	}
+    }
+  
+#if defined (USE_READLN)
+  if (new)
+    {
+      /* Setup on new screen */
+      vm_log(vm_get_prompt());
+      rl_on_new_line();
+
+      world.curjob->io.savebuf = NULL;
+    } 
+  else
+    {
+      /* Prompt already here */
+      if (!prompt_display)
+	rl_on_new_line_with_prompt();
+      rl_refresh_line(0, 0);
+    }
+      
+  rl_clear_message();
+
+  if (!new)
+    {
+      /* Restore the buffer */
+      if (world.curjob->io.savebuf)
+	strcpy(rl_line_buffer, world.curjob->io.savebuf);
+      rl_point = world.curjob->io.rl_point;
+      rl_end = world.curjob->io.rl_end;
     }
 
-  if (world.curjob->screen.head < world.curjob->screen.tail)
-    {
-      //  printf("head < tail\n"); 
-      snprintf(buf, world.curjob->screen.tail - world.curjob->screen.head, 
-	       "%s", world.curjob->screen.head);
-    }
-  else 
-    {
-      //printf("head => tail\n");
-      snprintf(buf, world.curjob->screen.x * world.curjob->screen.y 
-	       - (world.curjob->screen.head - world.curjob->screen.buf), 
-	       "%s", world.curjob->screen.head);
-      strcat(buf, world.curjob->screen.buf);
-    }
-#endif  
+  rl_redisplay();
+#endif
 
-  vm_output_nolog(buf);
-  vm_output_nolog(" ");
-
-
-  /*
-  {
-    char buf[256];
-    snprintf(buf, 256, "\033[00;01;35m%#x\033[00m", world.curjob);
-    vm_output_nolog(buf);
-  }
-  */
-
-  //  vm_output_nolog(" ");
-
-  //rl_forced_update_display(); 
-
-  if (var != 0x42424242)
-    {
-      printf("Buffer overflow detected on screen buffer \n");
-      exit(0);
-    }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+int		vm_screen_switch()
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (cmd_next_workspace() <= 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_screen_update(0, 1));
 }

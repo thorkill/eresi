@@ -69,6 +69,7 @@ int		vm_display_prompt()
 	  (world.state.vm_net && world.curjob->io.type != ELFSH_IOSTD)) ?
 	 vm_get_prompt() : "");
   vm_output(buf);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -76,8 +77,8 @@ int		vm_display_prompt()
 /* Reset lines counters and ignore output state */
 int		vm_flush()
 {
-  int  lines = 50;
-  int  cols = 160;
+  int  lines = 80;
+  int  cols = 200;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -89,8 +90,6 @@ int		vm_flush()
 #ifdef USE_READLN
   rl_get_screen_size(&lines, &cols);
 #endif
-
-  //printf("rl_get_screen_size x : %d y : %d\n", lines, cols);
 
   /* We * 2 because color take a lot of place !!! */
   world.curjob->io.outcache.lines = lines * 2;
@@ -145,6 +144,7 @@ int		vm_output(char *str)
     {
       vm_flush();
       world.curjob->io.output("-- press enter for more ('q/n' to quit / next) --\n");
+      vm_log("-- press enter for more ('q/n' to quit / next) --\n");
 
       /* We decided to discard further output (until next vm_flush) */
       if ((read(world.curjob->io.input_fd, &c, 1) == 1) && (c == 'q' || c == 'n'))
@@ -152,6 +152,7 @@ int		vm_output(char *str)
 	  if (c == 'q')
 	    world.curjob->io.outcache.ignore = 1;
 	  world.curjob->io.output("\n");
+	  vm_log("\n");
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  
 			     (c == 'q' ? -1 : -2));
 	}
@@ -199,10 +200,24 @@ char		**vm_input(int *argc)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	 ((char **) ELFSH_VOID_INPUT));
 
-#if defined(USE_READLN)
   if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT &&
       world.curjob->io.type == ELFSH_IOSTD)
     {
+#if defined(USE_READLN)
+      if (world.curjob->io.buf[0] != '\0')
+	{
+	  vm_log(buf);
+	  vm_log("\n\n");
+	}
+      else
+	{
+	  vm_log("\n");
+	}
+#else
+      vm_log(buf);
+      vm_log("\n\n");
+#endif
+#if defined(USE_READLN)
 #if 0
       HISTORY_STATE	*state;
       HIST_ENTRY	*entry;
@@ -219,8 +234,6 @@ char		**vm_input(int *argc)
 
 #endif
       add_history(buf);
-      vm_log(buf);
-      vm_log("\n");
       using_history();
 #if 0
       state = history_get_history_state();
@@ -241,8 +254,8 @@ char		**vm_input(int *argc)
 	}
       printf("-------------\n\n");
 #endif
-    }
 #endif
+    }
 
   /* Save the line for future references */
   if (world.curjob->oldline)
@@ -371,6 +384,7 @@ int		vm_initio()
   world.initial = world.curjob = initial;
   hash_init(&world.jobs, 11);
   hash_add(&world.jobs, "local", initial);
+  initial->name = elfsh_strdup("local");
   hash_init(&initial->loaded, 51);
   hash_init(&initial->dbgloaded, 11);
   elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, vm_colorfieldstr,
@@ -747,7 +761,6 @@ int                     vm_select()
 		      /* restore prompt that will be display
 		       * on next  rl_forced_update_display()
 		       * or rl_callback_read_char() */
-		      //vm_log("\n");
 		      rl_restore_prompt();
 		      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
                     }

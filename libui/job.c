@@ -30,9 +30,7 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
   new->sourced        = 0;
   new->oldline        = NULL;
   
-#if defined(USE_READLN)
   new->screen.buf = new->screen.tail = new->screen.head = NULL;
-#endif
 
   for (i = 0; i < ELFSH_MAX_SOURCE_DEPTH; i++)
     {
@@ -47,12 +45,25 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
 void		vm_switch_job(elfshjob_t      *job)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
 #if defined(USE_READLN)
+  /* Save the active buffer line */
+  if (world.curjob->io.savebuf)
+    XFREE(world.curjob->io.savebuf);
+  world.curjob->io.savebuf = elfsh_strdup(rl_line_buffer);
   world.curjob->io.buf = NULL;
+  world.curjob->io.rl_point = rl_point;
+  world.curjob->io.rl_end = rl_end;
 #endif
+
   world.curjob->active = 0;
   world.curjob = job;
   job->active = 1;
+
+#if defined(USE_READLN)
+  rl_set_prompt(vm_get_prompt());
+#endif
+
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

@@ -102,11 +102,15 @@ static void		logtofile(char *str)
 void			vm_log(char *str)
 {
   int			check = 0, size = 0;
+  char			*upper;
+  char			*tmp = NULL;
+  char 			*t_tail, *t_head, *t_end;
+  char			buf[BUFSIZ * 4];
 
   ELFSH_NOPROFILE_IN();
 
   /* Nothing possible */
-  if (!str || !world.curjob)
+  if (!str || !*str || !world.curjob)
     ELFSH_NOPROFILE_OUT();
 
   logtofile(str);
@@ -128,29 +132,50 @@ void			vm_log(char *str)
 
       world.curjob->screen.head = world.curjob->screen.tail =
       world.curjob->screen.buf;
-
     }
   /* reallocate the screen buffer when term size changes */
   else if (world.curjob->screen.x != world.curjob->io.outcache.cols ||
 	   world.curjob->screen.y != world.curjob->io.outcache.lines)
     {
-      
-      XFREE(world.curjob->screen.buf);
+      tmp = world.curjob->screen.buf;
       XALLOC(world.curjob->screen.buf,
 	     world.curjob->io.outcache.lines *
 	     world.curjob->io.outcache.cols + 1, );
 
+      /* Save ex pointers */
+      t_head = world.curjob->screen.head;
+      t_tail = world.curjob->screen.tail;
+      t_end = tmp + (world.curjob->screen.x * world.curjob->screen.y);
+
+      /* Update screen */
       world.curjob->screen.x = world.curjob->io.outcache.cols;
       world.curjob->screen.y = world.curjob->io.outcache.lines;
 
+      /* Reset pointers */
       world.curjob->screen.head = world.curjob->screen.tail =
 	world.curjob->screen.buf;
+
+      /* Refill the screen using vm_log() */
+      if (t_head < t_tail)
+	vm_log(t_head);
+      else
+	{
+	  snprintf(buf, t_end - t_head, "%s", t_head);
+	  vm_log(buf);
+	  snprintf(buf, BUFSIZ * 4 - 1, "%s", t_tail);
+	  vm_log(buf);
+	}
+      
+      /* Free at the end */
+      XFREE(tmp);
     }
 
 #define scrsize (world.curjob->io.outcache.cols * world.curjob->io.outcache.lines)
 #define buf	world.curjob->screen.buf
 #define tail	world.curjob->screen.tail
 #define head	world.curjob->screen.head
+
+  //printf("BUF = %08x HEAD = %08x TAIL = %08x\n", buf, head, tail);
 
   /* We could have to loop many time before full fill all the buffer */
   for (size = strlen(str), check = 0; size > 0; size -= check, str += check)
@@ -192,7 +217,6 @@ void			vm_log(char *str)
 
 	  /* Adjust head pointer */
 	  head = buf + ((tail - buf) + check)%scrsize;
-	  snprintf(tail, check, "%s", str);
 	  tail += check;
 	}
     }

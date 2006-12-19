@@ -537,6 +537,9 @@ typedef struct           s_elfsh_io
   int           new;                   /* 0 if already used */
 #if defined(USE_READLN)
   char	        *buf;                  /* readline line */
+  char		*savebuf;
+  int		rl_point;
+  int		rl_end;
 #endif
   elfshoutbuf_t	outcache;
 }                     elfshio_t;
@@ -564,8 +567,8 @@ typedef struct       s_socket
 /* Printed screen */
 typedef struct        s_screen
 {
-  u_char              x;              /* Screen height */
-  u_char              y;              /* Screen width */
+  unsigned int        x;              /* Screen height */
+  unsigned int        y;              /* Screen width */
   char                *buf;           /* Screen buffer */
   char                *head;          /* Buffer's beginning */
   char                *tail;          /* Buffer's end */
@@ -600,6 +603,8 @@ typedef struct        s_job
 #define       ELFSH_JOB_LOGGED (1 << 0)
   u_char              state;            /* Job state flags */
   asm_processor*      proc;		/* Processor structure */
+  
+  char		      *name;		/* Name of the job */
 }                     elfshjob_t;
 
 
@@ -1194,6 +1199,7 @@ elfshjob_t	*vm_clone_job(elfshjob_t *job);
 int		vm_add_script_cmd(char *dirstr);
 int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();
+int		vm_screen_update(u_short new, u_short prompt_display);
 int		vm_screen_switch();
 
 void		wait4exit(void *);
