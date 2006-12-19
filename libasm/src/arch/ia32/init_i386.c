@@ -1,4 +1,7 @@
-/* auto generated source file on Tue Apr 15 23:54:37 2003 */
+/**
+ * $Id: init_i386.c,v 1.6 2006-12-19 02:45:21 heroine Exp $
+ *
+ */
 #ifndef I386_H_
 #define I386_h_
 
@@ -306,11 +309,13 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_set[0xff] = op_indir_rmv;
   inter->cisc_i386[0x00] = op_group6;
   inter->cisc_i386[0x01] = op_group7;
+  inter->cisc_i386[0x09] = i386_wbinvd;
   inter->cisc_i386[0x0b] = op_ud2a;
   inter->cisc_i386[0x20] = i386_mov_rm_cr;
   inter->cisc_i386[0x22] = i386_mov_cr_rm;
   inter->cisc_i386[0x23] = i386_mov_dr_rm;
   inter->cisc_i386[0x31] = i386_rdtsc;
+  inter->cisc_i386[0x32] = i386_rdmsr;
   inter->cisc_i386[0x40] = i386_cmovo;
   inter->cisc_i386[0x41] = i386_cmovno;
   inter->cisc_i386[0x42] = i386_cmovb;
@@ -382,6 +387,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xb3] = op_btr_rmv_rv;
   inter->cisc_i386[0xb6] = i386_movzbl_rv_rmb;
   inter->cisc_i386[0xb7] = i386_movzwl_rv_rm2;
+  inter->cisc_i386[0xba] = i386_btrl;
   inter->cisc_i386[0xbc] = i386_bsf;
   inter->cisc_i386[0xbd] = i386_bsr_rv_rmb;
   inter->cisc_i386[0xbe] = i386_movsbl_rv_rmb;
