@@ -1,5 +1,5 @@
 /*
-** $Id: tables_i386.c,v 1.6 2006-12-19 10:24:36 heroine Exp $
+** $Id: tables_i386.c,v 1.7 2006-12-19 11:03:22 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 22:42:50 2002
@@ -173,8 +173,10 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_XOR] = "xor";
   proc->instr_table[ASM_XCHG] = "xchg";
   proc->instr_table[ASM_XLATB] = "xlatb";
-  proc->instr_table[ASM_XSTORENRG] = "xstorenrg";
-  
+  proc->instr_table[ASM_XSTORERNG] = "xstore-rng";
+  proc->instr_table[ASM_XCRYPTCBC] = "xcrypt-cbc";
+  proc->instr_table[ASM_XCRYPTCFB] = "xcrypt-cfb";
+  proc->instr_table[ASM_XCRYPTOFB] = "xcrypt-ofb";
   
   proc->instr_table[ASM_WBINVD] = "wbinvd";
   
