@@ -1,5 +1,5 @@
 /*
-** Author : <sk at devhell dot org>  
+** $Id: i386-0.c,v 1.3 2006-12-19 02:46:19 heroine Exp $
 ** Started : Sat Jun  1 03:13:28 2002
 ** Updated : Thu Apr  8 01:37:10 2004
 */

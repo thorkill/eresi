@@ -1,4 +1,5 @@
 /*
+** $Id: operand_ia32.c,v 1.3 2006-12-19 02:46:19 heroine Exp $
 **
 ** Author  : <sk at devhell dot org>
 ** Started : Tue May 28 13:06:39 2002

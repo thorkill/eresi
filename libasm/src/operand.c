@@ -1,5 +1,5 @@
 /*
-** 
+** $Id: operand.c,v 1.2 2006-12-19 02:46:19 heroine Exp $
 ** operand.c in 
 ** 
 ** Author  : <kahmm@altdev.net>

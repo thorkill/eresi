@@ -1,5 +1,5 @@
 /*
-** this is private - do not distribute
+** $Id: i386-c.c,v 1.2 2006-12-19 02:46:19 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002

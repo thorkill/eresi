@@ -1,5 +1,5 @@
 /*
-** private - do not distribute
+** $Id: i386-f.c,v 1.3 2006-12-19 02:46:19 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 17:06:33 2002
