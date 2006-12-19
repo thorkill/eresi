@@ -1,5 +1,5 @@
 /*
-** private - do not distribute
+** $Id: ei386-0.c,v 1.2 2006-12-19 02:43:17 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Feb 17 11:26:17 2003
@@ -46,12 +46,26 @@ int	op_group6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   return (new->len);
 }
 
+/**
+ *
+ *
+ */
+
+int	i386_wbinvd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+{
+  new->len += 1;
+  new->instr = ASM_WBINVD;
+  return (new->len);
+
+}
+
 /*
   <i386 func="op_group7" opcode="0x01"/>
 */
 
 
-int	op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int	op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   struct s_modrm	*modrm;
   
   new->len += 1;
@@ -95,7 +109,8 @@ int	op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   <i386 func="op_ud2a" opcode="0x0b"/>
  */
 
-int	op_ud2a(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int	op_ud2a(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   new->len += 1;
   new->instr = ASM_UD2A;
   return (new->len);
