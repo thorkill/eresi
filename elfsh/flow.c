@@ -288,13 +288,13 @@ int			cmd_flow()
 	  ilen = 1;
     }
 
-  vm_output(" [*] Flow analysis done \n\n");
-  
-  //btree_debug(binary_blks->btree, "flow.gvz", 0);
+  vm_output(" [*] Flow analysis done \n");
 
   if (mjr_store_blocks(world.curjob->current, binary_blks, 1) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store blocks in file", -1);    
+
+  vm_output(" [*] Flow analysis stored \n\n");
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }

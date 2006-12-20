@@ -176,7 +176,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.72"
-#define	ELFSH_RELEASE		"a1"
+#define	ELFSH_RELEASE		"a2"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -210,9 +210,8 @@ char prompt_token[512];
 				"\033[00m " 
 
 /* Be original, do your own */
-//#define	  ELFSH_PROMPT ELFSH_CREW_PROMPT
-#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
-
+#define	  ELFSH_PROMPT ELFSH_CREW_PROMPT
+//#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
 
 #define ELFSH_NAME		"ELF shell"
 
@@ -239,7 +238,7 @@ char prompt_token[512];
 #define BLK_COLOR_JUMP	GVZ_COLOR_BLACK
 /* END XXX */
 
-/* For elfsh/elfsh/disasm.c:display_object() */
+/* For vm_display_object() */
 #define	ELFSH_HEXA_VIEW		0
 #define	ELFSH_DISASM_VIEW	1
 
@@ -989,7 +988,7 @@ int		vm_gethexa(u_int index, u_int argc, char **argv);
 int		vm_getvarparams(u_int index, u_int argc, char **argv);
 
 /* Libasm resolve handlers */
-void		asm_do_resolve(void *data, u_int vaddr, char *, u_int);
+void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);
 char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
@@ -1028,7 +1027,7 @@ int             vm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id,
 int             vm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
 
 /* Disassembling and hexadecimal view functions */
-u_int		vm_display_instr(int, u_int, u_int, u_int, u_int,
+u_int		vm_display_instr(int, u_int, elfsh_Addr, u_int, u_int,
 				 char *, u_int, char *);
 int		vm_display_section(elfshsect_t *s, char *name, elfshlist_t *re);
 int		vm_match_sht(elfshobj_t *file, elfshsect_t *l, elfshlist_t *actual);

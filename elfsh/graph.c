@@ -138,7 +138,7 @@ int		cmd_graph(void)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot create graphviz file", -1);
   
-  /* Get parameters */
+  /* Gxoet parameters */
   if ((symtab = elfsh_get_metasym_by_name(world.curjob->current,
 					  world.curjob->curcmd->param[1])))
     min = symtab->st_value;
@@ -158,6 +158,9 @@ int		cmd_graph(void)
   if (!(blk_list = sect->altdata))
     mjr_load_blocks(world.curjob->current, &blk_list);
 
+  if (blk_list == NULL)
+    printf("blk_list is NULL ! \n");
+
   snprintf(buf, sizeof(buf),"digraph prof {\n"
 	  "ratio = fill; node [style=filled];\n");
   write(fd, buf, strlen(buf));
@@ -173,10 +176,19 @@ int		cmd_graph(void)
 	continue;
       blk = sect->data + symtab[index].st_value;
       if (!blk)
-	break;
+	{
+	  printf("No BLOCK found at offset %08X \n", blk);
+	  continue;
+	}
       iblk = mjr_block_get_by_vaddr(blk_list, blk->vaddr, 0);
       if (!iblk)
-	break;
+	{
+	  //printf("No IBLOCK found at addr %08X \n", blk->vaddr);
+	  putchar('.');
+	  continue;
+	}
+      else
+	printf("\nIBLOCK FOUND at %08X \n", blk->vaddr);
 
       /* Check if block is inside interval parameter
       ** Parameter type: min:max | min:+len

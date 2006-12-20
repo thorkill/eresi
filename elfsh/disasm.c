@@ -168,8 +168,8 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr,
 /* Display An instruction */
 /* Runtime compatible */
 u_int		vm_display_instr(int fd, u_int index, elfsh_Addr vaddr, 
-			      u_int foffset, u_int size, char *name, 
-			      u_int nindex, char *buff)
+				 u_int foffset, u_int size, char *name, 
+				 u_int nindex, char *buff)
 			      
 {
   char		*s;

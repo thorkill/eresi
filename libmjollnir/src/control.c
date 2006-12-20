@@ -124,12 +124,12 @@ void			mjr_trace_control(mjrcontext_t	*context,
     {
 
       /* previous block is finished
-	 search current block by vaddr if previously created	
-	 if found, set size to 0 as we are going to disassemble it
-	 if not found, create a new block unless instruction is a NOP
-	 -this is to escape some padding in begining of .text section-
-	 if (g_prevaddr is not null, then, new block)
-	 */
+      ** search current block by vaddr if previously created	
+      ** if found, set size to 0 as we are going to disassemble it
+      ** if not found, create a new block unless instruction is a NOP
+      ** -this is to escape some padding in begining of .text section-
+      ** if (g_prevaddr is not null, then, new block)
+      */
       if ((g_curblock = mjr_block_get_by_vaddr(*blk_list, vaddr, 0)))
 	g_curblock->size = 0;
       else 
@@ -141,11 +141,11 @@ void			mjr_trace_control(mjrcontext_t	*context,
     }
   
   /* 
-     If previous block is not finished, search for a block which begin at current
-     virtual address. If found, then current instruction is the first of a 
-     previously detected block. 
-     
-     NOTE: this may help in obfuscated code detection
+  ** If previous block is not finished, search for a block which begin at current
+  ** virtual address. If found, then the current instruction is the first of a 
+  ** previously detected block. 
+  **
+  ** NOTE: this may help in obfuscated code detection
   */
   else if ((tmp = mjr_block_get_by_vaddr(*blk_list, vaddr, 0))) 
     {

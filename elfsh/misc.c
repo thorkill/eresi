@@ -17,7 +17,7 @@ char	*vm_get_prompt()
       world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER) 
     {
       snprintf(prompt_token, sizeof(prompt_token), 
-	       "%s%s%s%s%s%s%s%s%s %s ",
+	       "%s%s%s%s%s%s%s%s%s%s%s ",
 	       vm_colorget("%s", "pspecial", "("),
 	       (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
 		vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
@@ -28,8 +28,9 @@ char	*vm_get_prompt()
 	       vm_colorget("%s", "prelease", ELFSH_RELEASE),
 	       vm_colorget("%s", "pspecial", "-"),
 	       vm_colorget("%s", "pedition", ELFSH_EDITION),
-	       vm_colorget("%s", "pspecial", ") ~"),
-	       vm_colorget("%s", "psname", world.curjob->name));
+	       vm_colorget("%s", "pspecial", "@"),
+	       vm_colorget("%s", "psname", world.curjob->name),
+	       vm_colorget("%s", "pspecial", ")"));
       vm_endline();
 
 #if defined(USE_READLN)

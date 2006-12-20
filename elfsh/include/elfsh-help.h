@@ -137,7 +137,8 @@
 #define	HLP_SETGVL              "Set graph verbosity level \n\n\t"CMD_SETGVL" <0-5> \n"
 #define	HLP_INSPECT	        "Disassemble block at symbol/address\n"
 #define HLP_FLOWJACK	        "Hijack basic block reference from sym1 to sym2\n"
-#define HLP_ADDGOTO	        "\t"CMD_ADDGOTO" <vaddr> <func_addr>\n"
+#define HLP_ADDGOTO	        "\t"CMD_ADDGOTO" <vaddr> <func_addr>\n\n\t" \
+				"Inform elfsh about the location and value of a function pointer\n"
 #define	HLP_UNSTRIP		"Reconstruct symbol table with original name when possible"
 #define	HLP_RENAME		"Rename a symbol with a new supplied name"
 #define	HLP_FLOWTEST		"Test command for graph analysis features"

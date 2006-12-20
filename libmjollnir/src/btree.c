@@ -116,30 +116,54 @@ void		*btree_find_elem(btree_t *root,
     return (NULL);
   ret = match(root->elem, ptr);
   if (!ret)
-    return ((void *) ret);
+    //return ((void *) ret);
+    return (ptr);
   else if (ret > 0)
     return (btree_find_elem(root->right, match, ptr));
   else
     return (btree_find_elem(root->left, match, ptr));
 }
 
-/**
+
+/*
  * browse tree and call function apply on each element.
  * ptr is a pointer passed as second argument of apply
- *
  */
-
 void	btree_browse_prefix(btree_t *root, int (*apply)(void *, void *), void *ptr)
 {
   if (root)
     {
-      apply(root->elem, ptr);
+      if (apply(root->elem, ptr) != 0)
+	{
+	  fprintf(stderr, "apply handler returned != 0, backtracking\n");
+	  fflush(stdout);
+	  return;
+	}
+      else
+	{
+	  fprintf(stderr, "apply returned 0 \n");
+	  fflush(stdout);
+	}
+
       if (root->left)
-	btree_browse_prefix(root->left, apply, ptr);
+	{
+	  printf("Going on the left of %08X \n", 
+		 ((elfshiblock_t *) root->elem)->vaddr);
+	  btree_browse_prefix(root->left, apply, ptr);
+	  printf("Back from the left of %08X \n", 
+		 ((elfshiblock_t *) root->elem)->vaddr);
+	}
       if (root->right)
-	btree_browse_prefix(root->right, apply, ptr);
+	{
+	  printf("Going on the right of %08X \n", 
+		 ((elfshiblock_t *) root->elem)->vaddr);
+	  btree_browse_prefix(root->right, apply, ptr);
+	  printf("Going on the right of %08X \n", 
+		 ((elfshiblock_t *) root->elem)->vaddr);
+	}
     }
 }
+
 
 
 void	btree_browse_infix(btree_t *root, int (*apply)(void *, void *), void *ptr)
@@ -173,6 +197,7 @@ void	btree_browse_suffix(btree_t *root, int (*apply)(void *, void *), void *ptr)
 
 void	btree_free(btree_t *root, int mode)
 {
+  printf("Calling free on block %08X \n", ((elfshiblock_t *)root->elem)->vaddr);
   if (root)
     {
       if (mode)
@@ -187,7 +212,6 @@ void	btree_free(btree_t *root, int mode)
  *
  *
  */
-
 int	btree_debug_node(void *elem, void *ptr, btree_t *root)
 {
   struct s_debug	*opt;

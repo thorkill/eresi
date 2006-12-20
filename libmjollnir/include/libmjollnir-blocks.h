@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-blocks.h,v 1.7 2006-12-12 10:34:21 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.8 2006-12-20 00:22:54 may Exp $
  *
  */
 
@@ -99,16 +99,15 @@ typedef struct		s_iblock
   u_int			vaddr;	/* block starting virtual address	*/
   u_int			size;	/* block size				*/
   struct s_caller	*caller;/* linked list of invvoking instr.      */
+  btree_t		*btree; /* Left and right of the block          */
 
   u_int			altern;	/* vaddr of alternate path		*/
   u_int			altype; /* alternative path invokation type	*/
-
   u_int			contig; /* vaddr of next block if continuing	*/
-  struct s_iblock	*next;
-  btree_t		*btree;
 
-  int			passed;
 }			elfshiblock_t;
+
+
 
 /* Concrete header of block representation */
 /* as it is stored in .elfsh.control section */

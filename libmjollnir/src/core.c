@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: core.c,v 1.11 2006-12-12 10:34:21 may Exp $
+ * $Id: core.c,v 1.12 2006-12-20 00:22:54 may Exp $
  *
  */
 #include "libmjollnir.h"
@@ -57,7 +57,7 @@ int		mjr_analyse(mjrsession_t *sess,int flags)
 
 
 /* This function will find calls including calls trought a pointer */
-int		 mjr_find_calls(mjrsession_t *sess,char *section_name) 
+int		 mjr_find_calls(mjrsession_t *sess, char *section_name) 
 {
   
   elfshsect_t    *sct;

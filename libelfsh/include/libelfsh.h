@@ -251,7 +251,7 @@
 
 #define		ELFSH_TRACE_MAX_ARGS		30
 
-#define		STT_BLOCK			(STT_NUM + 1)
+#define		STT_BLOCK			(STT_NUM)
 
 
 #define	DUMPABLE(sym)		(elfsh_get_symbol_type(sym) == STT_FUNC   || \

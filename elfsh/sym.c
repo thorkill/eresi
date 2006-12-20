@@ -59,7 +59,7 @@ int		ds(elfshobj_t	*file,
       /* Retreive names */
       typenum = elfsh_get_symbol_type(table + index);
       bindnum = elfsh_get_symbol_bind(table + index);
-      type = (char *) (typenum >= ELFSH_SYMTYPE_MAX ? 
+      type = (char *) (typenum > ELFSH_SYMTYPE_MAX ? 
 		       vm_build_unknown(type_unk, "type", typenum) : 
 		       elfsh_sym_type[typenum].desc);
       bind = (char *) (bindnum >= ELFSH_SYMBIND_MAX ?
@@ -91,7 +91,8 @@ int		ds(elfshobj_t	*file,
 					   table[index].st_value));
 					
       if (sect && sect->shdr->sh_addr != table[index].st_value)
-	sprintf(off, " + %s", vm_colornumber("%u", (u_int) (table[index].st_value - sect->shdr->sh_addr)));
+	sprintf(off, " + %s", vm_colornumber("%u", 
+					     (u_int) (table[index].st_value - sect->shdr->sh_addr)));
       else
 	*off = '\0';
 

@@ -1,9 +1,10 @@
 /*
 ** blocks_flow.c in libmjollnir for elfsh
 ** 
-** Author  : <sk at devhell dot org>
-** Started : Thu May 29 20:39:14 2003
-** Updated : Fri Nov 28 01:09:47 2003
+** Authors : sk, thorkill, mayhem
+**
+** Started : Thu May 29 20:39:14 2003 sk
+** Updated : Fri Dec 15 01:09:47 2006 mayhem
 */
 #include "libmjollnir.h"
 
@@ -145,51 +146,66 @@ int		 mjr_block_is_funcstart(elfshiblock_t *blk)
 
 
 /* Create the block information to be saved in file */
-int			mjr_save_block(elfshiblock_t *cur, void *opt)
+int			mjr_save_block(elfshiblock_t *cur, elfshbuf_t *buf)
 {
   u_int		        blen;
   int			is_func;
   char			buffer[24];
-  elfshbuf_t		*buf;
   elfshcaller_t		*cal;
   elfsh_Sym		bsym;
+  elfsh_Sym		*sym;
   elfshblk_t		*curblock;
   elfshblkref_t		*blockref;
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  buf = (struct s_buf *) opt;
+  /* 
+  ** If that block was already allocated we should not allocate it
+  ** again, since this function is called only on completely built 
+  ** graphs and not graph beeing built, so there is no allocation size 
+  ** change unless the control section was removed, and then its the first
+  ** time the block is beeing allocated in the new section instance -may  
+  */
+  snprintf(buffer, sizeof (buffer), "block_%08x", cur->vaddr);
+  sym = elfsh_get_symbol_by_name(buf->obj, buffer);
+  if (sym)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+
+  printf("Saving block at addr %s \n", buffer);
+
+  /* Else insert the block in the global buffer for the .control section */
   if (!buf->data) 
     {
-      buf->allocated = 4096;
-      buf->data = elfsh_malloc(4096);
+      buf->allocated = getpagesize();;
+      buf->data = elfsh_malloc(buf->allocated);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + sizeof (elfshblk_t)))
     {
-      buf->data = elfsh_realloc(buf->data, buf->allocated + 4096);
-      buf->allocated += 4096;
+      buf->allocated += getpagesize();
+      buf->data = elfsh_realloc(buf->data, buf->allocated);
     }
   
   is_func = 0;
   blen = sizeof (elfshblk_t);
   
   curblock = (elfshblk_t *) (buf->data + buf->maxlen);
-  curblock->vaddr = cur->vaddr;
+  curblock->vaddr  = cur->vaddr;
   curblock->contig = cur->contig;
   curblock->altern = cur->altern;
-  curblock->size = cur->size;
+  curblock->size   = cur->size;
   curblock->altype = cur->altype;
 
-  snprintf(buffer, sizeof (buffer), "block_%08x", cur->vaddr);
-    
-  /* For each caller, add a new blcok reference to section */
-  for (cal = cur->caller; cal; cal = cal->next) 
+  /* For each caller, add a new block reference to section */
+  int index = 0;
+  for (cal = cur->caller; cal; cal = cal->next, index++) 
     {
+      printf("index = %u and call = %08X \n", index, (unsigned int) cal);
+
       if (buf->allocated  < (buf->maxlen + blen + sizeof (elfshblkref_t)))
 	{
-	  buf->data = elfsh_realloc(buf->data, buf->allocated + 4096);
-	  buf->allocated += 4096;
+	  buf->allocated += getpagesize();
+	  buf->data = elfsh_realloc(buf->data, buf->allocated);
 	}
       blockref = (elfshblkref_t *) (buf->data + buf->maxlen + blen);
       blockref->vaddr = cal->vaddr;
@@ -199,10 +215,11 @@ int			mjr_save_block(elfshiblock_t *cur, void *opt)
 	  is_func = 1;
 	  snprintf(buffer, sizeof (buffer), "function_%08x", cur->vaddr);
 	} 
-      // elfsh_append_data_to_section(sect, &blockref, sizeof (elfshblkref_t));
       blen += sizeof (elfshblkref_t);
+      putchar('.');
     }
-  
+
+  /* Then we create the symbol for the bloc and returns */
   bsym = elfsh_create_symbol(buf->maxlen, blen, STT_BLOCK, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
   buf->maxlen += blen;
@@ -223,24 +240,29 @@ int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  printf("Calling store blocks ! \n");
+
   /* For each block, insert a new STT_BLOCK symbol 
   ** and associated block in data of section */
   sect = elfsh_get_section_by_name(obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (sect)
     elfsh_remove_section(obj, ELFSH_SECTION_NAME_CONTROL);
   
-  buf.allocated = 0;
-  buf.maxlen = 0;
+  buf.allocated     = 0;
+  buf.maxlen        = 0;
   buf.block_counter = 0;
-  buf.data = 0;
-  buf.obj = obj;
+  buf.data          = 0;
+  buf.obj           = obj;
+
   if (mode)
     btree_browse_prefix(blist->btree, (void *) mjr_save_block, &buf);
 
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
   sect->altdata = blist;
-  
+
+  printf(" [*] Saving control section of %u bytes \n", buf.maxlen);
+
   err = elfsh_insert_unmapped_section(obj, sect, shdr, buf.data);
   if (err < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -252,6 +274,8 @@ int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist,
 
 
 /* Reset the passed flag in all blocks of the list */
+// NEVER CALLED !! to remove
+/*
 void		mjr_block_clean_passed(elfshiblock_t *list) 
 {
   elfshiblock_t	*cur;
@@ -261,6 +285,7 @@ void		mjr_block_clean_passed(elfshiblock_t *list)
     cur->passed = 0;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, );
 }
+*/
 
 /* Create a new block */
 elfshiblock_t	*mjr_block_create(u_int vaddr, u_int size) 
@@ -278,14 +303,12 @@ elfshiblock_t	*mjr_block_create(u_int vaddr, u_int size)
 /* Print block */
 void		mjr_block_dump(elfshiblock_t *b) 
 {
-  printf("[B]=(%08x) [V]=(%08x) sz=(%04u) [N]=(%08x)\n",
-	 (int) b, b->vaddr, b->size, (int) b->next);
+  printf("[B]=(%08x) [V]=(%08x) sz=(%04u) \n", (int) b, b->vaddr, b->size);
 }
 
 /* Display all information about a block */
-int			mjr_apply_display(void *elem, void *opt)
+int			mjr_apply_display(elfshiblock_t *cur, void *opt)
 {
-  elfshiblock_t		*cur;
   elfshcaller_t		*ccal;
   struct s_disopt	*disopt;
   char			*str;
@@ -295,7 +318,6 @@ int			mjr_apply_display(void *elem, void *opt)
   char			buf1[30];
   char			buf2[30];
   
-  cur = (elfshiblock_t *) elem;
   disopt = (struct s_disopt *) opt;
   str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
   end_str = elfsh_reverse_metasym(disopt->file, 
@@ -406,14 +428,13 @@ elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode
 /* 
 ** Support function pointers computations
 **
-** Handle something like this : call  *%eax 
+** Handle something like this : call *%reg
 **     
 **  -> Check goto table and fixup destination
 **
-**  - start gdb, set breakpoint on any "pointer function at [%x]
-**  - check register value
+**  - start gdb, set breakpoint on a known pointer function, run the prog
+**  - check register value at breakpoint
 **  - start elfsh
-**  - load modflow
 **  - addgoto <vaddr of call *%eax> <daddr value of *%eax>   
 */
 int		mjr_compute_fctptr(mjrcontext_t		*context,
@@ -472,18 +493,20 @@ int		mjr_compute_fctptr(mjrcontext_t		*context,
       mjr_block_add_caller(dst, vaddr, (ins->instr == ASM_CALL ? CALLER_CALL : 
 					CALLER_JUMP));
     } 
-
   
+  /* Happens when an address was manually inserted in the routing table */
+  /* This allow to avoid the control flow graph to be broken if elfsh
+     is not capable to recompute the target address */
   else 
     {
       ret = (char *) hash_get(&goto_hash, tmp);
       if (ret) 
 	{
-	  dest = strtol(ret,(char **)NULL,16);
+	  dest = strtol(ret, (char **) NULL, 16);
 	  if (dest) 
 	    {
 	      printf(" [*] Extended routing table found 0x%08x -> 0x%08x\n",
-		     vaddr,dest);
+		     vaddr, dest);
 	      dst = mjr_block_get_by_vaddr(dst_end, dest, 1);
 	      if (!dst) 
 		{
