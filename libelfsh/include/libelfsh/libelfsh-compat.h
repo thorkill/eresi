@@ -77,9 +77,6 @@ typedef char uint8;
  #include "libelfsh-internal.h"
 #endif
 
-/* We need it for .interp fingerprint base */
-#include "libelfsh-hash.h"
-
 #ifndef swap32
 #define swap32(x)						\
 	((uint32_t)(						\

@@ -6,7 +6,7 @@
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
 */
-#include "libelfsh.h"
+#include "libaspect.h"
 
 
 /* Initialize the hash table */
@@ -22,7 +22,7 @@ int	hash_init(hash_t *h, int size)
 /* Destroy a hash table */
 void	hash_destroy(hash_t *h)
 {
-  XFREE(h->ent);
+  free(h->ent);
 }
 
 
@@ -77,7 +77,7 @@ int		hash_del(hash_t *h, char *key)
 	{
 	  todel = actual->next;
 	  *actual = *actual->next;
-	  XFREE(todel);
+	  free(todel);
 	}
       else
 	bzero(actual, sizeof (hashent_t));
@@ -98,7 +98,7 @@ int		hash_del(hash_t *h, char *key)
   /* Found */
   todel = actual->next;
   actual->next = actual->next->next;
-  XFREE(todel);
+  free(todel);
   h->elmnbr--;
   return (0);
 }

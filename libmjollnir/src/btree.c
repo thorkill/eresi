@@ -116,7 +116,6 @@ void		*btree_find_elem(btree_t *root,
     return (NULL);
   ret = match(root->elem, ptr);
   if (!ret)
-    //return ((void *) ret);
     return (ptr);
   else if (ret > 0)
     return (btree_find_elem(root->right, match, ptr));

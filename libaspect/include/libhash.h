@@ -2,7 +2,7 @@
 ** libhash.h for elfsh
 **
 ** Started on  Fri Jan 24 20:25:42 2003 mayhem
-** Last update Sat Aug 16 00:14:56 2003 jv
+** Last update Fri Dec 22 00:14:56 2006 mayhem
 */
 
 #ifndef _LIBHASH_H_
@@ -15,7 +15,7 @@
 #include <strings.h>
 
 #ifdef __BEOS__
-#include <bsd_mem.h>
+ #include <bsd_mem.h>
 #endif
 
 /* Safe calloc() */

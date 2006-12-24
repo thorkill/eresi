@@ -1,18 +1,17 @@
 /*
 ** hooks.c for libelfsh (The ELF shell library)
 **
-** All the function pointers for all provided
-** techniques.
+** All the function pointers for all provided techniques.
+**
+** This is using the libaspect vectors
 **
 ** Started Jan 11 2004 02:57:03 mayhem
 **
 */
 #include "libelfsh.h"
 
-
-
 hash_t	interp_hash;
-hash_t	vector_hash;
+
 
 u_char	elfsh_ostype[5] = {
   ELFOSABI_LINUX,		
@@ -21,120 +20,6 @@ u_char	elfsh_ostype[5] = {
   ELFOSABI_OPENBSD,	
   ELFOSABI_SOLARIS,	
 };
-
-
-/* To be moved in libaspect.h */
-typedef struct	s_elfshvector
-{
-  void		*hook;
-  void		*register_func;
-  void		*default_func;
-  u_int		*arraydims;
-  u_int		arraysz;
-}		elfshvector_t;
-
-
-
-/* Project each dimension and write the desired function pointer */
-static void	 elfsh_project_vectdim(elfshvector_t *vect, u_int *dim, u_int dimsz, elfsh_Addr fct)
-{
-  elfsh_Addr	*tmp;
-  u_int		idx;
-
-  tmp = vect->hook;
-  for (idx = 0; idx < dimsz; idx++)
-    {
-      //printf("+ Projecting dimension %u (dimsz = %u) \n", idx, dimsz);
-      //fflush(stdout);
-      tmp += dim[idx];
-      //printf("= Dereferencing ptr %08X \n", (elfsh_Addr) tmp);
-      if (idx + 1 < dimsz)
-	tmp  = (elfsh_Addr *) *tmp;
-      //printf("- Projected dimension %u (curtmp = %08X) \n", idx, (elfsh_Addr) tmp);
-    }
-
-  *tmp = (elfsh_Addr) fct;
-}
-
-
-/* Project each dimension and get the requested function pointer */
-void*		elfsh_project_coords(elfshvector_t *vect, u_int *dim, u_int dimsz)
-{
-  elfsh_Addr	*tmp;
-  u_int		idx;
-
-  tmp = vect->hook;
-  for (idx = 0; idx < dimsz; idx++)
-    {
-      //printf("+ Projecting dimension %u (dimsz = %u) \n", idx, dimsz);
-      //fflush(stdout);
-      tmp += dim[idx];
-      //printf("= Dereferencing ptr %08X \n", (elfsh_Addr) tmp);
-      tmp  = (elfsh_Addr *) *tmp;
-      //printf("- Projected dimension %u (curtmp = %08X) \n", idx, (elfsh_Addr) tmp);
-    }
-  return (tmp);
-}
-
-
-/* Allocate recursively the hook array */
-int		elfsh_recursive_vectalloc(elfsh_Addr *tab, u_int *dims, u_int depth, u_int dimsz)
-{
-  u_int		idx;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("Recursing vectalloc depth %u \n", depth);
-  //  fflush(stdout);
-
-  if (depth == dimsz)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  for (idx = 0; idx < dims[depth - 1]; idx++)
-    {
-			tab[idx] = (elfsh_Addr)elfsh_calloc(dims[depth] * sizeof(elfsh_Addr), 1);
-			if(tab[idx] == NULL) {
-				write(1, "Out of memory\n", 14);
-				ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)"Out of memory .", -1);
-			}
-      //XALLOC(tab[idx], dims[depth] * sizeof(elfsh_Addr), -1);
-      elfsh_recursive_vectalloc((elfsh_Addr *) tab[idx], dims, depth + 1, dimsz);
-    }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-/* Register a new vector. A vector is an multidimentional array of hooks */
-int		elfsh_register_vector(char	*name, 
-				      void	*registerfunc, 
-				      void	*defaultfunc,
-				      u_int	*dimensions, 
-				      u_int	dimsz)
-{
-  elfshvector_t	*vector;
-  elfsh_Addr	*ptr;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!registerfunc || !defaultfunc || !dimsz || !dimensions)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameters", -1);
-
-  XALLOC(vector, sizeof(elfshvector_t), -1);  
-  XALLOC(ptr, dimensions[0] * sizeof(elfsh_Addr), -1);
-  vector->hook = ptr;
-  if (dimsz > 1)
-    elfsh_recursive_vectalloc((elfsh_Addr *) vector->hook, dimensions, 1, dimsz);
-
-  vector->arraysz       = dimsz;
-  vector->arraydims     = dimensions;
-  vector->register_func = registerfunc;
-  vector->default_func  = defaultfunc;
-  hash_add(&vector_hash, name, vector);
-
-  //  printf("Added vector with name %s \n", name);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 
 								
 /* Default hooks handlers */ 

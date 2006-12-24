@@ -20,17 +20,14 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-
 #include "elfsh-libc.h"
-
 #include <elf.h>
-
+#include "libaspect.h"
 #include <libelfsh/libelfsh-compat.h>
 
 #ifdef __BEOS__
  #include <bsd_mem.h>
 #endif
-
 
 #define __USE_GNU
 #include <sys/ucontext.h>
@@ -597,6 +594,9 @@ extern char	*elfsh_error_str;
 
 /* Profiling depth */
 extern int	elfsh_depth;
+
+/* Hash of vectors */
+extern hash_t   vector_hash;
 
 
 /*

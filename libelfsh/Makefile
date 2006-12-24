@@ -11,8 +11,9 @@ CC			?= gcc
 LD			= gcc
 RM			= rm -f 
 AR			= ar rc
-CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN      \
-			-I../libasm/include/ -I../libc/include $(BITS) $(BUILDOP) 
+CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
+			-I../libasm/include/ -I../libc/include 		    \
+			-I../libaspect/include/ $(BITS) $(BUILDOP) 
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c error.c stab.c \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \
@@ -22,7 +23,7 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			bss.c sort.c hooks.c ia32.c sparc32.c sparc64.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
-			inject.c linkmap.c bp.c libhash.c rpht.c version.c
+			inject.c linkmap.c bp.c rpht.c version.c
 OBJ			= $(SRC:.c=.o)
 NAME			= libelfsh
 

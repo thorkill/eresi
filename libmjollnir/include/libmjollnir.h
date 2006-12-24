@@ -11,10 +11,8 @@
 ** component. Adapted the data structures. Unified prefixing. -may
 **
 **/
-#include <libelfsh.h>
-#include <libasm.h>
 #include <openssl/md5.h>
-
+#include "libelfsh.h"
 #include "libmjollnir-btree.h"
 #include "libmjollnir-blocks.h"
 #include "libmjollnir-int.h"
