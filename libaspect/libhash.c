@@ -22,7 +22,7 @@ int	hash_init(hash_t *h, int size)
 /* Destroy a hash table */
 void	hash_destroy(hash_t *h)
 {
-  free(h->ent);
+  elfsh_free(h->ent);
 }
 
 
@@ -60,6 +60,8 @@ int		hash_add(hash_t *h, char *key, void *data)
 }
 
 
+
+
 /* Delete an entry from the hash table */
 int		hash_del(hash_t *h, char *key)
 {
@@ -77,7 +79,7 @@ int		hash_del(hash_t *h, char *key)
 	{
 	  todel = actual->next;
 	  *actual = *actual->next;
-	  free(todel);
+	  elfsh_free(todel);
 	}
       else
 	bzero(actual, sizeof (hashent_t));
@@ -98,7 +100,7 @@ int		hash_del(hash_t *h, char *key)
   /* Found */
   todel = actual->next;
   actual->next = actual->next->next;
-  free(todel);
+  elfsh_free(todel);
   h->elmnbr--;
   return (0);
 }
