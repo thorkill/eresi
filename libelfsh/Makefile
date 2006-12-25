@@ -23,7 +23,8 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			bss.c sort.c hooks.c ia32.c sparc32.c sparc64.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
-			inject.c linkmap.c bp.c rpht.c version.c
+			inject.c linkmap.c bp.c rpht.c version.c            \
+			config.c
 OBJ			= $(SRC:.c=.o)
 NAME			= libelfsh
 
