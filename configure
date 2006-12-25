@@ -434,7 +434,7 @@ echo "	@cp libc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
-echo "	@chmod 644 \$(BINPATH)/elfsh "				>> Makefile
+echo "	@chmod 755 \$(BINPATH)/elfsh "				>> Makefile
 echo "	@chmod 644 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect.so "			>> Makefile
