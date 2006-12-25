@@ -305,7 +305,23 @@
 #define		EI_PAX			   14   /* Index in e_ident[] where to read flags */
 #define		EI_RPHT			   10	/* Index in e_ident[] where to read rphtoff */
 
+/* Config related data types */
+#define		LIBELFSH_CONFIG_HASH_SIZE	256
 
+typedef struct	s_config_item
+{
+    char	*name;
+#define		ELFSH_CONFIG_TYPE_INT	0
+#define		ELFSH_CONFIG_TYPE_STR	1
+    u_int	type;				/* int will use val, str *data */
+    u_int	mode;				/* RO/RW */
+    u_int	val;				/* val - for int values 0-off/1-on ... */
+    void	*data;
+} t_configitem;
+
+/* Config flags */
+#define		ELFSH_SAFEMODE_OFF	0
+#define		ELFSH_SAFEMODE_ON	1
 
 /* ELFsh redirection abstract unit */
 typedef struct	s_redir
@@ -528,12 +544,14 @@ typedef struct	s_libstate
 #define		LIBELFSH_MODE_E2DBG	2
   u_char	mode;				/* The current working mode (ondisk/memory) */
   u_char	indebug;			/* 1 when inside the debugger */
+  
+  hash_t	config_hash;			/* Configuration */
 
 #define		ELFSH_NOPROF	0
 #define		ELFSH_ERRPROF	1
 #define		ELFSH_OUTPROF	2
 #define		ELFSH_DEBUGPROF	3
-  char		proflevel;	  		/* libelfsh profiling switch */
+//  char		proflevel;	  		/* libelfsh profiling switch */
   int           (*profile)(char *);		/* Profiling output function */
   int           (*profile_err)(char *);		/* Profiling output (error) function */
   
@@ -608,6 +626,15 @@ extern hash_t   vector_hash;
 ** XXX: libelfsh-api.txt not updated to 0.5 (it is for 0.43b)
 ** FIXME: Maybe doxygen soon ? ;)
 */
+
+/* config.c */
+void	elfsh_config_init();
+void    elfsh_config_add_item(char *name, u_int type, u_int mode, void *data);
+void    elfsh_config_update_key(char *name,void *data);
+void    *elfsh_config_get_data(char *name);
+
+/* Private functions - should not be used outside config functions */
+void    __elfsh_config_update_item(t_configitem *item,void *data);
 
 /* dynamic.c */
 elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, int *num);
@@ -1403,6 +1430,11 @@ void		elfsh_set_color_advanced(char *(*coloradv)(char *ty, char *p, char *te),
 					 char *(*colorfieldstr_fmt)(char *p, char *t),
 					 char *(*colortypestr_fmt)(char *p, char *t),
 					 char *(*colorwarn_fmt)(char *pattern, char *text));
+
+void 		elfsh_set_safemode_on();
+void		elfsh_set_safemode_off();
+int		elfsh_is_safemode();
+
 
 /* linkmap.c */
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm);

@@ -528,7 +528,6 @@ int		elfsh_check_hdr(elfshobj_t *file) {
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-
  elfsh_check_hdr_type(file);
  elfsh_check_hdr_machine(file);
  elfsh_check_hdr_version(file);
@@ -565,7 +564,8 @@ int		elfsh_load_hdr(elfshobj_t *file)
 
   elfsh_endianize_elfhdr(file->hdr, file->hdr->e_ident[EI_DATA]);
 
-  elfsh_check_hdr(file);
+  if (elfsh_is_safemode())
+	elfsh_check_hdr(file);
 
 #if defined(ELFSH32)
   if (file->hdr->e_ident[EI_CLASS] != ELFCLASS32)

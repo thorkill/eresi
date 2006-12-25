@@ -15,7 +15,29 @@ void	elfsh_init() __attribute__ ((constructor));
 void	elfsh_init()
 {
   memset(&dbgworld, 0x00, sizeof(dbgworld));
+
+  /* Default configuration */
+  elfsh_config_init();
+  elfsh_config_add_item("proflevel",ELFSH_CONFIG_TYPE_INT,0,ELFSH_NOPROF);
+  elfsh_config_add_item("safemode",ELFSH_CONFIG_TYPE_INT,0,ELFSH_SAFEMODE_OFF);
+
   elfsh_set_static_mode();
+}
+
+/* Functions to turn on/off safemode */
+void 	elfsh_set_safemode_on()
+{
+    elfsh_config_update_key("safemode",(void *)ELFSH_SAFEMODE_ON);
+}
+
+void	elfsh_set_safemode_off()
+{
+    elfsh_config_update_key("safemode",(void *)ELFSH_SAFEMODE_OFF);
+}
+
+int	elfsh_is_safemode()
+{
+    return (int)elfsh_config_get_data("safemode");
 }
 
 /* The functions for simple ondisk/memory state flag */
@@ -72,25 +94,25 @@ void	elfsh_toggle_mode()
 /* Here the functions for the profiler option */
 int	elfsh_prof_enable_err()
 {
-  dbgworld.proflevel = ELFSH_ERRPROF;
+  elfsh_config_update_key("proflevel",(void *)ELFSH_ERRPROF);
   return (0);
 }
 
 int	elfsh_prof_enable_out()
 {
-  dbgworld.proflevel = ELFSH_OUTPROF;
+  elfsh_config_update_key("proflevel",(void *)ELFSH_OUTPROF);
   return (0);
 }
 
 int	elfsh_prof_disable()
 {
-  dbgworld.proflevel = ELFSH_NOPROF;
+  elfsh_config_update_key("proflevel",(void *)ELFSH_NOPROF);
   return 0;
 }
 
 int	elfsh_is_prof_enable()
 {
-  return (dbgworld.proflevel);
+  return (int)elfsh_config_get_data("proflevel");
 }
 
 /* Change the profiling output function */
@@ -99,7 +121,6 @@ void	elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *))
 {
   dbgworld.profile = profile;
   dbgworld.profile_err = profile_err;
-
 }
 
 /* We setup two functions for colors because we have too many functions */
