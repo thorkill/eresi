@@ -9,7 +9,7 @@ CC			?= gcc
 LD			= gcc
 RM			= rm -f 
 AR			= ar rc
-CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2
+CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN
 SRC			= vectors.c libhash.c
 OBJ			= $(SRC:.c=.o)
 NAME			= libaspect

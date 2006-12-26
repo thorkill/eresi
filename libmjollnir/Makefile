@@ -31,7 +31,7 @@ CC	= gcc -ggdb -g3
 NAME	= libmjollnir
 
 all	: $(OBJ)
-	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto
+	$(CC) $(LDFLAGS) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto
 	@ar rc ${NAME}.a ${OBJ} 
 	@ranlib ${NAME}.a
 	$(CC) $(CFLAGS) $(SRCT) -o $(OBJT) $(LDFLAGS) $(STATOPT)

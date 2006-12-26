@@ -1,5 +1,5 @@
 /*
-** libhash.h for elfsh
+** libhash.h for libaspect from elfsh
 **
 ** Started on  Fri Jan 24 20:25:42 2003 mayhem
 ** Last update Fri Dec 22 00:14:56 2006 mayhem
@@ -7,12 +7,6 @@
 
 #ifndef _LIBHASH_H_
  #define _LIBHASH_H_ 1
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <strings.h>
 
 #ifdef __BEOS__
  #include <bsd_mem.h>
@@ -22,7 +16,7 @@
 #define		HASHALLOC(a, b, c)			\
 do							\
 {							\
-  if ((a = elfsh_calloc(b, 1)) == NULL)			\
+  if ((a = calloc(b, 1)) == NULL)			\
     {							\
       perror("libhashelfsh[calloc]");			\
       return (c);					\

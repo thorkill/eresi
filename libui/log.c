@@ -102,7 +102,6 @@ static void		logtofile(char *str)
 void			vm_log(char *str)
 {
   int			check = 0, size = 0;
-  char			*upper;
   char			*tmp = NULL;
   char 			*t_tail, *t_head, *t_end;
   char			buf[BUFSIZ * 4];

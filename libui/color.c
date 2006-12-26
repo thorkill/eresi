@@ -1,5 +1,5 @@
 /*
-** color.c for elfsh
+** color.c for libui from elfsh
 **
 ** All functions about colors
 **

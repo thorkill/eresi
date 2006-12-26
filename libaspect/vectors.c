@@ -12,9 +12,15 @@
 hash_t	vector_hash;
 
 
+/* Initialize the vector hash */
+void		aspect_vectors_init()
+{
+  hash_init(&vector_hash, 11);
+}
+
 /* Project each dimension and write the desired function pointer */
-void		elfsh_project_vectdim(elfshvector_t *vect, unsigned int *dim, 
-				      unsigned int dimsz, unsigned long fct)
+void		aspect_project_vectdim(vector_t *vect, unsigned int *dim, 
+				       unsigned int dimsz, unsigned long fct)
 {
   unsigned long	*tmp;
   unsigned int	idx;
@@ -31,7 +37,7 @@ void		elfsh_project_vectdim(elfshvector_t *vect, unsigned int *dim,
 
 
 /* Project each dimension and get the requested function pointer */
-void*			elfsh_project_coords(elfshvector_t *vect, 
+void*			aspect_project_coords(vector_t *vect, 
 					     unsigned int *dim, 
 					     unsigned int dimsz)
 {
@@ -49,7 +55,7 @@ void*			elfsh_project_coords(elfshvector_t *vect,
 
 
 /* Allocate recursively the hook array */
-int		elfsh_recursive_vectalloc(unsigned long *tab, unsigned int *dims, 
+int		aspect_recursive_vectalloc(unsigned long *tab, unsigned int *dims, 
 					  unsigned int depth, unsigned int dimsz)
 {
   unsigned int		idx;
@@ -65,7 +71,7 @@ int		elfsh_recursive_vectalloc(unsigned long *tab, unsigned int *dims,
 	  write(1, "Out of memory\n", 14);
 	  return (-1);
 	}
-      elfsh_recursive_vectalloc((unsigned long *) tab[idx], dims, 
+      aspect_recursive_vectalloc((unsigned long *) tab[idx], dims, 
 				depth + 1, dimsz);
     }
   return (0);
@@ -73,13 +79,13 @@ int		elfsh_recursive_vectalloc(unsigned long *tab, unsigned int *dims,
 
 
 /* Register a new vector. A vector is an multidimentional array of hooks */
-int		elfsh_register_vector(char		*name, 
+int		aspect_register_vector(char		*name, 
 				      void		*registerfunc, 
 				      void		*defaultfunc,
 				      unsigned int	*dimensions, 
 				      unsigned int	dimsz)
 {
-  elfshvector_t	*vector;
+  vector_t	*vector;
   unsigned long	*ptr;
 
   if (!registerfunc || !defaultfunc || !dimsz || !dimensions)
@@ -87,16 +93,16 @@ int		elfsh_register_vector(char		*name,
       write(1, "Invalid NULL parameters\n", 24);
       return (-1);
     }
-  vector = elfsh_calloc(sizeof(elfshvector_t), 1);
+  vector = calloc(sizeof(vector_t), 1);
   if (vector == NULL)
     return (-1);
-  ptr = elfsh_calloc(dimensions[0] * sizeof(unsigned long), 1);
+  ptr = calloc(dimensions[0] * sizeof(unsigned long), 1);
   if (!ptr)
     return (-1);
   vector->hook = ptr;
   if (dimsz > 1)
-    elfsh_recursive_vectalloc((unsigned long *) vector->hook, 
-			      dimensions, 1, dimsz);
+    aspect_recursive_vectalloc((unsigned long *) vector->hook, 
+			       dimensions, 1, dimsz);
   vector->arraysz       = dimsz;
   vector->arraydims     = dimensions;
   vector->register_func = registerfunc;

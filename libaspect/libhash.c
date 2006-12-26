@@ -22,7 +22,7 @@ int	hash_init(hash_t *h, int size)
 /* Destroy a hash table */
 void	hash_destroy(hash_t *h)
 {
-  elfsh_free(h->ent);
+  free(h->ent);
 }
 
 
@@ -79,7 +79,7 @@ int		hash_del(hash_t *h, char *key)
 	{
 	  todel = actual->next;
 	  *actual = *actual->next;
-	  elfsh_free(todel);
+	  free(todel);
 	}
       else
 	bzero(actual, sizeof (hashent_t));
@@ -181,16 +181,16 @@ char		**hash_get_keys(hash_t *h, int *n)
 #if __DEBUG__
 	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
 #endif
-	  keys = elfsh_realloc(keys, (i + 1) * sizeof(char *));
+	  keys    = realloc(keys, (i + 1) * sizeof(char *));
 	  keys[i] = entry->key;
-	  entry = entry->next;
+	  entry   = entry->next;
 	  i++;
 	}
     }
   
-  keys = elfsh_realloc(keys, (i + 1) * sizeof(char *));
+  keys    = realloc(keys, (i + 1) * sizeof(char *));
   keys[i] = NULL;
-  *n = i;
+  *n      = i;
   return (keys);
 }
 
@@ -247,7 +247,8 @@ int		hash_compare(hash_t *first, hash_t *two)
   
   for (m = index = 0; index < first->size; index++) 
     {
-      for (actual = &first->ent[index]; actual != NULL && actual->key != NULL; actual = actual->next) 
+      for (actual = first->ent + index; actual != NULL && actual->key != NULL; 
+	   actual = actual->next) 
 	{
 	  bis = hash_get_ent(two, actual->key);
 	  if (actual->data != bis->data) 

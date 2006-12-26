@@ -29,8 +29,9 @@ OBJ			= $(SRC:.c=.o)
 NAME			= libelfsh
 
 all			: $(OBJ)
-			@$(LD) --trace-symbol=malloc -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
-			$(BITS) -shared $(OBJ) -o $(NAME).so
+			$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
+			-L../libaspect/ -laspect $(BITS) -shared $(OBJ) 	 \
+			-o $(NAME).so
 			@$(AR) $(NAME).a $(OBJ)
 			@$(RANLIB) $(NAME).a
 

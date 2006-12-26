@@ -143,7 +143,7 @@ int			e2dbg_load_linkmap(char *name)
     {
 
       /* No need to fill ET_EXEC base addr */
-      if (!vm_is_loaded(name) && vm_load_file(name, NULL, NULL) < 0)
+      if (!vm_is_loaded(name) && vm_load_file(name, 0, NULL) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot load file", -1);
       

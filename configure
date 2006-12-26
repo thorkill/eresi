@@ -581,11 +581,11 @@ echo "	@echo '###############' Total '###############'"	>> Makefile
 echo "	wc -l vm/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
 echo "	vm/include/*.h modules/*.c libasm/src/*.c \\"		>> Makefile
 echo "  libasm/src/arch/ia32/*.c e2dbg/*.c e2dbg/include/*.h \\">> Makefile
-echo "  libaspect/*.c libaspect/include/*.h \\"                 >> Makefile
-echo "  librevm/*.c librevm/include/*.h"			>> Makefile
+echo "  libaspect/*.c libaspect/include/*.h "                 >> Makefile
+#echo "  librevm/*.c librevm/include/*.h"			>> Makefile
 echo "	@echo '###############' Total w/o headers '###'"	>> Makefile
 echo "	wc -l vm/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
-echo "	libaspect/*.c librevm/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile
+echo "	libaspect/*.c libasm/src/arch/ia32/*.c \\"	        >> Makefile
 echo "	libasm/src/*.c libasm/src/arch/sparc/*.c "	        >> Makefile
 echo "	@echo '###############' Libelfsh only '#######'"	>> Makefile
 echo "	wc -l libelfsh/*.c "					>> Makefile
