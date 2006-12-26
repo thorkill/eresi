@@ -8,6 +8,7 @@
 */
 #include "libmjollnir.h"
 
+
 static elfshiblock_t	*g_curblock = 0;     /* current working block */
 u_int			g_prevaddr = 0;	     /* previous instruction address */
 asm_instr		g_previns;	     /* previous instruction if CMP/TEST */
@@ -138,7 +139,7 @@ void			mjr_trace_control(mjrcontext_t	*context,
 	  if (g_prevaddr)
 	    mjr_block_add_caller(g_curblock, g_prevaddr, CALLER_CONT);
 	}
-    }
+   }
   
   /* 
   ** If previous block is not finished, search for a block which begin at current
@@ -152,19 +153,16 @@ void			mjr_trace_control(mjrcontext_t	*context,
       g_curblock->altype = CALLER_CONT;
       g_curblock->contig = vaddr;
       mjr_block_add_list(blk_list, g_curblock);
+      tmp->size = 0;
       g_curblock = tmp;
-      g_curblock->size = 0;
-      g_curblock = tmp;
+      //g_curblock->size = 0;
+      //g_curblock = tmp;
     }
   
-  /* From there, we MUST be in a block assert if not */
-  if (!g_curblock) 
-    {
-      printf("%08x: block not found and creation failure... exiting\n", vaddr);
-      exit(-1);
-    } 
+  /* From there, we MUST be in a block */
+  assert(g_curblock != NULL);
 
-  /* Keep track of current address add current instruction size to block size */
+  /* Keep track of current address and add current instruction size to block size */
   g_prevaddr = vaddr;
   ilen = asm_instr_len(ins);
   g_curblock->size += ilen;

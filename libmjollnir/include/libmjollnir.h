@@ -12,6 +12,7 @@
 **
 **/
 #include <stddef.h>
+#include <assert.h>
 #include <openssl/md5.h>
 #include "libelfsh.h"
 #include "libmjollnir-btree.h"
@@ -104,6 +105,8 @@ void		mjr_block_add_list(elfshiblock_t **, elfshiblock_t *);
 int		mjr_block_is_funcstart(elfshiblock_t *);
 int		mjr_insert_destaddr(mjrcontext_t *c, elfshobj_t *, 
 				    asm_instr *, u_int, elfshiblock_t **);
+int		mjr_block_point(elfshiblock_t **blklist, asm_instr *ins,
+				elfsh_Addr vaddr, elfsh_Addr dest);
 
 /* MERGE !!! core.c / control.c */
 int		mjr_find_calls(mjrsession_t *,char *);				
