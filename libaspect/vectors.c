@@ -10,12 +10,17 @@
 
 /* The hash tables of vectors */
 hash_t	vector_hash;
+static u_short vh_set = 0;
 
 
 /* Initialize the vector hash */
 void		aspect_vectors_init()
 {
-  hash_init(&vector_hash, 11);
+  if (!vh_set)
+    {
+      hash_init(&vector_hash, 11);
+      vh_set = 1;
+    }
 }
 
 /* Project each dimension and write the desired function pointer */
