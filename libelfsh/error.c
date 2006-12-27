@@ -117,7 +117,7 @@ void		elfsh_profile_err(char *file, char *func, u_int line, char *msg)
   char		buf[BUFSIZ];
   char		*fill;
 
-  if ((int)elfsh_config_get_data("proflevel") >= ELFSH_ERRPROF)
+  if ((int)elfsh_config_get_data(ELFSH_CONFIG_NAME_PROFLEVEL) >= ELFSH_ERRPROF)
     {
       
       /* Stock a pattern without printing */
@@ -167,7 +167,7 @@ void		elfsh_profile_out(char *file, char *func, u_int line)
   char		*space;
   char		b_dir[2];
 
-  if ((int)elfsh_config_get_data("proflevel") >= ELFSH_OUTPROF)
+  if ((int)elfsh_config_get_data(ELFSH_CONFIG_NAME_PROFLEVEL) >= ELFSH_OUTPROF)
     {
 
       /* Stock a pattern, without printing */

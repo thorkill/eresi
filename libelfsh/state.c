@@ -19,12 +19,14 @@ void	elfsh_init()
   /* Default configuration */
   elfsh_config_init();
 
-  elfsh_config_add_item("proflevel",
+  elfsh_config_add_item(
+    ELFSH_CONFIG_NAME_PROFLEVEL,
     ELFSH_CONFIG_TYPE_INT,
     ELFSH_CONFIG_MODE_RO,
     ELFSH_NOPROF);
 
-  elfsh_config_add_item("safemode",
+  elfsh_config_add_item(
+    ELFSH_CONFIG_NAME_SAFEMODE,
     ELFSH_CONFIG_TYPE_INT,
     ELFSH_CONFIG_MODE_RW,
     ELFSH_SAFEMODE_OFF);
@@ -35,17 +37,23 @@ void	elfsh_init()
 /* Functions to turn on/off safemode */
 void 	elfsh_set_safemode_on()
 {
-    elfsh_config_update_key("safemode",(void *)ELFSH_SAFEMODE_ON);
+    elfsh_config_update_key(
+     ELFSH_CONFIG_NAME_SAFEMODE,
+     (void *)ELFSH_SAFEMODE_ON
+    );
 }
 
 void	elfsh_set_safemode_off()
 {
-    elfsh_config_update_key("safemode",(void *)ELFSH_SAFEMODE_OFF);
+    elfsh_config_update_key(
+     ELFSH_CONFIG_NAME_SAFEMODE,
+     (void *)ELFSH_SAFEMODE_OFF
+    );
 }
 
 int	elfsh_is_safemode()
 {
-    return (int)elfsh_config_get_data("safemode");
+    return (int)elfsh_config_get_data(ELFSH_CONFIG_NAME_SAFEMODE);
 }
 
 /* The functions for simple ondisk/memory state flag */
@@ -102,25 +110,25 @@ void	elfsh_toggle_mode()
 /* Here the functions for the profiler option */
 int	elfsh_prof_enable_err()
 {
-  elfsh_config_update_key("proflevel",(void *)ELFSH_ERRPROF);
+  elfsh_config_update_key(ELFSH_CONFIG_NAME_PROFLEVEL,(void *)ELFSH_ERRPROF);
   return (0);
 }
 
 int	elfsh_prof_enable_out()
 {
-  elfsh_config_update_key("proflevel",(void *)ELFSH_OUTPROF);
+  elfsh_config_update_key(ELFSH_CONFIG_NAME_PROFLEVEL,(void *)ELFSH_OUTPROF);
   return (0);
 }
 
 int	elfsh_prof_disable()
 {
-  elfsh_config_update_key("proflevel",(void *)ELFSH_NOPROF);
+  elfsh_config_update_key(ELFSH_CONFIG_NAME_PROFLEVEL,(void *)ELFSH_NOPROF);
   return 0;
 }
 
 int	elfsh_is_prof_enable()
 {
-  return (int)elfsh_config_get_data("proflevel");
+  return (int)elfsh_config_get_data(ELFSH_CONFIG_NAME_PROFLEVEL);
 }
 
 /* Change the profiling output function */

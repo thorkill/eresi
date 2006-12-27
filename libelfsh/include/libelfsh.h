@@ -308,6 +308,10 @@
 /* Config related data types */
 #define		LIBELFSH_CONFIG_HASH_SIZE	256
 
+/* Default names for config names */
+#define		ELFSH_CONFIG_NAME_PROFLEVEL	"proflevel"
+#define		ELFSH_CONFIG_NAME_SAFEMODE	"safemode"
+
 typedef struct	s_config_item
 {
     char	*name;

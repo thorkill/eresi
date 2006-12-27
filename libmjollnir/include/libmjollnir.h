@@ -49,12 +49,17 @@ typedef struct		s_session
 /* Size of temp buffers */
 #define BSIZE		4096 
 
+/* Names used in config hash */
+#define MJR_COFING_CALL_PREFIX "mjr.callsprefix"
+
 /* Default subroutines prefix in symbol recovery */
 #define MJR_CALL_PREFIX	"sub_"
 
 /* OS for which we are able to match the entry point */
 #define			MJR_BIN_LINUX	0
 #define			MJR_BIN_FREEBSD	1
+
+
 
 /* The hash declared in VM for gotos */
 extern hash_t	goto_hash;

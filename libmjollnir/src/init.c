@@ -1,20 +1,29 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.6 2006-12-11 13:57:39 may Exp $
+ * $Id: init.c,v 1.7 2006-12-27 22:39:46 thor Exp $
  *
  * Initialization functions
  *
  */
 #include "libmjollnir.h"
 
-
 /* Initialize the world for libmjollnir */
 int		mjr_init_session(mjrsession_t *sess) 
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   hash_init(&goto_hash, 100);
   hash_init(&sess->ctx, mjrHashSmall);
+
+  /* register configurable parameters */
+  elfsh_config_add_item(
+    MJR_COFING_CALL_PREFIX,
+    ELFSH_CONFIG_TYPE_STR,
+    ELFSH_CONFIG_MODE_RW,
+    MJR_CALL_PREFIX
+  );
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 

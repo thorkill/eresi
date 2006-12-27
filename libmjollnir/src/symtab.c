@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.6 2006-12-11 13:57:39 may Exp $
+ * $Id: symtab.c,v 1.7 2006-12-27 22:39:46 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -23,7 +23,10 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
      if (n->type != MJR_TYPE_FUNCT && n->type != MJR_TYPE_SECT_START)
        continue;
      memset(s,0x00,BSIZE);
-     snprintf(s,BSIZE,"%s%s", MJR_CALL_PREFIX,(char *)_vaddr2string(n->vaddr));
+     snprintf(s,BSIZE,"%s%s", 
+      (char *)elfsh_config_get_data(MJR_COFING_CALL_PREFIX),
+      (char *)_vaddr2string(n->vaddr)
+     );
      mjr_symbol_add(sess,n->section,n->vaddr,s);
    }
  return 1;

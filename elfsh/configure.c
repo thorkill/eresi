@@ -2,7 +2,7 @@
  * ELFsh/vm configure related code
  * 2006 thorkill, Asgard Labs Inc.
  *
- * $Id: configure.c,v 1.1 2006-12-27 22:13:29 thor Exp $
+ * $Id: configure.c,v 1.2 2006-12-27 22:39:46 thor Exp $
  */
 
 #include "elfsh.h"
@@ -40,10 +40,6 @@ int	cmd_configure()
     }
   else
     {
-      printf(" [*] setting new configuration value for %s to %s\n\n",
-        world.curjob->curcmd->param[0],
-        world.curjob->curcmd->param[1]
-      );
 
       ci = hash_get(&dbgworld.config_hash,world.curjob->curcmd->param[0]);
 
@@ -57,7 +53,12 @@ int	cmd_configure()
 
        if (ci->type == ELFSH_CONFIG_TYPE_STR)
         elfsh_config_update_key(ci->name,world.curjob->curcmd->param[1]);
-       
+
+       printf(" [*] setting new configuration value for %s to %s\n\n",
+        world.curjob->curcmd->param[0],
+        world.curjob->curcmd->param[1]
+       );
+
       } else {
        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                                    "Configuration key not found.", (-1));
