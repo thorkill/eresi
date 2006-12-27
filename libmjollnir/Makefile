@@ -19,22 +19,22 @@ OBJT 	= elfThor
 SRCUT 	= tools/mjollnirUnitTest.c
 OBJUT 	= mjollnirUnitTest
 
-CFLAGS	+= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
+CFLAGS	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
         -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
 	-Wall $(BITS) -DELFSH_INTERN
 
-LDFLAGS += -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-	 -L../libaspect/ -lmjollnir -lelfsh -lasm -lcelfsh  \
-	  -laspect -lmalloc-e2dbg $(LDMJOLLNIR) $(LPTHREAD)
+LDFLAGS = -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
+	 -L../libaspect/ -lelfsh -lasm -lcelfsh  \
+	  -laspect -lmalloc-e2dbg $(LPTHREAD)
 
 CC	= gcc -ggdb -g3
 NAME	= libmjollnir
 
 all	: $(OBJ)
-	$(CC) $(LDFLAGS) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto
+	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto $(LDFLAGS)
 	@ar rc ${NAME}.a ${OBJ} 
 	@ranlib ${NAME}.a
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCT) -o $(OBJT) $(STATOPT)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir
 # comment this out if you don't want to make unittests 
 #	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
 
