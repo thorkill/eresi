@@ -1,6 +1,6 @@
 /*
 ** misc.c for elfsh
-** 
+**
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
 */
@@ -14,9 +14,9 @@
 char	*vm_get_prompt()
 {
   if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
-      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER) 
+      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
     {
-      snprintf(prompt_token, sizeof(prompt_token), 
+      snprintf(prompt_token, sizeof(prompt_token),
 	       "%s%s%s%s%s%s%s%s%s%s%s ",
 	       vm_colorget("%s", "pspecial", "("),
 	       (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
@@ -58,7 +58,7 @@ char		*vm_get_mode_name()
     mode = E2DBG_NAME;
   else
     mode = ELFSH_NAME;
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (mode));
 }
 
@@ -75,10 +75,10 @@ int		vm_system(char *cmd)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->io.type == ELFSH_IONET)
-    snprintf(buf, BUFSIZ, "%s <&%u >&0 2>&0 ", cmd, world.curjob->io.output_fd); 
+    snprintf(buf, BUFSIZ, "%s <&%u >&0 2>&0 ", cmd, world.curjob->io.output_fd);
   else
-    snprintf(buf, BUFSIZ, "%s ", cmd); 
-  
+    snprintf(buf, BUFSIZ, "%s ", cmd);
+
   /* If the user shell is unspecified we use system */
   nbr = vm_findblanks(cmd);
   av = vm_doargv(nbr, (u_int *)&argc, cmd);
@@ -90,8 +90,8 @@ int		vm_system(char *cmd)
 
   /* Report result */
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Shell not found", 0);	
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Shell not found", 0);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -108,10 +108,10 @@ void	vm_exit(int err)
 void	vm_badparam(char *str)
 {
   char	buf[BUFSIZ];
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  snprintf(buf, BUFSIZ, 
+  snprintf(buf, BUFSIZ,
 	   "\n [!] Invalid parameters for command %s .::. "
 	   "type 'help' for command list \n\n", str);
   vm_output(buf);
@@ -158,7 +158,7 @@ int		vm_openscript(char **av)
 
   /* Open script file */
   XOPEN(fd, av[0], O_RDONLY, 0, -1);
-  
+
   world.curjob->io.input_fd = fd;
 
   /* Add argument variables */
@@ -171,7 +171,7 @@ int		vm_openscript(char **av)
 
   new = vm_create_IMMED(ELFSH_OBJINT, 1, idx);
   hash_add(&vars_hash, ELFSH_ARGVAR, new);
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -210,8 +210,8 @@ void		vm_print_banner()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1,
-	   "\n\n\t The %s %s (%s) .::. \n\n %s", 
-	   vm_get_mode_name(), 
+	   "\n\n\t The %s %s (%s) .::. \n\n %s",
+	   vm_get_mode_name(),
 	   ELFSH_VERSION,
 #if defined(ELFSH32)
 	   "32 bits built",
@@ -258,9 +258,9 @@ elfshobj_t	*vm_getfile(u_int id)
 	  cur = hash_get(&world.curjob->loaded, keys[idx]);
 	  if (cur->id == id)
 	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
-	  
+
 	  if ((subcur = vm_is_depid(cur, id)) != NULL)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
 	}
     }
 
@@ -273,13 +273,13 @@ elfshobj_t	*vm_getfile(u_int id)
 	  cur = hash_get(&world.shared_hash, keys[idx]);
 	  if (cur->id == id)
 	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
-	  
+
 	  if ((subcur = vm_is_depid(cur, id)) != NULL)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));	
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
 	}
     }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Unable to find file", (NULL));
 }
 
@@ -293,7 +293,7 @@ elfshmod_t	*vm_getmod(u_int index)
   for (cur = world.modlist; cur; cur = cur->next)
     if (cur->id == index)
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Unable to find module", (NULL));
 }
 
@@ -309,7 +309,7 @@ int		vm_doerror(void (*fct)(char *str), char *str)
       cmd_help();
       exit(-1);
     }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Bypassed error printing", (-1));
 }
 
@@ -368,7 +368,7 @@ int		cmd_network()
   if (world.state.vm_net == 1)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   XALLOC(job, sizeof (elfshjob_t), -1);
-  
+
   /* network job setup */
   job->io.type   = ELFSH_IONET;
   job->io.input  = vm_net_input;
@@ -440,14 +440,14 @@ int		cmd_meta()
       world.state.vm_mode == ELFSH_VMSTATE_IMODE)
     rl_deprep_terminal();
 #endif
-  
+
   ret = vm_system(vm_lookup_var("$SHELL"));
-  
+
 #if defined(USE_READLN)
   if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ||
       world.state.vm_mode == ELFSH_VMSTATE_IMODE)
     rl_prep_terminal(1);
-#endif 
+#endif
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -468,7 +468,7 @@ int             cmd_edit()
     rl_deprep_terminal();
 #endif
 
-  snprintf(buff, BUFSIZ, "%s %s", 
+  snprintf(buff, BUFSIZ, "%s %s",
 	   vm_lookup_var("$EDITOR"),
 	   world.curjob->curcmd->param[0]);
 
@@ -479,7 +479,7 @@ int             cmd_edit()
       world.state.vm_mode == ELFSH_VMSTATE_IMODE)
     rl_prep_terminal(1);
 #endif
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
@@ -520,8 +520,8 @@ int		cmd_glregx()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   str = elfsh_strdup(world.curjob->curcmd->param[0]);
-  if (regcomp(&world.state.vm_regx, str, REG_EXTENDED) < 0)	
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  if (regcomp(&world.state.vm_regx, str, REG_EXTENDED) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Failed to compute regex", -1);
   world.state.vm_use_regx = 1;
   if (world.state.vm_sregx)
@@ -533,7 +533,7 @@ int		cmd_glregx()
       vm_output(logbuf);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}				
+}
 
 
 /* Read the sorting parameter */
@@ -543,13 +543,13 @@ int		cmd_sort()
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.curjob->curcmd->param[0][0] != ELFSH_SORT_BY_ADDR && 
+  if (world.curjob->curcmd->param[0][0] != ELFSH_SORT_BY_ADDR &&
       world.curjob->curcmd->param[0][0] != ELFSH_SORT_BY_SIZE)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid sorting type", -1);
   if (!world.state.vm_quiet)
     {
-      snprintf(logbuf, BUFSIZ - 1, " [*] Switched to %s sorting\n\n", 
+      snprintf(logbuf, BUFSIZ - 1, " [*] Switched to %s sorting\n\n",
 	       (world.curjob->curcmd->param[0][0] == ELFSH_SORT_BY_ADDR ?
 		"ADDR" : "SIZE"));
       vm_output(logbuf);
@@ -568,8 +568,8 @@ int		cmd_alert()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   str = elfsh_strdup(world.curjob->curcmd->param[0]);
-  if (regcomp(&world.state.vm_alert, str, REG_EXTENDED) < 0)	
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  if (regcomp(&world.state.vm_alert, str, REG_EXTENDED) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Failed to compute regex", -1);
   world.state.vm_use_alert = 1;
   if (world.state.vm_salert)
@@ -581,7 +581,7 @@ int		cmd_alert()
       vm_output(logbuf);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}				
+}
 
 /* Set the share flag */
 int		cmd_shared()
@@ -627,7 +627,7 @@ int		cmd_netlist()
 
   if (i == 0)
     vm_output(" [*] No client\n");
-    
+
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -637,11 +637,11 @@ int		cmd_netkill()
 {
   char		*tokill;
   char          buf[BUFSIZ];
-    
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   tokill = world.curjob->curcmd->param[0];
-  
+
   tokill = vm_lookup_var(tokill);
 
   if (world.curjob->io.type == ELFSH_IONET)
@@ -650,7 +650,7 @@ int		cmd_netkill()
       vm_output("\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   if (vm_socket_del(tokill) < 0)
     {
 #if __DEBUG_NETWORK__
@@ -664,7 +664,7 @@ int		cmd_netkill()
   snprintf(buf, BUFSIZ - 1, " [*] %s's connection closed.\n", tokill);
   vm_output(buf);
   vm_output("\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -677,7 +677,7 @@ int		cmd_peerslist()
   hashent_t     *actual;
   int           index;
   char          buf[BUFSIZ];
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   vm_output(" .::. DUMP neighbors list .::. \n");
@@ -692,13 +692,13 @@ int		cmd_peerslist()
 	  i++;
 	}
     }
-#else 
+#else
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #endif
-    
+
   if (i == 0)
     vm_output(" [*] No connection\n");
-  
+
   vm_output("\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -707,13 +707,13 @@ int		cmd_peerslist()
 /* connect to a dump node */
 int		cmd_connect()
 {
-#if defined(ELFSHNET) 
+#if defined(ELFSHNET)
 
   char          *toconnect;
   char          buf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
- 
+
   toconnect = world.curjob->curcmd->param[0];
 
   toconnect = vm_lookup_var(toconnect);
@@ -721,14 +721,14 @@ int		cmd_connect()
   if (world.state.vm_net != 1)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  
+
   if (world.curjob->io.type == ELFSH_IONET)
     {
       vm_output(" [*] You can't add DUMP connection.\n");
       vm_output("\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   if (dump_connect_to(toconnect, ELFSH_DUMP_PORT) < 0)
     {
       snprintf(buf, BUFSIZ - 1, " [*] connection to %s failed.\n", toconnect);
@@ -736,7 +736,7 @@ int		cmd_connect()
       vm_output("\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   snprintf(buf, BUFSIZ - 1, " [*] connection to %s established.\n", toconnect);
   vm_output(buf);
   vm_output("\n");
@@ -751,27 +751,27 @@ int		cmd_connect()
 /* disconnect from a dump node */
 int		cmd_discon()
 {
-#if defined(ELFSHNET) 
+#if defined(ELFSHNET)
 
   char          *todisconnect;
   char          buf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   todisconnect = world.curjob->curcmd->param[0];
 
   todisconnect = vm_lookup_var(todisconnect);
 
   if (world.state.vm_net != 1)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
+
   if (world.curjob->io.type == ELFSH_IONET)
     {
       vm_output(" [*] You can't remove DUMP connection.\n");
       vm_output("\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   if (dump_disconnect_host(todisconnect) < 0)
     {
       snprintf(buf, BUFSIZ - 1, " [*] Not connected to %s.\n", todisconnect);
@@ -779,11 +779,11 @@ int		cmd_discon()
       vm_output("\n");
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   snprintf(buf, BUFSIZ - 1, " [*] connection to %s closed.\n", todisconnect);
   vm_output(buf);
   vm_output("\n");
-#else 
+#else
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #endif
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -802,7 +802,7 @@ int			cmd_rcmd()
   char			data[BUFSIZ];
   u_int			sz = BUFSIZ - 1;
   int			ret;
-   
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.state.vm_net != 1)
@@ -814,7 +814,7 @@ int			cmd_rcmd()
   data[1] = '\0';
 
   sz -= 2;
-  
+
   for (idx = 1; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
@@ -852,7 +852,7 @@ int			cmd_rcmd()
 
   ret = dump_send(serv_addr.sin_addr, elfsh_strdup(data), 1 + strlen(data + 1) + 1);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-#else 
+#else
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 #endif
 
@@ -922,11 +922,11 @@ int		cmd_cat()
   int		fd;
   int		len = 0;
   int		tmplen = 0;
-    
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   tocat = vm_lookup_var(world.curjob->curcmd->param[0]);
-  if ((fd = open(tocat, O_RDONLY, 0)) < 0)          
+  if ((fd = open(tocat, O_RDONLY, 0)) < 0)
     {
       vm_output("Can't open file\n");
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Open failed", (-1));
@@ -934,7 +934,7 @@ int		cmd_cat()
 
   while (1)
     {
-      tmplen = read(fd, buf + len, 1);  
+      tmplen = read(fd, buf + len, 1);
       if (tmplen < 0)
 	{
 	  XCLOSE(fd,0);
@@ -946,7 +946,7 @@ int		cmd_cat()
       if (len > BUFSIZ - 1)
 	{
 	  XCLOSE(fd, 0);
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			    "File too long", (-1));
 	}
     }
@@ -967,7 +967,7 @@ int		vm_clearscreen(int i, char c)
 
   XFREE(world.curjob->screen.buf);
   world.curjob->screen.head = world.curjob->screen.tail = world.curjob->screen.buf = NULL;
-  
+
 #if defined(USE_READLN)
   if (rl_ctrll)
     rl_ctrll(i, c);
@@ -992,7 +992,7 @@ int		vm_install_clearscreen()
   keyseq[0] = CTRL('l');
   keyseq[1] = '\0';
   rl_ctrll = rl_function_of_keyseq(keyseq, map, NULL);
-  rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_clearscreen); 
+  rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_clearscreen);
 #endif
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1024,7 +1024,7 @@ int		vm_screen_update(u_short new, u_short prompt_display)
 	  vm_output_nolog(world.curjob->screen.buf);
 	}
     }
-  
+
 #if defined (USE_READLN)
   if (new)
     {
@@ -1033,7 +1033,7 @@ int		vm_screen_update(u_short new, u_short prompt_display)
       rl_on_new_line();
 
       world.curjob->io.savebuf = NULL;
-    } 
+    }
   else
     {
       /* Prompt already here */
@@ -1041,7 +1041,7 @@ int		vm_screen_update(u_short new, u_short prompt_display)
 	rl_on_new_line_with_prompt();
       rl_refresh_line(0, 0);
     }
-      
+
   rl_clear_message();
 
   if (!new)

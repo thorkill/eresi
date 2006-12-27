@@ -863,6 +863,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SETGVL    , cmd_setgvl        , vm_getoption,    1, HLP_SETGVL);
   vm_addcmd(CMD_RENAME	  , cmd_rename        , vm_getoption2,   1, HLP_RENAME);  
   vm_addcmd(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+  vm_addcmd(CMD_CONFIGURE , cmd_configure     , vm_getvarparams, 0, HLP_CONFIGURE);
 }
 
 /* Mix default library path with LD_LIBRARY_PATH variable */

@@ -15,7 +15,8 @@ SRC			= grammar.c disasm.c dyn.c hdr.c main.c got.c interp.c \
 			  insert.c remove.c flush.c vlist.c lts.c source.c \
 			  cleanup.c run.c trace.c variables.c version.c hash.c \
 			  unload.c list.c doswitch.c misc.c implicit.c deps.c \
-			  reladd.c job.c flow.c inspect.c flowjack.c graph.c
+			  reladd.c job.c flow.c inspect.c flowjack.c graph.c \
+			  configure.c
 OBJ			= $(SRC:.c=.o)
 CC			?= gcc
 RM			= rm -f

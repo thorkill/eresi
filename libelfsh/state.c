@@ -18,8 +18,16 @@ void	elfsh_init()
 
   /* Default configuration */
   elfsh_config_init();
-  elfsh_config_add_item("proflevel",ELFSH_CONFIG_TYPE_INT,0,ELFSH_NOPROF);
-  elfsh_config_add_item("safemode",ELFSH_CONFIG_TYPE_INT,0,ELFSH_SAFEMODE_OFF);
+
+  elfsh_config_add_item("proflevel",
+    ELFSH_CONFIG_TYPE_INT,
+    ELFSH_CONFIG_MODE_RO,
+    ELFSH_NOPROF);
+
+  elfsh_config_add_item("safemode",
+    ELFSH_CONFIG_TYPE_INT,
+    ELFSH_CONFIG_MODE_RW,
+    ELFSH_SAFEMODE_OFF);
 
   elfsh_set_static_mode();
 }

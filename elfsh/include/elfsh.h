@@ -406,6 +406,9 @@ char prompt_token[512];
 #define CMD_FLOWSAVE		"flowsave" // ???
 #define	CMD_FLOWTEST		"flowtest" // ???
 
+/* config commands */
+#define CMD_CONFIGURE		"configure"
+
 
 
 /* Regx option, a module of struct s_args */
@@ -845,6 +848,7 @@ extern int         elfsh_net_client_count; /* Number of clients connected */
 extern char		elfsh_libpath[BUFSIZ];
 
 /* Commands execution handlers, each in their respective file */
+int		cmd_configure();
 int		cmd_dyn();
 int		cmd_sht();
 int             cmd_rsht();
@@ -975,6 +979,7 @@ int		cmd_step();
 int		cmd_run();
 int		cmd_display();
 int		cmd_undisplay();
+
 
 /* Registration handlers for options from opt.c */
 int		vm_getoption(u_int index, u_int argc, char **argv);

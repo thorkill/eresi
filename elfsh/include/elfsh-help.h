@@ -196,4 +196,7 @@
 #define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
 #endif
 
+
+#define HLP_CONFIGURE		"Configure internal elfsh behavior."
+
 #endif

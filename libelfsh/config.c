@@ -2,7 +2,7 @@
  * ELFsh - Configuration related api
  * 2006 thorkill, Asgard Labs Inc.
  *
- * $Id: config.c,v 1.1 2006-12-25 12:07:58 thor Exp $
+ * $Id: config.c,v 1.2 2006-12-27 22:13:29 thor Exp $
  *
  */
 
@@ -80,7 +80,6 @@ void	elfsh_config_update_key(char *name,void *data)
 /*
   returns val/data 
  */
-
 void	*elfsh_config_get_data(char *name) {
  t_configitem *item;
  
