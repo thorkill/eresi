@@ -24,7 +24,7 @@ void		aspect_vectors_init()
 }
 
 /* Project each dimension and write the desired function pointer */
-void		aspect_project_vectdim(vector_t *vect, unsigned int *dim, 
+void		aspect_vectors_insert(vector_t *vect, unsigned int *dim, 
 				       unsigned int dimsz, unsigned long fct)
 {
   unsigned long	*tmp;
@@ -42,9 +42,9 @@ void		aspect_project_vectdim(vector_t *vect, unsigned int *dim,
 
 
 /* Project each dimension and get the requested function pointer */
-void*			aspect_project_coords(vector_t *vect, 
-					     unsigned int *dim, 
-					     unsigned int dimsz)
+void*			aspect_vectors_select(vector_t *vect, 
+					      unsigned int *dim, 
+					      unsigned int dimsz)
 {
   unsigned long		*tmp;
   unsigned int		idx;

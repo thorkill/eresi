@@ -111,11 +111,11 @@ typedef struct	s_vector
 void		aspect_vectors_init();
 
 /* Add the function pointer to the hook at requested coordonates */
-void		aspect_project_vectdim(vector_t *vect, unsigned int *dim, 
+void		aspect_vectors_insert(vector_t *vect, unsigned int *dim, 
 				       unsigned int dimsz, unsigned long fct);
 
 /* Get the hook from the dimension array */
-void*		aspect_project_coords(vector_t *vect, unsigned int *dim, 
+void*		aspect_vectors_select(vector_t *vect, unsigned int *dim, 
 				      unsigned int dimsz);
 
 /* Allocate matrixes of hooks */

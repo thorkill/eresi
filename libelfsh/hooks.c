@@ -138,8 +138,7 @@ int	elfsh_register_altplthook(u_char archtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(altplt, dim, 3, (elfsh_Addr) fct);
-  //  puts("----------------- ALTPLT ----------------------");
+  aspect_vectors_insert(altplt, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -170,12 +169,7 @@ int		elfsh_register_extplthook(u_char archtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(extplt, dim, 3, (elfsh_Addr) fct);
-
-  //puts("----------------- EXTPLT ----------------------");
-  //hook = extplt->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(extplt, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -204,12 +198,7 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(plt, dim, 3, (elfsh_Addr) fct);
-
-  //puts("----------------- PLT ----------------------");
-  //hook = plt->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(plt, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -238,12 +227,7 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(encodeplt, dim, 3, (elfsh_Addr) fct);
-
-  //puts("----------------- ENCODEPLT ----------------------");
-  //hook = encodeplt->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(encodeplt, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -267,17 +251,11 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
   if (ostype >= ELFSH_OSNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
-
-  //hook = encodeplt1->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-  //puts("----------------- ENCODEPLT1 ----------------------");
-
   dim = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(encodeplt1, dim, 3, (elfsh_Addr) fct);
-
+  aspect_vectors_insert(encodeplt1, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -307,12 +285,7 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(rel, dim, 3, (elfsh_Addr) fct);
-  //puts("----------------- REL ----------------------");
-
-  //hook = rel->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(rel, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -341,12 +314,7 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(cflow, dim, 3, (elfsh_Addr) fct);
-  //puts("----------------- CFLOW ----------------------");
-
-  //hook = cflow->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(cflow, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -376,12 +344,7 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(breakp, dim, 3, (elfsh_Addr) fct);
-  //puts("----------------- BREAK ----------------------");
-
-  //hook = breakp->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(breakp, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -409,12 +372,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_project_vectdim(argcp, dim, 3, (elfsh_Addr) fct);
-  //puts("----------------- ARGC ----------------------");
-
-  //hook = argcp->hook;
-  //hook[archtype][objtype][ostype] = (elfsh_Addr) fct;
-
+  aspect_vectors_insert(argcp, dim, 3, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -475,7 +433,6 @@ int		elfsh_init_vectors()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 
 /* Initialize ALTPLT hijack and ET_REL injection handlers in their hook */
@@ -1035,15 +992,10 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "RELOCATION handler unexistant for this ARCH/OS", -1);
-  
-  //hook = rel->hook;
-  //fct = (void *) hook[archtype][elftype][ostype];
-
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(rel, dim, 3);
-
+  fct    = aspect_vectors_select(rel, dim, 3);
   ret = fct(s, r, l, a, m);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1063,7 +1015,6 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   u_char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, elfsh_Addr n4);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1078,14 +1029,11 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "CFLOW handler unexistant for this ARCH/OS", -1);
-  
-  //hook = cflow->hook;
-  //fct = (void *) hook[archtype][elftype][ostype];
+
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(cflow, dim, 3);
-
+  fct    = aspect_vectors_select(cflow, dim, 3);
   ret = fct(file, name, old, new);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1103,7 +1051,6 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   u_char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *f, elfsh_Sym *s, elfsh_Addr a);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1119,14 +1066,11 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT handler unexistant for this ARCH/OS", -1);
 
-  //hook = plt->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(plt, dim, 3);
-
-  ret  = fct(file, s, new);
+  fct    = aspect_vectors_select(plt, dim, 3);
+  ret    = fct(file, s, new);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT redirection handler failed", (-1));
@@ -1145,7 +1089,6 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   u_char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfsh_Addr a, u_int off);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1161,12 +1104,10 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ENCODEPLT handler unexistant for this ARCH/OS", -1);
 
-  //hook = encodeplt->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(encodeplt, dim, 3);
+  fct    = aspect_vectors_select(encodeplt, dim, 3);
 
   ret  = fct(file, plt, diff, off);
   if (ret < 0)
@@ -1188,7 +1129,6 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   int           ret;
   int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfshsect_t *s2,
 		       elfsh_Addr a);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1204,13 +1144,10 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ENCODEPLT1 handler unexistant for this ARCH/OS", -1);
 
-  //hook = encodeplt1->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(encodeplt1, dim, 3);
-
+  fct    = aspect_vectors_select(encodeplt1, dim, 3);
   ret  = fct(file, plt, extplt, diff);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1229,7 +1166,6 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   u_char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr a);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1248,10 +1184,7 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(altplt, dim, 3);
-
-  //hook = altplt->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
+  fct    = aspect_vectors_select(altplt, dim, 3);
   ret  = fct(file, s, new);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1271,7 +1204,6 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   int           ret;
   int		(*fct)(elfshsect_t *extplt, elfshsect_t *altgot,
 		       elfshsect_t *dynsym, elfshsect_t *relplt);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1286,13 +1218,10 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
       ostype   == ELFSH_OS_ERROR)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "EXTPLT handler unexistant for this ARCH/OS", -1);
-
-  //hook = vextplt->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(vextplt, dim, 3);
+  fct    = aspect_vectors_select(vextplt, dim, 3);
   ret  = fct(extplt, altgot, dynsym, relplt);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1312,7 +1241,6 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   u_char        ostype;
   int		ret;
   int		(*fct)(elfshobj_t *file, elfshbp_t *bp);
-  //elfsh_Addr	***hook;
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1331,11 +1259,7 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(breakh, dim, 3);
-
-  //hook = breakh->hook;
-  //fct  = (void *) hook[archtype][elftype][ostype];
-
+  fct    = aspect_vectors_select(breakh, dim, 3);
   ret  = fct(file, bp);
   if (ret < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1369,8 +1293,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
-  fct    = aspect_project_coords(argch, dim, 3);
-
+  fct    = aspect_vectors_select(argch, dim, 3);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
 }
 
