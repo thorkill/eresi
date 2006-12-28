@@ -369,9 +369,14 @@ char		*vm_stdinput()
 /* Initialize Input/Output hooks */
 int		vm_initio()
 {
+  static int	done = 0;
   elfshjob_t	*initial;
 
   ELFSH_NOPROFILE_IN();
+  if (done)
+    ELFSH_NOPROFILE_ROUT(0);
+  done = 1;
+
   XALLOC(initial, sizeof(elfshjob_t), -1);
   memset(initial, 0, sizeof(elfshjob_t));
   initial->io.type      = ELFSH_IOSTD;
@@ -387,9 +392,9 @@ int		vm_initio()
   initial->name = elfsh_strdup("local");
   hash_init(&initial->loaded, 51);
   hash_init(&initial->dbgloaded, 11);
-  elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, vm_colorfieldstr,
-			 vm_colortypestr, vm_colorend, vm_colorwarn, vm_colorfunction,
-			 vm_colorfilename);
+  elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, 
+			 vm_colorfieldstr, vm_colortypestr, vm_colorend, 
+			 vm_colorwarn, vm_colorfunction, vm_colorfilename);
   elfsh_set_color_advanced(vm_coloradv, vm_colorinstr_fmt, vm_coloraddress,
 			   vm_colornumber, vm_colorstr_fmt, vm_colorfieldstr_fmt, 
 			   vm_colortypestr_fmt, vm_colorwarn_fmt);

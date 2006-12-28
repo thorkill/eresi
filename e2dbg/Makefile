@@ -27,10 +27,10 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
 			-L../libaspect/ -laspect -L../librevm/                     \
-			-L../libmjollnir/ -g3 -L../libc/ -lcelfsh -L../libui/ -lui \
-			$(LDASMOPT) $(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ \
-			$(DYNOPT) $(BITS) $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD)     \
-			$(LDMJOLLNIR)
+			-L../libmjollnir -lmjollnir -g3 -L../libc/ -lcelfsh        \
+			-L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)       \
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)       \
+			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 all                     : ${OBJ}
 			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 

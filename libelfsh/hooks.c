@@ -122,8 +122,8 @@ int	elfsh_register_altplthook(u_char archtype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
   altplt = hash_get(&vector_hash, ELFSH_HOOK_ALTPLT);
+
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
@@ -475,9 +475,6 @@ int		elfsh_init_vectors()
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 
 

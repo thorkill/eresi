@@ -1,7 +1,7 @@
 /*
-** blocks_flow.c in libmjollnir for elfsh
+** blocks.c in libmjollnir for elfsh
 ** 
-** Authors : sk, thorkill, mayhem
+** Authors : sk, mayhem, thorkill
 **
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem

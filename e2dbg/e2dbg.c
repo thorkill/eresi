@@ -127,6 +127,7 @@ int			e2dbg_setup(char *name)
 #endif
 
   e2dbg_setup_hooks();
+  vm_initio();
   vm_config();
   e2dbg_load_linkmap(name);
 

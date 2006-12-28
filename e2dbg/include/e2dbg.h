@@ -22,6 +22,15 @@
 #define		E2DBG_PROFILER_BUFLEN	256
 #define		E2DBG_SCRIPT_CONTINUE	1
 
+#define		E2DBG_HOOK_GETREGS	"hook_getregs"
+#define		E2DBG_HOOK_SETREGS	"hook_setregs"
+#define		E2DBG_HOOK_GETPC	"hook_getpc"
+#define		E2DBG_HOOK_SETSTEP	"hook_setstep"
+#define		E2DBG_HOOK_RESETSTEP	"hook_resetstep"
+#define		E2DBG_HOOK_GETFP	"hook_getfp"
+#define		E2DBG_HOOK_NEXTFP	"hook_nextfp"
+#define		E2DBG_HOOK_GETRET	"hook_getret"
+
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
 #define		E2DBG_SIGTRAMP_RETADDR	(0xFFFFE440)
