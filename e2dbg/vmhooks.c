@@ -1,29 +1,17 @@
 /*
-** vmhooks.c
+** vmhooks.c for e2dbg in the ELF shell framework
 **
 ** The interface hooking system
 **
-** Those hooks stay in the VM and not in libelfsh.
+** Those hooks stay in the debugger and not in libelfsh.
 **
-** For now they cant be accessed or changed from scripting
+** For now they cannot be accessed or changed from scripting yet.
 ** 
-** Started on  Sat Sep 24 07:17:33 2005 mayhem
+** Started   Sat Sep 24 07:17:33 2005 mayhem
+** Modified  Thu Dec 28 04:28:00 2006 mayhem
 */
 #include "elfsh.h"
 
-
-
-/* VM Debugger hooks */
-/*
-elfsh_Addr*	(*hook_getpc[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-elfsh_Addr*	(*hook_getfp[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-elfsh_Addr      (*hook_nextfp[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])(elfsh_Addr bp);
-elfsh_Addr	(*hook_getret[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])(elfsh_Addr bp);
-void		(*hook_setregs[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-void		(*hook_getregs[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-void		(*hook_setstep[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-void		(*hook_resetstep[ELFSH_ARCHNUM][E2DBG_HOSTNUM][ELFSH_OSNUM])();
-*/
 
 /* Void handlers for the 2 hooks */
 void		  e2dbg_default_getregs()
