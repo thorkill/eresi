@@ -51,8 +51,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
       context->curblock->contig = curvaddr + ilen;
       context->curblock->altern = mjr_insert_destaddr(context);
       context->curblock->altype = CALLER_CALL;
-      context->curblock = 0;
+//      context->curblock = 0;
       context->calls_seen++;
+
       if (context->curblock->altern)
 	context->calls_found++;
 

@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.13 2006-12-29 22:38:47 may Exp $
+** $Id: core.c,v 1.14 2006-12-29 23:57:17 thor Exp $
 */
 #include "libmjollnir.h"
 
@@ -42,6 +42,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   curr     = 0;
   vaddr    = sct->shdr->sh_addr;
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
+
   if (sct->shdr->sh_addr == e_point)
     {
       printf(" [*] Entry point: %08x\n", e_point);
@@ -60,12 +61,8 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 	  mjr_history_shift(sess->cur, instr, vaddr + curr);
 	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
 	} 
+	curr += ilen;
     }
-  
-  /* Store analyzed blocks in file */
-  if (mjr_store_blocks(sess->cur->obj, sess->cur->blklist, 1) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to store blocks in file", -1);    
   
   elfsh_free(ptr);
   ELFSH_NOPROFILE_ROUT(NULL);
@@ -118,6 +115,11 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 #endif
       mjr_analyse_section(sess, shtName);
     }
+
+  /* Store analyzed blocks in file */
+  if (mjr_store_blocks(sess->cur->obj, sess->cur->blklist, 1) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to store blocks in file", -1);  
   
   /* Set the flag and return */
   sess->cur->analysed = 1;
