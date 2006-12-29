@@ -112,15 +112,10 @@ void		aspect_vectors_init();
 
 /* Add the function pointer to the hook at requested coordonates */
 void		aspect_vectors_insert(vector_t *vect, unsigned int *dim, 
-				       unsigned int dimsz, unsigned long fct);
+				      unsigned long fct);
 
 /* Get the hook from the dimension array */
-void*		aspect_vectors_select(vector_t *vect, unsigned int *dim, 
-				      unsigned int dimsz);
-
-/* Allocate matrixes of hooks */
-int		aspect_recursive_vectalloc(unsigned long *tab, unsigned int *dims, 
-					   unsigned int depth, unsigned int dimsz);
+void*		aspect_vectors_select(vector_t *vect, unsigned int *dim);
 
 /* Add a new vector */
 int		aspect_register_vector(char *, void*, void*,

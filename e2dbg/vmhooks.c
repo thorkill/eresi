@@ -95,7 +95,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(nextfp, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(nextfp, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -123,7 +123,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getret, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(getret, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -151,7 +151,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(setregs, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(setregs, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -179,7 +179,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getregs, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(getregs, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -207,7 +207,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getpc, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(getpc, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -235,7 +235,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getfp, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(getfp, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -263,7 +263,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(setstep, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(setstep, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -291,7 +291,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(resetstep, dim, 3, (elfsh_Addr) fct);
+  aspect_vectors_insert(resetstep, dim, (elfsh_Addr) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -299,7 +299,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
 
 
 /* Initialize e2dbg hook vectors */
-static int	e2dbg_init_vectors()
+static int	e2dbg_register_vectors()
 {
   u_int		*dims;
 
@@ -354,29 +354,13 @@ static int	e2dbg_init_vectors()
 void		e2dbg_setup_hooks()
 {
   static int	done = 0;
-  u_int		i, j, k;
 
   /* Check if already initialized */
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (done)
     ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
   aspect_vectors_init();
-  e2dbg_init_vectors();
-  
-  /* Initialize hooks to void */
-  for (i = 0; i < ELFSH_ARCHNUM; i++)
-    for (j = 0; j < E2DBG_HOSTNUM; j++)
-      for (k = 0; k < ELFSH_OSNUM; k++)
-	{
-	  e2dbg_register_sregshook(i, j, k, e2dbg_default_setregs);
-	  e2dbg_register_gregshook(i, j, k, e2dbg_default_getregs);
-	  e2dbg_register_getpchook(i, j, k, e2dbg_default_getpc);
-	  e2dbg_register_getfphook(i, j, k, e2dbg_default_getfp);
-	  e2dbg_register_setstephook(i, j, k, e2dbg_default_setstep);
-	  e2dbg_register_resetstephook(i, j, k, e2dbg_default_resetstep);
-	  e2dbg_register_nextfphook(i, j, k, e2dbg_default_nextfphandler);
-	  e2dbg_register_getrethook(i, j, k, e2dbg_default_getrethandler);
-	}
+  e2dbg_register_vectors();
 
   /* Initialize vectors */
   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
@@ -545,7 +529,7 @@ int		  e2dbg_getregs()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(getregs, dim, 3);
+  fct    = aspect_vectors_select(getregs, dim);
 
   /* This hook is non-fatal, we just wont have regs as variables if it fails */
   fct();
@@ -579,7 +563,7 @@ int		  e2dbg_setregs()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(setregs, dim, 3);
+  fct    = aspect_vectors_select(setregs, dim);
  
   /* This hook is non-fatal, we just wont have modified registers if it fails. */
   fct();
@@ -613,7 +597,7 @@ elfsh_Addr*     e2dbg_getpc()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(getpc, dim, 3);
+  fct    = aspect_vectors_select(getpc, dim);
   pc     = fct();
   if (pc == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -649,7 +633,7 @@ elfsh_Addr*     e2dbg_getfp()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(getfp, dim, 3);
+  fct    = aspect_vectors_select(getfp, dim);
   fp     = fct();
   if (fp == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -684,7 +668,7 @@ int		  e2dbg_setstep()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(setstep, dim, 3);
+  fct    = aspect_vectors_select(setstep, dim);
   fct();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -715,7 +699,7 @@ int		  e2dbg_resetstep()
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(resetstep, dim, 3);
+  fct    = aspect_vectors_select(resetstep, dim);
   fct();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -750,7 +734,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(nextfp, dim, 3);
+  fct    = aspect_vectors_select(nextfp, dim);
   ret = fct(addr);
   if (ret == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -786,7 +770,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  fct    = aspect_vectors_select(getret, dim, 3);
+  fct    = aspect_vectors_select(getret, dim);
   ret    = fct(addr);
   if (ret == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,

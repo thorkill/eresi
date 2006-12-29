@@ -24,13 +24,16 @@ void		aspect_vectors_init()
 }
 
 /* Project each dimension and write the desired function pointer */
-void		aspect_vectors_insert(vector_t *vect, unsigned int *dim, 
-				       unsigned int dimsz, unsigned long fct)
+void		aspect_vectors_insert(vector_t	   *vect, 
+				      unsigned int *dim, 
+				      unsigned long fct)
 {
   unsigned long	*tmp;
   unsigned int	idx;
+  unsigned int  dimsz;
 
-  tmp = vect->hook;
+  dimsz = vect->arraysz;
+  tmp   = vect->hook;
   for (idx = 0; idx < dimsz; idx++)
     {
       tmp += dim[idx];
@@ -42,14 +45,14 @@ void		aspect_vectors_insert(vector_t *vect, unsigned int *dim,
 
 
 /* Project each dimension and get the requested function pointer */
-void*			aspect_vectors_select(vector_t *vect, 
-					      unsigned int *dim, 
-					      unsigned int dimsz)
+void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 {
   unsigned long		*tmp;
   unsigned int		idx;
+  unsigned int		dimsz;
 
-  tmp = vect->hook;
+  tmp   = vect->hook;
+  dimsz = vect->arraysz;
   for (idx = 0; idx < dimsz; idx++)
     {
       tmp += dim[idx];
@@ -60,10 +63,10 @@ void*			aspect_vectors_select(vector_t *vect,
 
 
 /* Allocate recursively the hook array */
-int		aspect_recursive_vectalloc(unsigned long *tab, unsigned int *dims, 
-					  unsigned int depth, unsigned int dimsz)
+static int	aspect_vectors_recalloc(unsigned long *tab, unsigned int *dims, 
+					unsigned int depth, unsigned int dimsz)
 {
-  unsigned int		idx;
+  unsigned int	idx;
 
   if (depth == dimsz)
     return (0);
@@ -76,9 +79,30 @@ int		aspect_recursive_vectalloc(unsigned long *tab, unsigned int *dims,
 	  write(1, "Out of memory\n", 14);
 	  return (-1);
 	}
-      aspect_recursive_vectalloc((unsigned long *) tab[idx], dims, 
-				depth + 1, dimsz);
+      aspect_vectors_recalloc((unsigned long *) tab[idx], dims, depth + 1, dimsz);
     }
+  return (0);
+}
+
+
+/* Initialize recursively the hook array */
+static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims, 
+				       unsigned int depth, unsigned int dimsz,
+				       void *defaultelem)
+{
+  unsigned int	idx;
+
+  if (depth == dimsz)
+    return (0);
+
+  /* Check if we reached a leaf, otherwise recurse more */
+  if (depth == dimsz)
+    for (idx = 0; idx < dims[depth - 1]; idx++)
+      tab[idx] = (unsigned long) defaultelem;
+  else
+    for (idx = 0; idx < dims[depth - 1]; idx++)
+      aspect_vectors_recinit((unsigned long *) tab[idx], dims, 
+			     depth + 1, dimsz, defaultelem);
   return (0);
 }
 
@@ -92,7 +116,7 @@ int		aspect_register_vector(char		*name,
 {
   vector_t	*vector;
   unsigned long	*ptr;
-
+  
   if (!registerfunc || !defaultfunc || !dimsz || !dimensions)
     {
       write(1, "Invalid NULL parameters\n", 24);
@@ -106,12 +130,15 @@ int		aspect_register_vector(char		*name,
     return (-1);
   vector->hook = ptr;
   if (dimsz > 1)
-    aspect_recursive_vectalloc((unsigned long *) vector->hook, 
-			       dimensions, 1, dimsz);
+    aspect_vectors_recalloc((unsigned long *) vector->hook, dimensions, 1, dimsz);
+  
   vector->arraysz       = dimsz;
   vector->arraydims     = dimensions;
   vector->register_func = registerfunc;
   vector->default_func  = defaultfunc;
   hash_add(&vector_hash, name, vector);
+
+  /* Initialize vectored elements */
+  aspect_vectors_recinit(vector->hook, dimensions, 1, dimsz, defaultfunc);
   return (0);
 }
