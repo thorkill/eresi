@@ -853,7 +853,6 @@ static void	setup_cmdhash()
 #endif
 
   /* Flow analysis commands */
-  vm_addcmd(CMD_FLOW      , cmd_flow          , NULL,            1, HLP_FLOW);
   vm_addcmd(CMD_ANALYSE	  , cmd_analyse       , NULL,            0, HLP_ANALYSE);
   vm_addcmd(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            0, HLP_UNSTRIP);
   vm_addcmd(CMD_GRAPH     , cmd_graph         , vm_getoption3,   1, HLP_GRAPH);

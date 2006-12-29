@@ -1,14 +1,14 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.4 2006-12-11 13:57:39 may Exp $
+ * $Id: function.c,v 1.5 2006-12-29 22:38:47 may Exp $
  *
  */
 #include <libmjollnir.h>
 
 
 /* Copy the function in a special buffer to fingerprint it */
-int		mjr_i386_function_copy(mjrsession_t  *ctx, 
+int		mjr_i386_function_copy(mjrcontext_t  *ctx, 
 				       unsigned char *src, 
 				       unsigned char *dst, 
 				       int	     mlen)
@@ -19,7 +19,7 @@ int		mjr_i386_function_copy(mjrsession_t  *ctx,
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   for (p = ilen = n = 0; n < mlen; n += ilen) 
     {
-      ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->cur->proc);
+      ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
       if (ilen <= 0)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
       
@@ -43,8 +43,8 @@ int		mjr_i386_function_copy(mjrsession_t  *ctx,
 
 
 /* Finger print a function using X method */
-void		*mjr_fingerprint_function(mjrsession_t  *ctx, 
-					  unsigned char *buff, 
+void		*mjr_fingerprint_function(mjrcontext_t  *ctx, 
+					  elfsh_Addr	addr, 
 					  int		type) 
 {
  MD5_CTX	md5ctx;
@@ -53,9 +53,20 @@ void		*mjr_fingerprint_function(mjrsession_t  *ctx,
  void           *ret;
  u_int		i;
  int 		mlen;
+ int		off;
+ elfshsect_t	*sect;
+ unsigned char	*buff;
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
  ret = NULL;
+
+ /* Get function data */
+ sect = elfsh_get_parent_section(ctx->obj, addr, &off);
+ if (!sect)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unknown parent section", NULL);   
+ buff = elfsh_get_raw(sect);
+ buff += off;
 
  /* Select the desired fingerprinting function */
  switch (type) 

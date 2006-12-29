@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: elfThor.c,v 1.6 2006-12-11 13:57:27 may Exp $
+ * $Id: elfThor.c,v 1.7 2006-12-29 22:38:47 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -84,8 +84,8 @@ int		main(int ac, char **av)
     {
       mjr_analyse(&sess,NULL);
       printf("seen: %d found %d\n",
-	     sess.cur->st_calls_seen,
-	     sess.cur->st_calls_found);
+	     sess.cur->calls_seen,
+	     sess.cur->calls_found);
     }
   
   if (opt_R)

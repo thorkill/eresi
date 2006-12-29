@@ -107,6 +107,7 @@ static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims,
 }
 
 
+
 /* Register a new vector. A vector is an multidimentional array of hooks */
 int		aspect_register_vector(char		*name, 
 				      void		*registerfunc, 

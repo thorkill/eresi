@@ -9,18 +9,13 @@
 #include "libmjollnir.h"
 
 
-static elfshiblock_t	*g_curblock = 0;     /* current working block */
-u_int			g_prevaddr = 0;	     /* previous instruction address */
-asm_instr		g_previns;	     /* previous instruction if CMP/TEST */
-
-
 
 /* This function traces the entry point and save the last push argument until 
 ** a call is found. This allow to fetch the main address in an OS-dependent 
 ** manner */
 u_int			mjr_trace_start(mjrcontext_t	*context,
 					elfshobj_t	*obj, 
-					char		*buf, 
+					unsigned char	*buf, 
 					u_int		len, 
 					u_int		vaddr,
 					elfshiblock_t	**b_lst)
@@ -110,18 +105,21 @@ u_int			mjr_trace_start(mjrcontext_t	*context,
  * flow.
  *
  */
-void			mjr_trace_control(mjrcontext_t	*context,
+int			mjr_trace_control(mjrcontext_t	*context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *ins, 
-					  u_int		vaddr,
-					  elfshiblock_t **blk_list) 
+					  elfsh_Addr	vaddr)
+					  
 {
   int			ilen;
+  int			ret;
   elfshiblock_t		*tmp = NULL;
   
   /* Initialy enter here */
-  /* If the last instrution was a jmp/call/ret, g_curblock will be NULL here */
-  if (!g_curblock) 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If the last instrution was a jmp/call/ret, curblock will be NULL here */
+  if (!context->curblock) 
     {
 
       /* previous block is finished
@@ -129,15 +127,17 @@ void			mjr_trace_control(mjrcontext_t	*context,
       ** if found, set size to 0 as we are going to disassemble it
       ** if not found, create a new block unless instruction is a NOP
       ** -this is to escape some padding in begining of .text section-
-      ** if (g_prevaddr is not null, then, new block)
+      ** if (prevaddr is not null, then, new block)
       */
-      if ((g_curblock = mjr_block_get_by_vaddr(*blk_list, vaddr, 0)))
-	g_curblock->size = 0;
+      if ((context->curblock = mjr_block_get_by_vaddr(context->blklist, vaddr, 0)))
+	context->curblock->size = 0;
       else 
 	{
-	  g_curblock = mjr_block_create(vaddr, 0);
-	  if (g_prevaddr)
-	    mjr_block_add_caller(g_curblock, g_prevaddr, CALLER_CONT);
+	  context->curblock = mjr_block_create(vaddr, 0);
+	  if (context->hist[MJR_HISTORY_PREV].vaddr)
+	    mjr_block_add_caller(context->curblock, 
+				 context->hist[MJR_HISTORY_PREV].vaddr,
+				 CALLER_CONT);
 	}
    }
   
@@ -148,65 +148,32 @@ void			mjr_trace_control(mjrcontext_t	*context,
   **
   ** NOTE: this may help in obfuscated code detection
   */
-  else if ((tmp = mjr_block_get_by_vaddr(*blk_list, vaddr, 0))) 
+  else if ((tmp = mjr_block_get_by_vaddr(context->blklist, vaddr, 0))) 
     {
-      g_curblock->altype = CALLER_CONT;
-      g_curblock->contig = vaddr;
-      mjr_block_add_list(blk_list, g_curblock);
-      tmp->size = 0;
-      g_curblock = tmp;
-      //g_curblock->size = 0;
-      //g_curblock = tmp;
+      context->curblock->altype = CALLER_CONT;
+      context->curblock->contig = vaddr;
+      mjr_block_add_list(&context->blklist, context->curblock);
+      context->curblock->size   = 0;
+      context->curblock         = tmp;
     }
   
   /* From there, we MUST be in a block */
-  assert(g_curblock != NULL);
+  assert(context->curblock != NULL);
 
-  /* Keep track of current address and add current instruction size to block size */
-  g_prevaddr = vaddr;
-  ilen = asm_instr_len(ins);
-  g_curblock->size += ilen;
-  memcpy(&g_previns, ins, sizeof (asm_instr));
-  
+  /* Keep track of curaddr and add current instruction size to block size */
+  context->curblock->size += ilen;
+  mjr_history_write(context, ins, vaddr, MJR_HISTORY_CUR);
+
   if (!tmp)
-    mjr_block_add_list(blk_list, g_curblock);
+    mjr_block_add_list(&context->blklist, context->curblock);
   
-  /*
-    Depending on instruction type -based on IA32 instruction set-
-
-    ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
-    ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
-    ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
-
-    The last two types reset g_prevaddr as execution flow won't be restored
-    to following instruction.
-  */
-  switch (ins->type) 
-    {
-    case ASM_TYPE_CONDBRANCH:
-      g_curblock->contig = vaddr + ilen;
-      g_curblock->altern = mjr_insert_destaddr(context, obj, ins, vaddr, blk_list);
-      g_curblock->altype = CALLER_JUMP;
-      g_curblock = 0;
-      break;
-    case ASM_TYPE_CALLPROC:
-      g_curblock->contig = vaddr + ilen;
-      g_curblock->altern = mjr_insert_destaddr(context, obj, ins, vaddr, blk_list);
-      g_curblock->altype = CALLER_CALL;
-      g_curblock = 0;
-      break;
-    case ASM_TYPE_IMPBRANCH:
-      g_curblock->altern = mjr_insert_destaddr(context, obj, ins, vaddr, blk_list);
-      g_curblock->altype = CALLER_JUMP;
-      g_curblock = 0;
-      g_prevaddr = 0;
-      break;
-    case ASM_TYPE_RETPROC:
-      g_curblock->contig = 0;
-      g_curblock->altern = 0;
-      g_curblock->altype = CALLER_RET;
-      g_curblock = 0;
-      g_prevaddr = 0;
-      break;
-    }
+  /* Now abstract interpret the operational semantics of the current 
+     instruction set using the typed instruction system of libasm */
+  context->obj      = obj;
+  mjr_history_write(context, ins, vaddr, 0);
+  ret = mjr_asm_flow(context);
+  if (ret < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to interpret instruction type", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

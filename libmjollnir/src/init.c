@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.7 2006-12-27 22:39:46 thor Exp $
+ * $Id: init.c,v 1.8 2006-12-29 22:38:47 may Exp $
  *
  * Initialization functions
  *
@@ -65,12 +65,9 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
 
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
  XALLOC(ctx, sizeof(mjrcontext_t), NULL);
+ bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- ctx->curVaddr = 0;
- ctx->analysed_calls = 0;
- ctx->st_calls_seen = 0;
- ctx->st_calls_found = 0;
- hash_init(&ctx->blocks, mjrHashLarge);
+ hash_init(&ctx->blkhash, mjrHashLarge);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }
 

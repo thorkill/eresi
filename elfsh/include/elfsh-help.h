@@ -133,17 +133,16 @@
 #define HLP_GRAPH	        "Create graphviz file for CFG\n\n\t" \
 				CMD_GRAPH" [file] [symbol|startaddr] [endaddr|+size]\n"
 
-#define	HLP_FLOW		"Perform control flow analysis"
 #define	HLP_SETGVL              "Set graph verbosity level \n\n\t"CMD_SETGVL" <0-5> \n"
 #define	HLP_INSPECT	        "Disassemble block at symbol/address\n"
 #define HLP_FLOWJACK	        "Hijack basic block reference from sym1 to sym2\n"
 #define HLP_ADDGOTO	        "\t"CMD_ADDGOTO" <vaddr> <func_addr>\n\n\t" \
 				"Inform elfsh about the location and value of a function pointer\n"
-#define	HLP_UNSTRIP		"Reconstruct symbol table with original name when possible"
-#define	HLP_RENAME		"Rename a symbol with a new supplied name"
 #define	HLP_FLOWTEST		"Test command for graph analysis features"
 #define	HLP_ANALYSE		"Perform libmjollnir analysis"
 #define	HLP_CONTROL		"Print stored control flow information"
+#define HLP_UNSTRIP		"Unstrip the current working binary"
+#define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
 
 /* Scripting only commands */
 #define HLP_CMP			"Compare 2 parameters (modify $_ variable)"
@@ -189,13 +188,6 @@
 #define	HLP_DISPLAY		"List or add displayed commands on breakpoints hits or step"
 #define	HLP_UNDISPLAY		"UNIMPLEMENTED : Remove a display command"
 #define HLP_THREADS		"Print existing threads list or switch to a given thread view"
-
-#if defined(USE_MJOLLNIR)
-#define HLP_ANALYSE		"Analyse the binary (needed for unstrip)"
-#define HLP_UNSTRIP		"Unstrip the binary."
-#define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
-#endif
-
 
 #define HLP_CONFIGURE		"Configure internal elfsh behavior."
 

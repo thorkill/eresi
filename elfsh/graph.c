@@ -177,7 +177,7 @@ int		cmd_graph(void)
       blk = sect->data + symtab[index].st_value;
       if (!blk)
 	{
-	  printf("No BLOCK found at offset %08X \n", blk);
+	  printf("No BLOCK found at offset %08X \n", (elfsh_Addr) blk);
 	  continue;
 	}
       iblk = mjr_block_get_by_vaddr(blk_list, blk->vaddr, 0);

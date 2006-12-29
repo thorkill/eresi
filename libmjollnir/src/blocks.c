@@ -18,21 +18,96 @@ char	*call_type_str[] =
   "UNKN"
 };
 
-
 /* Goto hash */
 hash_t		goto_hash;
 
 
-/* Add a value in historic and shift all old ones */
-void	mjr_history_shift(mjrcontext_t *cur, asm_instr vaddr) 
+
+/* Make the link between the new block and the current block */
+/* Split existing blocks if necessary */
+int		mjr_block_point(elfshiblock_t **blklist,
+				asm_instr      *ins,
+				elfsh_Addr     vaddr,
+				elfsh_Addr     dest)
 {
+  elfshiblock_t	*dst;
+  elfshiblock_t	*dst_end;  
+  int		new_size;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  dst_end = *blklist;
+  dst     = mjr_block_get_by_vaddr(dst_end, dest, 1);
+
+  /* Just create a new target block */
+  if (!dst) 
+    {
+      dst = mjr_block_create(dest, 1);
+      dst->altype = CALLER_UNKN;
+      mjr_block_add_list(blklist, dst);
+    } 
+
+  /* Split block */
+  else if (dst->vaddr != dest) 
+    {
+      new_size        = dst->size - (dest - dst->vaddr);
+      dst->size      -= new_size;
+      dst_end         = mjr_block_create(dest, new_size);
+      dst_end->contig = dst->contig;
+      dst_end->altern = dst->altern;
+      dst_end->altype = dst->altype;
+      dst->contig     = dest;
+      dst->altype     = CALLER_CONT;
+      dst->altern     = 0;
+      mjr_block_add_list(blklist, dst_end);
+      dst            = dst_end;
+    }
+  
+  /* Add caller to target block */
+  mjr_block_add_caller(dst, vaddr, 
+		       (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+
+
+/* Retreive control flow section content if any */
+elfshiblock_t*	mjr_get_blocks(elfshobj_t *file)
+{
+  elfshsect_t	*sect;
+  int		ilen;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  cur->vaddr_hist[0] = cur->vaddr_hist[1];
-  cur->vaddr_hist[1] = cur->vaddr_hist[2];
-  cur->vaddr_hist[2] = cur->vaddr_hist[3];
-  cur->vaddr_hist[3] = cur->vaddr_hist[4];
-  cur->vaddr_hist[4] = vaddr;  
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, );
+  
+ /* Parse arguments, load binary and resolve symbol */
+  sect = elfsh_get_section_by_name(file,
+				   ELFSH_SECTION_NAME_CONTROL, 
+				   0, 0, 0);
+  if (!sect)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Make sure the user wants to renew analysis */
+  /* XXX: Needs to use vm_output which will be located in librevm ! */
+  printf(" [*] %s section present ! \n"
+	 "     Analysis will remove currently stored information. "
+	 "continue ? [N/y]", ELFSH_SECTION_NAME_CONTROL);
+  ilen = getchar();
+  puts("");
+  if (ilen != 'y')
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Flow analysis aborted", 0);
+
+  /* Return or retreive information */
+  if (sect->altdata)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+  mjr_load_blocks(file, (elfshiblock_t **) &sect->altdata);
+  if (sect->altdata)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Flow analysis failed", 0);
 }
 
 
@@ -230,7 +305,7 @@ int			mjr_save_block(elfshiblock_t *cur, elfshbuf_t *buf)
 
 
 /* Store the blocks inside the .control section using the file representation */
-int			mjr_store_blocks(elfshobj_t *obj , elfshiblock_t *blist, 
+int			mjr_store_blocks(elfshobj_t *obj, elfshiblock_t *blist, 
 					 int mode) 
 {
   elfsh_Shdr		shdr;
@@ -420,199 +495,8 @@ elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode
   if (!list)
     return (NULL);
   cur.vaddr = vaddr;
-  bcur = btree_find_elem(list->btree, (mode ? 
-				       (void *) mjr_match_inblock : 
-				       (void *) mjr_match_block), &cur);
+  bcur = btree_find_elem(list->btree, 
+			 (mode ? (void *) mjr_match_inblock : 
+			  (void *) mjr_match_block), &cur);
   return (bcur);
 }
-
-
-
-
-/* Make the link between the new block and the current block */
-/* Split existing blocks if necessary */
-int		mjr_block_point(elfshiblock_t **blklist,
-				asm_instr      *ins,
-				elfsh_Addr     vaddr,
-				elfsh_Addr     dest)
-{
-  elfshiblock_t	*dst;
-  elfshiblock_t	*dst_end;  
-  int		new_size;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  dst_end = *blklist;
-  dst     = mjr_block_get_by_vaddr(dst_end, dest, 1);
-
-  /* Just create a new target block */
-  if (!dst) 
-    {
-      dst = mjr_block_create(dest, 1);
-      dst->altype = CALLER_UNKN;
-      mjr_block_add_list(blklist, dst);
-    } 
-
-  /* Split block */
-  else if (dst->vaddr != dest) 
-    {
-      new_size        = dst->size - (dest - dst->vaddr);
-      dst->size      -= new_size;
-      dst_end         = mjr_block_create(dest, new_size);
-      dst_end->contig = dst->contig;
-      dst_end->altern = dst->altern;
-      dst_end->altype = dst->altype;
-      dst->contig     = dest;
-      dst->altype     = CALLER_CONT;
-      dst->altern     = 0;
-      mjr_block_add_list(blklist, dst_end);
-      dst            = dst_end;
-    }
-  
-  /* Add caller to target block */
-  mjr_block_add_caller(dst, vaddr, 
-		       (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-
-/* 
-** Support function pointers computations
-**
-** Handle something like this : call *%reg
-**     
-**  -> Check goto table and fixup destination
-**
-**  - start gdb, set breakpoint on a known pointer function, run the prog
-**  - check register value at breakpoint
-**  - start elfsh
-**  - addgoto <vaddr of call *%reg> <destaddr value of *%reg>   
-*/
-elfsh_Addr		mjr_compute_fctptr(mjrcontext_t		*context,
-					   elfshobj_t		*obj, 
-					   asm_instr		*ins, 
-					   elfsh_Addr		vaddr,
-					   elfshiblock_t	**blklist) 
-{
-  char		tmp[255];
-  char		*ret;
-  elfsh_Addr	dest;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  printf(" [*] Found function pointer at %x\n",vaddr);
-  snprintf(tmp, sizeof(tmp), "%x", vaddr);
-
-  /* We deal with a constructed address */
-  if (context->vaddr_hist[4].instr == ASM_CALL &&
-      context->vaddr_hist[3].instr == ASM_MOV  &&
-      context->vaddr_hist[2].instr == ASM_MOV) 
-    {
-      dest = context->vaddr_hist[2].op2.imm;
-      
-      if (dest < elfsh_get_entrypoint(obj->hdr)) 
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid target vaddr for function pointer", 
-			  (elfsh_Addr) -1);
-      mjr_block_point(blklist, ins, vaddr, dest);
-
-#if defined(__DEBUG_MJOLLNIR__)
-      printf(" [*] 0x%08x Detected possible FUNCPTR at [%x/%d] \n",
-	     vaddr, dest, dest);
-#endif
-
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
-    } 
-  
-  /* Happens when an address was manually inserted in the routing table */
-  /* This allow to avoid the control flow graph to be broken if elfsh
-     is not capable to recompute the target address */
-  ret = (char *) hash_get(&goto_hash, tmp);
-  if (!ret) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to compute function pointer target", 
-		      (elfsh_Addr) -1);  
-  dest = strtol(ret, (char **) NULL, 16);
-  if (dest) 
-    {
-
-#if defined(__DEBUG_MJOLLNIR__)
-      printf(" [*] Extended routing table found 0x%08x -> 0x%08x\n", vaddr, dest);
-#endif
-
-      mjr_block_point(blklist, ins, vaddr, dest);
-    }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
-}
-
-
-
-
-
-/*
- * This function add a new element to the linked list of callers 
- * of the current block.
- * 
- * It resolve operand of instruction which may modify the execution path.
- * If resolved to a virtual address, a new block is inserted.
- *
- * -> Return destination address inserted or -1 if unresolved
- */
-int		mjr_insert_destaddr(mjrcontext_t	*context,
-				    elfshobj_t		*obj, 
-				    asm_instr		*ins, 
-				    u_int		vaddr,
-				    elfshiblock_t	**blklist) 
-{
-  int		ilen;
-  elfshiblock_t	*dst_end;
-  elfsh_Addr	dest;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  dest = 0;
-
-  /* The target block is called directly */
-  if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
-    {    
-      ilen = asm_instr_len(ins);
-      asm_operand_get_immediate(ins, 1, 0, &dest);
-      dest += ilen + vaddr;
-      dst_end = *blklist;
-      mjr_block_point(blklist, ins, vaddr, dest);
-    }
-
-  /* The target block is called indirectly : if we find a pattern that correspond 
-     to an easy to predict function pointer, then we compute it */
-  else if (ins->op1.content & ASM_OP_BASE) 
-    dest = mjr_compute_fctptr(context, obj, ins, vaddr, blklist);
-  else
-    dest = -1;
-  
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
-}
-
-
-
-
-
-/*---------- Original libmjollnir block format !!!!!! --------- */
-
-
-/* Create a block in the original MJR format */
-mjrblock_t	*mjr_create_block(u_int vaddr, char *section, u_int type) 
-{
-  mjrblock_t	*nblk;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(nblk, sizeof(mjrblock_t), NULL);
-  nblk->vaddr    = vaddr;
-  nblk->type     = type;
-  nblk->name     = NULL;
-  nblk->section  = elfsh_strdup(section);
-  nblk->flowTo   = NULL;
-  nblk->flowRet  = NULL;
-  nblk->listNext = NULL;
-  nblk->listPrev = NULL;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (nblk));
-}
-
-

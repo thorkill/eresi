@@ -1,16 +1,15 @@
 #
 # LibMjollnir Makefile
 #
-# (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, thorolf, mayhem)
+# (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, mayhem, thorolf)
 #
 # BSD License 
 #
-
 include ../config.h
 
 
-SRC	= src/blocks.c src/core.c src/destCall.c src/function.c src/history.c \
-	src/init.c src/internal.c src/symtab.c src/control.c src/btree.c
+SRC	= src/blocks.c src/core.c src/function.c src/history.c src/init.c \
+	src/internal.c src/symtab.c src/control.c src/btree.c src/types.c
 
 OBJ	= ${SRC:.c=.o}
 SRCT 	= bin/elfThor.c
@@ -39,7 +38,7 @@ all	: $(OBJ)
 #	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
 
 clean:
-	rm -f src/*.o $(NAME).a $(NAME).so $(OBJT) $(OBJM)
+	rm -f src/*.o src/*~ src/\#* $(NAME).a $(NAME).so $(OBJT) $(OBJM)
 
 fclean: clean
 	rm -f bin/elfThor mjollnirUnitTest libmjollnir.a libmjollnir.so

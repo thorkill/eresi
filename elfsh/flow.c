@@ -22,8 +22,6 @@
  *
  ************************************************************************/
 
-//hash_t		   block_hash;
-
 
 void	elfsh_help() 
 {
@@ -49,33 +47,7 @@ void	elfsh_help()
 }
 
 
-/* Flowsave command */
-int		cmd_flowsave(void)
-{
-  elfshsect_t	*sect;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  sect = elfsh_get_section_by_name(world.curjob->current, 
-				   ELFSH_SECTION_NAME_CONTROL,
-				   0, 0, 0);
-  if (!sect || !sect->altdata)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "No control flow section found", -1);
-
-  mjr_store_blocks(world.curjob->current, (elfshiblock_t *) sect->altdata, 1);
-  return (0);
-}
-
-
-int	cmd_flowload(void)
-{
-  elfshiblock_t	*blk = 0;
-
-  mjr_load_blocks(world.curjob->current, &blk);
-  return (0);
-}
-
-
+/* Manually add function pointer information */
 int	cmd_addgoto(void)
 {
   if (!world.curjob->curcmd->param[0] || !world.curjob->curcmd->param[1])
@@ -91,6 +63,7 @@ int	cmd_addgoto(void)
   return (0);
 }
 
+/* Test function ... start to get old and unused */
 int		cmd_testflow(void)
 {
   elfshiblock_t	*blk_list;
@@ -186,122 +159,6 @@ int		cmd_testflow(void)
 }
 
 
-
-/* Flow analysis command : create the .control section */
-int			cmd_flow() 
-{
-
-  char                  *buffer;
-  asm_instr             instr;
-  elfshsect_t           *sect;
-  elfsh_Shdr		*shtlist;
-  elfsh_Shdr            *shdr;
-  elfsh_Sym             *sym;
-  u_int                 idx_sht;
-  int                   num_sht;
-  u_int                 disassembled;
-  u_int                 ilen;
-  u_int                 max_len;
-  u_int                 foff;
-  u_int                 e_point;
-  u_int                 main_addr;
-  u_int                 vaddr;
-  char                  *str;
-  elfshiblock_t        *binary_blks;
-  char			buflog[BUFSIZ];
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-
-  /* Parse arguments, load binary and resolve symbol */
-  sect = elfsh_get_section_by_name(world.curjob->current, 
-				   ELFSH_SECTION_NAME_CONTROL, 
-				   0, 0, 0);
-  if (!sect)
-    binary_blks = 0;
-  else
-    {
-      snprintf(buflog, sizeof(buflog),
-	       " [*] %s section present ! \n"
-	       "     Analysis will remove currently stored information. "
-	       "continue ? [N/y]",
-	       ELFSH_SECTION_NAME_CONTROL);
-      vm_output(buflog);
-      ilen = getchar();
-      vm_output("\n");
-      if (ilen != 'y')
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Flow analysis aborted", -1);
-      if (sect->altdata)
-	binary_blks = (elfshiblock_t *) sect->altdata;
-      else
-	mjr_load_blocks(world.curjob->current, 
-			(elfshiblock_t **) &binary_blks);
-    }
-  
-  shtlist = elfsh_get_sht(world.curjob->current, &num_sht);
-  if (!shtlist)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "[MODFLOW] cannot get sectionlist", -1);
-
-  /* Fetch main from entry point */
-  e_point = elfsh_get_entrypoint(elfsh_get_hdr(world.curjob->current));
-
-  /* Parse SHT */
-  for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
-    {
-      shdr = (shtlist + idx_sht);
-      sym = elfsh_get_sym_from_shtentry(world.curjob->current, shdr);
-      str = elfsh_get_symbol_name(world.curjob->current, sym);
-      if (!elfsh_get_section_allocflag(shdr) ||
-	  !elfsh_get_section_execflag(shdr))
-	continue;
-
-      max_len = elfsh_get_symbol_size(sym);
-      vaddr   = sym->st_value;
-      foff    = elfsh_get_foffset_from_vaddr(world.curjob->current, vaddr);
-      buffer = elfsh_malloc(max_len);
-      elfsh_raw_read(world.curjob->current, foff, buffer, max_len);
-
-      //hash_init(&block_hash, max_len); (this hash doesnt exist anymore)
-      if (shdr->sh_addr == e_point)
-	{
-	  printf(" [*] Entry point: %08x\n", e_point);
-	  main_addr = mjr_trace_start(world.mjr_session.cur,
-				      world.curjob->current, buffer, 
-				      max_len, e_point, &binary_blks);
-	  printf(" [*] main located at %08x\n", main_addr);
-	}
-
-      /*
-      ** Main loop : For each instruction disassembled, pass it to
-      ** the trace_control function which may build dynamically
-      ** a linked list of blocks, with additionnal relationship
-      ** informations in a linked list contained in the block
-      */
-      for (disassembled = 0; disassembled < max_len; disassembled += ilen) 
-	if ((ilen = asm_read_instr(&instr, (u_char *) buffer + disassembled, 
-				   max_len - disassembled, &world.proc))) 
-	  {
-	    mjr_history_shift(world.mjr_session.cur, instr);
-	    mjr_trace_control(world.mjr_session.cur, world.curjob->current, 
-			      &instr, vaddr + disassembled, &binary_blks);
-	  } 
-	else
-	  ilen = 1;
-    }
-
-  vm_output(" [*] Flow analysis done \n");
-
-  if (mjr_store_blocks(world.curjob->current, binary_blks, 1) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to store blocks in file", -1);    
-
-  vm_output(" [*] Flow analysis stored \n\n");
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
-}
-
-
 /* Print the control information */
 int		cmd_control()
 {
@@ -314,14 +171,8 @@ int		cmd_control()
   if (!sect || !sect->altdata)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "No control flow section found", -1);
-
   mjr_display_blocks(world.curjob->current, sect->altdata, 1);
-  
   vm_output("\n [*] Control flow information dumped \n\n");
-
-  //mjr_trace_functions(world.curjob->current, &binary_functions, binary_blk);
-  //vm_outpout(" [*] Blocks printed\n\n");
-  //display_functions(world.curjob->current, binary_functions);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
