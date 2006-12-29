@@ -98,13 +98,12 @@ u_int			mjr_trace_start(mjrcontext_t	*context,
 
 
 /*
- * This function trace execution flow and creates block depending on instruction.
- *
- * If instruction break execution flow, block is considerated finished and added 
- * to linked list of blocks 2 static variables are used to keep state of execution 
- * flow.
- *
- */
+** This function trace execution flow and creates block depending on instruction.
+**
+** If instruction break execution flow, block is considerated finished and added 
+** to linked list of blocks (that is the content of the .elfsh.control section)
+**
+*/
 int			mjr_trace_control(mjrcontext_t	*context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *ins, 
@@ -123,11 +122,11 @@ int			mjr_trace_control(mjrcontext_t	*context,
     {
 
       /* previous block is finished
-      ** search current block by vaddr if previously created	
-      ** if found, set size to 0 as we are going to disassemble it
-      ** if not found, create a new block unless instruction is a NOP
-      ** -this is to escape some padding in begining of .text section-
-      ** if (prevaddr is not null, then, new block)
+      ** - search current block by vaddr
+      ** - if found, set size to 0 as we are going to disassemble it
+      ** - if not found, create a new block unless instruction is a NOP
+      ** -> this is to escape some padding
+      ** -> if prevaddr is not null, then we create a new block
       */
       if ((context->curblock = mjr_block_get_by_vaddr(context->blklist, vaddr, 0)))
 	context->curblock->size = 0;

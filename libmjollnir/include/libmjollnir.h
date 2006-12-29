@@ -89,13 +89,9 @@ int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *,
 /* core.c */
 int		mjr_analyse(mjrsession_t *sess, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
-elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
-int		mjr_insert_destaddr(mjrcontext_t *c);
-int		mjr_block_point(elfshiblock_t **blklist, asm_instr *ins,
-				elfsh_Addr vaddr, elfsh_Addr dest);
-elfshiblock_t*	mjr_get_blocks(elfshobj_t *file);
 
 /* blocks.c */
+elfshiblock_t*	mjr_get_blocks(elfshobj_t *file);
 elfshiblock_t	*mjr_block_create(u_int, u_int);
 int		mjr_display_blocks(elfshobj_t *, elfshiblock_t *, int);
 void		mjr_dump_block(elfshiblock_t *b);
@@ -107,10 +103,13 @@ void		mjr_block_clean_passed(elfshiblock_t *);
 void		mjr_block_add_caller(elfshiblock_t *, u_int, int);
 void		mjr_block_add_list(elfshiblock_t **, elfshiblock_t *);
 int		mjr_block_is_funcstart(elfshiblock_t *);
+int		mjr_block_point(elfshiblock_t **blklist, asm_instr *ins,
+				elfsh_Addr vaddr, elfsh_Addr dest);
 
-/* typed.c */
+/* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);
-
+elfsh_Addr     mjr_compute_fctptr(mjrcontext_t	*context);
+int	       mjr_insert_destaddr(mjrcontext_t *c);
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);

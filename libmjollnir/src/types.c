@@ -160,7 +160,53 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 
 
 
-/* Find the destination of a call instruction */
+
+
+/*
+** This function add a new element to the linked list of callers 
+** of the current block.
+** 
+** It resolves operands of instruction which may modify the execution path.
+** 
+** If resolved to a virtual address, a new block is inserted.
+**
+** -> Return destination address inserted or -1 if unresolved
+*/
+int		mjr_insert_destaddr(mjrcontext_t *context)
+{
+  int		ilen;
+  elfsh_Addr	dest;
+  asm_instr	*ins;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  dest = 0;
+  ins  = &context->hist[MJR_HISTORY_CUR].instr;
+
+  /* The target block is called directly */
+  if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+    {    
+      ilen    = asm_instr_len(ins);
+      asm_operand_get_immediate(ins, 1, 0, &dest);
+      dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+      mjr_block_point(&context->blklist, ins, 
+		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
+    }
+
+  /* The target block is called indirectly : if we find a pattern that correspond 
+     to an easy to predict function pointer, then we compute it */
+  else if (ins->op1.content & ASM_OP_BASE) 
+    dest = mjr_compute_fctptr(context);
+  else
+    dest = -1;
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+}
+
+
+
+
+
+
 /* Old function of libmjollnir, maybe it does more than insert_destaddr, to make
    sure we can remove this */
 /*
@@ -231,45 +277,3 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
   }
 */
-
-
-
-
-/*
- * This function add a new element to the linked list of callers 
- * of the current block.
- * 
- * It resolve operand of instruction which may modify the execution path.
- * If resolved to a virtual address, a new block is inserted.
- *
- * -> Return destination address inserted or -1 if unresolved
- */
-int		mjr_insert_destaddr(mjrcontext_t *context)
-{
-  int		ilen;
-  elfsh_Addr	dest;
-  asm_instr	*ins;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  dest = 0;
-  ins  = &context->hist[MJR_HISTORY_CUR].instr;
-
-  /* The target block is called directly */
-  if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
-    {    
-      ilen    = asm_instr_len(ins);
-      asm_operand_get_immediate(ins, 1, 0, &dest);
-      dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
-      mjr_block_point(&context->blklist, ins, 
-		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
-    }
-
-  /* The target block is called indirectly : if we find a pattern that correspond 
-     to an easy to predict function pointer, then we compute it */
-  else if (ins->op1.content & ASM_OP_BASE) 
-    dest = mjr_compute_fctptr(context);
-  else
-    dest = -1;
-  
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
-}
