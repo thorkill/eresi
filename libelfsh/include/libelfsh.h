@@ -1173,6 +1173,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t	*file,
 
 /* debug.c */
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label);
+char		*elfsh_get_machine_string(elfsh_Half machine);
 
 /* bss.c */
 int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag);		

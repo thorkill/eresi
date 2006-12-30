@@ -182,6 +182,7 @@ u_int		vm_display_instr(int fd, u_int index, elfsh_Addr vaddr,
   char		c1[2];
   char		c2[2];
   u_int		strsz;
+  elfsh_Half	machine;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -192,16 +193,19 @@ u_int		vm_display_instr(int fd, u_int index, elfsh_Addr vaddr,
   /* Init proc */			  
   if (!world.curjob->proc) {
   
-    switch (elfsh_get_arch(world.curjob->current->hdr))
+    switch (machine = elfsh_get_arch(world.curjob->current->hdr))
     {
     case EM_386:
       world.curjob->proc = &world.proc;
       break;
     case EM_SPARC:
+    case EM_SPARC32PLUS:
       world.curjob->proc = &world.proc_sparc;
       break;
     default:
-      vm_output("Architecture not supported. No disassembly available\n");
+      snprintf(logbuf, sizeof (logbuf) - 1, "Architecture %s not supported. No disassembly available\n",
+	       elfsh_get_machine_string(machine));
+      vm_output(logbuf);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
    }
@@ -766,20 +770,25 @@ int             cmd_disasm()
   int		matchs;
   elfsh_Addr	vaddr;
   char		logbuf[BUFSIZ];
+  elfsh_Half	machine;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First check the architecture */
-  switch (elfsh_get_arch(world.curjob->current->hdr))
+  switch (machine = elfsh_get_arch(world.curjob->current->hdr))
     {
     case EM_386:
       world.curjob->proc = &world.proc;
       break;
+    case EM_SPARC32PLUS:
     case EM_SPARC:
       world.curjob->proc = &world.proc_sparc;
       break;
     default:
-      vm_output("Architecture not supported. No disassembly available\n");
+      snprintf(logbuf, sizeof (logbuf) - 1, 
+	       "Architecture %s not supported. No disassembly available\n",
+	       elfsh_get_machine_string(machine));
+      vm_output(logbuf);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 

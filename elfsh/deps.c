@@ -352,7 +352,14 @@ int		vm_load_dep(elfshobj_t *parent, char *name,
   if (NULL == new)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot load object", -1);
-
+  if (elfsh_get_arch(new->hdr) != elfsh_get_arch(parent->hdr))
+    {
+      snprintf(logbuf, sizeof (logbuf) - 1, "Parent file and dependance %s"
+	       " architecture unmatched", name);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			logbuf, -1);
+    }
+  
   /* Print a msg if not in quiet mode */
   new->loadtime = time(&new->loadtime);
   if (!world.state.vm_quiet)
