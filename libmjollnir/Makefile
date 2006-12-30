@@ -49,7 +49,7 @@ NAME	= libmjollnir
 NAME32	= libmjollnir32
 NAME64	= libmjollnir64
 
-all	: $(OBJ) $(OBJ32) $(OBJ64)
+all	: $(OBJ32) $(OBJ64)
 #	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto $(LDFLAGS)
 #	@ar rc ${NAME}.a ${OBJ} 
 #	@ranlib ${NAME}.a
