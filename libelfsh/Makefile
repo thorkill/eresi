@@ -37,12 +37,13 @@ OBJ64			= $(SRC:.c=.64.o)
 NAME			= libelfsh
 NAME32			= libelfsh32
 NAME64			= libelfsh64
+
 all			: $(OBJ32) $(OBJ64)
-			$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
-			-L../libaspect/ -laspect -DELFSH32 -shared $(OBJ32) 	 \
+			$(LD) -L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg \
+			-L../libaspect/ -laspect32 -DELFSH32 -shared $(OBJ32) 	 \
 			-o $(NAME32).so
-			$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
-			-L../libaspect/ -laspect -DELFSH64 -shared $(OBJ64) 	 \
+			$(LD) -L../libc/ -lcelfsh64 -L../libmalloc/ -lmalloc-e2dbg \
+			-L../libaspect/ -laspect64 -DELFSH64 -shared $(OBJ64) 	 \
 			-o $(NAME64).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(AR) $(NAME64).a $(OBJ64)
