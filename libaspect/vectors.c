@@ -23,6 +23,15 @@ void		aspect_vectors_init()
     }
 }
 
+/* Retreive a vector from the hash table giving its name */
+vector_t*	aspect_vector_get(char *name)
+{
+  vector_t	*vect;
+
+  vect = hash_get(&vector_hash, name);
+  return (vect);
+}
+
 /* Project each dimension and write the desired function pointer */
 void		aspect_vectors_insert(vector_t	   *vect, 
 				      unsigned int *dim, 

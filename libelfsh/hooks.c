@@ -122,7 +122,7 @@ int	elfsh_register_altplthook(u_char archtype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  altplt = hash_get(&vector_hash, ELFSH_HOOK_ALTPLT);
+  altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -138,7 +138,7 @@ int	elfsh_register_altplthook(u_char archtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(altplt, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(altplt, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -154,7 +154,7 @@ int		elfsh_register_extplthook(u_char archtype,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  extplt = hash_get(&vector_hash, ELFSH_HOOK_EXTPLT);
+  extplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
@@ -169,7 +169,7 @@ int		elfsh_register_extplthook(u_char archtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(extplt, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(extplt, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -183,7 +183,7 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  plt = hash_get(&vector_hash, ELFSH_HOOK_PLT);
+  plt = aspect_vector_get(ELFSH_HOOK_PLT);
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
@@ -198,7 +198,7 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(plt, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(plt, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -211,7 +211,7 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  encodeplt = hash_get(&vector_hash, ELFSH_HOOK_ENCODEPLT);
+  encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -227,7 +227,7 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(encodeplt, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(encodeplt, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -240,7 +240,7 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  encodeplt1 = hash_get(&vector_hash, ELFSH_HOOK_ENCODEPLT1);
+  encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -255,7 +255,7 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(encodeplt1, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(encodeplt1, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -269,7 +269,7 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  rel = hash_get(&vector_hash, ELFSH_HOOK_REL);
+  rel = aspect_vector_get(ELFSH_HOOK_REL);
   
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -285,7 +285,7 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(rel, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(rel, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -298,7 +298,7 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  cflow = hash_get(&vector_hash, ELFSH_HOOK_CFLOW);
+  cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -314,7 +314,7 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(cflow, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(cflow, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -328,7 +328,7 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  breakp = hash_get(&vector_hash, ELFSH_HOOK_BREAK);
+  breakp = aspect_vector_get(ELFSH_HOOK_BREAK);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -344,7 +344,7 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(breakp, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(breakp, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -356,7 +356,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  argcp = hash_get(&vector_hash, ELFSH_HOOK_ARGC);
+  argcp = aspect_vector_get(ELFSH_HOOK_ARGC);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -372,7 +372,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
-  aspect_vectors_insert(argcp, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(argcp, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -965,7 +965,7 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  rel = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_REL);
+  rel = aspect_vector_get(ELFSH_HOOK_REL);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1002,7 +1002,7 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  cflow = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_CFLOW);
+  cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1038,7 +1038,7 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  plt = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_PLT);
+  plt = aspect_vector_get(ELFSH_HOOK_PLT);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1076,7 +1076,7 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  encodeplt = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_ENCODEPLT);
+  encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1116,7 +1116,7 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  encodeplt1 = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_ENCODEPLT1);
+  encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1153,7 +1153,7 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  altplt = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_ALTPLT);
+  altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
  
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1191,7 +1191,7 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  vextplt = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_EXTPLT);
+  vextplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(extplt->parent);
@@ -1228,7 +1228,7 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  breakh = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_BREAK);
+  breakh = aspect_vector_get(ELFSH_HOOK_BREAK);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -1262,7 +1262,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   u_int		dim[3];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  argch = (vector_t *) hash_get(&vector_hash, ELFSH_HOOK_ARGC);
+  argch = aspect_vector_get(ELFSH_HOOK_ARGC);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);

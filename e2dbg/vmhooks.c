@@ -78,7 +78,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  nextfp = hash_get(&vector_hash, E2DBG_HOOK_NEXTFP);
+  nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -95,7 +95,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(nextfp, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(nextfp, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -107,7 +107,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getret = hash_get(&vector_hash, E2DBG_HOOK_GETRET);
+  getret = aspect_vector_get(E2DBG_HOOK_GETRET);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -123,7 +123,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getret, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(getret, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -135,7 +135,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  setregs = hash_get(&vector_hash, E2DBG_HOOK_SETREGS);
+  setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
   
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -151,7 +151,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(setregs, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(setregs, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -163,7 +163,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getregs = hash_get(&vector_hash, E2DBG_HOOK_GETREGS);
+  getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -179,7 +179,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getregs, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(getregs, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -191,7 +191,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getpc = hash_get(&vector_hash, E2DBG_HOOK_GETPC);
+  getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -207,7 +207,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getpc, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(getpc, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -219,7 +219,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getfp = hash_get(&vector_hash, E2DBG_HOOK_GETFP);
+  getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -235,7 +235,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(getfp, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(getfp, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -247,7 +247,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  setstep = hash_get(&vector_hash, E2DBG_HOOK_SETSTEP);
+  setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
 
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -263,7 +263,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(setstep, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(setstep, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -275,7 +275,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   u_int		*dim;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  resetstep = hash_get(&vector_hash, E2DBG_HOOK_RESETSTEP);
+  resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
   
   if (archtype >= ELFSH_ARCHNUM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -291,7 +291,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(resetstep, dim, (elfsh_Addr) fct);
+  aspect_vectors_insert(resetstep, dim, (unsigned long) fct);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -514,7 +514,7 @@ int		  e2dbg_getregs()
   void		(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getregs = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_GETREGS);
+  getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -548,7 +548,7 @@ int		  e2dbg_setregs()
   void		(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  setregs = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_SETREGS);
+  setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -582,7 +582,7 @@ elfsh_Addr*     e2dbg_getpc()
   elfsh_Addr	*(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getpc = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_GETPC);
+  getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -618,7 +618,7 @@ elfsh_Addr*     e2dbg_getfp()
   elfsh_Addr	*(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getfp = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_GETFP);
+  getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -653,7 +653,7 @@ int		  e2dbg_setstep()
   void		(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  setstep = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_SETSTEP);
+  setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -684,7 +684,7 @@ int		  e2dbg_resetstep()
   void		(*fct)();
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  resetstep = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_RESETSTEP);
+  resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(world.curjob->current);
@@ -718,7 +718,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   int		(*fct)(elfsh_Addr addr);
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  nextfp = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_NEXTFP);
+  nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
@@ -755,7 +755,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   int		(*fct)(elfsh_Addr addr);
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  getret = (vector_t *) hash_get(&vector_hash, E2DBG_HOOK_GETRET);
+  getret = aspect_vector_get(E2DBG_HOOK_GETRET);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);

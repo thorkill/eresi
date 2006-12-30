@@ -110,6 +110,9 @@ typedef struct	s_vector
 /* Initialize the vectors of libaspect */
 void		aspect_vectors_init();
 
+/* Retreive a vector from the vectors hash table */
+vector_t*	aspect_vector_get(char *name);
+
 /* Add the function pointer to the hook at requested coordonates */
 void		aspect_vectors_insert(vector_t *vect, unsigned int *dim, 
 				      unsigned long fct);
