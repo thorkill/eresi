@@ -66,7 +66,7 @@ LDFLAGS32		+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../libc 	  \
 			-lcelfsh32 -L../libasm/ -lasm -L../libui/ -lui32 -g3 	  \
 			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect -L../librevm/                    \
+			-L../libaspect/ -laspect32 -L../librevm/                  \
 			-lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
@@ -75,7 +75,7 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../libc 	  \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect -L../librevm/ 			  \
+			-L../libaspect/ -laspect64 -L../librevm/		  \
 			-lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
