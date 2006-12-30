@@ -38,11 +38,11 @@ LDFLAGS = -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
 
 LDFLAGS32 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
 		-L../libaspect/ -lelfsh32 -lasm -lcelfsh32  \
-		-laspect -lmalloc-e2dbg $(LPTHREAD)
+		-laspect32 -lmalloc-e2dbg $(LPTHREAD)
 
 LDFLAGS64 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
 		-L../libaspect/ -lelfsh64 -lasm -lcelfsh64  \
-		-laspect -lmalloc-e2dbg $(LPTHREAD)
+		-laspect64 -lmalloc-e2dbg $(LPTHREAD)
 
 CC	= gcc -ggdb -g3
 NAME	= libmjollnir
