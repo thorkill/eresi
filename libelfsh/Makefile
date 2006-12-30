@@ -14,6 +14,12 @@ AR			= ar rc
 CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
 			-I../libasm/include/ -I../libc/include 		    \
 			-I../libaspect/include/ $(BITS) $(BUILDOP) 
+CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
+			-I../libasm/include/ -I../libc/include 		    \
+			-I../libaspect/include/ -DELFSH32 $(BUILDOP) 
+CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
+			-I../libasm/include/ -I../libc/include 		    \
+			-I../libaspect/include/ -DELFSH64 $(BUILDOP) 
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c error.c stab.c \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \
@@ -26,14 +32,22 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			inject.c linkmap.c bp.c rpht.c version.c            \
 			config.c
 OBJ			= $(SRC:.c=.o)
+OBJ32			= $(SRC:.c=.32.o)
+OBJ64			= $(SRC:.c=.64.o)
 NAME			= libelfsh
-
-all			: $(OBJ)
+NAME32			= libelfsh32
+NAME64			= libelfsh64
+all			: $(OBJ32) $(OBJ64)
 			$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
-			-L../libaspect/ -laspect $(BITS) -shared $(OBJ) 	 \
-			-o $(NAME).so
-			@$(AR) $(NAME).a $(OBJ)
-			@$(RANLIB) $(NAME).a
+			-L../libaspect/ -laspect -DELFSH32 -shared $(OBJ32) 	 \
+			-o $(NAME32).so
+			$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
+			-L../libaspect/ -laspect -DELFSH64 -shared $(OBJ64) 	 \
+			-o $(NAME64).so
+			@$(AR) $(NAME32).a $(OBJ32)
+			@$(AR) $(NAME64).a $(OBJ64)
+			@$(RANLIB) $(NAME32).a
+			@$(RANLIB) $(NAME64).a
 
 
 dumpregs.o:		dumpregs.c
@@ -46,4 +60,10 @@ clean			:
 
 fclean			: clean
 			@$(RM) $(NAME).so $(NAME).a
+
+
+%.32.o : %.c
+			$(CC) $(CFLAGS32) -c -o $@ $<
+%.64.o : %.c
+			$(CC) $(CFLAGS64) -c -o $@ $<
 

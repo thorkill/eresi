@@ -11,10 +11,19 @@ SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
 			vmhooks.c mutex.c continue.c xmalloc.c resolv.c        \
 			rlheapdbg.c threads.c entry.c
 OBJ			= $(SRC:.c=.o)
+OBJ32			= $(SRC:.c=.32.o)
+OBJ64			= $(SRC:.c=.64.o)
+
 VMOBJ			= ../vm/*.o
+VMOBJ32			= ../vm/*.32.o
+VMOBJ64			= ../vm/*.64.o
+
 CC			?= gcc
 RM			= rm -f
+
 DBGNAME			= e2dbg
+DBGNAME32		= e2dbg32
+DBGNAME64		= e2dbg64
 
 CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
@@ -24,6 +33,22 @@ CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			$(BITS)
 
+CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
+			-I../libelfsh/include/ -I../libdump/include/      	 \
+			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
+			-I../libui/include/ -I../libmjollnir/include/ 		 \
+			-I../libaspect/include					 \
+			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
+			-DELFSH32
+
+CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
+			-I../libelfsh/include/ -I../libdump/include/      	 \
+			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
+			-I../libui/include/ -I../libmjollnir/include/ 		 \
+			-I../libaspect/include					 \
+			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
+			-DELFSH64
+
 LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
 			-L../libaspect/ -laspect -L../librevm/                     \
@@ -32,8 +57,34 @@ LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)       \
 			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
-all                     : ${OBJ}
-			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 
+LDFLAGS32		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh32  \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
+			-L../libaspect/ -laspect -L../librevm/                     \
+			-L../libmjollnir -lmjollnir32 -g3 -L../libc/ -lcelfsh32    \
+			-L../libui/ -lui32 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)       \
+			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH32 $(EXTRAOPT)     \
+			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
+
+LDFLAGS64		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh64  \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
+			-L../libaspect/ -laspect -L../librevm/                     \
+			-L../libmjollnir -lmjollnir64 -g3 -L../libc/ -lcelfsh64    \
+			-L../libui/ -lui64 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)       \
+			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH64 $(EXTRAOPT)     \
+			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
+
+all			: all32 all64
+
+#all                     : ${OBJ}
+#			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 
+
+all32			: ${OBJ32}
+			$(CC) $(OBJ32) $(VMOBJ32) $(LDFLAGS32) -o $(DBGNAME32).so  \
+			-shared 
+
+all64			: ${OBJ64}
+			$(CC) $(OBJ64) $(VMOBJ64) $(LDFLAGS64) -o $(DBGNAME64).so  \
+			-shared 
 
 # This target is work in progress (static files debugger)
 et_rel			: ${OBJ}
@@ -45,10 +96,17 @@ et_rel			: ${OBJ}
 			/usr/lib/libc.a -r -o $(DBGNAME)_rel.o	  
 
 clean		       :
-		       @$(RM) $(OBJ) *~ \#* *\# .\#*
+		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
 fclean		       : clean
 		       @$(RM) $(NAME) $(OBJ_DYN) $(DBGNAME).so
+		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32).so
+		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64).so
+
+%.32.o : %.c
+			$(CC) $(CFLAGS32) -c -o $@ $<
+%.64.o : %.c
+			$(CC) $(CFLAGS64) -c -o $@ $<
 
 

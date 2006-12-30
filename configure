@@ -39,7 +39,7 @@ fi
 echo  " [*] Enabling ELF64 support"
 BITS="-DELFSH64"
 echo  "BITS		= -DELFSH64"		>> $CONFIGFILE
-echo  "#define ELFSH64 1"			>> $LIBVARSFILE
+echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 ;;
 
@@ -54,7 +54,7 @@ fi
 echo  " [*] Enabling ELF32 support"
 BITS="-DELFSH32"
 echo  "BITS = -DELFSH32"		>> $CONFIGFILE
-echo  "#define ELFSH32 1"		>> $LIBVARSFILE
+echo  "//#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"
 ;;
 
@@ -173,7 +173,8 @@ shift
 done
 
 
-if [ $CHOSENBIT = "0" ]; then
+if [ A = B ] ; then
+#if [ $CHOSENBIT = "0" ]; then
     echo "Error: you MUST specify --enable-32 OR --enable-64."
     echo
     echo "   Available parameters :" 
