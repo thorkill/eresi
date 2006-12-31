@@ -29,8 +29,8 @@ int		mjr_block_point(mjrcontext_t  *ctxt,
 				elfsh_Addr     vaddr,
 				elfsh_Addr     dest)
 {
-  elfshiblock_t	*dst;
-  elfshiblock_t	*dst_end;  
+  mjrblock_t	*dst;
+  mjrblock_t	*dst_end;  
   int		new_size;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
@@ -71,7 +71,7 @@ int		mjr_block_point(mjrcontext_t  *ctxt,
 
 
 /* Retreive control flow section content if any */
-elfshiblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
+mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
 
@@ -95,12 +95,12 @@ elfshiblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 
 
 /* Create the control flow graph using the information stored in .elfsh.control */
-elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
+mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 {
   int                   index;
   elfshsect_t           *sect;
-  elfshiblock_t         *curbloc;
-  elfshiblock_t         *target;
+  mjrblock_t         *curbloc;
+  mjrblock_t         *target;
   unsigned int		blocnbr;
   char			name[20];
 
@@ -111,7 +111,7 @@ elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   if (!sect)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No control flow section : use analyse command", 0);
-  if (sect->shdr->sh_size % sizeof(elfshiblock_t))
+  if (sect->shdr->sh_size % sizeof(mjrblock_t))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted control flow section : modulo-test failed", 0);
 
@@ -121,10 +121,10 @@ elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new blocks but use the data from the section */
-  blocnbr = sect->shdr->sh_size / sizeof(elfshiblock_t);
+  blocnbr = sect->shdr->sh_size / sizeof(mjrblock_t);
   for (index = 0; index < blocnbr; index++)
     {
-      curbloc = (elfshiblock_t *) sect->data + index;
+      curbloc = (mjrblock_t *) sect->data + index;
       mjr_block_add_list(ctxt, curbloc);
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
       hash_add(&ctxt->blkhash, name, curbloc);
@@ -133,7 +133,7 @@ elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   /* Second pass : create all caller information for all loaded blocks */
   for (index = 0; index < blocnbr; index++)
     {
-      curbloc = (elfshiblock_t *) sect->data + index;
+      curbloc = (mjrblock_t *) sect->data + index;
  
       /* Link true child info */
       target = mjr_block_get_by_vaddr(ctxt, curbloc->true, 0);
@@ -158,9 +158,9 @@ elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
 
 /* Say if a block is the start of a function or not */
-int		 mjr_block_funcstart(elfshiblock_t *blk) 
+int		 mjr_block_funcstart(mjrblock_t *blk) 
 {
-  elfshcaller_t	 *cur;
+  mjrcaller_t	 *cur;
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (blk)
@@ -172,12 +172,12 @@ int		 mjr_block_funcstart(elfshiblock_t *blk)
 
 
 /* Create the block information to be saved in file */
-int			mjr_block_save(elfshiblock_t *cur, elfshbuf_t *buf)
+int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 {
   char			buffer[24];
   elfsh_Sym		bsym;
   elfsh_Sym		*sym;
-  elfshiblock_t		*curblock;
+  mjrblock_t		*curblock;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -196,20 +196,20 @@ int			mjr_block_save(elfshiblock_t *cur, elfshbuf_t *buf)
       buf->data = elfsh_malloc(buf->allocated);
       buf->maxlen = 0;
     }
-  else if (buf->allocated  < (buf->maxlen + sizeof(elfshiblock_t)))
+  else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
     {
       buf->allocated += getpagesize();
       buf->data = elfsh_realloc(buf->data, buf->allocated);
     }
   
-  curblock         = (elfshiblock_t *) ((char *) buf->data + buf->maxlen);
-  memcpy(curblock, cur, sizeof(elfshiblock_t));
+  curblock         = (mjrblock_t *) ((char *) buf->data + buf->maxlen);
+  memcpy(curblock, cur, sizeof(mjrblock_t));
   curblock->caller = NULL;
 
   /* Then we create the symbol for the bloc and returns */
   bsym = elfsh_create_symbol(cur->vaddr, cur->size, STT_BLOCK, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
-  buf->maxlen += sizeof(elfshiblock_t);
+  buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -218,10 +218,10 @@ int			mjr_block_save(elfshiblock_t *cur, elfshbuf_t *buf)
 
 /* Recursive traversal of the graph */
 static int		mjr_block_recstore(mjrcontext_t *ctxt,
-					   elfshiblock_t *start, 
-					   elfshbuf_t *buf)
+					   mjrblock_t *start, 
+					   mjrbuf_t *buf)
 {
-  elfshiblock_t		*tmp;
+  mjrblock_t		*tmp;
 
   if (mjr_block_save(start, buf) < 0)
     return (-1);
@@ -245,8 +245,8 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 {
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
-  elfshbuf_t		buf;
-  elfshiblock_t		*start;
+  mjrbuf_t		buf;
+  mjrblock_t		*start;
   int			err;
   elfsh_Addr		e_entry;
 
@@ -284,13 +284,13 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 
 
 /* Create a new block */
-elfshiblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
+mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
 {
-  elfshiblock_t	*t;
+  mjrblock_t	*t;
   char		tmp[20];
 
-  t = elfsh_malloc(sizeof (elfshiblock_t));
-  memset(t, 0, sizeof (elfshiblock_t));
+  t = elfsh_malloc(sizeof (mjrblock_t));
+  memset(t, 0, sizeof (mjrblock_t));
   t->vaddr = vaddr;
   t->size = size;
   snprintf(tmp, sizeof(tmp), AFMT, vaddr);
@@ -300,7 +300,7 @@ elfshiblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size
 
 
 /* Print block */
-void		mjr_block_dump(elfshiblock_t *b) 
+void		mjr_block_dump(mjrblock_t *b) 
 {
   printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
 	 (unsigned long) b, (unsigned long) b->vaddr, b->size);
@@ -308,9 +308,9 @@ void		mjr_block_dump(elfshiblock_t *b)
 
 
 /* Display all information about a block */
-int			mjr_apply_display(elfshiblock_t *cur, void *opt)
+int			mjr_apply_display(mjrblock_t *cur, void *opt)
 {
-  elfshcaller_t		*ccal;
+  mjrcaller_t		*ccal;
   struct s_disopt	*disopt;
   char			*str;
   char			*end_str;
@@ -360,10 +360,10 @@ int			mjr_apply_display(elfshiblock_t *cur, void *opt)
 
 /* Recursive traversal of the graph */
 static int		mjr_block_recdisplay(mjrcontext_t  *c,
-					     elfshiblock_t *start, 
-					     elfshopt_t    *opt)
+					     mjrblock_t *start, 
+					     mjropt_t    *opt)
 {
-  elfshiblock_t		*tmp;
+  mjrblock_t		*tmp;
 
   if (mjr_apply_display(start, opt) < 0)
     return (-1);
@@ -385,9 +385,9 @@ static int		mjr_block_recdisplay(mjrcontext_t  *c,
 /* Print the content of the control flow section */
 int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
-  elfshopt_t	opt;
+  mjropt_t	opt;
   elfsh_Addr	e_entry;
-  elfshiblock_t	*start;
+  mjrblock_t	*start;
 
   e_entry     = elfsh_get_entrypoint(c->obj->hdr);
   start       = mjr_block_get_by_vaddr(c, e_entry, 0);
@@ -403,9 +403,9 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
 
 /* Add a new block to the blocks tree (sorted by address)
 ** If block is already present, it's not inserted and function returns */
-void		mjr_block_add_list(mjrcontext_t *ctxt, elfshiblock_t *n) 
+void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n) 
 {
-  elfshiblock_t	*cur;
+  mjrblock_t	*cur;
 
   cur = ctxt->blklist;
   if (!cur)
@@ -418,13 +418,13 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, elfshiblock_t *n)
 
   
 /* Add a caller : vaddr is address of starting block */
-void		mjr_block_add_caller(elfshiblock_t *blk, 
+void		mjr_block_add_caller(mjrblock_t *blk, 
 				     elfsh_Addr    vaddr, 
 				     int	   type) 
 {
-  elfshcaller_t	*n;
+  mjrcaller_t	*n;
   
-  n = elfsh_malloc(sizeof (elfshcaller_t));
+  n = elfsh_malloc(sizeof (mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;
@@ -438,12 +438,12 @@ void		mjr_block_add_caller(elfshiblock_t *blk,
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-elfshiblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
+mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
 					elfsh_Addr   vaddr, 
 					int	     mode)
 {
-  elfshiblock_t	cur;
-  elfshiblock_t	*ret;
+  mjrblock_t	cur;
+  mjrblock_t	*ret;
   char		**keys;
   int		index;
   int		size;
@@ -454,7 +454,7 @@ elfshiblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
   keys = hash_get_keys(&ctxt->blkhash, &size);
   for (index = 0; index < size; index++)
     {
-      ret = (elfshiblock_t *) hash_get(&ctxt->blkhash, keys[index]);
+      ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
       switch (mode)
 	{
 	  /* Return exact match */

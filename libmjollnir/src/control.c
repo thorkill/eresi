@@ -22,7 +22,7 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
   u_int			dis;
   elfsh_Addr		main_addr;
   elfsh_Addr		init_addr;
-  elfshiblock_t		*main_b;
+  mjrblock_t		*main_b;
   asm_instr		ins;
   int			arch_bin;
   int			fetch_next = 0;
@@ -113,7 +113,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
 {
   int			ilen;
   int			ret;
-  elfshiblock_t		*tmp = NULL;
+  mjrblock_t		*tmp = NULL;
   
   /* Initialy enter here */
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);

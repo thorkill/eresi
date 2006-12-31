@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.9 2006-12-31 05:07:12 may Exp $
+ * $Id: symtab.c,v 1.10 2006-12-31 05:32:48 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -14,7 +14,7 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  int		cn;
  int		x;
  char		**tab;
- elfshiblock_t	*n;
+ mjrblock_t	*n;
  char		s[BSIZE];
 
  tab = hash_get_keys(&sess->cur->blkhash, &cn);
@@ -23,9 +23,8 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
      n = hash_get(&sess->cur->blkhash, tab[x]);
      if (!mjr_block_funcstart(n))
        continue;
-     snprintf(s, BSIZE, "%s%s", 
-	      (char *) elfsh_config_get_data(MJR_COFING_CALL_PREFIX),
-	      (char *) _vaddr2string(n->vaddr));
+     snprintf(s, BSIZE, "%s"AFMT, 
+	      (char *) elfsh_config_get_data(MJR_COFING_CALL_PREFIX), n->vaddr);
      mjr_symbol_add(sess, n->vaddr, s);
    }
  return 1;
