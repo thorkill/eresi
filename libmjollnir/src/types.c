@@ -41,42 +41,45 @@ int		mjr_asm_flow(mjrcontext_t *context)
   /* Switch on instruction types provided by libasm */
   switch (curins->type) 
     {
+
     case ASM_TYPE_CONDBRANCH:
-      context->curblock->contig = curvaddr + ilen;
-      context->curblock->altern = mjr_insert_destaddr(context);
-      context->curblock->altype = CALLER_JUMP;
+      context->curblock->true  = mjr_insert_destaddr(context);
+      context->curblock->false = curvaddr + ilen;
+      context->curblock->type  = CALLER_JUMP;
       context->curblock = 0;
       break;
-    case ASM_TYPE_CALLPROC:
-      context->curblock->contig = curvaddr + ilen;
-      context->curblock->altern = mjr_insert_destaddr(context);
-      context->curblock->altype = CALLER_CALL;
-//      context->curblock = 0;
-      context->calls_seen++;
 
-      if (context->curblock->altern)
+    case ASM_TYPE_CALLPROC:
+      context->curblock->true  = mjr_insert_destaddr(context);
+      context->curblock->false = curvaddr + ilen;
+      context->curblock->type  = CALLER_CALL;
+      context->calls_seen++;
+      if (context->curblock->true)
 	context->calls_found++;
 
       /* XXX: put this in a vector of fingerprinting techniques */
-      fun = mjr_function_create(context->curblock->altern);
+      fun = mjr_function_create(context->curblock->true);
       md5 = mjr_fingerprint_function(context, 
-				     context->curblock->altern, 
+				     context->curblock->true, 
 				     MJR_FNG_TYPE_MD5);
       if (md5)
 	fun->md5 = elfsh_strdup(md5);
+      context->curblock = 0;
       break;
 
     case ASM_TYPE_IMPBRANCH:
-      context->curblock->altern = mjr_insert_destaddr(context);
-      context->curblock->altype = CALLER_JUMP;
-      context->curblock         = 0;
+      context->curblock->true  = mjr_insert_destaddr(context);
+      context->curblock->false = 0;
+      context->curblock->type  = CALLER_JUMP;
+      context->curblock        = 0;
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
+
     case ASM_TYPE_RETPROC:
-      context->curblock->contig = 0;
-      context->curblock->altern = 0;
-      context->curblock->altype = CALLER_RET;
-      context->curblock         = 0;
+      context->curblock->true  = 0;
+      context->curblock->false = 0;
+      context->curblock->type  = CALLER_RET;
+      context->curblock        = 0;
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
     }
@@ -107,9 +110,10 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  printf(" [*] Found function pointer at %x\n", 
-	 context->hist[MJR_HISTORY_CUR].vaddr);
-  snprintf(tmp, sizeof(tmp), "%x", context->hist[MJR_HISTORY_CUR].vaddr);
+  printf(" [*] Found function pointer at %lx\n", 
+	 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
+  snprintf(tmp, sizeof(tmp), "%lx", 
+	   (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
 
   /* We deal with a constructed address */
   if (context->hist[MJR_HISTORY_CUR].instr.instr   == ASM_CALL &&
@@ -124,12 +128,13 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 			  (elfsh_Addr) -1);
 
       /* Resolve target block */
-      mjr_block_point(&context->blklist, &context->hist[MJR_HISTORY_CUR].instr, 
+      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr, 
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
 
 #if defined(__DEBUG_MJOLLNIR__)
-      printf(" [*] 0x%08x Detected possible FUNCPTR at [%x/%d] \n",
-	     context->hist[MJR_HISTORY_CUR].vaddr, dest, dest);
+      printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+	     (unsigned long) dest, (unsigned long) dest);
 #endif
 
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
@@ -148,12 +153,13 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
     {
 
 #if defined(__DEBUG_MJOLLNIR__)
-      printf(" [*] Extended routing table found 0x%08x -> 0x%08x\n", 
-	     context->hist[MJR_HISTORY_CUR].vaddr, dest);
+      printf(" [*] Extended routing table found 0x%lx -> 0x%lx\n", 
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+	     (unsigned long) dest);
 #endif
 
       /* Resolve target block */
-      mjr_block_point(&context->blklist, &context->hist[MJR_HISTORY_CUR].instr,
+      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
@@ -189,8 +195,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
       ilen    = asm_instr_len(ins);
       asm_operand_get_immediate(ins, 1, 0, &dest);
       dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
-      mjr_block_point(&context->blklist, ins, 
-		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
+      mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
 
   /* The target block is called indirectly : if we find a pattern that correspond 

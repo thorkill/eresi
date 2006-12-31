@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.14 2006-12-29 23:57:17 thor Exp $
+** $Id: core.c,v 1.15 2006-12-31 05:07:12 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -45,11 +45,9 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 
   if (sct->shdr->sh_addr == e_point)
     {
-      printf(" [*] Entry point: %08x\n", e_point);
-      main_addr = mjr_trace_start(sess->cur, sess->cur->obj, ptr, 
-				  sct->shdr->sh_size, e_point, 
-				  &sess->cur->blklist);
-      printf(" [*] main located at %08x\n", main_addr);
+      printf(" [*] Entry point: %lx\n", (unsigned long) e_point);
+      main_addr = mjr_trace_start(sess->cur, ptr, sct->shdr->sh_size, e_point);
+      printf(" [*] main located at %lx\n", (unsigned long) main_addr);
     }
 
   /* Read all instructions of the section */
@@ -77,7 +75,8 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   elfsh_Shdr	*shtlist, *shdr;
   elfsh_Sym	*sym;
   int		num_sht, idx_sht;
-  
+  char		c;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Preliminary checks */
@@ -91,7 +90,20 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to get SHT", -1);
   
-  sess->cur->blklist = mjr_get_blocks(sess->cur->obj);
+  /* Make sure we do what the user desires */
+  /* XXX: should go in elfsh analyse command and use vm_output */
+  if (sess->cur->analysed)
+    {
+      printf(" [*] %s section present ! \n"
+	     "     Analysis will remove currently stored information. "
+	     "continue ? [N/y]", ELFSH_SECTION_NAME_CONTROL);
+      c = getchar();
+      puts("");
+      if (c != 'y')
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Flow analysis aborted", 0);
+      elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_CONTROL);
+    }
 
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
@@ -117,7 +129,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
     }
 
   /* Store analyzed blocks in file */
-  if (mjr_store_blocks(sess->cur->obj, sess->cur->blklist, 1) < 0)
+  if (mjr_blocks_store(sess->cur) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store blocks in file", -1);  
   

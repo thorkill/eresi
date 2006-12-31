@@ -9,7 +9,7 @@ include ../config.h
 
 
 SRC	= src/blocks.c src/core.c src/function.c src/history.c src/init.c \
-	src/internal.c src/symtab.c src/control.c src/btree.c src/types.c
+	src/internal.c src/symtab.c src/control.c src/types.c
 
 OBJ	= ${SRC:.c=.o}
 OBJ32	= ${SRC:.c=.32.o}

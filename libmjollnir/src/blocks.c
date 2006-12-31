@@ -6,7 +6,6 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 */
-
 #include "libmjollnir.h"
 
 /* Some constant data */
@@ -23,10 +22,9 @@ char	*call_type_str[] =
 hash_t		goto_hash;
 
 
-
 /* Make the link between the new block and the current block */
 /* Split existing blocks if necessary */
-int		mjr_block_point(elfshiblock_t **blklist,
+int		mjr_block_point(mjrcontext_t  *ctxt, 
 				asm_instr      *ins,
 				elfsh_Addr     vaddr,
 				elfsh_Addr     dest)
@@ -36,15 +34,15 @@ int		mjr_block_point(elfshiblock_t **blklist,
   int		new_size;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  dst_end = *blklist;
-  dst     = mjr_block_get_by_vaddr(dst_end, dest, 1);
+  dst_end = ctxt->blklist;
+  dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
 
   /* Just create a new target block */
   if (!dst) 
     {
-      dst = mjr_block_create(dest, 1);
-      dst->altype = CALLER_UNKN;
-      mjr_block_add_list(blklist, dst);
+      dst = mjr_block_create(ctxt, dest, 1);
+      dst->type = CALLER_UNKN;
+      mjr_block_add_list(ctxt, dst);
     } 
 
   /* Split block */
@@ -52,15 +50,15 @@ int		mjr_block_point(elfshiblock_t **blklist,
     {
       new_size        = dst->size - (dest - dst->vaddr);
       dst->size      -= new_size;
-      dst_end         = mjr_block_create(dest, new_size);
-      dst_end->contig = dst->contig;
-      dst_end->altern = dst->altern;
-      dst_end->altype = dst->altype;
-      dst->contig     = dest;
-      dst->altype     = CALLER_CONT;
-      dst->altern     = 0;
-      mjr_block_add_list(blklist, dst_end);
-      dst            = dst_end;
+      dst_end         = mjr_block_create(ctxt, dest, new_size);
+      dst_end->true   = dst->true;
+      dst_end->false  = dst->false;
+      dst_end->type   = dst->type;
+      dst->true       = dest;
+      dst->type       = CALLER_CONT;
+      dst->false      = 0;
+      mjr_block_add_list(ctxt, dst_end);
+      dst             = dst_end;
     }
   
   /* Add caller to target block */
@@ -72,39 +70,23 @@ int		mjr_block_point(elfshiblock_t **blklist,
 
 
 
-
-
-
 /* Retreive control flow section content if any */
-elfshiblock_t*	mjr_get_blocks(elfshobj_t *file)
+elfshiblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
-  int		ilen;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
-  sect = elfsh_get_section_by_name(file,
-				   ELFSH_SECTION_NAME_CONTROL, 
-				   0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (!sect)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-  /* Make sure the user wants to renew analysis */
-  /* XXX: Needs to use vm_output which will be located in librevm ! */
-  printf(" [*] %s section present ! \n"
-	 "     Analysis will remove currently stored information. "
-	 "continue ? [N/y]", ELFSH_SECTION_NAME_CONTROL);
-  ilen = getchar();
-  puts("");
-  if (ilen != 'y')
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Flow analysis aborted", 0);
+		      "No control flow section : use analyse command", NULL);
 
   /* Return or retreive information */
   if (sect->altdata)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
-  mjr_load_blocks(file, (elfshiblock_t **) &sect->altdata);
+  sect->altdata = mjr_blocks_load(ctxt);
   if (sect->altdata)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -112,103 +94,71 @@ elfshiblock_t*	mjr_get_blocks(elfshobj_t *file)
 }
 
 
-/* Say if 2 blocks are starting at the same address */
-int			mjr_match_block(elfshiblock_t *elem, elfshiblock_t *match)
-{
-  int			cmp;
-  
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  cmp = match->vaddr - elem->vaddr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, cmp);
-}
-
-
-/* Say if the the block 'match' starts inside block 'elem' */
-int		mjr_match_inblock(elfshiblock_t *elem, elfshiblock_t *match)
-{
-  elfsh_Addr	cmp;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  cmp = match->vaddr - elem->vaddr;
-  if (cmp > 0 && cmp < elem->size)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, cmp);
-}
-
-
-/* Free linked list of elfshiblock_t (file representation of blocks) */
-int	mjr_free_blocks(elfshiblock_t *blks)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (blks) 
-    {      
-      btree_free(blks->btree, 1);
-      XFREE(blks);
-    }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
 /* Create the control flow graph using the information stored in .elfsh.control */
-int			mjr_load_blocks(elfshobj_t *obj, elfshiblock_t **blist)
+elfshiblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 {
-  elfsh_Sym             *symtab;
-  int                   num;
   int                   index;
-  int                   i;
   elfshsect_t           *sect;
-  elfshiblock_t         *iblk;
-  elfshblk_t            *blk;
-  elfshblkref_t         *blkref;
-  int                   load;
-  void			*data;
+  elfshiblock_t         *curbloc;
+  elfshiblock_t         *target;
+  unsigned int		blocnbr;
+  char			name[20];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  sect = elfsh_get_section_by_name(obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
+
+  /* Preliminary checks */
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (!sect)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "No control flow section saved", -1);
-  data = elfsh_get_raw(sect);
-  if (!data)
+		      "No control flow section : use analyse command", 0);
+  if (sect->shdr->sh_size % sizeof(elfshiblock_t))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Control flow section has no data", -1);
+		      "Corrupted control flow section : modulo-test failed", 0);
 
-  // If the function was already called, return the cached info
+  /* If the function was already called, return its result */
   if (sect->altdata)
-    {
-      *blist = sect->altdata;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
   
-  /* Iterate on symtab to find blocks */
-  /* If block is already present present, skip it */
-  symtab = elfsh_get_symtab(obj, &num);
-  for (load = index = 0; index < num; index++)
+  /* First pass : Iterate on the control flow section to find blocks */
+  /* We do not create new blocks but use the data from the section */
+  blocnbr = sect->shdr->sh_size / sizeof(elfshiblock_t);
+  for (index = 0; index < blocnbr; index++)
     {
-      if (elfsh_get_symbol_type(symtab + index) != STT_BLOCK)
-        continue;
-      blk          = data + symtab[index].st_value;
-      if ((iblk = mjr_block_get_by_vaddr(*blist, blk->vaddr, 0)))
-        continue;
-      iblk         = mjr_block_create(blk->vaddr, blk->size);
-      iblk->contig = blk->contig;
-      iblk->altern = blk->altern;
-      iblk->altype = blk->altype;       
-      for (i = sizeof (elfshblk_t); i < symtab[index].st_size; 
-           i += sizeof (elfshblkref_t))
-        {
-          blkref = data + (symtab + index)->st_value + i;
-          mjr_block_add_caller(iblk, blkref->vaddr, blkref->type);
-        }
-      mjr_block_add_list(blist, iblk);
-      load++;
+      curbloc = (elfshiblock_t *) sect->data + index;
+      mjr_block_add_list(ctxt, curbloc);
+      snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
+      hash_add(&ctxt->blkhash, name, curbloc);
     }
-  sect->altdata = blist;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, load);
+     
+  /* Second pass : create all caller information for all loaded blocks */
+  for (index = 0; index < blocnbr; index++)
+    {
+      curbloc = (elfshiblock_t *) sect->data + index;
+ 
+      /* Link true child info */
+      target = mjr_block_get_by_vaddr(ctxt, curbloc->true, 0);
+      if (!target)
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Corrupted control flow callers information 1", 0);
+      mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
+
+      /* Link false child info */
+      target = mjr_block_get_by_vaddr(ctxt, curbloc->false, 0);
+      if (!target)
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Corrupted control flow callers information 2", 0);
+      mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
+    }
+
+  /* Return results */
+  sect->altdata = ctxt->blklist;
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 }
 
+
+
 /* Say if a block is the start of a function or not */
-int		 mjr_block_is_funcstart(elfshiblock_t *blk) 
+int		 mjr_block_funcstart(elfshiblock_t *blk) 
 {
   elfshcaller_t	 *cur;
   
@@ -222,28 +172,17 @@ int		 mjr_block_is_funcstart(elfshiblock_t *blk)
 
 
 /* Create the block information to be saved in file */
-int			mjr_save_block(elfshiblock_t *cur, elfshbuf_t *buf)
+int			mjr_block_save(elfshiblock_t *cur, elfshbuf_t *buf)
 {
-  u_int		        blen;
-  int			is_func;
   char			buffer[24];
-  elfshcaller_t		*cal;
   elfsh_Sym		bsym;
   elfsh_Sym		*sym;
-  elfshblk_t		*curblock;
-  elfshblkref_t		*blockref;
-  int			index;
+  elfshiblock_t		*curblock;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* 
-  ** If that block was already allocated we should not allocate it
-  ** again, since this function is called only on completely built 
-  ** graphs and not graph beeing built, so there is no allocation size 
-  ** change unless the control section was removed, and then its the first
-  ** time the block is beeing allocated in the new section instance -may  
-  */
-  snprintf(buffer, sizeof (buffer), "block_%08x", cur->vaddr);
+  /* At this points, no new block allocation should be done */
+  snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) cur->vaddr);
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
   if (sym)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -257,121 +196,105 @@ int			mjr_save_block(elfshiblock_t *cur, elfshbuf_t *buf)
       buf->data = elfsh_malloc(buf->allocated);
       buf->maxlen = 0;
     }
-  else if (buf->allocated  < (buf->maxlen + sizeof (elfshblk_t)))
+  else if (buf->allocated  < (buf->maxlen + sizeof(elfshiblock_t)))
     {
       buf->allocated += getpagesize();
       buf->data = elfsh_realloc(buf->data, buf->allocated);
     }
   
-  is_func = 0;
-  blen = sizeof (elfshblk_t);
-  
-  curblock = (elfshblk_t *) (buf->data + buf->maxlen);
-  curblock->vaddr  = cur->vaddr;
-  curblock->contig = cur->contig;
-  curblock->altern = cur->altern;
-  curblock->size   = cur->size;
-  curblock->altype = cur->altype;
-
-  /* For each caller, add a new block reference to section */
-  for (index = 0, cal = cur->caller; cal; cal = cal->next, index++) 
-    {
-      printf("index = %u and call = %08X \n", index, (unsigned int) cal);
-
-      if (buf->allocated  < (buf->maxlen + blen + sizeof (elfshblkref_t)))
-	{
-	  buf->allocated += getpagesize();
-	  buf->data = elfsh_realloc(buf->data, buf->allocated);
-	}
-      blockref = (elfshblkref_t *) (buf->data + buf->maxlen + blen);
-      blockref->vaddr = cal->vaddr;
-      blockref->type = cal->type;
-      if (!is_func && cal->type == CALLER_CALL) 
-	{
-	  is_func = 1;
-	  snprintf(buffer, sizeof (buffer), "function_%08x", cur->vaddr);
-	} 
-      blen += sizeof (elfshblkref_t);
-      putchar('.');
-    }
+  curblock         = (elfshiblock_t *) ((char *) buf->data + buf->maxlen);
+  memcpy(curblock, cur, sizeof(elfshiblock_t));
+  curblock->caller = NULL;
 
   /* Then we create the symbol for the bloc and returns */
-  bsym = elfsh_create_symbol(buf->maxlen, blen, STT_BLOCK, 0, 0, 0);
+  bsym = elfsh_create_symbol(cur->vaddr, cur->size, STT_BLOCK, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
-  buf->maxlen += blen;
+  buf->maxlen += sizeof(elfshiblock_t);
   buf->block_counter++;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
+/* Recursive traversal of the graph */
+static int		mjr_block_recstore(mjrcontext_t *ctxt,
+					   elfshiblock_t *start, 
+					   elfshbuf_t *buf)
+{
+  elfshiblock_t		*tmp;
+
+  if (mjr_block_save(start, buf) < 0)
+    return (-1);
+  tmp = mjr_block_get_by_vaddr(ctxt, start->true, 0);
+  assert(tmp != 0);
+  if (mjr_block_recstore(ctxt, tmp, buf) < 0)
+    return (-1);
+  if (start->false)
+    {
+      tmp = mjr_block_get_by_vaddr(ctxt, start->false, 0);
+      assert(tmp != 0);
+      if (mjr_block_recstore(ctxt, tmp, buf) < 0)
+	return (-1);
+    }
+  return (0);
+}
+
+
 /* Store the blocks inside the .control section using the file representation */
-int			mjr_store_blocks(elfshobj_t *obj, elfshiblock_t *blist, 
-					 int mode) 
+int			mjr_blocks_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   elfshbuf_t		buf;
+  elfshiblock_t		*start;
   int			err;
+  elfsh_Addr		e_entry;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   printf("Calling store blocks ! \n");
 
-  /* For each block, insert a new STT_BLOCK symbol 
-  ** and associated block in data of section */
-  sect = elfsh_get_section_by_name(obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
+  /* Remove previous control section if any */
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (sect)
-    elfsh_remove_section(obj, ELFSH_SECTION_NAME_CONTROL);
+    elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_CONTROL);
   
+  /* Initialize data buffer */
   buf.allocated     = 0;
   buf.maxlen        = 0;
   buf.block_counter = 0;
   buf.data          = 0;
-  buf.obj           = obj;
+  buf.obj           = ctxt->obj;
 
-  if (mode)
-    btree_browse_prefix(blist->btree, (void *) mjr_save_block, &buf);
-
+  /* Recursively save blocks information and create section */
+  e_entry = elfsh_get_entrypoint(ctxt->obj->hdr);
+  start = mjr_block_get_by_vaddr(ctxt, e_entry, 0);
+  mjr_block_recstore(ctxt, start, &buf);
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
-  sect->altdata = blist;
+  sect->altdata = ctxt->blklist;
 
   printf(" [*] Saving control section of %u bytes \n", buf.maxlen);
-
-  err = elfsh_insert_unmapped_section(obj, sect, shdr, buf.data);
+  err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
   if (err < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save control flow section", -1);
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
 
 
-
-/* Reset the passed flag in all blocks of the list */
-// NEVER CALLED !! to remove
-/*
-void		mjr_block_clean_passed(elfshiblock_t *list) 
-{
-  elfshiblock_t	*cur;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  for (cur = list; cur; cur = cur->next)
-    cur->passed = 0;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, );
-}
-*/
-
 /* Create a new block */
-elfshiblock_t	*mjr_block_create(u_int vaddr, u_int size) 
+elfshiblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
 {
   elfshiblock_t	*t;
-  
+  char		tmp[20];
+
   t = elfsh_malloc(sizeof (elfshiblock_t));
   memset(t, 0, sizeof (elfshiblock_t));
   t->vaddr = vaddr;
   t->size = size;
+  snprintf(tmp, sizeof(tmp), AFMT, vaddr);
+  hash_add(&ctxt->blkhash, tmp, t);
   return (t);
 };
 
@@ -379,8 +302,10 @@ elfshiblock_t	*mjr_block_create(u_int vaddr, u_int size)
 /* Print block */
 void		mjr_block_dump(elfshiblock_t *b) 
 {
-  printf("[B]=(%08x) [V]=(%08x) sz=(%04u) \n", (int) b, b->vaddr, b->size);
+  printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
+	 (unsigned long) b, (unsigned long) b->vaddr, b->size);
 }
+
 
 /* Display all information about a block */
 int			mjr_apply_display(elfshiblock_t *cur, void *opt)
@@ -403,20 +328,20 @@ int			mjr_apply_display(elfshiblock_t *cur, void *opt)
     *buf1 = 0x00;
   else
     snprintf(buf1, sizeof (buf1), "<%s + " UFMT ">", str, offset);
-  if (end_str == NULL || !(cur->contig))
+  if (end_str == NULL || !(cur->true))
     *buf2 = 0x00;
   else
     snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
       
-  printf("[%08x:%05i:%08x:%08x] %-4s %-30s --> %-30s ", 
-	 cur->vaddr, cur->size, cur->contig, cur->altern, 
-	 call_type_str[cur->altype], buf1, buf2);
+  printf("[%8lx:%05i:%8lx:%8lx] %-4s %-30s --> %-30s ", 
+	 (unsigned long) cur->vaddr, cur->size, (unsigned long) cur->true, 
+	 (unsigned long) cur->false, call_type_str[cur->type], buf1, buf2);
       
-  if (cur->altern == 0xFFFFFFFF)
+  if (cur->false == 0xFFFFFFFF)
     printf(" [?]");
-  else if (cur->altern != NULL)
+  else if (cur->false != NULL)
     {
-      str = elfsh_reverse_metasym(disopt->file, cur->altern, &offset);
+      str = elfsh_reverse_metasym(disopt->file, cur->false, &offset);
       printf(" [%s + " UFMT "]", (str ? str : ""), offset);
     }
       
@@ -433,20 +358,44 @@ int			mjr_apply_display(elfshiblock_t *cur, void *opt)
 }
 
 
+/* Recursive traversal of the graph */
+static int		mjr_block_recdisplay(mjrcontext_t  *c,
+					     elfshiblock_t *start, 
+					     elfshopt_t    *opt)
+{
+  elfshiblock_t		*tmp;
+
+  if (mjr_apply_display(start, opt) < 0)
+    return (-1);
+  tmp = mjr_block_get_by_vaddr(c, start->true, 0);
+  assert(tmp != 0);
+  if (mjr_block_recdisplay(c, tmp, opt) < 0)
+    return (-1);
+  if (start->false)
+    {
+      tmp = mjr_block_get_by_vaddr(c, start->false, 0);
+      assert(tmp != 0);
+      if (mjr_block_recdisplay(c, tmp, opt) < 0)
+	return (-1);
+    }
+  return (0);
+}
+
 
 /* Print the content of the control flow section */
-int			mjr_display_blocks(elfshobj_t		*file, 
-					   elfshiblock_t	*blk_list, 
-					   int			level) 
+int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
-  struct s_disopt	disopt;
-  
-  disopt.counter = 0;
-  disopt.level = level;
-  disopt.file = file;
-  if (blk_list->btree)
-    btree_browse_infix(blk_list->btree, (void *) mjr_apply_display, &disopt);
-  return (disopt.counter);
+  elfshopt_t	opt;
+  elfsh_Addr	e_entry;
+  elfshiblock_t	*start;
+
+  e_entry     = elfsh_get_entrypoint(c->obj->hdr);
+  start       = mjr_block_get_by_vaddr(c, e_entry, 0);
+  opt.counter = 0;
+  opt.level   = level;
+  opt.file    = c->obj;
+  mjr_block_recdisplay(c, start, &opt);
+  return (opt.counter);
 }
 
 
@@ -454,23 +403,24 @@ int			mjr_display_blocks(elfshobj_t		*file,
 
 /* Add a new block to the blocks tree (sorted by address)
 ** If block is already present, it's not inserted and function returns */
-void		mjr_block_add_list(elfshiblock_t **list, elfshiblock_t *n) 
+void		mjr_block_add_list(mjrcontext_t *ctxt, elfshiblock_t *n) 
 {
   elfshiblock_t	*cur;
 
-  cur = *list;
+  cur = ctxt->blklist;
   if (!cur)
     {
-      cur = mjr_block_create(0, 0);
-      *list = cur;
+      cur = mjr_block_create(ctxt, cur->vaddr, cur->size);
+      ctxt->blklist = cur;
     }
-  btree_insert_sort(&cur->btree, (void *) mjr_match_block, n);
 }
 
 
   
 /* Add a caller : vaddr is address of starting block */
-void		mjr_block_add_caller(elfshiblock_t *blk, u_int vaddr, int type) 
+void		mjr_block_add_caller(elfshiblock_t *blk, 
+				     elfsh_Addr    vaddr, 
+				     int	   type) 
 {
   elfshcaller_t	*n;
   
@@ -488,16 +438,37 @@ void		mjr_block_add_caller(elfshiblock_t *blk, u_int vaddr, int type)
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-elfshiblock_t	*mjr_block_get_by_vaddr(elfshiblock_t *list, u_int vaddr, int mode)
+elfshiblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
+					elfsh_Addr   vaddr, 
+					int	     mode)
 {
   elfshiblock_t	cur;
-  elfshiblock_t	*bcur;
-  
-  if (!list)
+  elfshiblock_t	*ret;
+  char		**keys;
+  int		index;
+  int		size;
+
+  if (!ctxt)
     return (NULL);
   cur.vaddr = vaddr;
-  bcur = btree_find_elem(list->btree, 
-			 (mode ? (void *) mjr_match_inblock : 
-			  (void *) mjr_match_block), &cur);
-  return (bcur);
+  keys = hash_get_keys(&ctxt->blkhash, &size);
+  for (index = 0; index < size; index++)
+    {
+      ret = (elfshiblock_t *) hash_get(&ctxt->blkhash, keys[index]);
+      switch (mode)
+	{
+	  /* Return exact match */
+	case 0:
+	  if (ret->vaddr == vaddr)
+	    return (ret);
+	  break;
+
+	  /* Return parent match */
+	default:
+	  if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
+	    return (ret);
+	  break;
+	}
+    }
+  return (NULL);
 }

@@ -1,33 +1,19 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-blocks.h,v 1.8 2006-12-20 00:22:54 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.9 2006-12-31 05:07:12 may Exp $
  *
  */
-
 #include <libelfsh.h>
 #include <libasm.h>
 
-/* Structure s_list used for arguments enumeration */
-
-#define EXEC_MISSED	0
-#define EXEC_PASSED	1
-
-struct s_arglist 
-{
-  int   num;		/* argument number		*/
-  int	used;		/* number of access to argument	*/
-  struct s_arglist	*next;
-};
-
-struct s_disopt
+/* Control flow dump options */
+typedef struct	s_disopt
 {
   elfshobj_t	*file;
   u_int		counter;
   int		level;
-};
-
-
+}		elfshopt_t;
 
 /* ELFsh buffer */
 typedef struct	s_buf
@@ -49,26 +35,6 @@ typedef struct	s_condition
   char		*src;
   char		*cmp;
 }		elfshcond_t;
-
-//asm_instr		vaddr_hist[5];
-
-/* this covers at this moment only calls */
-
-#define MJR_TYPE_SECT_START 0
-#define MJR_TYPE_FUNCT		1
-
-/* Original block format for libmjollnir */
-typedef struct		_mjrBlock 
-{
- u_int			vaddr;
- u_int			type;
- char			*name;
- u_int			flowTo;
- u_int			flowRet;
- char			*section;
- struct mjrBlock	*listNext;
- struct mjrBlock	*listPrev;
-}			mjrblock_t;
 
 
 /*
@@ -95,38 +61,16 @@ typedef			struct s_caller
 /* This format is never saved ondisk */
 typedef struct		s_iblock 
 {
-  char			*symstr;
-  u_int			vaddr;	/* block starting virtual address	*/
-  u_int			size;	/* block size				*/
-  struct s_caller	*caller;/* linked list of invvoking instr.      */
-  btree_t		*btree; /* Left and right of the block          */
-
-  u_int			altern;	/* vaddr of alternate path		*/
-  u_int			altype; /* alternative path invokation type	*/
-  u_int			contig; /* vaddr of next block if continuing	*/
-
+  unsigned int		symoff;	 /* block name offset in string table   */
+  elfsh_Addr		vaddr;	 /* block starting virtual address	*/
+  elfsh_Addr		true;    /* vaddr of next block if continuing	*/
+  elfsh_Addr		false;	 /* vaddr of alternate path		*/
+  u_int			type;	 /* Invokation type			*/
+  u_int			size;	 /* block size				*/
+  struct s_caller	*caller; /* MEMONLY : linked list of callers    */
 }			elfshiblock_t;
 
 
-
-/* Concrete header of block representation */
-/* as it is stored in .elfsh.control section */
-typedef struct	s_elfshblock 
-{
-  u_int		vaddr;		/* virtual address of block  */
-  u_int		size;		/* size of block	     */
-  u_int		contig;		/* contiguous execution path */
-  u_int		altern;		/* alternate execution path  */
-  u_int		altype;		/* execution breaking instr  */
-}		elfshblk_t;
-
-/* Abstract block reference representation */
-/* An array of them comes after the block header representation, for each block */
-typedef struct	s_elfshbref 
-{
-  u_int		vaddr;		/* address of instruction invoking block	*/
-  u_int		type;		/* type of invokation				*/
-}		elfshblkref_t;
 
 /* Abstract function representation */
 typedef struct		s_function 
@@ -137,13 +81,3 @@ typedef struct		s_function
   struct s_caller	*blocks;
   struct s_function	*next;
 }			elfshfunc_t;
-
-/* Some settings */
-/*
-struct s_elfshstng 
-{
-  int	rec_ptr_fnc; 		** automagic ptr-function recognition **
-  int  use_goto_hash; 	        ** use s_goto hash/addgoto function ** 
-  int  graph_verbose_level;
-};
-*/

@@ -1,10 +1,8 @@
 /*
-** 
 ** control.c in libmjollnir for elfsh
-** 
-** Author  : <sk at devhell dot org>
-** Started : Thu May 29 20:44:39 2003
-** Updated : Sun Oct 19 16:45:48 2003
+**
+** Started : Thu May 29 20:44:39 2003 sk
+** Updated : Sun Dec 30 16:45:48 2006 mayhem
 */
 #include "libmjollnir.h"
 
@@ -13,32 +11,34 @@
 /* This function traces the entry point and save the last push argument until 
 ** a call is found. This allow to fetch the main address in an OS-dependent 
 ** manner */
-u_int			mjr_trace_start(mjrcontext_t	*context,
-					elfshobj_t	*obj, 
-					unsigned char	*buf, 
+elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
+					u_char		*buf, 
 					u_int		len, 
-					u_int		vaddr,
-					elfshiblock_t	**b_lst)
+					elfsh_Addr	vaddr)
 {
   int			stop;
   elfsh_Sym		*sym;
   u_int			ilen;
   u_int			dis;
-  u_int			main_addr;
-  u_int			init_addr;
+  elfsh_Addr		main_addr;
+  elfsh_Addr		init_addr;
   elfshiblock_t		*main_b;
   asm_instr		ins;
   int			arch_bin;
   int			fetch_next = 0;
+  elfshobj_t		*obj;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!context || !buf)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid parameters", 0);
   
   if (!(elfsh_get_objtype(elfsh_get_hdr(obj)) == ET_EXEC))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Object is not ET_EXEC", 0);
 
 #if defined(__DEBUG_MJOLLNIR__)
-  printf(" [*] _start found at %08x\n", vaddr);
+  printf(" [*] _start found at %lx\n", (unsigned long) vaddr);
 #endif
 
   for (dis = stop = 0; !stop; dis += ilen) 
@@ -55,7 +55,8 @@ u_int			mjr_trace_start(mjrcontext_t	*context,
 	      arch_bin = MJR_BIN_FREEBSD;
 	      sym = elfsh_get_metasym_by_name(obj, ELFSH_SECTION_NAME_INIT);
 	      init_addr = sym->st_value;
-	      printf(" [*] locating call to .init: %8x\n", init_addr);
+	      printf(" [*] locating call to .init: %lx\n", 
+		     (unsigned long) init_addr);
 	      break;
 	    }
 	  printf(" [*] %s-like start\n", arch_bin ? "FreeBSD" : "Linux");  
@@ -90,8 +91,8 @@ u_int			mjr_trace_start(mjrcontext_t	*context,
 	}
     }
 
-  main_b = mjr_block_create(main_addr, 1);
-  mjr_block_add_list(b_lst, main_b);
+  main_b = mjr_block_create(context, main_addr, 1);
+  mjr_block_add_list(context, main_b);
   mjr_block_add_caller(main_b, vaddr + dis, CALLER_CALL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
@@ -128,11 +129,11 @@ int			mjr_trace_control(mjrcontext_t	*context,
       ** -> this is to escape some padding
       ** -> if prevaddr is not null, then we create a new block
       */
-      if ((context->curblock = mjr_block_get_by_vaddr(context->blklist, vaddr, 0)))
+      if ((context->curblock = mjr_block_get_by_vaddr(context, vaddr, 0)))
 	context->curblock->size = 0;
       else 
 	{
-	  context->curblock = mjr_block_create(vaddr, 0);
+	  context->curblock = mjr_block_create(context, vaddr, 0);
 	  if (context->hist[MJR_HISTORY_PREV].vaddr)
 	    mjr_block_add_caller(context->curblock, 
 				 context->hist[MJR_HISTORY_PREV].vaddr,
@@ -147,13 +148,13 @@ int			mjr_trace_control(mjrcontext_t	*context,
   **
   ** NOTE: this may help in obfuscated code detection
   */
-  else if ((tmp = mjr_block_get_by_vaddr(context->blklist, vaddr, 0))) 
+  else if ((tmp = mjr_block_get_by_vaddr(context, vaddr, 0))) 
     {
-      context->curblock->altype = CALLER_CONT;
-      context->curblock->contig = vaddr;
-      mjr_block_add_list(&context->blklist, context->curblock);
-      context->curblock->size   = 0;
-      context->curblock         = tmp;
+      context->curblock->type  = CALLER_CONT;
+      context->curblock->true  = vaddr;
+      mjr_block_add_list(context, context->curblock);
+      context->curblock->size  = 0;
+      context->curblock        = tmp;
     }
   
   /* From there, we MUST be in a block */
@@ -164,7 +165,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
   mjr_history_write(context, ins, vaddr, MJR_HISTORY_CUR);
 
   if (!tmp)
-    mjr_block_add_list(&context->blklist, context->curblock);
+    mjr_block_add_list(context, context->curblock);
   
   /* Now abstract interpret the operational semantics of the current 
      instruction set using the typed instruction system of libasm */

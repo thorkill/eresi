@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.5 2006-12-29 22:38:47 may Exp $
+ * $Id: function.c,v 1.6 2006-12-31 05:07:12 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -53,7 +53,7 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
  void           *ret;
  u_int		i;
  int 		mlen;
- int		off;
+ elfsh_SAddr	off;
  elfshsect_t	*sect;
  unsigned char	*buff;
 

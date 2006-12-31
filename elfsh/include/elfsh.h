@@ -176,7 +176,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.73"
-#define	ELFSH_RELEASE		"a4"
+#define	ELFSH_RELEASE		"a5"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -398,13 +398,7 @@ char prompt_token[512];
 #define CMD_UNSTRIP		"unstrip"
 #define CMD_RENAME		"rename"
 #define	CMD_CONTROL		"control"
-
-#define CMD_FLOW		"flow"    // duplicate
-#define CMD_ANALYSE		"analyse" // duplicate
-
-#define CMD_FLOWLOAD		"flowload" // ???
-#define CMD_FLOWSAVE		"flowsave" // ???
-#define	CMD_FLOWTEST		"flowtest" // ???
+#define CMD_ANALYSE		"analyse"
 
 /* config commands */
 #define CMD_CONFIGURE		"configure"

@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.8 2006-12-29 22:38:47 may Exp $
+ * $Id: symtab.c,v 1.9 2006-12-31 05:07:12 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -11,45 +11,44 @@
 /* Rebuild the symtab with original names when possible */
 int		mjr_symtab_rebuild(mjrsession_t *sess) 
 {
- int		cn, x;
+ int		cn;
+ int		x;
  char		**tab;
- mjrblock_t	*n;
+ elfshiblock_t	*n;
  char		s[BSIZE];
 
  tab = hash_get_keys(&sess->cur->blkhash, &cn);
  for (x = 0; x < cn; x++) 
    {
      n = hash_get(&sess->cur->blkhash, tab[x]);
-     if (n->type != MJR_TYPE_FUNCT && n->type != MJR_TYPE_SECT_START)
+     if (!mjr_block_funcstart(n))
        continue;
-     memset(s, 0x00, BSIZE);
      snprintf(s, BSIZE, "%s%s", 
 	      (char *) elfsh_config_get_data(MJR_COFING_CALL_PREFIX),
 	      (char *) _vaddr2string(n->vaddr));
-     mjr_symbol_add(sess, n->section, n->vaddr, s);
+     mjr_symbol_add(sess, n->vaddr, s);
    }
  return 1;
 }
 
 /* This function inserts new symbol as a function. Shortcut for insert/set */
 int		mjr_symbol_add(mjrsession_t	*sess, 
-			       char		*section, 
-			       u_int		vaddr, 
+			       elfsh_Addr	vaddr, 
 			       char		*fname)
 {
-  elfshsect_t	*sct;
+  elfshsect_t	*sect;
   elfsh_Sym	sym;
+  
+  sect = elfsh_get_parent_section(sess->cur->obj, vaddr, NULL);
 
 #if __DEBUG__
   fprintf(D_DESC,"[__DEBUG__] mjrSymbolAdd: [%10s] 0x%08x <%s>\n",
 	  section, vaddr, fname);
 #endif
-  
-  sct = elfsh_get_section_by_name((elfshobj_t *) sess->cur->obj, 
-				  (char *) section, NULL, NULL, NULL);
-  if (!sct)
+
+  if (!sect)
     return 0;
-  sym = elfsh_create_symbol(vaddr, 0, STT_FUNC, 0, 0, sct->index);
+  sym = elfsh_create_symbol(vaddr, 0, STT_FUNC, 0, 0, sect->index);
   elfsh_insert_symbol(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB], &sym, fname);
   return 1;
 }
@@ -72,21 +71,19 @@ int		mjr_symbol_rename(mjrsession_t  *sess,
 				  char		*new_name) 
 {
   elfsh_Sym	*sm;
-  elfshsect_t	*s;
   
   sm = elfsh_get_symbol_by_name(sess->cur->obj, old_name);
   if (!sm)
     return 0;
-  s = elfsh_get_section_by_index(sess->cur->obj, sm->st_shndx, NULL, NULL);
   
 #if __DEBUG__
  fprintf(D_DESC,
-	 "[__DEBUG__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s <%s>\n", 
-	 old_name, sm->st_value, new_name, s->name);
+	 "[__DEBUG__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s \n", 
+	 old_name, sm->st_value, new_name);
 #endif
  
- mjr_symbol_add(sess,s->name,sm->st_value,new_name);
- mjr_symbol_delete_by_name(sess,old_name); 
+ mjr_symbol_add(sess, sm->st_value, new_name);
+ mjr_symbol_delete_by_name(sess, old_name); 
  return 1;
 }
 

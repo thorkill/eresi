@@ -81,8 +81,7 @@ int		mjr_setup_processor(mjrsession_t *);
 char		*_vaddr2string(u_int);
 
 /* control.c	*/
-u_int		mjr_trace_start(mjrcontext_t *c, elfshobj_t *, unsigned char *, 
-				u_int, u_int, elfshiblock_t **);
+elfsh_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, u_int, elfsh_Addr);
 int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
 				  asm_instr *, elfsh_Addr a);
 
@@ -91,20 +90,17 @@ int		mjr_analyse(mjrsession_t *sess, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
 
 /* blocks.c */
-elfshiblock_t*	mjr_get_blocks(elfshobj_t *file);
-elfshiblock_t	*mjr_block_create(u_int, u_int);
-int		mjr_display_blocks(elfshobj_t *, elfshiblock_t *, int);
-void		mjr_dump_block(elfshiblock_t *b);
-int		mjr_free_blocks(elfshiblock_t *blks);
-int		mjr_load_blocks(elfshobj_t *, elfshiblock_t **);
-int		mjr_store_blocks(elfshobj_t *, elfshiblock_t *, int);
-elfshiblock_t  *mjr_block_get_by_vaddr(elfshiblock_t *, u_int, int);
-void		mjr_block_clean_passed(elfshiblock_t *);
-void		mjr_block_add_caller(elfshiblock_t *, u_int, int);
-void		mjr_block_add_list(elfshiblock_t **, elfshiblock_t *);
-int		mjr_block_is_funcstart(elfshiblock_t *);
-int		mjr_block_point(elfshiblock_t **blklist, asm_instr *ins,
-				elfsh_Addr vaddr, elfsh_Addr dest);
+elfshiblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
+elfshiblock_t*	mjr_blocks_load(mjrcontext_t *c);
+elfshiblock_t*  mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
+elfshiblock_t*  mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+int		mjr_blocks_display(mjrcontext_t *c, int);
+int		mjr_blocks_store(mjrcontext_t *c);
+int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
+void		mjr_block_add_list(mjrcontext_t *c, elfshiblock_t *);
+void		mjr_block_dump(elfshiblock_t *b);
+void		mjr_block_add_caller(elfshiblock_t *, elfsh_Addr, int);
+int		mjr_block_funcstart(elfshiblock_t *);
 
 /* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);
@@ -113,7 +109,7 @@ int	       mjr_insert_destaddr(mjrcontext_t *c);
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);
-int		mjr_symbol_add(mjrsession_t *, char *, u_int, char *);
+int		mjr_symbol_add(mjrsession_t *, elfsh_Addr, char *);
 int		mjr_symbol_delete_by_name(mjrsession_t *, char *);
 int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 
