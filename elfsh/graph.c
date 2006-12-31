@@ -10,7 +10,7 @@
 
 
 /* Add a link entry to the graph */
-void		vm_write_graphent(elfshobj_t *file, int fd, elfshiblock_t *cur)
+void		vm_write_graphent(elfshobj_t *file, int fd, mjrblock_t *cur)
 {
   char		buf[BUFSIZ];
   char		*src_name;
@@ -70,7 +70,7 @@ void		vm_write_graphent(elfshobj_t *file, int fd, elfshiblock_t *cur)
 
 
 /* Disassemble a block */
-void		vm_disasm_block(int fd, elfshiblock_t *blk)
+void		vm_disasm_block(int fd, mjrblock_t *blk)
 {
   char		*buffer;
   char		*name;
@@ -105,9 +105,9 @@ void		vm_disasm_block(int fd, elfshiblock_t *blk)
 /* Graph the binary */
 int		cmd_graph(void)
 {
-  elfshiblock_t	*blk;
+  mjrblock_t	*blk;
   elfshsect_t	*sect;
-  elfshcaller_t	*cal;
+  mjrcaller_t	*cal;
   int		index;
   int		blocnbr;
   int		fd;
@@ -130,7 +130,7 @@ int		cmd_graph(void)
   if (!sect || !sect->altdata)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Control flow section not found : use analyse command", -1);
-  if (sect->shdr->sh_size % sizeof(elfshiblock_t))
+  if (sect->shdr->sh_size % sizeof(mjrblock_t))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted control section : modulo-test failed", -1);
 

@@ -12,7 +12,7 @@
 /* Perform hijack of basic blocks */
 int			cmd_flowjack(void)
 {
-  elfshiblock_t		*to_hijack;
+  mjrblock_t		*to_hijack;
   struct s_caller	*cal;
   unsigned long		addr;
   elfshsect_t		*sect;

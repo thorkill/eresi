@@ -1,40 +1,14 @@
 /*
- * (C) 2006 Asgard Labs, thorolf
- * BSD License
- * $Id: libmjollnir-blocks.h,v 1.9 2006-12-31 05:07:12 may Exp $
+ * 2001-2006 Devhell Labs
+ * 2006 Asgard Labs, thorolf
+ * 
+ * Basic blocks related structures for libmjollnir
+ *
+ * $Id: libmjollnir-blocks.h,v 1.10 2006-12-31 05:36:31 may Exp $
  *
  */
 #include <libelfsh.h>
 #include <libasm.h>
-
-/* Control flow dump options */
-typedef struct	s_disopt
-{
-  elfshobj_t	*file;
-  u_int		counter;
-  int		level;
-}		elfshopt_t;
-
-/* ELFsh buffer */
-typedef struct	s_buf
-{
-  char		*data;
-  u_int		maxlen;
-  u_int		allocated;
-  u_int		block_counter;
-  elfshobj_t	*obj;
-}		elfshbuf_t;
-
-/* Abstract representation for a condition */
-typedef struct	s_condition 
-{
-#define CONDITION_SIGNED
-#define CONDITION_UNSIGNED
-  int		sign;
-  char		*dst;
-  char		*src;
-  char		*cmp;
-}		elfshcond_t;
 
 
 /*
@@ -44,7 +18,7 @@ typedef struct	s_condition
  * - a type field to know how the block is invoked
  * - a vaddr field to know address of instruction which has invoked it.
  */
-typedef			struct s_caller 
+typedef	struct		s_caller 
 {
 #define   CALLER_CONT   0	/* block is invoked from previous block	*/
 #define   CALLER_JUMP	1	/* block is invoked by some JUMP,JCC	*/
@@ -54,7 +28,7 @@ typedef			struct s_caller
   int			type;
   u_int			vaddr;
   struct s_caller	*next;
-}			elfshcaller_t;
+}			mjrcaller_t;
 
 
 /* Structure used to describe blocks in memory */
@@ -68,8 +42,50 @@ typedef struct		s_iblock
   u_int			type;	 /* Invokation type			*/
   u_int			size;	 /* block size				*/
   struct s_caller	*caller; /* MEMONLY : linked list of callers    */
-}			elfshiblock_t;
+}			mjrblock_t;
 
+
+
+/***** Misplaced structures : should find another header */
+
+
+
+/* Control flow dump options */
+typedef struct	s_disopt
+{
+  elfshobj_t	*file;
+  u_int		counter;
+  int		level;
+}		mjropt_t;
+
+/* ELFsh buffer */
+typedef struct	s_buf
+{
+  char		*data;
+  u_int		maxlen;
+  u_int		allocated;
+  u_int		block_counter;
+  elfshobj_t	*obj;
+}		mjrbuf_t;
+
+
+
+
+/***** Those 2 structures are not used yet ******/
+
+
+
+
+/* Abstract representation for a condition */
+typedef struct	s_condition 
+{
+#define CONDITION_SIGNED
+#define CONDITION_UNSIGNED
+  int		sign;
+  char		*dst;
+  char		*src;
+  char		*cmp;
+}		mjrcond_t;
 
 
 /* Abstract function representation */
@@ -80,4 +96,4 @@ typedef struct		s_function
   char			*symstr;
   struct s_caller	*blocks;
   struct s_function	*next;
-}			elfshfunc_t;
+}			mjrfunc_t;

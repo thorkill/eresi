@@ -32,7 +32,7 @@ typedef struct		_mjrContext
 {
   elfshobj_t		*obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
-  elfshiblock_t	        *curblock;   /* current working block */
+  mjrblock_t	        *curblock;   /* current working block */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
@@ -41,7 +41,7 @@ typedef struct		_mjrContext
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
   hash_t		blkhash;     /* blocks hash table for this obj */
-  elfshiblock_t		*blklist;    /* blocks array with on-disk format */
+  mjrblock_t		*blklist;    /* blocks array with on-disk format */
   unsigned char		analysed;    /* do we analysed it */
   u_int			calls_seen;  /* FIXME */
   u_int			calls_found; /* FIXME */
@@ -77,9 +77,6 @@ int		mjr_create_context_as_current(mjrsession_t *, elfshobj_t *);
 mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *);
 
-/* internal.c */
-char		*_vaddr2string(u_int);
-
 /* control.c	*/
 elfsh_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, u_int, elfsh_Addr);
 int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
@@ -90,17 +87,17 @@ int		mjr_analyse(mjrsession_t *sess, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
 
 /* blocks.c */
-elfshiblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
-elfshiblock_t*	mjr_blocks_load(mjrcontext_t *c);
-elfshiblock_t*  mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
-elfshiblock_t*  mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
+mjrblock_t*	mjr_blocks_load(mjrcontext_t *c);
+mjrblock_t*     mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
+mjrblock_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
 int		mjr_blocks_display(mjrcontext_t *c, int);
 int		mjr_blocks_store(mjrcontext_t *c);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
-void		mjr_block_add_list(mjrcontext_t *c, elfshiblock_t *);
-void		mjr_block_dump(elfshiblock_t *b);
-void		mjr_block_add_caller(elfshiblock_t *, elfsh_Addr, int);
-int		mjr_block_funcstart(elfshiblock_t *);
+void		mjr_block_add_list(mjrcontext_t *c, mjrblock_t *);
+void		mjr_block_dump(mjrblock_t *b);
+void		mjr_block_add_caller(mjrblock_t *, elfsh_Addr, int);
+int		mjr_block_funcstart(mjrblock_t *);
 
 /* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);
@@ -118,7 +115,6 @@ mjrfunction_t   *mjr_function_create(u_int);
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
 
 /* history.c */
-int		mjr_history_update(mjrcontext_t *cur, asm_instr i);
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
-void		mjr_history_write(mjrcontext_t *c, asm_instr*, elfsh_Addr a, int i);
+void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
 #endif

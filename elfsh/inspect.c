@@ -13,8 +13,8 @@ int			cmd_inspect()
 {
   elfshsect_t		*sect;
   elfsh_Sym		*sym;
-  elfshiblock_t		*blk;
-  elfshcaller_t		*cal;
+  mjrblock_t		*blk;
+  mjrcaller_t		*cal;
   char			*name;
   elfsh_SAddr		off;
   int			index;
