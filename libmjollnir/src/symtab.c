@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.10 2006-12-31 05:32:48 may Exp $
+ * $Id: symtab.c,v 1.11 2006-12-31 21:38:08 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -40,9 +40,9 @@ int		mjr_symbol_add(mjrsession_t	*sess,
   
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, NULL);
 
-#if __DEBUG__
-  fprintf(D_DESC,"[__DEBUG__] mjrSymbolAdd: [%10s] 0x%08x <%s>\n",
-	  section, vaddr, fname);
+#if __DEBUG_MJOLLNIR__
+  fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjrSymbolAdd: [%10s] 0x%08x <%s>\n",
+	  "SECNAME", vaddr, fname);
 #endif
 
   if (!sect)
@@ -56,8 +56,8 @@ int		mjr_symbol_add(mjrsession_t	*sess,
 /* Remove symbol by name */
 int		mjr_symbol_delete_by_name(mjrsession_t *sess, char *symbol) 
 { 
-#if __DEBUG__
-  fprintf(D_DESC,"[__DEBUG__] mjr_symbol_deleteByName: <%s>\n", symbol);
+#if __DEBUG_MJOLLNIR__
+  fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjr_symbol_deleteByName: <%s>\n", symbol);
 #endif
   
   elfsh_remove_symbol(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB], symbol);
@@ -75,9 +75,9 @@ int		mjr_symbol_rename(mjrsession_t  *sess,
   if (!sm)
     return 0;
   
-#if __DEBUG__
+#if __DEBUG_MJOLLNIR__
  fprintf(D_DESC,
-	 "[__DEBUG__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s \n", 
+	 "[__DEBUG_MJOLLNIR__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s \n", 
 	 old_name, sm->st_value, new_name);
 #endif
  

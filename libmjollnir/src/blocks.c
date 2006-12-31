@@ -57,6 +57,7 @@ int		mjr_block_point(mjrcontext_t  *ctxt,
       dst->true       = dest;
       dst->type       = CALLER_CONT;
       dst->false      = 0;
+      
       mjr_block_add_list(ctxt, dst_end);
       dst             = dst_end;
     }
@@ -125,8 +126,12 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   for (index = 0; index < blocnbr; index++)
     {
       curbloc = (mjrblock_t *) sect->data + index;
+
       mjr_block_add_list(ctxt, curbloc);
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
+
+      fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s\n",name);
+
       hash_add(&ctxt->blkhash, name, curbloc);
     }
      
@@ -161,12 +166,14 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 int		 mjr_block_funcstart(mjrblock_t *blk) 
 {
   mjrcaller_t	 *cur;
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (blk)
     for (cur = blk->caller; cur; cur = cur->next)
       if (cur->type == CALLER_CALL)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -287,15 +294,22 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
 {
   mjrblock_t	*t;
-  char		tmp[20];
+  char		tmp[32];
 
-  t = elfsh_malloc(sizeof (mjrblock_t));
-  memset(t, 0, sizeof (mjrblock_t));
-  t->vaddr = vaddr;
-  t->size = size;
-  snprintf(tmp, sizeof(tmp), AFMT, vaddr);
-  hash_add(&ctxt->blkhash, tmp, t);
-  return (t);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+                                                                                                                                                                          
+  t = elfsh_malloc(sizeof (mjrblock_t));                                                                                                                              
+  memset(t, 0, sizeof (mjrblock_t));                                                                                                                                  
+  t->vaddr = vaddr;                                                                                                                                                   
+  t->size = size;                                                                                                                                                     
+  snprintf(tmp, sizeof(tmp), AFMT, vaddr);                                                                                                                            
+
+//  fprintf(D_DESC,"[__DEBUG__] mjr_block_create: hash_add %s\n", tmp);
+
+  hash_add(&ctxt->blkhash, elfsh_strdup(tmp), t);                                                                                                                                   
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
+
 };
 
 
@@ -407,12 +421,16 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
 {
   mjrblock_t	*cur;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   cur = ctxt->blklist;
   if (!cur)
     {
-      cur = mjr_block_create(ctxt, cur->vaddr, cur->size);
+//      cur = mjr_block_create(ctxt, n->vaddr, n->size);
       ctxt->blklist = cur;
     }
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -423,12 +441,16 @@ void		mjr_block_add_caller(mjrblock_t *blk,
 				     int	   type) 
 {
   mjrcaller_t	*n;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
   n = elfsh_malloc(sizeof (mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;
   blk->caller = n;
+
+  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -442,33 +464,56 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
 					elfsh_Addr   vaddr, 
 					int	     mode)
 {
+// FIXME ???
   mjrblock_t	cur;
+
   mjrblock_t	*ret;
   char		**keys;
   int		index;
   int		size;
 
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!ctxt)
-    return (NULL);
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      "missing context", (NULL));
+
+
+// FIXME ???
   cur.vaddr = vaddr;
+
   keys = hash_get_keys(&ctxt->blkhash, &size);
+
   for (index = 0; index < size; index++)
     {
+    
+//    fprintf(D_DESC,"[__DEBUG__] mjr_block_get_by_vaddr: index:%d/%d key:%s\n",index,size,keys[index]);
+
       ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
+      
+      if (NULL == ret)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	"Can't get keys[index] from hash", (NULL));
+      
       switch (mode)
 	{
 	  /* Return exact match */
 	case 0:
 	  if (ret->vaddr == vaddr)
-	    return (ret);
+		ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 	  break;
 
 	  /* Return parent match */
 	default:
 	  if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
-	    return (ret);
+		ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 	  break;
 	}
     }
-  return (NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }
+
+//    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+//		      "Unable to save control flow section", -1);
+//  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
+

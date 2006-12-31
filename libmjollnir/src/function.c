@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.6 2006-12-31 05:07:12 may Exp $
+ * $Id: function.c,v 1.7 2006-12-31 21:38:08 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -108,7 +108,9 @@ mjrfunction_t	*mjr_function_create(u_int vaddr)
  mjrfunction_t *fun;
  
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+
  XALLOC(fun, sizeof(mjrfunction_t), NULL);
  fun->vaddr = vaddr;
+
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }

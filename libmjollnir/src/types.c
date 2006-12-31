@@ -148,6 +148,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to compute function pointer target", 
 		      (elfsh_Addr) -1);  
+
   dest = strtol(ret, (char **) NULL, 16);
   if (dest) 
     {

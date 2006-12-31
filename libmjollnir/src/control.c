@@ -33,7 +33,7 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid parameters", 0);
   
-  if (!(elfsh_get_objtype(elfsh_get_hdr(obj)) == ET_EXEC))
+  if (!(elfsh_get_objtype(elfsh_get_hdr(context->obj)) == ET_EXEC))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Object is not ET_EXEC", 0);
 
@@ -53,7 +53,7 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 	      break;
 	    case ASM_PUSH:
 	      arch_bin = MJR_BIN_FREEBSD;
-	      sym = elfsh_get_metasym_by_name(obj, ELFSH_SECTION_NAME_INIT);
+	      sym = elfsh_get_metasym_by_name(context->obj, ELFSH_SECTION_NAME_INIT);
 	      init_addr = sym->st_value;
 	      printf(" [*] locating call to .init: %lx\n", 
 		     (unsigned long) init_addr);
