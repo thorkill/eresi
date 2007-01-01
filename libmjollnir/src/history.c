@@ -1,7 +1,7 @@
 /*
 ** (C) 2001-2006 Devhell Labs / Asgard Labs : thorolf / sk / mayhem
 **
-** $Id: history.c,v 1.6 2006-12-31 21:38:08 thor Exp $
+** $Id: history.c,v 1.7 2007-01-01 04:25:41 thor Exp $
 */
 #include "libmjollnir.h"
 
@@ -19,6 +19,13 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
   memcpy(&cur->hist[3], &cur->hist[4], sizeof(mjrhistory_t));
   memcpy(&cur->hist[4].instr, &inst, sizeof(asm_instr));
   cur->hist[4].vaddr = addr;
+
+#if __DEBUG_OPERAND__
+  fprintf(D_DESC,"[__DEBUG_OPERAND__] mjr_history_shift: %x/%x/%x\n",
+    cur->hist[MJR_HISTORY_CUR].vaddr,
+    cur->hist[MJR_HISTORY_PREV].vaddr,
+    cur->hist[MJR_HISTORY_PPREV].vaddr);
+#endif
 
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }

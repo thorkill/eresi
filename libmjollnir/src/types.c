@@ -31,6 +31,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
   mjrfunction_t	*fun;
   asm_instr	*curins;
   elfsh_Addr	curvaddr;
+  elfsh_Addr	dstaddr;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -43,14 +44,21 @@ int		mjr_asm_flow(mjrcontext_t *context)
     {
 
     case ASM_TYPE_CONDBRANCH:
-      context->curblock->true  = mjr_insert_destaddr(context);
+    dstaddr = mjr_insert_destaddr(context);
+
+    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_CALLPROC T:%x F:%x\n",curvaddr,dstaddr,curvaddr+ilen);
+      context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_JUMP;
       context->curblock = 0;
       break;
 
     case ASM_TYPE_CALLPROC:
-      context->curblock->true  = mjr_insert_destaddr(context);
+    dstaddr = mjr_insert_destaddr(context);
+
+    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_CALLPROC T:%x F:%x\n",curvaddr,dstaddr,curvaddr+ilen);
+
+      context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_CALL;
       context->calls_seen++;
@@ -68,20 +76,31 @@ int		mjr_asm_flow(mjrcontext_t *context)
       break;
 
     case ASM_TYPE_IMPBRANCH:
-      context->curblock->true  = mjr_insert_destaddr(context);
+      dstaddr = mjr_insert_destaddr(context);
+
+     fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_IMPBRANCH T:%x F:0\n", curvaddr, dstaddr);
+
+      context->curblock->true  = dstaddr;
       context->curblock->false = 0;
       context->curblock->type  = CALLER_JUMP;
       context->curblock        = 0;
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
+
       break;
 
     case ASM_TYPE_RETPROC:
+    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_RETPROC\n",curvaddr);
       context->curblock->true  = 0;
       context->curblock->false = 0;
       context->curblock->type  = CALLER_RET;
       context->curblock        = 0;
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
+
+/*    
+    default:
+	fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x DEFAULT %d\n",curvaddr, curins->type);
+*/
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -100,7 +119,15 @@ int		mjr_asm_flow(mjrcontext_t *context)
 **  - start gdb, set breakpoint on a known pointer function, run the prog
 **  - check register value at breakpoint
 **  - start elfsh
-**  - addgoto <vaddr of call *%reg> <destaddr value of *%reg>   
+**  - addgoto <vaddr of call *%reg> <destaddr value of *%reg> 
+**
+** TODO:
+**  history of mov to reg when second operand was an address ;-)
+**  
+**  804933c:       89 d1                   mov    %edx,%ecx
+**  804933e:       89 15 c0 e2 04 08       mov    %edx,0x804e2c0
+**  ...
+**  804936c:       ff d2                   call   *%edx
 */
 elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 {
@@ -131,7 +158,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
       mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr, 
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
 
-#if defined(__DEBUG_MJOLLNIR__)
+#if __DEBUG_MJOLLNIR__
       printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
 	     (unsigned long) dest, (unsigned long) dest);
@@ -153,7 +180,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   if (dest) 
     {
 
-#if defined(__DEBUG_MJOLLNIR__)
+#if __DEBUG_MJOLLNIR__
       printf(" [*] Extended routing table found 0x%lx -> 0x%lx\n", 
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
 	     (unsigned long) dest);
@@ -201,16 +228,13 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
 
   /* The target block is called indirectly : if we find a pattern that correspond 
      to an easy to predict function pointer, then we compute it */
-  else if (ins->op1.content & ASM_OP_BASE) 
+  else if (ins->op1.content & ASM_OP_BASE)
     dest = mjr_compute_fctptr(context);
   else
     dest = -1;
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
-
-
-
 
 
 

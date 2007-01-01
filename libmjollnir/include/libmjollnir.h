@@ -56,6 +56,7 @@ typedef struct		s_session
 }			mjrsession_t;
 
 /* Size of temp buffers */
+#define BSIZE_SMALL	32
 #define BSIZE		4096 
 
 /* Names used in config hash */
@@ -98,6 +99,7 @@ void		mjr_block_add_list(mjrcontext_t *c, mjrblock_t *);
 void		mjr_block_dump(mjrblock_t *b);
 void		mjr_block_add_caller(mjrblock_t *, elfsh_Addr, int);
 int		mjr_block_funcstart(mjrblock_t *);
+char 		*_vaddr2str(u_int);
 
 /* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);

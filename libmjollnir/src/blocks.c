@@ -218,6 +218,7 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
   buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -229,21 +230,40 @@ static int		mjr_block_recstore(mjrcontext_t *ctxt,
 					   mjrbuf_t *buf)
 {
   mjrblock_t		*tmp;
+  int			ret;
 
-  if (mjr_block_save(start, buf) < 0)
-    return (-1);
-  tmp = mjr_block_get_by_vaddr(ctxt, start->true, 0);
-  assert(tmp != 0);
-  if (mjr_block_recstore(ctxt, tmp, buf) < 0)
-    return (-1);
-  if (start->false)
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get T:%x F:%x\n", start->true,start->false);
+
+  if ((ret = mjr_block_save(start, buf)) < 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
+
+
+  if ((start->true) && (start->true != -1)) {
+   fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get T:%x\n", start->true);
+
+   tmp = mjr_block_get_by_vaddr(ctxt, start->true, 0);
+   assert(tmp != 0);
+
+   if (mjr_block_recstore(ctxt, tmp, buf) < 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
+
+   }
+
+  if ((start->false) && (start->false != -1))
     {
-      tmp = mjr_block_get_by_vaddr(ctxt, start->false, 0);
+      fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get F:%x\n", start->false);
+       tmp = mjr_block_get_by_vaddr(ctxt, start->false, 0);
+      
       assert(tmp != 0);
+
       if (mjr_block_recstore(ctxt, tmp, buf) < 0)
-	return (-1);
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
+
     }
-  return (0);
+
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
@@ -276,7 +296,9 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   /* Recursively save blocks information and create section */
   e_entry = elfsh_get_entrypoint(ctxt->obj->hdr);
   start = mjr_block_get_by_vaddr(ctxt, e_entry, 0);
+
   mjr_block_recstore(ctxt, start, &buf);
+
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
   sect->altdata = ctxt->blklist;
@@ -294,7 +316,6 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
 {
   mjrblock_t	*t;
-  char		tmp[32];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
                                                                                                                                                                           
@@ -302,11 +323,8 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size)
   memset(t, 0, sizeof (mjrblock_t));                                                                                                                                  
   t->vaddr = vaddr;                                                                                                                                                   
   t->size = size;                                                                                                                                                     
-  snprintf(tmp, sizeof(tmp), AFMT, vaddr);                                                                                                                            
 
-//  fprintf(D_DESC,"[__DEBUG__] mjr_block_create: hash_add %s\n", tmp);
-
-  hash_add(&ctxt->blkhash, elfsh_strdup(tmp), t);                                                                                                                                   
+  hash_add(&ctxt->blkhash, (char *)_vaddr2str(vaddr), t);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
 
@@ -426,7 +444,7 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
   cur = ctxt->blklist;
   if (!cur)
     {
-//      cur = mjr_block_create(ctxt, n->vaddr, n->size);
+      cur = mjr_block_create(ctxt, n->vaddr, n->size);
       ctxt->blklist = cur;
     }
 
@@ -464,9 +482,6 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
 					elfsh_Addr   vaddr, 
 					int	     mode)
 {
-// FIXME ???
-  mjrblock_t	cur;
-
   mjrblock_t	*ret;
   char		**keys;
   int		index;
@@ -478,17 +493,15 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 	      "missing context", (NULL));
 
-
-// FIXME ???
-  cur.vaddr = vaddr;
+  if (mode == 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+    (mjrblock_t *) hash_get(&ctxt->blkhash,_vaddr2str(vaddr)));
 
   keys = hash_get_keys(&ctxt->blkhash, &size);
 
   for (index = 0; index < size; index++)
     {
     
-//    fprintf(D_DESC,"[__DEBUG__] mjr_block_get_by_vaddr: index:%d/%d key:%s\n",index,size,keys[index]);
-
       ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
       
       if (NULL == ret)
@@ -513,7 +526,13 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }
 
-//    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-//		      "Unable to save control flow section", -1);
-//  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 
+
+char *_vaddr2str(u_int addr)
+{
+    char *tmp;
+    tmp = elfsh_malloc(BSIZE_SMALL);
+    memset(tmp,0,BSIZE_SMALL);
+    snprintf(tmp,BSIZE_SMALL-1, AFMT, addr);
+    return (char *)(tmp);
+}
