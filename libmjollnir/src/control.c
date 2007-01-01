@@ -26,7 +26,6 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
   asm_instr		ins;
   int			arch_bin;
   int			fetch_next = 0;
-  elfshobj_t		*obj;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!context || !buf)

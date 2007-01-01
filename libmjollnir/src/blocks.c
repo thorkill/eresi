@@ -194,7 +194,7 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   if (sym)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
-  printf("Saving block at addr %s \n", buffer);
+  printf(" [*] Saving block at addr %s \n", buffer);
 
   /* Else insert the block in the global buffer for the .control section */
   if (!buf->data) 
@@ -208,7 +208,6 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
       buf->allocated += getpagesize();
       buf->data = elfsh_realloc(buf->data, buf->allocated);
     }
-  
   curblock         = (mjrblock_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curblock, cur, sizeof(mjrblock_t));
   curblock->caller = NULL;
@@ -218,53 +217,9 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
   buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* Recursive traversal of the graph */
-static int		mjr_block_recstore(mjrcontext_t *ctxt,
-					   mjrblock_t *start, 
-					   mjrbuf_t *buf)
-{
-  mjrblock_t		*tmp;
-  int			ret;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get T:%x F:%x\n", start->true,start->false);
-
-  if ((ret = mjr_block_save(start, buf)) < 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
-
-
-  if ((start->true) && (start->true != -1)) {
-   fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get T:%x\n", start->true);
-
-   tmp = mjr_block_get_by_vaddr(ctxt, start->true, 0);
-   assert(tmp != 0);
-
-   if (mjr_block_recstore(ctxt, tmp, buf) < 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
-
-   }
-
-  if ((start->false) && (start->false != -1))
-    {
-      fprintf(D_DESC,"[__DEBUG__] mjr_block_recstore: get F:%x\n", start->false);
-       tmp = mjr_block_get_by_vaddr(ctxt, start->false, 0);
-      
-      assert(tmp != 0);
-
-      if (mjr_block_recstore(ctxt, tmp, buf) < 0)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
-
-    }
-
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-}
 
 
 /* Store the blocks inside the .control section using the file representation */
@@ -273,13 +228,13 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   mjrbuf_t		buf;
-  mjrblock_t		*start;
+  mjrblock_t		*block;
   int			err;
-  elfsh_Addr		e_entry;
+  char			**keys;
+  int			keynbr;
+  int			index;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  printf("Calling store blocks ! \n");
 
   /* Remove previous control section if any */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
@@ -293,15 +248,18 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   buf.data          = 0;
   buf.obj           = ctxt->obj;
 
-  /* Recursively save blocks information and create section */
-  e_entry = elfsh_get_entrypoint(ctxt->obj->hdr);
-  start = mjr_block_get_by_vaddr(ctxt, e_entry, 0);
+  /* Iteratively save all blocks */
+  keys = hash_get_keys(&ctxt->blkhash, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      block = hash_get(&ctxt->blkhash, keys[index]);
+      mjr_block_save(block, &buf);
+    }
 
-  mjr_block_recstore(ctxt, start, &buf);
-
+  /* Create control section */
   sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
-  sect->altdata = ctxt->blklist;
+  sect->altdata = ctxt->blklist = (mjrblock_t *) buf.data;
 
   printf(" [*] Saving control section of %u bytes \n", buf.maxlen);
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
@@ -313,21 +271,17 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 
 
 /* Create a new block */
-mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int size) 
+mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz) 
 {
   mjrblock_t	*t;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-                                                                                                                                                                          
-  t = elfsh_malloc(sizeof (mjrblock_t));                                                                                                                              
-  memset(t, 0, sizeof (mjrblock_t));                                                                                                                                  
-  t->vaddr = vaddr;                                                                                                                                                   
-  t->size = size;                                                                                                                                                     
-
-  hash_add(&ctxt->blkhash, (char *)_vaddr2str(vaddr), t);
-
+  t = elfsh_malloc(sizeof (mjrblock_t));
+  memset(t, 0, sizeof (mjrblock_t));
+  t->vaddr = vaddr;
+  t->size  = sz;
+  hash_add(&ctxt->blkhash, (char *) _vaddr2str(vaddr), t);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
-
 };
 
 
@@ -340,10 +294,9 @@ void		mjr_block_dump(mjrblock_t *b)
 
 
 /* Display all information about a block */
-int			mjr_apply_display(mjrblock_t *cur, void *opt)
+int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
 {
   mjrcaller_t		*ccal;
-  struct s_disopt	*disopt;
   char			*str;
   char			*end_str;
   elfsh_SAddr		offset;
@@ -351,7 +304,7 @@ int			mjr_apply_display(mjrblock_t *cur, void *opt)
   char			buf1[30];
   char			buf2[30];
   
-  disopt = (struct s_disopt *) opt;
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
   end_str = elfsh_reverse_metasym(disopt->file, 
 				  cur->vaddr + cur->size, &end_offset);
@@ -386,31 +339,7 @@ int			mjr_apply_display(mjrblock_t *cur, void *opt)
 	       ccal->vaddr, (str ? str : ""), (elfsh_SAddr) offset, 
 	       call_type_str[ccal->type]);
       }
-  return (++disopt->counter);
-}
-
-
-/* Recursive traversal of the graph */
-static int		mjr_block_recdisplay(mjrcontext_t  *c,
-					     mjrblock_t *start, 
-					     mjropt_t    *opt)
-{
-  mjrblock_t		*tmp;
-
-  if (mjr_apply_display(start, opt) < 0)
-    return (-1);
-  tmp = mjr_block_get_by_vaddr(c, start->true, 0);
-  assert(tmp != 0);
-  if (mjr_block_recdisplay(c, tmp, opt) < 0)
-    return (-1);
-  if (start->false)
-    {
-      tmp = mjr_block_get_by_vaddr(c, start->false, 0);
-      assert(tmp != 0);
-      if (mjr_block_recdisplay(c, tmp, opt) < 0)
-	return (-1);
-    }
-  return (0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
 }
 
 
@@ -418,16 +347,22 @@ static int		mjr_block_recdisplay(mjrcontext_t  *c,
 int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
   mjropt_t	opt;
-  elfsh_Addr	e_entry;
-  mjrblock_t	*start;
+  mjrblock_t	*block;
+  char		**keys;
+  int		index;
+  int		blocnbr;
 
-  e_entry     = elfsh_get_entrypoint(c->obj->hdr);
-  start       = mjr_block_get_by_vaddr(c, e_entry, 0);
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   opt.counter = 0;
   opt.level   = level;
   opt.file    = c->obj;
-  mjr_block_recdisplay(c, start, &opt);
-  return (opt.counter);
+  keys        = hash_get_keys(&c->blkhash, &blocnbr);
+  for (index = 0; index < blocnbr; index++)
+    {
+      block = hash_get(&c->blkhash, keys[index]);
+      mjr_block_display(block, &opt);
+    }
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
 
 
@@ -440,14 +375,12 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
   mjrblock_t	*cur;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   cur = ctxt->blklist;
   if (!cur)
     {
       cur = mjr_block_create(ctxt, n->vaddr, n->size);
       ctxt->blklist = cur;
     }
-
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
@@ -488,51 +421,35 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
   int		size;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!ctxt)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-	      "missing context", (NULL));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "missing context", (NULL));
 
+  /* Exact match */
   if (mode == 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-    (mjrblock_t *) hash_get(&ctxt->blkhash,_vaddr2str(vaddr)));
+    {
+      ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+    }
 
+  /* Parent match */
   keys = hash_get_keys(&ctxt->blkhash, &size);
-
   for (index = 0; index < size; index++)
     {
-    
       ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
-      
-      if (NULL == ret)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-	"Can't get keys[index] from hash", (NULL));
-      
-      switch (mode)
-	{
-	  /* Return exact match */
-	case 0:
-	  if (ret->vaddr == vaddr)
-		ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-	  break;
-
-	  /* Return parent match */
-	default:
-	  if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
-		ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-	  break;
-	}
+      if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }
 
 
-
-char *_vaddr2str(u_int addr)
+/* Shortcut for vaddr 2 string with allocation .. */
+char	*_vaddr2str(elfsh_Addr addr)
 {
-    char *tmp;
-    tmp = elfsh_malloc(BSIZE_SMALL);
-    memset(tmp,0,BSIZE_SMALL);
-    snprintf(tmp,BSIZE_SMALL-1, AFMT, addr);
-    return (char *)(tmp);
+  char *tmp;
+  
+  tmp = elfsh_malloc(BSIZE_SMALL);
+  snprintf(tmp, BSIZE_SMALL - 1, AFMT, addr);
+  return ((char *) tmp);
 }

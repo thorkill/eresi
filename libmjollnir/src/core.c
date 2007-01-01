@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.15 2006-12-31 05:07:12 may Exp $
+** $Id: core.c,v 1.16 2007-01-01 19:20:33 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -29,8 +29,8 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   
   sct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
   if (!sct)
-    ELFSH_NOPROFILE_ROUT(NULL);
-  
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Section not found", -1);
+      
 #if __DEBUG_CALLS__
   fprintf(D_DESC, "[__DEBUG_CALLS__] mjrFindCalls: %x %d %d\n",
 	  sct->shdr->sh_addr, sct->shdr->sh_size, sct->shdr->sh_offset);
@@ -63,7 +63,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
     }
   
   elfsh_free(ptr);
-  ELFSH_NOPROFILE_ROUT(NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

@@ -92,14 +92,17 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
 mjrblock_t*	mjr_blocks_load(mjrcontext_t *c);
 mjrblock_t*     mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
 mjrblock_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+
 int		mjr_blocks_display(mjrcontext_t *c, int);
+int		mjr_block_display(mjrblock_t *c, mjropt_t *opt);
+
 int		mjr_blocks_store(mjrcontext_t *c);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 void		mjr_block_add_list(mjrcontext_t *c, mjrblock_t *);
 void		mjr_block_dump(mjrblock_t *b);
 void		mjr_block_add_caller(mjrblock_t *, elfsh_Addr, int);
 int		mjr_block_funcstart(mjrblock_t *);
-char 		*_vaddr2str(u_int);
+char 		*_vaddr2str(elfsh_Addr);
 
 /* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);

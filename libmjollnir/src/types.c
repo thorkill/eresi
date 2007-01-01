@@ -44,27 +44,32 @@ int		mjr_asm_flow(mjrcontext_t *context)
     {
 
     case ASM_TYPE_CONDBRANCH:
-    dstaddr = mjr_insert_destaddr(context);
-
-    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_CALLPROC T:%x F:%x\n",curvaddr,dstaddr,curvaddr+ilen);
+      dstaddr = mjr_insert_destaddr(context);
+      
+      fprintf(D_DESC,
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT 
+	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
+      
       context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_JUMP;
       context->curblock = 0;
       break;
-
+      
     case ASM_TYPE_CALLPROC:
-    dstaddr = mjr_insert_destaddr(context);
-
-    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_CALLPROC T:%x F:%x\n",curvaddr,dstaddr,curvaddr+ilen);
-
+      dstaddr = mjr_insert_destaddr(context);
+      
+      fprintf(D_DESC,
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC T:" XFMT 
+	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
+      
       context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_CALL;
       context->calls_seen++;
       if (context->curblock->true)
 	context->calls_found++;
-
+      
       /* XXX: put this in a vector of fingerprinting techniques */
       fun = mjr_function_create(context->curblock->true);
       md5 = mjr_fingerprint_function(context, 
@@ -78,7 +83,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
     case ASM_TYPE_IMPBRANCH:
       dstaddr = mjr_insert_destaddr(context);
 
-     fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_IMPBRANCH T:%x F:0\n", curvaddr, dstaddr);
+      fprintf(D_DESC,
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH T:" XFMT 
+	      " F: NULL \n", curvaddr, dstaddr);
 
       context->curblock->true  = dstaddr;
       context->curblock->false = 0;
@@ -89,7 +96,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
       break;
 
     case ASM_TYPE_RETPROC:
-    fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x ASM_TYPE_RETPROC\n",curvaddr);
+
+      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_RETPROC\n", 
+	      curvaddr);
+
       context->curblock->true  = 0;
       context->curblock->false = 0;
       context->curblock->type  = CALLER_RET;
