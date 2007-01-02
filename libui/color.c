@@ -47,7 +47,7 @@ color_t 	*vm_colortable(char *type, char *text)
 /* Speed setup code*/
 #define COLOR_SET_ELEMENT(_c, _v, _z) 					\
 do {									\
-if (_c) { 								\
+if (_c > 0) { 								\
 snprintf(_v, 15, "%s%u", (!set ? S_STARTCOLOR : COLOR_SEPARE), _z); 	\
 set = 1; } 								\
 } while(0)
@@ -59,7 +59,7 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!t->bground && !t->fground && !t->bold && !t->underline)
+if (t == NULL || (!t->bground && !t->fground && !t->bold && !t->underline))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);  
 
   /* Set every element */
@@ -70,10 +70,10 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
 
   snprintf(pattern, COLOR_TOKEN_LEN - 1,
 	   "%%s%s%s%s%sm%%s%s%um%%s",
-	   (!t->bold      ? bo : ""),
-	   (!t->underline ? ul : ""),
-	   (!t->fground   ? fg : ""),
-	   (!t->bground   ? bg : ""),
+	   (t->bold > 0 ? bo : ""),
+	   (t->underline > 0 ? ul : ""),
+	   (t->fground > 0 ? fg : ""),
+	   (t->bground > 0 ? bg : ""),
 	   S_STARTCOLOR,
 	   COLOR_NONE);
 
