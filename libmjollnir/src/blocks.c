@@ -350,13 +350,3 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }
-
-/* Shortcut for vaddr 2 string with allocation .. */
-char	*_vaddr2str(elfsh_Addr addr)
-{
-  char *tmp;
-
-  tmp = elfsh_malloc(BSIZE_SMALL);
-  snprintf(tmp, BSIZE_SMALL - 1, AFMT, addr);
-  return ((char *) tmp);
-}
