@@ -17,7 +17,7 @@ int		vm_bp_add(elfsh_Addr addr, u_char flags)
   int		err;
   char		buf[BUFSIZ];
   char		*name;
-  int		off;
+  elfsh_SAddr	off;
   elfshobj_t	*file;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -31,7 +31,7 @@ int		vm_bp_add(elfsh_Addr addr, u_char flags)
   /* Resolve breakpoint address */
   name = vm_resolve(file, addr, &off);
   if (off)
-    snprintf(buf, BUFSIZ, "<%s + %d>", name, off);
+    snprintf(buf, BUFSIZ, "<%s + " DFMT ">", name, off);
   else
     snprintf(buf, BUFSIZ, "<%s>", name);
 
@@ -123,7 +123,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
     {
       sym = elfsh_get_metasym_by_name(world.curjob->current, 
 				      name);
-      if (!sym || sym->st_value == NULL)
+      if (!sym || !sym->st_value)
 	{
 	  elfsh_toggle_mode();
 	  sym = elfsh_get_metasym_by_name(world.curjob->current,
@@ -134,8 +134,8 @@ elfshbp_t	*vm_lookup_bp(char *name)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "No symbol by that name in the current file", 
 			  NULL);
-
-      if (sym->st_value == NULL)
+      
+      if (!sym->st_value)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Requested symbol address unknown",
 			  NULL);
@@ -150,7 +150,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
       if (!bp)
 	{
 	  snprintf(logbuf, BUFSIZ, 
-		   "\n [!] No breakpoint set at addr %08X \n\n", addr);
+		   "\n [!] No breakpoint set at addr " AFMT " \n\n", addr);
 	  vm_output(logbuf);
 	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "No breakpoint at this address", NULL);
@@ -175,7 +175,7 @@ int		cmd_bp()
   int		idx;
   int		index;
   int		idx2 = 0;
-  int		off = 0;
+  elfsh_SAddr	off = 0;
   char		*name;
   hashent_t	*actual;
   elfshbp_t	*cur;
@@ -202,7 +202,7 @@ int		cmd_bp()
 				(elfsh_Addr) cur->addr, &off);
 	      
 	      if (off)
-		snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + %d>\n", 
+		snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + " UFMT ">\n", 
 			 (vm_is_watchpoint(cur) ? 'W' : 'B'),
 			 cur->id, cur->addr, name, off);
 	      else
@@ -246,7 +246,7 @@ int		cmd_bp()
 
 	  /* Sometimes we fix symbols on the disk */
 	  /* We avoid a mprotect */
-	  if (!sym || sym->st_value == NULL)
+	  if (!sym || !sym->st_value)
 	    {
 	      elfsh_toggle_mode();
 	      sym = elfsh_get_metasym_by_name(world.curjob->current, str);
@@ -256,7 +256,7 @@ int		cmd_bp()
 	  if (!sym)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "No symbol by that name in the current file", (-1));
-	  if (sym->st_value == NULL)
+	  if (!sym->st_value)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Requested symbol address unknown", (-1));
 
@@ -289,7 +289,7 @@ int		cmd_bp()
 		     (watchflag ? "Watch" : "Break"), name, addr);
 	  else
 	    snprintf(logbuf, BUFSIZ - 1, 
-		     " [*] %spoint added at <%s + %u> (" XFMT ")\n\n", 
+		     " [*] %spoint added at <%s + " UFMT "> (" XFMT ")\n\n", 
 		     (watchflag ? "Watch" : "Break"), name, off, addr);
 	  vm_output(logbuf);
 	}

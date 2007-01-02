@@ -213,8 +213,10 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
 
-      printf("Allocated BSS data of %u bytes with %u bytes of padding \n", 
+#if __DEBUG_BSS__
+      printf("Allocated BSS data of " UFMT " bytes with %u bytes of padding \n", 
 	     bss->shdr->sh_size, size2);
+#endif
 
     }
 
@@ -225,8 +227,8 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
       
-#if 1 //__DEBUG_BSS__
-      printf("[DEBUG_BSS] PT_LOAD BSS FILESZ now = %u [bss reallocated] \n", 
+#if __DEBUG_BSS__
+      printf("[DEBUG_BSS] PT_LOAD BSS FILESZ now = " UFMT " [bss reallocated] \n", 
 	     bss->shdr->sh_size + size2);
 #endif
       

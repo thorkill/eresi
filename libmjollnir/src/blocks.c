@@ -8,16 +8,6 @@
 */
 #include "libmjollnir.h"
 
-/* Some constant data */
-char	*call_type_str[] = 
-{
-  "CONT",
-  "JUMP",
-  "CALL",
-  "RET",
-  "UNKN"
-};
-
 /* Goto hash */
 hash_t		goto_hash;
 
@@ -100,8 +90,8 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 {
   int                   index;
   elfshsect_t           *sect;
-  mjrblock_t         *curbloc;
-  mjrblock_t         *target;
+  mjrblock_t            *curbloc;
+  mjrblock_t            *target;
   unsigned int		blocnbr;
   char			name[20];
 
@@ -126,7 +116,6 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   for (index = 0; index < blocnbr; index++)
     {
       curbloc = (mjrblock_t *) sect->data + index;
-
       mjr_block_add_list(ctxt, curbloc);
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
 
@@ -158,23 +147,6 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   /* Return results */
   sect->altdata = ctxt->blklist;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
-}
-
-
-
-/* Say if a block is the start of a function or not */
-int		 mjr_block_funcstart(mjrblock_t *blk) 
-{
-  mjrcaller_t	 *cur;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (blk)
-    for (cur = blk->caller; cur; cur = cur->next)
-      if (cur->type == CALLER_CALL)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -231,10 +203,12 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   elfshsect_t		*sect;
   mjrbuf_t		buf;
   mjrblock_t		*block;
+  mjrfunc_t		*func;
   int			err;
   char			**keys;
   int			keynbr;
   int			index;
+  char			funcname[50];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -256,6 +230,22 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
     {
       block = hash_get(&ctxt->blkhash, keys[index]);
       mjr_block_save(block, &buf);
+
+      /* Additionally fill the bloc entry point for recontructed functions */
+      if (mjr_block_funcstart(block))
+	{
+	  snprintf(funcname, sizeof(funcname), AFMT, block->vaddr);
+	  func        = hash_get(&ctxt->funchash, funcname);
+
+	  /* Can happens rarely - should not be fatal */
+	  if (func == NULL)
+	    {
+	      printf(" [*] Failed to find parent function at %s \n", funcname);
+	      continue;
+	    }
+	  printf(" [*] Found block start for function %s \n", funcname);
+	  func->first = block;
+	}
     }
 
   /* Create control section */
@@ -285,90 +275,6 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz)
   hash_add(&ctxt->blkhash, (char *) _vaddr2str(vaddr), t);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
 };
-
-
-/* Print block */
-void		mjr_block_dump(mjrblock_t *b) 
-{
-  printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
-	 (unsigned long) b, (unsigned long) b->vaddr, b->size);
-}
-
-
-/* Display all information about a block */
-int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
-{
-  mjrcaller_t		*ccal;
-  char			*str;
-  char			*end_str;
-  elfsh_SAddr		offset;
-  elfsh_SAddr		end_offset;
-  char			buf1[30];
-  char			buf2[30];
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
-  end_str = elfsh_reverse_metasym(disopt->file, 
-				  cur->vaddr + cur->size, &end_offset);
-
-  if (str == NULL)
-    *buf1 = 0x00;
-  else
-    snprintf(buf1, sizeof (buf1), "<%s + " UFMT ">", str, offset);
-  if (end_str == NULL || !(cur->true))
-    *buf2 = 0x00;
-  else
-    snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
-
-  printf("[%8lx:%05i:%8lx:%8lx] %-4s %-30s --> %-30s ", 
-	 (unsigned long) cur->vaddr, cur->size, (unsigned long) cur->true, 
-	 (unsigned long) cur->false, call_type_str[cur->type], buf1, buf2);
-
-  if (cur->false == 0xFFFFFFFF)
-    printf(" [?]");
-  else if (cur->false != NULL)
-    {
-      str = elfsh_reverse_metasym(disopt->file, cur->false, &offset);
-      printf(" [%s + " UFMT "]", (str ? str : ""), offset);
-    }
-
-  printf("\n");
-  if (disopt->level > 0)
-    for (ccal = cur->caller; ccal; ccal = ccal->next) 
-      {
-	str = elfsh_reverse_metasym(disopt->file, ccal->vaddr, &offset);
-	printf("\texecuted from: (%08x) <%s + " UFMT "> : %s\n",
-	       ccal->vaddr, (str ? str : ""), (elfsh_SAddr) offset, 
-	       call_type_str[ccal->type]);
-      }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
-}
-
-
-/* Print the content of the control flow section */
-int		mjr_blocks_display(mjrcontext_t	*c, int level)
-{
-  mjropt_t	opt;
-  mjrblock_t	*block;
-  char		**keys;
-  int		index;
-  int		blocnbr;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  opt.counter = 0;
-  opt.level   = level;
-  opt.file    = c->obj;
-  keys        = hash_get_keys(&c->blkhash, &blocnbr);
-  for (index = 0; index < blocnbr; index++)
-    {
-      block = hash_get(&c->blkhash, keys[index]);
-      mjr_block_display(block, &opt);
-    }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
-}
-
-
-
 
 /* Add a new block to the blocks tree (sorted by address)
 ** If block is already present, it's not inserted and function returns */
@@ -444,6 +350,8 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
     }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }
+<<<<<<< blocks.c
+=======
 
 
 /* Shortcut for vaddr 2 string with allocation .. */
@@ -457,3 +365,4 @@ char	*_vaddr2str(elfsh_Addr addr)
 }
 
 
+>>>>>>> 1.22

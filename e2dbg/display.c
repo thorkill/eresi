@@ -125,12 +125,6 @@ int		cmd_display()
     {
       vm_print_display();
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
-
-
-
-
-
   }
   
   /* Add a global display */
@@ -138,7 +132,7 @@ int		cmd_display()
     {
       if (e2dbgworld.displaynbr >= E2DBG_STEPCMD_MAX)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Too many global displays", NULL);
+			  "Too many global displays", 0);
       str = vm_get_string(world.curjob->curcmd->param);
       snprintf(buf, BUFSIZ, "\n [*] Adding global display %u [%s] \n\n", 
 	       e2dbgworld.displaynbr, str);
@@ -149,21 +143,17 @@ int		cmd_display()
   /* Add a local display on breakpoint */
   else
     {
-     
       bp = vm_lookup_bp(world.curjob->curcmd->param[0]);
       if (!bp)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Cannot find specified breakpoint", NULL);
-      
+			  "Cannot find specified breakpoint", 0);
       if (bp->cmdnbr >= 10)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                          "Too many local displays", NULL);
-      
+                          "Too many local displays", 0);
       str = vm_get_string(&world.curjob->curcmd->param[1]);
       snprintf(buf, BUFSIZ, "\n [*] Adding display %u [%s] for breakpoint %u "
 	       "[" XFMT "] %s \n\n", bp->cmdnbr, str, 
 	       bp->id, bp->addr, bp->symname);
-               
       vm_output(buf);
       bp->cmd[(int) bp->cmdnbr++] = str;
     }

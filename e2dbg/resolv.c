@@ -139,7 +139,7 @@ int			e2dbg_load_linkmap(char *name)
   //elfsh_set_static_mode();
 
   /* Load debugged file */
-  if (name != NULL)
+  if (name)
     {
 
       /* No need to fill ET_EXEC base addr */
@@ -295,21 +295,21 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 #endif
 
   memset(&obj, 0x00, sizeof(obj));
-  XOPEN(obj.fd, objname, O_RDONLY, 0, NULL);
-  XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), NULL);
+  XOPEN(obj.fd, objname, O_RDONLY, 0, 0);
+  XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), 0);
 
 #if __DEBUG_E2DBG__
   write(1, " [*] 1", 6);
 #endif
 
-  XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, NULL);
+  XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, 0);
   pht = alloca(obj.e.e_phnum * sizeof(elfsh_Phdr));
 
 #if __DEBUG_E2DBG__
   write(1, "2", 1);
 #endif
 
-  XREAD(obj.fd, pht, obj.e.e_phnum * sizeof(elfsh_Phdr), NULL);
+  XREAD(obj.fd, pht, obj.e.e_phnum * sizeof(elfsh_Phdr), 0);
   for (nbr = 0; nbr < obj.e.e_phnum; nbr++)
     if (pht[nbr].p_type == PT_DYNAMIC)
       {
@@ -321,14 +321,14 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   write(1, "3", 1);
 #endif
 
-  XSEEK(obj.fd, obj.dynoff, SEEK_SET, NULL);
+  XSEEK(obj.fd, obj.dynoff, SEEK_SET, 0);
   dyn = alloca(pht[nbr].p_filesz);
 
 #if __DEBUG_E2DBG__
   write(1, "4", 1);
 #endif
 
-  XREAD(obj.fd, dyn, pht[nbr].p_filesz, NULL);
+  XREAD(obj.fd, dyn, pht[nbr].p_filesz, 0);
   for (nbr2 = 0; nbr2 < pht[nbr].p_filesz / sizeof(elfsh_Dyn); nbr2++)
     {
       if (dyn[nbr2].d_tag == DT_SYMTAB)
@@ -379,8 +379,8 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   write(1, "6", 1);
 #endif
 
-  XSEEK(obj.fd, obj.stroff, SEEK_SET, NULL);
-  XREAD(obj.fd, strtab, obj.strsz, NULL);
+  XSEEK(obj.fd, obj.stroff, SEEK_SET, 0);
+  XREAD(obj.fd, strtab, obj.strsz, 0);
 
 #if __DEBUG_E2DBG__
   write(1, "7", 1);
@@ -389,8 +389,8 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   /* XXX: Assume that strtab is always just after symtab */
   for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
     {
-      XSEEK(obj.fd, obj.symoff + curoff, SEEK_SET, NULL);
-      XREAD(obj.fd, &cursym, sizeof(elfsh_Sym), NULL);
+      XSEEK(obj.fd, obj.symoff + curoff, SEEK_SET, 0);
+      XREAD(obj.fd, &cursym, sizeof(elfsh_Sym), 0);
       if (cursym.st_name >= obj.strsz)
 	continue;
       if (!strcmp(strtab + cursym.st_name, refsym))
@@ -403,7 +403,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 
   if (!found_ref)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to find reference symbol in object", NULL);
+		      "Unable to find reference symbol in object", 0);
 
 #if __DEBUG_E2DBG__
   write(1, " Success !\n", 11);
@@ -441,7 +441,8 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 
   /* First go after the e2dbg and the binary linkmap entries */
   curobj = e2dbgworld.syms.map;
-  while (curobj->lname == NULL || strstr(curobj->lname, "e2dbg") || *curobj->lname == 0x00)
+  while (!curobj->lname || strstr(curobj->lname, "e2dbg") || 
+	 *curobj->lname == 0x00)
     curobj = curobj->lnext;
 
   /* Iterate on the linkmap to resolve symbols in library priority order */
@@ -457,7 +458,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 #endif
       
       memset(&obj, 0x00, sizeof(obj));
-      XOPEN(obj.fd, curobj->lname, O_RDONLY, 0, NULL);
+      XOPEN(obj.fd, curobj->lname, O_RDONLY, 0, 0);
       dyn = curobj->lld;
       
       /* Getting needed address in the memory mapped PT_DYNAMIC segment */
@@ -500,15 +501,17 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 	}
       
 #if __DEBUG_E2DBG__
-      len = snprintf(buf, sizeof(buf), " [*] SYMOFF = %u (%08X), STROFF = %u (%08X), STRSZ = %u \n",
+      len = snprintf(buf, sizeof(buf), 
+		     " [*] SYMOFF = %u (%08X), STROFF = %u (%08X), STRSZ = %u \n",
 		     obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
       write(1, buf, len);
 #endif
 
-      XCLOSE(obj.fd, NULL);
+      XCLOSE(obj.fd, 0);
       
       /* XXX: Assume that strtab is always just after symtab */
-      for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
+      for (curoff = 0; 
+	   obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
 	{
 	  memcpy(&cursym, (void *) obj.symoff + curoff, sizeof(elfsh_Sym));
 	  if (cursym.st_name >= obj.strsz)
@@ -523,14 +526,15 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 	      write(1, buf, len);
 #endif
 
-	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, curobj->laddr + found_sym);
+	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+				 curobj->laddr + found_sym);
 	    }
 	}
     }
 
   /* We did not find the symbol in the linkmap ... */
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Unable to find looked up symbol in object", NULL);
+		    "Unable to find looked up symbol in object", 0);
 }
 
 
@@ -582,7 +586,8 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] Guessed Linkmap address = %08X \n--------------\n", (elfsh_Addr) lm);
+  len = sprintf(buf, " [*] Guessed Linkmap address = %08X \n--------------\n", 
+		(elfsh_Addr) lm);
   write(1, buf, len);
 #endif
 

@@ -36,7 +36,7 @@ color_t 	*vm_colortable(char *type, char *text)
 
   /* Override color by warning color if we match the alert regex */
   if (world.state.vm_use_alert && 
-      regexec(&world.state.vm_alert, text, 0, 0, 0) == NULL)
+      !regexec(&world.state.vm_alert, text, 0, 0, 0))
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       hash_get(&t_color_hash, "warnstring"));
 
@@ -59,8 +59,7 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (t->bground == NULL && t->fground == NULL && 
-      t->bold == NULL && t->underline == NULL)
+  if (!t->bground && !t->fground && !t->bold && !t->underline)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);  
 
   /* Set every element */
@@ -71,10 +70,10 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
 
   snprintf(pattern, COLOR_TOKEN_LEN - 1,
 	   "%%s%s%s%s%sm%%s%s%um%%s",
-	   (t->bold != NULL ? bo : ""),
-	   (t->underline != NULL ? ul : ""),
-	   (t->fground != NULL ? fg : ""),
-	   (t->bground != NULL ? bg : ""),
+	   (!t->bold      ? bo : ""),
+	   (!t->underline ? ul : ""),
+	   (!t->fground   ? fg : ""),
+	   (!t->bground   ? bg : ""),
 	   S_STARTCOLOR,
 	   COLOR_NONE);
 

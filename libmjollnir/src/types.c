@@ -28,7 +28,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 {
   int		ilen;
   char		*md5;
-  mjrfunction_t	*fun;
+  mjrfunc_t	*fun;
   asm_instr	*curins;
   elfsh_Addr	curvaddr;
   elfsh_Addr	dstaddr;
@@ -63,7 +63,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC T:" XFMT 
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT 
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
 
@@ -75,13 +75,19 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	context->calls_found++;
 
       /* XXX: put this in a vector of fingerprinting techniques */
-      fun = mjr_function_create(context->curblock->true);
-      md5 = mjr_fingerprint_function(context, 
-				     context->curblock->true, 
-				     MJR_FNG_TYPE_MD5);
+      fun = mjr_function_create(context, _vaddr2str(context->curblock->true),
+				context->curblock->true, 0, 0);
+      if (context->curfunc)
+	{
+	  hash_add(&fun->parentfuncs, context->curfunc->name, context->curfunc);
+	  hash_add(&context->curfunc->childfuncs, fun->name, fun);
+	}
+      md5 = mjr_fingerprint_function(context, context->curblock->true, 
+				     MJR_FPRINT_TYPE_MD5);
       if (md5)
 	fun->md5 = elfsh_strdup(md5);
       context->curblock = 0;
+      context->curfunc  = fun;
       break;
 
     case ASM_TYPE_IMPBRANCH:
@@ -89,7 +95,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH T:" XFMT 
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
 	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 

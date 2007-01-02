@@ -130,7 +130,7 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr,
   /* Retreive the nearest symbol */
   file = data;
   parent = elfsh_get_parent_section(file, vaddr, 0);
-  if (NULL != parent && NULL != parent->shdr->sh_addr)
+  if (NULL != parent && parent->shdr->sh_addr)
     name = vm_resolve(file, vaddr, &off);      
   else
     name = NULL;
@@ -150,12 +150,9 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr,
 	snprintf(buf + len, maxlen - len -  1, "%s%s", 
 		 vm_colornumber("%u", (u_int) off),
 		 vm_colorfieldstr(">"));
-
-      //printf("[%u] %s\n", strlen(buf), buf);
-
     }
   else
-    snprintf(buf, maxlen - 1, "%X", vaddr);
+    snprintf(buf, maxlen - 1, AFMT, vaddr);
 }
 
 
@@ -356,7 +353,7 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
 	  loff = *(elfsh_Addr *) (char*) elfsh_get_raw(parent) + 
 	    index * sizeof(elfsh_Addr) + (vaddr - parent->shdr->sh_addr);
 	  
-	  snprintf(buf, sizeof(buf), " %08X [foff: %u] \t %s[%0*u] = %08X", 
+	  snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " AFMT, 
 		   elfsh_is_debug_mode() ? 
 		   parent->parent->rhdr.base + vaddr + index * sizeof(elfsh_Addr) :
 		   vaddr   + index * sizeof(elfsh_Addr), 
@@ -441,7 +438,7 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
 	  if (world.state.vm_quiet)
 	    {
 	      sprintf(buf, " %s %s + %s", 
-		      vm_coloraddress("%08x", (elfsh_Addr) vaddr + index), 
+		      vm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
 		      vm_colorstr(name), vm_colornumber("%u", index));
 	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
 	      vm_output(logbuf);
@@ -449,9 +446,9 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
 	  else
 	    {
 	      sprintf(buf, " %s [%s %s] %s + %s", 
-		      vm_coloraddress("%08x", (elfsh_Addr) vaddr + index), 
+		      vm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
 		      vm_colorfieldstr("foff:"),
-		      vm_colornumber("%08u", foffset + index), 
+		      vm_colornumber(DFMT, foffset + index), 
 		      vm_colorstr(name), vm_colornumber("%u", index));
 	      snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + vm_color_size(buf), buf);
 	      vm_output(logbuf);
@@ -658,7 +655,7 @@ int		vm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
       
 #if __DEBUG_DISASM__
       snprintf(logbuf, BUFSIZ - 1, 
-	       "[debug_disasm:cmd_disasm] Found dynsym regx (%s) (%08X)\n", 
+	       "[debug_disasm:cmd_disasm] Found dynsym regx (%s) (" AFMT ")\n", 
 	       name, elfsh_get_symbol_value(sym + index));
       vm_output(logbuf);
 #endif
@@ -714,7 +711,7 @@ int		vm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
   
 #if __DEBUG_DISASM__
   snprintf(logbuf, BUFSIZ - 1, 
-	   "[debug:cmd_disasm] SPECIAL with vaddr(%08X) \n", vaddr);
+	   "[debug:cmd_disasm] SPECIAL with vaddr(" AFMT ") \n", vaddr);
   vm_output(logbuf);
 #endif
   
@@ -737,7 +734,7 @@ int		vm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
   
 #if __DEBUG_DISASM__
   snprintf(logbuf, BUFSIZ - 1, "[debug_disasm:cmd_disasm] Found special regx "
-	   "(%s with off %d)  sym = %08X\n", name, off, sym->st_value);
+	   "(%s with off %d)  sym = " AFMT "\n", name, off, sym->st_value);
   vm_output(logbuf);
 #endif
 
@@ -808,7 +805,7 @@ int             cmd_disasm()
     {
       if (IS_VADDR(actual->rname))
 	{
-	  if (sscanf(actual->rname + 2, "%X", &vaddr) != 1)
+	  if (sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid virtual address requested", 
 			      -1);
@@ -821,7 +818,7 @@ int             cmd_disasm()
 	{
 	  vaddr = elfsh_get_vaddr_from_foffset(file, atoi(actual->rname));
 	  if (vaddr == 0xFFFFFFFF && 
-	      sscanf(actual->rname + 2, "%X", &vaddr) != 1)
+	      sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid file offset requested",
 			      -1);

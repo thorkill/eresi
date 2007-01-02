@@ -186,7 +186,7 @@ void		elfsh_profile_out(char *file, char *func, u_int line)
 	  b_dir[0] = elfsh_direction;
 	  b_dir[1] = '\0';
 
-	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s> \n", 
+	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s>", 
 		   space, dbgworld.colornumber("%u", elfsh_depth), 
 		   dbgworld.colorfieldstr(b_dir), 
 		   dbgworld.colorfunction(func), dbgworld.colorfilename(file),
@@ -194,7 +194,7 @@ void		elfsh_profile_out(char *file, char *func, u_int line)
 	}
       else
 	{
-	  snprintf(buff, sizeof(buff), "%s %u %c <%s@%s:%u> \n", 
+	  snprintf(buff, sizeof(buff), "%s %u %c <%s@%s:%u>\n", 
 		   space, elfsh_depth, elfsh_direction, 
 		   func, file,line);
 	  

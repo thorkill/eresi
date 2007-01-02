@@ -32,7 +32,8 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
 }
 
 /* Internal Signal handler for SIGSEGV */
-void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info, void *pcontext)
+void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info, 
+					       void *pcontext)
 {
   ucontext_t	*context;
 
@@ -190,7 +191,7 @@ void			e2dbg_sigusr1_handler(int signum,
   elfshbp_t		*bp;
   int			prot;
   char			*name;
-  int			off;
+  elfsh_SAddr		off;
   int			ret;
   asm_instr		ptr;
   char			*s;
@@ -237,7 +238,7 @@ void			e2dbg_sigusr1_handler(int signum,
 
 	  /* Print the current instruction at $pc */
 	  if (off)
-	    printf(" [S] " XFMT " <%s + %d> %s \n", 
+	    printf(" [S] " XFMT " <%s + " DFMT "> %s \n", 
 		   *pc, name, off, s);
 	  else 
 	    printf(" [S] " XFMT "<%s> %s \n", 
@@ -274,7 +275,7 @@ void			e2dbg_sigusr1_handler(int signum,
 	  printf(".::- E2DBG WARNING -::.\n"
 		 "Breakpoint triggered at location %08X which we don't know about.\n\n"
 		 "This may be an anti-debug trick or the program could be inside another\n"
-		 "debugger that uses breakpoints. (count = %u, step is off)\n\n" 
+		 "debugger that uses breakpoints. (count = " UFMT ", step is off)\n\n" 
 		 "This use of e2dbg is unsupported for now, exiting .. \n\n", 
 		 e2dbgworld.curthread->count, *pc - 1);
 	  return;
@@ -293,7 +294,7 @@ void			e2dbg_sigusr1_handler(int signum,
 	      vm_output(" [E] Breakpoint reinsertion failed");
 	      return;
 	    }
-	  e2dbgworld.curthread->past = NULL;
+	  e2dbgworld.curthread->past = 0;
 	}
       
       /* remove trace flag */	  
@@ -311,14 +312,15 @@ void			e2dbg_sigusr1_handler(int signum,
       s    = (vm_is_watchpoint(bp) ? "Watch" : "Break");
       bpsz = elfsh_get_breaksize(world.curjob->current);
       if (off)
-	printf(" [*] %spoint found at " XFMT " <%s + %d> in thread %u \n\n", 
+	printf(" [*] %spoint found at " XFMT " <%s + " DFMT "> in thread %u \n\n", 
 	       s, *pc - bpsz, name, off, (unsigned int) e2dbgworld.curthread->tid);
       else 
 	printf(" [*] %spoint found at " XFMT " <%s> in thread %u \n\n",   
 	       s, *pc - bpsz, name, (unsigned int) e2dbgworld.curthread->tid);
 
       printf("Count %u -> 0 for thread ID %u \n", 
-	     e2dbgworld.curthread->count, (unsigned int) e2dbgworld.curthread->tid);
+	     e2dbgworld.curthread->count, 
+	     (unsigned int) e2dbgworld.curthread->tid);
       
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);

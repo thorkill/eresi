@@ -67,9 +67,11 @@ int	cmd_addgoto(void)
 int		cmd_control()
 {
   elfshsect_t	*sect;
+  elfshobj_t	*current;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  sect = elfsh_get_section_by_name(world.curjob->current, 
+  current = world.curjob->current;
+  sect = elfsh_get_section_by_name(current, 
 				   ELFSH_SECTION_NAME_CONTROL,
 				   0, 0, 0);
   if (!sect || !sect->altdata)

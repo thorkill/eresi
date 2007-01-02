@@ -13,7 +13,7 @@ int		vm_dumpstack(uint32_t size, elfsh_Addr start)
   long		*i;
   char		logbuf[BUFSIZ];
   char		*name;
-  int		off;
+  elfsh_SAddr	off;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -30,7 +30,7 @@ int		vm_dumpstack(uint32_t size, elfsh_Addr start)
       if (!name)
 	name = "?";
       if (off)
-	snprintf(logbuf, BUFSIZ - 1, " " XFMT " " XFMT " <%s + %d> \n", 
+	snprintf(logbuf, BUFSIZ - 1, " " XFMT " " XFMT " <%s + " DFMT "> \n", 
 		 (elfsh_Addr) i, (elfsh_Addr) *i, name, off);
       else
 	snprintf(logbuf, BUFSIZ - 1, " " XFMT " " XFMT " <%s> \n", 

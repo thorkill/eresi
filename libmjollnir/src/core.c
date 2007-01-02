@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.16 2007-01-01 19:20:33 may Exp $
+** $Id: core.c,v 1.17 2007-01-02 06:21:23 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -62,7 +62,6 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 	curr += ilen;
     }
   
-  elfsh_free(ptr);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

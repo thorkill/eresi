@@ -4,12 +4,13 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.10 2006-12-31 05:36:31 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.11 2007-01-02 06:21:23 may Exp $
  *
  */
-#include <libelfsh.h>
-#include <libasm.h>
+#if !defined(__MJR_BLOCKS__)
+ #define __MJR_BLOCKS__ 1
 
+#include "libelfsh.h"
 
 /*
  * struct s_caller is to reference blocks calling block
@@ -26,7 +27,7 @@ typedef	struct		s_caller
 #define	  CALLER_RET	3	/* block is ended by a RET		*/
 #define   CALLER_UNKN	4	/* block was not analysed		*/
   int			type;
-  u_int			vaddr;
+  elfsh_Addr		vaddr;
   struct s_caller	*next;
 }			mjrcaller_t;
 
@@ -69,10 +70,7 @@ typedef struct	s_buf
 }		mjrbuf_t;
 
 
-
-
-/***** Those 2 structures are not used yet ******/
-
+/***** That structure is not used yet ******/
 
 
 
@@ -88,12 +86,4 @@ typedef struct	s_condition
 }		mjrcond_t;
 
 
-/* Abstract function representation */
-typedef struct		s_function 
-{
-  u_int			vaddr;
-  u_int			size;
-  char			*symstr;
-  struct s_caller	*blocks;
-  struct s_function	*next;
-}			mjrfunc_t;
+#endif

@@ -13,7 +13,7 @@ int		vm_bt()
   elfsh_Addr	frame;
   elfsh_Addr	ret;
   char		*name, *name2;
-  int		off, off2;
+  elfsh_SAddr	off, off2;
   char		logbuf[BUFSIZ];
   int		i = 0;
 
@@ -40,8 +40,10 @@ int		vm_bt()
 	  e2dbgworld.curthread->stackaddr + e2dbgworld.curthread->stacksize < frame)
 	{
 	  snprintf(logbuf, BUFSIZ, 
-		   " [*] Invalid next frame address %08X (stackaddr = %08X, size = %u)\n\n", 
-		   frame, e2dbgworld.curthread->stackaddr, e2dbgworld.curthread->stacksize);
+		   " [*] Invalid next frame address " AFMT 
+		   " (stackaddr = " AFMT ", size = %u)\n\n", 
+		   frame, e2dbgworld.curthread->stackaddr, 
+		   e2dbgworld.curthread->stacksize);
 	  vm_output(logbuf);
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
@@ -59,16 +61,19 @@ int		vm_bt()
       /* Just insert the real entry point where we reach the thread entry point of e2dbg */
       if (strstr(name, "e2dbg_thread_start"))
 	{
-	  snprintf(logbuf, BUFSIZ - 1, "%u", (unsigned int) e2dbgworld.stoppedthread->tid);
+	  snprintf(logbuf, BUFSIZ - 1, "%u", 
+		   (unsigned int) e2dbgworld.stoppedthread->tid);
 	  t = hash_get(&e2dbgworld.threads, logbuf);
 	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, &off2);
 	  if (name2)
 	    {
 	      if (off2)
-		snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s + %u> -ENTRY-\n", i, 
+		snprintf(logbuf, BUFSIZ - 1, 
+			 " [%02d] "XFMT" in "XFMT" <%s + " UFMT "> -ENTRY-\n", i, 
 			 ret, (elfsh_Addr) t->entry, name2, off2);
 	      else
-		snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT " <%s> -ENTRY-\n", i, 
+		snprintf(logbuf, BUFSIZ - 1, 
+			 " [%02d] "XFMT" in "XFMT " <%s> -ENTRY-\n", i, 
 			 ret, (elfsh_Addr) t->entry, name2);
 	      vm_output(logbuf);
 	      i++;
@@ -83,8 +88,9 @@ int		vm_bt()
       
       /* Print the current level frame */
       if (off)
-	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s + %d>\n", i, 
-		 (elfsh_Addr) ret, ret - off, name, off);
+	snprintf(logbuf, BUFSIZ - 1, " [%02d] " XFMT " in " XFMT
+		 " <%s + " UFMT ">\n", i, (elfsh_Addr) ret, ret - off, name, off);
+		 
       else
 	snprintf(logbuf, BUFSIZ - 1, " [%02d] "XFMT" in "XFMT" <%s>\n", i, 
 		 (elfsh_Addr) ret, ret, name);

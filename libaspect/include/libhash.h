@@ -53,7 +53,8 @@ void		*hash_get(hash_t *h, char *key);	/* Get an entry pointer */
 hashent_t	*hash_get_head(hash_t *h, char *b);	/* Get a list head */
 hashent_t 	*hash_get_ent(hash_t *h, char *key);	/* Get an entry metadata */
 void		hash_print(hash_t *h);			/* Print the hash table */
-char**		hash_get_keys(hash_t *h, int* n);	/* XXX: need comment */
+char**		hash_get_keys(hash_t *h, int* n);	/* Create array of keys */
+void		hash_free_keys(char *keys);		/* Free keys */
 int             hash_apply(hash_t *h, void *ptr, 
 			   int (*f)(hashent_t *e, void *p)); /* Apply function */
 int		hash_merge(hash_t *dst, hash_t *src);	/* Fuse hashes */
@@ -61,5 +62,4 @@ int		hash_unmerge(hash_t *dst, hash_t *src); /* Quotient hashes */
 int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */
 void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
-
 #endif /* _LIBHASH_H_ */

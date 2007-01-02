@@ -141,7 +141,7 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
 {
   int		index;
   elfsh_Sym	*sym;
-  int		offset;
+  elfsh_SAddr	offset;
   elfsh_Shdr	*shdr;
   elfshsect_t	*sct;
 

@@ -154,17 +154,7 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
     *num = nbr;
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
-
-  /*
-  fprintf(stderr,
-	  "elfsh_get_dynsymtab has dynsym data (%08x) = %08X pdata = %08X\n", 
-	 (unsigned int) ret,
-	 (unsigned int) file->secthash[ELFSH_SECTION_DYNSYM]->data, 
-	 (unsigned int) file->secthash[ELFSH_SECTION_DYNSYM]->pdata);
-  */
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (ret));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

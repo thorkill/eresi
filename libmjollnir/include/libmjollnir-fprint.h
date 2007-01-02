@@ -1,20 +1,24 @@
 /*
- * (C) 2006 Asgard Labs, thorolf
- * BSD License
- * $Id: libmjollnir-fprint.h,v 1.2 2006-12-11 13:57:34 may Exp $
+ * 2001-2006 Devhell Labs
+ * 2006 Asgard Labs, thorolf
+ * 
+ * Basic blocks related structures for libmjollnir
+ *
+ * $Id: libmjollnir-fprint.h,v 1.3 2007-01-02 06:21:23 may Exp $
  *
  */
+#include "libmjollnir-blocks.h"
 
-#define MJR_FNG_TYPE_MD5 0
+#define		MJR_FPRINT_TYPE_MD5	0
 
-typedef struct _mjrFunction mjrfunction_t;
-
-/* Here comes linked list of conditional blocks
-   found between this vaddr of this function
-   and next vaddr of a function */
-struct	_mjrFunction 
+/* Abstract function representation */
+typedef struct		s_function 
 {
-  u_int	vaddr;
-  char	*md5;
-};
-
+  elfsh_Addr		vaddr;		/* Function virtual address */
+  u_int			size;		/* Function size */
+  char			*name;		/* Function name */
+  mjrblock_t		*first;		/* First function block */
+  hash_t		parentfuncs;	/* Functions we are called from */
+  hash_t		childfuncs;	/* Functions we call */
+  char			*md5;		/* MD5 Checksum */
+}			mjrfunc_t;

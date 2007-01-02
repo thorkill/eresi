@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.7 2006-12-31 21:38:08 thor Exp $
+ * $Id: function.c,v 1.8 2007-01-02 06:21:23 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -48,7 +48,8 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
 					  int		type) 
 {
  MD5_CTX	md5ctx;
- unsigned char  *fbuf, digest[16];
+ unsigned char  fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
+ unsigned char	digest[16];
  char		*pt;
  void           *ret;
  u_int		i;
@@ -71,19 +72,14 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
  /* Select the desired fingerprinting function */
  switch (type) 
    {
-   case MJR_FNG_TYPE_MD5:
-     XALLOC(fbuf, MJR_MAX_FUNCTION_LEN, NULL);
-     memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
+   case MJR_FPRINT_TYPE_MD5:
+     //memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
      mlen = mjr_i386_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
      if (mlen <= 0) 
-       {
-	 XFREE(fbuf);
-	 ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-       }
+       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      MD5_Init(&md5ctx);
      MD5_Update(&md5ctx, fbuf, mlen);
      MD5_Final(digest, &md5ctx);
-     XFREE(fbuf);
      XALLOC(ret, 33, NULL);
      if (!ret)
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
@@ -103,14 +99,19 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
 
 
 /* Create a function in the original MJR format */
-mjrfunction_t	*mjr_function_create(u_int vaddr) 
+mjrfunc_t	*mjr_function_create(mjrcontext_t *c, char *name, elfsh_Addr addr, 
+				     u_int size, mjrblock_t *e)
 {
- mjrfunction_t *fun;
+ mjrfunc_t	*fun;
  
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
-
- XALLOC(fun, sizeof(mjrfunction_t), NULL);
- fun->vaddr = vaddr;
-
+ XALLOC(fun, sizeof(mjrfunc_t), NULL);
+ fun->vaddr = addr;
+ fun->size  = size;
+ fun->first = e;
+ fun->name  = name;
+ hash_init(&fun->parentfuncs, 5);
+ hash_init(&fun->childfuncs, 5);
+ hash_add(&c->funchash, name, fun);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }

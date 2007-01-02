@@ -11,7 +11,7 @@
 /* Resolve a register */
 void		vm_dumpreg(char *name, uint32_t reg)
 {
-  int		off;
+  elfsh_SAddr	off;
   char		*str;
 
   str = vm_resolve(world.curjob->current, reg, &off);
@@ -20,7 +20,7 @@ void		vm_dumpreg(char *name, uint32_t reg)
     printf("\t [%s] %08X (%010u) <%s> \n", 
 	   name, reg, reg, (str ? str : "unknown"));
   else
-    printf("\t [%s] %08X (%010u) <%s + %u> \n", 
+    printf("\t [%s] %08X (%010u) <%s + " UFMT "> \n", 
 	   name, reg, reg, str, off);
 }
 
@@ -33,15 +33,17 @@ int		cmd_dumpregs()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e2dbgworld.curthread)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No current thread available", (-1));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No current thread available", (-1));
   if (!e2dbgworld.curthread->context)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No context available", (-1));
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No context available", (-1));
   
   vm_output(" .:: Registers ::. \n\n");
 
 #if defined(__amd64__) && defined(__FreeBSD__)
-
-#elif defined(__FreeBSD__)
+  #error "Register context not filled on FreeBSD / AMD64"
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   vm_dumpreg("EAX", e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   vm_dumpreg("EBX", e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   vm_dumpreg("ECX", e2dbgworld.curthread->context->uc_mcontext.mc_ecx);

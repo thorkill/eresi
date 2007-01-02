@@ -35,6 +35,9 @@ int		hash_add(hash_t *h, char *key, void *data)
   char		*backup;
   u_int		index;
 
+  if (!h || !key || !data || hash_get(h, key))
+    return (-1);
+  
   new = NULL;
   for (index = 0, backup = key; *backup; backup++)
     index += *backup;
@@ -194,6 +197,11 @@ char		**hash_get_keys(hash_t *h, int *n)
   return (keys);
 }
 
+/* Free the keys returned by hash_get_keys() */
+void		hash_free_keys(char *keys)
+{
+  free(keys);
+}
 
 /* Print the hash table (DEBUG PURPOSE) */
 void            hash_print(hash_t *h)

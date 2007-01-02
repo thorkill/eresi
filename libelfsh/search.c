@@ -81,8 +81,8 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
 	  symchoice = sym;
 	  choice = curidx;
 #if	__DEBUG_STATIC__	      
-	  printf("[DEBUG_STATIC] Found stronger sym %s (%08X) in %s [WSLIST] \n", 
-		 name, symchoice->st_value, choice->name);
+	  printf("[DEBUG_STATIC] Found stronger sym %s (" AFMT ") "
+		 "in %s [WSLIST] \n", name, symchoice->st_value, choice->name);
 #endif
 	}
     } 
@@ -109,7 +109,7 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
 	  symchoice = sym;
 	  choice = curidx;
 #if	__DEBUG_STATIC__	      
-	  printf("Found stronger symbol %s (%08X) in %s [SHAREDLIST] \n",
+	  printf("Found stronger symbol %s ("AFMT") in %s [SHAREDLIST] \n",
 		 name, symchoice->st_value, choice->name);
 #endif      
 	  

@@ -1032,8 +1032,11 @@ int		vm_display_section(elfshsect_t *s, char *name, elfshlist_t *re);
 int		vm_match_sht(elfshobj_t *file, elfshsect_t *l, elfshlist_t *actual);
 int		vm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
 				elfshlist_t *actual, int flag);
-int		vm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
-				 elfshlist_t *actual);
+int		vm_match_special(elfshobj_t *file, elfsh_Addr vaddr, elfshlist_t*);
+int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size, 
+				  u_int off, u_int foffset, elfsh_Addr vaddr, 
+				  char *name, char otype);
+
 
 /* Parsing, Scanning, I/O functions */
 char		*vm_filter_param(char *buf, char *ptr);

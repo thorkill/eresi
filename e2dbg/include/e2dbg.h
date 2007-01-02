@@ -223,7 +223,7 @@ typedef struct		s_thread
 #define			E2DBG_THREAD_FINISHED	7
   char			state;			/* Initiliazing, Running, Finished */
   int			count;			/* State (0->2) when breakpointing */
-  int			past;			/* Previous opcode instead of break */
+  elfsh_Addr		past;			/* Previous opcode instead of break */
   u_char		step;			/* Is this thread beeing stepped ? */
   void			*(*entry)(void *);	/* Entry point */
   ucontext_t		*context;		/* Thread context on signal */

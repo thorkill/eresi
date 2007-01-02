@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <openssl/md5.h>
 #include "libelfsh.h"
+#include "libasm.h"
 #include "libmjollnir-btree.h"
 #include "libmjollnir-blocks.h"
 #include "libmjollnir-int.h"
@@ -33,6 +34,7 @@ typedef struct		_mjrContext
   elfshobj_t		*obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
   mjrblock_t	        *curblock;   /* current working block */
+  mjrfunc_t		*curfunc;    /* current working function */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
@@ -40,6 +42,7 @@ typedef struct		_mjrContext
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
+  hash_t		funchash;    /* functions hash table */
   hash_t		blkhash;     /* blocks hash table for this obj */
   mjrblock_t		*blklist;    /* blocks array with on-disk format */
   unsigned char		analysed;    /* do we analysed it */
@@ -92,17 +95,35 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
 mjrblock_t*	mjr_blocks_load(mjrcontext_t *c);
 mjrblock_t*     mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
 mjrblock_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
-
-int		mjr_blocks_display(mjrcontext_t *c, int);
-int		mjr_block_display(mjrblock_t *c, mjropt_t *opt);
-
 int		mjr_blocks_store(mjrcontext_t *c);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 void		mjr_block_add_list(mjrcontext_t *c, mjrblock_t *);
-void		mjr_block_dump(mjrblock_t *b);
 void		mjr_block_add_caller(mjrblock_t *, elfsh_Addr, int);
-int		mjr_block_funcstart(mjrblock_t *);
 char 		*_vaddr2str(elfsh_Addr);
+
+/* fingerprint.c */
+int		mjr_block_funcstart(mjrblock_t *);
+int		mjr_fprint_fwd(mjrcontext_t *c,
+			       mjrblock_t   *start, 
+			       int	    weight,
+			       int	    curd,
+			       int	    mind,
+			       int	    maxd,
+			       int	    (*fprint)(mjrblock_t *));
+int		mjr_fprint_bwd(mjrcontext_t *c,
+			       mjrblock_t   *start, 
+			       int	    weight,
+			       int	    curd,
+			       int	    mind,
+			       int	    maxd,
+			       int	    (*fprint)(mjrblock_t *));
+
+/* display.c */
+void		mjr_block_dump(mjrblock_t *b);
+int		mjr_blocks_display(mjrcontext_t *c, int);
+int		mjr_block_display(mjrblock_t *c, mjropt_t *opt);
+void		mjr_function_display(mjrfunc_t *func);
+void		mjr_funcs_display(mjrcontext_t *c);
 
 /* types.c */
 int            mjr_asm_flow(mjrcontext_t *c);
@@ -116,7 +137,8 @@ int		mjr_symbol_delete_by_name(mjrsession_t *, char *);
 int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 
 /* function.c */
-mjrfunction_t   *mjr_function_create(u_int);
+mjrfunc_t	*mjr_function_create(mjrcontext_t *c, char *name, elfsh_Addr a,  
+				     u_int size, mjrblock_t *entry);
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
 
 /* history.c */

@@ -19,7 +19,7 @@ int		cmd_delete()
   elfshbp_t	*bp;
   char		*name;
   int		prot;
-  int		off;
+  elfsh_SAddr	off;
   char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -42,10 +42,10 @@ int		cmd_delete()
   hash_del(&e2dbgworld.bp, logbuf);
 
   if (off)
-    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at %08X <%s + %u> removed\n\n", 
-	 addr, name, off);
+    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at " AFMT 
+	     " <%s + " UFMT "> removed\n\n", addr, name, off);
   else
-    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at %08X <%s> removed\n\n", 
+    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at " AFMT "<%s> removed\n\n", 
 	 addr, name);
   vm_output(logbuf);
 

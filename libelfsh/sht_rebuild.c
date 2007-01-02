@@ -167,18 +167,21 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 	  file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr = file->sht + file->hdr->e_shstrndx;
 
 	  file->sht[index + 1].sh_name = elfsh_insert_in_shstrtab(file, name);
-	  snprintf(buff, sizeof(buff), "%s_%u", 
-		   (file->sht[index + 2].sh_addr ? ELFSH_SECTION_NAME_MAPPED : ELFSH_SECTION_NAME_UNMAPPED),
+	  snprintf(buff, sizeof(buff), "%s_"UFMT, 
+		   (file->sht[index + 2].sh_addr ? 
+		    ELFSH_SECTION_NAME_MAPPED : ELFSH_SECTION_NAME_UNMAPPED),
 		   file->sht[index + 2].sh_offset);
 	  file->sht[index + 2].sh_name = elfsh_insert_in_shstrtab(file, buff);
 
 	  XALLOC(sect, sizeof(*sect), -1);
-	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
+	  if (elfsh_add_section(file, sect, index, 
+				NULL, ELFSH_SHIFTING_ABSENT) < 0)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 
 	  XALLOC(sect, sizeof(*sect), -1);
-	  if (elfsh_add_section(file, sect, index + 2, NULL, ELFSH_SHIFTING_ABSENT) < 0)
+	  if (elfsh_add_section(file, sect, index + 2, 
+				NULL, ELFSH_SHIFTING_ABSENT) < 0)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 
@@ -237,7 +240,8 @@ static int	init_sht(elfshobj_t *file, u_int num)
 
   /* Insert the .unmapped section */
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, high->p_offset + high->p_filesz, 
-			   file->fstat.st_size - (high->p_offset + high->p_filesz), 0, 0, 0, 0);
+			   file->fstat.st_size - (high->p_offset + high->p_filesz),
+			   0, 0, 0, 0);
   file->sht[1] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 1, NULL, ELFSH_SHIFTING_NONE) < 0)
@@ -245,7 +249,8 @@ static int	init_sht(elfshobj_t *file, u_int num)
 		      "Unable to add section", -1);
 
   /* Insert the section header string table (.sh_strtab) */
-  shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, file->fstat.st_size, 0, 0, 0, 0, 0);
+  shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, file->fstat.st_size, 
+			   0, 0, 0, 0, 0);
   file->sht[2] = shdr;
   XALLOC(sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 2, NULL, ELFSH_SHIFTING_NONE) < 0)
@@ -255,12 +260,14 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
 
   /* Insert names in .shstrtab */
-  snprintf(buff, sizeof(buff), "%s_%u", ELFSH_SECTION_NAME_MAPPED, file->sht[0].sh_offset); 
+  snprintf(buff, sizeof(buff), "%s_" UFMT, 
+	   ELFSH_SECTION_NAME_MAPPED, file->sht[0].sh_offset); 
   file->sht[0].sh_name = elfsh_insert_in_shstrtab(file, buff);
-  snprintf(buff, sizeof(buff), "%s_%u", ELFSH_SECTION_NAME_UNMAPPED, file->sht[1].sh_offset); 
+  snprintf(buff, sizeof(buff), "%s_" UFMT, 
+	   ELFSH_SECTION_NAME_UNMAPPED, file->sht[1].sh_offset); 
   file->sht[1].sh_name = elfsh_insert_in_shstrtab(file, buff);
-  file->sht[2].sh_name = elfsh_insert_in_shstrtab(file, ELFSH_SECTION_NAME_SHSTRTAB);
-
+  file->sht[2].sh_name = elfsh_insert_in_shstrtab(file, 
+						  ELFSH_SECTION_NAME_SHSTRTAB);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -359,8 +366,8 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
   for (index = 0; index < num; index++)
     {
       flags = SHF_ALLOC;
-      flags |= (elfsh_segment_is_writable(file->pht + index)    ? SHF_WRITE     : 0);
-      flags |= (elfsh_segment_is_executable(file->pht + index)  ? SHF_EXECINSTR : 0);
+      flags |= (elfsh_segment_is_writable(file->pht + index)  ? SHF_WRITE     : 0);
+      flags |= (elfsh_segment_is_executable(file->pht + index)? SHF_EXECINSTR : 0);
       switch (file->pht[index].p_type)
 	{
 	case PT_LOAD:

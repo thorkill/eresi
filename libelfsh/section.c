@@ -210,10 +210,10 @@ int             elfsh_add_runtime_section(elfshobj_t    *file,
 
 /* Internal function */
 static 
-elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,                
-						    char         *name,                     
-						    int          *idx,                      
-						    int          *strindex,                 
+elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
+						    char         *name,
+						    int          *idx,
+						    int          *strindex,
 						    int          *num,
 						    elfshsect_t	 *sectlist)   
 {
@@ -899,24 +899,24 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
 /* This function makes the difference between data and pdata, beeing the process data */
 void			*elfsh_get_raw(elfshsect_t *sect)
 {
+  void			*dataptr = 0;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_is_debug_mode())
     {
-      //printf("entering raw debug mode (sect = %08X) \n", sect);
-      //fflush(stdout);
-      //fprintf(stderr, "RAW Returning %08X + base %08X \n", 
-      //     sect->shdr->sh_addr, sect->parent->rhdr.base);
-
-      sect->pdata = (void *) sect->shdr->sh_addr;
+      /* The address of the section */
+      dataptr = (void *) sect->shdr->sh_addr;
+      
+      /* For runtime injected sections */
       if (!elfsh_section_is_runtime(sect))
-	sect->pdata += sect->parent->rhdr.base;
+	dataptr += sect->parent->rhdr.base;
 
-      // For unmapped sections
-      if (!sect->pdata)
-	sect->pdata = sect->data;
+      /* For unmapped sections */
+      if (!dataptr)
+	dataptr = sect->data;
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->pdata));
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
   if (sect)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->data));

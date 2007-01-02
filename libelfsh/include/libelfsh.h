@@ -434,9 +434,6 @@ struct			s_sect
   /* Filled at loading */
   void			*data;		/* Section's data cache in file					*/
 
-  /* Points in our own address space */
-  void			*pdata;		/* Section's data in the process itself				*/
-
   /* Filled at analysing */
   void			*altdata;	/* Type dependant internal format				*/
   void			*terdata;	/* Alternate type dependant internal format			*/
