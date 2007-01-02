@@ -360,6 +360,3 @@ char	*_vaddr2str(elfsh_Addr addr)
   snprintf(tmp, BSIZE_SMALL - 1, AFMT, addr);
   return ((char *) tmp);
 }
-
-
->>>>>>> 1.22
