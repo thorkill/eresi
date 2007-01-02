@@ -1,6 +1,6 @@
 /*
 ** types.c in libmjollnir for elfsh
-** 
+**
 ** Functions that use the typed instructions information in libasm
 **
 ** Made by mayhem, thorkill, sk
@@ -8,16 +8,16 @@
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 */
 #include "libmjollnir.h"
-  
+
 
 
 /*
 **  Depending on instruction type -based on IA32 instruction set-
-** 
+**
 **  ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
 **  ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
 **  ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
-**  
+**
 **  The last two types reset g_prevaddr as execution flow won't be restored
 **  to following instruction.
 **
@@ -45,31 +45,35 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
     case ASM_TYPE_CONDBRANCH:
       dstaddr = mjr_insert_destaddr(context);
-      
+
+#if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT 
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
-      
+#endif
+
       context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_JUMP;
       context->curblock = 0;
       break;
-      
+
     case ASM_TYPE_CALLPROC:
       dstaddr = mjr_insert_destaddr(context);
-      
+
+#if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC T:" XFMT 
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
-      
+#endif
+
       context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_CALL;
       context->calls_seen++;
       if (context->curblock->true)
 	context->calls_found++;
-      
+
       /* XXX: put this in a vector of fingerprinting techniques */
       fun = mjr_function_create(context->curblock->true);
       md5 = mjr_fingerprint_function(context, 
@@ -83,9 +87,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
     case ASM_TYPE_IMPBRANCH:
       dstaddr = mjr_insert_destaddr(context);
 
+#if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH T:" XFMT 
 	      " F: NULL \n", curvaddr, dstaddr);
+#endif
 
       context->curblock->true  = dstaddr;
       context->curblock->false = 0;
@@ -97,8 +103,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
     case ASM_TYPE_RETPROC:
 
+#if __DEBUG_FLOW__
       fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_RETPROC\n", 
 	      curvaddr);
+#endif
 
       context->curblock->true  = 0;
       context->curblock->false = 0;
@@ -107,10 +115,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
 
-/*    
+#if __DEBUG_FLOW__
     default:
 	fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x DEFAULT %d\n",curvaddr, curins->type);
-*/
+#endif
+
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -119,11 +128,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
 
 
-/* 
+/*
 ** Support function pointers computations
 **
 ** Handle something like this : call *%reg
-**     
+**
 **  -> Check goto table and fixup destination
 **
 **  - start gdb, set breakpoint on a known pointer function, run the prog
@@ -133,7 +142,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 **
 ** TODO:
 **  history of mov to reg when second operand was an address ;-)
-**  
+**
 **  804933c:       89 d1                   mov    %edx,%ecx
 **  804933e:       89 15 c0 e2 04 08       mov    %edx,0x804e2c0
 **  ...
@@ -155,44 +164,44 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   /* We deal with a constructed address */
   if (context->hist[MJR_HISTORY_CUR].instr.instr   == ASM_CALL &&
       context->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV  &&
-      context->hist[MJR_HISTORY_PPREV].instr.instr == ASM_MOV) 
+      context->hist[MJR_HISTORY_PPREV].instr.instr == ASM_MOV)
     {
       dest = context->hist[MJR_HISTORY_PPREV].instr.op2.imm;
-      
-      if (dest < elfsh_get_entrypoint(context->obj->hdr)) 
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid target vaddr for function pointer", 
+
+      if (dest < elfsh_get_entrypoint(context->obj->hdr))
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Invalid target vaddr for function pointer",
 			  (elfsh_Addr) -1);
 
       /* Resolve target block */
-      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr, 
+      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
 
 #if __DEBUG_MJOLLNIR__
       printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
-	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
 	     (unsigned long) dest, (unsigned long) dest);
 #endif
 
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
-    } 
-  
+    }
+
   /* Happens when an address was manually inserted in the routing table */
   /* This allow to avoid the control flow graph to be broken if elfsh
      is not capable to recompute the target address */
   ret = (char *) hash_get(&goto_hash, tmp);
   if (!ret) 
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to compute function pointer target", 
-		      (elfsh_Addr) -1);  
+		      "Unable to compute function pointer target",
+		      (elfsh_Addr) -1);
 
   dest = strtol(ret, (char **) NULL, 16);
-  if (dest) 
+  if (dest)
     {
 
 #if __DEBUG_MJOLLNIR__
-      printf(" [*] Extended routing table found 0x%lx -> 0x%lx\n", 
-	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+      printf(" [*] Extended routing table found 0x%lx -> 0x%lx\n",
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
 	     (unsigned long) dest);
 #endif
 

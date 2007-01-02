@@ -194,7 +194,9 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   if (sym)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
-  printf(" [*] Saving block at addr %s \n", buffer);
+#if __MJR_DEBUG_BLOCKS__
+  fprintf(D_DESC," [*] Saving block at addr %s \n", buffer);
+#endif
 
   /* Else insert the block in the global buffer for the .control section */
   if (!buf->data) 
@@ -240,7 +242,7 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (sect)
     elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_CONTROL);
-  
+
   /* Initialize data buffer */
   buf.allocated     = 0;
   buf.maxlen        = 0;
@@ -303,7 +305,7 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
   elfsh_SAddr		end_offset;
   char			buf1[30];
   char			buf2[30];
-  
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
   end_str = elfsh_reverse_metasym(disopt->file, 
@@ -317,11 +319,11 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
     *buf2 = 0x00;
   else
     snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
-      
+
   printf("[%8lx:%05i:%8lx:%8lx] %-4s %-30s --> %-30s ", 
 	 (unsigned long) cur->vaddr, cur->size, (unsigned long) cur->true, 
 	 (unsigned long) cur->false, call_type_str[cur->type], buf1, buf2);
-      
+
   if (cur->false == 0xFFFFFFFF)
     printf(" [?]");
   else if (cur->false != NULL)
@@ -329,7 +331,7 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
       str = elfsh_reverse_metasym(disopt->file, cur->false, &offset);
       printf(" [%s + " UFMT "]", (str ? str : ""), offset);
     }
-      
+
   printf("\n");
   if (disopt->level > 0)
     for (ccal = cur->caller; ccal; ccal = ccal->next) 
@@ -385,7 +387,7 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
 }
 
 
-  
+
 /* Add a caller : vaddr is address of starting block */
 void		mjr_block_add_caller(mjrblock_t *blk, 
 				     elfsh_Addr    vaddr, 
@@ -394,7 +396,7 @@ void		mjr_block_add_caller(mjrblock_t *blk,
   mjrcaller_t	*n;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   n = elfsh_malloc(sizeof (mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
@@ -448,8 +450,10 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
 char	*_vaddr2str(elfsh_Addr addr)
 {
   char *tmp;
-  
+
   tmp = elfsh_malloc(BSIZE_SMALL);
   snprintf(tmp, BSIZE_SMALL - 1, AFMT, addr);
   return ((char *) tmp);
 }
+
+
