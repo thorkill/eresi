@@ -47,8 +47,6 @@ int		mjr_fprint_fwd(mjrcontext_t *c,
     true = mjr_block_get_by_vaddr(c, start->true, 0);
   if (start->false)
     false = mjr_block_get_by_vaddr(c, start->false, 0);
-  if (!true && !false)
-    return (weight);
 
   /* We are not yet in the depth range of fingerprint, just recurse */
   if (curd < mind)
@@ -69,8 +67,9 @@ int		mjr_fprint_fwd(mjrcontext_t *c,
   return (true && false ? 
 	  mjr_fprint_fwd(c, true, weight, curd, mind, maxd, fprint) + 
 	  mjr_fprint_fwd(c, false, weight, curd, mind, maxd, fprint) : 
-	  true ? mjr_fprint_fwd(c, true, weight, curd, mind, maxd, fprint) :
-	  mjr_fprint_fwd(c, false, weight, curd, mind, maxd, fprint));
+	  true  ? mjr_fprint_fwd(c, true, weight, curd, mind, maxd, fprint)  :
+	  false ? mjr_fprint_fwd(c, false, weight, curd, mind, maxd, fprint) :
+	  weight);
 }
 
 
