@@ -38,17 +38,22 @@ NAME			= libelfsh
 NAME32			= libelfsh32
 NAME64			= libelfsh64
 
-all			: $(OBJ32) $(OBJ64)
-			$(LD) -L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg \
-			-L../libaspect/ -laspect32 -DELFSH32 -shared $(OBJ32) 	 \
-			-o $(NAME32).so
+all			: all32 all64
+
+all64			:  $(OBJ64)
 			$(LD) -L../libc/ -lcelfsh64 -L../libmalloc/ -lmalloc-e2dbg \
 			-L../libaspect/ -laspect64 -DELFSH64 -shared $(OBJ64) 	 \
 			-o $(NAME64).so
-			@$(AR) $(NAME32).a $(OBJ32)
 			@$(AR) $(NAME64).a $(OBJ64)
-			@$(RANLIB) $(NAME32).a
 			@$(RANLIB) $(NAME64).a
+
+all32			: $(OBJ32)
+			$(LD) -L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg \
+			-L../libaspect/ -laspect32 -DELFSH32 -shared $(OBJ32) 	 \
+			-o $(NAME32).so
+			@$(AR) $(NAME32).a $(OBJ32)
+			@$(RANLIB) $(NAME32).a
+
 
 
 dumpregs.o:		dumpregs.c
