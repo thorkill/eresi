@@ -122,11 +122,13 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
       mjr_block_add_list(ctxt, curbloc);
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
 
+#if __DEBUG_BLOCKS__
       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s\n",name);
+#endif
 
-      hash_add(&ctxt->blkhash, name, curbloc);
+      hash_add(&ctxt->blkhash, (char *) _vaddr2str(curbloc->vaddr), curbloc);
     }
-     
+
   /* Second pass : create all caller information for all loaded blocks */
   for (index = 0; index < blocnbr; index++)
     {
@@ -134,6 +136,12 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
  
       /* Link true child info */
       target = mjr_block_get_by_vaddr(ctxt, curbloc->true, 0);
+
+#if __DEBUG_BLOCKS__
+      if (!target)
+       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",curbloc->true);
+#endif
+
       if (!target)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 1", 0);
@@ -142,6 +150,12 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
       /* Link false child info */
       target = mjr_block_get_by_vaddr(ctxt, curbloc->false, 0);
+
+#if __DEBUG_BLOCKS__
+      if (!target)
+       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 2-pass vaddr: "XFMT"\n",curbloc->false);
+#endif
+
       if (!target)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 2", 0);
@@ -171,7 +185,7 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   if (sym)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
-#if __MJR_DEBUG_BLOCKS__
+#if __DEBUG_BLOCKS__
   fprintf(D_DESC," [*] Saving block at addr %s \n", buffer);
 #endif
 

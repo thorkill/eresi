@@ -68,10 +68,9 @@ int		cmd_control()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  if (!mjr_blocks_get(world.mjr_session.cur)) {
-    vm_output("\n [!] Blocks can't be restored. \n\n");
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-  }
+  if (!mjr_blocks_get(world.mjr_session.cur))
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	"Blocks can't be restored.", -1);
 
   mjr_blocks_display(world.mjr_session.cur, 1);
 

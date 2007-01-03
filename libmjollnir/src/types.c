@@ -40,7 +40,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
   ilen     = asm_instr_len(curins);
 
   /* Switch on instruction types provided by libasm */
-  switch (curins->type) 
+  switch (curins->type)
     {
 
     case ASM_TYPE_CONDBRANCH:
@@ -48,22 +48,24 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT 
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
-
+     if (dstaddr != -1)
+     {
       context->curblock->true  = dstaddr;
       context->curblock->false = curvaddr + ilen;
       context->curblock->type  = CALLER_JUMP;
       context->curblock = 0;
-      break;
+     }
+    break;
 
     case ASM_TYPE_CALLPROC:
       dstaddr = mjr_insert_destaddr(context);
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT 
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
 
@@ -108,12 +110,16 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 
-      context->curblock->true  = dstaddr;
-      context->curblock->false = 0;
-      context->curblock->type  = CALLER_JUMP;
-      context->curblock        = 0;
-      context->hist[MJR_HISTORY_PREV].vaddr = 0;
+      if (dstaddr != -1)
+       {
 
+        context->curblock->true  = dstaddr;
+        context->curblock->false = 0;
+        context->curblock->type  = CALLER_JUMP;
+        context->curblock        = 0;
+        context->hist[MJR_HISTORY_PREV].vaddr = 0;
+
+       }
       break;
 
     case ASM_TYPE_RETPROC:
