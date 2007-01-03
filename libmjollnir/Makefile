@@ -48,19 +48,24 @@ NAME	= libmjollnir
 NAME32	= libmjollnir32
 NAME64	= libmjollnir64
 
-all	: $(OBJ32) $(OBJ64)
+all	: all32 all64
 #	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto $(LDFLAGS)
 #	@ar rc ${NAME}.a ${OBJ} 
 #	@ranlib ${NAME}.a
-	$(CC) $(BITS) -shared $(OBJ32) -o $(NAME32).so -lcrypto $(LDFLAGS32)
-	@ar rc ${NAME32}.a ${OBJ32} 
-	@ranlib ${NAME32}.a
-	$(CC) $(BITS) -shared $(OBJ64) -o $(NAME64).so -lcrypto $(LDFLAGS64)
-	@ar rc ${NAME64}.a ${OBJ64} 
-	@ranlib ${NAME64}.a
+
 #	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir
 # comment this out if you don't want to make unittests 
 #	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
+
+all32	: $(OBJ32)
+	$(CC) $(BITS) -shared $(OBJ32) -o $(NAME32).so -lcrypto $(LDFLAGS32)
+	@ar rc ${NAME32}.a ${OBJ32} 
+	@ranlib ${NAME32}.a
+
+all64	: $(OBJ64)
+	$(CC) $(BITS) -shared $(OBJ64) -o $(NAME64).so -lcrypto $(LDFLAGS64)
+	@ar rc ${NAME64}.a ${OBJ64} 
+	@ranlib ${NAME64}.a
 
 clean:
 	rm -f src/*.o src/*~ src/\#* $(NAME).a $(NAME).so $(OBJT) $(OBJM)
