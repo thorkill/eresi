@@ -41,7 +41,9 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
   char			buf2[30];
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
   str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
+
   end_str = elfsh_reverse_metasym(disopt->file, 
 				  cur->vaddr + cur->size, &end_offset);
 
@@ -93,11 +95,13 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
   opt.level   = level;
   opt.file    = c->obj;
   keys        = hash_get_keys(&c->blkhash, &blocnbr);
+
   for (index = 0; index < blocnbr; index++)
     {
       block = hash_get(&c->blkhash, keys[index]);
       mjr_block_display(block, &opt);
     }
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
 

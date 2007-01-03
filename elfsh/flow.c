@@ -66,19 +66,15 @@ int	cmd_addgoto(void)
 /* Print the control information */
 int		cmd_control()
 {
-  elfshsect_t	*sect;
-  elfshobj_t	*current;
-
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
-  current = world.curjob->current;
-  sect = elfsh_get_section_by_name(current, 
-				   ELFSH_SECTION_NAME_CONTROL,
-				   0, 0, 0);
-  if (!sect || !sect->altdata)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "No control flow section found", -1);
+
+  if (!mjr_blocks_get(world.mjr_session.cur)) {
+    vm_output("\n [!] Blocks can't be restored. \n\n");
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+  }
 
   mjr_blocks_display(world.mjr_session.cur, 1);
+
   vm_output("\n [*] Control flow information dumped \n\n");
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }

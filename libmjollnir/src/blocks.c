@@ -77,9 +77,12 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
   /* Return or retreive information */
   if (sect->altdata)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+
   sect->altdata = mjr_blocks_load(ctxt);
+
   if (sect->altdata)
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Flow analysis failed", 0);
 }
@@ -134,6 +137,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
       if (!target)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 1", 0);
+
       mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
 
       /* Link false child info */
@@ -141,6 +145,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
       if (!target)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 2", 0);
+
       mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
     }
 
@@ -255,9 +260,11 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 
   printf(" [*] Saving control section of %u bytes \n", buf.maxlen);
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
+
   if (err < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save control flow section", -1);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
 
