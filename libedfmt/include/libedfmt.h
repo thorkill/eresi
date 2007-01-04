@@ -9,7 +9,7 @@
 #define __LIBEDFMT_H__
 
 #include <libelfsh.h>
-#include "dwarf2.h"
+#include "libedfmt-dwarf2.h"
 
 /* Defines */
 #define UNKNOWN_FORMAT 	0

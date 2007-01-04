@@ -532,6 +532,7 @@ echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 #echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
+echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
  
 
 echo "	@echo 'ELFsh, Libelfsh, Libmjollnir, Libaspect, Libedfmt, Libui and Libasm uninstalled successfully' "	>> Makefile
