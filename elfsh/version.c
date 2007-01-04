@@ -48,7 +48,7 @@ int			vm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
     }
 
      if (regx == NULL || 
-	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
        vm_output(logbuf);
 
   vm_endline();
@@ -108,7 +108,7 @@ int			vm_version_pdef(hashdef_t *pdef, u_int auxid,
 		vm_colorstr_fmt("%-10s", dauxnames[0]) : ""));
     }
      if (regx == NULL || 
-	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
        vm_output(logbuf);
 
   vm_endline();
@@ -164,7 +164,7 @@ int			vm_version_pneed(hashneed_t *pneed, u_int auxid,
 	       vm_colorstr_fmt("%s", file));
     }
      if (regx == NULL || 
-	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
        vm_output(logbuf);
 
   vm_endline();
@@ -236,7 +236,7 @@ int 			cmd_version()
 
   if (sect == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to find Version Symbol table", NULL);
+		      "Unable to find Version Symbol table", 0);
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION SYMBOL TABLE]\n [Object %s]\n [Section %s]\n\n", 
@@ -347,7 +347,7 @@ int 			cmd_verneed()
 
   if (sect == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to find Version Need section", NULL);
+		      "Unable to find Version Need section", 0);
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION NEED TABLE]\n [Object %s]\n"
@@ -377,7 +377,7 @@ int 			cmd_verneed()
 	       vm_colornumber("%02x", table->vn_next));
 
      if (regx == NULL || 
-	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
        {
 	 if (index > 0)
 	         vm_output("\n");
@@ -408,18 +408,18 @@ int 			cmd_verneed()
 		   vm_colornumber("%02x", tableaux->vna_next));
 
 	  if (regx == NULL || 
-	      (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	      (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
 		 vm_output(logbuf);
 
 	  vm_endline();	  
 
-	  if (tableaux->vna_next == NULL)
+	  if (tableaux->vna_next == 0)
 	    break;
 
 	  auxset += tableaux->vna_next;
 	}
 
-      if (table->vn_next == NULL)
+      if (table->vn_next == 0)
 	break;
 
       offset += table->vn_next;
@@ -455,7 +455,7 @@ int 			cmd_verdef()
 
   if (sect == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to find Definition Version section", NULL);
+		      "Unable to find Definition Version section", 0);
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION DEFINITION TABLE]\n [Object %s]\n"
@@ -486,7 +486,7 @@ int 			cmd_verdef()
 	       vm_colornumber("%02x", table->vd_next));
 
       if (regx == NULL || 
-	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	  (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
 	{
 	  if (index > 0)
 	    vm_output("\n");
@@ -510,18 +510,18 @@ int 			cmd_verdef()
 		   vm_colornumber("%02x", tableaux->vda_next));
 
 	  if (regx == NULL || 
-	      (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == NULL))
+	      (regx != NULL && regexec(regx, logbuf, 0, 0, 0) == 0))
 	    vm_output(logbuf);
 
 	  vm_endline();
 
-	  if (tableaux->vda_next == NULL)
+	  if (tableaux->vda_next == 0)
 	    break;
 
 	  auxset += tableaux->vda_next;
 	}
 
-      if (table->vd_next == NULL)
+      if (table->vd_next == 0)
 	break;
 
       offset += table->vd_next;

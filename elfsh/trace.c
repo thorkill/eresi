@@ -7,6 +7,7 @@
 **
 */
 #include "elfsh.h"
+#include "libedfmt.h"
 
 #define TRACE_CFLOW 	1
 #define TRACE_PLT 	2
@@ -55,13 +56,13 @@ FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
   /* Generate a random temporary name file */
   fd = mkstemp(tfname);
 
-  if (fd == NULL)
+  if (fd == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot create temporary file", NULL);
 
   fp = fdopen(fd, "w");
 
-  if (fp == NULL)
+  if (fp == 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot read temporary file", NULL);
 
@@ -89,11 +90,11 @@ FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
 	   "int pad_count = 0;\n\n"
 	   "char *pad_print(int inc)\n{\n"
 	   "\tint i;\n"
-	   "\tif (inc == 0)\n\t\tpad_count -= 2;\n"
+	   "\tif (inc == 0 && pad_count >= 2)\n\t\tpad_count -= 2;\n"
 	   "\tfor (i = 0; i < pad_count; i++)\n"
 	   "\t\tpad_str[i] = ' ';\n"
 	   "\t\tpad_str[i] = 0;\n"
-	   "\tif (inc == 1)\n\t\tpad_count += 2;\n"
+	   "\tif (inc == 1 && pad_count < 61)\n\t\tpad_count += 2;\n"
 	   "\treturn pad_str;\n}\n");
 
   fwrite(buf, strlen(buf), sizeof(char), fp);
@@ -106,21 +107,39 @@ FILE		*vm_trace_init(char *tfname, char *rsofname, char *rtfname)
 /* Add a function to the tracing file */
 int		vm_trace_add(FILE *fp, int *argcount, char *func_name)
 {
-  int		z = 0;
+  int		z = 0, i;
   char		buf[BUFSIZ + 1];
   char		bufex[BUFSIZ + 1];
   char		args[BUFSIZ + 1];
   char		argsproto[BUFSIZ + 1];
   char		argshexa[BUFSIZ + 1];
+  u_char        notblank = 0;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  for (i = 0; func_name[i] != 0x00; i++)
+    {
+      if (!notblank && !IS_BLANK(func_name[i]))
+	notblank = 1;
+      if (!PRINTABLE(func_name[i]))
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+    }
+
+  /* XXX: Generate a random name */
+  if (i == 0 || !notblank)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+
+  /* Avoid infinite loop */
+  if (!strcmp(func_name, "printf")
+      || (func_name[0] == '_' && func_name[1] == '_'))
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   argshexa[0] = 0;
   argsproto[0] = 0;
   args[0] = 0;
 
   /* Do we have arguments in this function ? */
-  if (argcount[0] != NULL)
+  if (argcount[0] != 0)
   {
     snprintf(argshexa, BUFSIZ, "%%%%%s", "08x");
     snprintf(argsproto, BUFSIZ, "char a%d[%d]", 0, argcount[0]);
@@ -129,7 +148,7 @@ int		vm_trace_add(FILE *fp, int *argcount, char *func_name)
     /* Arguments by arguments */
     for (z = 1; z < ELFSH_TRACE_MAX_ARGS && argcount != NULL; z++)
     {
-      if (argcount[z] == NULL)
+      if (argcount[z] == 0)
 	break;
 
       /* char type is just what we need to setup a good size */
@@ -261,9 +280,12 @@ int			vm_trace_functions(FILE *fp, elfsh_Sym *symtab,
       
       /* Print some informations */
 #if 0
-      snprintf(buf, BUFSIZ, "[%03d] %-24s => %-20s argnum = %d \n", 
-	       count, func_name, sect_name, numargs);      
-      vm_output(buf);      
+      if (argnum > 0)
+	{
+	  snprintf(buf, BUFSIZ, "[%03d] %-24s => %-20s argnum = %d \n", 
+		   count, func_name, sect_name, numargs);      
+	  vm_output(buf);      
+	}
 #endif
       count++;
     }
@@ -368,8 +390,11 @@ int		trace_add(const char *name, const char *optarg)
     /* Retrieve symbol */
     dst = elfsh_get_symbol_by_name(world.curjob->current, buf);
     if (dst == NULL)
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Failed to find trace function", (-1));
+      {
+	continue;
+	//ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	//	  "Failed to find trace function", (-1));
+      }
     addr = dst->st_value;
 
 #if __DEBUG_TRACE__
@@ -426,7 +451,8 @@ int		trace_create(const char *name, const char *optarg)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  vm_output("trace: create\n\n");
+  //vm_output("trace: create\n\n");
+  edfmt_format(world.curjob->current);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

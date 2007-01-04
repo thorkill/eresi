@@ -32,8 +32,8 @@ CFLAGS			+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libaspect/include/ -I../librevm/include/ \
-			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) $(BITS) \
-			$(NCURSESLNOPT) $(READLNOPT)
+			-I../libedfmt/include/ -DELFSH_INTERN $(STATOPT2) \
+			$(ASMOPT) $(BITS) $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../libelfsh/include/ -I../libc/include/ \
@@ -57,8 +57,8 @@ LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/   \
 			-L../libmjollnir/ -lmjollnir $(LPTHREAD) -L../libc 	  \
 			-lcelfsh -L../libasm/ -lasm -L../libui/ -lui -g3 	  \
 			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect -L../librevm/                    \
-			-lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  			  \
+			-L../libaspect/ -laspect -L../librevm/ -ledfmt 		  \
+			-L../libedfmt/ -lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  	  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
@@ -66,8 +66,8 @@ LDFLAGS32		+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../libc 	  \
 			-lcelfsh32 -L../libasm/ -lasm -L../libui/ -lui32 -g3 	  \
 			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect32 -L../librevm/                  \
-			-lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  			  \
+			-L../libaspect/ -laspect32 -L../librevm/ -ledfmt32        \
+			-L../libedfmt/ -lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)       \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
@@ -75,8 +75,8 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../libc 	  \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect64 -L../librevm/		  \
-			-lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)  			  \
+			-L../libaspect/ -laspect64 -L../librevm/ -ledfmt64	  \
+			-L../libedfmt/ -lmalloc-e2dbg $(LDMJOLLNIR) $(DLOPT)       \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
