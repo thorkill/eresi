@@ -65,8 +65,8 @@ clean			:
 			include/*~ include/.\#*
 
 fclean			: clean
-			@$(RM) $(NAME).so $(NAME).a
-
+			@$(RM) $(NAME).so $(NAME).a $(NAME32).so $(NAME32).a \
+			$(NAME64).so $(NAME64).a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

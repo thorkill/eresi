@@ -165,6 +165,10 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
   /* Return results */
   sect->altdata = ctxt->blklist;
+
+  /* FIXME: prevent double analysis */
+  ctxt->analysed = 1;
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 }
 

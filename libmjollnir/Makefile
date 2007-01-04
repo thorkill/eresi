@@ -71,7 +71,8 @@ clean:
 	rm -f src/*.o src/*~ src/\#* $(NAME).a $(NAME).so $(OBJT) $(OBJM)
 
 fclean: clean
-	rm -f bin/elfThor mjollnirUnitTest libmjollnir.a libmjollnir.so
+	rm -f bin/elfThor mjollnirUnitTest $(NAME32).a $(NAME32).so \
+	$(NAME64).a $(NAME64).so
 
 .c.o:
 	$(CC) $(CFLAGS) -c $*.c -o $*.o

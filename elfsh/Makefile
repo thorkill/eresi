@@ -95,7 +95,7 @@ all64			: $(OBJ64)
 			@$(RM) rlheap.64.o # make sure we dont link this file into e2dbg
 
 clean		       :
-		       @$(RM) $(OBJ) *~ \#* *\# .\#*
+		       @$(RM) $(OBJ) *~ \#* *\# .\#* *.32.o *.64.o
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
 fclean		       : clean

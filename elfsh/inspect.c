@@ -26,24 +26,25 @@ int			cmd_inspect()
   
   /* Preliminary checks */
   obj = world.curjob->current;
-  sect = elfsh_get_section_by_name(obj,
-				   ELFSH_SECTION_NAME_CONTROL, 
-				   0, 0, 0);
-  if (!sect || !sect->altdata)
+
+  if (!mjr_blocks_get(world.mjr_session.cur))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "No usable control section : run analyse first", -1);
-  
+            "Blocks can't be restored.", -1);
+
   /* Try to find block by symbol or address */
   if ((sym = elfsh_get_metasym_by_name(world.curjob->current, 
 				       world.curjob->curcmd->param[0])))
     vaddr = sym->st_value;
   else
     vaddr = strtoul(world.curjob->curcmd->param[0], 0, 16);  
+
   if (!vaddr)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find block symbol or address", -1);
+
   name = elfsh_reverse_metasym(world.curjob->current, vaddr, &off);
   blk = mjr_block_get_by_vaddr(world.mjr_session.cur, vaddr, 1);
+
   if (!blk)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find block", -1);

@@ -441,8 +441,7 @@ echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
 echo "install : all prepareDir #mod_install "			>> Makefile
-echo "	@cp vm/elfsh32 \$(BINPATH)/ "				>> Makefile
-echo "	@cp vm/elfsh64 \$(BINPATH)/ "				>> Makefile
+echo "	@cp vm/elfsh?? \$(BINPATH)/ "	>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp libc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
@@ -464,8 +463,7 @@ echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 #echo "	@ln \$(BINPATH)/elfsh$(LOCALBITS) \$(BINPATH)/elfsh "	>> Makefile
-echo "	@chmod 755 \$(BINPATH)/elfsh32 "		        >> Makefile
-echo "	@chmod 755 \$(BINPATH)/elfsh64 "			>> Makefile
+echo "	@chmod 755 \$(BINPATH)/elfsh?? "		        >> Makefile
 echo "	@chmod 644 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
