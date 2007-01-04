@@ -803,7 +803,7 @@ void		  e2dbg_get_regvars_ia32_bsd()
 void		  e2dbg_get_regvars_ia32_sysv()
 { 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   VM_GETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   VM_GETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   VM_GETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
@@ -844,7 +844,7 @@ void		  e2dbg_set_regvars_ia32_bsd()
 void		  e2dbg_set_regvars_ia32_sysv()
 { 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   VM_SETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   VM_SETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   VM_SETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
@@ -875,7 +875,7 @@ elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
@@ -899,7 +899,7 @@ elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
 #endif
@@ -921,7 +921,7 @@ void		  e2dbg_setstep_bsd_ia32()
 void		  e2dbg_setstep_sysv_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] |= 0x100; 
 #endif
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -931,7 +931,7 @@ void		  e2dbg_setstep_sysv_ia32()
 void		  e2dbg_resetstep_sysv_ia32()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) || defined(sun)
+#if defined(__linux__) && defined(__i386__) || defined(sun)
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] &= ~0x100;
 #endif
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);

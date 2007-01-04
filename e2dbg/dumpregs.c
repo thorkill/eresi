@@ -90,7 +90,7 @@ int		cmd_dumpregs()
   vm_dumpreg("MDHI", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_MDHI]);
   vm_dumpreg("EPC", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_EPC]);
   vm_dumpreg("SR", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_SR]);
-#else
+#elif defined(__i386__)
   vm_dumpreg("EAX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   vm_dumpreg("EBX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   vm_dumpreg("ECX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
