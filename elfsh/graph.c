@@ -18,14 +18,14 @@ void		vm_write_graphent(elfshobj_t *file, int fd, mjrblock_t *cur)
   char		*col_arrow;
   elfsh_SAddr	src_offset;
   elfsh_SAddr	dst_offset;
-  
+
   /* Some preliminary checks */
   if (cur->type == CALLER_RET || cur->type == CALLER_UNKN)
     return;
   src_name = elfsh_reverse_metasym(file, cur->vaddr, &src_offset);
   if (src_name == NULL)
     src_name = ELFSH_NULL_STRING;
-  
+
   /* First process the contiguous block */
   if (cur->true)
     {
@@ -124,15 +124,9 @@ int		cmd_graph(void)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Some preliminary checks */
-  sect = elfsh_get_section_by_name(world.curjob->current,
-				   ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
-  if (!sect || !sect->altdata)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Control flow section not found : use analyse command", -1);
-  if (sect->shdr->sh_size % sizeof(mjrblock_t))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Corrupted control section : modulo-test failed", -1);
+  if (!world.mjr_session.cur->analysed)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+     "Control flow section not found : use analyse command", -1);
 
   /* Open graphviz file */
   fd = open(world.curjob->curcmd->param[0], O_RDWR | O_CREAT, 0644);

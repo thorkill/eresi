@@ -212,9 +212,18 @@ int		vm_setup(int ac, char **av)
 	}
     }
 
+  /* setup configurable parameters */
+
+  /* on.load. */
+   elfsh_config_add_item(
+      ELFSH_VMCONFIG_ONLOAD_RCONTROL,
+      ELFSH_CONFIG_TYPE_INT,
+      ELFSH_CONFIG_MODE_RW,
+      (int)1);
+
   if (!mjr_init_session(&world.mjr_session))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "mjollnir session can't be initialized.", -1);
+      "mjollnir session can't be initialized.", -1);
 
   vm_setup_hashtables();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

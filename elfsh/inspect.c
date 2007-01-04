@@ -27,9 +27,9 @@ int			cmd_inspect()
   /* Preliminary checks */
   obj = world.curjob->current;
 
-  if (!mjr_blocks_get(world.mjr_session.cur))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-            "Blocks can't be restored.", -1);
+  if (!world.mjr_session.cur->analysed)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+     "Control flow section not found : use analyse command", -1);
 
   /* Try to find block by symbol or address */
   if ((sym = elfsh_get_metasym_by_name(world.curjob->current, 

@@ -404,6 +404,9 @@ char prompt_token[512];
 #define CMD_CONFIGURE		"configure"
 
 
+/* config strings */
+#define ELFSH_VMCONFIG_ONLOAD_RCONTROL "onload.restore_control"
+
 
 /* Regx option, a module of struct s_args */
 typedef struct		s_list

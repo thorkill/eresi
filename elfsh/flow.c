@@ -68,9 +68,9 @@ int		cmd_control()
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  if (!mjr_blocks_get(world.mjr_session.cur))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-	"Blocks can't be restored.", -1);
+  if (!world.mjr_session.cur->analysed)
+   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+     "Control flow section not found : use analyse command", -1);
 
   mjr_blocks_display(world.mjr_session.cur, 1);
 

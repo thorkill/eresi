@@ -9,7 +9,6 @@
 
 
 
-
 /* Say if a block is the start of a function or not */
 int		 mjr_block_funcstart(mjrblock_t *blk) 
 {

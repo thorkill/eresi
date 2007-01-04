@@ -89,6 +89,7 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
 
   world.curjob->current = new;
 
+
   tmp = hash_get(&vars_hash, "!");
   if (!tmp)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -112,6 +113,14 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
   hash_init(&new->child_hash, 20);
   hash_init(&new->root_hash, 20);
   hash_init(&new->parent_hash, 20);
+
+  /* restore .elfsh.control */
+  if ((int)elfsh_config_get_data(ELFSH_VMCONFIG_ONLOAD_RCONTROL))
+      if (elfsh_get_section_by_name(world.curjob->current,
+                          ELFSH_SECTION_NAME_CONTROL, 0, 0, 0) &&
+          (!mjr_blocks_get(world.mjr_session.cur)))
+           ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+            "Blocks can't be restored.", -1);
 
   /* Load dependances */
   if (new->hdr->e_type == ET_EXEC)
