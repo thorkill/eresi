@@ -15,19 +15,14 @@ CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -DSHARED -DUSE_TLS \
 	-fPIC -g3 -Iinclude -I../libelfsh/include/
 NAME	= malloc-e2dbg
 
-all	: heap ex
+all	: heap
 
 heap	: $(OBJ)
 	$(AR) rc lib$(NAME).a $(OBJ)
 	$(RANLIB) lib$(NAME).a
 
-ex	: 
-	$(MAKE) -C tests all
-
 clean	:
 	rm -f $(OBJ) *~ \#* *\#
-	$(MAKE) -C tests clean
 
 fclean	: clean
 	rm -f lib$(NAME).a
-	$(MAKE) -C tests fclean
