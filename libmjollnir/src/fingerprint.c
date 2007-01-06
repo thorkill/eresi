@@ -16,14 +16,18 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (blk)
-    for (cur = blk->caller; cur; cur = cur->next)
+
+  if (blk) {
+  fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n",blk->vaddr);
+    for (cur = blk->caller; cur; cur = cur->next) {
+     fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
+        cur->vaddr,cur->type);
       if (cur->type == CALLER_CALL)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-
+    }
+  }
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 
 /* Depth First Search : forward distance fingerprinting algorithm */

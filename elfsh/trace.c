@@ -453,7 +453,6 @@ int		trace_create(const char *name, const char *optarg)
 
   //vm_output("trace: create\n\n");
   edfmt_format(world.curjob->current);
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

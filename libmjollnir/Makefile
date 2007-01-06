@@ -50,8 +50,6 @@ NAME64	= libmjollnir64
 
 all	: all32 all64
 #	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto $(LDFLAGS)
-#	@ar rc ${NAME}.a ${OBJ} 
-#	@ranlib ${NAME}.a
 
 #	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir
 # comment this out if you don't want to make unittests 
@@ -61,6 +59,7 @@ all32	: $(OBJ32)
 	$(CC) $(BITS) -shared $(OBJ32) -o $(NAME32).so -lcrypto $(LDFLAGS32)
 	@ar rc ${NAME32}.a ${OBJ32} 
 	@ranlib ${NAME32}.a
+#	$(CC) $(CFLAGS32) $(LDFLAGS32) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir32
 
 all64	: $(OBJ64)
 	$(CC) $(BITS) -shared $(OBJ64) -o $(NAME64).so -lcrypto $(LDFLAGS64)
@@ -68,7 +67,8 @@ all64	: $(OBJ64)
 	@ranlib ${NAME64}.a
 
 clean:
-	rm -f src/*.o src/*~ src/\#* $(NAME).a $(NAME).so $(OBJT) $(OBJM)
+	rm -f src/*.o src/*~ src/\#* \
+	$(NAME)??.a $(NAME)??.so $(OBJT) $(OBJM)
 
 fclean: clean
 	rm -f bin/elfThor mjollnirUnitTest $(NAME32).a $(NAME32).so \

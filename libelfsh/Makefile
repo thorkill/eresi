@@ -54,8 +54,6 @@ all32			: $(OBJ32)
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 
-
-
 dumpregs.o:		dumpregs.c
 			$(CC) $(CFLAGS) -fomit-frame-pointer $< -o $@ -c
 

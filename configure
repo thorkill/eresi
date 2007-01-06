@@ -38,7 +38,6 @@ if [ $CHOSENBIT = "1" ]; then
 fi
 echo  " [*] Enabling ELF64/ELF32 support"
 BITS="-DELFSH64"
-echo  "BITS		= -DELFSH64"		>> $CONFIGFILE
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=""
@@ -54,7 +53,6 @@ if [ $CHOSENBIT = "1" ]; then
 fi
 echo  " [*] Enabling ELF64 support"
 BITS="-DELFSH64"
-echo  "BITS		= -DELFSH64"		>> $CONFIGFILE
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all64
@@ -70,7 +68,7 @@ if [ $CHOSENBIT = "1" ]; then
 fi
 echo  " [*] Enabling ELF32 support"
 BITS="-DELFSH32"
-echo  "BITS = -DELFSH32"		>> $CONFIGFILE
+
 echo  "//#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all32
@@ -81,7 +79,6 @@ echo  " [*] Enable distributed ELFsh"
 ELFSHNET="1"
 echo  "LDDUMPOPT		= -ldumpelfsh"		>> $CONFIGFILE
 BITS=$BITS" -DELFSHNET"
-echo "BITS = " $BITS			>> $CONFIGFILE
 ;;
 
 --enable-readline*)
@@ -344,6 +341,9 @@ echo  " [*] Enabling libasm support"
 echo  "LDASMOPT	= -lasm"		>> $CONFIGFILE
 
 echo "LPTHREAD=	$LPTHREAD"		>> $CONFIGFILE
+
+## Save BITS=
+echo "BITS = " $BITS			>> $CONFIGFILE
 
 #case "$(uname -m)" in
 #i686)

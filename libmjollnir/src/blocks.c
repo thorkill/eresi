@@ -123,7 +123,8 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
 
 #if __DEBUG_BLOCKS__
-      fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s\n",name);
+      fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s/%d\n",name,
+        curbloc->type);
 #endif
 
       hash_add(&ctxt->blkhash, (char *) _vaddr2str(curbloc->vaddr), curbloc);

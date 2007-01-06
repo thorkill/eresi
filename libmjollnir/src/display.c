@@ -9,7 +9,6 @@
 */
 #include "libmjollnir.h"
 
-
 /* Some constant data */
 char	*call_type_str[] = 
 {
@@ -19,7 +18,6 @@ char	*call_type_str[] =
   "RET",
   "UNKN"
 };
-
 
 /* Print block */
 void		mjr_block_dump(mjrblock_t *b) 

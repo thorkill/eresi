@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.8 2007-01-02 06:21:23 may Exp $
+ * $Id: function.c,v 1.9 2007-01-06 01:46:57 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -99,8 +99,11 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
 
 
 /* Create a function in the original MJR format */
-mjrfunc_t	*mjr_function_create(mjrcontext_t *c, char *name, elfsh_Addr addr, 
-				     u_int size, mjrblock_t *e)
+mjrfunc_t	*mjr_function_create(mjrcontext_t *c, 
+					char *name, 
+					elfsh_Addr addr, 
+				        u_int size, 
+					mjrblock_t *e)
 {
  mjrfunc_t	*fun;
  

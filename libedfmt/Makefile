@@ -15,21 +15,14 @@ SRC			= edfmt.c dwarf2.c
 OBJ			= $(SRC:.c=.o)
 OBJ32	 		= ${SRC:.c=.32.o}
 OBJ64	 		= ${SRC:.c=.64.o}
-NAME			= libedfmt
 NAME32			= libedfmt32
 NAME64			= libedfmt64
-
-CFLAGS			+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
-			-I../libelfsh/include/ -I../libc/include/ -DELFSH_INTERN
 
 CFLAGS32		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/ -I../libc/include/ -DELFSH_INTERN -DELFSH32
 
 CFLAGS64		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/ -I../libc/include/ -DELFSH_INTERN -DELFSH64
-
-LDFLAGS			+= -L../libaspect/ -laspect -L../libelfsh/ -lelfsh \
-			-L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg
 
 LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 \
 			-L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg
@@ -38,10 +31,6 @@ LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
 			-L../libc/ -lcelfsh64 -L../libmalloc/ -lmalloc-e2dbg
 
 all			: all32 all64
-#all			: $(OBJ)
-#			@$(LD) $(LDFLAGS) -shared $(OBJ) -o $(NAME).so
-#			@$(AR) $(NAME).a $(OBJ)
-#			@$(RANLIB) $(NAME).a
 
 all32			: $(OBJ32)
 			@$(LD) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so

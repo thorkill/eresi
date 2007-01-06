@@ -136,10 +136,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
 
-#if __DEBUG_FLOW__
     default:
+#if __DEBUG_FLOW__
 	fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x DEFAULT %d\n",curvaddr, curins->type);
 #endif
+    break;
 
     }
 

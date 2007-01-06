@@ -25,14 +25,6 @@ DBGNAME			= e2dbg
 DBGNAME32		= e2dbg32
 DBGNAME64		= e2dbg64
 
-CFLAGS			+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
-			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
-			-I../libui/include/ -I../libmjollnir/include/ 		 \
-			-I../libaspect/include					 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
-			$(BITS)
-
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
 			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
@@ -48,14 +40,6 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libaspect/include					 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DELFSH64
-
-LDFLAGS			+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh    \
-			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
-			-L../libaspect/ -laspect -L../librevm/                     \
-			-L../libmjollnir -lmjollnir -g3 -L../libc/ -lcelfsh        \
-			-L../libui/ -lui $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)       \
-			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)       \
-			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 LDFLAGS32		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh32  \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
@@ -74,9 +58,6 @@ LDFLAGS64		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh64  \
 			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 all			: all32 all64
-
-#all                     : ${OBJ}
-#			$(CC) $(OBJ) $(VMOBJ) $(LDFLAGS) -o $(DBGNAME).so -shared 
 
 all32			: ${OBJ32}
 			$(CC) $(OBJ32) $(VMOBJ32) $(LDFLAGS32) -o $(DBGNAME32).so  \

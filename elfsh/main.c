@@ -219,7 +219,7 @@ int		vm_setup(int ac, char **av)
       ELFSH_VMCONFIG_ONLOAD_RCONTROL,
       ELFSH_CONFIG_TYPE_INT,
       ELFSH_CONFIG_MODE_RW,
-      (int)1);
+      (void *)1);
 
   if (!mjr_init_session(&world.mjr_session))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,

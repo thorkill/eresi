@@ -21,11 +21,6 @@ NAME32			= libaspect32
 NAME64			= libaspect64
 
 all			: all32 all64
-#all			: $(OBJ)
-#			@$(LD) -L../libc/ -lcelfsh -L../libmalloc/ -lmalloc-e2dbg \
-#			-shared $(OBJ) -o $(NAME).so
-#			@$(AR) $(NAME).a $(OBJ)
-#			@$(RANLIB) $(NAME).a
 
 all32			: $(OBJ32)
 			@$(LD) -L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg \

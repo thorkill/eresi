@@ -14,13 +14,6 @@ NAME	 	= libui
 NAME32	 	= libui32
 NAME64	 	= libui64
 
-CFLAGS		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
-		-I../libelfsh/include/ -I../libc/include/ -I../libdump/include/ \
-		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
-		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
-		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) $(BITS) 		\
-		$(NCURSESLNOPT) $(READLNOPT)
-
 CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../libc/include/ -I../libdump/include/ \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
@@ -34,12 +27,6 @@ CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DELFSH64		\
 		$(NCURSESLNOPT) $(READLNOPT)
-
-LDFLAGS		+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../libc -lcelfsh -L../libasm/ -lasm 		\
-		-L../libmalloc -lmalloc-e2dbg -g3 $(LDASMOPT) 			\
-		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
-		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS32	+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ 	\
 		$(LPTHREAD) -L../libc -lcelfsh32 -L../libasm/ -lasm 		\
@@ -58,12 +45,7 @@ ETAGS 		= etags
 AR		= ar rc
 LD		= gcc
 
-all2		: all32 all64
-
-all		: $(OBJ)
-		@$(LD) $(LDFLAGS) $(BITS) -shared $(OBJ) -o $(NAME).so
-		@$(AR) $(NAME).a $(OBJ)
-		@$(RANLIB) $(NAME).a
+all		: all32 all64
 
 all32		: $(OBJ32)
 		@$(LD) $(LDFLAGS32) $(BITS) -shared $(OBJ32) -o $(NAME32).so
