@@ -169,6 +169,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
 **  804933e:       89 15 c0 e2 04 08       mov    %edx,0x804e2c0
 **  ...
 **  804936c:       ff d2                   call   *%edx
+**
+** FIXME : this function must be ported to the SPARC architecture
 */
 elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 {
@@ -247,6 +249,9 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 ** If resolved to a virtual address, a new block is inserted.
 **
 ** -> Return destination address inserted or -1 if unresolved
+**
+** FIXME: this function must be tested on the SPARC architecture
+**
 */
 int		mjr_insert_destaddr(mjrcontext_t *context)
 {

@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 /* Step command */
@@ -24,6 +24,8 @@ int		cmd_step()
 			"You must be in a SIGTRAP handler to step", -1);
     }
 
+  /* Also maintain a stepping flag in the world struct to keep 
+     modelisation independance */
   if (e2dbgworld.curthread->step)
     {
       if (e2dbg_resetstep() < 0)

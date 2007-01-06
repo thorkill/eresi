@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 
@@ -48,7 +48,7 @@ int		cmd_stack()
 {
   char		*param;
   elfsh_Addr	  size;
-  elfshpath_t	*ssp;
+  revmobj_t	*ssp;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

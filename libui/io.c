@@ -15,7 +15,7 @@ int		vm_output_bcast(char *str)
   hashent_t	*actual;
   int		index;
   int		ret = 0;
-  elfshjob_t	*old;
+  revmjob_t	*old;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -34,7 +34,7 @@ int		vm_output_bcast(char *str)
 	      if (!strcmp(actual->key, "local")    ||
 		  !strcmp(actual->key, "net_init") ||
 		  !strncmp(actual->key, "DUMP", 4) ||
-		  !((elfshjob_t *)actual->data)->active);
+		  !((revmjob_t *)actual->data)->active);
 	      continue;
 
 	      world.curjob = actual->data;
@@ -370,15 +370,15 @@ char		*vm_stdinput()
 int		vm_initio()
 {
   static int	done = 0;
-  elfshjob_t	*initial;
+  revmjob_t	*initial;
 
   ELFSH_NOPROFILE_IN();
   if (done)
     ELFSH_NOPROFILE_ROUT(0);
   done = 1;
 
-  XALLOC(initial, sizeof(elfshjob_t), -1);
-  memset(initial, 0, sizeof(elfshjob_t));
+  XALLOC(initial, sizeof(revmjob_t), -1);
+  memset(initial, 0, sizeof(revmjob_t));
   initial->io.type      = ELFSH_IOSTD;
   initial->io.input_fd  = 0;
   initial->io.input     = vm_stdinput;
@@ -408,7 +408,7 @@ int		vm_initio()
 int             elfsh_getmaxfd()
 {
   int           ret;
-  elfshjob_t    *serv;
+  revmjob_t    *serv;
 
 #if  defined(ELFSHNET)
   int           index;
@@ -432,7 +432,7 @@ int             elfsh_getmaxfd()
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  //	  if (!((elfshjob_t *) actual->data)->active)
+	  //	  if (!((revmjob_t *) actual->data)->active)
 	  //	    continue;
 
 #if __DEBUG_NETWORK__
@@ -454,18 +454,18 @@ int             elfsh_getmaxfd()
            actual = actual->next)
         {
 
-	  if (!((elfshjob_t *) actual->data)->active)
+	  if (!((revmjob_t *) actual->data)->active)
 	    continue;
 
 #if __DEBUG_NETWORK__
           fprintf(stderr,
 		  "[DEBUG NETWORK] Socket [%u] key = %10s ; next = %p\n",
-		  ((elfshjob_t *) actual->data)->sock.socket,
+		  ((revmjob_t *) actual->data)->sock.socket,
 		  actual->key, actual->next);
 #endif
 
-          if (((elfshjob_t *) actual->data)->sock.socket > ret)
-            ret = ((elfshjob_t *) actual->data)->sock.socket;
+          if (((revmjob_t *) actual->data)->sock.socket > ret)
+            ret = ((revmjob_t *) actual->data)->sock.socket;
         }
     }
 #endif
@@ -490,7 +490,7 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  //	  if (!((elfshjob_t *) actual->data)->active)
+	  //	  if (!((revmjob_t *) actual->data)->active)
 	  //	    continue;
 
 #if __DEBUG_NETWORK__
@@ -510,24 +510,24 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
            actual = actual->next)
         {
 
-	  // Please elfshjob_t *cur here instead of casting so much times
-	  if (!((elfshjob_t *) actual->data)->active)
+	  // Please revmjob_t *cur here instead of casting so much times
+	  if (!((revmjob_t *) actual->data)->active)
 	    continue;
 
 #if _DEBUG_NETWORK__
 	  fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
-		  ((elfshjob_t *)actual->data)->sock.socket);
+		  ((revmjob_t *)actual->data)->sock.socket);
 #endif
 #if defined(ELFSHNET)
-	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IODUMP)
+	  if (((revmjob_t *) actual->data)->io.type == ELFSH_IODUMP)
 	    continue;
 
-	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IONET)
-	    FD_SET(((elfshjob_t *) actual->data)->sock.socket, sel_sockets);
+	  if (((revmjob_t *) actual->data)->io.type == ELFSH_IONET)
+	    FD_SET(((revmjob_t *) actual->data)->sock.socket, sel_sockets);
 #endif
 
-	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IOSTD)
-	    FD_SET(((elfshjob_t *) actual->data)->io.input_fd, sel_sockets);
+	  if (((revmjob_t *) actual->data)->io.type == ELFSH_IOSTD)
+	    FD_SET(((revmjob_t *) actual->data)->io.input_fd, sel_sockets);
 	}
 
     }
@@ -537,7 +537,7 @@ int		elfsh_prepare4select(fd_set *sel_sockets)
 /* Set IO to the choosen socket */
 int			vm_socket_getnew()
 {
-  elfshjob_t		*cur;
+  revmjob_t		*cur;
   hashent_t		*actual;
   int			index;
 
@@ -547,7 +547,7 @@ int			vm_socket_getnew()
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  cur = (elfshjob_t *) actual->data;
+	  cur = (revmjob_t *) actual->data;
 	  if (!cur || !cur->active)
 	    continue;
 
@@ -588,11 +588,11 @@ int                   vm_clean_jobs()
            actual = actual->next)
         {
 
-	  switch (((elfshjob_t *) actual->data)->io.type)
+	  switch (((revmjob_t *) actual->data)->io.type)
 	    {
 	    case ELFSH_IODUMP:
 #if defined(ELFSHNET)
-	      if (((elfshjob_t *) actual->data)->io.new == 0)
+	      if (((revmjob_t *) actual->data)->io.new == 0)
 		{
 #if __DEBUG_NETWORK__
 		  printf("CLEAN : %s\n", actual->key);
@@ -603,8 +603,8 @@ int                   vm_clean_jobs()
 
 		  /* XXX can we free io.pkt ?? */
 
-		  //		  dump_free(((elfshjob_t *) actual->data)->io.pkt);
-		  //		  XFREE(((elfshjob_t *) actual->data));
+		  //		  dump_free(((revmjob_t *) actual->data)->io.pkt);
+		  //		  XFREE(((revmjob_t *) actual->data));
 		  //		  hash_del(&world.jobs, actual->key);
 		}
 #endif
@@ -618,7 +618,7 @@ int                   vm_clean_jobs()
 }
 
 /* Return the current local job */
-elfshjob_t		*vm_get_curlocaljob()
+revmjob_t		*vm_get_curlocaljob()
 {
   hashent_t		*actual;
   int			index;
@@ -631,10 +631,10 @@ elfshjob_t		*vm_get_curlocaljob()
            actual != NULL && actual->key != NULL;
            actual = actual->next)
         {
-	  if (!((elfshjob_t *) actual->data)->active)
+	  if (!((revmjob_t *) actual->data)->active)
 	    continue;
 
-	  if (((elfshjob_t *) actual->data)->io.type == ELFSH_IOSTD)
+	  if (((revmjob_t *) actual->data)->io.type == ELFSH_IOSTD)
 	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		   actual->data);
 
@@ -650,7 +650,7 @@ int                     vm_select()
   fd_set		sel_sockets;
   int                   max_fd;
   int                   cont;
-  elfshjob_t            *init;
+  revmjob_t            *init;
   int			err;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -822,13 +822,13 @@ void    vm_ln_handler(char *c)
 
 
 /* Change the Input file */
-void	vm_setinput(elfshjob_t *j, int fd)
+void	vm_setinput(revmjob_t *j, int fd)
 {
   j->io.input_fd = fd;
 }
 
 /* Change the Input file */
-void	vm_setoutput(elfshjob_t *j, int fd)
+void	vm_setoutput(revmjob_t *j, int fd)
 {
   j->io.output_fd = fd;
 }

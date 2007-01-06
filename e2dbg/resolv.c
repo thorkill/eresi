@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 /* Reference symbol for the debugger */
 int			reference = 42;
@@ -745,9 +745,9 @@ int		e2dbg_dlsym_init()
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
   hash_init(&e2dbgworld.threads, 29);
+  hash_init(&e2dbgworld.bp, 51);
 
   write(1, " [D] e2dbg_dlsym_init FINISHED\n", 31);
-
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 

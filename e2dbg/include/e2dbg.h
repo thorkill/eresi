@@ -5,9 +5,10 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mm
 **
 */
-
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
+
+#include "revm.h"
 
 #define		__DEBUG_E2DBG__		0
 #define		__DEBUG_MUTEX__		1
@@ -16,11 +17,8 @@
 #define		__DEBUG_LINKMAP__	0
 #define		__DEBUG_THREADS__	0
 
-#define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
-#define		E2DBG_ARGV0		"e2dbg"
 #define		E2DBG_PROFILER_BUFLEN	256
-#define		E2DBG_SCRIPT_CONTINUE	1
 
 #define		E2DBG_HOOK_GETREGS	"hook_getregs"
 #define		E2DBG_HOOK_SETREGS	"hook_setregs"
@@ -79,8 +77,6 @@
 #define		CMD_STEP		"step"
 #define		CMD_START		"start"
 #define		CMD_DELETE		"delete"
-#define		CMD_CONTINUE		"continue"
-#define		CMD_CONTINUE2		"cont"
 #define		CMD_RUN			"run"
 #define		CMD_DISPLAY		"display"
 #define		CMD_UNDISPLAY		"undisplay"
@@ -155,7 +151,7 @@ do							\
 #define			VM_GETREG(name, val)		\
 do							\
 {							\
-  elfshpath_t		*r;				\
+  revmobj_t		*r;				\
   r = hash_get(&vars_hash, name);			\
   if (!r)						\
     {							\
@@ -171,7 +167,7 @@ while (0)
 #define			VM_SETREG(name, val)		\
 do							\
 {							\
-  elfshpath_t		*r;				\
+  revmobj_t		*r;				\
   r = hash_get(&vars_hash, name);			\
   if (!r)						\
     {							\
@@ -264,7 +260,7 @@ typedef struct		s_e2dbgworld
   hash_t		threads;			/* Threads hash table */
   u_char		sourcing;			/* We are executing a debugger script */
   u_int			dbgpid;				/* Thread ID for the debugger */
-  e2dbgcontext_t	dbgcontext;			/* Current e2dbg scripting context */
+  //e2dbgcontext_t	dbgcontext;			/* Current e2dbg scripting context */
   e2dbgsyms_t		syms;				/* Resolved symbol informations */
 
   /* Display commands memory */
@@ -349,7 +345,7 @@ elfshobj_t	*vm_get_parent_object(elfsh_Addr addr);
 int		vm_display(char **cmd, u_int nbr);
 char		*vm_get_prompt();
 char		*vm_get_mode_name();
-int		vm_restore_dbgcontext(int, char, elfshargv_t*, void *, char **, char*);
+int		vm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
 int		vm_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*vm_lookup_bp(char *name);
 

@@ -5,7 +5,7 @@
  *
  * Started Fri Oct  7 21:05:26 CEST 2005 crew
  */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 /* Debugger Thread specific information */

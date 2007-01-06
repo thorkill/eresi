@@ -8,14 +8,14 @@
 
 
 /* Create a new job structure */
-elfshjob_t	*vm_clone_job(elfshjob_t      *job)
+revmjob_t	*vm_clone_job(revmjob_t      *job)
 {
-  elfshjob_t    *new;
+  revmjob_t    *new;
   int		i;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(new, sizeof(elfshjob_t), NULL);
-  memcpy(new, job, sizeof(elfshjob_t));
+  XALLOC(new, sizeof(revmjob_t), NULL);
+  memcpy(new, job, sizeof(revmjob_t));
   bzero(&new->loaded, sizeof(hash_t));
   bzero(&new->dbgloaded, sizeof(hash_t));
   hash_init(&new->loaded, 51);
@@ -39,7 +39,7 @@ elfshjob_t	*vm_clone_job(elfshjob_t      *job)
 
 
 /* Switch of current job */
-void		vm_switch_job(elfshjob_t      *job)
+void		vm_switch_job(revmjob_t      *job)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -85,7 +85,7 @@ int		vm_valid_workspace(char *name)
 
 
 /* Is this workspace the current one ? */
-int		vm_own_job(elfshjob_t *job)
+int		vm_own_job(revmjob_t *job)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

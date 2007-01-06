@@ -4,7 +4,7 @@
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 ** 
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 

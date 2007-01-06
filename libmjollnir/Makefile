@@ -19,29 +19,29 @@ OBJT 	= elfThor
 SRCUT 	= tools/mjollnirUnitTest.c
 OBJUT 	= mjollnirUnitTest
 
-CFLAGS	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
+CFLAGS	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/        \
 	-I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
 	-Wall $(BITS) -DELFSH_INTERN
 
-CFLAGS32	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
-		-I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-		-Wall -DELFSH32 -DELFSH_INTERN
+CFLAGS32 = -fPIC -I./include/ -I../libc/include/ -I../libasm/include/        \
+	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
+	 -Wall -DELFSH32 -DELFSH_INTERN
 
-CFLAGS64	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ \
-		-I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-		-Wall -DELFSH64 -DELFSH_INTERN
+CFLAGS64 = -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ 	     \
+	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
+	 -Wall -DELFSH64 -DELFSH_INTERN
 
-LDFLAGS = -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-	 -L../libaspect/ -lelfsh -lasm -lcelfsh  \
-	  -laspect -lmalloc-e2dbg $(LPTHREAD)
+LDFLAGS = -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc      \
+	  -L../libaspect/ -lelfsh -lasm -lcelfsh -laspect -lmalloc-e2dbg  \
+	  $(LPTHREAD)
 
 LDFLAGS32 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-		-L../libaspect/ -lelfsh32 -lasm -lcelfsh32  \
-		-laspect32 -lmalloc-e2dbg $(LPTHREAD)
+		-L../libaspect/ -lelfsh32 -lasm -lcelfsh32 -laspect32     \
+		-lmalloc-e2dbg $(LPTHREAD)
 
 LDFLAGS64 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-		-L../libaspect/ -lelfsh64 -lasm -lcelfsh64  \
-		-laspect64 -lmalloc-e2dbg $(LPTHREAD)
+		-L../libaspect/ -lelfsh64 -lasm -lcelfsh64  -laspect64    \
+		-lmalloc-e2dbg $(LPTHREAD)
 
 CC	= gcc -ggdb -g3
 NAME	= libmjollnir
@@ -67,12 +67,11 @@ all64	: $(OBJ64)
 	@ranlib ${NAME64}.a
 
 clean:
-	rm -f src/*.o src/*~ src/\#* \
-	$(NAME)??.a $(NAME)??.so $(OBJT) $(OBJM)
+	rm -f $(OBJ) $(OBJ32) $(OBJ64) src/*~ src/\#* \
+	include/\#* include/*~ $(OBJT) $(OBJM)
 
 fclean: clean
-	rm -f bin/elfThor mjollnirUnitTest $(NAME32).a $(NAME32).so \
-	$(NAME64).a $(NAME64).so
+	rm -f bin/elfThor mjollnirUnitTest *.a *.so *~
 
 .c.o:
 	$(CC) $(CFLAGS) -c $*.c -o $*.o

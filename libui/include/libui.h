@@ -7,7 +7,7 @@
 #ifndef __LIBUI_H__
  #define __LIBUI_H__
 
-#include <elfsh.h>
+#include "revm.h"
 #include "libui-color.h"
 
 #define	VM_OUTPUT(str)						\

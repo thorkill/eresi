@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 /* Dump the linkmap */

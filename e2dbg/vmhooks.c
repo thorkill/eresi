@@ -10,7 +10,7 @@
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
 ** Modified  Thu Dec 28 04:28:00 2006 mayhem
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 /* Void handlers for the 2 hooks */

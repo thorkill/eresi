@@ -5,7 +5,7 @@
 ** 
 ** Last update Wed Oct 11 18:22:59 2005 mayhem
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 

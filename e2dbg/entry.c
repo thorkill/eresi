@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 

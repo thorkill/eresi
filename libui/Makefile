@@ -19,14 +19,14 @@ CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DELFSH32		\
-		$(NCURSESLNOPT) $(READLNOPT)
+		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../libc/include/ -I../libdump/include/ \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DELFSH64		\
-		$(NCURSESLNOPT) $(READLNOPT)
+		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32	+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ 	\
 		$(LPTHREAD) -L../libc -lcelfsh32 -L../libasm/ -lasm 		\
@@ -58,17 +58,15 @@ all64		: $(OBJ64)
 		@$(RANLIB) $(NAME64).a
 
 clean		: 
-		@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \
-		include/*~ include/.\#*
+		@$(RM) \#* *\# *~ .\#* include/\#* include/*\#  \
+		$(OBJ) $(OBJ32) $(OBJ64) include/*~ include/.\#*
 
 tags		:
 		@$(ETAGS) -a *.c include/*.h *.c
 		@echo TAGS generated succesfully
 
 fclean		: clean
-		@$(RM) $(NAME).so $(NAME).a
-		@$(RM) $(NAME32).so $(NAME32).a
-		@$(RM) $(NAME64).so $(NAME64).a
+		@$(RM) *.so *.a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

@@ -1,3 +1,0 @@
-ld:e2dbg_test.o:1: ignoring invalid character `\177' in script
-ld: unrecognised keyword in MRI style script 'ELF'
-make: *** [et_rel] Error 1

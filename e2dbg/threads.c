@@ -5,7 +5,7 @@
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 #include <pthread.h>
 
 

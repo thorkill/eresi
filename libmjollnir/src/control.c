@@ -52,7 +52,8 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 	      break;
 	    case ASM_PUSH:
 	      arch_bin = MJR_BIN_FREEBSD;
-	      sym = elfsh_get_metasym_by_name(context->obj, ELFSH_SECTION_NAME_INIT);
+	      sym = elfsh_get_metasym_by_name(context->obj, 
+					      ELFSH_SECTION_NAME_INIT);
 	      init_addr = sym->st_value;
 	      printf(" [*] locating call to .init: %lx\n", 
 		     (unsigned long) init_addr);
@@ -108,7 +109,6 @@ int			mjr_trace_control(mjrcontext_t	*context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *ins, 
 					  elfsh_Addr	vaddr)
-					  
 {
   int			ilen;
   int			ret;
@@ -117,7 +117,8 @@ int			mjr_trace_control(mjrcontext_t	*context,
   /* Initialy enter here */
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* If the last instrution was a jmp/call/ret, curblock will be NULL here */
+  /* If last instr was a jmp/call/ret, or if we are at entry point,
+  ** curblock will be NULL here */
   if (!context->curblock) 
     {
 

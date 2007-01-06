@@ -57,14 +57,14 @@ all32			: $(OBJ32)
 dumpregs.o:		dumpregs.c
 			$(CC) $(CFLAGS) -fomit-frame-pointer $< -o $@ -c
 
-
 clean			: 
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \
-			include/*~ include/.\#*
+			include/*~ include/.\#* include/libelfsh/\#*	    \
+			include/libelfsh/*\# include/libelfsh/*~            \
+			include/libelfsh/.\#*
 
 fclean			: clean
-			@$(RM) $(NAME).so $(NAME).a $(NAME32).so $(NAME32).a \
-			$(NAME64).so $(NAME64).a
+			@$(RM) *.so *.a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

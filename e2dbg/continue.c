@@ -4,7 +4,7 @@
 ** The continue command in e2dbg
 **
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 /* (re)start a process in e2dbg */
 void		e2dbg_start_proc()

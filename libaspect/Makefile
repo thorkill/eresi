@@ -35,13 +35,11 @@ all64			: $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 
 clean			: 
-			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \
-			include/*~ include/.\#*
+			@$(RM) \#* *\# *~ $(OBJ) $(OBJ32) $(OBJ64) .\#* include/\#* \
+			include/*\# include/*~ include/.\#*
 
 fclean			: clean
-			@$(RM) $(NAME).so $(NAME).a
-			@$(RM) $(NAME32).so $(NAME32).a
-			@$(RM) $(NAME64).so $(NAME64).a
+			@$(RM) *.so *.a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

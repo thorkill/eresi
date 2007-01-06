@@ -61,7 +61,7 @@ static void		__strip_group_char(char *str, char s, char e)
 static void		logtofile(char *str)
 {
   
-  elfshpath_t		*stripvar;
+  revmobj_t		*stripvar;
   u_int			len;
 
   ELFSH_NOPROFILE_IN();

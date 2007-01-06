@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 */
-#include "elfsh.h"
+#include "e2dbg.h"
 
 
 
@@ -76,7 +76,7 @@ void		vm_print_display()
 int		vm_display(char **cmd, u_int nbr)
 {
   int		idx;
-  elfshargv_t	*cur;
+  revmargv_t	*cur;
   char		*str;
   char		buf[BUFSIZ];
 
