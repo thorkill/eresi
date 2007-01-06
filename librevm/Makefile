@@ -15,27 +15,19 @@ NAME			= librevm
 NAME32			= librevm32
 NAME64			= librevm64
 
-LDFLAGS			+= -L../libelfsh/ -lelfsh -L../libdump/ -L/usr/pkg/lib/   \
-			-L../libmjollnir/ -lmjollnir $(LPTHREAD) -L../libc 	  \
-			-lcelfsh -L../libasm/ -lasm -L../libui/ -lui -g3 	  \
-			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect -lmalloc-e2dbg $(LDMJOLLNIR)     \
-			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
-			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
-
 LDFLAGS32		+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ \
-			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../libc 	  \
+			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../elibc 	  \
 			-lcelfsh32 -L../libasm/ -lasm -L../libui/ -lui32 -g3 	  \
-			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect32 -lmalloc-e2dbg $(LDMJOLLNIR)   \
+			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
-			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../libc 	  \
+			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
-			$(LDASMOPT) -L../libmalloc -L../libmjollnir/ 		  \
-			-L../libaspect/ -laspect64 -lmalloc-e2dbg $(LDMJOLLNIR)   \
+			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 

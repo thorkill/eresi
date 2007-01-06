@@ -21,7 +21,7 @@ DBGNAME64		= e2dbg64
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
+			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
@@ -29,26 +29,26 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../vm/include/ -I../libc/include/ \
+			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DELFSH64
 
-LDFLAGS32		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh32  \
-			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
-			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32          \
-			-L../libmjollnir -lmjollnir32 -g3 -L../libc/ -lcelfsh32    \
-			-L../libui/ -lui32 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)     \
-			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH32 $(EXTRAOPT)     \
+LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
+			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
+			-L../libmjollnir -lmjollnir32 -g3 -L../elibc/ -lcelfsh32    \
+			-L../libui/ -lui32 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)      \
+			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH32 $(EXTRAOPT)      \
 			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
-LDFLAGS64		+= -L../libmalloc -lmalloc-e2dbg -L../libelfsh/ -lelfsh64  \
-			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm           \
-			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64          \
-			-L../libmjollnir -lmjollnir64 -g3 -L../libc/ -lcelfsh64    \
-			-L../libui/ -lui64 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)     \
-			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH64 $(EXTRAOPT)     \
+LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
+			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
+			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64           \
+			-L../libmjollnir -lmjollnir64 -g3 -L../elibc/ -lcelfsh64    \
+			-L../libui/ -lui64 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)      \
+			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH64 $(EXTRAOPT)      \
 			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 all			: all32 all64

@@ -29,14 +29,14 @@ CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32	+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../libc -lcelfsh32 -L../libasm/ -lasm 		\
-		-L../libmalloc -lmalloc-e2dbg -g3 $(LDASMOPT) 			\
+		$(LPTHREAD) -L../elibc -lcelfsh32 -L../libasm/ -lasm 		\
+		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64	+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../libc -lcelfsh64 -L../libasm/ -lasm 		\
-		-L../libmalloc -lmalloc-e2dbg -g3 $(LDASMOPT) 			\
+		$(LPTHREAD) -L../elibc -lcelfsh64 -L../libasm/ -lasm 		\
+		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 

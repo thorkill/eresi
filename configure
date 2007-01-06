@@ -385,11 +385,11 @@ echo " "							>> Makefile
 echo "all     : world modules tags"				>> Makefile
 echo "world   : "						>> Makefile
 echo "	@echo 'Building e2dbg-libc ..' "			>> Makefile
-echo "	@cd libc && \$(MAKE) \$(BUILD_TARGET)"			>> Makefile
+echo "	@cd elibc && \$(MAKE) \$(BUILD_TARGET)"			>> Makefile
 echo "	@echo 'Libc-elfsh has been built successfully.' "	>> Makefile
-echo "	@echo 'Building e2dbg-libmalloc..' "			>> Makefile
-echo "	@cd libmalloc && \$(MAKE) "				>> Makefile
-echo "	@echo 'Libmalloc-elfsh has been built successfully.' "	>> Makefile
+echo "	@echo 'Building liballocproxy ..' "			>> Makefile
+echo "	@cd liballocproxy && \$(MAKE) "				>> Makefile
+echo "	@echo 'Liballoc-proxy has been built successfully.' "	>> Makefile
 echo "	@echo 'Building libaspect..' "			        >> Makefile
 echo "	@cd libaspect && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libaspect has been built successfully.' "	>> Makefile
@@ -444,9 +444,9 @@ echo " "							>> Makefile
 echo "install : all prepareDir #mod_install "			>> Makefile
 echo "	@cp vm/elfsh?? \$(BINPATH)/ "	>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
-echo "	@cp libc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
+echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libmalloc/libmalloc-e2dbg.a \$(LIBPATH) "		>> Makefile
+echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
@@ -461,7 +461,7 @@ echo "	@cp libaspect/include/*.h \$(INCPATH)"		        >> Makefile
 echo "	@cp librevm/include/*.h \$(INCPATH)"		        >> Makefile
 echo "	@cp libedfmt/include/*.h \$(INCPATH) "			>> Makefile
 echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
-echo "	@cp libc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
+echo "	@cp elibc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
@@ -515,7 +515,7 @@ echo "	rm -f  \$(BINPATH)/e2dbg "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg.a "			>> Makefile
+echo "	rm -f  \$(LIBPATH)/liballocproxy.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libcelfsh*.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libmjollnir*"			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libaspect*"			        >> Makefile
@@ -542,14 +542,14 @@ echo "	@echo 'Cleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libc	     && \$(MAKE) -s clean "			>> Makefile
+echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libedfmt   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libaspect && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s clean "		        >> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libmalloc && \$(MAKE) -s clean "			>> Makefile
+echo "	cd liballocproxy && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
@@ -560,12 +560,12 @@ echo "	@echo 'Fcleaning tree ...' "				>> Makefile
 echo "	cd vm        && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libc      && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd elibc      && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libedfmt   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libaspect && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libmalloc && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd liballocproxy && \$(MAKE) -s fclean "	        >> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s fclean "		        >> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s fclean "			>> Makefile
@@ -587,15 +587,15 @@ echo "	@echo Doing tags ... "					>> Makefile
 if [ "$ETAGS" = "1" ]; then
 echo "	@\$(ETAGS) vm/*.c vm/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
-echo "	modules/*.c libmalloc/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
-echo "	libasm/src/*.c libmalloc/include/*.h \\"		>> Makefile
+echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
+echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
 echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile
 echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
-echo "  libc/include/*.h libc/*.c"			        >> Makefile
+echo "  elibc/include/*.h elibc/*.c"			        >> Makefile
 echo " "							>> Makefile
 fi
 
@@ -604,7 +604,7 @@ echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
 echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
 echo "  libasm/src/arch/ia32/*.c \\"    			>> Makefile
 echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
-echo "	libc/include/*.h libc/*.c\\"				>> Makefile
+echo "	elibc/include/*.h elibc/*.c\\"				>> Makefile
 echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
 echo "  libelfsh/include/*.h \\"    				>> Makefile
 echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile
@@ -612,7 +612,7 @@ echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "  libelfsh/include/libelfsh/*.h\\"    			>> Makefile
 echo "  libelfsh/*.c \\" 					>> Makefile
-echo "  libmalloc/*.c libmalloc/include/*.h \\" 		>> Makefile
+echo "  liballocproxy/*.c liballocproxy/include/*.h \\" 	>> Makefile
 echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  vm/*.c vm/include/*.h \\" 				>> Makefile

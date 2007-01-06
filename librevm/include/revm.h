@@ -185,8 +185,8 @@ extern asm_processor	proc;
 
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
-#define	ELFSH_VERSION		"0.73"
-#define	ELFSH_RELEASE		"a6"
+#define	ELFSH_VERSION		"0.74"
+#define	ELFSH_RELEASE		"a1"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -411,6 +411,8 @@ char prompt_token[512];
 /* config commands */
 #define CMD_CONFIGURE		"configure"
 
+/* config strings */
+#define ELFSH_VMCONFIG_ONLOAD_RCONTROL "onload.restore_control"
 
 
 /* Regx option, a module of struct s_args */

@@ -11,7 +11,6 @@ RM			= rm -f
 AR			= ar rc
 
 SRC			= edfmt.c dwarf2.c
-
 OBJ			= $(SRC:.c=.o)
 OBJ32	 		= ${SRC:.c=.32.o}
 OBJ64	 		= ${SRC:.c=.64.o}
@@ -19,16 +18,18 @@ NAME32			= libedfmt32
 NAME64			= libedfmt64
 
 CFLAGS32		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
-			-I../libelfsh/include/ -I../libc/include/ -DELFSH_INTERN -DELFSH32
+			-I../libelfsh/include/ -I../elibc/include/ -DELFSH_INTERN \
+			-DELFSH32
 
 CFLAGS64		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
-			-I../libelfsh/include/ -I../libc/include/ -DELFSH_INTERN -DELFSH64
+			-I../libelfsh/include/ -I../elibc/include/ -DELFSH_INTERN \
+			-DELFSH64
 
 LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 \
-			-L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg
+			-L../elibc/ -lcelfsh32 -L../liballocproxy -lallocproxy
 
 LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
-			-L../libc/ -lcelfsh64 -L../libmalloc/ -lmalloc-e2dbg
+			-L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy
 
 all			: all32 all64
 

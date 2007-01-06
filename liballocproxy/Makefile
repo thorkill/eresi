@@ -13,7 +13,7 @@ SRC	= elfsh_malloc.c
 OBJ	= $(SRC:.c=.o)
 CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -DSHARED -DUSE_TLS \
 	-fPIC -g3 -Iinclude -I../libelfsh/include/
-NAME	= malloc-e2dbg
+NAME	= allocproxy
 
 all	: heap
 

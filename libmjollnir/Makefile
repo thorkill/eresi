@@ -9,39 +9,29 @@ include ../config.h
 
 SRC	= src/blocks.c src/core.c src/function.c src/history.c src/init.c \
 	src/symtab.c src/control.c src/types.c src/fingerprint.c src/display.c
-
 OBJ	= ${SRC:.c=.o}
 OBJ32	= ${SRC:.c=.32.o}
 OBJ64	= ${SRC:.c=.64.o}
 SRCT 	= bin/elfThor.c
 OBJT 	= elfThor
-
 SRCUT 	= tools/mjollnirUnitTest.c
 OBJUT 	= mjollnirUnitTest
 
-CFLAGS	= -fPIC -I./include/ -I../libc/include/ -I../libasm/include/        \
-	-I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-	-Wall $(BITS) -DELFSH_INTERN
-
-CFLAGS32 = -fPIC -I./include/ -I../libc/include/ -I../libasm/include/        \
+CFLAGS32 = -fPIC -I./include/ -I../elibc/include/ -I../libasm/include/       \
 	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
 	 -Wall -DELFSH32 -DELFSH_INTERN
 
-CFLAGS64 = -fPIC -I./include/ -I../libc/include/ -I../libasm/include/ 	     \
+CFLAGS64 = -fPIC -I./include/ -I../elibc/include/ -I../libasm/include/ 	     \
 	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
 	 -Wall -DELFSH64 -DELFSH_INTERN
 
-LDFLAGS = -L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc      \
-	  -L../libaspect/ -lelfsh -lasm -lcelfsh -laspect -lmalloc-e2dbg  \
-	  $(LPTHREAD)
+LDFLAGS32 = -L. -L../libasm/ -L../libelfsh/ -L../elibc/ -L../liballocproxy   \
+	  -L../libaspect/ -lelfsh32 -lasm -lcelfsh32 -laspect32              \
+	  -lallocproxy $(LPTHREAD)
 
-LDFLAGS32 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-		-L../libaspect/ -lelfsh32 -lasm -lcelfsh32 -laspect32     \
-		-lmalloc-e2dbg $(LPTHREAD)
-
-LDFLAGS64 = 	-L. -L../libasm/ -L../libelfsh/ -L../libc/ -L../libmalloc \
-		-L../libaspect/ -lelfsh64 -lasm -lcelfsh64  -laspect64    \
-		-lmalloc-e2dbg $(LPTHREAD)
+LDFLAGS64 = -L. -L../libasm/ -L../libelfsh/ -L../elibc/ -L../liballocproxy   \
+	  -L../libaspect/ -lelfsh64 -lasm -lcelfsh64  -laspect64             \
+	  -lallocproxy $(LPTHREAD)
 
 CC	= gcc -ggdb -g3
 NAME	= libmjollnir
@@ -77,7 +67,7 @@ fclean: clean
 	$(CC) $(CFLAGS) -c $*.c -o $*.o
 
 %.32.o : %.c
-			$(CC) $(CFLAGS32) -c -o $@ $<
+	$(CC) $(CFLAGS32) -c -o $@ $<
 %.64.o : %.c
-			$(CC) $(CFLAGS64) -c -o $@ $<
+	$(CC) $(CFLAGS64) -c -o $@ $<
 

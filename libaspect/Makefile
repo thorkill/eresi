@@ -23,13 +23,13 @@ NAME64			= libaspect64
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(LD) -L../libc/ -lcelfsh32 -L../libmalloc/ -lmalloc-e2dbg \
+			@$(LD) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
 			-shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 
 all64			: $(OBJ64)
-			@$(LD) -L../libc/ -lcelfsh64 -L../libmalloc/ -lmalloc-e2dbg \
+			@$(LD) -L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy \
 			-shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
