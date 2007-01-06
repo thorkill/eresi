@@ -20,6 +20,7 @@ all	:
 	@cd sht_stripping      && $(MAKE)
 	@cd symtab_extend      && $(MAKE)
 	@cd etrel_inject       && $(MAKE)
+	@cd e2dbg_multithreads && $(MAKE)
 
 clean	:
 	@echo -n 'Cleaning testsuite ...'
@@ -34,6 +35,7 @@ clean	:
 	@cd sht_stripping      && $(MAKE) clean
 	@cd symtab_extend      && $(MAKE) clean
 	@cd etrel_inject       && $(MAKE) clean
+	@cd e2dbg_multithreads && $(MAKE) clean
 	@echo 'Testsuite cleaned .'
 
 fclean	: clean
@@ -48,3 +50,5 @@ fclean	: clean
 	@cd sht_stripping      && $(MAKE) fclean
 	@cd symtab_extend      && $(MAKE) fclean
 	@cd etrel_inject       && $(MAKE) fclean
+	@cd e2dbg_multithreads && $(MAKE) fclean
+
