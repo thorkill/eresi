@@ -2,7 +2,7 @@
  * ELFsh - Configuration related api
  * 2006 thorkill, Asgard Labs Inc.
  *
- * $Id: config.c,v 1.2 2006-12-27 22:13:29 thor Exp $
+ * $Id: config.c,v 1.3 2007-01-06 08:19:39 may Exp $
  *
  */
 
@@ -36,9 +36,9 @@ void	__elfsh_config_update_item(t_configitem *item,void *data)
 
 /* create new item */
 void	elfsh_config_add_item(char *name,
-				 u_int type,	/* int, string ... */
-				 u_int mode,	/* RW, RO */
-				 void *data)
+			      u_int type,	/* int, string ... */
+			      u_int mode,	/* RW, RO */
+			      void *data)
 {
  t_configitem *tmp;
 

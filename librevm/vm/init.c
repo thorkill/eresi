@@ -26,7 +26,6 @@ void		sigint_handler(int signum)
 int		vm_loop(int argc, char **argv)
 {
   int		ret;
-  char		msg[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = 0;
@@ -209,12 +208,13 @@ int		vm_setup(int ac, char **av)
 			ELFSH_CONFIG_TYPE_INT,
 			ELFSH_CONFIG_MODE_RW,
 			(int) 1);
-
+  
   if (!mjr_init_session(&world.mjr_session))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "mjollnir session can't be initialized.", -1);
 
   vm_setup_hashtables();
+  elfsh_setup_hooks();
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -298,10 +298,9 @@ int		vm_run(int ac, char **av)
 
       using_history();
       rl_attempted_completion_function = custom_completion;
-      rl_callback_handler_install (vm_get_prompt(), vm_ln_handler);
+      rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
       rl_bind_key(CTRL('x'), vm_screen_switch);
       vm_install_clearscreen();
-
       update_col();
 
       /* We will handle SIGWINCH */

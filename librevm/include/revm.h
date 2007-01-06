@@ -396,6 +396,7 @@ char prompt_token[512];
 #define	CMD_LIST2		 "l"
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"
+#define	CMD_VECTORS		 "vectors"
 
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
@@ -634,7 +635,6 @@ typedef struct        s_comp
 #define		      ELFSH_COMPMAX   16
   char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
 }		      revmcomp_t;
-
 
 
 /* This structure contains the control flow context for e2dbg scripts */
@@ -941,6 +941,7 @@ int             cmd_verneed();
 int             cmd_verdef();
 int             cmd_version();
 int             cmd_hashx();
+int		cmd_vectors();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);
@@ -973,7 +974,6 @@ int		cmd_delete();
 int		cmd_step();
 int		cmd_display();
 int		cmd_undisplay();
-
 
 /* Registration handlers for options from opt.c */
 int		vm_getoption(u_int index, u_int argc, char **argv);
@@ -1064,6 +1064,7 @@ char		*vm_basename(char *str);
 char		*vm_get_string(char **params);
 void		vm_log(char *str);
 int             vm_closelog();
+char		*vm_get_prompt();
 
 /* Trace functions */
 FILE		  *vm_trace_init(char *tfname, char *rsofname, char *rtfname);

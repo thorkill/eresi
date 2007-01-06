@@ -730,6 +730,8 @@ static void	setup_cmdhash()
       vm_addcmd(CMD_STOP      , (void *) cmd_stop     , (void *) NULL           , 0, HLP_STOP);
       vm_addcmd(CMD_WORKSPACE , (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
       vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
+      vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
+      vm_addcmd(CMD_VECTORS   , (void *) cmd_vectors  , (void *) vm_getvarparams, 0, HLP_VECTORS);
     }
 
   /* Command line only commands */

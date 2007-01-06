@@ -313,19 +313,19 @@
 
 typedef struct	s_config_item
 {
-    char	*name;
+  char		*name;
 #define		ELFSH_CONFIG_TYPE_INT	0
 #define		ELFSH_CONFIG_TYPE_STR	1
-    u_int	type;				/* int will use val, str *data */
+  u_int		type;			  /* int will use val, str *data */
 #define		ELFSH_CONFIG_MODE_RW	0
 #define		ELFSH_CONFIG_MODE_RO	1
-    u_int	mode;				/* RO/RW - it's relevant to higher api 
-						    like vm_ allows direct updates to those values
-						    when RW is set and enforces usage of vm_api
-						    when RO is set (see profile) */
-    u_int	val;				/* val - for int values 0-off/1-on ... */
-    void	*data;
-} t_configitem;
+  u_int		mode;			  /* RO/RW - it's relevant to higher api
+					     like vm_ allows direct updates to those values
+					     when RW is set and enforces usage of vm_api
+					     when RO is set (see profile) */
+  u_int		val;			  /* For int values 0-off/1-on ... */
+  void		*data;
+}		t_configitem;
 
 /* Config flags */
 #define		ELFSH_SAFEMODE_OFF	0

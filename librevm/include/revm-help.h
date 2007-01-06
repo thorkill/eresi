@@ -166,7 +166,8 @@
 #define	HLP_QUIT		 "Quit current session or script"
 #define	HLP_SWITCH		 "Change the current working object"
 #define	HLP_LIST		 "List loaded ELF objects"
-#define	HLP_WORKSPACE		 "List existing workspaces"
+#define	HLP_WORKSPACE		 "Syntax: workspace [name] : List or switch workspaces"
+#define	HLP_VECTORS		 "Syntax: vectors [name] : List vectors content"
 
 /* Debugger commands */
 #define	HLP_MODE		"Print or change to debugger (d) or static (s) mode"

@@ -8,8 +8,9 @@
 */
 #include "libaspect.h"
 
+
 /* The hash tables of vectors */
-hash_t	vector_hash;
+hash_t	       vector_hash;
 static u_short vh_set = 0;
 
 
@@ -31,6 +32,13 @@ vector_t*	aspect_vector_get(char *name)
   vect = hash_get(&vector_hash, name);
   return (vect);
 }
+
+/* Retreive the hash table : useful when iterating over it */
+hash_t*		aspect_vecthash_get()
+{
+  return (&vector_hash);
+}
+
 
 /* Project each dimension and write the desired function pointer */
 void		aspect_vectors_insert(vector_t	   *vect, 
@@ -151,4 +159,69 @@ int		aspect_register_vector(char		*name,
   /* Initialize vectored elements */
   aspect_vectors_recinit(vector->hook, dimensions, 1, dimsz, defaultfunc);
   return (0);
+}
+
+
+
+
+/* Display the vector recursively */
+void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims, 
+				 unsigned int *index, unsigned int depth, 
+				 unsigned int dimsz, char *name)
+{
+  unsigned int	idx;
+  unsigned int	idx2;  
+
+  /* Check if we reached a leaf, otherwise recurse more */
+  if (depth == dimsz)
+    for (idx = 0; idx < dims[depth - 1]; idx++)
+      {
+	printf("   %s", name);
+	index[depth - 1] = idx;
+	for (idx2 = 0; idx2 < depth; idx2++)
+	  printf("[%02u]", index[idx2]);
+	printf(" = $0x%08lX \n", tab[idx]);
+      }
+  else
+    for (idx = 0; idx < dims[depth - 1]; idx++)
+      {
+	index[depth - 1] = idx;
+	aspect_vector_recdisplay((unsigned long *) tab[idx], dims, index,
+				 depth + 1, dimsz, name);
+      }
+  return;  
+}
+
+
+/* Display vector */
+void		aspect_vector_display(vector_t *cur, char *name)
+{
+  unsigned int	*idx;
+
+  idx = alloca(cur->arraysz * sizeof(unsigned int));
+  bzero(idx, cur->arraysz * sizeof(unsigned int));
+  printf("  .:: Printing vector %s \n\n", name);
+  aspect_vector_recdisplay(cur->hook, cur->arraydims, idx, 
+			   1, cur->arraysz, name);
+  printf("\n .:: Vector %s printed \n\n", name);
+}
+
+
+
+/* Display the content of a vector */
+void		aspect_vectors_display()
+{
+  char		**keys;
+  int		keynbr;
+  int		index;
+  vector_t	*cur;
+
+  printf("  .:: Registered vectors \n\n");
+  keys = hash_get_keys(&vector_hash, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      cur = hash_get(&vector_hash, keys[index]);
+      printf("  + %s \n", keys[index]);
+    }
+  printf("\n Type vector vectname for specific vector details.\n\n");
 }
