@@ -417,7 +417,7 @@ echo "	@cd libmjollnir && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Libmjollnir has been built successfully.'"	>> Makefile
 
 echo "	@echo 'Building librevm...'			"      	>> Makefile
-echo "	@cd librevm && \$(MAKE) 			"	>> Makefile
+echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 
 echo "	@echo 'Building libedfmt...'                     "	>> Makefile
