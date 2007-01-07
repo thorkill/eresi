@@ -96,6 +96,7 @@ void		elfsh_free(void *tofree);
 
 /* Include this here since it contains an allocation too */
 #include "libhash.h"
+#include "libbtree.h"
 
 /* The structure of multidimensional vectors */
 typedef struct	s_vector

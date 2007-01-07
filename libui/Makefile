@@ -17,14 +17,14 @@ NAME64	 	= libui64
 CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../elibc/include/ -I../libdump/include/ \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
-		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
+		-I../elfsh/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DELFSH32		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../elibc/include/ -I../libdump/include/ \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
-		-I../vm/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
+		-I../elfsh/include/ -I../libmjollnir/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DELFSH64		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
