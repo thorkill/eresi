@@ -33,28 +33,28 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 all			: all32 all64
 
 all32			:
-			gmake -C lang all32
-			gmake -C elf  all32
-			gmake -C vm   all32
-			gmake -C cmd  all32
+			$(MAKE) -C lang all32
+			$(MAKE) -C elf  all32
+			$(MAKE) -C vm   all32
+			$(MAKE) -C cmd  all32
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
 			@ar rc ${NAME32}.a ${OBJ32} 
 			@ranlib ${NAME32}.a
 
 all64			:
-			gmake -C lang all64
-			gmake -C elf  all64
-			gmake -C vm   all64
-			gmake -C cmd  all64
+			$(MAKE) -C lang all64
+			$(MAKE) -C elf  all64
+			$(MAKE) -C vm   all64
+			$(MAKE) -C cmd  all64
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
 			@ar rc ${NAME64}.a ${OBJ64} 
 			@ranlib ${NAME64}.a
 
 clean		       :
-			gmake -C lang clean
-			gmake -C elf  clean
-			gmake -C vm   clean
-			gmake -C cmd  clean
+			$(MAKE) -C lang clean
+			$(MAKE) -C elf  clean
+			$(MAKE) -C vm   clean
+			$(MAKE) -C cmd  clean
 		       @$(RM) *~ \#* *\# .\#*
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
