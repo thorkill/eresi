@@ -368,11 +368,11 @@ echo "DESTDIR = $PREFIX"                       			>> Makefile
 echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
-echo "BASEPATH = \$(DESTDIR)/usr/local"                >> Makefile
-echo "MANPATH = \$(BASEPATH)/man"                      >> Makefile
+echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
+echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
 else
-echo "BASEPATH = \$(DESTDIR)/usr/local"                >> Makefile
-echo "MANPATH = \$(BASEPATH)/share/man"                >> Makefile
+echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
+echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
 fi
 
 echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
@@ -442,7 +442,7 @@ echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
 echo "install : all prepareDir #mod_install "			>> Makefile
-echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "	>> Makefile
+echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
 echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
@@ -539,12 +539,12 @@ echo " "							>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
 echo "	@echo 'Cleaning tree ...' "				>> Makefile
-echo "	cd elfsh        && \$(MAKE) -s clean "			>> Makefile
+echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libedfmt   && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libedfmt  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libaspect && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s clean "		        >> Makefile
@@ -557,13 +557,13 @@ echo " "							>> Makefile
 
 echo "fclean  : cleandoc "					>> Makefile
 echo "	@echo 'Fcleaning tree ...' "				>> Makefile
-echo "	cd elfsh        && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd elibc      && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libedfmt   && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libedfmt  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libaspect && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd liballocproxy && \$(MAKE) -s fclean "	        >> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s fclean "		        >> Makefile

@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.11 2007-01-02 06:21:23 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.12 2007-01-07 05:21:01 may Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -15,6 +15,7 @@
 /*
  * struct s_caller is to reference blocks calling block
  * field type may help us to analyse blocks to build higher
+ *
  * logical structure. It contains :
  * - a type field to know how the block is invoked
  * - a vaddr field to know address of instruction which has invoked it.
