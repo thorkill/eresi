@@ -14,7 +14,8 @@ RM			= rm -f
 NAME32			= librevm32
 NAME64			= librevm64
 
-LDFLAGS32		+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ \
+LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
+			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../elibc 	  \
 			-lcelfsh32 -L../libasm/ -lasm -L../libui/ -lui32 -g3 	  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
@@ -22,7 +23,8 @@ LDFLAGS32		+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 
-LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
+LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
+			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \

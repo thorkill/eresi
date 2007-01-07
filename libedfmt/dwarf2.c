@@ -7,6 +7,7 @@
 
 #include "libedfmt.h"
 
+edfmtdw2info_t debug_info;
 edfmtdw2sectlist_t dw2_sections;
 
 hash_t abbrev_table;
@@ -20,13 +21,16 @@ hash_t ref_cu_table;
 
 edfmtdw2cu_t *current_cu = NULL;
 
-#define c_pos(val, name, type) val = *(type *) (dw2_sections.name.data + dw2_sections.name.pos)
+#define a_pos(name) (dw2_sections.name.data + dw2_sections.name.pos)
+#define ac_pos(name) (char *) a_pos(name)
+
+#define c_pos(val, name, type) val = *(type *) a_pos(name)
 #define inc_pos(name, value) do { dw2_sections.name.pos += value; } while(0)
 #define ci_pos(val, name, type) do { c_pos(val, name, type); inc_pos(name, sizeof(type)); } while(0)
-#define c_read_1(val, name) do { c_pos(val, name, int) & 0xFF; } while(0)
-#define c_read_2(val, name) do { c_pos(val, name, int) & 0xFFFF; } while(0)
-#define c_read_4(val, name) do { c_pos(val, name, int) & 0xFFFFFFFF; } while(0)
-#define c_read_8(val, name) do { c_pos(val, name, long int) & 0xFFFFFFFFFFFFFFFFULL; } while(0)
+#define c_read_1(val, name) do { c_pos(val, name, char); } while(0)
+#define c_read_2(val, name) do { c_pos(val, name, short); } while(0)
+#define c_read_4(val, name) do { c_pos(val, name, int); } while(0)
+#define c_read_8(val, name) do { c_pos(val, name, long int); } while(0)
 #define ci_read_1(val, name) do { c_read_1(val, name); inc_pos(name, 1); } while(0)
 #define ci_read_2(val, name) do { c_read_2(val, name); inc_pos(name, 2); } while(0)
 #define ci_read_4(val, name) do { c_read_4(val, name); inc_pos(name, 4); } while(0)
@@ -43,32 +47,18 @@ static int	edfmt_dwarf2_updatefref(u_char global)
 
   ht = global ? &ref_global_table : &ref_cu_table;
 
-  printf(" ========= %d ==========\n", (u_int) global);
-
   /* For each elements in the ref list */
   for (ref = (global ? ref_global : ref_cu); ref != NULL; ref = ref->next)
     {
       edfmt_dwarf2_ckey(ckey, DW2_CKEY_SIZE - 1, ref->offset);
       ent = (edfmtdw2abbent_t *) hash_get(ht, ckey);
 
-      if (ent == NULL)
-	{
-	  printf("%s = NULL\n", ckey);
-	  continue;
-	}
+      if (ent == NULL || ref->attr == NULL)
+	continue;
 
-      if (ref->attr == NULL)
-	{
-	  printf("ATTR = NULL\n");
-	  continue;
-	}
-      
       /* Set the correct reference */
       ref->attr->u.ref = ent;
-      printf("%s = %p / %d\n", ckey, ent, ent->key);
     }
-
-  printf(" =======================\n");
 
   /* Clean */
   base = global ? ref_global : ref_cu;
@@ -98,6 +88,7 @@ static int	edfmt_dwarf2_updatefref(u_char global)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Create a new reference that wait for resolution after compil unit or global parsing */
 static int	edfmt_dwarf2_newfref(long int offset, edfmtdw2abbattr_t *attr, u_char global)
 {
   edfmtdw2fref_t *tmp;
@@ -127,6 +118,7 @@ static int	edfmt_dwarf2_newfref(long int offset, edfmtdw2abbattr_t *attr, u_char
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
+/* Create a string from a key (used in hash table) */
 char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long int key)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -138,6 +130,86 @@ char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long int key)
   snprintf(buf, size, "%ld", key);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Create a string from a file + line (used in hash table) */
+char 		*edfmt_dwarf2_cline(char *buf, u_int size, u_int line, char *file)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (buf == NULL || size == 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", NULL);
+
+  snprintf(buf, size, "%s:%d", file, line);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Create a string from an addr (used in hash table) */
+char 		*edfmt_dwarf2_caddr(char *buf, u_int size, elfsh_Addr addr)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (buf == NULL || size == 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", NULL);
+
+  snprintf(buf, size, "%x", addr);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+static char *
+dwarf_lne_name (u_char ext_opc)
+{
+  switch(ext_opc)
+    {
+    case DW_LNE_end_sequence:
+      return "DW_LNE_end_sequence";
+    case DW_LNE_set_address:
+      return "DW_LNE_set_address";
+    case DW_LNE_define_file:
+      return "DW_LNE_define_file";
+    default:
+      return "DW_LNE_<UNKNOWN>";
+    }
+}
+
+static char *
+dwarf_lns_name (u_char opc)
+{
+  switch(opc)
+    {
+    case DW_LNS_extended_op:
+      return "DW_LNS_extended_op";
+    case DW_LNS_copy:
+      return "DW_LNS_copy";
+    case DW_LNS_advance_pc:
+      return "DW_LNS_advance_pc";
+    case DW_LNS_advance_line:
+      return "DW_LNS_advance_line";
+    case DW_LNS_set_file:
+      return "DW_LNS_set_file";
+    case DW_LNS_set_column:
+      return "DW_LNS_set_column";
+    case DW_LNS_negate_stmt:
+      return "DW_LNS_negate_stmt";
+    case DW_LNS_set_basic_block:
+      return "DW_LNS_set_basic_block";
+    case DW_LNS_const_add_pc:
+      return "DW_LNS_const_add_pc";
+    case DW_LNS_fixed_advance_pc:
+      return "DW_LNS_fixed_advance_pc";
+    case DW_LNS_set_prologue_end:
+      return "DW_LNS_set_prologue_end";
+    case DW_LNS_set_epilogue_begin:
+      return "DW_LNS_set_epilogue_begin";
+    case DW_LNS_set_isa:
+      return "DW_LNS_set_isa";
+    default:
+      return "DW_LNS_<UNKOWN>";
+    }
 }
 
 /* Convert a DIE tag into its string name.  */
@@ -986,8 +1058,10 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
       csect = elfsh_get_section_by_name(file, names[i], NULL, NULL, NULL);
 
       if (!csect)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "A dwarf2 section didn't exist", -1);
+	{
+	  printf("Section number %d didn't exist\n", i);
+	  continue;
+	}
 
       pointers[i]->data = csect->data;
       pointers[i]->size = csect->shdr->sh_size;
@@ -996,13 +1070,14 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
   /* Start into the block entrie */
   edfmt_dwarf2_block_entrie();
 
-  /* Clean */
+  /* Clean references */
+  edfmt_dwarf2_updatefref(1);
+
   keys = hash_get_keys(&ref_global_table, &keynbr);
   for (index = 0; index < keynbr; index++)
     XFREE(keys[index]);
   hash_free_keys((char *) keys);
 
-  edfmt_dwarf2_updatefref(1);
   hash_destroy(&ref_global_table);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1029,9 +1104,22 @@ int		edfmt_dwarf2_block_entrie()
       
       /* Update current pointer */
       if (current_cu != NULL)
-	current_cu->next = tcu;
+	{
+	  current_cu->next = tcu;
+	}
+      else
+	{
+	  /* Init info structure */
+	  debug_info.cu_list = tcu;
+	  hash_init(&debug_info.file_line, 50);
+	  hash_init(&debug_info.addr, 50);
+	}
 
       current_cu = current_cu ? current_cu->next : tcu;
+
+      /* Init local hashes */
+      hash_init(&current_cu->file_line, 50);
+      hash_init(&current_cu->addr, 50);
 
       /* Set compil unit start position */
       current_cu->start_pos = dw2_sections.info.pos;
@@ -1054,11 +1142,7 @@ int		edfmt_dwarf2_block_entrie()
 
       /* We didn't finish at the exact correct offset ? */
       if (last_pos + current_cu->length != dw2_sections.info.pos)
-	{
-	  printf("DIFF LENGTH !! (%d / %d)\n", 
-		 last_pos + current_cu->length, dw2_sections.info.pos);
-	  dw2_sections.info.pos = last_pos + current_cu->length;
-	}
+	dw2_sections.info.pos = last_pos + current_cu->length;
 
       edfmt_dwarf2_updatefref(0);
 
@@ -1148,6 +1232,271 @@ edfmtdw2abbent_t *edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ent);
 }
 
+/* Parse .debug_line */
+int		edfmt_dwarf2_line(u_long offset)
+{
+  u_int		i, bsize;
+  edfmtdw2linehead_t header;
+  u_long      	prev_pos;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Update position offset */
+  dw2_sections.line.pos = offset;
+
+  /* Parse the header */
+  ci_read_4(header.total_length, line);
+  header.end_pos = dw2_sections.line.pos + header.total_length;
+  ci_read_2(header.version, line);
+  ci_read_4(header.prologue_length, line);
+  header.prologue_pos = dw2_sections.line.pos;
+  ci_read_1(header.min_length_instr, line);
+  ci_read_1(header.default_stmt, line);
+  ci_read_1(header.line_base, line);
+  ci_read_1(header.line_range, line);
+  ci_read_1(header.opcode_base, line);
+  header.std_opcode_length = ac_pos(line);
+  inc_pos(line, header.opcode_base - 1);
+  
+  /* Dir first pass */
+  prev_pos = dw2_sections.line.pos;
+  for (i = 0; (ac_pos(line))[0] != '\0'; i++)
+    inc_pos(line, strlen(ac_pos(line))+1);
+  dw2_sections.line.pos = prev_pos;
+
+  XALLOC(header.dirs, sizeof(char*)*i, -1);
+  header.dirs_number = i;
+
+  /* Dir second pass */
+  for (i = 0; (ac_pos(line))[0] != '\0'; i++)
+    {
+      header.dirs[i] = ac_pos(line);
+      inc_pos(line, strlen(ac_pos(line))+1);
+    }
+  inc_pos(line, 1);
+
+  /* Filename first pass */
+  prev_pos = dw2_sections.line.pos;
+  for (i = 0; (ac_pos(line))[0] != '\0'; i++)
+    {
+      inc_pos(line, strlen(ac_pos(line))+1);
+      edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+      edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+      edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+    }
+  dw2_sections.line.pos = prev_pos;
+
+  XALLOC(header.files_name, sizeof(char*)*i, -1);
+  XALLOC(header.files_dindex, sizeof(u_int)*i, -1);
+  XALLOC(header.files_time, sizeof(u_int)*i, -1);
+  XALLOC(header.files_len, sizeof(u_int)*i, -1);
+  header.files_number = i;
+
+  /* Filename second pass */
+  for (i = 0; (ac_pos(line))[0] != '\0'; i++)
+    {
+      header.files_name[i] = ac_pos(line);
+      inc_pos(line, strlen(ac_pos(line))+1);
+      header.files_dindex[i] = edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+      header.files_time[i] = edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+      header.files_len[i] = edfmt_read_uleb128(a_pos(line), &bsize);
+      inc_pos(line, bsize);
+    }
+  inc_pos(line, 1);
+
+  /* Check position validity */
+  if (header.prologue_pos + header.prologue_length != dw2_sections.line.pos)
+    dw2_sections.line.pos = header.prologue_pos + header.prologue_length;
+
+  /* Save files & directories list */
+  current_cu->dirs 	   = header.dirs;
+  current_cu->files_name   = header.files_name;
+  current_cu->files_dindex = header.files_dindex;
+  current_cu->files_time   = header.files_time;
+  current_cu->files_len    = header.files_len;
+
+  /* Parse the rest */
+  edfmt_dwarf2_line_data(&header);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, elfsh_Addr addr, u_int fid)
+{
+  edfmtdw2line_t *pline;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  XALLOC(pline, sizeof(edfmtdw2line_t), -1);
+
+  pline->addr = addr;
+  pline->line = line;
+  pline->column = column;
+  pline->fileid = fid;
+  pline->cu = cu;
+
+  /* Create hash names */
+  edfmt_dwarf2_cline(pline->cline, DW2_CLINE_SIZE - 1, line, cu->files_name[fid]);
+  edfmt_dwarf2_caddr(pline->caddr, DW2_CADDR_SIZE - 1, addr);
+
+  /* Global */
+  hash_add(&debug_info.file_line, pline->cline, (void *) pline);
+  hash_add(&debug_info.addr, pline->caddr, (void *) pline);
+
+  /* Local */
+  hash_add(&cu->file_line, pline->cline, (void *) pline);
+  hash_add(&cu->addr, pline->caddr, (void *) pline);
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Parse data part of .debug_line format */
+int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
+{
+  elfsh_Addr  	addr;
+  u_int		file;
+  u_int		line;
+  u_int		column;
+  u_int	      	is_stmt;
+  u_int		basic_block;
+  u_int		end_sequence;
+
+  u_int		i, bsize;
+  u_char       	opc, ext_opc;
+  char		*read_addr;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (header == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Invalid parameters", -1);
+
+  /* Loop until end position */
+  while (dw2_sections.line.pos < header->end_pos)
+    {
+      addr = 0;
+      file = 1;
+      line = 1;
+      column = 0;
+      is_stmt = header->default_stmt;
+      basic_block = 0;
+      end_sequence = 0;
+
+      while (!end_sequence)
+	{
+	  ci_read_1(opc, line);
+
+	  if (opc >= header->opcode_base)
+	    {
+	      opc -= header->opcode_base;
+	      line += header->line_base + (opc % header->line_range);
+	      addr += (opc / header->line_range) * header->min_length_instr;
+
+	      edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
+	      basic_block = 1;
+	    }
+	  else
+	    {
+	      switch(opc)
+		{
+		case DW_LNS_extended_op:
+		  edfmt_read_uleb128(a_pos(line), &bsize);
+		  inc_pos(line, bsize);
+
+		  ci_read_1(ext_opc, line);
+		  switch(ext_opc)
+		    {
+		    case DW_LNE_end_sequence:
+		      end_sequence = 1;
+		      edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
+		      break;
+		    case DW_LNE_set_address:
+		      XALLOC(read_addr, current_cu->addr_size, -1);
+		      
+		      for (i = 0; i < current_cu->addr_size; i++)
+			ci_pos(read_addr[i], line, u_char);
+
+		      addr = *(elfsh_Addr *) read_addr;
+		      
+		      XFREE(read_addr);
+		      break;
+		    case DW_LNE_define_file:
+		      header->files_number++;
+		      /* Realloc pointers */
+		      XREALLOC(header->files_name, header->files_name, 
+			       sizeof(char*)*header->files_number, -1);
+		      XREALLOC(header->files_dindex, header->files_dindex, 
+			       sizeof(u_int)*header->files_number, -1);
+		      XREALLOC(header->files_time, header->files_time, 
+			       sizeof(u_int)*header->files_number, -1);
+		      XREALLOC(header->files_len, header->files_len, 
+			       sizeof(u_int)*header->files_number, -1);
+
+		      /* Read information and fill new entrie */
+		      header->files_name[header->files_number] = ac_pos(line);
+		      inc_pos(line, strlen(ac_pos(line))+1);
+		      header->files_dindex[header->files_number] = edfmt_read_uleb128(a_pos(line), &bsize);
+		      inc_pos(line, bsize);
+		      header->files_time[header->files_number] = edfmt_read_uleb128(a_pos(line), &bsize);
+		      inc_pos(line, bsize);
+		      header->files_len[header->files_number] = edfmt_read_uleb128(a_pos(line), &bsize);
+		      inc_pos(line, bsize);
+		      break;
+		    }
+		  break;
+		case DW_LNS_copy:
+		  basic_block = 0;
+		  edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
+		  break;
+		case DW_LNS_advance_pc:
+		  addr += edfmt_read_uleb128(a_pos(line), &bsize) * header->min_length_instr;
+		  inc_pos(line, bsize);
+		  break;
+		case DW_LNS_advance_line:
+		  line += edfmt_read_leb128(a_pos(line), &bsize);
+		  inc_pos(line, bsize);		  
+		  break;
+		case DW_LNS_set_file:
+		  file = edfmt_read_uleb128(a_pos(line), &bsize);
+		  inc_pos(line, bsize);
+		  break;
+		case DW_LNS_set_column:
+		  column = edfmt_read_uleb128(a_pos(line), &bsize);
+		  inc_pos(line, bsize);
+		  break;
+		case DW_LNS_negate_stmt:
+		  is_stmt = !is_stmt;
+		  break;
+		case DW_LNS_set_basic_block:
+		  basic_block = 1;
+		  break;
+		case DW_LNS_const_add_pc:
+		  addr += ((255 - header->opcode_base) / header->line_range) 
+		    * header->min_length_instr;
+		  break;
+		case DW_LNS_fixed_advance_pc:
+		  ci_read_2(bsize, line);
+		  addr += bsize;
+		  break;
+		default:
+		  for (i = 0; i < header->std_opcode_length[opc]; i++)
+		    {
+		      edfmt_read_uleb128(a_pos(line), &bsize);
+		      inc_pos(line, bsize);
+		    }
+		}
+	    }
+	}
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 /* Follow .debug_info form using abbrev_table as structure reference */
 int		edfmt_dwarf2_form(u_int endpos)
 {  
@@ -1161,7 +1510,7 @@ int		edfmt_dwarf2_form(u_int endpos)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   do {
-    ptr = (dw2_sections.info.data + dw2_sections.info.pos);
+    ptr = a_pos(info);
 
     start_pos = dw2_sections.info.pos;
     
@@ -1179,11 +1528,7 @@ int		edfmt_dwarf2_form(u_int endpos)
     
     ent = edfmt_dwarf2_lookup_abbrev(num_fetch);
     if (ent == NULL)
-      {
-	printf("NOT FOUND IN ABBREV TABLE !! %d < %d (%x)\n", 
-	       dw2_sections.info.pos, endpos, num_fetch);
-	continue;
-      }
+      continue;
 
     /* Update references */
     XALLOC(ref_global_ckey, DW2_CKEY_SIZE, -1);
@@ -1198,19 +1543,20 @@ int		edfmt_dwarf2_form(u_int endpos)
     /* If we enter into a new child list, increase the level */
     if (ent->children != 0)
       level++;
-    
-    printf("%d - %d - [%02d] TAG: %s CHILDREN: %d\n", 
-	   start_pos,
-	   start_pos - current_cu->start_pos,
-	   ent->key, dwarf_tag_name(ent->tag), ent->children);
-    
+
+    /* Resolv form value for each attribute */
     for (i = 0; ent->attr[i].attr; i++)
       {
-	printf("\tATTR: %s FORM: %s",
-	       dwarf_attr_name(ent->attr[i].attr),
-	       dwarf_form_name(ent->attr[i].form));
 	edfmt_dwarf2_form_value(ent->attr + i);
+
+	switch(ent->attr[i].attr)
+	  {
+	  case DW_AT_stmt_list:
+	    edfmt_dwarf2_line(ent->attr[i].u.udata);
+	    break;
+	  }
       }
+
   } while(level > 0 && dw2_sections.info.pos < endpos);
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1229,7 +1575,7 @@ int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ptr = (dw2_sections.info.data + dw2_sections.info.pos);
+  ptr = a_pos(info);
 
   switch (attr->form)
     {
@@ -1239,16 +1585,13 @@ int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
       for (i = 0; i < current_cu->addr_size; i++)
 	ci_pos(addr[i], info, u_char);
 
-      printf(" => %08x\n", *(u_int *) addr);
-
       edfmt_dwarf2_newfref(*(u_int *) addr, attr, 1);
+      XFREE(addr);
       break;
     case DW_FORM_addr:
       XALLOC(attr->u.vbuf, current_cu->addr_size, -1);
       for (i = 0; i < current_cu->addr_size; i++)
 	ci_pos(attr->u.vbuf[i], info, u_char);
-
-      printf(" => %08x\n", *(u_int *) attr->u.vbuf);
       break;
     case DW_FORM_block1:
     case DW_FORM_block2:
@@ -1268,36 +1611,23 @@ int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 
       XALLOC(attr->u.vbuf, attr->asize, -1);
 
-      printf(" => ");
       for (i = 0; i < attr->asize; i++)
-	{
-	  if (i > 0 && (i % 16) == 0)
-	    printf("\n");
-
-	  ci_pos(attr->u.vbuf[i], info, u_char);
-	  printf("%02x ", attr->u.vbuf[i]);
-	}
-      printf("\n");
+	ci_pos(attr->u.vbuf[i], info, u_char);
       break;
     case DW_FORM_data1:
-      ci_read_1(attr->u.data, info);
-      printf(" => %02x\n", attr->u.data);      
+      ci_read_1(attr->u.udata, info);
       break;
     case DW_FORM_data2:
-      ci_read_2(attr->u.data, info);
-      printf(" => %04x\n", attr->u.data);
+      ci_read_2(attr->u.udata, info);
       break;
     case DW_FORM_data4:
-      ci_read_4(attr->u.data, info);
-      printf(" => %08x\n", attr->u.data);
+      ci_read_4(attr->u.udata, info);
       break;
     case DW_FORM_data8:
-      ci_read_8(attr->u.ldata, info);
-      printf(" => %ld\n", attr->u.ldata);
+      ci_read_8(attr->u.udata, info);
       break;
     case DW_FORM_string:
       attr->u.str = (char *) ptr;
-      printf(" => %s\n", attr->u.str);
       inc_pos(info, strlen(attr->u.str)+1);
       break;
     case DW_FORM_block:
@@ -1306,59 +1636,39 @@ int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 
       XALLOC(attr->u.vbuf, attr->asize, -1);
 
-      printf(" => ");
       for (i = 0; i < attr->asize; i++)
-	{
-	  if (i > 0 && (i % 16) == 0)
-	    printf("\n");
-
-	  ci_pos(attr->u.vbuf[i], info, u_char);
-	  printf("%02x ", attr->u.vbuf[i]);
-	}
-      printf("\n");
+	ci_pos(attr->u.vbuf[i], info, u_char);
       break;
     case DW_FORM_flag:
-      ci_read_1(attr->u.data, info);
-      printf(" => %02x\n", attr->u.data);
+      ci_read_1(attr->u.udata, info);
       break;
     case DW_FORM_strp:
       addr = (char *) dw2_sections.str.data;
       ci_read_4(data, info);
       attr->u.str = addr + data;
-      printf(" => %s\n", attr->u.str);
       break;
     case DW_FORM_udata:
       attr->u.udata = edfmt_read_uleb128(ptr, &bsize);
       inc_pos(info, bsize);
-      printf(" => %ld\n", attr->u.udata);
       break;
     case DW_FORM_sdata:
       attr->u.sdata = edfmt_read_leb128(ptr, &bsize);
       inc_pos(info, bsize);
-      printf(" => %ld\n", attr->u.sdata);
       break;
     case DW_FORM_ref1:
       ci_read_1(data, info);
-      printf(" => REF: %d\n", data);
-
       edfmt_dwarf2_newfref(data, attr, 0);
       break;
     case DW_FORM_ref2:
       ci_read_2(data, info);
-      printf(" => REF: %d\n", data);
-
       edfmt_dwarf2_newfref(data, attr, 0);
       break;
     case DW_FORM_ref4:
       ci_read_4(data, info);
-      printf(" => REF: %d\n", data);
-
       edfmt_dwarf2_newfref(data, attr, 0);
       break;
     case DW_FORM_ref8:
       ci_read_8(ddata, info);
-      printf(" => REF: %ld\n", ddata);
-
       edfmt_dwarf2_newfref(ddata, attr, 0);
       break;
     case DW_FORM_ref_udata:
@@ -1378,7 +1688,9 @@ int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 			 edfmt_dwarf2_form_value(attr));
       break;
     default:
-      printf("UNKNOWN FORM ??\n");
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unknown form", -1);
+      break;
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1401,101 +1713,101 @@ int		edfmt_dwarf2_abbrev()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   do {
-      ptr = (dw2_sections.abbrev.data + dw2_sections.abbrev.pos);
+    ptr = a_pos(abbrev);
 
-      /* Fetch the key number */
-      num = edfmt_read_uleb128(ptr, &bread);
-      inc_pos(abbrev, bread);
-      ptr += bread;
-
-      /* A level end */
-      if (num == 0)
+    /* Fetch the key number */
+    num = edfmt_read_uleb128(ptr, &bread);
+    inc_pos(abbrev, bread);
+    ptr += bread;
+    
+    /* A level end */
+    if (num == 0)
+      {
+	level--;
+	/* It's the end ! */
+	if (level == 0)
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	continue;
+      }
+    
+    /* Save last element */
+    tmp = ent;
+    
+    /* Alloc next elements */
+    XALLOC(ent, sizeof(edfmtdw2abbent_t), -1);
+    
+    /* Fill main data */
+    ent->key = num;
+    ent->tag = edfmt_read_uleb128(ptr, &bread);
+    inc_pos(abbrev, bread);
+    ptr += bread;
+    ci_read_1(ent->children, abbrev);
+    ptr += 1;
+    
+    attri = allocattr = 0;
+    attr = NULL;
+    
+    /* Update level */
+    ent->level = level;
+    
+    if (ent->children != 0)
+      level++;
+    
+    /* Update links between entities */
+    if (tmp)
+      {
+	/* Direct child */
+	if (ent->level > tmp->level)
+	  {
+	    ent->parent = tmp;
+	  }
+	/* Next sibling of last element parent */
+	else if (ent->level < tmp->level)
+	  {
+	    if (tmp->parent != NULL)
+	      {
+		ent->parent = tmp->parent->parent;
+		tmp->parent->sib = ent;
+	      }
+	  }
+	/* Next sibling */
+	else
+	  {
+	    tmp->sib = ent;
+	    ent->parent = tmp->parent;
+	  }
+      }
+    
+    /* Parse attributes */
+    do {
+      /* First allocation */
+      if (attr == NULL)
 	{
-	  level--;
-	  /* It's the end ! */
-	  if (level == 0)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	  continue;
+	  allocattr = allocstep;
+	  XALLOC(attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
+	}
+      
+      /* We fill all the array, so we realloc all */
+      if (attri == allocattr)
+	{
+	  allocattr += allocstep;
+	  XREALLOC(attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
 	}
 
-      /* Save last element */
-      tmp = ent;
-
-      /* Alloc next elements */
-      XALLOC(ent, sizeof(edfmtdw2abbent_t), -1);
-
-      /* Fill main data */
-      ent->key = num;
-      ent->tag = edfmt_read_uleb128(ptr, &bread);
+      /* Fill attribute structure */
+      attr[attri].attr = edfmt_read_uleb128(ptr, &bread);
       inc_pos(abbrev, bread);
       ptr += bread;
-      ci_read_1(ent->children, abbrev);
-      ptr += 1;
+      attr[attri].form = edfmt_read_uleb128(ptr, &bread);
+      inc_pos(abbrev, bread);
+      ptr += bread;
+    } while (attr[attri++].attr);
       
-      attri = allocattr = 0;
-      attr = NULL;
-
-      /* Update level */
-      ent->level = level;
-
-      if (ent->children != 0)
-	level++;
-
-      /* Update links between entities */
-      if (tmp)
-	{
-	  /* Direct child */
-	  if (ent->level > tmp->level)
-	    {
-	      ent->parent = tmp;
-	    }
-	  /* Next sibling of last element parent */
-	  else if (ent->level < tmp->level)
-	    {
-	      if (tmp->parent != NULL)
-		{
-		  ent->parent = tmp->parent->parent;
-		  tmp->parent->sib = ent;
-		}
-	    }
-	  /* Next sibling */
-	  else
-	    {
-	      tmp->sib = ent;
-	      ent->parent = tmp->parent;
-	    }
-	}
-	  
-      /* Parse attributes */
-      do {
-	/* First allocation */
-	if (attr == NULL)
-	  {
-	    allocattr = allocstep;
-	    XALLOC(attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-	  }
-
-	/* We fill all the array, so we realloc all */
-	if (attri == allocattr)
-	  {
-	    allocattr += allocstep;
-	    XREALLOC(attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-	  }
-
-	/* Fill attribute structure */
-	attr[attri].attr = edfmt_read_uleb128(ptr, &bread);
-	inc_pos(abbrev, bread);
-	ptr += bread;
-	attr[attri].form = edfmt_read_uleb128(ptr, &bread);
-	inc_pos(abbrev, bread);
-	ptr += bread;
-      } while (attr[attri++].attr);
-      
-      ent->attr = attr;
-
-      /* Add into abbrev table */
-      edfmt_dwarf2_ckey(ent->ckey, DW2_CKEY_SIZE - 1, ent->key);
-      hash_add(&abbrev_table, ent->ckey, (void *) ent);
+    ent->attr = attr;
+    
+    /* Add into abbrev table */
+    edfmt_dwarf2_ckey(ent->ckey, DW2_CKEY_SIZE - 1, ent->key);
+    hash_add(&abbrev_table, ent->ckey, (void *) ent);
   } while (dw2_sections.abbrev.pos < dw2_sections.abbrev.size);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

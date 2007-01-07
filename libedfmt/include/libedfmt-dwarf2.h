@@ -12,8 +12,8 @@
 typedef struct 	s_edfmtdw2sect
 {
   void 		*data; 	// Pointer
-  u_int 	pos;	// Position
-  u_int		size; 	// Size
+  u_long 	pos;	// Position
+  u_long	size; 	// Size
 }		edfmtdw2sect_t; 
 
 typedef struct 	s_edfmtdw2sectlist
@@ -40,11 +40,9 @@ typedef struct 	s_edfmtdw2abbattr
   union 
   {
     char 	*vbuf; 	// DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block
-    u_long	udata;	// DW_FORM_udata 	
-    long	sdata;	// DW_FORM_sdata
-    int		data;	// DW_FORM_data[1-4], DW_FORM_flag
+    u_long 	udata;	// DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8
+    long int	sdata;	// DW_FORM_sdata
     char      	*str;	// DW_FORM_string, DW_FORM_strp
-    long int	ldata;	// DW_FORM_data8
     edfmtdw2abbent_t *ref; // DW_FORM_ref[1-8], DW_FORM_ref_udata
   } u;
 } 		edfmtdw2abbattr_t;
@@ -65,13 +63,26 @@ struct 	s_edfmtdw2abbent
 
 typedef struct	s_edfmtdw2cu
 {
+  /* Header informations */
   u_int		length;
   u_int		version;
   u_int		offset;
   u_int		addr_size;
   u_int		start_pos;
 
+  /* Abbrev section informations */
   edfmtdw2abbent_t *fent;
+
+  /* Files informations */
+  char		**dirs;
+  char		**files_name;
+  u_int		*files_dindex;
+  u_int		*files_time;
+  u_int		*files_len;
+
+  /* Line informations */
+  hash_t      	file_line;
+  hash_t	addr;
 
   struct s_edfmtdw2cu *next;
 }		edfmtdw2cu_t;
@@ -82,6 +93,61 @@ typedef struct 	s_edfmtdw2fref
   edfmtdw2abbattr_t *attr;
   struct s_edfmtdw2fref *next;
 }		edfmtdw2fref_t;
+
+typedef struct	s_edfmtdw2linehead
+{
+  /* Header informations */
+  u_int		total_length;
+  u_short	version;
+  u_int		prologue_length;
+  u_int		min_length_instr;
+  u_int       	default_stmt;
+  int		line_base;
+  u_int		line_range;
+  u_int		opcode_base;
+  u_char       	*std_opcode_length;
+
+  char		**dirs;
+  char		**files_name;
+  u_int		*files_dindex;
+  u_int		*files_time;
+  u_int		*files_len;
+
+  u_int		dirs_number;
+  u_int		files_number;
+
+  /* Deducted positions */
+  u_long	end_pos;
+  u_long	prologue_pos;
+}		edfmtdw2linehead_t;
+
+/* Description a line information */
+typedef struct 	s_edfmtdw2line
+{
+  /* Main informations */
+  elfsh_Addr	addr;
+  u_int		line;
+  u_int		column;
+
+  /* Char buffer cache */
+#define DW2_CLINE_SIZE 30
+#define DW2_CADDR_SIZE 20
+  char		cline[DW2_CLINE_SIZE];
+  char		caddr[DW2_CADDR_SIZE];
+
+  /* References */
+  edfmtdw2cu_t	*cu;
+  u_int		fileid;
+}		edfmtdw2line_t;
+
+typedef struct 	s_edfmtdw2info
+{
+  edfmtdw2cu_t	*cu_list;
+  
+  /* Addr and file / line resolution */
+  hash_t      	file_line;
+  hash_t    	addr;
+}		edfmtdw2info_t;
 
 
 /* Most of this enums are from gdb 6.4 dwarf 2 header

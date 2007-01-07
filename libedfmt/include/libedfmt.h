@@ -42,6 +42,11 @@ elfshsect_t 	*edfmt_format_find(elfshobj_t *file, u_int *format);
 
 /* dwarf2.c */
 char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long int key);
+char 		*edfmt_dwarf2_cline(char *buf, u_int size, u_int line, char *file);
+char 		*edfmt_dwarf2_caddr(char *buf, u_int size, elfsh_Addr addr);
+int		edfmt_dwarf2_line(u_long offset);
+int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header);
+int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, elfsh_Addr addr, u_int fid);
 int		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect);
 int		edfmt_dwarf2_block_entrie();
 int		edfmt_dwarf2_block_loop(u_int endpos);
