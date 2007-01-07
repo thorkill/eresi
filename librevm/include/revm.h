@@ -39,16 +39,7 @@
 #include <dirent.h>
 #define __USE_GNU
 #include <sys/ucontext.h>
-
-#ifdef  __BEOS__
-#include <image.h>
-#include <bsd_mem.h>
-#else
-#include <dlfcn.h>
-#endif
-
 #include <pthread.h>
-
 #include <libelfsh.h>
 #include <libui.h>
 
@@ -186,7 +177,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.74"
-#define	ELFSH_RELEASE		"a2"
+#define	ELFSH_RELEASE		"a3"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
