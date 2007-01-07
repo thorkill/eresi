@@ -167,8 +167,12 @@
 #define	HLP_SWITCH		 "Change the current working object"
 #define	HLP_LIST		 "List loaded ELF objects"
 #define	HLP_WORKSPACE		 "Syntax: workspace [name] : List or switch workspaces"
-#define	HLP_VECTORS		 "Syntax: vectors [name] : List vectors content"
-
+#define	HLP_VECTORS		 "Act on reflective objects \n\n\t"				       \
+				 "vectors                                \t List existing vectors\n\t" \
+				 "vectors name                           \t List vector content\n\t"   \
+				 "vectors name:idx1:...:idxN             \t Print vector entry\n\t"    \
+                                 "vectors name:idx1:...:idxN symbol|addr \t Modify vector entry\n\n\t" \
+				 "Vector objects indexes can be given by scripting variables \n"
 /* Debugger commands */
 #define	HLP_MODE		"Print or change to debugger (d) or static (s) mode"
 #define	HLP_LINKMAP		"Print Linkmap list for this process"

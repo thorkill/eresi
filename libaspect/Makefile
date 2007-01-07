@@ -24,13 +24,13 @@ all			: all32 all64
 
 all32			: $(OBJ32)
 			@$(LD) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
-			-shared $(OBJ32) -o $(NAME32).so
+			$(DLOPT) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 
 all64			: $(OBJ64)
 			@$(LD) -L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy \
-			-shared $(OBJ64) -o $(NAME64).so
+			$(DLOPT) -shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 

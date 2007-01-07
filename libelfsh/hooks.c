@@ -147,7 +147,7 @@ int	elfsh_register_altplthook(u_char archtype,
 int		elfsh_register_extplthook(u_char archtype, 
 					  u_char objtype, 
 					  u_char ostype, 
-					  void *fct)
+					  void	 *fct)
 {
   vector_t	*extplt;
   u_int		*dim;
@@ -175,8 +175,8 @@ int		elfsh_register_extplthook(u_char archtype,
 
 
 /* Register an PLT handler */
-int		elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype, 
-				       void *fct)
+int		elfsh_register_plthook(u_char archtype, u_char objtype, 
+				       u_char ostype, void *fct)
 {
   vector_t	*plt;
   u_int		*dim;
@@ -350,7 +350,7 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
 
 /* Register a args counting redirection handler */
 int	elfsh_register_argchook(u_char archtype, u_char objtype, 
-				 u_char ostype, void *fct)
+				u_char ostype, void *fct)
 {
   vector_t	*argcp;
   u_int		*dim;

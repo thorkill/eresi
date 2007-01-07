@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <strings.h>
+#include <dlfcn.h>
 
 /* Endianess definitions */
 #if defined(__linux__) || defined (__BEOS__)
@@ -112,6 +113,15 @@ typedef struct	s_vector
 #define		VECTOR_TYPE_FUNC	2
   u_int		type;			/* Type of elements in this vector */
 }		vector_t;
+
+/* This is not defined by dlfcn and it is needed */
+typedef struct 
+{
+  const char  *dli_fname;
+  void        *dli_fbase;
+  const char  *dli_sname;
+  void        *dli_saddr;
+} Dl_info;
 
 /* Initialize the vectors of libaspect */
 void		aspect_vectors_init();

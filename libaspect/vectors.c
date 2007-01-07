@@ -171,6 +171,8 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 {
   unsigned int	idx;
   unsigned int	idx2;  
+  Dl_info	info;
+  //char		buf[256];
 
   /* Check if we reached the last dimension */
   if (depth == dimsz)
@@ -180,8 +182,12 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 	index[depth - 1] = idx;
 	for (idx2 = 0; idx2 < depth; idx2++)
 	  printf("[%02u]", index[idx2]);
+	if (!dladdr(tab[idx], &info))
+	  dlerror();
 	printf(" = $0x%08lX %s\n", tab[idx], 
-	       (tab[idx] == def) ? "(default void handler)" : "");
+	       (tab[idx] == def) ? "(default void handler)" : 
+	       info.dli_sname    ? info.dli_sname           :
+	       "Unknown function");
       }
 
   /* Otherwise recurse more */
