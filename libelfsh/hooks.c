@@ -383,53 +383,48 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
 int		elfsh_init_vectors()
 {
   u_int		*dims;
+  char		**strdims;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
   aspect_vectors_init();
 
   /* All hooks have the same dimensions here */
-  XALLOC(dims, 4 * sizeof(u_int), -1);
-  dims[0] = ELFSH_ARCHNUM;
-  dims[1] = ELFSH_TYPENUM;
-  dims[2] = ELFSH_OSNUM;
-  dims[3] = 0;
+  XALLOC(dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(strdims, 4 * sizeof(char *), -1);
+  dims[0]    = ELFSH_ARCHNUM;
+  dims[1]    = ELFSH_TYPENUM;
+  dims[2]    = ELFSH_OSNUM;
+  strdims[0] = "ARCHTYPE";
+  strdims[1] = "ELFTYPE";
+  strdims[2] = "OSTYPE";
 
   aspect_register_vector(ELFSH_HOOK_ALTPLT, 
-			elfsh_register_altplthook, 
 			elfsh_default_plthandler,
-			dims, 3);
+			dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_PLT, 
-			elfsh_register_plthook, 
 			elfsh_default_plthandler,
-			dims, 3);
+			dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_REL, 
-			elfsh_register_relhook, 
 			elfsh_default_relhandler,
-			dims, 3);
+			dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_CFLOW, 
-			elfsh_register_cflowhook, 
 			elfsh_default_cflowhandler, 
-			dims, 3);
+			dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_BREAK, 
-			elfsh_register_breakhook, 
 			elfsh_default_breakhandler, 
-			dims, 3);
+			dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_EXTPLT, 
-			elfsh_register_extplthook, 
 			elfsh_default_extplthandler, 
-			dims, 3);  
+			dims, strdims, 3, VECTOR_TYPE_FUNC);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT, 
-			 elfsh_register_encodeplthook, 
 			 elfsh_default_encodeplthandler, 
-			 dims, 3);  
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT1, 
-			 elfsh_register_encodeplt1hook, 
 			 elfsh_default_encodeplt1handler, 
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(ELFSH_HOOK_ARGC, 
-			 elfsh_register_argchook, 
 			 elfsh_default_argchandler, 
-			 dims, 3);  
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);  
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

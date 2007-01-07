@@ -126,15 +126,16 @@ static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims,
 
 /* Register a new vector. A vector is an multidimentional array of hooks */
 int		aspect_register_vector(char		*name, 
-				      void		*registerfunc, 
-				      void		*defaultfunc,
-				      unsigned int	*dimensions, 
-				      unsigned int	dimsz)
+				       void		*defaultfunc,
+				       unsigned int	*dimensions, 
+				       char		**strdims,
+				       unsigned int	dimsz,
+				       unsigned int     vectype)
 {
   vector_t	*vector;
   unsigned long	*ptr;
   
-  if (!registerfunc || !defaultfunc || !dimsz || !dimensions)
+  if (!vectype || !defaultfunc || !dimsz || !dimensions)
     {
       write(1, "Invalid NULL parameters\n", 24);
       return (-1);
@@ -151,7 +152,7 @@ int		aspect_register_vector(char		*name,
   
   vector->arraysz       = dimsz;
   vector->arraydims     = dimensions;
-  vector->register_func = registerfunc;
+  vector->strdims       = strdims;
   vector->default_func  = defaultfunc;
   hash_add(&vector_hash, name, vector);
 
@@ -228,6 +229,9 @@ void		aspect_vectors_display()
       printf("  + %-30s\t Dimensions: ", keys[index]);
       for (index2 = 0; index2 < cur->arraysz; index2++)
 	printf("[%02u]", cur->arraydims[index2]);
+      printf("  Discriminated by: ");
+      for (index2 = 0; index2 < cur->arraysz; index2++)
+	printf("%s ", cur->strdims[index2]);
       printf("\n");
     }
   printf("\n Type vector vectname for specific vector details.\n\n");

@@ -302,49 +302,45 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
 static int	e2dbg_register_vectors()
 {
   u_int		*dims;
+  char		**strdims;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* All hooks have the same dimensions here */
-  XALLOC(dims, 4 * sizeof(u_int), -1);
-  dims[0] = ELFSH_ARCHNUM;
-  dims[1] = ELFSH_TYPENUM;
-  dims[2] = ELFSH_OSNUM;
-  dims[3] = 0;
-  
+  XALLOC(dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(strdims, 4 * sizeof(char *), -1);
+  dims[0]    = ELFSH_ARCHNUM;
+  dims[1]    = E2DBG_HOSTNUM;
+  dims[2]    = ELFSH_OSNUM;
+  strdims[0] = "ARCHTYPE";
+  strdims[1] = "HOSTYPE";
+  strdims[2] = "OSTYPE";
+
   /* Initialize debugger vectors */
   aspect_register_vector(E2DBG_HOOK_GETREGS, 
-			 e2dbg_register_gregshook, 
 			 e2dbg_default_getregs,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_SETREGS, 
-			 e2dbg_register_sregshook, 
 			 e2dbg_default_setregs,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_GETPC, 
-			 e2dbg_register_getpchook, 
 			 e2dbg_default_getpc,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_SETSTEP, 
-			 e2dbg_register_setstephook, 
 			 e2dbg_default_setstep,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_RESETSTEP, 
-			 e2dbg_register_resetstephook, 
 			 e2dbg_default_resetstep,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_GETFP, 
-			 e2dbg_register_getfphook, 
 			 e2dbg_default_getfp,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_NEXTFP, 
-			 e2dbg_register_nextfphook, 
 			 e2dbg_default_nextfphandler,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
   aspect_register_vector(E2DBG_HOOK_GETRET, 
-			 e2dbg_register_getrethook, 
 			 e2dbg_default_getrethandler,
-			 dims, 3);
+			 dims, strdims, 3, VECTOR_TYPE_FUNC);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

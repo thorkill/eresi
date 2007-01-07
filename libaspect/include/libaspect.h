@@ -101,11 +101,16 @@ void		elfsh_free(void *tofree);
 /* The structure of multidimensional vectors */
 typedef struct	s_vector
 {
-  void		*hook;
-  void		*register_func;
-  void		*default_func;
-  u_int		*arraydims;
-  u_int		arraysz;
+  void		*hook;			/* The vector data */
+  void		*register_func;		/* Registration function */
+  void		*default_func;		/* Default registered function */
+  u_int		*arraydims;		/* Size of each dimension */
+  char		**strdims;		/* Label for each dimension */
+  u_int		arraysz;		/* Number of dimensions */
+#define		VECTOR_TYPE_UNKNOWN	0
+#define		VECTOR_TYPE_HASH	1
+#define		VECTOR_TYPE_FUNC	2
+  u_int		type;			/* Type of elements in this vector */
 }		vector_t;
 
 /* Initialize the vectors of libaspect */
@@ -125,7 +130,7 @@ void		aspect_vectors_insert(vector_t *vect, unsigned int *dim,
 void*		aspect_vectors_select(vector_t *vect, unsigned int *dim);
 
 /* Add a new vector */
-int		aspect_register_vector(char *, void*, void*,
-				       unsigned int *, unsigned int);
+int		aspect_register_vector(char *, void*, unsigned int*, char **,
+				       unsigned int, unsigned int);
 
 #endif
