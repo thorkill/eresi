@@ -166,7 +166,7 @@ int		aspect_register_vector(char		*name,
 /* Display the vector recursively */
 void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims, 
 				 unsigned int *index, unsigned int depth, 
-				 unsigned int dimsz, char *name)
+				 unsigned int dimsz, char *name, unsigned long def)
 {
   unsigned int	idx;
   unsigned int	idx2;  
@@ -179,7 +179,8 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 	index[depth - 1] = idx;
 	for (idx2 = 0; idx2 < depth; idx2++)
 	  printf("[%02u]", index[idx2]);
-	printf(" = $0x%08lX \n", tab[idx]);
+	printf(" = $0x%08lX %s\n", tab[idx], 
+	       (tab[idx] == def) ? "(default void handler)" : "");
       }
 
   /* Otherwise recurse more */
@@ -188,7 +189,7 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
       {
 	index[depth - 1] = idx;
 	aspect_vector_recdisplay((unsigned long *) tab[idx], dims, index,
-				 depth + 1, dimsz, name);
+				 depth + 1, dimsz, name, def);
       }
   return;  
 }
@@ -203,7 +204,8 @@ void		aspect_vector_display(vector_t *cur, char *name)
   bzero(idx, cur->arraysz * sizeof(unsigned int));
   printf("  .:: Printing vector %s \n\n", name);
   aspect_vector_recdisplay(cur->hook, cur->arraydims, idx, 
-			   1, cur->arraysz, name);
+			   1, cur->arraysz, name, 
+			   (unsigned long) cur->default_func);
   printf("\n .:: Vector %s printed \n\n", name);
 }
 

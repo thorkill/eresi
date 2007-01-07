@@ -1003,6 +1003,7 @@ revmobj_t	*vm_lookup_immed(char *param);
 elfsh_Addr	vm_lookup_index(char *param);
 char		*vm_lookup_var(char *param);
 char		*vm_lookup_string(char *param);
+revmobj_t	*vm_lookup_addr(char *param);
 
 /* Lazy Abstract Type system functions */
 int		vm_convert2str(revmobj_t *obj);

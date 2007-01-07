@@ -35,6 +35,67 @@ char			*vm_lookup_var(char *param)
 }
 
 
+
+/* Get address value */
+revmobj_t		*vm_lookup_addr(char *param)
+{
+  elfsh_Sym		*sym;
+  revmconst_t		*actual;
+  char			eol;
+  int			ret;
+  revmobj_t		*ptr;
+  elfsh_Addr	       	val;
+
+#if __DEBUG_MODEL__
+  char			logbuf[BUFSIZ];
+
+ snprintf(logbuf, BUFSIZ - 1, 
+	  "[DEBUG_MODEL] Lookup immed : PARAM [ %s ] \n", param);
+ vm_output(logbuf);
+#endif
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Lookup .symtab */
+  sym = elfsh_get_symbol_by_name(world.curjob->current, param);
+  if (sym != NULL)
+    {
+      ptr = vm_create_LONG(0, sym->st_value);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+    }
+
+  /* Lookup .dynsym */
+  sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
+  if (sym != NULL)
+    {
+      ptr = vm_create_LONG(0, sym->st_value);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+    }
+
+  /* Lookup a constant */
+  /* FIXME : Constants must be differentiated by their size ! */
+  actual = hash_get(&const_hash, param);
+  if (actual != NULL)
+    {
+      ptr = vm_create_IMMED(ELFSH_OBJINT, 0, actual->val);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+    }
+  
+  /* Lookup hexadecimal numeric value */
+  ret = sscanf(param, XFMT "%c", &val, &eol);
+  if (ret == 1)
+    {
+      ptr = vm_create_LONG(0, val);
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+    }
+
+  /* No match -- returns ERR */
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unable to lookup address object", (NULL));
+}
+
+
+
 /* Get immediate value */
 revmobj_t		*vm_lookup_immed(char *param)
 {
