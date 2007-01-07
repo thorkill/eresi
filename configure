@@ -185,6 +185,14 @@ shift
 
 done
 
+#
+# test for make/gmake support
+#
+if [ -z "$(which gmake)" ] ; then
+echo "MAKE=make" >> $CONFIGFILE
+else
+echo "MAKE=gmake" >> $CONFIGFILE
+fi
 
 if [ $CHOSENBIT = "0" ]; then
     echo "Error: you MUST specify --enable-32, --enable-64 OR --enable-32-64."
