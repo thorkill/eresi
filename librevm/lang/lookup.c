@@ -112,7 +112,7 @@ revmobj_t		*vm_lookup_immed(char *param)
       ptr = vm_create_LONG(0, val);
       goto good;
     }
-
+  
   /* Lookup a supplied string */
   bzero(lbuf, sizeof(lbuf));
   ret = sscanf(param, "%[^\n]4095%c", lbuf, &eol);
@@ -151,7 +151,8 @@ elfsh_Addr     		vm_lookup_index(char *param)
 #if __DEBUG_MODEL__
   char			logbuf[BUFSIZ];
   
-  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup index : PARAM [ %s ] \n", param);
+  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup index : PARAM [ %s ] \n", 
+	   param);
   vm_output(logbuf);
 #endif
 
