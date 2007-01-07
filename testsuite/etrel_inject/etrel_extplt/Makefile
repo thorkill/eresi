@@ -10,8 +10,8 @@ include ../../../config.h
 SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../libc \
-	-lcelfsh32 -L../../../libmalloc -lmalloc-e2dbg -L../../../libaspect/     \
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../elibc \
+	-lcelfsh32 -L../../../liballocproxy -lallocproxy -L../../../libaspect/    \
 	-laspect32 -lpthread
 NAM	= etrel_injecter
 

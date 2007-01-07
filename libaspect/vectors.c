@@ -109,13 +109,12 @@ static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims,
 {
   unsigned int	idx;
 
-  if (depth == dimsz)
-    return (0);
-
   /* Check if we reached a leaf, otherwise recurse more */
   if (depth == dimsz)
-    for (idx = 0; idx < dims[depth - 1]; idx++)
-      tab[idx] = (unsigned long) defaultelem;
+    {
+      for (idx = 0; idx < dims[depth - 1]; idx++)
+	tab[idx] = (unsigned long) defaultelem;
+    }
   else
     for (idx = 0; idx < dims[depth - 1]; idx++)
       aspect_vectors_recinit((unsigned long *) tab[idx], dims, 
@@ -172,7 +171,7 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
   unsigned int	idx;
   unsigned int	idx2;  
 
-  /* Check if we reached a leaf, otherwise recurse more */
+  /* Check if we reached the last dimension */
   if (depth == dimsz)
     for (idx = 0; idx < dims[depth - 1]; idx++)
       {
@@ -182,6 +181,8 @@ void	aspect_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 	  printf("[%02u]", index[idx2]);
 	printf(" = $0x%08lX \n", tab[idx]);
       }
+
+  /* Otherwise recurse more */
   else
     for (idx = 0; idx < dims[depth - 1]; idx++)
       {
@@ -214,6 +215,7 @@ void		aspect_vectors_display()
   char		**keys;
   int		keynbr;
   int		index;
+  int		index2;
   vector_t	*cur;
 
   printf("  .:: Registered vectors \n\n");
@@ -221,7 +223,10 @@ void		aspect_vectors_display()
   for (index = 0; index < keynbr; index++)
     {
       cur = hash_get(&vector_hash, keys[index]);
-      printf("  + %s \n", keys[index]);
+      printf("  + %-30s\t Dimensions: ", keys[index]);
+      for (index2 = 0; index2 < cur->arraysz; index2++)
+	printf("[%02u]", cur->arraydims[index2]);
+      printf("\n");
     }
   printf("\n Type vector vectname for specific vector details.\n\n");
 }
