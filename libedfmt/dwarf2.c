@@ -1111,15 +1111,15 @@ int		edfmt_dwarf2_block_entrie()
 	{
 	  /* Init info structure */
 	  debug_info.cu_list = tcu;
-	  hash_init(&debug_info.file_line, 50);
-	  hash_init(&debug_info.addr, 50);
+	  hash_init(&debug_info.file_line, 50, ELEM_TYPE_ANY);
+	  hash_init(&debug_info.addr, 50, ELEM_TYPE_ANY);
 	}
 
       current_cu = current_cu ? current_cu->next : tcu;
 
       /* Init local hashes */
-      hash_init(&current_cu->file_line, 50);
-      hash_init(&current_cu->addr, 50);
+      hash_init(&current_cu->file_line, 50, ELEM_TYPE_ANY);
+      hash_init(&current_cu->addr, 50, ELEM_TYPE_ANY);
 
       /* Set compil unit start position */
       current_cu->start_pos = dw2_sections.info.pos;
