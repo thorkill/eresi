@@ -40,6 +40,7 @@
 #define __USE_GNU
 #include <sys/ucontext.h>
 #include <pthread.h>
+#include <stdarg.h> 
 #include <libelfsh.h>
 #include <libui.h>
 
@@ -64,7 +65,7 @@ extern asm_processor	proc;
 /* Now comes DEBUGGING variables for various part of the code */
 #define	__DEBUG_DISASM__	0
 #define	__DEBUG_SIGHANDLER__	0
-#define	__DEBUG_MODEL__		0
+#define	__DEBUG_LANG__		0
 #define	__DEBUG_SCANNER__	0
 #define	__DEBUG_ASLR__		0
 #define __DEBUG_NETWORK__	0
@@ -168,7 +169,7 @@ extern asm_processor	proc;
 #define ELFSH_MIPSFLAGS_MAX	16
 
 /* ELFsh general parameters */
-#define	ELFSH_FIELD_SEP		"."
+#define	REVM_SEP		"."
 #define	ELFSH_COMMENT_START	'#'
 #define ELFSH_MINUS		'-'
 #define	ELFSH_SLASH		'/'
@@ -470,7 +471,7 @@ while (0)
 #include <libmjollnir.h>
 //#include "e2dbg.h"
 
-/* ELFsh module structure */
+/* REVM module structure */
 typedef struct	      s_module
 {
   char		      *path;	      /* Name */
@@ -486,7 +487,6 @@ typedef struct	      s_module
   time_t              loadtime;       /* Load time stamp */
   struct s_module     *next;          /* Next module of the list */
 }                     revmmod_t;
-
 
 /* Elfsh Output Caching structure */
 typedef struct          s_outbuf
@@ -727,6 +727,8 @@ typedef struct	s_L2handler
 /* ELFsh Level 1 object (= parent object) structure */
 typedef struct	s_L1handler
 {
+#define		REVM_L1TAG 0xF9456273				/* L1 ID TAG */
+  u_long	tag;
   hash_t	*l2list;					/* A ptr on the child L2 hashtable */
   u_int		elem_size;					/* Size of one element of this object */
   
@@ -764,6 +766,7 @@ extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
 extern hash_t		cmd_hash;	 /* commands handlers */
+extern hash_t		parser_hash;	 /* parsers handlers */
 extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
@@ -1009,6 +1012,12 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur);
 int		vm_addcmd(char *cmd, void *exec, void *reg, 
 			  u_int needfile, char *help);
 int		vm_delcmd(char *cmd);
+
+/* Default grammar handlers */
+revmobj_t       *parse_lookup3_index(char *param, char *fmt);
+revmobj_t       *parse_lookup3(char *param, char *fmt);
+revmobj_t       *parse_lookup4(char *param, char *fmt);
+revmobj_t       *parse_lookup5_index(char *param, char *fmt);
 
 /* Versions functions */
 int             vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 

@@ -42,10 +42,11 @@ typedef struct          s_hash
   hashent_t             *ent;
   int                   size;
   int			elmnbr;
+  u_char		type;
 }                       hash_t;
 
 /* hash.c */
-int		hash_init(hash_t *h, int size);		/* Allocate the table */
+int		hash_init(hash_t *h, int sz, u_int t);	/* Allocate the table */
 void		hash_destroy(hash_t *h);		/* Free the table */
 int		hash_add(hash_t *h, char *k, void *d);	/* Add an entry */
 int		hash_del(hash_t *h, char *key);		/* Delete an entry */

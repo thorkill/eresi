@@ -230,6 +230,26 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 
 
 
+/* Just a test */
+int		elfsh_get_dynent_by_type(elfshobj_t	*robj, 
+					 elfsh_Dyn	*data,
+					 elfsh_Word	real_index)
+{
+  elfsh_Dyn	*ent;
+  int		idx;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  ent = elfsh_get_dynamic_entry_by_type(robj, real_index);
+  idx = (int) ((char *) ent - (char *) data);
+  idx = idx / sizeof(elfsh_Dyn);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
+}
+
+
+
+
+
+
 
 
 

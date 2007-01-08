@@ -11,12 +11,23 @@
 
 
 
-/* 
-** Lookup a parameter with 3 fields, 3rd field beeing an index 
-** Used by GOT, CTORS, DTORS 
-*/
-static revmobj_t	*lookup3_index(char *obj, char *L1field, char *index)
-				      
+
+/* Get a va_list of parameters */
+static int		parse_lookup_varlist(char *param, char *fmt, ...)
+{
+  int			rc;
+  va_list		arg_ptr;
+
+  va_start(arg_ptr, fmt);
+  rc = vsscanf(param, fmt, arg_ptr);
+  va_end(arg_ptr);
+  return (rc);
+}
+
+
+/* Lookup a parameter with 3 fields, 3rd field beeing an index 
+** Used by GOT, CTORS, DTORS */
+revmobj_t		*parse_lookup3_index(char *param, char *fmt)
 {
   revmL1_t		*l1;
   void			*robj;
@@ -24,15 +35,18 @@ static revmobj_t	*lookup3_index(char *obj, char *L1field, char *index)
   u_int			size;
   elfsh_Addr		real_index = 0;
   revmobj_t		*pobj;
-
-#if __DEBUG_MODEL__
-  char			logbuf[BUFSIZ];
-  
-  snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup3 index\n");
-#endif
+  char			obj[ELFSH_MEANING];
+  char			L1field[ELFSH_MEANING];
+  char			index[ELFSH_MEANING];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
+  /* Check if this handler is the correct one */
+  size = parse_lookup_varlist(param, fmt, obj, L1field, index);
+  if (size != 3)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parser handling failed", NULL);
+  
   /* Let's ask the hash table for the current working file */
   robj = vm_lookup_file(obj);
   if (robj == NULL)
@@ -99,31 +113,37 @@ static revmobj_t	*lookup3_index(char *obj, char *L1field, char *index)
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
   pobj->type    = ELFSH_OBJLONG;
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_check_object(pobj));
+  pobj          = vm_check_object(pobj);
+  if (!pobj)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid REVM object", NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
 
 
-/* 
-** Lookup a parameter with 3 fields, all fields beeing non indexed 
-** Only used by ELF header 'til now
-*/
-static revmobj_t	*lookup3(char *obj, char *L1field, char *L2field)
+/* Lookup a parameter with 3 fields, all fields beeing non indexed 
+** Only used by ELF header 'til now */
+revmobj_t		*parse_lookup3(char *param, char *fmt)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
   void			*robj;
   revmobj_t		*pobj;
 
-#if __DEBUG_MODEL__
-  char			logbuf[BUFSIZ];
-  
-  snprintf(logbuf, BUFSIZ, "[DEBUG_MODEL] Lookup3 \n");
-#endif
+  char			obj[ELFSH_MEANING];
+  char			L1field[ELFSH_MEANING];
+  char			L2field[ELFSH_MEANING];
+  int			ret;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if this handler is the correct one */
+  ret = parse_lookup_varlist(param, fmt, obj, L1field, L2field);
+  if (ret != 3)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parser handling failed", NULL);
 
   /* Let's ask the hash table for the current working file */
   robj = vm_lookup_file(obj);
@@ -157,35 +177,13 @@ static revmobj_t	*lookup3(char *obj, char *L1field, char *L2field)
   pobj->set_obj = (void *) l2->set_obj;
   pobj->type    = l2->type;
   pobj->parent  = l1->get_obj(robj, NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     vm_check_object(pobj));
+  pobj          = vm_check_object(pobj);
+
+  if (!pobj)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid REVM object", NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
-
-
-
-
-
-
-
-
-/* Just a test */
-int		vm_get_dynent_by_type(elfshobj_t	*robj, 
-				      elfsh_Dyn		*data,
-				      elfsh_Word	real_index)
-{
-  elfsh_Dyn	*ent;
-  int		idx;
-
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ent = elfsh_get_dynamic_entry_by_type(robj, real_index);
-  idx = (int) ((char *) ent - (char *) data);
-  idx = idx / sizeof(elfsh_Dyn);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     idx);
-}
-
-
-
 
 
 
@@ -196,27 +194,46 @@ int		vm_get_dynent_by_type(elfshobj_t	*robj,
 **
 ** Here need to add 1.rel[name].{L2fields} lookup
 */
-static revmobj_t	*lookup4(char *obj, char *L1field, 
-				 char *index, char *L2field, 
-				 u_int off, u_int sizelem)
+revmobj_t		*parse_lookup4(char *param, char *fmt)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
   void			*robj;
   void			*o1;
-  int		  	real_index, isversion;
+  int		  	real_index;
+  int			isversion;
   u_int			size;
   revmobj_t		*pobj;
 
-#if __DEBUG_MODEL__
-  char			logbuf[BUFSIZ];
-#endif
-
-#if __DEBUG_MODEL__
- snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup4 : off = %u \n", off);
-#endif
+  char			obj[ELFSH_MEANING];
+  char			L1field[ELFSH_MEANING];
+  char			L2field[ELFSH_MEANING];
+  char			index[ELFSH_MEANING];
+  u_int			off;
+  u_int			sizelem;
+  int			ret;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if this handler is the correct one */
+  /* This handler has 3 different possible parsing rules */
+  ret = parse_lookup_varlist(param, fmt, obj, L1field, 
+			  index, &off, &sizelem, L2field);
+  if (ret != 6)
+    {
+      ret = parse_lookup_varlist(param, fmt, obj, L1field, index, &off, L2field);
+      if (ret != 5)
+	{
+	  ret = parse_lookup_varlist(param, fmt, obj, L1field, index, L2field);
+	  if (ret != 4)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Parser handling failed", NULL);
+	  sizelem = 1;
+	  off = 0;
+	}
+      else
+	sizelem = 1;
+    }
 
   /* Let's ask the hash table for the current working file */
   robj = vm_lookup_file(obj);
@@ -251,8 +268,8 @@ static revmobj_t	*lookup4(char *obj, char *L1field,
   /* Do lookup by index or by name */
   real_index = vm_lookup_index(index);
   
-#if __DEBUG_MODEL__
-  printf("SYM index = %s, real_index = %u (signed = %d) \n", 
+#if __DEBUG_LANG__
+  printf("LOOKUP4 object index = %s, real_index = %u (signed = %d) \n", 
 	 index, real_index, real_index);
 #endif
 
@@ -276,7 +293,7 @@ static revmobj_t	*lookup4(char *obj, char *L1field,
     {
 
       if (!strcmp(L1field, "dynamic") && !vm_isnbr(index))
-	real_index = vm_get_dynent_by_type(robj, o1, real_index);
+	real_index = elfsh_get_dynent_by_type(robj, o1, real_index);
       
       isversion = (!strcmp(L1field, "version") ||
 		   !strcmp(L1field, "verdef") ||
@@ -310,22 +327,19 @@ static revmobj_t	*lookup4(char *obj, char *L1field,
   pobj->root     = robj;
 
   /* Error checking */
-  //snprintf(logbuf, BUFSIZ, "calling checking pobj = %p \n", pobj);
-  //vm_output(logbuf);
   pobj = vm_check_object(pobj);
-  //snprintf(logbuf, BUFSIZ, "returning pobj = %p \n", pobj);
-  //vm_output(logbuf);
-
+  if (!pobj)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid REVM object", NULL);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
-/* 
-** Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
-** Used for Relocation tables and GOT tables.
-*/
-static revmobj_t	*lookup5_index(char *obj, char *L1field, char *index, 
-				       char *index2, char *L2field)
+
+
+/* Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
+** Used for Relocation tables and GOT tables */
+revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -337,11 +351,25 @@ static revmobj_t	*lookup5_index(char *obj, char *L1field, char *index,
   int			isversion;
   revmobj_t		*pobj;
   elfshsect_t		*sect;
+
+  char			obj[ELFSH_MEANING];
+  char			L1field[ELFSH_MEANING];
+  char			L2field[ELFSH_MEANING];
+  char			index[ELFSH_MEANING];
+  char			index2[ELFSH_MEANING];
+  int			ret;
+
 #if 0
   char			logbuf[BUFSIZ];
 #endif
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if this handler is the correct one */
+  ret = parse_lookup_varlist(param, fmt, obj, L1field, index, index2, L2field);
+  if (ret != 5)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parser handling failed", NULL);
 
   real_index = vm_lookup_index(index);
   real_index2 = vm_lookup_index(index2);
@@ -421,13 +449,13 @@ static revmobj_t	*lookup5_index(char *obj, char *L1field, char *index,
 		      "Unknown L2 object or Invalid L2 index", 
 		      NULL);
 
-  //printf("[DEBUG_RELOCS_IDX2-AFTER] entptr = %p \n",
-  // pobj->parent);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     vm_check_object(pobj));
+  /* Error checking */
+  pobj = vm_check_object(pobj);
+  if (!pobj)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid REVM object", NULL);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
-
 
 
 
@@ -437,124 +465,50 @@ static revmobj_t	*lookup5_index(char *obj, char *L1field, char *index,
 */
 revmobj_t		*vm_lookup_param(char *param, u_int m)
 {
-  char			obj[ELFSH_MEANING];
-  char			field1[ELFSH_MEANING];
-  char			field2[ELFSH_MEANING];
-  char			index[ELFSH_MEANING];
-  char			index2[ELFSH_MEANING];
-  char			off[ELFSH_MEANING];
-  char			sizelem[ELFSH_MEANING];
+  revmobj_t		*(*funcptr)(char *param, char *fmt);
+  void			*ret;
+  char			**keys;
+  int			keynbr;
+  char			*parm;
+  unsigned int		sepnbr;
+  unsigned int		index;
   revmobj_t		*res;
-  int			ret;
-
-#if __DEBUG_MODEL__
-  char			logbuf[BUFSIZ];
-
- snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Looking up Parameter %s \n", param);
- vm_output(logbuf);
-#endif
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* RULE1 : 2 levels, with one index per level : 5 field */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^[][%41[^]]][%41[^]]]"
-	       ELFSH_FIELD_SEP
-	       "%41s",
-	       obj, field1, index, index2, field2);
-  if (ret == 5)
-    {
-      res = lookup5_index(obj, field1, index, index2, field2);
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-    }
-
-  /* RULE2: 2 levels with index:offset%elemsize at level 1 : 4 fields */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"
-	       ELFSH_FIELD_SEP
-	       "%41s",
-	       obj, field1, index, off, sizelem, field2);
-  if (ret == 6)
-    {
-      res = lookup4(obj, field1, index, field2, atoi(off), atoi(sizelem));
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-    }
-
-  /* RULE2 bis: 2 levels with index:offset at level 1 : 5 fields */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^[][%41[^:]:%41[^]]]"
-	       ELFSH_FIELD_SEP
-	       "%41s",
-	       obj, field1, index, off, field2);
-  if (ret == 5)
-    {
-      res = lookup4(obj, field1, index, field2, atoi(off), 1);
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-    }
-
-  /* RULE2 ter: 2 levels with index at level 1 : 4 fields */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^[][%41[^]]]"
-	       ELFSH_FIELD_SEP
-	       "%41s",
-	       obj, field1, index, field2);
-  if (ret == 4)
-    {
-      res = lookup4(obj, field1, index, field2, 0, 1);
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-    }
-
-  /* RULE3: Only 1 level with 1 index : 3 fields [got/ctors/dtors] */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^[][%41[^]]]", 
-	       obj, field1, index);
-  if (ret == 3)
-    {
-      res = lookup3_index(obj, field1, index);
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-    }
   
-  /* RULE4: 2 level but no index : 3 fields */
-  ret = sscanf(param, 
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41[^"ELFSH_FIELD_SEP"]"
-	       ELFSH_FIELD_SEP
-	       "%41s", 
-	       obj, field1, field2);
-  if (ret == 3)
+  /* Find the number of fields in param */
+  sepnbr = 0;
+  parm   = param;
+  do {    
+    parm = strchr(parm, REVM_SEP[0]);
+    if (parm)
+      {
+	sepnbr++;
+	parm++;
+      }
+  } while (parm && *parm);
+  
+  /* Find the correct parsing handler */
+  keys = hash_get_keys(&parser_hash, &keynbr);
+  for (index = 0; index < keynbr; index++)
     {
-      res = lookup3(obj, field1, field2);
-      //if (res)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
+      funcptr = hash_get(&parser_hash, keys[index]);
+      ret = funcptr(param, keys[index]);
+      if (!ret)
+	continue;
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
     }
 
-  /* RULE5: Try immediate value */
   /* If no good syntax is available, print error if we are not in probe mode */
-  /* Patched 30-08-2004 for catching more errors in the set command */
   if (m)
     {
       res = vm_lookup_immed(param);
-      if (res)
+      if (!res || (m == 2 && res->immed))
+	vm_badparam(param);
+      else
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
-      vm_badparam(param);
     }
-  
+
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to lookup object", (NULL));
+		    "Unable to resolve object", NULL);
 }

@@ -7,12 +7,13 @@
 
 
 /* Preconditions on atomic operations */
+/* Only called by set */
 int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  *o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  *o1 = vm_lookup_param(world.curjob->curcmd->param[0], 2);
   *o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!*o1 || !*o2)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 

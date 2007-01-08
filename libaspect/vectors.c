@@ -19,7 +19,7 @@ void		aspect_vectors_init()
 {
   if (!vh_set)
     {
-      hash_init(&vector_hash, 11);
+      hash_init(&vector_hash, 11, ELEM_TYPE_VECT);
       vh_set = 1;
     }
 }
@@ -130,14 +130,19 @@ int		aspect_register_vector(char		*name,
 				       unsigned int	*dimensions, 
 				       char		**strdims,
 				       unsigned int	dimsz,
-				       unsigned int     vectype)
+				       unsigned int	vectype)
 {
   vector_t	*vector;
   unsigned long	*ptr;
   
-  if (!vectype || !defaultfunc || !dimsz || !dimensions)
+  if (!defaultfunc || !dimsz || !dimensions)
     {
       write(1, "Invalid NULL parameters\n", 24);
+      return (-1);
+    }
+  if (vectype >= ELEM_TYPE_MAX)
+    {
+      write(1, "Invalid vector element type\n", 28);
       return (-1);
     }
   vector = calloc(sizeof(vector_t), 1);

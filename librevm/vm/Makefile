@@ -6,9 +6,9 @@
 include ../../config.h
 
 SRC			= atomic.c  color.c doswitch.c fcthijack.c 	\
-			  job.c loop.c misc-revm.c opt.c 	\
+			  job.c loop.c misc-revm.c opt.c 	        \
 			  cmdapi.c configure.c exec.c implicit.c	\
-			  jmp.c log.c modules.c screen.c tables.c init.c
+			  jmp.c log.c modules.c screen.c init.c tables.c
 
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)

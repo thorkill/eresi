@@ -652,6 +652,7 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, elfsh_Addr index
 char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent);
 int		elfsh_endianize_dynamic(elfshsect_t *_new);
 int		elfsh_shift_dynamic(elfshobj_t *file, u_int size);
+int		elfsh_get_dynent_by_type(elfshobj_t *robj, elfsh_Dyn *data, elfsh_Word real_index);
 
 /* symbol.c */
 elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name);

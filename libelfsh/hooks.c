@@ -400,31 +400,31 @@ int		elfsh_init_vectors()
 
   aspect_register_vector(ELFSH_HOOK_ALTPLT, 
 			elfsh_default_plthandler,
-			dims, strdims, 3, VECTOR_TYPE_FUNC);
+			dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_PLT, 
 			elfsh_default_plthandler,
-			dims, strdims, 3, VECTOR_TYPE_FUNC);
+			dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_REL, 
 			elfsh_default_relhandler,
-			dims, strdims, 3, VECTOR_TYPE_FUNC);
+			dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_CFLOW, 
 			elfsh_default_cflowhandler, 
-			dims, strdims, 3, VECTOR_TYPE_FUNC);
+			dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_BREAK, 
 			elfsh_default_breakhandler, 
-			dims, strdims, 3, VECTOR_TYPE_FUNC);
+			dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_EXTPLT, 
 			elfsh_default_extplthandler, 
-			dims, strdims, 3, VECTOR_TYPE_FUNC);  
+			dims, strdims, 3, ELEM_TYPE_IMMED);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT, 
 			 elfsh_default_encodeplthandler, 
-			 dims, strdims, 3, VECTOR_TYPE_FUNC);  
+			 dims, strdims, 3, ELEM_TYPE_IMMED);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT1, 
 			 elfsh_default_encodeplt1handler, 
-			 dims, strdims, 3, VECTOR_TYPE_FUNC);
+			 dims, strdims, 3, ELEM_TYPE_IMMED);
   aspect_register_vector(ELFSH_HOOK_ARGC, 
 			 elfsh_default_argchandler, 
-			 dims, strdims, 3, VECTOR_TYPE_FUNC);  
+			 dims, strdims, 3, ELEM_TYPE_IMMED);  
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -1401,7 +1401,7 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
     {
       if (!interp_hash.size)
 	{
-	  hash_init(&interp_hash, 10);
+	  hash_init(&interp_hash, 10, ELEM_TYPE_IMMED);
 	  hash_add(&interp_hash, 
 		   "/lib/ld-linux.so", 
 		   &elfsh_ostype[ELFSH_OS_LINUX]);

@@ -744,8 +744,8 @@ int		e2dbg_dlsym_init()
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
-  hash_init(&e2dbgworld.threads, 29);
-  hash_init(&e2dbgworld.bp, 51);
+  hash_init(&e2dbgworld.threads, 29, ELEM_TYPE_ANY);
+  hash_init(&e2dbgworld.bp, 51, ELEM_TYPE_ANY);
 
   write(1, " [D] e2dbg_dlsym_init FINISHED\n", 31);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));

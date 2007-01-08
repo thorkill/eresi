@@ -46,7 +46,7 @@ revmobj_t		*vm_lookup_addr(char *param)
   revmobj_t		*ptr;
   elfsh_Addr	       	val;
 
-#if __DEBUG_MODEL__
+#if __DEBUG_LANG__
   char			logbuf[BUFSIZ];
 
  snprintf(logbuf, BUFSIZ - 1, 
@@ -107,7 +107,7 @@ revmobj_t		*vm_lookup_immed(char *param)
   revmobj_t		*ptr;
   elfsh_Addr	       	val;
 
-#if __DEBUG_MODEL__
+#if __DEBUG_LANG__
   char			logbuf[BUFSIZ];
 
  snprintf(logbuf, BUFSIZ - 1, 
@@ -209,7 +209,7 @@ elfsh_Addr     		vm_lookup_index(char *param)
   int			ret;
   elfsh_Addr	       	val;
 
-#if __DEBUG_MODEL__
+#if __DEBUG_LANG__
   char			logbuf[BUFSIZ];
   
   snprintf(logbuf, BUFSIZ - 1, "[DEBUG_MODEL] Lookup index : PARAM [ %s ] \n", 
@@ -271,7 +271,7 @@ char			*vm_lookup_string(char *param)
   int			ret;
   char			lbuf[4096];
 
-#if __DEBUG_MODEL__
+#if __DEBUG_LANG__
   char			logbuf[BUFSIZ];
   
   snprintf(logbuf, BUFSIZ - 1, 

@@ -1027,7 +1027,7 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
   memset(&dw2_sections, 0x00, sizeof(edfmtdw2sectlist_t));
 
   /* Init global reference table (for DW_FORM_ref entities) */
-  hash_init(&ref_global_table, 50);
+  hash_init(&ref_global_table, 50, ELEM_TYPE_ANY);
 
   /* We already have it ! */
   dw2_sections.info.data = sect->data;
@@ -1097,7 +1097,7 @@ int		edfmt_dwarf2_block_entrie()
   while (dw2_sections.info.pos < dw2_sections.info.size)
     {
       /* Init local reference compil unit table */
-      hash_init(&ref_cu_table, 30);
+      hash_init(&ref_cu_table, 30, ELEM_TYPE_ANY);
 
       /* Alloc a new compil unit */
       XALLOC(tcu, sizeof(edfmtdw2cu_t), -1);
@@ -1818,7 +1818,7 @@ int		edfmt_dwarf2_block_loop(u_int endpos)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);   
 
-  hash_init(&abbrev_table, 30);
+  hash_init(&abbrev_table, 30, ELEM_TYPE_ANY);
   
   /* Parse abbrev table on the appropriate offset */
   edfmt_dwarf2_abbrev();

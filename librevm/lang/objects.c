@@ -150,6 +150,7 @@ revmL1_t	*vm_create_L1ENT(void	*get_obj,
   new->set_entval           = set_entval;
   new->l2list               = l2_hash;
   new->elem_size	    = elem_size;
+  new->tag                  = REVM_L1TAG;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 

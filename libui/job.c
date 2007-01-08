@@ -18,8 +18,8 @@ revmjob_t	*vm_clone_job(revmjob_t      *job)
   memcpy(new, job, sizeof(revmjob_t));
   bzero(&new->loaded, sizeof(hash_t));
   bzero(&new->dbgloaded, sizeof(hash_t));
-  hash_init(&new->loaded, 51);
-  hash_init(&new->dbgloaded, 11);
+  hash_init(&new->loaded, 51, ELEM_TYPE_OBJ);
+  hash_init(&new->dbgloaded, 11, ELEM_TYPE_OBJ);
 
   /* empty new job */
   new->curcmd         = NULL;

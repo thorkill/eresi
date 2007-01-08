@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.9 2007-01-06 01:46:57 thor Exp $
+ * $Id: function.c,v 1.10 2007-01-08 11:23:58 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -113,8 +113,8 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  fun->size  = size;
  fun->first = e;
  fun->name  = name;
- hash_init(&fun->parentfuncs, 5);
- hash_init(&fun->childfuncs, 5);
+ hash_init(&fun->parentfuncs, 5, ELEM_TYPE_PROC);
+ hash_init(&fun->childfuncs, 5, ELEM_TYPE_PROC);
  hash_add(&c->funchash, name, fun);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }

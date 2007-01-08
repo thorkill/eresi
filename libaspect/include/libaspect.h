@@ -102,6 +102,19 @@ void		elfsh_free(void *tofree);
  #define	free	elfsh_free
 #endif
 
+/* Elements that we can find in vectors or hash tables */
+#define		ELEM_TYPE_ANY	0	 /* Unknown tainted type */
+#define		ELEM_TYPE_L1	(1 << 1) /* Container type */
+#define		ELEM_TYPE_L2    (1 << 2) /* Simple type */
+#define		ELEM_TYPE_VECT  (1 << 3) /* Vector type */
+#define		ELEM_TYPE_HASH	(1 << 4) /* Hash table type */
+#define		ELEM_TYPE_PROC  (1 << 5) /* Abstract Procedure type */
+#define		ELEM_TYPE_BLOC  (1 << 6) /* Abstract Basic bloc pointers */
+#define		ELEM_TYPE_INSTR	(1 << 7) /* Abstract Instruction pointers */
+#define		ELEM_TYPE_IMMED	(1 << 8) /* Immed: str, raw, char, short, int, long */
+#define		ELEM_TYPE_OBJ	(1 << 9) /* File object pointers */
+#define		ELEM_TYPE_MAX   (1 << 10)
+
 /* Include this here since it contains an allocation too */
 #include "libhash.h"
 #include "libbtree.h"
@@ -115,10 +128,7 @@ typedef struct	s_vector
   u_int		*arraydims;		/* Size of each dimension */
   char		**strdims;		/* Label for each dimension */
   u_int		arraysz;		/* Number of dimensions */
-#define		VECTOR_TYPE_UNKNOWN	0
-#define		VECTOR_TYPE_HASH	1
-#define		VECTOR_TYPE_FUNC	2
-  u_int		type;			/* Type of elements in this vector */
+  u_int   	type;			/* Type of elements in this vector */
 }		vector_t;
 
 /* Initialize the vectors of libaspect */

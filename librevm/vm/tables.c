@@ -51,6 +51,9 @@ hash_t          fg_color_hash;
 hash_t          bg_color_hash;
 hash_t          t_color_hash;
 
+/* Grammar parser hash */
+hash_t		parser_hash;
+
 /* Trace hash */
 hash_t		trace_cmd_hash;
 
@@ -60,7 +63,7 @@ char	       elfsh_libpath[BUFSIZ];
 /* Fill all the Level 1 Objects hash tables */
 static void	setup_L1hash()
 {
-  hash_init(&L1_hash, 29);
+  hash_init(&L1_hash, 29, ELEM_TYPE_L1 | ELEM_TYPE_HASH);
   hash_add(&L1_hash, "hdr"     , (void *) vm_create_L1ENT(elfsh_get_hdr,
 							  NULL, NULL,
 							  &elf_L2_hash,
@@ -209,7 +212,7 @@ static void	setup_L1hash()
 /* Hash table for ELF header fields */
 static void	setup_elfhash()
 {
-  hash_init(&elf_L2_hash, 29);
+  hash_init(&elf_L2_hash, 29, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&elf_L2_hash, "magic"        , vm_create_L2ENT(elfsh_get_magic, 
 							  elfsh_set_magic, 
 							  ELFSH_OBJINT,
@@ -327,7 +330,7 @@ static void	setup_elfhash()
 /* Hash table for SHT fields */
 static void	setup_shthash()
 {
-  hash_init(&sht_L2_hash, 29);
+  hash_init(&sht_L2_hash, 29, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&sht_L2_hash, "type"     , vm_create_L2ENT(elfsh_get_section_type, 
 						      elfsh_set_section_type, 
 						      0, NULL, NULL, NULL, NULL));
@@ -390,7 +393,7 @@ static void	setup_shthash()
 /* Hash table for PHT fields */
 static void	setup_phthash()
 {
-  hash_init(&pht_L2_hash, 29);
+  hash_init(&pht_L2_hash, 29, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&pht_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_segment_type, 
 						   elfsh_set_segment_type, 
 						   0, NULL, NULL, NULL, NULL));
@@ -427,7 +430,7 @@ static void	setup_phthash()
 /* Hash table for symbol table */
 static void	setup_symhash()
 {
-  hash_init(&sym_L2_hash, 23);
+  hash_init(&sym_L2_hash, 23, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
 
   hash_add(&sym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR, 
 						  elfsh_get_symbol_name,
@@ -466,7 +469,7 @@ static void	setup_symhash()
 /* Hash table for dynamic symbol table */
 static void	setup_dynsymhash()
 {
-  hash_init(&dynsym_L2_hash, 23);
+  hash_init(&dynsym_L2_hash, 23, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
 
   hash_add(&dynsym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
 						     elfsh_get_dynsymbol_name,
@@ -501,7 +504,7 @@ static void	setup_dynsymhash()
 /* Hash table for .rel sections */
 static void	setup_relhash()
 {
-  hash_init(&rel_L2_hash, 23);
+  hash_init(&rel_L2_hash, 23, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&rel_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_reltype, 
 						   elfsh_set_reltype, 
 						   ELFSH_OBJLONG, NULL,
@@ -523,7 +526,7 @@ static void	setup_relhash()
 /* Hash table for .dynamic section */
 static void	setup_dynhash()
 {
-  hash_init(&dyn_L2_hash, 11);
+  hash_init(&dyn_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&dyn_L2_hash, "val", vm_create_L2ENT(elfsh_get_dynentry_val, 
 						elfsh_set_dynentry_val, 
 						ELFSH_OBJLONG, NULL, 
@@ -544,7 +547,7 @@ static void	setup_dynhash()
 static void	setup_gothash()
 {
   
-  hash_init(&got_L2_hash, 11);
+  hash_init(&got_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&got_L2_hash, "val" , vm_create_L2ENT(elfsh_get_got_val, elfsh_set_got_val,
 						 ELFSH_OBJLONG, NULL,
 						 NULL, NULL, NULL));
@@ -559,7 +562,7 @@ static void	setup_gothash()
 /* Hash tables for sections data */
 static void	setup_scthash()
 {
-  hash_init(&sct_L2_hash, 11);
+  hash_init(&sct_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&sct_L2_hash, "name", vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
 						 elfsh_get_section_name,
 						 elfsh_set_section_name,
@@ -579,14 +582,14 @@ static void   setup_vershash()
 {
   
   /* Version symbols */
-  hash_init(&vers_L2_hash, 11);
+  hash_init(&vers_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&vers_L2_hash, "value", vm_create_L2ENT(elfsh_get_versym_val,
 						   elfsh_set_versym_val,
 						   ELFSH_OBJSHORT, NULL,
 						   NULL, NULL, NULL));
   
   /* Version def */
-  hash_init(&verd_L2_hash, 11);
+  hash_init(&verd_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&verd_L2_hash, "index", vm_create_L2ENT(elfsh_get_verdef_ndx,
 						   elfsh_set_verdef_ndx,
 						   ELFSH_OBJSHORT, NULL,
@@ -619,10 +622,9 @@ static void   setup_vershash()
 						   elfsh_set_verdef_cname, 
 						   ELFSH_OBJLONG, NULL, 
 						   NULL, NULL, NULL));
-
    
    /* Version need */
-   hash_init(&vern_L2_hash, 11);
+   hash_init(&vern_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
    hash_add(&vern_L2_hash, "index", vm_create_L2ENT(elfsh_get_verneed_ndx, 
 						    elfsh_set_verneed_ndx, 
 						    ELFSH_OBJSHORT, NULL, 
@@ -668,7 +670,7 @@ static void   setup_hashhash()
 {
 
   /* Hash bucket */
-  hash_init(&hashb_L2_hash, 11);
+  hash_init(&hashb_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&hashb_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashbucket_value, 
 						    elfsh_set_hashbucket_value, 
 						    ELFSH_OBJINT, NULL, 
@@ -678,7 +680,7 @@ static void   setup_hashhash()
 						      ELFSH_OBJINT, NULL, 
 						      NULL, NULL, NULL)); 
   /* Hash chain */
-  hash_init(&hashc_L2_hash, 11);
+  hash_init(&hashc_L2_hash, 11, ELEM_TYPE_L2 | ELEM_TYPE_IMMED);
   hash_add(&hashc_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashchain_value, 
 						    elfsh_set_hashchain_value, 
 						    ELFSH_OBJINT, NULL, 
@@ -713,7 +715,7 @@ static void	setup_L2hash()
 /* Setup the command hash table */
 static void	setup_cmdhash()
 {
-  hash_init(&cmd_hash, 101);
+  hash_init(&cmd_hash, 101, ELEM_TYPE_IMMED);
 
   /* Interactive mode / Scripting mode commands */
   if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
@@ -915,7 +917,7 @@ static void	setup_varshash()
   l = vm_create_IMMEDSTR(1, get_libpath());
   o = vm_create_IMMED(ELFSH_OBJINT, 1, ELFSH_SLOG);
 
-  hash_init(&vars_hash, 251);
+  hash_init(&vars_hash, 251, ELEM_TYPE_IMMED);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
   hash_add(&vars_hash, ELFSH_LOADVAR, g);
   hash_add(&vars_hash, ELFSH_ERRVAR, r);
@@ -931,7 +933,7 @@ static void	setup_consthash()
 {
   u_int		index;
 
-  hash_init(&const_hash, 51);
+  hash_init(&const_hash, 51, ELEM_TYPE_IMMED);
 
   for (index = 0; index < ELFSH_SEGTYPE_MAX; index++)
     hash_add(&const_hash, 
@@ -1023,6 +1025,30 @@ static void	setup_consthash()
 	     elfsh_mipsflags + index);
 }
 
+
+/* Setup default grammar */
+void	setup_grammar()
+{
+  hash_init(&parser_hash, 11, ELEM_TYPE_IMMED);
+  
+  /* Default grammar rules */
+#define LOOKUP5_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"		 
+#define LOOKUP4_A   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"REVM_SEP"%41s" 
+#define LOOKUP4_B   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^]]]"REVM_SEP"%41s"		 
+#define LOOKUP4_C   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"			 
+#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"				 
+#define	LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"                   
+
+  hash_add(&parser_hash, LOOKUP5_IDX, parse_lookup5_index);
+  hash_add(&parser_hash, LOOKUP4_A  , parse_lookup4);
+  hash_add(&parser_hash, LOOKUP4_B  , parse_lookup4);
+  hash_add(&parser_hash, LOOKUP4_C  , parse_lookup4);
+  hash_add(&parser_hash, LOOKUP3_IDX, parse_lookup3_index);
+  hash_add(&parser_hash, LOOKUP3    , parse_lookup3);
+}
+
+
+
 /* Setup color table */
 void setup_color()
 {
@@ -1090,14 +1116,14 @@ void		vm_setup_hashtables()
     return;
   done = 1;
 
-  hash_init(&file_hash, 251);
-  hash_init(&mod_hash, 51);
-  hash_init(&labels_hash[0], 51);
-  hash_init(&fg_color_hash, 13);
-  hash_init(&bg_color_hash, 13);
-  hash_init(&t_color_hash, 11);
-  hash_init(&trace_cmd_hash, 11);
-  hash_init(&world.shared_hash, 11);
+  hash_init(&file_hash, 251, ELEM_TYPE_OBJ);
+  hash_init(&mod_hash, 51, ELEM_TYPE_ANY);
+  hash_init(&labels_hash[0], 51, ELEM_TYPE_IMMED);
+  hash_init(&fg_color_hash, 13, ELEM_TYPE_ANY);
+  hash_init(&bg_color_hash, 13, ELEM_TYPE_ANY);
+  hash_init(&t_color_hash, 11, ELEM_TYPE_ANY);
+  hash_init(&trace_cmd_hash, 11, ELEM_TYPE_ANY);
+  hash_init(&world.shared_hash, 11, ELEM_TYPE_OBJ);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();
@@ -1106,4 +1132,5 @@ void		vm_setup_hashtables()
   setup_color();
   setup_color_type();
   setup_trace_table();
+  setup_grammar();
 }

@@ -10,10 +10,13 @@
 
 
 /* Initialize the hash table */
-int	hash_init(hash_t *h, int size)
+int	hash_init(hash_t *h, int size, u_int type)
 {
+  if (type >= ELEM_TYPE_MAX)
+    return (-1);
   HASHALLOC(h->ent, size * sizeof(hashent_t), -1);
   h->size   = size;
+  h->type   = type;
   h->elmnbr = 0;
   return (0);
 }

@@ -387,11 +387,11 @@ int		vm_initio()
   initial->active	= 1;
   initial->createtime = time(&initial->createtime);
   world.initial = world.curjob = initial;
-  hash_init(&world.jobs, 11);
+  hash_init(&world.jobs, 11, ELEM_TYPE_ANY);
   hash_add(&world.jobs, "local", initial);
   initial->name = elfsh_strdup("local");
-  hash_init(&initial->loaded, 51);
-  hash_init(&initial->dbgloaded, 11);
+  hash_init(&initial->loaded, 51, ELEM_TYPE_OBJ);
+  hash_init(&initial->dbgloaded, 11, ELEM_TYPE_OBJ);
   elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, 
 			 vm_colorfieldstr, vm_colortypestr, vm_colorend, 
 			 vm_colorwarn, vm_colorfunction, vm_colorfilename);

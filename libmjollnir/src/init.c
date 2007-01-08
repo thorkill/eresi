@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.10 2007-01-02 06:21:23 may Exp $
+ * $Id: init.c,v 1.11 2007-01-08 11:23:58 may Exp $
  *
  * Initialization functions
  *
@@ -13,8 +13,8 @@ int		mjr_init_session(mjrsession_t *sess)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_init(&goto_hash, 100);
-  hash_init(&sess->ctx, mjrHashSmall);
+  hash_init(&goto_hash, 100, ELEM_TYPE_IMMED);
+  hash_init(&sess->ctx, mjrHashSmall, ELEM_TYPE_ANY);
 
   /* register configurable parameters */
   elfsh_config_add_item(
@@ -67,8 +67,8 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  XALLOC(ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash, mjrHashVerySmall);
- hash_init(&ctx->blkhash, mjrHashLarge);
+ hash_init(&ctx->funchash, mjrHashVerySmall, ELEM_TYPE_PROC);
+ hash_init(&ctx->blkhash, mjrHashLarge, ELEM_TYPE_BLOC);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }
 
