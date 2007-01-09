@@ -15,21 +15,21 @@
 #define MGETBIT(val, shift)	(((val) >> shift) & 1)
 
 int	sparc_type_instr(int instr);
-void	sparc_instruction2synthetic(asm_instr *ins);
-int	sparc_decode_branch(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_other(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_sethi(asm_instr *, u_char *, u_int, asm_processor *);
+void sparc_instruction2synthetic(asm_instr *ins);
+
+int	sparc_decode_branches(asm_instr *, u_char *, u_int, asm_processor *);
 int	sparc_decode_call(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_format3_rs(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_format3_imm(asm_instr *, u_char *, u_int, asm_processor *);
+int	sparc_decode_arithmetic(asm_instr *, u_char *, u_int, asm_processor *);
+int	sparc_decode_memory(asm_instr *, u_char *, u_int, asm_processor *);
 
-void	sparc_convert_branch(struct s_decode_branch *, u_char *, asm_processor *);
-void    sparc_convert_sethi(struct s_decode_sethi *, u_char *, asm_processor *);
-void	sparc_convert_call(struct s_decode_call	*, u_char *, asm_processor *);
-void	sparc_convert_format3_rs(struct s_decode_f3rs *, u_char *, asm_processor *);
-void	sparc_convert_format3_imm(struct s_decode_f3imm	*, u_char *, asm_processor *);
+void sparc_convert_pbranch(struct s_decode_pbranch *, u_char *, asm_processor *);
+void sparc_convert_rbranch(struct s_decode_rbranch *, u_char *, asm_processor *);
+void sparc_convert_branch(struct s_decode_branch *, u_char *, asm_processor *);
+void sparc_convert_call(struct s_decode_call *, u_char *, asm_processor *);
+void sparc_convert_format3(struct s_decode_format3 *, u_char *, asm_processor *);
+void sparc_convert_format4(struct s_decode_format4 *, u_char *, asm_processor *);
 
-void	asm_resolve_sparc(void *, u_int, char *, u_int);
+void asm_resolve_sparc(void *, u_int, char *, u_int);
 
 
 /*****
@@ -45,22 +45,26 @@ struct s_asm_ins_sparc {
 };
 
 struct s_asm_proc_sparc {
-  /* compatibility				*/
-  /* processor state: oplen actived or not	*/
-    int			(*get_vect_size)(asm_processor *);
-  
   /* handlers for x86 instructions referenced by opcode	*/
-  int	*format0_branch_table;
-  int	*format3_op2_table;
-  int	*format3_op3_table;
+  int *bcc_table;
+  int *brcc_table;
+  int *fbcc_table;
+  int *shift_table;
+  int *movcc_table;
+  int *movfcc_table;
+  int *movr_table;
+  int *fpop1_table;
+  int *fmovcc_table;
+  int *fmovfcc_table;
+  int *fmovr_table;
+  int *fcmp_table;
+  int *op2_table;
+  int *op3_table;
 };
-
 
 enum {
   ASM_REG_R0,
   ASM_REG_R1
-  
-
 } e_sparc_gregisters;
 
 enum {
@@ -97,9 +101,65 @@ enum {
   ASM_REG_I6,
   ASM_REG_I7
 } e_sparc_sregisters;
+
+enum {
+  ASM_SREG_Y,
+  ASM_SREG_BAD,
+  ASM_SREG_CCR,
+  ASM_SREG_ASI,
+  ASM_SREG_TICK,
+  ASM_SREG_PC,
+  ASM_SREG_FPRS
+  /* Values from 7 to 31 are either unused or implementation-specific */
+} e_sparc_state_registers;
+
+enum {
+  ASM_PREG_TPC,
+  ASM_PREG_TNPC,
+  ASM_PREG_TSTATE,
+  ASM_PREG_TT,
+  ASM_PREG_TICK,
+  ASM_PREG_TBA,
+  ASM_PREG_PSTATE,
+  ASM_PREG_TL,
+  ASM_PREG_PIL,
+  ASM_PREG_CWP,
+  ASM_PREG_CANSAVE,
+  ASM_PREG_CANRESTORE,
+  ASM_PREG_CLEANWIN,
+  ASM_PREG_OTHERWIN,
+  ASM_PREG_WSTATE,
+  ASM_PREG_FQ,
+  ASM_PREG_BAD16, /* Values from 16 to 30 are reserved */
+  ASM_PREG_BAD17,
+  ASM_PREG_BAD18,
+  ASM_PREG_BAD19,
+  ASM_PREG_BAD20,
+  ASM_PREG_BAD21,
+  ASM_PREG_BAD22,
+  ASM_PREG_BAD23,
+  ASM_PREG_BAD24,
+  ASM_PREG_BAD25,
+  ASM_PREG_BAD26,
+  ASM_PREG_BAD27,
+  ASM_PREG_BAD28,
+  ASM_PREG_BAD29,
+  ASM_PREG_BAD30,
+  ASM_PREG_VER
+} e_sparc_privileged_registers;
+
+enum {
+  ASM_SP_FCC0,
+  ASM_SP_FCC1,
+  ASM_SP_FCC2,
+  ASM_SP_FCC3,
+  ASM_SP_ICC,
+  ASM_SP_BADCC, /* 5 and 7 are reserved */
+  ASM_SP_XCC  
+} e_sparc_condition_codes;
+
 /**
  * Instruction family, depending on op field
- *
  */
 
 enum {
@@ -116,138 +176,382 @@ enum {
   ASM_SP_OTYPE_DISPLACEMENT,
   ASM_SP_OTYPE_DISP30,
   ASM_SP_OTYPE_SETHI,
-  ASM_SP_OTYPE_FREGISTER
+  ASM_SP_OTYPE_FREGISTER,
+  ASM_SP_OTYPE_SREGISTER,
+  ASM_SP_OTYPE_PREGISTER,
+  ASM_SP_OTYPE_CC
 };
-
-
 
 /***
  * Instruction list
- *
- *
- * Last Instruction must be ASM_SP_BAD
+ * 
+ * Last instruction must be ASM_SP_BAD
  */
 
 enum {
   ASM_SP_,
-  ASM_SP_ADD,
-  ASM_SP_AND,
-  ASM_SP_OR,
-  ASM_SP_XOR,
-  ASM_SP_SUB,
-  ASM_SP_ANDN,
-  ASM_SP_ORN,
-  ASM_SP_XNOR,
-  ASM_SP_ADDX,
-  ASM_SP_SUBX,
-  ASM_SP_ADDCC,
-  ASM_SP_ANDCC,
-  ASM_SP_ORCC,
-  ASM_SP_XORCC,
-  ASM_SP_SUBCC,
-  ASM_SP_ANDNCC,
-  ASM_SP_ORNCC,
-  ASM_SP_XNORCC,
-  ASM_SP_ADDXCC,
-  ASM_SP_SUBXCC,
-  ASM_SP_TADDCC,
-  ASM_SP_TSUBCC,
-  ASM_SP_TADDCCTV,
-  ASM_SP_TSUBCCTV,
-  ASM_SP_MULSCC,
-  ASM_SP_SLL,
-  ASM_SP_SRL,
-  ASM_SP_SRA,
-  ASM_SP_RDY,
-  ASM_SP_RDPSR,
-  ASM_SP_RDWIM,
-  ASM_SP_RDTBR,
-  ASM_SP_WRY,
-  ASM_SP_WRPSR,
-  ASM_SP_WRWIM,
-  ASM_SP_WRTBR,
-  ASM_SP_FPOP1,
-  ASM_SP_FPOP2,
-  ASM_SP_CPOP1,
-  ASM_SP_CPOP2,
-  ASM_SP_JMPL,
-  ASM_SP_RETT,
-  ASM_SP_TICC,
-  ASM_SP_IFLUSH,
-  ASM_SP_SAVE,
-  ASM_SP_RESTORE,
-  ASM_SP_LD,
-  ASM_SP_LDUB,
-  ASM_SP_LDUH,
-  ASM_SP_LDD,
-  ASM_SP_ST,
-  ASM_SP_STB,
-  ASM_SP_STH,
-  ASM_SP_STD,
-  ASM_SP_LDSB,
-  ASM_SP_LDSH,
-  ASM_SP_LDSTUB,
-  ASM_SP_SWAP,
-  ASM_SP_LDA,
-  ASM_SP_LDUBA,
-  ASM_SP_LDUHA,
-  ASM_SP_LDDA,
-  ASM_SP_STAC,
-  ASM_SP_STBA,
-  ASM_SP_STHA,
-  ASM_SP_STDA,
-  ASM_SP_LDSBA,
-  ASM_SP_LDSHA,
-  ASM_SP_LDSTUBA,
-  ASM_SP_SWAPA,
-  ASM_SP_LDF,
-  ASM_SP_LDFSR,
-  ASM_SP_LDDF,
-  ASM_SP_STF,
-  ASM_SP_STFSR,
-  ASM_SP_STDFQ,
-  ASM_SP_STDF,
-  ASM_SP_LDC,
-  ASM_SP_LDCSR,
-  ASM_SP_LDDC,
-  ASM_SP_STC,
-  ASM_SP_STCSR,
-  ASM_SP_STDCQ,
-  ASM_SP_STDC,
+  
+  ASM_SP_ADD, /* ADD */
+  ASM_SP_ADDCC, /* ADDcc */
+  ASM_SP_ADDC, /* ADDC */
+  ASM_SP_ADDCCC, /* ADDCcc */
+  ASM_SP_AND, /* AND */
+  ASM_SP_ANDCC, /* ANDcc */
+  ASM_SP_ANDN, /* ANDN */
+  ASM_SP_ANDNCC, /* ANDNcc */
+  ASM_SP_BA, /* BPcc, Bicc */
   ASM_SP_BN,
-  ASM_SP_BZ,
-  ASM_SP_BLE,
-  ASM_SP_BL,
-  ASM_SP_BLEU,
-  ASM_SP_BCS,
-  ASM_SP_BNEG,
-  ASM_SP_BVS,
-  ASM_SP_BBA,
   ASM_SP_BNE,
+  ASM_SP_BE,
   ASM_SP_BG,
+  ASM_SP_BLE,
   ASM_SP_BGE,
+  ASM_SP_BL,
   ASM_SP_BGU,
+  ASM_SP_BLEU,
   ASM_SP_BCC,
+  ASM_SP_BCS,
   ASM_SP_BPOS,
+  ASM_SP_BNEG,
   ASM_SP_BVC,
-  ASM_SP_SETHI,
-  ASM_SP_CALL,
-  ASM_SP_NOP,
-  ASM_SP_TST,
-  ASM_SP_CLR,
-  ASM_SP_CMP,
-  ASM_SP_JMP,
-  ASM_SP_RET,
-  ASM_SP_RETL,
-  ASM_SP_MOV,
+  ASM_SP_BVS,
+  ASM_SP_BRZ, /* BPr */
+  ASM_SP_BRLEZ,
+  ASM_SP_BRLZ,
+  ASM_SP_BRNZ,
+  ASM_SP_BRGZ,
+  ASM_SP_BRGEZ,
+  ASM_SP_CALL, /* CALL */
+  ASM_SP_CASA, /* CASA */
+  ASM_SP_CASXA, /* CASXA */
+  ASM_SP_DONE, /* DONE */
+  ASM_SP_FABSS, /* FABS(s,d,q) */
+  ASM_SP_FABSD,
+  ASM_SP_FABSQ,
+  ASM_SP_FADDS, /* FADD(s,d,q) */
+  ASM_SP_FADDD,
+  ASM_SP_FADDQ,
+  ASM_SP_FBA, /* FBfcc, FBPfcc */
+  ASM_SP_FBN,
+  ASM_SP_FBU,
+  ASM_SP_FBG,
+  ASM_SP_FBUG,
+  ASM_SP_FBL,
+  ASM_SP_FBUL,
+  ASM_SP_FBLG,
+  ASM_SP_FBNE,
+  ASM_SP_FBE,
+  ASM_SP_FBUE,
+  ASM_SP_FBGE,
+  ASM_SP_FBUGE,
+  ASM_SP_FBLE,
+  ASM_SP_FBULE,
+  ASM_SP_FBO,
+  ASM_SP_FCMPS, /* FCMP(s,d,q) */
+  ASM_SP_FCMPD,
+  ASM_SP_FCMPQ,
+  ASM_SP_FCMPES, /* FCMPE(s,d,q) */
+  ASM_SP_FCMPED,
+  ASM_SP_FCMPEQ,
+  ASM_SP_FDIVS, /* FDIV(s,d,q) */
+  ASM_SP_FDIVD,
+  ASM_SP_FDIVQ,
+  ASM_SP_FDMULQ, /* FdMULq */
+  ASM_SP_FITOS, /* FiTO(s,d,q) */
+  ASM_SP_FITOD,
+  ASM_SP_FITOQ,
+  ASM_SP_FLUSH, /* FLUSH */
+  ASM_SP_FLUSHW, /* FLUSHW */
+  ASM_SP_FMOVS, /* FMOV(s,d,q) */
+  ASM_SP_FMOVD,
+  ASM_SP_FMOVQ,
+  ASM_SP_FMOVSA, /* FMOV(s,d,q)cc */
+  ASM_SP_FMOVSN,
+  ASM_SP_FMOVSNE,
+  ASM_SP_FMOVSE,
+  ASM_SP_FMOVSG,
+  ASM_SP_FMOVSLE,
+  ASM_SP_FMOVSGE,
+  ASM_SP_FMOVSL,
+  ASM_SP_FMOVSGU,
+  ASM_SP_FMOVSLEU,
+  ASM_SP_FMOVSCC,
+  ASM_SP_FMOVSCS,
+  ASM_SP_FMOVSPOS,
+  ASM_SP_FMOVSNEG,
+  ASM_SP_FMOVSVC,
+  ASM_SP_FMOVSVS,
+  ASM_SP_FMOVSU,
+  ASM_SP_FMOVSUG,
+  ASM_SP_FMOVSUL,
+  ASM_SP_FMOVSLG,
+  ASM_SP_FMOVSUE,
+  ASM_SP_FMOVSUGE,
+  ASM_SP_FMOVSULE,
+  ASM_SP_FMOVSO,
+  ASM_SP_FMOVDA,
+  ASM_SP_FMOVDN,
+  ASM_SP_FMOVDNE,
+  ASM_SP_FMOVDE,
+  ASM_SP_FMOVDG,
+  ASM_SP_FMOVDLE,
+  ASM_SP_FMOVDGE,
+  ASM_SP_FMOVDL,
+  ASM_SP_FMOVDGU,
+  ASM_SP_FMOVDLEU,
+  ASM_SP_FMOVDCC,
+  ASM_SP_FMOVDCS,
+  ASM_SP_FMOVDPOS,
+  ASM_SP_FMOVDNEG,
+  ASM_SP_FMOVDVC,
+  ASM_SP_FMOVDVS,
+  ASM_SP_FMOVDU,
+  ASM_SP_FMOVDUG,
+  ASM_SP_FMOVDUL,
+  ASM_SP_FMOVDLG,
+  ASM_SP_FMOVDUE,
+  ASM_SP_FMOVDUGE,
+  ASM_SP_FMOVDULE,
+  ASM_SP_FMOVDO,
+  ASM_SP_FMOVQA,
+  ASM_SP_FMOVQN,
+  ASM_SP_FMOVQNE,
+  ASM_SP_FMOVQE,
+  ASM_SP_FMOVQG,
+  ASM_SP_FMOVQLE,
+  ASM_SP_FMOVQGE,
+  ASM_SP_FMOVQL,
+  ASM_SP_FMOVQGU,
+  ASM_SP_FMOVQLEU,
+  ASM_SP_FMOVQCC,
+  ASM_SP_FMOVQCS,
+  ASM_SP_FMOVQPOS,
+  ASM_SP_FMOVQNEG,
+  ASM_SP_FMOVQVC,
+  ASM_SP_FMOVQVS,
+  ASM_SP_FMOVQU,
+  ASM_SP_FMOVQUG,
+  ASM_SP_FMOVQUL,
+  ASM_SP_FMOVQLG,
+  ASM_SP_FMOVQUE,
+  ASM_SP_FMOVQUGE,
+  ASM_SP_FMOVQULE,
+  ASM_SP_FMOVQO,  
+  ASM_SP_FMOVRSZ, /* FMOV(s,d,q)r */ 
+  ASM_SP_FMOVRSLEZ,
+  ASM_SP_FMOVRSLZ,
+  ASM_SP_FMOVRSNZ,
+  ASM_SP_FMOVRSGZ,
+  ASM_SP_FMOVRSGEZ,
+  ASM_SP_FMOVRDZ, 
+  ASM_SP_FMOVRDLEZ,
+  ASM_SP_FMOVRDLZ,
+  ASM_SP_FMOVRDNZ,
+  ASM_SP_FMOVRDGZ,
+  ASM_SP_FMOVRDGEZ,
+  ASM_SP_FMOVRQZ, 
+  ASM_SP_FMOVRQLEZ,
+  ASM_SP_FMOVRQLZ,
+  ASM_SP_FMOVRQNZ,
+  ASM_SP_FMOVRQGZ,
+  ASM_SP_FMOVRQGEZ,
+  ASM_SP_FMULS, /* FMUL(s,d,q) */
+  ASM_SP_FMULD,
+  ASM_SP_FMULQ,
+  ASM_SP_FNEGS, /* FNEG(s,d,q) */
+  ASM_SP_FNEGD,
+  ASM_SP_FNEGQ,
+  ASM_SP_FSMULD, /* FsMULd */
+  ASM_SP_FSQRTS, /* FSQRT(s,d,q) */
+  ASM_SP_FSQRTD,
+  ASM_SP_FSQRTQ,
+  ASM_SP_FSTOI, /* F(s,d,q)TOi */
+  ASM_SP_FDTOI,
+  ASM_SP_FQTOI,
+  ASM_SP_FSTOD, /* F(s,d,q)TO(s,d,q) */
+  ASM_SP_FSTOQ,
+  ASM_SP_FDTOS,
+  ASM_SP_FDTOQ,
+  ASM_SP_FQTOS,
+  ASM_SP_FQTOD,
+  ASM_SP_FSTOX, /* F(s,d,q)TOx */
+  ASM_SP_FDTOX,
+  ASM_SP_FQTOX,
+  ASM_SP_FSUBS, /* FSUB(s,d,q) */
+  ASM_SP_FSUBD,
+  ASM_SP_FSUBQ,
+  ASM_SP_FXTOS, /* FxTO(s,d,q) */
+  ASM_SP_FXTOD,
+  ASM_SP_FXTOQ,
+  ASM_SP_ILLTRAP, /* ILLTRAP */
+  ASM_SP_IMPDEP1, /* IMPDEP1 */
+  ASM_SP_IMPDEP2, /* IMPDEP2 */
+  ASM_SP_JMPL, /* JMPL, RET, RETL */
+  ASM_SP_LDD, /* LDD */
+  ASM_SP_LDDA, /* LDDA */
+  ASM_SP_LDDF, /* LDFF */
+  ASM_SP_LDDFA, /* LDDFA */
+  ASM_SP_LDF, /* LDF */
+  ASM_SP_LDFA, /* LDFA */
+  ASM_SP_LDFSR, /* LDFSR */
+  ASM_SP_LDQF, /* LDQF */
+  ASM_SP_LDQFA, /* LDQFA */
+  ASM_SP_LDSB, /* LDSB */
+  ASM_SP_LDSBA, /* LDSBA */
+  ASM_SP_LDSH, /* LDSH */
+  ASM_SP_LDSHA, /* LDSHA */
+  ASM_SP_LDSTUB, /* LDSTUB */
+  ASM_SP_LDSTUBA, /* LDSTUBA */
+  ASM_SP_LDSW, /* LDSW */
+  ASM_SP_LDSWA, /* LDSWA */
+  ASM_SP_LDUB, /* LDUB */
+  ASM_SP_LDUBA, /*LDUBA */
+  ASM_SP_LDUH, /* LDUH */
+  ASM_SP_LDUHA, /* LDUHA */
+  ASM_SP_LDUW, /* LDUW */
+  ASM_SP_LDUWA, /* LDUWA */
+  ASM_SP_LDX, /* LDX */
+  ASM_SP_LDXA, /* LDXA */
+  ASM_SP_LDXFSR, /* LDXFSR */
+  ASM_SP_MEMBAR, /* MEMBAR */
+  ASM_SP_MOVA, /* MOVcc */
+  ASM_SP_MOVN,
+  ASM_SP_MOVNE,
+  ASM_SP_MOVE,
+  ASM_SP_MOVG,
+  ASM_SP_MOVLE,
+  ASM_SP_MOVGE,
+  ASM_SP_MOVL,
+  ASM_SP_MOVGU,
+  ASM_SP_MOVLEU,
+  ASM_SP_MOVCC,
+  ASM_SP_MOVCS,
+  ASM_SP_MOVPOS,
+  ASM_SP_MOVNEG,
+  ASM_SP_MOVVC,
+  ASM_SP_MOVVS,
+  ASM_SP_MOVU,
+  ASM_SP_MOVUG,
+  ASM_SP_MOVUL,
+  ASM_SP_MOVLG,
+  ASM_SP_MOVUE,
+  ASM_SP_MOVUGE,
+  ASM_SP_MOVULE,
+  ASM_SP_MOVO,
+  ASM_SP_MOVRZ, /* MOVr */
+  ASM_SP_MOVRLEZ,
+  ASM_SP_MOVRLZ,
+  ASM_SP_MOVRNZ,
+  ASM_SP_MOVRGZ,
+  ASM_SP_MOVRGEZ,
+  ASM_SP_MULSCC, /* MULScc */
+  ASM_SP_MULX, /* MULX */
+  ASM_SP_NOP, /* NOP */
+  ASM_SP_OR, /* OR */
+  ASM_SP_ORCC, /* ORcc */
+  ASM_SP_ORN, /* ORC */
+  ASM_SP_ORNCC, /* ORNcc */
+  ASM_SP_POPC, /* POPC */
+  ASM_SP_PREFETCH, /* PREFETCH */
+  ASM_SP_PREFETCHA, /* PREFETCHA */
+  ASM_SP_RD, /* RDASI, RDASR, RDCCR, RDFPRS, RDPC, RDPR, RDTICK, RDY */
+  ASM_SP_RDPR, /* RDPR */
+  ASM_SP_RESTORE, /* RESTORE */
+  ASM_SP_RESTORED, /* RESTORED */
+  ASM_SP_RETRY, /* RETRY */
+  ASM_SP_RETURN, /* RETURN */
+  ASM_SP_SAVE, /* SAVE */
+  ASM_SP_SAVED, /* SAVED */
+  ASM_SP_SDIV, /* SDIV */
+  ASM_SP_SDIVCC, /* SDIVcc */
+  ASM_SP_SDIVX, /* SDIVX */
+  ASM_SP_SETHI, /* SETHI */
+  ASM_SP_SIR, /* SIR */
+  ASM_SP_SLL, /* SLL */
+  ASM_SP_SLLX, /* SLLX */
+  ASM_SP_SMUL, /* SMUL */
+  ASM_SP_SMULCC, /* SMULcc */
+  ASM_SP_SQRTS, /* SQRT(s,d,q) */
+  ASM_SP_SQRTD,
+  ASM_SP_SQRTQ,
+  ASM_SP_SRA, /* SRA */
+  ASM_SP_SRAX, /* SRAX */
+  ASM_SP_SRL, /* SRL */
+  ASM_SP_SRLX, /* SRLX */
+  ASM_SP_STB, /* STB */
+  ASM_SP_STBA, /* STBA */
+  ASM_SP_STBAR, /* STBAR */
+  ASM_SP_STD, /* STD */
+  ASM_SP_STDA, /* STDA */
+  ASM_SP_STDF, /* STDF */
+  ASM_SP_STDFA, /* STDFA */
+  ASM_SP_STF, /* STF */
+  ASM_SP_STFA, /* STFA */
+  ASM_SP_STFSR, /* STFSR */
+  ASM_SP_STH, /* STH */
+  ASM_SP_STHA, /* STHA */
+  ASM_SP_STQF, /* STQF */
+  ASM_SP_STQFA, /* STQFA */
+  ASM_SP_STW, /* STW */
+  ASM_SP_STWA, /* STWA */
+  ASM_SP_STX, /* STX */
+  ASM_SP_STXA, /* STXA */
+  ASM_SP_STXFSR, /* STXFSR */
+  ASM_SP_SUB, /* SUB */
+  ASM_SP_SUBCC, /* SUBcc */
+  ASM_SP_SUBC, /* SUBC */
+  ASM_SP_SUBCCC, /* SUBCcc */
+  ASM_SP_SWAP, /* SWAP */
+  ASM_SP_SWAPA, /* SWAPA */
+  ASM_SP_TADDCC, /* TADDcc */
+  ASM_SP_TADDCCTV, /* TADDccTV */
+  ASM_SP_TA, /* Tcc */
+  ASM_SP_TN,
+  ASM_SP_TNE,
+  ASM_SP_TE,
+  ASM_SP_TG,
+  ASM_SP_TLE,
+  ASM_SP_TGE,
+  ASM_SP_TL,
+  ASM_SP_TGU,
+  ASM_SP_TLEU,
+  ASM_SP_TCC,
+  ASM_SP_TCS,
+  ASM_SP_TPOS,
+  ASM_SP_TNEG,
+  ASM_SP_TVC,
+  ASM_SP_TVS,
+  ASM_SP_TSUBCC, /* TSUBcc */
+  ASM_SP_TSUBCCTV, /* TSUBccTV */
+  ASM_SP_UDIV, /* UDIV */
+  ASM_SP_UDIVCC, /* UDIVcc */
+  ASM_SP_UDIVX, /* UDIVX */
+  ASM_SP_UMUL, /* UMUL */
+  ASM_SP_UMULCC, /* UMULcc */
+  ASM_SP_WR, /* WRASI, WRASR, WRCCR, WRFPRS, WRY */
+  ASM_SP_WRPR, /* WRPR */
+  ASM_SP_XNOR, /* XNOR */
+  ASM_SP_XNORCC, /* XNORcc */
+  ASM_SP_XOR, /* XOR */
+  ASM_SP_XORCC, /* XORcc */
+    
   ASM_SP_BAD
 } e_sparc_instr;
 
 extern char	*sparc_instr_list[ASM_SP_BAD + 1];
-extern int	sparc_cond_list[16];
-extern int	format3_op2_table[64];
-extern int	format3_op3_table[64];
-
+extern int sparc_bcc_list[16];
+extern int sparc_brcc_list[8];
+extern int sparc_fbcc_list[16];
+extern int sparc_shift_list[6];
+extern int sparc_movcc_list[16];
+extern int sparc_movfcc_list[16];
+extern int sparc_movr_list[8];
+extern int sparc_fpop1_list[256];
+extern int sparc_fmovcc_list[48];
+extern int sparc_fmovfcc_list[48];
+extern int sparc_fmovr_list[24];
+extern int sparc_fcmp_list[8];
+extern int sparc_op2_table[64];
+extern int sparc_op3_table[64];
 
 #endif
-

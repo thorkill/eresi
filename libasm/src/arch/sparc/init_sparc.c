@@ -10,73 +10,58 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-
-int     fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) {
+int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) 
+{  
+  int converted;
   
-  int	converted;
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-  u_char	*ptr;
-  int	i;
+  u_char *ptr;
+  int i;
   ptr = (u_char*) &converted;
+  
   for (i = 0; i < 4; i++)
     *(ptr + i) = *(buf + 3 - i);
+    
   #if DEBUG_SPARC
-  printf("[DIS_SPARC] big endian -> little endian : 0x%08x - ", converted);
-  for (i = 31; i >= 0; i--)
-    {
+    printf("[DIS_SPARC] big endian -> little endian : 0x%08x - ", converted);
+    
+    for (i = 31; i >= 0; i--){
       printf("%i", MGETBIT(converted, i));
       if (!(i % 8))
-	printf(" ");
+	    printf(" ");
     }
-  puts("");
+    
+    puts("");
   #endif
 #else
+
   memcpy(&converted, buf, 4);
+  
 #endif
 
   ins->proc = proc;
   ins->len = 4;
-  if (MGETBIT(converted, 31) == 0)
-    {
-      if (MGETBIT(converted, 30) == 1)
-	{
-	  return sparc_decode_call(ins, (u_char *)&converted, len, proc);
-	}
-      else
-	{
-	  if (MGETBIT(converted, 24) == 1)
-	    return sparc_decode_sethi(ins, (u_char*) &converted, len, proc);
-	  else
-	    {
-	      if (MGETBIT(converted, 23) == 1)
-		return sparc_decode_branch(ins, (u_char*) &converted, len, proc);
-	      else
-		return sparc_decode_other(ins, (u_char*) &converted, len, proc);
-	    }
-	  
-	}
-    }
+  ins->ptr_instr = buf;
+  if (MGETBIT(converted, 31)) {
+  	if (MGETBIT(converted, 30))
+	  return sparc_decode_memory(ins, (u_char*) &converted, len, proc);
+    else
+	  return sparc_decode_arithmetic(ins, (u_char*) &converted, len, proc);    	   
+  }	
   else
-    {
-      if (MGETBIT(converted, 13))
-	return (sparc_decode_format3_imm(ins, (u_char*) &converted, len, proc));
-      else
-	return (sparc_decode_format3_rs(ins, (u_char*) &converted, len, proc));
-    }
+  	if (MGETBIT(converted, 30))
+	  return sparc_decode_call(ins, (u_char *)&converted, len, proc);	
+    else	    
+	  return sparc_decode_branches(ins, (u_char*) &converted, len, proc);
+  
   printf("[DEBUG_SPARC] fetch_sparc:impossible execution path\n");
   return (-1);
 }
 
-
-
 void	asm_init_sparc(asm_processor *proc) {
-
   struct s_asm_proc_sparc	*inter;
-  // int				i;
   
-  proc->instr_table = /*malloc(sizeof(char *) * (ASM_SP_BAD + 1));
-  for (i = 0; i < (ASM_SP_BAD + 1); i++)
-  proc->instr_table[i] = */ sparc_instr_list;
+  proc->instr_table = sparc_instr_list;
   proc->resolve_immediate = asm_resolve_sparc;
   proc->resolve_data = 0;
   proc->fetch = fetch_sparc;
@@ -84,12 +69,18 @@ void	asm_init_sparc(asm_processor *proc) {
   
   proc->internals = inter = malloc(sizeof (struct s_asm_proc_sparc));
   
-  inter->format0_branch_table = sparc_cond_list;
-  inter->format3_op2_table = format3_op2_table;
-  inter->format3_op3_table = format3_op3_table;
+  inter->bcc_table = sparc_bcc_list;
+  inter->brcc_table = sparc_brcc_list;
+  inter->fbcc_table = sparc_fbcc_list;
+  inter->shift_table = sparc_shift_list;
+  inter->movcc_table = sparc_movcc_list;
+  inter->movfcc_table = sparc_movfcc_list;
+  inter->movr_table = sparc_movr_list;
+  inter->fpop1_table = sparc_fpop1_list;
+  inter->fmovcc_table = sparc_fmovcc_list;
+  inter->fmovfcc_table = sparc_fmovfcc_list;
+  inter->fmovr_table = sparc_fmovr_list;
+  inter->fcmp_table = sparc_fcmp_list; 
+  inter->op2_table = sparc_op2_table;
+  inter->op3_table = sparc_op3_table;
 }
-
-
-
-
-

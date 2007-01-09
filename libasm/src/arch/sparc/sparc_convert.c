@@ -8,110 +8,202 @@
 ** Last update Tue Jun 14 09:18:36 2005 #!HATE#@!
 */
 
+/*
+ * Note: during the development on this code, I got kinda
+ * confused about the efficiency of this endian-specific-code
+ * approach. I'm not sure if this is doing what it's supposed
+ * to, but I'm too stupid to draw a conclusion. So, please,
+ * someone take a look at the code, fix whatever needs to
+ * be fixed and remove this note. kthx. 
+ * 
+ * Strauss
+ */  
+
 #include <libasm.h>
 
+void sparc_convert_pbranch(struct s_decode_pbranch	*opcode,
+			     			u_char *buf, asm_processor *proc)
+{
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+    int converted;
   
-  
-void	sparc_convert_branch(struct s_decode_branch	*opcode,
-			     u_char *buf, asm_processor *proc)
-{
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  int				converted;
-  #endif
-  
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  memcpy(&converted, buf, 4);
-  opcode->op = (converted >> 30) & 0x3;
-  opcode->a = (converted >> 29) & 0x1;
-  opcode->cond = (converted >> 25) & 0xf;
-  opcode->op2 = (converted >> 22);
-  opcode->immediate = converted & 0x3FFFFF;
+    memcpy(&converted, buf, 4);
+    opcode->op = (converted >> 30) & 0x3;
+    opcode->a = (converted >> 29) & 0x1;
+    opcode->cond = (converted >> 25) & 0xf;
+    opcode->op2 = (converted >> 22) & 0x7;
+    opcode->cc1 = (converted >> 21) & 0x1;
+    opcode->cc0 = (converted >> 20) & 0x1;
+    opcode->p = (converted >> 19) & 0x1;
+    opcode->immediate = converted & 0x7FFFF;
   #else
-  memcpy(opcode, buf, 4);
-  #endif
-}
-
-void	sparc_convert_sethi(struct s_decode_sethi	*opcode,
-			    u_char *buf, asm_processor *proc)
-{
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  int				converted;
-  #endif
-
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  memcpy(&converted, buf, 4);
-  opcode->op = (converted >> 30) & 0x3;
-  opcode->rd = (converted >> 25) & 0x1f;
-  opcode->sethi = (converted >> 22) & 0x7;
-  opcode->immediate = (converted & 0x3FFFFF);
-  #else
-  memcpy(opcode, buf, 4);
-  #endif    
-}
-
-
-void	sparc_convert_call(struct s_decode_call	*opcode,
-			   u_char *buf, asm_processor *proc)
-{
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  int			converted;
-  #endif
-
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  memcpy(&converted, buf, 4);
-  opcode->op = (converted >> 30) & 0x3;
-  opcode->displacement = (converted & 0x3FFFFFFF);
-  #else
-  memcpy(opcode, buf, 4);
-  #endif
-}
-
-
-void	sparc_convert_format3_rs(struct s_decode_f3rs	*opcode,
-				 u_char *buf, 
-				 asm_processor *proc)
-{
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  int			converted;
-  #endif
-
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  memcpy(&converted, buf, 4);
-  opcode->op = (converted >> 30) & 0x3;
-  opcode->rd = (converted >> 25) & 0x1f;
-  opcode->op3 = (converted >> 19) & 0x3f;
-  opcode->rs1 = (converted >> 14) & 0x1f;
-  opcode->zero = (converted >> 13) & 1;
-  opcode->none = (converted >> 5) & 0xff;
-  opcode->rs2 = converted & 0x1f;
-  #else
-  memcpy(opcode, buf, 4);
-  #endif
-    
-}
-
-
-void	sparc_convert_format3_imm(struct s_decode_f3imm	*opcode,
-				  u_char *buf,
-				  asm_processor *proc)
-{
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  int			converted;
-  #endif
-
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
-  memcpy(&converted, buf, 4);
-  opcode->op = (converted >> 30) & 0x3;
-  opcode->rd = (converted >> 25) & 0x1f;
-  opcode->op3 = (converted >> 19) & 0x3f;
-  opcode->rs1 = (converted >> 14) & 0x1f;
-  opcode->sign = (converted >> 13) & 1;
-  opcode->immediate = converted & 0x1ffff;
-  #else
-  memcpy(opcode, buf, 4);
+    memcpy(opcode, buf, 4);
   #endif
   
+  opcode->cc = (opcode->cc1 << 1) | opcode->cc0;
+  
+  if (opcode->immediate & 0x40000)
+   	opcode->imm = opcode->immediate | 0xFFFC0000;
+  else
+   	opcode->imm = opcode->immediate;
 }
 
+void sparc_convert_rbranch(struct s_decode_rbranch *opcode,
+			     			u_char *buf, asm_processor *proc)
+{
+  int d16;
+  
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+    int converted;
+  
+    memcpy(&converted, buf, 4);
+    opcode->op = (converted >> 30) & 0x3;
+    opcode->a = (converted >> 29) & 0x1;
+    opcode->zero = (converted >> 28) & 0x1;
+    opcode->rcond = (converted >> 25) & 0x7;
+    opcode->op2 = (converted >> 22) & 0x7;    
+    opcode->d16hi = (converted >> 20) & 0x3;
+    opcode->p = (converted >> 19) & 0x1;
+    opcode->rs1 = (converted >> 14) & 0x1f;
+    opcode->d16lo = converted & 0x3FFF;    
+  #else
+    memcpy(opcode, buf, 4);
+  #endif
+  
+  d16 = (opcode->d16hi << 14) | (opcode->d16lo);
+  if (d16 & 0x8000)
+  	opcode->d16 = d16 | 0xFFFF0000;
+  else
+  	opcode->d16 = d16;
+}
 
+void sparc_convert_branch(struct s_decode_branch *opcode,
+			     			u_char *buf, asm_processor *proc)
+{
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+    int converted;
+  
+    memcpy(&converted, buf, 4);
+    opcode->op = (converted >> 30) & 0x3;
+    opcode->a = (converted >> 29) & 0x1;
+    opcode->cond = (converted >> 25) & 0xf;
+    opcode->op2 = (converted >> 22) & 0x7;
+    opcode->immediate = converted & 0x3FFFFF;
+  #else
+    memcpy(opcode, buf, 4);
+  #endif
 
+  opcode->rd = (opcode->a << 4) | opcode->cond;
+  
+  if (opcode->immediate & 0x200000)
+   	opcode->imm = opcode->immediate | 0xFFE00000;
+  else
+   	opcode->imm = opcode->immediate;
+}
+
+void sparc_convert_call(struct s_decode_call *opcode,
+			   			u_char *buf, asm_processor *proc)
+{
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+    int converted;
+  
+  	memcpy(&converted, buf, 4);
+  	opcode->op = (converted >> 30) & 0x3;
+  	opcode->disp30 = (converted & 0x3FFFFFFF);
+  #else
+  	memcpy(opcode, buf, 4);
+  #endif
+  
+  if (opcode->disp30 & 0x20000000)
+    opcode->displacement = opcode->disp30 | 0xC0000000;
+  else
+  	opcode->displacement = opcode->disp30;
+}
+
+void sparc_convert_format3(struct s_decode_format3 *opcode,
+						 	u_char *buf, asm_processor *proc)
+{
+  int shcnt, immediate10; 
+  int immediate;
+  
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+  	int converted;
+  
+  	memcpy(&converted, buf, 4);
+  	opcode->op = (converted >> 30) & 0x3;
+  	opcode->rd = (converted >> 25) & 0x1f;
+  	opcode->op3 = (converted >> 19) & 0x3f;
+  	opcode->rs1 = (converted >> 14) & 0x1f;
+  	opcode->i = (converted >> 13) & 0x1;
+  	opcode->none = (converted >> 5) & 0xff;
+  	opcode->rs2 = converted & 0x1f;
+  #else
+  	memcpy(opcode, buf, 4);
+  #endif
+  
+  /* The following code sets the immediate and the shcnt values 
+   * (abstracting whether the shcnt value is for 32 or 64 bits)
+   */
+  immediate = (opcode->none << 5) | (opcode->rs2);  
+  	  	
+  if (immediate & 0x1000)
+    opcode->imm = 0xFFFFF000 | immediate;
+  else
+    opcode->imm = immediate;
+      
+  immediate10 = immediate & 0x3ff;
+  if (immediate10 & 0x200)
+    opcode->imm10 = 0xFFFFFC00 | immediate10;
+  else
+    opcode->imm10 = immediate10;
+      
+  shcnt = immediate & 0x3f;
+  /* (immediate & 0x1fff == the 'x' bit */
+  if (((immediate & 0x1fff) == 0) && (shcnt & 0x10))
+    shcnt = 0x20 | shcnt;
+  	
+  if (shcnt & 0x20)
+    opcode->shcnt = 0xFFFFF200 | shcnt;
+  else
+    opcode->shcnt = shcnt;
+  
+  opcode->rcond = (opcode->imm & 0x1c00) >> 10;
+  opcode->opf = (opcode->i << 8) | opcode->none;
+  opcode->opf_cc = (opcode->opf & 0x1c0) >> 6;
+  opcode->cc = opcode->rd & 0x3;
+  opcode->cond = opcode->rs1 & 0xf;
+}
+
+void sparc_convert_format4(struct s_decode_format4 *opcode,
+				 			u_char *buf, asm_processor *proc)
+{
+  int immediate;
+  
+  #if __BYTE_ORDER == __LITTLE_ENDIAN
+  	int converted;
+  
+  	memcpy(&converted, buf, 4);
+  	opcode->op = (converted >> 30) & 0x3;
+  	opcode->rd = (converted >> 25) & 0x1f;
+  	opcode->op3 = (converted >> 19) & 0x3f;
+  	opcode->rs1 = (converted >> 14) & 0x1f;
+  	opcode->i = (converted >> 13) & 0x1;
+  	opcode->cc1 = (converted >> 12) & 0x1;
+  	opcode->cc0 = (converted >>11) & 0x1;
+  	opcode->none = (converted >> 5) & 0x3f;
+  	opcode->rs2 = converted & 0x1f;
+  #else
+  	memcpy(opcode, buf, 4);
+  #endif 
+  
+  opcode->cond = opcode->rs1 & 0xf;
+  opcode->cc2 = opcode->rs1 & 0x10;
+  opcode->cc = (opcode->cc2 << 2) | (opcode->cc1 << 1) | opcode->cc0;  
+     
+  immediate = (opcode->none << 5) | (opcode->rs2);
+  	
+  if (immediate & 0x400)
+    opcode->imm = 0xFFFFF800 | immediate;
+  else
+    opcode->imm = immediate;
+}

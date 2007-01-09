@@ -10,15 +10,14 @@
 
 #include <libasm.h>
 
-void	asm_resolve_sparc(void *d, u_int val, char *buf, u_int len)
+void asm_resolve_sparc(void *d, u_int val, char *buf, u_int len)
 {
   sprintf(buf, "0x%x", val);
 }
 
-char	*get_sparc_register(int reg)
+char *get_sparc_register(int reg)
 {
-  switch(reg)
-    {
+  switch(reg) {
     case ASM_REG_G0: return "%g0";
     case ASM_REG_G1: return "%g1";
     case ASM_REG_G2: return "%g2";
@@ -51,8 +50,61 @@ char	*get_sparc_register(int reg)
     case ASM_REG_I5: return "%i5";
     case ASM_REG_I6: return "%fp";
     case ASM_REG_I7: return "%i7";
-    }
-  return "bad";
+    default: return "bad";
+  }  
+}
+
+/* Get SPARC state register */
+char *get_sparc_sregister(int reg)
+{
+  switch(reg) {
+    case ASM_SREG_Y: return "%y";    
+    case ASM_SREG_CCR: return "%ccr";
+    case ASM_SREG_ASI: return "%asi";
+    case ASM_SREG_TICK: return "%tick";
+    case ASM_SREG_PC: return "%pc";
+    case ASM_SREG_FPRS: return "%fprs";
+    default: return "bad";
+  }  
+}
+
+/* Get SPARC privileged register */
+char *get_sparc_pregister(int reg)
+{
+  switch(reg) {
+	case ASM_PREG_TPC: return "%tpc";
+  	case ASM_PREG_TNPC: return "%tnpc";
+  	case ASM_PREG_TSTATE: return "%tstate";
+  	case ASM_PREG_TT: return "%tt";
+  	case ASM_PREG_TICK: return "%tick";
+  	case ASM_PREG_TBA: return "%tba";
+  	case ASM_PREG_PSTATE: return "%pstate";
+  	case ASM_PREG_TL: return "%tl";
+  	case ASM_PREG_PIL: return "%pil";
+  	case ASM_PREG_CWP: return "%cwp";
+  	case ASM_PREG_CANSAVE: return "%cansave";
+  	case ASM_PREG_CANRESTORE: return "%canrestore";
+  	case ASM_PREG_CLEANWIN: return "%cleanwin";
+  	case ASM_PREG_OTHERWIN: return "%otherwin";
+  	case ASM_PREG_WSTATE: return "%wstate";
+  	case ASM_PREG_FQ: return "%fq";
+  	case ASM_PREG_VER: return "%ver";
+  	default: return "bad";
+  }
+}
+
+/* Get SPARC condition code */
+char *get_sparc_cc(int cc)
+{
+  switch(cc) {
+  	case ASM_SP_FCC0: return "%fcc0";
+  	case ASM_SP_FCC1: return "%fcc1";
+  	case ASM_SP_FCC2: return "%fcc2";
+  	case ASM_SP_FCC3: return "%fcc3";
+  	case ASM_SP_ICC: return "%icc";
+  	case ASM_SP_XCC: return "%xcc";
+  	default: return "bad";
+  }
 }
 
 void	asm_sparc_dump_operand(asm_instr *ins, int num, 
@@ -73,9 +125,18 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
     case ASM_SP_OTYPE_REGISTER:
       sprintf(buf, "%s", get_sparc_register(op->base_reg));
       break;
+    case ASM_SP_OTYPE_SREGISTER:
+      sprintf(buf, "%s", get_sparc_sregister(op->base_reg));
+      break;
+    case ASM_SP_OTYPE_PREGISTER:
+      sprintf(buf, "%s", get_sparc_pregister(op->base_reg));
+      break;
     case ASM_SP_OTYPE_FREGISTER:
       sprintf(buf, "%%f%i", op->base_reg);
       break;
+    case ASM_SP_OTYPE_CC:
+      sprintf(buf, "%s", get_sparc_cc(op->base_reg));
+      break;  
     case ASM_SP_OTYPE_IMMEDIATE:
       if (op->imm < 10)
 	sprintf(buf, "%i", op->imm);
@@ -101,67 +162,70 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
     }
 }
 
-char	*asm_sparc_display_instr(asm_instr *instr, int addr)
+char *asm_sparc_display_instr(asm_instr *instr, int addr)
 {
-  static char	buffer[1024];
-  // int		i;
-
+  static char buffer[1024];  
   memset(buffer, 0, 1024);
   sprintf(buffer, "%s ", instr->proc->instr_table[instr->instr]);  
-  /*
-  for (i = strlen(buffer); i < 16; i++)
-    buffer[i] = ' ';
-  */
-  if (instr->type == ASM_TYPE_LOAD)
-    {
+  
+  switch (instr->type) {
+    case ASM_TYPE_LOAD:
       strcat(buffer, " [ ");
       asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-      if (!(instr->op3.type == ASM_SP_OTYPE_REGISTER && instr->op3.base_reg == ASM_REG_R0))
-	{
-	  strcat(buffer, " + ");
-	  asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	}
+      if (!(instr->op3.type == ASM_SP_OTYPE_REGISTER && 
+    		instr->op3.base_reg == ASM_REG_R0)) {
+	    strcat(buffer, " + ");
+	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
+	  }
       strcat(buffer, " ], ");
-      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-    }
-  else if (instr->type == ASM_TYPE_STORE)
-    {
+      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));      
+      break;
+  
+    case ASM_TYPE_STORE:
       strcat(buffer, " ");
       asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
       strcat(buffer, ", [ ");
       asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-      if (!((instr->op3.type == ASM_SP_OTYPE_REGISTER && instr->op3.base_reg == ASM_REG_R0) || (instr->op3.type == ASM_SP_OTYPE_IMMEDIATE && instr->op3.imm == 0)))
-	{
-	  strcat(buffer, " + ");
-	  asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	}
-      strcat(buffer, " ]");
-    }
-  else
-    {
-      if (instr->nb_op > 0)
-	strcat(buffer, " ");
-      if (instr->nb_op == 3)
-	{
-	  asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-	  strcat(buffer, ", ");
-	}
-      if (instr->nb_op == 3)
-	{
-	  asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	  strcat(buffer, ", ");
-	}
-      else
-	if (instr->nb_op == 2)
-	  {
-	  asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-	  strcat(buffer, ", ");	    
+      if (!((instr->op3.type == ASM_SP_OTYPE_REGISTER && 
+    		instr->op3.base_reg == ASM_REG_R0) 
+    		|| (instr->op3.type == ASM_SP_OTYPE_IMMEDIATE && 
+    		instr->op3.imm == 0))) {
+	    strcat(buffer, " + ");
+	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
 	  }
+      strcat(buffer, " ]");
+	  break;
+	  
+	case ASM_TYPE_CONDBRANCH:	  
+	  if (instr->annul)
+	    strcat(buffer, ",a");
+	  if (!instr->prediction)
+	    strcat(buffer, ",pn");
+  
+    default:
       if (instr->nb_op > 0)
-	{
-	  asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-	}
-    }
-  return (buffer);
+	    strcat(buffer, " ");
+	  
+      if (instr->nb_op == 3) {
+		asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
+	    strcat(buffer, ", ");
+	  }
+      if (instr->nb_op == 3) {
+	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
+	    strcat(buffer, ", ");
+	  }
+      else {
+	    if (instr->nb_op == 2) {
+	      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
+	      strcat(buffer, ", ");	    
+	    }
+        if (instr->nb_op > 0)	{
+	      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
+	    }
+      }
+      break;
     
+  }
+    
+  return (buffer);    
 }
