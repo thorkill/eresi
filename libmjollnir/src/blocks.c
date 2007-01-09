@@ -268,8 +268,7 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 	      continue;
 	    }
 	  printf(" [*] Found block start for function %s \n", funcname);
-	  func->first = block;
-	}
+	  }
     }
 
   /* Create control section */

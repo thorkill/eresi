@@ -89,8 +89,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
 				context->curblock->true, 0, 0);
         if (context->curfunc)
 	    {
-	     hash_add(&fun->parentfuncs, context->curfunc->name, context->curfunc);
-	     hash_add(&context->curfunc->childfuncs, fun->name, fun);
+	      mjr_function_add_parent(&fun->parentfuncs, context->curfunc->vaddr,0);
+	      mjr_function_add_child(&context->curfunc->childfuncs, fun->vaddr, 0);
 	    }
         md5 = mjr_fingerprint_function(context, context->curblock->true, 
 				     MJR_FPRINT_TYPE_MD5);

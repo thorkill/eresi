@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-fprint.h,v 1.3 2007-01-02 06:21:23 may Exp $
+ * $Id: libmjollnir-fprint.h,v 1.4 2007-01-09 17:14:23 thor Exp $
  *
  */
 #include "libmjollnir-blocks.h"
@@ -18,7 +18,9 @@ typedef struct		s_function
   u_int			size;		/* Function size */
   char			*name;		/* Function name */
   mjrblock_t		*first;		/* First function block */
-  hash_t		parentfuncs;	/* Functions we are called from */
-  hash_t		childfuncs;	/* Functions we call */
+  mjrcaller_t		*parentfuncs;	/* Functions we are called from */
+  mjrcaller_t		*childfuncs;	/* Functions we call */
   char			*md5;		/* MD5 Checksum */
 }			mjrfunc_t;
+
+#define ELFSH_SECTION_NAME_EDFMT_FUNCTIONS ".edfmt.functions"
