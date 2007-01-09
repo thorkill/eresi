@@ -26,7 +26,7 @@ int	sparc_type_instr(int instr)
       /** 
        * \todo Complete ASM_TYPE_LOAD instruction list. 
        */
-    case ASM_SP_LD:
+    //case ASM_SP_LD:
     case ASM_SP_LDF:
     case ASM_SP_LDUB:
       return ASM_TYPE_LOAD;
@@ -34,7 +34,7 @@ int	sparc_type_instr(int instr)
       /** 
        * \todo Complete ASM_TYPE_STORE instruction list.
        */
-    case ASM_SP_ST:
+    //case ASM_SP_ST:
     case ASM_SP_STF:
     case ASM_SP_STB:
       return ASM_TYPE_STORE;
@@ -42,11 +42,11 @@ int	sparc_type_instr(int instr)
     case ASM_SP_CALL:
       return ASM_TYPE_CALLPROC;
       break;
-    case ASM_SP_JMP:
+    //case ASM_SP_JMP:
       return ASM_TYPE_IMPBRANCH;
       break;
-    case ASM_SP_RET:
-    case ASM_SP_RETL:
+    //case ASM_SP_RET:
+    //case ASM_SP_RETL:
       return ASM_TYPE_RETPROC;
       return 0;
       break;
@@ -100,7 +100,7 @@ void	sparc_instruction2synthetic(asm_instr *ins)
       if (ins->op1.type == ASM_SP_OTYPE_REGISTER && ins->op1.base_reg == ASM_REG_G0 &&
 	  ins->op2.type == ASM_SP_OTYPE_REGISTER && ins->op2.base_reg == ASM_REG_G0)
 	{
-	  ins->instr = ASM_SP_TST;
+	  //ins->instr = ASM_SP_TST;
 	  ins->nb_op = 1;
 	  ins->op1.base_reg = ins->op3.base_reg;
 	  goto label_set_type;
@@ -124,7 +124,7 @@ void	sparc_instruction2synthetic(asm_instr *ins)
       if (ins->op3.type == ASM_SP_OTYPE_IMMEDIATE && ins->op3.imm == 0 &&
 	  ins->op2.type == ASM_SP_OTYPE_REGISTER && ins->op2.base_reg == ASM_REG_G0)
 	{
-	  ins->instr = ASM_SP_CLR;
+	  //ins->instr = ASM_SP_CLR;
 	  ins->nb_op = 1;
 	  goto label_set_type;
 	}
@@ -132,7 +132,7 @@ void	sparc_instruction2synthetic(asm_instr *ins)
       if (ins->op2.type == ASM_SP_OTYPE_REGISTER && ins->op2.base_reg == 0)
 	{
 	  ins->nb_op = 2;
-	  ins->instr = ASM_SP_MOV;
+	  //ins->instr = ASM_SP_MOV;
 	  ins->op2.type = ins->op3.type;
 	  ins->op2.base_reg = ins->op3.base_reg;
 	  ins->op2.imm = ins->op3.imm;
@@ -146,7 +146,7 @@ void	sparc_instruction2synthetic(asm_instr *ins)
       if (ins->op1.type == ASM_SP_OTYPE_REGISTER && ins->op1.base_reg == ASM_REG_G0)
 	{
 	  ins->nb_op = 2;
-	  ins->instr = ASM_SP_CMP;
+	  //ins->instr = ASM_SP_CMP;
 	  ins->op1.type = ins->op3.type;
 	  ins->op1.base_reg = ins->op3.base_reg;
 	  ins->op1.imm = ins->op3.imm;
@@ -175,13 +175,13 @@ void	sparc_instruction2synthetic(asm_instr *ins)
 	{
 	  if (ins->op2.type == ASM_SP_OTYPE_REGISTER && ins->op2.base_reg == ASM_REG_I7)
 	    {
-	      ins->instr = ASM_SP_RET;
+	      //ins->instr = ASM_SP_RET;
 	      ins->nb_op = 0;
 	      goto label_set_type;
 	    }
 	  if (ins->op2.type == ASM_SP_OTYPE_REGISTER && ins->op2.base_reg == ASM_REG_O7)
 	    {
-	      ins->instr = ASM_SP_RETL;
+	      //ins->instr = ASM_SP_RETL;
 	      ins->nb_op = 0;
 	      goto label_set_type;
 	    }
