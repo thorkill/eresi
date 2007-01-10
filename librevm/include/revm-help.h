@@ -97,6 +97,14 @@
 #define HLP_VERNEED             "Print the needed versions table"
 #define HLP_HASH                "Print the dynsymbols ELF hash table (.hash)"
 
+#define	HLP_TYPE		"Create a type \n\n\t"			                                     \
+				"type                                      \t List existing types    \n\t"   \
+				"type scope begin                          \t Open  type scope       \n\t"   \
+				"type scope end                            \t Close type scope       \n\t"   \
+				"type name                                 \t Print type information \n\t"   \
+				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
+				"Fields and types can be named using scripting variables            \n"
+
 /* Configuration commands */
 #define	HLP_HIJACK		"Redirect a function to another function \n\n\t" \
 				CMD_HIJACK" [hooked funcname|addr] [hooking funcname|addr]"				

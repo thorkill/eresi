@@ -173,7 +173,9 @@ revmL2_t	*vm_create_L2ENT(void	*get_obj,
   new->set_obj  = set_obj;
   new->get_name = get_name;
   new->set_name = set_name;
+
   new->type     = type;
+
   new->get_data = get_data;
   new->set_data = set_data;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));

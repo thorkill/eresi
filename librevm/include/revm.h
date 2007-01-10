@@ -320,6 +320,7 @@ char prompt_token[512];
 #define CMD_COLOR               "setcolor"
 #define CMD_NOCOLOR             "nocolor"
 #define CMD_TRACE		"trace"
+#define	CMD_TYPE		"type"
 
 #define CMD_INSERT		"insert"
 #define	CMD_INSERT2		"ins"
@@ -426,6 +427,28 @@ typedef struct		s_const
   const char	        *name;
   elfsh_Addr	       	val;
 }			revmconst_t;
+
+/* Structure for type */
+typedef struct		s_langtype
+{
+#define               REVM_TYPE_UNKNOW          0          /* Unknown / Tainted */
+#define               REVM_TYPE_RAW             1          /* Raw               */
+#define		      REVM_TYPE_BYTE		2	   /* Byte	        */
+#define               REVM_TYPE_STR             3          /* String            */
+#define               REVM_TYPE_SHORT           4          /* 2 bytes           */
+#define               REVM_TYPE_INT             5          /* Always 4 bytes    */
+#define               REVM_TYPE_LONG            6          /* 4 or 8 bytes      */
+#define		      REVM_TYPE_STRUCT		7	   /* A structure       */
+#define               REVM_TYPE_NUM             8          /* MAX TYPE NBR      */
+  u_char		type;		/* Plain or pointed type */
+  u_char		isptr;		/* the type is a pointer */
+  u_int			elemnbr;	/* Number of array elems */
+  u_int			taintedoff;	/* Taintedness start off */
+  u_int			size;		/* Type full memsize     */
+  u_int			off;		/* Offset inside parent  */
+  hash_t		*childs;	/* Child objects if any  */
+  char			*name;		/* Type name             */
+}			revmtype_t;
 
 
 /* ELFsh command handlers */
@@ -697,8 +720,8 @@ typedef struct  s_path
 #define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
 #define               ELFSH_OBJBYTE   6       /* One byte */
   char                type;		      /* The object type */
-  char                perm;		      /* TRUE if object is a script variable */
 
+  char                perm;		      /* TRUE if object is a script variable */
 }                     revmobj_t;
 
 
@@ -741,6 +764,8 @@ typedef struct	s_L1handler
   elfsh_Addr   	(*set_entval)(void *ptr, elfsh_Addr vaddr);     /* Set value */
 }		revmL1_t;
 
+
+
 /* Trace structures */
 typedef struct 	s_revmtrace
 {
@@ -766,6 +791,7 @@ extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
 extern hash_t		cmd_hash;	 /* commands handlers */
+extern hash_t		types_hash;	 /* language types */
 extern hash_t		parser_hash;	 /* parsers handlers */
 extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
@@ -842,6 +868,7 @@ extern char		elfsh_libpath[BUFSIZ];
 
 /* Commands execution handlers, each in their respective file */
 int		cmd_configure();
+int		cmd_type();
 int		cmd_dyn();
 int		cmd_sht();
 int             cmd_rsht();
@@ -1139,6 +1166,16 @@ int             vm_setvar_byte(char *varname, u_char byte);
 int             vm_setvar_short(char *varname, u_short val);
 int             vm_setvar_int(char *varname, u_int val);
 int             vm_setvar_long(char *varname, u_long val);
+
+/* Type related functions */
+int		vm_simpletype_create(u_int type);
+int		vm_type_create(char *label, char **fields, u_int fieldnbr);
+revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, u_char p, u_int nbr);
+int		vm_types_print();
+int		vm_type_print(char *type);
+int		vm_typescope_close();
+int		vm_types_untaint();
+int		vm_typescope_open();
 
 /* Readline stuff (XXX: need to be prefixed) */
 char		**custom_completion(const char* text, int start, int end);

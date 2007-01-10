@@ -124,7 +124,8 @@ int		cmd_hijack()
     }
   
 #if	__DEBUG_HIJACK__
-  printf("[cmd_hijack] Resolved %s as %08X \n", world.curjob->curcmd->param[1], addr);
+  printf("[cmd_hijack] Resolved %s as %08X \n", 
+	 world.curjob->curcmd->param[1], addr);
 #endif
 
   /* Hijack function */

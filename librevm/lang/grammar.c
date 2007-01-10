@@ -1,15 +1,11 @@
 /*
 ** grammar.c for elfsh
 ** 
-** Need to use bison instead of vm_lookup_param()
-** but bison is not that light, particulary when
-** using an embedded elfsh ;>
+** We dont use bison and have our own parser generator
 **
 ** Started on  Sun Feb  9 22:57:58 2003 mayhem
 */
 #include "revm.h"
-
-
 
 
 /* Get a va_list of parameters */
@@ -41,19 +37,19 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  /* Check if this handler is the correct one */
+  // Check if this handler is the correct one 
   size = parse_lookup_varlist(param, fmt, obj, L1field, index);
   if (size != 3)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
   
-  /* Let's ask the hash table for the current working file */
+  // Let's ask the hash table for the current working file
   robj = vm_lookup_file(obj);
   if (robj == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", NULL);
 
-  /* Then, we ask the Level 1 object */
+  // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -66,15 +62,14 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
   pobj->immed = 0;
 
-  /* Lookup object */
+  // Lookup object 
   o1 = l1->get_obj(robj, &size);
 
-  /* Lookup index */
+  // Lookup index 
   real_index = vm_lookup_index(index);
   
   printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n", 
 	 real_index, real_index, real_index);
-
 
   if (((int) real_index) < 0)
     {
@@ -100,7 +95,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
 	}
     }
 
-  /* Do index sanity */
+  // Do index sanity 
   if (pobj->parent == NULL)
     {
       if (size <= real_index)
@@ -109,7 +104,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
       pobj->parent  = l1->get_entptr(o1, real_index);
     }
 
-  /* Finally we fill the intermediate object format for the guessed object */
+  // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
   pobj->type    = ELFSH_OBJLONG;
@@ -139,20 +134,20 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Check if this handler is the correct one */
+  // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, L2field);
   if (ret != 3)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
 
-  /* Let's ask the hash table for the current working file */
+  // Let's ask the hash table for the current working file 
   robj = vm_lookup_file(obj);
   if (robj == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object",
 		      NULL);
 
-  /* Then, we ask the Level 1 object */
+  // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -163,14 +158,14 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
 		      "Invalid object path",
 		      NULL);
 
-  /* Then the Level 2 object */
+  // Then the Level 2 object 
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L2 object",
 		      NULL);
 
-  /* Finally we fill the intermediate object format for the guessed object */
+  // Finally we fill the intermediate object format for the guessed object 
   pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
@@ -215,8 +210,8 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Check if this handler is the correct one */
-  /* This handler has 3 different possible parsing rules */
+  // Check if this handler is the correct one 
+  // This handler has 3 different possible parsing rules 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, 
 			  index, &off, &sizelem, L2field);
   if (ret != 6)
@@ -235,13 +230,13 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 	sizelem = 1;
     }
 
-  /* Let's ask the hash table for the current working file */
+  // Let's ask the hash table for the current working file 
   robj = vm_lookup_file(obj);
   if (NULL == robj)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
 		   NULL);
 
-  /* Then, we ask the Level 1 object */
+  // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L1 object", 
@@ -250,13 +245,13 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect object path",
 		   NULL);
 
-  /* Then the Level 2 object */
+  // Then the Level 2 object 
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L2 object", 
 		   NULL);
 
-  /* Read object */
+  // Read object 
   o1 = l1->get_obj(robj, (void *) &size);
   if (o1 == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
@@ -265,7 +260,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
   pobj->immed = 0;
 
-  /* Do lookup by index or by name */
+  // Do lookup by index or by name 
   real_index = vm_lookup_index(index);
   
 #if __DEBUG_LANG__
@@ -273,7 +268,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 	 index, real_index, real_index);
 #endif
 
-  /* Index error handling */
+  // Index error handling 
   if (((int) real_index) < 0)
     {
       if (l1->get_obj_nam == NULL)
@@ -288,7 +283,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 	}
     }
   
-  /* Get L2 object by index (or type for dynamic) */
+  // Get L2 object by index (or type for dynamic) 
   if (pobj->parent == NULL)
     {
 
@@ -311,13 +306,13 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 			  NULL);
     }
 
-  /* Finally we fill the intermediate object format for the guessed object */
+  // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj  = (void *) l2->get_obj;
   pobj->set_obj  = (void *) l2->set_obj;
   pobj->get_name = l2->get_name;
   pobj->set_name = l2->set_name;
 
-  /* The 2 next fields are used for 'raw' L2 of 'section' L1 */
+  // The 2 next fields are used for 'raw' L2 of 'section' L1 
   pobj->get_data = l2->get_data;
   pobj->set_data = l2->set_data;
 
@@ -326,7 +321,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   pobj->sizelem  = sizelem;
   pobj->root     = robj;
 
-  /* Error checking */
+  // Error checking 
   pobj = vm_check_object(pobj);
   if (!pobj)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -365,12 +360,43 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Check if this handler is the correct one */
+  // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, index, index2, L2field);
   if (ret != 5)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
 
+  // Let's ask the hash table for the current working file 
+  robj = vm_lookup_file(obj);
+  if (robj == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested file object", 
+		      NULL);
+
+  // Then, we ask the Level 1 object 
+  l1 = hash_get(&L1_hash, L1field);
+  if (l1 == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested L1 object", NULL);
+  else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "This object needs 2 indexes", NULL);
+
+  // Then the Level 2 object 
+  l2 = hash_get(l1->l2list, L2field);
+  if (l2 == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested L2 object", NULL);
+  else if (l2->get_obj == NULL || l2->set_obj == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Child object is invalid", NULL);
+
+  // Not clean .. need to ve virtualized 
+  isversion = (!strcmp(L1field, "version") ||
+	       !strcmp(L1field, "verdef") ||
+	       !strcmp(L1field, "verneed"));
+
+  // Get indexes 
   real_index = vm_lookup_index(index);
   real_index2 = vm_lookup_index(index2);
 
@@ -381,37 +407,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
  vm_output(logbuf);
 #endif
 
-  /* Let's ask the hash table for the current working file */
-  robj = vm_lookup_file(obj);
-  if (robj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object", 
-		      NULL);
-
-  /* Then, we ask the Level 1 object */
-  l1 = hash_get(&L1_hash, L1field);
-  if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L1 object", NULL);
-  else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "This object needs 2 indexes", NULL);
-
-  /* Then the Level 2 object */
-  l2 = hash_get(l1->l2list, L2field);
-  if (l2 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L2 object", NULL);
-  else if (l2->get_obj == NULL || l2->set_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Child object is invalid", NULL);
-
-  /* Not clean .. need to ve virtualized */
-  isversion = (!strcmp(L1field, "version") ||
-	       !strcmp(L1field, "verdef") ||
-	       !strcmp(L1field, "verneed"));
-
-  /* Do index sanity */
+  // Do index sanity 
   o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
   if (!isversion && size <= real_index2)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -424,23 +420,23 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n", 
   // o1, ((elfshsect_t*)o1)->data, ((elfshsect_t*)o1)->name);
 
-  /* 
-  ** This elfsh_get_reloc() returns a elfshsect_t *, 
-  ** and we need to grab the ->data pointer, to avoid rewriting a 
-  ** new handler (its not fair but it works .. ;) and its acceptable
-  ** since only relocation tables use this rule.
-  */
+  // 
+  // This elfsh_get_reloc() returns a elfshsect_t *, 
+  // and we need to grab the ->data pointer, to avoid rewriting a 
+  // new handler (its not fair but it works .. ;) and its acceptable
+  // since only relocation tables use this rule.
+  
   sect = (elfshsect_t *) o1;
   o1 = elfsh_get_raw(sect);
 
-  /* Finally we fill the intermediate object format for the guessed object */
+  // Finally we fill the intermediate object format for the guessed object 
   pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
   pobj->type    = l2->type;
 
-  /* ugly flag to put for dynamic Rel vs Rela information */
+  // ugly flag to put for dynamic Rel vs Rela information 
   elfsh_setrel(IS_REL(sect));
   pobj->parent  = l1->get_entptr(o1, real_index2);
 
@@ -449,7 +445,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 		      "Unknown L2 object or Invalid L2 index", 
 		      NULL);
 
-  /* Error checking */
+  // Error checking 
   pobj = vm_check_object(pobj);
   if (!pobj)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 

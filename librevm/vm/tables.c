@@ -54,6 +54,9 @@ hash_t          t_color_hash;
 /* Grammar parser hash */
 hash_t		parser_hash;
 
+/* Available types hash */
+hash_t		types_hash;
+
 /* Trace hash */
 hash_t		trace_cmd_hash;
 
@@ -839,7 +842,9 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
   vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption , 1, HLP_HASH);
-
+  vm_addcmd(CMD_CONFIGURE, cmd_configure      , vm_getvarparams, 0, HLP_CONFIGURE);
+  vm_addcmd(CMD_TYPE    , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
+  
 #if defined(ELFSHNET)
   /* DUMP network commands */
   vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
@@ -862,7 +867,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SETGVL    , cmd_setgvl        , vm_getoption,    1, HLP_SETGVL);
   vm_addcmd(CMD_RENAME	  , cmd_rename        , vm_getoption2,   1, HLP_RENAME);  
   vm_addcmd(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
-  vm_addcmd(CMD_CONFIGURE , cmd_configure     , vm_getvarparams, 0, HLP_CONFIGURE);
 }
 
 /* Mix default library path with LD_LIBRARY_PATH variable */
@@ -1048,6 +1052,17 @@ void	setup_grammar()
 }
 
 
+/* Initialize simple types */
+void	setup_types()
+{
+  hash_init(&types_hash, 11, ELEM_TYPE_ANY);
+  vm_simpletype_create(REVM_TYPE_BYTE);
+  vm_simpletype_create(REVM_TYPE_SHORT);
+  vm_simpletype_create(REVM_TYPE_INT);
+  vm_simpletype_create(REVM_TYPE_LONG);
+  vm_simpletype_create(REVM_TYPE_STR);
+}
+
 
 /* Setup color table */
 void setup_color()
@@ -1118,6 +1133,7 @@ void		vm_setup_hashtables()
 
   hash_init(&file_hash, 251, ELEM_TYPE_OBJ);
   hash_init(&mod_hash, 51, ELEM_TYPE_ANY);
+  hash_init(&types_hash, 51, ELEM_TYPE_ANY);
   hash_init(&labels_hash[0], 51, ELEM_TYPE_IMMED);
   hash_init(&fg_color_hash, 13, ELEM_TYPE_ANY);
   hash_init(&bg_color_hash, 13, ELEM_TYPE_ANY);
@@ -1133,4 +1149,5 @@ void		vm_setup_hashtables()
   setup_color_type();
   setup_trace_table();
   setup_grammar();
+  setup_types();
 }
