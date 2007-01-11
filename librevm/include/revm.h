@@ -429,7 +429,7 @@ typedef struct		s_const
 }			revmconst_t;
 
 /* Structure for type */
-typedef struct		s_langtype
+typedef struct		s_type
 {
 #define               REVM_TYPE_UNKNOW          0          /* Unknown / Tainted */
 #define               REVM_TYPE_RAW             1          /* Raw               */
@@ -442,12 +442,18 @@ typedef struct		s_langtype
 #define               REVM_TYPE_NUM             8          /* MAX TYPE NBR      */
   u_char		type;		/* Plain or pointed type */
   u_char		isptr;		/* the type is a pointer */
+  u_char		tainted;	/* the type is partial   */
   u_int			elemnbr;	/* Number of array elems */
   u_int			taintedoff;	/* Taintedness start off */
   u_int			size;		/* Type full memsize     */
   u_int			off;		/* Offset inside parent  */
-  hash_t		*childs;	/* Child objects if any  */
   char			*name;		/* Type name             */
+  char			*fieldname;	/* Field name		 */
+
+  /* We have a list of child, and a list of nexts in case we
+  ** are ourselves a child of a structure object */
+  struct s_type		*childs;	/* Current object fields if any     */
+  struct s_type		*next;		/* Next field of this type's parent */
 }			revmtype_t;
 
 
@@ -1168,9 +1174,11 @@ int             vm_setvar_int(char *varname, u_int val);
 int             vm_setvar_long(char *varname, u_long val);
 
 /* Type related functions */
+int		vm_type_addfield(revmtype_t *parent, revmtype_t *field);
 int		vm_simpletype_create(u_int type);
 int		vm_type_create(char *label, char **fields, u_int fieldnbr);
-revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, u_char p, u_int nbr);
+revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
+			      u_char p, u_int nbr, char *fieldname);
 int		vm_types_print();
 int		vm_type_print(char *type);
 int		vm_typescope_close();
