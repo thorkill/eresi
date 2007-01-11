@@ -10,7 +10,7 @@ LD			= gcc
 RM			= rm -f 
 AR			= ar rc
 
-SRC			= edfmt.c dwarf2.c
+SRC			= edfmt.c dwarf2.c dwarf2-utils.c dwarf2-abbrev.c dwarf2-cfa.c
 OBJ			= $(SRC:.c=.o)
 OBJ32	 		= ${SRC:.c=.32.o}
 OBJ64	 		= ${SRC:.c=.64.o}

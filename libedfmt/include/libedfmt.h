@@ -35,23 +35,31 @@ typedef struct 	s_edfmtmanage
   unsigned int	format;
 } 		edfmtmanage_t;
 
-
 /* edfmt.c */
 int		edfmt_format(elfshobj_t *file);
 elfshsect_t 	*edfmt_format_find(elfshobj_t *file, u_int *format);
 
 /* dwarf2.c */
-char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long int key);
+int		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect);
+int		edfmt_dwarf2_block_entrie(elfshobj_t *file);
+int		edfmt_dwarf2_block_loop(u_int endpos);
+
+/* dwarf2-utils.c */
+char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long key);
 char 		*edfmt_dwarf2_cline(char *buf, u_int size, u_int line, char *file);
 char 		*edfmt_dwarf2_caddr(char *buf, u_int size, elfsh_Addr addr);
+u_long 		edfmt_read_uleb128(void *data, u_int *bread);
+long 		edfmt_read_leb128(void *data, u_int *bread);
+
+/* dwarf2-abbrev.c */
+int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size);
 int		edfmt_dwarf2_line(u_long offset);
-int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header);
 int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, elfsh_Addr addr, u_int fid);
-int		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect);
-int		edfmt_dwarf2_block_entrie();
-int		edfmt_dwarf2_block_loop(u_int endpos);
+int		edfmt_dwarf2_mac(u_long offset);
 int		edfmt_dwarf2_abbrev();
 int		edfmt_dwarf2_form(u_int endpos);
-int		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr);
 edfmtdw2abbent_t *edfmt_dwarf2_lookup_abbrev(u_int num_fetch);
+
+/* dwarf2-cfa */
+int		edfmt_dwarf2_cfa();
 #endif
