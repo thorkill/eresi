@@ -15,7 +15,7 @@ edfmtmanage_t debug_format[] =
   };
 
 /* Load a dwarf2 section information from the file */
-void    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name)
+elfshsect_t    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name)
 {
   elfshsect_t	*sect;
   int		strindex;
@@ -34,28 +34,14 @@ void    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name)
 			  "Unable to get a debug format section by name", NULL);
 
       file->secthash[hash] = sect;
-      file->secthash[hash]->data =
-	elfsh_load_section(file, sect->shdr);
+
       if (file->secthash[hash]->data == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load debug format section", NULL);
-
-      /* Fill the stab string table */
-      sect = elfsh_get_section_by_index(file, strindex, NULL, NULL);
-      if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to get debug format section string table", NULL);
-
-      sect->data = elfsh_load_section(file, sect->shdr);
-      if (sect->data == NULL)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to load debug format section string table", NULL);
-
-      file->secthash[hash] = sect;
     }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (elfsh_get_raw(file->secthash[hash])));
+		     file->secthash[hash]);
 }
 
 /* Main point of the debug format library */

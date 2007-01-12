@@ -27,7 +27,7 @@ typedef struct 	s_edfmtmanage
 /* edfmt.c */
 int		edfmt_format(elfshobj_t *file);
 elfshsect_t 	*edfmt_format_find(elfshobj_t *file, u_int *format);
-void    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name);
+elfshsect_t    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name);
 
 /* dwarf2.c */
 int		edfmt_dwarf2_parse(elfshobj_t *file);
