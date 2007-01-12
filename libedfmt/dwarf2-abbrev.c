@@ -72,7 +72,7 @@ int		edfmt_dwarf2_abbrev()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
-  if (dw2_sections.abbrev.data == NULL)
+  if (i_data(abbrev) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_abbrev section not available",  -1);
 
@@ -161,7 +161,7 @@ int		edfmt_dwarf2_abbrev()
     /* Add into abbrev table */
     edfmt_dwarf2_ckey(ent->ckey, DW2_CKEY_SIZE - 1, ent->key);
     hash_add(&abbrev_table, ent->ckey, (void *) ent);
-  } while (dw2_sections.abbrev.pos < dw2_sections.abbrev.size);
+  } while (i_pos(abbrev) < i_size(abbrev));
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -242,7 +242,7 @@ static int    	edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
       ci_read_1(attr->u.udata, info);
       break;
     case DW_FORM_strp:
-      addr = (char *) dw2_sections.str.data;
+      addr = (char *) i_data(str);
       ci_read_4(data, info);
       attr->u.str = addr + data;
       break;
@@ -303,12 +303,12 @@ int		edfmt_dwarf2_form(u_int endpos)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
-  if (dw2_sections.abbrev.data == NULL)
+  if (i_data(abbrev) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_info section not available",  -1);
 
   do {
-    start_pos = dw2_sections.info.pos;
+    start_pos = i_pos(info);
     
     /* Retrieve abbrev number */
     ci_uleb128(num_fetch, info);
@@ -356,7 +356,7 @@ int		edfmt_dwarf2_form(u_int endpos)
 	    break;
 	  }
       }
-  } while(level > 0 && dw2_sections.info.pos < endpos);
+  } while(level > 0 && i_pos(info) < endpos);
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -373,12 +373,12 @@ int		edfmt_dwarf2_mac(u_long offset)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
-  if (dw2_sections.macinfo.data == NULL)
+  if (i_data(macinfo) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_macinfo section not available",  -1);
 
   // Update position offset
-  dw2_sections.macinfo.pos = offset;
+  i_pos(macinfo) = offset;
 
   do {
     ci_read_1(type, macinfo);
@@ -425,7 +425,7 @@ int		edfmt_dwarf2_mac(u_long offset)
 	   But I don't know any vendor extension so ... */
 	break;
       }
-  } while (type != 0 && dw2_sections.macinfo.pos < dw2_sections.macinfo.size);
+  } while (type != 0 && i_pos(macinfo) < i_size(macinfo));
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -914,7 +914,7 @@ static int	edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		       "Invalid parameters", -1);
 
   /* Loop until end position */
-  while (dw2_sections.line.pos < header->end_pos)
+  while (i_pos(line) < header->end_pos)
     {
       addr = 0;
       file = 1;
@@ -1035,14 +1035,14 @@ int		edfmt_dwarf2_line(u_long offset)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Update position offset */
-  dw2_sections.line.pos = offset;
+  i_pos(line) = offset;
 
   /* Parse the header */
   ci_read_4(header.total_length, line);
-  header.end_pos = dw2_sections.line.pos + header.total_length;
+  header.end_pos = i_pos(line) + header.total_length;
   ci_read_2(header.version, line);
   ci_read_4(header.prologue_length, line);
-  header.prologue_pos = dw2_sections.line.pos;
+  header.prologue_pos = i_pos(line);
   ci_read_1(header.min_length_instr, line);
   ci_read_1(header.default_stmt, line);
   ci_read_1(header.line_base, line);
@@ -1052,10 +1052,10 @@ int		edfmt_dwarf2_line(u_long offset)
   inc_pos(line, header.opcode_base - 1);
   
   /* Dir first pass */
-  prev_pos = dw2_sections.line.pos;
+  prev_pos = i_pos(line);
   for (i = 0; (ac_pos(line))[0] != '\0'; i++)
     inc_pos(line, strlen(ac_pos(line))+1);
-  dw2_sections.line.pos = prev_pos;
+  i_pos(line) = prev_pos;
 
   XALLOC(header.dirs, sizeof(char*)*i, -1);
   header.dirs_number = i;
@@ -1069,7 +1069,7 @@ int		edfmt_dwarf2_line(u_long offset)
   inc_pos(line, 1);
 
   /* Filename first pass */
-  prev_pos = dw2_sections.line.pos;
+  prev_pos = i_pos(line);
   for (i = 0; (ac_pos(line))[0] != '\0'; i++)
     {
       ci_str(strf, line);
@@ -1077,7 +1077,7 @@ int		edfmt_dwarf2_line(u_long offset)
       ci_uleb128(tmpf, line);
       ci_uleb128(tmpf, line);
     }
-  dw2_sections.line.pos = prev_pos;
+  i_pos(line) = prev_pos;
 
   XALLOC(header.files_name, sizeof(char*)*i, -1);
   XALLOC(header.files_dindex, sizeof(u_int)*i, -1);
@@ -1096,8 +1096,8 @@ int		edfmt_dwarf2_line(u_long offset)
   inc_pos(line, 1);
 
   /* Check position validity */
-  if (header.prologue_pos + header.prologue_length != dw2_sections.line.pos)
-    dw2_sections.line.pos = header.prologue_pos + header.prologue_length;
+  if (header.prologue_pos + header.prologue_length != i_pos(line))
+    i_pos(line) = header.prologue_pos + header.prologue_length;
 
   /* Save files & directories list */
   current_cu->dirs 	   = header.dirs;

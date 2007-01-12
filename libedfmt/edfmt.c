@@ -9,16 +9,59 @@
 
 edfmtmanage_t debug_format[] = 
   {
-    { DWARF1_SECTION, DWARF1_FORMAT },
-    { DWARF2_SECTION, DWARF2_FORMAT },
-    { NULL, UNKNOWN_FORMAT }
+    { ELFSH_SECTION_NAME_DEBUG, ELFSH_SECTION_DEBUG, DWARF1_FORMAT },
+    { ELFSH_SECTION_NAME_DW2_INFO, ELFSH_SECTION_DW2_INFO, DWARF2_FORMAT },
+    { NULL, 0, UNKNOWN_FORMAT }
   };
+
+/* Load a dwarf2 section information from the file */
+void    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name)
+{
+  elfshsect_t	*sect;
+  int		strindex;
+  int		index;
+  int		nbr;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Fill the table */
+  if (file->secthash[hash] == NULL)
+    {
+      sect = elfsh_get_section_by_name(file, hash_name,
+					&index, &strindex, &nbr);
+      if (NULL == sect)
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to get a debug format section by name", NULL);
+
+      file->secthash[hash] = sect;
+      file->secthash[hash]->data =
+	elfsh_load_section(file, sect->shdr);
+      if (file->secthash[hash]->data == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to load debug format section", NULL);
+
+      /* Fill the stab string table */
+      sect = elfsh_get_section_by_index(file, strindex, NULL, NULL);
+      if (sect == NULL)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to get debug format section string table", NULL);
+
+      sect->data = elfsh_load_section(file, sect->shdr);
+      if (sect->data == NULL)
+        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to load debug format section string table", NULL);
+
+      file->secthash[hash] = sect;
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_get_raw(file->secthash[hash])));
+}
 
 /* Main point of the debug format library */
 int		edfmt_format(elfshobj_t *file)
 {
   u_int		format;
-  elfshsect_t	*sect;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -26,9 +69,7 @@ int		edfmt_format(elfshobj_t *file)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
 
-  sect = edfmt_format_find(file, &format);
-
-  if (sect == NULL)
+  if (edfmt_format_find(file, &format) == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Can't find debug format", -1);
 
@@ -39,7 +80,7 @@ int		edfmt_format(elfshobj_t *file)
       break;
     case DWARF2_FORMAT:
       printf("DWARF2 FORMAT\n");
-      edfmt_dwarf2_parse(file, sect);
+      edfmt_dwarf2_parse(file);
       break;
     default:
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -62,9 +103,8 @@ elfshsect_t   	*edfmt_format_find(elfshobj_t *file, u_int *format)
   /* Each format */
   for (i = 0; debug_format[i].sect_name != NULL; i++)
     {
-      sect = elfsh_get_section_by_name(file, 
-				       debug_format[i].sect_name,
-				       NULL, NULL, NULL);
+      sect = edfmt_get_sect(file, debug_format[i].sect_hash, 
+			    debug_format[i].sect_name);
 
       if (sect != NULL)
 	{

@@ -161,6 +161,15 @@
 #define		ELFSH_SECTION_NAME_EHFRAME	".eh_frame"
 #define		ELFSH_SECTION_NAME_INIT		".init"
 #define		ELFSH_SECTION_NAME_FINI		".fini"
+#define		ELFSH_SECTION_NAME_DEBUG       	".debug"
+#define 	ELFSH_SECTION_NAME_DW2_INFO 	".debug_info"
+#define 	ELFSH_SECTION_NAME_DW2_ARANGES 	".debug_aranges"
+#define 	ELFSH_SECTION_NAME_DW2_PUBNAMES	".debug_pubnames"
+#define 	ELFSH_SECTION_NAME_DW2_ABBREV	".debug_abbrev"
+#define 	ELFSH_SECTION_NAME_DW2_LINE	".debug_line"
+#define 	ELFSH_SECTION_NAME_DW2_FRAME	".debug_frame"
+#define 	ELFSH_SECTION_NAME_DW2_STR	".debug_str"
+#define 	ELFSH_SECTION_NAME_DW2_MACINFO	".debug_macinfo"
 
 /* Section index in the secthash */
 #define		ELFSH_SECTION_NULL		0
@@ -199,6 +208,15 @@
 #define		ELFSH_SECTION_EXTPLT		33
 #define		ELFSH_SECTION_RSHSTRTAB		34
 #define		ELFSH_SECTION_RSYMTAB		35
+#define		ELFSH_SECTION_DEBUG       	36
+#define 	ELFSH_SECTION_DW2_INFO 		37
+#define 	ELFSH_SECTION_DW2_ARANGES 	38
+#define 	ELFSH_SECTION_DW2_PUBNAMES	39
+#define 	ELFSH_SECTION_DW2_ABBREV	40
+#define 	ELFSH_SECTION_DW2_LINE		41
+#define 	ELFSH_SECTION_DW2_FRAME		42
+#define 	ELFSH_SECTION_DW2_STR		43
+#define 	ELFSH_SECTION_DW2_MACINFO	44
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
 

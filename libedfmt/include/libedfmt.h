@@ -16,31 +16,21 @@
 #define DWARF1_FORMAT 	1
 #define DWARF2_FORMAT 	2
 
-#define DWARF1_SECTION 	".debug"
-#define DWARF2_SECTION 	".debug_info"
-
-/* DWARF2 sections */
-#define DWARF2_SECTION_ARANGES 	".debug_aranges"
-#define DWARF2_SECTION_PUBNAMES	".debug_pubnames"
-#define DWARF2_SECTION_ABBREV	".debug_abbrev"
-#define DWARF2_SECTION_LINE	".debug_line"
-#define DWARF2_SECTION_FRAME	".debug_frame"
-#define DWARF2_SECTION_STR	".debug_str"
-#define DWARF2_SECTION_MACINFO	".debug_macinfo"
-
 /* Structures */
 typedef struct 	s_edfmtmanage
 {
   char 		*sect_name;
-  unsigned int	format;
+  u_int		sect_hash;
+  u_int		format;
 } 		edfmtmanage_t;
 
 /* edfmt.c */
 int		edfmt_format(elfshobj_t *file);
 elfshsect_t 	*edfmt_format_find(elfshobj_t *file, u_int *format);
+void    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name);
 
 /* dwarf2.c */
-int		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect);
+int		edfmt_dwarf2_parse(elfshobj_t *file);
 int		edfmt_dwarf2_block_entrie(elfshobj_t *file);
 int		edfmt_dwarf2_block_loop(u_int endpos);
 
@@ -62,4 +52,5 @@ edfmtdw2abbent_t *edfmt_dwarf2_lookup_abbrev(u_int num_fetch);
 
 /* dwarf2-cfa */
 int		edfmt_dwarf2_cfa();
+
 #endif

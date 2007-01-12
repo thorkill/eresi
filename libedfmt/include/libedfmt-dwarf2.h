@@ -16,9 +16,8 @@
 /* Structures */
 typedef struct 	s_edfmtdw2sect
 {
-  void 		*data; 	// Pointer
+  elfshsect_t	*sect;
   u_long 	pos;	// Position
-  u_long	size; 	// Size
 }		edfmtdw2sect_t; 
 
 typedef struct 	s_edfmtdw2sectlist
@@ -245,7 +244,10 @@ extern edfmtdw2cu_t *current_cu;
 extern hash_t abbrev_table;
 
 /* I/O management */
-#define a_pos(name) (dw2_sections.name.data + dw2_sections.name.pos)
+#define i_pos(name) dw2_sections.name.pos
+#define i_size(name) dw2_sections.name.sect->shdr->sh_size
+#define i_data(name) dw2_sections.name.sect->data
+#define a_pos(name) (i_data(name) + i_pos(name))
 #define ac_pos(name) (char *) a_pos(name)
 
 #define c_pos(val, name, type) val = *(type *) a_pos(name)

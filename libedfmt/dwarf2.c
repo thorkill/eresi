@@ -89,12 +89,12 @@ static int	edfmt_dwarf2_updatefref(u_char global)
 }
 
 /* Parse the DWARF-2 debug format */
-int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
+int 		edfmt_dwarf2_parse(elfshobj_t *file)
 {
   edfmtdw2sect_t *pointers[7];
   char		*names[7];
+  u_int		hash[7];
   u_int		i;
-  elfshsect_t 	*csect;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -105,8 +105,12 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
   hash_init(&ref_global_table, 50, ELEM_TYPE_ANY);
 
   /* We already have it ! */
-  dw2_sections.info.data = sect->data;
-  dw2_sections.info.size = sect->shdr->sh_size;
+  dw2_sections.info.sect = edfmt_get_sect(file, ELFSH_SECTION_DW2_INFO, 
+					     ELFSH_SECTION_NAME_DW2_INFO);
+
+  if (dw2_sections.info.sect == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Main DWARF2 section unavailable", -1);
 
   /* Local table system to full fill every pointers correctly */
   pointers[0] = &dw2_sections.abbrev;	// Supported
@@ -118,28 +122,27 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file, elfshsect_t *sect)
   pointers[6] = &dw2_sections.str;	// Supported
   pointers[7] = NULL;
 
-  names[0] = DWARF2_SECTION_ABBREV;
-  names[1] = DWARF2_SECTION_ARANGES;
-  names[2] = DWARF2_SECTION_FRAME;
-  names[3] = DWARF2_SECTION_LINE;
-  names[4] = DWARF2_SECTION_MACINFO;
-  names[5] = DWARF2_SECTION_PUBNAMES;
-  names[6] = DWARF2_SECTION_STR;
+  names[0] = ELFSH_SECTION_NAME_DW2_ABBREV;
+  names[1] = ELFSH_SECTION_NAME_DW2_ARANGES;
+  names[2] = ELFSH_SECTION_NAME_DW2_FRAME;
+  names[3] = ELFSH_SECTION_NAME_DW2_LINE;
+  names[4] = ELFSH_SECTION_NAME_DW2_MACINFO;
+  names[5] = ELFSH_SECTION_NAME_DW2_PUBNAMES;
+  names[6] = ELFSH_SECTION_NAME_DW2_STR;
   names[7] = NULL;
+
+  hash[0] = ELFSH_SECTION_DW2_ABBREV;
+  hash[1] = ELFSH_SECTION_DW2_ARANGES;
+  hash[2] = ELFSH_SECTION_DW2_FRAME;
+  hash[3] = ELFSH_SECTION_DW2_LINE;
+  hash[4] = ELFSH_SECTION_DW2_MACINFO;
+  hash[5] = ELFSH_SECTION_DW2_PUBNAMES;
+  hash[6] = ELFSH_SECTION_DW2_STR;
+  hash[7] = NULL;
 
   /* Use the table to fill every pointers and report a problem */
   for (i = 0; names[i] != NULL; i++)
-    {
-      csect = elfsh_get_section_by_name(file, names[i], NULL, NULL, NULL);
-      
-      /* Some functions are optional so we get what we can */
-      if (!csect)
-	continue;
-
-      /* Fill data */
-      pointers[i]->data = csect->data;
-      pointers[i]->size = csect->shdr->sh_size;
-    }
+    pointers[i]->sect = edfmt_get_sect(file, hash[i], names[i]);
 
   /* Start into the block entrie */
   edfmt_dwarf2_block_entrie(file);
@@ -158,7 +161,7 @@ int		edfmt_dwarf2_block_entrie(elfshobj_t *file)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  while (dw2_sections.info.pos < dw2_sections.info.size)
+  while (i_pos(info) < i_size(info))
     {
       /* Init local reference compil unit table */
       hash_init(&ref_cu_table, 30, ELEM_TYPE_ANY);
@@ -192,17 +195,17 @@ int		edfmt_dwarf2_block_entrie(elfshobj_t *file)
       hash_init(&current_cu->cfa, 50, ELEM_TYPE_ANY);
 
       /* Set compil unit start position */
-      current_cu->start_pos = dw2_sections.info.pos;
+      current_cu->start_pos = i_pos(info);
 
       /* Read DWARF2 .debug_info header */
       ci_pos(current_cu->length, info, u_int);
-      last_pos = dw2_sections.info.pos;
+      last_pos = i_pos(info);
       ci_pos(current_cu->version, info, u_short);
       ci_pos(current_cu->offset, info, u_int);
       ci_pos(current_cu->addr_size, info, u_char);
       
       /* Update abbrev position */
-      dw2_sections.abbrev.pos = current_cu->offset;
+      i_pos(abbrev) = current_cu->offset;
      
       /* Loop on the current compil unit */
       edfmt_dwarf2_block_loop(last_pos + current_cu->length);

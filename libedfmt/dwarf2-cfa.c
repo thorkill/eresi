@@ -63,7 +63,7 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   if (!init)
     {
       ci_read_4(length, frame);	       	// Length (without length)
-      last_pos = dw2_sections.frame.pos;
+      last_pos = i_pos(frame);
       ci_read_4(cie, frame);		// Cie ptr
       ci_read_4(addr_start, frame); 	// Initial location
       ci_read_4(addr_range, frame);	// Address range
@@ -212,8 +212,8 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	/* Unknown cfa, oupssss ? */
 	break;
       }
-  } while (dw2_sections.frame.pos < dw2_sections.frame.size &&
-	   dw2_sections.frame.pos < max_pos);
+  } while (i_pos(frame) < i_size(frame) &&
+	   i_pos(frame) < max_pos);
 
   if (!init)
     {
@@ -237,7 +237,7 @@ int		edfmt_dwarf2_cfa()
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Reset frame position */
-  dw2_sections.frame.pos = 0;
+  i_pos(frame) = 0;
 
   /* Reset state */
   memset(&state, 0x00, sizeof(edfmtdw2cfastate_t));
@@ -246,11 +246,11 @@ int		edfmt_dwarf2_cfa()
     /* Reset header */
     memset(&header, 0x00, sizeof(edfmtdw2cfahead_t));
 
-    header.offset = dw2_sections.frame.pos;
+    header.offset = i_pos(frame);
     
     /* Read CIE header */
     ci_read_4(header.length, frame);
-    header.end_offset = dw2_sections.frame.pos + header.length;
+    header.end_offset = i_pos(frame) + header.length;
     ci_read_4(header.cid, frame);
     ci_read_1(header.version, frame);
     ci_str(header.augmentation, frame);
@@ -258,27 +258,27 @@ int		edfmt_dwarf2_cfa()
     ci_leb128(header.data_align_factor, frame);
     ci_read_1(header.return_addr_reg, frame);
 
-    header.init_offset = dw2_sections.frame.pos;
+    header.init_offset = i_pos(frame);
     
     /* Read init */
     edfmt_dwarf2_cfa_data(&state, &header, 1);
 
     /* Correct length */
-    if (header.end_offset != dw2_sections.frame.pos)
-      dw2_sections.frame.pos = header.end_offset;
+    if (header.end_offset != i_pos(frame))
+      i_pos(frame) = header.end_offset;
 
     do {
       edfmt_dwarf2_cfa_data(&state, &header, 0);
 
       /* We aren't at the end */
-      if (dw2_sections.frame.pos < dw2_sections.frame.size)
+      if (i_pos(frame) < i_size(frame))
 	{
 	  /* Check if the next header is a CIE */
 	  if (header.cid == *(u_int *) (ac_pos(frame)+4))
 	    break;
 	}
-    } while(dw2_sections.frame.pos < dw2_sections.frame.size);
-  } while (dw2_sections.frame.pos < dw2_sections.frame.size);
+    } while(i_pos(frame) < i_size(frame));
+  } while (i_pos(frame) < i_size(frame));
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
