@@ -95,6 +95,7 @@ struct s_decode_format4 {
   u_int32_t cc2;
   u_int32_t cc;  
   u_int32_t imm;
+  u_int32_t sw_trap;
 };
 
 #endif
