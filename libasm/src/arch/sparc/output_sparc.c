@@ -110,18 +110,17 @@ char *get_sparc_cc(int cc)
 void	asm_sparc_dump_operand(asm_instr *ins, int num, 
 			       unsigned int addr, char *buf)
 {
-  asm_operand	*op;
-  int		address;
+  asm_operand *op;
+  int address;
   
-  switch(num)
-    {
+  switch(num) {
     case 1: op = &ins->op1; break;
     case 2: op = &ins->op2; break;
     case 3: op = &ins->op3; break;
     default: return;
-    }
-  switch(op->type)
-    {
+  }
+  
+  switch(op->type) {
     case ASM_SP_OTYPE_REGISTER:
       sprintf(buf, "%s", get_sparc_register(op->base_reg));
       break;
@@ -139,15 +138,15 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       break;  
     case ASM_SP_OTYPE_IMMEDIATE:
       if (op->imm < 10)
-	sprintf(buf, "%i", op->imm);
+		sprintf(buf, "%i", op->imm);
       else
-	sprintf(buf, "0x%x", op->imm);
+		sprintf(buf, "0x%x", op->imm);
       break;
     case ASM_SP_OTYPE_SETHI:
       if (op->imm)
-	sprintf(buf, "%%hi(0x%x)", op->imm << 10);
+		sprintf(buf, "%%hi(0x%x)", op->imm << 10);
       else
-	sprintf(buf, "%%hi(%x)", op->imm << 10);
+		sprintf(buf, "%%hi(%x)", op->imm << 10);
       break;
     case ASM_SP_OTYPE_DISPLACEMENT:
       address = addr + (op->imm << 2);
@@ -157,9 +156,21 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       address = addr + (op->imm << 2);
       ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, 42);
       break;
+    case ASM_SP_OTYPE_IMM_ADDRESS:
+      sprintf(buf, "[ %s", get_sparc_register(op->base_reg));
+      if (op->imm)
+        sprintf(buf, " + 0x%x", op->imm);
+        
+      sprintf(buf, " ]");
+      break;
+    case ASM_SP_OTYPE_REG_ADDRESS:
+      sprintf(buf, "[ %s", get_sparc_register(op->base_reg));
+      sprintf(buf, " + %s ]", get_sparc_register(op->index_reg));
+      break;
+      
     default:
       sprintf(buf, "err");
-    }
+  }
 }
 
 char *asm_sparc_display_instr(asm_instr *instr, int addr)
@@ -169,33 +180,6 @@ char *asm_sparc_display_instr(asm_instr *instr, int addr)
   sprintf(buffer, "%s ", instr->proc->instr_table[instr->instr]);  
   
   switch (instr->type) {
-    case ASM_TYPE_LOAD:
-      strcat(buffer, " [ ");
-      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-      if (!(instr->op3.type == ASM_SP_OTYPE_REGISTER && 
-    		instr->op3.base_reg == ASM_REG_R0)) {
-	    strcat(buffer, " + ");
-	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	  }
-      strcat(buffer, " ], ");
-      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));      
-      break;
-  
-    case ASM_TYPE_STORE:
-      strcat(buffer, " ");
-      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-      strcat(buffer, ", [ ");
-      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-      if (!((instr->op3.type == ASM_SP_OTYPE_REGISTER && 
-    		instr->op3.base_reg == ASM_REG_R0) 
-    		|| (instr->op3.type == ASM_SP_OTYPE_IMMEDIATE && 
-    		instr->op3.imm == 0))) {
-	    strcat(buffer, " + ");
-	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	  }
-      strcat(buffer, " ]");
-	  break;
-	  
 	case ASM_TYPE_CONDBRANCH:	  
 	  if (instr->annul)
 	    strcat(buffer, ",a");
@@ -203,28 +187,19 @@ char *asm_sparc_display_instr(asm_instr *instr, int addr)
 	    strcat(buffer, ",pn");
   
     default:
-      if (instr->nb_op > 0)
+      if (instr->nb_op > 0) {
 	    strcat(buffer, " ");
-	  
-      if (instr->nb_op == 3) {
-		asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-	    strcat(buffer, ", ");
-	  }
-      if (instr->nb_op == 3) {
-	    asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	    strcat(buffer, ", ");
-	  }
-      else {
-	    if (instr->nb_op == 2) {
+	    
+	  	if (instr->nb_op == 3) {
+	      asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
+	      strcat(buffer, ", ");
+	    }
+	    if (instr->nb_op >= 2) {
 	      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
 	      strcat(buffer, ", ");	    
 	    }
-        if (instr->nb_op > 0)	{
-	      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-	    }
-      }
-      break;
-    
+	    asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
+	  }    
   }
     
   return (buffer);    

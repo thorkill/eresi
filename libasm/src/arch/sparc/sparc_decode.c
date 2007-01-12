@@ -473,17 +473,69 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   	  ins->nb_op = 2;
   	  ins->op1.type = ASM_SP_OTYPE_REGISTER;
   	  ins->op1.base_reg = opcode.rd;
-  	  ins->op2.type = ASM_SP_OTYPE_DISPLACEMENT;
-  	  ins->op2.imm = opcode.imm;
+  	  if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
   	  break;
   	  
   	case 0x39: /* RETURN */
   	  ins->nb_op = 1;
-  	  ins->op1.type = ASM_SP_OTYPE_DISPLACEMENT;
-  	  if (opcode.i)
+  	  if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
   	    ins->op1.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  break;
+  	  
+  	case 0x3a: /* Tcc */
+  	  ins->instr = inter->tcc_table[opcode4.cond];
+  	  ins->nb_op = 2;
+  	  if (opcode4.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode4.sw_trap;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode4.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode4.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_CC;
+  	  ins->op2.base_reg = (opcode4.cc & 0x3) + 4;
+  	  
+  	  break;
+  	  
+  	case 0x3b: /* FLUSH */
+  	  ins->nb_op = 1;
+  	  if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  break;
+  	    	
+  	case 0x3e: /* DONE, RETRY */
+  	  if (opcode.rd == 0) /* DONE */
+  	    ins->instr = ASM_SP_DONE;
+  	  else if (opcode.rd == 1)
+  	    ins->instr = ASM_SP_RETRY; /* RETRY */
   	  else
-  	    //ins->op1.imm = opcode.rs1
+  	    ins->instr = ASM_SP_BAD;
+  	    
   	  break;
   	  
   	default: /* Arithmetic and logical operations */

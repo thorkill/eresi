@@ -198,7 +198,9 @@ void sparc_convert_format4(struct s_decode_format4 *opcode,
   
   opcode->cond = opcode->rs1 & 0xf;
   opcode->cc2 = opcode->rs1 & 0x10;
-  opcode->cc = (opcode->cc2 << 2) | (opcode->cc1 << 1) | opcode->cc0;  
+  opcode->cc = (opcode->cc2 << 2) | (opcode->cc1 << 1) | opcode->cc0;
+  
+  opcode->sw_trap = ((opcode->none & 0x3) << 5) | opcode->rs2;
      
   immediate = (opcode->none << 5) | (opcode->rs2);
   	

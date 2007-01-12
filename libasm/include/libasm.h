@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.2 2006-12-19 02:46:19 heroine Exp $
+** $Id: libasm.h,v 1.3 2007-01-12 06:27:41 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -21,16 +21,12 @@
 #endif
 
 /*
-  typedef
+  typedef's
 */
 
-typedef struct s_asm_processor		asm_processor;
-typedef struct s_asm_instr		asm_instr;
-typedef struct s_asm_op			asm_operand;
-
-typedef struct s_asm_processor		asm_processor_t;
-typedef struct s_asm_instr		asm_instr_t;
-typedef struct s_asm_op			asm_operand_t;
+typedef struct s_asm_processor 		asm_processor;
+typedef struct s_asm_instr 			asm_instr;
+typedef struct s_asm_op				asm_operand;
 
 /*
   structures

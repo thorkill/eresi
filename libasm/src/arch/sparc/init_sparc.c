@@ -42,6 +42,8 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->proc = proc;
   ins->len = 4;
   ins->ptr_instr = buf;
+  ins->nb_op = 0;
+  ins->type = ASM_TYPE_NONE;
   if (MGETBIT(converted, 31)) {
   	if (MGETBIT(converted, 30))
 	  return sparc_decode_memory(ins, (u_char*) &converted, len, proc);
@@ -80,7 +82,8 @@ void	asm_init_sparc(asm_processor *proc) {
   inter->fmovcc_table = sparc_fmovcc_list;
   inter->fmovfcc_table = sparc_fmovfcc_list;
   inter->fmovr_table = sparc_fmovr_list;
-  inter->fcmp_table = sparc_fcmp_list; 
+  inter->fcmp_table = sparc_fcmp_list;
+  inter->tcc_table = sparc_tcc_list; 
   inter->op2_table = sparc_op2_table;
   inter->op3_table = sparc_op3_table;
 }

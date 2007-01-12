@@ -180,6 +180,25 @@ int	sparc_bcc_list[16] = {
   ASM_SP_BVC  
 };
 
+int	sparc_tcc_list[16] = {
+  ASM_SP_TN,
+  ASM_SP_TE,
+  ASM_SP_TLE,
+  ASM_SP_TL,
+  ASM_SP_TLEU,
+  ASM_SP_TCS,
+  ASM_SP_TNEG,
+  ASM_SP_TVS,
+  ASM_SP_TA,
+  ASM_SP_TNE,
+  ASM_SP_TG,
+  ASM_SP_TGE,
+  ASM_SP_TGU,
+  ASM_SP_TCC,
+  ASM_SP_TPOS,
+  ASM_SP_TVC  
+};
+
 int	sparc_brcc_list[8] = {
   ASM_SP_,
   ASM_SP_BRZ,

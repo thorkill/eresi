@@ -14,32 +14,31 @@
 
 struct s_asm_op 
 {  
+  /* pointer to processor structure. - to remove -	*/
+  asm_processor *proc;
   /** operand length. (usefull on ia32 only).
    * operands expressed in R byte from ModRM byte have a null size.	*/
   u_int	len;			
-  /* pointer to operand in buffer					*/
+  /* pointer to operand in buffer */
   u_char *ptr;
-  /* operand type:
-   * contain operand type flags	*/
+  /* operand type: contain operand type flags */
   u_int	type;
   /* contain operand size flags	*/
   u_int	size;
-  /* Operand content flags (ia32 only)		*/
+  /* Operand content flags (ia32 only) */
   u_int	content;
   /* register set: 8/16/32 bits general registers, segment registers ..
    * (ia32 only) */
   int regset;
-  /* operand prefix (ia32 only)		*/
-  int prefix;
-  /* pointer to processor structure. - to remove -	*/
-  asm_processor *proc;
+  /* operand prefix (ia32 only)	*/
+  int prefix;  
   /* immediate value extracted from operand	*/
   int imm; 
-  /* base register : primary register extracted		*/
+  /* base register: primary register extracted	*/
   int base_reg;
-  /* index register				*/
-  int index_reg;
-  /* scale factor (ia32 only)				*/
+  /* index register: auxiliary register */
+  int index_reg;  
+  /* scale factor (ia32 only) */
   unsigned int scale;
 };
 

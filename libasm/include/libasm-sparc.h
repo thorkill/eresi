@@ -58,6 +58,7 @@ struct s_asm_proc_sparc {
   int *fmovfcc_table;
   int *fmovr_table;
   int *fcmp_table;
+  int *tcc_table;
   int *op2_table;
   int *op3_table;
 };
@@ -179,7 +180,9 @@ enum {
   ASM_SP_OTYPE_FREGISTER,
   ASM_SP_OTYPE_SREGISTER,
   ASM_SP_OTYPE_PREGISTER,
-  ASM_SP_OTYPE_CC
+  ASM_SP_OTYPE_CC,
+  ASM_SP_OTYPE_IMM_ADDRESS, /* [ r[rs1] + imm ] */
+  ASM_SP_OTYPE_REG_ADDRESS /* [ r[rs1] + r[rs2] ] */
 };
 
 /***
@@ -551,6 +554,7 @@ extern int sparc_fmovcc_list[48];
 extern int sparc_fmovfcc_list[48];
 extern int sparc_fmovr_list[24];
 extern int sparc_fcmp_list[8];
+extern int sparc_tcc_list[16];
 extern int sparc_op2_table[64];
 extern int sparc_op3_table[64];
 
