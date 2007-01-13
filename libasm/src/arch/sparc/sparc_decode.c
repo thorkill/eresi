@@ -1,6 +1,6 @@
 /*
 ** 
-** sparc_subs.c in 
+** sparc_decode.c in 
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Tue Dec  2 20:59:30 2003
@@ -118,7 +118,6 @@ int	sparc_decode_branches(asm_instr *ins, u_char *buf, u_int len,
       break;    
   }
         
-  sparc_instruction2synthetic(ins);
   return (4);
 }
 
@@ -171,8 +170,6 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-  ins->type = sparc_type_instr(ins->instr);
-  ins->len = 4;
   
   switch (opcode.op3) {
   	case 0x19: /* Free/reserved opcodes */
@@ -570,32 +567,311 @@ int	sparc_decode_memory(asm_instr *ins, u_char *buf, u_int len,
   struct s_asm_proc_sparc *inter;
 
   sparc_convert_format3(&opcode, buf, proc);
+  
   #ifdef DEBUG_SPARC
   printf("[DEBUG sparc_ins_decode_imm op = %i rd = %i op3 = %i rs1 = %i sign = %i"
 	  " immediate = %i]\n",
 	  opcode.op, opcode.rd, opcode.op3, opcode.rs1,
 	  opcode.sign, opcode.immediate);
   #endif
-  inter = proc->internals;
-  if (opcode.op == 2)
-    ins->instr = inter->op2_table[opcode.op3];
-  else
-    {
-      ins->instr = inter->op3_table[opcode.op3];
-      ins->type = sparc_type_instr(ins->instr);
-    }
-  ins->len = 4;
-  ins->nb_op = 3;
-  ins->op1.type = ASM_SP_OTYPE_REGISTER;
-  ins->op1.base_reg = opcode.rd;
-  ins->op2.type = ASM_SP_OTYPE_REGISTER;
-  ins->op2.base_reg = opcode.rs1;
-  if (opcode.imm & 0x1000)
-    ins->op3.imm = 0xFFFFF000 | opcode.imm;
-  else
-    ins->op3.imm = opcode.imm;
+  
+  ins->instr = inter->op3_table[opcode.op3];
+  
+  switch(opcode.op3) {
+  	case 0x0: /* Load Integer */
+  	case 0x1:
+  	case 0x2:
+  	case 0x3:
+  	case 0x8:
+  	case 0x9:
+  	case 0xa:
+  	case 0xb:
+  	case 0xd: /* LDSTUB */
+  	case 0xf: /* SWAP */
+  	  ins->nb_op = 2;
+      ins->op1.type = ASM_SP_OTYPE_REGISTER;
+      ins->op1.base_reg = opcode.rd;
       
-  ins->op3.type = ASM_SP_OTYPE_IMMEDIATE;
-
+      if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	  
+  	case 0x4: /* Store Integer */
+  	case 0x5:
+  	case 0x6:
+  	case 0x7:
+  	case 0xe:
+  	  ins->nb_op = 2;      
+      if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_REGISTER;
+      ins->op2.base_reg = opcode.rd;
+  	  
+  	  break;
+  	  
+  	case 0x10: /* Load Integer from alternate space */
+  	case 0x11:
+  	case 0x12:
+  	case 0x13:
+  	case 0x18:
+  	case 0x19:
+  	case 0x1a:
+  	case 0x1b:
+  	case 0x1d: /* LDSTUBA */
+  	case 0x1f: /* SWAPA */
+  	  ins->nb_op = 2;
+      ins->op1.type = ASM_SP_OTYPE_REGISTER;
+      ins->op1.base_reg = opcode.rd;
+      
+      if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op2.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	    ins->op2.address_space = opcode.none;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	
+  	case 0x14: /* Store Integer into alternate space */
+  	case 0x15:
+  	case 0x16:
+  	case 0x17:
+  	case 0x1e:
+  	  ins->nb_op = 2;      
+      if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op1.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	    ins->op1.address_space = opcode.none;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_REGISTER;
+      ins->op2.base_reg = opcode.rd;
+  	  
+  	  break;
+  	  
+  	case 0x20: /* Load floating-point */
+  	case 0x22:
+  	case 0x23:
+  	  ins->nb_op = 2;
+      ins->op1.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op1.base_reg = opcode.rd;
+      
+      if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	  
+  	case 0x21: /* LDFSR, LDXFSR */
+  	  if (opcode.rd == 0)
+  	    ins->instr = ASM_SP_LDFSR;
+  	  else if (opcode.rd == 1)
+  	    ins->instr = ASM_SP_LDXFSR;
+  	  else {
+  	  	ins->instr = ASM_SP_BAD;
+  	  	break;
+  	  }
+  	  
+  	  ins->nb_op = 2;
+      ins->op1.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op1.base_reg = ASM_FREG_FSR;
+      
+      if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	  
+  	case 0x24: /* Store floating-point */
+  	case 0x26:
+  	case 0x27:
+  	  ins->nb_op = 2;      
+      if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op2.base_reg = opcode.rd;
+  	  
+  	  break;
+  	  
+  	case 0x25: /* STFSR, STXFSR */
+  	  if (opcode.rd == 0)
+  	    ins->instr = ASM_SP_LDFSR;
+  	  else if (opcode.rd == 1)
+  	    ins->instr = ASM_SP_LDXFSR;
+  	  else {
+  	  	ins->instr = ASM_SP_BAD;
+  	  	break;
+  	  }
+  	  
+  	  ins->nb_op = 2;      
+      if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op2.base_reg = ASM_FREG_FSR;
+  	  
+  	  break;
+  	  
+  	case 0x2d: /* PREFETCH */
+  	  ins->nb_op = 2;
+  	  ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
+  	  ins->op1.imm = opcode.rd;
+  	  if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  break;
+  	  
+  	case 0x30: /* Load floating-point from Alternate Space */
+  	case 0x32:
+  	case 0x33:
+  	  ins->nb_op = 2;
+      ins->op1.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op1.base_reg = opcode.rd;
+      
+      if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op2.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	    ins->op2.address_space = opcode.none;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	  
+  	case 0x34: /* Store floating-point into Alternate Space */
+  	case 0x36:
+  	case 0x37:
+  	  ins->nb_op = 2;      
+      if (opcode.i) {
+  	    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op1.imm = opcode.imm;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op1.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op1.index_reg = opcode.rs2;
+  	    ins->op1.address_space = opcode.none;
+  	  }
+  	  ins->op1.base_reg = opcode.rs1;
+  	  
+  	  ins->op2.type = ASM_SP_OTYPE_FREGISTER;
+      ins->op2.base_reg = opcode.rd;
+  	  
+  	  break;
+  	  
+  	case 0x3d: /* PREFETCHA */
+  	  ins->nb_op = 2;
+  	  ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
+  	  ins->op1.imm = opcode.rd;
+  	  if (opcode.i) {
+  	    ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    ins->op2.imm = opcode.imm;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op2.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op2.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	    ins->op2.index_reg = opcode.rs2;
+  	    ins->op2.address_space = opcode.none;
+  	  }
+  	  ins->op2.base_reg = opcode.rs1;
+  	  break;
+  	  
+  	case 0x3c: /* CASA */
+  	case 0x3e: /* CASXA */
+  	  ins->nb_op = 3;
+  	  ins->op1.type = ASM_SP_OTYPE_REGISTER;
+      ins->op1.base_reg = opcode.rd;
+  	  ins->op2.type = ASM_SP_OTYPE_REGISTER;
+      ins->op2.base_reg = opcode.rs2;
+      if (opcode.i) {
+  	    ins->op3.type = ASM_SP_OTYPE_IMM_ADDRESS;
+  	    /* Special case */
+  	    ins->op3.imm = 0;
+  	    /* This value doesn't matter. Just has to be != 0x80 */
+  	    ins->op3.address_space = -1;
+  	  }
+  	  else {
+  	  	ins->op3.type = ASM_SP_OTYPE_REG_ADDRESS;
+  	  	/* Special case */
+  	    ins->op3.index_reg = -1;
+  	    ins->op3.address_space = opcode.none;
+  	  }
+  	  ins->op3.base_reg = opcode.rs1;
+  	  
+  	  break;
+  	  
+  	default: ins->instr = ASM_SP_BAD;  	  
+  	  
+  }
+  
   return (4);
 }

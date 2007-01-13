@@ -131,7 +131,10 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       sprintf(buf, "%s", get_sparc_pregister(op->base_reg));
       break;
     case ASM_SP_OTYPE_FREGISTER:
-      sprintf(buf, "%%f%i", op->base_reg);
+      if (op->base_reg == ASM_FREG_FSR)
+        sprintf(buf, "%%fsr");
+      else
+        sprintf(buf, "%%f%i", op->base_reg);
       break;
     case ASM_SP_OTYPE_CC:
       sprintf(buf, "%s", get_sparc_cc(op->base_reg));
@@ -162,10 +165,20 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
         sprintf(buf, " + 0x%x", op->imm);
         
       sprintf(buf, " ]");
+      
+      if (op->address_space != 80)
+        sprintf(buf, " %%asi");
       break;
     case ASM_SP_OTYPE_REG_ADDRESS:
-      sprintf(buf, "[ %s", get_sparc_register(op->base_reg));
-      sprintf(buf, " + %s ]", get_sparc_register(op->index_reg));
+      if (op->index_reg > 0)
+        sprintf(buf, "[ %s + %s ]", get_sparc_register(op->base_reg),
+      								get_sparc_register(op->index_reg));
+      								
+	  else
+	    sprintf(buf, "[ %s ]", get_sparc_register(op->base_reg));
+      								
+      if (op->address_space != 80)
+        sprintf(buf, " 0x%x", op->address_space);								
       break;
       
     default:

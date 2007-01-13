@@ -14,8 +14,7 @@
 
 #define MGETBIT(val, shift)	(((val) >> shift) & 1)
 
-int	sparc_type_instr(int instr);
-void sparc_instruction2synthetic(asm_instr *ins);
+#define ASM_FREG_FSR -1 /* Nasty little hack */
 
 int	sparc_decode_branches(asm_instr *, u_char *, u_int, asm_processor *);
 int	sparc_decode_call(asm_instr *, u_char *, u_int, asm_processor *);
@@ -182,7 +181,7 @@ enum {
   ASM_SP_OTYPE_PREGISTER,
   ASM_SP_OTYPE_CC,
   ASM_SP_OTYPE_IMM_ADDRESS, /* [ r[rs1] + imm ] */
-  ASM_SP_OTYPE_REG_ADDRESS /* [ r[rs1] + r[rs2] ] */
+  ASM_SP_OTYPE_REG_ADDRESS /* [ r[rs1] + r[rs2] ] */ 
 };
 
 /***

@@ -37,7 +37,9 @@ struct s_asm_op
   /* base register: primary register extracted	*/
   int base_reg;
   /* index register: auxiliary register */
-  int index_reg;  
+  int index_reg;
+  /* address space (sparc only) */
+  int address_space;  
   /* scale factor (ia32 only) */
   unsigned int scale;
 };

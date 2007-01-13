@@ -44,6 +44,11 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->ptr_instr = buf;
   ins->nb_op = 0;
   ins->type = ASM_TYPE_NONE;
+  /* Primary (implicit) address space */
+  ins->op1.address_space = 0x80;
+  ins->op2.address_space = 0x80;
+  ins->op3.address_space = 0x80;
+  
   if (MGETBIT(converted, 31)) {
   	if (MGETBIT(converted, 30))
 	  return sparc_decode_memory(ins, (u_char*) &converted, len, proc);
