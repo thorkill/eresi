@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.11 2007-01-08 11:23:58 may Exp $
+ * $Id: init.c,v 1.12 2007-01-14 06:05:53 strauss Exp $
  *
  * Initialization functions
  *
@@ -83,6 +83,7 @@ int		mjr_setup_processor(mjrsession_t *sess)
  switch(arch)
    {
    case EM_SPARC:
+   case EM_SPARCV9:
      //   asm_init_sparc(&sess->proc);
      break;
    case EM_386:

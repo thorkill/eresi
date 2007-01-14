@@ -185,7 +185,7 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   	case 0x27: 
   	  /* Find the right kind of shift - (SLL/SRL/SRA){X} */ 	  
   	  ins->instr = inter->shift_table[opcode.op3 - 0x25 + 
-  	  									(opcode.imm & 0x1fff)]; 
+  	  									((opcode.imm & 0x1000)?1:0)]; 
   	  
   	  ins->nb_op = 3;
   	  ins->op1.type = ASM_SP_OTYPE_REGISTER;
@@ -575,6 +575,7 @@ int	sparc_decode_memory(asm_instr *ins, u_char *buf, u_int len,
 	  opcode.sign, opcode.immediate);
   #endif
   
+  inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
   switch(opcode.op3) {

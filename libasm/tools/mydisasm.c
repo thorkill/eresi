@@ -97,6 +97,7 @@ int	main(int ac, char **av) {
     {
     case EM_SPARC32PLUS:
     case EM_SPARC:
+    case EM_SPARCV9:
       asm_init_sparc(&proc);
       break;
     case EM_386:

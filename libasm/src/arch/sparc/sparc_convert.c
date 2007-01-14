@@ -159,13 +159,10 @@ void sparc_convert_format3(struct s_decode_format3 *opcode,
       
   shcnt = immediate & 0x3f;
   /* (immediate & 0x1fff == the 'x' bit */
-  if (((immediate & 0x1fff) == 0) && (shcnt & 0x10))
-    shcnt = 0x20 | shcnt;
-  	
-  if (shcnt & 0x20)
-    opcode->shcnt = 0xFFFFF200 | shcnt;
-  else
-    opcode->shcnt = shcnt;
+  if ((immediate & 0x1fff) == 0)
+    shcnt &= 0x1f;
+  	  
+  opcode->shcnt = shcnt;
   
   opcode->rcond = (opcode->imm & 0x1c00) >> 10;
   opcode->opf = (opcode->i << 8) | opcode->none;
