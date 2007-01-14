@@ -1182,7 +1182,7 @@ revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o,
 int		vm_types_print();
 int		vm_type_print(char *type);
 int		vm_typescope_close();
-int		vm_types_untaint();
+char		*vm_types_untaint();
 int		vm_typescope_open();
 
 /* Readline stuff (XXX: need to be prefixed) */
