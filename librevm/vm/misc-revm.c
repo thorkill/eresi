@@ -191,12 +191,14 @@ int		vm_testscript(int ac, char **av)
   if (strncmp(buff, "#!", 2))
     {
       XCLOSE(fd, 0);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid script interpreter", 0);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Invalid script interpreter", 0);
     }
   if (!strstr(buff, av[0]) && !strstr(buff, "elfsh"))
     {
       XCLOSE(fd, 0);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Not an Elfsh script", 0);
+      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Not an ELFsh script", 0);
     }
   XCLOSE(fd, 0);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));

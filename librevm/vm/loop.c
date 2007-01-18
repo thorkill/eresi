@@ -62,6 +62,7 @@ int		vm_execscript()
 {
   revmargv_t	*cur;
   revmargv_t	*next;
+  int		status;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -113,7 +114,8 @@ int		vm_execscript()
 	  if (vm_implicit(cur->cmd) < 0)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Implicit operations failed", -1);
-	  if (cur->cmd->exec() < 0)
+	  status = cur->cmd->exec();
+	  if (status < 0)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Command execution failed", -1);
 	}
@@ -128,6 +130,10 @@ int		vm_execscript()
 	}
       else
 	next = world.curjob->curcmd;
+
+      /* Break the flow if we switched to interactive mode */
+      if (status == ELFSH_SCRIPT_STOP)
+	break;
     }
 
   /* If we had a saved context, restore it */
@@ -144,8 +150,12 @@ int		vm_execscript()
       world.state.vm_sourcing = 0;
       printf("Restoring e2dbg context from sourced script \n");
     }
+  
+  /* Make sure we switch to interactive mode if we issued a stop command */
+  if (status == ELFSH_SCRIPT_STOP)
+    world.state.vm_mode = ELFSH_VMSTATE_IMODE;
       
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }
 
 

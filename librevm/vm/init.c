@@ -32,6 +32,10 @@ int		vm_loop(int argc, char **argv)
 
   do {
 
+    /* Come back to the loop if a script turns into interactive mode */
+  reenter:
+    //__asm__(".byte 0xCC");
+
     /* Fill argv from stdin if we are in interactive mode */
     if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net == 1)
       {
@@ -119,7 +123,12 @@ int		vm_loop(int argc, char **argv)
   if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
-      vm_execscript();
+      if (vm_execscript() == ELFSH_SCRIPT_STOP)
+	{
+	  XCLOSE(world.curjob->io.input_fd, -1);
+	  world.curjob->io.input_fd = 0;
+	  goto reenter;
+	}
     }
 
  end:

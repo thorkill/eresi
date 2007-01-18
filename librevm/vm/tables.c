@@ -292,7 +292,7 @@ static void	setup_elfhash()
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "shstrndx"     , vm_create_L2ENT(elfsh_get_shstrtab_index,
-							  elfsh_set_shstrtab_index, 
+							  elfsh_set_shstrtab_index,
 							  ELFSH_OBJSHORT,
 							  NULL, NULL, 
 							  NULL, NULL));

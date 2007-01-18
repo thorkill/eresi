@@ -85,6 +85,7 @@ extern asm_processor	proc;
 #define		E2DBG_NAME		"Embedded ELF Debugger"
 #define		E2DBG_ARGV0		"e2dbg"
 #define		E2DBG_SCRIPT_CONTINUE	1
+#define		ELFSH_SCRIPT_STOP	2
 #define		CMD_CONTINUE		"continue"
 #define		CMD_CONTINUE2		"cont"
 
@@ -178,7 +179,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.74"
-#define	ELFSH_RELEASE		"a3"
+#define	ELFSH_RELEASE		"a6"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -1175,7 +1176,7 @@ int             vm_setvar_long(char *varname, u_long val);
 int		vm_type_addfield(revmtype_t *parent, revmtype_t *field);
 int		vm_simpletype_create(u_int type);
 int		vm_types_print();
-int		vm_type_print(char *type);
+int		vm_type_print(char *type, char mode);
 revmtype_t	*vm_type_create(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
 			      u_char p, u_int nbr, char *fieldname);

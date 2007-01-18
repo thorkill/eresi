@@ -235,7 +235,8 @@ int			vm_parseopt(int argc, char **argv)
 
 	  if (ret == 2 && c == ':')
 	    {
-	      hash_add(&labels_hash[world.curjob->sourced], elfsh_strdup(label), new); 
+	      hash_add(&labels_hash[world.curjob->sourced], 
+		       elfsh_strdup(label), new); 
 
 	      printf(" [*] Found label %s \n", label);
 
