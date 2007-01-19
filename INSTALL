@@ -1,6 +1,8 @@
 
 How to build elfsh, e2dbg, libasm and libelfsh :
 
+You will need openssl headers. Debian users should
+install openssl-dev.
 
 1. ./configure --help (select your options)
 2. make
