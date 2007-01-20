@@ -103,17 +103,14 @@ void		elfsh_free(void *tofree);
 #endif
 
 /* Elements that we can find in vectors or hash tables */
-#define		ELEM_TYPE_ANY	0	 /* Unknown tainted type */
-#define		ELEM_TYPE_L1	(1 << 1) /* Container type */
-#define		ELEM_TYPE_L2    (1 << 2) /* Simple type */
-#define		ELEM_TYPE_VECT  (1 << 3) /* Vector type */
-#define		ELEM_TYPE_HASH	(1 << 4) /* Hash table type */
-#define		ELEM_TYPE_PROC  (1 << 5) /* Abstract Procedure type */
-#define		ELEM_TYPE_BLOC  (1 << 6) /* Abstract Basic bloc pointers */
-#define		ELEM_TYPE_INSTR	(1 << 7) /* Abstract Instruction pointers */
-#define		ELEM_TYPE_IMMED	(1 << 8) /* Immed: str, raw, char, short, int, long */
-#define		ELEM_TYPE_OBJ	(1 << 9) /* File object pointers */
-#define		ELEM_TYPE_MAX   (1 << 10)
+#define		ELEM_TYPE_ANY	0	/* Unknown tainted type */
+#define		ELEM_TYPE_VECT  1	/* Vector type */
+#define		ELEM_TYPE_HASH	2	/* Hash table type */
+#define		ELEM_TYPE_PROC  3	/* Abstract Procedure type */
+#define		ELEM_TYPE_BLOC  4	/* Abstract Basic bloc pointers */
+#define		ELEM_TYPE_INSTR	5	/* Abstract Instruction pointers */
+#define		ELEM_TYPE_IMMED	6       /* Immed: str, raw, char, short, int, long */
+#define		ELEM_TYPE_MAX   7
 
 /* Include this here since it contains an allocation too */
 #include "libhash.h"

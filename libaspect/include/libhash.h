@@ -45,8 +45,12 @@ typedef struct          s_hash
   u_char		type;
 }                       hash_t;
 
+/* The hash table of hash tables is accessible to the public */
+extern hash_t		*hash_hash;
+
 /* hash.c */
-int		hash_init(hash_t *h, int sz, u_int t);	/* Allocate the table */
+int		hash_init(hash_t *, char*, int, u_int);	/* Allocate the table */
+hash_t		*hash_find(char *name);			/* Find a hash table */
 void		hash_destroy(hash_t *h);		/* Free the table */
 int		hash_add(hash_t *h, char *k, void *d);	/* Add an entry */
 int		hash_del(hash_t *h, char *key);		/* Delete an entry */

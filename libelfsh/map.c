@@ -215,6 +215,6 @@ elfshobj_t	*elfsh_map_obj(char *name)
 		      "Unable to load object", NULL);
   file->rights = O_RDWR;
   elfsh_read_obj(file);
-  hash_init(&file->redir_hash, 51, ELEM_TYPE_ANY);
+  hash_init(&file->redir_hash, "redirections", 51, ELEM_TYPE_ANY);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }

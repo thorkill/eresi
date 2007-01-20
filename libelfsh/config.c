@@ -2,7 +2,7 @@
  * ELFsh - Configuration related api
  * 2006 thorkill, Asgard Labs Inc.
  *
- * $Id: config.c,v 1.4 2007-01-08 11:23:58 may Exp $
+ * $Id: config.c,v 1.5 2007-01-20 19:33:40 may Exp $
  *
  */
 
@@ -13,7 +13,8 @@ libworld_t      dbgworld;
 /* This function is started by elfsh_init() */
 void	elfsh_config_init()
 {
-  hash_init(&dbgworld.config_hash, LIBELFSH_CONFIG_HASH_SIZE, ELEM_TYPE_ANY);
+  hash_init(&dbgworld.config_hash, "configuration",
+	    LIBELFSH_CONFIG_HASH_SIZE, ELEM_TYPE_ANY);
 }
 
 /* this function is a wraper for updating data/val which depend on datatype */

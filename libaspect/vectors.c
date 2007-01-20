@@ -19,7 +19,7 @@ void		aspect_vectors_init()
 {
   if (!vh_set)
     {
-      hash_init(&vector_hash, 11, ELEM_TYPE_VECT);
+      hash_init(&vector_hash, "vectors", 11, ELEM_TYPE_VECT);
       vh_set = 1;
     }
 }

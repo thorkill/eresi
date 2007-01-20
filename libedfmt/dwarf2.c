@@ -102,7 +102,7 @@ int 		edfmt_dwarf2_parse(elfshobj_t *file)
   memset(&dw2_sections, 0x00, sizeof(edfmtdw2sectlist_t));
 
   /* Init global reference table (for DW_FORM_ref entities) */
-  hash_init(&ref_global_table, 50, ELEM_TYPE_ANY);
+  hash_init(&ref_global_table, "dwarf2_gltable", 50, ELEM_TYPE_ANY);
 
   /* We already have it ! */
   dw2_sections.info.sect = edfmt_get_sect(file, ELFSH_SECTION_DW2_INFO, 
@@ -164,7 +164,7 @@ int		edfmt_dwarf2_block_entrie(elfshobj_t *file)
   while (i_pos(info) < i_size(info))
     {
       /* Init local reference compil unit table */
-      hash_init(&ref_cu_table, 30, ELEM_TYPE_ANY);
+      hash_init(&ref_cu_table, "dwarf2_cutable", 30, ELEM_TYPE_ANY);
 
       /* Alloc a new compil unit */
       XALLOC(tcu, sizeof(edfmtdw2cu_t), -1);
@@ -180,19 +180,19 @@ int		edfmt_dwarf2_block_entrie(elfshobj_t *file)
 	{
 	  /* Init info structure */
 	  debug_info.cu_list = tcu;
-	  hash_init(&debug_info.file_line, 50, ELEM_TYPE_ANY);
-	  hash_init(&debug_info.addr, 50, ELEM_TYPE_ANY);
-	  hash_init(&debug_info.macros, 50, ELEM_TYPE_ANY);
-	  hash_init(&debug_info.cfa, 50, ELEM_TYPE_ANY);
+	  hash_init(&debug_info.file_line, "dwarf2_filelines", 50, ELEM_TYPE_ANY);
+	  hash_init(&debug_info.addr     , "dwarf2_addresses", 50, ELEM_TYPE_ANY);
+	  hash_init(&debug_info.macros   , "dwarf2_macros"   , 50, ELEM_TYPE_ANY);
+	  hash_init(&debug_info.cfa      , "dwarf2_cfa"      , 50, ELEM_TYPE_ANY);
 	}
 
       current_cu = current_cu ? current_cu->next : tcu;
 
       /* Init local hashes */
-      hash_init(&current_cu->file_line, 50, ELEM_TYPE_ANY);
-      hash_init(&current_cu->addr, 50, ELEM_TYPE_ANY);
-      hash_init(&current_cu->macros, 50, ELEM_TYPE_ANY);
-      hash_init(&current_cu->cfa, 50, ELEM_TYPE_ANY);
+      hash_init(&current_cu->file_line, "dwarf2_local_flines", 50, ELEM_TYPE_ANY);
+      hash_init(&current_cu->addr     , "dwarf2_local_addr"  , 50, ELEM_TYPE_ANY);
+      hash_init(&current_cu->macros   , "dwarf2_local_macros", 50, ELEM_TYPE_ANY);
+      hash_init(&current_cu->cfa      , "dwarf2_local_cfa"   , 50, ELEM_TYPE_ANY);
 
       /* Set compil unit start position */
       current_cu->start_pos = i_pos(info);
@@ -225,7 +225,7 @@ int		edfmt_dwarf2_block_loop(u_int endpos)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);   
 
-  hash_init(&abbrev_table, 30, ELEM_TYPE_ANY);
+  hash_init(&abbrev_table, "dwarf2_abbrev_table", 30, ELEM_TYPE_ANY);
   
   /* Parse abbrev table on the appropriate offset */
   if (edfmt_dwarf2_abbrev() == 0)

@@ -6,20 +6,23 @@
 #include "libui.h"
 
 
-
 /* Create a new job structure */
-revmjob_t	*vm_clone_job(revmjob_t      *job)
+revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
 {
   revmjob_t    *new;
   int		i;
+  char		logbuf[BUFSIZ];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(new, sizeof(revmjob_t), NULL);
   memcpy(new, job, sizeof(revmjob_t));
   bzero(&new->loaded, sizeof(hash_t));
   bzero(&new->dbgloaded, sizeof(hash_t));
-  hash_init(&new->loaded, 51, ELEM_TYPE_OBJ);
-  hash_init(&new->dbgloaded, 11, ELEM_TYPE_OBJ);
+
+  snprintf(logbuf, sizeof(logbuf), "%s_loaded", newname);
+  hash_init(&new->loaded, elfsh_strdup(logbuf), 51, ELEM_TYPE_ANY);
+  snprintf(logbuf, sizeof(logbuf), "%s_dbgloaded", newname);
+  hash_init(&new->dbgloaded, elfsh_strdup(logbuf), 11, ELEM_TYPE_ANY);
 
   /* empty new job */
   new->curcmd         = NULL;

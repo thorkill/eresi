@@ -179,7 +179,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.74"
-#define	ELFSH_RELEASE		"a6"
+#define	ELFSH_RELEASE		"a7"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -391,6 +391,8 @@ char prompt_token[512];
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"
 #define	CMD_VECTORS		 "vectors"
+#define	CMD_TABLES		 "tables"
+
 
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
@@ -968,6 +970,7 @@ int             cmd_verdef();
 int             cmd_version();
 int             cmd_hashx();
 int		cmd_vectors();
+int		cmd_tables();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);
@@ -1237,7 +1240,7 @@ u_int		vm_dbgid_get();
 int		vm_own_job(revmjob_t *job);
 int		vm_valid_workspace(char *name);
 void		vm_switch_job(revmjob_t *job);
-revmjob_t	*vm_clone_job(revmjob_t *job);
+revmjob_t	*vm_clone_job(char *name, revmjob_t *job);
 int		vm_add_script_cmd(char *dirstr);
 int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();

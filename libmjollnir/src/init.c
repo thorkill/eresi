@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.12 2007-01-14 06:05:53 strauss Exp $
+ * $Id: init.c,v 1.13 2007-01-20 19:33:40 may Exp $
  *
  * Initialization functions
  *
@@ -13,8 +13,8 @@ int		mjr_init_session(mjrsession_t *sess)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_init(&goto_hash, 100, ELEM_TYPE_IMMED);
-  hash_init(&sess->ctx, mjrHashSmall, ELEM_TYPE_ANY);
+  hash_init(&goto_hash, "gotos"      , 100, ELEM_TYPE_IMMED);
+  hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ELEM_TYPE_ANY);
 
   /* register configurable parameters */
   elfsh_config_add_item(
@@ -67,8 +67,8 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  XALLOC(ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash, mjrHashVerySmall, ELEM_TYPE_PROC);
- hash_init(&ctx->blkhash, mjrHashLarge, ELEM_TYPE_BLOC);
+ hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ELEM_TYPE_PROC);
+ hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ELEM_TYPE_BLOC);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }
 

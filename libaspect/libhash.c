@@ -9,16 +9,31 @@
 #include "libaspect.h"
 
 
+/* Hash tables of hash tables */
+hash_t	*hash_hash = NULL;
+
 /* Initialize the hash table */
-int	hash_init(hash_t *h, int size, u_int type)
+int	hash_init(hash_t *h, char *name, int size, u_int type)
 {
+  if (!hash_hash)
+    {
+      hash_hash = calloc(sizeof(hash_t), 1);
+      hash_init(hash_hash, "hashes", 51, ELEM_TYPE_ANY);
+    }
   if (type >= ELEM_TYPE_MAX)
     return (-1);
   HASHALLOC(h->ent, size * sizeof(hashent_t), -1);
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
+  hash_add(hash_hash, name, h);
   return (0);
+}
+
+/* Return a hash table by its name */
+hash_t	*hash_find(char *name)
+{
+  return (hash_get(hash_hash, name));
 }
 
 
@@ -168,8 +183,6 @@ hashent_t	*hash_get_head(hash_t *h, char *backup)
     index += *backup;
   return (&h->ent[index % h->size]);
 }
-
-
 
 /* Used to create arrays of keys for completion */
 char		**hash_get_keys(hash_t *h, int *n)

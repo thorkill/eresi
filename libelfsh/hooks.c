@@ -1401,7 +1401,7 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
     {
       if (!interp_hash.size)
 	{
-	  hash_init(&interp_hash, 10, ELEM_TYPE_IMMED);
+	  hash_init(&interp_hash, "interpreters", 10, ELEM_TYPE_IMMED);
 	  hash_add(&interp_hash, 
 		   "/lib/ld-linux.so", 
 		   &elfsh_ostype[ELFSH_OS_LINUX]);
@@ -1431,7 +1431,8 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
       if (res)
 	{
 	  file->hdr->e_ident[EI_OSABI] = *res;
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_real_ostype(file)));
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     (elfsh_get_real_ostype(file)));
 	}
     }
 
