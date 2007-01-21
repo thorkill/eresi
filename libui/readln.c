@@ -59,7 +59,7 @@ char		*command_generator(const char *text, int state)
 
 
 
-char	**custom_completion(const char* text, int start, int end) 
+char	**vm_completion(const char* text, int start, int end) 
 {
   char	**matches = (char**) NULL;
   char	*baq, *baq2;
@@ -95,7 +95,8 @@ char	**custom_completion(const char* text, int start, int end)
     {
       memcpy(buf, text, baq2 - text);
       strcpy(buf + (baq2 - text), matches[0]);
-      XFREE(matches[0]);
+      //seems not to be freed
+      //XFREE(matches[0]);
       matches[0] = elfsh_strdup(buf);
     }
 

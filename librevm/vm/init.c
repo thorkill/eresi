@@ -306,7 +306,7 @@ int		vm_run(int ac, char **av)
       world.comp.cmds[15] = NULL;
 
       using_history();
-      rl_attempted_completion_function = custom_completion;
+      rl_attempted_completion_function = vm_completion;
       rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
       rl_bind_key(CTRL('x'), vm_screen_switch);
       vm_install_clearscreen();

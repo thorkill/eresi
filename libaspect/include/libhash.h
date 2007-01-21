@@ -51,6 +51,7 @@ extern hash_t		*hash_hash;
 /* hash.c */
 int		hash_init(hash_t *, char*, int, u_int);	/* Allocate the table */
 hash_t		*hash_find(char *name);			/* Find a hash table */
+hash_t		*hash_empty(char *name);		/* Empty the hash table */
 void		hash_destroy(hash_t *h);		/* Free the table */
 int		hash_add(hash_t *h, char *k, void *d);	/* Add an entry */
 int		hash_del(hash_t *h, char *key);		/* Delete an entry */

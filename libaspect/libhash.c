@@ -30,6 +30,7 @@ int	hash_init(hash_t *h, char *name, int size, u_int type)
   return (0);
 }
 
+
 /* Return a hash table by its name */
 hash_t	*hash_find(char *name)
 {
@@ -37,12 +38,25 @@ hash_t	*hash_find(char *name)
 }
 
 
+/* Empty a hash table */
+hash_t		*hash_empty(char *name)
+{
+  hash_t	*hash;
+
+  hash = hash_find(name);
+  if (!name)
+    return (NULL);
+  hash_del(hash_hash, name);
+  hash_destroy(hash);
+  hash = calloc(sizeof(hash_t), 1);
+  hash_init(hash, name, 11, ELEM_TYPE_ANY);
+}
+
 /* Destroy a hash table */
 void	hash_destroy(hash_t *h)
 {
   free(h->ent);
 }
-
 
 
 /* Add an entry to the hash table */

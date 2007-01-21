@@ -179,7 +179,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.74"
-#define	ELFSH_RELEASE		"a7"
+#define	ELFSH_RELEASE		"a8"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -1190,7 +1190,7 @@ revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o,
 			      u_char p, u_int nbr, char *fieldname);
 
 /* Readline stuff (XXX: need to be prefixed) */
-char		**custom_completion(const char* text, int start, int end);
+char		**vm_completion(const char* text, int start, int end);
 int		update_col();
 void		*vm_readline_malloc(unsigned int sz);
 void		vm_readline_free(void *ptr);
