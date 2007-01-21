@@ -61,8 +61,15 @@ hash_t		*hash_empty(char *name)
 }
 
 /* Destroy a hash table */
-void	hash_destroy(hash_t *h)
+void		hash_destroy(hash_t *h)
 {
+  char		**keys;
+  int		idx;
+  int		keynbr;
+
+  keys = hash_get_keys(h, &keynbr);
+  for (idx = 0; idx < keynbr; idx++)
+    free(keys[idx]);
   free(h->ent);
 }
 
