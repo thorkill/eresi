@@ -97,14 +97,6 @@
 #define HLP_VERNEED             "Print the needed versions table"
 #define HLP_HASH                "Print the dynsymbols ELF hash table (.hash)"
 
-#define	HLP_TYPE		"Create a type \n\n\t"			                                     \
-				"type                                      \t List existing types    \n\t"   \
-				"type scope begin                          \t Open  type scope       \n\t"   \
-				"type scope end                            \t Close type scope       \n\t"   \
-				"type name                                 \t Print type information \n\t"   \
-				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
-				"Fields and types can be named using scripting variables            \n"
-
 /* Configuration commands */
 #define	HLP_HIJACK		"Redirect a function to another function \n\n\t" \
 				CMD_HIJACK" [hooked funcname|addr] [hooking funcname|addr]"				
@@ -166,6 +158,21 @@
 #define HLP_ALL			 "All prefix : set global regular expression"
 #define	HLP_ALERT		 "Alert prefix : change alert regular expression"
 #define	HLP_FORCE		 "Force sanity checks to be disabled for the command"
+
+/* Type commands */
+#define	HLP_INFORM		"Inform a type about a variable \n\n\t"				             \
+				"inform type                \t List all variables of a given type \n\t"	     \
+				"inform type name [address] \t Inform type about variable           \n" 
+
+#define	HLP_UNINFORM		"Uninform a type about a variable \n\n\t"				        \
+				"uninform type              \t Remove all variables associated to type \n\t"    \
+				"uninform type name         \t Remove a given variable from type information\n"
+
+#define	HLP_TYPE		"Create a type \n\n\t"			                                     \
+				"type                                      \t List existing types    \n\t"   \
+				"type name                                 \t Print type information \n\t"   \
+				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
+				"Fields and types can be named using scripting variables            \n"
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"

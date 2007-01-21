@@ -339,6 +339,10 @@ char prompt_token[512];
 #define	CMD_EXPORT		"export"
 #define	CMD_EDIT		"edit"
 
+/* Type related commands */
+#define	CMD_INFORM		"inform"
+#define	CMD_UNINFORM		"uninform"
+
 /* ELF Version commands */
 #define CMD_VERSION		"version"
 #define CMD_VERNEED		"verneed"
@@ -392,7 +396,6 @@ char prompt_token[512];
 #define	CMD_WORKSPACE2		 "w"
 #define	CMD_VECTORS		 "vectors"
 #define	CMD_TABLES		 "tables"
-
 
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
@@ -971,6 +974,8 @@ int             cmd_version();
 int             cmd_hashx();
 int		cmd_vectors();
 int		cmd_tables();
+int		cmd_inform();
+int		cmd_uninform();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);

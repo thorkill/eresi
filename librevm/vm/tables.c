@@ -845,7 +845,11 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
   vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption , 1, HLP_HASH);
   vm_addcmd(CMD_CONFIGURE, cmd_configure      , vm_getvarparams, 0, HLP_CONFIGURE);
+
+  /* Type related commands */
   vm_addcmd(CMD_TYPE    , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
+  vm_addcmd(CMD_INFORM  , cmd_inform          , vm_getvarparams, 0, HLP_INFORM);
+  vm_addcmd(CMD_UNINFORM, cmd_uninform        , vm_getoption   , 0, HLP_UNINFORM);
   
 #if defined(ELFSHNET)
   /* DUMP network commands */
