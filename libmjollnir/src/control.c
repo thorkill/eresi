@@ -39,7 +39,7 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 #if defined(__DEBUG_MJOLLNIR__)
   printf(" [*] _start found at %lx\n", (unsigned long) vaddr);
 #endif
-
+ 
   for (dis = stop = 0; !stop; dis += ilen) 
     {
       ilen = asm_read_instr(&ins, (u_char *) buf + dis, len - dis, &context->proc);
@@ -92,8 +92,11 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
     }
 
   main_b = mjr_block_create(context, main_addr, 1);
+ 
+
   mjr_block_add_list(context, main_b);
   mjr_block_add_caller(main_b, vaddr + dis, CALLER_CALL);
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
 

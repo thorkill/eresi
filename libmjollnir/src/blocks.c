@@ -187,8 +187,10 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   /* At this points, no new block allocation should be done */
   snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) cur->vaddr);
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
-  if (sym)
+  if (sym) {
+    printf("BLOCK ALLREADY IN TABLE %s\n", buffer);
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+  }
 
 #if __DEBUG_BLOCKS__
   fprintf(D_DESC," [*] Saving block at addr %s \n", buffer);

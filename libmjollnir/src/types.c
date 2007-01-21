@@ -66,7 +66,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT
-	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
+	      " F:" XFMT" C:"XFMT"\n", curvaddr, dstaddr, curvaddr + ilen, (context->curfunc) ? context->curfunc->vaddr : 0x0);
 #endif
 
       context->calls_seen++;
@@ -85,13 +85,18 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	    context->calls_found++;
 
         /* XXX: put this in a vector of fingerprinting techniques */
-        fun = mjr_function_create(context, _vaddr2str(context->curblock->true),
+	fun = hash_get(&context->funchash, _vaddr2str(context->curblock->true));
+
+	if (!fun)
+	  fun = mjr_function_create(context, _vaddr2str(context->curblock->true),
 				context->curblock->true, 0, 0);
+
         if (context->curfunc)
 	    {
-	      mjr_function_add_parent(&fun->parentfuncs, context->curfunc->vaddr,0);
-	      mjr_function_add_child(&context->curfunc->childfuncs, fun->vaddr, 0);
+	      mjr_function_add_parent(fun, context->curfunc->vaddr,0);
+	      mjr_function_add_child(context->curfunc, fun->vaddr, 0);
 	    }
+
         md5 = mjr_fingerprint_function(context, context->curblock->true, 
 				     MJR_FPRINT_TYPE_MD5);
         if (md5)
@@ -146,8 +151,6 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 
 /*

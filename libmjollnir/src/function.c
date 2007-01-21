@@ -1,11 +1,76 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.11 2007-01-09 17:14:23 thor Exp $
+ * $Id: function.c,v 1.12 2007-01-21 22:07:12 thor Exp $
  *
  */
 #include <libmjollnir.h>
 
+void mjr_function_dump(char *where,mjrfunc_t *f)
+{
+  mjrcaller_t *cur,*next;
+  fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] Cnbr: %d Pnbr %d\n",
+	  where, f->vaddr, f->name,f->md5,f->childnbr,f->parentnbr);
+
+  if (f->childfuncs)
+    {
+      fprintf(D_DESC," [D] Child functions:\n [x] ");
+
+      cur = f->childfuncs;
+
+      while(cur){
+	fprintf(D_DESC,"%x ", cur->vaddr);
+	cur = cur->next;
+      }
+ 
+      fprintf(D_DESC,"\n");
+    }
+
+  if (f->parentfuncs)
+    {
+      fprintf(D_DESC," [D] Parent functions:\n [x] ");
+      cur = f->parentfuncs;
+
+      while(cur)
+	{
+	  fprintf(D_DESC,"%x ", cur->vaddr);
+	  cur = cur->next;
+	}
+    
+      fprintf(D_DESC,"\n");
+    }
+}
+
+u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
+{
+  u_int curOff; 
+
+  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  
+  if (!buf->data) 
+    {
+      buf->allocated = getpagesize();;
+      buf->data = elfsh_malloc(buf->allocated);
+      buf->maxlen = 0;
+    }
+  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->parentnbr)))
+    {
+     buf->allocated += getpagesize();
+     buf->data = elfsh_realloc(buf->data, buf->allocated);
+    }
+ curOff = buf->maxlen;
+
+ //curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
+ //memcpy(curfunc, cur, sizeof(mjrfunc_t));
+ buf->maxlen += sizeof(mjrfunc_t);
+
+ ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
+}
+
+elfsh_Off	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
+{
+
+}
 
 /* Copy the function in a special buffer to fingerprint it */
 int		mjr_i386_function_copy(mjrcontext_t  *ctx, 
@@ -80,7 +145,7 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
      MD5_Init(&md5ctx);
      MD5_Update(&md5ctx, fbuf, mlen);
      MD5_Final(digest, &md5ctx);
-     XALLOC(ret, 33, NULL);
+     ret = elfsh_malloc(33);
      if (!ret)
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      memset(ret, 0, 33);
@@ -97,7 +162,6 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
 }
 
 
-
 /* Create a function in the original MJR format */
 mjrfunc_t	*mjr_function_create(mjrcontext_t *c, 
 					char *name, 
@@ -108,15 +172,37 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  mjrfunc_t	*fun;
  
  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
- XALLOC(fun, sizeof(mjrfunc_t), NULL);
+ fun = elfsh_malloc(sizeof(mjrfunc_t));
  fun->vaddr = addr;
  fun->size  = size;
  fun->first = e;
  fun->name  = name;
  fun->parentfuncs = NULL;
+ fun->parentnbr = 0;
  fun->childfuncs = NULL;
+ fun->childnbr = 0;
  hash_add(&c->funchash, name, fun);
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
+}
+
+void		mjr_function_add_child(mjrfunc_t *fnc,
+					elfsh_Addr vaddr,
+					int type)
+{
+  mjrcaller_t *n;
+  
+  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  n = elfsh_malloc(sizeof(mjrcaller_t));
+  n->vaddr = vaddr;
+  n->type = type;
+  n->next = fnc->childfuncs;
+  fnc->childfuncs = n;
+  fnc->childnbr = fnc->childnbr + 1;
+
+  mjr_function_dump(__FUNCTION__, fnc);
+
+  ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 void		mjr_function_add_parent(mjrfunc_t *fnc,
@@ -132,6 +218,9 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   n->type = type;
   n->next = fnc->parentfuncs;
   fnc->parentfuncs = n;
+  fnc->parentnbr++;
+
+  mjr_function_dump(__FUNCTION__, fnc);
 
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
@@ -145,6 +234,9 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   mjrfunc_t		*curfunc;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!cur)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* At this points, no new block allocation should be done */
   snprintf(buffer, sizeof (buffer), "%s%lX",
@@ -173,6 +265,15 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curfunc, cur, sizeof(mjrfunc_t));
   
+  /* Clean the parent/child lists 
+     FIXME: this should be set to an offset in .edfmt.fcontrol so we
+	    will be able to restore all data structures on load
+	    without recomputing it.
+ 
+  curfunc->parentfuncs = NULL;
+  curfunc->childfuncs = NULL;
+  */
+
   /* Then we create the symbol for the bloc and returns */
   bsym = elfsh_create_symbol(cur->vaddr, cur->size, STT_FUNC, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
@@ -181,29 +282,11 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-void		mjr_function_add_child(mjrfunc_t *fnc,
-					elfsh_Addr vaddr,
-					int type)
-{
-  mjrcaller_t *n;
-  
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
-
-  n = elfsh_malloc(sizeof(mjrcaller_t));
-  n->vaddr = vaddr;
-  n->type = type;
-  n->next = fnc->childfuncs;
-  fnc->childfuncs = n;
-
-  ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
-}
-
 int			mjr_functions_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
-  mjrbuf_t		buf;
+  mjrbuf_t		buf,cfbuf;
   mjrfunc_t		*func;
   int			err;
   char			**keys;
@@ -225,12 +308,33 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   buf.data          = 0;
   buf.obj           = ctxt->obj;
 
+    /* Initialize data buffer for control flow */
+  cfbuf.allocated     = 0;
+  cfbuf.maxlen        = 0;
+  cfbuf.block_counter = 0;
+  cfbuf.data          = 0;
+  cfbuf.obj           = ctxt->obj;
+
   /* Iteratively save all blocks */
   keys = hash_get_keys(&ctxt->funchash, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
+      u_int flowOffp,flowOffc;
+
       func = hash_get(&ctxt->funchash, keys[index]);
+      mjr_function_dump(__FUNCTION__, func);
+
+      /* 1st Save flow information and get offset from the beginning of .edfmt.fcontrol */
+      //      flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
+      //      flowOffc = mjr_function_flow_childs_save(func, &cfbuf);
+      
+      /* Set New pointers */
+      func->parentfuncs = flowOffp;
+      func->childfuncs = flowOffc;
+
+      /* 2nd Save function structure */
       mjr_function_save(func, &buf);
+
     }
 
   /* Create control section */
@@ -250,4 +354,5 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
+
 

@@ -18,10 +18,10 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 
 
   if (blk) {
-  fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n",blk->vaddr);
+    //  fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n",blk->vaddr);
     for (cur = blk->caller; cur; cur = cur->next) {
-     fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
-        cur->vaddr,cur->type);
+      //     fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
+      //  cur->vaddr,cur->type);
       if (cur->type == CALLER_CALL)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
