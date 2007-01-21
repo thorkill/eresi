@@ -49,7 +49,7 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
-			-lallocproxy -L../libedfmt/ -ledfmt32 $(LDMJOLLNIR)       \
+			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
 			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
