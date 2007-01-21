@@ -319,28 +319,28 @@ static int	e2dbg_register_vectors()
   /* Initialize debugger vectors */
   aspect_register_vector(E2DBG_HOOK_GETREGS, 
 			 e2dbg_default_getregs,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_SETREGS, 
 			 e2dbg_default_setregs,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_GETPC, 
 			 e2dbg_default_getpc,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_SETSTEP, 
 			 e2dbg_default_setstep,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_RESETSTEP, 
 			 e2dbg_default_resetstep,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_GETFP, 
 			 e2dbg_default_getfp,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_NEXTFP, 
 			 e2dbg_default_nextfphandler,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
   aspect_register_vector(E2DBG_HOOK_GETRET, 
 			 e2dbg_default_getrethandler,
-			 dims, strdims, 3, ELEM_TYPE_IMMED);
+			 dims, strdims, 3, ELEM_TYPE_FADDR);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

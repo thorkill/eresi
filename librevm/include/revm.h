@@ -1147,6 +1147,7 @@ int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
+char		*vm_ascii_type(hash_t *cur);
 
 /* Dependences related information : deps.c */
 int		vm_load_enumdep(elfshobj_t *obj);

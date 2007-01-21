@@ -56,7 +56,7 @@ hash_t		*hash_empty(char *name)
   hash = calloc(sizeof(hash_t), 1);
   newname = malloc(strlen(name) + 1);
   strcpy(newname, name);
-  hash_init(hash, newname, hash->elmnbr, hash->type);
+  hash_init(hash, newname, elemnbr, type);
   return (hash);
 }
 
@@ -67,9 +67,11 @@ void		hash_destroy(hash_t *h)
   int		idx;
   int		keynbr;
 
+  /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     free(keys[idx]);
+  hash_free_keys(keys);
   free(h->ent);
 }
 
@@ -243,9 +245,9 @@ char		**hash_get_keys(hash_t *h, int *n)
 }
 
 /* Free the keys returned by hash_get_keys() */
-void		hash_free_keys(char *keys)
+void		hash_free_keys(char **keys)
 {
-  free(keys);
+  free((char *) keys);
 }
 
 /* Print the hash table (DEBUG PURPOSE) */

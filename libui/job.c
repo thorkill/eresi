@@ -20,9 +20,9 @@ revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
   bzero(&new->dbgloaded, sizeof(hash_t));
 
   snprintf(logbuf, sizeof(logbuf), "%s_loaded", newname);
-  hash_init(&new->loaded, elfsh_strdup(logbuf), 51, ELEM_TYPE_ANY);
+  hash_init(&new->loaded, elfsh_strdup(logbuf), 51, ELEM_TYPE_OBJ);
   snprintf(logbuf, sizeof(logbuf), "%s_dbgloaded", newname);
-  hash_init(&new->dbgloaded, elfsh_strdup(logbuf), 11, ELEM_TYPE_ANY);
+  hash_init(&new->dbgloaded, elfsh_strdup(logbuf), 11, ELEM_TYPE_OBJ);
 
   /* empty new job */
   new->curcmd         = NULL;

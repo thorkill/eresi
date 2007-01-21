@@ -60,7 +60,7 @@ hashent_t	*hash_get_head(hash_t *h, char *b);	/* Get a list head */
 hashent_t 	*hash_get_ent(hash_t *h, char *key);	/* Get an entry metadata */
 void		hash_print(hash_t *h);			/* Print the hash table */
 char**		hash_get_keys(hash_t *h, int* n);	/* Create array of keys */
-void		hash_free_keys(char *keys);		/* Free keys */
+void		hash_free_keys(char **keys);		/* Free keys */
 int             hash_apply(hash_t *h, void *ptr, 
 			   int (*f)(hashent_t *e, void *p)); /* Apply function */
 int		hash_merge(hash_t *dst, hash_t *src);	/* Fuse hashes */

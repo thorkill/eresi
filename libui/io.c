@@ -390,8 +390,8 @@ int		vm_initio()
   hash_init(&world.jobs, "jobs", 11, ELEM_TYPE_ANY);
   hash_add(&world.jobs, "local", initial);
   initial->name = elfsh_strdup("local");
-  hash_init(&initial->loaded,    "initial_loaded_files", 51, ELEM_TYPE_ANY);
-  hash_init(&initial->dbgloaded, "initial_dbgloaded_files", 11, ELEM_TYPE_ANY);
+  hash_init(&initial->loaded,    "initial_loaded_files"   , 51, ELEM_TYPE_OBJ);
+  hash_init(&initial->dbgloaded, "initial_dbgloaded_files", 11, ELEM_TYPE_OBJ);
   elfsh_set_color_simple(vm_endline, vm_colorinstr, vm_colorstr, 
 			 vm_colorfieldstr, vm_colortypestr, vm_colorend, 
 			 vm_colorwarn, vm_colorfunction, vm_colorfilename);

@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.13 2007-01-20 19:33:40 may Exp $
+ * $Id: init.c,v 1.14 2007-01-21 21:45:51 may Exp $
  *
  * Initialization functions
  *
@@ -13,7 +13,7 @@ int		mjr_init_session(mjrsession_t *sess)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_init(&goto_hash, "gotos"      , 100, ELEM_TYPE_IMMED);
+  hash_init(&goto_hash, "gotos"      , 100         , ELEM_TYPE_STR);
   hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ELEM_TYPE_ANY);
 
   /* register configurable parameters */

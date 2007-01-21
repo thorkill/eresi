@@ -215,7 +215,7 @@ static void	setup_L1hash()
 /* Hash table for ELF header fields */
 static void	setup_elfhash()
 {
-  hash_init(&elf_L2_hash, "elfL2objects", 29, ELEM_TYPE_IMMED);
+  hash_init(&elf_L2_hash, "elfL2objects", 29, ELEM_TYPE_ANY);
   hash_add(&elf_L2_hash, "magic"        , vm_create_L2ENT(elfsh_get_magic, 
 							  elfsh_set_magic, 
 							  ELFSH_OBJINT,
@@ -333,7 +333,7 @@ static void	setup_elfhash()
 /* Hash table for SHT fields */
 static void	setup_shthash()
 {
-  hash_init(&sht_L2_hash, "shtL2objects", 29, ELEM_TYPE_IMMED);
+  hash_init(&sht_L2_hash, "shtL2objects", 29, ELEM_TYPE_ANY);
   hash_add(&sht_L2_hash, "type"     , vm_create_L2ENT(elfsh_get_section_type, 
 						      elfsh_set_section_type, 
 						      0, NULL, NULL, NULL, NULL));
@@ -396,7 +396,7 @@ static void	setup_shthash()
 /* Hash table for PHT fields */
 static void	setup_phthash()
 {
-  hash_init(&pht_L2_hash, "phtL2objects", 29, ELEM_TYPE_IMMED);
+  hash_init(&pht_L2_hash, "phtL2objects", 29, ELEM_TYPE_ANY);
   hash_add(&pht_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_segment_type, 
 						   elfsh_set_segment_type, 
 						   0, NULL, NULL, NULL, NULL));
@@ -433,7 +433,7 @@ static void	setup_phthash()
 /* Hash table for symbol table */
 static void	setup_symhash()
 {
-  hash_init(&sym_L2_hash, "symL2objects", 23, ELEM_TYPE_IMMED);
+  hash_init(&sym_L2_hash, "symL2objects", 23, ELEM_TYPE_ANY);
 
   hash_add(&sym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR, 
 						  elfsh_get_symbol_name,
@@ -472,9 +472,7 @@ static void	setup_symhash()
 /* Hash table for dynamic symbol table */
 static void	setup_dynsymhash()
 {
-  hash_init(&dynsym_L2_hash, "dynsymL2objects", 23, 
-	    ELEM_TYPE_IMMED);
-  
+  hash_init(&dynsym_L2_hash, "dynsymL2objects", 23, ELEM_TYPE_ANY);
   hash_add(&dynsym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
 						     elfsh_get_dynsymbol_name,
 						     elfsh_set_dynsymbol_name,
@@ -508,7 +506,7 @@ static void	setup_dynsymhash()
 /* Hash table for .rel sections */
 static void	setup_relhash()
 {
-  hash_init(&rel_L2_hash, "relL2objects", 23, ELEM_TYPE_IMMED);
+  hash_init(&rel_L2_hash, "relL2objects", 23, ELEM_TYPE_ANY);
   hash_add(&rel_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_reltype, 
 						   elfsh_set_reltype, 
 						   ELFSH_OBJLONG, NULL,
@@ -530,7 +528,7 @@ static void	setup_relhash()
 /* Hash table for .dynamic section */
 static void	setup_dynhash()
 {
-  hash_init(&dyn_L2_hash, "dynL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&dyn_L2_hash, "dynL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&dyn_L2_hash, "val", vm_create_L2ENT(elfsh_get_dynentry_val, 
 						elfsh_set_dynentry_val, 
 						ELFSH_OBJLONG, NULL, 
@@ -551,7 +549,7 @@ static void	setup_dynhash()
 static void	setup_gothash()
 {
   
-  hash_init(&got_L2_hash, "gotL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&got_L2_hash, "gotL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&got_L2_hash, "val" , vm_create_L2ENT(elfsh_get_got_val, elfsh_set_got_val,
 						 ELFSH_OBJLONG, NULL,
 						 NULL, NULL, NULL));
@@ -566,7 +564,7 @@ static void	setup_gothash()
 /* Hash tables for sections data */
 static void	setup_scthash()
 {
-  hash_init(&sct_L2_hash, "sectsL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&sct_L2_hash, "sectsL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&sct_L2_hash, "name", vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
 						 elfsh_get_section_name,
 						 elfsh_set_section_name,
@@ -586,14 +584,14 @@ static void   setup_vershash()
 {
   
   /* Version symbols */
-  hash_init(&vers_L2_hash, "versionL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&vers_L2_hash, "versionL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&vers_L2_hash, "value", vm_create_L2ENT(elfsh_get_versym_val,
 						   elfsh_set_versym_val,
 						   ELFSH_OBJSHORT, NULL,
 						   NULL, NULL, NULL));
   
   /* Version def */
-  hash_init(&verd_L2_hash, "verdefsL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&verd_L2_hash, "verdefsL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&verd_L2_hash, "index", vm_create_L2ENT(elfsh_get_verdef_ndx,
 						   elfsh_set_verdef_ndx,
 						   ELFSH_OBJSHORT, NULL,
@@ -628,7 +626,7 @@ static void   setup_vershash()
 						   NULL, NULL, NULL));
    
    /* Version need */
-   hash_init(&vern_L2_hash, "verneedL2objects", 11, ELEM_TYPE_IMMED);
+   hash_init(&vern_L2_hash, "verneedL2objects", 11, ELEM_TYPE_ANY);
    hash_add(&vern_L2_hash, "index", vm_create_L2ENT(elfsh_get_verneed_ndx, 
 						    elfsh_set_verneed_ndx, 
 						    ELFSH_OBJSHORT, NULL, 
@@ -674,7 +672,7 @@ static void   setup_hashhash()
 {
 
   /* Hash bucket */
-  hash_init(&hashb_L2_hash, "hashbucketsL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&hashb_L2_hash, "hashbucketsL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&hashb_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashbucket_value, 
 						    elfsh_set_hashbucket_value, 
 						    ELFSH_OBJINT, NULL, 
@@ -684,7 +682,7 @@ static void   setup_hashhash()
 						      ELFSH_OBJINT, NULL, 
 						      NULL, NULL, NULL)); 
   /* Hash chain */
-  hash_init(&hashc_L2_hash, "hashchainL2objects", 11, ELEM_TYPE_IMMED);
+  hash_init(&hashc_L2_hash, "hashchainL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&hashc_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashchain_value, 
 						    elfsh_set_hashchain_value, 
 						    ELFSH_OBJINT, NULL, 
@@ -719,7 +717,7 @@ static void	setup_L2hash()
 /* Setup the command hash table */
 static void	setup_cmdhash()
 {
-  hash_init(&cmd_hash, "commands", 101, ELEM_TYPE_IMMED);
+  hash_init(&cmd_hash, "commands", 101, ELEM_TYPE_ANY);
 
   /* Interactive mode / Scripting mode commands */
   if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
@@ -927,7 +925,7 @@ static void	setup_varshash()
   l = vm_create_IMMEDSTR(1, get_libpath());
   o = vm_create_IMMED(ELFSH_OBJINT, 1, ELFSH_SLOG);
 
-  hash_init(&vars_hash, "variables", 251, ELEM_TYPE_IMMED);
+  hash_init(&vars_hash, "variables", 251, ELEM_TYPE_ANY);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
   hash_add(&vars_hash, ELFSH_LOADVAR, g);
   hash_add(&vars_hash, ELFSH_ERRVAR, r);
@@ -943,7 +941,7 @@ static void	setup_consthash()
 {
   u_int		index;
 
-  hash_init(&const_hash, "constants", 51, ELEM_TYPE_IMMED);
+  hash_init(&const_hash, "constants", 51, ELEM_TYPE_STR);
 
   for (index = 0; index < ELFSH_SEGTYPE_MAX; index++)
     hash_add(&const_hash, 
@@ -1037,9 +1035,10 @@ static void	setup_consthash()
 
 
 /* Setup default grammar */
+/* XXX: This function is temporary and we not remain in the new type system */
 void	setup_grammar()
 {
-  hash_init(&parser_hash, "parsers", 11, ELEM_TYPE_IMMED);
+  hash_init(&parser_hash, "parsers", 11, ELEM_TYPE_FADDR);
   
   /* Default grammar rules */
 #define LOOKUP5_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"		 
@@ -1139,7 +1138,7 @@ void		vm_setup_hashtables()
 
   hash_init(&file_hash        , "files"      , 251, ELEM_TYPE_ANY);
   hash_init(&mod_hash         , "modules"    , 51, ELEM_TYPE_ANY);
-  hash_init(&labels_hash[0]   , "labels"     , 51, ELEM_TYPE_IMMED);
+  hash_init(&labels_hash[0]   , "labels"     , 51, ELEM_TYPE_STR);
   hash_init(&fg_color_hash    , "fgcolors"   , 13, ELEM_TYPE_ANY);
   hash_init(&bg_color_hash    , "bgcolors"   , 13, ELEM_TYPE_ANY);
   hash_init(&t_color_hash     , "tcolors"    , 11, ELEM_TYPE_ANY);

@@ -109,8 +109,11 @@ void		elfsh_free(void *tofree);
 #define		ELEM_TYPE_PROC  3	/* Abstract Procedure type */
 #define		ELEM_TYPE_BLOC  4	/* Abstract Basic bloc pointers */
 #define		ELEM_TYPE_INSTR	5	/* Abstract Instruction pointers */
-#define		ELEM_TYPE_IMMED	6       /* Immed: str, raw, char, short, int, long */
-#define		ELEM_TYPE_MAX   7
+#define		ELEM_TYPE_STR	6	/* String type */
+#define		ELEM_TYPE_DADDR	7	/* Data address */
+#define		ELEM_TYPE_FADDR	8	/* Code address */
+#define		ELEM_TYPE_OBJ	9	/* File object */
+#define		ELEM_TYPE_MAX   10
 
 /* Include this here since it contains an allocation too */
 #include "libhash.h"
