@@ -51,6 +51,16 @@ int	sparc_decode_branches(asm_instr *ins, u_char *buf, u_int len,
   	  ins->op2.base_reg = opcodep.cc+4;
   	  ins->annul = opcodep.a;
   	  ins->prediction = opcodep.p;
+  	  
+  	  /* Synthetics */
+  	  if (ins->instr == ASM_SP_BN &&
+  	       ins->annul && ins->prediction &&
+  	       ins->op2.base_reg == ASM_SP_XCC) {
+  	       	
+  	    ins->instr = ASM_SP_IPREFETCH;
+  	    ins->nb_op = 1;
+  	    ins->type = ASM_TYPE_NONE;
+	  }
       break;
       
     case 2: /* Bicc */
@@ -201,6 +211,32 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   		ins->op2.type = ASM_SP_OTYPE_IMMEDIATE;
   	  	ins->op2.imm = opcode.shcnt;
   	  }
+  	  
+  	  /* Synthetics */
+  	  if (ins->instr == ASM_SP_SRL && 
+  	  		ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+  	  		ins->op2.base_reg == ASM_REG_G0) {
+  	  			
+  	  	ins->instr = ASM_SP_CLRUW;
+  	  	if (ins->op3.base_reg == ins->op1.base_reg)
+  	  	  ins->nb_op = 1;
+  	  	else {
+  	  	  ins->nb_op = 2;
+  	  	  ins->op2 = ins->op3;  	  	
+  	  	}
+  	  }
+  	  else if (ins->instr == ASM_SP_SRA && 
+  	  			ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+	  	  		ins->op2.base_reg == ASM_REG_G0) {  	  			
+  	  	    	
+  	  	ins->instr = ASM_SP_SIGNX;
+  	  	if (ins->op3.base_reg == ins->op1.base_reg)
+  	  	  ins->nb_op = 1;
+  	  	else {
+  	  	  ins->nb_op = 2;
+  	  	  ins->op2 = ins->op3;  	  	
+  	  	}
+  	  }
   	    	
   	  break;
   	  
@@ -337,7 +373,7 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   	    ins->op3.base_reg = opcode.rs1;
   
   	    if (opcode.i == 0) {
-    	  ins->op2.type = ASM_SP_OTYPE_REGISTER;
+    	  ins->op2.type = ASM_SP_OTYPE_REGISTER;	
   		  ins->op2.base_reg = opcode.rs2;
   	    }
   	    else {  		
@@ -466,7 +502,7 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   	case 0x37: /* IMPDEP2 */
   	  break;
   	  
-  	case 0x38: /* JMPL */
+  	case 0x38: /* JMPL, JMP, CALL, RET, RETL */
   	  ins->nb_op = 2;
   	  ins->op1.type = ASM_SP_OTYPE_REGISTER;
   	  ins->op1.base_reg = opcode.rd;
@@ -479,6 +515,35 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   	    ins->op2.index_reg = opcode.rs2;
   	  }
   	  ins->op2.base_reg = opcode.rs1;
+  	  
+  	  /* Synthetics */
+  	  if (ins->op1.base_reg == ASM_REG_O7) {
+  	  	ins->nb_op = 1;
+  	  	ins->instr = ASM_SP_CALL;
+  	  	ins->op1 = ins->op2;
+  	  }
+  	  else if (ins->op1.base_reg == ASM_REG_G0) {
+  	  	if (ins->op2.type == ASM_SP_OTYPE_IMM_ADDRESS &&
+  	  	    ins->op2.base_reg == ASM_REG_I7 &&
+  	  	    ins->op2.imm == 8) {
+  	  	    	
+  	  	  ins->instr = ASM_SP_RET;
+  	  	  ins->nb_op = 0; 
+  	  	}
+  	  	else if (ins->op2.type == ASM_SP_OTYPE_IMM_ADDRESS &&
+  	  	    ins->op2.base_reg == ASM_REG_O7 &&
+  	  	    ins->op2.imm == 8) {
+  	  	    	
+  	  	  ins->instr = ASM_SP_RETL;
+  	  	  ins->nb_op = 0; 
+  	  	}
+  	  	else {
+  	  	  ins->instr = ASM_SP_JMP;
+  	  	  ins->nb_op = 1;
+  	  	  ins->op1 = ins->op2;
+  	  	}    
+  	  }
+  	  
   	  break;
   	  
   	case 0x39: /* RETURN */
@@ -550,6 +615,151 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
   		ins->op2.type = ASM_SP_OTYPE_IMMEDIATE;
   	  	ins->op2.imm = opcode.imm;
   	  }
+  	  
+  	  /* Synthethics */
+  	  if (ins->instr == ASM_SP_SUBCC) {  	    
+  	    if (ins->op1.base_reg == ASM_REG_G0) {  	
+  	      ins->instr = ASM_SP_CMP;
+  	      ins->nb_op = 2;
+  	      ins->op1 = ins->op2;
+  	      ins->op2 = ins->op3;
+  	    }
+  	    else if ((ins->op1.base_reg == ins->op3.base_reg) &&
+  	    			ins->op2.type == ASM_OTYPE_IMMEDIATE) {
+  	    				
+  	      ins->instr = ASM_SP_DECCC;
+  	      
+  	      if (ins->op2.imm == 1)
+  	        ins->nb_op = 1;
+  	      else
+  	        ins->nb_op = 2;
+  	    }
+  	  }
+  	  else if (ins->instr == ASM_SP_SUB) {  	    
+		if ((ins->op1.base_reg == ins->op3.base_reg) &&
+  	    		ins->op2.type == ASM_OTYPE_IMMEDIATE) {
+  	    				
+  	      ins->instr = ASM_SP_DEC;
+  	      
+  	      if (ins->op2.imm == 1)
+  	        ins->nb_op = 1;
+  	      else
+  	        ins->nb_op = 2;
+  	    }
+  	    else if (ins->op3.base_reg == ASM_REG_G0 && 
+  	    			ins->op2.type == ASM_OTYPE_REGISTER) {
+  	    				
+  	      ins->instr = ASM_SP_NEG;
+  	      if (ins->op2.base_reg == ins->op1.base_reg)
+  	        ins->nb_op = 1;
+  	      else
+  	      	ins->nb_op = 2;
+
+		}
+  	  }
+  	  else if (ins->instr == ASM_SP_ADD) {  	    
+		if ((ins->op1.base_reg == ins->op3.base_reg) &&
+  	    		ins->op2.type == ASM_OTYPE_IMMEDIATE) {
+  	    				
+  	      ins->instr = ASM_SP_INC;
+  	      
+  	      if (ins->op2.imm == 1)
+  	        ins->nb_op = 1;
+  	      else
+  	        ins->nb_op = 2;
+  	    }
+  	  }
+  	  else if (ins->instr == ASM_SP_ADDCC) {
+		if ((ins->op1.base_reg == ins->op3.base_reg) &&
+  	    		ins->op2.type == ASM_OTYPE_IMMEDIATE) {
+  	    				
+  	      ins->instr = ASM_SP_INCCC;
+  	      
+  	      if (ins->op2.imm == 1)
+  	        ins->nb_op = 1;
+  	      else
+  	        ins->nb_op = 2;
+  	    }
+  	  }
+  	  else if (ins->instr == ASM_SP_ORCC &&
+  	  			ins->op1.base_reg == ASM_REG_G0 &&
+  	  			ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+  	  			ins->op3.base_reg == ASM_REG_G0) {
+  	  				
+  	  	ins->instr = ASM_SP_TST;
+  	  	ins->nb_op = 1;
+  	  	ins->op1 = ins->op2;
+	  }
+	  else if ((ins->instr == ASM_SP_RESTORE ||
+	  			 ins->instr == ASM_SP_SAVE) &&
+	  			 ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+	  			 ins->op1.base_reg == ins->op2.base_reg &&
+	  			 ins->op2.base_reg == ins->op3.base_reg) {
+	  			 	
+	  	ins->nb_op = 0;
+	  }
+	  else if (ins->instr == ASM_SP_XNOR && 
+	  	  		ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+  		  		ins->op2.base_reg == ASM_REG_G0) {  	  			
+  	  	    	
+  	  	ins->instr = ASM_SP_NOT;
+  	  	if (ins->op3.base_reg == ins->op1.base_reg)
+  	  	  ins->nb_op = 1;
+  	  	else {
+  	  	  ins->nb_op = 2;
+  	  	  ins->op2 = ins->op3;  	  	
+  	  	}
+  	  }
+  	  else if (ins->instr == ASM_SP_ANDCC && 
+  	  			ins->op1.base_reg == ASM_REG_G0) {
+  	  				
+  	  	ins->instr = ASM_SP_BTST;
+  	  	ins->nb_op = 2;
+  	  	ins->op1 = ins->op3;
+  	  }
+  	  else if (ins->instr == ASM_SP_ANDN &&
+  	  			ins->op1.base_reg == ins->op3.base_reg) {
+  	  				
+  	  	ins->instr = ASM_SP_BCLR;
+  	  	ins->nb_op = 2;
+  	  }
+  	  else if (ins->instr == ASM_SP_XOR &&
+  	  			ins->op1.base_reg == ins->op3.base_reg) {
+  	  				
+  	  	ins->instr = ASM_SP_BTOG;
+  	  	ins->nb_op = 2;
+  	  }
+  	  else if (ins->instr == ASM_SP_OR) {
+  	  	if (ins->op1.base_reg == ins->op3.base_reg) {
+  	  	  ins->instr = ASM_SP_BSET;
+  	  	  ins->nb_op = 2;
+  	  	}
+  	  	else if (ins->op3.base_reg == ASM_REG_G0) {
+  	  	  if (ins->op2.type == ASM_OTYPE_REGISTER &&
+  	  	  		ins->op2.base_reg == ASM_REG_G0) {
+  	  	  			
+  	  	  	ins->instr = ASM_SP_CLR;
+  	  	  	ins->nb_op = 1;
+  	  	  }
+  	  	  else {
+  	  	  	ins->instr = ASM_SP_MOV;
+  	  	  	ins->nb_op = 2;
+  	  	  }
+  	  	}
+  	  }
+  	  else if (ins->instr == ASM_SP_RD &&
+  	  			ins->op1.base_reg == ASM_SREG_Y) {
+  	  				
+  	  	ins->instr = ASM_SP_MOV;
+  	  }
+  	  else if (ins->instr == ASM_SP_WR &&
+  	  			ins->op1.base_reg == ASM_SREG_Y &&
+  	  			ins->op3.base_reg == ASM_REG_G0) {
+  	  				
+  	  	ins->instr = ASM_SP_MOV;
+  	  	ins->nb_op = 2;
+  	  }  	  
+	  			 
   	    	
   	  break;
   }
@@ -623,6 +833,25 @@ int	sparc_decode_memory(asm_instr *ins, u_char *buf, u_int len,
   	  
   	  ins->op2.type = ASM_SP_OTYPE_REGISTER;
       ins->op2.base_reg = opcode.rd;
+      
+      /* Synthethics */
+      if (ins->instr == ASM_SP_STB && ins->op2.base_reg == ASM_REG_G0) {
+      	ins->instr = ASM_SP_CLRB;
+      	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STH && ins->op2.base_reg == ASM_REG_G0) {
+      	ins->instr = ASM_SP_CLRH;
+      	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STW && ins->op2.base_reg == ASM_REG_G0) {
+      	ins->instr = ASM_SP_CLR;
+      	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STX && ins->op2.base_reg == ASM_REG_G0) {
+      	ins->instr = ASM_SP_CLRX;
+      	ins->nb_op = 1;
+      }
+      
   	  
   	  break;
   	  
@@ -867,6 +1096,26 @@ int	sparc_decode_memory(asm_instr *ins, u_char *buf, u_int len,
   	    ins->op3.address_space = opcode.none;
   	  }
   	  ins->op3.base_reg = opcode.rs1;
+  	  
+  	  /* Synthethics */
+  	  if (ins->instr == ASM_SP_CASA &&
+  	  		ins->op3.type == ASM_SP_OTYPE_REG_ADDRESS) {
+  	  	if (ins->op3.address_space == ASM_SP_ASI_P)
+  	  	  ins->instr = ASM_SP_CAS;
+  	  	else if (ins->op3.address_space == ASM_SP_ASI_P_L) {
+  	  	  ins->instr = ASM_SP_CASL;
+  	  	  ins->op3.address_space = ASM_SP_ASI_P;
+  	  	}
+  	  }
+  	  else if (ins->instr == ASM_SP_CASXA &&
+  	  		ins->op3.type == ASM_SP_OTYPE_REG_ADDRESS) {
+  	  	if (ins->op3.address_space == ASM_SP_ASI_P)
+  	  	  ins->instr = ASM_SP_CASX;
+  	  	else if (ins->op3.address_space == ASM_SP_ASI_P_L) {
+  	  	  ins->instr = ASM_SP_CASXL;
+  	  	  ins->op3.address_space = ASM_SP_ASI_P;
+  	  	}
+  	  }
   	  
   	  break;
   	  

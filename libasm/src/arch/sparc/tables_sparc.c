@@ -908,7 +908,7 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "lduba", /*LDUBA */
   "lduh", /* LDUH */
   "lduha", /* LDUHA */
-  "lduw", /* LDUW */
+  "ld", /* LDUW */
   "lduwa", /* LDUWA */
   "ldx", /* LDX */
   "ldxa", /* LDXA */
@@ -992,7 +992,7 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "stha", /* STHA */
   "stq", /* STQF */
   "stqa", /* STQFA */
-  "stw", /* STW */
+  "st", /* STW */
   "stwa", /* STWA */
   "stx", /* STX */
   "stxa", /* STXA */
@@ -1034,5 +1034,36 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "xnorcc", /* XNORcc */
   "xor", /* XOR */
   "xorcc", /* XORcc */
+  "cmp", /* Synthetics */
+  "jmp",
+  "iprefetch",
+  "tst",
+  "ret",
+  "retl",
+  "setuw",
+  "set",
+  "setsw",
+  "setx",
+  "signx",
+  "not",
+  "neg",
+  "cas",
+  "casl",
+  "casx",
+  "casxl",
+  "inc",
+  "inccc",
+  "dec",
+  "deccc",
+  "btst",
+  "bset",
+  "bclr",
+  "btog",
+  "clr",
+  "clrb",
+  "clrh",
+  "clrx",
+  "clruw",
+  "mov",
   "(bad)"
 };

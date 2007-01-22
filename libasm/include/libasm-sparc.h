@@ -15,11 +15,13 @@
 #define MGETBIT(val, shift)	(((val) >> shift) & 1)
 
 #define ASM_FREG_FSR -1 /* Nasty little hack */
+#define ASM_SP_ASI_P 0x80 /* Primary ASI */
+#define ASM_SP_ASI_P_L 0x88 /* Primary ASI little-endian */
 
-int	sparc_decode_branches(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_call(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_arithmetic(asm_instr *, u_char *, u_int, asm_processor *);
-int	sparc_decode_memory(asm_instr *, u_char *, u_int, asm_processor *);
+int sparc_decode_branches(asm_instr *, u_char *, u_int, asm_processor *);
+int sparc_decode_call(asm_instr *, u_char *, u_int, asm_processor *);
+int sparc_decode_arithmetic(asm_instr *, u_char *, u_int, asm_processor *);
+int sparc_decode_memory(asm_instr *, u_char *, u_int, asm_processor *);
 
 void sparc_convert_pbranch(struct s_decode_pbranch *, u_char *, asm_processor *);
 void sparc_convert_rbranch(struct s_decode_rbranch *, u_char *, asm_processor *);
@@ -536,6 +538,37 @@ enum {
   ASM_SP_XNORCC, /* XNORcc */
   ASM_SP_XOR, /* XOR */
   ASM_SP_XORCC, /* XORcc */
+  ASM_SP_CMP, /* Synthetics */
+  ASM_SP_JMP,
+  ASM_SP_IPREFETCH,
+  ASM_SP_TST,
+  ASM_SP_RET,
+  ASM_SP_RETL,
+  ASM_SP_SETUW,
+  ASM_SP_SET,
+  ASM_SP_SETSW,
+  ASM_SP_SETX,
+  ASM_SP_SIGNX,
+  ASM_SP_NOT,
+  ASM_SP_NEG,
+  ASM_SP_CAS,
+  ASM_SP_CASL,
+  ASM_SP_CASX,
+  ASM_SP_CASXL,
+  ASM_SP_INC,
+  ASM_SP_INCCC,
+  ASM_SP_DEC,
+  ASM_SP_DECCC,
+  ASM_SP_BTST,
+  ASM_SP_BSET,
+  ASM_SP_BCLR,
+  ASM_SP_BTOG,
+  ASM_SP_CLR,
+  ASM_SP_CLRB,
+  ASM_SP_CLRH,
+  ASM_SP_CLRX,
+  ASM_SP_CLRUW,
+  ASM_SP_MOV,
     
   ASM_SP_BAD
 } e_sparc_instr;

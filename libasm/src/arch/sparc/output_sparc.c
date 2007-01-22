@@ -162,12 +162,13 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
     case ASM_SP_OTYPE_IMM_ADDRESS:
       sprintf(buf, "[ %s", get_sparc_register(op->base_reg));
       if (op->imm)
-        sprintf(buf, " + 0x%x", op->imm);
+        sprintf(buf+strlen(buf), " + 0x%x", op->imm);
         
-      sprintf(buf, " ]");
+      sprintf(buf+strlen(buf), " ]");
       
-      if (op->address_space != 80)
-        sprintf(buf, " %%asi");
+      if (op->address_space != ASM_SP_ASI_P)
+        sprintf(buf+strlen(buf), " %%asi");
+
       break;
     case ASM_SP_OTYPE_REG_ADDRESS:
       if (op->index_reg > 0)
@@ -177,8 +178,8 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
 	  else
 	    sprintf(buf, "[ %s ]", get_sparc_register(op->base_reg));
       								
-      if (op->address_space != 80)
-        sprintf(buf, " 0x%x", op->address_space);								
+      if (op->address_space != ASM_SP_ASI_P)
+        sprintf(buf+strlen(buf), " 0x%x", op->address_space);								
       break;
       
     default:
@@ -190,7 +191,7 @@ char *asm_sparc_display_instr(asm_instr *instr, int addr)
 {
   static char buffer[1024];  
   memset(buffer, 0, 1024);
-  sprintf(buffer, "%s ", instr->proc->instr_table[instr->instr]);  
+  sprintf(buffer, "%s", instr->proc->instr_table[instr->instr]);  
   
   switch (instr->type) {
 	case ASM_TYPE_CONDBRANCH:	  

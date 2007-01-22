@@ -38,7 +38,11 @@ struct s_asm_op
   int base_reg;
   /* index register: auxiliary register */
   int index_reg;
-  /* address space (sparc only) */
+  /* address space (sparc only) 
+   * 
+   * has to be different than ASM_SP_ASI_P for ASM_SP_OTYPE_IMM_ADDRESS
+   * operands on "alternate space" instructions so the output can be correct
+   */
   int address_space;  
   /* scale factor (ia32 only) */
   unsigned int scale;
