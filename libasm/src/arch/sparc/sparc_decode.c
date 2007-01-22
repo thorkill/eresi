@@ -37,7 +37,7 @@ int	sparc_decode_branches(asm_instr *ins, u_char *buf, u_int len,
     case 0: /* ILLTRAP */
       ins->instr = ASM_SP_ILLTRAP;
       ins->nb_op = 1;
-      ins->op1.type = ASM_SP_OTYPE_DISPLACEMENT;
+      ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
       ins->op1.imm = opcode.immediate;
       break;
       
