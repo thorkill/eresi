@@ -53,7 +53,6 @@ hash_t		*hash_empty(char *name)
   type    = hash->type;
   hash_del(hash_hash, name);
   hash_destroy(hash);
-  hash = calloc(sizeof(hash_t), 1);
   newname = malloc(strlen(name) + 1);
   strcpy(newname, name);
   hash_init(hash, newname, elemnbr, type);
