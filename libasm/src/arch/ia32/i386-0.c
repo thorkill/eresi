@@ -1,5 +1,5 @@
 /*
-** $Id: i386-0.c,v 1.3 2006-12-19 02:46:19 heroine Exp $
+** $Id: i386-0.c,v 1.4 2007-01-22 22:23:10 heroine Exp $
 ** Started : Sat Jun  1 03:13:28 2002
 ** Updated : Thu Apr  8 01:37:10 2004
 */
@@ -327,6 +327,8 @@ int op_push_cs(asm_instr *new, u_char *opcode, u_int len,
   return (new->len);
 }
 
+#if LIBASM_USE_VECTOR == 0
+
 /*
  * Opcode :		0x0f
  * Following byte must be fetched from i386 instruction table.
@@ -347,7 +349,25 @@ int op_386sp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
     return (0);
 }
 
+#else
 
+int	op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+{
+  vector_t	*vec;
+  u_int		dim[2];
+  u_char	opcode;
+  int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
+
+
+  vec = aspect_vector_get("disasm");
+  dim[0] = LIBASM_VECTOR_IA32;
+  opcode = *(buf + 1);
+  dim[1] = opcode + 0x100;
+  fetch = aspect_vectors_select(vec, dim);
+  return (fetch(ins, buf + 1, len, proc));
+}
+
+#endif
 
 
 

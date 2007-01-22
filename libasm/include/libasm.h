@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.3 2007-01-12 06:27:41 strauss Exp $
+** $Id: libasm.h,v 1.4 2007-01-22 22:23:10 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -20,6 +20,11 @@
 #include <endian.h>
 #endif
 
+#include <libaspect.h>
+
+#define	LIBASM_USE_VECTOR	1
+
+
 /*
   typedef's
 */
@@ -28,10 +33,27 @@ typedef struct s_asm_processor 		asm_processor;
 typedef struct s_asm_instr 			asm_instr;
 typedef struct s_asm_op				asm_operand;
 
+/**
+ *
+ *
+ */
+enum 
+  {
+    LIBASM_VECTOR_IA32,
+    LIBASM_VECTOR_SPARC,
+    LIBASM_VECTOR_MIPS,
+    LIBASM_VECTOR_ARCHNUM
+  } e_vector_arch;
+
+/*
+enum
+  {
+    LIBASM_VECTOR_
+  } e_vector_opcodes;
+*/
 /*
   structures
 */
-
 
 enum {
   ASM_TYPE_NONE,	//! 
@@ -198,7 +220,13 @@ void		asm_set_resolve_handler(asm_processor *,
 					void (*)(void *, u_int, char *, u_int), 
 					void *);
 
+/**
+ *
+ */
 
+int		asm_register_ia32_opcode(int opcode, unsigned long fcn);
+int		asm_arch_register(asm_processor *proc, int machine);
+int		asm_init_vectors(asm_processor *proc);
 
 enum {
   LIBASM_ERROR_SUCCESS,
@@ -210,6 +238,7 @@ enum {
 #include <libasm-structs.h>
 #include <libasm-i386.h>
 #include <libasm-sparc.h>
+#include <libasm-mips.h>
 
 #endif
 

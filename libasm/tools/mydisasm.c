@@ -103,6 +103,9 @@ int	main(int ac, char **av) {
     case EM_386:
       asm_init_i386(&proc);
       break;
+    case EM_MIPS:
+      asm_init_mips(&proc);
+      break;
     default:
       printf("unsupported architecture : %i\n", arch);
       elfsh_unload_obj(obj);

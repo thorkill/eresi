@@ -10,7 +10,7 @@
 #include <libasm.h>
 
 /**************************************************************************
- * op is 00
+ * op is 00 : First byte between 0x00 and 0x3f
  *************************************************************************/
 int	sparc_decode_branches(asm_instr *ins, u_char *buf, u_int len, 
 			 					asm_processor *proc) {
@@ -155,7 +155,7 @@ int	sparc_decode_call(asm_instr *ins, u_char *buf, u_int len,
 }
 
 /**************************************************************************
- * op is 10
+ * op is 10 : First byte between 0x80 and 0xbf
  *************************************************************************/
 int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len, 
 			      			asm_processor *proc) {
@@ -768,7 +768,7 @@ int	sparc_decode_arithmetic(asm_instr *ins, u_char *buf, u_int len,
 }
 
 /**************************************************************************
- * op is 11
+ * op is 11 : First byte between 0xc0 and 0xff
  *************************************************************************/
 int	sparc_decode_memory(asm_instr *ins, u_char *buf, u_int len, 
 			      		asm_processor *proc) {

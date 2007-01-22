@@ -55,7 +55,17 @@ SRCS_libasm 	=				\
 		src/output.c			\
 		src/error.c			\
 		src/operand.c			\
-		src/instruction.c
+		src/instruction.c		\
+		src/arch/mips/init_mips.c	\
+		src/arch/mips/mips_convert.c	\
+		src/arch/mips/mips_decode.c	\
+		src/arch/mips/output_mips.c	\
+		src/arch/mips/tables_mips.c	\
+		src/register.c			\
+		src/vectors.c
+
+
+
 
 OBJS_libasm 	=	${SRCS_libasm:.c=.o}
 NAME_libasm 	= 	libasm.a
@@ -64,7 +74,8 @@ SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
-CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC
+CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH32 \
+			-I../libaspect/include
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		= 	gcc
@@ -101,6 +112,6 @@ mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I./include/ \
 	-I../libc/include/ -L./ -L../libelfsh/ \
 	-L../libc/ -L../libmalloc/ -lpthread \
-	tools/mydisasm.c -o ./mydisasm -lasm -lelfsh -lcelfsh -lmalloc-e2dbg
+	tools/mydisasm.c -DELFSH32 -o ./mydisasm -lasm -lelfsh32 -lcelfsh32 -lmalloc-e2dbg -L../aspect -laspect32
 
 

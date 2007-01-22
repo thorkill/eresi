@@ -1,5 +1,5 @@
 /**
- * $Id: init_i386.c,v 1.7 2006-12-19 10:24:36 heroine Exp $
+ * $Id: init_i386.c,v 1.8 2007-01-22 22:23:10 heroine Exp $
  *
  */
 #ifndef I386_H_
@@ -11,6 +11,7 @@
 void	init_instr_table(asm_processor *);
 
 
+#if LIBASM_USE_VECTOR == 0
 /**
  * handler to disassemble ia32 code.
  * fetch in asm_i386_processor structure points to this function
@@ -26,6 +27,30 @@ int     fetch_i386(asm_instr *instr, u_char *buf, u_int len, asm_processor *proc
   return (0);
 }
 
+#else
+/**
+ *
+ *
+ */
+
+int	fetch_i386(asm_instr *instr, u_char *buf, u_int len, 
+			      asm_processor *proc)
+{
+  vector_t	*vec;
+  u_int		dim[2];
+  u_char	opcode;
+  int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
+  
+  vec = aspect_vector_get("disasm");
+  dim[0] = LIBASM_VECTOR_IA32;
+  opcode = *buf;
+  dim[1] = opcode;
+
+  fetch = aspect_vectors_select(vec, dim);
+  return (fetch(instr, buf, len, proc));
+}
+#endif
+
 /**
  *
  *
@@ -39,6 +64,8 @@ void asm_init_i386(asm_processor *proc) {
 
   init_instr_table(proc);
 
+  asm_init_vectors(proc);
+  asm_arch_register(proc, 1);  /* dummy parameters for the  moment */
   proc->resolve_immediate = asm_resolve_ia32;
   proc->resolve_data = 0;
   // proc->get_operand = create_i386_operand;
