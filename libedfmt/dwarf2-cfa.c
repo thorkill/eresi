@@ -8,9 +8,9 @@
 #include "libedfmt.h"
 
 /* Submit a new row state */
-static int	edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
+static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
 {
-  edfmtdw2cfastate_t *tmp;
+  edfmtdw2cfastate_t 	*tmp;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -21,28 +21,30 @@ static int	edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
   XALLOC(tmp, sizeof(edfmtdw2cfastate_t), -1);
   memcpy(tmp, reg, sizeof(edfmtdw2cfastate_t));
   
-  edfmt_dwarf2_caddr(tmp->caddr, DW2_CADDR_SIZE, tmp->addr);
-  
   /* Add local and gloabal */
-  hash_add(&current_cu->cfa, tmp->caddr, (void *) tmp);
-  hash_add(&debug_info.cfa, tmp->caddr, (void *) tmp);
+  if (current_cu->cfa == NULL)
+    current_cu->cfa = tmp;
+  else
+    current_cu->last_cfa->next = tmp;
+
+  current_cu->last_cfa = tmp;
       
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
 /* Parse .debug_frame FDE + data */
-static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state, 
-				      edfmtdw2cfahead_t *header, u_char init)
+static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state, 
+					      edfmtdw2cfahead_t *header, u_char init)
 {
-  u_char	cfa, cfa_data, scfa, c_low, c_high;
-  int		data, reg;
-  elfsh_Addr	nloc;
-  edfmtdw2cfastate_t save_stack[20];
-  int		isave_pos = 0;
-  int      	cie;
-  int      	length, addr_range, addr_start;
-  u_long       	last_pos;
-  u_long	max_pos;
+  u_char		cfa, cfa_data, scfa, c_low, c_high;
+  int			data, reg;
+  elfsh_Addr		nloc;
+  edfmtdw2cfastate_t 	save_stack[20];
+  int			isave_pos = 0;
+  int      		cie;
+  int      		length, addr_range, addr_start;
+  u_long       		last_pos;
+  u_long		max_pos;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -62,11 +64,11 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   /* We read FDE if we aren't on init state */
   if (!init)
     {
-      ci_read_4(length, frame);	       	// Length (without length)
-      last_pos = i_pos(frame);
-      ci_read_4(cie, frame);		// Cie ptr
-      ci_read_4(addr_start, frame); 	// Initial location
-      ci_read_4(addr_range, frame);	// Address range
+      dwarf2_iread_4(length, frame);	       	// Length (without length)
+      last_pos = dwarf2_pos(frame);
+      dwarf2_iread_4(cie, frame);		// Cie ptr
+      dwarf2_iread_4(addr_start, frame); 	// Initial location
+      dwarf2_iread_4(addr_range, frame);	// Address range
       
       state->addr = addr_start;      
     }
@@ -79,7 +81,7 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   max_pos = init ? header->end_offset : last_pos + length;
   
   do {
-    ci_read_1(cfa, frame);
+    dwarf2_iread_1(cfa, frame);
     scfa = cfa;
 
     /* Find low and high parts of the id */
@@ -102,13 +104,13 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	    data = cfa_data;
 	    break;
 	  case DW_CFA_advance_loc1:
-	    ci_read_1(data, frame);
+	    dwarf2_iread_1(data, frame);
 	    break;
 	  case DW_CFA_advance_loc2:
-	    ci_read_2(data, frame);
+	    dwarf2_iread_2(data, frame);
 	    break;
 	  case DW_CFA_advance_loc4:
-	    ci_read_4(data, frame);
+	    dwarf2_iread_4(data, frame);
 	    break;
 	  default:
 	    data = 0;
@@ -125,9 +127,9 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	if (cfa == DW_CFA_offset)
 	  reg = cfa_data;
 	else
-	  ci_uleb128(reg, frame);
+	  dwarf2_iuleb128(reg, frame);
 
-	ci_leb128(data, frame);
+	dwarf2_ileb128(data, frame);
 
 	if (!CFA_C_REG(reg))
 	  break;
@@ -143,7 +145,7 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	if (cfa ==DW_CFA_restore)
 	  data = cfa_data;
 	else
-	  ci_uleb128(data, frame);
+	  dwarf2_iuleb128(data, frame);
 
 	if (!CFA_C_REG(data))
 	  break;
@@ -151,8 +153,8 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	state->reg[data] = header->init.reg[data];
 	break;
       case DW_CFA_set_loc:
-	nloc = *(elfsh_Addr *) a_pos(frame);
-	inc_pos(frame, sizeof(elfsh_Addr));
+	nloc = *(elfsh_Addr *) dwarf2_a_pos(frame);
+	dwarf2_inc_pos(frame, sizeof(elfsh_Addr));
 	if (nloc > state->addr)
 	  {
 	    if (!init)
@@ -162,7 +164,7 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	break;
       case DW_CFA_same_value:
       case DW_CFA_undefined:
-	ci_uleb128(data, frame);
+	dwarf2_iuleb128(data, frame);
 
 	if (!CFA_C_REG(data))
 	  break;
@@ -171,8 +173,8 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	state->reg[data].type = (cfa == DW_CFA_undefined ? DW2_CFA_T_UNDEF : DW2_CFA_T_SAME);
 	break;
       case DW_CFA_register:
-	ci_uleb128(data, frame);
-	ci_uleb128(reg, frame);
+	dwarf2_iuleb128(data, frame);
+	dwarf2_iuleb128(reg, frame);
 
 	if (!CFA_C_REG(reg) || !CFA_C_REG(data))
 	  break;
@@ -190,19 +192,19 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	*state = save_stack[--isave_pos]; 
 	break;
       case DW_CFA_def_cfa:
-	ci_uleb128(reg, frame);
-	ci_uleb128(data, frame);
+	dwarf2_iuleb128(reg, frame);
+	dwarf2_iuleb128(data, frame);
 
 	state->cfa_reg = reg;
 	state->cfa_offset = (elfsh_Addr) data;
 	break;
       case DW_CFA_def_cfa_register:
-	ci_uleb128(reg, frame);
+	dwarf2_iuleb128(reg, frame);
 	  
 	state->cfa_reg = reg;
 	break;
       case DW_CFA_def_cfa_offset:
-	ci_uleb128(data, frame);
+	dwarf2_iuleb128(data, frame);
 	  
 	state->cfa_offset = (elfsh_Addr) data;
 	break;
@@ -212,8 +214,8 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	/* Unknown cfa, oupssss ? */
 	break;
       }
-  } while (i_pos(frame) < i_size(frame) &&
-	   i_pos(frame) < max_pos);
+  } while (dwarf2_pos(frame) < dwarf2_size(frame) &&
+	   dwarf2_pos(frame) < max_pos);
 
   if (!init)
     {
@@ -229,15 +231,15 @@ static int	edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 }
 
 /* .debug_frame parsing entry point */
-int		edfmt_dwarf2_cfa()
+int			edfmt_dwarf2_cfa()
 {
-  edfmtdw2cfahead_t header;
-  edfmtdw2cfastate_t state;
+  edfmtdw2cfahead_t 	header;
+  edfmtdw2cfastate_t 	state;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Reset frame position */
-  i_pos(frame) = 0;
+  dwarf2_pos(frame) = 0;
 
   /* Reset state */
   memset(&state, 0x00, sizeof(edfmtdw2cfastate_t));
@@ -246,39 +248,39 @@ int		edfmt_dwarf2_cfa()
     /* Reset header */
     memset(&header, 0x00, sizeof(edfmtdw2cfahead_t));
 
-    header.offset = i_pos(frame);
+    header.offset = dwarf2_pos(frame);
     
     /* Read CIE header */
-    ci_read_4(header.length, frame);
-    header.end_offset = i_pos(frame) + header.length;
-    ci_read_4(header.cid, frame);
-    ci_read_1(header.version, frame);
-    ci_str(header.augmentation, frame);
-    ci_uleb128(header.code_align_factor, frame);
-    ci_leb128(header.data_align_factor, frame);
-    ci_read_1(header.return_addr_reg, frame);
+    dwarf2_iread_4(header.length, frame);
+    header.end_offset = dwarf2_pos(frame) + header.length;
+    dwarf2_iread_4(header.cid, frame);
+    dwarf2_iread_1(header.version, frame);
+    dwarf2_istr(header.augmentation, frame);
+    dwarf2_iuleb128(header.code_align_factor, frame);
+    dwarf2_ileb128(header.data_align_factor, frame);
+    dwarf2_iread_1(header.return_addr_reg, frame);
 
-    header.init_offset = i_pos(frame);
+    header.init_offset = dwarf2_pos(frame);
     
     /* Read init */
     edfmt_dwarf2_cfa_data(&state, &header, 1);
 
     /* Correct length */
-    if (header.end_offset != i_pos(frame))
-      i_pos(frame) = header.end_offset;
+    if (header.end_offset != dwarf2_pos(frame))
+      dwarf2_pos(frame) = header.end_offset;
 
     do {
       edfmt_dwarf2_cfa_data(&state, &header, 0);
 
       /* We aren't at the end */
-      if (i_pos(frame) < i_size(frame))
+      if (dwarf2_pos(frame) < dwarf2_size(frame))
 	{
 	  /* Check if the next header is a CIE */
-	  if (header.cid == *(u_int *) (ac_pos(frame)+4))
+	  if (header.cid == *(u_int *) (dwarf2_ac_pos(frame)+4))
 	    break;
 	}
-    } while(i_pos(frame) < i_size(frame));
-  } while (i_pos(frame) < i_size(frame));
+    } while(dwarf2_pos(frame) < dwarf2_size(frame));
+  } while (dwarf2_pos(frame) < dwarf2_size(frame));
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

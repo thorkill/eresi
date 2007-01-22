@@ -7,55 +7,13 @@
 
 #include "libedfmt.h"
 
-/* Create a string from a key (used in hash table) */
-char 		*edfmt_dwarf2_ckey(char *buf, u_int size, long key)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (buf == NULL || size == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameters", NULL);
-
-  snprintf(buf, size, "%ld", key);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* Create a string from a file + line (used in hash table) */
-char 		*edfmt_dwarf2_cline(char *buf, u_int size, u_int line, char *file)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (buf == NULL || size == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameters", NULL);
-
-  snprintf(buf, size, "%s:%d", file, line);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* Create a string from an addr (used in hash table) */
-char 		*edfmt_dwarf2_caddr(char *buf, u_int size, elfsh_Addr addr)
-{
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (buf == NULL || size == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameters", NULL);
-
-  snprintf(buf, size, XFMT, addr);
-
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /* Read an unsigned leb128 number */
-u_long 		edfmt_read_uleb128(void *data, u_int *bread)
+u_long 			edfmt_read_uleb128(void *data, u_int *bread)
 {
-  u_long	sum = 0;
-  u_int		read = 0;
-  u_char 	c;
-  int		s = 0;
+  u_long		sum = 0;
+  u_int			read = 0;
+  u_char 		c;
+  int			s = 0;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -74,12 +32,12 @@ u_long 		edfmt_read_uleb128(void *data, u_int *bread)
 }
 
 /* Read a signed leb128 number */
-long 		edfmt_read_leb128(void *data, u_int *bread)
+long 			edfmt_read_leb128(void *data, u_int *bread)
 {
-  long		sum = 0;
-  u_int		read = 0;
-  u_char 	c;
-  int		s = 0;
+  long			sum = 0;
+  u_int			read = 0;
+  u_char 		c;
+  int			s = 0;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

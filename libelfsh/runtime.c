@@ -191,7 +191,7 @@ int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
   if (!elfsh_is_debug_mode())
     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  retval = mprotect((void *) addr - addr % getpagesize(), 
+  retval = mprotect((void *) (long) addr - (long) addr % getpagesize(), 
 		    getpagesize(), prot);
 
   if (retval != 0)

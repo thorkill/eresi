@@ -1,5 +1,5 @@
 /*
-** dwarf2.h for libedfmt (The Elf debug format library of ELFsh)
+** libedfmt-dwarf2.h for libedfmt (The Elf debug format library of ELFsh)
 **
 ** Started on  Mon Dec 25 18:08:03 2006 mxatone
 **
@@ -9,18 +9,17 @@
 #define __DWARF_2_H__
 
 #define DW2_MACRON_SIZE 50
-#define DW2_CLINE_SIZE  30
-#define DW2_CADDR_SIZE  20
-#define DW2_CKEY_SIZE   10
 
 /* Structures */
-typedef struct 	s_edfmtdw2sect
+typedef struct 	s_dw2sect
 {
   elfshsect_t	*sect;
+  void		*data;
   u_long 	pos;	// Position
 }		edfmtdw2sect_t; 
 
-typedef struct 	s_edfmtdw2sectlist
+/* Every DWARF2 section is kept on this structure */
+typedef struct 	s_dw2sectlist
 {
   edfmtdw2sect_t	info;
   edfmtdw2sect_t	abbrev;
@@ -33,16 +32,20 @@ typedef struct 	s_edfmtdw2sectlist
 } 		edfmtdw2sectlist_t;
 
 /* Forward declaration */
-struct s_edfmtdw2abbent;
-typedef struct s_edfmtdw2abbent edfmtdw2abbent_t;
+struct s_dw2abbent;
+typedef struct s_dw2abbent edfmtdw2abbent_t;
+struct s_dw2cu;
+typedef struct s_dw2cu edfmtdw2cu_t;
 
-typedef struct	s_edfmtdw2loc
+/* Descripbe a location */
+typedef struct	s_dw2loc
 {
   u_int		op;
   elfsh_Addr	value;
 }		edfmtdw2loc_t;
 
-typedef struct 	s_edfmtdw2abbattr
+/* Describe an abbrev attribute */
+typedef struct 	s_dw2abbattr
 {
   u_int		attr;
   u_int		form;
@@ -61,72 +64,42 @@ typedef struct 	s_edfmtdw2abbattr
   edfmtdw2loc_t	loc; // DW_AT_location
 } 		edfmtdw2abbattr_t;
 
-struct 	s_edfmtdw2abbent
+/* Describe an abbrev entitie */
+struct 	s_dw2abbent
 {
   edfmtdw2abbattr_t *attr;
   u_int		key;
-  char		ckey[DW2_CKEY_SIZE];
+  //char		ckey[EDFMT_CKEY_SIZE];
   u_int		tag; 
   u_char 	children;
   u_int		level;
-  struct s_edfmtdw2abbent *sib;
-  struct s_edfmtdw2abbent *child;
-  struct s_edfmtdw2abbent *parent;
+  struct s_dw2abbent *sib;
+  struct s_dw2abbent *child;
+  struct s_dw2abbent *parent;
 };
 
-typedef struct	s_edfmtdw2cu
-{
-  /* Header informations */
-  u_int		length;
-  u_int		version;
-  u_int		offset;
-  u_int		addr_size;
-  u_int		start_pos;
-
-  /* Designed file */
-  elfshobj_t	*fileobj;
-
-  /* Abbrev section informations */
-  edfmtdw2abbent_t *fent;
-
-  /* Files informations */
-  char		**dirs;
-  char		**files_name;
-  u_int		*files_dindex;
-  u_int		*files_time;
-  u_int		*files_len;
-  
-  /* Cfa informations */
-  hash_t	cfa;
-
-  /* Macro informations */
-  hash_t	macros;
-
-  /* Line informations */
-  hash_t      	file_line;
-  hash_t	addr;
-
-  struct s_edfmtdw2cu *next;
-}		edfmtdw2cu_t;
-
-typedef struct 	s_edfmtdw2fref
+/* Describe a reference to update lately */
+typedef struct 	s_dw2fref
 {
   long		offset;
   edfmtdw2abbattr_t *attr;
-  struct s_edfmtdw2fref *next;
+  struct s_dw2fref *next;
 }		edfmtdw2fref_t;
 
-typedef struct	s_edfmtdw2macro
+/* Describe a macro */
+typedef struct	s_dw2macro
 {
   u_char	def;
   int		fileno;
   int		line;
   char		name[DW2_MACRON_SIZE];
   char		*str;
+
+  struct s_dw2macro *next;
 }		edfmtdw2macro_t;
 
 /* A column description */
-typedef struct 	s_edfmtdw2cfareg
+typedef struct 	s_dw2cfareg
 {
 #define DW2_CFA_T_UNDEF   0
 #define DW2_CFA_T_SAME    1
@@ -141,10 +114,10 @@ typedef struct 	s_edfmtdw2cfareg
 }		edfmtdw2cfareg_t;
 
 /* A givent state */
-typedef struct 	s_edfmtdw2cfastate
+typedef struct 	s_dw2cfastate
 {
   elfsh_Addr	addr;
-  char		caddr[DW2_CADDR_SIZE];
+  char		caddr[EDFMT_CADDR_SIZE];
 
   int 		cfa_reg;
   elfsh_Addr	cfa_offset;
@@ -152,9 +125,12 @@ typedef struct 	s_edfmtdw2cfastate
 #define DW2_CFA_MAX_REG 16
 #define CFA_C_REG(_a) (DW2_CFA_MAX_REG > _a)
   edfmtdw2cfareg_t reg[DW2_CFA_MAX_REG];
+
+  struct s_dw2cfastate *next;
 }		edfmtdw2cfastate_t;
 
-typedef struct 	s_edfmtdw2cfahead
+/* Cfa section header representation */
+typedef struct 	s_dw2cfahead 
 {
   u_int		offset;
   u_int		init_offset;
@@ -170,7 +146,8 @@ typedef struct 	s_edfmtdw2cfahead
   edfmtdw2cfastate_t init;
 }		edfmtdw2cfahead_t;
 
-typedef struct	s_edfmtdw2linehead
+/* Line section header representation */
+typedef struct	s_dw2linehead
 {
   /* Header informations */
   u_int		total_length;
@@ -197,36 +174,63 @@ typedef struct	s_edfmtdw2linehead
   u_long	prologue_pos;
 }		edfmtdw2linehead_t;
 
-/* Description a line information */
-typedef struct 	s_edfmtdw2line
+/* Describe a line information */
+typedef struct 	s_dw2line
 {
   /* Main informations */
   elfsh_Addr	addr;
   u_int		line;
   u_int		column;
 
-  /* Char buffer cache */
-  char		cline[DW2_CLINE_SIZE];
-  char		caddr[DW2_CADDR_SIZE];
-
   /* References */
   edfmtdw2cu_t	*cu;
   u_int		fileid;
+
+  struct s_dw2line *next;
 }		edfmtdw2line_t;
 
-typedef struct 	s_edfmtdw2info
+/* Describe a compil unit */
+struct		s_dw2cu
+{
+  /* Header informations */
+  u_int		length;
+  u_int		version;
+  u_int		offset;
+  u_int		addr_size;
+  u_int		start_pos;
+
+  /* Designed file */
+  elfshobj_t	*fileobj;
+
+  /* Abbrev section informations */
+  edfmtdw2abbent_t *fent;
+
+  /* Lines informations */
+  edfmtdw2line_t *line;
+  edfmtdw2line_t *last_line;
+
+  /* Macros informations */
+  edfmtdw2macro_t *macro;
+  edfmtdw2macro_t *last_macro;
+
+  /* Cfa state informations */
+  edfmtdw2cfastate_t *cfa;
+  edfmtdw2cfastate_t *last_cfa;
+
+  /* Files informations */
+  char		**dirs;
+  char		**files_name;
+  u_int		*files_dindex;
+  u_int		*files_time;
+  u_int		*files_len;
+  
+  struct s_dw2cu *next;
+};
+
+/* Main structure of dwarf2 */
+typedef struct 	s_dw2info
 {
   edfmtdw2cu_t	*cu_list;
-  
-  /* Addr and file / line resolution */
-  hash_t      	file_line;
-  hash_t    	addr;
-
-  /* Cfa informations */
-  hash_t       	cfa;
-
-  /* Macros information */
-  hash_t	macros;
 }		edfmtdw2info_t;
 
 /* Variables */
@@ -244,42 +248,87 @@ extern edfmtdw2cu_t *current_cu;
 extern hash_t abbrev_table;
 
 /* I/O management */
-#define i_pos(name) dw2_sections.name.pos
-#define i_size(name) dw2_sections.name.sect->shdr->sh_size
-#define i_data(name) dw2_sections.name.sect->data
-#define a_pos(name) (i_data(name) + i_pos(name))
-#define ac_pos(name) (char *) a_pos(name)
+#define dwarf2_pos(name) 	dw2_sections.name.pos
+#define dwarf2_size(name) 	dw2_sections.name.sect->shdr->sh_size
+#define dwarf2_data(name) 	dw2_sections.name.data
+#define dwarf2_a_pos(name) 	(dwarf2_data(name) + dwarf2_pos(name))
+#define dwarf2_ac_pos(name) 	(char *) dwarf2_a_pos(name)
 
-#define c_pos(val, name, type) val = *(type *) a_pos(name)
-#define inc_pos(name, value) do { dw2_sections.name.pos += value; } while(0)
-#define ci_pos(val, name, type) do { c_pos(val, name, type); inc_pos(name, sizeof(type)); } while(0)
-#define c_read_1(val, name) do { c_pos(val, name, char); } while(0)
-#define c_read_2(val, name) do { c_pos(val, name, short); } while(0)
-#define c_read_4(val, name) do { c_pos(val, name, int); } while(0)
-#define c_read_8(val, name) do { c_pos(val, name, long); } while(0)
-#define ci_read_1(val, name) do { c_read_1(val, name); inc_pos(name, 1); } while(0)
-#define ci_read_2(val, name) do { c_read_2(val, name); inc_pos(name, 2); } while(0)
-#define ci_read_4(val, name) do { c_read_4(val, name); inc_pos(name, 4); } while(0)
-#define ci_read_8(val, name) do { c_read_8(val, name); inc_pos(name, 8); } while(0)
+#define dwarf2_get_pos(val, name, type) val = *(type *) dwarf2_a_pos(name)
 
-#define ci_uleb128(val, name) 				\
+#define dwarf2_inc_pos(name, value) 			\
+do {							\
+  dw2_sections.name.pos += value; 			\
+} while(0)
+
+#define dwarf2_ipos(val, name, type) 			\
+do { 							\
+  dwarf2_get_pos(val, name, type);			\
+  dwarf2_inc_pos(name, sizeof(type)); 			\
+} while(0)
+
+#define dwarf2_read_1(val, name) 			\
+do { 							\
+  dwarf2_get_pos(val, name, char); 			\
+} while(0)
+
+#define dwarf2_read_2(val, name) 			\
+do { 							\
+  dwarf2_get_pos(val, name, short); 			\
+} while(0)
+
+#define dwarf2_read_4(val, name) 		   	\
+do { 						     	\
+  dwarf2_get_pos(val, name, int); 			\
+} while(0)
+
+#define dwarf2_read_8(val, name) 			\
+do { 							\
+  dwarf2_get_pos(val, name, long); 			\
+} while(0)
+
+#define dwarf2_iread_1(val, name) 		  	\
+do { 							\
+  dwarf2_read_1(val, name); 				\
+  dwarf2_inc_pos(name, 1); 				\
+} while(0)
+
+#define dwarf2_iread_2(val, name) 		    	\
+do { 							\
+  dwarf2_read_2(val, name); 				\
+  dwarf2_inc_pos(name, 2); 				\
+} while(0)
+
+#define dwarf2_iread_4(val, name) 			\
+do { 							\
+  dwarf2_read_4(val, name); 				\
+  dwarf2_inc_pos(name, 4); 				\
+} while(0)
+
+#define dwarf2_iread_8(val, name) 			\
+do { 							\
+  dwarf2_read_8(val, name); 				\
+  dwarf2_inc_pos(name, 8); 				\
+} while(0)
+
+#define dwarf2_iuleb128(val, name) 			\
 do {							\
   u_int bsize;						\
-  val = edfmt_read_uleb128(a_pos(name), &bsize);	\
-  inc_pos(name, bsize);					\
+  val = edfmt_read_uleb128(dwarf2_a_pos(name), &bsize);	\
+  dwarf2_inc_pos(name, bsize);			       	\
 } while (0)
 
-#define ci_leb128(val, name) 				\
+#define dwarf2_ileb128(val, name) 		        \
 do {							\
   u_int bsize;						\
-  val = edfmt_read_leb128(a_pos(name), &bsize);		\
-  inc_pos(name, bsize);					\
+  val = edfmt_read_leb128(dwarf2_a_pos(name), &bsize); 	\
+  dwarf2_inc_pos(name, bsize);			       	\
 } while (0)
 
-#define ci_str(val, name)				\
+#define dwarf2_istr(val, name)				\
 do {							\
-  val = ac_pos(name);					\
-  inc_pos(name, strlen(val)+1);				\
+  val = dwarf2_ac_pos(name);			      	\
+  dwarf2_inc_pos(name, strlen(val)+1);		       	\
 } while (0)
 
 /* Most of this enums are from gdb 6.4 dwarf 2 header
