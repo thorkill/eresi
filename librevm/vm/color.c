@@ -62,7 +62,7 @@ int 		cmd_color()
 	icolor = (u_int) hash_get(&bg_color_hash, 
 				  world.curjob->curcmd->param[2]);
 
-      if (icolor == NULL)
+      if (icolor == 0)
 	{
 	  vm_output(" [!] Unknown color (see help for list)\n\n");
 	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
