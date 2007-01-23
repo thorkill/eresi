@@ -248,6 +248,9 @@ char prompt_token[512];
 /* For elfsh/elfsh/modules.c:vm_change_handler() */
 #define	ELFSH_ORIG		((void *) -1)
 
+/* For lang/access.c */
+#define	REVM_INVALID_FIELD	((u_int) -1)
+
 /* Return of an input function in case of ignorable input */
 #define ELFSH_VOID_INPUT -1
 #define ELFSH_EXIT_INPUT -2
@@ -699,10 +702,10 @@ typedef struct  s_path
   /* Handlers */
   elfsh_Addr          (*get_obj)(void *parent);
   int	              (*set_obj)(void *parent, elfsh_Addr value);
-  char                *(*get_name)(elfshobj_t *, void *obj);
-  int                 (*set_name)(elfshobj_t *, void *, char *);
-  char                *(*get_data)(elfshsect_t *, u_int off, u_int);
-  int                 (*set_data)(elfshsect_t *, u_int, char *, u_int, u_int);
+  char                *(*get_name)(void*, void *obj);
+  int                 (*set_name)(void*, void *, char *);
+  char                *(*get_data)(void*, u_int off, u_int);
+  int                 (*set_data)(void*, u_int, char *, u_int, u_int);
 
   elfshobj_t          *root;          /* Root parent */
   void                *parent;        /* Direct parent */
@@ -766,10 +769,10 @@ typedef struct	s_L1handler
   u_int		elem_size;					/* Size of one element of this object */
   
   /* Handlers */
-  void		*(*get_obj)(void *file, void *arg);		/* Read object */
-  void		*(*get_obj_idx)(void *file, elfsh_Addr i, void *a); /* Read handler for mutiple instanced L1 obj */
-  void		*(*get_obj_nam)(void *file, char *name);	/* Read handler by name */
-  void		*(*get_entptr)(void *file, elfsh_Addr idx);	/* Get address */
+  void		*(*get_obj)(void *container, void *retarg); /* Read object and return size */
+  void		*(*get_obj_idx)(void *file, elfsh_Addr i, void *a); /* Read handler for arrays objects */
+  void		*(*get_obj_nam)(void *file, char *name); /* Read handler by name */
+  void		*(*get_entptr)(void *file, elfsh_Addr idx);     /* Get address */
   elfsh_Addr   	(*get_entval)(void *ptr);			/* Get value */
   elfsh_Addr   	(*set_entval)(void *ptr, elfsh_Addr vaddr);     /* Set value */
 }		revmL1_t;

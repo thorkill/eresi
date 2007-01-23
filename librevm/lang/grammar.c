@@ -495,6 +495,11 @@ revmobj_t		*vm_lookup_param(char *param, u_int m)
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
     }
 
+  /* If still not found, try manually inserted types */
+  ret = vm_revmobj_lookup(param);
+  if (ret)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
+
   /* If no good syntax is available, print error if we are not in probe mode */
   if (m)
     {

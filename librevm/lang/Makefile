@@ -5,7 +5,7 @@
 ##
 include ../../config.h
 
-SRC			= grammar.c lookup.c lts.c objects.c variables.c
+SRC			= grammar.c lookup.c lts.c objects.c variables.c access.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

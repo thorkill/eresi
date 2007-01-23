@@ -95,7 +95,7 @@ char	**vm_completion(const char* text, int start, int end)
     {
       memcpy(buf, text, baq2 - text);
       strcpy(buf + (baq2 - text), matches[0]);
-      //seems not to be freed
+      //seems not to be free
       //XFREE(matches[0]);
       matches[0] = elfsh_strdup(buf);
     }
