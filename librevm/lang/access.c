@@ -53,6 +53,10 @@ static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
     return (NULL);
   *data = (char *) *data + off;
 
+  /* Check for pointers */
+  if (child->isptr)
+    *data = (void *) *(elfsh_Addr *) *data;
+
   return (vm_field_get(child, next, data));
 }
 
@@ -112,8 +116,10 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   path->set_obj  = (void *) vm_generic_setobj;
   path->get_data = (void *) vm_generic_getdata;
   path->set_data = (void *) vm_generic_setdata;
-  path->immed    = 0;
+
   path->type     = type->type;
+  path->immed    = 0;		/* Value is not immediate */
+  path->perm	 = 1;		/* Do not free after use  */
 
   /* Success */
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, path);

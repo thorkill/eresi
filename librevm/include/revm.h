@@ -725,13 +725,15 @@ typedef struct  s_path
   }                   immed_val;
 
   /* Here is the object type list */
-#define               ELFSH_OBJINT    0       /* word : always 4 bytes */
-#define               ELFSH_OBJSTR    1       /* String */
-#define               ELFSH_OBJRAW    2       /* Raw */
-#define               ELFSH_OBJUNK    3       /* Unknown */
-#define               ELFSH_OBJLONG   4       /* Long object 4 or 8 bytes */
-#define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
-#define               ELFSH_OBJBYTE   6       /* One byte */
+  #define               ELFSH_OBJINT    0       /* word : always 4 bytes */
+  #define               ELFSH_OBJSTR    1       /* String */
+  #define               ELFSH_OBJRAW    2       /* Raw */
+  #define               ELFSH_OBJUNK    3       /* Unknown */
+  #define               ELFSH_OBJLONG   4       /* Long object 4 or 8 bytes */
+  #define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
+  #define               ELFSH_OBJBYTE   6       /* One byte */
+
+  /* Now use REVM_TYPE_* ! */
   char                type;		      /* The object type */
 
   char                perm;		      /* TRUE if object is a script variable */
