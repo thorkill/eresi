@@ -1193,6 +1193,16 @@ revmtype_t	*vm_type_create(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
 			      u_char p, u_int nbr, char *fieldname);
 
+/* Data access related functions */
+revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off);
+revmobj_t	*vm_revmobj_lookup(char *str);
+char		*vm_generic_getname(void *type, void *data);
+int		vm_generic_setname(void *type, void *data, void *newdata);
+elfsh_Addr	vm_generic_getobj(void *data);
+int		vm_generic_setobj(void *data, elfsh_Addr value);
+char		*vm_generic_getdata(void *data, int off, int sizelm);
+int		vm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
+
 /* Readline stuff (XXX: need to be prefixed) */
 char		**vm_completion(const char* text, int start, int end);
 int		update_col();

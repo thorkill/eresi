@@ -21,6 +21,7 @@ revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off)
   return (NULL);
 }
 
+
 /* Recursive function to lookup data from its type path */
 static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
 {
@@ -68,7 +69,8 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   elfshobj_t	*obj;
   revmtype_t	*type;
   void		*data;
-
+  revmobj_t	*path;
+  
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = sscanf(str, "%s.%s[%s]", filename, typename, objectname);
   if (ret != 3)
@@ -97,18 +99,62 @@ revmobj_t	*vm_revmobj_lookup(char *str)
 
   /* Get recursively the leaf type and data pointer */
   type = vm_field_get(type, str, (void **) &data);
-  
-  // XXX: FIXME: Construct the revmobj_t with correct set/get handlers
-  // getname(o->root, o->parent) for GET strings (return char*)
-  // setname(o->root, o->parent, char*str) for SET strings
-  // getobj(o->parent) for GET others (return plain value)
-  // setobj(o->parent, plainval) for SET plain values
-  // getdata(o->parent, o->off, o->szelm) -> GET void* data
-  // setdata(o->parent, o->off, data, sz, szelm) -> write data
+  if (!type)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to lookup object", NULL);
 
+  XALLOC(path, sizeof(revmobj_t), NULL);
+  path->root     = (void *) type;
+  path->parent   = (void *) data;
+  path->get_name = (void *) vm_generic_getname;
+  path->set_name = (void *) vm_generic_setname;
+  path->get_obj  = (void *) vm_generic_getobj;
+  path->set_obj  = (void *) vm_generic_setobj;
+  path->get_data = (void *) vm_generic_getdata;
+  path->set_data = (void *) vm_generic_setdata;
+  path->immed    = 0;
+  path->type     = type->type;
 
-  /* Default error case */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to create revmobj_t handlers", NULL);
+  /* Success */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
+
+
+/* Generic handlers */
+char		*vm_generic_getname(void *type, void *data)
+{
+  return (data);
+}
+
+int		vm_generic_setname(void *type, void *data, void *newdata)
+{
+  strcpy(data, newdata);
+  return (0);
+}
+
+elfsh_Addr	vm_generic_getobj(void *data)
+{
+  return (*(elfsh_Addr *) data);
+}
+
+int		vm_generic_setobj(void *data, elfsh_Addr value)
+{
+  elfsh_Addr	*dst;
+
+  dst = (elfsh_Addr *) data;
+  *dst = value;
+  return (0);
+}
+
+char		*vm_generic_getdata(void *data, int off, int sizelm)
+{
+  return ((char *) data + (off * sizelm));
+}
+
+int		vm_generic_setdata(void *data, int off, void *newdata, 
+				   int size, int sizelm)
+{
+  memcpy((char *) data + (off * sizelm), newdata, size);
+  return (0);
+}
