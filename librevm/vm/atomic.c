@@ -227,7 +227,7 @@ int		cmd_get()
       break;
     case REVM_TYPE_INT:
       val32 = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
-      snprintf(logbuf, BUFSIZ - 1, "%8X\n", val32);
+      snprintf(logbuf, BUFSIZ - 1, "0x%08X\n", val32);
       vm_output(logbuf);
 
       /* The $_ variable is updated as well */

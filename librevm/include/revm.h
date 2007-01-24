@@ -437,6 +437,16 @@ typedef struct		s_const
   elfsh_Addr	       	val;
 }			revmconst_t;
 
+
+/* Completion structure */
+typedef struct        s_comp
+{
+#define		      ELFSH_COMPMAX   16
+  char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
+}		      revmcomp_t;
+
+
+
 /* Structure for type */
 typedef struct		s_type
 {
@@ -627,6 +637,8 @@ typedef struct        s_job
 }                     revmjob_t;
 
 
+
+
 /* Hold all the VM flags, sort of global context */
 typedef struct        s_state
 {
@@ -654,14 +666,6 @@ typedef struct        s_state
   char                vm_net;         /* We are a node connected to the elf network */
   u_int               lastid;         /* Last Object ID */
 }		      revmstate_t;
-
-
-/* Completion structure */
-typedef struct        s_comp
-{
-#define		      ELFSH_COMPMAX   16
-  char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
-}		      revmcomp_t;
 
 
 /* This structure contains the control flow context for e2dbg scripts */
@@ -693,6 +697,8 @@ typedef struct        s_world
   asm_processor	      proc_sparc;     /* Libasm Sparc */
   mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
 }		      revmworld_t;
+
+
 
 
 /* Meta object : describe an object in a standard way, whatever its hierarchy level */
