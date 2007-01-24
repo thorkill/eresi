@@ -8,26 +8,34 @@ type state = flags:byte[4] glregex%32 sregx:*long alert:byte alertregex%32 strs:
 type world = state:state ctxt:context
 
 type archtypes = types:string[55] end:byte
-type archaddr  = types:long[55] end:byte
-
 inform archtypes elfsh_arch_type
+type archaddr  = types:long[55] end:byte
 inform archaddr  elfsh_arch_type
 
-get 107.archtypes[elfsh_arch_type].types[0]
+quiet
+print Now print Strings
+print
+print 107.archtypes[elfsh_arch_type].types[0]
+print 107.archtypes[elfsh_arch_type].types[1]
+print 107.archtypes[elfsh_arch_type].types[2]
+print 107.archtypes[elfsh_arch_type].types[3]
+print
+print Now print addresses
+print
+print Entry 1 : 107.archaddr[elfsh_arch_type].types[0]
+print Entry 2 : 107.archaddr[elfsh_arch_type].types[1] 
+print Entry 2 : 107.archaddr[elfsh_arch_type].types[2]
+print Entry 4 : 107.archaddr[elfsh_arch_type].types[3]
+print
 
-get 107.archaddr[elfsh_arch_type].types[0]
-get 107.archaddr[elfsh_arch_type].types[1]
-get 107.archaddr[elfsh_arch_type].types[2]
-get 107.archaddr[elfsh_arch_type].types[3]
+#set 107.archaddr[elfsh_arch_type].types[0] 0x41414141
+#set 107.archaddr[elfsh_arch_type].types[1] 0x42424242
+#set 107.archaddr[elfsh_arch_type].types[2] 0x43434343
+#set 107.archaddr[elfsh_arch_type].types[3] 0x44444444
 
-set 107.archaddr[elfsh_arch_type].types[0] 0x41414141
-set 107.archaddr[elfsh_arch_type].types[1] 0x42424242
-set 107.archaddr[elfsh_arch_type].types[2] 0x43434343
-set 107.archaddr[elfsh_arch_type].types[3] 0x44444444
-
-get 107.archaddr[elfsh_arch_type].types[0]
-get 107.archaddr[elfsh_arch_type].types[1]
-get 107.archaddr[elfsh_arch_type].types[2]
-get 107.archaddr[elfsh_arch_type].types[3]
+#get 107.archaddr[elfsh_arch_type].types[0]
+#get 107.archaddr[elfsh_arch_type].types[1]
+#get 107.archaddr[elfsh_arch_type].types[2]
+#get 107.archaddr[elfsh_arch_type].types[3]
 
 
