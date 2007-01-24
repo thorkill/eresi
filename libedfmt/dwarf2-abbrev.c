@@ -167,6 +167,8 @@ int			edfmt_dwarf2_abbrev()
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+
 /* Parse a form value */
 static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 {
@@ -291,6 +293,7 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 /* Follow .debug_info form using abbrev_table as structure reference */
 int			edfmt_dwarf2_form(u_int endpos)

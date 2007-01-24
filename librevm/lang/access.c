@@ -174,6 +174,15 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   /* Create the revmobj and fill its handlers */
   XALLOC(path, sizeof(revmobj_t), NULL);
   path->root     = (void *) type;
+
+  /* Lookup again in the file if we are dealing with a pointer */
+  if (type->type == REVM_TYPE_STR || type->isptr)
+    {
+      data = (void *) *(elfsh_Addr *) data;
+      data = vm_get_raw(data);
+    }
+
+  /* Fill type specific object handlers */
   path->parent   = (void *) data;
   if (type->type == REVM_TYPE_STR)
     {
