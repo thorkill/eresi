@@ -59,7 +59,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Bad object path", NULL);
   
-  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Lookup object 
@@ -107,7 +107,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
-  pobj->type    = ELFSH_OBJLONG;
+  pobj->type    = REVM_TYPE_LONG;
   pobj          = vm_check_object(pobj);
   if (!pobj)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -166,7 +166,7 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
 		      NULL);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
@@ -257,7 +257,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
 		   NULL);
   
-  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Do lookup by index or by name 
@@ -309,12 +309,12 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj  = (void *) l2->get_obj;
   pobj->set_obj  = (void *) l2->set_obj;
-  pobj->get_name = l2->get_name;
-  pobj->set_name = l2->set_name;
+  pobj->get_name = (void *) l2->get_name;
+  pobj->set_name = (void *) l2->set_name;
 
   // The 2 next fields are used for 'raw' L2 of 'section' L1 
-  pobj->get_data = l2->get_data;
-  pobj->set_data = l2->set_data;
+  pobj->get_data = (void *) l2->get_data;
+  pobj->set_data = (void *) l2->set_data;
 
   pobj->type     = l2->type;
   pobj->off      = off;
@@ -430,7 +430,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   o1 = elfsh_get_raw(sect);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(ELFSH_OBJUNK, 0, 0);
+  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;

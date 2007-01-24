@@ -19,11 +19,9 @@ revmobj_t	*vm_create_IMMED(char type, char perm, u_int val)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Please use create_IMMEDSTR or create_LONG for that */
-  if (type == ELFSH_OBJSTR || type == ELFSH_OBJLONG)
+  if (type == REVM_TYPE_STR || type == REVM_TYPE_LONG)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid type for immed", (NULL));
-
-  //printf("created IMMED with val = %u \n", val);
 
   XALLOC(new, sizeof(revmobj_t), NULL);
   new->immed = 1;
@@ -45,7 +43,7 @@ revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val)
   XALLOC(new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ELFSH_OBJLONG;
+  new->type = REVM_TYPE_LONG;
   new->size = sizeof(val);
   new->immed_val.ent = val;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -64,7 +62,7 @@ revmobj_t	*vm_create_SHORT(char perm, u_short val)
   XALLOC(new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ELFSH_OBJSHORT;
+  new->type = REVM_TYPE_SHORT;
   new->size = 2;
   new->immed_val.half = val;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -83,7 +81,7 @@ revmobj_t	*vm_create_BYTE(char perm, u_char val)
   XALLOC(new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ELFSH_OBJBYTE;
+  new->type = REVM_TYPE_BYTE;
   new->size = 1;
   new->immed_val.byte = val;
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -102,7 +100,7 @@ revmobj_t	*vm_create_IMMEDSTR(char perm, char *str)
   XALLOC(new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ELFSH_OBJSTR;
+  new->type = REVM_TYPE_STR;
   new->immed_val.str = str;
   new->size = strlen(new->immed_val.str);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -199,7 +197,7 @@ int		vm_convert_object(revmobj_t *obj, u_int objtype)
 #endif  
 
   /* Automatic conversion */
-  if (obj->type == ELFSH_OBJUNK || obj->type == objtype)
+  if (obj->type == REVM_TYPE_UNKNOW || obj->type == objtype)
     {
       obj->type = objtype;
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -207,17 +205,17 @@ int		vm_convert_object(revmobj_t *obj, u_int objtype)
 
   switch (objtype)
     {
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2str(obj));
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2long(obj));
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2int(obj));
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2byte(obj));
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2short(obj));
-    case ELFSH_OBJRAW:
+    case REVM_TYPE_RAW:
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2raw(obj));
     default:
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -238,24 +236,24 @@ revmobj_t		*vm_check_object(revmobj_t *pobj)
 
   switch (pobj->type)
     {
-    case ELFSH_OBJRAW:
+    case REVM_TYPE_RAW:
       if (pobj->immed == 1)
 	break;
     if (pobj->get_data == NULL || pobj->set_data == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid object path", NULL);
       break;
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       if (pobj->immed == 1)
 	break;
       if (pobj->get_name == NULL || pobj->set_name == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid object path", NULL);
       break;
-    case ELFSH_OBJINT:
-    case ELFSH_OBJLONG:
-    case ELFSH_OBJSHORT:
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_INT:
+    case REVM_TYPE_LONG:
+    case REVM_TYPE_SHORT:
+    case REVM_TYPE_BYTE:
       if (pobj->immed == 1)
 	break;
       if (pobj->get_obj == NULL || pobj->set_obj == NULL)

@@ -25,7 +25,7 @@ char			*vm_lookup_var(char *param)
       if (ptr == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown variable", (NULL));
-      if (vm_convert_object(ptr, ELFSH_OBJSTR) < 0)
+      if (vm_convert_object(ptr, REVM_TYPE_STR) < 0)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Failed parameter string conversion", 
 			  (NULL));
@@ -77,7 +77,7 @@ revmobj_t		*vm_lookup_addr(char *param)
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
     {
-      ptr = vm_create_IMMED(ELFSH_OBJINT, 0, actual->val);
+      ptr = vm_create_IMMED(REVM_TYPE_INT, 0, actual->val);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
   
@@ -127,7 +127,7 @@ revmobj_t		*vm_lookup_immed(char *param)
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
-      ptr = vm_create_IMMED(ELFSH_OBJUNK, 1, 0);
+      ptr = vm_create_IMMED(REVM_TYPE_UNKNOW, 1, 0);
       hash_add(&vars_hash, elfsh_strdup(param), ptr);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
@@ -154,7 +154,7 @@ revmobj_t		*vm_lookup_immed(char *param)
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
     {
-      ptr = vm_create_IMMED(ELFSH_OBJINT, 0, actual->val);
+      ptr = vm_create_IMMED(REVM_TYPE_INT, 0, actual->val);
       goto good;
     }
 
@@ -191,7 +191,7 @@ revmobj_t		*vm_lookup_immed(char *param)
  good:
   
   /* Now replace \x00 patterns if any */
-  if (ptr->type == ELFSH_OBJSTR)
+  if (ptr->type == REVM_TYPE_STR)
     vm_filter_zero(ptr->immed_val.str);
 
   /* We matched -- returns OK */
@@ -228,11 +228,10 @@ elfsh_Addr     		vm_lookup_index(char *param)
 			  "Unable to lookup variable", (-1));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL && 
-	  (ptr->type == ELFSH_OBJINT   || 
-	   ptr->type == ELFSH_OBJSHORT || 
-	   ptr->type == ELFSH_OBJBYTE  || 
-	   ptr->type == ELFSH_OBJLONG 
-	   ))
+	  (ptr->type == REVM_TYPE_INT   || 
+	   ptr->type == REVM_TYPE_SHORT || 
+	   ptr->type == REVM_TYPE_BYTE  || 
+	   ptr->type == REVM_TYPE_LONG))
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			   ptr->immed_val.ent);
       else
@@ -289,7 +288,7 @@ char			*vm_lookup_string(char *param)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
-      if (ptr != NULL && ptr->type == ELFSH_OBJSTR)
+      if (ptr != NULL && ptr->type == REVM_TYPE_STR)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			   ptr->immed_val.str);
       else
@@ -335,9 +334,9 @@ elfshobj_t		*vm_lookup_file(char *param)
       if (!ptr)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get variable", (NULL));
-      if (ptr->type == ELFSH_OBJINT)
+      if (ptr->type == REVM_TYPE_INT)
 	idx = ptr->immed_val.ent;
-      else if (ptr->type == ELFSH_OBJSTR)
+      else if (ptr->type == REVM_TYPE_STR)
 	param = ptr->immed_val.str;
       else
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 

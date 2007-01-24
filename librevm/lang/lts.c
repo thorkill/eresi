@@ -37,50 +37,50 @@ int		vm_convert2str(revmobj_t *obj)
 
   switch (obj->type)
     {
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%hhd", val8);
       obj->immed_val.byte = 0;
       obj->immed_val.str = elfsh_strdup(tmp);
-      obj->type = ELFSH_OBJSTR;
+      obj->type = REVM_TYPE_STR;
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%hd", val16);
       obj->immed_val.half = 0;
       obj->immed_val.str = elfsh_strdup(tmp);
-      obj->type = ELFSH_OBJSTR;
+      obj->type = REVM_TYPE_STR;
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), "%d", val32);
       obj->immed_val.word = 0;
       obj->immed_val.str = elfsh_strdup(tmp);
-      obj->type = ELFSH_OBJSTR;
+      obj->type = REVM_TYPE_STR;
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJRAW:
+    case REVM_TYPE_RAW:
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Raw -> String is not a valid "
 			"conversion", -1);
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       snprintf(tmp, sizeof(tmp), XFMT, val64);
       obj->immed_val.ent = 0;
       obj->immed_val.str = elfsh_strdup(tmp);
-      obj->type = ELFSH_OBJSTR;
+      obj->type = REVM_TYPE_STR;
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       break;
     default:
       ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -101,41 +101,41 @@ int		vm_convert2int(revmobj_t *obj)
 
   switch (obj->type)
     {
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (u_char) (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));
       obj->immed_val.byte = 0;
       obj->immed_val.word = val8;
-      obj->type = ELFSH_OBJINT;
+      obj->type = REVM_TYPE_INT;
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (u_short) (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.word = val16;
-      obj->type = ELFSH_OBJINT;
+      obj->type = REVM_TYPE_INT;
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSTR:
-    case ELFSH_OBJRAW:
+    case REVM_TYPE_STR:
+    case REVM_TYPE_RAW:
       val32 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
 	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.word = val32;
-      obj->type = ELFSH_OBJINT;
+      obj->type = REVM_TYPE_INT;
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.word = (int) val64;
-      obj->type = ELFSH_OBJINT;
+      obj->type = REVM_TYPE_INT;
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -156,41 +156,41 @@ int		vm_convert2long(revmobj_t *obj)
   
   switch (obj->type)
     {
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val64 = (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.ent = val64;
-      obj->type = ELFSH_OBJLONG;
+      obj->type = REVM_TYPE_LONG;
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val64 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.ent = val64;
-      obj->type = ELFSH_OBJLONG;
+      obj->type = REVM_TYPE_LONG;
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSTR:
-    case ELFSH_OBJRAW:
+    case REVM_TYPE_STR:
+    case REVM_TYPE_RAW:
       val64 = atol(obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent));
       if (obj->immed && obj->immed_val.str)
 	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.ent = val64;
-      obj->type = ELFSH_OBJLONG;
+      obj->type = REVM_TYPE_LONG;
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val64 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.ent = val64;
-      obj->type = ELFSH_OBJLONG;
+      obj->type = REVM_TYPE_LONG;
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -216,47 +216,47 @@ int		vm_convert2raw(revmobj_t *obj)
   
   switch (obj->type)
     {
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(obj->immed_val.str, 2, -1);
       *obj->immed_val.str = val8;
-      obj->type = ELFSH_OBJRAW;
+      obj->type = REVM_TYPE_RAW;
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 1;
       break;
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       str = (obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent));
       XREALLOC(obj->immed_val.str, obj->immed_val.str, obj->size, -1);
       memcpy(obj->immed_val.str, str, obj->size);
-      obj->type = ELFSH_OBJRAW;
+      obj->type = REVM_TYPE_RAW;
       obj->immed = 1;
       //obj->size; No size change
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(obj->immed_val.str, sizeof(val16) + 1, -1);
       memcpy(obj->immed_val.str, &val16, sizeof(val16));	// FIXME: Take care of endianess !
-      obj->type = ELFSH_OBJRAW;
+      obj->type = REVM_TYPE_RAW;
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(obj->immed_val.str, sizeof(val32) + 1, -1);
       memcpy(obj->immed_val.str, &val32, sizeof(val32));	// FIXME: Take care of endianess !
-      obj->type = ELFSH_OBJRAW;
+      obj->type = REVM_TYPE_RAW;
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       XALLOC(obj->immed_val.str, sizeof(val64) + 1, -1);
       memcpy(obj->immed_val.str, &val64, sizeof(val64)); // FIXME: Take care of endianess !
-      obj->type = ELFSH_OBJRAW;
+      obj->type = REVM_TYPE_RAW;
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -280,41 +280,41 @@ int		vm_convert2byte(revmobj_t *obj)
   
   switch (obj->type)
     {
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (u_short) (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.byte = (u_char) val16;
-      obj->type = ELFSH_OBJBYTE;
+      obj->type = REVM_TYPE_BYTE;
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJRAW:
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_RAW:
+    case REVM_TYPE_STR:
       val8 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
 	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.byte = val8;
-      obj->type = ELFSH_OBJBYTE;
+      obj->type = REVM_TYPE_BYTE;
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (u_int) (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.byte = (u_char) val32;
-      obj->type = ELFSH_OBJBYTE;
+      obj->type = REVM_TYPE_BYTE;
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.byte = (u_char) val64;
-      obj->type = ELFSH_OBJBYTE;
+      obj->type = REVM_TYPE_BYTE;
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
@@ -338,41 +338,41 @@ int		vm_convert2short(revmobj_t *obj)
   
   switch (obj->type)
     {
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (u_char) (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));;
       obj->immed_val.byte = 0;
       obj->immed_val.half = (u_short) val8;
-      obj->type = ELFSH_OBJSHORT;
+      obj->type = REVM_TYPE_SHORT;
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJRAW:
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_RAW:
+    case REVM_TYPE_STR:
       val16 = atoi((obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent)));
       if (obj->immed && obj->immed_val.str)
 	XFREE(obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.half = val16;
-      obj->type = ELFSH_OBJSHORT;
+      obj->type = REVM_TYPE_SHORT;
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (u_int) (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.half = (u_short) val32;
-      obj->type = ELFSH_OBJSHORT;
+      obj->type = REVM_TYPE_SHORT;
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
       break;
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.half = (u_short) val64;
-      obj->type = ELFSH_OBJSHORT;
+      obj->type = REVM_TYPE_SHORT;
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;

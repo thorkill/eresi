@@ -22,10 +22,10 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
   /* Lazy typing in action */
   if ((*o1)->type != (*o2)->type)
     {
-      if ((*o2)->type == ELFSH_OBJUNK)
+      if ((*o2)->type == REVM_TYPE_UNKNOW)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Source parameter undefined", -1);
-      if ((*o1)->type == ELFSH_OBJUNK)
+      if ((*o1)->type == REVM_TYPE_UNKNOW)
         vm_convert_object(*o1, (*o2)->type);
       else if (vm_convert_object(*o2, (*o1)->type) < 0)
         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -66,7 +66,7 @@ int                     cmd_set()
   /* Do the real assignation */
   switch (o1->type)
     {
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       str = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
       if (o1->immed)
         {
@@ -77,7 +77,7 @@ int                     cmd_set()
         goto err;
       break;
 
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
       if (o1->immed)
         o1->immed_val.byte = val8;
@@ -93,7 +93,7 @@ int                     cmd_set()
       break;
 
 
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.half = val16;
@@ -108,7 +108,7 @@ int                     cmd_set()
       last->type = o1->type;
       break;
 
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.word = val32;
@@ -123,7 +123,7 @@ int                     cmd_set()
       last->type = o1->type;
       break;
 
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.ent = val64;
@@ -149,7 +149,7 @@ int                     cmd_set()
   error = 0;
 
  err:
-  if (o2->immed && o2->type == ELFSH_OBJSTR && str != NULL)
+  if (o2->immed && o2->type == REVM_TYPE_STR && str != NULL)
     XFREE(str);
   if (!o2->perm)
     XFREE(o2);
@@ -194,14 +194,14 @@ int		cmd_get()
   /* Switch on the object type */
   switch (o1->type)
     {
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       str = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
       vm_output(str);
       if (o1->immed)
 	XFREE(str);
       break;
 
-    case ELFSH_OBJBYTE:
+    case REVM_TYPE_BYTE:
       val8 = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%c\n", val8);
       vm_output(logbuf);
@@ -213,7 +213,7 @@ int		cmd_get()
       last->immed_val.word = val8;
       last->type = o1->type;
       break;
-    case ELFSH_OBJSHORT:
+    case REVM_TYPE_SHORT:
       val16 = (o1->immed ? o1->immed_val.half : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%4hu \n", val16);
       vm_output(logbuf);
@@ -225,7 +225,7 @@ int		cmd_get()
       last->immed_val.word = val16;
       last->type = o1->type;
       break;
-    case ELFSH_OBJINT:
+    case REVM_TYPE_INT:
       val32 = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%8X\n", val32);
       vm_output(logbuf);
@@ -237,7 +237,7 @@ int		cmd_get()
       last->immed_val.word = val32;
       last->type = o1->type;
       break;
-    case ELFSH_OBJLONG:
+    case REVM_TYPE_LONG:
       val = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, XFMT "\n", val);
       vm_output(logbuf);
@@ -291,16 +291,16 @@ int			cmd_add()
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == ELFSH_OBJUNK && o1->perm)
-    o1->type = ELFSH_OBJINT;
+  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
+    o1->type = REVM_TYPE_INT;
 
-  else if (o1->type == ELFSH_OBJSTR)
-    vm_convert_object(o1, ELFSH_OBJINT);
+  else if (o1->type == REVM_TYPE_STR)
+    vm_convert_object(o1, REVM_TYPE_INT);
     
-  if ((o1->type != ELFSH_OBJINT   &&
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG) ||
+  if ((o1->type != REVM_TYPE_INT   &&
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
@@ -340,12 +340,12 @@ int			cmd_sub()
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == ELFSH_OBJUNK && o1->perm)
-    o1->type = ELFSH_OBJINT;
-  if ((o1->type != ELFSH_OBJINT   &&
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG) ||
+  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
+    o1->type = REVM_TYPE_INT;
+  if ((o1->type != REVM_TYPE_INT   &&
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
@@ -386,12 +386,12 @@ int			cmd_mul()
   if (!o1 || !o2)
     RET(-1);
 
-  if (o1->type == ELFSH_OBJUNK && o1->perm)
-    o1->type = ELFSH_OBJINT;
-  if ((o1->type != ELFSH_OBJINT   &&
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG) ||
+  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
+    o1->type = REVM_TYPE_INT;
+  if ((o1->type != REVM_TYPE_INT   &&
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
@@ -431,12 +431,12 @@ int			cmd_div()
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == ELFSH_OBJUNK && o1->perm)
-    o1->type = ELFSH_OBJINT;
-  if ((o1->type != ELFSH_OBJINT   &&
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG) ||
+  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
+    o1->type = REVM_TYPE_INT;
+  if ((o1->type != REVM_TYPE_INT   &&
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
@@ -481,13 +481,13 @@ int			cmd_mod()
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == ELFSH_OBJUNK && o1->perm)
-    o1->type = ELFSH_OBJINT;
+  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
+    o1->type = REVM_TYPE_INT;
 
-  if ((o1->type != ELFSH_OBJINT   &&
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG) ||
+  if ((o1->type != REVM_TYPE_INT   &&
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
@@ -536,11 +536,11 @@ int			cmd_cmp()
     RET(-1);
 
   /* Lazy typing in action */
-  if ((o1->type != ELFSH_OBJINT   && 
-       o1->type != ELFSH_OBJBYTE  && 
-       o1->type != ELFSH_OBJSHORT && 
-       o1->type != ELFSH_OBJLONG  && 
-       o1->type != ELFSH_OBJSTR)  ||
+  if ((o1->type != REVM_TYPE_INT   && 
+       o1->type != REVM_TYPE_BYTE  && 
+       o1->type != REVM_TYPE_SHORT && 
+       o1->type != REVM_TYPE_LONG  && 
+       o1->type != REVM_TYPE_STR)  ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     {	
       snprintf(logbuf, BUFSIZ - 1, "o1type = %u, o2type = %u \n",
@@ -556,7 +556,7 @@ int			cmd_cmp()
   /* Do the real assignation */
   switch (o1->type)
     {
-    case ELFSH_OBJSTR:
+    case REVM_TYPE_STR:
       str2 = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
       str  = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
       if (!str || !str2)
@@ -564,10 +564,10 @@ int			cmd_cmp()
       else
 	val = strcmp(str, str2);
       break;
-    case ELFSH_OBJBYTE:
-    case ELFSH_OBJSHORT:
-    case ELFSH_OBJLONG:
-    case ELFSH_OBJINT:
+    case REVM_TYPE_BYTE:
+    case REVM_TYPE_SHORT:
+    case REVM_TYPE_LONG:
+    case REVM_TYPE_INT:
       val2 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       val -= val2;
@@ -583,12 +583,12 @@ int			cmd_cmp()
     goto err;
   last->immed_val.ent = val;
   last->type = o1->type;
-  if (o1->type == ELFSH_OBJSTR)
-    last->type = ELFSH_OBJINT;
+  if (o1->type == REVM_TYPE_STR)
+    last->type = REVM_TYPE_INT;
   error = 0;
 
  err:
-  if (!o2->perm && o2->immed && o2->type == ELFSH_OBJSTR && str != NULL)
+  if (!o2->perm && o2->immed && o2->type == REVM_TYPE_STR && str != NULL)
     XFREE(str);
   if (!o2->perm)
     XFREE(o2);

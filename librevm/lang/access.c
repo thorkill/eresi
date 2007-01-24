@@ -10,13 +10,34 @@
 revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off)
 {
   revmtype_t	*child;
+  int		isarray;
+  char		*strindex;
+  char		*endindex;
+  int		index;
 
+  /* Determine if the requested access is an array access */
+  strindex = strchr(field, '[');
+  if (strindex)
+    {
+      endindex = strchr(strindex + 1, ']');
+      if (!endindex)
+	return (NULL);
+      *endindex = 0x00;
+      index = atoi(strindex + 1);
+    }
+  isarray = (strindex ? 1 : 0);
+
+  /* Find the child offset, augment it in case of array */
   for (child = parent->childs; child; child = child->next)
     if (!strcmp(child->name, field))
       {
 	*off = child->off;
+	if (isarray)
+	  *off += child->size * index;
 	return (child);
       }
+
+  /* Failed match */
   *off = REVM_INVALID_FIELD;
   return (NULL);
 }
@@ -53,7 +74,7 @@ static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
     return (NULL);
   *data = (char *) *data + off;
 
-  /* Check for pointers */
+  /* Dereference pointers */
   if (child->isptr)
     *data = (void *) *(elfsh_Addr *) *data;
 
@@ -107,16 +128,40 @@ revmobj_t	*vm_revmobj_lookup(char *str)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup object", NULL);
 
+  /* Create the revmobj and fill its handlers */
   XALLOC(path, sizeof(revmobj_t), NULL);
   path->root     = (void *) type;
   path->parent   = (void *) data;
-  path->get_name = (void *) vm_generic_getname;
-  path->set_name = (void *) vm_generic_setname;
+  if (type->type == REVM_TYPE_STR)
+    {
+      path->get_name = (void *) vm_generic_getname;
+      path->set_name = (void *) vm_generic_setname;
+    }
+  if (type->type == REVM_TYPE_RAW)
+    {
+      path->get_data = (void *) vm_generic_getdata;
+      path->set_data = (void *) vm_generic_setdata;
+    }
   path->get_obj  = (void *) vm_generic_getobj;
-  path->set_obj  = (void *) vm_generic_setobj;
-  path->get_data = (void *) vm_generic_getdata;
-  path->set_data = (void *) vm_generic_setdata;
 
+  /* This handler is size dependant */
+  switch (type->type)
+    {
+    case REVM_TYPE_BYTE:
+      path->set_obj  = (void *) vm_byte_setobj;
+      break;
+    case REVM_TYPE_SHORT:
+      path->set_obj  = (void *) vm_short_setobj;
+      break;
+    case REVM_TYPE_INT:
+      path->set_obj  = (void *) vm_int_setobj;
+      break;
+    case REVM_TYPE_LONG:
+      path->set_obj  = (void *) vm_long_setobj;
+      break;
+    default:
+      break;
+    }
   path->type     = type->type;
   path->immed    = 0;		/* Value is not immediate */
   path->perm	 = 1;		/* Do not free after use  */
@@ -144,7 +189,34 @@ elfsh_Addr	vm_generic_getobj(void *data)
   return (*(elfsh_Addr *) data);
 }
 
-int		vm_generic_setobj(void *data, elfsh_Addr value)
+int		vm_byte_setobj(void *data, elfsh_Addr value)
+{
+  unsigned char	*byte;
+
+  byte  = (unsigned char *) data;
+  *byte = (unsigned char) value;
+  return (0);
+}
+
+int		vm_short_setobj(void *data, elfsh_Addr value)
+{
+  u_short	*half;
+
+  half  = (u_short *) data;
+  *half = (u_short) value;
+  return (0);
+}
+
+int		vm_int_setobj(void *data, elfsh_Addr value)
+{
+  unsigned int	*val;
+
+  val  = (unsigned int *) data;
+  *val = (unsigned int) value;
+  return (0);
+}
+
+int		vm_long_setobj(void *data, elfsh_Addr value)
 {
   elfsh_Addr	*dst;
 

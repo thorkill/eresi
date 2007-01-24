@@ -169,7 +169,7 @@ int		vm_openscript(char **av)
       hash_add(&vars_hash, elfsh_strdup(actual), new);
     }
 
-  new = vm_create_IMMED(ELFSH_OBJINT, 1, idx);
+  new = vm_create_IMMED(REVM_TYPE_INT, 1, idx);
   hash_add(&vars_hash, ELFSH_ARGVAR, new);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

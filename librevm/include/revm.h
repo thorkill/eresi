@@ -725,14 +725,13 @@ typedef struct  s_path
   }                   immed_val;
 
   /* Here is the object type list */
-  #define               ELFSH_OBJINT    0       /* word : always 4 bytes */
-  #define               ELFSH_OBJSTR    1       /* String */
-  #define               ELFSH_OBJRAW    2       /* Raw */
-  #define               ELFSH_OBJUNK    3       /* Unknown */
-  #define               ELFSH_OBJLONG   4       /* Long object 4 or 8 bytes */
-  #define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
-  #define               ELFSH_OBJBYTE   6       /* One byte */
-
+  //#define               ELFSH_OBJINT    0       /* word : always 4 bytes */
+  //#define               ELFSH_OBJSTR    1       /* String */
+  //#define               ELFSH_OBJRAW    2       /* Raw */
+  //#define               ELFSH_OBJUNK    3       /* Unknown */
+  //#define               ELFSH_OBJLONG   4       /* Long object 4 or 8 bytes */
+  //#define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
+  //#define               ELFSH_OBJBYTE   6       /* One byte */
   /* Now use REVM_TYPE_* ! */
   char                type;		      /* The object type */
 
@@ -1201,7 +1200,10 @@ revmobj_t	*vm_revmobj_lookup(char *str);
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	vm_generic_getobj(void *data);
-int		vm_generic_setobj(void *data, elfsh_Addr value);
+int		vm_byte_setobj(void *data, elfsh_Addr value);
+int		vm_short_setobj(void *data, elfsh_Addr value);
+int		vm_int_setobj(void *data, elfsh_Addr value);
+int		vm_long_setobj(void *data, elfsh_Addr value);
 char		*vm_generic_getdata(void *data, int off, int sizelm);
 int		vm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 

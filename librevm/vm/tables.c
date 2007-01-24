@@ -63,6 +63,8 @@ hash_t		trace_cmd_hash;
 /* Lib path store variable */
 char	       elfsh_libpath[BUFSIZ];
 
+
+
 /* Fill all the Level 1 Objects hash tables */
 static void	setup_L1hash()
 {
@@ -218,112 +220,112 @@ static void	setup_elfhash()
   hash_init(&elf_L2_hash, "elfL2objects", 29, ELEM_TYPE_ANY);
   hash_add(&elf_L2_hash, "magic"        , vm_create_L2ENT(elfsh_get_magic, 
 							  elfsh_set_magic, 
-							  ELFSH_OBJINT,
+							  REVM_TYPE_INT,
 							  NULL, NULL, 
 							  NULL, NULL));
 							  
   hash_add(&elf_L2_hash, "class"        , vm_create_L2ENT(elfsh_get_class, 
 							  elfsh_set_class, 
-							  ELFSH_OBJINT,
+							  REVM_TYPE_INT,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "type"         , vm_create_L2ENT(elfsh_get_objtype, 
 							  elfsh_set_objtype, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "machine"      , vm_create_L2ENT(elfsh_get_arch, 
 							  elfsh_set_arch, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "version"      , vm_create_L2ENT(elfsh_get_version, 
 							  elfsh_set_version, 
-							  ELFSH_OBJINT,
+							  REVM_TYPE_INT,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "entry"        , vm_create_L2ENT(elfsh_get_entrypoint, 
 							  elfsh_set_entrypoint, 
-							  ELFSH_OBJLONG,
+							  REVM_TYPE_LONG,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "phoff"        , vm_create_L2ENT(elfsh_get_phtoff, 
 							  elfsh_set_phtoff, 
-							  ELFSH_OBJLONG,
+							  REVM_TYPE_LONG,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "rphoff"       , vm_create_L2ENT(elfsh_get_rphtoff, 
 							  elfsh_set_rphtoff, 
-							  ELFSH_OBJLONG,
+							  REVM_TYPE_LONG,
 							  NULL, NULL,
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "shoff"        , vm_create_L2ENT(elfsh_get_shtoff, 
 							  elfsh_set_shtoff, 
-							  ELFSH_OBJLONG,
+							  REVM_TYPE_LONG,
 							  NULL, NULL, NULL, NULL));
   hash_add(&elf_L2_hash, "flags"        , vm_create_L2ENT(elfsh_get_flags, 
 							  elfsh_set_flags, 
-							  ELFSH_OBJINT,
+							  REVM_TYPE_INT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "ehsize"       , vm_create_L2ENT(elfsh_get_ehsize,
 							  elfsh_set_ehsize, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "phentsize"    , vm_create_L2ENT(elfsh_get_phentsize,
 							  elfsh_set_phentsize, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "shentsize"    , vm_create_L2ENT(elfsh_get_shentsize,
 							  elfsh_set_shentsize, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "phnum"        , vm_create_L2ENT(elfsh_get_phtnbr,
 							  elfsh_set_phtnbr, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "shnum"        , vm_create_L2ENT(elfsh_get_shtnbr,
 							  elfsh_set_shtnbr, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "shstrndx"     , vm_create_L2ENT(elfsh_get_shstrtab_index,
 							  elfsh_set_shstrtab_index,
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_pageexec" , vm_create_L2ENT(elfsh_get_pax_pageexec, 
 							  elfsh_set_pax_pageexec, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_emultramp", vm_create_L2ENT(elfsh_get_pax_emultramp, 
 							  elfsh_set_pax_emultramp, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_mprotect" , vm_create_L2ENT(elfsh_get_pax_mprotect, 
 							  elfsh_set_pax_mprotect, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_randmmap" , vm_create_L2ENT(elfsh_get_pax_randmmap, 
 							  elfsh_set_pax_randmmap, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_randexec" , vm_create_L2ENT(elfsh_get_pax_randexec, 
 							  elfsh_set_pax_randexec, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
   hash_add(&elf_L2_hash, "pax_segmexec" , vm_create_L2ENT(elfsh_get_pax_segmexec, 
 							  elfsh_set_pax_segmexec, 
-							  ELFSH_OBJSHORT,
+							  REVM_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
 }
@@ -339,15 +341,15 @@ static void	setup_shthash()
 						      0, NULL, NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "addr"     , vm_create_L2ENT(elfsh_get_section_addr, 
 						      elfsh_set_section_addr, 
-						      ELFSH_OBJLONG, NULL, 
+						      REVM_TYPE_LONG, NULL, 
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "offset"   , vm_create_L2ENT(elfsh_get_section_foffset, 
 						      elfsh_set_section_foffset, 
-						      ELFSH_OBJLONG, NULL,
+						      REVM_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "size"     , vm_create_L2ENT(elfsh_get_section_size, 
 						      elfsh_set_section_size, 
-						      ELFSH_OBJLONG, NULL,
+						      REVM_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "link"     , vm_create_L2ENT(elfsh_get_section_link, 
 						      elfsh_set_section_link, 
@@ -357,39 +359,39 @@ static void	setup_shthash()
 						      0, NULL, NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "align"    , vm_create_L2ENT(elfsh_get_section_align, 
 						      elfsh_set_section_align, 
-						      ELFSH_OBJLONG, NULL,
+						      REVM_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "entsize"  , vm_create_L2ENT(elfsh_get_section_entsize, 
 						      elfsh_set_section_entsize,
-						      ELFSH_OBJLONG, NULL,
+						      REVM_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "a"  , vm_create_L2ENT(elfsh_get_section_allocflag, 
 						elfsh_set_section_allocflag, 
-						ELFSH_OBJLONG, NULL, 
+						REVM_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "w"  , vm_create_L2ENT(elfsh_get_section_writableflag, 
 						elfsh_set_section_writableflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "x"  , vm_create_L2ENT(elfsh_get_section_execflag, 
 						elfsh_set_section_execflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "s"  , vm_create_L2ENT(elfsh_get_section_strflag, 
 						elfsh_set_section_strflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "m"  , vm_create_L2ENT(elfsh_get_section_mergeableflag, 
 						elfsh_set_section_mergeableflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "l"  , vm_create_L2ENT(elfsh_get_section_linkflag, 
 						elfsh_set_section_linkflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "o"  , vm_create_L2ENT(elfsh_get_section_orderflag, 
 						elfsh_set_section_orderflag, 
-						ELFSH_OBJLONG, NULL,
+						REVM_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
 }
 
@@ -402,30 +404,30 @@ static void	setup_phthash()
 						   0, NULL, NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "offset", vm_create_L2ENT(elfsh_get_segment_offset, 
 						   elfsh_set_segment_offset, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "vaddr" , vm_create_L2ENT(elfsh_get_segment_vaddr, 
 						   elfsh_set_segment_vaddr, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "paddr" , vm_create_L2ENT(elfsh_get_segment_paddr, 
 						   elfsh_set_segment_paddr, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "filesz", vm_create_L2ENT(elfsh_get_segment_filesz, 
 						   elfsh_set_segment_filesz, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "memsz" , vm_create_L2ENT(elfsh_get_segment_memsz, 
 						   elfsh_set_segment_memsz, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "flags" , vm_create_L2ENT(elfsh_get_segment_flags, 
 						   elfsh_set_segment_flags, 
 						   0, NULL, NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "align" , vm_create_L2ENT(elfsh_get_segment_align, 
 						   elfsh_set_segment_align, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
 }
 
@@ -435,35 +437,35 @@ static void	setup_symhash()
 {
   hash_init(&sym_L2_hash, "symL2objects", 23, ELEM_TYPE_ANY);
 
-  hash_add(&sym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR, 
+  hash_add(&sym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, REVM_TYPE_STR, 
 						  elfsh_get_symbol_name,
 						  elfsh_set_symbol_name,
 						  NULL, NULL));
 
   hash_add(&sym_L2_hash, "value", vm_create_L2ENT(elfsh_get_symbol_value, 
 						  elfsh_set_symbol_value, 
-						  ELFSH_OBJLONG, NULL,
+						  REVM_TYPE_LONG, NULL,
 						  NULL, NULL, NULL));
   hash_add(&sym_L2_hash, "size" , vm_create_L2ENT(elfsh_get_symbol_size, 
 						  elfsh_set_symbol_size, 
-						  ELFSH_OBJLONG, NULL,
+						  REVM_TYPE_LONG, NULL,
 						  NULL, NULL, NULL));
   hash_add(&sym_L2_hash, "bind" , vm_create_L2ENT(elfsh_get_symbol_bind, 
 						  elfsh_set_symbol_bind, 
-						  ELFSH_OBJBYTE, NULL, 
+						  REVM_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
   hash_add(&sym_L2_hash, "type" , vm_create_L2ENT(elfsh_get_symbol_type, 
 						  elfsh_set_symbol_type, 
-						  ELFSH_OBJBYTE, NULL, 
+						  REVM_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
   hash_add(&sym_L2_hash, "other", vm_create_L2ENT(elfsh_get_symbol_visibility, 
 						  elfsh_set_symbol_visibility, 
-						  ELFSH_OBJBYTE, NULL, 
+						  REVM_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
 
   hash_add(&sym_L2_hash, "link", vm_create_L2ENT(elfsh_get_symbol_link, 
 						 elfsh_set_symbol_link, 
-						 ELFSH_OBJSHORT, NULL, 
+						 REVM_TYPE_SHORT, NULL, 
 						 NULL, NULL, NULL));
 }
 
@@ -473,33 +475,33 @@ static void	setup_symhash()
 static void	setup_dynsymhash()
 {
   hash_init(&dynsym_L2_hash, "dynsymL2objects", 23, ELEM_TYPE_ANY);
-  hash_add(&dynsym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
+  hash_add(&dynsym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, REVM_TYPE_STR,
 						     elfsh_get_dynsymbol_name,
 						     elfsh_set_dynsymbol_name,
 						     NULL, NULL));
   hash_add(&dynsym_L2_hash, "value", vm_create_L2ENT(elfsh_get_symbol_value, 
 						     elfsh_set_symbol_value, 
-						     ELFSH_OBJLONG, NULL,
+						     REVM_TYPE_LONG, NULL,
 						     NULL, NULL, NULL));
   hash_add(&dynsym_L2_hash, "size" , vm_create_L2ENT(elfsh_get_symbol_size, 
 						     elfsh_set_symbol_size, 
-						     ELFSH_OBJLONG, NULL,
+						     REVM_TYPE_LONG, NULL,
 						     NULL, NULL, NULL));
   hash_add(&dynsym_L2_hash, "bind" , vm_create_L2ENT(elfsh_get_symbol_bind, 
 						     elfsh_set_symbol_bind, 
-						     ELFSH_OBJBYTE, NULL, 
+						     REVM_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
   hash_add(&dynsym_L2_hash, "type" , vm_create_L2ENT(elfsh_get_symbol_type, 
 						     elfsh_set_symbol_type, 
-						     ELFSH_OBJBYTE, NULL, 
+						     REVM_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
   hash_add(&dynsym_L2_hash, "other", vm_create_L2ENT(elfsh_get_symbol_visibility, 
 						     elfsh_set_symbol_visibility, 
-						     ELFSH_OBJBYTE, NULL, 
+						     REVM_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
   hash_add(&dynsym_L2_hash, "link", vm_create_L2ENT(elfsh_get_symbol_link, 
 						    elfsh_set_symbol_link, 
-						    ELFSH_OBJSHORT, NULL, 
+						    REVM_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));
 }
 
@@ -509,19 +511,19 @@ static void	setup_relhash()
   hash_init(&rel_L2_hash, "relL2objects", 23, ELEM_TYPE_ANY);
   hash_add(&rel_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_reltype, 
 						   elfsh_set_reltype, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&rel_L2_hash, "sym"   , vm_create_L2ENT(elfsh_get_relsym, 
 						   elfsh_set_relsym, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&rel_L2_hash, "offset", vm_create_L2ENT(elfsh_get_reloffset, 
 						   elfsh_set_reloffset, 
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
   hash_add(&rel_L2_hash, "addend", vm_create_L2ENT(elfsh_get_reladdend, 
 						   elfsh_set_reladdend,
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
 }
 
@@ -531,11 +533,11 @@ static void	setup_dynhash()
   hash_init(&dyn_L2_hash, "dynL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&dyn_L2_hash, "val", vm_create_L2ENT(elfsh_get_dynentry_val, 
 						elfsh_set_dynentry_val, 
-						ELFSH_OBJLONG, NULL, 
+						REVM_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
   hash_add(&dyn_L2_hash, "tag", vm_create_L2ENT(elfsh_get_dynentry_type, 
 						elfsh_set_dynentry_type, 
-						ELFSH_OBJLONG, NULL, 
+						REVM_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
 }
 
@@ -551,11 +553,11 @@ static void	setup_gothash()
   
   hash_init(&got_L2_hash, "gotL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&got_L2_hash, "val" , vm_create_L2ENT(elfsh_get_got_val, elfsh_set_got_val,
-						 ELFSH_OBJLONG, NULL,
+						 REVM_TYPE_LONG, NULL,
 						 NULL, NULL, NULL));
   //hash_add(&got_L2_hash, "idx" , vm_create_L2ENT());
   hash_add(&got_L2_hash, "addr", vm_create_L2ENT(elfsh_get_got_addr, elfsh_set_got_addr,
-						 ELFSH_OBJLONG, NULL,
+						 REVM_TYPE_LONG, NULL,
 						 NULL, NULL, NULL));
 }
 
@@ -565,13 +567,13 @@ static void	setup_gothash()
 static void	setup_scthash()
 {
   hash_init(&sct_L2_hash, "sectsL2objects", 11, ELEM_TYPE_ANY);
-  hash_add(&sct_L2_hash, "name", vm_create_L2ENT(NULL, NULL, ELFSH_OBJSTR,
+  hash_add(&sct_L2_hash, "name", vm_create_L2ENT(NULL, NULL, REVM_TYPE_STR,
 						 elfsh_get_section_name,
 						 elfsh_set_section_name,
 						 NULL, NULL));
   
   hash_add(&sct_L2_hash, "raw", vm_create_L2ENT(NULL, NULL, 
-						ELFSH_OBJRAW,
+						REVM_TYPE_RAW,
 						NULL, NULL, 
 						elfsh_get_section_data,
 						elfsh_write_section_data));
@@ -587,81 +589,81 @@ static void   setup_vershash()
   hash_init(&vers_L2_hash, "versionL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&vers_L2_hash, "value", vm_create_L2ENT(elfsh_get_versym_val,
 						   elfsh_set_versym_val,
-						   ELFSH_OBJSHORT, NULL,
+						   REVM_TYPE_SHORT, NULL,
 						   NULL, NULL, NULL));
   
   /* Version def */
   hash_init(&verd_L2_hash, "verdefsL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&verd_L2_hash, "index", vm_create_L2ENT(elfsh_get_verdef_ndx,
 						   elfsh_set_verdef_ndx,
-						   ELFSH_OBJSHORT, NULL,
+						   REVM_TYPE_SHORT, NULL,
 						   NULL, NULL, NULL));
    hash_add(&verd_L2_hash, "count", vm_create_L2ENT(elfsh_get_verdef_cnt,
 						    elfsh_set_verdef_cnt,
-						    ELFSH_OBJSHORT, NULL,
+						    REVM_TYPE_SHORT, NULL,
 						    NULL, NULL, NULL));
    hash_add(&verd_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verdef_hash, 
 						   elfsh_set_verdef_hash, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    hash_add(&verd_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verdef_flags, 
 						   elfsh_set_verdef_flags, 
-						   ELFSH_OBJSHORT, NULL, 
+						   REVM_TYPE_SHORT, NULL, 
 						   NULL, NULL, NULL));
    hash_add(&verd_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verdef_aux, 
 						  elfsh_set_verdef_aux, 
-						  ELFSH_OBJLONG, NULL, 
+						  REVM_TYPE_LONG, NULL, 
 						  NULL, NULL, NULL));
 
 
    /* Child & parent */
    hash_add(&verd_L2_hash, "next", vm_create_L2ENT(elfsh_get_verdef_next, 
 						   elfsh_set_verdef_next, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    /* Child */
    hash_add(&verd_L2_hash, "name", vm_create_L2ENT(elfsh_get_verdef_cname, 
 						   elfsh_set_verdef_cname, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    
    /* Version need */
    hash_init(&vern_L2_hash, "verneedL2objects", 11, ELEM_TYPE_ANY);
    hash_add(&vern_L2_hash, "index", vm_create_L2ENT(elfsh_get_verneed_ndx, 
 						    elfsh_set_verneed_ndx, 
-						    ELFSH_OBJSHORT, NULL, 
+						    REVM_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));  
    
    hash_add(&vern_L2_hash, "name", vm_create_L2ENT(elfsh_get_verneed_name, 
 						   elfsh_set_verneed_name, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    
    hash_add(&vern_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verneed_hash,
 						   elfsh_set_verneed_hash,
-						   ELFSH_OBJLONG, NULL,
+						   REVM_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
    hash_add(&vern_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verneed_flags, 
 						   elfsh_set_verneed_flags, 
-						   ELFSH_OBJSHORT, NULL, 
+						   REVM_TYPE_SHORT, NULL, 
 						   NULL, NULL, NULL));
    /* child && parent */
    hash_add(&vern_L2_hash, "next", vm_create_L2ENT(elfsh_get_verneed_next, 
 						   elfsh_set_verneed_next, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    /* parent */
    hash_add(&vern_L2_hash, "file", vm_create_L2ENT(elfsh_get_verneed_file, 
 						   elfsh_set_verneed_file, 
-						   ELFSH_OBJLONG, NULL, 
+						   REVM_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    hash_add(&vern_L2_hash, "count", vm_create_L2ENT(elfsh_get_verneed_cnt, 
 						    elfsh_set_verneed_cnt, 
-						    ELFSH_OBJSHORT, NULL, 
+						    REVM_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));
    hash_add(&vern_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verneed_aux, 
 						  elfsh_set_verneed_aux, 
-						  ELFSH_OBJLONG, NULL, 
+						  REVM_TYPE_LONG, NULL, 
 						  NULL, NULL, NULL));
 }
 
@@ -675,21 +677,21 @@ static void   setup_hashhash()
   hash_init(&hashb_L2_hash, "hashbucketsL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&hashb_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashbucket_value, 
 						    elfsh_set_hashbucket_value, 
-						    ELFSH_OBJINT, NULL, 
+						    REVM_TYPE_INT, NULL, 
 						    NULL, NULL, NULL));  
   hash_add(&hashb_L2_hash, "nbucket", vm_create_L2ENT(elfsh_get_hashbucket_num, 
 						      elfsh_set_hashbucket_num, 
-						      ELFSH_OBJINT, NULL, 
+						      REVM_TYPE_INT, NULL, 
 						      NULL, NULL, NULL)); 
   /* Hash chain */
   hash_init(&hashc_L2_hash, "hashchainL2objects", 11, ELEM_TYPE_ANY);
   hash_add(&hashc_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashchain_value, 
 						    elfsh_set_hashchain_value, 
-						    ELFSH_OBJINT, NULL, 
+						    REVM_TYPE_INT, NULL, 
 						    NULL, NULL, NULL));  
   hash_add(&hashc_L2_hash, "nchain", vm_create_L2ENT(elfsh_get_hashchain_num, 
 						     elfsh_set_hashchain_num, 
-						     ELFSH_OBJINT, NULL, 
+						     REVM_TYPE_INT, NULL, 
 						     NULL, NULL, NULL));   
 }
 
@@ -917,13 +919,13 @@ static void	setup_varshash()
   revmobj_t	*l;
   revmobj_t	*o;
 
-  f = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
-  g = vm_create_IMMED(ELFSH_OBJINT, 1, 0);
-  r = vm_create_IMMED(ELFSH_OBJINT, 1, 0xFFFFFFFF);
+  f = vm_create_IMMED(REVM_TYPE_INT, 1, 0);
+  g = vm_create_IMMED(REVM_TYPE_INT, 1, 0);
+  r = vm_create_IMMED(REVM_TYPE_INT, 1, 0xFFFFFFFF);
   s = vm_create_IMMEDSTR(1, ELFSH_SHELL);
   e = vm_create_IMMEDSTR(1, ELFSH_EDITOR);
   l = vm_create_IMMEDSTR(1, get_libpath());
-  o = vm_create_IMMED(ELFSH_OBJINT, 1, ELFSH_SLOG);
+  o = vm_create_IMMED(REVM_TYPE_INT, 1, ELFSH_SLOG);
 
   hash_init(&vars_hash, "variables", 251, ELEM_TYPE_ANY);
   hash_add(&vars_hash, ELFSH_RESVAR, f);
