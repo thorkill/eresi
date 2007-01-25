@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.12 2007-01-21 22:07:12 thor Exp $
+ * $Id: function.c,v 1.13 2007-01-25 01:51:34 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -10,7 +10,7 @@ void mjr_function_dump(char *where,mjrfunc_t *f)
 {
   mjrcaller_t *cur,*next;
   fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] Cnbr: %d Pnbr %d\n",
-	  where, f->vaddr, f->name,f->md5,f->childnbr,f->parentnbr);
+	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL ,f->childnbr,f->parentnbr);
 
   if (f->childfuncs)
     {
@@ -44,8 +44,12 @@ void mjr_function_dump(char *where,mjrfunc_t *f)
 u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 {
   u_int curOff; 
+  mjrcaller_t *cur;
 
   ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  if (!fnc->parentfuncs)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!buf->data) 
     {
@@ -60,16 +64,53 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
     }
  curOff = buf->maxlen;
 
- //curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
- //memcpy(curfunc, cur, sizeof(mjrfunc_t));
- buf->maxlen += sizeof(mjrfunc_t);
+ cur = fnc->parentfuncs;
+
+ while(cur)
+   {
+     memcpy(buf->data + buf->maxlen, cur->vaddr , sizeof(elfsh_Addr));
+     buf->maxlen += sizeof(elfsh_Addr);
+     cur = cur->next;
+   }
 
  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
 }
 
-elfsh_Off	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
-{
 
+
+u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
+{
+  u_int curOff; 
+  mjrcaller_t *cur;
+
+  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  if (!fnc->childfuncs)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  
+  if (!buf->data) 
+    {
+      buf->allocated = getpagesize();;
+      buf->data = elfsh_malloc(buf->allocated);
+      buf->maxlen = 0;
+    }
+  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->childnbr)))
+    {
+     buf->allocated += getpagesize();
+     buf->data = elfsh_realloc(buf->data, buf->allocated);
+    }
+ curOff = buf->maxlen;
+
+ cur = fnc->childfuncs;
+
+ while(cur)
+   {
+     memcpy(buf->data + buf->maxlen, cur->vaddr , sizeof(elfsh_Addr));
+     buf->maxlen += sizeof(elfsh_Addr);
+     cur = cur->next;
+   }
+
+ ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
 }
 
 /* Copy the function in a special buffer to fingerprint it */
@@ -225,6 +266,91 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
+void *mjr_functions_load(mjrcontext_t *ctxt)
+{
+  int		index,findex;
+  elfshsect_t	*sect,*flowsect;
+  u_int		fncnbr,cnt,off;
+  elfsh_Addr	tmpaddr;
+  mjrfunc_t	*curfnc;
+
+  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
+  if (!sect)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "No function section : use analyse command", NULL);
+
+  /* get flow section */
+  /* FIXME: use macros!!! */
+  flowsect = elfsh_get_section_by_name(ctxt->obj, ".edfmt.fcontrol", 0, 0, 0);
+  
+  if (!flowsect)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "No function flow section : use analyse command", NULL);
+
+  fncnbr = sect->shdr->sh_size / sizeof(mjrfunc_t);
+  fprintf(D_DESC, " [D] %s: loading %d functions\n", __FUNCTION__, fncnbr);
+
+  for (index=0; index < fncnbr; index++)
+    {
+      curfnc = (mjrfunc_t *) sect->data + index;
+      /* FIXME: change store function to save name and md5 sums */
+      curfnc->name=NULL;
+      curfnc->md5=NULL;
+      /* fill the flow list */
+      for (findex=0; findex<curfnc->parentnbr; findex++)
+	{
+	  off = curfnc->parentfuncs;
+	  curfnc->parentfuncs = NULL;
+
+	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
+	  fprintf(D_DESC," [D] resotore parent: %x\n", tmpaddr);
+	  mjr_function_add_parent(curfnc,tmpaddr,0);
+	}
+
+      for (findex=0; findex<curfnc->childnbr; findex++)
+	{
+	  off = curfnc->childfuncs;
+	  curfnc->childfuncs = NULL;
+
+	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
+	  fprintf(D_DESC," [D] resotore child: %x\n", tmpaddr);
+	  mjr_function_add_child(curfnc,tmpaddr,0);
+	}
+
+      mjr_function_dump(__FUNCTION__, curfnc);
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
+}
+
+/* Retreive control flow section content if any */
+mjrblock_t*	mjr_functions_get(mjrcontext_t *ctxt)
+{
+  elfshsect_t	*sect;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+ /* Parse arguments, load binary and resolve symbol */
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
+  if (!sect)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No functions section : use analyse command", NULL);
+
+  /* Return or retreive information */
+  if (sect->altdata)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+
+  sect->altdata = mjr_functions_load(ctxt);
+
+  if (sect->altdata)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+
+  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Flow analysis failed", 0);
+}
+
 /* Create the block information to be saved in file */
 int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
 {
@@ -320,13 +446,17 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   for (index = 0; index < keynbr; index++)
     {
       u_int flowOffp,flowOffc;
+      
 
       func = hash_get(&ctxt->funchash, keys[index]);
       mjr_function_dump(__FUNCTION__, func);
 
       /* 1st Save flow information and get offset from the beginning of .edfmt.fcontrol */
-      //      flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
-      //      flowOffc = mjr_function_flow_childs_save(func, &cfbuf);
+      flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
+      fprintf(D_DESC, " [D] %s: parentOffset: %d\n", __FUNCTION__, flowOffp);
+
+      flowOffc = mjr_function_flow_childs_save(func, &cfbuf);
+      fprintf(D_DESC, " [D] %s: childOffset: %d\n", __FUNCTION__, flowOffc);
       
       /* Set New pointers */
       func->parentfuncs = flowOffp;
@@ -351,6 +481,20 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   if (err < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save .edfmt.functions section", -1);
+
+  sect = elfsh_create_section(".edfmt.fcontrol");
+  shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, cfbuf.maxlen, 0, 0, 0, 0);
+  sect->altdata = cfbuf.data;
+
+  printf(" [*] Saving %s section of %u bytes\n",
+	 ".edfmt.fcontrol",
+	 cfbuf.maxlen);
+
+  err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, cfbuf.data);
+
+  if (err < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to save .edfmt.fcontrol section", -1);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }

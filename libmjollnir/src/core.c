@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.19 2007-01-21 22:07:12 thor Exp $
+** $Id: core.c,v 1.20 2007-01-25 01:51:34 thor Exp $
 */
 #include "libmjollnir.h"
 
@@ -133,9 +133,9 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 		      "Unable to store blocks in file", -1);
 
  /* Store analyzed functions in file */
-  //  if (mjr_functions_store(sess->cur) < 0)
-  //  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-  //	      "Unable to store functions in file", -1);
+    if (mjr_functions_store(sess->cur) < 0)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  	      "Unable to store functions in file", -1);
   
   /* Set the flag and return */
   sess->cur->analysed = 1;
