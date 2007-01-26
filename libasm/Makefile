@@ -93,7 +93,7 @@ install:
 	${CP} include/libasm-sparc.h /usr/include
 
 lib:	$(OBJS_libasm)
-	ar rc ${NAME_libasm} ${OBJS_libasm}
+	@ar rc ${NAME_libasm} ${OBJS_libasm}
 	@echo "[AR] ${NAME_libasm}"
 	@ranlib ${NAME_libasm}
 	@echo "[RANLIB] ${NAME_libasm}"
