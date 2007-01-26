@@ -16,10 +16,14 @@
 int	dump_init()
 {
   /* hash tables initializations */
-  hash_init(&dump_world.ports, HASHTABLE_SIZE); 
-  hash_init(&dump_world.RRrecently_seen, HASHTABLE_SIZE); 
-  hash_init(&dump_world.Rrrecently_seen, HASHTABLE_SIZE); 
-  hash_init(&dump_world.myids, HASHTABLE_SIZE); 
+  hash_init(&dump_world.ports, "dump_ports", 
+	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+  hash_init(&dump_world.RRrecently_seen, "dump_RRseen", 
+	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+  hash_init(&dump_world.Rrrecently_seen, "dump_Rrseen", 
+	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+  hash_init(&dump_world.myids, "dump_myids", 
+	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
 
   /* initialize send wait queue */
   dump_world.send_wq = (pkt_wq_t *) NULL;
@@ -45,7 +49,7 @@ int	dump_add_neighbor(int s, dump_id_t peer_addr)
 
   tmp = inet_ntoa(peer_addr);
 
-  hash_add(&dump_world.ports, strdup(tmp), (void *) (long)s);
+  hash_add(&dump_world.ports, strdup(tmp), (void *) (int) s);
   return 0;
 }
 
