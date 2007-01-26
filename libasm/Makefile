@@ -12,6 +12,27 @@ include	Makefile.inc
 # Architecture source files
 #
 SRCS_libasm 	=				\
+		src/arch/ia32/init_i386.c	\
+		src/arch/ia32/tables_i386.c	\
+		src/arch/ia32/operand_ia32.c	\
+		src/arch/sparc/init_sparc.c	\
+		src/arch/sparc/tables_sparc.c	\
+		src/arch/sparc/sparc_decode.c	\
+		src/arch/sparc/sparc_convert.c	\
+		src/arch/ia32/output_ia32.c	\
+		src/arch/sparc/output_sparc.c	\
+		src/generic.c			\
+		src/output.c			\
+		src/error.c			\
+		src/operand.c			\
+		src/instruction.c		\
+		src/arch/mips/init_mips.c	\
+		src/arch/mips/mips_convert.c	\
+		src/arch/mips/mips_decode.c	\
+		src/arch/mips/output_mips.c	\
+		src/arch/mips/tables_mips.c	\
+		src/register.c			\
+		src/vectors.c			\
 #		src/arch/ia32/i386-0.c		\
 #		src/arch/ia32/i386-1.c		\
 #		src/arch/ia32/i386-2.c		\
@@ -42,32 +63,13 @@ SRCS_libasm 	=				\
 #		src/arch/ia32/ei386-c.c     \
 #		src/arch/ia32/ei386-d.c     \
 #		src/arch/ia32/ei386-e.c     \
-		src/arch/ia32/init_i386.c	\
-		src/arch/ia32/tables_i386.c	\
-		src/arch/ia32/operand_ia32.c	\
-		src/arch/sparc/init_sparc.c	\
-		src/arch/sparc/tables_sparc.c	\
-		src/arch/sparc/sparc_decode.c	\
-		src/arch/sparc/sparc_convert.c	\
-		src/arch/ia32/output_ia32.c	\
-		src/arch/sparc/output_sparc.c	\
-		src/generic.c			\
-		src/output.c			\
-		src/error.c			\
-		src/operand.c			\
-		src/instruction.c		\
-		src/arch/mips/init_mips.c	\
-		src/arch/mips/mips_convert.c	\
-		src/arch/mips/mips_decode.c	\
-		src/arch/mips/output_mips.c	\
-		src/arch/mips/tables_mips.c	\
-		src/register.c			\
-		src/vectors.c
 
 
 
 
-OBJS_libasm 	=	${SRCS_libasm:.c=.o} ${SRCS_hdl:.c=.o}
+
+OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
+OBJS_libasm	+=	${SRCS_hdl:.c=.o}
 NAME_libasm 	= 	libasm.a
 
 SRCS_sparc	=	tools/sparc_mydisasm.c
@@ -91,13 +93,13 @@ install:
 	${CP} include/libasm-sparc.h /usr/include
 
 lib:	$(OBJS_libasm)
-	@ar rc ${NAME_libasm} ${OBJS_libasm}
+	ar rc ${NAME_libasm} ${OBJS_libasm}
 	@echo "[AR] ${NAME_libasm}"
 	@ranlib ${NAME_libasm}
 	@echo "[RANLIB] ${NAME_libasm}"
 
 clean:
-	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump}
+	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
 	@find . -name '*~' -exec rm -f {} \;
 	@echo "Cleaning source tree"
 
