@@ -417,6 +417,15 @@ char prompt_token[512];
 /* config strings */
 #define ELFSH_VMCONFIG_ONLOAD_RCONTROL "onload.restore_control"
 
+/* Manage string table */
+#define REVM_STRTABLE_GET(_out, _in) 	\
+do {					\
+  if (_in > strtable_current)		\
+    _out = NULL;			\
+  else					\
+    _out = strtable + _in;		\
+} while(0)
+
 
 /* Regx option, a module of struct s_args */
 typedef struct		s_list
@@ -472,6 +481,23 @@ typedef struct		s_type
   struct s_type		*childs;	/* Current object fields if any     */
   struct s_type		*next;		/* Next field of this type's parent */
 }			revmtype_t;
+
+/* Structure for variable */
+typedef struct 		s_var
+{
+  int			nameoff;	/* Name offset */
+
+#define EDFMT_SCOPE_UNK    0
+#define EDFMT_SCOPE_GLOBAL 1
+#define EDFMT_SCOPE_FUNC   2
+  u_char 		scope;
+
+  elfsh_Addr 		addr; 		/* Global addr */
+  u_int 		reg;   		/* Function reg id base (stack) */
+  int 			relvalue;     	/* Relatif value based on reg */
+
+  int			typenum;	/* Type number */
+}			revmvar_t;
 
 
 /* ELFsh command handlers */
@@ -886,6 +912,11 @@ extern int         elfsh_net_client_count; /* Number of clients connected */
 /* Lib path */
 extern char		elfsh_libpath[BUFSIZ];
 
+/* String table for .elfsh.strings */
+extern char *strtable;
+extern u_int strtable_current;
+extern u_int strtable_max;
+
 /* Commands execution handlers, each in their respective file */
 int		cmd_configure();
 int		cmd_type();
@@ -1116,6 +1147,9 @@ char		*vm_get_string(char **params);
 void		vm_log(char *str);
 int             vm_closelog();
 char		*vm_get_prompt();
+
+/* String functions */
+int		vm_strtable_add(char *string);
 
 /* Trace functions */
 FILE		  *vm_trace_init(char *tfname, char *rsofname, char *rtfname);

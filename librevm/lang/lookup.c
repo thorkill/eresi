@@ -58,7 +58,7 @@ revmobj_t		*vm_lookup_addr(char *param)
 
   /* Lookup .symtab */
   sym = elfsh_get_symbol_by_name(world.curjob->current, param);
-  if (sym != NULL)
+  if (sym != NULL && sym->st_value > 0)
     {
       ptr = vm_create_LONG(0, sym->st_value);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
@@ -66,7 +66,7 @@ revmobj_t		*vm_lookup_addr(char *param)
 
   /* Lookup .dynsym */
   sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
-  if (sym != NULL)
+  if (sym != NULL && sym->st_value > 0)
     {
       ptr = vm_create_LONG(0, sym->st_value);
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
