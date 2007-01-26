@@ -1,5 +1,5 @@
 /**
- * $Id: init_i386.c,v 1.8 2007-01-22 22:23:10 heroine Exp $
+ * $Id: init_i386.c,v 1.9 2007-01-26 14:18:37 heroine Exp $
  *
  */
 #ifndef I386_H_
@@ -17,6 +17,7 @@ void	init_instr_table(asm_processor *);
  * fetch in asm_i386_processor structure points to this function
  *
  */
+#error NOT USING VECTORS
 int     fetch_i386(asm_instr *instr, u_char *buf, u_int len, asm_processor *proc) {
   asm_i386_processor	*i386p;
 

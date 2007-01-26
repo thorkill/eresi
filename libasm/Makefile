@@ -7,41 +7,41 @@
 ##
 
 #DBGFLAGS	=	-ggdb -DDEBUG_SPARC
-
+include	Makefile.inc
 #
 # Architecture source files
 #
 SRCS_libasm 	=				\
-		src/arch/ia32/i386-0.c		\
-		src/arch/ia32/i386-1.c		\
-		src/arch/ia32/i386-2.c		\
-		src/arch/ia32/i386-3.c		\
-		src/arch/ia32/i386-4.c		\
-		src/arch/ia32/i386-5.c		\
-		src/arch/ia32/i386-6.c		\
-		src/arch/ia32/i386-7.c		\
-		src/arch/ia32/i386-8.c		\
-		src/arch/ia32/i386-9.c		\
-		src/arch/ia32/i386-a.c		\
-		src/arch/ia32/i386-b.c		\
-		src/arch/ia32/i386-c.c		\
-		src/arch/ia32/i386-d.c		\
-		src/arch/ia32/i386-e.c		\
-		src/arch/ia32/i386-f.c		\
-		src/arch/ia32/ei386-0.c		\
-		src/arch/ia32/ei386-1.c		\
-		src/arch/ia32/ei386-2.c		\
-		src/arch/ia32/ei386-3.c		\
-		src/arch/ia32/ei386-4.c		\
-		src/arch/ia32/ei386-6.c		\
-		src/arch/ia32/ei386-7.c		\
-		src/arch/ia32/ei386-8.c		\
-		src/arch/ia32/ei386-9.c		\
-		src/arch/ia32/ei386-a.c		\
-		src/arch/ia32/ei386-b.c		\
-		src/arch/ia32/ei386-c.c     \
-		src/arch/ia32/ei386-d.c     \
-		src/arch/ia32/ei386-e.c     \
+#		src/arch/ia32/i386-0.c		\
+#		src/arch/ia32/i386-1.c		\
+#		src/arch/ia32/i386-2.c		\
+#		src/arch/ia32/i386-3.c		\
+#		src/arch/ia32/i386-4.c		\
+#		src/arch/ia32/i386-5.c		\
+#		src/arch/ia32/i386-6.c		\
+#		src/arch/ia32/i386-7.c		\
+#		src/arch/ia32/i386-8.c		\
+#		src/arch/ia32/i386-9.c		\
+#		src/arch/ia32/i386-a.c		\
+#		src/arch/ia32/i386-b.c		\
+#		src/arch/ia32/i386-c.c		\
+#		src/arch/ia32/i386-d.c		\
+#		src/arch/ia32/i386-e.c		\
+#		src/arch/ia32/i386-f.c		\
+#		src/arch/ia32/ei386-0.c		\
+#		src/arch/ia32/ei386-1.c		\
+#		src/arch/ia32/ei386-2.c		\
+#		src/arch/ia32/ei386-3.c		\
+#		src/arch/ia32/ei386-4.c		\
+#		src/arch/ia32/ei386-6.c		\
+#		src/arch/ia32/ei386-7.c		\
+#		src/arch/ia32/ei386-8.c		\
+#		src/arch/ia32/ei386-9.c		\
+#		src/arch/ia32/ei386-a.c		\
+#		src/arch/ia32/ei386-b.c		\
+#		src/arch/ia32/ei386-c.c     \
+#		src/arch/ia32/ei386-d.c     \
+#		src/arch/ia32/ei386-e.c     \
 		src/arch/ia32/init_i386.c	\
 		src/arch/ia32/tables_i386.c	\
 		src/arch/ia32/operand_ia32.c	\
@@ -67,7 +67,7 @@ SRCS_libasm 	=				\
 
 
 
-OBJS_libasm 	=	${SRCS_libasm:.c=.o}
+OBJS_libasm 	=	${SRCS_libasm:.c=.o} ${SRCS_hdl:.c=.o}
 NAME_libasm 	= 	libasm.a
 
 SRCS_sparc	=	tools/sparc_mydisasm.c
@@ -91,12 +91,15 @@ install:
 	${CP} include/libasm-sparc.h /usr/include
 
 lib:	$(OBJS_libasm)
-	ar rc ${NAME_libasm} ${OBJS_libasm}
-	ranlib ${NAME_libasm}
+	@ar rc ${NAME_libasm} ${OBJS_libasm}
+	@echo "[AR] ${NAME_libasm}"
+	@ranlib ${NAME_libasm}
+	@echo "[RANLIB] ${NAME_libasm}"
 
 clean:
-	$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump}
-	find . -name '*~' -exec rm -f {} \;
+	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump}
+	@find . -name '*~' -exec rm -f {} \;
+	@echo "Cleaning source tree"
 
 fclean: clean
 	$(RM) ${NAME_libasm} ${NAME_mydisasm} ${NAME_cmpdump} 
@@ -106,7 +109,8 @@ tags:
 	@echo TAGS generated succesfully
 
 .c.o:
-	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
+	@$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
+	@echo "[CC] $*.o"
 
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I./include/ \
@@ -114,4 +118,5 @@ mydisasm:
 	-L../libc/ -L../libmalloc/ -lpthread \
 	tools/mydisasm.c -DELFSH32 -o ./mydisasm -lasm -lelfsh32 -lcelfsh32 -lmalloc-e2dbg -L../aspect -laspect32
 
-
+Makefile.inc:	
+	sh configure

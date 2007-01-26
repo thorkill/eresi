@@ -1,0 +1,14 @@
+#!/bin/sh
+SRCS=$(ls src/arch/ia32/handlers/*.c)
+echo -n "SRCS_hdl = 	" > Makefile.inc
+FIRST="1"
+for i in ${SRCS} ; do
+    if [ "$FIRST" = "1" ] ; then
+	FIRST="0"
+	echo -n " $i    " >> Makefile.inc
+    else
+	echo -n "\\
+		 $i    " >> Makefile.inc
+    fi
+	
+done
