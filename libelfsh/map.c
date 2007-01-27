@@ -52,6 +52,10 @@ int		elfsh_read_obj(elfshobj_t *file)
   /* Fixup stuffs in the SHT */
   elfsh_fixup(file);
 
+  if(file->hdr->e_type == ET_CORE) {
+	elfsh_get_core_notes(file);
+	goto out;
+  }
   /* Fill multiple relocation sections */
   for (index = 0; 
        NULL != (actual = elfsh_get_reloc(file, index, NULL)); 
@@ -117,6 +121,7 @@ int		elfsh_read_obj(elfshobj_t *file)
   if (file->secthash[ELFSH_SECTION_DYNSYM])
     elfsh_fixup_dynsymtab(file->secthash[ELFSH_SECTION_DYNSYM]);
 
+out:
   /* We close the file descriptor after file mapping so we can open more files */
   if (file->fd >= 0) {
 #if __DEBUG_MAP__

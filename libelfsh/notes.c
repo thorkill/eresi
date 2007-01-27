@@ -8,9 +8,6 @@
 */
 #include "libelfsh.h"
 
-
-
-
 /* Return the content of the 'range'th section of type SHT_NOTE */
 elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 {
@@ -72,12 +69,6 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 }
 
 
-
-
-
-
-
-
 /* Free the notes section linked list */
 void			elfsh_free_notes(elfshobj_t *file)
 {
@@ -101,12 +92,4 @@ void			elfsh_free_notes(elfshobj_t *file)
       }
   ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
-
-
-
-
-
-
 

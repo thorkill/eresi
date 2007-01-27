@@ -35,6 +35,7 @@
 #define HLP_REL			"Print all relocation tables from current file"
 #define HLP_DYNAMIC		"Print the ELF dynamic section"
 #define HLP_SYM			"Print symbol table (.symtab)"
+#define HLP_CORE_INFO	"Print information about the core file"
 #define HLP_DYNSYM		"Print dynamic symbol table (.dynsym)"
 #define HLP_SHT			"Print Section Header Table (SHT)"
 #define HLP_RSHT		"Print the runtime Section Header Table (RSHT)"

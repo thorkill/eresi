@@ -19,6 +19,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/user.h>
+#include <sys/procfs.h>
 
 #include "elfsh-libc.h"
 #include <elf.h>
@@ -489,7 +491,32 @@ typedef struct	s_rehdr
 
 }		elfshrhdr_t;
 
+typedef struct user_fpregs_struct fpregs_t;
 
+#define ELFSH_CORE_HAS_NOTHING	0x0000
+#define ELFSH_CORE_HAS_PRSTATUS	0x0001
+#define ELFSH_CORE_HAS_PRPSINFO	0x0010
+#define ELFSH_CORE_HAS_FPREGS	0x0100
+
+#define roundup(x, y)  ((((x)+((y)-1))/(y))*(y))
+
+/* core file info structure */
+typedef struct s_core
+{
+  char			name[32];	/* Name for the note */
+  uint16_t		offset;		/* offset for note section in the file */
+  uint16_t		length;		/* size of the section */
+  
+  elfsh_Nhdr	nhdr;		/* core files should have only one note entry */
+  
+  long			flags;		/* ELFSH_CORE_HAS_NOTHING, ELFSH_CORE_HAS_PRSTATUS, ... */
+
+  prstatus_t	prstatus;	/* PRSTATUS structure */
+  prpsinfo_t	prpsinfo;	/* PRPSINFO structure */
+  fpregs_t		fpregs;		/* Floating point saved register */
+  
+
+}		elfshcore_t;
 
 /* ELF object structure */
 struct		 s_obj
@@ -505,6 +532,8 @@ struct		 s_obj
   elfshsect_t	 *rsectlist;			/* Runtime Section linked list */
 
   elfshsect_t	 *secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
+
+  elfshcore_t	core;
 
   int		 fd;			/* File descriptor for the original file */
   char		 *name;			/* Object path */
@@ -766,6 +795,7 @@ int		elfsh_static_file(elfshobj_t *file);
 int		elfsh_dynamic_file(elfshobj_t *file);
 int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num);
 elfsh_Off	elfsh_get_rphtoff(elfsh_Ehdr *hdr);
+int		elfsh_get_core_notes(elfshobj_t *file);
 
 
 /* pax.c */

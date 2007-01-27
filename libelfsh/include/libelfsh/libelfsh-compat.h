@@ -113,6 +113,7 @@ typedef char uint8;
 #if defined(ELFSH64)
 typedef Elf64_Phdr	elfsh_Phdr;
 typedef Elf64_Shdr	elfsh_Shdr;
+typedef Elf64_Nhdr	elfsh_Nhdr;
 typedef Elf64_Sym	elfsh_Sym;
 typedef Elf64_Dyn	elfsh_Dyn;
 typedef Elf64_Ehdr	elfsh_Ehdr;
@@ -159,6 +160,7 @@ typedef int64_t		elfsh_SAddr;
 
 typedef Elf32_Phdr	elfsh_Phdr;
 typedef Elf32_Shdr	elfsh_Shdr;
+typedef Elf32_Nhdr	elfsh_Nhdr;
 typedef Elf32_Sym	elfsh_Sym;
 typedef Elf32_Dyn	elfsh_Dyn;
 typedef Elf32_Ehdr	elfsh_Ehdr;

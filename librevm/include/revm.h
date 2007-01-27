@@ -287,6 +287,7 @@ char prompt_token[512];
 #define	CMD_INTERP2		"i"
 #define	CMD_NOTE		"notes"
 #define	CMD_NOTE2		"n"
+#define CMD_CORE_INFO	"ci"
 #define	CMD_GOT			"got"
 #define	CMD_GOT2		"g"
 #define	CMD_CTORS		"ctors"
@@ -903,6 +904,7 @@ extern revmconst_t     elfsh_rel_type_sparc[ELFSH_RELOC_SPARC64_MAX];
 extern revmconst_t     elfsh_rel_type_alpha[ELFSH_RELOC_ALPHA_MAX];
 extern revmconst_t     elfsh_rel_type_mips[ELFSH_RELOC_MIPS_MAX];
 extern revmconst_t     elfsh_verentry_type[ELFSH_VERENTRY_MAX];
+extern int 				elfsh_load_core_info(elfshobj_t *);
 
 /* Network related variables */
 //extern hash_t      elfsh_net_client_list;  /* The client socket's list */
@@ -935,11 +937,12 @@ int		cmd_elf();
 int		cmd_interp();
 int		cmd_list();
 int		cmd_notes();
+int		cmd_core_info();
 int		cmd_sym();
 int		cmd_stab();
-int             cmd_hexa();
-int             cmd_disasm();
-int             cmd_shtrm();
+int     cmd_hexa();
+int     cmd_disasm();
+int     cmd_shtrm();
 int		cmd_comments();
 int		cmd_modhelp();
 int		cmd_help();
