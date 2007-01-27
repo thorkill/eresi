@@ -117,8 +117,8 @@ tags:
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I./include/ \
 	-I../libc/include/ -L./ -L../libelfsh/ \
-	-L../libc/ -L../libmalloc/ -lpthread \
-	tools/mydisasm.c -DELFSH32 -o ./mydisasm -lasm -lelfsh32 -lcelfsh32 -lmalloc-e2dbg -L../aspect -laspect32
+	-L../libc/ -L../liballocproxy/ -lpthread \
+	tools/mydisasm.c -DELFSH32 -o ./mydisasm -lasm -lelfsh32 -lcelfsh32 -lallocproxy -L../aspect -laspect32
 
 Makefile.inc:	
 	sh configure
