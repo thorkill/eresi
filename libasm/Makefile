@@ -17,7 +17,6 @@ SRCS_libasm 	=				\
 		src/arch/ia32/operand_ia32.c	\
 		src/arch/sparc/init_sparc.c	\
 		src/arch/sparc/tables_sparc.c	\
-		src/arch/sparc/sparc_decode.c	\
 		src/arch/sparc/sparc_convert.c	\
 		src/arch/ia32/output_ia32.c	\
 		src/arch/sparc/output_sparc.c	\

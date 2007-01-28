@@ -18,10 +18,136 @@
 #define ASM_SP_ASI_P 0x80 /* Primary ASI */
 #define ASM_SP_ASI_P_L 0x88 /* Primary ASI little-endian */
 
-int sparc_decode_branches(asm_instr *, u_char *, u_int, asm_processor *);
-int sparc_decode_call(asm_instr *, u_char *, u_int, asm_processor *);
-int sparc_decode_arithmetic(asm_instr *, u_char *, u_int, asm_processor *);
-int sparc_decode_memory(asm_instr *, u_char *, u_int, asm_processor *);
+/* SPARC Instruction decoders */
+int asm_sparc_add (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_addc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_addcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_addccc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_and (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_andcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_andn (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_andncc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_bicc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_bpcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_bpr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_call (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_casa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_casxa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_done (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fbfcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fbpfcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmpd (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmped (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmpeq (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmpes (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmpq (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fcmps (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_flush (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_flushw (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovdcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovdr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovqcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovqr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovscc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fmovsr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_fpop1 (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_hu (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_hu2 (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_illegal (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_illtrap (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_impdep1 (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_impdep2 (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_jmpl (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldd (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldda (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lddf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lddfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldfsr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldqf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldqfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldsb (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldsba (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldsh (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldsha (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldstub (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldstuba (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldsw (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldswa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldub (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lduba (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lduh (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lduha (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lduw (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_lduwa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldx (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_ldxa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_movcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_movr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_mulscc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_mulx (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_or (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_orcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_orn (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_orncc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_popc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_prefetch (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_prefetcha (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_rd (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_rdpr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_restore (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_return (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_save (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_saved (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sdiv (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sdivcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sdivx (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sethi (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sll (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_smul (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_smulcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sra (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_srl (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stb (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stba (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_std (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stda (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stdf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stdfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stfsr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sth (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stha (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stqf (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stqfa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stw (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stwa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stx (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_stxa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_sub (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_subc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_subcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_subccc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_swap (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_swapa (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_taddcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_taddcctv (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_tcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_tsubcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_tsubcctv (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_udiv (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_udivcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_udivx (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_umul (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_umulcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_wr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_wrpr (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_xnor (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_xnorcc (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_xor (asm_instr *, u_char *, u_int, asm_processor *);
+int asm_sparc_xorcc (asm_instr *, u_char *, u_int, asm_processor *);
 
 void sparc_convert_pbranch(struct s_decode_pbranch *, u_char *, asm_processor *);
 void sparc_convert_rbranch(struct s_decode_rbranch *, u_char *, asm_processor *);
@@ -34,8 +160,7 @@ void asm_resolve_sparc(void *, u_int, char *, u_int);
 
 
 /*****
- * sparc processor internal
- *
+ * sparc processor internals
  */
 
 struct s_asm_ins_sparc {
@@ -573,7 +698,7 @@ enum {
   ASM_SP_BAD
 } e_sparc_instr;
 
-extern char	*sparc_instr_list[ASM_SP_BAD + 1];
+extern char *sparc_instr_list[ASM_SP_BAD + 1];
 extern int sparc_bcc_list[16];
 extern int sparc_brcc_list[8];
 extern int sparc_fbcc_list[16];

@@ -11,8 +11,12 @@
 #include <libasm-int.h>
 
 int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) 
-{  
-  int converted;
+{ 
+  vector_t *vec;
+  u_int dim[4];
+  int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *); 
+  
+  int converted;  
   
 #if __BYTE_ORDER == __LITTLE_ENDIAN
   u_char *ptr;
@@ -49,17 +53,35 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->op2.address_space = 0x80;
   ins->op3.address_space = 0x80;
   
+  vec = aspect_vector_get("disasm");
+  dim[0] = LIBASM_VECTOR_SPARC;
+  dim[1] = (converted & 0xC0000000) >> 30;
+  
   if (MGETBIT(converted, 31)) {
-  	if (MGETBIT(converted, 30))
-	  return sparc_decode_memory(ins, (u_char*) &converted, len, proc);
-    else
-	  return sparc_decode_arithmetic(ins, (u_char*) &converted, len, proc);    	   
+  	if (MGETBIT(converted, 30)) {  	  	  
+	  dim[2] = (converted >> 19) & 0x3f;
+	  dim[3] = 0;
+  	}
+    else {
+      dim[2] = (converted >> 19) & 0x3f;
+      if (dim[2] == 0x35) /* FPop2 */
+	    dim[3] = (converted & 0x3E0) >> 5;
+	  else
+	    dim[3] = 0;
+    }
   }	
   else
-  	if (MGETBIT(converted, 30))
-	  return sparc_decode_call(ins, (u_char *)&converted, len, proc);	
-    else	    
-	  return sparc_decode_branches(ins, (u_char*) &converted, len, proc);
+  	if (MGETBIT(converted, 30)) {
+  	  dim[2] = 0;
+	  dim[3] = 0;
+  	}
+    else {
+      dim[2] = (converted >> 22) & 0x7;
+	  dim[3] = 0;	  
+    }
+  
+  fetch = aspect_vectors_select(vec, dim);
+  return (fetch(ins, (u_char*) &converted, len, proc));
   
   printf("[DEBUG_SPARC] fetch_sparc:impossible execution path\n");
   return (-1);
@@ -73,6 +95,7 @@ void	asm_init_sparc(asm_processor *proc) {
   proc->resolve_data = 0;
   proc->fetch = fetch_sparc;
   proc->display_handle = asm_sparc_display_instr;
+  proc->type = ASM_PROC_SPARC;
   
   proc->internals = inter = malloc(sizeof (struct s_asm_proc_sparc));
   
@@ -91,4 +114,6 @@ void	asm_init_sparc(asm_processor *proc) {
   inter->tcc_table = sparc_tcc_list; 
   inter->op2_table = sparc_op2_table;
   inter->op3_table = sparc_op3_table;
+  
+  asm_arch_register(proc, 0);
 }

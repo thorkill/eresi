@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.1 2007-01-22 22:23:10 heroine Exp $
+ * $Id: vectors.c,v 1.2 2007-01-28 18:55:00 strauss Exp $
  *
  * @return 1 on success, 0 on error
  */
@@ -18,7 +18,10 @@
 int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
 			  asm_processor *proc)
 {
-  return (-1);
+  if (proc->type == ASM_PROC_SPARC)
+  	return asm_sparc_illegal(ins, opcode, len, proc);
+  else	
+    return (-1);
 }
 
 /**
@@ -34,20 +37,24 @@ int	asm_init_vectors(asm_processor *proc)
   
   aspect_vectors_init();
   
-  dims = malloc(2 * sizeof (u_int));
+  dims = malloc(4 * sizeof (u_int));
   if (!dims)
     return (0);
-  dimstr = malloc(2 * sizeof (char *));
+  dimstr = malloc(4 * sizeof (char *));
   if (!dimstr)
     return (0);
   
   dims[0] = LIBASM_VECTOR_ARCHNUM;
   dims[1] = 512;
+  dims[2] = 64;
+  dims[3] = 32;
   
   dimstr[0] = "MACHINE";
   dimstr[1] = "OPCODES";
+  dimstr[2] = "SECONDARY OPCODES (SPARC ONLY)"; /* Should be 0 when unused */
+  dimstr[3] = "FPOP OPCODE (SPARC ONLY)"; /* Should be 0 when unused */
   aspect_register_vector("disasm",
 			 asm_fetch_default,
-			 dims, dimstr, 2, ELEM_TYPE_FADDR);
+			 dims, dimstr, 4, ELEM_TYPE_FADDR);
   return (1);
 }

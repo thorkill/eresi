@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.4 2007-01-22 22:23:10 heroine Exp $
+** $Id: libasm.h,v 1.5 2007-01-28 18:55:00 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -44,6 +44,12 @@ enum
     LIBASM_VECTOR_MIPS,
     LIBASM_VECTOR_ARCHNUM
   } e_vector_arch;
+  
+enum {
+  ASM_PROC_IA32,
+  ASM_PROC_SPARC,
+  ASM_PROC_MIPS
+} e_proc_type;
 
 /*
 enum
@@ -224,9 +230,11 @@ void		asm_set_resolve_handler(asm_processor *,
  *
  */
 
-int		asm_register_ia32_opcode(int opcode, unsigned long fcn);
-int		asm_arch_register(asm_processor *proc, int machine);
-int		asm_init_vectors(asm_processor *proc);
+int asm_register_ia32_opcode(int opcode, unsigned long fcn);
+int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
+								unsigned long fcn);
+int asm_arch_register(asm_processor *proc, int machine);
+int asm_init_vectors(asm_processor *proc);
 
 enum {
   LIBASM_ERROR_SUCCESS,

@@ -95,7 +95,7 @@ struct s_asm_processor
   void (*resolve_immediate)(void *, u_int, char *, u_int); 
   /* handler data pointer */
   void *resolve_data;
-  /* processor type. i386 supports only */
+  /* processor type */
   int type;
   /* array to instruction memonic by instr field of asm_instr */
   char **instr_table;
