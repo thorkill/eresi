@@ -43,19 +43,19 @@ hash_t		*hash_empty(char *name)
 {
   hash_t	*hash;
   char		*newname;
-  int		elemnbr;
+  int		size;
   char		type;
 
   hash = hash_find(name);
   if (!name)
     return (NULL);
-  elemnbr = hash->elmnbr;
+  size    = hash->size;
   type    = hash->type;
   hash_del(hash_hash, name);
   hash_destroy(hash);
   newname = malloc(strlen(name) + 1);
   strcpy(newname, name);
-  hash_init(hash, newname, elemnbr, type);
+  hash_init(hash, newname, size, type);
   return (hash);
 }
 
