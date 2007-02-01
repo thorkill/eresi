@@ -50,12 +50,16 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return architecture string related to e_machine 
-   generated with
-   cat /usr/include/elf.h | grep EM_ \
-   awk -F\  \
-   '{print "case "$3": return @"$2" : "$5 $6" "$7" "$8" "$9" "$10"@;" }'  \
-   | sed s/@/\"/g | sed 's/\*\///g'
+/**
+ *  Return architecture string related to e_machine 
+ *  generated with
+ *  cat /usr/include/elf.h | grep EM_ \
+ *  awk -F\  \
+ *  '{print "case "$3": return @"$2" : "$5 $6" "$7" "$8" "$9" "$10"@;" }'  \
+ *  | sed s/@/\"/g | sed 's/\*\///g'
+ *
+ * @param machine Machine to get description string
+ * @return A pointer to a static string to describe machine 
 */
 char		*elfsh_get_machine_string(elfsh_Half machine)
 {

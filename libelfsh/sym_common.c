@@ -292,7 +292,14 @@ elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name)
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
 }
 
-/* Reverse a symbol */
+/**
+ * Reverse a symbol and give the offset of virtual address from that
+ * symbol virtual address.
+ * @param file elfsh object
+ * @param vaddr Virtual address to resolve
+ * @param off Reference to store offset from the symbol address
+ * @return Returns a pointer to the resolved symbol.
+ */
 char		*elfsh_reverse_metasym(elfshobj_t *file, 
 				       elfsh_Addr vaddr, elfsh_SAddr *off)
 {
