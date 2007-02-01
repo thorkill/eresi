@@ -68,4 +68,5 @@ int		hash_unmerge(hash_t *dst, hash_t *src); /* Quotient hashes */
 int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */
 void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
+int		hash_set(hash_t *h, char *key, void *data); /* Change meta data for a key */
 #endif /* _LIBHASH_H_ */
