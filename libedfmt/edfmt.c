@@ -9,9 +9,9 @@
 
 edfmtmanage_t debug_format[] = 
   {
-    { ELFSH_SECTION_NAME_STAB    , ELFSH_SECTION_STAB    , edfmt_stabs_parse },
-    { ELFSH_SECTION_NAME_DW2_INFO, ELFSH_SECTION_DW2_INFO, edfmt_dwarf2_parse },
-    { NULL                       , 0                     , UNKNOWN_FORMAT }
+    { ELFSH_SECTION_NAME_STAB    , ELFSH_SECTION_STAB    , edfmt_stabs_parse , edfmt_stabs_transform },
+    { ELFSH_SECTION_NAME_DW2_INFO, ELFSH_SECTION_DW2_INFO, edfmt_dwarf2_parse, edfmt_dwarf2_transform },
+    { NULL                       , 0                     , NULL              , NULL }
   };
 
 /* Load a dwarf2 section information from the file */
@@ -74,6 +74,7 @@ int			edfmt_format(elfshobj_t *file)
       if (sect != NULL && debug_format[i].func != NULL)
 	{
 	  debug_format[i].func(file);
+	  debug_format[i].trans(file);
 	  count++;
 	}
     }

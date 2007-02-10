@@ -40,34 +40,124 @@ static int		edfmt_dwarf2_newfref(long offset, edfmtdw2abbattr_t *attr, u_char gl
 }
 
 /* Lookup on abbrev_table */
-edfmtdw2abbent_t 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
+u_long		 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
 {
   char			ckey[EDFMT_CKEY_SIZE];
-  edfmtdw2abbent_t 	*ent;
+  u_long		*pos;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num_fetch);
-  ent = (edfmtdw2abbent_t *) hash_get(&abbrev_table, ckey);
+  pos = (u_long *) hash_get(&abbrev_table, ckey);
 
-  if (ent == NULL)
+  if (pos == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Abbrev number not found", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ent);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pos);
 }
 
-/* Parse the .debug_abbrev format */
-int			edfmt_dwarf2_abbrev()
+/* Read an abbrev entry @ this position */
+edfmtdw2abbent_t	*edfmt_dwarf2_abbrev_read(u_long pos, u_long ipos)
 {
   u_int			num;
   edfmtdw2abbent_t 	*ent = NULL;
-  edfmtdw2abbent_t 	*tmp;
   edfmtdw2abbattr_t 	*attr = NULL;
   u_int			allocattr = 0;
   u_int			attri = 0;
-  u_int			level = 1;
   const	u_int		allocstep = 12;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Do we have this section ? */
+  if (dwarf2_data(abbrev) == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      ".debug_abbrev section not available", NULL);
+
+  /* Update position to read the entry */
+  dwarf2_pos(abbrev) = pos;
+
+  /* Fetch the key number */
+  dwarf2_iuleb128(num, abbrev);
+  
+  /* A level end */
+  if (num == 0)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    
+  /* Alloc next elements */
+  XALLOC(ent, sizeof(edfmtdw2abbent_t), NULL);
+  
+  /* Fill main data */
+  ent->key = ipos;
+  edfmt_ckey(ent->ckey, EDFMT_CKEY_SIZE, ipos);
+
+  dwarf2_iuleb128(ent->tag, abbrev);
+  dwarf2_iread_1(ent->children, abbrev);
+  
+  attri = allocattr = 0;
+  attr = NULL;
+  
+  /* Parse attributes */
+  do {
+    /* First allocation */
+    if (attr == NULL)
+      {
+	allocattr = allocstep;
+	XALLOC(attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
+      }
+    
+    /* We fill all the array, so we realloc all */
+    if (attri == allocattr)
+      {
+	allocattr += allocstep;
+	XREALLOC(attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
+      }
+    
+    /* Fill attribute structure */
+    dwarf2_iuleb128(attr[attri].attr, abbrev);
+    dwarf2_iuleb128(attr[attri].form, abbrev);
+  } while (attr[attri++].attr);
+  
+  ent->attr = attr;
+  ent->attrsize = attri > 1 ? attri - 1 : attri;
+  
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ent);
+}
+
+/* Clean allocated buffer for enumeration */
+int			edfmt_dwarf2_abbrev_enum_clean()
+{
+  char			**keys;
+  u_int			index;
+  u_int			keynbr;
+  u_long		*value;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  keys = hash_get_keys(&abbrev_table, &keynbr);
+
+  if (keys)
+    {
+      for (index = 0; index < keynbr; index++)
+	{
+	  value = (u_long *) hash_get(&abbrev_table, keys[index]);
+
+	  if (value)
+	    XFREE(value);
+	}
+    }
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Parse the .debug_abbrev format */
+int			edfmt_dwarf2_abbrev_enum()
+{
+  u_int			num;
+  u_int			base;
+  u_long	      	*start_pos;
+  u_int			tag, children;
+  u_int			attr, form;
   char			ckey[EDFMT_CKEY_SIZE];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -77,91 +167,31 @@ int			edfmt_dwarf2_abbrev()
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_abbrev section not available",  -1);
 
+  base = dwarf2_pos(abbrev);
+
   do {
+    XALLOC(start_pos, sizeof(u_long), NULL);
+
+    *start_pos = dwarf2_pos(abbrev);
     /* Fetch the key number */
     dwarf2_iuleb128(num, abbrev);
     
     /* A level end */
     if (num == 0)
-      {
-	level--;
-	/* It's the end ! */
-	if (level == 0)
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	continue;
-      }
+      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     
-    /* Save last element */
-    tmp = ent;
-    
-    /* Alloc next elements */
-    XALLOC(ent, sizeof(edfmtdw2abbent_t), -1);
-    
-    /* Fill main data */
-    ent->key = num;
-    dwarf2_iuleb128(ent->tag, abbrev);
-    dwarf2_iread_1(ent->children, abbrev);
-    
-    attri = allocattr = 0;
-    attr = NULL;
-    
-    /* Update level */
-    ent->level = level;
-    
-    if (ent->children != 0)
-      level++;
-    
-    /* Update links between entities */
-    if (tmp)
-      {
-	/* Direct child */
-	if (ent->level > tmp->level)
-	  {
-	    ent->parent = tmp;
-	  }
-	/* Next sibling of last element parent */
-	else if (ent->level < tmp->level)
-	  {
-	    if (tmp->parent != NULL)
-	      {
-		ent->parent = tmp->parent->parent;
-		tmp->parent->sib = ent;
-	      }
-	  }
-	/* Next sibling */
-	else
-	  {
-	    tmp->sib = ent;
-	    ent->parent = tmp->parent;
-	  }
-      }
+    dwarf2_iuleb128(tag, abbrev);
+    dwarf2_iread_1(children, abbrev);
     
     /* Parse attributes */
     do {
-      /* First allocation */
-      if (attr == NULL)
-	{
-	  allocattr = allocstep;
-	  XALLOC(attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-	}
+      dwarf2_iuleb128(attr, abbrev);
+      dwarf2_iuleb128(form, abbrev);
+    } while (attr);
       
-      /* We fill all the array, so we realloc all */
-      if (attri == allocattr)
-	{
-	  allocattr += allocstep;
-	  XREALLOC(attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-	}
-
-      /* Fill attribute structure */
-      dwarf2_iuleb128(attr[attri].attr, abbrev);
-      dwarf2_iuleb128(attr[attri].form, abbrev);
-    } while (attr[attri++].attr);
-      
-    ent->attr = attr;
-    
     /* Add into abbrev table */
-    edfmt_ckey(ckey, EDFMT_CKEY_SIZE, ent->key);
-    hash_add(&abbrev_table, elfsh_strdup(ckey), (void *) ent);
+    edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num);
+    hash_add(&abbrev_table, elfsh_strdup(ckey), (void *) start_pos);
   } while (dwarf2_pos(abbrev) < dwarf2_size(abbrev));
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -218,16 +248,20 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
       break;
     case DW_FORM_data1:
-      dwarf2_iread_1(attr->u.udata, info);
+      dwarf2_iread_1(ddata, info);
+      attr->u.udata = (u_long) ddata & 0xFF;
       break;
     case DW_FORM_data2:
-      dwarf2_iread_2(attr->u.udata, info);
+      dwarf2_iread_2(ddata, info);
+      attr->u.udata = (u_long) ddata & 0xFFFF;
       break;
     case DW_FORM_data4:
-      dwarf2_iread_4(attr->u.udata, info);
+      dwarf2_iread_4(ddata, info);
+      attr->u.udata = (u_long) ddata & 0xFFFFFFFF;
       break;
     case DW_FORM_data8:
-      dwarf2_iread_8(attr->u.udata, info);
+      dwarf2_iread_8(ddata, info);
+      attr->u.udata = (u_long) ddata;
       break;
     case DW_FORM_string:
       attr->u.str = dwarf2_ac_pos(info);
@@ -242,7 +276,8 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 	dwarf2_ipos(attr->u.vbuf[i], info, char);
       break;
     case DW_FORM_flag:
-      dwarf2_iread_1(attr->u.udata, info);
+      dwarf2_iread_1(ddata, info);
+      attr->u.udata = (u_long) ddata & 0xFF;
       break;
     case DW_FORM_strp:
       addr = (char *) dwarf2_data(str);
@@ -300,8 +335,9 @@ int			edfmt_dwarf2_form(u_int endpos)
 {  
   char			*ref_global_ckey;
   char	      		*ref_cu_ckey;
-  u_int			num_fetch, i, level = 1;
+  u_int			num_fetch, i;
   edfmtdw2abbent_t 	*ent;
+  u_long		*fetch;
   u_int			start_pos;
   
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -317,14 +353,16 @@ int			edfmt_dwarf2_form(u_int endpos)
     /* Retrieve abbrev number */
     dwarf2_iuleb128(num_fetch, info);
 
-    /* Update current level */
+    /* We didn't use num_fetch == 0 */
     if (num_fetch == 0)
-      {
-	level--;
-	continue;
-      }
+      continue;
     
-    ent = edfmt_dwarf2_lookup_abbrev(num_fetch);
+    fetch = edfmt_dwarf2_lookup_abbrev(num_fetch);
+    if (fetch == NULL)
+      continue;
+ 
+    ent = edfmt_dwarf2_abbrev_read(*fetch, start_pos - current_cu->start_pos);
+
     if (ent == NULL)
       continue;
 
@@ -338,10 +376,6 @@ int			edfmt_dwarf2_form(u_int endpos)
     hash_add(&ref_global_table, ref_global_ckey, (void *) ent);
     hash_add(&ref_cu_table, ref_cu_ckey, (void *) ent);
     
-    /* If we enter into a new child list, increase the level */
-    if (ent->children != 0)
-      level++;
-
     /* Resolv form value for each attribute */
     for (i = 0; ent->attr[i].attr; i++)
       {
@@ -352,6 +386,7 @@ int			edfmt_dwarf2_form(u_int endpos)
 	  case DW_AT_stmt_list:
 	    edfmt_dwarf2_line(ent->attr[i].u.udata);
 	    break;
+	  case DW_AT_data_member_location:
 	  case DW_AT_location:
 	    edfmt_dwarf2_loc(&ent->attr[i].loc, ent->attr[i].u.vbuf, ent->attr[i].asize);
 	    break;
@@ -360,7 +395,17 @@ int			edfmt_dwarf2_form(u_int endpos)
 	    break;
 	  }
       }
-  } while(level > 0 && dwarf2_pos(info) < endpos);
+
+    if (current_cu)
+      {
+	if (current_cu->fent == NULL)
+	  current_cu->fent = ent;
+	else
+	  current_cu->lent->sib = ent;
+
+	current_cu->lent = ent;
+      }
+  } while(dwarf2_pos(info) < endpos);
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -1066,7 +1111,7 @@ int			edfmt_dwarf2_line(u_long offset)
   dwarf2_pos(line) = prev_pos;
 
   XALLOC(header.dirs, sizeof(char*)*i, -1);
-  header.dirs_number = i;
+  header.dirs_number = i+1;
 
   /* Dir second pass */
   for (i = 0; (dwarf2_ac_pos(line))[0] != '\0'; i++)
@@ -1091,7 +1136,7 @@ int			edfmt_dwarf2_line(u_long offset)
   XALLOC(header.files_dindex, sizeof(u_int)*i, -1);
   XALLOC(header.files_time, sizeof(u_int)*i, -1);
   XALLOC(header.files_len, sizeof(u_int)*i, -1);
-  header.files_number = i;
+  header.files_number = i+1;
 
   /* Filename second pass */
   for (i = 0; (dwarf2_ac_pos(line))[0] != '\0'; i++)
@@ -1113,6 +1158,7 @@ int			edfmt_dwarf2_line(u_long offset)
   current_cu->files_dindex = header.files_dindex;
   current_cu->files_time   = header.files_time;
   current_cu->files_len    = header.files_len;
+  current_cu->files_number = header.files_number;
 
   /* Parse the rest */
   edfmt_dwarf2_line_data(&header);

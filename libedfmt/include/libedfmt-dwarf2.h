@@ -65,14 +65,17 @@ typedef struct 	s_dw2abbattr
 } 		edfmtdw2abbattr_t;
 
 /* Describe an abbrev entitie */
-struct 	s_dw2abbent
+struct 		s_dw2abbent
 {
-  edfmtdw2abbattr_t *attr;
   u_int		key;
-  //char		ckey[EDFMT_CKEY_SIZE];
+  char		ckey[EDFMT_CKEY_SIZE];
   u_int		tag; 
   u_char 	children;
   u_int		level;
+
+  edfmtdw2abbattr_t *attr;
+  u_int		attrsize;
+
   struct s_dw2abbent *sib;
   struct s_dw2abbent *child;
   struct s_dw2abbent *parent;
@@ -204,6 +207,7 @@ struct		s_dw2cu
 
   /* Abbrev section informations */
   edfmtdw2abbent_t *fent;
+  edfmtdw2abbent_t *lent;
 
   /* Lines informations */
   edfmtdw2line_t *line;
@@ -223,6 +227,7 @@ struct		s_dw2cu
   u_int		*files_dindex;
   u_int		*files_time;
   u_int		*files_len;
+  u_long	files_number;
   
   struct s_dw2cu *next;
 };
@@ -234,7 +239,7 @@ typedef struct 	s_dw2info
 }		edfmtdw2info_t;
 
 /* Variables */
-extern edfmtdw2info_t debug_info;
+extern edfmtdw2info_t *dwarf2_info;
 extern edfmtdw2sectlist_t dw2_sections;
 
 /* References */
@@ -329,6 +334,16 @@ do {							\
 do {							\
   val = dwarf2_ac_pos(name);			      	\
   dwarf2_inc_pos(name, strlen(val)+1);		       	\
+} while (0)
+
+/* Transformation management */
+#define DWARF2_TRANS_GETATTR(_out, _in, _type, _param, _default) 	\
+do {									\
+  edfmtdw2abbattr_t *attr;					       	\
+  _out = _default;							\
+  attr = edfmt_dwarf2_getattr(_in, _type);				\
+  if (attr)								\
+    _out = attr->_param;						\
 } while (0)
 
 /* Most of this enums are from gdb 6.4 dwarf 2 header

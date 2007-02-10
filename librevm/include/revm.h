@@ -1233,6 +1233,7 @@ int		vm_type_addfield(revmtype_t *parent, revmtype_t *field);
 int		vm_simpletype_create(u_int type);
 int		vm_types_print();
 int		vm_type_print(char *type, char mode);
+int		vm_type_create_adv(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_create(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
 			      u_char p, u_int nbr, char *fieldname);

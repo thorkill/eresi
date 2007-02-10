@@ -39,35 +39,46 @@ edfmtstabsfunc_t *current_func = NULL;
 hash_t type_ref;
 
 /* Contain main informations */
-edfmtstabsinfo_t stabs_info;
+edfmtstabsinfo_t *stabs_info = NULL;
+
+/* Actual parsed file */
+elfshobj_t *afile = NULL;
+
+edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (edfmtstabsinfo_t *) file->debug_format.stabs);
+}
 
 int	    		edfmt_stabs_addfile(char *dir, char *file)
 {
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* At the end of the list ? */
-  if (stabs_info.index_list >= stabs_info.num_list)
+  if (stabs_info->index_list >= stabs_info->num_list)
     {
-      stabs_info.num_list += STABS_FILE_IT;
-      if (stabs_info.dir_list == NULL)
+      stabs_info->num_list += STABS_FILE_IT;
+      if (stabs_info->dir_list == NULL)
 	{
-	  XALLOC(stabs_info.dir_list, stabs_info.num_list * sizeof(char *), -1);
-	  XALLOC(stabs_info.file_list, stabs_info.num_list * sizeof(char *), -1);
+	  XALLOC(stabs_info->dir_list, stabs_info->num_list * sizeof(char *), -1);
+	  XALLOC(stabs_info->file_list, stabs_info->num_list * sizeof(char *), -1);
 	}
       else
 	{
-	  XREALLOC(stabs_info.dir_list, stabs_info.dir_list, 
-		   stabs_info.num_list * sizeof(char *), -1);
-	  XREALLOC(stabs_info.file_list, stabs_info.file_list, 
-		   stabs_info.num_list * sizeof(char *), -1);
+	  XREALLOC(stabs_info->dir_list, stabs_info->dir_list, 
+		   stabs_info->num_list * sizeof(char *), -1);
+	  XREALLOC(stabs_info->file_list, stabs_info->file_list, 
+		   stabs_info->num_list * sizeof(char *), -1);
 	}
     }
 
   /* Update list */
-  stabs_info.dir_list[stabs_info.index_list] 	= dir;
-  stabs_info.file_list[stabs_info.index_list] 	= file;
+  stabs_info->dir_list[stabs_info->index_list] 	= dir;
+  stabs_info->file_list[stabs_info->index_list] = file;
 
-  stabs_info.index_list++;
+  stabs_info->index_list++;
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -80,7 +91,7 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* End of the current fonction ? */
+  /* End of the current function ? */
   if (STABS_IVD_STR(str))
     {
       if (current_func)
@@ -108,7 +119,7 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
   current_file->last_func = func;
 
   /* Parse every param symbols next entries */
-  for(;stabs_index < stabs_num; stabs_index++)
+  for(stabs_index = stabs_index + 1;stabs_index < stabs_num; stabs_index++)
     {
       if (stabs_c_ent.type != STABS_TYPE_PSYM)
 	{
@@ -186,8 +197,11 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
 
   low = high = 0;
 
-  /* Save str pointer */
-  rtype = edfmt_stabs_type(str);
+  if (**str == 'r')
+    (*str)++;
+
+  /* This type describe how index is managed .. we don't need it */
+  edfmt_stabs_type(str);
 
   if (**str == ';')
     (*str)++;
@@ -207,6 +221,9 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
 		      "Invalid str informations", -1); 
 
   (*str)++;
+
+  /* Describe array type */
+  rtype = edfmt_stabs_type(str);
 
   type->u.arr.low = low;
   type->u.arr.high = high;
@@ -269,7 +286,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     (*str)++;
   } while (**str != ';');
-  
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -354,7 +371,6 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
   XALLOC(type, sizeof(edfmtstabstype_t), NULL);
   type->num = tnum;
 
-
  typestart:
   token = *(*str)++;
 
@@ -374,7 +390,8 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	}
       else
 	{
-	  /* LINK case */
+	  /* Restore string position */
+	  *str = save_str;
 	  type->type = STABS_TYPE_LINK;
 	  type->u.link = edfmt_stabs_type(str);
 	}
@@ -461,7 +478,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	  break;
 	case STABS_STR_D_STRUCT:
 	case STABS_STR_D_UNION:
-	  type->type = token == STABS_STR_D_STRUCT ? STABS_TYPE_UNION : STABS_TYPE_STRUCT;
+	  type->type = token == STABS_STR_D_STRUCT ? STABS_TYPE_STRUCT : STABS_TYPE_UNION;
 	  edfmt_stabs_struct(&type->u.struct_union, str);
 	  break;
 	case STABS_STR_D_BITSTRING:
@@ -471,7 +488,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 
   /* Add it into hash table */
   edfmt_stabs_ctypenum(type->cnum, STABS_CTYPENUM_SIZE, &type->num);
-  hash_add(&type_ref, type->cnum, (void *) type);
+  HASH_ADDX(&type_ref, type->cnum, type);
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
@@ -489,7 +506,9 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", NULL);
 
-  if (edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM) != 0)
+  edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);
+
+  if ((*str)[-1] != STABS_STR_DELIM)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Stabs type not found", NULL);
 
@@ -561,6 +580,11 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_GVAR:
 	  data->scope = STABS_SCOPE_GVAR;
 	  data->type = edfmt_stabs_type(str);
+
+	  if (data->type == NULL)
+	    break;
+
+	  data->u.addr = edfmt_lookup_addr(afile, data->name);
 	  break;
 
 	  /* Integer constant */
@@ -608,8 +632,8 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_TYPE_STRUCT:
 	case STABS_STR_T_TYPE_NAME:
 	  data->scope = STABS_SCOPE_TYPE;
-	  data->type->data = data;
 	  data->type = edfmt_stabs_type(str);
+	  data->type->data = data;
 	  break;
 
 	  /* Argument passed by reference */
@@ -639,8 +663,12 @@ int			edfmt_stabs_parse(elfshobj_t *file)
   u_char		parse_str;
   u_char		inc;
   edfmtstabsline_t 	*line;
+  edfmtstabsdata_t	*data;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (edfmt_stabs_getinfo(file) != NULL)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Retrieve stabs section */
   stabs_sect = edfmt_get_sect(file, ELFSH_SECTION_STAB, ELFSH_SECTION_NAME_STAB,
@@ -657,6 +685,10 @@ int			edfmt_stabs_parse(elfshobj_t *file)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "STABS string section not found", -1);
 
+  afile = file;
+
+  XALLOC(stabs_info, sizeof(edfmtstabsinfo_t), -1);
+
   if (type_ref.ent == NULL)
     hash_init(&type_ref, STABS_HNAME_TYPE_REF, 50, ELEM_TYPE_ANY);
   
@@ -670,6 +702,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
       inc = 0;
       str = stabs_c_str;
       parse_str = 1;
+
       switch(stabs_c_ent.type)
 	{
 	  /* Compiler information */
@@ -720,6 +753,10 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      /* Update pointers */
 	      last_file = current_file;
 	      current_file = NULL;
+
+#if __DEBUG_STABS_
+	      printf("------------------------------------------------\n");
+#endif
 	      break;
 	    }
 
@@ -742,13 +779,19 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  else
 	    tmp->path = str;
 
+#if __DEBUG_STABS_
+	  printf("- %s%s -----------------------------------------------\n",
+		 inc ? "[i] " : "",
+		 str);
+#endif
+
 	  tmp->s_addr = stabs_c_ent.value;
 	  
 	  if (!inc)
 	    {
 	      /* Update first file if needed */
-	      if (stabs_info.file == NULL)
-		stabs_info.file = tmp;
+	      if (stabs_info->file == NULL)
+		stabs_info->file = tmp;
 	  
 	      /* Update current or last file */
 	      if (current_file != NULL)
@@ -811,10 +854,44 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	}
 
       if (parse_str)
-	edfmt_stabs_data(&str);
+	{
+#if __DEBUG_STABS_
+	  printf("%s - %s - %s\n", current_file->path, current_file->file, str);
+#endif
+
+	  data = edfmt_stabs_data(&str);
+
+	  if (data)
+	    {
+	      /* TODO: Add more informations  */
+	      switch(data->scope)
+		{
+		case STABS_SCOPE_TYPE:
+		  if (current_file->types == NULL)
+		    current_file->types = data->type;
+		  else 
+		    current_file->ltype->next = data->type;
+		  current_file->ltype = data->type;
+		  break;
+		case STABS_SCOPE_GVAR:
+		  if (current_file->vars == NULL)
+		    current_file->vars = data;
+		  else 
+		    current_file->lvar->next = data;
+		  current_file->lvar = data;		  
+		  break;
+		}
+	    }
+	}
     }
 
   hash_empty(STABS_HNAME_TYPE_REF);
+
+  file->debug_format.stabs = (void *) stabs_info;
+  stabs_info = NULL;
+  root_file = current_file = last_file = NULL;
+  current_func = NULL;
+  afile = NULL;
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

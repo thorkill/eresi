@@ -11,7 +11,7 @@ RM			= rm -f
 AR			= ar rc
 
 SRC			= edfmt.c edfmt-utils.c dwarf2.c dwarf2-utils.c dwarf2-abbrev.c \
-			  dwarf2-cfa.c stabs.c stabs-utils.c
+			  dwarf2-cfa.c dwarf2-trans.c stabs.c stabs-trans.c stabs-utils.c api.c
 OBJ			= $(SRC:.c=.o)
 OBJ32	 		= ${SRC:.c=.32.o}
 OBJ64	 		= ${SRC:.c=.64.o}

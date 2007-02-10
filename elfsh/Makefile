@@ -38,7 +38,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/		  \
 			-lmjollnir32 $(LPTHREAD) -L../elibc -lcelfsh32		  \
 			-L../libasm/ -lasm -L../libui/ -lui32 -g3		  \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
@@ -47,7 +47,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \

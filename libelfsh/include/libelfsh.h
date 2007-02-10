@@ -491,6 +491,14 @@ typedef struct	s_rehdr
 
 }		elfshrhdr_t;
 
+/* Debug format pointers */
+typedef struct	s_dfmt
+{
+  void		*uni;
+  void		*dwarf2;
+  void		*stabs;
+}		elfshdfmt_t;
+
 typedef struct user_fpregs_struct fpregs_t;
 
 #define ELFSH_CORE_HAS_NOTHING	0x0000
@@ -564,6 +572,8 @@ struct		 s_obj
 
   hash_t	 redir_hash;		/* Redirections hash table */
   elfshlinkmap_t *linkmap;		/* Linkmap */
+
+  elfshdfmt_t	 debug_format;		/* Debug format informations */
 
   /* 
   ** Every object can have childs

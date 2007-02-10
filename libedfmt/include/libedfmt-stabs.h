@@ -158,6 +158,11 @@ struct		s_stabstype
 
   /* Data parent */
   edfmtstabsdata_t *data;
+
+  /* Transformated type link */
+  edfmttype_t *transtype;
+
+  struct s_stabstype *next;
 };
 
 /* Data structure represent a scoped type
@@ -196,6 +201,8 @@ struct		s_stabsdata
     double fl;
     int i;
   } u;
+
+  struct s_stabsdata *next;
 };
 
 /* Describe a relation between a line and an address */
@@ -228,6 +235,11 @@ typedef struct 	s_stabsfile
   /* Lines pointers */
   edfmtstabsline_t *line;
   edfmtstabsline_t *last_line;
+
+  edfmtstabsdata_t *vars;
+  edfmtstabsdata_t *lvar;
+  edfmtstabstype_t *types;
+  edfmtstabstype_t *ltype;
 
   /* Include & parent pointers */
   struct s_stabsfile *inc;

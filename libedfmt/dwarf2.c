@@ -15,7 +15,7 @@ specificitation @ http://dwarf.freestandards.org/Download.php */
 #define DWARF2_HNAME_ABBREV 	"dwarf2_abbrev_table"
 
 /* Dwarf2 structures */
-edfmtdw2info_t	   debug_info;
+edfmtdw2info_t	   *dwarf2_info = NULL;
 edfmtdw2sectlist_t dw2_sections;
 
 /* References */
@@ -28,6 +28,14 @@ hash_t ref_cu_table;
 
 /* Current compil unit pointer */
 edfmtdw2cu_t *current_cu = NULL;
+
+edfmtdw2info_t 		*edfmt_dwarf2_getinfo(elfshobj_t *file)
+{
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (edfmtdw2info_t *) file->debug_format.dwarf2);
+}
 
 /* Update references global/local */
 static int		edfmt_dwarf2_updatefref(u_char global)
@@ -95,6 +103,9 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (edfmt_dwarf2_getinfo(file) != NULL)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   /* Full fill with 0 */
   memset(&dw2_sections, 0x00, sizeof(edfmtdw2sectlist_t));
 
@@ -104,12 +115,15 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
 
   /* We already have it ! */
   dw2_sections.info.sect = edfmt_get_sect(file, ELFSH_SECTION_DW2_INFO, 
-					     ELFSH_SECTION_NAME_DW2_INFO, 0);
+					  ELFSH_SECTION_NAME_DW2_INFO, 0);
+
   dw2_sections.info.data = elfsh_get_raw(dw2_sections.info.sect);
 
   if (dw2_sections.info.sect == NULL || dw2_sections.info.data == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Main DWARF2 section unavailable", -1);
+
+  XALLOC(dwarf2_info, sizeof(edfmtdw2info_t), -1);
 
   /* Local table system to full fill every pointers correctly */
   pointers[0] = &dw2_sections.abbrev;	// Supported
@@ -150,8 +164,59 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   /* Start into the block entrie */
   edfmt_dwarf2_block_entrie(file);
 
+  /* Parse cfa informations */
+  edfmt_dwarf2_cfa();
+
   /* Clean references */
   edfmt_dwarf2_updatefref(1);
+
+  /* Update file pointer */
+  file->debug_format.dwarf2 = (void *) dwarf2_info;
+  dwarf2_info = NULL;
+  ref_global = ref_cu = NULL;
+  current_cu = NULL;
+
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Rebuild an entire tree from abbrev table (update dependencies) */
+int			edfmt_dwarf2_build_tree(edfmtdw2abbent_t *parent,
+						edfmtdw2abbent_t *fent,
+						edfmtdw2abbent_t *ref)
+{
+  edfmtdw2abbent_t	*abbent, *mref;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (fent == NULL)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Invalid parameters", -1);
+
+  /* Iterate each elements */
+  for (abbent = fent; abbent; abbent = abbent->sib)
+    {
+      abbent->parent = parent;
+
+      /* Next is the reference */
+      if (ref && abbent->sib == ref)
+	{
+	  abbent->sib = NULL;
+	  break;
+	}
+
+      if (abbent->children)
+	{
+	  DWARF2_TRANS_GETATTR(mref, abbent, DW_AT_sibling, u.ref, NULL);
+
+	  if (mref != NULL && abbent->sib != mref)
+	    {
+	      /* Update pointers */
+	      abbent->child = abbent->sib;
+	      edfmt_dwarf2_build_tree(abbent, abbent->sib, mref);
+	      abbent->sib = mref;
+	    }
+	}
+    }
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -164,12 +229,12 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Init local reference compil unit table */
+  if (ref_cu_table.ent == NULL)
+    hash_init(&ref_cu_table, DWARF2_HNAME_REF_LOCAL, 30, ELEM_TYPE_ANY);
+
   while (dwarf2_pos(info) < dwarf2_size(info))
     {
-      /* Init local reference compil unit table */
-      if (ref_cu_table.ent == NULL)
-	hash_init(&ref_cu_table, DWARF2_HNAME_REF_LOCAL, 30, ELEM_TYPE_ANY);
-
       /* Alloc a new compil unit */
       XALLOC(tcu, sizeof(edfmtdw2cu_t), -1);
 
@@ -183,7 +248,7 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       else
 	{
 	  /* Init info structure */
-	  debug_info.cu_list = tcu;
+	  dwarf2_info->cu_list = tcu;
 	}
 
       current_cu = current_cu ? current_cu->next : tcu;
@@ -191,7 +256,7 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       /* Set compil unit start position */
       current_cu->start_pos = dwarf2_pos(info);
 
-      /* Read DWARF2 .debug_info header */
+      /* Read DWARF2 .dwarf2_info header */
       dwarf2_ipos(current_cu->length, info, u_int);
       last_pos = dwarf2_pos(info);
       dwarf2_ipos(current_cu->version, info, u_short);
@@ -209,6 +274,8 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 	dwarf2_pos(info) = last_pos + current_cu->length;
 
       edfmt_dwarf2_updatefref(0);
+      
+      edfmt_dwarf2_build_tree(NULL, current_cu->fent, NULL);
     }
       
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -223,14 +290,13 @@ int			edfmt_dwarf2_block_loop(u_int endpos)
     hash_init(&abbrev_table, DWARF2_HNAME_ABBREV, 30, ELEM_TYPE_ANY);
   
   /* Parse abbrev table on the appropriate offset */
-  if (edfmt_dwarf2_abbrev() == 0)
+  if (edfmt_dwarf2_abbrev_enum() == 0)
     { 
       /* Print dwarf only if we have .debug_abbrev pattern */
       edfmt_dwarf2_form(endpos);
     }
 
-  /* Parse cfa informations */
-  edfmt_dwarf2_cfa();
+  edfmt_dwarf2_abbrev_enum_clean();
 
   hash_empty(DWARF2_HNAME_ABBREV);
   
