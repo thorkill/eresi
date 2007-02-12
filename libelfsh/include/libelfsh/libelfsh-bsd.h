@@ -12,6 +12,8 @@
 #include <sys/queue.h>		// NEEDED BY Obj_Entry
 #include <sys/stat.h>
 #include <sys/signal.h>
+#include <sys/param.h>
+#include <sys/elf_common.h>
 
 /* Lists of shared object dependencies */
 typedef struct			Struct_Needed_Entry 
@@ -224,6 +226,23 @@ typedef struct
   Elf64_Word	vn_next;		/* Offset in bytes to next verneed
 					   entry */
 } Elf64_Verneed;
+
+/* Note section contents.  Each entry in the note section begins with
+   a header of a fixed form.  */
+typedef struct
+{
+  Elf32_Word n_namesz;                  /* Length of the note's name.  */
+  Elf32_Word n_descsz;                  /* Length of the note's descriptor.  */
+  Elf32_Word n_type;                    /* Type of the note.  */
+} Elf32_Nhdr;
+
+typedef struct
+{
+  Elf64_Word n_namesz;                  /* Length of the note's name.  */
+  Elf64_Word n_descsz;                  /* Length of the note's descriptor.  */
+  Elf64_Word n_type;                    /* Type of the note.  */
+} Elf64_Nhdr;
+
 
 
 /* Legal values for vn_version (version revision).  */
@@ -533,3 +552,58 @@ typedef struct
 #if !defined(STT_NUM)
  #define STT_NUM	7
 #endif
+
+
+/* 32bit */
+struct user_fpregs_struct
+{
+  long int cwd;
+  long int swd;
+  long int twd;
+  long int fip;
+  long int fcs;
+  long int foo;
+  long int fos;
+  long int st_space [20];
+};
+
+
+struct user_fpregs_struct64bit
+{
+  __uint16_t            cwd;
+  __uint16_t            swd;
+  __uint16_t            ftw;
+  __uint16_t            fop;
+  __uint64_t            rip;
+  __uint64_t            rdp;
+  __uint32_t            mxcsr;
+  __uint32_t            mxcr_mask;
+  __uint32_t            st_space[32];   /* 8*16 bytes for each FP-reg = 128 bytes */
+  __uint32_t            xmm_space[64];  /* 16*16 bytes for each XMM-reg = 256 bytes */
+  __uint32_t            padding[24];
+};
+
+
+/* Legal values for note segment descriptor types for core files. */
+
+
+#define NT_PRSTATUS     1               /* Contains copy of prstatus struct */
+#define NT_FPREGSET     2               /* Contains copy of fpregset struct */
+#define NT_PRPSINFO     3               /* Contains copy of prpsinfo struct */
+#define NT_PRXREG       4               /* Contains copy of prxregset struct */
+#define NT_TASKSTRUCT   4               /* Contains copy of task structure */
+#define NT_PLATFORM     5               /* String from sysinfo(SI_PLATFORM) */
+#define NT_AUXV         6               /* Contains copy of auxv array */
+#define NT_GWINDOWS     7               /* Contains copy of gwindows struct */
+#define NT_ASRS         8               /* Contains copy of asrset struct */
+#define NT_PSTATUS      10              /* Contains copy of pstatus struct */
+#define NT_PSINFO       13              /* Contains copy of psinfo struct */
+#define NT_PRCRED       14              /* Contains copy of prcred struct */
+#define NT_UTSNAME      15              /* Contains copy of utsname struct */
+#define NT_LWPSTATUS    16              /* Contains copy of lwpstatus struct */
+#define NT_LWPSINFO     17              /* Contains copy of lwpinfo struct */
+#define NT_PRFPXREG     20              /* Contains copy of fprxregset struct*/
+
+/* Legal values for the note segment descriptor types for object files.  */
+
+#define NT_VERSION      1               /* Contains a version string.  */

@@ -19,8 +19,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <sys/user.h>
-#include <sys/procfs.h>
 
 #include "elfsh-libc.h"
 #include <elf.h>
@@ -34,6 +32,8 @@
 #define __USE_GNU
 #include <sys/ucontext.h>
 
+#include <sys/user.h>
+#include <sys/procfs.h>
 
 /* Configure the DEBUG modes for various part of the code */
 #define		__DEBUG_MAP__			0
