@@ -33,8 +33,8 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
       ins->instr = ASM_SP_STBAR;
     }
     else if (opcode.i == 1) {	/* MEMBAR */
-      ins->instr = ASM_SP_MEMBAR
-      ins->type = ASM_TYPE_OTHER;;
+      ins->instr = ASM_SP_MEMBAR;
+      ins->type = ASM_TYPE_OTHER;
       ins->nb_op = 1;
       ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
       /* operand = cmask OR mmask */
