@@ -9,7 +9,8 @@ asm_sparc_stxa(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf, proc);
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_STORE;
 
   ins->nb_op = 2;
   if (opcode.i) {

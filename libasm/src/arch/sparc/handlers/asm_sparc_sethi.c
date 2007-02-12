@@ -6,6 +6,8 @@ asm_sparc_sethi(asm_instr * ins, u_char * buf, u_int len,
 {
   struct s_decode_branch opcode;
   sparc_convert_branch(&opcode, buf, proc);
+  
+  ins->type = ASM_TYPE_OTHER;
 
   if (!opcode.rd && !opcode.imm) {
     ins->instr = ASM_SP_NOP;

@@ -10,7 +10,8 @@ asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_IMPBRANCH;
 
   ins->nb_op = 2;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
@@ -29,6 +30,7 @@ asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
   if (ins->op1.base_reg == ASM_REG_O7) {
     ins->nb_op = 1;
     ins->instr = ASM_SP_CALL;
+    ins->type = ASM_TYPE_CALLPROC;
     ins->op1 = ins->op2;
   }
   else if (ins->op1.base_reg == ASM_REG_G0) {
@@ -36,12 +38,14 @@ asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
 	ins->op2.base_reg == ASM_REG_I7 && ins->op2.imm == 8) {
 
       ins->instr = ASM_SP_RET;
+      ins->type = ASM_TYPE_RETPROC;
       ins->nb_op = 0;
     }
     else if (ins->op2.type == ASM_SP_OTYPE_IMM_ADDRESS &&
 	     ins->op2.base_reg == ASM_REG_O7 && ins->op2.imm == 8) {
 
       ins->instr = ASM_SP_RETL;
+      ins->type = ASM_TYPE_RETPROC;
       ins->nb_op = 0;
     }
     else {

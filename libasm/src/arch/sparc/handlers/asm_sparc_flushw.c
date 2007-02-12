@@ -7,6 +7,8 @@ asm_sparc_flushw(asm_instr * ins, u_char * buf, u_int len,
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
   sparc_convert_format3(&opcode, buf, proc);
+  
+  ins->type = ASM_TYPE_OTHER;
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];

@@ -10,7 +10,8 @@ asm_sparc_movr(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_STORE;
 
   ins->instr = inter->movr_table[opcode.rcond];
   ins->nb_op = 3;

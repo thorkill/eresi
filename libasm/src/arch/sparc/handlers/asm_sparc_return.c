@@ -10,7 +10,8 @@ asm_sparc_return(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_RETPROC;
 
   ins->nb_op = 1;
   if (opcode.i) {

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.5 2007-01-28 18:55:00 strauss Exp $
+** $Id: libasm.h,v 1.6 2007-02-12 17:15:26 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -69,10 +69,11 @@ enum {
   ASM_TYPE_RETPROC,	//! Return instruction
   ASM_TYPE_MEM_READ,	//! Memory read access instruction.
   ASM_TYPE_MEM_WRITE,	//! Memory write access instruction.
-  ASM_TYPE_ARITH,	//! Arithmetic instruction.
+  ASM_TYPE_ARITH,	//! Arithmetic (or logic) instruction.
   ASM_TYPE_LOAD,	//! Memory data loading instruction.
   ASM_TYPE_STORE,	//! Memory data storing instruction.
   ASM_TYPE_ARCH,	//! Architecture dependant instruction.
+  ASM_TYPE_OTHER	//! Type that doesn't fit the ones above.
 } e_asm_instr_type;
 
 

@@ -9,8 +9,9 @@ asm_sparc_ldsha(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf, proc);
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
-
-
+  
+  ins->type = ASM_TYPE_LOAD;
+  
   ins->nb_op = 2;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
   ins->op1.base_reg = opcode.rd;

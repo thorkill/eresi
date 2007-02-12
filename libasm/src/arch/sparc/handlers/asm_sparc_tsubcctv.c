@@ -10,7 +10,8 @@ asm_sparc_tsubcctv(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_ARITH;
 
   ins->nb_op = 3;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;

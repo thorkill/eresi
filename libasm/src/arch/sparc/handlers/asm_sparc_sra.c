@@ -10,7 +10,8 @@ asm_sparc_sra(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_ARITH;
 
   /* Find the right kind of shift - (SLL/SRL/SRA){X} */
   ins->instr = inter->shift_table[opcode.op3 - 0x25 +

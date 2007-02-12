@@ -12,7 +12,8 @@ asm_sparc_movcc(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_STORE;
 
   if (opcode4.cc2 == 0) { /* fcc{0,1,2,3,4} */
    	ins->instr = inter->movcc_table[opcode4.cond];  	  	

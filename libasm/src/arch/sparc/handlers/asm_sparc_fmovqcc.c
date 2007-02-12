@@ -10,7 +10,8 @@ asm_sparc_fmovqcc(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_STORE;
 
   if (opcode.opf_cc < 4)
     ins->instr = inter->fmovfcc_table[(((opcode.opf & 0x1f) - 1) * 8)

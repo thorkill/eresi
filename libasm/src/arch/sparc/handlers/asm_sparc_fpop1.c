@@ -10,10 +10,12 @@ asm_sparc_fpop1(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_ARITH;
 
   ins->instr = inter->fpop1_table[opcode.opf];
   if (opcode.opf < 0x40 || opcode.opf >= 0x70) {
+  	ins->type = ASM_TYPE_STORE;
     ins->nb_op = 2;
   }
   else {			/* 0x40 < opf < 0x69 - add, sub, mul, div */

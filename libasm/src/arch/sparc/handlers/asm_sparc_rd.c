@@ -10,7 +10,8 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-
+  
+  ins->type = ASM_TYPE_LOAD;
 
   if (opcode.rs1 != 15) {	/* RD*(-PR) */
     ins->nb_op = 2;
@@ -28,10 +29,12 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
     if (opcode.rd != 0)
       ins->instr = ASM_SP_BAD;
     else if (opcode.i == 0) {	/* STBAR */
+      ins->type = ASM_TYPE_OTHER;
       ins->instr = ASM_SP_STBAR;
     }
     else if (opcode.i == 1) {	/* MEMBAR */
-      ins->instr = ASM_SP_MEMBAR;
+      ins->instr = ASM_SP_MEMBAR
+      ins->type = ASM_TYPE_OTHER;;
       ins->nb_op = 1;
       ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
       /* operand = cmask OR mmask */
