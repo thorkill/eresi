@@ -148,8 +148,6 @@ int			mjr_trace_control(mjrcontext_t	*context,
   ** If previous block is not finished, search for a block which begin at current
   ** virtual address. If found, then the current instruction is the first of a 
   ** previously detected block. 
-  **
-  ** NOTE: this may help in obfuscated code detection
   */
   else if ((tmp = mjr_block_get_by_vaddr(context, vaddr, 0))) 
     {
@@ -166,7 +164,6 @@ int			mjr_trace_control(mjrcontext_t	*context,
   /* Keep track of curaddr and add current instruction size to block size */
   context->curblock->size += ilen;
   mjr_history_write(context, ins, vaddr, MJR_HISTORY_CUR);
-
   if (!tmp)
     mjr_block_add_list(context, context->curblock);
   

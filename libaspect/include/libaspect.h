@@ -20,7 +20,9 @@
  #include <image.h>
  #include <bsd_mem.h>
 #else
+#if !defined(__USE_GNU)
  #define __USE_GNU
+#endif
  #include <dlfcn.h>
 #endif
 

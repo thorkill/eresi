@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.12 2007-01-06 01:46:57 thor Exp $
+ * $Id: symtab.c,v 1.13 2007-02-18 17:01:03 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -22,10 +22,10 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
    {
      n = hash_get(&sess->cur->blkhash, tab[x]);
      fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjr_symtab_rebuild: "XFMT" %d\n",
-        n->vaddr,
-	n->type);
-	if (!mjr_block_funcstart(n))
-    	    continue;
+	     n->vaddr,
+	     n->type);
+     if (!mjr_block_funcstart(n))
+       continue;
      snprintf(s, BSIZE, "%s"AFMT, 
 	      (char *) elfsh_config_get_data(MJR_COFING_CALL_PREFIX), n->vaddr);
      mjr_symbol_add(sess, n->vaddr, s);
@@ -88,4 +88,3 @@ int		mjr_symbol_rename(mjrsession_t  *sess,
  mjr_symbol_delete_by_name(sess, old_name); 
  return 1;
 }
-

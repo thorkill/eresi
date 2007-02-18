@@ -40,7 +40,7 @@ int		cmd_modload()
 		      "Module already loaded", -1);
 
   /* Load the module and create revmmod_t entry */
-  XALLOC(new, sizeof(revmmod_t), NULL);
+  XALLOC(new, sizeof(revmmod_t), -1);
 #ifdef __BEOS__
   new->handler = load_add_on(name);
   if (new->handler == B_ERROR)

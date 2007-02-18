@@ -25,7 +25,7 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
   root = *proot;
   if (!root)
     {
-      root = elfsh_malloc(sizeof (btree_t));
+      root = (btree_t *) elfsh_malloc(sizeof (btree_t));
       memset(root, 0, sizeof (btree_t));
       root->id = id;
       root->elem = elem;

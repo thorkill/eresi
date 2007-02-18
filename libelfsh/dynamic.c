@@ -8,7 +8,7 @@
 
 
 /* Change endianess of .dynamic */
-int		elfsh_endianize_dynamic(elfshsect_t *new)
+int		elfsh_endianize_dynamic(elfshsect_t *newent)
 {	  
   elfsh_Dyn	*dyn;
   u_int		idx;
@@ -16,19 +16,19 @@ int		elfsh_endianize_dynamic(elfshsect_t *new)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity check */
-  if (!new)
+  if (!newent)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-  if (new->parent->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
+  if (newent->parent->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 #elif __BYTE_ORDER == __BIG_ENDIAN
-  if (new->parent->hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
+  if (newent->parent->hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
 #else
 #error Unexpected __BYTE_ORDER !
 #endif
-    dyn = elfsh_get_raw(new);
-    for (idx = 0; idx < new->shdr->sh_size / sizeof(elfsh_Dyn); idx++)
+    dyn = (elfsh_Dyn *) elfsh_get_raw(newent);
+    for (idx = 0; idx < newent->shdr->sh_size / sizeof(elfsh_Dyn); idx++)
       {
 	dyn[idx].d_tag      = swaplong(dyn[idx].d_tag);
 	dyn[idx].d_un.d_val = swaplong(dyn[idx].d_un.d_val);
@@ -40,9 +40,9 @@ int		elfsh_endianize_dynamic(elfshsect_t *new)
 
 
 /* Return a ptr on the dynamic section */
-elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, int *num)
+elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 {
-  elfshsect_t	*new = NULL; /* to shut gcc up with -Wall */
+  elfshsect_t	*newent = NULL; /* to shut gcc up with -Wall */
   int		nbr;
   elfsh_Dyn	*ret;
 
@@ -50,29 +50,29 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, int *num)
 
   if (file->secthash[ELFSH_SECTION_DYNAMIC] == NULL)
     {
-      new = elfsh_get_section_by_type(file, SHT_DYNAMIC, NULL, NULL, &nbr, 0);
-      if (new == NULL)
+      newent = elfsh_get_section_by_type(file, SHT_DYNAMIC, NULL, NULL, &nbr, 0);
+      if (newent == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get .dynamic by type", NULL);
-      file->secthash[ELFSH_SECTION_DYNAMIC] = new;
+      file->secthash[ELFSH_SECTION_DYNAMIC] = newent;
     }    
   
-  new = file->secthash[ELFSH_SECTION_DYNAMIC];
+  newent = file->secthash[ELFSH_SECTION_DYNAMIC];
   nbr = file->secthash[ELFSH_SECTION_DYNAMIC]->shdr->sh_size / 
     sizeof(elfsh_Dyn);
   if (num != NULL)
     *num = nbr;
 
-  if (new->data == NULL)
+  if (newent->data == NULL)
     {
-      new->data = elfsh_load_section(file, new->shdr);
-      if (new->data == NULL)
+      newent->data = elfsh_load_section(file, newent->shdr);
+      if (newent->data == NULL)
 	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .dynamic", NULL);
-      elfsh_endianize_dynamic(new);
+      elfsh_endianize_dynamic(newent);
     }
 
-  ret = elfsh_get_raw(new);
+  ret = (elfsh_Dyn *) elfsh_get_raw(newent);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -110,7 +110,7 @@ elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
 
   if (d == NULL)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameter", -1);
+		      "Invalid NULL parameter", 0xFFFFFFFF);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
 }
 
@@ -156,9 +156,10 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, 
 						 elfsh_Word type)
 {
-  int		index;
-  int		size;
+  u_int		index;
+  u_int		size;
   elfsh_Dyn	*table;
+  elfsh_Sword	res;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -168,8 +169,11 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
 		      "Unable to get DYNAMIC", NULL);
 
   for (index = 0; index < size; index++)
-    if (elfsh_get_dynentry_type(table + index) == type)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (table + index));
+    {
+      res = elfsh_get_dynentry_type(table + index);
+      if (res != -1 && res == (elfsh_Sword) type)
+	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (table + index));
+    }
   
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No dynamic entry with that type", NULL);
@@ -214,8 +218,9 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 {
   elfsh_Dyn	*dyn;
-  int		nbr;
+  u_int		nbr;
   u_int		idx;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   dyn = elfsh_get_dynamic(file, &nbr);
   if (dyn == NULL)

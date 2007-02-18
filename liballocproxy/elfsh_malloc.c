@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: elfsh_malloc.c,v 1.4 2006-06-16 20:05:44 thor Exp $
+  $Id: elfsh_malloc.c,v 1.5 2007-02-18 17:01:03 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -233,7 +233,10 @@
 /*
 ** for MREMAP_MAYMOVE
 */
-#define _GNU_SOURCE 
+#if !defined(_GNU_SOURCE)
+ #define _GNU_SOURCE 
+#endif
+
 #include <unistd.h>
 #include <sys/mman.h>
 

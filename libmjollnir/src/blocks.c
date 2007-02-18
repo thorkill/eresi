@@ -118,6 +118,10 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   blocnbr = sect->shdr->sh_size / sizeof(mjrblock_t);
   for (index = 0; index < blocnbr; index++)
     {
+
+      // here you can see that the format ondisk is the exact same format that
+      // we manipulate in this lib. So its very practical to reload/store the
+      // info ondisk.
       curbloc = (mjrblock_t *) sect->data + index;
       mjr_block_add_list(ctxt, curbloc);
       snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
@@ -129,7 +133,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
       hash_add(&ctxt->blkhash, (char *) _vaddr2str(curbloc->vaddr), curbloc);
     }
-
+  
   /* Second pass : create all caller information for all loaded blocks */
   for (index = 0; index < blocnbr; index++)
     {
@@ -140,7 +144,8 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
 #if __DEBUG_BLOCKS__
       if (!target)
-       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",curbloc->true);
+	fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",
+		curbloc->true);
 #endif
 
       if (!target)
@@ -154,7 +159,8 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 
 #if __DEBUG_BLOCKS__
       if (!target)
-       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 2-pass vaddr: "XFMT"\n",curbloc->false);
+	fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 2-pass vaddr: "XFMT"\n",
+		curbloc->false);
 #endif
 
       if (!target)
@@ -221,6 +227,7 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 
 
 /* Store the blocks inside the .control section using the file representation */
+// This loops on all block, and call blocks_save on each bloc
 int			mjr_blocks_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;
@@ -255,7 +262,6 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
       block = hash_get(&ctxt->blkhash, keys[index]);
       mjr_block_save(block, &buf);
 
-      /* Additionally fill the bloc entry point for recontructed functions */
       if (mjr_block_funcstart(block))
 	{
 	  snprintf(funcname, sizeof(funcname), AFMT, block->vaddr);
@@ -268,7 +274,7 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 	      continue;
 	    }
 	  printf(" [*] Found block start for function %s \n", funcname);
-	  }
+	}
     }
 
   /* Create control section */
@@ -300,6 +306,8 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz)
   hash_add(&ctxt->blkhash, (char *) _vaddr2str(vaddr), t);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
 };
+
+
 
 /* Add a new block to the blocks tree (sorted by address)
 ** If block is already present, it's not inserted and function returns */

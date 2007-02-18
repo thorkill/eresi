@@ -127,6 +127,11 @@ echo  " [*] Enabling etags support"
 CTAGS="1"
 ;;
 
+--use-cpp*)
+echo  " [*] Enabling C++ built"
+echo  "CC		= g++"			>> $CONFIGFILE
+;;
+
 --set-shell*)
 shift
 echo  " [*] Setting UNIX shell to " $1
@@ -209,6 +214,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
+    echo "   --use-cpp         : Build the project as C++"
     echo
     echo "   Available variables :"
     echo

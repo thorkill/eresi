@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.14 2007-01-21 21:45:51 may Exp $
+ * $Id: init.c,v 1.15 2007-02-18 17:01:03 may Exp $
  *
  * Initialization functions
  *
@@ -30,11 +30,10 @@ int		mjr_init_session(mjrsession_t *sess)
 /* Change the current analysis context */
 int		mjr_set_current_context(mjrsession_t *sess, char *name) 
 {
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
- if ((sess->cur = hash_get(&sess->ctx,name)) == NULL)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
-
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  if ((sess->cur = hash_get(&sess->ctx,name)) == NULL)
+    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Create a new analysis context */

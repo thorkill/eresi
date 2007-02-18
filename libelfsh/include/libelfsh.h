@@ -29,7 +29,10 @@
  #include <bsd_mem.h>
 #endif
 
-#define __USE_GNU
+#if !defined(__USE_GNU)
+ #define __USE_GNU
+#endif
+
 #include <sys/ucontext.h>
 
 #include <sys/user.h>
@@ -699,7 +702,7 @@ void    *elfsh_config_get_data(char *name);
 void    __elfsh_config_update_item(t_configitem *item,void *data);
 
 /* dynamic.c */
-elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, int *num);
+elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num);
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, elfsh_Word type);
 elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d);
 int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag);
@@ -1121,7 +1124,7 @@ int		elfsh_copy_plt(elfshobj_t *file, u_int modulo);
 int		elfsh_get_plt_symbol_offset(elfshobj_t *file, uint8 *name,
 					    elfsh_Off *off);
 int		elfsh_build_plt(elfshobj_t *file);
-int		elfsh_altplt_firstent(elfshsect_t	*new, 
+int		elfsh_altplt_firstent(elfshsect_t	*created, 
 				      u_int		*off,
 				      elfshsect_t	*symtab, 
 				      elfshobj_t	*file, 
@@ -1283,10 +1286,10 @@ int		elfsh_get_pagesize(elfshobj_t *file);
 u_int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
 
-int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new);
-int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new);
+int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);
+int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
-			    elfsh_Addr new);
+			    elfsh_Addr created);
 int             elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
 			  elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m);
 int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);

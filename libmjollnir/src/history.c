@@ -1,7 +1,7 @@
 /*
 ** (C) 2001-2006 Devhell Labs / Asgard Labs : thorolf / sk / mayhem
 **
-** $Id: history.c,v 1.7 2007-01-01 04:25:41 thor Exp $
+** $Id: history.c,v 1.8 2007-02-18 17:01:03 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -13,6 +13,8 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
   if (inst.instr == ASM_NOP)
     ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 
+  /* XXX: history should move in libasm */
+  /* XXX: does not work if HISTORY_LEN is changed in the header file */
   memcpy(&cur->hist[0], &cur->hist[1], sizeof(mjrhistory_t));
   memcpy(&cur->hist[1], &cur->hist[2], sizeof(mjrhistory_t));
   memcpy(&cur->hist[2], &cur->hist[3], sizeof(mjrhistory_t));

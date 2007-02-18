@@ -12,7 +12,7 @@ OBJ	= dump.o recv.o send.o
 CFLAGS	= -Wall $(BITS) -g3 -Iinclude -I../libc/include/ -I../libelfsh/include/ -DELFSH_INTERN -fPIC
 LDFLAGS = -L./ -L../libelfsh/ -llibelfsh  -ldumpelfsh -L/usr/pkg/lib/ -ltermcap -lreadline \
 	  $(BITS) $(EXTRAOPT)
-CC	= gcc
+CC	?= gcc
 AR	= ar rc
 NAME	= libdumpelfsh
 

@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.1.1.6 2006-02-14 20:17:03 thor Exp $
+  $Id: malloc.h,v 1.2 2007-02-18 17:01:03 may Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
@@ -79,12 +79,12 @@ typedef struct malloc_state * mstate;
    gcc 2.8.x and egcs.  */
 # ifndef __THROW
 #  if defined __cplusplus && (__GNUC__ >= 3 || __GNUC_MINOR__ >= 8)
-#   define __THROW	throw ()
-#  else
+//#   define __THROW	throw ()
+//#  else
 #   define __THROW
 #  endif
 # endif
-# define __MALLOC_P(args)	args __THROW
+# define __MALLOC_P(args)	args //__THROW
 /* This macro will be used for functions which might take C++ callback
    functions.  */
 # define __MALLOC_PMT(args)	args

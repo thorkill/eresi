@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: elfsh_hooks.c,v 1.1.1.3 2006-02-14 20:17:03 thor Exp $ */
+/* $Id: elfsh_hooks.c,v 1.2 2007-02-18 17:01:03 may Exp $ */
 
 /* What to do if the standard debugging hooks are in place and a
    corrupt pointer is detected: do nothing (0), print an error message
@@ -225,7 +225,7 @@ top_check()
   malloc_printerr (check_action, "malloc: top chunk is corrupt", t);
 
   /* Try to set up a new top chunk. */
-  brk = MORECORE(0);
+  brk = (char *) (MORECORE(0));
   front_misalign = (unsigned long)chunk2mem(brk) & MALLOC_ALIGN_MASK;
   if (front_misalign > 0)
     front_misalign = MALLOC_ALIGNMENT - front_misalign;

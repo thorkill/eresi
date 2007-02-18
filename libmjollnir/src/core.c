@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.20 2007-01-25 01:51:34 thor Exp $
+** $Id: core.c,v 1.21 2007-02-18 17:01:03 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -67,6 +67,14 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 
 
 
+// This is the function called when we do an "analyse"
+// It takes each section and call the analyse 
+// which kind of features we provide in this analysis?
+// control flow graphs (actually 2 graphs : one graph of blocks, one graph 
+// functions
+// we also provide fingerprinting but I will show later oki ? k
+
+
 /* Main analysis function */
 int		mjr_analyse(mjrsession_t *sess, int flags) 
 {
@@ -91,6 +99,8 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   
   /* Make sure we do what the user desires */
   /* XXX: should go in elfsh analyse command and use vm_output */
+  // Just to make sure we remove previously done analysis if user call
+  // analyse a second time
   if (sess->cur->analysed)
     {
       printf(" [*] %s section present ! \n"
@@ -132,10 +142,10 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store blocks in file", -1);
 
- /* Store analyzed functions in file */
-    if (mjr_functions_store(sess->cur) < 0)
+  /* Store analyzed functions in file */
+  if (mjr_functions_store(sess->cur) < 0)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-  	      "Unable to store functions in file", -1);
+		      "Unable to store functions in file", -1);
   
   /* Set the flag and return */
   sess->cur->analysed = 1;

@@ -1195,6 +1195,8 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
 char		*vm_ascii_type(hash_t *cur);
+char		*vm_ascii_vtype(vector_t *cur);
+char		*vm_get_mode_name();
 
 /* Dependences related information : deps.c */
 int		vm_load_enumdep(elfshobj_t *obj);

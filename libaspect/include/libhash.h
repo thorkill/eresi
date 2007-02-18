@@ -16,7 +16,7 @@
 #define		HASHALLOC(a, b, c)			\
 do							\
 {							\
-  if ((a = calloc(b, 1)) == NULL)			\
+  if ((a = (hashent_t *) calloc(b, 1)) == NULL)	        \
     {							\
       perror("libhashelfsh[calloc]");			\
       return (c);					\

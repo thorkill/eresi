@@ -19,11 +19,11 @@ OBJUT 	= mjollnirUnitTest
 
 CFLAGS32 = -fPIC -I./include/ -I../elibc/include/ -I../libasm/include/       \
 	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-	 -Wall -DELFSH32 -DELFSH_INTERN
+	 -Wall -DELFSH32 -DELFSH_INTERN -g3
 
 CFLAGS64 = -fPIC -I./include/ -I../elibc/include/ -I../libasm/include/ 	     \
 	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-	 -Wall -DELFSH64 -DELFSH_INTERN
+	 -Wall -DELFSH64 -DELFSH_INTERN -g3
 
 LDFLAGS32 = -L. -L../libasm/ -L../libelfsh/ -L../elibc/ -L../liballocproxy   \
 	  -L../libaspect/ -lelfsh32 -lasm -lcelfsh32 -laspect32              \
@@ -33,7 +33,7 @@ LDFLAGS64 = -L. -L../libasm/ -L../libelfsh/ -L../elibc/ -L../liballocproxy   \
 	  -L../libaspect/ -lelfsh64 -lasm -lcelfsh64  -laspect64             \
 	  -lallocproxy $(LPTHREAD)
 
-CC	= gcc -ggdb -g3
+CC	?= gcc
 NAME	= libmjollnir
 NAME32	= libmjollnir32
 NAME64	= libmjollnir64

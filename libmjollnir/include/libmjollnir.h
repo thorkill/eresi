@@ -18,8 +18,7 @@
 #include "libmjollnir-blocks.h"
 #include "libmjollnir-int.h"
 #include "libmjollnir-fprint.h"
-
-
+ 
 /* An history entry */
 typedef struct		s_history
 {
@@ -49,13 +48,14 @@ typedef struct		_mjrContext
   u_int			calls_found; /* FIXME */
 }			mjrcontext_t;
 
-
 /* The session structure. Yes, libmjollnir is multisession */
 typedef struct		s_session
 {
  mjrcontext_t		*cur;
  hash_t			ctx;
 }			mjrsession_t;
+
+
 
 /* Size of temp buffers */
 #define BSIZE_SMALL	32

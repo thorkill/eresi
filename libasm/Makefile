@@ -79,7 +79,7 @@ CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH32 \
 			-I../libaspect/include
 RM 		= 	rm -f
 ETAGS 		= 	etags
-CC 		= 	gcc
+CC 		?= 	gcc
 CP 		= 	cp
 
 all:	lib

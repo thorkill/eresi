@@ -36,10 +36,10 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 /* Fprint : any intrabloc fingerprinting function that you like */
 int		mjr_fprint_fwd(mjrcontext_t *c,
 			       mjrblock_t   *start, 
-			       int	    weight,
-			       int	    curd,
-			       int	    mind,
-			       int	    maxd,
+			       int	    weight, 
+			       int	    curd, // cur depth
+			       int	    mind, // min depth to match
+			       int	    maxd, // max depth to match
 			       int	    (*fprint)(mjrblock_t *))
 {
   mjrblock_t	*true;
@@ -117,4 +117,3 @@ int		mjr_fprint_bwd(mjrcontext_t *c,
     }
   return (weight);
 }
-

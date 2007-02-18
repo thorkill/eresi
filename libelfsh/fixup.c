@@ -18,7 +18,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   elfshsect_t	*list;
   elfshsect_t	*parent;
   elfsh_Shdr	hdr;
-  elfsh_Sym	new;
+  elfsh_Sym	newent;
   elfsh_Sym	*actual;
   elfsh_Addr	startaddr;
   u_int		index;
@@ -93,9 +93,9 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
       parent = elfsh_get_parent_section(symtab->parent, startaddr, NULL);
        if (parent != NULL)
 	 {
-	    new = elfsh_create_symbol(startaddr, 0, STT_FUNC,
+	    newent = elfsh_create_symbol(startaddr, 0, STT_FUNC,
 				      0, 0, parent->index);
-	    elfsh_insert_symbol(symtab, &new, ELFSH_STARTSYM);
+	    elfsh_insert_symbol(symtab, &newent, ELFSH_STARTSYM);
 	 }
     }
   else
@@ -110,9 +110,9 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   actual = elfsh_get_symbol_by_name(symtab->parent, ELFSH_GOTSYM);
   if (actual == NULL && got != NULL)
     {
-      new = elfsh_create_symbol(got->shdr->sh_addr, 0, STT_OBJECT,
+      newent = elfsh_create_symbol(got->shdr->sh_addr, 0, STT_OBJECT,
 				0, 0, got->index);
-      elfsh_insert_symbol(symtab, &new, ELFSH_GOTSYM);
+      elfsh_insert_symbol(symtab, &newent, ELFSH_GOTSYM);
     }
 
   /* Fix sctndx */

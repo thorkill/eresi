@@ -29,7 +29,7 @@ vector_t*	aspect_vector_get(char *name)
 {
   vector_t	*vect;
 
-  vect = hash_get(&vector_hash, name);
+  vect = (vector_t *) hash_get(&vector_hash, name);
   return (vect);
 }
 
@@ -50,7 +50,7 @@ void		aspect_vectors_insert(vector_t	   *vect,
   unsigned int  dimsz;
 
   dimsz = vect->arraysz;
-  tmp   = vect->hook;
+  tmp   = (unsigned long *) vect->hook;
   for (idx = 0; idx < dimsz; idx++)
     {
       tmp += dim[idx];
@@ -68,7 +68,7 @@ void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
   unsigned int		idx;
   unsigned int		dimsz;
 
-  tmp   = vect->hook;
+  tmp   = (unsigned long *) vect->hook;
   dimsz = vect->arraysz;
   for (idx = 0; idx < dimsz; idx++)
     {
@@ -145,10 +145,10 @@ int		aspect_register_vector(char		*name,
       write(1, "Invalid vector element type\n", 28);
       return (-1);
     }
-  vector = calloc(sizeof(vector_t), 1);
+  vector = (vector_t *) calloc(sizeof(vector_t), 1);
   if (vector == NULL)
     return (-1);
-  ptr = calloc(dimensions[0] * sizeof(unsigned long), 1);
+  ptr = (unsigned long *) calloc(dimensions[0] * sizeof(unsigned long), 1);
   if (!ptr)
     return (-1);
   vector->hook = ptr;
@@ -162,6 +162,7 @@ int		aspect_register_vector(char		*name,
   hash_add(&vector_hash, name, vector);
 
   /* Initialize vectored elements */
-  aspect_vectors_recinit(vector->hook, dimensions, 1, dimsz, defaultfunc);
+  aspect_vectors_recinit((unsigned long *) vector->hook, 
+			 dimensions, 1, dimsz, defaultfunc);
   return (0);
 }

@@ -17,7 +17,7 @@ int	hash_init(hash_t *h, char *name, int size, u_int type)
 {
   if (!hash_hash)
     {
-      hash_hash = calloc(sizeof(hash_t), 1);
+      hash_hash = (hash_t *) calloc(sizeof(hash_t), 1);
       hash_init(hash_hash, "hashes", 51, ELEM_TYPE_ANY);
     }
   if (type >= ELEM_TYPE_MAX)
@@ -34,7 +34,7 @@ int	hash_init(hash_t *h, char *name, int size, u_int type)
 /* Return a hash table by its name */
 hash_t	*hash_find(char *name)
 {
-  return (hash_get(hash_hash, name));
+  return ((hash_t *) hash_get(hash_hash, name));
 }
 
 
@@ -53,7 +53,7 @@ hash_t		*hash_empty(char *name)
   type    = hash->type;
   hash_del(hash_hash, name);
   hash_destroy(hash);
-  newname = malloc(strlen(name) + 1);
+  newname = (char *) malloc(strlen(name) + 1);
   strcpy(newname, name);
   hash_init(hash, newname, size, type);
   return (hash);
@@ -79,14 +79,14 @@ void		hash_destroy(hash_t *h)
 int		hash_add(hash_t *h, char *key, void *data)
 {
   hashent_t	*actual;
-  hashent_t	*new;
+  hashent_t	*newent;
   char		*backup;
   u_int		index;
 
   if (!h || !key || !data || hash_get(h, key))
     return (-1);
   
-  new = NULL;
+  newent = NULL;
   for (index = 0, backup = key; *backup; backup++)
     index += *backup;
   index %= h->size;
@@ -98,13 +98,13 @@ int		hash_add(hash_t *h, char *key, void *data)
     }
   else
     {
-      HASHALLOC(new, sizeof(hashent_t), -1);
-      new->key  = key;
-      new->data = data;
+      HASHALLOC(newent, sizeof(hashent_t), -1);
+      newent->key  = key;
+      newent->data = data;
       actual = h->ent + index;
       while (actual->next)
 	actual = actual->next;
-      actual->next = new;
+      actual->next = newent;
     }
   h->elmnbr++;
   return (0);
@@ -230,14 +230,14 @@ char		**hash_get_keys(hash_t *h, int *n)
 #if __DEBUG__
 	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
 #endif
-	  keys    = realloc(keys, (i + 1) * sizeof(char *));
+	  keys    = (char **) realloc(keys, (i + 1) * sizeof(char *));
 	  keys[i] = entry->key;
 	  entry   = entry->next;
 	  i++;
 	}
     }
   
-  keys    = realloc(keys, (i + 1) * sizeof(char *));
+  keys    = (char **) realloc(keys, (i + 1) * sizeof(char *));
   keys[i] = NULL;
   *n      = i;
   return (keys);

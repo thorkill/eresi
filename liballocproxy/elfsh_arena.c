@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: elfsh_arena.c,v 1.1.1.3 2006-02-14 20:17:03 thor Exp $ */
+/* $Id: elfsh_arena.c,v 1.2 2007-02-18 17:01:03 may Exp $ */
 
 /* Compile-time constants.  */
 
@@ -42,13 +42,13 @@ mstate  elfsh_int_new_arena(size_t);
    `true' and `false' must have the value 0 and 1 respectively.  */
 typedef enum
   {
-    false = 0,
-    true = 1
-  } bool;
+    False = 0,
+    True = 1
+  } Bool;
 
-/* The names `true' and `false' must also be made available as macros.  */
-#define false   false
-#define true    true
+/* The names `True' and `False' must also be made available as macros.  */
+#define False   False
+#define True    True
 
 #ifndef THREAD_STATS
 #define THREAD_STATS 0
@@ -380,7 +380,7 @@ libc_hidden_proto (_dl_open_hook);
    so it has to switch to using the special startup-time hooks while doing
    those allocations.  */
 void
-__elfsh_libc_malloc_pthread_startup (bool first_time)
+__elfsh_libc_malloc_pthread_startup (Bool first_time)
 {
   if (first_time)
     {
@@ -633,14 +633,14 @@ new_heap(size, top_pad) size_t size, top_pad;
      No swap space needs to be reserved for the following large
      mapping (on Linux, this is the case for all non-writable mappings
      anyway). */
-  p2 = MAP_FAILED;
+  p2 = (char *) (MAP_FAILED);
   if(aligned_heap_area) {
     p2 = (char *)MMAP(aligned_heap_area, HEAP_MAX_SIZE, PROT_NONE,
 		      MAP_PRIVATE|MAP_NORESERVE);
     aligned_heap_area = NULL;
     if (p2 != MAP_FAILED && ((unsigned long)p2 & (HEAP_MAX_SIZE-1))) {
       munmap(p2, HEAP_MAX_SIZE);
-      p2 = MAP_FAILED;
+      p2 = (char *) (MAP_FAILED);
     }
   }
   if(p2 == MAP_FAILED) {
@@ -787,7 +787,7 @@ arena_get2(a_tsd, size) mstate a_tsd; size_t size;
 #endif
 {
   mstate a;
-  bool retried = false;
+  Bool retried = False;
 
   if(!a_tsd)
     a = a_tsd = &main_arena;
@@ -823,7 +823,7 @@ arena_get2(a_tsd, size) mstate a_tsd; size_t size;
     (void)mutex_lock(&list_lock);
 
     /* Since we blocked there might be an arena available now.  */
-    retried = true;
+    retried = True;
     a = a_tsd;
     goto repeat;
   }

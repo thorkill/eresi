@@ -42,7 +42,6 @@ int		mjr_asm_flow(mjrcontext_t *context)
   /* Switch on instruction types provided by libasm */
   switch (curins->type)
     {
-
     case ASM_TYPE_CONDBRANCH:
       dstaddr = mjr_insert_destaddr(context);
 
@@ -52,23 +51,23 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
      if (dstaddr != -1)
-     {
-      context->curblock->true  = dstaddr;
-      context->curblock->false = curvaddr + ilen;
-      context->curblock->type  = CALLER_JUMP;
-      context->curblock = 0;
-     }
-    break;
-
+       {
+	 context->curblock->true  = dstaddr;
+	 context->curblock->false = curvaddr + ilen;
+	 context->curblock->type  = CALLER_JUMP;
+	 context->curblock = 0;
+       }
+     break;
+     
     case ASM_TYPE_CALLPROC:
       dstaddr = mjr_insert_destaddr(context);
-
+      
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT
 	      " F:" XFMT" C:"XFMT"\n", curvaddr, dstaddr, curvaddr + ilen, (context->curfunc) ? context->curfunc->vaddr : 0x0);
 #endif
-
+      
       context->calls_seen++;
 
 /* 20070102
@@ -97,6 +96,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	      mjr_function_add_child(context->curfunc, fun->vaddr, 0);
 	    }
 
+	// when a function start, we do a fingerprint of it
         md5 = mjr_fingerprint_function(context, context->curblock->true, 
 				     MJR_FPRINT_TYPE_MD5);
         if (md5)
@@ -189,6 +189,11 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 	   (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
 
   /* We deal with a constructed address */
+
+  /* Specific pattern (simple one) */
+  /* As we dont do any real dataflow analysis yet, we dont handle automatically
+     complex case where addresses are  constructed in a complex way */
+
   if (context->hist[MJR_HISTORY_CUR].instr.instr   == ASM_CALL &&
       context->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV  &&
       context->hist[MJR_HISTORY_PPREV].instr.instr == ASM_MOV)
@@ -213,10 +218,17 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
     }
 
+  /* Instead we have a hash table that we can add element to using the 'addgoto'
+     command of elfsh. That allow to tell which is the target address manually
+     and make the graph continuous even with complex address construction */
+
   /* Happens when an address was manually inserted in the routing table */
   /* This allow to avoid the control flow graph to be broken if elfsh
      is not capable to recompute the target address */
-  ret = (char *) hash_get(&goto_hash, tmp);
+  /* So the keys for this hash tables are the vaddr of the instruction that does
+     the complex function pointer call */
+  
+ ret = (char *) hash_get(&goto_hash, tmp);
   if (!ret) 
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to compute function pointer target",
@@ -236,6 +248,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
       mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
@@ -265,7 +278,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
-
+  
   /* The target block is called directly */
   if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
     {    
@@ -287,8 +300,13 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
 
 
 
+
+
+
 /* Old function of libmjollnir, maybe it does more than insert_destaddr, to make
    sure we can remove this */
+/* Is not used anymore, could be removed, we keep it just to make sure because
+   it seems like some cases are handled that are not yet in the new code */
 /*
   int	mjr_get_calldest(mjrsession_t *sess, int *dest) 
   {
