@@ -104,6 +104,7 @@ clean:
 
 fclean: clean
 	$(RM) ${NAME_libasm} ${NAME_mydisasm} ${NAME_cmpdump} 
+	$(RM) mydisasm
 
 tags:
 	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
@@ -114,10 +115,9 @@ tags:
 	@echo "[CC] $*.o"
 
 mydisasm:
-	$(CC) -g3 -I../libelfsh/include/ -I./include/ \
-	-I../libc/include/ -L./ -L../libelfsh/ \
-	-L../libc/ -L../liballocproxy/ -lpthread \
-	tools/mydisasm.c -DELFSH32 -o ./mydisasm -lasm -lelfsh32 -lcelfsh32 -lallocproxy -L../aspect -laspect32
+	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
+	tools/mydisasm.c -DELFSH32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
+	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm
 
 Makefile.inc:	
 	sh configure
