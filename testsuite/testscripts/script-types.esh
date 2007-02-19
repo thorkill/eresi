@@ -7,12 +7,14 @@ type context = savedfd:int savedmode:byte savedcmd:*long savedinput:*long saveda
 type state = flags:byte[4] glregex%32 sregx:*long alert:byte alertregex%32 strs:*long[4] flags:byte[5] lastid:int
 type world = state:state ctxt:context
 
-type archtypes = types:string[55] end:byte
+type archtypes = types:string[55]
 inform archtypes elfsh_arch_type
-type archaddr  = types:long[55] end:byte
+type archaddr  = types:long[55]
 inform archaddr  elfsh_arch_type
 
+inform archtypes
 quiet
+
 print Now print Strings
 print
 print 107.archtypes[elfsh_arch_type].types[0]
@@ -20,6 +22,7 @@ print 107.archtypes[elfsh_arch_type].types[1]
 print 107.archtypes[elfsh_arch_type].types[2]
 print 107.archtypes[elfsh_arch_type].types[3]
 print
+
 print Now print addresses
 print
 print Entry 1 : 107.archaddr[elfsh_arch_type].types[0]
@@ -38,7 +41,7 @@ get 107.archaddr[elfsh_arch_type].types[1]
 get 107.archaddr[elfsh_arch_type].types[2]
 get 107.archaddr[elfsh_arch_type].types[3]
 
-type multiarray = array:int[32][2][4] len:byte
+
 
 types
 
