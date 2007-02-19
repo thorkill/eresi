@@ -139,6 +139,12 @@ int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 mjrfunc_t	*mjr_function_create(mjrcontext_t *c, char *name, elfsh_Addr a,  
 				     u_int size, mjrblock_t *entry);
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
+void		mjr_function_dump(char *,mjrfunc_t *);
+u_int		mjr_function_flow_parents_save(mjrfunc_t *, mjrbuf_t *);
+u_int		mjr_function_flow_childs_save(mjrfunc_t *, mjrbuf_t *);
+void		mjr_function_add_child(mjrfunc_t *,elfsh_Addr,int);
+void		mjr_function_add_parent(mjrfunc_t *,elfsh_Addr,int);
+void		*mjr_functions_load(mjrcontext_t *ctxt);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);

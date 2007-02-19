@@ -1,14 +1,14 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.13 2007-01-25 01:51:34 thor Exp $
+ * $Id: function.c,v 1.14 2007-02-19 18:22:26 thor Exp $
  *
  */
 #include <libmjollnir.h>
 
 void mjr_function_dump(char *where,mjrfunc_t *f)
 {
-  mjrcaller_t *cur,*next;
+  mjrcaller_t *cur;
   fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] Cnbr: %d Pnbr %d\n",
 	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL ,f->childnbr,f->parentnbr);
 
@@ -68,7 +68,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 
  while(cur)
    {
-     memcpy(buf->data + buf->maxlen, cur->vaddr , sizeof(elfsh_Addr));
+     memcpy(buf->data + buf->maxlen, (char *)cur->vaddr , sizeof(elfsh_Addr));
      buf->maxlen += sizeof(elfsh_Addr);
      cur = cur->next;
    }
@@ -105,7 +105,7 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 
  while(cur)
    {
-     memcpy(buf->data + buf->maxlen, cur->vaddr , sizeof(elfsh_Addr));
+     memcpy(buf->data + buf->maxlen, (void *)cur->vaddr , sizeof(elfsh_Addr));
      buf->maxlen += sizeof(elfsh_Addr);
      cur = cur->next;
    }
@@ -241,7 +241,7 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
   fnc->childfuncs = n;
   fnc->childnbr = fnc->childnbr + 1;
 
-  mjr_function_dump(__FUNCTION__, fnc);
+  mjr_function_dump((char *)__FUNCTION__, fnc);
 
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
@@ -261,7 +261,7 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   fnc->parentfuncs = n;
   fnc->parentnbr++;
 
-  mjr_function_dump(__FUNCTION__, fnc);
+  mjr_function_dump((char *)__FUNCTION__, fnc);
 
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
@@ -270,7 +270,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 {
   int		index,findex;
   elfshsect_t	*sect,*flowsect;
-  u_int		fncnbr,cnt,off;
+  u_int		fncnbr,off;
   elfsh_Addr	tmpaddr;
   mjrfunc_t	*curfnc;
 
@@ -301,7 +301,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
       /* fill the flow list */
       for (findex=0; findex<curfnc->parentnbr; findex++)
 	{
-	  off = curfnc->parentfuncs;
+	  off = (u_int)curfnc->parentfuncs;
 	  curfnc->parentfuncs = NULL;
 
 	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
@@ -311,7 +311,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 
       for (findex=0; findex<curfnc->childnbr; findex++)
 	{
-	  off = curfnc->childfuncs;
+	  off = (u_int)curfnc->childfuncs;
 	  curfnc->childfuncs = NULL;
 
 	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
@@ -319,7 +319,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 	  mjr_function_add_child(curfnc,tmpaddr,0);
 	}
 
-      mjr_function_dump(__FUNCTION__, curfnc);
+      mjr_function_dump((char *)__FUNCTION__, curfnc);
     }
 
   ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
@@ -418,7 +418,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   char			**keys;
   int			keynbr;
   int			index;
-  char			funcname[50];
+  //  char			funcname[50];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -449,7 +449,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
       
 
       func = hash_get(&ctxt->funchash, keys[index]);
-      mjr_function_dump(__FUNCTION__, func);
+      mjr_function_dump((char *)__FUNCTION__, func);
 
       /* 1st Save flow information and get offset from the beginning of .edfmt.fcontrol */
       flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
@@ -459,8 +459,8 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
       fprintf(D_DESC, " [D] %s: childOffset: %d\n", __FUNCTION__, flowOffc);
       
       /* Set New pointers */
-      func->parentfuncs = flowOffp;
-      func->childfuncs = flowOffc;
+      func->parentfuncs = (mjrcaller_t *)flowOffp;
+      func->childfuncs = (mjrcaller_t *)flowOffc;
 
       /* 2nd Save function structure */
       mjr_function_save(func, &buf);
@@ -470,7 +470,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   /* Create control section */
   sect = elfsh_create_section(ELFSH_SECTION_NAME_EDFMT_FUNCTIONS);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
-  sect->altdata = ctxt->blklist = (mjrfunc_t *) buf.data;
+  sect->altdata = ctxt->blklist = (void *) buf.data;
 
   printf(" [*] Saving %s section of %u bytes \n", 
 	 ELFSH_SECTION_NAME_EDFMT_FUNCTIONS,
