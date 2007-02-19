@@ -1039,25 +1039,33 @@ static void	setup_consthash()
 
 /* Setup default grammar */
 /* XXX: This function is temporary and we not remain in the new type system */
-void	setup_grammar()
+void setup_grammar()
 {
   hash_init(&parser_hash, "parsers", 11, ELEM_TYPE_FADDR);
-  
+
   /* Default grammar rules */
-#define LOOKUP5_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"		 
-#define LOOKUP4_A   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"REVM_SEP"%41s" 
-#define LOOKUP4_B   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^]]]"REVM_SEP"%41s"		 
-#define LOOKUP4_C   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"			 
-#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"				 
-#define	LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"                   
+#define LOOKUP5_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_A   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_B   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_C   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
+#define LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"
+#define LOOKUP_VECT "$vector[^"REVM_SEP"]"
+#define LOOKUP_HASH "$hash[^"REVM_SEP"]"
 
   hash_add(&parser_hash, LOOKUP5_IDX, parse_lookup5_index);
-  hash_add(&parser_hash, LOOKUP4_A  , parse_lookup4);
-  hash_add(&parser_hash, LOOKUP4_B  , parse_lookup4);
-  hash_add(&parser_hash, LOOKUP4_C  , parse_lookup4);
+  hash_add(&parser_hash, LOOKUP4_A, parse_lookup4);
+  hash_add(&parser_hash, LOOKUP4_B, parse_lookup4);
+  hash_add(&parser_hash, LOOKUP4_C, parse_lookup4);
   hash_add(&parser_hash, LOOKUP3_IDX, parse_lookup3_index);
-  hash_add(&parser_hash, LOOKUP3    , parse_lookup3);
+  hash_add(&parser_hash, LOOKUP3, parse_lookup3);
+  hash_add(&parser_hash, LOOKUP_VECT, parse_vector);
+  hash_add(&parser_hash, LOOKUP_HASH, parse_hash);
 }
+
+
+
+
 
 
 /* Initialize simple types */

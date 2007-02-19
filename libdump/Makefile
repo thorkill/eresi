@@ -9,13 +9,13 @@ include ../config.h
 
 SRC	= dump.c recv.c send.c
 OBJ	= dump.o recv.o send.o
-CFLAGS	= -Wall $(BITS) -g3 -Iinclude -I../libc/include/ -I../libelfsh/include/ -DELFSH_INTERN -fPIC
-LDFLAGS = -L./ -L../libelfsh/ -llibelfsh  -ldumpelfsh -L/usr/pkg/lib/ -ltermcap -lreadline \
-	  $(BITS) $(EXTRAOPT)
+CFLAGS	= -Wall $(BITS) -g3 -Iinclude -I../libc/include/ -I../libelfsh/include/ \
+	-I../libaspect/include/ -DELFSH_INTERN -fPIC
+LDFLAGS = -L./ -L../libelfsh/ -llibelfsh  -ldumpelfsh -L/usr/pkg/lib/ -ltermcap \
+	-lreadline -laspect $(BITS) $(EXTRAOPT)
 CC	?= gcc
 AR	= ar rc
 NAME	= libdumpelfsh
-
 
 all	: $(OBJ)
 	$(AR) $(NAME).a $(OBJ)

@@ -60,7 +60,6 @@
  #define __BYTE_ORDER    BIG_ENDIAN
 #endif
 
-
 #ifndef swap32
 #define swap32(x)						\
 	((uint32_t)(						\
@@ -148,6 +147,9 @@ void		aspect_vectors_insert(vector_t *vect, unsigned int *dim,
 
 /* Get the hook from the dimension array */
 void*		aspect_vectors_select(vector_t *vect, unsigned int *dim);
+
+/* Project each dimension and get the requested data pointer */
+void            *aspect_vectors_selectptr(vector_t * vect, unsigned int *dim);
 
 /* Add a new vector */
 int		aspect_register_vector(char *, void*, unsigned int*, char **,

@@ -79,6 +79,27 @@ void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 }
 
 
+/* Project each dimension and get the requested data pointer */
+void		*aspect_vectors_selectptr(vector_t * vect, unsigned int *dim)
+{
+  unsigned long *tmp;
+  unsigned int	idx;
+  unsigned int	dimsz;
+
+  tmp = (unsigned long *) vect->hook;
+  dimsz = vect->arraysz;
+  for (idx = 0; idx < dimsz; idx++)
+    {
+      tmp += dim[idx];
+      if (idx + 1 < dimsz)
+        tmp = (unsigned long *) *tmp;
+    }
+  return (tmp);
+}
+
+
+
+
 /* Allocate recursively the hook array */
 static int	aspect_vectors_recalloc(unsigned long *tab, unsigned int *dims, 
 					unsigned int depth, unsigned int dimsz)

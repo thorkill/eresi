@@ -9,16 +9,116 @@
 
 
 /* Get a va_list of parameters */
-static int		parse_lookup_varlist(char *param, char *fmt, ...)
+static int	parse_lookup_varlist(char *param, char *fmt, ...)
 {
-  int			rc;
-  va_list		arg_ptr;
+  int		rc;
+  va_list	arg_ptr;
 
   va_start(arg_ptr, fmt);
   rc = vsscanf(param, fmt, arg_ptr);
   va_end(arg_ptr);
   return (rc);
 }
+
+
+/* Parse a vector access */
+revmobj_t	*parse_vector(char *param, char *fmt)
+{
+  u_int		size;
+  char		index[ELFSH_MEANING];
+  vector_t	*cur;
+  int		dimnbr;
+  unsigned int	*dims;
+  revmobj_t	*ret;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  size = parse_lookup_varlist(param, fmt, index);
+  if (size != 1)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
+  if (!strchr(index, ':'))
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Index parser failed", NULL);
+
+  /* Grab the vector */
+  dimnbr = vm_vectors_getdimnbr(index);
+  dims = alloca(dimnbr * sizeof(unsigned int));
+  vm_vectors_getdims(index, dims);
+  cur = aspect_vector_get(index);
+
+  /* Early sanity checks */
+  if (!cur)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unknown requested vector", NULL);
+  if (vm_vector_bad_dims(cur, dims, dimnbr))
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Requested vector with bad dimensions", NULL);
+
+  /* Get a pointer on the desired entry of the vector */
+  XALLOC(ret, sizeof(revmobj_t), NULL);
+  ret->parent   = aspect_vectors_selectptr(cur, dims);
+  ret->type     = cur->type;
+  ret->perm     = 1;
+  ret->immed    = 0;
+  ret->get_obj  = (void *) vm_generic_getobj;
+  ret->set_obj  = (void *) vm_long_setobj;
+
+  /* Success */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+/* Parse a hash access */
+revmobj_t	*parse_hash(char *param, char *fmt)
+{
+  u_int		size;
+  char		index[ELFSH_MEANING];
+  hash_t	*hash;
+  revmobj_t	*ret;
+  char		*entryname;
+  void		*ptr;
+
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  size = parse_lookup_varlist(param, fmt, index);
+  if (size != 1)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
+  
+  /* Get hash table and entry */
+  entryname = strchr(index, ':');
+  if (entryname)
+    *entryname++ = 0x00;
+  hash = hash_find(index);
+  if (!hash)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Unknown requested hash", NULL);
+  if (entryname)
+    {
+      ptr = hash_get(hash, entryname);
+      if (!ptr)
+	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Unknown requested hash entry", NULL);
+    }
+  else
+    ptr = (void *) hash;
+
+  /* Get an revm object */
+  XALLOC(ret, sizeof(revmobj_t), NULL);
+  ret->parent   = ptr;
+  ret->type     = (entryname ? hash->type : REVM_TYPE_UNKNOW);
+  ret->perm     = 1;
+  ret->immed    = 0;
+  ret->get_obj  = (void *) vm_generic_getobj;
+  ret->set_obj  = (void *) vm_long_setobj;
+
+  /* Success */
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
 
 
 /* Lookup a parameter with 3 fields, 3rd field beeing an index 

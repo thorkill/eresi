@@ -536,6 +536,7 @@ echo "	rm -f  \$(LIBPATH)/libaspect*"			        >> Makefile
 echo "	rm -f  \$(LIBPATH)/librevm*"			        >> Makefile
 echo "	rm -f  \$(LIBPATH)/libedfmt*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm.a "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg*"			>> Makefile
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
@@ -545,6 +546,7 @@ echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
+
  
 
 echo "	@echo 'ELFsh, Libelfsh, Libmjollnir, Libaspect, \\"     >> Makefile

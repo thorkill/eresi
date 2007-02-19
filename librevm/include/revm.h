@@ -179,7 +179,7 @@ extern asm_processor	proc;
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.75"
-#define	ELFSH_RELEASE		"a1"
+#define	ELFSH_RELEASE		"a2"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -470,10 +470,13 @@ typedef struct		s_type
 #define		      REVM_TYPE_STRUCT		7	   /* A structure       */
 #define               REVM_TYPE_NUM             8          /* MAX TYPE NBR      */
   u_char		type;		/* Plain or pointed type */
+
   u_char		isptr;		/* the type is a pointer */
-  u_int			elemnbr;	/* Number of array elems */
   u_int			size;		/* Type full memsize     */
   u_int			off;		/* Offset inside parent  */
+
+  u_int			dimnbr;		/* Number of dimensions of array */
+  u_int			*elemnbr;	/* Number of elements for each dimension */
   char			*name;		/* Type name             */
   char			*fieldname;	/* Field name		 */
 
@@ -757,18 +760,8 @@ typedef struct  s_path
     char              *str;
   }                   immed_val;
 
-  /* Here is the object type list */
-  //#define               ELFSH_OBJINT    0       /* word : always 4 bytes */
-  //#define               ELFSH_OBJSTR    1       /* String */
-  //#define               ELFSH_OBJRAW    2       /* Raw */
-  //#define               ELFSH_OBJUNK    3       /* Unknown */
-  //#define               ELFSH_OBJLONG   4       /* Long object 4 or 8 bytes */
-  //#define               ELFSH_OBJSHORT  5       /* Short : 2 bytes */
-  //#define               ELFSH_OBJBYTE   6       /* One byte */
-  /* Now use REVM_TYPE_* ! */
   char                type;		      /* The object type */
-
-  char                perm;		      /* TRUE if object is a script variable */
+  char                perm;		      /* TRUE if obj is a script var */
 }                     revmobj_t;
 
 
@@ -1102,6 +1095,8 @@ revmobj_t       *parse_lookup3_index(char *param, char *fmt);
 revmobj_t       *parse_lookup3(char *param, char *fmt);
 revmobj_t       *parse_lookup4(char *param, char *fmt);
 revmobj_t       *parse_lookup5_index(char *param, char *fmt);
+revmobj_t	*parse_vector(char *param, char *fmt);
+revmobj_t	*parse_hash(char *param, char *fmt);
 
 /* Versions functions */
 int             vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
@@ -1195,8 +1190,13 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
 char		*vm_ascii_type(hash_t *cur);
-char		*vm_ascii_vtype(vector_t *cur);
 char		*vm_get_mode_name();
+
+/* Vector related functions */
+int		vm_vectors_getdims(char *str, unsigned int *dims);
+char		*vm_ascii_vtype(vector_t *cur);
+int		vm_vectors_getdimnbr(char *str);
+int		vm_vector_bad_dims(vector_t *v, unsigned int *dims, u_int dimnbr);
 
 /* Dependences related information : deps.c */
 int		vm_load_enumdep(elfshobj_t *obj);
@@ -1235,10 +1235,11 @@ int		vm_type_addfield(revmtype_t *parent, revmtype_t *field);
 int		vm_simpletype_create(u_int type);
 int		vm_types_print();
 int		vm_type_print(char *type, char mode);
-int		vm_type_create_adv(char *label, char **fields, u_int fieldnbr);
+int		vm_type_register(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_create(char *label, char **fields, u_int fieldnbr);
 revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
-			      u_char p, u_int nbr, char *fieldname);
+			      u_char p, u_int nbr, char *fieldname, u_int *dims);
+u_int		*vm_type_getdims(char *typename, int *dimnbr);
 
 /* Data access related functions */
 revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off);

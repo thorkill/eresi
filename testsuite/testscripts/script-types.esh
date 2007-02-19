@@ -28,14 +28,18 @@ print Entry 2 : 107.archaddr[elfsh_arch_type].types[2]
 print Entry 4 : 107.archaddr[elfsh_arch_type].types[3]
 print
 
-#set 107.archaddr[elfsh_arch_type].types[0] 0x41414141
-#set 107.archaddr[elfsh_arch_type].types[1] 0x42424242
-#set 107.archaddr[elfsh_arch_type].types[2] 0x43434343
-#set 107.archaddr[elfsh_arch_type].types[3] 0x44444444
+set 107.archaddr[elfsh_arch_type].types[0] 0x41414141
+set 107.archaddr[elfsh_arch_type].types[1] 0x42424242
+set 107.archaddr[elfsh_arch_type].types[2] 0x43434343
+set 107.archaddr[elfsh_arch_type].types[3] 0x44444444
 
-#get 107.archaddr[elfsh_arch_type].types[0]
-#get 107.archaddr[elfsh_arch_type].types[1]
-#get 107.archaddr[elfsh_arch_type].types[2]
-#get 107.archaddr[elfsh_arch_type].types[3]
+get 107.archaddr[elfsh_arch_type].types[0]
+get 107.archaddr[elfsh_arch_type].types[1]
+get 107.archaddr[elfsh_arch_type].types[2]
+get 107.archaddr[elfsh_arch_type].types[3]
+
+type multiarray = array:int[32][2][4] len:byte
+
+types
 
 

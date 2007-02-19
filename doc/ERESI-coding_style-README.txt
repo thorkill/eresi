@@ -1,5 +1,5 @@
 
-$id 
+$ID 
 
 		------------------------------------------------------
 		ERESI : The ELF Reverse Engineering Software Interface
@@ -40,6 +40,7 @@ B/ DEVELOPMENT
    4. Your code should be portable
    5. Your code shoud take advantage of the existing API
    6. Your code should be modular
+   7. Your code should be formated
 
 C/ TESTING
 
@@ -284,6 +285,56 @@ B/ DEVELOPMENT
    the content of framework objects as well, but for this you need to use
    HASH TABLES (hash_t) and VECTORS (vector_t) objects, whoose API is both
    implemented in the LIBASPECT component.
+
+
+   7. Your code should be formated
+   -------------------------------
+
+   - Use explicit variable and function names !
+
+   BAD:
+
+   int f(int a, int r, int m)
+   {
+       if (!a)
+          return (r % m);
+        r *= a--;
+        return (f(a, r, m));
+   }
+
+   GOOD:
+
+   int	factorial_modulo(int nbr, int result, int modulo)
+   {
+     if (!nbr)
+       return (result % modulo);
+     result *= nbr--;
+     return (factorial_modulo(nbr, result, modulo));
+   }
+
+   - Dont use meaningless suffixes like _adv : use a function
+   name that self-describes the content of it.
+
+   - Always prefix your functions name depending on the name
+   of the component you are working into. Prefixes are :
+
+   elfsh_    : for libelfsh
+   vm_       : for librevm
+   asm_      : for libasm
+   aspect_   : for libaspect
+   dump_     : for libdump
+   e2dbg_    : for the debugger
+   edfmt_    : for the eresi debug format lib
+   mjr_      : for libmjollnir
+
+   Sometimes, special functions have special prefixing that get
+   out of this scheme. For exemple:
+
+   parse_    : for parsing handlers (librevm/lang/grammar.c)
+   cmd_      : for command handlers (librevm/cmd/*)
+
+   Libui does not have yet a prefix scheme, but a good candidate
+   is certainly: ui_ (to be determined) 
 
 
 C/ TESTING
