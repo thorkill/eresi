@@ -31,36 +31,76 @@ void		*vm_get_raw(void *addr)
 }
 
 
+/* Return the requested projections in case of an array */
+int		vm_arrayoff_get(char *field, u_int elmsize,
+				u_int dimnbr, u_int *dims)
+{
+  char		*strindex;
+  char		*endindex;
+  int		offset;
+  int		index;
+  int		iter;
+  
+  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Find the offset of the element we want to access */
+  for (iter = offset = 0; field && *field; field = endindex + 1, iter++)
+    {
+      strindex = strchr(field, '[');
+      if (strindex)
+	{
+	  *strindex = 0x00;
+	  endindex = strchr(strindex + 1, ']');
+	  if (!endindex)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Invalid array syntax", -1);
+	  *endindex = 0x00;
+	  index = atoi(strindex + 1);
+	  if (index >= dims[iter] || (strindex + 1) == endindex)
+	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Invalid array index", -1);
+	  offset += (elmsize * index);
+	}
+      else
+	break;
+    }
+  
+  /* Make sure we havent gone further the limit of dimensions */
+  if (iter != dimnbr)
+    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid array dimensions", -1);
+  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
+}
+
+
 /* Return offset given field name */
 revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off)
 {
   revmtype_t	*child;
-  char		*strindex;
-  char		*endindex;
   int		index;
+  char		fieldname[256];
+  char		*str;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Determine if the requested access is an array access */
-  strindex = strchr(field, '[');
-  if (strindex)
-    {
-      *strindex = 0x00;
-      endindex = strchr(strindex + 1, ']');
-      if (!endindex)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid array syntax", NULL);
-      *endindex = 0x00;
-      index = atoi(strindex + 1);
-    }
+  /* Truncate the name to keep only the field identifier */
+  memcpy(fieldname, field, sizeof(fieldname) - 1);
+  str = strchr(fieldname, '[');
+  if (str)
+    *str = 0x00;
 
   /* Find the child offset, augment it in case of array */
   for (child = parent->childs; child; child = child->next)
-    if (!strcmp(child->fieldname, field))
+    if (!strcmp(child->fieldname, fieldname))
       {
 	*off = child->off;
-	if (strindex)
-	  *off += child->size * index;
+	
+	/* Get offset inside the array if we are accessing an array */
+	index = vm_arrayoff_get(field, child->size, child->dimnbr, child->elemnbr);
+	if (index < 0)
+	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			    "Invalid array access", NULL);
+	*off += index;
 	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
       }
 
@@ -127,6 +167,7 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   int		ret;
   elfshobj_t	*obj;
   revmtype_t	*type;
+  revmvar_t	*var;
   void		*data;
   revmobj_t	*path;
   
@@ -158,11 +199,11 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   if (!typehash)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type map", NULL);
-  data = hash_get(typehash, objectname);
+  var = hash_get(typehash, objectname);
   if (!data)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
-  data = (void *) *(elfsh_Addr *) data;
+  data = (void *) var->addr;
   data = vm_get_raw(data);
 
   /* Get recursively the leaf type and data pointer */

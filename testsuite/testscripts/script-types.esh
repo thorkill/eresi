@@ -41,8 +41,7 @@ get 107.archaddr[elfsh_arch_type].types[1]
 get 107.archaddr[elfsh_arch_type].types[2]
 get 107.archaddr[elfsh_arch_type].types[3]
 
+quit
 
-
-types
 
 
