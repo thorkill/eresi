@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.16 2007-02-20 11:12:02 strauss Exp $
+ * $Id: function.c,v 1.17 2007-02-20 15:35:03 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -239,12 +239,15 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  fun->vaddr = addr;
  fun->size  = size;
  fun->first = e;
- fun->name  = name;
+ snprintf(fun->name,sizeof(fun->name),"%s", name);
  fun->parentfuncs = NULL;
  fun->parentnbr = 0;
  fun->childfuncs = NULL;
  fun->childnbr = 0;
+
+ memset(fun->md5, 0x00, sizeof(fun->md5));
  hash_add(&c->funchash, name, fun);
+
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }
 
@@ -318,8 +321,9 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
     {
       curfnc = (mjrfunc_t *) sect->data + index;
       /* FIXME: change store function to save name and md5 sums */
-      curfnc->name=NULL;
-      curfnc->md5=NULL;
+      //curfnc->name=NULL;
+      //curfnc->md5=NULL;
+
       /* fill the flow list */
       for (findex=0; findex<curfnc->parentnbr; findex++)
 	{
@@ -440,7 +444,6 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   char			**keys;
   int			keynbr;
   int			index;
-  //  char			funcname[50];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
 

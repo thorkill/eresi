@@ -100,6 +100,7 @@ lib:	$(OBJS_libasm)
 clean:
 	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
 	@find . -name '*~' -exec rm -f {} \;
+	@find src/ -name '*.o' -exec rm -rf {} \;
 	@echo "Cleaning source tree"
 
 fclean: clean

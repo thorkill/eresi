@@ -99,8 +99,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	// when a function start, we do a fingerprint of it
         md5 = mjr_fingerprint_function(context, context->curblock->true, 
 				     MJR_FPRINT_TYPE_MD5);
+
         if (md5)
-	    fun->md5 = elfsh_strdup(md5);
+	  snprintf(fun->md5,sizeof(fun->md5),"%s",md5);
+
         context->curblock = 0;
         context->curfunc  = fun;
        }

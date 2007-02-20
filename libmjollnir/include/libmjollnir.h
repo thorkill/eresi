@@ -144,7 +144,8 @@ u_int		mjr_function_flow_parents_save(mjrfunc_t *, mjrbuf_t *);
 u_int		mjr_function_flow_childs_save(mjrfunc_t *, mjrbuf_t *);
 void		mjr_function_add_child(mjrfunc_t *,elfsh_Addr,int);
 void		mjr_function_add_parent(mjrfunc_t *,elfsh_Addr,int);
-void		*mjr_functions_load(mjrcontext_t *ctxt);
+void		*mjr_functions_load(mjrcontext_t *);
+int		mjr_functions_store(mjrcontext_t *);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);

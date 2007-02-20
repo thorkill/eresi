@@ -123,7 +123,7 @@ void		mjr_funcs_display(mjrcontext_t *c)
       current = hash_get(&c->funchash, keys[index]);
       mjr_function_display(current);
     }
-  hash_free_keys((char *) keys);
+  hash_free_keys((char **) keys);
 }
 
 
