@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.12 2007-01-07 05:21:01 may Exp $
+ * $Id: libmjollnir-blocks.h,v 1.13 2007-02-20 11:12:02 strauss Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -22,10 +22,10 @@
  */
 typedef	struct		s_caller 
 {
-#define   CALLER_CONT   0	/* block is invoked from previous block	*/
+#define   CALLER_CONT  0	/* block is invoked from previous block	*/
 #define   CALLER_JUMP	1	/* block is invoked by some JUMP,JCC	*/
 #define   CALLER_CALL	2	/* block is invoked by a call		*/
-#define	  CALLER_RET	3	/* block is ended by a RET		*/
+#define   CALLER_RET	3	/* block is ended by a RET		*/
 #define   CALLER_UNKN	4	/* block was not analysed		*/
   int			type;
   elfsh_Addr		vaddr;

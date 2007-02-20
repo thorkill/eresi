@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.15 2007-02-20 05:35:25 strauss Exp $
+ * $Id: function.c,v 1.16 2007-02-20 11:12:02 strauss Exp $
  *
  */
 #include <libmjollnir.h>
@@ -114,35 +114,56 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 }
 
 /* Copy the function in a special buffer to fingerprint it */
-int		mjr_i386_function_copy(mjrcontext_t  *ctx, 
+int		mjr_function_copy(mjrcontext_t  *ctx, 
 				       unsigned char *src, 
 				       unsigned char *dst, 
 				       int	     mlen)
 {
   int             n, ilen, p;
-  asm_instr       instr, hist[4];
+  asm_instr       instr, hist[2];
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
   for (p = ilen = n = 0; n < mlen; n += ilen) 
-    {
-      ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
-      if (ilen <= 0)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-      
-      /* Filter this out */
-      if (instr.instr != ASM_NOP)
-	dst[p++] = src[n];
-      
-      /* epilog */
-      if ((hist[0].instr == ASM_LEAVE || hist[0].instr == ASM_POP) && 
-	  (instr.instr == ASM_RET))
-	{
-	  dst[p++] = src[n];
+  {
+    ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
+    if (ilen <= 0)
 	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	} 
-      hist[1] = hist[0];
-      hist[0] = instr;
-    }  
+      
+    /* Filter this out */
+    if ((ctx->proc.type == ASM_PROC_IA32 &&instr.instr != ASM_NOP) ||
+    	(ctx->proc.type == ASM_PROC_SPARC &&instr.instr != ASM_SP_NOP))
+    {
+      memcpy(dst, src, ilen);
+      p += ilen;
+    }
+      
+    /* epilog */
+    if (ctx->proc.type == ASM_PROC_IA32)
+    {
+      if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
+							    		hist[0].instr == ASM_POP ||
+							    		hist[0].instr == ASM_MOV))
+	  {
+	  	memcpy(dst, src, ilen);
+        p += ilen;
+	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  }
+    } 
+    else if (ctx->proc.type == ASM_PROC_SPARC)
+    {
+      if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
+      		hist[0].instr == ASM_SP_RETL)
+	  {
+	  	if (instr.instr != ASM_SP_NOP) {
+	  	  memcpy(dst, src, ilen);
+          p += ilen;
+	  	}
+	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  }
+    }
+    hist[1] = hist[0];
+    hist[0] = instr;
+  }  
   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to copy function", 0);
 }
@@ -180,10 +201,7 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
    {
    case MJR_FPRINT_TYPE_MD5:
      //memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
-     if (ctx->proc.type == ASM_PROC_IA32)
-       mlen = mjr_i386_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
-     else
-       mlen = -1;
+     mlen = mjr_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
        
      if (mlen <= 0) 
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
