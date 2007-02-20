@@ -14,14 +14,15 @@ hash_t		goto_hash;
 
 /* Make the link between the new block and the current block */
 /* Split existing blocks if necessary */
-int		mjr_block_point(mjrcontext_t  *ctxt, 
-				asm_instr      *ins,
-				elfsh_Addr     vaddr,
-				elfsh_Addr     dest)
+int			mjr_block_point(mjrcontext_t  *ctxt, 
+								asm_instr      *ins,
+								elfsh_Addr     vaddr,
+								elfsh_Addr     dest)
 {
   mjrblock_t	*dst;
   mjrblock_t	*dst_end;  
-  int		new_size;
+  int			new_size;
+  int			type;
 
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
   dst_end = ctxt->blklist;
@@ -53,8 +54,15 @@ int		mjr_block_point(mjrcontext_t  *ctxt,
     }
   
   /* Add caller to target block */
-  mjr_block_add_caller(dst, vaddr, 
-		       (ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP));
+  if (ctxt->proc.type == ASM_PROC_IA32)
+  {
+  	type = ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP;
+  }
+  else if (ctxt->proc.type == ASM_PROC_SPARC)
+  {
+  	type = ins->instr == ASM_SP_CALL ? CALLER_CALL : CALLER_JUMP;
+  }
+  mjr_block_add_caller(dst, vaddr, type);
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

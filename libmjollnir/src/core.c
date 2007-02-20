@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.21 2007-02-18 17:01:03 may Exp $
+** $Id: core.c,v 1.22 2007-02-20 05:35:25 strauss Exp $
 */
 #include "libmjollnir.h"
 
@@ -64,16 +64,6 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-// This is the function called when we do an "analyse"
-// It takes each section and call the analyse 
-// which kind of features we provide in this analysis?
-// control flow graphs (actually 2 graphs : one graph of blocks, one graph 
-// functions
-// we also provide fingerprinting but I will show later oki ? k
-
 
 /* Main analysis function */
 int		mjr_analyse(mjrsession_t *sess, int flags) 

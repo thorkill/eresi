@@ -279,19 +279,48 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
-  /* The target block is called directly */
-  if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+  if (context->proc.type == ASM_PROC_IA32)
+  {
+  	/* The target block is called directly */
+	if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
     {    
-      ilen    = asm_instr_len(ins);
-      asm_operand_get_immediate(ins, 1, 0, &dest);
-      dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
-      mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
+      	ilen    = asm_instr_len(ins);
+      	asm_operand_get_immediate(ins, 1, 0, &dest);
+      	dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+      	mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
 
-  /* The target block is called indirectly : if we find a pattern that correspond 
-     to an easy to predict function pointer, then we compute it */
-  else if (ins->op1.content & ASM_OP_BASE)
-    dest = mjr_compute_fctptr(context);
+  	/* The target block is called indirectly : if we find a pattern that correspond 
+       to an easy to predict function pointer, then we compute it */
+ 	else if (ins->op1.content & ASM_OP_BASE)
+      dest = mjr_compute_fctptr(context);
+  	else
+      dest = -1;
+  }
+  else if (context->proc.type == ASM_PROC_SPARC)
+  {
+  	if (ins->instr == ASM_SP_CALL)
+  	{
+  	  if (ins->op1.type == ASM_SP_OTYPE_DISP30)
+  	  {
+  	  	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+  	  	mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, 
+  	  					dest);
+  	  	
+  	  }
+  	  else /* Indirect call (special case of JMPL) */
+  	  	dest = -1;
+  	}
+  	else if (ins->instr == ASM_SP_JMPL) /* Indirect jump */
+  	{
+  	  dest = -1;
+  	}
+  	else if (ins->type == ASM_TYPE_CONDBRANCH)
+  	{
+  	  dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+  	  mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
+  	}
+  }
   else
     dest = -1;
   

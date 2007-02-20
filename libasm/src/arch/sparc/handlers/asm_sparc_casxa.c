@@ -10,7 +10,7 @@ asm_sparc_casxa(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
-  ins->type = ASM_TYPE_CALLPROC;
+  ins->type = ASM_TYPE_STORE;
 
   ins->nb_op = 3;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;

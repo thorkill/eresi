@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.14 2007-02-19 18:22:26 thor Exp $
+ * $Id: function.c,v 1.15 2007-02-20 05:35:25 strauss Exp $
  *
  */
 #include <libmjollnir.h>
@@ -180,7 +180,11 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
    {
    case MJR_FPRINT_TYPE_MD5:
      //memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
-     mlen = mjr_i386_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
+     if (ctx->proc.type == ASM_PROC_IA32)
+       mlen = mjr_i386_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
+     else
+       mlen = -1;
+       
      if (mlen <= 0) 
        ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      MD5_Init(&md5ctx);
