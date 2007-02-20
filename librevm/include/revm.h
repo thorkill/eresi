@@ -1242,7 +1242,7 @@ revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o,
 u_int		*vm_type_getdims(char *typename, int *dimnbr);
 
 /* Data access related functions */
-revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off);
+revmtype_t	*vm_fieldoff_get(revmtype_t *par, char *fld, u_int *off);
 revmobj_t	*vm_revmobj_lookup(char *str);
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);

@@ -32,7 +32,7 @@ void		*vm_get_raw(void *addr)
 
 
 /* Return the requested projections in case of an array */
-int		vm_arrayoff_get(char *field, u_int elmsize,
+int		vm_arrayoff_get(char *field, u_int elmsize, 
 				u_int dimnbr, u_int *dims)
 {
   char		*strindex;
@@ -40,11 +40,17 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
   int		offset;
   int		index;
   int		iter;
-  
+  int		liter;
+  u_int		*dimoff;
+
   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  /* Find the offset of the element we want to access */
-  for (iter = offset = 0; field && *field; field = endindex + 1, iter++)
+
+  dimoff = alloca(dimnbr * sizeof(int));
+
+  /* Fill the dimension indexes array in the first pass */
+  for (iter = 0; 
+       field && *field && iter < dimnbr; 
+       field = endindex + 1, iter++)
     {
       strindex = strchr(field, '[');
       if (strindex)
@@ -59,7 +65,11 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
 	  if (index >= dims[iter] || (strindex + 1) == endindex)
 	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array index", -1);
-	  offset += (elmsize * index);
+
+	  /* Example [2][3][2] = 2 * dim2 * dim3 + 3 * dim3 + 2 * sizeof(int) */
+	  dimoff[iter] = index * sizeof(int);
+	  for (liter = 0; liter != iter; liter++)
+	    dimoff[liter] *= dims[iter];
 	}
       else
 	break;
@@ -69,8 +79,15 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
   if (iter != dimnbr)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid array dimensions", -1);
+
+  /* Compute the offset of elem inside the array offset taking care of all dims */
+  for (offset = iter = 0; iter < dimnbr; iter++)
+    offset += dimoff[iter];
+
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
 }
+
+
 
 
 /* Return offset given field name */
