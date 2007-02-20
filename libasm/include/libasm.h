@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.6 2007-02-12 17:15:26 strauss Exp $
+** $Id: libasm.h,v 1.7 2007-02-20 11:07:09 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -24,6 +24,25 @@
 
 #define	LIBASM_USE_VECTOR	1
 
+/* Instruction types */
+#define ASM_TYPE_NONE			0x0	   //! 
+#define ASM_TYPE_IMPBRANCH	0x1    //! Branching instruction which always branch (jump).
+#define ASM_TYPE_CONDBRANCH	0x2    //! Conditionnal branching instruction.
+#define ASM_TYPE_CALLPROC		0x4    //! Sub Procedure calling instruction.
+#define ASM_TYPE_RETPROC		0x8    //! Return instruction
+#define ASM_TYPE_MEM_READ		0x10   //! Memory read access instruction.
+#define ASM_TYPE_MEM_WRITE	0x20   //! Memory write access instruction.
+#define ASM_TYPE_ARITH		0x40   //! Arithmetic (or logic) instruction.
+#define ASM_TYPE_LOAD			0x80   //! Memory data loading instruction.
+#define ASM_TYPE_STORE		0x100  //! Memory data storing instruction.
+#define ASM_TYPE_ARCH			0x200  //! Architecture dependent instruction.
+#define ASM_TYPE_FLAG			0x400  //! Flag-modifier instruction.
+#define ASM_TYPE_INT			0x800  //! Interrupt/call-gate instruction.
+#define ASM_TYPE_ASSIGN		0x1000 //! Assignment instruction.
+#define ASM_TYPE_TEST			0x2000 //! Comparison or test instruction.
+
+#define ASM_TYPE_OTHER		0x4000 //! Type that doesn't fit the ones above.
+
 
 /*
   typedef's
@@ -33,54 +52,25 @@ typedef struct s_asm_processor 		asm_processor;
 typedef struct s_asm_instr 			asm_instr;
 typedef struct s_asm_op				asm_operand;
 
-/**
- *
- *
- */
 enum 
-  {
-    LIBASM_VECTOR_IA32,
-    LIBASM_VECTOR_SPARC,
-    LIBASM_VECTOR_MIPS,
-    LIBASM_VECTOR_ARCHNUM
-  } e_vector_arch;
+{
+  LIBASM_VECTOR_IA32,
+  LIBASM_VECTOR_SPARC,
+  LIBASM_VECTOR_MIPS,
+  LIBASM_VECTOR_ARCHNUM
+} e_vector_arch;
   
-enum {
+enum 
+{
   ASM_PROC_IA32,
   ASM_PROC_SPARC,
   ASM_PROC_MIPS
 } e_proc_type;
 
-/*
-enum
-  {
-    LIBASM_VECTOR_
-  } e_vector_opcodes;
-*/
-/*
-  structures
-*/
-
-enum {
-  ASM_TYPE_NONE,	//! 
-  ASM_TYPE_IMPBRANCH,	//! Branching instruction which always branch (jump).
-  ASM_TYPE_CONDBRANCH,	//! Conditionnal branching instruction.
-  ASM_TYPE_CALLPROC,	//! Sub Procedure calling instruction.
-  ASM_TYPE_RETPROC,	//! Return instruction
-  ASM_TYPE_MEM_READ,	//! Memory read access instruction.
-  ASM_TYPE_MEM_WRITE,	//! Memory write access instruction.
-  ASM_TYPE_ARITH,	//! Arithmetic (or logic) instruction.
-  ASM_TYPE_LOAD,	//! Memory data loading instruction.
-  ASM_TYPE_STORE,	//! Memory data storing instruction.
-  ASM_TYPE_ARCH,	//! Architecture dependant instruction.
-  ASM_TYPE_OTHER	//! Type that doesn't fit the ones above.
-} e_asm_instr_type;
-
 
 /*
   prototypes.
 */
-
 
 /**
  * Initialize an asm_processor structure to disassemble
