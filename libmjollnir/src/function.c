@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: function.c,v 1.17 2007-02-20 15:35:03 thor Exp $
+ * $Id: function.c,v 1.18 2007-02-20 21:50:58 strauss Exp $
  *
  */
 #include <libmjollnir.h>
@@ -133,7 +133,7 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
     if ((ctx->proc.type == ASM_PROC_IA32 &&instr.instr != ASM_NOP) ||
     	(ctx->proc.type == ASM_PROC_SPARC &&instr.instr != ASM_SP_NOP))
     {
-      memcpy(dst, src, ilen);
+      memcpy(dst+p, src, ilen);
       p += ilen;
     }
       
@@ -144,8 +144,6 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
 							    		hist[0].instr == ASM_POP ||
 							    		hist[0].instr == ASM_MOV))
 	  {
-	  	memcpy(dst, src, ilen);
-        p += ilen;
 	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
 	  }
     } 
@@ -153,11 +151,7 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
     {
       if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
       		hist[0].instr == ASM_SP_RETL)
-	  {
-	  	if (instr.instr != ASM_SP_NOP) {
-	  	  memcpy(dst, src, ilen);
-          p += ilen;
-	  	}
+	  {	  	
 	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
 	  }
     }
