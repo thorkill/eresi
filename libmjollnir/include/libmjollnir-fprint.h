@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-fprint.h,v 1.6 2007-02-20 15:35:03 thor Exp $
+ * $Id: libmjollnir-fprint.h,v 1.7 2007-02-20 23:11:23 thor Exp $
  *
  */
 #include "libmjollnir-blocks.h"
@@ -26,3 +26,4 @@ typedef struct		s_function
 }			mjrfunc_t;
 
 #define ELFSH_SECTION_NAME_EDFMT_FUNCTIONS ".edfmt.functions"
+#define ELFSH_SECTION_NAME_EDFMT_FCONTROL  ".edfmt.fcontrol"

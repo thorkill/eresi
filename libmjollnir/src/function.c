@@ -1,7 +1,10 @@
 /*
- * (C) 2006 Asgard Labs, thorolf
+ * (C) 2006-2007 Asgard Labs, thorolf
+ *     2006-2007 devhell, mayhem
+ *     2007      rfd labs, strauss
+ *
  * BSD License
- * $Id: function.c,v 1.18 2007-02-20 21:50:58 strauss Exp $
+ * $Id: function.c,v 1.19 2007-02-20 23:11:23 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -68,7 +71,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 
  while(cur)
    {
-     memcpy(buf->data + buf->maxlen, (char *)cur->vaddr , sizeof(elfsh_Addr));
+     memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr , sizeof(elfsh_Addr));
      buf->maxlen += sizeof(elfsh_Addr);
      cur = cur->next;
    }
@@ -105,7 +108,7 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 
  while(cur)
    {
-     memcpy(buf->data + buf->maxlen, (void *)cur->vaddr , sizeof(elfsh_Addr));
+     memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr, sizeof(elfsh_Addr));
      buf->maxlen += sizeof(elfsh_Addr);
      cur = cur->next;
    }
@@ -132,28 +135,28 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
     /* Filter this out */
     if ((ctx->proc.type == ASM_PROC_IA32 &&instr.instr != ASM_NOP) ||
     	(ctx->proc.type == ASM_PROC_SPARC &&instr.instr != ASM_SP_NOP))
-    {
+      {
       memcpy(dst+p, src, ilen);
       p += ilen;
     }
-      
+
     /* epilog */
     if (ctx->proc.type == ASM_PROC_IA32)
-    {
+      {
       if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
-							    		hist[0].instr == ASM_POP ||
-							    		hist[0].instr == ASM_MOV))
-	  {
-	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+				       hist[0].instr == ASM_POP ||
+				       hist[0].instr == ASM_MOV))
+	{
+	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
 	  }
     } 
     else if (ctx->proc.type == ASM_PROC_SPARC)
-    {
+      {
       if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
-      		hist[0].instr == ASM_SP_RETL)
-	  {	  	
-	  	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	  }
+	  hist[0].instr == ASM_SP_RETL)
+	{	  	
+	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	}
     }
     hist[1] = hist[0];
     hist[0] = instr;
@@ -245,6 +248,10 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }
 
+/**
+ ** Expand the list of child functions
+ **/
+
 void		mjr_function_add_child(mjrfunc_t *fnc,
 					elfsh_Addr vaddr,
 					int type)
@@ -260,10 +267,12 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
   fnc->childfuncs = n;
   fnc->childnbr = fnc->childnbr + 1;
 
-  mjr_function_dump((char *)__FUNCTION__, fnc);
-
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
+
+/**
+ ** Expand the list of parent functions
+ **/
 
 void		mjr_function_add_parent(mjrfunc_t *fnc,
 					elfsh_Addr vaddr,
@@ -279,8 +288,6 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   n->next = fnc->parentfuncs;
   fnc->parentfuncs = n;
   fnc->parentnbr++;
-
-  mjr_function_dump((char *)__FUNCTION__, fnc);
 
   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
@@ -302,7 +309,9 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 
   /* get flow section */
   /* FIXME: use macros!!! */
-  flowsect = elfsh_get_section_by_name(ctxt->obj, ".edfmt.fcontrol", 0, 0, 0);
+  flowsect = elfsh_get_section_by_name(ctxt->obj,
+				       ELFSH_SECTION_NAME_EDFMT_FCONTROL
+				       , 0, 0, 0);
   
   if (!flowsect)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -314,29 +323,31 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
   for (index=0; index < fncnbr; index++)
     {
       curfnc = (mjrfunc_t *) sect->data + index;
-      /* FIXME: change store function to save name and md5 sums */
-      //curfnc->name=NULL;
-      //curfnc->md5=NULL;
+      off = (u_int)curfnc->parentfuncs;
+      curfnc->parentfuncs = NULL;
 
       /* fill the flow list */
       for (findex=0; findex<curfnc->parentnbr; findex++)
-	{
-	  off = (u_int)curfnc->parentfuncs;
-	  curfnc->parentfuncs = NULL;
-
-	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
-	  fprintf(D_DESC," [D] resotore parent: %x\n", tmpaddr);
-	  mjr_function_add_parent(curfnc,tmpaddr,0);
+	{	 
+	  tmpaddr = *((elfsh_Addr *)flowsect->data + off + findex);
+	  if (tmpaddr)
+	    {
+	      fprintf(D_DESC," [D] resotore parent: %x\n", tmpaddr);
+	      mjr_function_add_parent(curfnc,tmpaddr,0);
+	    }
 	}
+
+      off = (u_int)curfnc->childfuncs;
+      curfnc->childfuncs = NULL;
 
       for (findex=0; findex<curfnc->childnbr; findex++)
 	{
-	  off = (u_int)curfnc->childfuncs;
-	  curfnc->childfuncs = NULL;
-
-	  tmpaddr = (elfsh_Addr) flowsect->data + off + findex;
-	  fprintf(D_DESC," [D] resotore child: %x\n", tmpaddr);
-	  mjr_function_add_child(curfnc,tmpaddr,0);
+	  tmpaddr = *((elfsh_Addr *)flowsect->data + off + findex);
+	  if (tmpaddr)
+	    {
+	    fprintf(D_DESC," [D] resotore child: %x\n", tmpaddr);
+	    mjr_function_add_child(curfnc,tmpaddr,0);
+	    }
 	}
 
       mjr_function_dump((char *)__FUNCTION__, curfnc);
@@ -410,15 +421,6 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
     }
   curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curfunc, cur, sizeof(mjrfunc_t));
-  
-  /* Clean the parent/child lists 
-     FIXME: this should be set to an offset in .edfmt.fcontrol so we
-	    will be able to restore all data structures on load
-	    without recomputing it.
- 
-  curfunc->parentfuncs = NULL;
-  curfunc->childfuncs = NULL;
-  */
 
   /* Then we create the symbol for the bloc and returns */
   bsym = elfsh_create_symbol(cur->vaddr, cur->size, STT_FUNC, 0, 0, 0);
@@ -465,7 +467,6 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   for (index = 0; index < keynbr; index++)
     {
       u_int flowOffp,flowOffc;
-      
 
       func = hash_get(&ctxt->funchash, keys[index]);
       mjr_function_dump((char *)__FUNCTION__, func);
@@ -501,7 +502,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save .edfmt.functions section", -1);
 
-  sect = elfsh_create_section(".edfmt.fcontrol");
+  sect = elfsh_create_section(ELFSH_SECTION_NAME_EDFMT_FCONTROL);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, cfbuf.maxlen, 0, 0, 0, 0);
   sect->altdata = cfbuf.data;
 
@@ -517,5 +518,4 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
 
   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
-
 
