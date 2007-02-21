@@ -1,5 +1,6 @@
 /*
-** Author  : <sk at devhell dot org>
+** Latest edition Author : $Author: heroine $
+** $Id: generic.c,v 1.4 2007-02-21 03:43:51 heroine Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */
@@ -42,10 +43,24 @@ int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
   return (0);
 }
 
+/**
+ * Return instruction length
+ * @param ins
+ */
+
+
 int	asm_instr_len(asm_instr *i) {
   return (asm_instruction_get_len(i, 0, 0));
 }
 
+/**
+ * Return 2 power val
+ * @param val The level of power to raise 2.
+ * @return Return the computed value.
+ */
+int     asm_int_pow2(int val) {
+  return (val ? (2 * asm_int_pow2(val - 1)) :  1);
+}
 
 
 int	asm_int_pow2(int i) {
@@ -54,6 +69,11 @@ int	asm_int_pow2(int i) {
 
 /*
  *
+ */
+/**
+ * Set the resolving handler to display addresses.
+ * @param proc Pointer to processor structure.
+ * @param fcn The resolving handler to use
  */
 
 void	asm_set_resolve_handler(asm_processor *proc, 
@@ -65,6 +85,12 @@ void	asm_set_resolve_handler(asm_processor *proc,
 /*
 ** returns 1 if OPLEN is not activated
 */
+/**
+ * returns 1 if OPLEN is not activated
+ * This is related only to ia32 architecture.
+ * @param proc The pointer to the processor structure. 
+ * @return 1 if OPLEN is activated, 0 if not.
+ */
 
 int     asm_proc_is_protected(asm_processor *proc) {
   asm_i386_processor       *i386p;
@@ -80,6 +106,12 @@ int     asm_proc_is_protected(asm_processor *proc) {
  * returns the value of the processor's current
  * operand length
  */
+/**
+ * returns the value of the processor's current operand length
+ * This is related only to ia32 architecture.
+ * @param proc Pointer to the processor structure.
+ * @return 1 if opsize is set, 0 if not.
+ */
 
 int     asm_proc_opsize(asm_processor *proc) {
   asm_i386_processor       *i386p;
@@ -94,6 +126,11 @@ int     asm_proc_opsize(asm_processor *proc) {
  * returns the value of the processor's current
  * address size
  */
+/**
+ * returns the value of the processor's current address size
+ * @param proc Pointer to the processor structure
+ * @return 1 if addsize is set, 0 if not 
+ */
 
 int     asm_proc_addsize(asm_processor *proc) {
   asm_i386_processor       *i386p;
@@ -107,6 +144,12 @@ int     asm_proc_addsize(asm_processor *proc) {
 /*
  * returns 4 or 2 depending on eventual OPLEN prefix
  */
+/**
+ * Returns vector current size depending on oplen prefix
+ * This is related to ia32 architecture only
+ * @param proc Pointer to the processor structure.
+ * @return 4 or 2 depending on
+ */
 
 int     asm_proc_vector_len(asm_processor *proc) {
   if (asm_proc_opsize(proc))
@@ -117,6 +160,12 @@ int     asm_proc_vector_len(asm_processor *proc) {
 
 /**
  * Return vector size depending on prefix
+ */
+/**
+ * Return vector size depending on prefix
+ * This is ia32 related.
+ * @param proc Pointer to the processor structure
+ * @return Return vector size.
  */
 
 int	asm_proc_vector_size(asm_processor *proc) {
@@ -129,6 +178,14 @@ int	asm_proc_vector_size(asm_processor *proc) {
 /*
  * set the immediate part of the operand if present
  * return number of bytes written
+ */
+/**
+ * Set the immediate part of the operand if present
+ * @param ins Pointer to instruction
+ * @param num Number of the operand to set.
+ * @param opt Optionnal. may be used to specify current virtual address.
+ * @param valptr Pointer to the new value
+ * @return number of bytes written
  */
 
 int    asm_operand_set_immediate(asm_instr *ins, int num, 
@@ -210,11 +267,25 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
 /**
  * returns a pointer to a static buffer containing instruction memonic
  */
+/**
+ * returns a pointer to a static buffer containing instruction memonic
+ * @param ins Pointer to the instruction structure 
+ * @param proc Pointer to the processor structure
+ * return Return the mnemonic.
+*/
 
 char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
   return (proc->instr_table[ins->instr]);
 }
 
+/**
+ * Return content field of an operand.
+ * @param ins Pointer to an instruction structure.
+ * @param num Number of the operand to get content from.
+ * @param opt Currently not used.
+ * @param valptr Currently not used.
+ * @return Return operand content field.
+ */
 
 int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) {
   switch(num)
@@ -230,6 +301,14 @@ int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) {
     }
 }
 
+/**
+ * Dump debug output of operand to a file stream.
+ * @param ins Pointer to the instruction structure
+ * @param num Number of the operand to dump
+ * @param opt optional parameter. Currently not used.
+ * @param valptr is a filestream : FILE *
+ * @return 1 on success, 0 on error.
+ */
 
 int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) {
   asm_operand	*op;

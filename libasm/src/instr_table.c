@@ -7,6 +7,13 @@
 */
 #include <libasm.h>
 
+/**
+ * Allocate and initialize the instr_table array with instructions mnemonic.
+ * This is related to ia32 architecture.
+ * @param proc Pointer to the processor structure.
+ * @return 1 on success, 0 on error.
+ */
+
 int init_instr_table(asm_processor *proc) {
   
   /* valgrind complained about mem leaks */

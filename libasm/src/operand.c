@@ -1,5 +1,5 @@
 /*
-** $Id: operand.c,v 1.2 2006-12-19 02:46:19 heroine Exp $
+** $Id: operand.c,v 1.3 2007-02-21 03:43:51 heroine Exp $
 ** operand.c in 
 ** 
 ** Author  : <kahmm@altdev.net>
@@ -9,10 +9,14 @@
 
 #include <libasm.h>
 #include <libasm-int.h>
-/**
- *
- */
 
+/**
+ * Return immediate part of the operand
+ * @param ins Pointer to instruction
+ * @param num Number of the operand. (SOURCE/DEST/OPT)
+ * @param opt Optionnal. May be the virtual address of instruction
+ * @param valptr Reference to store immediate content
+ */
 int     asm_operand_get_immediate(asm_instr *ins, int num,
 				  int opt, void *valptr) 
 {  
@@ -35,6 +39,12 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
   
   memset(valptr, 0, 4);
   memcpy(valptr, &op->imm, 4);
+
+  /**
+   * This is pseudo dead code
+   * it was about 
+   *
+   */
   /*
   switch(op->type)
     {
@@ -65,9 +75,13 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
 
 
 /**
- * base register field of operand
+ * Get base register of operand
  * asm_operand must have ASM_OP_BASE defined
- * return -1 on error
+ * @param ins Pointer to instruction
+ * @param num Number of the operand
+ * @param opt Optionnal parameter, may be virtual address
+ * @param valptr Reference to store the content of the register
+ * @return -1 on error, 
  */
 
 int     asm_operand_get_basereg(asm_instr *ins, int num, 
@@ -88,7 +102,7 @@ int     asm_operand_get_basereg(asm_instr *ins, int num,
       if (ins->op2.type && (ins->op2.content & ASM_OP_BASE))
 	*val = ins->op2.base_reg;
       else
-	return (-1);  
+	return (-1);
       break;
     case 3:
       if (ins->op3.type && (ins->op3.content & ASM_OP_BASE))
@@ -103,9 +117,9 @@ int     asm_operand_get_basereg(asm_instr *ins, int num,
 }
 
 /**
- * index register field of operand
- * asm_operand must have ASM_OP_
- * return -1 on error
+ * Get index register field of operand
+ * asm_operand must have ASM_OP_INDEX
+ * @return -1 on errorreturn -1 on error
  */
 
 int     asm_operand_get_indexreg(asm_instr *ins, int num, 
@@ -141,9 +155,9 @@ int     asm_operand_get_indexreg(asm_instr *ins, int num,
 }
 
 /**
- * scale field of operand
+ * Get scale field of operand
  * asn_operand must have ASM_OP_SCALE type set
- * return -1 on error
+ * @return -1 on error, 1 on success
  */
 
 int     asm_operand_get_scale(asm_instr *ins, int num,
@@ -177,8 +191,13 @@ int     asm_operand_get_scale(asm_instr *ins, int num,
   return (1);
 }
 
-/*
-  
+/**
+ * Set base register of operand 
+ * @param ins
+ * @param num
+ * @param opt
+ * @param valptr
+ * @return -1 on error, 1 on success
  */
 
 int    asm_operand_set_basereg(asm_instr *ins, int num, 
@@ -227,7 +246,17 @@ int    asm_operand_set_basereg(asm_instr *ins, int num,
   
   return (1);
 }
-  
+
+
+/**
+ * Set index register of operand 
+ * @param ins
+ * @param num
+ * @param opt
+ * @param valptr
+ * @return -1 on error, 1 on success
+ */
+
 int    asm_operand_set_indexreg(asm_instr *ins, int num, 
 				int opt, void *valptr) {
   int			*val;
@@ -252,7 +281,15 @@ int    asm_operand_set_indexreg(asm_instr *ins, int num,
 
   return (-1);
 }
-     
+
+/**
+ * Set scale field of operand 
+ * @param ins
+ * @param num
+ * @param opt
+ * @param valptr
+ * @return -1 on error, 1 on success
+ */
 int    asm_operand_set_scale(asm_instr *ins, int num,
 			     int opt, void *valptr) {
   int			*val;
@@ -280,6 +317,12 @@ int    asm_operand_set_scale(asm_instr *ins, int num,
   }
   return (1);
 }
+
+/**
+ * 
+ * 
+ *
+ */
 
 int	asm_operand_get_type(asm_instr *ins, int num, int opt, void *valptr) {
   int	*val;
@@ -337,13 +380,13 @@ int	asm_operand_get_len(asm_instr *ins, int num, int opt, void *valptr) {
 }
 
 /**
- *
- *
+ * Return number of operands
+ * @param ins Pointer to instruction *
  */
-
-
-int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr) {
-  
+int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr) 
+{
+  if (!ins)
+    return (-1);
   num = 0;
   if (ins->op1.content)
     num++;
@@ -353,64 +396,3 @@ int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr) {
     num++;
   return (num);
 }
-
-
-
-/*
-
-int	asm_operand_get_type(asm_instr *ins, int num, int opt, void *valptr)
-{
-  int     *typeptr;
-  
-  typeptr = valptr;
-  typeptr & ASM_OTYPE_MASK;
-  
-  }
-
-  int	asm_operand_set_type(asm_instr *ins, int num, int opt, void *valptr)
-  {
-  int *typeptr;
-  
-  
-  typeptr = valptr;
-  
-}
-
-
-int	asm_operand_get_size(asm_instr *ins, int num, int opt, void *valptr)
-{
-  if (valptr)
-    switch(num)
-      {
-      case 1:
-	*valptr = ins->op1.size;
-	return (1);
-      case 2:
-	*valptr = ins->op2.size;
-	return (1);
-      case 3:
-	*valptr = ins->op2.size;
-	return (1);
-      }
-  else
-    return (-1);
-}
-
-
-int	asm_operand_set_size(asm_instr *ins, int num, int opt, void *valptr)
-{
-  if (valptr)
-    switch(num)
-      {
-  
-  
-      }
-  else
-    
-}
-
-*/
-
-
-
-

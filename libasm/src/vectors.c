@@ -1,7 +1,7 @@
 /**
- * $Id: vectors.c,v 1.2 2007-01-28 18:55:00 strauss Exp $
+ * $Id: vectors.c,v 1.3 2007-02-21 03:43:51 heroine Exp $
  *
- * @return 1 on success, 0 on error
+ *  Initialize the instruction and opcode vectors.
  */
 
 #include <libasm.h>

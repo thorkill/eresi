@@ -9,6 +9,13 @@
 
 #include <libasm.h>
 
+/**
+ * Return instruction length.
+ * @param ins Pointer to instruction structure.
+ * @param opt Optional parameter, not used.
+ * @param valptr Optional parameter, not used.
+ * @return Instruction length
+ */
 
 int	asm_instruction_get_len(asm_instr *ins, int opt, void *valptr) {
   int	*val;
@@ -30,6 +37,12 @@ int	asm_instruction_get_mnemonic(asm_instr *ins, int opt, void *valptr)
     }
   return (0);
 }
+
+
+/**
+ *
+ * @return Returns 1 on success, 0 on error.
+ */
 
 
 int	asm_instruction_get_type(asm_instr *ins, int opt, void *valptr)
