@@ -1,6 +1,6 @@
 /*
-** Latest edition Author : $Author: heroine $
-** $Id: generic.c,v 1.4 2007-02-21 03:43:51 heroine Exp $
+** Latest edition Author : $Author: thor $
+** $Id: generic.c,v 1.5 2007-02-21 08:50:40 thor Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */
@@ -63,13 +63,12 @@ int     asm_int_pow2(int val) {
 }
 
 
+/*
 int	asm_int_pow2(int i) {
   return (i ? (2 * asm_int_pow2(i - 1)) :  1);
 }
+*/
 
-/*
- *
- */
 /**
  * Set the resolving handler to display addresses.
  * @param proc Pointer to processor structure.
