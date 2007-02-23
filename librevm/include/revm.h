@@ -1284,8 +1284,14 @@ int		vm_screen_update(u_short new, u_short prompt_display);
 int		vm_screen_switch();
 
 /* May not be defined */
+#if __BSD__
+extern int vsscanf(const char * restrict str, const char * restrict format,
+		     va_list ap);
+#elif defined(__linux__)
 extern int vsscanf (__const char *__restrict __s,
                     __const char *__restrict __format, _G_va_list __arg);
+#endif
+
 
 void		wait4exit(void *);
 

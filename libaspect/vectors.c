@@ -208,5 +208,5 @@ int		aspect_register_vector(char		*name,
   /* Initialize vectored elements */
   aspect_vectors_recinit((unsigned long *) vector->hook, 
 			 dimensions, 1, dimsz, defaultfunc);
-  return (0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }

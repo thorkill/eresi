@@ -51,8 +51,9 @@ void	config_add_item(char *name,
   
   if (hash_get(&aspectworld.config_hash,tmp->name) == NULL) 
     hash_add(&aspectworld.config_hash,tmp->name,tmp);
+    
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
-
 
 /**
 *** This function updates the value of val/data in already
