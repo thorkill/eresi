@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.13 2007-02-18 17:01:03 may Exp $
+ * $Id: symtab.c,v 1.14 2007-02-23 05:27:47 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -27,7 +27,7 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
      if (!mjr_block_funcstart(n))
        continue;
      snprintf(s, BSIZE, "%s"AFMT, 
-	      (char *) elfsh_config_get_data(MJR_COFING_CALL_PREFIX), n->vaddr);
+	      (char *) config_get_data(MJR_COFING_CALL_PREFIX), n->vaddr);
      mjr_symbol_add(sess, n->vaddr, s);
    }
  return 1;

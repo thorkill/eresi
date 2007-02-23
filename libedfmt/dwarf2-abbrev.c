@@ -14,13 +14,13 @@ static int		edfmt_dwarf2_newfref(long offset, edfmtdw2abbattr_t *attr, u_char gl
 {
   edfmtdw2fref_t 	*tmp;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (attr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid parameters", -1);  
 
-  XALLOC(tmp, sizeof(edfmtdw2fref_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,tmp, sizeof(edfmtdw2fref_t), -1);
 
   tmp->offset = offset;
   tmp->attr = attr;
@@ -36,7 +36,7 @@ static int		edfmt_dwarf2_newfref(long offset, edfmtdw2abbattr_t *attr, u_char gl
       ref_cu = tmp;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
 /* Lookup on abbrev_table */
@@ -45,16 +45,16 @@ u_long		 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
   char			ckey[EDFMT_CKEY_SIZE];
   u_long		*pos;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num_fetch);
   pos = (u_long *) hash_get(&abbrev_table, ckey);
 
   if (pos == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Abbrev number not found", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pos);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pos);
 }
 
 /* Read an abbrev entry @ this position */
@@ -67,11 +67,11 @@ edfmtdw2abbent_t	*edfmt_dwarf2_abbrev_read(u_long pos, u_long ipos)
   u_int			attri = 0;
   const	u_int		allocstep = 12;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
   if (dwarf2_data(abbrev) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_abbrev section not available", NULL);
 
   /* Update position to read the entry */
@@ -82,10 +82,10 @@ edfmtdw2abbent_t	*edfmt_dwarf2_abbrev_read(u_long pos, u_long ipos)
   
   /* A level end */
   if (num == 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     
   /* Alloc next elements */
-  XALLOC(ent, sizeof(edfmtdw2abbent_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,ent, sizeof(edfmtdw2abbent_t), NULL);
   
   /* Fill main data */
   ent->key = ipos;
@@ -103,14 +103,14 @@ edfmtdw2abbent_t	*edfmt_dwarf2_abbrev_read(u_long pos, u_long ipos)
     if (attr == NULL)
       {
 	allocattr = allocstep;
-	XALLOC(attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
+	XALLOC(__FILE__, __FUNCTION__, __LINE__,attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
       }
     
     /* We fill all the array, so we realloc all */
     if (attri == allocattr)
       {
 	allocattr += allocstep;
-	XREALLOC(attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
+	XREALLOC(__FILE__, __FUNCTION__, __LINE__,attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, NULL);
       }
     
     /* Fill attribute structure */
@@ -121,7 +121,7 @@ edfmtdw2abbent_t	*edfmt_dwarf2_abbrev_read(u_long pos, u_long ipos)
   ent->attr = attr;
   ent->attrsize = attri > 1 ? attri - 1 : attri;
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ent);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ent);
 }
 
 /* Clean allocated buffer for enumeration */
@@ -132,7 +132,7 @@ int			edfmt_dwarf2_abbrev_enum_clean()
   u_int			keynbr;
   u_long		*value;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   keys = hash_get_keys(&abbrev_table, &keynbr);
 
@@ -143,11 +143,11 @@ int			edfmt_dwarf2_abbrev_enum_clean()
 	  value = (u_long *) hash_get(&abbrev_table, keys[index]);
 
 	  if (value)
-	    XFREE(value);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,value);
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Parse the .debug_abbrev format */
@@ -160,17 +160,17 @@ int			edfmt_dwarf2_abbrev_enum()
   u_int			attr, form;
   char			ckey[EDFMT_CKEY_SIZE];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
   if (dwarf2_data(abbrev) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_abbrev section not available",  -1);
 
   base = dwarf2_pos(abbrev);
 
   do {
-    XALLOC(start_pos, sizeof(u_long), NULL);
+    XALLOC(__FILE__, __FUNCTION__, __LINE__,start_pos, sizeof(u_long), NULL);
 
     *start_pos = dwarf2_pos(abbrev);
     /* Fetch the key number */
@@ -178,7 +178,7 @@ int			edfmt_dwarf2_abbrev_enum()
     
     /* A level end */
     if (num == 0)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     
     dwarf2_iuleb128(tag, abbrev);
     dwarf2_iread_1(children, abbrev);
@@ -191,10 +191,11 @@ int			edfmt_dwarf2_abbrev_enum()
       
     /* Add into abbrev table */
     edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num);
-    hash_add(&abbrev_table, elfsh_strdup(ckey), (void *) start_pos);
+    hash_add(&abbrev_table, aproxy_strdup(ckey), (void *) start_pos);
+ 
   } while (dwarf2_pos(abbrev) < dwarf2_size(abbrev));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -208,21 +209,21 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
   u_long		ldata;
   long			ddata;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (attr->form)
     {
     case DW_FORM_ref_addr:
-      XALLOC(addr, current_cu->addr_size, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,addr, current_cu->addr_size, -1);
 
       for (i = 0; i < current_cu->addr_size; i++)
 	dwarf2_ipos(addr[i], info, u_char);
 
       edfmt_dwarf2_newfref(*(u_int *) addr, attr, 1);
-      XFREE(addr);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,addr);
       break;
     case DW_FORM_addr:
-      XALLOC(attr->u.vbuf, current_cu->addr_size, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, current_cu->addr_size, -1);
       for (i = 0; i < current_cu->addr_size; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
       break;
@@ -242,7 +243,7 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 	  break;
 	}
 
-      XALLOC(attr->u.vbuf, attr->asize, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, attr->asize, -1);
 
       for (i = 0; i < attr->asize; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
@@ -270,7 +271,7 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
     case DW_FORM_block:
       dwarf2_iuleb128(attr->asize, info);
 
-      XALLOC(attr->u.vbuf, attr->asize, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, attr->asize, -1);
 
       for (i = 0; i < attr->asize; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, char);
@@ -317,16 +318,16 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
      
       /* Update attribute value and relaunch the function */
       attr->form = data;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			 edfmt_dwarf2_form_value(attr));
       break;
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown form", -1);
       break;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -340,11 +341,11 @@ int			edfmt_dwarf2_form(u_int endpos)
   u_long		*fetch;
   u_int			start_pos;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
   if (dwarf2_data(abbrev) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_info section not available",  -1);
 
   do {
@@ -367,8 +368,8 @@ int			edfmt_dwarf2_form(u_int endpos)
       continue;
 
     /* Update references */
-    XALLOC(ref_global_ckey, EDFMT_CKEY_SIZE, -1);
-    XALLOC(ref_cu_ckey, EDFMT_CKEY_SIZE, -1);
+    XALLOC(__FILE__, __FUNCTION__, __LINE__,ref_global_ckey, EDFMT_CKEY_SIZE, -1);
+    XALLOC(__FILE__, __FUNCTION__, __LINE__,ref_cu_ckey, EDFMT_CKEY_SIZE, -1);
 
     edfmt_ckey(ref_global_ckey, EDFMT_CKEY_SIZE, start_pos);
     edfmt_ckey(ref_cu_ckey, EDFMT_CKEY_SIZE, start_pos - current_cu->start_pos);
@@ -407,7 +408,7 @@ int			edfmt_dwarf2_form(u_int endpos)
       }
   } while(dwarf2_pos(info) < endpos);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Read macinfo data */
@@ -419,11 +420,11 @@ int			edfmt_dwarf2_mac(u_long offset)
   char			*str = NULL;
   edfmtdw2macro_t 	*mac;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have this section ? */
   if (dwarf2_data(macinfo) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_macinfo section not available",  -1);
 
   // Update position offset
@@ -436,7 +437,7 @@ int			edfmt_dwarf2_mac(u_long offset)
       {
       case DW_MACINFO_define:
       case DW_MACINFO_undef:
-	XALLOC(mac, sizeof(edfmtdw2macro_t), -1);
+	XALLOC(__FILE__, __FUNCTION__, __LINE__,mac, sizeof(edfmtdw2macro_t), -1);
 
 	mac->fileno = file;
 	mac->def = type == DW_MACINFO_define ? 1 : 0;
@@ -480,7 +481,7 @@ int			edfmt_dwarf2_mac(u_long offset)
       }
   } while (type != 0 && dwarf2_pos(macinfo) < dwarf2_size(macinfo));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size)
@@ -490,10 +491,10 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size)
   edfmtdw2loc_t		stack[75];
   int			bra;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (buf == NULL || size == 0 || loc == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", -1);
 
   spos = 0;
@@ -941,7 +942,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size)
   loc->op = stack[spos].op;
   loc->value = stack[spos].value;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Parse data part of .debug_line format */
@@ -960,10 +961,10 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
   u_char       		opc, ext_opc;
   char			*read_addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (header == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid parameters", -1);
 
   /* Loop until end position */
@@ -1005,25 +1006,25 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
 		      break;
 		    case DW_LNE_set_address:
-		      XALLOC(read_addr, current_cu->addr_size, -1);
+		      XALLOC(__FILE__, __FUNCTION__, __LINE__,read_addr, current_cu->addr_size, -1);
 		      
 		      for (i = 0; i < current_cu->addr_size; i++)
 			dwarf2_ipos(read_addr[i], line, u_char);
 
 		      addr = *(elfsh_Addr *) read_addr;
 		      
-		      XFREE(read_addr);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,read_addr);
 		      break;
 		    case DW_LNE_define_file:
 		      header->files_number++;
 		      /* Realloc pointers */
-		      XREALLOC(header->files_name, header->files_name, 
+		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_name, header->files_name, 
 			       sizeof(char*)*header->files_number, -1);
-		      XREALLOC(header->files_dindex, header->files_dindex, 
+		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_dindex, header->files_dindex, 
 			       sizeof(u_int)*header->files_number, -1);
-		      XREALLOC(header->files_time, header->files_time, 
+		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_time, header->files_time, 
 			       sizeof(u_int)*header->files_number, -1);
-		      XREALLOC(header->files_len, header->files_len, 
+		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_len, header->files_len, 
 			       sizeof(u_int)*header->files_number, -1);
 
 		      /* Read information and fill new entrie */
@@ -1074,7 +1075,7 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Parse .debug_line */
@@ -1085,7 +1086,7 @@ int			edfmt_dwarf2_line(u_long offset)
   u_long      		prev_pos, tmpf;
   char			*strf;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Update position offset */
   dwarf2_pos(line) = offset;
@@ -1110,7 +1111,7 @@ int			edfmt_dwarf2_line(u_long offset)
     dwarf2_inc_pos(line, strlen(dwarf2_ac_pos(line))+1);
   dwarf2_pos(line) = prev_pos;
 
-  XALLOC(header.dirs, sizeof(char*)*i, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.dirs, sizeof(char*)*i, -1);
   header.dirs_number = i+1;
 
   /* Dir second pass */
@@ -1132,10 +1133,10 @@ int			edfmt_dwarf2_line(u_long offset)
     }
   dwarf2_pos(line) = prev_pos;
 
-  XALLOC(header.files_name, sizeof(char*)*i, -1);
-  XALLOC(header.files_dindex, sizeof(u_int)*i, -1);
-  XALLOC(header.files_time, sizeof(u_int)*i, -1);
-  XALLOC(header.files_len, sizeof(u_int)*i, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_name, sizeof(char*)*i, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_dindex, sizeof(u_int)*i, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_time, sizeof(u_int)*i, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_len, sizeof(u_int)*i, -1);
   header.files_number = i+1;
 
   /* Filename second pass */
@@ -1163,7 +1164,7 @@ int			edfmt_dwarf2_line(u_long offset)
   /* Parse the rest */
   edfmt_dwarf2_line_data(&header);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, 
@@ -1171,9 +1172,9 @@ int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column,
 {
   edfmtdw2line_t 	*pline;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(pline, sizeof(edfmtdw2line_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,pline, sizeof(edfmtdw2line_t), -1);
 
   pline->addr = addr;
   pline->line = line;
@@ -1189,5 +1190,5 @@ int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column,
 
   cu->last_line = pline;
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

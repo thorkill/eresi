@@ -13,14 +13,14 @@ int		 vm_linkmap(elfshobj_t *file)
   elfshlinkmap_t *actual;
   int		 i = 1;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
 
   if (!file->linkmap)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No linkmap", -1);
 
   vm_output(" .::. Linkmap entries .::. \n");
@@ -48,7 +48,7 @@ int		 vm_linkmap(elfshobj_t *file)
     }
 
   vm_output("\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -59,16 +59,16 @@ int		cmd_linkmap()
   int		old;
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_is_debug_mode())
     {
       if (!world.curjob)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No current workspace", -1);
       
       if (!world.curjob->current)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No current file", -1);
       
       old = world.curjob->current->id;
@@ -77,10 +77,10 @@ int		cmd_linkmap()
       vm_doswitch(1);
       ret = vm_linkmap(world.curjob->current);
       vm_doswitch(old);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
   else
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Debug mode only command", (-1));
 }
 

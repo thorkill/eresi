@@ -14,8 +14,8 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    elfsh_Sym	*symbol,
 					    elfsh_Addr  addr)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "CFLOW unimplemented yet for SPARC", -1);
 }
 
@@ -32,10 +32,10 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
   uint32_t	addrh, addrl;
   uint32_t	opcode[3];
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARC && file->hdr->e_machine != EM_SPARC32PLUS)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
 		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
 		   "SPARC\n", -1);
 
@@ -54,7 +54,7 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
   
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -71,11 +71,11 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
   uint32_t	addrh, addrl;
   uint32_t	opcode[3];
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARC && 
       file->hdr->e_machine != EM_SPARC32PLUS)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
 		      "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
 		      "SPARC\n", -1);
 
@@ -94,7 +94,7 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
   
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -132,10 +132,10 @@ int		elfsh_hijack_altplt_sparc32(elfshobj_t *file,
   uint32_t	addrh, addrl;
   uint32_t	opcode[11];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARC && file->hdr->e_machine != EM_SPARC32PLUS)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
 		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
 		   "SPARC\n", -1);
 
@@ -144,9 +144,9 @@ int		elfsh_hijack_altplt_sparc32(elfshobj_t *file,
 
     sym = elfsh_get_symbol_by_value(file, addr, 0, ELFSH_EXACTSYM);
     if (!sym)
-ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1);
+PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1);
 
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_hijack_plt_sparc32_second(file, sym, symbol->st_value)));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_hijack_plt_sparc32_second(file, sym, symbol->st_value)));
   }
 
 
@@ -196,7 +196,7 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. 
 
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   elfsh_raw_write(file, foffset, opcode, 12 * sizeof(uint32_t));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -214,7 +214,7 @@ int       elfsh_relocate_sparc32(elfshsect_t       *new,
   elfsh_Addr	result;
   uint32_t	*word;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #define ADD     (cur->r_addend)
 #define BAS     (elfsh_get_object_baseaddr(new->parent))
@@ -343,7 +343,7 @@ int       elfsh_relocate_sparc32(elfshsect_t       *new,
 	; // XXX error condition
       break;
     default:
-ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported reloc type",
+PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported reloc type",
 		     -1);
       break;
     }
@@ -355,7 +355,7 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported reloc type",
 #undef PLA
 #undef SYM
   *word += (uint32_t) result;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
 
 

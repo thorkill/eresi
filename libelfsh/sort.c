@@ -32,11 +32,11 @@ int		      addrsort_compare(const elfsh_Sym * p,const elfsh_Sym * q)
 /* Sort the symtab given in parameter */
 int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (symtab == NULL || !size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   switch (type) 
@@ -51,10 +51,10 @@ int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
       break;
     default:
       /* Unknown sort mode */
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown sorting mode", -1);
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -64,17 +64,17 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
 {
   u_int			nbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL parameter", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL parameter", 
 		      -1);
   if (sect->shdr->sh_type != SHT_SYMTAB && sect->shdr->sh_type != SHT_DYNSYM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Param is not a symtab", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Param is not a symtab", 
 		      -1);
 
   if (sect->altdata != NULL)
-    XFREE(sect->altdata);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
 
   nbr = sect->curend / sizeof(elfsh_Sym);
   //nbr = sect->shdr->sh_size / sizeof(elfsh_Sym);
@@ -82,9 +82,9 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
   elfsh_sort_symtab(sect->altdata, nbr, ELFSH_SORT_BY_ADDR);
   
   if (sect->terdata != NULL)
-    XFREE(sect->terdata);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
   sect->terdata = elfsh_copy_symtab(sect->data, nbr);
   elfsh_sort_symtab(sect->terdata, nbr, ELFSH_SORT_BY_SIZE);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

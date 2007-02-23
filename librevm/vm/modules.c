@@ -14,7 +14,7 @@ int		cmd_modload()
   char		*errmsg;
   char		*name;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Verify if the file exists */
   if (access(world.curjob->curcmd->param[0], R_OK) != 0)
@@ -25,7 +25,7 @@ int		cmd_modload()
 	  snprintf(buf, sizeof(buf), "%s%s.so",
 		   ELFSH_MODPATH, world.curjob->curcmd->param[0]);
 	  if (access(buf, R_OK) != 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Cannot find module", -1);
 	}
       name = buf;
@@ -36,11 +36,11 @@ int		cmd_modload()
   /* See if the module isnt already loaded */
   new = hash_get(&mod_hash, name);
   if (new != NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Module already loaded", -1);
 
   /* Load the module and create revmmod_t entry */
-  XALLOC(new, sizeof(revmmod_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmmod_t), -1);
 #ifdef __BEOS__
   new->handler = load_add_on(name);
   if (new->handler == B_ERROR)
@@ -72,22 +72,23 @@ int		cmd_modload()
   new->help = dlsym(new->handler, ELFSH_HELP);
 #endif
   new->id   = ++world.state.lastid;
-  new->path = elfsh_strdup(name);
+  new->path = aproxy_strdup(name);
+ 
   time(&new->loadtime);
   new->next = world.modlist;
   world.modlist = new;
   hash_add(&mod_hash, new->path, new);
   new->init();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Error handling */
  err:
-  XFREE(new);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,new);
 #ifdef __BEOS__
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, errmsg, -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, errmsg, -1);
 #else
   snprintf(buf, sizeof(buf), "%s: %s", errmsg, dlerror());
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, buf, -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, buf, -1);
 #endif
 }
 
@@ -102,7 +103,7 @@ int		cmd_modunload()
   u_int		id;
   char		buf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   id = atoi(world.curjob->curcmd->param[0]);
   cur = 0;
@@ -116,7 +117,7 @@ int		cmd_modunload()
 	    snprintf(buf, sizeof(buf), "%s%s.so",
 		     ELFSH_MODPATH, world.curjob->curcmd->param[0]);
 	    if (access(buf, R_OK) != 0)
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				"Cannot find module", -1);
 	  }
 	else
@@ -158,7 +159,7 @@ int		cmd_modunload()
 
  bad:
   /* We didnt find the module */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Module is not loaded", -1);
 
   /* We found the module */
@@ -169,9 +170,9 @@ int		cmd_modunload()
 	   todel->path, ctime(&unload_time));
   vm_output(buf);
   hash_del(&mod_hash, todel->path);
-  XFREE(todel->path);
-  XFREE(todel);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,todel->path);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,todel);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -185,7 +186,7 @@ int		vm_modlist()
   char		*nl;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   vm_output(" .::. ELFsh modules .::. \n");
   index = 1;
@@ -201,7 +202,7 @@ int		vm_modlist()
     }
   if (world.modlist == NULL)
     vm_output(" [*] No loaded module\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -212,29 +213,29 @@ int		vm_modlist()
 
 void * dlopen(const char *pathname, int mode)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "DLOPEN unavailable in static built", (NULL));
 }
 
 void *dlsym(void *handle, const char *name)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "DLSYM unavailable in static built", (NULL));
 }
 
 int dlclose(void *handle)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "DLCLOSE unavailable in static built", (1));
 }
 
 char *dlerror(void)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "DLERROR unavailable in static built", (NULL));
 }
 

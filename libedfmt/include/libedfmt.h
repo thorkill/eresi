@@ -8,7 +8,8 @@
 #ifndef __LIBEDFMT_H__
 #define __LIBEDFMT_H__
 
-#include <libelfsh.h>
+#include "libelfsh.h"
+#include "libaspect.h"
 
 /* Defines */
 #define 	UNKNOWN_FORMAT 			0

@@ -28,9 +28,9 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
   // 0xe8 (blt)
   // 0xec / 0xed (ble)
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);		 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);		 
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -73,11 +73,11 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   elfshsect_t	*got;
   uint16_t	hi, low, hi2, low2;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Regular checks */
   if (!FILE_IS_ALPHA64(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
 		   "ELFSH_HIJACK_CPU_ALPHA while the elf file is not "
 		   "ALPHA\n", -1);
   
@@ -86,7 +86,7 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   altplt       = file->secthash[ELFSH_SECTION_ALTPLT];
   altpltprolog = file->secthash[ELFSH_SECTION_ALTPLTPROLOG];
   if (!plt || !altplt || !got || !altpltprolog)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find one of the PLT sections", 
 		      -1);
 
@@ -147,7 +147,7 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   elfsh_raw_write(file, altplt->shdr->sh_offset, 
 		  opcode, sizeof(uint32_t));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -168,10 +168,10 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
   uint32_t      off;
   uint16_t	hi, low;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_ALPHA && file->hdr->e_machine != EM_ALPHA_EXP)
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
                      "ELFSH_HIJACK_CPU_ALPHA while the elf file is not "
                      "ALPHA\n", -1);
 
@@ -212,7 +212,7 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
   elfsh_raw_write(file, foffset, opcode, sizeof(uint32_t) * 3);
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -224,7 +224,7 @@ elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
   unsigned int	idx;
   elfsh_Addr	*cur;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   cur = elfsh_get_raw(modgot);
   for (idx = 0; idx < modgot->shdr->sh_size / sizeof(elfsh_Addr); idx++)
@@ -236,10 +236,10 @@ elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
       if (cur[idx] == addr)
 	{
 	  printf("returned success in modgot_find \n");
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot->shdr->sh_addr + idx * sizeof(elfsh_Addr)));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot->shdr->sh_addr + idx * sizeof(elfsh_Addr)));
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Handle the mod.o.got section */
@@ -261,16 +261,16 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   char		*name;
   char		tmpname[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Create or return existing mod.o.got section */
-  XALLOC(buff, strlen(modrel->parent->name) + 4 + 1, NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,buff, strlen(modrel->parent->name) + 4 + 1, NULL);
   sprintf(buff, "%s.got", modrel->parent->name);
   modgot = elfsh_get_section_by_name(infile->parent, buff, 0, 0, 0);
   if (modgot)
     {
-      XFREE(buff);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot));
+      XFREE(__FILE__, __FUNCTION__, __LINE__,buff);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot));
     }
 
   needed = 0;
@@ -296,7 +296,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   ** Inject section. Here we are sure that it was loaded in last 
   ** for this module and all ET_REL symbols have been injected.  
   */
-  XALLOC(data, needed * sizeof(elfsh_Addr), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, needed * sizeof(elfsh_Addr), NULL);
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_WRITE | SHF_ALLOC,
 			  0, 0, needed * sizeof(elfsh_Addr), 0, 0, 0, 0);
 
@@ -331,7 +331,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 	      sym = elfsh_get_symbol_from_reloc(sctcur->parent, relcur);
 	      name = elfsh_get_symname_from_reloc(sctcur->parent, relcur);
 	      if (!sym || !name)
-ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found for LITERAL", 
+PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found for LITERAL", 
 			       NULL);
 	      
 	      if (elfsh_get_symbol_bind(sym) != STB_LOCAL   && /* patch BeoS */
@@ -343,7 +343,7 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found fo
 		  if (sym == NULL)
 		    {
 		      printf("missing sym = %s \n", name);
-		      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				     " Cant find requested symbol in ET_EXEC\n", NULL);
 		      }
 		  got[gotidx] = sym->st_value;		
@@ -356,14 +356,14 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found fo
 		  sect = elfsh_get_section_by_index(sctcur->parent, sym->st_shndx,
 						    NULL, NULL);
 		  if (sect == NULL)
-		    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				   "Cant find extracted section in ET_REL\n", NULL);
 		  
 		  /* Find corresponding inserted section in ET_EXEC */
 		  snprintf(tmpname, sizeof(tmpname), "%s%s", sctcur->parent->name, sect->name);
 		  sect = elfsh_get_section_by_name(infile->parent, tmpname, 0, 0, 0);
 		  if (sect == NULL)
-		    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				   "Cant find inserted section in ET_EXEC\n", NULL);
 		  
 		  /* Compute pointer value */
@@ -377,9 +377,9 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found fo
 	    }
 	}
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot));
  bad:
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Bad return for modgot", NULL);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Bad return for modgot", NULL);
 }
 
 
@@ -406,7 +406,7 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
   elfsh_Addr	val;
 
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   printf("relocata_alpha64 Input addr = " XFMT "\n", addr);
 
@@ -474,7 +474,7 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
       
       modgot = elfsh_modgot_alpha64(new, mod);
       if (modgot == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"modgot failed", -1);
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,"modgot failed", -1);
       val = elfsh_modgot_find(modgot, addr);
       SETSYM(val);
       
@@ -498,7 +498,7 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
       
       // seems to be badly encoded
       *dw += low;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       
     case R_ALPHA_LITUSE:      
       printf ("R_ALPHA_LITUSE\n"); 
@@ -531,7 +531,7 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
 	}
       
       *(dw + (ADD / 4)) += low;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
       
     case R_ALPHA_BRADDR:
       printf ("R_ALPHA_BRADDR\n"); 
@@ -620,7 +620,7 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
       break;
 
     default:
-ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
+PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
 		     -1);
       break;
     }
@@ -634,7 +634,7 @@ ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type
 #undef SETSYM
 #undef GP
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
 
 

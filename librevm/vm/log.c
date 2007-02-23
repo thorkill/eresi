@@ -13,7 +13,7 @@ int			cmd_log()
   int			fd;
   char			buf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Change logging state */
   if (world.curjob->curcmd->param[0])
@@ -48,7 +48,7 @@ int			cmd_log()
       vm_output(buf);
     }
       
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -58,7 +58,7 @@ int		cmd_export()
   int		err;
   char		buf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   snprintf(buf, BUFSIZ, "%s=%s", world.curjob->curcmd->param[0], world.curjob->curcmd->param[1]);
 
@@ -72,8 +72,8 @@ int		cmd_export()
       vm_output(buf);
     }
   if (!err)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   else
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to change environment", -1);
 }

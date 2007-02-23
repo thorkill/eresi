@@ -86,25 +86,25 @@ A/ INDENTATION
    /* Return the ELF header flags field */
    elfsh_Word      elfsh_get_flags(elfsh_Ehdr *hdr)
    {
-      ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+      PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
       if (!hdr)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	                 "Invalid NULL parameter", (elfsh_Word) -1);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_flags));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_flags));
    }
 
    BAD:
 
    /* Change the section header table file offset */
    int             elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off) {
-       ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+       PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
        if (!hdr)
-               ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+               PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                                "Invalid NULL parameter", -1);
 		hdr->e_shoff = (elfsh_Off) off;
-       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
        } 
 
 
@@ -167,13 +167,19 @@ A/ INDENTATION
 
     - Put space after , but not before.
 
-    - Put space on both sides of arithmetic or logic operands (+, -, *, <<)
+    - Put space on both sides of arithmetic or logic operands. That
+    includes +, -, *, /, <<, >>, % , &, | and = signs
 
+    - Never put additional spaces because of parenthesis ( ) or [ ]
 
-    DONT LET DEAD CODE IN THE CVS (commented code ..) unless you might
-    reuse it in the future, and only for that reason.
+    - Always put a space after a non-line-terminating ; or a , but not before.
 
+    
+			** DONT LET DEAD CODE IN THE CVS **
 
+    You can keep that code as commented only, in case you plan to reuse it
+    in the future or you are not sure it should be removed because you are
+    not the author. In that case, ask on the mailing list.
 
 
 B/ DEVELOPMENT
@@ -187,7 +193,7 @@ B/ DEVELOPMENT
 
            case NT_PRPSINFO:
              if(read(file->fd, &file->core.prpsinfo, descsz) != descsz)
-               ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+               PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
              break;
 
   GOOD:
@@ -195,23 +201,25 @@ B/ DEVELOPMENT
          case NT_PRPSINFO:
             XREAD(file->fd, &file->core.prpsinfo, descsz, -1);
 
-   The same holds for malloc (XALLOC), lseek (XSEEK), write (XWRITE),
-   close (XCLOSE), etc.
+   The same holds for malloc (XALLOC), realloc (XREALLOC), 
+   free (XFREE), lseek (XSEEK), write (XWRITE), and close (XCLOSE).
 
-   See: ./libelfsh/include/libelfsh/libelfsh-internal.h for all available macros.
+   See: ./libelfsh/include/libelfsh/libelfsh-internal.h for all macros.
 
 
    2. Use the profiler macros carefully ! 
    --------------------------------------
 
-   Those allow your functions to be present in the profiling (profile command)
-   BUT take care if you are coding I/O functions, as we dont want them to
-   be present in the profiling (else we will see profile output each time we
-   type a key, which is very disturbing).
+   Those allow your functions and allocations to be present in the 
+   profiling (profile command) BUT take care if you are coding I/O 
+   functions, as we dont want them to be present in the profiling 
+   (else we will see profile output each time we type a key, which
+   is very disturbing).
 
-   Those macros are the one starting with ELFSH_{NO}PROFILE_*
+   Those macros are the one starting with PROFILER_* and NOPROFILER_*
+   macros. If you have any doubt on using those macros, ask for help.
 
-   If you have any doubt on using those macros, ask for help.
+   They are defined in the file : libaspect/include/libaspect-profiler.h
 
    If you have any doubt if you should use the profiler in your function,
    use it and check in the result if it brings too much unwanted profile
@@ -223,24 +231,24 @@ B/ DEVELOPMENT
 
    You should make sure that you dont let :
 
-   - unused or uninitialized variables (use a decent version of gcc, for instance
-   gcc 4.x.
+   - unused or uninitialized variables (use a decent version of gcc, 
+   for instance gcc 4.x.
 
-   - Make sure your code at least compiles when beeing compiled using g++. This
-   way, it can be used in C++ projects. The configure file has a --use-cpp option
-   that helps you for testing this.
+   - Make sure your code at least compiles when beeing compiled using 
+   g++. This way, it can be used in C++ projects. The configure file 
+   has a --use-cpp option that helps you for testing this.
 
 
    4. Your code should be portable
    -------------------------------
 
-   If you just have access to your development machine, please get more accounts
-   or ask us to help you doing the portability checks before you submit a patch
-   for inclusion to cvs. For instance, if you develop on Linux, try to make sure
-   your code at least does not break the BSD tree. In the best case scenario,
-   make your code portable directly, so that all your work is also available
-   on FreeBSD, NetBSD, OpenBSD, and Solaris (the main target operating systems of
-   the project).
+   If you just have access to your development machine, please get more 
+   accounts or ask us to help you doing the portability checks before you 
+   submit a patch for inclusion to cvs. For instance, if you develop on 
+   Linux, try to make sure your code at least does not break the BSD 
+   tree. In the best case scenario, make your code portable directly, 
+   so that all your work is also available on FreeBSD, NetBSD, OpenBSD, 
+   and Solaris (the main target operating systems of the project).
 
 
    5. Your code shoud take advantage of the existing API
@@ -249,19 +257,20 @@ B/ DEVELOPMENT
    The API of the project has more than 500 functions.
 
    Well often, you will find inside it the function that you need. Dont
-   duplicate code, your patch will make the project bigger and harder to maintain
-   in the future.
+   duplicate code, your patch will make the project bigger and harder
+   to maintain in the future.
 
    If you need to reuse an API but you need to change a small detail inside its
    code, make sur you dont break any feature that used this function before by
    testing the project. Make your change in the respect of the coding style
    defined earlier in that document.
 
-   If you have to change more than a third of a function code, then you may break
-   it into smaller pieces, and call those smaller functions where you need them.
+   If you have to change more than a third of a function code, then you may 
+   break it into smaller pieces, and call those smaller functions where you
+   need them.
    
-   If you add any function you must add its prototype at the correct place in the
-   correct header file.
+   If you add any function you must add its prototype at the correct place 
+   in the correct header file.
 
 
    6. Your code should be modular
@@ -269,9 +278,10 @@ B/ DEVELOPMENT
 
    If you have to do big changes and if you are coding a new big feature 
    inside the project, think about using VECTORS. Vectors are multidimensional
-   arrays that allow for discriminating objects inside the framework. For instance,
-   if you add a feature that has a different implementation depending on the
-   architecture of the Operating System, you might want to call a different
+   arrays that allow for discriminating objects inside the framework. 
+   For instance, if you add a feature that has a different implementation
+   depending on the architecture of the Operating System, you might want
+   to call a different
    function depending on the local parameters of the machine you are running
    ERESI on. The Vector data structures helps you at this. Additionally, vectors
    are reflective objects inside 
@@ -318,18 +328,20 @@ B/ DEVELOPMENT
    - Always prefix your functions name depending on the name
    of the component you are working into. Prefixes are :
 
-   elfsh_    : for libelfsh
-   vm_       : for librevm
-   asm_      : for libasm
+   aproxy_   : for liballocproxy
    aspect_   : for libaspect
-   dump_     : for libdump
-   e2dbg_    : for the debugger
-   edfmt_    : for the eresi debug format lib
+   asm_      : for libasm
+   elfsh_    : for libelfsh
    mjr_      : for libmjollnir
+   edfmt_    : for the eresi debug format lib
+   dump_     : for libdump
+   vm_       : for librevm
+   e2dbg_    : for the debugger
 
    Sometimes, special functions have special prefixing that get
    out of this scheme. For exemple:
 
+   profiler_ : for profiler functions inside libaspect
    parse_    : for parsing handlers (librevm/lang/grammar.c)
    cmd_      : for command handlers (librevm/cmd/*)
 
@@ -382,22 +394,33 @@ D/ DOCUMENTATION :
    more complex. The good way to put comments is :
 
    /** <--- double star allow for doxygen outputs
-   ** This is the sumup of my comment
-   **
-   ** More details about what Im talking about      **
-   */
-   if (test)
-      myvar++;
-   else
-     {
+   *** This is the sumup of my comment
+   ***
+   *** More details about what Im talking about 
+   **/
+   int		my_function()
+   {
+     if (test)
+       myvar++;
+     else
+       {
          I_do_something_else;
-     }
+       }
+      return (blah);
+    }
 
 
 
---
 
-Thanks for your attention and comprehension
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+
+
+That is all for now. This documentation is updated and completed soon, so
+please check the CVS for new versions !
+
+Thanks for your attention and your comprehension.
 
 -may
 

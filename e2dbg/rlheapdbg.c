@@ -12,12 +12,12 @@
 /* When inside e2dbg and not elfsh, readline should allocate with the internal malloc */
 void	*vm_readline_malloc(unsigned int sz)
 {
-  return (elfsh_malloc(sz));
+  return (aproxy_malloc(sz));
 }
 
 /* When inside e2dbg and not elfsh, readline should free with the real malloc */
 void	vm_readline_free(void *ptr)
 {
-  elfsh_free(ptr);
+  aproxy_free(ptr);
 }
 

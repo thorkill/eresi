@@ -17,11 +17,11 @@ int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
   u_int		count;
   elfsh_Addr	base;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   base = elfsh_get_object_baseaddr(file);
   if (file == NULL || file->pht == NULL || file->hdr->e_phnum == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", 0);
 
   for (count = i = 0; i < file->hdr->e_phnum; i++) 
@@ -38,7 +38,7 @@ int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 /* Remap the Section Header Table */
@@ -48,10 +48,10 @@ int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
   u_int		count;
   elfsh_Addr	base;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || file->sht == NULL || file->hdr->e_shnum == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   base = elfsh_get_object_baseaddr(file);
@@ -61,7 +61,7 @@ int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
 	file->sht[i].sh_addr += diff;
 	count++;
       }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 
@@ -75,14 +75,14 @@ int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
   u_int		count;
   elfsh_Addr	base;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (s == NULL || s->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (s->shdr->sh_type != SHT_SYMTAB && s->shdr->sh_type != SHT_DYNSYM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is not a symbol table", -1);
 
   symtab = elfsh_get_raw(s);
@@ -99,7 +99,7 @@ int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
   
   /* Synchronize the symtab hash table */
   elfsh_sync_sorted_symtab(s);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 
@@ -111,14 +111,14 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
   elfshsect_t	*target;
   char		*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (cur == NULL || cur->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   if (elfsh_get_raw(cur) == NULL || cur->rel == NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Read the actual section and find valid references */
   for (index = 0; index < cur->srcref; index++)
@@ -131,7 +131,7 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 					    cur->rel[index].idx_dst,
 					    NULL, NULL);
 	if (target == NULL)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid IDX_DST",  -1);
 
 	str = elfsh_get_raw(cur) + cur->rel[index].off_src;
@@ -144,7 +144,7 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 	break;
       }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur->srcref));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur->srcref));
 }
 
 
@@ -159,14 +159,14 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
   elfsh_Addr	val;
   u_int		nbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (sect->shdr->sh_type != SHT_DYNAMIC)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section type", -1);
 
   nbr = sect->shdr->sh_size / sizeof(elfsh_Dyn);
@@ -180,7 +180,7 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
 	  count++;
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 
@@ -193,14 +193,14 @@ int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
   u_int		count;
   u_int		nbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (sect->shdr->sh_type != SHT_REL && sect->shdr->sh_type != SHT_RELA)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section type", -1);
 
   nbr = sect->shdr->sh_size / sizeof(elfsh_Rel);
@@ -215,7 +215,7 @@ int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
 	  count++;
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 
@@ -230,10 +230,10 @@ int		elfsh_reloc_array(elfshobj_t *file,
   u_int		index;
   u_int		count;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || array == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", -1);
 
   for (count = index = 0; index < size; index++)
@@ -245,41 +245,41 @@ int		elfsh_reloc_array(elfshobj_t *file,
 	  count++;
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
 
 /* Remap Global Offset Table */
 int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (strcmp(sect->name, ELFSH_SECTION_NAME_GOT))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
 			    sect->shdr->sh_size / sizeof(elfsh_Addr), diff)));
 }
 
 /* Remap .ctors section */
 int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (strcmp(sect->name, ELFSH_SECTION_NAME_CTORS))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
 			    sect->shdr->sh_size / sizeof(elfsh_Addr), 
 			    diff)));
 }
@@ -287,17 +287,17 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 /* Remap .dtors section */
 int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (strcmp(sect->name, ELFSH_SECTION_NAME_DTORS))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
 			    sect->shdr->sh_size / sizeof(elfsh_Addr), 
 			    diff)));
 }
@@ -306,17 +306,17 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 /* Not used ATM since it triggers more false positives ;P */
 int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (sect->shdr->sh_type != SHT_HASH)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is not HASH", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
 			    sect->shdr->sh_size / sizeof(elfsh_Addr), diff)));
 }
 
@@ -326,11 +326,11 @@ int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
 {
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = 0;
   if (sect == NULL || elfsh_get_raw(sect) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", -1);
 
   if (sect->shdr->sh_addr != NULL)
@@ -353,9 +353,9 @@ int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
   else if (sect->shdr->sh_addr != NULL)
     ret = elfsh_reloc_raw(sect, diff);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Relocation recovery failed for this section", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
@@ -374,20 +374,20 @@ int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
   u_int		count;
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   count = 0;
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   else if (elfsh_read_obj(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to read object", -1);
 
   diff = elfsh_get_object_baseaddr(file);
   if (diff == (elfsh_Addr) -1);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Object base address is NULL", -1);
 
   for (sect = file->sectlist; sect != NULL; sect = sect->next)
@@ -395,9 +395,9 @@ int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
       ret = elfsh_relocate_section(sect, -diff);
       printf("Relocation number found for %-20s : %d \n", sect->name, ret);
       if (ret < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to relocate section", -1);
       count += ret;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }

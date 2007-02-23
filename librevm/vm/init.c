@@ -27,17 +27,17 @@ int		vm_loop(int argc, char **argv)
 {
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = 0;
 
   do {
 
     /* Come back to the loop if a script turns into interactive mode */
   reenter:
-    //__asm__(".byte 0xCC");
 
     /* Fill argv from stdin if we are in interactive mode */
-    if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net == 1)
+    if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || 
+	world.state.vm_net == 1)
       {
 	if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
 	  {
@@ -84,8 +84,8 @@ int		vm_loop(int argc, char **argv)
       {
 	if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
 	  {
-	    //XFREE(argv[1]);
-	    XFREE(argv);
+	    //XFREE(__FILE__, __FUNCTION__, __LINE__,argv[1]);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
 	    if (world.state.vm_mode != ELFSH_VMSTATE_IMODE &&
 		world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
 	      goto end;
@@ -104,14 +104,15 @@ int		vm_loop(int argc, char **argv)
 	    printf(" [*] e2dbg continue from vm_execcmd \n");
 	    goto e2dbg_continue;
 	  case -1:
-	    elfsh_error();
+	    profiler_error();
 	  default:
 	    break;
 	  }
       }
 
     /* Quit parsing if necessary */
-    if ((!world.curjob->curcmd && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
+    if ((!world.curjob->curcmd && 
+	 world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
@@ -142,7 +143,7 @@ int		vm_loop(int argc, char **argv)
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 
   /* Clean the script machine state when a script is over */
  e2dbg_cleanup:
@@ -155,7 +156,7 @@ int		vm_loop(int argc, char **argv)
   rl_callback_handler_remove();
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
@@ -173,7 +174,7 @@ int		vm_init()
 
   /* setting libelfsh profile function */
   /* error on stdout, profile on stderr */
-  elfsh_set_profile(vm_outerr, vm_output);
+  profiler_install(vm_outerr, vm_output);
   return (0);
 }
 
@@ -181,7 +182,7 @@ int		vm_init()
 /* Setup ELFsh/e2dbg hash tables and structures */
 int		vm_setup(int ac, char **av)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Detect the mode we are running in */
   if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
@@ -213,18 +214,18 @@ int		vm_setup(int ac, char **av)
     }
 
   /* on.load. */
-  elfsh_config_add_item(ELFSH_VMCONFIG_ONLOAD_RCONTROL,
-			ELFSH_CONFIG_TYPE_INT,
-			ELFSH_CONFIG_MODE_RW,
-			(int) 1);
+  config_add_item(ELFSH_VMCONFIG_ONLOAD_RCONTROL,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 1);
   
   if (!mjr_init_session(&world.mjr_session))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "mjollnir session can't be initialized.", -1);
-
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "mjollnir session can't be initialized.", -1);
+  
   vm_setup_hashtables();
   elfsh_setup_hooks();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -238,27 +239,27 @@ int		vm_config()
   static int	done = 0;
   revmargv_t	*new;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (done)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   ret = -1;
   home = getenv("HOME");
   if (home)
     {
       snprintf(buff, sizeof(buff), "%s/.elfshrc", home);
-      XALLOC(new, sizeof(revmargv_t), -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmargv_t), -1);
       memset(new, 0, sizeof(revmargv_t));
       world.curjob->curcmd = new;
       world.curjob->curcmd->param[0] = buff;
       ret = cmd_source();
       world.curjob->curcmd = NULL;
-      XFREE(new);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,new);
     }
   if (ret < 0)
     vm_output("\n [*] No configuration in ~/.elfshrc \n\n");
   done = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

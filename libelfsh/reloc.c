@@ -23,12 +23,12 @@ elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym,
 {
   elfsh_Rel	r;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   elfsh_set_reltype(&r, type);
   elfsh_set_relsym(&r, sym);
   elfsh_set_reloffset(&r, off);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
 }
 
 /* Create relocation entry */
@@ -39,108 +39,108 @@ elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym,
   elfsh_Rela	*enta;
   elfsh_Rel	*ent;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   enta = &r;
   ent  = (elfsh_Rel *) enta;
   elfsh_set_reltype(ent, type);
   elfsh_set_relsym(ent, sym);
   elfsh_set_reloffset(ent, off);
   elfsh_set_reladdend(&r, add);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
 }
 
 /* Return the relocation type */
 u_int	elfsh_get_reltype(elfsh_Rel *r)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_TYPE(r->r_info)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_TYPE(r->r_info)));
 }
 
 /* Return the relocation type */
 u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   r->r_info = ELFSH_R_INFO(ELFSH_R_SYM(r->r_info), type);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the relocation symbol index */
 u_int	elfsh_get_relsym(elfsh_Rel *r)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_SYM(r->r_info)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_SYM(r->r_info)));
 }
 
 /* Change the relocation symbol index */
 u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   r->r_info = ELFSH_R_INFO(sym, ELFSH_R_TYPE(r->r_info));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Return the relocation offset */
 elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_offset));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_offset));
 }
 
 /* Change the relocation offset for this entry */
 int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   r->r_offset = off;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Return the add-end */
 elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
    if (r == NULL)
-     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid NULL parameter", -1);
-   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_addend));
+   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_addend));
 }
 
 /* Change the add-end */
 int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (r == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   r->r_addend = (elfsh_Sword) val;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -153,9 +153,9 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
   elfsh_Rela	*rela;
   u_int		sz;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
 
   sz = s->shdr->sh_size / (IS_REL(s) ? 
@@ -186,7 +186,7 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
 	  rela[idx].r_addend = swaplong(rela[idx].r_addend);
 	}
   }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -199,11 +199,11 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
   u_int		type;
   u_int		sz;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file->sectlist == NULL && elfsh_get_sht(file, NULL) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get SHT", NULL);
 
   /* Read section */
@@ -212,7 +212,7 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
 				range, NULL,
 				NULL, NULL);
   if (s == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get reloc section", NULL);
 
   /* Return what's needed */
@@ -227,12 +227,12 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
     {
       s->data = elfsh_load_section(file, s->shdr);
       if (s->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load reloc data", NULL);
       elfsh_endianize_relocs(s);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 
 
@@ -244,14 +244,14 @@ int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
 {
   int		index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (sect == NULL || sect->shdr == NULL || rel == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", -1);
   if (sect->shdr->sh_type != SHT_REL && sect->shdr->sh_type != SHT_RELA)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Input section is not REL/RELA", -1);
 
   /* Insert entry in relocation table */
@@ -259,7 +259,7 @@ int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
      index = elfsh_append_data_to_section(sect, rel, sizeof(elfsh_Rel));
    else
      index = elfsh_append_data_to_section(sect, rel, sizeof(elfsh_Rela));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }
 
 
@@ -270,20 +270,20 @@ char		*elfsh_get_symname_from_reloc(elfshobj_t *file,
 {
   elfsh_Sym	*sym;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanitize */
   sym = elfsh_get_symbol_from_reloc(file, r);
   if (sym == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find symbol", NULL);
 
   /* The object is relocatable : find symbol in .symtab */
   if (file->hdr->e_type == ET_REL)
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_symbol_name(file, sym)));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_symbol_name(file, sym)));
   
   /* else find symbol in .dynsym */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_dynsymbol_name(file, sym)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_dynsymbol_name(file, sym)));
 }
 
 
@@ -295,11 +295,11 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
   elfsh_Sym	*sym;
   u_int		tmp;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (NULL == file || NULL == r)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   tmp = ELFSH_R_SYM(r->r_info);
 
@@ -308,23 +308,23 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
     {
       if (NULL == file->secthash[ELFSH_SECTION_SYMTAB])
 	if (NULL == elfsh_get_symtab(file, NULL))
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Unable to find SYMTAB", NULL);
 
       sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_SYMTAB]->data;
       sym += tmp; //(tmp * ELFSH_SYMTAB_ENTRY_SIZE));
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
     }
 
   /* else find symbol in .dynsym */
   if (NULL == file->secthash[ELFSH_SECTION_DYNSYM] &&
       NULL == elfsh_get_dynsymtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find DYNSYM", NULL);
 
   sym = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]) + 
     (tmp * ELFSH_SYMTAB_ENTRY_SIZE);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
 }
 
 
@@ -336,11 +336,11 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
 */
 void		elfsh_setrel(char b) 
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  
   isrel = b; 
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -349,13 +349,13 @@ elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
 {
   elfsh_Rela	*atable;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!table)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
   atable = (elfsh_Rela *) table;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (isrel ? table + index : (elfsh_Rel*) ((elfsh_Rela*) atable + index)));
 }
 
@@ -372,11 +372,11 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
   char		*curnam;
   void		*data;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* Find relocation entry by name */
@@ -391,13 +391,13 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 		 (void *) ((elfsh_Rel  *) data + idx));
 	  curnam = elfsh_get_symname_from_reloc(file, cur);
 	  if (curnam != NULL && !strcmp(curnam, name))
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 	}
       sect = elfsh_get_reloc(file, range, &num);
     }
 
   /* Not found */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Relentry not found", NULL);
 }
 
@@ -413,20 +413,20 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   elfsh_Addr   	vaddr;
   u_int		index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (sect == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   else if (elfsh_get_raw(sect) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section empty", NULL);
   else if (sect->shdr->sh_addr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section unmapped", NULL);
   else if (sect->rel)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->rel));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->rel));
 
   /* These sections must not be relocated, but passed to relative */
   if (sect->shdr->sh_type == SHT_DYNSYM             ||
@@ -436,7 +436,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
       !strcmp(sect->name, ELFSH_SECTION_NAME_GOT)   ||
       !strcmp(sect->name, ELFSH_SECTION_NAME_CTORS) ||
       !strcmp(sect->name, ELFSH_SECTION_NAME_DTORS))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Use different relocation code for this section", NULL);
 
   /* Free existing rel[] entries if existing (section data probably changed) */
@@ -460,10 +460,10 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
 
   /* allocate the array */
   if (sect->srcref == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No need to relocate section", NULL);
 
-  XALLOC(rel, sect->srcref * sizeof(elfshrel_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,rel, sect->srcref * sizeof(elfshrel_t), NULL);
 
   /* Read the actual section again and create section rel table */
   str = elfsh_get_raw(sect);
@@ -489,5 +489,5 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
 
   /* Return the array */
   sect->rel = rel;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->rel));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->rel));
 }

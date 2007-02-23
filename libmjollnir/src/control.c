@@ -27,13 +27,13 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
   int			arch_bin;
   int			fetch_next = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!context || !buf)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid parameters", 0);
   
   if (!(elfsh_get_objtype(elfsh_get_hdr(context->obj)) == ET_EXEC))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Object is not ET_EXEC", 0);
 
 #if defined(__DEBUG_MJOLLNIR__)
@@ -133,7 +133,7 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
   mjr_block_add_list(context, main_b);
   mjr_block_add_caller(main_b, vaddr + dis, CALLER_CALL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
 
 
@@ -154,7 +154,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
   mjrblock_t		*tmp = NULL;
   
   /* Initialy enter here */
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If last instr was a jmp/call/ret, or if we are at entry point,
   ** curblock will be NULL here */
@@ -209,7 +209,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
   mjr_history_write(context, ins, vaddr, 0);
   ret = mjr_asm_flow(context);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to interpret instruction type", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

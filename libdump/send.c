@@ -15,7 +15,7 @@ int	dump_send_real(int s, pkt_t *pkt)
   void  *data;
   int	len = HDR_SIZE + ntohl(pkt->path_len)*sizeof (dump_id_t) + ntohl(pkt->size);
     
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   if (pkt == NULL)
     {
@@ -27,7 +27,7 @@ int	dump_send_real(int s, pkt_t *pkt)
     }
     
 
-  XALLOC(data, sizeof (char)*len, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, sizeof (char)*len, -1);
 
   /* copy the header part */
   memcpy(data, pkt, HDR_SIZE);
@@ -56,7 +56,7 @@ int	dump_send_real(int s, pkt_t *pkt)
       exit(-1);
     }
     
-  XFREE(data);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,data);
     
   return ret;
 }
@@ -73,9 +73,9 @@ int	dump_send_RR(dump_id_t src,
   int	 ret;
   pkt_t	 *pkt;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(pkt, sizeof (pkt_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,pkt, sizeof (pkt_t), -1);
 
   pkt->src = src;
   pkt->dst = dst;
@@ -92,7 +92,7 @@ int	dump_send_RR(dump_id_t src,
   /* send it now */
   ret = dump_send_real(next_hop_socket, pkt);
 
-  XFREE(pkt);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,pkt);
   return ret;
 }
 
@@ -108,9 +108,9 @@ int	dump_send_Rr(dump_id_t src,
   int	ret;
   pkt_t *pkt;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(pkt, sizeof (pkt_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,pkt, sizeof (pkt_t), -1);
    
   pkt->src = src;
   pkt->dst = dst;
@@ -130,7 +130,7 @@ int	dump_send_Rr(dump_id_t src,
   /* send it now */
   ret = dump_send_real(next_hop_socket, pkt);
 
-  XFREE(pkt);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,pkt);
   return ret;
 }
  
@@ -146,9 +146,9 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
   hashent_t	*actual;
   pkt_t		*pkt;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(pkt, sizeof (pkt_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,pkt, sizeof (pkt_t), -1);
   
   pkt->src = dump_get_myid(0);
   pkt->dst = dst;
@@ -163,7 +163,7 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
   dump_add_send_queue(pkt);
 
   /* prepare RR */
-  XALLOC(path, sizeof (dump_id_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,path, sizeof (dump_id_t), -1);
   
   /* search all neighbors ...*/
   for (index = 0; index < dump_world.ports.size; index++)
@@ -188,7 +188,7 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
 		     0);
       }
 
-  XFREE(path);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,path);
   return 0;
 }
 

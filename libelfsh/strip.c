@@ -17,12 +17,12 @@ int		elfsh_strip(elfshobj_t *file)
   elfshsect_t	*bss;
   elfshsect_t	*next;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   bss = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_BSS,
 				  NULL, NULL, NULL);
   if (file == NULL || file->sectlist == NULL || bss == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   while (bss->shdr->sh_addr)
@@ -34,12 +34,12 @@ int		elfsh_strip(elfshobj_t *file)
 	  if ((bss->index != 0) || (
 	      (bss->index != file->hdr->e_shstrndx) &&
 	       elfsh_remove_section(file, bss->name)))
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to remove section", -1);
 
       bss = next;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

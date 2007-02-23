@@ -24,7 +24,7 @@ int		cmd_hijack()
   int		printed;
   elfsh_Addr	hookedaddr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If no parameter is given, print the redirection list */
   if (!world.curjob->curcmd->param[0])
@@ -61,12 +61,12 @@ int		cmd_hijack()
       else
 	vm_output("\n\n");
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Some sanity checks first */
   if (!world.curjob->curcmd->param[1])
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Redirection destination needed", (-1));
 
   /* Resolve destination parameter */
@@ -95,7 +95,7 @@ int		cmd_hijack()
 	  err = elfsh_copy_plt(world.curjob->current, 
 			       elfsh_get_pagesize(world.curjob->current));
 	  if (err < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Failed at copying PLT", (-1));		  
 	  
 	  /* Request a PLT entry since we have no symbol yet */
@@ -104,13 +104,13 @@ int		cmd_hijack()
 	  if (dst)
 	    addr = dst->st_value;
 	  else
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "PLT entry request failed", (-1));		  
 	}
 
       /* Insert a symbol on the requested address to avoid this */
       else	  
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Need a symbol to redirect", -1);
       
       rev = vm_reverse(world.curjob->current, addr);
@@ -136,7 +136,7 @@ int		cmd_hijack()
 
   /* Last checks */
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Function redirection failed", (-1));
   
   /* Add it to redirection hash table */
@@ -156,8 +156,8 @@ int		cmd_hijack()
       vm_output(logbuf);
     }
   if (rev != NULL)
-    XFREE(rev);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,rev);
   
   /* Everything is ok */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -99,7 +99,7 @@ do {								\
   if (hash_get(_table, _name) != NULL)				\
     hash_set(_table, _name, (void *) _value);			\
   else								\
-    hash_add(_table, elfsh_strdup(_name), (void *) _value);	\
+    hash_add(_table, aproxy_strdup(_name), (void *) _value);	\
 } while (0)
 
 #endif

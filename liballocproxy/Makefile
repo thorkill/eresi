@@ -9,7 +9,7 @@
 include ../config.h
 
 CC	?= gcc
-SRC	= elfsh_malloc.c
+SRC	= aproxy_malloc.c aproxy_strdup.c
 OBJ	= $(SRC:.c=.o)
 CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -DSHARED -DUSE_TLS \
 	-fPIC -g3 -Iinclude -I../libelfsh/include/

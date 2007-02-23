@@ -12,7 +12,7 @@ void		elfsh_fixup(elfshobj_t *file)
 {
   elfsh_Shdr	*got;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   elfsh_get_symtab(file, NULL);
   if (file->hdr->e_type == ET_REL || elfsh_static_file(file))
     elfsh_sort_sht(file);
@@ -22,7 +22,7 @@ void		elfsh_fixup(elfshobj_t *file)
   if (got != NULL && got->sh_entsize == 0)
     got->sh_entsize = sizeof(elfsh_Addr);
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -34,15 +34,15 @@ int		elfsh_read_obj(elfshobj_t *file)
   int		index;
   int		mode;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->read)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (file->sht == NULL && NULL == elfsh_get_sht(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to grab SHT", -1);
   if (NULL == elfsh_get_pht(file, NULL) && file->hdr->e_type != ET_REL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to grab PHT", -1);
 
 #if __DEBUG_MAP__
@@ -133,7 +133,7 @@ out:
    /* neutralize file descriptor */
    file->fd = -1;
   }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -150,7 +150,7 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
   elfsh_Shdr	*shdr;
   elfshsect_t	*sct;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   //return (symtab); // XXX
 
@@ -201,7 +201,7 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, symtab);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, symtab);
 }
 
 
@@ -212,14 +212,14 @@ elfshobj_t	*elfsh_map_obj(char *name)
 {
   elfshobj_t	*file;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   file = elfsh_load_obj(name);
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to load object", NULL);
   file->rights = O_RDWR;
   elfsh_read_obj(file);
-  hash_init(&file->redir_hash, "redirections", 51, ELEM_TYPE_ANY);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
+  hash_init(&file->redir_hash, "redirections", 51, ASPECT_TYPE_UNKNOW);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }

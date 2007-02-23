@@ -9,90 +9,90 @@
 /* Read the input file parameter */
 int		vm_getoption(u_int index, u_int argc, char **argv)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->argc = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Read the input file parameter */
 int		vm_getinput(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.state.input = argv[index + 1];
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Read the output file parameter */
 int		vm_getoutput(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 >= argc)			
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.state.output = argv[index + 1];
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
 int		vm_getoption2(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 2 >= argc)			
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
   world.curjob->curcmd->argc = 2;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
 int		vm_getoption3(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 3 >= argc)			
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter not available", (-1));				
   world.curjob->curcmd->param[0] = argv[index + 1];
   world.curjob->curcmd->param[1] = argv[index + 2];
   world.curjob->curcmd->param[2] = argv[index + 3];
     world.curjob->curcmd->argc = 3;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (3));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (3));
 }
 
 /* Activate a non-mandatory-regex-parameter option */
 int		vm_getregxoption(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (index + 1 < argc && argv[index + 1][0] != ELFSH_MINUS)		
     {									
       if (regcomp(&world.curjob->curcmd->regx[0], argv[index + 1], 
 		  REG_EXTENDED) != 0 || *argv[index + 1] == '*')
 	  
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Parameter not available", (-1));
       world.curjob->curcmd->use_regx[0] = 1;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
     }				
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Fetch parameters until we find NULL or something starting by '-' */
@@ -100,7 +100,7 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
 {
   u_int		idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (world.curjob->curcmd->argc = idx = 0; 
        idx < 254 && index + idx + 1 < argc;
        idx++)
@@ -109,7 +109,7 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
       world.curjob->curcmd->argc++;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
 /* Add an entry to the requested dump list */
@@ -120,7 +120,7 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
   revmlist_t	*cur;
   char		*used;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (idx < index + 2)
     {
@@ -130,7 +130,7 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
       if (argv[idx + 1] == NULL)								
 	{
 	  *used = 0;
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     (idx == index ? -1 : 1));
 	}
 
@@ -154,19 +154,19 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
       
       if (regcomp(&cur->name, argv[idx + 1], REG_EXTENDED | REG_ICASE) != 0 ||
 	  *cur->rname == '*')
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Regular computation failed", (-1));
       *used = 1;
       idx++;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
 /* Add an DISASM typed entry */
 int		vm_getdisasm(u_int index, u_int argc, char **argv)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     vm_add2list(ELFSH_DISASM_VIEW, index, argc, argv));
 }
 
@@ -174,8 +174,8 @@ int		vm_getdisasm(u_int index, u_int argc, char **argv)
 int		vm_gethexa(u_int index, u_int argc, char **argv)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     vm_add2list(ELFSH_HEXA_VIEW, index, argc, argv));
 }
 
@@ -191,7 +191,7 @@ int			vm_parseopt(int argc, char **argv)
   static u_int		pendinglabel = 0;
   static revmargv_t	*new = NULL;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Main option reading loop : using the command hash table */
   for (index = 1; index < argc; index++)
@@ -201,7 +201,7 @@ int			vm_parseopt(int argc, char **argv)
       bzero(label, sizeof(label));
       if (!pendinglabel)
 	{
-	  XALLOC(new, sizeof(revmargv_t), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmargv_t), -1);
 	  world.curjob->curcmd = new;
 	  if (world.curjob->script[world.curjob->sourced] == NULL)
 	    world.curjob->script[world.curjob->sourced] = new;
@@ -220,7 +220,7 @@ int			vm_parseopt(int argc, char **argv)
 	    {
 	      ret = actual->reg(index, argc, argv);
 	      if (ret < 0)
-              ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+              PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				"Command not found", 
 				(vm_doerror(vm_badparam, argv[index])));
 	      index += ret;
@@ -236,7 +236,8 @@ int			vm_parseopt(int argc, char **argv)
 	  if (ret == 2 && c == ':')
 	    {
 	      hash_add(&labels_hash[world.curjob->sourced], 
-		       elfsh_strdup(label), new); 
+		       aproxy_strdup(label), new); 
+ 
 
 	      printf(" [*] Found label %s \n", label);
 
@@ -252,7 +253,7 @@ int			vm_parseopt(int argc, char **argv)
       
       /* We matched nothing known, error */
       else
-          ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Unknown parsing error", 
 			    (vm_doerror(vm_unknown, argv[index])));
 
@@ -271,7 +272,7 @@ int			vm_parseopt(int argc, char **argv)
       
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

@@ -17,19 +17,19 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
   int			offset;
   int			size;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Search and load the section if necessary */
   notes = elfsh_get_section_by_type(file, SHT_NOTE, range, 
 				    NULL, NULL, &size);
   if (notes == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get .notes by type", NULL);
   if (notes->data == NULL)
     {
       notes->data = elfsh_load_section(file, notes->shdr);
       if (notes->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot get .notes data", NULL);
     }
   
@@ -37,7 +37,7 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
   for (offset = 0; offset < size; 
        offset += (e->namesz + e->descsz + sizeof(int) * 3))
     {
-      XALLOC(e, sizeof(elfshnotent_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,e, sizeof(elfshnotent_t), NULL);
       e->namesz    = * (int *) notes->data;
       e->namesz   += e->namesz % 4;
       e->descsz    = * (int *) notes->data + 1;
@@ -45,11 +45,13 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 
       /* Sanity check */
       if (offset + sizeof(int) * 3 + e->namesz > size)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Corrupted Notes section", NULL);
 
-      e->note      = elfsh_strdup((char *) notes->data + offset + sizeof(int) * 3);
-      e->desc      = elfsh_strdup((char *) notes->data + offset + sizeof(int) * 3 
+      e->note      = aproxy_strdup((char *) notes->data + offset + sizeof(int) * 3);
+ 
+      e->desc      = aproxy_strdup((char *) notes->data + offset + sizeof(int) * 3 
+ 
 			    + e->namesz);
       
       /* Put the note entry at the end of the list */
@@ -65,7 +67,7 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 	}
     }
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (notes));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (notes));
 }
 
 
@@ -76,20 +78,20 @@ void			elfsh_free_notes(elfshobj_t *file)
   elfshnotent_t		*etmp;
   elfshsect_t		*sect;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (sect = file->sectlist; sect; sect = sect->next)
     if (sect->data && sect->shdr->sh_type == SHT_NOTE)
       {
-	XFREE(sect->data);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->data);
 	for (e = sect->altdata; e; e = etmp)
 	  {
 	    etmp = e->next;
-	    XFREE(e->note);
-	    XFREE(e->desc);
-	    XFREE(e);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,e->note);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,e->desc);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,e);
 	  }
       }
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

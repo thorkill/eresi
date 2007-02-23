@@ -23,12 +23,12 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
 {
   int		ret;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = elfsh_rel(new->parent, new, reloc, dword, addr, mod);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to relocate object", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -41,7 +41,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
   elfshobj_t	*dep;
 
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   
   /* If this symbol is a old_ one, accept it to be relocated in 2nd stage */
@@ -58,7 +58,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 #if __DEBUG_RELADD__
 	  printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", reltab->parent->name);
 #endif
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 	}
     }
 
@@ -72,7 +72,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 	{
 	  *sym = elfsh_request_pltent(new->parent, name);
 	  if (*sym)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 	}
       else
 	{
@@ -84,7 +84,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 	  
 	  /* no symbol found */
 	  if (dep == ((void *) -1))
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to inject ET_REL dependence", -1);
 
 	  /* Use stage 2 relocation as the best et_rel is beeing inserted */
@@ -100,20 +100,20 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 #if	__DEBUG_STATIC__
 		  printf("[DEBUG_STATIC] %s object relocation will have a second stage\n", reltab->parent->name);
 #endif
-		  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 		}
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to add stage 2 relocation", -1);
 	    }
 
 	  /* symbol found, gonna try to inject et_rel */
 	  if (dep != NULL && dep != reltab->parent && elfsh_inject_etrel(new->parent, dep) < 0)
 	    {
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to inject ET_REL dependence", -1);
 	    }
 	  
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 
 	}
       break;
@@ -138,7 +138,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
   printf("[DEBUG_STATIC] Not found after OLD check : sym = %s \n", name);
 #endif  
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Cant find requested symbol in ET_EXEC\n", -1);
 }
   
@@ -164,7 +164,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
   void		*data;
   elfsh_Half	symtype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   /* ET_REL object is not mapped we use unconditionaly 
      the ondisk relocation tables for such operation */
@@ -182,12 +182,12 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
   
   plt = elfsh_get_plt(new->parent, NULL);
   if (NULL == plt && elfsh_dynamic_file(new->parent))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get plt", -1);
 
   entsz = elfsh_get_pltentsz(new->parent);
   if (entsz < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get pltentsz", -1);
 
   for (index = 0; index < size; index++)
@@ -210,7 +210,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
       name = elfsh_get_symname_from_reloc(reltab->parent, cur);
 
       if (sym == NULL || name == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to find symbol in ET_REL", -1);
 
       /* Grab a pointer on the dword that need to be relocated */
@@ -246,7 +246,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	      break;
 	    case -1:
 	    default:
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to satisfy symbol in ET_REL", -1);
 	    }
 	  
@@ -273,7 +273,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  sect = elfsh_get_section_by_index(reltab->parent, sym->st_shndx,
 					    NULL, NULL);
 	  if (sect == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Cant find extracted section in ET_REL", -1);
 
 	  /* Find corresponding inserted section in ET_EXEC */
@@ -288,7 +288,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 		     tmpname, name);
 #endif
  
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Cant find inserted section in ET_EXEC", -1);
 	    }
 	  
@@ -311,11 +311,11 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
       
       /* Perform relocation */
       if (elfsh_relocate_entry(new, cur, dword, addr, reltab) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to relocate entry", -1);
 
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -329,14 +329,14 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
   char		sctname[BUFSIZ];
   u_int		index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Last pass : relocate each inserted section */
   for (index = 0; index < rel->hdr->e_shnum; index++)
     {
       sect = elfsh_get_section_by_index(rel, index, NULL, NULL);
       if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cant get section in ET_REL",  -1);
 
       /* Check if the section is mapped */
@@ -355,15 +355,15 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 	  snprintf(sctname, sizeof(sctname), "%s%s", sect->parent->name, sect->name);
 	  sect = elfsh_get_section_by_name(file, sctname, NULL, NULL, NULL);
 	  if (sect == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Cant get section in ET_EXEC",  -1);
 	  if (elfsh_relocate_etrel_section(sect, reltab, stage) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to relocate section", -1);
 	}
 
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -381,21 +381,21 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   u_int		modulo;
   elfshsect_t	*plt;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_dynamic_file(file) && NULL == (plt = elfsh_get_plt(file, NULL)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get PLT", -1);
 
   /* else create a new section */
   hdr = elfsh_create_shdr(0, sect->shdr->sh_type, sect->shdr->sh_flags,
 			  0, 0, sect->shdr->sh_size, 0, 0, 0, 0);
-  XALLOC(newname, strlen(sect->parent->name) + strlen(sect->name) + 2, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,newname, strlen(sect->parent->name) + strlen(sect->name) + 2, -1);
   sprintf(newname, "%s%s", sect->parent->name, sect->name);
   new = elfsh_create_section(newname);
   
   /* Copy the data */
-  XALLOC(data, sect->shdr->sh_size, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, sect->shdr->sh_size, -1);
   memcpy(data, sect->data, sect->shdr->sh_size);
 
   /* Inject new section by top or after bss depending on its type */
@@ -423,10 +423,10 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   if (new == NULL)
     goto bad;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
  bad:
-  XFREE(newname);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  XFREE(__FILE__, __FUNCTION__, __LINE__,newname);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Unable to inject ET_REL section", -1);
 }
 
@@ -446,7 +446,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
   elfsh_Sym	*sym;
   int		symnbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   sym = elfsh_get_symtab(rel, &symnbr);
   for (index = 0; index < symnbr; index++)
@@ -463,7 +463,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
       /* Find target section in ET_REL */
       sect = elfsh_get_section_by_index(rel, sym[index].st_shndx, NULL, NULL);
       if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cant find extracted section in ET_REL\n", -1);
 
       /* Filter symbols using source section */
@@ -475,7 +475,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
       snprintf(sctname, sizeof(sctname), "%s%s", rel->name, sect->name);
       sect = elfsh_get_section_by_name(file, sctname, NULL, NULL, NULL);
       if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cant find inserted section in ET_EXEC\n", -1);
 
 #if __DEBUG_RELADD__
@@ -493,29 +493,29 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
 
       if (elfsh_insert_symbol(file->secthash[ELFSH_SECTION_SYMTAB], &newsym,
 			      elfsh_get_symbol_name(rel, sym + index)) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to insert ET_REL symbol", -1);
     }
 
   /* Resynchronize sorted instances of symbol table */
   if (elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to synchronize host symtab", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Inject ET_REL bss inside host BSS */
 int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_insert_runtime_bss(file, rel) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to insert runtime BSS", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -533,15 +533,15 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   int		ret;
   static int	depth = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || file->hdr == NULL || rel == NULL || rel->hdr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   if (rel->hdr->e_type != ET_REL ||
       (file->hdr->e_type != ET_EXEC && file->hdr->e_type != ET_DYN))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Bad parameter types", -1);
 
 #if	__DEBUG_RELADD__
@@ -568,7 +568,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   if (elfsh_fuse_bss(file, rel) < 0)
     {
       rel->pending = 0;
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Cant fuze BSS sections", -1);
     }
 
@@ -581,7 +581,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
       if (sect == NULL)
 	{
 	  rel->pending = 0;
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Cant read section in ET_REL",  -1);
 	}
       
@@ -594,7 +594,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 	  if (elfsh_inject_etrel_section(file, sect, mod) < 0) 
 	    {
 	      rel->pending = 0;
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to inject ET_REL section", -1);
 	    }
 	}
@@ -608,7 +608,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   if (!elfsh_static_file(file) && elfsh_copy_plt(file, mod) < 0)
     {
       rel->pending = 0;
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Unable to copy PLT", -1);
     }
 
@@ -630,7 +630,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
       if (!hooks)
 	{
 	  rel->pending = 0;
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot inject .hooks", -1);
 	}
       hooks->curend = 0;
@@ -645,7 +645,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   if (elfsh_fuse_etrel_symtab(file, rel) < 0)
     {
       rel->pending = 0;
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to fuze symbol tables", -1);
     }
 
@@ -658,7 +658,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   ret = elfsh_relocate_object(file, rel, ELFSH_RELOC_STAGE1);
   rel->pending = 0;
   depth--;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
@@ -669,13 +669,13 @@ int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel,
 {
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   elfsh_register_working_objects(listw, listsh);
   ret = elfsh_inject_etrel(host, rel);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to inject ET_REL with list", ret);
   else
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       (ret));
 }

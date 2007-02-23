@@ -12,13 +12,13 @@ static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
 {
   edfmtdw2cfastate_t 	*tmp;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (reg == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);  
 
-  XALLOC(tmp, sizeof(edfmtdw2cfastate_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,tmp, sizeof(edfmtdw2cfastate_t), -1);
   memcpy(tmp, reg, sizeof(edfmtdw2cfastate_t));
   
   /* Add local and gloabal */
@@ -29,7 +29,7 @@ static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
 
   current_cu->last_cfa = tmp;
       
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
 /* Parse .debug_frame FDE + data */
@@ -46,7 +46,7 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   u_long       		last_pos;
   u_long		max_pos;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!init)
     {
@@ -227,7 +227,7 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   if (init)
     header->init = *state;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* .debug_frame parsing entry point */
@@ -236,7 +236,7 @@ int			edfmt_dwarf2_cfa()
   edfmtdw2cfahead_t 	header;
   edfmtdw2cfastate_t 	state;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Reset frame position */
   dwarf2_pos(frame) = 0;
@@ -282,5 +282,5 @@ int			edfmt_dwarf2_cfa()
     } while(dwarf2_pos(frame) < dwarf2_size(frame));
   } while (dwarf2_pos(frame) < dwarf2_size(frame));
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

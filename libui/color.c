@@ -18,28 +18,28 @@ color_t 	*vm_colorblank()
 {
   color_t 	*c;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(c, sizeof(color_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,c, sizeof(color_t), NULL);
 
   c->fground = COLOR_NONE;
   c->bground = COLOR_NONE;
   c->bold = COLOR_NONE;
   c->underline = COLOR_NONE;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (c));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (c));
 }
 
 color_t 	*vm_colortable(char *type, char *text)
 {
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   /* Override color by warning color if we match the alert regex */
   if (world.state.vm_use_alert && 
       !regexec(&world.state.vm_alert, text, 0, 0, 0))
-    ELFSH_NOPROFILE_ROUT(hash_get(&t_color_hash, "warnstring"));
+    NOPROFILER_ROUT(hash_get(&t_color_hash, "warnstring"));
 
-  ELFSH_NOPROFILE_ROUT(hash_get(&t_color_hash, type)); 
+  NOPROFILER_ROUT(hash_get(&t_color_hash, type)); 
 }
 
 /* Speed setup code*/
@@ -55,10 +55,10 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
   char		bo[16], ul[16], fg[16], bg[16];
   u_short      	set = 0;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
 if (t == NULL || (!t->bground && !t->fground && !t->bold && !t->underline))
-  ELFSH_NOPROFILE_ROUT(-1); 
+  NOPROFILER_ROUT(-1); 
 
   /* Set every element */
   COLOR_SET_ELEMENT(t->bold, bo, COLOR_BOLD);
@@ -75,23 +75,23 @@ if (t == NULL || (!t->bground && !t->fground && !t->bold && !t->underline))
 	   S_STARTCOLOR,
 	   COLOR_NONE);
 
-  ELFSH_NOPROFILE_ROUT(0); 
+  NOPROFILER_ROUT(0); 
 }
 
 /* Return without color */
 static char	*vm_colornothing(char *sp, void *object)
 {
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   if (!strcmp(sp, "%s"))
-    ELFSH_NOPROFILE_ROUT((char *) object);
+    NOPROFILER_ROUT((char *) object);
 
   if (strchr(sp, 's') == NULL)
     snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, *(long *) object);
   else
     snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, object);
 
-  ELFSH_NOPROFILE_ROUT(tokens[curtok++]); 
+  NOPROFILER_ROUT(tokens[curtok++]); 
 }
 
 /* Trim a string from blank char and copy it on to argument */
@@ -99,23 +99,23 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
 {
   u_int		len, istart, iend;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   if (size == 0 || size > COLOR_TOKEN_LEN || from == NULL || to == NULL)
-    ELFSH_NOPROFILE_ROUT(-1);
+    NOPROFILER_ROUT(-1);
 
   len = strlen(from);
 
   /* Speed check */
   if (!IS_BLANK(from[0]) && !IS_BLANK(from[len]))
-    ELFSH_NOPROFILE_ROUT(-1);
+    NOPROFILER_ROUT(-1);
 
   /* Before */
   for (istart = 0; istart < len && IS_BLANK(from[istart]); istart++);
 
   /* All blank, no modifications */
   if (istart == len)
-    ELFSH_NOPROFILE_ROUT(-1);
+    NOPROFILER_ROUT(-1);
 
   /* After */
   for (iend = len; iend > 0 && IS_BLANK(from[iend]); iend--);
@@ -138,7 +138,7 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
       end[iend] = 0x00;
     }
 
-  ELFSH_NOPROFILE_ROUT(0);
+  NOPROFILER_ROUT(0);
 }
 
 /* Build color text */
@@ -152,12 +152,12 @@ char 		*vm_colorget(char *sp, char *type, void *object)
   char		white_e[COLOR_TOKEN_LEN];
   char		*pText;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   if (curtok >= COLOR_TOKENS) 
     {
       printf("WARNING !!!! Token overflow (val:%u)\n", curtok);
-      ELFSH_NOPROFILE_ROUT(NULL);
+      NOPROFILER_ROUT(NULL);
     }
 
   //snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
@@ -168,17 +168,17 @@ char 		*vm_colorget(char *sp, char *type, void *object)
 
   /* Color isn't activated */
   if (!nocolor)
-    ELFSH_NOPROFILE_ROUT(vm_colornothing(sp, object));
+    NOPROFILER_ROUT(vm_colornothing(sp, object));
 
   t = vm_colortable(type, text);
 
   /* Color not found */
   if (t == NULL)
-    ELFSH_NOPROFILE_ROUT(vm_colornothing(sp, object));
+    NOPROFILER_ROUT(vm_colornothing(sp, object));
 
   /* Invalid pattern */
   if (vm_colorpattern(t, text, pattern) != 0)
-    ELFSH_NOPROFILE_ROUT(vm_colornothing(sp, object));
+    NOPROFILER_ROUT(vm_colornothing(sp, object));
 
   pText = text;
 
@@ -192,7 +192,7 @@ char 		*vm_colorget(char *sp, char *type, void *object)
   snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, 
 	   pattern, white_s, pText, white_e);
 
-  ELFSH_NOPROFILE_ROUT(tokens[curtok++]);
+  NOPROFILER_ROUT(tokens[curtok++]);
 }
 
 /* Reset token */
@@ -217,7 +217,7 @@ char 		*vm_coloradv(char *type, char *pattern, char *text)
 {
   char 		*p;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   p = vm_colorget(pattern, type, text); 
 
@@ -225,7 +225,7 @@ char 		*vm_coloradv(char *type, char *pattern, char *text)
   text[BUFSIZ-1] = 0;
   curtok--;
 
-  ELFSH_NOPROFILE_ROUT(text);
+  NOPROFILER_ROUT(text);
 }
 
 /* Advanced functions */
@@ -247,7 +247,7 @@ int		vm_color_count(char *string)
   int		len;
   int		i;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   len = strlen(string);
   for (i = 0; i < len; i++)
@@ -260,7 +260,7 @@ int		vm_color_count(char *string)
 	}
     }
 
-  ELFSH_NOPROFILE_ROUT(count);
+  NOPROFILER_ROUT(count);
 }
 
 /* Return total size of colors on a string */
@@ -270,7 +270,7 @@ int		vm_color_size(char *string)
   int		len;
   int		i;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   len = strlen(string);
   for (i = 0; i < len; i++)
@@ -286,5 +286,5 @@ int		vm_color_size(char *string)
 	}      
     }
 
-  ELFSH_NOPROFILE_ROUT(size);
+  NOPROFILER_ROUT(size);
 }

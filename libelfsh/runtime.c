@@ -17,12 +17,12 @@ int		elfsh_set_phdr_prot(u_int mode)
 {
   elfsh_Word	flags;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   flags = PF_R | PF_W;
   //  if (mode == ELFSH_CODE_INJECTION)
   flags |= PF_X;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
 }
 
 /* Map a new area in memory */
@@ -31,7 +31,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
   elfsh_Addr	addr;
   int		prot = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_segment_is_readable(segment))
     prot |= PROT_READ;
@@ -51,7 +51,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
  zero = fopen("/dev/zero", O_RDWR);
  if (zero < 0)
-   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to open /dev/zero", 
 		      ELFSH_INVALID_ADDR);
 
@@ -71,7 +71,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
 
   if (addr == 0 && segment->p_vaddr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Mmap refused the mapping", 
 		      ELFSH_INVALID_ADDR);
 
@@ -84,7 +84,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 	   (elfsh_segment_is_executable(segment) ? 'X' : '-'));
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
 }
 
 
@@ -93,14 +93,14 @@ int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 {
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   ret = munmap((void *) segment->p_vaddr, segment->p_memsz);
 
   //if (!ret)
   //memset(segment, 0x00, sizeof(elfsh_Phdr));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -110,18 +110,18 @@ int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 {
   elfsh_Addr	addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   elfsh_runtime_unmap(segment);
   segment->p_memsz += moresize;
   addr = elfsh_runtime_map(segment);
   if (!addr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Could not extend mmaped memory",
                       ELFSH_INVALID_ADDR);
   
   segment->p_vaddr = segment->p_paddr = addr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
 }
 
 
@@ -129,10 +129,10 @@ int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 /* Synchronize ondisk modifications in memory */
 int		elfsh_runtime_sync()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -147,13 +147,13 @@ int		elfsh_munprotect(elfshobj_t *file,
   int		retval;
   int		prot;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!elfsh_is_debug_mode())
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   sect = elfsh_get_parent_section(file, addr, NULL);
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Cannot find parent section", -1);
 
   phdr = elfsh_get_parent_segment(file, sect);
@@ -172,11 +172,11 @@ int		elfsh_munprotect(elfshobj_t *file,
   if (retval != 0)
     {
       perror("mprotect");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Failed mprotect", -1);
     }
   /* Return the original rights */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     prot);
 }
 
@@ -187,16 +187,16 @@ int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
 {
   int		retval;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!elfsh_is_debug_mode())
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   retval = mprotect((void *) (long) addr - (long) addr % getpagesize(), 
 		    getpagesize(), prot);
 
   if (retval != 0)
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Failed munprotect", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, retval);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, retval);
 }

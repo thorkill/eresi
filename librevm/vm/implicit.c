@@ -12,7 +12,7 @@ void				vm_load_cwfiles()
 {
   char				logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.state.input == NULL)
     {
@@ -41,7 +41,7 @@ void				vm_load_cwfiles()
       vm_output(logbuf);
     }
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -52,7 +52,7 @@ int				vm_unload_cwfiles()
 {
   char				logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.state.output)
     switch (elfsh_save_obj(world.curjob->current, world.state.output))
@@ -71,7 +71,7 @@ int				vm_unload_cwfiles()
 		 " [*] Unable to save modified object in %s \n\n", 
 		 world.state.output);
 	vm_output(logbuf);
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Failed to save object", (-1));
       }
   else
@@ -84,7 +84,7 @@ int				vm_unload_cwfiles()
 	  vm_output(logbuf);
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -94,11 +94,11 @@ int				vm_unload_cwfiles()
 int		vm_implicit(revmcmd_t *actual)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the requested command does not need a current pointer */
   if (actual && !actual->wflags)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Load implicit current file */
   else if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && 
@@ -119,13 +119,13 @@ int		vm_implicit(revmcmd_t *actual)
 	    !world.curjob->current))
     {
       cmd_dolist();
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
     }
 
   /* We need to set it here since the CURRENT object can change */
   asm_set_resolve_handler(&world.proc, asm_do_resolve, world.curjob->current);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

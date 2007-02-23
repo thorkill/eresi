@@ -41,16 +41,16 @@ void		e2dbg_start_proc()
 /* Start cmd */
 int		cmd_start()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (world.curjob->current->running)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Process is already started", -1);
   if (!world.state.vm_quiet)
     vm_output(" [*] Starting process\n");
   e2dbg_start_proc();
   world.curjob->current->running = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -58,10 +58,10 @@ int		cmd_start()
 /* See the count in e2dbg/signal.c that makes e2dbg need this */
 int	cmd_cont()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!world.curjob->current->running)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Current object not running", -1);
 
   if (!world.state.vm_quiet)
@@ -85,5 +85,5 @@ int	cmd_cont()
     }
 
   vm_output("\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -13,7 +13,7 @@ static void		__strip_char(char *str, char c)
   u_int			len, pos;
   char			*search;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   len = strlen(str);
 
@@ -26,7 +26,7 @@ static void		__strip_char(char *str, char c)
       len--;
     }
 
-  ELFSH_NOPROFILE_OUT();
+  NOPROFILER_OUT();
 }
 
 /* Strip a group of char */
@@ -35,7 +35,7 @@ static void		__strip_group_char(char *str, char s, char e)
   u_int			len, diff, pos;
   char			*search, *search_end;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   len = strlen(str) + 1;
   for (search = str; (search = strchr(search, s)) != NULL;)
@@ -44,7 +44,7 @@ static void		__strip_group_char(char *str, char s, char e)
 
       /* Error !! */
       if (!search_end)
-	ELFSH_NOPROFILE_OUT();
+	NOPROFILER_OUT();
 
       diff = search_end - search + 1;
       pos = search - str;
@@ -55,7 +55,7 @@ static void		__strip_group_char(char *str, char s, char e)
       len -= diff;
     }
 
-  ELFSH_NOPROFILE_OUT();
+  NOPROFILER_OUT();
 }
 
 static void		logtofile(char *str)
@@ -64,13 +64,13 @@ static void		logtofile(char *str)
   revmobj_t		*stripvar;
   u_int			len;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   len = strlen(str);
 
   /* Do we want to log ? */
   if (!(world.curjob->state & ELFSH_JOB_LOGGED) || len <= 0)
-    ELFSH_NOPROFILE_OUT();
+    NOPROFILER_OUT();
 
   /* We made only local modifications */
   char tmp[len+1];
@@ -94,7 +94,7 @@ static void		logtofile(char *str)
   len = strlen(tmp);
   XWRITE(world.curjob->logfd, tmp, len, );
 
-  ELFSH_NOPROFILE_OUT();
+  NOPROFILER_OUT();
 }
 
 
@@ -106,23 +106,23 @@ void			vm_log(char *str)
   char 			*t_tail, *t_head, *t_end;
   char			buf[BUFSIZ * 4];
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   /* Nothing possible */
   if (!str || !*str || !world.curjob)
-    ELFSH_NOPROFILE_OUT();
+    NOPROFILER_OUT();
 
   logtofile(str);
 
   /* We could log before return */
   if(!world.curjob->io.outcache.lines ||
      !world.curjob->io.outcache.cols)
-    ELFSH_NOPROFILE_OUT();
+    NOPROFILER_OUT();
 
   /* Allocate the screen buffer */
   if (world.curjob->screen.buf == NULL)
     {
-      XALLOC(world.curjob->screen.buf,
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,world.curjob->screen.buf,
 	     world.curjob->io.outcache.lines *
 	     world.curjob->io.outcache.cols + 1, );
 
@@ -132,12 +132,13 @@ void			vm_log(char *str)
       world.curjob->screen.head = world.curjob->screen.tail =
       world.curjob->screen.buf;
     }
+
   /* reallocate the screen buffer when term size changes */
   else if (world.curjob->screen.x != world.curjob->io.outcache.cols ||
 	   world.curjob->screen.y != world.curjob->io.outcache.lines)
     {
       tmp = world.curjob->screen.buf;
-      XALLOC(world.curjob->screen.buf,
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,world.curjob->screen.buf,
 	     world.curjob->io.outcache.lines *
 	     world.curjob->io.outcache.cols + 1, );
 
@@ -166,7 +167,7 @@ void			vm_log(char *str)
 	}
       
       /* Free at the end */
-      XFREE(tmp);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,tmp);
     }
 
 #define scrsize (world.curjob->io.outcache.cols * world.curjob->io.outcache.lines)
@@ -226,14 +227,14 @@ void			vm_log(char *str)
 #undef head
 
 
-  ELFSH_NOPROFILE_OUT();
+  NOPROFILER_OUT();
 }
 
 
 /* Stop logging */
 int			vm_closelog()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XCLOSE(world.curjob->logfd, -1);
 
@@ -241,7 +242,7 @@ int			vm_closelog()
     vm_output(" [*] Saved logging session \n\n");
   world.curjob->state &= (~ELFSH_JOB_LOGGED);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

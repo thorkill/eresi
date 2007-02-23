@@ -16,14 +16,14 @@ revmcmd_t	*vm_create_CMDENT(int  (*exec)(void *file, void *av),
 {
   revmcmd_t	*new;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(new, sizeof(revmcmd_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmcmd_t), NULL);
   new->exec   = exec;
   new->reg    = reg;
   new->wflags = flags;
   new->help   = help;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -34,7 +34,7 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
   revmcmd_t	*act;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ent = hash_get_ent(&cmd_hash, cmd);
   if (!ent)
@@ -42,7 +42,7 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
       snprintf(logbuf, BUFSIZ - 1,
 	       "\n [!] Unknown command %s \n\n", world.curjob->curcmd->param[0]);
       vm_output(logbuf);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Supplied handler invalid", (-1));
     }
   act = ent->data;
@@ -52,16 +52,16 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
     act->exec = exec;
   if (needcur != (u_int) ELFSH_ORIG)
     act->wflags = needcur;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Add a command */
 int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile, 
 			  char *help)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash_add(&cmd_hash, cmd , (void *) vm_create_CMDENT(exec, reg, needfile, help));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -69,8 +69,8 @@ int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile,
 int		vm_delcmd(char *cmd)
 {
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   hash_del(&cmd_hash, cmd);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

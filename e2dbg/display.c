@@ -20,7 +20,7 @@ void		vm_print_display()
   elfshbp_t     *curbp;
   int		idx2;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Global displays */
   printed = 0;
@@ -67,7 +67,7 @@ void		vm_print_display()
       }
 
   vm_output("\n");
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -80,7 +80,7 @@ int		vm_display(char **cmd, u_int nbr)
   char		*str;
   char		buf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (idx = 0; idx < nbr; idx++)
     if (cmd[idx])
       {
@@ -91,9 +91,10 @@ int		vm_display(char **cmd, u_int nbr)
 	vm_output(buf);
 	
 	/* Register displayed command in the script control flow */
-	str = elfsh_strdup(cmd[idx]);
+	str = aproxy_strdup(cmd[idx]);
+ 
 	if (vm_exec_str(cmd[idx]) < 0)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Display execrequest failed", -1);
 	cmd[idx] = str;
 	
@@ -101,12 +102,12 @@ int		vm_display(char **cmd, u_int nbr)
 	cur = world.curjob->curcmd;
 	world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; // instead of script 0
 	if (vm_execmd() < 0)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			    "Display execution failed", -1);
 	world.curjob->curcmd = cur;
       }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -118,20 +119,20 @@ int		cmd_display()
   char		buf[BUFSIZ];
   char		*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* No parameter, list displays */
   if (!world.curjob->curcmd->param[0])
     {
       vm_print_display();
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   }
   
   /* Add a global display */
   if (!vm_isnbr(world.curjob->curcmd->param[0]))
     {
       if (e2dbgworld.displaynbr >= E2DBG_STEPCMD_MAX)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Too many global displays", 0);
       str = vm_get_string(world.curjob->curcmd->param);
       snprintf(buf, BUFSIZ, "\n [*] Adding global display %u [%s] \n\n", 
@@ -145,10 +146,10 @@ int		cmd_display()
     {
       bp = vm_lookup_bp(world.curjob->curcmd->param[0]);
       if (!bp)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cannot find specified breakpoint", 0);
       if (bp->cmdnbr >= 10)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Too many local displays", 0);
       str = vm_get_string(&world.curjob->curcmd->param[1]);
       snprintf(buf, BUFSIZ, "\n [*] Adding display %u [%s] for breakpoint %u "
@@ -157,7 +158,7 @@ int		cmd_display()
       vm_output(buf);
       bp->cmd[(int) bp->cmdnbr++] = str;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -165,9 +166,9 @@ int		cmd_display()
 /* Delete displays */
 int		cmd_undisplay()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

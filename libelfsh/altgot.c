@@ -33,7 +33,7 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
   char			patch;
   char			*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First re-relocate some entries */
   for (current = file->sectlist; current; current = current->next)
@@ -60,7 +60,7 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 	  }
       }
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -71,7 +71,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, elfshsect_t *altgot
   elfsh_Rela		*rel;
   elfsh_Addr		addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Find the relocation entry */
   entsz = elfsh_get_pltentsz(file);
@@ -81,7 +81,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, elfshsect_t *altgot
 #if __DEBUG_COPYPLT__	  
       printf("[DEBUG_COPYPLT] Did not find relocation entry from symbol %s \n", name);
 #endif
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,"Unable to get relocation entry", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,"Unable to get relocation entry", -1);
     }
 
 #if __DEBUG_COPYPLT__	  
@@ -99,7 +99,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, elfshsect_t *altgot
   
   /* Write it */
   elfsh_set_reloffset((elfsh_Rel *) rel, addr);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -110,14 +110,14 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file, elfsh_Addr diff, elfshsect_t 
   elfsh_Rela		*l;
   int			index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < relplt->shdr->sh_size / sizeof(elfsh_Rela); index++)
     {
       l = (elfsh_Rela *) relplt->data + index;
       elfsh_set_reloffset((elfsh_Rel *) l, elfsh_get_reloffset((elfsh_Rel *) l) + diff);
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -130,7 +130,7 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
   elfsh_Rel		*l;
   int			index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < relplt->shdr->sh_size / sizeof(elfsh_Rel); index++)
     {
@@ -138,7 +138,7 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
       if (ELFSH_NOLIMIT == limit || elfsh_get_reloffset((elfsh_Rel *) l) >= limit)
 	elfsh_set_reloffset((elfsh_Rel *) l, elfsh_get_reloffset((elfsh_Rel *) l) + diff);
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Same arch independant code for the SPARC case */
@@ -146,8 +146,8 @@ int			elfsh_shift_sparc_relocs(elfshobj_t	*file,
 						 elfsh_Addr	diff, 
 						 elfshsect_t	*relplt)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_shift_generic_relocs(file, diff, relplt)));
 }
 					       
@@ -163,19 +163,19 @@ int			elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *
   elfshsect_t		*relplt;
   char			*name;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get the DT_PLTGOT entry in .dynamic */
   dyn = elfsh_get_dynamic_entry_by_type(file, DT_PLTGOT);
   if (!dyn)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find DT_PLTGOT", -1);
 
   /* Get the PLT related relocation table */
   name = IS_REL(plt) ? ELFSH_SECTION_NAME_RELPLT : ELFSH_SECTION_NAME_RELAPLT;
   relplt = elfsh_get_section_by_name(plt->parent, name, 0, 0, 0);
   if (!relplt)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find RELPLT section by name", -1);
 
   /* On MIPS we change it from .got to .alt.got : ALTGOT technique */
@@ -188,7 +188,7 @@ int			elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *
 	  elfsh_set_gpvalue(file, altgot->shdr->sh_addr + 0x8000 - 0x10);
 	  sym = elfsh_get_dynsymbol_by_name(file, "_gp_disp");
 	  if (sym == NULL)
-	        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Could not find _gp_disp ",  -1);
 	  sym->st_value = altgot->shdr->sh_addr + 0x8000 - 0x10;
 	  elfsh_shift_mips_relocs(file, altgot->shdr->sh_addr - got->shdr->sh_addr);
@@ -206,7 +206,7 @@ int			elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *
       elfsh_shift_sparc_relocs(file, altplt->shdr->sh_addr - plt->shdr->sh_addr, relplt);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

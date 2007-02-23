@@ -16,7 +16,7 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 	u_char	*data;
 	char		*sctname;
 
-	ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 	printf(" [SCTLIST][%s]\n", label);
 	for (index = 0, actual = obj->sectlist;
@@ -47,7 +47,7 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 	}
 	puts(" [EOL]\n");
 	fflush(stdout);
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
@@ -55,7 +55,7 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
  *  generated with
  *  cat /usr/include/elf.h | grep EM_ \
  *  awk -F\  \
- *  '{print "case "$3": return @"$2" : "$5 $6" "$7" "$8" "$9" "$10"@;" }'  \
+ *  '{print "case "$3": return @"$2" : "$5 $6" "$7" "$8" "$9" "$20"@;" }'  \
  *  | sed s/@/\"/g | sed 's/\*\///g'
  *
  * @param machine Machine to get description string

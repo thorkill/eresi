@@ -8,35 +8,28 @@
 */
 #include "libaspect.h"
 
+hash_t	       *vector_hash = NULL;
 
-/* The hash tables of vectors */
-hash_t	       vector_hash;
-static u_short vh_set = 0;
-
-
-/* Initialize the vector hash */
-void		aspect_vectors_init()
-{
-  if (!vh_set)
-    {
-      hash_init(&vector_hash, "vectors", 11, ELEM_TYPE_VECT);
-      vh_set = 1;
-    }
-}
 
 /* Retreive a vector from the hash table giving its name */
 vector_t*	aspect_vector_get(char *name)
 {
   vector_t	*vect;
 
-  vect = (vector_t *) hash_get(&vector_hash, name);
+  if (!vector_hash)
+    {
+      printf("Tried to get a vector when hash table = NULL \n");
+      return (NULL);
+    }
+
+  vect = (vector_t *) hash_get(vector_hash, name);
   return (vect);
 }
 
 /* Retreive the hash table : useful when iterating over it */
 hash_t*		aspect_vecthash_get()
 {
-  return (&vector_hash);
+  return (vector_hash);
 }
 
 
@@ -80,7 +73,8 @@ void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 
 
 /* Project each dimension and get the requested data pointer */
-void		*aspect_vectors_selectptr(vector_t * vect, unsigned int *dim)
+void		*aspect_vectors_selectptr(vector_t * vect, 
+					  unsigned int *dim)
 {
   unsigned long *tmp;
   unsigned int	idx;
@@ -101,34 +95,57 @@ void		*aspect_vectors_selectptr(vector_t * vect, unsigned int *dim)
 
 
 /* Allocate recursively the hook array */
-static int	aspect_vectors_recalloc(unsigned long *tab, unsigned int *dims, 
-					unsigned int depth, unsigned int dimsz)
+static int	aspect_vectors_recalloc(unsigned long *tab, 
+					unsigned int *dims, 
+					unsigned int depth, 
+					unsigned int dimsz)
 {
   unsigned int	idx;
+  void		*ptr;
+
+  //PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  //printf("Calling recalloc with depth = %u and dimsz = %u\n", 
+  //depth, dimsz);
 
   if (depth == dimsz)
     return (0);
+    //PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+
   for (idx = 0; idx < dims[depth - 1]; idx++)
     {
-      tab[idx] = (unsigned long) elfsh_calloc(dims[depth] * sizeof(unsigned long), 
-					      1);
-      if (tab[idx] == (unsigned long) NULL) 
-	{
-	  write(1, "Out of memory\n", 14);
-	  return (-1);
-	}
-      aspect_vectors_recalloc((unsigned long *) tab[idx], dims, depth + 1, dimsz);
+
+      //XALLOC(__FILE__, __FUNCTION__, __LINE__,
+      //ptr, dims[depth] * sizeof(unsigned long), -1);
+      
+      ptr = calloc(dims[depth] * sizeof(unsigned long), 1);
+      if (!ptr)
+	return (-1);
+
+      tab[idx] = (unsigned long) ptr;
+      aspect_vectors_recalloc((unsigned long *) tab[idx], 
+			      dims, depth + 1, dimsz);
     }
+
+
+  //printf("GETTING OUT OF recalloc with depth = %u and dimentnbr = %u\n", 
+  // depth, dimsz);
+
   return (0);
+  //PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
 }
 
 
 /* Initialize recursively the hook array */
-static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims, 
-				       unsigned int depth, unsigned int dimsz,
+static int	aspect_vectors_recinit(unsigned long *tab, 
+				       unsigned int *dims, 
+				       unsigned int depth, 
+				       unsigned int dimsz,
 				       void *defaultelem)
 {
   unsigned int	idx;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   /* Check if we reached a leaf, otherwise recurse more */
   if (depth == dimsz)
@@ -140,7 +157,7 @@ static int	aspect_vectors_recinit(unsigned long *tab, unsigned int *dims,
     for (idx = 0; idx < dims[depth - 1]; idx++)
       aspect_vectors_recinit((unsigned long *) tab[idx], dims, 
 			     depth + 1, dimsz, defaultelem);
-  return (0);
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
 }
 
 
@@ -155,32 +172,38 @@ int		aspect_register_vector(char		*name,
 {
   vector_t	*vector;
   unsigned long	*ptr;
-  
+  void		*mem;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+
   if (!defaultfunc || !dimsz || !dimensions)
     {
       write(1, "Invalid NULL parameters\n", 24);
       return (-1);
     }
-  if (vectype >= ELEM_TYPE_MAX)
+  if (vectype >= aspect_type_nbr)
     {
       write(1, "Invalid vector element type\n", 28);
       return (-1);
     }
-  vector = (vector_t *) calloc(sizeof(vector_t), 1);
-  if (vector == NULL)
-    return (-1);
-  ptr = (unsigned long *) calloc(dimensions[0] * sizeof(unsigned long), 1);
-  if (!ptr)
-    return (-1);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, mem, sizeof(vector_t), -1);
+  vector = (vector_t *) mem;
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, mem, 
+	 dimensions[0] * sizeof(unsigned long), -1);
+  ptr = (unsigned long *) mem;
+
   vector->hook = ptr;
   if (dimsz > 1)
-    aspect_vectors_recalloc((unsigned long *) vector->hook, dimensions, 1, dimsz);
+    aspect_vectors_recalloc((unsigned long *) vector->hook, 
+			    dimensions, 1, dimsz);
   
   vector->arraysz       = dimsz;
   vector->arraydims     = dimensions;
   vector->strdims       = strdims;
   vector->default_func  = defaultfunc;
-  hash_add(&vector_hash, name, vector);
+  hash_add(vector_hash, name, vector);
 
   /* Initialize vectored elements */
   aspect_vectors_recinit((unsigned long *) vector->hook, 

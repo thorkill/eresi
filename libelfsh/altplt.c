@@ -25,13 +25,13 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
   elfsh_Sym	*sym;
   elfsh_Addr	addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Insert plt+0 symbol */
   entsz  = elfsh_get_pltentsz(file);
   newsym = elfsh_create_symbol(new->shdr->sh_addr, entsz, STT_FUNC, 0, 0, 0);
   if (elfsh_insert_symbol(symtab, &newsym, "old_dlresolve") < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to insert old_dlresolve symbol", -1);
   
   *off = *off - entsz + elfsh_get_first_pltentsz(file);
@@ -41,7 +41,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
     {
       sym = elfsh_get_dynsymbol_by_name(file, "__libc_start_main");
       if (!sym)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot find __libc_start_main",  -1);
       
 #if __DEBUG_COPYPLT__	      
@@ -56,17 +56,17 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
 
   /* Call the libelfsh hook ALTPLT */
   if (elfsh_altplt(file, &newsym, addr) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "ALTPLT failed", -1);
   
   /* On IA32, reencode the PLT and EXTPLT entries to use the ALTGOT */
   /* The hook does nothing on other archs for now */
   if (FILE_IS_IA32(file))
     if (elfsh_encodeplt1(file, plt, extplt, diff) < 0)
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Reencoding of (EXT)PLT+0 failed", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -103,38 +103,38 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   u_char	ostype;
   elfsh_Addr	diff;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get PLT */
   if (file->secthash[ELFSH_SECTION_ALTPLT] != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   plt = elfsh_get_plt(file, NULL);
   if (NULL == plt)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "PLT section not found", -1);
   entsz = elfsh_get_pltentsz(file);
   if (entsz < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Failed to get PLT entry size", -1);
 
   /* Get GOT (recent ld call it .got.plt) */
   got = elfsh_get_gotsct(file);
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "GOT section not found", -1);
       
   /* Get symtabs */
   if (NULL == elfsh_get_dynsymtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "DYNSYM not found", -1);
   if (NULL == elfsh_get_symtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "SYMTAB not found", -1);
 
   /* Some fingerprint */
   ostype = elfsh_get_ostype(file);
   if (ostype == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid OS target", -1);
 
   /* Insert alternative .plt */
@@ -166,12 +166,12 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       if (elfsh_insert_mapped_section(file, 
 				      prolog, hdr, prologdata, 
 				      mode, mod) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.{plt,got}.prolog insertion failed", -1);
 
       new = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
       if (new == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.{plt,got}.prolog insertion failed", -1);
       file->secthash[ELFSH_SECTION_ALTPLTPROLOG] = new; 
     }
@@ -203,11 +203,11 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 
 			  0, 0, sz, 0, 0, 0, 0);
   if (elfsh_insert_mapped_section(file, new, hdr, prologdata, mode, mod) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      ".alt.plt|.pad.got insertion failed", -1);
   new = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
   if (new == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      ".alt.plt|.pad.got insertion failed", -1);
   file->secthash[ELFSH_SECTION_ALTPLT] = new;
    
@@ -228,13 +228,13 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       
       if (elfsh_insert_mapped_section(file, altgot, hdr, prologdata, 
 				      ELFSH_DATA_INJECTION, mod) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.got insertion failed", -1);
 
       altgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTGOT, 
 				      NULL, NULL, NULL);
       if (altgot == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.got insertion failed", -1);
       file->secthash[ELFSH_SECTION_ALTGOT] = altgot;
       altgot->curend = got->shdr->sh_size;
@@ -254,12 +254,12 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
       if (elfsh_insert_mapped_section(file, extplt, hdr, prologdata, 
 				      mode, mod) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".ext.plt insertion failed", -1);
       extplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_EXTPLT, 
 					 NULL, NULL, NULL);
       if (extplt == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".ext.plt insertion failed", -1);
       file->secthash[ELFSH_SECTION_EXTPLT] = extplt;
       extplt->curend = elfsh_get_first_pltentsz(file);
@@ -274,7 +274,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       /* Special case for the first plt entry */
       if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, extplt, plt,
 					    (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.plt on first entry failed", -1);
       else if (off == 0)
 	continue;
@@ -321,7 +321,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       newsym = elfsh_create_symbol(addr, entsz, STT_FUNC, 0, 0, 0);
       snprintf(buf, BUFSIZ, "old_%s", name);
       if (elfsh_insert_symbol(symtab, &newsym, buf) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "old_* symbol injection failed", -1);
       
 #if __DEBUG_COPYPLT__
@@ -353,12 +353,12 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
   /* Activate ALTGOT */
   if (elfsh_redirect_pltgot(file, altgot, got, plt, new) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "PLTGOT redirection failed", -1);
 
   /* Activate EXTPLT */
   if (elfsh_extplt_mirror_sections(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Section mirroring failed", -1);
 
 #if	__DEBUG_COPYPLT__
@@ -368,13 +368,13 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
   /* Everything is 0k4y */
   if (elfsh_sync_sorted_symtab(symtab) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "symtab synchronisation failed", -1);
   if (elfsh_sync_sorted_symtab(dynsym) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "dynsym synchronisation failed", -1);
   elfsh_sync_sectnames(file);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -417,15 +417,15 @@ int		elfsh_build_plt(elfshobj_t *file)
   char		*tdata;
   unsigned int	idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First checks */
   text = elfsh_get_parent_section(file, elfsh_get_entrypoint(file->hdr), &off);
   if (!text)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find parent section from entry point", -1);
   if (!elfsh_get_anonymous_section(file, text))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get an anonymous section", -1);
 
   
@@ -445,14 +445,14 @@ int		elfsh_build_plt(elfshobj_t *file)
 	      pltend = text->shdr->sh_addr + off + 16;
 	      goto found;
 	    }
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cannot find PLT end", -1);
       }
 
  found:
   idx = text->index;
   if (!pltaddr) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find PLT start", -1);
 
   /* 
@@ -470,7 +470,7 @@ int		elfsh_build_plt(elfshobj_t *file)
 			    text->shdr->sh_addr, text->shdr->sh_offset,
 			    size, 0, 0, 0, 0);
   new = elfsh_create_section(ELFSH_SECTION_NAME_START);
-  XALLOC(data, size, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, size, -1);
   memcpy(data, tdata, size);
   elfsh_insert_shdr(file, start, idx, new->name, 0);
   elfsh_add_section(file, new, idx, data, ELFSH_SHIFTING_MIPSPLT);
@@ -484,7 +484,7 @@ int		elfsh_build_plt(elfshobj_t *file)
 			    start.sh_offset + start.sh_size,
 			    size, 0, 0, 0, 0);
   new = elfsh_create_section(ELFSH_SECTION_NAME_PLT);
-  XALLOC(data, size, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, size, -1);
   memcpy(data, tdata + start.sh_size, size);
   elfsh_insert_shdr(file, plt, idx + 1, new->name, 0);
   elfsh_add_section(file, new, idx + 1, data, ELFSH_SHIFTING_MIPSPLT);
@@ -497,7 +497,7 @@ int		elfsh_build_plt(elfshobj_t *file)
 	  text->shdr->sh_size - (start.sh_size + plt.sh_size));
   text->shdr->sh_size   -= (start.sh_size + plt.sh_size);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -506,17 +506,17 @@ int		elfsh_build_plt(elfshobj_t *file)
 /* This is the main entry point for the ALTPLT, ALTGOT, and EXTPLT techniques */
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Some sanity checks */
   if (elfsh_static_file(file))
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (FILE_IS_MIPS(file) && 
       elfsh_dynamic_file(file) && 
       (elfsh_build_plt(file) < 0))
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Unable to build MIPS plt", -1);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     elfsh_relink_plt(file, modulo));
 }

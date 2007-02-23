@@ -18,7 +18,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
   elfsh_Addr	*addr;
 
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if	__DEBUG_ETRELintoETDYN__
   printf("[DEBUG_ETRELintoETDYN] Shifting GOT from %u bytes \n", size);
 #endif
@@ -26,7 +26,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
   got = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_GOT, 
 				  NULL, NULL, &nbr);
   if (!got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Cannot retreive GOT in ET_DYN", -1);
   nbr = nbr / sizeof(elfsh_Addr);
   for (idx = 0; idx < nbr; idx++)
@@ -35,7 +35,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
       if (*addr)
 	*addr += size;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 /* Shift ALTGOT on ET_DYN */
@@ -46,7 +46,7 @@ int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
   u_int				idx;
   elfsh_Addr	*addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if	__DEBUG_ETRELintoETDYN__
   printf("[DEBUG_ETRELintoETDYN] Shifting ALTGOT from %u bytes \n", size);
 #endif
@@ -54,7 +54,7 @@ int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
   got = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTGOT, 
 				  NULL, NULL, &nbr);
   if (!got)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
   nbr = nbr / sizeof(elfsh_Addr);
   for (idx = 0; idx < nbr; idx++)
     {
@@ -62,7 +62,7 @@ int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
       if (*addr)
 	*addr += size;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
@@ -73,10 +73,10 @@ int		elfsh_endianize_got(elfshsect_t *new)
   elfsh_Addr	*cur;  
   int		idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!new)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -90,7 +90,7 @@ int		elfsh_endianize_got(elfshsect_t *new)
     for (idx = 0; idx < new->shdr->sh_size / new->shdr->sh_entsize; idx++)
       cur[idx] = swaplong(cur[idx]);
   }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
   
 
@@ -100,14 +100,14 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 {
   elfshsect_t	*new;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   else if (file->sectlist == NULL && elfsh_read_obj(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to read object", NULL);
 
   /* Read GOT */
@@ -117,7 +117,7 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
     {
       new = elfsh_get_gotsct(file);
       if (new == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get GOT by name", NULL);
     }
  
@@ -126,7 +126,7 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
     {
       new->data = elfsh_load_section(file, new->shdr);
       if (new->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load GOT", NULL);
       file->secthash[ELFSH_SECTION_GOT] = new;
 
@@ -137,7 +137,7 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
   /* Final things */
   if (num != NULL)
     *num = new->shdr->sh_size / new->shdr->sh_entsize;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
 }
  
 
@@ -147,7 +147,7 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
   {
     elfshsect_t *new;
-   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);    
+   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);    
     
     new = file->secthash[ELFSH_SECTION_GOT];
     if (new == NULL)
@@ -161,11 +161,11 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
 					   ELFSH_SECTION_NAME_GOT, 
 					   NULL, NULL, NULL);
 	   if (new == NULL)
-	     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			       "Unable to get GOT by name", NULL);
 	 }
      }
-   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
  }
  
 
@@ -180,15 +180,15 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
   char		*name;
   elfsh_Addr	rank = 0;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == 0x0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No file selected", NULL);
   
   if (file->sectlist == NULL && elfsh_get_sht(file, NULL) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get SHT", NULL);
 
   for (idx = 0; idx < elfsh_get_shtnbr(file->hdr); idx++)
@@ -203,7 +203,7 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
 	  got = elfsh_get_section_by_name(file, name,
 					  NULL, NULL, NULL);
 	  if (got == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Unable to get GOT by name", NULL);	  
 	  
 	  /* Load GOT data */
@@ -213,7 +213,7 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
 	      got->data = elfsh_load_section(file, got->shdr);
 	     
 	      if (got->data == NULL)
-		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				  "Unable to load got", NULL);
 	      
 	      // file->secthash[ELFSH_SECTION_GOT] = got;
@@ -226,13 +226,13 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
 	    {
 	      if (nbr != NULL)
 		*nbr =  got->shdr->sh_size / got->shdr->sh_entsize;
-	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (got));
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (got));
 	    }
 
 	  rank++;	  
 	}
     }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Cannot reach requested range", NULL);
 }
   
@@ -247,17 +247,17 @@ int		elfsh_set_got_entry_by_index(elfshobj_t *file,
   int		nbr;
   elfsh_Addr	*got;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   got = elfsh_get_got(file, &nbr);
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get GOT", -1);
   if (i >= nbr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GOT index too big", -1);
   got[i] = n;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -270,17 +270,17 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *f,
 {
   elfsh_Addr	*got;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (f == NULL || n == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   got = elfsh_get_got_entry_by_name(f, n);
   if (got == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get GOT entry by name", -1);
   *got = a;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -289,12 +289,12 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *f,
 elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got, 
 					      elfsh_Addr index)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (got == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (got + index));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (got + index));
 }
 
 
@@ -308,31 +308,31 @@ elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
   elfsh_Sym	*sym;
   u_int		sz;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   got = elfsh_get_got(file, &nbr);
   sym = elfsh_get_dynsymbol_by_name(file, name);
   if (got == NULL || sym == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find symbol", NULL);
 
   /* Get PLT info */
   if (!elfsh_is_pltentry(file, sym))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Symbol is not PLT entry", NULL);
   sz = elfsh_get_pltentsz(file);
   
   /* Find the entry */
   for (index = 0; index < nbr; index++)
     if (INTERVAL(sym->st_value, got[index], sym->st_value + sz))
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (got + index));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (got + index));
     
   /* Not found */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "GOT entry not found", NULL);
 }
 
@@ -342,13 +342,13 @@ elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 /* Return a entry giving its parent and its index : used as INTERNAL hash handler */
 int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   *got = vaddr;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -357,12 +357,12 @@ int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
    hash handler */
 elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
 
 
@@ -370,12 +370,12 @@ elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 /* Return a GOT entry value */
 elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
 
 
@@ -383,12 +383,12 @@ elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 /* Return a GOT entry address */
 elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
 
 
@@ -396,13 +396,13 @@ elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 /* Change a GOT entry val */
 u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == got)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   *got = val;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -410,12 +410,12 @@ u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 /* Change a GOT entry addr */
 u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   // XXX Not yet implemented ... and not going to be
   printf("[DEBUG] elfsh_set_got_addr\n");
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -437,20 +437,20 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
    elfsh_Off   off;
    void		*data;
    
-   ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
    
    /* Sanity checks */
    entsz = elfsh_get_pltentsz(file);
    if (entsz < 0)
-     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid PLT entry size", -1);
 
   if (NULL == elfsh_get_dynsymtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get DYNSYM", -1);
 
   if (NULL == elfsh_get_symtab(file, NULL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get SYMTAB", -1);
   
   /* get got section index */
@@ -458,7 +458,7 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
 				  ELFSH_SECTION_NAME_GOT,
 				  &got_index, NULL, NULL);
   if (got == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get GOT", -1);
   
   /* search the got relocation section */
@@ -472,7 +472,7 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
     }
   
   if ((rel_got == NULL) || (rel_got->shdr->sh_info != got_index))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get GOT relocations", -1);
   
   /* search for the requested symbol */
@@ -487,11 +487,11 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
       if(strcmp(elfsh_get_symname_from_reloc(file, cur_rel), name) == 0)
 	{
 	  *rel_entry = *cur_rel;
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
     }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Symbol not found", -1);
 }
 

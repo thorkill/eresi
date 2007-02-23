@@ -12,140 +12,140 @@
 /* Return the symbol size */
 elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_size));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_size));
 }
 
 /* Change the symbol size */
 int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
   s->st_size = (elfsh_Word) size;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the symbol offset giving its elfsh_Sym entry */
 elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_value));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_value));
 }
 
 /* Change the symbol offset giving its elfsh_Sym entry */
 int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
   s->st_value = value;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Return the symbol binding */
 u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_BIND(s->st_info)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_BIND(s->st_info)));
 }
 
 /* Change the symbol binding */
 u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   s->st_info = (s->st_info & 0x0F) + ((((char) opt) << 4) & 0xF0);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the symbol type */
 u_char	elfsh_get_symbol_type(elfsh_Sym *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_TYPE(s->st_info)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_TYPE(s->st_info)));
 }
 
 /* Change the symbol type */
 u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
   s->st_info = (s->st_info & 0xF0) + (((char) type) & 0x0F);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the symbol type */
 u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_VISIBILITY(s->st_other)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_VISIBILITY(s->st_other)));
 }
 
 /* Change the symbol type */
 u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   s->st_other = ELFSH_ST_VISIBILITY(((char) vis));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the symbol linked section index */
 u_int	elfsh_get_symbol_link(elfsh_Sym *s) 
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_shndx));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_shndx));
 }
 
 /* Change the symbol linked section index */
 u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
   s->st_shndx = (u_int) val;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -157,7 +157,7 @@ elfsh_Sym	*elfsh_get_metasym_byval(elfshobj_t *file, int num,
 {
   elfsh_Sym	*res;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   elfsh_get_symtab(file, NULL);
   elfsh_get_dynsymtab(file, NULL);
@@ -167,7 +167,7 @@ elfsh_Sym	*elfsh_get_metasym_byval(elfshobj_t *file, int num,
   if (res == NULL)
     res = elfsh_get_sym_by_value(file->secthash[ELFSH_SECTION_SYMTAB]->data, 
 				 num, vaddr, off, mode);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }
 
 
@@ -182,13 +182,13 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
   int		  high_off;
   int		  idx;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   low_off = high_off = ELFSH_UNSET_OFFSET;
   good = low = high = NULL;
 
   if (sym == NULL || !num)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* main loop */
@@ -212,23 +212,23 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
     {
       if (off != NULL)
 	*off = 0;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (good));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (good));
     }
   else if (mode == ELFSH_LOWSYM)
     {
       if (off != NULL)
 	*off = low_off;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (low));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (low));
     }
   else if (mode == ELFSH_HIGHSYM)
     {
       if (off != NULL)
 	*off = high_off;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (high));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (high));
     }
 
   /* ELFSH_EXACTSYM but no matching symbol */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No exact symbol matching", NULL);
 }
 
@@ -239,7 +239,7 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
 {
   elfsh_Sym	new;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   new.st_value = value;
   new.st_size  = size;
@@ -247,7 +247,7 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
   new.st_other = vis;
   new.st_shndx = sctidx;
 	new.st_name  = NULL;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -256,14 +256,14 @@ elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 {
   elfsh_Sym	*new;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!data || !size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  XALLOC(new, size * ELFSH_SYMTAB_ENTRY_SIZE, NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, size * ELFSH_SYMTAB_ENTRY_SIZE, NULL);
   memcpy(new, data, size * ELFSH_SYMTAB_ENTRY_SIZE);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
@@ -272,9 +272,9 @@ elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab, 
 						   elfsh_Addr index)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab + index));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab + index));
 }
 
 
@@ -283,13 +283,13 @@ elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   sym = elfsh_get_dynsymbol_by_name(file, name);
   if (sym != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
   sym = elfsh_get_symbol_by_name(file, name);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
 }
 
 /**
@@ -305,22 +305,22 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 {
   elfshsect_t	*parent;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || vaddr == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
 
   parent = elfsh_get_parent_section(file, vaddr, NULL);
   if (parent == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find parent section", NULL);
 
   if (file->secthash[ELFSH_SECTION_PLT] != NULL &&
       parent->index == file->secthash[ELFSH_SECTION_PLT]->index)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       (elfsh_reverse_dynsymbol(file, vaddr, off)));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_reverse_symbol(file, vaddr, off)));
 }
 
@@ -331,10 +331,10 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
   u_int		idx;
   u_int		sz;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!tab)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
 
     /* Arrange endianess if necessary */
@@ -357,7 +357,7 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 	  symtab[idx].st_size  = swaplong(symtab[idx].st_size);
 	}
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
   
 
@@ -370,10 +370,10 @@ int		elfsh_shift_syms(elfshobj_t *file,
   u_int		idx;
   elfsh_Sym	*sym;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (symtab == NULL || symtab->data == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid SYMTAB parameter", -1);
 
 #if	__DEBUG_RELADD__
@@ -402,5 +402,5 @@ int		elfsh_shift_syms(elfshobj_t *file,
       }
 
   elfsh_sync_sorted_symtab(symtab);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

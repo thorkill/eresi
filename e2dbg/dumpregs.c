@@ -30,13 +30,13 @@ void		vm_dumpreg(char *name, uint32_t reg)
 /* Small BSD patch submitted by Rod */
 int		cmd_dumpregs()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e2dbgworld.curthread)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No current thread available", (-1));
   if (!e2dbgworld.curthread->context)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No context available", (-1));
   
   vm_output(" .:: Registers ::. \n\n");
@@ -104,5 +104,5 @@ int		cmd_dumpregs()
   
   printf("\n");
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }

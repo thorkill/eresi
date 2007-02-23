@@ -18,11 +18,11 @@ int		cmd_cleanup()
   uint32_t	nbr;
   char		buf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   obj = vm_lookup_file(world.curjob->curcmd->param[0]);
   if (!obj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
 
   sect = world.curjob->current->sectlist;
@@ -40,5 +40,5 @@ int		cmd_cleanup()
   //world.curjob->current->strip = 1;
 
   vm_output("\n [*] File marked for cleanup-on-save \n\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

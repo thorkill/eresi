@@ -17,18 +17,18 @@ static edfmttype_t     	*edfmt_stabs_transform_type_get(edfmtstabstype_t *type)
 {
   edfmttype_t		*stype = NULL;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
   if (!type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);
 
   stype = (edfmttype_t *) hash_get(&types_added, type->cnum);
 
   if (stype)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, stype);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, stype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, u_char main_type)
@@ -40,10 +40,10 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   char			buf[BUFSIZ];
   char			*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
   if (!type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);
 
   if (type->transtype != NULL)
@@ -51,7 +51,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       if (main_type)
 	edfmt_change_type_nfile(type->transtype);
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, type->transtype);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type->transtype);
     }
 
   switch(type->type)
@@ -131,23 +131,23 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       HASH_ADDX(&types_added, type->cnum, etype);
     }
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, etype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, etype);
 }
 
 static int		edfmt_stabs_transform_type(edfmtstabstype_t *type_list)
 {
   edfmtstabstype_t	*type;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
   if (!type_list)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   for (type = type_list; type != NULL; type = type->next)
     edfmt_stabs_transform_type_adv(type, 1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
@@ -155,10 +155,10 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
   edfmttype_t 		*stype;
   edfmtstabsdata_t 	*var;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
   if (!var_list)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   for (var = var_list; var != NULL; var = var->next)
@@ -176,7 +176,7 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile, 
@@ -186,14 +186,14 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
   edfmtstabsfile_t 	*tfile;
   char			name[EDFMT_NAME_SIZE];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!sfile)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   if (types_added.ent == NULL)
-    hash_init(&types_added, STABS_HNAME_TYPE_ADD, 50, ELEM_TYPE_ANY);
+    hash_init(&types_added, STABS_HNAME_TYPE_ADD, 50, ASPECT_TYPE_UNKNOW);
 
   /* Iterate each element */
   for (tfile = sfile; tfile != NULL; tfile = tfile->next)
@@ -219,7 +219,7 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
 
   hash_empty(STABS_HNAME_TYPE_ADD);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Transform stabs informations */
@@ -228,22 +228,22 @@ int			edfmt_stabs_transform(elfshobj_t *file)
   edfmtstabsinfo_t 	*tinfo;
   edfmtstabsfile_t 	*tfile;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1); 
 
   tinfo = (edfmtstabsinfo_t *) file->debug_format.stabs;
 
   if (tinfo == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No debug information for stabs", -1); 
 
   tfile = (edfmtstabsfile_t *) tinfo->file;
 
   if (tfile == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No file information for stabs", -1); 
 
   /* Init api */
@@ -254,5 +254,5 @@ int			edfmt_stabs_transform(elfshobj_t *file)
   /* Reset api */
   edfmt_add_end();
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

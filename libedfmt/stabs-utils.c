@@ -13,10 +13,10 @@ char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
   u_int		csize;
   char		*delim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == buf || size == 0 || STABS_IVD_STR(str) || c_delim == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid parameters", NULL);
 
   delim = strchr(*str, c_delim);
@@ -32,7 +32,7 @@ char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
 
   *str += csize;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /* Read a number from a string 
@@ -47,10 +47,10 @@ int		edfmt_stabs_readnumber(char **str, char c_delim, long *set_num)
   int		base = 10;
   long		num = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (STABS_IVD_STR(str) || !set_num)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   if (**str == '-')
@@ -72,20 +72,20 @@ int		edfmt_stabs_readnumber(char **str, char c_delim, long *set_num)
     }
 
   if (c_delim && **str != c_delim)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   *set_num = num * sign;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Read a type number (num,num) or num */
 int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (STABS_IVD_STR(str))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
   if (**str == '(')
@@ -93,12 +93,12 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
       (*str)++;
 
       if (edfmt_stabs_readnumber(str, ',', &tnum->file) != 0)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
       (*str)++;
 
       if (edfmt_stabs_readnumber(str, ')', &tnum->number) != 0)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
        
       (*str)++;
     }
@@ -106,21 +106,21 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
     {
       tnum->file = 0;
       if (edfmt_stabs_readnumber(str, 0, &tnum->number) != 0)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		edfmt_stabs_ctypenum(char *buf, u_int size, edfmtstabstypenum_t *tnum)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!buf || size == 0 || !tnum)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);
 
   snprintf(buf, size - 1, "(%ld,%ld)", tnum->file, tnum->number);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

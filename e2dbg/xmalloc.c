@@ -77,9 +77,10 @@ void		*malloc(size_t t)
     }
   else
     {
-      chunk = elfsh_malloc(t);
+      chunk = aproxy_malloc(t);
 #if __DEBUG_EMALLOC__
-      len = snprintf(buf, sizeof(buf), "E2DBG malloc used [ret = %08X, len = %u] \n", 
+      len = snprintf(buf, sizeof(buf), 
+		     "E2DBG malloc used [ret = %08X, len = %u] \n", 
 		     (elfsh_Addr) chunk, t);
       write(2, buf, len);
 #endif
@@ -131,7 +132,7 @@ void		*valloc(size_t t)
 #if __DEBUG_EMALLOC__
       write(2, "E2DBG valloc used\n", 18);
 #endif
-      chunk = (void *) elfsh_valloc(t);
+      chunk = (void *) aproxy_valloc(t);
     }
   
   if (!chunk)
@@ -208,7 +209,8 @@ void		*calloc(size_t t, u_int nbr)
 #if __DEBUG_EMALLOC__
       {
 	char buff[256];
-	len = snprintf(buff, sizeof(buff), "Calling LIBC calloc at addr %08X\n", 
+	len = snprintf(buff, sizeof(buff), 
+		       "Calling LIBC calloc at addr %08X\n", 
 		       (elfsh_Addr) callocptr);
 	write(2, buff, len);
       } 
@@ -226,8 +228,8 @@ void		*calloc(size_t t, u_int nbr)
       write(2, "E2DBG calloc used\n", 18);
       write(2, "\033[00m", 5);
 #endif
-      //chunk = elfsh_calloc(t, nbr);
-      chunk = elfsh_malloc(t * nbr);
+      //chunk = aproxy_calloc(t, nbr);
+      chunk = aproxy_malloc(t * nbr);
       if (chunk)
 	memset(chunk, 0x00, t * nbr);
     }
@@ -236,14 +238,16 @@ void		*calloc(size_t t, u_int nbr)
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " ! Calloc failed (%u * %u sz) \n", 
+      len = snprintf(buff, sizeof(buff), 
+		     " ! Calloc failed (%u * %u sz) \n", 
 		     t, nbr);
       write(2, buff, len);
     }
   else
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " Calloc (%u * %u sz) returned %08X\n", 
+      len = snprintf(buff, sizeof(buff), 
+		     " Calloc (%u * %u sz) returned %08X\n", 
 		     t, nbr, (elfsh_Addr) chunk);
       write(2, buff, len);
     }
@@ -305,14 +309,15 @@ void		*memalign(size_t t, u_int nbr)
       write(2, "E2DBG memalign used\n", 18);
       write(2, "\033[00m", 5);
 #endif
-      chunk = (void *) elfsh_memalign(t, nbr);
+      chunk = (void *) aproxy_memalign(t, nbr);
     }
 
 #if __DEBUG_EMALLOC__
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), " ! Memalign failed (%u * %u sz) \n", 
+      len = snprintf(buff, sizeof(buff), 
+		     " ! Memalign failed (%u * %u sz) \n", 
 		     t, nbr);
       write(2, buff, len);
     }
@@ -359,7 +364,7 @@ void	*realloc(void *a, size_t t)
 #if __DEBUG_EMALLOC__
       write(2, "E2DBG realloc used\n", 19);
 #endif
-      b = elfsh_realloc(a, t);
+      b = aproxy_realloc(a, t);
     }
   
   if (!b)
@@ -406,7 +411,7 @@ void	free(void *a)
 #if __DEBUG_EMALLOC__
       write(2, "E2DBG free used\n", 16);
 #endif
-      XFREE(a);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,a);
     }
 
 #if __DEBUG_EMALLOC__
@@ -430,7 +435,8 @@ void		_exit(int err)
   /* If another thread did an exit, just signal it and return */
   if (pthread_self() != vm_dbgid_get())
     {
-      printf(" [*] Thread ID %u exited \n", (unsigned int) pthread_self());
+      printf(" [*] Thread ID %u exited \n", 
+	     (unsigned int) pthread_self());
       while (1)
 	sleep(1);
     }
@@ -467,8 +473,8 @@ void	__libc_malloc_pthread_startup (int first_time)
   write(2, "Calling __libc_malloc_pthread_startup HOOK ! \n", 46);
   pthstartupptr(first_time);
   write(2, "Finished LIBC pthread startup ! \n", 33);
-  write(2, "Calling __elfsh_libc_malloc_pthread_startup HOOK ! \n", 52);
-  __elfsh_libc_malloc_pthread_startup (first_time);
+  write(2, "Calling __aproxy_libc_malloc_pthread_startup HOOK ! \n", 52);
+  __aproxy_libc_malloc_pthread_startup (first_time);
   write(2,g "Finished OURS pthread startup ! \n", 33);
 }
 */
@@ -476,10 +482,10 @@ void	__libc_malloc_pthread_startup (int first_time)
 
 /* Not sure it is useful / bugless, just a try */
 /*
-void*		_int_malloc(size_t p)             { return (malloc(p));      }
-void*		_int_valloc(size_t p)             { return (valloc(p));      }
-void*		_int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
-void*		_int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
-void*		_int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
-void		_int_free(void *p)                { free(p);                 }  
+void*	  _int_malloc(size_t p)             { return (malloc(p));      }
+void*	  _int_valloc(size_t p)             { return (valloc(p));      }
+void*	  _int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
+void*	  _int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
+void*	  _int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
+void	  _int_free(void *p)                { free(p);                 }  
 */

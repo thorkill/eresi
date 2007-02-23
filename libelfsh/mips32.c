@@ -36,7 +36,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   char			bufname[BUFSIZ];
   void			*data;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /*
     func+0:	[addu t9, (hook-func)]
@@ -58,36 +58,36 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   /* Resolve parameters */
   off = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   if (!off) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid address to hijack", -1);
 
   ret = elfsh_raw_read(file, off, (void *) buff, 3*4);
   if (ret != 3*4)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Function too small to be hijacked", -1);
 
   /* If the hook section does not exist, create it */
   hooks = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_HOOKS, 0, 0, 0);
   if (!hooks)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Cannot get .HOOKS", -1);  
   
   hook = (char *) (hooks->shdr->sh_addr + hooks->curend);
   
   if (((uint32_t)  symbol->st_value & 0xf0000000) != (addr & 0xf0000000))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "hook function too far from hijacked function", -1);
   
   if (((uint32_t) hook & 0xf0000000) != ((symbol->st_value + 0x8) & 0xf0000000)) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "hook section too far from hijacked function", -1);
   
   if ((addr - (uint32_t)  symbol->st_value) & (0xffffffff<<16))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "hook function too far from hijacked function", -1);
 
   if (((uint32_t)  symbol->st_value - (uint32_t) hook) & (0xffffffff<<16))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "hook section too far from hijacked function", -1);
 
   /* Determine the minimal aligned length */
@@ -132,7 +132,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   /* We need to grab the parent section to compute the remaining offset */
   source = elfsh_get_parent_section_by_foffset(file, off, NULL);
   if (!source)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find parent section for hooked addr", -1);
 
   /* Install the hook */
@@ -151,12 +151,12 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
 
   len = elfsh_raw_write(file, off, hookbuf, ret);
   if (len != ret)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error during hook installation", -1);
 
   /* Everything OK, ret is always 3*4 on mips32 (RISC strike again) */
   hooks->curend += ret + 6; // (6 = 1 add, 3 instr, 1 jump, 1 nop)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -167,8 +167,8 @@ int		elfsh_hijack_plt_mips32(elfshobj_t *file,
 					elfsh_Sym *symbol,
 					elfsh_Addr addr)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS\n", 0);
 }
 
@@ -204,11 +204,11 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   uint16_t	gotdiff;
   uint32_t	*originstr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Regular checks */
   if (!FILE_IS_MIPS(file))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "File is not MIPS", -1);
 
   altgotprolog = file->secthash[ELFSH_SECTION_ALTGOTPROLOG];
@@ -220,7 +220,7 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   dynamic      = file->secthash[ELFSH_SECTION_DYNAMIC];
 
   if (!altgotprolog || !altgot || !got || !padgot || !dynsym || !dynamic)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find GOT, ALTGOTPROLOG, ALTGOT"
 		      " PADGOT, DYSYM, DYNAMIC or MIPSTART section", -1);
 
@@ -239,14 +239,14 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   gotsym = (dynent  ? elfsh_get_dynentry_val(dynent)  : 0);
   symnbr = dynamic->shdr->sh_size / sizeof(elfsh_Sym);
   if (symnbr < gotsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "DYNSYM smaller than DT_MIPS_GOTSYM", -1);
   
   dynent2 = elfsh_get_dynamic_entry_by_type(file, DT_MIPS_LOCAL_GOTNO); 
   gotno  = (dynent2 ? elfsh_get_dynentry_val(dynent2) : 0);
   gotnbr = got->shdr->sh_size / sizeof(elfsh_Addr);
   if (gotnbr < gotno)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GOT smaller than DT_MIPS_GOTSYM", -1);
 
   sym   = elfsh_get_raw(dynsym);
@@ -263,7 +263,7 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   
   printf("[DEBUG_GOTPLT:mips] Found %u extern variables\n", varnbr);
 
-  XALLOC(opcode, (9 + (varnbr * 2)) * sizeof(uint32_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,opcode, (9 + (varnbr * 2)) * sizeof(uint32_t), -1);
 
   /*
     __asm__("addi $t0, $gp, 0x8010;");
@@ -306,12 +306,12 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   opcode[opcodendx++] = 0x00000000;	 /* nop delay slot    */
 
   if (padgot->shdr->sh_size < sizeof(uint32_t) * varnbr * 2)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".pad.got section too small", -1);
 
   elfsh_raw_write(file, altgotprolog->shdr->sh_offset, opcode, sizeof(uint32_t) * 7);
   elfsh_raw_write(file, padgot->shdr->sh_offset, opcode + 7, sizeof(uint32_t) * (2 + (varnbr * 2)));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -371,7 +371,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 							/* XXX what if there is no .got ? */
 #define GP	(elfsh_get_gpvalue_addr(new->parent)?(*(elfsh_get_gpvalue_addr(new->parent))):NULL)					
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   retval = 0;
   switch (elfsh_get_reltype(cur))
@@ -402,7 +402,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       printf("[DEBUG] elfsh_relocate_mips32 : R_MIPS_32 \n");
       
       *dword += TRUNCATE32(S + A);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 
     case  R_MIPS_REL32:
       break;
@@ -451,7 +451,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       */
       printf("[DEBUG] elfsh_relocate_mips32 : R_MIPS_HI16 \n");
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 
     case  R_MIPS_LO16:
       /* _gp_disp case */
@@ -488,7 +488,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       if (HI16_cur == NULL || HI16_dword == NULL)
 	{
 	  printf("[DEBUG] elfsh_relocate_mips32: You loose\n");
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			    "Invalid HI16 relocation context", -1);
 	}
 
@@ -540,23 +540,23 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       if (ISGPDISP(cur))
 	{
 	  *dword = VERIFY16(((old_HI16_dword << 16) + (short) A) + GP + P + 4);
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
       
 
       if (ISLOCAL(cur))
 	{
 	  *dword = TRUNCATE16(((old_HI16_dword << 16) + (short) A) + S);
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
       
       if (ISEXTERNAL(cur))
 	{
 	  *dword = TRUNCATE16(((old_HI16_dword << 16) + (short) A) + S);
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Unknown relocation type", -1);      
       
     case  R_MIPS_GPREL16:
@@ -597,17 +597,17 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 	{
 	  *dword += VERIFY16(G);
 	  
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
       
       if (ISEXTERNAL(cur))
 	{
 	  printf("External symbol MIMPS_GOT16 reloc not yet implemented\n");
 	  
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 	}
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Unknown MIPS relocation type", -1);
 
     case  R_MIPS_PC16:
@@ -621,7 +621,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
       */
             printf("[DEBUG] elfsh_relocate_mips32 : R_MIPS_CALL16 \n");
       *dword += VERIFY16(G);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 
     case  R_MIPS_GPREL32:
     case  R_MIPS_SHIFT5:
@@ -648,7 +648,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
     case  R_MIPS_JALR:
       break;
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unsupported relocation type", -1);
       break;
     }
@@ -659,7 +659,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 #undef G
 #undef GP
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
 
 

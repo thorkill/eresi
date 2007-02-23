@@ -10,32 +10,32 @@
 /* Only called by set */
 int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   *o1 = vm_lookup_param(world.curjob->curcmd->param[0], 2);
   *o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!*o1 || !*o2)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup a parameter", -1);
 
   /* Lazy typing in action */
   if ((*o1)->type != (*o2)->type)
     {
-      if ((*o2)->type == REVM_TYPE_UNKNOW)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      if ((*o2)->type == ASPECT_TYPE_UNKNOW)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Source parameter undefined", -1);
-      if ((*o1)->type == REVM_TYPE_UNKNOW)
+      if ((*o1)->type == ASPECT_TYPE_UNKNOW)
         vm_convert_object(*o1, (*o2)->type);
       else if (vm_convert_object(*o2, (*o1)->type) < 0)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "SET parameters type are not compatible", -1);
     }
   else if ((*o1)->immed && !(*o1)->perm)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Dest. param. must not be a constant", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -54,30 +54,31 @@ int                     cmd_set()
   int                   error;
   int			errvar;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks and conversions */
   error  = -1;
   errvar = 0;
   if (vm_preconds_atomics(&o1, &o2) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid variable transaction", (-1));
 
   /* Do the real assignation */
   switch (o1->type)
     {
-    case REVM_TYPE_STR:
+    case ASPECT_TYPE_STR:
       str = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
       if (o1->immed)
         {
-          o1->immed_val.str = elfsh_strdup(str);
+          o1->immed_val.str = aproxy_strdup(str);
+ 
           o1->size = o2->size;
         }
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
         goto err;
       break;
 
-    case REVM_TYPE_BYTE:
+    case ASPECT_TYPE_BYTE:
       val8 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
       if (o1->immed)
         o1->immed_val.byte = val8;
@@ -93,7 +94,7 @@ int                     cmd_set()
       break;
 
 
-    case REVM_TYPE_SHORT:
+    case ASPECT_TYPE_SHORT:
       val16 = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.half = val16;
@@ -108,7 +109,7 @@ int                     cmd_set()
       last->type = o1->type;
       break;
 
-    case REVM_TYPE_INT:
+    case ASPECT_TYPE_INT:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.word = val32;
@@ -123,7 +124,8 @@ int                     cmd_set()
       last->type = o1->type;
       break;
 
-    case REVM_TYPE_LONG:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.ent = val64;
@@ -139,7 +141,7 @@ int                     cmd_set()
       break;
 
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown type for SET parameter", -1);
     }
 
@@ -149,22 +151,22 @@ int                     cmd_set()
   error = 0;
 
  err:
-  if (o2->immed && o2->type == REVM_TYPE_STR && str != NULL)
-    XFREE(str);
+  if (o2->immed && o2->type == ASPECT_TYPE_STR && str != NULL)
+    XFREE(__FILE__, __FUNCTION__, __LINE__,str);
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
 
   /* We have 2 different possible errors here */
   if (errvar < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error while setting $_", -1);
   else if (error < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to set object", -1);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 
@@ -181,11 +183,11 @@ int		cmd_get()
   int		error = -1;
   revmobj_t	*last;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GET need a parameter", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   if (!o1)
@@ -194,14 +196,14 @@ int		cmd_get()
   /* Switch on the object type */
   switch (o1->type)
     {
-    case REVM_TYPE_STR:
+    case ASPECT_TYPE_STR:
       str = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
       vm_output(str);
       if (o1->immed)
-	XFREE(str);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
       break;
 
-    case REVM_TYPE_BYTE:
+    case ASPECT_TYPE_BYTE:
       val8 = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%c\n", val8);
       vm_output(logbuf);
@@ -213,7 +215,7 @@ int		cmd_get()
       last->immed_val.word = val8;
       last->type = o1->type;
       break;
-    case REVM_TYPE_SHORT:
+    case ASPECT_TYPE_SHORT:
       val16 = (o1->immed ? o1->immed_val.half : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "%4hu \n", val16);
       vm_output(logbuf);
@@ -225,7 +227,7 @@ int		cmd_get()
       last->immed_val.word = val16;
       last->type = o1->type;
       break;
-    case REVM_TYPE_INT:
+    case ASPECT_TYPE_INT:
       val32 = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, "0x%08X\n", val32);
       vm_output(logbuf);
@@ -237,7 +239,9 @@ int		cmd_get()
       last->immed_val.word = val32;
       last->type = o1->type;
       break;
-    case REVM_TYPE_LONG:
+
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
       val = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       snprintf(logbuf, BUFSIZ - 1, XFMT "\n", val);
       vm_output(logbuf);
@@ -251,7 +255,7 @@ int		cmd_get()
       break;
       
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown type for GET parameter", -1);
     }
 
@@ -263,13 +267,13 @@ int		cmd_get()
   
  err:
   if (!o1->perm)
-    XFREE(o1);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
 
   if (error < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error while setting $_", error);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 
@@ -281,28 +285,29 @@ int			cmd_add()
   revmobj_t		*o2;
   elfsh_Addr		val;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
-    o1->type = REVM_TYPE_INT;
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
 
-  else if (o1->type == REVM_TYPE_STR)
-    vm_convert_object(o1, REVM_TYPE_INT);
+  else if (o1->type == ASPECT_TYPE_STR)
+    vm_convert_object(o1, ASPECT_TYPE_INT);
     
-  if ((o1->type != REVM_TYPE_INT   &&
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG) ||
+  if ((o1->type != ASPECT_TYPE_INT   &&
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR &&
+       o1->type != ASPECT_TYPE_DADDR) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
@@ -317,10 +322,10 @@ int			cmd_add()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully\n\n");
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* SUB command */
@@ -330,24 +335,25 @@ int			cmd_sub()
   revmobj_t		*o2;
   elfsh_Addr	       	val;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
-    o1->type = REVM_TYPE_INT;
-  if ((o1->type != REVM_TYPE_INT   &&
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG) ||
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
+  if ((o1->type != ASPECT_TYPE_INT   &&
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR &&
+       o1->type != ASPECT_TYPE_DADDR) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
@@ -361,10 +367,10 @@ int			cmd_sub()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -375,25 +381,27 @@ int			cmd_mul()
   revmobj_t		*o2;
   elfsh_Addr		val;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Needs 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
 
-  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
-    o1->type = REVM_TYPE_INT;
-  if ((o1->type != REVM_TYPE_INT   &&
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG) ||
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
+  if ((o1->type != ASPECT_TYPE_INT    &&
+       o1->type != ASPECT_TYPE_BYTE   && 
+       o1->type != ASPECT_TYPE_SHORT  && 
+       o1->type != ASPECT_TYPE_CADDR  &&
+       o1->type != ASPECT_TYPE_DADDR) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
@@ -407,10 +415,10 @@ int			cmd_mul()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* DIV command */
@@ -421,31 +429,32 @@ int			cmd_div()
   elfsh_Addr		val;
   elfsh_Addr		lav;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
-    o1->type = REVM_TYPE_INT;
-  if ((o1->type != REVM_TYPE_INT   &&
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG) ||
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
+  if ((o1->type != ASPECT_TYPE_INT   &&
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR &&
+       o1->type != ASPECT_TYPE_DADDR) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
   lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
   if (lav == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot divide by 0", -1);
   if (o1->immed)
     o1->immed_val.ent = val / lav;
@@ -455,11 +464,11 @@ int			cmd_div()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -471,32 +480,33 @@ int			cmd_mod()
   elfsh_Addr	       	val;
   elfsh_Addr	      	lav;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "MOD needs 2 parameters", -1);
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
   o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!o1 || !o2)
     RET(-1);
-  if (o1->type == REVM_TYPE_UNKNOW && o1->perm)
-    o1->type = REVM_TYPE_INT;
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
 
-  if ((o1->type != REVM_TYPE_INT   &&
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG) ||
+  if ((o1->type != ASPECT_TYPE_INT    &&
+       o1->type != ASPECT_TYPE_BYTE   && 
+       o1->type != ASPECT_TYPE_SHORT  && 
+       o1->type != ASPECT_TYPE_CADDR  &&
+       o1->type != ASPECT_TYPE_DADDR) ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
   /* Compute */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
   lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
   if (lav == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot divide by 0", -1);
   if (o1->immed)
     o1->immed_val.ent = val % lav;
@@ -506,11 +516,11 @@ int			cmd_mod()
   if (!world.state.vm_quiet)
     vm_output(" [*] Field modified succesfully \n\n");
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -527,7 +537,7 @@ int			cmd_cmp()
   int			error;
   char			logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
@@ -536,17 +546,18 @@ int			cmd_cmp()
     RET(-1);
 
   /* Lazy typing in action */
-  if ((o1->type != REVM_TYPE_INT   && 
-       o1->type != REVM_TYPE_BYTE  && 
-       o1->type != REVM_TYPE_SHORT && 
-       o1->type != REVM_TYPE_LONG  && 
-       o1->type != REVM_TYPE_STR)  ||
+  if ((o1->type != ASPECT_TYPE_INT   && 
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR && 
+       o1->type != ASPECT_TYPE_DADDR && 
+       o1->type != ASPECT_TYPE_STR)  ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
     {	
       snprintf(logbuf, BUFSIZ - 1, "o1type = %u, o2type = %u \n",
 	       o1->type, o2->type);
       vm_output(logbuf);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Invalid parameters", -1);
     }
 
@@ -556,7 +567,7 @@ int			cmd_cmp()
   /* Do the real assignation */
   switch (o1->type)
     {
-    case REVM_TYPE_STR:
+    case ASPECT_TYPE_STR:
       str2 = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
       str  = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
       if (!str || !str2)
@@ -564,16 +575,17 @@ int			cmd_cmp()
       else
 	val = strcmp(str, str2);
       break;
-    case REVM_TYPE_BYTE:
-    case REVM_TYPE_SHORT:
-    case REVM_TYPE_LONG:
-    case REVM_TYPE_INT:
+    case ASPECT_TYPE_BYTE:
+    case ASPECT_TYPE_SHORT:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_INT:
       val2 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       val -= val2;
       break;
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown parameter type", -1);
     }
 
@@ -583,17 +595,17 @@ int			cmd_cmp()
     goto err;
   last->immed_val.ent = val;
   last->type = o1->type;
-  if (o1->type == REVM_TYPE_STR)
-    last->type = REVM_TYPE_INT;
+  if (o1->type == ASPECT_TYPE_STR)
+    last->type = ASPECT_TYPE_INT;
   error = 0;
 
  err:
-  if (!o2->perm && o2->immed && o2->type == REVM_TYPE_STR && str != NULL)
-    XFREE(str);
+  if (!o2->perm && o2->immed && o2->type == ASPECT_TYPE_STR && str != NULL)
+    XFREE(__FILE__, __FUNCTION__, __LINE__,str);
   if (!o2->perm)
-    XFREE(o2);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
   if (!o1->perm)
-    XFREE(o1);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
   if (!world.state.vm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1, " [*] Objects are %s. \n\n", (!val ? "EQUALS" : "INEQUALS"));
@@ -601,9 +613,9 @@ int			cmd_cmp()
     }
   
   if (error < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Error while setting $_", error);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Error while setting $_", error);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 

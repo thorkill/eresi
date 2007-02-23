@@ -12,7 +12,7 @@ int		cmd_exec()
   char      buf[BUFSIZ] = "";
   int       i = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 
 #if defined(USE_READLN)
@@ -43,6 +43,6 @@ int		cmd_exec()
     rl_prep_terminal(1);
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     status);
 }

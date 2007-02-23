@@ -24,7 +24,7 @@ int			mjr_block_point(mjrcontext_t  *ctxt,
   int			new_size;
   int			type;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   dst_end = ctxt->blklist;
   dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
 
@@ -63,7 +63,7 @@ int			mjr_block_point(mjrcontext_t  *ctxt,
   	type = ins->instr == ASM_SP_CALL ? CALLER_CALL : CALLER_JUMP;
   }
   mjr_block_add_caller(dst, vaddr, type);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -74,24 +74,24 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No control flow section : use analyse command", NULL);
 
   /* Return or retreive information */
   if (sect->altdata)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 
   sect->altdata = mjr_blocks_load(ctxt);
 
   if (sect->altdata)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Flow analysis failed", 0);
 }
 
@@ -106,20 +106,20 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   unsigned int		blocnbr;
   char			name[20];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No control flow section : use analyse command", 0);
   if (sect->shdr->sh_size % sizeof(mjrblock_t))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted control flow section : modulo-test failed", 0);
 
   /* If the function was already called, return its result */
   if (sect->altdata)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
   
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new blocks but use the data from the section */
@@ -157,7 +157,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 #endif
 
       if (!target)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 1", 0);
 
       mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
@@ -172,7 +172,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 #endif
 
       if (!target)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 2", 0);
 
       mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
@@ -184,7 +184,7 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   /* FIXME: prevent double analysis */
   ctxt->analysed = 1;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 }
 
 
@@ -196,13 +196,13 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   elfsh_Sym		*sym;
   mjrblock_t		*curblock;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* At this points, no new block allocation should be done */
   snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) cur->vaddr);
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
   if (sym)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
 #if __DEBUG_BLOCKS__
   fprintf(D_DESC," [*] Saving block at addr %s \n", buffer);
@@ -212,13 +212,13 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = elfsh_malloc(buf->allocated);
+      buf->data = aproxy_malloc(buf->allocated);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
     {
       buf->allocated += getpagesize();
-      buf->data = elfsh_realloc(buf->data, buf->allocated);
+      buf->data = aproxy_realloc(buf->data, buf->allocated);
     }
   curblock         = (mjrblock_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curblock, cur, sizeof(mjrblock_t));
@@ -229,7 +229,7 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
   buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -249,7 +249,7 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   int			index;
   char			funcname[50];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Remove previous control section if any */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
@@ -294,10 +294,10 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
 
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save control flow section", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
 
 
@@ -306,13 +306,13 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz)
 {
   mjrblock_t	*t;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  t = elfsh_malloc(sizeof (mjrblock_t));
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  t = aproxy_malloc(sizeof (mjrblock_t));
   memset(t, 0, sizeof (mjrblock_t));
   t->vaddr = vaddr;
   t->size  = sz;
   hash_add(&ctxt->blkhash, (char *) _vaddr2str(vaddr), t);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
 };
 
 
@@ -323,14 +323,14 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
 {
   mjrblock_t	*cur;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cur = ctxt->blklist;
   if (!cur)
     {
       cur = mjr_block_create(ctxt, n->vaddr, n->size);
       ctxt->blklist = cur;
     }
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -342,15 +342,15 @@ void		mjr_block_add_caller(mjrblock_t *blk,
 {
   mjrcaller_t	*n;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = elfsh_malloc(sizeof (mjrcaller_t));
+  n = aproxy_malloc(sizeof (mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;
   blk->caller = n;
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -369,16 +369,16 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
   int		index;
   int		size;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!ctxt)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "missing context", (NULL));
 
   /* Exact match */
   if (mode == 0)
     {
       ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
     }
 
   /* Parent match */
@@ -387,7 +387,7 @@ mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt,
     {
       ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
       if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 }

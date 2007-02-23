@@ -14,7 +14,7 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 {
   mjrcaller_t	 *cur;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 
   if (blk) {
@@ -23,10 +23,10 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
       //     fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
       //  cur->vaddr,cur->type);
       if (cur->type == CALLER_CALL)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
   }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.3 2007-02-21 03:43:51 heroine Exp $
+ * $Id: vectors.c,v 1.4 2007-02-23 05:27:47 may Exp $
  *
  *  Initialize the instruction and opcode vectors.
  */
@@ -34,8 +34,7 @@ int	asm_init_vectors(asm_processor *proc)
   u_int	*dims;
   char	**dimstr;
   
-  
-  aspect_vectors_init();
+  aspect_init();
   
   dims = malloc(4 * sizeof (u_int));
   if (!dims)
@@ -55,6 +54,6 @@ int	asm_init_vectors(asm_processor *proc)
   dimstr[3] = "FPOP OPCODE (SPARC ONLY)"; /* Should be 0 when unused */
   aspect_register_vector("disasm",
 			 asm_fetch_default,
-			 dims, dimstr, 4, ELEM_TYPE_FADDR);
+			 dims, dimstr, 4, ASPECT_TYPE_CADDR);
   return (1);
 }

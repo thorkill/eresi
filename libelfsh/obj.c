@@ -12,24 +12,25 @@ elfshobj_t		*elfsh_load_obj(char *name)
 {
   elfshobj_t	*file;
  
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(file, sizeof(elfshobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
 
-  file->name = elfsh_strdup(name);
+  file->name = aproxy_strdup(name);
+ 
 
   /* Get the file size on disk */
   if (0 != fstat(file->fd,&file->fstat))
-   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get fstat(2)", NULL);
 
   file->hdr = elfsh_get_hdr(file);
   file->rights = O_RDONLY;
   if (file->hdr == NULL || file->name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get ELF header", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
 
 
@@ -40,25 +41,25 @@ void		elfsh_unload_obj(elfshobj_t *file)
   elfshsect_t	*sect;
   elfshsect_t	*next;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XFREE(file->hdr);
-  XFREE(file->pht);
-  XFREE(file->sht);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,file->hdr);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,file->pht);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,file->sht);
   for (sect = file->sectlist; sect; sect = next)
     {
-      XFREE(sect->data);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,sect->data);
       if (sect->altdata)
-	XFREE(sect->altdata);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
       if (sect->terdata)
-	XFREE(sect->terdata);
-      XFREE(sect->name);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,sect->name);
       next = sect->next;
-      XFREE(sect);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,sect);
     }
   if (file->fd)
     close(file->fd);
-  XFREE(file->name);
-  XFREE(file);
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,file->name);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,file);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

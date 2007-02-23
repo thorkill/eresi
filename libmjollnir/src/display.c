@@ -38,7 +38,7 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
   char			buf1[30];
   char			buf2[30];
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
 
@@ -75,7 +75,7 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
 	       ccal->vaddr, (str ? str : ""), (elfsh_SAddr) offset, 
 	       call_type_str[ccal->type]);
       }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
 }
 
 
@@ -88,7 +88,7 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
   int		index;
   int		blocnbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   opt.counter = 0;
   opt.level   = level;
   opt.file    = c->obj;
@@ -100,7 +100,7 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
       mjr_block_display(block, &opt);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
 
 /* Print information for functions */
@@ -132,7 +132,7 @@ char	*_vaddr2str(elfsh_Addr addr)
 {
   char *tmp;
   
-  tmp = elfsh_malloc(BSIZE_SMALL);
+  tmp = aproxy_malloc(BSIZE_SMALL);
   snprintf(tmp, BSIZE_SMALL, AFMT, addr);
   return ((char *) tmp);
 }

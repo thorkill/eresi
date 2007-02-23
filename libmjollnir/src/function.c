@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.19 2007-02-20 23:11:23 thor Exp $
+ * $Id: function.c,v 1.20 2007-02-23 05:27:47 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -49,21 +49,21 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   u_int curOff; 
   mjrcaller_t *cur;
 
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   if (!fnc->parentfuncs)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = elfsh_malloc(buf->allocated);
+      buf->data = aproxy_malloc(buf->allocated);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->parentnbr)))
     {
      buf->allocated += getpagesize();
-     buf->data = elfsh_realloc(buf->data, buf->allocated);
+     buf->data = aproxy_realloc(buf->data, buf->allocated);
     }
  curOff = buf->maxlen;
 
@@ -76,7 +76,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
      cur = cur->next;
    }
 
- ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
+ PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
 }
 
 
@@ -86,21 +86,21 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   u_int curOff; 
   mjrcaller_t *cur;
 
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   if (!fnc->childfuncs)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = elfsh_malloc(buf->allocated);
+      buf->data = aproxy_malloc(buf->allocated);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->childnbr)))
     {
      buf->allocated += getpagesize();
-     buf->data = elfsh_realloc(buf->data, buf->allocated);
+     buf->data = aproxy_realloc(buf->data, buf->allocated);
     }
  curOff = buf->maxlen;
 
@@ -113,7 +113,7 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
      cur = cur->next;
    }
 
- ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
+ PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
 }
 
 /* Copy the function in a special buffer to fingerprint it */
@@ -125,12 +125,12 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
   int             n, ilen, p;
   asm_instr       instr, hist[2];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (p = ilen = n = 0; n < mlen; n += ilen) 
   {
     ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
     if (ilen <= 0)
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
       
     /* Filter this out */
     if ((ctx->proc.type == ASM_PROC_IA32 &&instr.instr != ASM_NOP) ||
@@ -147,7 +147,7 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
 				       hist[0].instr == ASM_POP ||
 				       hist[0].instr == ASM_MOV))
 	{
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
 	  }
     } 
     else if (ctx->proc.type == ASM_PROC_SPARC)
@@ -155,13 +155,13 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
       if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
 	  hist[0].instr == ASM_SP_RETL)
 	{	  	
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
 	}
     }
     hist[1] = hist[0];
     hist[0] = instr;
   }  
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to copy function", 0);
 }
 
@@ -182,13 +182,13 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
  elfshsect_t	*sect;
  unsigned char	*buff;
 
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  ret = NULL;
 
  /* Get function data */
  sect = elfsh_get_parent_section(ctx->obj, addr, &off);
  if (!sect)
-   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unknown parent section", NULL);   
  buff = elfsh_get_raw(sect);
  buff += off;
@@ -201,13 +201,13 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
      mlen = mjr_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
        
      if (mlen <= 0) 
-       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      MD5_Init(&md5ctx);
      MD5_Update(&md5ctx, fbuf, mlen);
      MD5_Final(digest, &md5ctx);
-     ret = elfsh_malloc(33);
+     ret = aproxy_malloc(33);
      if (!ret)
-       ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      memset(ret, 0, 33);
      pt = ret;
      for (i = 0; i < 16; i++, pt += 2) 
@@ -215,10 +215,10 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
      break;
 
    default:
-     ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unknown fingerprint type", NULL);
    }
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
@@ -231,8 +231,8 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
 {
  mjrfunc_t	*fun;
  
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
- fun = elfsh_malloc(sizeof(mjrfunc_t));
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+ fun = aproxy_malloc(sizeof(mjrfunc_t));
  fun->vaddr = addr;
  fun->size  = size;
  fun->first = e;
@@ -245,7 +245,7 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  memset(fun->md5, 0x00, sizeof(fun->md5));
  hash_add(&c->funchash, name, fun);
 
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (fun)); 
 }
 
 /**
@@ -258,16 +258,16 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
 {
   mjrcaller_t *n;
   
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
-  n = elfsh_malloc(sizeof(mjrcaller_t));
+  n = aproxy_malloc(sizeof(mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->childfuncs;
   fnc->childfuncs = n;
   fnc->childnbr = fnc->childnbr + 1;
 
-  ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 /**
@@ -280,16 +280,16 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
 {
   mjrcaller_t *n;
   
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
-  n = elfsh_malloc(sizeof(mjrcaller_t));
+  n = aproxy_malloc(sizeof(mjrcaller_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->parentfuncs;
   fnc->parentfuncs = n;
   fnc->parentnbr++;
 
-  ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 void *mjr_functions_load(mjrcontext_t *ctxt)
@@ -300,11 +300,11 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
   elfsh_Addr	tmpaddr;
   mjrfunc_t	*curfnc;
 
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No function section : use analyse command", NULL);
 
   /* get flow section */
@@ -314,7 +314,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 				       , 0, 0, 0);
   
   if (!flowsect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No function flow section : use analyse command", NULL);
 
   fncnbr = sect->shdr->sh_size / sizeof(mjrfunc_t);
@@ -353,7 +353,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
       mjr_function_dump((char *)__FUNCTION__, curfnc);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
 }
 
 /* Retreive control flow section content if any */
@@ -361,24 +361,24 @@ mjrblock_t*	mjr_functions_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
   if (!sect)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No functions section : use analyse command", NULL);
 
   /* Return or retreive information */
   if (sect->altdata)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 
   sect->altdata = mjr_functions_load(ctxt);
 
   if (sect->altdata)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Flow analysis failed", 0);
 }
 
@@ -390,18 +390,18 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   elfsh_Sym		*sym;
   mjrfunc_t		*curfunc;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!cur)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* At this points, no new block allocation should be done */
   snprintf(buffer, sizeof (buffer), "%s%lX",
-	   (char *)elfsh_config_get_data(MJR_COFING_CALL_PREFIX),
+	   (char *) config_get_data(MJR_COFING_CALL_PREFIX),
 	   (unsigned long) cur->vaddr);
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
   if (sym)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
 #if __DEBUG_BLOCKS__
   fprintf(D_DESC," [*] Saving block at addr %s \n", buffer);
@@ -411,13 +411,13 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = elfsh_malloc(buf->allocated);
+      buf->data = aproxy_malloc(buf->allocated);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
     {
       buf->allocated += getpagesize();
-      buf->data = elfsh_realloc(buf->data, buf->allocated);
+      buf->data = aproxy_realloc(buf->data, buf->allocated);
     }
   curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curfunc, cur, sizeof(mjrfunc_t));
@@ -427,7 +427,7 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
   buf->maxlen += sizeof(mjrfunc_t);
   //  buf->block_counter++;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int			mjr_functions_store(mjrcontext_t *ctxt) 
@@ -441,7 +441,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   int			keynbr;
   int			index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Remove previous control section if any */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
@@ -499,7 +499,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
 
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save .edfmt.functions section", -1);
 
   sect = elfsh_create_section(ELFSH_SECTION_NAME_EDFMT_FCONTROL);
@@ -513,9 +513,9 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, cfbuf.data);
 
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to save .edfmt.fcontrol section", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
 

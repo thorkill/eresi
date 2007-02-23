@@ -35,7 +35,7 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
   char			buff[BUFSIZ];
   void			*data;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   namelen = strlen(name);
 
@@ -85,7 +85,7 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
       else if (file->sht[index].sh_offset == shdr.sh_offset)
 	{
 	  printf("SHT rebuild case 2 \n");
-	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 1, 
 		  file->sht + index, 
 		  file->hdr->e_shentsize * (file->hdr->e_shnum - index));
@@ -103,9 +103,9 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 	  file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr = file->sht + file->hdr->e_shstrndx;
 	  file->sht[index].sh_name = elfsh_insert_in_shstrtab(file, name);
 
-	  XALLOC(sect, sizeof(*sect), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 	  
 	  file->hdr->e_shnum++;
@@ -118,7 +118,7 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
       else if (file->sht[index].sh_offset + file->sht[index].sh_size == shdr.sh_offset + shdr.sh_size)
 	{
 	  printf("SHT rebuild case 3 \n");
-	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,file->sht, file->sht, (file->hdr->e_shnum + 1) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 2, 
 		  file->sht + index + 1, 
 		  file->hdr->e_shentsize * (file->hdr->e_shnum - index - 1));
@@ -130,9 +130,9 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 	  file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr = file->sht + file->hdr->e_shstrndx;
 	  file->sht[index + 1].sh_name = elfsh_insert_in_shstrtab(file, name);
 	  
-	  XALLOC(sect, sizeof(*sect), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 
 	  file->hdr->e_shnum++;
@@ -147,7 +147,7 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 	{
 	  printf("SHT rebuild case 4 \n");
 
-	  XREALLOC(file->sht, file->sht, (file->hdr->e_shnum + 2) * file->hdr->e_shentsize, -1);
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,file->sht, file->sht, (file->hdr->e_shnum + 2) * file->hdr->e_shentsize, -1);
 	  memmove(file->sht + index + 3, 
 		  file->sht + index + 1, 
 		  file->hdr->e_shentsize * (file->hdr->e_shnum - index - 1));
@@ -173,16 +173,16 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 		   file->sht[index + 2].sh_offset);
 	  file->sht[index + 2].sh_name = elfsh_insert_in_shstrtab(file, buff);
 
-	  XALLOC(sect, sizeof(*sect), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index, 
 				NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 
-	  XALLOC(sect, sizeof(*sect), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(*sect), -1);
 	  if (elfsh_add_section(file, sect, index + 2, 
 				NULL, ELFSH_SHIFTING_ABSENT) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to add section", -1);
 
 	  file->hdr->e_shnum += 2;
@@ -191,7 +191,7 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
 	}
     }       
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -207,7 +207,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
   char		buff[256];
   u_int		index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
 
@@ -221,7 +221,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
     }
 
   /* Create the initial SHT */
-  XALLOC(file->sht, file->hdr->e_shentsize * 3, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,file->sht, file->hdr->e_shentsize * 3, -1);
   file->hdr->e_shoff = file->fstat.st_size;
   file->hdr->e_shnum = 3;
   file->hdr->e_shstrndx = 2;
@@ -233,9 +233,9 @@ static int	init_sht(elfshobj_t *file, u_int num)
    ( low->p_offset == 0) ? 52 : low->p_offset , 
 			   high->p_offset + high->p_filesz, 0, 0, 0, 0);
   file->sht[0] = shdr;
-  XALLOC(sect, sizeof(elfshsect_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 0, NULL, ELFSH_SHIFTING_NONE) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to add section", -1);
 
   /* Insert the .unmapped section */
@@ -243,18 +243,18 @@ static int	init_sht(elfshobj_t *file, u_int num)
 			   file->fstat.st_size - (high->p_offset + high->p_filesz),
 			   0, 0, 0, 0);
   file->sht[1] = shdr;
-  XALLOC(sect, sizeof(elfshsect_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 1, NULL, ELFSH_SHIFTING_NONE) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to add section", -1);
 
   /* Insert the section header string table (.sh_strtab) */
   shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, file->fstat.st_size, 
 			   0, 0, 0, 0, 0);
   file->sht[2] = shdr;
-  XALLOC(sect, sizeof(elfshsect_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
   if (elfsh_add_section(file, sect, 2, NULL, ELFSH_SHIFTING_NONE) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to add section", -1);
 
   file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
@@ -268,7 +268,7 @@ static int	init_sht(elfshobj_t *file, u_int num)
   file->sht[1].sh_name = elfsh_insert_in_shstrtab(file, buff);
   file->sht[2].sh_name = elfsh_insert_in_shstrtab(file, 
 						  ELFSH_SECTION_NAME_SHSTRTAB);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -283,7 +283,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
   u_int		index;
   int		flags;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < num; index++)
     {
@@ -344,7 +344,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	}
     }    
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -358,10 +358,10 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
   char		*name;
   char		i;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do not remove if first_round() is entirely working with section paddings */
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 
   for (index = 0; index < num; index++)
     {
@@ -393,17 +393,17 @@ int		elfsh_rebuild_sht(elfshobj_t *file)
 {
   int		num;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Some preliminary stuffs */
   if (!elfsh_get_pht(file, &num) || init_sht(file, num) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get PHT or to init SHT", -1);
 
   sht_first_round(file, num);
   sht_second_round(file, num);
   file->shtrb = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

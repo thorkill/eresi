@@ -299,19 +299,20 @@
 				 FILE_IS_ALPHA64((scn)->parent) ? 0 : 1)
 
 
-#define ELFSH_SELECT_INJECTION(a, b, d)	\
-		do {	\
-    		if ((elfsh_get_ostype(a) == ELFSH_OS_FREEBSD || \
-    		    elfsh_get_ostype(a) == ELFSH_OS_BEOS || \
-		    elfsh_get_ostype(a) == ELFSH_OS_SOLARIS || \
-    		    FILE_IS_ALPHA64(a) || \
-		    FILE_IS_MIPS(a) || \
-    		    FILE_IS_SPARC(a)) || (b)) { \
-    		    d = ELFSH_DATA_INJECTION; \
-		} else { \
-		    d = ELFSH_CODE_INJECTION; \
-		}\
-	    } while (0)
+#define ELFSH_SELECT_INJECTION(a, b, d)		  \
+do						  \
+{						  \
+  if ((elfsh_get_ostype(a) == ELFSH_OS_FREEBSD || \
+       elfsh_get_ostype(a) == ELFSH_OS_BEOS    || \
+       elfsh_get_ostype(a) == ELFSH_OS_SOLARIS || \
+       FILE_IS_ALPHA64(a) || FILE_IS_MIPS(a)   || \
+       FILE_IS_SPARC(a)) || (b))		  \
+     d = ELFSH_DATA_INJECTION;			  \
+  else						  \
+     d = ELFSH_CODE_INJECTION;			  \
+} while (0)
+
+
 
 /* Old Pax flags (to be read in elfhdr.e_flags) */
 #define		ELFSH_PAX_PAGEEXEC         1    /* Paging based non-exec pages */
@@ -321,38 +322,9 @@
 #define		ELFSH_PAX_RANDEXEC         16   /* Randomize ET_EXEC base */
 #define	        ELFSH_PAX_SEGMEXEC         32   /* Segmentation based non-exec pages */
 
-
-
 /* EI_RPHT is not PaX related */
 #define		EI_PAX			   14   /* Index in e_ident[] where to read flags */
 #define		EI_RPHT			   10	/* Index in e_ident[] where to read rphtoff */
-
-/* Config related data types */
-#define		LIBELFSH_CONFIG_HASH_SIZE	256
-
-/* Default names for config names */
-#define		ELFSH_CONFIG_NAME_PROFLEVEL	"proflevel"
-#define		ELFSH_CONFIG_NAME_SAFEMODE	"safemode"
-
-typedef struct	s_config_item
-{
-  char		*name;
-#define		ELFSH_CONFIG_TYPE_INT	0
-#define		ELFSH_CONFIG_TYPE_STR	1
-  u_int		type;			  /* int will use val, str *data */
-#define		ELFSH_CONFIG_MODE_RW	0
-#define		ELFSH_CONFIG_MODE_RO	1
-  u_int		mode;			  /* RO/RW - it's relevant to higher api
-					     like vm_ allows direct updates to those values
-					     when RW is set and enforces usage of vm_api
-					     when RO is set (see profile) */
-  u_int		val;			  /* For int values 0-off/1-on ... */
-  void		*data;
-}		t_configitem;
-
-/* Config flags */
-#define		ELFSH_SAFEMODE_OFF	0
-#define		ELFSH_SAFEMODE_ON	1
 
 /* ELFsh redirection abstract unit */
 typedef struct	s_redir
@@ -607,39 +579,8 @@ typedef struct	s_libstate
 #define		LIBELFSH_MODE_UNKNOWN	0 
 #define		LIBELFSH_MODE_STATIC	1
 #define		LIBELFSH_MODE_E2DBG	2
-  u_char	mode;				/* The current working mode (ondisk/memory) */
-  u_char	indebug;			/* 1 when inside the debugger */
-  
-  hash_t	config_hash;			/* Configuration */
-
-#define		ELFSH_NOPROF	0
-#define		ELFSH_ERRPROF	1
-#define		ELFSH_OUTPROF	2
-#define		ELFSH_DEBUGPROF	3
-//  char		proflevel;	  		/* libelfsh profiling switch */
-  int           (*profile)(char *);		/* Profiling output function */
-  int           (*profile_err)(char *);		/* Profiling output (error) function */
-  
-  /* libui pointers */
-  void	     	(*endline)();
-  /* Simple */
-  char		*(*colorinstr)(char *text);
-  char        	*(*colorstr)(char *t);
-  char         	*(*colorfieldstr)(char *t);
-  char         	*(*colortypestr)(char *t);
-  char		*(*colorend)(char *text); 
-  char		*(*colorwarn)(char *text);
-  char		*(*colorfunction)(char *text);
-  char		*(*colorfilename)(char *text);
-  /* Advanced */
-  char 		*(*coloradv)(char *ty, char *p, char *te);
-  char		*(*colorinstr_fmt)(char* p, char *t);
-  char          *(*coloraddress)(char *p, elfsh_Addr a);
-  char          *(*colornumber)(char *p, u_int n);
-  char          *(*colorstr_fmt)(char *p, char *t);
-  char          *(*colorfieldstr_fmt)(char *p, char *t);
-  char          *(*colortypestr_fmt)(char *p, char *t);
-  char		*(*colorwarn_fmt)(char *pattern, char *text);
+  u_char	mode;		 /* The current working mode (ondisk/memory) */
+  u_char	indebug;	 /* 1 when inside the debugger */
 }		libworld_t;
 
 
@@ -668,18 +609,8 @@ typedef struct	s_bp
 }		elfshbp_t;
 
 
-
 /* Extern data */
 extern libworld_t	dbgworld;
-
-/* Libelfsh error message */
-extern char	*elfsh_error_str;
-
-/* Profiling depth */
-extern int	elfsh_depth;
-
-/* Hash of vectors */
-extern hash_t   vector_hash;
 
 
 /*
@@ -689,17 +620,8 @@ extern hash_t   vector_hash;
 ** Check elfsh/doc/libelfsh-api.txt for a complete description
 **
 ** XXX: libelfsh-api.txt not updated to 0.5 (it is for 0.43b)
-** FIXME: Maybe doxygen soon ? ;)
+** FIXME: Please put your comments at the doxygen format
 */
-
-/* config.c */
-void	elfsh_config_init();
-void    elfsh_config_add_item(char *name, u_int type, u_int mode, void *data);
-void    elfsh_config_update_key(char *name,void *data);
-void    *elfsh_config_get_data(char *name);
-
-/* Private functions - should not be used outside config functions */
-void    __elfsh_config_update_item(t_configitem *item,void *data);
 
 /* dynamic.c */
 elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num);
@@ -1461,16 +1383,6 @@ int		elfsh_set_phdr_prot(u_int mode);
 int		elfsh_munprotect(elfshobj_t *obj, elfsh_Addr addr, uint32_t sz);
 int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot);
 
-/* error.c */
-void		elfsh_profile_reset(u_int sel);
-int		elfsh_profile_print(char *file, char *func, u_int line, char *msg);
-void		elfsh_profile_err(char *file, char *func, u_int line, char *msg);
-void		elfsh_profile_out(char *file, char *func, u_int line);
-void		elfsh_error();
-void		elfsh_incdepth();
-void		elfsh_decdepth();
-void		elfsh_updir();
-
 /* state.c */
 u_char		elfsh_is_static_mode(); 
 void		elfsh_set_static_mode();
@@ -1479,30 +1391,7 @@ void		elfsh_set_debug_mode();
 void		elfsh_set_mode(u_char mode);
 u_char		elfsh_get_mode();
 void		elfsh_toggle_mode();
-int		elfsh_is_prof_enable();
-int		elfsh_prof_disable();
-int		elfsh_prof_enable_err();
-int		elfsh_prof_enable_out();
 u_char		elfsh_debugger_present();
-void		elfsh_set_profile(int (*profile)(char *), int (*profile_err)(char *));
-void		elfsh_set_color_simple(void (*endline)(), char *(*colorinstr)(char *text),
-				       char *(*colorstr)(char *t), char *(*colorfieldstr)(char *t),
-				       char *(*colortypestr)(char *t), char *(*colorend)(char *text),
-				       char *(*colorwarn)(char *text), char *(*colorfunction)(char *text),
-				       char *(*colorfilename)(char *text));
-void		elfsh_set_color_advanced(char *(*coloradv)(char *ty, char *p, char *te),
-					 char *(*colorinstr_fmt)(char* p, char *t),
-					 char *(*coloraddress)(char *p, elfsh_Addr a),
-					 char *(*colornumber)(char *p, u_int n),
-					 char *(*colorstr_fmt)(char *p, char *t),
-					 char *(*colorfieldstr_fmt)(char *p, char *t),
-					 char *(*colortypestr_fmt)(char *p, char *t),
-					 char *(*colorwarn_fmt)(char *pattern, char *text));
-
-void 		elfsh_set_safemode_on();
-void		elfsh_set_safemode_off();
-int		elfsh_is_safemode();
-
 
 /* linkmap.c */
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm);

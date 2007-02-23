@@ -13,7 +13,7 @@ int 		cmd_color()
   u_int 	fg, bg, bd, ul, f, z, icolor;
   color_t 	*ex;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /*
   revmworld_t *pworld = &world;
@@ -29,7 +29,7 @@ int 		cmd_color()
       world.curjob->curcmd->param[2] == NULL)
     {
       vm_output(" [!] Need 3 paramters\n\n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Need 3 parameters", -1);
     }
 
@@ -37,7 +37,7 @@ int 		cmd_color()
   if (ex == NULL)
     {
       vm_output(" [!] Unknown type\n\n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown type", -1);  
     }
 
@@ -49,7 +49,7 @@ int 		cmd_color()
   if (fg && bg && bd && ul)
     {
       vm_output(" [!] Need fg, bg, bold or underline\n\n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Need fg, bg, bold or underline", -1);
     }
      
@@ -65,7 +65,7 @@ int 		cmd_color()
       if (icolor == 0)
 	{
 	  vm_output(" [!] Unknown color (see help for list)\n\n");
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Unknown color", -1);
 	}
 
@@ -85,7 +85,7 @@ int 		cmd_color()
       if (f && z)
 	{
 	  vm_output(" [!] Need 1 or 0 (1 = true, 0 = false)\n\n");
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Need 1 or 0 (1 = true, 0 = false)", -1);
 	}
 
@@ -103,12 +103,12 @@ int 		cmd_color()
   if (!world.state.vm_quiet)
     vm_output(" [*] Color modified succesfully\n\n");
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int 		cmd_nocolor()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (nocolor == 0) 
     {
@@ -121,5 +121,5 @@ int 		cmd_nocolor()
       nocolor = 0;
     } 
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

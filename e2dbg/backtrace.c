@@ -17,20 +17,20 @@ int		vm_bt()
   char		logbuf[BUFSIZ];
   int		i = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
   if (!world.curjob)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No current workspace", -1);
   if (!world.curjob->current)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No current file", -1);
 
   /* Get the current frame by calling the hook */
   frame = (elfsh_Addr) e2dbg_getfp();
   if (!frame)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "No context", (-1));
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No context", (-1));
 
   /* Backtrace frames */
   while (frame && frame != 0xFFFFFFFF)
@@ -45,7 +45,7 @@ int		vm_bt()
 		   frame, e2dbgworld.curthread->stackaddr, 
 		   e2dbgworld.curthread->stacksize);
 	  vm_output(logbuf);
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
       /* Call the getret hook */
@@ -102,7 +102,7 @@ int		vm_bt()
     }
   
   vm_output("\n");
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -113,15 +113,15 @@ int		cmd_bt()
 {
   int		ret;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!elfsh_is_debug_mode())
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Not in dynamic or debugger mode", -1);
   if (e2dbgworld.curthread == NULL || e2dbgworld.curthread->context == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No current thread context available", -1);    
   vm_output(" .:: Backtrace ::. \n");
   ret = vm_bt();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 

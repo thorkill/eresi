@@ -31,27 +31,27 @@ int		remap_cmd()
   u_int		count_sht = 0;
   u_int		count_ent = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   i = sscanf(world.curjob->curcmd->param[0], "0x%X", &new_base);
   if (new_base == 0 || i != 1) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid new base address", -1);
   file = world.curjob->current;
 
   if (elfsh_read_obj(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to read object file", -1);
 
   if (elfsh_get_symtab(file, NULL) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to read symbol table", -1);
 
   /* Calculate delta */
   real_base = elfsh_get_object_baseaddr(file);
   if (real_base == 0xffffffff)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Base address not found", -1);
 
   if (new_base & 0xfff)
@@ -97,7 +97,7 @@ int		remap_cmd()
          count_pht , count_sht , count_ent , count_raw);
   printf(" [*] Remapping at base %08X -OK-\n\n", new_base);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 void elfsh_init()

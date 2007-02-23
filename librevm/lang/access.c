@@ -43,11 +43,11 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
   int		liter;
   u_int		*dimoff;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   dimoff = alloca(dimnbr * sizeof(int));
 
-  /* Fill the dimension indexes array in the first pass */
+  /* Compute offset for each dimension in the first pass */
   for (iter = 0; 
        field && *field && iter < dimnbr; 
        field = endindex + 1, iter++)
@@ -58,15 +58,15 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
 	  *strindex = 0x00;
 	  endindex = strchr(strindex + 1, ']');
 	  if (!endindex)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array syntax", -1);
 	  *endindex = 0x00;
 	  index = atoi(strindex + 1);
 	  if (index >= dims[iter] || (strindex + 1) == endindex)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array index", -1);
 
-	  /* Example [2][3][2] = 2 * dim2 * dim3 + 3 * dim3 + 2 * sizeof(int) */
+	  /* Example [2][3][2] = (2 * dim2 * dim3 + 3 * dim3 + 2) * sizeof(int) */
 	  dimoff[iter] = index * sizeof(int);
 	  for (liter = 0; liter != iter; liter++)
 	    dimoff[liter] *= dims[iter];
@@ -77,28 +77,29 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
   
   /* Make sure we havent gone further the limit of dimensions */
   if (iter != dimnbr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid array dimensions", -1);
 
-  /* Compute the offset of elem inside the array offset taking care of all dims */
+  /* Compute the final offset of element inside the array by
+     adding offsets of all dimensions */
   for (offset = iter = 0; iter < dimnbr; iter++)
     offset += dimoff[iter];
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
 }
 
 
 
 
 /* Return offset given field name */
-revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off)
+aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 {
-  revmtype_t	*child;
+  aspectype_t	*child;
   int		index;
   char		fieldname[256];
   char		*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Truncate the name to keep only the field identifier */
   memcpy(fieldname, field, sizeof(fieldname) - 1);
@@ -115,28 +116,28 @@ revmtype_t	*vm_fieldoff_get(revmtype_t *parent, char *field, u_int *off)
 	/* Get offset inside the array if we are accessing an array */
 	index = vm_arrayoff_get(field, child->size, child->dimnbr, child->elemnbr);
 	if (index < 0)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid array access", NULL);
 	*off += index;
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
       }
 
   /* Failed match */
   *off = REVM_INVALID_FIELD;
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Cannot find requested field offset", NULL);
 }
 
 
 /* Recursive function to lookup data from its type path */
-static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
+static aspectype_t	*vm_field_get(aspectype_t *type, char *param, void **data)
 {
   char			*str;
   char			*next;
   unsigned int		off;
-  revmtype_t		*child;
+  aspectype_t		*child;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   str = strchr(param, *REVM_SEP);
 
   /* This is the leaf field */
@@ -144,10 +145,10 @@ static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
     {
       child = vm_fieldoff_get(type, param, &off);
       if (off == REVM_INVALID_FIELD)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot find terminal field", NULL);
       *data = (char *) *data + off;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
     }
 
   /* This is a non-terminal child field */
@@ -156,7 +157,7 @@ static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
 
   child = vm_fieldoff_get(type, param, &off);
   if (off == REVM_INVALID_FIELD)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find field", NULL);
   *data = (char *) *data + off;
 
@@ -166,10 +167,10 @@ static revmtype_t	*vm_field_get(revmtype_t *type, char *param, void **data)
 
   child = vm_field_get(child, next, data);
   if (!child)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested field", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
 }
 
 
@@ -183,42 +184,42 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   hash_t	*typehash;
   int		ret;
   elfshobj_t	*obj;
-  revmtype_t	*type;
+  aspectype_t	*type;
   revmvar_t	*var;
   void		*data;
   revmobj_t	*path;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
 
   ret = sscanf(str, LOOKUP3_IDX, filename, typename, objectname);
   if (ret != 3)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to resolve manual type object", NULL);
   str += strlen(filename) + strlen(typename) + strlen(objectname) + 3;
   if (!str[0] || !str[1])
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid truncated field name", NULL);
   str++;
 
   /* Get parent objects */
   obj = vm_lookup_file(filename);
   if (obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", NULL);
   type = hash_get(&types_hash, typename);
   if (!type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type", NULL);
   snprintf(hashname, sizeof(hashname), "type_%s", typename);
   typehash = hash_get(hash_hash, hashname);
   if (!typehash)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type map", NULL);
   var = hash_get(typehash, objectname);
   if (!data)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
   data = (void *) var->addr;
   data = vm_get_raw(data);
@@ -226,15 +227,15 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   /* Get recursively the leaf type and data pointer */
   type = vm_field_get(type, str, (void **) &data);
   if (!type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup object", NULL);
 
   /* Create the revmobj and fill its handlers */
-  XALLOC(path, sizeof(revmobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,path, sizeof(revmobj_t), NULL);
   path->root     = (void *) type;
 
   /* Lookup again in the file if we are dealing with a pointer */
-  if (type->type == REVM_TYPE_STR || type->isptr)
+  if (type->type == ASPECT_TYPE_STR || type->isptr)
     {
       data = (void *) *(elfsh_Addr *) data;
       data = vm_get_raw(data);
@@ -242,12 +243,12 @@ revmobj_t	*vm_revmobj_lookup(char *str)
 
   /* Fill type specific object handlers */
   path->parent   = (void *) data;
-  if (type->type == REVM_TYPE_STR)
+  if (type->type == ASPECT_TYPE_STR)
     {
       path->get_name = (void *) vm_generic_getname;
       path->set_name = (void *) vm_generic_setname;
     }
-  if (type->type == REVM_TYPE_RAW)
+  if (type->type == ASPECT_TYPE_RAW)
     {
       path->get_data = (void *) vm_generic_getdata;
       path->set_data = (void *) vm_generic_setdata;
@@ -257,16 +258,17 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   /* This handler is size dependant */
   switch (type->type)
     {
-    case REVM_TYPE_BYTE:
+    case ASPECT_TYPE_BYTE:
       path->set_obj  = (void *) vm_byte_setobj;
       break;
-    case REVM_TYPE_SHORT:
+    case ASPECT_TYPE_SHORT:
       path->set_obj  = (void *) vm_short_setobj;
       break;
-    case REVM_TYPE_INT:
+    case ASPECT_TYPE_INT:
       path->set_obj  = (void *) vm_int_setobj;
       break;
-    case REVM_TYPE_LONG:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
       path->set_obj  = (void *) vm_long_setobj;
       break;
     default:
@@ -277,12 +279,15 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   path->perm	 = 1;		/* Do not free after use  */
 
   /* Success */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
 
 
-/* Generic handlers */
+/**************** Generic handlers *********************************/
+
+
+
 char		*vm_generic_getname(void *type, void *data)
 {
   return (data);

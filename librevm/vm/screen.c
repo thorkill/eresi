@@ -9,9 +9,9 @@
 
 int		vm_clearscreen(int i, char c)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XFREE(world.curjob->screen.buf);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->screen.buf);
   world.curjob->screen.head = world.curjob->screen.tail = NULL;
   world.curjob->screen.buf = NULL;
 
@@ -21,7 +21,7 @@ int		vm_clearscreen(int i, char c)
   world.curjob->io.buf = NULL;
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -32,7 +32,7 @@ int		vm_install_clearscreen()
 #endif
   char		    keyseq[2];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if defined(USE_READLN)
   map = rl_get_keymap();
@@ -42,13 +42,13 @@ int		vm_install_clearscreen()
   rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_clearscreen);
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Update the screen depending of the actual job */
 int		vm_screen_update(u_short new, u_short prompt_display)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* clear screen */
   vm_output_nolog("\033[2J");
@@ -103,17 +103,17 @@ int		vm_screen_update(u_short new, u_short prompt_display)
   rl_redisplay();
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 int		vm_screen_switch()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (cmd_next_workspace() <= 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_screen_update(0, 1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_screen_update(0, 1));
 }
 

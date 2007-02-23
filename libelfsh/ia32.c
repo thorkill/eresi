@@ -23,7 +23,7 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
   char		*ent;
   u_int		relentsz;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* 6 is the size of the first instruction of a .plt entry on x86 */
   gotent = extplt->shdr->sh_addr + extplt->curend + 6;
@@ -54,7 +54,7 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
   memcpy(elfsh_get_raw(relplt) + relplt->curend, &r, relentsz);
   relplt->curend += relentsz;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -72,10 +72,10 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
   elfshsect_t	*relplt;
   u_int		resoff;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || plt == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   /* 12 is the size of 3 reserved PLT entries on x86 */
@@ -91,7 +91,7 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
     {
       relplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELPLT, 0, 0, 0);
       if (relplt == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot retreive .rel.plt", -1);
       
       pltent = plt->data + off + 7;
@@ -99,7 +99,7 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
       *got = relplt->shdr->sh_size;
     }
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -113,10 +113,10 @@ int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
   char		*pltent;
   uint32_t	*got;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || plt == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
       
   /* The first GOT address is at offset .plt+2 on IA32 */
@@ -129,7 +129,7 @@ int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
   got = (uint32_t *) pltent;
   *got += diff;		
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -140,15 +140,15 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
 				      elfshsect_t *extplt,
 				      elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (elfsh_reencode_first_pltentry_ia32(file, plt, diff) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Reencoding of PLT+0 failed", -1);
   
   if (elfsh_reencode_first_pltentry_ia32(file, extplt, diff) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Reencoding of EXTPLT+0 failed", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -160,32 +160,32 @@ int		elfsh_encodeplt_ia32(elfshobj_t *file,
 				     elfsh_Addr diff, 
 				     u_int      off)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (elfsh_reencode_pltentry_ia32(file, plt, diff, off) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Reencoding of PLT+0 failed", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Get the next frame pointer given the current one */
 void		*elfsh_bt_ia32(void *frame)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   if (!frame)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     ((void *) *(long*) frame));
 }
 
 /* Get the return address giving the current frame pointer */
 void		*elfsh_getret_ia32(void *frame)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   if (!frame)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (void *) (*((long *) frame + 1)));
 }
 
@@ -197,7 +197,7 @@ int			elfsh_break_ia32(elfshobj_t *f,
 {
   int			prot;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
 #if __DEBUG_BREAKPOINTS__
   printf("[DEBUG_BREAKPOINTS:ia32] bp->addr %08X \n", bp->addr);
@@ -206,7 +206,7 @@ int			elfsh_break_ia32(elfshobj_t *f,
   bp->savedinstr[0] = (*(char *) bp->addr);
   prot = elfsh_munprotect(f, bp->addr, 4);
   if (prot == (-1))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
   
 #if __DEBUG_BREAKPOINTS__
   printf("[DEBUG_BREAKPOINTS:ia32] after munprotect\n");
@@ -219,7 +219,7 @@ int			elfsh_break_ia32(elfshobj_t *f,
 #if __DEBUG_BREAKPOINTS__
   printf("[DEBUG_BREAKPOINTS:ia32] after mprotect\n");
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
@@ -242,7 +242,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   char			bufname[BUFSIZ];
   int			prot;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if 	__DEBUG_CFLOW__      
   printf("[DEBUG_CFLOW] Requesting hijack addr = %08X, sym.st_value = %08X, name = %s\n", 
@@ -252,12 +252,12 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   /* Resolve parameters */
   off = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   if (!off) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid address to hijack", -1);
 
   ret = elfsh_raw_read(file, off, buff, 32);
   if (ret != 32)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Function too small to be hijacked", -1);
 
   /* If the hook section does not exist, create it */
@@ -265,7 +265,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 				    0, 0, 0); 
 
   if (!hooks)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get and inject .hooks", -1);
 
   hook = elfsh_get_raw(hooks) + hooks->curend;
@@ -288,7 +288,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   /* We need to grab the parent section to compute the remaining offset */
   source = elfsh_get_parent_section_by_foffset(file, off, NULL);
   if (!source)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find parent section for hooked addr", -1);
 
   /* Install the hook */
@@ -307,7 +307,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   memset(hookbuf + 5, 0x90, ret - 5);
   len = elfsh_raw_write(file, off, hookbuf, ret);
   if (len != ret)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error during hook installation", -1);
   //elfsh_mprotect(hookbuf, 16, prot);
 
@@ -329,7 +329,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   /* Everything OK, ret usually is 6 on x86 */
   hooks->curend += ret + 10;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -346,10 +346,10 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
   uint32_t	displacement;
   int		prot;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (file->hdr->e_machine != EM_386)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "File is not IA32", -1);
 
   /* Compute jmp displacement, 5 is the length of jmp opcode */
@@ -375,7 +375,7 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
   elfsh_mprotect(symbol->st_value, 
 		 elfsh_get_pltentsz(file), prot);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -393,7 +393,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
   elfsh_Sym  *symbol;	
   char	     *symname;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
    
   switch (elfsh_get_reltype(cur))
     {
@@ -411,7 +411,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
     case R_386_GOT32:   
       section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
       if (section == NULL)
-         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to find GOT for GOTOFF", -1);
       *dword = cur->r_offset - section->sh_addr;
       break;
@@ -427,13 +427,13 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 	  printf("[DEBUG_RELADD] R_386_PLT32 : %s\n", symname); 
 #endif	  
 	  if (symname == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to find symbol name", -1);
 	  
 
 	  symbol = elfsh_get_symbol_from_reloc(mod->parent, cur);
 	  if (symbol == NULL)
-	   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to find symbol", -1);
 	  *dword = symbol->st_value + addr - (new->shdr->sh_addr + cur->r_offset + 4);
 	}
@@ -441,7 +441,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 	{
 	  section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_PLT);
 	  if (section == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to find PLT fot PLT32", -1);
 	
 #if	__DEBUG_RELADD__        
@@ -462,7 +462,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
     case R_386_GOTOFF:
       section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
       if (section == NULL)
-         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to find GOT for GOTOFF", -1);
       *dword = addr - section->sh_addr;
       break;
@@ -470,7 +470,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
     case R_386_GOTPC:
       section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
       if (section == NULL)
-         ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                         "Unable to find GOT for GOTPC", -1);
 
       *dword = section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + 2;
@@ -483,10 +483,10 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
       break;
 
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unsupported relocation type", -1);
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 typedef struct s_int
@@ -499,22 +499,22 @@ typedef struct s_int
 /* Personnal func / define for args_count */
 static int    elfsh_is_arg_ebp(asm_operand *op)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (op->base_reg == ASM_REG_EBP && op->imm > 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 static int    elfsh_is_arg_esp(asm_operand *op, int sub)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (op->base_reg == ASM_REG_ESP && op->imm > sub)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 static int    elfsh_largs_add(s_sint *args, int add)
@@ -522,15 +522,15 @@ static int    elfsh_largs_add(s_sint *args, int add)
   s_sint	      *p, *n;
   int                 i;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (add == 0 || args == NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   if (args->value == 0)
     {
       args->value = add;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* First entry */
@@ -547,7 +547,7 @@ static int    elfsh_largs_add(s_sint *args, int add)
       /* We sort result */
       if (p->value > add)
 	{
-	  XALLOC(n, sizeof(s_sint), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,n, sizeof(s_sint), -1);
 	  n->value = add;
 	  
 	  n->prec = p->prec;
@@ -560,7 +560,7 @@ static int    elfsh_largs_add(s_sint *args, int add)
       /* Add at the tail */
       if (p->next == NULL)
 	{
-	  XALLOC(n, sizeof(s_sint), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,n, sizeof(s_sint), -1);
 	  n->value = add;
 	  
 	  p->next = n;
@@ -569,7 +569,7 @@ static int    elfsh_largs_add(s_sint *args, int add)
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* TODO: implement forward / backward */
@@ -584,10 +584,10 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
   int	      *final_args;
   asm_instr   i;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Reset args */
-  XALLOC(final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
 
   asm_init_i386(&proc);
 
@@ -611,7 +611,7 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
 		  ffp = 1;
 		}
 
-	      XALLOC(args, sizeof(s_sint), NULL);
+	      XALLOC(__FILE__, __FUNCTION__, __LINE__,args, sizeof(s_sint), NULL);
 	      args->value = 0;
 	    }
 	  else
@@ -665,7 +665,7 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
       final_args[index] = p->next->value - p->value;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
 }
 
 /* Find arguments from a call */
@@ -679,7 +679,7 @@ int 		elfsh_args_count_forward(elfshobj_t *obj, u_int func, u_int call)
   asm_instr	i;
   u_int		diff = func - call;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we found the call just after saved registers */
   for (current = func; current < diff; current += ret)
@@ -715,5 +715,5 @@ int 		elfsh_args_count_forward(elfshobj_t *obj, u_int func, u_int call)
   /* TODO: add a check on addr if needed ! */
 
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -18,7 +18,7 @@ do								\
   if (er < 0)							\
   {								\
      vm_output("\n");						\
-     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
   }								\
 }								\
 while (0)
@@ -31,7 +31,7 @@ do								\
   if (er == -1)							\
   {								\
      vm_output("\n");						\
-     ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
   }								\
 }								\
 while (0)

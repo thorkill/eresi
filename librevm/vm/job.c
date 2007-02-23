@@ -20,7 +20,7 @@ int		cmd_workspace()
   char		**loadedkeys;
   int		loadedkeynbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   //printf("workspace argc %u \n", world.curjob->curcmd->argc);
 
@@ -64,19 +64,20 @@ int		cmd_workspace()
 	    }
 	}
       vm_output("\n");
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       
       /* $ workspace name */      
     case 1:
       if (!vm_valid_workspace(world.curjob->curcmd->param[0]))
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Incorrect workspace name", -1);
 
       job = hash_get(&world.jobs, world.curjob->curcmd->param[0]);
       if (!job)
 	{
 	  /* create a new workspace */
-	  job = vm_clone_job(elfsh_strdup(world.curjob->curcmd->param[0]),
+	  job = vm_clone_job(aproxy_strdup(world.curjob->curcmd->param[0]),
+ 
 			     world.curjob);
 	  hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);
 	  new = 1;
@@ -89,7 +90,7 @@ int		cmd_workspace()
 		       "\n [+] Already in workspace : %s\n\n", world.curjob->curcmd->param[0]);
 	      vm_output(logbuf);
 
-	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	    }
 	}
 
@@ -111,15 +112,15 @@ int		cmd_workspace()
 	  /* Update the screen */
 	  vm_screen_update(new, 0);
 
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Incorrect workspace name", -1);
 
       /* Unknown command format */
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong arg number", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong arg number", -1);
     }
 }
 
@@ -131,11 +132,11 @@ int		cmd_next_workspace()
   int		keynbr;
   revmjob_t	*curjob;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   keys = hash_get_keys(&world.jobs, &keynbr);
   if (keynbr <= 1)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Search the current index */
   for (index = 0; index < keynbr; index++)
@@ -159,10 +160,10 @@ int		cmd_next_workspace()
 	    break;
 
 	  vm_switch_job(curjob);
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 	}
     }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to find workspace to switch on", -1);
 }

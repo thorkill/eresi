@@ -15,7 +15,7 @@ void			vm_findhex(u_int argc, char **argv)
   char			*buf;
   char			*ptr;
 
-  ELFSH_PROFILE_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   /* For each of the argv[] entry */
   for (index = 0; index < argc; index++)
@@ -28,7 +28,7 @@ void			vm_findhex(u_int argc, char **argv)
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
 	buf = vm_filter_param(buf, ptr);
     }
-   ELFSH_PROFILE_OUT(__FILE__,__FUNCTION__,__LINE__);
+   PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 
@@ -39,20 +39,20 @@ char		*vm_getln(char *ptr)
   char		*sav;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   do
     {
       buf = world.curjob->io.input();
 
       if (buf == ((char *) ELFSH_VOID_INPUT))
-        ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+        PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
          (char*) ELFSH_VOID_INPUT);
 
       if (!buf || !*buf)
 	{
 	  if (buf)
-	    XFREE(buf);
-	  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,NULL);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
+	  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,NULL);
 	}
 
       if (buf == NULL)
@@ -73,15 +73,22 @@ char		*vm_getln(char *ptr)
 	  vm_log(sav);
 	  vm_log("\n");
 
-#if defined(USE_READLN)
-/* XXX: FIXME check this XFREE! thorkill */
-          if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
-#endif
-	    XFREE(buf);
+	  /*
+	    #if defined(USE_READLN)
+	    if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
+	    vm_readline_free(buf);
+	    #elif
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
+	    #endif
+	  */
 
+#if !defined(USE_READLN)
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, buf);
+#endif
+	  
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-               ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+               PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
                 (char*) ELFSH_VOID_INPUT);
 
 
@@ -100,7 +107,7 @@ char		*vm_getln(char *ptr)
           if (buf == NULL)
 	    {
 	      printf("Entered readline test .. returning void input \n");
-              ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,
+              PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
 	       (char*) ELFSH_VOID_INPUT);
 	    }
           break;
@@ -110,7 +117,7 @@ char		*vm_getln(char *ptr)
     }
   while (buf == NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__,__FUNCTION__,__LINE__,buf);
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,buf);
 }
 
 
@@ -172,9 +179,9 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
   char		logbuf[BUFSIZ];
 #endif
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(argv, sizeof(char *) * (nbr + 2), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,argv, sizeof(char *) * (nbr + 2), NULL);
   argv[0] = argv[nbr + 1] = NULL;
   sav = buf;
 
@@ -218,7 +225,7 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
 
   *argc = nbr + 1;
 
-  ELFSH_NOPROFILE_ROUT(argv);
+  NOPROFILER_ROUT(argv);
 }
 
 

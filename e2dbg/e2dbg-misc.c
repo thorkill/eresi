@@ -24,7 +24,7 @@ elfshobj_t	*vm_get_parent_object(elfsh_Addr addr)
   int		index;
   int		keynbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   for (index = 0; index < keynbr; index++)
@@ -35,12 +35,12 @@ elfshobj_t	*vm_get_parent_object(elfsh_Addr addr)
 	{
 	  cur = elfsh_get_parent_segment(curfile, cursect);
 	  if (cur)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, curfile);
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, curfile);
 	}
     }
   
   /* Parent object not found */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to get parent object addr", (NULL));
 }
 
@@ -53,7 +53,7 @@ char	*vm_get_string(char **params)
   int	idx;
   int	len;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (len = idx = 0; params[idx]; idx++)
     len += snprintf(buff + len, BUFSIZ - len, "%s%s", 
@@ -61,9 +61,10 @@ char	*vm_get_string(char **params)
    
 
   if (len)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		       elfsh_strdup(buff));
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		       aproxy_strdup(buff));
+ 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Empty display", NULL);
 }
 

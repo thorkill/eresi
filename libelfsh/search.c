@@ -19,10 +19,10 @@ static hash_t *hash_shared = NULL;
 int		elfsh_register_working_objects(hash_t *prvhash,
 					       hash_t *sharedhash)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash_workspace = prvhash;
   hash_shared    = sharedhash;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -32,15 +32,15 @@ int		elfsh_register_working_objects(hash_t *prvhash,
    symbols are in the same object, take care */
 elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (elfsh_get_symbol_type(choice) == STT_NOTYPE)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (candidate));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (candidate));
       
   if (elfsh_get_symbol_type(candidate) == STT_NOTYPE)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_get_symbol_bind(choice) < 
 		      elfsh_get_symbol_bind(candidate) ?
 		      candidate : choice));
@@ -61,7 +61,7 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
   char		**keys;
   int		keynbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   choice = NULL;
   symchoice = sym = NULL;
@@ -89,11 +89,11 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
   
   /* If the selected et_rel is beeing injected warn caller */
   if (choice->pending)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL) ;
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL) ;
 
   /* If we found something in the local list, do not search in the shared one */
   if (symchoice != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice)) ;
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice)) ;
 
   /* Now look in the shared files */
   if (!hash_shared)
@@ -120,12 +120,12 @@ elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
   
   /* If the selected et_rel is beeing injected warn caller */
   if (choice->pending)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   
   /* If we found something in the local list, do not search in the shared one */
   if (symchoice != NULL)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (choice));
   
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Object not found", ((void *) -1));
 }

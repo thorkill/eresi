@@ -14,15 +14,15 @@ static char*		elfsh_strstr(char *buffer, char *neddle, int n)
   int			idx;
   char			*ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (idx = 0; idx < n; idx++)
     {
       ret = strstr(buffer + idx, neddle);
       if (ret)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Cannot find injected names", NULL);
 }
 
@@ -34,13 +34,13 @@ static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
   int			index;
   int			res;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   sect = file->sectlist;
   for (res = index = 0; index < idx; index++, sect = sect->next)
     if (sect->flags & ELFSH_SECTION_REMOVED)
       res++;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }
 
 
@@ -57,7 +57,7 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   char			*first;
   char			*off;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_MAP__
   printf("[DEBUG_MAP] Writing SHT \t\t\t\t (file offset %u, size %u)\n",
@@ -122,7 +122,7 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   printf("[DEBUG_SAVE] Saved SHT -ok- \n");
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 
@@ -137,12 +137,12 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   elfsh_Phdr	*pht;
   unsigned int	totsize;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || file->sht == NULL || file->sectlist == NULL ||
       (file->pht == NULL && elfsh_get_objtype(file->hdr) != ET_REL))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid elfshobj_t parameter",  -1);
 
   /* Force the final relocations to be done (old_* symbols) */
@@ -154,7 +154,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 #endif      
 
       if (elfsh_relocate_object(file, file->listrel[index], ELFSH_RELOC_STAGE2) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Final stage relocation failed", -1);
     }
 
@@ -168,14 +168,14 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
       actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, NULL, ELFSH_CODE_INJECTION,
 				    totsize % elfsh_get_pagesize(file), 0);
       if (!actual)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to inject page padding section", -1);
     }
 
   /* Copy the object before saving (so that we dont strip the working file) */
   file = elfsh_copy_obj(file);
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to copy object", -1);
 
   /* Open the output file */
@@ -189,17 +189,17 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   if (!file->shtrb && elfsh_dynamic_file(file))
     {
       if (elfsh_endianize_got(file->secthash[ELFSH_SECTION_GOT]) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to endianize got", -1);
       if (elfsh_endianize_symtab(file->secthash[ELFSH_SECTION_DYNSYM]) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to endianize dynsym", -1);
       if (elfsh_endianize_dynamic(file->secthash[ELFSH_SECTION_DYNAMIC]) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to endianize dynamic", -1);
     }
   if (elfsh_endianize_symtab(file->secthash[ELFSH_SECTION_SYMTAB]) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to endianize symtab", -1);
 
   /* Endianize multiple relocation sections */
@@ -307,7 +307,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 
   elfsh_unload_obj(file);
   XCLOSE(fd, -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

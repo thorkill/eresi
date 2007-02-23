@@ -14,24 +14,24 @@ char			*vm_lookup_var(char *param)
 {
   revmobj_t		*ptr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
   
   if (*param == ELFSH_VARPREF)
     {
       ptr = (void *) hash_get(&vars_hash, ++param);
       if (ptr == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown variable", (NULL));
-      if (vm_convert_object(ptr, REVM_TYPE_STR) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      if (vm_convert_object(ptr, ASPECT_TYPE_STR) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Failed parameter string conversion", 
 			  (NULL));
       param = ptr->immed_val.str;
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, param);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, param);
 }
 
 
@@ -54,14 +54,14 @@ revmobj_t		*vm_lookup_addr(char *param)
  vm_output(logbuf);
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lookup .symtab */
   sym = elfsh_get_symbol_by_name(world.curjob->current, param);
   if (sym != NULL && sym->st_value > 0)
     {
       ptr = vm_create_LONG(0, sym->st_value);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
   /* Lookup .dynsym */
@@ -69,7 +69,7 @@ revmobj_t		*vm_lookup_addr(char *param)
   if (sym != NULL && sym->st_value > 0)
     {
       ptr = vm_create_LONG(0, sym->st_value);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
   /* Lookup a constant */
@@ -77,8 +77,8 @@ revmobj_t		*vm_lookup_addr(char *param)
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
     {
-      ptr = vm_create_IMMED(REVM_TYPE_INT, 0, actual->val);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+      ptr = vm_create_IMMED(ASPECT_TYPE_INT, 0, actual->val);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
   
   /* Lookup hexadecimal numeric value */
@@ -86,11 +86,11 @@ revmobj_t		*vm_lookup_addr(char *param)
   if (ret == 1)
     {
       ptr = vm_create_LONG(0, val);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
   /* No match -- returns ERR */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup address object", (NULL));
 }
 
@@ -115,21 +115,22 @@ revmobj_t		*vm_lookup_immed(char *param)
  vm_output(logbuf);
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
-      ptr = vm_create_IMMED(REVM_TYPE_UNKNOW, 1, 0);
-      hash_add(&vars_hash, elfsh_strdup(param), ptr);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+      ptr = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
+      hash_add(&vars_hash, aproxy_strdup(param), ptr);
+ 
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
   /* Lookup .symtab */
@@ -154,7 +155,7 @@ revmobj_t		*vm_lookup_immed(char *param)
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
     {
-      ptr = vm_create_IMMED(REVM_TYPE_INT, 0, actual->val);
+      ptr = vm_create_IMMED(ASPECT_TYPE_INT, 0, actual->val);
       goto good;
     }
 
@@ -179,23 +180,24 @@ revmobj_t		*vm_lookup_immed(char *param)
   ret = sscanf(param, "%[^\n]4095%c", lbuf, &eol);
   if (ret == 1)
     {
-      ptr = vm_create_IMMEDSTR(0, elfsh_strdup(lbuf));
+      ptr = vm_create_IMMEDSTR(0, aproxy_strdup(lbuf));
+ 
       goto good;
     }
 
   /* No match -- returns ERR */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup object", (NULL));
   
   /* Match */
  good:
   
   /* Now replace \x00 patterns if any */
-  if (ptr->type == REVM_TYPE_STR)
+  if (ptr->type == ASPECT_TYPE_STR)
     vm_filter_zero(ptr->immed_val.str);
 
   /* We matched -- returns OK */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
 }
 
 
@@ -217,46 +219,47 @@ elfsh_Addr     		vm_lookup_index(char *param)
   vm_output(logbuf);
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to lookup variable", (-1));
       ptr = (void *) hash_get(&vars_hash, param);
       if (ptr != NULL && 
-	  (ptr->type == REVM_TYPE_INT   || 
-	   ptr->type == REVM_TYPE_SHORT || 
-	   ptr->type == REVM_TYPE_BYTE  || 
-	   ptr->type == REVM_TYPE_LONG))
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  (ptr->type == ASPECT_TYPE_INT   || 
+	   ptr->type == ASPECT_TYPE_SHORT || 
+	   ptr->type == ASPECT_TYPE_BYTE  || 
+	   ptr->type == ASPECT_TYPE_CADDR ||
+	   ptr->type == ASPECT_TYPE_DADDR))
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			   ptr->immed_val.ent);
       else
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid variable type", (-1));
     }
 
   /* Lookup a constant */
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		       actual->val);
   
   /* Lookup hexadecimal numeric value */
   ret = sscanf(param, XFMT "%c", &val, &eol);
   if (ret == 1)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
 
   /* Lookup decimal numeric value */
   ret = sscanf(param, UFMT "%c", &val, &eol);
   if (ret == 1)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (val));
 
   /* We do not match -- returns ERR */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup valid object", (-1));
 }
 
@@ -278,21 +281,21 @@ char			*vm_lookup_string(char *param)
   vm_output(logbuf);
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for lazy creation of variables */
   if (param != NULL && *param == ELFSH_VARPREF)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
-      if (ptr != NULL && ptr->type == REVM_TYPE_STR)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+      if (ptr != NULL && ptr->type == ASPECT_TYPE_STR)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			   ptr->immed_val.str);
       else
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unexpected object type", (NULL));
     }
 
@@ -302,12 +305,13 @@ char			*vm_lookup_string(char *param)
   if (ret == 1)
     {
       vm_filter_zero(lbuf);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			 elfsh_strdup(lbuf));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			 aproxy_strdup(lbuf));
+ 
     }
 
   /* We do not match -- returns ERR */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup string", (NULL));
 }
 
@@ -320,7 +324,7 @@ elfshobj_t		*vm_lookup_file(char *param)
   u_int			idx;
   revmobj_t		*ptr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Support for variable file lookup */
   idx = 0;
@@ -328,24 +332,24 @@ elfshobj_t		*vm_lookup_file(char *param)
     {
       param = vm_lookup_var(++param);
       if (!param)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to lookup variable", (NULL));
       ptr = (void *) hash_get(&vars_hash, param);
       if (!ptr)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get variable", (NULL));
-      if (ptr->type == REVM_TYPE_INT)
+      if (ptr->type == ASPECT_TYPE_INT)
 	idx = ptr->immed_val.ent;
-      else if (ptr->type == REVM_TYPE_STR)
+      else if (ptr->type == ASPECT_TYPE_STR)
 	param = ptr->immed_val.str;
       else
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unexpected variable type", (NULL));
     }
   else
     idx = atoi(param);
   
   /* Let's ask the hash table for the current working file */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (idx ? vm_getfile(idx) : hash_get(&file_hash, param)));
 }

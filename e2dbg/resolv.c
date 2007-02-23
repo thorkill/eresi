@@ -32,7 +32,7 @@ static int		e2dbg_load_linkmap_pie(char *name)
   elfsh_Addr		base;
   */
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   elfsh_set_static_mode();  
 
@@ -40,14 +40,14 @@ static int		e2dbg_load_linkmap_pie(char *name)
   /*
   handle = e2dbg_dlopen(name, (elfsh_Addr) main, "main");
   if (!handle)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "e2dbg_dlopen failed", -1);    
   */
 
   /*
   dynsymtab = elfsh_get_dynsymtab(world.curjob->current, &num);
   if (!dynsymtab)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get dynsymtab", -1);    
       
   sct = elfsh_get_section_by_name(world.curjob->current, 
@@ -59,14 +59,14 @@ static int		e2dbg_load_linkmap_pie(char *name)
 				    NULL, NULL, NULL, &num);
   
   if (!sct)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get dynsym section", -1);    
   
   num = num / sizeof(elfsh_Sym);
   
   table = (elfsh_Sym *) (sct->shdr->sh_addr ? elfsh_get_raw(sct) : sct->data);
   if (!table)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get dynsym data", -1);     
   
   gotseg = elfsh_get_parent_segment(world.curjob->current, got);
@@ -104,12 +104,12 @@ static int		e2dbg_load_linkmap_pie(char *name)
 
   /*  
   if (!handle->rhdr.base)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Base address not found", -1);    
   */
 
   elfsh_set_debug_mode();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -126,10 +126,10 @@ int			e2dbg_load_linkmap(char *name)
   elfsh_Ehdr		*hdr;
   u_int			elftypenum;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (done)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
   fprintf(stderr, "[e2dbg] Starting Loading LINKMAP !! \n");
 
@@ -144,7 +144,7 @@ int			e2dbg_load_linkmap(char *name)
 
       /* No need to fill ET_EXEC base addr */
       if (!vm_is_loaded(name) && vm_load_file(name, 0, NULL) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot load file", -1);
       
 #if __DEBUG_LINKMAP__
@@ -157,7 +157,7 @@ int			e2dbg_load_linkmap(char *name)
 
   /* Switch to obj 1 */
   if (vm_doswitch(1) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot switch on object 1", -1);    
   
   /* Get ALTGOT or GOT if we used LD_PRELOAD */
@@ -183,13 +183,13 @@ int			e2dbg_load_linkmap(char *name)
       /* Fix first file linkmap entry */
       hdr = elfsh_get_hdr(world.curjob->current);
       if (!hdr)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot get ELF header", -1);    
       elftypenum = elfsh_get_objtype(hdr);
       
       /* Find the PIE binary linkmap */
       if (elftypenum == ET_DYN && e2dbg_load_linkmap_pie(name) < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot get PIE linkmap", -1);    
       
       /* Get ALTGOT entry */
@@ -260,7 +260,7 @@ int			e2dbg_load_linkmap(char *name)
   //elfsh_set_debug_mode();
   vm_doswitch(1);
   done = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -284,7 +284,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   u_int		len;
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
   write(1, " [*] e2dbg_dlsect called for resolving ", 39);
@@ -402,7 +402,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 #endif
 
   if (!found_ref)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find reference symbol in object", 0);
 
 #if __DEBUG_E2DBG__
@@ -414,7 +414,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 #endif
 
   /* The reference addr is useful to deduce library base addresses */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     got + refaddr - found_ref);
 }
 
@@ -437,7 +437,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   u_int		len;
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First go after the e2dbg and the binary linkmap entries */
   curobj = e2dbgworld.syms.map;
@@ -526,14 +526,14 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 	      write(1, buf, len);
 #endif
 
-	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 				 curobj->laddr + found_sym);
 	    }
 	}
     }
 
   /* We did not find the symbol in the linkmap ... */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Unable to find looked up symbol in object", 0);
 }
 
@@ -606,12 +606,12 @@ int		e2dbg_dlsym_init()
   u_int		len;
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   write(1, " [D] e2dbg_dlsym_init CALLED\n", 29);
 
   if (done)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
   
   write(1, " [D] e2dbg_dlsym_init EXECUTED\n", 31);
 
@@ -621,7 +621,7 @@ int		e2dbg_dlsym_init()
   /* Only use our own dlsym here, do not use the libc handler */
   e2dbgworld.syms.mallocsym = (elfsh_Addr) e2dbg_dlsym("malloc");
   if (!e2dbgworld.syms.mallocsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig malloc not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -634,7 +634,7 @@ int		e2dbg_dlsym_init()
   if (!e2dbgworld.syms.callocsym)
     {
       dlerror();
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Orig calloc not found", (-1));
     }
 
@@ -646,7 +646,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
   if (!e2dbgworld.syms.reallocsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig realloc not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -657,7 +657,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.freesym = (elfsh_Addr) e2dbg_dlsym("free");
   if (!e2dbgworld.syms.freesym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig free not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -668,7 +668,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
   if (!e2dbgworld.syms.vallocsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig valloc not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -680,7 +680,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
   if (!e2dbgworld.syms.memalignsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig memalign not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -691,7 +691,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
   if (!e2dbgworld.syms.memalignhooksym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __memalign_hook not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -704,7 +704,7 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.mallochooksym = (elfsh_Addr) e2dbg_dlsym("__malloc_hook");
   if (!e2dbgworld.syms.mallochooksym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig __malloc_hook not found", (-1));
 
 #if __DEBUG_E2DBG__
@@ -718,7 +718,7 @@ int		e2dbg_dlsym_init()
   /*
     e2dbgworld.syms.pthstartupsym = (elfsh_Addr) e2dbg_dlsym("__libc_malloc_pthread_startup");
     if (!e2dbgworld.syms.pthstartupsym)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
     "Orig pthread_startup not found", (-1));
     #if __DEBUG_E2DBG__
     len = snprintf(buf, sizeof(buf), 
@@ -729,25 +729,25 @@ int		e2dbg_dlsym_init()
 
   e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
   if (!e2dbgworld.syms.pthreadcreate)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig pthread_create not found", (-1));
 
   e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
   if (!e2dbgworld.syms.pthreadexit)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig pthread_exit not found", (-1));
 
   e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig signal not found", (-1));
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
-  hash_init(&e2dbgworld.threads, "threads"    , 29, ELEM_TYPE_ANY);
-  hash_init(&e2dbgworld.bp     , "breakpoints", 51, ELEM_TYPE_ANY);
+  hash_init(&e2dbgworld.threads, "threads"    , 29, ASPECT_TYPE_UNKNOW);
+  hash_init(&e2dbgworld.bp     , "breakpoints", 51, ASPECT_TYPE_UNKNOW);
 
   write(1, " [D] e2dbg_dlsym_init FINISHED\n", 31);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 

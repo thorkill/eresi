@@ -13,11 +13,11 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
   elfsh_Dyn	*dyn;
   u_int		idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity check */
   if (!newent)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -34,7 +34,7 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
 	dyn[idx].d_un.d_val = swaplong(dyn[idx].d_un.d_val);
       }
   }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -46,13 +46,13 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
   int		nbr;
   elfsh_Dyn	*ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DYNAMIC] == NULL)
     {
       newent = elfsh_get_section_by_type(file, SHT_DYNAMIC, NULL, NULL, &nbr, 0);
       if (newent == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get .dynamic by type", NULL);
       file->secthash[ELFSH_SECTION_DYNAMIC] = newent;
     }    
@@ -67,13 +67,13 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
     {
       newent->data = elfsh_load_section(file, newent->shdr);
       if (newent->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .dynamic", NULL);
       elfsh_endianize_dynamic(newent);
     }
 
   ret = (elfsh_Dyn *) elfsh_get_raw(newent);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -82,48 +82,48 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 /* Return the tag field of the dynamic entry */
 elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (d == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_tag));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_tag));
 }
 
 /* Change the tag field of the dynamic entry */
 int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (d == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   d->d_tag = (elfsh_Sword) tag;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Return the tag field of the dynamic entry */
 elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (d == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", 0xFFFFFFFF);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
 }
 
 /* Change the val field of the dynamic entry */
 int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (d == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
   d->d_un.d_val = (elfsh_Word) val;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -132,23 +132,23 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 {
   void		*data;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL && 
       elfsh_get_dynsymtab(file, NULL) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
 
   if (ent->d_un.d_val > file->secthash[ELFSH_SECTION_DYNSTR]->shdr->sh_size)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid .dynstr offset", NULL);
 
   data = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + ent->d_un.d_val));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + ent->d_un.d_val));
 }
 
 
@@ -161,21 +161,21 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
   elfsh_Dyn	*table;
   elfsh_Sword	res;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   table = elfsh_get_dynamic(file, &size);
   if (!table)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNAMIC", NULL);
 
   for (index = 0; index < size; index++)
     {
       res = elfsh_get_dynentry_type(table + index);
       if (res != -1 && res == (elfsh_Sword) type)
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (table + index));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (table + index));
     }
   
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No dynamic entry with that type", NULL);
 }
 
@@ -184,8 +184,8 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, 
 						  elfsh_Addr index)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (dynamic + index));
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dynamic + index));
 }
 
 
@@ -221,16 +221,16 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
   u_int		nbr;
   u_int		idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dyn = elfsh_get_dynamic(file, &nbr);
   if (dyn == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot find .dynamic in ET_DYN", -1);
   for (idx = 0; idx < nbr; idx++)
     if (elfsh_shiftable_dynent(dyn + idx))
       elfsh_set_dynentry_val(dyn + idx,
 			     elfsh_get_dynentry_val(dyn + idx) + size);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
@@ -243,11 +243,11 @@ int		elfsh_get_dynent_by_type(elfshobj_t	*robj,
   elfsh_Dyn	*ent;
   int		idx;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ent = elfsh_get_dynamic_entry_by_type(robj, real_index);
   idx = (int) ((char *) ent - (char *) data);
   idx = idx / sizeof(elfsh_Dyn);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
 

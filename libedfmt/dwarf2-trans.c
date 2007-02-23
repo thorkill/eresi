@@ -19,29 +19,29 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, u_int attr)
   edfmtdw2abbattr_t   	*mattr;
   u_int			index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (abbrev != NULL)
     {
       for (index = 0, mattr = abbrev->attr; mattr && mattr[index].attr; index++)
 	{
 	  if (mattr[index].attr == attr)
-	    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, mattr + index);
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, mattr + index);
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!vbuf)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", (elfsh_Addr) 0);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, *(elfsh_Addr *) vbuf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, *(elfsh_Addr *) vbuf);
 }
 
 static edfmttype_t	*edfmt_dwarf2_transform_abbrev_adv(edfmtdw2abbent_t *abbrev)
@@ -54,13 +54,13 @@ static edfmttype_t	*edfmt_dwarf2_transform_abbrev_adv(edfmtdw2abbent_t *abbrev)
   char			buf[BUFSIZ];
   int			fileid, inc = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   type = (edfmttype_t *) hash_get(&types_ref, abbrev->ckey);
       
   /* Already parsed ? */
   if (type)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 
   /* Change current file */
   if (abbrev->tag != DW_TAG_compile_unit)
@@ -248,15 +248,15 @@ static edfmttype_t	*edfmt_dwarf2_transform_abbrev_adv(edfmtdw2abbent_t *abbrev)
   if (type)
     HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
 static int	     	edfmt_dwarf2_transform_abbrev(edfmtdw2abbent_t *abbrev)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!abbrev)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);
 
   while (abbrev != NULL)
@@ -270,7 +270,7 @@ static int	     	edfmt_dwarf2_transform_abbrev(edfmtdw2abbent_t *abbrev)
       abbrev = abbrev->sib;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Transform dwarf2 informations */
@@ -279,26 +279,26 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
   edfmtdw2info_t 	*tinfo;
   edfmtdw2cu_t 		*tcu;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1); 
 
   tinfo = (edfmtdw2info_t *) file->debug_format.dwarf2;
 
   if (tinfo == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No debug information for dwarf2", -1); 
 
   tcu = (edfmtdw2cu_t *) tinfo->cu_list;
 
   if (tcu == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No compile unit information for dwarf2", -1);   
 
   if (types_ref.ent == NULL)
-    hash_init(&types_ref, DWARF2_HNAME_TRANS_TREF, 50, ELEM_TYPE_ANY);
+    hash_init(&types_ref, DWARF2_HNAME_TRANS_TREF, 50, ASPECT_TYPE_UNKNOW);
 
   edfmt_add_init(file);
 
@@ -315,5 +315,5 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
 
   edfmt_add_end();
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

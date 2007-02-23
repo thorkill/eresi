@@ -15,7 +15,7 @@ u_long 			edfmt_read_uleb128(void *data, u_int *bread)
   u_char 		c;
   int			s = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   do {
     c = *(u_char *) (data + read) & 0xFF; 
@@ -28,7 +28,7 @@ u_long 			edfmt_read_uleb128(void *data, u_int *bread)
   if (bread)
     *bread = read;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sum);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sum);
 }
 
 /* Read a signed leb128 number */
@@ -39,7 +39,7 @@ long 			edfmt_read_leb128(void *data, u_int *bread)
   u_char 		c;
   int			s = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   do {
     c = *(u_char *) (data + read) & 0xFF; 
@@ -55,5 +55,5 @@ long 			edfmt_read_leb128(void *data, u_int *bread)
   if (bread)
     *bread = read;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sum);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sum);
 }

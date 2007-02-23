@@ -16,7 +16,7 @@ int		cmd_mode()
   char		*param;
   char		buf[256];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   param = world.curjob->curcmd->param[0];
   if (!param)
@@ -26,11 +26,11 @@ int		cmd_mode()
       else if (elfsh_is_debug_mode())
 	param = "DYNAMIC";
       else
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown e2dbg mode", -1);
       snprintf(buf, sizeof(buf), " [*] e2dbg is in %s MODE \n\n", param);
       vm_output(buf);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
   if (*param == 's' || *param == 'S')
@@ -44,7 +44,7 @@ int		cmd_mode()
 	{
 	  if (world.curjob->current)
 	    if (!world.curjob->current->linkmap && !world.curjob->current->rhdr.base)
-	      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				"Can't switch to dynamic"
 				" mode on not mapped file.", -1);
 	}
@@ -52,9 +52,9 @@ int		cmd_mode()
       vm_output(" [*] e2dbg is now in DYNAMIC mode\n\n"); 
     }
   else
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown mode for E2DBG", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

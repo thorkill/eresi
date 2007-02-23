@@ -1,4 +1,6 @@
-ELFsh allocator library README file
+
+The ERESI allocator library README file
+---------------------------------------
 
 This allocator is ptmalloc2 (http://www.malloc.de/malloc/ptmalloc2.tar.gz) patched
 in quite a straightforward manner to allow only using mmap and no sbrk. The second

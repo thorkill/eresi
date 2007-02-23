@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: elfsh_arena.c,v 1.2 2007-02-18 17:01:03 may Exp $ */
+/* $Id: aproxy_arena.c,v 1.1 2007-02-23 05:27:47 may Exp $ */
 
 /* Compile-time constants.  */
 
@@ -29,7 +29,7 @@
 
 #include "malloc.h"
 
-mstate  elfsh_int_new_arena(size_t);
+mstate  aproxy_int_new_arena(size_t);
 
 /* HEAP_MIN_SIZE and HEAP_MAX_SIZE limit the size of mmap()ed heaps
    that are dynamically created for multi-threaded programs.  The
@@ -88,7 +88,7 @@ static int stat_n_heaps;
 static unsigned long arena_mem;
 
 /* Already initialized? */
-int __elfsh_malloc_initialized = -1;
+int __aproxy_malloc_initialized = -1;
 
 /**************************************************************************/
 
@@ -109,7 +109,7 @@ int __elfsh_malloc_initialized = -1;
  /*else                                              \
     {                                                \
    if (!debug_key)                                 \
-     debug_key = elfsh_int_new_arena(size);             \
+     debug_key = aproxy_int_new_arena(size);             \
    ptr = (mstate)tsd_getspecific(debug_key, vptr); \
    } */                                              \
   if (ptr && !mutex_trylock(&ptr->mutex)) { \
@@ -182,11 +182,11 @@ malloc_atfork(size_t sz, const Void_t *caller)
   if(vptr == ATFORK_ARENA_PTR) {
     /* We are the only thread that may allocate at all.  */
     if(save_malloc_hook != malloc_check) {
-      return elfsh_int_malloc(&main_arena, sz);
+      return aproxy_int_malloc(&main_arena, sz);
     } else {
       if(top_check()<0)
         return 0;
-      victim = elfsh_int_malloc(&main_arena, sz+1);
+      victim = aproxy_int_malloc(&main_arena, sz+1);
       return mem2mem_check(victim, sz);
     }
   } else {
@@ -223,7 +223,7 @@ free_atfork(Void_t* mem, const Void_t *caller)
   tsd_getspecific(arena_key, vptr);
   if(vptr != ATFORK_ARENA_PTR)
     (void)mutex_lock(&ar_ptr->mutex);
-  elfsh_int_free(ar_ptr, mem);
+  aproxy_int_free(ar_ptr, mem);
   if(vptr != ATFORK_ARENA_PTR)
     (void)mutex_unlock(&ar_ptr->mutex);
 }
@@ -239,7 +239,7 @@ ptmalloc_lock_all (void)
 {
   mstate ar_ptr;
 
-  if(__elfsh_malloc_initialized < 1)
+  if(__aproxy_malloc_initialized < 1)
     return;
   (void)mutex_lock(&list_lock);
   for(ar_ptr = &main_arena;;) {
@@ -247,10 +247,10 @@ ptmalloc_lock_all (void)
     ar_ptr = ar_ptr->next;
     if(ar_ptr == &main_arena) break;
   }
-  save_malloc_hook = __elfsh_malloc_hook;
-  save_free_hook = __elfsh_free_hook;
-  __elfsh_malloc_hook = malloc_atfork;
-  __elfsh_free_hook = free_atfork;
+  save_malloc_hook = __aproxy_malloc_hook;
+  save_free_hook = __aproxy_free_hook;
+  __aproxy_malloc_hook = malloc_atfork;
+  __aproxy_free_hook = free_atfork;
   /* Only the current thread may perform malloc/free calls now. */
   tsd_getspecific(arena_key, save_arena);
   tsd_setspecific(arena_key, ATFORK_ARENA_PTR);
@@ -261,11 +261,11 @@ ptmalloc_unlock_all (void)
 {
   mstate ar_ptr;
 
-  if(__elfsh_malloc_initialized < 1)
+  if(__aproxy_malloc_initialized < 1)
     return;
   tsd_setspecific(arena_key, save_arena);
-  __elfsh_malloc_hook = save_malloc_hook;
-  __elfsh_free_hook = save_free_hook;
+  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_free_hook = save_free_hook;
   for(ar_ptr = &main_arena;;) {
     (void)mutex_unlock(&ar_ptr->mutex);
     ar_ptr = ar_ptr->next;
@@ -286,12 +286,12 @@ ptmalloc_unlock_all2 (void)
 {
   mstate ar_ptr;
 
-  if(__elfsh_malloc_initialized < 1)
+  if(__aproxy_malloc_initialized < 1)
     return;
 #if defined _LIBC || defined MALLOC_HOOKS
   tsd_setspecific(arena_key, save_arena);
-  __elfsh_malloc_hook = save_malloc_hook;
-  __elfsh_free_hook = save_free_hook;
+  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_free_hook = save_free_hook;
 #endif
   for(ar_ptr = &main_arena;;) {
     mutex_init(&ar_ptr->mutex);
@@ -346,9 +346,9 @@ next_env_entry (char ***position)
 }
 #endif /* _LIBC */
 
-/* Set up basic state so that elfsh_int_malloc et al can work.  */
+/* Set up basic state so that aproxy_int_malloc et al can work.  */
 static void
-elfsh_ptmalloc_init_minimal (void)
+aproxy_ptmalloc_init_minimal (void)
 {
 #if DEFAULT_TOP_PAD != 0
   mp_.top_pad        = DEFAULT_TOP_PAD;
@@ -376,34 +376,34 @@ libc_hidden_proto (_dl_open_hook);
 
 /* This is called by __pthread_initialize_minimal when it needs to use
    malloc to set up the TLS state.  We cannot do the full work of
-   elfsh_ptmalloc_init (below) until __pthread_initialize_minimal has finished,
+   aproxy_ptmalloc_init (below) until __pthread_initialize_minimal has finished,
    so it has to switch to using the special startup-time hooks while doing
    those allocations.  */
 void
-__elfsh_libc_malloc_pthread_startup (Bool first_time)
+__aproxy_libc_malloc_pthread_startup (Bool first_time)
 {
   if (first_time)
     {
-      elfsh_ptmalloc_init_minimal ();
-      save_malloc_hook = __elfsh_malloc_hook;
-      save_memalign_hook = __elfsh_memalign_hook;
-      save_free_hook = __elfsh_free_hook;
-      __elfsh_malloc_hook = malloc_starter;
-      __elfsh_memalign_hook = memalign_starter;
-      __elfsh_free_hook = free_starter;
+      aproxy_ptmalloc_init_minimal ();
+      save_malloc_hook = __aproxy_malloc_hook;
+      save_memalign_hook = __aproxy_memalign_hook;
+      save_free_hook = __aproxy_free_hook;
+      __aproxy_malloc_hook = malloc_starter;
+      __aproxy_memalign_hook = memalign_starter;
+      __aproxy_free_hook = free_starter;
     }
   else
     {
-      __elfsh_malloc_hook = save_malloc_hook;
-      __elfsh_memalign_hook = save_memalign_hook;
-      __elfsh_free_hook = save_free_hook;
+      __aproxy_malloc_hook = save_malloc_hook;
+      __aproxy_memalign_hook = save_memalign_hook;
+      __aproxy_free_hook = save_free_hook;
     }
 }
 # endif
 #endif
 
 static void
-elfsh_ptmalloc_init (void)
+aproxy_ptmalloc_init (void)
 {
 #if __STD_C
   const char* s;
@@ -412,17 +412,17 @@ elfsh_ptmalloc_init (void)
 #endif
   int secure = 0;
 
-  if(__elfsh_malloc_initialized >= 0) return;
-  __elfsh_malloc_initialized = 0;
+  if(__aproxy_malloc_initialized >= 0) return;
+  __aproxy_malloc_initialized = 0;
 
 #ifdef _LIBC
 # if defined SHARED && defined USE_TLS && !USE___THREAD
-  /* elfsh_ptmalloc_init_minimal may already have been called via
+  /* aproxy_ptmalloc_init_minimal may already have been called via
      __libc_malloc_pthread_startup, above.  */
   if (mp_.pagesize == 0)
 # endif
 #endif
-    elfsh_ptmalloc_init_minimal();
+    aproxy_ptmalloc_init_minimal();
 
 #ifndef NO_THREADS
 # if defined _LIBC && defined USE_TLS
@@ -434,12 +434,12 @@ elfsh_ptmalloc_init (void)
   /* With some threads implementations, creating thread-specific data
      or initializing a mutex may call malloc() itself.  Provide a
      simple starter version (realloc() won't work). */
-  save_malloc_hook = __elfsh_malloc_hook;
-  save_memalign_hook = __elfsh_memalign_hook;
-  save_free_hook = __elfsh_free_hook;
-  __elfsh_malloc_hook = malloc_starter;
-  __elfsh_memalign_hook = memalign_starter;
-  __elfsh_free_hook = free_starter;
+  save_malloc_hook = __aproxy_malloc_hook;
+  save_memalign_hook = __aproxy_memalign_hook;
+  save_free_hook = __aproxy_free_hook;
+  __aproxy_malloc_hook = malloc_starter;
+  __aproxy_memalign_hook = memalign_starter;
+  __aproxy_free_hook = free_starter;
 #  ifdef _LIBC
   /* Initialize the pthreads interface. */
   if (__pthread_initialize != NULL)
@@ -457,7 +457,7 @@ elfsh_ptmalloc_init (void)
   struct link_map *l;
 
   if (_dl_open_hook != NULL
-      || (_dl_addr (elfsh_ptmalloc_init, &di, &l, NULL) != 0
+      || (_dl_addr (aproxy_ptmalloc_init, &di, &l, NULL) != 0
 	  && l->l_ns != LM_ID_BASE))
     __morecore = __failing_morecore;
 #endif
@@ -468,9 +468,9 @@ elfsh_ptmalloc_init (void)
   thread_atfork(ptmalloc_lock_all, ptmalloc_unlock_all, ptmalloc_unlock_all2);
 #ifndef NO_THREADS
 # ifndef NO_STARTER
-  __elfsh_malloc_hook = save_malloc_hook;
-  __elfsh_memalign_hook = save_memalign_hook;
-  __elfsh_free_hook = save_free_hook;
+  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_memalign_hook = save_memalign_hook;
+  __aproxy_free_hook = save_free_hook;
 # else
 #  undef NO_STARTER
 # endif
@@ -539,11 +539,11 @@ elfsh_ptmalloc_init (void)
   if(s) {
     if(s[0]) mALLOPt(M_CHECK_ACTION, (int)(s[0] - '0'));
     if (check_action != 0)
-      __elfsh_malloc_check_init();
+      __aproxy_malloc_check_init();
   }
-  if(__elfsh_malloc_initialize_hook != NULL)
-    (*__elfsh_malloc_initialize_hook)();
-  __elfsh_malloc_initialized = 1;
+  if(__aproxy_malloc_initialize_hook != NULL)
+    (*__aproxy_malloc_initialize_hook)();
+  __aproxy_malloc_initialized = 1;
 }
 
 /* There are platforms (e.g. Hurd) with a link-time hook mechanism. */
@@ -829,7 +829,7 @@ arena_get2(a_tsd, size) mstate a_tsd; size_t size;
   }
 
   /* Nothing immediately available, so generate a new arena.  */
-  a = elfsh_int_new_arena(size);
+  a = aproxy_int_new_arena(size);
   if(a)
     {
       tsd_setspecific(arena_key, (Void_t *)a);
@@ -851,7 +851,7 @@ arena_get2(a_tsd, size) mstate a_tsd; size_t size;
 /* Create a new arena with initial size "size".  */
 
 mstate
-elfsh_int_new_arena(size_t size)
+aproxy_int_new_arena(size_t size)
 {
   mstate a;
   heap_info *h;
@@ -862,7 +862,7 @@ elfsh_int_new_arena(size_t size)
 	       mp_.top_pad);
   if(!h) {
     /* Maybe size is too large to fit in a single heap.  So, just try
-       to create a minimally-sized arena and let elfsh_int_malloc() attempt
+       to create a minimally-sized arena and let aproxy_int_malloc() attempt
        to deal with the large request via mmap_chunk().  */
     h = new_heap(sizeof(*h) + sizeof(*a) + MALLOC_ALIGNMENT, mp_.top_pad);
     if(!h)

@@ -15,19 +15,19 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
   char	*ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file || !s)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL)
     if (NULL == elfsh_get_dynsymtab(file, NULL))
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to get DYNSYM", NULL);
   
   ret = (char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]) + s->st_name;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -41,22 +41,22 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
   u_int		new_len;
   void		*data;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || s == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL && 
       elfsh_get_dynsymtab(file, NULL) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive symbol table", -1);
 
   /* Else use the symbol string table */
   data = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
   if (file->secthash[ELFSH_SECTION_DYNSTR] == NULL || 
       data == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSTR", NULL);
 
   /* Change the name */
@@ -72,7 +72,7 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
   else
     s->st_name = elfsh_insert_in_dynstr(file, name);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_name));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_name));
 }
 
 
@@ -88,10 +88,10 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   int		nbr;
   void		*ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   //fprintf(stderr, "Calling get_dynsymtab ! \n");
@@ -106,13 +106,13 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 	  newent = elfsh_get_section_by_type(file, SHT_DYNSYM, 0,
 					  NULL, &strindex, &nbr);
 	  if (newent == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Unable to get DYNSYM by type", NULL);
 	}
 
       newent->data = elfsh_load_section(file, newent->shdr);
       if (newent->data == NULL) 
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load DYNSYM", NULL);
       file->secthash[ELFSH_SECTION_DYNSYM] = newent;
       
@@ -122,12 +122,12 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
       /* Now retreive the dynamic symbol string table .dynstr */
       newent = elfsh_get_section_by_index(file, strindex, NULL, &nbr);
       if (newent == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get DYNSTR by index", NULL);
 
       newent->data = elfsh_load_section(file, newent->shdr);
       if (newent->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load DYNSTR", NULL);
 
       file->secthash[ELFSH_SECTION_DYNSTR] = newent;
@@ -149,7 +149,7 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
     *num = nbr;
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -171,14 +171,14 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
   elfshsect_t	*plt;
   
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (!value || value == (elfsh_Addr) -1)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);  
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   if (offset)
     *offset = 0;
@@ -188,7 +188,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
     {
       sect = elfsh_get_parent_section(file, value, offset);
       if (sect == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No parent section", NULL);
 
       /* handle dynamic case */
@@ -198,7 +198,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
       if (offset)
 	*offset = (elfsh_SAddr) (sect->shdr->sh_addr - value);
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			 (elfsh_get_section_name(file, sect)));
     }
 
@@ -217,7 +217,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
       if (pltsym)
 	{
 	  *offset = 0;
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 			     (elfsh_get_dynsymbol_name(file, pltsym)));
 	}                                                                                                                                   
     }
@@ -239,11 +239,11 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 	  str = NULL;
 	
 	
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
       }
   
   /* Not found */
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No valid symbol interval", NULL);
 }
 
@@ -260,15 +260,15 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   int		size = 0;
   char		*actual;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   ret = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
   if (ret == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
 
   //printf("DYNsymtab retreived with data pointer = %08X \n", (unsigned int) ret);
@@ -277,10 +277,10 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     {
       actual = elfsh_get_dynsymbol_name(file, ret + index);
       if (actual && !strcmp(actual, name))
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + index));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + index));
     }
   
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Symbol not found", NULL);
 }
 
@@ -292,7 +292,7 @@ int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc)
   elfshsect_t	*actual;
   int		err;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   actual = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTDYNSYM, 
 				     NULL, NULL, NULL);
@@ -300,14 +300,14 @@ int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc)
     {
       actual = elfsh_get_section_by_type(file, SHT_DYNSYM, 0, NULL, NULL, NULL);
       if (actual == NULL || actual->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to find DYNSYM by type", -1);
     }
 
   err = elfsh_shift_syms(file, actual, limit, inc);
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to shift DYNSYM", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

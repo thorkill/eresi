@@ -24,21 +24,22 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   u_int		index;
   char		*str;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* Create symbol table if it does not exist */
   if (file->secthash[ELFSH_SECTION_SYMTAB] == NULL)
     {
-      XALLOC(symtab, sizeof (elfshsect_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,symtab, sizeof (elfshsect_t), NULL);
       hdr = elfsh_create_shdr(0, SHT_SYMTAB, 0, 0, 0, 0, 0, 0, 0, sizeof(elfsh_Sym));
-      symtab->name = elfsh_strdup(ELFSH_SECTION_NAME_SYMTAB);
+      symtab->name = aproxy_strdup(ELFSH_SECTION_NAME_SYMTAB);
+ 
       index = elfsh_insert_unmapped_section(file, symtab, hdr, NULL);
       if (index < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to insert SYMTAB", NULL);
       file->secthash[ELFSH_SECTION_SYMTAB] = symtab;
     }
@@ -117,13 +118,13 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
   /* Fix sctndx */
   if (elfsh_fixup_sctndx(symtab) == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to fixup sctndx", NULL);
   
   /* Resynchronize cached sorted symtab and return */
   elfsh_sync_sorted_symtab(symtab);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab));
 }
 
 
@@ -141,7 +142,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
   elfshsect_t	*relplt;
   char		*name;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Grab values */
   entsz = elfsh_get_pltentsz(file);
@@ -151,7 +152,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
   name = IS_REL(plt) ? ELFSH_SECTION_NAME_RELPLT : ELFSH_SECTION_NAME_RELAPLT;
   relplt = elfsh_get_section_by_name(plt->parent, name, 0, 0, 0);
   if (!relplt)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find RELPLT", NULL);
 
   /* On Sparc, some of the first entries are reserved */
@@ -162,14 +163,14 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       printf("[DEBUG_COPYPLT] Passing reserved PLT entry on SPARC\n");
 #endif
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Not patching reserved PLT entry", NULL);
     }
   
   /* On some architecture the first plt entry size is different than entsz */
   index = (off - elfsh_get_first_pltentsz(file) + entsz) / entsz;
   if (!index)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Not patching first PLT entry", NULL);
   index--;
   
@@ -189,7 +190,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       printf("[DEBUG_COPYPLT] Found END of relocation table, symbol not inserted \n");
 #endif
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Not patching PLT entry without relocation entry", NULL);
     }
   
@@ -212,7 +213,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 	     off, (elfsh_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Not patching PLT entry without valid symbol", NULL);
     }
 
@@ -222,7 +223,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 #endif
 
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
 }
 
 
@@ -239,12 +240,12 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   char			*name;
   int			mode;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get PLT */
   plt = elfsh_get_plt(dynsym->parent, NULL);
   if (!plt)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get PLT", -1);
 
   mode = elfsh_get_mode();
@@ -288,6 +289,6 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
     }
 
   elfsh_set_mode(mode);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

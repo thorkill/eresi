@@ -107,7 +107,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 
   if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER && e2dbg_setup(av[1]) < 0)
     {
-      elfsh_error();
+      profiler_error();
       exit(-1);
     }
   vm_doswitch(1);
@@ -124,7 +124,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 /* Load all process files in the debugger */
 int			e2dbg_setup(char *name)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg_setup] Starting \n");
@@ -139,6 +139,6 @@ int			e2dbg_setup(char *name)
   vm_output("\n");
   elfsh_set_debug_mode();
   vm_doswitch(1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

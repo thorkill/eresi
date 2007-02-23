@@ -38,8 +38,8 @@ void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info,
   ucontext_t	*context;
 
   CLRSIG;
-  if (elfsh_is_prof_enable())
-    elfsh_prof_disable();
+  if (profiler_enabled())
+    profiler_disable();
   context = (ucontext_t *) pcontext;
   printf("\n [!] Segfault in E2dbg, exiting ...\n\n");
   vm_bt();

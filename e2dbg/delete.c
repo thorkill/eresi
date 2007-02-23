@@ -22,13 +22,13 @@ int		cmd_delete()
   elfsh_SAddr	off;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lookup breakpoint */
   
   bp = vm_lookup_bp(vm_lookup_var(world.curjob->curcmd->param[0]));
   if (!bp)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown breakpoint", -1);
   addr = bp->addr;
   
@@ -49,7 +49,7 @@ int		cmd_delete()
 	 addr, name);
   vm_output(logbuf);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

@@ -68,16 +68,16 @@ int		e2dbg_curthread_init(void *start)
   e2dbgthread_t	*new;
   char		*key;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(new, sizeof(e2dbgthread_t), -1);
-  XALLOC(key, 15, -1);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
   snprintf(key, 15, "%u", (unsigned int) getpid());
   new->tid   = (unsigned int) getpid();
   new->entry = (void *) e2dbgworld.real_main;
   time(&new->stime);
   hash_add(&e2dbgworld.threads, key, new);
   e2dbgworld.curthread = new;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -96,7 +96,7 @@ int		pthread_create (pthread_t *__restrict __threadp,
 		       void *__start_routine,
 		       void *__restrict __arg);
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   /* Do not allow to create a thread while another ons is breaking */
   e2dbg_mutex_lock(&e2dbgworld.dbgbp);
@@ -104,8 +104,8 @@ int		pthread_create (pthread_t *__restrict __threadp,
 
   fct = (void *) e2dbgworld.syms.pthreadcreate;
   ret = (*fct)(__threadp, __attr, e2dbg_thread_start, __arg);
-  XALLOC(new, sizeof(e2dbgthread_t), -1);
-  XALLOC(key, 15, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
   snprintf(key, 15, "%u", *(unsigned int *) __threadp);
   new->tid   = *(unsigned long *) __threadp;
   new->entry = __start_routine;
@@ -116,7 +116,7 @@ int		pthread_create (pthread_t *__restrict __threadp,
   vm_output(" [*] BP MUTEX UNLOCKED [pthread_create] \n");
   e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
 
-  ELFSH_NOPROFILE_ROUT(ret);
+  NOPROFILER_ROUT(ret);
 }
 
 
@@ -232,7 +232,7 @@ int		cmd_threads()
   e2dbgthread_t	*cur; 
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Change current working thread if passed a parameter */
   if (world.curjob->curcmd->param[0])
@@ -243,7 +243,7 @@ int		cmd_threads()
       if (!cur)
 	{
 	  printf("Unknown thread -%s- \n", world.curjob->curcmd->param[0]);
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Unknown thread", (-1));
 	}
       
@@ -254,12 +254,12 @@ int		cmd_threads()
       snprintf(logbuf, BUFSIZ, " [*] Switched to thread %s \n\n", 
 	       world.curjob->curcmd->param[0]);
       vm_output(logbuf);
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Print all threads */
   e2dbg_threads_print();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

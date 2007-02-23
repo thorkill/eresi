@@ -16,56 +16,56 @@
 /* Void handlers for the 2 hooks */
 void		  e2dbg_default_getregs()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__); 
 }
 
 void		  e2dbg_default_setregs()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__); 
 }
 
 /* Error handler by default for them */
 elfsh_Addr*	  e2dbg_default_getpc()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "GETPC unimplemented on this architecture", NULL);
 }
 
 elfsh_Addr*	  e2dbg_default_getfp()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "GETFP unimplemented on this architecture", NULL);
 }
 
 void		e2dbg_default_setstep()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_NERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_NERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "SETSTEP unimplemented on this architecture");
 }
 
 void		e2dbg_default_resetstep()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_NERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_NERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "RESETSTEP unimplemented on this architecture"); 
 }
 
 elfsh_Addr	e2dbg_default_nextfphandler(elfsh_Addr a)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
 elfsh_Addr	e2dbg_default_getrethandler(elfsh_Addr a)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -77,17 +77,17 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   vector_t	*nextfp;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   //hook_nextfp[archtype][hosttype][ostype] = fct;
@@ -96,7 +96,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(nextfp, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register a next return-addr handler */
@@ -106,17 +106,17 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   vector_t	*getret;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getret = aspect_vector_get(E2DBG_HOOK_GETRET);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -124,7 +124,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(getret, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an SETREGS injection handler */
@@ -134,17 +134,17 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   vector_t	*setregs;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
   
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -152,7 +152,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(setregs, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an SETREGS injection handler */
@@ -162,17 +162,17 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   vector_t	*getregs;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -180,7 +180,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(getregs, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an GETPC injection handler */
@@ -190,17 +190,17 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   vector_t	*getpc;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -208,7 +208,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(getpc, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an GETPC injection handler */
@@ -218,17 +218,17 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   vector_t	*getfp;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -236,7 +236,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(getfp, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an SETSTEP injection handler */
@@ -246,17 +246,17 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   vector_t	*setstep;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -264,7 +264,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(setstep, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an RESETSTEP injection handler */
@@ -274,17 +274,17 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   vector_t	*resetstep;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
   
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOSTNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -292,7 +292,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(resetstep, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -304,11 +304,11 @@ static int	e2dbg_register_vectors()
   u_int		*dims;
   char		**strdims;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* All hooks have the same dimensions here */
-  XALLOC(dims   , 4 * sizeof(u_int) , -1);
-  XALLOC(strdims, 4 * sizeof(char *), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
   dims[0]    = ELFSH_ARCHNUM;
   dims[1]    = E2DBG_HOSTNUM;
   dims[2]    = ELFSH_OSNUM;
@@ -319,30 +319,30 @@ static int	e2dbg_register_vectors()
   /* Initialize debugger vectors */
   aspect_register_vector(E2DBG_HOOK_GETREGS, 
 			 e2dbg_default_getregs,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_SETREGS, 
 			 e2dbg_default_setregs,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_GETPC, 
 			 e2dbg_default_getpc,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_SETSTEP, 
 			 e2dbg_default_setstep,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_RESETSTEP, 
 			 e2dbg_default_resetstep,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_GETFP, 
 			 e2dbg_default_getfp,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_NEXTFP, 
 			 e2dbg_default_nextfphandler,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_GETRET, 
 			 e2dbg_default_getrethandler,
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -352,10 +352,10 @@ void		e2dbg_setup_hooks()
   static int	done = 0;
 
   /* Check if already initialized */
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (done)
-    ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
-  aspect_vectors_init();
+    PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+  aspect_init();
   e2dbg_register_vectors();
 
   /* Initialize vectors */
@@ -494,7 +494,7 @@ void		e2dbg_setup_hooks()
 			    ELFSH_OS_SOLARIS, elfsh_getret_ia32);
   
   done = 1;
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -509,7 +509,7 @@ int		  e2dbg_getregs()
   vector_t	*getregs;
   void		(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
 
   /* Fingerprint binary */
@@ -519,7 +519,7 @@ int		  e2dbg_getregs()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETREGS handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -529,7 +529,7 @@ int		  e2dbg_getregs()
 
   /* This hook is non-fatal, we just wont have regs as variables if it fails */
   fct();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -543,7 +543,7 @@ int		  e2dbg_setregs()
   vector_t	*setregs;
   void		(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
 
   /* Fingerprint binary */
@@ -553,7 +553,7 @@ int		  e2dbg_setregs()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETREGS handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -563,7 +563,7 @@ int		  e2dbg_setregs()
  
   /* This hook is non-fatal, we just wont have modified registers if it fails. */
   fct();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Call the getpc hook */
@@ -577,7 +577,7 @@ elfsh_Addr*     e2dbg_getpc()
   vector_t	*getpc;
   elfsh_Addr	*(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
 
   /* Fingerprint binary */
@@ -587,7 +587,7 @@ elfsh_Addr*     e2dbg_getpc()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", NULL);
   
   dim[0] = archtype;
@@ -596,9 +596,9 @@ elfsh_Addr*     e2dbg_getpc()
   fct    = aspect_vectors_select(getpc, dim);
   pc     = fct();
   if (pc == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to get program counter register", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pc);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pc);
 }
 
 
@@ -613,7 +613,7 @@ elfsh_Addr*     e2dbg_getfp()
   vector_t	*getfp;
   elfsh_Addr	*(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
 
   /* Fingerprint binary */
@@ -623,7 +623,7 @@ elfsh_Addr*     e2dbg_getfp()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", NULL);
   
   dim[0] = archtype;
@@ -632,9 +632,9 @@ elfsh_Addr*     e2dbg_getfp()
   fct    = aspect_vectors_select(getfp, dim);
   fp     = fct();
   if (fp == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to get program counter register", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fp);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, fp);
 }
 
 
@@ -648,7 +648,7 @@ int		  e2dbg_setstep()
   vector_t	*setstep;
   void		(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
 
   /* Fingerprint binary */
@@ -658,7 +658,7 @@ int		  e2dbg_setstep()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETSTEP handler unexistant for this ARCH/OS", -1);
   
   dim[0] = archtype;
@@ -666,7 +666,7 @@ int		  e2dbg_setstep()
   dim[2] = ostype;
   fct    = aspect_vectors_select(setstep, dim);
   fct();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Call the getregs hook */
@@ -679,7 +679,7 @@ int		  e2dbg_resetstep()
   vector_t	*resetstep;
   void		(*fct)();
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
 
   /* Fingerprint binary */
@@ -689,7 +689,7 @@ int		  e2dbg_resetstep()
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", -1);
   
   dim[0] = archtype;
@@ -697,7 +697,7 @@ int		  e2dbg_resetstep()
   dim[2] = ostype;
   fct    = aspect_vectors_select(resetstep, dim);
   fct();
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -713,7 +713,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   vector_t	*nextfp;
   int		(*fct)(elfsh_Addr addr);
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
 
   /* Fingerprint binary */
@@ -723,7 +723,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "BACKTRACE (nextfp) handler unexistant for this ARCH/OS", 
 		      -1);
 
@@ -733,9 +733,9 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   fct    = aspect_vectors_select(nextfp, dim);
   ret = fct(addr);
   if (ret == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Backtrace handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -750,7 +750,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   vector_t	*getret;
   int		(*fct)(elfsh_Addr addr);
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getret = aspect_vector_get(E2DBG_HOOK_GETRET);
 
   /* Fingerprint binary */
@@ -760,7 +760,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   if (archtype == ELFSH_ARCH_ERROR ||
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETRET handler unexistant for this ARCH/OS", -1);
   
   dim[0] = archtype;
@@ -769,9 +769,9 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   fct    = aspect_vectors_select(getret, dim);
   ret    = fct(addr);
   if (ret == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "GetRet handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -779,7 +779,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
 /* Regvars handler for the IA32 architecture on BSD */
 void		  e2dbg_get_regvars_ia32_bsd()
 { 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   VM_GETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   VM_GETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
@@ -792,13 +792,13 @@ void		  e2dbg_get_regvars_ia32_bsd()
   VM_GETREG(ELFSH_FPVAR , e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
   VM_GETREG(ELFSH_PCVAR , e2dbgworld.curthread->context->uc_mcontext.mc_eip);
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Regvars handler for the IA32 architecture on SYSV */
 void		  e2dbg_get_regvars_ia32_sysv()
 { 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
   VM_GETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   VM_GETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
@@ -811,14 +811,14 @@ void		  e2dbg_get_regvars_ia32_sysv()
   VM_GETREG(ELFSH_FPVAR , e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
   VM_GETREG(ELFSH_PCVAR , e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /* Regvars handler for the IA32 architecture */
 void		  e2dbg_set_regvars_ia32_bsd()
 { 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   VM_SETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   VM_SETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
@@ -831,7 +831,7 @@ void		  e2dbg_set_regvars_ia32_bsd()
   VM_SETREG(ELFSH_FPVAR , e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
   VM_SETREG(ELFSH_PCVAR , e2dbgworld.curthread->context->uc_mcontext.mc_eip);
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -839,7 +839,7 @@ void		  e2dbg_set_regvars_ia32_bsd()
 /* Regvars handler for the IA32 architecture on SYSV */
 void		  e2dbg_set_regvars_ia32_sysv()
 { 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
   VM_SETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   VM_SETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
@@ -852,30 +852,30 @@ void		  e2dbg_set_regvars_ia32_sysv()
   VM_SETREG(ELFSH_FPVAR , e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
   VM_SETREG(ELFSH_PCVAR , e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /* Get Program Counter register */
 elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_eip);
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 /* Get Program Counter register on Sys V */
 elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 
@@ -883,62 +883,62 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 /* Get Program Counter register */
 elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 /* Get Program Counter register on Sys V */
 elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
 #endif
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 
 /* Enable stepping on BSD */
 void		  e2dbg_setstep_bsd_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags |= 0x100;
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Enable stepping on Sys V */
 void		  e2dbg_setstep_sysv_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] |= 0x100; 
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Disable stepping on Sys V */
 void		  e2dbg_resetstep_sysv_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__linux__) && defined(__i386__) || defined(sun)
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] &= ~0x100;
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Disable stepping on BSD */
 void		  e2dbg_resetstep_bsd_ia32()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags &= ~0x100;
 #endif
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

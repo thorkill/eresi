@@ -20,10 +20,10 @@ int			vm_strtable_add(char *string)
   u_int			string_len;
   int			off;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!string || !string[0])
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid string", -1);
 
   string_len = strlen(string);
@@ -31,7 +31,7 @@ int			vm_strtable_add(char *string)
   if (strtable == NULL)
     {
       strtable_max = STRTABLE_IT;
-      XALLOC(strtable, strtable_max * sizeof(char), -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,strtable, strtable_max * sizeof(char), -1);
     }
   else if (strtable_max <= strtable_current + string_len)
     {
@@ -40,7 +40,7 @@ int			vm_strtable_add(char *string)
 	strtable_max += STRTABLE_IT;
       } while (strtable_max <= strtable_current + string_len);
 
-      XREALLOC(strtable, strtable, strtable_max * sizeof(char), -1);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__,strtable, strtable, strtable_max * sizeof(char), -1);
     }
 
   /* Copy string */
@@ -51,5 +51,5 @@ int			vm_strtable_add(char *string)
   off = strtable_current;
   strtable_current += string_len + 1;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, off);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, off);
 }

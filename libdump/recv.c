@@ -18,9 +18,9 @@ pkt_t	*dump_recv_pkt(int s)
   pkt_t *msg;
   int	try = 0;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(msg, sizeof (pkt_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,msg, sizeof (pkt_t), NULL);
 
   /* read fixed size header part */
   do
@@ -35,7 +35,7 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	  printf("[WW] Connection closed by remote host (1)\n");
 #endif
-	  XFREE(msg);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 	  return  (pkt_t *)(-1);
         }
 
@@ -48,7 +48,7 @@ pkt_t	*dump_recv_pkt(int s)
 	      try++;
 	      if (try > DUMP_MAXTRY)
 		{
-		  XFREE (msg);
+		  XFREE(__FILE__, __FUNCTION__, __LINE__, msg);
 		  return (pkt_t *)(-1);
 		}
 	      continue;
@@ -57,7 +57,7 @@ pkt_t	*dump_recv_pkt(int s)
 	  printf("[EE] Error while reading on socket (1)\n");
 	  perror("recv");
 #endif
-	  XFREE(msg);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, msg);
 	  return (pkt_t *)(-1);
         }
       
@@ -69,7 +69,10 @@ pkt_t	*dump_recv_pkt(int s)
   if (ntohl(msg->path_len) != 0)
     {
       /* read pkt path from header */
-      XALLOC(msg->path, ntohl(msg->path_len)*sizeof (dump_id_t), (pkt_t *) -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     msg->path, 
+	     ntohl(msg->path_len) * sizeof (dump_id_t), 
+	     (pkt_t *) -1);
 
       tmp = 0;
       do 
@@ -85,7 +88,7 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	      printf("[WW] Connection closed by remote host (2)\n");
 #endif
-	      XFREE(msg);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -98,8 +101,8 @@ pkt_t	*dump_recv_pkt(int s)
 		  try++;
 		  if (try > DUMP_MAXTRY)
 		    {
-		      XFREE(msg->path);
-		      XFREE(msg);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 		      return (pkt_t *)(-1);
 		    }
 		  continue;
@@ -108,8 +111,8 @@ pkt_t	*dump_recv_pkt(int s)
 	      printf("[EE] Error while reading on socket (2)\n");
 	      perror("recv");
 #endif
-	      XFREE(msg->path);
-	      XFREE(msg);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 	      return  (pkt_t *)(-1);
             }
 
@@ -124,7 +127,7 @@ pkt_t	*dump_recv_pkt(int s)
   /* read payload */
   if (ntohl(msg->size) != 0)
     {
-      XALLOC(msg->data, (size_t) sizeof (char)*ntohl(msg->size), (pkt_t *) -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,msg->data, (size_t) sizeof (char)*ntohl(msg->size), (pkt_t *) -1);
 
       tmp = 0;
       do
@@ -140,9 +143,9 @@ pkt_t	*dump_recv_pkt(int s)
 #if !defined(ELFSH_INTERN)
 	      printf("[WW] Connection closed by remote host (3)\n");
 #endif
-	      XFREE(msg->path);
-	      XFREE(msg->data);
-	      XFREE(msg);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->data);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -155,9 +158,9 @@ pkt_t	*dump_recv_pkt(int s)
 		  try++;
 		  if (try > DUMP_MAXTRY)
 		    {
-		      XFREE(msg->path);
-		      XFREE(msg->data);
-		      XFREE(msg);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->data);
+		      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 		      return (pkt_t *)(-1);
 		    }
 		  continue;
@@ -166,9 +169,9 @@ pkt_t	*dump_recv_pkt(int s)
 	      printf("[EE] Error while reading on socket (3)\n");
 	      perror("recv");
 #endif
-	      XFREE(msg->path);
-	      XFREE(msg->data);
-	      XFREE(msg);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->data);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
 	      return (pkt_t *)(-1);
             }
 
@@ -192,7 +195,7 @@ int		dump_receive_RR(pkt_t *pkt)
   hashent_t	*actual;
   int		index;
     
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
   if (dump_lookup_RR_recently_seen(pkt->id))
     {
@@ -207,7 +210,7 @@ int		dump_receive_RR(pkt_t *pkt)
     return (-1);
 
   /* add myid to path's tail */
-  XALLOC(npath, sizeof (dump_id_t)*(ntohl(pkt->path_len)+1), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,npath, sizeof (dump_id_t)*(ntohl(pkt->path_len)+1), -1);
     
   /* back the previous hop up */
   prev = pkt->path[ntohl(pkt->path_len)-1];
@@ -236,7 +239,7 @@ int		dump_receive_RR(pkt_t *pkt)
 #if !defined(ELFSH_INTERN)
 	  fprintf(stderr, "dump_send_Rr error (1)\n");
 #endif
-	  XFREE(npath);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,npath);
 	  return (-1);
         }
     }
@@ -274,7 +277,7 @@ int		dump_receive_RR(pkt_t *pkt)
 #if !defined(ELFSH_INTERN)
 		    printf("[EE] dump_send_RR error (2)\n");
 #endif
-		    XFREE(npath);
+		    XFREE(__FILE__, __FUNCTION__, __LINE__,npath);
 		    return (-1);
 		  }
 	      }
@@ -291,7 +294,7 @@ int		dump_receive_RR(pkt_t *pkt)
       
     }
     
-  XFREE(npath);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,npath);
   return 0;
 }
 
@@ -349,8 +352,8 @@ int	dump_receive_Rr(pkt_t *pkt)
 	  dump_send_real(next_hop_socket, spkt);
 	  
 	  /* free pkt */
-	  XFREE(spkt->data);
-	  XFREE(spkt);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,spkt->data);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,spkt);
 
 	  /* remove it from wait queue */
 	  dump_del_send_queue(spkt);

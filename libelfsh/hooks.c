@@ -27,8 +27,8 @@ int	elfsh_default_plthandler(elfshobj_t *null,
 				 elfsh_Sym  *null2, 
 				 elfsh_Addr null3)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -38,8 +38,8 @@ int	elfsh_default_encodeplthandler(elfshobj_t *file,
 				       elfshsect_t *sect, 
 				       elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -49,8 +49,8 @@ int	elfsh_default_encodeplt1handler(elfshobj_t *file,
 					elfshsect_t *sect2,
 					elfsh_Addr diff)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -60,8 +60,8 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 				 elfsh_Addr   null4,
 				 elfshsect_t *null5)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -70,8 +70,8 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   elfsh_Sym    *null2,
 				   elfsh_Addr	null3)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -79,8 +79,8 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 int     elfsh_default_breakhandler(elfshobj_t   *null,
 				   elfshbp_t	*null3)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -88,8 +88,8 @@ int     elfsh_default_breakhandler(elfshobj_t   *null,
 int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d, 
 				    elfshsect_t *t, elfshsect_t *f)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -99,14 +99,14 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
 				 elfsh_Sym  *null2, 
 				 elfsh_Addr null3)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int	elfsh_default_argchandler(elfsh_Addr addr)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
@@ -121,17 +121,17 @@ int	elfsh_register_altplthook(u_char archtype,
   vector_t	*altplt;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -139,7 +139,7 @@ int	elfsh_register_altplthook(u_char archtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(altplt, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -152,17 +152,17 @@ int		elfsh_register_extplthook(u_char archtype,
   vector_t	*extplt;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   extplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -170,7 +170,7 @@ int		elfsh_register_extplthook(u_char archtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(extplt, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -181,17 +181,17 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
   vector_t	*plt;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   plt = aspect_vector_get(ELFSH_HOOK_PLT);
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim    = alloca(sizeof(u_int) * 4);
@@ -199,7 +199,7 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(plt, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an ENCODEPLT handler */
@@ -209,18 +209,18 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
   vector_t	*encodeplt;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -228,7 +228,7 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(encodeplt, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register an ENCODEPLT1 handler */
@@ -238,25 +238,25 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
   vector_t	*encodeplt1;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
   dim = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(encodeplt1, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -268,17 +268,17 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   vector_t	*rel;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   rel = aspect_vector_get(ELFSH_HOOK_REL);
   
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -286,7 +286,7 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(rel, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -297,17 +297,17 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
   vector_t	*cflow;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -315,7 +315,7 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(cflow, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -327,17 +327,17 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   vector_t	*breakp;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   breakp = aspect_vector_get(ELFSH_HOOK_BREAK);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -345,7 +345,7 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(breakp, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Register a args counting redirection handler */
@@ -355,17 +355,17 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
   vector_t	*argcp;
   u_int		*dim;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   argcp = aspect_vector_get(ELFSH_HOOK_ARGC);
 
   if (archtype >= ELFSH_ARCHNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
   if (objtype >= ELFSH_TYPENUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OSNUM)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
   dim = alloca(sizeof(u_int) * 4);
@@ -373,7 +373,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
   dim[1] = objtype;
   dim[2] = ostype;
   aspect_vectors_insert(argcp, dim, (unsigned long) fct);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -385,12 +385,12 @@ int		elfsh_init_vectors()
   u_int		*dims;
   char		**strdims;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__); 
-  aspect_vectors_init();
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+  aspect_init();
 
   /* All hooks have the same dimensions here */
-  XALLOC(dims   , 4 * sizeof(u_int) , -1);
-  XALLOC(strdims, 4 * sizeof(char *), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
   dims[0]    = ELFSH_ARCHNUM;
   dims[1]    = ELFSH_TYPENUM;
   dims[2]    = ELFSH_OSNUM;
@@ -400,33 +400,33 @@ int		elfsh_init_vectors()
 
   aspect_register_vector(ELFSH_HOOK_ALTPLT, 
 			elfsh_default_plthandler,
-			dims, strdims, 3, ELEM_TYPE_FADDR);
+			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_PLT, 
 			elfsh_default_plthandler,
-			dims, strdims, 3, ELEM_TYPE_FADDR);
+			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_REL, 
 			elfsh_default_relhandler,
-			dims, strdims, 3, ELEM_TYPE_FADDR);
+			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_CFLOW, 
 			elfsh_default_cflowhandler, 
-			dims, strdims, 3, ELEM_TYPE_FADDR);
+			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_BREAK, 
 			elfsh_default_breakhandler, 
-			dims, strdims, 3, ELEM_TYPE_FADDR);
+			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_EXTPLT, 
 			elfsh_default_extplthandler, 
-			dims, strdims, 3, ELEM_TYPE_FADDR);  
+			dims, strdims, 3, ASPECT_TYPE_CADDR);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT, 
 			 elfsh_default_encodeplthandler, 
-			 dims, strdims, 3, ELEM_TYPE_FADDR);  
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);  
   aspect_register_vector(ELFSH_HOOK_ENCODEPLT1, 
 			 elfsh_default_encodeplt1handler, 
-			 dims, strdims, 3, ELEM_TYPE_FADDR);
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_ARGC, 
 			 elfsh_default_argchandler, 
-			 dims, strdims, 3, ELEM_TYPE_FADDR);  
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);  
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -436,11 +436,11 @@ void	elfsh_setup_hooks()
   //u_int	i, j, k;
   static int done = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Check if already initialized */
   if (done)
-    ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+    PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 
   elfsh_init_vectors();
 
@@ -935,7 +935,7 @@ void	elfsh_setup_hooks()
 			  ELFSH_OS_SOLARIS, elfsh_args_count_ia32);
   
   done++;
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -958,7 +958,7 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
 		       elfsh_Addr  n4,
 		       elfshsect_t *n5);
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   rel = aspect_vector_get(ELFSH_HOOK_REL);
 
@@ -969,7 +969,7 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "RELOCATION handler unexistant for this ARCH/OS", -1);
   dim[0] = archtype;
   dim[1] = elftype;
@@ -977,9 +977,9 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
   fct    = aspect_vectors_select(rel, dim);
   ret = fct(s, r, l, a, m);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Relocation handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -996,7 +996,7 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, elfsh_Addr n4);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
 
   /* Fingerprint binary */
@@ -1006,7 +1006,7 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "CFLOW handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -1015,9 +1015,9 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   fct    = aspect_vectors_select(cflow, dim);
   ret = fct(file, name, old, new);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Control flow redirection handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -1032,7 +1032,7 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   int		(*fct)(elfshobj_t *f, elfsh_Sym *s, elfsh_Addr a);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   plt = aspect_vector_get(ELFSH_HOOK_PLT);
 
   /* Fingerprint binary */
@@ -1042,7 +1042,7 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -1051,9 +1051,9 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   fct    = aspect_vectors_select(plt, dim);
   ret    = fct(file, s, new);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT redirection handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -1070,7 +1070,7 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfsh_Addr a, u_int off);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
 
   /* Fingerprint binary */
@@ -1080,7 +1080,7 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ENCODEPLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -1090,9 +1090,9 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
 
   ret  = fct(file, plt, diff, off);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT encoding handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -1110,7 +1110,7 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 		       elfsh_Addr a);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
 
   /* Fingerprint binary */
@@ -1120,7 +1120,7 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ENCODEPLT1 handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -1129,9 +1129,9 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   fct    = aspect_vectors_select(encodeplt1, dim);
   ret  = fct(file, plt, extplt, diff);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "PLT1 encoding handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -1147,7 +1147,7 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   int		(*fct)(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr a);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
  
   /* Fingerprint binary */
@@ -1157,7 +1157,7 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ALTPLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
@@ -1166,9 +1166,9 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
   fct    = aspect_vectors_select(altplt, dim);
   ret  = fct(file, s, new);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "ALTPLT redirection handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -1185,7 +1185,7 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
 		       elfshsect_t *dynsym, elfshsect_t *relplt);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   vextplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
 
   /* Fingerprint binary */
@@ -1195,7 +1195,7 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "EXTPLT handler unexistant for this ARCH/OS", -1);
   dim[0] = archtype;
   dim[1] = elftype;
@@ -1203,9 +1203,9 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   fct    = aspect_vectors_select(vextplt, dim);
   ret  = fct(extplt, altgot, dynsym, relplt);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "EXTPLT redirection handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -1222,7 +1222,7 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   int		(*fct)(elfshobj_t *file, elfshbp_t *bp);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   breakh = aspect_vector_get(ELFSH_HOOK_BREAK);
 
   /* Fingerprint binary */
@@ -1232,7 +1232,7 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETBREAK handler unexistant for this ARCH/OS", -1);
   
   dim[0] = archtype;
@@ -1241,9 +1241,9 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   fct    = aspect_vectors_select(breakh, dim);
   ret  = fct(file, bp);
   if (ret < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Breakpoint handler failed", (-1));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Call the arg count hook */
@@ -1256,7 +1256,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   int		*(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
   u_int		dim[3];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   argch = aspect_vector_get(ELFSH_HOOK_ARGC);
 
   /* Fingerprint binary */
@@ -1266,14 +1266,14 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_TYPE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "ARGC handler unexistant for this ARCH/OS", NULL);
   
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(argch, dim);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
 }
 
 
@@ -1282,43 +1282,43 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
 /* Translate ELF architecture type into ELFsh architecture type */
 u_char		elfsh_get_archtype(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-   ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
     "Invalid file argument!", (ELFSH_ARCH_ERROR));
 
   switch (elfsh_get_arch(file->hdr))
     {
     case EM_386:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_IA32));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_IA32));
     case EM_SPARC:
     case EM_SPARC32PLUS:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_SPARC32));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_SPARC32));
     case EM_SPARCV9:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_SPARC64));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_SPARC64));
     case EM_PARISC:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PARISC));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PARISC));
     case EM_IA_64:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_IA64));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_IA64));
     case EM_PPC:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PPC32));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PPC32));
     case EM_PPC64:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PPC64));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_PPC64));
     case EM_SVX:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_CRAY));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_CRAY));
     case EM_ALPHA:
 #if EM_ALPHA != EM_ALPHA_EXP
     case EM_ALPHA_EXP:
 #endif
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ALPHA64));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ALPHA64));
     case EM_MIPS:
     case EM_MIPS_RS3_LE:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_MIPS32));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_MIPS32));
     case EM_ARM:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ARM));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ARM));
     default:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ERROR));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ERROR));
     }
 }
 
@@ -1326,16 +1326,16 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
 /* Translate ELF object type into ELFsh object type */
 u_char		elfsh_get_elftype(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (elfsh_get_objtype(file->hdr))
     {
     case ET_EXEC:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_EXEC));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_EXEC));
     case ET_DYN:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_DYN));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_DYN));
     default:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_ERROR));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_TYPE_ERROR));
     }
 }
 
@@ -1343,24 +1343,24 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
 /* Retreive ELFsh OS type from ELF header */
 u_char  elfsh_get_real_ostype(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (file->hdr->e_ident[EI_OSABI])
     {
     case ELFOSABI_LINUX:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_LINUX));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_LINUX));
     case ELFOSABI_FREEBSD:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_FREEBSD));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_FREEBSD));
     case ELFOSABI_NETBSD:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_NETBSD));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_NETBSD));
     case ELFOSABI_OPENBSD:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_OPENBSD));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_OPENBSD));
     case ELFOSABI_SOLARIS:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_SOLARIS));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_SOLARIS));
     case 0:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     default:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_ERROR));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_ERROR));
     }
 }
 
@@ -1369,8 +1369,8 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
 /* Need to be extended for the kernel memory type */
 u_char		elfsh_get_hosttype(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (E2DBG_HOST_PROC));
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (E2DBG_HOST_PROC));
 }
 
 
@@ -1382,7 +1382,7 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
   char		*end;
   char		r;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First try */
   r = elfsh_get_real_ostype(file);
@@ -1392,7 +1392,7 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
     case 0:
       break;
     default:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
     }
   
   /* Smart intermediate way, fingerprint by .interp section */
@@ -1401,7 +1401,7 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
     {
       if (!interp_hash.size)
 	{
-	  hash_init(&interp_hash, "interpreters", 10, ELEM_TYPE_STR);
+	  hash_init(&interp_hash, "interpreters", 10, ASPECT_TYPE_STR);
 	  hash_add(&interp_hash, 
 		   "/lib/ld-linux.so", 
 		   &elfsh_ostype[ELFSH_OS_LINUX]);
@@ -1431,51 +1431,51 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
       if (res)
 	{
 	  file->hdr->e_ident[EI_OSABI] = *res;
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     (elfsh_get_real_ostype(file)));
 	}
     }
 
   /* Fatalist */
 #if defined(__linux__)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_LINUX);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_LINUX);
 #elif defined(__FreeBSD__)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_FREEBSD);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_FREEBSD);
 #elif defined(__NetBSD__)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_NETBSD);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_NETBSD);
 #elif defined(__OpenBSD__)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_OPENBSD);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_OPENBSD);
 #elif defined(sun)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_SOLARIS);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_SOLARIS);
 #elif defined(__BEOS__)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_BEOS);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_BEOS);
 #else
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_ERROR);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_OS_ERROR);
 #endif
 }
 
 /* Return the page size */
 int       elfsh_get_pagesize(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (elfsh_get_archtype(file))
     {
     case ELFSH_ARCH_IA32:
     case ELFSH_ARCH_MIPS32:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 4096);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 4096);
     case ELFSH_ARCH_SPARC32:
     case ELFSH_ARCH_SPARC64:
     case ELFSH_ARCH_PARISC:
     case ELFSH_ARCH_IA64:
     case ELFSH_ARCH_ALPHA64:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 8192);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 8192);
     case ELFSH_ARCH_PPC32:
     case ELFSH_ARCH_PPC64:
     case ELFSH_ARCH_CRAY:
     case ELFSH_ARCH_ERROR:
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unsupported architecture", 0);
     }  
 }
@@ -1483,12 +1483,12 @@ int       elfsh_get_pagesize(elfshobj_t *file)
 /* Return the page size */
 u_int       elfsh_get_breaksize(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (elfsh_get_archtype(file))
     {
     case ELFSH_ARCH_IA32:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     case ELFSH_ARCH_MIPS32:
     case ELFSH_ARCH_SPARC32:
     case ELFSH_ARCH_SPARC64:
@@ -1496,12 +1496,12 @@ u_int       elfsh_get_breaksize(elfshobj_t *file)
     case ELFSH_ARCH_ALPHA64:
     case ELFSH_ARCH_PPC32:
     case ELFSH_ARCH_PPC64:
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 4);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 4);
     case ELFSH_ARCH_IA64:
     case ELFSH_ARCH_CRAY:
     case ELFSH_ARCH_ERROR:
     default:
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unsupported architecture", 0);
     }  
 }

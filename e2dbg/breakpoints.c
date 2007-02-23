@@ -20,12 +20,12 @@ int		vm_bp_add(elfsh_Addr addr, u_char flags)
   elfsh_SAddr	off;
   elfshobj_t	*file;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Resolve source file */
   file = vm_get_parent_object(addr);
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot resolve parent file for bp", -1);
 
   /* Resolve breakpoint address */
@@ -38,9 +38,9 @@ int		vm_bp_add(elfsh_Addr addr, u_char flags)
   /* Really put the breakpoint */
   err = elfsh_bp_add(&e2dbgworld.bp, file, buf, addr, flags);
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot add breakpoint", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -48,8 +48,8 @@ int		vm_bp_add(elfsh_Addr addr, u_char flags)
 /* Return 1 if the breakpoint is a watchpoint */
 int		vm_is_watchpoint(elfshbp_t *b)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     b && b->flags & ELFSH_BP_WATCH);
 }
 
@@ -64,7 +64,7 @@ elfshbp_t	*vm_get_bp_by_id(uint32_t bpid)
   elfshbp_t	*cur;
   int           index;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   for (index = 0; index < e2dbgworld.bp.size; index++)
     for (actual = e2dbgworld.bp.ent + index;
@@ -73,11 +73,11 @@ elfshbp_t	*vm_get_bp_by_id(uint32_t bpid)
       {
 	cur = (elfshbp_t *) actual->data;
 	if (cur->id == bpid)
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     cur);
       }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                     "Unable to find breakpoing by ID", NULL);
 }
 
@@ -93,7 +93,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
   char		straddr[32];
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   bp = NULL;
   
   /* Lookup by vaddr */
@@ -101,7 +101,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
     {
       
       if (sscanf(name + 2, AFMT, &addr) != 1)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Invalid virtual address requested", 
 			  NULL);
     }
@@ -112,7 +112,7 @@ elfshbp_t	*vm_lookup_bp(char *name)
       bpid = atoi(name);
       bp   = vm_get_bp_by_id(bpid);
       if (!bp)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Invalid breakpoint ID", NULL);
     }
 
@@ -131,12 +131,12 @@ elfshbp_t	*vm_lookup_bp(char *name)
 	  elfsh_toggle_mode();
 	}
       if (!sym)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "No symbol by that name in the current file", 
 			  NULL);
       
       if (!sym->st_value)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Requested symbol address unknown",
 			  NULL);
       addr = sym->st_value;
@@ -152,12 +152,12 @@ elfshbp_t	*vm_lookup_bp(char *name)
 	  snprintf(logbuf, BUFSIZ, 
 		   "\n [!] No breakpoint set at addr " AFMT " \n\n", addr);
 	  vm_output(logbuf);
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "No breakpoint at this address", NULL);
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, bp);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, bp);
 }
 
 
@@ -180,7 +180,7 @@ int		cmd_bp()
   hashent_t	*actual;
   elfshbp_t	*cur;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
@@ -224,18 +224,18 @@ int		cmd_bp()
   else if (idx == 1)
     {
       if (!elfsh_is_debug_mode())
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Not in dynamic or debugger mode", -1);
   
       if (!str || !(*str))
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid argument", -1);
 
       /* Break on a supplied virtual address */
       if (IS_VADDR(str))
 	{
 	  if (sscanf(str + 2, AFMT, &addr) != 1)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid virtual address requested", (-1));
 	}
 
@@ -254,10 +254,10 @@ int		cmd_bp()
 	    }
 	  
 	  if (!sym)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "No symbol by that name in the current file", (-1));
 	  if (!sym->st_value)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Requested symbol address unknown", (-1));
 
 	  addr = sym->st_value;
@@ -278,7 +278,7 @@ int		cmd_bp()
       /* Add the breakpoint */
       ret = vm_bp_add(addr, watchflag);
       if (ret < 0)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Breakpoint insertion failed\n", (-1));
       if (ret >= 0)
 	{
@@ -295,10 +295,10 @@ int		cmd_bp()
 	}
     } 
   else 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong arg number", (-1));
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
@@ -308,13 +308,13 @@ int		cmd_watch()
 {
   int		err;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   watchflag = 1;
   err = cmd_bp();
   watchflag = 0;
   if (err < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed to install watchpoint", -1);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (err));
 }

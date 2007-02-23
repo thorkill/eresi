@@ -23,7 +23,7 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
   int			index;
   int			nbr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fill the table */
   if (file->secthash[hash] == NULL)
@@ -31,13 +31,13 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
       sect = elfsh_get_section_by_name(file, hash_name,
 					&index, &strindex, &nbr);
       if (NULL == sect)
-        ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get a debug format section by name", NULL);
 
       file->secthash[hash] = sect;
 
       if (file->secthash[hash]->data == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load debug format section", NULL);
 
       if (strhash > 0)
@@ -48,7 +48,7 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     file->secthash[hash]);
 }
 
@@ -59,10 +59,10 @@ int			edfmt_format(elfshobj_t *file)
   elfshsect_t 		*sect = NULL;
   u_int			count = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
 
   /* We check every entries */
@@ -80,8 +80,8 @@ int			edfmt_format(elfshobj_t *file)
     }
   
   if (count == 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Can't find at leat on debug format", -1);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

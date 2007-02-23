@@ -15,19 +15,24 @@ hash_t	*hash_hash = NULL;
 /* Initialize the hash table */
 int	hash_init(hash_t *h, char *name, int size, u_int type)
 {
+  NOPROFILER_IN();
+
   if (!hash_hash)
     {
       hash_hash = (hash_t *) calloc(sizeof(hash_t), 1);
-      hash_init(hash_hash, "hashes", 51, ELEM_TYPE_ANY);
+      hash_init(hash_hash, "hashes", 51, ASPECT_TYPE_UNKNOW);
     }
-  if (type >= ELEM_TYPE_MAX)
-    return (-1);
-  HASHALLOC(h->ent, size * sizeof(hashent_t), -1);
+  if (type >= aspect_type_nbr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to initialize hash table", -1);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 h->ent, size * sizeof(hashent_t), -1);
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
   hash_add(hash_hash, name, h);
-  return (0);
+  NOPROFILER_ROUT(0);
 }
 
 
@@ -46,17 +51,19 @@ hash_t		*hash_empty(char *name)
   int		size;
   char		type;
 
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
   hash = hash_find(name);
   if (!name)
-    return (NULL);
+    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
   size    = hash->size;
   type    = hash->type;
   hash_del(hash_hash, name);
   hash_destroy(hash);
-  newname = (char *) malloc(strlen(name) + 1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 newname, strlen(name) + 1, NULL);
   strcpy(newname, name);
   hash_init(hash, newname, size, type);
-  return (hash);
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, hash);
 }
 
 /* Destroy a hash table */
@@ -66,12 +73,15 @@ void		hash_destroy(hash_t *h)
   int		idx;
   int		keynbr;
 
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
-    free(keys[idx]);
+    XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   hash_free_keys(keys);
-  free(h->ent);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, h->ent);
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 
@@ -83,8 +93,10 @@ int		hash_add(hash_t *h, char *key, void *data)
   char		*backup;
   u_int		index;
 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !key || !data || hash_get(h, key))
-    return (-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", -1);
   
   newent = NULL;
   for (index = 0, backup = key; *backup; backup++)
@@ -98,7 +110,8 @@ int		hash_add(hash_t *h, char *key, void *data)
     }
   else
     {
-      HASHALLOC(newent, sizeof(hashent_t), -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     newent, sizeof(hashent_t), -1);
       newent->key  = key;
       newent->data = data;
       actual = h->ent + index;
@@ -107,7 +120,7 @@ int		hash_add(hash_t *h, char *key, void *data)
       actual->next = newent;
     }
   h->elmnbr++;
-  return (0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -118,6 +131,8 @@ int		hash_del(hash_t *h, char *key)
 {
   hashent_t	*actual;
   hashent_t	*todel;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   /* Check the first entry for this hash */
   //printf("before h = %p key = %p (%s) \n", h, key, (key ? key : ""));
@@ -130,12 +145,12 @@ int		hash_del(hash_t *h, char *key)
 	{
 	  todel = actual->next;
 	  *actual = *actual->next;
-	  free(todel);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
 	}
       else
 	bzero(actual, sizeof (hashent_t));
       h->elmnbr--;
-      return (0);
+      PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
     }
 
   /* Looking for the good entry in the list for this hash value */
@@ -146,14 +161,14 @@ int		hash_del(hash_t *h, char *key)
 
   /* Not found */
   if (!actual->next)
-    return (-1);
+    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, -1);
 
   /* Found */
   todel = actual->next;
   actual->next = actual->next->next;
-  elfsh_free(todel);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
   h->elmnbr--;
-  return (0);
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
 }
 
 
@@ -214,13 +229,18 @@ hashent_t	*hash_get_head(hash_t *h, char *backup)
   return (&h->ent[index % h->size]);
 }
 
+
+
 /* Used to create arrays of keys for completion */
 char		**hash_get_keys(hash_t *h, int *n)
 {
   int		j, i;
-  char		**keys=NULL;
+  char		**keys;
   hashent_t	*entry;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
   
+  keys = NULL;
   for (i = j = 0; j < h->size; j++) 
     {
       entry = &h->ent[j];
@@ -230,23 +250,31 @@ char		**hash_get_keys(hash_t *h, int *n)
 #if __DEBUG__
 	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
 #endif
-	  keys    = (char **) realloc(keys, (i + 1) * sizeof(char *));
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+		   keys, keys, (i + 1) * sizeof(char *), NULL);
 	  keys[i] = entry->key;
 	  entry   = entry->next;
 	  i++;
 	}
     }
   
-  keys    = (char **) realloc(keys, (i + 1) * sizeof(char *));
+  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+	   keys, keys, (i + 1) * sizeof(char *), NULL);
+  
   keys[i] = NULL;
   *n      = i;
-  return (keys);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
+
+
 
 /* Free the keys returned by hash_get_keys() */
 void		hash_free_keys(char **keys)
 {
-  free((char *) keys);
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 /* Print the hash table (DEBUG PURPOSE) */
@@ -267,9 +295,9 @@ void            hash_print(hash_t *h)
 }
 
 /* Apply func all entries */
-int		hash_apply(hash_t	*h, 
-			   void		*ptr, 
-			   int		(*func)(hashent_t *ph, void *pptr))
+int		hash_apply(hash_t      *h, 
+			   void	       *ptr, 
+			   int	       (*func)(hashent_t *ph, void *pptr))
 {
   hashent_t     *actual;
   int           index;
@@ -288,7 +316,8 @@ int		hash_apply(hash_t	*h,
 
 
 /* Compare 2 hash tables */
-/* Contributed by zorgon, can be used to compare ELF in memory and ELF in file */
+/* Contributed by zorgon */
+/* Can be used to compare ELF in memory and ELF in file */
 int		hash_compare(hash_t *first, hash_t *two)
 {
   int		index;
@@ -301,14 +330,17 @@ int		hash_compare(hash_t *first, hash_t *two)
   
   for (m = index = 0; index < first->size; index++) 
     {
-      for (actual = first->ent + index; actual != NULL && actual->key != NULL; 
+      for (actual = first->ent + index; 
+	   actual != NULL && actual->key != NULL; 
 	   actual = actual->next) 
 	{
 	  bis = hash_get_ent(two, actual->key);
 	  if (actual->data != bis->data) 
 	    {
-	      printf("FIRST  key = %s ; data = %p", actual->key, actual->data);
-	      printf("SECOND key = %s ; data = %p", bis->key, bis->data);
+	      printf("FIRST  key = %s ; data = %p", 
+		     actual->key, actual->data);
+	      printf("SECOND key = %s ; data = %p", 
+		     bis->key, bis->data);
 	      m++;
 	    }
 	  //misused API

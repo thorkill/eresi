@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.2 2007-02-18 17:01:03 may Exp $
+  $Id: malloc.h,v 1.3 2007-02-23 05:27:47 may Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
@@ -79,12 +79,12 @@ typedef struct malloc_state * mstate;
    gcc 2.8.x and egcs.  */
 # ifndef __THROW
 #  if defined __cplusplus && (__GNUC__ >= 3 || __GNUC_MINOR__ >= 8)
-//#   define __THROW	throw ()
-//#  else
+#   define __THROW	throw ()
+#  else
 #   define __THROW
 #  endif
 # endif
-# define __MALLOC_P(args)	args //__THROW
+# define __MALLOC_P(args)	args __THROW
 /* This macro will be used for functions which might take C++ callback
    functions.  */
 # define __MALLOC_PMT(args)	args
@@ -228,22 +228,22 @@ extern int malloc_set_state __MALLOC_P ((__malloc_ptr_t __ptr));
 /* Called once when malloc is initialized; redefining this variable in
    the application provides the preferred way to set up the hook
    pointers. */
-extern void (*__elfsh_malloc_initialize_hook) __MALLOC_PMT ((void));
+extern void (*__aproxy_malloc_initialize_hook) __MALLOC_PMT ((void));
 /* Hooks for debugging and user-defined versions. */
-extern void (*__elfsh_free_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
+extern void (*__aproxy_free_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 					__const __malloc_ptr_t));
-extern __malloc_ptr_t (*__elfsh_malloc_hook) __MALLOC_PMT ((size_t __size,
+extern __malloc_ptr_t (*__aproxy_malloc_hook) __MALLOC_PMT ((size_t __size,
 						    __const __malloc_ptr_t));
-extern __malloc_ptr_t (*__elfsh_realloc_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
+extern __malloc_ptr_t (*__aproxy_realloc_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 						     size_t __size,
 						     __const __malloc_ptr_t));
-extern __malloc_ptr_t (*__elfsh_memalign_hook) __MALLOC_PMT ((size_t __alignment,
+extern __malloc_ptr_t (*__aproxy_memalign_hook) __MALLOC_PMT ((size_t __alignment,
 						      size_t __size,
 						      __const __malloc_ptr_t));
-extern void (*__elfsh_after_morecore_hook) __MALLOC_PMT ((void));
+extern void (*__aproxy_after_morecore_hook) __MALLOC_PMT ((void));
 
 /* Activate a standard set of debugging hooks. */
-extern void __elfsh_malloc_check_init __MALLOC_P ((void));
+extern void __aproxy_malloc_check_init __MALLOC_P ((void));
 
 
 #ifdef __cplusplus

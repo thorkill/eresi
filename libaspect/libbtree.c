@@ -21,12 +21,14 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
 		     void *elem)		/* ptr to element	*/
 {
   btree_t	*root;
-  
+  void		*ptr;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
   root = *proot;
   if (!root)
     {
-      root = (btree_t *) elfsh_malloc(sizeof (btree_t));
-      memset(root, 0, sizeof (btree_t));
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, sizeof (btree_t), );
+      root = (btree_t *) ptr;
       root->id = id;
       root->elem = elem;
       *proot = root;
@@ -38,6 +40,7 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
       else
 	btree_insert(&root->right, id, elem);
     }
+  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
 }
 
 /**
@@ -189,10 +192,10 @@ void	btree_free(btree_t *root, int mode)
   if (root)
     {
       if (mode)
-	elfsh_free(root->elem);
+	XFREE(__FILE__, __FUNCTION__, __LINE__, root->elem);
       btree_free(root->left, mode);
       btree_free(root->right, mode);
-      elfsh_free(root);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, root);
     }
 }
 

@@ -18,7 +18,7 @@ CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
 			-I../libasm/include/ -I../elibc/include	            \
 			-I../libaspect/include/ -DELFSH64 $(BUILDOP) 
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
-			interp.c pht.c plt.c section.c sht.c error.c stab.c \
+			interp.c pht.c plt.c section.c sht.c stab.c         \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \
 			raw.c map.c strtab.c sht_rebuild.c comment.c        \
 			sym_common.c hijack.c obj.c pax.c save.c copy.c     \
@@ -26,8 +26,7 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			bss.c sort.c hooks.c ia32.c sparc32.c sparc64.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
-			inject.c linkmap.c bp.c rpht.c version.c            \
-			config.c
+			inject.c linkmap.c bp.c rpht.c version.c            
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 NAME32			= libelfsh32

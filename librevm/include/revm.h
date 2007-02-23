@@ -12,6 +12,8 @@
 /* User defined configuration */
 #include "revm-vars.h"
 
+#define __USE_ISOC99
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <termios.h>
@@ -96,8 +98,8 @@ extern asm_processor	proc;
 /* General usage macros */
 #define FATAL(a)		{ perror(a); vm_exit(-1);		      }
 #define QUIT_ERROR(a)		{ vm_exit(a);				      }
-#define RET(a)			ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, a)
-#define RETERR(a)		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, a, -1)
+#define RET(a)			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, a)
+#define RETERR(a)		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, a, -1)
 #define	PERROR_RET(a, b)	{ perror(a); RETERR (b);		      }
 #define	PRINTABLE(c)		(c >= 32 && c <= 126)
 #define REGX_IS_USED(a)		a
@@ -178,8 +180,8 @@ extern asm_processor	proc;
 
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
-#define	ELFSH_VERSION		"0.75"
-#define	ELFSH_RELEASE		"a2"
+#define	ELFSH_VERSION		"0.76"
+#define	ELFSH_RELEASE		"a1"
 #define ELFSH_EDITION		"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -456,54 +458,6 @@ typedef struct        s_comp
 }		      revmcomp_t;
 
 
-
-/* Structure for type */
-typedef struct		s_type
-{
-#define               REVM_TYPE_UNKNOW          0          /* Unknown           */
-#define               REVM_TYPE_RAW             1          /* Raw               */
-#define		      REVM_TYPE_BYTE		2	   /* Byte	        */
-#define               REVM_TYPE_STR             3          /* String            */
-#define               REVM_TYPE_SHORT           4          /* 2 bytes           */
-#define               REVM_TYPE_INT             5          /* Always 4 bytes    */
-#define               REVM_TYPE_LONG            6          /* 4 or 8 bytes      */
-#define		      REVM_TYPE_STRUCT		7	   /* A structure       */
-#define               REVM_TYPE_NUM             8          /* MAX TYPE NBR      */
-  u_char		type;		/* Plain or pointed type */
-
-  u_char		isptr;		/* the type is a pointer */
-  u_int			size;		/* Type full memsize     */
-  u_int			off;		/* Offset inside parent  */
-
-  u_int			dimnbr;		/* Number of dimensions of array */
-  u_int			*elemnbr;	/* Number of elements for each dimension */
-  char			*name;		/* Type name             */
-  char			*fieldname;	/* Field name		 */
-
-  /* We have a list of child, and a list of nexts in case we
-  ** are ourselves a child of a structure object */
-  struct s_type		*childs;	/* Current object fields if any     */
-  struct s_type		*next;		/* Next field of this type's parent */
-}			revmtype_t;
-
-/* Structure for variable */
-typedef struct 		s_var
-{
-  int			nameoff;	/* Name offset */
-
-#define EDFMT_SCOPE_UNK    0
-#define EDFMT_SCOPE_GLOBAL 1
-#define EDFMT_SCOPE_FUNC   2
-  u_char 		scope;
-
-  elfsh_Addr 		addr; 		/* Global addr */
-  u_int 		reg;   		/* Function reg id base (stack) */
-  int 			relvalue;     	/* Relatif value based on reg */
-
-  int			typenum;	/* Type number */
-}			revmvar_t;
-
-
 /* ELFsh command handlers */
 typedef struct	s_cmdhandler
 {
@@ -730,8 +684,25 @@ typedef struct        s_world
 
 
 
+/* Structure for variable */
+typedef struct 		s_var
+{
+  int			nameoff;	/* Name offset */
 
-/* Meta object : describe an object in a standard way, whatever its hierarchy level */
+#define EDFMT_SCOPE_UNK    0
+#define EDFMT_SCOPE_GLOBAL 1
+#define EDFMT_SCOPE_FUNC   2
+  u_char 		scope;
+
+  elfsh_Addr 		addr; 		/* Global addr */
+  u_int 		reg;   		/* Function reg id base (stack) */
+  int 			relvalue;     	/* Relatif value based on reg */
+
+  u_int			typenum;	/* Type number */
+}			revmvar_t;
+
+
+/* Meta object : describe an object abstractly, whatever its hierarchy level */
 typedef struct  s_path
 {
 
@@ -760,7 +731,7 @@ typedef struct  s_path
     char              *str;
   }                   immed_val;
 
-  char                type;		      /* The object type */
+  u_int               type;		      /* The object type, like in types */
   char                perm;		      /* TRUE if obj is a script var */
 }                     revmobj_t;
 
@@ -782,7 +753,7 @@ typedef struct	s_L2handler
   char		*(*get_data)(elfshsect_t *, u_int, u_int);	/* Read data */
   int		(*set_data)(elfshsect_t*, u_int, char*, u_int, u_int); /* Write data */
   
-  char          type;                                           /* Object type */
+  u_char        type;                                           /* Object type */
 }               revmL2_t;
 
 
@@ -790,8 +761,6 @@ typedef struct	s_L2handler
 /* ELFsh Level 1 object (= parent object) structure */
 typedef struct	s_L1handler
 {
-#define		REVM_L1TAG 0xF9456273				/* L1 ID TAG */
-  u_long	tag;
   hash_t	*l2list;					/* A ptr on the child L2 hashtable */
   u_int		elem_size;					/* Size of one element of this object */
   
@@ -831,7 +800,7 @@ extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
 extern hash_t		cmd_hash;	 /* commands handlers */
-extern hash_t		types_hash;	 /* language types */
+//extern hash_t		types_hash;	 /* language types */
 extern hash_t		parser_hash;	 /* parsers handlers */
 extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
@@ -933,9 +902,9 @@ int		cmd_notes();
 int		cmd_core_info();
 int		cmd_sym();
 int		cmd_stab();
-int     cmd_hexa();
-int     cmd_disasm();
-int     cmd_shtrm();
+int		cmd_hexa();
+int		cmd_disasm();
+int		cmd_shtrm();
 int		cmd_comments();
 int		cmd_modhelp();
 int		cmd_help();
@@ -1083,6 +1052,8 @@ int		vm_convert2long(revmobj_t *obj);
 int		vm_convert2raw(revmobj_t *obj);
 int		vm_convert2byte(revmobj_t *obj);
 int		vm_convert2short(revmobj_t *obj);
+int		vm_convert2daddr(revmobj_t *obj);
+int		vm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
 int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur);
@@ -1231,18 +1202,11 @@ int             vm_setvar_int(char *varname, u_int val);
 int             vm_setvar_long(char *varname, u_long val);
 
 /* Type related functions */
-int		vm_type_addfield(revmtype_t *parent, revmtype_t *field);
-int		vm_simpletype_create(u_int type);
 int		vm_types_print();
 int		vm_type_print(char *type, char mode);
-int		vm_type_register(char *label, char **fields, u_int fieldnbr);
-revmtype_t	*vm_type_create(char *label, char **fields, u_int fieldnbr);
-revmtype_t	*vm_type_copy(revmtype_t *t, unsigned int o, 
-			      u_char p, u_int nbr, char *fieldname, u_int *dims);
-u_int		*vm_type_getdims(char *typename, int *dimnbr);
 
 /* Data access related functions */
-revmtype_t	*vm_fieldoff_get(revmtype_t *par, char *fld, u_int *off);
+aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
 revmobj_t	*vm_revmobj_lookup(char *str);
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);
@@ -1285,6 +1249,8 @@ elfshredir_t	*vm_create_REDIR(u_char type, char *sname, char *dname,
 revmobj_t	*vm_create_IMMED(char type, char perm, u_int val);
 revmobj_t	*vm_create_IMMEDSTR(char perm, char *str);
 revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val);
+revmobj_t	*vm_create_CADDR(char perm, elfsh_Addr val);
+revmobj_t	*vm_create_DADDR(char perm, elfsh_Addr val);
 
 /* Network related functions */
 int		vm_net_init();
@@ -1316,6 +1282,10 @@ int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();
 int		vm_screen_update(u_short new, u_short prompt_display);
 int		vm_screen_switch();
+
+/* May not be defined */
+extern int vsscanf (__const char *__restrict __s,
+                    __const char *__restrict __format, _G_va_list __arg);
 
 void		wait4exit(void *);
 

@@ -12,18 +12,6 @@
  #include <bsd_mem.h>
 #endif
 
-/* Safe calloc() */
-#define		HASHALLOC(a, b, c)			\
-do							\
-{							\
-  if ((a = (hashent_t *) calloc(b, 1)) == NULL)	        \
-    {							\
-      perror("libhashelfsh[calloc]");			\
-      return (c);					\
-    }							\
-}							\
-while (0)
-
 /*
 ** Hash table entry
 */
@@ -42,8 +30,9 @@ typedef struct          s_hash
   hashent_t             *ent;
   int                   size;
   int			elmnbr;
-  u_char		type;
+  u_int			type;
 }                       hash_t;
+
 
 /* The hash table of hash tables is accessible to the public */
 extern hash_t		*hash_hash;

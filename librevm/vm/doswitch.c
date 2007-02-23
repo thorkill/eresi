@@ -10,13 +10,13 @@ int		vm_doswitch(int nbr)
 {
   elfshobj_t	*actual; 
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   actual = (nbr ? vm_getfile(nbr) : 
 	    hash_get(&file_hash, world.curjob->curcmd->param[0]));
 					     
   if (actual == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown requested object", (-1));
     
   world.curjob->current = actual;
@@ -25,7 +25,7 @@ int		vm_doswitch(int nbr)
   if (elfsh_is_debug_mode() && !actual->linkmap)
     elfsh_set_static_mode();
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -37,10 +37,10 @@ int		cmd_doswitch()
   int		nbr;
   elfshobj_t	*cur;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->curcmd->param[0] == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", (-1));
   nbr = atoi(world.curjob->curcmd->param[0]);
 
@@ -71,5 +71,5 @@ int		cmd_doswitch()
     }
 
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

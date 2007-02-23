@@ -17,13 +17,13 @@ int	dump_init()
 {
   /* hash tables initializations */
   hash_init(&dump_world.ports, "dump_ports", 
-	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+	    HASHTABLE_SIZE, ASPECT_TYPE_UNKNOW); 
   hash_init(&dump_world.RRrecently_seen, "dump_RRseen", 
-	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+	    HASHTABLE_SIZE, ASPECT_TYPE_UNKNOW); 
   hash_init(&dump_world.Rrrecently_seen, "dump_Rrseen", 
-	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+	    HASHTABLE_SIZE, ASPECT_TYPE_UNKNOW); 
   hash_init(&dump_world.myids, "dump_myids", 
-	    HASHTABLE_SIZE, ELEM_TYPE_ANY); 
+	    HASHTABLE_SIZE, ASPECT_TYPE_UNKNOW); 
 
   /* initialize send wait queue */
   dump_world.send_wq = (pkt_wq_t *) NULL;
@@ -76,10 +76,10 @@ int		dump_add_RR_recently_seen(pkt_id_t id)
   char		*str;
   time_t	*date; 
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
-  XALLOC(str, sizeof (char)*20, -1);
-  XALLOC(date, sizeof (time_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,str, sizeof (char)*20, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,date, sizeof (time_t), -1);
     
   /* convert id to string */
   snprintf(str, 20-1, "%u", ntohl(id));
@@ -99,11 +99,11 @@ int		dump_add_Rr_recently_seen(pkt_id_t id)
   char		*str;
   time_t	*date; 
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
 
-  XALLOC(str, sizeof (char)*20, -1);
-  XALLOC(date, sizeof (time_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,str, sizeof (char)*20, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,date, sizeof (time_t), -1);
     
   /* convert id to string */
   snprintf(str, 20-1, "%u", ntohl(id));
@@ -198,13 +198,13 @@ int		dump_add_send_queue(pkt_t *pkt)
   pkt_wq_t	*tmp = dump_world.send_wq;
   pkt_wq_t	*new;
 
-  ELFSH_NOPROFILE_IN();
+  NOPROFILER_IN();
 
 #if __DEBUG_DUMP__
   printf("[DUMP] dump_add_send_queue \n");
 #endif
 
-  XALLOC(new, sizeof (pkt_wq_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof (pkt_wq_t), -1);
 
   new->next = NULL;
   new->pkt = pkt;
@@ -291,7 +291,7 @@ int		dump_del_send_queue(pkt_t *pkt)
 	  else 
 	    prev->next = tmp->next;
 	    
-	  XFREE(tmp);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,tmp);
 	  /* XXX to improve : pkt never freed */
 	  return 0;
 	}
@@ -323,10 +323,10 @@ int	dump_free(pkt_t *pkt)
   if (pkt != NULL)
     {
       if (pkt->path != NULL)
-	XFREE(pkt->path);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,pkt->path);
       if (pkt->data != NULL)
-	XFREE(pkt->data);
-      XFREE(pkt);
+	XFREE(__FILE__, __FUNCTION__, __LINE__,pkt->data);
+      XFREE(__FILE__, __FUNCTION__, __LINE__,pkt);
     }
   return 0;
 }

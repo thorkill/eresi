@@ -108,7 +108,6 @@
 #define HLP_SDIR		"Change the script directory"
 #define HLP_LSCRIPTS		"List macro commands"
 #define HLP_CAT			"Print the file argument"
-#define HLP_PROFILE		"Change the ELFsh profiling behavior"
 #define	HLP_LOG			"Enable logging of work session \n\n\t" \
 				CMD_LOG" [outputfile|stop]"
 
@@ -174,6 +173,9 @@
 				"type name                                 \t Print type information \n\t"   \
 				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
 				"Fields and types can be named using scripting variables            \n"
+
+#define HLP_PROFILE		"Change the ELFsh profiling behavior \n\n\t" \
+				CMD_PROFILE" enable|disable trace|error|alloc|debug|all"
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"

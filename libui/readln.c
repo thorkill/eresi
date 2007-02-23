@@ -17,7 +17,7 @@ char		*command_generator(const char *text, int state)
   char		*name, *name2;
   const char    *baq;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   baq = text;
   for (name = strchr(baq, '.'); name; name = strchr(baq, '.'))
@@ -48,13 +48,13 @@ char		*command_generator(const char *text, int state)
 	    {
 	      name2 = vm_readline_malloc(strlen(name) + 1);
 	      strcpy(name2, name);
-	      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
 	    }
 	}
 
   /* If no names matched, then return NULL. */
   i = tab = len = 0;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,  ((char *) NULL));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  ((char *) NULL));
 }
 
 
@@ -65,14 +65,14 @@ char	**vm_completion(const char* text, int start, int end)
   char	*baq, *baq2;
   char	buf[50];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* prevent freeing of unitialized memory on FreeBSD
 	 XXX: check this !!
    */
 
   if (strlen(text) == 0)
-   ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
 #if defined(__OpenBSD__)
   matches = completion_matches(text, command_generator);
@@ -81,7 +81,7 @@ char	**vm_completion(const char* text, int start, int end)
 #endif
 
   if (!matches)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
   baq2 = NULL;
   baq = strchr(text, '.');
@@ -96,8 +96,9 @@ char	**vm_completion(const char* text, int start, int end)
       memcpy(buf, text, baq2 - text);
       strcpy(buf + (baq2 - text), matches[0]);
       //seems not to be free
-      //XFREE(matches[0]);
-      matches[0] = elfsh_strdup(buf);
+      //XFREE(__FILE__, __FUNCTION__, __LINE__,matches[0]);
+      matches[0] = aproxy_strdup(buf);
+ 
     }
 
   switch (rl_completion_append_character)
@@ -115,7 +116,7 @@ char	**vm_completion(const char* text, int start, int end)
       break;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, matches);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matches);
 }
 
 
@@ -124,12 +125,12 @@ char	**vm_completion(const char* text, int start, int end)
    We keep this function because it can be useful later. */
 int 	update_col() 
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Ask readline to retrieve console size */
   rl_resize_terminal();
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* A prompt need some update to fit correctly on readline (with color) */
@@ -141,11 +142,11 @@ int		vm_rl_update_prompt(char *ptr, int size)
   int		open = 0;
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If no color on the prompt */
   if (strchr(ptr, C_STARTCOLOR) == NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   tmp[0] = '\0';
 
@@ -206,7 +207,7 @@ int		vm_rl_update_prompt(char *ptr, int size)
   /* Update the submited variable */
   memcpy(ptr, tmp, size);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 #endif

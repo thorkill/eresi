@@ -107,7 +107,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   int			(*libcstartmain)();
   int			ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] there\n", 33);
@@ -119,7 +119,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
     {
       write(1, "Error : Orig __libc_start_main not found\n", 41);
       return (-1);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Orig __libc_start_main not found", (-1));
     }
   libcstartmain = (void *) orig;
@@ -149,7 +149,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 		      fini, rtld_fini, stack_end);
 
   /* Never reached */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 #elif defined(__FreeBSD__)
@@ -164,7 +164,7 @@ int				atexit(void (*fini)(void))
   char				*beg;
   e2dbgparams_t			params;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit] there\n");
@@ -176,7 +176,7 @@ int				atexit(void (*fini)(void))
     {
       write(1, "Error : Orig atexit not found\n", 30);
       return (-1);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Orig atexit not found", (-1));
     }
   libc_atexit = (void *) orig;
@@ -214,7 +214,7 @@ int				atexit(void (*fini)(void))
 #endif
   
   /* Recall the original function */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     libc_atexit(fini));
 }
 
@@ -228,7 +228,7 @@ void			__fpstart(int argc, char**ubp_av)
   char			*argv[3];
   e2dbgparams_t		params;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] Start\n");
@@ -240,7 +240,7 @@ void			__fpstart(int argc, char**ubp_av)
     {
       write(1, "Error : Orig __fpstart not found\n", 33);
       return (-1);
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Orig __fpstart not found", (-1));
     }  
   realfpstart = (void *) orig;
@@ -264,7 +264,7 @@ void			__fpstart(int argc, char**ubp_av)
   printf("[e2dbg__fpstart] End \n");
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__);
 }
 #else
  #warning "E2DBG Not yet implemented on this OS/Arch"

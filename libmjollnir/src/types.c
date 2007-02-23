@@ -33,7 +33,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
   elfsh_Addr	curvaddr;
   elfsh_Addr	dstaddr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   curins   = &context->hist[MJR_HISTORY_CUR].instr;
   curvaddr = context->hist[MJR_HISTORY_CUR].vaddr;
@@ -151,7 +151,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -183,7 +183,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   char		*ret;
   elfsh_Addr	dest;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
   printf(" [*] Found function pointer at %lx\n", 
 	 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
@@ -203,7 +203,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
       dest = context->hist[MJR_HISTORY_PPREV].instr.op2.imm;
 
       if (dest < elfsh_get_entrypoint(context->obj->hdr))
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Invalid target vaddr for function pointer",
 			  (elfsh_Addr) -1);
 
@@ -217,7 +217,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 	     (unsigned long) dest, (unsigned long) dest);
 #endif
 
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
     }
 
   /* Instead we have a hash table that we can add element to using the 'addgoto'
@@ -232,7 +232,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   
  ret = (char *) hash_get(&goto_hash, tmp);
   if (!ret) 
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to compute function pointer target",
 		      (elfsh_Addr) -1);
 
@@ -251,7 +251,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
 
@@ -277,7 +277,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   elfsh_Addr	dest;
   asm_instr	*ins;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
@@ -326,7 +326,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   else
     dest = -1;
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
 
@@ -343,10 +343,10 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   {
   int   ret = 0;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (sess->cur->ihist[0].instr != ASM_CALL)
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
   
   #if __DEBUG_CALLS__
   fprintf(D_DESC, "[__DEBUG_CALLS__] mjrGetCallDst: start - 0x%08x %d\n",
@@ -357,7 +357,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   !(sess->cur->ihist[0].op1.content & ASM_OP_REFERENCE))
   {
   if (asm_operand_get_immediate(&sess->cur->ihist[0], 1, 0, dest) == -1) 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
   "Failed to get immediate operand", -1);
   ret = 1;
   }
@@ -393,7 +393,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   sess->cur->curVaddr, sess->cur->ihist[0].op1.content);
   #endif
   
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
   "Operand content not supported.", -1);
   }
   
@@ -403,6 +403,6 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   *dest);
   #endif
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
   }
 */

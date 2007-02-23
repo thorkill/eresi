@@ -16,15 +16,15 @@ u_char file_active = 0;
 elfshobj_t *cu_obj = NULL;
 
 #define EDFMT_NEW_TYPE(_type) \
-do { XALLOC(_type, sizeof(edfmttype_t), NULL); } while(0)
+do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_type, sizeof(edfmttype_t), NULL); } while(0)
 
 #define EDFMT_NEW_VAR(_var) \
-do { XALLOC(_var, sizeof(edfmtvar_t), NULL); } while(0)
+do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_var, sizeof(edfmtvar_t), NULL); } while(0)
 
 #define EDFMT_COPY_NAME(_dest, _source) 			\
 do { 								\
   if (strlen(_source) >= EDFMT_NAME_SIZE)			\
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
 		       "Invalid name size", NULL);		\
   strcpy(_dest->name, _source);					\
 } while (0)
@@ -135,14 +135,14 @@ int			edfmt_uni_print(elfshobj_t *file)
 {
   edfmtinfo_t		*info;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   info = edfmt_get_uniinfo(file);
 
   if (!info)
     {
       printf("Uniinfo = NULL\n");
-      ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"No informations", -1);
     }
 
@@ -153,24 +153,24 @@ int			edfmt_uni_print(elfshobj_t *file)
 
   edfmt_unit_print_file(info->files);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Init an add context */
 int			edfmt_add_init(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   cu_obj = file;
 
   if (!file)							
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid file object", NULL);
 
   /* Init the object if needed */
   if (file->debug_format.uni == NULL) 
     {				
-      XALLOC(file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
       uniinfo = file->debug_format.uni;				
     } 
   else 
@@ -178,13 +178,13 @@ int			edfmt_add_init(elfshobj_t *file)
       uniinfo = file->debug_format.uni; 
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* End an add context */
 int			edfmt_add_end()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (uniinfo && uniinfo->lfile && uniinfo->lfile->parent != NULL)
     uniinfo->lfile = uniinfo->lfile->parent;
@@ -194,16 +194,16 @@ int			edfmt_add_end()
   uniinfo = NULL;
   file_active = 0;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Update type list */
 int			edfmt_update_type(edfmttype_t *type)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!uniinfo)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Global pointer uninitialise", NULL);
 
   type->file = uniinfo->lfile;
@@ -229,16 +229,16 @@ int			edfmt_update_type(edfmttype_t *type)
       uniinfo->lfile->ltype = type;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Update var list */
 int			edfmt_update_var(edfmtvar_t *var)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!uniinfo)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Global pointer uninitialise", NULL);
 
   /* Global scope */
@@ -262,19 +262,19 @@ int			edfmt_update_var(edfmtvar_t *var)
       uniinfo->lfile->lvar = var;
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Retrieve uniinfo pointer */
 edfmtinfo_t		*edfmt_get_uniinfo(elfshobj_t *file)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid paramter", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (edfmtinfo_t *) file->debug_format.uni);
 }
 
@@ -282,10 +282,10 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
 {
   edfmttype_t		*tmp_type = NULL;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid paramter", -1);
   
   /* Delete for its file */
@@ -318,32 +318,32 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
   /* Add to the current file */
   edfmt_update_type(type);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Restore parent file */
 edfmtfile_t		*edfmt_restore_parent_file()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (uniinfo->lfile == NULL || uniinfo->lfile->parent == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No parents", NULL);
 
   uniinfo->lfile = uniinfo->lfile->parent;
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
 }
 
 edfmtfile_t		*edfmt_get_current_file()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (!uniinfo)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No uniform informations", NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
 }
 
 /* Search for a specific included file */
@@ -351,15 +351,15 @@ edfmtfile_t		*edfmt_get_inc_file(edfmtfile_t *file, char *name)
 {
   edfmtfile_t 		*inc;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (inc = file->child; inc != NULL; inc = inc->next)
     {
       if (!strcmp(name, inc->name))
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, inc);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, inc);
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 /* Add a new file */
@@ -368,10 +368,10 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
 {
   edfmtfile_t 		*file, *already_file;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid paramter", NULL);
 
   if (parent_file != NULL)
@@ -383,11 +383,11 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
 	  uniinfo->lfile = already_file;
 	  file_active = 1;	  
 
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, already_file);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, already_file);
 	}
     }
 
-  XALLOC(file, sizeof(edfmtfile_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,file, sizeof(edfmtfile_t), NULL);
 
   EDFMT_COPY_NAME(file, name);
   file->start = start;
@@ -419,27 +419,27 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   uniinfo->lfile = file;
   file_active = 1;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
 }
 
 /* Reset file activity */
 int			edfmt_reset_file()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   file_active = 0;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Reactive file activity */
 int			edfmt_reactive_file()
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   file_active = 1;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Create an unknown type */
@@ -447,10 +447,10 @@ edfmttype_t		*edfmt_add_type_unk(char *name)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -460,7 +460,7 @@ edfmttype_t		*edfmt_add_type_unk(char *name)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create a basic type */
@@ -468,10 +468,10 @@ edfmttype_t		*edfmt_add_type_basic(char *name, int size)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -482,7 +482,7 @@ edfmttype_t		*edfmt_add_type_basic(char *name, int size)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create an array type */
@@ -491,10 +491,10 @@ edfmttype_t		*edfmt_add_type_array(char *name,
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name || !type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -506,7 +506,7 @@ edfmttype_t		*edfmt_add_type_array(char *name,
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create a ptr type */
@@ -514,10 +514,10 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name || !type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -528,7 +528,7 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create a structure type */
@@ -536,10 +536,10 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -550,7 +550,7 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create an union type */
@@ -558,10 +558,10 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -572,7 +572,7 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
  /* Create an attribute type */
@@ -581,10 +581,10 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
 {
   edfmttype_t		*ltype, *last;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!tstruct || !name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -611,7 +611,7 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
 	}
     }
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create a void type */
@@ -619,10 +619,10 @@ edfmttype_t		*edfmt_add_type_void(char *name)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -632,7 +632,7 @@ edfmttype_t		*edfmt_add_type_void(char *name)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 /* Create a link type */
@@ -640,10 +640,10 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
 {
   edfmttype_t		*ltype;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name || !type)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_TYPE(ltype);
@@ -654,17 +654,17 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
   /* Update type list */
   edfmt_update_type(ltype);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
 edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr)
 {
   edfmtvar_t		*lvar;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!type || !name)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
   EDFMT_NEW_VAR(lvar);
@@ -675,5 +675,5 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
 
   edfmt_update_var(lvar);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
 }

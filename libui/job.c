@@ -13,16 +13,18 @@ revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
   int		i;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(new, sizeof(revmjob_t), NULL);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmjob_t), NULL);
   memcpy(new, job, sizeof(revmjob_t));
   bzero(&new->loaded, sizeof(hash_t));
   bzero(&new->dbgloaded, sizeof(hash_t));
 
   snprintf(logbuf, sizeof(logbuf), "%s_loaded", newname);
-  hash_init(&new->loaded, elfsh_strdup(logbuf), 51, ELEM_TYPE_OBJ);
+  hash_init(&new->loaded, aproxy_strdup(logbuf), 51, ASPECT_TYPE_UNKNOW);
+ 
   snprintf(logbuf, sizeof(logbuf), "%s_dbgloaded", newname);
-  hash_init(&new->dbgloaded, elfsh_strdup(logbuf), 11, ELEM_TYPE_OBJ);
+  hash_init(&new->dbgloaded, aproxy_strdup(logbuf), 11, ASPECT_TYPE_UNKNOW);
+ 
 
   /* empty new job */
   new->curcmd         = NULL;
@@ -37,20 +39,21 @@ revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
       new->lstcmd[i] = NULL;
     }
   new->createtime = time(&new->createtime);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
 
 /* Switch of current job */
 void		vm_switch_job(revmjob_t      *job)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if defined(USE_READLN)
   /* Save the active buffer line */
   if (world.curjob->io.savebuf)
-    XFREE(world.curjob->io.savebuf);
-  world.curjob->io.savebuf = elfsh_strdup(rl_line_buffer);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->io.savebuf);
+  world.curjob->io.savebuf = aproxy_strdup(rl_line_buffer);
+ 
   world.curjob->io.buf = NULL;
   world.curjob->io.rl_point = rl_point;
   world.curjob->io.rl_end = rl_end;
@@ -64,47 +67,47 @@ void		vm_switch_job(revmjob_t      *job)
   rl_set_prompt(vm_get_prompt());
 #endif
 
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Is this workspace valid for switching ? */
 int		vm_valid_workspace(char *name)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!name)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (!name[0])
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (!strncmp(name, "net_init", 5))
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (isdigit(name[0]))
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 
 /* Is this workspace the current one ? */
 int		vm_own_job(revmjob_t *job)
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!job)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.type != world.curjob->io.type)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.input_fd != world.curjob->io.input_fd)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (job->io.output_fd != world.curjob->io.output_fd)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 

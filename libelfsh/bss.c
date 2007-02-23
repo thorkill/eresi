@@ -19,19 +19,19 @@ int			elfsh_flush_bss(elfshobj_t *file)
   elfshsect_t		*bss;
   elfshsect_t		*next;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   bss = elfsh_get_section_by_name(file,
 				  ELFSH_SECTION_NAME_BSS,
 				  NULL, NULL, NULL);
   if (!bss)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find BSS", NULL);
   if (bss->phdr->p_filesz != bss->phdr->p_memsz)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (bss->next && bss->next->shdr->sh_addr)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Not latest mapped, cannot flush", -1);
 
   /* Fixup PHT */
@@ -40,7 +40,7 @@ int			elfsh_flush_bss(elfshobj_t *file)
   for (next = bss->next; next != NULL; next = next->next)
     next->shdr->sh_offset -= bss->shdr->sh_size;
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -51,11 +51,11 @@ int			elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
   elfshsect_t		*bss;
   u_int			range = 0;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   bss = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_BSS, NULL, NULL, NULL);
   if (!bss)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find BSS", -1);
 
   for (range = 0; range < file->hdr->e_phnum; range++)
@@ -63,9 +63,9 @@ int			elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
 	elfsh_segment_is_writable(pht + range))
       {
 	pht[range].p_memsz += bss->shdr->sh_size;
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       }
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Cannot find data PT_LOAD",  -1);
 }
 
@@ -80,16 +80,16 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
   u_int			idx = 0;
   char			fixflag;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", NULL);
 
   /* We add a static variable for making the code reentrant, how fancy */
   if (file == obj && last != NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (last));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (last));
 
   fixflag = 0;
   for (bss = file->sectlist; idx < file->hdr->e_shnum; idx++, bss = bss->next)
@@ -129,7 +129,7 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
   fflush(stdout);
 #endif
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (last));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (last));
 }
 
 
@@ -144,7 +144,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
   u_int		size;
   elfsh_Off	size2;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fixup file offset of BSS section and makes it matches the previous
      section file offset added to the previous size. Necessary on
@@ -209,7 +209,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
   /* Allocate BSS data */
   if (bss->data == NULL)
     {
-      XALLOC(bss->data, bss->shdr->sh_size + size2, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,bss->data, bss->shdr->sh_size + size2, -1);
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
 
@@ -223,7 +223,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
   /* Extend physical bss and the segment for .bss if PHT exists */
   else
     {
-      XREALLOC(bss->data, bss->data, bss->shdr->sh_size + size2, -1);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__,bss->data, bss->data, bss->shdr->sh_size + size2, -1);
       bss->phdr->p_filesz += bss->shdr->sh_size + size2;
       bss->phdr->p_memsz  += size2;
       
@@ -242,7 +242,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
   for (actual = bss->next; actual != NULL; actual = actual->next)
     actual->shdr->sh_offset += bss->shdr->sh_size + size2;
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -253,21 +253,21 @@ elfshsect_t	*elfsh_find_bss(elfshobj_t *file, char *name)
   elfshsect_t	*cur;
   char		buff[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (file == NULL || name == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* Find zone */
   snprintf(buff, sizeof(buff), "%s.bss", name);
   cur = elfsh_get_section_by_name(file, buff, 0, 0, 0);
   if (cur == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot find module BSS",  NULL);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 }
 
 
@@ -289,11 +289,11 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   char		buff[BUFSIZ];
   elfsh_Addr	bss_size;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (host == NULL || rel == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
   /* Init some stuff */
@@ -301,17 +301,17 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   host_symtab = host->secthash[ELFSH_SECTION_SYMTAB];
   symtab = elfsh_get_symtab(rel, &size);
   if (symtab == NULL || host_symtab == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find symbol tables", -1);
   
   snprintf(buff, sizeof(buff), "%s%s", rel->name, bssname);
   host_bss = elfsh_get_section_by_name(host, buff, 0, 0, 0);
   if (host_bss == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Host's bss not found",  -1);
 
   if (host_bss == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to find host BSS", -1);
 
   bss_size = host_bss->shdr->sh_addr;
@@ -346,7 +346,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 #endif
 
   elfsh_sync_sorted_symtab(host_symtab);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (bss_size));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (bss_size));
 }
 
 
@@ -360,7 +360,7 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
   char		buf[BUFSIZ];
   elfshsect_t	*current;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   newbss = NULL;
   current = rel->sectlist;
@@ -374,14 +374,14 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
       newbss = elfsh_insert_section(file, buf, NULL, ELFSH_DATA_INJECTION,
 				    elfsh_get_pagesize(file), 0);
       if (!newbss)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to insert runtime bss", NULL);
       
       bsslen = elfsh_find_bsslen(file, rel, current->name);
       if (bsslen == -1)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to find bss size", NULL);
     }
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (newbss));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (newbss));
 }

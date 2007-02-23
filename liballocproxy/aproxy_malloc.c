@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: elfsh_malloc.c,v 1.5 2007-02-18 17:01:03 may Exp $
+  $Id: aproxy_malloc.c,v 1.1 2007-02-23 05:27:47 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -495,8 +495,8 @@ extern "C" {
 #define public_mUSABLe   __malloc_usable_size
 #define public_iCALLOc   __libc_independent_calloc
 #define public_iCOMALLOc __libc_independent_comalloc
-#define public_gET_STATe __elfsh_malloc_get_state
-#define public_sET_STATe __elfsh_malloc_set_state
+#define public_gET_STATe __aproxy_malloc_get_state
+#define public_sET_STATe __aproxy_malloc_set_state
 #define malloc_getpagesize __getpagesize()
 #define open             __open
 #define mmap             __mmap
@@ -510,23 +510,23 @@ Void_t * __default_morecore (ptrdiff_t);
 Void_t *(*__morecore)(ptrdiff_t) = __default_morecore;
 
 #else /* !_LIBC */
-#define public_cALLOc    elfsh_calloc 
-#define public_fREe      elfsh_free
-#define public_cFREe     elfsh_cfree
-#define public_mALLOc    elfsh_malloc
-#define public_mEMALIGn  elfsh_memalign
-#define public_rEALLOc   elfsh_realloc
-#define public_vALLOc    elfsh_valloc
-#define public_pVALLOc   elfsh_pvalloc
-#define public_mALLINFo  elfsh_mallinfo
-#define public_mALLOPt   elfsh_mallopt
-#define public_mTRIm     elfsh_malloc_trim
-#define public_mSTATs    elfsh_malloc_stats
-#define public_mUSABLe   elfsh_malloc_usable_size
-#define public_iCALLOc   elfsh_independent_calloc
-#define public_iCOMALLOc elfsh_independent_comalloc
-#define public_gET_STATe elfsh_elfsh_malloc_get_state
-#define public_sET_STATe elfsh_malloc_set_state
+#define public_cALLOc    aproxy_calloc 
+#define public_fREe      aproxy_free
+#define public_cFREe     aproxy_cfree
+#define public_mALLOc    aproxy_malloc
+#define public_mEMALIGn  aproxy_memalign
+#define public_rEALLOc   aproxy_realloc
+#define public_vALLOc    aproxy_valloc
+#define public_pVALLOc   aproxy_pvalloc
+#define public_mALLINFo  aproxy_mallinfo
+#define public_mALLOPt   aproxy_mallopt
+#define public_mTRIm     aproxy_malloc_trim
+#define public_mSTATs    aproxy_malloc_stats
+#define public_mUSABLe   aproxy_malloc_usable_size
+#define public_iCALLOc   aproxy_independent_calloc
+#define public_iCOMALLOc aproxy_independent_comalloc
+#define public_gET_STATe aproxy_aproxy_malloc_get_state
+#define public_sET_STATe aproxy_malloc_set_state
 #endif /* _LIBC */
 #endif /* USE_DL_PREFIX */
 
@@ -631,11 +631,11 @@ extern Void_t*     sbrk();
   sample version for pre-OSX macos.
 */
 
-void  *elfsh_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
+void  *aproxy_sbrk(intptr_t increment) { return ((void *) MORECORE_FAILURE); }
 
 #ifndef MORECORE
 //#define MORECORE sbrk
-#define MORECORE elfsh_sbrk
+#define MORECORE aproxy_sbrk
 #endif
 
 /*
@@ -1258,7 +1258,7 @@ void     public_mSTATs();
 #endif
 
 /*
-  elfsh_malloc_get_state(void);
+  aproxy_malloc_get_state(void);
 
   Returns the state of all malloc variables in an opaque data
   structure.
@@ -1270,10 +1270,10 @@ Void_t*  public_gET_STATe();
 #endif
 
 /*
-  elfsh_malloc_set_state(Void_t* state);
+  aproxy_malloc_set_state(Void_t* state);
 
   Restore the state of all malloc variables from data obtained with
-  elfsh_malloc_get_state().
+  aproxy_malloc_get_state().
 */
 #if __STD_C
 int      public_sET_STATe(Void_t*);
@@ -1521,15 +1521,15 @@ int      __posix_memalign(void **, size_t, size_t);
 
 #if __STD_C
 
-Void_t*         elfsh_int_malloc(mstate, size_t);
-void            elfsh_int_free(mstate, Void_t*);
-Void_t*         elfsh_int_realloc(mstate, Void_t*, size_t);
-Void_t*         elfsh_int_memalign(mstate, size_t, size_t);
-Void_t*         elfsh_int_valloc(mstate, size_t);
-static Void_t*  elfsh_int_pvalloc(mstate, size_t);
+Void_t*         aproxy_int_malloc(mstate, size_t);
+void            aproxy_int_free(mstate, Void_t*);
+Void_t*         aproxy_int_realloc(mstate, Void_t*, size_t);
+Void_t*         aproxy_int_memalign(mstate, size_t, size_t);
+Void_t*         aproxy_int_valloc(mstate, size_t);
+static Void_t*  aproxy_int_pvalloc(mstate, size_t);
 /*static Void_t*  cALLOc(size_t, size_t);*/
-static Void_t** elfsh_int_icalloc(mstate, size_t, size_t, Void_t**);
-static Void_t** elfsh_int_icomalloc(mstate, size_t, size_t*, Void_t**);
+static Void_t** aproxy_int_icalloc(mstate, size_t, size_t, Void_t**);
+static Void_t** aproxy_int_icomalloc(mstate, size_t, size_t*, Void_t**);
 static int      mTRIm(size_t);
 static size_t   mUSABLe(Void_t*);
 static void     mSTATs(void);
@@ -1570,15 +1570,15 @@ static void      free_atfork(Void_t* mem, const Void_t *caller);
 
 #else
 
-Void_t*         elfsh_int_malloc();
-void            elfsh_int_free();
-Void_t*         elfsh_int_realloc();
-Void_t*         elfsh_int_memalign();
-Void_t*         elfsh_int_valloc();
-Void_t*         elfsh_int_pvalloc();
+Void_t*         aproxy_int_malloc();
+void            aproxy_int_free();
+Void_t*         aproxy_int_realloc();
+Void_t*         aproxy_int_memalign();
+Void_t*         aproxy_int_valloc();
+Void_t*         aproxy_int_pvalloc();
 /*static Void_t*  cALLOc();*/
-static Void_t** elfsh_int_icalloc();
-static Void_t** elfsh_int_icomalloc();
+static Void_t** aproxy_int_icalloc();
+static Void_t** aproxy_int_icomalloc();
 static int      mTRIm();
 static size_t   mUSABLe();
 static void     mSTATs();
@@ -2358,18 +2358,18 @@ static Void_t* realloc_hook_ini __MALLOC_P ((Void_t* ptr, size_t sz,
 static Void_t* memalign_hook_ini __MALLOC_P ((size_t alignment, size_t sz,
 					      const __malloc_ptr_t caller));
 
-void weak_variable (*__elfsh_malloc_initialize_hook) (void) = NULL;
-void weak_variable (*__elfsh_free_hook) (__malloc_ptr_t __ptr,
+void weak_variable (*__aproxy_malloc_initialize_hook) (void) = NULL;
+void weak_variable (*__aproxy_free_hook) (__malloc_ptr_t __ptr,
 				   const __malloc_ptr_t) = NULL;
-__malloc_ptr_t weak_variable (*__elfsh_malloc_hook)
+__malloc_ptr_t weak_variable (*__aproxy_malloc_hook)
      (size_t __size, const __malloc_ptr_t) = malloc_hook_ini;
-__malloc_ptr_t weak_variable (*__elfsh_realloc_hook)
+__malloc_ptr_t weak_variable (*__aproxy_realloc_hook)
      (__malloc_ptr_t __ptr, size_t __size, const __malloc_ptr_t)
      = realloc_hook_ini;
-__malloc_ptr_t weak_variable (*__elfsh_memalign_hook)
+__malloc_ptr_t weak_variable (*__aproxy_memalign_hook)
      (size_t __alignment, size_t __size, const __malloc_ptr_t)
      = memalign_hook_ini;
-void weak_variable (*__elfsh_after_morecore_hook) (void) = NULL;
+void weak_variable (*__aproxy_after_morecore_hook) (void) = NULL;
 
 
 /* ---------------- Error behavior ------------------------------------ */
@@ -2382,7 +2382,7 @@ static int check_action = DEFAULT_CHECK_ACTION;
 
 
 /* ------------------- Support for multiple arenas -------------------- */
-#include "elfsh_arena.c"
+#include "aproxy_arena.c"
 
 /*
   Debugging support
@@ -2735,7 +2735,7 @@ static void do_check_malloc_state(mstate av)
 
 
 /* ----------------- Support for debugging hooks -------------------- */
-#include "elfsh_hooks.c"
+#include "aproxy_hooks.c"
 
 
 /* ----------- Routines dealing with system allocation -------------- */
@@ -2913,7 +2913,7 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
 	set_head(chunk_at_offset(old_top, old_size), (2*SIZE_SZ)|PREV_INUSE);
 	set_foot(chunk_at_offset(old_top, old_size), (2*SIZE_SZ));
 	set_head(old_top, old_size|PREV_INUSE|NON_MAIN_ARENA);
-	elfsh_int_free(av, chunk2mem(old_top));
+	aproxy_int_free(av, chunk2mem(old_top));
       } else {
 	set_head(old_top, (old_size + 2*SIZE_SZ)|PREV_INUSE);
 	set_foot(old_top, (old_size + 2*SIZE_SZ));
@@ -2957,8 +2957,8 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
 
   if (brk != (char*)(MORECORE_FAILURE)) {
     /* Call the `morecore' hook if necessary.  */
-    if (__elfsh_after_morecore_hook)
-      (*__elfsh_after_morecore_hook) ();
+    if (__aproxy_after_morecore_hook)
+      (*__aproxy_after_morecore_hook) ();
   } else {
   /*
     If have mmap, try using it as a backup when MORECORE fails or
@@ -3099,8 +3099,8 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
           snd_brk = (char*)(MORECORE(0));
         } else
 	  /* Call the `morecore' hook if necessary.  */
-	  if (__elfsh_after_morecore_hook)
-	    (*__elfsh_after_morecore_hook) ();
+	  if (__aproxy_after_morecore_hook)
+	    (*__aproxy_after_morecore_hook) ();
       }
 
       /* handle non-contiguous cases */
@@ -3152,7 +3152,7 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
 
           /* If possible, release the rest. */
           if (old_size >= MINSIZE) {
-            elfsh_int_free(av, chunk2mem(old_top));
+            aproxy_int_free(av, chunk2mem(old_top));
           }
 
         }
@@ -3244,8 +3244,8 @@ static int sYSTRIm(pad, av) size_t pad; mstate av;
 
       MORECORE(-extra);
       /* Call the `morecore' hook if necessary.  */
-      if (__elfsh_after_morecore_hook)
-	(*__elfsh_after_morecore_hook) ();
+      if (__aproxy_after_morecore_hook)
+	(*__aproxy_after_morecore_hook) ();
       new_brk = (char*)(MORECORE(0));
 
       if (new_brk != (char*)MORECORE_FAILURE) {
@@ -3354,20 +3354,20 @@ public_mALLOc(size_t bytes)
   mstate ar_ptr;
   Void_t *victim;
 
-  __malloc_ptr_t (*hook) (size_t, __const __malloc_ptr_t) = __elfsh_malloc_hook;
+  __malloc_ptr_t (*hook) (size_t, __const __malloc_ptr_t) = __aproxy_malloc_hook;
   if (hook != NULL)
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
   arena_get(ar_ptr, bytes);
   if(!ar_ptr)
     return 0;
-  victim = elfsh_int_malloc(ar_ptr, bytes);
+  victim = aproxy_int_malloc(ar_ptr, bytes);
   if(!victim) {
     /* Maybe the failure is due to running out of mmapped areas. */
     if(ar_ptr != &main_arena) {
       (void)mutex_unlock(&ar_ptr->mutex);
       (void)mutex_lock(&main_arena.mutex);
-      victim = elfsh_int_malloc(&main_arena, bytes);
+      victim = aproxy_int_malloc(&main_arena, bytes);
       (void)mutex_unlock(&main_arena.mutex);
     } else {
 #if USE_ARENAS
@@ -3375,7 +3375,7 @@ public_mALLOc(size_t bytes)
       ar_ptr = arena_get2(ar_ptr->next ? ar_ptr : 0, bytes);
       (void)mutex_unlock(&main_arena.mutex);
       if(ar_ptr) {
-        victim = elfsh_int_malloc(ar_ptr, bytes);
+        victim = aproxy_int_malloc(ar_ptr, bytes);
         (void)mutex_unlock(&ar_ptr->mutex);
       }
 #endif
@@ -3396,7 +3396,7 @@ public_fREe(Void_t* mem)
   mstate ar_ptr;
   mchunkptr p;                          /* chunk corresponding to mem */
 
-  void (*hook) (__malloc_ptr_t, __const __malloc_ptr_t) = __elfsh_free_hook;
+  void (*hook) (__malloc_ptr_t, __const __malloc_ptr_t) = __aproxy_free_hook;
   if (hook != NULL) {
     (*hook)(mem, RETURN_ADDRESS (0));
     return;
@@ -3426,7 +3426,7 @@ public_fREe(Void_t* mem)
 #else
   (void)mutex_lock(&ar_ptr->mutex);
 #endif
-  elfsh_int_free(ar_ptr, mem);
+  aproxy_int_free(ar_ptr, mem);
   (void)mutex_unlock(&ar_ptr->mutex);
 }
 #ifdef libc_hidden_def
@@ -3445,7 +3445,7 @@ public_rEALLOc(Void_t* oldmem, size_t bytes)
   Void_t* newp;             /* chunk to return */
 
   __malloc_ptr_t (*hook) (__malloc_ptr_t, size_t, __const __malloc_ptr_t) =
-    __elfsh_realloc_hook;
+    __aproxy_realloc_hook;
   if (hook != NULL)
     return (*hook)(oldmem, bytes, RETURN_ADDRESS (0));
 
@@ -3509,7 +3509,7 @@ public_rEALLOc(Void_t* oldmem, size_t bytes)
   tsd_setspecific(arena_key, (Void_t *)ar_ptr);
 #endif
 
-  newp = elfsh_int_realloc(ar_ptr, oldmem, bytes);
+  newp = aproxy_int_realloc(ar_ptr, oldmem, bytes);
 
   (void)mutex_unlock(&ar_ptr->mutex);
   assert(!newp || chunk_is_mmapped(mem2chunk(newp)) ||
@@ -3528,7 +3528,7 @@ public_mEMALIGn(size_t alignment, size_t bytes)
 
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					__const __malloc_ptr_t)) =
-    __elfsh_memalign_hook;
+    __aproxy_memalign_hook;
   if (hook != NULL)
     return (*hook)(alignment, bytes, RETURN_ADDRESS (0));
 
@@ -3541,20 +3541,20 @@ public_mEMALIGn(size_t alignment, size_t bytes)
   arena_get(ar_ptr, bytes + alignment + MINSIZE);
   if(!ar_ptr)
     return 0;
-  p = elfsh_int_memalign(ar_ptr, alignment, bytes);
+  p = aproxy_int_memalign(ar_ptr, alignment, bytes);
   (void)mutex_unlock(&ar_ptr->mutex);
   if(!p) {
     /* Maybe the failure is due to running out of mmapped areas. */
     if(ar_ptr != &main_arena) {
       (void)mutex_lock(&main_arena.mutex);
-      p = elfsh_int_memalign(&main_arena, alignment, bytes);
+      p = aproxy_int_memalign(&main_arena, alignment, bytes);
       (void)mutex_unlock(&main_arena.mutex);
     } else {
 #if USE_ARENAS
       /* ... or sbrk() has failed and there is still a chance to mmap() */
       ar_ptr = arena_get2(ar_ptr->next ? ar_ptr : 0, bytes);
       if(ar_ptr) {
-        p = elfsh_int_memalign(ar_ptr, alignment, bytes);
+        p = aproxy_int_memalign(ar_ptr, alignment, bytes);
         (void)mutex_unlock(&ar_ptr->mutex);
       }
 #endif
@@ -3575,10 +3575,10 @@ public_vALLOc(size_t bytes)
   Void_t *p;
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					__const __malloc_ptr_t)) =
-    __elfsh_memalign_hook;
+    __aproxy_memalign_hook;
 
-  if(__elfsh_malloc_initialized < 0)
-    elfsh_ptmalloc_init ();
+  if(__aproxy_malloc_initialized < 0)
+    aproxy_ptmalloc_init ();
 
   if (hook != NULL)
     return (*hook)(mp_.pagesize, bytes, RETURN_ADDRESS (0));
@@ -3586,7 +3586,7 @@ public_vALLOc(size_t bytes)
   arena_get(ar_ptr, bytes + mp_.pagesize + MINSIZE);
   if(!ar_ptr)
     return 0;
-  p = elfsh_int_valloc(ar_ptr, bytes);
+  p = aproxy_int_valloc(ar_ptr, bytes);
   (void)mutex_unlock(&ar_ptr->mutex);
   return p;
 }
@@ -3599,17 +3599,17 @@ public_pVALLOc(size_t bytes)
 
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					__const __malloc_ptr_t)) =
-    __elfsh_memalign_hook;
+    __aproxy_memalign_hook;
 
-  if(__elfsh_malloc_initialized < 0)
-    elfsh_ptmalloc_init ();
+  if(__aproxy_malloc_initialized < 0)
+    aproxy_ptmalloc_init ();
   if (hook != NULL)
     return (*hook)(mp_.pagesize,
 		   (bytes + mp_.pagesize - 1) & ~(mp_.pagesize - 1),
 		   RETURN_ADDRESS (0));
 
   arena_get(ar_ptr, bytes + 2*mp_.pagesize + MINSIZE);
-  p = elfsh_int_pvalloc(ar_ptr, bytes);
+  p = aproxy_int_pvalloc(ar_ptr, bytes);
   (void)mutex_unlock(&ar_ptr->mutex);
   return p;
 }
@@ -3625,7 +3625,7 @@ public_cALLOc(size_t n, size_t elem_size)
   unsigned long nclears;
   INTERNAL_SIZE_T* d;
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, __const __malloc_ptr_t)) =
-    __elfsh_malloc_hook;
+    __aproxy_malloc_hook;
 
   /* size_t is unsigned so the behavior on overflow is defined.  */
   bytes = n * elem_size;
@@ -3669,7 +3669,7 @@ public_cALLOc(size_t n, size_t elem_size)
     oldtopsize = (mp_.sbrk_base + av->max_system_mem - (char *)oldtop);
 #endif
 #endif
-  mem = elfsh_int_malloc(av, sz);
+  mem = aproxy_int_malloc(av, sz);
 
   /* Only clearing follows, so we can unlock early. */
   (void)mutex_unlock(&av->mutex);
@@ -3681,7 +3681,7 @@ public_cALLOc(size_t n, size_t elem_size)
     /* Maybe the failure is due to running out of mmapped areas. */
     if(av != &main_arena) {
       (void)mutex_lock(&main_arena.mutex);
-      mem = elfsh_int_malloc(&main_arena, sz);
+      mem = aproxy_int_malloc(&main_arena, sz);
       (void)mutex_unlock(&main_arena.mutex);
     } else {
 #if USE_ARENAS
@@ -3690,7 +3690,7 @@ public_cALLOc(size_t n, size_t elem_size)
       av = arena_get2(av->next ? av : 0, sz);
       (void)mutex_unlock(&main_arena.mutex);
       if(av) {
-        mem = elfsh_int_malloc(av, sz);
+        mem = aproxy_int_malloc(av, sz);
         (void)mutex_unlock(&av->mutex);
       }
 #endif
@@ -3756,7 +3756,7 @@ public_iCALLOc(size_t n, size_t elem_size, Void_t** chunks)
   if(!ar_ptr)
     return 0;
 
-  m = elfsh_int_icalloc(ar_ptr, n, elem_size, chunks);
+  m = aproxy_int_icalloc(ar_ptr, n, elem_size, chunks);
   (void)mutex_unlock(&ar_ptr->mutex);
   return m;
 }
@@ -3771,7 +3771,7 @@ public_iCOMALLOc(size_t n, size_t sizes[], Void_t** chunks)
   if(!ar_ptr)
     return 0;
 
-  m = elfsh_int_icomalloc(ar_ptr, n, sizes, chunks);
+  m = aproxy_int_icomalloc(ar_ptr, n, sizes, chunks);
   (void)mutex_unlock(&ar_ptr->mutex);
   return m;
 }
@@ -3816,8 +3816,8 @@ struct mallinfo public_mALLINFo()
 {
   struct mallinfo m;
 
-  if(__elfsh_malloc_initialized < 0)
-    elfsh_ptmalloc_init ();
+  if(__aproxy_malloc_initialized < 0)
+    aproxy_ptmalloc_init ();
   (void)mutex_lock(&main_arena.mutex);
   m = mALLINFo(&main_arena);
   (void)mutex_unlock(&main_arena.mutex);
@@ -3837,7 +3837,7 @@ public_mALLOPt(int p, int v)
 */
 
 Void_t*
-elfsh_int_malloc(mstate av, size_t bytes)
+aproxy_int_malloc(mstate av, size_t bytes)
 {
   INTERNAL_SIZE_T nb;               /* normalized request size */
   unsigned int    idx;              /* associated bin index */
@@ -4229,7 +4229,7 @@ elfsh_int_malloc(mstate av, size_t bytes)
 */
 
 void
-elfsh_int_free(mstate av, Void_t* mem)
+aproxy_int_free(mstate av, Void_t* mem)
 {
   mchunkptr       p;           /* chunk corresponding to mem */
   INTERNAL_SIZE_T size;        /* its size */
@@ -4551,7 +4551,7 @@ static void malloc_consolidate(av) mstate av;
 */
 
 Void_t*
-elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
+aproxy_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
 {
   INTERNAL_SIZE_T  nb;              /* padded request size */
 
@@ -4651,7 +4651,7 @@ elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
 
       /* allocate, copy, free */
       else {
-        newmem = elfsh_int_malloc(av, nb - MALLOC_ALIGN_MASK);
+        newmem = aproxy_int_malloc(av, nb - MALLOC_ALIGN_MASK);
         if (newmem == 0)
           return 0; /* propagate failure */
 
@@ -4699,7 +4699,7 @@ elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
             }
           }
 
-          elfsh_int_free(av, oldmem);
+          aproxy_int_free(av, oldmem);
           check_inuse_chunk(av, newp);
           return chunk2mem(newp);
         }
@@ -4723,7 +4723,7 @@ elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
 	       (av != &main_arena ? NON_MAIN_ARENA : 0));
       /* Mark remainder as inuse so free() won't complain */
       set_inuse_bit_at_offset(remainder, remainder_size);
-      elfsh_int_free(av, chunk2mem(remainder));
+      aproxy_int_free(av, chunk2mem(remainder));
     }
 
     check_inuse_chunk(av, newp);
@@ -4779,10 +4779,10 @@ elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
       newmem = oldmem; /* do nothing */
     else {
       /* Must alloc, copy, free. */
-      newmem = elfsh_int_malloc(av, nb - MALLOC_ALIGN_MASK);
+      newmem = aproxy_int_malloc(av, nb - MALLOC_ALIGN_MASK);
       if (newmem != 0) {
         MALLOC_COPY(newmem, oldmem, oldsize - 2*SIZE_SZ);
-        elfsh_int_free(av, oldmem);
+        aproxy_int_free(av, oldmem);
       }
     }
     return newmem;
@@ -4801,7 +4801,7 @@ elfsh_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
 */
 
 Void_t*
-elfsh_int_memalign(mstate av, size_t alignment, size_t bytes)
+aproxy_int_memalign(mstate av, size_t alignment, size_t bytes)
 {
   INTERNAL_SIZE_T nb;             /* padded  request size */
   char*           m;              /* memory returned by malloc call */
@@ -4816,7 +4816,7 @@ elfsh_int_memalign(mstate av, size_t alignment, size_t bytes)
 
   /* If need less alignment than we give anyway, just relay to malloc */
 
-  if (alignment <= MALLOC_ALIGNMENT) return elfsh_int_malloc(av, bytes);
+  if (alignment <= MALLOC_ALIGNMENT) return aproxy_int_malloc(av, bytes);
 
   /* Otherwise, ensure that it is at least a minimum chunk size */
 
@@ -4839,7 +4839,7 @@ elfsh_int_memalign(mstate av, size_t alignment, size_t bytes)
 
   /* Call malloc with worst case padding to hit alignment. */
 
-  m  = (char*)(elfsh_int_malloc(av, nb + alignment + MINSIZE));
+  m  = (char*)(aproxy_int_malloc(av, nb + alignment + MINSIZE));
 
   if (m == 0) return 0; /* propagate failure */
 
@@ -4876,7 +4876,7 @@ elfsh_int_memalign(mstate av, size_t alignment, size_t bytes)
 	     (av != &main_arena ? NON_MAIN_ARENA : 0));
     set_inuse_bit_at_offset(newp, newsize);
     set_head_size(p, leadsize | (av != &main_arena ? NON_MAIN_ARENA : 0));
-    elfsh_int_free(av, chunk2mem(p));
+    aproxy_int_free(av, chunk2mem(p));
     p = newp;
 
     assert (newsize >= nb &&
@@ -4892,7 +4892,7 @@ elfsh_int_memalign(mstate av, size_t alignment, size_t bytes)
       set_head(remainder, remainder_size | PREV_INUSE |
 	       (av != &main_arena ? NON_MAIN_ARENA : 0));
       set_head_size(p, nb);
-      elfsh_int_free(av, chunk2mem(remainder));
+      aproxy_int_free(av, chunk2mem(remainder));
     }
   }
 
@@ -4968,9 +4968,9 @@ Void_t* cALLOc(n_elements, elem_size) size_t n_elements; size_t elem_size;
 
 Void_t**
 #if __STD_C
-elfsh_int_icalloc(mstate av, size_t n_elements, size_t elem_size, Void_t* chunks[])
+aproxy_int_icalloc(mstate av, size_t n_elements, size_t elem_size, Void_t* chunks[])
 #else
-elfsh_int_icalloc(av, n_elements, elem_size, chunks)
+aproxy_int_icalloc(av, n_elements, elem_size, chunks)
 mstate av; size_t n_elements; size_t elem_size; Void_t* chunks[];
 #endif
 {
@@ -4985,9 +4985,9 @@ mstate av; size_t n_elements; size_t elem_size; Void_t* chunks[];
 
 Void_t**
 #if __STD_C
-elfsh_int_icomalloc(mstate av, size_t n_elements, size_t sizes[], Void_t* chunks[])
+aproxy_int_icomalloc(mstate av, size_t n_elements, size_t sizes[], Void_t* chunks[])
 #else
-elfsh_int_icomalloc(av, n_elements, sizes, chunks)
+aproxy_int_icomalloc(av, n_elements, sizes, chunks)
 mstate av; size_t n_elements; size_t sizes[]; Void_t* chunks[];
 #endif
 {
@@ -5040,7 +5040,7 @@ mstate av; size_t n_elements; size_t* sizes; int opts; Void_t* chunks[];
   else {
     /* if empty req, must still return chunk representing empty array */
     if (n_elements == 0)
-      return (Void_t**) elfsh_int_malloc(av, 0);
+      return (Void_t**) aproxy_int_malloc(av, 0);
     marray = 0;
     array_size = request2size(n_elements * (sizeof(Void_t*)));
   }
@@ -5068,7 +5068,7 @@ mstate av; size_t n_elements; size_t* sizes; int opts; Void_t* chunks[];
   */
   mmx = mp_.n_mmaps_max;   /* disable mmap */
   mp_.n_mmaps_max = 0;
-  mem = elfsh_int_malloc(av, size);
+  mem = aproxy_int_malloc(av, size);
   mp_.n_mmaps_max = mmx;   /* reset mmap */
   if (mem == 0)
     return 0;
@@ -5133,14 +5133,14 @@ mstate av; size_t n_elements; size_t* sizes; int opts; Void_t* chunks[];
 
 Void_t*
 #if __STD_C
-elfsh_int_valloc(mstate av, size_t bytes)
+aproxy_int_valloc(mstate av, size_t bytes)
 #else
-elfsh_int_valloc(av, bytes) mstate av; size_t bytes;
+aproxy_int_valloc(av, bytes) mstate av; size_t bytes;
 #endif
 {
   /* Ensure initialization/consolidation */
   if (have_fastchunks(av)) malloc_consolidate(av);
-  return elfsh_int_memalign(av, mp_.pagesize, bytes);
+  return aproxy_int_memalign(av, mp_.pagesize, bytes);
 }
 
 /*
@@ -5150,9 +5150,9 @@ elfsh_int_valloc(av, bytes) mstate av; size_t bytes;
 
 Void_t*
 #if __STD_C
-elfsh_int_pvalloc(mstate av, size_t bytes)
+aproxy_int_pvalloc(mstate av, size_t bytes)
 #else
-elfsh_int_pvalloc(av, bytes) mstate av, size_t bytes;
+aproxy_int_pvalloc(av, bytes) mstate av, size_t bytes;
 #endif
 {
   size_t pagesz;
@@ -5160,7 +5160,7 @@ elfsh_int_pvalloc(av, bytes) mstate av, size_t bytes;
   /* Ensure initialization/consolidation */
   if (have_fastchunks(av)) malloc_consolidate(av);
   pagesz = mp_.pagesize;
-  return elfsh_int_memalign(av, pagesz, (bytes + pagesz - 1) & ~(pagesz - 1));
+  return aproxy_int_memalign(av, pagesz, (bytes + pagesz - 1) & ~(pagesz - 1));
 }
 
 
@@ -5281,8 +5281,8 @@ void mSTATs()
   long stat_lock_direct = 0, stat_lock_loop = 0, stat_lock_wait = 0;
 #endif
 
-  if(__elfsh_malloc_initialized < 0)
-    elfsh_ptmalloc_init ();
+  if(__aproxy_malloc_initialized < 0)
+    aproxy_ptmalloc_init ();
 #ifdef _LIBC
   _IO_flockfile (stderr);
   int old_flags2 = ((_IO_FILE *) stderr)->_flags2;
@@ -5352,8 +5352,8 @@ int mALLOPt(param_number, value) int param_number; int value;
   mstate av = &main_arena;
   int res = 1;
 
-  if(__elfsh_malloc_initialized < 0)
-    elfsh_ptmalloc_init ();
+  if(__aproxy_malloc_initialized < 0)
+    aproxy_ptmalloc_init ();
   (void)mutex_lock(&av->mutex);
   /* Ensure initialization/consolidation */
   malloc_consolidate(av);
@@ -5562,7 +5562,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
   void *mem;
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, size_t,
 					__const __malloc_ptr_t)) =
-    __elfsh_memalign_hook;
+    __aproxy_memalign_hook;
 
   /* Test whether the SIZE argument is valid.  It must be a power of
      two multiple of sizeof (void *).  */
@@ -5603,8 +5603,8 @@ strong_alias (__libc_mallopt, __mallopt) weak_alias (__libc_mallopt, mallopt)
 weak_alias (__malloc_stats, malloc_stats)
 weak_alias (__malloc_usable_size, malloc_usable_size)
 weak_alias (__malloc_trim, malloc_trim)
-weak_alias (__elfsh_malloc_get_state, elfsh_malloc_get_state)
-weak_alias (__elfsh_malloc_set_state, elfsh_malloc_set_state)
+weak_alias (__aproxy_malloc_get_state, aproxy_malloc_get_state)
+weak_alias (__aproxy_malloc_set_state, aproxy_malloc_set_state)
 
 #endif /* _LIBC */
 

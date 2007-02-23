@@ -16,7 +16,7 @@ int		vm_printscript(revmargv_t *start)
   u_int		index;
   char		logbuf[BUFSIZ];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   vm_output("Printing Script ! \n");
 
@@ -31,7 +31,7 @@ int		vm_printscript(revmargv_t *start)
 	       index, list->name, list);
       vm_output(logbuf);
     }
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -41,7 +41,7 @@ void		vm_print_actual(revmargv_t *cur)
   int		idx;
   char		logbuf[BUFSIZ];
     
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1, "~%s ", cur->name);
   vm_output(logbuf);
@@ -51,7 +51,7 @@ void		vm_print_actual(revmargv_t *cur)
       vm_output(logbuf);
     }
   putchar('\n');
-  ELFSH_PROFILE_OUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -64,7 +64,7 @@ int		vm_execscript()
   revmargv_t	*next;
   int		status;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Restore the command pointer if we used 'cont' */
   if (world.state.vm_sourcing)
@@ -89,7 +89,7 @@ int		vm_execscript()
 	    {
 	      REVM_CMDARGS_COUNT(cur);
 	      if (cur->cmd->reg(0, cur->argc, cur->param) < 0)
-		ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				  "Commande parsing failed",
 				  vm_doerror(vm_badparam, cur->param[0]));
 	    }
@@ -102,7 +102,7 @@ int		vm_execscript()
 	  world.context.curcmd    = next;
 	  world.state.vm_sourcing = 1;
 	  printf("Found continue in script, saving context & sourcing flag \n");
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     E2DBG_SCRIPT_CONTINUE);
 	}
 
@@ -112,11 +112,11 @@ int		vm_execscript()
 	  if (!world.state.vm_quiet)
 	    vm_print_actual(cur);
 	  if (vm_implicit(cur->cmd) < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Implicit operations failed", -1);
 	  status = cur->cmd->exec();
 	  if (status < 0)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Command execution failed", -1);
 	}
       else
@@ -155,7 +155,7 @@ int		vm_execscript()
   if (status == ELFSH_SCRIPT_STOP)
     world.state.vm_mode = ELFSH_VMSTATE_IMODE;
       
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }
 
 
@@ -169,7 +169,7 @@ int		vm_execmd()
   int		err;
   int		ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   curjob = world.curjob;
 
@@ -180,7 +180,7 @@ int		vm_execmd()
       {
 	if (vm_implicit(cur->cmd) < 0)
 	  {
-	    elfsh_error();
+	    profiler_error();
 	    err = -1;
 	    goto end;
 	  }
@@ -197,7 +197,7 @@ int		vm_execmd()
 
 	/* We are executing 'cont' from e2dbg */
 	else if (ret == E2DBG_SCRIPT_CONTINUE)
-	  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			     E2DBG_SCRIPT_CONTINUE);
       }
   
@@ -211,7 +211,7 @@ int		vm_execmd()
   for (cur = world.curjob->script[world.curjob->sourced]; cur; cur = next)
   {
   next = cur->next;
-  XFREE(cur); 
+  XFREE(__FILE__, __FUNCTION__, __LINE__,cur); 
   }
   */
   
@@ -219,9 +219,9 @@ int		vm_execmd()
   curjob->lstcmd[curjob->sourced] = NULL;
 
   if (err < 0)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -235,17 +235,17 @@ int		vm_move_pc(char *param)
   int		jmp;
   revmargv_t	*next;
   
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* check if we match a label */
   next = hash_get(&labels_hash[world.curjob->sourced], param);
   if (next)
     {
       if (!next->cmd)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid EOF branchement", -1);
       world.curjob->curcmd = next;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
   /* Use the parameter as a numerical index */
@@ -254,7 +254,7 @@ int		vm_move_pc(char *param)
     for (index = 0, jmp = -jmp; index != jmp; index++)
       {
 	if (!world.curjob->curcmd->prev)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid backward branchement", -1);
 	world.curjob->curcmd = world.curjob->curcmd->prev;
       }
@@ -262,15 +262,15 @@ int		vm_move_pc(char *param)
     for (index = 0; index != jmp; index++)
       {
 	if (!world.curjob->curcmd->next)
-	  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid forward branchement", -1);
 	world.curjob->curcmd = world.curjob->curcmd->next;
       }
   else
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid null branchement", -1);
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

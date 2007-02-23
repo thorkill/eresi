@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.17 2007-02-20 11:12:02 strauss Exp $
+ * $Id: init.c,v 1.18 2007-02-23 05:27:47 may Exp $
  *
  * Initialization functions
  *
@@ -11,37 +11,35 @@
 /* Initialize the world for libmjollnir */
 int		mjr_init_session(mjrsession_t *sess) 
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_init(&goto_hash, "gotos"      , 100         , ELEM_TYPE_STR);
-  hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ELEM_TYPE_ANY);
+  hash_init(&goto_hash, "gotos"      , 100         , ASPECT_TYPE_STR);
+  hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ASPECT_TYPE_UNKNOW);
 
   /* register configurable parameters */
-  elfsh_config_add_item(
-    MJR_COFING_CALL_PREFIX,
-    ELFSH_CONFIG_TYPE_STR,
-    ELFSH_CONFIG_MODE_RW,
-    MJR_CALL_PREFIX
-  );
+  config_add_item(MJR_COFING_CALL_PREFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  MJR_CALL_PREFIX);
 
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Change the current analysis context */
 int		mjr_set_current_context(mjrsession_t *sess, char *name) 
 {
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if ((sess->cur = hash_get(&sess->ctx,name)) == NULL)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Create a new analysis context */
 int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx) 
 {
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  hash_add(&sess->ctx,ctx->obj->name,ctx);
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /* Create a context and set it as the current one */
@@ -49,11 +47,11 @@ int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
 {
  mjrcontext_t	*ctx;
 
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  ctx = mjr_create_context(obj);
  mjr_add_context(sess, ctx);
  mjr_set_current_context(sess, obj->name);
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 
@@ -62,13 +60,13 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
 {
  mjrcontext_t	*ctx;
 
- ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
- XALLOC(ctx, sizeof(mjrcontext_t), NULL);
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+ XALLOC(__FILE__, __FUNCTION__, __LINE__,ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ELEM_TYPE_PROC);
- hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ELEM_TYPE_BLOC);
- ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
+ hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ASPECT_TYPE_UNKNOW);
+ hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ASPECT_TYPE_UNKNOW);
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }
 
 

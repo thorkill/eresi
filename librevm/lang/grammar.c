@@ -31,14 +31,14 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   unsigned int	*dims;
   revmobj_t	*ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   size = parse_lookup_varlist(param, fmt, index);
   if (size != 1)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Parser handling failed", NULL);
   if (!strchr(index, ':'))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Index parser failed", NULL);
 
   /* Grab the vector */
@@ -49,14 +49,14 @@ revmobj_t	*parse_vector(char *param, char *fmt)
 
   /* Early sanity checks */
   if (!cur)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unknown requested vector", NULL);
   if (vm_vector_bad_dims(cur, dims, dimnbr))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Requested vector with bad dimensions", NULL);
 
   /* Get a pointer on the desired entry of the vector */
-  XALLOC(ret, sizeof(revmobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = aspect_vectors_selectptr(cur, dims);
   ret->type     = cur->type;
   ret->perm     = 1;
@@ -65,7 +65,7 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   ret->set_obj  = (void *) vm_long_setobj;
 
   /* Success */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -79,11 +79,11 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   char		*entryname;
   void		*ptr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   size = parse_lookup_varlist(param, fmt, index);
   if (size != 1)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Parser handling failed", NULL);
   
   /* Get hash table and entry */
@@ -92,29 +92,29 @@ revmobj_t	*parse_hash(char *param, char *fmt)
     *entryname++ = 0x00;
   hash = hash_find(index);
   if (!hash)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unknown requested hash", NULL);
   if (entryname)
     {
       ptr = hash_get(hash, entryname);
       if (!ptr)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unknown requested hash entry", NULL);
     }
   else
     ptr = (void *) hash;
 
   /* Get an revm object */
-  XALLOC(ret, sizeof(revmobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = ptr;
-  ret->type     = (entryname ? hash->type : REVM_TYPE_UNKNOW);
+  ret->type     = (entryname ? hash->type : ASPECT_TYPE_UNKNOW);
   ret->perm     = 1;
   ret->immed    = 0;
   ret->get_obj  = (void *) vm_generic_getobj;
   ret->set_obj  = (void *) vm_long_setobj;
 
   /* Success */
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
@@ -135,31 +135,31 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   char			L1field[ELFSH_MEANING];
   char			index[ELFSH_MEANING];
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   // Check if this handler is the correct one 
   size = parse_lookup_varlist(param, fmt, obj, L1field, index);
   if (size != 3)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
   
   // Let's ask the hash table for the current working file
   robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", NULL);
 
   // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L1 object", NULL);
   
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Bad object path", NULL);
   
-  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
+  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Lookup object 
@@ -175,7 +175,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
     {
       
       if (l1->get_obj_nam == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid L1 index", NULL);
       else
 	{
@@ -190,7 +190,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
 		 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->name);
 	  
 	  if (pobj->parent == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "No entry by that name", NULL);
 	}
     }
@@ -199,7 +199,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   if (pobj->parent == NULL)
     {
       if (size <= real_index)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Index too big", NULL);
       pobj->parent  = l1->get_entptr(o1, real_index);
     }
@@ -207,12 +207,12 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
-  pobj->type    = REVM_TYPE_LONG;
+  pobj->type    = ASPECT_TYPE_CADDR;
   pobj          = vm_check_object(pobj);
   if (!pobj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
@@ -232,41 +232,41 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
   char			L2field[ELFSH_MEANING];
   int			ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, L2field);
   if (ret != 3)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
 
   // Let's ask the hash table for the current working file 
   robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object",
 		      NULL);
 
   // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L1 object",
 		      NULL);
   else if (l1->get_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid object path",
 		      NULL);
 
   // Then the Level 2 object 
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L2 object",
 		      NULL);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
+  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
@@ -275,9 +275,9 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
   pobj          = vm_check_object(pobj);
 
   if (!pobj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
@@ -308,7 +308,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   u_int			sizelem;
   int			ret;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   // Check if this handler is the correct one 
   // This handler has 3 different possible parsing rules 
@@ -321,7 +321,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 	{
 	  ret = parse_lookup_varlist(param, fmt, obj, L1field, index, L2field);
 	  if (ret != 4)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Parser handling failed", NULL);
 	  sizelem = 1;
 	  off = 0;
@@ -333,31 +333,31 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   // Let's ask the hash table for the current working file 
   robj = vm_lookup_file(obj);
   if (NULL == robj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
 		   NULL);
 
   // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L1 object", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L1 object", 
 		   NULL);
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect object path",
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect object path",
 		   NULL);
 
   // Then the Level 2 object 
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L2 object", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L2 object", 
 		   NULL);
 
   // Read object 
   o1 = l1->get_obj(robj, (void *) &size);
   if (o1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
 		   NULL);
   
-  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
+  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Do lookup by index or by name 
@@ -372,13 +372,13 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   if (((int) real_index) < 0)
     {
       if (l1->get_obj_nam == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid L1 index", NULL);
       else
 	{
 	  pobj->parent = l1->get_obj_nam(robj, index);
 	  if (pobj->parent == NULL)
-	    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "No L1 index by this name", NULL);
 	}
     }
@@ -395,13 +395,13 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 		   !strcmp(L1field, "verneed"));
       
       if (!isversion && size <= real_index)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", 
 	NULL);
 
       pobj->parent = l1->get_entptr(o1, real_index);
 
       if (isversion && pobj->parent == NULL)
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown L2 object or Invalid L1 index", 
 			  NULL);
     }
@@ -424,9 +424,9 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   // Error checking 
   pobj = vm_check_object(pobj);
   if (!pobj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
@@ -458,37 +458,37 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   char			logbuf[BUFSIZ];
 #endif
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, index, index2, L2field);
   if (ret != 5)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parser handling failed", NULL);
 
   // Let's ask the hash table for the current working file 
   robj = vm_lookup_file(obj);
   if (robj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", 
 		      NULL);
 
   // Then, we ask the Level 1 object 
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L1 object", NULL);
   else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "This object needs 2 indexes", NULL);
 
   // Then the Level 2 object 
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested L2 object", NULL);
   else if (l2->get_obj == NULL || l2->set_obj == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Child object is invalid", NULL);
 
   // Not clean .. need to ve virtualized 
@@ -510,11 +510,11 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   // Do index sanity 
   o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
   if (!isversion && size <= real_index2)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Second index too big", NULL);
 
   if (isversion && o1 == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid L1 index", NULL);    
   
   // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n", 
@@ -530,7 +530,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   o1 = elfsh_get_raw(sect);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(REVM_TYPE_UNKNOW, 0, 0);
+  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
@@ -541,16 +541,16 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   pobj->parent  = l1->get_entptr(o1, real_index2);
 
   if (isversion && pobj->parent == NULL)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown L2 object or Invalid L2 index", 
 		      NULL);
 
   // Error checking 
   pobj = vm_check_object(pobj);
   if (!pobj)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
 
@@ -570,7 +570,7 @@ revmobj_t		*vm_lookup_param(char *param, u_int m)
   unsigned int		index;
   revmobj_t		*res;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Find the number of fields in param */
   sepnbr = 0;
@@ -592,13 +592,13 @@ revmobj_t		*vm_lookup_param(char *param, u_int m)
       ret = funcptr(param, keys[index]);
       if (!ret)
 	continue;
-      ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
     }
 
   /* If still not found, try manually inserted types */
   ret = vm_revmobj_lookup(param);
   if (ret)
-    ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
 
   /* If no good syntax is available, print error if we are not in probe mode */
   if (m)
@@ -607,9 +607,9 @@ revmobj_t		*vm_lookup_param(char *param, u_int m)
       if (!res || (m == 2 && res->immed))
 	vm_badparam(param);
       else
-	ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
     }
 
-  ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to resolve object", NULL);
 }

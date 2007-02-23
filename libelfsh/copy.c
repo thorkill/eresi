@@ -19,26 +19,27 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   int		range;
   int		cnt;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   if (!file)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
   if (elfsh_read_obj(file) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Can't copy file object", NULL);
    
 
   /* Do copy */
-  XALLOC(copy, sizeof(elfshobj_t), NULL);
-  copy->name = elfsh_strdup(file->name);
-  XALLOC(copy->hdr, sizeof(elfsh_Ehdr), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,copy, sizeof(elfshobj_t), NULL);
+  copy->name = aproxy_strdup(file->name);
+ 
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,copy->hdr, sizeof(elfsh_Ehdr), NULL);
   memcpy(copy->hdr, file->hdr, sizeof(elfsh_Ehdr));
   copy->rights = file->rights;
-  XALLOC(copy->pht, sizeof(elfsh_Phdr) * file->hdr->e_phnum, NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,copy->pht, sizeof(elfsh_Phdr) * file->hdr->e_phnum, NULL);
   memcpy(copy->pht, file->pht, sizeof(elfsh_Phdr) * file->hdr->e_phnum);
-  XALLOC(copy->sht, sizeof(elfsh_Shdr) * file->hdr->e_shnum, NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,copy->sht, sizeof(elfsh_Shdr) * file->hdr->e_shnum, NULL);
   memcpy(copy->sht, file->sht, sizeof(elfsh_Shdr) * file->hdr->e_shnum);
   copy->read  = file->read;
   copy->shtrm = file->shtrm;
@@ -54,16 +55,17 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   /* Arrange sectlist. Partially ripped from elfsh_add_section() . */
   for (range = 0, cur = file->sectlist; cur; cur = cur->next, range++)
     {
-      XALLOC(new, sizeof(elfshsect_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(elfshsect_t), NULL);
       new->shdr = copy->sht + range;
       new->parent = copy;
       new->index = range;
-      new->name = elfsh_strdup(cur->name);
+      new->name = aproxy_strdup(cur->name);
+ 
       new->flags = cur->flags;
 
       if (new->shdr->sh_size && cur->data)
 	{
-	  XALLOC(new->data, new->shdr->sh_size, NULL);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,new->data, new->shdr->sh_size, NULL);
 	  memcpy(new->data, cur->data, new->shdr->sh_size);
 	}
 
@@ -108,5 +110,5 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 
   /* XXX-runtimelist to copy as well */
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, (copy));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (copy));
 }

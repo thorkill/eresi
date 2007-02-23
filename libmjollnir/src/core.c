@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.22 2007-02-20 05:35:25 strauss Exp $
+** $Id: core.c,v 1.23 2007-02-23 05:27:47 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -20,7 +20,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   elfsh_Addr      e_point;
   elfsh_Addr	  main_addr;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* load section */
 #if __DEBUG_MJOLLNIR__
@@ -29,7 +29,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   
   sct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
   if (!sct)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Section not found", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section not found", -1);
       
 #if __DEBUG_CALLS__
   fprintf(D_DESC, "[__DEBUG_CALLS__] mjrFindCalls: %x %d %d\n",
@@ -62,7 +62,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 	curr += ilen;
     }
   
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Main analysis function */
@@ -74,17 +74,17 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   int		num_sht, idx_sht;
   char		c;
 
-  ELFSH_PROFILE_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Preliminary checks */
   if ((NULL == sess) || (NULL == sess->cur))
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameters", -1);
   
   /* Get section table */
   shtlist = elfsh_get_sht(sess->cur->obj, &num_sht);
   if (!shtlist)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Failed to get SHT", -1);
   
   /* Make sure we do what the user desires */
@@ -99,7 +99,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
       c = getchar();
       puts("");
       if (c != 'y')
-	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Flow analysis aborted", 0);
       elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_CONTROL);
     }
@@ -129,17 +129,17 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 
   /* Store analyzed blocks in file */
   if (mjr_blocks_store(sess->cur) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store blocks in file", -1);
 
   /* Store analyzed functions in file */
   if (mjr_functions_store(sess->cur) < 0)
-    ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to store functions in file", -1);
   
   /* Set the flag and return */
   sess->cur->analysed = 1;
-  ELFSH_PROFILE_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
