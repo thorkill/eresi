@@ -33,20 +33,13 @@ static void	aspect_config_init()
   memset(&aspectworld, 0x00, sizeof(aspectworld_t));
 
   // Just for debugging
-  aspectworld.profile = (void *) puts;
+  //aspectworld.profile = (void *) puts;
 
   hash_init(&aspectworld.config_hash, "configuration",
 	    CONFIG_HASH_SIZE, ASPECT_TYPE_UNKNOW);
 
   aspectworld.proflevel = PROFILE_NONE;
 
-  /* config_add_item(CONFIG_NAME_PROFLEVEL,
-     CONFIG_TYPE_INT,
-     CONFIG_MODE_RO,
-     //(void *) PROFILE_DEBUG);
-     (void *) PROFILE_NONE);
-  */
-  
   config_add_item(CONFIG_NAME_SAFEMODE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,

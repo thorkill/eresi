@@ -31,6 +31,11 @@ static profallocentry_t		allocentries[PROFILER_MAX_ALLOC];
 static u_int	profiler_adepth = 0;
 
 
+
+/***************** Now the allocator profiler *********************/
+
+
+
 /* Find an entry in the allocation profiler cache */
 profallocentry_t	*profiler_alloc_find(u_char direction,
 					     u_long addr, 
@@ -116,7 +121,7 @@ void			profiler_alloc_warning(u_char warntype)
 	profiler_alloc_warnprint(" [E] A pointer was freed"
 				 " but it is already free ", 
 				 1, profiler_adepth);
-
+      
       /* We emit a warning when a free happens in the wrong allocator */
       if ((allocentries[profiler_adepth].optype == PROFILER_OP_FREE ||
 	   allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC)
@@ -130,14 +135,14 @@ void			profiler_alloc_warning(u_char warntype)
       /* We emit a warning when we free without remembering the alloc */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC
 	  && !ent)
-	profiler_alloc_warnprint(" [E] A pointer was reallocated but its"
+	profiler_alloc_warnprint(" [!] A pointer was reallocated but its"
 				 " allocation was not found in history",
 				 0, profiler_adepth);
-
+      
       /* We emit a warning when we realloc without remembering alloc */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC
 	  && !ent && !ent2)
-	profiler_alloc_warnprint(" [E] A pointer was reallocated but its"
+	profiler_alloc_warnprint(" [!] A pointer was reallocated but its"
 				 " allocation was not found in history",
 				 0, profiler_adepth);
 
@@ -168,7 +173,7 @@ void			profiler_alloc_warning(u_char warntype)
 				allocentries[0].addr, 
 				PROFILER_OP_FREE);
       if (!ent)
-	profiler_alloc_warnprint(" [E] An allocation was removed"
+	profiler_alloc_warnprint(" [!] An allocation was removed"
 				 " from the history without beeing free", 
 				 0, 0);
       break;
@@ -415,7 +420,7 @@ void		profiler_out(char *file, char *func, u_int line)
 	{
 	  b_dir[0] = profiler_direction;
 	  b_dir[1] = '\0';
-	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s>", 
+	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s>\n", 
 		   space, 
 		   aspectworld.colornumber("%u", profiler_depth), 
 		   aspectworld.colorfieldstr(b_dir), 

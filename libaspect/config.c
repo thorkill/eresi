@@ -23,8 +23,7 @@ static void __config_update_item(configitem_t *item,void *data)
      break;
      
    case CONFIG_TYPE_STR:
-     item->data = aproxy_strdup(data);
- 
+     item->data = aproxy_strdup(data); 
      break;
      
    default:
