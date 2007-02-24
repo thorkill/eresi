@@ -353,7 +353,7 @@ void		profiler_err(char *file, char *func,
   char		buf[BUFSIZ];
   char		*fill;
   
-  if (!(aspectworld.proflevel & PROFILE_ERROR))
+  if (!(aspectworld.proflevel & PROFILE_WARN))
     return;
       
   /* Stock a pattern without printing */
@@ -403,7 +403,7 @@ void		profiler_out(char *file, char *func, u_int line)
   char		*space;
   char		b_dir[2];
 
-  if (!(aspectworld.proflevel & PROFILE_OUTPUT))
+  if (!(aspectworld.proflevel & PROFILE_FUNCS))
     return;
 
   /* Stock a pattern, without printing */

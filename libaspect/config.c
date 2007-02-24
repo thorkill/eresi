@@ -117,13 +117,13 @@ int	config_safemode()
 /* Here the functions for the profiler option */
 int	profiler_enable_err()
 {
-  aspectworld.proflevel |= PROFILE_ERROR;
+  aspectworld.proflevel |= PROFILE_WARN;
   return (0);
 }
 
 int	profiler_enable_out()
 {
-  aspectworld.proflevel |= PROFILE_OUTPUT;
+  aspectworld.proflevel |= PROFILE_FUNCS;
   return (0);
 }
 
@@ -141,13 +141,13 @@ int	profiler_enable_debug()
 
 int	profiler_disable_err()
 {
-  aspectworld.proflevel &= PROFILE_ERROR;
+  aspectworld.proflevel &= PROFILE_WARN;
   return (0);
 }
 
 int	profiler_disable_out()
 {
-  aspectworld.proflevel &= PROFILE_OUTPUT;
+  aspectworld.proflevel &= PROFILE_FUNCS;
   return (0);
 }
 
@@ -180,6 +180,11 @@ int	profiler_enable_all()
 int	profiler_enabled()
 {
   return (aspectworld.proflevel);
+}
+
+int	profiler_is_enabled(u_char mask)
+{
+  return (aspectworld.proflevel & mask);
 }
 
 /* Change the profiling output function */

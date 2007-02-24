@@ -834,7 +834,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SOURCE  , (void *) cmd_source  , (void *) vm_getvarparams , 0, HLP_SOURCE);
   vm_addcmd(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL		  , 0, HLP_LSCRIPTS);
   vm_addcmd(CMD_CAT	, (void *) cmd_cat     , (void *) vm_getoption    , 0, HLP_CAT);
-  vm_addcmd(CMD_PROFILE	, (void *) cmd_profile , (void *) vm_getoption2	  , 0, HLP_PROFILE);
+  vm_addcmd(CMD_PROFILE	, (void *) cmd_profile , (void *) vm_getvarparams , 0, HLP_PROFILE);
   vm_addcmd(CMD_LOG     , (void *) cmd_log     , (void *) vm_getvarparams , 0, HLP_LOG);
   vm_addcmd(CMD_EXPORT  , (void *) cmd_export  , (void *) vm_getoption2   , 0, HLP_EXPORT);
   vm_addcmd(CMD_SHARED    , (void *) cmd_shared   , (void *) NULL         , 0, HLP_SHARED);

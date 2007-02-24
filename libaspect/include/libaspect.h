@@ -218,8 +218,8 @@ typedef struct	s_aspectworld
   hash_t	config_hash;		/* Configuration */
 
 #define		PROFILE_NONE	0
-#define		PROFILE_ERROR	(1 << 0)
-#define		PROFILE_OUTPUT  (1 << 1)
+#define		PROFILE_WARN    (1 << 0)
+#define		PROFILE_FUNCS   (1 << 1)
 #define		PROFILE_ALLOC   (1 << 2)
 #define		PROFILE_DEBUG	(1 << 3)
   u_char	proflevel;		/* Profiling switch */
@@ -301,6 +301,7 @@ void		profiler_incdepth();
 void		profiler_decdepth();
 void		profiler_updir();
 int		profiler_enabled();
+int		profiler_is_enabled(u_char mask);
 u_char		profiler_started();
 
 int		profiler_enable_err();

@@ -175,7 +175,7 @@
 				"Fields and types can be named using scripting variables            \n"
 
 #define HLP_PROFILE		"Change the ELFsh profiling behavior \n\n\t" \
-				CMD_PROFILE" enable|disable trace|error|alloc|debug|all"
+				CMD_PROFILE" enable|disable warn|trace|alloc|debug|all"
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"
