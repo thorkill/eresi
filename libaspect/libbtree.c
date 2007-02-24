@@ -23,7 +23,7 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
   btree_t	*root;
   void		*ptr;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   root = *proot;
   if (!root)
     {
@@ -40,7 +40,7 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
       else
 	btree_insert(&root->right, id, elem);
     }
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /**

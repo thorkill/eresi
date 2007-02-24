@@ -826,7 +826,7 @@ void    vm_ln_handler(char *c)
       rl_save_prompt();
     }
 #endif
- PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+ PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 

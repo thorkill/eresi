@@ -51,10 +51,10 @@ hash_t		*hash_empty(char *name)
   int		size;
   char		type;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash = hash_find(name);
   if (!name)
-    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   size    = hash->size;
   type    = hash->type;
   hash_del(hash_hash, name);
@@ -63,7 +63,7 @@ hash_t		*hash_empty(char *name)
 	 newname, strlen(name) + 1, NULL);
   strcpy(newname, name);
   hash_init(hash, newname, size, type);
-  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, hash);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hash);
 }
 
 /* Destroy a hash table */
@@ -73,7 +73,7 @@ void		hash_destroy(hash_t *h)
   int		idx;
   int		keynbr;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
@@ -81,7 +81,7 @@ void		hash_destroy(hash_t *h)
     XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   hash_free_keys(keys);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h->ent);
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -132,7 +132,7 @@ int		hash_del(hash_t *h, char *key)
   hashent_t	*actual;
   hashent_t	*todel;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check the first entry for this hash */
   //printf("before h = %p key = %p (%s) \n", h, key, (key ? key : ""));
@@ -150,7 +150,7 @@ int		hash_del(hash_t *h, char *key)
       else
 	bzero(actual, sizeof (hashent_t));
       h->elmnbr--;
-      PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Looking for the good entry in the list for this hash value */
@@ -161,14 +161,14 @@ int		hash_del(hash_t *h, char *key)
 
   /* Not found */
   if (!actual->next)
-    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, -1);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   /* Found */
   todel = actual->next;
   actual->next = actual->next->next;
   XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
   h->elmnbr--;
-  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -238,7 +238,7 @@ char		**hash_get_keys(hash_t *h, int *n)
   char		**keys;
   hashent_t	*entry;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   keys = NULL;
   for (i = j = 0; j < h->size; j++) 
@@ -272,9 +272,9 @@ char		**hash_get_keys(hash_t *h, int *n)
 /* Free the keys returned by hash_get_keys() */
 void		hash_free_keys(char **keys)
 {
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Print the hash table (DEBUG PURPOSE) */

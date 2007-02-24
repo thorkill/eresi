@@ -39,7 +39,7 @@ void	config_add_item(char *name,
 {
   configitem_t *tmp;
   
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, tmp, sizeof(configitem_t), );  
   tmp->name = aproxy_strdup(name);
   tmp->type = type;

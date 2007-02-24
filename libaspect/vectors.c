@@ -103,14 +103,14 @@ static int	aspect_vectors_recalloc(unsigned long *tab,
   unsigned int	idx;
   void		*ptr;
 
-  //PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  //PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   //printf("Calling recalloc with depth = %u and dimsz = %u\n", 
   //depth, dimsz);
 
   if (depth == dimsz)
     return (0);
-    //PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+    //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   for (idx = 0; idx < dims[depth - 1]; idx++)
     {
@@ -132,7 +132,7 @@ static int	aspect_vectors_recalloc(unsigned long *tab,
   // depth, dimsz);
 
   return (0);
-  //PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -145,7 +145,7 @@ static int	aspect_vectors_recinit(unsigned long *tab,
 {
   unsigned int	idx;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we reached a leaf, otherwise recurse more */
   if (depth == dimsz)
@@ -157,7 +157,7 @@ static int	aspect_vectors_recinit(unsigned long *tab,
     for (idx = 0; idx < dims[depth - 1]; idx++)
       aspect_vectors_recinit((unsigned long *) tab[idx], dims, 
 			     depth + 1, dimsz, defaultelem);
-  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -174,7 +174,7 @@ int		aspect_register_vector(char		*name,
   unsigned long	*ptr;
   void		*mem;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!defaultfunc || !dimsz || !dimensions)
     {

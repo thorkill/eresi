@@ -618,7 +618,7 @@ fi
 if [ "$CTAGS" = "1" ]; then
 echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
 echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
-echo "  libasm/src/arch/ia32/*.c \\"    			>> Makefile
+echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c">> Makefile
 echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
 echo "	elibc/include/*.h elibc/*.c\\"				>> Makefile
 echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
@@ -639,15 +639,18 @@ echo "info    : "						>> Makefile
 echo "	@echo '###############' TOTAL '###############'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
 echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile
-echo "  libasm/src/arch/ia32/*.c e2dbg/*.c e2dbg/include/*.h \\">> Makefile
+echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
 echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile
-echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c"    >> Makefile
+echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile
+echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile
+echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c           " >> Makefile
 echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
-echo "	libaspect/*.c libasm/src/arch/ia32/*.c \\"	        >> Makefile
+echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
 echo "	libasm/src/*.c libasm/src/arch/sparc/*.c \\"	        >> Makefile
-echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c"	        >> Makefile
+echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
+echo "	libasm/src/arch/*/handlers/*.c libedfmt/*.c   "         >> Makefile
 echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile
 echo "	@wc -l libaspect/*.c "					>> Makefile
 echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile

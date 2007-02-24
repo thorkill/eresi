@@ -1,7 +1,7 @@
 /*
 ** (C) 2001-2006 Devhell Labs / Asgard Labs : thorolf / sk / mayhem
 **
-** $Id: history.c,v 1.10 2007-02-23 05:27:47 may Exp $
+** $Id: history.c,v 1.11 2007-02-24 00:06:57 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -14,7 +14,7 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
   
   if ((cur->proc.type == ASM_PROC_IA32 && inst.instr == ASM_NOP) ||
   		(cur->proc.type == ASM_PROC_SPARC && inst.instr == ASM_SP_NOP))
-    PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+    PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 
   for (i = 0; i < MJR_HISTORY_LEN; i++) 
   {
@@ -29,7 +29,7 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
     cur->hist[MJR_HISTORY_PPREV].vaddr);
 #endif
 
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Write an entry of history */

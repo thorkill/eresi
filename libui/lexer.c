@@ -15,7 +15,7 @@ void			vm_findhex(u_int argc, char **argv)
   char			*buf;
   char			*ptr;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* For each of the argv[] entry */
   for (index = 0; index < argc; index++)
@@ -28,7 +28,7 @@ void			vm_findhex(u_int argc, char **argv)
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
 	buf = vm_filter_param(buf, ptr);
     }
-   PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -45,14 +45,14 @@ char		*vm_getln(char *ptr)
       buf = world.curjob->io.input();
 
       if (buf == ((char *) ELFSH_VOID_INPUT))
-        PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
+        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
          (char*) ELFSH_VOID_INPUT);
 
       if (!buf || !*buf)
 	{
 	  if (buf)
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
-	  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,NULL);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,NULL);
 	}
 
       if (buf == NULL)
@@ -88,7 +88,7 @@ char		*vm_getln(char *ptr)
 	  
 	  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
 	      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-               PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
+               PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (char*) ELFSH_VOID_INPUT);
 
 
@@ -107,7 +107,7 @@ char		*vm_getln(char *ptr)
           if (buf == NULL)
 	    {
 	      printf("Entered readline test .. returning void input \n");
-              PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	       (char*) ELFSH_VOID_INPUT);
 	    }
           break;
@@ -117,7 +117,7 @@ char		*vm_getln(char *ptr)
     }
   while (buf == NULL);
 
-  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,buf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,buf);
 }
 
 

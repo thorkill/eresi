@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.20 2007-02-23 05:27:47 may Exp $
+ * $Id: function.c,v 1.21 2007-02-24 00:06:57 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -49,7 +49,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   u_int curOff; 
   mjrcaller_t *cur;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!fnc->parentfuncs)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -76,7 +76,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
      cur = cur->next;
    }
 
- PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
 }
 
 
@@ -86,7 +86,7 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   u_int curOff; 
   mjrcaller_t *cur;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!fnc->childfuncs)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -113,7 +113,7 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
      cur = cur->next;
    }
 
- PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, (curOff));
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
 }
 
 /* Copy the function in a special buffer to fingerprint it */
@@ -258,7 +258,7 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
 {
   mjrcaller_t *n;
   
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   n = aproxy_malloc(sizeof(mjrcaller_t));
   n->vaddr = vaddr;
@@ -267,7 +267,7 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
   fnc->childfuncs = n;
   fnc->childnbr = fnc->childnbr + 1;
 
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /**
@@ -280,7 +280,7 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
 {
   mjrcaller_t *n;
   
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   n = aproxy_malloc(sizeof(mjrcaller_t));
   n->vaddr = vaddr;
@@ -289,7 +289,7 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   fnc->parentfuncs = n;
   fnc->parentnbr++;
 
-  PROFILER_OUT(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 void *mjr_functions_load(mjrcontext_t *ctxt)
@@ -300,7 +300,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
   elfsh_Addr	tmpaddr;
   mjrfunc_t	*curfnc;
 
-  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
   if (!sect)
@@ -353,7 +353,7 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
       mjr_function_dump((char *)__FUNCTION__, curfnc);
     }
 
-  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 /* Retreive control flow section content if any */
