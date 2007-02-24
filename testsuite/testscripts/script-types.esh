@@ -1,11 +1,14 @@
 #!/usr/local/bin/elfsh
 
-load elfsh/elfsh32
+load ../../elfsh/elfsh32
 switch 107
 
+# Just some examples of type that can be used to map internal framework structures 
 type context = savedfd:int savedmode:byte savedcmd:*long savedinput:*long savedargv:*long savedname:*long curcmd:*long
 type state = flags:byte[4] glregex%32 sregx:*long alert:byte alertregex%32 strs:*long[4] flags:byte[5] lastid:int
 type world = state:state ctxt:context
+
+# Lets see an example of printing of real variables arrays of the framework
 
 type archtypes = types:string[55]
 inform archtypes elfsh_arch_type

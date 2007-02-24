@@ -12,6 +12,4 @@ redir legit_func hook_func
 
 save fake_aout
 
-vectors hook_cflow
-
 quit

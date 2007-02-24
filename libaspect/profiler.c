@@ -99,6 +99,9 @@ void			profiler_alloc_warning(u_char warntype)
   profallocentry_t	*ent2;
   profallocentry_t	*ent3;
 
+  /* Do not emit warning if not asked to */
+  if (!(aspectworld.proflevel & PROFILE_ALLOC))
+    return;
 
   switch (warntype)
     {      
@@ -222,18 +225,17 @@ int			profiler_alloc_update(char *file, char *func,
 					      u_int line, u_long addr, 
 					      u_char atype, u_char otype)
 {
-  void			*profunc;
-
-  profunc             = aspectworld.profile;  
-  aspectworld.profile = (void *) printf;
+  //void			*profunc;
+  // XXX: remove this ?
+  //profunc             = aspectworld.profile;  
+  //aspectworld.profile = (void *) printf;
 
   /* Just happens an entry at the end. Check the last entry. */
   if (profiler_adepth + 1 != PROFILER_MAX_ALLOC)
     {
       profiler_alloc_add(file, func, line, addr, atype, otype);
       profiler_alloc_warning(PROFILER_WARNING_LAST);
-
-      aspectworld.profile = profunc;
+      //aspectworld.profile = profunc;
       return (0);
     }
 
@@ -243,7 +245,7 @@ int			profiler_alloc_update(char *file, char *func,
   profiler_alloc_add(file, func, line, addr, atype, otype);  
   profiler_alloc_warning(PROFILER_WARNING_LAST);
 
-  aspectworld.profile = profunc;
+  //aspectworld.profile = profunc;
   return (1);
 }
 
@@ -351,47 +353,46 @@ void		profiler_err(char *file, char *func,
   char		buf[BUFSIZ];
   char		*fill;
   
-  if (aspectworld.proflevel & PROFILE_ERROR)
-    {
+  if (!(aspectworld.proflevel & PROFILE_ERROR))
+    return;
       
-      /* Stock a pattern without printing */
-      if (profiler_print(file, func, line, msg))
-	return;
-
-      fill = (profiler_depth - 6 > 0 ? 
-	      alloca(profiler_depth + 1) : "");
-      if (profiler_depth - 6 > 0)
-	{
-	  memset(fill, ' ', profiler_depth);
-	  fill[profiler_depth] = 0x00;
-	}
-
-      if (aspectworld.endline != NULL)
-	{
-	  snprintf(buff, sizeof(buff), " <%s@%s:%s>", 
-		   aspectworld.colorfunction(func), 
-		   aspectworld.colorfilename(file), 
-		   aspectworld.colornumber("%u", line));
-	  snprintf(buf, BUFSIZ, " %s %s %-50s %s \n", 
-		   aspectworld.colorwarn("[W]"), 
-		   fill, buff, aspectworld.colorwarn(msg)); 
-	}
-      else
-	{
-	  snprintf(buff, sizeof(buff), " <%s@%s:%u>", 
-		   func, file, line);
-	  snprintf(buf, BUFSIZ, " [W] %s %-50s %s \n", 
-		   fill, buff, msg);
-	}
-
-      if (aspectworld.profile_err != NULL)		
-	aspectworld.profile_err(buf);			
-      else					
-	fprintf(stderr, "No profiling function specified.\n");
-      if (aspectworld.endline != NULL)
-	aspectworld.endline();
-      profiler_reset(0);
+  /* Stock a pattern without printing */
+  if (profiler_print(file, func, line, msg))
+    return;
+  
+  fill = (profiler_depth - 6 > 0 ? 
+	  alloca(profiler_depth + 1) : "");
+  if (profiler_depth - 6 > 0)
+    {
+      memset(fill, ' ', profiler_depth);
+      fill[profiler_depth] = 0x00;
     }
+  
+  if (aspectworld.endline != NULL)
+    {
+      snprintf(buff, sizeof(buff), " <%s@%s:%s>", 
+	       aspectworld.colorfunction(func), 
+	       aspectworld.colorfilename(file), 
+	       aspectworld.colornumber("%u", line));
+      snprintf(buf, BUFSIZ, " %s %s %-50s %s \n", 
+	       aspectworld.colorwarn("[W]"), 
+	       fill, buff, aspectworld.colorwarn(msg)); 
+    }
+  else
+    {
+      snprintf(buff, sizeof(buff), " <%s@%s:%u>", 
+	       func, file, line);
+      snprintf(buf, BUFSIZ, " [W] %s %-50s %s \n", 
+	       fill, buff, msg);
+    }
+  
+  if (aspectworld.profile_err != NULL)		
+    aspectworld.profile_err(buf);			
+  else					
+    fprintf(stderr, "No profiling function specified.\n");
+  if (aspectworld.endline != NULL)
+    aspectworld.endline();
+  profiler_reset(0);
 }
 
 
@@ -402,42 +403,41 @@ void		profiler_out(char *file, char *func, u_int line)
   char		*space;
   char		b_dir[2];
 
-  if (aspectworld.proflevel & PROFILE_OUTPUT)
+  if (!(aspectworld.proflevel & PROFILE_OUTPUT))
+    return;
+
+  /* Stock a pattern, without printing */
+  if (profiler_print(file, func, line, NULL))
+    return;
+  
+  if (profiler_depth > 80)
+    profiler_depth = 1;
+  space = alloca(profiler_depth + 1);
+  memset(space, 0x00, profiler_depth);
+  memset(space, ' ', profiler_depth);
+  space[profiler_depth] = 0x00;
+
+  if (aspectworld.endline != NULL)
     {
-
-      /* Stock a pattern, without printing */
-      if (profiler_print(file, func, line, NULL))
-	return;
-
-      if (profiler_depth > 80)
-	profiler_depth = 1;
-      space = alloca(profiler_depth + 1);
-      memset(space, 0x00, profiler_depth);
-      memset(space, ' ', profiler_depth);
-      space[profiler_depth] = 0x00;
-
-      if (aspectworld.endline != NULL)
-	{
-	  b_dir[0] = profiler_direction;
-	  b_dir[1] = '\0';
-	  snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s>\n", 
-		   space, 
-		   aspectworld.colornumber("%u", profiler_depth), 
-		   aspectworld.colorfieldstr(b_dir), 
-		   aspectworld.colorfunction(func), 
-		   aspectworld.colorfilename(file),
-		   aspectworld.colornumber("%u", line));
-	}
-      else
-	{
-	  snprintf(buff, sizeof(buff), "%s %u %c <%s@%s:%u>\n", 
-		   space, profiler_depth, profiler_direction, 
-		   func, file,line);
-	}
-      aspectworld.profile(buff);	
-      if (aspectworld.endline != NULL)
-	aspectworld.endline();
+      b_dir[0] = profiler_direction;
+      b_dir[1] = '\0';
+      snprintf(buff, sizeof(buff), "%s %s %s <%s@%s:%s>\n", 
+	       space, 
+	       aspectworld.colornumber("%u", profiler_depth), 
+	       aspectworld.colorfieldstr(b_dir), 
+	       aspectworld.colorfunction(func), 
+	       aspectworld.colorfilename(file),
+	       aspectworld.colornumber("%u", line));
     }
+  else
+    {
+      snprintf(buff, sizeof(buff), "%s %u %c <%s@%s:%u>\n", 
+	       space, profiler_depth, profiler_direction, 
+	       func, file,line);
+    }
+  aspectworld.profile(buff);	
+  if (aspectworld.endline != NULL)
+    aspectworld.endline();
 }
 
 /* Profiler is started ? */
