@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-fprint.h,v 1.8 2007-02-23 05:27:47 may Exp $
+ * $Id: libmjollnir-fprint.h,v 1.9 2007-02-25 15:44:42 thor Exp $
  *
  */
 #include "libmjollnir-blocks.h"
@@ -18,9 +18,9 @@ typedef struct		s_function
   u_int			size;		/* Function size */
   char			name[64];	/* Function name */
   mjrblock_t		*first;		/* First function block */
-  mjrcaller_t		*parentfuncs;	/* Functions we are called from */
+  mjrlink_t		*parentfuncs;	/* Functions we are called from */
   u_int			parentnbr;	/* Number of parent functions */
-  mjrcaller_t		*childfuncs;	/* Functions we call */
+  mjrlink_t		*childfuncs;	/* Functions we call */
   u_int			childnbr;	/* Number of child functions */
   char			md5[34];	/* MD5 Checksum */
 }			mjrfunc_t;

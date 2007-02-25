@@ -12,7 +12,7 @@
 /* Say if a block is the start of a function or not */
 int		 mjr_block_funcstart(mjrblock_t *blk) 
 {
-  mjrcaller_t	 *cur;
+  mjrlink_t	 *cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -92,7 +92,7 @@ int		mjr_fprint_bwd(mjrcontext_t *c,
 			       int	    (*fprint)(mjrblock_t *))
 {
   mjrblock_t	*parent;
-  mjrcaller_t	*caller;
+  mjrlink_t	*caller;
 
   /* We are not yet in the depth range of fingerprint, just recurse */
   if (curd < mind)

@@ -30,7 +30,7 @@ void		mjr_block_dump(mjrblock_t *b)
 /* Display all information about a block */
 int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
 {
-  mjrcaller_t		*ccal;
+  mjrlink_t		*ccal;
   char			*str;
   char			*end_str;
   elfsh_SAddr		offset;

@@ -4,14 +4,14 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.21 2007-02-24 00:06:57 may Exp $
+ * $Id: function.c,v 1.22 2007-02-25 15:44:42 thor Exp $
  *
  */
 #include <libmjollnir.h>
 
 void mjr_function_dump(char *where,mjrfunc_t *f)
 {
-  mjrcaller_t *cur;
+  mjrlink_t *cur;
   fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] Cnbr: %d Pnbr %d\n",
 	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL ,f->childnbr,f->parentnbr);
 
@@ -47,7 +47,7 @@ void mjr_function_dump(char *where,mjrfunc_t *f)
 u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 {
   u_int curOff; 
-  mjrcaller_t *cur;
+  mjrlink_t *cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -84,7 +84,7 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 {
   u_int curOff; 
-  mjrcaller_t *cur;
+  mjrlink_t *cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -256,11 +256,11 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
 					elfsh_Addr vaddr,
 					int type)
 {
-  mjrcaller_t *n;
+  mjrlink_t *n;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = aproxy_malloc(sizeof(mjrcaller_t));
+  n = aproxy_malloc(sizeof(mjrlink_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->childfuncs;
@@ -278,11 +278,11 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
 					elfsh_Addr vaddr,
 					int type)
 {
-  mjrcaller_t *n;
+  mjrlink_t *n;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = aproxy_malloc(sizeof(mjrcaller_t));
+  n = aproxy_malloc(sizeof(mjrlink_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->parentfuncs;
@@ -479,8 +479,8 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
       fprintf(D_DESC, " [D] %s: childOffset: %d\n", __FUNCTION__, flowOffc);
       
       /* Set New pointers */
-      func->parentfuncs = (mjrcaller_t *)flowOffp;
-      func->childfuncs = (mjrcaller_t *)flowOffc;
+      func->parentfuncs = (mjrlink_t *)flowOffp;
+      func->childfuncs = (mjrlink_t *)flowOffc;
 
       /* 2nd Save function structure */
       mjr_function_save(func, &buf);

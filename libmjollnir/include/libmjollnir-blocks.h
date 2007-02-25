@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.13 2007-02-20 11:12:02 strauss Exp $
+ * $Id: libmjollnir-blocks.h,v 1.14 2007-02-25 15:44:42 thor Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -20,17 +20,17 @@
  * - a type field to know how the block is invoked
  * - a vaddr field to know address of instruction which has invoked it.
  */
-typedef	struct		s_caller 
+typedef	struct		s_link 
 {
-#define   CALLER_CONT  0	/* block is invoked from previous block	*/
+#define   CALLER_CONT   0	/* block is invoked from previous block	*/
 #define   CALLER_JUMP	1	/* block is invoked by some JUMP,JCC	*/
 #define   CALLER_CALL	2	/* block is invoked by a call		*/
 #define   CALLER_RET	3	/* block is ended by a RET		*/
 #define   CALLER_UNKN	4	/* block was not analysed		*/
   int			type;
   elfsh_Addr		vaddr;
-  struct s_caller	*next;
-}			mjrcaller_t;
+  struct s_link		*next;
+}			mjrlink_t;
 
 
 /* Structure used to describe blocks in memory */
@@ -43,7 +43,7 @@ typedef struct		s_iblock
   elfsh_Addr		false;	 /* vaddr of alternate path		*/
   u_int			type;	 /* Invokation type			*/
   u_int			size;	 /* block size				*/
-  struct s_caller	*caller; /* MEMONLY : linked list of callers    */
+  struct s_link		*caller; /* MEMONLY : linked list of callers    */
 }			mjrblock_t;
 
 

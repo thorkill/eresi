@@ -15,14 +15,14 @@ hash_t		goto_hash;
 /* Make the link between the new block and the current block */
 /* Split existing blocks if necessary */
 int			mjr_block_point(mjrcontext_t  *ctxt, 
-								asm_instr      *ins,
-								elfsh_Addr     vaddr,
-								elfsh_Addr     dest)
+					asm_instr      *ins,
+					elfsh_Addr     vaddr,
+					elfsh_Addr     dest)
 {
   mjrblock_t	*dst;
   mjrblock_t	*dst_end;  
-  int			new_size;
-  int			type;
+  int		new_size;
+  int		type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   dst_end = ctxt->blklist;
@@ -55,13 +55,13 @@ int			mjr_block_point(mjrcontext_t  *ctxt,
   
   /* Add caller to target block */
   if (ctxt->proc.type == ASM_PROC_IA32)
-  {
-  	type = ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP;
-  }
+    {
+      type = ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP;
+    }
   else if (ctxt->proc.type == ASM_PROC_SPARC)
-  {
-  	type = ins->instr == ASM_SP_CALL ? CALLER_CALL : CALLER_JUMP;
-  }
+    {
+      type = ins->instr == ASM_SP_CALL ? CALLER_CALL : CALLER_JUMP;
+    }
   mjr_block_add_caller(dst, vaddr, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -340,11 +340,11 @@ void		mjr_block_add_caller(mjrblock_t *blk,
 				     elfsh_Addr    vaddr, 
 				     int	   type) 
 {
-  mjrcaller_t	*n;
+  mjrlink_t	*n;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = aproxy_malloc(sizeof (mjrcaller_t));
+  n = aproxy_malloc(sizeof (mjrlink_t));
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;
