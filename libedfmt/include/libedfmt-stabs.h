@@ -141,6 +141,7 @@ struct		s_stabstype
 #define STABS_TYPE_FUNC	    11
 #define STABS_TYPE_VOLATILE 12
 #define STABS_TYPE_CONST    13
+#define STABS_TYPE_CLINK    14
   u_char       	type;
 
   edfmtstabstypenum_t num;
@@ -352,6 +353,7 @@ enum stabs_type
 #define STABS_STR_D_STRUCT	's'
 #define STABS_STR_D_BITSTRING	'S'
 #define STABS_STR_D_UNION	'u'
+#define STABS_STR_D_CREF	'x'
 
 /* AIX attributes */
 #define STABS_STR_AIX_SIZE	's'

@@ -7,11 +7,14 @@
 
 #include "libedfmt.h"
 
+#define EDFMT_SET_FUNCS(_name) \
+_name##_parse, _name##_transform, _name##_clean
+
 edfmtmanage_t debug_format[] = 
   {
-    { ELFSH_SECTION_NAME_STAB    , ELFSH_SECTION_STAB    , edfmt_stabs_parse , edfmt_stabs_transform },
-    { ELFSH_SECTION_NAME_DW2_INFO, ELFSH_SECTION_DW2_INFO, edfmt_dwarf2_parse, edfmt_dwarf2_transform },
-    { NULL                       , 0                     , NULL              , NULL }
+    { ELFSH_SECTION_NAME_STAB    , ELFSH_SECTION_STAB    , EDFMT_SET_FUNCS(edfmt_stabs) },
+    { ELFSH_SECTION_NAME_DW2_INFO, ELFSH_SECTION_DW2_INFO, EDFMT_SET_FUNCS(edfmt_dwarf2) },
+    { NULL                       , 0                     , NULL, NULL, NULL }
   };
 
 /* Load a dwarf2 section information from the file */
@@ -73,8 +76,12 @@ int			edfmt_format(elfshobj_t *file)
 
       if (sect != NULL && debug_format[i].func != NULL)
 	{
-	  debug_format[i].func(file);
-	  debug_format[i].trans(file);
+	  if (debug_format[i].func)
+	    debug_format[i].func(file);
+	  if (debug_format[i].trans)
+	    debug_format[i].trans(file);
+	  if (debug_format[i].clean)
+	    debug_format[i].clean(file);
 	  count++;
 	}
     }
@@ -82,6 +89,10 @@ int			edfmt_format(elfshobj_t *file)
   if (count == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Can't find at leat on debug format", -1);
+
+  /*printf("======= ADDED TYPES ================\n");
+  edfmt_uni_print(file);
+  printf("====================================\n");*/
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

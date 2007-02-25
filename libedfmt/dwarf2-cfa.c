@@ -22,12 +22,14 @@ static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
   memcpy(tmp, reg, sizeof(edfmtdw2cfastate_t));
   
   /* Add local and gloabal */
+  /* TODO: Reuse when it will be usefull 
   if (current_cu->cfa == NULL)
     current_cu->cfa = tmp;
   else
     current_cu->last_cfa->next = tmp;
 
   current_cu->last_cfa = tmp;
+  */
       
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
@@ -237,6 +239,10 @@ int			edfmt_dwarf2_cfa()
   edfmtdw2cfastate_t 	state;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (dwarf2_data(frame) == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      ".debug_frame section not available", -1);
 
   /* Reset frame position */
   dwarf2_pos(frame) = 0;

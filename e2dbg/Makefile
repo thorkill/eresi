@@ -24,6 +24,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
+			-I../libedfmt/include/					 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DELFSH32
 
@@ -32,6 +33,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
+			-I../libedfmt/include/					 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DELFSH64
 

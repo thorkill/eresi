@@ -55,10 +55,10 @@ typedef struct 	s_dw2abbattr
   union 
   {
     char 	*vbuf; 	// DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block
-    u_long 	udata;	// DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8
+    u_long 	udata;	// DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
+    			// DW_FORM_ref[1-8], DW_FORM_ref_udata
     long	sdata;	// DW_FORM_sdata
     char      	*str;	// DW_FORM_string, DW_FORM_strp
-    edfmtdw2abbent_t *ref; // DW_FORM_ref[1-8], DW_FORM_ref_udata
   } u;
 
   edfmtdw2loc_t	loc; // DW_AT_location
@@ -76,9 +76,8 @@ struct 		s_dw2abbent
   edfmtdw2abbattr_t *attr;
   u_int		attrsize;
 
-  struct s_dw2abbent *sib;
-  struct s_dw2abbent *child;
-  struct s_dw2abbent *parent;
+  u_int 	sib;
+  u_int 	child;
 };
 
 /* Describe a reference to update lately */
@@ -161,7 +160,7 @@ typedef struct	s_dw2linehead
   int		line_base;
   u_int		line_range;
   u_int		opcode_base;
-  u_char       	*std_opcode_length;
+  char       	*std_opcode_length;
 
   char		**dirs;
   char		**files_name;
@@ -201,25 +200,14 @@ struct		s_dw2cu
   u_int		offset;
   u_int		addr_size;
   u_int		start_pos;
+  u_int		end_pos;
+  u_int		info_pos;
 
   /* Designed file */
   elfshobj_t	*fileobj;
 
-  /* Abbrev section informations */
-  edfmtdw2abbent_t *fent;
-  edfmtdw2abbent_t *lent;
-
-  /* Lines informations */
-  edfmtdw2line_t *line;
-  edfmtdw2line_t *last_line;
-
-  /* Macros informations */
-  edfmtdw2macro_t *macro;
-  edfmtdw2macro_t *last_macro;
-
-  /* Cfa state informations */
-  edfmtdw2cfastate_t *cfa;
-  edfmtdw2cfastate_t *last_cfa;
+  /* Store abbrev table informations */
+  hash_t	abbrev_table;
 
   /* Files informations */
   char		**dirs;
@@ -236,26 +224,19 @@ struct		s_dw2cu
 typedef struct 	s_dw2info
 {
   edfmtdw2cu_t	*cu_list;
+  edfmtdw2sectlist_t sections;
 }		edfmtdw2info_t;
 
 /* Variables */
 extern edfmtdw2info_t *dwarf2_info;
-extern edfmtdw2sectlist_t dw2_sections;
 
 /* References */
-extern edfmtdw2fref_t *ref_global;
-extern edfmtdw2fref_t *ref_cu;
-
-extern hash_t ref_global_table;
-extern hash_t ref_cu_table;
-
 extern edfmtdw2cu_t *current_cu;
-extern hash_t abbrev_table;
 
 /* I/O management */
-#define dwarf2_pos(name) 	dw2_sections.name.pos
-#define dwarf2_size(name) 	dw2_sections.name.sect->shdr->sh_size
-#define dwarf2_data(name) 	dw2_sections.name.data
+#define dwarf2_pos(name) 	dwarf2_info->sections.name.pos
+#define dwarf2_size(name) 	dwarf2_info->sections.name.sect->shdr->sh_size
+#define dwarf2_data(name) 	dwarf2_info->sections.name.data
 #define dwarf2_a_pos(name) 	(dwarf2_data(name) + dwarf2_pos(name))
 #define dwarf2_ac_pos(name) 	(char *) dwarf2_a_pos(name)
 
@@ -263,7 +244,7 @@ extern hash_t abbrev_table;
 
 #define dwarf2_inc_pos(name, value) 			\
 do {							\
-  dw2_sections.name.pos += value; 			\
+  dwarf2_info->sections.name.pos += value; 		\
 } while(0)
 
 #define dwarf2_ipos(val, name, type) 			\
@@ -328,6 +309,18 @@ do {							\
   u_int bsize;						\
   val = edfmt_read_leb128(dwarf2_a_pos(name), &bsize); 	\
   dwarf2_inc_pos(name, bsize);			       	\
+} while (0)
+
+#define dwarf2_uleb128(val, name) 			\
+do {							\
+  u_int bsize;						\
+  val = edfmt_read_uleb128(dwarf2_a_pos(name), &bsize);	\
+} while (0)
+
+#define dwarf2_leb128(val, name) 		        \
+do {							\
+  u_int bsize;						\
+  val = edfmt_read_leb128(dwarf2_a_pos(name), &bsize); 	\
 } while (0)
 
 #define dwarf2_istr(val, name)				\

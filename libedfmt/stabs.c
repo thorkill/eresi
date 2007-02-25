@@ -15,6 +15,9 @@ and gentoo linux, some bugs can append on Sparc, more test will
 be done to make this work correctly */
 
 #define STABS_HNAME_TYPE_REF "stabs_type_reference"
+#define STABS_HNAME_TYPE_CROSS_REF "stabs_type_reference"
+
+#define STABS_DATA(_str) (!STABS_IVD_STR(_str) ? edfmt_stabs_data(_str) : NULL)
 
 /* Global position variables */
 elfshsect_t *stabs_sect;
@@ -37,6 +40,7 @@ edfmtstabsfunc_t *current_func = NULL;
 
 /* Temporary hash table used for type resolution */
 hash_t type_ref;
+hash_t type_cross_ref;
 
 /* Contain main informations */
 edfmtstabsinfo_t *stabs_info = NULL;
@@ -50,6 +54,30 @@ edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (edfmtstabsinfo_t *) file->debug_format.stabs);
+}
+
+static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
+{
+  char			buf[BUFSIZ];
+  edfmtstabstype_t 	*seek_type;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameters", -1);
+  
+  snprintf(buf, BUFSIZ - 1, "%c%s", token, type->data->name);
+
+  seek_type = (edfmtstabstype_t *) hash_get(&type_cross_ref, buf);
+
+  if (seek_type)
+    {
+      seek_type->u.link = type;
+      hash_del(&type_cross_ref, buf);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int	    		edfmt_stabs_addfile(char *dir, char *file)
@@ -132,7 +160,7 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
       if (arg_index < STABS_MAX_ARGUMENTS)
 	{
 	  my_str = stabs_c_str;
-	  func->args[arg_index++] = edfmt_stabs_data(&my_str);
+	  func->args[arg_index++] = STABS_DATA(&my_str);
 	}
     }
 
@@ -172,7 +200,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid str informations", -1);
 
-  *(str)++;
+  (*str)++;
 
   /* Fill range felds, but we will use only link (mainly) */
   type->type = STABS_TYPE_RANGE;
@@ -287,6 +315,8 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
     (*str)++;
   } while (**str != ';');
 
+  (*str)++;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -323,6 +353,9 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
       if(edfmt_stabs_readnumber(str, ',', &enum_attr->value) != 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Wrong string pattern", NULL);
+
+      if (**str == ',')
+	(*str)++;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, root_attr);
@@ -333,11 +366,13 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
   char			*save_str;
   char			token;
   edfmtstabstypenum_t 	tnum;
-  edfmtstabstype_t	 *type;
+  edfmtstabstype_t	*type;
   char			ctypenum[STABS_CTYPENUM_SIZE];
+  char			name[STABS_NAME_SIZE];
   long			tsize = 0;
   u_char       		isString = 0;
   u_char		isVector = 0;
+  int			addtype = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -464,6 +499,12 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	      goto typestart;
 	    }
 	  break;
+	case STABS_STR_D_CREF:
+	  /* We get the name from with the first part, then we can search the correct type */
+	  type->type = STABS_TYPE_CLINK;
+	  edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);
+	  HASH_ADDX(&type_cross_ref, name, type);
+	  break;
 	case STABS_STR_D_ARRAY:
 	  type->type = STABS_TYPE_ARRAY;
 	  edfmt_stabs_array(type, str, isString, isVector);
@@ -479,7 +520,13 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	case STABS_STR_D_STRUCT:
 	case STABS_STR_D_UNION:
 	  type->type = token == STABS_STR_D_STRUCT ? STABS_TYPE_STRUCT : STABS_TYPE_UNION;
-	  edfmt_stabs_struct(&type->u.struct_union, str);
+
+	  edfmt_stabs_ctypenum(type->cnum, STABS_CTYPENUM_SIZE, &type->num);
+
+	  HASH_ADDX(&type_ref, type->cnum, type);
+	  addtype = 0;
+      
+	  edfmt_stabs_struct(&(type->u.struct_union), str);
 	  break;
 	case STABS_STR_D_BITSTRING:
 	  break;
@@ -487,16 +534,19 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
     }
 
   /* Add it into hash table */
-  edfmt_stabs_ctypenum(type->cnum, STABS_CTYPENUM_SIZE, &type->num);
-  HASH_ADDX(&type_ref, type->cnum, type);
-
+  if (type && addtype)
+    {
+      edfmt_stabs_ctypenum(type->cnum, STABS_CTYPENUM_SIZE, &type->num);
+      HASH_ADDX(&type_ref, type->cnum, type);
+    }
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
 /* Parse the string */
 edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 {
-  char			token;
+  char			token, *save_str;
   char			name[STABS_NAME_SIZE];
   edfmtstabsdata_t 	*data;
 
@@ -632,8 +682,30 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_TYPE_STRUCT:
 	case STABS_STR_T_TYPE_NAME:
 	  data->scope = STABS_SCOPE_TYPE;
+	  save_str = *str;
 	  data->type = edfmt_stabs_type(str);
 	  data->type->data = data;
+
+	  /* Cross reference types */
+	  if (data->type->type == STABS_TYPE_STRUCT
+	      || data->type->type == STABS_TYPE_UNION
+	      || data->type->type == STABS_TYPE_ENUM)
+	    {
+	      switch(data->type->type)
+		{
+		case STABS_TYPE_STRUCT:
+		  token = STABS_STR_D_STRUCT;
+		  break;
+		case STABS_TYPE_UNION:
+		  token = STABS_STR_D_UNION;
+		  break;
+		case STABS_TYPE_ENUM:
+		  token = STABS_STR_D_ENUM;
+		  break;
+		}
+
+	      edfmt_stabs_update_cref(data->type, token);
+	    }
 	  break;
 
 	  /* Argument passed by reference */
@@ -691,6 +763,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 
   if (type_ref.ent == NULL)
     hash_init(&type_ref, STABS_HNAME_TYPE_REF, 50, ASPECT_TYPE_UNKNOW);
+
+  if (type_cross_ref.ent == NULL)
+    hash_init(&type_cross_ref, STABS_HNAME_TYPE_CROSS_REF, 50, ASPECT_TYPE_UNKNOW);
   
   /* Initialise global variables */
   stabs_datastr = (char *) elfsh_get_raw(stabs_sect_str);
@@ -859,7 +934,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  printf("%s - %s - %s\n", current_file->path, current_file->file, str);
 #endif
 
-	  data = edfmt_stabs_data(&str);
+	  data = STABS_DATA(&str);
 
 	  if (data)
 	    {
@@ -886,6 +961,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
     }
 
   hash_empty(STABS_HNAME_TYPE_REF);
+  hash_empty(STABS_HNAME_TYPE_CROSS_REF);
 
   file->debug_format.stabs = (void *) stabs_info;
   stabs_info = NULL;
@@ -893,5 +969,116 @@ int			edfmt_stabs_parse(elfshobj_t *file)
   current_func = NULL;
   afile = NULL;
   
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Clean each stabs file */
+static int		edfmt_stabs_clean_file(edfmtstabsfile_t *file)
+{
+  int			i = 0;
+  edfmtstabsfile_t	*stabs_file, *fileprev;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Every element on the list */
+  for (stabs_file = file, fileprev = NULL; 
+       stabs_file != NULL; 
+       fileprev = stabs_file, stabs_file = stabs_file->next)
+    {
+      /* Function structure */
+      {
+	edfmtstabsfunc_t *func, *funcprev;
+
+	for (func = stabs_file->func, funcprev = NULL; 
+	     func != NULL; 
+	     funcprev = func, func = func->next)
+	  {
+	    /* Clean allocated arguments */
+	    for (i = 0; func->args[i] &&  i < STABS_MAX_ARGUMENTS; i++)
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, func->args[i]);
+
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, funcprev);
+	  }
+
+	if (funcprev)
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, funcprev);
+      }
+
+      /* Line structure */
+      {
+	edfmtstabsline_t *line, *lineprev;
+
+	for (line = stabs_file->line, lineprev = NULL; 
+	     line != NULL;
+	     lineprev = line, line = line->next)
+	  {
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, lineprev);
+	  }
+
+	if (lineprev)
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, lineprev);
+      }
+
+      /* Data structure */
+      {
+	edfmtstabsdata_t *data, *dataprev;
+
+	for (data = stabs_file->vars, dataprev = NULL; 
+	     data != NULL;
+	     dataprev = data, data = data->next)
+	  {
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, dataprev);
+	  }
+
+	if (dataprev)
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, dataprev);
+      }
+
+      /* Type structure */
+      {
+	edfmtstabstype_t *type, *typeprev;
+
+	for (type = stabs_file->types, typeprev = NULL; 
+	     type != NULL;
+	     typeprev = type, type = type->next)
+	  {
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, typeprev);
+	  }
+
+	if (typeprev)
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, typeprev);
+      }
+
+      /* We clean include as weel */
+      if (stabs_file->inc)
+	edfmt_stabs_clean_file(stabs_file->inc);
+
+      XFREE(__FILE__, __FUNCTION__, __LINE__, fileprev);
+    }
+
+  if (fileprev)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, fileprev);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Clean stabs allocated structures */
+int			edfmt_stabs_clean(elfshobj_t *file)
+{
+  edfmtstabsinfo_t 	*info;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+ 
+  info = edfmt_stabs_getinfo(file);
+
+  if (!info)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  if (info->dir_list)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, info->dir_list);
+
+  if (info->file_list)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, info->file_list);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

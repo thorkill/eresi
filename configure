@@ -414,6 +414,10 @@ echo "	@echo 'Building libelfsh...' "				>> Makefile
 echo "	@cd libelfsh && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
 
+echo "	@echo 'Building libedfmt...'                     "	>> Makefile
+echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile
+echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
+
 if [ "$ELFSHNET" = "1" ]; then
 
 echo "	@echo 'Building libdumpelfsh...' "			>> Makefile
@@ -429,10 +433,6 @@ echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
 echo "	@echo 'Building libmjollnir...'			"      	>> Makefile
 echo "	@cd libmjollnir && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Libmjollnir has been built successfully.'"	>> Makefile
-
-echo "	@echo 'Building libedfmt...'                     "	>> Makefile
-echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile
-echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
 
 echo "	@echo 'Building librevm...'			"      	>> Makefile
 echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile

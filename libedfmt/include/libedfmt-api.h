@@ -67,10 +67,12 @@ struct			s_efile
   /* Types */
   edfmttype_t		*types;
   edfmttype_t		*ltype;
+  hash_t		htype;
 
   /* Variables */
   edfmtvar_t		*vars;
-  edfmtvar_t		*lvar;  
+  edfmtvar_t		*lvar;
+  hash_t		hvar;
 
   struct s_efile	*next;
 
@@ -88,10 +90,12 @@ typedef struct		s_einfo
   /* Types */
   edfmttype_t		*types;
   edfmttype_t		*ltype;
+  hash_t		htype;
 
   /* Variables */
   edfmtvar_t		*vars;
   edfmtvar_t		*lvar;
+  hash_t		hvar;
 }			edfmtinfo_t;
 
 #define HASH_ADDX(_table, _name, _value) 			\

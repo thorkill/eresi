@@ -31,7 +31,7 @@ char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
   buf[csize - 1] = 0x00;
 
   *str += csize;
-
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 

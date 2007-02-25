@@ -45,6 +45,7 @@
 #include <stdarg.h> 
 #include <libelfsh.h>
 #include <libui.h>
+#include <libedfmt.h>
 
 #if defined(ELFSHNET)
  #include <libdump.h>

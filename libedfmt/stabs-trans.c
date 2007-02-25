@@ -13,23 +13,8 @@
 
 hash_t types_added;
 
-static edfmttype_t     	*edfmt_stabs_transform_type_get(edfmtstabstype_t *type)
-{
-  edfmttype_t		*stype = NULL;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
-
-  if (!type)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameters", NULL);
-
-  stype = (edfmttype_t *) hash_get(&types_added, type->cnum);
-
-  if (stype)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, stype);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
-}
+/* Optimize stack allocation by setting a global pointer for string things */
+char buf[BUFSIZ];
 
 static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, u_char main_type)
 {
@@ -37,8 +22,8 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   edfmttype_t		*stype = NULL;
   edfmttype_t		*ftype = NULL;
   edfmtstabsattr_t	*attr;
-  char			buf[BUFSIZ];
   char			*str;
+  int			addtype = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
@@ -58,15 +43,29 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
     {
     case STABS_TYPE_UNION:
     case STABS_TYPE_STRUCT:
+      str = type->data->name;
+      if (!str)
+	{
+	  snprintf(buf, BUFSIZ - 1, "s_(%d)", rand() % 99999);
+	  str = buf;
+	}
+
       if (type->type == STABS_TYPE_STRUCT)
 	{
-	  etype = edfmt_add_type_struct(type->data->name,
+	  etype = edfmt_add_type_struct(str,
 					(int) type->u.struct_union.size);
 	}
       else
 	{
-	  etype = edfmt_add_type_union(type->data->name,
+	  etype = edfmt_add_type_union(str,
 				       (int) type->u.struct_union.size);
+	}
+
+      if (etype)
+	{
+	  type->transtype = etype;
+	  HASH_ADDX(&types_added, type->cnum, etype);
+	  addtype = 0;
 	}
 
       for (attr = type->u.struct_union.attr; attr != NULL; attr = attr->next)
@@ -74,7 +73,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	  if (attr->type)
 	    {
 	      stype = edfmt_stabs_transform_type_adv(attr->type, 0);
-		
+
 	      ftype = edfmt_add_type_attr(etype, attr->name, 
 					  attr->start, attr->size, stype);
 	    }
@@ -100,32 +99,59 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
     case STABS_TYPE_VOID:
       etype = edfmt_add_type_void(type->data->name);
       break;
+    case STABS_TYPE_CONST:
+    case STABS_TYPE_FUNC:
     case STABS_TYPE_LINK:
     case STABS_TYPE_REF:
     case STABS_TYPE_PTR:
-      stype = edfmt_stabs_transform_type_adv(type->u.link, 0);
-
-      str = type->data->name;
-      if (str == NULL || !str[0])
+    case STABS_TYPE_CLINK:
+      if (type->type == STABS_TYPE_CLINK)
 	{
-	  snprintf(buf, BUFSIZ - 1, "*%s", stype->name);
-	  str = buf;
+	  /* Cross reference not found, that can happen */
+	  if (type->u.link == NULL)
+	    {
+	      etype = edfmt_add_type_unk("unk_cref");
+	    }
+	  else
+	    type->type = STABS_TYPE_LINK;
 	}
 
-      if (type->type == STABS_TYPE_LINK)
-	etype = edfmt_add_type_link(str, stype);
-      else
-	etype = edfmt_add_type_ptr(str, stype);
+      if (etype == NULL)
+	{
+	  stype = edfmt_stabs_transform_type_adv(type->u.link, 0);
+	  
+	  switch(type->type)
+	    {
+	    case STABS_TYPE_CONST:
+	      snprintf(buf, BUFSIZ - 1, "(const:%s)", stype->name);
+	      str = buf;
+	      break;
+	    case STABS_TYPE_FUNC:
+	      snprintf(buf, BUFSIZ - 1, "(func:%s)()", stype->name);
+	      str = buf;
+	      break;
+	    default:
+	      str = type->data->name;
+	      if (str == NULL || !str[0])
+		{
+		  snprintf(buf, BUFSIZ - 1, "*%s", stype->name);
+		  str = buf;
+		}
+	    }
+	  
+	  if (type->type == STABS_TYPE_LINK)
+	    etype = edfmt_add_type_link(str, stype);
+	  else
+	    etype = edfmt_add_type_ptr(str, stype);
+	}
       break;
-    case STABS_TYPE_FUNC:
     case STABS_TYPE_VOLATILE:
-    case STABS_TYPE_CONST:
     case STABS_TYPE_ENUM:
       /* Not yet */
       break;
     }
   
-  if (etype)
+  if (etype && addtype)
     {
       type->transtype = etype;
       HASH_ADDX(&types_added, type->cnum, etype);

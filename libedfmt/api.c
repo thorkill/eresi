@@ -170,8 +170,12 @@ int			edfmt_add_init(elfshobj_t *file)
   /* Init the object if needed */
   if (file->debug_format.uni == NULL) 
     {				
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
-      uniinfo = file->debug_format.uni;				
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
+      uniinfo = file->debug_format.uni;
+
+      hash_init(&(uniinfo->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
     } 
   else 
     {							
@@ -200,6 +204,9 @@ int			edfmt_add_end()
 /* Update type list */
 int			edfmt_update_type(edfmttype_t *type)
 {
+  edfmttype_t		*seek_type;
+  hash_t		*htable;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!uniinfo)
@@ -208,6 +215,16 @@ int			edfmt_update_type(edfmttype_t *type)
 
   type->file = uniinfo->lfile;
 
+  /* Setup hash table depending of current scope */
+  htable = uniinfo->lfile == NULL ? &(uniinfo->htype) : &(uniinfo->lfile->htype);
+
+  /* Research on the right table */
+  seek_type = (edfmttype_t *) hash_get(htable, type->name);
+  
+  /* We already have this type */
+  if (seek_type)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   /* Global scope */
   if (uniinfo->lfile == NULL)
     {
@@ -215,19 +232,20 @@ int			edfmt_update_type(edfmttype_t *type)
 	uniinfo->types = type;
       else
 	uniinfo->ltype->next = type;
-
+      
       uniinfo->ltype = type;
     }
-  else
+  else /* Local scope */
     {
-      /* Local scope */
       if (uniinfo->lfile->types == NULL)
 	uniinfo->lfile->types = type;
       else
 	uniinfo->lfile->ltype->next = type;
-
+      
       uniinfo->lfile->ltype = type;
     }
+
+  hash_add(htable, aproxy_strdup(type->name), (void *) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -392,6 +410,9 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   EDFMT_COPY_NAME(file, name);
   file->start = start;
   file->end = end;
+
+  hash_init(&(file->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
 
   /* Update pointers depending if he get a parrent */
   if (parent_file != NULL)
@@ -595,6 +616,9 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
   ltype->start = start;
   ltype->size = size ? size : tstruct->size - start;
 
+  if (type && type->size > 0)
+    ltype->size = type->size;
+
   if (tstruct->child == NULL)
     tstruct->child = ltype;
   else
@@ -604,7 +628,7 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
 
       if (last)
 	{
-	  if (last->size == tstruct->size - last->start)
+	  if (tstruct->type != EDFMT_TYPE_UNION && last->size == tstruct->size - last->start)
 	    last->size = start - last->start;
 
 	  last->next = ltype;
