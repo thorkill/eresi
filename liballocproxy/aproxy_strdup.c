@@ -4,10 +4,10 @@
 ** Made by mayhem for the ERESI project
 **
 */
-#include "malloc.h"
+#include "aproxy.h"
 #include <string.h>
 
-char            *aproxy_strdup(const char *s)
+char            *strdup(const char *s)
 {
   size_t        size;
   void          *dup;
@@ -15,7 +15,7 @@ char            *aproxy_strdup(const char *s)
   if (!s)
     return (NULL);
   size = strlen((char *) s);
-  dup = (void *) aproxy_malloc(size + 1);
+  dup = (void *) aproxy(size + 1);
   if (!dup)
     return (NULL);
   memcpy(dup, (char *) s, size + 1);

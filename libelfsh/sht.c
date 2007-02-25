@@ -139,7 +139,7 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
       name = elfsh_get_section_name(file, s);
       if (s->name != NULL)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,s->name);
-      s->name = (name != NULL ? aproxy_strdup(name) : NULL);
+      s->name = (name != NULL ? strdup(name) : NULL);
  
     }
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

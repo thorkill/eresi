@@ -170,7 +170,7 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
       
     /* Add into abbrev table */
     edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num);
-    hash_add(abbrev_table, aproxy_strdup(ckey), (void *) start_pos);
+    hash_add(abbrev_table, strdup(ckey), (void *) start_pos);
   } while (dwarf2_pos(abbrev) < dwarf2_size(abbrev));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

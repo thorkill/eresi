@@ -17,7 +17,7 @@ elfshobj_t		*elfsh_load_obj(char *name)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
 
-  file->name = aproxy_strdup(name);
+  file->name = strdup(name);
  
 
   /* Get the file size on disk */

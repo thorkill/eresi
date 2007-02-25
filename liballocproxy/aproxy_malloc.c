@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: aproxy_malloc.c,v 1.1 2007-02-23 05:27:47 may Exp $
+  $Id: aproxy_malloc.c,v 1.2 2007-02-25 22:13:33 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -275,7 +275,7 @@
 #include <sys/types.h>
 #endif
 
-#include <malloc-machine.h>
+#include <aproxy-machine.h>
 
 #ifdef _LIBC
 #include <stdio-common/_itoa.h>
@@ -495,8 +495,8 @@ extern "C" {
 #define public_mUSABLe   __malloc_usable_size
 #define public_iCALLOc   __libc_independent_calloc
 #define public_iCOMALLOc __libc_independent_comalloc
-#define public_gET_STATe __aproxy_malloc_get_state
-#define public_sET_STATe __aproxy_malloc_set_state
+#define public_gET_STATe __aproxy_get_state
+#define public_sET_STATe __aproxy_set_state
 #define malloc_getpagesize __getpagesize()
 #define open             __open
 #define mmap             __mmap
@@ -513,20 +513,20 @@ Void_t *(*__morecore)(ptrdiff_t) = __default_morecore;
 #define public_cALLOc    aproxy_calloc 
 #define public_fREe      aproxy_free
 #define public_cFREe     aproxy_cfree
-#define public_mALLOc    aproxy_malloc
+#define public_mALLOc    aproxy
 #define public_mEMALIGn  aproxy_memalign
 #define public_rEALLOc   aproxy_realloc
 #define public_vALLOc    aproxy_valloc
 #define public_pVALLOc   aproxy_pvalloc
 #define public_mALLINFo  aproxy_mallinfo
 #define public_mALLOPt   aproxy_mallopt
-#define public_mTRIm     aproxy_malloc_trim
-#define public_mSTATs    aproxy_malloc_stats
-#define public_mUSABLe   aproxy_malloc_usable_size
+#define public_mTRIm     aproxy_trim
+#define public_mSTATs    aproxy_stats
+#define public_mUSABLe   aproxy_usable_size
 #define public_iCALLOc   aproxy_independent_calloc
 #define public_iCOMALLOc aproxy_independent_comalloc
-#define public_gET_STATe aproxy_aproxy_malloc_get_state
-#define public_sET_STATe aproxy_malloc_set_state
+#define public_gET_STATe aproxy_aproxy_get_state
+#define public_sET_STATe aproxy_set_state
 #endif /* _LIBC */
 #endif /* USE_DL_PREFIX */
 
@@ -1258,7 +1258,7 @@ void     public_mSTATs();
 #endif
 
 /*
-  aproxy_malloc_get_state(void);
+  aproxy_get_state(void);
 
   Returns the state of all malloc variables in an opaque data
   structure.
@@ -1270,10 +1270,10 @@ Void_t*  public_gET_STATe();
 #endif
 
 /*
-  aproxy_malloc_set_state(Void_t* state);
+  aproxy_set_state(Void_t* state);
 
   Restore the state of all malloc variables from data obtained with
-  aproxy_malloc_get_state().
+  aproxy_get_state().
 */
 #if __STD_C
 int      public_sET_STATe(Void_t*);
@@ -1501,7 +1501,7 @@ int      __posix_memalign(void **, size_t, size_t);
 } /* end of extern "C" */
 #endif
 
-#include "malloc.h"
+#include "aproxy.h"
 
 #ifndef BOUNDED_N
 #define BOUNDED_N(ptr, sz) (ptr)
@@ -2358,10 +2358,10 @@ static Void_t* realloc_hook_ini __MALLOC_P ((Void_t* ptr, size_t sz,
 static Void_t* memalign_hook_ini __MALLOC_P ((size_t alignment, size_t sz,
 					      const __malloc_ptr_t caller));
 
-void weak_variable (*__aproxy_malloc_initialize_hook) (void) = NULL;
+void weak_variable (*__aproxy_initialize_hook) (void) = NULL;
 void weak_variable (*__aproxy_free_hook) (__malloc_ptr_t __ptr,
 				   const __malloc_ptr_t) = NULL;
-__malloc_ptr_t weak_variable (*__aproxy_malloc_hook)
+__malloc_ptr_t weak_variable (*__aproxy_hook)
      (size_t __size, const __malloc_ptr_t) = malloc_hook_ini;
 __malloc_ptr_t weak_variable (*__aproxy_realloc_hook)
      (__malloc_ptr_t __ptr, size_t __size, const __malloc_ptr_t)
@@ -3354,7 +3354,7 @@ public_mALLOc(size_t bytes)
   mstate ar_ptr;
   Void_t *victim;
 
-  __malloc_ptr_t (*hook) (size_t, __const __malloc_ptr_t) = __aproxy_malloc_hook;
+  __malloc_ptr_t (*hook) (size_t, __const __malloc_ptr_t) = __aproxy_hook;
   if (hook != NULL)
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
@@ -3577,7 +3577,7 @@ public_vALLOc(size_t bytes)
 					__const __malloc_ptr_t)) =
     __aproxy_memalign_hook;
 
-  if(__aproxy_malloc_initialized < 0)
+  if(__aproxy_initialized < 0)
     aproxy_ptmalloc_init ();
 
   if (hook != NULL)
@@ -3601,7 +3601,7 @@ public_pVALLOc(size_t bytes)
 					__const __malloc_ptr_t)) =
     __aproxy_memalign_hook;
 
-  if(__aproxy_malloc_initialized < 0)
+  if(__aproxy_initialized < 0)
     aproxy_ptmalloc_init ();
   if (hook != NULL)
     return (*hook)(mp_.pagesize,
@@ -3625,7 +3625,7 @@ public_cALLOc(size_t n, size_t elem_size)
   unsigned long nclears;
   INTERNAL_SIZE_T* d;
   __malloc_ptr_t (*hook) __MALLOC_PMT ((size_t, __const __malloc_ptr_t)) =
-    __aproxy_malloc_hook;
+    __aproxy_hook;
 
   /* size_t is unsigned so the behavior on overflow is defined.  */
   bytes = n * elem_size;
@@ -3816,7 +3816,7 @@ struct mallinfo public_mALLINFo()
 {
   struct mallinfo m;
 
-  if(__aproxy_malloc_initialized < 0)
+  if(__aproxy_initialized < 0)
     aproxy_ptmalloc_init ();
   (void)mutex_lock(&main_arena.mutex);
   m = mALLINFo(&main_arena);
@@ -5281,7 +5281,7 @@ void mSTATs()
   long stat_lock_direct = 0, stat_lock_loop = 0, stat_lock_wait = 0;
 #endif
 
-  if(__aproxy_malloc_initialized < 0)
+  if(__aproxy_initialized < 0)
     aproxy_ptmalloc_init ();
 #ifdef _LIBC
   _IO_flockfile (stderr);
@@ -5352,7 +5352,7 @@ int mALLOPt(param_number, value) int param_number; int value;
   mstate av = &main_arena;
   int res = 1;
 
-  if(__aproxy_malloc_initialized < 0)
+  if(__aproxy_initialized < 0)
     aproxy_ptmalloc_init ();
   (void)mutex_lock(&av->mutex);
   /* Ensure initialization/consolidation */
@@ -5603,8 +5603,8 @@ strong_alias (__libc_mallopt, __mallopt) weak_alias (__libc_mallopt, mallopt)
 weak_alias (__malloc_stats, malloc_stats)
 weak_alias (__malloc_usable_size, malloc_usable_size)
 weak_alias (__malloc_trim, malloc_trim)
-weak_alias (__aproxy_malloc_get_state, aproxy_malloc_get_state)
-weak_alias (__aproxy_malloc_set_state, aproxy_malloc_set_state)
+weak_alias (__aproxy_get_state, aproxy_get_state)
+weak_alias (__aproxy_set_state, aproxy_set_state)
 
 #endif /* _LIBC */
 

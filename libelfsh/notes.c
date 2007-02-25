@@ -48,9 +48,9 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Corrupted Notes section", NULL);
 
-      e->note      = aproxy_strdup((char *) notes->data + offset + sizeof(int) * 3);
+      e->note      = strdup((char *) notes->data + offset + sizeof(int) * 3);
  
-      e->desc      = aproxy_strdup((char *) notes->data + offset + sizeof(int) * 3 
+      e->desc      = strdup((char *) notes->data + offset + sizeof(int) * 3 
  
 			    + e->namesz);
       

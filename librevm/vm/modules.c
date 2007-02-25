@@ -72,7 +72,7 @@ int		cmd_modload()
   new->help = dlsym(new->handler, ELFSH_HELP);
 #endif
   new->id   = ++world.state.lastid;
-  new->path = aproxy_strdup(name);
+  new->path = strdup(name);
  
   time(&new->loadtime);
   new->next = world.modlist;

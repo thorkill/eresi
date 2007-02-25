@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.22 2007-02-25 15:44:42 thor Exp $
+ * $Id: function.c,v 1.23 2007-02-25 22:13:33 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -57,30 +57,33 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = aproxy_malloc(buf->allocated);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->parentnbr)))
     {
-     buf->allocated += getpagesize();
-     buf->data = aproxy_realloc(buf->data, buf->allocated);
+      buf->allocated += getpagesize();
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	       buf->data, buf->data, buf->allocated, -1);
     }
- curOff = buf->maxlen;
-
- cur = fnc->parentfuncs;
-
- while(cur)
-   {
-     memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr , sizeof(elfsh_Addr));
-     buf->maxlen += sizeof(elfsh_Addr);
-     cur = cur->next;
-   }
-
- PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
+  
+  curOff = buf->maxlen;
+  cur = fnc->parentfuncs;
+  
+  while (cur)
+    {
+      memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr , sizeof(elfsh_Addr));
+      buf->maxlen += sizeof(elfsh_Addr);
+      cur = cur->next;
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
 }
 
 
-
+/* XXX: Almost complete duplicate code from the previous functions !!!!!! */
+/* Please merge this in a single modular function */
 u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 {
   u_int curOff; 
@@ -94,76 +97,80 @@ u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = aproxy_malloc(buf->allocated);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
-  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->childnbr)))
+  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr) * fnc->childnbr)))
     {
      buf->allocated += getpagesize();
-     buf->data = aproxy_realloc(buf->data, buf->allocated);
+     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	      buf->data, buf->data, buf->allocated, -1);
     }
- curOff = buf->maxlen;
-
- cur = fnc->childfuncs;
-
- while(cur)
-   {
-     memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr, sizeof(elfsh_Addr));
-     buf->maxlen += sizeof(elfsh_Addr);
-     cur = cur->next;
-   }
-
- PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
+  
+  curOff = buf->maxlen;
+  cur = fnc->childfuncs;
+  
+  while (cur)
+    {
+      memcpy(buf->data + buf->maxlen, (char *) &cur->vaddr, sizeof(elfsh_Addr));
+      buf->maxlen += sizeof(elfsh_Addr);
+      cur = cur->next;
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
 }
+
 
 /* Copy the function in a special buffer to fingerprint it */
 int		mjr_function_copy(mjrcontext_t  *ctx, 
-				       unsigned char *src, 
-				       unsigned char *dst, 
-				       int	     mlen)
+				  unsigned char *src, 
+				  unsigned char *dst, 
+				  int		mlen)
 {
   int             n, ilen, p;
   asm_instr       instr, hist[2];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (p = ilen = n = 0; n < mlen; n += ilen) 
-  {
-    ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
-    if (ilen <= 0)
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+    {
+      ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
+      if (ilen <= 0)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
       
-    /* Filter this out */
-    if ((ctx->proc.type == ASM_PROC_IA32 &&instr.instr != ASM_NOP) ||
-    	(ctx->proc.type == ASM_PROC_SPARC &&instr.instr != ASM_SP_NOP))
-      {
-      memcpy(dst+p, src, ilen);
-      p += ilen;
-    }
-
-    /* epilog */
-    if (ctx->proc.type == ASM_PROC_IA32)
-      {
-      if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
-				       hist[0].instr == ASM_POP ||
-				       hist[0].instr == ASM_MOV))
+      /* Filter this out */
+      if ((ctx->proc.type == ASM_PROC_IA32  && instr.instr != ASM_NOP) ||
+	  (ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
 	{
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	  }
-    } 
-    else if (ctx->proc.type == ASM_PROC_SPARC)
-      {
-      if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
-	  hist[0].instr == ASM_SP_RETL)
-	{	  	
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  memcpy(dst + p, src, ilen);
+	  p += ilen;
 	}
-    }
-    hist[1] = hist[0];
-    hist[0] = instr;
-  }  
+      
+      /* epilog */
+      if (ctx->proc.type == ASM_PROC_IA32)
+	{
+	  if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
+					   hist[0].instr == ASM_POP ||
+					   hist[0].instr == ASM_MOV))
+	    {
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	    }
+	} 
+      else if (ctx->proc.type == ASM_PROC_SPARC)
+	{
+	  if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
+	      hist[0].instr == ASM_SP_RETL)
+	    {	  	
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	    }
+	}
+      hist[1] = hist[0];
+      hist[0] = instr;
+    }  
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to copy function", 0);
+	       "Unable to copy function", 0);
 }
+
 
 
 /* Finger print a function using X method */
@@ -205,7 +212,7 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
      MD5_Init(&md5ctx);
      MD5_Update(&md5ctx, fbuf, mlen);
      MD5_Final(digest, &md5ctx);
-     ret = aproxy_malloc(33);
+     XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, 33, NULL);
      if (!ret)
        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
      memset(ret, 0, 33);
@@ -232,7 +239,8 @@ mjrfunc_t	*mjr_function_create(mjrcontext_t *c,
  mjrfunc_t	*fun;
  
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
- fun = aproxy_malloc(sizeof(mjrfunc_t));
+ XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	fun, sizeof(mjrfunc_t), NULL);
  fun->vaddr = addr;
  fun->size  = size;
  fun->first = e;
@@ -260,7 +268,7 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = aproxy_malloc(sizeof(mjrlink_t));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, n, sizeof(mjrlink_t), );
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->childfuncs;
@@ -272,8 +280,8 @@ void		mjr_function_add_child(mjrfunc_t *fnc,
 
 /**
  ** Expand the list of parent functions
- **/
-
+ */
+/* XXX: Duplicate ! please factorize with the previous function ! */
 void		mjr_function_add_parent(mjrfunc_t *fnc,
 					elfsh_Addr vaddr,
 					int type)
@@ -281,8 +289,8 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   mjrlink_t *n;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  n = aproxy_malloc(sizeof(mjrlink_t));
+  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, n, sizeof(mjrlink_t), );
   n->vaddr = vaddr;
   n->type = type;
   n->next = fnc->parentfuncs;
@@ -292,7 +300,7 @@ void		mjr_function_add_parent(mjrfunc_t *fnc,
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-void *mjr_functions_load(mjrcontext_t *ctxt)
+void		*mjr_functions_load(mjrcontext_t *ctxt)
 {
   int		index,findex;
   elfshsect_t	*sect,*flowsect;
@@ -302,7 +310,9 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, 
+				   ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 
+				   0, 0, 0);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No function section : use analyse command", NULL);
@@ -356,6 +366,8 @@ void *mjr_functions_load(mjrcontext_t *ctxt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
+
+
 /* Retreive control flow section content if any */
 mjrblock_t*	mjr_functions_get(mjrcontext_t *ctxt)
 {
@@ -364,7 +376,8 @@ mjrblock_t*	mjr_functions_get(mjrcontext_t *ctxt)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, 
+				   ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No functions section : use analyse command", NULL);
@@ -411,13 +424,15 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = aproxy_malloc(buf->allocated);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
     {
       buf->allocated += getpagesize();
-      buf->data = aproxy_realloc(buf->data, buf->allocated);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	       buf->data, buf->data, buf->allocated, -1);
     }
   curfunc         = (mjrfunc_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curfunc, cur, sizeof(mjrfunc_t));
@@ -430,6 +445,8 @@ int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+/* XXX: You should never use printf but vm_output */
 int			mjr_functions_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;
@@ -444,7 +461,8 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Remove previous control section if any */
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, 
+				   ELFSH_SECTION_NAME_EDFMT_FUNCTIONS, 0, 0, 0);
   if (sect)
     elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_FUNCTIONS);
 
@@ -471,7 +489,8 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
       func = hash_get(&ctxt->funchash, keys[index]);
       mjr_function_dump((char *)__FUNCTION__, func);
 
-      /* 1st Save flow information and get offset from the beginning of .edfmt.fcontrol */
+      /* 1st Save flow information and get offset from the beginning 
+	 of .edfmt.fcontrol */
       flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
       fprintf(D_DESC, " [D] %s: parentOffset: %d\n", __FUNCTION__, flowOffp);
 

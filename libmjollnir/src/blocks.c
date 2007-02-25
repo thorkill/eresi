@@ -212,13 +212,15 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
   if (!buf->data) 
     {
       buf->allocated = getpagesize();;
-      buf->data = aproxy_malloc(buf->allocated);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
   else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
     {
       buf->allocated += getpagesize();
-      buf->data = aproxy_realloc(buf->data, buf->allocated);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+	       buf->data, buf->data, buf->allocated, -1);
     }
   curblock         = (mjrblock_t *) ((char *) buf->data + buf->maxlen);
   memcpy(curblock, cur, sizeof(mjrblock_t));
@@ -307,7 +309,7 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz)
   mjrblock_t	*t;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  t = aproxy_malloc(sizeof (mjrblock_t));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, t, sizeof (mjrblock_t), NULL);
   memset(t, 0, sizeof (mjrblock_t));
   t->vaddr = vaddr;
   t->size  = sz;
@@ -344,7 +346,7 @@ void		mjr_block_add_caller(mjrblock_t *blk,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  n = aproxy_malloc(sizeof (mjrlink_t));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, n, sizeof (mjrlink_t), );
   n->vaddr = vaddr;
   n->type = type;
   n->next = blk->caller;

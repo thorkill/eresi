@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: malloc.h,v 1.3 2007-02-23 05:27:47 may Exp $
+  $Id: aproxy.h,v 1.1 2007-02-25 22:13:33 may Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
@@ -128,33 +128,33 @@ extern "C" {
 #endif
 
 /* Allocate SIZE bytes of memory.  */
-extern __malloc_ptr_t malloc __MALLOC_P ((size_t __size)) __attribute_malloc__;
+extern __malloc_ptr_t aproxy_malloc __MALLOC_P ((size_t __size)) __attribute_malloc__;
 
 /* Allocate NMEMB elements of SIZE bytes each, all initialized to 0.  */
-extern __malloc_ptr_t calloc __MALLOC_P ((size_t __nmemb, size_t __size))
+extern __malloc_ptr_t aproxy_calloc __MALLOC_P ((size_t __nmemb, size_t __size))
        __attribute_malloc__;
 
 /* Re-allocate the previously allocated block in __ptr, making the new
    block SIZE bytes long.  */
-extern __malloc_ptr_t realloc __MALLOC_P ((__malloc_ptr_t __ptr,
+extern __malloc_ptr_t aproxy_realloc __MALLOC_P ((__malloc_ptr_t __ptr,
 					   size_t __size))
        __attribute_malloc__;
 
 /* Free a block allocated by `malloc', `realloc' or `calloc'.  */
-extern void free __MALLOC_P ((__malloc_ptr_t __ptr));
+extern void aproxy_free __MALLOC_P ((__malloc_ptr_t __ptr));
 
 /* Free a block allocated by `calloc'. */
-extern void cfree __MALLOC_P ((__malloc_ptr_t __ptr));
+extern void aproxy_cfree __MALLOC_P ((__malloc_ptr_t __ptr));
 
 /* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
-extern __malloc_ptr_t memalign __MALLOC_P ((size_t __alignment, size_t __size));
+extern __malloc_ptr_t aproxy_memalign __MALLOC_P ((size_t __alignment, size_t __size));
 
 /* Allocate SIZE bytes on a page boundary.  */
-extern __malloc_ptr_t valloc __MALLOC_P ((size_t __size)) __attribute_malloc__;
+extern __malloc_ptr_t aproxy_valloc __MALLOC_P ((size_t __size)) __attribute_malloc__;
 
 /* Equivalent to valloc(minimum-page-that-holds(n)), that is, round up
    __size to nearest pagesize. */
-extern __malloc_ptr_t  pvalloc __MALLOC_P ((size_t __size))
+extern __malloc_ptr_t  aproxy_pvalloc __MALLOC_P ((size_t __size))
        __attribute_malloc__;
 
 /* Underlying allocation function; successive calls should return
@@ -228,11 +228,11 @@ extern int malloc_set_state __MALLOC_P ((__malloc_ptr_t __ptr));
 /* Called once when malloc is initialized; redefining this variable in
    the application provides the preferred way to set up the hook
    pointers. */
-extern void (*__aproxy_malloc_initialize_hook) __MALLOC_PMT ((void));
+extern void (*__aproxy_initialize_hook) __MALLOC_PMT ((void));
 /* Hooks for debugging and user-defined versions. */
 extern void (*__aproxy_free_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 					__const __malloc_ptr_t));
-extern __malloc_ptr_t (*__aproxy_malloc_hook) __MALLOC_PMT ((size_t __size,
+extern __malloc_ptr_t (*__aproxy_hook) __MALLOC_PMT ((size_t __size,
 						    __const __malloc_ptr_t));
 extern __malloc_ptr_t (*__aproxy_realloc_hook) __MALLOC_PMT ((__malloc_ptr_t __ptr,
 						     size_t __size,
@@ -243,7 +243,7 @@ extern __malloc_ptr_t (*__aproxy_memalign_hook) __MALLOC_PMT ((size_t __alignmen
 extern void (*__aproxy_after_morecore_hook) __MALLOC_PMT ((void));
 
 /* Activate a standard set of debugging hooks. */
-extern void __aproxy_malloc_check_init __MALLOC_P ((void));
+extern void __aproxy_check_init __MALLOC_P ((void));
 
 
 #ifdef __cplusplus

@@ -91,7 +91,7 @@ int		vm_display(char **cmd, u_int nbr)
 	vm_output(buf);
 	
 	/* Register displayed command in the script control flow */
-	str = aproxy_strdup(cmd[idx]);
+	str = strdup(cmd[idx]);
  
 	if (vm_exec_str(cmd[idx]) < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

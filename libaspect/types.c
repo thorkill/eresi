@@ -165,7 +165,7 @@ static aspectype_t	*aspect_type_create(char *label,
 	 newtype->childs, sizeof(hash_t), NULL);
 
   newtype->childs = NULL;
-  newtype->name   = aproxy_strdup(label);
+  newtype->name   = strdup(label);
  
     
   /* Add fields to types */
@@ -247,7 +247,7 @@ static aspectype_t	*aspect_type_create(char *label,
 		  XALLOC(__FILE__, __FUNCTION__, __LINE__,
 			 childtype, sizeof(aspectype_t), NULL);
 		  childtype->type = ASPECT_TYPE_UNKNOW;
-		  childtype->name = aproxy_strdup(typename);
+		  childtype->name = strdup(typename);
  
 		}
 	      else
@@ -295,7 +295,8 @@ int		aspect_type_register(char *label,
   /* The type ID is incremented here */
   aspect_type_nbr++;
   XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-	   aspect_typeinfo, aspect_typeinfo, aspect_type_nbr, -1);
+	   aspect_typeinfo, aspect_typeinfo, 
+	   sizeof(typeinfo_t) * aspect_type_nbr, -1);
   aspect_typeinfo[aspect_type_nbr - 1].name = label;
   aspect_typeinfo[aspect_type_nbr - 1].size = ret->size; 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -322,7 +323,7 @@ static int	aspect_basetype_create(u_int type, typeinfo_t *info)
   snprintf(hashname, sizeof(hashname), "type_%s", info->name);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	 newhash, sizeof(hash_t), -1);
-  hash_init(newhash, aproxy_strdup(hashname), 11, ASPECT_TYPE_UNKNOW);
+  hash_init(newhash, strdup(hashname), 11, ASPECT_TYPE_UNKNOW);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
@@ -334,7 +335,7 @@ int		aspect_basetypes_create()
   u_int		basesize;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  basesize = ASPECT_TYPE_BASENUM * (sizeof(char*) + sizeof(int));
+  basesize = ASPECT_TYPE_BASENUM * sizeof(typeinfo_t);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, aspect_typeinfo, basesize, -1);
   memcpy(aspect_typeinfo, aspect_typeinfo_base, basesize);
   for (index = 1; index < ASPECT_TYPE_BASENUM; index++)

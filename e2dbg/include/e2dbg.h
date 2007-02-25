@@ -9,6 +9,7 @@
  #define __E2DBG_H__
 
 #include "revm.h"
+#include "aproxy.h"
 
 #define		__DEBUG_E2DBG__		0
 #define		__DEBUG_MUTEX__		1

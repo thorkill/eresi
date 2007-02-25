@@ -128,7 +128,7 @@ revmobj_t		*vm_lookup_immed(char *param)
       if (ptr != NULL)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
       ptr = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
-      hash_add(&vars_hash, aproxy_strdup(param), ptr);
+      hash_add(&vars_hash, strdup(param), ptr);
  
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
@@ -180,7 +180,7 @@ revmobj_t		*vm_lookup_immed(char *param)
   ret = sscanf(param, "%[^\n]4095%c", lbuf, &eol);
   if (ret == 1)
     {
-      ptr = vm_create_IMMEDSTR(0, aproxy_strdup(lbuf));
+      ptr = vm_create_IMMEDSTR(0, strdup(lbuf));
  
       goto good;
     }
@@ -306,7 +306,7 @@ char			*vm_lookup_string(char *param)
     {
       vm_filter_zero(lbuf);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			 aproxy_strdup(lbuf));
+			 strdup(lbuf));
  
     }
 

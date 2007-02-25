@@ -218,7 +218,7 @@ revmobj_t	*vm_revmobj_lookup(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type map", NULL);
   var = hash_get(typehash, objectname);
-  if (!data)
+  if (!var)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
   data = (void *) var->addr;

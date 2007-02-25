@@ -328,7 +328,7 @@ char		*vm_stdinput()
 
     end:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-	   (*tmpbuf ? aproxy_strdup(tmpbuf) : NULL));
+	   (*tmpbuf ? strdup(tmpbuf) : NULL));
  
 
 #if defined(USE_READLN)
@@ -351,7 +351,7 @@ char		*vm_stdinput()
 	  /* XXX memory leak, this dup will never be freed */
 	  if (world.curjob->oldline)
 	   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-	    (aproxy_strdup(world.curjob->oldline)));
+	    (strdup(world.curjob->oldline)));
  
 
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
@@ -359,7 +359,7 @@ char		*vm_stdinput()
 	}
 
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-	   (aproxy_strdup(world.curjob->io.buf)));
+	   (strdup(world.curjob->io.buf)));
  
     }
 #endif
@@ -391,7 +391,7 @@ int		vm_initio()
   world.initial = world.curjob = initial;
   hash_init(&world.jobs, "jobs", 11, ASPECT_TYPE_UNKNOW);
   hash_add(&world.jobs, "local", initial);
-  initial->name = aproxy_strdup("local");
+  initial->name = strdup("local");
  
   hash_init(&initial->loaded,    
 	    "initial_loaded_files", 

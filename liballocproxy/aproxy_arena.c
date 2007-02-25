@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: aproxy_arena.c,v 1.1 2007-02-23 05:27:47 may Exp $ */
+/* $Id: aproxy_arena.c,v 1.2 2007-02-25 22:13:33 may Exp $ */
 
 /* Compile-time constants.  */
 
@@ -27,7 +27,7 @@
 #define HEAP_MAX_SIZE (1024*1024) /* must be a power of two */
 #endif
 
-#include "malloc.h"
+#include "aproxy.h"
 
 mstate  aproxy_int_new_arena(size_t);
 
@@ -88,7 +88,7 @@ static int stat_n_heaps;
 static unsigned long arena_mem;
 
 /* Already initialized? */
-int __aproxy_malloc_initialized = -1;
+int __aproxy_initialized = -1;
 
 /**************************************************************************/
 
@@ -239,7 +239,7 @@ ptmalloc_lock_all (void)
 {
   mstate ar_ptr;
 
-  if(__aproxy_malloc_initialized < 1)
+  if(__aproxy_initialized < 1)
     return;
   (void)mutex_lock(&list_lock);
   for(ar_ptr = &main_arena;;) {
@@ -247,9 +247,9 @@ ptmalloc_lock_all (void)
     ar_ptr = ar_ptr->next;
     if(ar_ptr == &main_arena) break;
   }
-  save_malloc_hook = __aproxy_malloc_hook;
+  save_malloc_hook = __aproxy_hook;
   save_free_hook = __aproxy_free_hook;
-  __aproxy_malloc_hook = malloc_atfork;
+  __aproxy_hook = malloc_atfork;
   __aproxy_free_hook = free_atfork;
   /* Only the current thread may perform malloc/free calls now. */
   tsd_getspecific(arena_key, save_arena);
@@ -261,10 +261,10 @@ ptmalloc_unlock_all (void)
 {
   mstate ar_ptr;
 
-  if(__aproxy_malloc_initialized < 1)
+  if(__aproxy_initialized < 1)
     return;
   tsd_setspecific(arena_key, save_arena);
-  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_hook = save_malloc_hook;
   __aproxy_free_hook = save_free_hook;
   for(ar_ptr = &main_arena;;) {
     (void)mutex_unlock(&ar_ptr->mutex);
@@ -286,11 +286,11 @@ ptmalloc_unlock_all2 (void)
 {
   mstate ar_ptr;
 
-  if(__aproxy_malloc_initialized < 1)
+  if(__aproxy_initialized < 1)
     return;
 #if defined _LIBC || defined MALLOC_HOOKS
   tsd_setspecific(arena_key, save_arena);
-  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_hook = save_malloc_hook;
   __aproxy_free_hook = save_free_hook;
 #endif
   for(ar_ptr = &main_arena;;) {
@@ -385,16 +385,16 @@ __aproxy_libc_malloc_pthread_startup (Bool first_time)
   if (first_time)
     {
       aproxy_ptmalloc_init_minimal ();
-      save_malloc_hook = __aproxy_malloc_hook;
+      save_malloc_hook = __aproxy_hook;
       save_memalign_hook = __aproxy_memalign_hook;
       save_free_hook = __aproxy_free_hook;
-      __aproxy_malloc_hook = malloc_starter;
+      __aproxy_hook = malloc_starter;
       __aproxy_memalign_hook = memalign_starter;
       __aproxy_free_hook = free_starter;
     }
   else
     {
-      __aproxy_malloc_hook = save_malloc_hook;
+      __aproxy_hook = save_malloc_hook;
       __aproxy_memalign_hook = save_memalign_hook;
       __aproxy_free_hook = save_free_hook;
     }
@@ -412,8 +412,8 @@ aproxy_ptmalloc_init (void)
 #endif
   int secure = 0;
 
-  if(__aproxy_malloc_initialized >= 0) return;
-  __aproxy_malloc_initialized = 0;
+  if(__aproxy_initialized >= 0) return;
+  __aproxy_initialized = 0;
 
 #ifdef _LIBC
 # if defined SHARED && defined USE_TLS && !USE___THREAD
@@ -434,10 +434,10 @@ aproxy_ptmalloc_init (void)
   /* With some threads implementations, creating thread-specific data
      or initializing a mutex may call malloc() itself.  Provide a
      simple starter version (realloc() won't work). */
-  save_malloc_hook = __aproxy_malloc_hook;
+  save_malloc_hook = __aproxy_hook;
   save_memalign_hook = __aproxy_memalign_hook;
   save_free_hook = __aproxy_free_hook;
-  __aproxy_malloc_hook = malloc_starter;
+  __aproxy_hook = malloc_starter;
   __aproxy_memalign_hook = memalign_starter;
   __aproxy_free_hook = free_starter;
 #  ifdef _LIBC
@@ -468,7 +468,7 @@ aproxy_ptmalloc_init (void)
   thread_atfork(ptmalloc_lock_all, ptmalloc_unlock_all, ptmalloc_unlock_all2);
 #ifndef NO_THREADS
 # ifndef NO_STARTER
-  __aproxy_malloc_hook = save_malloc_hook;
+  __aproxy_hook = save_malloc_hook;
   __aproxy_memalign_hook = save_memalign_hook;
   __aproxy_free_hook = save_free_hook;
 # else
@@ -539,11 +539,11 @@ aproxy_ptmalloc_init (void)
   if(s) {
     if(s[0]) mALLOPt(M_CHECK_ACTION, (int)(s[0] - '0'));
     if (check_action != 0)
-      __aproxy_malloc_check_init();
+      __aproxy_check_init();
   }
-  if(__aproxy_malloc_initialize_hook != NULL)
-    (*__aproxy_malloc_initialize_hook)();
-  __aproxy_malloc_initialized = 1;
+  if(__aproxy_initialize_hook != NULL)
+    (*__aproxy_initialize_hook)();
+  __aproxy_initialized = 1;
 }
 
 /* There are platforms (e.g. Hurd) with a link-time hook mechanism. */

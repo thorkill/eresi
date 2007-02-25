@@ -20,10 +20,10 @@ revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
   bzero(&new->dbgloaded, sizeof(hash_t));
 
   snprintf(logbuf, sizeof(logbuf), "%s_loaded", newname);
-  hash_init(&new->loaded, aproxy_strdup(logbuf), 51, ASPECT_TYPE_UNKNOW);
+  hash_init(&new->loaded, strdup(logbuf), 51, ASPECT_TYPE_UNKNOW);
  
   snprintf(logbuf, sizeof(logbuf), "%s_dbgloaded", newname);
-  hash_init(&new->dbgloaded, aproxy_strdup(logbuf), 11, ASPECT_TYPE_UNKNOW);
+  hash_init(&new->dbgloaded, strdup(logbuf), 11, ASPECT_TYPE_UNKNOW);
  
 
   /* empty new job */
@@ -52,7 +52,7 @@ void		vm_switch_job(revmjob_t      *job)
   /* Save the active buffer line */
   if (world.curjob->io.savebuf)
     XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->io.savebuf);
-  world.curjob->io.savebuf = aproxy_strdup(rl_line_buffer);
+  world.curjob->io.savebuf = strdup(rl_line_buffer);
  
   world.curjob->io.buf = NULL;
   world.curjob->io.rl_point = rl_point;

@@ -32,7 +32,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 
   /* Do copy */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,copy, sizeof(elfshobj_t), NULL);
-  copy->name = aproxy_strdup(file->name);
+  copy->name = strdup(file->name);
  
   XALLOC(__FILE__, __FUNCTION__, __LINE__,copy->hdr, sizeof(elfsh_Ehdr), NULL);
   memcpy(copy->hdr, file->hdr, sizeof(elfsh_Ehdr));
@@ -59,7 +59,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
       new->shdr = copy->sht + range;
       new->parent = copy;
       new->index = range;
-      new->name = aproxy_strdup(cur->name);
+      new->name = strdup(cur->name);
  
       new->flags = cur->flags;
 

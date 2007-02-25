@@ -132,8 +132,9 @@ char	*_vaddr2str(elfsh_Addr addr)
 {
   char *tmp;
   
-  tmp = aproxy_malloc(BSIZE_SMALL);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, tmp, BSIZE_SMALL, NULL);
   snprintf(tmp, BSIZE_SMALL, AFMT, addr);
-  return ((char *) tmp);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char *) tmp);
 }
 

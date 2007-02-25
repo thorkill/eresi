@@ -865,7 +865,7 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__,pneed, sizeof(hashneed_t), -1);
 	  pneed->need = table;
 	  pneed->aux = tableaux;
-	  hash_add(t, aproxy_strdup(s_temp), (void*) pneed);
+	  hash_add(t, strdup(s_temp), (void*) pneed);
  
 
 	  auxset += tableaux->vna_next;
@@ -897,7 +897,7 @@ int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
       pdef->ps  = ps;
       pdef->def = table;
       pdef->aux = (elfsh_Word *) offset + table->vd_aux;
-      hash_add(t, aproxy_strdup(s_temp), (void *) pdef);
+      hash_add(t, strdup(s_temp), (void *) pdef);
  
       if (table->vd_next == NULL)
 	break;

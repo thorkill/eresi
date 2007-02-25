@@ -245,7 +245,7 @@ int			edfmt_update_type(edfmttype_t *type)
       uniinfo->lfile->ltype = type;
     }
 
-  hash_add(htable, aproxy_strdup(type->name), (void *) type);
+  hash_add(htable, strdup(type->name), (void *) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

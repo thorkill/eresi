@@ -516,7 +516,7 @@ elfshsect_t	*elfsh_create_section(char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL name", NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(elfshsect_t), NULL);
-  new->name = aproxy_strdup(name);
+  new->name = strdup(name);
  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }

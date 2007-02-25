@@ -32,7 +32,7 @@ int		elfsh_bp_add(hash_t	*bps,
   bp->obj     = file;
   bp->type    = INSTR;
   bp->addr    = addr;
-  bp->symname = aproxy_strdup(resolv);
+  bp->symname = strdup(resolv);
  
   bp->flags   = flags;
   snprintf(tmp, 32, XFMT, addr);   
@@ -48,7 +48,7 @@ int		elfsh_bp_add(hash_t	*bps,
 
   /* Add new breakpoint to hash table */
   bp->id = lastbpid++;
-  hash_add(bps, aproxy_strdup(tmp), bp); 
+  hash_add(bps, strdup(tmp), bp); 
  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

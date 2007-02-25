@@ -165,9 +165,9 @@ int		vm_openscript(char **av)
   for (idx = 1; av[idx]; idx++)
     {
       snprintf(actual, sizeof(actual), "%u", idx);
-      new = vm_create_IMMEDSTR(1, aproxy_strdup(av[idx]));
+      new = vm_create_IMMEDSTR(1, strdup(av[idx]));
  
-      hash_add(&vars_hash, aproxy_strdup(actual), new);
+      hash_add(&vars_hash, strdup(actual), new);
  
     }
 

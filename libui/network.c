@@ -517,7 +517,7 @@ char	*vm_dump_input()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tmp = aproxy_strdup((char *)(world.curjob->io.pkt->data) + 1);
+  tmp = strdup((char *)(world.curjob->io.pkt->data) + 1);
  
 
   world.curjob->io.new = 0;
@@ -791,7 +791,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			  new->io.pkt       = data;
 			  new->createtime = time(&new->createtime);
 			  new->active	    = 1;
-			  hash_add(&world.jobs, aproxy_strdup(tmp), new);
+			  hash_add(&world.jobs, strdup(tmp), new);
  
 			  break;
 			  /* message, display it */

@@ -97,7 +97,7 @@ char	**vm_completion(const char* text, int start, int end)
       strcpy(buf + (baq2 - text), matches[0]);
       //seems not to be free
       //XFREE(__FILE__, __FUNCTION__, __LINE__,matches[0]);
-      matches[0] = aproxy_strdup(buf);
+      matches[0] = strdup(buf);
  
     }
 

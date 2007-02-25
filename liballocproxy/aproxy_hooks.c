@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id: aproxy_hooks.c,v 1.1 2007-02-23 05:27:47 may Exp $ */
+/* $Id: aproxy_hooks.c,v 1.2 2007-02-25 22:13:33 may Exp $ */
 
 /* What to do if the standard debugging hooks are in place and a
    corrupt pointer is detected: do nothing (0), print an error message
@@ -35,7 +35,7 @@ malloc_hook_ini(sz, caller)
      size_t sz; const __malloc_ptr_t caller;
 #endif
 {
-  __aproxy_malloc_hook = NULL;
+  __aproxy_hook = NULL;
   aproxy_ptmalloc_init();
   return public_mALLOc(sz);
 }
@@ -48,7 +48,7 @@ realloc_hook_ini(ptr, sz, caller)
      Void_t* ptr; size_t sz; const __malloc_ptr_t caller;
 #endif
 {
-  __aproxy_malloc_hook = NULL;
+  __aproxy_hook = NULL;
   __aproxy_realloc_hook = NULL;
   aproxy_ptmalloc_init();
   return public_rEALLOc(ptr, sz);
@@ -70,31 +70,31 @@ memalign_hook_ini(alignment, sz, caller)
 /* Whether we are using malloc checking.  */
 static int using_malloc_checking;
 
-/* A flag that is set by aproxy_malloc_set_state, to signal that malloc checking
+/* A flag that is set by aproxy_set_state, to signal that malloc checking
    must not be enabled on the request from the user (via the MALLOC_CHECK_
-   environment variable).  It is reset by __aproxy_malloc_check_init to tell
-   aproxy_malloc_set_state that the user has requested malloc checking.
+   environment variable).  It is reset by __aproxy_check_init to tell
+   aproxy_set_state that the user has requested malloc checking.
 
    The purpose of this flag is to make sure that malloc checking is not
    enabled when the heap to be restored was constructed without malloc
    checking, and thus does not contain the required magic bytes.
    Otherwise the heap would be corrupted by calls to free and realloc.  If
    it turns out that the heap was created with malloc checking and the
-   user has requested it aproxy_malloc_set_state just calls __aproxy_malloc_check_init
+   user has requested it aproxy_set_state just calls __aproxy_check_init
    again to enable it.  On the other hand, reusing such a heap without
    further malloc checking is safe.  */
 static int disallow_malloc_check;
 
 /* Activate a standard set of debugging hooks. */
 void
-__aproxy_malloc_check_init()
+__aproxy_check_init()
 {
   if (disallow_malloc_check) {
     disallow_malloc_check = 0;
     return;
   }
   using_malloc_checking = 1;
-  __aproxy_malloc_hook = malloc_check;
+  __aproxy_hook = malloc_check;
   __aproxy_free_hook = free_check;
   __aproxy_realloc_hook = realloc_check;
   __aproxy_memalign_hook = memalign_check;
@@ -452,19 +452,19 @@ free_starter(mem, caller) Void_t* mem; const Void_t *caller;
 #endif /* NO_THREADS */
 
 
-/* Get/set state: aproxy_malloc_get_state() records the current state of all
+/* Get/set state: aproxy_get_state() records the current state of all
    malloc variables (_except_ for the actual heap contents and `hook'
    function pointers) in a system dependent, opaque data structure.
    This data structure is dynamically allocated and can be free()d
-   after use.  aproxy_malloc_set_state() restores the state of all malloc
+   after use.  aproxy_set_state() restores the state of all malloc
    variables to the previously obtained state.  This is especially
    useful when using this malloc as part of a shared library, and when
    the heap contents are saved/restored via some other method.  The
    primary example for this is GNU Emacs with its `dumping' procedure.
    `Hook' function pointers are never saved or restored by these
    functions, with two exceptions: If malloc checking was in use when
-   aproxy_malloc_get_state() was called, then aproxy_malloc_set_state() calls
-   __aproxy_malloc_check_init() if possible; if malloc checking was not in
+   aproxy_get_state() was called, then aproxy_set_state() calls
+   __aproxy_check_init() if possible; if malloc checking was not in
    use in the recorded state but the user requested malloc checking,
    then the hooks are reset to 0.  */
 
@@ -610,9 +610,9 @@ public_sET_STATe(Void_t* msptr)
        it is necessary to disable it.  */
     if (ms->using_malloc_checking && !using_malloc_checking &&
         !disallow_malloc_check)
-      __aproxy_malloc_check_init ();
+      __aproxy_check_init ();
     else if (!ms->using_malloc_checking && using_malloc_checking) {
-      __aproxy_malloc_hook = 0;
+      __aproxy_hook = 0;
       __aproxy_free_hook = 0;
       __aproxy_realloc_hook = 0;
       __aproxy_memalign_hook = 0;

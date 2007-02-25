@@ -23,7 +23,7 @@ static void __config_update_item(configitem_t *item,void *data)
      break;
      
    case CONFIG_TYPE_STR:
-     item->data = aproxy_strdup(data); 
+     item->data = strdup(data); 
      break;
      
    default:
@@ -41,7 +41,7 @@ void	config_add_item(char *name,
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, tmp, sizeof(configitem_t), );  
-  tmp->name = aproxy_strdup(name);
+  tmp->name = strdup(name);
   tmp->type = type;
   tmp->mode = mode;
   tmp->val  = -1;

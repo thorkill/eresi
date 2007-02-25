@@ -62,7 +62,7 @@ char	*vm_get_string(char **params)
 
   if (len)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		       aproxy_strdup(buff));
+		       strdup(buff));
  
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Empty display", NULL);

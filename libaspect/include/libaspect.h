@@ -89,21 +89,6 @@
 	((uint64_t)((uint64_t)(x) & (uint64_t) 0xff00000000000000U) >> 56)))
 #endif
 
-
-
-/* When we link inside the elfsh project, dont forget to redirect allocations */
-#if defined(ASPECT_ELFSH_INTERN)
-void           *aproxy_malloc(size_t);
-void           *aproxy_calloc(size_t, char);
-void           *aproxy_realloc(void *, size_t);
-void		aproxy_free(void *tofree);
-
- #define	malloc  aproxy_malloc
- #define	calloc  aproxy_calloc
- #define	realloc aproxy_realloc
- #define	free	aproxy_free
-#endif
-
 /* Include this here since it contains an allocation too */
 #include "libaspect-hash.h"
 #include "libaspect-btree.h"

@@ -76,7 +76,7 @@ int		cmd_workspace()
       if (!job)
 	{
 	  /* create a new workspace */
-	  job = vm_clone_job(aproxy_strdup(world.curjob->curcmd->param[0]),
+	  job = vm_clone_job(strdup(world.curjob->curcmd->param[0]),
  
 			     world.curjob);
 	  hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);

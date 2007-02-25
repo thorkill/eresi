@@ -14,16 +14,6 @@
  #define     PROFILER_ERRORS_ARRAY		sys_errlist[sys_nerr]
 #endif
 
-/* Some calls defined in libmalloc */
-void		*aproxy_calloc(size_t, char);
-void		*aproxy_realloc(void *, size_t);
-void		*aproxy_malloc(size_t);
-void		*aproxy_valloc(size_t t);
-void		*aproxy_memalign(size_t t, u_int nbr);
-void		aproxy_free(void *);
-char		*aproxy_strdup(char *str);
-void		__aproxy_libc_malloc_pthread_startup(int first_time);
-
 /* Extern variables */
 extern int		profiler_depth;
 extern char*		profiler_error_str;
@@ -66,7 +56,7 @@ typedef	struct		s_allocentry
 #define		XALLOC(f, fc, l, a, b, c)		    \
 do							    \
 {							    \
-  if ((a = (void *) aproxy_calloc(b, 1)) == NULL)	    \
+  if ((a = (void *) calloc(b, 1)) == NULL)		    \
   {							    \
     write(1, "Out of memory\n", 14);			    \
     exit(1);						    \
@@ -84,7 +74,7 @@ while (0)
 #define		XREALLOC(f, fc, l, a, b, c, d)		    \
 do							    \
 {							    \
-  if ((a = (void *) aproxy_realloc(b, c)) == NULL)	    \
+  if ((a = (void *) realloc(b, c)) == NULL)		    \
   {							    \
     write(1, "Out of memory\n", 14);			    \
     exit(1);						    \
@@ -106,8 +96,20 @@ do							    \
     profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
 		          PROFILER_ALLOC_PROXY,		    \
 		          PROFILER_OP_FREE);		    \
-  aproxy_free(a);					    \
+  free(a);						    \
   a = 0;						    \
+}							    \
+while (0)
+
+/* Our free() */
+#define		XSTRDUP(f, fc, l, a, b)			    \
+do							    \
+{							    \
+  if (profiler_started())				    \
+    profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
+		          PROFILER_ALLOC_PROXY,		    \
+		          PROFILER_OP_ALLOC);		    \
+  a = strdup(b);					    \
 }							    \
 while (0)
 
