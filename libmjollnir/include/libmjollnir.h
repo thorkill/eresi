@@ -16,6 +16,7 @@
 #include "libelfsh.h"
 #include "libasm.h"
 #include "libmjollnir-blocks.h"
+#include "libmjollnir-container.h"
 #include "libmjollnir-int.h"
 #include "libmjollnir-fprint.h"
  

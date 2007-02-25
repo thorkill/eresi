@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.14 2007-02-25 15:44:42 thor Exp $
+ * $Id: libmjollnir-blocks.h,v 1.15 2007-02-25 16:03:21 thor Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -45,7 +45,6 @@ typedef struct		s_iblock
   u_int			size;	 /* block size				*/
   struct s_link		*caller; /* MEMONLY : linked list of callers    */
 }			mjrblock_t;
-
 
 
 /***** Misplaced structures : should find another header */
