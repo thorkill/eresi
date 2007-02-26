@@ -74,9 +74,10 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 {
   u_int		size;
   char		index[ELFSH_MEANING];
-   hash_t	*hash;
+  hash_t	*hash;
   revmobj_t	*ret;
   char		*entryname;
+  char		*hashname;
   void		*ptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -90,14 +91,15 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   entryname = strchr(index, ':');
   if (entryname)
     *entryname++ = 0x00;
+  hashname  = strdup(index);
 
   /* In case the hash table does not exist, create it empty */
-  hash = hash_find(index);
+  hash = hash_find(hashname);
   if (!hash)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	     hash, sizeof(hash_t), NULL);
-      hash_init(hash, index, 7, ASPECT_TYPE_UNKNOW);
+      hash_init(hash, hashname, 7, ASPECT_TYPE_UNKNOW);
     }
 
   /* Now deal with the entry */
@@ -107,8 +109,8 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = ptr;
   ret->type     = (entryname ? hash->type : ASPECT_TYPE_HASH);
-  ret->hname    = index;
-  ret->kname    = entryname;
+  ret->hname    = hashname;
+  ret->kname    = (entryname ? strdup(entryname) : NULL);
   ret->perm     = 1;
   ret->immed    = 0;
   ret->get_obj  = (void *) vm_generic_getobj;

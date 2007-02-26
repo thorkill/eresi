@@ -1046,8 +1046,8 @@ void setup_grammar()
 #define LOOKUP4_C   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"
 #define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
 #define LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"
-#define LOOKUP_VECT "$vector[^"REVM_SEP"]"
-#define LOOKUP_HASH "$hash[^"REVM_SEP"]"
+#define LOOKUP_VECT "$vector[%41[^]]]"
+#define LOOKUP_HASH "$hash[%41[^]]]"
 
   hash_add(&parser_hash, LOOKUP5_IDX, parse_lookup5_index);
   hash_add(&parser_hash, LOOKUP4_A, parse_lookup4);

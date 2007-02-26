@@ -43,8 +43,17 @@ hash_t	*hash_find(char *name)
 }
 
 /* Return a hash table pointer by its name */
+/* Overwrite existing table if there was one sharing that name */
 void	hash_register(hash_t *table, char *name)
 {
+  hash_t	*h;
+
+  h = hash_get(hash_hash, name);
+  if (h)
+    {
+      hash_destroy(h);
+      hash_del(hash_hash, name);
+    }
   hash_add(hash_hash, name, table);
 }
 
