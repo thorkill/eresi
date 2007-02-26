@@ -845,6 +845,7 @@ static void	setup_cmdhash()
 
   /* Type related commands */
   vm_addcmd(CMD_TYPE    , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
+  vm_addcmd(CMD_TYPEDEF , cmd_typedef         , vm_getvarparams, 0, HLP_TYPEDEF);
   vm_addcmd(CMD_INFORM  , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
   vm_addcmd(CMD_UNINFORM, cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
   

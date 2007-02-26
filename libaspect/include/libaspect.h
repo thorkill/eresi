@@ -120,7 +120,6 @@
 #define		ASPECT_TYPENAME_VECT	"vector" 
 #define		ASPECT_TYPENAME_HASH	"hash"
 
-
 /* A structure for the type information */
 typedef struct		s_info
 {
@@ -273,6 +272,13 @@ int		aspect_basetypes_create();
 int		aspect_type_register(char *label, 
 				     char **fields, 
 				     u_int fieldnbr);
+aspectype_t	*aspect_type_copy(aspectype_t	*type, 
+				  unsigned int	off, 
+				  u_char	isptr, 
+				  u_int		elemnbr, 
+				  char		*fieldname,
+				  u_int		*dims);
+int		aspect_basetype_register(char *name, u_int size);
 
 /* profile.c : Profiler related functions */
 void		profiler_reset(u_int sel);

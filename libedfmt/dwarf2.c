@@ -193,16 +193,6 @@ int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-int			edfmt_dwarf2_freeent(edfmtdw2abbent_t *abbent)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (abbent && abbent->attr)
-    XFREE(__FILE__, __FUNCTION__, __LINE__, abbent->attr);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /* Manage parsing loops */
 int			edfmt_dwarf2_block_loop(u_int endpos)
 {

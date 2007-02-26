@@ -24,6 +24,11 @@
 #define 	__DEBUG_STABS__ 		0
 #define 	__DEBUG_DWARF2__ 		0
 
+/* Allocate pool steps */
+#define		DWARF2_ALLOC_STEP		4096
+#define		STABS_ALLOC_STEP		4096
+#define		API_ALLOC_STEP			4096
+
 /* Include debug format headers */
 #include "libedfmt-api.h"
 #include "libedfmt-dwarf2.h"
@@ -48,6 +53,9 @@ char 		*edfmt_ckey(char *buf, u_int size, long key);
 char 		*edfmt_cline(char *buf, u_int size, u_int line, char *file);
 char 		*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr);
 elfsh_Addr     	edfmt_lookup_addr(elfshobj_t *file, char *param);
+void 	       	*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
+				  int astep, int nsize);
+int 		edfmt_clean_pool(char **pool);
 
 /* api.c */
 int		edfmt_uni_print(elfshobj_t *file);
@@ -103,10 +111,9 @@ int		edfmt_dwarf2_build_tree(edfmtdw2abbent_t *parent,
 int 		edfmt_dwarf2_getent(edfmtdw2cu_t *cu, 
 				    edfmtdw2abbent_t *abbent, 
 				    u_int pos);
-int	       	edfmt_dwarf2_freeent(edfmtdw2abbent_t *abbent);
 
 /* dwarf2-trans.c */
-int	   	edfmt_dwarf2_transform_abbrev(u_int pos);
+__inline__ int	edfmt_dwarf2_transform_abbrev(u_int pos);
 edfmttype_t    	*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev);
 int		edfmt_dwarf2_transform(elfshobj_t *file);
 edfmtdw2abbattr_t *edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, u_int attr);

@@ -9,6 +9,13 @@
 
 hash_t abbrev_table;
 
+char *alloc_pool = NULL;
+int alloc_pos = 0;
+int alloc_size = 0;
+
+#define DW2_GETPTR(_size) \
+edfmt_alloc_pool(&alloc_pool, &alloc_pos, &alloc_size, DWARF2_ALLOC_STEP, _size)
+
 /* Lookup on abbrev_table */
 u_long		 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
 {
@@ -19,6 +26,8 @@ u_long		 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
 
   edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num_fetch);
   pos = (u_long *) hash_get(&(current_cu->abbrev_table), ckey);
+
+  //printf("Retrieve pos = %x, %ld\n", pos, *pos);
 
   if (pos == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -32,10 +41,8 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent,
 						  u_long pos, u_long ipos)
 {
   u_int			num;
-  edfmtdw2abbattr_t 	*attr = NULL;
   u_int			allocattr = 0;
   u_int			attri = 0;
-  const	u_int		allocstep = 12;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -66,30 +73,14 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent,
   dwarf2_iread_1(ent->children, abbrev);
 
   attri = allocattr = 0;
-  attr = NULL;
   
   /* Parse attributes */
   do {
-    /* First allocation */
-    if (attr == NULL)
-      {
-	allocattr = allocstep;
-	XALLOC(__FILE__, __FUNCTION__, __LINE__,attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-      }
-    
-    /* We fill all the array, so we realloc all */
-    if (attri == allocattr)
-      {
-	allocattr += allocstep;
-	XREALLOC(__FILE__, __FUNCTION__, __LINE__,attr, attr, sizeof(edfmtdw2abbattr_t)*allocattr, -1);
-      }
-    
     /* Fill attribute structure */
-    dwarf2_iuleb128(attr[attri].attr, abbrev);
-    dwarf2_iuleb128(attr[attri].form, abbrev);
-  } while (attr[attri++].attr);
+    dwarf2_iuleb128(ent->attr[attri].attr, abbrev);
+    dwarf2_iuleb128(ent->attr[attri].form, abbrev);
+  } while (ent->attr[attri++].attr && attri < DW2_MAX_ATTR);
   
-  ent->attr = attr;
   ent->attrsize = attri > 1 ? attri - 1 : attri;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -104,6 +95,8 @@ int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
   u_long		*value;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   if (!abbrev_table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -149,9 +142,11 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
   base = dwarf2_pos(abbrev);
 
   do {
-    XALLOC(__FILE__, __FUNCTION__, __LINE__,start_pos, sizeof(u_long), NULL);
+    start_pos = DW2_GETPTR(sizeof(u_long));
 
     *start_pos = dwarf2_pos(abbrev);
+
+    //printf("Setpos = %x / %ld\n", start_pos, *start_pos);
     /* Fetch the key number */
     dwarf2_iuleb128(num, abbrev);
     
@@ -182,7 +177,8 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
 static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 {
   u_int			i;
-  u_char 		*addr;
+  char			*ptr;
+  u_char 		addr[20]; /* 20 should be enough */
   u_int			data;
   long			ddata;
 
@@ -191,16 +187,13 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
   switch (attr->form)
     {
     case DW_FORM_ref_addr:
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,addr, current_cu->addr_size, -1);
-
       for (i = 0; i < current_cu->addr_size; i++)
 	dwarf2_ipos(addr[i], info, u_char);
 
       attr->u.udata = *(u_long *) addr;
-      XFREE(__FILE__, __FUNCTION__, __LINE__,addr);
       break;
     case DW_FORM_addr:
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, current_cu->addr_size, -1);
+      attr->u.vbuf = DW2_GETPTR(current_cu->addr_size);
       for (i = 0; i < current_cu->addr_size; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
       break;
@@ -220,10 +213,13 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 	  break;
 	}
 
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, attr->asize, -1);
-
-      for (i = 0; i < attr->asize; i++)
-	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
+      if (attr->asize > 0)
+	{
+	  attr->u.vbuf = DW2_GETPTR(attr->asize);
+	  
+	  for (i = 0; i < attr->asize; i++)
+	    dwarf2_ipos(attr->u.vbuf[i], info, u_char);
+	}
       break;
     case DW_FORM_data1:
       dwarf2_iread_1(ddata, info);
@@ -248,7 +244,7 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
     case DW_FORM_block:
       dwarf2_iuleb128(attr->asize, info);
 
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,attr->u.vbuf, attr->asize, -1);
+      attr->u.vbuf = DW2_GETPTR(attr->asize);
 
       for (i = 0; i < attr->asize; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, char);
@@ -258,9 +254,9 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
       attr->u.udata = (u_long) ddata & 0xFF;
       break;
     case DW_FORM_strp:
-      addr = (u_char *) dwarf2_data(str);
+      ptr = (char *) dwarf2_data(str);
       dwarf2_iread_4(data, info);
-      attr->u.str = (char *) addr + data;
+      attr->u.str = (char *) ptr + data;
       break;
     case DW_FORM_udata:
       dwarf2_iuleb128(attr->u.udata, info);
@@ -319,7 +315,7 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
 
   /* Retrieve abbrev number */
   dwarf2_iuleb128(num_fetch, info);
-  
+
   /* We didn't use num_fetch == 0 */
   if (num_fetch == 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -394,7 +390,7 @@ int			edfmt_dwarf2_mac(u_long offset)
       {
       case DW_MACINFO_define:
       case DW_MACINFO_undef:
-	XALLOC(__FILE__, __FUNCTION__, __LINE__,mac, sizeof(edfmtdw2macro_t), -1);
+	mac = DW2_GETPTR(sizeof(edfmtdw2macro_t));
 
 	mac->fileno = file;
 	mac->def = type == DW_MACINFO_define ? 1 : 0;
@@ -970,14 +966,12 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
 		      break;
 		    case DW_LNE_set_address:
-		      XALLOC(__FILE__, __FUNCTION__, __LINE__,read_addr, current_cu->addr_size, -1);
+		      read_addr = DW2_GETPTR(current_cu->addr_size);
 		      
 		      for (i = 0; i < current_cu->addr_size; i++)
 			dwarf2_ipos(read_addr[i], line, u_char);
 
 		      addr = *(elfsh_Addr *) read_addr;
-		      
-		      XFREE(__FILE__, __FUNCTION__, __LINE__,read_addr);
 		      break;
 		    case DW_LNE_define_file:
 		      header->files_number++;
@@ -1075,7 +1069,7 @@ int			edfmt_dwarf2_line(u_long offset)
     dwarf2_inc_pos(line, strlen(dwarf2_ac_pos(line))+1);
   dwarf2_pos(line) = prev_pos;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.dirs, sizeof(char*)*i, -1);
+  header.dirs = DW2_GETPTR(sizeof(char*)*i);
   header.dirs_number = i+1;
 
   /* Dir second pass */
@@ -1097,10 +1091,11 @@ int			edfmt_dwarf2_line(u_long offset)
     }
   dwarf2_pos(line) = prev_pos;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_name, sizeof(char*)*i, -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_dindex, sizeof(u_int)*i, -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_time, sizeof(u_int)*i, -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,header.files_len, sizeof(u_int)*i, -1);
+  header.files_name = DW2_GETPTR(sizeof(char*)*i);
+  header.files_dindex = DW2_GETPTR(sizeof(u_int)*i);
+  header.files_time = DW2_GETPTR(sizeof(u_int)*i);
+  header.files_len = DW2_GETPTR(sizeof(u_int)*i);
+
   header.files_number = i+1;
 
   /* Filename second pass */
@@ -1138,7 +1133,7 @@ int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,pline, sizeof(edfmtdw2line_t), -1);
+  pline = DW2_GETPTR(sizeof(edfmtdw2line_t));
 
   pline->addr = addr;
   pline->line = line;

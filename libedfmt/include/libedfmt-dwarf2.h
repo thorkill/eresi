@@ -73,7 +73,8 @@ struct 		s_dw2abbent
   u_char 	children;
   u_int		level;
 
-  edfmtdw2abbattr_t *attr;
+#define DW2_MAX_ATTR 10
+  edfmtdw2abbattr_t attr[DW2_MAX_ATTR];
   u_int		attrsize;
 
   u_int 	sib;

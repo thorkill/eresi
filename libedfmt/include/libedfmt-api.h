@@ -96,6 +96,10 @@ typedef struct		s_einfo
   edfmtvar_t		*vars;
   edfmtvar_t		*lvar;
   hash_t		hvar;
+
+  char 			*alloc_pool;
+  int 			alloc_pos;
+  int 			alloc_size;
 }			edfmtinfo_t;
 
 #define HASH_ADDX(_table, _name, _value) 			\

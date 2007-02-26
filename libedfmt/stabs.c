@@ -14,10 +14,39 @@ This version of stabs format parsing has been approved for x86
 and gentoo linux, some bugs can append on Sparc, more test will
 be done to make this work correctly */
 
-#define STABS_HNAME_TYPE_REF "stabs_type_reference"
-#define STABS_HNAME_TYPE_CROSS_REF "stabs_type_reference"
+#define STABS_HNAME_TYPE_REF 		"stabs_type_reference"
+#define STABS_HNAME_TYPE_CROSS_REF 	"stabs_type_reference"
+#define STABS_HNAME_RES_SIZE 		"stabs_resolve_size"
 
 #define STABS_DATA(_str) (!STABS_IVD_STR(_str) ? edfmt_stabs_data(_str) : NULL)
+
+typedef struct s_res_size
+{
+  char *name;
+  long size;
+}	       edfmt_res_size_t;
+
+edfmt_res_size_t resolved_table[] =
+  {
+    {"int"                   , sizeof(int)			},
+    {"char"                  , sizeof(char)			},
+    {"long int"              , sizeof(long int)			},
+    {"unsigned int"          , sizeof(unsigned int)		},
+    {"long unsigned int"     , sizeof(long unsigned int)	},
+    {"long long int"         , sizeof(long long int)		},
+    {"long long unsigned int", sizeof(long long unsigned int)	},
+    {"short int"             , sizeof(short int)		},
+    {"short unsigned int"    , sizeof(short unsigned int)	},
+    {"signed char"           , sizeof(signed char)		},
+    {"unsigned char"         , sizeof(unsigned char)		},
+    {"float"                 , sizeof(float)			},
+    {"double"                , sizeof(double)			},
+    {"long double"           , sizeof(long double)		},
+    { NULL		     , 0 				}
+  };
+
+/* Local resolv table */
+hash_t resolved_size;
 
 /* Global position variables */
 elfshsect_t *stabs_sect;
@@ -45,6 +74,10 @@ hash_t type_cross_ref;
 /* Contain main informations */
 edfmtstabsinfo_t *stabs_info = NULL;
 
+#define STABS_GETPTR(_size) \
+edfmt_alloc_pool(&(stabs_info->alloc_pool), &(stabs_info->alloc_pos), \
+		 &(stabs_info->alloc_size), STABS_ALLOC_STEP, _size) 
+
 /* Actual parsed file */
 elfshobj_t *afile = NULL;
 
@@ -54,6 +87,24 @@ edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (edfmtstabsinfo_t *) file->debug_format.stabs);
+}
+
+static int		edfmt_stabs_initrestable()
+{
+  int			index;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (resolved_size.ent == NULL)
+    {
+      hash_init(&resolved_size, STABS_HNAME_RES_SIZE, 20, ASPECT_TYPE_UNKNOW);  
+
+      for (index = 0; resolved_table[index].name != NULL; index++)
+	hash_add(&resolved_size, strdup(resolved_table[index].name), 
+		 (void *) &(resolved_table[index]));
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
@@ -279,7 +330,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
   edfmt_stabs_readnumber(str, 0, &tstruct->size);
 
   do {
-    XALLOC(__FILE__, __FUNCTION__, __LINE__,tattr, sizeof(edfmtstabsattr_t), -1);
+    tattr = STABS_GETPTR(sizeof(edfmtstabsattr_t));
 
     if (tstruct->attr == NULL)
       tstruct->attr = tattr;
@@ -334,7 +385,7 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
 
   while (**str != ';')
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,enum_attr, sizeof(edfmtstabsenum_t), NULL);
+      enum_attr = STABS_GETPTR(sizeof(edfmtstabsenum_t));
 
       if (root_attr == NULL)
 	root_attr = enum_attr;
@@ -403,7 +454,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
       tnum.file = tnum.number = -1;
     }
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,type, sizeof(edfmtstabstype_t), NULL);
+  type = STABS_GETPTR(sizeof(edfmtstabstype_t));
   type->num = tnum;
 
  typestart:
@@ -429,6 +480,8 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	  *str = save_str;
 	  type->type = STABS_TYPE_LINK;
 	  type->u.link = edfmt_stabs_type(str);
+	  if (type->u.link)
+	    type->u.link->parent_link = type;
 	}
     }
   else
@@ -515,7 +568,6 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	  break;
 	case STABS_STR_D_RANGE:
 	  edfmt_stabs_range(type, str);
-	  type->u.r.size = tsize;
 	  break;
 	case STABS_STR_D_STRUCT:
 	case STABS_STR_D_UNION:
@@ -546,6 +598,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 /* Parse the string */
 edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 {
+  edfmt_res_size_t 	*res;
   char			token, *save_str;
   char			name[STABS_NAME_SIZE];
   edfmtstabsdata_t 	*data;
@@ -562,7 +615,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Stabs type not found", NULL);
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, sizeof(edfmtstabsdata_t), NULL);
+  data = STABS_GETPTR(sizeof(edfmtstabsdata_t));
 
   strncpy(data->name, name, STABS_NAME_SIZE);
   data->name[STABS_NAME_SIZE - 1] = 0x00;
@@ -686,6 +739,15 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	  data->type = edfmt_stabs_type(str);
 	  data->type->data = data;
 
+	  /* Resolve size for range types */
+	  if (data->type->type == STABS_TYPE_RANGE)
+	    {
+	      res = hash_get(&resolved_size, data->name);
+
+	      if (res)
+		data->type->u.r.size = res->size;
+	    }
+
 	  /* Cross reference types */
 	  if (data->type->type == STABS_TYPE_STRUCT
 	      || data->type->type == STABS_TYPE_UNION
@@ -759,7 +821,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 
   afile = file;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,stabs_info, sizeof(edfmtstabsinfo_t), -1);
+  edfmt_stabs_initrestable();
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, stabs_info, sizeof(edfmtstabsinfo_t), -1);
 
   if (type_ref.ent == NULL)
     hash_init(&type_ref, STABS_HNAME_TYPE_REF, 50, ASPECT_TYPE_UNKNOW);
@@ -801,7 +865,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      sfile = sfile && sfile[1] != '\0' ? sfile+1 : current_file->file;
 	    }
 
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,line, sizeof(edfmtstabsline_t), -1);
+	  line = STABS_GETPTR(sizeof(edfmtstabsline_t));
 
 	  /* Fill right informations */
 	  line->line = (u_int) stabs_c_ent.desc;
@@ -847,7 +911,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      edfmt_stabs_addfile(NULL, str);
 	    }
 
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,tmp, sizeof(edfmtstabsfile_t), -1);
+	  tmp = STABS_GETPTR(sizeof(edfmtstabsfile_t));
 	  
 	  if (inc)
 	    tmp->file = str;
@@ -972,96 +1036,6 @@ int			edfmt_stabs_parse(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Clean each stabs file */
-static int		edfmt_stabs_clean_file(edfmtstabsfile_t *file)
-{
-  int			i = 0;
-  edfmtstabsfile_t	*stabs_file, *fileprev;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Every element on the list */
-  for (stabs_file = file, fileprev = NULL; 
-       stabs_file != NULL; 
-       fileprev = stabs_file, stabs_file = stabs_file->next)
-    {
-      /* Function structure */
-      {
-	edfmtstabsfunc_t *func, *funcprev;
-
-	for (func = stabs_file->func, funcprev = NULL; 
-	     func != NULL; 
-	     funcprev = func, func = func->next)
-	  {
-	    /* Clean allocated arguments */
-	    for (i = 0; func->args[i] &&  i < STABS_MAX_ARGUMENTS; i++)
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, func->args[i]);
-
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, funcprev);
-	  }
-
-	if (funcprev)
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, funcprev);
-      }
-
-      /* Line structure */
-      {
-	edfmtstabsline_t *line, *lineprev;
-
-	for (line = stabs_file->line, lineprev = NULL; 
-	     line != NULL;
-	     lineprev = line, line = line->next)
-	  {
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, lineprev);
-	  }
-
-	if (lineprev)
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, lineprev);
-      }
-
-      /* Data structure */
-      {
-	edfmtstabsdata_t *data, *dataprev;
-
-	for (data = stabs_file->vars, dataprev = NULL; 
-	     data != NULL;
-	     dataprev = data, data = data->next)
-	  {
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, dataprev);
-	  }
-
-	if (dataprev)
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, dataprev);
-      }
-
-      /* Type structure */
-      {
-	edfmtstabstype_t *type, *typeprev;
-
-	for (type = stabs_file->types, typeprev = NULL; 
-	     type != NULL;
-	     typeprev = type, type = type->next)
-	  {
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, typeprev);
-	  }
-
-	if (typeprev)
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, typeprev);
-      }
-
-      /* We clean include as weel */
-      if (stabs_file->inc)
-	edfmt_stabs_clean_file(stabs_file->inc);
-
-      XFREE(__FILE__, __FUNCTION__, __LINE__, fileprev);
-    }
-
-  if (fileprev)
-    XFREE(__FILE__, __FUNCTION__, __LINE__, fileprev);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /* Clean stabs allocated structures */
 int			edfmt_stabs_clean(elfshobj_t *file)
 {
@@ -1079,6 +1053,9 @@ int			edfmt_stabs_clean(elfshobj_t *file)
 
   if (info->file_list)
     XFREE(__FILE__, __FUNCTION__, __LINE__, info->file_list);
+
+  if (info->alloc_pool)
+    edfmt_clean_pool(&(info->alloc_pool));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

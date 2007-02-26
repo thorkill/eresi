@@ -336,6 +336,7 @@ char prompt_token[512];
 #define CMD_NOCOLOR             "nocolor"
 #define CMD_TRACE		"trace"
 #define	CMD_TYPE		"type"
+#define	CMD_TYPEDEF		"typedef"
 
 #define CMD_INSERT		"insert"
 #define	CMD_INSERT2		"ins"
@@ -895,6 +896,7 @@ extern u_int strtable_max;
 /* Commands execution handlers, each in their respective file */
 int		cmd_configure();
 int		cmd_type();
+int		cmd_typedef();
 int		cmd_dyn();
 int		cmd_sht();
 int             cmd_rsht();
@@ -1215,6 +1217,7 @@ int             vm_setvar_long(char *varname, u_long val);
 /* Type related functions */
 int		vm_types_print();
 int		vm_type_print(char *type, char mode);
+int		vm_type_copy(char *from, char *to);
 
 /* Data access related functions */
 aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
@@ -1293,6 +1296,12 @@ int		vm_clearscreen(int i, char c);
 int		vm_install_clearscreen();
 int		vm_screen_update(u_short new, u_short prompt_display);
 int		vm_screen_switch();
+
+/* libedfmt related functions */
+int		vm_edfmt_parse(elfshobj_t *file);
+
+/* Inform related functions */
+int		vm_inform_type(char *type, char *varname, char *straddr, u_char print);
 
 /* May not be defined */
 #if __BSD__

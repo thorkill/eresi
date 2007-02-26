@@ -22,7 +22,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   edfmttype_t		*stype = NULL;
   edfmttype_t		*ftype = NULL;
   edfmtstabsattr_t	*attr;
-  char			*str;
+  char			*str = NULL;
   int			addtype = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
@@ -43,7 +43,12 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
     {
     case STABS_TYPE_UNION:
     case STABS_TYPE_STRUCT:
-      str = type->data->name;
+      if (type->data)
+	str = type->data->name;
+
+      if (!str && type->parent_link && type->parent_link->data)
+	str = type->parent_link->data->name;
+
       if (!str)
 	{
 	  snprintf(buf, BUFSIZ - 1, "s_(%d)", rand() % 99999);
@@ -80,7 +85,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	}
       break;
     case STABS_TYPE_RANGE:
-      etype = edfmt_add_type_basic(type->data->name, 0);
+      etype = edfmt_add_type_basic(type->data->name, (int) type->u.r.size);
       break;
     case STABS_TYPE_ARRAY:
       stype = edfmt_stabs_transform_type_adv(type->u.arr.link, 0);

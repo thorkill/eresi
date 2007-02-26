@@ -16,22 +16,22 @@ int		aspect_type_nbr       = ASPECT_TYPE_BASENUM;
 typeinfo_t	*aspect_typeinfo      = NULL;
 typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] = 
   {
-    {ASPECT_TYPENAME_UNKNOW , 0			},
-    {ASPECT_TYPENAME_RAW    , 0			},
-    {ASPECT_TYPENAME_BYTE   , sizeof(u_char)	},
-    {ASPECT_TYPENAME_STR    , sizeof(u_long)	},
-    {ASPECT_TYPENAME_SHORT  , sizeof(u_short)	},
-    {ASPECT_TYPENAME_INT    , sizeof(u_int)	},
-    {ASPECT_TYPENAME_LONG   , sizeof(u_long)	},
-    {ASPECT_TYPENAME_DADDR  , sizeof(u_long)	},
-    {ASPECT_TYPENAME_CADDR  , sizeof(u_long)	},
-    {ASPECT_TYPENAME_VECT   , sizeof(vector_t)	},
-    {ASPECT_TYPENAME_HASH   , sizeof(hash_t)	},
+    {ASPECT_TYPENAME_UNKNOW  , 0	      	},
+    {ASPECT_TYPENAME_RAW     , 0	  	},
+    {ASPECT_TYPENAME_BYTE    , sizeof(u_char)	},
+    {ASPECT_TYPENAME_STR     , sizeof(u_long)	},
+    {ASPECT_TYPENAME_SHORT   , sizeof(u_short)	},
+    {ASPECT_TYPENAME_INT     , sizeof(u_int)	},
+    {ASPECT_TYPENAME_LONG    , sizeof(u_long)	},
+    {ASPECT_TYPENAME_DADDR   , sizeof(u_long)	},
+    {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
+    {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
+    {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
   };
 
 
 /* Copy the parameter type by change its offset */
-static aspectype_t	*aspect_type_copy(aspectype_t	*type, 
+aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
 					  u_char	isptr, 
 					  u_int		elemnbr, 
@@ -212,9 +212,10 @@ static aspectype_t	*aspect_type_create(char *label,
       else
 	{
 	  /* Pointer types */
-	  if (typename[0] == '*')
+	  isptr = 0;
+	  while (typename[0] == '*')
 	    {
-	      isptr = 1;
+	      isptr += 1;
 	      typename++;
 	    }
 
@@ -340,6 +341,33 @@ int		aspect_basetypes_create()
   memcpy(aspect_typeinfo, aspect_typeinfo_base, basesize);
   for (index = 1; index < ASPECT_TYPE_BASENUM; index++)
     aspect_basetype_create(index, aspect_typeinfo + index);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
+
+/* Add a simple type */
+int		aspect_basetype_register(char *name, u_int size)
+{
+  typeinfo_t	info;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  info.name = name;
+  info.size = size;
+
+  aspect_basetype_create(aspect_type_nbr, &info);
+
+  /* The type ID is incremented here */
+  aspect_type_nbr++;
+  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+	   aspect_typeinfo, aspect_typeinfo, 
+	   sizeof(typeinfo_t) * aspect_type_nbr, -1);
+  aspect_typeinfo[aspect_type_nbr - 1].name = name;
+  aspect_typeinfo[aspect_type_nbr - 1].size = size; 
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 

@@ -85,3 +85,64 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup address object", (elfsh_Addr) 0);
 }
+
+void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
+					  int astep, int nsize)
+{
+  char			*prevpool;
+  char			*ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!pool || !apos || astep <= 0 || !asize || nsize <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", NULL);
+
+  //printf("asize = %d apos = %d diff = %d, size = %d\n", *asize, *apos, (*asize - *apos), nsize);
+
+  if (*pool == NULL || *asize == 0)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, *pool, astep+sizeof(void*), NULL);
+      *asize = astep;
+      *apos += sizeof(void*);
+    }
+  else if (*apos + nsize >= *asize)
+    {
+      *asize = 0;
+      *apos = 0;
+      do {
+	*asize += astep;
+      } while (*apos + nsize >= *asize);
+
+      prevpool = *pool;
+      
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, *pool, *asize+sizeof(void*), NULL);
+      *apos += 4;
+      *(int *) *pool = prevpool;
+    }
+
+  ret = (char *) *pool + *apos;
+  *apos += nsize;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *) ret);
+}
+
+/* Clean an allocated pool */
+int 			edfmt_clean_pool(char **pool)
+{
+  char			*prevpool = NULL;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!pool)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  do {
+    prevpool = *(int *) *pool;
+    XFREE(__FILE__, __FUNCTION__, __LINE__, *pool);
+    *pool = prevpool;
+  } while (*pool != NULL);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

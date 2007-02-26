@@ -67,8 +67,6 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
 			  "dwarf2 getenv failed", NULL);
       
       type = edfmt_dwarf2_transform_abbrev_parse(&ref);
-
-      edfmt_dwarf2_freeent(&ref);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
@@ -252,8 +250,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
 	  snprintf(buf, BUFSIZ - 1, "%s[%d]", type->name, (int) size+1);
 	  type = edfmt_add_type_array(buf, (int) size, type);
-
-	  edfmt_dwarf2_freeent(&tref);
 	}
       break;
     case DW_TAG_structure_type:
@@ -303,8 +299,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
 		  etype = edfmt_dwarf2_transform_abbrev_parse(&tref);
 
-		  edfmt_dwarf2_freeent(&tref);
-
 		  if (!etype)
 		    continue;
 
@@ -324,8 +318,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		{
 		  edfmt_dwarf2_transform_abbrev_parse(&ref);
 		}
-
-	      edfmt_dwarf2_freeent(&ref);
 	    }
 	  
 	  /* We already add our type and we want to return the right information */
@@ -346,10 +338,11 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-int	   	  	edfmt_dwarf2_transform_abbrev(u_int pos)
-{
-  edfmtdw2abbent_t     	abbrev;
+/* Use in global scope to improve speed */
+edfmtdw2abbent_t     	abbrev;
 
+__inline__ int	     	edfmt_dwarf2_transform_abbrev(u_int pos)
+{
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (pos <= 0)
@@ -416,6 +409,7 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
 
       tcu = tcu->next;
     }
+
   current_cu = NULL;
 
   edfmt_add_end();

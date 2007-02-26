@@ -15,11 +15,17 @@ edfmtvar_t *uni_lastvar = NULL;
 u_char file_active = 0;
 elfshobj_t *cu_obj = NULL;
 
+#define API_GETPTR(_size) \
+edfmt_alloc_pool(&(uniinfo->alloc_pool), &(uniinfo->alloc_pos), \
+		 &(uniinfo->alloc_size), API_ALLOC_STEP, _size) 
+
 #define EDFMT_NEW_TYPE(_type) \
-do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_type, sizeof(edfmttype_t), NULL); } while(0)
+do { _type = API_GETPTR(sizeof(edfmttype_t)); } while(0)
+//do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_type, sizeof(edfmttype_t), NULL); } while(0)
 
 #define EDFMT_NEW_VAR(_var) \
-do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_var, sizeof(edfmtvar_t), NULL); } while(0)
+do { _var = API_GETPTR(sizeof(edfmtvar_t)); } while(0)
+//do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_var, sizeof(edfmtvar_t), NULL); } while(0)
 
 #define EDFMT_COPY_NAME(_dest, _source) 			\
 do { 								\
@@ -545,6 +551,7 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
   ltype->type = EDFMT_TYPE_PTR;
   EDFMT_COPY_NAME(ltype, name);
   ltype->parent = type;
+  ltype->size = sizeof(void *);
 
   /* Update type list */
   edfmt_update_type(ltype);

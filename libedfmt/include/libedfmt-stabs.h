@@ -159,6 +159,7 @@ struct		s_stabstype
 
   /* Data parent */
   edfmtstabsdata_t *data;
+  struct s_stabstype *parent_link;
 
   /* Transformated type link */
   edfmttype_t *transtype;
@@ -256,10 +257,14 @@ typedef struct 	s_stabsfile
 typedef struct	s_stabsinfo
 {
   /* Files informations */
-  char **dir_list;
-  char **file_list;
-  u_int index_list;
-  u_int num_list;
+  char 		**dir_list;
+  char 		**file_list;
+  u_int 	index_list;
+  u_int 	num_list;
+
+  char 		*alloc_pool;
+  int 		alloc_pos;
+  int 		alloc_size;
 
   /* File list */
   edfmtstabsfile_t *file;

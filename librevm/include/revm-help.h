@@ -173,6 +173,9 @@
 				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
 				"Fields and types can be named using scripting variables            \n"
 
+#define	HLP_TYPEDEF		"Copy and rename a type \n\n\t"			                            \
+				"typedef name newname"
+
 #define HLP_PROFILE		"Change the ELFsh profiling behavior \n\n\t" \
 				CMD_PROFILE" enable|disable warn|trace|alloc|debug|all"
 
