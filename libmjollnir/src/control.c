@@ -8,9 +8,11 @@
 
 
 
-/* This function traces the entry point and save the last push argument until 
-** a call is found. This allow to fetch the main address in an OS-dependent 
-** manner */
+/** 
+ * This function traces the entry point and save the last push argument until 
+ * a call is found. This allow to fetch the main address in an OS-dependent 
+ * manner 
+ */
 elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 					u_char		*buf, 
 					u_int		len, 
@@ -70,7 +72,8 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 	  	    arch_bin = MJR_BIN_LINUX;
 	  	    break;
 	  	}
-	  }	  	
+	  }
+	  // FIXME: This should go to librevm
 	  printf(" [*] %s-like start\n", arch_bin ? "FreeBSD" : "Linux");  
 	}
     
@@ -137,13 +140,13 @@ elfsh_Addr	        mjr_trace_start(mjrcontext_t	*context,
 }
 
 
-/*
-** This function trace execution flow and creates block depending on instruction.
-**
-** If instruction break execution flow, block is considerated finished and added 
-** to linked list of blocks (that is the content of the .elfsh.control section)
-**
-*/
+/**
+ * This function trace execution flow and creates block depending on instruction.
+ *
+ * If instruction break execution flow, block is considerated finished and added 
+ * to linked list of blocks (that is the content of the .elfsh.control section)
+ *
+ */
 int			mjr_trace_control(mjrcontext_t	*context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *ins, 

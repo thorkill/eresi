@@ -4,10 +4,14 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.23 2007-02-25 22:13:33 may Exp $
+ * $Id: function.c,v 1.24 2007-02-26 17:47:15 thor Exp $
  *
  */
 #include <libmjollnir.h>
+
+/**
+ * Function dumping procedure for debug purposes
+ */
 
 void mjr_function_dump(char *where,mjrfunc_t *f)
 {
@@ -44,14 +48,33 @@ void mjr_function_dump(char *where,mjrfunc_t *f)
     }
 }
 
-u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
+/**
+ * Save and prepare a buffer which will be saved into the elfshobj.
+ * @param fnc a function to store
+ * @param type 0 for parents/1 for childs
+ * @param buf buffer which contains the data
+ * @return an offset where the data has been saved
+ */
+
+u_int	 mjr_function_flow_save(mjrfunc_t *fnc,u_int type, mjrbuf_t *buf)
 {
-  u_int curOff; 
+  u_int curOff,nbr; 
   mjrlink_t *cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!fnc->parentfuncs)
+  if (type == 0) 
+    {
+      cur = fnc->parentfuncs;
+      nbr = fnc->parentnbr;
+    } 
+  else if (type == 1)
+    {
+      cur = fnc->childfuncs;
+      nbr = fnc->childnbr;
+    }
+
+  if (!cur)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   if (!buf->data) 
@@ -61,16 +84,15 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
 	     buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
-  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*fnc->parentnbr)))
+  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr)*nbr)))
     {
       buf->allocated += getpagesize();
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	       buf->data, buf->data, buf->allocated, -1);
     }
-  
+
   curOff = buf->maxlen;
-  cur = fnc->parentfuncs;
-  
+
   while (cur)
     {
       memcpy(buf->data + buf->maxlen, (char *)&cur->vaddr , sizeof(elfsh_Addr));
@@ -80,47 +102,6 @@ u_int	 mjr_function_flow_parents_save(mjrfunc_t *fnc, mjrbuf_t *buf)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
 }
-
-
-/* XXX: Almost complete duplicate code from the previous functions !!!!!! */
-/* Please merge this in a single modular function */
-u_int	mjr_function_flow_childs_save(mjrfunc_t *fnc, mjrbuf_t *buf)
-{
-  u_int curOff; 
-  mjrlink_t *cur;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (!fnc->childfuncs)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
-  if (!buf->data) 
-    {
-      buf->allocated = getpagesize();;
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	     buf->data, buf->allocated, -1);
-      buf->maxlen = 0;
-    }
-  else if (buf->allocated  < (buf->maxlen + (sizeof(elfsh_Addr) * fnc->childnbr)))
-    {
-     buf->allocated += getpagesize();
-     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	      buf->data, buf->data, buf->allocated, -1);
-    }
-  
-  curOff = buf->maxlen;
-  cur = fnc->childfuncs;
-  
-  while (cur)
-    {
-      memcpy(buf->data + buf->maxlen, (char *) &cur->vaddr, sizeof(elfsh_Addr));
-      buf->maxlen += sizeof(elfsh_Addr);
-      cur = cur->next;
-    }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
-}
-
 
 /* Copy the function in a special buffer to fingerprint it */
 int		mjr_function_copy(mjrcontext_t  *ctx, 
@@ -491,10 +472,10 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
 
       /* 1st Save flow information and get offset from the beginning 
 	 of .edfmt.fcontrol */
-      flowOffp = mjr_function_flow_parents_save(func, &cfbuf);
+      flowOffp = mjr_function_flow_save(func, 0, &cfbuf);
       fprintf(D_DESC, " [D] %s: parentOffset: %d\n", __FUNCTION__, flowOffp);
 
-      flowOffc = mjr_function_flow_childs_save(func, &cfbuf);
+      flowOffc = mjr_function_flow_save(func, 1, &cfbuf);
       fprintf(D_DESC, " [D] %s: childOffset: %d\n", __FUNCTION__, flowOffc);
       
       /* Set New pointers */

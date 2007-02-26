@@ -1,5 +1,5 @@
 /*
-** (C) Devhell Labs / Asgard Labs 2001-2006
+** (C) Devhell Labs / Asgard Labs 2001-2007
 **
 ** $id: Libmjollnir.H,V 1.8 2006/07/27 16:50:48 thor Exp $
 **

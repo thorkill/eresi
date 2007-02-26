@@ -19,7 +19,10 @@ char	*call_type_str[] =
   "UNKN"
 };
 
-/* Print block */
+/**
+ * Block dump for debug purposes 
+ * @param b mjrblock strucutre
+ */
 void		mjr_block_dump(mjrblock_t *b) 
 {
   printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
@@ -27,7 +30,9 @@ void		mjr_block_dump(mjrblock_t *b)
 }
 
 
-/* Display all information about a block */
+/**
+ * Display all information about a block 
+ */
 int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
 {
   mjrlink_t		*ccal;
@@ -79,7 +84,9 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
 }
 
 
-/* Print the content of the control flow section */
+/**
+ * Print the content of the control flow section 
+ */
 int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
   mjropt_t	opt;
@@ -103,13 +110,17 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
 
-/* Print information for functions */
+/**
+ * Print information for functions 
+ */
 void		mjr_function_display(mjrfunc_t *func)
 {
   printf(" - FUNC ["AFMT"] %30s MD5: %s \n", func->vaddr, func->name, func->md5);
 }
 
-/* Print the functions in the function hash for the current context */
+/**
+ * Print the functions in the function hash for the current context 
+ */
 void		mjr_funcs_display(mjrcontext_t *c)
 {
   char		**keys;
@@ -127,7 +138,9 @@ void		mjr_funcs_display(mjrcontext_t *c)
 }
 
 
-/* Shortcut for vaddr 2 string with allocation .. */
+/**
+ * Shortcut for vaddr 2 string with allocation .. 
+ */
 char	*_vaddr2str(elfsh_Addr addr)
 {
   char *tmp;

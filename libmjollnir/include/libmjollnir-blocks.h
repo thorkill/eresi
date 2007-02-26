@@ -1,10 +1,10 @@
 /*
- * 2001-2006 Devhell Labs
- * 2006 Asgard Labs, thorolf
+ * 2001-2007 Devhell Labs
+ * 2006-2007 Asgard Labs, thorolf
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.15 2007-02-25 16:03:21 thor Exp $
+ * $Id: libmjollnir-blocks.h,v 1.16 2007-02-26 17:47:15 thor Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)

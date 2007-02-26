@@ -1,14 +1,17 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.18 2007-02-23 05:27:47 may Exp $
+ * $Id: init.c,v 1.19 2007-02-26 17:47:15 thor Exp $
  *
  * Initialization functions
  *
  */
 #include "libmjollnir.h"
 
-/* Initialize the world for libmjollnir */
+/**
+ * Initialize the world for libmjollnir 
+ * @param sess The session structure
+ */
 int		mjr_init_session(mjrsession_t *sess) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -25,7 +28,11 @@ int		mjr_init_session(mjrsession_t *sess)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Change the current analysis context */
+/**
+ * Change the current analysis context
+ * @param sess The session structure
+ * @param name The name of the session
+ */
 int		mjr_set_current_context(mjrsession_t *sess, char *name) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -34,7 +41,11 @@ int		mjr_set_current_context(mjrsession_t *sess, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Create a new analysis context */
+/**
+ * Create a new analysis context 
+ * @param sess The session structure
+ * @param ctx The context structure
+ */
 int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx) 
 {
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -42,7 +53,11 @@ int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx)
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Create a context and set it as the current one */
+/**
+ * Create a context and set it as the current one 
+ * @param sess The session strucutre
+ * @param obj elfshell obj
+ */
 int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj) 
 {
  mjrcontext_t	*ctx;
@@ -55,7 +70,10 @@ int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
 }
 
 
-/* Create a new context */
+/**
+ * Create a new context 
+ * @param obj elf shell object
+ */
 mjrcontext_t	*mjr_create_context(elfshobj_t *obj) 
 {
  mjrcontext_t	*ctx;
@@ -71,7 +89,10 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
 
 
 
-/* Virtualisation of the libasm initialization depending on the architecture */
+/**
+ * Virtualisation of the libasm initialization depending on the architecture 
+ * @param sess Mjollnir session strucutre
+ */
 int		mjr_setup_processor(mjrsession_t *sess) 
 {
  u_int         arch;

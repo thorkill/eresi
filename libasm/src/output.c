@@ -1,5 +1,5 @@
 /*
-** $Id: output.c,v 1.2 2007-02-21 03:43:51 heroine Exp $
+** $Id: output.c,v 1.3 2007-02-26 17:47:15 thor Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -39,10 +39,25 @@ char	*asm_display_instr_att(asm_instr *instr,
 
 
 
-
-
-
-
+/**
+ * Debug dump of an opperand, merged from mjollnir
+ */
+int	asm_debug_operand(asm_operand * op)
+{
+  fprintf(stderr, "[*] Operand Dump\n[*] len: %d type: %d size: %d content: %d\n",
+	  op->len, op->type, op->size, op->content);
+  
+  fprintf(stderr, "[*] Content: %s %s %s %s %s %s %s\n",
+	  (op->content & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
+	  (op->content & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
+	  (op->content & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
+	  (op->content & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
+	  (op->content & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
+	  (op->content & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
+	  (op->content & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+  
+  return 0;
+}
 
 
 

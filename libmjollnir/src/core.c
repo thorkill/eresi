@@ -3,12 +3,17 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.23 2007-02-23 05:27:47 may Exp $
+** $Id: core.c,v 1.24 2007-02-26 17:47:15 thor Exp $
 */
+
 #include "libmjollnir.h"
 
 
-/* This function will find calls including calls trought a pointer */
+/**
+ * This function will find calls including calls trought a pointer 
+ * @param sess Mjollnir session
+ * @param section_name The name of the section we want to analyse
+ */
 int		  mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   
@@ -65,7 +70,11 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Main analysis function */
+/**
+ * Main analysis function 
+ * @param sess Mjollnir session strucutre
+ * @param flags <FIXME:NotImplemented>
+ */
 int		mjr_analyse(mjrsession_t *sess, int flags) 
 {
   char		*shtName;
@@ -140,27 +149,5 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   /* Set the flag and return */
   sess->cur->analysed = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-//**** FIXME : should go in libasm******
-
-
-/* Debug printing */
-int	asm_debug_operand(asm_operand * op)
-{
-  fprintf(D_DESC, "[*] Operand Dump\n[*] len: %d type: %d size: %d content: %d\n",
-	  op->len, op->type, op->size, op->content);
-  
-  fprintf(D_DESC, "[*] Content: %s %s %s %s %s %s %s\n",
-	  (op->content & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
-	  (op->content & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
-	  (op->content & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
-	  (op->content & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
-	  (op->content & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
-	  (op->content & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
-	  (op->content & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
-  
-  return 0;
 }
 

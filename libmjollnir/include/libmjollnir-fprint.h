@@ -1,10 +1,10 @@
 /*
  * 2001-2006 Devhell Labs
- * 2006 Asgard Labs, thorolf
+ * 2006-2007 Asgard Labs, thorolf
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-fprint.h,v 1.9 2007-02-25 15:44:42 thor Exp $
+ * $Id: libmjollnir-fprint.h,v 1.10 2007-02-26 17:47:15 thor Exp $
  *
  */
 #include "libmjollnir-blocks.h"

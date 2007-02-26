@@ -7,9 +7,9 @@
 */
 #include "libmjollnir.h"
 
-
-
-/* Say if a block is the start of a function or not */
+/**
+ * Say if a block is the start of a function or not 
+ */
 int		 mjr_block_funcstart(mjrblock_t *blk) 
 {
   mjrlink_t	 *cur;
@@ -18,10 +18,18 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 
 
   if (blk) {
-    //  fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n",blk->vaddr);
+
+#if __DEBUG_BLOCK__
+    fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n",blk->vaddr);
+#endif
+
     for (cur = blk->caller; cur; cur = cur->next) {
-      //     fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
-      //  cur->vaddr,cur->type);
+
+#if __DEBUG_BLOCK__
+      fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
+	      cur->vaddr,cur->type);
+#endif
+
       if (cur->type == CALLER_CALL)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
@@ -30,16 +38,22 @@ int		 mjr_block_funcstart(mjrblock_t *blk)
 }
 
 
-/* Depth First Search : forward distance fingerprinting algorithm */
-/* Curd: current depth, Mind: minimum depth to search for, Maxd: Maximum depth */
-/* Weight : allow finer fingerprint by counting hits (should start with 0) */
-/* Fprint : any intrabloc fingerprinting function that you like */
+/**
+ * Depth First Search: forward distance fingerprinting algorithm
+ * @param c mjollnir context
+ * @param start mjollnir block
+ * @param curd current depth, Mind: minimum depth to search for, Maxd: Maximum depth
+ * @param weight : allow finer fingerprint by counting hits (should start with 0)
+ * @param mind min depth to match
+ * @param maxd max depth to match
+ * @param fprint : any intrabloc fingerprinting function that you like
+ */
 int		mjr_fprint_fwd(mjrcontext_t *c,
 			       mjrblock_t   *start, 
 			       int	    weight, 
-			       int	    curd, // cur depth
-			       int	    mind, // min depth to match
-			       int	    maxd, // max depth to match
+			       int	    curd,
+			       int	    mind,
+			       int	    maxd,
 			       int	    (*fprint)(mjrblock_t *))
 {
   mjrblock_t	*true;
@@ -79,10 +93,15 @@ int		mjr_fprint_fwd(mjrcontext_t *c,
 
 
 
-/* Reverse Depth First Search : backward distance fingerprinting algorithm */
-/* Curd: current depth, Mind: minimum depth to search for, Maxd: Maximum depth */
-/* Weight : allow finer fingerprint by counting hits (should start with 0) */
-/* Fprint : any intrabloc fingerprinting function that you like */
+/* Reverse Depth First Search : backward distance fingerprinting algorithm
+ * @param c mjollnir context
+ * @param start mjollnir block
+ * @param curd current depth, Mind: minimum depth to search for, Maxd: Maximum depth
+ * @param weight : allow finer fingerprint by counting hits (should start with 0)
+ * @param mind min depth to match
+ * @param maxd max depth to match
+ * @param fprint : any intrabloc fingerprinting function that you like
+ */
 int		mjr_fprint_bwd(mjrcontext_t *c,
 			       mjrblock_t   *start, 
 			       int	    weight,

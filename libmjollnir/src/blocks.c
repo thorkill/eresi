@@ -12,8 +12,14 @@
 hash_t		goto_hash;
 
 
-/* Make the link between the new block and the current block */
-/* Split existing blocks if necessary */
+/**
+ * Make the link between the new block and the current block.
+ * Split existing blocks if necessary.
+ * @param ctxt mjorllnir context strucutre
+ * @param ins asm instruction
+ * @param vaddr source address
+ * @param dest destination address
+ */
 int			mjr_block_point(mjrcontext_t  *ctxt, 
 					asm_instr      *ins,
 					elfsh_Addr     vaddr,
@@ -69,7 +75,9 @@ int			mjr_block_point(mjrcontext_t  *ctxt,
 
 
 
-/* Retreive control flow section content if any */
+/**
+ * Retreive control flow section content if any 
+ */
 mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
@@ -96,7 +104,9 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 }
 
 
-/* Create the control flow graph using the information stored in .elfsh.control */
+/**
+ * Create the control flow graph using the information stored in .elfsh.control 
+ */
 mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 {
   int                   index;
@@ -188,7 +198,9 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 }
 
 
-/* Create the block information to be saved in file */
+/**
+ * Create the block information to be saved in file 
+ */
 int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 {
   char			buffer[24];
@@ -236,7 +248,9 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 
 
 
-/* Store the blocks inside the .control section using the file representation */
+/**
+ * Store the blocks inside the .control section using the file representation 
+ */
 // This loops on all block, and call blocks_save on each bloc
 int			mjr_blocks_store(mjrcontext_t *ctxt) 
 {
@@ -303,7 +317,9 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
 }
 
 
-/* Create a new block */
+/**
+ * Create a new block 
+ */
 mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz) 
 {
   mjrblock_t	*t;
@@ -319,8 +335,10 @@ mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz)
 
 
 
-/* Add a new block to the blocks tree (sorted by address)
-** If block is already present, it's not inserted and function returns */
+/**
+ * Add a new block to the blocks tree (sorted by address)
+ * If block is already present, it's not inserted and function returns 
+ */
 void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n) 
 {
   mjrblock_t	*cur;
@@ -337,7 +355,9 @@ void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n)
 
 
 
-/* Add a caller : vaddr is address of starting block */
+/** 
+ * Add a caller : vaddr is address of starting block 
+ */
 void		mjr_block_add_caller(mjrblock_t *blk, 
 				     elfsh_Addr    vaddr, 
 				     int	   type) 
@@ -356,7 +376,7 @@ void		mjr_block_add_caller(mjrblock_t *blk,
 }
 
 
-/* 
+/** 
  * Get a block by vaddr
  *
  * If mode = 0, return block only if vaddr is equal to block starting address

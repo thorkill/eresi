@@ -1,11 +1,11 @@
 
 /*
  * 2001-2007 Devhell Labs
- * 2007 Asgard Labs, thorolf
+ * 2006-2007 Asgard Labs, thorolf
  * 
  * Container structures for libmjollnir
  *
- * $Id: libmjollnir-container.h,v 1.1 2007-02-25 16:03:46 thor Exp $
+ * $Id: libmjollnir-container.h,v 1.2 2007-02-26 17:47:15 thor Exp $
  *
  */
 
