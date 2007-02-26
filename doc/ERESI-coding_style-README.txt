@@ -204,7 +204,7 @@ B/ DEVELOPMENT
    The same holds for malloc (XALLOC), realloc (XREALLOC), 
    free (XFREE), lseek (XSEEK), write (XWRITE), and close (XCLOSE).
 
-   See: ./libelfsh/include/libelfsh/libelfsh-internal.h for all macros.
+   See: ./libaspect/include/libaspect-profiler.h for all macros.
 
 
    2. Use the profiler macros carefully ! 
