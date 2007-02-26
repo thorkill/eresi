@@ -124,6 +124,14 @@ extern asm_processor	proc;
 #define ELFSH_VERTYPE_DEF     3
 #define ELFSH_VERENTRY_MAX    4
 
+/* REVM atomic operations */
+#define	REVM_OP_UNKNOW	      0
+#define	REVM_OP_ADD	      1
+#define	REVM_OP_SUB	      2
+#define	REVM_OP_MUL	      3
+#define	REVM_OP_DIV	      4
+#define	REVM_OP_MOD	      5
+
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
 			     &world.curjob->curcmd->regx[idx] :               \
@@ -303,7 +311,6 @@ char prompt_token[512];
 #define CMD_BINFILE_R		"f"
 #define	CMD_BINFILE_W		"w"
 #define	CMD_SET			"set"
-#define	CMD_GET			"get"
 #define	CMD_PRINT		"print"
 #define	CMD_EXEC		"exec"
 #define	CMD_ADD			"add"
@@ -704,7 +711,7 @@ typedef struct 		s_var
 
 
 /* Meta object : describe an object abstractly, whatever its hierarchy level */
-typedef struct  s_path
+typedef	struct		s_path
 {
 
   /* Handlers */
@@ -721,6 +728,12 @@ typedef struct  s_path
   u_int               size;           /* Size of the immediate string */
   u_int               sizelem;        /* Size of element for OBJRAW */
   char                immed;          /* Immediate binary flag */
+  u_int               type;	      /* The object type identifier */
+  char                perm;	      /* TRUE if obj is a script variable */
+
+  /* Only when describing elements of hash tables */
+  char		      *hname;		/* Name of parent hash table */
+  char		      *kname;		/* Name of key in hash table */
 
   /* Immediate value if immed flag is set */
   union               immval
@@ -731,9 +744,6 @@ typedef struct  s_path
     elfsh_Addr        ent;
     char              *str;
   }                   immed_val;
-
-  u_int               type;		      /* The object type, like in types */
-  char                perm;		      /* TRUE if obj is a script var */
 }                     revmobj_t;
 
 

@@ -74,7 +74,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 {
   u_int		size;
   char		index[ELFSH_MEANING];
-  hash_t	*hash;
+   hash_t	*hash;
   revmobj_t	*ret;
   char		*entryname;
   void		*ptr;
@@ -90,24 +90,25 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   entryname = strchr(index, ':');
   if (entryname)
     *entryname++ = 0x00;
+
+  /* In case the hash table does not exist, create it empty */
   hash = hash_find(index);
   if (!hash)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unknown requested hash", NULL);
-  if (entryname)
     {
-      ptr = hash_get(hash, entryname);
-      if (!ptr)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Unknown requested hash entry", NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     hash, sizeof(hash_t), NULL);
+      hash_init(hash, index, 7, ASPECT_TYPE_UNKNOW);
     }
-  else
-    ptr = (void *) hash;
+
+  /* Now deal with the entry */
+  ptr = (entryname ? hash_get(hash, entryname) : (void *) hash);
 
   /* Get an revm object */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = ptr;
-  ret->type     = (entryname ? hash->type : ASPECT_TYPE_UNKNOW);
+  ret->type     = (entryname ? hash->type : ASPECT_TYPE_HASH);
+  ret->hname    = index;
+  ret->kname    = entryname;
   ret->perm     = 1;
   ret->immed    = 0;
   ret->get_obj  = (void *) vm_generic_getobj;

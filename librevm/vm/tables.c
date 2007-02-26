@@ -752,7 +752,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_DISASM2 , (void *) cmd_disasm  , (void *) vm_getdisasm    , 1, HLP_DISASM);
   vm_addcmd(CMD_HEXA    , (void *) cmd_disasm  , (void *) vm_gethexa      , 1, HLP_HEXA);
   vm_addcmd(CMD_HEXA2   , (void *) cmd_disasm  , (void *) vm_gethexa      , 1, HLP_HEXA);
-  vm_addcmd(CMD_GET     , (void *) cmd_get     , (void *) vm_getoption    , 0, HLP_GET);
   vm_addcmd(CMD_PRINT   , (void *) cmd_print   , (void *) vm_getvarparams , 0, HLP_PRINT);
   vm_addcmd(CMD_EXEC    , (void *) cmd_exec    , (void *) vm_getvarparams , 0, HLP_EXEC);
   vm_addcmd(CMD_EDIT    , (void *) cmd_edit    , (void *) vm_getoption    , 0, HLP_EDIT);

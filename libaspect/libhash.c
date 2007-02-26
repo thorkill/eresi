@@ -42,6 +42,12 @@ hash_t	*hash_find(char *name)
   return ((hash_t *) hash_get(hash_hash, name));
 }
 
+/* Return a hash table pointer by its name */
+void	hash_register(hash_t *table, char *name)
+{
+  hash_add(hash_hash, name, table);
+}
+
 
 /* Empty a hash table */
 hash_t		*hash_empty(char *name)
@@ -187,6 +193,19 @@ void 		*hash_get(hash_t *h, char *key)
 	 strcmp(actual->key, key))
     actual = actual->next;
   return (actual != NULL ? actual->data : NULL);
+}
+
+/* Retrieve the data pointer for a given key */
+void 		*hash_select(hash_t *h, char *key)
+{
+  hashent_t	*actual;
+
+  actual = hash_get_head(h, key);
+  while (actual      != NULL && 
+	 actual->key != NULL && 
+	 strcmp(actual->key, key))
+    actual = actual->next;
+  return (actual != NULL ? &actual->data : NULL);
 }
 
 

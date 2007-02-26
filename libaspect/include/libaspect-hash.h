@@ -40,11 +40,13 @@ extern hash_t		*hash_hash;
 /* hash.c */
 int		hash_init(hash_t *, char*, int, u_int);	/* Allocate the table */
 hash_t		*hash_find(char *name);			/* Find a hash table */
+void		hash_register(hash_t *h, char *name);	/* Register a hash table */
 hash_t		*hash_empty(char *name);		/* Empty the hash table */
 void		hash_destroy(hash_t *h);		/* Free the table */
 int		hash_add(hash_t *h, char *k, void *d);	/* Add an entry */
 int		hash_del(hash_t *h, char *key);		/* Delete an entry */
-void		*hash_get(hash_t *h, char *key);	/* Get an entry pointer */
+void		*hash_get(hash_t *h, char *key);	/* Get data from key */
+void 		*hash_select(hash_t *h, char *key);	/* Get an entry pointer */
 hashent_t	*hash_get_head(hash_t *h, char *b);	/* Get a list head */
 hashent_t 	*hash_get_ent(hash_t *h, char *key);	/* Get an entry metadata */
 void		hash_print(hash_t *h);			/* Print the hash table */

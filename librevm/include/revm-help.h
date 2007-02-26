@@ -52,7 +52,6 @@
 #define	HLP_SHTRM		"Mark Section Header Table as removed"
 #define	HLP_COMMENT		"Print comment section content"
 #define	HLP_SET			"Set parameter object value"
-#define	HLP_GET			"Print parameter object value"
 #define	HLP_PRINT		"Print list of resolved values of parameters"
 #define	HLP_EXEC		"Fork and execute parameter command (with args)"
 #define	HLP_ADD			"Add the 2 parameters"

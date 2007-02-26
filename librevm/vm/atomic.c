@@ -6,7 +6,7 @@
 #include "revm.h"
 
 
-/* Preconditions on atomic operations */
+/* Preconditions on atomic operations set */
 /* Only called by set */
 int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 {
@@ -39,13 +39,152 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 }
 
 
+/* Preconditions on arithmetic operations */
+/* Used by add, sub, mul, div, mod */
+int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
+{
+  elfsh_Addr		src;
+  elfsh_Addr		dst;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Preliminary checks */
+  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->type = ASPECT_TYPE_INT;
+  else if (o1->type == ASPECT_TYPE_STR)
+    vm_convert_object(o1, ASPECT_TYPE_INT);
+  if ((o1->type != ASPECT_TYPE_INT   &&
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR &&
+       o1->type != ASPECT_TYPE_DADDR &&
+       o1->type != ASPECT_TYPE_LONG) ||
+      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Parameter has not INTEGER type", -1);
+
+  dst  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
+  src  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
+
+  /* Compute */
+  switch (op)
+    {
+    case REVM_OP_ADD:
+      dst += src;
+      break;
+    case REVM_OP_SUB:
+      dst -= src;
+      break;
+    case REVM_OP_MUL:
+      dst *= src;
+      break;
+    case REVM_OP_DIV:
+      if (src == 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Cannot divide by 0", -1);      
+      dst /= src;
+      break;
+    case REVM_OP_MOD:
+      if (src == 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Cannot divide by 0", -1);
+      dst %= src;
+      break;
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unknown requested operation", -1);
+    }
+
+  /* Store result */
+  if (o1->immed)
+    o1->immed_val.ent = dst;
+  else
+    o1->set_obj(o1->parent, dst);
+  if (!world.state.vm_quiet)
+    vm_output(" [*] Field modified succesfully\n\n");
+  if (!o2->perm)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
+  if (!o1->perm)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, o1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* API for adding in hash */
+int			vm_hash_add(hash_t *h, revmobj_t *o)
+{
+  void			*elem;
+  char			*name;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if ((h->type != o->type && vm_convert_object(o, h->type)) || 
+      (!o->kname && !o->hname && !o->get_name))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Variable and hash elements have different types", -1);
+  elem = (void *) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  name = (o->kname ? o->kname : o->hname ? o->hname : 
+	  o->get_name(o->root, o->parent));
+  hash_add(h, name, elem);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* API for deleting in hash */
+int			vm_hash_del(hash_t *h, revmobj_t *o)
+{
+  char			*name;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If second parameter was a string */
+  if (o->type == ASPECT_TYPE_STR)
+    {
+      name = o->get_name(o->root, o->parent);
+      if (hash_get(h, name))
+	hash_del(h, name);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Else if it was a hash element */
+  if ((h->type != o->type && vm_convert_object(o, h->type)) || !o->kname ||
+      !hash_get(h, o->kname))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown hash element to remove", -1);
+  hash_del(h, o->kname);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* API for setting elements inside hash */
+int			vm_hash_set(char *table, char *elmname, void *obj)
+{
+  hash_t		*h;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!table)
+    hash_register((hash_t *) obj, elmname);
+  else
+    {
+      h = hash_find(table);
+      if (!h)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unknown destination hash table", -1);
+      hash_add(h, elmname, obj);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
 
 /* SET command */
-int                     cmd_set()
+int			cmd_set()
 {
-  revmobj_t           *o1;
-  revmobj_t           *o2;
-  revmobj_t           *last;
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+  revmobj_t		*last;
   char                  *str;
   elfsh_Addr            val64;
   u_int                 val32;
@@ -53,6 +192,7 @@ int                     cmd_set()
   u_short               val16;
   int                   error;
   int			errvar;
+  hash_t		*hash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -63,6 +203,15 @@ int                     cmd_set()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid variable transaction", (-1));
 
+  /* The $_ variable is updated as well */
+  last = hash_get(&vars_hash, ELFSH_RESVAR);
+  if (last == NULL)
+    { 
+      errvar = -1; 
+      goto err; 
+    }
+  last->type = o1->type;
+
   /* Do the real assignation */
   switch (o1->type)
     {
@@ -71,9 +220,10 @@ int                     cmd_set()
       if (o1->immed)
         {
           o1->immed_val.str = strdup(str);
- 
           o1->size = o2->size;
         }
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str);
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
         goto err;
       break;
@@ -82,62 +232,55 @@ int                     cmd_set()
       val8 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
       if (o1->immed)
         o1->immed_val.byte = val8;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val8);
       else if (o1->set_obj(o1->parent, val8) < 0)
         goto err;
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-        { errvar = -1; goto err; }
-      last->immed_val.word = val8;
-      last->type = o1->type;
+      last->immed_val.byte = val8;
       break;
-
 
     case ASPECT_TYPE_SHORT:
       val16 = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.half = val16;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val16);
       else if (o1->set_obj(o1->parent, val16) < 0)
 	goto err;
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	{ errvar = -1; goto err; }
-      last->immed_val.word = val16;
-      last->type = o1->type;
+      last->immed_val.half = val16;
       break;
 
     case ASPECT_TYPE_INT:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.word = val32;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val32);
       else if (o1->set_obj(o1->parent, val32) < 0)
 	goto err;
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	{ errvar = -1; goto err; }
       last->immed_val.word = val32;
-      last->type = o1->type;
       break;
 
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_LONG:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.ent = val64;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, (void *) val64);
       else if (o1->set_obj(o1->parent, val64) < 0)
 	goto err;
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	{ errvar = -1; goto err; }
       last->immed_val.ent = val64;
-      last->type = o1->type;
+      break;
+
+    case ASPECT_TYPE_HASH:
+      hash = (hash_t *) o2->get_obj(o2->parent);
+      if (vm_hash_set(NULL, o1->hname, (void *) hash))
+	goto err;
       break;
 
     default:
@@ -161,366 +304,12 @@ int                     cmd_set()
   /* We have 2 different possible errors here */
   if (errvar < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Error while setting $_", -1);
+		      "Error while setting result variable", -1);
   else if (error < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to set object", -1);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
-}
-
-
-/* GET command */
-int		cmd_get()
-{
-  revmobj_t	*o1;
-  char		*str;
-  elfsh_Addr	val;
-  u_int		val32;
-  u_char	val8;
-  u_short	val16;
-  char		logbuf[BUFSIZ];
-  int		error = -1;
-  revmobj_t	*last;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "GET need a parameter", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  if (!o1)
-    RET(-1);
-
-  /* Switch on the object type */
-  switch (o1->type)
-    {
-    case ASPECT_TYPE_STR:
-      str = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
-      vm_output(str);
-      if (o1->immed)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
-      break;
-
-    case ASPECT_TYPE_BYTE:
-      val8 = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
-      snprintf(logbuf, BUFSIZ - 1, "%c\n", val8);
-      vm_output(logbuf);
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	goto err;
-      last->immed_val.word = val8;
-      last->type = o1->type;
-      break;
-    case ASPECT_TYPE_SHORT:
-      val16 = (o1->immed ? o1->immed_val.half : o1->get_obj(o1->parent));
-      snprintf(logbuf, BUFSIZ - 1, "%4hu \n", val16);
-      vm_output(logbuf);
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	goto err;
-      last->immed_val.word = val16;
-      last->type = o1->type;
-      break;
-    case ASPECT_TYPE_INT:
-      val32 = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
-      snprintf(logbuf, BUFSIZ - 1, "0x%08X\n", val32);
-      vm_output(logbuf);
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	goto err;
-      last->immed_val.word = val32;
-      last->type = o1->type;
-      break;
-
-    case ASPECT_TYPE_CADDR:
-    case ASPECT_TYPE_DADDR:
-      val = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-      snprintf(logbuf, BUFSIZ - 1, XFMT "\n", val);
-      vm_output(logbuf);
-
-      /* The $_ variable is updated as well */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	goto err;
-      last->immed_val.word = val;
-      last->type = o1->type;
-      break;
-      
-    default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unknown type for GET parameter", -1);
-    }
-
-  /* Print stuff and return OK */
-  if (!world.state.vm_quiet)
-    vm_output("\n");
-  
-  error = 0;
-  
- err:
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-
-  if (error < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Error while setting $_", error);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
-}
-
-
-
-/* ADD command */
-int			cmd_add()
-{
-  revmobj_t		*o1;
-  revmobj_t		*o2;
-  elfsh_Addr		val;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
-  if (!o1 || !o2)
-    RET(-1);
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-
-  else if (o1->type == ASPECT_TYPE_STR)
-    vm_convert_object(o1, ASPECT_TYPE_INT);
-    
-  if ((o1->type != ASPECT_TYPE_INT   &&
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR &&
-       o1->type != ASPECT_TYPE_DADDR) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameter has not INTEGER type", -1);
-
-  /* Compute */
-  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-  val += (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-  if (o1->immed)
-    o1->immed_val.ent = val;
-  else
-    o1->set_obj(o1->parent, val);
-
-
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully\n\n");
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* SUB command */
-int			cmd_sub()
-{
-  revmobj_t		*o1;
-  revmobj_t		*o2;
-  elfsh_Addr	       	val;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
-  if (!o1 || !o2)
-    RET(-1);
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-  if ((o1->type != ASPECT_TYPE_INT   &&
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR &&
-       o1->type != ASPECT_TYPE_DADDR) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameter has not INTEGER type", -1);
-
-  /* Compute */
-  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-  val -= (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-  if (o1->immed)
-    o1->immed_val.ent = val;
-  else
-    o1->set_obj(o1->parent, val);
-  
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully \n\n");
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-/* MUL command */
-int			cmd_mul()
-{
-  revmobj_t		*o1;
-  revmobj_t		*o2;
-  elfsh_Addr		val;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || 
-      world.curjob->curcmd->param[1] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Needs 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
-  if (!o1 || !o2)
-    RET(-1);
-
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-  if ((o1->type != ASPECT_TYPE_INT    &&
-       o1->type != ASPECT_TYPE_BYTE   && 
-       o1->type != ASPECT_TYPE_SHORT  && 
-       o1->type != ASPECT_TYPE_CADDR  &&
-       o1->type != ASPECT_TYPE_DADDR) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameter has not INTEGER type", -1);
-
-  /* Compute */
-  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-  val *= (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-  if (o1->immed)
-    o1->immed_val.ent = val;
-  else
-    o1->set_obj(o1->parent, val);
-
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully \n\n");
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* DIV command */
-int			cmd_div()
-{
-  revmobj_t		*o1;
-  revmobj_t		*o2;
-  elfsh_Addr		val;
-  elfsh_Addr		lav;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
-  if (!o1 || !o2)
-    RET(-1);
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-  if ((o1->type != ASPECT_TYPE_INT   &&
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR &&
-       o1->type != ASPECT_TYPE_DADDR) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameter has not INTEGER type", -1);
-
-  /* Compute */
-  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-  lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-  if (lav == 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot divide by 0", -1);
-  if (o1->immed)
-    o1->immed_val.ent = val / lav;
-  else
-    o1->set_obj(o1->parent, val / lav);
-  
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully \n\n");
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-/* MOD command */
-int			cmd_mod()
-{
-  revmobj_t		*o1;
-  revmobj_t		*o2;
-  elfsh_Addr	       	val;
-  elfsh_Addr	      	lav;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Sanity checks */
-  if (world.curjob->curcmd->param[0] == NULL || world.curjob->curcmd->param[1] == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "MOD needs 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
-  if (!o1 || !o2)
-    RET(-1);
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-
-  if ((o1->type != ASPECT_TYPE_INT    &&
-       o1->type != ASPECT_TYPE_BYTE   && 
-       o1->type != ASPECT_TYPE_SHORT  && 
-       o1->type != ASPECT_TYPE_CADDR  &&
-       o1->type != ASPECT_TYPE_DADDR) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameter has not INTEGER type", -1);
-
-  /* Compute */
-  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-  lav  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
-  if (lav == 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot divide by 0", -1);
-  if (o1->immed)
-    o1->immed_val.ent = val % lav;
-  else
-    o1->set_obj(o1->parent, val % lav);
-
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully \n\n");
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -551,15 +340,11 @@ int			cmd_cmp()
        o1->type != ASPECT_TYPE_SHORT && 
        o1->type != ASPECT_TYPE_CADDR && 
        o1->type != ASPECT_TYPE_DADDR && 
+       o1->type != ASPECT_TYPE_LONG  &&
        o1->type != ASPECT_TYPE_STR)  ||
       (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    {	
-      snprintf(logbuf, BUFSIZ - 1, "o1type = %u, o2type = %u \n",
-	       o1->type, o2->type);
-      vm_output(logbuf);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Invalid parameters", -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
 
   error = -1;
   str = NULL;
@@ -579,24 +364,27 @@ int			cmd_cmp()
     case ASPECT_TYPE_SHORT:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_INT:
       val2 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       val -= val2;
+
+      /* Set the last result variable */
+      last = hash_get(&vars_hash, ELFSH_RESVAR);
+      if (last == NULL)
+	goto err;
+      last->immed_val.ent = val;
+      last->type = o1->type;
+      if (o1->type == ASPECT_TYPE_STR)
+	last->type = ASPECT_TYPE_INT;
       break;
+      
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unknown parameter type", -1);
+			"Uncomparable parameter type", -1);
     }
 
-  /* Set the last result variable */
-  last = hash_get(&vars_hash, ELFSH_RESVAR);
-  if (last == NULL)
-    goto err;
-  last->immed_val.ent = val;
-  last->type = o1->type;
-  if (o1->type == ASPECT_TYPE_STR)
-    last->type = ASPECT_TYPE_INT;
   error = 0;
 
  err:
@@ -608,18 +396,183 @@ int			cmd_cmp()
     XFREE(__FILE__, __FUNCTION__, __LINE__,o1);
   if (!world.state.vm_quiet)
     {
-      snprintf(logbuf, BUFSIZ - 1, " [*] Objects are %s. \n\n", (!val ? "EQUALS" : "INEQUALS"));
+      snprintf(logbuf, BUFSIZ - 1, 
+	       " [*] Objects are %s. \n\n", (!val ? "EQUALS" : "INEQUALS"));
       vm_output(logbuf);
     }
   
   if (error < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Error while setting $_", error);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Error while setting result variable", error);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, error);
 }
 
 
 
+/************************ Now arithmetic commands *****************/
 
+
+
+/* ADD command */
+int			cmd_add()
+{
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+  int			ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  if (!o1 || !o2)
+    RET(-1);
+
+  /* In case we have a hash table as parameter */
+  if (o1->type == ASPECT_TYPE_HASH)
+    {
+      ret = vm_hash_add(o1->parent, o2);
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to insert hash element", -1);
+      if (!world.state.vm_quiet)
+	vm_output(" [*] Element inserted succesfully\n\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Perform computation */
+  if (vm_arithmetics(o1, o2, REVM_OP_ADD) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to add elements", -1);
+  
+  /* Return success */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* SUB command */
+int			cmd_sub()
+{
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+  int			ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  if (!o1 || !o2)
+    RET(-1);
+
+  /* In case we have a hash table as parameter */
+  if (o1->type == ASPECT_TYPE_HASH)
+    {
+      ret = vm_hash_del(o1->parent, o2);
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to delete hash element", -1);
+      if (!world.state.vm_quiet)
+	vm_output(" [*] Element deleted succesfully\n\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Perform computation */
+  if (vm_arithmetics(o1, o2, REVM_OP_SUB) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to substract elements", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* MUL command */
+int			cmd_mul()
+{
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Needs 2 parameters", -1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  if (!o1 || !o2)
+    RET(-1);
+
+  /* Perform computation */
+  if (vm_arithmetics(o1, o2, REVM_OP_MUL) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to multiply elements", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* DIV command */
+int			cmd_div()
+{
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Need 2 parameters", -1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  if (!o1 || !o2)
+    RET(-1);
+
+  /* Perform computation */
+  if (vm_arithmetics(o1, o2, REVM_OP_DIV) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to divide elements", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* MOD command */
+int			cmd_mod()
+{
+  revmobj_t		*o1;
+  revmobj_t		*o2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL || 
+      world.curjob->curcmd->param[1] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "MOD needs 2 parameters", -1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  if (!o1 || !o2)
+    RET(-1);
+
+  /* Perform computation */
+  if (vm_arithmetics(o1, o2, REVM_OP_MOD) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to divide elements", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
