@@ -1225,6 +1225,7 @@ revmobj_t	*vm_revmobj_lookup(char *str);
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	vm_generic_getobj(void *data);
+elfsh_Addr	vm_hash_getobj(void *data);
 int		vm_byte_setobj(void *data, elfsh_Addr value);
 int		vm_short_setobj(void *data, elfsh_Addr value);
 int		vm_int_setobj(void *data, elfsh_Addr value);

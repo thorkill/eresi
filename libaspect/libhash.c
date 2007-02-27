@@ -54,10 +54,13 @@ int		hash_register(hash_t *table, char *name)
   h = hash_get(hash_hash, name);
   if (h)
     {
+      if (h->type == ASPECT_TYPE_UNKNOW)
+	h->type = table->type;
       if (h->type != table->type)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Incompatible hash tables", -1);
-      h = hash_empty(name);
+      if (h->elmnbr)
+	h = hash_empty(name);
       hash_merge(h, table);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }  
@@ -203,10 +206,7 @@ void 		*hash_get(hash_t *h, char *key)
 {
   hashent_t	*actual;
 
-  //printf("before h = %p key = %p (%s) \n", h, key, (key ? key : ""));
   actual = hash_get_head(h, key);
-  //printf("after  h = %p key = %p (%s) \n", h, key, (key ? key : ""));
-
   while (actual      != NULL && 
 	 actual->key != NULL && 
 	 strcmp(actual->key, key))

@@ -304,6 +304,11 @@ elfsh_Addr	vm_generic_getobj(void *data)
   return (*(elfsh_Addr *) data);
 }
 
+elfsh_Addr	vm_hash_getobj(void *data)
+{
+  return ((elfsh_Addr) data);
+}
+
 int		vm_byte_setobj(void *data, elfsh_Addr value)
 {
   unsigned char	*byte;

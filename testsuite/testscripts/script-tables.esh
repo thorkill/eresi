@@ -2,9 +2,20 @@
 
 set $hash[test1:key]  42
 tables test1
+
 set $hash[test2] $hash[test1]
 tables test
+
 set $hash[test1:key2] 43
 tables test
+tables test1
+tables test2
+
+add $hash[test2] $hash[test1:key2]
+tables test2
+
+sub $hash[test2] key2
+tables test2
+
 
 quit
