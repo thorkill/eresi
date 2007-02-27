@@ -160,7 +160,6 @@ extern asm_processor	proc;
 #define	ELFSH_EXTDYN_MAX	19
 #define ELFSH_MIPSDYN_MAX	43
 #define	ELFSH_ARCHTYPE_MAX	56
-#define	ELFSH_STAB_MAX		256
 #define	ELFSH_EXTSEG_MAX	5
 
 
@@ -288,8 +287,6 @@ char prompt_token[512];
 #define CMD_SHT2		"s"
 #define CMD_PHT			"pht"
 #define CMD_PHT2		"p"
-#define CMD_STAB		"stab"
-#define CMD_STAB2		"st"
 #define CMD_DWARF		"dwarf"
 #define CMD_DWARF2		"dw"
 #define CMD_ELF			"elf"
@@ -298,7 +295,7 @@ char prompt_token[512];
 #define	CMD_INTERP2		"i"
 #define	CMD_NOTE		"notes"
 #define	CMD_NOTE2		"n"
-#define CMD_CORE_INFO	"ci"
+#define CMD_CORE_INFO		"ci"
 #define	CMD_GOT			"got"
 #define	CMD_GOT2		"g"
 #define	CMD_CTORS		"ctors"
@@ -357,6 +354,9 @@ char prompt_token[512];
 /* Type related commands */
 #define	CMD_INFORM		"inform"
 #define	CMD_UNINFORM		"uninform"
+
+/* Debugging format commands */
+#define CMD_DEBUG		"debug"
 
 /* ELF Version commands */
 #define CMD_VERSION		"version"
@@ -866,7 +866,6 @@ extern revmconst_t     elfsh_encoding[ELFSH_ENCODING_MAX];
 extern revmconst_t     elfsh_extdyn_type[ELFSH_EXTDYN_MAX];
 extern revmconst_t     elfsh_mipsdyn_type[ELFSH_MIPSDYN_MAX];
 extern char	       *elfsh_arch_type[ELFSH_ARCHTYPE_MAX];
-extern char	       *elfsh_stab_type[ELFSH_STAB_MAX];
 extern revmconst_t     elfsh_feature1[ELFSH_FEATURE_MAX];
 extern revmconst_t     elfsh_posflag1[ELFSH_POSFLAG_MAX];
 extern revmconst_t     elfsh_flags[ELFSH_FLAGS_MAX];
@@ -914,7 +913,6 @@ int		cmd_list();
 int		cmd_notes();
 int		cmd_core_info();
 int		cmd_sym();
-int		cmd_stab();
 int		cmd_hexa();
 int		cmd_disasm();
 int		cmd_shtrm();
@@ -1027,6 +1025,9 @@ int		cmd_delete();
 int		cmd_step();
 int		cmd_display();
 int		cmd_undisplay();
+
+/* Debug format functions */
+int		cmd_debug();
 
 /* Registration handlers for options from opt.c */
 int		vm_getoption(u_int index, u_int argc, char **argv);
@@ -1218,6 +1219,7 @@ int             vm_setvar_long(char *varname, u_long val);
 int		vm_types_print();
 int		vm_type_print(char *type, char mode);
 int		vm_type_copy(char *from, char *to);
+int		vm_type_hashcreate(char *name);
 
 /* Data access related functions */
 aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
@@ -1300,6 +1302,7 @@ int		vm_screen_switch();
 
 /* libedfmt related functions */
 int		vm_edfmt_parse(elfshobj_t *file);
+int		vm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
 int		vm_inform_type(char *type, char *varname, char *straddr, u_char print);

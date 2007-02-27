@@ -765,7 +765,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
   vm_addcmd(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
   vm_addcmd(CMD_SHT     , (void *) cmd_sht     , (void *) vm_getregxoption, 1, HLP_SHT);
-  vm_addcmd(CMD_STAB    , (void *) cmd_stab    , (void *) vm_getregxoption, 1, HLP_STAB);
+  vm_addcmd(CMD_DEBUG   , (void *) cmd_debug   , (void *) vm_getregxoption, 1, HLP_DEBUG);
   vm_addcmd(CMD_REL     , (void *) cmd_rel     , (void *) vm_getregxoption, 1, HLP_REL);
   vm_addcmd(CMD_COMMENT , (void *) cmd_comments, (void *) vm_getregxoption, 1, HLP_COMMENT);
   vm_addcmd(CMD_PHT2    , (void *) cmd_pht     , (void *) vm_getregxoption, 1, HLP_PHT);
@@ -777,7 +777,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_DYNAMIC2, (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
   vm_addcmd(CMD_DYNSYM2 , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
   vm_addcmd(CMD_SHT2    , (void *) cmd_sht     , (void *) vm_getregxoption, 1, HLP_SHT);
-  vm_addcmd(CMD_STAB2   , (void *) cmd_stab    , (void *) vm_getregxoption, 1, HLP_STAB);
   vm_addcmd(CMD_REL2    , (void *) cmd_rel     , (void *) vm_getregxoption, 1, HLP_REL);
   vm_addcmd(CMD_COMMENT2, (void *) cmd_comments, (void *) vm_getregxoption, 1, HLP_COMMENT);
   vm_addcmd(CMD_SET     , (void *) cmd_set     , (void *) vm_getoption2   , 0, HLP_SET);

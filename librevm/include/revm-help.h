@@ -41,7 +41,7 @@
 #define HLP_RSHT		"Print the runtime Section Header Table (RSHT)"
 #define HLP_PHT			"Print Program Header Table (PHT)"
 #define HLP_RPHT		"Print the runtime Program Header Table (RPHT)"
-#define HLP_STAB		"Print raw stab debugging information"
+#define HLP_DEBUG		"Print uni format debugging information"
 #define HLP_DWARF		"Print raw dwarf debugging information"
 #define HLP_ELF			"Print ELF header"
 #define	HLP_INTERP		"Print ELF interpreter path"

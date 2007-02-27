@@ -58,7 +58,6 @@ void 	       	*edfmt_alloc_pool(char **pool, int *apos, int *asize,
 int 		edfmt_clean_pool(char **pool);
 
 /* api.c */
-int		edfmt_uni_print(elfshobj_t *file);
 int		edfmt_add_init(elfshobj_t *file);
 int		edfmt_add_end();
 int		edfmt_update_type(edfmttype_t *type);

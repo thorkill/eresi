@@ -32,6 +32,8 @@ typedef struct 	       	s_etype
   int			start;
   int			size;
 
+  u_char       		parsed;
+
   struct s_etype       	*parent;   	/* Used in structure attribute, array and pointer */
   struct s_etype       	*child;   	/* Used in structure and attribute */
   struct s_etype       	*next;		/* Next element on a list */
