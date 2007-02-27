@@ -9,8 +9,9 @@
 
 
 /* Token system */
-char 		tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
-u_int 		curtok = 0;
+static char 	tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
+static u_int 	curtok = 0;
+
 u_int 		nocolor = 1;
 
 /* Init color structure */
@@ -56,9 +57,9 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
   u_short      	set = 0;
 
   NOPROFILER_IN();
-
-if (t == NULL || (!t->bground && !t->fground && !t->bold && !t->underline))
-  NOPROFILER_ROUT(-1); 
+  
+  if (t == NULL || (!t->bground && !t->fground && !t->bold && !t->underline))
+    NOPROFILER_ROUT(-1); 
 
   /* Set every element */
   COLOR_SET_ELEMENT(t->bold, bo, COLOR_BOLD);
@@ -203,7 +204,6 @@ void 		vm_endline()
 
 /* Simple functions */
 char *vm_colorinstr(char *text) 	{ return vm_colorget("%s", "instr"     , text); }
-
 char *vm_colorstr(char *text) 		{ return vm_colorget("%s", "string"     , text); }
 char *vm_colorfieldstr(char *text) 	{ return vm_colorget("%s", "fieldstring", text); }
 char *vm_colortypestr(char *text) 	{ return vm_colorget("%s", "typestring" , text); }
@@ -229,14 +229,44 @@ char 		*vm_coloradv(char *type, char *pattern, char *text)
 }
 
 /* Advanced functions */
-char *vm_colorinstr_fmt(char *pattern, char *text)		{ return vm_colorget(pattern, "instr"      , text); }
-char *vm_colorstr_fmt(char *pattern, char *text) 		{ return vm_colorget(pattern, "string"     , text); }
-char *vm_colorfieldstr_fmt(char *pattern, char *text) 		{ return vm_colorget(pattern, "fieldstring", text); }
-char *vm_colortypestr_fmt(char *pattern, char *text) 		{ return vm_colorget(pattern, "typestring" , text); }
-char *vm_colorend_fmt(char *pattern, char *text) 		{ return vm_colorget(pattern, "endstring"  , text); }
-char *vm_colorwarn_fmt(char *pattern, char *text) 		{ return vm_colorget(pattern, "warnstring" , text); }
-char *vm_coloraddress(char *pattern, elfsh_Addr addr) 		{ return vm_colorget(pattern, "address"    , &addr); }
-char *vm_colornumber(char *pattern, u_int numb) 		{ return vm_colorget(pattern, "number"     , &numb); }
+char *vm_colorinstr_fmt(char *pattern, char *text)		
+{ 
+  return vm_colorget(pattern, "instr", text); 
+}
+
+char *vm_colorstr_fmt(char *pattern, char *text) 		
+{ 
+  return vm_colorget(pattern, "string", text); 
+}
+char *vm_colorfieldstr_fmt(char *pattern, char *text)
+{ 
+  return vm_colorget(pattern, "fieldstring", text); 
+}
+
+char *vm_colortypestr_fmt(char *pattern, char *text) 		
+{ 
+  return vm_colorget(pattern, "typestring", text); 
+}
+
+char *vm_colorend_fmt(char *pattern, char *text) 		
+{ 
+  return vm_colorget(pattern, "endstring", text); 
+}
+
+char *vm_colorwarn_fmt(char *pattern, char *text) 		
+{ 
+  return vm_colorget(pattern, "warnstring", text); 
+}
+
+char *vm_coloraddress(char *pattern, elfsh_Addr addr) 		
+{ 
+  return vm_colorget(pattern, "address", &addr); 
+}
+
+char *vm_colornumber(char *pattern, u_int numb) 		
+{ 
+  return vm_colorget(pattern, "number", &numb); 
+}
 
 /* Misc functions */
 
