@@ -29,10 +29,15 @@ do { _var = API_GETPTR(sizeof(edfmtvar_t)); } while(0)
 
 #define EDFMT_COPY_NAME(_dest, _source) 			\
 do { 								\
+  int index, len;					       	\
   if (strlen(_source) >= EDFMT_NAME_SIZE)			\
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 		\
 		       "Invalid name size", NULL);		\
   strcpy(_dest->name, _source);					\
+  len = strlen(_dest->name);					\
+  for (index = 0; index < len; index++)				\
+    if (_dest->name[index] == ' ')				\
+      _dest->name[index] = '_';					\
 } while (0)
 
 /* Init an add context */

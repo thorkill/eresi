@@ -23,12 +23,18 @@ static int		vm_edfmt_register_type(char *label,
 					       char **fields, 
 					       u_int fieldnbr)
 {
-  int			index = 0;
+  int			index = 0, len;
   int 			ret = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ret = aspect_type_register(strdup(label), fields, fieldnbr);
+  snprintf(buf, BUFSIZ - 1, "%s", label);
+  len = strlen(buf);
+  
+  for (index = 0; index < len && buf[index] == '*'; index++)
+    buf[index] = 'p';
+
+  ret = aspect_type_register(strdup(buf), fields, fieldnbr);
 
   if (ret == 0)
     vm_type_hashcreate(label);
@@ -40,6 +46,7 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 {
   edfmttype_t		*child, *find;
   int			index = 0;
+  int			typeid;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -48,7 +55,11 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
   
   VM_EDFMT_PARSED(type);
 
-  switch(type->type)
+  typeid = type->type;
+
+ start:
+
+  switch(typeid)
     {
     case EDFMT_TYPE_UNK:
       break;
@@ -67,9 +78,15 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	}
       break;
     case EDFMT_TYPE_PTR:
-      break;
       if (type->parent)
-	vm_edfmt_type_parse(type->parent);
+	{
+	  vm_edfmt_type_parse(type->parent);
+
+	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
+		   "elm:%s", type->parent->name);
+	  tmp_arr[index] = strdup(arr_pool);
+	  vm_edfmt_register_type(type->name, tmp_arr, 1);
+	}
       break;
     case EDFMT_TYPE_VOID:
     case EDFMT_TYPE_BASIC:
@@ -106,8 +123,16 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
       if (type->parent)
 	{
 	  vm_edfmt_type_parse(type->parent);
-	  if (vm_type_copy(type->parent->name, type->name) == 0)
-	    vm_type_hashcreate(type->name);
+	  if (type->name[0] == '*')
+	    {
+	      typeid = EDFMT_TYPE_PTR;
+	      goto start;
+	    }
+	  else
+	    {
+	      if (vm_type_copy(type->parent->name, type->name) == 0)
+		vm_type_hashcreate(type->name);
+	    }
 	}
       break;
     }
@@ -131,6 +156,7 @@ static int		vm_edfmt_types(edfmttype_t *types)
 /* Add global variable into ERESI engine */
 static int		vm_edfmt_inform(edfmtvar_t *var)
 {
+  int			index = 0, len;
   char			*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -138,6 +164,12 @@ static int		vm_edfmt_inform(edfmtvar_t *var)
   if (!var)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);  
+
+  snprintf(buf, BUFSIZ - 1, "%s", var->name);
+  len = strlen(buf);
+  
+  for (index = 0; index < len && buf[index] == '*'; index++)
+    buf[index] = 'p';
 
   snprintf(buf, BUFSIZ - 1, XFMT, var->addr);
   if (var->type->type == EDFMT_TYPE_ARRAY)
@@ -149,7 +181,7 @@ static int		vm_edfmt_inform(edfmtvar_t *var)
   else
     str = var->type->name;
 
-  vm_inform_type(str, var->name, buf, 0);
+  vm_inform_type(str, buf, buf, 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
