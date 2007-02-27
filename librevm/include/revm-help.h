@@ -187,7 +187,11 @@
 #define	HLP_SWITCH		 "Change the current working object"
 #define	HLP_LIST		 "List loaded ELF objects"
 #define	HLP_WORKSPACE		 "Syntax: workspace [name] : List or switch workspaces"
-#define	HLP_TABLES		 "Show internal framework hash tables"
+#define	HLP_TABLES		 "Print hash tables list and content \n\n\t"      \
+				 CMD_TABLES"      : Print all tables \n\t"        \
+				 CMD_TABLES" regx : Print matching tables \n\n\t" \
+				 "If a single hash matches, its content is printed"
+
 #define	HLP_VECTORS		 "Act on reflective objects \n\n\t"				       \
 				 "vectors                                \t List existing vectors\n\t" \
 				 "vectors name                           \t List vector content\n\t"   \
