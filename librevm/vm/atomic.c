@@ -123,6 +123,7 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
       (!o->kname && !o->hname && !o->get_name))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Variable and hash elements have different types", -1);
+
   elem = (void *) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
   name = (o->kname ? o->kname : o->hname ? o->hname : 
 	  o->get_name(o->root, o->parent));
@@ -158,7 +159,10 @@ int			vm_hash_del(hash_t *h, revmobj_t *o)
 
 
 /* API for setting elements inside hash */
-int			vm_hash_set(char *table, char *elmname, void *obj)
+int			vm_hash_set(char   *table, 
+				    char   *elmname, 
+				    void   *obj,
+				    u_char type)
 {
   hash_t		*h;
 
@@ -171,6 +175,8 @@ int			vm_hash_set(char *table, char *elmname, void *obj)
       if (!h)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown destination hash table", -1);
+      if (h->type == ASPECT_TYPE_UNKNOW)
+	h->type = type;
       hash_add(h, elmname, obj);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -223,7 +229,8 @@ int			cmd_set()
           o1->size = o2->size;
         }
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str);
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+		    ASPECT_TYPE_STR);
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
         goto err;
       break;
@@ -234,7 +241,7 @@ int			cmd_set()
         o1->immed_val.byte = val8;
       else if (o1->hname && (o1->kname || o2->kname))
 	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val8);
+		    (void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
       else if (o1->set_obj(o1->parent, val8) < 0)
         goto err;
       last->immed_val.byte = val8;
@@ -246,7 +253,7 @@ int			cmd_set()
 	o1->immed_val.half = val16;
       else if (o1->hname && (o1->kname || o2->kname))
 	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val16);
+		    (void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
       else if (o1->set_obj(o1->parent, val16) < 0)
 	goto err;
       last->immed_val.half = val16;
@@ -258,7 +265,7 @@ int			cmd_set()
 	o1->immed_val.word = val32;
       else if (o1->hname && (o1->kname || o2->kname))
 	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val32);
+		    (void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
       else if (o1->set_obj(o1->parent, val32) < 0)
 	goto err;
       last->immed_val.word = val32;
@@ -271,7 +278,8 @@ int			cmd_set()
       if (o1->immed)
 	o1->immed_val.ent = val64;
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, (void *) val64);
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) val64, o1->type);
       else if (o1->set_obj(o1->parent, val64) < 0)
 	goto err;
       last->immed_val.ent = val64;
@@ -279,7 +287,7 @@ int			cmd_set()
 
     case ASPECT_TYPE_HASH:
       hash = (hash_t *) o2->get_obj(o2->parent);
-      if (vm_hash_set(NULL, o1->hname, (void *) hash))
+      if (vm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
 	goto err;
       break;
 

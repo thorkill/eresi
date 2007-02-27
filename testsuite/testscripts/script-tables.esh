@@ -1,0 +1,10 @@
+#!/usr/local/bin/elfsh
+
+set $hash[test1:key]  42
+tables test1
+set $hash[test2] $hash[test1]
+tables test
+set $hash[test1:key2] 43
+tables test
+
+quit

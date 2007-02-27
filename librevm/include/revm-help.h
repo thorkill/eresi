@@ -167,10 +167,10 @@
 				"uninform type              \t Remove all variables associated to type \n\t"    \
 				"uninform type name         \t Remove a given variable from type information\n"
 
-#define	HLP_TYPE		"Create a type \n\n\t"			                                     \
-				"type                                      \t List existing types    \n\t"   \
-				"type name                                 \t Print type information \n\t"   \
-				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"  \
+#define	HLP_TYPE		"Create or list ERESI types\n\n\t"		                              \
+				"type                                      \t List all existing types \n\t"   \
+				"type regx                                 \t Print matching types \n\t"      \
+				"type name = field1:type1 ... fieldN:typeN \t Create a new type     \n\n\t"   \
 				"Fields and types can be named using scripting variables            \n"
 
 #define	HLP_TYPEDEF		"Copy and rename a type \n\n\t"			                            \

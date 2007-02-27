@@ -43,18 +43,28 @@ hash_t	*hash_find(char *name)
 }
 
 /* Return a hash table pointer by its name */
-/* Overwrite existing table if there was one sharing that name */
-void	hash_register(hash_t *table, char *name)
+/* Overwrite existing table if there was one sharing that name, only
+   if both tables have the same elements type */
+int		hash_register(hash_t *table, char *name)
 {
   hash_t	*h;
+  int		sz;
 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   h = hash_get(hash_hash, name);
   if (h)
     {
-      hash_destroy(h);
-      hash_del(hash_hash, name);
-    }
-  hash_add(hash_hash, name, table);
+      if (h->type != table->type)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Incompatible hash tables", -1);
+      h = hash_empty(name);
+      hash_merge(h, table);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(hash_t), -1);
+  sz = (table->size > table->elmnbr ? table->size : table->elmnbr);
+  hash_init(h, name, sz, table->type);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
