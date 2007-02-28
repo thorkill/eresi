@@ -115,34 +115,69 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 /* API for adding in hash */
 int			vm_hash_add(hash_t *h, revmobj_t *o)
 {
-  void			*elem;
-  char			*name;
+  elfsh_Addr		elem;
+  char			*key;
+  hash_t		*src;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if ((h->type != o->type && vm_convert_object(o, h->type)) || 
-      (!o->kname && !o->hname && !o->get_name))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Variable and hash elements have different types", -1);
 
-  elem = (void *) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
-  name = (o->kname ? o->kname : o->hname ? o->hname : 
-	  o->get_name(o->root, o->parent));
-  hash_add(h, name, elem);
+  /* If the source object is a hash, then we need to do a merge operation ! */
+  if (o->type == ASPECT_TYPE_HASH)
+    {
+      src = (hash_t *) o->get_obj(o->parent);
+      hash_merge(h, src);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Some checks */
+  if (!o->kname && !o->hname && !o->get_name)
+    {
+      if (vm_convert_object(o, ASPECT_TYPE_STR) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unknown key for source object", -1);
+      key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
+    }
+  else
+    key = (o->kname ? o->kname : o->hname ? o->hname : 
+	   o->get_name(o->root, o->parent));
+  if (!key)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown key for source object", -1);
+  if (h->type != o->type && vm_convert_object(o, h->type))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Incompatible types between objects", -1);
+   
+  /* Add it to the hash table */
+  elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  hash_add(h, key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 
 /* API for deleting in hash */
 int			vm_hash_del(hash_t *h, revmobj_t *o)
 {
   char			*name;
+  hash_t		*src;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If the source object is a hash, then we need to do a merge operation ! */
+  if (o->type == ASPECT_TYPE_HASH)
+    {
+      src = (hash_t *) o->get_obj(o->parent);
+      hash_unmerge(h, src);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   /* If second parameter was a string */
   if (o->type == ASPECT_TYPE_STR)
     {
-      name = o->get_name(o->root, o->parent);
+      if (o->get_name)
+	name = o->get_name(o->root, o->parent);
+      else
+	name = (o->immed ? o->immed_val.str : (char *) o->get_obj(o->parent));
       if (hash_get(h, name))
 	hash_del(h, name);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

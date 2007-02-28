@@ -247,6 +247,8 @@ int		vm_convert_object(revmobj_t *obj, u_int objtype)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2caddr(obj));
     case ASPECT_TYPE_DADDR:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2daddr(obj));
+    case ASPECT_TYPE_LONG:
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2long(obj));
     case ASPECT_TYPE_INT:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2int(obj));
     case ASPECT_TYPE_BYTE:
@@ -288,11 +290,12 @@ revmobj_t		*vm_check_object(revmobj_t *pobj)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid object path", NULL);
       break;
+    case ASPECT_TYPE_BYTE:
+    case ASPECT_TYPE_SHORT:
     case ASPECT_TYPE_INT:
+    case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-    case ASPECT_TYPE_SHORT:
-    case ASPECT_TYPE_BYTE:
       if (pobj->immed == 1)
 	break;
       if (pobj->get_obj == NULL || pobj->set_obj == NULL)

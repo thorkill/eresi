@@ -360,8 +360,7 @@ void		profiler_err(char *file, char *func,
   if (profiler_print(file, func, line, msg))
     return;
   
-  fill = (profiler_depth - 6 > 0 ? 
-	  alloca(profiler_depth + 1) : "");
+  fill = (profiler_depth - 6 > 0 ? alloca(profiler_depth + 1) : "");
   if (profiler_depth - 6 > 0)
     {
       memset(fill, ' ', profiler_depth);
@@ -374,7 +373,7 @@ void		profiler_err(char *file, char *func,
 	       aspectworld.colorfunction(func), 
 	       aspectworld.colorfilename(file), 
 	       aspectworld.colornumber("%u", line));
-      snprintf(buf, BUFSIZ, " %s %s %-50s %s \n", 
+      snprintf(buf, BUFSIZ, " %s %s %-70s %s \n", 
 	       aspectworld.colorwarn("[W]"), 
 	       fill, buff, aspectworld.colorwarn(msg)); 
     }
@@ -382,7 +381,7 @@ void		profiler_err(char *file, char *func,
     {
       snprintf(buff, sizeof(buff), " <%s@%s:%u>", 
 	       func, file, line);
-      snprintf(buf, BUFSIZ, " [W] %s %-50s %s \n", 
+      snprintf(buf, BUFSIZ, " [W] %s %-70s %s \n", 
 	       fill, buff, msg);
     }
   

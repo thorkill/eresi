@@ -113,7 +113,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   ret->kname    = (entryname ? strdup(entryname) : NULL);
   ret->perm     = 1;
   ret->immed    = 0;
-  ret->get_obj  = (void *) (entryname ? vm_generic_getobj : vm_hash_getobj);
+  ret->get_obj  = vm_hash_getobj;
   ret->set_obj  = (void *) (entryname ? vm_long_setobj : NULL);
 
   /* Success */

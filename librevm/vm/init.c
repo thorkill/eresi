@@ -124,17 +124,25 @@ int		vm_loop(int argc, char **argv)
   if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
-      if (vm_execscript() == ELFSH_SCRIPT_STOP)
+      ret = vm_execscript();
+      if (ret == ELFSH_SCRIPT_STOP)
 	{
 	  XCLOSE(world.curjob->io.input_fd, -1);
 	  world.curjob->io.input_fd = 0;
 	  goto reenter;
 	}
+      else if (ret < 0)
+	profiler_error();
     }
 
  end:
   if (!world.state.vm_quiet && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
-    vm_output("\n [*] Script execution ended. \n\n");
+    {
+      if (ret < 0)
+	vm_output("\n [E] Script execution failed \n\n");
+      else
+	vm_output("\n [*] Script execution ended succesfully \n\n");
+    }
 
   /* Implicit unload or save if we are not in interactive mode */
   if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && world.curjob->current)
@@ -143,8 +151,9 @@ int		vm_loop(int argc, char **argv)
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  
   /* Clean the script machine state when a script is over */
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = world.curjob->curcmd = NULL;

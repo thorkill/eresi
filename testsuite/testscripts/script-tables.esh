@@ -17,5 +17,27 @@ tables test2
 sub $hash[test2] key2
 tables test2
 
+# test error checking
+sub $hash[test2] key2
+tables test2
+
+#profile enable warn
+
+add $hash[test2] 42
+add $hash[test2] 43
+add $hash[test2] 44
+add $hash[test2] 45
+add $hash[test2] 46
+add $hash[test2] 47
+add $hash[test2] 48
+
+tables test2
+tables test1
+sub $hash[test2] $hash[test1]
+tables test2
+tables test1
+add $hash[test2] $hash[test1]
+tables test2
+tables test1
 
 quit

@@ -94,6 +94,8 @@ hash_t		*hash_empty(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hash);
 }
 
+
+
 /* Destroy a hash table */
 void		hash_destroy(hash_t *h)
 {
@@ -122,7 +124,9 @@ int		hash_add(hash_t *h, char *key, void *data)
   u_int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!h || !key || !data || hash_get(h, key))
+
+  //Weaken the check : do not hash_get(h, key) check
+  if (!h || !key || !data)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
   
@@ -413,7 +417,7 @@ int		hash_merge(hash_t	*dst,
 }
 
 
-/* Merge hash tables in the first one */
+/* Delete all elements of source hash in destination hash */
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
 int		hash_unmerge(hash_t	*dst,
 			     hash_t	*src)
