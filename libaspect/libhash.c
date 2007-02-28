@@ -81,7 +81,7 @@ hash_t		*hash_empty(char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash = hash_find(name);
-  if (!name)
+  if (!hash)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   size    = hash->size;
   type    = hash->type;
