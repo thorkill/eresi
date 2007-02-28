@@ -194,85 +194,127 @@ int			elfsh_merge_shtentry(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-/* INTERNAL FUNCTION : Rebuild an initial SHT and create .mapped, .unmapped, and .shstrtab */
-static int	init_sht(elfshobj_t *file, u_int num)
+/* INTERNAL FUNCTION : Rebuild an initial SHT and 
+ * create some sections based on the pht entries 
+*/
+static int		init_sht(elfshobj_t *file, u_int num)
 {
-  elfsh_Phdr	*low;
-  elfsh_Phdr	*high;
   elfsh_Shdr	shdr;
   elfshsect_t	*sect;
-  char		buff[256];
-  u_int		index;
+  char				name[256];
+  u_int				index,idx;
+	u_int				nnames,lnames,dnames;
+	u_int				tlsnames,ehnames,bss;
+	
+	long				type, total;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
-
-  /* Do the first pass : guess the borders for .mapped and .unmapped */
-  for (low = high = NULL, index = 0; index < num; index++)
-    {
-      if (!high || (file->pht[index].p_offset + file->pht[index].p_filesz) > (high->p_offset + high->p_filesz))
-	high = file->pht + index;
-      if (!low || file->pht[index].p_offset < low->p_offset)
-	low = file->pht + index;
-    }
-
-  /* Create the initial SHT */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,file->sht, file->hdr->e_shentsize * 3, -1);
   file->hdr->e_shoff = file->fstat.st_size;
-  file->hdr->e_shnum = 3;
-  file->hdr->e_shstrndx = 2;
 
-  /* Insert the .mapped section */
-  shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC, low->p_vaddr, 
-   /* We need to shift it otherwise elfsh_save_sht will
-    overwrite new header */
-   ( low->p_offset == 0) ? 52 : low->p_offset , 
-			   high->p_offset + high->p_filesz, 0, 0, 0, 0);
-  file->sht[0] = shdr;
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
-  if (elfsh_add_section(file, sect, 0, NULL, ELFSH_SHIFTING_NONE) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to add section", -1);
+	for(total = idx = 0; idx < num; idx++)
+	{
+		switch(file->pht[idx].p_type) {
+			case PT_NOTE:
+			case PT_LOAD:
+			case PT_DYNAMIC:
+			case PT_TLS:
+			case PT_INTERP:
+			case PT_GNU_EH_FRAME:
+				total++;
+				break;
+		}
+	}
+	
+  file->hdr->e_shnum = total+1;
+  /* Create the initial SHT */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, file->sht, 
+			file->hdr->e_shentsize * (total + 1), -1);
 
-  /* Insert the .unmapped section */
-  shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, high->p_offset + high->p_filesz, 
-			   file->fstat.st_size - (high->p_offset + high->p_filesz),
-			   0, 0, 0, 0);
-  file->sht[1] = shdr;
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
-  if (elfsh_add_section(file, sect, 1, NULL, ELFSH_SHIFTING_NONE) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to add section", -1);
+	/* rebuild the sht based on the pht entries */
+	for(idx = index = 0; index < num; index++)
+	{
+		switch(file->pht[index].p_type)
+		{
+			
+			case PT_NOTE: 
+				type = SHT_NOTE; 
+				break;
+			case PT_DYNAMIC:
+				type = SHT_DYNAMIC;
+				break;
+			case PT_LOAD: 
+			case PT_GNU_EH_FRAME:
+			case PT_TLS:
+			case PT_INTERP:
+				type = SHT_PROGBITS; 
+				break;
+			default: 
+				continue;
+		}
 
-  /* Insert the section header string table (.sh_strtab) */
+		shdr = elfsh_create_shdr(0, type, 0, file->pht[index].p_vaddr,
+			 	file->pht[index].p_offset, file->pht[index].p_filesz,0,0,file->pht[index].p_align,0);
+			 	//file->pht[index].p_align, 0, 0, 0);
+		
+		file->sht[idx] = shdr;
+		
+		/* store the type for later use when fixing up the name of this section */
+		file->sht[idx].sh_name = file->pht[index].p_type;
+		
+		XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+		if(elfsh_add_section(file, sect, idx++, NULL, ELFSH_SHIFTING_NONE) < 0)
+			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+						"Unable to add section", -1);
+	}
+
+/* Insert the section header string table (.shstrtab) */
   shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, file->fstat.st_size, 
 			   0, 0, 0, 0, 0);
-  file->sht[2] = shdr;
+  file->sht[idx] = shdr;
   XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
-  if (elfsh_add_section(file, sect, 2, NULL, ELFSH_SHIFTING_NONE) < 0)
+  if (elfsh_add_section(file, sect, idx, NULL, ELFSH_SHIFTING_NONE) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to add section", -1);
 
   file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
+ 	file->hdr->e_shstrndx = idx;
 
-  /* Insert names in .shstrtab */
-  snprintf(buff, sizeof(buff), "%s_" UFMT, 
-	   ELFSH_SECTION_NAME_MAPPED, file->sht[0].sh_offset); 
-  file->sht[0].sh_name = elfsh_insert_in_shstrtab(file, buff);
-  snprintf(buff, sizeof(buff), "%s_" UFMT, 
-	   ELFSH_SECTION_NAME_UNMAPPED, file->sht[1].sh_offset); 
-  file->sht[1].sh_name = elfsh_insert_in_shstrtab(file, buff);
-  file->sht[2].sh_name = elfsh_insert_in_shstrtab(file, 
-						  ELFSH_SECTION_NAME_SHSTRTAB);
+	ehnames = tlsnames = nnames = lnames = dnames = 0;
+	/* fixup the section names */
+	for(index = 0; index < total; index++)
+	{
+		switch(file->sht[index].sh_name) 
+		{
+			case PT_INTERP:
+				snprintf(name, sizeof(name), ".interp");
+				break;
+			case PT_LOAD:
+				snprintf(name, sizeof(name), ".load%d", lnames++);
+				break;
+			case PT_NOTE:
+				snprintf(name, sizeof(name), ".note%d", nnames++);
+				break;
+			case PT_TLS:
+				snprintf(name, sizeof(name), ".tls%d", tlsnames++);
+				break;
+			case PT_DYNAMIC:
+				snprintf(name, sizeof(name), ".dynamic%d", dnames++);
+				break;
+			case PT_GNU_EH_FRAME:
+				snprintf(name, sizeof(name), ".eh_frame%d", ehnames++);
+				break;
+			default: break;
+		}
+		file->sht[index].sh_name = elfsh_insert_in_shstrtab(file, name);
+	}
+
+	file->sht[idx].sh_name = elfsh_insert_in_shstrtab(file, ELFSH_SECTION_NAME_SHSTRTAB);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
+#if 0
 /* First round : Read PHT and guess .bss, .interp, .dynamic and .notes bounds */
 static void	sht_first_round(elfshobj_t *file, u_int num)
 {
@@ -294,7 +336,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	{
 
 	  /* The dynamic segment */
-	  /*
+	  
 	    case PT_DYNAMIC:
 	    dyn = file->pht + index;
 	    shdr = elfsh_create_section_header(0, SHT_DYNAMIC, flags , file->pht[index].p_vaddr,
@@ -302,30 +344,30 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	    0, 0, 0, 0);
 	    elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_DYNAMIC);
 	    break;
-	  */
+	  
 
 	  /* The interpretor segment */
-	  /*
+	  
 	    case PT_INTERP:
 	    shdr = elfsh_create_section_header(0, SHT_PROGBITS, flags, file->pht[index].p_vaddr,
 	    file->pht[index].p_offset, file->pht[index].p_filesz, 
 	    0, 0, 0, 0);
 	    elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_INTERP);
 	    break;
-	  */
+	  
 
 	  /* This is the auxiliary information */
-	  /*
+	  
 	case PT_NOTE:
 	  shdr = elfsh_create_section_header(0, SHT_NOTE, flags, file->pht[index].p_vaddr,
 					     file->pht[index].p_offset, file->pht[index].p_filesz, 
 					     0, 0, 0, 0);
 	  elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_NOTES_ABI);
 	  break;
-	  */
+	  
 
 	  /* Rebuild the .bss */
-	  /*
+	  
 	case PT_LOAD:
 	  if (file->pht[index].p_memsz != file->pht[index].p_filesz)
 	    {
@@ -337,7 +379,7 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 	      elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_BSS);
 	    }
 	  break;
-	  */
+	  
 
 	default:
 	  break;
@@ -379,13 +421,14 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
 	  i = INTERVAL(file->pht[index].p_vaddr, file->hdr->e_entry, 
 		       file->pht[index].p_vaddr + file->pht[index].p_filesz);
 	  name = (i ? ELFSH_SECTION_NAME_TEXT : ELFSH_SECTION_NAME_DATA);
+		printf("MERGIN SHDR second round!\n");
 	  elfsh_merge_shtentry(file, index, shdr, name);
 	default:
 	  break;
 	}
     }
 }
-
+#endif
 
 
 /* Recreate the section header table examining the program header table */
@@ -400,8 +443,9 @@ int		elfsh_rebuild_sht(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get PHT or to init SHT", -1);
 
-  sht_first_round(file, num);
-  sht_second_round(file, num);
+//  sht_first_round(file, num);
+//  sht_second_round(file, num);
+	
   file->shtrb = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
