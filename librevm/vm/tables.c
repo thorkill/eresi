@@ -760,7 +760,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_CTORS   , (void *) cmd_ctors   , (void *) vm_getregxoption, 1, HLP_CTORS);
   vm_addcmd(CMD_DTORS   , (void *) cmd_dtors   , (void *) vm_getregxoption, 1, HLP_DTORS);
   vm_addcmd(CMD_NOTE    , (void *) cmd_notes   , (void *) vm_getregxoption, 1, HLP_NOTES);
-  vm_addcmd(CMD_CORE_INFO,(void *) cmd_core_info,(void *) NULL			  , 1, HLP_CORE_INFO);
+  vm_addcmd(CMD_CORE_INFO,(void *) cmd_core_info,(void *) NULL			  		, 1, HLP_CORE_INFO);
   vm_addcmd(CMD_SYM     , (void *) cmd_sym     , (void *) vm_getregxoption, 1, HLP_SYM);
   vm_addcmd(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
   vm_addcmd(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);

@@ -1,14 +1,14 @@
 /*
-** map.c for libelfsh
-**
-** Started on  Sat Mar  2 20:47:36 2002 mayhem
-**
-*/
+ ** map.c for libelfsh
+ **
+ ** Started on  Sat Mar  2 20:47:36 2002 mayhem
+ **
+ */
 #include "libelfsh.h"
 
 
 /* Fixup the binary, inject symbols and sort SHT */
-void		elfsh_fixup(elfshobj_t *file)
+void		      elfsh_fixup(elfshobj_t *file)
 {
   elfsh_Shdr	*got;
 
@@ -28,11 +28,11 @@ void		elfsh_fixup(elfshobj_t *file)
 
 /* Load all the part of the binary */
 /* This function should not be used by e2dbg */
-int		elfsh_read_obj(elfshobj_t *file)
+int		        elfsh_read_obj(elfshobj_t *file)
 {
   elfshsect_t	*actual;
-  int		index;
-  int		mode;
+  int		      index;
+  int		      mode;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,10 +40,10 @@ int		elfsh_read_obj(elfshobj_t *file)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (file->sht == NULL && NULL == elfsh_get_sht(file, NULL))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to grab SHT", -1);
+                 "Unable to grab SHT", -1);
   if (NULL == elfsh_get_pht(file, NULL) && file->hdr->e_type != ET_REL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to grab PHT", -1);
+                 "Unable to grab PHT", -1);
 
 #if __DEBUG_MAP__
   puts("[DEBUG:read_obj] Loading all known typed sections\n");
@@ -52,19 +52,21 @@ int		elfsh_read_obj(elfshobj_t *file)
   /* Fixup stuffs in the SHT */
   elfsh_fixup(file);
 
-  if(file->hdr->e_type == ET_CORE) {
-	elfsh_get_core_notes(file);
-	goto out;
+  if(file->hdr->e_type == ET_CORE) 
+  {
+    elfsh_get_core_notes(file);
+    goto out;
   }
+
   /* Fill multiple relocation sections */
-  for (index = 0; 
-       NULL != (actual = elfsh_get_reloc(file, index, NULL)); 
+  for (index = 0; NULL != 
+       (actual = elfsh_get_reloc(file, index, NULL)); 
        index++);
 
   /*
-  ** We cannot use simply elfsh_get_anonymous_section() here
-  ** because the object's section hash ptrs would not be filled.
-  */
+   ** We cannot use simply elfsh_get_anonymous_section() here
+   ** because the object's section hash ptrs would not be filled.
+   */
   elfsh_get_symtab(file, NULL);
   elfsh_get_dynsymtab(file, NULL);
   elfsh_get_stab(file, NULL);
@@ -88,33 +90,29 @@ int		elfsh_read_obj(elfshobj_t *file)
 
   /* Loop on the section header table and load all unknown-typed sections */
   for (actual = file->sectlist; actual; actual = actual->next)
+  {
+    /* Fix first section size */
+    if (actual->shdr->sh_size == 0 && actual->next &&
+        actual->next->shdr->sh_offset != actual->shdr->sh_offset)
+      actual->shdr->sh_size =
+        actual->next->shdr->sh_offset - actual->shdr->sh_offset;
+
+    /* If the section data has to be loaded, load it */
+    /* In case of bss, only load if BSS data is inserted in the file */
+    if (actual->data == NULL && actual->shdr->sh_size)
     {
+      if ((actual->shdr->sh_type == SHT_NOBITS && 
+           actual->shdr->sh_offset == actual->next->shdr->sh_offset) ||
+          (actual->next != NULL && actual->next->shdr->sh_offset == actual->shdr->sh_offset))
+        continue;
 
-      /* Fix first section size */
-      if (actual->shdr->sh_size == 0 && actual->next &&
-	  actual->next->shdr->sh_offset != actual->shdr->sh_offset)
-	actual->shdr->sh_size =
-	  actual->next->shdr->sh_offset - actual->shdr->sh_offset;
-      
-      /* If the section data has to be loaded, load it */
-      /* In case of bss, only load if BSS data is inserted in the file */
-      if (actual->data == NULL && actual->shdr->sh_size)
-	{
-	  
-	  if ((actual->shdr->sh_type == SHT_NOBITS && 
-	       actual->shdr->sh_offset == actual->next->shdr->sh_offset) ||
-	      (actual->next != NULL && actual->next->shdr->sh_offset == actual->shdr->sh_offset))
-	    continue;
-	  
 #if __DEBUG_MAP__
-	  printf("[LIBELFSH] Loading anonymous  section %15s \n",
-		 elfsh_get_section_name(file, actual));
+      printf("[LIBELFSH] Loading anonymous  section %15s \n",
+             elfsh_get_section_name(file, actual));
 #endif
-
-	  elfsh_get_anonymous_section(file, actual);
-	}
-
+      elfsh_get_anonymous_section(file, actual);
     }
+  }
 
   /* Fixup various symbols like dynamic ones that are NULL */
   /* Non fatal error */
@@ -125,27 +123,23 @@ out:
   /* We close the file descriptor after file mapping so we can open more files */
   if (file->fd >= 0) {
 #if __DEBUG_MAP__
-	  printf("[LIBELFSH] Closing descriptor %d \n",
-		 file->fd);
+    printf("[LIBELFSH] Closing descriptor %d \n",
+           file->fd);
 #endif
 
-   XCLOSE(file->fd, -1);
-   /* neutralize file descriptor */
-   file->fd = -1;
+    XCLOSE(file->fd, -1);
+    /* neutralize file descriptor */
+    file->fd = -1;
   }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /* Called from elfsh_fixup_symtab */
 /* When trying to inject part of the libc, some bss symbols have a wrong sctndx */
-elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
+elfshsect_t   *elfsh_fixup_sctndx(elfshsect_t *symtab)
 {
-  int		index;
-  elfsh_Sym	*sym;
+  int		      index;
+  elfsh_Sym	  *sym;
   elfsh_SAddr	offset;
   elfsh_Shdr	*shdr;
   elfshsect_t	*sct;
@@ -158,57 +152,52 @@ elfshsect_t *	elfsh_fixup_sctndx(elfshsect_t *symtab)
   shdr = symtab->parent->sht + symtab->index;
 
   for (index = 0; index < shdr->sh_size / sizeof(elfsh_Sym); index++)
+  {
+    if (elfsh_get_symbol_link(sym + index) != SHN_COMMON)
     {
-      if (elfsh_get_symbol_link(sym + index) != SHN_COMMON)
-	{
-	  if (elfsh_get_symbol_type(sym + index) == STT_SECTION)
-	    continue;
+      if (elfsh_get_symbol_type(sym + index) == STT_SECTION)
+        continue;
 
-	  sct = elfsh_get_parent_section(symtab->parent, 
-					 elfsh_get_symbol_value(sym + index), 
-					 &offset);
+      sct = elfsh_get_parent_section(symtab->parent, 
+                                     elfsh_get_symbol_value(sym + index), 
+                                     &offset);
 
-	  if (sct == NULL)
-	    {
-	      sct = elfsh_get_section_by_index(symtab->parent, 
-					       elfsh_get_symbol_link(sym + index), 
-					       NULL, 
-					       NULL);
-	      if (sct && elfsh_get_section_type(sct->shdr) == SHT_NOBITS)
-		{
+      if (sct == NULL)
+      {
+        sct = elfsh_get_section_by_index(symtab->parent, 
+                                         elfsh_get_symbol_link(sym + index), 
+                                         NULL, 
+                                         NULL);
+        if (sct && elfsh_get_section_type(sct->shdr) == SHT_NOBITS)
+        {
 
 #if	__DEBUG_MAP__
-		  printf(" [*] Symbol [%s] sctndx changed from %u to SHN_COMMON\n", 
-			 elfsh_get_symbol_name(symtab->parent, sym + index), 
-			 elfsh_get_symbol_link(sym + index));
+          printf(" [*] Symbol [%s] sctndx changed from %u to SHN_COMMON\n", 
+                 elfsh_get_symbol_name(symtab->parent, sym + index), 
+                 elfsh_get_symbol_link(sym + index));
 #endif
 
-		  elfsh_set_symbol_link(sym + index, SHN_COMMON);
-		  continue;
-		}
+          elfsh_set_symbol_link(sym + index, SHN_COMMON);
+          continue;
+        }
 
-	    }
+      }
 
-       	  if (sct && elfsh_get_section_type(sct->shdr) == SHT_NOBITS)
-	    {
-	      elfsh_set_symbol_link(sym + index, SHN_COMMON);
+      if (sct && elfsh_get_section_type(sct->shdr) == SHT_NOBITS)
+      {
+        elfsh_set_symbol_link(sym + index, SHN_COMMON);
 #if	__DEBUG_MAP__		  
-	      printf(" [*] Symbol [%s] sctndx changed to SHN_COMMON\n", 
-		     elfsh_get_symbol_name(symtab->parent, sym + index));
+        printf(" [*] Symbol [%s] sctndx changed to SHN_COMMON\n", 
+               elfsh_get_symbol_name(symtab->parent, sym + index));
 #endif
-	    }
-
-	}
+      }
     }
-
+  }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, symtab);
 }
 
-
-
-
 /* Map in memory all ressources for this file */
-elfshobj_t	*elfsh_map_obj(char *name)
+elfshobj_t	  *elfsh_map_obj(char *name)
 {
   elfshobj_t	*file;
 
@@ -217,7 +206,7 @@ elfshobj_t	*elfsh_map_obj(char *name)
   file = elfsh_load_obj(name);
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to load object", NULL);
+                 "Unable to load object", NULL);
   file->rights = O_RDWR;
   elfsh_read_obj(file);
   hash_init(&file->redir_hash, "redirections", 51, ASPECT_TYPE_UNKNOW);

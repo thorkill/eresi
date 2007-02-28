@@ -1,12 +1,12 @@
 /*
-** libelfsh.h for libelfsh
-**
-** Started on  Mon Jul 23 15:47:12 2001 mayhem
-**
-*/
+ ** libelfsh.h for libelfsh
+ **
+ ** Started on  Mon Jul 23 15:47:12 2001 mayhem
+ **
+ */
 
 #ifndef __LIBELFSH_H_
- #define __LIBELFSH_H_
+#define __LIBELFSH_H_
 
 #include "libvars.h"
 
@@ -26,11 +26,11 @@
 #include <libelfsh/libelfsh-compat.h>
 
 #ifdef __BEOS__
- #include <bsd_mem.h>
+#include <bsd_mem.h>
 #endif
 
 #if !defined(__USE_GNU)
- #define __USE_GNU
+#define __USE_GNU
 #endif
 
 #include <sys/ucontext.h>
@@ -39,19 +39,19 @@
 #include <sys/procfs.h>
 
 /* Configure the DEBUG modes for various part of the code */
-#define		__DEBUG_MAP__			0
-#define		__DEBUG_SECTS__			0
-#define		__DEBUG_SORT__			0	
-#define		__DEBUG_RELADD__		0
-#define		__DEBUG_COPYPLT__		0
-#define		__DEBUG_BSS__			0
-#define		__DEBUG_REDIR__			0
-#define		__DEBUG_RUNTIME__		0
-#define		__DEBUG_CFLOW__			0
-#define		__DEBUG_STATIC__		1
-#define		__DEBUG_BREAKPOINTS__		0
+#define		__DEBUG_MAP__							0
+#define		__DEBUG_SECTS__						0
+#define		__DEBUG_SORT__						0	
+#define		__DEBUG_RELADD__					0
+#define		__DEBUG_COPYPLT__					0
+#define		__DEBUG_BSS__							0
+#define		__DEBUG_REDIR__						0
+#define		__DEBUG_RUNTIME__					0
+#define		__DEBUG_CFLOW__						0
+#define		__DEBUG_STATIC__					1
+#define		__DEBUG_BREAKPOINTS__			0
 #define		__DEBUG_ETRELintoETDYN__	0
-#define		__DEBUG_EXTPLT__		0
+#define		__DEBUG_EXTPLT__					0
 
 /* ELFsh architecture types */
 #define		ELFSH_ARCH_IA32			0
@@ -274,42 +274,42 @@
 
 
 #define	DUMPABLE(sym)		(elfsh_get_symbol_type(sym) == STT_FUNC   || \
-				 elfsh_get_symbol_type(sym) == STT_OBJECT || \
-				 elfsh_get_symbol_type(sym) == STT_COMMON || \
-				 elfsh_get_symbol_type(sym) == STT_SECTION)
+                         elfsh_get_symbol_type(sym) == STT_OBJECT || \
+                         elfsh_get_symbol_type(sym) == STT_COMMON || \
+                         elfsh_get_symbol_type(sym) == STT_SECTION)
 
 #define	FILE_IS_SPARC(obj)	(FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
 #define FILE_IS_SPARC32(obj)	(((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \
-				(elfsh_get_arch((obj)->hdr) == EM_SPARC32PLUS)) ? 1 : 0)
+                                (elfsh_get_arch((obj)->hdr) == EM_SPARC32PLUS)) ? 1 : 0)
 
 #define FILE_IS_SPARC64(obj)	((elfsh_get_arch((obj)->hdr) == EM_SPARCV9) ? 1 : 0)
 
 #define	FILE_IS_MIPS(obj)	(elfsh_get_arch((obj)->hdr) == EM_MIPS || \
-				 elfsh_get_arch((obj)->hdr) == EM_MIPS_RS3_LE ? 1 : 0)
+                           elfsh_get_arch((obj)->hdr) == EM_MIPS_RS3_LE ? 1 : 0)
 
 #define	FILE_IS_IA64(obj)	((elfsh_get_arch((obj)->hdr)) == EM_IA_64 ? 1 : 0)
 #define	FILE_IS_IA32(obj)	((elfsh_get_arch((obj)->hdr)) == EM_386 ? 1 : 0)
 
 #define	FILE_IS_ALPHA64(obj)	((elfsh_get_arch((obj)->hdr)) == EM_ALPHA || \
-				(elfsh_get_arch((obj)->hdr)) == EM_ALPHA_EXP ? 1 : 0)
-			      
+                               (elfsh_get_arch((obj)->hdr)) == EM_ALPHA_EXP ? 1 : 0)
+
 #define IS_REL(scn)		(FILE_IS_SPARC((scn)->parent)   || \
-				 FILE_IS_SPARC64((scn)->parent) || \
-				 FILE_IS_IA64((scn)->parent)    || \
-				 FILE_IS_ALPHA64((scn)->parent) ? 0 : 1)
+                       FILE_IS_SPARC64((scn)->parent) || \
+                       FILE_IS_IA64((scn)->parent)    || \
+                       FILE_IS_ALPHA64((scn)->parent) ? 0 : 1)
 
 
 #define ELFSH_SELECT_INJECTION(a, b, d)		  \
-do						  \
+  do						  \
 {						  \
   if ((elfsh_get_ostype(a) == ELFSH_OS_FREEBSD || \
        elfsh_get_ostype(a) == ELFSH_OS_BEOS    || \
        elfsh_get_ostype(a) == ELFSH_OS_SOLARIS || \
        FILE_IS_ALPHA64(a) || FILE_IS_MIPS(a)   || \
        FILE_IS_SPARC(a)) || (b))		  \
-     d = ELFSH_DATA_INJECTION;			  \
+  d = ELFSH_DATA_INJECTION;			  \
   else						  \
-     d = ELFSH_CODE_INJECTION;			  \
+  d = ELFSH_CODE_INJECTION;			  \
 } while (0)
 
 
@@ -416,7 +416,7 @@ struct			s_sect
   int			index;		/* Section index in sht						*/
   struct s_sect		*next;		/* Next section in the list					*/
   struct s_sect		*prev;		/* Prev section in the list					*/
-  
+
   /* ELFsh section state */
 #define		ELFSH_SECTION_ANALYZED		(1 << 0)
 #define		ELFSH_SECTION_INSERTED		(1 << 1)
@@ -474,99 +474,259 @@ typedef struct	s_dfmt
   void		*stabs;
 }		elfshdfmt_t;
 
-typedef struct user_fpregs_struct fpregs_t;
+/* core file support linux/bsd */
 
-#define ELFSH_CORE_HAS_NOTHING	0x0000
-#define ELFSH_CORE_HAS_PRSTATUS	0x0001
-#define ELFSH_CORE_HAS_PRPSINFO	0x0010
-#define ELFSH_CORE_HAS_FPREGS	0x0100
+#define ELFSH_CORE_LINUX				0x01000
+#define ELFSH_CORE_FREEBSD			0x10000
+#define ELFSH_CORE_HAS_NOTHING	0x00000
+#define ELFSH_CORE_HAS_PRSTATUS	0x00001
+#define ELFSH_CORE_HAS_PRPSINFO	0x00010
+#define ELFSH_CORE_HAS_FPREGSET	0x00100
 
 #define roundup(x, y)  ((((x)+((y)-1))/(y))*(y))
 
-/* core file info structure */
-typedef struct s_core
+#if !defined(__FreeBSD__)
+
+typedef struct user_fpregs_struct fpregs_t;
+
+#define PRFNAMESZ 16  					/* Maximum command length saved */
+#define PRARGSZ   80  					/* Maximum argument bytes saved */
+
+#define PRPSINFO_VERSION  1 		/* Current version of prpsinfo_t */
+
+typedef struct prpsinfo {
+  int   	pr_version; 					/* Version number of struct (1) */
+  size_t  pr_psinfosz;  				/* sizeof(prpsinfo_t) (1) */
+  char  	pr_fname[PRFNAMESZ+1];/* Command name, null terminated (1) */
+  char  	pr_psargs[PRARGSZ+1]; /* Arguments, null terminated (1) */
+} prpsinfoBSD_t;
+
+struct reg {
+  unsigned int  r_fs;
+  unsigned int  r_es;
+  unsigned int  r_ds;
+  unsigned int  r_edi;
+  unsigned int  r_esi;
+  unsigned int  r_ebp;
+  unsigned int  r_isp;
+  unsigned int  r_ebx;
+  unsigned int  r_edx;
+  unsigned int  r_ecx;
+  unsigned int  r_eax;
+  unsigned int  r_trapno;
+  unsigned int  r_err;
+  unsigned int  r_eip;
+  unsigned int  r_cs;
+  unsigned int  r_eflags;
+  unsigned int  r_esp;
+  unsigned int  r_ss;
+  unsigned int  r_gs;
+};
+
+struct fpreg {
+  unsigned long fpr_env[7];
+  unsigned char fpr_acc[8][10];
+  unsigned long fpr_ex_sw;
+  unsigned char fpr_pad[64];
+};
+
+typedef struct reg fregset_t;
+typedef struct fpreg fpregsBSD_t;
+
+#define PRSTATUS_VERSION  1 		/* Current version of prstatus_t */
+
+typedef struct prstatus {
+  int   		pr_version; 				/* Version number of struct (1) */
+  size_t  	pr_statussz;  			/* sizeof(prstatus_t) (1) */
+  size_t  	pr_gregsetsz; 			/* sizeof(gregset_t) (1) */
+  size_t  	pr_fpregsetsz;  		/* sizeof(fpregset_t) (1) */
+  int   		pr_osreldate; 			/* Kernel version (1) */
+  int   		pr_cursig;  				/* Current signal (1) */
+  pid_t 		pr_pid;   					/* Process ID (1) */
+  fregset_t pr_reg;   					/* General purpose registers (1) */
+} 					prstatusBSD_t;
+
+#else
+
+typedef struct user_regs_struct
 {
-  char			name[32];	/* Name for the note */
+  long int ebx;
+  long int ecx;
+  long int edx;
+  long int esi;
+  long int edi;
+  long int ebp;
+  long int eax;
+  long int xds;
+  long int xes;
+  long int xfs;
+  long int xgs;
+  long int orig_eax;
+  long int eip;
+  long int xcs;
+  long int eflags;
+  long int esp;
+  long int xss;
+} gregset_t;
+
+typedef struct user_fpregs_struct
+{
+  long int cwd;
+  long int swd;
+  long int twd;
+  long int fip;
+  long int fcs;
+  long int foo;
+  long int fos;
+  long int st_space [20];
+} fpregs_t;
+
+typedef struct user_fpregs_struct fpregs_t;
+
+struct elf_siginfo
+{
+  int si_signo;     /* Signal number.  */
+  int si_code;      /* Extra code.  */
+  int si_errno;     /* Errno.  */
+};
+
+typedef struct elf_prstatus
+{
+  struct elf_siginfo 	pr_info;   	/* Info associated with signal.  */
+  short int 					pr_cursig;  /* Current signal.  */
+  unsigned long int 	pr_sigpend; /* Set of pending signals.  */
+  unsigned long int 	pr_sighold; /* Set of held signals.  */
+  pid_t 							pr_pid;
+  pid_t 							pr_ppid;
+  pid_t 							pr_pgrp;
+  pid_t								pr_sid;
+  struct timeval 			pr_utime;   /* User time.  */
+  struct timeval 			pr_stime;   /* System time.  */
+  struct timeval 			pr_cutime;  /* Cumulative user time.  */
+  struct timeval 			pr_cstime;  /* Cumulative system time.  */
+  elf_gregset_t 			pr_reg;   	/* GP registers.  */
+  int 								pr_fpvalid; /* True if math copro being used.  */
+} prstatus_t;
+
+#define ELF_PRARGSZ     (80)    /* Number of chars for args.  */
+
+typedef struct elf_prpsinfo
+{
+  char pr_state;      /* Numeric process state.  */
+  char pr_sname;      /* Char for pr_state.  */
+  char pr_zomb;     /* Zombie.  */
+  char pr_nice;     /* Nice val.  */
+  unsigned long int pr_flag;    /* Flags.  */
+  unsigned short int pr_uid;
+  unsigned short int pr_gid;
+  int pr_pid, pr_ppid, pr_pgrp, pr_sid;
+  char pr_fname[16];      /* Filename of executable.  */
+  char pr_psargs[ELF_PRARGSZ];  /* Initial part of arg list.  */
+} prpsinfo_t;
+
+#endif
+
+/* core file info structure 
+ *
+ * needs to be improved */
+typedef struct linux_core
+{
   uint16_t		offset;		/* offset for note section in the file */
   uint16_t		length;		/* size of the section */
-  
-  elfsh_Nhdr	nhdr;		/* core files should have only one note entry */
-  
-  long			flags;		/* ELFSH_CORE_HAS_NOTHING, ELFSH_CORE_HAS_PRSTATUS, ... */
+
+  elfsh_Nhdr	nhdr;			/* core files should have only one note entry */
+
+  long				flags;		/* ELFSH_CORE_HAS_NOTHING, ELFSH_CORE_HAS_PRSTATUS, ... */
 
   prstatus_t	prstatus;	/* PRSTATUS structure */
   prpsinfo_t	prpsinfo;	/* PRPSINFO structure */
   fpregs_t		fpregs;		/* Floating point saved register */
-  
 
-}		elfshcore_t;
+}							elfshcore_t;
+
+typedef struct bsd_core 
+{
+  uint16_t			offset;
+  uint16_t			length;
+
+  elfsh_Nhdr		nhdr;
+
+  long					flags;
+
+  prstatusBSD_t	prstatus;
+  prpsinfoBSD_t	prpsinfo;
+  fpregsBSD_t		fpregs;
+
+} elfshbsdcore_t;
 
 /* ELF object structure */
 struct		 s_obj
 {
-  elfsh_Ehdr	 *hdr;				/* Elf header */
-  elfsh_Shdr	 *sht;				/* Section header table */
-  elfsh_Phdr	 *pht;				/* Program Header table */
-  elfshsect_t	 *sectlist;			/* Section linked list */
+  elfsh_Ehdr	 		*hdr;				/* Elf header */
+  elfsh_Shdr	 		*sht;				/* Section header table */
+  elfsh_Phdr	 		*pht;				/* Program Header table */
+  elfshsect_t	 		*sectlist;			/* Section linked list */
 
-  elfshrhdr_t	 rhdr;				/* The Runtime header */
-  elfsh_Shdr	 *rsht;				/* The Runtime SHT */
-  elfsh_Phdr	 *rpht;				/* The Runtime PHT */
-  elfshsect_t	 *rsectlist;			/* Runtime Section linked list */
+  elfshrhdr_t	 		rhdr;				/* The Runtime header */
+  elfsh_Shdr	 		*rsht;				/* The Runtime SHT */
+  elfsh_Phdr	 		*rpht;				/* The Runtime PHT */
+  elfshsect_t	 		*rsectlist;			/* Runtime Section linked list */
 
-  elfshsect_t	 *secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
+  elfshsect_t	 		*secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
 
-  elfshcore_t	core;
+  elfshcore_t			core;
+  elfshbsdcore_t	bsdcore;
+  int							coretype;
 
-  int		 fd;			/* File descriptor for the original file */
-  char		 *name;			/* Object path */
-  struct stat	 fstat;			/* File stat */
-  int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
-  int		 rights;		/* 0 = RO, 1 = WR */
-  time_t	 loadtime;		/* Time of Loading */
-  u_int		 id;			/* Object ID */
+  int		 					fd;			/* File descriptor for the original file */
+  char		 				*name;			/* Object path */
+  struct stat	 		fstat;			/* File stat */
+  int		 					type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
+  int		 					rights;		/* 0 = RO, 1 = WR */
+  time_t	 				loadtime;		/* Time of Loading */
+  u_int		 				id;			/* Object ID */
 
-  char		 running;		/* Is the process running ? */
-  char		 scanned;		/* Has the object already been block scanned ? */
-  char		 hdr_broken;		/* Is the header broken/corrupted ? */
-  char		 read;			/* Has the object already been read ? */
-  char		 shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
-  char		 strip;			/* Mark file as stripped */
-  char		 pending;		/* Beeing injected */
-  uint32_t	 nbrm;			/* Number of section headers to remove at saving */
+  char		 				running;		/* Is the process running ? */
+  char		 				scanned;		/* Has the object already been block scanned ? */
+  char		 				hdr_broken;		/* Is the header broken/corrupted ? */
+  char		 				read;			/* Has the object already been read ? */
+  char		 				shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
+  char		 				strip;			/* Mark file as stripped */
+  char		 				pending;		/* Beeing injected */
+  uint32_t	 			nbrm;			/* Number of section headers to remove at saving */
 
-  char		 shtrb;			/* Reconstruct the SHT if non present */
+  char		 				shtrb;			/* Reconstruct the SHT if non present */
 
 #define		 ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
-  struct s_obj	 *listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
-  u_char	 nbrel;			/* Number of injected ET_REL in this object */
-  
-  char		 buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
-  const char	 *error;		/* Last error string */
-  struct s_obj	 *next;			/* The list is simply linked */
+  struct s_obj	 	*listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
+  u_char	 				nbrel;			/* Number of injected ET_REL in this object */
 
-  hash_t	 redir_hash;		/* Redirections hash table */
-  elfshlinkmap_t *linkmap;		/* Linkmap */
+  char		 				buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
+  const char	 		*error;		/* Last error string */
+  struct s_obj	 	*next;			/* The list is simply linked */
 
-  elfshdfmt_t	 debug_format;		/* Debug format informations */
+  hash_t	 				redir_hash;		/* Redirections hash table */
+  elfshlinkmap_t 	*linkmap;		/* Linkmap */
+
+  elfshdfmt_t	 		debug_format;		/* Debug format informations */
 
   /* 
-  ** Every object can have childs
-  ** The number 0 is used as a seperator:
-  ** 1: (Father)
-  ** |-> 101 Child1
-  ** |-> ....
-  ** |-> 1012 Child12
-  ** 
-  ** Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
-  */
+   ** Every object can have childs
+   ** The number 0 is used as a seperator:
+   ** 1: (Father)
+   ** |-> 101 Child1
+   ** |-> ....
+   ** |-> 1012 Child12
+   ** 
+   ** Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
+   */
 #define 	ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
 #define 	ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
 #define 	ELFSH_CHILD_MAX 	99
-  hash_t	 child_hash;		/* Childs hash table */
-  hash_t	 parent_hash;		/* Immediate parent hash table */
-  hash_t	 root_hash;		/* Root ELF objects for this file */
-  int		 lastchildid;	      	/* Last child id */
+  hash_t	 				child_hash;		/* Childs hash table */
+  hash_t	 				parent_hash;		/* Immediate parent hash table */
+  hash_t	 				root_hash;		/* Root ELF objects for this file */
+  int		 					lastchildid;	      	/* Last child id */
 };
 
 
@@ -614,14 +774,14 @@ extern libworld_t	dbgworld;
 
 
 /*
-**
-** Libelfsh API prototypes
-**
-** Check elfsh/doc/libelfsh-api.txt for a complete description
-**
-** XXX: libelfsh-api.txt not updated to 0.5 (it is for 0.43b)
-** FIXME: Please put your comments at the doxygen format
-*/
+ **
+ ** Libelfsh API prototypes
+ **
+ ** Check elfsh/doc/libelfsh-api.txt for a complete description
+ **
+ ** XXX: libelfsh-api.txt not updated to 0.5 (it is for 0.43b)
+ ** FIXME: Please put your comments at the doxygen format
+ */
 
 /* dynamic.c */
 elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num);
@@ -649,7 +809,7 @@ int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect);
 int		elfsh_get_symbol_foffset(elfshobj_t *file, elfsh_Sym *sym);
 int		elfsh_insert_symbol(elfshsect_t *sect, elfsh_Sym *sym, char *name);
 int		elfsh_insert_funcsym(elfshobj_t *file, char *name, elfsh_Addr vaddr, 
-				     uint32_t sz, uint32_t sctidx);
+                           uint32_t sz, uint32_t sctidx);
 
 /* dynsym.c */
 elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name);
@@ -683,7 +843,7 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name);
 void		elfsh_symtab_endianize(elfshsect_t *tab);
 int		elfsh_endianize_symtab(elfshsect_t *tab);
 int		elfsh_shift_syms(elfshobj_t *file, elfshsect_t *symtab, 
-				 elfsh_Addr limit, int inc);
+                       elfsh_Addr limit, int inc);
 
 /* obj.c */
 elfshobj_t	*elfsh_load_obj(char *name);
@@ -798,9 +958,9 @@ void		elfsh_remove_sht(elfshobj_t *file);
 int		elfsh_set_section_name(elfshobj_t *file, elfshsect_t *sect, char *name);
 char		*elfsh_get_section_name(elfshobj_t *file, elfshsect_t *s);
 elfsh_Shdr	elfsh_create_shdr(elfsh_Word name, elfsh_Word type, elfsh_Word flags,
-				  elfsh_Addr addr, elfsh_Off offset, elfsh_Word size,
-				  elfsh_Word link, elfsh_Word info, elfsh_Word align,
-				  elfsh_Word entsize);
+                              elfsh_Addr addr, elfsh_Off offset, elfsh_Word size,
+                              elfsh_Word link, elfsh_Word info, elfsh_Word align,
+                              elfsh_Word entsize);
 int		elfsh_insert_runtime_shdr(elfshobj_t *f, elfsh_Shdr hdr, u_int r, char *name, char sf);
 
 int		elfsh_sort_sht(elfshobj_t *file);
@@ -882,7 +1042,7 @@ u_int		elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val);
 elfsh_Addr      elfsh_get_got_addr(elfsh_Addr *got);
 u_int		elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val);
 int     	elfsh_get_got_symbol_reloc(elfshobj_t *file, uint8 *name,
-                                 elfsh_Rel *rel_entry);
+                                     elfsh_Rel *rel_entry);
 int		elfsh_endianize_got(elfshsect_t *_new);
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file);
 int		elfsh_shift_got(elfshobj_t *file, u_int size);
@@ -1019,9 +1179,9 @@ elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r);
 int             elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val);
 int		elfsh_endianize_relocs(elfshsect_t *s);
 elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym, 
-				    elfsh_Addr off);
+                              elfsh_Addr off);
 elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym, 
-				     elfsh_Addr off, elfsh_Addr add);
+                                 elfsh_Addr off, elfsh_Addr add);
 
 /* interp.c */
 char		*elfsh_get_interp(elfshobj_t *file);
@@ -1044,37 +1204,37 @@ int		elfsh_get_first_pltentsz(elfshobj_t *file);
 int		elfsh_relink_plt(elfshobj_t *file, u_int modulo);
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo);
 int		elfsh_get_plt_symbol_offset(elfshobj_t *file, uint8 *name,
-					    elfsh_Off *off);
+                                  elfsh_Off *off);
 int		elfsh_build_plt(elfshobj_t *file);
 int		elfsh_altplt_firstent(elfshsect_t	*created, 
-				      u_int		*off,
-				      elfshsect_t	*symtab, 
-				      elfshobj_t	*file, 
-				      elfshsect_t	*plt,
-				      elfshsect_t	*extplt,
-				      uint32_t		diff);
+                            u_int		*off,
+                            elfshsect_t	*symtab, 
+                            elfshobj_t	*file, 
+                            elfshsect_t	*plt,
+                            elfshsect_t	*extplt,
+                            uint32_t		diff);
 
 /* altgot.c */
 int		elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *got, 
-				      elfshsect_t *plt, elfshsect_t *altplt);
+                            elfshsect_t *plt, elfshsect_t *altplt);
 int		elfsh_shift_generic_relocs(elfshobj_t *file, elfsh_Addr diff, 
-					   elfshsect_t *relplt);
+                                 elfshsect_t *relplt);
 int		elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, 
-					 elfshsect_t *altgot, u_int off);
+                               elfshsect_t *altgot, u_int off);
 int		elfsh_shift_ia32_relocs(elfshobj_t *file, elfsh_Addr  diff,
-					elfshsect_t *relplt, elfsh_Addr limit);
+                              elfshsect_t *relplt, elfsh_Addr limit);
 void		elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff);
 int		elfsh_shift_sparc_relocs(elfshobj_t *file, elfsh_Addr diff, 
-					 elfshsect_t *relplt);
+                               elfshsect_t *relplt);
 int		elfsh_reencode_pltentry(elfshobj_t *file, elfshsect_t *plt, 
-					uint32_t diff, u_int off);
+                              uint32_t diff, u_int off);
 int		elfsh_reencode_first_pltentry(elfshobj_t *file, elfshsect_t *plt, 
-					      uint32_t diff);
+                                    uint32_t diff);
 
 /* extplt.c */
 int		elfsh_extplt_mirror_sections(elfshobj_t *file);
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
-	
+
 
 /* raw.c */
 int		elfsh_raw_write(elfshobj_t *file, u_int dst, void *src, int len);
@@ -1120,7 +1280,7 @@ int             elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name);
 elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex);
 int		 elfsh_fixup_dynsymtab(elfshsect_t *dynsym);
 elfsh_Sym	 *elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, u_int off, 
-				       elfshsect_t *dynsym);
+                                 elfshsect_t *dynsym);
 
 
 /* sanitize.c */
@@ -1136,9 +1296,9 @@ void		elfsh_update_dynsym_shidx(elfshobj_t *file, int idx, int diff);
 /* sht_rebuild.c */
 int		elfsh_rebuild_sht(elfshobj_t *file);
 int		elfsh_merge_shtentry(elfshobj_t *file, 
-				     int	phdr_index, 
-				     elfsh_Shdr shdr, 
-				     char	*name);
+                           int	phdr_index, 
+                           elfsh_Shdr shdr, 
+                           char	*name);
 
 /* comment.c */
 elfshsect_t	*elfsh_get_comments(elfshobj_t *file);
@@ -1146,10 +1306,10 @@ char		*elfsh_get_comments_entry(elfshobj_t *file, u_int range);
 
 /* hijack.c */
 int		elfsh_hijack_function_by_name(elfshobj_t	*file,
-					      uint32_t		type,
-					      char		*name,
-					      elfsh_Addr	addr,
-					      elfsh_Addr	*hooked);
+                                    uint32_t		type,
+                                    char		*name,
+                                    elfsh_Addr	addr,
+                                    elfsh_Addr	*hooked);
 
 /* debug.c */
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label);
@@ -1168,7 +1328,7 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel);
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel);
 int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage);
 int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel, 
-					hash_t *first, hash_t *second);
+                              hash_t *first, hash_t *second);
 
 
 /* search.c */
@@ -1211,163 +1371,163 @@ void		elfsh_setup_hooks();
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
-			    elfsh_Addr created);
+                            elfsh_Addr created);
 int             elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
-			  elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m);
+                          elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m);
 int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
-				elfsh_Addr diff, u_int off);
+                                elfsh_Addr diff, u_int off);
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
-				 elfshsect_t *extplt, elfsh_Addr diff);
+                                 elfshsect_t *extplt, elfsh_Addr diff);
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
-			     elfshsect_t *dynsym, elfshsect_t *relplt);
+                             elfshsect_t *dynsym, elfshsect_t *relplt);
 int		*elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
 
 
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,
-				    char	*snull,
-				    elfsh_Sym*	null2,
-				    elfsh_Addr	null3);
+                          char	*snull,
+                          elfsh_Sym*	null2,
+                          elfsh_Addr	null3);
 int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
-					 elfsh_Sym *symbol,
-					 elfsh_Addr addr);
+                               elfsh_Sym *symbol,
+                               elfsh_Addr addr);
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file,
-					    elfsh_Sym *symbol,
-					    elfsh_Addr addr);
+                                  elfsh_Sym *symbol,
+                                  elfsh_Addr addr);
 int		elfsh_relocate_sparc32(elfshsect_t	*_new,
-				       elfsh_Rela	*cur,
-				       elfsh_Addr	*dword,
-				       elfsh_Addr       addr,
-				       elfshsect_t	*mod);
+                             elfsh_Rela	*cur,
+                             elfsh_Addr	*dword,
+                             elfsh_Addr       addr,
+                             elfshsect_t	*mod);
 
 /* sparc64.c */
 int		elfsh_cflow_sparc64(elfshobj_t  *null,
-				    char	*snull,
-				    elfsh_Sym	*null2,
-				    elfsh_Addr	null3);
+                          char	*snull,
+                          elfsh_Sym	*null2,
+                          elfsh_Addr	null3);
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
-				       elfsh_Sym *symbol,
-				       elfsh_Addr addr);
+                               elfsh_Sym *symbol,
+                               elfsh_Addr addr);
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
-					  elfsh_Sym *symbol,
-					  elfsh_Addr addr);
+                                  elfsh_Sym *symbol,
+                                  elfsh_Addr addr);
 int		elfsh_relocate_sparc64(elfshsect_t	*_new,
-				       elfsh_Rela      	*cur,
-				       elfsh_Addr      	*dword,
-				       elfsh_Addr       addr,
-				       elfshsect_t      *mod);
+                             elfsh_Rela      	*cur,
+                             elfsh_Addr      	*dword,
+                             elfsh_Addr       addr,
+                             elfshsect_t      *mod);
 
 /* ia64.c */
 int		elfsh_cflow_ia64(elfshobj_t     *null,
-				 char		*sname,
-				 elfsh_Sym	*null2,
-				 elfsh_Addr	null3);
+                       char		*sname,
+                       elfsh_Sym	*null2,
+                       elfsh_Addr	null3);
 int		elfsh_hijack_plt_ia64(elfshobj_t *file,
-				      elfsh_Sym *symbol,
-				      elfsh_Addr addr);
+                            elfsh_Sym *symbol,
+                            elfsh_Addr addr);
 int		elfsh_hijack_altplt_ia64(elfshobj_t *file,
-					 elfsh_Sym *symbol,
-					 elfsh_Addr addr);
+                               elfsh_Sym *symbol,
+                               elfsh_Addr addr);
 int		elfsh_relocate_ia64(elfshsect_t	*_new,
-				    elfsh_Rela   *cur,
-				    elfsh_Addr   *dword,
-				    elfsh_Addr   addr,
-				    elfshsect_t  *mod);
+                          elfsh_Rela   *cur,
+                          elfsh_Addr   *dword,
+                          elfsh_Addr   addr,
+                          elfshsect_t  *mod);
 
 /* alpha64.c */
 int		elfsh_cflow_alpha64(elfshobj_t  *null,
-				    char	*sname,
-				    elfsh_Sym	*null2,
-				    elfsh_Addr	null3);
+                          char	*sname,
+                          elfsh_Sym	*null2,
+                          elfsh_Addr	null3);
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
-					 elfsh_Sym *symbol,
-					 elfsh_Addr addr);
+                               elfsh_Sym *symbol,
+                               elfsh_Addr addr);
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
-					    elfsh_Sym *symbol,
-					    elfsh_Addr addr);
+                                  elfsh_Sym *symbol,
+                                  elfsh_Addr addr);
 int		elfsh_relocate_alpha64(elfshsect_t  *_new,
-				       elfsh_Rela   *cur,
-				       elfsh_Addr   *dword,
-				       elfsh_Addr   addr,
-				       elfshsect_t  *mod);
+                             elfsh_Rela   *cur,
+                             elfsh_Addr   *dword,
+                             elfsh_Addr   addr,
+                             elfshsect_t  *mod);
 
 /* mips32.c */
 int		elfsh_cflow_mips32(elfshobj_t   *null,
-				   char		*sname,
-				   elfsh_Sym	*null2,
-				   elfsh_Addr	null3);
+                         char		*sname,
+                         elfsh_Sym	*null2,
+                         elfsh_Addr	null3);
 int		elfsh_hijack_plt_mips32(elfshobj_t *file,
-					elfsh_Sym *symbol,
-					elfsh_Addr addr);
+                              elfsh_Sym *symbol,
+                              elfsh_Addr addr);
 int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
-					   elfsh_Sym *symbol,
-					   elfsh_Addr addr);
+                                 elfsh_Sym *symbol,
+                                 elfsh_Addr addr);
 int		elfsh_relocate_mips32(elfshsect_t  *_new,
-				      elfsh_Rel    *cur,
-				      elfsh_Addr   *dword,
-				      elfsh_Addr   addr,
-				      elfshsect_t  *mod);
+                            elfsh_Rel    *cur,
+                            elfsh_Addr   *dword,
+                            elfsh_Addr   addr,
+                            elfshsect_t  *mod);
 
 /* mips64.c */
 int		elfsh_cflow_mips64(elfshobj_t   *null,
-				   char		*sname,
-				   elfsh_Sym	*null2,
-				   elfsh_Addr	null3);
+                         char		*sname,
+                         elfsh_Sym	*null2,
+                         elfsh_Addr	null3);
 int		elfsh_hijack_plt_mips64(elfshobj_t *file,
-					elfsh_Sym *symbol,
-					elfsh_Addr addr);
+                              elfsh_Sym *symbol,
+                              elfsh_Addr addr);
 int		elfsh_hijack_altplt_mips64(elfshobj_t *file,
-					   elfsh_Sym *symbol,
-					   elfsh_Addr addr);
+                                 elfsh_Sym *symbol,
+                                 elfsh_Addr addr);
 int		elfsh_relocate_mips64(elfshsect_t  *_new,
-				      elfsh_Rel    *cur,
-				      elfsh_Addr   *dword,
-				      elfsh_Addr   addr,
-				      elfshsect_t  *mod);
+                            elfsh_Rel    *cur,
+                            elfsh_Addr   *dword,
+                            elfsh_Addr   addr,
+                            elfshsect_t  *mod);
 
 
 /* ia32.c */
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
-					     elfshsect_t  *plt, 
-					     uint32_t     diff, 
-					     u_int	     off);
+                                   elfshsect_t  *plt, 
+                                   uint32_t     diff, 
+                                   u_int	     off);
 int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
-						   elfshsect_t *plt, 
-						   uint32_t	diff);
+                                         elfshsect_t *plt, 
+                                         uint32_t	diff);
 
 int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
-				      elfshsect_t *plt, 
-				      elfshsect_t *extplt,
-				      elfsh_Addr diff);
+                            elfshsect_t *plt, 
+                            elfshsect_t *extplt,
+                            elfsh_Addr diff);
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
-				     elfshsect_t *plt, 
-				     elfsh_Addr diff,
-				     u_int	off);
+                           elfshsect_t *plt, 
+                           elfsh_Addr diff,
+                           u_int	off);
 void		*elfsh_getret_ia32(void *frame);
 void		*elfsh_bt_ia32(void *frame);
 
 int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
-				  elfshsect_t *dynsym, elfshsect_t *relplt);
+                        elfshsect_t *dynsym, elfshsect_t *relplt);
 int		elfsh_break_ia32(elfshobj_t *f,
-				 elfshbp_t  *bp);
+                       elfshbp_t  *bp);
 
 int		elfsh_cflow_ia32(elfshobj_t      *null,
-				 char		*sname,
-				 elfsh_Sym	*null2,
-				 elfsh_Addr	null3);
+                       char		*sname,
+                       elfsh_Sym	*null2,
+                       elfsh_Addr	null3);
 int		elfsh_hijack_plt_ia32(elfshobj_t *file,
-				      elfsh_Sym *symbol,
-				      elfsh_Addr addr);
+                            elfsh_Sym *symbol,
+                            elfsh_Addr addr);
 int		elfsh_hijack_plt_ia32_etdyn(elfshobj_t *file,
-					    elfsh_Sym *symbol,
-					    elfsh_Addr addr);
+                                  elfsh_Sym *symbol,
+                                  elfsh_Addr addr);
 int		elfsh_relocate_ia32(elfshsect_t	*_new,
-				    elfsh_Rel	*cur,
-				    elfsh_Addr	*dword,
-				    elfsh_Addr	addr,
-				    elfshsect_t *mod);
+                          elfsh_Rel	*cur,
+                          elfsh_Addr	*dword,
+                          elfsh_Addr	addr,
+                          elfshsect_t *mod);
 int           *elfsh_args_count_ia32(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
 
 /* reginfo.c */
@@ -1412,7 +1572,7 @@ void		*elfsh_bt_get_frame(ucontext_t *);
 
 /* bp.c */
 int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
-			     char *resolv, elfsh_Addr addr, 
-			     u_char flags);
+                   char *resolv, elfsh_Addr addr, 
+                   u_char flags);
 
 #endif /* __LIBELFSH_H_ */
