@@ -29,6 +29,7 @@ typedef struct 	s_dw2sectlist
   edfmtdw2sect_t	macinfo;
   edfmtdw2sect_t	pubnames;
   edfmtdw2sect_t	str;
+  edfmtdw2sect_t	loc;
 } 		edfmtdw2sectlist_t;
 
 /* Forward declaration */
@@ -50,6 +51,7 @@ typedef struct 	s_dw2abbattr
   u_int		attr;
   u_int		form;
   u_long	asize;
+  u_long	infopos;
 
   /* Form value */
   union 

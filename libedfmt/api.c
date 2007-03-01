@@ -9,8 +9,6 @@
 
 /* Unique debug format base variable */
 edfmtinfo_t *uniinfo = NULL;
-edfmttype_t *uni_lasttype = NULL;
-edfmtvar_t *uni_lastvar = NULL;
 
 u_char file_active = 0;
 elfshobj_t *cu_obj = NULL;
@@ -19,13 +17,52 @@ elfshobj_t *cu_obj = NULL;
 edfmt_alloc_pool(&(uniinfo->alloc_pool), &(uniinfo->alloc_pos), \
 		 &(uniinfo->alloc_size), API_ALLOC_STEP, _size) 
 
-#define EDFMT_NEW_TYPE(_type) \
-do { _type = API_GETPTR(sizeof(edfmttype_t)); } while(0)
-//do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_type, sizeof(edfmttype_t), NULL); } while(0)
+#define EDFMT_NEW_TYPE(_type, _name, _up) 		       	\
+do { 								\
+  _type = edfmt_check_type(_name);				\
+  if (_type)							\
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _type);	\
+  _type = API_GETPTR(sizeof(edfmttype_t)); 			\
+  EDFMT_COPY_NAME(_type, _name);				\
+  if (_up)							\
+    edfmt_update_type(_type);					\
+} while(0)
 
+#define EDFMT_NEW_VAR(_var, _name, _up) 		       	\
+do { 								\
+  _var = edfmt_check_var(_name);				\
+  if (_var)							\
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _var);	\
+  _var = API_GETPTR(sizeof(edfmtvar_t)); 			\
+  EDFMT_COPY_NAME(_var, _name);					\
+  if (_up)							\
+    edfmt_update_var(_var);					\
+} while(0)
+
+#define EDFMT_NEW_FUNC(_func, _name, _up) 		       	\
+do { 								\
+  _func = edfmt_check_func(_name);				\
+  if (_func)							\
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _func);	\
+  _func = API_GETPTR(sizeof(edfmtfunc_t)); 			\
+  EDFMT_COPY_NAME(_func, _name);				\
+  if (_up)							\
+    edfmt_update_func(_func);					\
+} while(0)
+
+#define EDFMT_NEW_ARG(_arg, _name) 				\
+do { 								\
+  _arg = API_GETPTR(sizeof(edfmtfuncarg_t)); 			\
+  EDFMT_COPY_NAME(_arg, _name);					\
+} while(0)
+
+/*
 #define EDFMT_NEW_VAR(_var) \
 do { _var = API_GETPTR(sizeof(edfmtvar_t)); } while(0)
-//do { XALLOC(__FILE__, __FUNCTION__, __LINE__,_var, sizeof(edfmtvar_t), NULL); } while(0)
+
+#define EDFMT_NEW_FUNC(_func) \
+do { _func = API_GETPTR(sizeof(edfmtfunc_t)); } while(0)
+*/
 
 #define EDFMT_COPY_NAME(_dest, _source) 			\
 do { 								\
@@ -58,8 +95,9 @@ int			edfmt_add_init(elfshobj_t *file)
 	     file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
       uniinfo = file->debug_format.uni;
 
-      hash_init(&(uniinfo->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
       hash_init(&(uniinfo->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->hfunc), NULL, 30, ASPECT_TYPE_UNKNOW);
     } 
   else 
     {							
@@ -85,10 +123,12 @@ int			edfmt_add_end()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Update type list */
-int			edfmt_update_type(edfmttype_t *type)
+#define API_GET_FROM_SCOPE(_name) \
+uniinfo->lfile == NULL ? &(uniinfo->_name) : &(uniinfo->lfile->_name);
+
+edfmttype_t	      	*edfmt_check_type(char *name)
 {
-  edfmttype_t		*seek_type;
+  edfmttype_t		*seek_type = NULL;
   hash_t		*htable;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -97,17 +137,70 @@ int			edfmt_update_type(edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Global pointer uninitialise", NULL);
 
-  type->file = uniinfo->lfile;
-
   /* Setup hash table depending of current scope */
-  htable = uniinfo->lfile == NULL ? &(uniinfo->htype) : &(uniinfo->lfile->htype);
+  htable = API_GET_FROM_SCOPE(htype);
 
   /* Research on the right table */
-  seek_type = (edfmttype_t *) hash_get(htable, type->name);
+  seek_type = (edfmttype_t *) hash_get(htable, name);
   
-  /* We already have this type */
-  if (seek_type)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_type);
+}
+
+edfmtvar_t	      	*edfmt_check_var(char *name)
+{
+  edfmtvar_t		*seek_var = NULL;
+  hash_t		*htable;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!uniinfo)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Global pointer uninitialise", NULL);
+
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(hvar);
+
+  /* Research on the right table */
+  seek_var = (edfmtvar_t *) hash_get(htable, name);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_var);
+}
+
+edfmtfunc_t	      	*edfmt_check_func(char *name)
+{
+  edfmtfunc_t		*seek_func = NULL;
+  hash_t		*htable;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!uniinfo)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Global pointer uninitialise", NULL);
+
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(hfunc);
+
+  /* Research on the right table */
+  seek_func = (edfmtfunc_t *) hash_get(htable, name);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_func);
+}
+
+/* Update type list */
+int			edfmt_update_type(edfmttype_t *type)
+{
+  hash_t		*htable;
+    
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!uniinfo)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Global pointer uninitialise", 0);
+
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(htype);
+
+  type->file = uniinfo->lfile;
 
   /* Global scope */
   if (uniinfo->lfile == NULL)
@@ -137,11 +230,16 @@ int			edfmt_update_type(edfmttype_t *type)
 /* Update var list */
 int			edfmt_update_var(edfmtvar_t *var)
 {
+  hash_t		*htable;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!uniinfo)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Global pointer uninitialise", NULL);
+
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(hvar);
 
   /* Global scope */
   if (uniinfo->lfile == NULL || file_active == 0)
@@ -163,6 +261,48 @@ int			edfmt_update_var(edfmtvar_t *var)
 
       uniinfo->lfile->lvar = var;
     }
+
+  hash_add(htable, strdup(var->name), (void *) var);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Update function list */
+int			edfmt_update_func(edfmtfunc_t *func)
+{
+  hash_t		*htable;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!uniinfo)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Global pointer uninitialise", NULL);
+
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(hfunc);
+
+  /* Global scope */
+  if (uniinfo->lfile == NULL || file_active == 0)
+    {
+      if (uniinfo->funcs == NULL)
+	uniinfo->funcs = func;
+      else
+	uniinfo->lfunc->next = func;
+
+      uniinfo->lfunc = func;
+    }
+  else
+    {
+      /* Local scope */
+      if (uniinfo->lfile->funcs == NULL)
+	uniinfo->lfile->funcs = func;
+      else
+	uniinfo->lfile->lfunc->next = func;
+
+      uniinfo->lfile->lfunc = func;
+    }
+
+  hash_add(htable, strdup(func->name), (void *) func);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -217,8 +357,11 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
 	tmp_type->next = type->next;
     }
 
-  /* Add to the current file */
-  edfmt_update_type(type);
+  if (edfmt_check_type(type->name) == NULL)
+    {
+      /* Add to the current file */
+      edfmt_update_type(type);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -295,8 +438,9 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   file->start = start;
   file->end = end;
 
-  hash_init(&(file->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
   hash_init(&(file->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->hfunc), NULL, 30, ASPECT_TYPE_UNKNOW);
 
   /* Update pointers depending if he get a parrent */
   if (parent_file != NULL)
@@ -358,12 +502,8 @@ edfmttype_t		*edfmt_add_type_unk(char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_UNK;
-  EDFMT_COPY_NAME(ltype, name);
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -379,13 +519,9 @@ edfmttype_t		*edfmt_add_type_basic(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_BASIC;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->size = size;
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -402,14 +538,10 @@ edfmttype_t		*edfmt_add_type_array(char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_ARRAY;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->parent = type;
   ltype->size = size;
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -425,14 +557,10 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_PTR;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->parent = type;
   ltype->size = sizeof(void *);
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -448,13 +576,9 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_STRUCT;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->size = size;
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -470,13 +594,9 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_UNION;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->size = size;
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -485,7 +605,7 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
 edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name, 
 					     int start, int size, edfmttype_t *type)
 {
-  edfmttype_t		*ltype, *last;
+  edfmttype_t		*ltype, *last = NULL;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -493,9 +613,8 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 0);
   ltype->type = EDFMT_TYPE_ATTR;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->parent = tstruct;
   ltype->child = type;
   ltype->start = start;
@@ -534,12 +653,8 @@ edfmttype_t		*edfmt_add_type_void(char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_VOID;
-  EDFMT_COPY_NAME(ltype, name);
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -555,13 +670,9 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype);
+  EDFMT_NEW_TYPE(ltype, name, 1);
   ltype->type = EDFMT_TYPE_LINK;
-  EDFMT_COPY_NAME(ltype, name);
   ltype->parent = type;
-
-  /* Update type list */
-  edfmt_update_type(ltype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -576,13 +687,62 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_VAR(lvar);
+  EDFMT_NEW_VAR(lvar, name, 1);
   lvar->scope = EDFMT_SCOPE_GLOBAL;
   lvar->addr = addr;
-  EDFMT_COPY_NAME(lvar, name);
   lvar->type = type;
 
-  edfmt_update_var(lvar);
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
+}
+
+edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret, 
+					elfsh_Addr start, elfsh_Addr end)
+{
+  edfmtfunc_t		*lfunc;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!name || !ret)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid paramters", NULL);
+
+  EDFMT_NEW_FUNC(lfunc, name, 1);
+  lfunc->rettype = ret;
+  lfunc->start = start;
+  lfunc->end = end;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lfunc);
+}
+
+edfmtfuncarg_t		*edfmt_add_arg(edfmtfunc_t *func, char *name,
+				       u_int reg, int pos, edfmttype_t *type)
+{
+  edfmtfuncarg_t	*larg, *find;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!func || !name || !type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid paramters", NULL);
+
+  EDFMT_NEW_ARG(larg, name);
+  larg->type = type;
+  larg->reg = reg;
+  larg->pos = pos;
+
+  /* Search last argument */
+  for (find = func->arguments; 
+       find != NULL && find->next != NULL; 
+       find = find->next);
+  
+  /* Update pointer as needed */
+  if (find == NULL)
+    func->arguments = larg;
+  else
+    find->next = larg;
+  
+  /* Then update arg counting variable */
+  func->argc++;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, larg);
 }

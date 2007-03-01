@@ -18,6 +18,7 @@ char buf[BUFSIZ];
 hash_t types_ref;
 
 /* Search a type from its ckey string */
+/*
 static edfmttype_t	*edfmt_dwarf2_searchtype(char *ckey)
 {
   edfmttype_t 		*type;
@@ -29,7 +30,7 @@ static edfmttype_t	*edfmt_dwarf2_searchtype(char *ckey)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Search a type from its ckey long */
+// Search a type from its ckey long
 static edfmttype_t 	*edfmt_dwarf2_searchtypei(long ckey)
 {
   edfmttype_t 		*type;
@@ -37,11 +38,37 @@ static edfmttype_t 	*edfmt_dwarf2_searchtypei(long ckey)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  /* Create the string */
+  // Create the string
   edfmt_ckey(str_ckey, EDFMT_CKEY_SIZE, ckey);
 
-  /* Retrieve the type */
+  // Retrieve the type 
   type = edfmt_dwarf2_searchtype(str_ckey);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+}
+*/
+
+static edfmttype_t	*edfmt_dwarf2_searchtype_str(char *str)
+{
+  edfmttype_t 		*type = NULL;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  type = (edfmttype_t *) hash_get(&types_ref, str);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+}
+static edfmttype_t	*edfmt_dwarf2_searchtype(edfmtdw2abbent_t *abbrev)
+{
+  edfmttype_t 		*type = NULL;
+  edfmtdw2abbattr_t	*attr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  attr = edfmt_dwarf2_getattr(abbrev, DW_AT_name);
+
+  if (attr)
+    type = (edfmttype_t *) hash_get(&types_ref, attr->u.str);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
@@ -58,13 +85,20 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);
 
-  type = edfmt_dwarf2_searchtypei(current_cu->start_pos + pos);
+  if (edfmt_dwarf2_getent(current_cu, &ref, current_cu->start_pos + pos) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "dwarf2 getenv failed", NULL);
+
+  //  type = edfmt_dwarf2_searchtypei(current_cu->start_pos + pos);
+  type = edfmt_dwarf2_searchtype(&ref);
 
   if (type == NULL)
     {
+      /*
       if (edfmt_dwarf2_getent(current_cu, &ref, current_cu->start_pos + pos) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "dwarf2 getenv failed", NULL);
+      */
       
       type = edfmt_dwarf2_transform_abbrev_parse(&ref);
     }
@@ -72,19 +106,90 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, u_int attr)
+edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 {
-  edfmtdw2abbattr_t   	*mattr;
-  u_int			index;
+  edfmtdw2info_t	*pinfo;
+  u_int			i;
+  u_char		*bufptr;
+  u_short		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (abbrev != NULL)
+  if (abbent != NULL)
     {
-      for (index = 0, mattr = abbrev->attr; mattr && mattr[index].attr; index++)
+      for (i = 0; abbent->attr[i].attr; i++)
 	{
-	  if (mattr[index].attr == attr)
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, mattr + index);
+	  if (abbent->attr[i].attr == attr)
+	    {
+	      /* Save current pointers */
+	      pinfo = dwarf2_info;
+	      dwarf2_info = (edfmtdw2info_t *) current_cu->fileobj->debug_format.dwarf2;
+
+	      edfmt_dwarf2_form_value(abbent->attr + i);
+	      
+	      /* Modifications */
+	      switch(abbent->attr[i].attr)
+		{
+		case DW_AT_frame_base:
+		case DW_AT_data_member_location:
+		case DW_AT_location:
+		  switch(abbent->attr[i].form)
+		    {
+		    case DW_FORM_block1:
+		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), (u_char *) abbent->attr[i].u.vbuf, 
+				       abbent->attr[i].asize);
+		      break;
+		      /* We have to use .debug_loc */
+		    case DW_FORM_data8:
+		    case DW_FORM_data4:
+		      /* We need loc section */
+		      if (dwarf2_data(loc) == NULL)
+			break;
+
+		      /* Set position */
+		      dwarf2_pos(loc) = abbent->attr[i].u.udata;
+		      bufptr = dwarf2_a_pos(loc);
+
+		      /* Read length, we don't care about start & end */
+		      len = *(u_short *) (bufptr + (current_cu->addr_size * 2));
+	      
+		      /*printf("%x %x len = %d / %d\n", 
+		       *(elfsh_Addr *) bufptr,
+		       *(elfsh_Addr *) bufptr + current_cu->addr_size,
+		       len, dwarf2_pos(loc));*/
+
+		      dwarf2_pos(loc) += (current_cu->addr_size * 2) + sizeof(u_short);
+
+		      /*if (len > 20)
+			asm("int3");*/
+
+		      if (dwarf2_pos(loc) + len > dwarf2_size(loc))
+			{
+			  printf("TOOBIG !!\n");
+			  break;
+			}
+	      
+		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), 
+				       dwarf2_a_pos(loc), len);		
+
+		      break;
+		    }
+		  break;
+		  /* TODO: reuse when it will be usefull
+		     case DW_AT_stmt_list:
+		     edfmt_dwarf2_line(ent->attr[i].u.udata);
+		     break;
+		     case DW_AT_macro_info:
+		     edfmt_dwarf2_mac(ent->attr[i].u.udata);
+		     break;
+		  */
+		}
+
+	      /* Restore ex pointers */
+	      dwarf2_info = pinfo;
+
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, abbent->attr + i);
+	    }
 	}
     }
 
@@ -104,21 +209,34 @@ elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 
 edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 {
-  char			*str, *comp_dir, *vbuf, *vbufs;
+  char			*str, *comp_dir, *vbuf, *vbufs, *pstr;
   long			size = 0;
   edfmttype_t		*type, *etype;
   u_long		iref, itref;
   edfmtdw2abbent_t	ref, tref;
   edfmtdw2abbattr_t	*attr;
-  int			fileid, inc = 0, addtype = 1, base = 0;
+  elfsh_Addr		low = 0, high = 0;
+  int			fileid, inc = 0, addtype = 1, base = 0, op = 0;
+  edfmtfunc_t		*func;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  type = edfmt_dwarf2_searchtype(abbrev->ckey);
+  if (!abbrev)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid parameters", NULL);
 
-  /* Already parsed ? */
-  if (type)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+  /* Retrieve abbrev name */
+  DWARF2_TRANS_GETATTR(str, abbrev, DW_AT_name, u.str, NULL);
+
+  //type = edfmt_dwarf2_searchtype(abbrev->ckey);
+  if (str)
+    {
+      type = edfmt_dwarf2_searchtype_str(str);
+      
+      /* Already parsed ? */
+      if (type)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+    }
 
   /* Change current file */
   if (abbrev->tag != DW_TAG_compile_unit)
@@ -129,15 +247,15 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
       if (fileid > 0 && fileid < current_cu->files_number)
 	{
 	  fileid--;
-	  str = current_cu->dirs[current_cu->files_dindex[fileid] - 1];
-	  if (str != NULL 
+	  pstr = current_cu->dirs[current_cu->files_dindex[fileid] - 1];
+	  if (pstr != NULL 
 	      && current_cu->files_dindex[fileid] < current_cu->files_number
 	      && current_cu->files_dindex[fileid] > 0)
 	    {
-	      size = strlen(str);
+	      size = strlen(pstr);
 	      snprintf(buf, BUFSIZ - 1, "%s%s%s",
-		       str, 
-		       str[size - 1] != '/' ? "/" : "",
+		       pstr, 
+		       pstr[size - 1] != '/' ? "/" : "",
 		       current_cu->files_name[fileid]);
 	    }
 	  else
@@ -148,7 +266,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  
 	  edfmt_add_file(edfmt_get_current_file(), buf, 0, 0);
 	  
-	  str = NULL;
+	  pstr = NULL;
 	  size = 0;
 	}
       else if (fileid >= 0)
@@ -157,8 +275,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  edfmt_reset_file();
 	}
     }
-
-  DWARF2_TRANS_GETATTR(str, abbrev, DW_AT_name, u.str, NULL);
 
   switch(abbrev->tag)
     {
@@ -272,8 +388,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	    type = edfmt_add_type_struct(str, (int) size);
 	  
 	  /* We add our structure right before members to avoid pointers infinite loop */
-	  if (type)
-	    HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
+	  if (type && str)
+	    HASH_ADDX(&types_ref, str, (void *) type);
+	  //HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
 
 	  if (edfmt_dwarf2_getent(current_cu, &ref, abbrev->child) < 0)
 	    break;
@@ -294,10 +411,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		  if (itref == 0)
 		    continue;
 
-		  if (edfmt_dwarf2_getent(current_cu, &tref, current_cu->start_pos + itref) < 0)
-		    continue;
-
-		  etype = edfmt_dwarf2_transform_abbrev_parse(&tref);
+		  etype = edfmt_dwarf2_trans_gettype(itref);
 
 		  if (!etype)
 		    continue;
@@ -319,9 +433,64 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		  edfmt_dwarf2_transform_abbrev_parse(&ref);
 		}
 	    }
+
+	  /* We won't have to re-parse structure members */
+	  abbrev->child = 0;
 	  
 	  /* We already add our type and we want to return the right information */
 	  addtype = 0;
+	}
+      break;
+    case DW_TAG_subprogram:
+      DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_low_pc, u.vbuf, 0);
+      if (vbuf)
+	low = *(elfsh_Addr *) vbuf;
+      DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_high_pc, u.vbuf, 0);
+      if (vbuf)
+	high = *(elfsh_Addr *) vbuf;
+
+      DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
+      
+      type = edfmt_dwarf2_trans_gettype(iref);
+      
+      if (!type)
+	break;      
+
+      func = edfmt_add_func(str, type, low, high);
+
+      if (func)
+	{
+	  for (iref = abbrev->child; iref > 0; iref = ref.sib)
+	    {
+	      if (edfmt_dwarf2_getent(current_cu, &ref, iref) < 0)
+		break;
+
+	      /* Do we have a parameter */
+	      if (ref.tag == DW_TAG_formal_parameter)
+		{
+		  DWARF2_TRANS_GETATTR(str, &ref, DW_AT_name, u.str, NULL);
+		  DWARF2_TRANS_GETATTR(itref, &ref, DW_AT_type, u.udata, 0);
+		  
+		  type = edfmt_dwarf2_trans_gettype(itref);
+		  attr = edfmt_dwarf2_getattr(&ref, DW_AT_location);
+		  
+		  if (!type || !attr)
+		    continue;      
+
+		  /* Support based reg */
+		  if (attr->loc.op >= DW_OP_breg0 && attr->loc.op <= DW_OP_breg31)
+		    op = attr->loc.op - DW_OP_breg0;
+
+		  edfmt_add_arg(func, str, op, (int) attr->loc.value, type);
+		}
+	      else
+		{
+		  edfmt_dwarf2_transform_abbrev_parse(&ref);
+		}
+	    }
+
+	  /* We won't have to re-parse function arguments */
+	  abbrev->child = 0;
 	}
       break;
     }
@@ -332,16 +501,19 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   else if (inc == 2)
     edfmt_reactive_file();
 
-  if (type && addtype)
-    HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
+  if (type && addtype && str)
+    HASH_ADDX(&types_ref, str, (void *) type);
+    //HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
 /* Use in global scope to improve speed */
-edfmtdw2abbent_t     	abbrev;
+#define DW2_MAX_LEVEL 20
+edfmtdw2abbent_t     	abbrev[DW2_MAX_LEVEL];
+int 			abbrev_level = 0;
 
-__inline__ int	     	edfmt_dwarf2_transform_abbrev(u_int pos)
+int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -349,22 +521,26 @@ __inline__ int	     	edfmt_dwarf2_transform_abbrev(u_int pos)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
+  if (abbrev_level >= DW2_MAX_LEVEL)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   while (pos > 0 && pos < current_cu->end_pos)
     {
-      if (edfmt_dwarf2_getent(current_cu, &abbrev, pos) < 0)
-	{
-	  printf("Can't retrieve @ %d\n", pos);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			    "Can't retrieve abbrev entitie", -1);
-	}
+      if (edfmt_dwarf2_getent(current_cu, &(abbrev[abbrev_level]), pos) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't retrieve abbrev entitie", -1);
 
-      edfmt_dwarf2_transform_abbrev_parse(&abbrev);
+      edfmt_dwarf2_transform_abbrev_parse(&(abbrev[abbrev_level]));
 
       /* Parse childs too */
-      if (abbrev.child > 0)
-	edfmt_dwarf2_transform_abbrev(abbrev.child);
+      if (abbrev[abbrev_level].child > 0)
+	{
+	  abbrev_level++;
+	  edfmt_dwarf2_transform_abbrev(abbrev[abbrev_level - 1].child);
+	  abbrev_level--;
+	}
 
-      pos = abbrev.sib;
+      pos = abbrev[abbrev_level].sib;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -395,7 +571,7 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
 		      "No compile unit information for dwarf2", -1);   
 
   if (types_ref.ent == NULL)
-    hash_init(&types_ref, DWARF2_HNAME_TRANS_TREF, 50, ASPECT_TYPE_UNKNOW);
+    hash_init(&types_ref, DWARF2_HNAME_TRANS_TREF, 200, ASPECT_TYPE_UNKNOW);
 
   edfmt_add_init(file);
 
@@ -403,12 +579,13 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
     {
       current_cu = tcu;
 
+      abbrev_level = 0;
       edfmt_dwarf2_transform_abbrev(tcu->info_pos);
-
-      hash_empty(DWARF2_HNAME_TRANS_TREF);
 
       tcu = tcu->next;
     }
+
+  hash_empty(DWARF2_HNAME_TRANS_TREF);
 
   current_cu = NULL;
 

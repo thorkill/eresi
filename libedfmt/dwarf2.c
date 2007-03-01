@@ -28,9 +28,9 @@ edfmtdw2info_t 		*edfmt_dwarf2_getinfo(elfshobj_t *file)
 /* Parse the DWARF-2 debug format */
 int 			edfmt_dwarf2_parse(elfshobj_t *file)
 {
-  edfmtdw2sect_t 	*pointers[8];
-  char			*names[8];
-  u_int			hash[8];
+  edfmtdw2sect_t 	*pointers[9];
+  char			*names[9];
+  u_int			hash[9];
   u_int			i;
   edfmtdw2sectlist_t	dw2_sections;
 
@@ -63,7 +63,8 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   pointers[4] = &(dwarf2_info->sections.macinfo);	// Supported
   pointers[5] = &(dwarf2_info->sections.pubnames);	// Unsupported
   pointers[6] = &(dwarf2_info->sections.str);		// Supported
-  pointers[7] = NULL;
+  pointers[7] = &(dwarf2_info->sections.loc);		// Supported
+  pointers[8] = NULL;
 
   names[0] = ELFSH_SECTION_NAME_DW2_ABBREV;
   names[1] = ELFSH_SECTION_NAME_DW2_ARANGES;
@@ -72,7 +73,8 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   names[4] = ELFSH_SECTION_NAME_DW2_MACINFO;
   names[5] = ELFSH_SECTION_NAME_DW2_PUBNAMES;
   names[6] = ELFSH_SECTION_NAME_DW2_STR;
-  names[7] = NULL;
+  names[7] = ELFSH_SECTION_NAME_DW2_LOC;
+  names[8] = NULL;
 
   hash[0] = ELFSH_SECTION_DW2_ABBREV;
   hash[1] = ELFSH_SECTION_DW2_ARANGES;
@@ -81,7 +83,8 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   hash[4] = ELFSH_SECTION_DW2_MACINFO;
   hash[5] = ELFSH_SECTION_DW2_PUBNAMES;
   hash[6] = ELFSH_SECTION_DW2_STR;
-  hash[7] = NULL;
+  hash[7] = ELFSH_SECTION_DW2_LOC;
+  hash[8] = NULL;
 
   /* Use the table to fill every pointers and report a problem */
   for (i = 0; names[i] != NULL; i++)

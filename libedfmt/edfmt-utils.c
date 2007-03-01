@@ -118,7 +118,7 @@ void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize,
       
       XALLOC(__FILE__, __FUNCTION__, __LINE__, *pool, *asize+sizeof(void*), NULL);
       *apos += 4;
-      *(int *) *pool = prevpool;
+      *(void **) *pool = prevpool;
     }
 
   ret = (char *) *pool + *apos;
@@ -139,7 +139,7 @@ int 			edfmt_clean_pool(char **pool)
 		 "Invalid parameters", -1);
 
   do {
-    prevpool = *(int *) *pool;
+    prevpool = *(void **) *pool;
     XFREE(__FILE__, __FUNCTION__, __LINE__, *pool);
     *pool = prevpool;
   } while (*pool != NULL);

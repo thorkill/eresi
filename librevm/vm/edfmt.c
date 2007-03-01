@@ -19,6 +19,8 @@ char arr_pool[TYPE_ATTR_LEN];
 #define VM_EDFMT_PARSED(_type) \
 _type->parsed = 1
 
+hash_t var_queue;
+
 static int		vm_edfmt_register_type(char *label, 
 					       char **fields, 
 					       u_int fieldnbr)
@@ -44,7 +46,7 @@ static int		vm_edfmt_register_type(char *label,
 
 static int		vm_edfmt_type_parse(edfmttype_t *type)
 {
-  edfmttype_t		*child, *find;
+  edfmttype_t		*child;
   int			index = 0;
   int			typeid;
 
@@ -186,8 +188,6 @@ static int		vm_edfmt_inform(edfmtvar_t *var)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-hash_t var_queue;
-
 /* Add some global variable waiting to be added at the end */
 static int		vm_edfmt_add_var_queue(edfmtvar_t *vars)
 {
@@ -235,9 +235,9 @@ static int		vm_edfmt_proceed_var_queue()
 	}
 
       hash_free_keys(keys);
-    }
 
-  hash_empty(VM_EDFMT_VAR_QUEUE_NAME);
+      hash_empty(VM_EDFMT_VAR_QUEUE_NAME);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 }

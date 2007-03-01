@@ -210,6 +210,53 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
+{
+  edfmtstabsfunc_t	*func;
+  edfmtstabsdata_t	*arg_func;
+  edfmtfunc_t		*uni_func;
+  u_int			index;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+
+  if (!func_list)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter", -1);
+
+  /* Stabs function is a simple linked list without any child */
+  for (func = func_list; func != NULL; func = func->next)
+    {
+      if (!func->data || !func->rettype)
+	continue;
+
+      uni_func = edfmt_add_func(func->data->name, func->rettype->transtype, 
+				func->s_addr, func->e_addr);
+
+      if (!uni_func)
+	continue;
+      
+      /* We add each argument using uni_func pointer */
+      for (index = 0; index < STABS_MAX_ARGUMENTS && func->args[index]; index++)
+	{
+	  arg_func = func->args[index];
+
+	  if (!arg_func->type)
+	    continue;
+
+	  switch(arg_func->scope)
+	    {
+	    case STABS_SCOPE_ARG:
+	      edfmt_add_arg(uni_func, arg_func->name, 0, arg_func->u.stackpos, 
+			    arg_func->type->transtype);
+	      break;
+	    }
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
 static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile, 
 						  edfmtfile_t *parent)
 {
@@ -246,6 +293,9 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
       
       if (tfile->inc)
 	edfmt_stabs_transform_adv(tfile->inc, mparent);
+
+      if (tfile->func)
+	edfmt_stabs_transform_func(tfile->func);
     }
 
   hash_empty(STABS_HNAME_TYPE_ADD);

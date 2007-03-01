@@ -568,7 +568,6 @@ int	elfsh_load_hdr(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
 
-}
 /* Return a ptr on the ELF header (load it before if not done yet) */
 void	*elfsh_get_hdr(elfshobj_t *file)
 {

@@ -175,6 +175,7 @@
 #define 	ELFSH_SECTION_NAME_DW2_FRAME	".debug_frame"
 #define 	ELFSH_SECTION_NAME_DW2_STR	".debug_str"
 #define 	ELFSH_SECTION_NAME_DW2_MACINFO	".debug_macinfo"
+#define 	ELFSH_SECTION_NAME_DW2_LOC	".debug_loc"
 
 /* Section index in the secthash */
 #define		ELFSH_SECTION_NULL		0
@@ -222,6 +223,7 @@
 #define 	ELFSH_SECTION_DW2_FRAME		42
 #define 	ELFSH_SECTION_DW2_STR		43
 #define 	ELFSH_SECTION_DW2_MACINFO	44
+#define 	ELFSH_SECTION_DW2_LOC		45
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
 

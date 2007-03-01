@@ -348,12 +348,19 @@ int		aspect_basetypes_create()
 int		aspect_basetype_register(char *name, u_int size)
 {
   typeinfo_t	info;
+  aspectype_t	*exist;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
+
+  exist = (aspectype_t *) hash_get(&types_hash, name);
+
+  if (exist)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Type destination already exist", -1);      
 
   info.name = name;
   info.size = size;

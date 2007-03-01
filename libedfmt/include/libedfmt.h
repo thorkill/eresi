@@ -62,6 +62,7 @@ int		edfmt_add_init(elfshobj_t *file);
 int		edfmt_add_end();
 int		edfmt_update_type(edfmttype_t *type);
 int		edfmt_update_var(edfmtvar_t *var);
+int		edfmt_update_func(edfmtfunc_t *func);
 int		edfmt_change_type_nfile(edfmttype_t *type);
 edfmtfile_t   	*edfmt_restore_parent_file();
 edfmtfile_t	*edfmt_get_current_file();
@@ -83,6 +84,13 @@ edfmttype_t	*edfmt_add_type_link(char *name, edfmttype_t *type);
 
 edfmtvar_t	*edfmt_add_var_global(edfmttype_t *type, char *name, 
 				      elfsh_Addr addr);
+edfmtfunc_t	*edfmt_add_func(char *name, edfmttype_t *ret, 
+				elfsh_Addr start, elfsh_Addr end);
+edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
+			       u_int reg, int pos, edfmttype_t *type);
+edfmttype_t	*edfmt_check_type(char *name);
+edfmtvar_t	*edfmt_check_var(char *name);
+edfmtfunc_t	*edfmt_check_func(char *name);
 
 /* stabs.c */
 edfmtstabsinfo_t *edfmt_stabs_getinfo(elfshobj_t *file);
@@ -112,7 +120,7 @@ int 		edfmt_dwarf2_getent(edfmtdw2cu_t *cu,
 				    u_int pos);
 
 /* dwarf2-trans.c */
-__inline__ int	edfmt_dwarf2_transform_abbrev(u_int pos);
+int		edfmt_dwarf2_transform_abbrev(u_int pos);
 edfmttype_t    	*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev);
 int		edfmt_dwarf2_transform(elfshobj_t *file);
 edfmtdw2abbattr_t *edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, u_int attr);
@@ -122,7 +130,7 @@ u_long 		edfmt_read_uleb128(void *data, u_int *bread);
 long 		edfmt_read_leb128(void *data, u_int *bread);
 
 /* dwarf2-abbrev.c */
-int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size);
+int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size);
 int		edfmt_dwarf2_line(u_long offset);
 int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, elfsh_Addr addr, u_int fid);
 int		edfmt_dwarf2_mac(u_long offset);
@@ -130,7 +138,7 @@ int		edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *abbent, u_long pos, u_long ipos)
 int		edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table);
 int		edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table);
 int		edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos);
-u_long		 *edfmt_dwarf2_lookup_abbrev(u_int num_fetch);
+int 	   	edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr);
 
 /* dwarf2-cfa */
 int		edfmt_dwarf2_cfa();

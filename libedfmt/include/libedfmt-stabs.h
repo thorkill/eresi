@@ -238,8 +238,11 @@ typedef struct 	s_stabsfile
   edfmtstabsline_t *line;
   edfmtstabsline_t *last_line;
 
+  /* Variable */
   edfmtstabsdata_t *vars;
   edfmtstabsdata_t *lvar;
+
+  /* Types */
   edfmtstabstype_t *types;
   edfmtstabstype_t *ltype;
 

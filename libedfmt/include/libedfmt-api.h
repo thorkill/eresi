@@ -59,6 +59,34 @@ typedef struct		s_evar
   struct s_evar		*next;
 }			edfmtvar_t;
 
+typedef struct		s_efunc_arg
+{
+  char			name[EDFMT_NAME_SIZE];
+
+  u_int			reg;
+  int			pos;
+
+  edfmttype_t		*type;
+
+  struct s_efunc_arg	*next;
+}			edfmtfuncarg_t;
+
+typedef struct		s_efunc
+{
+  char			name[EDFMT_NAME_SIZE];
+
+  int			argc;
+  edfmtfuncarg_t	*arguments;
+
+  edfmttype_t		*rettype;
+
+  elfsh_Addr		start;
+  elfsh_Addr		end;
+
+  struct s_efunc	*next;
+}			edfmtfunc_t;
+
+
 struct			s_efile
 {
   char			name[EDFMT_NAME_SIZE];
@@ -75,6 +103,11 @@ struct			s_efile
   edfmtvar_t		*vars;
   edfmtvar_t		*lvar;
   hash_t		hvar;
+
+  /* Functions */
+  edfmtfunc_t		*funcs;
+  edfmtfunc_t		*lfunc;
+  hash_t		hfunc;
 
   struct s_efile	*next;
 
@@ -98,6 +131,11 @@ typedef struct		s_einfo
   edfmtvar_t		*vars;
   edfmtvar_t		*lvar;
   hash_t		hvar;
+
+  /* Function */
+  edfmtfunc_t		*funcs;
+  edfmtfunc_t		*lfunc;
+  hash_t		hfunc;
 
   char 			*alloc_pool;
   int 			alloc_pos;

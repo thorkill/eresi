@@ -609,6 +609,10 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", NULL);
 
+#if __DEBUG_STABS__
+	  printf("%s - %s - %s\n", current_file->path, current_file->file, *str);
+#endif
+
   edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);
 
   if ((*str)[-1] != STABS_STR_DELIM)
@@ -893,7 +897,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      last_file = current_file;
 	      current_file = NULL;
 
-#if __DEBUG_STABS_
+#if __DEBUG_STABS__
 	      printf("------------------------------------------------\n");
 #endif
 	      break;
@@ -918,7 +922,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  else
 	    tmp->path = str;
 
-#if __DEBUG_STABS_
+#if __DEBUG_STABS__
 	  printf("- %s%s -----------------------------------------------\n",
 		 inc ? "[i] " : "",
 		 str);
@@ -994,10 +998,6 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 
       if (parse_str)
 	{
-#if __DEBUG_STABS_
-	  printf("%s - %s - %s\n", current_file->path, current_file->file, str);
-#endif
-
 	  data = STABS_DATA(&str);
 
 	  if (data)

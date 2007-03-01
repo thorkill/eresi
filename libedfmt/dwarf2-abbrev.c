@@ -7,8 +7,6 @@
 
 #include "libedfmt.h"
 
-hash_t abbrev_table;
-
 char *alloc_pool = NULL;
 int alloc_pos = 0;
 int alloc_size = 0;
@@ -17,32 +15,23 @@ int alloc_size = 0;
 edfmt_alloc_pool(&alloc_pool, &alloc_pos, &alloc_size, DWARF2_ALLOC_STEP, _size)
 
 /* Lookup on abbrev_table */
-u_long		 	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
+static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
 {
   char			ckey[EDFMT_CKEY_SIZE];
-  u_long		*pos;
+  edfmtdw2abbent_t 	*res;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num_fetch);
-  pos = (u_long *) hash_get(&(current_cu->abbrev_table), ckey);
+  res = (edfmtdw2abbent_t *) hash_get(&(current_cu->abbrev_table), ckey);
 
-  //printf("Retrieve pos = %x, %ld\n", pos, *pos);
-
-  if (pos == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Abbrev number not found", NULL);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pos);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
 /* Read an abbrev entry @ this position */
-int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent,
-						  u_long pos, u_long ipos)
+int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
 {
-  u_int			num;
-  u_int			allocattr = 0;
-  u_int			attri = 0;
+  edfmtdw2abbent_t	*fetch;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -55,33 +44,17 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 ".debug_abbrev section not available", -1);
 
-  /* Update position to read the entry */
-  dwarf2_pos(abbrev) = pos;
+  fetch = edfmt_dwarf2_lookup_abbrev(fnum);
 
-  /* Fetch the key number */
-  dwarf2_iuleb128(num, abbrev);
-  
-  /* A level end */
-  if (num == 0)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (!fetch)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No entry found", -1);
+
+  memcpy(ent, fetch, sizeof(edfmtdw2abbent_t));
 
   /* Fill main data */
   ent->key = ipos;
-  edfmt_ckey(ent->ckey, EDFMT_CKEY_SIZE, ipos);
-
-  dwarf2_iuleb128(ent->tag, abbrev);
-  dwarf2_iread_1(ent->children, abbrev);
-
-  attri = allocattr = 0;
-  
-  /* Parse attributes */
-  do {
-    /* Fill attribute structure */
-    dwarf2_iuleb128(ent->attr[attri].attr, abbrev);
-    dwarf2_iuleb128(ent->attr[attri].form, abbrev);
-  } while (ent->attr[attri++].attr && attri < DW2_MAX_ATTR);
-  
-  ent->attrsize = attri > 1 ? attri - 1 : attri;
+  //edfmt_ckey(ent->ckey, EDFMT_CKEY_SIZE, ipos);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -123,10 +96,10 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
 {
   u_int			num;
   u_int			base;
-  u_long	      	*start_pos;
-  u_int			tag, children;
-  u_int			attr, form;
+  edfmtdw2abbent_t	*ent;
   char			ckey[EDFMT_CKEY_SIZE];
+  u_int			allocattr = 0;
+  u_int			attri = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -142,47 +115,137 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
   base = dwarf2_pos(abbrev);
 
   do {
-    start_pos = DW2_GETPTR(sizeof(u_long));
-
-    *start_pos = dwarf2_pos(abbrev);
-
-    //printf("Setpos = %x / %ld\n", start_pos, *start_pos);
     /* Fetch the key number */
     dwarf2_iuleb128(num, abbrev);
     
     /* A level end */
     if (num == 0)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+    ent = DW2_GETPTR(sizeof(edfmtdw2abbent_t));
+
+    dwarf2_iuleb128(ent->tag, abbrev);
+    dwarf2_iread_1(ent->children, abbrev);
     
-    dwarf2_iuleb128(tag, abbrev);
-    dwarf2_iread_1(children, abbrev);
+    attri = allocattr = 0;
     
     /* Parse attributes */
     do {
-      dwarf2_iuleb128(attr, abbrev);
-      dwarf2_iuleb128(form, abbrev);
-    } while (attr);
+      /* Fill attribute structure */
+      dwarf2_iuleb128(ent->attr[attri].attr, abbrev);
+      dwarf2_iuleb128(ent->attr[attri].form, abbrev);
+    } while (ent->attr[attri++].attr && attri < DW2_MAX_ATTR);
+
+    ent->attrsize = attri > 1 ? attri - 1 : attri;
       
     /* Add into abbrev table */
     edfmt_ckey(ckey, EDFMT_CKEY_SIZE, num);
-    hash_add(abbrev_table, strdup(ckey), (void *) start_pos);
+    hash_add(abbrev_table, strdup(ckey), (void *) ent);
   } while (dwarf2_pos(abbrev) < dwarf2_size(abbrev));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Parse a form value */
+static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
+{
+  long			data;
+  u_long		size;
+  u_int			form;
 
+  NOPROFILER_IN();
+
+  attr->infopos = dwarf2_pos(info);
+  form = attr->form;
+
+fvstart:
+
+  switch (form)
+    {
+    case DW_FORM_ref_addr:
+      dwarf2_inc_pos(info, current_cu->addr_size);
+      break;
+    case DW_FORM_addr:
+      dwarf2_inc_pos(info, current_cu->addr_size);
+      break;
+    case DW_FORM_block1:
+      dwarf2_iread_1(size, info);
+      if (size > 0)
+	dwarf2_inc_pos(info, size);
+      break;
+    case DW_FORM_block2:
+      dwarf2_iread_2(size, info);
+      if (size > 0)
+	dwarf2_inc_pos(info, size);
+      break;
+    case DW_FORM_block4:
+      dwarf2_iread_4(size, info);
+      if (size > 0)
+	dwarf2_inc_pos(info, size);
+      break;
+    case DW_FORM_ref1:
+    case DW_FORM_data1:
+      dwarf2_inc_pos(info, 1);
+      break;
+    case DW_FORM_ref2:
+    case DW_FORM_data2:
+      dwarf2_inc_pos(info, 2);
+      break;
+    case DW_FORM_ref4:
+    case DW_FORM_strp:
+    case DW_FORM_data4:
+      dwarf2_inc_pos(info, 4);
+      break;
+    case DW_FORM_ref8:
+    case DW_FORM_data8:
+      dwarf2_inc_pos(info, 8);
+      break;
+    case DW_FORM_string:
+      dwarf2_inc_pos(info, strlen(dwarf2_ac_pos(info))+1);
+      break;
+    case DW_FORM_block:
+      dwarf2_iuleb128(size, info);
+      dwarf2_inc_pos(info, size);
+      break;
+    case DW_FORM_flag:
+      dwarf2_inc_pos(info, 1);
+      break;
+    case DW_FORM_udata:
+      dwarf2_iuleb128(size, info);
+      break;
+    case DW_FORM_sdata:
+      dwarf2_ileb128(data, info);
+      break;
+    case DW_FORM_ref_udata:
+      dwarf2_iuleb128(size, info);
+      break;
+    case DW_FORM_indirect:
+      dwarf2_ileb128(data, info);
+      form = data;
+      goto fvstart;
+      break;
+    }
+
+  NOPROFILER_ROUT(0);
+}
 
 /* Parse a form value */
-static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
+int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 {
   u_int			i;
   char			*ptr;
-  u_char 		addr[20]; /* 20 should be enough */
+  u_char 		addr[10]; /* 10 should be enough */
   u_int			data;
   long			ddata;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  NOPROFILER_IN();
+
+  if (dwarf2_data(info) == NULL)
+      NOPROFILER_ROUT(-1);
+
+  dwarf2_pos(info) = attr->infopos;
+
+fvstart:
 
   switch (attr->form)
     {
@@ -285,16 +348,11 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
      
       /* Update attribute value and relaunch the function */
       attr->form = data;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			 edfmt_dwarf2_form_value(attr));
-      break;
-    default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unknown form", -1);
+      goto fvstart;
       break;
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  NOPROFILER_ROUT(0);
 }
 
 
@@ -302,7 +360,6 @@ static int    		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
 {  
   u_int			num_fetch, i;
-  u_long		*fetch;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -312,6 +369,7 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
 		 ".debug_info section not available", -1);
 
   dwarf2_pos(info) = pos;
+  //printf("getent = %d\n", pos);
 
   /* Retrieve abbrev number */
   dwarf2_iuleb128(num_fetch, info);
@@ -320,39 +378,22 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
   if (num_fetch == 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  fetch = edfmt_dwarf2_lookup_abbrev(num_fetch);
-
-  if (fetch == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Impossible to retrieve abbrev position", -1);
-
-  if (edfmt_dwarf2_abbrev_read(abbent, *fetch, pos) < 0)
+  if (edfmt_dwarf2_abbrev_read(abbent, num_fetch, pos) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Impossible to read the structure", -1);
 
   /* Resolv form value for each attribute */
   for (i = 0; abbent->attr[i].attr; i++)
     {
-      edfmt_dwarf2_form_value(abbent->attr + i);
-
       switch(abbent->attr[i].attr)
 	{
 	case DW_AT_sibling:
+	  abbent->attr[i].infopos = dwarf2_pos(info);
+	  edfmt_dwarf2_form_value(abbent->attr + i);
 	  abbent->sib = current_cu->start_pos + abbent->attr[i].u.udata;
 	  break;
-	case DW_AT_frame_base:
-	case DW_AT_data_member_location:
-	case DW_AT_location:
-	  edfmt_dwarf2_loc(&(abbent->attr[i].loc), abbent->attr[i].u.vbuf, abbent->attr[i].asize);
-	  break;
-	  /* TODO: reuse when it will be usefull
-	     case DW_AT_stmt_list:
-	     edfmt_dwarf2_line(ent->attr[i].u.udata);
-	     break;
-	     case DW_AT_macro_info:
-	     edfmt_dwarf2_mac(ent->attr[i].u.udata);
-	     break;
-	  */
+	default:
+	  edfmt_dwarf2_form_it(abbent->attr + i);
 	}
     }
 
@@ -439,7 +480,7 @@ int			edfmt_dwarf2_mac(u_long offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size)
+int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 {
   u_int			i, spos, bsize, tmp_op;
   elfsh_Addr		tmp_value;
@@ -457,127 +498,15 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, char *buf, u_int size)
   stack[spos].value = 0;
 
   /* Iterate for each part of the block */
+  //printf("--- %d\n", size);
   for (i = 0; i < size; i++)
     {
+      //printf("LOC: %x\n", buf[i]);
       /* Push a stack operand */
-      switch(buf[i] & 0xFF)
-	{
-	case DW_OP_addr:
-	case DW_OP_const1u:
-	case DW_OP_const1s:
-	case DW_OP_const2u:
-	case DW_OP_const2s:
-	case DW_OP_const4u:
-	case DW_OP_const4s:
-	case DW_OP_const8u:
-	case DW_OP_const8s:	
-	case DW_OP_constu:	
-	case DW_OP_consts:	
-	case DW_OP_regx:
-	case DW_OP_lit0:	
-	case DW_OP_lit1:	
-	case DW_OP_lit2:	
-	case DW_OP_lit3:	
-	case DW_OP_lit4:	
-	case DW_OP_lit5:	
-	case DW_OP_lit6:	
-	case DW_OP_lit7:	
-	case DW_OP_lit8:	
-	case DW_OP_lit9:	
-	case DW_OP_lit10:	
-	case DW_OP_lit11:	
-	case DW_OP_lit12:	
-	case DW_OP_lit13:	
-	case DW_OP_lit14:	
-	case DW_OP_lit15:	
-	case DW_OP_lit16:	
-	case DW_OP_lit17:	
-	case DW_OP_lit18:	
-	case DW_OP_lit19:	
-	case DW_OP_lit20:	
-	case DW_OP_lit21:	
-	case DW_OP_lit22:	
-	case DW_OP_lit23:	
-	case DW_OP_lit24:	
-	case DW_OP_lit25:	
-	case DW_OP_lit26:	
-	case DW_OP_lit27:	
-	case DW_OP_lit28:	
-	case DW_OP_lit29:	
-	case DW_OP_lit30:	
-	case DW_OP_lit31:	
-	case DW_OP_reg0:	
-	case DW_OP_reg1:	
-	case DW_OP_reg2:	
-	case DW_OP_reg3:	
-	case DW_OP_reg4:	
-	case DW_OP_reg5:	
-	case DW_OP_reg6:	
-	case DW_OP_reg7:	
-	case DW_OP_reg8:	
-	case DW_OP_reg9:	
-	case DW_OP_reg10:	
-	case DW_OP_reg11:	
-	case DW_OP_reg12:	
-	case DW_OP_reg13:	
-	case DW_OP_reg14:	
-	case DW_OP_reg15:	
-	case DW_OP_reg16:	
-	case DW_OP_reg17:	
-	case DW_OP_reg18:	
-	case DW_OP_reg19:	
-	case DW_OP_reg20:	
-	case DW_OP_reg21:	
-	case DW_OP_reg22:	
-	case DW_OP_reg23:	
-	case DW_OP_reg24:	
-	case DW_OP_reg25:	
-	case DW_OP_reg26:	
-	case DW_OP_reg27:	
-	case DW_OP_reg28:	
-	case DW_OP_reg29:	
-	case DW_OP_reg30:	
-	case DW_OP_reg31:	
-	case DW_OP_breg0:	
-	case DW_OP_breg1:	
-	case DW_OP_breg2:	
-	case DW_OP_breg3:	
-	case DW_OP_breg4:	
-	case DW_OP_breg5:	
-	case DW_OP_breg6:	
-	case DW_OP_breg7:	
-	case DW_OP_breg8:	
-	case DW_OP_breg9:	
-	case DW_OP_breg10:	
-	case DW_OP_breg11:	
-	case DW_OP_breg12:	
-	case DW_OP_breg13:	
-	case DW_OP_breg14:	
-	case DW_OP_breg15:	
-	case DW_OP_breg16:	
-	case DW_OP_breg17:	
-	case DW_OP_breg18:	
-	case DW_OP_breg19:	
-	case DW_OP_breg20:	
-	case DW_OP_breg21:	
-	case DW_OP_breg22:	
-	case DW_OP_breg23:	
-	case DW_OP_breg24:	
-	case DW_OP_breg25:	
-	case DW_OP_breg26:	
-	case DW_OP_breg27:	
-	case DW_OP_breg28:	
-	case DW_OP_breg29:	
-	case DW_OP_breg30:	
-	case DW_OP_breg31:	
-	case DW_OP_bregx:
-	case DW_OP_fbreg:	
-	  stack[++spos].op = buf[i];
-	  break;
-	}
+      stack[++spos].op = buf[i];
 
       /* Thread value */
-      switch(buf[i] & 0xFF)
+      switch(buf[i])
 	{
 	case DW_OP_addr:
 	  stack[spos].value = *(elfsh_Addr *) (buf + (++i));
