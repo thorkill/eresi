@@ -487,23 +487,21 @@ typedef struct	s_dfmt
 
 #define roundup(x, y)  ((((x)+((y)-1))/(y))*(y))
 
-#if !defined(__FreeBSD__)
-
-typedef struct user_fpregs_struct fpregs_t;
-
 #define PRFNAMESZ 16  					/* Maximum command length saved */
 #define PRARGSZ   80  					/* Maximum argument bytes saved */
 
 #define PRPSINFO_VERSION  1 		/* Current version of prpsinfo_t */
 
-typedef struct prpsinfo {
+typedef struct 	elfsh_bsdprpsinfo 
+{
   int   	pr_version; 					/* Version number of struct (1) */
-  size_t  pr_psinfosz;  				/* sizeof(prpsinfo_t) (1) */
+  size_t  	pr_psinfosz;  				/* sizeof(prpsinfo_t) (1) */
   char  	pr_fname[PRFNAMESZ+1];/* Command name, null terminated (1) */
   char  	pr_psargs[PRARGSZ+1]; /* Arguments, null terminated (1) */
-} prpsinfoBSD_t;
+} elfsh_bsdprpsinfo_t;
 
-struct reg {
+typedef struct elfsh_bsdureg 
+{
   unsigned int  r_fs;
   unsigned int  r_es;
   unsigned int  r_ds;
@@ -523,34 +521,31 @@ struct reg {
   unsigned int  r_esp;
   unsigned int  r_ss;
   unsigned int  r_gs;
-};
+} elfsh_bsduregset_t;
 
-struct fpreg {
+typedef struct elfsh_bsdfpreg 
+{
   unsigned long fpr_env[7];
   unsigned char fpr_acc[8][10];
   unsigned long fpr_ex_sw;
   unsigned char fpr_pad[64];
-};
-
-typedef struct reg fregset_t;
-typedef struct fpreg fpregsBSD_t;
+} elfsh_bsdfpregs_t;
 
 #define PRSTATUS_VERSION  1 		/* Current version of prstatus_t */
 
-typedef struct prstatus {
-  int   		pr_version; 				/* Version number of struct (1) */
-  size_t  	pr_statussz;  			/* sizeof(prstatus_t) (1) */
-  size_t  	pr_gregsetsz; 			/* sizeof(gregset_t) (1) */
-  size_t  	pr_fpregsetsz;  		/* sizeof(fpregset_t) (1) */
-  int   		pr_osreldate; 			/* Kernel version (1) */
-  int   		pr_cursig;  				/* Current signal (1) */
-  pid_t 		pr_pid;   					/* Process ID (1) */
-  fregset_t pr_reg;   					/* General purpose registers (1) */
-} 					prstatusBSD_t;
+typedef struct elfsh_bsdprstatus
+{
+  int   		pr_version; 	/* Version number of struct (1) */
+  size_t  		pr_statussz;  	/* sizeof(prstatus_t) (1) */
+  size_t  		pr_gregsetsz; 	/* sizeof(gregset_t) (1) */
+  size_t  		pr_fpregsetsz;  /* sizeof(fpregset_t) (1) */
+  int   		pr_osreldate; 	/* Kernel version (1) */
+  int   		pr_cursig;  	/* Current signal (1) */
+  pid_t 		pr_pid;   	/* Process ID (1) */
+  elfsh_bsduregset_t	pr_reg;   	/* General purpose registers (1) */
+} 			elfsh_bsdprstatus_t;
 
-#else
-
-typedef struct user_regs_struct
+typedef struct user_regs
 {
   long int ebx;
   long int ecx;
@@ -569,9 +564,9 @@ typedef struct user_regs_struct
   long int eflags;
   long int esp;
   long int xss;
-} gregset_t;
+} elfsh_uregset_t;
 
-typedef struct user_fpregs_struct
+typedef struct user_fpregs
 {
   long int cwd;
   long int swd;
@@ -581,52 +576,51 @@ typedef struct user_fpregs_struct
   long int foo;
   long int fos;
   long int st_space [20];
-} fpregs_t;
+} elfsh_fpregs_t;
 
-typedef struct user_fpregs_struct fpregs_t;
-
-struct elf_siginfo
+typedef struct siginfo_t
 {
   int si_signo;     /* Signal number.  */
   int si_code;      /* Extra code.  */
   int si_errno;     /* Errno.  */
-};
+} elfsh_siginfo_t;
 
-typedef struct elf_prstatus
+typedef struct elfsh_prstatus
 {
-  struct elf_siginfo 	pr_info;   	/* Info associated with signal.  */
-  short int 					pr_cursig;  /* Current signal.  */
-  unsigned long int 	pr_sigpend; /* Set of pending signals.  */
-  unsigned long int 	pr_sighold; /* Set of held signals.  */
-  pid_t 							pr_pid;
-  pid_t 							pr_ppid;
-  pid_t 							pr_pgrp;
-  pid_t								pr_sid;
-  struct timeval 			pr_utime;   /* User time.  */
-  struct timeval 			pr_stime;   /* System time.  */
-  struct timeval 			pr_cutime;  /* Cumulative user time.  */
-  struct timeval 			pr_cstime;  /* Cumulative system time.  */
-  elf_gregset_t 			pr_reg;   	/* GP registers.  */
-  int 								pr_fpvalid; /* True if math copro being used.  */
-} prstatus_t;
+  elfsh_siginfo_t 	pr_info;   	/* Info associated with signal.  */
+  short int 		pr_cursig;  	/* Current signal.  */
+  unsigned long int 	pr_sigpend; 	/* Set of pending signals.  */
+  unsigned long int 	pr_sighold; 	/* Set of held signals.  */
+  pid_t 		pr_pid;
+  pid_t 		pr_ppid;
+  pid_t 		pr_pgrp;
+  pid_t			pr_sid;
+  struct timeval 	pr_utime;   	/* User time.  */
+  struct timeval 	pr_stime;   	/* System time.  */
+  struct timeval 	pr_cutime;  	/* Cumulative user time.  */
+  struct timeval 	pr_cstime;  	/* Cumulative system time.  */
+  elfsh_uregset_t 	pr_reg;		/* GP registers.  */
+  int 			pr_fpvalid; 	/* True if math copro being used.  */
+} elfsh_prstatus_t;
 
 #define ELF_PRARGSZ     (80)    /* Number of chars for args.  */
 
-typedef struct elf_prpsinfo
+typedef struct elfsh_prpsinfo
 {
-  char pr_state;      /* Numeric process state.  */
-  char pr_sname;      /* Char for pr_state.  */
-  char pr_zomb;     /* Zombie.  */
-  char pr_nice;     /* Nice val.  */
-  unsigned long int pr_flag;    /* Flags.  */
-  unsigned short int pr_uid;
-  unsigned short int pr_gid;
-  int pr_pid, pr_ppid, pr_pgrp, pr_sid;
-  char pr_fname[16];      /* Filename of executable.  */
-  char pr_psargs[ELF_PRARGSZ];  /* Initial part of arg list.  */
-} prpsinfo_t;
-
-#endif
+  char 			pr_state;      	/* Numeric process state.  */
+  char 			pr_sname;      	/* Char for pr_state.  */
+  char 			pr_zomb;     	/* Zombie.  */
+  char 			pr_nice;     	/* Nice val.  */
+  unsigned long int 	pr_flag;    	/* Flags.  */
+  unsigned short int 	pr_uid;
+  unsigned short int 	pr_gid;
+  int 			pr_pid, 
+			pr_ppid, 
+			pr_pgrp, 
+			pr_sid;
+  char 			pr_fname[16];      /* Filename of executable.  */
+  char 			pr_psargs[ELF_PRARGSZ];  /* Initial part of arg list.  */
+} elfsh_prpsinfo_t;
 
 /* core file info structure 
  *
@@ -634,83 +628,83 @@ typedef struct elf_prpsinfo
 typedef struct linux_core
 {
   uint16_t		offset;		/* offset for note section in the file */
-  uint16_t		length;		/* size of the section */
+  uint16_t		filesz;		/* size of the section */
 
-  elfsh_Nhdr	nhdr;			/* core files should have only one note entry */
+  elfsh_Nhdr		nhdr;		/* core files should have only one note entry */
 
-  long				flags;		/* ELFSH_CORE_HAS_NOTHING, ELFSH_CORE_HAS_PRSTATUS, ... */
+  long			flags;		/* ELFSH_CORE_HAS_NOTHING, ELFSH_CORE_HAS_PRSTATUS, ... */
 
-  prstatus_t	prstatus;	/* PRSTATUS structure */
-  prpsinfo_t	prpsinfo;	/* PRPSINFO structure */
-  fpregs_t		fpregs;		/* Floating point saved register */
+  elfsh_prstatus_t	prstatus;	/* PRSTATUS structure */
+  elfsh_prpsinfo_t	prpsinfo;	/* PRPSINFO structure */
+  elfsh_fpregs_t	fpregs;		/* Floating point saved register */
 
-}							elfshcore_t;
+}			elfshcore_t;
 
 typedef struct bsd_core 
 {
-  uint16_t			offset;
-  uint16_t			length;
+  uint16_t		offset;
+  uint16_t		filesz;
 
   elfsh_Nhdr		nhdr;
 
-  long					flags;
+  long			flags;
 
-  prstatusBSD_t	prstatus;
-  prpsinfoBSD_t	prpsinfo;
-  fpregsBSD_t		fpregs;
+  elfsh_bsdprstatus_t	prstatus;
+  elfsh_bsdprpsinfo_t	prpsinfo;
+  elfsh_bsdfpregs_t	fpregs;
 
 } elfshbsdcore_t;
 
 /* ELF object structure */
-struct		 s_obj
+struct		 	s_obj
 {
-  elfsh_Ehdr	 		*hdr;				/* Elf header */
-  elfsh_Shdr	 		*sht;				/* Section header table */
-  elfsh_Phdr	 		*pht;				/* Program Header table */
-  elfshsect_t	 		*sectlist;			/* Section linked list */
+  elfsh_Ehdr	 	*hdr;				/* Elf header */
+  elfsh_Shdr	 	*sht;				/* Section header table */
+  elfsh_Phdr	 	*pht;				/* Program Header table */
+  elfshsect_t	 	*sectlist;			/* Section linked list */
 
-  elfshrhdr_t	 		rhdr;				/* The Runtime header */
-  elfsh_Shdr	 		*rsht;				/* The Runtime SHT */
-  elfsh_Phdr	 		*rpht;				/* The Runtime PHT */
-  elfshsect_t	 		*rsectlist;			/* Runtime Section linked list */
+  elfshrhdr_t	 	rhdr;				/* The Runtime header */
+  elfsh_Shdr	 	*rsht;				/* The Runtime SHT */
+  elfsh_Phdr	 	*rpht;				/* The Runtime PHT */
+  elfshsect_t	 	*rsectlist;			/* Runtime Section linked list */
+  
+  elfshsect_t	 	*secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
 
-  elfshsect_t	 		*secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
-
-  elfshcore_t			core;
+  elfshcore_t		core;
   elfshbsdcore_t	bsdcore;
-  int							coretype;
+  int			coretype;
+  
+  int			fd;			/* File descriptor for the original file */
+  char 			*name;			/* Object path */
+  struct stat	 	fstat;			/* File stat */
+  int			type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
+  int			rights;		/* 0 = RO, 1 = WR */
+  time_t		loadtime;		/* Time of Loading */
+  u_int			id;			/* Object ID */
 
-  int		 					fd;			/* File descriptor for the original file */
-  char		 				*name;			/* Object path */
-  struct stat	 		fstat;			/* File stat */
-  int		 					type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
-  int		 					rights;		/* 0 = RO, 1 = WR */
-  time_t	 				loadtime;		/* Time of Loading */
-  u_int		 				id;			/* Object ID */
+  char			running;		/* Is the process running ? */
+  char			scanned;		/* Has the object already been block scanned ? */
+  char			hdr_broken;		/* Is the header broken/corrupted ? */
+  char			read;			/* Has the object already been read ? */
+  char			shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
+  char			strip;			/* Mark file as stripped */
+  char			pending;		/* Beeing injected */
+  uint32_t		nbrm;			/* Number of section headers to remove at saving */
 
-  char		 				running;		/* Is the process running ? */
-  char		 				scanned;		/* Has the object already been block scanned ? */
-  char		 				hdr_broken;		/* Is the header broken/corrupted ? */
-  char		 				read;			/* Has the object already been read ? */
-  char		 				shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
-  char		 				strip;			/* Mark file as stripped */
-  char		 				pending;		/* Beeing injected */
-  uint32_t	 			nbrm;			/* Number of section headers to remove at saving */
+  char			shtrb;			/* Reconstruct the SHT if non present */
 
-  char		 				shtrb;			/* Reconstruct the SHT if non present */
+#define			ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
+  struct s_obj		*listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
+  u_char		nbrel;			/* Number of injected ET_REL in this object */
 
-#define		 ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
-  struct s_obj	 	*listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
-  u_char	 				nbrel;			/* Number of injected ET_REL in this object */
+  char			buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
+  const char		*error;		/* Last error string */
+  struct s_obj		*next;			/* The list is simply linked */
 
-  char		 				buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
-  const char	 		*error;		/* Last error string */
-  struct s_obj	 	*next;			/* The list is simply linked */
-
-  hash_t	 				redir_hash;		/* Redirections hash table */
+  hash_t	 	redir_hash;		/* Redirections hash table */
   elfshlinkmap_t 	*linkmap;		/* Linkmap */
 
-  elfshdfmt_t	 		debug_format;		/* Debug format informations */
+  elfshdfmt_t	 	debug_format;		/* Debug format informations */
 
   /* 
    ** Every object can have childs
@@ -722,13 +716,14 @@ struct		 s_obj
    ** 
    ** Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
    */
-#define 	ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
-#define 	ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
-#define 	ELFSH_CHILD_MAX 	99
-  hash_t	 				child_hash;		/* Childs hash table */
-  hash_t	 				parent_hash;		/* Immediate parent hash table */
-  hash_t	 				root_hash;		/* Root ELF objects for this file */
-  int		 					lastchildid;	      	/* Last child id */
+#define 		ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
+#define 		ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
+#define 		ELFSH_CHILD_MAX 	99
+  
+  hash_t	 	child_hash;		/* Childs hash table */
+  hash_t	 	parent_hash;		/* Immediate parent hash table */
+  hash_t	 	root_hash;		/* Root ELF objects for this file */
+  int		 	lastchildid;	      	/* Last child id */
 };
 
 

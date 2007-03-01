@@ -443,10 +443,10 @@ int elfsh_check_hdr_type(elfshobj_t *file)
     case ET_DYN:  break;
     case ET_CORE: break;
     default:
-		  file->hdr->e_type = ET_NONE;
-		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			       "file->hdr->e_type is not valid", NULL);
-		  break;
+      file->hdr->e_type = ET_NONE;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	           "file->hdr->e_type is not valid", NULL);
+      break;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -607,7 +607,7 @@ int elfsh_get_core_notes(elfshobj_t *file)
   int         i, offset, filesz, 
 	      j, namesz, descsz;
   int         pos;
-  char        name[128];
+  char        name[18];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -618,94 +618,102 @@ int elfsh_get_core_notes(elfshobj_t *file)
     {
     if (elfsh_get_segment_type(&file->pht[i]) == PT_NOTE) 
       {
-      offset = elfsh_get_segment_offset(&file->pht[i]);
-      filesz = elfsh_get_segment_filesz(&file->pht[i]);
+	offset = elfsh_get_segment_offset(&file->pht[i]);
+	filesz = elfsh_get_segment_filesz(&file->pht[i]);
 
-      if(lseek(file->fd, offset, SEEK_SET) < 0)
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-
-      pos = lseek(file->fd, 0L, SEEK_CUR);
-
-      for(j = 0; pos < offset + filesz; j++) 
-	{
-	if(read(file->fd, &nhdr, sizeof(nhdr)) != sizeof(nhdr))
+	if(lseek(file->fd, offset, SEEK_SET) < 0)
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
-	namesz = roundup(nhdr.n_namesz, 4);
-	descsz = roundup(nhdr.n_descsz, 4);
-
-	if(namesz > 128) continue;
-
-	if(read(file->fd, name, namesz) != namesz) 
-	  break;
-	name[namesz] = 0;
-
-	switch(elfsh_get_ostype(file)) 
-	  {
-	  case ELFSH_OS_LINUX:
-	    file->coretype = ELFSH_CORE_LINUX;
-	    file->core.length = filesz;
-	    break;
-	  case ELFSH_OS_FREEBSD:
-	    file->coretype = ELFSH_CORE_FREEBSD;
-	    file->bsdcore.length = filesz;
-	    break;
-	  }
-
-	switch(nhdr.n_type) 
-	  {
-	  case NT_PRPSINFO:
-	    if(file->coretype == ELFSH_CORE_FREEBSD) {
-	      if(read(file->fd, &file->bsdcore.prpsinfo, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->bsdcore.flags |= ELFSH_CORE_HAS_PRPSINFO;
-	    } else {
-	      if(read(file->fd, &file->core.prpsinfo, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->core.flags |= ELFSH_CORE_HAS_PRPSINFO;
-	    }
-	    break;
-	  case NT_PRSTATUS:
-	    if(file->coretype == ELFSH_CORE_FREEBSD) {
-	      if(read(file->fd, &file->bsdcore.prstatus, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->bsdcore.flags |= ELFSH_CORE_HAS_PRSTATUS;
-	    } else {
-	      if(read(file->fd, &file->core.prstatus, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->core.flags |= ELFSH_CORE_HAS_PRSTATUS;
-	    }
-	    break;
-	  case NT_FPREGSET:
-	    if(file->coretype == ELFSH_CORE_FREEBSD) {
-	      if(read(file->fd, &file->bsdcore.fpregs, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->bsdcore.flags |= ELFSH_CORE_HAS_FPREGSET;
-	    } else {
-	      if(read(file->fd, &file->core.fpregs, descsz) != descsz)
-		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	      file->core.flags |= ELFSH_CORE_HAS_FPREGSET;
-	    }
-	    break;
-	  case NT_AUXV: /* TODO: figure out how use this data in a auxv vector */
-	    // if (read(file->fd, &file->core.auxv, descsz) != descsz)
-	    //  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-	  case NT_TASKSTRUCT:
-	  case NT_PLATFORM:
-	  case NT_GWINDOWS:
-	  case NT_ASRS:
-	  case NT_PSTATUS:
-	  case NT_PRCRED:
-	  case NT_UTSNAME:
-	  case NT_LWPSTATUS:
-	  case NT_LWPSINFO:
-	  case NT_PRFPXREG:
-	  default: break;
-	  }
 	pos = lseek(file->fd, 0L, SEEK_CUR);
+
+	for(j = 0; pos < offset + filesz; j++) 
+	  {
+	    if(read(file->fd, &nhdr, sizeof(nhdr)) != sizeof(nhdr))
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+
+	    namesz = roundup(nhdr.n_namesz, 4);
+	    descsz = roundup(nhdr.n_descsz, 4);
+
+	    if(namesz > 16) continue;
+
+	    if(read(file->fd, name, namesz) != namesz) 
+	      break;
+	    name[namesz] = 0;
+
+	    switch(elfsh_get_ostype(file)) 
+	      {
+		case ELFSH_OS_LINUX:
+		  file->coretype = ELFSH_CORE_LINUX;
+		  file->core.filesz = filesz;
+		  break;
+		case ELFSH_OS_FREEBSD:
+		  file->coretype = ELFSH_CORE_FREEBSD;
+		  file->bsdcore.filesz = filesz;
+		  break;
+	      }
+
+	    switch(nhdr.n_type) 
+	      {
+		case NT_PRPSINFO:
+		  if(file->coretype == ELFSH_CORE_FREEBSD) 
+		    {
+		      if(read(file->fd, &file->bsdcore.prpsinfo, descsz) != descsz)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		      file->bsdcore.flags |= ELFSH_CORE_HAS_PRPSINFO;
+		    } 
+		  else 
+		    {
+		      if(read(file->fd, &file->core.prpsinfo, descsz) != descsz)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		      file->core.flags |= ELFSH_CORE_HAS_PRPSINFO;
+		    }
+		  break;
+		case NT_PRSTATUS:
+		  if(file->coretype == ELFSH_CORE_FREEBSD) 
+		    {
+		      if(read(file->fd, &file->bsdcore.prstatus, descsz) != descsz)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		      file->bsdcore.flags |= ELFSH_CORE_HAS_PRSTATUS;
+		    } 
+		  else 
+		    {
+		      if(read(file->fd, &file->core.prstatus, descsz) != descsz)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		      file->core.flags |= ELFSH_CORE_HAS_PRSTATUS;
+		    }
+		    break;
+	      case NT_FPREGSET:
+		if(file->coretype == ELFSH_CORE_FREEBSD) 
+		  {
+		    if(read(file->fd, &file->bsdcore.fpregs, descsz) != descsz)
+		      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		    file->bsdcore.flags |= ELFSH_CORE_HAS_FPREGSET;
+		  } 
+		else 
+		  {
+		    if(read(file->fd, &file->core.fpregs, descsz) != descsz)
+		      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		    file->core.flags |= ELFSH_CORE_HAS_FPREGSET;
+		  }
+		break;
+	      case NT_AUXV: /* TODO: figure out how use this data in a auxv vector */
+		// if (read(file->fd, &file->core.auxv, descsz) != descsz)
+		//  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+	      case NT_TASKSTRUCT:
+	      case NT_PLATFORM:
+	      case NT_GWINDOWS:
+	      case NT_ASRS:
+	      case NT_PSTATUS:
+	      case NT_PRCRED:
+	      case NT_UTSNAME:
+	      case NT_LWPSTATUS:
+	      case NT_LWPSINFO:
+	      case NT_PRFPXREG:
+	      default: break;
+	    }
+	  pos = lseek(file->fd, 0L, SEEK_CUR);
 	}
       }
     }
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
