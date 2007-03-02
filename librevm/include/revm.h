@@ -333,7 +333,7 @@ char prompt_token[512];
 #define	CMD_HIJACK		"redir"
 #define CMD_COLOR               "setcolor"
 #define CMD_NOCOLOR             "nocolor"
-#define CMD_TRACE		"trace"
+#define CMD_TRACES		"traces"
 #define	CMD_TYPE		"type"
 #define	CMD_TYPEDEF		"typedef"
 
@@ -797,9 +797,9 @@ typedef struct	s_L1handler
 
 
 /* Trace structures */
-typedef struct 	s_revmtrace
+typedef struct 	s_revmtraces
 {
-  int 		(*exec)(char *name, char *optarg);	/* Function used */
+  int 		(*exec)(char *name, char **optarg);	/* Function used */
 
   /* Code for this options:
   ** 0: doesn't exist
@@ -808,7 +808,7 @@ typedef struct 	s_revmtrace
   */
   char		flagName;	/* Need a first argument */
   char		flagArg;       	/* Need a second argument */
-}		revmtrace_t;
+}		revmtraces_t;
 
 
 #if defined(USE_READLN)
@@ -856,7 +856,7 @@ extern hash_t           bg_color_hash; 	/* colors def */
 extern hash_t           fg_color_hash; 	/* colors def */
 extern hash_t           t_color_hash;  	/* colors type */
 
-extern hash_t		trace_cmd_hash;	/* trace cmd table */
+extern hash_t		traces_cmd_hash;/* trace cmd table */
 extern hash_t		goto_hash;	/* goto hash */
 
 /* Lattice for I/O */
@@ -985,7 +985,7 @@ int		cmd_profile();
 int		cmd_log();
 int		cmd_export();  
 int		cmd_edit();
-int		cmd_trace();
+int		cmd_traces();
 int		cmd_shared();
 int             cmd_verneed();
 int             cmd_verdef();
@@ -1151,17 +1151,17 @@ char		*vm_get_prompt();
 int		vm_strtable_add(char *string);
 
 /* Trace functions */
-FILE		  *vm_trace_init(char *tfname, char *rsofname, char *rtfname);
-int		  vm_trace_add(FILE *fp, int *argcount, char *func_name);
-int 	          trace_addcmd(char *cmd, void *exec, char flagName, char flagArg);
-int		  trace_add(const char *name, const char *optarg);
-int		  trace_rm(const char *name, const char *optarg);
-int		  trace_enable(const char *name, const char *optarg);
-int		  trace_disable(const char *name, const char *optarg);
-int		  trace_create(const char *name, const char *optarg);
-int		  trace_delete(const char *name, const char *optarg);
-int		  trace_flush(const char *name, const char *optarg);
-int		  trace_list(const char *name, const char *optarg);
+FILE		  *vm_traces_init(char *tfname, char *rsofname, char *rtfname);
+int		  vm_traces_add(FILE *fp, int *argcount, char *func_name);
+int 	          traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
+int		  traces_add(char *name, char **optarg);
+int		  traces_rm(char *name, char **optarg);
+int		  traces_enable(char *name, char **optarg);
+int		  traces_disable(char *name, char **optarg);
+int		  traces_create(char *name, char **optarg);
+int		  traces_delete(char *name, char **optarg);
+int		  traces_flush(char *name, char **optarg);
+int		  traces_list(char *name, char **optarg);
 
 /* Hash functions */
 int             vm_hashunk(int i);

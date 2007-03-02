@@ -780,9 +780,18 @@ typedef struct	s_bp
   u_char	flags;		/* Breakpoint flags */
 }		elfshbp_t;
 
+/* Trace structure */
+typedef struct 	s_traces
+{
+#define ELFSH_TRACES_TYPE_DEFAULT "global"
+  char	       	*funcname;
+  elfshobj_t	*file;
+  u_char	enable;
+}		elfshtraces_t;
 
 /* Extern data */
 extern libworld_t	dbgworld;
+extern hash_t 		traces_table;
 
 
 /*
@@ -1586,5 +1595,19 @@ void		*elfsh_bt_get_frame(ucontext_t *);
 int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
                    char *resolv, elfsh_Addr addr, 
                    u_char flags);
+
+/* traces.c */
+int		*elfsh_traces_inittrace();
+hash_t		*elfsh_traces_createtrace(char *trace);
+hash_t		*elfsh_traces_gettrace(char *trace);
+elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshobj_t *file);
+int		elfsh_traces_funcrm(char *trace, char *name);
+int		elfsh_traces_funcenable(char *trace, char *name);
+int		elfsh_traces_funcsetstatus(hash_t *table, int status);
+int		elfsh_traces_funcenableall(char *trace);
+int		elfsh_traces_funcdisableall(char *trace);
+int		elfsh_traces_funcdisable(char *trace, char *name);
+int		elfsh_traces_funcrmall(char *trace);
+int		elfsh_traces_deletetrace(char *trace);
 
 #endif /* __LIBELFSH_H_ */

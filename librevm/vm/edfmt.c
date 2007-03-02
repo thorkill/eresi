@@ -46,7 +46,7 @@ static int		vm_edfmt_register_type(char *label,
 
 static int		vm_edfmt_type_parse(edfmttype_t *type)
 {
-  edfmttype_t		*child;
+  edfmttype_t		*child = NULL;
   int			index = 0;
   int			typeid;
 

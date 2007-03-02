@@ -89,19 +89,10 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "dwarf2 getenv failed", NULL);
 
-  //  type = edfmt_dwarf2_searchtypei(current_cu->start_pos + pos);
   type = edfmt_dwarf2_searchtype(&ref);
 
   if (type == NULL)
-    {
-      /*
-      if (edfmt_dwarf2_getent(current_cu, &ref, current_cu->start_pos + pos) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "dwarf2 getenv failed", NULL);
-      */
-      
-      type = edfmt_dwarf2_transform_abbrev_parse(&ref);
-    }
+    type = edfmt_dwarf2_transform_abbrev_parse(&ref);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
@@ -209,9 +200,9 @@ elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 
 edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 {
-  char			*str, *comp_dir, *vbuf, *vbufs, *pstr;
+  char			*str = NULL, *comp_dir, *vbuf, *vbufs, *pstr;
   long			size = 0;
-  edfmttype_t		*type, *etype;
+  edfmttype_t		*type = NULL, *etype;
   u_long		iref, itref;
   edfmtdw2abbent_t	ref, tref;
   edfmtdw2abbattr_t	*attr;
@@ -390,7 +381,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  /* We add our structure right before members to avoid pointers infinite loop */
 	  if (type && str)
 	    HASH_ADDX(&types_ref, str, (void *) type);
-	  //HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
 
 	  if (edfmt_dwarf2_getent(current_cu, &ref, abbrev->child) < 0)
 	    break;
@@ -503,7 +493,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
   if (type && addtype && str)
     HASH_ADDX(&types_ref, str, (void *) type);
-    //HASH_ADDX(&types_ref, abbrev->ckey, (void *) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }

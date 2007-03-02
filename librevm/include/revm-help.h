@@ -72,7 +72,15 @@
 #define	HLP_HELP		"Print the help summary"
 #define	HLP_RELINJCT		"Relocate a new .o file inside the current file or process"
 #define	HLP_STOP		"Raise a SIGSTOP to the current process"
-#define HLP_TRACE		"Trace functions"
+#define HLP_TRACES	    	"\t Trace some functions\n\n\t Trace command options: \n\n" 									     \
+	       			" add     funcname     [optional_traces_name] : add a function to a given trace\n"						     \
+	       			" rm      funcname     [optional_traces_name] : remove a function from a given trace\n"						     \
+	       			" enable  funcname|all [optional_traces_name] : enable tracing for a function in a given trace (enabled by default after a add)\n"   \
+	       			" disable funcname|all [optional_traces_name] : disable tracing for a function in a given trace\n"				     \
+	       			" create  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default\n"		     \
+	       			" delete  tracename                           : delete a trace\n"								     \
+	       			" flush   tracename                           : remove all functions from a given trace\n"					     \
+	       			" list                                        : list all available traces\n\n"
 
 #define HLP_COLOR               "Associates data types to colors \n\n\t"				 \
 				CMD_COLOR" type [bg,fg] color     \n\n\t"				 \

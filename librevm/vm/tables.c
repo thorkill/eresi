@@ -55,7 +55,7 @@ hash_t          t_color_hash;
 hash_t		parser_hash;
 
 /* Trace hash */
-hash_t		trace_cmd_hash;
+hash_t		traces_cmd_hash;
 
 /* Lib path store variable */
 char	       elfsh_libpath[BUFSIZ];
@@ -801,7 +801,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERB2   , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
   vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_SORT2   , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
-  vm_addcmd(CMD_TRACE   , (void *) cmd_trace   , (void *) vm_getvarparams , 1, HLP_TRACE);
+  vm_addcmd(CMD_TRACES  , (void *) cmd_traces  , (void *) vm_getvarparams , 1, HLP_TRACES);
   vm_addcmd(CMD_ALL	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALL2	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALERT	, (void *) cmd_alert   , (void *) vm_getoption    , 0, HLP_ALERT);
@@ -1111,16 +1111,15 @@ void setup_color_type()
 
 
 /* Setup all used sub functions */
-void setup_trace_table()
+void setup_traces_table()
 {
-  trace_addcmd("add", 		(void *) trace_add, 	2, 1);
-  trace_addcmd("rm",		(void *) trace_rm,     	2, 1);
-  trace_addcmd("enable",	(void *) trace_enable,	2, 1);
-  trace_addcmd("disable",	(void *) trace_disable,	2, 1);
-  trace_addcmd("create",	(void *) trace_create,	2, 1);
-  trace_addcmd("delete",	(void *) trace_delete,	2, 0);
-  trace_addcmd("flush",		(void *) trace_flush,	2, 0);
-  trace_addcmd("list",		(void *) trace_list,	0, 0);
+  traces_addcmd("add"    , (void *) traces_add    , 2, 1);
+  traces_addcmd("rm"     , (void *) traces_rm     , 2, 1);
+  traces_addcmd("enable" , (void *) traces_enable , 2, 1);
+  traces_addcmd("disable", (void *) traces_disable, 2, 1);
+  traces_addcmd("create" , (void *) traces_create , 2, 1);
+  traces_addcmd("delete" , (void *) traces_delete , 2, 0);
+  traces_addcmd("flush"  , (void *) traces_flush  , 2, 0);
 }
 
    
@@ -1139,7 +1138,7 @@ void		vm_setup_hashtables()
   hash_init(&fg_color_hash    , "fgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&bg_color_hash    , "bgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
-  hash_init(&trace_cmd_hash   , "traces"     , 11, ASPECT_TYPE_UNKNOW);
+  hash_init(&traces_cmd_hash  , "traces"     , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   setup_varshash();
   setup_cmdhash();
@@ -1148,7 +1147,7 @@ void		vm_setup_hashtables()
   setup_L2hash();
   setup_color();
   setup_color_type();
-  setup_trace_table();
+  setup_traces_table();
   setup_grammar();
   aspect_init();
 }

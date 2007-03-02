@@ -26,7 +26,7 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			bss.c sort.c hooks.c ia32.c sparc32.c sparc64.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
-			inject.c linkmap.c bp.c rpht.c version.c            
+			inject.c linkmap.c bp.c rpht.c version.c traces.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 NAME32			= libelfsh32
