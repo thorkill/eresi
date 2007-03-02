@@ -15,6 +15,7 @@
 char buf[BUFSIZ];
 
 hash_t traces_table;
+int trace_enabled_count = 0;
 
 #define ELFSH_TRACES_TABLE_NAME "elfsh_traces_table"
 #define ELFSH_TRACES_PATTERN "traces_%s"
@@ -411,6 +412,314 @@ hash_t			*elfsh_traces_createtrace(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newhash);
 }
 
+elfshtraces_t **trace_queue = NULL;
+int queue_count = 0;
+#define ELFSH_TRACES_DEFAULT_STEP 20
+int queue_step = 0;
+
+static int		elfsh_trace_queue_add(elfshtraces_t *elm)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (trace_queue == NULL)
+    {
+      queue_step = ELFSH_TRACES_DEFAULT_STEP;
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, 
+	     sizeof(elfshtraces_t)*queue_step, -1);
+    }
+  else
+    {
+      queue_step += ELFSH_TRACES_DEFAULT_STEP;
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, trace_queue,
+	     sizeof(elfshtraces_t)*queue_step, -1);
+    }
+
+  trace_queue[queue_count++] = elm;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+static int		elfsh_trace_queue_clean()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (trace_queue)
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, trace_queue);
+      trace_queue = NULL;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+char		buf[BUFSIZ];
+char		bufex[BUFSIZ];
+char		args[BUFSIZ];
+char		argsproto[BUFSIZ];
+char		argshexa[BUFSIZ];
+
+static int		elfsh_trace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
+{
+  int			z = 0;
+  u_int			index;
+  int			keynbr;
+  char			**keys;
+  elfshtraces_t		*ret_trace;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  keys = hash_get_keys(table, &keynbr);
+
+  if (keys)
+    {
+      for (index = 0; index < keynbr; index++)
+	{
+	  ret_trace = hash_get(table, keys[index]);
+
+	  if (ret_trace && ret_trace->enable && ret_trace->file->id == file->id)
+	    {
+	      /* At in the queue */
+	      elfsh_trace_queue_add(ret_trace);
+
+	      argshexa[0] = 0;
+	      argsproto[0] = 0;
+	      args[0] = 0;
+
+	      // Do we have arguments in this function ? 
+	      if (ret_trace->argc > 0)
+		{
+		  snprintf(argshexa, BUFSIZ - 1, "%%%%%s", "08x");
+		  snprintf(argsproto, BUFSIZ - 1, "char a%d[%d]", 0,
+			   ret_trace->arguments[0].size);
+		  snprintf(args, BUFSIZ - 1, "a%d", 0);
+	
+		  // Arguments by arguments 
+		  for (z = 1; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		    {
+		      // char type is just what we need to setup a good size 
+		      snprintf(buf, BUFSIZ - 1, ", char a%d[%d]", z, 
+			       ret_trace->arguments[z].size);
+
+		      if (strlen(argsproto) + strlen(buf) + 1 > BUFSIZ)
+			break;
+
+		      strncat(argsproto, buf, strlen(buf));
+
+		      snprintf(buf, BUFSIZ - 1, ", a%d", z);
+
+		      if (strlen(args) + strlen(buf) + 1 > BUFSIZ)
+			break;
+
+		      strncat(args, buf, strlen(buf));
+
+		      snprintf(buf, BUFSIZ - 1, ", %%%%%s", "08x");
+
+		      if (strlen(argshexa) + strlen(buf) + 1 > BUFSIZ)
+			break;
+
+		      strncat(argshexa, buf, strlen(buf));
+		    }
+		}
+
+	      // Tracing function with a human readable form
+	      snprintf(bufex, BUFSIZ - 1, "int %%1$s_trace(%%2$s)\n{\n"
+		       "\tint ret;\n"
+		       "\tprintf(\"%%%%s + %%1$s(%s)\\n\", pad_print(1)%s%s);\n"
+		       "\tret = old_%%1$s(%%3$s);\n"
+		       "\tprintf(\"%%%%s - %%1$s\\n\", pad_print(0));\n"
+		       "\treturn ret;\n}\n",
+		       argshexa, (strlen(args) > 0 ? "," : ""), args);
+
+	      snprintf(buf, BUFSIZ - 1, bufex, 
+		       ret_trace->funcname, argsproto, args);
+
+	      fwrite(buf, strlen(buf), sizeof(char), fp);	      
+	    }
+	}
+      
+      hash_free_keys(keys);
+    }  
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Proceed tracing elements on the file during save cmd */
+int			elfsh_traces_save(elfshobj_t *file)
+{
+  u_int			index;
+  int			keynbr;
+  char			**keys;
+  hash_t		*table;
+  FILE			*fp;
+  char 			tfname[] = "/tmp/tracingXXXXXX";
+  int			osize = strlen(tfname) + 3;
+  char			rsofname[50];
+  char			rtfname[50];
+  elfshobj_t		*tobj;
+  int			idx;
+  int			rs = 0, fd;
+  struct stat		s;
+  elfsh_Addr		addr;
+  elfsh_Sym		*dst;
+  int			err;
+  char			*system[6];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Do we will have something to trace ? */
+  if (trace_enabled_count <= 0)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  keys = hash_get_keys(&traces_table, &keynbr);
+
+  if (keys == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't get keys and I should", -1);
+
+ fretry:
+  if (rs > 30)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot create temporary file (retry more than 30 times)", 
+		      NULL);
+  rs++;
+
+  // Generate a random temporary name file 
+  fd = mkstemp(tfname);
+
+  if (fd == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot create temporary file", NULL);
+
+  fp = fdopen(fd, "w");
+
+  if (fp == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot read temporary file", NULL);
+
+  // gcc needs rights extentions
+  snprintf(rtfname, osize, "%s.c", tfname);
+  snprintf(rsofname, osize, "%s.o", tfname);
+
+  // If one of this two files exists, we retry
+  if (lstat(rtfname, &s) == 0 
+      || lstat(rsofname, &s) == 0)
+    goto fretry;
+
+#if __DEBUG_TRACES__
+  printf("[DEBUG TRACE] Open trace temporary filename: %s\n", tfname);
+  printf("[DEBUG TRACE] Futur trace filename: %s\n", rtfname);
+  printf("[DEBUG TRACE] Relocatable filename: %s\n", rsofname);
+#endif
+
+  // Write basic stuff, include headers and
+  //   pad functions (to have a tree like form)
+  snprintf(buf, BUFSIZ, 
+	   "#include <stdio.h>\n\n"
+	   "char pad_str[64];\n"
+	   "int pad_count = 0;\n\n"
+	   "char *pad_print(int inc)\n{\n"
+	   "\tint i;\n"
+	   "\tif (inc == 0)\n\t\tpad_count -= 2;\n"
+	   "\tfor (i = 0; i < pad_count; i++)\n"
+	   "\t\tpad_str[i] = ' ';\n"
+	   "\t\tpad_str[i] = 0;\n"
+	   "\tif (inc == 1)\n\t\tpad_count += 2;\n"
+	   "\treturn pad_str;\n}\n");
+  fwrite(buf, strlen(buf), sizeof(char), fp);
+
+  /* Iterate */
+  for (index = 0; index < keynbr; index++)
+    {
+      table = hash_get(&traces_table, keys[index]);
+      
+      if (table)
+	elfsh_trace_save_table(fp, file, table);
+    }
+
+  hash_free_keys(keys);
+  fclose(fp);
+
+  if (queue_count == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No functions found", (-1));
+
+  // Compile the tmp c file to create a relocatable file to inject
+  if (rename(tfname, rtfname) < 0)
+    {
+      elfsh_trace_queue_clean();
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Rename failed", (-1));
+    }
+
+  system[0] = "gcc";
+  system[1] = "-c";
+  system[2] = rtfname;
+  system[3] = "-o";
+  system[4] = rsofname;
+  system[5] = NULL;
+
+  err = 0;
+  if (!fork())
+    err = execvp(system[0], system);
+  else
+    wait(NULL);
+
+  if (err < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Compilation failed", -1);
+
+  // Load the new relocatable file for ET_REL injection
+  tobj = elfsh_map_obj(rsofname);
+  if (!tobj)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Failed to load relocatable file", -1);
+
+  idx = elfsh_inject_etrel(file, tobj);
+  if (idx < 0)
+    {
+      elfsh_trace_queue_clean();
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Failed to inject ET_REL with workspace", -1);
+    }
+
+  // Hijack functions with the new functions injected 
+  for (index = 0; index < queue_count && trace_queue[index]; index++)
+  {
+    snprintf(buf, BUFSIZ, "%s_trace", trace_queue[index]->funcname);	  
+
+    // Retrieve symbol
+    dst = elfsh_get_symbol_by_name(file, buf);
+    if (dst == NULL)
+      {
+	elfsh_trace_queue_clean();
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Failed to find trace function", -1);
+      }
+
+    addr = dst->st_value;
+
+#if __DEBUG_TRACES__
+    printf("[DEBUG TRACE] (%03u) HIJACK: %s / %s\n", index, trace_queue[index]->funcname, buf);
+#endif
+
+    // Start to hijack the function 
+    err = elfsh_hijack_function_by_name(file, 
+					ELFSH_HIJACK_TYPE_FLOW,
+					trace_queue[index]->funcname, 
+					addr, NULL);
+    if (err < 0)
+      {
+	elfsh_trace_queue_clean();
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Failed to hijack a function", -1);
+      }
+  }
+
+  elfsh_trace_queue_clean();
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 int			*elfsh_traces_inittrace()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
@@ -438,11 +747,98 @@ hash_t			*elfsh_traces_gettrace(char *trace)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, table);
 }
+  
+static int		elfsh_traces_build_args(elfshobj_t *file, elfshtraces_t *ent, 
+						elfsh_Sym *symtab, int num, u_char dynsym)
+{
+  u_int			index, off;
+  elfshsect_t		*sect;
+  char			*sect_name;
+  char			*func_name;
+  int			*argcount;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+
+  if (!ent || !symtab || num <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  for (index = 0; index < num; index++)
+    {
+      // Only function symbols
+      if (elfsh_get_symbol_type(symtab + index) != STT_FUNC)
+	continue;
+
+      // Retrieve symbol section store into st_value
+      sect = elfsh_get_parent_section(file, symtab[index].st_value, NULL);
+      
+      // Try to get the section using index 
+      if (sect == NULL && symtab[index].st_shndx)
+	sect = elfsh_get_section_by_index(file, symtab[index].st_shndx, NULL, NULL);
+
+      if (sect == NULL)
+	continue;
+
+      sect_name = elfsh_get_section_name(file, sect);
+      
+      // Only global, plt & text 
+      // Make sure we look at the beginning of the name, including the .
+      if (elfsh_get_symbol_bind(symtab + index) != STB_GLOBAL
+	  || (strncmp(sect_name, ".plt", 4) && strncmp(sect_name, ".text", 5)))
+	continue;
+     
+      // Switch between symbol table and dynamic symbol table
+      if (!dynsym)
+	func_name = elfsh_get_symbol_name(file, symtab + index);
+      else
+	func_name = elfsh_get_dynsymbol_name(file, symtab + index);
+
+      /* Compare names */
+      if (strcmp(ent->funcname, func_name) != 0)
+	continue;
+
+      // FIXME: A function name containing "." will not be compiled right with gcc 
+      if (strstr(func_name, "."))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "We didn't support function name with a '.'", -1);
+      
+      off = (u_int) elfsh_get_raw(sect) + symtab[index].st_value;
+      off -= (sect->parent->rhdr.base + sect->shdr->sh_addr);
+      
+      // Get args number table
+      argcount = elfsh_args_count(file, off, symtab[index].st_value);
+
+      if (argcount == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Arg count failed", -1);
+
+      /* Set offset position */
+      ent->offset = off;
+
+      /* Fill arguments */
+      for (index = 0; argcount[index] != NULL; index++)
+	{
+	  ent->arguments[index].scope = ELFSH_ARG_INTERN;
+	  ent->arguments[index].type = ELFSH_ARG_SIZE_BASED;
+	  ent->arguments[index].size = argcount[index];
+	}
+
+      ent->argc = index;
+      XFREE(__FILE__, __FUNCTION__, __LINE__, argcount);
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Function symbol not found", -1);
+}
 
 elfshtraces_t 		*elfsh_traces_funcadd(char *trace, char *name, elfshobj_t *file)
 {
   hash_t		*table;
-  elfshtraces_t 		*newtrace;
+  elfshtraces_t 	*newtrace;
+  elfsh_Sym		*symtab, *dynsym;
+  int			symnum = 0, dynsymnum = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -450,17 +846,39 @@ elfshtraces_t 		*elfsh_traces_funcadd(char *trace, char *name, elfshobj_t *file)
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Trace table not found", NULL);
+		 "Trace table not found", NULL);
 
   if (hash_get(table, name) != NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Function already exist", NULL);
+		 "Function already exist", NULL);
 
+  elfsh_setup_hooks();
+
+  /* Retrieve symbols */
+  symtab = elfsh_get_symtab(file, &symnum);
+  dynsym = elfsh_get_dynsymtab(file, &dynsymnum);
+
+  if (symnum + dynsymnum <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No symbols found", NULL);
+
+  /* Alloc the structure */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newtrace, sizeof(elfshtraces_t), NULL);
   newtrace->funcname = strdup(name);
   newtrace->file = file;
   newtrace->enable = 1;
 
+  /* We fill arguments part and check if we found the function */
+  if (elfsh_traces_build_args(file, newtrace, symtab, symnum, 0) < 0
+      && elfsh_traces_build_args(file, newtrace, dynsym, dynsymnum, 1) < 0)
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, newtrace->funcname);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, newtrace);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Symbol not found or impossible to trace", NULL);
+    }
+
+  trace_enabled_count++;
   hash_add(table, newtrace->funcname, (void *) newtrace);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtrace);
@@ -485,6 +903,7 @@ int			elfsh_traces_funcrm(char *trace, char *name)
     {
       hash_del(table, name);
       XFREE(__FILE__, __FUNCTION__, __LINE__, ret_trace);
+      trace_enabled_count--;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -508,6 +927,9 @@ int			elfsh_traces_funcenable(char *trace, char *name)
   if (!ret_trace)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Function not found", -1);
+
+  if (ret_trace->enable != 1)
+    trace_enabled_count++;
 
   ret_trace->enable = 1;
 
@@ -536,7 +958,16 @@ int			elfsh_traces_funcsetstatus(hash_t *table, int status)
 	  ret_trace = (elfshtraces_t *) hash_get(table, keys[index]);
 	  
 	  if (ret_trace)
-	    ret_trace->enable = status;
+	    {
+	      if (ret_trace->enable != status)
+		{
+		  if (ret_trace->enable == 1)
+		    trace_enabled_count--;
+		  else
+		    trace_enabled_count++;
+		}
+	      ret_trace->enable = status;
+	    }
 	}
 
       hash_free_keys(keys);
@@ -623,6 +1054,9 @@ int			elfsh_traces_funcdisable(char *trace, char *name)
   if (!ret_trace)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Function not found", -1);
+
+  if (ret_trace->enable != 0)
+    trace_enabled_count--;
 
   ret_trace->enable = 0;
 

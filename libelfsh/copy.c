@@ -47,6 +47,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   copy->strip = file->strip;
   copy->nbrm  = file->nbrm;
   copy->fstat = file->fstat;
+  copy->id = file->id;
   copy->fd = file->fd;
   copy->pending = file->pending;
   copy->linkmap = file->linkmap;

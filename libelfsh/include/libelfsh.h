@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -767,12 +768,30 @@ typedef struct	s_bp
 }		elfshbp_t;
 
 /* Trace structure */
+typedef struct 	s_traces_args
+{
+#define ELFSH_ARG_INTERN 0
+#define ELFSH_ARG_EXTERN 1
+  u_char	scope;
+
+#define	ELFSH_ARG_SIZE_BASED 0
+#define ELFSH_ARG_TYPE_BASED 1
+  u_char	type;
+
+  int		size;
+}		elfshtracesargs_t;
+
 typedef struct 	s_traces
 {
 #define ELFSH_TRACES_TYPE_DEFAULT "global"
   char	       	*funcname;
   elfshobj_t	*file;
   u_char	enable;
+  u_int		offset;
+
+#define ELFSH_TRACES_MAX_ARGS 20
+  elfshtracesargs_t arguments[ELFSH_TRACES_MAX_ARGS];
+  u_int		argc;
 }		elfshtraces_t;
 
 /* Extern data */

@@ -181,6 +181,9 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to copy object", -1);
 
+  /* Apply awaiting tracing */
+  elfsh_traces_save(file);
+
   /* Open the output file */
 #ifdef __BEOS__
   XOPEN(fd, name, O_CREAT | O_RDWR , 0700, -1);
