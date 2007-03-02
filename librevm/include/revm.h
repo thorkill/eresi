@@ -1092,10 +1092,10 @@ int		vm_addcmd(char *cmd, void *exec, void *reg,
 int		vm_delcmd(char *cmd);
 
 /* Default grammar handlers */
-revmobj_t       *parse_lookup3_index(char *param, char *fmt);
-revmobj_t       *parse_lookup3(char *param, char *fmt);
-revmobj_t       *parse_lookup4(char *param, char *fmt);
-revmobj_t       *parse_lookup5_index(char *param, char *fmt);
+revmobj_t       *parse_lookup3_index(char *param, char *fmt, u_int sepnbr);
+revmobj_t       *parse_lookup3(char *param, char *fmt, u_int sepnbr);
+revmobj_t       *parse_lookup4(char *param, char *fmt, u_int sepnbr);
+revmobj_t       *parse_lookup5_index(char *param, char *fmt, u_int sepnbr);
 revmobj_t	*parse_vector(char *param, char *fmt);
 revmobj_t	*parse_hash(char *param, char *fmt);
 

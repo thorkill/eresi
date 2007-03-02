@@ -126,7 +126,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 
 /* Lookup a parameter with 3 fields, 3rd field beeing an index 
 ** Used by GOT, CTORS, DTORS */
-revmobj_t		*parse_lookup3_index(char *param, char *fmt)
+revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
   void			*robj;
@@ -139,6 +139,9 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   char			index[ELFSH_MEANING];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (sep != 1)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+
   real_index = 0;
 
   // Check if this handler is the correct one 
@@ -226,7 +229,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
 
 /* Lookup a parameter with 3 fields, all fields beeing non indexed 
 ** Only used by ELF header 'til now */
-revmobj_t		*parse_lookup3(char *param, char *fmt)
+revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -239,6 +242,8 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
   int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (sep != 2)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
   // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, L2field);
@@ -295,7 +300,7 @@ revmobj_t		*parse_lookup3(char *param, char *fmt)
 **
 ** Here need to add 1.rel[name].{L2fields} lookup
 */
-revmobj_t		*parse_lookup4(char *param, char *fmt)
+revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -305,38 +310,47 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   int			isversion;
   u_int			size;
   revmobj_t		*pobj;
-
   char			obj[ELFSH_MEANING];
   char			L1field[ELFSH_MEANING];
   char			L2field[ELFSH_MEANING];
   char			index[ELFSH_MEANING];
+  char			offfield[ELFSH_MEANING];
+  char			sizelemfield[ELFSH_MEANING];
   u_int			off;
   u_int			sizelem;
   int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  // Check if this handler is the correct one 
-  // This handler has 3 different possible parsing rules 
-  ret = parse_lookup_varlist(param, fmt, obj, L1field, 
-			  index, &off, &sizelem, L2field);
-  if (ret != 6)
+  /* This handler has 3 possibles syntax */
+  switch (sep)
     {
-      ret = parse_lookup_varlist(param, fmt, obj, L1field, index, &off, L2field);
-      if (ret != 5)
-	{
-	  ret = parse_lookup_varlist(param, fmt, obj, L1field, index, L2field);
-	  if (ret != 4)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Parser handling failed", NULL);
-	  sizelem = 1;
-	  off = 0;
-	}
-      else
-	sizelem = 1;
+    case 4:
+      ret = parse_lookup_varlist(param, fmt, obj, L1field, 
+				 index, offfield, sizelemfield, L2field);
+      sizelem = atoi(sizelemfield);
+      off = atoi(offfield);
+      break;
+    case 3:
+      ret = parse_lookup_varlist(param, fmt, obj, L1field, 
+				 index, offfield, L2field);
+      sizelem = 1;
+      off = atoi(offfield);
+      break;
+    case 2:
+      ret = parse_lookup_varlist(param, fmt, obj, L1field, index, L2field);
+      sizelem = 1;
+      off = 0;
+      break;
+    default:
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
     }
 
-  // Let's ask the hash table for the current working file 
+  /* Quick test to see if we matched */
+  if (ret - 2 != sep)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  
+  /* Let's ask the hash table for the current working file */
   robj = vm_lookup_file(obj);
   if (NULL == robj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
@@ -439,7 +453,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 
 /* Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
 ** Used for Relocation tables and GOT tables */
-revmobj_t		*parse_lookup5_index(char *param, char *fmt)
+revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -463,6 +477,8 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (sep != 2)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
   // Check if this handler is the correct one 
   ret = parse_lookup_varlist(param, fmt, obj, L1field, index, index2, L2field);
@@ -562,8 +578,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 /** Parse the parameter and fill the revmobj_t */
 revmobj_t		*vm_lookup_param(char *param)
 {
-  revmobj_t		*(*funcptr)(char *param, char *fmt);
-  void			*ret;
+  revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
   char			**keys;
   int			keynbr;
   char			*parm;
@@ -574,32 +589,29 @@ revmobj_t		*vm_lookup_param(char *param)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Find the number of fields in param */
-  sepnbr = 0;
-  parm   = param;
-  do {    
-    parm = strchr(parm, REVM_SEP[0]);
-    if (parm)
+  for (sepnbr = 0, parm = param; *parm; parm++)
+    if (*parm == REVM_SEP[0] || *parm == ':' || *parm == '%')
       {
+	if (parm > param && parm[-1] == '[')
+	  continue;
 	sepnbr++;
-	parm++;
       }
-  } while (parm && *parm);
   
   /* Find the correct parsing handler */
   keys = hash_get_keys(&parser_hash, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
       funcptr = hash_get(&parser_hash, keys[index]);
-      ret = funcptr(param, keys[index]);
-      if (!ret)
+      res = funcptr(param, keys[index], sepnbr);
+      if (!res)
 	continue;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);  
     }
 
   /* If still not found, try manually inserted types */
-  ret = vm_revmobj_lookup(param);
-  if (ret)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
+  res = vm_revmobj_lookup(param);
+  if (res)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);  
 
   /* If no good syntax is available, print error if we are not in probe mode */
   res = vm_lookup_immed(param);
