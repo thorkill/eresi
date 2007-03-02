@@ -135,7 +135,7 @@ int		vm_getforparams(u_int index, u_int argc, char **argv)
   /* Intermediate checks */
   if ((argc - index) == 6)
     {
-      flag = (!strcmp("as", p) ? 1 : !strcmp("until", p) ? 2 : 0);
+      flag = (!strcmp("matching", p) ? 1 : !strcmp("until", p) ? 2 : 0);
       if (!flag)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong loop format", -1);
 

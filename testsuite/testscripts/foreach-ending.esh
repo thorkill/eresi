@@ -14,6 +14,9 @@ tables test2
 beginning:
 print Starting first foreach
 
-foreach $elem of test2 as Sparc
+foreach $elem of test2 matching Sparc
   print Regex Matched $elem
 forend
+
+# This script bugs because we dont know the instruction
+# after forend. Patching at the moment.
