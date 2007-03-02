@@ -83,13 +83,13 @@ int			vm_parseopt(int argc, char **argv)
 	{
 
 	  /* If there is a forend label waiting, insert it */
+	  /* The forend label must point on the -following- command */
 	  if (nextlabel)
 	    {
 	      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
-	      labl = looplabels[--curnest];
-	      loopstart = hash_get(&labels_hash[world.curjob->sourced], labl);
+	      loopstart = hash_get(&labels_hash[world.curjob->sourced],
+				   looplabels[curnest]);
 	      loopstart->endlabel = endlabl;
-	      forend->endlabel = labl;
 	      nextlabel = 0;
 	    }
 
@@ -121,8 +121,9 @@ int			vm_parseopt(int argc, char **argv)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			     "Unknown loop at forend statement", -1);
 	      endlabl = vm_label_get("forend");
-	      nextlabel = 1;
 	      forend = newcmd;
+	      forend->endlabel = looplabels[--curnest];
+	      nextlabel = 1;
 	    }
 	  index += ret;
 
