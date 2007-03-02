@@ -1,10 +1,11 @@
-#!../../vm/elfsh
+#!/usr/local/bin/elfsh
 #
 # Additional tests suite for shell commands .
 #
-# Danke to spendy for inspiring this filename
+# This does nothing really, just checking that all commands 
+# do their job. The output file is completely useless.
 # 
-# And please -dont- ask why 42 
+# And please dont ask -why- 42 
 #
 
 
@@ -17,7 +18,7 @@ info
 # quiet
 
 # Now load the files
-load 	../../vm/elfsh
+load 	/usr/local/bin/elfsh
 load 	/lib/libc.so.6
 list
 switch 1 
@@ -57,9 +58,9 @@ print hehe
 # Illustrate the object affectations between files
 
 e
-get 1.hdr.magic
+print 1.hdr.magic
 set 1.hdr.magic	0x42424242
-get 1.hdr.magic
+print 1.hdr.magic
 e
 
 set 1.hdr.type		  2.hdr.type
@@ -89,19 +90,19 @@ set 1.hdr.pax_randexec		  1
 
 e 
 
-get 1.hdr.magic
-get 1.hdr.type		
-get 1.hdr.machine	
-get 1.hdr.version	
-get 1.hdr.entry		
-get 1.hdr.phoff		
-get 1.hdr.shoff		
-get 1.hdr.ehsize	
-get 1.hdr.shentsize	
-get 1.hdr.phentsize	
-get 1.hdr.phnum		
-get 1.hdr.shnum	
-get 1.hdr.shstrndx	
+print 1.hdr.magic
+print 1.hdr.type		
+print 1.hdr.machine	
+print 1.hdr.version	
+print 1.hdr.entry		
+print 1.hdr.phoff		
+print 1.hdr.shoff		
+print 1.hdr.ehsize	
+print 1.hdr.shentsize	
+print 1.hdr.phentsize	
+print 1.hdr.phnum		
+print 1.hdr.shnum	
+print 1.hdr.shstrndx	
 
 
 # PHT tests
@@ -118,14 +119,14 @@ set 1.pht[0].flags	 0x60
 set 1.pht[0].align	 0x61		
 p
 
-get 1.pht[0].type
-get 1.pht[0].offset
-get 1.pht[0].vaddr
-get 1.pht[0].paddr
-get 1.pht[0].filesz
-get 1.pht[0].memsz
-get 1.pht[0].flags
-get 1.pht[0].align
+print 1.pht[0].type
+print 1.pht[0].offset
+print 1.pht[0].vaddr
+print 1.pht[0].paddr
+print 1.pht[0].filesz
+print 1.pht[0].memsz
+print 1.pht[0].flags
+print 1.pht[0].align
 
 
 
@@ -149,21 +150,21 @@ set 	1.sht[1].l			 1
 set 	1.sht[1].o			 1
 s
 
-get 	1.sht[1].type	 	
-get 	1.sht[1].addr	 	
-get 	1.sht[1].offset	 	
-get 	1.sht[1].size	 	
-get 	1.sht[1].link	 	
-get 	1.sht[1].info 		
-get 	1.sht[1].align	 	
-get 	1.sht[1].entsize	 	
-get 	1.sht[1].a	 		
-get 	1.sht[1].w	 		
-get 	1.sht[1].x	 		
-get 	1.sht[1].s	 		
-get 	1.sht[1].m			
-get 	1.sht[1].l
-get 	1.sht[1].o
+print 	1.sht[1].type	 	
+print 	1.sht[1].addr	 	
+print 	1.sht[1].offset	 	
+print 	1.sht[1].size	 	
+print 	1.sht[1].link	 	
+print 	1.sht[1].info 		
+print 	1.sht[1].align	 	
+print 	1.sht[1].entsize	 	
+print 	1.sht[1].a	 		
+print 	1.sht[1].w	 		
+print 	1.sht[1].x	 		
+print 	1.sht[1].s	 		
+print 	1.sht[1].m			
+print 	1.sht[1].l
+print 	1.sht[1].o
 
 
 
@@ -178,11 +179,11 @@ set 1.symtab[3].type	 4
 set 1.symtab[3].other	 2
 sym 03]
 
-get 1.symtab[3].value
-get 1.symtab[3].size	 
-get 1.symtab[3].bind	
-get 1.symtab[3].type	
-get 1.symtab[3].other
+print 1.symtab[3].value
+print 1.symtab[3].size	 
+print 1.symtab[3].bind	
+print 1.symtab[3].type	
+print 1.symtab[3].other
 
 
 # DYNSYMTAB tests
@@ -195,11 +196,11 @@ set 1.dynsym[12].type	 6
 set 1.dynsym[12].other	 2
 dynsym 12]
 
-get 1.dynsym[12].value
-get 1.dynsym[12].size	 
-get 1.dynsym[12].bind	
-get 1.dynsym[12].type	
-get 1.dynsym[12].other
+print 1.dynsym[12].value
+print 1.dynsym[12].size	 
+print 1.dynsym[12].bind	
+print 1.dynsym[12].type	
+print 1.dynsym[12].other
 
 
 # .DYNAMIC tests
@@ -209,17 +210,17 @@ set 1.dynamic[7].val 	0x72
 set 1.dynamic[7].tag 	0x73
 dyn 07]
 
-get 1.dynamic[7].val
-get 1.dynamic[7].tag
+print 1.dynamic[7].val
+print 1.dynamic[7].tag
 
 
 # .GOT tests : you can also use filepath instead of their index
 
-got 05]|13]
-get 1.got[5]
-set 1.got[5] 		/usr/bin/elfsh.got[13]
-get 1.got[5]
-got 05]|13]
+got 	05]|13]
+print 	1.got[5]
+set 	1.got[5]   /usr/local/bin/elfsh.got[13]
+print 	1.got[5]
+got 	05]|13]
 
 
 # CTORS and DTORS tests
@@ -244,12 +245,9 @@ set 1.rel[1][62].offset 	0x08044800
 set 1.rel[1][62].type   	R_386_GOTPC
 rel 062]
 
-
-
 # Now leave, unloaded files are closed without saving
-
 save /tmp/elfsh.dumped
-unload /usr/bin/elfsh
+unload /usr/local/bin/elfsh
 quit
 
 

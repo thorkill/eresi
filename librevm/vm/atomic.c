@@ -13,8 +13,8 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  *o1 = vm_lookup_param(world.curjob->curcmd->param[0], 2);
-  *o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  *o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  *o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!*o1 || !*o2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup a parameter", -1);
@@ -24,16 +24,18 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
     {
       if ((*o2)->type == ASPECT_TYPE_UNKNOW)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Source parameter undefined", -1);
+		     "Source parameter undefined", -1);
       if ((*o1)->type == ASPECT_TYPE_UNKNOW)
         vm_convert_object(*o1, (*o2)->type);
       else if (vm_convert_object(*o2, (*o1)->type) < 0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "SET parameters type are not compatible", -1);
+		     "SET parameters type are not compatible", -1);
     }
-  else if ((*o1)->immed && !(*o1)->perm)
+  
+  /* Make sure we dont want to write in a constant */
+  if ((*o1)->immed && !(*o1)->perm)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Dest. param. must not be a constant", -1);
+		      "Destination parameter must not be a constant", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -47,6 +49,16 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   elfsh_Addr		dst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* First basic check */
+  if (!o1 || !o2)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup a parameter", -1);
+
+  /* First check if we write in a constant */
+  if (o1->immed && !o1->perm)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Destination parameter must not be a constant", -1);
 
   /* Preliminary checks */
   if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
@@ -63,6 +75,7 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
+  /* Get the objects */
   dst  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
   src  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
 
@@ -143,6 +156,12 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown key for source object", -1);
+
+  /* In case the hash table was freshly created, assign its element type now */
+  if (h->type == ASPECT_TYPE_UNKNOW)
+    h->type = o->type;
+
+  /* Make sure we insert an element of the same type */
   if (h->type != o->type && vm_convert_object(o, h->type))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Incompatible types between objects", -1);
@@ -372,10 +391,14 @@ int			cmd_cmp()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
+  if (o1->type == ASPECT_TYPE_UNKNOW || o2->type == ASPECT_TYPE_UNKNOW)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Parameter has type unknown thus uncomparable", -1);
 
   /* Lazy typing in action */
   if ((o1->type != ASPECT_TYPE_INT   && 
@@ -384,13 +407,23 @@ int			cmd_cmp()
        o1->type != ASPECT_TYPE_CADDR && 
        o1->type != ASPECT_TYPE_DADDR && 
        o1->type != ASPECT_TYPE_LONG  &&
-       o1->type != ASPECT_TYPE_STR)  ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+       o1->type != ASPECT_TYPE_STR) ||
+      o1->type != o2->type)
+    {
+      vm_convert_object(o2, o1->type);
+      if (o2->type != o1->type)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Invalid parameters", -1);
+    }
 
   error = -1;
   str = NULL;
+
+  /* Set the last result variable */
+  last = hash_get(&vars_hash, ELFSH_RESVAR);
+  if (last == NULL)
+    goto err;
+  last->type = ASPECT_TYPE_INT;
 
   /* Do the real assignation */
   switch (o1->type)
@@ -405,30 +438,21 @@ int			cmd_cmp()
       break;
     case ASPECT_TYPE_BYTE:
     case ASPECT_TYPE_SHORT:
+    case ASPECT_TYPE_INT:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     case ASPECT_TYPE_LONG:
-    case ASPECT_TYPE_INT:
       val2 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       val -= val2;
-
-      /* Set the last result variable */
-      last = hash_get(&vars_hash, ELFSH_RESVAR);
-      if (last == NULL)
-	goto err;
-      last->immed_val.ent = val;
-      last->type = o1->type;
-      if (o1->type == ASPECT_TYPE_STR)
-	last->type = ASPECT_TYPE_INT;
-      break;
-      
+      break;      
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Uncomparable parameter type", -1);
     }
 
   error = 0;
+  last->immed_val.ent = val;
 
  err:
   if (!o2->perm && o2->immed && o2->type == ASPECT_TYPE_STR && str != NULL)
@@ -471,11 +495,12 @@ int			cmd_add()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
-
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
+  
   /* In case we have a hash table as parameter */
   if (o1->type == ASPECT_TYPE_HASH)
     {
@@ -498,6 +523,8 @@ int			cmd_add()
 }
 
 
+
+
 /* SUB command */
 int			cmd_sub()
 {
@@ -512,10 +539,11 @@ int			cmd_sub()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
 
   /* In case we have a hash table as parameter */
   if (o1->type == ASPECT_TYPE_HASH)
@@ -551,10 +579,11 @@ int			cmd_mul()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Needs 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
   if (vm_arithmetics(o1, o2, REVM_OP_MUL) < 0)
@@ -578,10 +607,11 @@ int			cmd_div()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
   if (vm_arithmetics(o1, o2, REVM_OP_DIV) < 0)
@@ -605,10 +635,11 @@ int			cmd_mod()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "MOD needs 2 parameters", -1);
-  o1 = vm_lookup_param(world.curjob->curcmd->param[0], 1);
-  o2 = vm_lookup_param(world.curjob->curcmd->param[1], 1);
+  o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
+  o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
   if (!o1 || !o2)
-    RET(-1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
   if (vm_arithmetics(o1, o2, REVM_OP_MOD) < 0)

@@ -1,4 +1,4 @@
-#!/usr/bin/elfsh
+#!/usr/local/bin/elfsh
 
 exec rm /tmp/ls.new
 load /bin/ls

@@ -25,8 +25,7 @@ int		cmd_delete()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lookup breakpoint */
-  
-  bp = vm_lookup_bp(vm_lookup_var(world.curjob->curcmd->param[0]));
+  bp = vm_lookup_bp(vm_lookup_string(world.curjob->curcmd->param[0]));
   if (!bp)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown breakpoint", -1);

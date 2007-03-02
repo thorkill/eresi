@@ -20,15 +20,15 @@ hash_t		goto_hash;
  * @param vaddr source address
  * @param dest destination address
  */
-int			mjr_block_point(mjrcontext_t  *ctxt, 
-					asm_instr      *ins,
-					elfsh_Addr     vaddr,
-					elfsh_Addr     dest)
+int							mjr_block_point(mjrcontext_t  *ctxt, 
+																asm_instr      *ins,
+																elfsh_Addr     vaddr,
+																elfsh_Addr     dest)
 {
-  mjrblock_t	*dst;
-  mjrblock_t	*dst_end;  
-  int		new_size;
-  int		type;
+  mjrblock_t		*dst;
+  mjrblock_t		*dst_end;  
+  int						new_size;
+  int						type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   dst_end = ctxt->blklist;
@@ -78,10 +78,10 @@ int			mjr_block_point(mjrcontext_t  *ctxt,
 /**
  * Retreive control flow section content if any 
  */
-mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
+mjrblock_t*			mjr_blocks_get(mjrcontext_t *ctxt)
 {
-  elfshsect_t	*sect;
-
+  elfshsect_t		*sect;
+	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
@@ -107,15 +107,15 @@ mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt)
 /**
  * Create the control flow graph using the information stored in .elfsh.control 
  */
-mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
+mjrblock_t*							mjr_blocks_load(mjrcontext_t *ctxt)
 {
   int                   index;
   elfshsect_t           *sect;
   mjrblock_t            *curbloc;
   mjrblock_t            *target;
-  unsigned int		blocnbr;
-  char			name[20];
-
+  unsigned int					blocnbr;
+  char									name[20];
+	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
@@ -156,16 +156,16 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
   for (index = 0; index < blocnbr; index++)
     {
       curbloc = (mjrblock_t *) sect->data + index;
- 
+			
       /* Link true child info */
       target = mjr_block_get_by_vaddr(ctxt, curbloc->true, 0);
-
+			
 #if __DEBUG_BLOCKS__
       if (!target)
-	fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",
-		curbloc->true);
+				fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",
+								curbloc->true);
 #endif
-
+			
       if (!target)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Corrupted control flow callers information 1", 0);
@@ -201,11 +201,11 @@ mjrblock_t*		mjr_blocks_load(mjrcontext_t *ctxt)
 /**
  * Create the block information to be saved in file 
  */
-int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
+int							mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 {
-  char			buffer[24];
-  elfsh_Sym		bsym;
-  elfsh_Sym		*sym;
+  char					buffer[24];
+  elfsh_Sym			bsym;
+  elfsh_Sym			*sym;
   mjrblock_t		*curblock;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -252,26 +252,26 @@ int			mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
  * Store the blocks inside the .control section using the file representation 
  */
 // This loops on all block, and call blocks_save on each bloc
-int			mjr_blocks_store(mjrcontext_t *ctxt) 
+int							mjr_blocks_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
-  mjrbuf_t		buf;
+  mjrbuf_t			buf;
   mjrblock_t		*block;
-  mjrfunc_t		*func;
-  int			err;
-  char			**keys;
-  int			keynbr;
-  int			index;
-  char			funcname[50];
+  mjrfunc_t			*func;
+  int						err;
+  char					**keys;
+  int						keynbr;
+  int						index;
+  char					funcname[50];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+	
   /* Remove previous control section if any */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
   if (sect)
     elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_CONTROL);
-
+	
   /* Initialize data buffer */
   buf.allocated     = 0;
   buf.maxlen        = 0;
@@ -287,18 +287,18 @@ int			mjr_blocks_store(mjrcontext_t *ctxt)
       mjr_block_save(block, &buf);
 
       if (mjr_block_funcstart(block))
-	{
-	  snprintf(funcname, sizeof(funcname), AFMT, block->vaddr);
-	  func        = hash_get(&ctxt->funchash, funcname);
-
-	  /* Can happens rarely - should not be fatal */
-	  if (func == NULL)
-	    {
-	      printf(" [*] Failed to find parent function at %s \n", funcname);
-	      continue;
-	    }
-	  printf(" [*] Found block start for function %s \n", funcname);
-	}
+				{
+					snprintf(funcname, sizeof(funcname), AFMT, block->vaddr);
+					func        = hash_get(&ctxt->funchash, funcname);
+					
+					/* Can happens rarely - should not be fatal */
+					if (func == NULL)
+						{
+							printf(" [*] Failed to find parent function at %s \n", funcname);
+							continue;
+						}
+					printf(" [*] Found block start for function %s \n", funcname);
+				}
     }
 
   /* Create control section */
@@ -383,8 +383,8 @@ void		mjr_block_add_caller(mjrblock_t *blk,
  * else return block if vaddr belong to block
  */
 mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
-					elfsh_Addr   vaddr, 
-					int	     mode)
+																		elfsh_Addr   vaddr, 
+																		int	     mode)
 {
   mjrblock_t	*ret;
   char		**keys;

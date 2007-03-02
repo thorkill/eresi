@@ -61,7 +61,7 @@ int		cmd_stack()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));
 
-  param = vm_lookup_var(param);
+  param = vm_lookup_string(param);
 
   ssp = hash_get(&vars_hash, ELFSH_SSPVAR);
   if (!ssp)
@@ -101,7 +101,7 @@ int		cmd_dbgstack()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));
 
-  param = vm_lookup_var(param);
+  param = vm_lookup_string(param);
 
   /* Dump debugger stack */
   if (vm_isnbr(param))

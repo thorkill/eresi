@@ -1,9 +1,9 @@
-#!../../vm/elfsh
+#!/usr/local/bin/elfsh
 #
 # Second regression test script
 #
 
-quiet
+#quiet
 
 load /bin/ls
 
@@ -14,9 +14,9 @@ print The interpretor section:
 X	interp
 
 print Change section name:
-get 	1.section[1].name
-set 	1.section[1].name	.pffffffffffff
-get 	1.section[1].name
+print 1.section[1].name
+set   1.section[1].name	.pffffffffffff
+print 1.section[1].name
 
 print 20 first bytes of .text:
 X 	 ^\.text%20
@@ -36,14 +36,14 @@ X 	 ^\.text%20
 s 	01]|13]
 
 print Change a symbol name
-get 1.symtab[1].name
-set 1.symtab[1].name heh
-get 1.symtab[1].name
+print 1.symtab[1].name
+set   1.symtab[1].name heh
+print 1.symtab[1].name
 
 print Change a dynamic symbol name
-get 1.dynsym[2].name
+print 1.dynsym[2].name
 set 1.dynsym[2].name test_big_string_oh_yeah
-get 1.dynsym[2].name
+print 1.dynsym[2].name
 
 save /tmp/elfsh.modifs
 quit

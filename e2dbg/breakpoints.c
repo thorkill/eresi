@@ -184,7 +184,7 @@ int		cmd_bp()
 
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
-  str = vm_lookup_var(world.curjob->curcmd->param[0]);
+  str = vm_lookup_string(world.curjob->curcmd->param[0]);
 
   /* List breakpoints */
   if (idx == 0)

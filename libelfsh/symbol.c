@@ -52,7 +52,6 @@ int			elfsh_set_symbol_name(elfshobj_t	*file,
   char			*str;
   u_int			len;
   u_int			new_len;
-  void			*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -76,13 +75,13 @@ int			elfsh_set_symbol_name(elfshobj_t	*file,
 
 
   /* Else use the symbol string table */
-  data = file->secthash[ELFSH_SECTION_STRTAB];
-  if (file->secthash[ELFSH_SECTION_STRTAB] == NULL || data == NULL)
+  if (file->secthash[ELFSH_SECTION_STRTAB]       == NULL || 
+      file->secthash[ELFSH_SECTION_STRTAB]->data == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No STRTAB available", NULL);
+		 "No STRTAB available", NULL);
 
   /* Change the name */
-  str = data;
+  str = file->secthash[ELFSH_SECTION_STRTAB]->data;
   str += s->st_name;
   len = strlen(str);
   new_len = strlen(name);

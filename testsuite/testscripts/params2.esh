@@ -1,4 +1,4 @@
-#!../../vm/elfsh
+#!/usr/local/bin/elfsh
 
 print TWO  = $2
 print ONE  = $1

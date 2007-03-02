@@ -1,5 +1,7 @@
 /*
-** opt.c
+** opt.c for librevm in ERESI
+**
+** Implement the commands registration handlers
 ** 
 ** Started on  Fri Nov  2 15:17:02 2001 mayhem
 */
@@ -85,8 +87,8 @@ int		vm_getregxoption(u_int index, u_int argc, char **argv)
   if (index + 1 < argc && argv[index + 1][0] != ELFSH_MINUS)		
     {									
       if (regcomp(&world.curjob->curcmd->regx[0], argv[index + 1], 
-		  REG_EXTENDED) != 0 || *argv[index + 1] == '*')
-	  
+		  REG_EXTENDED) != 0 || !strcmp(argv[index + 1], "*"))
+	
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Parameter not available", (-1));
       world.curjob->curcmd->use_regx[0] = 1;
@@ -111,6 +113,50 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
+
+/* Format the input of a loop */
+int		vm_getforparams(u_int index, u_int argc, char **argv)
+{
+  char		*p;
+  char		flag;
+  char		*last;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (((argc - index != 6) && (argc - index != 4)) ||
+      strcmp(argv[index + 2], "of"))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong loop format", -1);
+
+  p     = argv[index + 4];
+  last  = argv[index + 5];
+  flag  = 0;
+  
+  /* Intermediate checks */
+  if ((argc - index) == 6)
+    {
+      flag = (!strcmp("as", p) ? 1 : !strcmp("until", p) ? 2 : 0);
+      if (!flag)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong loop format", -1);
+
+      /* Compute the regex if necessary */
+      if (flag == 1)
+	{
+	  if (regcomp(&world.curjob->curcmd->regx[0], last, REG_EXTENDED) != 0 ||
+	      !strcmp(last, "*"))    
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Invalid requested regex", (-1));
+	  world.curjob->curcmd->use_regx[0] = 1;
+	}
+      }
+
+  /* Set the current and maximum indexes to uninitialized */
+  world.curjob->curcmd->curidx = REVM_IDX_UNINIT;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		vm_getvarparams(index, argc, argv));
+}
+
+
 
 /* Add an entry to the requested dump list */
 static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
@@ -178,110 +224,3 @@ int		vm_gethexa(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     vm_add2list(ELFSH_HEXA_VIEW, index, argc, argv));
 }
-
-/* Parse the commands */
-int			vm_parseopt(int argc, char **argv)
-{
-  u_int			index;
-  int			ret;
-  volatile revmcmd_t	*actual;
-  char			*name;
-  char			label[16];
-  char			c;
-  static u_int		pendinglabel = 0;
-  static revmargv_t	*new = NULL;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Main option reading loop : using the command hash table */
-  for (index = 1; index < argc; index++)
-    {
-
-      /* Allocate command descriptor */
-      bzero(label, sizeof(label));
-      if (!pendinglabel)
-	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmargv_t), -1);
-	  world.curjob->curcmd = new;
-	  if (world.curjob->script[world.curjob->sourced] == NULL)
-	    world.curjob->script[world.curjob->sourced] = new;
-	}
-      else
-	pendinglabel = 0;
-      
-      /* Retreive command descriptor in the hash table */
-      name = argv[index] + ((world.state.vm_mode == ELFSH_VMSTATE_CMDLINE) && !(world.state.vm_net));
-      actual = hash_get(&cmd_hash, name);
-    
-      /* We matched a command : call the registration handler */
-      if (actual != NULL)
-	{
-	  if (actual->reg != NULL)
-	    {
-	      ret = actual->reg(index, argc, argv);
-	      if (ret < 0)
-              PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-				"Command not found", 
-				(vm_doerror(vm_badparam, argv[index])));
-	      index += ret;
-	    }
-	}
-
-      /* We did -NOT- match command */
-      else if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
-	{
-	  /* Try to match a label */
-	  ret = sscanf(name, "%15[^:]%c", label, &c);
-
-	  if (ret == 2 && c == ':')
-	    {
-	      hash_add(&labels_hash[world.curjob->sourced], 
-		       strdup(label), new); 
- 
-
-	      printf(" [*] Found label %s \n", label);
-
-	      pendinglabel = 1;
-	      continue;
-	    }
-	  
-	  /* No label matched, enable lazy evaluation */
-	  /* because it may be a module command */
-	  ret = vm_getvarparams(index - 1, argc, argv);
-	  index += ret;
-	}
-      
-      /* We matched nothing known, error */
-      else
-          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			    "Unknown parsing error", 
-			    (vm_doerror(vm_unknown, argv[index])));
-
-      /* Put the new command at the end of the list */
-      new->name = name;
-      new->cmd  = (revmcmd_t *) actual;
-      
-      if (!world.curjob->lstcmd[world.curjob->sourced])
-	world.curjob->lstcmd[world.curjob->sourced] = new;
-      else
-	{
-	  world.curjob->lstcmd[world.curjob->sourced]->next = new;
-	  new->prev = world.curjob->lstcmd[world.curjob->sourced];
-	  world.curjob->lstcmd[world.curjob->sourced] = new;
-	}
-      
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-
-
-
-
-
-
-
-
-

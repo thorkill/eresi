@@ -132,14 +132,15 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   void			*robj;
   void			*o1;
   u_int			size;
-  elfsh_Addr		real_index = 0;
+  u_int			real_index;
   revmobj_t		*pobj;
   char			obj[ELFSH_MEANING];
   char			L1field[ELFSH_MEANING];
   char			index[ELFSH_MEANING];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+  real_index = 0;
+
   // Check if this handler is the correct one 
   size = parse_lookup_varlist(param, fmt, obj, L1field, index);
   if (size != 3)
@@ -171,8 +172,8 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
   // Lookup index 
   real_index = vm_lookup_index(index);
   
-  printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n", 
-	 real_index, real_index, real_index);
+  //printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n", 
+  // real_index, real_index, real_index);
 
   if (((int) real_index) < 0)
     {
@@ -183,15 +184,17 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt)
       else
 	{
 	  
-	  printf("looking up get_obj_name in GOT ! \n");
-
+	  //printf("looking up get_obj_name in GOT ! \n");
+	  
 	  pobj->parent = l1->get_obj_nam(robj, index);
-
+	  
+	  /*
 	  printf("GOT pobjparent = %p (with name = %s) \n", pobj->parent, index);
 	  printf("GOT sect data  = %p (GOT name = %s) \n", 
 		 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->data,
 		 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->name);
-	  
+	  */
+
 	  if (pobj->parent == NULL)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "No entry by that name", NULL);
@@ -364,7 +367,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
   pobj->immed = 0;
 
   // Do lookup by index or by name 
-  real_index = vm_lookup_index(index);
+  real_index = (int) vm_lookup_index(index);
   
 #if __DEBUG_LANG__
   printf("LOOKUP4 object index = %s, real_index = %u (signed = %d) \n", 
@@ -372,7 +375,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 #endif
 
   // Index error handling 
-  if (((int) real_index) < 0)
+  if (real_index < 0)
     {
       if (l1->get_obj_nam == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -398,8 +401,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt)
 		   !strcmp(L1field, "verneed"));
       
       if (!isversion && size <= real_index)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", 
-	NULL);
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", NULL);
 
       pobj->parent = l1->get_entptr(o1, real_index);
 
@@ -443,13 +445,12 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
   revmL2_t		*l2;
   void			*robj;
   void			*o1;
-  volatile elfsh_Addr  	real_index;
-  volatile elfsh_Addr  	real_index2;
-  volatile u_int	size;
+  int			real_index;
+  int			real_index2;
+  u_int			size;
   int			isversion;
   revmobj_t		*pobj;
   elfshsect_t		*sect;
-
   char			obj[ELFSH_MEANING];
   char			L1field[ELFSH_MEANING];
   char			L2field[ELFSH_MEANING];
@@ -500,8 +501,8 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 	       !strcmp(L1field, "verneed"));
 
   // Get indexes 
-  real_index = vm_lookup_index(index);
-  real_index2 = vm_lookup_index(index2);
+  real_index  = (int) vm_lookup_index(index);
+  real_index2 = (int) vm_lookup_index(index2);
 
 #if 0
  snprintf(logbuf, BUFSIZ - 1, 
@@ -558,11 +559,8 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt)
 
 
 
-/*
-** Parse the parameter and fill the revmobj_t
-** Change ELFSH_FIELD_SEP in elfsh/elfsh/include/revm.h
-*/
-revmobj_t		*vm_lookup_param(char *param, u_int m)
+/** Parse the parameter and fill the revmobj_t */
+revmobj_t		*vm_lookup_param(char *param)
 {
   revmobj_t		*(*funcptr)(char *param, char *fmt);
   void			*ret;
@@ -604,15 +602,12 @@ revmobj_t		*vm_lookup_param(char *param, u_int m)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);  
 
   /* If no good syntax is available, print error if we are not in probe mode */
-  if (m)
+  res = vm_lookup_immed(param);
+  if (!res)
     {
-      res = vm_lookup_immed(param);
-      if (!res || (m == 2 && res->immed))
-	vm_badparam(param);
-      else
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
+      vm_badparam(param);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unable to resolve object", NULL);
     }
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to resolve object", NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }

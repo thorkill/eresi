@@ -39,19 +39,19 @@
 #include <sys/procfs.h>
 
 /* Configure the DEBUG modes for various part of the code */
-#define		__DEBUG_MAP__							0
-#define		__DEBUG_SECTS__						0
-#define		__DEBUG_SORT__						0	
-#define		__DEBUG_RELADD__					0
-#define		__DEBUG_COPYPLT__					0
-#define		__DEBUG_BSS__							0
-#define		__DEBUG_REDIR__						0
-#define		__DEBUG_RUNTIME__					0
-#define		__DEBUG_CFLOW__						0
-#define		__DEBUG_STATIC__					1
-#define		__DEBUG_BREAKPOINTS__			0
-#define		__DEBUG_ETRELintoETDYN__	0
-#define		__DEBUG_EXTPLT__					0
+#define		__DEBUG_MAP__		       0
+#define		__DEBUG_SECTS__		       0
+#define		__DEBUG_SORT__		       0	
+#define		__DEBUG_RELADD__	       0
+#define		__DEBUG_COPYPLT__	       0
+#define		__DEBUG_BSS__		       0
+#define		__DEBUG_REDIR__		       0
+#define		__DEBUG_RUNTIME__	       0
+#define		__DEBUG_CFLOW__		       0
+#define		__DEBUG_STATIC__	       1
+#define		__DEBUG_BREAKPOINTS__	       0
+#define		__DEBUG_ETRELintoETDYN__       0
+#define		__DEBUG_EXTPLT__	       0
 
 /* ELFsh architecture types */
 #define		ELFSH_ARCH_IA32			0
@@ -87,11 +87,11 @@
 #define		ELFSH_OSNUM			8
 #define		ELFSH_OS_ERROR			0xFF
 
-/* (k)e2dbg emory hosting types for the debugger hooks */
-#define		E2DBG_HOST_KERN		0
-#define		E2DBG_HOST_PROC		1
-#define		E2DBG_HOSTNUM		2
-#define		E2DBG_HOST_ERROR	0xFF
+/* (k)e2dbg memory hosting types for the debugger hooks */
+#define		E2DBG_HOST_KERN			0
+#define		E2DBG_HOST_PROC			1
+#define		E2DBG_HOSTNUM			2
+#define		E2DBG_HOST_ERROR		0xFF
 
 /* libelfsh block hijack types */
 #define		ELFSH_HIJACK_TYPE_FLOW		0x000000
@@ -275,34 +275,34 @@
 #define		STT_BLOCK			(STT_NUM)
 
 
-#define	DUMPABLE(sym)		(elfsh_get_symbol_type(sym) == STT_FUNC   || \
+#define	DUMPABLE(sym)	 (elfsh_get_symbol_type(sym) == STT_FUNC  || \
                          elfsh_get_symbol_type(sym) == STT_OBJECT || \
                          elfsh_get_symbol_type(sym) == STT_COMMON || \
                          elfsh_get_symbol_type(sym) == STT_SECTION)
 
-#define	FILE_IS_SPARC(obj)	(FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
-#define FILE_IS_SPARC32(obj)	(((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \
-                                (elfsh_get_arch((obj)->hdr) == EM_SPARC32PLUS)) ? 1 : 0)
+#define	FILE_IS_SPARC(obj)   (FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
+#define FILE_IS_SPARC32(obj) (((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \
+                             (elfsh_get_arch((obj)->hdr) == EM_SPARC32PLUS)) ? 1 : 0)
 
-#define FILE_IS_SPARC64(obj)	((elfsh_get_arch((obj)->hdr) == EM_SPARCV9) ? 1 : 0)
+#define FILE_IS_SPARC64(obj) ((elfsh_get_arch((obj)->hdr) == EM_SPARCV9) ? 1 : 0)
 
-#define	FILE_IS_MIPS(obj)	(elfsh_get_arch((obj)->hdr) == EM_MIPS || \
+#define	FILE_IS_MIPS(obj)  (elfsh_get_arch((obj)->hdr) == EM_MIPS || \
                            elfsh_get_arch((obj)->hdr) == EM_MIPS_RS3_LE ? 1 : 0)
 
-#define	FILE_IS_IA64(obj)	((elfsh_get_arch((obj)->hdr)) == EM_IA_64 ? 1 : 0)
-#define	FILE_IS_IA32(obj)	((elfsh_get_arch((obj)->hdr)) == EM_386 ? 1 : 0)
+#define	FILE_IS_IA64(obj)   ((elfsh_get_arch((obj)->hdr)) == EM_IA_64 ? 1 : 0)
+#define	FILE_IS_IA32(obj)   ((elfsh_get_arch((obj)->hdr)) == EM_386 ? 1 : 0)
 
-#define	FILE_IS_ALPHA64(obj)	((elfsh_get_arch((obj)->hdr)) == EM_ALPHA || \
-                               (elfsh_get_arch((obj)->hdr)) == EM_ALPHA_EXP ? 1 : 0)
+#define	FILE_IS_ALPHA64(obj) ((elfsh_get_arch((obj)->hdr)) == EM_ALPHA || \
+                             (elfsh_get_arch((obj)->hdr)) == EM_ALPHA_EXP ? 1 : 0)
 
-#define IS_REL(scn)		(FILE_IS_SPARC((scn)->parent)   || \
+#define IS_REL(scn)    (FILE_IS_SPARC((scn)->parent)   || \
                        FILE_IS_SPARC64((scn)->parent) || \
                        FILE_IS_IA64((scn)->parent)    || \
                        FILE_IS_ALPHA64((scn)->parent) ? 0 : 1)
 
 
 #define ELFSH_SELECT_INJECTION(a, b, d)		  \
-  do						  \
+do						  \
 {						  \
   if ((elfsh_get_ostype(a) == ELFSH_OS_FREEBSD || \
        elfsh_get_ostype(a) == ELFSH_OS_BEOS    || \
@@ -334,14 +334,13 @@ typedef struct	s_redir
 #define		ELFSH_REDIR_CFLOW	0
 #define		ELFSH_REDIR_ALTPLT	1
 #define		ELFSH_REDIR_ALTGOT	2
-  u_char	type;					/* Redirection type                */
+  u_char	type;			       /* Redirection type                */
 
 #define		ELFSH_ORIG_FUNC	        0
 #define		ELFSH_HOOK_FUNC		1
-  char		*name[2];				/* Name of involved functions      */
-  elfsh_Addr	 addr[2];				/* Redirection address             */
+  char		*name[2];		       /* Name of involved functions      */
+  elfsh_Addr	 addr[2];		       /* Redirection address             */
 }		elfshredir_t;
-
 
 
 /* ELFsh private stab entry */
@@ -353,7 +352,6 @@ typedef struct		s_stab
   unsigned short	desc;
   elfsh_Addr		value;
 }			elfshstabent_t;
-
 
 
 /* ELFsh private .notes entry format */
@@ -392,16 +390,20 @@ typedef struct		s_rel
   u_int			idx_dst;
   u_int			off_dst;
 
-#define	ELFSH_RELOC_SECTBASE		0		/* The dword is to be patched depending on section's base */
-#define	ELFSH_RELOC_FP			0xFFFFFFFF	/* This entry is a false positive : do not relocate */
+/* The dword is to be patched depending on section's base */
+#define	ELFSH_RELOC_SECTBASE		0           
+
+/* This entry is a false positive : do not relocate */
+#define	ELFSH_RELOC_FP			0xFFFFFFFF	
   u_int			type;
 }			elfshrel_t;
+
 
 /* forward declaration */
 struct			s_sect;
 struct			s_obj;
-typedef struct s_sect elfshsect_t;
-typedef struct s_obj  elfshobj_t;
+typedef struct s_sect	elfshsect_t;
+typedef struct s_obj	elfshobj_t;
 
 
 /* Section data type */
@@ -409,15 +411,15 @@ struct			s_sect
 {
 
   /* Filled at creation */
-  char			*name;		/* Cached name							*/
-  struct s_obj		*parent;	/* Parent Object						*/
-  elfsh_Phdr		*phdr;		/* the first parent segment					*/
+  char			*name;		/* Cached name			    */
+  struct s_obj		*parent;	/* Parent Object		    */
+  elfsh_Phdr		*phdr;		/* the first parent segment	    */
 
   /* Filled at creation, can be modified when SHT is sorted */
-  elfsh_Shdr		*shdr;		/* section header for this section				*/
-  int			index;		/* Section index in sht						*/
-  struct s_sect		*next;		/* Next section in the list					*/
-  struct s_sect		*prev;		/* Prev section in the list					*/
+  elfsh_Shdr		*shdr;		/* section header for this section  */
+  int			index;		/* Section index in sht		    */
+  struct s_sect		*next;		/* Next section in the list	    */
+  struct s_sect		*prev;		/* Prev section in the list	    */
 
   /* ELFsh section state */
 #define		ELFSH_SECTION_ANALYZED		(1 << 0)
@@ -425,22 +427,22 @@ struct			s_sect
 #define		ELFSH_SECTION_MOVED		(1 << 2)
 #define		ELFSH_SECTION_REMOVED		(1 << 3)
 #define		ELFSH_SECTION_RUNTIME		(1 << 4)
-  char			flags;		/* Analysed/Raw, Orphelin/Inserted, Moved, Removed, Runtime/Static */
+  char			flags;	   /* Analysed/Raw, Orphelin/Inserted, Moved, Removed, Runtime/Static */
 
   /* Filled at loading */
-  void			*data;		/* Section's data cache in file					*/
+  void			*data;	   /* Section's data cache in file	        */
 
   /* Filled at analysing */
-  void			*altdata;	/* Type dependant internal format				*/
-  void			*terdata;	/* Alternate type dependant internal format			*/
+  void			*altdata;  /* Type dependant internal format		*/
+  void			*terdata;  /* Alternate type dependant internal format	*/
 
   /* Filled at 'unrelocation' : ELFsh private relocs fmt only used in experimental features */
-  elfshrel_t		*rel;		/* ELFsh private relocation table for this section		*/
-  u_int			srcref;		/* Number of absolute reference FROM this section : sizeof(rel)	*/
-  u_int			dstref;		/* Number of absolute reference TO this section			*/
+  elfshrel_t		*rel;	   /* ELFsh private relocation table for this section	    */
+  u_int			srcref;	   /* Number of absolute reference FROM this section : sizeof(rel)  */
+  u_int			dstref;	   /* Number of absolute reference TO this section	    */
 
   /* Changed during extension */
-  u_int			curend;		/* Current real end of section : we save room when possible */
+  u_int			curend;	   /* Current real end of section : we save room when possible */
 
 };
 
@@ -448,13 +450,11 @@ struct			s_sect
 /* Link map structure */
 typedef struct		s_link_map
 {
-
-  elfsh_Addr		laddr;		/* Base address shared object is loaded at. */
-  char			*lname;		/* Absolute file name object was found in.  */
-  elfsh_Dyn		*lld;		/* Dynamic section of the shared object.    */
-  struct s_link_map	*lnext;		/* Next object in linkmap		    */
-  struct s_link_map	*lprev;		/* Prev object in linkmap		    */
-
+  elfsh_Addr		laddr;	   /* Base address shared object is loaded at. */
+  char			*lname;	   /* Absolute file name object was found in.  */
+  elfsh_Dyn		*lld;	   /* Dynamic section of the shared object.    */
+  struct s_link_map	*lnext;	   /* Next object in linkmap		       */
+  struct s_link_map	*lprev;	   /* Prev object in linkmap		       */
 }			elfshlinkmap_t;
 
 
@@ -462,9 +462,9 @@ typedef struct		s_link_map
 /* This structure has been introduced since the Embedded ELF Debugger */
 typedef struct	s_rehdr
 {
-  uint16_t	 rphtnbr;		/* Number of entries in RPHT */
-  uint16_t	 rshtnbr;		/* Number of entries in RSHT */
-  elfsh_Addr	 base;			/* Base address (runtime ET_DYN object base) */
+  uint16_t	 rphtnbr;	    /* Number of entries in RPHT */
+  uint16_t	 rshtnbr;	    /* Number of entries in RSHT */
+  elfsh_Addr	 base;		    /* Base address (runtime ET_DYN object base) */
 
 }		elfshrhdr_t;
 
@@ -477,28 +477,41 @@ typedef struct	s_dfmt
 }		elfshdfmt_t;
 
 /* core file support linux/bsd */
+#define ELFSH_CORE_LINUX		0x01000
+#define ELFSH_CORE_FREEBSD		0x10000
+#define ELFSH_CORE_HAS_NOTHING		0x00000
+#define ELFSH_CORE_HAS_PRSTATUS		0x00001
+#define ELFSH_CORE_HAS_PRPSINFO		0x00010
+#define ELFSH_CORE_HAS_FPREGSET		0x00100
 
-#define ELFSH_CORE_LINUX				0x01000
-#define ELFSH_CORE_FREEBSD			0x10000
-#define ELFSH_CORE_HAS_NOTHING	0x00000
-#define ELFSH_CORE_HAS_PRSTATUS	0x00001
-#define ELFSH_CORE_HAS_PRPSINFO	0x00010
-#define ELFSH_CORE_HAS_FPREGSET	0x00100
+#define roundup(x, y)			((((x)+((y)-1))/(y))*(y))
 
-#define roundup(x, y)  ((((x)+((y)-1))/(y))*(y))
 
-#define PRFNAMESZ 16  					/* Maximum command length saved */
-#define PRARGSZ   80  					/* Maximum argument bytes saved */
+typedef struct user_fpregs_struct fpregs_t;
 
-#define PRPSINFO_VERSION  1 		/* Current version of prpsinfo_t */
+#define PRFNAMESZ		16  	 /* Maximum command length saved */
+#define PRARGSZ			80  	 /* Maximum argument bytes saved */
+#define PRPSINFO_VERSION	1 	 /* Current version of prpsinfo_t */
+
+
+typedef struct	prpsinfo 
+{
+  int   	pr_version; 		 /* Version number of struct (1)      */
+  size_t        pr_psinfosz;  		 /* sizeof(prpsinfo_t) (1)            */
+  char  	pr_fname[PRFNAMESZ + 1]; /* Command name, null terminated (1) */
+  char  	pr_psargs[PRARGSZ  + 1]; /* Arguments, null terminated (1)    */
+}		prpsinfoBSD_t;
+
 
 typedef struct 	elfsh_bsdprpsinfo 
 {
-  int   	pr_version; 					/* Version number of struct (1) */
-  size_t  	pr_psinfosz;  				/* sizeof(prpsinfo_t) (1) */
-  char  	pr_fname[PRFNAMESZ+1];/* Command name, null terminated (1) */
-  char  	pr_psargs[PRARGSZ+1]; /* Arguments, null terminated (1) */
-} elfsh_bsdprpsinfo_t;
+  int   	pr_version; 		 /* Version number of struct (1) */
+  size_t  	pr_psinfosz;  		/* sizeof(prpsinfo_t) (1) */
+  char  	pr_fname[PRFNAMESZ+1];  /* Command name, null terminated (1) */
+  char  	pr_psargs[PRARGSZ+1];   /* Arguments, null terminated (1) */
+}		elfsh_bsdprpsinfo_t;
+
+
 
 typedef struct elfsh_bsdureg 
 {
@@ -521,7 +534,9 @@ typedef struct elfsh_bsdureg
   unsigned int  r_esp;
   unsigned int  r_ss;
   unsigned int  r_gs;
-} elfsh_bsduregset_t;
+}		elfsh_bsduregset_t;
+
+
 
 typedef struct elfsh_bsdfpreg 
 {
@@ -529,9 +544,10 @@ typedef struct elfsh_bsdfpreg
   unsigned char fpr_acc[8][10];
   unsigned long fpr_ex_sw;
   unsigned char fpr_pad[64];
-} elfsh_bsdfpregs_t;
+}		elfsh_bsdfpregs_t;
 
-#define PRSTATUS_VERSION  1 		/* Current version of prstatus_t */
+
+#define		PRSTATUS_VERSION  1 	/* Current version of prstatus_t */
 
 typedef struct elfsh_bsdprstatus
 {
@@ -568,15 +584,15 @@ typedef struct user_regs
 
 typedef struct user_fpregs
 {
-  long int cwd;
-  long int swd;
-  long int twd;
-  long int fip;
-  long int fcs;
-  long int foo;
-  long int fos;
-  long int st_space [20];
-} elfsh_fpregs_t;
+  long int	cwd;
+  long int	swd;
+  long int	twd;
+  long int	fip;
+  long int	fcs;
+  long int	foo;
+  long int	fos;
+  long int	st_space [20];
+}		elfsh_fpregs_t;
 
 typedef struct siginfo_t
 {
@@ -655,56 +671,57 @@ typedef struct bsd_core
 
 } elfshbsdcore_t;
 
+
+
+
 /* ELF object structure */
-struct		 	s_obj
+struct		 s_obj
 {
-  elfsh_Ehdr	 	*hdr;				/* Elf header */
-  elfsh_Shdr	 	*sht;				/* Section header table */
-  elfsh_Phdr	 	*pht;				/* Program Header table */
-  elfshsect_t	 	*sectlist;			/* Section linked list */
+  elfsh_Ehdr	 *hdr;				/* Elf header */
+  elfsh_Shdr	 *sht;				/* Section header table */
+  elfsh_Phdr	 *pht;				/* Program Header table */
+  elfshsect_t	 *sectlist;			/* Section linked list */
 
-  elfshrhdr_t	 	rhdr;				/* The Runtime header */
-  elfsh_Shdr	 	*rsht;				/* The Runtime SHT */
-  elfsh_Phdr	 	*rpht;				/* The Runtime PHT */
-  elfshsect_t	 	*rsectlist;			/* Runtime Section linked list */
+  elfshrhdr_t	 rhdr;				/* The Runtime header */
+  elfsh_Shdr	 *rsht;				/* The Runtime SHT */
+  elfsh_Phdr	 *rpht;				/* The Runtime PHT */
+  elfshsect_t	 *rsectlist;			/* Runtime Section linked list */
+  elfshsect_t	 *secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
+
+  elfshcore_t	 core;
+  elfshbsdcore_t bsdcore;
+  int		 coretype;
+
+  int		 fd;			/* File descriptor for the original file */
+  char		 *name;			/* Object path */
+  struct stat	 fstat;			/* File stat */
+  int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
+  int		 rights;		/* 0 = RO, 1 = WR */
+  time_t	 loadtime;		/* Time of Loading */
+  u_int		 id;			/* Object ID */
+
+  char		 running;		/* Is the process running ? */
+  char		 scanned;		/* Has the object already been block scanned ? */
+  char		 hdr_broken;		/* Is the header broken/corrupted ? */
+  char		 read;			/* Has the object already been read ? */
+  char		 shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
+  char		 strip;			/* Mark file as stripped */
+  char		 pending;		/* Beeing injected */
+  uint32_t	 nbrm;			/* Number of section headers to remove at saving */
+
+  char		 shtrb;			/* Reconstruct the SHT if non present */
+
+#define		 ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
+  struct s_obj	 *listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
+  u_char	 nbrel;			/* Number of injected ET_REL in this object */
   
-  elfshsect_t	 	*secthash[ELFSH_SECTION_MAX];	/* Section hash table (common) */
+  char		 buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
+  const char	 *error;		/* Last error string */
+  struct s_obj	 *next;			/* The list is simply linked */
 
-  elfshcore_t		core;
-  elfshbsdcore_t	bsdcore;
-  int			coretype;
-  
-  int			fd;			/* File descriptor for the original file */
-  char 			*name;			/* Object path */
-  struct stat	 	fstat;			/* File stat */
-  int			type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
-  int			rights;		/* 0 = RO, 1 = WR */
-  time_t		loadtime;		/* Time of Loading */
-  u_int			id;			/* Object ID */
-
-  char			running;		/* Is the process running ? */
-  char			scanned;		/* Has the object already been block scanned ? */
-  char			hdr_broken;		/* Is the header broken/corrupted ? */
-  char			read;			/* Has the object already been read ? */
-  char			shtrm;			/* Mark SHT and Unmapped sections as stripped ? */
-  char			strip;			/* Mark file as stripped */
-  char			pending;		/* Beeing injected */
-  uint32_t		nbrm;			/* Number of section headers to remove at saving */
-
-  char			shtrb;			/* Reconstruct the SHT if non present */
-
-#define			ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
-  struct s_obj		*listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
-  u_char		nbrel;			/* Number of injected ET_REL in this object */
-
-  char			buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
-  const char		*error;		/* Last error string */
-  struct s_obj		*next;			/* The list is simply linked */
-
-  hash_t	 	redir_hash;		/* Redirections hash table */
-  elfshlinkmap_t 	*linkmap;		/* Linkmap */
-
-  elfshdfmt_t	 	debug_format;		/* Debug format informations */
+  hash_t	 redir_hash;		/* Redirections hash table */
+  elfshlinkmap_t *linkmap;		/* Linkmap */
+  elfshdfmt_t	 debug_format;		/* Debug format informations */
 
   /* 
    ** Every object can have childs
@@ -716,14 +733,13 @@ struct		 	s_obj
    ** 
    ** Max childs for a father should be 99, then we can control a strange id like 101001 (1 => 10 => 1)
    */
-#define 		ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
-#define 		ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
-#define 		ELFSH_CHILD_MAX 	99
-  
-  hash_t	 	child_hash;		/* Childs hash table */
-  hash_t	 	parent_hash;		/* Immediate parent hash table */
-  hash_t	 	root_hash;		/* Root ELF objects for this file */
-  int		 	lastchildid;	      	/* Last child id */
+#define 	ELFSH_CHILD_BASE(o) 	(o->id * 100 * (o->lastchildid > 9 ? 10 : 1))
+#define 	ELFSH_CHILD_NEW(o) 	ELFSH_CHILD_BASE(o) + ++o->lastchildid
+#define 	ELFSH_CHILD_MAX 	99
+  hash_t	child_hash;		/* Childs hash table */
+  hash_t	parent_hash;		/* Immediate parent hash table */
+  hash_t	root_hash;		/* Root ELF objects for this file */
+  int		lastchildid;	      	/* Last child id */
 };
 
 
@@ -762,7 +778,6 @@ typedef struct	s_bp
 #define	ELFSH_BP_BREAK	0	/* Classical breakpoint */
 #define	ELFSH_BP_WATCH	1	/* Do not get back to debugger */
   u_char	flags;		/* Breakpoint flags */
-
 }		elfshbp_t;
 
 

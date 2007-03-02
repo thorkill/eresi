@@ -84,13 +84,16 @@ extern asm_processor	proc;
 #define MAX_CLIENTS		4
 #define MAX_SEND_SIZE		2048
 
+/* Parsing related defines */
+#define	REVM_MAXNEST_LOOP	10
+
 /* Debugger defines that must be in revm and not in the debugger */
-#define		E2DBG_NAME		"Embedded ELF Debugger"
-#define		E2DBG_ARGV0		"e2dbg"
-#define		E2DBG_SCRIPT_CONTINUE	1
-#define		ELFSH_SCRIPT_STOP	2
-#define		CMD_CONTINUE		"continue"
-#define		CMD_CONTINUE2		"cont"
+#define	E2DBG_NAME		"Embedded ELF Debugger"
+#define	E2DBG_ARGV0		"e2dbg"
+#define	E2DBG_SCRIPT_CONTINUE	1
+#define	ELFSH_SCRIPT_STOP	2
+#define	CMD_CONTINUE		"continue"
+#define	CMD_CONTINUE2		"cont"
 
 /* DUMP related defines */
 #define ELFSH_DUMP_CMD		1
@@ -233,22 +236,21 @@ char prompt_token[512];
 #define ELFSH_HELP		"elfsh_help"
 
 /* XXX: To merge in libui */
-#define GVZ_COLOR_BLUE  "\"blue\""
-#define GVZ_COLOR_CORAL "\"coral\""
-#define	GVZ_COLOR_CYAN	"\"cyan\""
-#define GVZ_COLOR_RED	"\"red\""
-#define GVZ_COLOR_GREEN	"\"green\""
-#define GVZ_COLOR_BLACK	"\"black\""
+#define GVZ_COLOR_BLUE		"\"blue\""
+#define GVZ_COLOR_CORAL		"\"coral\""
+#define	GVZ_COLOR_CYAN		"\"cyan\""
+#define GVZ_COLOR_RED		"\"red\""
+#define GVZ_COLOR_GREEN		"\"green\""
+#define GVZ_COLOR_BLACK		"\"black\""
 
-#define BLK_COLOR_FUNC	GVZ_COLOR_GREEN
-#define BLK_COLOR_NORM	GVZ_COLOR_CYAN
-#define BLK_COLOR_RET	GVZ_COLOR_CORAL
-
-#define BLK_COLOR_TRUE	GVZ_COLOR_GREEN
-#define BLK_COLOR_FALSE	GVZ_COLOR_RED
-#define BLK_COLOR_CONT	GVZ_COLOR_BLACK
-#define BLK_COLOR_CALL	GVZ_COLOR_BLUE
-#define BLK_COLOR_JUMP	GVZ_COLOR_BLACK
+#define BLK_COLOR_FUNC		GVZ_COLOR_GREEN
+#define BLK_COLOR_NORM		GVZ_COLOR_CYAN
+#define BLK_COLOR_RET		GVZ_COLOR_CORAL
+#define BLK_COLOR_TRUE		GVZ_COLOR_GREEN
+#define BLK_COLOR_FALSE		GVZ_COLOR_RED
+#define BLK_COLOR_CONT		GVZ_COLOR_BLACK
+#define BLK_COLOR_CALL		GVZ_COLOR_BLUE
+#define BLK_COLOR_JUMP		GVZ_COLOR_BLACK
 /* END XXX */
 
 /* For vm_display_object() */
@@ -262,8 +264,8 @@ char prompt_token[512];
 #define	REVM_INVALID_FIELD	((u_int) -1)
 
 /* Return of an input function in case of ignorable input */
-#define ELFSH_VOID_INPUT -1
-#define ELFSH_EXIT_INPUT -2
+#define ELFSH_VOID_INPUT	-1
+#define ELFSH_EXIT_INPUT	-2
 
 /* ELFsh actions, for parametrizing some function behaviors */
 #define	ELFSH_MERGE		(1 << 0)
@@ -385,6 +387,8 @@ char prompt_token[512];
 #define	CMD_JG			"jg"
 #define	CMD_JLE			"jle"
 #define	CMD_JGE			"jge"
+#define	CMD_FOREACH		"foreach"
+#define	CMD_FOREND		"forend"
 
 /* Prefixes */
 #define	CMD_SORT		 "sort"
@@ -490,6 +494,9 @@ typedef struct		s_args
   char			argc;		/* Number of args in param[] */
   revmcmd_t		*cmd;		/* Command descriptor */
   char			*name;		/* Command name */
+#define	REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int			curidx;		/* Current iteration index (foreach) */
+  char			*endlabel;	/* Label for forend (or foreach) */
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
@@ -619,8 +626,10 @@ typedef struct        s_job
   u_char              active;            
   time_t              createtime;
   int                 logfd;            /* Log file descriptor */
-  revmscreen_t       screen;           /* Last printed screen */
+  revmscreen_t        screen;           /* Last printed screen */
   char		      *oldline;		/* Previous command line */
+
+  
 
 #define       ELFSH_JOB_LOGGED (1 << 0)
   u_char              state;            /* Job state flags */
@@ -950,13 +959,6 @@ int		cmd_relinject();
 int		cmd_stop();
 int		cmd_hijack();
 int		cmd_cmp();
-int		cmd_jmp();
-int		cmd_je();
-int		cmd_jne();
-int		cmd_jg();
-int		cmd_jl();
-int		cmd_jge();
-int		cmd_jle();
 int		cmd_insert();
 int		cmd_remove();
 int		cmd_sort();
@@ -993,6 +995,17 @@ int		cmd_vectors();
 int		cmd_tables();
 int		cmd_inform();
 int		cmd_uninform();
+
+/* Scripting only commands */
+int		cmd_jmp();
+int		cmd_je();
+int		cmd_jne();
+int		cmd_jg();
+int		cmd_jl();
+int		cmd_jge();
+int		cmd_jle();
+int		cmd_foreach();
+int		cmd_forend();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);
@@ -1039,25 +1052,28 @@ int		vm_getoutput(u_int index, u_int argc, char **argv);
 int		vm_getdisasm(u_int index, u_int argc, char **argv);
 int		vm_gethexa(u_int index, u_int argc, char **argv);
 int		vm_getvarparams(u_int index, u_int argc, char **argv);
+int		vm_getforparams(u_int index, u_int argc,  char **argv);
 
 /* Libasm resolve handlers */
 void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);
 char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
-revmobj_t	*vm_lookup_param(char *param, u_int mode);
+revmobj_t	*vm_lookup_param(char *param);
 revmobj_t	*vm_check_object(revmobj_t *pobj);
+void		vm_destroy_object(revmobj_t *pobj);
+revmobj_t	 *vm_copy_object(revmobj_t *pobj);
 elfshobj_t	*vm_getfile(u_int index);
 revmmod_t	*vm_getmod(u_int index);
 char		*vm_reverse(elfshobj_t *file, u_int vaddr);
 
 /* Lookup functions */
-elfshobj_t	*vm_lookup_file(char *param);
 revmobj_t	*vm_lookup_immed(char *param);
-elfsh_Addr	vm_lookup_index(char *param);
-char		*vm_lookup_var(char *param);
+revmobj_t	*vm_lookup_var(char *param);
+elfshobj_t	*vm_lookup_file(char *param);
+u_int		vm_lookup_index(char *param);
 char		*vm_lookup_string(char *param);
-revmobj_t	*vm_lookup_addr(char *param);
+elfsh_Addr	vm_lookup_addr(char *param);
 
 /* Lazy Abstract Type system functions */
 int		vm_convert2str(revmobj_t *obj);

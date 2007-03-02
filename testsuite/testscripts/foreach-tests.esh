@@ -1,0 +1,45 @@
+#!/usr/local/bin/elfsh
+
+quiet
+
+add $hash[test2] Intel
+add $hash[test2] Alpha
+add $hash[test2] Sparc32
+add $hash[test2] Mips
+add $hash[test2] Sparc64
+add $hash[test2] AMD
+add $hash[test2] Pa-risc
+tables test2
+
+beginning:
+print Starting first foreach
+
+foreach $elem of test2 as Sparc
+  print Regex Matched $elem
+forend
+
+print Starting second foreach
+tables test2
+
+foreach $element of test2
+  print Table contains element : $element
+forend
+
+load /bin/ls
+
+set $entnbr 1.sht[.dynsym].size
+div $entnbr 1.sht[.dynsym].entsize
+vlist
+
+print Third loop until $entnbr :
+print
+
+foreach $idx of 0 until $entnbr
+  print Symbol $idx is 1.dynsym[$idx].name
+forend
+
+unload /bin/ls
+
+end:
+print Program finished
+quit

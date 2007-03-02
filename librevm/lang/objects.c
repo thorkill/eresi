@@ -220,7 +220,6 @@ revmL2_t	*vm_create_L2ENT(void	*get_obj,
 /* The high level function for object conversion */
 int		vm_convert_object(revmobj_t *obj, u_int objtype)
 {
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!obj)
@@ -311,3 +310,33 @@ revmobj_t		*vm_check_object(revmobj_t *pobj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (pobj));
 }
 
+
+/* Destroy an object */
+void		vm_destroy_object(revmobj_t *pobj)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (pobj->type == ASPECT_TYPE_STR && pobj->immed)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, pobj->immed_val.str);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, pobj);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+/* Destroy an object */
+revmobj_t	 *vm_copy_object(revmobj_t *pobj)
+{
+  revmobj_t	*copy;
+  char		*str;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  str = NULL;
+  if (!pobj)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid NULL parameter", NULL);
+  if (pobj->type == ASPECT_TYPE_STR && pobj->immed)
+    str = strdup(pobj->immed_val.str);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, copy, sizeof(revmobj_t), NULL);
+  memcpy(copy, pobj, sizeof(revmobj_t));
+  if (str)
+    copy->immed_val.str = str;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, copy);
+}

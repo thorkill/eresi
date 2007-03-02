@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.24 2007-02-26 17:47:15 thor Exp $
+ * $Id: function.c,v 1.25 2007-03-02 10:56:10 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -375,6 +375,10 @@ mjrblock_t*	mjr_functions_get(mjrcontext_t *ctxt)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Flow analysis failed", 0);
 }
+
+
+
+
 
 /* Create the block information to be saved in file */
 int			mjr_function_save(mjrfunc_t *cur, mjrbuf_t *buf)

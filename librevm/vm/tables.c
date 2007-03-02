@@ -820,6 +820,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_FLUSH   , (void *) cmd_flush   , (void *) NULL            , 1, HLP_FLUSH);
   vm_addcmd(CMD_COLOR   , (void *) cmd_color   , (void *) vm_getoption3   , 0, HLP_COLOR);
   vm_addcmd(CMD_NOCOLOR , (void *) cmd_nocolor , (void *) NULL            , 0, HLP_NOCOLOR);
+
   vm_addcmd(CMD_JMP     , (void *) cmd_jmp     , (void *) vm_getoption    , 0, HLP_JMP);
   vm_addcmd(CMD_JE      , (void *) cmd_je      , (void *) vm_getoption    , 0, HLP_JE);
   vm_addcmd(CMD_JNE     , (void *) cmd_jne     , (void *) vm_getoption    , 0, HLP_JNE);
@@ -827,6 +828,10 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_JL      , (void *) cmd_jl      , (void *) vm_getoption    , 0, HLP_JL);
   vm_addcmd(CMD_JGE     , (void *) cmd_jge     , (void *) vm_getoption    , 0, HLP_JGE);
   vm_addcmd(CMD_JLE     , (void *) cmd_jle     , (void *) vm_getoption    , 0, HLP_JLE);
+
+  vm_addcmd(CMD_FOREACH , (void *) cmd_foreach , (void *) vm_getforparams , 0, HLP_FOREACH);
+  vm_addcmd(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL            , 0, HLP_FOREND);
+    
   vm_addcmd(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) vm_getoption  , 0, HLP_SDIR);
   vm_addcmd(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
   vm_addcmd(CMD_SOURCE  , (void *) cmd_source  , (void *) vm_getvarparams , 0, HLP_SOURCE);
@@ -840,7 +845,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
   vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
   vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption , 1, HLP_HASH);
-  vm_addcmd(CMD_CONFIGURE, cmd_configure      , vm_getvarparams, 0, HLP_CONFIGURE);
+  vm_addcmd(CMD_CONFIGURE, cmd_configure       , vm_getvarparams, 0, HLP_CONFIGURE);
 
   /* Type related commands */
   vm_addcmd(CMD_TYPE    , cmd_type            , vm_getvarparams, 0, HLP_TYPE);

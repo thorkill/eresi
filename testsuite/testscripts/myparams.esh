@@ -1,6 +1,6 @@
-#!../../vm/elfsh
+#!/usr/local/bin/elfsh
 
-load ../../openssl64
+load /bin/ls
 
 print Parameter 1 : $1
 set $full 1.sht[.dynsym].size
@@ -8,11 +8,11 @@ div $full 1.sht[.dynsym].entsize
 print Dynamic symtab contains $full entries
 cmp $full $1
 jle err
-print Entry $1 is 1.dynsym[$1].tag
+print Entry $1 is 1.dynsym[$1].value
 jmp end
 err:
 print Table is too small
 end:
 print End of scripts, listing variables :
-vtable
+vlist
 quit

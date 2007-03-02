@@ -1,6 +1,6 @@
-#!/usr/bin/elfsh
+#!/usr/local/bin/elfsh
 
-quiet
+#quiet
 
 print Parameters : $1 $2 $3
 print 
@@ -8,9 +8,9 @@ print
 set $index 1
 
 loop:
+#profile enable warn
 cmp $index $#
-je end
-
+jl end
 load $$index
 dynsym printf
 unload $$index

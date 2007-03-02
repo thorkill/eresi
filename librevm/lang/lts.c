@@ -77,10 +77,9 @@ int		vm_convert2str(revmobj_t *obj)
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), DFMT, val64);
+      snprintf(tmp, sizeof(tmp), RDFMT, val64);
       obj->immed_val.ent = 0;
       obj->immed_val.str = strdup(tmp);
- 
       obj->type = ASPECT_TYPE_STR;
       obj->immed = 1;
       obj->size = strlen(tmp);

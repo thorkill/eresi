@@ -21,11 +21,11 @@
 
    This is necessary when we do SHT reconstruction or when we unmerge
    the PLT section from the TEXT section on the MIPS architecture.
-   */
+*/
 int					elfsh_merge_shtentry(elfshobj_t *file, 
-										 int	phdr_index, 
-										 elfsh_Shdr shdr, 
-										 char	*name)
+							     int	phdr_index, 
+							     elfsh_Shdr shdr, 
+							     char	*name)
 {
 	elfshsect_t		*sect;
 	int				index;
@@ -448,18 +448,18 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
 /* Recreate the section header table examining the program header table */
 int		elfsh_rebuild_sht(elfshobj_t *file)
 {
-	int	num;
+  int		num;
 
-	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-	/* Some preliminary stuffs */
-	if (!elfsh_get_pht(file, &num) || elfsh_init_sht(file, num) < 0)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-					 "Unable to get PHT or to init SHT", -1);
+  /* Some preliminary stuffs */
+  if (!elfsh_get_pht(file, &num) || elfsh_init_sht(file, num) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to get PHT or to init SHT", -1);
 
-	//  sht_first_round(file, num);
-	//  sht_second_round(file, num);
-
-	file->shtrb = 1;
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  //  sht_first_round(file, num);
+  //  sht_second_round(file, num);
+	
+  file->shtrb = 1;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

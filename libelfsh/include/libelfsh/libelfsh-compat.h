@@ -147,6 +147,7 @@ typedef int64_t		elfsh_SAddr;
 #define	AFMT		"%016llX"
 #define	UFMT		"%016llu"
 #define DFMT		"%016lld"
+#define RDFMT		"%lld"
 
 #if !defined(__mips64)
  #define	swaplong(x)	swap64(x)
@@ -194,6 +195,7 @@ typedef int32_t		elfsh_SAddr;
 #define	AFMT		"%08X"
 #define UFMT		"%08u"
 #define DFMT		"%08d"
+#define	RDFMT		"%d"
 #define swaplong(x)	swap32(x)
 
 #endif	/* BITS */

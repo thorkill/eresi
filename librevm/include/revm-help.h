@@ -150,6 +150,15 @@
 #define	HLP_JLE			"Jump on label if lower or equal (use last cmp result)"
 #define	HLP_JGE			"Jump on label if greater or equal (use last cmp result)"
 
+#define	HLP_FOREACH		"Iterate on hash tables or arrays      \n\n\t" \
+				"foreach idxvar of minint until maxint \n\t"   \
+				"(...)                                 \n\t"   \
+				"forend                                \n\n\t" \
+				"foreach elmvar of hashobj [as regx]   \n\t"   \
+				"(...)                                 \n\t"   \
+				"forend                                \n\n"
+#define	HLP_FOREND		HLP_FOREACH
+
 /* Prefixes */
 #define	HLP_SORT		 "Sorting prefix (use a -addr- or s -size-)"
 #define	HLP_QUIET		 "Toggle quiet flag (do not print executed commands)"

@@ -148,14 +148,16 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   /* Force the final relocations to be done (old_* symbols) */
   for (index = 0; index < file->nbrel; index++)
     {
-
+      
 #if __DEBUG_MAP__
-      printf("[DEBUG_MAP] Now relocating %s in second stage \n", file->listrel[index]->name);
+      printf("[DEBUG_MAP] Now relocating %s in second stage \n", 
+	     file->listrel[index]->name);
 #endif      
 
-      if (elfsh_relocate_object(file, file->listrel[index], ELFSH_RELOC_STAGE2) < 0)
+      if (elfsh_relocate_object(file, file->listrel[index], 
+				ELFSH_RELOC_STAGE2) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Final stage relocation failed", -1);
+		     "Final stage relocation failed", -1);
     }
 
   /* Insert a padding section to make the latest top-injected code section starting on a page bound */
@@ -165,13 +167,14 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   totsize = actual->shdr->sh_addr - sizeof(elfsh_Ehdr) - (sizeof(elfsh_Phdr) * file->hdr->e_phnum);
   if (totsize % elfsh_get_pagesize(file))
     {
-      actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, NULL, ELFSH_CODE_INJECTION,
+      actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, 
+				    NULL, ELFSH_CODE_INJECTION,
 				    totsize % elfsh_get_pagesize(file), 0);
       if (!actual)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to inject page padding section", -1);
+		     "Unable to inject page padding section", -1);
     }
-
+  
   /* Copy the object before saving (so that we dont strip the working file) */
   file = elfsh_copy_obj(file);
   if (file == NULL)
@@ -252,6 +255,19 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 
   if ((file->sectlist) && !file->shtrb)
     file->sectlist->shdr->sh_size = 0;
+
+  /* snape BUG : the executable PT_LOAD contains the previous elf header
+     image at its beginning, and you write at offset 0, thus it put back 
+     the offset and entnbr to 0 because the ELF header was already written
+     in fd previously : see load0 section offset after reconstructing sht 
+
+     Solution: You need to mirror sizeof(elfsh_Ehdr) bytes of the
+     header inside the PT_LOAD data cache too ! (.load0 ->data pointer)
+
+     Better to do that at the end in sht_rebuild.c
+
+     -may (Feb 28 2007)
+  */
 
   /* Write each sections in the destination file at their respective offset */
   for (written_sht = 0, actual = file->sectlist; actual; actual = actual->next)
