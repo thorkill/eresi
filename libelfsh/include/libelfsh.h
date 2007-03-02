@@ -486,21 +486,9 @@ typedef struct	s_dfmt
 
 #define roundup(x, y)			((((x)+((y)-1))/(y))*(y))
 
-
-typedef struct user_fpregs_struct fpregs_t;
-
 #define PRFNAMESZ		16  	 /* Maximum command length saved */
 #define PRARGSZ			80  	 /* Maximum argument bytes saved */
 #define PRPSINFO_VERSION	1 	 /* Current version of prpsinfo_t */
-
-
-typedef struct	prpsinfo 
-{
-  int   	pr_version; 		 /* Version number of struct (1)      */
-  size_t        pr_psinfosz;  		 /* sizeof(prpsinfo_t) (1)            */
-  char  	pr_fname[PRFNAMESZ + 1]; /* Command name, null terminated (1) */
-  char  	pr_psargs[PRARGSZ  + 1]; /* Arguments, null terminated (1)    */
-}		prpsinfoBSD_t;
 
 
 typedef struct 	elfsh_bsdprpsinfo 
@@ -510,8 +498,6 @@ typedef struct 	elfsh_bsdprpsinfo
   char  	pr_fname[PRFNAMESZ+1];  /* Command name, null terminated (1) */
   char  	pr_psargs[PRARGSZ+1];   /* Arguments, null terminated (1) */
 }		elfsh_bsdprpsinfo_t;
-
-
 
 typedef struct elfsh_bsdureg 
 {
