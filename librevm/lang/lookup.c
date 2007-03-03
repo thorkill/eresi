@@ -128,6 +128,7 @@ revmobj_t		*vm_lookup_immed(char *param)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
+  /* Not necessary to call those functions if there is no loaded file */
   if (world.curjob->current)
     {
 
@@ -135,8 +136,6 @@ revmobj_t		*vm_lookup_immed(char *param)
       sym = elfsh_get_symbol_by_name(world.curjob->current, param);
       if (sym != NULL)
 	{
-	  //printf("symbol_by_name returned %016llX for %s \n", sym->st_value, 
-	  //param);
 	  ptr = vm_create_LONG(0, sym->st_value);
 	  goto good;
 	}
@@ -145,8 +144,6 @@ revmobj_t		*vm_lookup_immed(char *param)
       sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
       if (sym != NULL)
 	{
-	  //printf("dynsymbol_by_name returned %016llX for %s \n", sym->st_value, 
-	  //param);
 	  ptr = vm_create_LONG(0, sym->st_value);
 	  goto good;
 	}
