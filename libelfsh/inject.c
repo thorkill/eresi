@@ -29,6 +29,8 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
   u_int		index;
   int		err;
   elfshsect_t	*relsect;
+  int		check;
+  elfsh_Addr	entrypoint;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -76,9 +78,23 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 		      "Cannot find guard section", -1);
 
   /* Pad the new section if needed */
+  /*
+    I KEEP OLD METHOD ON COMMENT (IN CASE)
   if (mod && (hdr.sh_size % mod))
     {
       rsize = hdr.sh_size + mod - (hdr.sh_size % mod);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,rdata, rsize, -1);
+      if (data)
+	memcpy(rdata, data, hdr.sh_size);
+      hdr.sh_size = rsize;
+      data = rdata;
+    }
+  */
+  /* New method that how we should do no ? */
+  check = (phdr->p_vaddr - phdr->p_offset) & (phdr->p_align - 1);
+  if (check != 0)
+    {
+      rsize = hdr.sh_size + (check + 1);	
       XALLOC(__FILE__, __FUNCTION__, __LINE__,rdata, rsize, -1);
       if (data)
 	memcpy(rdata, data, hdr.sh_size);
@@ -108,28 +124,31 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
       phdr->p_vaddr  -= hdr.sh_size;
       phdr->p_paddr  -= hdr.sh_size;
     }
+
+  entrypoint = elfsh_get_entrypoint(file->hdr);
   
   /* Fixup file offset for all loadable segments and fixup PHDR base vaddr */
   for (range = 0, cur = file->pht; range < file->hdr->e_phnum; range++)
+    {
+      /* That's how we shift on ET_EXEC */
+      if (cur[range].p_type == PT_PHDR && 
+	  elfsh_get_objtype(file->hdr) != ET_DYN)
+	{
+	  cur[range].p_vaddr -= hdr.sh_size;
+	  cur[range].p_paddr -= hdr.sh_size;
+	}
+      else if (cur + range != phdr && cur[range].p_offset >= hdr.sh_offset)
+	{
+	  cur[range].p_offset += hdr.sh_size;
 
-    /* That's how we shift on ET_EXEC */
-    if (cur[range].p_type == PT_PHDR && 
-	elfsh_get_objtype(file->hdr) != ET_DYN)
-      {
-	cur[range].p_vaddr -= hdr.sh_size;
-	cur[range].p_paddr -= hdr.sh_size;
-      }
-    else if (cur + range != phdr && cur[range].p_offset >= hdr.sh_offset)
-      {
-	cur[range].p_offset += hdr.sh_size;
-
-	/* That's how we shift the address space on ET_DYN */
-	if (elfsh_get_objtype(file->hdr) == ET_DYN)
-	  {
-	    cur[range].p_vaddr += hdr.sh_size;
-	    cur[range].p_paddr += hdr.sh_size;
-	  }
-      }
+	  /* That's how we shift the address space on ET_DYN */
+	  if (elfsh_get_objtype(file->hdr) == ET_DYN)
+	    {
+	      cur[range].p_vaddr += hdr.sh_size;
+	      cur[range].p_paddr += hdr.sh_size;
+	    }
+	}	  
+    }
 
   /* Inject our section with the associated header */
   index = first->index;
