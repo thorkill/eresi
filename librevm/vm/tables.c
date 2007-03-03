@@ -736,6 +736,7 @@ static void	setup_cmdhash()
       vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
       vm_addcmd(CMD_VECTORS   , (void *) cmd_vectors  , (void *) vm_getvarparams, 0, HLP_VECTORS);
       vm_addcmd(CMD_TABLES    , (void *) cmd_tables   , (void *) vm_getvarparams, 0, HLP_TABLES);
+      vm_addcmd(CMD_EMPTY     , (void *) cmd_empty    , (void *) vm_getvarparams, 0, HLP_EMPTY);
     }
 
   /* Command line only commands */

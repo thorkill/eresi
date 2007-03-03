@@ -18,4 +18,7 @@ foreach $elem of test2 matching Sparc
   print Regex Matched $elem
 forend
 
+empty test2
+tables test2
+
 # Special case where nothing is after the forend

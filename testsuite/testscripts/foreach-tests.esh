@@ -11,6 +11,10 @@ add $hash[test2] AMD
 add $hash[test2] Pa-risc
 tables test2
 
+# We need a parameter
+cmp $# 1
+jne error
+
 beginning:
 print Starting first foreach
 
@@ -39,7 +43,10 @@ foreach $idx of 0 until $entnbr
 forend
 
 unload /usr/bin/ssh
-
-end:
 print Program finished
+empty test2
+tables test2
 quit
+
+error:
+print This script needs one parameter (a file name)

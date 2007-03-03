@@ -204,6 +204,7 @@
 #define	HLP_SWITCH		 "Change the current working object"
 #define	HLP_LIST		 "List loaded ELF objects"
 #define	HLP_WORKSPACE		 "Syntax: workspace [name] : List or switch workspaces"
+#define	HLP_EMPTY		 "Empty hash tables given as parameters"
 #define	HLP_TABLES		 "Print hash tables list and content \n\n\t"      \
 				 CMD_TABLES"      : Print all tables \n\t"        \
 				 CMD_TABLES" regx : Print matching tables \n\n\t" \

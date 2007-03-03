@@ -415,6 +415,7 @@ char prompt_token[512];
 #define	CMD_WORKSPACE2		 "w"
 #define	CMD_VECTORS		 "vectors"
 #define	CMD_TABLES		 "tables"
+#define	CMD_EMPTY		 "empty"
 
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
@@ -993,6 +994,7 @@ int             cmd_version();
 int             cmd_hashx();
 int		cmd_vectors();
 int		cmd_tables();
+int		cmd_empty();
 int		cmd_inform();
 int		cmd_uninform();
 
