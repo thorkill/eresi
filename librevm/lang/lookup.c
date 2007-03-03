@@ -128,23 +128,30 @@ revmobj_t		*vm_lookup_immed(char *param)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
-  /* Lookup .symtab */
-  sym = elfsh_get_symbol_by_name(world.curjob->current, param);
-  if (sym != NULL)
+  if (world.curjob->current)
     {
-      //printf("symbol_by_name returned %016llX for %s \n", sym->st_value, param);
-      ptr = vm_create_LONG(0, sym->st_value);
-      goto good;
+
+      /* Lookup .symtab */
+      sym = elfsh_get_symbol_by_name(world.curjob->current, param);
+      if (sym != NULL)
+	{
+	  //printf("symbol_by_name returned %016llX for %s \n", sym->st_value, 
+	  //param);
+	  ptr = vm_create_LONG(0, sym->st_value);
+	  goto good;
+	}
+      
+      /* Lookup .dynsym */
+      sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
+      if (sym != NULL)
+	{
+	  //printf("dynsymbol_by_name returned %016llX for %s \n", sym->st_value, 
+	  //param);
+	  ptr = vm_create_LONG(0, sym->st_value);
+	  goto good;
+	}
     }
 
-  /* Lookup .dynsym */
-  sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
-  if (sym != NULL)
-    {
-      //printf("dynsymbol_by_name returned %016llX for %s \n", sym->st_value, param);
-      ptr = vm_create_LONG(0, sym->st_value);
-      goto good;
-    }
 
   /* FIXME: Constants must be differentiated by their size ! */
   actual = hash_get(&const_hash, param);

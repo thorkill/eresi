@@ -632,7 +632,8 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
 
       if (last)
 	{
-	  if (tstruct->type != EDFMT_TYPE_UNION && last->size == tstruct->size - last->start)
+	  if (tstruct->type != EDFMT_TYPE_UNION && 
+	      last->size == tstruct->size - last->start)
 	    last->size = start - last->start;
 
 	  last->next = ltype;

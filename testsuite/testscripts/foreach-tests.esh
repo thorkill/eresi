@@ -25,7 +25,7 @@ foreach $element of test2
   print Table contains element : $element
 forend
 
-load /bin/ls
+load /usr/bin/ssh
 
 set $entnbr 1.sht[.dynsym].size
 div $entnbr 1.sht[.dynsym].entsize
@@ -38,7 +38,7 @@ foreach $idx of 0 until $entnbr
   print Symbol $idx is 1.dynsym[$idx].name
 forend
 
-unload /bin/ls
+unload /usr/bin/ssh
 
 end:
 print Program finished

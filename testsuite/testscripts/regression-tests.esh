@@ -16,10 +16,11 @@ info
 
 # Uncomment me for a quiet output log
 # quiet
+# Uncomment me for a very verbose output
+#profile enable warn
 
 # Now load the files
-load 	/usr/local/bin/elfsh
-load 	/lib/libc.so.6
+load 	/bin/ls
 list
 switch 1 
 
@@ -246,8 +247,9 @@ set 1.rel[1][62].type   	R_386_GOTPC
 rel 062]
 
 # Now leave, unloaded files are closed without saving
-save /tmp/elfsh.dumped
-unload /usr/local/bin/elfsh
+save /tmp/test-save
+unload /bin/ls
+exec rm /tmp/test-save
 quit
 
 
