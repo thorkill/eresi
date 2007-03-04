@@ -16,6 +16,7 @@ hash_t types_added;
 /* Optimize stack allocation by setting a global pointer for string things */
 char buf[BUFSIZ];
 
+/* Advanced iterating of a structure element */
 static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, u_char main_type)
 {
   edfmttype_t		*etype = NULL;
@@ -31,6 +32,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);
 
+  /* Do we already have a type for this entry ? */
   if (type->transtype != NULL)
     {
       if (main_type)
@@ -39,6 +41,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type->transtype);
     }
 
+  /* Thread by type */
   switch(type->type)
     {
     case STABS_TYPE_UNION:
@@ -46,9 +49,11 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       if (type->data)
 	str = type->data->name;
 
+      /* Resolve a name from a parent link */
       if (!str && type->parent_link && type->parent_link->data)
 	str = type->parent_link->data->name;
 
+      /* If we didn't have any name, we generate it */
       if (!str)
 	{
 	  snprintf(buf, BUFSIZ - 1, "s_(%d)", rand() % 99999);
@@ -65,7 +70,8 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	  etype = edfmt_add_type_union(str,
 				       (int) type->u.struct_union.size);
 	}
-
+      
+      /* Add the new type to avoid infinite loop */
       if (etype)
 	{
 	  type->transtype = etype;
@@ -73,6 +79,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	  addtype = 0;
 	}
 
+      /* Add structure / union members */
       for (attr = type->u.struct_union.attr; attr != NULL; attr = attr->next)
 	{
 	  if (attr->type)
@@ -85,6 +92,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	}
       break;
     case STABS_TYPE_RANGE:
+      /* A range is a basic type */
       etype = edfmt_add_type_basic(type->data->name, (int) type->u.r.size);
       break;
     case STABS_TYPE_ARRAY:
@@ -93,6 +101,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       str = type->data->name;
       if (str == NULL)
 	{
+	  /* Generate an array type */
 	  snprintf(buf, BUFSIZ - 1, "%s[%ld]", stype->name, type->u.arr.high+1);
 	  str = buf;	  
 	}
@@ -165,6 +174,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, etype);
 }
 
+/* This function iterate from normal way */
 static int		edfmt_stabs_transform_type(edfmtstabstype_t *type_list)
 {
   edfmtstabstype_t	*type;
@@ -181,6 +191,7 @@ static int		edfmt_stabs_transform_type(edfmtstabstype_t *type_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Transform a variable */
 static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
 {
   edfmttype_t 		*stype;
@@ -197,6 +208,7 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
       if (!var->type)
 	continue;
 
+      /* For the moment we handle only global variables */
       switch(var->scope)
 	{
 	case STABS_SCOPE_GVAR:
@@ -210,6 +222,7 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Transform a function */
 static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
 {
   edfmtstabsfunc_t	*func;
@@ -256,7 +269,7 @@ static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/* Organize the whole transformation of the stabs format */
 static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile, 
 						  edfmtfile_t *parent)
 {
@@ -303,7 +316,7 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform stabs informations */
+/* Transform stabs informations - Entry point */
 int			edfmt_stabs_transform(elfshobj_t *file)
 {
   edfmtstabsinfo_t 	*tinfo;

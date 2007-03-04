@@ -9,7 +9,6 @@
 #define __LIBEDFMT_H__
 
 #include "libelfsh.h"
-#include "libaspect.h"
 
 /* Defines */
 #define 	UNKNOWN_FORMAT 			0
@@ -56,41 +55,6 @@ elfsh_Addr     	edfmt_lookup_addr(elfshobj_t *file, char *param);
 void 	       	*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
 				  int astep, int nsize);
 int 		edfmt_clean_pool(char **pool);
-
-/* api.c */
-int		edfmt_add_init(elfshobj_t *file);
-int		edfmt_add_end();
-int		edfmt_update_type(edfmttype_t *type);
-int		edfmt_update_var(edfmtvar_t *var);
-int		edfmt_update_func(edfmtfunc_t *func);
-int		edfmt_change_type_nfile(edfmttype_t *type);
-edfmtfile_t   	*edfmt_restore_parent_file();
-edfmtfile_t	*edfmt_get_current_file();
-edfmtfile_t	*edfmt_get_inc_file(edfmtfile_t *file, char *name);
-edfmtfile_t    	*edfmt_add_file(edfmtfile_t *parent_file, char *name, elfsh_Addr start, elfsh_Addr end);
-int		edfmt_reset_file();
-int		edfmt_reactive_file();
-edfmtinfo_t    	*edfmt_get_uniinfo(elfshobj_t *file);
-edfmttype_t	*edfmt_add_type_unk(char *name);
-edfmttype_t	*edfmt_add_type_basic(char *name, int size);
-edfmttype_t	*edfmt_add_type_array(char *name, int size, edfmttype_t *type);
-edfmttype_t	*edfmt_add_type_ptr(char *name, edfmttype_t *type);
-edfmttype_t	*edfmt_add_type_struct(char *name, int size);
-edfmttype_t	*edfmt_add_type_union(char *name, int size);
-edfmttype_t	*edfmt_add_type_attr(edfmttype_t *tstruct, char *name, 
-				     int start, int size, edfmttype_t *type);
-edfmttype_t	*edfmt_add_type_void(char *name);
-edfmttype_t	*edfmt_add_type_link(char *name, edfmttype_t *type);
-
-edfmtvar_t	*edfmt_add_var_global(edfmttype_t *type, char *name, 
-				      elfsh_Addr addr);
-edfmtfunc_t	*edfmt_add_func(char *name, edfmttype_t *ret, 
-				elfsh_Addr start, elfsh_Addr end);
-edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
-			       u_int reg, int pos, edfmttype_t *type);
-edfmttype_t	*edfmt_check_type(char *name);
-edfmtvar_t	*edfmt_check_var(char *name);
-edfmtfunc_t	*edfmt_check_func(char *name);
 
 /* stabs.c */
 edfmtstabsinfo_t *edfmt_stabs_getinfo(elfshobj_t *file);

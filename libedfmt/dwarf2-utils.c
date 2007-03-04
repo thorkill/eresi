@@ -7,7 +7,9 @@
 
 #include "libedfmt.h"
 
-/* Read an unsigned leb128 number */
+/* Read an unsigned leb128 number as describe on the dwarf2 documentation 
+   a little bit optimize
+ */
 u_long 			edfmt_read_uleb128(void *data, u_int *bread)
 {
   u_long		sum = 0;
@@ -31,7 +33,9 @@ u_long 			edfmt_read_uleb128(void *data, u_int *bread)
   NOPROFILER_ROUT(sum);
 }
 
-/* Read a signed leb128 number */
+/* Read a signed leb128 number as describe on the dwarf2 documentation 
+   a little bit optimize
+ */
 long 			edfmt_read_leb128(void *data, u_int *bread)
 {
   long			sum = 0;

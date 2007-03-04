@@ -308,7 +308,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 
 	}
-      
+
       /* Perform relocation */
       if (elfsh_relocate_entry(new, cur, dword, addr, reltab) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -457,6 +457,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
       /* Avoid non-injectable symbols */
       if (type != STT_FUNC && type != STT_OBJECT)
 	continue;
+
       if (sym[index].st_shndx >= rel->hdr->e_shnum)
 	continue;
 
@@ -464,7 +465,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
       sect = elfsh_get_section_by_index(rel, sym[index].st_shndx, NULL, NULL);
       if (sect == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Cant find extracted section in ET_REL\n", -1);
+		     "Cant find extracted section in ET_REL\n", -1);
 
       /* Filter symbols using source section */
       if (sect->shdr->sh_type != SHT_PROGBITS || !sect->shdr->sh_size ||

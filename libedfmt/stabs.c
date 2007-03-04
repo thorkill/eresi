@@ -18,14 +18,20 @@ be done to make this work correctly */
 #define STABS_HNAME_TYPE_CROSS_REF 	"stabs_type_reference"
 #define STABS_HNAME_RES_SIZE 		"stabs_resolve_size"
 
+/* This function is called a lot of time, we win some time */
 #define STABS_DATA(_str) (!STABS_IVD_STR(_str) ? edfmt_stabs_data(_str) : NULL)
 
+/* Temporary structure for the next table */
 typedef struct s_res_size
 {
   char *name;
   long size;
 }	       edfmt_res_size_t;
 
+/* This table store size for every basic elements
+   Stabs doens't get size information but range information that are
+   hard to parse and can create some bug, then we won't use it
+ */
 edfmt_res_size_t resolved_table[] =
   {
     {"int"                   , sizeof(int)			},
@@ -81,6 +87,7 @@ edfmt_alloc_pool(&(stabs_info->alloc_pool), &(stabs_info->alloc_pos), \
 /* Actual parsed file */
 elfshobj_t *afile = NULL;
 
+/* Retreive stabs info pointer */
 edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -107,6 +114,7 @@ static int		edfmt_stabs_initrestable()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Update a cross reference */
 static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
 {
   char			buf[BUFSIZ];
@@ -131,6 +139,7 @@ static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Add a new file on the list */
 int	    		edfmt_stabs_addfile(char *dir, char *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -230,6 +239,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", NULL);
 
+  /* First we got a type */
   rtype = edfmt_stabs_type(str);
 
   if (**str == ';')
@@ -237,6 +247,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
 
   low = high = 0;
 
+  /* Then a low range number */
   edfmt_stabs_readnumber(str, ';', &low);
 
   if (**str != ';')
@@ -245,6 +256,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
 
   (*str)++;
 
+  /* And a high range number */
   edfmt_stabs_readnumber(str, ';', &high);
 
   if (**str != ';')
@@ -256,12 +268,17 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
   /* Fill range felds, but we will use only link (mainly) */
   type->type = STABS_TYPE_RANGE;
   type->u.link = rtype;
+
+  /* We don't read correctly very big numbers as we didn't need them
+     but we still save those information
+   */
   type->u.r.low = low;
   type->u.r.high = high;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Parse an array */
 int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str, 
 				  u_char isString, u_char isVector)
 {
@@ -285,6 +302,7 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
   if (**str == ';')
     (*str)++;
 
+  /* Should be zero */
   edfmt_stabs_readnumber(str, ';', &low);
   
   if (**str != ';')
@@ -292,7 +310,8 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
 		      "Invalid str informations", -1);
   
   (*str)++;
-  
+
+  /* Represent the size */
   edfmt_stabs_readnumber(str, ';', &high);
   
   if (**str != ';')
@@ -317,6 +336,7 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);  
 }
 
+/* Read a structure */
 int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 {
   edfmtstabsattr_t 	*tattr = NULL, *lattr = NULL;
@@ -327,11 +347,14 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
+  /* Read structure size */
   edfmt_stabs_readnumber(str, 0, &tstruct->size);
 
   do {
+    /* Allocate for a member */
     tattr = STABS_GETPTR(sizeof(edfmtstabsattr_t));
 
+    /* Update link between elements */
     if (tstruct->attr == NULL)
       tstruct->attr = tattr;
     else
@@ -339,11 +362,13 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     lattr = tattr;
     
+    /* Member name */
     edfmt_stabs_readstr(tattr->name, STABS_NAME_SIZE, str, ':');
 
     if ((*str)[-1] != ':')
       break;
 
+    /* Member type */
     tattr->type = edfmt_stabs_type(str);
     
     if (**str != ',')
@@ -351,6 +376,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     (*str)++;
 
+    /* Start at */
     edfmt_stabs_readnumber(str, ',', &tattr->start);
 
     if (**str != ',')
@@ -358,6 +384,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     (*str)++;
 
+    /* End at */
     edfmt_stabs_readnumber(str, ';', &tattr->size);
 
     if (**str != ';')
@@ -371,6 +398,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Read an enum table */
 edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
 {
   edfmtstabsenum_t 	*root_attr = NULL;
@@ -395,12 +423,14 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
 
       last_attr = enum_attr;
 
+      /* Read name */
       edfmt_stabs_readstr(enum_attr->name, STABS_NAME_SIZE, str, ':');
 
       if ((*str)[-1] != ':')
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Wrong string pattern", NULL);
 
+      /* Read value */
       if(edfmt_stabs_readnumber(str, ',', &enum_attr->value) != 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Wrong string pattern", NULL);
@@ -412,6 +442,10 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, root_attr);
 }
 
+/* Read a type, that an important fonction.
+   Stabs use type in an embedded form, a type can be declare in the center
+   of a structure
+ */
 edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 {
   char			*save_str;
@@ -486,6 +520,10 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
     }
   else
     {
+      /* Stabs is a really strange and difficult format 
+	 You should read the documentation, you'll see that stabs can
+	 be different depending of the architecture, which create a lot of issue.
+       */
       type->type = STABS_TYPE_UNK;
       switch(token)
 	{
@@ -595,7 +633,9 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Parse the string */
+/* Parse the string 
+   A data element represent the whole string
+ */
 edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 {
   edfmt_res_size_t 	*res;
@@ -793,7 +833,9 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, data);
 }
 
-/* Main stabs function */
+/* Main stabs function 
+   Contain the string and more global informations
+ */
 int			edfmt_stabs_parse(elfshobj_t *file)
 {
   char			*str, *sfile;
@@ -829,9 +871,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, stabs_info, sizeof(edfmtstabsinfo_t), -1);
 
+  /* Init hash tables */
   if (type_ref.ent == NULL)
     hash_init(&type_ref, STABS_HNAME_TYPE_REF, 50, ASPECT_TYPE_UNKNOW);
-
   if (type_cross_ref.ent == NULL)
     hash_init(&type_cross_ref, STABS_HNAME_TYPE_CROSS_REF, 50, ASPECT_TYPE_UNKNOW);
   
@@ -1024,6 +1066,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	}
     }
 
+  /* Clean hash tables */
   hash_empty(STABS_HNAME_TYPE_REF);
   hash_empty(STABS_HNAME_TYPE_CROSS_REF);
 

@@ -267,8 +267,9 @@ static aspectype_t	*aspect_type_create(char *label,
 	 change type offset */
       copy    = aspect_type_copy(childtype, curoff, isptr, 
 				 dimnbr, fieldname, dims);
-      for (size = off, idx = 0; idx < dimnbr; idx++)
+      for (size = off, idx = 0; dims != NULL && idx < dimnbr; idx++)
 	size *= dims[idx];
+
       curoff += size;
       aspect_type_addfield(newtype, copy);
     }

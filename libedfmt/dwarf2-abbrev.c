@@ -75,6 +75,7 @@ int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid arguments",  -1);
 
+  /* Clean every elements on the hash table */
   keys = hash_get_keys(abbrev_table, &keynbr);
 
   if (keys)
@@ -117,7 +118,7 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
   do {
     /* Fetch the key number */
     dwarf2_iuleb128(num, abbrev);
-    
+
     /* A level end */
     if (num == 0)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -146,7 +147,9 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse a form value */
+/* Increment the info position without reading every elements
+   then we avoid losing data access time on elements that we don't need.
+ */
 static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
 {
   long			data;
@@ -155,11 +158,15 @@ static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
 
   NOPROFILER_IN();
 
+  /* We keep current position then we can read value for a specific element later */
   attr->infopos = dwarf2_pos(info);
   form = attr->form;
 
 fvstart:
 
+  /* I will not explain every element because it will be too long
+     you can read dwarf2 documentation for more information.
+   */
   switch (form)
     {
     case DW_FORM_ref_addr:
@@ -243,10 +250,14 @@ int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
   if (dwarf2_data(info) == NULL)
       NOPROFILER_ROUT(-1);
 
+  /* Reset position on saved value */
   dwarf2_pos(info) = attr->infopos;
 
 fvstart:
 
+  /* I will not explain every element because it will be too long
+     you can read dwarf2 documentation for more information.
+   */
   switch (attr->form)
     {
     case DW_FORM_ref_addr:
@@ -369,7 +380,6 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
 		 ".debug_info section not available", -1);
 
   dwarf2_pos(info) = pos;
-  //printf("getent = %d\n", pos);
 
   /* Retrieve abbrev number */
   dwarf2_iuleb128(num_fetch, info);
@@ -378,6 +388,7 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
   if (num_fetch == 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
+  /* Retreive an abbrev element */
   if (edfmt_dwarf2_abbrev_read(abbent, num_fetch, pos) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Impossible to read the structure", -1);
@@ -387,16 +398,19 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
     {
       switch(abbent->attr[i].attr)
 	{
+	  /* This tag inform for the next element (after childs) we have to get it */
 	case DW_AT_sibling:
 	  abbent->attr[i].infopos = dwarf2_pos(info);
 	  edfmt_dwarf2_form_value(abbent->attr + i);
 	  abbent->sib = current_cu->start_pos + abbent->attr[i].u.udata;
 	  break;
 	default:
+	  /* All other elements are just iterate */
 	  edfmt_dwarf2_form_it(abbent->attr + i);
 	}
     }
-
+  
+  /* Update some position depending of the current status */
   if (abbent->children)
     abbent->child = dwarf2_pos(info);
   else if (abbent->sib <= 0)
@@ -405,7 +419,9 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read macinfo data */
+/* XXX: Re use it when it will be usefull
+   Read macinfo data 
+ */
 int			edfmt_dwarf2_mac(u_long offset)
 {
   int			line = 0, file = 0;
@@ -421,7 +437,7 @@ int			edfmt_dwarf2_mac(u_long offset)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".debug_macinfo section not available",  -1);
 
-  // Update position offset
+  /* Update position offset */
   dwarf2_pos(macinfo) = offset;
 
   do {
@@ -480,6 +496,7 @@ int			edfmt_dwarf2_mac(u_long offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Parse a dwarf2 location, this location describe where an element is store */
 int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 {
   u_int			i, spos, bsize, tmp_op;
@@ -498,14 +515,14 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
   stack[spos].value = 0;
 
   /* Iterate for each part of the block */
-  //printf("--- %d\n", size);
   for (i = 0; i < size; i++)
     {
-      //printf("LOC: %x\n", buf[i]);
       /* Push a stack operand */
       stack[++spos].op = buf[i];
 
-      /* Thread value */
+      /* I will not explain every element because it will be too long
+	 you can read dwarf2 documentation for more information.
+      */
       switch(buf[i])
 	{
 	case DW_OP_addr:
@@ -834,7 +851,9 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse data part of .debug_line format */
+/* XXX: Re use it when it will be usefull
+   Parse data part of .debug_line format 
+ */
 static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 {
   elfsh_Addr  		addr;
@@ -965,7 +984,9 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse .debug_line */
+/* XXX: Re use it when it will be usefull
+   Parse .debug_line 
+ */
 int			edfmt_dwarf2_line(u_long offset)
 {
   u_int			i;
@@ -1055,6 +1076,9 @@ int			edfmt_dwarf2_line(u_long offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* XXX: Re use it when it will be usefull
+   Record a new line entry
+ */
 int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, 
 					      elfsh_Addr addr, u_int fid)
 {

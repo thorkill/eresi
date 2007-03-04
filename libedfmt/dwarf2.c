@@ -253,9 +253,7 @@ int 			edfmt_dwarf2_clean(elfshobj_t *file)
     }
 
   if (cunext)
-    {
-      XFREE(__FILE__, __FUNCTION__, __LINE__, cunext);
-    }
+    XFREE(__FILE__, __FUNCTION__, __LINE__, cunext);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

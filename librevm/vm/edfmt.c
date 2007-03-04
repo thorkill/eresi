@@ -21,6 +21,7 @@ _type->parsed = 1
 
 hash_t var_queue;
 
+/* Register a type (and transform its name if needed) */
 static int		vm_edfmt_register_type(char *label, 
 					       char **fields, 
 					       u_int fieldnbr)
@@ -44,6 +45,7 @@ static int		vm_edfmt_register_type(char *label,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Analyze a given uniform type and add it into ERESI type engine */
 static int		vm_edfmt_type_parse(edfmttype_t *type)
 {
   edfmttype_t		*child = NULL;

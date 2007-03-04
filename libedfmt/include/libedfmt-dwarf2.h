@@ -69,29 +69,33 @@ typedef struct 	s_dw2abbattr
 /* Describe an abbrev entitie */
 struct 		s_dw2abbent
 {
-  u_int		key;
-  char		ckey[EDFMT_CKEY_SIZE];
-  u_int		tag; 
-  u_char 	children;
-  u_int		level;
+  u_int		key;			/* Key that represent the element */
+  char		ckey[EDFMT_CKEY_SIZE];	/* String representation for hash table */
+  u_int		tag; 			/* A type (sort of) of this element */
+  u_char 	children;		/* Do we have children ? */
+  u_int		level;			/* Children lvel */
 
-#define DW2_MAX_ATTR 10
-  edfmtdw2abbattr_t attr[DW2_MAX_ATTR];
-  u_int		attrsize;
+#define DW2_MAX_ATTR 20
+  edfmtdw2abbattr_t attr[DW2_MAX_ATTR];	/* List of attributes */
+  u_int		attrsize;		/* Current attribute size */
 
-  u_int 	sib;
-  u_int 	child;
+  u_int 	sib;			/* Next position */
+  u_int 	child;			/* Child position */
 };
 
 /* Describe a reference to update lately */
+/*
 typedef struct 	s_dw2fref
 {
   long		offset;
   edfmtdw2abbattr_t *attr;
   struct s_dw2fref *next;
 }		edfmtdw2fref_t;
+*/
 
-/* Describe a macro */
+/* Describe a macro 
+ XXX: Use when it will be usefull 
+*/
 typedef struct	s_dw2macro
 {
   u_char	def;
@@ -103,7 +107,7 @@ typedef struct	s_dw2macro
   struct s_dw2macro *next;
 }		edfmtdw2macro_t;
 
-/* A column description */
+// A column description 
 typedef struct 	s_dw2cfareg
 {
 #define DW2_CFA_T_UNDEF   0
@@ -118,7 +122,7 @@ typedef struct 	s_dw2cfareg
   } u;
 }		edfmtdw2cfareg_t;
 
-/* A givent state */
+// A givent state 
 typedef struct 	s_dw2cfastate
 {
   elfsh_Addr	addr;
@@ -134,7 +138,7 @@ typedef struct 	s_dw2cfastate
   struct s_dw2cfastate *next;
 }		edfmtdw2cfastate_t;
 
-/* Cfa section header representation */
+// Cfa section header representation 
 typedef struct 	s_dw2cfahead 
 {
   u_int		offset;
@@ -151,10 +155,10 @@ typedef struct 	s_dw2cfahead
   edfmtdw2cfastate_t init;
 }		edfmtdw2cfahead_t;
 
-/* Line section header representation */
+// Line section header representation 
 typedef struct	s_dw2linehead
 {
-  /* Header informations */
+  // Header informations
   u_int		total_length;
   u_short	version;
   u_int		prologue_length;
@@ -174,20 +178,20 @@ typedef struct	s_dw2linehead
   u_int		dirs_number;
   u_int		files_number;
 
-  /* Deducted positions */
+  // Deducted positions
   u_long	end_pos;
   u_long	prologue_pos;
 }		edfmtdw2linehead_t;
 
-/* Describe a line information */
+// Describe a line information 
 typedef struct 	s_dw2line
 {
-  /* Main informations */
+  // Main informations 
   elfsh_Addr	addr;
   u_int		line;
   u_int		column;
 
-  /* References */
+  // References
   edfmtdw2cu_t	*cu;
   u_int		fileid;
 
@@ -198,13 +202,13 @@ typedef struct 	s_dw2line
 struct		s_dw2cu
 {
   /* Header informations */
-  u_int		length;
-  u_int		version;
-  u_int		offset;
-  u_int		addr_size;
-  u_int		start_pos;
-  u_int		end_pos;
-  u_int		info_pos;
+  u_int		length;		/* Compile unit length without this entry */
+  u_int		version;	/* DWARF2 version */
+  u_int		offset;		/* Abbrev offset */
+  u_int		addr_size;	/* Address size on this compile unit */
+  u_int		start_pos;	/* Start position of the compile unit (before the header) */
+  u_int		end_pos;	/* End position of the compile unit */
+  u_int		info_pos;	/* Right after the header */
 
   /* Designed file */
   elfshobj_t	*fileobj;
@@ -226,8 +230,8 @@ struct		s_dw2cu
 /* Main structure of dwarf2 */
 typedef struct 	s_dw2info
 {
-  edfmtdw2cu_t	*cu_list;
-  edfmtdw2sectlist_t sections;
+  edfmtdw2cu_t	*cu_list;	/* Compile unit list */
+  edfmtdw2sectlist_t sections;	/* Section pointers & informations */
 }		edfmtdw2info_t;
 
 /* Variables */

@@ -17,37 +17,7 @@ char buf[BUFSIZ];
 /* Transform hash table */
 hash_t types_ref;
 
-/* Search a type from its ckey string */
-/*
-static edfmttype_t	*edfmt_dwarf2_searchtype(char *ckey)
-{
-  edfmttype_t 		*type;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  type = (edfmttype_t *) hash_get(&types_ref, ckey);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
-}
-
-// Search a type from its ckey long
-static edfmttype_t 	*edfmt_dwarf2_searchtypei(long ckey)
-{
-  edfmttype_t 		*type;
-  char			str_ckey[EDFMT_CKEY_SIZE];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-
-  // Create the string
-  edfmt_ckey(str_ckey, EDFMT_CKEY_SIZE, ckey);
-
-  // Retrieve the type 
-  type = edfmt_dwarf2_searchtype(str_ckey);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
-}
-*/
-
+/* Search a type from its name */
 static edfmttype_t	*edfmt_dwarf2_searchtype_str(char *str)
 {
   edfmttype_t 		*type = NULL;
@@ -58,6 +28,8 @@ static edfmttype_t	*edfmt_dwarf2_searchtype_str(char *str)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
+
+/* Search a type from its abbrev structure (retrieve its name) */
 static edfmttype_t	*edfmt_dwarf2_searchtype(edfmtdw2abbent_t *abbrev)
 {
   edfmttype_t 		*type = NULL;
@@ -97,6 +69,7 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
+/* Get an attribut from an abbrev entity */
 edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 {
   edfmtdw2info_t	*pinfo;
@@ -108,6 +81,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 
   if (abbent != NULL)
     {
+      /* We search the right entry on every attribute */
       for (i = 0; abbent->attr[i].attr; i++)
 	{
 	  if (abbent->attr[i].attr == attr)
@@ -118,7 +92,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 
 	      edfmt_dwarf2_form_value(abbent->attr + i);
 	      
-	      /* Modifications */
+	      /* Transformation from based values */
 	      switch(abbent->attr[i].attr)
 		{
 		case DW_AT_frame_base:
@@ -143,26 +117,17 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 
 		      /* Read length, we don't care about start & end */
 		      len = *(u_short *) (bufptr + (current_cu->addr_size * 2));
-	      
-		      /*printf("%x %x len = %d / %d\n", 
-		       *(elfsh_Addr *) bufptr,
-		       *(elfsh_Addr *) bufptr + current_cu->addr_size,
-		       len, dwarf2_pos(loc));*/
 
+		      /* Update the position right after the two addresses */
 		      dwarf2_pos(loc) += (current_cu->addr_size * 2) + sizeof(u_short);
 
-		      /*if (len > 20)
-			asm("int3");*/
-
+		      /* We don't want to be on another section */
 		      if (dwarf2_pos(loc) + len > dwarf2_size(loc))
-			{
-			  printf("TOOBIG !!\n");
-			  break;
-			}
+			break;
 	      
+		      /* Read the location */
 		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), 
 				       dwarf2_a_pos(loc), len);		
-
 		      break;
 		    }
 		  break;
@@ -187,6 +152,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
+/* Get an addresse from a buffer */
 elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -198,6 +164,7 @@ elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, *(elfsh_Addr *) vbuf);
 }
 
+/* This parsing function is the main function of transformation */
 edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 {
   char			*str = NULL, *comp_dir, *vbuf, *vbufs, *pstr;
@@ -229,7 +196,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
     }
 
-  /* Change current file */
+  /* If we're not with a compil unit tag, we can have a specific dedicated file
+     this is the way to handle header files in dwarf2
+   */
   if (abbrev->tag != DW_TAG_compile_unit)
     {
       DWARF2_TRANS_GETATTR(fileid, abbrev, DW_AT_decl_file, u.udata, -1);
@@ -267,12 +236,17 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	}
     }
 
+  /* A TAG represent an element of the dwarf2 format, each TAG are linked by child / parent
+     alike structure. You can get more information on the dwarf2 documentation
+   */
   switch(abbrev->tag)
     {
+      /* Represent an object file (only .c) */
     case DW_TAG_compile_unit:
       if (!str)
 	break;
-
+      
+      /* If we don't have a global path, we try to read a directory */
       if (str[0] != '/')
 	{
 	  DWARF2_TRANS_GETATTR(comp_dir, abbrev, DW_AT_comp_dir, u.str, NULL);
@@ -287,6 +261,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	    }
 	}
 
+      /* Lower and high bound addresses of the file into the object */
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_low_pc, u.vbuf, NULL);
       DWARF2_TRANS_GETATTR(vbufs, abbrev, DW_AT_high_pc, u.vbuf, NULL);
 
@@ -295,6 +270,8 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		     edfmt_dwarf2_getaddr(vbuf),
 		     edfmt_dwarf2_getaddr(vbufs));
       break;
+
+      /* Represente a global variable */
     case DW_TAG_variable:
       attr = edfmt_dwarf2_getattr(abbrev, DW_AT_location);
 
@@ -310,10 +287,14 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
       edfmt_add_var_global(type, str, attr->loc.value);
       break;
+
+      /* An elementary type */
     case DW_TAG_base_type:
       DWARF2_TRANS_GETATTR(size, abbrev, DW_AT_byte_size, u.udata, -1);
       type = edfmt_add_type_basic(str, (int) size);
       break;
+
+      /* Rename a given type on another (like typedef) */
     case DW_TAG_typedef:
       DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
 
@@ -324,6 +305,8 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
       type = edfmt_add_type_link(str, type);
       break;
+
+      /* Pointer or refence on a given type */
     case DW_TAG_pointer_type:
     case DW_TAG_reference_type:
       DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
@@ -342,6 +325,8 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
       type = edfmt_add_type_ptr(buf, type);
       break;
+
+      /* An array - its size can be dynamic, that can create some problem then be aware */
     case DW_TAG_array_type:
       if (abbrev->child > 0 && edfmt_dwarf2_getent(current_cu, &tref, abbrev->child) == 0
 	  && tref.tag == DW_TAG_subrange_type)
@@ -359,20 +344,24 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  type = edfmt_add_type_array(buf, (int) size, type);
 	}
       break;
+
+      /* Structure and union are parsed together because they used the same parsing 
+	 structure
+       */
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
       if (abbrev->child)
 	{
 	  DWARF2_TRANS_GETATTR(size, abbrev, DW_AT_byte_size, u.udata, -1);
 
+	  /* If we don't have a name, let generate one */
 	  if (!str)
 	    {
 	      snprintf(buf, BUFSIZ - 1, "s_(%u)", abbrev->key);
 	      str = buf;
 	    }
-	  
-	  //printf("Struct: %s ================ \n", str);
 
+	  /* Use the right uniform format function */
 	  if (abbrev->tag == DW_TAG_union_type)
 	    type = edfmt_add_type_union(str, (int) size);
 	  else
@@ -382,30 +371,30 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  if (type && str)
 	    HASH_ADDX(&types_ref, str, (void *) type);
 
-	  if (edfmt_dwarf2_getent(current_cu, &ref, abbrev->child) < 0)
-	    break;
-
+	  /* We get every childs here, a child represent a structure / union member */
 	  for (iref = abbrev->child; iref > 0; iref = ref.sib)
 	    {
+	      /* Retrieve and fill the structure correctly */
 	      if (edfmt_dwarf2_getent(current_cu, &ref, iref) < 0)
 		break;
 
-	      /* Do we have a member */
+	      /* Do we have a member ? */
 	      if (ref.tag == DW_TAG_member)
 		{
 		  DWARF2_TRANS_GETATTR(str, &ref, DW_AT_name, u.str, NULL);
 		  DWARF2_TRANS_GETATTR(itref, &ref, DW_AT_type, u.udata, 0);
 
-		  //printf("attr: %s\n", str);
-
+		  /* We need a type for this element */
 		  if (itref == 0)
 		    continue;
 
+		  /* We retrieve the type */
 		  etype = edfmt_dwarf2_trans_gettype(itref);
 
 		  if (!etype)
 		    continue;
-
+		  
+		  /* On structure we read location information */
 		  if (DW_TAG_union_type != abbrev->tag)
 		    {
 		      attr = edfmt_dwarf2_getattr(&ref, DW_AT_data_member_location);
@@ -416,10 +405,12 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		      base = (int) attr->loc.value;
 		    }
 
+		  /* Add the attribute */
 		  edfmt_add_type_attr(type, str, base, 0, etype);
 		}
 	      else
 		{
+		  /* We handle other elements in case of .. */
 		  edfmt_dwarf2_transform_abbrev_parse(&ref);
 		}
 	    }
@@ -431,27 +422,34 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  addtype = 0;
 	}
       break;
+
+      /* Represent a fonction */
     case DW_TAG_subprogram:
+      /* Try to read addresses */
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_low_pc, u.vbuf, 0);
       if (vbuf)
 	low = *(elfsh_Addr *) vbuf;
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_high_pc, u.vbuf, 0);
       if (vbuf)
 	high = *(elfsh_Addr *) vbuf;
-
-      DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
       
+      /* Resolve return type */
+      DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
       type = edfmt_dwarf2_trans_gettype(iref);
       
       if (!type)
 	break;      
-
+      
+      /* Transform the function */
       func = edfmt_add_func(str, type, low, high);
 
       if (func)
 	{
+	  /* Parse and add arguments, this disposion is quite the same used
+	     for structure / union*/
 	  for (iref = abbrev->child; iref > 0; iref = ref.sib)
 	    {
+	      /* Read a structure */
 	      if (edfmt_dwarf2_getent(current_cu, &ref, iref) < 0)
 		break;
 
@@ -475,6 +473,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 		}
 	      else
 		{
+		  /* We parse in cas of ... */
 		  edfmt_dwarf2_transform_abbrev_parse(&ref);
 		}
 	    }
@@ -491,6 +490,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   else if (inc == 2)
     edfmt_reactive_file();
 
+  /* Add type into the hash table */
   if (type && addtype && str)
     HASH_ADDX(&types_ref, str, (void *) type);
 
@@ -502,6 +502,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 edfmtdw2abbent_t     	abbrev[DW2_MAX_LEVEL];
 int 			abbrev_level = 0;
 
+/* Loop for a given compile unit depending of its position */
 int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -535,7 +536,9 @@ int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform dwarf2 informations */
+/* Transform dwarf2 informations 
+   Entrypoint for transformation from dwarf2 to uniform format
+ */
 int			edfmt_dwarf2_transform(elfshobj_t *file)
 {
   edfmtdw2info_t 	*tinfo;
@@ -562,8 +565,10 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
   if (types_ref.ent == NULL)
     hash_init(&types_ref, DWARF2_HNAME_TRANS_TREF, 200, ASPECT_TYPE_UNKNOW);
 
+  /* Setup the file */
   edfmt_add_init(file);
 
+  /* Iterate through compile unit */
   while (tcu != NULL)
     {
       current_cu = tcu;
@@ -578,6 +583,7 @@ int			edfmt_dwarf2_transform(elfshobj_t *file)
 
   current_cu = NULL;
 
+  /* Clean current file context */
   edfmt_add_end();
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

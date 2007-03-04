@@ -1153,6 +1153,10 @@ char		*vm_get_prompt();
 int		vm_strtable_add(char *string);
 
 /* Trace functions */
+edfmtfunc_t 	*elfsh_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
+elfshtraces_t  	*elfsh_traces_createargs(elfshobj_t *file, char *name,
+					 edfmtfunc_t *func, elfsh_Addr vaddr,
+					 u_char external);
 FILE		  *vm_traces_init(char *tfname, char *rsofname, char *rtfname);
 int		  vm_traces_add(FILE *fp, int *argcount, char *func_name);
 int 	          traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);

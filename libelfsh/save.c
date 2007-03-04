@@ -125,6 +125,31 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
+/* Relocate during save process */
+int		elfsh_save_relocate(elfshobj_t *file)
+{
+  u_int		index;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Force the final relocations to be done (old_* symbols) */
+  for (index = 0; index < file->nbrel; index++)
+    {
+      
+#if __DEBUG_MAP__
+      printf("[DEBUG_MAP] Now relocating %s in second stage \n", 
+	     file->listrel[index]->name);
+#endif      
+
+      if (elfsh_relocate_object(file, file->listrel[index], 
+				ELFSH_RELOC_STAGE2) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Final stage relocation failed", -1);
+    }  
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /* Unmap and free all ressources for this file */
 int		elfsh_save_obj(elfshobj_t *file, char *name)
@@ -145,20 +170,9 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid elfshobj_t parameter",  -1);
 
-  /* Force the final relocations to be done (old_* symbols) */
-  for (index = 0; index < file->nbrel; index++)
-    {
-      
-#if __DEBUG_MAP__
-      printf("[DEBUG_MAP] Now relocating %s in second stage \n", 
-	     file->listrel[index]->name);
-#endif      
-
-      if (elfsh_relocate_object(file, file->listrel[index], 
-				ELFSH_RELOC_STAGE2) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Final stage relocation failed", -1);
-    }
+  if (elfsh_save_relocate(file) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Final stage relocation failed", -1);
 
   /* Insert a padding section to make the latest top-injected code section starting on a page bound */
   actual = file->sectlist;
@@ -182,7 +196,9 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 		      "Unable to copy object", -1);
 
   /* Apply awaiting tracing */
-  elfsh_traces_save(file);
+  if (elfsh_traces_save(file) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Tracing failed", -1);
 
   /* Open the output file */
 #ifdef __BEOS__

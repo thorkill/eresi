@@ -572,30 +572,216 @@ static int    elfsh_largs_add(s_sint *args, int add)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* TODO: implement forward / backward */
-int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
+static elfsh_Addr foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *before)
 {
-  int         index;
-  int         ret;
-  int	      reserv = 0;
-  int	      ffp = 0;
-  int         len = 1024;
-  s_sint      *args = NULL, *p = NULL;
-  int	      *final_args;
-  asm_instr   i;
+  u_int 	index;
+  asm_instr   	i;
+  int		ret;
+  elfsh_SAddr	foffset;
+  elfsh_Word	len;
+  elfshsect_t	*text;
+  char		*data;
+  elfsh_Addr	base_vaddr, last_vaddr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  text = elfsh_get_parent_section(file, elfsh_get_entrypoint(file->hdr), &foffset);
+  if (!text)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find parent section from entry point", 0);
+  
+  if (!elfsh_get_anonymous_section(file, text))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to get an anonymous section", 0);
+  
+  data = elfsh_get_raw(text);
+  len = text->shdr->sh_size;
+
+  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
+		elfsh_get_section_addr(text->shdr));
+
+  last_vaddr = base_vaddr;
+
+  for (index = 0; index < len; index += ret)
+    {
+      /* Read an instruction */
+      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
+	{
+	  /* Search a call to our address (near call) */
+	  if (i.instr == ASM_CALL)
+	    {
+	      if (base_vaddr + index + i.op1.imm + i.len == vaddr)
+		{
+		  if (before)
+		    *before = last_vaddr;
+
+		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, base_vaddr + index);
+		}
+	      last_vaddr = base_vaddr + index;
+	    }
+	  else if (i.instr == ASM_RET)
+	    {
+	      last_vaddr = base_vaddr + index;
+	    }
+	}
+
+      if (ret <= 0)
+	ret = 1;
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+static char	*get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
+{
+  elfshsect_t	*sect;
+  elfsh_SAddr	foffset;
+  char		*buf = NULL;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  sect = elfsh_get_parent_section(file, vaddr, &foffset);
+
+  if (sect)
+    {
+      buf = elfsh_get_raw(sect);
+      buf += vaddr - (sect->parent->rhdr.base + sect->shdr->sh_addr);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
+}
+
+/* TODO: implement forward / backward */
+int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
+{
+  int         	index;
+  int         	ret;
+  int	      	reserv = 0;
+  int	      	ffp = 0;
+  int         	len = 1024;
+  s_sint      	*args = NULL, *p = NULL;
+  int	      	*final_args;
+  elfsh_Addr  	f_vaddr, up_vaddr;
+  asm_instr   	i;
+  char      	*data, *sym_name;
+  elfshsect_t	*sect;
+  elfsh_SAddr	sfoffset;
+  elfsh_Sym	*sym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Reset args */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
 
   asm_init_i386(&proc);
 
+  if (foffset == 0)
+    {
+      f_vaddr = foundcallto(file, vaddr, &up_vaddr);
+      
+      if (f_vaddr > 0)
+	{
+	  data = get_sect_ptr(file, up_vaddr);
+	  len = f_vaddr - up_vaddr;
+
+	  for (index = 0; index < len && data ; index += ret)
+	    {
+	      /* Read an instruction */
+	      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
+		{
+		  /* We don't want to read another function */
+		  if (i.instr == ASM_MOV && i.op1.base_reg == ASM_REG_ESP)
+		    {
+		      if (reserv == 0)
+			{
+			  XALLOC(__FILE__, __FUNCTION__, __LINE__, args, sizeof(s_sint), NULL);
+			  args->value = 0;
+			}
+
+		      elfsh_largs_add(args, i.op1.imm + 20);
+		      reserv = 1;
+		    }
+		}
+
+	      ret = asm_instr_len(&i);
+	      if (!ret)
+		ret++;
+	    }
+
+	  /* We have something */
+	  if (reserv)
+	    goto setargs;
+
+	  sect = elfsh_get_parent_section(file, vaddr, &sfoffset);
+	  if (!sect)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Can't get section", NULL);
+	    }
+
+	  data = elfsh_get_section_name(file, sect);
+
+	  if (!data)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Can't get section name", NULL);
+	    }
+
+	  /* Find the right function on dependencies */
+	  if (!strncmp(data, ".plt", 4))
+	    {
+	      sym_name = elfsh_reverse_dynsymbol(file, vaddr, &sfoffset);
+
+	      if (sym_name == NULL)
+		{
+		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			       "Can't find symbol name", NULL);
+		}
+
+	      file = elfsh_traces_search_sym(file, sym_name);
+	      
+	      if (file == NULL)
+		{
+		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			       "Can't find extern function file", NULL);		  
+		}
+
+	      sym = elfsh_get_dynsymbol_by_name(file, sym_name);
+
+	      if (!sym)
+		{
+		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			       "Can't find function symbol on dependencies", NULL);
+		}
+
+	      vaddr = sym->st_value;
+	    }
+	}
+    }
+  else
+    {
+      vaddr = elfsh_get_vaddr_from_foffset(file, foffset);
+    }
+
+  data = get_sect_ptr(file, vaddr);
+
+  if (!data)
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    }
+
   /* Enumerate all arguments */
-  for (index = 0; index < len; index += ret)
+  for (index = 0; index < len && data; index += ret)
     {
       /* Read an instruction */
-      if ((ret = asm_read_instr(&i, (u_char *) (foffset + index), len -  index, &proc)))
+      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)) > 0)
 	{
 	  /* We don't want to read another function */
 	  if (i.instr == ASM_RET)
@@ -611,7 +797,7 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
 		  ffp = 1;
 		}
 
-	      XALLOC(__FILE__, __FUNCTION__, __LINE__,args, sizeof(s_sint), NULL);
+	      XALLOC(__FILE__, __FUNCTION__, __LINE__, args, sizeof(s_sint), NULL);
 	      args->value = 0;
 	    }
 	  else
@@ -632,7 +818,13 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
 	}
       else
 	break;
+
+      ret = asm_instr_len(&i);
+      if (!ret)
+	ret++;
     }
+
+ setargs:
 
   /* Go at the end */
   while (args->next)
@@ -664,8 +856,8 @@ int           *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr
       /* Stock argument size which depend of the next entrie */
       final_args[index] = p->next->value - p->value;
     }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
+  
+   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
 }
 
 /* Find arguments from a call */

@@ -88,15 +88,18 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", -1);
 
+  /* With two ids ? */
   if (**str == '(')
     {
       (*str)++;
 
+      /* First element, the file id */
       if (edfmt_stabs_readnumber(str, ',', &tnum->file) != 0)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
       (*str)++;
 
+      /* Second element the real id */
       if (edfmt_stabs_readnumber(str, ')', &tnum->number) != 0)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
        
@@ -104,6 +107,7 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
     }
   else
     {
+      /* We support basic typenums */
       tnum->file = 0;
       if (edfmt_stabs_readnumber(str, 0, &tnum->number) != 0)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);      
@@ -112,6 +116,10 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Create a string from a typenum
+   A typenum represent a type using 1 or 2 ids, on the documentation we see only 1 id
+   but now there's two ids, the first describe the file.
+ */
 int		edfmt_stabs_ctypenum(char *buf, u_int size, edfmtstabstypenum_t *tnum)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -86,6 +86,14 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 		    "Unable to lookup address object", (elfsh_Addr) 0);
 }
 
+/* Create an allocation pool used to store different data and optimize performance
+   This pool didn't realloc the buffer each time it needs more memory, but create a new
+   buffer and store reference of the previous (like a linked list).
+
+   Reallocation isn't used because I already have some pointer inside in the allocation and
+   if I made a XREALLOC the whole buffer would be recreate on another memory part, and some
+   pointers would be lost.
+ */
 void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
 					  int astep, int nsize)
 {
@@ -98,10 +106,10 @@ void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", NULL);
 
-  //printf("asize = %d apos = %d diff = %d, size = %d\n", *asize, *apos, (*asize - *apos), nsize);
-
+  /* First allocation */
   if (*pool == NULL || *asize == 0)
     {
+      /* We add a void* blanked that indicate that its the first block*/
       XALLOC(__FILE__, __FUNCTION__, __LINE__, *pool, astep+sizeof(void*), NULL);
       *asize = astep;
       *apos += sizeof(void*);
@@ -118,9 +126,12 @@ void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize,
       
       XALLOC(__FILE__, __FUNCTION__, __LINE__, *pool, *asize+sizeof(void*), NULL);
       *apos += 4;
+
+      /* Store previous block address then we can retrieve it later */
       *(void **) *pool = prevpool;
     }
 
+  /* Save current position and update position pointer */
   ret = (char *) *pool + *apos;
   *apos += nsize;
 
@@ -138,6 +149,7 @@ int 			edfmt_clean_pool(char **pool)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
+  /* Iterate and free each block */
   do {
     prevpool = *(void **) *pool;
     XFREE(__FILE__, __FUNCTION__, __LINE__, *pool);

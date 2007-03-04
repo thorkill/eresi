@@ -770,14 +770,8 @@ typedef struct	s_bp
 /* Trace structure */
 typedef struct 	s_traces_args
 {
-#define ELFSH_ARG_INTERN 0
-#define ELFSH_ARG_EXTERN 1
-  u_char	scope;
-
-#define	ELFSH_ARG_SIZE_BASED 0
-#define ELFSH_ARG_TYPE_BASED 1
-  u_char	type;
-
+  char		*name;
+  char		*typename;
   int		size;
 }		elfshtracesargs_t;
 
@@ -789,6 +783,14 @@ typedef struct 	s_traces
   u_char	enable;
   u_int		offset;
 
+#define ELFSH_ARG_INTERN 0
+#define ELFSH_ARG_EXTERN 1
+  u_char	scope;
+
+#define	ELFSH_ARG_SIZE_BASED 0
+#define ELFSH_ARG_TYPE_BASED 1
+  u_char	type;
+
 #define ELFSH_TRACES_MAX_ARGS 20
   elfshtracesargs_t arguments[ELFSH_TRACES_MAX_ARGS];
   u_int		argc;
@@ -797,7 +799,6 @@ typedef struct 	s_traces
 /* Extern data */
 extern libworld_t	dbgworld;
 extern hash_t 		traces_table;
-
 
 /*
  **
@@ -1289,6 +1290,7 @@ elfshobj_t	*elfsh_map_obj(char *name);
 elfshsect_t *   elfsh_fixup_sctndx(elfshsect_t *symtab);
 
 /* save.c */
+int		elfsh_save_relocate(elfshobj_t *file);
 int		elfsh_save_obj(elfshobj_t *file, char *name);
 
 /* copy.c */
@@ -1605,7 +1607,9 @@ int		elfsh_bp_add(hash_t *bps, elfshobj_t *file,
 int		*elfsh_traces_inittrace();
 hash_t		*elfsh_traces_createtrace(char *trace);
 hash_t		*elfsh_traces_gettrace(char *trace);
-elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshobj_t *file);
+int 		elfsh_traces_tracable(elfshobj_t *file, char *name,
+				      elfsh_Addr *vaddr, u_char *dynsym);
+elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
 int		elfsh_traces_funcrm(char *trace, char *name);
 int		elfsh_traces_funcenable(char *trace, char *name);
 int		elfsh_traces_funcsetstatus(hash_t *table, int status);
@@ -1614,5 +1618,7 @@ int		elfsh_traces_funcdisableall(char *trace);
 int		elfsh_traces_funcdisable(char *trace, char *name);
 int		elfsh_traces_funcrmall(char *trace);
 int		elfsh_traces_deletetrace(char *trace);
+int		elfsh_traces_save(elfshobj_t *file);
+elfshobj_t   	*elfsh_traces_search_sym(elfshobj_t *file, char *name);
 
 #endif /* __LIBELFSH_H_ */

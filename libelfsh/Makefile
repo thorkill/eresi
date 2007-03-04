@@ -12,11 +12,11 @@ LD			= gcc
 RM			= rm -f 
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../elibc/include             \
-			-I../libaspect/include/ -DELFSH32 $(BUILDOP) 
+			-I../libasm/include/ -I../elibc/include 	    \
+			-I../libaspect/include/ -DELFSH32 $(BUILDOP)
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
 			-I../libasm/include/ -I../elibc/include	            \
-			-I../libaspect/include/ -DELFSH64 $(BUILDOP) 
+			-I../libaspect/include/ -DELFSH64 $(BUILDOP)
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c stab.c         \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \
@@ -36,15 +36,15 @@ all			: all32 all64
 
 all64			:  $(OBJ64)
 			$(LD) -L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy \
-			-L../libaspect/ -laspect64 -DELFSH64 -shared $(OBJ64) 	  \
-			-o $(NAME64).so
+			-L../libaspect/ -laspect64 \
+			-DELFSH64 -shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 
 all32			: $(OBJ32)
 			$(LD) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
-			-L../libaspect/ -laspect32 -DELFSH32 -shared $(OBJ32) 	      \
-			-o $(NAME32).so
+			-L../libaspect/ -laspect32 \
+			-DELFSH32 -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 

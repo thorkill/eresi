@@ -383,8 +383,8 @@ void		mjr_block_add_caller(mjrblock_t *blk,
  * else return block if vaddr belong to block
  */
 mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
-																		elfsh_Addr   vaddr, 
-																		int	     mode)
+					elfsh_Addr   vaddr, 
+					int	     mode)
 {
   mjrblock_t	*ret;
   char		**keys;

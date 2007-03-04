@@ -17,6 +17,19 @@ elfshobj_t *cu_obj = NULL;
 edfmt_alloc_pool(&(uniinfo->alloc_pool), &(uniinfo->alloc_pos), \
 		 &(uniinfo->alloc_size), API_ALLOC_STEP, _size) 
 
+#define EDFMT_COPY_NAME(_dest, _source) 			\
+do { 								\
+  int index, len;					       	\
+  if (strlen(_source) >= EDFMT_NAME_SIZE)			\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 		\
+		       "Invalid name size", NULL);		\
+  strcpy(_dest->name, _source);					\
+  len = strlen(_dest->name);					\
+  for (index = 0; index < len; index++)				\
+    if (_dest->name[index] == ' ')				\
+      _dest->name[index] = '_';					\
+} while (0)
+
 #define EDFMT_NEW_TYPE(_type, _name, _up) 		       	\
 do { 								\
   _type = edfmt_check_type(_name);				\
@@ -55,27 +68,6 @@ do { 								\
   _arg = API_GETPTR(sizeof(edfmtfuncarg_t)); 			\
   EDFMT_COPY_NAME(_arg, _name);					\
 } while(0)
-
-/*
-#define EDFMT_NEW_VAR(_var) \
-do { _var = API_GETPTR(sizeof(edfmtvar_t)); } while(0)
-
-#define EDFMT_NEW_FUNC(_func) \
-do { _func = API_GETPTR(sizeof(edfmtfunc_t)); } while(0)
-*/
-
-#define EDFMT_COPY_NAME(_dest, _source) 			\
-do { 								\
-  int index, len;					       	\
-  if (strlen(_source) >= EDFMT_NAME_SIZE)			\
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 		\
-		       "Invalid name size", NULL);		\
-  strcpy(_dest->name, _source);					\
-  len = strlen(_dest->name);					\
-  for (index = 0; index < len; index++)				\
-    if (_dest->name[index] == ' ')				\
-      _dest->name[index] = '_';					\
-} while (0)
 
 /* Init an add context */
 int			edfmt_add_init(elfshobj_t *file)
@@ -123,9 +115,11 @@ int			edfmt_add_end()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* We don't use the same hash tables depending of the current scope */
 #define API_GET_FROM_SCOPE(_name) \
 uniinfo->lfile == NULL ? &(uniinfo->_name) : &(uniinfo->lfile->_name);
 
+/* Check if we already have this type, then avoid loosing precious time */
 edfmttype_t	      	*edfmt_check_type(char *name)
 {
   edfmttype_t		*seek_type = NULL;
@@ -146,6 +140,7 @@ edfmttype_t	      	*edfmt_check_type(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_type);
 }
 
+/* Check if we already have this variable, then avoid loosing precious time */
 edfmtvar_t	      	*edfmt_check_var(char *name)
 {
   edfmtvar_t		*seek_var = NULL;
@@ -166,6 +161,7 @@ edfmtvar_t	      	*edfmt_check_var(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_var);
 }
 
+/* Check if we already have this function, then avoid loosing precious time */
 edfmtfunc_t	      	*edfmt_check_func(char *name)
 {
   edfmtfunc_t		*seek_func = NULL;
@@ -320,6 +316,9 @@ edfmtinfo_t		*edfmt_get_uniinfo(elfshobj_t *file)
 		     (edfmtinfo_t *) file->debug_format.uni);
 }
 
+/* Sometime you add an element on the wrong context, you didn't really know
+   where this element belong to, this function delete the type from its previous
+   emplacement and add it the current file context */
 int			edfmt_change_type_nfile(edfmttype_t *type)
 {
   edfmttype_t		*tmp_type = NULL;
@@ -330,7 +329,7 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid paramter", -1);
   
-  /* Delete for its file */
+  /* Delete in its file */
   if (type->file == NULL)
     {
       if (uniinfo->types == type)
@@ -366,7 +365,11 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Restore parent file */
+/* Restore parent file 
+   this function restore a parent file (.c file), it helps to
+   manage symbols declared for a given header then reback on the normal file
+   This function was add for dwarf2 support.
+ */
 edfmtfile_t		*edfmt_restore_parent_file()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -380,6 +383,7 @@ edfmtfile_t		*edfmt_restore_parent_file()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
 }
 
+/* Retreive current file */
 edfmtfile_t		*edfmt_get_current_file()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -419,6 +423,7 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid paramter", NULL);
 
+  /* We update link between new and parent file */
   if (parent_file != NULL)
     {
       already_file = edfmt_get_inc_file(parent_file, name);
@@ -437,7 +442,8 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   EDFMT_COPY_NAME(file, name);
   file->start = start;
   file->end = end;
-
+  
+  /* Init hash tables */
   hash_init(&(file->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
   hash_init(&(file->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
   hash_init(&(file->hfunc), NULL, 30, ASPECT_TYPE_UNKNOW);
@@ -678,6 +684,7 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
+/* Create a global variable */
 edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr)
 {
   edfmtvar_t		*lvar;
@@ -696,6 +703,7 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
 }
 
+/* Create a function */
 edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret, 
 					elfsh_Addr start, elfsh_Addr end)
 {
@@ -715,6 +723,7 @@ edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lfunc);
 }
 
+/* Add arguments on a function */
 edfmtfuncarg_t		*edfmt_add_arg(edfmtfunc_t *func, char *name,
 				       u_int reg, int pos, edfmttype_t *type)
 {
