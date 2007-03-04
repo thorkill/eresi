@@ -2,7 +2,7 @@
 ** obj.c for elfsh
 **
 ** Started on  Wed Feb 12 00:07:06 2003 mayhem
-** Last update Sat Aug 16 13:32:24 2003 jv
+** Last update Sun Mar  4 00:46:13 2007 thorkill
 */
 #include "libelfsh.h"
 
@@ -35,7 +35,10 @@ elfshobj_t		*elfsh_load_obj(char *name)
 
 
 
-/* Free the ELF descriptor and its fields */
+/**
+ * Free the ELF descriptor and its fields 
+ * @param file The elfsh obj
+ */
 void		elfsh_unload_obj(elfshobj_t *file)
 {
   elfshsect_t	*sect;
@@ -48,6 +51,12 @@ void		elfsh_unload_obj(elfshobj_t *file)
   XFREE(__FILE__, __FUNCTION__, __LINE__,file->sht);
   for (sect = file->sectlist; sect; sect = next)
     {
+      /* FIXME: Prevent dobule free() */
+      if (sect->data == sect->altdata)
+	sect->altdata = NULL;
+      if (sect->data == sect->terdata)
+	sect->terdata = NULL;
+
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect->data);
       if (sect->altdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
