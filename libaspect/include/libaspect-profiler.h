@@ -1,9 +1,9 @@
 /*
-** libelfsh-internal.h for elfsh
-** 
-** Started on  Wed Jan  1 07:51:24 2003 mayhem
-** Last update Thu Mar 20 06:19:53 2003 mayhem
-*/
+ * libelfsh-internal.h for elfsh
+ * 
+ * Started on  Wed Jan  1 07:51:24 2003 mayhem
+ * Last update Thu Mar 20 06:19:53 2003 mayhem
+ */
 
 #ifndef __LIBASPECT_INTERN_
  #define __LIBASPECT_INTERN_
@@ -22,12 +22,16 @@ extern hash_t		*vector_hash;
 extern hash_t		types_hash;
 
 
-/* Type of warnings that emit the allocation profiler */
+/**
+ * Type of warnings that emit the allocation profiler 
+ */
 #define			PROFILER_WARNING_UNKNOW	0
 #define			PROFILER_WARNING_LAST	1
 #define			PROFILER_WARNING_FIRST	2
 
-/* The structure for an allocation entry */
+/**
+ * The structure for an allocation entry 
+ */
 typedef	struct		s_allocentry
 {
 #define			PROFILER_ALLOC_UNKNOW	0
@@ -47,12 +51,16 @@ typedef	struct		s_allocentry
 }			profallocentry_t;
 
 
-/* Maximum function calls patterns depth */
+/**
+ * Maximum function calls patterns depth 
+ */
 #define		PROFILER_MAX_PATTERN	10 
 #define		PROFILER_MAX_ALLOC	2000
 
 
-/* Safe calloc() */
+/**
+ * Safe calloc() 
+ */
 #define		XALLOC(f, fc, l, a, b, c)		    \
 do							    \
 {							    \
@@ -70,7 +78,9 @@ do							    \
 }							    \
 while (0)
 
-/* Safe realloc() */
+/**
+ * Safe realloc() 
+ */
 #define		XREALLOC(f, fc, l, a, b, c, d)		    \
 do							    \
 {							    \
@@ -88,7 +98,9 @@ do							    \
 }							    \
 while (0)
 
-/* Our free() */
+/**
+ * Our free() 
+ */
 #define		XFREE(f, fc, l, a)			    \
 do							    \
 {							    \
@@ -101,7 +113,9 @@ do							    \
 }							    \
 while (0)
 
-/* Our free() */
+/**
+ * Our strdup() 
+ */
 #define		XSTRDUP(f, fc, l, a, b)			    \
 do							    \
 {							    \
@@ -113,7 +127,9 @@ do							    \
 }							    \
 while (0)
 
-/* Safe open() */
+/**
+ * Safe open() 
+ */
 #define		XOPEN(a, b, c, d, e)			    \
 do							    \
 {							    \
@@ -123,7 +139,9 @@ do							    \
 }							    \
 while (0)
      
-/* Safe read() */
+/**
+ * Safe read() 
+ */
 #define		XREAD(a, b, c, d)			    \
 do							    \
 {							    \
@@ -133,7 +151,9 @@ do							    \
 }							    \
 while (0)
 
-/* Safe lseek() */
+/**
+ * Safe lseek() 
+ */
 #define		XSEEK(a, b, c, d)			    \
 do							    \
 {							    \
@@ -143,7 +163,9 @@ do							    \
 }							    \
 while (0)
 
-/* Safe write */
+/**
+ * Safe write 
+ */
 #define		XWRITE(a, b, c, d)			    \
 do							    \
 {							    \
@@ -156,7 +178,9 @@ do							    \
 }							    \
 while (0)
 
-/* Safe close */
+/**
+ * Safe close 
+ */
 #define		XCLOSE(a, b)				    \
 do							    \
 {							    \
@@ -167,10 +191,14 @@ do							    \
 while (0)
 
 
-/* Simple useful macro */
+/**
+ * Simple useful macro 
+ */
 #define	INTERVAL(a, b, c) (a <= b && b < c)
 
-/* Profiling macros */
+/**
+ * Profiling macros 
+ */
 #define	NOPROFILER_IN()    int profileme = 0
 
 #define	NOPROFILER_OUT()	\
@@ -271,7 +299,9 @@ do {						\
 
 
 
-/* Debugging macro */
+/**
+ * Debugging macro 
+ */
 #ifdef ELFSH_DEBUG						
 #define PROFILER_DEBUG(fi, f, l, fm, a...) do			  \
  {								  \

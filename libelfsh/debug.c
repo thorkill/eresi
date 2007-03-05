@@ -1,14 +1,18 @@
 /*
- ** debug.c for elfsh
- **
- ** Started on  Thu Apr  3 21:36:55 2003 mayhem
-
-*/
+ * debug.c for elfsh
+ *
+ * Started on  Thu Apr  3 21:36:55 2003 mayhem
+ *
+ * $Id: debug.c,v 1.6 2007-03-05 01:11:18 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 
 
-/* Debug : print the section list */
+/**
+ * Debug : print the section list 
+ */
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 {
 	elfshsect_t	*actual;
@@ -60,7 +64,7 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
  *
  * @param machine Machine to get description string
  * @return A pointer to a static string to describe machine 
-*/
+ */
 char		*elfsh_get_machine_string(elfsh_Half machine)
 {
   switch(machine)

@@ -1,14 +1,20 @@
 /*
-** dtors.c for libelfsh
-**
-** Started on  Tue Feb 26 22:12:38 2002 mayhem
-**
-*/
+ * libelfsh/dtors.c
+ *
+ * Started on  Tue Feb 26 22:12:38 2002 mayhem
+ *
+ * $Id: dtors.c,v 1.4 2007-03-05 01:11:18 thor Exp $
+ *
+ */
+
 #include "libelfsh.h"
 
 
 
-/* Read the destructor array in .dtors */
+
+/**
+ * Read the destructor array in .dtors 
+ */
 elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 {
   elfshsect_t	*new;
@@ -50,7 +56,9 @@ elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 
 
 
-/* Shift DTORS on ET_DYN */
+/**
+ * Shift DTORS on ET_DYN 
+ */
 int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*dtors;

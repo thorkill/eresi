@@ -1,13 +1,15 @@
 /*
-** dynamic.c for libelfsh
-** 
-** Started on  Tue Feb 27 04:36:53 2001 mayhem
-**
-*/
+ * dynamic.c for libelfsh
+ * 
+ * Started on  Tue Feb 27 04:36:53 2001 mayhem
+ *
+ */
 #include "libelfsh.h"
 
 
-/* Change endianess of .dynamic */
+/**
+ * Change endianess of .dynamic 
+ */
 int		elfsh_endianize_dynamic(elfshsect_t *newent)
 {	  
   elfsh_Dyn	*dyn;
@@ -39,7 +41,9 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
 
 
 
-/* Return a ptr on the dynamic section */
+/**
+ * Return a ptr on the dynamic section 
+ */
 elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 {
   elfshsect_t	*newent = NULL; /* to shut gcc up with -Wall */
@@ -79,7 +83,9 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 
 
 
-/* Return the tag field of the dynamic entry */
+/**
+ * Return the tag field of the dynamic entry 
+ */
 elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -90,7 +96,9 @@ elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_tag));
 }
 
-/* Change the tag field of the dynamic entry */
+/**
+ * Change the tag field of the dynamic entry 
+ */
 int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -103,7 +111,9 @@ int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the tag field of the dynamic entry */
+/**
+ * Return the tag field of the dynamic entry 
+ */
 elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -114,7 +124,9 @@ elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
 }
 
-/* Change the val field of the dynamic entry */
+/**
+ * Change the val field of the dynamic entry 
+ */
 int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -127,7 +139,9 @@ int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
 }
 
 
-/* Retreive the information giving the entry */
+/**
+ * Retreive the information giving the entry 
+ */
 char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 {
   void		*data;
@@ -152,7 +166,9 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 }
 
 
-/* Get .dynamic entries by type */
+/**
+ * Get .dynamic entries by type 
+ */
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, 
 						 elfsh_Word type)
 {
@@ -180,7 +196,9 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
 }
 
 
-/* Return a elfsh_Dyn entry by its index */
+/**
+ * Return a elfsh_Dyn entry by its index 
+ */
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, 
 						  elfsh_Addr index)
 {
@@ -189,7 +207,9 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic,
 }
 
 
-/* Say if the entry is a pointer */
+/**
+ * Say if the entry is a pointer 
+ */
 int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 {
   switch (elfsh_get_dynentry_type(ent))
@@ -214,7 +234,9 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 
 
 
-/* Shift the .dynamic section in ET_DYN files */
+/**
+ * Shift the .dynamic section in ET_DYN files 
+ */
 int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 {
   elfsh_Dyn	*dyn;
@@ -235,7 +257,10 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 
 
 
-/* Just a test */
+/**
+ * FIXME: TEST?
+ * Just a test 
+ */
 int		elfsh_get_dynent_by_type(elfshobj_t	*robj, 
 					 elfsh_Dyn	*data,
 					 elfsh_Word	real_index)
@@ -249,14 +274,4 @@ int		elfsh_get_dynent_by_type(elfshobj_t	*robj,
   idx = idx / sizeof(elfsh_Dyn);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
-
-
-
-
-
-
-
-
-
-
 

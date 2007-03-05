@@ -1,12 +1,14 @@
 /*
- ** elf.c for libelfsh
- ** 
- ** Started on  Mon Feb 26 04:09:38 2001 mayhem
- ** Last update Mon Apr 21 20:58:41 2003 mayhem
+ * elf.c for libelfsh
+ * 
+ * Started on  Mon Feb 26 04:09:38 2001 mayhem
+ * Last update Mon Apr 21 20:58:41 2003 mayhem
  */
 #include "libelfsh.h"
 
-/* Change the ELF header flags field */
+/**
+ * Change the ELF header flags field 
+ */
 int		elfsh_set_flags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -18,7 +20,9 @@ int		elfsh_set_flags(elfsh_Ehdr *hdr, elfsh_Addr flags)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the ELF header flags field */
+/**
+ * Return the ELF header flags field 
+ */
 elfsh_Word	elfsh_get_flags(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -29,7 +33,9 @@ elfsh_Word	elfsh_get_flags(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_flags));
 }
 
-/* Change the section header table file offset */
+/**
+ * Change the section header table file offset 
+ */
 int		elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -41,7 +47,9 @@ int		elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the section header table file offset */
+/**
+ * Return the section header table file offset 
+ */
 elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -53,7 +61,9 @@ elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
 }
 
 
-/* Change the section header table entry count */
+/**
+ * Change the section header table entry count 
+ */
 int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -65,7 +75,9 @@ int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the section header table entry count */
+/**
+ * Return the section header table entry count 
+ */
 elfsh_Half	elfsh_get_shtnbr(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -77,7 +89,9 @@ elfsh_Half	elfsh_get_shtnbr(elfsh_Ehdr *hdr)
 }
 
 
-/* Change the program header table file offset */
+/**
+ * Change the program header table file offset 
+ */
 int		elfsh_set_phtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -89,7 +103,9 @@ int		elfsh_set_phtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the program header table file offset */
+/**
+ * Return the program header table file offset 
+ */
 elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -100,7 +116,9 @@ elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_phoff));
 }
 
-/* Change the program header table file offset */
+/**
+ * Change the program header table file offset 
+ */
 int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -112,7 +130,9 @@ int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the program header table file offset */
+/**
+ * Return the program header table file offset 
+ */
 elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -124,7 +144,9 @@ elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
 		(*(elfsh_Off *) hdr->e_ident + EI_RPHT));
 }
 
-/* Change the program header table entry count */
+/**
+ * Change the program header table entry count 
+ */
 int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -136,7 +158,9 @@ int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the program header table entry count */
+/**
+ * Return the program header table entry count 
+ */
 elfsh_Half	elfsh_get_phtnbr(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -147,7 +171,9 @@ elfsh_Half	elfsh_get_phtnbr(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_phnum));
 }
 
-/* Change the program entry point */
+/** 
+ *Change the program entry point 
+ */
 int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -159,7 +185,9 @@ int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the program entry point */
+/** 
+ * Return the program entry point 
+ */
 elfsh_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -170,7 +198,9 @@ elfsh_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_entry));
 }
 
-/* Return the machine type giving its e_arch field */
+/**
+ * Return the machine type giving its e_arch field 
+ */
 elfsh_Half	elfsh_get_arch(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -181,7 +211,9 @@ elfsh_Half	elfsh_get_arch(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_machine));
 }
 
-/* Change the machine type e_arch field */
+/**
+ * Change the machine type e_arch field 
+ */
 u_int	elfsh_set_arch(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -193,7 +225,9 @@ u_int	elfsh_set_arch(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the ELF object type giving its e_type field */
+/**
+ * Return the ELF object type giving its e_type field 
+ */
 elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -204,7 +238,9 @@ elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_type));
 }
 
-/* Return the ELF object type giving its e_type field */
+/**
+ * Return the ELF object type giving its e_type field 
+ */
 u_int	elfsh_set_objtype(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -216,7 +252,9 @@ u_int	elfsh_set_objtype(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the ELF section string table index field */
+/**
+ * Return the ELF section string table index field 
+ */
 elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -227,7 +265,9 @@ elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_shstrndx));
 }
 
-/* Set the ELF section string table index field */
+/**
+ * Set the ELF section string table index field 
+ */
 u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -239,7 +279,9 @@ u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Change the e_version flag */
+/**
+ * Change the e_version flag 
+ */
 u_int	elfsh_set_version(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -251,7 +293,9 @@ u_int	elfsh_set_version(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read the version flags */
+/**
+ * Read the version flags 
+ */
 elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -262,7 +306,9 @@ elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_version));
 }
 
-/* Change the ELF header size field */
+/**
+ * Change the ELF header size field 
+ */
 u_int	elfsh_set_ehsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -274,7 +320,9 @@ u_int	elfsh_set_ehsize(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the ELF header size field */
+/**
+ * Return the ELF header size field 
+ */
 elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -285,7 +333,9 @@ elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_ehsize));
 }
 
-/* Change the Program Header Entry size field */
+/**
+ * Change the Program Header Entry size field 
+ */
 u_int	elfsh_set_phentsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -297,7 +347,9 @@ u_int	elfsh_set_phentsize(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the Program Header Entry size field */
+/**
+ * Return the Program Header Entry size field 
+ */
 elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -308,7 +360,9 @@ elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_phentsize));
 }
 
-/* Change the Section Header Entry size field */
+/**
+ * Change the Section Header Entry size field 
+ */
 u_int	elfsh_set_shentsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -320,7 +374,9 @@ u_int	elfsh_set_shentsize(elfsh_Ehdr *e, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the Section Header Entry size field */
+/**
+ * Return the Section Header Entry size field 
+ */
 elfsh_Half	elfsh_get_shentsize(elfsh_Ehdr *e)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -332,7 +388,9 @@ elfsh_Half	elfsh_get_shentsize(elfsh_Ehdr *e)
 }
 
 
-/* Return the encoding type */
+/**
+ * Return the encoding type 
+ */
 int		elfsh_get_encoding(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -343,7 +401,9 @@ int		elfsh_get_encoding(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_ident[EI_DATA]));
 }
 
-/* Change the encoding (little endian, big endian, or else) */
+/**
+ * Change the encoding (little endian, big endian, or else) 
+ */
 int		elfsh_set_encoding(elfsh_Ehdr *hdr, elfsh_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -355,7 +415,9 @@ int		elfsh_set_encoding(elfsh_Ehdr *hdr, elfsh_Addr type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the magic */
+/**
+ * Return the magic 
+ */
 int		elfsh_get_magic(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -366,7 +428,9 @@ int		elfsh_get_magic(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*(u_int *) hdr->e_ident));
 }
 
-/* Change the magic */
+/**
+ * Change the magic 
+ */
 int		elfsh_set_magic(elfsh_Ehdr *hdr, elfsh_Addr mag)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -378,7 +442,9 @@ int		elfsh_set_magic(elfsh_Ehdr *hdr, elfsh_Addr mag)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the class */
+/**
+ * Return the class 
+ */
 int		elfsh_get_class(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -389,7 +455,9 @@ int		elfsh_get_class(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_ident[EI_CLASS]));
 }
 
-/* Change the class */
+/**
+ * Change the class 
+ */
 int		elfsh_set_class(elfsh_Ehdr *hdr, elfsh_Addr eclass)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -401,7 +469,9 @@ int		elfsh_set_class(elfsh_Ehdr *hdr, elfsh_Addr eclass)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Endianize ELF header */
+/**
+ * Endianize ELF header 
+ */
 void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -431,6 +501,9 @@ void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder)
     PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * Sanity check of header type
+ */
 int elfsh_check_hdr_type(elfshobj_t *file) 
 {  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -452,6 +525,9 @@ int elfsh_check_hdr_type(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Sanity check of machin type
+ */
 int elfsh_check_hdr_machine(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -468,6 +544,9 @@ int elfsh_check_hdr_machine(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Sanity check of version value
+ */
 int elfsh_check_hdr_version(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -482,6 +561,9 @@ int elfsh_check_hdr_version(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Sanity check of phoff value
+ */
 int elfsh_check_hdr_phoff(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -496,6 +578,9 @@ int elfsh_check_hdr_phoff(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Sanity check of shoff value
+ */
 int elfsh_check_hdr_shoff(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -509,7 +594,9 @@ int elfsh_check_hdr_shoff(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* perform some sanity checks on ELF header */
+/**
+ * perform some sanity checks on ELF header 
+ */
 int		elfsh_check_hdr(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -523,7 +610,9 @@ int		elfsh_check_hdr(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Load the ELF header */
+/**
+ * Load the ELF header 
+ */
 int	elfsh_load_hdr(elfshobj_t *file)
 {
   int	len;
@@ -568,7 +657,9 @@ int	elfsh_load_hdr(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
 
-/* Return a ptr on the ELF header (load it before if not done yet) */
+/**
+ * Return a ptr on the ELF header (load it before if not done yet) 
+ */
 void	*elfsh_get_hdr(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -582,7 +673,9 @@ void	*elfsh_get_hdr(elfshobj_t *file)
 }
 
 
-/* Return 1 if the file is static or dynamic */
+/**
+ * @return 1 if the file is static or dynamic 
+ */
 int		elfsh_static_file(elfshobj_t *file)
 {
   elfsh_Phdr	*p;
@@ -593,6 +686,9 @@ int		elfsh_static_file(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (p ? 0 : 1));
 }
 
+/**
+ * @return 1 if the file is dynamic
+ */
 int		elfsh_dynamic_file(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -600,6 +696,9 @@ int		elfsh_dynamic_file(elfshobj_t *file)
 		(!elfsh_static_file(file)));
 }
 
+/**
+ * Get notes section from core
+ */
 int elfsh_get_core_notes(elfshobj_t *file)
 {
   elfsh_Nhdr  nhdr;

@@ -1,14 +1,18 @@
 /*
-** ctors.c for libelfsh
-**
-** Started on  Tue Feb 26 22:11:12 2002 mayhem
-**
-*/
+ * ctors.c for libelfsh
+ *
+ * Started on  Tue Feb 26 22:11:12 2002 mayhem
+ *
+ * $Id: ctors.c,v 1.4 2007-03-05 01:11:18 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 
 
-/* Read the constructor array in .ctors */
+/**
+ * Read the constructor array in .ctors 
+ */
 elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 {
   elfshsect_t	*new;

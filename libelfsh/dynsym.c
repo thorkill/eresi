@@ -1,16 +1,18 @@
 /*
-** Dynsym.c for libelfsh
-** 
-** Started on  Mon Feb 26 04:13:29 2001 mayhem
-**
-*/
+ * Dynsym.c for libelfsh
+ * 
+ * Started on  Mon Feb 26 04:13:29 2001 mayhem
+ *
+ */
 #include "libelfsh.h"
 
 
 
 
 
-/* Return the dynsymbol name giving its index in the dynamic symbol string table */
+/**
+ * Return the dynsymbol name giving its index in the dynamic symbol string table 
+ */
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
   char	*ret;
@@ -32,7 +34,9 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 
 
 
-/* Return the used offset in .dynstr or -1 if failed */
+/**
+ * Return the used offset in .dynstr or -1 if failed 
+ */
 int		elfsh_set_dynsymbol_name(elfshobj_t *file, 
 					 elfsh_Sym *s, char *name)
 {
@@ -80,7 +84,9 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
 
 
 
-/* Return a ptr on the dynamic symbol table num is filled with the entries total number */
+/**
+ * Return a ptr on the dynamic symbol table num is filled with the entries total number 
+ */
 void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 {
   elfshsect_t	*newent;
@@ -154,10 +160,10 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 
 
 
-/* 
-** Return the dynamic symbol name giving its value, 
-** Fill 'offset' with the difference between sym->st_value and 'value'
-*/
+/** 
+ * Return the dynamic symbol name giving its value, 
+ * Fill 'offset' with the difference between sym->st_value and 'value'
+ */
 char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 					 elfsh_Addr	value, 
 					 elfsh_SAddr    *offset)
@@ -252,7 +258,9 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 
 
 
-/* Return the symbol entry giving its name */
+/**
+ * Return the symbol entry giving its name 
+ */
 elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*ret;
@@ -286,7 +294,9 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 
 
 
-/* Shift the dynamic symbol table, mostly useful on ET_DYN objects */
+/**
+ * Shift the dynamic symbol table, mostly useful on ET_DYN objects 
+ */
 int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc)
 {
   elfshsect_t	*actual;

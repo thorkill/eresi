@@ -8,7 +8,9 @@
 #include "libelfsh.h"
 
 
-/* Add a breakpoint */
+/**
+ * Add a breakpoint 
+ */
 int		elfsh_bp_add(hash_t	*bps, 
 			     elfshobj_t *file, 
 			     char	*resolv, 

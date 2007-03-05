@@ -1,19 +1,23 @@
 /*
-** extplt.c for libelfsh
-** 
-** This file contain the architecture -dependant- code 
-** for the EXTPLT technique (unknown symbol resolution)
-**
-** Started on  Wed Jun 12 21:20:07 2005 mm
-**
-*/
+ * extplt.c for libelfsh
+ * 
+ * This file contain the architecture -dependant- code 
+ * for the EXTPLT technique (unknown symbol resolution)
+ *
+ * Started on  Wed Jun 12 21:20:07 2005 mm
+ *
+ * $Id: extplt.c,v 1.5 2007-03-05 01:11:18 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 
 
 
-/* When performing EXTPLT technique, we need to mirror some sections
-   if we want to be able to extend them : .rel.plt, .dynsym, .dynstr */
+/**
+ * When performing EXTPLT technique, we need to mirror some sections
+ * if we want to be able to extend them : .rel.plt, .dynsym, .dynstr 
+ */
 int		elfsh_extplt_mirror_sections(elfshobj_t *file) 
 {
   elfshsect_t	*dynsym;
@@ -129,8 +133,10 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 }
 
 
-/* Insert a new function entry point for dynamic resolution */
-/* Return the symbol pointing on this new definition (its .plt entry) */
+/**
+ * Insert a new function entry point for dynamic resolution
+ * Return the symbol pointing on this new definition (its .plt entry) 
+ */
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)	
 {
   u_int		sz;

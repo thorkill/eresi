@@ -11,19 +11,18 @@
 
 
 
-/* 
-   Shift the relocation HI16 and L16 for mips binaries
-   We have to do that using a signature since no relocation 
-   tables are available in ET_EXEC files on mips.
-
-   3c1c0000        lui     gp,0x0
-   279c0000        addiu   gp,gp,0
-
-   diff contains the difference to add to the offset for obtaining
-   .alt.got address that we need to add to the HI16 relocations 
-   matching the signature.
-
-*/
+/**
+ * Shift the relocation HI16 and L16 for mips binaries
+ * We have to do that using a signature since no relocation 
+ * tables are available in ET_EXEC files on mips.
+ *
+ * 3c1c0000        lui     gp,0x0
+ * 279c0000        addiu   gp,gp,0
+ *
+ * diff contains the difference to add to the offset for obtaining
+ * .alt.got address that we need to add to the HI16 relocations 
+ * matching the signature.
+ */
 void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 {
   uint32_t		*dword;
@@ -64,8 +63,13 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 }
 
 
-/* Shift the ALPHA relocations */
-int			elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, elfshsect_t *altgot, u_int off)
+/**
+ * Shift the ALPHA relocations 
+ */
+int			elfsh_shift_alpha_relocs(elfshobj_t *file, 
+						 char *name, 
+						 elfshsect_t *altgot, 
+						 u_int off)
 {
   u_int			entsz;
   elfsh_Rela		*rel;
@@ -104,8 +108,12 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, elfshsect_t *altgot
 
 
 
-/* Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt */
-int			elfsh_shift_generic_relocs(elfshobj_t *file, elfsh_Addr diff, elfshsect_t *relplt)
+/**
+ * Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt 
+ */
+int			elfsh_shift_generic_relocs(elfshobj_t *file, 
+						   elfsh_Addr diff, 
+						   elfshsect_t *relplt)
 {
   elfsh_Rela		*l;
   int			index;
@@ -121,7 +129,9 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file, elfsh_Addr diff, elfshsect_t 
 }
 
 
-/* Shift relocation on IA32 for allowing non-present symbol resolving */
+/**
+ * Shift relocation on IA32 for allowing non-present symbol resolving 
+ */
 int			elfsh_shift_ia32_relocs(elfshobj_t *file, 
 						elfsh_Addr  diff,
 						elfshsect_t *relplt,
@@ -141,7 +151,9 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Same arch independant code for the SPARC case */
+/**
+ * Same arch independant code for the SPARC case 
+ */
 int			elfsh_shift_sparc_relocs(elfshobj_t	*file, 
 						 elfsh_Addr	diff, 
 						 elfshsect_t	*relplt)
@@ -154,9 +166,15 @@ int			elfsh_shift_sparc_relocs(elfshobj_t	*file,
 
 
 
-/* Change the DT_PLTGOT entry in the .dynamic section to change the relocation base address */
-int			elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *got, 
-					      elfshsect_t *plt, elfshsect_t *altplt)
+/**
+ * Change the DT_PLTGOT entry in the .dynamic
+ * section to change the relocation base address
+ */
+int			elfsh_redirect_pltgot(elfshobj_t *file, 
+					      elfshsect_t *altgot, 
+					      elfshsect_t *got, 
+					      elfshsect_t *plt, 
+					      elfshsect_t *altplt)
 {
   elfsh_Sym		*sym;
   elfsh_Dyn		*dyn;

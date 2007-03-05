@@ -1,13 +1,13 @@
 /*
-** hooks.c for libelfsh (The ELF shell library)
-**
-** All the function pointers for all provided techniques.
-**
-** This is using the libaspect vectors
-**
-** Started Jan 11 2004 02:57:03 mayhem
-**
-*/
+ * hooks.c for libelfsh (The ELF shell library)
+ *
+ * All the function pointers for all provided techniques.
+ *
+ * This is using the libaspect vectors
+ *
+ * Started Jan 11 2004 02:57:03 mayhem
+ *
+ */
 #include "libelfsh.h"
 
 hash_t	interp_hash;
@@ -22,7 +22,9 @@ u_char	elfsh_ostype[5] = {
 };
 
 								
-/* Default hooks handlers */ 
+/**
+ * Default hooks handlers
+ */
 int	elfsh_default_plthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
 				 elfsh_Addr null3)
@@ -32,8 +34,10 @@ int	elfsh_default_plthandler(elfshobj_t *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/* Used for encoding a random PLT entry */
-/* Do nothing by default, this is not fatal */
+/**
+ * Used for encoding a random PLT entry
+ * Do nothing by default, this is not fatal 
+ */
 int	elfsh_default_encodeplthandler(elfshobj_t *file, 
 				       elfshsect_t *sect, 
 				       elfsh_Addr diff)
@@ -43,7 +47,9 @@ int	elfsh_default_encodeplthandler(elfshobj_t *file,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/* Used for encoding of the first PLT entry */
+/**
+ * Used for encoding of the first PLT entry 
+ */
 int	elfsh_default_encodeplt1handler(elfshobj_t *file, 
 					elfshsect_t *sect,
 					elfshsect_t *sect2,
@@ -54,6 +60,9 @@ int	elfsh_default_encodeplt1handler(elfshobj_t *file,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
+/**
+ *
+ */
 int	elfsh_default_relhandler(elfshsect_t *null, 
 				 elfsh_Rel  * null2, 
 				 elfsh_Addr * null3, 
@@ -65,6 +74,9 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
+/**
+ *
+ */
 int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   char		*nulls,
 				   elfsh_Sym    *null2,
@@ -75,7 +87,9 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
+/**
+ *
+ */
 int     elfsh_default_breakhandler(elfshobj_t   *null,
 				   elfshbp_t	*null3)
 {
@@ -84,7 +98,9 @@ int     elfsh_default_breakhandler(elfshobj_t   *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
+/**
+ *
+ */
 int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d, 
 				    elfshsect_t *t, elfshsect_t *f)
 {
@@ -93,8 +109,10 @@ int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/* Used on architectures where altplt hijack is not required, thus induce no fatal error */
-/* DO NOT use this as a default handler, unless you know exactly what you are doing */
+/**
+ * Used on architectures where altplt hijack is not required, thus induce no fatal error
+ * DO NOT use this as a default handler, unless you know exactly what you are doing
+ */
 int	elfsh_void_altplthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
 				 elfsh_Addr null3)
@@ -103,6 +121,9 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ *
+ */
 int	elfsh_default_argchandler(elfsh_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -110,9 +131,9 @@ int	elfsh_default_argchandler(elfsh_Addr addr)
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
-
-/* Registration handlers */
+/**
+ * Registration handlers 
+ */
 int	elfsh_register_altplthook(u_char archtype, 
 				  u_char objtype, 
 				  u_char ostype, 
@@ -143,7 +164,9 @@ int	elfsh_register_altplthook(u_char archtype,
 }
 
 
-/* Register an EXTPLT handler */
+/**
+ * Register an EXTPLT handler 
+ */
 int		elfsh_register_extplthook(u_char archtype, 
 					  u_char objtype, 
 					  u_char ostype, 
@@ -174,7 +197,9 @@ int		elfsh_register_extplthook(u_char archtype,
 }
 
 
-/* Register an PLT handler */
+/**
+ * Register an PLT handler 
+ */
 int		elfsh_register_plthook(u_char archtype, u_char objtype, 
 				       u_char ostype, void *fct)
 {
@@ -202,7 +227,9 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Register an ENCODEPLT handler */
+/** 
+ * Register an ENCODEPLT handler 
+ */
 int	elfsh_register_encodeplthook(u_char archtype, u_char objtype, 
 				     u_char ostype, void *fct)
 {
@@ -231,7 +258,9 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Register an ENCODEPLT1 handler */
+/**
+ * Register an ENCODEPLT1 handler 
+ */
 int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype, 
 				      u_char ostype, void *fct)
 {
@@ -261,7 +290,9 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
 
 
 
-/* Register an ET_REL injection handler */
+/**
+ * Register an ET_REL injection handler 
+ */
 int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
 			       void *fct)
 {
@@ -290,7 +321,9 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
 }
 
 
-/* Register a control flow redirection handler */
+/**
+ * Register a control flow redirection handler 
+ */
 int	elfsh_register_cflowhook(u_char archtype, u_char objtype, 
 				 u_char ostype, void *fct)
 {
@@ -320,7 +353,9 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
 
 
 
-/* Register a breakpoint redirection handler */
+/**
+ * Register a breakpoint redirection handler 
+ */
 int	elfsh_register_breakhook(u_char archtype, u_char objtype, 
 				 u_char ostype, void *fct)
 {
@@ -348,7 +383,9 @@ int	elfsh_register_breakhook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Register a args counting redirection handler */
+/**
+ * Register a args counting redirection handler 
+ */
 int	elfsh_register_argchook(u_char archtype, u_char objtype, 
 				u_char ostype, void *fct)
 {
@@ -379,7 +416,9 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
 
 
 
-/* Initialize hook hash table */
+/**
+ * Initialize hook hash table 
+ */
 int		elfsh_init_vectors()
 {
   u_int		*dims;
@@ -430,7 +469,9 @@ int		elfsh_init_vectors()
 }
 
 
-/* Initialize ALTPLT hijack and ET_REL injection handlers in their hook */
+/**
+ * Initialize ALTPLT hijack and ET_REL injection handlers in their hook 
+ */
 void	elfsh_setup_hooks()
 {
   //u_int	i, j, k;
@@ -939,7 +980,9 @@ void	elfsh_setup_hooks()
 }
 
 
-/* Call the relocation hook */
+/**
+ * Call the relocation hook 
+ */
 int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r, 
 			    elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m)
 {
@@ -984,7 +1027,9 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
 
 
 
-/* Call the relocation hook */
+/**
+ * Call the relocation hook 
+ */
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old, 
 			    elfsh_Addr new)
 {
@@ -1021,7 +1066,9 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
 }
 
 
-/* Call the PLT hook */
+/**
+ * Call the PLT hook 
+ */
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 {
   vector_t	*plt;
@@ -1058,7 +1105,9 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 
 
 
-/* Call the ENCODEPLT hook */
+/**
+ * Call the ENCODEPLT hook 
+ */
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
 				elfsh_Addr diff, u_int off)
 {
@@ -1097,7 +1146,9 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
 
 
 
-/* Call the ENCODEPLT1 hook */
+/** 
+ * Call the ENCODEPLT1 hook 
+ */
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
 				 elfshsect_t *extplt, elfsh_Addr diff)
 {
@@ -1136,7 +1187,9 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 
 
 
-/* Call the ALTPLT hook */
+/**
+ * Call the ALTPLT hook 
+ */
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 {
   vector_t	*altplt;
@@ -1172,7 +1225,9 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 }
 
 
-/* Call the EXTPLT hook */
+/**
+ * Call the EXTPLT hook 
+ */
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
 			     elfshsect_t *dynsym, elfshsect_t *relplt)
 {
@@ -1211,7 +1266,9 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
 
 
 
-/* Call the breakpoint hook */
+/**
+ * Call the breakpoint hook 
+ */
 int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
 {
   vector_t	*breakh;
@@ -1246,7 +1303,9 @@ int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Call the arg count hook */
+/**
+ * Call the arg count hook 
+ */
 int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
 {
   vector_t	*argch;
@@ -1279,7 +1338,9 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
 
 
 
-/* Translate ELF architecture type into ELFsh architecture type */
+/**
+ * Translate ELF architecture type into ELFsh architecture type 
+ */
 u_char		elfsh_get_archtype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1323,7 +1384,9 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
 }
 
 
-/* Translate ELF object type into ELFsh object type */
+/**
+ * Translate ELF object type into ELFsh object type 
+ */
 u_char		elfsh_get_elftype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1340,7 +1403,9 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
 }
 
       
-/* Retreive ELFsh OS type from ELF header */
+/**
+ * Retreive ELFsh OS type from ELF header 
+ */
 u_char  elfsh_get_real_ostype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1365,8 +1430,10 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
 }
 
 
-/* For now, always return the type of a userland process */
-/* Need to be extended for the kernel memory type */
+/**
+ * For now, always return the type of a userland process
+ * Need to be extended for the kernel memory type 
+ */
 u_char		elfsh_get_hosttype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1374,7 +1441,9 @@ u_char		elfsh_get_hosttype(elfshobj_t *file)
 }
 
 
-/* Fill up ELFsh Operating System type */
+/**
+ * Fill up ELFsh Operating System type 
+ */
 u_char		elfsh_get_ostype(elfshobj_t *file)
 {
   u_char	*res;
@@ -1454,7 +1523,9 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
 #endif
 }
 
-/* Return the page size */
+/**
+ * Return the page size 
+ */
 int       elfsh_get_pagesize(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1480,7 +1551,9 @@ int       elfsh_get_pagesize(elfshobj_t *file)
     }  
 }
 
-/* Return the page size */
+/**
+ * Return the page size 
+ */
 u_int       elfsh_get_breaksize(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

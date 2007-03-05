@@ -1,29 +1,29 @@
-/*
-** types.c in libmjollnir for elfsh
-**
-** Functions that use the typed instructions information in libasm
-**
-** Made by mayhem, thorkill, sk
-**
-** Updated Thu Dec 29 16:14:39 2006 mayhem
-*/
+/**
+ * \file libmjollnir/types.c
+ *
+ * Functions that use the typed instructions information in libasm
+ *
+ * Made by mayhem, thorkill, sk
+ *
+ * Updated Thu Dec 29 16:14:39 2006 mayhem
+ */
 #include "libmjollnir.h"
 
 
 
-/*
-**  Depending on instruction type -based on IA32 instruction set-
-**
-**  ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
-**  ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
-**  ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
-**
-**  The last two types reset g_prevaddr as execution flow won't be restored
-**  to following instruction.
-**
-** FIXME : this function must be tested on other architectures
-**
-*/
+/**
+ *  Depending on instruction type -based on IA32 instruction set-
+ *
+ *  ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
+ *  ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
+ *  ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
+ *
+ *  The last two types reset g_prevaddr as execution flow won't be restored
+ *  to following instruction.
+ *
+ * FIXME : this function must be tested on other architectures
+ *
+ */
 int		mjr_asm_flow(mjrcontext_t *context)
 {
   int		ilen;
@@ -155,28 +155,28 @@ int		mjr_asm_flow(mjrcontext_t *context)
 }
 
 
-/*
-** Support function pointers computations
-**
-** Handle something like this : call *%reg
-**
-**  -> Check goto table and fixup destination
-**
-**  - start gdb, set breakpoint on a known pointer function, run the prog
-**  - check register value at breakpoint
-**  - start elfsh
-**  - addgoto <vaddr of call *%reg> <destaddr value of *%reg> 
-**
-** TODO:
-**  history of mov to reg when second operand was an address ;-)
-**
-**  804933c:       89 d1                   mov    %edx,%ecx
-**  804933e:       89 15 c0 e2 04 08       mov    %edx,0x804e2c0
-**  ...
-**  804936c:       ff d2                   call   *%edx
-**
-** FIXME : this function must be ported to the SPARC architecture
-*/
+/**
+ * Support function pointers computations
+ *
+ * Handle something like this : call *%reg
+ *
+ *  -> Check goto table and fixup destination
+ *
+ *  - start gdb, set breakpoint on a known pointer function, run the prog
+ *  - check register value at breakpoint
+ *  - start elfsh
+ *  - addgoto <vaddr of call *%reg> <destaddr value of *%reg> 
+ *
+ * TODO:
+ *  history of mov to reg when second operand was an address ;-)
+ *
+ *  804933c:       89 d1                   mov    %edx,%ecx
+ *  804933e:       89 15 c0 e2 04 08       mov    %edx,0x804e2c0
+ *  ...
+ *  804936c:       ff d2                   call   *%edx
+ *
+ * FIXME : this function must be ported to the SPARC architecture
+ */
 elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 {
   char		tmp[255];
@@ -258,19 +258,19 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 
 
 
-/*
-** This function add a new element to the linked list of callers 
-** of the current block.
-** 
-** It resolves operands of instruction which may modify the execution path.
-** 
-** If resolved to a virtual address, a new block is inserted.
-**
-** -> Return destination address inserted or -1 if unresolved
-**
-** FIXME: this function must be tested on the SPARC architecture
-**
-*/
+/**
+ * This function add a new element to the linked list of callers 
+ * of the current block.
+ * 
+ * It resolves operands of instruction which may modify the execution path.
+ * 
+ * If resolved to a virtual address, a new block is inserted.
+ *
+ * -> Return destination address inserted or -1 if unresolved
+ *
+ * FIXME: this function must be tested on the SPARC architecture
+ *
+ */
 int		mjr_insert_destaddr(mjrcontext_t *context)
 {
   int		ilen;
@@ -394,10 +394,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   #endif
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-  "Operand content not supported.", -1);
-  }
-  
-  #if __DEBUG_CALLS__
+  "Operand content not supported.", -  #if __DEBUG_CALLS__
   fprintf(D_DESC, "[__DEBUG_CALLS__] mjrGetCallDst: vaddr: %x dest: %x\n",
   sess->cur->curVaddr,
   *dest);

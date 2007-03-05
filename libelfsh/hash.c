@@ -1,14 +1,16 @@
 /*
-** hash.c for libelfsh
-** 
-** Started on  Mon Feb 26 04:15:44 2001 mayhem
-**
-*/
+ * hash.c for libelfsh
+ * 
+ * Started on  Mon Feb 26 04:15:44 2001 mayhem
+ *
+ */
 #include "libelfsh.h"
 
 static void	*lastdata;
 
-/* Return the chain number */
+/**
+ * Return the chain number 
+ */
 int	       	elfsh_get_hashchain_num(int *chain)
 {
   int		nchain;
@@ -25,7 +27,9 @@ int	       	elfsh_get_hashchain_num(int *chain)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (nchain));
 }
 
-/* Set a value for the chain number */
+/**
+ * Set a value for the chain number 
+ */
 int	     	elfsh_set_hashchain_num(int *chain, int val)
 {
   int		*c;
@@ -44,7 +48,9 @@ int	     	elfsh_set_hashchain_num(int *chain, int val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the bucket number */
+/**
+ * Return the bucket number 
+ */
 int	       	elfsh_get_hashbucket_num(int *bucket)
 {
   int		nbucket;
@@ -61,7 +67,9 @@ int	       	elfsh_get_hashbucket_num(int *bucket)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (nbucket));
 }
 
-/* Set a value for the bucket number */
+/**
+ * Set a value for the bucket number 
+ */
 int	     	elfsh_set_hashbucket_num(int *bucket, int val)
 {
   int		*b;
@@ -80,7 +88,9 @@ int	     	elfsh_set_hashbucket_num(int *bucket, int val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a value for a chain */
+/**
+ * Return a value for a chain 
+ */
 int	       	elfsh_get_hashchain_value(int *chain)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -92,7 +102,9 @@ int	       	elfsh_get_hashchain_value(int *chain)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*chain));
 }
 
-/* Set a value for a chain value */
+/**
+ * Set a value for a chain value 
+ */
 int	       	elfsh_set_hashchain_value(int *chain, int val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -106,7 +118,9 @@ int	       	elfsh_set_hashchain_value(int *chain, int val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a value for a bucket */
+/**
+ * Return a value for a bucket 
+ */
 int	       	elfsh_get_hashbucket_value(int *bucket)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -118,7 +132,9 @@ int	       	elfsh_get_hashbucket_value(int *bucket)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*bucket));
 }
 
-/* Set a value for a bucket value */
+/**
+ * Set a value for a bucket value 
+ */
 int	     	elfsh_set_hashbucket_value(int *bucket, int val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -132,7 +148,9 @@ int	     	elfsh_set_hashbucket_value(int *bucket, int val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Get hash chain by name */
+/**
+ * Get hash chain by name 
+ */
 int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
 {
   elfsh_Sym	*sym;
@@ -173,7 +191,9 @@ int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));  
 }
 
-/* Get hash chain by index */
+/**
+ * Get hash chain by index 
+ */
 int       	*elfsh_get_hashchain_by_index(void *ps, int index)
 {
   int		*chain;
@@ -192,7 +212,9 @@ int       	*elfsh_get_hashchain_by_index(void *ps, int index)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));  
 }
 
-/* Get hash bucket by name */
+/**
+ * Get hash bucket by name 
+ */
 int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
 {
   elfsh_Sym	*sym;
@@ -233,7 +255,9 @@ int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));  
 }
 
-/* Get hash bucket by index */
+/**
+ * Get hash bucket by index 
+ */
 int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
 {
   int		*bucket;
@@ -252,6 +276,9 @@ int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));  
 }
 
+/**
+ *
+ */
 int		*elfsh_get_hashchain(const void *data)
 {
   int		*bucket;
@@ -265,6 +292,9 @@ int		*elfsh_get_hashchain(const void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((int *) bucket + nbucket));
 }
 
+/**
+ *
+ */
 int		elfsh_get_hashnchain(const void *data)
 {
   int 		*p;
@@ -276,7 +306,9 @@ int		elfsh_get_hashnchain(const void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*(p + 1)));
 }
 
-
+/**
+ *
+ */
 int		*elfsh_get_hashbucket(const void *data)
 {
   int		*p;
@@ -288,6 +320,9 @@ int		*elfsh_get_hashbucket(const void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (p + 2));
 }
 
+/**
+ *
+ */
 int		elfsh_get_hashnbucket(const void *data)
 {
   int		*p;
@@ -299,7 +334,9 @@ int		elfsh_get_hashnbucket(const void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*p));
 }
 
-/* Return a pointer on the symbol hash table and load it if needed */
+/**
+ * Return a pointer on the symbol hash table and load it if needed 
+ */
 void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 {
   elfshsect_t	*new;
@@ -337,7 +374,9 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-/* Return the symbol value giving its name using the symbol hash table */
+/**
+ * Return the symbol value giving its name using the symbol hash table 
+ */
 int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
@@ -401,12 +440,9 @@ int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
 		    "No Hash found for the symbol",  0);
 }
 
-
-
-
-
-
-/* Get the hash for the symbol name . Adapted from the ELF TIS reference */
+/**
+ * Get the hash for the symbol name . Adapted from the ELF TIS reference 
+ */
 int		elfsh_get_symbol_hash(char *name)
 {
   unsigned long h;

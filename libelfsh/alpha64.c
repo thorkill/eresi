@@ -10,7 +10,13 @@
 
 
 
-/* Static hooking for Alpha64 */
+/**
+ * Static hooking for Alpha64
+ * @param sect elfsh section object
+ * @param name the name of the section
+ * @param sym the name of symbol
+ * @param addr the address
+ */
 int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 			    char	*name,
 			    elfsh_Sym	*sym,
@@ -39,27 +45,29 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 
 
 
-/* ALTPLT hijacking on ALPHA64 */
-/*
-  On ALPHA we dont have any relative operands while those
-  bytes are copied.
+/** ALTPLT hijacking on ALPHA64 
+ * On ALPHA we dont have any relative operands while those
+ * bytes are copied.
 
-  However since we only have 32 bytes free in the first
-  PLT entry, we cannot insert this 12 instrs length code 
-  updating the first entry of .alt.plt by the first entry
-  of .plt at runtime (since this last is only filled at 
-  runtime).
+ * However since we only have 32 bytes free in the first
+ * PLT entry, we cannot insert this 12 instrs length code 
+ * updating the first entry of .alt.plt by the first entry
+ * of .plt at runtime (since this last is only filled at 
+ * runtime).
 
-  Because alpha does not provide an instruction that only
-  load the 2 low bytes part of a register, we use different
-  register values depending on the addresses we need to
-  read/write. The only predictable register value is %gp
-  whoose value is always .got+0x8000
+ * Because alpha does not provide an instruction that only
+ * load the 2 low bytes part of a register, we use different
+ * register values depending on the addresses we need to
+ * read/write. The only predictable register value is %gp
+ * whoose value is always .got+0x8000
 
-  If we dont do this ALTPLT hijack, we cannot call the original 
-  function from the hook function that was setup in PLT.
-  
-*/
+ * If we dont do this ALTPLT hijack, we cannot call the original 
+ * function from the hook function that was setup in PLT.
+ *
+ * @param file elfshobj
+ * @param symbol elfsh symbol sturcture
+ * @param addr address
+ */
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
 					    elfsh_Addr addr)
@@ -158,7 +166,12 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
 
 
 
-/* PLT hijacking on ALPHA64 */
+/**
+ * PLT hijacking on ALPHA64 
+ * @param file elfshobj
+ * @param symbol elfsh symbol sturcture
+ * @param addr address
+ */
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
 					 elfsh_Addr addr)
@@ -218,7 +231,9 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
 
 
 
-/* Find the address of modgot entry for this value */
+/**
+ * Find the address of modgot entry for this value 
+ */
 elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
 {
   unsigned int	idx;
@@ -242,7 +257,9 @@ elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Handle the mod.o.got section */
+/**
+ * Handle the mod.o.got section 
+ */
 elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 {
   elfshsect_t	*modgot;
@@ -331,8 +348,8 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 	      sym = elfsh_get_symbol_from_reloc(sctcur->parent, relcur);
 	      name = elfsh_get_symname_from_reloc(sctcur->parent, relcur);
 	      if (!sym || !name)
-PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found for LITERAL", 
-			       NULL);
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found for LITERAL", 
+			     NULL);
 	      
 	      if (elfsh_get_symbol_bind(sym) != STB_LOCAL   && /* patch BeoS */
 		  (elfsh_get_symbol_type(sym) == STT_NOTYPE ||
@@ -385,12 +402,16 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Symbol or Name not found for LIT
 
 
 
-/* 
-   Perform relocation on entry for ALPHA64 architecture.
-
-   Only the types that are needed for relocating ET_REL objects 
-   are filled, others might come on the need.
-*/
+/**
+ * Perform relocation on entry for ALPHA64 architecture.
+ * Only the types that are needed for relocating ET_REL objects 
+ * are filled, others might come on the need.
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ */
 int       elfsh_relocate_alpha64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
 				 elfsh_Addr        *dword,
@@ -636,5 +657,4 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-
 

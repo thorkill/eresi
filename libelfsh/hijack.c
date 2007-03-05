@@ -1,13 +1,15 @@
 /*
-** hijack.c in elfsh
-** 
-** Started on  Tue Feb  4 14:41:34 2003 emsi
-**
-*/
+ * hijack.c in elfsh
+ * 
+ * Started on  Tue Feb  4 14:41:34 2003 emsi
+ *
+ */
 #include "libelfsh.h"
 
 
-/* Perform custom function hijack, return 0 on success -1 on error */
+/**
+ * Perform custom function hijack, return 0 on success -1 on error 
+ */
 int		elfsh_hijack_function_by_name(elfshobj_t *file, 
 					      uint32_t	 type,
 					      char	 *name, 

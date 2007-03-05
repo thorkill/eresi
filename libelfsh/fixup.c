@@ -1,15 +1,17 @@
 /*
-** fixup.c for elfsh
-** 
-** Started on  Fri Jul 27 04:56:06 2001 mayhem
-**
-*/
+ * fixup.c for elfsh
+ * 
+ * Started on  Fri Jul 27 04:56:06 2001 mayhem
+ *
+ */
 #include "libelfsh.h"
 
 
 
-/* TERMINAL FUNCTION ! Fixup size for section symbols, if symtab doesnt exist, create it */
-/* This function only works on FILE and is not e2dbg safe */
+/**
+ * TERMINAL FUNCTION ! Fixup size for section symbols, if symtab doesnt exist, create it
+ * This function only works on FILE and is not e2dbg safe 
+ */
 elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 {
   elfshsect_t	*symtab;
@@ -130,7 +132,9 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
 
 
-/* Recompute .dynsym symbols address which are zeroed by new versions of ld */
+/**
+ * Recompute .dynsym symbols address which are zeroed by new versions of ld 
+ */
 elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, 
 				      u_int off, elfshsect_t *dynsym)
 				     
@@ -229,8 +233,10 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 
 
 
-/* Fixup the dynamic symbol table (recompute all zeroed symbols) */
-/* Useful on recent versions of ld */
+/**
+ * Fixup the dynamic symbol table (recompute all zeroed symbols)
+ * Useful on recent versions of ld 
+ */
 int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 {
   elfshsect_t		*plt;

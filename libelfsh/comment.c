@@ -10,7 +10,9 @@
 #include "libelfsh.h"
 
 
-/* Get comment section */
+/**
+ * Get comment section 
+ */
 elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 {
   elfshsect_t		*new;
@@ -41,7 +43,9 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 }
 
 
-/* Get an entry from .comment */
+/**
+ * Get an entry from .comment 
+ */
 char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
 {
   int			index;

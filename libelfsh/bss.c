@@ -13,7 +13,9 @@
 
 
 
-/* Clean the BSS (remove all its data from the file and fixup PHT) */
+/**
+ * Clean the BSS (remove all its data from the file and fixup PHT) 
+ */
 int			elfsh_flush_bss(elfshobj_t *file)
 {
   elfshsect_t		*bss;
@@ -44,8 +46,10 @@ int			elfsh_flush_bss(elfshobj_t *file)
 }
 
 
-/* Set memsz and filesz as seemingfull vanilla values by inadvertancy */
-/* Multiple BSS safe */
+/**
+ * Set memsz and filesz as seemingfull vanilla values by inadvertancy
+ * Multiple BSS safe 
+ */
 int			elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
 {
   elfshsect_t		*bss;
@@ -71,7 +75,9 @@ int			elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
 
 
 
-/* Put the bss physically in the file */
+/**
+ * Put the bss physically in the file 
+ */
 elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
 {
   static elfshobj_t	*obj = NULL;
@@ -134,10 +140,14 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
 
 
 
-/* The real function that fixup the bss */
-/* fixflag indicate if the section was nullsized and fixed */
-/* This file is not DBG safe */
-int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)		
+/**
+ * The real function that fixup the bss
+ * fixflag indicate if the section was nullsized and fixed
+ * This file is not DBG safe
+ */
+int		elfsh_fixup_bss_real(elfshobj_t *file,
+				     elfshsect_t *bss,
+				     char fixflag)
 {
   elfshsect_t	*next;
   elfshsect_t	*actual;
@@ -247,7 +257,9 @@ int		elfsh_fixup_bss_real(elfshobj_t *file, elfshsect_t *bss, char fixflag)
 
 
 
-/* Find the BSS section for this module */
+/**
+ * Find the BSS section for this module 
+ */
 elfshsect_t	*elfsh_find_bss(elfshobj_t *file, char *name)
 {
   elfshsect_t	*cur;
@@ -270,11 +282,9 @@ elfshsect_t	*elfsh_find_bss(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 }
 
-
-
-
-
-/* Find BSS size in a relocatable object */
+/**
+ * Find BSS size in a relocatable object 
+ */
 int		elfsh_find_bsslen(elfshobj_t	*host,
 				  elfshobj_t	*rel,
 				  char		*bssname)
@@ -352,7 +362,9 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 
 
 
-/* Map a new BSS in the current file or process as an additional section */
+/**
+ * Map a new BSS in the current file or process as an additional section 
+ */
 elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 {
   elfshsect_t	*newbss;

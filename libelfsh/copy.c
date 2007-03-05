@@ -8,8 +8,10 @@
 
 
 
-/* Used by elfsh_save_obj(). Do not use outside ELFsh */
-/* May not be perfect, to modify if some param is zeroified because of the copy */
+/**
+ * Used by elfsh_save_obj(). Do not use outside ELFsh 
+ * May not be perfect, to modify if some param is zeroified because of the copy 
+ */
 elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 {
   elfshobj_t	*copy;

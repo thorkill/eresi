@@ -10,8 +10,10 @@
 #include "libelfsh.h"
 
 
-/* The first PLT entry is always a special case and it is handled by this 
-   function */
+/**
+ * The first PLT entry is always a special case and it is handled by this 
+ * function 
+ */
 int		elfsh_altplt_firstent(elfshsect_t	*new, 
 				      u_int		*off,
 				      elfshsect_t	*symtab, 
@@ -75,10 +77,10 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
 
 
 
-/* 
-   Copy the PLT of an ET_EXEC object for the ALTPLT technique.
-   Copy the GOT of an ET_EXEC object for the ALTGOT technique.
-*/
+/**
+ * Copy the PLT of an ET_EXEC object for the ALTPLT technique.
+ * Copy the GOT of an ET_EXEC object for the ALTGOT technique.
+ */
 int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 {
   elfshsect_t	*got;
@@ -381,26 +383,26 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
 
 
-/* 
-   On MIPS there is no .plt section : call to libraries are done
-   using an indirect jump on .got value directly from .text. If 
-   we want to be able to call the original function from the hook 
-   function, we need to create a plt-like section and mirror the
-   Global Offset Table (.got). 
-
-   By default, .got points in some code stub standing in .text. This
-   code stubs looks much like a PLT. Indeed, there is a kind of PLT 
-   on MIPS but it is embedded in the .text section. What we do in this 
-   function is to disambiguize .plt and .text, so that we can apply 
-   ALTPLT technique as well on MIPS.
-
-   Unlike on ALPHA, we cannot move relocations from .got to .alt.got
-   since MIPS binaries have no relocation tables in ET_EXEC objects.
-   What we do instead is changing the processor specific DT_PLTGOT 
-   entry in the .dynamic section and continue to rely on the ALTPLT 
-   technique (call's the original functions using the injected 'old_' 
-   symbol) just like ALTPLT redirection on other architectures. -mm
-*/
+/** 
+ * On MIPS there is no .plt section : call to libraries are done
+ * using an indirect jump on .got value directly from .text. If 
+ * we want to be able to call the original function from the hook 
+ * function, we need to create a plt-like section and mirror the
+ * Global Offset Table (.got). 
+ *
+ * By default, .got points in some code stub standing in .text. This
+ * code stubs looks much like a PLT. Indeed, there is a kind of PLT 
+ * on MIPS but it is embedded in the .text section. What we do in this 
+ * function is to disambiguize .plt and .text, so that we can apply 
+ * ALTPLT technique as well on MIPS.
+ *
+ * Unlike on ALPHA, we cannot move relocations from .got to .alt.got
+ * since MIPS binaries have no relocation tables in ET_EXEC objects.
+ * What we do instead is changing the processor specific DT_PLTGOT 
+ * entry in the .dynamic section and continue to rely on the ALTPLT 
+ * technique (call's the original functions using the injected 'old_' 
+ * symbol) just like ALTPLT redirection on other architectures. -mm
+ */
 int		elfsh_build_plt(elfshobj_t *file)
 {
   elfshsect_t	*text;
@@ -503,7 +505,9 @@ int		elfsh_build_plt(elfshobj_t *file)
 
 
 
-/* This is the main entry point for the ALTPLT, ALTGOT, and EXTPLT techniques */
+/**
+ * This is the main entry point for the ALTPLT, ALTGOT, and EXTPLT techniques 
+ */
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -1,11 +1,11 @@
-/*
-** blocks.c in libmjollnir for elfsh
-** 
-** Authors : sk, mayhem, thorkill
-**
-** Started : Thu May 29 20:39:14 2003 sk
-** Updated : Fri Dec 15 01:09:47 2006 mayhem
-*/
+/**
+ * libmjollnir/src/blocks.c
+ * 
+ * Authors : sk, mayhem, thorkill
+ *
+ * Started : Thu May 29 20:39:14 2003 sk
+ * Updated : Fri Dec 15 01:09:47 2006 mayhem
+ */
 #include "libmjollnir.h"
 
 /* Goto hash */

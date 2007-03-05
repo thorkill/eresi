@@ -29,7 +29,9 @@ struct		s_regs_ia32
 
 
 
-/* The breakpoint routine. Save registers and callback */
+/**
+ * The breakpoint routine. Save registers and callback 
+ */
 void	elfsh_genericbp_ia32()
 {
   //ia32regs_t	breakpoint;

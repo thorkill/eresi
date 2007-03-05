@@ -1,15 +1,17 @@
 /*
-** got.c for elfsh
-**
-** Started on  Sun Jun 24 21:30:41 2001 mayhem
-** Last update Thu May 15 04:39:15 2003 mayhem
-*/
+ * got.c for elfsh
+ *
+ * Started on  Sun Jun 24 21:30:41 2001 mayhem
+ * Last update Thu May 15 04:39:15 2003 mayhem
+ */
 #include "libelfsh.h"
 
 
 
 
-/* Shift GOT on ET_DYN */
+/**
+ * Shift GOT on ET_DYN 
+ */
 int		elfsh_shift_got(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*got;
@@ -38,7 +40,9 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-/* Shift ALTGOT on ET_DYN */
+/**
+ * Shift ALTGOT on ET_DYN 
+ */
 int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*got;
@@ -67,7 +71,9 @@ int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
 
 
 
-/* Change endianess of GOT */  
+/**
+ * Change endianess of GOT 
+ */
 int		elfsh_endianize_got(elfshsect_t *new)
 {
   elfsh_Addr	*cur;  
@@ -95,7 +101,9 @@ int		elfsh_endianize_got(elfshsect_t *new)
   
 
 
-/* Read the global offset table in section .got */
+/**
+ * Read the global offset table in section .got 
+ */
 elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 {
   elfshsect_t	*new;
@@ -143,7 +151,9 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 
 
  
-/* Return the real GOT section */
+/**
+ * Return the real GOT section 
+ */
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
   {
     elfshsect_t *new;
@@ -169,7 +179,9 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
  }
  
 
-/* Return the 'range'th got - seems ok */
+/**
+ * Return the 'range'th got - seems ok 
+ */
 elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, 
 				      elfsh_Addr range, 
 				      u_int	 *nbr)
@@ -239,7 +251,9 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
 
 
 
-/* Modify a GOT entry */
+/**
+ * Modify a GOT entry 
+ */
 int		elfsh_set_got_entry_by_index(elfshobj_t *file, 
 					     int i, 
 					     elfsh_Addr n)
@@ -263,7 +277,9 @@ int		elfsh_set_got_entry_by_index(elfshobj_t *file,
 
 
 
-/* Modify the got entry for the dynamic symbol 'n' */
+/**
+ * Modify the got entry for the dynamic symbol 'n' 
+ */
 int		elfsh_set_got_entry_by_name(elfshobj_t *f, 
 					    char *n, 
 					    elfsh_Addr a)
@@ -285,7 +301,9 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *f,
 
 
 
-/* Return a entry giving its parent and its index */
+/**
+ * Return a entry giving its parent and its index 
+ */
 elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got, 
 					      elfsh_Addr index)
 {
@@ -299,7 +317,9 @@ elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got,
 
 
 
-/* Return a entry giving its parent and its index */
+/**
+ * Return a entry giving its parent and its index 
+ */
 elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 {
   int		nbr;
@@ -339,7 +359,10 @@ elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 
 
 
-/* Return a entry giving its parent and its index : used as INTERNAL hash handler */
+/**
+ * Return a entry giving its parent and 
+ * its index : used as INTERNAL hash handler 
+ */
 int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -353,8 +376,10 @@ int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
 
 
 
-/* Return a entry value giving its parent and its index : used as INTERNAL 
-   hash handler */
+/**
+ * Return a entry value giving its parent and its 
+ * index : used as INTERNAL hash handler 
+ */
 elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -367,7 +392,9 @@ elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 
 
 
-/* Return a GOT entry value */
+/**
+ * Return a GOT entry value 
+ */
 elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -380,7 +407,9 @@ elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 
 
 
-/* Return a GOT entry address */
+/**
+ * Return a GOT entry address 
+ */
 elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -393,7 +422,9 @@ elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 
 
 
-/* Change a GOT entry val */
+/**
+ * Change a GOT entry val 
+ */
 u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -407,7 +438,9 @@ u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 
 
 
-/* Change a GOT entry addr */
+/**
+ * Change a GOT entry addr 
+ */
 u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -421,11 +454,11 @@ u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
 
 
 
-/*
-** Only used on BeoS 
-** Tested and developed by zadig@myrealbox.com
-**
-*/
+/**
+ * Only used on BeoS 
+ * Tested and developed by zadig@myrealbox.com
+ *
+ */
 int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
 				 uint8		*name,
                                  elfsh_Rel	*rel_entry)
