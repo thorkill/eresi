@@ -10,28 +10,47 @@
  rl_command_func_t *rl_ctrll = NULL;
 #endif
 
+char buf[BUFSIZ];
+
+void    vm_set_prompt(void (*func) (char *name, u_int size))
+{
+  prompt_token_setup = func;
+}
+
+void	vm_create_default_prompt(char *name, u_int size)
+{
+  snprintf(name, size - 1,
+	   "%s%s%s%s%s%s%s%s%s%s%s ",
+	   vm_colorget("%s", "pspecial", "("),
+	   (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
+	    vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
+	    vm_colorget("%s", "psname" , ELFSH_SNAME)),
+	   vm_colorget("%s", "pspecial", "-"),
+	   vm_colorget("%s", "pversion", ELFSH_VERSION),
+	   vm_colorget("%s", "pspecial", "-"),
+	   vm_colorget("%s", "prelease", ELFSH_RELEASE),
+	   vm_colorget("%s", "pspecial", "-"),
+	   vm_colorget("%s", "pedition", ELFSH_EDITION),
+	   vm_colorget("%s", "pspecial", "@"),
+	   vm_colorget("%s", "psname", world.curjob->name),
+	   vm_colorget("%s", "pspecial", ")"));
+  vm_endline();
+}
+
 /* return the right prompt */
 char	*vm_get_prompt()
 {
   if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
       world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
     {
-      snprintf(prompt_token, sizeof(prompt_token),
-	       "%s%s%s%s%s%s%s%s%s%s%s ",
-	       vm_colorget("%s", "pspecial", "("),
-	       (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
-		vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
-		vm_colorget("%s", "psname" , ELFSH_SNAME)),
-	       vm_colorget("%s", "pspecial", "-"),
-	       vm_colorget("%s", "pversion", ELFSH_VERSION),
-	       vm_colorget("%s", "pspecial", "-"),
-	       vm_colorget("%s", "prelease", ELFSH_RELEASE),
-	       vm_colorget("%s", "pspecial", "-"),
-	       vm_colorget("%s", "pedition", ELFSH_EDITION),
-	       vm_colorget("%s", "pspecial", "@"),
-	       vm_colorget("%s", "psname", world.curjob->name),
-	       vm_colorget("%s", "pspecial", ")"));
-      vm_endline();
+      /* Setup prompt only once */
+      if (prompt_token_setup == NULL)
+	vm_set_prompt(vm_create_default_prompt);
+
+      if (prompt_token_setup)
+	prompt_token_setup(prompt_token, sizeof(prompt_token));
+      else
+	snprintf(prompt_token, sizeof(prompt_token) - 1, "prompt-error");
 
 #if defined(USE_READLN)
       /* Prompt on readline need some modifications */

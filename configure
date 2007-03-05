@@ -448,6 +448,11 @@ echo "	@cd e2dbg && \$(MAKE) \$(BUILD_TARGET)	     	"       >> Makefile
 echo "	@echo 'E2dbg has been built successfully.' "		>> Makefile
 echo " "							>> Makefile
 
+echo "	@echo 'Building Etrace'				"	>> Makefile
+echo "	@cd etrace && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
+echo "	@echo 'ETrace has been built successfully.' 	"	>> Makefile
+echo " "							>> Makefile
+
 echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
 echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
@@ -458,6 +463,7 @@ echo " "							>> Makefile
 echo "install : all prepareDir #mod_install "			>> Makefile
 echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
+echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
@@ -482,6 +488,7 @@ echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 #echo "	@ln \$(BINPATH)/elfsh$(LOCALBITS) \$(BINPATH)/elfsh "	>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh?? "		        >> Makefile
 echo "	@chmod 644 \$(BINPATH)/e2dbg "				>> Makefile
+echo "	@chmod 755 \$(BINPATH)/etrace?? "		        >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.a "			>> Makefile
@@ -512,7 +519,7 @@ if [ "$FREEBSD" = "1" ]; then
     echo "	@ldconfig -R"                                   >> Makefile
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Libelfsh, Libmjollnir, \\"         >> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libmjollnir, \\" >> Makefile
 echo " Libui, Librevm and Libasm installed successfully .'"	>> Makefile
 echo " "							>> Makefile 
 
@@ -526,6 +533,8 @@ echo "uninstall: "						>> Makefile
 echo "	rm -f  \$(BINPATH)/elfsh32 "				>> Makefile
 echo "	rm -f  \$(BINPATH)/elfsh64 "				>> Makefile
 echo "	rm -f  \$(BINPATH)/e2dbg "				>> Makefile
+echo "	rm -f  \$(BINPATH)/etrace32 "				>> Makefile
+echo "	rm -f  \$(BINPATH)/etrace64 "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
@@ -549,7 +558,7 @@ echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
 
  
 
-echo "	@echo 'ELFsh, Libelfsh, Libmjollnir, Libaspect, \\"     >> Makefile
+echo "	@echo 'ELFsh, Etrace, Libelfsh, Libmjollnir, Libaspect, \\" >> Makefile
 echo "Libedfmt, Libui and Libasm uninstalled successfully' "    >> Makefile
 echo " "							>> Makefile
 
@@ -557,6 +566,7 @@ echo "clean   : cleandoc "					>> Makefile
 echo "	@echo 'Cleaning tree ...' "				>> Makefile
 echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
+echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
@@ -575,6 +585,7 @@ echo "fclean  : cleandoc "					>> Makefile
 echo "	@echo 'Fcleaning tree ...' "				>> Makefile
 echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
@@ -611,8 +622,8 @@ echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
-echo "  elibc/include/*.h elibc/*.c"			        >> Makefile
-echo " "							>> Makefile
+echo "  elibc/include/*.h elibc/*.c etrace/*.c \\"		>> Makefile
+echo "  etrace/include/*.h "					>> Makefile
 fi
 
 if [ "$CTAGS" = "1" ]; then
@@ -632,6 +643,7 @@ echo "  liballocproxy/*.c liballocproxy/include/*.h \\" 	>> Makefile
 echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
+echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
 echo " "							>> Makefile
 fi
 
@@ -672,6 +684,8 @@ echo "	@echo '###############' ELFSH only '#############'"	>> Makefile
 echo "	@wc -l elfsh/*.c "					>> Makefile
 echo "	@echo '###############' E2DBG only '#############'"	>> Makefile
 echo "	@wc -l e2dbg/*.c "				        >> Makefile
+echo "	@echo '###############' ELFSH only '#############'"	>> Makefile
+echo "	@wc -l etrace/*.c "					>> Makefile
 echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
 echo "	@wc -l modules/*.c "					>> Makefile
 echo " "							>> Makefile

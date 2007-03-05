@@ -189,6 +189,10 @@ extern asm_processor	proc;
 #define	ELFSH_SLASH		'/'
 #define	ELFSH_SPACE		' '
 
+extern u_char quit_msg_setup;
+char quit_msg[512];
+
+void (*prompt_token_setup)(char *name, u_int size);
 char prompt_token[512];
 #define ELFSH_SNAME		"elfsh"
 #define	ELFSH_VERSION		"0.76"
@@ -1147,6 +1151,8 @@ char		*vm_basename(char *str);
 char		*vm_get_string(char **params);
 void		vm_log(char *str);
 int             vm_closelog();
+void    	vm_set_quit_msg(char *msg);
+void    	vm_set_prompt(void (*func) (char *name, u_int size));
 char		*vm_get_prompt();
 
 /* String functions */
