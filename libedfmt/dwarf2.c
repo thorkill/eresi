@@ -7,16 +7,27 @@
 
 #include "libedfmt.h"
 
-/* This file implements DWARF2 support for libedfmt.
-specificitation @ http://dwarf.freestandards.org/Download.php */
+/**
+ * This file implements DWARF2 support for libedfmt.
+ * specificitation @ http://dwarf.freestandards.org/Download.php 
+ * @file dwarf2.c
+ */
 
-/* Dwarf2 structures */
-edfmtdw2info_t	   *dwarf2_info = NULL;
+/**
+ * Dwarf2 information structure
+ */
+edfmtdw2info_t *dwarf2_info = NULL;
 
-/* Current compil unit pointer */
+/**
+ * Current compil unit pointer 
+ */
 edfmtdw2cu_t *current_cu = NULL;
 
-/* Retrieve dwarf2 info pointer from a file pointer */
+/**
+ * Retrieve dwarf2 info pointer from a file pointer 
+ * @param file file target
+ * @return dwarf2 information structure
+ */
 edfmtdw2info_t 		*edfmt_dwarf2_getinfo(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -25,7 +36,10 @@ edfmtdw2info_t 		*edfmt_dwarf2_getinfo(elfshobj_t *file)
 		     (edfmtdw2info_t *) file->debug_format.dwarf2);
 }
 
-/* Parse the DWARF-2 debug format */
+/**
+ * Parse the DWARF-2 debug format 
+ * @param file file target
+ */
 int 			edfmt_dwarf2_parse(elfshobj_t *file)
 {
   edfmtdw2sect_t 	*pointers[9];
@@ -111,7 +125,10 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Central parse function that find every compilation unit */
+/**
+ * Central parse function that find every compilation unit 
+ * @param file file target
+ */
 int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 {
   edfmtdw2cu_t		*tcu;
@@ -163,7 +180,12 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Retrieve en abbrev entity rom a compil unit */
+/**
+ * Retrieve en abbrev entity from a compil unit 
+ * @param cu compile unit target
+ * @param abbent abbrev entity that will be fill
+ * @param pos position to read
+ */
 int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent, 
 					    u_int pos)
 {
@@ -196,7 +218,10 @@ int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Manage parsing loops */
+/**
+ * Manage parsing loops. On the new layout thif function just fill abbrev hash table
+ * @param endpos represent the end position to read on the current compile unit (deprecate)
+ */
 int			edfmt_dwarf2_block_loop(u_int endpos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);   
@@ -210,7 +235,10 @@ int			edfmt_dwarf2_block_loop(u_int endpos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Clean allocated buffer for this file */
+/**
+ * Clean allocated buffer for this file 
+ * @param file file to clean
+ */
 int 			edfmt_dwarf2_clean(elfshobj_t *file)
 {
   edfmtdw2cu_t		*cu, *cunext = NULL;

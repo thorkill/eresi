@@ -7,30 +7,38 @@
 
 #include "libedfmt.h"
 
-/* This file implements stab support for libedfmt.
-specificitation @ http://wwwcdf.pd.infn.it/localdoc/stabs.pdf 
--
-This version of stabs format parsing has been approved for x86
-and gentoo linux, some bugs can append on Sparc, more test will
-be done to make this work correctly */
+/**
+ * This file implements stab support for libedfmt.
+ * specificitation @ http://wwwcdf.pd.infn.it/localdoc/stabs.pdf 
+ * -
+ * This version of stabs format parsing has been approved for x86
+ * and gentoo linux, some bugs can append on Sparc, more test will
+ * be done to make this work correctly 
+ * @file stabs.c
+ */
 
 #define STABS_HNAME_TYPE_REF 		"stabs_type_reference"
 #define STABS_HNAME_TYPE_CROSS_REF 	"stabs_type_reference"
 #define STABS_HNAME_RES_SIZE 		"stabs_resolve_size"
 
-/* This function is called a lot of time, we win some time */
+/**
+ * This function is called a lot of time, we win some time 
+ */
 #define STABS_DATA(_str) (!STABS_IVD_STR(_str) ? edfmt_stabs_data(_str) : NULL)
 
-/* Temporary structure for the next table */
+/**
+ * Temporary structure for the next table 
+ */
 typedef struct s_res_size
 {
   char *name;
   long size;
 }	       edfmt_res_size_t;
 
-/* This table store size for every basic elements
-   Stabs doens't get size information but range information that are
-   hard to parse and can create some bug, then we won't use it
+/**
+ * This table store size for every basic elements
+ * Stabs doens't get size information but range information that are
+ * hard to parse and can create some bug, then we won't use it
  */
 edfmt_res_size_t resolved_table[] =
   {
@@ -51,7 +59,9 @@ edfmt_res_size_t resolved_table[] =
     { NULL		     , 0 				}
   };
 
-/* Local resolv table */
+/**
+ * Local resolv table 
+ */
 hash_t resolved_size;
 
 /* Global position variables */
@@ -70,24 +80,36 @@ edfmtstabsfile_t *root_file = NULL;
 edfmtstabsfile_t *current_file = NULL;
 edfmtstabsfile_t *last_file = NULL;
 
-/* Current function we are in */
+/**
+ * Current function we are in 
+ */
 edfmtstabsfunc_t *current_func = NULL;
 
 /* Temporary hash table used for type resolution */
 hash_t type_ref;
 hash_t type_cross_ref;
 
-/* Contain main informations */
+/**
+ * Contain main informations 
+ */
 edfmtstabsinfo_t *stabs_info = NULL;
 
+/**
+ * Macro to gain time when fetch allocation pointer from the stabs pool
+ */
 #define STABS_GETPTR(_size) \
 edfmt_alloc_pool(&(stabs_info->alloc_pool), &(stabs_info->alloc_pos), \
 		 &(stabs_info->alloc_size), STABS_ALLOC_STEP, _size) 
 
-/* Actual parsed file */
+/**
+ * Actual parsed file 
+ */
 elfshobj_t *afile = NULL;
 
-/* Retreive stabs info pointer */
+/**
+ * Retreive stabs info pointer 
+ * @param file retrieve stabs information from this file
+ */
 edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -96,6 +118,9 @@ edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 		     (edfmtstabsinfo_t *) file->debug_format.stabs);
 }
 
+/**
+ * Init resolved_size hash table table 
+ */
 static int		edfmt_stabs_initrestable()
 {
   int			index;
@@ -114,7 +139,11 @@ static int		edfmt_stabs_initrestable()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Update a cross reference */
+/**
+ * Update a cross reference 
+ * @param type watch if we got a type waiting for this type
+ * @param token help to make an unique search name
+ */
 static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
 {
   char			buf[BUFSIZ];
@@ -139,7 +168,11 @@ static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Add a new file on the list */
+/**
+ * Add a new file on the list 
+ * @param dir new directory
+ * @parma file new filename
+ */
 int	    		edfmt_stabs_addfile(char *dir, char *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -171,7 +204,11 @@ int	    		edfmt_stabs_addfile(char *dir, char *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse a function */
+/**
+ * Parse a function 
+ * @param func store information on this structure 
+ * @param str pointer on the string to parse
+ */
 int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 {
   char			*my_str;
@@ -227,7 +264,11 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse a type range */
+/**
+ * Parse a type range 
+ * @param type type structure to fill
+ * @param str pointer on the string to parse
+ */
 int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
 {
   edfmtstabstype_t 	*rtype = NULL;
@@ -269,8 +310,9 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
   type->type = STABS_TYPE_RANGE;
   type->u.link = rtype;
 
-  /* We don't read correctly very big numbers as we didn't need them
-     but we still save those information
+  /**
+   * We don't read correctly very big numbers as we didn't need them
+   * but we still save those information
    */
   type->u.r.low = low;
   type->u.r.high = high;
@@ -278,7 +320,13 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse an array */
+/**
+ * Parse an array 
+ * @param type structure to fill
+ * @param str pointer on the string to parse
+ * @param isString indicate if this array is a string
+ * @param isVector indicate if this array is a vector
+ */
 int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str, 
 				  u_char isString, u_char isVector)
 {
@@ -336,7 +384,11 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);  
 }
 
-/* Read a structure */
+/**
+ * Read a structure 
+ * @param tstruct structure to fill
+ * @param str pointer on the string to parse
+ */
 int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 {
   edfmtstabsattr_t 	*tattr = NULL, *lattr = NULL;
@@ -398,7 +450,11 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read an enum table */
+/**
+ * Read an enum table 
+ * @param str pointer on the string to parse
+ * @return created structure that store enum informations
+ */
 edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
 {
   edfmtstabsenum_t 	*root_attr = NULL;
@@ -442,9 +498,12 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, root_attr);
 }
 
-/* Read a type, that an important fonction.
-   Stabs use type in an embedded form, a type can be declare in the center
-   of a structure
+/** 
+ * Read a type, that an important fonction.
+ * Stabs use type in an embedded form, a type can be declare in the center
+ * of a structure
+ * @param str pointer on the string to parse
+ * @return the generated type structure or an existing structure
  */
 edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 {
@@ -520,17 +579,20 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
     }
   else
     {
-      /* Stabs is a really strange and difficult format 
-	 You should read the documentation, you'll see that stabs can
-	 be different depending of the architecture, which create a lot of issue.
+      /**
+       * Stabs is a really strange and difficult format 
+       * You should read the documentation, you'll see that stabs can
+       * be different depending of the architecture, which create a lot of issue.
        */
       type->type = STABS_TYPE_UNK;
       switch(token)
 	{
 	case STABS_STR_D_METHOD:
-	  /* We don't support C++ for the moment 
-	     as clear representation isn't set for 
-	     the moment, we will see */
+	  /**
+	   * We don't support C++ for the moment 
+	   * as clear representation isn't set for 
+	   * the moment, we will see 
+	   */
 	  break;
 	case STABS_STR_D_PTR:
 	case STABS_STR_D_REF:
@@ -561,9 +623,11 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	  /* GNU C++ way - Class member*/
 	  if (STABS_IS_SPECIAL(**str))
 	    {
-	      /* We don't support C++ for the moment 
-		 as clear representation isn't set for 
-		 the moment, we will see */
+	      /** 
+	       * We don't support C++ for the moment 
+	       * as clear representation isn't set for 
+	       * the moment, we will see 
+	       */
 	      break;
 	    }
 	  else
@@ -633,8 +697,11 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Parse the string 
-   A data element represent the whole string
+/**
+ * Parse the string 
+ * A data element represent the whole string
+ * @param str pointer on the string to parse
+ * @return return a data structure
  */
 edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 {
@@ -833,8 +900,10 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, data);
 }
 
-/* Main stabs function 
-   Contain the string and more global informations
+/**
+ * Main stabs function 
+ * Contain the string and more global informations
+ * @param file file to parse
  */
 int			edfmt_stabs_parse(elfshobj_t *file)
 {
@@ -1079,7 +1148,10 @@ int			edfmt_stabs_parse(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Clean stabs allocated structures */
+/**
+ * Clean stabs allocated structures 
+ * @param file to clean
+ */
 int			edfmt_stabs_clean(elfshobj_t *file)
 {
   edfmtstabsinfo_t 	*info;

@@ -12,9 +12,16 @@
 static char 	tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
 static u_int 	curtok = 0;
 
+/**
+ * Indicate if we print color 
+ * 0 = color, 1 = without color
+ */
 u_int 		nocolor = 1;
 
-/* Init color structure */
+/**
+ * Init color structure 
+ * @return an allocated color structure
+ */
 color_t 	*vm_colorblank()
 {
   color_t 	*c;
@@ -31,6 +38,12 @@ color_t 	*vm_colorblank()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (c));
 }
 
+/**
+ * Retrieve a color information structure from a color type
+ * @param type color type
+ * @param text text to color to filter for warnstring type
+ * @return color structure
+ */
 color_t 	*vm_colortable(char *type, char *text)
 {
   NOPROFILER_IN();
@@ -51,6 +64,12 @@ snprintf(_v, 15, "%s%u", (!set ? S_STARTCOLOR : COLOR_SEPARE), _z); 	\
 set = 1; } 								\
 } while(0)
 
+/**
+ * Generate the color pattern for a given color structure
+ * @param t color structure
+ * @param text text to color (not used on this function)
+ * @param pattern pattern will be save on this buffer
+ */
 int		vm_colorpattern(color_t *t, char *text, char *pattern)
 {
   char		bo[16], ul[16], fg[16], bg[16];
@@ -79,7 +98,12 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
   NOPROFILER_ROUT(0); 
 }
 
-/* Return without color */
+/**
+ * Return without color 
+ * @param sp given string (pattern like %s or %d etc ..)
+ * @param object objet to print using the string
+ * @return generate string
+ */
 static char	*vm_colornothing(char *sp, void *object)
 {
   NOPROFILER_IN();
@@ -95,7 +119,14 @@ static char	*vm_colornothing(char *sp, void *object)
   NOPROFILER_ROUT(tokens[curtok++]); 
 }
 
-/* Trim a string from blank char and copy it on to argument */
+/**
+ * Trim a string from blank char and copy it on to argument 
+ * @param from source
+ * @param to destination
+ * @param size buffer size
+ * @param start saved starting blank chars (for replace in another place)
+ * @param end saved ending blank chars (for replace in another place)
+ */
 static int	trim(char *from, char *to, u_int size, char *start, char *end)
 {
   u_int		len, istart, iend;
@@ -142,7 +173,10 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
   NOPROFILER_ROUT(0);
 }
 
-/* Build color text */
+/**
+ * Build color text 
+ * 
+ */
 char 		*vm_colorget(char *sp, char *type, void *object)
 {
   color_t 	*t;

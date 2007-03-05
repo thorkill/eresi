@@ -7,7 +7,13 @@
 
 #include "libedfmt.h"
 
-/* Read a stabs name, delimited by a special char */
+/**
+ * Read a stabs name, delimited by a special char 
+ * @param buf store resulting string
+ * @param size size of the buffer
+ * @param str pointer on the string to parse
+ * @param c_delim delimitation string
+ */
 char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
 {
   u_int		csize;
@@ -35,11 +41,15 @@ char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-/* Read a number from a string 
-   We didn't support octal numbers very well, in fact this informations is quite
-   uninsteresting, we know the architecture and the type name, it would be far
-   more easy to use an hash table to understand perfectly which type we are
-   talking about.
+/**
+ * Read a number from a string 
+ * We didn't support octal numbers very well, in fact this informations is quite
+ * uninsteresting, we know the architecture and the type name, it would be far
+ * more easy to use an hash table to understand perfectly which type we are
+ * talking about.
+ * @param str pointer on the string to parse
+ * @param c_delim delimitation char, it will break on every char that isn't a number
+ * @param set_num result number
  */
 int		edfmt_stabs_readnumber(char **str, char c_delim, long *set_num)
 {
@@ -79,7 +89,11 @@ int		edfmt_stabs_readnumber(char **str, char c_delim, long *set_num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read a type number (num,num) or num */
+/**
+ * Read a type number (num,num) or num 
+ * @param tnum store typenum informations
+ * @param str pointer on the string to parse
+ */
 int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -116,9 +130,13 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Create a string from a typenum
-   A typenum represent a type using 1 or 2 ids, on the documentation we see only 1 id
-   but now there's two ids, the first describe the file.
+/**
+ * Create a string from a typenum
+ * A typenum represent a type using 1 or 2 ids, on the documentation we see only 1 id
+ * but now there's two ids, the first describe the file.
+ * @param buf store string
+ * @param size size of the buffer
+ * @param tnum input type number
  */
 int		edfmt_stabs_ctypenum(char *buf, u_int size, edfmtstabstypenum_t *tnum)
 {

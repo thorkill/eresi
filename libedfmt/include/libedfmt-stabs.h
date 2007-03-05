@@ -23,14 +23,16 @@ stabs_ent[stabs_index]
 #define stabs_c_str \
 (stabs_datastr + stabs_c_ent.strindex)
 
-/* Represent an entrie on the stab section */
+/**
+ * Represent an entrie on the stab section 
+ */
 typedef struct	s_stabsent
 {
-  elfsh_Addr   	strindex; 	// The index to find the string on the string stab section
-  u_char       	type;		// Type id
-  u_char	other;		// Never use, already @ 0
-  u_short	desc;		// Used to store short information like line
-  elfsh_Addr  	value;		// Used to store addr aligned informations
+  elfsh_Addr   	strindex; 	/* The index to find the string on the string stab section */
+  u_char       	type;		/* Type id */
+  u_char	other;		/* Never use, already @ 0 */
+  u_short	desc;		/* Used to store short information like line */
+  elfsh_Addr  	value;		/* Used to store addr aligned informations */
 }	     	edfmtstabsent_t;
 
 /* Forward declaration */
@@ -39,14 +41,18 @@ typedef struct s_stabsdata edfmtstabsdata_t;
 struct s_stabstype;
 typedef struct s_stabstype edfmtstabstype_t;
 
-/* A type is defined as two number, file and type number */
+/**
+ * A type is defined as two number, file and type number 
+ */
 typedef struct 	s_stabstypenum
 {
   long		file;
   long		number;
 }		edfmtstabstypenum_t;
 
-/* A structure attribute */
+/**
+ * A structure attribute 
+ */
 typedef struct	s_stabsattr
 {
   char		name[STABS_NAME_SIZE];
@@ -60,7 +66,9 @@ typedef struct	s_stabsattr
   struct s_stabsattr *next;
 }		edfmtstabsattr_t;
 
-/* Describe a structure */
+/**
+ * Describe a structure 
+ */
 typedef struct 	s_stabsstruct
 {
   /* Total size */
@@ -70,7 +78,9 @@ typedef struct 	s_stabsstruct
   edfmtstabsattr_t *attr;
 }		edfmtstabsstruct_t;
 
-/* Describe an enum */
+/**
+ * Describe an enum 
+ */
 typedef struct 	s_stabsenum
 {
   char		name[STABS_NAME_SIZE];
@@ -79,10 +89,12 @@ typedef struct 	s_stabsenum
   struct s_stabsenum *next;
 }		edfmtstabsenum_t;
 
-/* In stabs, a basic type is describe by its range 
-   We get those informations (except too long numbers)
-   only for parsing purpore, resolve basic type size
-   should use name matching engine */
+/** 
+ * In stabs, a basic type is describe by its range 
+ * We get those informations (except too long numbers)
+ * only for parsing purpore, resolve basic type size
+ * should use name matching engine 
+ */
 typedef struct	s_stabsrange
 {
   long 		low;
@@ -92,7 +104,9 @@ typedef struct	s_stabsrange
   long		size;
 }		edfmtstabsrange_t;
 
-/* Describe an array */
+/**
+ * Describe an array 
+ */
 typedef struct	s_stabsarray
 {
   long		low;
@@ -105,12 +119,14 @@ typedef struct	s_stabsarray
   edfmtstabstype_t *link;
 }		edfmtstabsarray_t;
 
-/* Represent a function */
+/**
+ * Represent a function 
+ */
 typedef struct 	s_stabsfunc
 {
-  u_int		s_line; // Start line
-  elfsh_Addr	s_addr; // Start address
-  elfsh_Addr	e_addr; // End address
+  u_int		s_line; /* Start line */
+  elfsh_Addr	s_addr; /* Start address */
+  elfsh_Addr	e_addr; /* End address */
 
   edfmtstabsdata_t *args[STABS_MAX_ARGUMENTS];
 
@@ -124,7 +140,9 @@ typedef struct 	s_stabsfunc
   struct s_stabsfunc *next;
 }		edfmtstabsfunc_t;
 
-/* Describe a type, a type isn't always basic */
+/** 
+ * Describe a type, a type isn't always basic 
+ */
 struct		s_stabstype
 {
 #define STABS_TYPE_UNK 	     0
@@ -147,8 +165,10 @@ struct		s_stabstype
   edfmtstabstypenum_t num;
   char cnum[STABS_CTYPENUM_SIZE];
 
-  /* Depend of the field type, we will use on of this union
-     entry */
+  /**
+   * Depend of the field type, we will use on of this union
+   * entry 
+   */
   union {
     edfmtstabsstruct_t struct_union;
     edfmtstabsenum_t *enum_attr;
@@ -167,9 +187,11 @@ struct		s_stabstype
   struct s_stabstype *next;
 };
 
-/* Data structure represent a scoped type
-   there is many type apply on different scope:
-   function, variables, etc etc .. */
+/**
+ * Data structure represent a scoped type
+ * there is many type apply on different scope:
+ * function, variables, etc etc .. 
+ */
 struct		s_stabsdata
 {
   char 		name[STABS_NAME_SIZE];
@@ -207,7 +229,9 @@ struct		s_stabsdata
   struct s_stabsdata *next;
 };
 
-/* Describe a relation between a line and an address */
+/** 
+ * Describe a relation between a line and an address 
+ */
 typedef struct	s_stabsline
 {
   u_int		line;
@@ -216,14 +240,18 @@ typedef struct	s_stabsline
   struct s_stabsline *next;
 }		edfmtstabsline_t;
 
-/* Describe a file:
- There is two different types of files so (object file) and include (header file) 
-  - an object file wouldn't have any parent
-  - an include file can have others include file but always have a parent */
+/**
+ * Describe a file:
+ * There is two different types of files so (object file) and include (header file) 
+ * - an object file wouldn't have any parent
+ * - an include file can have others include file but always have a parent 
+ */
 typedef struct 	s_stabsfile
 {
-  /* Path and file, and include file wouldn't have a path, 
-     an absolute path is on file field */
+  /**
+   * Path and file, and include file wouldn't have a path, 
+   * an absolute path is on file field 
+   */
   char	      	*path;
   char		*file;
 
@@ -256,7 +284,9 @@ typedef struct 	s_stabsfile
   struct s_stabsfile *next;
 }		edfmtstabsfile_t;
 
-/* This structure is the information center */
+/**
+ * This structure is the information center 
+ */
 typedef struct	s_stabsinfo
 {
   /* Files informations */

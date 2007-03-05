@@ -7,7 +7,10 @@
 
 #include "libedfmt.h"
 
-/* Submit a new row state */
+/**
+ * XXX: Re use it when it will be usefull
+ * Submit a new row state 
+ */
 static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
 {
   edfmtdw2cfastate_t 	*tmp;
@@ -34,7 +37,10 @@ static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
-/* Parse .debug_frame FDE + data */
+/**
+ * XXX: Re use it when it will be usefull
+ * Parse .debug_frame FDE + data 
+ */
 static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state, 
 					      edfmtdw2cfahead_t *header, u_char init)
 {
@@ -232,7 +238,10 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* .debug_frame parsing entry point */
+/**
+ * XXX: Re use it when it will be usefull
+ * .debug_frame parsing entry point 
+ */
 int			edfmt_dwarf2_cfa()
 {
   edfmtdw2cfahead_t 	header;

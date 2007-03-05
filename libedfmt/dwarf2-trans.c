@@ -7,17 +7,28 @@
 
 #include "libedfmt.h"
 
-/* This file implements DWARF2 transformation */
+/**
+ * This file implements DWARF2 transformation 
+ * @file dwarf2-trans.c
+ */
 
 #define DWARF2_HNAME_TRANS_TREF "dwarf2_trans_typeref"
 
-/* Temporary buffer outside function to optimize function recursion */
+/**
+ * Temporary buffer outside function to optimize function recursion 
+ */
 char buf[BUFSIZ];
 
-/* Transform hash table */
+/**
+ * Transform hash table 
+ */
 hash_t types_ref;
 
-/* Search a type from its name */
+/**
+ * Search a type from its name
+ * @param str search type from this name
+ * @return return founded type
+ */
 static edfmttype_t	*edfmt_dwarf2_searchtype_str(char *str)
 {
   edfmttype_t 		*type = NULL;
@@ -29,7 +40,11 @@ static edfmttype_t	*edfmt_dwarf2_searchtype_str(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Search a type from its abbrev structure (retrieve its name) */
+/**
+ * Search a type from its abbrev structure (retrieve its name) 
+ * @param abbrev get the name from this abbrev entity and search this type
+ * @return return founded type
+ */
 static edfmttype_t	*edfmt_dwarf2_searchtype(edfmtdw2abbent_t *abbrev)
 {
   edfmttype_t 		*type = NULL;
@@ -45,7 +60,11 @@ static edfmttype_t	*edfmt_dwarf2_searchtype(edfmtdw2abbent_t *abbrev)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Get a type starting by try to resolve it fast */
+/**
+ * Get a type starting by try to resolve it fast 
+ * @param pos retrive the type from this position
+ * @return return founded type
+ */
 static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
 {
   edfmtdw2abbent_t   	ref;
@@ -69,7 +88,12 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Get an attribut from an abbrev entity */
+/**
+ * Get an attribut from an abbrev entity 
+ * @param abbent abbrev entity that host the attribute
+ * @param attr attribute id
+ * @return return the abbrev attribute structure from attr id
+ */
 edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 {
   edfmtdw2info_t	*pinfo;
@@ -152,7 +176,11 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* Get an addresse from a buffer */
+/**
+ * Get an addresse from a buffer 
+ * @param vbuf buffer that store the addresse
+ * @return the addresse or 0
+ */
 elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -164,7 +192,11 @@ elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, *(elfsh_Addr *) vbuf);
 }
 
-/* This parsing function is the main function of transformation */
+/**
+ * This parsing function is the main function of transformation
+ * @param abbrev analyze the abbrev entity
+ * @return retunr generated type
+ */
 edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 {
   char			*str = NULL, *comp_dir, *vbuf, *vbufs, *pstr;
@@ -196,8 +228,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
     }
 
-  /* If we're not with a compil unit tag, we can have a specific dedicated file
-     this is the way to handle header files in dwarf2
+  /**
+   * If we're not with a compil unit tag, we can have a specific dedicated file
+   * this is the way to handle header files in dwarf2
    */
   if (abbrev->tag != DW_TAG_compile_unit)
     {
@@ -236,8 +269,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	}
     }
 
-  /* A TAG represent an element of the dwarf2 format, each TAG are linked by child / parent
-     alike structure. You can get more information on the dwarf2 documentation
+  /** 
+   * A TAG represent an element of the dwarf2 format, each TAG are linked by child / parent
+   * alike structure. You can get more information on the dwarf2 documentation
    */
   switch(abbrev->tag)
     {
@@ -345,8 +379,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	}
       break;
 
-      /* Structure and union are parsed together because they used the same parsing 
-	 structure
+      /** 
+       * Structure and union are parsed together because they used the same parsing 
+       * structure
        */
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
@@ -445,8 +480,10 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 
       if (func)
 	{
-	  /* Parse and add arguments, this disposion is quite the same used
-	     for structure / union*/
+	  /**
+	   * Parse and add arguments, this disposion is quite the same used
+	   * for structure / union
+	   */
 	  for (iref = abbrev->child; iref > 0; iref = ref.sib)
 	    {
 	      /* Read a structure */
@@ -502,7 +539,10 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 edfmtdw2abbent_t     	abbrev[DW2_MAX_LEVEL];
 int 			abbrev_level = 0;
 
-/* Loop for a given compile unit depending of its position */
+/**
+ * Loop for a given compile unit depending of its position 
+ * @param pos starting position
+ */
 int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -536,8 +576,10 @@ int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform dwarf2 informations 
-   Entrypoint for transformation from dwarf2 to uniform format
+/**
+ * Transform dwarf2 informations 
+ * Entrypoint for transformation from dwarf2 to uniform format
+ * @param file transform this file
  */
 int			edfmt_dwarf2_transform(elfshobj_t *file)
 {

@@ -56,14 +56,14 @@ typedef struct 	s_dw2abbattr
   /* Form value */
   union 
   {
-    char 	*vbuf; 	// DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block
-    u_long 	udata;	// DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
-    			// DW_FORM_ref[1-8], DW_FORM_ref_udata
-    long	sdata;	// DW_FORM_sdata
-    char      	*str;	// DW_FORM_string, DW_FORM_strp
+    char 	*vbuf; 	/* DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block */
+    u_long 	udata;	/* DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
+			   DW_FORM_ref[1-8], DW_FORM_ref_udata */
+    long	sdata;	/* DW_FORM_sdata */
+    char      	*str;	/* DW_FORM_string, DW_FORM_strp */
   } u;
 
-  edfmtdw2loc_t	loc; // DW_AT_location
+  edfmtdw2loc_t	loc; 	/* DW_AT_location */
 } 		edfmtdw2abbattr_t;
 
 /* Describe an abbrev entitie */
@@ -83,19 +83,10 @@ struct 		s_dw2abbent
   u_int 	child;			/* Child position */
 };
 
-/* Describe a reference to update lately */
-/*
-typedef struct 	s_dw2fref
-{
-  long		offset;
-  edfmtdw2abbattr_t *attr;
-  struct s_dw2fref *next;
-}		edfmtdw2fref_t;
-*/
-
-/* Describe a macro 
- XXX: Use when it will be usefull 
-*/
+/**
+ * XXX: Use when it will be usefull 
+ * Describe a macro 
+ */
 typedef struct	s_dw2macro
 {
   u_char	def;
@@ -107,7 +98,10 @@ typedef struct	s_dw2macro
   struct s_dw2macro *next;
 }		edfmtdw2macro_t;
 
-// A column description 
+/**
+ * XXX: Use when it will be usefull 
+ * A column description 
+ */
 typedef struct 	s_dw2cfareg
 {
 #define DW2_CFA_T_UNDEF   0
@@ -122,7 +116,10 @@ typedef struct 	s_dw2cfareg
   } u;
 }		edfmtdw2cfareg_t;
 
-// A givent state 
+/**
+ * XXX: Use when it will be usefull 
+ * A givent state 
+ */
 typedef struct 	s_dw2cfastate
 {
   elfsh_Addr	addr;
@@ -138,7 +135,10 @@ typedef struct 	s_dw2cfastate
   struct s_dw2cfastate *next;
 }		edfmtdw2cfastate_t;
 
-// Cfa section header representation 
+/**
+ * XXX: Use when it will be usefull 
+ * Cfa section header representation 
+ */
 typedef struct 	s_dw2cfahead 
 {
   u_int		offset;
@@ -155,10 +155,13 @@ typedef struct 	s_dw2cfahead
   edfmtdw2cfastate_t init;
 }		edfmtdw2cfahead_t;
 
-// Line section header representation 
+/**
+ * XXX: Use when it will be usefull 
+ * Line section header representation 
+ */
 typedef struct	s_dw2linehead
 {
-  // Header informations
+  /* Header informations */
   u_int		total_length;
   u_short	version;
   u_int		prologue_length;
@@ -178,27 +181,32 @@ typedef struct	s_dw2linehead
   u_int		dirs_number;
   u_int		files_number;
 
-  // Deducted positions
+  /* Deducted positions */
   u_long	end_pos;
   u_long	prologue_pos;
 }		edfmtdw2linehead_t;
 
-// Describe a line information 
+/**
+ * XXX: Use when it will be usefull 
+ * Describe a line information 
+ */
 typedef struct 	s_dw2line
 {
-  // Main informations 
+  /* Main informations */
   elfsh_Addr	addr;
   u_int		line;
   u_int		column;
 
-  // References
+  /* References */
   edfmtdw2cu_t	*cu;
   u_int		fileid;
 
   struct s_dw2line *next;
 }		edfmtdw2line_t;
 
-/* Describe a compil unit */
+/**
+ * Describe a compil unit 
+ */
 struct		s_dw2cu
 {
   /* Header informations */
@@ -227,7 +235,9 @@ struct		s_dw2cu
   struct s_dw2cu *next;
 };
 
-/* Main structure of dwarf2 */
+/**
+ * Main structure of dwarf2 
+ */
 typedef struct 	s_dw2info
 {
   edfmtdw2cu_t	*cu_list;	/* Compile unit list */

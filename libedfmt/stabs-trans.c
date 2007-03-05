@@ -7,16 +7,30 @@
 
 #include "libedfmt.h"
 
-/* Translation from stabs representation into uniform format */
+/**
+ * Translation from stabs representation into uniform format 
+ * @file stabs-trans.c
+ */
 
 #define STABS_HNAME_TYPE_ADD "stabs_type_added"
 
+/**
+ * Type hash table
+ * store added type
+ */
 hash_t types_added;
 
-/* Optimize stack allocation by setting a global pointer for string things */
+/**
+ * Optimize stack allocation by setting a global pointer for string things 
+ */
 char buf[BUFSIZ];
 
-/* Advanced iterating of a structure element */
+/**
+ * Advanced iterating of a structure element 
+ * @param type type input
+ * @param main_type (0 = resolve way, 1 = main way)
+ * @return generated uniform type 
+ */
 static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, u_char main_type)
 {
   edfmttype_t		*etype = NULL;
@@ -174,7 +188,11 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, etype);
 }
 
-/* This function iterate from normal way */
+/**
+ * This function iterate from normal way 
+ * @param type_list input stabs type list
+ * @see edfmt_stabs_transform_type_adv
+ */
 static int		edfmt_stabs_transform_type(edfmtstabstype_t *type_list)
 {
   edfmtstabstype_t	*type;
@@ -191,7 +209,10 @@ static int		edfmt_stabs_transform_type(edfmtstabstype_t *type_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform a variable */
+/**
+ * Transform a variable 
+ * @param var_list input stabs variable list
+ */
 static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
 {
   edfmttype_t 		*stype;
@@ -222,7 +243,10 @@ static int		edfmt_stabs_transform_var(edfmtstabsdata_t *var_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform a function */
+/**
+ * Transform a function 
+ * @param func_list input stabs function list
+ */
 static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
 {
   edfmtstabsfunc_t	*func;
@@ -269,7 +293,11 @@ static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Organize the whole transformation of the stabs format */
+/**
+ * Organize the whole transformation of the stabs format 
+ * @param sfile tranform this file list
+ * @param parent parent file
+ */
 static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile, 
 						  edfmtfile_t *parent)
 {
@@ -286,7 +314,7 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
   if (types_added.ent == NULL)
     hash_init(&types_added, STABS_HNAME_TYPE_ADD, 50, ASPECT_TYPE_UNKNOW);
 
-  /* Iterate each element */
+  /* Iterate each element of the file list */
   for (tfile = sfile; tfile != NULL; tfile = tfile->next)
     {
       snprintf(name, EDFMT_NAME_SIZE - 1,
@@ -316,7 +344,11 @@ static int		edfmt_stabs_transform_adv(edfmtstabsfile_t *sfile,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Transform stabs informations - Entry point */
+/**
+ * Transform stabs informations - Entry point 
+ * @param file file to transform from stabs to uniform format
+ * @see edfmt_stabs_transform_adv
+ */
 int			edfmt_stabs_transform(elfshobj_t *file)
 {
   edfmtstabsinfo_t 	*tinfo;

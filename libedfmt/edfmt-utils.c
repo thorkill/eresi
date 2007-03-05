@@ -7,7 +7,13 @@
 
 #include "libedfmt.h"
 
-/* Create a string from a key (used in hash table) */
+/**
+ * Create a string from a key (used in hash table) 
+ * @param buf destination buffer
+ * @param size size of the buffer
+ * @param key key to transform
+ * @return the modified pointer or NULL
+ */
 char 			*edfmt_ckey(char *buf, u_int size, long key)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -19,10 +25,17 @@ char 			*edfmt_ckey(char *buf, u_int size, long key)
   /* That big but malloc fault on small chunk ! */
   snprintf(buf, size - 1, "%08ld", key);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-/* Create a string from a file + line (used in hash table) */
+/**
+ * Create a string from a file + line (used in hash table) 
+ * @param buf destination buffer
+ * @param size size of the buffer
+ * @param line line number
+ * @param file filename
+ * @return the modified pointer or NULL
+ */
 char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -33,10 +46,16 @@ char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
 
   snprintf(buf, size - 1, "%s:%d", file, line);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-/* Create a string from an addr (used in hash table) */
+/**
+ * Create a string from an addr (used in hash table) 
+ * @param buf destination buffer
+ * @param size size of the buffer
+ * @param addr address to transform
+ * @return the modified pointer or NULL
+ */
 char 			*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -47,10 +66,15 @@ char 			*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr)
 
   snprintf(buf, size - 1, XFMT, addr);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-/* like vm_lookup_addr - Get address value */
+/**
+ * like vm_lookup_addr - Get address value 
+ * @param file host file
+ * @param param name to search
+ * @return addresse found or 0
+ */
 elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 {
   elfsh_Sym		*sym;
@@ -86,13 +110,20 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 		    "Unable to lookup address object", (elfsh_Addr) 0);
 }
 
-/* Create an allocation pool used to store different data and optimize performance
-   This pool didn't realloc the buffer each time it needs more memory, but create a new
-   buffer and store reference of the previous (like a linked list).
-
-   Reallocation isn't used because I already have some pointer inside in the allocation and
-   if I made a XREALLOC the whole buffer would be recreate on another memory part, and some
-   pointers would be lost.
+/** 
+ * Create an allocation pool used to store different data and optimize performance
+ * This pool didn't realloc the buffer each time it needs more memory, but create a new
+ * buffer and store reference of the previous (like a linked list).
+ *
+ * Reallocation isn't used because I already have some pointer inside in the allocation and
+ * if I made a XREALLOC the whole buffer would be recreate on another memory part, and some
+ * pointers would be lost.
+ * @param pool pool pointer
+ * @param apos pool position
+ * @param asize pool size
+ * @param astep pool step
+ * @param nsize needed size
+ * @return pointer on the allocated memory
  */
 void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
 					  int astep, int nsize)
@@ -138,7 +169,10 @@ void 			*edfmt_alloc_pool(char **pool, int *apos, int *asize,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *) ret);
 }
 
-/* Clean an allocated pool */
+/**
+ * Clean an allocated pool 
+ * @param pool pool pointer
+ */
 int 			edfmt_clean_pool(char **pool)
 {
   char			*prevpool = NULL;

@@ -7,7 +7,9 @@
 
 #include "libedfmt.h"
 
-/* Unique debug format base variable */
+/**
+ * Unique debug format base variable 
+ */
 edfmtinfo_t *uniinfo = NULL;
 
 u_char file_active = 0;
@@ -69,7 +71,10 @@ do { 								\
   EDFMT_COPY_NAME(_arg, _name);					\
 } while(0)
 
-/* Init an add context */
+/**
+ * Init an add context 
+ * @param input file to init
+ */
 int			edfmt_add_init(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -99,7 +104,9 @@ int			edfmt_add_init(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* End an add context */
+/**
+ * End an add context
+ */
 int			edfmt_add_end()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -115,11 +122,17 @@ int			edfmt_add_end()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* We don't use the same hash tables depending of the current scope */
+/**
+ * We don't use the same hash tables depending of the current scope 
+ */
 #define API_GET_FROM_SCOPE(_name) \
 uniinfo->lfile == NULL ? &(uniinfo->_name) : &(uniinfo->lfile->_name);
 
-/* Check if we already have this type, then avoid loosing precious time */
+/**
+ * Check if we already have this type, then avoid loosing precious time 
+ * @param name check if a type already exist
+ * @return type found or NULL
+ */
 edfmttype_t	      	*edfmt_check_type(char *name)
 {
   edfmttype_t		*seek_type = NULL;
@@ -140,7 +153,11 @@ edfmttype_t	      	*edfmt_check_type(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_type);
 }
 
-/* Check if we already have this variable, then avoid loosing precious time */
+/**
+ * Check if we already have this variable, then avoid loosing precious time 
+ * @param name check if this variable exist
+ * @return var found or NULL
+ */
 edfmtvar_t	      	*edfmt_check_var(char *name)
 {
   edfmtvar_t		*seek_var = NULL;
@@ -161,7 +178,11 @@ edfmtvar_t	      	*edfmt_check_var(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_var);
 }
 
-/* Check if we already have this function, then avoid loosing precious time */
+/**
+ * Check if we already have this function, then avoid loosing precious time 
+ * @param name check if this function exist
+ * @return function found or NULL
+ */
 edfmtfunc_t	      	*edfmt_check_func(char *name)
 {
   edfmtfunc_t		*seek_func = NULL;
@@ -182,7 +203,10 @@ edfmtfunc_t	      	*edfmt_check_func(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, seek_func);
 }
 
-/* Update type list */
+/**
+ * Update type list linked list
+ * @param type input new type
+ */
 int			edfmt_update_type(edfmttype_t *type)
 {
   hash_t		*htable;
@@ -223,7 +247,10 @@ int			edfmt_update_type(edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Update var list */
+/**
+ * Update var linked list 
+ * @param var input new var
+ */
 int			edfmt_update_var(edfmtvar_t *var)
 {
   hash_t		*htable;
@@ -263,7 +290,10 @@ int			edfmt_update_var(edfmtvar_t *var)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Update function list */
+/**
+ * Update function linked list 
+ * @param func input new function
+ */
 int			edfmt_update_func(edfmtfunc_t *func)
 {
   hash_t		*htable;
@@ -303,7 +333,11 @@ int			edfmt_update_func(edfmtfunc_t *func)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Retrieve uniinfo pointer */
+/**
+ * Retrieve uniinfo pointer 
+ * @param file source file
+ * @return unform information structure
+ */
 edfmtinfo_t		*edfmt_get_uniinfo(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -316,9 +350,12 @@ edfmtinfo_t		*edfmt_get_uniinfo(elfshobj_t *file)
 		     (edfmtinfo_t *) file->debug_format.uni);
 }
 
-/* Sometime you add an element on the wrong context, you didn't really know
-   where this element belong to, this function delete the type from its previous
-   emplacement and add it the current file context */
+/**
+ * Sometime you add an element on the wrong context, you didn't really know
+ * where this element belong to, this function delete the type from its previous
+ * emplacement and add it the current file context 
+ * @param type source type
+ */
 int			edfmt_change_type_nfile(edfmttype_t *type)
 {
   edfmttype_t		*tmp_type = NULL;
@@ -365,10 +402,12 @@ int			edfmt_change_type_nfile(edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Restore parent file 
-   this function restore a parent file (.c file), it helps to
-   manage symbols declared for a given header then reback on the normal file
-   This function was add for dwarf2 support.
+/** 
+ * Restore parent file 
+ * this function restore a parent file (.c file), it helps to
+ * manage symbols declared for a given header then reback on the normal file
+ * This function was add for dwarf2 support.
+ * @return parent file
  */
 edfmtfile_t		*edfmt_restore_parent_file()
 {
@@ -383,7 +422,10 @@ edfmtfile_t		*edfmt_restore_parent_file()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
 }
 
-/* Retreive current file */
+/**
+ * Retreive current file 
+ * @return parent file
+ */
 edfmtfile_t		*edfmt_get_current_file()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -395,7 +437,12 @@ edfmtfile_t		*edfmt_get_current_file()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, uniinfo->lfile);
 }
 
-/* Search for a specific included file */
+/**
+ * Search for a specific included file 
+ * @param file base file
+ * @param name include name
+ * @return include file pointer or NULL
+ */
 edfmtfile_t		*edfmt_get_inc_file(edfmtfile_t *file, char *name)
 {
   edfmtfile_t 		*inc;
@@ -411,7 +458,14 @@ edfmtfile_t		*edfmt_get_inc_file(edfmtfile_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* Add a new file */
+/**
+ * Add a new file 
+ * @param parent_file parent file (optional)
+ * @param name filename
+ * @param start starting address (optional)
+ * @param end ending address (optional)
+ * @return created file
+ */
 edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name, 
 					elfsh_Addr start, elfsh_Addr end)
 {
@@ -477,7 +531,9 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
 }
 
-/* Reset file activity */
+/**
+ * Reset file activity 
+ */
 int			edfmt_reset_file()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -487,7 +543,9 @@ int			edfmt_reset_file()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Reactive file activity */
+/**
+ * Reactive file activity 
+ */
 int			edfmt_reactive_file()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -497,7 +555,11 @@ int			edfmt_reactive_file()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Create an unknown type */
+/**
+ * Create an unknown type 
+ * @param name new type name
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_unk(char *name)
 {
   edfmttype_t		*ltype;
@@ -514,7 +576,12 @@ edfmttype_t		*edfmt_add_type_unk(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a basic type */
+/**
+ * Create a basic type 
+ * @param name new type name
+ * @param size type size
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_basic(char *name, int size)
 {
   edfmttype_t		*ltype;
@@ -532,7 +599,13 @@ edfmttype_t		*edfmt_add_type_basic(char *name, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create an array type */
+/**
+ * Create an array type 
+ * @param name new type name
+ * @param size type size
+ * @param type sub type
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_array(char *name, 
 					      int size, edfmttype_t *type)
 {
@@ -552,7 +625,12 @@ edfmttype_t		*edfmt_add_type_array(char *name,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a ptr type */
+/**
+ * Create a ptr type 
+ * @param name new type name
+ * @param type sub type
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
 {
   edfmttype_t		*ltype;
@@ -571,7 +649,12 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a structure type */
+/**
+ * Create a structure type 
+ * @param name new type name
+ * @param size structure size
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_struct(char *name, int size)
 {
   edfmttype_t		*ltype;
@@ -589,7 +672,12 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create an union type */
+/**
+ * Create an union type
+ * @param name new type name
+ * @param size union size
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_union(char *name, int size)
 {
   edfmttype_t		*ltype;
@@ -607,7 +695,15 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
- /* Create an attribute type */
+/**
+ * Create an attribute type 
+ * @param tstruct structure type
+ * @param name new type name
+ * @param start start offset
+ * @param size member size
+ * @param type member type
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name, 
 					     int start, int size, edfmttype_t *type)
 {
@@ -649,7 +745,11 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a void type */
+/**
+ * Create a void type 
+ * @param name new type name
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_void(char *name)
 {
   edfmttype_t		*ltype;
@@ -666,7 +766,12 @@ edfmttype_t		*edfmt_add_type_void(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a link type */
+/**
+ * Create a link type 
+ * @param name new type name
+ * @param type link to this type
+ * @return result type
+ */
 edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
 {
   edfmttype_t		*ltype;
@@ -684,7 +789,13 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
 
-/* Create a global variable */
+/**
+ * Create a global variable 
+ * @param type variable type
+ * @param name variable name
+ * @param addr variable address
+ * @return result variable
+ */
 edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr)
 {
   edfmtvar_t		*lvar;
@@ -703,7 +814,14 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
 }
 
-/* Create a function */
+/**
+ * Create a function 
+ * @param name new function name
+ * @param ret return type
+ * @param start start address
+ * @param end end addresss
+ * @return result function
+ */
 edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret, 
 					elfsh_Addr start, elfsh_Addr end)
 {
@@ -723,7 +841,15 @@ edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lfunc);
 }
 
-/* Add arguments on a function */
+/**
+ * Add arguments on a function 
+ * @param func function structure (parent)
+ * @param name argument name
+ * @param reg base reg
+ * @param pos position (from reg or stack)
+ * @param type argument type
+ * @return result function argument
+ */
 edfmtfuncarg_t		*edfmt_add_arg(edfmtfunc_t *func, char *name,
 				       u_int reg, int pos, edfmttype_t *type)
 {

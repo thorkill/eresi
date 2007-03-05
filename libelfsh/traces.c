@@ -14,16 +14,24 @@
 
 char buf[BUFSIZ];
 
-/* Store every traces, this table store another hash table for each key */
+/**
+ * Store every traces, this table store another hash table for each key 
+ */
 hash_t traces_table;
 
-/* Whole active elements */
+/**
+ * Whole active elements 
+ */
 int trace_enabled_count = 0;
 
 #define ELFSH_TRACES_TABLE_NAME "elfsh_traces_table"
 #define ELFSH_TRACES_PATTERN "traces_%s"
 
-/* Create a new trace */
+/**
+ * Create a new trace 
+ * @param trace trace name
+ * @return trace hash table
+ */
 hash_t			*elfsh_traces_createtrace(char *trace)
 {
   hash_t		*newhash;
@@ -50,11 +58,15 @@ int queue_count = 0;
 #define ELFSH_TRACES_DEFAULT_STEP 20
 int queue_step = 0;
 
-/* The queue is used to store function that will be traced.
-   The aglorithm is two differents function then I don't wanna
-   recheck which function must be traced.
+/**
+ * The queue is used to store function that will be traced.
+ * The aglorithm is two differents function then I don't wanna
+ * recheck which function must be traced.
+ * @param elm function to queue
+ * @see elfsh_traces_save_table
+ * @see elfsh_traces_save
  */
-static int		elfsh_trace_queue_add(elfshtraces_t *elm)
+static int		elfsh_traces_queue_add(elfshtraces_t *elm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -76,8 +88,10 @@ static int		elfsh_trace_queue_add(elfshtraces_t *elm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Clean the queue if we setup one */
-static int		elfsh_trace_queue_clean()
+/**
+ * Clean the queue if we setup one 
+ */
+static int		elfsh_traces_queue_clean()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -97,8 +111,13 @@ char		args[BUFSIZ];
 char		argsproto[BUFSIZ];
 char		argshexa[BUFSIZ];
 
-/* Generate each function on the file */
-static int		elfsh_trace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
+/**
+ * Generate each function on the file 
+ * @param fp file pointer
+ * @param file object (target)
+ * @param table a trace hash table
+ */
+static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 {
   int			z = 0;
   u_int			index;
@@ -120,7 +139,7 @@ static int		elfsh_trace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	  if (ret_trace && ret_trace->enable && ret_trace->file->id == file->id)
 	    {
 	      /* Add in the queue */
-	      elfsh_trace_queue_add(ret_trace);
+	      elfsh_traces_queue_add(ret_trace);
 
 	      argshexa[0] = 0;
 	      argsproto[0] = 0;
@@ -187,7 +206,11 @@ static int		elfsh_trace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Proceed tracing elements on the file during save cmd */
+/**
+ * Proceed tracing elements on the file during save cmd 
+ * @param file target file that is a copy of the original
+ * @see cmd_save
+ */
 int			elfsh_traces_save(elfshobj_t *file)
 {
   u_int			index;
@@ -277,7 +300,7 @@ int			elfsh_traces_save(elfshobj_t *file)
       table = hash_get(&traces_table, keys[index]);
       
       if (table)
-	elfsh_trace_save_table(fp, file, table);
+	elfsh_traces_save_table(fp, file, table);
     }
 
   hash_free_keys(keys);
@@ -290,7 +313,7 @@ int			elfsh_traces_save(elfshobj_t *file)
   // Compile the tmp c file to create a relocatable file to inject
   if (rename(tfname, rtfname) < 0)
     {
-      elfsh_trace_queue_clean();
+      elfsh_traces_queue_clean();
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Rename failed", (-1));
     }
@@ -323,7 +346,7 @@ int			elfsh_traces_save(elfshobj_t *file)
   idx = elfsh_inject_etrel(file, tobj);
   if (idx < 0)
     {
-      elfsh_trace_queue_clean();
+      elfsh_traces_queue_clean();
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Failed to inject ET_REL with workspace", -1);
     }
@@ -337,7 +360,7 @@ int			elfsh_traces_save(elfshobj_t *file)
     dst = elfsh_get_symbol_by_name(file, buf);
     if (dst == NULL)
       {
-	elfsh_trace_queue_clean();
+	elfsh_traces_queue_clean();
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Failed to find trace function", -1);
       }
@@ -355,13 +378,13 @@ int			elfsh_traces_save(elfshobj_t *file)
 					addr, NULL);
     if (err < 0)
       {
-	elfsh_trace_queue_clean();
+	elfsh_traces_queue_clean();
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Failed to hijack a function", -1);
       }
   }
 
-  elfsh_trace_queue_clean();
+  elfsh_traces_queue_clean();
 
   /* Save procedure already relocate but we made some modifications too
      then we restart this procedure.
@@ -388,7 +411,11 @@ int			*elfsh_traces_inittrace()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Retreive a trace from its name */
+/**
+ * Retreive a trace from its name 
+ * @param trace trace name
+ * @return trace hash table
+ */
 hash_t			*elfsh_traces_gettrace(char *trace)
 {
   hash_t		*table;
@@ -404,7 +431,12 @@ hash_t			*elfsh_traces_gettrace(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, table);
 }
 
-/* Search a symbol on dependences file */
+/**
+ * Search a symbol on dependences file 
+ * @param file parent file
+ * @param name symbol name
+ * @return file object that containt the symbol (on dynsym)
+ */
 elfshobj_t   		*elfsh_traces_search_sym(elfshobj_t *file, char *name)
 {
   char			**keys;
@@ -463,7 +495,16 @@ elfshobj_t   		*elfsh_traces_search_sym(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, find);
 }
 
-/* Can we trace this symbol ? */
+/**
+ * Can we trace this symbol ? 
+ * @param file target file
+ * @param name function name
+ * @param symtab symbol table (symtab or dynsym)
+ * @param num number of symbol on the table
+ * @param dynsym 0 = symtab 1 = dynsym (internal/external)
+ * @param vaddr fill symbol virtual address
+ * @see elfsh_traces_tracable
+ */
 static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
 						  int num, u_char dynsym, elfsh_Addr *vaddr)
 {
@@ -522,7 +563,14 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Function not found", -1);
 }
 
-/* Check if a fonction can be traced or not */
+/**
+ * Check if a function can be traced or not 
+ * @param file target file
+ * @param name function name
+ * @param vaddr pointer where save the function virtual address
+ * @param external pointer where save the status internal / external of the function
+ * @see elfsh_traces_tracable_sym
+ */
 int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
 					      elfsh_Addr *vaddr, u_char *external)
 {
@@ -559,7 +607,13 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not tracable", -1);
 }
 
-/* Add the function on the trace table */
+/**
+ * Add the function on the trace table 
+ * @param trace trace name
+ * @param name function name
+ * @param newtrace allocated structure that describe the trace
+ * @return newtrace pointer or NULL in case of failure
+ */
 elfshtraces_t 		*elfsh_traces_funcadd(char *trace, 
 					      char *name, elfshtraces_t *newtrace)
 {
@@ -583,7 +637,11 @@ elfshtraces_t 		*elfsh_traces_funcadd(char *trace,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtrace);
 }
 
-/* Delete the function from the trace table */
+/**
+ * Delete the function from the trace table 
+ * @param trace trace name
+ * @param name function name
+ */
 int			elfsh_traces_funcrm(char *trace, char *name)
 {
   elfshtraces_t		*ret_trace;
@@ -609,7 +667,11 @@ int			elfsh_traces_funcrm(char *trace, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Enable the function from the trace table */
+/**
+ * Enable the function from the trace table 
+ * @param trace trace name
+ * @param name function name
+ */
 int			elfsh_traces_funcenable(char *trace, char *name)
 {
   elfshtraces_t		*ret_trace;
@@ -637,7 +699,13 @@ int			elfsh_traces_funcenable(char *trace, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Change the status of a whole trace */
+/**
+ * Change the status of a whole trace 
+ * @param table trace hash table
+ * @param status new status (0 = disable, 1 = enable)
+ * @see elfsh_traces_funcenableall
+ * @see elfsh_traces_funcdisableall
+ */
 int			elfsh_traces_funcsetstatus(hash_t *table, int status)
 {
   u_int			index;
@@ -678,7 +746,11 @@ int			elfsh_traces_funcsetstatus(hash_t *table, int status)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Enable all functions of a trace */
+/**
+ * Enable all functions of a trace 
+ * @param trace trace name
+ * @see elfsh_traces_funcsetstatus
+ */
 int			elfsh_traces_funcenableall(char *trace)
 {
   u_int			index;
@@ -709,7 +781,10 @@ int			elfsh_traces_funcenableall(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Disable all functions of a trace */
+/* Disable all functions of a trace 
+ * @param trace trace name 
+ * @see elfsh_traces_funcsettatus
+ */
 int			elfsh_traces_funcdisableall(char *trace)
 {
   u_int			index;
@@ -740,7 +815,11 @@ int			elfsh_traces_funcdisableall(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Disable a functions of a trace */
+/**
+ * Disable a functions of a trace 
+ * @param trace trace name
+ * @param name function name
+ */
 int			elfsh_traces_funcdisable(char *trace, char *name)
 {
   elfshtraces_t		*ret_trace;
@@ -768,7 +847,10 @@ int			elfsh_traces_funcdisable(char *trace, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Delete all functions of a trace */
+/**
+ * Delete all functions of a trace 
+ * @param trace trace name
+ */
 int			elfsh_traces_funcrmall(char *trace)
 {
   char			**keys;
@@ -804,7 +886,10 @@ int			elfsh_traces_funcrmall(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Delete a trace */
+/**
+ * Delete a trace 
+ * @param trace trace name
+ */
 int			elfsh_traces_deletetrace(char *trace)
 {
   hash_t		*table;

@@ -14,7 +14,11 @@ int alloc_size = 0;
 #define DW2_GETPTR(_size) \
 edfmt_alloc_pool(&alloc_pool, &alloc_pos, &alloc_size, DWARF2_ALLOC_STEP, _size)
 
-/* Lookup on abbrev_table */
+/**
+ * Lookup on abbrev_table and retrieve en abbrev entity (structure)
+ * @param num_fetch used to found the abbrev entity on the abbrev hash table
+ * @return abbrev entity structure
+ */
 static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
 {
   char			ckey[EDFMT_CKEY_SIZE];
@@ -28,7 +32,12 @@ static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
-/* Read an abbrev entry @ this position */
+/**
+ * Read an abbrev entry @ this position
+ * @param ent abbrev entity to fill
+ * @param fnum abbrev entity fetch number
+ * @param ipos abbrev entity key to set
+ */
 int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
 {
   edfmtdw2abbent_t	*fetch;
@@ -59,7 +68,10 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Clean allocated buffer for enumeration */
+/**
+ * Clean allocated buffer for enumeration 
+ * @param abbrev_table store abbrev entities (structure)
+ */
 int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
 {
   char			**keys;
@@ -92,7 +104,10 @@ int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse the .debug_abbrev format */
+/**
+ * Parse the .debug_abbrev format and store the result on the abbrev table
+ * @param abbrev_table store abbrev entities (structure)
+ */
 int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
 {
   u_int			num;
@@ -147,8 +162,10 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Increment the info position without reading every elements
-   then we avoid losing data access time on elements that we don't need.
+/**
+ * Increment the info position without reading every elements
+ * then we avoid losing data access time on elements that we don't need.
+ * @param attr abbrev attribute to iterate
  */
 static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
 {
@@ -164,8 +181,9 @@ static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
 
 fvstart:
 
-  /* I will not explain every element because it will be too long
-     you can read dwarf2 documentation for more information.
+  /**
+   * I will not explain every element because it will be too long
+   * you can read dwarf2 documentation for more information.
    */
   switch (form)
     {
@@ -236,7 +254,10 @@ fvstart:
   NOPROFILER_ROUT(0);
 }
 
-/* Parse a form value */
+/**
+ * Parse a form value 
+ * @param attr abbrev attribute to fill
+ */
 int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 {
   u_int			i;
@@ -255,8 +276,9 @@ int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 
 fvstart:
 
-  /* I will not explain every element because it will be too long
-     you can read dwarf2 documentation for more information.
+  /**
+   * I will not explain every element because it will be too long
+   * you can read dwarf2 documentation for more information.
    */
   switch (attr->form)
     {
@@ -367,7 +389,11 @@ fvstart:
 }
 
 
-/* Follow .debug_info form using abbrev_table as structure reference */
+/**
+ * Follow .debug_info form using abbrev_table as structure reference 
+ * @param abbent abbrev entity to fill
+ * @param pos info position
+ */
 int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
 {  
   u_int			num_fetch, i;
@@ -419,8 +445,9 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* XXX: Re use it when it will be usefull
-   Read macinfo data 
+/**
+ * XXX: Re use it when it will be usefull
+ * Read macinfo data 
  */
 int			edfmt_dwarf2_mac(u_long offset)
 {
@@ -496,7 +523,12 @@ int			edfmt_dwarf2_mac(u_long offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Parse a dwarf2 location, this location describe where an element is store */
+/**
+ * Parse a dwarf2 location, this location describe where an element is store 
+ * @param loc information will be store on this structure
+ * @param buf location is read from this buffer
+ * @param size size of the buffer
+ */
 int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 {
   u_int			i, spos, bsize, tmp_op;
@@ -520,9 +552,10 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
       /* Push a stack operand */
       stack[++spos].op = buf[i];
 
-      /* I will not explain every element because it will be too long
-	 you can read dwarf2 documentation for more information.
-      */
+      /**
+       * I will not explain every element because it will be too long
+       * you can read dwarf2 documentation for more information.
+       */
       switch(buf[i])
 	{
 	case DW_OP_addr:
@@ -851,8 +884,9 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* XXX: Re use it when it will be usefull
-   Parse data part of .debug_line format 
+/** 
+ * XXX: Re use it when it will be usefull
+ * Parse data part of .debug_line format 
  */
 static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 {
@@ -984,8 +1018,9 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* XXX: Re use it when it will be usefull
-   Parse .debug_line 
+/**
+ * XXX: Re use it when it will be usefull
+ * Parse .debug_line 
  */
 int			edfmt_dwarf2_line(u_long offset)
 {
@@ -1076,8 +1111,9 @@ int			edfmt_dwarf2_line(u_long offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* XXX: Re use it when it will be usefull
-   Record a new line entry
+/**
+ * XXX: Re use it when it will be usefull
+ * Record a new line entry
  */
 int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, 
 					      elfsh_Addr addr, u_int fid)

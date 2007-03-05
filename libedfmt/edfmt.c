@@ -10,9 +10,10 @@
 #define EDFMT_SET_FUNCS(_name) \
 _name##_parse, _name##_transform, _name##_clean
 
-/* This structure list all debug format that we support and with which function 
-   For the moment we support stabs & dwarf2, we check if one of this debug format is present
-   with checking each one sections exist.
+/**
+ * This structure list all debug format that we support and with which function 
+ * For the moment we support stabs & dwarf2, we check if one of this debug format is present
+ * with checking each one sections exist.
  */
 edfmtmanage_t debug_format[] = 
   {
@@ -21,7 +22,13 @@ edfmtmanage_t debug_format[] =
     { NULL                       , 0                     , NULL, NULL, NULL }
   };
 
-/* Retrieve a specific section if this section is available */
+/**
+ * Retrieve a specific section if this section is available 
+ * @param file host file
+ * @param hash hash id
+ * @param hash_name section name
+ * @param strhash hash id for the linked string section
+ */
 elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name, 
 					u_int strhash)
 {
@@ -60,11 +67,13 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 		     file->secthash[hash]);
 }
 
-/* Main point of the debug format library 
-   This function manage this steps for every debugging formats:
-    - Parse the format and create / init an interface for the next step.
-    - Transform the debugging format representation in the uniform debugging format.
-    - Clean elements allocated by the first step.
+/** 
+ * Main point of the debug format library 
+ * This function manage this steps for every debugging formats:
+ *  - Parse the format and create / init an interface for the next step.
+ *  - Transform the debugging format representation in the uniform debugging format.
+ *  - Clean elements allocated by the first step.
+ * @param file target file
  */
 int			edfmt_format(elfshobj_t *file)
 {
