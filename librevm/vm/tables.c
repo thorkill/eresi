@@ -10,7 +10,7 @@
 
 
 /* Labels hash */
-hash_t		labels_hash[ELFSH_MAX_SOURCE_DEPTH];
+hash_t		labels_hash[REVM_MAXSRCNEST];
 
 /* Variables hash */
 hash_t		vars_hash;
@@ -719,7 +719,7 @@ static void	setup_cmdhash()
   hash_init(&cmd_hash, "commands", 101, ASPECT_TYPE_UNKNOW);
 
   /* Interactive mode / Scripting mode commands */
-  if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
+  if (world.state.vm_mode != REVM_STATE_CMDLINE)
     {
       vm_addcmd(CMD_LOAD      , (void *) cmd_load     , (void *) vm_getoption   , 0, HLP_LOAD);
       vm_addcmd(CMD_UNLOAD    , (void *) cmd_unload   , (void *) vm_getoption   , 0, HLP_UNLOAD);
@@ -740,7 +740,7 @@ static void	setup_cmdhash()
     }
 
   /* Command line only commands */
-  if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE)
+  if (world.state.vm_mode == REVM_STATE_CMDLINE)
     {
       vm_addcmd(CMD_BINFILE_W, (void *) NULL, (void *) vm_getoutput, 0, "");
       vm_addcmd(CMD_BINFILE_R, (void *) NULL, (void *) vm_getinput , 0, "");
@@ -931,13 +931,13 @@ static void	setup_varshash()
   o = vm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
 
   hash_init(&vars_hash, "variables", 251, ASPECT_TYPE_UNKNOW);
-  hash_add(&vars_hash, ELFSH_RESVAR, f);
-  hash_add(&vars_hash, ELFSH_LOADVAR, g);
-  hash_add(&vars_hash, ELFSH_ERRVAR, r);
-  hash_add(&vars_hash, ELFSH_SHELLVAR, s);
-  hash_add(&vars_hash, ELFSH_EDITVAR, e);
-  hash_add(&vars_hash, ELFSH_LIBPATHVAR, l);
-  hash_add(&vars_hash, ELFSH_SLOGVAR, o);
+  hash_add(&vars_hash, REVM_VAR_RESULT, f);
+  hash_add(&vars_hash, REVM_VAR_LOAD, g);
+  hash_add(&vars_hash, REVM_VAR_ERROR, r);
+  hash_add(&vars_hash, REVM_VAR_SHELL, s);
+  hash_add(&vars_hash, REVM_VAR_EDITOR, e);
+  hash_add(&vars_hash, REVM_VAR_LIBPATH, l);
+  hash_add(&vars_hash, REVM_VAR_STRIPLOG, o);
 }
 
 

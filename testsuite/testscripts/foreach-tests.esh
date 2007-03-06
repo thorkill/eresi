@@ -1,6 +1,6 @@
 #!/usr/local/bin/elfsh
 
-quiet
+#quiet
 
 add $hash[test2] Intel
 add $hash[test2] Alpha
@@ -28,6 +28,8 @@ tables test2
 foreach $element of test2
   print Table contains element : $element
 forend
+
+verb
 
 load /usr/bin/ssh
 

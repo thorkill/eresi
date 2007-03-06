@@ -5,39 +5,47 @@
 ##
 include ../../config.h
 
-SRC			= grammar.c lookup.c lts.c objects.c variables.c access.c
-OBJ32			= $(SRC:.c=.32.o)
-OBJ64			= $(SRC:.c=.64.o)
-CC			?= gcc
-RM			= rm -f
+SRC		= access.c convert.c grammar.c lookup.c objects.c \
+		options.c parser.c scanner.c variables.c
+OBJ32		= $(SRC:.c=.32.o)
+OBJ64		= $(SRC:.c=.64.o)
+CC		?= gcc
+LD		?= ld
+RM		= rm -f
+NAME32		= revm-lang.32.o
+NAME64		= revm-lang.64.o
 
-CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)        \
-			 -I../../libelfsh/include/ -I../../elibc/include/         \
-			 -I../../libdump/include/ -I../../libasm/include/         \
-			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)   \
-			 -I../../libmjollnir/include/ -I../../libaspect/include/  \
-			 -I../../libedfmt/include/				  \
-			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) -DELFSH32 		  \
-			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
+CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)        \
+		 -I../../libelfsh/include/ -I../../elibc/include/         \
+		 -I../../libdump/include/ -I../../libasm/include/         \
+		 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)   \
+		 -I../../libmjollnir/include/ -I../../libaspect/include/  \
+		 -I../../libedfmt/include/				  \
+		-DELFSH_INTERN $(STATOPT2) $(ASMOPT) -DELFSH32 		  \
+		-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
-CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT) 	  \
-			 -I../../libelfsh/include/ -I../../elibc/include/	  \
-			 -I../../libdump/include/ -I../../libasm/include/         \
-			 -I/usr/pkg/include/  -I../../libaspect/include/          \
-			 -I../../libui/include/ -I../../libmjollnir/include/      \
-			 -I../../libedfmt/include/				  \
-			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) -DELFSH64 $(BUILDOP) \
-			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
+CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT) 	  \
+		 -I../../libelfsh/include/ -I../../elibc/include/	  \
+		 -I../../libdump/include/ -I../../libasm/include/         \
+		 -I/usr/pkg/include/  -I../../libaspect/include/          \
+		 -I../../libui/include/ -I../../libmjollnir/include/      \
+		 -I../../libedfmt/include/				  \
+		-DELFSH_INTERN $(STATOPT2) $(ASMOPT) -DELFSH64 $(BUILDOP) \
+		-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
-all			: all32 all64
+all		: all32 all64
 
-all32			: $(OBJ32)
-all64			: $(OBJ64)
+all32		: $(OBJ32)
+		$(LD) -r $(OBJ32) -o ../$(NAME32)
 
-clean		        :
-		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+all64		: $(OBJ64)
+		$(LD) -r $(OBJ64) -o ../$(NAME64)
 
-%.32.o : %.c
-			$(CC) $(CFLAGS32) -c -o $@ $<
-%.64.o : %.c
-			$(CC) $(CFLAGS64) -c -o $@ $<
+clean		:
+		@$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+
+%.32.o 		: %.c
+		$(CC) $(CFLAGS32) -c -o $@ $<
+
+%.64.o 		: %.c
+		$(CC) $(CFLAGS64) -c -o $@ $<

@@ -70,6 +70,7 @@ SRCS_libasm 	=				\
 OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
 OBJS_libasm	+=	${SRCS_hdl:.c=.o}
 NAME_libasm 	= 	libasm.a
+NAME_libasm_o	=	libasm.o
 
 SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
@@ -80,6 +81,7 @@ CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH32 \
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc
+LD		?=	ld
 CP 		= 	cp
 
 all:	lib
@@ -96,15 +98,16 @@ lib:	$(OBJS_libasm)
 	@echo "[AR] ${NAME_libasm}"
 	@ranlib ${NAME_libasm}
 	@echo "[RANLIB] ${NAME_libasm}"
+	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
 
 clean:
 	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
-	@find . -name '*~' -exec rm -f {} \;
-	@find src/ -name '*.o' -exec rm -rf {} \;
+	@find .   -name '*~' -exec rm -f {} \;
+	@find src -name '*.o' -exec rm -rf {} \;
 	@echo "Cleaning source tree"
 
 fclean: clean
-	$(RM) ${NAME_libasm} ${NAME_mydisasm} ${NAME_cmpdump} 
+	$(RM) ${NAME_libasm} ${NAME_libasmo} ${NAME_mydisasm} ${NAME_cmpdump} 
 	$(RM) mydisasm
 
 tags:

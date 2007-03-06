@@ -16,7 +16,7 @@ revmworld_t	world;
 /* Signal handler for SIGINT */
 void		sigint_handler(int signum)
 {
-  if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE)
+  if (world.state.vm_mode == REVM_STATE_CMDLINE)
     vm_exit(0);
 }
 
@@ -36,10 +36,10 @@ int		vm_loop(int argc, char **argv)
   reenter:
 
     /* Fill argv from stdin if we are in interactive mode */
-    if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || 
+    if (world.state.vm_mode != REVM_STATE_CMDLINE || 
 	world.state.vm_net == 1)
       {
-	if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
+	if (world.state.vm_mode != REVM_STATE_SCRIPT)
 	  {
 	    if (vm_select() < 0)
 	      {
@@ -50,12 +50,12 @@ int		vm_loop(int argc, char **argv)
 
 	/* Take a line, execute old command if void line */
 	argv = vm_input(&argc);
-	if (world.state.vm_mode == ELFSH_VMSTATE_IMODE     ||
-	    world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER  ||
-	    world.state.vm_mode == ELFSH_VMSTATE_SCRIPT    ||
+	if (world.state.vm_mode == REVM_STATE_INTERACTIVE     ||
+	    world.state.vm_mode == REVM_STATE_DEBUGGER  ||
+	    world.state.vm_mode == REVM_STATE_SCRIPT    ||
 	    world.state.vm_net)
 	  {
-	    if (argv == ((char **) ELFSH_VOID_INPUT))
+	    if (argv == ((char **) REVM_INPUT_VOID))
 	      continue;
 	  }
 
@@ -63,7 +63,7 @@ int		vm_loop(int argc, char **argv)
 	if (!argv)
 	  {
 	    /* when debugging -> back to main program */
-	    if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+	    if (world.state.vm_mode == REVM_STATE_DEBUGGER)
 	      {
 		vm_output("\n");
 		goto e2dbg_cleanup;
@@ -82,12 +82,12 @@ int		vm_loop(int argc, char **argv)
     /* Fetch the current scripting command */
     if (vm_parseopt(argc, argv) < 0)
       {
-	if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
+	if (world.state.vm_mode != REVM_STATE_CMDLINE)
 	  {
 	    //XFREE(__FILE__, __FUNCTION__, __LINE__,argv[1]);
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
-	    if (world.state.vm_mode != ELFSH_VMSTATE_IMODE &&
-		world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
+	    if (world.state.vm_mode != REVM_STATE_INTERACTIVE &&
+		world.state.vm_mode != REVM_STATE_DEBUGGER)
 	      goto end;
 	  }
 	else if(!world.state.vm_net)
@@ -95,7 +95,7 @@ int		vm_loop(int argc, char **argv)
       }
 
     /* Just execute one command if we are not in script mode */
-    if (world.state.vm_mode != ELFSH_VMSTATE_SCRIPT)
+    if (world.state.vm_mode != REVM_STATE_SCRIPT)
       {
 	world.curjob->curcmd = world.curjob->script[0];
 	switch (vm_execmd())
@@ -112,23 +112,23 @@ int		vm_loop(int argc, char **argv)
 
     /* Quit parsing if necessary */
     if ((!world.curjob->curcmd && 
-	 world.state.vm_mode == ELFSH_VMSTATE_SCRIPT) ||
+	 world.state.vm_mode == REVM_STATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
       break;
   }
-  while (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net);
+  while (world.state.vm_mode != REVM_STATE_CMDLINE || world.state.vm_net);
 
   /* If we are in scripting, execute commands list now */
-  if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
+  if (world.state.vm_mode == REVM_STATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
       ret = vm_execscript();
       if (ret == ELFSH_SCRIPT_STOP)
 	{
-	  XCLOSE(world.curjob->io.input_fd, -1);
-	  world.curjob->io.input_fd = 0;
+	  XCLOSE(world.curjob->ws.io.input_fd, -1);
+	  world.curjob->ws.io.input_fd = 0;
 	  goto reenter;
 	}
       else if (ret < 0)
@@ -136,7 +136,7 @@ int		vm_loop(int argc, char **argv)
     }
 
  end:
-  if (!world.state.vm_quiet && world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
+  if (!world.state.vm_quiet && world.state.vm_mode == REVM_STATE_SCRIPT)
     {
       if (ret < 0)
 	vm_output("\n [E] Script execution failed \n\n");
@@ -145,7 +145,7 @@ int		vm_loop(int argc, char **argv)
     }
 
   /* Implicit unload or save if we are not in interactive mode */
-  if (world.state.vm_mode == ELFSH_VMSTATE_CMDLINE && world.curjob->current)
+  if (world.state.vm_mode == REVM_STATE_CMDLINE && world.curjob->current)
     ret = vm_unload_cwfiles();
 
 #if defined(USE_READLN)
@@ -197,9 +197,9 @@ int		vm_setup(int ac, char **av)
   if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
     {
       /* Set the mode of e2dbg */
-      world.state.vm_mode = ELFSH_VMSTATE_DEBUGGER;
+      world.state.vm_mode = REVM_STATE_DEBUGGER;
 #if defined(USE_READLN)
-      world.curjob->io.buf = NULL;
+      world.curjob->ws.io.buf = NULL;
 #endif
       elfsh_set_debug_mode();
     }
@@ -210,10 +210,10 @@ int		vm_setup(int ac, char **av)
       elfsh_set_static_mode();
 
       if (ac == 1)
-	world.state.vm_mode = ELFSH_VMSTATE_IMODE;
+	world.state.vm_mode = REVM_STATE_INTERACTIVE;
       else if (vm_testscript(ac, av))
 	{
-	  world.state.vm_mode = ELFSH_VMSTATE_SCRIPT;
+	  world.state.vm_mode = REVM_STATE_SCRIPT;
 	  vm_setup_hashtables();
 	  if (vm_openscript(&av[1]) < 0)
 	    QUIT_ERROR(-1);
@@ -277,12 +277,9 @@ int		vm_config()
 /* Interface initialisation && loop entry point */
 int		vm_run(int ac, char **av)
 {
-#if defined(USE_READLN)
-  int		cmdnum;
-#endif
 
   /* Do not handle signals in debugger mode */
-  if (world.state.vm_mode != ELFSH_VMSTATE_DEBUGGER)
+  if (world.state.vm_mode != REVM_STATE_DEBUGGER)
     {
       signal(SIGQUIT, SIG_IGN);
       signal(SIGTERM, SIG_IGN);
@@ -294,45 +291,9 @@ int		vm_run(int ac, char **av)
 #endif
 
 #if defined(USE_READLN)
-  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
-      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
-    {
-
-      world.comp.cmds[0]  = hash_get_keys(&cmd_hash    , &cmdnum);
-      world.comp.cmds[1]  = hash_get_keys(&vars_hash   , &cmdnum);
-      world.comp.cmds[2]  = hash_get_keys(&const_hash  , &cmdnum);
-      world.comp.cmds[3]  = hash_get_keys(&mod_hash    , &cmdnum);
-      world.comp.cmds[4]  = hash_get_keys(&L1_hash     , &cmdnum);
-      world.comp.cmds[5]  = hash_get_keys(&elf_L2_hash , &cmdnum);
-      world.comp.cmds[6]  = hash_get_keys(&sht_L2_hash , &cmdnum);
-      world.comp.cmds[7]  = hash_get_keys(&pht_L2_hash , &cmdnum);
-      world.comp.cmds[8]  = hash_get_keys(&sym_L2_hash , &cmdnum);
-      world.comp.cmds[9]  = hash_get_keys(&rel_L2_hash , &cmdnum);
-      world.comp.cmds[10] = hash_get_keys(&dynsym_L2_hash, &cmdnum);
-      world.comp.cmds[11] = hash_get_keys(&dyn_L2_hash , &cmdnum);
-      world.comp.cmds[12] = hash_get_keys(&sct_L2_hash , &cmdnum);
-      world.comp.cmds[13] = hash_get_keys(&fg_color_hash, &cmdnum);
-      world.comp.cmds[14] = hash_get_keys(&t_color_hash, &cmdnum);
-      world.comp.cmds[15] = NULL;
-
-      using_history();
-      rl_attempted_completion_function = vm_completion;
-      rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
-      rl_bind_key(CTRL('x'), vm_screen_switch);
-      vm_install_clearscreen();
-      update_col();
-
-      /* We will handle SIGWINCH */
-      signal(SIGWINCH, (void*)update_col);
-      rl_catch_sigwinch = 0;
-      rl_set_signals();
-    }
-  else
-    rl_bind_key ('\t', rl_insert);
+  readln_completion_install(world.state.vm_mode);
 #endif
-
   vm_flush();
-
 #if defined (USE_READLN)
   vm_log(vm_get_prompt());
 #endif

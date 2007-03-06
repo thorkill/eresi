@@ -5,19 +5,15 @@
 ##
 include ../../config.h
 
-SRC			= atomic.c  color.c doswitch.c fcthijack.c 	\
-			  job.c loop.c misc-revm.c opt.c 	        \
-			  cmdapi.c configure.c exec.c implicit.c	\
-			  jmp.c log.c modules.c screen.c init.c 	\
-			  tables.c stringtable.c edfmt.c parse.c
-
+SRC			= init.c loop.c tables.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
+LD			?= ld
 RM			= rm -f
 NAME			= librevm
-NAME32			= librevm32
-NAME64			= librevm64
+NAME32			= revm-machine.32.o
+NAME64			= revm-machine.64.o
 
 CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)        \
 			 -I../../libelfsh/include/ -I../../elibc/include/         \
@@ -40,7 +36,10 @@ CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT) 	  \
 all			: all32 all64
 
 all32			: $(OBJ32)
+			$(LD) -r $(OBJ32) -o ../$(NAME32)
+
 all64			: $(OBJ64)
+			$(LD) -r $(OBJ64) -o ../$(NAME64)
 
 clean		        :
 		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*

@@ -6,18 +6,17 @@
 
 include ../config.h
 
-OBJ32			= lang/*.32.o elf/*.32.o vm/*.32.o cmd/*.32.o
-OBJ64			= lang/*.64.o elf/*.64.o vm/*.64.o cmd/*.64.o
+OBJ32			= *.32.o
+OBJ64			= *.64.o
 CC			?= gcc
 RM			= rm -f
-
 NAME32			= librevm32
 NAME64			= librevm64
 
 LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../elibc 	  \
-			-lcelfsh32 -L../libasm/ -lasm -L../libui/ -lui32 -g3 	  \
+			-lcelfsh32 -L../libasm/ -lasm $(LDUIOPT32) -g3		  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
@@ -26,7 +25,7 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
-			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
+			-lcelfsh64 -L../libasm/ -lasm $(LDUIOPT64) -g3		  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
@@ -39,6 +38,8 @@ all32			:
 			$(MAKE) -C elf  all32
 			$(MAKE) -C vm   all32
 			$(MAKE) -C cmd  all32
+			$(MAKE) -C io   all32
+			$(MAKE) -C api  all32
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
 			@ar rc ${NAME32}.a ${OBJ32} 
 			@ranlib ${NAME32}.a
@@ -48,6 +49,8 @@ all64			:
 			$(MAKE) -C elf  all64
 			$(MAKE) -C vm   all64
 			$(MAKE) -C cmd  all64
+			$(MAKE) -C io   all64
+			$(MAKE) -C api  all64
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
 			@ar rc ${NAME64}.a ${OBJ64} 
 			@ranlib ${NAME64}.a
@@ -57,8 +60,10 @@ clean		       :
 			$(MAKE) -C elf  clean
 			$(MAKE) -C vm   clean
 			$(MAKE) -C cmd  clean
-		       @$(RM) *~ \#* *\# .\#*
-		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
+			$(MAKE) -C io   clean
+			$(MAKE) -C api  clean
+		        @$(RM) *~ \#* *\# .\#*
+		        @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
 fclean		       : clean
-		       @$(RM) *.so *.a $(OBJ_DYN)
+		       @$(RM) *.o *.so *.a $(OBJ_DYN)

@@ -5,18 +5,17 @@
 # The ELFsh crew.
 #
 
-CHOSENBIT="0"
-STATIC="0"
-READLN="0"
-ELFSHNET="0"
-LIBMJOLLNIR="1"
-PREFIX="/"
-OSVER=`uname -r | cut -d "." -f1`
-
-CONFIGFILE="config.h"
-VARSFILE="librevm/include/revm-vars.h"
-LIBVARSFILE="libelfsh/include/libvars.h"
-LPTHREAD="-lpthread"
+CHOSENBIT	= "0"
+STATIC		= "0"
+READLN		= "0"
+ELFSHNET	= "0"
+LIBMJOLLNIR	= "1"
+PREFIX		= "/"
+OSVER		= `uname -r | cut -d "." -f1`
+CONFIGFILE	= "config.h"
+VARSFILE	= "librevm/include/revm-vars.h"
+LIBVARSFILE	= "libelfsh/include/libvars.h"
+LPTHREAD	= "-lpthread"
 
 echo > $LIBVARSFILE
 echo > $VARSFILE
@@ -29,11 +28,12 @@ case $1 in
 --enable-32-64*)
 if [ $CHOSENBIT = "1" ]; then
     echo
-    echo "Error: enable-32 and enable-64 are incompatible."
+    echo "Error: enable-32 and enable-64 are incompatible : use --enable-32-64"
     echo
     rm -f $CONFIGFILE
     exit
 fi
+
 echo  " [*] Enabling ELF64/ELF32 support"
 BITS="-DELFSH64"
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
@@ -83,7 +83,9 @@ BITS=$BITS" -DELFSHNET"
 echo  " [*] Enabling readline support"
 READLN="1"
 echo  "READLNOPT	= -DUSE_READLN"		>> $CONFIGFILE
-echo  "LDREADLNOPT	= -lreadline -ltermcap" >> $CONFIGFILE
+echo  "LDREADLNOPT      = -lreadline -ltermcap" >> $CONFIGFILE
+echo  "LDUIOPT32	= -L../libui -lui32"    >> $CONFIGFILE
+echo  "LDUIOPT64	= -L../libui -lui64"    >> $CONFIGFILE
 ;;
 
 --enable-ncurses*)
@@ -287,7 +289,7 @@ if [ "$OSVER" = "4" ]; then
  LPTHREAD="-lc_r"
 fi
 
-echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"          "   >> $VARSFILE
+echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\" "   >> $VARSFILE
 
 MODPATHSET="1";
 FREEBSD="1";
@@ -438,6 +440,10 @@ echo "	@echo 'Building librevm...'			"      	>> Makefile
 echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 
+echo "	@echo 'Building libe2dbg...'			"      	>> Makefile
+echo "	@cd libe2dbg && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
+echo "	@echo 'Libe2dbg has been built successfully.'"	        >> Makefile
+
 echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
 echo "	@cd elfsh && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
@@ -468,6 +474,7 @@ echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
+echo "	@cp libe2dbg/libe2dbg*.so \$(LIBPATH) "		        >> Makefile
 echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile
@@ -490,6 +497,7 @@ echo "	@chmod 755 \$(BINPATH)/elfsh?? "		        >> Makefile
 echo "	@chmod 644 \$(BINPATH)/e2dbg "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)/etrace?? "		        >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.a "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)librevm*.so "			>> Makefile
@@ -519,8 +527,9 @@ if [ "$FREEBSD" = "1" ]; then
     echo "	@ldconfig -R"                                   >> Makefile
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libmjollnir, \\" >> Makefile
-echo " Libui, Librevm and Libasm installed successfully .'"	>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libe2dbg, \\"    >> Makefile
+echo "Libmjollnir, Libasm, Libui, Librevm and Libaspect  \\"    >> Makefile
+echo "installed successfully .'"			        >> Makefile
 echo " "							>> Makefile 
 
 echo "mod_install: "						>> Makefile
@@ -536,6 +545,7 @@ echo "	rm -f  \$(BINPATH)/e2dbg "				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace32 "				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace64 "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libe2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/liballocproxy.a "			>> Makefile
@@ -556,10 +566,9 @@ echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
 
- 
-
-echo "	@echo 'ELFsh, Etrace, Libelfsh, Libmjollnir, Libaspect, \\" >> Makefile
-echo "Libedfmt, Libui and Libasm uninstalled successfully' "    >> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libmjollnir, \\" >> Makefile
+echo "Libaspect, Libedfmt, Libe2dbg, Libui and Libasm       \\" >> Makefile
+echo "uninstalled successfully' "				>> Makefile
 echo " "							>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
@@ -568,6 +577,7 @@ echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libedfmt  && \$(MAKE) -s clean "			>> Makefile
@@ -587,6 +597,7 @@ echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile
@@ -616,8 +627,8 @@ echo "	@\$(ETAGS) elfsh/*.c elfsh/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
 echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
-echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile
-echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile
+echo "	libaspect/*.c libe2dbg/*.c libaspect/include/*.h \\"    >> Makefile
+echo "	librevm/*/*.c librevm/include/*.h libe2dbg/include/*.h \\" >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
@@ -631,6 +642,7 @@ echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
 echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
 echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c">> Makefile
 echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
+echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "	elibc/include/*.h elibc/*.c\\"				>> Makefile
 echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
 echo "  libelfsh/include/*.h \\"    				>> Makefile
@@ -654,19 +666,22 @@ echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile
 echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
 echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile
+echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile
 echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile
 echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c           " >> Makefile
 echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
-echo "	libasm/src/*.c libasm/src/arch/sparc/*.c \\"	        >> Makefile
+echo "	libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*.c \\" >> Makefile
 echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
 echo "	libasm/src/arch/*/handlers/*.c libedfmt/*.c   "         >> Makefile
 echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile
 echo "	@wc -l libaspect/*.c "					>> Makefile
 echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile
 echo "	@wc -l libelfsh/*.c "					>> Makefile
+echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile
+echo "	@wc -l libe2dbg/*.c "					>> Makefile
 echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile
 echo "	@wc -l libasm/src/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile
 echo "  libasm/src/arch/sparc/*.c"				>> Makefile
@@ -674,7 +689,7 @@ echo "	@echo '###############' LIBMJOLLNIR ONLY '##########'"	>> Makefile
 echo "	@wc -l libmjollnir/src/*.c "				>> Makefile
 echo "	@echo '###############' LIBREVM ONLY '##########'"	>> Makefile
 echo "	@wc -l librevm/*/*.c "					>> Makefile
-echo "	@echo '###############' LIBEDFMT ONLY ##########'"	>> Makefile
+echo "	@echo '###############' LIBEDFMT ONLY '##########'"	>> Makefile
 echo "	wc -l libedfmt/*.c "					>> Makefile
 echo "	@echo '###############' LIBUI ONLY '##########'"	>> Makefile
 echo "	@wc -l libui/*.c "					>> Makefile
@@ -684,7 +699,7 @@ echo "	@echo '###############' ELFSH only '#############'"	>> Makefile
 echo "	@wc -l elfsh/*.c "					>> Makefile
 echo "	@echo '###############' E2DBG only '#############'"	>> Makefile
 echo "	@wc -l e2dbg/*.c "				        >> Makefile
-echo "	@echo '###############' ELFSH only '#############'"	>> Makefile
+echo "	@echo '###############' ETRACE only '#############'"	>> Makefile
 echo "	@wc -l etrace/*.c "					>> Makefile
 echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
 echo "	@wc -l modules/*.c "					>> Makefile

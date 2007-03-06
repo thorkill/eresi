@@ -8,8 +8,9 @@
 include ../config.h
 
 SRC	= src/blocks.c src/core.c src/function.c src/history.c src/init.c \
-	src/container.c \
-	src/symtab.c src/control.c src/types.c src/fingerprint.c src/display.c
+	src/container.c src/symtab.c src/control.c src/types.c src/fingerprint.c \
+	src/display.c
+
 OBJ	= ${SRC:.c=.o}
 OBJ32	= ${SRC:.c=.32.o}
 OBJ64	= ${SRC:.c=.64.o}
@@ -17,6 +18,11 @@ SRCT 	= bin/elfThor.c
 OBJT 	= elfThor
 SRCUT 	= tools/mjollnirUnitTest.c
 OBJUT 	= mjollnirUnitTest
+
+CC	?= gcc
+LD	?= ld
+NAME32	= libmjollnir32
+NAME64	= libmjollnir64
 
 CFLAGS32 = -fPIC -I./include/ -I../elibc/include/ -I../libasm/include/       \
 	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
@@ -34,35 +40,27 @@ LDFLAGS64 = -L. -L../libasm/ -L../libelfsh/ -L../elibc/ -L../liballocproxy   \
 	  -L../libaspect/ -lelfsh64 -lasm -lcelfsh64  -laspect64             \
 	  -lallocproxy $(LPTHREAD)
 
-CC	?= gcc
-NAME	= libmjollnir
-NAME32	= libmjollnir32
-NAME64	= libmjollnir64
-
 all	: all32 all64
-#	$(CC) $(BITS) -shared $(OBJ) -o $(NAME).so -lcrypto $(LDFLAGS)
-
-#	$(CC) $(CFLAGS) $(LDFLAGS) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir
-# comment this out if you don't want to make unittests 
-#	$(CC) $(CFLAGS) -I/usr/local/include/ $(SRCUT) -o $(OBJUT) $(LDFLAGS) -lcheck
 
 all32	: $(OBJ32)
 	$(CC) $(BITS) -shared $(OBJ32) -o $(NAME32).so -lcrypto $(LDFLAGS32)
 	@ar rc ${NAME32}.a ${OBJ32} 
 	@ranlib ${NAME32}.a
 #	$(CC) $(CFLAGS32) $(LDFLAGS32) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir32
+	@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64	: $(OBJ64)
 	$(CC) $(BITS) -shared $(OBJ64) -o $(NAME64).so -lcrypto $(LDFLAGS64)
 	@ar rc ${NAME64}.a ${OBJ64} 
 	@ranlib ${NAME64}.a
+	@$(LD) -r $(OBJ64) -o $(NAME64).o
 
 clean:
 	rm -f $(OBJ) $(OBJ32) $(OBJ64) src/*~ src/\#* \
 	include/\#* include/*~ $(OBJT) $(OBJM)
 
 fclean: clean
-	rm -f bin/elfThor mjollnirUnitTest *.a *.so *~
+	rm -f bin/elfThor mjollnirUnitTest *.a *.so *~ $(NAME64).o $(NAME32).o
 
 .c.o:
 	$(CC) $(CFLAGS) -c $*.c -o $*.o

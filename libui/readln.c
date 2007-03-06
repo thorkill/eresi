@@ -9,9 +9,19 @@
 
 #if defined(USE_READLN)
 
+rlcomp_t		comp;			/* Completion strings */
+rl_command_func_t	*rl_ctrll = NULL;
+
+
+/* Set rl_ctrl */
+void		readln_ctrl_set(int i, char c)
+{
+  if (rl_ctrll)
+    rl_ctrll(i, c);
+}
 
 /* Completion fonction for the command list */
-char		*command_generator(const char *text, int state)
+char		*readln_match(const char *text, int state)
 {
   static int	i, len, tab;
   char		*name, *name2;
@@ -40,13 +50,14 @@ char		*command_generator(const char *text, int state)
 
   /* Return the next name which partially matches any hash tables keys */
   for (; tab < ELFSH_COMPMAX; i = 0, tab++)
-    if (world.comp.cmds[tab] != NULL)
-      for (; world.comp.cmds[tab][i] != NULL; i++)
+    if (comp.cmds[tab] != NULL)
+      for (; comp.cmds[tab][i] != NULL; i++)
 	{
-	  name = world.comp.cmds[tab][i];
+	  name = comp.cmds[tab][i];
 	  if (!strncmp(name, text, len))
 	    {
-	      name2 = vm_readline_malloc(strlen(name) + 1);
+	      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+		     name2, strlen(name) + 1, NULL);
 	      strcpy(name2, name);
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
 	    }
@@ -59,7 +70,55 @@ char		*command_generator(const char *text, int state)
 
 
 
-char	**vm_completion(const char* text, int start, int end) 
+/* Add commands to completion */
+void		readln_completion_commands(hash_t *cmd_hash)
+{
+  comp.cmds[0] = hash_get_keys(cmd_hash, NULL);
+}
+
+
+
+/* Install the completion strings */
+void		readln_completion_install(char mode)
+{
+  if (mode != REVM_STATE_INTERACTIVE && mode != REVM_STATE_DEBUGGER)
+    {
+      rl_bind_key ('\t', rl_insert);
+      return;
+    }
+  
+  comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
+  comp.cmds[1]  = hash_get_keys(&vars_hash   , NULL);
+  comp.cmds[2]  = hash_get_keys(&const_hash  , NULL);
+  comp.cmds[3]  = hash_get_keys(&mod_hash    , NULL);
+  comp.cmds[4]  = hash_get_keys(&L1_hash     , NULL);
+  comp.cmds[5]  = hash_get_keys(&elf_L2_hash , NULL);
+  comp.cmds[6]  = hash_get_keys(&sht_L2_hash , NULL);
+  comp.cmds[7]  = hash_get_keys(&pht_L2_hash , NULL);
+  comp.cmds[8]  = hash_get_keys(&sym_L2_hash , NULL);
+  comp.cmds[9]  = hash_get_keys(&rel_L2_hash , NULL);
+  comp.cmds[10] = hash_get_keys(&dynsym_L2_hash, NULL);
+  comp.cmds[11] = hash_get_keys(&dyn_L2_hash , NULL);
+  comp.cmds[12] = hash_get_keys(&sct_L2_hash , NULL);
+  comp.cmds[13] = hash_get_keys(&fg_color_hash, NULL);
+  comp.cmds[14] = hash_get_keys(&t_color_hash, NULL);
+  comp.cmds[15] = NULL;
+  
+  using_history();
+  rl_attempted_completion_function = readln_completion;
+  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_bind_key(CTRL('x'), vm_screen_switch);
+  readln_install_clearscreen();
+  readln_column_update();
+  signal(SIGWINCH, (void *) readln_column_update);
+  rl_catch_sigwinch = 0;
+  rl_set_signals();
+}
+
+
+
+/* Perform completion */
+char	**readln_completion(const char* text, int start, int end) 
 {
   char	**matches = (char**) NULL;
   char	*baq, *baq2;
@@ -75,9 +134,9 @@ char	**vm_completion(const char* text, int start, int end)
    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
 #if defined(__OpenBSD__)
-  matches = completion_matches(text, command_generator);
+  matches = completion_matches(text, readln_match);
 #else
-  matches = rl_completion_matches(text, command_generator);
+  matches = rl_completion_matches(text, readln_match);
 #endif
 
   if (!matches)
@@ -121,9 +180,9 @@ char	**vm_completion(const char* text, int start, int end)
 
 
 /* This function was used to update columns on a readline colored prompt
-   another solution has been found that work well (see vm_rl_update_prompt).
+   another solution has been found that work well (see readln_prompt_update).
    We keep this function because it can be useful later. */
-int 	update_col() 
+int 	readln_column_update() 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -133,8 +192,10 @@ int 	update_col()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+
 /* A prompt need some update to fit correctly on readline (with color) */
-int		vm_rl_update_prompt(char *ptr, int size)
+int		readln_prompt_update(char *ptr, int size)
 {
   int		i, tmpi;
   char		tmp[size];
@@ -209,6 +270,217 @@ int		vm_rl_update_prompt(char *ptr, int size)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+
+/* readline line handler */
+void    vm_ln_handler(char *c)
+{
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  world.curjob->ws.io.buf = c;
+  if (c != NULL)
+    {
+      if (!c[0])
+	vm_log("\n");
+      /* save (remove) prompt if a complete line was typed
+       * so that the line is not displayed on return */
+      rl_save_prompt();
+    }
+  if (c == NULL)
+    {
+      /* special to enable exit on CTRL-D */
+      world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
+      rl_save_prompt();
+    }
+
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+
+
+/* Restore readline prompt that will be display on next 
+** rl_forced_update_display() or rl_callback_read_char() */
+int		readln_prompt_restore()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  world.curjob->ws.io.buf = NULL;
+  
+  rl_callback_read_char();
+  
+  if (world.curjob->ws.io.buf != NULL)
+    {
+      rl_restore_prompt();
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* Perform some checks on the input given by readline */
+char		*readln_input_check()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* input in progress */
+  if (world.curjob->ws.io.buf == NULL)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		  ((char *) REVM_INPUT_VOID));
+  
+  /* CTRL-D case */
+  if (world.curjob->ws.io.buf == (char *) REVM_INPUT_EXIT)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		  (NULL));
+  
+  /* empty string */
+  if (strlen(world.curjob->ws.io.buf) == 0)
+    {
+      /* XXX memory leak, this dup will never be freed */
+      if (world.curjob->ws.oldline)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		      (strdup(world.curjob->ws.oldline)));
+      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		    ((char *) REVM_INPUT_VOID));
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		(strdup(world.curjob->ws.io.buf)));
+}
+
+
+/* Log the input of readline */
+void		readln_input_log(char *str)
+{
+#if 0
+  HISTORY_STATE	*state;
+  HIST_ENTRY	*entry;
+  int		i;
+#endif
+
+  //if (world.curjob->io.buf[0] != '\0')
+  if (*str)
+    {
+      vm_log(str);
+      vm_log("\n\n");
+    }
+  else
+    vm_log("\n");
+  
+#if 0
+  printf ("[READLN] history : [%s]\n", buf);
+  state = history_get_history_state();
+  printf("== HISTORY STATE ==\n");
+  printf("   offset : %d\n", state->offset);
+  printf("   length : %d\n", state->length);
+  printf("   size : %d\n", state->size);
+  printf("===================\n");
+#endif
+
+  add_history(str);
+  using_history();
+
+#if 0
+  state = history_get_history_state();
+  printf("== HISTORY STATE ==\n");
+  printf("   offset : %d\n", state->offset);
+  printf("   length : %d\n", state->length);
+  printf("   size : %d\n", state->size);
+  printf("===================\n");
+  printf("-- entries --\n");
+  for (i = 0; i <= state->length + 1; i++)
+    {
+      entry = history_get(i);
+      if (entry)
+	printf("-- entry %d [%s] (%x) \n", i, entry->line, entry->line);
+      else
+	printf("-- entry %d NULL \n", i);
+    }
+  printf("-------------\n\n");
+#endif
+  
+}
+
+
+
+
+/* Install the shortcut for clearing the screen */
+void		readln_install_clearscreen()
+{
+  Keymap	map;
+  char		keyseq[2];
+
+  map       = rl_get_keymap();
+  keyseq[0] = CTRL('l');
+  keyseq[1] = '\0';
+  rl_ctrll  = rl_function_of_keyseq(keyseq, map, NULL);
+  rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_screen_clear);
+}
+
+
+/* Change the screen content */
+void		readln_screen_change(u_short isnew, char prompt_display)
+{
+  /* Setup on new screen */
+  if (isnew)
+    {
+      vm_log(vm_get_prompt());
+      rl_on_new_line();
+      world.curjob->ws.io.savebuf = NULL;
+    }
+
+  /* Prompt already here */
+  else
+    {
+      if (!prompt_display)
+	rl_on_new_line_with_prompt();
+      rl_refresh_line(0, 0);
+    }
+
+  rl_clear_message();
+
+  /* Restore the buffer */
+  if (!isnew)
+    {
+      if (world.curjob->ws.io.savebuf)
+	strcpy(rl_line_buffer, world.curjob->ws.io.savebuf);
+      rl_point = world.curjob->ws.io.rl_point;
+      rl_end = world.curjob->ws.io.rl_end;
+    }
+
+  rl_redisplay();
+}
+
+
+/* Write readline history on quit */
+void		readln_history_dump(char mode)
+{
+  if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_DEBUGGER)
+    {
+      vm_output(" [*] Writting history (.elfsh_history) \n");
+      write_history(".elfsh_history");
+      rl_callback_handler_remove();
+    }
+}
+
+/* Prepare readline terminal */
+void		readln_terminal_prepare(char mode)
+{
+  if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
+    rl_prep_terminal(1);
+}
+
+/* Prepare readline terminal */
+void		readln_terminal_unprepare(char mode)
+{
+  if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
+    rl_deprep_terminal();
+}
+
 
 #endif
 

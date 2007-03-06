@@ -13,7 +13,7 @@ void	setup_local_cmdhash()
 {
 
   /* Interactive mode / Scripting mode commands */
-  if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
+  if (world.state.vm_mode != REVM_STATE_CMDLINE)
     vm_addcmd(CMD_RUN , (void *) cmd_run   , (void *) vm_getvarparams, 0, HLP_RUN);
   vm_addcmd(CMD_STRIP , (void *) cmd_strip , (void *) NULL           , 1, HLP_STRIP);
   vm_addcmd(CMD_SSTRIP, (void *) cmd_sstrip, (void *) NULL           , 1, HLP_SSTRIP);

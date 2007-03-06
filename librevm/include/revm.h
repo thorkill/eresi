@@ -32,35 +32,29 @@
 #include <setjmp.h>
 #include <time.h>
 #include <ctype.h>
-#include <regex.h>
 #include <sys/types.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <dirent.h>
 #define __USE_GNU
 #include <sys/ucontext.h>
 #include <pthread.h>
 #include <stdarg.h> 
+#include <regex.h>
+
 #include <libelfsh.h>
-#include <libui.h>
 #include <libedfmt.h>
 
 #if defined(ELFSHNET)
  #include <libdump.h>
 #endif
 
+#if defined(USE_READLN)
+ #include <libui.h>
+#endif
+
 /* Thanks to sk from Devhell Labs we have a libasm */
 #include <libasm.h>
  
 extern asm_processor	proc;
-
-/* Thanks to GNU we have readline */
-#if defined(USE_READLN)
- #include <readline/readline.h>
- #include <readline/history.h>
-#endif
 
 /* Help strings */
 #include "revm-help.h"
@@ -78,12 +72,6 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 
-/* Network related defines */
-#define ELFSH_PORT		4444
-#define ELFSH_DUMP_PORT		4445
-#define MAX_CLIENTS		4
-#define MAX_SEND_SIZE		2048
-
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
 
@@ -94,10 +82,6 @@ extern asm_processor	proc;
 #define	ELFSH_SCRIPT_STOP	2
 #define	CMD_CONTINUE		"continue"
 #define	CMD_CONTINUE2		"cont"
-
-/* DUMP related defines */
-#define ELFSH_DUMP_CMD		1
-#define ELFSH_DUMP_MSG		2
 
 /* General usage macros */
 #define FATAL(a)		{ perror(a); vm_exit(-1);		      }
@@ -110,22 +94,15 @@ extern asm_processor	proc;
 #define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	IS_BLANK(c)		(c == ' ' || c == '\t')
 
-#define	ELFSH_ARGVAR		"#"
+#define	REVM_VAR_ARGC		"#"
 #define	ELFSH_VARPREF		'$'
-#define ELFSH_RESVAR		"_"
-#define	ELFSH_LOADVAR		"!"
-#define	ELFSH_ERRVAR		"ERR"
-#define	ELFSH_SHELLVAR		"SHELL"
-#define	ELFSH_EDITVAR		"EDITOR"
-#define ELFSH_LIBPATHVAR	"LPATH"
-#define ELFSH_SLOGVAR		"SLOG"
-
-/* ELF Versions */
-#define ELFSH_VERTYPE_NONE    0
-#define ELFSH_VERTYPE_UNK     1
-#define ELFSH_VERTYPE_NEED    2
-#define ELFSH_VERTYPE_DEF     3
-#define ELFSH_VERENTRY_MAX    4
+#define REVM_VAR_RESULT		"_"
+#define	REVM_VAR_LOAD		"!"
+#define	REVM_VAR_ERROR		"ERR"
+#define	REVM_VAR_SHELL		"SHELL"
+#define	REVM_VAR_EDITOR		"EDITOR"
+#define REVM_VAR_LIBPATH	"LPATH"
+#define REVM_VAR_STRIPLOG	"SLOG"
 
 /* REVM atomic operations */
 #define	REVM_OP_UNKNOW	      0
@@ -143,14 +120,18 @@ extern asm_processor	proc;
 #define	FIRSTREGX(r)	     CHOOSE_REGX(r, 0)
 #define	SECONDREGX(r)	     CHOOSE_REGX(r, 1)
 
+/** Macros for declaring commands inside modules
+ ** Necessary for beeing able to use module commands
+ ** in script without loading the module during the
+ ** entire script */
+#define	REVM_COMMAND_DECLARE(name)	char modcmd_##name = name
 
-/* 
-** Macros for declaring commands inside modules
-** Necessary for beeing able to use module commands
-** in script without loading the module during the
-** entire script
-*/
-#define	ELFSH_CMDEC(name)	char modcmd_##name = name
+/* ELF Versions */
+#define ELFSH_VERTYPE_NONE    0
+#define ELFSH_VERTYPE_UNK     1
+#define ELFSH_VERTYPE_NEED    2
+#define ELFSH_VERTYPE_DEF     3
+#define ELFSH_VERENTRY_MAX    4
 
 /* Used to store ascii description for different structures types in data.c */
 #define ELFSH_SEGTYPE_MAX	7
@@ -165,14 +146,12 @@ extern asm_processor	proc;
 #define	ELFSH_ARCHTYPE_MAX	56
 #define	ELFSH_EXTSEG_MAX	5
 
-
 #define	ELFSH_RELOC_i386_MAX	11
 #define	ELFSH_RELOC_IA64_MAX	81
 #define	ELFSH_RELOC_SPARC_MAX	55
 #define ELFSH_RELOC_SPARC64_MAX	55
 #define	ELFSH_RELOC_ALPHA_MAX	43
 #define	ELFSH_RELOC_MIPS_MAX	35
-
 
 #define ELFSH_RELOC_MAX(file)   vm_getmaxrelnbr(file)
 
@@ -182,84 +161,21 @@ extern asm_processor	proc;
 #define	ELFSH_FLAGS1_MAX	15
 #define ELFSH_MIPSFLAGS_MAX	16
 
-/* ELFsh general parameters */
+/* REVM general parameters */
 #define	REVM_SEP		"."
-#define	ELFSH_COMMENT_START	'#'
-#define ELFSH_MINUS		'-'
-#define	ELFSH_SLASH		'/'
-#define	ELFSH_SPACE		' '
-
-extern u_char quit_msg_setup;
-char quit_msg[512];
-
-void (*prompt_token_setup)(char *name, u_int size);
-char prompt_token[512];
-#define ELFSH_SNAME		"elfsh"
-#define	ELFSH_VERSION		"0.76"
-#define	ELFSH_RELEASE		"a3"
-#define ELFSH_EDITION		"dev"
-
-/* Unused, feel free to try it, its awesome */
-#define ELFSH_CIRCUS_PROMPT	"\033[00;01;30m(" \
-				"\033[00;01;31me" \
-				"\033[00;01;32ml" \
-				"\033[00;01;33mf" \
-				"\033[00;01;34ms" \
-				"\033[00;01;35mh" \
-				"\033[00;01;36m-" \
-				"\033[00;01;30m"  \
-				ELFSH_VERSION     \
-				"\033[00;01;35m-" \
-				"\033[05;01;35mcircus"  \
-				"\033[00;01;35m-edition"\
-				"\033[00;01;30m)"       \
-				"\033[00m " 
-
-/* The ELF shell crew prompt */
-#define ELFSH_CREW_PROMPT	"\033[00;01;30m("         \
-				"\033[00;01;31melfsh"     \
-				"\033[00;01;30m-"         \
-				"\033[00;01;33m"          \
-				ELFSH_VERSION              \
-				"\033[00;01;30m-"         \
-				"\033[00;01;33m"          \
-				ELFSH_RELEASE              \
-				"\033[00;01;30m-"         \
-				"\033[00;01;32mdevhell"   \
-				"\033[00;01;30m)"         \
-				"\033[00m " 
-
-/* Be original, do your own */
-#define	  ELFSH_PROMPT ELFSH_CREW_PROMPT
-//#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
+#define	REVM_COMMENT_START	'#'
+#define REVM_DASH		'-'
+#define	REVM_SLASH		'/'
+#define	REVM_SPACE		' '
 
 #define ELFSH_NAME		"ELF shell"
-
 #define	ELFSH_INIT		"elfsh_init"
 #define	ELFSH_FINI		"elfsh_fini"
 #define ELFSH_HELP		"elfsh_help"
 
-/* XXX: To merge in libui */
-#define GVZ_COLOR_BLUE		"\"blue\""
-#define GVZ_COLOR_CORAL		"\"coral\""
-#define	GVZ_COLOR_CYAN		"\"cyan\""
-#define GVZ_COLOR_RED		"\"red\""
-#define GVZ_COLOR_GREEN		"\"green\""
-#define GVZ_COLOR_BLACK		"\"black\""
-
-#define BLK_COLOR_FUNC		GVZ_COLOR_GREEN
-#define BLK_COLOR_NORM		GVZ_COLOR_CYAN
-#define BLK_COLOR_RET		GVZ_COLOR_CORAL
-#define BLK_COLOR_TRUE		GVZ_COLOR_GREEN
-#define BLK_COLOR_FALSE		GVZ_COLOR_RED
-#define BLK_COLOR_CONT		GVZ_COLOR_BLACK
-#define BLK_COLOR_CALL		GVZ_COLOR_BLUE
-#define BLK_COLOR_JUMP		GVZ_COLOR_BLACK
-/* END XXX */
-
 /* For vm_display_object() */
-#define	ELFSH_HEXA_VIEW		0
-#define	ELFSH_DISASM_VIEW	1
+#define	REVM_VIEW_HEX		0
+#define	REVM_VIEW_DISASM	1
 
 /* For elfsh/elfsh/modules.c:vm_change_handler() */
 #define	ELFSH_ORIG		((void *) -1)
@@ -268,13 +184,13 @@ char prompt_token[512];
 #define	REVM_INVALID_FIELD	((u_int) -1)
 
 /* Return of an input function in case of ignorable input */
-#define ELFSH_VOID_INPUT	-1
-#define ELFSH_EXIT_INPUT	-2
+#define REVM_INPUT_VOID		(-1)
+#define REVM_INPUT_EXIT		(-2)
 
 /* ELFsh actions, for parametrizing some function behaviors */
-#define	ELFSH_MERGE		(1 << 0)
-#define	ELFSH_UNMERGE		(1 << 1)
-#define	ELFSH_NEWID		(1 << 2)
+#define	REVM_HASH_MERGE		(1 << 0)
+#define	REVM_HASH_UNMERGE	(1 << 1)
+#define	REVM_CREATE_NEWID	(1 << 2)
 
 /* Commands */
 #define CMD_DISASM		"disasm"
@@ -438,6 +354,7 @@ char prompt_token[512];
 /* config strings */
 #define ELFSH_VMCONFIG_ONLOAD_RCONTROL "onload.restore_control"
 
+
 /* Manage string table */
 #define REVM_STRTABLE_GET(_out, _in) 	\
 do {					\
@@ -446,6 +363,18 @@ do {					\
   else					\
     _out = strtable + _in;		\
 } while(0)
+
+
+/* Take a revmargv_t and fill its argc field */
+/* Only used when the command is unknown (module) and tries to be determined */
+#define		REVM_CMDARGS_COUNT(cmd)		\
+do						\
+{						\
+  int		len;				\
+  for (len = 0; cmd->param[len] != 0; len++)	\
+    cmd->argc++;				\
+}						\
+while (0)
 
 
 /* Regx option, a module of struct s_args */
@@ -466,14 +395,6 @@ typedef struct		s_const
   const char	        *name;
   elfsh_Addr	       	val;
 }			revmconst_t;
-
-
-/* Completion structure */
-typedef struct        s_comp
-{
-#define		      ELFSH_COMPMAX   16
-  char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
-}		      revmcomp_t;
 
 
 /* ELFsh command handlers */
@@ -506,21 +427,10 @@ typedef struct		s_args
   struct s_args		*prev;
 }			revmargv_t;
 
-/* Take a revmargv_t and fill its argc field */
-/* Only used when the command is unknown (module) and tries to be determined */
-#define		REVM_CMDARGS_COUNT(cmd)		\
-do						\
-{						\
-  int		len;				\
-  for (len = 0; cmd->param[len] != 0; len++)	\
-    cmd->argc++;				\
-}						\
-while (0)
 
-
-/* The Embedded ELF debugger include file comes here */
 #include <libmjollnir.h>
-//#include "e2dbg.h"
+
+
 
 /* REVM module structure */
 typedef struct	      s_module
@@ -539,141 +449,6 @@ typedef struct	      s_module
   struct s_module     *next;          /* Next module of the list */
 }                     revmmod_t;
 
-/* Elfsh Output Caching structure */
-typedef struct          s_outbuf
-{
-  int			nblines;
-  unsigned int          cols;
-  unsigned int          lines;
-  char                  ignore;
-}			revmoutbuf_t;
-
-
-/* Input / Output template for ELFsh */
-typedef struct	s_io
-{
-  
-#define		ELFSH_IOSTD     1
-#define		ELFSH_IONET     2
-#define		ELFSH_IODUMP    3
-#define		ELFSH_IONUM     4
-  char		type;                   /* IO type           */
-  int		input_fd;               /* Input file        */
-  int		output_fd;              /* Output file       */
-  char		*(*input)();            /* Read Input data   */
-  int		(*output)(char *buf);   /* Write output data */
-  
-  /* dump specific */
-#if defined(ELFSHNET)
-  pkt_t        *pkt;                   /* dump received pkt */
-#endif
-  int           new;                   /* 0 if already used */
-#if defined(USE_READLN)
-  char	        *buf;                  /* readline line */
-  char		*savebuf;
-  int		rl_point;
-  int		rl_end;
-#endif
-  revmoutbuf_t	outcache;
-}               revmio_t;
-
-
-
-
-/* REVM socket structure */
-typedef struct       s_socket
-{
-  struct sockaddr_in addr;        /* sockaddr_in struct */
-  int                socket;      /* The socket */
-  char               **recvd;     /* List of received buffer */
-  
-  /* XXX: NEW/OLD is not explicit enough, rename ... */
-#define NEW   1
-#define OLD   0
-  int                recvd_f;     /* NEW if the buffer was not passed to the parser yet */
-#define YES 1
-#define NO  0
-  int                ready_f;     /* Have we received the trailing \n ? */
-}                    revmsock_t;
-
-
-
-/* Screen cache for each workspace */
-typedef struct        s_screen
-{
-  unsigned int        x;              /* Screen height */
-  unsigned int        y;              /* Screen width */
-  char                *buf;           /* Screen buffer */
-  char                *head;          /* Buffer's beginning */
-  char                *tail;          /* Buffer's end */
-}                     revmscreen_t;
-
-
-/* REVM job structure, one per client */
-typedef struct        s_job
-{
-#define       ELFSH_INPUT     0
-#define       ELFSH_OUTPUT    1
-  revmio_t           io;		 /* Current IO for this job */
-  revmsock_t         sock;		 /* Current socket, unused in initial job */
-  
-#define		      ELFSH_MAX_SOURCE_DEPTH  10
-  revmargv_t	      *script[ELFSH_MAX_SOURCE_DEPTH]; /* List of script commands */
-  revmargv_t         *lstcmd[ELFSH_MAX_SOURCE_DEPTH]; /* Last command for each depth */
-  u_int               sourced;                         /* script depth (if beeing sourced) */
-  revmargv_t	      *curcmd;          /* Next command to be executed */
-
-  hash_t              loaded;           /* List of loaded ELF objects */
-  elfshobj_t          *current;         /* Current working ELF object */
-  hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
-  elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
-  
-  u_char              active;            
-  time_t              createtime;
-  int                 logfd;            /* Log file descriptor */
-  revmscreen_t        screen;           /* Last printed screen */
-  char		      *oldline;		/* Previous command line */
-
-  
-
-#define       ELFSH_JOB_LOGGED (1 << 0)
-  u_char              state;            /* Job state flags */
-  asm_processor*      proc;		/* Processor structure */
-  
-  char		      *name;		/* Name of the job */
-}                     revmjob_t;
-
-
-
-
-/* Hold all the VM flags, sort of global context */
-typedef struct        s_state
-{
-  char                vm_quiet;       /* Quiet mode : 0 or 1 */
-  char		      vm_gvl;	      /* Graph verbose level : 0 or 1 */
-  char                vm_force;       /* Force mode : 0 or 1 */
-  char                vm_use_regx;    /* Is a global regx available ? */
-  regex_t	      vm_regx;        /* Global regx */
-  char                *vm_sregx;      /* Global regx in string format */
-  char                vm_use_alert;   /* Is an alert regx available ? */
-  regex_t	      vm_alert;       /* Alert regx */
-  char                *vm_salert;     /* ALert regx in string format */
-  char                *sort;          /* Actual sorting choice */
-  char                *input;         /* Implicit File input (-f option) */
-  char                *output;        /* Implicit File output (-w option) */
-  
-#define       ELFSH_VMSTATE_CMDLINE   0
-#define       ELFSH_VMSTATE_SCRIPT    1
-#define       ELFSH_VMSTATE_IMODE     2
-#define       ELFSH_VMSTATE_DEBUGGER  3
-  char                vm_mode;        /* Command line, scripting, interactive, debugger ? */
-  char		      vm_sourcing;    /* Are we sourcing a script ? */
-  char                vm_stopped;     /* We are in a signal handler */
-  char                vm_shared;      /* Next opened object must be shared */
-  char                vm_net;         /* We are a node connected to the elf network */
-  u_int               lastid;         /* Last Object ID */
-}		      revmstate_t;
-
 
 /* This structure contains the control flow context for e2dbg scripts */
 typedef struct		s_revmcontext
@@ -688,12 +463,32 @@ typedef struct		s_revmcontext
 }			revmcontext_t;
 
 
+/* We use a separate header for the generic IO sublib */
+#include "revm-io.h"
+
+
+/* REVM job structure, one per client */
+typedef struct        s_job
+{
+  revmworkspace_t     ws;		/* The job workspace */
+#define		      REVM_MAXSRCNEST  10
+  revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
+  revmargv_t         *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
+  u_int               sourced;          /* script depth (if beeing sourced) */
+  revmargv_t	      *curcmd;          /* Next command to be executed */
+  hash_t              loaded;           /* List of loaded ELF objects */
+  elfshobj_t          *current;         /* Current working ELF object */
+  hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
+  elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
+  asm_processor*      proc;		/* Processor structure */
+}                     revmjob_t;
+
+
 /* The REVM world */
 typedef struct        s_world
 {
   revmstate_t         state;          /* Flags structure */
   revmcontext_t       context;        /* Save the VM context before sourcing */
-  revmcomp_t	      comp;           /* Completion strings */
   revmmod_t	      *modlist;       /* ELFsh loaded modules list */
   hash_t	      jobs;           /* Hash table of jobs */
   revmjob_t	      *initial;       /* Main initial job */
@@ -816,11 +611,6 @@ typedef struct 	s_revmtraces
 }		revmtraces_t;
 
 
-#if defined(USE_READLN)
-extern rl_command_func_t *rl_ctrll;
-#endif
-
-
 /* The world */
 extern revmworld_t	world;
 
@@ -899,12 +689,12 @@ extern int         elfsh_net_client_count; /* Number of clients connected */
 //extern revmsock_t    elfsh_net_serv_sock;    /* The main socket structur */
 
 /* Lib path */
-extern char		elfsh_libpath[BUFSIZ];
+extern char	   elfsh_libpath[BUFSIZ];
 
 /* String table for .elfsh.strings */
-extern char *strtable;
-extern u_int strtable_current;
-extern u_int strtable_max;
+extern char	   *strtable;
+extern u_int	   strtable_current;
+extern u_int	   strtable_max;
 
 /* Commands execution handlers, each in their respective file */
 int		cmd_configure();
@@ -1124,36 +914,14 @@ int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size,
 				  u_int off, u_int foffset, elfsh_Addr vaddr, 
 				  char *name, char otype);
 
-
-/* Parsing, Scanning, I/O functions */
+/* Parsing / Scanning functions */
 char		*vm_filter_param(char *buf, char *ptr);
 char		*vm_build_unknown(char *buf, const char *str, u_long type);
 void		vm_filter_zero(char *str);
 int		vm_parseopt(int argc, char **argv);
 void            vm_findhex(u_int argc, char **argv);
-char            *vm_getln(char *ptr);
 u_int           vm_findblanks(char *buf);
 char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
-int		vm_initio();
-char            **vm_input(int *argc);
-char		*vm_stdinput();
-int		vm_flush();
-int		vm_output(char *str);
-int		vm_output_nolog(char *str);
-int		vm_outerr(char *str);
-int		vm_output_bcast(char *str);
-int		vm_stdoutput(char *str);
-int		vm_display_prompt();
-void		vm_ln_handler (char *c);
-void		vm_setinput(revmjob_t *j, int fd);
-void		vm_setoutput(revmjob_t *j, int fd);
-char		*vm_basename(char *str);
-char		*vm_get_string(char **params);
-void		vm_log(char *str);
-int             vm_closelog();
-void    	vm_set_quit_msg(char *msg);
-void    	vm_set_prompt(void (*func) (char *name, u_int size));
-char		*vm_get_prompt();
 
 /* String functions */
 int		vm_strtable_add(char *string);
@@ -1204,6 +972,8 @@ int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
 char		*vm_ascii_type(hash_t *cur);
 char		*vm_get_mode_name();
+char            *vm_basename(char *str);
+void            vm_set_quit_msg(char *msg);
 
 /* Vector related functions */
 int		vm_vectors_getdims(char *str, unsigned int *dims);
@@ -1263,12 +1033,6 @@ int		vm_long_setobj(void *data, elfsh_Addr value);
 char		*vm_generic_getdata(void *data, int off, int sizelm);
 int		vm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 
-/* Readline stuff (XXX: need to be prefixed) */
-char		**vm_completion(const char* text, int start, int end);
-int		update_col();
-void		*vm_readline_malloc(unsigned int sz);
-void		vm_readline_free(void *ptr);
-
 /* Object creation/verification functions */
 int		vm_convert_object(revmobj_t *obj, u_int objtype);
 revmL1_t	*vm_create_L1ENT(void	*get_obj,
@@ -1297,36 +1061,30 @@ revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val);
 revmobj_t	*vm_create_CADDR(char perm, elfsh_Addr val);
 revmobj_t	*vm_create_DADDR(char perm, elfsh_Addr val);
 
-/* Network related functions */
-int		vm_net_init();
-revmjob_t	*vm_get_curlocaljob();
-int		vm_select();
-char		*vm_net_input();
-int		vm_net_output(char *buf);
-int		vm_net_recvd();
-int		vm_net_accept();
-int		vm_dump_accept();
-revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr);
-int		vm_socket_del(char *inet_addr);
-int		vm_socket_get_nb_recvd(char *inet);
-int		vm_update_recvd(revmsock_t *socket);
-char		*vm_socket_merge_recvd(revmsock_t *socket);
-
 /* Interface related functions */
 int		vm_system(char *cmd);
 void		vm_dbgid_set(u_int pid);
 u_int		vm_dbgid_get();
 
-/* Workspace related functions*/
+/* Atomic operations */
+int             vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2);
+int		vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
+int		vm_hash_add(hash_t *h, revmobj_t *o);
+int		vm_hash_del(hash_t *h, revmobj_t *o);
+int		vm_hash_set(char *tab, char *elm, void *obj, u_char type);
+
+
+/* Job related functions */
 int		vm_own_job(revmjob_t *job);
 int		vm_valid_workspace(char *name);
 void		vm_switch_job(revmjob_t *job);
 revmjob_t	*vm_clone_job(char *name, revmjob_t *job);
 int		vm_add_script_cmd(char *dirstr);
-int		vm_clearscreen(int i, char c);
-int		vm_install_clearscreen();
-int		vm_screen_update(u_short new, u_short prompt_display);
-int		vm_screen_switch();
+revmjob_t	*vm_localjob_get();
+revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr);
+int              vm_screen_switch();
+int              vm_screen_clear(int i, char c);
+int              vm_screen_update(u_short isnew, u_short prompt_display);
 
 /* libedfmt related functions */
 int		vm_edfmt_parse(elfshobj_t *file);

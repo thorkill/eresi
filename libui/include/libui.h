@@ -7,33 +7,37 @@
 #ifndef __LIBUI_H__
  #define __LIBUI_H__
 
+/* Thanks to GNU we have readline */
+#if defined(USE_READLN)
+ #include <readline/readline.h>
+ #include <readline/history.h>
+#endif
+
 #include "revm.h"
-#include "libui-color.h"
+#include "libaspect.h"
 
-#define	VM_OUTPUT(str)						\
-do								\
-{								\
-  int er;							\
-  er = vm_output(str);						\
-  if (er < 0)							\
-  {								\
-     vm_output("\n");						\
-     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
-  }								\
-}								\
-while (0)
+/* Completion structure */
+typedef struct        s_comp
+{
+#define		      ELFSH_COMPMAX   16
+  char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
+}		      rlcomp_t;
 
-#define	VM_OUTPUT_Q(str)					\
-do								\
-{								\
-  int er;							\
-  er = vm_output(str);						\
-  if (er == -1)							\
-  {								\
-     vm_output("\n");						\
-     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, er);	\
-  }								\
-}								\
-while (0)
+/* Prototypes for readline functions */
+void		readln_ctrl_set(int i, char c);
+char            *readln_match(const char *text, int state);
+void            readln_completion_install(char mode);
+void		readln_completion_commands(hash_t *cmd_hash);
+char		**readln_completion(const char* text, int start, int end);
+int		readln_column_update();
+int             readln_prompt_update(char *ptr, int size);
+int             readln_prompt_restore();
+char            *readln_input_check();
+void            readln_input_log(char *str);
+void            readln_install_clearscreen();
+void            readln_screen_change(u_short isnew, char promptdisplay);
+void            readln_history_dump(char mode);
+void            readln_terminal_prepare(char mode);
+void            readln_terminal_unprepare(char mode);
 
 #endif

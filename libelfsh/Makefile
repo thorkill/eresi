@@ -8,7 +8,7 @@
 include ../config.h
 
 CC			?= gcc
-LD			= gcc
+LD			?= ld
 RM			= rm -f 
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
@@ -34,19 +34,21 @@ NAME64			= libelfsh64
 
 all			: all32 all64
 
-all64			:  $(OBJ64)
-			$(LD) -L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy \
-			-L../libaspect/ -laspect64 \
-			-DELFSH64 -shared $(OBJ64) -o $(NAME64).so
-			@$(AR) $(NAME64).a $(OBJ64)
-			@$(RANLIB) $(NAME64).a
-
 all32			: $(OBJ32)
-			$(LD) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
-			-L../libaspect/ -laspect32 \
-			-DELFSH32 -shared $(OBJ32) -o $(NAME32).so
+			$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ \
+			-lallocproxy -L../libaspect/ -laspect32 -DELFSH32 \
+			-shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
+			@$(LD) -r $(OBJ32) -o $(NAME32).o
+
+all64			:  $(OBJ64)
+			$(CC) -L../elibc/ -lcelfsh64 -L../liballocproxy/ \
+			-lallocproxy -L../libaspect/ -laspect64 -DELFSH64 \
+			-shared $(OBJ64) -o $(NAME64).so 
+			@$(AR) $(NAME64).a $(OBJ64)
+			@$(RANLIB) $(NAME64).a
+			@$(LD) -r $(OBJ64) -o $(NAME64).o
 
 clean			: 
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \

@@ -153,7 +153,7 @@ int		vm_execscript()
   
   /* Make sure we switch to interactive mode if we issued a stop command */
   if (status == ELFSH_SCRIPT_STOP)
-    world.state.vm_mode = ELFSH_VMSTATE_IMODE;
+    world.state.vm_mode = REVM_STATE_INTERACTIVE;
       
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }

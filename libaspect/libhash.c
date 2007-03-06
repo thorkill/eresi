@@ -306,7 +306,8 @@ char		**hash_get_keys(hash_t *h, int *n)
 	   keys, keys, (i + 1) * sizeof(char *), NULL);
   
   keys[i] = NULL;
-  *n      = i;
+  if (n)
+    *n = i;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }

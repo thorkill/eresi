@@ -6,7 +6,7 @@
 
 include ../config.h
 
-SRC 		= io.c color.c filter.c job.c lexer.c log.c network.c readln.c
+SRC 		= readln.c
 OBJ	 	= ${SRC:.c=.o}
 OBJ32	 	= ${SRC:.c=.32.o}
 OBJ64	 	= ${SRC:.c=.64.o}

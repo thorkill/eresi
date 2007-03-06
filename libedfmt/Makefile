@@ -6,7 +6,7 @@
 include ../config.h
 
 CC			?= gcc
-LD			= gcc
+LD			?= ld
 RM			= rm -f 
 AR			= ar rc
 
@@ -35,14 +35,16 @@ LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(LD) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
+			@$(CC) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
+			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			: $(OBJ64)
-			@$(LD) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so
+			@$(CC) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
+			@$(LD) -r $(OBJ64) -o $(NAME64).o
 
 clean			: 
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \

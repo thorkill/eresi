@@ -20,7 +20,8 @@ RELSRC	= rel.c
 RELOBJ	= rel.o
 
 OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
-	$(BITS)
+	-I../../../libaspect/include/ $(BITS)
+
 RM	= rm -f
 CFLAGS	= $(OPT)
 PAXCTL	= /sbin/paxctl

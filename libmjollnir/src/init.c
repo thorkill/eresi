@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.19 2007-02-26 17:47:15 thor Exp $
+ * $Id: init.c,v 1.20 2007-03-06 06:33:33 may Exp $
  *
  * Initialization functions
  *
@@ -109,7 +109,7 @@ int		mjr_setup_processor(mjrsession_t *sess)
      asm_init_i386(&sess->cur->proc);
      break;
    default:
-     printf("unsupported architecture\n");
+     printf(" [E] Libmjollnir unsupported architecture \n");
      return (-1);
    }
  return 1;

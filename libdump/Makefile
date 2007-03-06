@@ -11,15 +11,17 @@ SRC	= dump.c recv.c send.c
 OBJ	= dump.o recv.o send.o
 CFLAGS	= -Wall $(BITS) -g3 -Iinclude -I../libc/include/ -I../libelfsh/include/ \
 	-I../libaspect/include/ -I../elibc/include -DELFSH_INTERN -fPIC
-LDFLAGS = -L./ -L../libelfsh/ -lelfsh  -ldumpelfsh -L/usr/pkg/lib/ -ltermcap \
+LDFLAGS = -L./ -L../libelfsh/ -lelfsh -ldump -L/usr/pkg/lib/ -ltermcap \
 	-lreadline -laspect $(BITS) $(EXTRAOPT)
 CC	?= gcc
+LD	?= ld
 AR	= ar rc
-NAME	= libdumpelfsh
+NAME	= libdump
 
 all	: $(OBJ)
 	$(AR) $(NAME).a $(OBJ)
 	$(RANLIB) $(NAME).a
+	$(LD) -r $(OBJ) -o $(NAME).o
 
 test:   all dump_main.o
 #	$(CC) $(CFLAGS) $(LDFLAGS) dump_main.o -o dump_main 
@@ -33,4 +35,4 @@ clean	:
 	@rm -f include/*~ include/*\# include/\#* include/.\#* 
 
 fclean	: clean
-	@rm -f $(NAME).a dump_main
+	@rm -f $(NAME).a $(NAME).o dump_main

@@ -10,7 +10,7 @@
 int		vm_main(int ac, char **av)
 {
   vm_setup(ac, av);
-  if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE)
+  if (world.state.vm_mode != REVM_STATE_CMDLINE)
     vm_print_banner(av[1]);
   vm_config();
   setup_local_cmdhash();

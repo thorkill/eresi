@@ -6,7 +6,7 @@
 include ../config.h
 
 CC			?= gcc
-LD			= gcc
+LD			= ld
 RM			= rm -f 
 AR			= ar rc
 CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN
@@ -24,16 +24,18 @@ NAME64			= libaspect64
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(LD) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
+			@$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ -lallocproxy \
 			$(DLOPT) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
+			$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			: $(OBJ64)
 			@$(LD) -L../elibc/ -lcelfsh64 -L../liballocproxy/ -lallocproxy \
 			$(DLOPT) -shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
+			$(LD) -r $(OBJ64) -o $(NAME64).o
 
 clean			: 
 			@$(RM) \#* *\# *~ $(OBJ) $(OBJ32) $(OBJ64) .\#* include/\#* \
