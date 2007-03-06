@@ -11,7 +11,7 @@
 
 
 /* Read a new line, avoiding comments and void lines */
-char		*vm_getln(char *ptr)
+char		*vm_getln()
 {
   char		*buf;
   char		*sav;
@@ -23,7 +23,7 @@ char		*vm_getln(char *ptr)
 
       if (buf == ((char *) REVM_INPUT_VOID))
         PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		      (char*) REVM_INPUT_VOID);
+		      (char *) REVM_INPUT_VOID);
       
       if (!buf || !*buf)
 	{
@@ -53,11 +53,9 @@ char		*vm_getln(char *ptr)
 	  if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
 	      world.state.vm_mode == REVM_STATE_DEBUGGER)
                PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-                (char*) REVM_INPUT_VOID);
-
+			     (char*) REVM_INPUT_VOID);
 
           buf = NULL;
-
           if (*sav)
 	    continue;
 	}
@@ -72,7 +70,7 @@ char		*vm_getln(char *ptr)
 	    {
 	      printf("Entered readline test .. returning void input \n");
               PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-	       (char*) REVM_INPUT_VOID);
+			    (char *) REVM_INPUT_VOID);
 	    }
           break;
 #endif

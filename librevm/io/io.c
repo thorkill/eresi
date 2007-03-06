@@ -36,6 +36,43 @@ int		vm_flush()
 
 }
 
+/* Set workspace configuration to standard I/O */
+int		vm_std_io(revmjob_t *job)
+{
+  NOPROFILER_IN();
+  if (!job)
+    NOPROFILER_ROUT(0);
+  job->ws.io.type      = ELFSH_IOSTD;
+  job->ws.io.input_fd  = 0;
+  job->ws.io.input     = vm_stdinput;
+  job->ws.io.output_fd = 1;
+  job->ws.io.output    = vm_stdoutput;
+  NOPROFILER_ROUT(0);
+}
+
+/* Set workspace configuration to standard I/O */
+int		vm_fifo_io(revmjob_t *job)
+{
+  int		fd;
+
+  NOPROFILER_IN();
+  if (!job)
+    {
+      fprintf(stderr, "error: input job is NULL in fifo_io \n");
+      NOPROFILER_ROUT(0);
+    }
+
+  mkfifo(REVM_FIFO, 0600);
+  XOPEN(fd, REVM_FIFO, 0600, 0, -1);
+
+  job->ws.io.type      = ELFSH_IOFIFO;
+  job->ws.io.input_fd  = fd;
+  job->ws.io.input     = vm_stdinput;
+  job->ws.io.output_fd = fd;
+  job->ws.io.output    = vm_stdoutput;
+  NOPROFILER_ROUT(0);
+}
+
 
 /* Initialize Input/Output hooks */
 int		vm_initio()
@@ -50,13 +87,11 @@ int		vm_initio()
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,initial, sizeof(revmjob_t), -1);
   memset(initial, 0, sizeof(revmjob_t));
-  initial->ws.io.type      = ELFSH_IOSTD;
-  initial->ws.io.input_fd  = 0;
-  initial->ws.io.input     = vm_stdinput;
-  initial->ws.io.output_fd = 1;
-  initial->ws.io.output    = vm_stdoutput;
+
+  vm_std_io(initial);
   initial->ws.active	   = 1;
   initial->ws.createtime   = time(&initial->ws.createtime);
+
   world.initial = world.curjob = initial;
   hash_init(&world.jobs, "jobs", 11, ASPECT_TYPE_UNKNOW);
   hash_add(&world.jobs, "local", initial);

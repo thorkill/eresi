@@ -468,7 +468,7 @@ echo " "							>> Makefile
 
 echo "install : all prepareDir #mod_install "			>> Makefile
 echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
-echo "	@cp e2dbg/e2dbg \$(BINPATH)/ "				>> Makefile
+echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
@@ -480,7 +480,6 @@ echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile
 echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile
 echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile
-echo "	@cp e2dbg/e2dbg*.so \$(LIBPATH) "			>> Makefile
 echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
 echo "	@cp libasm/include/*.h \$(INCPATH)"		        >> Makefile
@@ -492,9 +491,8 @@ echo "	@cp elibc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
 echo "	@cp doc/elfsh.1 \$(MANPATH)/man1/ "			>> Makefile
 echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
-#echo "	@ln \$(BINPATH)/elfsh$(LOCALBITS) \$(BINPATH)/elfsh "	>> Makefile
 echo "	@chmod 755 \$(BINPATH)/elfsh?? "		        >> Makefile
-echo "	@chmod 644 \$(BINPATH)/e2dbg "				>> Makefile
+echo "	@chmod 755 \$(BINPATH)/e2dbg??"				>> Makefile
 echo "	@chmod 755 \$(BINPATH)/etrace?? "		        >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
@@ -504,7 +502,6 @@ echo "	@chmod 644 \$(LIBPATH)librevm*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)librevm*.a "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libedfmt*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libedfmt*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)e2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libcelfsh*.a "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libui*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libui*.a "			>> Makefile
@@ -512,8 +509,11 @@ echo "	@chmod 644 \$(INCPATH)libui.h "				>> Makefile
 echo "	@chmod 644 \$(INCPATH)libelfsh*.h "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.a "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libasm.a "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libelfsh*.h "			>> Makefile
+echo "	@chmod 644 \$(INCPATH)libedfmt*.h "			>> Makefile
 echo "	@chmod 644 \$(INCPATH)libasm*.h "			>> Makefile
+echo "	@chmod 644 \$(INCPATH)libmjollnir.h "			>> Makefile
+echo "	@chmod 644 \$(INCPATH)libaspect*.h "			>> Makefile
+echo "	@chmod 644 \$(INCPATH)librevm*.h "			>> Makefile
 echo " "                        				>> Makefile
 echo "prepareDir: " 						>> Makefile
 echo "	@mkdir -p \$(DESTDIR) || true"  			>> Makefile
@@ -546,7 +546,6 @@ echo "	rm -f  \$(BINPATH)/etrace32 "				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace64 "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libe2dbg* "				>> Makefile
-echo "	rm -f  \$(LIBPATH)/e2dbg* "				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/liballocproxy.a "			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libcelfsh*.a "			>> Makefile

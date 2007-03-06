@@ -67,8 +67,7 @@ int		vm_main(int ac, char **av)
   /* Interface tweak */
   vm_setup_quit_msg();
   vm_setup_prompt();
-
-  vm_setup(ac, av);
+  vm_setup(ac, av, 0, 0);
   if (world.state.vm_mode != REVM_STATE_CMDLINE)
     vm_print_etrace_banner();
   vm_config();

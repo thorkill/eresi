@@ -794,7 +794,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_INTERP  , (void *) cmd_interp  , (void *) NULL            , 1, HLP_INTERP);
   vm_addcmd(CMD_HELP    , (void *) cmd_help    , (void *) vm_getvarparams , 0, HLP_HELP);
   vm_addcmd(CMD_MODHELP , (void *) cmd_modhelp , (void *) vm_getoption    , 0, HLP_MODHELP);
-  vm_addcmd(CMD_SHTRM   , (void *) cmd_shtrm   , (void *) NULL            , 1, HLP_SHTRM);
   vm_addcmd(CMD_QUIET   , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
   vm_addcmd(CMD_QUIET2  , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
   vm_addcmd(CMD_FORCE   , (void *) cmd_force   , (void *) NULL            , 0, HLP_FORCE);

@@ -1,7 +1,8 @@
 /*
 ** libui.h for libui
 ** 
-** Started on  Sun Jan 22 19:04:04 2006 mxatone
+** Started on Sun Jan 22 19:04:04 2006 mxatone
+** Updated on Tue Mar  6 08:42:17 2007 mayhem
 */
 
 #ifndef __LIBUI_H__

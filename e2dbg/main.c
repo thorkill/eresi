@@ -11,9 +11,8 @@
 /* The real main function */
 int		vm_main(int ac, char **av)
 {
-  vm_setup(ac, av);
-  if (world.state.vm_mode != REVM_STATE_CMDLINE)
-    vm_print_banner(av[1]);
+  vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_CLIENT);
+  vm_print_banner(av[1]);
   vm_config();
   vm_output(" [*] Type help for regular commands \n\n");
   return (vm_run(ac, av));

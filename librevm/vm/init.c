@@ -62,12 +62,11 @@ int		vm_loop(int argc, char **argv)
 	/* CTRL-D -> !argv */
 	if (!argv)
 	  {
+	    vm_output("\n");
+
 	    /* when debugging -> back to main program */
 	    if (world.state.vm_mode == REVM_STATE_DEBUGGER)
-	      {
-		vm_output("\n");
-		goto e2dbg_cleanup;
-	      }
+	      goto e2dbg_cleanup;
 
 	    /* if net is enable but we are not in e2dbg -> ignore */
 	    if (world.state.vm_net)
@@ -189,15 +188,18 @@ int		vm_init()
 
 
 /* Setup ELFsh/e2dbg hash tables and structures */
-int		vm_setup(int ac, char **av)
+int		vm_setup(int ac, char **av, char mode, char side)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Detect the mode we are running in */
-  if ((0 < ac) && (ac < 3) && !strncmp(av[0], E2DBG_ARGV0, 5))
+  if (mode == REVM_STATE_DEBUGGER)
     {
-      /* Set the mode of e2dbg */
-      world.state.vm_mode = REVM_STATE_DEBUGGER;
+      /* Set the mode, side, and IO of the debugger */
+      world.state.vm_mode = mode;
+      world.state.vm_side = side;
+      vm_fifo_io(world.curjob);
+
 #if defined(USE_READLN)
       world.curjob->ws.io.buf = NULL;
 #endif
@@ -256,8 +258,9 @@ int		vm_config()
   home = getenv("HOME");
   if (home)
     {
-      snprintf(buff, sizeof(buff), "%s/.elfshrc", home);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmargv_t), -1);
+      snprintf(buff, sizeof(buff), "%s/%s", home, REVM_CONFIG);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     new, sizeof(revmargv_t), -1);
       memset(new, 0, sizeof(revmargv_t));
       world.curjob->curcmd = new;
       world.curjob->curcmd->param[0] = buff;
@@ -266,7 +269,7 @@ int		vm_config()
       XFREE(__FILE__, __FUNCTION__, __LINE__,new);
     }
   if (ret < 0)
-    vm_output("\n [*] No configuration in ~/.elfshrc \n\n");
+    vm_output("\n [*] No configuration in ~/" REVM_CONFIG " \n\n");
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

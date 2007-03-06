@@ -155,10 +155,7 @@ char		**vm_input(int *argc)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Read, and sanitize a first time to avoid blank lines */
-  buf = ((world.state.vm_mode == REVM_STATE_INTERACTIVE ||
-	  world.state.vm_mode == REVM_STATE_DEBUGGER) ?
-	 vm_get_prompt() : "");
-  buf = vm_getln(buf);
+  buf = vm_getln();
   if (!buf)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
 

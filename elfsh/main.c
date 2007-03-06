@@ -9,7 +9,7 @@
 /* The real main function */
 int		vm_main(int ac, char **av)
 {
-  vm_setup(ac, av);
+  vm_setup(ac, av, 0, 0);
   if (world.state.vm_mode != REVM_STATE_CMDLINE)
     vm_print_banner(av[1]);
   vm_config();

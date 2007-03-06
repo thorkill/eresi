@@ -67,7 +67,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
   printf("[e2dbg_entry] CHECKPOINT 3\n");
 #endif
 
-  vm_setup(ac, av);
+  vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
   
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 4\n");

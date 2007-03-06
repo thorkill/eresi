@@ -53,10 +53,10 @@ LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 all			: all32 all64
 
 all32			: ${OBJ32}
-			$(CC) -shared $(OBJ32) $(LDFLAGS32) -o $(DBGNAME32).so
+			$(CC) $(OBJ32) $(LDFLAGS32) -o $(DBGNAME32)
 
 all64			: ${OBJ64}
-			$(CC) -shared $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64).so
+			$(CC) $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64)
 
 # This target is work in progress (static files debugger)
 et_rel			: ${OBJ}

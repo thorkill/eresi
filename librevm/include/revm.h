@@ -173,6 +173,10 @@ extern asm_processor	proc;
 #define	ELFSH_FINI		"elfsh_fini"
 #define ELFSH_HELP		"elfsh_help"
 
+/* REVM files */
+#define	REVM_CONFIG		".elfshrc"
+#define	REVM_FIFO		"/tmp/.revm.io"
+
 /* For vm_display_object() */
 #define	REVM_VIEW_HEX		0
 #define	REVM_VIEW_DISASM	1
@@ -992,7 +996,7 @@ int		vm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
 /* Top skeleton functions */
 int		vm_init() __attribute__((constructor)) ;
 int		vm_loop(int argc, char **argv);
-int		vm_setup(int ac, char **av);
+int		vm_setup(int ac, char **av, char mode, char side);
 int		vm_run(int ac, char **av);
 int		vm_config();
 

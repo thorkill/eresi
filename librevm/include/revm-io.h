@@ -116,7 +116,8 @@ typedef struct	s_io
 #define		ELFSH_IOSTD     1
 #define		ELFSH_IONET     2
 #define		ELFSH_IODUMP    3
-#define		ELFSH_IONUM     4
+#define		ELFSH_IOFIFO	4
+#define		ELFSH_IONUM     5
   char		type;                   /* IO type           */
   int		input_fd;               /* Input file        */
   int		output_fd;              /* Output file       */
@@ -205,13 +206,14 @@ typedef struct        s_state
   char                *sort;          /* Actual sorting choice */
   char                *input;         /* Implicit File input (-f option) */
   char                *output;        /* Implicit File output (-w option) */
-  
 #define       REVM_STATE_CMDLINE	0
 #define       REVM_STATE_SCRIPT		1
 #define       REVM_STATE_INTERACTIVE    2
 #define       REVM_STATE_DEBUGGER	3
-
   char                vm_mode;        /* Command line, scripting, interactive, debugger ? */
+#define	      REVM_SIDE_CLIENT		0
+#define	      REVM_SIDE_SERVER		1
+  char		      vm_side;	      /* Useful for the bi-partite debugger */
   char		      vm_sourcing;    /* Are we sourcing a script ? */
   char                vm_stopped;     /* We are in a signal handler */
   char                vm_shared;      /* Next opened object must be shared */
@@ -223,7 +225,7 @@ extern int		 elfsh_net_client_count;
 
 
 /* Parsing, Scanning, I/O functions */
-char            *vm_getln(char *ptr);
+char            *vm_getln();
 int		vm_initio();
 char            **vm_input(int *argc);
 char		*vm_stdinput();
