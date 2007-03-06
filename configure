@@ -5,17 +5,17 @@
 # The ELFsh crew.
 #
 
-CHOSENBIT	= "0"
-STATIC		= "0"
-READLN		= "0"
-ELFSHNET	= "0"
-LIBMJOLLNIR	= "1"
-PREFIX		= "/"
-OSVER		= `uname -r | cut -d "." -f1`
-CONFIGFILE	= "config.h"
-VARSFILE	= "librevm/include/revm-vars.h"
-LIBVARSFILE	= "libelfsh/include/libvars.h"
-LPTHREAD	= "-lpthread"
+CHOSENBIT="0"
+STATIC="0"
+READLN="0"
+ELFSHNET="0"
+LIBMJOLLNIR="1"
+PREFIX="/"
+OSVER=`uname -r | cut -d "." -f1`
+CONFIGFILE="config.h"
+VARSFILE="librevm/include/revm-vars.h"
+LIBVARSFILE="libelfsh/include/libvars.h"
+LPTHREAD="-lpthread"
 
 echo > $LIBVARSFILE
 echo > $VARSFILE
