@@ -38,17 +38,17 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
 			-L../libmjollnir -lmjollnir32 -g3 -L../elibc/ -lcelfsh32    \
-			-L../libui/ -lui32 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)      \
-			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH32 $(EXTRAOPT)      \
-			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
+			-L../libui/ -lui32 -L../libedfmt -ledfmt32 $(LDASMOPT) 	    \
+			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
+			-DELFSH32 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64           \
 			-L../libmjollnir -lmjollnir64 -g3 -L../elibc/ -lcelfsh64    \
-			-L../libui/ -lui64 $(LDASMOPT) $(LDREADLNOPT) $(DLOPT)      \
-			-L/usr/freeware/lib32/ $(DYNOPT) -DELFSH64 $(EXTRAOPT)      \
-			$(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
+			-L../libui/ -lui64 -L../libedfmt -ledfmt64 $(LDASMOPT)      \
+			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
+			-DELFSH64 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR)
 
 all			: all32 all64
 
