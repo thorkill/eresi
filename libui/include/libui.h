@@ -5,12 +5,14 @@
 */
 
 #ifndef __LIBUI_H__
- #define __LIBUI_H__
+#define __LIBUI_H__
+
+#include <stdio.h>
 
 /* Thanks to GNU we have readline */
 #if defined(USE_READLN)
- #include <readline/readline.h>
- #include <readline/history.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #endif
 
 #include "revm.h"
