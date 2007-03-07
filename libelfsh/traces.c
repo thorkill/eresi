@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id: traces.c,v 1.7 2007-03-07 20:56:53 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -108,11 +108,7 @@ static int		elfsh_traces_queue_clean()
 }
 
 /* This buffers are used to generate the file */
-char		buf[BUFSIZ];
 char		bufex[BUFSIZ];
-char		args[BUFSIZ];
-char		argsproto[BUFSIZ];
-char		argshexa[BUFSIZ];
 
 /**
  * Generate each function on the file 
@@ -144,62 +140,86 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      /* Add in the queue */
 	      elfsh_traces_queue_add(ret_trace);
 
-	      argshexa[0] = 0;
-	      argsproto[0] = 0;
-	      args[0] = 0;
+	      snprintf(bufex, BUFSIZ - 1, "int %s_trace(", ret_trace->funcname);
+	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
-	      // Do we have arguments in this function ? 
+	      /* Function arguments */
 	      if (ret_trace->argc > 0)
-		{	
-		  // Arguments by arguments 
+		{
 		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
 		    {
 		      start = z == 0 ? "" : ", ";
 
-		      // char type is just what we need to setup a good size 
-		      snprintf(buf, BUFSIZ - 1, "%schar a%d[%d]", 
+		      snprintf(bufex, BUFSIZ - 1, "%schar a%d[%d]", 
 			       start, z, 
 			       ret_trace->arguments[z].size);
-
-		      if (strlen(argsproto) + strlen(buf) + 1 > BUFSIZ)
-			break;
-
-		      strncat(argsproto, buf, strlen(buf));
-
-		      snprintf(buf, BUFSIZ - 1, "%sa%d", start, z);
-
-		      if (strlen(args) + strlen(buf) + 1 > BUFSIZ)
-			break;
-
-		      strncat(args, buf, strlen(buf));
-
-		      if (ret_trace->type == ELFSH_ARG_TYPE_BASED)
-			snprintf(buf, BUFSIZ - 1, "%s%s %s: 0x%%%%%s", 
-				 start, ret_trace->arguments[z].typename,
-				 ret_trace->arguments[z].name, "x");
-		      else
-			snprintf(buf, BUFSIZ - 1, "%s0x%%%%%s", start, "x");
-
-		      if (strlen(argshexa) + strlen(buf) + 1 > BUFSIZ)
-			break;
-
-		      strncat(argshexa, buf, strlen(buf));
+		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		    }
 		}
 
-	      // Tracing function with a human readable form
-	      snprintf(bufex, BUFSIZ - 1, "int %%1$s_trace(%%2$s)\n{\n"
-		       "\tint ret;\n"
-		       "\tprintf(\"%%%%s + %%1$s(%s)\\n\", pad_print(1)%s%s);\n"
-		       "\tret = old_%%1$s(%%3$s);\n"
-		       "\tprintf(\"%%%%s - %%1$s = %%%%x\\n\", pad_print(0), ret);\n"
+	      snprintf(bufex, BUFSIZ - 1, 
+		       ")\n{\n"
+		       "\tint ret;\n\tunsigned char readable, isstring;\n"
+		       "\tprintf(\"%%s + %s(\", pad_print(1));\n", 
+		       ret_trace->funcname);
+	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
+
+	      /* Printf arguments */
+	      if (ret_trace->argc > 0)
+		{
+		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		    {
+		      start = z == 0 ? "" : ", ";
+		      
+		      snprintf(bufex, BUFSIZ - 1, 
+			       "\tisstring = 0;\n"
+			       "\treadable = check_read_ptr((void *)a%d, MAX_CHECK_CHAR+1);\n"
+			       "\tif (readable)\n\t\tisstring = is_string((void *)a%d);\n"
+			       "\tprintf(\"%s", z, z, start);
+		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
+		      
+		      if (ret_trace->type == ELFSH_ARG_TYPE_BASED)
+			{
+			  snprintf(bufex, BUFSIZ - 1, "%s %s: ", 
+				   ret_trace->arguments[z].typename,
+				   ret_trace->arguments[z].name);
+			  fwrite(bufex, strlen(bufex), sizeof(char), fp);
+			}
+
+		      snprintf(bufex, BUFSIZ - 1, 
+			       "%%s0x%%x%%s%%s%%s\", "
+			       "readable ? \"*\" : \"\", "
+			       "a%d, "
+			       "isstring ? \" \\\"\" : \"\", "
+			       "(isstring ? a%d : (readable ? "
+			       "hex_to_str((void *)a%d) : \"\")), "
+			       "isstring ? \"\\\"\" : \"\");\n", z, z, z);
+		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
+		    }
+		}
+	      
+	      snprintf(bufex, BUFSIZ - 1, 
+		       "\tprintf(\")\\n\");\n\tret = old_%s(", ret_trace->funcname);
+	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
+
+	      /* Send arguments */
+	      if (ret_trace->argc > 0)
+		{
+		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		    {
+		      start = z == 0 ? "" : ", ";
+		      
+		      snprintf(bufex, BUFSIZ - 1, "%sa%d", start, z);
+		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
+		    }
+		}
+
+	      snprintf(bufex, BUFSIZ - 1,
+		       ");\n"
+		       "\tprintf(\"%%s - %s = %%x\\n\", pad_print(0), ret);\n"
 		       "\treturn ret;\n}\n",
-		       argshexa, (strlen(args) > 0 ? "," : ""), args);
-
-	      snprintf(buf, BUFSIZ - 1, bufex, 
-		       ret_trace->funcname, argsproto, args);
-
-	      fwrite(buf, strlen(buf), sizeof(char), fp);	      
+		       ret_trace->funcname);
+	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 	    }
 	}
       
@@ -284,7 +304,46 @@ int			elfsh_traces_save(elfshobj_t *file)
   // Write basic stuff, include headers and
   //   pad functions (to have a tree like form)
   snprintf(buf, BUFSIZ, 
-	   "#include <stdio.h>\n\n"
+	   "#include <stdio.h>\n"
+	   "#include <setjmp.h>\n"
+	   "#include <signal.h>\n\n"
+	   "#define MAX_CHECK_CHAR 3\n"
+	   "#define PRINTABLE(c) (c >= 32 && c <= 126)\n"
+	   "jmp_buf jBuf;\n\n"
+	   "unsigned char is_string(const void *ptr)\n{\n"
+	   "\tint count;\n"
+	   "\tchar *cptr = (char*) ptr;\n\n"
+	   "\tfor (count = 0; PRINTABLE(cptr[count]) && cptr[count] != 0x00; count++)\n\t{\n"
+	   "\t\tif (count >= MAX_CHECK_CHAR)\n"
+	   "\t\t\treturn 1;\n"
+	   "\t}\n\n"
+	   "\treturn 0;\n"
+	   "}\n\n"
+	   "void check_ptr_failed(int nSig)\n{\n"
+	   "\tlongjmp(jBuf, 1);\n"
+	   "}\n\n"
+	   "unsigned char check_read_ptr(const void *ptr, unsigned long size)\n{\n"
+	   "\tint index;\n"
+	   "\tchar elem;\n"
+	   "\tvoid (*prev_sig) (int sig);\n\n"
+	   "\tif (!ptr || size <= 0)\n"
+	   "\t\treturn 0;\n\n"
+	   "\tif(setjmp(jBuf))\n"
+	   "\t\treturn 0;\n\n"
+	   "\tprev_sig = signal(SIGSEGV, check_ptr_failed);\n\n"
+	   "\tfor (index = 0; index < size; index++)\n"
+	   "\t\telem = ((char *)ptr)[index];\n\n"
+	   "\tsignal(SIGSEGV, prev_sig);\n"
+	   "\treturn 1;\n"
+	   "}\n\n"
+	   "char tmpbuf[256];\n"
+	   "char *hex_to_str(const void *ptr)\n{\n"
+	   "\tint count;\n"
+	   "\tchar *cptr = (char*) ptr;\n\n"
+	   "\tsnprintf(tmpbuf, 255, \" = 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
+	   "cptr[0], cptr[1], cptr[2], cptr[3]);\n"
+	   "\treturn tmpbuf;\n"
+	   "}\n\n"
 	   "char pad_str[64];\n"
 	   "int pad_count = 0;\n\n"
 	   "char *pad_print(int inc)\n{\n"

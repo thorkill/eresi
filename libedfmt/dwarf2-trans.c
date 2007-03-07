@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2-trans.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: dwarf2-trans.c,v 1.10 2007-03-07 20:56:52 mxatone Exp $
 **
 */
 
@@ -376,6 +376,9 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	    break;
 
 	  DWARF2_TRANS_GETATTR(size, &tref, DW_AT_upper_bound, u.udata, -1);
+
+	  if (size < 0)
+	    size = 1;
 
 	  snprintf(buf, BUFSIZ - 1, "%s[%d]", type->name, (int) size+1);
 	  type = edfmt_add_type_array(buf, (int) size, type);
