@@ -126,7 +126,7 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
     }
 
   entrypoint = elfsh_get_entrypoint(file->hdr);
-  
+
   /* Fixup file offset for all loadable segments and fixup PHDR base vaddr */
   for (range = 0, cur = file->pht; range < file->hdr->e_phnum; range++)
     {

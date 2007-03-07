@@ -344,6 +344,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
   /* Inject the loaded file */
   idx = elfsh_inject_etrel(file, tobj);
+
   if (idx < 0)
     {
       elfsh_traces_queue_clean();
@@ -392,6 +393,9 @@ int			elfsh_traces_save(elfshobj_t *file)
   if (elfsh_save_relocate(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to relocate traced binary", -1);
+
+  /* Ask for rewrite the SHT */
+  file->hdr->e_shoff = 0;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -512,6 +516,7 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
   elfshsect_t		*sect;
   char			*sect_name;
   char			*func_name;
+  u_char		bind;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -535,7 +540,8 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
       
       // Only global, plt & text 
       // Make sure we look at the beginning of the name, including the .
-      if (elfsh_get_symbol_bind(symtab + index) != STB_GLOBAL
+      bind = elfsh_get_symbol_bind(symtab + index);
+      if ((bind != STB_GLOBAL && bind != STB_LOCAL)
 	  || (strncmp(sect_name, ".plt", 4) && strncmp(sect_name, ".text", 5)))
 	continue;
      

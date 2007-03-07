@@ -20,6 +20,8 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   elfshsect_t	*tmp;
   int		range;
   int		cnt;
+  int 		index;
+  elfsh_Phdr 	*actual;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -72,7 +74,13 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 	  memcpy(new->data, cur->data, new->shdr->sh_size);
 	}
 
-      new->phdr = copy->pht + ((cur->phdr - file->pht) / sizeof(elfsh_Phdr));
+      /* Set phdr pointer */
+      for (index = 0, actual = new->parent->pht; index < new->parent->hdr->e_phnum;
+	   index++)
+	if (INTERVAL(actual[index].p_vaddr, new->shdr->sh_addr,
+		     actual[index].p_vaddr + actual[index].p_memsz))
+	  new->phdr = actual + index;
+
       new->curend = cur->curend;
 
       /* Insert new section in sectlist */

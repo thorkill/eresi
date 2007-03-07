@@ -947,8 +947,8 @@ int			edfmt_stabs_parse(elfshobj_t *file)
     hash_init(&type_cross_ref, STABS_HNAME_TYPE_CROSS_REF, 50, ASPECT_TYPE_UNKNOW);
   
   /* Initialise global variables */
-  stabs_datastr = (char *) elfsh_get_raw(stabs_sect_str);
-  stabs_ent = (edfmtstabsent_t *) elfsh_get_raw(stabs_sect);
+  stabs_datastr = (char *) stabs_sect_str->data;
+  stabs_ent = (edfmtstabsent_t *) stabs_sect->data;
   stabs_num = stabs_sect->shdr->sh_size / sizeof(edfmtstabsent_t);
 
   for (stabs_index = 0; stabs_index < stabs_num; stabs_index++)

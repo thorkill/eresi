@@ -60,7 +60,7 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   dw2_sections.info.sect = edfmt_get_sect(file, ELFSH_SECTION_DW2_INFO, 
 					  ELFSH_SECTION_NAME_DW2_INFO, 0);
 
-  dw2_sections.info.data = elfsh_get_raw(dw2_sections.info.sect);
+  dw2_sections.info.data = dw2_sections.info.sect->data;
 
   if (dw2_sections.info.sect == NULL || dw2_sections.info.data == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -106,7 +106,7 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
       pointers[i]->sect = edfmt_get_sect(file, hash[i], names[i], 0);
 
       if (pointers[i]->sect != NULL)
-	pointers[i]->data = elfsh_get_raw(pointers[i]->sect);
+	pointers[i]->data = pointers[i]->sect->data;
     }
 
   /* Start into the block entrie */

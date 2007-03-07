@@ -693,11 +693,9 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
-  /*
-  printf("Extending %s section from %u bytes (curend = %u) \n", 
-	 sect->name, len, sect->curend);
-  fflush(stdout);
-  */
+  //printf("Extending %s section from %u bytes (curend = %u) \n", 
+  //	 sect->name, len, sect->curend);
+  //fflush(stdout);
 
   /* Put the data at the end of the section */
   /* XXX: need to re-mmap in the case of runtime section */

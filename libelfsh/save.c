@@ -150,7 +150,6 @@ int		elfsh_save_relocate(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Unmap and free all ressources for this file */
 int		elfsh_save_obj(elfshobj_t *file, char *name)
 {
@@ -163,7 +162,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   unsigned int	totsize;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* Sanity checks */
   if (file == NULL || file->sht == NULL || file->sectlist == NULL ||
       (file->pht == NULL && elfsh_get_objtype(file->hdr) != ET_REL))
@@ -188,7 +187,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to inject page padding section", -1);
     }
-  
+
   /* Copy the object before saving (so that we dont strip the working file) */
   file = elfsh_copy_obj(file);
   if (file == NULL)
@@ -199,7 +198,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   if (elfsh_traces_save(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Tracing failed", -1);
-
+ 
   /* Open the output file */
 #ifdef __BEOS__
   XOPEN(fd, name, O_CREAT | O_RDWR , 0700, -1);
@@ -294,7 +293,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 
       /* If SHT is not written yet and current section file offset is bigger */
       if (!written_sht && !file->shtrm && actual->shdr->sh_offset > file->hdr->e_shoff)
-	written_sht = elfsh_save_sht(file, fd);
+	  written_sht = elfsh_save_sht(file, fd);
       
       /* We do the check to avoid null sized section like .sbss to fool us */
       if (actual->data != NULL && 
@@ -316,7 +315,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 	  /* Write the section */
 	  XSEEK(fd, elfsh_get_section_foffset(actual->shdr), SEEK_SET, -1);
 	  XWRITE(fd, actual->data, actual->shdr->sh_size, -1);
-	 }
+	}
 
 #if __DEBUG_MAP__      
       else

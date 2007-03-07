@@ -30,6 +30,7 @@ int			elfsh_flush_bss(elfshobj_t *file)
   if (!bss)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find BSS", NULL);
+
   if (bss->phdr->p_filesz != bss->phdr->p_memsz)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (bss->next && bss->next->shdr->sh_addr)
