@@ -151,6 +151,7 @@ char		**vm_input(int *argc)
   char		**argv;
   char		*buf;
   int		nbr;
+  int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -182,9 +183,21 @@ char		**vm_input(int *argc)
 	    world.curjob->ws.oldline);
       world.curjob->ws.oldline = NULL;
     }
+
+  len = strlen(buf);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
-	 world.curjob->ws.oldline, strlen(buf) + 1, NULL);
+	 world.curjob->ws.oldline, len + 1, NULL);
   strcpy(world.curjob->ws.oldline, buf);
+
+  /* If we are in the client part of the debugger, 
+     we have a special behavior */
+  if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+      world.state.vm_side == REVM_SIDE_CLIENT)
+    {
+      write(world.fifofd, buf, len);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		    ((char **) REVM_INPUT_VOID));      
+    }
 
   /* Allocate the correct pointer array for argv */
   nbr = vm_findblanks(buf);

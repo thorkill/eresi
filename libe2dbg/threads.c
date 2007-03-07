@@ -35,8 +35,7 @@ static void*		e2dbg_thread_start(void *param)
 #endif
 
   /* Register the thread as started */
-  if (pthread_self() != e2dbg_getid())
-    e2dbgworld.threadnbr++;
+  e2dbgworld.threadnbr++;
   cur->state = E2DBG_THREAD_STARTED;
 
   /* Get stack information for this thread */
@@ -98,7 +97,7 @@ int		pthread_create (pthread_t *__restrict __threadp,
 
   NOPROFILER_IN();
 
-  /* Do not allow to create a thread while another ons is breaking */
+  /* Do not allow to create a thread while another one is breaking */
   e2dbg_mutex_lock(&e2dbgworld.dbgbp);
   e2dbg_output(" [*] BP MUTEX LOCKED [pthread_create] \n");
 
@@ -149,7 +148,7 @@ __sighandler_t		signal(int signum, __sighandler_t fctptr)
 
 #if __DEBUG_THREADS__
   printf(" [D] THREAD %u SIGNAL (SIGNUM %u) Calling back original at %08X \n", 
-	 (unsigned int) pthread_self(), signum, (elfsh_Addr) fct);
+  (unsigned int) pthread_self(), signum, (elfsh_Addr) fct);
 #endif
 
   return ((*fct)(signum, fctptr));
@@ -214,7 +213,7 @@ void		e2dbg_threads_print()
 	snprintf(logbuf, BUFSIZ, 
 		 " Thread ID %10u %c %s %8s --[ started on %s from %s \n", 
 		 (unsigned int) cur->tid, c, 
-		 (cur->tid == e2dbg_getid() ? "DBG" : "   "), 
+		 (e2dbg_presence_get() ? "DBG" : "   "), 
 		 state, time, entry);
 	e2dbg_output(logbuf);
       }
@@ -297,8 +296,7 @@ void		e2dbg_thread_stopall(int signum)
 	continue;
       
       /* Do not kill the debugger or the breaking thread */
-      if (cur->tid != e2dbg_getid() && cur->tid != getpid() &&
-	  cur->tid != e2dbgworld.stoppedthread->tid)
+      if (cur->tid != e2dbgworld.stoppedthread->tid)
 	{
 #if __DEBUG_THREADS__
 	  fprintf(stderr, 
@@ -314,9 +312,7 @@ void		e2dbg_thread_stopall(int signum)
 		  cur->state == E2DBG_THREAD_BREAKUSR2)
 		{
 		  cur->state = E2DBG_THREAD_RUNNING;
-		  fprintf(stderr, " pthread_kill(%lu, CONT) returned %d \n",
-			  (unsigned long) cur->tid, 
-			  pthread_kill(cur->tid, SIGCONT));
+		  e2dbg_kill(cur->tid, SIGCONT);
 		}
 	    }
 	  
@@ -326,7 +322,7 @@ void		e2dbg_thread_stopall(int signum)
 	  
 	  /* Send the signal */
 	  //e2dbg_threads_print();
-	  pthread_kill(cur->tid, signum);
+	  e2dbg_kill(cur->tid, signum);
 	  //fprintf(stderr, " pthread_kill(%lu, STOP/USR2) returned %d \n",
 	  //  (unsigned long) cur->tid, pthread_kill(cur->tid, signum));
 	}
@@ -345,38 +341,35 @@ void		e2dbg_thread_stopall(int signum)
 /* Continue all threads after a breakpoint */
 void		e2dbg_thread_contall()
 {
-  hashent_t     *actual;
   e2dbgthread_t	*cur;
+  char		**keys;
+  int		keynbr;
   u_int         index;
 
 #if 1 // __DEBUG_THREADS__
   printf(" [*] Continuing all threads (curthread count = %u) \n",
-	 e2dbgworld.curthread ? e2dbgworld.curthread->count : 42);
+	 e2dbgworld.curthread ? e2dbgworld.curthread->count : 0);
 #endif
 
-  /* Wake up the breaking thread in first */
+  /* Wake up the breaking thread in first
   //pthread_kill(e2dbgworld.curthread->tid, SIGCONT);
 
 #if __DEBUG_THREADS__
   printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
 #endif
+  */
+
+  keys = hash_get_keys(&e2dbgworld.threads, &keynbr);
 
   /* Wake up all other threads after */
-  for (index = 0; index < e2dbgworld.threads.size; index++)
-    for (actual = &e2dbgworld.threads.ent[index]; 
-	 actual != NULL && actual->key != NULL; actual = actual->next)
-      {
-	cur = actual->data;
-	if (cur->tid != getpid() && 
-	    cur->tid != e2dbg_getid()) // && cur->tid != e2dbgworld.curthread->tid)
-	  {
+  for (index = 0; index < keynbr; index++)
+    {
+      cur = hash_get(&e2dbgworld.threads, keys[index]);
 #if __DEBUG_THREADS__
-	    printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
+      printf(" [*] Continuing thread ID %u \n", (unsigned int) cur->tid);
 #endif
-	    cur->state = E2DBG_THREAD_RUNNING;
-	    //pthread_kill(cur->tid, SIGCONT);
-	    pthread_kill(cur->tid, SIGCONT);
-	  }
-      }
+      cur->state = E2DBG_THREAD_RUNNING;
+      e2dbg_kill(cur->tid, SIGCONT);
+    }
 }
 

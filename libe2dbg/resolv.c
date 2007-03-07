@@ -441,13 +441,14 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 
   /* First go after the e2dbg and the binary linkmap entries */
   curobj = e2dbgworld.syms.map;
-  while (!curobj->lname || strstr(curobj->lname, "e2dbg") || 
-	 *curobj->lname == 0x00)
-    curobj = curobj->lnext;
 
   /* Iterate on the linkmap to resolve symbols in library priority order */
   for (; curobj; curobj = curobj->lnext)
     {
+
+      if (!curobj->lname || !*curobj->lname || strstr(curobj->lname, "e2dbg"))
+	continue;
+
 
 #if __DEBUG_E2DBG__
       write(1, " [*] e2dbg_dlsym called for resolving ", 38);
@@ -544,9 +545,9 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 {
   elfsh_Addr		baseaddr;
   char			path[BUFSIZ];
-  char			*home;
   elfsh_Addr		*got;
   elfshlinkmap_t	*lm;
+  char			*version;
 #if defined(__FreeBSD__)
   Obj_Entry		*oe;
 #endif
@@ -561,8 +562,16 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   write(1, buf, len);
 #endif
 
-  home = getenv("HOME");
-  snprintf(path, BUFSIZ, "%s/.e2dbg/e2dbg.so", home);
+#if defined(ELFSH32)
+  version = "32";
+#elif defined(ELFSH64)
+  version = "64";
+#else
+  printf("Unknown debugger version : fatal error \n");
+  exit(-1);
+#endif
+
+  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", LIBPATH, version);
   baseaddr = e2dbg_dlsect(path, ".got.plt", (elfsh_Addr) &reference, "reference");
 
 #if __DEBUG_E2DBG__
@@ -689,6 +698,7 @@ int		e2dbg_dlsym_init()
   write(1, buf, len);
 #endif
 
+  /*
   e2dbgworld.syms.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
   if (!e2dbgworld.syms.memalignhooksym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -713,6 +723,7 @@ int		e2dbg_dlsym_init()
 		 e2dbgworld.syms.mallochooksym);
   write(1, buf, len);
 #endif
+  */
 
 
   /*

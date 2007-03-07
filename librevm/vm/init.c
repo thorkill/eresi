@@ -50,9 +50,9 @@ int		vm_loop(int argc, char **argv)
 
 	/* Take a line, execute old command if void line */
 	argv = vm_input(&argc);
-	if (world.state.vm_mode == REVM_STATE_INTERACTIVE     ||
-	    world.state.vm_mode == REVM_STATE_DEBUGGER  ||
-	    world.state.vm_mode == REVM_STATE_SCRIPT    ||
+	if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
+	    world.state.vm_mode == REVM_STATE_DEBUGGER    ||
+	    world.state.vm_mode == REVM_STATE_SCRIPT      ||
 	    world.state.vm_net)
 	  {
 	    if (argv == ((char **) REVM_INPUT_VOID))
@@ -206,7 +206,7 @@ int		vm_setup(int ac, char **av, char mode, char side)
       elfsh_set_debug_mode();
     }
 
-  /* Set libelfsh in static mode */
+  /* Set REVM in static mode */
   else
     {
       elfsh_set_static_mode();

@@ -14,7 +14,6 @@
 /* Our fake main function */
 int			e2dbg_fake_main(int argc, char **argv, char **aux)
 {
-  pthread_t		dbg;
   e2dbgparams_t		params;
   char			*args[3];
   char			*pn;
@@ -52,27 +51,16 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   params.ac = 2;
   params.av = args;
 
-  if (pthread_create(&dbg, NULL, (void *) e2dbg_entry, &params))
-    {
-      write(2, "Unable to create debugger thread\n", 33);
-      return (-1);
-    }
+  /* Call the debugger */
+  e2dbg_entry(&params);
 
-#if __DEBUG_E2DBG__
-  write(1, "[(e2dbg)__libc_start_main] Locking ACK mutex \n", 46);
-#endif
+  /* Initialize a "fake" thread if we are debugging a monothread program */
+  if (e2dbgworld.curthread == NULL)
+    e2dbg_curthread_init();
 
-  /* Wait for the right to run */
-  if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
-    write(1, " [*] Debuggee Cannot lock final dbgack mutex ! \n", 48);
-  
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] Calling ON_EXIT \n", 46);
 #endif
-
-  /* Initialize current thread information if we are debugging a monothread program */
-  if (e2dbgworld.curthread == NULL)
-    e2dbg_curthread_init();
 
   /* Wait for debuggee exit */
   on_exit((void *) wait4exit, NULL);
@@ -133,12 +121,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   CLRSIG;
 
   /* Initalize mutexes */
-  e2dbg_mutex_init(&e2dbgworld.dbgsyn);
-  e2dbg_mutex_init(&e2dbgworld.dbgack);
-  e2dbg_mutex_init(&e2dbgworld.dbgwait);
   e2dbg_mutex_init(&e2dbgworld.dbgbp);
-  if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
-    write(1, "Cannot lock initial dbgack mutex ! \n", 36);
 
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] there 3 \n", 35);
@@ -269,12 +252,3 @@ void			__fpstart(int argc, char**ubp_av)
 #else
  #warning "E2DBG Not yet implemented on this OS/Arch"
 #endif
-
-
-
-
-/* Add an interp section to the library
-** const char __invoke_dynamic_linker__[] 
-** __attribute__ ((section (".interp"))) = "/lib/ld-linux.so.2";
-*/
-

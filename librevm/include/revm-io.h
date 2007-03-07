@@ -40,7 +40,7 @@ char	prompt_token[512];
 
 #define ELFSH_SNAME	"elfsh"
 #define	ELFSH_VERSION	"0.77"
-#define	ELFSH_RELEASE	"a1"
+#define	ELFSH_RELEASE	"a2"
 #define ELFSH_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -246,6 +246,7 @@ void		vm_set_prompt(void (*func) (char *name, u_int size));
 
 /* Network related functions */
 int		vm_net_init();
+void		vm_check_net_select(fd_set *sel_sockets, int sock);
 int		vm_select();
 char*		vm_net_input();
 int		vm_net_output(char *buf);

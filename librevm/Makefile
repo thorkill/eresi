@@ -40,7 +40,7 @@ all32			:
 			$(MAKE) -C cmd  all32
 			$(MAKE) -C io   all32
 			$(MAKE) -C api  all32
-			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
+			@$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
 			@ar rc ${NAME32}.a ${OBJ32} 
 			@ranlib ${NAME32}.a
 
@@ -51,7 +51,7 @@ all64			:
 			$(MAKE) -C cmd  all64
 			$(MAKE) -C io   all64
 			$(MAKE) -C api  all64
-			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
+			@$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
 			@ar rc ${NAME64}.a ${OBJ64} 
 			@ranlib ${NAME64}.a
 

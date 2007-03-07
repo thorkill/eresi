@@ -9,31 +9,14 @@
 /* (re)start a process in e2dbg */
 void		e2dbg_start_proc()
 {
-
-  /* The debuggee now can continue */
-  if (e2dbg_mutex_unlock(&e2dbgworld.dbgack) < 0)
-    e2dbg_output(" [E] Process already running\n\n");
-#if __DEBUG_MUTEX__
-  else
-    printf(" [*] Debugger unlocked MUTEX-ACK and allow the debuggee to continue\n");
-#endif
-
   if (e2dbgworld.curthread && e2dbgworld.curthread->count == 2)
     e2dbg_thread_contall();
   else if (!e2dbgworld.curthread)
-    printf(" [*] e2dbg_start_proc -NOT- doing CONTALL because curthread = NULL\n");
+    e2dbg_output(" [*] e2dbg_start_proc -NOT- doing CONTALL"
+		 " because curthread = NULL\n");
   else
     printf(" [*] e2dbg_start_proc -NOT- doing CONTALL (count = %u)\n",
 	   e2dbgworld.curthread->count);
-
-  /* We lock here so that we can wait for the debuggee to unlock dbgsyn */
-  if (e2dbg_mutex_lock(&e2dbgworld.dbgsyn) < 0)
-    printf(" [*] Debugger failed lock on DBGSYN\n");
-#if __DEBUG_MUTEX__
-  else
-    printf(" [*] Debugger locked SYN, Debuggee can restart !\n");
-#endif
-  
   world.curjob->current->running = 1;
 }
 
@@ -78,11 +61,14 @@ int	cmd_cont()
 
   /* Restart the debuggee */
   e2dbg_start_proc();
+
+  /*
   if (!e2dbgworld.curthread->step)
     {
       e2dbg_start_proc();
       e2dbg_start_proc();
     }
+  */
 
   e2dbg_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

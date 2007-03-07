@@ -40,22 +40,22 @@ LDFLAGS64		+= $(DLOPT) $(LDMJOLLNIR) $(DYNOPT) $(EXTRAOPT) $(LDDUMPOPT)
 
 EXTRAOBJ32		= ../libasm/libasm.o ../libmjollnir/libmjollnir32.o     \
 			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o       \
-			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o \
+			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	\
 			../libaspect/libaspect32.o
 
 EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o     \
 			../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o       \
-			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o \
+			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o	\
 			../libaspect/libaspect64.o
 
 all			: all32 all64
 
 all32			: ${OBJ32}
-			$(CC) -shared $(OBJ32) $(EXTRAOBJ32) $(LDFLAGS32) \
+			@$(CC) -shared $(OBJ32) $(EXTRAOBJ32) $(LDFLAGS32) \
 			-o $(DBGNAME32).so
 
 all64			: ${OBJ64}
-			$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
+			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
 			-o $(DBGNAME64).so
 
 # This target is work in progress (static files debugger)

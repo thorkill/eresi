@@ -69,7 +69,24 @@ char	*e2dbg_get_string(char **params)
 /* XXX: Need a vector */
 int		e2dbg_output(char *str)
 {
-  printf("%s", str);
-  fflush(stdout);
+  vm_output(str);
   return (0);
+}
+
+
+/* Get the identity of the current process or thread */
+int		e2dbg_self()
+{
+  if (e2dbgworld.threadnbr == 1)
+    return (getpid());
+  return (pthread_self());
+}
+
+
+/* Send a signal */
+void		e2dbg_kill(pid_t pid, int sig)
+{
+  if (e2dbgworld.threadnbr == 1)
+    kill(pid, sig);
+  pthread_kill(pid, sig);
 }

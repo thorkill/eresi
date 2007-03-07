@@ -502,6 +502,7 @@ typedef struct        s_world
   asm_processor       proc;           /* Libasm world */
   asm_processor	      proc_sparc;     /* Libasm Sparc */
   mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
+  int		      fifofd;	      /* File descriptor for the debugger IO FIFO */
 }		      revmworld_t;
 
 
@@ -978,6 +979,7 @@ char		*vm_ascii_type(hash_t *cur);
 char		*vm_get_mode_name();
 char            *vm_basename(char *str);
 void            vm_set_quit_msg(char *msg);
+int		vm_fifo_io(revmjob_t *job);
 
 /* Vector related functions */
 int		vm_vectors_getdims(char *str, unsigned int *dims);

@@ -8,38 +8,31 @@
 #include "libe2dbg.h"
 
 
-/* Debugger Thread specific information */
-void		e2dbg_setid(u_int pid) 
+/* Debugger presence set */
+void		e2dbg_presence_set() 
 { 
-#if __DEBUG_E2DBG__
-  char		buf[BUFSIZ];
-  u_int		len;
-#endif
-
-  e2dbgworld.dbgpid = pid; 
+  e2dbgworld.dbgpresent = 1; 
 
 #if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] SET E2dbg thread id = %u\n", pid);
-  write(1, buf, len);
+  write(1, " [*] Enabled debugger presence\n", 31);
 #endif
 }
 
-/* Get the Debugger thread ID */
-u_int		e2dbg_getid()          
+/* Debugger presence reset */
+void		e2dbg_presence_reset() 
 { 
-#if __DEBUG_E2DBG__
-  char		buf[BUFSIZ];
-  u_int		len;
-#endif
+  e2dbgworld.dbgpresent = 0; 
 
 #if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] GET E2dbg thread id = %u\n", e2dbgworld.dbgpid);
-  //write(1, buf, len);
+  write(1, " [*] Disabled debugger presence\n", 32);
 #endif
+}
 
-  return (e2dbgworld.dbgpid); 
+
+/* Get the Debugger presence information */
+u_char		e2dbg_presence_get()          
+{ 
+  return (e2dbgworld.dbgpresent); 
 }	
 
 
@@ -60,7 +53,7 @@ void		*malloc(size_t t)
   if (!e2dbgworld.syms.mallocsym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;41m", 7);
@@ -112,7 +105,7 @@ void		*valloc(size_t t)
   if (!e2dbgworld.syms.vallocsym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;41m", 7);
@@ -180,7 +173,7 @@ void		*calloc(size_t t, u_int nbr)
   if (!e2dbgworld.syms.callocsym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;32m", 7);
@@ -217,7 +210,9 @@ void		*calloc(size_t t, u_int nbr)
 #endif
 
       chunk = callocptr(t * nbr);
+#if __DEBUG_EMALLOC__
       write(2, "Libc m/calloc returned\n", 23);
+#endif
       if (chunk)
 	memset(chunk, 0x00, t * nbr);
     }
@@ -276,7 +271,7 @@ void		*memalign(size_t t, u_int nbr)
   if (!e2dbgworld.syms.memalignsym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;32m", 7);
@@ -344,7 +339,7 @@ void	*realloc(void *a, size_t t)
   if (!e2dbgworld.syms.reallocsym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;41m", 7);
@@ -391,7 +386,7 @@ void	free(void *a)
   if (!e2dbgworld.syms.freesym)
     e2dbg_dlsym_init();
 
-  if (!e2dbg_getid() || e2dbg_getid() != pthread_self())
+  if (e2dbg_presence_get() == 0)
     {
 #if __DEBUG_EMALLOC__
       write(2, "\033[1;41m", 7);
@@ -433,10 +428,10 @@ void	wait4exit(void *a)
 void		_exit(int err)
 {
   /* If another thread did an exit, just signal it and return */
-  if (pthread_self() != e2dbg_getid())
+  if (e2dbg_presence_get() == 0)
     {
       printf(" [*] Thread ID %u exited \n", 
-	     (unsigned int) pthread_self());
+	     (unsigned int) e2dbg_self());
       while (1)
 	sleep(1);
     }

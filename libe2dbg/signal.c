@@ -27,7 +27,9 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
 
   params.ac = 1;
   params.av = argv;
-  //e2dbg_entry(&params);
+  e2dbg_presence_set();
+  e2dbg_entry(&params);
+  e2dbg_presence_reset();
   SETSIG;
 }
 
@@ -45,7 +47,6 @@ void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info,
   e2dbg_bt();
   cmd_quit();
   SETSIG;
-
 }
 
 /* Signal handler for SIGINT */
@@ -57,9 +58,10 @@ void            e2dbg_sigint_handler(int signum, siginfo_t *info, void *pcontext
   char		key[15];
 
   CLRSIG;
+  e2dbg_presence_set();
 
   /* Get the current thread */
-  snprintf(key, sizeof(key), "%u", (unsigned int) pthread_self());
+  snprintf(key, sizeof(key), "%u", (unsigned int) e2dbg_self());
   curthread = hash_get(&e2dbgworld.threads, key);
   curthread->context = (ucontext_t *) pcontext;
 
@@ -74,6 +76,7 @@ void            e2dbg_sigint_handler(int signum, siginfo_t *info, void *pcontext
   params.ac = 1;
   params.av = argv;
   e2dbg_entry(&params);
+  e2dbg_presence_reset();
   SETSIG;
 }
 
@@ -87,14 +90,15 @@ void            e2dbg_sigstop_handler(int signum, siginfo_t *info, void *pcontex
   char		key[15];
 
   CLRSIG;
+  e2dbg_presence_set();
 
   /* Get the current thread */
-  snprintf(key, sizeof(key), "%u", (unsigned int) pthread_self());
+  snprintf(key, sizeof(key), "%u", (unsigned int) e2dbg_self());
   curthread = hash_get(&e2dbgworld.threads, key);
   curthread->context = (ucontext_t *) pcontext;
 
 #if __DEBUG_THREADS__
-  printf("\n [*] SIGSTOP handler for thread %u \n", (unsigned int) pthread_self());
+  printf("\n [*] SIGSTOP handler for thread %u \n", (unsigned int) e2dbg_self());
 #endif
 
   /* Set all registers as variables and get PC */
@@ -108,6 +112,7 @@ void            e2dbg_sigstop_handler(int signum, siginfo_t *info, void *pcontex
   params.ac = 1;
   params.av = argv;
   e2dbg_entry(&params);
+  e2dbg_presence_reset();
   SETSIG;
 }
 
@@ -122,13 +127,13 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
   e2dbgworld.curthread->state = E2DBG_THREAD_SIGUSR2;
   
   /* Get the current thread */
-  snprintf(key, sizeof(key), "%u", (unsigned int) pthread_self());
+  snprintf(key, sizeof(key), "%u", (unsigned int) e2dbg_self());
   curthread = hash_get(&e2dbgworld.threads, key);
   curthread->context = (ucontext_t *) pcontext;
 
 #if __DEBUG_THREADS__
   fprintf(stderr,
-	  " [*] SIGUSR2 received by thread %u \n", (unsigned int) pthread_self());
+	  " [*] SIGUSR2 received by thread %u \n", (unsigned int) e2dbg_self());
 #endif
   
   e2dbgworld.threadsyncnbr++;
@@ -162,9 +167,10 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
   e2dbgparams_t	params;
 
   CLRSIG;
+  e2dbg_presence_set();
 
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__)
-  if (e2dbg_getid() != pthread_self())
+  if (!e2dbg_presence_get())
     e2dbg_output(" [*] Debuggee in SIGTRAP handler\n");
   else 
     e2dbg_output(" [*] Debugger in SIGTRAP handler\n");
@@ -177,14 +183,14 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
   params.ac = 1;
   params.av = argv;
   e2dbg_entry(&params);
+  e2dbg_presence_reset();
   SETSIG;
 }
 
 
 
 /* Signal handler for SIGUSR1 in debugger */
-void			e2dbg_sigusr1_handler(int signum,
-					      siginfo_t *info, void *pcontext)
+void			e2dbg_do_breakpoint()
 {
   char			*argv[2];
   char			buf[32];
@@ -197,13 +203,6 @@ void			e2dbg_sigusr1_handler(int signum,
   char			*s;
   elfsh_Addr		*pc; 
   u_int			bpsz;
-
-#if __DEBUG_MUTEX__
-  char			buf2[BUFSIZ];
-  snprintf(buf2, BUFSIZ, " [*] SigUSR1, E2dbg in action ... (count : %u)\n", 
-	   e2dbgworld.curthread->count);
-  e2dbg_output(buf2);
-#endif
 
   /* Set all registers as variables and get PC */
   argv[0] = "e2dbg";
@@ -346,6 +345,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   
   /* Do not allow processing of 2 breakpoint at the same time */
   /* We update the current thread information */
+  e2dbg_presence_set();
   e2dbg_mutex_lock(&e2dbgworld.dbgbp);
   
 #if __DEBUG_MUTEX__
@@ -355,15 +355,15 @@ void			e2dbg_generic_breakpoint(int		signum,
 #endif
   
   /* Get the current thread */
-  stopped = pthread_self();
+  stopped = e2dbg_self();
   snprintf(key, sizeof(key), "%u", (unsigned int) stopped);
-  e2dbgworld.stoppedthread = e2dbgworld.curthread = hash_get(&e2dbgworld.threads, 
-							     key);
+  e2dbgworld.curthread = hash_get(&e2dbgworld.threads, key);
+  e2dbgworld.stoppedthread = e2dbgworld.curthread;
   
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__)
   printf("\n [*] %s entering generic breakpoint (ID %u) \n",
-	 (e2dbg_getid() != e2dbgworld.stoppedthread->tid ? 
-	  "Debuggee" : "Debugger"), (unsigned int) e2dbgworld.stoppedthread->tid);
+	 (e2dbg_presence_get() ? "Debugger" : "Debuggee"), 
+	 (unsigned int) e2dbgworld.stoppedthread->tid);
   fflush(stdout);
 #endif
 
@@ -390,32 +390,8 @@ void			e2dbg_generic_breakpoint(int		signum,
   //else
   //e2dbg_thread_stopall(SIGSTOP);
 
-  /* XXX: if the debugger itself is breaking we need a new CLRSIG_BUT_USR1 macro */
-  /* We call the debugger */
-  pthread_kill(e2dbgworld.dbgpid, SIGUSR1);
-
-  /* We are in a debugger script, continue without mutex */
-  if (e2dbgworld.sourcing)
-    goto nolock;
-
-  /* The debuggee waits for a 'start/cont' command for resuming execution */
-  if (e2dbg_mutex_lock(&e2dbgworld.dbgack) < 0)
-    printf(" [*] Debuggee failed lock on dbgACK\n");
-#if __DEBUG_MUTEX__
-  else
-    e2dbg_output(" [*] Debuggee locked MUTEX-ACK and returning from sig handler \n");
-#endif
-
- nolock:
-
-  /* We allow the debugger to lock SYN again at next start */
-  if (e2dbg_mutex_unlock(&e2dbgworld.dbgsyn) != 0)
-    e2dbg_output(" [*] Debuggee Cannot unlock dbgSYN ! \n");
-#if __DEBUG_MUTEX__
-  else
-    e2dbg_output(" [*] Debuggee continuing & unlocking mutex SYN"
-	      " -> will wait start in the future\n");
-#endif
+  /* Call the real breakpoint code */
+  e2dbg_do_breakpoint();
   
   /* Allow another breakpoint to be processed */
   if (e2dbg_mutex_unlock(&e2dbgworld.dbgbp) != 0)
@@ -438,5 +414,6 @@ void			e2dbg_generic_breakpoint(int		signum,
 #endif
 
   e2dbgworld.curthread->state = E2DBG_THREAD_RUNNING;
+  e2dbg_presence_reset();
 }
 

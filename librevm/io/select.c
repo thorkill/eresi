@@ -58,6 +58,8 @@ int             vm_getmaxfd()
     }
 
   hash_free_keys(keys);
+  if (world.state.vm_mode == REVM_STATE_DEBUGGER && world.fifofd > ret)
+    ret = world.fifofd;
   return (ret);
 }
 #endif
@@ -117,10 +119,39 @@ int		vm_prepare_select(fd_set *sel_sockets)
 	FD_SET(job->ws.io.input_fd, sel_sockets);
     }
 
+  /* Also set the debugger fifo if we are in debugger mode */
+  if (world.state.vm_mode == REVM_STATE_DEBUGGER)
+    FD_SET(world.fifofd, sel_sockets);
+
   hash_free_keys(keys);
   return (vm_getmaxfd());
 }
 
+
+
+/* Check if we had any network event */
+void			vm_check_net_select(fd_set *sel_sockets, int cursock)
+{
+#if defined(ELFSHNET)
+  // Read net command if any.
+  if (vm_net_recvd(sel_sockets) < 0)
+    fprintf(stderr, "vmnet_select : vm_net_recvd() failed\n");
+  
+  /* Check remote clients */
+  if (FD_ISSET(cursock, sel_sockets))
+    {
+      if (vm_net_accept() < 0)
+	fprintf(stderr, "Connection rejected\n");
+    }
+  
+  /* Check the DUMP connection */
+  if (FD_ISSET(dump_world.sock, sel_sockets))
+    {
+      if (vm_dump_accept() < 0)
+	fprintf(stderr, "Connection rejected\n");
+    }
+#endif
+}
 
 
 
@@ -191,9 +222,7 @@ int                     vm_select()
 #if defined(ELFSHNET)
       if (world.state.vm_net && init)
         {
-          // We add the serv_sock to the sockets list for select
           FD_SET(init->ws.sock.socket, &sel_sockets);
-	  /* add DUMP main socket */
 	  FD_SET(dump_world.sock, &sel_sockets);
         }
 #endif
@@ -219,49 +248,29 @@ int                     vm_select()
 		      vm_log(vm_get_prompt());
 		    }
 		}
-	      else
+	      else 
 #endif
-		{
-		  vm_display_prompt();
-		}
+		if (world.state.vm_side != REVM_SIDE_SERVER)
+		  {
+		    vm_display_prompt();
+		  }
 	    }
         }
-
+      
       // Reset cont if a loop has already be done
       cont = 0;
     retry:
-      //printf("Trying select ... \n");
       err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
       if (err < 1 && errno == EINTR)
-	{
-	  //printf("Retrying select ... \n");
-	  goto retry;
-	}
-
+	goto retry;
       if (err > 0)
         {
+
 #if defined(ELFSHNET)
           if (world.state.vm_net && init)
-            {
-              // Read net command if any.
-              if (vm_net_recvd(&sel_sockets) < 0)
-                fprintf(stderr, "vmnet_select : vm_net_recvd() failed\n");
-
-              // Is there anybody out there (remote client) ?
-              if (FD_ISSET(init->ws.sock.socket, &sel_sockets))
-                {
-                  if (vm_net_accept() < 0)
-                    fprintf(stderr, "Connection rejected\n");
-                }
-
-              // Is there anybody out there (DUMP) ?
-              if (FD_ISSET(dump_world.sock, &sel_sockets))
-                {
-                  if (vm_dump_accept() < 0)
-                    fprintf(stderr, "Connection rejected\n");
-                }
-            }
+	    vm_check_net_select(&sel_sockets, init->ws.sock.socket);
 #endif
+
           if (world.state.vm_mode != REVM_STATE_CMDLINE)
             {
               if (FD_ISSET(0, &sel_sockets))
@@ -270,6 +279,11 @@ int                     vm_select()
 		  if (!world.curjob)
 		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(-1));
 
+		  /* If the event appeared on the debugger FIFO, 
+		     change the input file descriptor for it */
+		  if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+		      FD_ISSET(world.fifofd, &sel_sockets))
+		    vm_setinput(&world.curjob->ws, world.fifofd);
 
 #if defined (USE_READLN)
 		  if (readln_prompt_restore())

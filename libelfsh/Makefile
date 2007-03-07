@@ -35,7 +35,7 @@ NAME64			= libelfsh64
 all			: all32 all64
 
 all32			: $(OBJ32)
-			$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ \
+			@$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect32 -DELFSH32 \
 			-shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
@@ -43,7 +43,7 @@ all32			: $(OBJ32)
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			:  $(OBJ64)
-			$(CC) -L../elibc/ -lcelfsh64 -L../liballocproxy/ \
+			@$(CC) -L../elibc/ -lcelfsh64 -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect64 -DELFSH64 \
 			-shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)

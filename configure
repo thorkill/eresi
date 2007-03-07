@@ -394,6 +394,7 @@ fi
 echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
 echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile
 echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
+echo "#define LIBPATH          \"$PREFIX/usr/local/lib/\""	>> $VARSFILE
 echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "RM      = rm -f "                                		>> Makefile
 
@@ -440,6 +441,16 @@ echo "	@echo 'Building librevm...'			"      	>> Makefile
 echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 
+# If we compiled librevm with readline, we need to compile it a second
+# time without it, to be linked with libe2dbg in the embedded debugger
+if [ "$READLN" = "1" ]; then
+  cat $CONFIGFILE | grep -v READLN				> $CONFIGFILE
+  echo "	@echo 'Rebuilding librevm without readline'   "	>> Makefile
+  echo "	@cd librevm && \$(MAKE) clean		      "	>> Makefile
+  echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)      "	>> Makefile
+  echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
+fi
+
 echo "	@echo 'Building libe2dbg...'			"      	>> Makefile
 echo "	@cd libe2dbg && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
 echo "	@echo 'Libe2dbg has been built successfully.'"	        >> Makefile
@@ -466,7 +477,7 @@ echo "#	@cd modules && \$(MAKE) "				>> Makefile
 echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
 
-echo "install : all prepareDir #mod_install "			>> Makefile
+echo "install : prepareDir #mod_install "			>> Makefile
 echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
@@ -528,7 +539,7 @@ if [ "$FREEBSD" = "1" ]; then
 fi
 
 echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libe2dbg, \\"    >> Makefile
-echo "Libmjollnir, Libasm, Libui, Librevm and Libaspect  \\"    >> Makefile
+echo "Libmjollnir, Libasm, Libui, Librevm and Libaspect \\"     >> Makefile
 echo "installed successfully .'"			        >> Makefile
 echo " "							>> Makefile 
 

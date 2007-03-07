@@ -56,10 +56,10 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 all			: all32 all64
 
 all32			: $(OBJ32)
-			$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)
+			@$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)
 
 all64			: $(OBJ64)
-			$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) $(STATOPT)
+			@$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) $(STATOPT)
 
 clean		       :
 		       @$(RM) $(OBJ) *~ \#* *\# .\#* *.32.o *.64.o

@@ -2,7 +2,7 @@
 **
 ** libe2dbg.h for The Embedded ELF debugger 
 **
-** Started on Sun 05 Jun 2005 17:54:01 mm
+** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 */
 #ifndef __E2DBG_H__
@@ -12,7 +12,6 @@
 #include "aproxy.h"
 
 #define		__DEBUG_E2DBG__		0
-#define		__DEBUG_MUTEX__		1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
@@ -141,8 +140,6 @@ do							\
  ac.sa_flags       = SA_SIGINFO | SA_NODEFER ;		\
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
- ac.sa_sigaction   = e2dbg_sigusr1_handler;		\
- sigaction(SIGUSR1, &ac, NULL);				\
  signal(SIGSTOP, SIG_IGN);				\
  signal(SIGUSR2, SIG_IGN);				\
 } while (0)
@@ -252,7 +249,6 @@ typedef struct		s_e2dbgsyms
 }			e2dbgsyms_t;
 
 
-
 /* This structure contains the internal data of the debugger placed in the VM */
 typedef struct		s_e2dbgworld
 {
@@ -260,7 +256,7 @@ typedef struct		s_e2dbgworld
   hash_t		bp;				/* Breakpoints hash table */
   hash_t		threads;			/* Threads hash table */
   u_char		sourcing;			/* We are executing a debugger script */
-  u_int			dbgpid;				/* Thread ID for the debugger */
+  u_char		dbgpresent;			/* Should we proxy allocations ? */
   //e2dbgcontext_t	dbgcontext;			/* Current e2dbg scripting context */
   e2dbgsyms_t		syms;				/* Resolved symbol informations */
 
@@ -280,9 +276,6 @@ typedef struct		s_e2dbgworld
   /* Synchronization values */
 #define			ELFSH_MUTEX_UNLOCKED	0
 #define			ELFSH_MUTEX_LOCKED	1
-  elfshmutex_t		dbgsyn;				/* Dialog between debugger and debuggee */
-  elfshmutex_t		dbgack;				/* Dialog between debugger and debuggee */
-  elfshmutex_t		dbgwait;			/* Dialog between debugger and debuggee */
   elfshmutex_t		dbgbp;				/* Dialog between debugger and debuggee */
   int			exited;				/* Debugger exited */
   int			debuggee_exited;		/* Debuggee exited */
@@ -342,8 +335,11 @@ int		e2dbg_linkmap(elfshobj_t *file);
 char		*vm_get_prompt();
 char		*vm_get_mode_name();
 int		vm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
-u_int           e2dbg_getid();
-void            e2dbg_setid(u_int pid);
+u_char          e2dbg_presence_get();
+void            e2dbg_presence_set();
+void            e2dbg_presence_reset();
+int             e2dbg_self();
+void		e2dbg_kill(pid_t pid, int sig);
 
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);

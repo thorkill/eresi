@@ -63,13 +63,20 @@ int		vm_fifo_io(revmjob_t *job)
     }
 
   mkfifo(REVM_FIFO, 0600);
-  XOPEN(fd, REVM_FIFO, 0600, 0, -1);
+  XOPEN(fd, REVM_FIFO, O_RDWR, 0600, -1);
+  world.fifofd = fd;
 
-  job->ws.io.type      = ELFSH_IOFIFO;
-  job->ws.io.input_fd  = fd;
-  job->ws.io.input     = vm_stdinput;
-  job->ws.io.output_fd = fd;
-  job->ws.io.output    = vm_stdoutput;
+  /* If we are in the embedded server part of the debugger, do all I/O on the FIFO */
+  if (world.state.vm_side == REVM_SIDE_SERVER)
+    {
+      job->ws.io.type      = ELFSH_IOFIFO;
+      job->ws.io.input_fd  = fd;
+      job->ws.io.input     = vm_stdinput;
+      job->ws.io.output_fd = fd;
+      job->ws.io.output    = vm_stdoutput;
+      dup2(fd, 0);
+    }
+
   NOPROFILER_ROUT(0);
 }
 

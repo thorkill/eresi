@@ -19,7 +19,7 @@ void		e2dbg_init(void)
 {
   write(1, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
   e2dbg_dlsym_init();
-  e2dbg_setid(0);
+  e2dbg_presence_reset();
   SETSIG_USR1; 
   write(1, " [D] Finished e2dbg ctors \n", 26);
 }
@@ -30,13 +30,13 @@ int		e2dbg_entry(e2dbgparams_t *params)
 {
   int		ac;
   char		**av;
+  int		ret;
 
 #if __DEBUG_E2DBG__
   write(1, "[e2dbg_entry] CHECKPOINT 0\n", 27);
 #endif
 
   /* Initial settings */
-  e2dbg_setid(pthread_self());
   ac = params->ac;
   av = params->av;
   SETSIG_USR1;
@@ -116,7 +116,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
   printf("[e2dbg_entry] CHECKPOINT 5\n");
 #endif
 
-  return (vm_run(ac, av));
+  ret = vm_run(ac, av);
+  return (ret);
 }
 
 
