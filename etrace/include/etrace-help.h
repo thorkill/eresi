@@ -2,6 +2,9 @@
 ** etrace-help.h for etrace
 **
 ** Started on  Thu Aug 15 07:19:04 2005 mxatone
+**
+** $Id: etrace-help.h,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #ifndef __ETRACE_HELP_H_
  #define __ETRACE_HELP_H_

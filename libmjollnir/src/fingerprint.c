@@ -4,6 +4,9 @@
 ** Functions for fingerprinting inside libmjollnir
 **
 ** Started : Mon Jan 02 01:18:14 2007 mayhem
+**
+** $Id: fingerprint.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libmjollnir.h"
 

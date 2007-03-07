@@ -3,6 +3,9 @@
 ** 
 ** Started on  Thu Mar 13 23:27:58 2003 mayhem
 ** Last update Sat Mar 15 07:00:38 2003 mayhem
+**
+** $Id: filter.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libui.h"
 

@@ -1,13 +1,19 @@
 /*
 ** linkmap.c for libelfsh
-**
+** 
 ** TODO: Add linkmap object in scripting
-**
+** 
 ** Started on  Mon Jul 25 21:26:54 2005 ym
+** 
+**
+** $Id: linkmap.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
+/**
+ * Documentation missing.
+ */
 
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
 {
@@ -19,7 +25,9 @@ elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  lm->laddr);
 }
 
-
+/**
+ * Documentation missing.
+ */
 void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, elfsh_Addr laddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -31,7 +39,9 @@ void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, elfsh_Addr laddr)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
+/**
+ * Documentation missing.
+ */
 char		*elfsh_linkmap_get_lname(elfshlinkmap_t *lm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -42,7 +52,9 @@ char		*elfsh_linkmap_get_lname(elfshlinkmap_t *lm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (lm->lname));
 }
 
-
+/**
+ * Documentation missing.
+ */
 void		elfsh_linkmap_set_lname(elfshlinkmap_t *lm, char *name)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -54,7 +66,9 @@ void		elfsh_linkmap_set_lname(elfshlinkmap_t *lm, char *name)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
+/**
+ * Documentation missing.
+ */
 elfsh_Dyn	*elfsh_linkmap_get_lld(elfshlinkmap_t *lm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -65,7 +79,9 @@ elfsh_Dyn	*elfsh_linkmap_get_lld(elfshlinkmap_t *lm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  lm->lld);
 }
 
-
+/**
+ * Documentation missing.
+ */
 void		elfsh_linkmap_set_lld(elfshlinkmap_t *lm, elfsh_Dyn *lld)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -77,7 +93,9 @@ void		elfsh_linkmap_set_lld(elfshlinkmap_t *lm, elfsh_Dyn *lld)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
+/**
+ * Documentation missing.
+ */
 elfshlinkmap_t	*elfsh_linkmap_get_lnext(elfshlinkmap_t *lm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -88,7 +106,9 @@ elfshlinkmap_t	*elfsh_linkmap_get_lnext(elfshlinkmap_t *lm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lm->lnext);
 }
 
-
+/**
+ * Documentation missing.
+ */
 void		elfsh_linkmap_set_lnext(elfshlinkmap_t *lm, elfshlinkmap_t *lnext)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
@@ -100,7 +120,9 @@ void		elfsh_linkmap_set_lnext(elfshlinkmap_t *lm, elfshlinkmap_t *lnext)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
+/**
+ * Documentation missing.
+ */
 elfshlinkmap_t	*elfsh_linkmap_get_lprev(elfshlinkmap_t *lm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -125,7 +147,9 @@ void		elfsh_linkmap_set_lprev(elfshlinkmap_t *lm,
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
+/**
+ * Documentation missing.
+ */
 elfshlinkmap_t	*elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name)
 {
   elfshlinkmap_t *actual;

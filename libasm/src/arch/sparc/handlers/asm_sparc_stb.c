@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_stb.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -26,7 +31,6 @@ asm_sparc_stb(asm_instr * ins, u_char * buf, u_int len,
   ins->op2.type = ASM_SP_OTYPE_REGISTER;
   ins->op2.base_reg = opcode.rd;
 
-  /* Synthethics */
   if (ins->instr == ASM_SP_STB && ins->op2.base_reg == ASM_REG_G0) {
     ins->instr = ASM_SP_CLRB;
     ins->nb_op = 1;

@@ -1,12 +1,15 @@
 /*
- *
- * Compatibility with the Sparc architecture
- *
- * Define all the relocation types that can be undefined on various OS
- *
- * Last update Sat Feb 27 16:57:02 2005 mayhem
- *
- */
+** 
+** Compatibility with the Sparc architecture
+** 
+** Define all the relocation types that can be undefined on various OS
+** 
+** Last update Sat Feb 27 16:57:02 2005 mayhem
+** 
+**
+** $Id: libelfsh-sparc.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 
 #ifndef EM_SPARC

@@ -1,15 +1,20 @@
 /*
 ** ia64.c for libelfsh
-**
+** 
 ** Started on  Sat Feb 26 23:25:37 2005 mayhem
-**
+** 
 ** Skeleton cut & pasted from the sparc64 backend
+** 
+**
+** $Id: ia64.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Static hooking for IA64 */
+/**
+ * Static hooking for IA64 
+ */
 int	elfsh_cflow_ia64(elfshobj_t     *null,
 			 char		*sname,
 			 elfsh_Sym	*null2,
@@ -21,11 +26,9 @@ int	elfsh_cflow_ia64(elfshobj_t     *null,
 }
 
 
-
-// 
-
-
-/* PLT hijacking on IA64 */
+/**
+ * PLT hijacking on IA64 
+ */
 int		elfsh_hijack_plt_ia64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
 					 elfsh_Addr addr)
@@ -35,7 +38,9 @@ int		elfsh_hijack_plt_ia64(elfshobj_t *file,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/* ALTPLT hijacking on IA64 */
+/**
+ * ALTPLT hijacking on IA64 
+ */
 int		elfsh_hijack_altplt_ia64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
 					 elfsh_Addr addr)
@@ -45,7 +50,9 @@ int		elfsh_hijack_altplt_ia64(elfshobj_t *file,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/* Perform relocation on entry for IA64 architecture */
+/**
+ * Perform relocation on entry for IA64 architecture 
+ */
 int       elfsh_relocate_ia64(elfshsect_t       *new,
 			      elfsh_Rela        *cur,
 			      elfsh_Addr        *dword,

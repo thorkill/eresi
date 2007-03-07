@@ -1,14 +1,19 @@
 /*
- * rpht.c for elfsh
- *
- * Specific functions for Runtime Program Header Table
- *
- * Started on  Sat Oct 01 14:37:33 2005  mayhem
- */ 
+** rpht.c for elfsh
+** 
+** Specific functions for Runtime Program Header Table
+** 
+** Started on  Sat Oct 01 14:37:33 2005  mayhem
+**
+** $Id: rpht.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 
-/* Return a ptr on the program header table */
+/**
+ * Return a ptr on the program header table 
+ */
 void    *elfsh_get_rpht(elfshobj_t *file, int *num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -22,7 +27,9 @@ void    *elfsh_get_rpht(elfshobj_t *file, int *num)
                      (file->rpht));
 }
 
-/* Create and insert the Runtime PHT */
+/**
+ * Create and insert the Runtime PHT 
+ */
 int             elfsh_create_rpht(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -36,8 +43,9 @@ int             elfsh_create_rpht(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* Insert a PHT entry in the RPHT (e2dbg safe) */
+/**
+ * Insert a PHT entry in the RPHT (e2dbg safe) 
+ */
 elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h)
 {
   elfsh_Phdr	*phdr;

@@ -3,6 +3,9 @@
 **
 ** Started Sat 13 2006 09:52:12 mxatone
 **
+**
+** $Id: libedfmt-stabs.h,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef __STABS_H__

@@ -3,6 +3,9 @@
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 mayhem
 ** Last update Sun Mar 10 02:46:18 2002 mayhem
+**
+** $Id: got_hijack.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include	"libelfsh.h"
 

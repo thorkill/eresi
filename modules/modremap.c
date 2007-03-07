@@ -10,6 +10,9 @@
 ** merged in libelfsh/mapped.c
 **
 ** Fixed by ELFsh crew for the ELFsh project
+**
+** $Id: modremap.c,v 1.3 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "elfsh.h"
 

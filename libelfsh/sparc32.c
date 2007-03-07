@@ -1,14 +1,19 @@
 /*
 ** sparc32.c for libelfsh
-**
+** 
 ** Started on  Fri Jan 11 03:05:37 2003 mayhem
+** 
+**
+** $Id: sparc32.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
 
-/* Static hooking for Sparc */
+/**
+ * Static hooking for Sparc 
+ */
 int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    char	*name,
 					    elfsh_Sym	*symbol,
@@ -19,11 +24,11 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 		    "CFLOW unimplemented yet for SPARC", -1);
 }
 
-
-
-/* PLT hijacking on SPARC */
-/* Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes */
-/* Slight patch by emsi to support function call when the high bit is set */
+/**
+ * PLT hijacking on SPARC
+ * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
+ * Slight patch by emsi to support function call when the high bit is set
+ */
 int		elfsh_hijack_plt_sparc32(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
 					 elfsh_Addr addr)
@@ -58,11 +63,11 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
 }
 
 
-
-
-/* PLT hijacking on SPARC */
-/* Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes */
-/* Slight patch by emsi to support function call when the high bit is set */
+/**
+ * PLT hijacking on SPARC
+ * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
+ * Slight patch by emsi to support function call when the high bit is set 
+ */
 int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file, 
 						elfsh_Sym *symbol,
 						elfsh_Addr addr)
@@ -101,7 +106,6 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
 
 
 /* 
-
    Used for hijacking the first PLT entry, when %g1 needs to be kept.
    This 16 instructions lenght code copies the first updated .plt
    entry to the first not-yet-updated .alt.plt entry in runtime. This
@@ -122,8 +126,11 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
    need this cool stub -mm
 
    Optimized by dvorak for fitting in 96 bytes (12 instrs) danke Jack !
-
 */
+
+/**
+ * hijack altptl on sparc32
+ */
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
 					    elfsh_Addr addr)
@@ -199,11 +206,10 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-/* Perform relocation on entry for SPARC architecture */
-/* First version by thegrugq adapted by elfsh crew */
+/**
+ * Perform relocation on entry for SPARC architecture
+ * First version by thegrugq adapted by elfsh crew
+ */
 int       elfsh_relocate_sparc32(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
 				 elfsh_Addr        *dword,

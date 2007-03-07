@@ -1,12 +1,15 @@
 /*
- *
- * Compatibility with the IA32 architecture
- *
- * Define all the relocation types that can be undefined on various OS
- *
- * Last update Sat Feb 26 20:57:27 2004 yann malcom 
- *
- */
+** 
+** Compatibility with the IA32 architecture
+** 
+** Define all the relocation types that can be undefined on various OS
+** 
+** Last update Sat Feb 26 20:57:27 2004 yann malcom 
+** 
+**
+** $Id: libelfsh-ia32.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 
 #ifndef EM_386

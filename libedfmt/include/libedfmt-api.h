@@ -3,6 +3,9 @@
 **
 ** Started Fev 02 2006 09:53:25 mxatone
 **
+**
+** $Id: libedfmt-api.h,v 1.10 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef __LIBEDFMT_API_H__

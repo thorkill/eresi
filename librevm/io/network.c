@@ -5,6 +5,9 @@
 **
 ** Started Wed Feb 25 22:22:35 2004 yann_malcom
 ** Updated Mon Mar 05 04:37:10 2007 mayhem 
+**
+** $Id: network.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

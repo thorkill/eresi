@@ -1,12 +1,15 @@
-/**
- * \file libmjollnir/types.c
- *
- * Functions that use the typed instructions information in libasm
- *
- * Made by mayhem, thorkill, sk
- *
- * Updated Thu Dec 29 16:14:39 2006 mayhem
- */
+/*
+** \file libmjollnir/types.c
+** 
+** Functions that use the typed instructions information in libasm
+** 
+** Made by mayhem, thorkill, sk
+** 
+** Updated Thu Dec 29 16:14:39 2006 mayhem
+**
+** $Id: types.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libmjollnir.h"
 
 

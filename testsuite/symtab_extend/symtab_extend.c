@@ -3,6 +3,9 @@
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 mayhem
 ** Last update Mon Jun 30 11:13:50 2003 mayhem
+**
+** $Id: symtab_extend.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include	"libelfsh.h"
 

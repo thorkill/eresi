@@ -2,12 +2,17 @@
 ** plt.c for libelfsh
 ** 
 ** Started on  Tue Jul 24 06:40:07 2001 mayhem
+** 
+**
+** $Id: plt.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Load the Procedure Linkage Table */
+/**
+ * Load the Procedure Linkage Table 
+ */
 elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num)
 {
   elfshsect_t	*actual;
@@ -42,7 +47,9 @@ elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num)
 }
 
 
-/* Return 1 if the section is the plt or 0 if its not */
+/**
+ * Return 1 if the section is the plt or 0 if its not 
+ */
 int		elfsh_is_plt(elfshobj_t *file, elfshsect_t *sct)
 {
   char		*name;
@@ -55,7 +62,9 @@ int		elfsh_is_plt(elfshobj_t *file, elfshsect_t *sct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return 1 if the section is the plt or 0 if its not */
+/**
+ * Return 1 if the section is the plt or 0 if its not 
+ */
 int		elfsh_is_altplt(elfshobj_t *file, elfshsect_t *sct)
 {
   char		*name;
@@ -68,7 +77,9 @@ int		elfsh_is_altplt(elfshobj_t *file, elfshsect_t *sct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return 1 if the symbol points in the PLT, 0 if not, -1 if the PLT cant be found */
+/**
+ * Return 1 if the symbol points in the PLT, 0 if not, -1 if the PLT cant be found 
+ */
 int			elfsh_is_pltentry(elfshobj_t *file, elfsh_Sym *sym)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -89,7 +100,9 @@ int			elfsh_is_pltentry(elfshobj_t *file, elfsh_Sym *sym)
 }
 
 
-/* Return the size of 1 PLT entry */
+/**
+ * Return the size of 1 PLT entry 
+ */
 int		elfsh_get_pltentsz(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -123,8 +136,10 @@ int		elfsh_get_pltentsz(elfshobj_t *file)
 }
 
 
-/* Return the size of the FIRST PLT entry on this arch */
-/* Its a different size on Alpha and Sparc */
+/**
+ * Return the size of the FIRST PLT entry on this arch
+ * Its a different size on Alpha and Sparc 
+ */
 int		 elfsh_get_first_pltentsz(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

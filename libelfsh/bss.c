@@ -8,6 +8,9 @@
 ** Started on  Sun Apr  6 08:35:07 2003 mayhem
 ** Last update Sat Jul 30 17:34:52 2005 mayhem
 **
+**
+** $Id: bss.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 

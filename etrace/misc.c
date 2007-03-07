@@ -2,6 +2,9 @@
 ** misc.c for etrace
 **
 ** Updated on  Wed Jan 03 17:31:11 2007 mxatone
+**
+** $Id: misc.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include "etrace.h"
 

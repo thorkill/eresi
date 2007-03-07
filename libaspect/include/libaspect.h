@@ -5,6 +5,9 @@
 **
 ** Started Dec 22 2006 02:57:03 mayhem
 **
+**
+** $Id: libaspect.h,v 1.21 2007-03-07 16:45:35 thor Exp $
+**
 */
 #if !defined(__ASPECT_H__)
  #define __ASPECT_H__ 1

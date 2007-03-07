@@ -3,7 +3,10 @@
  **
  ** Started on  Mon Jul 23 15:47:12 2001 mayhem
  **
- */
+**
+** $Id: libelfsh.h,v 1.40 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 #ifndef __LIBELFSH_H_
 #define __LIBELFSH_H_
@@ -329,7 +332,9 @@ do						  \
 #define		EI_PAX			   14   /* Index in e_ident[] where to read flags */
 #define		EI_RPHT			   10	/* Index in e_ident[] where to read rphtoff */
 
-/* ELFsh redirection abstract unit */
+/**
+ * ELFsh redirection abstract unit 
+ */
 typedef struct	s_redir
 {
 #define		ELFSH_REDIR_CFLOW	0
@@ -344,7 +349,9 @@ typedef struct	s_redir
 }		elfshredir_t;
 
 
-/* ELFsh private stab entry */
+/**
+ * ELFsh private stab entry 
+ */
 typedef struct		s_stab
 {
   elfsh_Addr		strindex;
@@ -355,7 +362,9 @@ typedef struct		s_stab
 }			elfshstabent_t;
 
 
-/* ELFsh private .notes entry format */
+/**
+ * ELFsh private .notes entry format 
+ */
 typedef struct		s_nentry
 {
   int			namesz;
@@ -368,7 +377,9 @@ typedef struct		s_nentry
 }			elfshnotent_t;
 
 
-/* Version structures */
+/**
+ * Version structures 
+ */
 typedef struct        s_hashneed
 {
   elfsh_Verneed       *need;
@@ -383,7 +394,9 @@ typedef struct        s_hashdef
 }                     hashdef_t;
 
 
-/* ELFsh private relocation format */
+/**
+ * ELFsh private relocation format 
+ */
 typedef struct		s_rel
 {
   u_int			idx_src;
@@ -407,7 +420,9 @@ typedef struct s_sect	elfshsect_t;
 typedef struct s_obj	elfshobj_t;
 
 
-/* Section data type */
+/**
+ * Section data type 
+ */
 struct			s_sect
 {
 
@@ -448,7 +463,9 @@ struct			s_sect
 };
 
 
-/* Link map structure */
+/**
+ * Link map structure 
+ */
 typedef struct		s_link_map
 {
   elfsh_Addr		laddr;	   /* Base address shared object is loaded at. */
@@ -459,8 +476,10 @@ typedef struct		s_link_map
 }			elfshlinkmap_t;
 
 
-/* The runtime ELF header (unofficial ELF extension) */
-/* This structure has been introduced since the Embedded ELF Debugger */
+/**
+ * The runtime ELF header (unofficial ELF extension)
+ * This structure has been introduced since the Embedded ELF Debugger 
+ */
 typedef struct	s_rehdr
 {
   uint16_t	 rphtnbr;	    /* Number of entries in RPHT */
@@ -469,7 +488,9 @@ typedef struct	s_rehdr
 
 }		elfshrhdr_t;
 
-/* Debug format pointers */
+/**
+ * Debug format pointers 
+ */
 typedef struct	s_dfmt
 {
   void		*uni;
@@ -491,7 +512,9 @@ typedef struct	s_dfmt
 #define PRARGSZ			80  	 /* Maximum argument bytes saved */
 #define PRPSINFO_VERSION	1 	 /* Current version of prpsinfo_t */
 
-
+/**
+ * Documentation missing.
+ */
 typedef struct 	elfsh_bsdprpsinfo 
 {
   int   	pr_version; 		 /* Version number of struct (1) */
@@ -500,6 +523,9 @@ typedef struct 	elfsh_bsdprpsinfo
   char  	pr_psargs[PRARGSZ+1];   /* Arguments, null terminated (1) */
 }		elfsh_bsdprpsinfo_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct elfsh_bsdureg 
 {
   unsigned int  r_fs;
@@ -523,8 +549,9 @@ typedef struct elfsh_bsdureg
   unsigned int  r_gs;
 }		elfsh_bsduregset_t;
 
-
-
+/**
+ * Documentation missing.
+ */
 typedef struct elfsh_bsdfpreg 
 {
   unsigned long fpr_env[7];
@@ -536,6 +563,9 @@ typedef struct elfsh_bsdfpreg
 
 #define		PRSTATUS_VERSION  1 	/* Current version of prstatus_t */
 
+/**
+ * Documentation missing.
+ */
 typedef struct elfsh_bsdprstatus
 {
   int   		pr_version; 	/* Version number of struct (1) */
@@ -548,6 +578,9 @@ typedef struct elfsh_bsdprstatus
   elfsh_bsduregset_t	pr_reg;   	/* General purpose registers (1) */
 } 			elfsh_bsdprstatus_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct user_regs
 {
   long int ebx;
@@ -569,6 +602,9 @@ typedef struct user_regs
   long int xss;
 } elfsh_uregset_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct user_fpregs
 {
   long int	cwd;
@@ -581,6 +617,9 @@ typedef struct user_fpregs
   long int	st_space [20];
 }		elfsh_fpregs_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct siginfo_t
 {
   int si_signo;     /* Signal number.  */
@@ -588,6 +627,9 @@ typedef struct siginfo_t
   int si_errno;     /* Errno.  */
 } elfsh_siginfo_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct elfsh_prstatus
 {
   elfsh_siginfo_t 	pr_info;   	/* Info associated with signal.  */
@@ -608,6 +650,9 @@ typedef struct elfsh_prstatus
 
 #define ELF_PRARGSZ     (80)    /* Number of chars for args.  */
 
+/**
+ * Documentation missing.
+ */
 typedef struct elfsh_prpsinfo
 {
   char 			pr_state;      	/* Numeric process state.  */
@@ -625,9 +670,10 @@ typedef struct elfsh_prpsinfo
   char 			pr_psargs[ELF_PRARGSZ];  /* Initial part of arg list.  */
 } elfsh_prpsinfo_t;
 
-/* core file info structure 
- *
- * needs to be improved */
+/**
+ * core file info structure 
+ * needs to be improved 
+ */
 typedef struct linux_core
 {
   uint16_t		offset;		/* offset for note section in the file */
@@ -643,6 +689,9 @@ typedef struct linux_core
 
 }			elfshcore_t;
 
+/**
+ * BSD core file info structure
+ */
 typedef struct bsd_core 
 {
   uint16_t		offset;
@@ -658,10 +707,9 @@ typedef struct bsd_core
 
 } elfshbsdcore_t;
 
-
-
-
-/* ELF object structure */
+/**
+ * ELF object structure 
+ */
 struct		 s_obj
 {
   elfsh_Ehdr	 *hdr;				/* Elf header */
@@ -731,8 +779,10 @@ struct		 s_obj
 
 
 
-/* The library has its world itself */
-/* There stands all the flags that are used by libelfsh */
+/**
+ * The library has its world itself
+ * There stands all the flags that are used by libelfsh 
+ */
 typedef struct	s_libstate
 {
 
@@ -745,7 +795,9 @@ typedef struct	s_libstate
 
 
 
-/* Elfsh break points */
+/**
+ * Elfsh break points 
+ */
 typedef struct	s_bp 
 {
 
@@ -767,7 +819,9 @@ typedef struct	s_bp
   u_char	flags;		/* Breakpoint flags */
 }		elfshbp_t;
 
-/* Trace structure */
+/**
+ * Trace structure 
+ */
 typedef struct 	s_traces_args
 {
   char		*name;
@@ -775,6 +829,9 @@ typedef struct 	s_traces_args
   int		size;
 }		elfshtracesargs_t;
 
+/**
+ * Documentation missing.
+ */
 typedef struct 	s_traces
 {
 #define ELFSH_TRACES_TYPE_DEFAULT "global"

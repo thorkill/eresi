@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_bicc.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -16,7 +21,6 @@ asm_sparc_bicc(asm_instr * ins, u_char * buf, u_int len,
   ins->op1.type = ASM_SP_OTYPE_DISPLACEMENT;
   ins->op1.imm = opcode.imm;
   ins->annul = opcode.a;
-  /* This will avoid having ',pn' on non-prediction branches outputs */
   ins->prediction = 1;
 
   return 4;

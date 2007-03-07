@@ -1,9 +1,12 @@
 /*
 ** libelfsh-bsd.h
-**
+** 
 ** Various undefined macros on BSD
-**
+** 
 ** Last update Mon Feb 26 05:05:27 2005 mayhem
+**
+** $Id: libelfsh-bsd.h,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 // TODO USE GOOD ELFSH TYPE
@@ -15,7 +18,9 @@
 #include <sys/param.h>
 #include <sys/elf_common.h>
 
-/* Lists of shared object dependencies */
+/**
+ * Lists of shared object dependencies 
+ */
 typedef struct			Struct_Needed_Entry 
 {
   struct Struct_Needed_Entry	*next;
@@ -25,6 +30,9 @@ typedef struct			Struct_Needed_Entry
 
 struct Struct_Obj_Entry;
 
+/**
+ * BSD Link map 
+ */
 typedef struct		link_map 
 {
   caddr_t		l_addr;                 /* Base Address of library */
@@ -37,7 +45,9 @@ typedef struct		link_map
 }			Link_map;
 
 
-/* Lists of shared objects */
+/**
+ * Lists of shared objects 
+ */
 typedef struct				Struct_Objlist_Entry 
 {
   STAILQ_ENTRY(Struct_Objlist_Entry)	link;
@@ -46,7 +56,7 @@ typedef struct				Struct_Objlist_Entry
 
 typedef STAILQ_HEAD(Struct_Objlist, Struct_Objlist_Entry) Objlist;
 
-/*
+/**
  * Shared object descriptor.
  *
  * Items marked with "(%)" are dynamically allocated, and must be freed
@@ -145,7 +155,9 @@ typedef struct Struct_Obj_Entry {
 #define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
 
 
-/* Version definition sections.  */
+/**
+ * Version definition sections (32Bit)
+ */
 typedef struct
 {
   Elf32_Half	vd_version;		/* Version revision */
@@ -158,6 +170,9 @@ typedef struct
 					   entry */
 } Elf32_Verdef;
 
+/**
+ * Version definition sections (64Bit)
+ */
 typedef struct
 {
   Elf64_Half	vd_version;		/* Version revision */
@@ -186,8 +201,9 @@ typedef struct
 #define	VER_NDX_LORESERVE	0xff00	/* Beginning of reserved entries.  */
 #define	VER_NDX_ELIMINATE	0xff01	/* Symbol is to be eliminated.  */
 
-/* Auxialiary version information.  */
-
+/**
+ * Auxialiary version information.
+ */
 typedef struct
 {
   Elf32_Word	vda_name;		/* Version or dependency names */
@@ -203,8 +219,9 @@ typedef struct
 } Elf64_Verdaux;
 
 
-/* Version dependency section.  */
-
+/**
+ * Version dependency section.
+ */
 typedef struct
 {
   Elf32_Half	vn_version;		/* Version of structure */
@@ -227,8 +244,10 @@ typedef struct
 					   entry */
 } Elf64_Verneed;
 
-/* Note section contents.  Each entry in the note section begins with
-   a header of a fixed form.  */
+/**
+ * Note section contents.  Each entry in the note section begins with
+ * a header of a fixed form.
+ */
 typedef struct
 {
   Elf32_Word n_namesz;                  /* Length of the note's name.  */
@@ -250,8 +269,9 @@ typedef struct
 #define VER_NEED_CURRENT 1		/* Current version */
 #define VER_NEED_NUM	 2		/* Given version number */
 
-/* Auxiliary needed version information.  */
-
+/**
+ * Auxiliary needed version information.
+ */
 typedef struct
 {
   Elf32_Word	vna_hash;		/* Hash value of dependency name */

@@ -2,6 +2,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
+**
+** $Id: mydisasm.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 /* 

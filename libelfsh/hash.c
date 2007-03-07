@@ -1,9 +1,12 @@
 /*
- * hash.c for libelfsh
- * 
- * Started on  Mon Feb 26 04:15:44 2001 mayhem
- *
- */
+** hash.c for libelfsh
+** 
+** Started on  Mon Feb 26 04:15:44 2001 mayhem
+** 
+**
+** $Id: hash.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 static void	*lastdata;

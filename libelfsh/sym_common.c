@@ -2,14 +2,16 @@
 ** sym_common.c for elfsh
 ** 
 ** Started on  Tue Dec 31 10:19:01 2002 mayhem
+** 
+**
+** $Id: sym_common.c,v 1.5 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-
-
-
-/* Return the symbol size */
+/**
+ * Return the symbol size 
+ */
 elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -20,7 +22,9 @@ elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_size));
 }
 
-/* Change the symbol size */
+/**
+ * Change the symbol size 
+ */
 int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -32,7 +36,9 @@ int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the symbol offset giving its elfsh_Sym entry */
+/**
+ * Return the symbol offset giving its elfsh_Sym entry 
+ */
 elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -43,7 +49,9 @@ elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_value));
 }
 
-/* Change the symbol offset giving its elfsh_Sym entry */
+/**
+ * Change the symbol offset giving its elfsh_Sym entry 
+ */
 int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -56,7 +64,9 @@ int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
 }
 
 
-/* Return the symbol binding */
+/**
+ * Return the symbol binding 
+ */
 u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -67,7 +77,9 @@ u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_BIND(s->st_info)));
 }
 
-/* Change the symbol binding */
+/**
+ * Change the symbol binding 
+ */
 u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -79,7 +91,9 @@ u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the symbol type */
+/**
+ * Return the symbol type 
+ */
 u_char	elfsh_get_symbol_type(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -90,7 +104,9 @@ u_char	elfsh_get_symbol_type(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_TYPE(s->st_info)));
 }
 
-/* Change the symbol type */
+/**
+ * Change the symbol type 
+ */
 u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -102,7 +118,9 @@ u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the symbol type */
+/**
+ * Return the symbol type 
+ */
 u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -113,7 +131,9 @@ u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ST_VISIBILITY(s->st_other)));
 }
 
-/* Change the symbol type */
+/**
+ * Change the symbol type 
+ */
 u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -125,7 +145,9 @@ u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the symbol linked section index */
+/**
+ * Return the symbol linked section index 
+ */
 u_int	elfsh_get_symbol_link(elfsh_Sym *s) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -136,7 +158,9 @@ u_int	elfsh_get_symbol_link(elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_shndx));
 }
 
-/* Change the symbol linked section index */
+/**
+ * Change the symbol linked section index 
+ */
 u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -148,9 +172,9 @@ u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* High level procedure for get_sym_by_value() */
+/**
+ * High level procedure for get_sym_by_value() 
+ */
 elfsh_Sym	*elfsh_get_metasym_byval(elfshobj_t *file, int num, 
 					 elfsh_Addr vaddr, int *off, 
 					 int mode)
@@ -171,7 +195,9 @@ elfsh_Sym	*elfsh_get_metasym_byval(elfshobj_t *file, int num,
 }
 
 
-/* Internal generic function for symbol research by value */
+/**
+ * Internal generic function for symbol research by value 
+ */
 elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num, 
 					  elfsh_Addr vaddr, int *off, int mode)
 {
@@ -233,7 +259,9 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
 }
 
 
-/* Create a symbol */
+/**
+ * Create a symbol 
+ */
 elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type, 
 				    int binding, int vis, int sctidx)
 {
@@ -251,7 +279,9 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
 }
 
 
-/* Just copy the symtab . The returned symbol table need to be freed */
+/**
+ * Just copy the symtab . The returned symbol table need to be freed 
+ */
 elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 {
   elfsh_Sym	*new;
@@ -266,9 +296,9 @@ elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
-
-/* Get symbol by index */
+/**
+ * Get symbol by index 
+ */
 elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab, 
 						   elfsh_Addr index)
 {
@@ -278,7 +308,9 @@ elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab,
 }
 
 
-/* Get a symbol value by its name */
+/**
+ * Get a symbol value by its name 
+ */
 elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
@@ -324,7 +356,9 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 		     (elfsh_reverse_symbol(file, vaddr, off)));
 }
 
-/* Endianize the table */
+/**
+ * Endianize the table 
+ */
 int		elfsh_endianize_symtab(elfshsect_t *tab)
 {
   elfsh_Sym	*symtab;
@@ -361,8 +395,10 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 }
   
 
-/* Shift the symbol table */
-int		elfsh_shift_syms(elfshobj_t *file, 
+/**
+ * Shift the symbol table 
+ */
+  int		elfsh_shift_syms(elfshobj_t *file, 
 				 elfshsect_t *symtab, 
 				 elfsh_Addr limit, int inc)
 {

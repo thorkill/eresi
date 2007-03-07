@@ -2,6 +2,9 @@
 ** arith.c for elfsh
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
+**
+** $Id: atomic.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

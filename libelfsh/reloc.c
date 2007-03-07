@@ -1,23 +1,29 @@
 /*
 ** reloc.c for elfsh
-**
+** 
 ** Started on  Tue Feb 27 14:34:50 2001 mayhem
+** 
+**
+** $Id: reloc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Contain the last requested relocation type */
-/* This ugly flag may be sensible to race conditions if 2 users use
-   it at the same time. However it is necessary for discriminating
-   elfsh_Rel and elfsh_Rela pointers in scripting handlers since
-   the handlers are shared with other ELF objects types, we lack
-   a bit of flexibility here.
-*/
+/**
+ * Contain the last requested relocation type
+ * This ugly flag may be sensible to race conditions if 2 users use
+ * it at the same time. However it is necessary for discriminating
+ *  elfsh_Rel and elfsh_Rela pointers in scripting handlers since
+ *  the handlers are shared with other ELF objects types, we lack
+ *  a bit of flexibility here.
+ */
 static char	isrel = 1;
 
 
-/* Create relocation entry */
+/**
+ * Create relocation entry 
+ */
 elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym, 
 				    elfsh_Addr off)
 {
@@ -31,7 +37,9 @@ elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
 }
 
-/* Create relocation entry */
+/**
+ * Create relocation entry 
+ */
 elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym, 
 				     elfsh_Addr off, elfsh_Addr add)
 {
@@ -49,7 +57,9 @@ elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r));
 }
 
-/* Return the relocation type */
+/**
+ * Return the relocation type 
+ */
 u_int	elfsh_get_reltype(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -60,7 +70,9 @@ u_int	elfsh_get_reltype(elfsh_Rel *r)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_TYPE(r->r_info)));
 }
 
-/* Return the relocation type */
+/**
+ * Return the relocation type 
+ */
 u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -72,7 +84,9 @@ u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return the relocation symbol index */
+/**
+ * Return the relocation symbol index 
+ */
 u_int	elfsh_get_relsym(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -83,7 +97,9 @@ u_int	elfsh_get_relsym(elfsh_Rel *r)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_R_SYM(r->r_info)));
 }
 
-/* Change the relocation symbol index */
+/**
+ * Change the relocation symbol index 
+ */
 u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -96,7 +112,9 @@ u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
 }
 
 
-/* Return the relocation offset */
+/**
+ * Return the relocation offset 
+ */
 elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -107,7 +125,9 @@ elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_offset));
 }
 
-/* Change the relocation offset for this entry */
+/**
+ * Change the relocation offset for this entry 
+ */
 int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -120,7 +140,9 @@ int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
 }
 
 
-/* Return the add-end */
+/**
+ * Return the add-end 
+ */
 elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -131,7 +153,9 @@ elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (r->r_addend));
 }
 
-/* Change the add-end */
+/**
+ * Change the add-end 
+ */
 int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -143,9 +167,9 @@ int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* Change endianess of relocation tables */
+/**
+ * Change endianess of relocation tables 
+ */
 int		elfsh_endianize_relocs(elfshsect_t *s)
 {
   u_int		idx;
@@ -190,7 +214,9 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
 }
 
 
-/* Return the 'range'th relocation table */
+/**
+ * Return the 'range'th relocation table 
+ */
 elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, 
 				 elfsh_Addr range, 
 				 u_int *nbr)
@@ -236,9 +262,9 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
 }
 
 
-
-
-/* Insert a symbol in the given symbol table */
+/**
+ * Insert a symbol in the given symbol table 
+ */
 int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
 
 {
@@ -264,7 +290,9 @@ int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
 
 
 
-/* Return the symbol name associated with the relocation entry */
+/**
+ * Return the symbol name associated with the relocation entry 
+ */
 char		*elfsh_get_symname_from_reloc(elfshobj_t *file,
 					      elfsh_Rel	 *r)
 {
@@ -288,7 +316,9 @@ char		*elfsh_get_symname_from_reloc(elfshobj_t *file,
 
 
 
-/* Return the Symbol associated with the relocation entry */
+/**
+ * Return the Symbol associated with the relocation entry 
+ */
 elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
 					     elfsh_Rel	*r)
 {
@@ -329,11 +359,11 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
 
 
 
-/* 
-   Ugly hook, but necessary for keeping track of the reloc element type
-   since elfsh_get_relent_by_index cannot do it since it shares a function
-   pointer with other elf objects in the scripting engine. -m
-*/
+/** 
+ * Ugly hook, but necessary for keeping track of the reloc element type
+ * since elfsh_get_relent_by_index cannot do it since it shares a function
+ * pointer with other elf objects in the scripting engine. -m
+ */
 void		elfsh_setrel(char b) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -344,7 +374,9 @@ void		elfsh_setrel(char b)
 }
 
 
-/* Used as internal handler for elfsh hashes */
+/**
+ * Used as internal handler for elfsh hashes 
+ */
 elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
 {
   elfsh_Rela	*atable;
@@ -361,7 +393,9 @@ elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
 
 
 
-/* Used as internal handler for elfsh hashes */
+/**
+ * Used as internal handler for elfsh hashes 
+ */
 elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
@@ -403,7 +437,9 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 
 
 
-/* Create relocation table for section */
+/**
+ * Create relocation table for section 
+ */
 elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
 {
   elfshsect_t	*target;

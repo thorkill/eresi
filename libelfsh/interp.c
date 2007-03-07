@@ -2,13 +2,18 @@
 ** interp.c for libelfsh
 ** 
 ** Started on  Sun Jun 10 20:29:18 2001 mayhem
+** 
+**
+** $Id: interp.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
 
-/* modify the niterpreter string : the new name len must be <= to the old one */
+/**
+ * modify the niterpreter string : the new name len must be <= to the old one 
+ */
 int             elfsh_write_interp(elfshobj_t *file, char *interp)
 {
   char          *actual;
@@ -33,7 +38,9 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
 
 
 
-/* Find the interpreter (pht lookup method) */
+/**
+ * Find the interpreter (pht lookup method) 
+ */
 char		*elfsh_get_interp(elfshobj_t *file)
 {
   elfshsect_t	*new = NULL;

@@ -4,6 +4,9 @@
 ** The base of the unified type system
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
+**
+** $Id: types.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libaspect.h"
 

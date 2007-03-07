@@ -5,6 +5,9 @@
 ** 
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
+**
+** $Id: e2dbg-misc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 

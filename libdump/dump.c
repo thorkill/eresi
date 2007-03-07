@@ -1,10 +1,13 @@
 /*
- * dump.c for elfsh
- *
- * Started on Tue Feb 15 12:51:34 CET 2005 ym
- * Updated on Wed Mar  9 22:02:29 CET 2005 ym
- *
- */
+** dump.c for elfsh
+** 
+** Started on Tue Feb 15 12:51:34 CET 2005 ym
+** Updated on Wed Mar  9 22:02:29 CET 2005 ym
+** 
+**
+** $Id: dump.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 #include "libdump.h"
 

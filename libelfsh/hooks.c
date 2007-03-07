@@ -1,13 +1,16 @@
 /*
- * hooks.c for libelfsh (The ELF shell library)
- *
- * All the function pointers for all provided techniques.
- *
- * This is using the libaspect vectors
- *
- * Started Jan 11 2004 02:57:03 mayhem
- *
- */
+** hooks.c for libelfsh (The ELF shell library)
+** 
+** All the function pointers for all provided techniques.
+** 
+** This is using the libaspect vectors
+** 
+** Started Jan 11 2004 02:57:03 mayhem
+** 
+**
+** $Id: hooks.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 hash_t	interp_hash;

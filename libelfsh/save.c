@@ -3,12 +3,17 @@
 ** 
 ** Started on  Tue Mar  4 01:14:01 2003 mayhem
 ** Last update Thu Mar 23 23:21:08 2006 thorkill
+**
+** $Id: save.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
 
 
-/* Find a string in a random buffer of size n */
+/**
+ * Find a string in a random buffer of size n
+ */
 static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 {
   int			idx;
@@ -27,7 +32,9 @@ static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 }
 
 
-/* Find the number of removed shdr before a given index */
+/**
+ * Find the number of removed shdr before a given index 
+ */
 static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 {
   elfshsect_t		*sect;
@@ -44,8 +51,9 @@ static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 }
 
 
-
-/* Save SHT taking care of removed shdr if the file was cleaned up */
+/**
+ * Save SHT taking care of removed shdr if the file was cleaned up 
+ */
 static int		elfsh_save_sht(elfshobj_t *file, int fd)
 {
   elfsh_Shdr		*newsht;
@@ -125,7 +133,9 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Relocate during save process */
+/**
+ * Relocate during save process
+ */
 int		elfsh_save_relocate(elfshobj_t *file)
 {
   u_int		index;
@@ -150,7 +160,9 @@ int		elfsh_save_relocate(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Unmap and free all ressources for this file */
+/**
+ * Unmap and free all ressources for this file
+ */
 int		elfsh_save_obj(elfshobj_t *file, char *name)
 {
   int		fd;
@@ -343,12 +355,3 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
   XCLOSE(fd, -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-
-
-

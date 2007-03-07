@@ -3,6 +3,9 @@
 ** 
 ** Started on  Mon Feb 24 15:52:06 2003 mayhem
 ** Last update Thu Mar 11 14:39:06 2004 mayhem
+**
+** $Id: commands.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

@@ -1,9 +1,12 @@
 /*
- * hijack.c in elfsh
- * 
- * Started on  Tue Feb  4 14:41:34 2003 emsi
- *
- */
+** hijack.c in elfsh
+** 
+** Started on  Tue Feb  4 14:41:34 2003 emsi
+** 
+**
+** $Id: hijack.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 

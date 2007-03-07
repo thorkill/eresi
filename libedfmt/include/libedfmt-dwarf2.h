@@ -3,6 +3,9 @@
 **
 ** Started on  Mon Dec 25 18:08:03 2006 mxatone
 **
+**
+** $Id: libedfmt-dwarf2.h,v 1.12 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef __DWARF_2_H__

@@ -5,6 +5,9 @@
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
 **
+**
+** $Id: revm.h,v 1.47 2007-03-07 16:45:35 thor Exp $
+**
 */
 #ifndef __REVM_H_
  #define __REVM_H_

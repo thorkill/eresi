@@ -4,6 +4,9 @@
 ** This file contains all command and objects definitions for scripting
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
+**
+** $Id: tables.c,v 1.26 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "revm.h"
 

@@ -1,9 +1,12 @@
 /*
- * got.c for elfsh
- *
- * Started on  Sun Jun 24 21:30:41 2001 mayhem
- * Last update Thu May 15 04:39:15 2003 mayhem
- */
+** got.c for elfsh
+** 
+** Started on  Sun Jun 24 21:30:41 2001 mayhem
+** Last update Thu May 15 04:39:15 2003 mayhem
+**
+** $Id: got.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 

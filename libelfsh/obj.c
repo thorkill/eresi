@@ -1,13 +1,18 @@
 /*
 ** obj.c for elfsh
-**
+** 
 ** Started on  Wed Feb 12 00:07:06 2003 mayhem
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
+**
+** $Id: obj.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
 
-/* Open the file 'name' and returns the elfshobj_t */
+/**
+ * Open the file 'name' and returns the elfshobj_t 
+ */
 elfshobj_t		*elfsh_load_obj(char *name)
 {
   elfshobj_t	*file;

@@ -4,6 +4,9 @@
 ** Hook the threads API for keeping thread debugger information accurately up2date
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
+**
+** $Id: threads.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 #include <pthread.h>

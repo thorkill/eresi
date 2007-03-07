@@ -4,6 +4,9 @@
 ** All functions about string table management
 **
 ** Started on Sept 11 2005 mxatone
+**
+** $Id: stringtable.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

@@ -3,6 +3,9 @@
 **
 ** Started on  Fri Dec  7 21:29:00 2001 mayhem
 ** Last update Mon Feb 26 05:05:27 2005 mayhem
+**
+** $Id: libelfsh-sunos.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 

@@ -3,12 +3,15 @@
 ** 
 ** Started on  Sun Mar 10 03:24:23 2002 mayhem
 ** Last update Sun May 25 17:40:19 2003 mayhem
+**
+** $Id: strtab.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
-
-
-/* Rebuild symbol string table if unexistant */
+/**
+ * Rebuild symbol string table if unexistant 
+ */
 elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
 {
   elfshsect_t	*strtab;
@@ -38,11 +41,9 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->secthash[ELFSH_SECTION_STRTAB]));
 }
 
-
-
-
-
-/* Retreive strtab */
+/**
+ * Retreive strtab 
+ */
 elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 {
   elfshsect_t	*s;
@@ -84,9 +85,9 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 
-
-
-/* Add a symbol name in .strtab */
+/**
+ * Add a symbol name in .strtab 
+ */
 int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
@@ -119,7 +120,9 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 }
 
 
-/* Add a symbol name in .dynstr */
+/**
+ * Add a symbol name in .dynstr 
+ */
 int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
@@ -143,7 +146,9 @@ int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
 }
 
 
-/* Add a section name in section string table */
+/**
+ * Add a section name in section string table 
+ */
 int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 {
   int		ret;
@@ -166,7 +171,9 @@ int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 }
 
 
-/* Add a section name in runtime section string table */
+/**
+ * Add a section name in runtime section string table 
+ */
 int		elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
 {
   int		ret;
@@ -187,7 +194,4 @@ int		elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
   else
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 

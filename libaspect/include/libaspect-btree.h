@@ -5,6 +5,9 @@
 ** Author  : <IDSAFQREOFASOCASDCAADS>
 ** Started : Fri Oct 17 14:30:27 2003
 ** Updated : Thu Nov 27 23:27:49 2003
+**
+** $Id: libaspect-btree.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #include <stdio.h>

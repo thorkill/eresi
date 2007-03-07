@@ -1,20 +1,25 @@
 /*
 ** relinject.c for libelfsh
-**
+** 
 ** This file contains all functions for relocating a ET_REL
 ** object. It calls the relocation hook for keeping an abstraction
 ** on various routines.
-**
+** 
 ** BeoS fixes by zadig
-**
+** 
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
+** 
+**
+** $Id: relinject.c,v 1.9 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
 
-/* Perform relocation on entry (Now use ELFsh 0.6 hooks model) */
+/**
+ * Perform relocation on entry (Now use ELFsh 0.6 hooks model) 
+ */
 static int      elfsh_relocate_entry(elfshsect_t        *new,
                                      void               *reloc,
 				     elfsh_Addr		*dword,
@@ -32,7 +37,9 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
 }
 
 
-/* Find the host symbol we rely on for performing the relocation */
+/**
+ * Find the host symbol we rely on for performing the relocation 
+ */
 static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 				    elfsh_Sym **sym, char *name, char stage, 
 				    elfsh_Half symtype)
@@ -145,7 +152,9 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 
 
 
-/* Relocate the just injected section */
+/**
+ * Relocate the just injected section 
+ */
 static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 					     elfshsect_t	*reltab,
 					     u_char		stage)
@@ -321,7 +330,9 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 
 
-/* Relocate the object */
+/**
+ * Relocate the object 
+ */
 int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 {
   elfshsect_t	*sect;
@@ -369,7 +380,9 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 
 
 
-/* Inject a section from ET_REL object into ET_EXEC */
+/**
+ * Inject a section from ET_REL object into ET_EXEC 
+ */
 static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int mod)
 {
   elfsh_Shdr	hdr;
@@ -430,12 +443,10 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
 		    "Unable to inject ET_REL section", -1);
 }
 
-
-
-
-
-/* The intermediate pass of theglobal algorithm for ET_REL injection */
-/* We fuze symbol tables from the ET_REL and the host binary */
+/**
+ * The intermediate pass of theglobal algorithm for ET_REL injection
+ * We fuze symbol tables from the ET_REL and the host binary 
+ */
 int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
 {
   elfshsect_t	*sect;
@@ -506,8 +517,9 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* Inject ET_REL bss inside host BSS */
+/**
+ * Inject ET_REL bss inside host BSS 
+ */
 int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -519,11 +531,9 @@ int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-/* Inject a ET_REL object into a ET_EXEC object */
+/**
+ * Inject a ET_REL object into a ET_EXEC object 
+ */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 {
   u_int		mod;
@@ -662,9 +672,9 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
-/* Front end function for injection in static binaries with module dependences */
+/**
+ * Front end function for injection in static binaries with module dependences 
+ */
 int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel, 
 					hash_t *listw, hash_t *listsh)
 {

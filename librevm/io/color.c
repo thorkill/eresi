@@ -4,6 +4,9 @@
 ** All functions about colors
 **
 ** Started on Sept 11 2005 mxatone
+**
+** $Id: color.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

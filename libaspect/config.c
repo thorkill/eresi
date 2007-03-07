@@ -3,6 +3,9 @@
 ** 
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 **
+**
+** $Id: config.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libaspect.h"
 

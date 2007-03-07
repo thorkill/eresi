@@ -3,6 +3,9 @@
 **
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Wed Jan 03 17:31:11 2007 mayhem
+**
+** $Id: misc.c,v 1.14 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include "elfsh.h"
 

@@ -1,9 +1,12 @@
 /*
- * dynamic.c for libelfsh
- * 
- * Started on  Tue Feb 27 04:36:53 2001 mayhem
- *
- */
+** dynamic.c for libelfsh
+** 
+** Started on  Tue Feb 27 04:36:53 2001 mayhem
+** 
+**
+** $Id: dynamic.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 

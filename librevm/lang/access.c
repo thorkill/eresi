@@ -2,6 +2,9 @@
 ** access.c : Implementation of scripting for language types
 **
 ** Started Jan 23 2007 23:39:51 mayhem
+**
+** $Id: access.c,v 1.12 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

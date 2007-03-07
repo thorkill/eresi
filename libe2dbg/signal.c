@@ -5,6 +5,9 @@
 ** 
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
+**
+** $Id: signal.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 

@@ -3,6 +3,9 @@
 ** 
 ** Started on  Sat May 10 07:01:59 2003 mayhem
 ** Last update Mon Jun 30 07:38:12 2003 mayhem
+**
+** $Id: etrel_inject.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include	"libelfsh.h"
 

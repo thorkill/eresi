@@ -6,6 +6,9 @@
 ** 
 ** Started on  Sun Dec  1 09:22:45 2002 mayhem
 **
+**
+** $Id: comment.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 

@@ -1,20 +1,25 @@
 /*
-** ia32.c for libelfsh
-**
-** Started on  Fri Jan 11 03:05:37 2003 mayhem
-**
-*/
+ * ia32.c for libelfsh
+ *
+ * Started on  Fri Jan 11 03:05:37 2003 mayhem
+ *
+ *
+ * $Id: ia32.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 #include "libasm.h"
-
-
 
 static asm_processor	proc;
 
 
-/* Start of hook code for EXTPLT */
-int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
-				  elfshsect_t *dynsym, elfshsect_t *relplt)
+/**
+ * Start of hook code for EXTPLT 
+ */
+int		elfsh_extplt_ia32(elfshsect_t *extplt, 
+				  elfshsect_t *altgot,
+				  elfshsect_t *dynsym, 
+				  elfshsect_t *relplt)
 {
   int		prot;
   int		*reloc;
@@ -60,8 +65,10 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
 
 
 
-/* On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got */
-/* Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp) */
+/**
+ * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got
+ * Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp) 
+ */
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
 					     elfshsect_t  *plt, 
 					     uint32_t     diff, 
@@ -104,8 +111,10 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
 
 
 
-/* On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got */ 
-/* Should work on both ET_EXEC and ET_DYN */
+/**
+ * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got 
+ * Should work on both ET_EXEC and ET_DYN 
+ */
 int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
 						   elfshsect_t *plt, 
 						   uint32_t	diff)
@@ -134,7 +143,9 @@ int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
 
 
 
-/* Hook for ENCODEPLT1 on IA32 : Simple wrapper for both calls */
+/**
+ * Hook for ENCODEPLT1 on IA32 : Simple wrapper for both calls 
+ */
 int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
 				      elfshsect_t *plt, 
 				      elfshsect_t *extplt,
@@ -154,7 +165,9 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
 
 
 
-/* Hook for ENCODEPLT on IA32 */
+/**
+ * Hook for ENCODEPLT on IA32 
+ */
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
 				     elfshsect_t *plt, 
 				     elfsh_Addr diff, 
@@ -168,7 +181,9 @@ int		elfsh_encodeplt_ia32(elfshobj_t *file,
 }
 
 
-/* Get the next frame pointer given the current one */
+/**
+ * Get the next frame pointer given the current one 
+ */
 void		*elfsh_bt_ia32(void *frame)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
@@ -179,7 +194,9 @@ void		*elfsh_bt_ia32(void *frame)
 		     ((void *) *(long*) frame));
 }
 
-/* Get the return address giving the current frame pointer */
+/**
+ * Get the return address giving the current frame pointer 
+ */
 void		*elfsh_getret_ia32(void *frame)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
@@ -190,8 +207,10 @@ void		*elfsh_getret_ia32(void *frame)
 }
 
 
-/* Write a breakpoint 0xCC in memory */
-/* One of the 2 breakpoint technique of e2dbg */
+/**
+ * Write a breakpoint 0xCC in memory
+ * One of the 2 breakpoint technique of e2dbg 
+ */
 int			elfsh_break_ia32(elfshobj_t *f,
 					 elfshbp_t  *bp)
 {
@@ -224,7 +243,9 @@ int			elfsh_break_ia32(elfshobj_t *f,
 
 
 
-/* Static hooking for IA32 */
+/**
+ * Static hooking for IA32 
+ */
 int			elfsh_cflow_ia32(elfshobj_t	*file,
 					 char		*name,
 					 elfsh_Sym	*symbol,
@@ -336,7 +357,9 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
 
 
-/* PLT hijacking on i386 for ET_DYN objects */
+/**
+ * PLT hijacking on i386 for ET_DYN objects 
+ */
 int		elfsh_hijack_plt_ia32(elfshobj_t *file, 
 				      elfsh_Sym *symbol,
 				      elfsh_Addr addr)
@@ -381,7 +404,9 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
 
 
 
-/* Perform relocation on entry for INTEL architecture */
+/**
+ * Perform relocation on entry for INTEL architecture
+ */
 /* XXX: not endianess independant - ym */
 int      elfsh_relocate_ia32(elfshsect_t	*new,
 			     elfsh_Rel		*cur,
@@ -496,7 +521,9 @@ typedef struct s_int
   struct s_int	*next;
 }		s_sint;
 
-/* Personnal func / define for args_count */
+/**
+ * Personnal func / define for args_count 
+ */
 static int    elfsh_is_arg_ebp(asm_operand *op)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -860,7 +887,9 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
 }
 
-/* Find arguments from a call */
+/**
+ * Find arguments from a call 
+ */
 int 		elfsh_args_count_forward(elfshobj_t *obj, u_int func, u_int call)
 {
   u_int		current;

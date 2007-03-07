@@ -4,6 +4,9 @@
 ** All functions dealing with libedfmt
 **
 ** Started on Fev 25 2007 mxatone
+**
+** $Id: edfmt.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

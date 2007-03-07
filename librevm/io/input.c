@@ -5,6 +5,9 @@
 **
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
+**
+** $Id: input.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

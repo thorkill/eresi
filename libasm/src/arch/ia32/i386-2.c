@@ -1,9 +1,12 @@
 /*
-## this is private - do not distribute
+** this is private - do not distribute
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Wed Jul 24 18:14:37 2002
 ** Updated : Sat Mar 20 05:42:38 2004
+**
+** $Id: i386-2.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include <libasm.h>
 #include <libasm-int.h>

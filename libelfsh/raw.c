@@ -3,12 +3,17 @@
 ** 
 ** Started on  Wed Feb 27 19:41:45 2002 mayhem
 ** Last update Thu Mar 20 05:47:12 2003 mayhem
+**
+** $Id: raw.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
 
 
-/* Perform a raw write on the object cache data */
+/**
+ * Perform a raw write on the object cache data 
+ */
 int		elfsh_raw_write(elfshobj_t	*file, 
 				u_int		foffset, 
 				void		*src_buff, 
@@ -50,7 +55,9 @@ int		elfsh_raw_write(elfshobj_t	*file,
 
 
 
-/* Perform a raw read on the object cache data */
+/**
+ * Perform a raw read on the object cache data 
+ */
 int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 {
   elfshsect_t	*sect;
@@ -77,7 +84,9 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 }
 
 
-/* Retreive the file offset from the virtual address */
+/**
+ * Retreive the file offset from the virtual address 
+ */
 int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
 {
   elfshsect_t	*actual;
@@ -96,7 +105,9 @@ int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
 }
 
 
-/* Retreive the virtual address given the file offset */
+/**
+ * Retreive the virtual address given the file offset 
+ */
 int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset)
 {
   elfshsect_t	*root;

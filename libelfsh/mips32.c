@@ -5,6 +5,9 @@
 **
 ** Skeleton cut & pasted from the sparc64 backend
 **
+**
+** $Id: mips32.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
@@ -12,14 +15,14 @@
 
 
 
-/* Static hooking for Mips32 */
-/*
-  Note : a new technique is beeing considered that
-  may invalidate this handler as it (at least 
-  change the way it should be implemented)
-
-  Make sure to ask anything before deciding to implement it
-*/
+/**
+ * Static hooking for Mips32
+ * Note : a new technique is beeing considered that
+ * may invalidate this handler as it (at least 
+ * change the way it should be implemented)
+ *
+ * Make sure to ask anything before deciding to implement it
+ */
 int			elfsh_cflow_mips32(elfshobj_t *file,
 					   char	      *name,
 					   elfsh_Sym  *symbol,
@@ -162,7 +165,9 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
 
 
 
-/* PLT hijacking on MIPS32, not needed thus unimplemented for now */
+/**
+ * PLT hijacking on MIPS32, not needed thus unimplemented for now 
+ */
 int		elfsh_hijack_plt_mips32(elfshobj_t *file, 
 					elfsh_Sym *symbol,
 					elfsh_Addr addr)
@@ -177,17 +182,18 @@ int		elfsh_hijack_plt_mips32(elfshobj_t *file,
 
 
 
-/* ALTPLT hijacking on MIPS32 */
-/* 
-   On MIPS we need to restore 2 words from .alt.got to .got 
-   and callback __libc_start_main. 
-
-   Update: we also need to copy .got values for extern
-   variables. We put ld/st pairs in .pad.got so that we
-   fill those only one time, before calling __libc_start_main
-   
-   The code works and is functional -mm
-*/
+/**
+ * ALTPLT hijacking on MIPS32
+ *
+ *  On MIPS we need to restore 2 words from .alt.got to .got 
+ * and callback __libc_start_main. 
+ *
+ * Update: we also need to copy .got values for extern
+ * variables. We put ld/st pairs in .pad.got so that we
+ * fill those only one time, before calling __libc_start_main
+ *  
+ * The code works and is functional -mm
+ */
 int		elfsh_hijack_altplt_mips32(elfshobj_t *file, 
 					   elfsh_Sym *symbol,
 					   elfsh_Addr addr)

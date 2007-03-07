@@ -3,6 +3,9 @@
 **
 ** Started Jan 01 2007 21:30:13 mxatone
 **
+**
+** $Id: stabs.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #include "libedfmt.h"

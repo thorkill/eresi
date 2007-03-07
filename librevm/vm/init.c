@@ -3,6 +3,9 @@
 **
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
+**
+** $Id: init.c,v 1.11 2007-03-07 16:45:36 thor Exp $
+**
 */
 
 #include "revm.h"

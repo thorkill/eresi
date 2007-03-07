@@ -3,6 +3,9 @@
 ** 
 ** Started on  Tue Feb 18 04:15:42 2003 mayhem
 ** Last update Mon Feb 23 16:23:43 2004 mayhem
+**
+** $Id: libelfsh-compat.h,v 1.9 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #undef NULL
@@ -200,10 +203,9 @@ typedef int32_t		elfsh_SAddr;
 
 #endif	/* BITS */
 
-
-
-
-/* MIPS reginfo structure */
+/**
+ * MIPS reginfo structure
+ */
 typedef		struct 
 {
   elfsh_Word	ri_gprmask;

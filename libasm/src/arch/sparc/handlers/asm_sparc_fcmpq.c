@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_fcmpq.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int

@@ -5,6 +5,9 @@
 **
 ** Skeleton cut & pasted from the sparc64 backend
 **
+**
+** $Id: alpha64.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 

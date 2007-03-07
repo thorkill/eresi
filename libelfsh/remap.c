@@ -1,16 +1,21 @@
 /*
 ** remap.c for elfsh
-**
+** 
 ** elfsh_reloc_pht/sht/symtab() are based on spacewalker's 
 ** original modremap.c
 ** 
 ** Started on  Mon Mar 17 09:30:33 2003 mayhem
+** 
+**
+** $Id: remap.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Remap the Program Header Table */
+/**
+ * Remap the Program Header Table 
+ */
 int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
 {
   u_int		i;
@@ -41,7 +46,9 @@ int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-/* Remap the Section Header Table */
+/**
+ * Remap the Section Header Table 
+ */
 int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
 {
   u_int		i;
@@ -64,9 +71,9 @@ int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-
-
-/* Remap a section which type is SHT_SYMTAB or SHT_DYNSYM */
+/**
+ * Remap a section which type is SHT_SYMTAB or SHT_DYNSYM 
+ */
 int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
 {
   elfsh_Sym	*symtab;
@@ -102,8 +109,9 @@ int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-
-/* Remap a section using its extra relocation entries */
+/**
+ * Remap a section using its extra relocation entries 
+ */
 int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 {
   u_int		index;
@@ -147,9 +155,9 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur->srcref));
 }
 
-
-
-/* Remap the .dynamic section */
+/**
+ * Remap the .dynamic section 
+ */
 int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
 {
   elfshsect_t	*parent;
@@ -184,7 +192,9 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
 }
 
 
-/* Remap sections of type SHT_REL and SHT_RELA */
+/**
+ * Remap sections of type SHT_REL and SHT_RELA 
+ */
 int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
 {
   elfshsect_t	*parent;
@@ -218,9 +228,9 @@ int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-
-
-/* Remap section's whoose type is a data array (GOT, CTORS, DTORS ..) */
+/**
+ * Remap section's whoose type is a data array (GOT, CTORS, DTORS ..) 
+ */
 int		elfsh_reloc_array(elfshobj_t *file, 
 				  elfsh_Addr *array, 
 				  u_int      size, 
@@ -248,8 +258,9 @@ int		elfsh_reloc_array(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-
-/* Remap Global Offset Table */
+/**
+ * Remap Global Offset Table 
+ */
 int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -266,7 +277,9 @@ int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 			    sect->shdr->sh_size / sizeof(elfsh_Addr), diff)));
 }
 
-/* Remap .ctors section */
+/**
+ * Remap .ctors section 
+ */
 int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -284,7 +297,9 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 			    diff)));
 }
 
-/* Remap .dtors section */
+/**
+ * Remap .dtors section 
+ */
 int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -303,7 +318,9 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 }
 
 
-/* Not used ATM since it triggers more false positives ;P */
+/**
+ * Not used ATM since it triggers more false positives ;P 
+ */
 int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -321,7 +338,9 @@ int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 }
 
 
-/* Call the type dependant remapping routine for this section */
+/**
+ * Call the type dependant remapping routine for this section 
+ */
 int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
 {
   int		ret;
@@ -360,13 +379,13 @@ int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
 
 
 
-/* 
-** XXX .::. TODO for ET_EXEC to ET_DYN : 
-** - Insertion a new .rel section
-** - Change objtype and entryp in ELF header
-** - Relocate PHT and SHT
-** - Change reloc section size in .dynamic *
-*/
+/** 
+ * XXX .::. TODO for ET_EXEC to ET_DYN : 
+ * - Insertion a new .rel section
+ * - Change objtype and entryp in ELF header
+ * - Relocate PHT and SHT
+ * - Change reloc section size in .dynamic *
+ */
 int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
 {
   elfshsect_t	*sect;

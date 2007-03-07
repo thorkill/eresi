@@ -1,9 +1,12 @@
 /*
- * libelfsh-internal.h for elfsh
- * 
- * Started on  Wed Jan  1 07:51:24 2003 mayhem
- * Last update Thu Mar 20 06:19:53 2003 mayhem
- */
+** libelfsh-internal.h for elfsh
+** 
+** Started on  Wed Jan  1 07:51:24 2003 mayhem
+** Last update Thu Mar 20 06:19:53 2003 mayhem
+**
+** $Id: libaspect-profiler.h,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 #ifndef __LIBASPECT_INTERN_
  #define __LIBASPECT_INTERN_

@@ -1,14 +1,17 @@
 /*
 ** sht.c for libelfsh
-**
+** 
 ** Started on  Mon Feb 26 04:16:18 2001 mayhem
+**
+** $Id: sht.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
-
-
-/* Sort SHT by file offset on ET_REL objects */
-/* Mandatory on gcc 2.95.2/2.96 generated bins, maybe others */
+/**
+ * Sort SHT by file offset on ET_REL objects
+ * Mandatory on gcc 2.95.2/2.96 generated bins, maybe others 
+ */
 int			elfsh_sort_sht(elfshobj_t *file)
 {
   elfshsect_t		*actual;
@@ -126,7 +129,9 @@ int			elfsh_sort_sht(elfshobj_t *file)
 }
 
 
-/* Synchronize duplicated names for sections */
+/**
+ * Synchronize duplicated names for sections 
+ */
 void		elfsh_sync_sectnames(elfshobj_t *file)
 {
   elfshsect_t	*s;
@@ -145,9 +150,9 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
-/* Synchronize SHT (mostly used when removing sections) */
+/**
+ * Synchronize SHT (mostly used when removing sections) 
+ */
 void		elfsh_sync_sht(elfshobj_t *file)
 {
   u_int		idx;
@@ -165,7 +170,9 @@ void		elfsh_sync_sht(elfshobj_t *file)
 }
 
 
-/* Return a pointer on the runtime SHT */
+/**
+ * Return a pointer on the runtime SHT 
+ */
 void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 {
   elfshsect_t	*rshstrtab;
@@ -205,7 +212,9 @@ void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 }
 
 
-/* Return a ptr on the section header table */
+/**
+ * Return a ptr on the section header table 
+ */
 void		*elfsh_get_sht(elfshobj_t *file, int *num)
 {
   elfshsect_t	*s;
@@ -247,7 +256,9 @@ void		*elfsh_get_sht(elfshobj_t *file, int *num)
 }
 
 
-/* Change endianess of SHT */
+/**
+ * Change endianess of SHT 
+ */
 int		elfsh_endianize_sht(elfsh_Shdr *s, 
 				    char byteorder, 
 				    uint16_t shnum)			    
@@ -286,9 +297,9 @@ int		elfsh_endianize_sht(elfsh_Shdr *s,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* Return an array of section header */
+/**
+ * Return an array of section header 
+ */
 int		elfsh_load_sht(elfshobj_t *file)
 {
   elfshsect_t	*new;
@@ -338,13 +349,9 @@ int		elfsh_load_sht(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-
-
-/* Retreive the section header giving the section symbol from .symtab */
+/**
+ * Retreive the section header giving the section symbol from .symtab 
+ */
 elfsh_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
 						     elfsh_Sym	*sym)
 {
@@ -357,11 +364,9 @@ elfsh_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
 		     (sect == NULL ? NULL : sect->shdr));
 }
 
-
-
-
-
-/* Retreive the symbol for the section giving the section header */
+/**
+ * Retreive the symbol for the section giving the section header 
+ */
 elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 						     elfsh_Shdr *hdr)
 {
@@ -403,13 +408,9 @@ elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 		    "Symbol not found", NULL);
 }
 
-
-
-
-
-
-
-/* Create a section header */
+/**
+ * Create a section header 
+ */
 elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
 					  elfsh_Word type,
 					  elfsh_Word flags,
@@ -438,10 +439,9 @@ elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
-
-
-/* Add a section header to the object */
+/**
+ * Add a section header to the object 
+ */
 int		elfsh_insert_shdr(elfshobj_t	*file,
 				  elfsh_Shdr	hdr,
 				  u_int		range,
@@ -527,9 +527,9 @@ int		elfsh_insert_shdr(elfshobj_t	*file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (range));
 }
 
-
-
-/* Add a section header to the object */
+/**
+ * Add a section header to the object 
+ */
 int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
 					  elfsh_Shdr	hdr,
 					  u_int		range,
@@ -614,11 +614,9 @@ int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (range));
 }
 
-
-
-
-
-/* Get the section's name in .shstrtab */
+/**
+ * Get the section's name in .shstrtab 
+ */
 char		*elfsh_get_section_name(elfshobj_t *file,
 					elfshsect_t *s)
 {
@@ -651,10 +649,9 @@ char		*elfsh_get_section_name(elfshobj_t *file,
 		     (str == NULL ? NULL : (char *) str + s->shdr->sh_name));
 }
 
-
-
-
-/* Set the section's name in .shstrtab */
+/**
+ * Set the section's name in .shstrtab 
+ */
 int			elfsh_set_section_name(elfshobj_t	*file,
 					       elfshsect_t	*s,
 					       char		*name)
@@ -703,10 +700,9 @@ int			elfsh_set_section_name(elfshobj_t	*file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->shdr->sh_name));
 }
 
-
-
-
-/* Tell elfsh that we dont want the sht in the output file */
+/**
+ * Tell elfsh that we dont want the sht in the output file 
+ */
 void		elfsh_remove_sht(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -716,10 +712,9 @@ void		elfsh_remove_sht(elfshobj_t *file)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
-
-/* SET/GET the allocatable flag */
+/**
+ * SET/GET the allocatable flag 
+ */
 char	elfsh_get_section_allocflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -731,6 +726,9 @@ char	elfsh_get_section_allocflag(elfsh_Shdr *s)
 		     ((s->sh_flags & SHF_ALLOC)));
 }
 
+/**
+ * Set the allocatable flag
+ */
 char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -745,8 +743,9 @@ char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* SET/GET the writable flag */
+/**
+ * SET/GET the writable flag 
+ */
 char	elfsh_get_section_writableflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -758,6 +757,9 @@ char	elfsh_get_section_writableflag(elfsh_Shdr *s)
 		     ((s->sh_flags & SHF_WRITE)));
 }
 
+/**
+ * SET writableflag
+ */
 char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -772,9 +774,9 @@ char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* SET/GET the executable flag */
+/**
+ * SET/GET the executable flag 
+ */
 char	elfsh_get_section_execflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -786,6 +788,9 @@ char	elfsh_get_section_execflag(elfsh_Shdr *s)
 		     ((s->sh_flags & SHF_EXECINSTR)));
 }
 
+/**
+ * SET executable flag
+ */
 char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -800,8 +805,9 @@ char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* SET/GET the mergeable flag */
+/**
+ * SET/GET the mergeable flag 
+ */
 char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -813,6 +819,9 @@ char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
 		     ((s->sh_flags & SHF_MERGE)));
 }
 
+/**
+ * SET the mergeable flag
+ */
 char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -827,8 +836,9 @@ char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* SET/GET the string flag */
+/**
+ * SET/GET the string flag 
+ */
 char	elfsh_get_section_strflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -840,6 +850,9 @@ char	elfsh_get_section_strflag(elfsh_Shdr *s)
 		     ((s->sh_flags & SHF_STRINGS)));
 }
 
+/**
+ * SET the string flag
+ */
 char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -855,7 +868,9 @@ char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
 }
 
 
-/* SET/GET the link flag */
+/**
+ * SET/GET the link flag 
+ */
 char	elfsh_get_section_linkflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -866,6 +881,10 @@ char	elfsh_get_section_linkflag(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     ((s->sh_flags & SHF_INFO_LINK)));
 }
+
+/**
+ * SET the link flag
+ */
 
 char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -881,8 +900,9 @@ char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/* SET/GET the order flag */
+/**
+ * SET/GET the order flag 
+ */
 char	elfsh_get_section_orderflag(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -893,6 +913,10 @@ char	elfsh_get_section_orderflag(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     ((s->sh_flags & SHF_LINK_ORDER)));
 }
+
+/**
+ * SET the order flag
+ */
 
 char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -908,11 +932,9 @@ char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-/* All the next functions are dumb read/write field access routine */
+/**
+ * All the next functions are dumb read/write field access routine 
+ */
 elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -923,6 +945,9 @@ elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_info));
 }
 
+/**
+ * Set section info
+ */
 int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -934,6 +959,9 @@ int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * get section entsize
+ */
 elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -944,6 +972,9 @@ elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_entsize));
 }
 
+/**
+ * set section entsize
+ */
 int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -955,6 +986,9 @@ int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * get section link
+ */
 elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -965,6 +999,9 @@ elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_link));
 }
 
+/**
+ * set section link
+ */
 int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -976,9 +1013,9 @@ int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
+/**
+ * get section foffset
+ */
 elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -989,6 +1026,9 @@ elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_offset));
 }
 
+/**
+ * set section foffset
+ */
 int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1000,7 +1040,9 @@ int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/**
+ * get section addr
+ */
 elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1011,8 +1053,9 @@ elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_addr));
 }
 
-
-
+/**
+ * set section addr
+ */
 int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1024,7 +1067,9 @@ int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/**
+ * get section align
+ */
 elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1035,6 +1080,9 @@ elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_addralign));
 }
 
+/**
+ * set section align
+ */
 int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1046,6 +1094,9 @@ int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * get section size
+ */
 elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1056,6 +1107,9 @@ elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_size));
 }
 
+/**
+ * set section size
+ */
 int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1067,6 +1121,9 @@ int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * get section type
+ */
 elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1077,6 +1134,9 @@ elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->sh_type));
 }
 
+/**
+ * set section type
+ */
 int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1089,19 +1149,16 @@ int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
 }
 
 
+/**
+ * ELFsh handlers
+ *
+ * These functions are usually not used by something else than ELFsh
+ *
+ */
 
-/*
-**
-**
-** ELFsh handlers
-**
-** These functions are usually not used by something else than ELFsh
-**
-**
-*/
-
-
-/* Get SHT or runtime SHT entry by index */
+/**
+ * Get SHT or runtime SHT entry by index 
+ */
 elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s, 
 						      elfsh_Addr index)
 {
@@ -1109,8 +1166,8 @@ elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s + index));
 }
 
-
-/* Get SHT entry by name */
+/**
+ * Get SHT entry by name */
 elfsh_Shdr		*elfsh_get_sht_entry_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t		*sect;

@@ -3,6 +3,9 @@
 ** 
 ** Started on  Wed Jan  1 07:51:24 2003 mayhem
 ** Last update Thu Mar 20 06:19:53 2003 mayhem
+**
+** $Id: libelfsh-internal.h,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef __LIBELFSH_INTERN_

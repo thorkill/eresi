@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_wr.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -42,7 +47,6 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
       ins->op2.imm = opcode.imm;
     }
     
-    /* Synthetics */
     if (ins->op1.base_reg == ASM_SREG_Y && ins->op3.base_reg == ASM_REG_G0) {
   	  	ins->instr = ASM_SP_MOV;
   	  	ins->nb_op = 2;

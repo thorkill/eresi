@@ -1,9 +1,12 @@
 /*
- * Dynsym.c for libelfsh
- * 
- * Started on  Mon Feb 26 04:13:29 2001 mayhem
- *
- */
+** Dynsym.c for libelfsh
+** 
+** Started on  Mon Feb 26 04:13:29 2001 mayhem
+** 
+**
+** $Id: dynsym.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 

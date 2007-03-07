@@ -3,6 +3,9 @@
 **
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
+**
+** $Id: misc.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

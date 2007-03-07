@@ -44,6 +44,9 @@ all64			: $(OBJ64)
 clean		        :
 		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 
+fclean:	clean
+			@$(RM) *.o
+
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<
 %.64.o : %.c

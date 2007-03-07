@@ -1,9 +1,12 @@
 /*
 ** inject.c for libelfsh
-**
+** 
 ** Contains all section injection API that can be used directly by the user
-**
+** 
 ** Started on  Thu Jun 09 00:12:42 2005 mm
+** 
+**
+** $Id: inject.c,v 1.7 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -11,9 +14,11 @@
 
 
 
-/* Insert a new section at the first place in the executable PT_LOAD */
-/* This function is not e2dbg safe and should only be used for ondisk files */
-/* This function is ET_DYN-PaX-pie-hardened-gentoo-safe */
+/**
+ * Insert a new section at the first place in the executable PT_LOAD
+ * This function is not e2dbg safe and should only be used for ondisk files
+ * This function is ET_DYN-PaX-pie-hardened-gentoo-safe 
+ */
 int		elfsh_insert_code_section(elfshobj_t	*file,
 					  elfshsect_t	*sect,
 					  elfsh_Shdr	hdr,
@@ -235,9 +240,11 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 
 
 
-/* Insert a new section at the first place in the executable PT_LOAD */
-/* WORK IN PROGRESS DO NOT USE IT FOR NOW */
-/* This function is not e2dbg safe and should only be used for ondisk files */
+/**
+ * Insert a new section at the first place in the executable PT_LOAD 
+ * WORK IN PROGRESS DO NOT USE IT FOR NOW
+ * This function is not e2dbg safe and should only be used for ondisk files 
+ */
 int		elfsh_insert_code_section_up(elfshobj_t		*file,
 					     elfshsect_t	*sect,
 					     elfsh_Shdr		hdr,
@@ -384,9 +391,11 @@ int		elfsh_insert_code_section_up(elfshobj_t		*file,
 
 
 
-/* Insert a data section in the object */
-/* This function is not e2dbg safe and should only be used with ondisk files */
-/* Use elfsh_insert_runtime_section() for runtime injections */
+/**
+ * Insert a data section in the object 
+ * This function is not e2dbg safe and should only be used with ondisk files
+ * Use elfsh_insert_runtime_section() for runtime injections 
+ */
 int		elfsh_insert_data_section(elfshobj_t	*file,
 					  elfshsect_t	*sect,
 					  elfsh_Shdr	hdr,
@@ -478,19 +487,19 @@ int		elfsh_insert_data_section(elfshobj_t	*file,
 
 
 
-/* 
-** 
-** This function need to be modularized so that it can serves for runtime mapping
-** and also static file mapping in new PT_LOAD. Since thats what this function do
-** it shouldnt be a problem. Just a thing to check : make sure the (real) PHT can 
-** be extended from this function, because PHT extension uses another injection 
-** internaly so I hope nothing is fucked up -mm
-**
-** Make sure also to use a dedicated base addr for the new section if you re
-** debugging heap sensible code. 
-**
-*/ 
-/* Runtime injection : the standard process injection */
+/**
+ * 
+ * This function need to be modularized so that it can serves for runtime mapping
+ * and also static file mapping in new PT_LOAD. Since thats what this function do
+ * it shouldnt be a problem. Just a thing to check : make sure the (real) PHT can 
+ * be extended from this function, because PHT extension uses another injection 
+ * internaly so I hope nothing is fucked up -mm
+ *
+ * Make sure also to use a dedicated base addr for the new section if you re
+ * debugging heap sensible code. 
+ *
+ * Runtime injection : the standard process injection 
+ */
 int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 					     elfshsect_t *sect,
 					     elfsh_Shdr	 hdr,
@@ -616,7 +625,9 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 
 
 
-/* Static binary injection : section injection for static binaries */
+/**
+ * Static binary injection : section injection for static binaries 
+ */
 int		elfsh_insert_static_section(elfshobj_t	 *file,
 					    elfshsect_t  *sect,
 					    elfsh_Shdr	 hdr,
@@ -750,8 +761,10 @@ int		elfsh_insert_static_section(elfshobj_t	 *file,
 
 
 
-/* Insert a mapped section in the object */
-/* This function is e2dbg safe */
+/**
+ * Insert a mapped section in the object
+ * This function is e2dbg safe 
+ */
 int		elfsh_insert_mapped_section(elfshobj_t	*file,
 					    elfshsect_t *sect,
 					    elfsh_Shdr	hdr,
@@ -814,7 +827,9 @@ int		elfsh_insert_mapped_section(elfshobj_t	*file,
 }
 
 
-/* Insert a non-mapped section in the object */
+/**
+ * Insert a non-mapped section in the object 
+ */
 int		elfsh_insert_unmapped_section(elfshobj_t	*file,
 					      elfshsect_t	*sect,
 					      elfsh_Shdr	hdr,
@@ -869,8 +884,10 @@ int		elfsh_insert_unmapped_section(elfshobj_t	*file,
 }
 
 
-/* Insert a section in the object */
-/* This function is e2dbg safe */
+/**
+ * Insert a section in the object
+ * This function is e2dbg safe
+ */
 elfshsect_t*		elfsh_insert_section(elfshobj_t	 *file,
 					     char	 *name, 
 					     char	*data,
@@ -929,8 +946,10 @@ elfshsect_t*		elfsh_insert_section(elfshobj_t	 *file,
 }
 
 
-/* Insert a section at the requested index */
-/* Should only be used with ondisk files */
+/**
+ * Insert a section at the requested index
+ * Should only be used with ondisk files 
+ */
 int		elfsh_insert_section_idx(elfshobj_t	*file,
 					 elfshsect_t	*sect,
 					 elfsh_Shdr	hdr,

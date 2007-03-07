@@ -1,10 +1,13 @@
 /*
- * Allocator wrapper for the Embedded ELF Debugger
- *
- * Select the allocator depending on the thread ID of the caller
- *
- * Started Fri Oct  7 21:05:26 CEST 2005 crew
- */
+** Allocator wrapper for the Embedded ELF Debugger
+** 
+** Select the allocator depending on the thread ID of the caller
+** 
+** Started Fri Oct  7 21:05:26 CEST 2005 crew
+**
+** $Id: xmalloc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libe2dbg.h"
 
 

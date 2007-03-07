@@ -5,6 +5,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Thu Feb 19 17:57:28 2004
 ** Updated : Thu Feb 19 18:27:36 2004
+**
+** $Id: output_operand.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 #include <>

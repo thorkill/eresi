@@ -1,14 +1,19 @@
 /*
 ** reginfo.c for libelfsh
-**
+** 
 ** Started on  Wed Mar 23 14:18:20 2005 ym
 ** Updated on  Wed Mar 23 14:21:32 2005 mayhem
+** 
+**
+** $Id: reginfo.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Get gpvalue */
+/**
+ * Get gpvalue 
+ */
 elfsh_Sword	elfsh_get_gpvalue(elfshobj_t* file)
 {
   elfsh_Sword	*gp;
@@ -20,7 +25,9 @@ elfsh_Sword	elfsh_get_gpvalue(elfshobj_t* file)
 }
 
 
-/* Set gpvalue */
+/**
+ * Set gpvalue 
+ */
 int		elfsh_set_gpvalue(elfshobj_t* file, elfsh_Addr gp)
 {
   elfsh_Sword	rgp;
@@ -38,7 +45,9 @@ int		elfsh_set_gpvalue(elfshobj_t* file, elfsh_Addr gp)
 }
 
 
-/* Return a pointer on ".reginfo" ri_gp_value */
+/**
+ * Return a pointer on ".reginfo" ri_gp_value 
+ */
 elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file)
 {
   elfshsect_t     *reginfo;
@@ -65,5 +74,4 @@ elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (&((elfsh_RegInfo *) elfsh_get_raw(reginfo))->ri_gp_value));
 }
-
 

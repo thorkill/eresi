@@ -1,9 +1,12 @@
 /*
- * fixup.c for elfsh
- * 
- * Started on  Fri Jul 27 04:56:06 2001 mayhem
- *
- */
+** fixup.c for elfsh
+** 
+** Started on  Fri Jul 27 04:56:06 2001 mayhem
+** 
+**
+** $Id: fixup.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 

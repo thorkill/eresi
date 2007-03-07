@@ -4,6 +4,9 @@
 ** Various undefined macros on IRIX
 **
 ** Last update Mon Aug 23 05:05:27 2005 ym
+**
+** $Id: libelfsh-irix.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 

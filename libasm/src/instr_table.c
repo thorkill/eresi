@@ -4,6 +4,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 22:42:50 2002
 ** Updated : Tue Feb 25 00:22:06 2003
+**
+** $Id: instr_table.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include <libasm.h>
 

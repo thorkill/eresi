@@ -3,6 +3,9 @@
 **
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
+**
+** $Id: control.c,v 1.18 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libmjollnir.h"
 

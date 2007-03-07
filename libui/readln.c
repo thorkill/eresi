@@ -4,6 +4,9 @@
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
+**
+** $Id: readln.c,v 1.11 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "libui.h"
 

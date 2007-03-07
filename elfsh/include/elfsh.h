@@ -2,6 +2,10 @@
 ** elfsh.h for elfsh
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
+**
+**
+** $Id: elfsh.h,v 1.38 2007-03-07 16:45:34 thor Exp $
+**
 */
 #ifndef __ELFSH_H_
  #define __ELFSH_H_

@@ -70,11 +70,12 @@ et_rel			: ${OBJ}
 clean		       :
 		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
+		       @$(RM) *.??.o
 
 fclean		       : clean
-		       @$(RM) $(NAME) $(OBJ_DYN) $(DBGNAME).so
-		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32).so
-		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64).so
+		       @$(RM) $(NAME) $(OBJ_DYN) $(DBGNAME)
+		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32)
+		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64)
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

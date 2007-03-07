@@ -1,15 +1,17 @@
 /*
 ** stabs.c for libelfsh
-**
+** 
 ** Started on  Mon Feb 26 04:14:06 2001 mayhem
+** 
+**
+** $Id: stab.c,v 1.4 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-
-
-
-/* Return the debugging symbol name giving its index in the stab string table */
+/**
+ * Return the debugging symbol name giving its index in the stab string table 
+ */
 char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 {
   char	*str;
@@ -29,11 +31,9 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
 }
 
-
-
-
-
-/* Load the stab information from the file */
+/**
+ * Load the stab information from the file 
+ */
 void		*elfsh_get_stab(elfshobj_t *file, int *num)
 {
   elfshsect_t	*sect;
@@ -80,18 +80,18 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
 }
 
 
-
-
-/* Return the symbol type name giving its index in the symtype array */
+/**
+ * Return the symbol type name giving its index in the symtype array 
+ */
 u_int	elfsh_get_stab_type(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->type));
 }
 
-
-
-/* Not used yet */
+/**
+ * Not used yet 
+ */
 elfsh_Addr	elfsh_get_stab_offset(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

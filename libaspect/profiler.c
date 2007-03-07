@@ -3,6 +3,9 @@
 ** 
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm
+**
+** $Id: profiler.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libaspect.h"
 

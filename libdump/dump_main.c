@@ -1,10 +1,13 @@
 /*
- * dump_main.c for elfsh
- *
- * Started on Tue Feb 20 14:40:34 CET 2005 ym 
- * Updated on Wed Mar  9 22:02:29 CET 2005 ym
- *
- */
+** dump_main.c for elfsh
+** 
+** Started on Tue Feb 20 14:40:34 CET 2005 ym 
+** Updated on Wed Mar  9 22:02:29 CET 2005 ym
+** 
+**
+** $Id: dump_main.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 #include <stdio.h>
 #include <readline/readline.h>

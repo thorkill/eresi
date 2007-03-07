@@ -5,6 +5,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
+**
+** $Id: libasm-sparc.h,v 1.7 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 #ifndef LIBASM_SPARC_H_

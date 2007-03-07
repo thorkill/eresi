@@ -6,6 +6,9 @@
 **
 ** Started on  Wed Jun 08 21:20:07 2005 mm
 **
+**
+** $Id: altgot.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 

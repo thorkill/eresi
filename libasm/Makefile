@@ -107,7 +107,7 @@ clean:
 	@echo "Cleaning source tree"
 
 fclean: clean
-	$(RM) ${NAME_libasm} ${NAME_libasmo} ${NAME_mydisasm} ${NAME_cmpdump} 
+	$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump} 
 	$(RM) mydisasm
 
 tags:

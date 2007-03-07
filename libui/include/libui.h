@@ -3,6 +3,9 @@
 ** 
 ** Started on Sun Jan 22 19:04:04 2006 mxatone
 ** Updated on Tue Mar  6 08:42:17 2007 mayhem
+**
+** $Id: libui.h,v 1.10 2007-03-07 16:45:36 thor Exp $
+**
 */
 
 #ifndef __LIBUI_H__

@@ -6,6 +6,9 @@
 ** 
 ** Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
 ** Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
+**
+** $Id: libasm-structs.h,v 1.7 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 /**

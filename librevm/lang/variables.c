@@ -1,9 +1,12 @@
-/*      
+/*
 ** variables.c for elfsh
 **
 ** Contain functions for easy variables accesses
 **
 ** Started September 16 2005 04:01:03 mayhem
+**
+**
+** $Id: variables.c,v 1.4 2007-03-07 16:45:36 thor Exp $
 **
 */
 #include "revm.h"

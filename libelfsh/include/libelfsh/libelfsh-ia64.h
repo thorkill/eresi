@@ -1,12 +1,15 @@
 /*
- *
- * Compatibility with IA64
- *
- * Define all the relocation types that can be undefined on various OS
- *
- * Last update Sat Feb 26 20:35:27 2004 mayhem
- *
- */
+** 
+** Compatibility with IA64
+** 
+** Define all the relocation types that can be undefined on various OS
+** 
+** Last update Sat Feb 26 20:35:27 2004 mayhem
+** 
+**
+** $Id: libelfsh-ia64.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 /* IA-64 relocations.  */
 #ifndef R_IA64_NONE

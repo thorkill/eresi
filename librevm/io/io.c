@@ -5,6 +5,9 @@
 **
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
+**
+** $Id: io.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

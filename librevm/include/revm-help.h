@@ -2,6 +2,9 @@
 ** revm-help.h for elfsh
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
+**
+** $Id: revm-help.h,v 1.18 2007-03-07 16:45:35 thor Exp $
+**
 */
 #ifndef __REVM_HELP_H_
  #define __REVM_HELP_H_

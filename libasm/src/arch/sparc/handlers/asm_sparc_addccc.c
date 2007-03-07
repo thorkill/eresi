@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_addccc.c,v 1.4 2007-03-07 16:45:34 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int

@@ -3,6 +3,9 @@
 ** 
 ** Started on  Tue Mar  4 01:15:23 2003 mayhem
 ** Last update Tue Mar 11 21:26:07 2003 mayhem
+**
+** $Id: copy.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 

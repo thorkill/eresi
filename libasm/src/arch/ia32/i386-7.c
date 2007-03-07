@@ -4,6 +4,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
 ** Updated : Sun Mar 21 00:37:27 2004
+**
+** $Id: i386-7.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include <libasm.h>
 #include <libasm-int.h>

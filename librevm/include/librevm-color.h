@@ -2,6 +2,9 @@
 ** libui-color.h for libui
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
+**
+** $Id: librevm-color.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef __LIBUI_COLOR_H__

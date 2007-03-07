@@ -1,14 +1,19 @@
 /*
 ** notes.c for libelfsh
-**
+** 
 ** Functions of this files are not intended to be used with e2dbg
 ** 
 ** Started on  Sun Jun 10 22:57:09 2001 mayhem
+** 
+**
+** $Id: notes.c,v 1.5 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-/* Return the content of the 'range'th section of type SHT_NOTE */
+/**
+ * Return the content of the 'range'th section of type SHT_NOTE 
+ */
 elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 {
   elfshsect_t		*notes;
@@ -71,7 +76,9 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 }
 
 
-/* Free the notes section linked list */
+/**
+ * Free the notes section linked list 
+ */
 void			elfsh_free_notes(elfshobj_t *file)
 {
   elfshnotent_t		*e;

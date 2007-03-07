@@ -1,10 +1,13 @@
 /*
- * libdump.h for elfsh
- * 
- * Started on Tue Feb 15 12:53:05 CET 2005 ym
- * Updated on Wed Mar  9 22:02:29 CET 2005 ym
- *
- * */
+** libdump.h for elfsh
+** 
+** Started on Tue Feb 15 12:53:05 CET 2005 ym
+** Updated on Wed Mar  9 22:02:29 CET 2005 ym
+** 
+**
+** $Id: libdump.h,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 #ifndef _LIBDUMP_H_
 #define _LIBDUMP_H_ 1

@@ -1,28 +1,26 @@
 /*
 ** sparc64.c for libelfsh
-**
+** 
 ** Started on  Sat Jan 15 14:25:37 2005 mayhem
 ** Last update Sat Jan 15 14:26:39 2005 mayhem
-**
+** 
 ** Cut & Pasted from the sparc32 backend
 ** 64 bits backend work-in-progress
+** 
+**
+** $Id: sparc64.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-
-
-
-
 /*
   Here some temporary info on openssl64
-
   printf : 0x100255560 (plt + 672)
 */
 
-
-
-/* Static hooking for Sparc64 */
+/**
+ * Static hooking for Sparc64 
+ */
 int	elfsh_cflow_sparc64(elfshobj_t  *null,
 			    char	*snull,
 			    elfsh_Sym	*null2,
@@ -33,9 +31,9 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
-
-/* PLT hijacking on SPARC64 */
+/**
+ * PLT hijacking on SPARC64 
+ */
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
 					 elfsh_Addr addr)
@@ -89,6 +87,10 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
    Optimized by dvorak at synnergy dot net for fitting in 64 bytes, danke Jack!
 
 */
+
+/**
+ * hijack altplt on sparc64
+ */
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
 					    elfsh_Addr addr)
@@ -149,11 +151,10 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-/* Perform relocation on entry for SPARC64 architecture */
-/* Shared relocation function with augmented SPARC32 */
+/**
+ * Perform relocation on entry for SPARC64 architecture
+ * Shared relocation function with augmented SPARC32 
+ */
 int       elfsh_relocate_sparc64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
 				 elfsh_Addr        *dword,
@@ -164,5 +165,3 @@ int       elfsh_relocate_sparc64(elfshsect_t       *new,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_relocate_sparc32(new, cur, dword, addr, mod)));
 }
-
-

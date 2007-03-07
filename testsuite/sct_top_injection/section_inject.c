@@ -3,6 +3,9 @@
 **
 ** Started on  Sun Mar 17 05:57:23 2002 mayhem
 ** Last update Mon Jun 30 11:54:57 2003 jv
+**
+** $Id: section_inject.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "libelfsh.h"
 

@@ -1,9 +1,12 @@
 /*
 ** version.c for elfsh
-**
+** 
 ** Started     Nov 25 2003 mayhem
 ** Last update Nov 25 2003 mayhem
 ** Last update Sep 27 2005 mxatone
+** 
+**
+** $Id: version.c,v 1.5 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -12,9 +15,9 @@ static int version_parent = -1;
 static int version_need = -1;
 
 
-
-
-/* Return a Version need entry value for aux (aux) */
+/**
+ * Return a Version need entry value for aux (aux) 
+ */
 elfsh_Word    		elfsh_get_verneed_aux(elfsh_Verneed *need)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -30,7 +33,9 @@ elfsh_Word    		elfsh_get_verneed_aux(elfsh_Verneed *need)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (need->vn_aux));
 }
 
-/* Set a Version need entry value for aux (aux) */
+/**
+ * Set a Version need entry value for aux (aux) 
+ */
 int			elfsh_set_verneed_aux(elfsh_Verneed *need, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -49,7 +54,9 @@ int			elfsh_set_verneed_aux(elfsh_Verneed *need, elfsh_Word val)
 }
 
 
-/* Return a Version need (aux) entry value for count (count) */
+/**
+ * Return a Version need (aux) entry value for count (count) 
+ */
 elfsh_Half    		elfsh_get_verneed_cnt(elfsh_Verneed *need)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -65,7 +72,9 @@ elfsh_Half    		elfsh_get_verneed_cnt(elfsh_Verneed *need)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (need->vn_cnt));
 }
 
-/* Set a Version need entry value for count (count) */
+/**
+ * Set a Version need entry value for count (count) 
+ */
 int			elfsh_set_verneed_cnt(elfsh_Verneed *need, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -83,12 +92,9 @@ int			elfsh_set_verneed_cnt(elfsh_Verneed *need, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-
-/* Return a Version need entry value for file (file) */
+/**
+ * Return a Version need entry value for file (file) 
+ */
 elfsh_Word    		elfsh_get_verneed_file(elfsh_Verneed *need)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -104,7 +110,9 @@ elfsh_Word    		elfsh_get_verneed_file(elfsh_Verneed *need)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (need->vn_file));
 }
 
-/* Set a Version need entry value for file (file) */
+/**
+ * Set a Version need entry value for file (file) 
+ */
 int			elfsh_set_verneed_file(elfsh_Verneed *need, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -122,16 +130,9 @@ int			elfsh_set_verneed_file(elfsh_Verneed *need, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-
-
-
-
-
-/* Return a Version need (aux) entry value for next (next) normal & parent */
+/**
+ * Return a Version need (aux) entry value for next (next) normal & parent 
+ */
 elfsh_Word    		elfsh_get_verneed_next(void *p)
 {
   elfsh_Verneed		*need;
@@ -154,7 +155,9 @@ elfsh_Word    		elfsh_get_verneed_next(void *p)
 }
 
 
-/* Set a Version need (aux) entry value for next (next) normal & parent */
+/**
+ * Set a Version need (aux) entry value for next (next) normal & parent 
+ */
 int			elfsh_set_verneed_next(void *p, elfsh_Word val)
 {
   elfsh_Verneed		*need;
@@ -180,7 +183,9 @@ int			elfsh_set_verneed_next(void *p, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version need (aux) entry value for flags (flag) */
+/**
+ * Return a Version need (aux) entry value for flags (flag) 
+ */
 elfsh_Half    		elfsh_get_verneed_flags(elfsh_Vernaux *naux)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -196,7 +201,9 @@ elfsh_Half    		elfsh_get_verneed_flags(elfsh_Vernaux *naux)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (naux->vna_flags));
 }
 
-/* Set a Version need (aux) entry value for flags (flag) */
+/**
+ * Set a Version need (aux) entry value for flags (flag) 
+ */
 int			elfsh_set_verneed_flags(elfsh_Vernaux *naux, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -214,7 +221,9 @@ int			elfsh_set_verneed_flags(elfsh_Vernaux *naux, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version need (aux) entry value for hash (hash) */
+/**
+ * Return a Version need (aux) entry value for hash (hash) 
+ */
 elfsh_Word    		elfsh_get_verneed_hash(elfsh_Vernaux *naux)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -230,7 +239,9 @@ elfsh_Word    		elfsh_get_verneed_hash(elfsh_Vernaux *naux)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (naux->vna_hash));
 }
 
-/* Set a Version need (aux) entry value for hash (hash) */
+/**
+ * Set a Version need (aux) entry value for hash (hash) 
+ */
 int			elfsh_set_verneed_hash(elfsh_Vernaux *naux, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -264,7 +275,9 @@ elfsh_Word    		elfsh_get_verneed_name(elfsh_Vernaux *naux)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (naux->vna_name));
 }
 
-/* Set a Version need (aux) entry value for name (name) */
+/**
+ * Set a Version need (aux) entry value for name (name) 
+ */
 int			elfsh_set_verneed_name(elfsh_Vernaux *naux, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -282,7 +295,9 @@ int			elfsh_set_verneed_name(elfsh_Vernaux *naux, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version need (aux) entry value for other (index) */
+/**
+ * Return a Version need (aux) entry value for other (index) 
+ */
 elfsh_Half    		elfsh_get_verneed_ndx(elfsh_Vernaux *naux)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -299,7 +314,9 @@ elfsh_Half    		elfsh_get_verneed_ndx(elfsh_Vernaux *naux)
 }
 
 
-/* Set a Version need (aux) entry value for ndx (index) */
+/**
+ * Set a Version need (aux) entry value for ndx (index) 
+ */
 int			elfsh_set_verneed_ndx(elfsh_Vernaux *naux, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -317,7 +334,9 @@ int			elfsh_set_verneed_ndx(elfsh_Vernaux *naux, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Get Version def by name */
+/**
+ * Get Version def by name 
+ */
 elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Verneed		*table;
@@ -357,7 +376,9 @@ elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);  
 }
 
-/* Get Version need by index (aux) */
+/**
+ * Get Version need by index (aux) 
+ */
 elfsh_Vernaux        	*elfsh_get_verneed_entry_by_index(void *ps, 
 						      elfsh_Half index)
 {
@@ -395,7 +416,9 @@ elfsh_Vernaux        	*elfsh_get_verneed_entry_by_index(void *ps,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* Return a Version def entry value for cname (name) [child] */
+/**
+ * Return a Version def entry value for cname (name) [child] 
+ */
 elfsh_Word    		elfsh_get_verdef_cname(elfsh_Verdaux *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -411,7 +434,9 @@ elfsh_Word    		elfsh_get_verdef_cname(elfsh_Verdaux *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vda_name));
 }
 
-/* Set a Version def entry value for cname (name) [child] */
+/**
+ * Set a Version def entry value for cname (name) [child] 
+ */
 int			elfsh_set_verdef_cname(elfsh_Verdaux *def, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -430,7 +455,9 @@ int			elfsh_set_verdef_cname(elfsh_Verdaux *def, elfsh_Word val)
 }
 
 
-/* Return a Version def entry value for cnext (next) [child] */
+/**
+ * Return a Version def entry value for cnext (next) [child]
+ */
 elfsh_Word    		elfsh_get_verdef_cnext(elfsh_Verdaux *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -446,7 +473,9 @@ elfsh_Word    		elfsh_get_verdef_cnext(elfsh_Verdaux *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vda_next));
 }
 
-/* Set a Version def entry value for cnext (next) [child] */
+/**
+ * Set a Version def entry value for cnext (next) [child] 
+ */
 int			elfsh_set_verdef_cnext(elfsh_Verdaux *def, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -464,7 +493,9 @@ int			elfsh_set_verdef_cnext(elfsh_Verdaux *def, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for next (next) normal & aux */
+/**
+ * Return a Version def entry value for next (next) normal & aux 
+ */
 elfsh_Word    		elfsh_get_verdef_next(void *p)
 {
   elfsh_Verdef		*def;
@@ -486,7 +517,9 @@ elfsh_Word    		elfsh_get_verdef_next(void *p)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_next));    
 }
 
-/* Set a Version def entry value for next (next) normal & aux */
+/**
+ * Set a Version def entry value for next (next) normal & aux 
+ */
 int			elfsh_set_verdef_next(void *p, elfsh_Word val)
 {
   elfsh_Verdef		*def;
@@ -512,7 +545,9 @@ int			elfsh_set_verdef_next(void *p, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for aux (aux) */
+/**
+ * Return a Version def entry value for aux (aux) 
+ */
 elfsh_Word    		elfsh_get_verdef_aux(elfsh_Verdef *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -528,7 +563,9 @@ elfsh_Word    		elfsh_get_verdef_aux(elfsh_Verdef *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_aux));
 }
 
-/* Set a Version def entry value for aux (aux) */
+/**
+ * Set a Version def entry value for aux (aux) 
+ */
 int			elfsh_set_verdef_aux(elfsh_Verdef *def, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -546,7 +583,9 @@ int			elfsh_set_verdef_aux(elfsh_Verdef *def, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for flags (flags) */
+/**
+ * Return a Version def entry value for flags (flags) 
+ */
 elfsh_Half    		elfsh_get_verdef_flags(elfsh_Verdef *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -562,7 +601,9 @@ elfsh_Half    		elfsh_get_verdef_flags(elfsh_Verdef *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_flags));
 }
 
-/* Set a Version def entry value for flags (flags) */
+/**
+ * Set a Version def entry value for flags (flags) 
+ */
 int			elfsh_set_verdef_flags(elfsh_Verdef *def, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -580,7 +621,9 @@ int			elfsh_set_verdef_flags(elfsh_Verdef *def, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for hash (hash) */
+/**
+ * Return a Version def entry value for hash (hash) 
+ */
 elfsh_Word    		elfsh_get_verdef_hash(elfsh_Verdef *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -596,7 +639,9 @@ elfsh_Word    		elfsh_get_verdef_hash(elfsh_Verdef *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_hash));
 }
 
-/* Set a Version def entry value for hash (hash) */
+/**
+ * Set a Version def entry value for hash (hash) 
+ */
 int			elfsh_set_verdef_hash(elfsh_Verdef *def, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -614,7 +659,9 @@ int			elfsh_set_verdef_hash(elfsh_Verdef *def, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for cnt (count) */
+/**
+ * Return a Version def entry value for cnt (count) 
+ */
 elfsh_Half    		elfsh_get_verdef_cnt(elfsh_Verdef *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -630,7 +677,9 @@ elfsh_Half    		elfsh_get_verdef_cnt(elfsh_Verdef *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_cnt));
 }
 
-/* Set a Version def entry value for cnt (count) */
+/**
+ * Set a Version def entry value for cnt (count) 
+ */
 int			elfsh_set_verdef_cnt(elfsh_Verdef *def, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -648,7 +697,9 @@ int			elfsh_set_verdef_cnt(elfsh_Verdef *def, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version def entry value for ndx (index) */
+/**
+ * Return a Version def entry value for ndx (index) 
+ */
 elfsh_Half    		elfsh_get_verdef_ndx(elfsh_Verdef *def)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -665,7 +716,9 @@ elfsh_Half    		elfsh_get_verdef_ndx(elfsh_Verdef *def)
 }
 
 
-/* Set a Version def entry value for ndx (index) */
+/**
+ * Set a Version def entry value for ndx (index) 
+ */
 int			elfsh_set_verdef_ndx(elfsh_Verdef *def, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -683,7 +736,9 @@ int			elfsh_set_verdef_ndx(elfsh_Verdef *def, elfsh_Half val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Get Version def by index */
+/**
+ * Get Version def by index 
+ */
 void	           	*elfsh_get_verdef_entry_by_index(void *ps, 
 						      elfsh_Half index)
 {
@@ -732,7 +787,9 @@ void	           	*elfsh_get_verdef_entry_by_index(void *ps,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* Get Version symbols by index */
+/**
+ * Get Version symbols by index 
+ */
 elfsh_Half    		*elfsh_get_versym_entry_by_index(elfsh_Half *s, 
 						      u_int index)
 {
@@ -741,7 +798,9 @@ elfsh_Half    		*elfsh_get_versym_entry_by_index(elfsh_Half *s,
 }
 
 
-/* Return a Version symbol entry value */
+/**
+ * Return a Version symbol entry value 
+ */
 elfsh_Half    		elfsh_get_versym_val(elfsh_Half *sym)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -754,7 +813,9 @@ elfsh_Half    		elfsh_get_versym_val(elfsh_Half *sym)
 }
 
 
-/* Set a Version symbol entry value */
+/**
+ * Set a Version symbol entry value 
+ */
 int			elfsh_set_versym_val(elfsh_Half *sym, elfsh_Half val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -769,7 +830,9 @@ int			elfsh_set_versym_val(elfsh_Half *sym, elfsh_Half val)
 }
 
 
-/* Return the version symbol entry giving its name */
+/**
+ * Return the version symbol entry giving its name 
+ */
 elfsh_Half		*elfsh_get_versym_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym		*ret;
@@ -807,9 +870,14 @@ elfsh_Half		*elfsh_get_versym_by_name(elfshobj_t *file, char *name)
 		    "Symbol not found", NULL);
 }
 
+
+/**
+ * Missing
+ */
 int 			elfsh_get_verdauxnamelist(elfshobj_t *file, 
 						  hashdef_t *hdef, 
-						  char **names, int numnames)
+						  char **names, 
+						  int numnames)
 {
   elfsh_Verdaux		*table;
   void			*ps;
@@ -838,6 +906,9 @@ int 			elfsh_get_verdauxnamelist(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Missing
+ */
 int			elfsh_load_needtable(hash_t *t, void *ps, 
 					     u_int size)
 {
@@ -880,6 +951,9 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/** 
+ * Missing
+ */
 int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
 {
   elfsh_Verdef		*table;
@@ -906,6 +980,10 @@ int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+/**
+ * Missing
+ */
 void    		*elfsh_get_verstrtable(elfshobj_t *file)
 {
   elfshsect_t		*dynstr;
@@ -940,6 +1018,10 @@ void    		*elfsh_get_verstrtable(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+
+/**
+ * Missing
+ */
 char	       		*elfsh_get_verneedfile(elfshobj_t *file, elfsh_Verneed *n)
 {
   void 	    		*str;
@@ -954,6 +1036,9 @@ char	       		*elfsh_get_verneedfile(elfshobj_t *file, elfsh_Verneed *n)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str + n->vn_file));
 }
 
+/**
+ * Missing
+ */
 char			*elfsh_get_vernauxname(elfshobj_t *file, elfsh_Vernaux *a)
 {
   void 			*str;
@@ -968,6 +1053,9 @@ char			*elfsh_get_vernauxname(elfshobj_t *file, elfsh_Vernaux *a)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str + a->vna_name));
 }
 
+/**
+ * Missing
+ */
 char			*elfsh_get_verdauxname(elfshobj_t *file, elfsh_Verdaux *a)
 {
   void 			*str;
@@ -982,6 +1070,9 @@ char			*elfsh_get_verdauxname(elfshobj_t *file, elfsh_Verdaux *a)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str + a->vda_name));
 }
 
+/**
+ * Missing
+ */
 void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
 {
   elfshsect_t		*sect;
@@ -1021,6 +1112,9 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+/**
+ * Missing
+ */
 void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
 {
   elfshsect_t		*sect;
@@ -1062,6 +1156,10 @@ void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+
+/**
+ * Missing
+ */ 
 void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
 {
   elfshsect_t		*sect;
@@ -1103,6 +1201,9 @@ void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+/**
+ * Missing
+ */
 elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, elfsh_Addr range, int *num)
 {
   elfsh_Verdef		*table;

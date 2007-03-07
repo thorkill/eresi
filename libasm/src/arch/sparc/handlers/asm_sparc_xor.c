@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_xor.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -28,7 +33,6 @@ asm_sparc_xor(asm_instr * ins, u_char * buf, u_int len,
     ins->op2.imm = opcode.imm;
   }
 
-  /* Synthethics */
   if (ins->op1.base_reg == ins->op3.base_reg) {
     ins->instr = ASM_SP_BTOG;
     ins->nb_op = 2;

@@ -3,6 +3,9 @@
 **
 ** Started on  Fri Jan 24 20:25:42 2003 mayhem
 ** Last update Fri Dec 22 00:14:56 2006 mayhem
+**
+** $Id: libaspect-hash.h,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #ifndef _LIBHASH_H_

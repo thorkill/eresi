@@ -19,6 +19,9 @@
 **
 ** Started on  Tue Feb 08 12:21:12 2005 mayhem
 **
+**
+** $Id: lts.c,v 1.7 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "revm.h"
 

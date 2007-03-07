@@ -1,9 +1,12 @@
-/*                                                                                                                                                          
+/*
 ** delete.c for e2dbg
 **    
 ** Delete breakpoints
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
+**
+** $Id: delete.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 

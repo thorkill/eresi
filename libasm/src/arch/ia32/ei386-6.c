@@ -2,6 +2,9 @@
 ** Author  : <strauss at rfdslabs com br>
 ** Started : Wed Dec  17 00:23:23 2006
 ** Updated : Wed Dec  17 00:23:23 2006
+**
+** $Id: ei386-6.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 #include <libasm.h>

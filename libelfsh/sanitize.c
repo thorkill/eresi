@@ -2,12 +2,17 @@
 ** sanitize.c for elfsh
 ** 
 ** Started on  Sun Mar 30 04:13:03 2003 mayhem
+** 
+**
+** $Id: sanitize.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* Update the sh_name field in the section header table entry */
+/**
+ * Update the sh_name field in the section header table entry
+ */
 void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
 {
   int		index;
@@ -21,7 +26,9 @@ void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Update the sh_link for all sections linked to a specific shifted one */
+/**
+ * Update the sh_link for all sections linked to a specific shifted one
+ */
 void		elfsh_update_linkidx(elfshobj_t *file, int low_index, int diff)
 {
   int		index;
@@ -34,7 +41,9 @@ void		elfsh_update_linkidx(elfshobj_t *file, int low_index, int diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Update the sh_link for all section linked to a specific one */
+/**
+ * Update the sh_link for all section linked to a specific one
+ */
 void		elfsh_update_linkidx_equ(elfshobj_t *file, int idx, int diff)
 {
   int		index;
@@ -49,7 +58,9 @@ void		elfsh_update_linkidx_equ(elfshobj_t *file, int idx, int diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Update the sh_link for all section linked to a specific one */
+/**
+ * Update the sh_link for all section linked to a specific one 
+ */
 void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
 {
   elfshsect_t	*s;
@@ -72,8 +83,9 @@ void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-/* Update sh_link fields for the given section */
+/**
+ * Update sh_link fields for the given section 
+ */
 void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
 {
   elfshsect_t	*s;
@@ -96,8 +108,9 @@ void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-/* Update the sh_link for all section linked to a specific one */
+/**
+ * Update the sh_link for all section linked to a specific one 
+ */
 void		elfsh_update_dynsym_shidx(elfshobj_t *file, int idx, int diff)
 {
   elfshsect_t	*s;
@@ -111,7 +124,9 @@ void		elfsh_update_dynsym_shidx(elfshobj_t *file, int idx, int diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Update the sh_link for all section linked to a specific one */
+/**
+ * Update the sh_link for all section linked to a specific one 
+ */
 void		elfsh_update_symtab_shidx(elfshobj_t *file, int idx, int diff)
 {
   elfshsect_t	*s;

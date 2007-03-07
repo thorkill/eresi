@@ -1,3 +1,8 @@
+/*
+**
+** $Id: host1.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

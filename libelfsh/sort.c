@@ -1,16 +1,21 @@
 /*
 ** sort.c for elfsh
-**
+** 
 ** Improved by spacewalker to use quicksort from libc
 ** instead of some ugly homemade bubble sort
 ** 
 ** Started on  Wed May 21 15:27:15 2003 mayhem
+** 
+**
+** $Id: sort.c,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-/* functions called by qsort() */
+/**
+ * functions called by qsort()
+ */
 int		      sizesort_compare(const elfsh_Sym * p, const elfsh_Sym * q)
 {
   if (p->st_size < q->st_size)
@@ -20,6 +25,9 @@ int		      sizesort_compare(const elfsh_Sym * p, const elfsh_Sym * q)
   return 0;
 }
 
+/**
+ * Missing
+ */
 int		      addrsort_compare(const elfsh_Sym * p,const elfsh_Sym * q)
 {
   if (p->st_value < q->st_value)
@@ -29,7 +37,9 @@ int		      addrsort_compare(const elfsh_Sym * p,const elfsh_Sym * q)
   return 0;
 }
 
-/* Sort the symtab given in parameter */
+/**
+ * Sort the symtab given in parameter 
+ */
 int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -57,9 +67,9 @@ int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* Synchronize sorted instance of tables */
+/**
+ * Synchronize sorted instance of tables 
+ */
 int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
 {
   u_int			nbr;

@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_rd.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -20,7 +25,6 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
     ins->op2.type = ASM_SP_OTYPE_SREGISTER;
     ins->op2.base_reg = opcode.rs1;
     
-    /* Synthetics */
     if (ins->op1.base_reg == ASM_SREG_Y) {
   	  	ins->instr = ASM_SP_MOV;
   	}

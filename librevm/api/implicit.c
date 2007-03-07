@@ -2,6 +2,9 @@
 ** implicit.c for elfsh
 ** 
 ** Started on  Tue Feb 18 06:45:35 2003 mayhem
+**
+** $Id: implicit.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

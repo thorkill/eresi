@@ -1,11 +1,14 @@
-/**
- * libmjollnir/src/blocks.c
- * 
- * Authors : sk, mayhem, thorkill
- *
- * Started : Thu May 29 20:39:14 2003 sk
- * Updated : Fri Dec 15 01:09:47 2006 mayhem
- */
+/*
+** libmjollnir/src/blocks.c
+** 
+** Authors : sk, mayhem, thorkill
+** 
+** Started : Thu May 29 20:39:14 2003 sk
+** Updated : Fri Dec 15 01:09:47 2006 mayhem
+**
+** $Id: blocks.c,v 1.43 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libmjollnir.h"
 
 /* Goto hash */

@@ -5,6 +5,9 @@
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Dec 28 03:37:02 2002
 ** Updated : Wed Apr 30 18:49:22 2003
+**
+** $Id: ei386-4.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include <libasm.h>
 #include <libasm-int.h>

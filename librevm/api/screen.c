@@ -3,6 +3,9 @@
 **
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Thu Jan 04 11:22:11 2007 mayhem
+**
+** $Id: screen.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

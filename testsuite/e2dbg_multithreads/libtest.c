@@ -1,3 +1,8 @@
+/*
+**
+** $Id: libtest.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
+*/
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,7 +15,6 @@ void *print_message_function_lib( void *ptr )
 
   for (idx = 0; 1; idx++)
     {
-      //if (idx == 5)
       //raise(SIGTRAP);
       message = (char *) malloc(42);
       printf("%s: (thread id = %u LIBTHREAD) new chunk addr %08X stack var addr %08X\n", 

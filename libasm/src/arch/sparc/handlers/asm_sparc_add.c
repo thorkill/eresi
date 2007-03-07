@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_add.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int 
@@ -28,7 +33,6 @@ asm_sparc_add(asm_instr * ins, u_char * buf, u_int len,
     ins->op2.imm = opcode.imm;
   }
 
-  /* Synthethics */
   if ((ins->op1.base_reg == ins->op3.base_reg) &&
 		ins->op2.type == ASM_OTYPE_IMMEDIATE) {
 

@@ -5,6 +5,9 @@
 **
 ** Started on  Mon Jun 23 06:56:04 2003 mayhem
 ** Last update Sun Aug 17 17:41:48 2003 mayhem
+**
+** $Id: rel.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include <stdio.h>
 #include <stdlib.h>

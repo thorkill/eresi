@@ -1,7 +1,10 @@
 /*
 ** elfsh-help.h for elfsh
-**
+** 
 ** Started on  Thu Aug 15 07:19:04 2005 mayhem
+**
+** $Id: elfsh-help.h,v 1.14 2007-03-07 16:45:34 thor Exp $
+**
 */
 #ifndef __ELFSH_HELP_H_
  #define __ELFSH_HELP_H_

@@ -5,6 +5,9 @@
 **
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
+**
+** $Id: libhash.c,v 1.25 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libaspect.h"
 

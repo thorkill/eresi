@@ -1,18 +1,18 @@
 /*
 ** symbol.c for libelfsh
-**
+** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
+**
+** $Id: symbol.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
-
-
-
-/*
-** Return the symbol name giving its index in the symbol string table
-** No special case for SECTION symbol because the section names strings
-** have been duplicated in the symbol table.
-*/
+/**
+ * Return the symbol name giving its index in the symbol string table
+ * No special case for SECTION symbol because the section names strings
+ * have been duplicated in the symbol table.
+ */
 char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
   void		*data;
@@ -40,10 +40,9 @@ char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + s->st_name));
 }
 
-
-
-
-/* Return the used offset in .strtab or -1 if failed */
+/**
+ * Return the used offset in .strtab or -1 if failed 
+ */
 int			elfsh_set_symbol_name(elfshobj_t	*file,
 					      elfsh_Sym		*s,
 					      char		*name)
@@ -98,7 +97,9 @@ int			elfsh_set_symbol_name(elfshobj_t	*file,
 
 
 
-/* Return a ptr on the symbol table */
+/**
+ * Return a ptr on the symbol table 
+ */
 void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 {
   elfshsect_t	*s;
@@ -161,10 +162,10 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
 }
 
 
-/*
-** Return the dynamic symbol name giving its value,
-** Fill 'offset' with the difference between sym->st_value and 'value'
-*/
+/**
+ * Return the dynamic symbol name giving its value,
+ * Fill 'offset' with the difference between sym->st_value and 'value'
+ */
 char		*elfsh_reverse_symbol(elfshobj_t	*file,
 				      elfsh_Addr       	value,
 				      elfsh_SAddr      	*offset)
@@ -223,10 +224,9 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
 }
 
 
-
-
-
-/* Return the symbol entry giving its name */
+/**
+ * Return the symbol entry giving its name 
+ */
 elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
@@ -256,7 +256,9 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
 
 
 
-/* Shift usual symbols (mandatory on solaris) */
+/**
+ * Shift usual symbols (mandatory on solaris) 
+ */
 void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
 {
   elfsh_Sym	*end;
@@ -295,8 +297,10 @@ void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
 }
 
 
-/* Insert a symbol in the given symbol table */
-/* This function is not e2dbg safe */
+/**
+ * Insert a symbol in the given symbol table 
+ * This function is not e2dbg safe 
+ */
 int		elfsh_insert_symbol(elfshsect_t *sect,
 				    elfsh_Sym	*sym,
 				    char	*name)
@@ -354,8 +358,10 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
 
 
 
-/* Remove a symbol */
-/* This function is not e2dbg safe */
+/**
+ * Remove a symbol
+ * This function is not e2dbg safe 
+ */
 int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 {
   elfsh_Sym	*ret;
@@ -396,12 +402,9 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 }
 
 
-
-
-
-
-
-/* Retreive the file offset giving the virtual address */
+/**
+ * Retreive the file offset giving the virtual address 
+ */
 int		elfsh_get_symbol_foffset(elfshobj_t *file, elfsh_Sym *sym)
 {
   elfshsect_t	*sect;
@@ -429,9 +432,9 @@ int		elfsh_get_symbol_foffset(elfshobj_t *file, elfsh_Sym *sym)
 		      (sym->st_value - sect->shdr->sh_addr)));
 }
 
-
-
-/* Get symtab entry by vaddr */
+/**
+ * Get symtab entry by vaddr 
+ */
 elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
 					     elfsh_Addr	vaddr,
 					     int	*off,
@@ -453,7 +456,9 @@ elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
 
 
 
-/* Shift the symbol table */
+/**
+ * Shift the symbol table 
+ */
 int		elfsh_shift_symtab(elfshobj_t *file, elfsh_Addr limit, int inc)
 {
   elfshsect_t	*actual;
@@ -475,9 +480,9 @@ int		elfsh_shift_symtab(elfshobj_t *file, elfsh_Addr limit, int inc)
 }
 
 
-
-
-/* Insert STT_SECTION symbol */
+/**
+ * Insert STT_SECTION symbol 
+ */
 int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
 {
   elfsh_Sym	new;
@@ -503,7 +508,9 @@ int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
 }
 
 
-/* Insert STT_SECTION symbol */
+/**
+ * Insert STT_SECTION symbol 
+ */
 int		elfsh_insert_funcsym(elfshobj_t *file, char *name, 
 				     elfsh_Addr vaddr, 
 				     uint32_t sz, uint32_t sctidx)

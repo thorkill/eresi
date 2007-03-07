@@ -1,3 +1,8 @@
+/*
+**
+** $Id: test-threads.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+**
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -34,7 +39,6 @@ main()
      char *message3 = "Thread 3";
      int  iret1, iret2, iret3;
  
-     /* Create independant threads each of which will execute function */
      //signal(SIGTRAP, (sighandler_t) sigtrap_handler);
      signal(SIGSTOP, (sighandler_t) sigstop_handler);
      signal(SIGUSR2, (sighandler_t) sigusr2_handler);

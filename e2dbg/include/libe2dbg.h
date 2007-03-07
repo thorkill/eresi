@@ -4,6 +4,9 @@
 **
 ** Started on Sun 05 Jun 2005 17:54:01 mm
 **
+**
+** $Id: libe2dbg.h,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #ifndef __E2DBG_H__
  #define __E2DBG_H__

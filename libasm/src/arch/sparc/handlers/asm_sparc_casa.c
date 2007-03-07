@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_casa.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -20,7 +25,6 @@ asm_sparc_casa(asm_instr * ins, u_char * buf, u_int len,
   if (opcode.i) {
     ins->op3.type = ASM_SP_OTYPE_IMM_ADDRESS;
     ins->op3.imm = 0;
-    /* This value doesn't matter. Just has to be != 0x80 */
     ins->op3.address_space = -1;
   }
   else {

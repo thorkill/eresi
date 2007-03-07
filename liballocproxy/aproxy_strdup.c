@@ -3,6 +3,9 @@
 **
 ** Made by mayhem for the ERESI project
 **
+**
+** $Id: aproxy_strdup.c,v 1.4 2007-03-07 16:45:34 thor Exp $
+**
 */
 #include "aproxy.h"
 #include <string.h>

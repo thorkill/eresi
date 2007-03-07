@@ -6,7 +6,10 @@
 ** December 2006 : Merged the modflow API and the mjollnir API to make a unified
 ** component. Adapted the data structures. Unified prefixing. -may
 **
-**/
+**
+** $Id: libmjollnir.h,v 1.28 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #if !defined(__MJOLLNIR__)
   #define __MJOLLNIR__ 1
 

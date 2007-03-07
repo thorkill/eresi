@@ -1,10 +1,13 @@
 /*
 ** search.c for libelfsh
-**
+** 
 ** This function contains the research function inside the ELF structures
 ** of the address space of the process or program.
-**
+** 
 ** Started on Sat Nov 25 21:19:53 2006 mayhem
+**
+** $Id: search.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libelfsh.h"
 
@@ -15,7 +18,9 @@ static hash_t *hash_shared = NULL;
 
 
 
-/* Register list of objects to work with */
+/**
+ * Register list of objects to work with 
+ */
 int		elfsh_register_working_objects(hash_t *prvhash,
 					       hash_t *sharedhash)
 {
@@ -27,9 +32,11 @@ int		elfsh_register_working_objects(hash_t *prvhash,
 
 
 
-/* Return the strongest symbol in the object */
-/* FIXME : we dont support symbol selection when 2 'concurrent' 
-   symbols are in the same object, take care */
+/**
+ * Return the strongest symbol in the object
+ * FIXME : we dont support symbol selection when 2 'concurrent' 
+ * symbols are in the same object, take care 
+ */
 elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -46,11 +53,9 @@ elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 		      candidate : choice));
 }
 
-
-
-
-
-/* Find in the available objects list the most important symbol with this name */
+/**
+ * Find in the available objects list the most important symbol with this name 
+ */
 elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
 {
   elfshobj_t	*curidx;

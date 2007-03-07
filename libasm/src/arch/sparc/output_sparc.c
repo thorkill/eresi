@@ -6,6 +6,9 @@
 ** 
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
+**
+** $Id: output_sparc.c,v 1.6 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 #include <libasm.h>

@@ -1,13 +1,18 @@
 /*
- ** map.c for libelfsh
- **
- ** Started on  Sat Mar  2 20:47:36 2002 mayhem
- **
- */
+** map.c for libelfsh
+** 
+** Started on  Sat Mar  2 20:47:36 2002 mayhem
+** 
+**
+** $Id: map.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libelfsh.h"
 
 
-/* Fixup the binary, inject symbols and sort SHT */
+/**
+ * Fixup the binary, inject symbols and sort SHT 
+ */
 void		      elfsh_fixup(elfshobj_t *file)
 {
   elfsh_Shdr	*got;
@@ -26,8 +31,10 @@ void		      elfsh_fixup(elfshobj_t *file)
 }
 
 
-/* Load all the part of the binary */
-/* This function should not be used by e2dbg */
+/**
+ * Load all the part of the binary 
+ * This function should not be used by e2dbg 
+ */
 int		        elfsh_read_obj(elfshobj_t *file)
 {
   elfshsect_t	*actual;
@@ -134,8 +141,10 @@ out:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Called from elfsh_fixup_symtab */
-/* When trying to inject part of the libc, some bss symbols have a wrong sctndx */
+/**
+ * Called from elfsh_fixup_symtab
+ * When trying to inject part of the libc, some bss symbols have a wrong sctndx 
+ */
 elfshsect_t   *elfsh_fixup_sctndx(elfshsect_t *symtab)
 {
   int		      index;
@@ -196,7 +205,9 @@ elfshsect_t   *elfsh_fixup_sctndx(elfshsect_t *symtab)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, symtab);
 }
 
-/* Map in memory all ressources for this file */
+/**
+ * Map in memory all ressources for this file 
+ */
 elfshobj_t	  *elfsh_map_obj(char *name)
 {
   elfshobj_t	*file;

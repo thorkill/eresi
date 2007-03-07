@@ -2,6 +2,9 @@
 ** etrace.h for etrace
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mxatone
+**
+** $Id: etrace.h,v 1.2 2007-03-07 16:45:34 thor Exp $
+**
 */
 #ifndef __ETRACE_H_
  #define __ETRACE_H_

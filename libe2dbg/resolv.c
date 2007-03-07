@@ -4,6 +4,9 @@
 ** Contains the linkmap related resolving builtins in e2dbg
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
+**
+** $Id: resolv.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 

@@ -1,18 +1,22 @@
 /*
 ** runtime.c for libelfsh
-**
-**
+** 
+** 
 ** This file contains runtime routines used for memory mapping
 ** in the debugger
-**
+** 
 ** Started Sun 05 May 2005 22:29:54 mm
+** 
+**
+** $Id: runtime.c,v 1.4 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 
-
-/* Set PHT entry rights from elfsh section mode */
+/**
+ * Set PHT entry rights from elfsh section mode 
+ */
 int		elfsh_set_phdr_prot(u_int mode)
 {
   elfsh_Word	flags;
@@ -25,7 +29,9 @@ int		elfsh_set_phdr_prot(u_int mode)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
 }
 
-/* Map a new area in memory */
+/**
+ * Map a new area in memory 
+ */
 elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 {
   elfsh_Addr	addr;
@@ -88,7 +94,9 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 }
 
 
-/* Unmap a previously requested area */
+/**
+ * Unmap a previously requested area 
+ */
 int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 {
   int		ret;
@@ -103,9 +111,9 @@ int		elfsh_runtime_unmap(elfsh_Phdr *segment)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-
-/* Remap an existing zone with a bigger size */
+/**
+ * Remap an existing zone with a bigger size 
+ */
 int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 {
   elfsh_Addr	addr;
@@ -124,9 +132,9 @@ int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
 }
 
-
-
-/* Synchronize ondisk modifications in memory */
+/**
+ * Synchronize ondisk modifications in memory 
+ */
 int		elfsh_runtime_sync()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -135,9 +143,9 @@ int		elfsh_runtime_sync()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/* Put write capability on the zone */
+/**
+ * Put write capability on the zone 
+ */
 int		elfsh_munprotect(elfshobj_t *file, 
 				 elfsh_Addr addr, 
 				 uint32_t sz)
@@ -180,9 +188,9 @@ int		elfsh_munprotect(elfshobj_t *file,
 		     prot);
 }
 
-
-
-/* Restore original rights */
+/**
+ * Restore original rights 
+ */
 int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
 {
   int		retval;

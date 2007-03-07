@@ -4,6 +4,9 @@
 ** Implement logging facilities 
 **
 ** Started September 16 03:11:04 2005 mayhem
+**
+** $Id: log.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "revm.h"
 

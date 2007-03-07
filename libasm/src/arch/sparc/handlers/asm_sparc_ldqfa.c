@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_ldqfa.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -19,7 +24,6 @@ asm_sparc_ldqfa(asm_instr * ins, u_char * buf, u_int len,
   if (opcode.i) {
     ins->op2.type = ASM_SP_OTYPE_IMM_ADDRESS;
     ins->op2.imm = opcode.imm;
-    /* This value doesn't matter. Just has to be != 0x80 */
     ins->op2.address_space = -1;
   }
   else {

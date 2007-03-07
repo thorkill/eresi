@@ -3,6 +3,9 @@
 **
 ** Started Jan 13 2007 18:09:02 mxatone
 **
+**
+** $Id: edfmt-utils.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+**
 */
 
 #include "libedfmt.h"

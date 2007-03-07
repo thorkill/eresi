@@ -1,9 +1,12 @@
 /*
 ** traces.c for libelfsh
-**
+** 
 ** All functions that help to trace content
-**
+** 
 ** Started Jul 2 2005 00:03:44 mxatone
+** 
+**
+** $Id: traces.c,v 1.6 2007-03-07 16:45:35 thor Exp $
 **
 */
 #include "libelfsh.h"

@@ -6,6 +6,9 @@
 ** 
 ** Started on  Tue Jun 14 05:02:37 2005 #!HATE#@!
 ** Last update Tue Jun 14 06:06:32 2005 #!HATE#@!
+**
+** $Id: libasm-sparc-decode.h,v 1.4 2007-03-07 16:45:34 thor Exp $
+**
 */
 
 #ifndef LIBASM_SPARC_DECODE_H_

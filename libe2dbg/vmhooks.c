@@ -9,6 +9,9 @@
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
 ** Modified  Thu Dec 28 04:28:00 2006 mayhem
+**
+** $Id: vmhooks.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libe2dbg.h"
 

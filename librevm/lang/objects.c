@@ -7,6 +7,9 @@
 ** 
 ** Started on  Mon Feb 24 12:21:12 2003 mayhem
 **
+**
+** $Id: objects.c,v 1.8 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "revm.h"
 

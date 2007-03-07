@@ -1,12 +1,15 @@
 /*
- *
- * Compatibility with the Alpha architecture
- *
- * Define all the relocation types that can be undefined on various OS
- *
- * Last update Sat Feb 26 20:57:27 2004 mayhem
- *
- */
+** 
+** Compatibility with the Alpha architecture
+** 
+** Define all the relocation types that can be undefined on various OS
+** 
+** Last update Sat Feb 26 20:57:27 2004 mayhem
+** 
+**
+** $Id: libelfsh-alpha.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+**
+*/
 
 /* Alpha relocations.  */
 

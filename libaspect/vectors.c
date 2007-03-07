@@ -5,6 +5,9 @@
 **
 ** Started Dec 22 2006 02:57:03 mayhem
 **
+**
+** $Id: vectors.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+**
 */
 #include "libaspect.h"
 

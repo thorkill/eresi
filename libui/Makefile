@@ -68,7 +68,7 @@ tags		:
 		@echo TAGS generated succesfully
 
 fclean		: clean
-		@$(RM) *.so *.a
+		@$(RM) *.so *.a *.o
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

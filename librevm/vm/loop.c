@@ -5,6 +5,9 @@
 **
 ** Started on  Wed Nov 19 23:02:04 2003 mayhem
 ** Updated on  Mon Aug 15 06:01:54 2005 mayhem
+**
+** $Id: loop.c,v 1.5 2007-03-07 16:45:36 thor Exp $
+**
 */
 #include "revm.h"
 

@@ -1,3 +1,8 @@
+/*
+**
+** $Id: asm_sparc_sra.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+**
+*/
 #include "libasm.h"
 
 int
@@ -13,7 +18,6 @@ asm_sparc_sra(asm_instr * ins, u_char * buf, u_int len,
   
   ins->type = ASM_TYPE_ARITH;
 
-  /* Find the right kind of shift - (SLL/SRL/SRA){X} */
   ins->instr = inter->shift_table[opcode.op3 - 0x25 +
 				  ((opcode.imm & 0x1000) ? 1 : 0)];
 
