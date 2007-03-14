@@ -4,7 +4,7 @@
  ** Started on  Mon Jul 23 15:47:12 2001 mayhem
  **
 **
-** $Id: libelfsh.h,v 1.40 2007-03-07 16:45:35 thor Exp $
+** $Id: libelfsh.h,v 1.41 2007-03-14 18:37:57 strauss Exp $
 **
 */
 
@@ -133,7 +133,10 @@
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
 #define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
-#define		ELFSH_SECTION_NAME_CONTROL	".elfsh.control"
+#define		ELFSH_SECTION_NAME_EDFMT_BLOCKS	".edfmt.blocks"
+#define		ELFSH_SECTION_NAME_EDFMT_BCONTROL	".edfmt.bcontrol"
+#define		ELFSH_SECTION_NAME_EDFMT_FUNCTIONS	".edfmt.function"
+#define		ELFSH_SECTION_NAME_EDFMT_FCONTROL	".edfmt.fcontrol"
 
 //#define		ELFSH_SECTION_NAME_RPHT		".elfsh.rpht"
 #define		ELFSH_SECTION_NAME_RSHSTRTAB	".rshstrtab"

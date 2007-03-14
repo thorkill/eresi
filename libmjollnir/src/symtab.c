@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.14 2007-02-23 05:27:47 may Exp $
+ * $Id: symtab.c,v 1.15 2007-03-14 18:37:57 strauss Exp $
  *
  */
 #include <libmjollnir.h>
@@ -14,17 +14,18 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  int		cn;
  int		x;
  char		**tab;
+ mjrcontainer_t *tmp;
  mjrblock_t	*n;
  char		s[BSIZE];
 
  tab = hash_get_keys(&sess->cur->blkhash, &cn);
  for (x = 0; x < cn; x++) 
    {
-     n = hash_get(&sess->cur->blkhash, tab[x]);
-     fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjr_symtab_rebuild: "XFMT" %d\n",
-	     n->vaddr,
-	     n->type);
-     if (!mjr_block_funcstart(n))
+     tmp = hash_get(&sess->cur->blkhash, tab[x]);
+		 n = tmp->data;
+     fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjr_symtab_rebuild: "XFMT" \n",
+	     n->vaddr);
+     if (!mjr_block_funcstart(tmp))
        continue;
      snprintf(s, BSIZE, "%s"AFMT, 
 	      (char *) config_get_data(MJR_COFING_CALL_PREFIX), n->vaddr);
@@ -35,8 +36,8 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
 
 /* This function inserts new symbol as a function. Shortcut for insert/set */
 int		mjr_symbol_add(mjrsession_t	*sess, 
-			       elfsh_Addr	vaddr, 
-			       char		*fname)
+							       elfsh_Addr		vaddr, 
+			  				     char					*fname)
 {
   elfshsect_t	*sect;
   elfsh_Sym	sym;

@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.43 2007-03-07 16:45:35 thor Exp $
+** $Id: blocks.c,v 1.44 2007-03-14 18:37:57 strauss Exp $
 **
 */
 #include "libmjollnir.h"
@@ -23,55 +23,63 @@ hash_t		goto_hash;
  * @param vaddr source address
  * @param dest destination address
  */
-int							mjr_block_point(mjrcontext_t  *ctxt, 
-																asm_instr      *ins,
-																elfsh_Addr     vaddr,
-																elfsh_Addr     dest)
+int							mjr_block_point(mjrcontext_t		*ctxt, 
+																asm_instr      	*ins,
+																elfsh_Addr     	vaddr,
+																elfsh_Addr     	dest)
 {
-  mjrblock_t		*dst;
-  mjrblock_t		*dst_end;  
-  int						new_size;
-  int						type;
+  mjrcontainer_t		*dst, *dst_end, *tmpcntnr;
+	mjrblock_t				*dstblk;
+	mjrlink_t					*dst_true, *dst_false;
+  int								new_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  dst_end = ctxt->blklist;
   dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
+	if (dst)
+		dstblk = (mjrblock_t *) dst->data;
 
   /* Just create a new target block */
   if (!dst) 
-    {
-      dst = mjr_block_create(ctxt, dest, 1);
-      dst->type = CALLER_UNKN;
-      mjr_block_add_list(ctxt, dst);
-    } 
+  {
+    dst = mjr_create_block_container(0, dest, 1);
+  	hash_add(&ctxt->blkhash, _vaddr2str(dest), dst);
+  } 
 
   /* Split block */
-  else if (dst->vaddr != dest) 
-    {
-      new_size        = dst->size - (dest - dst->vaddr);
-      dst->size      -= new_size;
-      dst_end         = mjr_block_create(ctxt, dest, new_size);
-      dst_end->true   = dst->true;
-      dst_end->false  = dst->false;
-      dst_end->type   = dst->type;
-      dst->true       = dest;
-      dst->type       = CALLER_CONT;
-      dst->false      = 0;
+  else if (dstblk->vaddr != dest) 
+  {
+    new_size        = dstblk->size - (dest - dstblk->vaddr);
+    dstblk->size    -= new_size;
+    dst_end         = mjr_create_block_container(0, dest, new_size);
+  	hash_add(&ctxt->blkhash, _vaddr2str(dest), dst_end);
+
+		dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
+		dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+		if (dst_true)
+			mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+		if (dst_false)
+			mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+
+		tmpcntnr = mjr_create_block_container(0, dest, 0);
+		if (!dst_true)
+			mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+		else
+			dst_true->id = tmpcntnr->id;
+
+		tmpcntnr = mjr_create_block_container(0, 0, 0);
+		if (!dst_false)
+			mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
+		else
+			dst_false->id = tmpcntnr->id;
       
-      mjr_block_add_list(ctxt, dst_end);
-      dst             = dst_end;
-    }
+    dst             = dst_end;
+  }
   
-  /* Add caller to target block */
-  if (ctxt->proc.type == ASM_PROC_IA32)
-    {
-      type = ins->instr == ASM_CALL ? CALLER_CALL : CALLER_JUMP;
-    }
-  else if (ctxt->proc.type == ASM_PROC_SPARC)
-    {
-      type = ins->instr == ASM_SP_CALL ? CALLER_CALL : CALLER_JUMP;
-    }
-  mjr_block_add_caller(dst, vaddr, type);
+	tmpcntnr = mjr_block_get_by_vaddr(ctxt, vaddr, 0);
+	if (!tmpcntnr)
+		mjr_create_block_container(0, vaddr, 0);
+
+	mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -80,49 +88,55 @@ int							mjr_block_point(mjrcontext_t  *ctxt,
 
 /**
  * Retreive control flow section content if any 
+ *
+ * returns the number of blocks (0 probably means something is wrong)
  */
-mjrblock_t*			mjr_blocks_get(mjrcontext_t *ctxt)
+int							mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t		*sect;
+	int						cnt;
 	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
  /* Parse arguments, load binary and resolve symbol */
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS, 0, 0, 0);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No control flow section : use analyse command", NULL);
+		      "No control flow section : use analyse command", 0);
 
   /* Return or retreive information */
-  if (sect->altdata)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+	cnt = hash_size(&ctxt->blkhash);
+  if (cnt != 0)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 
-  sect->altdata = mjr_blocks_load(ctxt);
+  cnt = mjr_blocks_load(ctxt);
 
-  if (sect->altdata)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+  if (cnt != 0)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Flow analysis failed", 0);
+		    "Flow analysis failed", cnt);
 }
 
 
 /**
  * Create the control flow graph using the information stored in .elfsh.control 
+ *
+ * returns the number of blocks (0 probably means something is wrong)
  */
-mjrblock_t*							mjr_blocks_load(mjrcontext_t *ctxt)
+int											mjr_blocks_load(mjrcontext_t *ctxt)
 {
-  int                   index;
-  elfshsect_t           *sect;
-  mjrblock_t            *curbloc;
-  mjrblock_t            *target;
-  unsigned int					blocnbr;
+  int                   index, findex, tmptype, cnt;
+  elfshsect_t           *sect, *flowsect;
+	mjrcontainer_t				*curcntnr;
+  mjrblock_t		        *curblock;
+  unsigned int					blocnbr, tmpid, off;
   char									name[20];
 	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS, 0, 0, 0);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No control flow section : use analyse command", 0);
@@ -130,91 +144,148 @@ mjrblock_t*							mjr_blocks_load(mjrcontext_t *ctxt)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted control flow section : modulo-test failed", 0);
 
+  flowsect = elfsh_get_section_by_name(ctxt->obj,
+				       ELFSH_SECTION_NAME_EDFMT_BCONTROL
+				       , 0, 0, 0);
+  
+  if (!flowsect)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "No block flow section : use analyse command", 0);
+
   /* If the function was already called, return its result */
-  if (sect->altdata)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+	cnt = hash_size(&ctxt->blkhash);
+  if (cnt != 0)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
   
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new blocks but use the data from the section */
-  blocnbr = sect->shdr->sh_size / sizeof(mjrblock_t);
+  blocnbr = sect->shdr->sh_size / (sizeof(mjrcontainer_t) + sizeof(mjrblock_t)) ;
   for (index = 0; index < blocnbr; index++)
     {
 
       // here you can see that the format ondisk is the exact same format that
       // we manipulate in this lib. So its very practical to reload/store the
       // info ondisk.
-      curbloc = (mjrblock_t *) sect->data + index;
-      mjr_block_add_list(ctxt, curbloc);
-      snprintf(name, sizeof(name), AFMT, curbloc->vaddr);
+      curcntnr = (mjrcontainer_t *) sect->data + index;
+			curblock = (mjrblock_t *) sect->data + index + sizeof(mjrcontainer_t);
+			curcntnr->data = curblock;
+
+      snprintf(name, sizeof(name), AFMT, curblock->vaddr);
 
 #if __DEBUG_BLOCKS__
       fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s/%d\n",name,
-        curbloc->type);
+        curblock->type);
 #endif
 
-      hash_add(&ctxt->blkhash, (char *) _vaddr2str(curbloc->vaddr), curbloc);
+			off = (u_int) curcntnr->input;
+			curcntnr->input = NULL;
+
+	    /* fill the flow list */
+	    for (findex=0; findex < curcntnr->in_nbr; findex++)
+			{	 
+		  	tmpid = *((unsigned int *) flowsect->data + off + findex);
+		  	tmptype = *((int *) flowsect->data + off + findex + sizeof(unsigned int));
+
+		    fprintf(D_DESC," [D] resotore parent: %u\n", tmpid);
+		    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
+			}
+
+	    off = (u_int)curcntnr->output;
+	    curcntnr->output = NULL;
+
+	    for (findex=0; findex < curcntnr->out_nbr; findex++)
+			{
+		  	tmpid = *((unsigned int *)flowsect->data + off + findex);
+		  	tmptype = *((int *) flowsect->data + off + findex + sizeof(unsigned int));
+
+		   	fprintf(D_DESC," [D] resotore child: %u\n", tmpid);
+		  	mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_OUT);
+			}
+
+			mjr_register_container_id (curcntnr);
+      hash_add(&ctxt->blkhash, (char *) _vaddr2str(curblock->vaddr), curcntnr);
     }
-  
-  /* Second pass : create all caller information for all loaded blocks */
-  for (index = 0; index < blocnbr; index++)
-    {
-      curbloc = (mjrblock_t *) sect->data + index;
-			
-      /* Link true child info */
-      target = mjr_block_get_by_vaddr(ctxt, curbloc->true, 0);
-			
-#if __DEBUG_BLOCKS__
-      if (!target)
-				fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 1-pass vaddr: "XFMT"\n",
-								curbloc->true);
-#endif
-			
-      if (!target)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Corrupted control flow callers information 1", 0);
-
-      mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
-
-      /* Link false child info */
-      target = mjr_block_get_by_vaddr(ctxt, curbloc->false, 0);
-
-#if __DEBUG_BLOCKS__
-      if (!target)
-	fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: 2-pass vaddr: "XFMT"\n",
-		curbloc->false);
-#endif
-
-      if (!target)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Corrupted control flow callers information 2", 0);
-
-      mjr_block_add_caller(target, curbloc->vaddr, curbloc->type);
-    }
-
-  /* Return results */
-  sect->altdata = ctxt->blklist;
 
   /* FIXME: prevent double analysis */
   ctxt->analysed = 1;
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+	cnt = hash_size(&ctxt->blkhash);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 }
 
 
 /**
+ * Save and prepare a buffer which will be saved into the elfshobj.
+ *
+ * @param c a block container containing links to be stores
+ * @param type 0 for inout/1 for output
+ * @param buf buffer which contains the data
+ * @return an offset where the data has been saved
+ */
+
+u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
+{
+  u_int curOff,nbr;
+  mjrlink_t *cur;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (type == 0) 
+  {
+    cur = c->input;
+    nbr = c->in_nbr;
+  } 
+  else if (type == 1)
+  {
+    cur = c->output;
+    nbr = c->out_nbr;
+  }
+
+  if (!cur)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  
+  if (!buf->data) 
+  {
+    buf->allocated = getpagesize();
+    XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
+    buf->maxlen = 0;
+  }
+  else if (buf->allocated  < (buf->maxlen + (sizeof(unsigned int) * nbr * 2)))
+  {
+    buf->allocated += getpagesize();
+    XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
+							buf->data, buf->data, buf->allocated, -1);
+  }
+
+  while (cur)
+  {
+    memcpy(buf->data + buf->maxlen, (char *)&cur->id , sizeof(unsigned int));
+    buf->maxlen += sizeof(unsigned int);
+    memcpy(buf->data + buf->maxlen, (char *)&cur->type , sizeof(int));
+    buf->maxlen += sizeof(int);
+    cur = cur->next;
+  }
+
+  curOff = buf->maxlen;
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
+}
+/**
  * Create the block information to be saved in file 
  */
-int							mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
+int								mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 {
-  char					buffer[24];
-  elfsh_Sym			bsym;
-  elfsh_Sym			*sym;
-  mjrblock_t		*curblock;
+  char						buffer[24];
+  elfsh_Sym				bsym;
+  elfsh_Sym				*sym;
+  mjrblock_t			*curblock;
+	mjrcontainer_t	*curcntnr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* At this points, no new block allocation should be done */
-  snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) cur->vaddr);
+	curblock = cur->data;
+  snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) curblock->vaddr);
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
   if (sym)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -225,25 +296,30 @@ int							mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 
   /* Else insert the block in the global buffer for the .control section */
   if (!buf->data) 
-    {
-      buf->allocated = getpagesize();;
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	     buf->data, buf->allocated, -1);
-      buf->maxlen = 0;
-    }
-  else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
-    {
-      buf->allocated += getpagesize();
-      XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-	       buf->data, buf->data, buf->allocated, -1);
-    }
-  curblock         = (mjrblock_t *) ((char *) buf->data + buf->maxlen);
-  memcpy(curblock, cur, sizeof(mjrblock_t));
-  curblock->caller = NULL;
+  {
+    buf->allocated = getpagesize();
+    XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
+    buf->maxlen = 0;
+  }
+
+	else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
+  {
+    buf->allocated += getpagesize();
+    XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
+							buf->data, buf->data, buf->allocated, -1);
+  }
+
+	curcntnr = (mjrcontainer_t *) ((char *) buf->data + buf->maxlen);
+  curblock = (mjrblock_t *) ((char *) buf->data + buf->maxlen + 
+															sizeof(mjrcontainer_t));
+
+	memcpy(curcntnr, cur, sizeof(mjrcontainer_t));
+  memcpy(curblock, cur->data, sizeof(mjrblock_t));
 
   /* Then we create the symbol for the bloc and returns */
-  bsym = elfsh_create_symbol(cur->vaddr, cur->size, STT_BLOCK, 0, 0, 0);
+  bsym = elfsh_create_symbol(curblock->vaddr, curblock->size, STT_BLOCK, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+	buf->maxlen += sizeof(mjrcontainer_t);
   buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -257,23 +333,24 @@ int							mjr_block_save(mjrblock_t *cur, mjrbuf_t *buf)
 // This loops on all block, and call blocks_save on each bloc
 int							mjr_blocks_store(mjrcontext_t *ctxt) 
 {
-  elfsh_Shdr		shdr;
-  elfshsect_t		*sect;
-  mjrbuf_t			buf;
-  mjrblock_t		*block;
-  mjrfunc_t			*func;
-  int						err;
-  char					**keys;
-  int						keynbr;
-  int						index;
-  char					funcname[50];
+  elfsh_Shdr				shdr;
+  elfshsect_t				*sect;
+  mjrbuf_t					buf, cfbuf;
+	mjrcontainer_t			*blkcntnr, *funcntnr;
+  mjrblock_t				*block;
+  mjrfunc_t					*func;
+  int								err;
+  char							**keys;
+  int								keynbr;
+  int								index;
+  char							funcname[50];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 	
   /* Remove previous control section if any */
-  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_CONTROL, 0, 0, 0);
+  sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS, 0, 0, 0);
   if (sect)
-    elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_CONTROL);
+    elfsh_remove_section(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS);
 	
   /* Initialize data buffer */
   buf.allocated     = 0;
@@ -282,17 +359,35 @@ int							mjr_blocks_store(mjrcontext_t *ctxt)
   buf.data          = 0;
   buf.obj           = ctxt->obj;
 
+  /* Initialize data buffer */
+  cfbuf.allocated     = 0;
+  cfbuf.maxlen        = 0;
+  cfbuf.block_counter = 0;
+  cfbuf.data          = 0;
+  cfbuf.obj           = ctxt->obj;
+
   /* Iteratively save all blocks */
   keys = hash_get_keys(&ctxt->blkhash, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
-      block = hash_get(&ctxt->blkhash, keys[index]);
-      mjr_block_save(block, &buf);
+			u_int flow_off_in, flow_off_out;
 
-      if (mjr_block_funcstart(block))
+      blkcntnr = hash_get(&ctxt->blkhash, keys[index]);
+
+			flow_off_in = mjr_block_flow_save(blkcntnr, 0, &cfbuf);
+			flow_off_out = mjr_block_flow_save(blkcntnr, 1, &cfbuf);
+
+			/* Setting references to link information inside the file */
+			blkcntnr->input = (mjrlink_t *) flow_off_in;
+			blkcntnr->output = (mjrlink_t *) flow_off_out;
+
+			mjr_block_save(blkcntnr, &buf);
+			block = (mjrblock_t *) blkcntnr->data;
+
+      if (mjr_block_funcstart(blkcntnr))
 				{
 					snprintf(funcname, sizeof(funcname), AFMT, block->vaddr);
-					func        = hash_get(&ctxt->funchash, funcname);
+					funcntnr = hash_get(&ctxt->funchash, funcname);
 					
 					/* Can happens rarely - should not be fatal */
 					if (func == NULL)
@@ -305,79 +400,29 @@ int							mjr_blocks_store(mjrcontext_t *ctxt)
     }
 
   /* Create control section */
-  sect = elfsh_create_section(ELFSH_SECTION_NAME_CONTROL);
+  sect = elfsh_create_section(ELFSH_SECTION_NAME_EDFMT_BLOCKS);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
-  sect->altdata = ctxt->blklist = (mjrblock_t *) buf.data;
 
-  printf(" [*] Saving control section of %u bytes \n", buf.maxlen);
+  printf(" [*] Saving .edfmt.blocks section of %u bytes \n", buf.maxlen);
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
 
   if (err < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+								"Unable to save .edfmt.blocks section", -1);
+
+  sect = elfsh_create_section(ELFSH_SECTION_NAME_EDFMT_BCONTROL);
+  shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, cfbuf.maxlen, 0, 0, 0, 0);
+
+  printf(" [*] Saving .edfmt.bcontrol section of %u bytes\n", cfbuf.maxlen);
+
+  err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, cfbuf.data);
+
+  if (err < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to save control flow section", -1);
+		  			    "Unable to save .edfmt.bcontrol section", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
-
-
-/**
- * Create a new block 
- */
-mjrblock_t	*mjr_block_create(mjrcontext_t *ctxt, elfsh_Addr vaddr, u_int sz) 
-{
-  mjrblock_t	*t;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, t, sizeof (mjrblock_t), NULL);
-  memset(t, 0, sizeof (mjrblock_t));
-  t->vaddr = vaddr;
-  t->size  = sz;
-  hash_add(&ctxt->blkhash, (char *) _vaddr2str(vaddr), t);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (t));
-};
-
-
-
-/**
- * Add a new block to the blocks tree (sorted by address)
- * If block is already present, it's not inserted and function returns 
- */
-void		mjr_block_add_list(mjrcontext_t *ctxt, mjrblock_t *n) 
-{
-  mjrblock_t	*cur;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  cur = ctxt->blklist;
-  if (!cur)
-    {
-      cur = mjr_block_create(ctxt, n->vaddr, n->size);
-      ctxt->blklist = cur;
-    }
-  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
-}
-
-
-
-/** 
- * Add a caller : vaddr is address of starting block 
- */
-void		mjr_block_add_caller(mjrblock_t *blk, 
-				     elfsh_Addr    vaddr, 
-				     int	   type) 
-{
-  mjrlink_t	*n;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, n, sizeof (mjrlink_t), );
-  n->vaddr = vaddr;
-  n->type = type;
-  n->next = blk->caller;
-  blk->caller = n;
-
-  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
-}
-
 
 /** 
  * Get a block by vaddr
@@ -385,34 +430,38 @@ void		mjr_block_add_caller(mjrblock_t *blk,
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-mjrblock_t	*mjr_block_get_by_vaddr(mjrcontext_t *ctxt, 
-					elfsh_Addr   vaddr, 
-					int	     mode)
+mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
+																				elfsh_Addr   	vaddr, 
+																				int						mode)
 {
-  mjrblock_t	*ret;
-  char		**keys;
-  int		index;
-  int		size;
+  mjrcontainer_t	*ret;
+	mjrblock_t			*tmpblock;
+  char						**keys;
+  int							index;
+  int							size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!ctxt)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "missing context", (NULL));
+		      				"missing context", (NULL));
 
   /* Exact match */
   if (mode == 0)
-    {
-      ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-    }
+  {
+    ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  }
 
   /* Parent match */
   keys = hash_get_keys(&ctxt->blkhash, &size);
   for (index = 0; index < size; index++)
-    {
-      ret = (mjrblock_t *) hash_get(&ctxt->blkhash, keys[index]);
-      if (ret->vaddr >= vaddr && vaddr <= ret->vaddr + ret->size)
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-    }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
+  {
+    ret = hash_get(&ctxt->blkhash, keys[index]);
+		tmpblock = (mjrblock_t *) ret->data;
+
+    if (tmpblock->vaddr >= vaddr && vaddr <= tmpblock->vaddr + tmpblock->size)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }

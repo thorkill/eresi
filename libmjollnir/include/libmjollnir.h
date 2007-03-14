@@ -6,10 +6,7 @@
 ** December 2006 : Merged the modflow API and the mjollnir API to make a unified
 ** component. Adapted the data structures. Unified prefixing. -may
 **
-**
-** $Id: libmjollnir.h,v 1.28 2007-03-07 16:45:35 thor Exp $
-**
-*/
+**/
 #if !defined(__MJOLLNIR__)
   #define __MJOLLNIR__ 1
 
@@ -33,10 +30,10 @@ typedef struct		s_history
 /* The context of a single session */
 typedef struct		_mjrContext 
 {
-  elfshobj_t		*obj;        /* elfsh object */
+  elfshobj_t			*obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
-  mjrblock_t	        *curblock;   /* current working block */
-  mjrfunc_t		*curfunc;    /* current working function */
+  mjrcontainer_t  *curblock;   /* current working block */
+  mjrcontainer_t	*curfunc;    /* current working function */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
@@ -44,19 +41,18 @@ typedef struct		_mjrContext
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
-  hash_t		funchash;    /* functions hash table */
-  hash_t		blkhash;     /* blocks hash table for this obj */
-  mjrblock_t		*blklist;    /* blocks array with on-disk format */
+  hash_t					funchash;    /* functions hash table */
+  hash_t					blkhash;     /* blocks hash table for this obj */
   unsigned char		analysed;    /* do we analysed it */
-  u_int			calls_seen;  /* FIXME */
-  u_int			calls_found; /* FIXME */
+  u_int						calls_seen;  /* FIXME */
+  u_int						calls_found; /* FIXME */
 }			mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
-typedef struct		s_session
+typedef struct	s_session
 {
  mjrcontext_t		*cur;
- hash_t			ctx;
+ hash_t					ctx;
 }			mjrsession_t;
 
 
@@ -94,37 +90,29 @@ int		mjr_analyse(mjrsession_t *sess, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
 
 /* blocks.c */
-mjrblock_t*	mjr_blocks_get(mjrcontext_t *ctxt);
-mjrblock_t*	mjr_blocks_load(mjrcontext_t *c);
-mjrblock_t*     mjr_block_create(mjrcontext_t *c, elfsh_Addr, u_int);
-mjrblock_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+int	mjr_blocks_get(mjrcontext_t *ctxt);
+int	mjr_blocks_load(mjrcontext_t *c);
+mjrcontainer_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
 int		mjr_blocks_store(mjrcontext_t *c);
+u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
-void		mjr_block_add_list(mjrcontext_t *c, mjrblock_t *);
-void		mjr_block_add_caller(mjrblock_t *, elfsh_Addr, int);
 char 		*_vaddr2str(elfsh_Addr);
 
 /* fingerprint.c */
-int		mjr_block_funcstart(mjrblock_t *);
-int		mjr_fprint_fwd(mjrcontext_t *c,
-			       mjrblock_t   *start, 
-			       int	    weight,
-			       int	    curd,
-			       int	    mind,
-			       int	    maxd,
-			       int	    (*fprint)(mjrblock_t *));
-int		mjr_fprint_bwd(mjrcontext_t *c,
-			       mjrblock_t   *start, 
-			       int	    weight,
-			       int	    curd,
-			       int	    mind,
-			       int	    maxd,
-			       int	    (*fprint)(mjrblock_t *));
+int		mjr_block_funcstart(mjrcontainer_t *cntnr);
+int		mjr_fprint(mjrcontext_t 			*c,
+									mjrcontainer_t   	*start, 
+									int								type,
+									int	    					weight,
+								  int	    					curd,
+									int	    					mind,
+									int	    					maxd,
+									int	    					(*fprint)(mjrcontainer_t *));
 
 /* display.c */
 void		mjr_block_dump(mjrblock_t *b);
 int		mjr_blocks_display(mjrcontext_t *c, int);
-int		mjr_block_display(mjrblock_t *c, mjropt_t *opt);
+int		mjr_block_display(mjrcontainer_t *c, mjropt_t *opt);
 void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
@@ -140,18 +128,37 @@ int		mjr_symbol_delete_by_name(mjrsession_t *, char *);
 int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 
 /* function.c */
-mjrfunc_t	*mjr_function_create(mjrcontext_t *c, char *name, elfsh_Addr a,  
-				     u_int size, mjrblock_t *entry);
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
-void		mjr_function_dump(char *,mjrfunc_t *);
-u_int		mjr_function_flow_parents_save(mjrfunc_t *, mjrbuf_t *);
-u_int		mjr_function_flow_childs_save(mjrfunc_t *, mjrbuf_t *);
-void		mjr_function_add_child(mjrfunc_t *,elfsh_Addr,int);
-void		mjr_function_add_parent(mjrfunc_t *,elfsh_Addr,int);
-void		*mjr_functions_load(mjrcontext_t *);
-int		mjr_functions_store(mjrcontext_t *);
+void		mjr_function_dump(char *,mjrcontainer_t *);
+u_int		mjr_function_flow_save(mjrcontainer_t *, u_int, mjrbuf_t *);
+int			mjr_functions_load(mjrcontext_t *);
+int			mjr_functions_get(mjrcontext_t *);
+int			mjr_functions_store(mjrcontext_t *);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
 void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
+
+/* container.c */
+void mjr_init_containers();
+void mjr_resize_containers();
+unsigned int mjr_register_container (mjrcontainer_t *cntnr);
+unsigned int mjr_register_container_id (mjrcontainer_t *cntnr);
+void mjr_unregister_container (u_int id);
+mjrcontainer_t *mjr_lookup_container (u_int id);
+mjrlink_t *mjr_container_add_link(mjrcontainer_t *cntnr, u_int id, 
+																	int link_type, int link_direction);
+
+mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
+
+mjrcontainer_t *mjr_create_block_container(u_int 				symoff,
+																						elfsh_Addr	vaddr,
+																						u_int				size);
+
+mjrcontainer_t *mjr_create_function_container(elfsh_Addr	vaddr,
+																							u_int				size,
+																							char				*name,
+																							mjrblock_t	*first,
+																							char				*md5);
+
 #endif

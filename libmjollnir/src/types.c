@@ -7,7 +7,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+** $Id: types.c,v 1.22 2007-03-14 18:37:57 strauss Exp $
 **
 */
 #include "libmjollnir.h"
@@ -29,18 +29,22 @@
  */
 int		mjr_asm_flow(mjrcontext_t *context)
 {
-  int		ilen;
-  char		*md5;
-  mjrfunc_t	*fun;
-  asm_instr	*curins;
-  elfsh_Addr	curvaddr;
-  elfsh_Addr	dstaddr;
+  int							ilen;
+  char						*md5, *tmpstr;
+  mjrcontainer_t	*fun, *tmpcntnr;
+  asm_instr				*curins;
+  elfsh_Addr			curvaddr, dstaddr, tmpaddr;
+	mjrlink_t				*true, *false;
+	mjrfunc_t				*tmpfunc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   curins   = &context->hist[MJR_HISTORY_CUR].instr;
   curvaddr = context->hist[MJR_HISTORY_CUR].vaddr;
   ilen     = asm_instr_len(curins);
+
+	true = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_TRUE);
+	false = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_FALSE);
 
   /* Switch on instruction types provided by libasm */
   switch (curins->type)
@@ -53,13 +57,28 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
 	      " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
-     if (dstaddr != -1)
-       {
-	 context->curblock->true  = dstaddr;
-	 context->curblock->false = curvaddr + ilen;
-	 context->curblock->type  = CALLER_JUMP;
-	 context->curblock = 0;
-       }
+		if (dstaddr != -1)
+    {
+			tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
+			if (!true)
+				true = mjr_container_add_link(context->curblock, 
+																			tmpcntnr->id,
+																			MJR_LINK_BLOCK_COND_TRUE,
+																			MJR_LINK_OUT);
+			else
+				true->id = tmpcntnr->id;
+
+			tmpcntnr = mjr_create_block_container(0, curvaddr + ilen, 0);
+			if (!false)
+				false = mjr_container_add_link(context->curblock, 
+																			tmpcntnr->id,
+																			MJR_LINK_BLOCK_COND_FALSE,
+																			MJR_LINK_OUT);
+			else
+				false->id = tmpcntnr->id;
+
+			context->curblock = 0;
+    }
      break;
      
     case ASM_TYPE_CALLPROC:
@@ -78,37 +97,57 @@ int		mjr_asm_flow(mjrcontext_t *context)
  * mjollnir.
  *
  */
-      if ((dstaddr) && (dstaddr != -1)){
-        context->curblock->true  = dstaddr;
-        context->curblock->false = curvaddr + ilen;
-        context->curblock->type  = CALLER_CALL;
+      if ((dstaddr) && (dstaddr != -1))
+			{
+				tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
+				if (!true)
+					true = mjr_container_add_link(context->curblock, 
+																				tmpcntnr->id,
+																				MJR_LINK_BLOCK_COND_TRUE,
+																				MJR_LINK_OUT);
+				else
+					true->id = tmpcntnr->id;
 
-        if (context->curblock->true)
-	    context->calls_found++;
+				tmpcntnr = mjr_create_block_container(0, curvaddr + ilen, 0);
+				if (!false)
+					false = mjr_container_add_link(context->curblock, 
+																					tmpcntnr->id,
+																					MJR_LINK_BLOCK_COND_FALSE,
+																					MJR_LINK_OUT);
+				else
+					false->id = tmpcntnr->id;
+
 
         /* XXX: put this in a vector of fingerprinting techniques */
-	fun = hash_get(&context->funchash, _vaddr2str(context->curblock->true));
+				tmpaddr = ((mjrblock_t *)mjr_lookup_container(true->id)->data)->vaddr;
+				tmpstr = _vaddr2str(tmpaddr);
+				fun = hash_get(&context->funchash, tmpstr);
 
-	if (!fun)
-	  fun = mjr_function_create(context, _vaddr2str(context->curblock->true),
-				context->curblock->true, 0, 0);
+				if (!fun)
+				{
+				  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, 0);
+					hash_add(&context->funchash, tmpstr, fun);
+				}
 
         if (context->curfunc)
-	    {
-	      mjr_function_add_parent(fun, context->curfunc->vaddr,0);
-	      mjr_function_add_child(context->curfunc, fun->vaddr, 0);
-	    }
+		    {
+		      mjr_container_add_link(fun, context->curfunc->id, 
+																	MJR_LINK_FUNC_RET, MJR_LINK_IN);
+		      mjr_container_add_link(context->curfunc, fun->id, 
+																	MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+		    }
 
-	// when a function start, we do a fingerprint of it
-        md5 = mjr_fingerprint_function(context, context->curblock->true, 
-				     MJR_FPRINT_TYPE_MD5);
+				// when a function start, we do a fingerprint of it
+        md5 = mjr_fingerprint_function(context, tmpaddr, MJR_FPRINT_TYPE_MD5);
+
+				tmpfunc = (mjrfunc_t *) fun->data;
 
         if (md5)
-	  snprintf(fun->md5,sizeof(fun->md5),"%s",md5);
+				  snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
 
         context->curblock = 0;
         context->curfunc  = fun;
-       }
+      }
       break;
 
     case ASM_TYPE_IMPBRANCH:
@@ -121,15 +160,29 @@ int		mjr_asm_flow(mjrcontext_t *context)
 #endif
 
       if (dstaddr != -1)
-       {
+      {
+				tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
+				if (!true)
+					true = mjr_container_add_link(context->curblock, 
+																				tmpcntnr->id,
+																				MJR_LINK_BLOCK_COND_TRUE,
+																				MJR_LINK_OUT);
+				else
+					true->id = tmpcntnr->id;
 
-        context->curblock->true  = dstaddr;
-        context->curblock->false = 0;
-        context->curblock->type  = CALLER_JUMP;
+				tmpcntnr = mjr_create_block_container(0, 0, 0);
+				if (!false)
+					false = mjr_container_add_link(context->curblock, 
+																					tmpcntnr->id,
+																					MJR_LINK_BLOCK_COND_FALSE,
+																					MJR_LINK_OUT);
+				else
+					false->id = tmpcntnr->id;
+
         context->curblock        = 0;
         context->hist[MJR_HISTORY_PREV].vaddr = 0;
 
-       }
+      }
       break;
 
     case ASM_TYPE_RETPROC:
@@ -139,9 +192,24 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	      curvaddr);
 #endif
 
-      context->curblock->true  = 0;
-      context->curblock->false = 0;
-      context->curblock->type  = CALLER_RET;
+			tmpcntnr = mjr_create_block_container(0, 0, 0);
+			if (!true)
+				true = mjr_container_add_link(context->curblock, 
+																			tmpcntnr->id,
+																			MJR_LINK_BLOCK_COND_TRUE,
+																			MJR_LINK_OUT);
+			else
+				true->id = tmpcntnr->id;
+
+			tmpcntnr = mjr_create_block_container(0, 0, 0);
+			if (!false)
+				false = mjr_container_add_link(context->curblock, 
+																				tmpcntnr->id,
+																				MJR_LINK_BLOCK_COND_FALSE,
+																				MJR_LINK_OUT);
+			else
+				false->id = tmpcntnr->id;
+
       context->curblock        = 0;
       context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;

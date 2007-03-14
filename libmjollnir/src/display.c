@@ -7,20 +7,10 @@
 **
 ** Started on  Tue Jan 02 04:04:18 2006 mayhem
 **
-** $Id: display.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: display.c,v 1.10 2007-03-14 18:37:57 strauss Exp $
 **
 */
 #include "libmjollnir.h"
-
-/* Some constant data */
-char	*call_type_str[] = 
-{
-  "CONT",
-  "JUMP",
-  "CALL",
-  "RET",
-  "UNKN"
-};
 
 /**
  * Block dump for debug purposes 
@@ -36,53 +26,54 @@ void		mjr_block_dump(mjrblock_t *b)
 /**
  * Display all information about a block 
  */
-int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
+int			mjr_block_display(mjrcontainer_t *cur, mjropt_t *disopt)
 {
-  mjrlink_t		*ccal;
-  char			*str;
-  char			*end_str;
+  mjrlink_t			*ccal;
+  char					*str;
+  char					*end_str;
   elfsh_SAddr		offset;
   elfsh_SAddr		end_offset;
-  char			buf1[30];
-  char			buf2[30];
+  char					buf1[30];
+  char					buf2[30];
+	mjrblock_t		*block;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  str = elfsh_reverse_metasym(disopt->file, cur->vaddr, &offset);
+	
+	block = cur->data;
+  str = elfsh_reverse_metasym(disopt->file, block->vaddr, &offset);
 
   end_str = elfsh_reverse_metasym(disopt->file, 
-				  cur->vaddr + cur->size, &end_offset);
+				  			block->vaddr + block->size, &end_offset);
 
   if (str == NULL)
     *buf1 = 0x00;
   else
     snprintf(buf1, sizeof (buf1), "<%s + " UFMT ">", str, offset);
-  if (end_str == NULL || !(cur->true))
+  if (end_str == NULL || !(mjr_get_link_of_type(cur->output, MJR_LINK_BLOCK_COND_TRUE)))
     *buf2 = 0x00;
   else
     snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
       
-  printf("[%8lx:%05i:%8lx:%8lx] %-4s %-30s --> %-30s ", 
-	 (unsigned long) cur->vaddr, cur->size, (unsigned long) cur->true, 
-	 (unsigned long) cur->false, call_type_str[cur->type], buf1, buf2);
+  printf("[%8lx:%05i] %-30s --> %-30s ", 
+	 (unsigned long) block->vaddr, block->size, buf1, buf2);
       
-  if (cur->false == 0xFFFFFFFF)
+/*  if (cur->false == 0xFFFFFFFF)
     printf(" [?]");
   else if (cur->false != NULL)
     {
       str = elfsh_reverse_metasym(disopt->file, cur->false, &offset);
       printf(" [%s + " UFMT "]", (str ? str : ""), offset);
     }
-      
+*/      
   printf("\n");
   if (disopt->level > 0)
-    for (ccal = cur->caller; ccal; ccal = ccal->next) 
-      {
-	str = elfsh_reverse_metasym(disopt->file, ccal->vaddr, &offset);
-	printf("\texecuted from: (" AFMT ") <%s + " UFMT "> : %s\n",
-	       ccal->vaddr, (str ? str : ""), (elfsh_SAddr) offset, 
-	       call_type_str[ccal->type]);
-      }
+    for (ccal = cur->input; ccal; ccal = ccal->next) 
+    {
+			mjrblock_t *tmp = mjr_lookup_container(ccal->id)->data;
+			str = elfsh_reverse_metasym(disopt->file, tmp->vaddr, &offset);
+			printf("\texecuted from: (" AFMT ") <%s + " UFMT ">\n",
+							tmp->vaddr, (str ? str : ""), (elfsh_SAddr) offset);
+    }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
 }
 
@@ -92,11 +83,11 @@ int			mjr_block_display(mjrblock_t *cur, mjropt_t *disopt)
  */
 int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
-  mjropt_t	opt;
-  mjrblock_t	*block;
-  char		**keys;
-  int		index;
-  int		blocnbr;
+  mjropt_t				opt;
+  mjrcontainer_t	*block;
+  char						**keys;
+  int							index;
+  int							blocnbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   opt.counter = 0;
@@ -105,10 +96,10 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
   keys        = hash_get_keys(&c->blkhash, &blocnbr);
 
   for (index = 0; index < blocnbr; index++)
-    {
-      block = hash_get(&c->blkhash, keys[index]);
-      mjr_block_display(block, &opt);
-    }
+  {
+    block = hash_get(&c->blkhash, keys[index]);
+    mjr_block_display(block, &opt);
+  }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
@@ -126,17 +117,19 @@ void		mjr_function_display(mjrfunc_t *func)
  */
 void		mjr_funcs_display(mjrcontext_t *c)
 {
-  char		**keys;
-  int		keynbr;
-  int		index;
-  mjrfunc_t	*current;
+  char						**keys;
+  int							keynbr;
+  int							index;
+  mjrfunc_t				*current;
+	mjrcontainer_t 	*cntnr;
 
   keys = hash_get_keys(&c->funchash, &keynbr);
   for (index = 0; index < keynbr; index++)
-    {
-      current = hash_get(&c->funchash, keys[index]);
-      mjr_function_display(current);
-    }
+  {
+    cntnr = hash_get(&c->funchash, keys[index]);
+		current = cntnr->data;
+    mjr_function_display(current);
+  }
   hash_free_keys((char **) keys);
 }
 

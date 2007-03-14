@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.24 2007-02-26 17:47:15 thor Exp $
+** $Id: core.c,v 1.25 2007-03-14 18:37:57 strauss Exp $
 */
 
 #include "libmjollnir.h"
@@ -17,13 +17,13 @@
 int		  mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   
-  elfshsect_t    *sct;
+  elfshsect_t    	*sct;
   asm_instr       instr;
-  unsigned char  *ptr;
+  unsigned char  	*ptr;
   unsigned long   curr, len;
   u_int           vaddr, ilen;
   elfsh_Addr      e_point;
-  elfsh_Addr	  main_addr;
+  elfsh_Addr	  	main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -49,23 +49,23 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
 
   if (sct->shdr->sh_addr == e_point)
-    {
-      printf(" [*] Entry point: %lx\n", (unsigned long) e_point);
-      main_addr = mjr_trace_start(sess->cur, ptr, sct->shdr->sh_size, e_point);
-      printf(" [*] main located at %lx\n", (unsigned long) main_addr);
-    }
+  {
+    printf(" [*] Entry point: %lx\n", (unsigned long) e_point);
+    main_addr = mjr_trace_start(sess->cur, ptr, sct->shdr->sh_size, e_point);
+    printf(" [*] main located at %lx\n", (unsigned long) main_addr);
+  }
 
   /* Read all instructions of the section */
   while (curr < len) 
-    {
-      ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
-      if (ilen > 0) 
-	{
-	  mjr_history_shift(sess->cur, instr, vaddr + curr);
-	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
-	} 
-	curr += ilen;
-    }
+  {
+    ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
+    if (ilen > 0) 
+		{
+		  mjr_history_shift(sess->cur, instr, vaddr + curr);
+		  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
+		} 
+		curr += ilen;
+  }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -77,11 +77,11 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
  */
 int		mjr_analyse(mjrsession_t *sess, int flags) 
 {
-  char		*shtName;
+  char				*shtName;
   elfsh_Shdr	*shtlist, *shdr;
-  elfsh_Sym	*sym;
-  int		num_sht, idx_sht;
-  char		c;
+  elfsh_Sym		*sym;
+  int					num_sht, idx_sht;
+  char				c;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -101,17 +101,20 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   // Just to make sure we remove previously done analysis if user call
   // analyse a second time
   if (sess->cur->analysed)
-    {
-      printf(" [*] %s section present ! \n"
-	     "     Analysis will remove currently stored information. "
-	     "continue ? [N/y]", ELFSH_SECTION_NAME_CONTROL);
-      c = getchar();
-      puts("");
-      if (c != 'y')
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Flow analysis aborted", 0);
-      elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_CONTROL);
-    }
+  {
+    printf(" [*] %s section present ! \n"
+				     "     Analysis will remove currently stored information. "
+				     "continue ? [N/y]", ELFSH_SECTION_NAME_EDFMT_BLOCKS);
+
+    c = getchar();
+    puts("");
+
+    if (c != 'y')
+			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+									  "Flow analysis aborted", 0);
+
+    elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS);
+  }
 
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
@@ -119,22 +122,21 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   
   /* Analyse all executable sections */
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
-    {
-      shdr    = (shtlist + idx_sht);
-      sym     = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
-      shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
+  {
+    shdr    = (shtlist + idx_sht);
+    sym     = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
+    shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
       
-      if (!elfsh_get_section_execflag(shdr) ||
-	  !elfsh_get_section_allocflag(shdr))
-	continue;
+    if (!elfsh_get_section_execflag(shdr) ||
+			  !elfsh_get_section_allocflag(shdr))
+			continue;
       
 #if __DEBUG_MJOLLNIR__
-      fprintf(D_DESC, 
-	      "[__DEBUG__] mjr_analize: Executable section name=(%14s) "
-	      "index=(%02i)\n", shtName, idx_sht);
+    fprintf(D_DESC, "[__DEBUG__] mjr_analize: Executable section name=(%14s) "
+							      "index=(%02i)\n", shtName, idx_sht);
 #endif
-      mjr_analyse_section(sess, shtName);
-    }
+    mjr_analyse_section(sess, shtName);
+  }
 
   /* Store analyzed blocks in file */
   if (mjr_blocks_store(sess->cur) < 0)
