@@ -4,7 +4,7 @@
 ** Started on  Tue Dec 31 10:19:01 2002 mayhem
 ** 
 **
-** $Id: sym_common.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: sym_common.c,v 1.6 2007-03-14 23:48:07 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -175,22 +175,27 @@ u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
 /**
  * High level procedure for get_sym_by_value() 
  */
-elfsh_Sym	*elfsh_get_metasym_byval(elfshobj_t *file, int num, 
-					 elfsh_Addr vaddr, int *off, 
-					 int mode)
+elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file, elfsh_Addr vaddr, 
+					    int *off, int mode)
 {
+  elfsh_Sym	*dynsym;
+  elfsh_Sym	*symtab;
   elfsh_Sym	*res;
+  int		num;
+  int		dynum;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  elfsh_get_symtab(file, NULL);
-  elfsh_get_dynsymtab(file, NULL);
-  res = 
-    elfsh_get_sym_by_value(elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]),
-			   num, vaddr, off, mode);
+  symtab = elfsh_get_symtab(file, &num);
+  dynsym = elfsh_get_dynsymtab(file, &dynum);
+
+  /* ET_DYN objects have a relative addressing inside the ELF file */
+  if (elfsh_is_debug_mode())
+    vaddr -= file->rhdr.base;
+
+  res = elfsh_get_sym_by_value(dynsym, dynum, vaddr, off, mode);
   if (res == NULL)
-    res = elfsh_get_sym_by_value(file->secthash[ELFSH_SECTION_SYMTAB]->data, 
-				 num, vaddr, off, mode);
+    res = elfsh_get_sym_by_value(symtab, num, vaddr, off, mode);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }
 

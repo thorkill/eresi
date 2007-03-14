@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.5 2007-03-14 22:44:59 may Exp $
+** $Id: signal.c,v 1.6 2007-03-14 23:48:07 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -238,7 +238,11 @@ void			e2dbg_do_breakpoint()
 	  parent = e2dbg_get_parent_object((elfsh_Addr) *pc);
 	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
 	  name   = vm_resolve(parent, (elfsh_Addr) *pc, &off);
-	  sym    = elfsh_get_metasym_by_name(parent, name);
+	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, &off, ELFSH_LOWSYM);
+
+	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) \n", 
+		 parent, parent->name, name, sect->name);
+
 	  vm_display_object(sect, sym, ret, 0, off, 
 			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);

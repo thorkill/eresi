@@ -4,7 +4,7 @@
  ** Started on  Mon Jul 23 15:47:12 2001 mayhem
  **
 **
-** $Id: libelfsh.h,v 1.41 2007-03-14 18:37:57 strauss Exp $
+** $Id: libelfsh.h,v 1.42 2007-03-14 23:48:07 may Exp $
 **
 */
 
@@ -925,6 +925,7 @@ u_int		elfsh_get_symbol_link(elfsh_Sym *s);
 u_int		elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val);
 elfsh_Sym	*elfsh_get_symbol_by_index(elfsh_Sym *symtab, elfsh_Addr index);
 elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name);
+elfsh_Sym       *elfsh_get_metasym_by_value(elfshobj_t *file, elfsh_Addr vaddr, int *off, int mode);
 char		*elfsh_reverse_metasym(elfshobj_t *file, elfsh_Addr vaddr, elfsh_SAddr *off);
 int		elfsh_remove_symbol(elfshsect_t *symtab, char *name);
 void		elfsh_symtab_endianize(elfshsect_t *tab);
