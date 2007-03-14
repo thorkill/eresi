@@ -6,13 +6,14 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Mon Mar  5 17:26:11 2007 mayhem
 **
-** $Id: prompt.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: prompt.c,v 1.3 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "revm.h"
 
 
-char buf[BUFSIZ];
+//char buf[BUFSIZ];
+
 
 void    vm_set_prompt(void (*func) (char *name, u_int size))
 {

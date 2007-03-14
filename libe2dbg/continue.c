@@ -4,7 +4,7 @@
 ** The continue command in e2dbg
 **
 **
-** $Id: continue.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: continue.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -14,12 +14,16 @@ void		e2dbg_start_proc()
 {
   if (e2dbgworld.curthread && e2dbgworld.curthread->count == 2)
     e2dbg_thread_contall();
+
+#if __DEBUG_THREADS_
   else if (!e2dbgworld.curthread)
     e2dbg_output(" [*] e2dbg_start_proc -NOT- doing CONTALL"
 		 " because curthread = NULL\n");
   else
     printf(" [*] e2dbg_start_proc -NOT- doing CONTALL (count = %u)\n",
 	   e2dbgworld.curthread->count);
+#endif
+
   world.curjob->current->running = 1;
 }
 
@@ -35,8 +39,7 @@ int		cmd_start()
   if (!world.state.vm_quiet)
     e2dbg_output(" [*] Starting process\n");
   e2dbg_start_proc();
-  world.curjob->current->running = 1;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
 }
 
 
@@ -54,13 +57,9 @@ int	cmd_cont()
     e2dbg_output(" [*] Continuing process\n");
 
   /* Set back the current thread to the stopped thread */
+  e2dbg_setregs();
   if (e2dbgworld.stoppedthread->tid != e2dbgworld.curthread->tid)
-    {
-      e2dbg_setregs();
-      e2dbgworld.curthread = e2dbgworld.stoppedthread;
-    }
-  else
-    e2dbg_setregs();
+    e2dbgworld.curthread = e2dbgworld.stoppedthread;
 
   /* Restart the debuggee */
   e2dbg_start_proc();
@@ -74,5 +73,5 @@ int	cmd_cont()
   */
 
   e2dbg_output("\n");
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
 }

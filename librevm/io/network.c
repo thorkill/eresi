@@ -6,7 +6,7 @@
 ** Started Wed Feb 25 22:22:35 2004 yann_malcom
 ** Updated Mon Mar 05 04:37:10 2007 mayhem 
 **
-** $Id: network.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: network.c,v 1.3 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "revm.h"
@@ -1058,7 +1058,7 @@ int		vm_clean_jobs()
 
 int		vm_getmaxfd() 
 { 
-  return (0); 
+  return (world.fifofd); 
 }
 
 revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)

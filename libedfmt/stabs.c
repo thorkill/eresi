@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+** $Id: stabs.c,v 1.11 2007-03-14 12:51:45 may Exp $
 **
 */
 
@@ -999,8 +999,12 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  break;
 	case STABS_TYPE_BINCL:
 	  inc = 1;
-	case STABS_TYPE_SO:
+
 	  /* Include or SO file */
+	case STABS_TYPE_SO:
+	  if (!current_file)
+	    break;
+
 	  parse_str = 0;
 	  if (!inc && (!str || !str[0]))
 	    {

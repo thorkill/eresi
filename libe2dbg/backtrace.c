@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: backtrace.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: backtrace.c,v 1.3 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -44,9 +44,10 @@ int		e2dbg_bt()
 	{
 	  snprintf(logbuf, BUFSIZ, 
 		   " [*] Invalid next frame address " AFMT 
-		   " (stackaddr = " AFMT ", size = %u)\n\n", 
+		   " (stackaddr = " AFMT ", size = %u, max = " AFMT " )\n\n", 
 		   frame, e2dbgworld.curthread->stackaddr, 
-		   e2dbgworld.curthread->stacksize);
+		   e2dbgworld.curthread->stacksize,
+		   e2dbgworld.curthread->stackaddr + e2dbgworld.curthread->stacksize);
 	  e2dbg_output(logbuf);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}

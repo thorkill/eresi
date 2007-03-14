@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: step.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: step.c,v 1.3 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -36,14 +36,23 @@ int		cmd_step()
 			  "Failed to disable stepping", -1);
       e2dbg_output("\n [*] Disabled stepping\n\n");
       e2dbgworld.curthread->step = 0;
+      e2dbgworld.curthread->count = 0;
     }
+
+  /* Disable stepping and continue */
   else
     {
       if (e2dbg_setstep() < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Failed to enable stepping", -1);
-      e2dbg_output("\n [*] Enabled stepping (now 'cont' to step) \n\n");
+      e2dbg_output("\n [*] Enabled stepping \n\n");
       e2dbgworld.curthread->step = 1;
+      e2dbg_setregs();
+      if (e2dbgworld.stoppedthread->tid != e2dbgworld.curthread->tid)
+	e2dbgworld.curthread = e2dbgworld.stoppedthread;
+      e2dbg_thread_contall();
+      world.curjob->current->running = 1;
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

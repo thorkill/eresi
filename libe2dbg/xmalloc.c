@@ -5,7 +5,7 @@
 ** 
 ** Started Fri Oct  7 21:05:26 CEST 2005 crew
 **
-** $Id: xmalloc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: xmalloc.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -409,7 +409,7 @@ void	free(void *a)
 #if __DEBUG_EMALLOC__
       write(2, "E2DBG free used\n", 16);
 #endif
-      XFREE(__FILE__, __FUNCTION__, __LINE__,a);
+      aproxy_free(a);
     }
 
 #if __DEBUG_EMALLOC__

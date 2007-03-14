@@ -5,7 +5,7 @@
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
 **
-** $Id: threads.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: threads.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -62,26 +62,6 @@ static void*		e2dbg_thread_start(void *param)
   e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
   return ((*start)(param));
 }
-
-
-/* Only called when running a monothread program */
-int		e2dbg_curthread_init(void *start)
-{
-  e2dbgthread_t	*new;
-  char		*key;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
-  snprintf(key, 15, "%u", (unsigned int) getpid());
-  new->tid   = (unsigned int) getpid();
-  new->entry = (void *) e2dbgworld.real_main;
-  time(&new->stime);
-  hash_add(&e2dbgworld.threads, key, new);
-  e2dbgworld.curthread = new;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 
 
 /* Hook for pthread_create */

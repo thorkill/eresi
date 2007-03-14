@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: e2dbg.c,v 1.5 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -40,10 +40,9 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #endif
 
   /* Initial settings */
-  ac = params->ac;
-  av = params->av;
+  ac = (params ? params->ac : 0);
+  av = (params ? params->av : NULL);
   SETSIG_USR1;
-  //signal(SIGUSR1, e2dbg_sigusr1_handler);
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 1\n");
@@ -70,7 +69,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
   printf("[e2dbg_entry] CHECKPOINT 3\n");
 #endif
 
-  vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
+  if (av && ac)
+    vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
   
 #if __DEBUG_E2DBG__
   printf("[e2dbg_entry] CHECKPOINT 4\n");
@@ -93,10 +93,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
       vm_addcmd(CMD_DELETE   , (void *) cmd_delete   , vm_getoption,    1, HLP_DELETE);
       vm_addcmd(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
       vm_addcmd(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
-
       vm_addcmd(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START);
       vm_addcmd(CMD_STEP     , (void *) cmd_step     , (void *) NULL,   1, HLP_STEP);
-
       vm_addcmd(CMD_DISPLAY  , (void *) cmd_display  , vm_getvarparams, 1, HLP_DISPLAY);
       vm_addcmd(CMD_UNDISPLAY, (void *) cmd_undisplay, vm_getvarparams, 1, HLP_UNDISPLAY);
       vm_addcmd(CMD_RSHT     , (void *) cmd_rsht     , vm_getregxoption, 1, HLP_RSHT);
@@ -104,11 +102,10 @@ int		e2dbg_entry(e2dbgparams_t *params)
       vm_addcmd(CMD_THREADS  , (void *) cmd_threads  , vm_getvarparams, 1, HLP_THREADS);
     }
 
-
   if (ac == 2 && (!e2dbgworld.curthread || !e2dbgworld.curthread->step))
     vm_print_banner(av[1]);
 
-  if (world.state.vm_mode == REVM_STATE_DEBUGGER && e2dbg_setup(av[1]) < 0)
+  if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && e2dbg_setup(av[1]) < 0)
     {
       profiler_error();
       exit(-1);

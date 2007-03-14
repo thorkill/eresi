@@ -4,7 +4,7 @@
 ** Started on  Wed Jan  1 07:51:24 2003 mayhem
 ** Last update Thu Mar 20 06:19:53 2003 mayhem
 **
-** $Id: libaspect-profiler.h,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: libaspect-profiler.h,v 1.5 2007-03-14 12:51:45 may Exp $
 **
 */
 
@@ -52,6 +52,22 @@ typedef	struct		s_allocentry
   u_int			linenbr;	/* Inform about line number */
   u_long		addr;		/* Address of allocation */
 }			profallocentry_t;
+
+
+/* If we are in the debugger, make sure that allocations are done 
+   by the debugger allocator */
+/*
+#if defined(E2DBG_PRESENT)
+#define	aproxy_malloc	malloc  
+#define	aproxy_calloc	calloc  
+#define	aproxy_valloc	valloc  
+#define	aproxy_free	free    
+#define	aproxy_memalign	memalign    
+#define	aproxy_realloc	realloc 
+#define	aproxy_strdup	strdup  
+#endif
+*/
+
 
 
 /**

@@ -1,12 +1,12 @@
 /*
-** signal.c for e2dbg
+** Signal.c for e2dbg
 **
 ** The debugger file for signal handlers
 ** 
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: signal.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -206,6 +206,9 @@ void			e2dbg_do_breakpoint()
   char			*s;
   elfsh_Addr		*pc; 
   u_int			bpsz;
+  elfshsect_t		*sect;
+  elfshobj_t		*parent;
+  elfsh_Sym		*sym;
 
   /* Set all registers as variables and get PC */
   argv[0] = "e2dbg";
@@ -226,27 +229,20 @@ void			e2dbg_do_breakpoint()
   if (!bp)
     {
 
-      /* We are stepping, display  the instruction at $pc */
+      /* We are stepping, display the instruction at $pc */
       if (e2dbgworld.curthread->step)
 	{
-	  ret = asm_read_instr(&ptr, (u_char *)((elfsh_Addr) *pc), 16, 
-			       &world.proc);
+	  ret = asm_read_instr(&ptr, (u_char *)((elfsh_Addr) *pc), 16, &world.proc);
 	  if (!ret)
-	    s = "(bad)";
-	  else
-	    s = asm_display_instr_att(&ptr, *pc);
-
-	  name = vm_resolve(world.curjob->current, *pc, &off);
-
-	  /* Print the current instruction at $pc */
-	  if (off)
-	    printf(" [S] " XFMT " <%s + " DFMT "> %s \n", 
-		   *pc, name, off, s);
-	  else 
-	    printf(" [S] " XFMT "<%s> %s \n", 
-		   *pc, name, s);
-
+	    ret++;
+	  parent = e2dbg_get_parent_object((elfsh_Addr) *pc);
+	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
+	  name   = vm_resolve(parent, (elfsh_Addr) *pc, &off);
+	  sym    = elfsh_get_metasym_by_name(parent, name);
+	  vm_display_object(sect, sym, ret, 0, off, 
+			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+	  e2dbg_entry(NULL);
 	}
       
       /* Here starts the real stuff 
@@ -257,10 +253,12 @@ void			e2dbg_do_breakpoint()
       */
       e2dbgworld.curthread->count++;	
       
-      printf("Count %u -> %u for thread ID %u \n", 
+#if __DEBUG_THREADS_
+      printf(" [C] Count %u -> %u for thread ID %u \n", 
 	     e2dbgworld.curthread->count - 1, 
 	     e2dbgworld.curthread->count, 
 	     ((unsigned int) e2dbgworld.curthread->tid));
+#endif
 
       /* execute the previously restored instruction */
       if (e2dbgworld.curthread->count == 1 && !e2dbgworld.curthread->step)
@@ -279,7 +277,7 @@ void			e2dbg_do_breakpoint()
 		 "This may be an anti-debug trick or the program could be inside another\n"
 		 "debugger that uses breakpoints. (count = " UFMT ", step is off)\n\n" 
 		 "This use of e2dbg is unsupported for now, exiting .. \n\n", 
-		 e2dbgworld.curthread->count, *pc - 1);
+		 *pc - 1, e2dbgworld.curthread->count);
 	  return;
 	}
 
@@ -313,16 +311,19 @@ void			e2dbg_do_breakpoint()
       name = vm_resolve(world.curjob->current, (elfsh_Addr) *pc - 1, &off);
       s    = (e2dbg_is_watchpoint(bp) ? "Watch" : "Break");
       bpsz = elfsh_get_breaksize(world.curjob->current);
+
+#if __DEBUG_THREADS_
+      printf(" [C] Count %u -> 0 for thread ID %u \n", 
+	     e2dbgworld.curthread->count, 
+	     (unsigned int) e2dbgworld.curthread->tid);
+#endif      
+
       if (off)
 	printf(" [*] %spoint found at " XFMT " <%s + " DFMT "> in thread %u \n\n", 
 	       s, *pc - bpsz, name, off, (unsigned int) e2dbgworld.curthread->tid);
       else 
 	printf(" [*] %spoint found at " XFMT " <%s> in thread %u \n\n",   
 	       s, *pc - bpsz, name, (unsigned int) e2dbgworld.curthread->tid);
-
-      printf("Count %u -> 0 for thread ID %u \n", 
-	     e2dbgworld.curthread->count, 
-	     (unsigned int) e2dbgworld.curthread->tid);
       
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
@@ -333,6 +334,7 @@ void			e2dbg_do_breakpoint()
       e2dbgworld.curthread->count            = 0;
       e2dbgworld.curbp                       = bp;
       e2dbg_display(bp->cmd, bp->cmdnbr);
+      e2dbg_entry(NULL);
     }
 }
 
@@ -390,8 +392,6 @@ void			e2dbg_generic_breakpoint(int		signum,
 	}
       e2dbgworld.threadgotnbr = e2dbgworld.threadsyncnbr = 0;
     }
-  //else
-  //e2dbg_thread_stopall(SIGSTOP);
 
   /* Call the real breakpoint code */
   e2dbg_do_breakpoint();

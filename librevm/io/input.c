@@ -6,7 +6,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: input.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: input.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "revm.h"
@@ -116,7 +116,11 @@ char		*vm_stdinput()
 	    if (len == 0)
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 			    ((char *) REVM_INPUT_VOID));
-	    tmpbuf[len] = 0x00;
+	    if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
+		world.state.vm_side == REVM_SIDE_CLIENT)
+	      tmpbuf[len + 1] = 0x00;
+	    else
+	      tmpbuf[len] = 0x00;
 	    goto end;
 	  }
 	continue;

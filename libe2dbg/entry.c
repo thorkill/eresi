@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: entry.c,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -21,7 +21,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   char			*args[3];
   char			*pn;
 
-#if __DEBUG_E2DBG__
+#if 1 //__DEBUG_E2DBG__
   char			logbuf[BUFSIZ];
   unsigned int		len;
   int			idx;
@@ -54,12 +54,12 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   params.ac = 2;
   params.av = args;
 
-  /* Call the debugger */
-  e2dbg_entry(&params);
-
   /* Initialize a "fake" thread if we are debugging a monothread program */
   if (e2dbgworld.curthread == NULL)
     e2dbg_curthread_init();
+  
+  /* Call the debugger */
+  e2dbg_entry(&params);
 
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] Calling ON_EXIT \n", 46);

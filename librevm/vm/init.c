@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.11 2007-03-07 16:45:36 thor Exp $
+** $Id: init.c,v 1.12 2007-03-14 12:51:45 may Exp $
 **
 */
 
@@ -103,8 +103,8 @@ int		vm_loop(int argc, char **argv)
 	switch (vm_execmd())
 	  {
 	  case E2DBG_SCRIPT_CONTINUE:
-	    printf(" [*] e2dbg continue from vm_execcmd \n");
-	    goto e2dbg_continue;
+	    //printf(" [*] e2dbg continue from vm_execmd \n");
+	    goto e2dbg_cleanup;
 	  case -1:
 	    profiler_error();
 	  default:
@@ -113,8 +113,7 @@ int		vm_loop(int argc, char **argv)
       }
 
     /* Quit parsing if necessary */
-    if ((!world.curjob->curcmd && 
-	 world.state.vm_mode == REVM_STATE_SCRIPT) ||
+    if ((!world.curjob->curcmd && world.state.vm_mode == REVM_STATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
@@ -157,8 +156,9 @@ int		vm_loop(int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
   
   /* Clean the script machine state when a script is over */
+  world.curjob->curcmd = NULL;
  e2dbg_cleanup:
-  world.curjob->script[world.curjob->sourced] = world.curjob->curcmd = NULL;
+  world.curjob->script[world.curjob->sourced] = NULL;
   world.curjob->lstcmd[world.curjob->sourced] = NULL;
   
     /* We arrive here when we execute a continue command from a debugger script */
@@ -169,6 +169,8 @@ int		vm_loop(int argc, char **argv)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
+
+
 
 
 /* Only one time initialisations */
@@ -188,6 +190,8 @@ int		vm_init()
   profiler_install(vm_outerr, vm_output);
   return (0);
 }
+
+
 
 
 /* Setup ELFsh/e2dbg hash tables and structures */

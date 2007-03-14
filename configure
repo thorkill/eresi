@@ -54,6 +54,7 @@ BITS="-DELFSH64"
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all64
+MOD_TARGET=mod64
 ;;
 
 --enable-32*)
@@ -70,6 +71,7 @@ BITS="-DELFSH32"
 echo  "//#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all32
+MOD_TARGET=mod32
 ;;
 
 --enable-network*)
@@ -382,6 +384,7 @@ echo "ETAGS   = etags "					        >> Makefile
 echo "CTAGS   = ctags "						>> Makefile
 echo "DESTDIR = $PREFIX"                       			>> Makefile
 echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile
+echo "MOD_TARGET = $MOD_TARGET"					>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
 echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
@@ -444,10 +447,10 @@ echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 # If we compiled librevm with readline, we need to compile it a second
 # time without it, to be linked with libe2dbg in the embedded debugger
 if [ "$READLN" = "1" ]; then
-  cat $CONFIGFILE | grep -v READLN				> $CONFIGFILE
+  echo "	cat $CONFIGFILE | grep -v READLN > tmp && mv tmp $CONFIGFILE" >> Makefile
   echo "	@echo 'Rebuilding librevm without readline'   "	>> Makefile
   echo "	@cd librevm && \$(MAKE) clean		      "	>> Makefile
-  echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)      "	>> Makefile
+  echo "	@cd librevm && \$(MAKE) \$(MOD_TARGET)      "	>> Makefile
   echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
 fi
 

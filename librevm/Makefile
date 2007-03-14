@@ -32,28 +32,34 @@ LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 
 all			: all32 all64
+all32			: mod32 lib32
+all64			: mod64 lib64
 
-all32			:
+mod32			:
 			$(MAKE) -C lang all32
 			$(MAKE) -C elf  all32
 			$(MAKE) -C vm   all32
 			$(MAKE) -C cmd  all32
 			$(MAKE) -C io   all32
 			$(MAKE) -C api  all32
-			@$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
-			@ar rc ${NAME32}.a ${OBJ32} 
-			@ranlib ${NAME32}.a
 
-all64			:
+lib32			:
+			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
+			ar rc ${NAME32}.a ${OBJ32} 
+			ranlib ${NAME32}.a
+
+mod64			:
 			$(MAKE) -C lang all64
 			$(MAKE) -C elf  all64
 			$(MAKE) -C vm   all64
 			$(MAKE) -C cmd  all64
 			$(MAKE) -C io   all64
 			$(MAKE) -C api  all64
-			@$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
-			@ar rc ${NAME64}.a ${OBJ64} 
-			@ranlib ${NAME64}.a
+
+lib64			:
+			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
+			ar rc ${NAME64}.a ${OBJ64} 
+			ranlib ${NAME64}.a
 
 clean		       :
 			$(MAKE) -C lang clean

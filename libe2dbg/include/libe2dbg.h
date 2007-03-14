@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: libe2dbg.h,v 1.4 2007-03-14 12:51:45 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -13,6 +13,8 @@
 
 #include "revm.h"
 #include "aproxy.h"
+#include <sys/resource.h>
+
 
 #define		__DEBUG_E2DBG__		0
 #define		__DEBUG_BP__		0

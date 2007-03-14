@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: aproxy_malloc.c,v 1.2 2007-02-25 22:13:33 may Exp $
+  $Id: aproxy_malloc.c,v 1.3 2007-03-14 12:51:45 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -513,7 +513,7 @@ Void_t *(*__morecore)(ptrdiff_t) = __default_morecore;
 #define public_cALLOc    aproxy_calloc 
 #define public_fREe      aproxy_free
 #define public_cFREe     aproxy_cfree
-#define public_mALLOc    aproxy
+#define public_mALLOc    aproxy_malloc
 #define public_mEMALIGn  aproxy_memalign
 #define public_rEALLOc   aproxy_realloc
 #define public_vALLOc    aproxy_valloc
