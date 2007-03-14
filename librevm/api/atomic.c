@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
 **
-** $Id: atomic.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: atomic.c,v 1.3 2007-03-14 22:44:59 may Exp $
 **
 */
 #include "revm.h"
@@ -50,6 +50,8 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 {
   elfsh_Addr		src;
   elfsh_Addr		dst;
+  char			buf[BUFSIZ];
+  revmobj_t		*res;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -116,8 +118,16 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
     o1->immed_val.ent = dst;
   else
     o1->set_obj(o1->parent, dst);
+
+  res = hash_get(&vars_hash, REVM_VAR_RESULT);
+  res->immed_val.ent = dst;
+  res->immed = 1;
   if (!world.state.vm_quiet)
-    vm_output(" [*] Field modified succesfully\n\n");
+    {
+      snprintf(buf, sizeof(buf), " $_ = " DFMT "\n\n", dst);
+      vm_output(buf);
+    }
+
   if (!o2->perm)
     XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
   if (!o1->perm)

@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: libe2dbg.h,v 1.5 2007-03-14 22:44:59 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -80,6 +80,7 @@
 #define		CMD_DBGSTACK		"dbgstack"
 #define		CMD_DUMPREGS		"dumpregs"
 #define		CMD_STEP		"step"
+#define		CMD_ITRACE		"itrace"
 #define		CMD_START		"start"
 #define		CMD_DELETE		"delete"
 #define		CMD_RUN			"run"
@@ -224,6 +225,7 @@ typedef struct		s_thread
   int			count;			/* State (0->2) when breakpointing */
   elfsh_Addr		past;			/* Previous opcode instead of break */
   u_char		step;			/* Is this thread beeing stepped ? */
+  u_char		trace;			/* Is the thread beeing itraced ? */
   void			*(*entry)(void *);	/* Entry point */
   ucontext_t		*context;		/* Thread context on signal */
   time_t		stime;			/* Creation time */
@@ -408,6 +410,7 @@ int             cmd_display();
 int             cmd_undisplay();
 int             cmd_delete();
 int             cmd_step();
+int		cmd_itrace();
 int		cmd_start();
 int		cmd_dumpregs();
 int		cmd_cont();

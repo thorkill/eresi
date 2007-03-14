@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.5 2007-03-14 12:51:45 may Exp $
+** $Id: e2dbg.c,v 1.6 2007-03-14 22:44:59 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -100,6 +100,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
       vm_addcmd(CMD_RSHT     , (void *) cmd_rsht     , vm_getregxoption, 1, HLP_RSHT);
       vm_addcmd(CMD_RPHT     , (void *) cmd_rpht     , vm_getregxoption, 1, HLP_RPHT);
       vm_addcmd(CMD_THREADS  , (void *) cmd_threads  , vm_getvarparams, 1, HLP_THREADS);
+      vm_addcmd(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
     }
 
   if (ac == 2 && (!e2dbgworld.curthread || !e2dbgworld.curthread->step))
@@ -117,6 +118,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #endif
 
   ret = vm_run(ac, av);
+  
   return (ret);
 }
 

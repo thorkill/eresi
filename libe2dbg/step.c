@@ -5,30 +5,18 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: step.c,v 1.3 2007-03-14 12:51:45 may Exp $
+** $Id: step.c,v 1.4 2007-03-14 22:44:59 may Exp $
 **
 */
 #include "libe2dbg.h"
 
 
-/* Step command */
-int		cmd_step()
+/* Perform stepping */
+int		e2dbg_step()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
- retry:
-  if (!e2dbgworld.curthread || !e2dbgworld.curthread->context)
-    {
-      if (e2dbgworld.sourcing)
-	goto retry;
-      else
-	printf("wasnt sourcing ... existing \n");
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"You must be in a SIGTRAP handler to step", -1);
-    }
-
-  /* Also maintain a stepping flag in the world struct to keep 
-     modelisation independance */
+  /* Checking stepping flag in the thread structure */
   if (e2dbgworld.curthread->step)
     {
       if (e2dbg_resetstep() < 0)
@@ -58,3 +46,55 @@ int		cmd_step()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+
+/* Step command */
+int		cmd_step()
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+ retry:
+  if (!e2dbgworld.curthread || !e2dbgworld.curthread->context)
+    {
+      if (e2dbgworld.sourcing)
+	goto retry;
+      else
+	printf("wasnt sourcing ... existing \n");
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"You must be in a SIGTRAP handler to step", -1);
+    }
+
+  ret = e2dbg_step();
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+/* Step-trace command */
+int		cmd_itrace()
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+ retry:
+  if (!e2dbgworld.curthread || !e2dbgworld.curthread->context)
+    {
+      if (e2dbgworld.sourcing)
+	goto retry;
+      else
+	printf("wasnt sourcing ... existing \n");
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"You must be in a SIGTRAP handler to step", -1);
+    }
+
+  /* Enable or disable trace flag */
+  if (e2dbgworld.curthread->trace)
+    e2dbgworld.curthread->trace = 0;
+  else
+    e2dbgworld.curthread->trace = 1;
+  ret = e2dbg_step();
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}

@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.18 2007-03-07 16:45:35 thor Exp $
+** $Id: revm-help.h,v 1.19 2007-03-14 22:44:59 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -229,6 +229,7 @@
 #define HLP_DBGSTACK		"Dump N words on debugger stack"
 #define	HLP_DUMPREGS		"Dump registers of debuggee at breakpoint or step"
 #define	HLP_STEP		"Enable stepping of debuggee program"
+#define	HLP_ITRACE		"Enable tracing of debuggee program until next event"
 #define	HLP_START		"Start the debuggee program"
 #define	HLP_DELETE		"Delete breakpoint by symbol, addr, or ID"
 #define	HLP_CONTINUE		"Continue executing debuggee program after break"

@@ -18,6 +18,9 @@ LD			?= ld
 RM			= rm -f
 DBGNAME32		= libe2dbg32
 DBGNAME64		= libe2dbg64
+AR			= ar rc
+RANLIB			= ranlib
+
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
@@ -55,10 +58,14 @@ all			: all32 all64
 all32			: ${OBJ32}
 			@$(CC) -shared $(OBJ32) $(EXTRAOBJ32) $(LDFLAGS32) \
 			-o $(DBGNAME32).so
+			@$(AR) $(DBGNAME32).a $(OBJ32)
+			@$(RANLIB) $(DBGNAME32).a
 
 all64			: ${OBJ64}
 			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
 			-o $(DBGNAME64).so
+			@$(AR) $(DBGNAME64).a $(OBJ64)
+			@$(RANLIB) $(DBGNAME64).a
 
 # This target is work in progress (static files debugger)
 et_rel			: ${OBJ}

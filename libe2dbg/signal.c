@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: signal.c,v 1.5 2007-03-14 22:44:59 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -242,7 +242,8 @@ void			e2dbg_do_breakpoint()
 	  vm_display_object(sect, sym, ret, 0, off, 
 			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-	  e2dbg_entry(NULL);
+	  if (!e2dbgworld.curthread->trace)
+	    e2dbg_entry(NULL);
 	}
       
       /* Here starts the real stuff 
