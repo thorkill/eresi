@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.5 2007-03-14 22:44:59 may Exp $
+** $Id: libe2dbg.h,v 1.6 2007-03-15 13:11:48 thor Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -15,6 +15,9 @@
 #include "aproxy.h"
 #include <sys/resource.h>
 
+#if defined(__FreeBSD__)
+  extern char **environ;
+#endif
 
 #define		__DEBUG_E2DBG__		0
 #define		__DEBUG_BP__		0

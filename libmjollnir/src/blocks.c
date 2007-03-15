@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.44 2007-03-14 18:37:57 strauss Exp $
+** $Id: blocks.c,v 1.45 2007-03-15 13:11:48 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -23,26 +23,27 @@ hash_t		goto_hash;
  * @param vaddr source address
  * @param dest destination address
  */
-int							mjr_block_point(mjrcontext_t		*ctxt, 
-																asm_instr      	*ins,
-																elfsh_Addr     	vaddr,
-																elfsh_Addr     	dest)
+int	mjr_block_point(mjrcontext_t	*ctxt,
+			asm_instr      	*ins,
+			elfsh_Addr     	vaddr,
+			elfsh_Addr     	dest)
 {
-  mjrcontainer_t		*dst, *dst_end, *tmpcntnr;
-	mjrblock_t				*dstblk;
-	mjrlink_t					*dst_true, *dst_false;
-  int								new_size;
+  mjrcontainer_t	*dst, *dst_end, *tmpcntnr;
+  mjrblock_t		*dstblk;
+  mjrlink_t		*dst_true, *dst_false;
+  int			new_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
-	if (dst)
-		dstblk = (mjrblock_t *) dst->data;
+
+  if (dst)
+    dstblk = (mjrblock_t *) dst->data;
 
   /* Just create a new target block */
   if (!dst) 
   {
     dst = mjr_create_block_container(0, dest, 1);
-  	hash_add(&ctxt->blkhash, _vaddr2str(dest), dst);
+    hash_add(&ctxt->blkhash, _vaddr2str(dest), dst);
   } 
 
   /* Split block */
@@ -51,39 +52,37 @@ int							mjr_block_point(mjrcontext_t		*ctxt,
     new_size        = dstblk->size - (dest - dstblk->vaddr);
     dstblk->size    -= new_size;
     dst_end         = mjr_create_block_container(0, dest, new_size);
-  	hash_add(&ctxt->blkhash, _vaddr2str(dest), dst_end);
+    hash_add(&ctxt->blkhash, _vaddr2str(dest), dst_end);
 
-		dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
-		dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
-		if (dst_true)
-			mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-		if (dst_false)
-			mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-
-		tmpcntnr = mjr_create_block_container(0, dest, 0);
-		if (!dst_true)
-			mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-		else
-			dst_true->id = tmpcntnr->id;
-
-		tmpcntnr = mjr_create_block_container(0, 0, 0);
-		if (!dst_false)
-			mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
-		else
-			dst_false->id = tmpcntnr->id;
-      
+    dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
+    dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+    if (dst_true)
+      mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+    if (dst_false)
+      mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+    
+    tmpcntnr = mjr_create_block_container(0, dest, 0);
+    if (!dst_true)
+      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+    else
+      dst_true->id = tmpcntnr->id;
+    
+    tmpcntnr = mjr_create_block_container(0, 0, 0);
+    if (!dst_false)
+      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
+    else
+      dst_false->id = tmpcntnr->id;
+    
     dst             = dst_end;
   }
   
-	tmpcntnr = mjr_block_get_by_vaddr(ctxt, vaddr, 0);
-	if (!tmpcntnr)
-		mjr_create_block_container(0, vaddr, 0);
-
-	mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
+  tmpcntnr = mjr_block_get_by_vaddr(ctxt, vaddr, 0);
+  if (!tmpcntnr)
+    mjr_create_block_container(0, vaddr, 0);
+  
+  mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 
 /**
@@ -91,10 +90,10 @@ int							mjr_block_point(mjrcontext_t		*ctxt,
  *
  * returns the number of blocks (0 probably means something is wrong)
  */
-int							mjr_blocks_get(mjrcontext_t *ctxt)
+int	mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t		*sect;
-	int						cnt;
+  int			cnt;
 	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
