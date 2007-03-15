@@ -518,6 +518,7 @@ echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile
 echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile
 echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile
+echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 
 # Create links
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
