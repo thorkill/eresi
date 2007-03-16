@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.45 2007-03-15 13:11:48 thor Exp $
+** $Id: blocks.c,v 1.46 2007-03-16 15:31:16 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -78,7 +78,7 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
   
   tmpcntnr = mjr_block_get_by_vaddr(ctxt, vaddr, 0);
   if (!tmpcntnr)
-    mjr_create_block_container(0, vaddr, 0);
+    tmpcntnr = mjr_create_block_container(0, vaddr, 0);
   
   mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
