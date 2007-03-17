@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: resolv.c,v 1.4 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -620,12 +620,16 @@ int		e2dbg_dlsym_init()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  write(1, " [D] e2dbg_dlsym_init CALLED\n", 29);
+#if __DEBUG_E2DBG__
+  write(2, " [D] e2dbg_dlsym_init CALLED\n", 29);
+#endif
 
   if (done)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-  
-  write(1, " [D] e2dbg_dlsym_init EXECUTED\n", 31);
+
+#if __DEBUG_E2DBG__  
+  write(2, " [D] e2dbg_dlsym_init EXECUTED\n", 31);
+#endif
 
   /* Get the address of the linkmap without calling malloc */
   e2dbgworld.syms.map = e2dbg_linkmap_getaddr();
@@ -639,7 +643,7 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc MALLOC() sym = %08X \n", e2dbgworld.syms.mallocsym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   e2dbgworld.syms.callocsym = (elfsh_Addr) e2dbg_dlsym("calloc");
@@ -653,7 +657,7 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc CALLOC() sym = %08X \n", e2dbgworld.syms.callocsym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   e2dbgworld.syms.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
@@ -664,7 +668,7 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc REALLOC() sym = %08X \n", e2dbgworld.syms.reallocsym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   e2dbgworld.syms.freesym = (elfsh_Addr) e2dbg_dlsym("free");
@@ -675,7 +679,7 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc FREE() sym = %08X \n", e2dbgworld.syms.freesym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   e2dbgworld.syms.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
@@ -686,7 +690,7 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc VALLOC() sym = %08X \n", e2dbgworld.syms.vallocsym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
 
@@ -698,48 +702,8 @@ int		e2dbg_dlsym_init()
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
 		 " [*] Libc MEMALIGN() sym = %08X \n", e2dbgworld.syms.memalignsym);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
-
-  /*
-  e2dbgworld.syms.memalignhooksym = (elfsh_Addr) e2dbg_dlsym("__memalign_hook");
-  if (!e2dbgworld.syms.memalignhooksym)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig __memalign_hook not found", (-1));
-
-#if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc __MEMALIGN_HOOK() sym = %08X \n", 
-		 e2dbgworld.syms.memalignhooksym);
-  write(1, buf, len);
-#endif
-
-
-  e2dbgworld.syms.mallochooksym = (elfsh_Addr) e2dbg_dlsym("__malloc_hook");
-  if (!e2dbgworld.syms.mallochooksym)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig __malloc_hook not found", (-1));
-
-#if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc __MALLOC_HOOK() sym = %08X \n", 
-		 e2dbgworld.syms.mallochooksym);
-  write(1, buf, len);
-#endif
-  */
-
-
-  /*
-    e2dbgworld.syms.pthstartupsym = (elfsh_Addr) e2dbg_dlsym("__libc_malloc_pthread_startup");
-    if (!e2dbgworld.syms.pthstartupsym)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-    "Orig pthread_startup not found", (-1));
-    #if __DEBUG_E2DBG__
-    len = snprintf(buf, sizeof(buf), 
-    " [*] Libc PTHREAD_STARTUP() sym = %08X \n", e2dbgworld.syms.pthstartupsym);
-    write(1, buf, len);
-    #endif
-  */
 
   e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
   if (!e2dbgworld.syms.pthreadcreate)
@@ -758,10 +722,15 @@ int		e2dbg_dlsym_init()
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
+  e2dbg_presence_set();
   hash_init(&e2dbgworld.threads, "threads"    , 29, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp     , "breakpoints", 51, ASPECT_TYPE_UNKNOW);
+  e2dbg_presence_reset();
 
-  write(1, " [D] e2dbg_dlsym_init FINISHED\n", 31);
+#if __DEBUG_E2DBG__
+  write(2, " [D] e2dbg_dlsym_init FINISHED\n", 31);
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 

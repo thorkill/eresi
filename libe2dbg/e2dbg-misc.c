@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg-misc.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: e2dbg-misc.c,v 1.5 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -72,7 +72,8 @@ char	*e2dbg_get_string(char **params)
 /* XXX: Need a vector */
 int		e2dbg_output(char *str)
 {
-  vm_output(str);
+  //vm_output(str);
+  fprintf(stderr, str);
   return (0);
 }
 
@@ -91,34 +92,24 @@ int		e2dbg_self()
 
 
 /* Send a signal */
-void		e2dbg_kill(pid_t pid, int sig)
+int		e2dbg_kill(int pid, int sig)
 {
   if (e2dbgworld.threadnbr == 1)
-    kill(pid, sig);
+    return (kill(pid, sig));
   else
-    pthread_kill(pid, sig);
+    return (pthread_kill(pid, sig));
 }
 
-
-/* Temporary signal handler for SIGSEGV when seeking the stack limit */
-int			flag;
-
-static void		e2dbg_sigsegv_temp(int sig) { flag = 1; }
-
 /* Determine stack address */
-static void		e2dbg_stack_get(e2dbgthread_t *cur)
+static void	e2dbg_stack_get(e2dbgthread_t *cur)
 {
-  struct rlimit rlp;
-
-  //elfsh_Addr	curaddr;
-  //elfsh_Addr	content;
-  //void		*sigsegv_orig;
-  //void		*sigbus_orig;
-  //void		*sigill_orig;
+  struct rlimit	rlp;
   int		index;
 
+#if __DEBUG_THREADS__
   int		ret;
   char		logbuf[BUFSIZ];
+#endif
 
   getrlimit(RLIMIT_STACK, &rlp);
   cur->stacksize = rlp.rlim_cur;
@@ -134,24 +125,14 @@ static void		e2dbg_stack_get(e2dbgthread_t *cur)
 
   cur->stackaddr = cur->stackaddr - cur->stacksize;
 
-  /*
-  curaddr = (elfsh_Addr) &curaddr;
-  sigsegv_orig = signal(SIGSEGV, e2dbg_sigsegv_temp);
-  sigbus_orig  = signal(SIGBUS , e2dbg_sigsegv_temp);
-  sigill_orig  = signal(SIGILL , e2dbg_sigsegv_temp);
-  printf("\n Starting segv loop \n");
-  for (flag = 0; !flag; curaddr += sizeof(elfsh_Addr))
-    content = *(elfsh_Addr *) curaddr;
-  signal(SIGSEGV, sigsegv_orig);
-  signal(SIGBUS , sigbus_orig);
-  signal(SIGILL , sigill_orig);
-  */
-
+#if __DEBUG_THREADS__
   ret = snprintf(logbuf, BUFSIZ, 
 		 "\n [D] Thread ID %u has stack at addr %08X with size %u (environ = %08X) max = %08X\n",
 		 (unsigned int) cur->tid, cur->stackaddr, cur->stacksize, 
 		 (elfsh_Addr) environ, (elfsh_Addr) (cur->stackaddr + cur->stacksize));
   write(1, logbuf, ret);
+#endif
+
 }
 
 
@@ -161,16 +142,30 @@ int		e2dbg_curthread_init(void *start)
   e2dbgthread_t	*new;
   char		*key;
 
+#if __DEBUG_THREADS__
+  char		logbuf[BUFSIZ];
+  int		ret;
+#endif
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
   snprintf(key, 15, "%u", (unsigned int) getpid());
-  new->tid   = (unsigned int) getpid();
-  new->entry = (void *) e2dbgworld.real_main;
+  new->tid     = (unsigned int) getpid();
+  new->entry   = (void *) e2dbgworld.real_main;
+  new->initial = 1;
   time(&new->stime);
   hash_add(&e2dbgworld.threads, key, new);
   e2dbgworld.curthread = new;
   e2dbgworld.threadnbr = 1;
   e2dbg_stack_get(new);
+
+#if __DEBUG_THREADS__
+  ret = snprintf(logbuf, BUFSIZ, " [D] Thread INITIAL has ID %u, stack at addr %08X with size %u \n",
+		 (unsigned int) new->tid, new->stackaddr, new->stacksize);
+  write(1, logbuf, ret);
+#endif
+
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

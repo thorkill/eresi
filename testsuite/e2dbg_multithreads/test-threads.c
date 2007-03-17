@@ -1,6 +1,6 @@
 /*
 **
-** $Id: test-threads.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: test-threads.c,v 1.3 2007-03-17 13:05:31 may Exp $
 **
 */
 #include <stdio.h>
@@ -40,8 +40,8 @@ main()
      int  iret1, iret2, iret3;
  
      //signal(SIGTRAP, (sighandler_t) sigtrap_handler);
-     signal(SIGSTOP, (sighandler_t) sigstop_handler);
-     signal(SIGUSR2, (sighandler_t) sigusr2_handler);
+     //signal(SIGSTOP, (sighandler_t) sigstop_handler);
+     //signal(SIGUSR2, (sighandler_t) sigusr2_handler);
 
      iret1 = pthread_create( &thread1, NULL, print_message_function, (void*) message1);
      iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);
@@ -56,9 +56,9 @@ main()
      pthread_join( thread2, NULL); 
      pthread_join( thread3, NULL); 
 
-     printf("Thread 1 returns: %d\n",iret1);
-     printf("Thread 2 returns: %d\n",iret2);
-     printf("Thread 3 returns: %d\n",iret3);
+     fprintf(stderr, "Thread 1 returns: %d\n",iret1);
+     fprintf(stderr, "Thread 2 returns: %d\n",iret2);
+     fprintf(stderr, "Thread 3 returns: %d\n",iret3);
      exit(0);
 }
 

@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: entry.c,v 1.5 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -21,7 +21,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   char			*args[3];
   char			*pn;
 
-#if 1 //__DEBUG_E2DBG__
+#if __DEBUG_E2DBG__
   char			logbuf[BUFSIZ];
   unsigned int		len;
   int			idx;
@@ -54,6 +54,8 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   params.ac = 2;
   params.av = args;
 
+  e2dbg_presence_set();
+
   /* Initialize a "fake" thread if we are debugging a monothread program */
   if (e2dbgworld.curthread == NULL)
     e2dbg_curthread_init();
@@ -78,6 +80,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 #endif
 
   /* Call the original main */
+  e2dbg_presence_reset();
   return (*e2dbgworld.real_main)(argc, argv, aux);
 }
 
@@ -100,6 +103,8 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  e2dbg_presence_set();
+
 #if __DEBUG_E2DBG__
   write(1, "[(e2dbg)__libc_start_main] there\n", 33);
 #endif
@@ -121,7 +126,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 
   /* Load the debugger in a new thread */
   e2dbgworld.preloaded = 1;
-  CLRSIG;
+  //CLRSIG;
 
   /* Initalize mutexes */
   e2dbg_mutex_init(&e2dbgworld.dbgbp);
@@ -187,12 +192,12 @@ int				atexit(void (*fini)(void))
       args[0] = E2DBG_ARGV0;
       args[1] = env; 
       args[2] = NULL;
-      CLRSIG;
+      //CLRSIG;
       e2dbgworld.preloaded = 1;
       params.ac = 2;
       params.av = args;
       e2dbg_entry(&params); 
-      SETSIG;
+      //SETSIG;
     }
   
 #if __DEBUG_E2DBG__
@@ -241,10 +246,10 @@ void			__fpstart(int argc, char**ubp_av)
   argv[2] = NULL;
   params.ac = 2;
   params.av = argv;
-  CLRSIG;
+  //CLRSIG;
   e2dbgworld.preloaded = 1;
   e2dbg_entry(&params); 
-  SETSIG;
+  //SETSIG;
 
 #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] End \n");

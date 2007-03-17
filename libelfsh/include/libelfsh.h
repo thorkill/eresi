@@ -4,7 +4,7 @@
  ** Started on  Mon Jul 23 15:47:12 2001 mayhem
  **
 **
-** $Id: libelfsh.h,v 1.42 2007-03-14 23:48:07 may Exp $
+** $Id: libelfsh.h,v 1.43 2007-03-17 13:05:31 may Exp $
 **
 */
 
@@ -816,6 +816,7 @@ typedef struct	s_bp
   uint32_t	id;		/* Breakpoint ID */
   char		*symname;	/* Symbol match, if any */
   elfshobj_t	*obj;		/* Parent object of breakpoint */
+  pid_t		tid;		/* Thread id of breakpoint */
 
 #define	ELFSH_BP_BREAK	0	/* Classical breakpoint */
 #define	ELFSH_BP_WATCH	1	/* Do not get back to debugger */

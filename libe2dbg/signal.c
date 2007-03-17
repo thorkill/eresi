@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.6 2007-03-14 23:48:07 may Exp $
+** $Id: signal.c,v 1.7 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -46,7 +46,7 @@ void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info,
   if (profiler_enabled())
     profiler_disable_all();
   context = (ucontext_t *) pcontext;
-  printf("\n [!] Segfault in E2dbg, exiting ...\n\n");
+  fprintf(stderr, "\n [!] Segfault in E2dbg, exiting ...\n\n");
   e2dbg_bt();
   cmd_quit();
   SETSIG;
@@ -95,14 +95,14 @@ void            e2dbg_sigstop_handler(int signum, siginfo_t *info, void *pcontex
   CLRSIG;
   e2dbg_presence_set();
 
+#if __DEBUG_THREADS__
+  printf("\n [*] SIGSTOP handler for thread %u \n", (unsigned int) e2dbg_self());
+#endif
+
   /* Get the current thread */
   snprintf(key, sizeof(key), "%u", (unsigned int) e2dbg_self());
   curthread = hash_get(&e2dbgworld.threads, key);
   curthread->context = (ucontext_t *) pcontext;
-
-#if __DEBUG_THREADS__
-  printf("\n [*] SIGSTOP handler for thread %u \n", (unsigned int) e2dbg_self());
-#endif
 
   /* Set all registers as variables and get PC */
   //e2dbgworld.context = (ucontext_t *) pcontext;
@@ -124,39 +124,30 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 {
   e2dbgthread_t	*curthread;
   char		key[15];
-  sigset_t	mask;
-  sigset_t	oldmask;
-  
-  e2dbgworld.curthread->state = E2DBG_THREAD_SIGUSR2;
   
   /* Get the current thread */
   snprintf(key, sizeof(key), "%u", (unsigned int) e2dbg_self());
-  curthread = hash_get(&e2dbgworld.threads, key);
+  curthread          = hash_get(&e2dbgworld.threads, key);
   curthread->context = (ucontext_t *) pcontext;
+  curthread->state   = E2DBG_THREAD_SIGUSR2;
+
 
 #if __DEBUG_THREADS__
-  fprintf(stderr,
-	  " [*] SIGUSR2 received by thread %u \n", (unsigned int) e2dbg_self());
+  fprintf(stderr, " ************ [T] SIGUSR2 received by %u ******** \n", 
+	  (unsigned int) curthread->tid);
 #endif
   
+  /* Make it wait until the breakpoint is finished to process */
   e2dbgworld.threadsyncnbr++;
-  e2dbgworld.curthread->state = E2DBG_THREAD_BREAKUSR2;
+  e2dbg_mutex_lock(&e2dbgworld.dbgbp);
+  e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
+  curthread->state = E2DBG_THREAD_RUNNING;
 
-  sigemptyset (&mask);
-  sigaddset (&mask, SIGUSR2);
-  sigprocmask (SIG_BLOCK, &mask, &oldmask);
-  sigsuspend (&oldmask);
-  sigprocmask (SIG_UNBLOCK, &mask, NULL);
-
-#if 1 //__DEBUG_THREADS__
-  fprintf(stderr, " [T] Getting out of SIGUSR2 handler \n");
+#if __DEBUG_THREADS__
+  fprintf(stderr, " ********** [T] Thread %u getting out of SIGUSR2 handler ******* \n", 
+	  (unsigned int) curthread->tid);
 #endif
 
-  //pthread_kill(pthread_self(), SIGSTOP);
-  //pause();
-  /* Make it wait until the breakpoint is finished to process */
-  //e2dbg_mutex_lock(&e2dbgworld.dbgbp);
-  //e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
 }
 
 
@@ -191,6 +182,27 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
 }
 
 
+#if __DEBUG_BP__
+void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
+{
+  elfsh_Addr	addr;
+  int		off;
+  char		*name;
+  elfshsect_t	*sect;
+  elfsh_Sym	 *sym;
+
+  off  = (bp ? 0 : e2dbgworld.stoppedthread->count == E2DBG_BREAK_HIT ? 3 : 6);
+  addr = (bp ? bp->addr : pc - off);
+  
+  fprintf(stderr, "%s ::: parent = %s (BP DESCRIPTOR = %08X) \n",
+	  str, (parent ? parent->name : "NONE !!!!"), (elfsh_Addr) bp);
+  sect   = elfsh_get_parent_section(parent, addr, NULL);
+  name   = vm_resolve(parent, addr, &off);
+  sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
+  vm_display_object(sect, sym, 16, 0, off, addr, name, REVM_VIEW_DISASM);
+}
+#endif
+
 
 /* Signal handler for SIGUSR1 in debugger */
 void			e2dbg_do_breakpoint()
@@ -205,10 +217,15 @@ void			e2dbg_do_breakpoint()
   asm_instr		ptr;
   char			*s;
   elfsh_Addr		*pc; 
+  elfsh_Addr		savedpc;
   u_int			bpsz;
   elfshsect_t		*sect;
   elfshobj_t		*parent;
   elfsh_Sym		*sym;
+
+#if __DEBUG_BP__
+  fprintf(stderr, "Entering breakpoint handler ... \n");
+#endif
 
   /* Set all registers as variables and get PC */
   argv[0] = "e2dbg";
@@ -217,77 +234,95 @@ void			e2dbg_do_breakpoint()
   e2dbg_getregs(); 
   pc = e2dbg_getpc();
 
+  parent = e2dbg_get_parent_object((elfsh_Addr) *pc);
+  bpsz = elfsh_get_breaksize(parent);
+
   /* Print variables and registers on breakpoints */
   //if (!world.state.vm_quiet)
   //cmd_vlist();
 
   /* Try to find the breakpoint at current instruction pointer */
-  snprintf(buf, sizeof(buf), XFMT, *pc - 1);
+#if __DEBUG_BP__
+  fprintf(stderr, "Trying to find breakpoint at addr %08X (bpsize = %u)\n", 
+	  *pc - bpsz, bpsz);
+#endif
+
+  snprintf(buf, sizeof(buf), XFMT, *pc - bpsz);
   bp = hash_get(&e2dbgworld.bp, buf);
 
-  /* If not found */
-  if (!bp)
+#if __DEBUG_BP__
+  bpdebug("BEFORE", bp, *pc, parent);
+  if (bp)
+    fprintf(stderr, " SAVED INSTR BYTE = %02X and PC-BPSZ BYTE = %02X \n",
+	    bp->savedinstr[0], *((u_char *) *pc - bpsz));
+#endif
+
+  /* If we are single-stepping or if we are stepping the breaked instruction */
+  if (!bp || (bp->savedinstr[0] == *((u_char *) *pc - bpsz)))
     {
 
-      /* We are stepping, display the instruction at $pc */
-      if (e2dbgworld.curthread->step)
+      /* We are single-stepping, display the instruction at $pc */
+      if (e2dbgworld.stoppedthread->step)
 	{
-	  ret = asm_read_instr(&ptr, (u_char *)((elfsh_Addr) *pc), 16, &world.proc);
+	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
 	  if (!ret)
 	    ret++;
-	  parent = e2dbg_get_parent_object((elfsh_Addr) *pc);
 	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
 	  name   = vm_resolve(parent, (elfsh_Addr) *pc, &off);
 	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, &off, ELFSH_LOWSYM);
 
+#if __DEBUG_BP__
 	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) \n", 
-		 parent, parent->name, name, sect->name);
+		 (elfsh_Addr) parent, parent->name, name, sect->name);
+#endif
 
 	  vm_display_object(sect, sym, ret, 0, off, 
 			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-	  if (!e2dbgworld.curthread->trace)
+	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);
 	}
       
       /* Here starts the real stuff 
       **
-      ** count == 1 -> execute restored instruction
-      ** count == 2 -> restore breakpoint
-      ** count >  2 -> antidebug
+      ** count == E2DBG_BREAK_EXEC     -> execute restored instruction
+      ** count == E2DBG_BREAK_FINISHED -> restore breakpoint
+      ** count >  E2DBG_BREAK_MAX      -> e2dbg is getting debugged by a third party debugger
       */
-      e2dbgworld.curthread->count++;	
+      e2dbgworld.stoppedthread->count++;	
       
-#if __DEBUG_THREADS_
+#if __DEBUG_BP__
       printf(" [C] Count %u -> %u for thread ID %u \n", 
-	     e2dbgworld.curthread->count - 1, 
-	     e2dbgworld.curthread->count, 
-	     ((unsigned int) e2dbgworld.curthread->tid));
+	     e2dbgworld.stoppedthread->count - 1, 
+	     e2dbgworld.stoppedthread->count, 
+	     ((unsigned int) e2dbgworld.stoppedthread->tid));
 #endif
 
       /* execute the previously restored instruction */
-      if (e2dbgworld.curthread->count == 1 && !e2dbgworld.curthread->step)
+      if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_EXEC &&
+	  !e2dbgworld.stoppedthread->step)
 	{
-#if __DEBUG_MUTEX__
-	  printf(" [*] Debuggee executes restored instruction \n");
+#if __DEBUG_BP__
+	  printf(" [*] Debuggee executed restored instruction (before pc = %08X) \n", *pc);
 #endif
 	  return;
 	}
       
       /* Suggested by andrewg, useful when debugging valgrind */
-      if (e2dbgworld.curthread->count > 2 && !e2dbgworld.curthread->step)
+      if (e2dbgworld.stoppedthread->count > E2DBG_BREAK_MAX &&
+	  !e2dbgworld.stoppedthread->step)
 	{
 	  printf(".::- E2DBG WARNING -::.\n"
 		 "Breakpoint triggered at location %08X which we don't know about.\n\n"
 		 "This may be an anti-debug trick or the program could be inside another\n"
 		 "debugger that uses breakpoints. (count = " UFMT ", step is off)\n\n" 
 		 "This use of e2dbg is unsupported for now, exiting .. \n\n", 
-		 *pc - 1, e2dbgworld.curthread->count);
+		 *pc - bpsz, e2dbgworld.stoppedthread->count);
 	  return;
 	}
 
-      /* test if the bp has not been deleted */
-      snprintf(buf, sizeof(buf), XFMT, e2dbgworld.curthread->past);
+      /* Test if we need to reinstall a breakpoint */
+      snprintf(buf, sizeof(buf), XFMT, e2dbgworld.stoppedthread->past);
       bp = hash_get(&e2dbgworld.bp, buf);
 
       /* Call the architecture dependant hook for putting back the breakpoint */
@@ -299,47 +334,85 @@ void			e2dbg_do_breakpoint()
 	      e2dbg_output(" [E] Breakpoint reinsertion failed");
 	      return;
 	    }
-	  e2dbgworld.curthread->past = 0;
+
+#if __DEBUG_BP__
+	  fprintf(stderr, " Breakpoint reinserted at %08X ! \n", bp->addr);
+#endif
+
+	  e2dbgworld.stoppedthread->past = 0;
 	}
+#if __DEBUG_BP__
+      else
+	fprintf(stderr, "Breakpoint was deleted from %08X : not reinstalling ! \n",
+		e2dbgworld.stoppedthread->past);
+      bpdebug("AFTER SETBREAK", bp, *pc, parent);
+#endif
       
       /* remove trace flag */	  
-      if (!e2dbgworld.curthread->step)
+      if (!e2dbgworld.stoppedthread->step)
 	{
+#if __DEBUG_BP__
+	  fprintf(stderr, "RESETING STEP MODE ! \n");
+#endif
 	  e2dbg_resetstep();
 	  return;
 	}
     }
-  
+
+
   /* Breakpoint case */
   else
     {
-      name = vm_resolve(world.curjob->current, (elfsh_Addr) *pc - 1, &off);
+      name = vm_resolve(parent, (elfsh_Addr) *pc - bpsz, &off);
       s    = (e2dbg_is_watchpoint(bp) ? "Watch" : "Break");
-      bpsz = elfsh_get_breaksize(world.curjob->current);
 
-#if __DEBUG_THREADS_
-      printf(" [C] Count %u -> 0 for thread ID %u \n", 
-	     e2dbgworld.curthread->count, 
-	     (unsigned int) e2dbgworld.curthread->tid);
+
+#if __DEBUG_BP__
+      printf(" [C] Count set to 1 for thread ID %u \n", 
+	     (unsigned int) e2dbgworld.stoppedthread->tid);
 #endif      
 
       if (off)
 	printf(" [*] %spoint found at " XFMT " <%s + " DFMT "> in thread %u \n\n", 
-	       s, *pc - bpsz, name, off, (unsigned int) e2dbgworld.curthread->tid);
+	       s, *pc - bpsz, name, off, (unsigned int) e2dbgworld.stoppedthread->tid);
       else 
 	printf(" [*] %spoint found at " XFMT " <%s> in thread %u \n\n",   
-	       s, *pc - bpsz, name, (unsigned int) e2dbgworld.curthread->tid);
+	       s, *pc - bpsz, name, (unsigned int) e2dbgworld.stoppedthread->tid);
       
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
-      *(u_char *) ((elfsh_Addr) *pc) = bp->savedinstr[0];
+      memcpy((u_char *) *pc, bp->savedinstr, bpsz);
       elfsh_mprotect(*pc, bpsz, prot);
       e2dbg_setstep();
-      e2dbgworld.curthread->past             = *pc;
-      e2dbgworld.curthread->count            = 0;
-      e2dbgworld.curbp                       = bp;
+      e2dbgworld.stoppedthread->past  = *pc;
+      e2dbgworld.stoppedthread->count = E2DBG_BREAK_HIT;
+      e2dbgworld.curbp                = bp;
+      bp->tid                         = e2dbgworld.stoppedthread->tid;
+
+#if __DEBUG_BP__
+      bpdebug("AFTER RESET BREAK", bp, (elfsh_Addr) *pc + bpsz, parent);
+#endif
+
+#if __DEBUG_BP__
+      fprintf(stderr, " Breakpoint desinstalled at addr %08X \n", *pc);
+#endif
       e2dbg_display(bp->cmd, bp->cmdnbr);
+#if __DEBUG_BP__
+      fprintf(stderr, " e2dbg display ! \n");
+#endif
+
+#if __DEBUG_BP__
+      fprintf(stderr, "PC before entry is addr %08X \n", *pc);
+#endif
+      
+      savedpc = *pc;
       e2dbg_entry(NULL);
+      *pc = savedpc;
+
+#if __DEBUG_BP__
+      fprintf(stderr, " RETURNED FROM HANDLER WITH STEP ENABLED AND PC = %08X\n",
+	      *pc);
+#endif
     }
 }
 
@@ -352,17 +425,23 @@ void			e2dbg_generic_breakpoint(int		signum,
   ucontext_t		*context;
   char			key[15];
   pthread_t		stopped;
-  
+
   /* Do not allow processing of 2 breakpoint at the same time */
   /* We update the current thread information */
   e2dbg_presence_set();
-  e2dbg_mutex_lock(&e2dbgworld.dbgbp);
-  
-#if __DEBUG_MUTEX__
-  e2dbg_output("------------------------------------->\n");
-  e2dbg_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
-  //e2dbg_threads_print();
+  if (!e2dbgworld.curbp || e2dbgworld.curbp->tid != e2dbg_self())
+    {
+      e2dbg_mutex_lock(&e2dbgworld.dbgbp);
+
+#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
+      //e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
+      //cmd_dumpregs();
+      //e2dbg_output("<------------------------------------------------------\n");
+      e2dbg_output("------------------------------------->\n");
+      e2dbg_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
+      e2dbg_threads_print();
 #endif
+    }
   
   /* Get the current thread */
   stopped = e2dbg_self();
@@ -370,58 +449,64 @@ void			e2dbg_generic_breakpoint(int		signum,
   e2dbgworld.curthread = hash_get(&e2dbgworld.threads, key);
   e2dbgworld.stoppedthread = e2dbgworld.curthread;
   
-#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__)
-  printf("\n [*] %s entering generic breakpoint (ID %u) \n",
-	 (e2dbg_presence_get() ? "Debugger" : "Debuggee"), 
+#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
+  fprintf(stderr, "\n [*] Thread entering generic breakpoint (ID %u) \n",
 	 (unsigned int) e2dbgworld.stoppedthread->tid);
   fflush(stdout);
 #endif
-
-  e2dbgworld.curthread->state = E2DBG_THREAD_BREAKING;
+  
+  e2dbgworld.stoppedthread->state = E2DBG_THREAD_BREAKING;
   context = (ucontext_t *) pcontext;
-  e2dbgworld.curthread->context = context;
+  e2dbgworld.stoppedthread->context = context;
 
   /* We first get contexts for all other threads (except debugger) using SIGUSR2 */
   /* Then we stop all threads */
   /* We do this only at the first state (count = 0) of the breakpoint */
-  if (!e2dbgworld.curthread->count)
+  if (!e2dbgworld.stoppedthread->count)
     {
       e2dbg_thread_stopall(SIGUSR2);
-      while (e2dbgworld.threadgotnbr != e2dbgworld.threadsyncnbr)
-	{
-#if __DEBUG_THREADS__
-	  printf(" [*] Waiting for synchronization (we have %u / %u) \n", 
-		 e2dbgworld.threadsyncnbr, e2dbgworld.threadgotnbr);
-	  usleep(500000);
-#endif
-	}
-      e2dbgworld.threadgotnbr = e2dbgworld.threadsyncnbr = 0;
+      usleep(100000);
     }
+#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
+  else
+    fprintf(stderr, " NOT COLLECTING THREADS CONTEXTS (stopped thread %u state count = %u) \n", 
+	    (u_int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
+#endif
 
   /* Call the real breakpoint code */
   e2dbg_do_breakpoint();
-  
-  /* Allow another breakpoint to be processed */
-  if (e2dbg_mutex_unlock(&e2dbgworld.dbgbp) != 0)
-    e2dbg_output(" [*] Debuggee Cannot unlock dbgBP ! \n");
-#if __DEBUG_MUTEX__
-  else
-    {
-      e2dbg_output(" [*] BP MUTEX UNLOCKED [e2dbg_generic_breakpoint] \n");
-      //e2dbg_threads_print();
-      e2dbg_output("<-------------------------------------\n");
-    }
-#endif
 
   /* Continue all threads */
-  if (e2dbgworld.curthread->count == 2)
-    e2dbg_thread_contall();
-#if __DEBUG_THREADS__
+  if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_FINISHED)
+    {
+      e2dbg_thread_contall();
+      e2dbgworld.stoppedthread->count = E2DBG_BREAK_NONE;
+      e2dbgworld.curbp                = NULL;
+  
+      /* Allow another breakpoint to be processed */
+      if (e2dbg_mutex_unlock(&e2dbgworld.dbgbp) != 0)
+	e2dbg_output(" [*] Debuggee Cannot unlock breakpoint mutex ! \n");
+#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
+      else
+	{
+	  e2dbg_output(" [*] BP MUTEX UNLOCKED [e2dbg_generic_breakpoint] \n");
+	  e2dbg_output("<-------------------------------------\n");
+	}
+#endif
+    }
+
+#if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
   else
-    printf("Not continuing because count = %u \n", e2dbgworld.curthread->count);
+    fprintf(stderr, " NOT CONTINUING BECAUSE STOPPED THREAD (%u) STATE COUNT = %u \n", 
+	    (u_int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
 #endif
 
-  e2dbgworld.curthread->state = E2DBG_THREAD_RUNNING;
+  e2dbgworld.stoppedthread->state = E2DBG_THREAD_RUNNING;
   e2dbg_presence_reset();
+  SETSIG;
+
+#if __DEBUG_BP__
+  fprintf(stderr, " RETURNING FROM BP HANDLER \n");
+#endif
 }
 

@@ -5,15 +5,16 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.6 2007-03-15 13:11:48 thor Exp $
+** $Id: libe2dbg.h,v 1.7 2007-03-17 13:05:31 may Exp $
 **
 */
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
+#include <sys/resource.h>
+#include <sys/types.h>
 #include "revm.h"
 #include "aproxy.h"
-#include <sys/resource.h>
 
 #if defined(__FreeBSD__)
   extern char **environ;
@@ -103,25 +104,8 @@
  ac.sa_sigaction   = e2dbg_internal_sigsegv_handler;	\
  signal(SIGINT, SIG_IGN);				\
  signal(SIGTRAP, SIG_IGN);				\
- signal(SIGSTOP, SIG_IGN);				\
  signal(SIGUSR2, SIG_IGN);				\
 }		while (0);
-
-#define		CLRSIG_USR1 do {			\
- struct sigaction ac;					\
-							\
- memset(&ac, 0x00, sizeof(ac));				\
- ac.sa_flags       = SA_SIGINFO;			\
- ac.sa_sigaction   = e2dbg_internal_sigsegv_handler;	\
- signal(SIGINT, SIG_IGN);				\
- signal(SIGTRAP, SIG_IGN);				\
- signal(SIGSTOP, SIG_IGN);				\
- signal(SIGUSR1, SIG_IGN);				\
-}		while (0);
-
-// Etait dans SETSIG
-// ac.sa_sigaction   = e2dbg_sigsegv_handler;      	
-// sigaction(SIGSEGV, &ac, NULL);			        
 
 #define		SETSIG					\
 do							\
@@ -129,28 +113,15 @@ do							\
  struct sigaction ac;					\
 							\
  memset(&ac, 0x00, sizeof(ac));				\
- ac.sa_flags       = SA_SIGINFO | SA_NODEFER ;		\
+ ac.sa_flags       = SA_SIGINFO | SA_ONSTACK;		\
  ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
  sigaction(SIGTRAP, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_sigint_handler;		\
  sigaction(SIGINT, &ac, NULL);				\
- ac.sa_sigaction   = e2dbg_sigstop_handler;		\
- sigaction(SIGSTOP, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_thread_sigusr2;		\
  sigaction(SIGUSR2, &ac, NULL);				\
-} while (0)
-
-#define		SETSIG_USR1				\
-do							\
-{							\
- struct sigaction ac;					\
-							\
- memset(&ac, 0x00, sizeof(ac));				\
- ac.sa_flags       = SA_SIGINFO | SA_NODEFER ;		\
- ac.sa_sigaction   = e2dbg_generic_breakpoint;		\
- sigaction(SIGTRAP, &ac, NULL);				\
- signal(SIGSTOP, SIG_IGN);				\
- signal(SIGUSR2, SIG_IGN);				\
+ ac.sa_sigaction   = e2dbg_sigsegv_handler;      	\
+ sigaction(SIGSEGV, &ac, NULL);			        \
 } while (0)
 
 
@@ -215,6 +186,7 @@ typedef struct		s_e2dbgparams
 typedef struct		s_thread
 {
   pthread_t		tid;			/* Key identification of that thread */
+  char			initial;		/* Is this thread the initial one ? */
 
 #define			E2DBG_THREAD_INIT	0
 #define			E2DBG_THREAD_STARTED	1
@@ -225,18 +197,28 @@ typedef struct		s_thread
 #define			E2DBG_THREAD_RUNNING	6
 #define			E2DBG_THREAD_FINISHED	7
   char			state;			/* Initiliazing, Running, Finished */
-  int			count;			/* State (0->2) when breakpointing */
+
+#define			E2DBG_BREAK_NONE	0
+#define			E2DBG_BREAK_HIT		1
+#define			E2DBG_BREAK_EXEC	2
+#define			E2DBG_BREAK_FINISHED	3
+#define			E2DBG_BREAK_MAX		3
+  int			count;			/* State when breakpointing */
+
   elfsh_Addr		past;			/* Previous opcode instead of break */
   u_char		step;			/* Is this thread beeing stepped ? */
   u_char		trace;			/* Is the thread beeing itraced ? */
   void			*(*entry)(void *);	/* Entry point */
   ucontext_t		*context;		/* Thread context on signal */
+
   time_t		stime;			/* Creation time */
   time_t		etime;			/* Ending time */
+
   elfsh_Addr		tlsaddr;		/* Address of TLS data */
   unsigned int		tlsize;			/* Size of TLS data */
   elfsh_Addr		stackaddr;		/* Address of stack */
   unsigned int		stacksize;		/* Size of stack */
+
 }			e2dbgthread_t;
 
 
@@ -286,7 +268,10 @@ typedef struct		s_e2dbgworld
   /* Synchronization values */
 #define			ELFSH_MUTEX_UNLOCKED	0
 #define			ELFSH_MUTEX_LOCKED	1
-  elfshmutex_t		dbgbp;				/* Dialog between debugger and debuggee */
+  elfshmutex_t		dbgbp;				/* The breakpoint handler mutex */
+  //pthread_barrier_t	barrier;			/* Threads breakpoint barrier */
+
+  /* Exit status */
   int			exited;				/* Debugger exited */
   int			debuggee_exited;		/* Debuggee exited */
   int			(*real_main)(int argc, char **argv, char **aux);
@@ -349,7 +334,7 @@ u_char          e2dbg_presence_get();
 void            e2dbg_presence_set();
 void            e2dbg_presence_reset();
 int             e2dbg_self();
-void		e2dbg_kill(pid_t pid, int sig);
+int		e2dbg_kill(int pid, int sig);
 
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
@@ -358,6 +343,7 @@ int		e2dbg_breakpoint_add(elfsh_Addr addr, u_char flags);
 int		e2dbg_display(char **cmd, u_int nbr);
 int		e2dbg_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name);
+elfsh_Addr	e2dbg_breakpoint_find_addr(char *str);
 
 /* Stack API */
 int		e2dbg_bt();
@@ -393,7 +379,7 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 
 /* Thread API */
 void		e2dbg_threads_print();
-void		e2dbg_thread_stopall(int signum);
+int		e2dbg_thread_stopall(int signum);
 void		e2dbg_thread_contall();
 int		e2dbg_curthread_init();
 int		pthread_attr_getstack(__const pthread_attr_t *__restrict __attr,

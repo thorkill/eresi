@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: breakpoints.c,v 1.3 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -167,21 +167,130 @@ elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
 
 
 
+/* Find the correct location for a breakpoint. Avoid putting breakpoints 
+   on plt entries when possible */
+elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
+{
+  elfsh_Sym	*sym;
+  elfsh_Sym	*bsym;
+  elfshsect_t	*sect;
+  elfshobj_t	*parent;
+  char		**keys;
+  int		keynbr;
+  int		index;
+  elfsh_Addr	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  sym = bsym = NULL;
+
+  /* Sometimes we fix symbols on the disk : we avoid mprotect */
+  /* Only return success early if not a plt symbol */
+  parent = world.curjob->current;
+  sym = elfsh_get_metasym_by_name(parent, str);
+  if (!sym || !sym->st_value)
+    {
+      elfsh_toggle_mode();
+      sym = elfsh_get_metasym_by_name(parent, str);
+      elfsh_toggle_mode();
+      if (sym && sym->st_value)
+	{
+	  sect = elfsh_get_parent_section(parent, sym->st_value, NULL);
+	  if (!elfsh_is_plt(parent, sect))
+	    goto end;
+	}
+    }
+  else
+    {
+      sect = elfsh_get_parent_section(parent, sym->st_value, NULL);
+      if (!elfsh_is_plt(parent, sect))
+	goto end;
+    }
+
+  /* Try to look in other objects */
+  keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      if (strstr(keys[index], E2DBG_ARGV0))
+	continue;
+
+      parent = hash_get(&world.curjob->loaded, keys[index]);
+      bsym = elfsh_get_metasym_by_name(parent, str);
+      if (!bsym || !bsym->st_value)
+	{
+	  elfsh_toggle_mode();
+	  bsym = elfsh_get_metasym_by_name(parent, str);
+	  elfsh_toggle_mode();
+	  if (bsym && bsym->st_value)
+	    {
+	      sect = elfsh_get_parent_section(parent, bsym->st_value, NULL);
+	      if (!elfsh_is_plt(parent, sect))
+		{
+		  sym = bsym;
+		  if (strstr(parent->name, "libc"))
+		    goto end;
+		}
+	      if (!sym)
+		sym = bsym;
+	    }
+	}
+      else
+	{
+	  sect = elfsh_get_parent_section(parent, bsym->st_value, NULL);
+	  if (!elfsh_is_plt(parent, sect))
+	    {
+	      sym = bsym;
+	      if (strstr(parent->name, "libc"))
+		goto end;
+	    }
+	  if (!sym)
+	    sym = bsym;
+	}
+
+#if __DEBUG_BP__
+      printf("BPSym after %-30s = %08X \n", parent->name, (elfsh_Addr) sym);
+#endif
+
+    }
+
+  /* Return error or success, dont forget to free the keys */
+ end:
+  hash_free_keys(keys);
+  if (!sym || !sym->st_value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No symbol by that name in the current file", 0);
+  addr = sym->st_value;
+  if (elfsh_get_objtype(parent->hdr) == ET_DYN)
+    {
+#if __DEBUG_BP__
+      printf(" [*] Adding base addr %08X \n", parent->rhdr.base);
+#endif
+      addr += parent->rhdr.base;
+    }
+  
+#if __DEBUG_BP__
+  printf(" [*] Will set breakpoint on %08X (parent = %s) \n", addr, parent->name);
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
+}
+
+
+
+
 /* Breakpoint command */
 int		cmd_bp()
 {
   char		*str;
   int		ret;
   elfsh_Addr	addr;
-  elfsh_Sym	*sym;
   char		logbuf[BUFSIZ];
   int		idx;
   int		index;
-  int		idx2 = 0;
   elfsh_SAddr	off = 0;
   char		*name;
-  hashent_t	*actual;
   elfshbp_t	*cur;
+  char		**keys;
+  int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -189,100 +298,66 @@ int		cmd_bp()
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
   str = vm_lookup_string(world.curjob->curcmd->param[0]);
 
-  /* List breakpoints */
-  if (idx == 0)
-    {  
-      e2dbg_output(" .:: Breakpoints & Watchpoints ::.\n\n");	      
-      for (index = 0; index < e2dbgworld.bp.size; index++)
-	{
-	  for (actual = e2dbgworld.bp.ent + index; 
-	       actual != NULL && actual->key != NULL; 
-	       actual = actual->next)
-	    {
-	      idx2++;
-	      cur = ((elfshbp_t *) actual->data);
-	      name = vm_resolve(world.curjob->current, 
-				(elfsh_Addr) cur->addr, &off);
-	      
-	      if (off)
-		snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + " UFMT ">\n", 
-			 (e2dbg_is_watchpoint(cur) ? 'W' : 'B'),
-			 cur->id, cur->addr, name, off);
-	      else
-		snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s>\n", 
-			 (e2dbg_is_watchpoint(cur) ? 'W' : 'B'),
-			 cur->id, cur->addr, name);
-		  
-	      e2dbg_output(logbuf);
-	    }
-	}
-
-      if (!idx2)
-	e2dbg_output(" [*] No breakpoints\n");
-      
-      e2dbg_output("\n");
-    }
-
-  /* Supply a new breakpoint */
-  else if (idx == 1)
+  /* Select subcommand */
+  switch (idx)
     {
+      
+      /* List breakpoints */
+    case 0:
+      e2dbg_output(" .:: Breakpoints & Watchpoints ::.\n\n");	      
+      keys = hash_get_keys(&e2dbgworld.bp, &keynbr);
+      for (index = 0; index < keynbr; index++)
+	{
+	  cur = hash_get(&e2dbgworld.bp, keys[index]);
+	  name = vm_resolve(world.curjob->current, 
+			    (elfsh_Addr) cur->addr, &off);
+	  if (off)
+	    snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + " UFMT ">\n", 
+		     (e2dbg_is_watchpoint(cur) ? 'W' : 'B'),
+		     cur->id, cur->addr, name, off);
+	  else
+	    snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s>\n", 
+		     (e2dbg_is_watchpoint(cur) ? 'W' : 'B'),
+		     cur->id, cur->addr, name);
+	  e2dbg_output(logbuf);
+	}
+      hash_free_keys(keys);
+      if (!index)
+	e2dbg_output(" [*] No breakpoints\n");
+      e2dbg_output("\n");
+      break;
+      
+      /* Supply a new breakpoint */
+    case 1:
       if (!elfsh_is_debug_mode())
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Not in dynamic or debugger mode", -1);
-  
+		     "Not in dynamic or debugger mode", -1);
       if (!str || !(*str))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid argument", -1);
-
+		     "Invalid argument", -1);
+      
       /* Break on a supplied virtual address */
       if (IS_VADDR(str))
 	{
 	  if (sscanf(str + 2, AFMT, &addr) != 1)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Invalid virtual address requested", (-1));
+			 "Invalid virtual address requested", (-1));
 	}
-
+      
       /* Resolve first a function name */
       else
 	{
-	  sym = elfsh_get_metasym_by_name(world.curjob->current, str);
-
-	  /* Sometimes we fix symbols on the disk */
-	  /* We avoid a mprotect */
-	  if (!sym || !sym->st_value)
-	    {
-	      elfsh_toggle_mode();
-	      sym = elfsh_get_metasym_by_name(world.curjob->current, str);
-	      elfsh_toggle_mode();
-	    }
-	  
-	  if (!sym)
+	  addr = e2dbg_breakpoint_find_addr(str);
+	  if (addr == 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "No symbol by that name in the current file", (-1));
-	  if (!sym->st_value)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Requested symbol address unknown", (-1));
-
-	  addr = sym->st_value;
-	  if (elfsh_get_objtype(world.curjob->current->hdr) == ET_DYN)
-	    {
-#if __DEBUG_BP__
-	      printf(" [*] Adding base addr %08X \n", world.curjob->current->rhdr.base);
-#endif
-	      addr += world.curjob->current->rhdr.base;
-	    }
-
-#if __DEBUG_BP__
-	  printf(" [*] Set breakpoint on %08X \n", addr);
-#endif
-
+			 "Requested symbol address unknown", -1);
 	}
-
+      
       /* Add the breakpoint */
       ret = e2dbg_breakpoint_add(addr, watchflag);
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Breakpoint insertion failed\n", (-1));
+		     "Breakpoint insertion failed\n", (-1));
       if (ret >= 0)
 	{
 	  name = vm_resolve(world.curjob->current, addr, &off);
@@ -296,11 +371,13 @@ int		cmd_bp()
 		     (watchflag ? "Watch" : "Break"), name, off, addr);
 	  e2dbg_output(logbuf);
 	}
-    } 
-  else 
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Wrong arg number", (-1));
-  
+      break;
+
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Wrong arg number", (-1));
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 

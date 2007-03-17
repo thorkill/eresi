@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+ * $Id: ia32.c,v 1.9 2007-03-17 13:05:31 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -222,7 +222,7 @@ int			elfsh_break_ia32(elfshobj_t *f,
   printf("[DEBUG_BREAKPOINTS:ia32] bp->addr %08X \n", bp->addr);
 #endif
 
-  bp->savedinstr[0] = (*(char *) bp->addr);
+  bp->savedinstr[0] = *(u_char *) bp->addr;
   prot = elfsh_munprotect(f, bp->addr, 4);
   if (prot == (-1))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
@@ -230,7 +230,7 @@ int			elfsh_break_ia32(elfshobj_t *f,
 #if __DEBUG_BREAKPOINTS__
   printf("[DEBUG_BREAKPOINTS:ia32] after munprotect\n");
 #endif
-  (*(char *) bp->addr) = 0xCC;
+  *(u_char *) bp->addr = 0xCC;
 #if __DEBUG_BREAKPOINTS__
   printf("[DEBUG_BREAKPOINTS:ia32] after write\n");
 #endif

@@ -4,7 +4,7 @@
 ** The continue command in e2dbg
 **
 **
-** $Id: continue.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: continue.c,v 1.5 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -12,7 +12,7 @@
 /* (re)start a process in e2dbg */
 void		e2dbg_start_proc()
 {
-  if (e2dbgworld.curthread && e2dbgworld.curthread->count == 2)
+  if (e2dbgworld.curthread && e2dbgworld.curthread->count == E2DBG_BREAK_FINISHED)
     e2dbg_thread_contall();
 
 #if __DEBUG_THREADS_

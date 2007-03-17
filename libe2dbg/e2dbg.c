@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.6 2007-03-14 22:44:59 may Exp $
+** $Id: e2dbg.c,v 1.7 2007-03-17 13:05:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -20,11 +20,14 @@ e2dbgworld_t	e2dbgworld;
 /* Only useful when debugger takes control by .ctors */
 void		e2dbg_init(void)
 {
-  write(1, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
+#if __DEBUG_E2DBG__
+  write(2, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
+#endif
   e2dbg_dlsym_init();
   e2dbg_presence_reset();
-  SETSIG_USR1; 
-  write(1, " [D] Finished e2dbg ctors \n", 26);
+#if __DEBUG_E2DBG__
+  write(2, " [D] Finished e2dbg ctors \n", 26);
+#endif
 }
 
 
@@ -36,16 +39,16 @@ int		e2dbg_entry(e2dbgparams_t *params)
   int		ret;
 
 #if __DEBUG_E2DBG__
-  write(1, "[e2dbg_entry] CHECKPOINT 0\n", 27);
+  write(2, "[e2dbg_entry] CHECKPOINT 0\n", 27);
 #endif
 
   /* Initial settings */
   ac = (params ? params->ac : 0);
   av = (params ? params->av : NULL);
-  SETSIG_USR1;
+  CLRSIG;
 
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] CHECKPOINT 1\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 1\n");
 #endif
 
   /* We have a debugger script pending, continue it */
@@ -57,7 +60,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
     }
 
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] CHECKPOINT 2\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 2\n");
 #endif  
 
   /* If the breakpoint is a watchpoint, do not call the debugger */
@@ -66,14 +69,14 @@ int		e2dbg_entry(e2dbgparams_t *params)
     return (0);
 
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] CHECKPOINT 3\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 3\n");
 #endif
 
   if (av && ac)
     vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
   
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] CHECKPOINT 4\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 4\n");
 #endif
 
   /* Only on first execution */
@@ -101,10 +104,10 @@ int		e2dbg_entry(e2dbgparams_t *params)
       vm_addcmd(CMD_RPHT     , (void *) cmd_rpht     , vm_getregxoption, 1, HLP_RPHT);
       vm_addcmd(CMD_THREADS  , (void *) cmd_threads  , vm_getvarparams, 1, HLP_THREADS);
       vm_addcmd(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
-    }
 
-  if (ac == 2 && (!e2dbgworld.curthread || !e2dbgworld.curthread->step))
-    vm_print_banner(av[1]);
+      if (!e2dbgworld.curthread || !e2dbgworld.curthread->step)
+	vm_print_banner(av[1]);
+    }
 
   if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && e2dbg_setup(av[1]) < 0)
     {
@@ -114,11 +117,11 @@ int		e2dbg_entry(e2dbgparams_t *params)
   vm_doswitch(1);
 
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_entry] CHECKPOINT 5\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 5\n");
 #endif
 
   ret = vm_run(ac, av);
-  
+  SETSIG;
   return (ret);
 }
 
@@ -130,7 +133,7 @@ int			e2dbg_setup(char *name)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
-  printf("[e2dbg_setup] Starting \n");
+  fprintf(stderr, "[e2dbg_setup] Starting \n");
 #endif
 
   e2dbg_setup_hooks();
