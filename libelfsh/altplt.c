@@ -7,7 +7,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id: altplt.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id: altplt.c,v 1.7 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -107,6 +107,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   char		*name;
   u_char	ostype;
   elfsh_Addr	diff;
+  u_int		extplt_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,7 +223,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   if (FILE_IS_MIPS(file) || FILE_IS_ALPHA64(file) || FILE_IS_IA32(file))
     {
       sz = (FILE_IS_MIPS(file) ? got->shdr->sh_size     : 
-	    FILE_IS_IA32(file) ? got->shdr->sh_size * 2 : 
+	    FILE_IS_IA32(file) ? got->shdr->sh_size * 4 : 
 	    plt->shdr->sh_size / elfsh_get_pltentsz(file) * sizeof(elfsh_Addr));
 
       altgot = elfsh_create_section(ELFSH_SECTION_NAME_ALTGOT);
@@ -251,9 +252,10 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   /* Insert EXTPLT in order to be able to resolve non present symbols */
   if (FILE_IS_IA32(file))
     {
+      extplt_size = plt->shdr->sh_size;
       extplt = elfsh_create_section(ELFSH_SECTION_NAME_EXTPLT);
       hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC | SHF_EXECINSTR,
-			      0, 0, plt->shdr->sh_size, 0, 0, 0, 0);
+			      0, 0, extplt_size, 0, 0, 0, 0);
       prologdata = alloca(plt->shdr->sh_size);
       memcpy(prologdata, elfsh_get_raw(plt), plt->shdr->sh_size);
 

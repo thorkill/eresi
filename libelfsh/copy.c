@@ -4,7 +4,7 @@
 ** Started on  Tue Mar  4 01:15:23 2003 mayhem
 ** Last update Tue Mar 11 21:26:07 2003 mayhem
 **
-** $Id: copy.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: copy.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -59,6 +59,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   copy->pending = file->pending;
   copy->linkmap = file->linkmap;
   copy->rhdr.base = file->rhdr.base;
+  copy->original = file;
   
   /* Arrange sectlist. Partially ripped from elfsh_add_section() . */
   for (range = 0, cur = file->sectlist; cur; cur = cur->next, range++)

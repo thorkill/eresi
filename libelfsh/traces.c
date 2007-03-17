@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.7 2007-03-07 20:56:53 mxatone Exp $
+** $Id: traces.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -150,9 +150,9 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 		    {
 		      start = z == 0 ? "" : ", ";
 
-		      snprintf(bufex, BUFSIZ - 1, "%schar a%d[%d]", 
-			       start, z, 
-			       ret_trace->arguments[z].size);
+		      snprintf(bufex, BUFSIZ - 1, "%sARG(%d) a%d", 
+			       start, 
+			       ret_trace->arguments[z].size, z);
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		    }
 		}
@@ -160,7 +160,9 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      snprintf(bufex, BUFSIZ - 1, 
 		       ")\n{\n"
 		       "\tint ret;\n\tunsigned char readable, isstring;\n"
-		       "\tprintf(\"%%s + %s(\", pad_print(1));\n", 
+		       "\tgettrace_time();\n"
+		       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %s(\", pad_print(1));\n"
+		       "\twrite(STDERR, logbuf, strlen(logbuf)+1);",
 		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
@@ -173,9 +175,9 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 		      
 		      snprintf(bufex, BUFSIZ - 1, 
 			       "\tisstring = 0;\n"
-			       "\treadable = check_read_ptr((void *)a%d, MAX_CHECK_CHAR+1);\n"
-			       "\tif (readable)\n\t\tisstring = is_string((void *)a%d);\n"
-			       "\tprintf(\"%s", z, z, start);
+			       "\treadable = check_read_ptr((void *)a%d.ptr, MAX_CHECK_CHAR+1);\n"
+			       "\tif (readable)\n\t\tisstring = is_string((void *)a%d.ptr);\n"
+			       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%s", z, z, start);
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		      
 		      if (ret_trace->type == ELFSH_ARG_TYPE_BASED)
@@ -189,17 +191,21 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 		      snprintf(bufex, BUFSIZ - 1, 
 			       "%%s0x%%x%%s%%s%%s\", "
 			       "readable ? \"*\" : \"\", "
-			       "a%d, "
+			       "(void*)a%d.ptr, "
 			       "isstring ? \" \\\"\" : \"\", "
-			       "(isstring ? a%d : (readable ? "
-			       "hex_to_str((void *)a%d) : \"\")), "
-			       "isstring ? \"\\\"\" : \"\");\n", z, z, z);
+			       "(isstring ? (char*)a%d.ptr : (readable ? "
+			       "hex_to_str((void *)a%d.ptr) : \"\")), "
+			       "isstring ? \"\\\"\" : \"\");\n"
+			       "\twrite(STDERR, logbuf, strlen(logbuf)+1);", 
+			       z, z, z);
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		    }
 		}
 	      
 	      snprintf(bufex, BUFSIZ - 1, 
-		       "\tprintf(\")\\n\");\n\tret = old_%s(", ret_trace->funcname);
+		       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
+		       "\twrite(STDERR, logbuf, strlen(logbuf)+1);"
+		       "\tret = old_%s(", ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
 	      /* Send arguments */
@@ -216,7 +222,10 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 
 	      snprintf(bufex, BUFSIZ - 1,
 		       ");\n"
-		       "\tprintf(\"%%s - %s = %%x\\n\", pad_print(0), ret);\n"
+		       "\tgettrace_time();\n"
+		       "\tsnprintf(logbuf, LOGBUFSIZ -1, \"%%s - %s = %%x\\n\", "
+		       "pad_print(0), ret);\n"
+		       "\twrite(STDERR, logbuf, strlen(logbuf));"
 		       "\treturn ret;\n}\n",
 		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
@@ -303,13 +312,24 @@ int			elfsh_traces_save(elfshobj_t *file)
 
   // Write basic stuff, include headers and
   //   pad functions (to have a tree like form)
-  snprintf(buf, BUFSIZ, 
+  snprintf(buf, BUFSIZ - 1, 
 	   "#include <stdio.h>\n"
 	   "#include <setjmp.h>\n"
-	   "#include <signal.h>\n\n"
+	   "#include <signal.h>\n"
+	   "#include <string.h>\n"
+	   "#include <stdlib.h>\n"
+	   "#include <unistd.h>\n"
+	   "#include <sys/time.h>\n"
+	   "#include <sys/resource.h>\n\n"
 	   "#define MAX_CHECK_CHAR 3\n"
 	   "#define PRINTABLE(c) (c >= 32 && c <= 126)\n"
-	   "jmp_buf jBuf;\n\n"
+	   "#define STDERR 2\n"
+	   "#define ARG(_size) trace_arg_##_size\n"
+	   "jmp_buf jBuf;\n"
+	   "#define LOGBUFSIZ 256\n"
+	   "char logbuf[LOGBUFSIZ];\n"
+	   "suseconds_t msec;\n"
+	   "time_t sec;\n"
 	   "unsigned char is_string(const void *ptr)\n{\n"
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
@@ -341,7 +361,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
 	   "\tsnprintf(tmpbuf, 255, \" = 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
-	   "cptr[0], cptr[1], cptr[2], cptr[3]);\n"
+	   "cptr[0] & 0xFF, cptr[1] & 0xFF, cptr[2] & 0xFF, cptr[3] & 0xFF);\n"
 	   "\treturn tmpbuf;\n"
 	   "}\n\n"
 	   "char pad_str[64];\n"
@@ -353,8 +373,46 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\t\tpad_str[i] = ' ';\n"
 	   "\t\tpad_str[i] = 0;\n"
 	   "\tif (inc == 1)\n\t\tpad_count += 2;\n"
-	   "\treturn pad_str;\n}\n");
+	   "\treturn pad_str;\n}\n\n"
+	   "int setup = 0;\n"
+	   "void gettrace_time()\n{\n"
+	   "\tstruct rusage use;\n"
+	   "\tdouble difftime;\n"
+	   "\tstruct timeval now;\n"
+	   "\tgettimeofday(&now, NULL);\n"
+	   "\tif (setup == 0)\n\t{\n"
+	   "\t\t\n"
+	   "\t\tgetrusage(RUSAGE_SELF, &use);\n"
+	   "\t\tmsec = now.tv_usec - (use.ru_utime.tv_usec + use.ru_stime.tv_usec);\n"
+	   "\t\tsec = now.tv_sec - (use.ru_utime.tv_sec + use.ru_stime.tv_sec);\n"
+	   "\t\tsetup = 1;\n"
+	   "\t}\n"
+	   "\tdifftime = (now.tv_sec - sec) + ((double) (now.tv_usec - msec)) * 0.000001;\n"
+	   "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%%0.4f \", difftime);\n"
+	   "\twrite(STDERR, logbuf, strlen(logbuf)+1);\n"
+	   "}\n");
   fwrite(buf, strlen(buf), sizeof(char), fp);
+
+  /* Setup structures */
+  for (index = sizeof(elfsh_Addr); index < 255; index++)
+    {
+      if (index > sizeof(elfsh_Addr))
+	{
+	  snprintf(buf, BUFSIZ - 1, 
+		   "typedef struct trace_s_%1$d { void *ptr; char elm[%2$d]; } trace_arg_%1$d;\n",
+		   index, index - sizeof(elfsh_Addr));
+	}
+      else
+	{
+	  snprintf(buf, BUFSIZ - 1, 
+		   "\ntypedef struct trace_s_%1$d { void *ptr; } trace_arg_%1$d;\n",
+		   index);
+	}
+      fwrite(buf, strlen(buf), sizeof(char), fp);
+    }
+  
+  /* Add a new line */
+  fwrite("\n", 1, sizeof(char), fp);
 
   /* Iterate */
   for (index = 0; index < keynbr; index++)

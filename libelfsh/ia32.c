@@ -4,14 +4,13 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.9 2007-03-17 13:05:31 may Exp $
+ * $Id: ia32.c,v 1.10 2007-03-17 17:26:06 mxatone Exp $
  *
  */
 #include "libelfsh.h"
 #include "libasm.h"
 
 static asm_processor	proc;
-
 
 /**
  * Start of hook code for EXTPLT 
@@ -27,8 +26,24 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
   elfsh_Rel	r;
   char		*ent;
   u_int		relentsz;
+  elfshsect_t	*plt;
+  elfshsect_t	*got;
+  elfsh_Addr	diff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  plt = elfsh_get_plt(extplt->parent, NULL);
+
+  /* Do we need to encode extplt entry ? */
+  if (plt && extplt->curend >= plt->shdr->sh_size)
+    {
+      got = elfsh_get_gotsct(extplt->parent);
+      if (got)
+	{
+	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
+	  elfsh_reencode_pltentry_ia32(extplt->parent, extplt, diff, extplt->curend);
+	}
+    }
 
   /* 6 is the size of the first instruction of a .plt entry on x86 */
   gotent = extplt->shdr->sh_addr + extplt->curend + 6;
@@ -64,7 +79,6 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 
 
 
-
 /**
  * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got
  * Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp) 
@@ -77,7 +91,11 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
   char		*pltent;
   uint32_t	*got;
   elfshsect_t	*relplt;
+  elfshsect_t	*realplt;
   u_int		resoff;
+  int		entsz;
+  u_int32_t	*align;
+  u_int		is_extplt;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -86,7 +104,33 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
 		      "Invalid NULL parameter", -1);
 
   /* 12 is the size of 3 reserved PLT entries on x86 */
-  resoff = (!strcmp(plt->name, ELFSH_SECTION_NAME_EXTPLT) ? 12 : 0);
+  is_extplt = !strcmp(plt->name, ELFSH_SECTION_NAME_EXTPLT);
+
+  resoff = (is_extplt ? 12 : 0);
+  
+  if (is_extplt)
+    {
+      realplt = elfsh_get_plt(file, NULL);
+
+      /* Do we need to copy previous element ? */
+      if (off >= realplt->shdr->sh_size)
+	{
+	  entsz = elfsh_get_pltentsz(file);
+
+	  /* We need at least one element */
+	  if (off < entsz + elfsh_get_first_pltentsz(file))
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Cannot find a previous extplt element", -1);
+	  
+	  memcpy(plt->data + off, plt->data + off - entsz, entsz);
+	  
+	  pltent = plt->data + off + 12;
+	  align = (uint32_t *) pltent;
+	  *align -= 16;
+
+	  diff = resoff + 4;
+	}
+    }
 
   /* Add ALTGOT addr difference to the GOT offset encoded in PLT */
   pltent = plt->data + off + 2;
@@ -94,7 +138,7 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
   *got += diff - resoff;
 
   /* If thats EXTPLT we are reencoding, shift the pushed reloc offsets as well */
-  if (!strcmp(plt->name, ELFSH_SECTION_NAME_EXTPLT))
+  if (is_extplt)
     {
       relplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELPLT, 0, 0, 0);
       if (relplt == NULL)
@@ -419,7 +463,7 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
   char	     *symname;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-   
+
   switch (elfsh_get_reltype(cur))
     {
 
@@ -726,7 +770,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 			  args->value = 0;
 			}
 
-		      elfsh_largs_add(args, i.op1.imm + 20);
+		      elfsh_largs_add(args, i.op1.imm + 16);
 		      reserv = 1;
 		    }
 		}
@@ -885,56 +929,4 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
     }
   
    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
-}
-
-/**
- * Find arguments from a call 
- */
-int 		elfsh_args_count_forward(elfshobj_t *obj, u_int func, u_int call)
-{
-  u_int		current;
-  u_int		ret;
-  u_int		addr = 0;
-  short		safeCheck = 0;
-  short		foundBreak = 0;
-  asm_instr	i;
-  u_int		diff = func - call;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Check if we found the call just after saved registers */
-  for (current = func; current < diff; current += ret)
-    {
-      ret = asm_read_instr(&i, (u_char *) current, diff - current, &proc);
-      
-      /* Wrong disassemble */
-      if (!ret)
-	break; // Return an error ? We should be not for the moment
-      
-      /* Those instruction make our system much more easier ! */
-      if (i.type == ASM_TYPE_IMPBRANCH ||
-	  i.type == ASM_TYPE_CONDBRANCH ||
-	  i.type == ASM_TYPE_CALLPROC)
-	{
-	  foundBreak = 1;
-	  
-	  /* Save last separate addr */
-	  addr = current;
-	}
-    }
-  
-  /* We "directly" call our function without any difference from register save */
-  if (!foundBreak)
-    safeCheck = 1;
-  
-  /* saveCheck found last save register push */
-  if (safeCheck)
-    {
-      /* TODO: check */
-    }
-
-  /* TODO: add a check on addr if needed ! */
-
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

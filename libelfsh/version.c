@@ -6,7 +6,7 @@
 ** Last update Sep 27 2005 mxatone
 ** 
 **
-** $Id: version.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: version.c,v 1.6 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,72 @@
 static int version_parent = -1;
 static int version_need = -1;
 
+/**
+ * Check an equivalence between a version def entry and a version need entry on 
+ * two different files
+ * @param file file for version need section
+ * @param deffile file for version def section
+ * @param need version need entry
+ * @param def version def entry
+ * @return need auxiliary entry
+ */
+elfsh_Vernaux		*elfsh_check_defneed_eq(elfshobj_t *file, elfshobj_t *deffile,
+					       elfsh_Verneed *need, elfsh_Verdef *def)
+{
+  elfsh_Vernaux		*needaux;
+  elfsh_Verdaux		*defaux;
+  void			*data;
+  void			*defdata;
+  u_int			offset;
+  u_int			defoffset;
+  char			*needname;
+  char			*defname;
+  u_int			index, defndx;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !deffile || !need || !def)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", NULL);
+
+  data = need;
+  for (index = 0, offset = need->vn_aux; 
+       index < need->vn_cnt; 
+       index++, offset += needaux->vna_next)
+    {
+      needaux = data + offset;
+
+      /* We find a first correc entry */
+      if (needaux->vna_hash == def->vd_hash)
+	{
+	  needname = elfsh_get_vernauxname(file, needaux);
+
+	  /* The definition as multiple entry, we need a correct one */
+	  defdata = def;
+	  for (defndx = 0, defoffset = def->vd_aux; 
+	       defndx < def->vd_cnt; 
+	       defndx++, defoffset += defaux->vda_next)
+	    {
+	      defaux = defdata + defoffset;
+
+	      defname = elfsh_get_verdauxname(deffile, defaux);
+
+	      /* Check the name */
+	      if (!strcmp(needname, defname))
+		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, needaux);
+
+	      if (defaux->vda_next == 0)
+		break;
+	    }
+	}
+
+      if (needaux->vna_next == 0)
+	break;
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Cannot find equivalent entries", NULL);
+}
 
 /**
  * Return a Version need entry value for aux (aux) 
@@ -335,7 +401,7 @@ int			elfsh_set_verneed_ndx(elfsh_Vernaux *naux, elfsh_Half val)
 }
 
 /**
- * Get Version def by name 
+ * Get Version need by name 
  */
 elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 {
@@ -938,11 +1004,13 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
 	  pneed->aux = tableaux;
 	  hash_add(t, strdup(s_temp), (void*) pneed);
  
+	  if (tableaux->vna_next == 0)
+	    break;
 
 	  auxset += tableaux->vna_next;
 	}
       
-      if (table->vn_next == NULL)
+      if (table->vn_next == 0)
 	break;
 
       offset += table->vn_next;
@@ -1105,11 +1173,43 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_GNUVERSYM]->shdr->sh_size;
   nbr /= sizeof(elfsh_Half);
 
-  *num = nbr;
+  if (num)
+    *num = nbr;
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERSYM]);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+}
+
+elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, int *num)
+{
+  elfshsect_t		*sect;
+  int			nbr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+
+  sect = elfsh_get_section_by_type(file, SHT_GNU_versym, range, NULL, NULL, NULL);
+  
+  if (sect == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to find Symbol Version table", NULL);
+
+  if (sect->data == NULL)
+    {
+      sect->data = elfsh_load_section(file, sect->shdr);
+      if (sect->data == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to find data for Symbol Version table", 
+		     NULL); 
+    }
+  
+  nbr = sect->shdr->sh_size;
+  nbr /= sizeof(elfsh_Half);
+
+  if (num)
+    *num = nbr;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sect);
 }
 
 /**
@@ -1149,7 +1249,8 @@ void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_GNUVERNEED]->shdr->sh_size;
   nbr /= sizeof(elfsh_Verneed);
 
-  *num = nbr;
+  if (num)
+    *num = nbr;
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERNEED]);
 

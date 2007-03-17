@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: relinject.c,v 1.10 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -50,7 +50,6 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  
   /* If this symbol is a old_ one, accept it to be relocated in 2nd stage */
   /* This is because function redirection may be done after ET_REL injection */
   if (strstr(name, "old_") && stage == ELFSH_RELOC_STAGE1)
@@ -234,7 +233,6 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
       if (elfsh_get_symbol_bind(sym) != STB_LOCAL && /* patch BEOS */
 	  (symtype == STT_NOTYPE || elfsh_get_symbol_link(sym) == SHN_COMMON))
 	{
-
 	  if (stage == ELFSH_RELOC_STAGE2 && !strstr(name, "old_"))
 	    continue;
 
@@ -321,7 +319,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
       /* Perform relocation */
       if (elfsh_relocate_entry(new, cur, dword, addr, reltab) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to relocate entry", -1);
+		     "Unable to relocate entry", -1);
 
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -462,7 +460,6 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
   sym = elfsh_get_symtab(rel, &symnbr);
   for (index = 0; index < symnbr; index++)
     {
-
       type = elfsh_get_symbol_type(sym + index);
 
       /* Avoid non-injectable symbols */
@@ -541,7 +538,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   u_int		index;
   elfshsect_t	*sect;
   elfshsect_t	*hooks;
-  int		ret;
+  int		ret = 0;
   static int	depth = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -651,7 +648,6 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   printf("[DEBUG_RELADD] Entering intermediate symbol injection loop\n");
 #endif
 
-
   /* Intermediate pass 2 : Inject ET_REL symbol table into host file */
   if (elfsh_fuse_etrel_symtab(file, rel) < 0)
     {
@@ -659,7 +655,6 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to fuze symbol tables", -1);
     }
-
 
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Entering final relocation loop\n");

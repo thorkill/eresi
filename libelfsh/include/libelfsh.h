@@ -4,7 +4,7 @@
  ** Started on  Mon Jul 23 15:47:12 2001 mayhem
  **
 **
-** $Id: libelfsh.h,v 1.43 2007-03-17 13:05:31 may Exp $
+** $Id: libelfsh.h,v 1.44 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 
@@ -52,7 +52,7 @@
 #define		__DEBUG_REDIR__		       0
 #define		__DEBUG_RUNTIME__	       0
 #define		__DEBUG_CFLOW__		       0
-#define		__DEBUG_STATIC__	       1
+#define		__DEBUG_STATIC__	       0
 #define		__DEBUG_BREAKPOINTS__	       0
 #define		__DEBUG_ETRELintoETDYN__       0
 #define		__DEBUG_EXTPLT__	       0
@@ -133,6 +133,7 @@
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
 #define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
+#define		ELFSH_SECTION_NAME_ALTVERSYM	".elfsh.version"
 #define		ELFSH_SECTION_NAME_EDFMT_BLOCKS	".edfmt.blocks"
 #define		ELFSH_SECTION_NAME_EDFMT_BCONTROL	".edfmt.bcontrol"
 #define		ELFSH_SECTION_NAME_EDFMT_FUNCTIONS	".edfmt.function"
@@ -231,6 +232,7 @@
 #define 	ELFSH_SECTION_DW2_STR		43
 #define 	ELFSH_SECTION_DW2_MACINFO	44
 #define 	ELFSH_SECTION_DW2_LOC		45
+#define 	ELFSH_SECTION_ALTVERSYM		46
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
 
@@ -280,7 +282,6 @@
 #define		ELFSH_TRACE_MAX_ARGS		30
 
 #define		STT_BLOCK			(STT_NUM)
-
 
 #define	DUMPABLE(sym)	 (elfsh_get_symbol_type(sym) == STT_FUNC  || \
                          elfsh_get_symbol_type(sym) == STT_OBJECT || \
@@ -756,6 +757,7 @@ struct		 s_obj
   char		 buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
   const char	 *error;		/* Last error string */
   struct s_obj	 *next;			/* The list is simply linked */
+  struct s_obj	 *original;		/* Original file (if its a copy) */
 
   hash_t	 redir_hash;		/* Redirections hash table */
   elfshlinkmap_t *linkmap;		/* Linkmap */
@@ -1116,6 +1118,8 @@ int           elfsh_get_hashnbucket(const void *d);
 void          *elfsh_get_hashtable(elfshobj_t *file, int *n);
 int	      elfsh_get_symbol_hash(char *sym_name);
 int	      elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *sym_name);
+elfshobj_t    *elfsh_hash_getfile_def(elfshobj_t *file, char *name);
+elfsh_Verdef  *elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, int size);
 
 /* got.c */
 elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num);
@@ -1199,6 +1203,7 @@ int		elfsh_insert_runtime_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shd
 
 
 /* version.c */
+elfsh_Vernaux *elfsh_check_defneed_eq(elfshobj_t *file, elfshobj_t *deffile, elfsh_Verneed *need, elfsh_Verdef *def);
 elfsh_Word    elfsh_get_verneed_aux(elfsh_Verneed *n);
 int           elfsh_set_verneed_aux(elfsh_Verneed *n, elfsh_Word v);
 elfsh_Half    elfsh_get_verneed_cnt(elfsh_Verneed *n);
@@ -1240,6 +1245,7 @@ int           elfsh_get_verdauxnamelist(elfshobj_t *f, hashdef_t *hdef, char **n
 int           elfsh_load_needtable(hash_t *t, void *p, u_int s);
 int           elfsh_load_deftable(hash_t *t, void *p, u_int s);
 void          *elfsh_get_versymtab(elfshobj_t *f, int *n);
+elfshsect_t   *elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, int *num);
 void          *elfsh_get_verneedtab(elfshobj_t *f, int *n);
 void          *elfsh_get_verdeftab(elfshobj_t *f, int *n);
 elfshsect_t   *elfsh_get_verdeftab_by_idx(elfshobj_t *f, elfsh_Addr r, int *n);
@@ -1321,6 +1327,7 @@ int		elfsh_reencode_first_pltentry(elfshobj_t *file, elfshsect_t *plt,
                                     uint32_t diff);
 
 /* extplt.c */
+int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *name);
 int		elfsh_extplt_mirror_sections(elfshobj_t *file);
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
 

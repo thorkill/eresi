@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: hash.c,v 1.5 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -441,6 +441,115 @@ int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No Hash found for the symbol",  0);
+}
+
+/**
+ * Pick up a version definition entry from a name
+ * @param file host file
+ * @param name function name
+ * @param defdata version def section data pointer
+ * @param size section size
+ * @return a pointer on version definition entry
+ */
+elfsh_Verdef  	*elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, int size)
+{
+  elfsh_Verdef	*table;
+  elfsh_Half	*sym;
+  u_int		offset;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", NULL);
+
+  /* We can get elements if we do not already have them */
+  if (defdata == NULL)
+    {
+      defdata = elfsh_get_verdeftab(file, &size);
+
+      if (defdata == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find version def section", NULL);
+    }
+
+  /* Get version symbol to check that is a def and not a need*/
+  sym = elfsh_get_versym_by_name(file, name);
+
+  if (sym)
+    {
+      /* Search on the verdef table */
+      for (offset = 0; offset < size; offset += table->vd_next)
+	{
+	  table = defdata + offset;
+
+	  /* This symbol was a definition */
+	  if (table->vd_ndx == *sym)
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, table);
+
+	  if (table->vd_next == 0)
+	    break;
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+}
+
+/**
+ * Research a function on dependences file using hash version
+ * @param file target file
+ * @param name function name
+ * @return file object
+ */
+elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
+{
+  char		**keys;
+  u_int		index;
+  int		keynbr;
+  elfshobj_t	*getfile;
+  void		*defdata;
+  int		defsize;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* We need original file to use child_hash */
+  if (file->original)
+    file = file->original;
+
+  /* Check if a version def section exist else we do nothing */
+  defdata = elfsh_get_verdeftab(file, &defsize);
+
+  if (defdata)
+    {
+      /* Try on the current file */
+      if (elfsh_get_dynsymbol_by_hash(file, name) > 0
+	  && elfsh_hash_getdef(file, name, defdata, defsize))
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
+    }
+
+  if (hash_size(&file->child_hash))
+    {
+      /* Search on his childs */
+      keys = hash_get_keys(&file->child_hash, &keynbr);
+      if (keys)
+	{
+	  for (index = 0; index < keynbr; index++)
+	    {
+	      getfile = (elfshobj_t *) hash_get(&file->child_hash, keys[index]);
+	      if (getfile)
+		{
+		  getfile = elfsh_hash_getfile_def(getfile, name);
+
+		  if (getfile)
+		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, getfile);
+		}
+	    }
+
+	  hash_free_keys(keys);
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
 /**

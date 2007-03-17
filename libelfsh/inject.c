@@ -6,7 +6,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: inject.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -83,8 +83,7 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 		      "Cannot find guard section", -1);
 
   /* Pad the new section if needed */
-  /*
-    I KEEP OLD METHOD ON COMMENT (IN CASE)
+  /*  I KEEP OLD METHOD ON COMMENT (IN CASE)
   if (mod && (hdr.sh_size % mod))
     {
       rsize = hdr.sh_size + mod - (hdr.sh_size % mod);
