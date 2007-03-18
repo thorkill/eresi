@@ -5,7 +5,7 @@
 ** 
 ** Started Fri Oct  7 21:05:26 CEST 2005 crew
 **
-** $Id: xmalloc.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: alloc-proxy.c,v 1.1 2007-03-18 12:35:04 may Exp $
 **
 */
 #include "libe2dbg.h"

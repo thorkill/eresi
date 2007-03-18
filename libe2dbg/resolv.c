@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.4 2007-03-17 13:05:31 may Exp $
+** $Id: resolv.c,v 1.5 2007-03-18 12:35:04 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -134,7 +134,9 @@ int			e2dbg_load_linkmap(char *name)
   if (done)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
+#if __DEBUG_LINKMAP__
   fprintf(stderr, "[e2dbg] Starting Loading LINKMAP !! \n");
+#endif
 
   e2dbg_setup_hooks();
   vm_config();

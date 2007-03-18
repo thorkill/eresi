@@ -10,7 +10,7 @@
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
 ** Modified  Thu Dec 28 04:28:00 2006 mayhem
 **
-** $Id: vmhooks.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: dbghooks.c,v 1.1 2007-03-18 12:35:04 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -47,14 +47,14 @@ elfsh_Addr*	  e2dbg_default_getfp()
 void		e2dbg_default_setstep()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_NERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_RERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "SETSTEP unimplemented on this architecture");
 }
 
 void		e2dbg_default_resetstep()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_NERR(__FILE__, __FUNCTION__, __LINE__, 
+  PROFILER_RERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "RESETSTEP unimplemented on this architecture"); 
 }
 

@@ -3,14 +3,10 @@
 ** 
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem
 **
-** $Id: mode.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: mode.c,v 1.3 2007-03-18 12:35:04 may Exp $
 **
 */
 #include "libe2dbg.h"
-
-
-
-
 
 
 /* Change between static (ondisk) and dynamic (memory) mode */

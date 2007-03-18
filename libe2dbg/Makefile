@@ -8,7 +8,7 @@ include ../config.h
 
 SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
 			signal.c mode.c stack.c step.c linkmap.c dumpregs.c    \
-			vmhooks.c mutex.c continue.c xmalloc.c resolv.c        \
+			dbghooks.c mutex.c continue.c alloc-proxy.c resolv.c   \
 			threads.c entry.c e2dbg-misc.c
 OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
