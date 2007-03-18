@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-fprint.h,v 1.11 2007-03-14 18:37:57 strauss Exp $
+ * $Id: libmjollnir-fprint.h,v 1.12 2007-03-18 23:11:03 thor Exp $
  *
  */
 #include "libmjollnir-blocks.h"
@@ -15,9 +15,9 @@
 typedef struct		s_function 
 {
   elfsh_Addr	vaddr;		/* Function virtual address */
-  u_int				size;			/* Function size */
-  char				name[64];	/* Function name */
+  u_int		size;		/* Function size */
+  char		name[64];	/* Function name */
   mjrblock_t	*first;		/* First function block */
-  char				md5[34];	/* MD5 Checksum */
-}			mjrfunc_t;
+  char		md5[34];	/* MD5 Checksum */
+}		mjrfunc_t;
 

@@ -30,9 +30,9 @@ typedef struct		s_history
 /* The context of a single session */
 typedef struct		_mjrContext 
 {
-  elfshobj_t			*obj;        /* elfsh object */
+  elfshobj_t		*obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
-  mjrcontainer_t  *curblock;   /* current working block */
+  mjrcontainer_t	*curblock;   /* current working block */
   mjrcontainer_t	*curfunc;    /* current working function */
 
 #define			MJR_HISTORY_LEN		5
@@ -41,18 +41,18 @@ typedef struct		_mjrContext
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
-  hash_t					funchash;    /* functions hash table */
-  hash_t					blkhash;     /* blocks hash table for this obj */
+  hash_t		funchash;    /* functions hash table */
+  hash_t		blkhash;     /* blocks hash table for this obj */
   unsigned char		analysed;    /* do we analysed it */
-  u_int						calls_seen;  /* FIXME */
-  u_int						calls_found; /* FIXME */
+  u_int			calls_seen;  /* FIXME */
+  u_int			calls_found; /* FIXME */
 }			mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
 typedef struct	s_session
 {
  mjrcontext_t		*cur;
- hash_t					ctx;
+ hash_t			ctx;
 }			mjrsession_t;
 
 
@@ -100,14 +100,14 @@ char 		*_vaddr2str(elfsh_Addr);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(mjrcontainer_t *cntnr);
-int		mjr_fprint(mjrcontext_t 			*c,
-									mjrcontainer_t   	*start, 
-									int								type,
-									int	    					weight,
-								  int	    					curd,
-									int	    					mind,
-									int	    					maxd,
-									int	    					(*fprint)(mjrcontainer_t *));
+int		mjr_fprint(mjrcontext_t 	*c,
+			   mjrcontainer_t   	*start, 
+			   int			type,
+			   int   		weight,
+			   int	    		curd,
+			   int	    		mind,
+			   int	    		maxd,
+			   int  		(*fprint)(mjrcontainer_t *));
 
 /* display.c */
 void		mjr_block_dump(mjrblock_t *b);
@@ -147,18 +147,18 @@ unsigned int mjr_register_container_id (mjrcontainer_t *cntnr);
 void mjr_unregister_container (u_int id);
 mjrcontainer_t *mjr_lookup_container (u_int id);
 mjrlink_t *mjr_container_add_link(mjrcontainer_t *cntnr, u_int id, 
-																	int link_type, int link_direction);
+				  int link_type, int link_direction);
 
 mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
 
 mjrcontainer_t *mjr_create_block_container(u_int 				symoff,
-																						elfsh_Addr	vaddr,
-																						u_int				size);
+					   elfsh_Addr	vaddr,
+					   u_int				size);
 
 mjrcontainer_t *mjr_create_function_container(elfsh_Addr	vaddr,
-																							u_int				size,
-																							char				*name,
-																							mjrblock_t	*first,
-																							char				*md5);
+					      u_int				size,
+					      char				*name,
+					      mjrblock_t	*first,
+					      char				*md5);
 
 #endif

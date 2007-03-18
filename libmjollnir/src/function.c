@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.26 2007-03-14 18:37:57 strauss Exp $
+ * $Id: function.c,v 1.27 2007-03-18 23:11:03 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -15,40 +15,40 @@
 
 void mjr_function_dump(char *where, mjrcontainer_t *c)
 {
-	mjrfunc_t *f, *tmp;
+  mjrfunc_t *f, *tmp;
   mjrlink_t *cur;
-	f = (mjrfunc_t *) c->data;
+  f = (mjrfunc_t *) c->data;
 
   fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] No. Children: %d, No. Parents: %d\n",
 	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL ,c->out_nbr, c->in_nbr);
-
+  
   if (c->output)
   {
     fprintf(D_DESC," [D] Child functions:\n [x] ");
-
+    
     cur = c->output;
 
     while(cur)
-		{
-			tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
-			fprintf(D_DESC,"%x ", tmp->vaddr);
-			cur = cur->next;
-    }
- 
+      {
+	tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
+	fprintf(D_DESC,"%x ", tmp->vaddr);
+	cur = cur->next;
+      }
+    
     fprintf(D_DESC,"\n");
   }
-
+  
   if (c->input)
   {
     fprintf(D_DESC," [D] Parent functions:\n [x] ");
     cur = c->input;
-
+    
     while(cur)
-		{
-			tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
-	  	fprintf(D_DESC,"%x ", tmp->vaddr);
-	  	cur = cur->next;
-		}
+      {
+	tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
+	fprintf(D_DESC,"%x ", tmp->vaddr);
+	cur = cur->next;
+      }
     
     fprintf(D_DESC,"\n");
   }
@@ -93,7 +93,7 @@ u_int	 mjr_function_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
   {
     buf->allocated += getpagesize();
     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
-							buf->data, buf->data, buf->allocated, -1);
+	     buf->data, buf->data, buf->allocated, -1);
   }
 
   while (cur)
@@ -124,34 +124,34 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
   {
     ilen = asm_read_instr(&instr, src + n, mlen - n, &ctx->proc);
     if (ilen <= 0)
-			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+    
     /* Filter this out */
     if ((ctx->proc.type == ASM_PROC_IA32  && instr.instr != ASM_NOP) ||
-	  		(ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
-		{
-	  	memcpy(dst + p, src, ilen);
-	  	p += ilen;
-		}
+	(ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
+      {
+	memcpy(dst + p, src, ilen);
+	p += ilen;
+      }
       
     /* epilog */
     if (ctx->proc.type == ASM_PROC_IA32)
-		{
-	  	if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
-																		   hist[0].instr == ASM_POP ||
-																			 hist[0].instr == ASM_MOV))
-	    {
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	    }
-		} 
+      {
+	if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
+					 hist[0].instr == ASM_POP ||
+					 hist[0].instr == ASM_MOV))
+	  {
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  }
+      } 
     else if (ctx->proc.type == ASM_PROC_SPARC)
-		{
-	  	if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
-	      	hist[0].instr == ASM_SP_RETL)
-	    {	  	
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	    }
-		}
+      {
+	if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
+	    hist[0].instr == ASM_SP_RETL)
+	  {	  	
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+	  }
+      }
     hist[1] = hist[0];
     hist[0] = instr;
   }  
@@ -163,63 +163,63 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
 
 /* Finger print a function using X method */
 void		*mjr_fingerprint_function(mjrcontext_t  *ctx, 
-					  												elfsh_Addr	addr, 
-																	  int					type) 
+					  elfsh_Addr	addr, 
+					  int		type) 
 {
-	MD5_CTX				md5ctx;
-	unsigned char fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
-	unsigned char	digest[16];
-	char					*pt;
-	void          *ret;
-	u_int					i;
-	int 					mlen;
-	elfsh_SAddr		off;
-	elfshsect_t		*sect;
-	unsigned char	*buff;
-
-	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-	ret = NULL;
-
-	/* Get function data */
-	sect = elfsh_get_parent_section(ctx->obj, addr, &off);
-	if (!sect)
-  	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-								"Unknown parent section", NULL);
-
-	buff = elfsh_get_raw(sect);
-	buff += off;
-
-	/* Select the desired fingerprinting function */
-	switch (type) 
-  {
-	  case MJR_FPRINT_TYPE_MD5:
-	    //memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
-  	  mlen = mjr_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
-       
-     	if (mlen <= 0) 
+  MD5_CTX				md5ctx;
+  unsigned char fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
+  unsigned char	digest[16];
+  char					*pt;
+  void          *ret;
+  u_int					i;
+  int 					mlen;
+  elfsh_SAddr		off;
+  elfshsect_t		*sect;
+  unsigned char	*buff;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  ret = NULL;
+  
+  /* Get function data */
+  sect = elfsh_get_parent_section(ctx->obj, addr, &off);
+  if (!sect)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown parent section", NULL);
+  
+  buff = elfsh_get_raw(sect);
+  buff += off;
+  
+  /* Select the desired fingerprinting function */
+  switch (type) 
+    {
+    case MJR_FPRINT_TYPE_MD5:
+      //memset(fbuf, 0, MJR_MAX_FUNCTION_LEN);
+      mlen = mjr_function_copy(ctx, buff, fbuf, MJR_MAX_FUNCTION_LEN);
+      
+      if (mlen <= 0) 
       	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-
-	    MD5_Init(&md5ctx);
-  	  MD5_Update(&md5ctx, fbuf, mlen);
-	    MD5_Final(digest, &md5ctx);
-	    XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, 33, NULL);
-
-	    if (!ret)
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-
-	    memset(ret, 0, 33);
-	    pt = ret;
-
-	    for (i = 0; i < 16; i++, pt += 2) 
-	      sprintf(pt, "%02x", digest[i]);
-
-	    break;
-
-		default:
-    	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    				   "Unknown fingerprint type", NULL);
-	}
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+      
+      MD5_Init(&md5ctx);
+      MD5_Update(&md5ctx, fbuf, mlen);
+      MD5_Final(digest, &md5ctx);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, 33, NULL);
+      
+      if (!ret)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+      
+      memset(ret, 0, 33);
+      pt = ret;
+      
+      for (i = 0; i < 16; i++, pt += 2) 
+	sprintf(pt, "%02x", digest[i]);
+      
+      break;
+      
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unknown fingerprint type", NULL);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 /**
@@ -227,14 +227,14 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
  *
  * returns the number of functions (0 probably means something is wrong)
  */
-int								mjr_functions_load(mjrcontext_t *ctxt)
+int			mjr_functions_load(mjrcontext_t *ctxt)
 {
-  int							index, findex, tmptype, cnt;
-  elfshsect_t			*sect, *flowsect;
-  u_int						fncnbr, off;
+  int			index, findex, tmptype, cnt;
+  elfshsect_t		*sect, *flowsect;
+  u_int			fncnbr, off;
   unsigned int		tmpid;
-  mjrfunc_t				*curfnc;
-	mjrcontainer_t 	*curcntnr;
+  mjrfunc_t		*curfnc;
+  mjrcontainer_t 	*curcntnr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -269,32 +269,32 @@ int								mjr_functions_load(mjrcontext_t *ctxt)
 
     /* fill the flow list */
     for (findex=0; findex < curcntnr->in_nbr; findex++)
-		{	 
-	  	tmpid = *((unsigned int *)flowsect->data + off + findex);
-	  	tmptype = *((int *)flowsect->data + off + findex + sizeof(unsigned int));
-
-	    fprintf(D_DESC," [D] resotore parent: %u\n", tmpid);
-	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
-		}
-
+      {	 
+	tmpid = *((unsigned int *)flowsect->data + off + findex);
+	tmptype = *((int *)flowsect->data + off + findex + sizeof(unsigned int));
+	
+	fprintf(D_DESC," [D] resotore parent: %u\n", tmpid);
+	mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
+      }
+    
     off = (u_int)curcntnr->output;
     curcntnr->output = NULL;
-
+    
     for (findex=0; findex < curcntnr->out_nbr; findex++)
-		{
-	  	tmpid = *((unsigned int *)flowsect->data + off + findex);
-	  	tmptype = *((int *)flowsect->data + off + findex + sizeof(unsigned int));
-	   	
-			fprintf(D_DESC," [D] resotore child: %u\n", tmpid);
-	  	mjr_container_add_link(curcntnr, tmpid , tmptype, MJR_LINK_OUT);
-		}
-
-		mjr_register_container_id (curcntnr);
+      {
+	tmpid = *((unsigned int *)flowsect->data + off + findex);
+	tmptype = *((int *)flowsect->data + off + findex + sizeof(unsigned int));
+	
+	fprintf(D_DESC," [D] resotore child: %u\n", tmpid);
+	mjr_container_add_link(curcntnr, tmpid , tmptype, MJR_LINK_OUT);
+      }
+    
+    mjr_register_container_id (curcntnr);
     mjr_function_dump((char *)__FUNCTION__, curcntnr);
-		hash_add(&ctxt->funchash, (char *) _vaddr2str(curfnc->vaddr), curcntnr);
+    hash_add(&ctxt->funchash, (char *) _vaddr2str(curfnc->vaddr), curcntnr);
   }
-
-	cnt = hash_size(&ctxt->funchash);
+  
+  cnt = hash_size(&ctxt->funchash);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 }
 

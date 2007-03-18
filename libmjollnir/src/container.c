@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.3 2007-03-15 13:11:48 thor Exp $
+ * $Id: container.c,v 1.4 2007-03-18 23:11:03 thor Exp $
  *
  */
 
@@ -111,7 +111,9 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   mjrlink_t *cur;
   mjrlink_t *link;
   
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, link, sizeof(mjrlink_t), NULL );
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, link, 
+	 sizeof(mjrlink_t), NULL );
+
   link->id = id;
   link->type = link_type;
   link->next = NULL;

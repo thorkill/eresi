@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.12 2007-03-14 12:51:45 may Exp $
+** $Id: init.c,v 1.13 2007-03-18 23:11:03 thor Exp $
 **
 */
 
@@ -237,6 +237,21 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_MODE_RW,
 		  (void *) 1);
   
+  config_add_item("graph.storegepath",
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *)"~/graphs/");
+
+  config_add_item("graph.viewcmd",
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *)"xzgv");
+
+  config_add_item("graph.autoview",
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 1);
+
   if (!mjr_init_session(&world.mjr_session))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "mjollnir session can't be initialized.", -1);
