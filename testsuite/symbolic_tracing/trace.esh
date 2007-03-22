@@ -6,4 +6,5 @@ traces add crypt critical
 traces create mainnodes
 traces add firstfunc mainnodes
 traces add testcrypt mainnodes
+profile enable warn
 save fake_aout

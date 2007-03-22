@@ -13,7 +13,8 @@ LIB	= -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32
 NAM	= tracer
 RM	= rm -f 
 OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ \
-	-I../../libasm/include/ -I../../libc/include $(BITS)
+	-I../../libasm/include/ -I../../elibc/include/ -I../../libaspect/include/ \
+	-I../../libmjollnir/include/ -I../../libedfmt/include/ $(BITS)
 CFLAGS	= $(OPT)
 
 HOSTSRC	= host.c

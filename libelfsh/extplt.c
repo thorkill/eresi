@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.6 2007-03-17 17:26:06 mxatone Exp $
+ * $Id: extplt.c,v 1.7 2007-03-22 19:01:33 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -28,6 +28,10 @@ int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *na
   elfsh_Half	*ent;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) != ELFSH_OS_LINUX)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 
   /* Search the correct file using hash version section 
    as every linker should do */
@@ -87,7 +91,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfshsect_t	*dynsym;
   elfshsect_t	*dynstr;
   elfshsect_t	*relplt;
-  elfshsect_t	*versym;
+  elfshsect_t	*versym = NULL;
   elfshsect_t	*dynamic;
   elfshsect_t	*new;
   elfsh_Dyn	*dynent;
@@ -97,18 +101,27 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Load versym hash if it does not already exist */
-  if (!file->secthash[ELFSH_SECTION_GNUVERSYM])
-    elfsh_get_versymtab(file, NULL);
-
   /* Grab needed pointers */
   dynsym  = file->secthash[ELFSH_SECTION_DYNSYM];
   dynstr  = file->secthash[ELFSH_SECTION_DYNSTR];
   dynamic = file->secthash[ELFSH_SECTION_DYNAMIC];
-  versym  = file->secthash[ELFSH_SECTION_GNUVERSYM];
   if (!dynsym || !dynstr || !dynamic)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Call ALTPLT (elfsh_copy_plt) first", -1);
+
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
+    {
+      /* Load versym hash if it does not already exist */
+      if (!file->secthash[ELFSH_SECTION_GNUVERSYM])
+	elfsh_get_versymtab(file, NULL);
+      
+      versym  = file->secthash[ELFSH_SECTION_GNUVERSYM];
+
+      if (!versym)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Call ALTPLT (elfsh_copy_plt) first", -1);
+    }
   
   /* grab relocation tables */
   relplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELPLT, 0, 0, 0);
@@ -200,28 +213,31 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   new->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
   new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
 
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
+    {
+      /* Same for .gnu.version */
+      new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTVERSYM, NULL,
+				 ELFSH_DATA_INJECTION, versym->shdr->sh_size * 4, 
+				 sizeof(elfsh_Addr));
+      if (!new)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to inject ALTVERSYM", -1);
+      memcpy(elfsh_get_raw(new), elfsh_get_raw(versym), versym->shdr->sh_size);
 
-  /* Same for .gnu.version */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTVERSYM, NULL,
-			     ELFSH_DATA_INJECTION, versym->shdr->sh_size * 4, 
-			     sizeof(elfsh_Addr));
-  if (!new)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to inject ALTVERSYM", -1);
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(versym), versym->shdr->sh_size);
+      new->curend = versym->shdr->sh_size;
+      new->shdr->sh_type = versym->shdr->sh_type;
+      new->shdr->sh_link = file->secthash[ELFSH_SECTION_GNUVERSYM]->index;
+      new->shdr->sh_entsize = sizeof(elfsh_Half);
+      file->secthash[ELFSH_SECTION_ALTVERSYM] = new;
 
-  new->curend = versym->shdr->sh_size;
-  new->shdr->sh_type = versym->shdr->sh_type;
-  new->shdr->sh_link = file->secthash[ELFSH_SECTION_GNUVERSYM]->index;
-  new->shdr->sh_entsize = sizeof(elfsh_Half);
-  file->secthash[ELFSH_SECTION_ALTVERSYM] = new;
-
-  /* Redirect on .dynamic section */
-  versyment = elfsh_get_dynamic_entry_by_type(file, DT_VERSYM);
-  if (!versyment)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get DT_VERSYM", -1);
-  elfsh_set_dynentry_val(versyment, new->shdr->sh_addr);
+      /* Redirect on .dynamic section */
+      versyment = elfsh_get_dynamic_entry_by_type(file, DT_VERSYM);
+      if (!versyment)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to get DT_VERSYM", -1);
+      elfsh_set_dynentry_val(versyment, new->shdr->sh_addr);
+    }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -239,7 +255,7 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   elfshsect_t	*altgot;
   elfshsect_t	*dynsym;
   elfshsect_t	*dynstr;
-  elfshsect_t	*altversym;
+  elfshsect_t	*altversym = NULL;
   u_int		relentsz;
   elfsh_Sym	sym;
   u_int		len;
@@ -281,17 +297,21 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
       file->secthash[ELFSH_SECTION_ALTGOT] = altgot;
     }
 
-  altversym = file->secthash[ELFSH_SECTION_ALTVERSYM];
-  if (!altversym)
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
     {
-      altversym = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTVERSYM,
-					 NULL, NULL, NULL);
+      altversym = file->secthash[ELFSH_SECTION_ALTVERSYM];
       if (!altversym)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "ALTVERSYM not found : Copy VERSYM first", NULL);
-      file->secthash[ELFSH_SECTION_ALTVERSYM] = altversym;
+	{
+	  altversym = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTVERSYM,
+						NULL, NULL, NULL);
+	  if (!altversym)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "ALTVERSYM not found : Copy VERSYM first", NULL);
+	  file->secthash[ELFSH_SECTION_ALTVERSYM] = altversym;
+	}
     }
-
+  
   dynsym = file->secthash[ELFSH_SECTION_DYNSYM];
   if (!dynsym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -351,16 +371,20 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No room anymore in ALTGOT", NULL);
     }
-  if (altversym->curend + sizeof(elfsh_Half) > altversym->shdr->sh_size)
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
     {
-      if (altversym->shdr->sh_offset + altversym->curend + sz <
-	  altversym->next->shdr->sh_offset)
-	altversym->shdr->sh_size += sz;
-      else
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "No room anymore in ALTVERSYM", NULL);
+      if (altversym->curend + sizeof(elfsh_Half) > altversym->shdr->sh_size)
+	{
+	  if (altversym->shdr->sh_offset + altversym->curend + sz <
+	      altversym->next->shdr->sh_offset)
+	    altversym->shdr->sh_size += sz;
+	  else
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "No room anymore in ALTVERSYM", NULL);
+	}
     }
-
+  
   /* The EXTPLT hook will allocate a new relentry and gotentry */
   if (elfsh_extplt(extplt, altgot, dynsym, relplt) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -394,10 +418,14 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 		      "Unable to get DT_STRSZ", NULL);
   elfsh_set_dynentry_val(dynent, elfsh_get_dynentry_val(dynent) + len + 1);
 
-  /* Insert version symbol */
-  if (elfsh_extplt_expend_versym(file, altversym, name) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to add an entry on ALTVERSYM", NULL);
+  /* Versym expend is only for linux */
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
+    {
+      /* Insert version symbol */
+      if (elfsh_extplt_expend_versym(file, altversym, name) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to add an entry on ALTVERSYM", NULL);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     elfsh_get_raw(dynsym) + dynsym->curend - sizeof(elfsh_Sym));
