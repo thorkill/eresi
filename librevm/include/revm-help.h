@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.19 2007-03-14 22:44:59 may Exp $
+** $Id: revm-help.h,v 1.20 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -83,7 +83,9 @@
 	       			" create  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default\n"		     \
 	       			" delete  tracename                           : delete a trace\n"								     \
 	       			" flush   tracename                           : remove all functions from a given trace\n"					     \
-	       			" list                                        : list all available traces\n\n"
+	       			" [optional_traces_name]                      : list all available traces\n\n"
+#define HLP_TRACEADD		"\t Add all submited functions on global traces scope.\n\n"
+#define HLP_TRACERUN		"\t Run a traced binary directly.\n\n"
 
 #define HLP_COLOR               "Associates data types to colors \n\n\t"				 \
 				CMD_COLOR" type [bg,fg] color     \n\n\t"				 \

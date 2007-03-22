@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.47 2007-03-07 16:45:35 thor Exp $
+** $Id: revm.h,v 1.48 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #ifndef __REVM_H_
@@ -180,6 +180,9 @@ extern asm_processor	proc;
 #define	REVM_CONFIG		".elfshrc"
 #define	REVM_FIFO		"/tmp/.revm.io"
 
+/* Traces directory */
+#define	REVM_TRACE_REP		".etrace"
+
 /* For vm_display_object() */
 #define	REVM_VIEW_HEX		0
 #define	REVM_VIEW_DISASM	1
@@ -261,6 +264,10 @@ extern asm_processor	proc;
 #define CMD_COLOR               "setcolor"
 #define CMD_NOCOLOR             "nocolor"
 #define CMD_TRACES		"traces"
+#define CMD_TRACEADD		"traceadd"
+#define CMD_TRACERUN		"tracerun"
+#define CMD_TRACEADD_CMDLINE	"t"
+#define CMD_TRACERUN_CMDLINE	"r"
 #define	CMD_TYPE		"type"
 #define	CMD_TYPEDEF		"typedef"
 
@@ -607,7 +614,7 @@ typedef struct	s_L1handler
 /* Trace structures */
 typedef struct 	s_revmtraces
 {
-  int 		(*exec)(char *name, char **optarg);	/* Function used */
+  int 		(*exec)(elfshobj_t *file, char *name, char **optarg);	/* Function used */
 
   /* Code for this options:
   ** 0: doesn't exist
@@ -789,6 +796,8 @@ int		cmd_log();
 int		cmd_export();  
 int		cmd_edit();
 int		cmd_traces();
+int		cmd_traceadd();
+int		cmd_tracerun();
 int		cmd_shared();
 int             cmd_verneed();
 int             cmd_verdef();
@@ -935,21 +944,21 @@ char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
 int		vm_strtable_add(char *string);
 
 /* Trace functions */
-edfmtfunc_t 	*elfsh_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
-elfshtraces_t  	*elfsh_traces_createargs(elfshobj_t *file, char *name,
+edfmtfunc_t 	*vm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
+elfshtraces_t  	*vm_traces_createargs(elfshobj_t *file, char *name,
 					 edfmtfunc_t *func, elfsh_Addr vaddr,
 					 u_char external);
 FILE		  *vm_traces_init(char *tfname, char *rsofname, char *rtfname);
 int		  vm_traces_add(FILE *fp, int *argcount, char *func_name);
 int 	          traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
-int		  traces_add(char *name, char **optarg);
-int		  traces_rm(char *name, char **optarg);
-int		  traces_enable(char *name, char **optarg);
-int		  traces_disable(char *name, char **optarg);
-int		  traces_create(char *name, char **optarg);
-int		  traces_delete(char *name, char **optarg);
-int		  traces_flush(char *name, char **optarg);
-int		  traces_list(char *name, char **optarg);
+int		  traces_add(elfshobj_t *file, char *name, char **optarg);
+int		  traces_rm(elfshobj_t *file, char *name, char **optarg);
+int		  traces_enable(elfshobj_t *file, char *name, char **optarg);
+int		  traces_disable(elfshobj_t *file, char *name, char **optarg);
+int		  traces_create(elfshobj_t *file, char *name, char **optarg);
+int		  traces_delete(elfshobj_t *file, char *name, char **optarg);
+int		  traces_flush(elfshobj_t *file, char *name, char **optarg);
+int		  traces_list(elfshobj_t *file, char *name, char **optarg);
 
 /* Hash functions */
 int             vm_hashunk(int i);
@@ -975,6 +984,7 @@ int	        vm_unload_cwfiles();
 int		dprintf(int fd, char *format, ...);
 void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
 int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
+int		vm_load_init_dephash(elfshobj_t *file, char *name);
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);

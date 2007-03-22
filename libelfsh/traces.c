@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
+** $Id: traces.c,v 1.9 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -45,6 +45,8 @@ hash_t			*elfsh_traces_createtrace(char *trace)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", NULL);    
 
+  elfsh_traces_inittrace();
+
   /* Create a new trace tracename */
   snprintf(buf, BUFSIZ - 1, ELFSH_TRACES_PATTERN, trace);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newhash, sizeof(hash_t), NULL);
@@ -71,6 +73,8 @@ int queue_step = 0;
  */
 static int		elfsh_traces_queue_add(elfshtraces_t *elm)
 {
+  u_int			index;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (trace_queue == NULL)
@@ -81,6 +85,14 @@ static int		elfsh_traces_queue_add(elfshtraces_t *elm)
     }
   else
     {
+      /* Check if we already have it */
+      for (index = 0; index < queue_step && trace_queue[index]; index++)
+	{
+	  if (!strcmp(elm->funcname, trace_queue[index]->funcname))
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Already added", -1);
+	}
+      
       queue_step += ELFSH_TRACES_DEFAULT_STEP;
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, trace_queue,
 	     sizeof(elfshtraces_t)*queue_step, -1);
@@ -124,6 +136,7 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
   char			**keys;
   elfshtraces_t		*ret_trace;
   char			*start;
+  int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -138,7 +151,15 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	  if (ret_trace && ret_trace->enable && ret_trace->file->id == file->id)
 	    {
 	      /* Add in the queue */
-	      elfsh_traces_queue_add(ret_trace);
+	      ret = elfsh_traces_queue_add(ret_trace);
+
+	      /* Allocation failed */
+	      if (ret == -1)
+		break;
+
+	      /* Already handled */
+	      if (ret == -2)
+		continue;
 
 	      snprintf(bufex, BUFSIZ - 1, "int %s_trace(", ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
@@ -546,6 +567,8 @@ hash_t			*elfsh_traces_gettrace(char *trace)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
+  elfsh_traces_inittrace();
+
   /* Default trace by default */
   if (!trace)
     trace = ELFSH_TRACES_TYPE_DEFAULT;
@@ -741,7 +764,8 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
  * @return newtrace pointer or NULL in case of failure
  */
 elfshtraces_t 		*elfsh_traces_funcadd(char *trace, 
-					      char *name, elfshtraces_t *newtrace)
+					      char *name,
+					      elfshtraces_t *newtrace)
 {
   hash_t		*table;
 
@@ -845,6 +869,8 @@ int			elfsh_traces_funcsetstatus(hash_t *table, int status)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
+  elfsh_traces_inittrace();
+
   keys = hash_get_keys(table, &keynbr);
 
   if (keys)
@@ -889,6 +915,8 @@ int			elfsh_traces_funcenableall(char *trace)
   if (!trace)
     trace = ELFSH_TRACES_TYPE_DEFAULT;
 
+  elfsh_traces_inittrace();
+
   keys = hash_get_keys(&traces_table, &keynbr);
 
   if (keys)
@@ -922,6 +950,8 @@ int			elfsh_traces_funcdisableall(char *trace)
 
   if (!trace)
     trace = ELFSH_TRACES_TYPE_DEFAULT;
+
+  elfsh_traces_inittrace();
 
   keys = hash_get_keys(&traces_table, &keynbr);
 

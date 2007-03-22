@@ -6,7 +6,7 @@
 ** Last update Sep 27 2005 mxatone
 ** 
 **
-** $Id: version.c,v 1.6 2007-03-17 17:26:06 mxatone Exp $
+** $Id: version.c,v 1.7 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -82,7 +82,9 @@ elfsh_Vernaux		*elfsh_check_defneed_eq(elfshobj_t *file, elfshobj_t *deffile,
 }
 
 /**
- * Return a Version need entry value for aux (aux) 
+ * Return a Version need entry value for a verneed aux
+ * @param need verneed entry
+ * @return aux value
  */
 elfsh_Word    		elfsh_get_verneed_aux(elfsh_Verneed *need)
 {
@@ -100,7 +102,9 @@ elfsh_Word    		elfsh_get_verneed_aux(elfsh_Verneed *need)
 }
 
 /**
- * Set a Version need entry value for aux (aux) 
+ * Set a Version need entry value for a verneed aux
+ * @param need verneed entry
+ * @param val new value
  */
 int			elfsh_set_verneed_aux(elfsh_Verneed *need, elfsh_Word val)
 {
@@ -121,7 +125,9 @@ int			elfsh_set_verneed_aux(elfsh_Verneed *need, elfsh_Word val)
 
 
 /**
- * Return a Version need (aux) entry value for count (count) 
+ * Return a Version need (aux) entry value for count (count)
+ * @param need verneed entry
+ * @return count value
  */
 elfsh_Half    		elfsh_get_verneed_cnt(elfsh_Verneed *need)
 {
@@ -139,7 +145,9 @@ elfsh_Half    		elfsh_get_verneed_cnt(elfsh_Verneed *need)
 }
 
 /**
- * Set a Version need entry value for count (count) 
+ * Set a Version need entry value for count
+ * @param need verneed entry
+ * @param val new value
  */
 int			elfsh_set_verneed_cnt(elfsh_Verneed *need, elfsh_Half val)
 {
@@ -159,7 +167,9 @@ int			elfsh_set_verneed_cnt(elfsh_Verneed *need, elfsh_Half val)
 }
 
 /**
- * Return a Version need entry value for file (file) 
+ * Return a Version need entry vale for file
+ * @param need verneed entry
+ * @return file offset on string table
  */
 elfsh_Word    		elfsh_get_verneed_file(elfsh_Verneed *need)
 {
@@ -177,7 +187,9 @@ elfsh_Word    		elfsh_get_verneed_file(elfsh_Verneed *need)
 }
 
 /**
- * Set a Version need entry value for file (file) 
+ * Set a Version need entry value for file
+ * @param need verneed entry
+ * @param val new value
  */
 int			elfsh_set_verneed_file(elfsh_Verneed *need, elfsh_Word val)
 {
@@ -198,6 +210,8 @@ int			elfsh_set_verneed_file(elfsh_Verneed *need, elfsh_Word val)
 
 /**
  * Return a Version need (aux) entry value for next (next) normal & parent 
+ * @param p pointer on a verneed or vernaux
+ * @return next offset value
  */
 elfsh_Word    		elfsh_get_verneed_next(void *p)
 {
@@ -223,6 +237,8 @@ elfsh_Word    		elfsh_get_verneed_next(void *p)
 
 /**
  * Set a Version need (aux) entry value for next (next) normal & parent 
+ * @param p pointer on a verneed or vernaux
+ * @param val new next value
  */
 int			elfsh_set_verneed_next(void *p, elfsh_Word val)
 {
@@ -250,7 +266,9 @@ int			elfsh_set_verneed_next(void *p, elfsh_Word val)
 }
 
 /**
- * Return a Version need (aux) entry value for flags (flag) 
+ * Return a Version need (aux) entry value for flags
+ * @param naux vernaux entry
+ * @return flag value
  */
 elfsh_Half    		elfsh_get_verneed_flags(elfsh_Vernaux *naux)
 {
@@ -268,7 +286,9 @@ elfsh_Half    		elfsh_get_verneed_flags(elfsh_Vernaux *naux)
 }
 
 /**
- * Set a Version need (aux) entry value for flags (flag) 
+ * Set a Version need (aux) entry value for flags
+ * @param naux vernaux entry
+ * @param val new flag value
  */
 int			elfsh_set_verneed_flags(elfsh_Vernaux *naux, elfsh_Half val)
 {
@@ -288,7 +308,9 @@ int			elfsh_set_verneed_flags(elfsh_Vernaux *naux, elfsh_Half val)
 }
 
 /**
- * Return a Version need (aux) entry value for hash (hash) 
+ * Return a Version need (aux) entry value for hash
+ * @param naux vernaux entry
+ * @return hash value
  */
 elfsh_Word    		elfsh_get_verneed_hash(elfsh_Vernaux *naux)
 {
@@ -306,7 +328,9 @@ elfsh_Word    		elfsh_get_verneed_hash(elfsh_Vernaux *naux)
 }
 
 /**
- * Set a Version need (aux) entry value for hash (hash) 
+ * Set a Version need (aux) entry value for hash
+ * @param naux vernaux entry
+ * @param val new hash value
  */
 int			elfsh_set_verneed_hash(elfsh_Vernaux *naux, elfsh_Word val)
 {
@@ -325,7 +349,11 @@ int			elfsh_set_verneed_hash(elfsh_Vernaux *naux, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Return a Version need (aux) entry value for name (name) */
+/**
+ * Return a Version need (aux) entry value for name
+ * @param naux vernaux entry
+ * @return name value
+ */
 elfsh_Word    		elfsh_get_verneed_name(elfsh_Vernaux *naux)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -342,7 +370,9 @@ elfsh_Word    		elfsh_get_verneed_name(elfsh_Vernaux *naux)
 }
 
 /**
- * Set a Version need (aux) entry value for name (name) 
+ * Set a Version need (aux) entry value for name
+ * @param naux vernaux entry
+ * @param val new name value
  */
 int			elfsh_set_verneed_name(elfsh_Vernaux *naux, elfsh_Word val)
 {
@@ -362,7 +392,9 @@ int			elfsh_set_verneed_name(elfsh_Vernaux *naux, elfsh_Word val)
 }
 
 /**
- * Return a Version need (aux) entry value for other (index) 
+ * Return a Version need (aux) entry value for other (index)
+ * @param naux vernaux entry
+ * @return index value
  */
 elfsh_Half    		elfsh_get_verneed_ndx(elfsh_Vernaux *naux)
 {
@@ -381,7 +413,9 @@ elfsh_Half    		elfsh_get_verneed_ndx(elfsh_Vernaux *naux)
 
 
 /**
- * Set a Version need (aux) entry value for ndx (index) 
+ * Set a Version need (aux) entry value for other (index) 
+ * @param naux vernaux entry
+ * @param val new index value
  */
 int			elfsh_set_verneed_ndx(elfsh_Vernaux *naux, elfsh_Half val)
 {
@@ -402,6 +436,9 @@ int			elfsh_set_verneed_ndx(elfsh_Vernaux *naux, elfsh_Half val)
 
 /**
  * Get Version need by name 
+ * @param file target file
+ * @param name verneed entry name
+ * @return verneed entry
  */
 elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 {
@@ -444,6 +481,9 @@ elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 
 /**
  * Get Version need by index (aux) 
+ * @param ps verneed or vernaux pointer
+ * @param index index to search
+ * @return vernaux entry
  */
 elfsh_Vernaux        	*elfsh_get_verneed_entry_by_index(void *ps, 
 						      elfsh_Half index)
@@ -484,6 +524,8 @@ elfsh_Vernaux        	*elfsh_get_verneed_entry_by_index(void *ps,
 
 /**
  * Return a Version def entry value for cname (name) [child] 
+ * @param def verdef entry
+ * @return name value
  */
 elfsh_Word    		elfsh_get_verdef_cname(elfsh_Verdaux *def)
 {
@@ -502,6 +544,8 @@ elfsh_Word    		elfsh_get_verdef_cname(elfsh_Verdaux *def)
 
 /**
  * Set a Version def entry value for cname (name) [child] 
+ * @param def verdef entry
+ * @param val new value
  */
 int			elfsh_set_verdef_cname(elfsh_Verdaux *def, elfsh_Word val)
 {
@@ -523,6 +567,8 @@ int			elfsh_set_verdef_cname(elfsh_Verdaux *def, elfsh_Word val)
 
 /**
  * Return a Version def entry value for cnext (next) [child]
+ * @param def verdef entry
+ * @return next value
  */
 elfsh_Word    		elfsh_get_verdef_cnext(elfsh_Verdaux *def)
 {
@@ -541,6 +587,8 @@ elfsh_Word    		elfsh_get_verdef_cnext(elfsh_Verdaux *def)
 
 /**
  * Set a Version def entry value for cnext (next) [child] 
+ * @param def verdef entry
+ * @param val new next value
  */
 int			elfsh_set_verdef_cnext(elfsh_Verdaux *def, elfsh_Word val)
 {
@@ -561,6 +609,8 @@ int			elfsh_set_verdef_cnext(elfsh_Verdaux *def, elfsh_Word val)
 
 /**
  * Return a Version def entry value for next (next) normal & aux 
+ * @param p verdef or verdaux pointer
+ * @return next value
  */
 elfsh_Word    		elfsh_get_verdef_next(void *p)
 {
@@ -585,6 +635,8 @@ elfsh_Word    		elfsh_get_verdef_next(void *p)
 
 /**
  * Set a Version def entry value for next (next) normal & aux 
+ * @param p verdef or verdaux pointer
+ * @param val new next value
  */
 int			elfsh_set_verdef_next(void *p, elfsh_Word val)
 {
@@ -613,6 +665,8 @@ int			elfsh_set_verdef_next(void *p, elfsh_Word val)
 
 /**
  * Return a Version def entry value for aux (aux) 
+ * @param def verdef entry
+ * @return aux offset
  */
 elfsh_Word    		elfsh_get_verdef_aux(elfsh_Verdef *def)
 {
@@ -630,7 +684,9 @@ elfsh_Word    		elfsh_get_verdef_aux(elfsh_Verdef *def)
 }
 
 /**
- * Set a Version def entry value for aux (aux) 
+ * Set a Version def entry value for aux
+ * @param def verdef entry
+ * @param val new aux value
  */
 int			elfsh_set_verdef_aux(elfsh_Verdef *def, elfsh_Word val)
 {
@@ -650,7 +706,9 @@ int			elfsh_set_verdef_aux(elfsh_Verdef *def, elfsh_Word val)
 }
 
 /**
- * Return a Version def entry value for flags (flags) 
+ * Return a Version def entry value for flags
+ * @param def verdef entry
+ * @return flag
  */
 elfsh_Half    		elfsh_get_verdef_flags(elfsh_Verdef *def)
 {
@@ -669,6 +727,8 @@ elfsh_Half    		elfsh_get_verdef_flags(elfsh_Verdef *def)
 
 /**
  * Set a Version def entry value for flags (flags) 
+ * @param def verdef entry
+ * @param val new flag value
  */
 int			elfsh_set_verdef_flags(elfsh_Verdef *def, elfsh_Half val)
 {
@@ -689,6 +749,8 @@ int			elfsh_set_verdef_flags(elfsh_Verdef *def, elfsh_Half val)
 
 /**
  * Return a Version def entry value for hash (hash) 
+ * @param def verdef entry
+ * @return hash value
  */
 elfsh_Word    		elfsh_get_verdef_hash(elfsh_Verdef *def)
 {
@@ -706,7 +768,9 @@ elfsh_Word    		elfsh_get_verdef_hash(elfsh_Verdef *def)
 }
 
 /**
- * Set a Version def entry value for hash (hash) 
+ * Set a Version def entry value for hash 
+ * @param def verdef entry
+ * @parma val new hash value
  */
 int			elfsh_set_verdef_hash(elfsh_Verdef *def, elfsh_Word val)
 {
@@ -727,6 +791,8 @@ int			elfsh_set_verdef_hash(elfsh_Verdef *def, elfsh_Word val)
 
 /**
  * Return a Version def entry value for cnt (count) 
+ * @param def verdef entry
+ * @return count value
  */
 elfsh_Half    		elfsh_get_verdef_cnt(elfsh_Verdef *def)
 {
@@ -745,6 +811,8 @@ elfsh_Half    		elfsh_get_verdef_cnt(elfsh_Verdef *def)
 
 /**
  * Set a Version def entry value for cnt (count) 
+ * @param def verdef entry
+ * @param val set count value
  */
 int			elfsh_set_verdef_cnt(elfsh_Verdef *def, elfsh_Half val)
 {
@@ -765,6 +833,8 @@ int			elfsh_set_verdef_cnt(elfsh_Verdef *def, elfsh_Half val)
 
 /**
  * Return a Version def entry value for ndx (index) 
+ * @param def verdef entry
+ * @return index value
  */
 elfsh_Half    		elfsh_get_verdef_ndx(elfsh_Verdef *def)
 {
@@ -784,6 +854,8 @@ elfsh_Half    		elfsh_get_verdef_ndx(elfsh_Verdef *def)
 
 /**
  * Set a Version def entry value for ndx (index) 
+ * @param def verdef entry
+ * @param val new index value
  */
 int			elfsh_set_verdef_ndx(elfsh_Verdef *def, elfsh_Half val)
 {
@@ -804,6 +876,9 @@ int			elfsh_set_verdef_ndx(elfsh_Verdef *def, elfsh_Half val)
 
 /**
  * Get Version def by index 
+ * @param ps verdef or verdaux pointer
+ * @param index index to search
+ * @param return verdef or verdaux which correspond
  */
 void	           	*elfsh_get_verdef_entry_by_index(void *ps, 
 						      elfsh_Half index)
@@ -855,6 +930,9 @@ void	           	*elfsh_get_verdef_entry_by_index(void *ps,
 
 /**
  * Get Version symbols by index 
+ * @param s versym base 
+ * @parma index versym index
+ * @return versym entry
  */
 elfsh_Half    		*elfsh_get_versym_entry_by_index(elfsh_Half *s, 
 						      u_int index)
@@ -866,6 +944,8 @@ elfsh_Half    		*elfsh_get_versym_entry_by_index(elfsh_Half *s,
 
 /**
  * Return a Version symbol entry value 
+ * @param sym versym entry
+ * @return versym value
  */
 elfsh_Half    		elfsh_get_versym_val(elfsh_Half *sym)
 {
@@ -881,6 +961,8 @@ elfsh_Half    		elfsh_get_versym_val(elfsh_Half *sym)
 
 /**
  * Set a Version symbol entry value 
+ * @param sym versym entry
+ * @param val new versym value
  */
 int			elfsh_set_versym_val(elfsh_Half *sym, elfsh_Half val)
 {
@@ -898,6 +980,9 @@ int			elfsh_set_versym_val(elfsh_Half *sym, elfsh_Half val)
 
 /**
  * Return the version symbol entry giving its name 
+ * @param file target file
+ * @param name symbol name
+ * @return symbol entry
  */
 elfsh_Half		*elfsh_get_versym_by_name(elfshobj_t *file, char *name)
 {
@@ -938,7 +1023,11 @@ elfsh_Half		*elfsh_get_versym_by_name(elfshobj_t *file, char *name)
 
 
 /**
- * Missing
+ * Build name list of verdaux entries
+ * @param file file target
+ * @param hdef a created def entry
+ * @param names where names will be store
+ * @param numnames table size
  */
 int 			elfsh_get_verdauxnamelist(elfshobj_t *file, 
 						  hashdef_t *hdef, 
@@ -973,7 +1062,10 @@ int 			elfsh_get_verdauxnamelist(elfshobj_t *file,
 }
 
 /**
- * Missing
+ * Fill an hashtable for verneed index information 
+ * @param t hash table
+ * @param ps verneed table pointer
+ * @param size verneed table size
  */
 int			elfsh_load_needtable(hash_t *t, void *ps, 
 					     u_int size)
@@ -1020,7 +1112,10 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
 }
 
 /** 
- * Missing
+ * Fill an hashtable for verdef index information 
+ * @param t hash table
+ * @param ps verdef table pointer
+ * @param size verdef table size
  */
 int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
 {
@@ -1050,7 +1145,9 @@ int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
 
 
 /**
- * Missing
+ * Get a pointer on the version string table
+ * @param file file which host version string table
+ * @return pointer on string table
  */
 void    		*elfsh_get_verstrtable(elfshobj_t *file)
 {
@@ -1088,7 +1185,10 @@ void    		*elfsh_get_verstrtable(elfshobj_t *file)
 
 
 /**
- * Missing
+ * Get verneed file string
+ * @param file target file
+ * @param n verneed entry
+ * @return filename string
  */
 char	       		*elfsh_get_verneedfile(elfshobj_t *file, elfsh_Verneed *n)
 {
@@ -1105,7 +1205,10 @@ char	       		*elfsh_get_verneedfile(elfshobj_t *file, elfsh_Verneed *n)
 }
 
 /**
- * Missing
+ * Get vernaux name string
+ * @param file target file
+ * @param a vernaux entry
+ * @return vernaux name string
  */
 char			*elfsh_get_vernauxname(elfshobj_t *file, elfsh_Vernaux *a)
 {
@@ -1122,7 +1225,10 @@ char			*elfsh_get_vernauxname(elfshobj_t *file, elfsh_Vernaux *a)
 }
 
 /**
- * Missing
+ * Get verdaux name string
+ * @param file target file
+ * @param a verdaux entry
+ * @return verdaux name string
  */
 char			*elfsh_get_verdauxname(elfshobj_t *file, elfsh_Verdaux *a)
 {
@@ -1139,7 +1245,10 @@ char			*elfsh_get_verdauxname(elfshobj_t *file, elfsh_Verdaux *a)
 }
 
 /**
- * Missing
+ * Preload versym section and return data pointer
+ * @param file target file
+ * @param num filled with entitiy number (optional)
+ * @return data pointer
  */
 void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
 {
@@ -1170,6 +1279,7 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
       file->secthash[ELFSH_SECTION_GNUVERSYM] = sect;
     }
 
+  /* Search number of entry do we get here */
   nbr = file->secthash[ELFSH_SECTION_GNUVERSYM]->shdr->sh_size;
   nbr /= sizeof(elfsh_Half);
 
@@ -1181,7 +1291,17 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, int *num)
+/**
+ * We seek a versym section using a range index.
+ * This function was introduced after versym support implementation in EXTPLT technique. 
+ * Because now we can have more than one versym in a binary.
+ * @param file target file
+ * @param range range index
+ * @param num set entitie number (optional)
+ * @return founded section
+ */
+elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, 
+						      int *num)
 {
   elfshsect_t		*sect;
   int			nbr;
@@ -1213,7 +1333,10 @@ elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, i
 }
 
 /**
- * Missing
+ * Preload verneed section and return data pointer
+ * @param file target file
+ * @param num filled with entitiy number (optional)
+ * @return data pointer
  */
 void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
 {
@@ -1259,7 +1382,10 @@ void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
 
 
 /**
- * Missing
+ * Preload verdef section and return data pointer
+ * @param file target file
+ * @param num filled with entitiy number (optional)
+ * @return data pointer
  */ 
 void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
 {
@@ -1303,7 +1429,11 @@ void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
 }
 
 /**
- * Missing
+ * Get verdef table only if we found a given index
+ * @param file target file
+ * @param range searched index
+ * @parma set entity number (optional)
+ * @retrun section element
  */
 elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, elfsh_Addr range, int *num)
 {

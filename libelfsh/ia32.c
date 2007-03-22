@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.10 2007-03-17 17:26:06 mxatone Exp $
+ * $Id: ia32.c,v 1.11 2007-03-22 09:43:26 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -568,7 +568,7 @@ typedef struct s_int
 /**
  * Personnal func / define for args_count 
  */
-static int    elfsh_is_arg_ebp(asm_operand *op)
+static int    elfsh_ac_is_arg_ebp(asm_operand *op)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -578,7 +578,7 @@ static int    elfsh_is_arg_ebp(asm_operand *op)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static int    elfsh_is_arg_esp(asm_operand *op, int sub)
+static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -588,7 +588,7 @@ static int    elfsh_is_arg_esp(asm_operand *op, int sub)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static int    elfsh_largs_add(s_sint *args, int add)
+static int    elfsh_ac_largs_add(s_sint *args, int add)
 {
   s_sint	      *p, *n;
   int                 i;
@@ -643,7 +643,7 @@ static int    elfsh_largs_add(s_sint *args, int add)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static elfsh_Addr foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *before)
+static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *before)
 {
   u_int 	index;
   asm_instr   	i;
@@ -704,7 +704,7 @@ static elfsh_Addr foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *be
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static char	*get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
+static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
 {
   elfshsect_t	*sect;
   elfsh_SAddr	foffset;
@@ -749,11 +749,11 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 
   if (foffset == 0)
     {
-      f_vaddr = foundcallto(file, vaddr, &up_vaddr);
+      f_vaddr = elfsh_ac_foundcallto(file, vaddr, &up_vaddr);
       
       if (f_vaddr > 0)
 	{
-	  data = get_sect_ptr(file, up_vaddr);
+	  data = elfsh_ac_get_sect_ptr(file, up_vaddr);
 	  len = f_vaddr - up_vaddr;
 
 	  for (index = 0; index < len && data ; index += ret)
@@ -770,7 +770,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 			  args->value = 0;
 			}
 
-		      elfsh_largs_add(args, i.op1.imm + 16);
+		      elfsh_ac_largs_add(args, i.op1.imm + 16);
 		      reserv = 1;
 		    }
 		}
@@ -840,7 +840,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
       vaddr = elfsh_get_vaddr_from_foffset(file, foffset);
     }
 
-  data = get_sect_ptr(file, vaddr);
+  data = elfsh_ac_get_sect_ptr(file, vaddr);
 
   if (!data)
     {
@@ -876,14 +876,14 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	      if (ffp == 0)
 		{
 		  /* EBP based argument */
-		  elfsh_largs_add(args, elfsh_is_arg_ebp(&i.op1));
-		  elfsh_largs_add(args, elfsh_is_arg_ebp(&i.op2));
+		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_ebp(&i.op1));
+		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_ebp(&i.op2));
 		}
 	      else
 		{
 		  /* ESP based argument */
-		  elfsh_largs_add(args, elfsh_is_arg_esp(&i.op1, reserv));
-		  elfsh_largs_add(args, elfsh_is_arg_esp(&i.op2, reserv));
+		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_esp(&i.op1, reserv));
+		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_esp(&i.op2, reserv));
 		}
 	    }
 	}

@@ -1,0 +1,9 @@
+#!/usr/local/bin/elfsh
+load ./a.out
+traces add main
+traces create critical
+traces add crypt critical
+traces create mainnodes
+traces add firstfunc mainnodes
+traces add testcrypt mainnodes
+save fake_aout

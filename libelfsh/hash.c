@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.5 2007-03-17 17:26:06 mxatone Exp $
+** $Id: hash.c,v 1.6 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,8 @@ static void	*lastdata;
 
 /**
  * Return the chain number 
+ * @param chain chain element
+ * @return num value
  */
 int	       	elfsh_get_hashchain_num(int *chain)
 {
@@ -32,6 +34,8 @@ int	       	elfsh_get_hashchain_num(int *chain)
 
 /**
  * Set a value for the chain number 
+ * @param chain chain element
+ * @param new num value
  */
 int	     	elfsh_set_hashchain_num(int *chain, int val)
 {
@@ -53,6 +57,8 @@ int	     	elfsh_set_hashchain_num(int *chain, int val)
 
 /**
  * Return the bucket number 
+ * @param bucket bucket element
+ * @return number value
  */
 int	       	elfsh_get_hashbucket_num(int *bucket)
 {
@@ -72,6 +78,8 @@ int	       	elfsh_get_hashbucket_num(int *bucket)
 
 /**
  * Set a value for the bucket number 
+ * @param bucket bucket element
+ * @param val new number
  */
 int	     	elfsh_set_hashbucket_num(int *bucket, int val)
 {
@@ -93,6 +101,8 @@ int	     	elfsh_set_hashbucket_num(int *bucket, int val)
 
 /**
  * Return a value for a chain 
+ * @param chain chain element 
+ * @return value
  */
 int	       	elfsh_get_hashchain_value(int *chain)
 {
@@ -107,6 +117,8 @@ int	       	elfsh_get_hashchain_value(int *chain)
 
 /**
  * Set a value for a chain value 
+ * @param chain chain element
+ * @param val new value
  */
 int	       	elfsh_set_hashchain_value(int *chain, int val)
 {
@@ -123,6 +135,8 @@ int	       	elfsh_set_hashchain_value(int *chain, int val)
 
 /**
  * Return a value for a bucket 
+ * @param bucket bucket element
+ * @return value
  */
 int	       	elfsh_get_hashbucket_value(int *bucket)
 {
@@ -137,6 +151,8 @@ int	       	elfsh_get_hashbucket_value(int *bucket)
 
 /**
  * Set a value for a bucket value 
+ * @param bucket bucket element
+ * @param val new value
  */
 int	     	elfsh_set_hashbucket_value(int *bucket, int val)
 {
@@ -153,6 +169,9 @@ int	     	elfsh_set_hashbucket_value(int *bucket, int val)
 
 /**
  * Get hash chain by name 
+ * @param file target file 
+ * @param sname symbol name
+ * @return chain
  */
 int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
 {
@@ -196,6 +215,9 @@ int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
 
 /**
  * Get hash chain by index 
+ * @param ps data pointer
+ * @param index chain index
+ * @return chain entry
  */
 int       	*elfsh_get_hashchain_by_index(void *ps, int index)
 {
@@ -217,6 +239,9 @@ int       	*elfsh_get_hashchain_by_index(void *ps, int index)
 
 /**
  * Get hash bucket by name 
+ * @param file target file
+ * @param symbol name
+ * @return bucket
  */
 int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
 {
@@ -260,6 +285,9 @@ int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
 
 /**
  * Get hash bucket by index 
+ * @param ps data pointer
+ * @parma index bucket index
+ * @return pointer on the bucket
  */
 int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
 {
@@ -280,7 +308,9 @@ int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
 }
 
 /**
- *
+ * Get chain
+ * @param data element pointer
+ * @return value
  */
 int		*elfsh_get_hashchain(const void *data)
 {
@@ -296,7 +326,9 @@ int		*elfsh_get_hashchain(const void *data)
 }
 
 /**
- *
+ * Get n chain
+ * @param data element pointer
+ * @return value
  */
 int		elfsh_get_hashnchain(const void *data)
 {
@@ -310,7 +342,9 @@ int		elfsh_get_hashnchain(const void *data)
 }
 
 /**
- *
+ * Get bucket
+ * @param data element pointer
+ * @return value
  */
 int		*elfsh_get_hashbucket(const void *data)
 {
@@ -324,7 +358,9 @@ int		*elfsh_get_hashbucket(const void *data)
 }
 
 /**
- *
+ * Get n bucket
+ * @param data element pointer
+ * @return value
  */
 int		elfsh_get_hashnbucket(const void *data)
 {
@@ -339,6 +375,9 @@ int		elfsh_get_hashnbucket(const void *data)
 
 /**
  * Return a pointer on the symbol hash table and load it if needed 
+ * @param file target file
+ * @param num number of entities (optional)
+ * @return data pointer
  */
 void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 {
@@ -379,6 +418,9 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 
 /**
  * Return the symbol value giving its name using the symbol hash table 
+ * @param file target file
+ * @param name symbol name
+ * @return symbol value or 0
  */
 int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
 {
@@ -554,6 +596,8 @@ elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
 
 /**
  * Get the hash for the symbol name . Adapted from the ELF TIS reference 
+ * @param name input name to hash
+ * @return hash value
  */
 int		elfsh_get_symbol_hash(char *name)
 {

@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.26 2007-03-07 16:45:36 thor Exp $
+** $Id: tables.c,v 1.27 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -747,6 +747,10 @@ static void	setup_cmdhash()
     {
       vm_addcmd(CMD_BINFILE_W, (void *) NULL, (void *) vm_getoutput, 0, "");
       vm_addcmd(CMD_BINFILE_R, (void *) NULL, (void *) vm_getinput , 0, "");
+
+      /* Traces aliases */
+      vm_addcmd(CMD_TRACEADD_CMDLINE, (void *) cmd_traceadd, (void *) vm_getvarparams, 1, HLP_TRACEADD);
+      vm_addcmd(CMD_TRACERUN_CMDLINE, (void *) cmd_tracerun, (void *) vm_getvarparams, 1, HLP_TRACERUN);
     }
 
   /* General purpose command */
@@ -764,7 +768,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_CTORS   , (void *) cmd_ctors   , (void *) vm_getregxoption, 1, HLP_CTORS);
   vm_addcmd(CMD_DTORS   , (void *) cmd_dtors   , (void *) vm_getregxoption, 1, HLP_DTORS);
   vm_addcmd(CMD_NOTE    , (void *) cmd_notes   , (void *) vm_getregxoption, 1, HLP_NOTES);
-  vm_addcmd(CMD_CORE_INFO,(void *) cmd_core_info,(void *) NULL			  		, 1, HLP_CORE_INFO);
+  vm_addcmd(CMD_CORE_INFO,(void *) cmd_core_info,(void *) NULL	          , 1, HLP_CORE_INFO);
   vm_addcmd(CMD_SYM     , (void *) cmd_sym     , (void *) vm_getregxoption, 1, HLP_SYM);
   vm_addcmd(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
   vm_addcmd(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
@@ -805,6 +809,8 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_SORT2   , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_TRACES  , (void *) cmd_traces  , (void *) vm_getvarparams , 1, HLP_TRACES);
+  vm_addcmd(CMD_TRACEADD, (void *) cmd_traceadd, (void *) vm_getvarparams , 1, HLP_TRACEADD);
+  vm_addcmd(CMD_TRACERUN, (void *) cmd_tracerun, (void *) vm_getvarparams , 1, HLP_TRACERUN);
   vm_addcmd(CMD_ALL	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALL2	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALERT	, (void *) cmd_alert   , (void *) vm_getoption    , 0, HLP_ALERT);
@@ -843,11 +849,11 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_PROFILE	, (void *) cmd_profile , (void *) vm_getvarparams , 0, HLP_PROFILE);
   vm_addcmd(CMD_LOG     , (void *) cmd_log     , (void *) vm_getvarparams , 0, HLP_LOG);
   vm_addcmd(CMD_EXPORT  , (void *) cmd_export  , (void *) vm_getoption2   , 0, HLP_EXPORT);
-  vm_addcmd(CMD_SHARED    , (void *) cmd_shared   , (void *) NULL         , 0, HLP_SHARED);
-  vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption , 1, HLP_VERSION);
-  vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption , 1, HLP_VERNEED);
-  vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption , 1, HLP_VERDEF);
-  vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption , 1, HLP_HASH);
+  vm_addcmd(CMD_SHARED  , (void *) cmd_shared  , (void *) NULL            , 0, HLP_SHARED);
+  vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption, 1, HLP_VERSION);
+  vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption, 1, HLP_VERNEED);
+  vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption, 1, HLP_VERDEF);
+  vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption, 1, HLP_HASH);
   vm_addcmd(CMD_CONFIGURE, cmd_configure       , vm_getvarparams, 0, HLP_CONFIGURE);
 
   /* Type related commands */

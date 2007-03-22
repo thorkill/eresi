@@ -1,10 +1,10 @@
 /*
- ** libelfsh.h for libelfsh
- **
- ** Started on  Mon Jul 23 15:47:12 2001 mayhem
- **
+** libelfsh.h for libelfsh
 **
-** $Id: libelfsh.h,v 1.44 2007-03-17 17:26:06 mxatone Exp $
+** Started on  Mon Jul 23 15:47:12 2001 mayhem
+**
+**
+** $Id: libelfsh.h,v 1.45 2007-03-22 09:43:26 mxatone Exp $
 **
 */
 
