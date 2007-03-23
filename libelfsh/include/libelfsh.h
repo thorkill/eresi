@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.45 2007-03-22 09:43:26 mxatone Exp $
+** $Id: libelfsh.h,v 1.46 2007-03-23 14:36:55 mxatone Exp $
 **
 */
 
@@ -134,6 +134,7 @@
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
 #define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
 #define		ELFSH_SECTION_NAME_ALTVERSYM	".elfsh.version"
+#define		ELFSH_SECTION_NAME_ALTHASH	".elfsh.hash"
 #define		ELFSH_SECTION_NAME_EDFMT_BLOCKS	".edfmt.blocks"
 #define		ELFSH_SECTION_NAME_EDFMT_BCONTROL	".edfmt.bcontrol"
 #define		ELFSH_SECTION_NAME_EDFMT_FUNCTIONS	".edfmt.function"
@@ -233,6 +234,7 @@
 #define 	ELFSH_SECTION_DW2_MACINFO	44
 #define 	ELFSH_SECTION_DW2_LOC		45
 #define 	ELFSH_SECTION_ALTVERSYM		46
+#define 	ELFSH_SECTION_ALTHASH		47
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
 
@@ -1099,24 +1101,25 @@ int		elfsh_create_rpht(elfshobj_t *file);
 elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h);
 
 /* hash.c */
-int           elfsh_get_hashchain_num(int *c);
-int           elfsh_set_hashchain_num(int *c, int v);
-int           elfsh_get_hashbucket_num(int *b);
-int           elfsh_set_hashbucket_num(int *b, int v);
-int           elfsh_get_hashchain_value(int *c);
-int           elfsh_set_hashchain_value(int *c, int v);
-int           elfsh_get_hashbucket_value(int *b);
-int           elfsh_set_hashbucket_value(int *b, int v);
-int           *elfsh_get_hashchain_by_name(elfshobj_t *f, char *s);
-int           *elfsh_get_hashchain_by_index(void *p, int i);
-int           *elfsh_get_hashbucket_by_name(elfshobj_t *f, char *s);
-int           *elfsh_get_hashbucket_by_index(void *p, int i);
-int           *elfsh_get_hashchain(const void *d);
-int           elfsh_get_hashnchain(const void *d);
-int           *elfsh_get_hashbucket(const void *d);
-int           elfsh_get_hashnbucket(const void *d);
+elfsh_Word    elfsh_get_hashchain_num(elfsh_Word *c);
+int           elfsh_set_hashchain_num(elfsh_Word *c, elfsh_Word v);
+elfsh_Word    elfsh_get_hashbucket_num(elfsh_Word *b);
+int           elfsh_set_hashbucket_num(elfsh_Word *b, elfsh_Word v);
+elfsh_Word    elfsh_get_hashchain_value(elfsh_Word *c);
+int           elfsh_set_hashchain_value(elfsh_Word *c, elfsh_Word v);
+elfsh_Word    elfsh_get_hashbucket_value(elfsh_Word *b);
+int           elfsh_set_hashbucket_value(elfsh_Word *b, elfsh_Word v);
+elfsh_Word    *elfsh_get_hashchain_by_name(elfshobj_t *f, char *s);
+elfsh_Word    *elfsh_get_hashchain_by_index(void *p, u_int i);
+elfsh_Word    *elfsh_get_hashbucket_by_name(elfshobj_t *f, char *s);
+elfsh_Word    *elfsh_get_hashbucket_by_index(void *p, u_int i);
+elfsh_Word    *elfsh_get_hashchain(const void *d);
+elfsh_Word    elfsh_get_hashnchain(const void *d);
+elfsh_Word    *elfsh_get_hashbucket(const void *d);
+elfsh_Word    elfsh_get_hashnbucket(const void *d);
 void          *elfsh_get_hashtable(elfshobj_t *file, int *n);
-int	      elfsh_get_symbol_hash(char *sym_name);
+elfshsect_t   *elfsh_get_hashtable_by_range(elfshobj_t *file, elfsh_Addr range, int *num);
+elfsh_Word    elfsh_get_symbol_hash(char *sym_name);
 int	      elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *sym_name);
 elfshobj_t    *elfsh_hash_getfile_def(elfshobj_t *file, char *name);
 elfsh_Verdef  *elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, int size);
@@ -1328,6 +1331,7 @@ int		elfsh_reencode_first_pltentry(elfshobj_t *file, elfshsect_t *plt,
 
 /* extplt.c */
 int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *name);
+int 		elfsh_extplt_expend_hash(elfshobj_t *file, elfshsect_t *hash, elfshsect_t *dynsym, char *name);
 int		elfsh_extplt_mirror_sections(elfshobj_t *file);
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
 

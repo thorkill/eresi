@@ -6,7 +6,7 @@
 ** Last update Sep 27 2005 mxatone
 ** 
 **
-** $Id: version.c,v 1.7 2007-03-22 09:43:26 mxatone Exp $
+** $Id: version.c,v 1.8 2007-03-23 14:36:55 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -1421,7 +1421,8 @@ void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_GNUVERDEF]->shdr->sh_size;
   nbr /= sizeof(elfsh_Verdef);
 
-  *num = nbr;
+  if (num != NULL)
+    *num = nbr;
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERDEF]);
 

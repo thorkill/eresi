@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.6 2007-03-22 09:43:26 mxatone Exp $
+** $Id: hash.c,v 1.7 2007-03-23 14:36:55 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -16,9 +16,9 @@ static void	*lastdata;
  * @param chain chain element
  * @return num value
  */
-int	       	elfsh_get_hashchain_num(int *chain)
+elfsh_Word	elfsh_get_hashchain_num(elfsh_Word *chain)
 {
-  int		nchain;
+  elfsh_Word    nchain;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -37,9 +37,9 @@ int	       	elfsh_get_hashchain_num(int *chain)
  * @param chain chain element
  * @param new num value
  */
-int	     	elfsh_set_hashchain_num(int *chain, int val)
+int	     	elfsh_set_hashchain_num(elfsh_Word *chain, elfsh_Word val)
 {
-  int		*c;
+  elfsh_Word   	*c;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -47,7 +47,7 @@ int	     	elfsh_set_hashchain_num(int *chain, int val)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
-  c = (int*) lastdata;
+  c = (elfsh_Word*) lastdata;
 
   *(c + 1) = val;
 
@@ -60,9 +60,9 @@ int	     	elfsh_set_hashchain_num(int *chain, int val)
  * @param bucket bucket element
  * @return number value
  */
-int	       	elfsh_get_hashbucket_num(int *bucket)
+elfsh_Word	elfsh_get_hashbucket_num(elfsh_Word *bucket)
 {
-  int		nbucket;
+  elfsh_Word	nbucket;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -81,9 +81,9 @@ int	       	elfsh_get_hashbucket_num(int *bucket)
  * @param bucket bucket element
  * @param val new number
  */
-int	     	elfsh_set_hashbucket_num(int *bucket, int val)
+int	     	elfsh_set_hashbucket_num(elfsh_Word *bucket, elfsh_Word val)
 {
-  int		*b;
+  elfsh_Word   	*b;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -91,7 +91,7 @@ int	     	elfsh_set_hashbucket_num(int *bucket, int val)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
-  b = (int*) lastdata;
+  b = (elfsh_Word*) lastdata;
 
   *b = val;
 
@@ -104,7 +104,7 @@ int	     	elfsh_set_hashbucket_num(int *bucket, int val)
  * @param chain chain element 
  * @return value
  */
-int	       	elfsh_get_hashchain_value(int *chain)
+elfsh_Word   	elfsh_get_hashchain_value(elfsh_Word *chain)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -120,7 +120,7 @@ int	       	elfsh_get_hashchain_value(int *chain)
  * @param chain chain element
  * @param val new value
  */
-int	       	elfsh_set_hashchain_value(int *chain, int val)
+int	       	elfsh_set_hashchain_value(elfsh_Word *chain, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -138,7 +138,7 @@ int	       	elfsh_set_hashchain_value(int *chain, int val)
  * @param bucket bucket element
  * @return value
  */
-int	       	elfsh_get_hashbucket_value(int *bucket)
+elfsh_Word    	elfsh_get_hashbucket_value(elfsh_Word *bucket)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -154,7 +154,7 @@ int	       	elfsh_get_hashbucket_value(int *bucket)
  * @param bucket bucket element
  * @param val new value
  */
-int	     	elfsh_set_hashbucket_value(int *bucket, int val)
+int	     	elfsh_set_hashbucket_value(elfsh_Word *bucket, elfsh_Word val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -173,14 +173,14 @@ int	     	elfsh_set_hashbucket_value(int *bucket, int val)
  * @param sname symbol name
  * @return chain
  */
-int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
+elfsh_Word 	*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
 {
   elfsh_Sym	*sym;
   void		*data;
-  int		*chain;
-  int		nchain;
-  int		index;
-  int		symid;
+  elfsh_Word	*chain;
+  elfsh_Word	nchain;
+  u_int		index;
+  elfsh_Word   	symid;
   char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -219,10 +219,10 @@ int 		*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
  * @param index chain index
  * @return chain entry
  */
-int       	*elfsh_get_hashchain_by_index(void *ps, int index)
+elfsh_Word     	*elfsh_get_hashchain_by_index(void *ps, u_int index)
 {
-  int		*chain;
-  int		nchain;
+  elfsh_Word  	*chain;
+  elfsh_Word	nchain;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -243,14 +243,14 @@ int       	*elfsh_get_hashchain_by_index(void *ps, int index)
  * @param symbol name
  * @return bucket
  */
-int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
+elfsh_Word 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
 {
   elfsh_Sym	*sym;
   void		*data;
-  int		*bucket;
-  int		nbucket;
+  elfsh_Word   	*bucket;
+  elfsh_Word   	nbucket;
   int		index;
-  int		symid;
+  elfsh_Word   	symid;
   char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -289,10 +289,10 @@ int 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
  * @parma index bucket index
  * @return pointer on the bucket
  */
-int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
+elfsh_Word     	*elfsh_get_hashbucket_by_index(void *ps, u_int index)
 {
-  int		*bucket;
-  int		nbucket;
+  elfsh_Word   	*bucket;
+  elfsh_Word   	nbucket;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -312,17 +312,17 @@ int       	*elfsh_get_hashbucket_by_index(void *ps, int index)
  * @param data element pointer
  * @return value
  */
-int		*elfsh_get_hashchain(const void *data)
+elfsh_Word     	*elfsh_get_hashchain(const void *data)
 {
-  int		*bucket;
-  int		nbucket;
+  elfsh_Word   	*bucket;
+  elfsh_Word   	nbucket;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   nbucket = elfsh_get_hashnbucket(data);
   bucket  = elfsh_get_hashbucket(data);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((int *) bucket + nbucket));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((elfsh_Word *) bucket + nbucket));
 }
 
 /**
@@ -330,13 +330,13 @@ int		*elfsh_get_hashchain(const void *data)
  * @param data element pointer
  * @return value
  */
-int		elfsh_get_hashnchain(const void *data)
+elfsh_Word     	elfsh_get_hashnchain(const void *data)
 {
-  int 		*p;
+  elfsh_Word   	*p;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  p = (int *) data;
+  p = (elfsh_Word *) data;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*(p + 1)));
 }
@@ -346,13 +346,13 @@ int		elfsh_get_hashnchain(const void *data)
  * @param data element pointer
  * @return value
  */
-int		*elfsh_get_hashbucket(const void *data)
+elfsh_Word     	*elfsh_get_hashbucket(const void *data)
 {
-  int		*p;
+  elfsh_Word   	*p;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  p = (int *) data;
+  p = (elfsh_Word *) data;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (p + 2));
 }
@@ -362,13 +362,13 @@ int		*elfsh_get_hashbucket(const void *data)
  * @param data element pointer
  * @return value
  */
-int		elfsh_get_hashnbucket(const void *data)
+elfsh_Word     	elfsh_get_hashnbucket(const void *data)
 {
-  int		*p;
+  elfsh_Word   	*p;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  p = (int *) data;
+  p = (elfsh_Word *) data;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*p));
 }
@@ -384,8 +384,8 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   elfshsect_t	*new;
   int		nbr;
   void		*ret;
-  int		nbucket;
-  int		nchain;
+  elfsh_Word   	nbucket;
+  elfsh_Word   	nchain;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -417,6 +417,44 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 }
 
 /**
+ * Return a pointer on a symbol hash table (depending of range value) and load it if needed 
+ * @param file target file
+ * @param range range index
+ * @param num number of entities (optional)
+ * @return section pointer
+ */
+elfshsect_t	*elfsh_get_hashtable_by_range(elfshobj_t *file, elfsh_Addr range, int *num)
+{
+  elfshsect_t	*new;
+  int		nbr;
+  elfsh_Word   	nbucket;
+  elfsh_Word   	nchain;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  new = elfsh_get_section_by_type(file, SHT_HASH, range, NULL, &nbr, 0);
+  if (new == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get HASH by type", NULL);
+
+  if (!new->data)
+    {
+      new->data = elfsh_load_section(file, new->shdr);
+      if (!new->data)	
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "No Hash table",  NULL);
+    }
+  
+  nbucket = elfsh_get_hashnbucket(new->data);
+  nchain = elfsh_get_hashnchain(new->data);
+
+  if (num != NULL)
+    *num = nbucket+nchain;
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
+}
+
+/**
  * Return the symbol value giving its name using the symbol hash table 
  * @param file target file
  * @param name symbol name
@@ -427,13 +465,13 @@ int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
   elfsh_Sym	*sym;
   void		*data;
   char		*sname;
-  int		hash;
-  int		nbucket;
-  int		nchain;
-  int		*chain;
-  int		*bucket;
+  elfsh_Word   	hash;
+  elfsh_Word   	nbucket;
+  elfsh_Word   	nchain;
+  elfsh_Word   	*chain;
+  elfsh_Word   	*bucket;
   int		index;
-  int		symid;
+  elfsh_Word   	symid;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -599,7 +637,7 @@ elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
  * @param name input name to hash
  * @return hash value
  */
-int		elfsh_get_symbol_hash(char *name)
+elfsh_Word	elfsh_get_symbol_hash(char *name)
 {
   unsigned long h;
   unsigned long g;
@@ -612,7 +650,7 @@ int		elfsh_get_symbol_hash(char *name)
       if ((g = h & 0xF0000000))
 	h ^= g >> 24;
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (h));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_Word) (h));
 }
 
 

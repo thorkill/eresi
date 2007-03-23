@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.7 2007-03-22 19:01:33 mxatone Exp $
+ * $Id: extplt.c,v 1.8 2007-03-23 14:36:55 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -29,6 +29,10 @@ int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!file || !versym || !name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid Parameters", -1);
+
   /* Versym expend is only for linux */
   if (elfsh_get_ostype(file) != ELFSH_OS_LINUX)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
@@ -41,10 +45,8 @@ int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 		 "Can't find a file for this function", -1);
 
   if (sym_file->id == file->id)
-    {
-      /* Same file error ? */
-      printf("same ????\n");
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Same file for def", -1);  
 
   /* We search the filename (we have a path) */
   len = strlen(sym_file->name);
@@ -69,14 +71,101 @@ int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *na
      verneed entry linked with verdef references */
   auxneed = elfsh_check_defneed_eq(file, sym_file, verneed, sym_verdef);
   if (auxneed == NULL)
-    {
-      printf(" NON !!!\n");
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find equivalence between def and need", -1);  
 
   /* Add an entry */
   ent = versym->data + versym->curend;
   *ent = (elfsh_Half) auxneed->vna_other & 0x7fff;
   versym->curend += sizeof(elfsh_Half);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
+
+/**
+ * Add a new entry on ALTHASH (.elfsh.hash)
+ * @param hash section pointer of target section
+ * @param name function name
+ */
+int 		elfsh_extplt_expend_hash(elfshobj_t *file, elfshsect_t *hash, 
+					 elfshsect_t *dynsym, char *name)
+{
+  elfsh_Word	strhash;
+  elfsh_Word	nchain;
+  elfsh_Word	nbucket;
+  elfsh_Word	*bucket;
+  elfsh_Word	*chain;
+  elfsh_Word	symid;
+  elfsh_Word	index;
+  elfsh_Word	symindex;
+  void		*data;
+  u_char	set = 0;
+  elfsh_Sym	*ret;
+  int		size = 0;
+  char		*actual;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !hash || !name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid Parameters", -1);
+
+  /* Dynsym data & size */
+  ret = (elfsh_Sym *) dynsym->data;
+  size = dynsym->curend ? dynsym->curend / sizeof(elfsh_Sym) : 
+    dynsym->shdr->sh_size / sizeof(elfsh_Sym);
+
+  if (ret == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get DYNSYM", -1);
+
+  /* Find current symbol index */
+  for (symindex = 0; symindex < size; symindex++)
+    {
+      actual = elfsh_get_dynsymbol_name(file, ret + symindex);
+      if (actual && !strcmp(actual, name))
+	break;
+    }
+
+  if (symindex >= size)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find dynamic symbol by name", -1);
+
+  /* Hash pointer */
+  data = hash->data;
+
+  /* Get bucket & chain pointers */
+  bucket = elfsh_get_hashbucket(data);
+  chain = elfsh_get_hashchain(data);
+
+  /* Get parts numbers */
+  nchain = elfsh_get_hashnchain(data);
+  nbucket = elfsh_get_hashnbucket(data);
+
+  strhash = elfsh_get_symbol_hash(name);
+
+  /* Loop */
+  for (index = bucket[strhash % nbucket]; index < nchain; index = symid)
+    {
+      symid = chain[index];
+
+      if (symid == STN_UNDEF)
+	{
+	  /* Set our symbol @ tail. Next element undefine */
+	  elfsh_set_hashchain_value(&chain[index], symindex);
+	  chain[symindex] = STN_UNDEF;
+	  set = 1;
+	  break;
+	}
+    }
+
+  if (set == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Chain end not found", -1);
+
+  /* Update chain number */
+  *(((elfsh_Word *) data)+1) += 1;
+  hash->curend += sizeof(elfsh_Word);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
@@ -92,6 +181,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfshsect_t	*dynstr;
   elfshsect_t	*relplt;
   elfshsect_t	*versym = NULL;
+  elfshsect_t	*hash;
   elfshsect_t	*dynamic;
   elfshsect_t	*new;
   elfsh_Dyn	*dynent;
@@ -105,18 +195,16 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   dynsym  = file->secthash[ELFSH_SECTION_DYNSYM];
   dynstr  = file->secthash[ELFSH_SECTION_DYNSTR];
   dynamic = file->secthash[ELFSH_SECTION_DYNAMIC];
-  if (!dynsym || !dynstr || !dynamic)
+  hash    = file->secthash[ELFSH_SECTION_HASH];
+
+  if (!dynsym || !dynstr || !dynamic || !hash)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Call ALTPLT (elfsh_copy_plt) first", -1);
 
   /* Versym expend is only for linux */
   if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
     {
-      /* Load versym hash if it does not already exist */
-      if (!file->secthash[ELFSH_SECTION_GNUVERSYM])
-	elfsh_get_versymtab(file, NULL);
-      
-      versym  = file->secthash[ELFSH_SECTION_GNUVERSYM];
+      versym = file->secthash[ELFSH_SECTION_GNUVERSYM];
 
       if (!versym)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -238,6 +326,21 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 		     "Unable to get DT_VERSYM", -1);
       elfsh_set_dynentry_val(versyment, new->shdr->sh_addr);
     }
+
+  /* Same for .hash */
+  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTHASH, NULL,
+			     ELFSH_DATA_INJECTION, hash->shdr->sh_size * 4, 
+			     sizeof(elfsh_Addr));
+  if (!new)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to inject ALTHASHM", -1);
+  memcpy(elfsh_get_raw(new), elfsh_get_raw(hash), hash->shdr->sh_size);
+  
+  new->curend = hash->shdr->sh_size;
+  new->shdr->sh_type = hash->shdr->sh_type;
+  new->shdr->sh_link = file->secthash[ELFSH_SECTION_HASH]->index;
+  new->shdr->sh_entsize = sizeof(elfsh_Half);
+  file->secthash[ELFSH_SECTION_ALTHASH] = new;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -256,6 +359,7 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   elfshsect_t	*dynsym;
   elfshsect_t	*dynstr;
   elfshsect_t	*altversym = NULL;
+  elfshsect_t	*althash;
   u_int		relentsz;
   elfsh_Sym	sym;
   u_int		len;
@@ -310,6 +414,17 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 			 "ALTVERSYM not found : Copy VERSYM first", NULL);
 	  file->secthash[ELFSH_SECTION_ALTVERSYM] = altversym;
 	}
+    }
+
+  althash = file->secthash[ELFSH_SECTION_ALTHASH];
+  if (!althash)
+    {
+      althash = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTHASH,
+					 NULL, NULL, NULL);
+      if (!althash)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "ALTHASH not found : Copy HASH first", NULL);
+      file->secthash[ELFSH_SECTION_ALTHASH] = althash;
     }
   
   dynsym = file->secthash[ELFSH_SECTION_DYNSYM];
@@ -384,6 +499,15 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 			 "No room anymore in ALTVERSYM", NULL);
 	}
     }
+  if (althash->curend + sizeof(elfsh_Word) > althash->shdr->sh_size)
+    {
+      if (althash->shdr->sh_offset + althash->curend + sz <
+	  althash->next->shdr->sh_offset)
+	althash->shdr->sh_size += sz;
+      else
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "No room anymore in ALTHASH", NULL);
+    }
   
   /* The EXTPLT hook will allocate a new relentry and gotentry */
   if (elfsh_extplt(extplt, altgot, dynsym, relplt) < 0)
@@ -426,6 +550,11 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to add an entry on ALTVERSYM", NULL);
     }
+
+  /* Expend .hash */
+  if (elfsh_extplt_expend_hash(file, althash, dynsym, name) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to add an entry on ALTHASH", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     elfsh_get_raw(dynsym) + dynsym->curend - sizeof(elfsh_Sym));
