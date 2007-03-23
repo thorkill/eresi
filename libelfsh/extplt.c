@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.9 2007-03-23 14:49:50 mxatone Exp $
+ * $Id: extplt.c,v 1.10 2007-03-23 15:40:44 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -340,7 +340,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   new->curend = hash->shdr->sh_size;
   new->shdr->sh_type = hash->shdr->sh_type;
   new->shdr->sh_link = file->secthash[ELFSH_SECTION_HASH]->index;
-  new->shdr->sh_entsize = sizeof(elfsh_Half);
+  new->shdr->sh_entsize = sizeof(elfsh_Word);
   file->secthash[ELFSH_SECTION_ALTHASH] = new;
 
   /* Redirect on .dynamic section */
@@ -529,10 +529,12 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
                       "Unable to get DT_PLTRELSZ", NULL);
   elfsh_set_dynentry_val(dynent, elfsh_get_dynentry_val(dynent) + relentsz);
 
-  /* Insert symbol referenced by previous injected reloc entry */
+  /* Insert symbol referenced by previous injected reloc entry.
+     We do not indicate a link with EXTPLT section because an external symbol
+     should not be link on a local section or it will be resolv as a local symbol. */
   sym = elfsh_create_symbol(extplt->shdr->sh_addr + extplt->curend - elfsh_get_pltentsz(file),
 			    elfsh_get_pltentsz(file), STT_FUNC,
-			    0, 0, extplt->index);
+			    0, 0, 0);
   sym.st_name = dynstr->curend;
   elfsh_set_symbol_bind(&sym, STB_GLOBAL);
   memcpy(elfsh_get_raw(dynsym) + dynsym->curend, &sym, sizeof(sym));
