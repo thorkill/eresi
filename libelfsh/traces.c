@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.9 2007-03-22 09:43:26 mxatone Exp $
+** $Id: traces.c,v 1.10 2007-03-23 17:04:12 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -500,6 +500,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
     // Retrieve symbol
     dst = elfsh_get_symbol_by_name(file, buf);
+
     if (dst == NULL)
       {
 	elfsh_traces_queue_clean();
@@ -702,6 +703,10 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
       if (strstr(func_name, "."))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "We didn't support function name with a '.'", -1);
+
+      /* Unusable symbol */
+      if (symtab[index].st_value == 0)
+	continue;
 
       if (vaddr)
 	*vaddr = symtab[index].st_value;

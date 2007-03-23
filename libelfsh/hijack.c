@@ -4,7 +4,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: hijack.c,v 1.5 2007-03-23 17:04:12 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -67,7 +67,10 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
       /* Resolve hooked function symbol */
       symbol = elfsh_get_symbol_by_name(file, name);
       ispltent = elfsh_is_pltentry(file, symbol);
-      if (NULL == symbol || ispltent == 1)
+
+      /* FreeBSD can have a normal symbol with invalid st_value 
+       for a plt entry */
+      if (NULL == symbol || ispltent == 1 || !symbol->st_value)
 	{
 
 	  symbol = elfsh_get_dynsymbol_by_name(file, name);
