@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.8 2007-03-23 14:36:55 mxatone Exp $
+ * $Id: extplt.c,v 1.9 2007-03-23 14:49:50 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -186,6 +186,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfshsect_t	*new;
   elfsh_Dyn	*dynent;
   elfsh_Dyn   	*versyment;
+  elfsh_Dyn   	*hashent;
 
   elfshsect_t	*relgot;
 
@@ -341,6 +342,13 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   new->shdr->sh_link = file->secthash[ELFSH_SECTION_HASH]->index;
   new->shdr->sh_entsize = sizeof(elfsh_Half);
   file->secthash[ELFSH_SECTION_ALTHASH] = new;
+
+  /* Redirect on .dynamic section */
+  hashent = elfsh_get_dynamic_entry_by_type(file, DT_HASH);
+  if (!hashent)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get DT_HASH", -1);
+  elfsh_set_dynentry_val(hashent, new->shdr->sh_addr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
