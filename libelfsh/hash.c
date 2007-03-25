@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.8 2007-03-25 13:09:25 mxatone Exp $
+** $Id: hash.c,v 1.9 2007-03-25 13:16:41 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -384,8 +384,6 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   elfshsect_t	*new;
   int		nbr;
   void		*ret;
-  elfsh_Word   	nbucket;
-  elfsh_Word   	nchain;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -428,8 +426,6 @@ elfshsect_t	*elfsh_get_hashtable_by_range(elfshobj_t *file, elfsh_Addr range, in
 {
   elfshsect_t	*new;
   int		nbr;
-  elfsh_Word   	nbucket;
-  elfsh_Word   	nchain;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   

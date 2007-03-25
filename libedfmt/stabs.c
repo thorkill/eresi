@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.11 2007-03-14 12:51:45 may Exp $
+** $Id: stabs.c,v 1.12 2007-03-25 13:16:41 mxatone Exp $
 **
 */
 
@@ -1118,7 +1118,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	{
 	  data = STABS_DATA(&str);
 
-	  if (data)
+	  if (data && current_file)
 	    {
 	      /* TODO: Add more informations  */
 	      switch(data->scope)
