@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.12 2007-03-25 13:16:41 mxatone Exp $
+** $Id: stabs.c,v 1.13 2007-03-25 13:46:26 mxatone Exp $
 **
 */
 
@@ -720,7 +720,11 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 		      "Invalid parameter", NULL);
 
 #if __DEBUG_STABS__
-	  printf("%s - %s - %s\n", current_file->path, current_file->file, *str);
+	  printf("[DEBUG_STABS] (0x%x) %s - %s - %s\n", 
+		 stabs_c_ent.type,
+		 current_file ? current_file->path : "?", 
+		 current_file ? current_file->file : "?", 
+		 *str);
 #endif
 
   edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);
@@ -998,13 +1002,13 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  current_file->last_line = line;
 	  break;
 	case STABS_TYPE_BINCL:
+	  if (!current_file)
+	    break;
+
 	  inc = 1;
 
 	  /* Include or SO file */
 	case STABS_TYPE_SO:
-	  if (!current_file)
-	    break;
-
 	  parse_str = 0;
 	  if (!inc && (!str || !str[0]))
 	    {
@@ -1016,7 +1020,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      current_file = NULL;
 
 #if __DEBUG_STABS__
-	      printf("------------------------------------------------\n");
+	      printf("[DEBUG_STABS] ------------------------------------------------\n");
 #endif
 	      break;
 	    }
@@ -1041,7 +1045,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	    tmp->path = str;
 
 #if __DEBUG_STABS__
-	  printf("- %s%s -----------------------------------------------\n",
+	  printf("[DEBUG_STABS] - %s%s -----------------------------------------------\n",
 		 inc ? "[i] " : "",
 		 str);
 #endif
