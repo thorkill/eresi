@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.48 2007-03-22 09:43:26 mxatone Exp $
+** $Id: revm.h,v 1.49 2007-03-25 14:27:34 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -98,7 +98,7 @@ extern asm_processor	proc;
 #define	IS_BLANK(c)		(c == ' ' || c == '\t')
 
 #define	REVM_VAR_ARGC		"#"
-#define	ELFSH_VARPREF		'$'
+#define	REVM_VAR_PREFIX		'$'
 #define REVM_VAR_RESULT		"_"
 #define	REVM_VAR_LOAD		"!"
 #define	REVM_VAR_ERROR		"ERR"
@@ -192,10 +192,6 @@ extern asm_processor	proc;
 
 /* For lang/access.c */
 #define	REVM_INVALID_FIELD	((u_int) -1)
-
-/* Return of an input function in case of ignorable input */
-#define REVM_INPUT_VOID		(-1)
-#define REVM_INPUT_EXIT		(-2)
 
 /* ELFsh actions, for parametrizing some function behaviors */
 #define	REVM_HASH_MERGE		(1 << 0)
@@ -670,8 +666,8 @@ extern hash_t		traces_cmd_hash;/* trace cmd table */
 extern hash_t		goto_hash;	/* goto hash */
 
 /* Lattice for I/O */
-extern char		*(*hooks_input[ELFSH_IONUM])();
-extern int		(*hooks_output[ELFSH_IONUM])(char *buf);
+extern char		*(*hooks_input[REVM_IO_NUM])();
+extern int		(*hooks_output[REVM_IO_NUM])(char *buf);
 
 /* Data value/string/description arrays */
 extern revmconst_t     elfsh_extseg_type[ELFSH_EXTSEG_MAX];

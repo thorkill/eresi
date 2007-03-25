@@ -6,7 +6,7 @@
 ** Started on  Wed Nov 19 23:02:04 2003 mayhem
 ** Updated on  Mon Aug 15 06:01:54 2005 mayhem
 **
-** $Id: loop.c,v 1.5 2007-03-07 16:45:36 thor Exp $
+** $Id: loop.c,v 1.6 2007-03-25 14:27:35 may Exp $
 **
 */
 #include "revm.h"
@@ -21,7 +21,7 @@ int		vm_printscript(revmargv_t *start)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  vm_output("Printing Script ! \n");
+  vm_output("  .:: Printing Script: \n");
 
   if (start)
     list = start;
@@ -30,7 +30,7 @@ int		vm_printscript(revmargv_t *start)
 
   for (index = 0; list; list = list->next, index++)
     {
-      snprintf(logbuf, BUFSIZ - 1, "[%03u] CMD: %s %p \n",
+      snprintf(logbuf, BUFSIZ - 1, "[%03u] ~%s %p \n",
 	       index, list->name, list);
       vm_output(logbuf);
     }

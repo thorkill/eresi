@@ -6,7 +6,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Mon Mar  5 17:26:11 2007 mayhem
 **
-** $Id: prompt.c,v 1.3 2007-03-14 12:51:45 may Exp $
+** $Id: prompt.c,v 1.4 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -79,7 +79,7 @@ int		vm_display_prompt()
 
   buf = ((world.state.vm_mode == REVM_STATE_INTERACTIVE ||
 	  world.state.vm_mode == REVM_STATE_DEBUGGER ||
-	  (world.state.vm_net && world.curjob->ws.io.type != ELFSH_IOSTD)) ?
+	  (world.state.vm_net && world.curjob->ws.io.type != REVM_IO_STD)) ?
 	 vm_get_prompt() : "");
   vm_output(buf);
 

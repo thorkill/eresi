@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.4 2007-03-07 16:45:34 thor Exp $
+** $Id: main.c,v 1.5 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -40,19 +40,34 @@ int		vm_execute_debuggee(int ac, char **av)
     args[index - 1] = av[index];
   args[index - 1] = NULL;
   execve(args[0], args, environ);
-  perror("exec");
   exit(-1);
 }
 
 
 /* The real main function */
-int		vm_main(int ac, char **av)
+int		e2dbg_main(int ac, char **av)
 {
+  pid_t		pid;
+  int		status;
+
   vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_CLIENT);
-  vm_print_banner();
   vm_config();
-  if (!fork())
+  pid = fork();
+  if (!pid)
     vm_execute_debuggee(ac, av);
+  else
+    {
+      usleep(50000);
+      if (waitpid(pid, &status, WNOHANG) != 0)
+	{
+	  vm_output("\n [E] Target binary not found\n");
+	  vm_output("\n Syntax : ");
+	  vm_output(av[0]);
+	  vm_output(" target_binary \n\n");
+	  exit(-1);
+	}
+    }
+
   vm_output(" [*] Type help for regular commands \n\n");
   return (vm_run(ac, av));
 }
@@ -61,7 +76,7 @@ int		vm_main(int ac, char **av)
 /* The main ELFsh routine */
 int		main(int ac, char **av)
 {
-  return (vm_main(ac, av));
+  return (e2dbg_main(ac, av));
 }
 
 

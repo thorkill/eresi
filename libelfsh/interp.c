@@ -4,7 +4,7 @@
 ** Started on  Sun Jun 10 20:29:18 2001 mayhem
 ** 
 **
-** $Id: interp.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: interp.c,v 1.4 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -66,7 +66,8 @@ char		*elfsh_get_interp(elfshobj_t *file)
 			  "Unable to load .interp", NULL);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP])));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		((char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP])));
 }
 
 

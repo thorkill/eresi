@@ -6,7 +6,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: input.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: input.c,v 1.5 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -18,27 +18,21 @@ char		*vm_getln()
 {
   char		*buf;
   char		*sav;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  NOPROFILER_IN();
   do
     {
       buf = world.curjob->ws.io.input();
-
       if (buf == ((char *) REVM_INPUT_VOID))
-        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		      (char *) REVM_INPUT_VOID);
-      
-      if (!buf || !*buf)
-	{
-	  if (buf)
-	    XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
-	}
-
+	NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
       if (buf == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Cannot read input file", NULL);
-
+	NOPROFILER_ROUT(NULL);
+      if (!*buf)
+	{
+	  XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
+	  NOPROFILER_ROUT(NULL);
+	}
+      
       sav = buf;
       while (IS_BLANK(*sav))
 	sav++;
@@ -55,8 +49,7 @@ char		*vm_getln()
 	  
 	  if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
 	      world.state.vm_mode == REVM_STATE_DEBUGGER)
-               PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-			     (char*) REVM_INPUT_VOID);
+	    NOPROFILER_ROUT((char*) REVM_INPUT_VOID);
 
           buf = NULL;
           if (*sav)
@@ -72,17 +65,16 @@ char		*vm_getln()
           if (buf == NULL)
 	    {
 	      printf("Entered readline test .. returning void input \n");
-              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-			    (char *) REVM_INPUT_VOID);
+              NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
 	    }
           break;
 #endif
-
+	  
 	}
     }
   while (buf == NULL);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,buf);
+  
+  NOPROFILER_ROUT(buf);
 }
 
 
@@ -95,14 +87,14 @@ char		*vm_stdinput()
   int		len;
   char		*str;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  NOPROFILER_IN();
   str = NULL;
 
 #if defined(USE_READLN)
   if (world.state.vm_mode != REVM_STATE_SCRIPT)
     {
       str = readln_input_check();
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, str);
+      NOPROFILER_ROUT(str);
     }
 #endif
   
@@ -114,8 +106,7 @@ char		*vm_stdinput()
 	if (tmpbuf[len] == '\n')
 	  {
 	    if (len == 0)
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-			    ((char *) REVM_INPUT_VOID));
+	      NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
 	    if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
 		world.state.vm_side == REVM_SIDE_CLIENT)
 	      tmpbuf[len + 1] = 0x00;
@@ -130,8 +121,7 @@ char		*vm_stdinput()
       }
 
  end:
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		(*tmpbuf ? strdup(tmpbuf) : NULL));
+  NOPROFILER_ROUT((*tmpbuf ? strdup(tmpbuf) : NULL));
 }
 
 

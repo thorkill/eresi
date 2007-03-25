@@ -3,7 +3,7 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.4 2007-03-07 16:45:34 thor Exp $
+** $Id: main.c,v 1.5 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "etrace.h"
@@ -70,7 +70,7 @@ int		vm_main(int ac, char **av)
   /* Interface tweak */
   vm_setup_quit_msg();
   vm_setup_prompt();
-  vm_setup(ac, av, 0, 0);
+  vm_setup(ac, av, REVM_STATE_TRACER, 0);
   if (world.state.vm_mode != REVM_STATE_CMDLINE)
     vm_print_etrace_banner();
   vm_config();

@@ -6,7 +6,7 @@
 ** Started on  Mon Feb 26 04:12:42 2001 mayhem
 ** 
 **
-** $Id: section.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: section.c,v 1.10 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -880,6 +880,7 @@ void			*elfsh_get_raw(elfshsect_t *sect)
 
   if (elfsh_is_debug_mode())
     {
+
       /* The address of the section */
       dataptr = (void *) sect->shdr->sh_addr;
       

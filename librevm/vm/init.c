@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.13 2007-03-18 23:11:03 thor Exp $
+** $Id: init.c,v 1.14 2007-03-25 14:27:35 may Exp $
 **
 */
 
@@ -59,6 +59,13 @@ int		vm_loop(int argc, char **argv)
 	    world.state.vm_net)
 	  {
 	    if (argv == ((char **) REVM_INPUT_VOID))
+	      {
+		if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
+		    world.state.vm_side == REVM_SIDE_CLIENT)
+		  vm_display_prompt();
+		continue;
+	      }
+	    else if (argv == ((char **) REVM_INPUT_TRANSFERED))
 	      continue;
 	  }
 
@@ -214,7 +221,7 @@ int		vm_setup(int ac, char **av, char mode, char side)
     }
 
   /* Set REVM in static mode */
-  else
+  else if (mode != REVM_STATE_TRACER)
     {
       elfsh_set_static_mode();
 
@@ -316,7 +323,7 @@ int		vm_run(int ac, char **av)
 #endif
 
 #if defined(USE_READLN)
-  readln_completion_install(world.state.vm_mode);
+  readln_completion_install(world.state.vm_mode, world.state.vm_side);
 #endif
   vm_flush();
 #if defined (USE_READLN)

@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.5 2007-03-18 12:35:04 may Exp $
+** $Id: resolv.c,v 1.6 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -245,13 +245,14 @@ int			e2dbg_load_linkmap(char *name)
        actual != NULL; 
        actual = elfsh_linkmap_get_lnext(actual))
     {
-     
-#if __DEBUG_LINKMAP__
-	  printf("[e2dbg_load_linkmap] Running on LINKMAP NEXT " XFMT "\n", 
-		 actual);
-#endif
 
       ename = elfsh_linkmap_get_lname(actual);
+     
+#if __DEBUG_LINKMAP__
+      fprintf(stderr, "[e2dbg_load_linkmap] Running on LINKMAP NEXT " XFMT " (%s baseaddr %08X) \n", 
+	      actual, ename, actual->laddr);
+#endif
+
       if (ename && *ename && !vm_is_loaded(ename))
 	{
 	  if (vm_load_file(ename, elfsh_linkmap_get_laddr(actual), 

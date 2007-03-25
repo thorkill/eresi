@@ -1,11 +1,11 @@
 /*
-** readln.c elfsh
+** readln.c for libui in ERESI
 **
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.11 2007-03-07 16:45:36 thor Exp $
+** $Id: readln.c,v 1.12 2007-03-25 14:27:35 may Exp $
 **
 */
 #include "libui.h"
@@ -82,13 +82,11 @@ void		readln_completion_commands(hash_t *cmd_hash)
 
 
 /* Install the completion strings */
-void		readln_completion_install(char mode)
+void		readln_completion_install(char mode, char side)
 {
-  if (mode != REVM_STATE_INTERACTIVE && mode != REVM_STATE_DEBUGGER)
-    {
-      rl_bind_key ('\t', rl_insert);
-      return;
-    }
+  char		*str;
+
+  rl_bind_key ('\t', rl_insert);
   
   comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
   comp.cmds[1]  = hash_get_keys(&vars_hash   , NULL);
@@ -109,7 +107,11 @@ void		readln_completion_install(char mode)
   
   using_history();
   rl_attempted_completion_function = readln_completion;
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+
+  str = (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT ?
+	 "" : vm_get_prompt());
+  rl_callback_handler_install(str, vm_ln_handler);
+
   rl_bind_key(CTRL('x'), vm_screen_switch);
   readln_install_clearscreen();
   readln_column_update();
@@ -281,24 +283,23 @@ int		readln_prompt_update(char *ptr, int size)
 void    vm_ln_handler(char *c)
 {
   
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   world.curjob->ws.io.buf = c;
+
+  /* save (remove) prompt if a complete line was typed
+   * so that the line is not displayed on return */
   if (c != NULL)
     {
       if (!c[0])
 	vm_log("\n");
-      /* save (remove) prompt if a complete line was typed
-       * so that the line is not displayed on return */
-      rl_save_prompt();
-    }
-  if (c == NULL)
-    {
-      /* special to enable exit on CTRL-D */
-      world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
-      rl_save_prompt();
     }
 
+  /* special to enable exit on CTRL-D */
+  else
+    world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
+    
+
+  rl_save_prompt();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

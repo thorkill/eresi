@@ -7,7 +7,7 @@
 ** Last update  Mar 01 2007 mayhem
 **
 **
-** $Id: lookup.c,v 1.12 2007-03-07 16:45:36 thor Exp $
+** $Id: lookup.c,v 1.13 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -24,7 +24,7 @@ revmobj_t		*vm_lookup_var(char *param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
 
-  for (indir = 0; *param == ELFSH_VARPREF; indir++, param++);  
+  for (indir = 0; *param == REVM_VAR_PREFIX; indir++, param++);  
   ptr = NULL;
   if (!*param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -124,7 +124,7 @@ revmobj_t		*vm_lookup_immed(char *param)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
 
   /* Support for lazy creation of variables */
-  if (*param == ELFSH_VARPREF)
+  if (*param == REVM_VAR_PREFIX)
     {
       ptr = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
       hash_add(&vars_hash, strdup(++param), ptr);

@@ -5,7 +5,7 @@
 **
 ** Started September 16 03:11:04 2005 mayhem
 **
-** $Id: log.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: log.c,v 1.3 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -67,7 +67,7 @@ static void		logtofile(char *str)
   len = strlen(str);
 
   /* Do we want to log ? */
-  if (!(world.curjob->ws.state & ELFSH_JOB_LOGGED) || len <= 0)
+  if (!(world.curjob->ws.state & REVM_JOB_LOGGED) || len <= 0)
     NOPROFILER_OUT();
 
   /* We made only local modifications */
@@ -238,7 +238,7 @@ int			vm_closelog()
 
   if (!world.state.vm_quiet)
     vm_output(" [*] Saved logging session \n\n");
-  world.curjob->ws.state &= (~ELFSH_JOB_LOGGED);
+  world.curjob->ws.state &= (~REVM_JOB_LOGGED);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

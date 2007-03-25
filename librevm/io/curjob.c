@@ -5,7 +5,7 @@
 **
 ** Started September 16 03:11:04 2005 mayhem
 **
-** $Id: curjob.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: curjob.c,v 1.3 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -26,7 +26,7 @@ revmjob_t		*vm_localjob_get()
       job = hash_get(&world.jobs, keys[index]);
       if (!job->ws.active)
         continue;
-      if (job->ws.io.type == ELFSH_IOSTD)
+      if (job->ws.io.type == REVM_IO_STD)
         PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, job);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));

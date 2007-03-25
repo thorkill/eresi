@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.11 2007-03-23 14:36:55 mxatone Exp $
+** $Id: map.c,v 1.12 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -82,16 +82,18 @@ int		        elfsh_read_obj(elfshobj_t *file)
   elfsh_get_dtors(file, NULL);
   elfsh_get_got(file, NULL);
   elfsh_get_interp(file);
+
   elfsh_get_versymtab(file, NULL);
   elfsh_get_verneedtab(file, NULL);
   elfsh_get_verdeftab(file, NULL);
   elfsh_get_hashtable(file, NULL);
 
+  /*
   mode = elfsh_get_mode();
   elfsh_set_static_mode();
   elfsh_get_hashtable(file, NULL);
   elfsh_set_mode(mode);
-
+  */
 
   elfsh_get_comments(file);
   elfsh_get_plt(file, NULL);

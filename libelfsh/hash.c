@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.9 2007-03-25 13:16:41 mxatone Exp $
+** $Id: hash.c,v 1.10 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -389,7 +389,6 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   
   if (file->secthash[ELFSH_SECTION_HASH] == NULL)
     {
-
       new = elfsh_get_section_by_type(file, SHT_HASH, NULL, NULL, &nbr, 0);
       if (new == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -414,6 +413,8 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
+
+
 
 /**
  * Return a pointer on a symbol hash table (depending of range value) and load it if needed 

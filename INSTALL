@@ -1,18 +1,24 @@
 
-How to build elfsh, e2dbg, libasm and libelfsh :
+How to build the ERESI framework. This includes:
 
-You will need openssl headers. Debian users should
-install openssl-dev.
+- elfsh, e2dbg, and etrace 
+- the language interpreter and type system libraries : librevm and libaspect
+- analysis libraries : libelfsh, libe2dbg, libedfmt, libasm, and libmjollnir
+- the interface library (readline based) : libui
+
+You will need openssl headers. Debian users should install openssl-dev.
 
 1. ./configure --help (select your options)
 2. make
 3. make install (optional, you can test from e2dbg/e2dbg and vm/elfsh)
-
-BETATESTERS: If you want to make install this tarball, be sure to edit 
-vm/e2dbg (its a script) and uncomment the 2 lines that you should find 
-easily for LD_PRELOAD path.
-
 4. cd testsuite && make (optional)
+
+If you want to test without installing, you need to do :
+
+5. source env.sh
+
+from the root directory of the project. This will change your
+LD_LIBRARY_PATH variable for using uninstalled libraries.
 
 
 Read each directory README file for more information.

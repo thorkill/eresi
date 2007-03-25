@@ -6,7 +6,7 @@
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: io.c,v 1.5 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -45,7 +45,7 @@ int		vm_std_io(revmjob_t *job)
   NOPROFILER_IN();
   if (!job)
     NOPROFILER_ROUT(0);
-  job->ws.io.type      = ELFSH_IOSTD;
+  job->ws.io.type      = REVM_IO_STD;
   job->ws.io.input_fd  = 0;
   job->ws.io.input     = vm_stdinput;
   job->ws.io.output_fd = 1;
@@ -72,7 +72,6 @@ int		vm_fifo_io(revmjob_t *job)
   /* If we are in the embedded server part of the debugger, do all I/O on the FIFO */
   if (world.state.vm_side == REVM_SIDE_SERVER)
     {
-      job->ws.io.type      = ELFSH_IOFIFO;
       job->ws.io.input_fd  = fd;
       job->ws.io.input     = vm_stdinput;
       job->ws.io.output_fd = fd;

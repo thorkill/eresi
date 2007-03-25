@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.5 2007-03-17 13:06:46 may Exp $
+** $Id: revm-io.h,v 1.6 2007-03-25 14:27:34 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -99,8 +99,9 @@ char	prompt_token[512];
 #define BLK_COLOR_JUMP		GVZ_COLOR_BLACK
 
 /* Return of an input function in case of ignorable input */
-#define ELFSH_VOID_INPUT	-1
-#define ELFSH_EXIT_INPUT	-2
+#define REVM_INPUT_VOID		(-1)
+#define REVM_INPUT_EXIT		(-2)
+#define	REVM_INPUT_TRANSFERED	(-3)
 
 /* Elfsh Output Caching structure */
 typedef struct          s_outbuf
@@ -114,34 +115,27 @@ typedef struct          s_outbuf
 
 /* Input / Output template for ELFsh */
 typedef struct	s_io
-{
-  
-#define		ELFSH_IOSTD     1
-#define		ELFSH_IONET     2
-#define		ELFSH_IODUMP    3
-#define		ELFSH_IOFIFO	4
-#define		ELFSH_IONUM     5
+{  
+#define		REVM_IO_STD     1
+#define		REVM_IO_NET     2
+#define		REVM_IO_DUMP    3
+#define		REVM_IO_NUM     4
   char		type;                   /* IO type           */
   int		input_fd;               /* Input file        */
   int		output_fd;              /* Output file       */
   char		*(*input)();            /* Read Input data   */
   int		(*output)(char *buf);   /* Write output data */
-  
-  /* dump specific */
-#if defined(ELFSHNET)
-  pkt_t		*pkt;                   /* dump received pkt */
-#endif
+  revmoutbuf_t	outcache;
 
-  int		new;                   /* 0 if already used */
-
-#if defined(USE_READLN)
+  /* Readline IO specific */
   char		*buf;                  /* readline line */
   char		*savebuf;
   int		rl_point;
   int		rl_end;
-#endif
 
-  revmoutbuf_t	outcache;
+  /* DUMP IO specific */
+  int		new;                   /* 0 if already used */
+  void		*pkt;                  /* Last received dump */
 }               revmio_t;
 
 
@@ -179,18 +173,21 @@ typedef struct        s_screen
 /* REVM job structure, one per client */
 typedef struct		s_workspace
 {
-#define			ELFSH_INPUT     0
-#define			ELFSH_OUTPUT    1
-  revmio_t		io;		  /* Current IO for this job */
+  char			*name;		  /* Name of the job */
   revmsock_t		sock;		  /* Unused in initial job */
   u_char		active;		  /* Is the workspace active ? */
   time_t		createtime;       /* Workspace creation time */
   int			logfd;            /* Log file descriptor */
   revmscreen_t		screen;           /* Last printed screen */
   char			*oldline;	  /* Previous command line */
-#define       ELFSH_JOB_LOGGED (1 << 0)
+
+#define			REVM_JOB_LOGGED (1 << 0)
   u_char                state;            /* Job state flags */
-  char			*name;		  /* Name of the job */
+
+#define			REVM_INPUT     0
+#define			REVM_OUTPUT    1
+  revmio_t		io;		  /* Current IO for this job */
+
 }			revmworkspace_t;
 
 
@@ -213,6 +210,7 @@ typedef struct        s_state
 #define       REVM_STATE_SCRIPT		1
 #define       REVM_STATE_INTERACTIVE    2
 #define       REVM_STATE_DEBUGGER	3
+#define	      REVM_STATE_TRACER		4
   char                vm_mode;        /* Command line, scripting, interactive, debugger ? */
 #define	      REVM_SIDE_CLIENT		0
 #define	      REVM_SIDE_SERVER		1

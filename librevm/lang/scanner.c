@@ -4,7 +4,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: scanner.c,v 1.5 2007-03-14 12:51:45 may Exp $
+** $Id: scanner.c,v 1.6 2007-03-25 14:27:35 may Exp $
 **
 */
 #include "revm.h"
@@ -158,18 +158,17 @@ char		**vm_input(int *argc)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Read, and sanitize a first time to avoid blank lines */
+  /* Read, and sanitize a first time to avoid blank lines and various special returns */
   buf = vm_getln();
-  if (!buf)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(NULL));
+  if ((int) buf == 0 || 
+      (int) buf == REVM_INPUT_VOID || 
+      (int) buf == REVM_INPUT_EXIT || 
+      (int) buf == REVM_INPUT_TRANSFERED)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char **) buf);
 
-  /* Blank Line : return the last command */
-  if (buf == (char *) REVM_INPUT_VOID)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-	 ((char **) REVM_INPUT_VOID));
-
+  /* Log the read line */
   if (world.state.vm_mode != REVM_STATE_SCRIPT &&
-      world.curjob->ws.io.type == ELFSH_IOSTD)
+      world.curjob->ws.io.type == REVM_IO_STD)
     {
 #if defined(USE_READLN)
       readln_input_log(buf);
@@ -201,7 +200,7 @@ char		**vm_input(int *argc)
 
       write(world.fifofd, buf, len);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		    ((char **) REVM_INPUT_VOID));      
+		    ((char **) REVM_INPUT_TRANSFERED));      
     }
 
   /* Allocate the correct pointer array for argv */

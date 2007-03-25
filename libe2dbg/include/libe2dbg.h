@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.7 2007-03-17 13:05:31 may Exp $
+** $Id: libe2dbg.h,v 1.8 2007-03-25 14:27:34 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -21,7 +21,7 @@
 #endif
 
 #define		__DEBUG_E2DBG__		0
-#define		__DEBUG_BP__		0
+#define		__DEBUG_BP__		1
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
 #define		__DEBUG_THREADS__	0

@@ -7,7 +7,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.23 2007-03-18 23:11:03 thor Exp $
+** $Id: types.c,v 1.24 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -356,14 +356,14 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
   if (context->proc.type == ASM_PROC_IA32)
   {
   	/* The target block is called directly */
-	if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
-    {    
+    if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+      {    
       	ilen    = asm_instr_len(ins);
       	asm_operand_get_immediate(ins, 1, 0, &dest);
       	dest   += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
       	mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
-    }
-
+      }
+    
   	/* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
  	else if (ins->op1.content & ASM_OP_BASE)

@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.4 2007-03-14 12:51:45 may Exp $
+** $Id: select.c,v 1.5 2007-03-25 14:27:34 may Exp $
 **
 */
 #include "revm.h"
@@ -112,13 +112,13 @@ int		vm_prepare_select(fd_set *sel_sockets)
 #endif
 
 #if defined(ELFSHNET)
-      if (job->ws.io.type == ELFSH_IODUMP)
+      if (job->ws.io.type == REVM_IO_DUMP)
 	continue;
-      if (job->ws.io.type == ELFSH_IONET)
+      if (job->ws.io.type == REVM_IO_NET)
 	FD_SET(job->ws.sock.socket, sel_sockets);
 #endif
       
-      if (job->ws.io.type == ELFSH_IOSTD)
+      if (job->ws.io.type == REVM_IO_STD)
 	FD_SET(job->ws.io.input_fd, sel_sockets);
     }
 
@@ -174,12 +174,12 @@ int			vm_socket_getnew()
       cur = hash_get(&world.jobs, keys[index]);
       if (!cur || !cur->ws.active)
 	continue;
-      if (cur->ws.io.type == ELFSH_IODUMP && cur->ws.io.new != 0)
+      if (cur->ws.io.type == REVM_IO_DUMP && cur->ws.io.new != 0)
 	{
 	  world.curjob = cur;
 	  return (1);
 	}
-      if (cur->ws.io.type == ELFSH_IONET && 
+      if (cur->ws.io.type == REVM_IO_NET && 
 	  cur->ws.sock.recvd_f == NEW && cur->ws.sock.ready_f == YES)
 	{
 	  world.curjob = cur;
@@ -238,12 +238,12 @@ int                     vm_select()
 	  (world.state.vm_mode != REVM_STATE_CMDLINE ||
 	   world.state.vm_net))
         {
-	  if (world.curjob->ws.io.type != ELFSH_IODUMP)
+	  if (world.curjob->ws.io.type != REVM_IO_DUMP)
 	    {
 
 	      // Display prompt
 #if defined(USE_READLN)
-	      if (world.curjob->ws.io.type == ELFSH_IOSTD)
+	      if (world.curjob->ws.io.type == REVM_IO_STD)
 		{
 		  if (world.curjob->ws.io.buf != NULL) 
 		    {
@@ -253,7 +253,8 @@ int                     vm_select()
 		}
 	      else 
 #endif
-		if (world.state.vm_side != REVM_SIDE_SERVER)
+		if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
+		      world.state.vm_side == REVM_SIDE_CLIENT))
 		  {
 		    vm_display_prompt();
 		  }
