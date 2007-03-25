@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.7 2007-03-23 14:36:55 mxatone Exp $
+** $Id: hash.c,v 1.8 2007-03-25 13:09:25 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -407,11 +407,12 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_HASH]);
 
-  nbucket = elfsh_get_hashnbucket(ret);
-  nchain = elfsh_get_hashnchain(ret);
+  /* Search number of entry do we get here */
+  nbr = file->secthash[ELFSH_SECTION_HASH]->shdr->sh_size;
+  nbr /= sizeof(elfsh_Word);
 
   if (num != NULL)
-    *num = nbucket+nchain;
+    *num = nbr;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -445,11 +446,12 @@ elfshsect_t	*elfsh_get_hashtable_by_range(elfshobj_t *file, elfsh_Addr range, in
 		     "No Hash table",  NULL);
     }
   
-  nbucket = elfsh_get_hashnbucket(new->data);
-  nchain = elfsh_get_hashnchain(new->data);
+  /* Search number of entry do we get here */
+  nbr = file->secthash[ELFSH_SECTION_HASH]->shdr->sh_size;
+  nbr /= sizeof(elfsh_Word);
 
   if (num != NULL)
-    *num = nbucket+nchain;
+    *num = nbr;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
