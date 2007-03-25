@@ -1,14 +1,16 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.15 2007-03-14 18:37:57 strauss Exp $
+ * $Id: symtab.c,v 1.16 2007-03-25 20:50:50 thor Exp $
  *
  */
 #include <libmjollnir.h>
 
 
 
-/* Rebuild the symtab with original names when possible */
+/**
+ * Rebuild the symtab with original names when possible 
+ */
 int		mjr_symtab_rebuild(mjrsession_t *sess) 
 {
  int		cn;
@@ -22,9 +24,11 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  for (x = 0; x < cn; x++) 
    {
      tmp = hash_get(&sess->cur->blkhash, tab[x]);
-		 n = tmp->data;
+     n = tmp->data;
+
      fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjr_symtab_rebuild: "XFMT" \n",
 	     n->vaddr);
+
      if (!mjr_block_funcstart(tmp))
        continue;
      snprintf(s, BSIZE, "%s"AFMT, 
@@ -36,8 +40,8 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
 
 /* This function inserts new symbol as a function. Shortcut for insert/set */
 int		mjr_symbol_add(mjrsession_t	*sess, 
-							       elfsh_Addr		vaddr, 
-			  				     char					*fname)
+			       elfsh_Addr	vaddr, 
+			       char		*fname)
 {
   elfshsect_t	*sect;
   elfsh_Sym	sym;
@@ -51,6 +55,7 @@ int		mjr_symbol_add(mjrsession_t	*sess,
 
   if (!sect)
     return 0;
+
   sym = elfsh_create_symbol(vaddr, 0, STT_FUNC, 0, 0, sect->index);
   elfsh_insert_symbol(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB], &sym, fname);
   return 1;

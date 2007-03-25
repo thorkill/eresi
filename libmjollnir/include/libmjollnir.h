@@ -90,11 +90,11 @@ int		mjr_analyse(mjrsession_t *sess, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
 
 /* blocks.c */
-int	mjr_blocks_get(mjrcontext_t *ctxt);
-int	mjr_blocks_load(mjrcontext_t *c);
-mjrcontainer_t*     mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+int		mjr_blocks_get(mjrcontext_t *ctxt);
+int		mjr_blocks_load(mjrcontext_t *c);
+mjrcontainer_t* mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
 int		mjr_blocks_store(mjrcontext_t *c);
-u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf);
+u_int		mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 char 		*_vaddr2str(elfsh_Addr);
 
@@ -117,9 +117,9 @@ void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
 /* types.c */
-int            mjr_asm_flow(mjrcontext_t *c);
-elfsh_Addr     mjr_compute_fctptr(mjrcontext_t	*context);
-int	       mjr_insert_destaddr(mjrcontext_t *c);
+int		mjr_asm_flow(mjrcontext_t *c);
+elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
+int		mjr_insert_destaddr(mjrcontext_t *c);
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);
@@ -131,9 +131,9 @@ int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
 void		mjr_function_dump(char *,mjrcontainer_t *);
 u_int		mjr_function_flow_save(mjrcontainer_t *, u_int, mjrbuf_t *);
-int			mjr_functions_load(mjrcontext_t *);
-int			mjr_functions_get(mjrcontext_t *);
-int			mjr_functions_store(mjrcontext_t *);
+int		mjr_functions_load(mjrcontext_t *);
+int		mjr_functions_get(mjrcontext_t *);
+int		mjr_functions_store(mjrcontext_t *);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
@@ -151,14 +151,16 @@ mjrlink_t *mjr_container_add_link(mjrcontainer_t *cntnr, u_int id,
 
 mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
 
-mjrcontainer_t *mjr_create_block_container(u_int 				symoff,
+mjrcontainer_t *mjr_create_block_container(u_int 	symoff,
 					   elfsh_Addr	vaddr,
-					   u_int				size);
+					   u_int	size);
 
 mjrcontainer_t *mjr_create_function_container(elfsh_Addr	vaddr,
-					      u_int				size,
-					      char				*name,
+					      u_int		size,
+					      char		*name,
 					      mjrblock_t	*first,
-					      char				*md5);
+					      char		*md5);
+
+mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type);
 
 #endif

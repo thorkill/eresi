@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.4 2007-03-18 23:11:03 thor Exp $
+ * $Id: container.c,v 1.5 2007-03-25 20:50:50 thor Exp $
  *
  */
 
@@ -56,6 +56,15 @@ unsigned int mjr_register_container(mjrcontainer_t *cntnr)
   
   reg_containers[next_id] = cntnr;
   cntnr->id = next_id;
+
+#if __DEBUG_CNTNR__
+  fprintf(D_DESC,"[D] %s: %x registred id: %d type: %d\n",
+	  __FUNCTION__, 
+	  (cntnr->type == 1) ? 
+	  ((mjrblock_t *)cntnr->data)->vaddr :
+	  ((mjrfunc_t *)cntnr->data)->vaddr, cntnr->id, cntnr->type);
+#endif
+
   return next_id++;
 }
 
@@ -79,7 +88,15 @@ unsigned int mjr_register_container_id (mjrcontainer_t *cntnr)
   reg_containers[cntnr->id] = cntnr;
   if (cntnr->id >= next_id)
     next_id = cntnr->id + 1;
-  
+
+#if __DEBUG_CNTNR__
+  fprintf(D_DESC,"[D] %s: %x registred id: %d\n",
+	  __FUNCTION__, 
+	  (cntnr->type == 1) ? 
+	  ((mjrblock_t *)cntnr->data)->vaddr :
+	  ((mjrfunc_t *)cntnr->data)->vaddr, cntnr->id);
+#endif
+
   return cntnr->id;
 }
 
@@ -110,14 +127,46 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   mjrlink_t *cur;
   mjrlink_t *link;
-  
+
+#if __DEBUG_CNTNR__
+  mjrcontainer_t *cnt;
+  u_int vaddr1,vaddr2;
+#endif
+
+  if (cntnr->id == id)
+    fprintf(D_DESC,"[D] %s: linking the same container id:%d\n",
+	    __FUNCTION__,id);
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, link, 
 	 sizeof(mjrlink_t), NULL );
 
   link->id = id;
   link->type = link_type;
   link->next = NULL;
-  
+
+#if __DEBUG_CNTNR__
+
+  if (cntnr->type == MJR_CNTNR_FUNC)
+    vaddr1 = ((mjrfunc_t *)cntnr->data)->vaddr;
+  else if (cntnr->type == MJR_CNTNR_BLOCK)
+    vaddr1 = ((mjrblock_t *)cntnr->data)->vaddr;
+
+  cnt = mjr_lookup_container(id);
+  if (cnt->type == MJR_CNTNR_FUNC)
+    vaddr2 = ((mjrfunc_t *)cnt->data)->vaddr;
+  else if (cntnr->type == MJR_CNTNR_BLOCK)
+    vaddr2 = ((mjrblock_t *)cnt->data)->vaddr;
+
+  fprintf(D_DESC,"[D] %s: linking id:%d<%x> LD:%d id:%d<%x> LT:%d\n",
+	  __FUNCTION__,
+	  cntnr->id,
+	  vaddr1,
+	  link_direction,
+	  id,
+	  vaddr2,
+	  link_type);
+#endif
+
   if (link_direction == MJR_LINK_IN) 
     {
       cur = cntnr->input;
@@ -166,9 +215,19 @@ mjrcontainer_t *mjr_create_block_container(u_int symoff,
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  mjrblock_t 			*newblock;
+  mjrblock_t 		*newblock;
   mjrcontainer_t	*newcntnr;
-  
+
+#if __DEBUG_CNTNR__
+  newcntnr = mjr_get_container_by_vaddr(vaddr,MJR_CNTNR_BLOCK);
+  if (newcntnr)
+    {
+      fprintf(D_DESC,"[D] %s: block container %x id:%d is there\n",
+	      __FUNCTION__, vaddr, newcntnr->id);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
+    }
+#endif
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newblock, sizeof(mjrblock_t), NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newcntnr, sizeof(mjrcontainer_t), NULL);
   
@@ -182,7 +241,11 @@ mjrcontainer_t *mjr_create_block_container(u_int symoff,
   newcntnr->in_nbr = 0;
   newcntnr->output = NULL;
   newcntnr->out_nbr = 0;
-  
+
+#if __DEBUG_CNTNR__
+  fprintf(D_DESC,"[D] %s: create block %x (%d)\n",
+	  __FUNCTION__, vaddr, size);
+#endif
   mjr_register_container(newcntnr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
@@ -224,9 +287,65 @@ mjrcontainer_t *mjr_create_function_container(elfsh_Addr vaddr,
   newcntnr->in_nbr = 0;
   newcntnr->output = NULL;
   newcntnr->out_nbr = 0;
-  
+
+#if __DEBUG_CNTNR__
+  fprintf(D_DESC,"[D] %s: create func %x/<%s> (%d) %s\n",
+	  __FUNCTION__, vaddr, name, size, md5);
+#endif
+
   mjr_register_container(newcntnr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
 
+/**
+ * This function should be used only for debug
+ * it O(n) since this api doesn't know about hashes in the mjr context
+ */
+
+mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type)
+{
+  mjrcontainer_t	*cur;
+  u_int			idx;
+
+  PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
+
+  idx=1;
+  while((cur=reg_containers[idx++]))
+    {
+      if ((cur->type == type) && (cur->type == MJR_CNTNR_FUNC))
+	{
+	  if (((mjrfunc_t *)cur->data)->vaddr == vaddr)
+	    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,(mjrcontainer_t *)cur);
+	}    
+      else if ((cur->type == type ) && (cur->type == MJR_CNTNR_BLOCK))
+	{
+	  if (((mjrblock_t *)cur->data)->vaddr == vaddr)
+	    PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,(mjrcontainer_t *)cur);
+	}
+    }
+  PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,(mjrcontainer_t *)NULL);    
+}
+
+void mjr_container_dump(int what)
+{
+  mjrcontainer_t	*cur;
+  mjrfunc_t		*tf;
+  u_int			idx;
+  idx=1;
+  while((cur=reg_containers[idx++]))
+    {
+      if (cur->type == what)
+	{
+	  if (cur->type == MJR_CNTNR_FUNC)
+	    {
+	      tf = cur->data;
+	      printf("FOUND: FUNC T:%d V:%x I:%d O:%d\n",
+		     what,
+		     tf->vaddr,
+		     cur->in_nbr,
+		     cur->out_nbr);
+	    }
+	}
+    }
+}

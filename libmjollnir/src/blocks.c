@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.47 2007-03-18 23:11:03 thor Exp $
+** $Id: blocks.c,v 1.48 2007-03-25 20:50:50 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -40,11 +40,11 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
     dstblk = (mjrblock_t *) dst->data;
 
   /* Just create a new target block */
-  if (!dst) 
+  if (!dst)
   {
     dst = mjr_create_block_container(0, dest, 1);
     hash_add(&ctxt->blkhash, _vaddr2str(dest), dst);
-  } 
+  }
 
   /* Split block */
   else if (dstblk->vaddr != dest) 
@@ -56,22 +56,27 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
 
     dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
     dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+
     if (dst_true)
       mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+
     if (dst_false)
       mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
     
-    tmpcntnr = mjr_create_block_container(0, dest, 0);
+    // BUG: this block was created few lines before
+    // tmpcntnr = mjr_create_block_container(0, dest, 0);
+
     if (!dst_true)
-      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+      mjr_container_add_link(ctxt->curblock, dst_end->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
     else
-      dst_true->id = tmpcntnr->id;
-    
-    tmpcntnr = mjr_create_block_container(0, 0, 0);
-    if (!dst_false)
-      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
-    else
-      dst_false->id = tmpcntnr->id;
+      dst_true->id = dst_end->id;
+
+    // BUG: this doesn't make sense
+    //    tmpcntnr = mjr_create_block_container(0, 0, 0);
+    //    if (!dst_false)
+    //      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
+    //    else
+    //      dst_false->id = tmpcntnr->id;
     
     dst             = dst_end;
   }
@@ -80,7 +85,7 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
   if (!tmpcntnr)
     tmpcntnr = mjr_create_block_container(0, vaddr, 0);
   
-  mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
+  mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -455,14 +460,23 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
   if (!ctxt)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "missing context", (NULL));
-  
-  /* Exact match */
-  if (mode == 0)
-  {
-    ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-  }
 
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: get %x (%d)\n",
+	  __FUNCTION__, vaddr, mode);
+#endif
+  /* Exact match */
+  ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
+
+#if __DEBUG_BLOCKS__
+  if (ret)
+    fprintf(D_DESC,"[D] %s: found %x in hash\n",
+	    __FUNCTION__, vaddr);
+#endif
+  
+  if ((mode == 0) || ((mode == 1) && (ret)))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  
   /* Parent match */
   keys = hash_get_keys(&ctxt->blkhash, &size);
   for (index = 0; index < size; index++)

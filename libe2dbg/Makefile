@@ -82,6 +82,7 @@ clean		       :
 fclean		       : clean
 		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32).so
 		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64).so
+		       @$(RM) $(DBGNAME32).a $(DBGNAME64).a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

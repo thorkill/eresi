@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.27 2007-03-18 23:11:03 thor Exp $
+ * $Id: function.c,v 1.28 2007-03-25 20:50:50 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -166,16 +166,16 @@ void		*mjr_fingerprint_function(mjrcontext_t  *ctx,
 					  elfsh_Addr	addr, 
 					  int		type) 
 {
-  MD5_CTX				md5ctx;
-  unsigned char fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
-  unsigned char	digest[16];
-  char					*pt;
-  void          *ret;
-  u_int					i;
-  int 					mlen;
+  MD5_CTX		md5ctx;
+  unsigned char		fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
+  unsigned char		digest[16];
+  char			*pt;
+  void			*ret;
+  u_int			i;
+  int 			mlen;
   elfsh_SAddr		off;
   elfshsect_t		*sect;
-  unsigned char	*buff;
+  unsigned char		*buff;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = NULL;
@@ -290,7 +290,9 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
       }
     
     mjr_register_container_id (curcntnr);
+#if __DEBUG_FUNCS__
     mjr_function_dump((char *)__FUNCTION__, curcntnr);
+#endif
     hash_add(&ctxt->funchash, (char *) _vaddr2str(curfnc->vaddr), curcntnr);
   }
   
@@ -305,7 +307,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
  *
  * returns the number of functions (0 probably means something is wrong)
  */
-int						mjr_functions_get(mjrcontext_t *ctxt)
+int			mjr_functions_get(mjrcontext_t *ctxt)
 {
   elfshsect_t	*sect;
 	int					cnt;
@@ -330,7 +332,7 @@ int						mjr_functions_get(mjrcontext_t *ctxt)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Flow analysis failed", 0);
+	       "Flow analysis failed", 0);
 }
 
 
@@ -340,23 +342,23 @@ int						mjr_functions_get(mjrcontext_t *ctxt)
 /* Create the block information to be saved in file */
 int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 {
-  char						buffer[24];
-  elfsh_Sym				bsym;
-  elfsh_Sym				*sym;
-  mjrfunc_t				*curfunc, *fnc;
-	mjrcontainer_t 	*curcntnr;
+  char			buffer[24];
+  elfsh_Sym		bsym;
+  elfsh_Sym		*sym;
+  mjrfunc_t		*curfunc, *fnc;
+  mjrcontainer_t 	*curcntnr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!cur)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
-
-	fnc = cur->data;
+  
+  fnc = cur->data;
 
   /* At this points, no new block allocation should be done */
   snprintf(buffer, sizeof (buffer), "%s%lX",
-				   (char *) config_get_data(MJR_COFING_CALL_PREFIX),
-				   (unsigned long) fnc->vaddr);
+	   (char *) config_get_data(MJR_COFING_CALL_PREFIX),
+	   (unsigned long) fnc->vaddr);
 
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
 
@@ -372,29 +374,30 @@ int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
   {
     buf->allocated = getpagesize();;
     XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-			     buf->data, buf->allocated, -1);
+	   buf->data, buf->allocated, -1);
     buf->maxlen = 0;
   }
-  else if (buf->allocated  < (buf->maxlen + 
-															sizeof(mjrcontainer_t) + 
-															sizeof(mjrfunc_t)))
+  else if (buf->allocated  < (buf->maxlen + sizeof(mjrcontainer_t) + sizeof(mjrfunc_t)))
   {
     buf->allocated += getpagesize();
     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
 				     buf->data, buf->data, buf->allocated, -1);
   }
 
-	curcntnr = (mjrcontainer_t *) ((char *) buf->data + buf->maxlen);
-  curfunc = (mjrfunc_t *) ((char *) buf->data + buf->maxlen + 
-																		sizeof(mjrcontainer_t));
-
-	memcpy(curcntnr, cur, sizeof(mjrcontainer_t));
+  curcntnr = (mjrcontainer_t *) ((char *) buf->data + buf->maxlen);
+  curfunc = (mjrfunc_t *) ((char *) buf->data + buf->maxlen + sizeof(mjrcontainer_t));
+  
+  memcpy(curcntnr, cur, sizeof(mjrcontainer_t));
   memcpy(curfunc, cur->data, sizeof(mjrfunc_t));
 
-  /* Then we create the symbol for the function and return */
+  /* 
+     Then we create the symbol for the function and return 
+     when symbol doesn't exists in symtab
+  */
   bsym = elfsh_create_symbol(curfunc->vaddr, curfunc->size, STT_FUNC, 0, 0, 0);
   elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
-	buf->maxlen += sizeof(mjrcontainer_t);
+
+  buf->maxlen += sizeof(mjrcontainer_t);
   buf->maxlen += sizeof(mjrfunc_t);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -404,14 +407,14 @@ int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 /* XXX: You should never use printf but vm_output */
 int			mjr_functions_store(mjrcontext_t *ctxt) 
 {
-  elfsh_Shdr			shdr;
-  elfshsect_t			*sect;
-  mjrbuf_t				buf,cfbuf;
-	mjrcontainer_t	*cntnr;
-  int							err;
-  char						**keys;
-  int							keynbr;
-  int							index;
+  elfsh_Shdr		shdr;
+  elfshsect_t		*sect;
+  mjrbuf_t		buf,cfbuf;
+  mjrcontainer_t	*cntnr;
+  int			err;
+  char			**keys;
+  int			keynbr;
+  int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -440,26 +443,37 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   for (index = 0; index < keynbr; index++)
   {
     u_int flowOffp,flowOffc;
+    mjrlink_t *tmpp,*tmpc;
 
     cntnr = hash_get(&ctxt->funchash, keys[index]);
+
+#if __DEBUG_FUNCS__
     mjr_function_dump((char *)__FUNCTION__, cntnr);
+#endif
 
     /* 1st Save flow information and get offset from the beginning 
 		 * of .edfmt.fcontrol 
 		 */
 
     flowOffp = mjr_function_flow_save(cntnr, 0, &cfbuf);
-    fprintf(D_DESC, " [D] %s: parentOffset: %d\n", __FUNCTION__, flowOffp);
-
     flowOffc = mjr_function_flow_save(cntnr, 1, &cfbuf);
+
+#if __DEBUG_FUNCS__
+    fprintf(D_DESC, " [D] %s: parentOffset: %d\n", __FUNCTION__, flowOffp);
     fprintf(D_DESC, " [D] %s: childOffset: %d\n", __FUNCTION__, flowOffc);
+#endif
       
     /* Set New pointers */
+    tmpp = cntnr->input;
+    tmpc = cntnr->output;
     cntnr->input = (mjrlink_t *)flowOffp;
     cntnr->output = (mjrlink_t *)flowOffc;
 
     /* 2nd Save function structure */
     mjr_function_save(cntnr, &buf);
+
+    cntnr->input = tmpp;
+    cntnr->output = tmpc;
 
   }
 
@@ -492,4 +506,3 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
-

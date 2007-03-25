@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.27 2007-03-22 09:43:26 mxatone Exp $
+** $Id: tables.c,v 1.28 2007-03-25 20:50:50 thor Exp $
 **
 */
 #include "revm.h"
@@ -877,7 +877,7 @@ static void	setup_cmdhash()
   /* Flow analysis commands */
   vm_addcmd(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
   vm_addcmd(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
-  vm_addcmd(CMD_GRAPH     , cmd_graph         , vm_getoption3,   1, HLP_GRAPH);
+  vm_addcmd(CMD_GRAPH     , cmd_graph         , vm_getvarparams, 1, HLP_GRAPH);
   vm_addcmd(CMD_INSPECT   , cmd_inspect       , vm_getoption,    1, HLP_INSPECT);
   vm_addcmd(CMD_FLOWJACK  , cmd_flowjack      , vm_getoption2,   1, HLP_FLOWJACK);
   vm_addcmd(CMD_ADDGOTO   , cmd_addgoto       , vm_getoption2,   1, HLP_ADDGOTO);

@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.14 2007-03-25 14:27:35 may Exp $
+** $Id: init.c,v 1.15 2007-03-25 20:50:50 thor Exp $
 **
 */
 
@@ -258,6 +258,12 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
+
+  config_add_item("graph.autobuild",
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 1);
+
 
   if (!mjr_init_session(&world.mjr_session))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

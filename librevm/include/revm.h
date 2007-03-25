@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.49 2007-03-25 14:27:34 may Exp $
+** $Id: revm.h,v 1.50 2007-03-25 20:50:50 thor Exp $
 **
 */
 #ifndef __REVM_H_
@@ -54,6 +54,10 @@
  #include <libui.h>
 #endif
 
+#if defined(__FreeBSD__)
+  extern char **environ;
+#endif
+
 /* Thanks to sk from Devhell Labs we have a libasm */
 #include <libasm.h>
  
@@ -73,7 +77,7 @@ extern asm_processor	proc;
 #define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
 #define __DEBUG_TRACE__		0
-#define	__DEBUG_GRAPH__		0
+#define	__DEBUG_GRAPH__		1
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
