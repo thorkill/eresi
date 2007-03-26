@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.7 2007-03-25 15:00:27 may Exp $
+** $Id: revm-io.h,v 1.8 2007-03-26 23:21:33 thor Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -88,6 +88,13 @@ char	prompt_token[512];
 #define GVZ_COLOR_RED		"\"red\""
 #define GVZ_COLOR_GREEN		"\"green\""
 #define GVZ_COLOR_BLACK		"\"black\""
+#define GVZ_COLOR_GREY		"\"grey\""
+
+#define GVZ_NODE_EPOINT		0
+#define GVZ_NODE_MAIN		1
+#define GVZ_NODE_INTERN		2
+#define GVZ_NODE_EXTERN		3
+#define GVZ_NODE_UNKNOWN	4
 
 #define BLK_COLOR_FUNC		GVZ_COLOR_GREEN
 #define BLK_COLOR_NORM		GVZ_COLOR_CYAN
@@ -97,6 +104,12 @@ char	prompt_token[512];
 #define BLK_COLOR_CONT		GVZ_COLOR_BLACK
 #define BLK_COLOR_CALL		GVZ_COLOR_BLUE
 #define BLK_COLOR_JUMP		GVZ_COLOR_BLACK
+
+#define FNC_COLOR_INTERN	GVZ_COLOR_GREY
+#define FNC_COLOR_EPOINT	GVZ_COLOR_GREEN
+#define FNC_COLOR_EXTERN	GVZ_COLOR_CYAN
+#define FNC_COLOR_MAIN		GVZ_COLOR_BLUE
+#define FNC_COLOR_DEFAULT	GVZ_COLOR_GREY
 
 /* Return of an input function in case of ignorable input */
 #define REVM_INPUT_VOID		(-1)
