@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.48 2007-03-25 20:50:50 thor Exp $
+** $Id: blocks.c,v 1.49 2007-03-26 14:52:30 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -28,12 +28,13 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
 			elfsh_Addr     	vaddr,
 			elfsh_Addr     	dest)
 {
-  mjrcontainer_t	*dst, *dst_end, *tmpcntnr;
+  mjrcontainer_t	*dst, *dst_end, *tmpcntnr, *src,*dst1,*backto;
   mjrblock_t		*dstblk;
   mjrlink_t		*dst_true, *dst_false;
-  int			new_size;
+  int			new_size,retaddr;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
 
   if (dst)
@@ -54,22 +55,69 @@ int	mjr_block_point(mjrcontext_t	*ctxt,
     dst_end         = mjr_create_block_container(0, dest, new_size);
     hash_add(&ctxt->blkhash, _vaddr2str(dest), dst_end);
 
-    dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
-    dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+    switch(ins->type)
+      {
+      case ASM_TYPE_CALLPROC:
 
-    if (dst_true)
-      mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+	retaddr = asm_instr_len(ins) + ctxt->hist[MJR_HISTORY_CUR].vaddr;
+	
+	if (!(dst1 = mjr_block_get_by_vaddr(ctxt, dest, 0)))
+	  fprintf(D_DESC," [D] %s: dst1 %x not found\n",
+		  __FUNCTION__, dest);
 
-    if (dst_false)
-      mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-    
-    // BUG: this block was created few lines before
-    // tmpcntnr = mjr_create_block_container(0, dest, 0);
+	if (!(src = mjr_block_get_by_vaddr(ctxt, vaddr, 1)))
+	  fprintf(D_DESC," [D] %s: src %x not found\n",
+		  __FUNCTION__, vaddr);
 
-    if (!dst_true)
-      mjr_container_add_link(ctxt->curblock, dst_end->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-    else
-      dst_true->id = dst_end->id;
+	if (!(backto = mjr_block_get_by_vaddr(ctxt, retaddr, 1)))
+	  fprintf(D_DESC," [D] %s: backto %x not found\n",
+		  __FUNCTION__, retaddr);
+
+	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_FUNC_CALL);
+	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_FUNC_RET);
+
+	if (dst_true)
+	    mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+	
+	if (dst_false)
+	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
+
+	break;
+
+      case ASM_TYPE_CONDBRANCH:
+	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
+	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+
+	if (dst_true)
+	  mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+	
+	if (dst_false)
+	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+
+	break;
+
+      case ASM_TYPE_IMPBRANCH:
+	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
+	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
+
+	if (dst_true)
+	  mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+	
+	if (dst_false)
+	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+
+	break;
+
+      default:
+	fprintf(D_DESC," [D] %s: ASM instruction not supported: %d\n",
+		__FUNCTION__, ins->type);
+	break;
+      }
+
+    //if (!dst_true)
+    //      mjr_container_add_link(ctxt->curblock, dst_end->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+    //    else
+    //      dst_true->id = dst_end->id;
 
     // BUG: this doesn't make sense
     //    tmpcntnr = mjr_create_block_container(0, 0, 0);

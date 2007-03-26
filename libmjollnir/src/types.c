@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.25 2007-03-25 20:50:50 thor Exp $
+** $Id: types.c,v 1.26 2007-03-26 14:52:30 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -347,9 +347,6 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
-
-
-
 
 
 /**
