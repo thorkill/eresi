@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.7 2007-03-17 13:05:31 may Exp $
+** $Id: signal.c,v 1.8 2007-03-26 17:09:35 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -352,7 +352,7 @@ void			e2dbg_do_breakpoint()
       if (!e2dbgworld.stoppedthread->step)
 	{
 #if __DEBUG_BP__
-	  fprintf(stderr, "RESETING STEP MODE ! \n");
+	  fprintf(stderr, " [S] RESETING STEP MODE ! \n");
 #endif
 	  e2dbg_resetstep();
 	  return;
@@ -384,6 +384,11 @@ void			e2dbg_do_breakpoint()
       memcpy((u_char *) *pc, bp->savedinstr, bpsz);
       elfsh_mprotect(*pc, bpsz, prot);
       e2dbg_setstep();
+
+#if __DEBUG_BP__
+      fprintf(stderr, " [S] SETTING STEP MODE ! \n");
+#endif
+
       e2dbgworld.stoppedthread->past  = *pc;
       e2dbgworld.stoppedthread->count = E2DBG_BREAK_HIT;
       e2dbgworld.curbp                = bp;
@@ -477,9 +482,11 @@ void			e2dbg_generic_breakpoint(int		signum,
   e2dbg_do_breakpoint();
 
   /* Continue all threads */
-  if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_FINISHED)
+  if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_FINISHED || 
+      e2dbgworld.curthread->step || e2dbgworld.curthread->was_step)
     {
       e2dbg_thread_contall();
+      e2dbgworld.curthread->was_step = 0;
       e2dbgworld.stoppedthread->count = E2DBG_BREAK_NONE;
       e2dbgworld.curbp                = NULL;
   

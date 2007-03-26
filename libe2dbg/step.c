@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: step.c,v 1.5 2007-03-17 13:05:31 may Exp $
+** $Id: step.c,v 1.6 2007-03-26 17:09:35 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -25,6 +25,7 @@ int		e2dbg_step()
       e2dbg_output("\n [*] Disabled stepping\n\n");
       e2dbgworld.curthread->step = 0;
       e2dbgworld.curthread->count = E2DBG_BREAK_NONE;
+      e2dbgworld.curthread->was_step = 1;
     }
 
   /* Disable stepping and continue */

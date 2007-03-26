@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.8 2007-03-25 14:27:34 may Exp $
+** $Id: libe2dbg.h,v 1.9 2007-03-26 17:09:35 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -21,7 +21,7 @@
 #endif
 
 #define		__DEBUG_E2DBG__		0
-#define		__DEBUG_BP__		1
+#define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
 #define		__DEBUG_THREADS__	0
@@ -207,6 +207,7 @@ typedef struct		s_thread
 
   elfsh_Addr		past;			/* Previous opcode instead of break */
   u_char		step;			/* Is this thread beeing stepped ? */
+  u_char		was_step;		/* Is this thread was just beeing stepped ? */
   u_char		trace;			/* Is the thread beeing itraced ? */
   void			*(*entry)(void *);	/* Entry point */
   ucontext_t		*context;		/* Thread context on signal */
@@ -269,7 +270,6 @@ typedef struct		s_e2dbgworld
 #define			ELFSH_MUTEX_UNLOCKED	0
 #define			ELFSH_MUTEX_LOCKED	1
   elfshmutex_t		dbgbp;				/* The breakpoint handler mutex */
-  //pthread_barrier_t	barrier;			/* Threads breakpoint barrier */
 
   /* Exit status */
   int			exited;				/* Debugger exited */
