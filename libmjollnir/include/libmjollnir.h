@@ -23,14 +23,14 @@
 /* An history entry */
 typedef struct		s_history
 {
-  elfsh_Addr		vaddr;
-  asm_instr		instr;
-}			mjrhistory_t;
+  elfsh_Addr  		vaddr;
+  asm_instr		    instr;
+}	mjrhistory_t;
 
 /* The context of a single session */
 typedef struct		_mjrContext 
 {
-  elfshobj_t		*obj;        /* elfsh object */
+  elfshobj_t		  *obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
   mjrcontainer_t	*curblock;   /* current working block */
   mjrcontainer_t	*curfunc;    /* current working function */
@@ -41,12 +41,12 @@ typedef struct		_mjrContext
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
-  hash_t		funchash;    /* functions hash table */
-  hash_t		blkhash;     /* blocks hash table for this obj */
+  hash_t		      funchash;    /* functions hash table */
+  hash_t		      blkhash;     /* blocks hash table for this obj */
   unsigned char		analysed;    /* do we analysed it */
-  u_int			calls_seen;  /* FIXME */
-  u_int			calls_found; /* FIXME */
-}			mjrcontext_t;
+  u_int			      calls_seen;  /* FIXME */
+  u_int			      calls_found; /* FIXME */
+}	mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
 typedef struct	s_session

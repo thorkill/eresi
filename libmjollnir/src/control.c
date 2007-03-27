@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: control.c,v 1.20 2007-03-25 20:50:50 thor Exp $
+** $Id: control.c,v 1.21 2007-03-27 13:10:36 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -194,21 +194,21 @@ int			mjr_trace_control(mjrcontext_t	*context,
     if ((context->curblock = mjr_block_get_by_vaddr(context, vaddr, 0)))
       ((mjrblock_t *)context->curblock->data)->size = 0;
     else 
-      {
-	context->curblock = mjr_create_block_container(0, vaddr, 0);
-	hash_add(&context->blkhash, _vaddr2str(vaddr), context->curblock);
+    {
+    	context->curblock = mjr_create_block_container(0, vaddr, 0);
+    	hash_add(&context->blkhash, _vaddr2str(vaddr), context->curblock);
 	
-	if (context->hist[MJR_HISTORY_PREV].vaddr)
-	  {
-	    tmp = mjr_block_get_by_vaddr(context, context->hist[MJR_HISTORY_PREV].vaddr, 0);
-	    if (!tmp)
+    	if (context->hist[MJR_HISTORY_PREV].vaddr)
+ 	    {
+  	    tmp = mjr_block_get_by_vaddr(context, context->hist[MJR_HISTORY_PREV].vaddr, 0);
+  	    if (!tmp)
 	      {
-		tmp = mjr_create_block_container(0, context->hist[MJR_HISTORY_PREV].vaddr, 0);
-		hash_add(&context->blkhash, _vaddr2str(context->hist[MJR_HISTORY_PREV].vaddr), tmp);
+      		tmp = mjr_create_block_container(0, context->hist[MJR_HISTORY_PREV].vaddr, 0);
+      		hash_add(&context->blkhash, _vaddr2str(context->hist[MJR_HISTORY_PREV].vaddr), tmp);
 	      }
-    	    mjr_container_add_link(context->curblock, tmp->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
-	  }
-      }
+   	    mjr_container_add_link(context->curblock, tmp->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
+  	  }
+    }
   }
   
   /* 
@@ -217,15 +217,15 @@ int			mjr_trace_control(mjrcontext_t	*context,
   ** previously detected block. 
   */
   else if ((tmp = mjr_block_get_by_vaddr(context, vaddr, 0))) 
-    {
-      mjr_container_add_link( context->curblock,
-			      tmp->id,
-			      MJR_LINK_BLOCK_COND_TRUE,
-			      MJR_LINK_OUT);
+  {
+    mjr_container_add_link( context->curblock,
+                  		      tmp->id,
+                			      MJR_LINK_BLOCK_COND_TRUE,
+                			      MJR_LINK_OUT);
       
-      ((mjrblock_t *)context->curblock->data)->size  = 0;
-      context->curblock        = tmp;
-    }
+    ((mjrblock_t *)context->curblock->data)->size  = 0;
+    context->curblock = tmp;
+  }
   
   /* From there, we MUST be in a block */
   assert(context->curblock != NULL);
@@ -240,7 +240,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
   
   /* Now abstract interpret the operational semantics of the current 
      instruction set using the typed instruction system of libasm */
-  context->obj      = obj;
+  context->obj = obj;
 
   // BUG: what is it for?
   mjr_history_write(context, ins, vaddr, 0);

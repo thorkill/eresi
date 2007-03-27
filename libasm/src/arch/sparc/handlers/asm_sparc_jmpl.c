@@ -1,13 +1,13 @@
 /*
 **
-** $Id: asm_sparc_jmpl.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_jmpl.c,v 1.4 2007-03-27 13:10:35 may Exp $
 **
 */
 #include "libasm.h"
 
 int
 asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
-	       asm_processor * proc)
+	 asm_processor * proc)
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
@@ -39,14 +39,14 @@ asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
   }
   else if (ins->op1.base_reg == ASM_REG_G0) {
     if (ins->op2.type == ASM_SP_OTYPE_IMM_ADDRESS &&
-	ins->op2.base_reg == ASM_REG_I7 && ins->op2.imm == 8) {
+  ins->op2.base_reg == ASM_REG_I7 && ins->op2.imm == 8) {
 
       ins->instr = ASM_SP_RET;
       ins->type = ASM_TYPE_RETPROC;
       ins->nb_op = 0;
     }
     else if (ins->op2.type == ASM_SP_OTYPE_IMM_ADDRESS &&
-	     ins->op2.base_reg == ASM_REG_O7 && ins->op2.imm == 8) {
+       ins->op2.base_reg == ASM_REG_O7 && ins->op2.imm == 8) {
 
       ins->instr = ASM_SP_RETL;
       ins->type = ASM_TYPE_RETPROC;
