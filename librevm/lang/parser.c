@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 mayhem
 **
-** $Id: parser.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: parser.c,v 1.3 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -57,8 +57,9 @@ int			vm_parseopt(int argc, char **argv)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We are at command line */
-  cmdline = (world.state.vm_mode == REVM_STATE_CMDLINE && 
-	     !world.state.vm_net);
+  cmdline = ((world.state.vm_mode == REVM_STATE_CMDLINE 
+	     || world.state.vm_mode == REVM_STATE_TRACER)
+	     && !world.state.vm_net);
 
   /* Main option reading loop : using the command hash table */
   for (index = 1; index < argc; index++)

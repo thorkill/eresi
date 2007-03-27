@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.11 2007-03-22 09:43:26 mxatone Exp $
+ * $Id: ia32.c,v 1.12 2007-03-27 20:56:03 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -914,11 +914,11 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	    final_args[index] = reserv - p->value + 20;
 	  else
 	    {
-	      final_args[index] = p->value - 16;
+	      final_args[index] = p->value - (16-(p->prec == NULL ? sizeof(elfsh_Addr) : 0));
 
 	      /* XXX: wrong readed argument */
-	      if (final_args[index] < 0)
-		final_args[index] = 4;
+	      if (final_args[index] < sizeof(elfsh_Addr))
+		final_args[index] = sizeof(elfsh_Addr);
 	    }
 
 	  continue;

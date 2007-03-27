@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.51 2007-03-27 08:48:17 thor Exp $
+** $Id: revm.h,v 1.52 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #ifndef __REVM_H_
@@ -267,7 +267,6 @@ extern asm_processor	proc;
 #define CMD_TRACEADD		"traceadd"
 #define CMD_TRACERUN		"tracerun"
 #define CMD_TRACEADD_CMDLINE	"t"
-#define CMD_TRACERUN_CMDLINE	"r"
 #define	CMD_TYPE		"type"
 #define	CMD_TYPEDEF		"typedef"
 
@@ -940,6 +939,8 @@ char		*vm_build_unknown(char *buf, const char *str, u_long type);
 void		vm_filter_zero(char *str);
 int		vm_parseopt(int argc, char **argv);
 void            vm_findhex(u_int argc, char **argv);
+int		vm_trans_speblank(const char *in, char ***av, u_int *ac);
+void		vm_replace_speblanks(u_int argc, char **argv);
 u_int           vm_findblanks(char *buf);
 char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
 
@@ -947,6 +948,7 @@ char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
 int		vm_strtable_add(char *string);
 
 /* Trace functions */
+int		vm_traces_add_arguments(int argc, char **argv);
 edfmtfunc_t 	*vm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
 elfshtraces_t  	*vm_traces_createargs(elfshobj_t *file, char *name,
 					 edfmtfunc_t *func, elfsh_Addr vaddr,

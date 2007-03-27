@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.10 2007-03-23 17:04:12 mxatone Exp $
+** $Id: traces.c,v 1.11 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -16,6 +16,39 @@
 #define TRACES_GOT 	3
 
 char buf[BUFSIZ];
+
+#define TRACE_USED_longjmp		0
+#define TRACE_USED__setjmp		1
+#define TRACE_USED_signal		2
+#define TRACE_USED_snprintf		3
+#define TRACE_USED_memset		4
+#define TRACE_USED_gettimeofday		5
+#define TRACE_USED_write		6
+#define TRACE_USED_MAX			7
+
+typedef struct _trace_used
+{
+  char *name;
+  u_char exist;
+} trace_used, *ptrace_used;
+
+#define TRACE_FUNCTIONS_ADD(_name) \
+{ #_name, 0 }
+
+#define FUNC_BEGIN(_name) \
+(trace_functions[TRACE_USED_##_name].exist ? "old_" : "")
+
+trace_used trace_functions[] = 
+  { 
+    TRACE_FUNCTIONS_ADD(longjmp),
+    TRACE_FUNCTIONS_ADD(_setjmp),
+    TRACE_FUNCTIONS_ADD(signal),
+    TRACE_FUNCTIONS_ADD(snprintf),
+    TRACE_FUNCTIONS_ADD(memset),
+    TRACE_FUNCTIONS_ADD(gettimeofday),
+    TRACE_FUNCTIONS_ADD(write),
+    { "", 0 }
+  };
 
 /**
  * Store every traces, this table store another hash table for each key 
@@ -31,6 +64,33 @@ int trace_enabled_count = 0;
 #define ELFSH_TRACES_PATTERN "traces_%s"
 
 /**
+ * Check every function used on the new module if there already exist or not
+ * @param file host file
+ */
+static int		elfsh_check_trace_functions(elfshobj_t *file)
+{
+  u_int			index;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+
+  /* Each used functions */
+  for (index = 0; index < TRACE_USED_MAX; index++)
+    {
+      /* Check on dynsym table */
+      if (elfsh_get_dynsymbol_by_name(file, trace_functions[index].name))
+	{
+	  trace_functions[index].exist = 1;
+	}
+      else
+	{
+	  trace_functions[index].exist = 0;
+	}
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
  * Create a new trace 
  * @param trace trace name
  * @return trace hash table
@@ -43,7 +103,7 @@ hash_t			*elfsh_traces_createtrace(char *trace)
 
   if (!trace)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", NULL);    
+		 "Invalid parameters", NULL);
 
   elfsh_traces_inittrace();
 
@@ -181,9 +241,10 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      snprintf(bufex, BUFSIZ - 1, 
 		       ")\n{\n"
 		       "\tint ret;\n\tunsigned char readable, isstring;\n"
+		       "\tstruct timeval before, after;\n"
 		       "\tgettrace_time();\n"
-		       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %s(\", pad_print(1));\n"
-		       "\twrite(STDERR, logbuf, strlen(logbuf)+1);",
+		       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %s(\", pad_print(1));\n"
+		       "\tWRITENOW();\n",
 		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
@@ -198,7 +259,7 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 			       "\tisstring = 0;\n"
 			       "\treadable = check_read_ptr((void *)a%d.ptr, MAX_CHECK_CHAR+1);\n"
 			       "\tif (readable)\n\t\tisstring = is_string((void *)a%d.ptr);\n"
-			       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%s", z, z, start);
+			       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%s", z, z, start);
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		      
 		      if (ret_trace->type == ELFSH_ARG_TYPE_BASED)
@@ -217,15 +278,16 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 			       "(isstring ? (char*)a%d.ptr : (readable ? "
 			       "hex_to_str((void *)a%d.ptr) : \"\")), "
 			       "isstring ? \"\\\"\" : \"\");\n"
-			       "\twrite(STDERR, logbuf, strlen(logbuf)+1);", 
+			       "\tWRITENOW();\n", 
 			       z, z, z);
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		    }
 		}
 	      
 	      snprintf(bufex, BUFSIZ - 1, 
-		       "\tsnprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
-		       "\twrite(STDERR, logbuf, strlen(logbuf)+1);"
+		       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
+		       "\tWRITENOW();\n"
+		       "\tT_gettimeofday(&before, NULL);\n"
 		       "\tret = old_%s(", ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
@@ -243,10 +305,24 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 
 	      snprintf(bufex, BUFSIZ - 1,
 		       ");\n"
+		       "\tT_gettimeofday(&after, NULL);\n"
+		       "\tisstring = 0;\n"
+		       "\treadable = check_read_ptr((void *)ret, MAX_CHECK_CHAR+1);\n"
+		       "\tif (readable)\n\t\tisstring = is_string((void *)ret);\n"
 		       "\tgettrace_time();\n"
-		       "\tsnprintf(logbuf, LOGBUFSIZ -1, \"%%s - %s = %%x\\n\", "
-		       "pad_print(0), ret);\n"
-		       "\twrite(STDERR, logbuf, strlen(logbuf));"
+		       "\tT_snprintf(logbuf, LOGBUFSIZ -1, \"%%s - %s = \", "
+		       "pad_print(0));\n"
+		       "\tWRITENOW();\n"
+		       "\tT_snprintf(logbuf, LOGBUFSIZ -1, \"%%s0x%%x%%s%%s%%s "
+		       "[time spent=%%d.%%06d]\\n\", "
+		       "readable ? \"*\" : \"\", "
+		       "(void*)ret, "
+		       "isstring ? \" \\\"\" : \"\", "
+		       "(isstring ? (char*)ret : (readable ? "
+		       "hex_to_str((void *)ret) : \"\")), "
+		       "isstring ? \"\\\"\" : \"\", after.tv_sec - before.tv_sec, "
+		       "after.tv_usec - before.tv_usec);\n"
+		       "\tWRITENOW();\n"
 		       "\treturn ret;\n}\n",
 		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
@@ -331,6 +407,9 @@ int			elfsh_traces_save(elfshobj_t *file)
   printf("[DEBUG TRACE] Relocatable filename: %s\n", rsofname);
 #endif
 
+  /* Check every used functions */
+  elfsh_check_trace_functions(file);
+
   // Write basic stuff, include headers and
   //   pad functions (to have a tree like form)
   snprintf(buf, BUFSIZ - 1, 
@@ -342,10 +421,18 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "#include <unistd.h>\n"
 	   "#include <sys/time.h>\n"
 	   "#include <sys/resource.h>\n\n"
+	   "#define T_longjmp %slongjmp\n"
+	   "#define T_setjmp %s_setjmp\n"
+	   "#define T_signal %ssignal\n"
+	   "#define T_snprintf %ssnprintf\n"
+	   "#define T_memset %smemset\n"
+	   "#define T_gettimeofday %sgettimeofday\n"
+	   "#define T_write %swrite\n"
 	   "#define MAX_CHECK_CHAR 3\n"
 	   "#define PRINTABLE(c) (c >= 32 && c <= 126)\n"
 	   "#define STDERR 2\n"
 	   "#define ARG(_size) trace_arg_##_size\n"
+	   "#define WRITENOW() T_write(STDERR, logbuf, strlen(logbuf)+1)\n"
 	   "jmp_buf jBuf;\n"
 	   "#define LOGBUFSIZ 256\n"
 	   "char logbuf[LOGBUFSIZ];\n"
@@ -367,21 +454,21 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\tint index;\n"
 	   "\tchar elem;\n"
 	   "\tvoid (*prev_sig) (int sig);\n\n"
-	   "\tif (!ptr || size <= 0)\n"
+	   "\tif (!ptr || size <= 0 || ptr < (void*)0x5000)\n"
 	   "\t\treturn 0;\n\n"
-	   "\tif(setjmp(jBuf))\n"
+	   "\tif(T_setjmp(jBuf))\n"
 	   "\t\treturn 0;\n\n"
-	   "\tprev_sig = signal(SIGSEGV, check_ptr_failed);\n\n"
+	   "\tprev_sig = T_signal(SIGSEGV, check_ptr_failed);\n\n"
 	   "\tfor (index = 0; index < size; index++)\n"
 	   "\t\telem = ((char *)ptr)[index];\n\n"
-	   "\tsignal(SIGSEGV, prev_sig);\n"
+	   "\tT_signal(SIGSEGV, prev_sig);\n"
 	   "\treturn 1;\n"
 	   "}\n\n"
 	   "char tmpbuf[256];\n"
 	   "char *hex_to_str(const void *ptr)\n{\n"
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
-	   "\tsnprintf(tmpbuf, 255, \" = 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
+	   "\tT_snprintf(tmpbuf, 255, \" = 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
 	   "cptr[0] & 0xFF, cptr[1] & 0xFF, cptr[2] & 0xFF, cptr[3] & 0xFF);\n"
 	   "\treturn tmpbuf;\n"
 	   "}\n\n"
@@ -390,28 +477,34 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "char *pad_print(int inc)\n{\n"
 	   "\tint i;\n"
 	   "\tif (inc == 0)\n\t\tpad_count -= 2;\n"
-	   "\tfor (i = 0; i < pad_count; i++)\n"
-	   "\t\tpad_str[i] = ' ';\n"
-	   "\t\tpad_str[i] = 0;\n"
+	   "\t\tT_memset(pad_str, ' ', pad_count);\n"
+	   "\t\tpad_str[pad_count] = 0;\n"
 	   "\tif (inc == 1)\n\t\tpad_count += 2;\n"
 	   "\treturn pad_str;\n}\n\n"
 	   "int setup = 0;\n"
 	   "void gettrace_time()\n{\n"
-	   "\tstruct rusage use;\n"
-	   "\tdouble difftime;\n"
+	   "\tdouble difftime = 0;\n"
 	   "\tstruct timeval now;\n"
-	   "\tgettimeofday(&now, NULL);\n"
+	   "\tT_gettimeofday(&now, NULL);\n"
 	   "\tif (setup == 0)\n\t{\n"
-	   "\t\t\n"
-	   "\t\tgetrusage(RUSAGE_SELF, &use);\n"
-	   "\t\tmsec = now.tv_usec - (use.ru_utime.tv_usec + use.ru_stime.tv_usec);\n"
-	   "\t\tsec = now.tv_sec - (use.ru_utime.tv_sec + use.ru_stime.tv_sec);\n"
-	   "\t\tsetup = 1;\n"
+	   "\t\tmsec = now.tv_usec;\n"
+	   "\t\tsec = now.tv_sec;\n"
 	   "\t}\n"
-	   "\tdifftime = (now.tv_sec - sec) + ((double) (now.tv_usec - msec)) * 0.000001;\n"
-	   "\tsnprintf(logbuf, LOGBUFSIZ - 1, \"%%0.4f \", difftime);\n"
-	   "\twrite(STDERR, logbuf, strlen(logbuf)+1);\n"
-	   "}\n");
+	   "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%4d.%%06d \", now.tv_sec - sec, now.tv_usec - msec);\n"
+	   "\tWRITENOW();\n"
+	   "\tif (setup)\n\t{\n"
+	   "\t\tmsec = now.tv_usec;\n"
+	   "\t\tsec = now.tv_sec;\n"
+	   "\t}\n"
+	   "\tsetup = 1;\n"
+	   "}\n",
+	   FUNC_BEGIN(longjmp),
+	   FUNC_BEGIN(_setjmp),
+	   FUNC_BEGIN(signal),
+	   FUNC_BEGIN(snprintf),
+	   FUNC_BEGIN(memset),
+	   FUNC_BEGIN(gettimeofday),
+	   FUNC_BEGIN(write));
   fwrite(buf, strlen(buf), sizeof(char), fp);
 
   /* Setup structures */

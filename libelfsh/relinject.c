@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.10 2007-03-17 17:26:06 mxatone Exp $
+** $Id: relinject.c,v 1.11 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -46,7 +46,6 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
      
 {
   elfshobj_t	*dep;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

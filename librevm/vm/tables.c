@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.28 2007-03-25 20:50:50 thor Exp $
+** $Id: tables.c,v 1.29 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -747,10 +747,12 @@ static void	setup_cmdhash()
     {
       vm_addcmd(CMD_BINFILE_W, (void *) NULL, (void *) vm_getoutput, 0, "");
       vm_addcmd(CMD_BINFILE_R, (void *) NULL, (void *) vm_getinput , 0, "");
+    }
 
+  if (world.state.vm_mode == REVM_STATE_TRACER)
+    {
       /* Traces aliases */
       vm_addcmd(CMD_TRACEADD_CMDLINE, (void *) cmd_traceadd, (void *) vm_getvarparams, 1, HLP_TRACEADD);
-      vm_addcmd(CMD_TRACERUN_CMDLINE, (void *) cmd_tracerun, (void *) vm_getvarparams, 1, HLP_TRACERUN);
     }
 
   /* General purpose command */

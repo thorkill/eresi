@@ -4,7 +4,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: scanner.c,v 1.6 2007-03-25 14:27:35 may Exp $
+** $Id: scanner.c,v 1.7 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -16,9 +16,9 @@ void			vm_findhex(u_int argc, char **argv)
   u_int			index;
   char			*buf;
   char			*ptr;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* For each of the argv[] entry */
   for (index = 0; index < argc; index++)
     {
@@ -30,8 +30,107 @@ void			vm_findhex(u_int argc, char **argv)
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
 	buf = vm_filter_param(buf, ptr);
     }
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+/* Translate a speblanks string */
+int			vm_trans_speblank(const char *in, char ***av, u_int *ac)
+{
+  char			**argv;
+  u_int			argc = 1;
+  u_int			index;
+  u_int			count = 0;
+  size_t		len;
+  char			*ptr;
+  char			str[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!str || !str[0])
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  snprintf(str, BUFSIZ - 1, "%s", in);
+  len = strlen(str);
+
+  /* Trim the string */
+  while (str[count] == ' ')
+    count++;
+
+  /* Only spaces ? */
+  if (count == len)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  if (count > 0)
+    {
+      memmove(str, str+count, len - count + 1);
+      len = strlen(str);
+    }
+
+  /* Trim the end */
+  while (str[len - 1] == ' ' && str[len - 2] != '\\')
+  {
+    str[len - 1] = 0x00;
+    len--;
+  }
+
+  for (ptr = strchr(str, ' '); ptr != NULL; ptr = strchr(ptr+1, ' '))
+    {
+      /* Check if its a valid space */
+      if ((ptr - str) > 0 && ptr[-1] != '\\')
+	{
+	  *ptr = 0x00;
+	  argc++;
+	}
+    }
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, argv, sizeof(char*)*argc, -1);
+  
+  /* Copy each parts */
+  for (index = 0, ptr = str; index < argc; index++, ptr += strlen(ptr)+1)
+    argv[index] = strdup(ptr);
+
+  /* Replace '\ ' */
+  vm_replace_speblanks(argc, argv);
+
+  if (av)
+    *av = argv;
+
+  if (ac)
+    *ac = argc;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Replace '\ ' by the ' ', I wished readline could have done that */
+void			vm_replace_speblanks(u_int argc, char **argv)
+{
+  u_int			index;
+  char			*buf;
+  char			*ptr;
+  size_t		len;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* For each of the argv[] entry */
+  for (index = 0; index < argc; index++)
+    {
+      if (argv[index] == NULL)
+	continue;
+      buf = argv[index];
+      len = strlen(buf);
+
+      /* Find "\ " sequences */
+      for (ptr = strstr(buf, "\\ "); ptr != NULL; ptr = strstr(ptr+1, "\\ "))
+	{
+	  *ptr = ' ';
+	  memmove(ptr+1, ptr+2, len - (ptr - buf + 2));
+	}
+    }
    PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
+
 
 
 /* Count blanks, so that we can allocate argv */

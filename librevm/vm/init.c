@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.16 2007-03-27 08:48:17 thor Exp $
+** $Id: init.c,v 1.17 2007-03-27 20:56:03 mxatone Exp $
 **
 */
 
@@ -39,8 +39,9 @@ int		vm_loop(int argc, char **argv)
   reenter:
 
     /* Fill argv from stdin if we are in interactive mode */
-    if (world.state.vm_mode != REVM_STATE_CMDLINE || 
-	world.state.vm_net == 1)
+    if ((world.state.vm_mode != REVM_STATE_CMDLINE
+	 && world.state.vm_mode != REVM_STATE_TRACER) 
+	|| world.state.vm_net == 1)
       {
 	if (world.state.vm_mode != REVM_STATE_SCRIPT)
 	  {
@@ -91,7 +92,8 @@ int		vm_loop(int argc, char **argv)
     /* Fetch the current scripting command */
     if (vm_parseopt(argc, argv) < 0)
       {
-	if (world.state.vm_mode != REVM_STATE_CMDLINE)
+	if (world.state.vm_mode != REVM_STATE_CMDLINE
+	    && world.state.vm_mode != REVM_STATE_TRACER)
 	  {
 	    //XFREE(__FILE__, __FUNCTION__, __LINE__,argv[1]);
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
@@ -126,7 +128,9 @@ int		vm_loop(int argc, char **argv)
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
       break;
   }
-  while (world.state.vm_mode != REVM_STATE_CMDLINE || world.state.vm_net);
+  while ((world.state.vm_mode != REVM_STATE_CMDLINE
+	 && world.state.vm_mode != REVM_STATE_TRACER)
+	 || world.state.vm_net);
 
   /* If we are in scripting, execute commands list now */
   if (world.state.vm_mode == REVM_STATE_SCRIPT)
@@ -153,7 +157,8 @@ int		vm_loop(int argc, char **argv)
     }
 
   /* Implicit unload or save if we are not in interactive mode */
-  if (world.state.vm_mode == REVM_STATE_CMDLINE && world.curjob->current)
+  if ((world.state.vm_mode == REVM_STATE_CMDLINE 
+       || world.state.vm_mode == REVM_STATE_TRACER) && world.curjob->current)
     ret = vm_unload_cwfiles();
 
 #if defined(USE_READLN)
@@ -219,9 +224,15 @@ int		vm_setup(int ac, char **av, char mode, char side)
 #endif
       elfsh_set_debug_mode();
     }
+  else if (mode == REVM_STATE_TRACER)
+    {
+      elfsh_set_static_mode();
 
+      world.state.vm_mode = mode;
+      world.state.vm_side = side;
+    }
   /* Set REVM in static mode */
-  else if (mode != REVM_STATE_TRACER)
+  else
     {
       elfsh_set_static_mode();
 
