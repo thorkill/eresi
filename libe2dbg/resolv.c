@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.6 2007-03-25 14:27:34 may Exp $
+** $Id: resolv.c,v 1.7 2007-03-27 00:08:41 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -577,8 +577,13 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   exit(-1);
 #endif
 
-  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", LIBPATH, version);
+  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", ELFSH_LIBPATH, version);
+
+#if defined(linux)
   baseaddr = e2dbg_dlsect(path, ".got.plt", (elfsh_Addr) &reference, "reference");
+#else
+  baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
+#endif
 
 #if __DEBUG_E2DBG__
   len = sprintf(buf, " [*] Base address - 1st = %08X\n", baseaddr);

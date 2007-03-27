@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.9 2007-03-26 17:09:35 may Exp $
+** $Id: libe2dbg.h,v 1.10 2007-03-27 00:08:42 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -20,11 +20,11 @@
   extern char **environ;
 #endif
 
-#define		__DEBUG_E2DBG__		0
+#define		__DEBUG_E2DBG__		1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	0
-#define		__DEBUG_THREADS__	0
+#define		__DEBUG_LINKMAP__	1
+#define		__DEBUG_THREADS__	1
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
 #define		E2DBG_PROFILER_BUFLEN	256
