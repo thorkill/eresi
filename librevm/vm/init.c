@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.15 2007-03-25 20:50:50 thor Exp $
+** $Id: init.c,v 1.16 2007-03-27 08:48:17 thor Exp $
 **
 */
 
@@ -244,22 +244,22 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_MODE_RW,
 		  (void *) 1);
   
-  config_add_item("graph.storegepath",
+  config_add_item(ELFSH_VMCONFIG_GRAPH_STORAGEPATH,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
-		  (char *)"~/graphs/");
+		  (char *)"/tmp/");
 
-  config_add_item("graph.viewcmd",
+  config_add_item(ELFSH_VMCONFIG_GRAPH_VIEWCMD,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)"xzgv");
 
-  config_add_item("graph.autoview",
+  config_add_item(ELFSH_VMCONFIG_GRAPH_AUTOVIEW,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
-  config_add_item("graph.autobuild",
+  config_add_item(ELFSH_VMCONFIG_GRAPH_AUTOBUILD,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
