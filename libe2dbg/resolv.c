@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.7 2007-03-27 00:08:41 may Exp $
+** $Id: resolv.c,v 1.8 2007-03-27 00:49:44 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -131,6 +131,8 @@ int			e2dbg_load_linkmap(char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  fprintf(stderr, "Load linkmap of process %s (done = %u) \n", name, done);
+  
   if (done)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
@@ -293,11 +295,11 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
-  write(1, " [*] e2dbg_dlsect called for resolving ", 39);
-  write(1, sect2resolve, strlen(sect2resolve));
-  write(1, " in ", 4);
-  write(1, objname, strlen(objname));
-  write(1, "\n", 1);
+  write(2, " [*] e2dbg_dlsect called for resolving ", 39);
+  write(2, sect2resolve, strlen(sect2resolve));
+  write(2, " in ", 4);
+  write(2, objname, strlen(objname));
+  write(2, "\n", 1);
 #endif
 
   memset(&obj, 0x00, sizeof(obj));
@@ -305,14 +307,14 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   XREAD(obj.fd, &obj.e, sizeof(elfsh_Ehdr), 0);
 
 #if __DEBUG_E2DBG__
-  write(1, " [*] 1", 6);
+  write(2, " [*] 1", 6);
 #endif
 
   XSEEK(obj.fd, obj.e.e_phoff, SEEK_SET, 0);
   pht = alloca(obj.e.e_phnum * sizeof(elfsh_Phdr));
 
 #if __DEBUG_E2DBG__
-  write(1, "2", 1);
+  write(2, "2", 1);
 #endif
 
   XREAD(obj.fd, pht, obj.e.e_phnum * sizeof(elfsh_Phdr), 0);
@@ -324,14 +326,14 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
       }
 
 #if __DEBUG_E2DBG__
-  write(1, "3", 1);
+  write(2, "3", 1);
 #endif
 
   XSEEK(obj.fd, obj.dynoff, SEEK_SET, 0);
   dyn = alloca(pht[nbr].p_filesz);
 
 #if __DEBUG_E2DBG__
-  write(1, "4", 1);
+  write(2, "4", 1);
 #endif
 
   XREAD(obj.fd, dyn, pht[nbr].p_filesz, 0);
@@ -348,36 +350,36 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
     }
 
 #if __DEBUG_E2DBG__
-  write(1, "5", 1);
+  write(2, "5", 1);
 #endif
  
   strtab = alloca(obj.strsz);
   if (!strtab)
     {
-      write(1, " Failed to alloca string table\n", 31);
+      write(2, " Failed to alloca string table\n", 31);
       return (-1);
     }
   if (!obj.symoff)
     {
-     write(1, " Unable to find SYMOFF from PT_DYNAMIC\n", 39);
+     write(2, " Unable to find SYMOFF from PT_DYNAMIC\n", 39);
      return (-1);
     }
 
   if (!obj.stroff)
     {
-      write(1, " Unable to find STROFF rom PT_DYNAMIC\n", 39);
+      write(2, " Unable to find STROFF rom PT_DYNAMIC\n", 39);
       return (-1);
     }
 
   if (!obj.strsz)
     {
-      write(1, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
+      write(2, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
       return (-1);
     }
   
   if (!got)
     {
-      write(1, " Unable to find PLTGOT from PT_DYNAMIC\n", 39);
+      write(2, " Unable to find PLTGOT from PT_DYNAMIC\n", 39);
       return (-1);
     }
  
@@ -404,7 +406,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
     }
 
 #if __DEBUG_E2DBG__
-  write(1, "8", 1);
+  write(2, "8", 1);
 #endif
 
   if (!found_ref)
@@ -412,11 +414,11 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 		      "Unable to find reference symbol in object", 0);
 
 #if __DEBUG_E2DBG__
-  write(1, " Success !\n", 11);
+  write(2, " Success !\n", 11);
   len = snprintf(buf, sizeof(buf), 
 		 " [*] REFADDR = %08X and FOUNDREF = %08X and GOT = %08X \n", 
 		 refaddr, found_ref, got);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   /* The reference addr is useful to deduce library base addresses */
@@ -455,13 +457,12 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       if (!curobj->lname || !*curobj->lname || strstr(curobj->lname, "e2dbg"))
 	continue;
 
-
 #if __DEBUG_E2DBG__
-      write(1, " [*] e2dbg_dlsym called for resolving ", 38);
-      write(1, sym2resolve, strlen(sym2resolve));
-      write(1, " in ", 4);
-      write(1, curobj->lname, strlen(curobj->lname));
-      write(1, "\n", 1);
+      write(2, " [*] e2dbg_dlsym called for resolving ", 38);
+      write(2, sym2resolve, strlen(sym2resolve));
+      write(2, " in ", 4);
+      write(2, curobj->lname, strlen(curobj->lname));
+      write(2, "\n", 1);
 #endif
       
       memset(&obj, 0x00, sizeof(obj));
@@ -491,19 +492,19 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       /* Checking if everything is ok */
       if (!obj.symoff)
 	{
-	  write(1, " Unable to find SYMOFF from PT_DYNAMIC\n", 39);
+	  write(2, " Unable to find SYMOFF from PT_DYNAMIC\n", 39);
 	  return (-1);
 	}
       
       if (!obj.stroff)
 	{
-	  write(1, " Unable to find STROFF rom PT_DYNAMIC\n", 39);
+	  write(2, " Unable to find STROFF rom PT_DYNAMIC\n", 39);
 	  return (-1);
 	}
       
       if (!obj.strsz)
 	{
-	  write(1, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
+	  write(2, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
 	  return (-1);
 	}
       
@@ -511,7 +512,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       len = snprintf(buf, sizeof(buf), 
 		     " [*] SYMOFF = %u (%08X), STROFF = %u (%08X), STRSZ = %u \n",
 		     obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
-      write(1, buf, len);
+      write(2, buf, len);
 #endif
 
       XCLOSE(obj.fd, 0);
@@ -530,7 +531,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 #if __DEBUG_E2DBG__
 	      len = snprintf(buf, sizeof(buf), " [*] FOUNDSYM (%s) = %08X \n", 
 			     strtab + cursym.st_name, found_sym);
-	      write(1, buf, len);
+	      write(2, buf, len);
 #endif
 
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
@@ -565,7 +566,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
 #if __DEBUG_E2DBG__
   len = sprintf(buf, " [*] e2dbg_linkmap_getaddr called\n");
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
 #if defined(ELFSH32)
@@ -587,14 +588,14 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
 #if __DEBUG_E2DBG__
   len = sprintf(buf, " [*] Base address - 1st = %08X\n", baseaddr);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   got = (elfsh_Addr *) baseaddr;
 
 #if __DEBUG_E2DBG__
   len = sprintf(buf, " [*] GOT address = %08X\n", (elfsh_Addr) got);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
@@ -608,7 +609,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #if __DEBUG_E2DBG__
   len = sprintf(buf, " [*] Guessed Linkmap address = %08X \n--------------\n", 
 		(elfsh_Addr) lm);
-  write(1, buf, len);
+  write(2, buf, len);
 #endif
 
   return (lm);
@@ -701,11 +702,12 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
+  /* Non fatal symbols, especially on BSD */
 
   e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
-  if (!e2dbgworld.syms.memalignsym)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig memalign not found", (-1));
+  //if (!e2dbgworld.syms.memalignsym)
+  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  //	      "Orig memalign not found", (-1));
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
@@ -714,14 +716,15 @@ int		e2dbg_dlsym_init()
 #endif
 
   e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
-  if (!e2dbgworld.syms.pthreadcreate)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig pthread_create not found", (-1));
+  //if (!e2dbgworld.syms.pthreadcreate)
+  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  //	      "Orig pthread_create not found", (-1));
 
   e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
-  if (!e2dbgworld.syms.pthreadexit)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig pthread_exit not found", (-1));
+
+  //if (!e2dbgworld.syms.pthreadexit)
+  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  //	      "Orig pthread_exit not found", (-1));
 
   e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)

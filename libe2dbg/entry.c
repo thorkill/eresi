@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.5 2007-03-17 13:05:31 may Exp $
+** $Id: entry.c,v 1.6 2007-03-27 00:49:44 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -156,6 +156,8 @@ int				atexit(void (*fini)(void))
   e2dbgparams_t			params;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  e2dbg_presence_set();
   
 #if __DEBUG_E2DBG__
   printf("[(e2dbg)atexit] there\n");
@@ -182,29 +184,40 @@ int				atexit(void (*fini)(void))
     {
       beg = strchr(env, '=');
       if (beg)
-	env = beg + 1;
+	beg++;
     }
+  else
+    beg = "unknown";
 
+  /* Initialize a "fake" thread if we are debugging a monothread program */
+  if (e2dbgworld.curthread == NULL)
+    e2dbg_curthread_init();
+  
   /* Load the debugger only one time */
   if (bFusible == 0)
     {
       bFusible = 1;
       args[0] = E2DBG_ARGV0;
-      args[1] = env; 
+      args[1] = beg; 
       args[2] = NULL;
-      //CLRSIG;
       e2dbgworld.preloaded = 1;
       params.ac = 2;
       params.av = args;
+      
+      /* Load the debugger in a new thread */
+      e2dbgworld.preloaded = 1;
+      
+      /* Initalize mutexes */
+      e2dbg_mutex_init(&e2dbgworld.dbgbp);      
       e2dbg_entry(&params); 
-      //SETSIG;
     }
   
 #if __DEBUG_E2DBG__
-  printf("[(e2dbg)atexit 3]\n");
+  printf("[e2dbg-fbsd: atexit 3]\n");
 #endif
-  
+
   /* Recall the original function */
+  e2dbg_presence_reset();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     libc_atexit(fini));
 }
