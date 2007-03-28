@@ -1,7 +1,7 @@
 /*
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.16 2007-03-25 20:50:50 thor Exp $
+ * $Id: symtab.c,v 1.17 2007-03-28 10:19:05 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -45,6 +45,9 @@ int		mjr_symbol_add(mjrsession_t	*sess,
 {
   elfshsect_t	*sect;
   elfsh_Sym	sym;
+
+  if (elfsh_get_symbol_by_value(sess->cur->obj, vaddr, 0, ELFSH_EXACTSYM))
+    return 0;
   
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, NULL);
 

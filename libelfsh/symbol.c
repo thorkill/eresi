@@ -3,7 +3,7 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id: symbol.c,v 1.7 2007-03-28 10:19:05 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -207,17 +207,18 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
     elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
   sorted = file->secthash[ELFSH_SECTION_SYMTAB]->altdata;
 
-
   for (index = 0; index < num; index++)
     if (sorted[index].st_value <= value && DUMPABLE(sorted + index) &&
-	(index + 1 >= num || sorted[index + 1].st_value > value))
-      {
-	*offset = (elfsh_SAddr) (value - sorted[index].st_value);
-	str = elfsh_get_symbol_name(file, sorted + index);
-	if (!*str)
-	  str = NULL;
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
-      }
+        	(index + 1 >= num || sorted[index + 1].st_value > value))
+    {
+    	*offset = (elfsh_SAddr) (value - sorted[index].st_value);
+
+    	str = elfsh_get_symbol_name(file, sorted + index);
+    	if (!*str)
+    	  str = NULL;
+
+    	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
+    }
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No valid symbol interval", NULL);

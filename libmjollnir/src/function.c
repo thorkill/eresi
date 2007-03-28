@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.28 2007-03-25 20:50:50 thor Exp $
+ * $Id: function.c,v 1.29 2007-03-28 10:19:05 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -363,6 +363,9 @@ int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
 
   if (sym)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+
+  if (elfsh_get_symbol_by_value(buf->obj, curfunc->vaddr, 0, ELFSH_EXACTSYM))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
 #if __DEBUG_BLOCKS__

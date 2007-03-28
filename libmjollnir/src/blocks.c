@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.49 2007-03-26 14:52:30 thor Exp $
+** $Id: blocks.c,v 1.50 2007-03-28 10:19:05 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -532,7 +532,7 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
     ret = hash_get(&ctxt->blkhash, keys[index]);
     tmpblock = (mjrblock_t *) ret->data;
     
-    if (tmpblock->vaddr >= vaddr && vaddr <= tmpblock->vaddr + tmpblock->size)
+    if (tmpblock->vaddr <= vaddr && vaddr <= tmpblock->vaddr + tmpblock->size)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
   }
   
