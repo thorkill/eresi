@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.12 2007-03-27 20:56:03 mxatone Exp $
+ * $Id: ia32.c,v 1.13 2007-03-28 08:11:11 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -730,7 +730,8 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
   int         	ret;
   int	      	reserv = 0;
   int	      	ffp = 0;
-  int         	len = 1024;
+  const int    	asm_len = 1024;
+  int         	len = 0;
   s_sint      	*args = NULL, *p = NULL;
   int	      	*final_args;
   elfsh_Addr  	f_vaddr, up_vaddr;
@@ -849,10 +850,10 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
     }
 
   /* Enumerate all arguments */
-  for (index = 0; index < len && data; index += ret)
+  for (index = 0; index < asm_len && data; index += ret)
     {
       /* Read an instruction */
-      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)) > 0)
+      if ((ret = asm_read_instr(&i, (u_char *) (data + index), asm_len -  index, &proc)) > 0)
 	{
 	  /* We don't want to read another function */
 	  if (i.instr == ASM_RET)
@@ -917,8 +918,8 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	      final_args[index] = p->value - (16-(p->prec == NULL ? sizeof(elfsh_Addr) : 0));
 
 	      /* XXX: wrong readed argument */
-	      if (final_args[index] < sizeof(elfsh_Addr))
-		final_args[index] = sizeof(elfsh_Addr);
+	      if (final_args[index] < (int)sizeof(elfsh_Addr))
+		final_args[index] = (int)sizeof(elfsh_Addr);
 	    }
 
 	  continue;

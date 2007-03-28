@@ -4,7 +4,7 @@
 ** Started Jan 26 2007 11:54:22 mxatone
 **
 **
-** $Id: api.c,v 1.12 2007-03-07 16:45:35 thor Exp $
+** $Id: api.c,v 1.13 2007-03-28 08:11:11 mxatone Exp $
 **
 */
 
@@ -17,6 +17,10 @@ edfmtinfo_t *uniinfo = NULL;
 
 u_char file_active = 0;
 elfshobj_t *cu_obj = NULL;
+
+#define API_HTYPE_NAME 	"edfmt_api_htype"
+#define API_HVAR_NAME 	"edfmt_api_hvar"
+#define API_HFUNC_NAME 	"edfmt_api_hfunc"
 
 #define API_GETPTR(_size) \
 edfmt_alloc_pool(&(uniinfo->alloc_pool), &(uniinfo->alloc_pos), \
@@ -95,9 +99,9 @@ int			edfmt_add_init(elfshobj_t *file)
 	     file->debug_format.uni, sizeof(edfmtinfo_t), NULL);	
       uniinfo = file->debug_format.uni;
 
-      hash_init(&(uniinfo->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
-      hash_init(&(uniinfo->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
-      hash_init(&(uniinfo->hfunc), NULL, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->htype), API_HTYPE_NAME, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->hvar), API_HVAR_NAME, 30, ASPECT_TYPE_UNKNOW);
+      hash_init(&(uniinfo->hfunc), API_HFUNC_NAME, 30, ASPECT_TYPE_UNKNOW);
     } 
   else 
     {							
@@ -501,9 +505,9 @@ edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name,
   file->end = end;
   
   /* Init hash tables */
-  hash_init(&(file->htype), NULL, 30, ASPECT_TYPE_UNKNOW);
-  hash_init(&(file->hvar), NULL, 30, ASPECT_TYPE_UNKNOW);
-  hash_init(&(file->hfunc), NULL, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->htype), API_HTYPE_NAME, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->hvar), API_HVAR_NAME, 30, ASPECT_TYPE_UNKNOW);
+  hash_init(&(file->hfunc), API_HFUNC_NAME, 30, ASPECT_TYPE_UNKNOW);
 
   /* Update pointers depending if he get a parrent */
   if (parent_file != NULL)

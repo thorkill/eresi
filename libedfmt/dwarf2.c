@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2.c,v 1.17 2007-03-07 16:45:35 thor Exp $
+** $Id: dwarf2.c,v 1.18 2007-03-28 08:11:11 mxatone Exp $
 **
 */
 
@@ -15,6 +15,8 @@
  * specificitation @ http://dwarf.freestandards.org/Download.php 
  * @file dwarf2.c
  */
+
+#define DWARF2_ABBREV_NAME "dwarf2_abbrev_table"
 
 /**
  * Dwarf2 information structure
@@ -230,7 +232,7 @@ int			edfmt_dwarf2_block_loop(u_int endpos)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);   
 
   if (current_cu->abbrev_table.ent == NULL)
-    hash_init(&(current_cu->abbrev_table), NULL, 30, ASPECT_TYPE_UNKNOW);
+    hash_init(&(current_cu->abbrev_table), DWARF2_ABBREV_NAME, 30, ASPECT_TYPE_UNKNOW);
   
   /* Parse abbrev table on the appropriate offset */
   edfmt_dwarf2_abbrev_enum(&(current_cu->abbrev_table));
