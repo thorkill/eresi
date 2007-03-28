@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.50 2007-03-28 10:19:05 may Exp $
+** $Id: blocks.c,v 1.51 2007-03-28 12:53:41 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -353,7 +353,7 @@ int	mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
     buf->maxlen = 0;
   }
 
-  else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t)))
+  else if (buf->allocated  < (buf->maxlen + sizeof(mjrblock_t) + sizeof(mjrcontainer_t)))
   {
     buf->allocated += getpagesize();
     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
