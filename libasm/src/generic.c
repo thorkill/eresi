@@ -1,6 +1,6 @@
 /*
-** Latest edition Author : $Author: thor $
-** $Id: generic.c,v 1.5 2007-02-21 08:50:40 thor Exp $
+** Latest edition Author : $Author: may $
+** $Id: generic.c,v 1.6 2007-04-01 23:33:16 may Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */

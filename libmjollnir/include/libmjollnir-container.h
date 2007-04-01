@@ -5,7 +5,7 @@
  *
  * Container structures for libmjollnir
  *
- * $Id: libmjollnir-container.h,v 1.5 2007-03-25 20:50:50 thor Exp $
+ * $Id: libmjollnir-container.h,v 1.6 2007-04-01 23:33:16 may Exp $
  *
  */
 
@@ -36,7 +36,8 @@ typedef	struct		s_link
 #define MJR_LINK_BLOCK_COND_TRUE	2 /* 'true' condition of a branch */
 #define MJR_LINK_BLOCK_COND_FALSE	3 /* 'false' condition of a branch */
 #define MJR_LINK_BLOCK_COND_ALWAYS	4 /* uncoditional branch */
-#define	MJR_LINK_UNKNOWN		5 /* unknown type */
+#define MJR_LINK_DELETE			5 /* internal mark for link delete */
+#define	MJR_LINK_UNKNOWN		6 /* unknown type */
   unsigned int		id;
   int			type;
   struct s_link		*next;

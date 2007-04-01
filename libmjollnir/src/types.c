@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.27 2007-03-27 13:10:36 may Exp $
+** $Id: types.c,v 1.28 2007-04-01 23:33:16 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -30,22 +30,28 @@
  */
 int		mjr_asm_flow(mjrcontext_t *context)
 {
-  int			        ilen;
-  char			      *md5, *tmpstr;
-  mjrcontainer_t	*fun, *tmpcntnr;
-  asm_instr		    *curins;
-  elfsh_Addr		  curvaddr, dstaddr, tmpaddr;
-  mjrlink_t		    *true, *false;
-  mjrfunc_t		    *tmpfunc;
+  int			ilen,plen;
+  char			*md5, *tmpstr;
+  mjrcontainer_t	*fun;
+  asm_instr		*curins,*previns;
+  elfsh_Addr		curvaddr,prevvaddr, dstaddr, tmpaddr;
+  mjrlink_t		*true;
+  mjrfunc_t		*tmpfunc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   curins   = &context->hist[MJR_HISTORY_CUR].instr;
   curvaddr = context->hist[MJR_HISTORY_CUR].vaddr;
-  ilen     = asm_instr_len(curins);
 
-  true = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_TRUE);
-  false = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_FALSE);
+  /*
+   * we do trace previouse instruction in order to
+   * split blocks in right way
+   */
+  previns   = &context->hist[MJR_HISTORY_PREV].instr;
+  prevvaddr = context->hist[MJR_HISTORY_PREV].vaddr;
+
+  ilen     = asm_instr_len(curins);  
+  plen    = asm_instr_len(previns);
 
   tmpstr = _vaddr2str(curvaddr);
   if ((fun = hash_get(&context->funchash, tmpstr)))
@@ -53,60 +59,58 @@ int		mjr_asm_flow(mjrcontext_t *context)
  
   fun = NULL;
 
-  /* Switch on instruction types provided by libasm */
-  switch (curins->type)
-  {
+  switch (previns->type)
+    {
     case ASM_TYPE_CONDBRANCH:
-    dstaddr = mjr_insert_destaddr(context);
-
-    true = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_TRUE);
-  	false = mjr_get_link_of_type(context->curblock->output, MJR_LINK_BLOCK_COND_FALSE);
+      dstaddr = mjr_get_jmp_destaddr(context);
 
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
 	    "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
+	    " F:" XFMT"\n", prevvaddr, dstaddr, curvaddr);
 #endif
     if (dstaddr != -1)
-  	{
-  	  // BUG: True has been created by mjr_block_point
-  	  if (!(tmpcntnr = mjr_block_get_by_vaddr(context, dstaddr, 0)))
-	    {
-	      fprintf(D_DESC,"[!] This should never happend!\n");
-	      tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
-	    }
+      mjr_blocks_link_jmp(context, prevvaddr, dstaddr, curvaddr);
 
-  	  // at this point we should have true
-  	  if (!true)
-        true = mjr_container_add_link(context->curblock, 
-                                      tmpcntnr->id,
-                            				  MJR_LINK_BLOCK_COND_TRUE,
-                          					  MJR_LINK_OUT);
-  	  else
-  	    true->id = tmpcntnr->id;
-	  
-  	  if (!(tmpcntnr = mjr_block_get_by_vaddr(context, dstaddr, 0)))
-  	    tmpcntnr = mjr_create_block_container(0, curvaddr + ilen, 0);
-
-  	  if (!false)
-  	    false = mjr_container_add_link(context->curblock, 
-                          					   tmpcntnr->id,
-                          					   MJR_LINK_BLOCK_COND_FALSE,
-                          					   MJR_LINK_OUT);
-  	  else
-  	    false->id = tmpcntnr->id;
-	  
-  	  context->curblock = 0;
-  	}
     break;
+    
+    case ASM_TYPE_IMPBRANCH:
+      dstaddr = mjr_get_jmp_destaddr(context);
       
+#if __DEBUG_FLOW__
+      fprintf(D_DESC,
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
+	      " F: NULL \n", prevvaddr, dstaddr);
+#endif
+
+      if (dstaddr != -1)
+	{
+	  if (curvaddr < dstaddr)
+	    mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
+	  else
+	    {
+	      mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
+	    }
+	}
+      break;
+
+    default:
+#if __DEBUG_FLOW__
+      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: PREV: %x DEFAULT %d\n",prevvaddr, previns->type);
+#endif
+      break;
+    }
+
+  /* Switch on instruction types provided by libasm */
+  switch (curins->type)
+  {
     case ASM_TYPE_CALLPROC:
-      dstaddr = mjr_insert_destaddr(context);
+      dstaddr = mjr_get_call_destaddr(context);
     
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC   T:" XFMT
-	      " F:" XFMT "\n", curvaddr, dstaddr, curvaddr + ilen);
+	      "[__DEBUG__] mjr_asm_flow: in block:" XFMT " " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
+	      " F:" XFMT "\n", prevvaddr, curvaddr, dstaddr, curvaddr + ilen);
 #endif
       
       context->calls_seen++;
@@ -118,30 +122,13 @@ int		mjr_asm_flow(mjrcontext_t *context)
  */
       if ((dstaddr) && (dstaddr != -1))
     	{
-    	  if (!(tmpcntnr = mjr_block_get_by_vaddr(context, dstaddr, 0)))
-    	    tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
+	  /* Link block layer */
+	  mjr_blocks_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
 
-    	  if (!true)
-    	    true = mjr_container_add_link(context->curblock, 
-                                			  tmpcntnr->id,
-                            					  MJR_LINK_BLOCK_COND_TRUE,
-                            					  MJR_LINK_OUT);
+	  /* Link/Prepare function layer */
+	  true = mjr_block_get_by_vaddr(context, dstaddr, 0);
 
-    	  else
-    	    true->id = tmpcntnr->id;
-
-    	  if (!(tmpcntnr = mjr_block_get_by_vaddr(context, dstaddr, 0)))
-    	    tmpcntnr = mjr_create_block_container(0, curvaddr + ilen, 0);
-
-    	  if (!false)
-    	    false = mjr_container_add_link(context->curblock,
-                            					   tmpcntnr->id,
-                            					   MJR_LINK_BLOCK_COND_FALSE,
-                            					   MJR_LINK_IN);
-
-    	  else
-    	    false->id = tmpcntnr->id;
-	  
+	  /* Note that function hash is another layer of containers */
     	  /* XXX: put this in a vector of fingerprinting techniques */
     	  tmpaddr = ((mjrblock_t *)mjr_lookup_container(true->id)->data)->vaddr;
     	  tmpstr = _vaddr2str(tmpaddr);
@@ -149,16 +136,16 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	  
     	  if (!fun)
   	    {
-          fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
-          hash_add(&context->funchash, tmpstr, fun);
+	      fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+	      hash_add(&context->funchash, tmpstr, fun);
   	    }
 	  
     	  if (context->curfunc)
   	    {
   	      mjr_container_add_link(fun, context->curfunc->id, 
-	                        	     MJR_LINK_FUNC_CALL, MJR_LINK_IN);
+	                        	     MJR_LINK_FUNC_RET, MJR_LINK_IN);
   	      mjr_container_add_link(context->curfunc, fun->id, 
-                    				     MJR_LINK_FUNC_RET, MJR_LINK_OUT);
+                    				     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
   	    }
 	  
     	  // when a function start, we do a fingerprint of it
@@ -168,78 +155,42 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	  
     	  if (md5)
     	    snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
-	  
-    	  context->curblock = 0;
+
     	}
       break;
 
-    case ASM_TYPE_IMPBRANCH:
-      dstaddr = mjr_insert_destaddr(context);
-      
-#if __DEBUG_FLOW__
-      fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
-	      " F: NULL \n", curvaddr, dstaddr);
-#endif
-
-      if (dstaddr != -1)
-	    {
-	      tmpcntnr = mjr_create_block_container(0, dstaddr, 0);
-	      if (!true)
-      		true = mjr_container_add_link(context->curblock, 
-			                        		      tmpcntnr->id,
-                        					      MJR_LINK_BLOCK_COND_TRUE,
-                        					      MJR_LINK_OUT);
-	      else
-      		true->id = tmpcntnr->id;
-	      
-	      tmpcntnr = mjr_create_block_container(0, curvaddr + ilen, 0);
-	      if (!false)
-      		false = mjr_container_add_link(context->curblock, 
-                          				       tmpcntnr->id,
-                          				       MJR_LINK_BLOCK_COND_FALSE,
-                        					       MJR_LINK_OUT);
-	      else
-      		false->id = tmpcntnr->id;
-	      
-  	      context->curblock = 0;
-  	      context->hist[MJR_HISTORY_PREV].vaddr = 0;
-	      
-      }
-  	  break;
-      
     case ASM_TYPE_RETPROC:
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_RETPROC\n", 
 	      curvaddr);
 #endif
-
-      tmpcntnr = mjr_create_block_container(0, 0, 0);
-      if (!true)
-      	true = mjr_container_add_link(context->curblock, 
-                        				      tmpcntnr->id,
-                        				      MJR_LINK_BLOCK_COND_TRUE,
-                        				      MJR_LINK_OUT);
-      else
-      	true->id = tmpcntnr->id;
-      
-      tmpcntnr = mjr_create_block_container(0, 0, 0);
-      if (!false)
-      	false = mjr_container_add_link(context->curblock, 
-                        				       tmpcntnr->id,
-                        				       MJR_LINK_BLOCK_COND_FALSE,
-                        				       MJR_LINK_OUT);
-      else
-      	false->id = tmpcntnr->id;
-      
-      context->curblock        = 0;
-      context->hist[MJR_HISTORY_PREV].vaddr = 0;
+      //
+      //      tmpcntnr = mjr_create_block_container(0, 0, 0);
+      //      if (!true)
+      //      	true = mjr_container_add_link(context->curblock, 
+      //                        				      tmpcntnr->id,
+      //                        				      MJR_LINK_BLOCK_COND_TRUE,
+      //                        				      MJR_LINK_OUT);
+      //      else
+      //      	true->id = tmpcntnr->id;
+      //      
+      //      tmpcntnr = mjr_create_block_container(0, 0, 0);
+      //      if (!false)
+      //      	false = mjr_container_add_link(context->curblock, 
+      //                        				       tmpcntnr->id,
+      //                        				       MJR_LINK_BLOCK_COND_FALSE,
+      //                        				       MJR_LINK_OUT);
+      //      else
+      //      	false->id = tmpcntnr->id;
+      //
+      //      context->curblock        = 0;
+      //context->hist[MJR_HISTORY_PREV].vaddr = 0;
       break;
       
     default:
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: %x DEFAULT %d\n",curvaddr, curins->type);
+      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: CUR: %x DEFAULT %d\n",curvaddr, curins->type);
 #endif
       break;
       
@@ -302,8 +253,8 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 			  (elfsh_Addr) -1);
 
       /* Resolve target block */
-      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
-		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
+      //mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
+      //	      context->hist[MJR_HISTORY_CUR].vaddr, dest);
 
 #if __DEBUG_MJOLLNIR__
       printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
@@ -333,36 +284,17 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   dest = strtol(ret, (char **) NULL, 16);
   if (dest)
     {
-
 #if __DEBUG_MJOLLNIR__
       printf(" [*] Extended routing table found 0x%lx -> 0x%lx\n",
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
 	     (unsigned long) dest);
 #endif
-
-      /* Resolve target block */
-      mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
-		      context->hist[MJR_HISTORY_CUR].vaddr, dest);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-
-/**
- * This function add a new element to the linked list of callers 
- * of the current block.
- * 
- * It resolves operands of instruction which may modify the execution path.
- * 
- * If resolved to a virtual address, a new block is inserted.
- *
- * -> Return destination address inserted or -1 if unresolved
- *
- * FIXME: this function must be tested on the SPARC architecture
- *
- */
-int		mjr_insert_destaddr(mjrcontext_t *context)
+int		mjr_get_call_destaddr(mjrcontext_t *context)
 {
   int		ilen;
   elfsh_Addr	dest;
@@ -381,8 +313,7 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
     	asm_operand_get_immediate(ins, 1, 0, &dest);
     	dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
     }
-    
-  	/* The target block is called indirectly : if we find a pattern that correspond 
+    /* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
     else if (ins->op1.content & ASM_OP_BASE)
       dest = mjr_compute_fctptr(context);
@@ -400,91 +331,54 @@ int		mjr_insert_destaddr(mjrcontext_t *context)
     	else /* Indirect call (special case of JMPL) */
     	  dest = -1;
     }
-    else if (ins->instr == ASM_SP_JMPL) /* Indirect jump */
-    {
-    	dest = -1;
-    }
-    else if (ins->type == ASM_TYPE_CONDBRANCH)
-    {
-    	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
-    }
   }
   else
     dest = -1;
 
-  if (dest)
-    mjr_block_point(context, ins, context->hist[MJR_HISTORY_CUR].vaddr, dest);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+}
+
+int		mjr_get_jmp_destaddr(mjrcontext_t *context)
+{
+  int		ilen;
+  elfsh_Addr	dest;
+  asm_instr	*ins;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  dest = 0;
+  ins  = &context->hist[MJR_HISTORY_PREV].instr;
+  
+  if (context->proc.type == ASM_PROC_IA32)
+  {
+  	/* The target block is called directly */
+    if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+    {    
+    	ilen = asm_instr_len(ins);
+    	asm_operand_get_immediate(ins, 1, 0, &dest);
+    	dest += ilen + context->hist[MJR_HISTORY_PREV].vaddr;
+    }
+    
+    /* The target block is called indirectly : if we find a pattern that correspond 
+       to an easy to predict function pointer, then we compute it */
+    else if (ins->op1.content & ASM_OP_BASE)
+      dest = mjr_compute_fctptr(context);
+    else
+      dest = -1;
+  }
+  else if (context->proc.type == ASM_PROC_SPARC)
+  {
+    if (ins->instr == ASM_SP_JMPL) /* Indirect jump */
+      {
+    	dest = -1;
+      }
+    else if (ins->type == ASM_TYPE_CONDBRANCH)
+      {
+    	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_PREV].vaddr;
+      }
+  }
+  else
+    dest = -1;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-
-/* Old function of libmjollnir, maybe it does more than insert_destaddr, to make
-   sure we can remove this */
-/* Is not used anymore, could be removed, we keep it just to make sure because
-   it seems like some cases are handled that are not yet in the new code */
-/*
-  int	mjr_get_calldest(mjrsession_t *sess, int *dest) 
-  {
-  int   ret = 0;
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  if (sess->cur->ihist[0].instr != ASM_CALL)
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
-  
-  #if __DEBUG_CALLS__
-  fprintf(D_DESC, "[__DEBUG_CALLS__] mjrGetCallDst: start - 0x%08x %d\n",
-  sess->cur->curVaddr, sess->cur->ihist[0].op1.content);
-  #endif
-  
-  if ((sess->cur->ihist[0].op1.content & ASM_OP_VALUE) &&
-  !(sess->cur->ihist[0].op1.content & ASM_OP_REFERENCE))
-  {
-  if (asm_operand_get_immediate(&sess->cur->ihist[0], 1, 0, dest) == -1) 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-  "Failed to get immediate operand", -1);
-  ret = 1;
-  }
-  
-  else if ((sess->cur->ihist[0].op1.content & ASM_OP_ADDRESS) &&
-  sess->cur->ihist[1].instr == ASM_MOV &&
-  sess->cur->ihist[2].instr == ASM_MOV &&
-  !(sess->cur->ihist[2].op1.content & ASM_OP_SCALE) &&
-  !(sess->cur->ihist[2].op2.content & ASM_OP_REFERENCE) &&
-  sess->cur->ihist[2].op2.imm != 0x0) 
-  {
-  
-  #if __DEBUG_OPERAND__
-  asm_debug_operand(&sess->cur->ihist[0].op1);
-  asm_debug_operand(&sess->cur->ihist[0].op2);
-  asm_debug_operand(&sess->cur->ihist[2].op1);
-  asm_debug_operand(&sess->cur->ihist[2].op2);
-  #endif
-  
-  dest = (int *)sess->cur->ihist[2].op2.imm;
-  
-  #if __DEBUG_PTR__
-  fprintf(D_DESC, "[__DEBUG_PTR__] mjrGetCallDst: PTR FUNCTION ! %x %x\n",
-  sess->cur->curVaddr, (int)dest);
-  #endif
-  ret = 1;
-  } 
-  else
-  {
-  
-  #if __DEBUG_OPERAND__
-  fprintf(D_DESC, " [DM] Operand not supported! [vaddr = 0x%08x] %02X\n",
-  sess->cur->curVaddr, sess->cur->ihist[0].op1.content);
-  #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-  "Operand content not supported.", -  #if __DEBUG_CALLS__
-  fprintf(D_DESC, "[__DEBUG_CALLS__] mjrGetCallDst: vaddr: %x dest: %x\n",
-  sess->cur->curVaddr,
-  *dest);
-  #endif
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(ret));
-  }
-*/

@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.52 2007-03-27 20:56:03 mxatone Exp $
+** $Id: revm.h,v 1.53 2007-04-01 23:33:16 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -77,7 +77,7 @@ extern asm_processor	proc;
 #define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
 #define __DEBUG_TRACE__		0
-#define	__DEBUG_GRAPH__		1
+#define	__DEBUG_GRAPH__		0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10

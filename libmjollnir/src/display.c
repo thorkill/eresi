@@ -7,20 +7,20 @@
 **
 ** Started on  Tue Jan 02 04:04:18 2006 mayhem
 **
-** $Id: display.c,v 1.10 2007-03-14 18:37:57 strauss Exp $
+** $Id: display.c,v 1.11 2007-04-01 23:33:16 may Exp $
 **
 */
 #include "libmjollnir.h"
 
-/**
- * Block dump for debug purposes 
- * @param b mjrblock strucutre
- */
-void		mjr_block_dump(mjrblock_t *b) 
-{
-  printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
-	 (unsigned long) b, (unsigned long) b->vaddr, b->size);
-}
+///**
+// * Block dump for debug purposes 
+// * @param b mjrblock strucutre
+// */
+//void		mjr_block_dump(mjrblock_t *b) 
+//{
+//  printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n", 
+//	 (unsigned long) b, (unsigned long) b->vaddr, b->size);
+//}
 
 
 /**

@@ -1,12 +1,12 @@
 /*
 ** libmjollnir/src/blocks.c
 ** 
-** Authors : sk, mayhem, thorkill
+** Authors : sk, mayhem, thorkill, strauss
 ** 
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.51 2007-03-28 12:53:41 thor Exp $
+** $Id: blocks.c,v 1.52 2007-04-01 23:33:16 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -14,129 +14,181 @@
 /* Goto hash */
 hash_t		goto_hash;
 
-
 /**
- * Make the link between the new block and the current block.
- * Split existing blocks if necessary.
- * @param ctxt mjorllnir context strucutre
- * @param ins asm instruction
- * @param vaddr source address
- * @param dest destination address
+ * This function moves dependency of blocks
+ * which are continuation of src to dst
+ * in specified direction and cleanups the old
+ * in src
  */
-int	mjr_block_point(mjrcontext_t	*ctxt,
-			asm_instr      	*ins,
-			elfsh_Addr     	vaddr,
-			elfsh_Addr     	dest)
+int	mjr_block_relink_cond_always(mjrcontainer_t *src,
+				      mjrcontainer_t *dst,
+				      int direction)
 {
-  mjrcontainer_t	*dst, *dst_end, *tmpcntnr, *src,*dst1,*backto;
-  mjrblock_t		*dstblk;
-  mjrlink_t		*dst_true, *dst_false;
-  int			new_size,retaddr;
+
+  mjrlink_t *lnk;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  dst     = mjr_block_get_by_vaddr(ctxt, dest, 1);
+  lnk = mjr_link_get_by_direction(src, direction);
 
-  if (dst)
-    dstblk = (mjrblock_t *) dst->data;
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: src:%d dst:%d dir:%d\n",
+	  __FUNCTION__, src->id, dst->id, direction);
+#endif
 
-  /* Just create a new target block */
-  if (!dst)
-  {
-    dst = mjr_create_block_container(0, dest, 1);
-    hash_add(&ctxt->blkhash, _vaddr2str(dest), dst);
-  }
+  while(lnk)
+    {
+      if ((lnk->type == MJR_LINK_BLOCK_COND_ALWAYS) && (lnk->id != dst->id))
+	{
+	  // 1 - add same links to dst
+	  mjr_container_add_link(dst,lnk->id, MJR_LINK_BLOCK_COND_ALWAYS, direction);
+	  // 2 - and remove it from src
+	  lnk->type = MJR_LINK_DELETE;
+	}
+      lnk = lnk->next;
+    }
 
-  /* Split block */
-  else if (dstblk->vaddr != dest) 
-  {
-    new_size        = dstblk->size - (dest - dstblk->vaddr);
-    dstblk->size    -= new_size;
-    dst_end         = mjr_create_block_container(0, dest, new_size);
-    hash_add(&ctxt->blkhash, _vaddr2str(dest), dst_end);
+  mjr_container_link_cleanup(src,direction);
 
-    switch(ins->type)
-      {
-      case ASM_TYPE_CALLPROC:
-
-	retaddr = asm_instr_len(ins) + ctxt->hist[MJR_HISTORY_CUR].vaddr;
-	
-	if (!(dst1 = mjr_block_get_by_vaddr(ctxt, dest, 0)))
-	  fprintf(D_DESC," [D] %s: dst1 %x not found\n",
-		  __FUNCTION__, dest);
-
-	if (!(src = mjr_block_get_by_vaddr(ctxt, vaddr, 1)))
-	  fprintf(D_DESC," [D] %s: src %x not found\n",
-		  __FUNCTION__, vaddr);
-
-	if (!(backto = mjr_block_get_by_vaddr(ctxt, retaddr, 1)))
-	  fprintf(D_DESC," [D] %s: backto %x not found\n",
-		  __FUNCTION__, retaddr);
-
-	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_FUNC_CALL);
-	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_FUNC_RET);
-
-	if (dst_true)
-	    mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-	
-	if (dst_false)
-	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
-
-	break;
-
-      case ASM_TYPE_CONDBRANCH:
-	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
-	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
-
-	if (dst_true)
-	  mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-	
-	if (dst_false)
-	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-
-	break;
-
-      case ASM_TYPE_IMPBRANCH:
-	dst_true = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_TRUE);
-	dst_false = mjr_get_link_of_type(dst->output, MJR_LINK_BLOCK_COND_FALSE);
-
-	if (dst_true)
-	  mjr_container_add_link(dst_end, dst_true->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-	
-	if (dst_false)
-	  mjr_container_add_link(dst_end, dst_false->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-
-	break;
-
-      default:
-	fprintf(D_DESC," [D] %s: ASM instruction not supported: %d\n",
-		__FUNCTION__, ins->type);
-	break;
-      }
-
-    //if (!dst_true)
-    //      mjr_container_add_link(ctxt->curblock, dst_end->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-    //    else
-    //      dst_true->id = dst_end->id;
-
-    // BUG: this doesn't make sense
-    //    tmpcntnr = mjr_create_block_container(0, 0, 0);
-    //    if (!dst_false)
-    //      mjr_container_add_link(ctxt->curblock, tmpcntnr->id, MJR_LINK_BLOCK_COND_FALSE,	MJR_LINK_OUT);
-    //    else
-    //      dst_false->id = tmpcntnr->id;
-    
-    dst             = dst_end;
-  }
-  
-  tmpcntnr = mjr_block_get_by_vaddr(ctxt, vaddr, 0);
-  if (!tmpcntnr)
-    tmpcntnr = mjr_create_block_container(0, vaddr, 0);
-  
-  mjr_container_add_link(dst, tmpcntnr->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
+int	mjr_blocks_link_call(mjrcontext_t *ctxt,
+			     elfsh_Addr src,
+			     elfsh_Addr dst,
+			     elfsh_Addr ret)
+{
+  mjrcontainer_t	*csrc,*cdst,*cret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: linking %x CALL %x RET %x\n",
+	  __FUNCTION__,
+	  src,dst,ret);
+#endif
+
+  csrc = mjr_block_get_by_vaddr(ctxt, src, 1);
+
+  assert(csrc != NULL);
+
+  if (!(cdst = mjr_split_block(ctxt,dst)))
+    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		 "Could not split the dst",0);
+
+  if (!(cret = mjr_split_block(ctxt,ret)))
+    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		 "Could not split the ret",0);
+  
+  mjr_container_add_link(csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+  mjr_container_add_link(cdst, csrc->id, MJR_LINK_FUNC_CALL, MJR_LINK_IN);
+
+  mjr_container_add_link(cdst, cret->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
+  mjr_container_add_link(cret, cdst->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
+
+  mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
+  mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
+
+#if __DEBUG_BLOCKS__
+  mjr_block_dump(csrc);
+  mjr_block_dump(cdst);
+  mjr_block_dump(cret);
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
+int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
+			     elfsh_Addr src,
+			     elfsh_Addr dst,
+			     elfsh_Addr ret)
+{
+  mjrcontainer_t	*csrc,*cdst,*cret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: linking JMP %x TRUE %x FALSE %x\n",
+	  __FUNCTION__,
+	  src,dst,ret);
+#endif
+
+  if (!(cdst = mjr_split_block(ctxt,dst)))
+    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		 "Could not split the dst",0);
+
+  csrc = mjr_block_get_by_vaddr(ctxt, src, 1);
+
+  assert(csrc != NULL);
+
+  cret = NULL;
+
+  if (ret)
+      if (!(cret = mjr_split_block(ctxt,ret)))
+	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		     "Could not split the ret",0);
+  
+  mjr_container_add_link(csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+  mjr_container_add_link(cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
+
+  if (cret)
+    {
+      mjr_container_add_link(csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+      mjr_container_add_link(cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
+
+      mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
+      mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
+mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
+				 elfsh_Addr dst)
+{
+  mjrcontainer_t	*tmpdst,*dstend;
+  mjrblock_t		*blkdst;
+  int			new_size;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  tmpdst = mjr_block_get_by_vaddr(ctxt, dst, 1);
+
+  if (!tmpdst)
+    {
+      tmpdst = mjr_create_block_container(0, dst, 1);
+      hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
+    }
+
+  blkdst = (mjrblock_t *)tmpdst->data;
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: wanted dst:%x got:%x\n",
+	  __FUNCTION__,dst,blkdst->vaddr);
+#endif
+
+  if (blkdst->vaddr != dst)
+    {
+      new_size		= blkdst->size - (dst - blkdst->vaddr);
+      blkdst->size	-= new_size;
+
+      assert(new_size > 0);
+      assert(blkdst->size > 0);
+
+      dstend		= mjr_create_block_container(0, dst, new_size);
+      hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
+
+      mjr_container_add_link(tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS, MJR_LINK_OUT);
+      mjr_container_add_link(dstend, tmpdst->id, MJR_LINK_BLOCK_COND_ALWAYS, MJR_LINK_IN);
+    } 
+  else 
+    {
+      dstend = tmpdst;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dstend));
+}
 
 /**
  * Retreive control flow section content if any 
@@ -178,12 +230,13 @@ int	mjr_blocks_get(mjrcontext_t *ctxt)
  */
 int   mjr_blocks_load(mjrcontext_t *ctxt)
 {
-  int                   index, findex, tmptype, cnt;
+  int                   index, findex, tmptype, cnt, done, flowdone, tmpnbr;
   elfshsect_t           *sect, *flowsect;
   mjrcontainer_t	*curcntnr;
   mjrblock_t		*curblock;
   unsigned int		blocnbr, tmpid, off;
   char			name[20];
+  char			**keys;
 	
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -192,7 +245,7 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No control flow section : use analyse command", 0);
-  if (sect->shdr->sh_size % sizeof(mjrblock_t))
+  if (sect->shdr->sh_size % (sizeof(mjrblock_t) + sizeof(mjrcontainer_t)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted control flow section : modulo-test failed", 0);
 
@@ -212,49 +265,88 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new blocks but use the data from the section */
   blocnbr = sect->shdr->sh_size / (sizeof(mjrcontainer_t) + sizeof(mjrblock_t)) ;
+  done = 0;
   for (index = 0; index < blocnbr; index++)
     {
-      
+      mjrcontainer_t *tmpcntnr;
+      mjrblock_t *tmpblk;
+
       // here you can see that the format ondisk is the exact same format that
       // we manipulate in this lib. So its very practical to reload/store the
       // info ondisk.
-      curcntnr = (mjrcontainer_t *) sect->data + index;
-      curblock = (mjrblock_t *) sect->data + index + sizeof(mjrcontainer_t);
-      curcntnr->data = curblock;
-      
-      snprintf(name, sizeof(name), AFMT, curblock->vaddr);
+      curcntnr = (mjrcontainer_t *)((char *)sect->data + done);
+      done += sizeof(mjrcontainer_t);
+
+      curblock = (mjrblock_t *)((char *)sect->data + done);
+      done += sizeof(mjrblock_t);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpblk, sizeof(mjrfunc_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpcntnr, sizeof(mjrcontainer_t), NULL);
+
+      memcpy(tmpcntnr, curcntnr, sizeof(mjrcontainer_t));
+      memcpy(tmpblk, curblock, sizeof(mjrblock_t));
+
+      tmpcntnr->data = tmpblk;
+
+      snprintf(name, sizeof(name), AFMT, tmpblk->vaddr);
       
 #if __DEBUG_BLOCKS__
-      fprintf(D_DESC,"[__DEBUG__] mjr_blocks_load: add new block name:%s\n",name);
+      fprintf(D_DESC,"[__DEBUG__] %s: add new block name:%s\n",__FUNCTION__,name);
 #endif
+      mjr_register_container_id (tmpcntnr);
+      hash_add(&ctxt->blkhash, (char *) _vaddr2str(tmpblk->vaddr), tmpcntnr);
+    }
+
+  keys = hash_get_keys(&ctxt->blkhash, &done);
+  for (index = 0; index < done; index++)
+    {
+      curcntnr = hash_get(&ctxt->blkhash, keys[index]);
 
       off = (u_int) curcntnr->input;
       curcntnr->input = NULL;
-      
+
       /* fill the flow list */
-      for (findex=0; findex < curcntnr->in_nbr; findex++)
+
+      /* prevent endless loop */
+      tmpnbr = curcntnr->in_nbr;
+      curcntnr->in_nbr = 0;
+      flowdone = 0;
+      for (findex=0; findex < tmpnbr; findex++)
 	{	 
-	  tmpid = *((unsigned int *) flowsect->data + off + findex);
-	  tmptype = *((int *) flowsect->data + off + findex + sizeof(unsigned int));
+	  tmpid = *(unsigned int *)((char *)flowsect->data + off + flowdone);
+	  flowdone += sizeof(unsigned int);
+	  tmptype = *(int *)((char *)flowsect->data + off + flowdone);
+	  flowdone += sizeof(int);
+
+	  fprintf(D_DESC," [D] resotore parent: (%d/%d) sid:%u did:%u type:%u\n", 
+		  findex,tmpnbr,
+		  curcntnr->id,tmpid,tmptype);
 	  
-	  fprintf(D_DESC," [D] resotore parent: %u\n", tmpid);
+	  /* this function increments in_nbr */
 	  mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
 	}
 
       off = (u_int)curcntnr->output;
       curcntnr->output = NULL;
 
-      for (findex=0; findex < curcntnr->out_nbr; findex++)
+      /* prevent endless loop */
+      tmpnbr = curcntnr->out_nbr;
+      curcntnr->out_nbr = 0;
+      for (findex=0; findex < tmpnbr; findex++)
 	{
-	  tmpid = *((unsigned int *)flowsect->data + off + findex);
-	  tmptype = *((int *) flowsect->data + off + findex + sizeof(unsigned int));
+	  tmpid = *(unsigned int *)((char *)flowsect->data + off + flowdone);
+	  flowdone += sizeof(unsigned int);
+	  tmptype = *(int *)((char *)flowsect->data + off + flowdone);
+	  flowdone += sizeof(int);
+
+	  fprintf(D_DESC," [D] resotore child: (%d/%d) sid:%u did:%u type:%u\n", 
+		  findex,tmpnbr,
+		  curcntnr->id,tmpid,tmptype);
 	  
-	  fprintf(D_DESC," [D] resotore child: %u\n", tmpid);
+	  /* out_nbr++ */
 	  mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_OUT);
 	}
-
-      mjr_register_container_id (curcntnr);
-      hash_add(&ctxt->blkhash, (char *) _vaddr2str(curblock->vaddr), curcntnr);
+      mjr_block_dump(curcntnr);
     }
 
   /* FIXME: prevent double analysis */
@@ -281,11 +373,11 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (type == 0) 
+  if (type == 0)
   {
     cur = c->input;
     nbr = c->in_nbr;
-  } 
+  }
   else if (type == 1)
   {
     cur = c->output;
@@ -294,8 +386,8 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
 
   if (!cur)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  
-  if (!buf->data) 
+
+  if (!buf->data)
   {
     buf->allocated = getpagesize();
     XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
@@ -305,8 +397,16 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
   {
     buf->allocated += getpagesize();
     XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
-							buf->data, buf->data, buf->allocated, -1);
+	     buf->data, buf->data, buf->allocated, -1);
   }
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: allocated: %d needed: %d endsize: %d pagesize: %d\n",
+	  __FUNCTION__, buf->allocated,
+	  (sizeof(unsigned int) * nbr * 2),
+	  buf->maxlen + (sizeof(unsigned int) * nbr * 2),
+	  getpagesize());
+#endif
 
   while (cur)
   {
@@ -316,7 +416,8 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
     buf->maxlen += sizeof(int);
     cur = cur->next;
   }
-
+  
+  buf->block_counter++;
   curOff = buf->maxlen;
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (curOff));
@@ -326,7 +427,7 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
  */
 int	mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 {
-  char			buffer[24];
+  char			buffer[BUFSIZ];
   elfsh_Sym		bsym;
   elfsh_Sym		*sym;
   mjrblock_t		*curblock;
@@ -336,7 +437,8 @@ int	mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 
   /* At this points, no new block allocation should be done */
   curblock = cur->data;
-  snprintf(buffer, sizeof (buffer), "block_%lX", (unsigned long) curblock->vaddr);
+  snprintf(buffer, sizeof(buffer), "block_%lX", (unsigned long) curblock->vaddr);
+
   sym = elfsh_get_symbol_by_name(buf->obj, buffer);
   if (sym)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -363,7 +465,8 @@ int	mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
   curcntnr = (mjrcontainer_t *) ((char *) buf->data + buf->maxlen);
   curblock = (mjrblock_t *) ((char *) buf->data + buf->maxlen + 
 			     sizeof(mjrcontainer_t));
-  
+
+
   memcpy(curcntnr, cur, sizeof(mjrcontainer_t));
   memcpy(curblock, cur->data, sizeof(mjrblock_t));
   
@@ -394,6 +497,7 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
   int			keynbr;
   int			index;
   char			funcname[50];
+  u_int			flow_off_in, flow_off_out;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -416,19 +520,17 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
   cfbuf.data          = 0;
   cfbuf.obj           = ctxt->obj;
 
+  flow_off_in = flow_off_out = 0;
+
   /* Iteratively save all blocks */
   keys = hash_get_keys(&ctxt->blkhash, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
-      u_int flow_off_in, flow_off_out;
       mjrlink_t *tmpin,*tmpout;
 
-      tmpin=tmpout=NULL;
+      tmpin = tmpout = NULL;
 
       blkcntnr = hash_get(&ctxt->blkhash, keys[index]);
-
-      flow_off_in = mjr_block_flow_save(blkcntnr, 0, &cfbuf);
-      flow_off_out = mjr_block_flow_save(blkcntnr, 1, &cfbuf);
 
       /* Setting references to link information inside the file */
       tmpin = blkcntnr->input;
@@ -437,7 +539,6 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
       blkcntnr->output = (mjrlink_t *) flow_off_out;
 
       mjr_block_save(blkcntnr, &buf);
-      block = (mjrblock_t *) blkcntnr->data;
 
       /* 
 	 resotre old lists 
@@ -446,6 +547,17 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
        */
       blkcntnr->input = tmpin;
       blkcntnr->output = tmpout;
+
+#if __DEBUG_BLOCKS__
+      fprintf(D_DESC, " [D] %s: IN  Offset: %d\n", __FUNCTION__, flow_off_in);
+      fprintf(D_DESC, " [D] %s: OUT Offset: %d\n", __FUNCTION__, flow_off_out);
+#endif
+
+      /* Store block flow and get new offsets */
+      flow_off_in = mjr_block_flow_save(blkcntnr, 0, &cfbuf);
+      flow_off_out = mjr_block_flow_save(blkcntnr, 1, &cfbuf);
+
+      block = (mjrblock_t *) blkcntnr->data;
 
       if (mjr_block_funcstart(blkcntnr))
 	{
@@ -516,7 +628,7 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
   /* Exact match */
   ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
 
-#if __DEBUG_BLOCKS__
+#if __DEBUG_BLK_LOOKUP__
   if (ret)
     fprintf(D_DESC,"[D] %s: found %x in hash\n",
 	    __FUNCTION__, vaddr);
@@ -528,13 +640,55 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
   /* Parent match */
   keys = hash_get_keys(&ctxt->blkhash, &size);
   for (index = 0; index < size; index++)
-  {
-    ret = hash_get(&ctxt->blkhash, keys[index]);
-    tmpblock = (mjrblock_t *) ret->data;
-    
-    if (tmpblock->vaddr <= vaddr && vaddr <= tmpblock->vaddr + tmpblock->size)
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-  }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    {
+      ret = hash_get(&ctxt->blkhash, keys[index]);
+      tmpblock = (mjrblock_t *) ret->data;
+
+#if __DEBUG_BLK_LOOKUP__      
+      fprintf(D_DESC,"[D] %s: checking block: %x:%x s:%d id:%d\n",
+	      __FUNCTION__,
+	      tmpblock->vaddr,
+	      tmpblock->vaddr+tmpblock->size,
+	      tmpblock->size,
+	      ret->id);
+#endif
+
+      if ((tmpblock->vaddr <= vaddr) && (vaddr <= tmpblock->vaddr + tmpblock->size))
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+}
+
+int mjr_block_dump(mjrcontainer_t *c)
+{
+  mjrblock_t *blk,*tblk;
+  mjrlink_t  *lnk;
+
+  blk = (mjrblock_t *)c->data;
+  fprintf(D_DESC,"[D] %s: vaddr:%x size:%d in container ID:%d OUT:%d IN:%d\n",
+	  __FUNCTION__,
+	  blk->vaddr, blk->size,
+	  c->id,c->out_nbr,c->in_nbr);
+
+  lnk = c->input;
+  while(lnk)
+    {
+      tblk = (mjrblock_t *) mjr_lookup_container(lnk->id)->data;
+      fprintf(D_DESC,"[D] %s: %x linked IN from vaddr:%x size:%d type:%d\n",
+	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
+      lnk = lnk->next;
+    }
+
+  lnk = c->output;
+  while(lnk)
+    {
+      tblk = (mjrblock_t *) mjr_lookup_container(lnk->id)->data;
+      fprintf(D_DESC,"[D] %s: %x linked OUT to vaddr:%x size:%d type:%d\n",
+	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
+      lnk = lnk->next;
+    }
+
+  return 0;
 }

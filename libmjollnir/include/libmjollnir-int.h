@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-int.h,v 1.13 2007-03-25 20:50:50 thor Exp $
+ * $Id: libmjollnir-int.h,v 1.14 2007-04-01 23:33:16 may Exp $
  *
  */
 
@@ -11,8 +11,10 @@
 #define __DEBUG_PTR__		0
 #define __DEBUG_OPERAND__	0
 #define __DEBUG_BLOCKS__	0
+#define __DEBUG_BLK_LOOKUP__	0
 #define __DEBUG_FLOW__		0
 #define __DEBUG_CNTNR__		0
+#define __DEBUG_CNTNR_LOOKUP__	0
 #define __DEBUG_FUNCS__		0
 
 /* Debug Fingerprinting */

@@ -30,7 +30,7 @@ typedef struct		s_history
 /* The context of a single session */
 typedef struct		_mjrContext 
 {
-  elfshobj_t		  *obj;        /* elfsh object */
+  elfshobj_t		*obj;        /* elfsh object */
   asm_processor		proc;  	     /* proc */
   mjrcontainer_t	*curblock;   /* current working block */
   mjrcontainer_t	*curfunc;    /* current working function */
@@ -41,11 +41,11 @@ typedef struct		_mjrContext
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
   mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
 
-  hash_t		      funchash;    /* functions hash table */
-  hash_t		      blkhash;     /* blocks hash table for this obj */
+  hash_t		funchash;    /* functions hash table */
+  hash_t		blkhash;     /* blocks hash table for this obj */
   unsigned char		analysed;    /* do we analysed it */
-  u_int			      calls_seen;  /* FIXME */
-  u_int			      calls_found; /* FIXME */
+  u_int			calls_seen;  /* how many CALL we have seen */
+  u_int			calls_found; /* how many dest has beed resolved */
 }	mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
@@ -97,6 +97,12 @@ int		mjr_blocks_store(mjrcontext_t *c);
 u_int		mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 char 		*_vaddr2str(elfsh_Addr);
+int		mjr_block_relink_cond_always(mjrcontainer_t *, mjrcontainer_t *, int);
+int		mjr_blocks_link_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
+int		mjr_blocks_link_jmp(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
+
+mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,elfsh_Addr dst);
+int		mjr_block_dump(mjrcontainer_t *c);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(mjrcontainer_t *cntnr);
@@ -110,7 +116,7 @@ int		mjr_fprint(mjrcontext_t 	*c,
 			   int  		(*fprint)(mjrcontainer_t *));
 
 /* display.c */
-void		mjr_block_dump(mjrblock_t *b);
+//void		mjr_block_dump(mjrblock_t *b);
 int		mjr_blocks_display(mjrcontext_t *c, int);
 int		mjr_block_display(mjrcontainer_t *c, mjropt_t *opt);
 void		mjr_function_display(mjrfunc_t *func);
@@ -119,7 +125,8 @@ void		mjr_funcs_display(mjrcontext_t *c);
 /* types.c */
 int		mjr_asm_flow(mjrcontext_t *c);
 elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
-int		mjr_insert_destaddr(mjrcontext_t *c);
+int		mjr_get_jmp_destaddr(mjrcontext_t *context);
+int		mjr_get_call_destaddr(mjrcontext_t *context);
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);
@@ -161,6 +168,8 @@ mjrcontainer_t *mjr_create_function_container(elfsh_Addr	vaddr,
 					      mjrblock_t	*first,
 					      char		*md5);
 
-mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type);
+mjrcontainer_t	*mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type);
+int		mjr_container_link_cleanup(mjrcontainer_t *c,int direction);
+mjrlink_t	*mjr_link_get_by_direction(mjrcontainer_t *c,int dir);
 
 #endif

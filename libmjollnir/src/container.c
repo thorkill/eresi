@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.5 2007-03-25 20:50:50 thor Exp $
+ * $Id: container.c,v 1.6 2007-04-01 23:33:16 may Exp $
  *
  */
 
@@ -117,6 +117,52 @@ mjrcontainer_t *mjr_lookup_container (unsigned int id)
 }
 
 /**
+ * This functions removes links marked as MJR_LINK_DELETE
+ */
+int mjr_container_link_cleanup(mjrcontainer_t *c,int direction)
+{
+  mjrlink_t *new,*cur,*tmp;
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  new = NULL;
+
+  /* get direction */
+  cur = mjr_link_get_by_direction(c,direction);
+
+  /* walk links and pickup active one */
+  while(cur)
+    {
+      if (cur->type != MJR_LINK_DELETE)
+	{
+	  if (!new)
+	    new = cur;
+	  else
+	    new->next = cur;
+	}
+      tmp = cur;
+      cur = cur->next;
+
+      /* remove old one */
+      if (tmp->type == MJR_LINK_DELETE)
+	{
+	  XFREE(__FILE__,__FUNCTION__,__LINE__,tmp);
+	  if (direction == MJR_LINK_IN)
+	    c->in_nbr--;
+	  else if (direction == MJR_LINK_OUT)
+	    c->out_nbr--;
+	}
+    }
+
+  /* update container */
+  if (direction == MJR_LINK_IN)
+    c->input = new;
+  else if (direction == MJR_LINK_OUT)
+    c->output = new;
+ 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
  *
  */
 mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
@@ -131,11 +177,11 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
 #if __DEBUG_CNTNR__
   mjrcontainer_t *cnt;
   u_int vaddr1,vaddr2;
-#endif
 
   if (cntnr->id == id)
     fprintf(D_DESC,"[D] %s: linking the same container id:%d\n",
 	    __FUNCTION__,id);
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, link, 
 	 sizeof(mjrlink_t), NULL );
@@ -189,8 +235,11 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
     }
   
   while (cur->next)
-    cur = cur->next;
-  
+    {
+      assert(cur != cur->next);
+      cur = cur->next;
+    }
+
   cur->next = link;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
 }
@@ -349,3 +398,19 @@ void mjr_container_dump(int what)
 	}
     }
 }
+
+mjrlink_t	*mjr_link_get_by_direction(mjrcontainer_t *c,int dir)
+{
+  mjrlink_t *ret;
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = NULL;
+
+  if (dir == MJR_LINK_IN)
+    ret = c->input;
+  else if (dir == MJR_LINK_OUT)
+    ret = c->output;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mjrlink_t *)ret);
+}
+
