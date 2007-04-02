@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.21 2007-03-07 16:45:35 thor Exp $
+** $Id: libaspect.h,v 1.22 2007-04-02 18:00:11 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -361,5 +361,11 @@ void 		config_safemode_set();
 void		config_safemode_reset();
 int		config_safemode();
 
+/* Debugger / Constructors related functions */
+void		aspect_called_ctors_inc();
+int		aspect_called_ctors_finished();
+void		e2dbg_presence_set();
+void		e2dbg_presence_reset();
+u_char		e2dbg_presence_get();
 
 #endif
