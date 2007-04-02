@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.28 2007-04-01 23:33:16 may Exp $
+** $Id: types.c,v 1.29 2007-04-02 08:58:18 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -30,12 +30,11 @@
  */
 int		mjr_asm_flow(mjrcontext_t *context)
 {
-  int			ilen,plen;
+  int			ilen;
   char			*md5, *tmpstr;
-  mjrcontainer_t	*fun;
-  asm_instr		*curins,*previns;
-  elfsh_Addr		curvaddr,prevvaddr, dstaddr, tmpaddr;
-  mjrlink_t		*true;
+  mjrcontainer_t	*fun,*true;
+  asm_instr		*curins;
+  elfsh_Addr		curvaddr, dstaddr, tmpaddr;
   mjrfunc_t		*tmpfunc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -43,15 +42,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
   curins   = &context->hist[MJR_HISTORY_CUR].instr;
   curvaddr = context->hist[MJR_HISTORY_CUR].vaddr;
 
-  /*
-   * we do trace previouse instruction in order to
-   * split blocks in right way
-   */
-  previns   = &context->hist[MJR_HISTORY_PREV].instr;
-  prevvaddr = context->hist[MJR_HISTORY_PREV].vaddr;
-
   ilen     = asm_instr_len(curins);  
-  plen    = asm_instr_len(previns);
 
   tmpstr = _vaddr2str(curvaddr);
   if ((fun = hash_get(&context->funchash, tmpstr)))
@@ -59,7 +50,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
  
   fun = NULL;
 
-  switch (previns->type)
+  /* Switch on instruction types provided by libasm */
+  switch (curins->type)
     {
     case ASM_TYPE_CONDBRANCH:
       dstaddr = mjr_get_jmp_destaddr(context);
@@ -67,10 +59,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
 	    "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", prevvaddr, dstaddr, curvaddr);
+	    " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
+
     if (dstaddr != -1)
-      mjr_blocks_link_jmp(context, prevvaddr, dstaddr, curvaddr);
+      mjr_blocks_link_jmp(context, curvaddr, dstaddr, curvaddr + ilen);
 
     break;
     
@@ -80,37 +73,21 @@ int		mjr_asm_flow(mjrcontext_t *context)
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
-	      " F: NULL \n", prevvaddr, dstaddr);
+	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 
       if (dstaddr != -1)
-	{
-	  if (curvaddr < dstaddr)
-	    mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
-	  else
-	    {
-	      mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
-	    }
-	}
+	mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
+
       break;
 
-    default:
-#if __DEBUG_FLOW__
-      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: PREV: %x DEFAULT %d\n",prevvaddr, previns->type);
-#endif
-      break;
-    }
-
-  /* Switch on instruction types provided by libasm */
-  switch (curins->type)
-  {
     case ASM_TYPE_CALLPROC:
       dstaddr = mjr_get_call_destaddr(context);
     
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: in block:" XFMT " " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
-	      " F:" XFMT "\n", prevvaddr, curvaddr, dstaddr, curvaddr + ilen);
+	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
+	      " F:" XFMT "\n", curvaddr, dstaddr, curvaddr + ilen);
 #endif
       
       context->calls_seen++;
@@ -143,9 +120,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
     	  if (context->curfunc)
   	    {
   	      mjr_container_add_link(fun, context->curfunc->id, 
-	                        	     MJR_LINK_FUNC_RET, MJR_LINK_IN);
+				     MJR_LINK_FUNC_RET, MJR_LINK_IN);
   	      mjr_container_add_link(context->curfunc, fun->id, 
-                    				     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+				     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
   	    }
 	  
     	  // when a function start, we do a fingerprint of it
@@ -193,7 +170,6 @@ int		mjr_asm_flow(mjrcontext_t *context)
       fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: CUR: %x DEFAULT %d\n",curvaddr, curins->type);
 #endif
       break;
-      
     }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -252,10 +228,6 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 			  "Invalid target vaddr for function pointer",
 			  (elfsh_Addr) -1);
 
-      /* Resolve target block */
-      //mjr_block_point(context, &context->hist[MJR_HISTORY_CUR].instr,
-      //	      context->hist[MJR_HISTORY_CUR].vaddr, dest);
-
 #if __DEBUG_MJOLLNIR__
       printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
@@ -294,6 +266,10 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
+/**
+ * Resolve the destination address of current call 
+ * @param context mjorllnir context strucutre
+ */
 int		mjr_get_call_destaddr(mjrcontext_t *context)
 {
   int		ilen;
@@ -338,6 +314,10 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
+/**
+ * Resolve the destination address of current jmp instruction
+ * @param context mjollnir context structure
+ */
 int		mjr_get_jmp_destaddr(mjrcontext_t *context)
 {
   int		ilen;
@@ -355,7 +335,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
     {    
     	ilen = asm_instr_len(ins);
     	asm_operand_get_immediate(ins, 1, 0, &dest);
-    	dest += ilen + context->hist[MJR_HISTORY_PREV].vaddr;
+    	dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
     }
     
     /* The target block is called indirectly : if we find a pattern that correspond 
@@ -373,7 +353,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
       }
     else if (ins->type == ASM_TYPE_CONDBRANCH)
       {
-    	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_PREV].vaddr;
+    	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       }
   }
   else
