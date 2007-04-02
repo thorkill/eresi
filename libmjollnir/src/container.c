@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.6 2007-04-01 23:33:16 may Exp $
+ * $Id: container.c,v 1.7 2007-04-02 18:01:19 may Exp $
  *
  */
 
@@ -21,7 +21,7 @@ void mjr_init_containers()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, reg_containers, 
-	 sizeof(mjrcontainer_t*) * cntnrs_size, NULL);
+	 sizeof(mjrcontainer_t*) * cntnrs_size, );
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
@@ -33,7 +33,7 @@ void mjr_resize_containers()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cntnrs_size += MJR_CNTNRS_INCREMENT;
   XREALLOC(__FILE__, __FUNCTION__, __LINE__, reg_containers, reg_containers,
-	   sizeof(mjrcontainer_t*) * cntnrs_size, NULL);
+	   sizeof(mjrcontainer_t*) * cntnrs_size, );
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

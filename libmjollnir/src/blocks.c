@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.52 2007-04-01 23:33:16 may Exp $
+** $Id: blocks.c,v 1.53 2007-04-02 18:01:19 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -599,7 +599,7 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
 
-/** 
+/*
  * Get a block by vaddr
  *
  * If mode = 0, return block only if vaddr is equal to block starting address
