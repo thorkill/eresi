@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg-misc.c,v 1.5 2007-03-17 13:05:31 may Exp $
+** $Id: e2dbg-misc.c,v 1.6 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -87,7 +87,7 @@ int		e2dbg_self()
 
   if (e2dbgworld.threadnbr == 1)
     return (getpid());
-  return (pthread_self());
+  return ((int) pthread_self());
 }
 
 
@@ -97,7 +97,7 @@ int		e2dbg_kill(int pid, int sig)
   if (e2dbgworld.threadnbr == 1)
     return (kill(pid, sig));
   else
-    return (pthread_kill(pid, sig));
+    return (pthread_kill((pthread_t) pid, sig));
 }
 
 /* Determine stack address */
@@ -151,7 +151,7 @@ int		e2dbg_curthread_init(void *start)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
   snprintf(key, 15, "%u", (unsigned int) getpid());
-  new->tid     = (unsigned int) getpid();
+  new->tid     = (pthread_t) getpid();
   new->entry   = (void *) e2dbgworld.real_main;
   new->initial = 1;
   time(&new->stime);

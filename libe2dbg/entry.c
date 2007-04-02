@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.6 2007-03-27 00:49:44 may Exp $
+** $Id: entry.c,v 1.7 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -86,8 +86,11 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 
 
 
-/* In case we have no symbols, we take control by this way */
+
 #if defined(linux)
+
+
+/* Entry point for Linux */
 int	__libc_start_main(int (*main) (int, char **, char **aux),
 			  int argc, char **ubp_av,
 			  // FIXME on PPC
@@ -145,15 +148,54 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 
 #elif defined(__FreeBSD__)
 
+
+
+/* Find the number of arguments by inspecting the environment on the stack */
+int				e2dbg_get_args(char **args)
+{
+  char				*str;
+  int				argc;
+  int				index;
+
+  str = ((char *) environ[0] - 2);
+  argc = 0;
+
+  /* First find the number of arguments */
+ again:
+  while (*str)
+    str--;
+  str++;
+  argc++;
+  if (access(str, F_OK))
+    {
+      str -= 2;
+      goto again;
+    }
+
+  /* Then fill the argv array */
+  args[0] = E2DBG_ARGV0;
+  for (index = 1; index < argc + 1 && index < 42; index++)
+    {
+      args[index] = str;
+      while (*str)
+	str++;
+      str++;
+    }
+  args[index] = NULL;
+  return (argc);
+}
+
+
+
+/* Entry point on FreeBSD */
 int				atexit(void (*fini)(void))
 {
   elfsh_Addr			orig;
   int				(*libc_atexit)();
-  char				*args[3];
+  char				*args[42];
   static short int		bFusible = 0;
-  char				**env;
-  char				*beg;
   e2dbgparams_t			params;
+  int				argc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -175,33 +217,25 @@ int				atexit(void (*fini)(void))
   libc_atexit = (void *) orig;
   
 #if __DEBUG_E2DBG__
-  printf("[(e2dbg)atexit 2\n");
+  printf("[(e2dbg)atexit 2 : envp = %08X \n", (elfsh_Addr) environ);
 #endif
-
-  /* Get argv[0] */
-  env = getenv("_");
-  if (env)
-    {
-      beg = strchr(env, '=');
-      if (beg)
-	beg++;
-    }
-  else
-    beg = "unknown";
 
   /* Initialize a "fake" thread if we are debugging a monothread program */
   if (e2dbgworld.curthread == NULL)
     e2dbg_curthread_init();
   
+#if __DEBUG_E2DBG__
+  printf("[(e2dbg) atexit 3 \n");
+#endif
+
   /* Load the debugger only one time */
   if (bFusible == 0)
     {
       bFusible = 1;
-      args[0] = E2DBG_ARGV0;
-      args[1] = beg; 
-      args[2] = NULL;
-      e2dbgworld.preloaded = 1;
-      params.ac = 2;
+
+      /* Get argv / argc */
+      argc = e2dbg_get_args(args);
+      params.ac = argc;
       params.av = args;
       
       /* Load the debugger in a new thread */
@@ -225,6 +259,9 @@ int				atexit(void (*fini)(void))
 
 
 #elif (defined(sun) && defined(__i386))
+
+
+/* Entry point for Solaris */
 void			__fpstart(int argc, char**ubp_av)
 {
   elfsh_Addr		orig;

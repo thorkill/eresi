@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.8 2007-03-26 17:09:35 may Exp $
+** $Id: signal.c,v 1.9 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -392,7 +392,7 @@ void			e2dbg_do_breakpoint()
       e2dbgworld.stoppedthread->past  = *pc;
       e2dbgworld.stoppedthread->count = E2DBG_BREAK_HIT;
       e2dbgworld.curbp                = bp;
-      bp->tid                         = e2dbgworld.stoppedthread->tid;
+      bp->tid                         = (uint32_t) e2dbgworld.stoppedthread->tid;
 
 #if __DEBUG_BP__
       bpdebug("AFTER RESET BREAK", bp, (elfsh_Addr) *pc + bpsz, parent);
@@ -449,7 +449,7 @@ void			e2dbg_generic_breakpoint(int		signum,
     }
   
   /* Get the current thread */
-  stopped = e2dbg_self();
+  stopped = (pthread_t) e2dbg_self();
   snprintf(key, sizeof(key), "%u", (unsigned int) stopped);
   e2dbgworld.curthread = hash_get(&e2dbgworld.threads, key);
   e2dbgworld.stoppedthread = e2dbgworld.curthread;

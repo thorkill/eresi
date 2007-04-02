@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.8 2007-03-27 00:49:44 may Exp $
+** $Id: resolv.c,v 1.9 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -131,8 +131,6 @@ int			e2dbg_load_linkmap(char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  fprintf(stderr, "Load linkmap of process %s (done = %u) \n", name, done);
-  
   if (done)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 
@@ -142,8 +140,6 @@ int			e2dbg_load_linkmap(char *name)
 
   e2dbg_setup_hooks();
   vm_config();
-
-  //elfsh_set_static_mode();
 
   /* Load debugged file */
   if (name)
@@ -176,8 +172,7 @@ int			e2dbg_load_linkmap(char *name)
     }
   else
     got = elfsh_get_gotsct(world.curjob->current);
-  
-  
+    
 #if __DEBUG_LINKMAP__
   fprintf(stderr, "[e2dbg_load_linkmap] %s section at " XFMT "\n",
 	  got->name, (elfsh_Addr) got);
@@ -204,7 +199,8 @@ int			e2dbg_load_linkmap(char *name)
       linkmap_entry = elfsh_get_got_entry_by_index(data, 1);
       
 #if defined(__FreeBSD__)
-      world.curjob->current->linkmap = &((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
+      world.curjob->current->linkmap = (elfshlinkmap_t *)
+	&((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
 #else
       world.curjob->current->linkmap = (elfshlinkmap_t *) elfsh_get_got_val(linkmap_entry);
 #endif
@@ -621,6 +617,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 int		e2dbg_dlsym_init()
 {
   static int	done = 0;
+  u_char	dbgmode;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -733,10 +730,13 @@ int		e2dbg_dlsym_init()
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
+
+  dbgmode = e2dbg_presence_get();
   e2dbg_presence_set();
   hash_init(&e2dbgworld.threads, "threads"    , 29, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp     , "breakpoints", 51, ASPECT_TYPE_UNKNOW);
-  e2dbg_presence_reset();
+  if (!dbgmode)
+    e2dbg_presence_reset();
 
 #if __DEBUG_E2DBG__
   write(2, " [D] e2dbg_dlsym_init FINISHED\n", 31);

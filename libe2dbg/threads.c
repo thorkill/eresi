@@ -5,7 +5,7 @@
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
 **
-** $Id: threads.c,v 1.5 2007-03-17 13:05:31 may Exp $
+** $Id: threads.c,v 1.6 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -66,7 +66,12 @@ static void*		e2dbg_thread_start(void *param)
     cur->initial = 1;
 
   /* Get stack information for this thread */
+#if defined(linux)
   pthread_getattr_np(cur->tid, &attr);
+#else
+  pthread_attr_get_np(cur->tid, &attr);
+#endif
+
   ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
 
 #if __DEBUG_THREADS__
@@ -124,7 +129,7 @@ int		pthread_create (pthread_t *__restrict __threadp,
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
   snprintf(key, 15, "%u", *(unsigned int *) __threadp);
-  new->tid   = *(unsigned long *) __threadp;
+  new->tid   = *(pthread_t *) __threadp;
   new->entry = __start_routine;
   time(&new->stime);
   hash_add(&e2dbgworld.threads, key, new);
@@ -380,7 +385,7 @@ int		e2dbg_thread_stopall(int signum)
       else
 	cur->state = E2DBG_THREAD_STOPPING;
 
-      ret = e2dbg_kill(cur->tid, signum);
+      ret = e2dbg_kill((int) cur->tid, signum);
       if (ret)
 	fprintf(stderr, "e2dbg_kill returned value %d \n", ret);
     }
@@ -477,7 +482,7 @@ void		e2dbg_thread_contall()
 #endif
 
       cur->state = E2DBG_THREAD_RUNNING;
-      e2dbg_kill(cur->tid, SIGCONT);
+      e2dbg_kill((int) cur->tid, SIGCONT);
     }
 
 #if (__DEBUG_THREADS__ || __DEBUG_BP__)

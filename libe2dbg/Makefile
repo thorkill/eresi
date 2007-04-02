@@ -1,7 +1,8 @@
 ##
-## Makefile for elfsh
+## Makefile for libe2dbg in the ERESI framework
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 mayhem
+## $id$
 ##
 
 include ../config.h
@@ -40,18 +41,18 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DELFSH64	 \
 			-DE2DBG_PRESENT
 
-LDFLAGS32		+= $(DLOPT) $(LDMJOLLNIR) $(DYNOPT) $(EXTRAOPT) $(LDDUMPOPT)
-LDFLAGS64		+= $(DLOPT) $(LDMJOLLNIR) $(DYNOPT) $(EXTRAOPT) $(LDDUMPOPT)
+LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
+LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 
 EXTRAOBJ32		= ../libasm/libasm.o ../libmjollnir/libmjollnir32.o     \
 			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o       \
 			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	\
-			../libaspect/libaspect32.o
+			../libaspect/libaspect32.o $(LDDUMPOBJ)
 
 EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o     \
 			../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o       \
 			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o	\
-			../libaspect/libaspect64.o
+			../libaspect/libaspect64.o $(LDDUMPOBJ)
 
 all			: all32 all64
 

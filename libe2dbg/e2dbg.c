@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.7 2007-03-17 13:05:31 may Exp $
+** $Id: e2dbg.c,v 1.8 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -21,12 +21,18 @@ e2dbgworld_t	e2dbgworld;
 void		e2dbg_init(void)
 {
 #if __DEBUG_E2DBG__
-  write(2, " [D] Calling DLSYM_INIT from e2dbg init !\n", 42);
+  write(2, " [D] Calling DLSYM_INIT from e2dbg_init() !\n", 45);
 #endif
+
+  aspect_called_ctors_inc();
+
   e2dbg_dlsym_init();
-  e2dbg_presence_reset();
+
+  if (aspect_called_ctors_finished())
+    e2dbg_presence_reset();
+
 #if __DEBUG_E2DBG__
-  write(2, " [D] Finished e2dbg ctors \n", 26);
+  write(2, " [D] Finished e2dbg ctors \n", 27);
 #endif
 }
 
@@ -37,6 +43,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
   int		ac;
   char		**av;
   int		ret;
+  static int	first = 1;
 
 #if __DEBUG_E2DBG__
   write(2, "[e2dbg_entry] CHECKPOINT 0\n", 27);
@@ -74,13 +81,13 @@ int		e2dbg_entry(e2dbgparams_t *params)
 
   if (av && ac)
     vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
-  
+
 #if __DEBUG_E2DBG__
   fprintf(stderr, "[e2dbg_entry] CHECKPOINT 4\n");
 #endif
 
   /* Only on first execution */
-  if (ac == 2)
+  if (first)
     {
       /* Debugger only script commands */
       vm_addcmd(CMD_MODE     , (void *) cmd_mode     , vm_getvarparams, 0, HLP_MODE);
@@ -107,6 +114,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
 
       if (!e2dbgworld.curthread || !e2dbgworld.curthread->step)
 	vm_print_banner(av[1]);
+
+      first = 0;
     }
 
   if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && e2dbg_setup(av[1]) < 0)

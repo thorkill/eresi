@@ -5,38 +5,10 @@
 ** 
 ** Started Fri Oct  7 21:05:26 CEST 2005 crew
 **
-** $Id: alloc-proxy.c,v 1.1 2007-03-18 12:35:04 may Exp $
+** $Id: alloc-proxy.c,v 1.2 2007-04-02 18:00:31 may Exp $
 **
 */
 #include "libe2dbg.h"
-
-
-/* Debugger presence set */
-void		e2dbg_presence_set() 
-{ 
-  e2dbgworld.dbgpresent = 1; 
-
-#if __DEBUG_E2DBG__
-  write(1, " [*] Enabled debugger presence\n", 31);
-#endif
-}
-
-/* Debugger presence reset */
-void		e2dbg_presence_reset() 
-{ 
-  e2dbgworld.dbgpresent = 0; 
-
-#if __DEBUG_E2DBG__
-  write(1, " [*] Disabled debugger presence\n", 32);
-#endif
-}
-
-
-/* Get the Debugger presence information */
-u_char		e2dbg_presence_get()          
-{ 
-  return (e2dbgworld.dbgpresent); 
-}	
 
 
 /* Wrapper for malloc */
