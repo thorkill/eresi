@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.10 2007-03-27 00:08:42 may Exp $
+** $Id: libe2dbg.h,v 1.11 2007-04-02 18:00:45 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -17,14 +17,14 @@
 #include "aproxy.h"
 
 #if defined(__FreeBSD__)
-  extern char **environ;
+ #include <pthread_np.h>
 #endif
 
-#define		__DEBUG_E2DBG__		1
-#define		__DEBUG_BP__		0
+#define		__DEBUG_E2DBG__		0
+#define		__DEBUG_BP__		1
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	1
-#define		__DEBUG_THREADS__	1
+#define		__DEBUG_LINKMAP__	0
+#define		__DEBUG_THREADS__	0
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
 #define		E2DBG_PROFILER_BUFLEN	256
@@ -163,7 +163,8 @@ while (0)
 typedef u_char elfshmutex_t;
 
 
-/* The internal object descriptor for e2dbg when resolving symbols before malloc is available */
+/* The internal object descriptor for e2dbg when resolving 
+   symbols before malloc is available */
 typedef	struct	s_eobj
 {
   int		fd;
@@ -249,7 +250,7 @@ typedef struct		s_e2dbgworld
   hash_t		bp;				/* Breakpoints hash table */
   hash_t		threads;			/* Threads hash table */
   u_char		sourcing;			/* We are executing a debugger script */
-  u_char		dbgpresent;			/* Should we proxy allocations ? */
+  //u_char		dbgpresent;			/* Should we proxy allocations ? */
   //e2dbgcontext_t	dbgcontext;			/* Current e2dbg scripting context */
   e2dbgsyms_t		syms;				/* Resolved symbol informations */
 
@@ -282,9 +283,10 @@ extern e2dbgworld_t	e2dbgworld;
 
 /* Some libc extern */
 #ifdef __FreeBSD__
-extern char*		__progname;
+ extern char		*__progname;
+ extern char		**environ;
 #else
-extern char*		__progname_full;
+ extern char		*__progname_full;
 #endif
 
 /* libe2dbg.hooks */
@@ -330,9 +332,11 @@ int		e2dbg_linkmap(elfshobj_t *file);
 char		*vm_get_prompt();
 char		*vm_get_mode_name();
 int		vm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
-u_char          e2dbg_presence_get();
-void            e2dbg_presence_set();
-void            e2dbg_presence_reset();
+
+//u_char          e2dbg_presence_get();
+//void            e2dbg_presence_set();
+//void            e2dbg_presence_reset();
+
 int             e2dbg_self();
 int		e2dbg_kill(int pid, int sig);
 
@@ -355,7 +359,9 @@ int		e2dbg_mutex_lock(elfshmutex_t *m);
 int		e2dbg_mutex_unlock(elfshmutex_t *m);
 
 /* e2dbg main API */
-void		e2dbg_init(void) __attribute__((constructor));
+void		e2dbg_init(void) __attribute__ ((constructor));
+void		e2dbg_last_init(void) __attribute__ ((constructor));
+
 int		e2dbg_setup(char *name);
 int		e2dbg_entry(e2dbgparams_t *);
 void		e2dbg_start_proc();
@@ -385,7 +391,6 @@ int		e2dbg_curthread_init();
 int		pthread_attr_getstack(__const pthread_attr_t *__restrict __attr,
 				      void **__restrict __stackaddr,
 				      size_t *__restrict __stacksize);
-
 /* e2dbg commands */
 int             cmd_mode();
 int             cmd_linkmap();
@@ -404,5 +409,11 @@ int		cmd_start();
 int		cmd_dumpregs();
 int		cmd_cont();
 int		cmd_threads();
+
+/* Undefined on FreeBSD */
+#if defined(__FreeBSD__)
+void		on_exit(void *exitptr, int param);
+#endif
+
 
 #endif
