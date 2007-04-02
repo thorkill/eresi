@@ -4,7 +4,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 ** 
 **
-** $Id: state.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: state.c,v 1.10 2007-04-02 18:00:57 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -23,9 +23,15 @@ void    elfsh_init()
 {
   memset(&dbgworld, 0x00, sizeof(dbgworld));
 
+  aspect_called_ctors_inc();
+
   /* Initialize the aspect library and set ondisk mode by default */
   aspect_init();
   elfsh_set_static_mode();
+
+  if (aspect_called_ctors_finished())
+    e2dbg_presence_reset();
+
 }
 
 
@@ -69,7 +75,8 @@ void	elfsh_set_debug_mode()
 void	elfsh_set_mode(u_char mode)
 {
   //fprintf(stderr, "Changed for %s mode ! \n",
-  //(mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
+  //  (mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
+
   dbgworld.mode = mode;
 }
 

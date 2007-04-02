@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.12 2007-03-25 14:27:34 may Exp $
+** $Id: map.c,v 1.13 2007-04-02 18:00:57 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -37,9 +37,8 @@ void		      elfsh_fixup(elfshobj_t *file)
  */
 int		        elfsh_read_obj(elfshobj_t *file)
 {
-  elfshsect_t	*actual;
-  int		      index;
-  int		      mode;
+  elfshsect_t		*actual;
+  int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -58,12 +57,12 @@ int		        elfsh_read_obj(elfshobj_t *file)
 
   /* Fixup stuffs in the SHT */
   elfsh_fixup(file);
-
-  if(file->hdr->e_type == ET_CORE) 
-  {
-    elfsh_get_core_notes(file);
-    goto out;
-  }
+  
+  if (file->hdr->e_type == ET_CORE) 
+    {
+      elfsh_get_core_notes(file);
+      goto out;
+    }
 
   /* Fill multiple relocation sections */
   for (index = 0; NULL != 
@@ -87,13 +86,6 @@ int		        elfsh_read_obj(elfshobj_t *file)
   elfsh_get_verneedtab(file, NULL);
   elfsh_get_verdeftab(file, NULL);
   elfsh_get_hashtable(file, NULL);
-
-  /*
-  mode = elfsh_get_mode();
-  elfsh_set_static_mode();
-  elfsh_get_hashtable(file, NULL);
-  elfsh_set_mode(mode);
-  */
 
   elfsh_get_comments(file);
   elfsh_get_plt(file, NULL);
