@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.46 2007-03-23 14:36:55 mxatone Exp $
+** $Id: libelfsh.h,v 1.47 2007-04-02 18:01:08 may Exp $
 **
 */
 
@@ -24,7 +24,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "elfsh-libc.h"
+//#include "elfsh-libc.h"
+
 #include <elf.h>
 #include "libaspect.h"
 #include <libelfsh/libelfsh-compat.h>
