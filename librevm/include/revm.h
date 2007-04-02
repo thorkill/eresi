@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.53 2007-04-01 23:33:16 may Exp $
+** $Id: revm.h,v 1.54 2007-04-02 18:01:47 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -1014,7 +1014,7 @@ elfshobj_t	*vm_is_depid(elfshobj_t *obj, int id);
 int		vm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
 
 /* Top skeleton functions */
-int		vm_init() __attribute__((constructor)) ;
+int		vm_init() __attribute__((constructor));
 int		vm_loop(int argc, char **argv);
 int		vm_setup(int ac, char **av, char mode, char side);
 int		vm_run(int ac, char **av);

@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.9 2007-04-02 11:51:03 may Exp $
+** $Id: revm-io.h,v 1.10 2007-04-02 18:01:47 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -148,7 +148,13 @@ typedef struct	s_io
 
   /* DUMP IO specific */
   int		new;                   /* 0 if already used */
-  void		*pkt;                  /* Last received dump */
+
+#if defined(ELFSHNET)
+  pkt_t		*pkt;                  /* Last received dump */
+#else
+  void		*pkt;		       /* Unused else */
+#endif
+
 }               revmio_t;
 
 
