@@ -78,7 +78,8 @@ MOD_TARGET=mod32
 --enable-network*)
 echo  " [*] Enable distributed ELFsh"
 ELFSHNET="1"
-echo  "LDDUMPOPT		= -ldumpelfsh"		>> $CONFIGFILE
+echo  "LDDUMPOPT		= -ldump"		>> $CONFIGFILE
+echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
 BITS=$BITS" -DELFSHNET"
 ;;
 
@@ -436,7 +437,7 @@ echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
 
 if [ "$ELFSHNET" = "1" ]; then
 
-echo "	@echo 'Building libdumpelfsh...' "			>> Makefile
+echo "	@echo 'Building libdump...' "				>> Makefile
 echo "	@cd libdump && \$(MAKE) -s "				>> Makefile
 echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
 
