@@ -10,10 +10,11 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.29 2007-04-02 08:58:18 thor Exp $
+** $Id: types.c,v 1.30 2007-04-02 11:51:02 may Exp $
 **
 */
 #include "libmjollnir.h"
+
 
 /**
  *  Depending on instruction type -based on IA32 instruction set-
@@ -92,11 +93,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
       
       context->calls_seen++;
 
-/* 20070102
- * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), possible libasm bug or
- * mjollnir.
- *
- */
+      /* 20070102
+       * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
+       * possible libasm bug or mjollnir.
+       */
       if ((dstaddr) && (dstaddr != -1))
     	{
 	  /* Link block layer */
