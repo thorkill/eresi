@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: aproxy_malloc.c,v 1.3 2007-03-14 12:51:45 may Exp $
+  $Id: aproxy_malloc.c,v 1.4 2007-04-02 17:59:31 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 
@@ -4578,8 +4578,8 @@ aproxy_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
   const char *errstr = NULL;
   INTERNAL_SIZE_T       nextsize;
 
-  //char			intbuf[256];
-  //int			intlen;
+  char			intbuf[256];
+  int			intlen;
 
   checked_request2size(bytes, nb);
 
@@ -4590,20 +4590,24 @@ aproxy_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
   if (__builtin_expect ((uintptr_t) oldp & MALLOC_ALIGN_MASK, 0))
     {
       errstr = "realloc(): invalid pointer";
+      
+      fprintf(stderr, "MALLOC_ALIGN_MASK = %08X (%u) -> align = %u\n", 
+	      MALLOC_ALIGN_MASK, MALLOC_ALIGN_MASK,
+	      (uintptr_t) oldp & MALLOC_ALIGN_MASK);
+
     errout:
       malloc_printerr (check_action, errstr, oldmem);
       return NULL;
     }
 
-  //intlen = snprintf(intbuf, sizeof(intbuf), "oldsize = %u, av->system_mem = %u \n", oldsize, av->system_mem); 
-  //write(1, intbuf, intlen);
-
   if (__builtin_expect (oldp->size <= 2 * SIZE_SZ, 0)
       || __builtin_expect (oldsize >= av->system_mem, 0))
     {
 
-      //intlen = snprintf(intbuf, sizeof(intbuf), "FAILURE WITH: oldsize = %u, av->system_mem = %u \n", oldsize, av->system_mem); 
-      //write(1, intbuf, intlen);
+      intlen = snprintf(intbuf, sizeof(intbuf), 
+			"FAILURE WITH: oldsize = %u, av->system_mem = %u \n", 
+			oldsize, av->system_mem); 
+      write(1, intbuf, intlen);
 
       errstr = "realloc(): invalid size";
       goto errout;
@@ -4618,6 +4622,12 @@ aproxy_int_realloc(mstate av, Void_t* oldmem, size_t bytes)
     if (__builtin_expect (next->size <= 2 * SIZE_SZ, 0)
 	|| __builtin_expect (nextsize >= av->system_mem, 0))
       {
+
+	intlen = snprintf(intbuf, sizeof(intbuf), 
+			  "FAILURE2 WITH: oldsize = %u, av->system_mem = %u \n", 
+			  oldsize, av->system_mem); 
+	write(1, intbuf, intlen);
+
 	errstr = "realloc(): invalid next size";
 	goto errout;
       }
