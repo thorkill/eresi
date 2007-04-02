@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.6 2007-03-27 00:08:40 may Exp $
+** $Id: main.c,v 1.7 2007-04-02 17:59:22 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -57,7 +57,10 @@ int		e2dbg_main(int ac, char **av)
     vm_execute_debuggee(ac, av);
   else
     {
+
       usleep(50000);
+      //sleep(20);
+
       if (waitpid(pid, &status, WNOHANG) != 0)
 	{
 	  vm_output("\n [E] Target binary not found\n");
@@ -76,6 +79,7 @@ int		e2dbg_main(int ac, char **av)
 /* The main ELFsh routine */
 int		main(int ac, char **av)
 {
+  //fprintf(stderr, "e2dbg client main -----------> \n");
   return (e2dbg_main(ac, av));
 }
 
