@@ -6,7 +6,7 @@
 ** Started Wed Feb 25 22:22:35 2004 yann_malcom
 ** Updated Mon Mar 05 04:37:10 2007 mayhem 
 **
-** $Id: network.c,v 1.3 2007-03-14 12:51:45 may Exp $
+** $Id: network.c,v 1.4 2007-04-02 18:02:03 may Exp $
 **
 */
 #include "revm.h"
@@ -49,7 +49,7 @@ revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
   new->ws.sock.recvd_f = OLD;
   elfsh_net_client_count++;
 
-  new->ws.io.type      = ELFSH_IONET;
+  new->ws.io.type      = REVM_IO_NET;
   new->ws.io.input_fd  = socket;
   new->ws.io.output_fd = socket;
   new->ws.io.input     = vm_net_input;
@@ -662,7 +662,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 
 	  temp_socket = &((revmjob_t *) actual->data)->ws.sock;
 
-	  if (((revmjob_t *) actual->data)->ws.io.type != ELFSH_IONET)
+	  if (((revmjob_t *) actual->data)->ws.io.type != REVM_IO_NET)
 	    continue;
 
 	  if (temp_socket->socket == init->ws.sock.socket ||
@@ -767,7 +767,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			      hash_del(&world.jobs, tmp);
 			    }
 
-			  new->ws.io.type      = ELFSH_IODUMP;
+			  new->ws.io.type      = REVM_IO_DUMP;
 			  new->ws.io.input_fd  = (-1);
 			  new->ws.io.output_fd = (-1);
 			  new->ws.io.input     = vm_dump_input;
@@ -1027,7 +1027,7 @@ int			vm_clean_jobs()
       switch (job->ws.io.type)
 	{
 	  
-	case ELFSH_IODUMP:
+	case REVM_IO_DUMP:
 	  if (job->ws.io.new == 0)
 	    {
 #if __DEBUG_NETWORK__
