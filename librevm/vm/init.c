@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.17 2007-03-27 20:56:03 mxatone Exp $
+** $Id: init.c,v 1.18 2007-04-02 18:02:14 may Exp $
 **
 */
 
@@ -95,7 +95,6 @@ int		vm_loop(int argc, char **argv)
 	if (world.state.vm_mode != REVM_STATE_CMDLINE
 	    && world.state.vm_mode != REVM_STATE_TRACER)
 	  {
-	    //XFREE(__FILE__, __FUNCTION__, __LINE__,argv[1]);
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
 	    if (world.state.vm_mode != REVM_STATE_INTERACTIVE &&
 		world.state.vm_mode != REVM_STATE_DEBUGGER)
@@ -189,8 +188,11 @@ int		vm_loop(int argc, char **argv)
 /* Called from CTORS */
 int		vm_init()
 {
- /* Must be here in case of script params presence */
+
+  /* Must be here in case of script params presence */
   bzero(&world, sizeof (world));
+
+  aspect_called_ctors_inc();
 
   /* Set the world up */
   asm_init_i386(&world.proc);
@@ -200,6 +202,10 @@ int		vm_init()
   /* setting libelfsh profile function */
   /* error on stdout, profile on stderr */
   profiler_install(vm_outerr, vm_output);
+
+  if (aspect_called_ctors_finished())
+    e2dbg_presence_reset();
+
   return (0);
 }
 
