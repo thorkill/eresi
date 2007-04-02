@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.30 2007-04-02 11:51:02 may Exp $
+** $Id: types.c,v 1.31 2007-04-02 19:14:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -326,7 +326,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
-  ins  = &context->hist[MJR_HISTORY_PREV].instr;
+  ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
   if (context->proc.type == ASM_PROC_IA32)
   {
