@@ -6,7 +6,7 @@
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
 **
-** $Id: libhash.c,v 1.25 2007-03-07 16:45:35 thor Exp $
+** $Id: libhash.c,v 1.26 2007-04-02 18:00:02 may Exp $
 **
 */
 #include "libaspect.h"
@@ -20,14 +20,20 @@ int	hash_init(hash_t *h, char *name, int size, u_int type)
 {
   NOPROFILER_IN();
 
+  if (name && strstr(name, "commands"))
+    fprintf(stderr, "Initializing hash %s \n", name);
+  
   if (!hash_hash)
     {
       hash_hash = (hash_t *) calloc(sizeof(hash_t), 1);
       hash_init(hash_hash, "hashes", 51, ASPECT_TYPE_UNKNOW);
     }
   if (type >= aspect_type_nbr)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to initialize hash table", -1);
+    {
+      fprintf(stderr, "Unable to initialize hash table %s \n", name);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unable to initialize hash table", -1);
+    }
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 h->ent, size * sizeof(hashent_t), -1);

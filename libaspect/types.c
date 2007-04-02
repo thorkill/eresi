@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id: types.c,v 1.7 2007-04-02 18:00:02 may Exp $
 **
 */
 #include "libaspect.h"
@@ -338,15 +338,22 @@ int		aspect_basetypes_create()
 {
   int		index;
   u_int		basesize;
+  static u_int	done = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (done)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  done = 1;
   basesize = ASPECT_TYPE_BASENUM * sizeof(typeinfo_t);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, aspect_typeinfo, basesize, -1);
   memcpy(aspect_typeinfo, aspect_typeinfo_base, basesize);
   for (index = 1; index < ASPECT_TYPE_BASENUM; index++)
     aspect_basetype_create(index, aspect_typeinfo + index);
+ 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
+
+
 
 /* Add a simple type */
 int		aspect_basetype_register(char *name, u_int size)

@@ -6,13 +6,68 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: init.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: init.c,v 1.4 2007-04-02 18:00:02 may Exp $
 **
 */
 #include "libaspect.h"
 
 
 static u_char aspect_initialized = 0;
+
+
+/***************** ERESI Constructors help functions **********************/
+
+static u_char called_ctors = 0;
+static u_char dbgpresent   = 0;
+
+/* Count the number of constructors already called in the framework */
+void		aspect_called_ctors_inc()
+{
+  if (!called_ctors)
+    e2dbg_presence_set();
+  called_ctors++;
+}
+
+/* Test if we called all constructors or not, currently we have 3 */
+int		aspect_called_ctors_finished()
+{
+  return (called_ctors == 3);
+}
+
+
+/*************** E2DBG presence help functions *******************/
+
+
+/* Debugger presence set */
+void		e2dbg_presence_set() 
+{ 
+  dbgpresent = 1; 
+
+#if __DEBUG_E2DBG__
+  write(2, " [*] Enabled debugger presence\n", 31);
+#endif
+
+}
+
+/* Debugger presence reset */
+void		e2dbg_presence_reset() 
+{ 
+  dbgpresent = 0; 
+
+#if __DEBUG_E2DBG__
+  write(2, " [*] Disabled debugger presence\n", 32);
+#endif
+
+}
+
+/* Get the Debugger presence information */
+u_char		e2dbg_presence_get()          
+{ 
+  return (dbgpresent); 
+}	
+
+
+/**************** LIBASPECT initiazation ******************/
 
 
 /* Initialize the vector hash */
