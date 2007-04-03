@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.10 2007-04-03 00:01:51 may Exp $
+** $Id: signal.c,v 1.11 2007-04-03 00:23:09 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -243,8 +243,8 @@ void			e2dbg_do_breakpoint()
 
   /* Try to find the breakpoint at current instruction pointer */
 #if __DEBUG_BP__
-  fprintf(stderr, "Trying to find breakpoint at addr %08X (bpsize = %u)\n", 
-	  *pc - bpsz, bpsz);
+  fprintf(stderr, "[PC = %08X] Trying to find breakpoint at addr %08X (bpsize = %u)\n", 
+	  *pc, *pc - bpsz, bpsz);
 #endif
 
   snprintf(buf, sizeof(buf), XFMT, *pc - bpsz);
@@ -271,7 +271,8 @@ void			e2dbg_do_breakpoint()
 	    ret++;
 	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
 	  name   = vm_resolve(parent, (elfsh_Addr) *pc, &off);
-	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, &off, ELFSH_LOWSYM);
+	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, 
+					      &off, ELFSH_LOWSYM);
 
 #if __DEBUG_BP__
 	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) \n", 
@@ -305,7 +306,7 @@ void			e2dbg_do_breakpoint()
 	  !e2dbgworld.stoppedthread->step)
 	{
 #if __DEBUG_BP__
-	  printf(" [*] Debuggee executed restored instruction (before pc = %08X) \n", *pc);
+	  printf(" [*] [pc = %08x] Debuggee executed restored instruction \n", *pc);
 #endif
 	  return;
 	}
@@ -316,7 +317,7 @@ void			e2dbg_do_breakpoint()
 	{
 	  printf(".::- E2DBG WARNING -::.\n"
 		 "Breakpoint triggered at location %08X which we don't know about.\n\n"
-		 "This may be an anti-debug trick or the program could be inside another\n"
+		 "This may be an anti-debug trick or the program MAY be inside another\n"
 		 "debugger that uses breakpoints. (count = " UFMT ", step is off)\n\n" 
 		 "This use of e2dbg is unsupported for now, exiting .. \n\n", 
 		 *pc - bpsz, e2dbgworld.stoppedthread->count);
@@ -354,7 +355,7 @@ void			e2dbg_do_breakpoint()
       if (!e2dbgworld.stoppedthread->step)
 	{
 #if __DEBUG_BP__
-	  fprintf(stderr, " [S] RESETING STEP MODE ! \n");
+	  fprintf(stderr, " [S] [PC = %08X] RESETING STEP MODE ! \n", *pc);
 #endif
 	  e2dbg_resetstep();
 	  return;
@@ -417,7 +418,7 @@ void			e2dbg_do_breakpoint()
       *pc = savedpc;
 
 #if __DEBUG_BP__
-      fprintf(stderr, " RETURNED FROM HANDLER WITH STEP ENABLED AND PC = %08X\n",
+      fprintf(stderr, "[PC = %08X] RETURNED FROM HANDLER WITH STEP ENABLED \n",
 	      *pc);
 #endif
     }
