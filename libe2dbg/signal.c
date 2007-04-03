@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.9 2007-04-02 18:00:31 may Exp $
+** $Id: signal.c,v 1.10 2007-04-03 00:01:51 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -194,8 +194,8 @@ void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
   off  = (bp ? 0 : e2dbgworld.stoppedthread->count == E2DBG_BREAK_HIT ? 3 : 6);
   addr = (bp ? bp->addr : pc - off);
   
-  fprintf(stderr, "%s ::: parent = %s (BP DESCRIPTOR = %08X) \n",
-	  str, (parent ? parent->name : "NONE !!!!"), (elfsh_Addr) bp);
+  fprintf(stderr, "%s (PC = %08X) ::: parent = %s (BP DESCRIPTOR = %08X) \n",
+	  str, pc, (parent ? parent->name : "NONE !!!!"), (elfsh_Addr) bp);
   sect   = elfsh_get_parent_section(parent, addr, NULL);
   name   = vm_resolve(parent, addr, &off);
   sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
@@ -255,6 +255,8 @@ void			e2dbg_do_breakpoint()
   if (bp)
     fprintf(stderr, " SAVED INSTR BYTE = %02X and PC-BPSZ BYTE = %02X \n",
 	    bp->savedinstr[0], *((u_char *) *pc - bpsz));
+  else
+    fprintf(stderr, "No BP found at %08X ! \n", *pc);
 #endif
 
   /* If we are single-stepping or if we are stepping the breaked instruction */
