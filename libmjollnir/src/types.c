@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.31 2007-04-02 19:14:05 thor Exp $
+** $Id: types.c,v 1.32 2007-04-07 23:00:01 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -32,11 +32,10 @@
 int		mjr_asm_flow(mjrcontext_t *context)
 {
   int			ilen;
-  char			*md5, *tmpstr;
-  mjrcontainer_t	*fun,*true;
+  char			*tmpstr;
+  mjrcontainer_t	*fun;
   asm_instr		*curins;
-  elfsh_Addr		curvaddr, dstaddr, tmpaddr;
-  mjrfunc_t		*tmpfunc;
+  elfsh_Addr		curvaddr, dstaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -46,8 +45,17 @@ int		mjr_asm_flow(mjrcontext_t *context)
   ilen     = asm_instr_len(curins);  
 
   tmpstr = _vaddr2str(curvaddr);
+
   if ((fun = hash_get(&context->funchash, tmpstr)))
-    context->curfunc = fun;
+    {
+      context->curfunc = fun;
+      context->in_function = 1;
+    } 
+  else 
+    {
+      mjr_asm_check_function_end(context);
+      mjr_asm_check_function_start(context);
+    }
  
   fun = NULL;
 
@@ -59,8 +67,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
-	    "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", curvaddr, dstaddr, curvaddr + ilen);
+	    "[D] %s: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
+	    " F:" XFMT"\n", __FUNCTION__, curvaddr, dstaddr, curvaddr + ilen);
 #endif
 
     if (dstaddr != -1)
@@ -73,7 +81,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
+	      "[D] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
 	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 
@@ -87,8 +95,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
     
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
-	      " F:" XFMT "\n", curvaddr, dstaddr, curvaddr + ilen);
+	      "[D] %s: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
+	      " F:" XFMT "\n", __FUNCTION__, curvaddr, dstaddr, curvaddr + ilen);
 #endif
       
       context->calls_seen++;
@@ -102,36 +110,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	  /* Link block layer */
 	  mjr_blocks_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
 
-	  /* Link/Prepare function layer */
-	  true = mjr_block_get_by_vaddr(context, dstaddr, 0);
-
-	  /* Note that function hash is another layer of containers */
-    	  /* XXX: put this in a vector of fingerprinting techniques */
-    	  tmpaddr = ((mjrblock_t *)mjr_lookup_container(true->id)->data)->vaddr;
-    	  tmpstr = _vaddr2str(tmpaddr);
-    	  fun = hash_get(&context->funchash, tmpstr);
-	  
-    	  if (!fun)
-  	    {
-	      fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
-	      hash_add(&context->funchash, tmpstr, fun);
-  	    }
-	  
-    	  if (context->curfunc)
-  	    {
-  	      mjr_container_add_link(fun, context->curfunc->id, 
-				     MJR_LINK_FUNC_RET, MJR_LINK_IN);
-  	      mjr_container_add_link(context->curfunc, fun->id, 
-				     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-  	    }
-	  
-    	  // when a function start, we do a fingerprint of it
-    	  md5 = mjr_fingerprint_function(context, tmpaddr, MJR_FPRINT_TYPE_MD5);
-	  
-    	  tmpfunc = (mjrfunc_t *) fun->data;
-	  
-    	  if (md5)
-    	    snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
+	  /* Link function layer */
+	  mjr_functions_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
 
     	}
       break;
@@ -139,8 +119,8 @@ int		mjr_asm_flow(mjrcontext_t *context)
     case ASM_TYPE_RETPROC:
       
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: " XFMT " ASM_TYPE_RETPROC\n", 
-	      curvaddr);
+      fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
+	      __FUNCTION__, curvaddr);
 #endif
       //
       //      tmpcntnr = mjr_create_block_container(0, 0, 0);
@@ -167,7 +147,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
       
     default:
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[__DEBUG__] mjr_asm_flow: CUR: %x DEFAULT %d\n",curvaddr, curins->type);
+      fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", __FUNCTION__, curvaddr, curins->type);
 #endif
       break;
     }
@@ -362,3 +342,73 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
+int mjr_asm_check_function_end(mjrcontext_t *ctxt)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (!ctxt->in_function)
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  if (ctxt->proc.type == ASM_PROC_IA32)
+    {
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr  == ASM_RET &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_LEAVE)
+	{
+#if __DEBUG_FLOW__
+	  fprintf(D_DESC,"[D] %s: leaving current function at %x\n",
+		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr);
+#endif
+	  ctxt->in_function = 0;
+	}
+    }
+  else if (ctxt->proc.type == ASM_PROC_SPARC)
+    {
+      
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Check if we missed some function start
+ * @param ctxt mjollnir context structure
+ */
+int mjr_asm_check_function_start(mjrcontext_t *ctxt)
+{
+  char			*tmpstr;
+  u_int			tmpaddr;
+  mjrcontainer_t	*fun;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (ctxt->in_function)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+
+  /* check function prologue */
+  if (ctxt->proc.type == ASM_PROC_IA32)
+    {
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
+	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
+	{
+	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
+	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
+
+#if __DEBUG_FLOW__
+	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
+		  __FUNCTION__,
+		  ctxt->hist[MJR_HISTORY_CUR].vaddr,
+		  tmpaddr);
+#endif
+	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+	  hash_add(&ctxt->funchash, tmpstr, fun);
+	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
+	}
+    }
+  else if (ctxt->proc.type == ASM_PROC_SPARC)
+    {
+      
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

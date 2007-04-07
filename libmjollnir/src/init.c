@@ -1,7 +1,7 @@
 /*
- * (C) 2006 Asgard Labs, thorolf
+ * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.21 2007-03-15 13:11:48 thor Exp $
+ * $Id: init.c,v 1.22 2007-04-07 23:00:01 thor Exp $
  *
  * Initialization functions
  *
@@ -84,11 +84,10 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  ctx->obj = obj;
  hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ASPECT_TYPE_UNKNOW);
  hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ASPECT_TYPE_UNKNOW);
+ ctx->in_function = 0;
  mjr_init_containers();
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }
-
-
 
 /**
  * Virtualisation of the libasm initialization depending on the architecture 
@@ -110,7 +109,7 @@ int		mjr_setup_processor(mjrsession_t *sess)
      asm_init_i386(&sess->cur->proc);
      break;
    default:
-     printf(" [E] Libmjollnir unsupported architecture \n");
+     fprintf(D_DESC," [E] Libmjollnir unsupported architecture\n");
      return (-1);
    }
  return 1;

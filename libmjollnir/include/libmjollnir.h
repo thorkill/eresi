@@ -46,6 +46,7 @@ typedef struct		_mjrContext
   unsigned char		analysed;    /* do we analysed it */
   u_int			calls_seen;  /* how many CALL we have seen */
   u_int			calls_found; /* how many dest has beed resolved */
+  u_int			in_function; /* are we in function (leave/ret not seen) */
 }	mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
@@ -127,6 +128,9 @@ int		mjr_asm_flow(mjrcontext_t *c);
 elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
 int		mjr_get_jmp_destaddr(mjrcontext_t *context);
 int		mjr_get_call_destaddr(mjrcontext_t *context);
+int		mjr_asm_check_function_start(mjrcontext_t *ctxt);
+int		mjr_asm_check_function_end(mjrcontext_t *ctxt);
+
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);
@@ -141,6 +145,10 @@ u_int		mjr_function_flow_save(mjrcontainer_t *, u_int, mjrbuf_t *);
 int		mjr_functions_load(mjrcontext_t *);
 int		mjr_functions_get(mjrcontext_t *);
 int		mjr_functions_store(mjrcontext_t *);
+int		mjr_functions_link_call(mjrcontext_t *ctxt, 
+					elfsh_Addr src, 
+					elfsh_Addr dst, 
+					elfsh_Addr ret);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);

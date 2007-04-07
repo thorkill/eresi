@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.30 2007-04-01 23:33:16 may Exp $
+ * $Id: function.c,v 1.31 2007-04-07 23:00:01 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -589,4 +589,61 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
 		 "Unable to save .edfmt.fcontrol section", -1);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
+}
+
+/**
+ * Link function layer
+ * @param ctxt mjollnir context structure
+ * @param str source address
+ * @param dst destination address
+ * @param ret return address
+ */
+int	mjr_functions_link_call(mjrcontext_t *ctxt, 
+				elfsh_Addr src, 
+				elfsh_Addr dst, 
+				elfsh_Addr ret)
+{
+  u_int			tmpaddr;
+  mjrcontainer_t	*true,*fun;
+  mjrfunc_t		*tmpfunc;
+  char			*tmpstr,*md5;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_FUNCS__
+  fprintf(D_DESC,"[D] %s: src:%x dst:%x ret:%x\n",
+	  __FUNCTION__, src, dst, ret);
+#endif
+  /* Link/Prepare function layer */
+  true = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_STRICT);
+
+  /* XXX: put this in a vector of fingerprinting techniques */
+  tmpaddr = ((mjrblock_t *)mjr_lookup_container(true->id)->data)->vaddr;
+
+  tmpstr = _vaddr2str(tmpaddr);
+  fun = hash_get(&ctxt->funchash, tmpstr);
+
+  if (!fun)
+    {
+      fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+      hash_add(&ctxt->funchash, tmpstr, fun);
+    }
+
+  if (ctxt->curfunc)
+    {
+      mjr_container_add_link(fun, ctxt->curfunc->id, 
+			     MJR_LINK_FUNC_RET, MJR_LINK_IN);
+      mjr_container_add_link(ctxt->curfunc, fun->id, 
+			     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+    }
+
+  // when a function start, we do a fingerprint of it
+  md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
+	  
+  tmpfunc = (mjrfunc_t *) fun->data;
+
+  if (md5)
+    snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

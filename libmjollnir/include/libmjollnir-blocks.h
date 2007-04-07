@@ -4,13 +4,16 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.17 2007-03-14 18:37:57 strauss Exp $
+ * $Id: libmjollnir-blocks.h,v 1.18 2007-04-07 23:00:01 thor Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
  #define __MJR_BLOCKS__ 1
 
 #include "libelfsh.h"
+
+#define MJR_BLOCK_GET_STRICT 0
+#define MJR_BLOCK_GET_FUZZY  1
 
 /* Structure used to describe blocks in memory */
 /* This format is never saved ondisk */

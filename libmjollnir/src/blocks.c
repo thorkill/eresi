@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.54 2007-04-07 13:49:58 strauss Exp $
+** $Id: blocks.c,v 1.55 2007-04-07 23:00:01 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -21,8 +21,8 @@ hash_t		goto_hash;
  * in src
  */
 int	mjr_block_relink_cond_always(mjrcontainer_t *src,
-				      mjrcontainer_t *dst,
-				      int direction)
+				     mjrcontainer_t *dst,
+				     int direction)
 {
 
   mjrlink_t *lnk;
