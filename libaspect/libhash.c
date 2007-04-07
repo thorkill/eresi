@@ -6,7 +6,7 @@
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
 **
-** $Id: libhash.c,v 1.27 2007-04-07 13:49:58 strauss Exp $
+** $Id: libhash.c,v 1.28 2007-04-07 14:23:36 strauss Exp $
 **
 */
 #include "libaspect.h"
@@ -34,10 +34,10 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
        "Unable to initialize hash table", -1);
     }
-  if (h != hash_hash && hash_find(name))
+  if (h != hash_hash && hash_find(name) && h->ent)
   {
 #if __DEBUG__
-    fprint(stderr, "Hash table already existent\n");
+    fprint(stderr, "Hash table already existent and initialized\n");
 #endif
     NOPROFILER_ROUT(1);
   }
