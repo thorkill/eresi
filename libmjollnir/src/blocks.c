@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.53 2007-04-02 18:01:19 may Exp $
+** $Id: blocks.c,v 1.54 2007-04-07 13:49:58 strauss Exp $
 **
 */
 #include "libmjollnir.h"
@@ -471,8 +471,13 @@ int	mjr_block_save(mjrcontainer_t *cur, mjrbuf_t *buf)
   memcpy(curblock, cur->data, sizeof(mjrblock_t));
   
   /* Then we create the symbol for the bloc and returns */
-  bsym = elfsh_create_symbol(curblock->vaddr, curblock->size, STT_BLOCK, 0, 0, 0);
-  elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+  sym = elfsh_get_symbol_by_value(buf->obj, curblock->vaddr, 0, ELFSH_EXACTSYM);
+
+  if (!sym)
+  {
+    bsym = elfsh_create_symbol(curblock->vaddr, curblock->size, STT_BLOCK, 0, 0, 0);
+    elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+  }
   buf->maxlen += sizeof(mjrcontainer_t);
   buf->maxlen += sizeof(mjrblock_t);
   buf->block_counter++;
