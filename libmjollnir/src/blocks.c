@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.55 2007-04-07 23:00:01 thor Exp $
+** $Id: blocks.c,v 1.56 2007-04-08 23:29:01 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -318,12 +318,15 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
 	  tmptype = *(int *)((char *)flowsect->data + off + flowdone);
 	  flowdone += sizeof(int);
 
-	  fprintf(D_DESC," [D] resotore parent: (%d/%d) sid:%u did:%u type:%u\n", 
+#if __DEBUBG_BLOCKS__
+	  fprintf(D_DESC," [D] restore parent: (%d/%d) sid:%u did:%u type:%u\n", 
 		  findex,tmpnbr,
 		  curcntnr->id,tmpid,tmptype);
+#endif
 	  
 	  /* this function increments in_nbr */
-	  mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
+	  if (tmpid)
+	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
 	}
 
       off = (u_int)curcntnr->output;
@@ -339,14 +342,18 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
 	  tmptype = *(int *)((char *)flowsect->data + off + flowdone);
 	  flowdone += sizeof(int);
 
-	  fprintf(D_DESC," [D] resotore child: (%d/%d) sid:%u did:%u type:%u\n", 
+#if __DEBUBG_BLOCKS__
+	  fprintf(D_DESC," [D] restore child: (%d/%d) sid:%u did:%u type:%u\n", 
 		  findex,tmpnbr,
 		  curcntnr->id,tmpid,tmptype);
+#endif
 	  
 	  /* out_nbr++ */
-	  mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_OUT);
+	  /* FIXME: we have some blocks where out_nbr is higher 
+	     than actual number of links DEBUG IT */
+	  if (tmpid)
+	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_OUT);
 	}
-      mjr_block_dump(curcntnr);
     }
 
   /* FIXME: prevent double analysis */
@@ -385,7 +392,7 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
   }
 
   if (!cur)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf->maxlen));
 
   if (!buf->data)
   {
@@ -414,6 +421,11 @@ u_int	 mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
     buf->maxlen += sizeof(unsigned int);
     memcpy(buf->data + buf->maxlen, (char *)&cur->type , sizeof(int));
     buf->maxlen += sizeof(int);
+
+#if __DEBUG_BLOCKS__
+    fprintf(D_DESC,"[D] %s.%d: stored dep id:%d dir:%d cid:%d type:%d\n",
+	    __FUNCTION__, __LINE__, c->id, type, cur->id, cur->type);
+#endif
     cur = cur->next;
   }
   
@@ -545,11 +557,7 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
 
       mjr_block_save(blkcntnr, &buf);
 
-      /* 
-	 resotre old lists 
-	 FIXME: we could retrieve the block once again
-	 what do you think? /thorkill 200703
-       */
+      /* resotre old lists */
       blkcntnr->input = tmpin;
       blkcntnr->output = tmpout;
 

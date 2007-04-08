@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.28 2007-04-01 23:33:16 may Exp $
+** $Id: core.c,v 1.29 2007-04-08 23:29:01 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -60,8 +60,6 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
     }
   else
     {
-      hash_add(&sess->cur->blkhash,_vaddr2str(vaddr), cntnr);
-
       cntnr = mjr_create_function_container(vaddr, 0, _vaddr2str(vaddr), 0, NULL);
       sess->cur->curfunc = cntnr;
       hash_add(&sess->cur->funchash,_vaddr2str(vaddr), cntnr);

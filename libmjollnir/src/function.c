@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.31 2007-04-07 23:00:01 thor Exp $
+ * $Id: function.c,v 1.32 2007-04-08 23:29:01 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -81,7 +81,7 @@ u_int	 mjr_function_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
   }
 
   if (!cur)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf->maxlen));
   
   if (!buf->data) 
   {
@@ -321,7 +321,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 	  flowdone += sizeof(int);
 
 #if __DEBUG_FUNCS__	
-	  fprintf(D_DESC," [D] resotore parent: (%d/%d) sid:%u did:%u type:%u\n", 
+	  fprintf(D_DESC,"[D] resotore parent: (%d/%d) sid:%u did:%u type:%u\n", 
 		  findex,tidx,
 		  curcntnr->id,tmpid,tmptype);
 #endif
@@ -333,7 +333,6 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
       off = (u_int)curcntnr->output;
       curcntnr->output = NULL;
     
-      flowdone = off;
       /* Prevent endless loops */
       tidx = curcntnr->out_nbr;
       curcntnr->out_nbr = 0;
@@ -346,7 +345,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 	  flowdone += sizeof(int);
 
 #if __DEBUG_FUNCS__
-	  fprintf(D_DESC," [D] resotore child: (%d/%d) sid:%u did:%u type:%u\n", 
+	  fprintf(D_DESC,"[D] resotore child: (%d/%d) sid:%u did:%u type:%u\n", 
 		  findex,tidx,
 		  curcntnr->id,tmpid,tmptype);
 #endif
