@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.35 2007-04-09 17:05:58 thor Exp $
+** $Id: types.c,v 1.36 2007-04-09 19:25:08 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -32,7 +32,6 @@
 int		mjr_asm_flow(mjrcontext_t *context)
 {
   int			ilen;
-  char			*tmpstr;
   mjrcontainer_t	*fun;
   asm_instr		*curins;
   elfsh_Addr		curvaddr, dstaddr;
@@ -44,9 +43,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
 
   ilen     = asm_instr_len(curins);  
 
-  tmpstr = _vaddr2str(curvaddr);
-
-  if ((fun = hash_get(&context->funchash, tmpstr)))
+  if ((fun = mjr_function_get_by_vaddr(context, curvaddr)))
       context->curfunc = fun;
   else 
       mjr_asm_check_function_start(context);
@@ -364,7 +361,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
 #endif
   	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
 	  mjr_function_register(ctxt, tmpaddr, fun);
-  	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
+  	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
   	}
   }
   else if (ctxt->proc.type == ASM_PROC_SPARC)
@@ -383,7 +380,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
 #endif
   	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
 	  mjr_function_register(ctxt, tmpaddr, fun);
-  	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
+  	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
   	}
   }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

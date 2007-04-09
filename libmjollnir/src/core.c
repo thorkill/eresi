@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.31 2007-04-09 17:05:58 thor Exp $
+** $Id: core.c,v 1.32 2007-04-09 19:25:08 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -62,7 +62,7 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
     {
       cntnr = mjr_create_function_container(sess->cur, vaddr, 0, _vaddr2str(vaddr), 0, NULL);
       sess->cur->curfunc = cntnr;
-      mjr_function_register(sess->cur, vaddr, cntnr);
+      mjr_function_register(sess->cur,vaddr, cntnr);
     }
 
   /* Read all instructions of the section */

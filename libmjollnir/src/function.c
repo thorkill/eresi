@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.35 2007-04-09 17:05:58 thor Exp $
+ * $Id: function.c,v 1.36 2007-04-09 19:25:08 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -265,7 +265,10 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 		 "No function flow section : use analyse command", 0);
   
   fncnbr = sect->shdr->sh_size / (sizeof(mjrcontainer_t) + sizeof(mjrfunc_t));
+
+#if __DEBUG_FUNCS__
   fprintf(D_DESC, " [D] %s: loading %d functions\n", __FUNCTION__, fncnbr);
+#endif
   
   done = 0;
   for (index=0; index < fncnbr; index++)
@@ -318,7 +321,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 	  tmptype = *(int *)((char *)flowsect->data + off + flowdone);
 	  flowdone += sizeof(int);
 
-#if __DEBUG_FUNCS__	
+#if __DEBUG_FUNCS__
 	  fprintf(D_DESC,"[D] resotore parent: (%d/%d) sid:%u did:%u type:%u\n", 
 		  findex,tidx,
 		  curcntnr->id,tmpid,tmptype);
@@ -617,13 +620,13 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
   /* XXX: put this in a vector of fingerprinting techniques */
   tmpaddr = ((mjrblock_t *)mjr_lookup_container(ctxt,true->id)->data)->vaddr;
 
-  tmpstr = _vaddr2str(tmpaddr);
-  fun = hash_get(&ctxt->funchash, tmpstr);
+  fun = mjr_function_get_by_vaddr(ctxt,tmpaddr);
 
   if (!fun)
     {
+      tmpstr = _vaddr2str(tmpaddr);
       fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-      mjr_function_register(ctxt, tmpaddr, fun);
+      mjr_function_register(ctxt,tmpaddr, fun);
     }
 
   if (ctxt->curfunc)
@@ -651,25 +654,38 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
  * @param vaddr virtual address of the function
  * @param fun function container
  */
-int mjr_function_register(mjrcontext_t *ctx, elfsh_Addr *vaddr, mjrcontainer_t *fun)
+int mjr_function_register(mjrcontext_t *ctx, u_int vaddr, mjrcontainer_t *fun)
 {
   char *tmpstr;
-  mjrcontainer_t *tmpfnc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  tmpstr = _vaddr2str(vaddr);
 
 #if __DEBUG_FUNCS__
   fprintf(D_DESC, "[D] %s: vaddr:%x ID:%d\n",
 	  __FUNCTION__, vaddr, fun->id);
 #endif
 
-  tmpfnc = hash_get(&ctx->funchash, tmpstr);
-
-  if (!tmpfnc)
-    hash_add(&ctx->funchash, tmpstr, fun);
+  if (!mjr_function_get_by_vaddr(ctx, vaddr))
+    {
+      tmpstr = _vaddr2str(vaddr);
+      hash_add(&ctx->funchash, tmpstr, fun);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Get function container by vaddr
+ * @param ctx mjollnir context structure
+ * @param vaddr virtual address of requested function
+ */
+mjrcontainer_t *mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+#if __DEBUG_FUCNS_LOOKUP__
+  fprintf(D_DESC,"[D] %s: vaddr:%x\n",__FUNCTION__,vaddr);
+#endif
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		(mjrcontainer_t *)(hash_get(&ctx->funchash,
+					    _vaddr2str(vaddr))));
+}
