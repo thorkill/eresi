@@ -5,7 +5,7 @@
 **
 ** Started : Mon Jan 02 01:18:14 2007 mayhem
 **
-** $Id: fingerprint.c,v 1.12 2007-03-18 23:11:03 thor Exp $
+** $Id: fingerprint.c,v 1.13 2007-04-09 15:18:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -91,7 +91,7 @@ int	mjr_fprint		(mjrcontext_t 	*c,
   /* Terminal recursion except when both true and false are != NULL */
   for (; link; link = link->next) 
     {
-      mjrcontainer_t *tmp = mjr_lookup_container(link->id);
+      mjrcontainer_t *tmp = mjr_lookup_container(c, link->id);
       weight += mjr_fprint(c, tmp, type, weight, curd, mind, maxd, fprint);
     }
   

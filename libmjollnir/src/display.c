@@ -7,7 +7,7 @@
 **
 ** Started on  Tue Jan 02 04:04:18 2006 mayhem
 **
-** $Id: display.c,v 1.11 2007-04-01 23:33:16 may Exp $
+** $Id: display.c,v 1.12 2007-04-09 15:18:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -26,25 +26,25 @@
 /**
  * Display all information about a block 
  */
-int			mjr_block_display(mjrcontainer_t *cur, mjropt_t *disopt)
+int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disopt)
 {
-  mjrlink_t			*ccal;
-  char					*str;
-  char					*end_str;
+  mjrlink_t		*ccal;
+  char			*str;
+  char			*end_str;
   elfsh_SAddr		offset;
   elfsh_SAddr		end_offset;
-  char					buf1[30];
-  char					buf2[30];
-	mjrblock_t		*block;
+  char			buf1[30];
+  char			buf2[30];
+  mjrblock_t		*block;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-	
-	block = cur->data;
+  
+  block = cur->data;
   str = elfsh_reverse_metasym(disopt->file, block->vaddr, &offset);
-
+  
   end_str = elfsh_reverse_metasym(disopt->file, 
-				  			block->vaddr + block->size, &end_offset);
-
+				  block->vaddr + block->size, &end_offset);
+  
   if (str == NULL)
     *buf1 = 0x00;
   else
@@ -53,27 +53,27 @@ int			mjr_block_display(mjrcontainer_t *cur, mjropt_t *disopt)
     *buf2 = 0x00;
   else
     snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
-      
+  
   printf("[%8lx:%05i] %-30s --> %-30s ", 
 	 (unsigned long) block->vaddr, block->size, buf1, buf2);
-      
-/*  if (cur->false == 0xFFFFFFFF)
-    printf(" [?]");
-  else if (cur->false != NULL)
-    {
+  
+  /*  if (cur->false == 0xFFFFFFFF)
+      printf(" [?]");
+      else if (cur->false != NULL)
+      {
       str = elfsh_reverse_metasym(disopt->file, cur->false, &offset);
       printf(" [%s + " UFMT "]", (str ? str : ""), offset);
-    }
-*/      
+      }
+  */      
   printf("\n");
   if (disopt->level > 0)
     for (ccal = cur->input; ccal; ccal = ccal->next) 
-    {
-			mjrblock_t *tmp = mjr_lookup_container(ccal->id)->data;
-			str = elfsh_reverse_metasym(disopt->file, tmp->vaddr, &offset);
-			printf("\texecuted from: (" AFMT ") <%s + " UFMT ">\n",
-							tmp->vaddr, (str ? str : ""), (elfsh_SAddr) offset);
-    }
+      {
+	mjrblock_t *tmp = mjr_lookup_container(ctxt, ccal->id)->data;
+	str = elfsh_reverse_metasym(disopt->file, tmp->vaddr, &offset);
+	printf("\texecuted from: (" AFMT ") <%s + " UFMT ">\n",
+	       tmp->vaddr, (str ? str : ""), (elfsh_SAddr) offset);
+      }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
 }
 
@@ -83,11 +83,11 @@ int			mjr_block_display(mjrcontainer_t *cur, mjropt_t *disopt)
  */
 int		mjr_blocks_display(mjrcontext_t	*c, int level)
 {
-  mjropt_t				opt;
+  mjropt_t		opt;
   mjrcontainer_t	*block;
-  char						**keys;
-  int							index;
-  int							blocnbr;
+  char			**keys;
+  int			index;
+  int			blocnbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   opt.counter = 0;
@@ -98,7 +98,7 @@ int		mjr_blocks_display(mjrcontext_t	*c, int level)
   for (index = 0; index < blocnbr; index++)
   {
     block = hash_get(&c->blkhash, keys[index]);
-    mjr_block_display(block, &opt);
+    mjr_block_display(c, block, &opt);
   }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);

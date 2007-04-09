@@ -34,6 +34,9 @@ typedef struct		_mjrContext
   asm_processor		proc;  	     /* proc */
   mjrcontainer_t	*curblock;   /* current working block */
   mjrcontainer_t	*curfunc;    /* current working function */
+  mjrcontainer_t	**reg_containers;	/* Registerd containers */
+  u_int			cntnrs_size;	/* size of current containers */
+  u_int			next_id;	/* next container id */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
@@ -46,7 +49,6 @@ typedef struct		_mjrContext
   unsigned char		analysed;    /* do we analysed it */
   u_int			calls_seen;  /* how many CALL we have seen */
   u_int			calls_found; /* how many dest has beed resolved */
-  u_int			in_function; /* are we in function (leave/ret not seen) */
 }	mjrcontext_t;
 
 /* The session structure. Yes, libmjollnir is multisession */
@@ -103,7 +105,7 @@ int		mjr_blocks_link_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 int		mjr_blocks_link_jmp(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 
 mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,elfsh_Addr dst);
-int		mjr_block_dump(mjrcontainer_t *c);
+int		mjr_block_dump(mjrcontext_t*, mjrcontainer_t *c);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(mjrcontainer_t *cntnr);
@@ -119,7 +121,7 @@ int		mjr_fprint(mjrcontext_t 	*c,
 /* display.c */
 //void		mjr_block_dump(mjrblock_t *b);
 int		mjr_blocks_display(mjrcontext_t *c, int);
-int		mjr_block_display(mjrcontainer_t *c, mjropt_t *opt);
+int		mjr_block_display(mjrcontext_t *, mjrcontainer_t *c, mjropt_t *opt);
 void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
@@ -129,8 +131,6 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
 int		mjr_get_jmp_destaddr(mjrcontext_t *context);
 int		mjr_get_call_destaddr(mjrcontext_t *context);
 int		mjr_asm_check_function_start(mjrcontext_t *ctxt);
-int		mjr_asm_check_function_end(mjrcontext_t *ctxt);
-
 
 /* symtab.c */
 int		mjr_symtab_rebuild(mjrsession_t *);
@@ -140,7 +140,7 @@ int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 
 /* function.c */
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
-void		mjr_function_dump(char *,mjrcontainer_t *);
+void		mjr_function_dump(mjrcontext_t*, char *,mjrcontainer_t *);
 u_int		mjr_function_flow_save(mjrcontainer_t *, u_int, mjrbuf_t *);
 int		mjr_functions_load(mjrcontext_t *);
 int		mjr_functions_get(mjrcontext_t *);
@@ -155,28 +155,30 @@ void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
 void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
 
 /* container.c */
-void mjr_init_containers();
-void mjr_resize_containers();
-unsigned int mjr_register_container (mjrcontainer_t *cntnr);
-unsigned int mjr_register_container_id (mjrcontainer_t *cntnr);
-void mjr_unregister_container (u_int id);
-mjrcontainer_t *mjr_lookup_container (u_int id);
+void mjr_init_containers(mjrcontext_t*);
+void mjr_resize_containers(mjrcontext_t*);
+unsigned int mjr_register_container (mjrcontext_t*, mjrcontainer_t *cntnr);
+unsigned int mjr_register_container_id (mjrcontext_t*, mjrcontainer_t *cntnr);
+void mjr_unregister_container (mjrcontext_t*, u_int id);
+mjrcontainer_t *mjr_lookup_container (mjrcontext_t*,u_int id);
 mjrlink_t *mjr_container_add_link(mjrcontainer_t *cntnr, u_int id, 
 				  int link_type, int link_direction);
 
 mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
 
-mjrcontainer_t *mjr_create_block_container(u_int 	symoff,
+mjrcontainer_t *mjr_create_block_container(mjrcontext_t*,
+					   u_int 	symoff,
 					   elfsh_Addr	vaddr,
 					   u_int	size);
 
-mjrcontainer_t *mjr_create_function_container(elfsh_Addr	vaddr,
+mjrcontainer_t *mjr_create_function_container(mjrcontext_t*,
+					      elfsh_Addr	vaddr,
 					      u_int		size,
 					      char		*name,
 					      mjrblock_t	*first,
 					      char		*md5);
 
-mjrcontainer_t	*mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type);
+mjrcontainer_t	*mjr_get_container_by_vaddr(mjrcontext_t*,elfsh_Addr vaddr,int type);
 int		mjr_container_link_cleanup(mjrcontainer_t *c,int direction);
 mjrlink_t	*mjr_link_get_by_direction(mjrcontainer_t *c,int dir);
 

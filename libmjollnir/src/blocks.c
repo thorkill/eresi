@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.56 2007-04-08 23:29:01 thor Exp $
+** $Id: blocks.c,v 1.57 2007-04-09 15:18:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -68,7 +68,7 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
 	  src,dst,ret);
 #endif
 
-  csrc = mjr_block_get_by_vaddr(ctxt, src, 1);
+  csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
 
   assert(csrc != NULL);
 
@@ -117,7 +117,7 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
-  csrc = mjr_block_get_by_vaddr(ctxt, src, 1);
+  csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
 
   assert(csrc != NULL);
 
@@ -152,11 +152,11 @@ mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tmpdst = mjr_block_get_by_vaddr(ctxt, dst, 1);
+  tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
 
   if (!tmpdst)
     {
-      tmpdst = mjr_create_block_container(0, dst, 1);
+      tmpdst = mjr_create_block_container(ctxt, 0, dst, 1);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
     }
@@ -176,7 +176,7 @@ mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
       assert(new_size > 0);
       assert(blkdst->size > 0);
 
-      dstend		= mjr_create_block_container(0, dst, new_size);
+      dstend		= mjr_create_block_container(ctxt, 0, dst, new_size);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
 
       mjr_container_add_link(tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS, MJR_LINK_OUT);
@@ -293,7 +293,7 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
 #if __DEBUG_BLOCKS__
       fprintf(D_DESC,"[__DEBUG__] %s: add new block name:%s\n",__FUNCTION__,name);
 #endif
-      mjr_register_container_id (tmpcntnr);
+      mjr_register_container_id(ctxt, tmpcntnr);
       hash_add(&ctxt->blkhash, (char *) _vaddr2str(tmpblk->vaddr), tmpcntnr);
     }
 
@@ -674,7 +674,7 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
 }
 
-int mjr_block_dump(mjrcontainer_t *c)
+int mjr_block_dump(mjrcontext_t* ctxt, mjrcontainer_t *c)
 {
   mjrblock_t *blk,*tblk;
   mjrlink_t  *lnk;
@@ -688,7 +688,7 @@ int mjr_block_dump(mjrcontainer_t *c)
   lnk = c->input;
   while(lnk)
     {
-      tblk = (mjrblock_t *) mjr_lookup_container(lnk->id)->data;
+      tblk = (mjrblock_t *)mjr_lookup_container(ctxt,lnk->id)->data;
       fprintf(D_DESC,"[D] %s: %x linked IN from vaddr:%x size:%d type:%d\n",
 	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
       lnk = lnk->next;
@@ -697,7 +697,7 @@ int mjr_block_dump(mjrcontainer_t *c)
   lnk = c->output;
   while(lnk)
     {
-      tblk = (mjrblock_t *) mjr_lookup_container(lnk->id)->data;
+      tblk = (mjrblock_t *) mjr_lookup_container(ctxt,lnk->id)->data;
       fprintf(D_DESC,"[D] %s: %x linked OUT to vaddr:%x size:%d type:%d\n",
 	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
       lnk = lnk->next;

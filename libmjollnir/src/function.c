@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.33 2007-04-09 03:21:48 strauss Exp $
+ * $Id: function.c,v 1.34 2007-04-09 15:18:05 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -13,7 +13,7 @@
  * Function dumping procedure for debug purposes
  */
 
-void mjr_function_dump(char *where, mjrcontainer_t *c)
+void mjr_function_dump(mjrcontext_t* ctxt, char *where, mjrcontainer_t *c)
 {
   mjrfunc_t *f, *tmp;
   mjrlink_t *cur;
@@ -30,7 +30,7 @@ void mjr_function_dump(char *where, mjrcontainer_t *c)
 
     while(cur)
       {
-	tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
+	tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
 	fprintf(D_DESC,"%x ", tmp->vaddr);
 	cur = cur->next;
       }
@@ -45,7 +45,7 @@ void mjr_function_dump(char *where, mjrcontainer_t *c)
     
     while(cur)
       {
-	tmp = (mjrfunc_t *) mjr_lookup_container(cur->id)->data;
+	tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
 	fprintf(D_DESC,"%x ", tmp->vaddr);
 	cur = cur->next;
       }
@@ -286,7 +286,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
       memcpy(newfunction, curfnc, sizeof(mjrfunc_t));
       
       newcntnr->data = newfunction;
-      mjr_register_container_id(newcntnr);
+      mjr_register_container_id(ctxt,newcntnr);
       
       hash_add(&ctxt->funchash, (char *) _vaddr2str(curfnc->vaddr), newcntnr);
     }
@@ -617,14 +617,14 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
   true = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_STRICT);
 
   /* XXX: put this in a vector of fingerprinting techniques */
-  tmpaddr = ((mjrblock_t *)mjr_lookup_container(true->id)->data)->vaddr;
+  tmpaddr = ((mjrblock_t *)mjr_lookup_container(ctxt,true->id)->data)->vaddr;
 
   tmpstr = _vaddr2str(tmpaddr);
   fun = hash_get(&ctxt->funchash, tmpstr);
 
   if (!fun)
     {
-      fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
       hash_add(&ctxt->funchash, tmpstr, fun);
     }
 
@@ -638,7 +638,7 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
 
   // when a function start, we do a fingerprint of it
   md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
-	  
+
   tmpfunc = (mjrfunc_t *) fun->data;
 
   if (md5)

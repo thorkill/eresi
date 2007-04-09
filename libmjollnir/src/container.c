@@ -4,49 +4,49 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.7 2007-04-02 18:01:19 may Exp $
+ * $Id: container.c,v 1.8 2007-04-09 15:18:05 thor Exp $
  *
  */
 
 #include "libmjollnir.h"
 
-static mjrcontainer_t **reg_containers;
-static unsigned int cntnrs_size = MJR_CNTNRS_INCREMENT;
-static unsigned int next_id = 1;
-
 /**
- *
+ * Initialize containers for context
+ * @param ctx mjollnir context
  */
-void mjr_init_containers()
+void mjr_init_containers(mjrcontext_t *ctx)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, reg_containers, 
-	 sizeof(mjrcontainer_t*) * cntnrs_size, );
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->reg_containers, 
+	 sizeof(mjrcontainer_t*) * ctx->cntnrs_size, );
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /**
- *
+ * Resize containers for given context
+ * @param ctx mjollnir context
  */
-void mjr_resize_containers()
+void mjr_resize_containers(mjrcontext_t *ctx)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  cntnrs_size += MJR_CNTNRS_INCREMENT;
-  XREALLOC(__FILE__, __FUNCTION__, __LINE__, reg_containers, reg_containers,
-	   sizeof(mjrcontainer_t*) * cntnrs_size, );
+  ctx->cntnrs_size += MJR_CNTNRS_INCREMENT;
+  XREALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->reg_containers, ctx->reg_containers,
+	   sizeof(mjrcontainer_t*) * ctx->cntnrs_size, );
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /**
- *
+ * Reigster new container for given context
+ * @param ctx mjollnir context
+ * @param cntnr container
  */
-unsigned int mjr_register_container(mjrcontainer_t *cntnr)
+unsigned int mjr_register_container(mjrcontext_t *ctx, mjrcontainer_t *cntnr)
 {
-  if (next_id >= cntnrs_size)
+  if (ctx->next_id >= ctx->cntnrs_size)
     {
-      if (cntnrs_size < MJR_CNTNRS_INCREMENT * MJR_MAX_INCREMENTS)
+      if (ctx->cntnrs_size < MJR_CNTNRS_INCREMENT * MJR_MAX_INCREMENTS)
 	{
-	  mjr_resize_containers();
+	  mjr_resize_containers(ctx);
 	}
       else
 	{
@@ -54,8 +54,8 @@ unsigned int mjr_register_container(mjrcontainer_t *cntnr)
 	}
     }
   
-  reg_containers[next_id] = cntnr;
-  cntnr->id = next_id;
+  ctx->reg_containers[ctx->next_id] = cntnr;
+  cntnr->id = ctx->next_id;
 
 #if __DEBUG_CNTNR__
   fprintf(D_DESC,"[D] %s: %x registred id: %d type: %d\n",
@@ -65,19 +65,20 @@ unsigned int mjr_register_container(mjrcontainer_t *cntnr)
 	  ((mjrfunc_t *)cntnr->data)->vaddr, cntnr->id, cntnr->type);
 #endif
 
-  return next_id++;
+  return ctx->next_id++;
 }
 
 /**
- *
+ * Register container in contenxt by id
+ * @param ctx mjollnir context
  */
-unsigned int mjr_register_container_id (mjrcontainer_t *cntnr)
+unsigned int mjr_register_container_id (mjrcontext_t *ctx, mjrcontainer_t *cntnr)
 {
-  if (cntnr->id >= cntnrs_size)
+  if (cntnr->id >= ctx->cntnrs_size)
     {
-      if (cntnrs_size < MJR_CNTNRS_INCREMENT * MJR_MAX_INCREMENTS)
+      if (ctx->cntnrs_size < MJR_CNTNRS_INCREMENT * MJR_MAX_INCREMENTS)
 	{
-	  mjr_resize_containers();
+	  mjr_resize_containers(ctx);
 	}
       else
 	{
@@ -85,9 +86,9 @@ unsigned int mjr_register_container_id (mjrcontainer_t *cntnr)
 	}
     }
   
-  reg_containers[cntnr->id] = cntnr;
-  if (cntnr->id >= next_id)
-    next_id = cntnr->id + 1;
+  ctx->reg_containers[cntnr->id] = cntnr;
+  if (cntnr->id >= ctx->next_id)
+    ctx->next_id = cntnr->id + 1;
 
 #if __DEBUG_CNTNR__
   fprintf(D_DESC,"[D] %s: %x registred id: %d\n",
@@ -101,25 +102,29 @@ unsigned int mjr_register_container_id (mjrcontainer_t *cntnr)
 }
 
 /**
- *
+ * Unregister container by id
+ * @param ctx mjollnir context
+ * @param id container id
  */
-void mjr_unregister_container (unsigned int id)
+void mjr_unregister_container(mjrcontext_t *ctx, unsigned int id)
 {
-	reg_containers[id] = NULL;
+	ctx->reg_containers[id] = NULL;
 }
 
 /**
- *
+ * Lookup container by id
+ * @param ctx mjollnir context
+ * @param id container id
  */
-mjrcontainer_t *mjr_lookup_container (unsigned int id)
+mjrcontainer_t *mjr_lookup_container (mjrcontext_t *ctx, unsigned int id)
 {
-	return reg_containers[id];
+	return ctx->reg_containers[id];
 }
 
 /**
  * This functions removes links marked as MJR_LINK_DELETE
  */
-int mjr_container_link_cleanup(mjrcontainer_t *c,int direction)
+int mjr_container_link_cleanup(mjrcontainer_t *c, int direction)
 {
   mjrlink_t *new,*cur,*tmp;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -258,7 +263,8 @@ mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type)
 /**
  *
  */
-mjrcontainer_t *mjr_create_block_container(u_int symoff,
+mjrcontainer_t *mjr_create_block_container(mjrcontext_t *ctx,
+					   u_int symoff,
 					   elfsh_Addr vaddr,
 					   u_int size)
 {
@@ -295,7 +301,7 @@ mjrcontainer_t *mjr_create_block_container(u_int symoff,
   fprintf(D_DESC,"[D] %s: create block %x (%d)\n",
 	  __FUNCTION__, vaddr, size);
 #endif
-  mjr_register_container(newcntnr);
+  mjr_register_container(ctx, newcntnr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
@@ -303,7 +309,8 @@ mjrcontainer_t *mjr_create_block_container(u_int symoff,
 /**
  * Creates function container
  */
-mjrcontainer_t *mjr_create_function_container(elfsh_Addr vaddr,
+mjrcontainer_t *mjr_create_function_container(mjrcontext_t *ctx,
+					      elfsh_Addr vaddr,
 					      u_int size,
 					      char *name,
 					      mjrblock_t *first,
@@ -342,7 +349,7 @@ mjrcontainer_t *mjr_create_function_container(elfsh_Addr vaddr,
 	  __FUNCTION__, vaddr, name, size, md5);
 #endif
 
-  mjr_register_container(newcntnr);
+  mjr_register_container(ctx, newcntnr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
@@ -352,7 +359,7 @@ mjrcontainer_t *mjr_create_function_container(elfsh_Addr vaddr,
  * it O(n) since this api doesn't know about hashes in the mjr context
  */
 
-mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type)
+mjrcontainer_t *mjr_get_container_by_vaddr(mjrcontext_t *ctx,elfsh_Addr vaddr,int type)
 {
   mjrcontainer_t	*cur;
   u_int			idx;
@@ -360,7 +367,7 @@ mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type)
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   idx=1;
-  while((cur=reg_containers[idx++]))
+  while((cur=ctx->reg_containers[idx++]))
     {
       if ((cur->type == type) && (cur->type == MJR_CNTNR_FUNC))
 	{
@@ -376,13 +383,13 @@ mjrcontainer_t *mjr_get_container_by_vaddr(elfsh_Addr vaddr,int type)
   PROFILER_ROUT(__FILE__,__FUNCTION__,__LINE__,(mjrcontainer_t *)NULL);    
 }
 
-void mjr_container_dump(int what)
+void mjr_container_dump(mjrcontext_t *ctx, int what)
 {
   mjrcontainer_t	*cur;
   mjrfunc_t		*tf;
   u_int			idx;
   idx=1;
-  while((cur=reg_containers[idx++]))
+  while((cur=ctx->reg_containers[idx++]))
     {
       if (cur->type == what)
 	{

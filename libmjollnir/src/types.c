@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.33 2007-04-09 03:21:48 strauss Exp $
+** $Id: types.c,v 1.34 2007-04-09 15:18:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -47,15 +47,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
   tmpstr = _vaddr2str(curvaddr);
 
   if ((fun = hash_get(&context->funchash, tmpstr)))
-    {
       context->curfunc = fun;
-      context->in_function = 1;
-    } 
   else 
-    {
-//      mjr_asm_check_function_end(context);
       mjr_asm_check_function_start(context);
-    }
  
   fun = NULL;
 
@@ -342,33 +336,6 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-int mjr_asm_check_function_end(mjrcontext_t *ctxt)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  if (!ctxt->in_function)
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-  if (ctxt->proc.type == ASM_PROC_IA32)
-    {
-      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr  == ASM_RET &&
-	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_LEAVE)
-	{
-#if __DEBUG_FLOW__
-	  fprintf(D_DESC,"[D] %s: leaving current function at %x\n",
-		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr);
-#endif
-	  ctxt->in_function = 0;
-	}
-    }
-  else if (ctxt->proc.type == ASM_PROC_SPARC)
-    {
-      
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /**
  * Check if we missed some function start
  * @param ctxt mjollnir context structure
@@ -380,10 +347,6 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
   mjrcontainer_t	*fun;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-//  if (ctxt->in_function)
-//    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
 
   /* check function prologue */
   if (ctxt->proc.type == ASM_PROC_IA32)
@@ -399,7 +362,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-  	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+  	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
   	  hash_add(&ctxt->funchash, tmpstr, fun);
   	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
   	}
@@ -418,7 +381,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-  	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+  	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
   	  hash_add(&ctxt->funchash, tmpstr, fun);
   	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
   	}

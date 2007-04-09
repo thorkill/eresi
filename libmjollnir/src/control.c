@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: control.c,v 1.24 2007-04-07 23:13:20 strauss Exp $
+** $Id: control.c,v 1.25 2007-04-09 15:18:05 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -45,7 +45,7 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
   printf(" [*] _start found at %lx\n", (unsigned long) vaddr);
 #endif
 
-  tmpcntnr = mjr_create_function_container(vaddr,0,"_start",0,NULL);
+  tmpcntnr = mjr_create_function_container(context, vaddr,0,"_start",0,NULL);
   hash_add(&context->funchash, _vaddr2str(vaddr), tmpcntnr);
 
   for (dis = stop = 0; !stop; dis += ilen) 
@@ -137,8 +137,8 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
     }    
   }
 
-  main_b = mjr_create_function_container(main_addr, 0, "main",
-	                                          				 0, NULL);
+  main_b = mjr_create_function_container(context, main_addr, 0, "main", 
+					 0, NULL);
 
   hash_add(&context->funchash, _vaddr2str(main_addr), main_b);
   mjr_container_add_link(tmpcntnr, main_b->id, 
