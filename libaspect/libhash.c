@@ -6,7 +6,7 @@
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
 **
-** $Id: libhash.c,v 1.28 2007-04-07 14:23:36 strauss Exp $
+** $Id: libhash.c,v 1.29 2007-04-09 02:37:53 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -43,14 +43,14 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
   }
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-   h->ent, size * sizeof(hashent_t), -1);
+	 h->ent, size * sizeof(hashent_t), -1);
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
+
   hash_add(hash_hash, name, h);
   NOPROFILER_ROUT(0);
 }
-
 
 /* Return a hash table by its name */
 hash_t  *hash_find(char *name)
@@ -161,16 +161,16 @@ int   hash_add(hash_t *h, char *key, void *data)
   else
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-       newent, sizeof(hashent_t), -1);
+	     newent, sizeof(hashent_t), -1);
       newent->key  = key;
       newent->data = data;
       actual = h->ent + index;
       while (actual->next)
-  actual = actual->next;
+	actual = actual->next;
       actual->next = newent;
     }
   h->elmnbr++;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, index);
 }
 
 
@@ -305,26 +305,27 @@ char    **hash_get_keys(hash_t *h, int *n)
     {
       entry = &h->ent[j];
       while (entry != NULL && entry->key != NULL) 
-  {
-    
+	{
+	  
 #if __DEBUG__
-    printf("hash[%u:%u] key = %s\n", j, i, entry->key);
+	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
 #endif
-    XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-       keys, keys, (i + 1) * sizeof(char *), NULL);
-    keys[i] = entry->key;
-    entry   = entry->next;
-    i++;
-  }
+
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+		   keys, keys, (i + 1) * sizeof(char *), NULL);
+	  keys[i] = entry->key;
+	  entry   = entry->next;
+	  i++;
+	}
     }
   
   XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-     keys, keys, (i + 1) * sizeof(char *), NULL);
+	   keys, keys, (i + 1) * sizeof(char *), NULL);
   
   keys[i] = NULL;
   if (n)
     *n = i;
-
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
 

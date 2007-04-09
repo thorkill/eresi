@@ -4,7 +4,7 @@
 ** Started on  Fri Jan 24 20:25:42 2003 mayhem
 ** Last update Fri Dec 22 00:14:56 2006 mayhem
 **
-** $Id: libaspect-hash.h,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: libaspect-hash.h,v 1.5 2007-04-09 02:37:53 thor Exp $
 **
 */
 
@@ -63,4 +63,5 @@ int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */
 void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
 int		hash_set(hash_t *h, char *key, void *data); /* Change meta data for a key */
+
 #endif /* _LIBHASH_H_ */
