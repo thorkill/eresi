@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.32 2007-04-07 23:00:01 thor Exp $
+** $Id: types.c,v 1.33 2007-04-09 03:21:48 strauss Exp $
 **
 */
 #include "libmjollnir.h"
@@ -53,7 +53,7 @@ int		mjr_asm_flow(mjrcontext_t *context)
     } 
   else 
     {
-      mjr_asm_check_function_end(context);
+//      mjr_asm_check_function_end(context);
       mjr_asm_check_function_start(context);
     }
  
@@ -381,34 +381,48 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (ctxt->in_function)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+//  if (ctxt->in_function)
+//    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
 
   /* check function prologue */
   if (ctxt->proc.type == ASM_PROC_IA32)
-    {
-      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
-	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
-	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
-	{
-	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
-	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
+  {
+    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
+    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
+    	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
+  	{
+  	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
+  	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
 
 #if __DEBUG_FLOW__
-	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
-		  __FUNCTION__,
-		  ctxt->hist[MJR_HISTORY_CUR].vaddr,
-		  tmpaddr);
+  	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
+        		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
-	  hash_add(&ctxt->funchash, tmpstr, fun);
-	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
-	}
-    }
+  	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+  	  hash_add(&ctxt->funchash, tmpstr, fun);
+  	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
+  	}
+  }
   else if (ctxt->proc.type == ASM_PROC_SPARC)
-    {
-      
-    }
+  {
+    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op1.base_reg == ASM_REG_O6 &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op2.type == ASM_SP_OTYPE_IMMEDIATE &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op3.base_reg == ASM_REG_O6)
+  	{
+  	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_CUR].vaddr);
+  	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;
+
+#if __DEBUG_FLOW__
+  	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
+        		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+#endif
+  	  fun = mjr_create_function_container(tmpaddr, 0, tmpstr, NULL, NULL);
+  	  hash_add(&ctxt->funchash, tmpstr, fun);
+  	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
+  	}
+  }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+

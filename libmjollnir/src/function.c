@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.32 2007-04-08 23:29:01 thor Exp $
+ * $Id: function.c,v 1.33 2007-04-09 03:21:48 strauss Exp $
  *
  */
 #include <libmjollnir.h>
@@ -136,30 +136,30 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
     
     /* Filter this out */
     if ((ctx->proc.type == ASM_PROC_IA32  && instr.instr != ASM_NOP) ||
-	(ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
-      {
-	memcpy(dst + p, src, ilen);
-	p += ilen;
-      }
+      	(ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
+    {
+    	memcpy(dst + p, src, ilen);
+    	p += ilen;
+    }
       
     /* epilog */
     if (ctx->proc.type == ASM_PROC_IA32)
-      {
-	if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
-					 hist[0].instr == ASM_POP ||
-					 hist[0].instr == ASM_MOV))
-	  {
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	  }
-      } 
+    {
+    	if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
+                            					 hist[0].instr == ASM_POP ||
+                            					 hist[0].instr == ASM_MOV))
+  	  {
+  	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+  	  }
+    } 
     else if (ctx->proc.type == ASM_PROC_SPARC)
-      {
-	if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
-	    hist[0].instr == ASM_SP_RETL)
-	  {	  	
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
-	  }
-      }
+    {
+    	if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
+      	    hist[0].instr == ASM_SP_RETL)
+  	  {	  	
+  	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
+  	  }
+    }
     hist[1] = hist[0];
     hist[0] = instr;
   }  
