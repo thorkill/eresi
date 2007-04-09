@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.34 2007-04-09 15:18:05 thor Exp $
+ * $Id: function.c,v 1.35 2007-04-09 17:05:58 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -12,15 +12,14 @@
 /**
  * Function dumping procedure for debug purposes
  */
-
 void mjr_function_dump(mjrcontext_t* ctxt, char *where, mjrcontainer_t *c)
 {
   mjrfunc_t *f, *tmp;
   mjrlink_t *cur;
   f = (mjrfunc_t *) c->data;
 
-  fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] No. Children: %d, No. Parents: %d\n",
-	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL ,c->out_nbr, c->in_nbr);
+  fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] ID:%d No. Children: %d, No. Parents: %d\n",
+	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL , c->id, c->out_nbr, c->in_nbr);
   
   if (c->output)
   {
@@ -137,29 +136,29 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
     /* Filter this out */
     if ((ctx->proc.type == ASM_PROC_IA32  && instr.instr != ASM_NOP) ||
       	(ctx->proc.type == ASM_PROC_SPARC && instr.instr != ASM_SP_NOP))
-    {
+      {
     	memcpy(dst + p, src, ilen);
     	p += ilen;
-    }
+      }
       
     /* epilog */
     if (ctx->proc.type == ASM_PROC_IA32)
-    {
+      {
     	if ((instr.instr == ASM_RET) && (hist[0].instr == ASM_LEAVE || 
-                            					 hist[0].instr == ASM_POP ||
-                            					 hist[0].instr == ASM_MOV))
+					 hist[0].instr == ASM_POP ||
+					 hist[0].instr == ASM_MOV))
   	  {
   	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
   	  }
-    } 
+      } 
     else if (ctx->proc.type == ASM_PROC_SPARC)
-    {
+      {
     	if ((instr.instr == ASM_SP_RESTORE && hist[0].instr == ASM_SP_RET) ||
       	    hist[0].instr == ASM_SP_RETL)
   	  {	  	
   	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, p);
   	  }
-    }
+      }
     hist[1] = hist[0];
     hist[0] = instr;
   }  
@@ -287,8 +286,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
       
       newcntnr->data = newfunction;
       mjr_register_container_id(ctxt,newcntnr);
-      
-      hash_add(&ctxt->funchash, (char *) _vaddr2str(curfnc->vaddr), newcntnr);
+      mjr_function_register(ctxt, curfnc->vaddr, newcntnr);
     }
 
   /*
@@ -355,7 +353,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 	}
 
 #if __DEBUG_FUNCS__
-    mjr_function_dump((char *)__FUNCTION__, curcntnr);
+      mjr_function_dump(ctxt,(char *)__FUNCTION__, curcntnr);
 #endif
   }
   
@@ -519,7 +517,7 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
     cntnr = hash_get(&ctxt->funchash, keys[index]);
 
 #if __DEBUG_FUNCS__
-    mjr_function_dump((char *)__FUNCTION__, cntnr);
+    mjr_function_dump(ctxt,(char *)__FUNCTION__, cntnr);
 #endif
 
     /* Set New pointers */
@@ -625,7 +623,7 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
   if (!fun)
     {
       fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-      hash_add(&ctxt->funchash, tmpstr, fun);
+      mjr_function_register(ctxt, tmpaddr, fun);
     }
 
   if (ctxt->curfunc)
@@ -646,3 +644,32 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+/**
+ * Register function container in the context
+ * @param ctx mjollnir context structure
+ * @param vaddr virtual address of the function
+ * @param fun function container
+ */
+int mjr_function_register(mjrcontext_t *ctx, elfsh_Addr *vaddr, mjrcontainer_t *fun)
+{
+  char *tmpstr;
+  mjrcontainer_t *tmpfnc;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  tmpstr = _vaddr2str(vaddr);
+
+#if __DEBUG_FUNCS__
+  fprintf(D_DESC, "[D] %s: vaddr:%x ID:%d\n",
+	  __FUNCTION__, vaddr, fun->id);
+#endif
+
+  tmpfnc = hash_get(&ctx->funchash, tmpstr);
+
+  if (!tmpfnc)
+    hash_add(&ctx->funchash, tmpstr, fun);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+

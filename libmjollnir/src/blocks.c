@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.57 2007-04-09 15:18:05 thor Exp $
+** $Id: blocks.c,v 1.58 2007-04-09 17:05:58 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -90,9 +90,9 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
   mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
 
 #if __DEBUG_BLOCKS__
-  mjr_block_dump(csrc);
-  mjr_block_dump(cdst);
-  mjr_block_dump(cret);
+  mjr_block_dump(ctxt,csrc);
+  mjr_block_dump(ctxt,cdst);
+  mjr_block_dump(ctxt,cret);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);

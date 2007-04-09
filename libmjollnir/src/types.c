@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.34 2007-04-09 15:18:05 thor Exp $
+** $Id: types.c,v 1.35 2007-04-09 17:05:58 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -363,7 +363,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
   	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-  	  hash_add(&ctxt->funchash, tmpstr, fun);
+	  mjr_function_register(ctxt, tmpaddr, fun);
   	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
   	}
   }
@@ -382,7 +382,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
   	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-  	  hash_add(&ctxt->funchash, tmpstr, fun);
+	  mjr_function_register(ctxt, tmpaddr, fun);
   	  ctxt->curfunc = hash_get(&ctxt->funchash, tmpstr);
   	}
   }

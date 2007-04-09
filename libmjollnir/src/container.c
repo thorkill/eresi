@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.8 2007-04-09 15:18:05 thor Exp $
+ * $Id: container.c,v 1.9 2007-04-09 17:05:58 thor Exp $
  *
  */
 
@@ -195,7 +195,7 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   link->type = link_type;
   link->next = NULL;
 
-#if __DEBUG_CNTNR__
+#if __DEBUG_CNTNR1__
 
   if (cntnr->type == MJR_CNTNR_FUNC)
     vaddr1 = ((mjrfunc_t *)cntnr->data)->vaddr;
@@ -274,7 +274,7 @@ mjrcontainer_t *mjr_create_block_container(mjrcontext_t *ctx,
   mjrcontainer_t	*newcntnr;
 
 #if __DEBUG_CNTNR__
-  newcntnr = mjr_get_container_by_vaddr(vaddr,MJR_CNTNR_BLOCK);
+  newcntnr = mjr_get_container_by_vaddr(ctx,vaddr,MJR_CNTNR_BLOCK);
   if (newcntnr)
     {
       fprintf(D_DESC,"[D] %s: block container %x id:%d is there\n",

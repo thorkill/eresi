@@ -149,6 +149,9 @@ int		mjr_functions_link_call(mjrcontext_t *ctxt,
 					elfsh_Addr src, 
 					elfsh_Addr dst, 
 					elfsh_Addr ret);
+int		mjr_function_register(mjrcontext_t *, 
+				      elfsh_Addr *,
+				      mjrcontainer_t *);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
