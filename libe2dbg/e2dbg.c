@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.8 2007-04-02 18:00:31 may Exp $
+** $Id: e2dbg.c,v 1.9 2007-04-12 16:48:00 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -112,11 +112,21 @@ int		e2dbg_entry(e2dbgparams_t *params)
       vm_addcmd(CMD_THREADS  , (void *) cmd_threads  , vm_getvarparams, 1, HLP_THREADS);
       vm_addcmd(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
 
+#if __DEBUG_E2DBG__
+      fprintf(stderr, "[e2dbg_entry] CHECKPOINT 4bis\n");
+#endif
+      
       if (!e2dbgworld.curthread || !e2dbgworld.curthread->step)
-	vm_print_banner(av[1]);
-
+	{
+	  vm_print_banner(av[1]);
+	}
+      
       first = 0;
     }
+
+#if __DEBUG_E2DBG__
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 5\n");
+#endif
 
   if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && e2dbg_setup(av[1]) < 0)
     {
@@ -126,7 +136,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
   vm_doswitch(1);
 
 #if __DEBUG_E2DBG__
-  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 5\n");
+  fprintf(stderr, "[e2dbg_entry] CHECKPOINT 6\n");
 #endif
 
   ret = vm_run(ac, av);

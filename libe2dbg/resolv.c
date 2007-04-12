@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.9 2007-04-02 18:00:31 may Exp $
+** $Id: resolv.c,v 1.10 2007-04-12 16:48:00 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -726,11 +726,10 @@ int		e2dbg_dlsym_init()
   e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Orig signal not found", (-1));
+		 "Orig signal not found", (-1));
 
   /* Now we can use malloc cause all symbols are resolved */
   done = 1;
-
   dbgmode = e2dbg_presence_get();
   e2dbg_presence_set();
   hash_init(&e2dbgworld.threads, "threads"    , 29, ASPECT_TYPE_UNKNOW);

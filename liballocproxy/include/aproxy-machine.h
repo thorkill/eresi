@@ -27,12 +27,11 @@
  #include <asm/atomic.h>
 #endif
 
-#include <pthread.h>
+//#if 0
 
-#if 0
 #ifndef pthread_mutex_init /* No threads, provide dummy macros */
 
-# error "No thread !"
+//# error "No thread !"
 
 # define NO_THREADS
 
@@ -56,8 +55,12 @@ typedef void *tsd_key_t;
 
 # define thread_atfork(prepare, parent, child) do {} while(0)
 
-#endif /* !defined mutex_init */
+//#endif /* !defined mutex_init */
+
 #else
+
+#include <pthread.h>
+
 typedef  pthread_mutex_t mutex_t;
 
 # define mutex_init(m)              pthread_mutex_init(m, NULL) 
@@ -71,7 +74,6 @@ typedef void *tsd_key_t;
 # define tsd_setspecific(key, data) ((key) = (data))
 # define tsd_getspecific(key, vptr) (vptr = (key))
 # define thread_atfork(prepare, parent, child) do {} while(0)
-
 
 
 #endif

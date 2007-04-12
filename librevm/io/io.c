@@ -6,7 +6,7 @@
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.5 2007-03-25 14:27:34 may Exp $
+** $Id: io.c,v 1.6 2007-04-12 16:48:00 may Exp $
 **
 */
 #include "revm.h"
@@ -65,7 +65,17 @@ int		vm_fifo_io(revmjob_t *job)
       NOPROFILER_ROUT(0);
     }
 
-  mkfifo(REVM_FIFO, 0600);
+  /* Remove the FIFO is already existing */
+  if (world.state.vm_side == REVM_SIDE_CLIENT)
+    {
+      if (!access(REVM_FIFO, F_OK))
+	unlink(REVM_FIFO);
+      
+      /* Create the FIFO */
+      mkfifo(REVM_FIFO, 0600);
+    }
+
+  /* Register the FIFO as an I/O */
   XOPEN(fd, REVM_FIFO, O_RDWR, 0600, -1);
   world.fifofd = fd;
 

@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.3 2007-03-17 13:05:31 may Exp $
+** $Id: breakpoints.c,v 1.4 2007-04-12 16:48:00 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -226,7 +226,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 	      if (!elfsh_is_plt(parent, sect))
 		{
 		  sym = bsym;
-		  if (strstr(parent->name, "libc"))
+		  if (strstr(parent->name, "libc.so"))
 		    goto end;
 		}
 	      if (!sym)
@@ -239,7 +239,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 	  if (!elfsh_is_plt(parent, sect))
 	    {
 	      sym = bsym;
-	      if (strstr(parent->name, "libc"))
+	      if (strstr(parent->name, "libc.so"))
 		goto end;
 	    }
 	  if (!sym)

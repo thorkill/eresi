@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
 **
-** $Id: misc.c,v 1.3 2007-03-25 14:27:34 may Exp $
+** $Id: misc.c,v 1.4 2007-04-12 16:48:00 may Exp $
 **
 */
 #include "revm.h"
@@ -189,6 +189,7 @@ void		vm_print_banner()
 #endif
 	   "\t .::. This software is under the General Public License V.2 \n"
 	   "\t .::. Please visit http://www.gnu.org \n\n");
+
   vm_output(logbuf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
