@@ -1,5 +1,5 @@
 /*
-** $Id: op_386sp.c,v 1.2 2007-02-18 05:08:25 strauss Exp $
+** $Id: op_386sp.c,v 1.3 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -36,7 +36,8 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   u_char        opcode;
   int           (*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
   
-  
+#if LIBASM_USE_OPERAND_VECTOR
+#endif  
   vec = aspect_vector_get("disasm");
   dim[0] = LIBASM_VECTOR_IA32;
   opcode = *(buf + 1);
@@ -46,6 +47,8 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   fetch = aspect_vectors_select(vec, dim);
   
   ins->len += 1;  
+  #if LIBASM_VECTOR_IA32
+  #endif
   return (fetch(ins, buf + 1, len, proc)+1);
 }
 

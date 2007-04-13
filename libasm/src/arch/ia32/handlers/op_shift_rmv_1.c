@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmv_1.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_shift_rmv_1.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -26,14 +26,14 @@ int op_shift_rmv_1(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
     new->instr = ASM_SHR;
     break;
   }
+  
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+#else
   new->op1.type = ASM_OTYPE_ENCODED;
   operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-  /*
-    new->op1 = asm_create_operand(0, 0, 0, 0, proc);
-    new->op1.len = 1;
-    new->op1.content = OP_REG;
-    new->op1.base_reg = modrm->m;
-  */
+  
   new->len += new->op1.len;
+  #endif
   return (new->len);
 }

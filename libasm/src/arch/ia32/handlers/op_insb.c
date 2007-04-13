@@ -1,5 +1,5 @@
 /*
-** $Id: op_insb.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_insb.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -14,7 +14,13 @@ int     op_insb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->instr = ASM_INSB;
   new->ptr_instr = opcode;
   
-  
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_FIXED, proc);
+  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op2.regset = ASM_REGSET_R16;
+  new->op2.base_reg = ASM_REG_EDX;
+#else
   new->op2.type = ASM_OTYPE_FIXED;
   new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
   new->op2.regset = ASM_REGSET_R16;
@@ -26,5 +32,6 @@ int     op_insb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->op1.base_reg = ASM_REG_EDI;
   new->op1.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 :
     ASM_REGSET_R32;
+#endif
   return (new->len);
 }

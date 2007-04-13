@@ -1,10 +1,16 @@
 /*
-** $Id: libasm.h,v 1.7 2007-02-20 11:07:09 strauss Exp $
+** $Id: libasm.h,v 1.8 2007-04-13 06:56:34 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
 ** Updated : Thu Apr  8 00:45:41 2004
+** 
 */
+
+/**
+ * @file libasm.h
+ * It contains the main define types and prototypes.
+ */
 
 #ifndef LIBASM_H_
 #define LIBASM_H_
@@ -22,7 +28,10 @@
 
 #include <libaspect.h>
 
-#define	LIBASM_USE_VECTOR	1
+
+
+#define	LIBASM_USE_VECTOR		1
+#define LIBASM_USE_OPERAND_VECTOR	1
 
 /* Instruction types */
 #define ASM_TYPE_NONE			0x0	   //! 
@@ -51,6 +60,8 @@
 typedef struct s_asm_processor 		asm_processor;
 typedef struct s_asm_instr 			asm_instr;
 typedef struct s_asm_op				asm_operand;
+
+
 
 enum 
 {
@@ -223,16 +234,65 @@ void		asm_set_resolve_handler(asm_processor *,
 
 int asm_register_ia32_opcode(int opcode, unsigned long fcn);
 int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
-								unsigned long fcn);
+			      unsigned long fcn);
 int asm_arch_register(asm_processor *proc, int machine);
+int asm_operand_register();
 int asm_init_vectors(asm_processor *proc);
 
-enum {
-  LIBASM_ERROR_SUCCESS,
+int	asm_operand_fetch(asm_operand *operand, u_char *opcode, int type, 
+			  asm_processor *proc);
+int	asm_operand_fetch_default(asm_operand *operand, u_char *opcode, int type, 
+				  asm_processor *proc);
+int	asm_operand_fetch_opmod(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_encodedbyte(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_general(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_jump(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_shortjump(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_offset(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_address(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_register(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_xsrc(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_ydest(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_memory(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_immediateword(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+int	asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, int type,
+				asm_processor *proc);
+
+enum 
+  {
+    LIBASM_ERROR_SUCCESS,
 #define LIBASM_MSG_SUCCESS		"success"
-  LIBASM_ERROR_NSUCH_CONTENT
+    LIBASM_ERROR_NSUCH_CONTENT
 #define LIBASM_MSG_NSUCH_CONTENT	"no such content"
-} e_libasm_errorcode;
+  } e_libasm_errorcode;
 
 #include <libasm-structs.h>
 #include <libasm-i386.h>

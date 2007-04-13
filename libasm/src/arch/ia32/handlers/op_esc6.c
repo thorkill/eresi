@@ -1,5 +1,5 @@
 /*
-** $Id: op_esc6.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_esc6.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -74,6 +74,17 @@ int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
     }
       
     if (!(*(opcode + 1) == 0xd9)) {
+      #if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, 
+				    proc);
+      new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->op1.len = 1;
+      new->op1.scale = modrm->m;
+      new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_FIXED, 
+				    proc);
+      new->op2.content = ASM_OP_FPU | ASM_OP_BASE;
+      new->op2.len = 0;
+      #else
       new->op1.type = ASM_OTYPE_FIXED;
       new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
       new->op1.len = 1;
@@ -81,9 +92,14 @@ int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
       new->op2.type = ASM_OTYPE_FIXED;
       new->op2.content = ASM_OP_FPU | ASM_OP_BASE;
       new->op2.len = 0;
+#endif
     } else
       new->len++;
+    #if LIBASM_USE_OPERAND
+
+    #else
     if (new->op1.type)
       new->len += new->op1.len;
+#endif
   return (new->len);
 }

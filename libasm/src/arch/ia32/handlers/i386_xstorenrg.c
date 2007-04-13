@@ -1,5 +1,5 @@
 /*
-** $Id: i386_xstorenrg.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: i386_xstorenrg.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -20,6 +20,8 @@ int     i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len, asm_processor 
     default: new->instr = ASM_NONE;
     }
   new->len += 2;
+  #if LIBASM_USE_OPERAND_VECTOR
+#endif
   return (new->len);
 }
 

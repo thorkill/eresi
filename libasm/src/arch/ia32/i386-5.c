@@ -5,7 +5,7 @@
 ** Started : Xxx Xxx xx xx:xx:xx 2002
 ** Updated : Mon May  5 23:18:35 2003
 **
-** $Id: i386-5.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: i386-5.c,v 1.4 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -30,6 +30,9 @@ int op_push_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_PUSH;
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch();
+#else
   new->op1.type = ASM_OTYPE_OPMOD;
   // new->type = IS_MEM_WRITE;
   new->op1.regset = asm_proc_opsize(proc) ? 
@@ -38,6 +41,7 @@ int op_push_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
   new->op1.ptr = opcode;
     
   new->op1.base_reg = modrm->m;
+#endif
   return (new->len);  
 }
 
@@ -61,13 +65,19 @@ int op_pop_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->len += 1;
   new->instr = ASM_POP;
   // new->type = IS_MEM_READ;
+  
+#if LIBASM_USE_OPERAND_VECTOR
+  printf("I AM ALIVE\n");
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD);
+#else
+  printf("I AM DEAD\n");
   new->op1.type = ASM_OTYPE_OPMOD;
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.ptr = opcode;
-
+  new->op1.ptr = opcode;  
   new->op1.base_reg = modrm->m; 
+#endif
   return (new->len);  
 }
 

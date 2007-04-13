@@ -1,5 +1,5 @@
 /*
-** $Id: i386_bt_rm_r.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: i386_bt_rm_r.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -16,6 +16,10 @@ int i386_bt_rm_r(asm_instr *new, u_char *opcode, u_int len,
   modrm = (struct s_modrm *) opcode + 1;
   new->instr = ASM_BT;
   new->len += 1;
+  #if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, proc);
+#else
   new->op1.type = ASM_OTYPE_ENCODED;
   new->op2.type = ASM_OTYPE_GENERAL;
   operand_rmv_rv(new, opcode + 1, len - 1, proc);
@@ -35,5 +39,6 @@ int i386_bt_rm_r(asm_instr *new, u_char *opcode, u_int len,
     
     new->len += new->op1.len + new->op2.len;
     */
+  #endif
   return (new->len);
 }

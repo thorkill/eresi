@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: error.c,v 1.2 2007-02-21 03:43:51 heroine Exp $
+** $Id: error.c,v 1.3 2007-04-13 06:56:34 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Sun Nov 30 19:58:38 2003
@@ -45,10 +45,7 @@ void	asm_set_errormsg(asm_instr *ins, char *msg)
 
 int	asm_get_error(asm_instr *ins)
 {
-
   return (0);
-
-
 }
 
 /**
@@ -59,6 +56,5 @@ int	asm_get_error(asm_instr *ins)
 
 const char	*asm_get_errormsg(asm_instr *ins)
 {
-
   return ("no error implemented");
 }

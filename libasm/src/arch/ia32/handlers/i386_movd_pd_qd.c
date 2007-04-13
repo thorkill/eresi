@@ -1,5 +1,5 @@
 /*
-** $Id: i386_movd_pd_qd.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: i386_movd_pd_qd.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -13,7 +13,12 @@ int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len, asm_processor
   new->ptr_instr = opcode;
   new->len += 1;
   new->instr = ASM_MOVD;
-  
+  /*
+  #if LIBASM_USE_OPERAND_VECTOR
+  //new->len += asm_operand_fetch();
+  //new->len += asm_operand_fetch();
+  #else
+  */
   new->op1.type = ASM_OTYPE_PMMX;
   new->op1.size = ASM_OSIZE_DWORD;
   new->op2.type = ASM_OTYPE_QMMX;
@@ -21,6 +26,6 @@ int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len, asm_processor
   
   operand_rv_rmv(new, opcode + 1, len - 1, proc);
   new->op1.regset = ASM_REGSET_MM;
-  
+  //#endif
   return (new->len);
 }

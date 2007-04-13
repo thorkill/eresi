@@ -1,13 +1,17 @@
 /*
-** Latest edition Author : $Author: may $
-** $Id: generic.c,v 1.6 2007-04-01 23:33:16 may Exp $
+** Latest edition Author : $Author: heroine $
+** $Id: generic.c,v 1.7 2007-04-13 06:56:34 heroine Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/**\file generic.c */
+/**
+ * @file generic.c
+ *
+ *
+ */
 
 /** Fetch instruction using asm_processor handler
  * func asm_read_instr

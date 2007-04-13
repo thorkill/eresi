@@ -1,5 +1,5 @@
 /*
-** $Id: op_esc5.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_esc5.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -25,7 +25,7 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
       break;
     case 5:
       new->instr = ASM_FUCOMP;
-    break;
+      break;
     default:
       new->instr = ASM_BAD;
       break;
@@ -58,20 +58,37 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
       break;
     }
   
-  if (modrm->mod == 3) {
-    new->op1.type = ASM_OTYPE_FIXED;
-    new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
-    new->op1.len = 1;
-    new->op1.ptr = opcode + 1;
-      
-    new->op1.scale = modrm->m;
-  } else {
-    new->op1.type = ASM_OTYPE_ENCODED;
-    operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-    //new->op1 = asm_create_operand(0, 0, 0, 0, proc);
-    //new->op->type = 
-  }
+  if (modrm->mod == 3) 
+    {
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, 
+				    proc);
+      new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->op1.len = 1;
+      new->op1.ptr = opcode + 1; 
+      new->op1.scale = modrm->m;
+#else
+      new->op1.type = ASM_OTYPE_FIXED;
+      new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->op1.len = 1;
+      new->op1.ptr = opcode + 1; 
+      new->op1.scale = modrm->m;
+#endif
+    } 
+  else 
+    {
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
+				    proc);
+#else
+      new->op1.type = ASM_OTYPE_ENCODED;
+      operand_rmv(&new->op1, opcode + 1, len - 1, proc);
+#endif
+    }
+#if LIBASM_USE_OPERAND_VECTOR
+#else
   if (new->op1.type)
     new->len += new->op1.len;
+#endif
   return (new->len);
 }

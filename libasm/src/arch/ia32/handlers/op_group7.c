@@ -1,5 +1,5 @@
 /*
-** $Id: op_group7.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_group7.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -12,27 +12,40 @@ int     op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->len += 1;
   modrm = (struct s_modrm *) opcode + 1;
 
-    switch(modrm->r) {
+  switch(modrm->r) 
+    {
     case 0:
       new->instr = ASM_SGDT;
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+#else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);
       new->len += new->op1.len;
+#endif
       break;
     case 1:
       new->instr = ASM_SIDT;
       break;
     case 2:
       new->instr = ASM_LGDT;
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+#else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);
       new->len += new->op1.len;
+#endif
       break;
     case 3:
       new->instr = ASM_LIDT;
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+#else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);
       new->len += new->op1.len;
+#endif
       break;
     case 4:
       break;
@@ -46,5 +59,5 @@ int     op_group7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
 
       break;
     }
-    return (new->len);
+  return (new->len);
 }

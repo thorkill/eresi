@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_reg_iv.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_mov_reg_iv.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -16,13 +16,19 @@
   <instruction func="op_mov_reg_iv" opcode="0xbf"/>
 */
 
-int op_mov_reg_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_mov_reg_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   struct s_modrm        *modrm;
   
   modrm = (struct s_modrm *) opcode;
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;
-  new->len += 1 + asm_proc_vector_len(proc);
+  new->len += 1;
+
+  #if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_OPMOD, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATE, proc);
+  #else
   
   new->op1.type = ASM_OTYPE_OPMOD;
   new->op1.size = ASM_OSIZE_DWORD;
@@ -39,5 +45,7 @@ int op_mov_reg_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->op2.ptr = opcode + 1;
   new->op2.len = asm_proc_vector_len(proc);
   memcpy(&new->op2.imm, opcode + 1, asm_proc_vector_len(proc));
+  new->len += asm_proc_vector_len(proc);
+#endif
   return (new->len);
 }

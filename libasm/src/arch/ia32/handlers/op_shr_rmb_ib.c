@@ -1,5 +1,5 @@
 /*
-** $Id: op_shr_rmb_ib.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_shr_rmb_ib.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -11,6 +11,7 @@
 
 int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   struct s_modrm        *modrm;
+  int			olen;
   
   modrm = (struct s_modrm *) (opcode + 1);
   new->ptr_instr = opcode;
@@ -27,8 +28,14 @@ int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
     new->instr = ASM_RCR;
   else
     new->instr = ASM_SHL;
+
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc));
+  new->len += (olen = asm_operand_fetch(&new->op2, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc));
+#else
   new->op1.type = ASM_OTYPE_ENCODED;
   new->op2.type = ASM_OTYPE_IMMEDIATE;
   operand_rmb_ib(new, opcode + 1, len - 1, proc);
+  #endif
   return (new->len);
 }

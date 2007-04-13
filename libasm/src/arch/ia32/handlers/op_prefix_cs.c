@@ -1,5 +1,5 @@
 /*
-** $Id: op_prefix_cs.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_prefix_cs.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -14,5 +14,7 @@ int     op_prefix_cs(asm_instr *new, u_char *opcode, u_int len, asm_processor *p
   if (!new->ptr_prefix)
     new->ptr_prefix = opcode;
   new->len += 1;
+#if LIBASM_USE_OPERAND_VECTOR
+#endif
   return (proc->fetch(new, opcode + 1, len - 1, proc));
 }

@@ -1,6 +1,7 @@
-/*
-** $Id: op_unary_rmb.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
-**
+/**
+ * @file op_unary_rmb.c
+* $Id: op_unary_rmb.c,v 1.2 2007-04-13 06:56:35 heroine Exp $
+*
 */
 #include <libasm.h>
 #include <libasm-int.h>
@@ -11,6 +12,7 @@
 
 int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   struct s_modrm        *modrm;
+  int			olen;
   
   new->ptr_instr = opcode;
   modrm = (struct s_modrm *) opcode + 1;
@@ -19,7 +21,10 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     case 0:
       new->instr = ASM_TEST;
       new->op1.type = ASM_OTYPE_ENCODED;
-
+#if LIBASM_USE_OPERAND_VECTOR
+      new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc));
+      new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc);
+#else
       operand_rmb(&new->op1, opcode + 1, len - 1, proc);
       new->op2.type = ASM_OTYPE_IMMEDIATE;
       new->op2.size = ASM_OSIZE_BYTE;
@@ -29,6 +34,7 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
       new->op2.imm = 0;
       memcpy(&new->op2.imm, new->op2.ptr, 1);
       new->len += new->op1.len + new->op2.len;
+      #endif
       break;
     case 1:
       return (0);
@@ -54,10 +60,15 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     default:
       break;
     }
-    if (!new->op1.type) {
+    if (!new->op1.type) 
+      {
+#if LIBASM_USE_OPERAND_VECTOR
+	new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc);
+      #else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmb(&new->op1, opcode + 1, len - 1, proc);
       new->len += new->op1.len;
+      #endif
     }
   return (new->len);
 }

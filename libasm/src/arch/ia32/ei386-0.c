@@ -1,5 +1,5 @@
 /*
-** $Id: ei386-0.c,v 1.3 2006-12-19 17:57:59 heroine Exp $
+** $Id: ei386-0.c,v 1.4 2007-04-13 06:56:34 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Feb 17 11:26:17 2003
@@ -40,6 +40,7 @@ int	op_group6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   }
   new->op1.type = ASM_OTYPE_ENCODED;
   new->op1.size = ASM_OSIZE_VECTOR;
+  asm_operand_process()
   operand_rmv(&new->op1, opcode + 1, len - 1, proc);
   new->len += new->op1.len;
   new->op1.regset = ASM_REGSET_R16;

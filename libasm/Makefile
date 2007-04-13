@@ -32,6 +32,7 @@ SRCS_libasm 	=				\
 		src/arch/mips/tables_mips.c	\
 		src/register.c			\
 		src/vectors.c			\
+		src/arch/ia32/operand_handlers.c\
 #		src/arch/ia32/i386-0.c		\
 #		src/arch/ia32/i386-1.c		\
 #		src/arch/ia32/i386-2.c		\
@@ -117,6 +118,9 @@ tags:
 .c.o:
 	@$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
 	@echo "[CC] $*.o"
+
+docs:
+	doxygen doc/doxygen.conf
 
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \

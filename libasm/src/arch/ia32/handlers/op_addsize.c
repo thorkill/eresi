@@ -1,5 +1,5 @@
 /*
-** $Id: op_addsize.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_addsize.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -22,5 +22,8 @@ int     op_addsize(asm_instr *new, u_char *opcode, u_int len,
   i386p->internals->addsize = !i386p->internals->addsize;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
   i386p->internals->addsize = !i386p->internals->addsize;
+#if LIBASM_USE_OPERAND_VECTOR
+#endif
+
   return (len);
 }

@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: libasm-i386.h,v 1.7 2006-12-19 11:03:22 heroine Exp $
+** $Id: libasm-i386.h,v 1.8 2007-04-13 06:56:34 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -155,17 +155,28 @@ enum {
    * a base register, an index register, a scaling factor, a displacement
    */
   ASM_OTYPE_ENCODED,	
+  ASM_OTYPE_ENCODEDBYTE,	
   /* flags registers
    */
   ASM_OTYPE_FLAGS,	
   /* reg field of mod R/M byte selelcts a general register. 
    */
   ASM_OTYPE_GENERAL,	
+  ASM_OTYPE_GENERALBYTE,	
   /* immediate data; value of operand is encoded in subsequent bytes 
    * of instruction
    */
   ASM_OTYPE_IMMEDIATE,	
+  ASM_OTYPE_IMMEDIATEWORD,	
+  /* immediate data; value of operand is encoded in subsequent bytes 
+   * of instruction
+   */
+  ASM_OTYPE_IMMEDIATEBYTE,	
   /* instruction contains a relative offset to be added 
+   * to the instruction pointer register
+   */
+  ASM_OTYPE_SHORTJUMP,	
+  /* instruction contains a relative one byte offset to be added 
    * to the instruction pointer register
    */
   ASM_OTYPE_JUMP,	
@@ -231,7 +242,8 @@ enum {
   ASM_OTYPE_ST_4,
   ASM_OTYPE_ST_5,
   ASM_OTYPE_ST_6,
-  ASM_OTYPE_ST_7
+  ASM_OTYPE_ST_7,
+  ASM_OTYPE_NUM
 } e_asm_operand_type;
 
 /**

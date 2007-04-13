@@ -1,5 +1,5 @@
 /*
-** $Id: op_aad.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_aad.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -8,9 +8,12 @@
 /*
   <instruction opcode="0xd5" func="op_aad"/>
 */
-int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
-    new->len += 1;
+int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
+  new->len += 1;
   new->ptr_instr = opcode;
-    new->instr = ASM_AAD;
+  new->instr = ASM_AAD;
+#if LIBASM_USE_OPERAND_VECTOR
+#endif
   return (new->len);
 }

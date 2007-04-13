@@ -4,7 +4,7 @@
 ** 
 ** 
 **
-** $Id: init_mips.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+** $Id: init_mips.c,v 1.3 2007-04-13 06:56:35 heroine Exp $
 **
 */
 
@@ -26,7 +26,7 @@ int	fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   #else
   memcpy();
   #endif
-  printf("opcode = [%i%i%i%i%i%i%i] function = [%i%i%i%i%i%i%i]",
+  printf("opcode = [%i%i%i%i%i%i] function = [%i%i%i%i%i%i]",
 	 MGETBIT(converted, 31),MGETBIT(converted, 30),MGETBIT(converted, 29),
 	 MGETBIT(converted, 28),MGETBIT(converted, 27),MGETBIT(converted, 26),
 	 

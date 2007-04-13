@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_segr_rm.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_mov_segr_rm.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -16,7 +16,11 @@ int op_mov_segr_rm(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;
-  
+
+  #if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_SEGMENT, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, proc);
+  #else
   new->op1.type = ASM_OTYPE_SEGMENT;
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_SREG;
@@ -28,6 +32,6 @@ int op_mov_segr_rm(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
   //new->op2.content = ASM_OP_BASE;
   //new->op2.regset = ASM_REGSET_R32;
   //new->op2.base_reg = modrm->m;
-  
+  #endif
   return (new->len);
 }

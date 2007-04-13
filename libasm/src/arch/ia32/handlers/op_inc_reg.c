@@ -1,5 +1,5 @@
 /*
-** $Id: op_inc_reg.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_inc_reg.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -17,14 +17,19 @@
 */
 
 
-int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   struct s_modrm        *modrm;
   
   modrm = (struct s_modrm *) opcode;
   new->len += 1;
   new->instr = ASM_INC;
   new->ptr_instr = opcode;
+
   
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, proc);
+#else
   new->op1.type = ASM_OTYPE_OPMOD;
   
   new->op1.content = ASM_OP_BASE;
@@ -33,5 +38,6 @@ int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->op1.ptr = opcode;
   
   new->op1.base_reg = modrm->m;
+#endif
   return (new->len);  
 }

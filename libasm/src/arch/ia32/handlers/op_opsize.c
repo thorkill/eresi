@@ -1,5 +1,5 @@
 /*
-** $Id: op_opsize.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_opsize.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -21,5 +21,7 @@ int     op_opsize(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->prefix |= ASM_PREFIX_OPSIZE;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
   i386p->internals->opsize = !i386p->internals->opsize;
+  #if LIBASM_USE_OPERAND_VECTOR
+  #endif
   return (len);
 }

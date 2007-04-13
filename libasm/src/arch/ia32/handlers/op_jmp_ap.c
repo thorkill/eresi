@@ -1,5 +1,5 @@
 /*
-** $Id: op_jmp_ap.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_jmp_ap.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -12,9 +12,12 @@
 int     op_jmp_ap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
     new->ptr_instr = opcode;
   new->instr = ASM_LBRANCH;
-  new->len += 7;
+  new->len += 1;
   new->type = ASM_TYPE_IMPBRANCH;
   
+  #if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ADDRESS, proc);
+  #else
   new->op1.type = ASM_OTYPE_ADDRESS;
   new->op1.content = ASM_OP_VALUE;
   new->op1.len = 4;
@@ -27,6 +30,8 @@ int     op_jmp_ap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->op2.imm = 0;
   memcpy(&new->op2.imm, opcode + 5, 2);
   */
-  
+  /** this length may be buggy */
+  new->len += 6;
+  #endif
   return (new->len);
 }

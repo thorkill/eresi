@@ -1,5 +1,5 @@
 /*
-** $Id: op_stosb.c,v 1.1 2007-01-26 14:18:38 heroine Exp $
+** $Id: op_stosb.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,11 +9,16 @@
   <instruction func="op_stosb" opcode="0xaa"/>
 */
 
-int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
     new->ptr_instr = opcode;
   new->instr = ASM_STOSB;
   new->len += 1;
   
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_XSRC, proc);
+#else
   new->op1.type = ASM_OTYPE_YDEST;
   new->op2.type = ASM_OTYPE_XSRC;
   
@@ -27,6 +32,6 @@ int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->op2.content = ASM_OP_BASE;
   new->op2.regset = ASM_REGSET_R8;
   new->op2.base_reg = ASM_REG_AL;
-  
+#endif  
   return (new->len);
 }

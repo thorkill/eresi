@@ -1,6 +1,6 @@
 /**
- * $Id: register.c,v 1.3 2007-02-21 03:43:51 heroine Exp $
- *
+ * $Id: register.c,v 1.4 2007-04-13 06:56:34 heroine Exp $
+ * @file register.c
  *
  */
 
@@ -33,7 +33,7 @@ int	asm_register_ia32_opcode(int opcode, unsigned long fcn)
  *
  */
 int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
-								unsigned long fcn)
+			      unsigned long fcn)
 {
   vector_t	*vec;
   u_int		dim[4];
@@ -58,6 +58,7 @@ int	asm_arch_register(asm_processor *proc, int machine)
 {  
   if (proc->type == ASM_PROC_IA32) 
     {
+      asm_operand_register();
       asm_register_ia32_opcode(0x00, (unsigned long) op_add_rmb_rb);
       asm_register_ia32_opcode(0x01, (unsigned long) op_add_rmv_rv);
       asm_register_ia32_opcode(0x02, (unsigned long) op_add_rb_rmb);
@@ -547,5 +548,76 @@ int	asm_arch_register(asm_processor *proc, int machine)
     }
   else
     return (0);
+  return (1);
+}
+
+/**
+ * Register an handler for a ia32 operand type.
+ * @param operand_type Type of the operand to register
+ * @param fcn Function pointer.
+ * @return 1 on success, 0 on error.
+ */
+
+int	asm_register_ia32_operand(int operand_type, unsigned long fcn)
+{
+  vector_t	*vec;
+  u_int		dim[2];
+
+  vec = aspect_vector_get("operand");
+  dim[0] = LIBASM_VECTOR_IA32;
+  dim[1] = operand_type;
+  aspect_vectors_insert(vec, dim, fcn);
+  return (1);
+}
+
+
+
+int	asm_operand_register()
+{
+  asm_register_ia32_operand(ASM_OTYPE_NONE, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_FIXED, (unsigned long) asm_operand_fetch_fixed);
+  asm_register_ia32_operand(ASM_OTYPE_OPMOD, (unsigned long) asm_operand_fetch_opmod);
+  asm_register_ia32_operand(ASM_OTYPE_ADDRESS, (unsigned long) asm_operand_fetch_address);
+  asm_register_ia32_operand(ASM_OTYPE_CONTROL, (unsigned long) asm_operand_fetch_control);
+  asm_register_ia32_operand(ASM_OTYPE_DEBUG, (unsigned long) asm_operand_fetch_debug);
+  asm_register_ia32_operand(ASM_OTYPE_ENCODED, (unsigned long) asm_operand_fetch_encoded);
+  asm_register_ia32_operand(ASM_OTYPE_ENCODEDBYTE, (unsigned long) asm_operand_fetch_encodedbyte);
+  asm_register_ia32_operand(ASM_OTYPE_FLAGS, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_GENERAL, (unsigned long) asm_operand_fetch_general);
+  asm_register_ia32_operand(ASM_OTYPE_GENERALBYTE, (unsigned long) asm_operand_fetch_generalbyte);
+  asm_register_ia32_operand(ASM_OTYPE_IMMEDIATE, (unsigned long) asm_operand_fetch_immediate);
+  asm_register_ia32_operand(ASM_OTYPE_IMMEDIATEWORD, (unsigned long) asm_operand_fetch_immediateword);
+  asm_register_ia32_operand(ASM_OTYPE_IMMEDIATEBYTE, (unsigned long) asm_operand_fetch_immediatebyte);
+  asm_register_ia32_operand(ASM_OTYPE_JUMP, (unsigned long) asm_operand_fetch_jump);
+  asm_register_ia32_operand(ASM_OTYPE_SHORTJUMP, (unsigned long) asm_operand_fetch_shortjump);
+  asm_register_ia32_operand(ASM_OTYPE_MEMORY, (unsigned long) asm_operand_fetch_memory);
+  asm_register_ia32_operand(ASM_OTYPE_OFFSET, (unsigned long) asm_operand_fetch_offset);
+  asm_register_ia32_operand(ASM_OTYPE_PMMX, (unsigned long) asm_operand_fetch_pmmx);
+  asm_register_ia32_operand(ASM_OTYPE_QMMX, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REGISTER, (unsigned long) asm_operand_fetch_register);
+  asm_register_ia32_operand(ASM_OTYPE_SEGMENT, (unsigned long) asm_operand_fetch_segment);
+  asm_register_ia32_operand(ASM_OTYPE_TEST, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_VSFP, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_WSFP, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_XSRC, (unsigned long) asm_operand_fetch_xsrc);
+  asm_register_ia32_operand(ASM_OTYPE_YDEST, (unsigned long) asm_operand_fetch_ydest);
+  asm_register_ia32_operand(ASM_OTYPE_VALUE, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG0, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG1, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG2, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG3, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG4, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG5, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG6, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_REG7, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_0, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_1, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_2, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_3, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_4, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_5, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_6, (unsigned long) asm_operand_fetch_default);
+  asm_register_ia32_operand(ASM_OTYPE_ST_7, (unsigned long) asm_operand_fetch_default);
   return (1);
 }

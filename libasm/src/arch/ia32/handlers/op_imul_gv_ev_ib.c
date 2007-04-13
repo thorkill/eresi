@@ -1,5 +1,5 @@
 /*
-** $Id: op_imul_gv_ev_ib.c,v 1.1 2007-01-26 14:18:37 heroine Exp $
+** $Id: op_imul_gv_ev_ib.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,11 +9,18 @@
   <instruction func="op_imul_gv_ev_ib" opcode="0x6b"/>
 */
 
-int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
-  
+int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
+  int	olen;
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_IMUL;
+
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, proc);
+  new->len += (olen = asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, proc));
+  new->len += asm_operand_fetch(&new->op3, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc);
+#else
   
   new->op1.type = ASM_OTYPE_GENERAL;
   new->op2.type = ASM_OTYPE_ENCODED;
@@ -30,6 +37,6 @@ int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len, asm_processo
   else
     new->op3.imm = 0;
   memcpy(&new->op3, new->op3.ptr, 1);
-  
+#endif
   return (new->len);
 }
