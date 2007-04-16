@@ -16,9 +16,14 @@ RELOBJ	= rel.o
 RTSRC	= myputs.c
 RTOBJ	= myputs.o
 
-OPT	= -g3 -O2 -I../../../libelfsh/include/ $(BITS)
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../elibc \
+	-lcelfsh32 -L../../../liballocproxy -lallocproxy -L../../../libaspect/    \
+	-laspect32 -lpthread
+OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
+	-I../../../libaspect/include/ $(BITS)
+
 RM	= rm -f
-CFLAGS	= $(OPT) -I../../../libhash/include/
+CFLAGS	= $(OPT) 
 
 all	: $(OBJ)
 

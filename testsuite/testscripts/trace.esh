@@ -25,6 +25,8 @@ jmp loop
 
 end:
 print Stepped 5 instructions ! 
+#delete 1
+step
 quit
 
 bad:

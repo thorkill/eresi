@@ -6,7 +6,7 @@
 ** Started on  Wed Nov 19 23:02:04 2003 mayhem
 ** Updated on  Mon Aug 15 06:01:54 2005 mayhem
 **
-** $Id: loop.c,v 1.6 2007-03-25 14:27:35 may Exp $
+** $Id: loop.c,v 1.7 2007-04-16 16:29:17 may Exp $
 **
 */
 #include "revm.h"
@@ -74,7 +74,10 @@ int		vm_execscript()
     {
       cur = world.context.curcmd;
       world.curjob->curcmd = cur;
-      printf("restored command context after CONT ! \n");
+      
+      //fprintf(stderr, "Restored curcmd (%s) after CONTINUE \n", cur->name);
+      //sleep(1);
+
     }
   else
     cur = world.curjob->script[world.curjob->sourced];
@@ -104,9 +107,9 @@ int		vm_execscript()
 	  next                    = cur->next;
 	  world.context.curcmd    = next;
 	  world.state.vm_sourcing = 1;
-	  printf("Found continue in script, saving context & sourcing flag \n");
+	  fprintf(stderr, "Found -continue- in script, sourcing flag now -ON- \n");
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     E2DBG_SCRIPT_CONTINUE);
+			REVM_SCRIPT_CONTINUE);
 	}
 
       /* Execute instruction */
@@ -135,13 +138,32 @@ int		vm_execscript()
 	next = world.curjob->curcmd;
 
       /* Break the flow if we switched to interactive mode */
-      if (status == ELFSH_SCRIPT_STOP)
-	break;
+      switch (status)
+	{
+	case REVM_SCRIPT_STOP:
+	case REVM_SCRIPT_QUIT:
+	  world.context.curcmd    = next;
+	  goto end;
+	case REVM_SCRIPT_CONTINUE:
+	  world.context.curcmd    = next;
+	  world.state.vm_sourcing = 1;
+	  fprintf(stderr, "Found -start- in script, sourcing flag now -ON- \n");
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			REVM_SCRIPT_CONTINUE);
+	}
     }
+
+
+  /* We finished executing the script for now */
+ end:
 
   /* If we had a saved context, restore it */
   if (world.state.vm_sourcing)
     {
+
+      fprintf(stderr, " [D] Restoring e2dbg context from sourced script \n");
+      //sleep(20);
+
       world.curjob->lstcmd[world.curjob->sourced] = NULL;
       vm_restore_dbgcontext(world.context.savedfd,
 			    world.context.savedmode,
@@ -149,15 +171,17 @@ int		vm_execscript()
 			    world.context.savedinput,
 			    world.context.savedargv,
 			    world.context.savedname);
+
       world.curjob->curcmd = NULL;
       world.state.vm_sourcing = 0;
-      printf("Restoring e2dbg context from sourced script \n");
+
+
+      fprintf(stderr, " [D] Restored e2dbg context ! \n");
     }
   
   /* Make sure we switch to interactive mode if we issued a stop command */
-  if (status == ELFSH_SCRIPT_STOP)
+  if (status == REVM_SCRIPT_STOP)
     world.state.vm_mode = REVM_STATE_INTERACTIVE;
-      
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }
 
@@ -199,9 +223,9 @@ int		vm_execmd()
 	  }
 
 	/* We are executing 'cont' from e2dbg */
-	else if (ret == E2DBG_SCRIPT_CONTINUE)
+	else if (ret == REVM_SCRIPT_CONTINUE)
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     E2DBG_SCRIPT_CONTINUE);
+			REVM_SCRIPT_CONTINUE);
       }
   
 

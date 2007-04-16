@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.54 2007-04-02 18:01:47 may Exp $
+** $Id: revm.h,v 1.55 2007-04-16 16:29:17 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -85,10 +85,15 @@ extern asm_processor	proc;
 /* Debugger defines that must be in revm and not in the debugger */
 #define	E2DBG_NAME		"Embedded ELF Debugger"
 #define	E2DBG_ARGV0		"e2dbg"
-#define	E2DBG_SCRIPT_CONTINUE	1
-#define	ELFSH_SCRIPT_STOP	2
 #define	CMD_CONTINUE		"continue"
 #define	CMD_CONTINUE2		"cont"
+
+/* Special cmd_ return values that indicate special events */
+#define	REVM_SCRIPT_ERROR	(-1)
+#define	REVM_SCRIPT_OK		(0)
+#define	REVM_SCRIPT_CONTINUE	(1)
+#define	REVM_SCRIPT_STOP	(2)
+#define	REVM_SCRIPT_QUIT	(3)
 
 /* General usage macros */
 #define FATAL(a)		{ perror(a); vm_exit(-1);		      }

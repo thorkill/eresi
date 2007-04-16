@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: step.c,v 1.6 2007-03-26 17:09:35 may Exp $
+** $Id: step.c,v 1.7 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -41,7 +41,7 @@ int		e2dbg_step()
 	e2dbgworld.curthread = e2dbgworld.stoppedthread;
       e2dbg_thread_contall();
       world.curjob->current->running = 1;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

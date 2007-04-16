@@ -4,6 +4,8 @@ load a.out
 load rel.o
 
 #stop
+
+profile enable warn
 reladd 1 2
 
 redir puts puts_troj

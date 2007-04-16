@@ -4,7 +4,7 @@
 ** The continue command in e2dbg
 **
 **
-** $Id: continue.c,v 1.5 2007-03-17 13:05:31 may Exp $
+** $Id: continue.c,v 1.6 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -39,7 +39,7 @@ int		cmd_start()
   if (!world.state.vm_quiet)
     e2dbg_output(" [*] Starting process\n");
   e2dbg_start_proc();
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
 }
 
 
@@ -73,5 +73,5 @@ int	cmd_cont()
   */
 
   e2dbg_output("\n");
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, E2DBG_SCRIPT_CONTINUE);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
 }

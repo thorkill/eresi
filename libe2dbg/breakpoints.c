@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.4 2007-04-12 16:48:00 may Exp $
+** $Id: breakpoints.c,v 1.5 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -297,6 +297,8 @@ int		cmd_bp()
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
   str = vm_lookup_string(world.curjob->curcmd->param[0]);
+
+  fprintf(stderr, "Putting breakpoint on %s \n", str);
 
   /* Select subcommand */
   switch (idx)

@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.5 2007-03-25 14:27:34 may Exp $
+** $Id: select.c,v 1.6 2007-04-16 16:29:17 may Exp $
 **
 */
 #include "revm.h"
@@ -268,6 +268,7 @@ int                     vm_select()
       
       if (err < 1 && errno == EINTR)
 	goto retry;
+
       if (err > 0)
         {
 

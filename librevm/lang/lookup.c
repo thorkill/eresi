@@ -7,7 +7,7 @@
 ** Last update  Mar 01 2007 mayhem
 **
 **
-** $Id: lookup.c,v 1.13 2007-03-25 14:27:34 may Exp $
+** $Id: lookup.c,v 1.14 2007-04-16 16:29:17 may Exp $
 **
 */
 #include "revm.h"
@@ -137,7 +137,7 @@ revmobj_t		*vm_lookup_immed(char *param)
 
       /* Lookup .symtab */
       sym = elfsh_get_symbol_by_name(world.curjob->current, param);
-      if (sym != NULL)
+      if (sym != NULL && sym->st_value)
 	{
 	  ptr = vm_create_LONG(0, sym->st_value);
 	  goto good;
@@ -145,7 +145,7 @@ revmobj_t		*vm_lookup_immed(char *param)
       
       /* Lookup .dynsym */
       sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
-      if (sym != NULL)
+      if (sym != NULL && sym->st_value)
 	{
 	  ptr = vm_create_LONG(0, sym->st_value);
 	  goto good;

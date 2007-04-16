@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.11 2007-04-03 00:23:09 may Exp $
+** $Id: signal.c,v 1.12 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -196,6 +196,9 @@ void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
   
   fprintf(stderr, "%s (PC = %08X) ::: parent = %s (BP DESCRIPTOR = %08X) \n",
 	  str, pc, (parent ? parent->name : "NONE !!!!"), (elfsh_Addr) bp);
+  if (!bp)
+    return;
+  
   sect   = elfsh_get_parent_section(parent, addr, NULL);
   name   = vm_resolve(parent, addr, &off);
   sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
@@ -266,6 +269,8 @@ void			e2dbg_do_breakpoint()
       /* We are single-stepping, display the instruction at $pc */
       if (e2dbgworld.stoppedthread->step)
 	{
+	  fprintf(stderr, "Single-stepping -IS- enabled \n");
+
 	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
 	  if (!ret)
 	    ret++;
@@ -285,7 +290,10 @@ void			e2dbg_do_breakpoint()
 	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);
 	}
+      else
+	fprintf(stderr, "Single-stepping is -NOT- enabled \n");
       
+
       /* Here starts the real stuff 
       **
       ** count == E2DBG_BREAK_EXEC     -> execute restored instruction

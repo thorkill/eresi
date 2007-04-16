@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: delete.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: delete.c,v 1.3 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -47,7 +47,7 @@ int		cmd_delete()
     snprintf(logbuf, BUFSIZ, " [*] Breakpoint at " AFMT 
 	     " <%s + " UFMT "> removed\n\n", addr, name, off);
   else
-    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at " AFMT "<%s> removed\n\n", 
+    snprintf(logbuf, BUFSIZ, " [*] Breakpoint at " AFMT " <%s> removed\n\n", 
 	 addr, name);
   e2dbg_output(logbuf);
 

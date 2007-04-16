@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.18 2007-04-02 18:02:14 may Exp $
+** $Id: init.c,v 1.19 2007-04-16 16:29:17 may Exp $
 **
 */
 
@@ -50,6 +50,11 @@ int		vm_loop(int argc, char **argv)
 		fprintf(stderr,"vm_select : failed \n");
 		vm_exit(-1);
 	      }
+
+	    /* If the FIFO does not exist anymore, the server has quit, so we quit too */
+	    if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+		access(REVM_FIFO, F_OK) < 0)
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);	      
 	  }
 
 	/* Take a line, execute old command if void line */
@@ -110,10 +115,10 @@ int		vm_loop(int argc, char **argv)
 	world.curjob->curcmd = world.curjob->script[0];
 	switch (vm_execmd())
 	  {
-	  case E2DBG_SCRIPT_CONTINUE:
+	  case REVM_SCRIPT_CONTINUE:
 	    //printf(" [*] e2dbg continue from vm_execmd \n");
 	    goto e2dbg_cleanup;
-	  case -1:
+	  case REVM_SCRIPT_ERROR:
 	    profiler_error();
 	  default:
 	    break;
@@ -136,7 +141,7 @@ int		vm_loop(int argc, char **argv)
     {
       world.curjob->curcmd = world.curjob->script[0];
       ret = vm_execscript();
-      if (ret == ELFSH_SCRIPT_STOP)
+      if (ret == REVM_SCRIPT_STOP)
 	{
 	  XCLOSE(world.curjob->ws.io.input_fd, -1);
 	  world.curjob->ws.io.input_fd = 0;

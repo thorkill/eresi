@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.9 2007-04-12 16:48:00 may Exp $
+** $Id: e2dbg.c,v 1.10 2007-04-16 16:29:16 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -61,6 +61,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
   /* We have a debugger script pending, continue it */
   if (e2dbgworld.sourcing)
     {
+      fprintf(stderr, "e2dbg_entry called with SOURCED program ! calling execscript \n");
+
       vm_execscript();
       if (e2dbgworld.sourcing)
 	return (0);
