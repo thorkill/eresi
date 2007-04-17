@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.55 2007-04-16 16:29:17 may Exp $
+** $Id: revm.h,v 1.56 2007-04-17 21:22:01 mxatone Exp $
 **
 */
 #ifndef __REVM_H_
@@ -147,7 +147,7 @@ extern asm_processor	proc;
 
 /* Used to store ascii description for different structures types in data.c */
 #define ELFSH_SEGTYPE_MAX	7
-#define	ELFSH_SHTYPE_MAX	13
+#define	ELFSH_SHTYPE_MAX	16
 #define	ELFSH_OBJTYPE_MAX	5
 #define	ELFSH_SYMBIND_MAX	3
 #define	ELFSH_SYMTYPE_MAX	STT_NUM + 1
@@ -993,6 +993,7 @@ int		vm_implicit(revmcmd_t *actual);
 int	        vm_unload_cwfiles();
 int		dprintf(int fd, char *format, ...);
 void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
+char		*vm_fetch_sht_typename(elfsh_Word typenum);
 int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
 int		vm_load_init_dephash(elfshobj_t *file, char *name);
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);

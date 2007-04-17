@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.47 2007-04-02 18:01:08 may Exp $
+** $Id: libelfsh.h,v 1.48 2007-04-17 21:22:01 mxatone Exp $
 **
 */
 
@@ -134,6 +134,8 @@
 #define		ELFSH_SECTION_NAME_ALTDYNSTR	".elfsh.dynstr"
 #define		ELFSH_SECTION_NAME_ALTRELPLT	".elfsh.relplt"
 #define		ELFSH_SECTION_NAME_PADPAGE	".elfsh.padpage"
+#define		ELFSH_SECTION_NAME_HASH		".hash"
+#define		ELFSH_SECTION_NAME_VERSYM	".version"
 #define		ELFSH_SECTION_NAME_ALTVERSYM	".elfsh.version"
 #define		ELFSH_SECTION_NAME_ALTHASH	".elfsh.hash"
 #define		ELFSH_SECTION_NAME_EDFMT_BLOCKS	".edfmt.blocks"
@@ -234,8 +236,7 @@
 #define 	ELFSH_SECTION_DW2_STR		43
 #define 	ELFSH_SECTION_DW2_MACINFO	44
 #define 	ELFSH_SECTION_DW2_LOC		45
-#define 	ELFSH_SECTION_ALTVERSYM		46
-#define 	ELFSH_SECTION_ALTHASH		47
+#define		ELFSH_SECTION_VERSYM		46
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
 
@@ -338,6 +339,17 @@ do						  \
 /* EI_RPHT is not PaX related */
 #define		EI_PAX			   14   /* Index in e_ident[] where to read flags */
 #define		EI_RPHT			   10	/* Index in e_ident[] where to read rphtoff */
+
+/* Those symbol doesn't exist on every OS */
+#ifndef SHT_GNU_verdef
+#define SHT_GNU_verdef	  0x6ffffffd	/* Version definition section.  */
+#endif
+#ifndef SHT_GNU_verneed
+#define SHT_GNU_verneed	  0x6ffffffe	/* Version needs section.  */
+#endif
+#ifndef SHT_GNU_versym
+#define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
+#endif
 
 /**
  * ELFsh redirection abstract unit 
@@ -1331,8 +1343,8 @@ int		elfsh_reencode_first_pltentry(elfshobj_t *file, elfshsect_t *plt,
                                     uint32_t diff);
 
 /* extplt.c */
-int 		elfsh_extplt_expend_versym(elfshobj_t *file, elfshsect_t *versym, char *name);
-int 		elfsh_extplt_expend_hash(elfshobj_t *file, elfshsect_t *hash, elfshsect_t *dynsym, char *name);
+int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *name);
+int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash, elfshsect_t *dynsym, char *name);
 int		elfsh_extplt_mirror_sections(elfshobj_t *file);
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
 
