@@ -10,6 +10,7 @@ STATIC="0"
 READLN="0"
 ELFSHNET="0"
 LIBMJOLLNIR="1"
+TESTING="0"
 PREFIX=""
 OSVER=`uname -r | cut -d "." -f1`
 CONFIGFILE="config.h"
@@ -187,8 +188,8 @@ break;
 --enable-testing*)
 shift
 echo " [*] Enable compilation without install"
-echo "#define ELFSH_LIBPATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
-LIBPATHSET="1"
+echo "#define ELFSH_DBGPATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
+TESTING="1"
 ;;
 
 *)
@@ -348,6 +349,10 @@ if [ "$LIBPATHSET" != "1" ]; then
     echo "#define ELFSH_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
 fi
 
+if [ "$TESTING" != "1" ]; then
+    echo "#define ELFSH_DBGPATH    \"$PREFIX/usr/local/lib/\""  >> $VARSFILE
+fi
+
 if [ "$SLOGSET" != "1" ]; then
     echo "#define ELFSH_SLOG 0" 				>> $VARSFILE
 fi
@@ -492,6 +497,12 @@ echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
 echo "#	@cd modules && \$(MAKE) "				>> Makefile
 echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
 echo " "							>> Makefile
+
+if [ "$TESTING" = "1" ]; then
+  echo "	@echo"						>> Makefile
+  echo "	@echo Now source env.sh"			>> Makefile
+  echo "	@echo"						>> Makefile
+fi
 
 # Create links for 64bits mode
 echo "install64 :"						       >> Makefile

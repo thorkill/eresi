@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.8 2007-04-12 16:48:00 may Exp $
+** $Id: main.c,v 1.9 2007-04-17 13:48:37 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -32,9 +32,9 @@ int		vm_execute_debuggee(int ac, char **av)
   args = alloca(ac * sizeof(char *));
   str = getenv("LD_PRELOAD");
   if (!str || !*str)
-    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so", ELFSH_LIBPATH, version);
+    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so", ELFSH_DBGPATH, version);
   else
-    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so:%s", ELFSH_LIBPATH, version, str);
+    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so:%s", ELFSH_DBGPATH, version, str);
 
   if (setenv("LD_PRELOAD", buf, 1))
     fprintf(stderr, "Failed to preload libe2dbg\n");

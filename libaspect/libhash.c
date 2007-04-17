@@ -6,7 +6,7 @@
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
 ** Last update Mon Aug 15 11:47:50 2005 mayhem
 **
-** $Id: libhash.c,v 1.30 2007-04-12 16:48:00 may Exp $
+** $Id: libhash.c,v 1.31 2007-04-17 13:48:37 may Exp $
 **
 */
 #include "libaspect.h"
@@ -20,8 +20,8 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
 {
   NOPROFILER_IN();
 
-  if (name && strstr(name, "commands"))
-    fprintf(stderr, "Initializing hash %s \n", name);
+  //if (name && strstr(name, "commands"))
+  //fprintf(stderr, "Initializing hash %s \n", name);
 
   if (!hash_hash)
     {
