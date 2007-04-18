@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.56 2007-04-17 21:22:01 mxatone Exp $
+** $Id: revm.h,v 1.57 2007-04-18 07:23:47 mxatone Exp $
 **
 */
 #ifndef __REVM_H_
@@ -993,7 +993,7 @@ int		vm_implicit(revmcmd_t *actual);
 int	        vm_unload_cwfiles();
 int		dprintf(int fd, char *format, ...);
 void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
-char		*vm_fetch_sht_typename(elfsh_Word typenum);
+char		*vm_fetch_sht_typedesc(elfsh_Word typenum);
 int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
 int		vm_load_init_dephash(elfshobj_t *file, char *name);
 int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
