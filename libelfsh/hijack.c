@@ -4,7 +4,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.5 2007-03-23 17:04:12 mxatone Exp $
+** $Id: hijack.c,v 1.6 2007-04-19 10:35:36 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,6 +20,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 					      elfsh_Addr *hooked)
 {
   elfsh_Sym	*symbol;
+  elfsh_Sym	*symbol2;
   int		ret;
   int		ispltent;
   elfshsect_t	*hooks;
@@ -66,50 +67,32 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 
       /* Resolve hooked function symbol */
       symbol = elfsh_get_symbol_by_name(file, name);
-      ispltent = elfsh_is_pltentry(file, symbol);
-
-      /* FreeBSD can have a normal symbol with invalid st_value 
-       for a plt entry */
-      if (NULL == symbol || ispltent == 1 || !symbol->st_value)
+      if (!symbol)
 	{
-
 	  symbol = elfsh_get_dynsymbol_by_name(file, name);
-	  if (!symbol)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unknown function (no symbol)", -1);
-
-	  if (!symbol->st_value)
-	    {
-	      elfsh_toggle_mode();
-	      symbol = elfsh_get_dynsymbol_by_name(file, name);
-	      elfsh_toggle_mode();
-	      printf("Out of NULL symbol value condition\n");
-	      fflush(stdout);
-	    }
-	  if (!symbol)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unknown function (no valid symbol)", -1);
-
-	  ispltent = elfsh_is_pltentry(file, symbol);
+	  elfsh_toggle_mode();
+	  symbol2 = elfsh_get_dynsymbol_by_name(file, name);
+	  elfsh_toggle_mode();
+	}
+      else
+	symbol2 = NULL;
+      if (!symbol && !symbol2)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unknown function (no symbol)", -1);
+      if (!symbol || (!symbol->st_value && symbol2))
+	symbol = symbol2;
+      ispltent = elfsh_is_pltentry(file, symbol);
 	  
 #if __DEBUG_REDIR__
-	  printf("[DEBUG_REDIR] 2 ispltent = %u for symbol %s resolved at %08X \n",
-		 ispltent, name, symbol ? symbol->st_value : 0);
+      fprintf(stderr, "[DEBUG_REDIR] Symbol %s [file %s] resolved at %08X isplt(%u)\n",
+	      name, file->name, symbol->st_value, ispltent);
 #endif
 
-	  /* Use elfsh 0.6 hooks, redirect on a PLT hijack if necessary */
-	  if (ispltent <= 0)
-	    {
-	      if (hooked)
-		*hooked = symbol->st_value;
-	      ret = elfsh_cflow(file, name, symbol, addr);
-	      if (ret < 0)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				  "Unable to perform CFLOW", -1);
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  ELFSH_REDIR_CFLOW);
-	    }
+      /* Perform PLT redirection if we deal with a PLT symbol */
+      if (ispltent)
+	{
 
-	  /* Temporary .. on MIPS */
+	  /* MIPS handling */
 	  if (FILE_IS_MIPS(file))
 	    {
 	      if (hooked)
@@ -132,13 +115,13 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_REDIR_ALTPLT);
 	}
       
+      /* If not a PLT entry, we do a control flow hijack */
       if (hooked)
 	*hooked = symbol->st_value;
       ret = elfsh_cflow(file, name, symbol, addr);
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to perform CFLOW redir", -1);
-
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_REDIR_CFLOW);
 
       /* GOT entry hijacking */

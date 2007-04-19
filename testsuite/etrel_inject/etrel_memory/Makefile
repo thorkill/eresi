@@ -8,11 +8,11 @@
 include ../../../config.h
 
 CC	= gcc
+RM	= rm -f
 
 HOSTSRC	= host.c
 RELSRC	= rel.c
 RELOBJ	= rel.o
-
 RTSRC	= myputs.c
 RTOBJ	= myputs.o
 
@@ -21,32 +21,16 @@ LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../elibc \
 	-laspect32 -lpthread
 OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
 	-I../../../libaspect/include/ $(BITS)
-
-RM	= rm -f
 CFLAGS	= $(OPT) 
 
 all	: $(OBJ)
-
 	$(CC) $(OPT) $(HOSTSRC) #-m64 -static
-	#@strip a.out
-#	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c #-m64
-#	$(CC) $(OPT) $(RELSRC2) -o $(RELOBJ2) -c -fPIC #-m64
-
-	make -C ../../../ e2dbg
-	make -C ../../../
-
-	/sbin/paxctl -m -s -p -r -x ../../../vm/elfsh
-	/sbin/paxctl -v ../../../vm/elfsh
-
-	cp ../../../e2dbg/e2dbg.so ibc.so.6
-
+	@strip a.out
 	$(CC) $(OPT) $(RTSRC) -o $(RTOBJ) -c
-
-	@echo Now run ./etrelmem.esh
+	@echo Now run etrelmem.esh inside e2dbg
 
 clean	:
-	$(RM) $(RTOBJ) $(OBJ) *~ \#* *\# $(RELOBJ) inject_e2dbg.esh 
-
+	$(RM) $(RTOBJ) $(OBJ) *~ \#* *\# $(RELOBJ)
 
 fclean	: clean
-	$(RM) $(NAM) a.out a.out_e2dbg ibc.so.6 inject_e2dbg.esh inject_e2dbg.out 
+	$(RM) $(NAM) a.out

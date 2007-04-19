@@ -7,7 +7,7 @@
 ** Started on  Wed May 21 15:27:15 2003 mayhem
 ** 
 **
-** $Id: sort.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: sort.c,v 1.4 2007-04-19 10:35:36 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -87,7 +87,6 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
     XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
 
   nbr = sect->curend / sizeof(elfsh_Sym);
-  //nbr = sect->shdr->sh_size / sizeof(elfsh_Sym);
   sect->altdata = elfsh_copy_symtab(sect->data, nbr);
   elfsh_sort_symtab(sect->altdata, nbr, ELFSH_SORT_BY_ADDR);
   

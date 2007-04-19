@@ -4,7 +4,7 @@
 ** Started on  Fri Jul 27 04:56:06 2001 mayhem
 ** 
 **
-** $Id: fixup.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+** $Id: fixup.c,v 1.9 2007-04-19 10:35:36 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -251,6 +251,9 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  fprintf(stderr, "Entering fixup dynsymtab for file %s \n",
+	  dynsym->parent->name);
+
   /* Get PLT */
   plt = elfsh_get_plt(dynsym->parent, NULL);
   if (!plt)
@@ -282,21 +285,21 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 
       /* New versions of ld do not fill the vaddr of dynamic symbols, do it ourself */
       if (sym == NULL)
-      {
+	{
 	  sym = elfsh_restore_dynsym(dynsym->parent, plt, off, dynsym);
-
+	  
 	  if (sym != NULL)
-	  {
+	    {
 	      name = elfsh_get_dynsymbol_name(plt->parent, sym);
-
+	      
 	      /* __gmon_start__ should not be resolved 
 		 if it was not already done by gcc */
 	      if (name && !strcmp(name, "__gmon_start__"))
-		  sym->st_value = 0x0;
-	  }
-      }
+		sym->st_value = 0x0;
+	    }
+	}
     }
-
+  
   elfsh_set_mode(mode);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

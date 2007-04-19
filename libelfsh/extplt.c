@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.11 2007-04-17 21:22:01 mxatone Exp $
+ * $Id: extplt.c,v 1.12 2007-04-19 10:35:36 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -190,6 +190,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 
   elfshsect_t	*relgot;
 
+  char		*data;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Grab needed pointers */
@@ -229,8 +231,11 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSYM", -1);
   new->shdr->sh_entsize = sizeof(elfsh_Sym);
+  data = elfsh_get_raw(new);
 
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(dynsym), dynsym->shdr->sh_size);
+  /* Take the fixed ondisk version of dynsym as original data */
+  memcpy(data, dynsym->data, dynsym->shdr->sh_size);
+  
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_SYMTAB);
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -248,7 +253,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSTR", -1);
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(dynstr), dynstr->shdr->sh_size);
+  data = elfsh_get_raw(new);
+  memcpy(data, elfsh_get_raw(dynstr), dynstr->shdr->sh_size);
 
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB);
   if (!dynent)
@@ -272,7 +278,9 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       if (!new)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to inject ALTRELGOT", -1);
-      memcpy(elfsh_get_raw(new), elfsh_get_raw(relgot), relgot->shdr->sh_size);
+
+      data = elfsh_get_raw(new);
+      memcpy(data, elfsh_get_raw(relgot), relgot->shdr->sh_size);
       dynent = elfsh_get_dynamic_entry_by_type(file, DT_REL);
       if (!dynent)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -291,7 +299,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTRELPLT", -1);
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(relplt), relplt->shdr->sh_size);
+  data = elfsh_get_raw(new);
+  memcpy(data, elfsh_get_raw(relplt), relplt->shdr->sh_size);
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_JMPREL);
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -312,7 +321,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       if (!new)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to inject ALTVERSYM", -1);
-      memcpy(elfsh_get_raw(new), elfsh_get_raw(versym), versym->shdr->sh_size);
+      data = elfsh_get_raw(new);
+      memcpy(data, elfsh_get_raw(versym), versym->shdr->sh_size);
 
       new->curend = versym->shdr->sh_size;
       new->shdr->sh_type = versym->shdr->sh_type;
@@ -335,7 +345,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to inject ALTHASHM", -1);
-  memcpy(elfsh_get_raw(new), elfsh_get_raw(hash), hash->shdr->sh_size);
+  data = elfsh_get_raw(new);
+  memcpy(data, elfsh_get_raw(hash), hash->shdr->sh_size);
   
   new->curend = hash->shdr->sh_size;
   new->shdr->sh_type = hash->shdr->sh_type;

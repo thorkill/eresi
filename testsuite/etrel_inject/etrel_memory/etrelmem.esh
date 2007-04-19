@@ -1,9 +1,12 @@
 #!../../../vm/elfsh
+
 load myputs.o
 switch 1
 mode dynamic
-reladd 1 10
-profile
+dynsym
+sym
+reladd 1 myputs.o
+profile enable warn
 redir puts myputs
-profile
+start
 

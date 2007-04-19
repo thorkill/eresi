@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: dynsym.c,v 1.10 2007-04-19 10:35:36 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -149,6 +149,14 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
       newent->curend = newent->shdr->sh_size;
     }
 
+  /*
+  fprintf(stderr, "dynsym curend = %u (%u entries) shsize = %u (%u entries) \n", 
+	  file->secthash[ELFSH_SECTION_DYNSYM]->curend,
+	  file->secthash[ELFSH_SECTION_DYNSYM]->curend / sizeof(elfsh_Sym),
+	  file->secthash[ELFSH_SECTION_DYNSYM]->shdr->sh_size,
+	  file->secthash[ELFSH_SECTION_DYNSYM]->shdr->sh_size / sizeof(elfsh_Sym));
+  */
+
   nbr = 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend ? 
     file->secthash[ELFSH_SECTION_DYNSYM]->curend / sizeof(elfsh_Sym) : 
@@ -281,8 +289,6 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   if (ret == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
-
-  //printf("DYNsymtab retreived with data pointer = %08X \n", (unsigned int) ret);
 
   for (index = 0; index < size; index++)
     {

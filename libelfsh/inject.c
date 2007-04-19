@@ -6,7 +6,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
+** $Id: inject.c,v 1.9 2007-04-19 10:35:36 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -533,7 +533,7 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   if (mod && (hdr.sh_size % mod))
     {
       rsize = hdr.sh_size + mod - (hdr.sh_size % mod);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,rdata, rsize, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, rdata, rsize, -1);
       if (data)
 	memcpy(rdata, data, hdr.sh_size);
       else
@@ -547,10 +547,7 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
     {
       rsize = hdr.sh_size;
       if (!data)
-	{
-	  data = alloca(rsize);
-	  memset(data, 0x00, hdr.sh_size);
-	}
+	XALLOC(__FILE__, __FUNCTION__, __LINE__, data, rsize, -1);
     }
 
   /* Create and inject the new PT_LOAD in runtime */
