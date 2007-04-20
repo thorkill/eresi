@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.9 2007-04-17 13:48:37 may Exp $
+** $Id: main.c,v 1.10 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -65,8 +65,8 @@ int		e2dbg_main(int ac, char **av)
 
       usleep(50000);
       
-      // debugger server debugging purpose
-      //sleep(20);
+      // debugging purpose
+      sleep(20);
 
       if (waitpid(pid, &status, WNOHANG) != 0)
 	{

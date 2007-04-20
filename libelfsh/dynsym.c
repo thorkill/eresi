@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.10 2007-04-19 10:35:36 may Exp $
+** $Id: dynsym.c,v 1.11 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -19,6 +19,7 @@
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
   char	*ret;
+  void	*rdata;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -31,7 +32,8 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unable to get DYNSYM", NULL);
   
-  ret = (char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]) + s->st_name;
+  rdata = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
+  ret = (char *) rdata + s->st_name;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -275,7 +277,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*ret;
-  int		index;
+  int		idx;
   int		size = 0;
   char		*actual;
 
@@ -290,11 +292,11 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DYNSYM", NULL);
 
-  for (index = 0; index < size; index++)
+  for (idx = 0; idx < size; idx++)
     {
-      actual = elfsh_get_dynsymbol_name(file, ret + index);
+      actual = elfsh_get_dynsymbol_name(file, ret + idx);
       if (actual && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + index));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + idx));
     }
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.12 2007-04-19 10:35:36 may Exp $
+ * $Id: extplt.c,v 1.13 2007-04-20 12:37:10 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -39,6 +39,13 @@ int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 
   /* Search the correct file using hash version section 
    as every linker should do */
+
+  /* XXX tmp fix testing -mm */
+  fprintf(stderr, "Calling hash_getfile_def for sym %s \n", name);
+  //if (!strncmp(name, "old_", 4))
+  //name += 4;
+
+  
   sym_file = elfsh_hash_getfile_def(file, name);
   if (!sym_file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -391,6 +398,8 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 		      "Invalid NULL parameter", NULL);
   len = strlen(name);
 
+  fprintf(stderr, "Requesting a new PLT entry for symbol %s \n", name);
+
   /* Get needed sections */
   extplt = file->secthash[ELFSH_SECTION_EXTPLT];
   if (!extplt)
@@ -428,9 +437,6 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 	{
 	  altversym = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_VERSYM,
 						NULL, NULL, NULL);
-	  if (!altversym)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "ALTVERSYM not found : Copy VERSYM first", NULL);
 	  file->secthash[ELFSH_SECTION_VERSYM] = altversym;
 	}
     }
@@ -505,8 +511,9 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No room anymore in ALTGOT", NULL);
     }
+
   /* Versym expand is only for linux */
-  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX && altversym)
     {
       if (altversym->curend + sizeof(elfsh_Half) > altversym->shdr->sh_size)
 	{
@@ -564,7 +571,7 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   elfsh_set_dynentry_val(dynent, elfsh_get_dynentry_val(dynent) + len + 1);
 
   /* Versym expand is only for linux */
-  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
+  if (elfsh_get_ostype(file) == ELFSH_OS_LINUX && altversym)
     {
       /* Insert version symbol */
       if (elfsh_extplt_expand_versym(file, altversym, name) < 0)

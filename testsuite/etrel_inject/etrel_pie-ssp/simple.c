@@ -6,7 +6,7 @@
 ** Started on  Mon Jun 23 06:56:04 2003 mayhem
 ** Last update Sun Aug 17 17:41:48 2003 mayhem
 **
-** $Id: simple.c,v 1.3 2007-03-07 16:45:36 thor Exp $
+** $Id: simple.c,v 1.4 2007-04-20 12:37:10 may Exp $
 **
 */
 #include <stdio.h>
@@ -47,7 +47,7 @@ int	fake_main(int argc, char **argv)
 /*
 char*	fake_strcpy(char *dst, char *src)
 {
-  printf("The fucker wants to copy %s at address %08X \n", src, dst);
+  printf("The binary wants to copy %s at address %08X \n", src, dst);
   return ((char *) old_strcpy(dst, src));
 }
 */

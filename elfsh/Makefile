@@ -42,7 +42,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
-			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
+			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
@@ -51,7 +51,8 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
-			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
+			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) \
+			$(READLNOPT)
 
 all			: all32 all64
 			@cp ../doc/elfshrc.example ~/.elfshrc

@@ -44,9 +44,11 @@ mod32			:
 			$(MAKE) -C api  all32
 
 lib32			:
-			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) $(STATOPT)
+			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
+			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
 			ranlib ${NAME32}.a
+			@echo LINKED LIBREVM32
 
 mod64			:
 			$(MAKE) -C lang all64
@@ -57,9 +59,11 @@ mod64			:
 			$(MAKE) -C api  all64
 
 lib64			:
-			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) $(STATOPT)
+			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) \
+			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME64}.a ${OBJ64} 
 			ranlib ${NAME64}.a
+			@echo LINKED LIBREVM64
 
 clean		       :
 			$(MAKE) -C lang clean

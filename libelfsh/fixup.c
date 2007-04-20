@@ -4,7 +4,7 @@
 ** Started on  Fri Jul 27 04:56:06 2001 mayhem
 ** 
 **
-** $Id: fixup.c,v 1.9 2007-04-19 10:35:36 may Exp $
+** $Id: fixup.c,v 1.10 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -250,9 +250,6 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   int			mode;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  fprintf(stderr, "Entering fixup dynsymtab for file %s \n",
-	  dynsym->parent->name);
 
   /* Get PLT */
   plt = elfsh_get_plt(dynsym->parent, NULL);

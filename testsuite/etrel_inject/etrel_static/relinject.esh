@@ -1,4 +1,4 @@
-#!../../../vm/elfsh
+#!../../../elfsh/elfsh32
 
 exec gcc -g3 -static host.c 
 exec gcc -g3 -static rel2.c -c

@@ -15,14 +15,10 @@ PIESRC	= host.c
 PIEOBJ	= host.o
 
 RM	= rm -f
-CFLAGS	= $(OPT) -I../../libhash/include/
+CFLAGS	= -fPIC -I../../libhash/include/
 
-all	: 
-	$(CC) $(PIESRC) -pie #-ssp
-	$(CC) $(RELSRC) -o $(RELOBJ) -c -fPIC
-
-	$(PAXCTL) -permxs ../../../vm/elfsh
-	$(PAXCTL) -v ../../../vm/elfsh
+all	: $(PIEOBJ) $(RELOBJ)
+	$(CC) $(PIEOBJ) -pie
 
 clean	:
 	$(RM) *~ \#* *\# $(RELOBJ) $(PIEOBJ)

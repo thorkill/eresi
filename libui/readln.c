@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.12 2007-03-25 14:27:35 may Exp $
+** $Id: readln.c,v 1.13 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "libui.h"
@@ -86,6 +86,8 @@ void		readln_completion_install(char mode, char side)
 {
   char		*str;
 
+  fprintf(stderr, "Installing completion now \n");
+
   rl_bind_key ('\t', rl_insert);
   
   comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
@@ -130,6 +132,8 @@ char	**readln_completion(const char* text, int start, int end)
   char	buf[50];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  fprintf(stderr, "Calling completion on %s \n", text);
 
   /* prevent freeing of unitialized memory on FreeBSD
 	 XXX: check this !!

@@ -6,7 +6,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.9 2007-04-19 10:35:36 may Exp $
+** $Id: inject.c,v 1.10 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -895,6 +895,8 @@ elfshsect_t*		elfsh_insert_section(elfshobj_t	 *file,
   elfsh_Shdr	hdr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (data == NULL)
+    XALLOC(__FILE__, __FUNCTION__, __LINE__, data, size, NULL);
 
   /* Creation new section */
   sect = elfsh_create_section(name);

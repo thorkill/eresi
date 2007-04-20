@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.6 2007-04-16 16:29:17 may Exp $
+** $Id: select.c,v 1.7 2007-04-20 12:37:10 may Exp $
 **
 */
 #include "revm.h"
@@ -247,7 +247,9 @@ int                     vm_select()
 		{
 		  if (world.curjob->ws.io.buf != NULL) 
 		    {
-		      rl_forced_update_display();
+		      if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
+			    world.state.vm_side == REVM_SIDE_CLIENT))
+			rl_forced_update_display();
 		      vm_log(vm_get_prompt());
 		    }
 		}
@@ -292,7 +294,8 @@ int                     vm_select()
 		    vm_setinput(&world.curjob->ws, world.fifofd);
 
 #if defined (USE_READLN)
-		  if (readln_prompt_restore())
+		  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
+			world.state.vm_side == REVM_SIDE_CLIENT) && readln_prompt_restore())
 		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 #endif
 		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));

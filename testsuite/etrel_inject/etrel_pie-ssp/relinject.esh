@@ -1,4 +1,4 @@
-#!../../../vm/elfsh
+#!../../../elfsh/elfsh32
 
 load a.out
 load simple.o
@@ -6,10 +6,11 @@ load simple.o
 reladd 1 2
 
 redir main fake_main
-redir __stack_smash_handler fake_stack_smash_handler
-redir __libc_start_main fake_libc_start_main
-redir strcpy fake_strcpy
+#redir __stack_smash_handler fake_stack_smash_handler
+#redir __libc_start_main fake_libc_start_main
+#redir strcpy fake_strcpy
 
+profile enable warn
 save fake_aout
 
 # uncomment just for development purpose made easier
