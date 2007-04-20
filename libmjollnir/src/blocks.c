@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.59 2007-04-09 19:25:08 thor Exp $
+** $Id: blocks.c,v 1.60 2007-04-20 15:17:31 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -25,7 +25,8 @@ int	mjr_block_relink_cond_always(mjrcontainer_t *src,
 				     int direction)
 {
 
-  mjrlink_t *lnk;
+  mjrlink_t	*lnk;
+  u_int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -35,6 +36,15 @@ int	mjr_block_relink_cond_always(mjrcontainer_t *src,
   fprintf(D_DESC,"[D] %s: src:%d dst:%d dir:%d\n",
 	  __FUNCTION__, src->id, dst->id, direction);
 #endif
+
+  if (direction == MJR_LINK_IN)
+    nbr = src->in_nbr;
+  else
+    nbr = src->out_nbr;
+
+  /* We don't need relink on 1 link */
+  if (nbr <= 1)
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 
   while(lnk)
     {
@@ -89,6 +99,9 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
   mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
   mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
 
+  mjr_container_add_link(csrc, cret->id, MKR_LINK_TYPE_DELAY, MJR_LINK_OUT);
+  mjr_container_add_link(cret, csrc->id, MKR_LINK_TYPE_DELAY, MJR_LINK_IN);
+
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);
   mjr_block_dump(ctxt,cdst);
@@ -97,6 +110,11 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
+
+/**
+ * This function does prepare linking of blocks on
+ * conditional jumps
+ */
 
 int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
 			     elfsh_Addr src,

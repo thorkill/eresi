@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.9 2007-04-09 17:05:58 thor Exp $
+ * $Id: container.c,v 1.10 2007-04-20 15:17:31 thor Exp $
  *
  */
 
@@ -195,27 +195,9 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   link->type = link_type;
   link->next = NULL;
 
-#if __DEBUG_CNTNR1__
-
-  if (cntnr->type == MJR_CNTNR_FUNC)
-    vaddr1 = ((mjrfunc_t *)cntnr->data)->vaddr;
-  else if (cntnr->type == MJR_CNTNR_BLOCK)
-    vaddr1 = ((mjrblock_t *)cntnr->data)->vaddr;
-
-  cnt = mjr_lookup_container(id);
-  if (cnt->type == MJR_CNTNR_FUNC)
-    vaddr2 = ((mjrfunc_t *)cnt->data)->vaddr;
-  else if (cntnr->type == MJR_CNTNR_BLOCK)
-    vaddr2 = ((mjrblock_t *)cnt->data)->vaddr;
-
-  fprintf(D_DESC,"[D] %s: linking id:%d<%x> LD:%d id:%d<%x> LT:%d\n",
-	  __FUNCTION__,
-	  cntnr->id,
-	  vaddr1,
-	  link_direction,
-	  id,
-	  vaddr2,
-	  link_type);
+#if __DEBUG_CNTNR__
+  fprintf(D_DESC,"[D] %s: link id:%d -> id:%d type:%d dir:%d\n",
+	  __FUNCTION__, cntnr->id, id, link_type, link_direction);
 #endif
 
   if (link_direction == MJR_LINK_IN) 
