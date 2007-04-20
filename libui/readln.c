@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.13 2007-04-20 12:37:10 may Exp $
+** $Id: readln.c,v 1.14 2007-04-20 14:40:38 mxatone Exp $
 **
 */
 #include "libui.h"
@@ -110,8 +110,16 @@ void		readln_completion_install(char mode, char side)
   using_history();
   rl_attempted_completion_function = readln_completion;
 
+  str = "";
+  if (!(mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT)
+      && mode != REVM_STATE_CMDLINE && mode != REVM_STATE_SCRIPT
+      && mode != REVM_STATE_TRACER)
+    str = vm_get_prompt();
+
+  /*
   str = (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT ?
 	 "" : vm_get_prompt());
+  */
   rl_callback_handler_install(str, vm_ln_handler);
 
   rl_bind_key(CTRL('x'), vm_screen_switch);
@@ -471,8 +479,9 @@ void		readln_history_dump(char mode)
     {
       vm_output(" [*] Writting history (.elfsh_history) \n");
       write_history(".elfsh_history");
-      rl_callback_handler_remove();
     }
+
+  rl_callback_handler_remove();
 }
 
 /* Prepare readline terminal */
