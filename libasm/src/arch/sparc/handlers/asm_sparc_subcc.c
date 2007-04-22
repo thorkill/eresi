@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_subcc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_subcc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,7 @@ asm_sparc_subcc(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_ARITH;
+  ins->type = ASM_TYPE_ARITH | ASM_TYPE_CONTROL;
 
   ins->nb_op = 3;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
@@ -35,6 +35,7 @@ asm_sparc_subcc(asm_instr * ins, u_char * buf, u_int len,
 
   if (ins->op1.base_reg == ASM_REG_G0) {
     ins->instr = ASM_SP_CMP;
+    ins->type |= ASM_TYPE_TEST;
     ins->nb_op = 2;
     ins->op1 = ins->op2;
     ins->op2 = ins->op3;

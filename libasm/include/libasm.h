@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.8 2007-04-13 06:56:34 heroine Exp $
+** $Id: libasm.h,v 1.9 2007-04-22 20:48:41 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -34,23 +34,23 @@
 #define LIBASM_USE_OPERAND_VECTOR	1
 
 /* Instruction types */
-#define ASM_TYPE_NONE			0x0	   //! 
+#define ASM_TYPE_NONE			  0x0	   //! Undefined instruction type.
 #define ASM_TYPE_IMPBRANCH	0x1    //! Branching instruction which always branch (jump).
 #define ASM_TYPE_CONDBRANCH	0x2    //! Conditionnal branching instruction.
 #define ASM_TYPE_CALLPROC		0x4    //! Sub Procedure calling instruction.
 #define ASM_TYPE_RETPROC		0x8    //! Return instruction
-#define ASM_TYPE_MEM_READ		0x10   //! Memory read access instruction.
-#define ASM_TYPE_MEM_WRITE	0x20   //! Memory write access instruction.
-#define ASM_TYPE_ARITH		0x40   //! Arithmetic (or logic) instruction.
-#define ASM_TYPE_LOAD			0x80   //! Memory data loading instruction.
-#define ASM_TYPE_STORE		0x100  //! Memory data storing instruction.
-#define ASM_TYPE_ARCH			0x200  //! Architecture dependent instruction.
-#define ASM_TYPE_FLAG			0x400  //! Flag-modifier instruction.
-#define ASM_TYPE_INT			0x800  //! Interrupt/call-gate instruction.
-#define ASM_TYPE_ASSIGN		0x1000 //! Assignment instruction.
-#define ASM_TYPE_TEST			0x2000 //! Comparison or test instruction.
+#define ASM_TYPE_ARITH	  	0x10   //! Arithmetic (or logic) instruction.
+#define ASM_TYPE_LOAD		  	0x20   //! Instruction that reads from memory.
+#define ASM_TYPE_STORE		  0x40   //! Instruction that writes in memory.
+#define ASM_TYPE_ARCH			  0x80   //! Architecture dependent instruction.
+#define ASM_TYPE_FLAG			  0x100  //! Flag-modifier instruction.
+#define ASM_TYPE_INT			  0x200  //! Interrupt/call-gate instruction.
+#define ASM_TYPE_ASSIGN		  0x400  //! Assignment instruction.
+#define ASM_TYPE_TEST			  0x800  //! Instruction that performs comparison or test.
+#define ASM_TYPE_CONTROL    0x1000 //! Instruction modifies control registers.
+#define ASM_TYPE_NOP        0x2000 //! Instruction that does nothing.
 
-#define ASM_TYPE_OTHER		0x4000 //! Type that doesn't fit the ones above.
+#define ASM_TYPE_OTHER		  0x4000 //! Type that doesn't fit the ones above.
 
 
 /*

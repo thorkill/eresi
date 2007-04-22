@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_movcc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_movcc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,9 +16,7 @@ asm_sparc_movcc(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format4(&opcode4, buf, proc);
 
   inter = proc->internals;
-  ins->instr = inter->op2_table[opcode.op3];
-  
-  ins->type = ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_ASSIGN;
 
   if (opcode4.cc2 == 0) { /* fcc{0,1,2,3,4} */
    	ins->instr = inter->movcc_table[opcode4.cond];  	  	

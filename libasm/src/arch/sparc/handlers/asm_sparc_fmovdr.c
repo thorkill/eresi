@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovdr.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_fmovdr.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -13,10 +13,9 @@ asm_sparc_fmovdr(asm_instr * ins, u_char * buf, u_int len,
   struct s_asm_proc_sparc *inter;
   sparc_convert_format3(&opcode, buf, proc);
   
-  ins->type = ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_TEST;
 
   inter = proc->internals;
-  ins->instr = inter->op2_table[opcode.op3];
 
   ins->instr = inter->fmovr_table[(((opcode.opf & 0x1f) - 6) * 8)
 				  + opcode.rcond];

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_ldfsr.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_ldfsr.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -15,7 +15,7 @@ asm_sparc_ldfsr(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
-  ins->type = ASM_TYPE_LOAD;
+  ins->type = ASM_TYPE_LOAD | ASM_TYPE_ASSIGN;
   
   if (opcode.rd == 0)
     ins->instr = ASM_SP_LDFSR;

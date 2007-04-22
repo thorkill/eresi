@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_tcc.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_tcc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,9 +16,7 @@ asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format4(&opcode4, buf, proc);
 
   inter = proc->internals;
-  ins->instr = inter->op2_table[opcode.op3];
-  
-  ins->type = ASM_TYPE_OTHER;
+  ins->type = ASM_TYPE_INT;
 
   ins->instr = inter->tcc_table[opcode4.cond];
   ins->nb_op = 2;

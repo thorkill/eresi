@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_wr.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_wr.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,12 +16,13 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_ASSIGN;
 
   if (opcode.rd == 1)
     ins->instr = ASM_SP_BAD;
   else if (opcode.rd == 15) {	/* SIR */
     ins->instr = ASM_SP_SIR;
+    ins->type = ASM_TYPE_INT;
     ins->nb_op = 1;
     ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
     ins->op1.imm = opcode.imm;

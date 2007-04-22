@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_sll.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_sll.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -14,8 +14,6 @@ asm_sparc_sll(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf, proc);
 
   inter = proc->internals;
-  ins->instr = inter->op2_table[opcode.op3];
-  
   ins->type = ASM_TYPE_ARITH;
 
   ins->instr = inter->shift_table[opcode.op3 - 0x25 +

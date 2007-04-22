@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fbpfcc.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_fbpfcc.c,v 1.3 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,6 +16,14 @@ asm_sparc_fbpfcc(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
 
   ins->instr = inter->fbcc_table[opcodep.cond];
+
+  if (ins->instr == ASM_SP_FBA)
+    ins->type = ASM_TYPE_IMPBRANCH;
+  else if (ins->instr == ASM_SP_FBN)
+    ins->type = ASM_TYPE_NOP;
+  else
+    ins->type = ASM_TYPE_CONDBRANCH;
+
   ins->type = ASM_TYPE_CONDBRANCH;
   ins->nb_op = 2;
   ins->op1.type = ASM_SP_OTYPE_DISPLACEMENT;

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_illtrap.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_illtrap.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -12,7 +12,7 @@ asm_sparc_illtrap(asm_instr * ins, u_char * buf, u_int len,
   struct s_decode_branch opcode;
   sparc_convert_branch(&opcode, buf, proc);
   
-  ins->type = ASM_TYPE_OTHER;
+  ins->type = ASM_TYPE_INT;
 
   ins->instr = ASM_SP_ILLTRAP;
   ins->nb_op = 1;

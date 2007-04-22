@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_ldswa.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_ldswa.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -15,7 +15,7 @@ asm_sparc_ldswa(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
-  ins->type = ASM_TYPE_LOAD;
+  ins->type = ASM_TYPE_LOAD | ASM_TYPE_ASSIGN;
 
   ins->nb_op = 2;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
