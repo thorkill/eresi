@@ -20,7 +20,6 @@ RM			= rm -f
 DBGNAME32		= libe2dbg32
 DBGNAME64		= libe2dbg64
 AR			= ar rc
-RANLIB			= ranlib
 
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \

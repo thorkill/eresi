@@ -5,6 +5,8 @@
 #
 #
 
+include ../../config.h
+
 CC	?= gcc
 NAME	= allocproxy
 BINAME	= debugme-mt

@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.49 2007-04-19 10:35:36 may Exp $
+** $Id: libelfsh.h,v 1.50 2007-04-22 22:58:14 thor Exp $
 **
 */
 
@@ -40,7 +40,9 @@
 
 #include <sys/ucontext.h>
 
+#if !defined(sgi)
 #include <sys/user.h>
+#endif
 #include <sys/procfs.h>
 
 /* Configure the DEBUG modes for various part of the code */

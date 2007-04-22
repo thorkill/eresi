@@ -7,6 +7,7 @@
 ##
 
 #DBGFLAGS	=	-ggdb -DDEBUG_SPARC
+include ../config.h
 include	Makefile.inc
 #
 # Architecture source files
@@ -97,7 +98,7 @@ install:
 lib:	$(OBJS_libasm)
 	@ar rc ${NAME_libasm} ${OBJS_libasm}
 	@echo "[AR] ${NAME_libasm}"
-	@ranlib ${NAME_libasm}
+	@${RANLIB} ${NAME_libasm}
 	@echo "[RANLIB] ${NAME_libasm}"
 	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
 

@@ -319,7 +319,8 @@ HP-UX*)
 
 IRIX*)
     echo "#define IRIX 1" 		  >> $LIBVARSFILE
-    echo "RANLIB  = /usr/bin/true"        >> $CONFIGFILE
+    echo "RANLIB  = /usr/bin/ar -rs"      >> $CONFIGFILE
+    echo "CC = gcc"                       >> $CONFIGFILE
 ;;
 
 *)
@@ -393,7 +394,7 @@ echo "## Automatically generated from the configure script"	>> Makefile
 echo "## "							>> Makefile
 echo ""								>> Makefile
 echo "include ./$CONFIGFILE " 					>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 echo "CC      = gcc "						>> Makefile
 echo "RM      = rm -f "						>> Makefile
 echo "ETAGS   = etags "					        >> Makefile
@@ -417,7 +418,7 @@ echo "#define LIBPATH          \"$PREFIX/usr/local/lib/\""	>> $VARSFILE
 echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "RM      = rm -f "                                		>> Makefile
 
-echo " "							>> Makefile
+echo ""								>> Makefile
 echo "all     : world modules tags"				>> Makefile
 echo "world   : "						>> Makefile
 echo "	@echo 'Building e2dbg-libc ..' "			>> Makefile
@@ -479,24 +480,24 @@ echo "	@echo 'Libe2dbg has been built successfully.'"	        >> Makefile
 echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
 echo "	@cd elfsh && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "	@echo 'Building E2dbg' "				>> Makefile
 echo "	@cd e2dbg && \$(MAKE) \$(BUILD_TARGET)	     	"       >> Makefile
 echo "	@echo 'E2dbg has been built successfully.' "		>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "	@echo 'Building Etrace'				"	>> Makefile
 echo "	@cd etrace && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'ETrace has been built successfully.' 	"	>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
 echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
 echo "#	@cd modules && \$(MAKE) "				>> Makefile
 echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 if [ "$TESTING" = "1" ]; then
   echo "	@echo"						>> Makefile
@@ -545,13 +546,13 @@ echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile
-echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"  >> Makefile
+echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir32.a \$(LIBPATH)libmjollnir.a"  >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm32.a     \$(LIBPATH)librevm.a"      >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt32.a    \$(LIBPATH)libedfmt.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"       >> Makefile
+echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"        >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect32.so   \$(LIBPATH)libaspect.so"   >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.so    \$(LIBPATH)libelfsh.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
@@ -598,7 +599,7 @@ echo "	@chmod 644 \$(INCPATH)libasm*.h "			>> Makefile
 echo "	@chmod 644 \$(INCPATH)libmjollnir.h "			>> Makefile
 echo "	@chmod 644 \$(INCPATH)libaspect*.h "			>> Makefile
 echo "	@chmod 644 \$(INCPATH)librevm*.h "			>> Makefile
-echo " "                        				>> Makefile
+echo ""	                        				>> Makefile
 echo "prepareDir: " 						>> Makefile
 echo "	@mkdir -p \$(BINPATH) || true"  			>> Makefile
 echo "	@mkdir -p \$(LIBPATH) || true"  			>> Makefile
@@ -619,7 +620,7 @@ echo "mod_install: "						>> Makefile
 echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile
 echo "	@cp modules/*.so \$(MODPATH) "				>> Makefile
 echo "	@chmod -R 755 \$(MODPATH) "				>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "uninstall: "						>> Makefile
 echo "	rm -f  \$(BINPATH)/elfsh*"				>> Makefile
@@ -649,7 +650,7 @@ echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
 echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libmjollnir, \\" >> Makefile
 echo "Libaspect, Libedfmt, Libe2dbg, Libui and Libasm       \\" >> Makefile
 echo "uninstalled successfully' "				>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
 echo "	@echo 'Cleaning tree ...' "				>> Makefile
@@ -669,7 +670,7 @@ echo "	cd liballocproxy && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile
 echo "	@echo 'Tree cleaned .' "				>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "fclean  : cleandoc "					>> Makefile
 echo "	@echo 'Fcleaning tree ...' "				>> Makefile
@@ -691,14 +692,14 @@ echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
 
 echo "	@echo 'Tree cleaned .' "				>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "cleandoc: "						>> Makefile
 echo "	@rm -f *~ *\# \#* .\#* "				>> Makefile
 echo "	@rm -f doc/*~ doc/*\# doc/\#* doc/.\#* "		>> Makefile
 echo "	@rm -f doc/research/*~ doc/research/*\# "		>> Makefile
 echo "	@rm -f doc/research/\#* doc/research/.\#* "		>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo "tags    : "						>> Makefile
 echo "	@echo Doing tags ... "					>> Makefile
@@ -736,7 +737,7 @@ echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
 echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 fi
 
 echo "info    : "						>> Makefile
@@ -783,7 +784,7 @@ echo "	@echo '###############' ETRACE only '#############'"	>> Makefile
 echo "	@wc -l etrace/*.c "					>> Makefile
 echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
 echo "	@wc -l modules/*.c "					>> Makefile
-echo " "							>> Makefile
+echo ""								>> Makefile
 
 echo
 echo " Now make && make install"

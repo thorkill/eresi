@@ -9,7 +9,7 @@
 ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
 ** 
 **
-** $Id: sht_rebuild.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+** $Id: sht_rebuild.c,v 1.11 2007-04-22 22:58:14 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -220,10 +220,12 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
 	case PT_NOTE:
 	case PT_LOAD:
 	case PT_DYNAMIC:
+        case PT_INTERP:
+#if !defined(sgi)
 	case PT_TLS:
-	case PT_INTERP:
 	case PT_GNU_EH_FRAME:
 	case PT_GNU_STACK:
+#endif
 	  total++;
 	  break;
 	}
@@ -249,9 +251,11 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
 	  type = SHT_DYNAMIC;
 	  break;
 	case PT_LOAD: 
+#if !defined(sgi)
 	case PT_GNU_EH_FRAME:
 	case PT_GNU_STACK:
 	case PT_TLS:
+#endif
 	case PT_INTERP:
 	  type = SHT_PROGBITS; 
 	  break;
@@ -309,18 +313,22 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
 	case PT_NOTE:
 	  snprintf(name, sizeof(name), ".note%d", nnames++);
 	  break;
+#if !defined(sgi)
 	case PT_TLS:
 	  snprintf(name, sizeof(name), ".tls%d", tlsnames++);
 	  break;
+#endif
 	case PT_DYNAMIC:
 	  snprintf(name, sizeof(name), ".dynamic%d", dnames++);
 	  break;
+#if !defined(sgi)
 	case PT_GNU_EH_FRAME:
 	  snprintf(name, sizeof(name), ".eh_frame%d", ehnames++);
 	  break;
 	case PT_GNU_STACK:
 	  snprintf(name, sizeof(name), ".stack%d", snames++);
 	  break;
+#endif
 	default: break;
 	}
       file->sht[index].sh_name = elfsh_insert_in_shstrtab(file, name);
