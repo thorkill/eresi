@@ -1,5 +1,5 @@
 /**
- * $Id: operand_handlers.c,v 1.1 2007-04-13 06:56:34 heroine Exp $
+ * $Id: operand_handlers.c,v 1.2 2007-04-24 16:25:14 strauss Exp $
  * @file operand_handlers.c
  *
  * Handlers for the operand vector.
@@ -378,11 +378,13 @@ int	asm_operand_fetch_memory(asm_operand *operand, u_char *opcode, int otype,
   modrm = (struct s_modrm *) opcode;
   operand->type = ASM_OTYPE_MEMORY;
 
-  operand->content = ASM_OP_BASE;
-  operand->regset = ASM_REGSET_R32;
-  operand->base_reg = modrm->r;
+//  operand->content = ASM_OP_BASE;
+//  operand->regset = ASM_REGSET_R32;
+//  operand->base_reg = modrm->r;
 
-  return (0);
+//  return (0);
+
+  return operand_rmv(operand, opcode, 4, proc);
 }
 
 /**
