@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.15 2007-04-30 13:39:37 may Exp $
+** $Id: readln.c,v 1.16 2007-04-30 19:54:12 mxatone Exp $
 **
 */
 #include "libui.h"
@@ -109,7 +109,7 @@ void		readln_completion_install(char mode, char side)
   rl_attempted_completion_function = readln_completion;
 
   str = "";
-  if (!(mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT)
+  if (!(mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_SERVER)
       && mode != REVM_STATE_CMDLINE && mode != REVM_STATE_SCRIPT
       && mode != REVM_STATE_TRACER)
     str = vm_get_prompt();
@@ -303,7 +303,6 @@ void    vm_ln_handler(char *c)
   /* special to enable exit on CTRL-D */
   else
     world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
-    
 
   rl_save_prompt();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -490,7 +489,6 @@ void		readln_terminal_unprepare(char mode)
   if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
     rl_deprep_terminal();
 }
-
 
 #endif
 

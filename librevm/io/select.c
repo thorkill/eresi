@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.8 2007-04-30 13:39:37 may Exp $
+** $Id: select.c,v 1.9 2007-04-30 19:54:12 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -196,8 +196,45 @@ int			vm_socket_getnew()
   return (0);
 }
 
+int			vm_preselect_prompt()
+{
+  // In the case of normal loop print prompt
+  if (world.state.vm_mode != REVM_STATE_CMDLINE ||
+      world.state.vm_net)
+    {
+      if (world.curjob->ws.io.type != REVM_IO_DUMP)
+	{
 
+	  // Display prompt
+#if defined(USE_READLN)
+	  if (world.curjob->ws.io.type == REVM_IO_STD)
+	    {
+	      if (world.curjob->ws.io.buf != NULL) 
+		{
+		  
+		  /* On the client side, we consider that the prompt is already
+		     returned by the server */
+		  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
+			world.state.vm_side == REVM_SIDE_CLIENT))
+		    rl_forced_update_display();
+		  else
+		    rl_on_new_line_with_prompt();
+		  vm_log(vm_get_prompt());
+		}
+	    }
+	  else 
+#endif
+	    {
+	      /* Do not display the prompt for the client side */
+	      if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
+		    world.state.vm_side == REVM_SIDE_CLIENT))
+		vm_display_prompt();
+	    }
+	}
+    }
 
+  return (0);
+}
 
 
 /* Wait for all input */
@@ -205,7 +242,6 @@ int                     vm_select()
 {
   fd_set		sel_sockets;
   int                   max_fd;
-  int                   cont;
   revmjob_t            *init;
   int			err;
   int			fifofd;
@@ -214,7 +250,6 @@ int                     vm_select()
 
   /* By default do only one select. */
   init = hash_get(&world.jobs, "net_init");
-  cont = 0;
 
   /* Flush pending outputs */
   vm_flush();
@@ -241,38 +276,9 @@ int                     vm_select()
       // Prepare for the select() call
       max_fd = vm_prepare_select(&sel_sockets);
 
-      // In the case of normal loop print prompt
-      if (cont == 0 &&
-	  (world.state.vm_mode != REVM_STATE_CMDLINE ||
-	   world.state.vm_net))
-         {
-	  if (world.curjob->ws.io.type != REVM_IO_DUMP)
-	    {
-
-	      // Display prompt
-#if defined(USE_READLN)
-	      if (world.curjob->ws.io.type == REVM_IO_STD)
-		{
-		  if (world.curjob->ws.io.buf != NULL) 
-		    {
-		      if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
-			    world.state.vm_side == REVM_SIDE_CLIENT))
-			rl_forced_update_display();
-		      vm_log(vm_get_prompt());
-		    }
-		}
-	      else 
-#endif
-		if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
-		      world.state.vm_side == REVM_SIDE_CLIENT))
-		  {
-		    vm_display_prompt();
-		  }
-	    }
-        }
+      /* Display the prompt */
+      vm_preselect_prompt();
       
-      // Reset cont if a loop has already be done
-      cont = 0;
     retry:
       err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
       

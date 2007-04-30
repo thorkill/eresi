@@ -4,7 +4,7 @@
 ** Input related functions
 **
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** $Id: input.c,v 1.6 2007-04-30 13:39:37 may Exp $
+** $Id: input.c,v 1.7 2007-04-30 19:54:12 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -56,7 +56,7 @@ char		*vm_getln()
 
       if (world.state.vm_mode != REVM_STATE_SCRIPT)
 	{
-          vm_output_nolog("\n");
+	  vm_output_nolog("\n");
 
           /* avoid looping with readline */
 #if defined(USE_READLN)
