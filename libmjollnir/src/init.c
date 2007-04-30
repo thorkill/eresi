@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.23 2007-04-09 15:18:05 thor Exp $
+ * $Id: init.c,v 1.24 2007-04-30 11:54:13 thor Exp $
  *
  * Initialization functions
  *
@@ -86,6 +86,7 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ASPECT_TYPE_UNKNOW);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
  ctx->next_id = 1;
+ ctx->block_btree=NULL;
  mjr_init_containers(ctx);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }

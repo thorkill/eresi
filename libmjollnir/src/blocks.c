@@ -6,13 +6,50 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.60 2007-04-20 15:17:31 thor Exp $
+** $Id: blocks.c,v 1.61 2007-04-30 11:54:13 thor Exp $
 **
 */
 #include "libmjollnir.h"
 
 /* Goto hash */
 hash_t		goto_hash;
+
+int	mjr_block_relink(mjrcontainer_t *src,
+			 mjrcontainer_t *dst,
+			 int direction)
+{
+
+  mjrlink_t	*lnk;
+  u_int		nbr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  lnk = mjr_link_get_by_direction(src, direction);
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC,"[D] %s: src:%d dst:%d dir:%d\n",
+	  __FUNCTION__, src->id, dst->id, direction);
+#endif
+
+  if (direction == MJR_LINK_IN)
+    nbr = src->in_nbr;
+  else
+    nbr = src->out_nbr;
+
+  while(lnk)
+    {
+      // 1 - add same links to dst
+      mjr_container_add_link(dst,lnk->id, lnk->type, direction);
+      // 2 - and remove it from src
+      lnk->type = MJR_LINK_DELETE;
+      lnk = lnk->next;
+    }
+
+  mjr_container_link_cleanup(src,direction);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
 
 /**
  * This function moves dependency of blocks
@@ -78,29 +115,34 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
 	  src,dst,ret);
 #endif
 
+  /* at this point we must have src block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
 
   assert(csrc != NULL);
 
-  if (!(cdst = mjr_split_block(ctxt,dst)))
+  /* search and/or split destination block */
+  if (!(cdst = mjr_split_block(ctxt,dst,NULL)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
-  if (!(cret = mjr_split_block(ctxt,ret)))
+  /* search and/or split - return block */
+  if (!(cret = mjr_split_block(ctxt,ret,NULL)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the ret",0);
   
+  /* link src and dst */
   mjr_container_add_link(csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
   mjr_container_add_link(cdst, csrc->id, MJR_LINK_FUNC_CALL, MJR_LINK_IN);
 
+  /* link dst and ret */
   mjr_container_add_link(cdst, cret->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
   mjr_container_add_link(cret, cdst->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
 
-  mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
-  mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
+  // mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
+  // mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
 
-  mjr_container_add_link(csrc, cret->id, MKR_LINK_TYPE_DELAY, MJR_LINK_OUT);
-  mjr_container_add_link(cret, csrc->id, MKR_LINK_TYPE_DELAY, MJR_LINK_IN);
+  mjr_container_add_link(csrc, cret->id, MJR_LINK_TYPE_DELAY, MJR_LINK_OUT);
+  mjr_container_add_link(cret, csrc->id, MJR_LINK_TYPE_DELAY, MJR_LINK_IN);
 
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);
@@ -130,39 +172,47 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
 	  __FUNCTION__,
 	  src,dst,ret);
 #endif
-
-  if (!(cdst = mjr_split_block(ctxt,dst)))
+  
+  if (!(cdst = mjr_split_block(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
-
+  
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
-
+  
   assert(csrc != NULL);
-
+  
   cret = NULL;
-
+  
   if (ret)
-      if (!(cret = mjr_split_block(ctxt,ret)))
-	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		     "Could not split the ret",0);
+    if (!(cret = mjr_split_block(ctxt,ret,MJR_LINK_BLOCK_COND_ALWAYS)))
+      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		   "Could not split the ret",0);
   
   mjr_container_add_link(csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
   mjr_container_add_link(cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
-
+  
   if (cret)
     {
       mjr_container_add_link(csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
       mjr_container_add_link(cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
-
-      mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
-      mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
+      
+      //      mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
+      //      mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
+/**
+ * This function does split a block carried by given container
+ * to 2 pices, a new container will be added by vaddr dst
+ * @param ctxt mjollnir context strucutre
+ * @param dst  destination address of wanted block
+ * @param link_with link splitted blocks with specified link type
+ */
 mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
-				 elfsh_Addr dst)
+				 elfsh_Addr dst,
+				 u_int link_with)
 {
   mjrcontainer_t	*tmpdst,*dstend;
   mjrblock_t		*blkdst;
@@ -197,8 +247,12 @@ mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
       dstend		= mjr_create_block_container(ctxt, 0, dst, new_size);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
 
-      mjr_container_add_link(tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS, MJR_LINK_OUT);
-      mjr_container_add_link(dstend, tmpdst->id, MJR_LINK_BLOCK_COND_ALWAYS, MJR_LINK_IN);
+      if (link_with != NULL)
+	{
+	  mjr_block_relink(tmpdst, dstend, MJR_LINK_OUT);
+	  mjr_container_add_link(tmpdst, dstend->id, link_with, MJR_LINK_OUT);
+	  mjr_container_add_link(dstend, tmpdst->id, link_with, MJR_LINK_IN);
+	}
     } 
   else 
     {
@@ -639,10 +693,8 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 					int		mode)
 {
   mjrcontainer_t	*ret;
+  btree_t		*retbtree;
   mjrblock_t		*tmpblock;
-  char			**keys;
-  int			index;
-  int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -665,13 +717,14 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
   
   if ((mode == 0) || ((mode == 1) && (ret)))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-  
-  /* Parent match */
-  keys = hash_get_keys(&ctxt->blkhash, &size);
-  for (index = 0; index < size; index++)
+
+  retbtree = ctxt->block_btree;
+  while(retbtree)
     {
-      ret = hash_get(&ctxt->blkhash, keys[index]);
-      tmpblock = (mjrblock_t *) ret->data;
+
+      /* Parent match */
+      ret = (mjrcontainer_t *)retbtree->elem;
+      tmpblock = (mjrblock_t *)ret->data;
 
 #if __DEBUG_BLK_LOOKUP__      
       fprintf(D_DESC,"[D] %s: checking block: %x:%x s:%d id:%d\n",
@@ -685,6 +738,10 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
       if ((tmpblock->vaddr <= vaddr) && (vaddr <= tmpblock->vaddr + tmpblock->size))
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 
+      if (tmpblock->vaddr < vaddr)
+	retbtree = retbtree->right;
+      else
+	retbtree = retbtree->left;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));

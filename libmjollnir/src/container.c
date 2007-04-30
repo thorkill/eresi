@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.10 2007-04-20 15:17:31 thor Exp $
+ * $Id: container.c,v 1.11 2007-04-30 11:54:13 thor Exp $
  *
  */
 
@@ -242,6 +242,17 @@ mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type)
     return mjr_get_link_of_type(link->next, link_type);
 }
 
+
+int			match_block(void *elem, void *match)
+{
+  mjrblock_t	*blk_elem, *blk_match;
+
+  blk_elem = (mjrblock_t *)((mjrcontainer_t *)elem)->data;
+  blk_match = (mjrblock_t *)((mjrcontainer_t *)match)->data;
+
+  return(blk_match->vaddr - blk_elem->vaddr);
+}
+
 /**
  *
  */
@@ -284,9 +295,13 @@ mjrcontainer_t *mjr_create_block_container(mjrcontext_t *ctx,
 	  __FUNCTION__, vaddr, size);
 #endif
   mjr_register_container(ctx, newcntnr);
-  
+
+  /* fill the btree */
+  btree_insert_sort(&ctx->block_btree, match_block, newcntnr);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
+
 
 /**
  * Creates function container

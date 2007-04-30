@@ -5,7 +5,7 @@
  *
  * Container structures for libmjollnir
  *
- * $Id: libmjollnir-container.h,v 1.7 2007-04-20 15:17:31 thor Exp $
+ * $Id: libmjollnir-container.h,v 1.8 2007-04-30 11:54:13 thor Exp $
  *
  */
 
@@ -37,7 +37,7 @@ typedef	struct		s_link
 #define MJR_LINK_BLOCK_COND_FALSE	3 /* 'false' condition of a branch */
 #define MJR_LINK_BLOCK_COND_ALWAYS	4 /* uncoditional branch */
 #define MJR_LINK_DELETE			5 /* internal mark for link delete */
-#define MKR_LINK_TYPE_DELAY		6 /* should be ignored on 
+#define MJR_LINK_TYPE_DELAY		6 /* should be ignored on 
 					     graph based analysis */
 #define	MJR_LINK_UNKNOWN		7 /* unknown type */
   unsigned int		id;

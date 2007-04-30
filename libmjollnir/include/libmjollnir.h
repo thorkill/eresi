@@ -35,6 +35,8 @@ typedef struct		_mjrContext
   mjrcontainer_t	*curblock;   /* current working block */
   mjrcontainer_t	*curfunc;    /* current working function */
   mjrcontainer_t	**reg_containers;	/* Registerd containers */
+  btree_t		*block_btree;	/* binary tree of blocks used
+					   to speedup fuzzy searches */
   u_int			cntnrs_size;	/* size of current containers */
   u_int			next_id;	/* next container id */
 
@@ -104,8 +106,8 @@ int		mjr_block_relink_cond_always(mjrcontainer_t *, mjrcontainer_t *, int);
 int		mjr_blocks_link_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 int		mjr_blocks_link_jmp(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 
-mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,elfsh_Addr dst);
-int		mjr_block_dump(mjrcontext_t*, mjrcontainer_t *c);
+mjrcontainer_t	*mjr_split_block(mjrcontext_t *,elfsh_Addr, u_int);
+int		mjr_block_dump(mjrcontext_t*, mjrcontainer_t *);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(mjrcontainer_t *cntnr);
