@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.7 2007-04-20 12:37:10 may Exp $
+** $Id: select.c,v 1.8 2007-04-30 13:39:37 may Exp $
 **
 */
 #include "revm.h"
@@ -88,7 +88,8 @@ int		vm_prepare_select(fd_set *sel_sockets)
     {
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : %d \n",
+      fprintf(stderr, 
+	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : %d \n",
 	      port);
 #endif
       FD_SET(port, sel_sockets);
@@ -124,7 +125,12 @@ int		vm_prepare_select(fd_set *sel_sockets)
 
   /* Also set the debugger fifo if we are in debugger mode */
   if (world.state.vm_mode == REVM_STATE_DEBUGGER)
-    FD_SET(world.fifofd, sel_sockets);
+    {
+      if (world.state.vm_side == REVM_SIDE_CLIENT)
+	FD_SET(world.fifo_s2c, sel_sockets);
+      else
+	FD_SET(world.fifo_c2s, sel_sockets);
+    }
 
   hash_free_keys(keys);
   return (vm_getmaxfd());
@@ -133,7 +139,8 @@ int		vm_prepare_select(fd_set *sel_sockets)
 
 
 /* Check if we had any network event */
-void			vm_check_net_select(fd_set *sel_sockets, int cursock)
+void			vm_check_net_select(fd_set *sel_sockets, 
+					    int cursock)
 {
 #if defined(ELFSHNET)
   // Read net command if any.
@@ -201,6 +208,7 @@ int                     vm_select()
   int                   cont;
   revmjob_t            *init;
   int			err;
+  int			fifofd;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -237,7 +245,7 @@ int                     vm_select()
       if (cont == 0 &&
 	  (world.state.vm_mode != REVM_STATE_CMDLINE ||
 	   world.state.vm_net))
-        {
+         {
 	  if (world.curjob->ws.io.type != REVM_IO_DUMP)
 	    {
 
@@ -268,56 +276,72 @@ int                     vm_select()
     retry:
       err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
       
+      /* Retry in case of error */
       if (err < 1 && errno == EINTR)
 	goto retry;
+      
 
-      if (err > 0)
-        {
-
+      /* Select which command will be proceded */
 #if defined(ELFSHNET)
-          if (world.state.vm_net && init)
+      if (world.state.vm_net)
+	{
+	  if (init)
 	    vm_check_net_select(&sel_sockets, init->ws.sock.socket);
-#endif
-
-          if (world.state.vm_mode != REVM_STATE_CMDLINE)
-            {
-              if (FD_ISSET(0, &sel_sockets))
-                {
-		  world.curjob = vm_localjob_get();
-		  if (!world.curjob)
-		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(-1));
-
-		  /* If the event appeared on the debugger FIFO, 
-		     change the input file descriptor for it */
-		  if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
-		      FD_ISSET(world.fifofd, &sel_sockets))
-		    vm_setinput(&world.curjob->ws, world.fifofd);
-
-#if defined (USE_READLN)
-		  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
-			world.state.vm_side == REVM_SIDE_CLIENT) && readln_prompt_restore())
-		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
-#endif
-		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
-                }
-            }
-
-          // Select which command will be proceded
-          if (world.state.vm_net)
-            {
-              if (vm_socket_getnew())
-		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
-              else
-                {
+	  
+	  if (vm_socket_getnew())
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
+	  
 #if __DEBUG_NETWORK__
-                  fprintf(stderr, "[DEBUG NETWORK] Select broken by a new connexion.\n");
+	  fprintf(stderr, 
+		  "[DEBUG NETWORK] Select broken by a new connexion.\n");
 #endif
-                  // Let's re-select
-                  cont = 1;
-                }
-            }
+	  continue;
 	}
-    } while (cont);
+#endif
+      
+      /* Come back now if we are in command line */
+      if (world.state.vm_mode == REVM_STATE_CMDLINE)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
+
+      /* If we are in interactive mode .. */
+      world.curjob = vm_localjob_get();
+      if (!world.curjob)
+	{
+	  //fprintf(stderr, "Entering NOCURJOB condition .. \n");
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (-1));
+	}
+	  
+      /* If the event appeared on the debugger FIFO, 
+	 change the input file descriptor for it */
+      if (world.state.vm_mode == REVM_STATE_DEBUGGER)
+	{
+	  fifofd = (world.state.vm_side == REVM_SIDE_CLIENT ?
+		    world.fifo_s2c : world.fifo_c2s);
+	  
+	  if (FD_ISSET(fifofd, &sel_sockets))
+	    {
+	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
+	      world.curjob->ws.io.input = vm_fifoinput;
+	      
+	      /* Debug only */
+	      /*
+	      if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+		  world.state.vm_side == REVM_SIDE_CLIENT)
+		fprintf(stderr, "(client) Event appeared on fifo \n");
+	      else if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+		       world.state.vm_side == REVM_SIDE_SERVER)
+		fprintf(stderr, "(server) Event appeared on fifo \n");
+	      */
+
+	    }
+	}
+	  
+#if defined (USE_READLN)
+      if (world.state.vm_side == REVM_SIDE_CLIENT && FD_ISSET(0, &sel_sockets))
+	readln_prompt_restore();
+#endif
+
+    } while (0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 }

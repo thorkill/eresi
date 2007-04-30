@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.19 2007-04-16 16:29:17 may Exp $
+** $Id: init.c,v 1.20 2007-04-30 13:39:37 may Exp $
 **
 */
 
@@ -39,7 +39,7 @@ int		vm_loop(int argc, char **argv)
   reenter:
 
     /* Fill argv from stdin if we are in interactive mode */
-    if ((world.state.vm_mode != REVM_STATE_CMDLINE
+    if ((world.state.vm_mode != REVM_STATE_CMDLINE 
 	 && world.state.vm_mode != REVM_STATE_TRACER) 
 	|| world.state.vm_net == 1)
       {
@@ -51,9 +51,11 @@ int		vm_loop(int argc, char **argv)
 		vm_exit(-1);
 	      }
 
-	    /* If the FIFO does not exist anymore, the server has quit, so we quit too */
+	    /* If the FIFO does not exist anymore, 
+	       the server has quit, so we quit too */
 	    if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
-		access(REVM_FIFO, F_OK) < 0)
+		(access(REVM_FIFO_S2C, F_OK) < 0 || 
+		 access(REVM_FIFO_C2S, F_OK) < 0))
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);	      
 	  }
 
@@ -65,12 +67,7 @@ int		vm_loop(int argc, char **argv)
 	    world.state.vm_net)
 	  {
 	    if (argv == ((char **) REVM_INPUT_VOID))
-	      {
-		if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
-		    world.state.vm_side == REVM_SIDE_CLIENT)
-		  vm_display_prompt();
-		continue;
-	      }
+	      continue;
 	    else if (argv == ((char **) REVM_INPUT_TRANSFERED))
 	      continue;
 	  }

@@ -84,6 +84,12 @@ echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
 BITS=$BITS" -DELFSHNET"
 ;;
 
+--enable-testing*)
+echo " [*] Enable compilation without install"
+echo "#define ELFSH_DBGPATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
+TESTING="1"
+;;
+
 --enable-readline*)
 echo  " [*] Enabling readline support"
 READLN="1"
@@ -183,13 +189,6 @@ PREFIX=$1
 --help*)
 CHOSENBIT="0"
 break;
-;;
-
---enable-testing*)
-shift
-echo " [*] Enable compilation without install"
-echo "#define ELFSH_DBGPATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
-TESTING="1"
 ;;
 
 *)

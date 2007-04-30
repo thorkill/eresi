@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.57 2007-04-18 07:23:47 mxatone Exp $
+** $Id: revm.h,v 1.58 2007-04-30 13:39:37 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -187,7 +187,8 @@ extern asm_processor	proc;
 
 /* REVM files */
 #define	REVM_CONFIG		".elfshrc"
-#define	REVM_FIFO		"/tmp/.revm.io"
+#define	REVM_FIFO_C2S		"/tmp/.revm.io.c2s"
+#define	REVM_FIFO_S2C		"/tmp/.revm.io.s2c"
 
 /* Traces directory */
 #define	REVM_TRACE_REP		".etrace"
@@ -519,7 +520,8 @@ typedef struct        s_world
   asm_processor       proc;           /* Libasm world */
   asm_processor	      proc_sparc;     /* Libasm Sparc */
   mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
-  int		      fifofd;	      /* File descriptor for the debugger IO FIFO */
+  int		      fifo_s2c;	      /* Fd for the debugger IO FIFO */
+  int		      fifo_c2s;	      /* Fd for the debugger IO FIFO */
 }		      revmworld_t;
 
 

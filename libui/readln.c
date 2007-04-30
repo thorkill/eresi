@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.14 2007-04-20 14:40:38 mxatone Exp $
+** $Id: readln.c,v 1.15 2007-04-30 13:39:37 may Exp $
 **
 */
 #include "libui.h"
@@ -80,15 +80,13 @@ void		readln_completion_commands(hash_t *cmd_hash)
 }
 
 
-
 /* Install the completion strings */
 void		readln_completion_install(char mode, char side)
 {
   char		*str;
+  FILE		*fifofile;
 
-  fprintf(stderr, "Installing completion now \n");
-
-  rl_bind_key ('\t', rl_insert);
+  //fprintf(stderr, "Installing completion now \n");
   
   comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
   comp.cmds[1]  = hash_get_keys(&vars_hash   , NULL);
@@ -116,10 +114,6 @@ void		readln_completion_install(char mode, char side)
       && mode != REVM_STATE_TRACER)
     str = vm_get_prompt();
 
-  /*
-  str = (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT ?
-	 "" : vm_get_prompt());
-  */
   rl_callback_handler_install(str, vm_ln_handler);
 
   rl_bind_key(CTRL('x'), vm_screen_switch);
@@ -141,10 +135,10 @@ char	**readln_completion(const char* text, int start, int end)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  fprintf(stderr, "Calling completion on %s \n", text);
-
-  /* prevent freeing of unitialized memory on FreeBSD
-	 XXX: check this !!
+  /*
+    fprintf(stderr, "Calling completion on %s \n", text);
+    prevent freeing of unitialized memory on FreeBSD
+    XXX: check this !!
    */
 
   if (strlen(text) == 0)
@@ -323,8 +317,7 @@ int		readln_prompt_restore()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  world.curjob->ws.io.buf = NULL;
-  
+  world.curjob->ws.io.buf = NULL;  
   rl_callback_read_char();
   
   if (world.curjob->ws.io.buf != NULL)

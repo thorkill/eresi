@@ -4,9 +4,7 @@
 ** Input related functions
 **
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** Updated on  Fri Mar  5 18:47:41 2007 mayhem
-**
-** $Id: input.c,v 1.5 2007-03-25 14:27:34 may Exp $
+** $Id: input.c,v 1.6 2007-04-30 13:39:37 may Exp $
 **
 */
 #include "revm.h"
@@ -64,7 +62,7 @@ char		*vm_getln()
 #if defined(USE_READLN)
           if (buf == NULL)
 	    {
-	      printf("Entered readline test .. returning void input \n");
+	      //fprintf(stderr, "Entered readline test .. returning void input \n");
               NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
 	    }
           break;
@@ -78,25 +76,13 @@ char		*vm_getln()
 }
 
 
-
-
-/* INPUT handler for stdin */
-char		*vm_stdinput()
+/* Read input from the file descriptor */
+char		*vm_read_input()
 {
   char		tmpbuf[BUFSIZ + 1];
   int		len;
-  char		*str;
 
   NOPROFILER_IN();
-  str = NULL;
-
-#if defined(USE_READLN)
-  if (world.state.vm_mode != REVM_STATE_SCRIPT)
-    {
-      str = readln_input_check();
-      NOPROFILER_ROUT(str);
-    }
-#endif
   
   /* In case we are scripting, even readline will use a read */
   for (len = 0; len < BUFSIZ; len++)
@@ -106,7 +92,10 @@ char		*vm_stdinput()
 	if (tmpbuf[len] == '\n')
 	  {
 	    if (len == 0)
-	      NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+	      {
+		//fprintf(stderr, "Read length 0 ... \n");
+		NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+	      }
 	    if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
 		world.state.vm_side == REVM_SIDE_CLIENT)
 	      tmpbuf[len + 1] = 0x00;
@@ -121,7 +110,70 @@ char		*vm_stdinput()
       }
 
  end:
+  //fprintf(stderr, "[pid = %u] Read on fd = *%s*\n", getpid(), tmpbuf);
   NOPROFILER_ROUT((*tmpbuf ? strdup(tmpbuf) : NULL));
+}
+
+
+/* Input handler for the FIFO */
+char		*vm_fifoinput()
+{
+  int		fd;
+  char		*ret;
+
+  fd = world.curjob->ws.io.input_fd;
+  
+  /* Just debugging */
+  switch (world.state.vm_side)
+    {
+    case REVM_SIDE_CLIENT:
+      //fprintf(stderr, "Goto read fifo (client legit) ... \n");      
+      world.curjob->ws.io.input_fd = world.fifo_s2c;
+      break;
+    case REVM_SIDE_SERVER:
+      //fprintf(stderr, "Goto read fifo (server legit) ... \n");
+      world.curjob->ws.io.input_fd = world.fifo_c2s;
+      break;
+    }
+ 
+ ret = vm_read_input();
+ world.curjob->ws.io.input_fd = fd;
+ world.curjob->ws.io.input = world.curjob->ws.io.old_input;
+ 
+ /* Just debugging */ 
+  switch (world.state.vm_side)
+    {
+    case REVM_SIDE_CLIENT:
+      //fprintf(stderr, "BACK from reading fifo (client legit) ... \n");      
+      break;
+    case REVM_SIDE_SERVER:
+      //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
+      break;
+    }
+
+  return (ret);
+}
+
+
+/* INPUT handler for stdin */
+char		*vm_stdinput()
+{
+  char		*str;
+
+  NOPROFILER_IN();
+  str = NULL;
+
+  /* Case if we are using readline */
+#if defined(USE_READLN)
+  if (world.state.vm_mode != REVM_STATE_SCRIPT)
+    {
+      str = readln_input_check();
+      NOPROFILER_ROUT(str);
+    }
+#endif
+
+  /* If not, read the stdin file descriptor */
+  NOPROFILER_ROUT(vm_read_input());
 }
 
 
@@ -130,6 +182,3 @@ void	vm_setinput(revmworkspace_t *ws, int fd)
 {
   ws->io.input_fd = fd;
 }
-
-
-

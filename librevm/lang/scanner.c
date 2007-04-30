@@ -4,7 +4,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: scanner.c,v 1.7 2007-03-27 20:56:03 mxatone Exp $
+** $Id: scanner.c,v 1.8 2007-04-30 13:39:37 may Exp $
 **
 */
 #include "revm.h"
@@ -295,9 +295,10 @@ char		**vm_input(int *argc)
   if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
       world.state.vm_side == REVM_SIDE_CLIENT)
     {
-      //printf("Printing on FIFO : %s ", buf);
-
-      write(world.fifofd, buf, len);
+      write(world.fifo_c2s, buf, len);
+#if defined(USE_READLN)
+      write(world.fifo_c2s, "\n", 1);
+#endif
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    ((char **) REVM_INPUT_TRANSFERED));      
     }

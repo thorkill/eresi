@@ -60,15 +60,6 @@ all32			: ${OBJ32}
 all64			: ${OBJ64}
 			@$(CC) $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64)
 
-# This target is work in progress (static files debugger)
-et_rel			: ${OBJ}
-			$(CC) -c $(CFLAGS) $(SRC_DYN) -o $(OBJ_DYN)
-			$(LD) ${OBJ_DYN} ${OBJ} ../libasm/libasm.a	\
-			../libelfsh/libelfsh.a ../libmalloc-e2dbg.a	\
-			/usr/lib/libreadline.a /usr/lib/libdl.a 	\
-			/usr/lib/libtermcap.a /usr/lib/libhistory.a   	\
-			/usr/lib/libc.a -r -o $(DBGNAME)_rel.o	  
-
 clean		       :
 		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*

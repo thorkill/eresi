@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.13 2007-04-12 16:48:00 may Exp $
+** $Id: revm-io.h,v 1.14 2007-04-30 13:39:37 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -43,7 +43,7 @@ char	prompt_token[512];
 
 #define ELFSH_SNAME	"elfsh"
 #define	ELFSH_VERSION	"0.77"
-#define	ELFSH_RELEASE	"b7"
+#define	ELFSH_RELEASE	"b8"
 #define ELFSH_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -137,6 +137,7 @@ typedef struct	s_io
   int		input_fd;               /* Input file        */
   int		output_fd;              /* Output file       */
   char		*(*input)();            /* Read Input data   */
+  char		*(*old_input)();        /* Old Input handler */
   int		(*output)(char *buf);   /* Write output data */
   revmoutbuf_t	outcache;
 
@@ -249,6 +250,7 @@ char            *vm_getln();
 int		vm_initio();
 char            **vm_input(int *argc);
 char		*vm_stdinput();
+char		*vm_fifoinput();
 int		vm_flush();
 int		vm_output(char *str);
 int		vm_output_nolog(char *str);

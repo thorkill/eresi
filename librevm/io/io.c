@@ -6,7 +6,7 @@
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.6 2007-04-12 16:48:00 may Exp $
+** $Id: io.c,v 1.7 2007-04-30 13:39:37 may Exp $
 **
 */
 #include "revm.h"
@@ -57,6 +57,7 @@ int		vm_std_io(revmjob_t *job)
 int		vm_fifo_io(revmjob_t *job)
 {
   int		fd;
+  int		fd2;
 
   NOPROFILER_IN();
   if (!job)
@@ -68,21 +69,27 @@ int		vm_fifo_io(revmjob_t *job)
   /* Remove the FIFO is already existing */
   if (world.state.vm_side == REVM_SIDE_CLIENT)
     {
-      if (!access(REVM_FIFO, F_OK))
-	unlink(REVM_FIFO);
+      if (!access(REVM_FIFO_C2S, F_OK))
+	unlink(REVM_FIFO_C2S);
+      if (!access(REVM_FIFO_S2C, F_OK))
+	unlink(REVM_FIFO_S2C);
       
-      /* Create the FIFO */
-      mkfifo(REVM_FIFO, 0600);
+      /* Create the 2 FIFO */
+      mkfifo(REVM_FIFO_S2C, 0600);
+      mkfifo(REVM_FIFO_C2S, 0600);
     }
 
   /* Register the FIFO as an I/O */
-  XOPEN(fd, REVM_FIFO, O_RDWR, 0600, -1);
-  world.fifofd = fd;
+  XOPEN(fd, REVM_FIFO_S2C, O_RDWR, 0600, -1);
+  world.fifo_s2c = fd;
+  XOPEN(fd2, REVM_FIFO_C2S, O_RDWR, 0600, -1);
+  world.fifo_c2s = fd2;
 
-  /* If we are in the embedded server part of the debugger, do all I/O on the FIFO */
+  /* If we are in the embedded server part of the debugger, 
+     do all I/O on the FIFO */
   if (world.state.vm_side == REVM_SIDE_SERVER)
     {
-      job->ws.io.input_fd  = fd;
+      job->ws.io.input_fd  = fd2;
       job->ws.io.input     = vm_stdinput;
       job->ws.io.output_fd = fd;
       job->ws.io.output    = vm_stdoutput;
