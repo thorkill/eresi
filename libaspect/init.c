@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: init.c,v 1.4 2007-04-02 18:00:02 may Exp $
+** $Id: init.c,v 1.5 2007-05-01 15:56:00 may Exp $
 **
 */
 #include "libaspect.h"
@@ -43,8 +43,8 @@ void		e2dbg_presence_set()
 { 
   dbgpresent = 1; 
 
-#if __DEBUG_E2DBG__
-  write(2, " [*] Enabled debugger presence\n", 31);
+#if 1 //__DEBUG_E2DBG__
+  //write(2, " [*] Enabled debugger presence\n", 31);
 #endif
 
 }
@@ -54,8 +54,8 @@ void		e2dbg_presence_reset()
 { 
   dbgpresent = 0; 
 
-#if __DEBUG_E2DBG__
-  write(2, " [*] Disabled debugger presence\n", 32);
+#if 1 //__DEBUG_E2DBG__
+  //write(2, " [*] Disabled debugger presence\n", 32);
 #endif
 
 }
@@ -63,6 +63,10 @@ void		e2dbg_presence_reset()
 /* Get the Debugger presence information */
 u_char		e2dbg_presence_get()          
 { 
+#if 1 //__DEBUG_E2DBG__
+  //write(2, " [*] Probbing debugger presence\n", 32);
+#endif
+
   return (dbgpresent); 
 }	
 

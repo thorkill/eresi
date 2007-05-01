@@ -6,7 +6,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.10 2007-04-20 12:37:10 may Exp $
+** $Id: inject.c,v 1.11 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -94,6 +94,7 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
       data = rdata;
     }
   */
+
   /* New method that how we should do no ? */
   check = (phdr->p_vaddr - phdr->p_offset) & (phdr->p_align - 1);
   if (check != 0)
@@ -206,13 +207,19 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Cannot shift dynamic in ET_DYN", -1);
 
-      if (elfsh_shift_got(file, sect->shdr->sh_size) < 0)
+      if (elfsh_shift_got(file, sect->shdr->sh_size, 
+			  ELFSH_SECTION_NAME_GOT) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                          "Cannot shift got in ET_DYN", -1);
+                          "Cannot shift .got in ET_DYN", -1);
+      
+      if (elfsh_shift_got(file, sect->shdr->sh_size,
+			  ELFSH_SECTION_NAME_GOTPLT) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Cannot shift .got.plt in ET_DYN", -1);
       
       if (elfsh_shift_altgot(file, sect->shdr->sh_size) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                          "Cannot shift got in ET_DYN", -1);
+                          "Cannot shift .alt.got in ET_DYN", -1);
 
       if (elfsh_shift_dtors(file, sect->shdr->sh_size) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

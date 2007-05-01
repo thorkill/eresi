@@ -86,6 +86,12 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *);
 
 /* control.c	*/
+elfsh_Addr	mjr_find_main(elfshobj_t	*obj,
+			      asm_processor	*proc,
+			      u_char		*buf,
+			      u_int		len,
+			      elfsh_Addr	vaddr,
+			      u_int		*dis);
 elfsh_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, u_int, elfsh_Addr);
 int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
 				  asm_instr *, elfsh_Addr a);

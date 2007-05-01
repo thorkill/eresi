@@ -7,7 +7,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id: altplt.c,v 1.8 2007-03-22 19:01:33 mxatone Exp $
+** $Id: altplt.c,v 1.9 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -168,7 +168,9 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       prolog = elfsh_create_section(name);
       hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 
 			      0, 0, sz, 0, 0, 0, 0);
-      prologdata = alloca(sz);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
+
       if (elfsh_insert_mapped_section(file, 
 				      prolog, hdr, prologdata, 
 				      mode, mod) < 0)
@@ -195,13 +197,13 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       addr = new->shdr->sh_addr + new->shdr->sh_size;
       if ((addr - (got->shdr->sh_addr)) % 1024)
 	sz = 1024 - ((addr - (got->shdr->sh_addr)) % 1024);
-      prologdata = alloca(sz);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
       memset(prologdata, 0x00, sz);
       name = ELFSH_SECTION_NAME_PADGOT;
     }
   else
     {
-      prologdata = alloca(sz);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
       memcpy(prologdata, elfsh_get_raw(plt), sz);
       name = ELFSH_SECTION_NAME_ALTPLT;
     }
@@ -229,8 +231,9 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       altgot = elfsh_create_section(ELFSH_SECTION_NAME_ALTGOT);
       hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE, 
 			      0, 0, sz, 0, 0, 0, sizeof(elfsh_Addr));
-      prologdata = alloca(sz);
-      memcpy(prologdata, elfsh_get_raw(got), sz);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
+      memcpy(prologdata, elfsh_get_raw(got), got->shdr->sh_size);
       
       if (elfsh_insert_mapped_section(file, altgot, hdr, prologdata, 
 				      ELFSH_DATA_INJECTION, mod) < 0)
@@ -256,7 +259,8 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       extplt = elfsh_create_section(ELFSH_SECTION_NAME_EXTPLT);
       hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC | SHF_EXECINSTR,
 			      0, 0, extplt_size, 0, 0, 0, 0);
-      prologdata = alloca(plt->shdr->sh_size);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, plt->shdr->sh_size, -1);
       memcpy(prologdata, elfsh_get_raw(plt), plt->shdr->sh_size);
 
       if (elfsh_insert_mapped_section(file, extplt, hdr, prologdata, 

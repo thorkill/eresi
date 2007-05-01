@@ -6,7 +6,7 @@
 ** Started on  Mon Jun 23 06:56:04 2003 mayhem
 ** Last update Sun Aug 17 17:41:48 2003 mayhem
 **
-** $Id: simple.c,v 1.4 2007-04-20 12:37:10 may Exp $
+** $Id: simple.c,v 1.5 2007-05-01 15:56:01 may Exp $
 **
 */
 #include <stdio.h>
@@ -22,13 +22,13 @@ char    glvar_testreloc_bss2;
 short   glvar_testreloc_bss3;
 */
 
+/*
 int	fake_main(int argc, char **argv)
 {
-  /*
+
   glvar_testreloc_bss = 1;
   glvar_testreloc_bss2 = 'Z';
   glvar_testreloc_bss3 = 42;
-  */
 
   old_printf("I am the main function, I have %d argc and my argv is %08X yupeelala \n", 
 	     argc, argv); //, glvar_testreloc);
@@ -37,12 +37,13 @@ int	fake_main(int argc, char **argv)
 
   old_main(argc, argv);
 
-  /*  old_printf("Last printf in hook_main [%08X:%08X:%c:%04X] \n", 
+    old_printf("Last printf in hook_main [%08X:%08X:%c:%04X] \n", 
 	     glvar_testreloc, glvar_testreloc_bss, 
-	     glvar_testreloc_bss2, glvar_testreloc_bss3); */
+	     glvar_testreloc_bss2, glvar_testreloc_bss3); 
 
   return (0);
 }
+*/
 
 /*
 char*	fake_strcpy(char *dst, char *src)
@@ -67,6 +68,7 @@ void	fake_stack_smash_handler(char func[], int damaged)
 */
 
 
+/*
 int fake_libc_start_main(void *one, void *two, void *three, void *four, void *five, void *six, void *seven)
 {
   static int i = 0;
@@ -74,4 +76,10 @@ int fake_libc_start_main(void *one, void *two, void *three, void *four, void *fi
   old_printf("fake_libc_start_main \n");
   printf("start_main has been run %u \n", i++);
   return (old___libc_start_main(one, two, three, four, five, six, seven));
+}
+*/
+
+int fake_puts(char *str)
+{
+  return (printf("Hijacked puts *%s*\n", str));
 }

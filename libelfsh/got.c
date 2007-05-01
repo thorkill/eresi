@@ -4,7 +4,7 @@
 ** Started on  Sun Jun 24 21:30:41 2001 mayhem
 ** Last update Thu May 15 04:39:15 2003 mayhem
 **
-** $Id: got.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: got.c,v 1.6 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -15,7 +15,9 @@
 /**
  * Shift GOT on ET_DYN 
  */
-int		elfsh_shift_got(elfshobj_t *file, u_int size)
+int		elfsh_shift_got(elfshobj_t *file, 
+				u_int size,
+				char *name)
 {
   elfshsect_t	*got;
   int		nbr;
@@ -28,7 +30,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
   printf("[DEBUG_ETRELintoETDYN] Shifting GOT from %u bytes \n", size);
 #endif
 
-  got = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_GOT, 
+  got = elfsh_get_section_by_name(file, name,
 				  NULL, NULL, &nbr);
   if (!got)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -42,6 +44,7 @@ int		elfsh_shift_got(elfshobj_t *file, u_int size)
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
+
 
 /**
  * Shift ALTGOT on ET_DYN 

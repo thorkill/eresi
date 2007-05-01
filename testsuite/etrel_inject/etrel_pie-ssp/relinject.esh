@@ -5,12 +5,17 @@ load simple.o
 
 reladd 1 2
 
-redir main fake_main
+#redir main fake_main
 #redir __stack_smash_handler fake_stack_smash_handler
 #redir __libc_start_main fake_libc_start_main
 #redir strcpy fake_strcpy
 
+sym puts
+dynsym puts
+
 profile enable warn
+redir puts fake_puts
+
 save fake_aout
 
 # uncomment just for development purpose made easier

@@ -5,10 +5,13 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.11 2007-04-17 13:48:37 may Exp $
+** $Id: resolv.c,v 1.12 2007-05-01 15:56:00 may Exp $
 **
 */
 #include "libe2dbg.h"
+
+extern unsigned long main;
+
 
 /* Reference symbol for the debugger */
 int			reference = 42;
@@ -39,13 +42,7 @@ static int		e2dbg_load_linkmap_pie(char *name)
   
   elfsh_set_static_mode();  
 
-  /* replace by self dlopen technique */
-  /*
-  handle = e2dbg_dlopen(name, (elfsh_Addr) main, "main");
-  if (!handle)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "e2dbg_dlopen failed", -1);    
-  */
+  //fprintf(stderr, "Main address in PIE = %08X \n", (unsigned long) main);
 
   /*
   dynsymtab = elfsh_get_dynsymtab(world.curjob->current, &num);
@@ -175,7 +172,8 @@ int			e2dbg_load_linkmap(char *name)
     
 #if __DEBUG_LINKMAP__
   fprintf(stderr, "[e2dbg_load_linkmap] %s section at " XFMT "\n",
-	  got->name, (elfsh_Addr) got);
+	  got->name, got->shdr->sh_addr);
+  fprintf(stderr, "[e2dbg_load_linkmap] BASE = %08x\n", world.curjob->current->rhdr.base);
 #endif
   
   
@@ -189,15 +187,25 @@ int			e2dbg_load_linkmap(char *name)
 			  "Cannot get ELF header", -1);    
       elftypenum = elfsh_get_objtype(hdr);
       
+      fprintf(stderr, "[e2dbg_load_linkmap] after ELF header \n");
+
       /* Find the PIE binary linkmap */
       if (elftypenum == ET_DYN && e2dbg_load_linkmap_pie(name) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot get PIE linkmap", -1);    
       
+      fprintf(stderr, "[e2dbg_load_linkmap] after PIElinkmap \n");
+
       /* Get ALTGOT entry */
       data          = elfsh_get_raw(got);
+
+      fprintf(stderr, "[e2dbg_load_linkmap] after get_raw (data = %08X) \n", data);
+
       linkmap_entry = elfsh_get_got_entry_by_index(data, 1);
       
+      fprintf(stderr, "[e2dbg_load_linkmap] after entry_by_index (linkmap_entry = %08x)\n",
+	      linkmap_entry);
+
 #if defined(__FreeBSD__)
       world.curjob->current->linkmap = (elfshlinkmap_t *)
 	&((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
@@ -208,6 +216,9 @@ int			e2dbg_load_linkmap(char *name)
     }
   
 #if __DEBUG_LINKMAP__
+  else
+    fprintf(stderr, "[e2dbg_load_linkmap] Linkmap was -NOT- dynamic\n");
+
   fprintf(stderr, "[e2dbg_load_linkmap] LINKMAP Found at " XFMT "\n", 
 	 world.curjob->current->linkmap);
 #endif
@@ -700,28 +711,9 @@ int		e2dbg_dlsym_init()
 #endif
 
   /* Non fatal symbols, especially on BSD */
-
   e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
-  //if (!e2dbgworld.syms.memalignsym)
-  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-  //	      "Orig memalign not found", (-1));
-
-#if __DEBUG_E2DBG__
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc MEMALIGN() sym = %08X \n", e2dbgworld.syms.memalignsym);
-  write(2, buf, len);
-#endif
-
   e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
-  //if (!e2dbgworld.syms.pthreadcreate)
-  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-  //	      "Orig pthread_create not found", (-1));
-
   e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
-
-  //if (!e2dbgworld.syms.pthreadexit)
-  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-  //	      "Orig pthread_exit not found", (-1));
 
   e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)

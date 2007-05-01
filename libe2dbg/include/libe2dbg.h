@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.14 2007-04-17 13:48:37 may Exp $
+** $Id: libe2dbg.h,v 1.15 2007-05-01 15:56:01 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -20,10 +20,10 @@
  #include <pthread_np.h>
 #endif
 
-#define		__DEBUG_E2DBG__		0
+#define		__DEBUG_E2DBG__	        1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	0
+#define		__DEBUG_LINKMAP__	1
 #define		__DEBUG_THREADS__	0
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)

@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.11 2007-04-20 12:37:10 may Exp $
+** $Id: dynsym.c,v 1.12 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -110,12 +110,13 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   /* Load the .dynsym */
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL)
     {
-      newent = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTDYNSYM, 
-				      NULL, &strindex, &nbr);
+      newent = elfsh_get_section_by_name(file, 
+					 ELFSH_SECTION_NAME_ALTDYNSYM, 
+					 NULL, &strindex, &nbr);
       if (newent == NULL)
 	{
 	  newent = elfsh_get_section_by_type(file, SHT_DYNSYM, 0,
-					  NULL, &strindex, &nbr);
+					     NULL, &strindex, &nbr);
 	  if (newent == NULL)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Unable to get DYNSYM by type", NULL);

@@ -6,7 +6,7 @@
 ** Started on  Mon Feb 26 04:12:42 2001 mayhem
 ** 
 **
-** $Id: section.c,v 1.10 2007-03-25 14:27:34 may Exp $
+** $Id: section.c,v 1.11 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -881,10 +881,13 @@ void			*elfsh_get_raw(elfshsect_t *sect)
   if (elfsh_is_debug_mode())
     {
 
+      //fprintf(stderr, "We are in debug mode (get_raw) for %s data request in file %s\n",
+      //      sect->name, sect->parent->name);
+
       /* The address of the section */
       dataptr = (void *) sect->shdr->sh_addr;
       
-      /* For runtime injected sections */
+      /* For runtime injected sections, do not add the base address of the object */
       if (!elfsh_section_is_runtime(sect))
 	dataptr += sect->parent->rhdr.base;
 

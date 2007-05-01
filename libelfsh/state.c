@@ -4,7 +4,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 ** 
 **
-** $Id: state.c,v 1.10 2007-04-02 18:00:57 may Exp $
+** $Id: state.c,v 1.11 2007-05-01 15:56:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -74,8 +74,8 @@ void	elfsh_set_debug_mode()
  */
 void	elfsh_set_mode(u_char mode)
 {
-  //fprintf(stderr, "Changed for %s mode ! \n",
-  //  (mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
+  //fprintf(stderr, "MODE changed for [%s] ! \n",
+  //(mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
 
   dbgworld.mode = mode;
 }
