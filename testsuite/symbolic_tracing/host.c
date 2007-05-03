@@ -16,6 +16,11 @@ int firstfunc(int num, char *value)
   return 1;
 }
 
+int secondfunc(char *justastring)
+{
+  puts(justastring);
+}
+
 int main(int argc, char **argv)
 {
   unsigned int index;

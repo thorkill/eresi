@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.29 2007-03-27 20:56:03 mxatone Exp $
+** $Id: tables.c,v 1.30 2007-05-03 14:47:14 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -749,12 +749,6 @@ static void	setup_cmdhash()
       vm_addcmd(CMD_BINFILE_R, (void *) NULL, (void *) vm_getinput , 0, "");
     }
 
-  if (world.state.vm_mode == REVM_STATE_TRACER)
-    {
-      /* Traces aliases */
-      vm_addcmd(CMD_TRACEADD_CMDLINE, (void *) cmd_traceadd, (void *) vm_getvarparams, 1, HLP_TRACEADD);
-    }
-
   /* General purpose command */
   vm_addcmd(CMD_MODLOAD , (void *) cmd_modload  , (void *) vm_getoption   , 0, HLP_MODLOAD);
   vm_addcmd(CMD_MODULOAD, (void *) cmd_modunload, (void *) vm_getoption   , 0, HLP_MODULOAD);
@@ -810,9 +804,6 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_VERB2   , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
   vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
   vm_addcmd(CMD_SORT2   , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
-  vm_addcmd(CMD_TRACES  , (void *) cmd_traces  , (void *) vm_getvarparams , 1, HLP_TRACES);
-  vm_addcmd(CMD_TRACEADD, (void *) cmd_traceadd, (void *) vm_getvarparams , 1, HLP_TRACEADD);
-  vm_addcmd(CMD_TRACERUN, (void *) cmd_tracerun, (void *) vm_getvarparams , 1, HLP_TRACERUN);
   vm_addcmd(CMD_ALL	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALL2	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
   vm_addcmd(CMD_ALERT	, (void *) cmd_alert   , (void *) vm_getoption    , 0, HLP_ALERT);

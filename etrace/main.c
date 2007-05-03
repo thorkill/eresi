@@ -3,7 +3,7 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.6 2007-03-27 20:56:03 mxatone Exp $
+** $Id: main.c,v 1.7 2007-05-03 14:47:14 mxatone Exp $
 **
 */
 #include "etrace.h"
@@ -72,8 +72,12 @@ int		vm_main(int ac, char **av)
   u_int		argc;
   char		logbuf[BUFSIZ];
   char		*str;
+  u_int		state;
 
-  if (ac < 3)
+  /*
+    Not useful anymore
+    TODO: find a way or something to reprint it
+  if (ac > 1 && ac < 3)
     {
       vm_output("Invalid arguments number\n");
       snprintf(logbuf, BUFSIZ - 1, 
@@ -82,44 +86,55 @@ int		vm_main(int ac, char **av)
       vm_output(logbuf);
       return -1;
     }
+  */
 
   /* Interface tweak */
   vm_setup_quit_msg();
   vm_setup_prompt();
-  vm_setup(ac, av, REVM_STATE_TRACER, 0);
+  
+  /* Which state ? */
+  state =  REVM_STATE_INTERACTIVE;
+  if (ac > 2)
+    state = REVM_STATE_TRACER;
+
+  vm_setup(ac, av, state, 0);
 
   vm_print_etrace_banner();
 
-  /* Parse first argument */
-  if (vm_trans_speblank(av[1], &argv, &argc) < 0)
-    return -1;
-
-  world.state.input = argv[0];
-  str = vm_lookup_string(world.state.input);
-
-  if (!str)
+  /* Tracer state parsing */
+  if (state == REVM_STATE_TRACER)
     {
-      vm_output("Unable to lookup file\n");
-      return -1;
+      /* Parse first argument */
+      if (vm_trans_speblank(av[1], &argv, &argc) < 0)
+	return -1;
+
+      world.state.input = argv[0];
+      str = vm_lookup_string(world.state.input);
+
+      if (!str)
+	{
+	  vm_output("Unable to lookup file\n");
+	  return -1;
+	}
+
+      /* Load submited file */
+      vm_output("\n");
+      ret = vm_load_file(str, 0, NULL);
+      vm_output("\n");
+      
+      if (ret < 0)
+	return ret;
+      
+      if (argc > 1)
+	vm_traces_add_arguments(argc - 1, argv+1);
+      
+      XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
+  
+      /* Update pointer */
+      ac--;
+      av[1] = av[0];
+      av++;
     }
-
-  /* Load submited file */
-  vm_output("\n");
-  ret = vm_load_file(str, 0, NULL);
-  vm_output("\n");
-
-  if (ret < 0)
-    return ret;
-
-  if (argc > 1)
-    vm_traces_add_arguments(argc - 1, argv+1);
-  
-  XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
-  
-  /* Update pointer */
-  ac--;
-  av[1] = av[0];
-  av++;
 
   vm_config();
   setup_local_cmdhash();

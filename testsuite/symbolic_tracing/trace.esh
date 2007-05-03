@@ -1,10 +1,10 @@
-#!/usr/local/bin/elfsh
+#!../../etrace/etrace32
 load ./a.out
 traces add main
 traces create critical
 traces add crypt critical
 traces create mainnodes
-traces add firstfunc mainnodes
+traces add .*func mainnodes
 traces add testcrypt mainnodes
 #profile enable warn
 save fake_aout
