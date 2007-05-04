@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: control.c,v 1.27 2007-05-01 15:56:01 may Exp $
+** $Id: control.c,v 1.28 2007-05-04 09:02:16 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -32,11 +32,13 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
   elfsh_Addr	   main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   for (*dis = stop = 0; !stop; *dis += ilen) 
     {
       ilen = asm_read_instr(&ins, (u_char *) buf + *dis, 
 			    len - *dis, proc);
-      if (!dis) 
+
+      if (!*dis)
 	{
 	  if (proc->type == ASM_PROC_IA32)
 	    {
