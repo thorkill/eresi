@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.36 2007-04-09 19:25:08 thor Exp $
+ * $Id: function.c,v 1.37 2007-05-06 18:16:34 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -367,7 +367,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 
 /** 
  * Retrieve control flow section content if any 
- *
+ * @param ctxt mjorllnir context
  * returns the number of functions (0 probably means something is wrong)
  */
 int			mjr_functions_get(mjrcontext_t *ctxt)
@@ -454,7 +454,7 @@ int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
   cur->data = fnc;
   /* 
      Then we create the symbol for the function and return 
-     when symbol doesn't exists in symtab
+     if symbol doesn't exists in symtab
   */
   sym = elfsh_get_symbol_by_value(buf->obj, curfunc->vaddr, 0, ELFSH_EXACTSYM);
 
