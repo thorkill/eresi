@@ -1,9 +1,10 @@
+
 /*
 ** symbol.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.7 2007-03-28 10:19:05 may Exp $
+** $Id: symbol.c,v 1.8 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -267,6 +268,14 @@ void		elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   //fprintf(stderr, "Calling shift usual syms ! \n");
+
+  /* Change _end in the symbol table */
+  end = elfsh_get_symbol_by_name(sect->parent, "_end");
+  if (end != NULL && sym->st_value + sym->st_size > end->st_value)
+    {
+      //printf("Shift _end! \n");
+      end->st_value = sym->st_value + sym->st_size;
+    }
 
   /* Change _end if necessary (solaris) */
   end = elfsh_get_dynsymbol_by_name(sect->parent, "_end");

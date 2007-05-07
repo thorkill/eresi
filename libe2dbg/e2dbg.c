@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg.c,v 1.10 2007-04-16 16:29:16 may Exp $
+** $Id: e2dbg.c,v 1.11 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -119,9 +119,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #endif
       
       if (!e2dbgworld.curthread || !e2dbgworld.curthread->step)
-	{
-	  vm_print_banner(av[1]);
-	}
+	vm_print_banner(av[1]);
       
       first = 0;
     }
@@ -130,7 +128,8 @@ int		e2dbg_entry(e2dbgparams_t *params)
   fprintf(stderr, "[e2dbg_entry] CHECKPOINT 5\n");
 #endif
 
-  if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && e2dbg_setup(av[1]) < 0)
+  if (world.state.vm_mode == REVM_STATE_DEBUGGER && av && 
+      e2dbg_setup(av[1]) < 0)
     {
       profiler_error();
       exit(-1);
@@ -160,7 +159,7 @@ int			e2dbg_setup(char *name)
   e2dbg_setup_hooks();
   vm_initio();
   vm_config();
-  e2dbg_load_linkmap(name);
+  e2dbg_linkmap_load(name);
 
   /* Everything was OK */
   e2dbg_output("\n");

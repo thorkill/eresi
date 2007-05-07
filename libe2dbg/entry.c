@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.7 2007-04-02 18:00:31 may Exp $
+** $Id: entry.c,v 1.8 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -20,6 +20,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   e2dbgparams_t		params;
   char			*args[3];
   char			*pn;
+  int			ret;
 
 #if __DEBUG_E2DBG__
   char			logbuf[BUFSIZ];
@@ -64,7 +65,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   e2dbg_entry(&params);
 
 #if __DEBUG_E2DBG__
-  write(1, "[(e2dbg)__libc_start_main] Calling ON_EXIT \n", 46);
+  write(1, "[(e2dbg_fake_main] Calling ON_EXIT \n", 46);
 #endif
 
   /* Wait for debuggee exit */
@@ -73,15 +74,28 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 
 #if __DEBUG_E2DBG__
   len = snprintf(logbuf, BUFSIZ, 
-		 "[(e2dbg)__libc_start_main] Calling main (%08X) with curthread = %08X (id = %u) \n", 
-		 (elfsh_Addr) e2dbgworld.real_main, (elfsh_Addr) e2dbgworld.curthread, 
+		 "[e2dbg_fake_main] Calling main %08X curthr %08X id %u\n", 
+		 (elfsh_Addr) e2dbgworld.real_main, 
+		 (elfsh_Addr) e2dbgworld.curthread, 
 		 (unsigned int) getpid());
   write(1, logbuf, len);
 #endif
 
   /* Call the original main */
   e2dbg_presence_reset();
-  return (*e2dbgworld.real_main)(argc, argv, aux);
+  ret = (*e2dbgworld.real_main)(argc, argv, aux);
+  
+#if __DEBUG_E2DBG__
+  len = snprintf(logbuf, BUFSIZ, 
+		 "[e2dbg_fake_main] Main returned %u\n", ret);
+  write(1, logbuf, len);
+#endif
+
+  /* Force PIE binaries to exit */
+  if (world.curjob->current->hdr->e_type == ET_DYN)
+    wait4exit(NULL);
+
+  return (ret);
 }
 
 
@@ -121,6 +135,8 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Orig __libc_start_main not found", (-1));
     }
+
+  /* Save the libcstartmain for future references */
   libcstartmain = (void *) orig;
 
 #if __DEBUG_E2DBG__

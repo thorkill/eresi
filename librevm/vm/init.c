@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.20 2007-04-30 13:39:37 may Exp $
+** $Id: init.c,v 1.21 2007-05-07 13:24:01 may Exp $
 **
 */
 
@@ -130,7 +130,7 @@ int		vm_loop(int argc, char **argv)
       break;
   }
   while ((world.state.vm_mode != REVM_STATE_CMDLINE
-	 && world.state.vm_mode != REVM_STATE_TRACER)
+	  && world.state.vm_mode != REVM_STATE_TRACER)
 	 || world.state.vm_net);
 
   /* If we are in scripting, execute commands list now */

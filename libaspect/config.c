@@ -4,7 +4,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 **
 **
-** $Id: config.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: config.c,v 1.8 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libaspect.h"
@@ -144,25 +144,25 @@ int	profiler_enable_debug()
 
 int	profiler_disable_err()
 {
-  aspectworld.proflevel &= PROFILE_WARN;
+  aspectworld.proflevel &= (~PROFILE_WARN);
   return (0);
 }
 
 int	profiler_disable_out()
 {
-  aspectworld.proflevel &= PROFILE_FUNCS;
+  aspectworld.proflevel &= (~PROFILE_FUNCS);
   return (0);
 }
 
 int	profiler_disable_alloc()
 {
-  aspectworld.proflevel &= PROFILE_ALLOC;
+  aspectworld.proflevel &= (~PROFILE_ALLOC);
   return (0);
 }
 
 int	profiler_disable_debug()
 {
-  aspectworld.proflevel &= PROFILE_DEBUG;
+  aspectworld.proflevel &= (~PROFILE_DEBUG);
   return (0);
 }
 

@@ -5,278 +5,15 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.12 2007-05-01 15:56:00 may Exp $
+** $Id: resolv.c,v 1.13 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
 
-extern unsigned long main;
-
+#include <dlfcn.h>
 
 /* Reference symbol for the debugger */
 int			reference = 42;
-
-/* Load linkmap in PIE based process */
-static int		e2dbg_load_linkmap_pie(char *name)
-{
-  /*
-  elfshobj_t		*handle;
-  elfshsect_t		*sct;
-  u_int			bindnum;
-  u_int			typenum;
-  elfsh_Phdr		*gotseg;
-  u_int			num;
-  elfsh_Sym		*dynsymtab;
-  elfsh_Sym		*table;
-  char			*symname;
-  void			*symaddr;
-  elfshsect_t		*got;
-  elfsh_Phdr		*sctseg;
-  elfsh_Addr		symvalue;
-  u_int			index;
-  elfsh_Sym		*mainsym;
-  elfsh_Addr		base;
-  */
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  elfsh_set_static_mode();  
-
-  //fprintf(stderr, "Main address in PIE = %08X \n", (unsigned long) main);
-
-  /*
-  dynsymtab = elfsh_get_dynsymtab(world.curjob->current, &num);
-  if (!dynsymtab)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsymtab", -1);    
-      
-  sct = elfsh_get_section_by_name(world.curjob->current, 
-				  ELFSH_SECTION_NAME_ALTDYNSYM, 
-				  NULL, NULL, &num);
-  
-  if (!sct)
-    sct = elfsh_get_section_by_type(world.curjob->current, SHT_DYNSYM, 
-				    NULL, NULL, NULL, &num);
-  
-  if (!sct)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsym section", -1);    
-  
-  num = num / sizeof(elfsh_Sym);
-  
-  table = (elfsh_Sym *) (sct->shdr->sh_addr ? elfsh_get_raw(sct) : sct->data);
-  if (!table)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot get dynsym data", -1);     
-  
-  gotseg = elfsh_get_parent_segment(world.curjob->current, got);
-  
-  for (index = 0; index < num; index++)
-    {
-      typenum = elfsh_get_symbol_type(table + index);
-      bindnum = elfsh_get_symbol_bind(table + index);
-      symname = elfsh_get_dynsymbol_name(world.curjob->current, table + index);
-      
-      sct = elfsh_get_parent_section(world.curjob->current, 
-				     table[index].st_value, 
-				     NULL);
-      
-      if (sct == NULL && table[index].st_shndx)
-	sct = elfsh_get_section_by_index(world.curjob->current, 
-					 table[index].st_shndx,
-					 NULL, NULL);
-      
-      if (symname != NULL && *symname)
-	{
-	  symaddr = e2dbg_dlsym(handle, symname);
-	  sctseg = elfsh_get_parent_segment(world.curjob->current, sct);
-	  symvalue = elfsh_get_symbol_value(table + index);
-	  
-	  if (symaddr && sctseg == gotseg && symvalue)
-	    {
-	      world.curjob->current->rhdr.base = (elfsh_Addr) symaddr - symvalue;
-	      break;
-	    }
-	}
-      
-    }
-  */
-
-  /*  
-  if (!handle->rhdr.base)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Base address not found", -1);    
-  */
-
-  elfsh_set_debug_mode();
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-/* Load linkmap */
-int			e2dbg_load_linkmap(char *name)
-{
-  static int		done	= 0;
-  elfshsect_t		*got;
-  elfsh_Addr		*linkmap_entry;
-  void			*data;
-  elfshlinkmap_t	*actual;
-  char			*gotname;
-  char			*ename;
-  elfsh_Ehdr		*hdr;
-  u_int			elftypenum;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (done)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
-
-#if __DEBUG_LINKMAP__
-  fprintf(stderr, "[e2dbg] Starting Loading LINKMAP !! \n");
-#endif
-
-  e2dbg_setup_hooks();
-  vm_config();
-
-  /* Load debugged file */
-  if (name)
-    {
-
-      /* No need to fill ET_EXEC base addr */
-      if (!vm_is_loaded(name) && vm_load_file(name, 0, NULL) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot load file", -1);
-      
-#if __DEBUG_LINKMAP__
-      fprintf(stderr, "[e2dbg_load_linkmap] file %s loaded\n", name);
-#endif
-
-      world.curjob->current->linkmap = E2DBG_DYNAMIC_LINKMAP;
-      world.curjob->current->running = 0;
-    }
-
-  /* Switch to obj 1 */
-  if (vm_doswitch(1) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot switch on object 1", -1);    
-  
-  /* Get ALTGOT or GOT if we used LD_PRELOAD */
-  if (!e2dbgworld.preloaded)
-    {
-      gotname = ELFSH_SECTION_NAME_ALTGOT;
-      got = elfsh_get_section_by_name(world.curjob->current, 
-				      gotname, NULL, NULL, NULL);
-    }
-  else
-    got = elfsh_get_gotsct(world.curjob->current);
-    
-#if __DEBUG_LINKMAP__
-  fprintf(stderr, "[e2dbg_load_linkmap] %s section at " XFMT "\n",
-	  got->name, got->shdr->sh_addr);
-  fprintf(stderr, "[e2dbg_load_linkmap] BASE = %08x\n", world.curjob->current->rhdr.base);
-#endif
-  
-  
-  /* Fix first file linkmap entry */
-  if (world.curjob->current->linkmap == E2DBG_DYNAMIC_LINKMAP)
-    {
-      /* Fix first file linkmap entry */
-      hdr = elfsh_get_hdr(world.curjob->current);
-      if (!hdr)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot get ELF header", -1);    
-      elftypenum = elfsh_get_objtype(hdr);
-      
-      fprintf(stderr, "[e2dbg_load_linkmap] after ELF header \n");
-
-      /* Find the PIE binary linkmap */
-      if (elftypenum == ET_DYN && e2dbg_load_linkmap_pie(name) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot get PIE linkmap", -1);    
-      
-      fprintf(stderr, "[e2dbg_load_linkmap] after PIElinkmap \n");
-
-      /* Get ALTGOT entry */
-      data          = elfsh_get_raw(got);
-
-      fprintf(stderr, "[e2dbg_load_linkmap] after get_raw (data = %08X) \n", data);
-
-      linkmap_entry = elfsh_get_got_entry_by_index(data, 1);
-      
-      fprintf(stderr, "[e2dbg_load_linkmap] after entry_by_index (linkmap_entry = %08x)\n",
-	      linkmap_entry);
-
-#if defined(__FreeBSD__)
-      world.curjob->current->linkmap = (elfshlinkmap_t *)
-	&((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
-#else
-      world.curjob->current->linkmap = (elfshlinkmap_t *) elfsh_get_got_val(linkmap_entry);
-#endif
-      
-    }
-  
-#if __DEBUG_LINKMAP__
-  else
-    fprintf(stderr, "[e2dbg_load_linkmap] Linkmap was -NOT- dynamic\n");
-
-  fprintf(stderr, "[e2dbg_load_linkmap] LINKMAP Found at " XFMT "\n", 
-	 world.curjob->current->linkmap);
-#endif
-  
-  vm_doswitch(1);
-
-  
-  /* now load all linkmap's files */
-  for (actual = elfsh_linkmap_get_lprev(world.curjob->current->linkmap);
-       actual != NULL; 
-       actual = elfsh_linkmap_get_lprev(actual))
-    {
-      
-#if __DEBUG_LINKMAP__
-      fprintf(stderr, "[e2dbg_setup] Running on LINKMAP PREV " XFMT "\n", 
-	     actual);
-#endif
-      
-      ename = elfsh_linkmap_get_lname(actual);
-      if (ename && *ename && !vm_is_loaded(ename))
-	{
-	  if (vm_load_file(ename, elfsh_linkmap_get_laddr(actual), 
-			   world.curjob->current->linkmap) < 0)
-	    e2dbg_output(" [EE] Loading failed");
-	}      
-    }
-
-#if __DEBUG_LINKMAP__
-  fprintf(stderr, "[e2dbg_load_linkmap] Running on LINKMAP NEXT\n");
-#endif
-  
-  for (actual = elfsh_linkmap_get_lnext(world.curjob->current->linkmap);
-       actual != NULL; 
-       actual = elfsh_linkmap_get_lnext(actual))
-    {
-
-      ename = elfsh_linkmap_get_lname(actual);
-     
-#if __DEBUG_LINKMAP__
-      fprintf(stderr, "[e2dbg_load_linkmap] Running on LINKMAP NEXT " XFMT " (%s baseaddr %08X) \n", 
-	      actual, ename, actual->laddr);
-#endif
-
-      if (ename && *ename && !vm_is_loaded(ename))
-	{
-	  if (vm_load_file(ename, elfsh_linkmap_get_laddr(actual), 
-			   world.curjob->current->linkmap) < 0)
-	    e2dbg_output(" [EE] Loading failed");
-	}      
-    }
-
-  /* Everything was OK */
-  e2dbg_output("\n");
-  //elfsh_set_debug_mode();
-  vm_doswitch(1);
-  done = 1;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
 
 
 /* Our own dlsect without malloc */
@@ -428,10 +165,14 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   write(2, buf, len);
 #endif
 
+  /* Close the file */
+  XCLOSE(obj.fd, 0);
+
   /* The reference addr is useful to deduce library base addresses */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     got + refaddr - found_ref);
 }
+
 
 
 /* Our own dlsym without malloc */
@@ -457,11 +198,16 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   /* First go after the e2dbg and the binary linkmap entries */
   curobj = e2dbgworld.syms.map;
 
+  /* Come back at the beginning of the linkmap */
+  while (curobj->lprev)
+    curobj = curobj->lprev;
+
   /* Iterate on the linkmap to resolve symbols in library priority order */
   for (; curobj; curobj = curobj->lnext)
     {
 
-      if (!curobj->lname || !*curobj->lname || strstr(curobj->lname, "e2dbg"))
+      if (!curobj->lname || !*curobj->lname || 
+	  strstr(curobj->lname, "e2dbg"))
 	continue;
 
 #if __DEBUG_E2DBG__
@@ -531,12 +277,14 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 	  memcpy(&cursym, (void *) obj.symoff + curoff, sizeof(elfsh_Sym));
 	  if (cursym.st_name >= obj.strsz)
 	    continue;
-	  if (!strcmp(strtab + cursym.st_name, sym2resolve) && cursym.st_value)
+	  if (!strcmp(strtab + cursym.st_name, sym2resolve) && 
+	      cursym.st_value)
 	    {
 	      found_sym = cursym.st_value;
       
 #if __DEBUG_E2DBG__
-	      len = snprintf(buf, sizeof(buf), " [*] FOUNDSYM (%s) = %08X \n", 
+	      len = snprintf(buf, sizeof(buf), 
+			     " [*] FOUNDSYM (%s) = %08X \n", 
 			     strtab + cursym.st_name, found_sym);
 	      write(2, buf, len);
 #endif
@@ -588,9 +336,11 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", ELFSH_DBGPATH, version);
 
 #if defined(linux)
-  baseaddr = e2dbg_dlsect(path, ".got.plt", (elfsh_Addr) &reference, "reference");
+  baseaddr = e2dbg_dlsect(path, ".got.plt", 
+			  (elfsh_Addr) &reference, "reference");
 #else
-  baseaddr = e2dbg_dlsect(path, ".got", (elfsh_Addr) &reference, "reference");
+  baseaddr = e2dbg_dlsect(path, ".got", 
+			  (elfsh_Addr) &reference, "reference");
 #endif
 
 #if __DEBUG_E2DBG__
@@ -614,7 +364,8 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] Guessed Linkmap address = %08X \n--------------\n", 
+  len = sprintf(buf, 
+		" [*] Guessed Linkmap address = %08X \n--------------\n", 
 		(elfsh_Addr) lm);
   write(2, buf, len);
 #endif
@@ -629,6 +380,10 @@ int		e2dbg_dlsym_init()
 {
   static int	done = 0;
   u_char	dbgmode;
+
+#if !defined(__FreeBSD__)
+  void		*handle;
+#endif
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -659,7 +414,8 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc MALLOC() sym = %08X \n", e2dbgworld.syms.mallocsym);
+		 " [*] Libc MALLOC() sym = %08X \n", 
+		 e2dbgworld.syms.mallocsym);
   write(2, buf, len);
 #endif
 
@@ -673,7 +429,8 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc CALLOC() sym = %08X \n", e2dbgworld.syms.callocsym);
+		 " [*] Libc CALLOC() sym = %08X \n", 
+		 e2dbgworld.syms.callocsym);
   write(2, buf, len);
 #endif
 
@@ -684,7 +441,8 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc REALLOC() sym = %08X \n", e2dbgworld.syms.reallocsym);
+		 " [*] Libc REALLOC() sym = %08X \n", 
+		 e2dbgworld.syms.reallocsym);
   write(2, buf, len);
 #endif
 
@@ -706,7 +464,8 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc VALLOC() sym = %08X \n", e2dbgworld.syms.vallocsym);
+		 " [*] Libc VALLOC() sym = %08X \n", 
+		 e2dbgworld.syms.vallocsym);
   write(2, buf, len);
 #endif
 
@@ -720,14 +479,35 @@ int		e2dbg_dlsym_init()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Orig signal not found", (-1));
 
-  /* Now we can use malloc cause all symbols are resolved */
+  /* Now we can use malloc cause allocation symbols are resolved */
+  /* The allocator proxy will select between legit or alternative syms */
   done = 1;
   dbgmode = e2dbg_presence_get();
   e2dbg_presence_set();
   hash_init(&e2dbgworld.threads, "threads"    , 29, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp     , "breakpoints", 51, ASPECT_TYPE_UNKNOW);
+
+  /* If we are dealing with a PIE binary, compute his base address using 
+     _end. This symbol is always defined in dynamic binaries, even when 
+     stripped. It is also important that the chosen symbol points in the 
+     data PT_LOAD, since each PT_LOAD have a different base address and 
+     we want the one that contains the GOT section, which itself contains 
+     the linkmap address in its second entry */
+#if !defined(__FreeBSD__)
+  handle = dlopen(NULL, RTLD_LAZY);
+  e2dbgworld.syms.piebase  = (elfsh_Addr) dlsym(handle, "_end");
+  dlclose(handle);
+#endif
+
   if (!dbgmode)
     e2dbg_presence_reset();
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] PIE _end resolved = %08X \n", 
+		 e2dbgworld.syms.piebase);
+  write(2, buf, len);
+#endif
 
 #if __DEBUG_E2DBG__
   write(2, " [D] e2dbg_dlsym_init FINISHED\n", 31);

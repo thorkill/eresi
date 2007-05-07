@@ -1,6 +1,6 @@
 /*
 **
-** $Id: host.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: host.c,v 1.3 2007-05-07 13:24:01 may Exp $
 **
 */
 #include <stdio.h>
@@ -19,7 +19,7 @@ int main()
   char	*str;
   char	buff[BUFSIZ];
 
-  read(0, buff, BUFSIZ-1);
+  //read(0, buff, BUFSIZ-1);
 
   str = malloc(10);
   if (str == NULL)

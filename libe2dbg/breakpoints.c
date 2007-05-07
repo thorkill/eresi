@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.5 2007-04-16 16:29:16 may Exp $
+** $Id: breakpoints.c,v 1.6 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -185,6 +185,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 
   /* Sometimes we fix symbols on the disk : we avoid mprotect */
   /* Only return success early if not a plt symbol */
+  keys = NULL;
   parent = world.curjob->current;
   sym = elfsh_get_metasym_by_name(parent, str);
   if (!sym || !sym->st_value)
@@ -192,14 +193,11 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
       elfsh_toggle_mode();
       sym = elfsh_get_metasym_by_name(parent, str);
       elfsh_toggle_mode();
-      if (sym && sym->st_value)
-	{
-	  sect = elfsh_get_parent_section(parent, sym->st_value, NULL);
-	  if (!elfsh_is_plt(parent, sect))
-	    goto end;
-	}
     }
-  else
+  
+  if (sym && parent->hdr->e_type == ET_DYN)
+    sym->st_value += parent->rhdr.base;
+  if (sym && sym->st_value)
     {
       sect = elfsh_get_parent_section(parent, sym->st_value, NULL);
       if (!elfsh_is_plt(parent, sect))
@@ -208,6 +206,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 
   /* Try to look in other objects */
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+  
   for (index = 0; index < keynbr; index++)
     {
       if (strstr(keys[index], E2DBG_ARGV0))
@@ -254,7 +253,9 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 
   /* Return error or success, dont forget to free the keys */
  end:
-  hash_free_keys(keys);
+  if (keys)
+    hash_free_keys(keys);
+
   if (!sym || !sym->st_value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "No symbol by that name in the current file", 0);
@@ -268,7 +269,8 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
     }
   
 #if __DEBUG_BP__
-  printf(" [*] Will set breakpoint on %08X (parent = %s) \n", addr, parent->name);
+  printf(" [*] Will set breakpoint on %08X (parent = %s) \n", 
+	 addr, parent->name);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
@@ -375,6 +377,7 @@ int		cmd_bp()
 	}
       break;
 
+      /* Wrong command syntax */
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Wrong arg number", (-1));

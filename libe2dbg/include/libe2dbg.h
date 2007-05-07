@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.15 2007-05-01 15:56:01 may Exp $
+** $Id: libe2dbg.h,v 1.16 2007-05-07 13:24:01 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -20,10 +20,10 @@
  #include <pthread_np.h>
 #endif
 
-#define		__DEBUG_E2DBG__	        1
+#define		__DEBUG_E2DBG__	        0
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	1
+#define		__DEBUG_LINKMAP__	0
 #define		__DEBUG_THREADS__	0
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -230,19 +230,20 @@ typedef struct		s_thread
 /* Hold all resolved symbols that we need in pre-malloc stage */
 typedef struct		s_e2dbgsyms
 {
-  elfsh_Addr		mallocsym;			/* Resolved libc malloc */
-  elfsh_Addr		vallocsym;			/* Resolved libc valloc */
-  elfsh_Addr		callocsym;			/* Resolved libc calloc */
-  elfsh_Addr		reallocsym;			/* Resolved libc realloc */
-  elfsh_Addr		memalignsym;			/* Resolved libc memalign*/
-  elfsh_Addr		freesym;			/* Resolved libc free */
-  elfsh_Addr		mallochooksym;			/* Resolved libc malloc hook */
-  elfsh_Addr		memalignhooksym;		/* Resolved libc memalign hook */
-  elfsh_Addr		pthstartupsym;			/* Resolved __libc_malloc_pthread_startup */
-  elfsh_Addr		pthreadcreate;			/* Resolved pthread_create */
-  elfsh_Addr		pthreadexit;			/* Resolved pthread_exit */
-  elfsh_Addr		signal;				/* Resolved signal function */
-  elfshlinkmap_t	*map;				/* Early resolved linkmap */
+  elfsh_Addr		piebase;		/* Computed base address for PIE */
+  elfsh_Addr		mallocsym;		/* Resolved libc malloc */
+  elfsh_Addr		vallocsym;		/* Resolved libc valloc */
+  elfsh_Addr		callocsym;		/* Resolved libc calloc */
+  elfsh_Addr		reallocsym;		/* Resolved libc realloc */
+  elfsh_Addr		memalignsym;		/* Resolved libc memalign*/
+  elfsh_Addr		freesym;		/* Resolved libc free */
+  elfsh_Addr		mallochooksym;		/* Resolved libc malloc hook */
+  elfsh_Addr		memalignhooksym;        /* Resolved libc memalign hook */
+  elfsh_Addr		pthstartupsym;		/* Resolved __libc_malloc_pthread_startup */
+  elfsh_Addr		pthreadcreate;		/* Resolved pthread_create */
+  elfsh_Addr		pthreadexit;		/* Resolved pthread_exit */
+  elfsh_Addr		signal;			/* Resolved signal function */
+  elfshlinkmap_t	*map;			/* Early resolved linkmap */
 }			e2dbgsyms_t;
 
 
@@ -253,8 +254,6 @@ typedef struct		s_e2dbgworld
   hash_t		bp;				/* Breakpoints hash table */
   hash_t		threads;			/* Threads hash table */
   u_char		sourcing;			/* We are executing a debugger script */
-  //u_char		dbgpresent;			/* Should we proxy allocations ? */
-  //e2dbgcontext_t	dbgcontext;			/* Current e2dbg scripting context */
   e2dbgsyms_t		syms;				/* Resolved symbol informations */
 
   /* Display commands memory */
@@ -335,13 +334,12 @@ int		e2dbg_linkmap(elfshobj_t *file);
 char		*vm_get_prompt();
 char		*vm_get_mode_name();
 int		vm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
-
-//u_char          e2dbg_presence_get();
-//void            e2dbg_presence_set();
-//void            e2dbg_presence_reset();
-
 int             e2dbg_self();
 int		e2dbg_kill(int pid, int sig);
+
+/* Linkmap related API */
+int		e2dbg_linkmap_load(char *name);
+elfshlinkmap_t*	e2dbg_linkmap_getaddr();
 
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
@@ -372,8 +370,6 @@ int		e2dbg_output();
 
 /* Early symbol / parent object resolving API */
 int		e2dbg_dlsym_init();
-int		e2dbg_load_linkmap(char *name);
-elfshlinkmap_t*	e2dbg_linkmap_getaddr();
 elfsh_Addr	e2dbg_dlsym(char *sym2resolve);
 elfshobj_t	*e2dbg_get_parent_object(elfsh_Addr addr);
 

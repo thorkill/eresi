@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.12 2007-04-16 16:29:16 may Exp $
+** $Id: signal.c,v 1.13 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -450,9 +450,9 @@ void			e2dbg_generic_breakpoint(int		signum,
       e2dbg_mutex_lock(&e2dbgworld.dbgbp);
 
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
-      //e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
-      //cmd_dumpregs();
-      //e2dbg_output("<------------------------------------------------------\n");
+      e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
+      cmd_dumpregs();
+      e2dbg_output("<------------------------------------------------------\n");
       e2dbg_output("------------------------------------->\n");
       e2dbg_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
       e2dbg_threads_print();
@@ -524,7 +524,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   SETSIG;
 
 #if __DEBUG_BP__
-  fprintf(stderr, " RETURNING FROM BP HANDLER \n");
+  fprintf(stderr, " RETURNING FROM GENERIC SIGNAL HANDLER \n");
 #endif
 }
 

@@ -4,7 +4,7 @@
 ** Started on  Sun Jun 24 21:30:41 2001 mayhem
 ** Last update Thu May 15 04:39:15 2003 mayhem
 **
-** $Id: got.c,v 1.6 2007-05-01 15:56:01 may Exp $
+** $Id: got.c,v 1.7 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -84,13 +84,13 @@ int		elfsh_endianize_got(elfshsect_t *new)
 {
   elfsh_Addr	*cur;  
   int		idx;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid NULL parameter", -1);
-
+		 "Invalid NULL parameter", -1);
+  
 #if __BYTE_ORDER == __LITTLE_ENDIAN
   if (new->parent->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 #elif __BYTE_ORDER == __BIG_ENDIAN
@@ -105,8 +105,8 @@ int		elfsh_endianize_got(elfshsect_t *new)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
   
-
-
+  
+  
 /**
  * Read the global offset table in section .got 
  */
@@ -154,35 +154,38 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
 }
  
-
-
+ 
+ 
  
 /**
  * Return the real GOT section 
  */
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
-  {
-    elfshsect_t *new;
+{
+   elfshsect_t *new;
+     
    PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);    
-    
-    new = file->secthash[ELFSH_SECTION_GOT];
-    if (new == NULL)
-     {
-       new = elfsh_get_section_by_name(file, 
-				       ELFSH_SECTION_NAME_GOTPLT, 
-				       NULL, NULL, NULL);
-       if (new == NULL)
-	 {
-	   new = elfsh_get_section_by_name(file, 
-					   ELFSH_SECTION_NAME_GOT, 
-					   NULL, NULL, NULL);
-	   if (new == NULL)
-	     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			       "Unable to get GOT by name", NULL);
-	 }
-     }
-   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
- }
+     
+   new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTGOT,
+				   NULL, NULL, NULL);
+   if (new)  
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+   new = file->secthash[ELFSH_SECTION_GOT];
+   if (new)
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+   new = elfsh_get_section_by_name(file, 
+	        		   ELFSH_SECTION_NAME_GOTPLT, 
+				   NULL, NULL, NULL);
+   if (new)
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+   new = elfsh_get_section_by_name(file, 
+   			           ELFSH_SECTION_NAME_GOT, 
+			     	   NULL, NULL, NULL);
+   if (new)
+     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		"Unable to get GOT by name", NULL);
+}
  
 
 /**

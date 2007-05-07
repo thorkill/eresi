@@ -5,7 +5,7 @@
 ** 
 ** Started Fri Oct  7 21:05:26 CEST 2005 crew
 **
-** $Id: alloc-proxy.c,v 1.2 2007-04-02 18:00:31 may Exp $
+** $Id: alloc-proxy.c,v 1.3 2007-05-07 13:24:01 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -392,7 +392,7 @@ void	free(void *a)
 
 void	wait4exit(void *a)
 {
-  //printf("\n [*] Debuggee wait4exit called \n");
+  fprintf(stderr, "\n [*] Debuggee wait4exit called \n");
   while (!e2dbgworld.exited)
     sleep(1);
   exit(0);
