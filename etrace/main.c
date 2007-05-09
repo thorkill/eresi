@@ -3,7 +3,7 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.7 2007-05-03 14:47:14 mxatone Exp $
+** $Id: main.c,v 1.8 2007-05-09 21:40:42 mxatone Exp $
 **
 */
 #include "etrace.h"
@@ -73,20 +73,8 @@ int		vm_main(int ac, char **av)
   char		logbuf[BUFSIZ];
   char		*str;
   u_int		state;
-
-  /*
-    Not useful anymore
-    TODO: find a way or something to reprint it
-  if (ac > 1 && ac < 3)
-    {
-      vm_output("Invalid arguments number\n");
-      snprintf(logbuf, BUFSIZ - 1, 
-	       "Usage: %s <file> -t <func_name_1> <func_name_2> .. \n",
-	       av[0]);
-      vm_output(logbuf);
-      return -1;
-    }
-  */
+  u_char	trace_all = 0;
+  char		**exav = NULL;
 
   /* Interface tweak */
   vm_setup_quit_msg();
@@ -98,6 +86,31 @@ int		vm_main(int ac, char **av)
     state = REVM_STATE_TRACER;
 
   vm_setup(ac, av, state, 0);
+
+  /* In this case we will trace all function of the binary */
+  if (ac > 1 && state == REVM_STATE_INTERACTIVE
+      && world.state.vm_mode != REVM_STATE_SCRIPT)
+    {
+      trace_all = 1;
+      exav = av;
+      
+      /* Switch to tracer mode */
+      world.state.vm_mode = state = REVM_STATE_TRACER;
+      ac += 2;
+
+      /* Allocated new argument list */
+      if ((av = (void*) calloc(sizeof(char*)*ac, 1)) == NULL)
+	{
+	  write(1, "Out of memory\n", 14);
+	  exit(1);
+	}
+
+      /* As we done a etrace <file> -t .* */
+      av[0] = exav[0];
+      av[1] = exav[1];
+      av[2] = "-t";
+      av[3] = ".*";
+    }
 
   vm_print_etrace_banner();
 
@@ -129,7 +142,7 @@ int		vm_main(int ac, char **av)
 	vm_traces_add_arguments(argc - 1, argv+1);
       
       XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
-  
+
       /* Update pointer */
       ac--;
       av[1] = av[0];

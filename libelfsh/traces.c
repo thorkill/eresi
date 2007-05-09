@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.11 2007-03-27 20:56:03 mxatone Exp $
+** $Id: traces.c,v 1.12 2007-05-09 21:40:42 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -26,11 +26,17 @@ char buf[BUFSIZ];
 #define TRACE_USED_write		6
 #define TRACE_USED_MAX			7
 
+#define TRACE_UNTRACABLE_NAME "untracable"
+
 typedef struct _trace_used
 {
   char *name;
   u_char exist;
 } trace_used, *ptrace_used;
+
+/* Untracable table */
+hash_t traces_untracable;
+u_char untracable_ostype;
 
 #define TRACE_FUNCTIONS_ADD(_name) \
 { #_name, 0 }
@@ -736,6 +742,54 @@ elfshobj_t   		*elfsh_traces_search_sym(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, find);
 }
 
+static int		elfsh_traces_add_untracable(char *name)
+{
+  NOPROFILER_IN();
+
+  hash_add(&traces_untracable, strdup(name), (void *)1);
+
+  NOPROFILER_ROUT(0);
+}
+
+static int		elfsh_traces_untracable(elfshobj_t *file, char *name)
+{
+  u_char		ostype;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ostype = elfsh_get_ostype(file);
+
+  /* Init the table if needed */
+  if (traces_untracable.ent == NULL || ostype != untracable_ostype)
+    {
+      if (traces_untracable.ent == NULL)
+	hash_empty(TRACE_UNTRACABLE_NAME);
+
+      hash_init(&traces_untracable, TRACE_UNTRACABLE_NAME, 11, ASPECT_TYPE_UNKNOW);
+      
+      if (ostype == ELFSH_OS_LINUX)
+	{
+	  elfsh_traces_add_untracable("__libc_start_main");
+	  elfsh_traces_add_untracable("_start");
+	}
+
+      if (ostype == ELFSH_OS_FREEBSD)
+	{
+	  // x86 failed on this function
+	  // TODO: correct them
+	  elfsh_traces_add_untracable("getcwd");
+	  elfsh_traces_add_untracable("printf");
+	}
+
+      untracable_ostype = ostype;
+    }
+
+  if (hash_get(&traces_untracable, name) != NULL)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
 /**
  * Can we trace this symbol ? 
  * @param file target file
@@ -826,6 +880,12 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Some function can't be traced */
+  if (elfsh_traces_untracable(file, name) == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Untracable function", -2);    
+
+  /* Retrieve symbol tables pointer / number */
   symtab = elfsh_get_symtab(file, &symnum);
   dynsym = elfsh_get_dynsymtab(file, &dynsymnum);
 

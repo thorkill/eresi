@@ -4,7 +4,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.7 2007-05-01 15:56:01 may Exp $
+** $Id: hijack.c,v 1.8 2007-05-09 21:40:42 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -67,7 +67,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 
       /* Resolve hooked function symbol */
       symbol = elfsh_get_symbol_by_name(file, name);
-      if (!symbol)
+      if (!symbol || symbol->st_value == 0)
 	symbol = elfsh_get_dynsymbol_by_name(file, name);
       if (!symbol && elfsh_debugger_present())
 	{

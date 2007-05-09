@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.30 2007-05-03 14:47:14 mxatone Exp $
+** $Id: tables.c,v 1.31 2007-05-09 21:40:42 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -1124,7 +1124,6 @@ void setup_traces_table()
   traces_addcmd("flush"  , (void *) traces_flush  , 2, 0);
 }
 
-   
 /* Setup all hash tables */
 void		vm_setup_hashtables()
 {
