@@ -5,7 +5,7 @@
 **
 ** Started September 16 03:11:04 2005 mayhem
 **
-** $Id: log.c,v 1.3 2007-03-25 14:27:34 may Exp $
+** $Id: log.c,v 1.4 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "revm.h"
@@ -58,20 +58,20 @@ static void		__strip_group_char(char *str, char s, char e)
 
 static void		logtofile(char *str)
 {
-  
   revmobj_t		*stripvar;
+  char			*tmp;
   u_int			len;
 
   NOPROFILER_IN();
 
   len = strlen(str);
+  tmp = alloca(len + 1);
 
   /* Do we want to log ? */
   if (!(world.curjob->ws.state & REVM_JOB_LOGGED) || len <= 0)
     NOPROFILER_OUT();
 
   /* We made only local modifications */
-  char tmp[len+1];
   strcpy(tmp, str);
 
   stripvar = hash_get(&vars_hash, REVM_VAR_STRIPLOG);

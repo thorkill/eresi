@@ -4,10 +4,9 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.11 2007-04-30 11:54:13 thor Exp $
+ * $Id: container.c,v 1.12 2007-05-11 10:48:29 may Exp $
  *
  */
-
 #include "libmjollnir.h"
 
 /**
@@ -175,9 +174,10 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
 				   int link_type,
 				   int link_direction)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   mjrlink_t *cur;
   mjrlink_t *link;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_CNTNR__
   mjrcontainer_t *cnt;
@@ -231,6 +231,8 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
 }
 
+
+
 /**
  *
  */
@@ -253,6 +255,7 @@ int			match_block(void *elem, void *match)
   return(blk_match->vaddr - blk_elem->vaddr);
 }
 
+
 /**
  *
  */
@@ -261,10 +264,10 @@ mjrcontainer_t *mjr_create_block_container(mjrcontext_t *ctx,
 					   elfsh_Addr vaddr,
 					   u_int size)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
   mjrblock_t 		*newblock;
   mjrcontainer_t	*newcntnr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_CNTNR__
   newcntnr = mjr_get_container_by_vaddr(ctx,vaddr,MJR_CNTNR_BLOCK);
@@ -313,10 +316,10 @@ mjrcontainer_t *mjr_create_function_container(mjrcontext_t *ctx,
 					      mjrblock_t *first,
 					      char *md5)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
   mjrfunc_t		*newfunction;
   mjrcontainer_t	*newcntnr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newfunction, sizeof(mjrfunc_t), NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newcntnr, sizeof(mjrcontainer_t), NULL);
@@ -405,7 +408,8 @@ void mjr_container_dump(mjrcontext_t *ctx, int what)
 
 mjrlink_t	*mjr_link_get_by_direction(mjrcontainer_t *c,int dir)
 {
-  mjrlink_t *ret;
+  mjrlink_t	*ret;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = NULL;
@@ -417,4 +421,11 @@ mjrlink_t	*mjr_link_get_by_direction(mjrcontainer_t *c,int dir)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mjrlink_t *)ret);
 }
+
+
+
+
+
+
+
 

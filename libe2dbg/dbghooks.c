@@ -10,7 +10,7 @@
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
 ** Modified  Thu Dec 28 04:28:00 2006 mayhem
 **
-** $Id: dbghooks.c,v 1.1 2007-03-18 12:35:04 may Exp $
+** $Id: dbghooks.c,v 1.2 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -778,12 +778,11 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
 }
 
 
-
 /* Regvars handler for the IA32 architecture on BSD */
 void		  e2dbg_get_regvars_ia32_bsd()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   E2DBG_GETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   E2DBG_GETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   E2DBG_GETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -802,7 +801,7 @@ void		  e2dbg_get_regvars_ia32_bsd()
 void		  e2dbg_get_regvars_ia32_sysv()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   E2DBG_GETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   E2DBG_GETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   E2DBG_GETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
@@ -822,7 +821,7 @@ void		  e2dbg_get_regvars_ia32_sysv()
 void		  e2dbg_set_regvars_ia32_bsd()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   E2DBG_SETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   E2DBG_SETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   E2DBG_SETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -843,7 +842,7 @@ void		  e2dbg_set_regvars_ia32_bsd()
 void		  e2dbg_set_regvars_ia32_sysv()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   E2DBG_SETREG(ELFSH_EAXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   E2DBG_SETREG(ELFSH_EBXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   E2DBG_SETREG(ELFSH_ECXVAR, e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
@@ -863,7 +862,7 @@ void		  e2dbg_set_regvars_ia32_sysv()
 elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_eip);
 #endif
@@ -874,7 +873,7 @@ elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
@@ -887,7 +886,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
 #endif
@@ -898,7 +897,7 @@ elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
 #endif
@@ -910,7 +909,7 @@ elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 void		  e2dbg_setstep_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags |= 0x100;
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -920,7 +919,7 @@ void		  e2dbg_setstep_bsd_ia32()
 void		  e2dbg_setstep_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] |= 0x100; 
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -930,7 +929,7 @@ void		  e2dbg_setstep_sysv_ia32()
 void		  e2dbg_resetstep_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(__linux__) && defined(__i386__) || defined(sun)
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
   e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EFL] &= ~0x100;
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -940,7 +939,7 @@ void		  e2dbg_resetstep_sysv_ia32()
 void		  e2dbg_resetstep_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags &= ~0x100;
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.10 2007-04-22 22:58:14 thor Exp $
+** $Id: libasm.h,v 1.11 2007-05-11 10:48:29 may Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -22,8 +22,10 @@
 #include <stdlib.h>
 #if defined(__FreeBSD__) || defined(sgi)
 #include <sys/endian.h>
-#else
+#elif !defined(sun)
 #include <endian.h>
+#else
+#include <db.h>
 #endif
 
 #include <libaspect.h>

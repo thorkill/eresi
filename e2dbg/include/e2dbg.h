@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 **
-** $Id: e2dbg.h,v 1.19 2007-03-07 16:45:34 thor Exp $
+** $Id: e2dbg.h,v 1.20 2007-05-11 10:48:29 may Exp $
 **
 */
 #ifndef __E2DBG_H_
@@ -12,7 +12,7 @@
 /* User defined configuration */
 #include "revm.h"
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(sun)
   extern char **environ;
 #endif
 

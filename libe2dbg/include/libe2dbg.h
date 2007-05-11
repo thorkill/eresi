@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.16 2007-05-07 13:24:01 may Exp $
+** $Id: libe2dbg.h,v 1.17 2007-05-11 10:48:29 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -214,6 +214,7 @@ typedef struct		s_thread
   u_char		was_step;		/* Is this thread was just beeing stepped ? */
   u_char		trace;			/* Is the thread beeing itraced ? */
   void			*(*entry)(void *);	/* Entry point */
+  pthread_attr_t	*attr;			/* Thread attributes */
   ucontext_t		*context;		/* Thread context on signal */
 
   time_t		stime;			/* Creation time */
@@ -286,6 +287,8 @@ extern e2dbgworld_t	e2dbgworld;
 /* Some libc extern */
 #ifdef __FreeBSD__
  extern char		*__progname;
+ extern char		**environ;
+#elif defined(sun)
  extern char		**environ;
 #else
  extern char		*__progname_full;
@@ -387,9 +390,13 @@ void		e2dbg_threads_print();
 int		e2dbg_thread_stopall(int signum);
 void		e2dbg_thread_contall();
 int		e2dbg_curthread_init();
+
+#if !defined(sun)
 int		pthread_attr_getstack(__const pthread_attr_t *__restrict __attr,
 				      void **__restrict __stackaddr,
 				      size_t *__restrict __stacksize);
+#endif
+
 /* e2dbg commands */
 int             cmd_mode();
 int             cmd_linkmap();

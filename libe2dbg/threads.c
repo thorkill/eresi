@@ -5,7 +5,7 @@
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
 **
-** $Id: threads.c,v 1.6 2007-04-02 18:00:31 may Exp $
+** $Id: threads.c,v 1.7 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -68,12 +68,16 @@ static void*		e2dbg_thread_start(void *param)
   /* Get stack information for this thread */
 #if defined(linux)
   pthread_getattr_np(cur->tid, &attr);
-#else
+  ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
+#elif defined(__FreeBSD__)
   pthread_attr_get_np(cur->tid, &attr);
+  ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
+#else
+  pthread_attr_getstacksize(cur->attr, (size_t *) &cur->stacksize);
+  ret = pthread_attr_getstackaddr(cur->attr, (void **) &cur->stackaddr);
 #endif
 
-  ret = pthread_attr_getstack(&attr, (void **) &cur->stackaddr, (size_t *) &cur->stacksize);
-
+  /* Check for errors */
 #if __DEBUG_THREADS__
   if (ret)
     write(1, "Problem during pthread_attr_getstack\n", 37);
@@ -101,18 +105,31 @@ static void*		e2dbg_thread_start(void *param)
 
 
 /* Hook for pthread_create */
+#if defined(sun)
+int		pthread_create(pthread_t *__threadp, 
+			       const pthread_attr_t *__attr,
+			       void * (*__start_routine)(void *), 
+			       void *__arg)
+{
+  int		(*fct)(pthread_t *__threadp, 
+		       __const pthread_attr_t *__attr,
+		       void *__start_routine,
+		       void *__arg);
+#else
 int		pthread_create (pthread_t *__restrict __threadp,
 				__const pthread_attr_t *__restrict __attr,
 				void *(*__start_routine) (void *),
 				void *__restrict __arg)
 {
-  e2dbgthread_t	*new;
-  char		*key;
-  int		ret;
   int		(*fct)(pthread_t *__restrict __threadp, 
 		       __const pthread_attr_t *__restrict __attr,
 		       void *__start_routine,
 		       void *__restrict __arg);
+#endif
+
+  e2dbgthread_t	*new;
+  char		*key;
+  int		ret;
 
   NOPROFILER_IN();
   e2dbg_presence_set();
@@ -131,6 +148,7 @@ int		pthread_create (pthread_t *__restrict __threadp,
   snprintf(key, 15, "%u", *(unsigned int *) __threadp);
   new->tid   = *(pthread_t *) __threadp;
   new->entry = __start_routine;
+  new->attr  = __attr;
   time(&new->stime);
   hash_add(&e2dbgworld.threads, key, new);
 

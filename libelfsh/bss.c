@@ -9,7 +9,7 @@
 ** Last update Sat Jul 30 17:34:52 2005 mayhem
 **
 **
-** $Id: bss.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+** $Id: bss.c,v 1.9 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -364,8 +364,6 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 }
 
 
-
-
 /**
  * Map a new BSS in the current file or process as an additional section 
  */
@@ -380,24 +378,26 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 
   newbss = NULL;
   current = rel->sectlist;
-
-  while ((current = current->next))
+  for (current = rel->sectlist; current; current = current->next)
     {
       if (elfsh_get_section_type(current->shdr) != SHT_NOBITS)
 	continue;
-
+      
       snprintf(buf, sizeof(buf), "%s%s", rel->name, current->name);
       newbss = elfsh_insert_section(file, buf, NULL, ELFSH_DATA_INJECTION,
 				    elfsh_get_pagesize(file), 0);
       if (!newbss)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to insert runtime bss", NULL);
+		     "Unable to insert runtime bss", NULL);
       
       bsslen = elfsh_find_bsslen(file, rel, current->name);
       if (bsslen == -1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to find bss size", NULL);
     }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (newbss));
+
+  /* There was simply no bss in the relocatable file, its not an error */
+  if (!newbss)
+    newbss = (elfshsect_t *) 0xdeadbeef;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
 }

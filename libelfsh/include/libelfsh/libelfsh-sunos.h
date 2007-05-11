@@ -4,7 +4,7 @@
 ** Started on  Fri Dec  7 21:29:00 2001 mayhem
 ** Last update Mon Feb 26 05:05:27 2005 mayhem
 **
-** $Id: libelfsh-sunos.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: libelfsh-sunos.h,v 1.3 2007-05-11 10:48:29 may Exp $
 **
 */
 
@@ -209,7 +209,10 @@ typedef struct
 #define	EM_PPC64		21
 #define	EM_SVX			73
 
-
+/* Linux/BSD Core file support on Solaris */
+#define	NT_FPREGSET		2
+#define	NT_TASKSTRUCT		4
+#define	NT_PRFPXREG		20
 
 
 

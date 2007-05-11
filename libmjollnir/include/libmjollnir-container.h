@@ -5,14 +5,11 @@
  *
  * Container structures for libmjollnir
  *
- * $Id: libmjollnir-container.h,v 1.8 2007-04-30 11:54:13 thor Exp $
+ * $Id: libmjollnir-container.h,v 1.9 2007-05-11 10:48:29 may Exp $
  *
  */
-
 #if !defined(__MJR_CONTAINER__)
  #define __MJR_CONTAINER__ 1
-
-#include "libelfsh.h"
 
 #define MJR_CNTNRS_INCREMENT 	200
 #define MJR_MAX_INCREMENTS	200
@@ -45,7 +42,7 @@ typedef	struct		s_link
   struct s_link		*next;
 }			mjrlink_t;
 
-typedef struct		s_container
+typedef struct	s_container	
 {
 #define MJR_CNTNR_FUNC		0 /* object contained is a mjrfunc_t */
 #define MJR_CNTNR_BLOCK		1 /* object contained is a mjrblock_t */
@@ -58,6 +55,6 @@ typedef struct		s_container
   unsigned int	in_nbr;		  /* number of input links */
   mjrlink_t	*output;	  /* a way to the next container */
   unsigned int	out_nbr;	  /* number of output links */
-}	mjrcontainer_t;
+}		mjrcontainer_t;
 
 #endif

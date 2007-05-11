@@ -129,4 +129,4 @@ mydisasm:
 	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm
 
 Makefile.inc:	
-	sh configure
+	bash configure

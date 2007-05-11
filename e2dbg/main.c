@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.11 2007-04-30 13:39:37 may Exp $
+** $Id: main.c,v 1.12 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -14,11 +14,13 @@
 /* Execute the debuggee program */
 int		vm_execute_debuggee(int ac, char **av)
 {
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ / 2];
+  char		envbuf[BUFSIZ / 2];
   char		*str;
   char          **args;
   int		index;
   char		*version;
+  int		ret;
 
 #if defined(ELFSH32)
   version = "32";
@@ -36,7 +38,14 @@ int		vm_execute_debuggee(int ac, char **av)
   else
     snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so:%s", ELFSH_DBGPATH, version, str);
 
-  if (setenv("LD_PRELOAD", buf, 1))
+#if !defined(sun)
+  ret = setenv("LD_PRELOAD", buf, 1);
+#else
+  snprintf(envbuf, sizeof(envbuf), "LD_PRELOAD=%s", buf);
+  ret = putenv(envbuf);
+#endif
+
+  if (ret)
     fprintf(stderr, "Failed to preload libe2dbg\n");
   else
     fprintf(stderr, " [*] Preloading %s \n", buf);

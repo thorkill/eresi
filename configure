@@ -93,10 +93,10 @@ TESTING="1"
 --enable-readline*)
 echo  " [*] Enabling readline support"
 READLN="1"
-echo  "READLNOPT	= -DUSE_READLN"		>> $CONFIGFILE
-echo  "LDREADLNOPT      = -lreadline -ltermcap" >> $CONFIGFILE
-echo  "LDUIOPT32	= -L../libui -lui32"    >> $CONFIGFILE
-echo  "LDUIOPT64	= -L../libui -lui64"    >> $CONFIGFILE
+echo  "READLNOPT	= -DUSE_READLN -I/opt/sfw/include/"     >> $CONFIGFILE
+echo  "LDREADLNOPT      = -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
+echo  "LDUIOPT32	= -L../libui -lui32"                    >> $CONFIGFILE
+echo  "LDUIOPT64	= -L../libui -lui64"                    >> $CONFIGFILE
 ;;
 
 --enable-ncurses*)
@@ -157,6 +157,13 @@ shift
 echo  " [*] Setting editor to " $1
 echo  "#define ELFSH_EDITOR        " $1		>> $VARSFILE
 EDITORSET="1"
+;;
+
+--set-compiler*)
+shift
+echo  " [*] Setting compiler to " $1
+echo  "CC		= " $1			>> $CONFIGFILE
+COMPILERSET="1"
 ;;
 
 --set-modpath*)
@@ -233,6 +240,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   Available variables :"
     echo
     echo "   --set-shell       : Set your UNIX shell path."
+    echo "   --set-compiler    : Set your compiler path."
     echo "   --set-editor      : Set your editor path."
     echo "   --set-modpath     : Set your ELFsh modules path."
     echo "   --prefix          : Set prefix."

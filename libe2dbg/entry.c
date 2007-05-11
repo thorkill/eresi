@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.8 2007-05-07 13:24:01 may Exp $
+** $Id: entry.c,v 1.9 2007-05-11 10:48:29 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -30,6 +30,8 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 
 #if defined(__FreeBSD__)
   pn = __progname;
+#elif defined(sun)
+  pn = getexecname();
 #else
   pn = __progname_full;
 #endif
@@ -274,7 +276,7 @@ int				atexit(void (*fini)(void))
 
 
 
-#elif (defined(sun) && defined(__i386))
+#elif defined(sun)
 
 
 /* Entry point for Solaris */
@@ -296,9 +298,7 @@ void			__fpstart(int argc, char**ubp_av)
   if (!orig)
     {
       write(1, "Error : Orig __fpstart not found\n", 33);
-      return (-1);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Orig __fpstart not found", (-1));
+      return;
     }  
   realfpstart = (void *) orig;
 
@@ -321,8 +321,9 @@ void			__fpstart(int argc, char**ubp_av)
   printf("[e2dbg__fpstart] End \n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
+
 #else
  #warning "E2DBG Not yet implemented on this OS/Arch"
 #endif

@@ -4,7 +4,7 @@
 ** 
 ** 
 **
-** $Id: init_mips.c,v 1.3 2007-04-13 06:56:35 heroine Exp $
+** $Id: init_mips.c,v 1.4 2007-05-11 10:48:29 may Exp $
 **
 */
 
@@ -16,16 +16,18 @@ int	fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 {
   int	op6;
   int	converted;
-  #if __BYTE_ORDER == __LITTLE_ENDIAN
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
   u_char	*ptr;
   int		i;
   
   ptr = (u_char *) &converted;
   for (i = 0; i < 4; i++)
     *(ptr + i) = *(buf + 3 - i);  
-  #else
-  memcpy();
-  #endif
+#else
+  memcpy((char *) &converted, buf, sizeof(converted));
+#endif
+
   printf("opcode = [%i%i%i%i%i%i] function = [%i%i%i%i%i%i]",
 	 MGETBIT(converted, 31),MGETBIT(converted, 30),MGETBIT(converted, 29),
 	 MGETBIT(converted, 28),MGETBIT(converted, 27),MGETBIT(converted, 26),

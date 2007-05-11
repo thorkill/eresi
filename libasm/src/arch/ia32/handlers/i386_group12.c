@@ -1,5 +1,5 @@
 /*
-** $Id: i386_group12.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_group12.c,v 1.3 2007-05-11 10:48:29 may Exp $
 **
 */
 #include <libasm.h>
@@ -9,13 +9,15 @@
   <i386 func="i386_group12" opcode="0x71"/>
 */
 
-int     i386_group12(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int			i386_group12(asm_instr *new, u_char *opcode, 
+				     u_int len, asm_processor *proc) 
 {
-  int		olen;
+  int			olen;
+  struct s_modrm	*modrm;
+
+  modrm = (struct s_modrm *) opcode + 1;
   new->ptr_instr = opcode;
   new->len += 1;
-  struct s_modrm *modrm = (struct s_modrm *) opcode + 1;
-  
   switch (modrm->r) 
     {
     case 2:
