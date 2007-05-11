@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.11 2007-05-11 10:48:29 may Exp $
+** $Id: libasm.h,v 1.12 2007-05-11 16:43:53 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -53,6 +53,7 @@
 #define ASM_TYPE_NOP        0x2000 //! Instruction that does nothing.
 
 #define ASM_TYPE_OTHER		  0x4000 //! Type that doesn't fit the ones above.
+#define ASM_TYPE_OTHER		  0x8000 //! Instruction modify stack pointer.
 
 
 /*
