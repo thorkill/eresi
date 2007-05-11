@@ -1,14 +1,14 @@
 ##
 ## this is private - do not distribute
-##
+## $Id: Makefile,v 1.20 2007-05-11 16:51:53 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
 ##
 
 #DBGFLAGS	=	-ggdb -DDEBUG_SPARC
+include Makefile.inc
 include ../config.h
-include	Makefile.inc
 #
 # Architecture source files
 #
@@ -33,37 +33,28 @@ SRCS_libasm 	=				\
 		src/arch/mips/tables_mips.c	\
 		src/register.c			\
 		src/vectors.c			\
-		src/arch/ia32/operand_handlers.c\
-#		src/arch/ia32/i386-0.c		\
-#		src/arch/ia32/i386-1.c		\
-#		src/arch/ia32/i386-2.c		\
-#		src/arch/ia32/i386-3.c		\
-#		src/arch/ia32/i386-4.c		\
-#		src/arch/ia32/i386-5.c		\
-#		src/arch/ia32/i386-6.c		\
-#		src/arch/ia32/i386-7.c		\
-#		src/arch/ia32/i386-8.c		\
-#		src/arch/ia32/i386-9.c		\
-#		src/arch/ia32/i386-a.c		\
-#		src/arch/ia32/i386-b.c		\
-#		src/arch/ia32/i386-c.c		\
-#		src/arch/ia32/i386-d.c		\
-#		src/arch/ia32/i386-e.c		\
-#		src/arch/ia32/i386-f.c		\
-#		src/arch/ia32/ei386-0.c		\
-#		src/arch/ia32/ei386-1.c		\
-#		src/arch/ia32/ei386-2.c		\
-#		src/arch/ia32/ei386-3.c		\
-#		src/arch/ia32/ei386-4.c		\
-#		src/arch/ia32/ei386-6.c		\
-#		src/arch/ia32/ei386-7.c		\
-#		src/arch/ia32/ei386-8.c		\
-#		src/arch/ia32/ei386-9.c		\
-#		src/arch/ia32/ei386-a.c		\
-#		src/arch/ia32/ei386-b.c		\
-#		src/arch/ia32/ei386-c.c     \
-#		src/arch/ia32/ei386-d.c     \
-#		src/arch/ia32/ei386-e.c     \
+		src/arch/ia32/operand_handlers/asm_operand_fetch.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_address.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_control.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_debug.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_encoded.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_encodedbyte.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_fixed.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_general.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_generalbyte.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_immediate.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_immediatebyte.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_immediateword.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_jump.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_memory.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_offset.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_opmod.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_pmmx.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_register.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_segment.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_shortjump.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_xsrc.c \
+		src/arch/ia32/operand_handlers/asm_operand_fetch_ydest.c
 
 
 
@@ -94,6 +85,7 @@ install:
 	${CP} include/libasm.h /usr/include
 	${CP} include/libasm-i386.h /usr/include
 	${CP} include/libasm-sparc.h /usr/include
+
 
 lib:	$(OBJS_libasm)
 	@ar rc ${NAME_libasm} ${OBJS_libasm}
