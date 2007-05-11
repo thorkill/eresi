@@ -1,5 +1,5 @@
 /*
-** $Id: op_retf_i2.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_retf_i2.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -10,7 +10,9 @@
 */
 
 int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+#if !LIBASM_USE_OPERAND_VECTOR
   short *shrt_ptr;
+#endif
 
   new->instr = ASM_RETF;
   new->ptr_instr = opcode;

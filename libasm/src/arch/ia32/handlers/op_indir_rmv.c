@@ -1,5 +1,5 @@
 /*
-** $Id: op_indir_rmv.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_indir_rmv.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -27,7 +27,8 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     new->op1.size = ASM_OSIZE_VECTOR;
     break;
   case 2:
-    new->type = ASM_TYPE_CALLPROC;
+    new->type = ASM_TYPE_CALLPROC | ASM_TYPE_TOUCHSP;
+    new->spdiff = -4;
     new->instr = ASM_CALL;
     new->op1.type = ASM_OTYPE_MEMORY;
     break;

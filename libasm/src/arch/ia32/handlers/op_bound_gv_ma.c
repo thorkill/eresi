@@ -1,5 +1,5 @@
 /*
-** $Id: op_bound_gv_ma.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_bound_gv_ma.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -10,7 +10,9 @@
 */
 
 int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+#if !LIBASM_USE_OPERAND_VECTOR
   struct s_modrm        *modrm;
+#endif
   
   new->instr = ASM_BOUND;
   new->len += 1;

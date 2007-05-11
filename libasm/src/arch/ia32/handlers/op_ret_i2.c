@@ -1,5 +1,5 @@
 /*
-** $Id: op_ret_i2.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_ret_i2.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -11,8 +11,9 @@
 
 int op_ret_i2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->len += 2;
-   new->type = ASM_TYPE_RETPROC;
-    new->instr = ASM_RET;
+  new->type = ASM_TYPE_RETPROC | ASM_TYPE_TOUCHSP;
+  new->spdiff = 4;
+  new->instr = ASM_RET;
   new->ptr_instr = opcode;
 
 #if LIBASM_USE_OPERAND_VECTOR

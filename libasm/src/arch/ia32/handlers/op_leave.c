@@ -1,6 +1,6 @@
 /**
  * @file op_leave.c
- * $Id: op_leave.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+ * $Id: op_leave.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -8,17 +8,18 @@
 
 /**
  * Handler for the leave instruction opcode 0xc9
- *
-  <instruction func="op_leave" opcode="0xc9"/>
+ * @param new Pointer to the instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
 */
 
-
-int op_leave(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_leave(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   new->len += 1;
   new->ptr_instr = opcode;
-  //new->type = ASM_TYPE_RETPROC;
+  new->type = ASM_TYPE_TOUCHSP;
+  new->spdiff = 4;
   new->instr = ASM_LEAVE;
-  #if LIBASM_USE_OPERAND_VECTOR
-  #endif
-return (new->len);
+  return (new->len);
 }
