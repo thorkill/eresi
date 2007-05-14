@@ -1,6 +1,6 @@
 ##
 ## this is private - do not distribute
-## $Id: Makefile,v 1.20 2007-05-11 16:51:53 heroine Exp $
+## $Id: Makefile,v 1.21 2007-05-14 11:57:06 thor Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -121,4 +121,4 @@ mydisasm:
 	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm
 
 Makefile.inc:	
-	bash configure
+	$(SHELL) configure

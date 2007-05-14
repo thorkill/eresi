@@ -17,6 +17,7 @@ CONFIGFILE="config.h"
 VARSFILE="librevm/include/revm-vars.h"
 LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
+SHELL="/bin/bash"
 
 echo > $LIBVARSFILE
 echo > $VARSFILE
@@ -295,6 +296,7 @@ FreeBSD*)
 
     echo " [*] OS Version: $OSVER"
     echo "RANLIB  = ranlib"               >> $CONFIGFILE
+    SHELL="/bin/sh"
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
     echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
@@ -384,6 +386,7 @@ echo "LPTHREAD=	$LPTHREAD"		>> $CONFIGFILE
 
 ## Save BITS=
 echo "BITS = " $BITS			>> $CONFIGFILE
+echo "SHELL= " $SHELL			>> $CONFIGFILE
 
 #case "$(uname -m)" in
 #i686)

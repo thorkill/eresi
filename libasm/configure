@@ -10,5 +10,4 @@ for i in ${SRCS} ; do
 	echo -n "\\
 		 $i    " >> Makefile.inc
     fi
-	
 done
