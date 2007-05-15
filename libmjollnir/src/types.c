@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.36 2007-04-09 19:25:08 thor Exp $
+** $Id: types.c,v 1.37 2007-05-15 12:13:03 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -51,11 +51,11 @@ int		mjr_asm_flow(mjrcontext_t *context)
   fun = NULL;
 
   /* Switch on instruction types provided by libasm */
-  switch (curins->type)
-    {
-    case ASM_TYPE_CONDBRANCH:
-      dstaddr = mjr_get_jmp_destaddr(context);
 
+  if (curins->type == ASM_TYPE_CONDBRANCH)
+    {
+      dstaddr = mjr_get_jmp_destaddr(context);
+      
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
 	    "[D] %s: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
@@ -65,9 +65,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
     if (dstaddr != -1)
       mjr_blocks_link_jmp(context, curvaddr, dstaddr, curvaddr + ilen);
 
-    break;
-    
-    case ASM_TYPE_IMPBRANCH:
+    }
+  else if (curins->type == ASM_TYPE_IMPBRANCH)
+    {
       dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
@@ -79,9 +79,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
       if (dstaddr != -1)
 	mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
 
-      break;
-
-    case ASM_TYPE_CALLPROC:
+    }
+  else if (curins->type & ASM_TYPE_CALLPROC)
+    {
       dstaddr = mjr_get_call_destaddr(context);
     
 #if __DEBUG_FLOW__
@@ -105,9 +105,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
 	  mjr_functions_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
 
     	}
-      break;
-
-    case ASM_TYPE_RETPROC:
+    }
+  else if (curins->type == ASM_TYPE_RETPROC)
+    {
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
@@ -134,13 +134,12 @@ int		mjr_asm_flow(mjrcontext_t *context)
       //
       //      context->curblock        = 0;
       //context->hist[MJR_HISTORY_PREV].vaddr = 0;
-      break;
-      
-    default:
+    }
+  else
+    {
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", __FUNCTION__, curvaddr, curins->type);
 #endif
-      break;
     }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
