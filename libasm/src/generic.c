@@ -1,6 +1,6 @@
 /*
-** Latest edition Author : $Author: heroine $
-** $Id: generic.c,v 1.7 2007-04-13 06:56:34 heroine Exp $
+** Latest edition Author : $Author: thor $
+** $Id: generic.c,v 1.8 2007-05-16 23:08:13 thor Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */
@@ -13,14 +13,15 @@
  *
  */
 
-/** Fetch instruction using asm_processor handler
+/** 
+ * Fetch instruction using asm_processor handler
  * func asm_read_instr
  * fetch instruction stored in buffer of max length len
  * according to specified processor.
- *\param i instruction to fill.
- *\param buf pointer to opcode to disassemble
- *\param len maximum length of opcode to disassemble
- *\return -1 on error or instruction fetched length
+ * @param i instruction to fill.
+ * @param buf pointer to opcode to disassemble
+ * @param len maximum length of opcode to disassemble
+ * @return -1 on error or instruction fetched length
  */
 
 int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
@@ -32,8 +33,7 @@ int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
 /**
  *
  *
-*/
-
+ */
 int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
   /*
   if (instr->op1)
@@ -337,5 +337,22 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) {
   fprintf(fp, "o%i indexreg  = %i\n", num, op->index_reg);
   fprintf(fp, "o%i scale     = %i\n", num, op->scale);
   return (1);
+}
+
+/**
+ * set config flag to specified endian
+ * @param mode endian (big/little)
+ */
+void asm_config_set_endian(int mode)
+{
+  config_update_key(ASM_CONFIG_ENDIAN_FLAG,(void *) mode);
+}
+
+/**
+ * get the endian flag
+ */
+int asm_config_get_endian()
+{
+  return (int) config_get_data(ASM_CONFIG_ENDIAN_FLAG);
 }
 

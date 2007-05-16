@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.5 2007-04-13 06:56:34 heroine Exp $
+ * $Id: vectors.c,v 1.6 2007-05-16 23:08:13 thor Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -88,7 +88,12 @@ int	asm_init_vectors(asm_processor *proc)
   aspect_register_vector("operand",
 			 asm_operand_fetch_default,
 			 dims, dimstr, 2, ASPECT_TYPE_CADDR);
-  
+
+  config_add_item(ASM_CONFIG_ENDIAN_FLAG,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  ASM_CONFIG_LITTLE_ENDIAN);
+ 
   return (1);
 }
 

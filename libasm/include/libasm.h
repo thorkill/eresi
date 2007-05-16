@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.13 2007-05-11 16:45:58 heroine Exp $
+** $Id: libasm.h,v 1.14 2007-05-16 23:08:13 thor Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -55,14 +55,18 @@
 #define ASM_TYPE_OTHER		  0x4000 //! Type that doesn't fit the ones above.
 #define ASM_TYPE_TOUCHSP	  0x8000 //! Instruction modify stack pointer.
 
+/* this is needed for mips implementation */
+#define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"
+#define ASM_CONFIG_LITTLE_ENDIAN 0
+#define ASM_CONFIG_BIG_ENDIAN 1
 
 /*
   typedef's
 */
 
-typedef struct s_asm_processor 		asm_processor;
-typedef struct s_asm_instr 			asm_instr;
-typedef struct s_asm_op				asm_operand;
+typedef struct s_asm_processor  asm_processor;
+typedef struct s_asm_instr      asm_instr;
+typedef struct s_asm_op         asm_operand;
 
 
 

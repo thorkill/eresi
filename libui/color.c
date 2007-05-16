@@ -5,7 +5,7 @@
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: color.c,v 1.13 2007-03-07 16:45:36 thor Exp $
+** $Id: color.c,v 1.14 2007-05-16 23:08:13 thor Exp $
 **
 */
 #include "libui.h"
@@ -194,7 +194,8 @@ char 		*vm_colorget(char *sp, char *type, void *object)
 
   if (curtok >= COLOR_TOKENS) 
     {
-      printf("WARNING !!!! Token overflow (val:%u)\n", curtok);
+      printf("[E] %s:%d %s: WARNING !!!! Token overflow (val:%u)\n",
+      __FILE__, __LINE__, __FUNCTION__, curtok);
       NOPROFILER_ROUT(NULL);
     }
 

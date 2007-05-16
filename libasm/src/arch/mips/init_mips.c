@@ -4,7 +4,7 @@
 ** 
 ** 
 **
-** $Id: init_mips.c,v 1.4 2007-05-11 10:48:29 may Exp $
+** $Id: init_mips.c,v 1.5 2007-05-16 23:08:13 thor Exp $
 **
 */
 
@@ -109,4 +109,7 @@ void	asm_init_mips(asm_processor *proc)
   proc->instr_table[ASM_MIPS_XOR] = "xor";
   proc->instr_table[ASM_MIPS_XORI] = "xori";
   proc->instr_table[ASM_MIPS_BAD] = "bad";
+
+  // asm_config_get_endian()
+  // asm_config_set_endian()
 }
