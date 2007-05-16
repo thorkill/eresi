@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: libasm-i386.h,v 1.8 2007-04-13 06:56:34 heroine Exp $
+** $Id: libasm-i386.h,v 1.9 2007-05-16 18:49:40 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -122,6 +122,28 @@ struct s_asm_proc_i386 {
 #define ASM_PREFIX_OPSIZE	128
 #define ASM_PREFIX_ADDSIZE	256
 
+
+enum
+  {
+    ASM_FLAG_CF = 1 << 0,
+    ASM_FLAG_PF = 1 << 2,
+    ASM_FLAG_AF = 1 << 4,
+    ASM_FLAG_ZF = 1 << 6,
+    ASM_FLAG_SF = 1 << 7,
+    ASM_FLAG_TF = 1 << 8,
+    ASM_FLAG_IF = 1 << 9,
+    ASM_FLAG_DF = 1 << 10,
+    ASM_FLAG_OF = 1 << 11,
+    ASM_FLAG_IOPL = 1 << 12,
+    ASM_FLAG_NT = 1 << 14,
+
+    ASM_FLAG_RF = 1 << 16,
+    ASM_FLAG_VM = 1 << 17,
+    ASM_FLAG_AC = 1 << 18,
+    ASM_FLAG_VIF = 1 << 19,
+    ASM_FLAG_VIP = 1 << 20,
+    ASM_FLAG_ID = 1 << 21
+  } e_ia32_flags;
 
 /**
  * Content of the struct s_operand type field
