@@ -4,10 +4,10 @@
 ** Started on  Sun Mar 10 02:41:10 2002 mayhem
 ** Last update Sun Mar 10 02:54:44 2002 mayhem
 **
-** $Id: hijacked.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: hijacked.c,v 1.3 2007-05-16 23:36:37 may Exp $
 **
 */
-
+#include <stdio.h>
 
 
 void	my_ctors() __attribute__ ((constructor));

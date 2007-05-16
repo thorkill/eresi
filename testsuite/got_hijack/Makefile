@@ -9,15 +9,14 @@ include ../../config.h
 
 SRC	= got_hijack.c
 OBJ	= $(SRC:.c=.o)
-CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm \
-	-L../../libc/ -lcelfsh -L../../libmalloc/ -lmalloc-e2dbg \
-	-L../usr/pkg/lib/ -lpthread
+CC	?= gcc
+LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
+	-L../../libaspect/ -laspect32
 NAM	= got_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -g3 -O2 -I../../libelfsh/include -I../../libasm/include \
-	-I../../libc/include $(BITS)
+OPT	= -O2 -I../../libelfsh/include/ \
+	-I../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

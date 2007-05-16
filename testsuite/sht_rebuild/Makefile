@@ -10,13 +10,12 @@ include ../../config.h
 SRC	= sht_rebuild.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm \
-	-L../../libc/ -lcelfsh -L../../libmalloc/ -lmalloc-e2dbg \
-	-L../usr/pkg/lib/ -lpthread
+LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
+	-L../../libaspect/ -laspect32
 NAM	= sht_rebuilder
 RM	= rm -f 
-OPT	= -g3 -O2 -I../../libelfsh/include/ -I../../libasm/include/ \
-	-I../../libc/include $(BITS)
+OPT	= -O2 -I../../libelfsh/include/ \
+	-I../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

@@ -1,13 +1,12 @@
 /*
 **
-** $Id: main.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: main.c,v 1.3 2007-05-16 23:36:38 may Exp $
 **
 */
+#include <stdio.h>
 
 int main()
 {
-printf("Example program . \n");
-
-return (0);
-
+  printf("Example program . \n");
+  return (0);
 }

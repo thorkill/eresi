@@ -10,14 +10,13 @@ include ../../config.h
 SRC	= hash_read.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh -L../../libasm/ -lasm \
-	-L../../libc/ -lcelfsh -L../../libmalloc/ -lmalloc-e2dbg \
-	-L../usr/pkg/lib/ -lpthread
+LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
+	-L../../libaspect/ -laspect32
 NAM	= hash_reader
 RM	= rm -f 
 VULN	= main.c
-OPT	= -g3 -O2 -I../../libelfsh/include/ -L../../libasm/include/ \
-	-I../../libc/include $(BITS)
+OPT	= -O2 -I../../libelfsh/include/ \
+	-I../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

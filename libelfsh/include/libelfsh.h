@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.52 2007-05-16 13:33:47 may Exp $
+** $Id: libelfsh.h,v 1.53 2007-05-16 23:36:37 may Exp $
 **
 */
 
@@ -1667,6 +1667,7 @@ void		elfsh_set_mode(u_char mode);
 u_char		elfsh_get_mode();
 void		elfsh_toggle_mode();
 u_char		elfsh_debugger_present();
+void		elfsh_error();
 
 /* linkmap.c */
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm);

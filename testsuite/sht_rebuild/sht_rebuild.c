@@ -4,18 +4,16 @@
 ** Started on  Sun Mar 17 05:57:23 2002 mayhem
 ** Last update Fri Jan 24 12:56:13 2003 mayhem
 **
-** $Id: sht_rebuild.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: sht_rebuild.c,v 1.3 2007-05-16 23:36:38 may Exp $
 **
 */
 #include "libelfsh.h"
+#include <stdio.h>
 
 #define         STRIPPED_FILE   "./sht_stripped_file"
 #define         OUTPUT_FILE     "./sht_rebuilt_file"
 
-
-
-
-/* Here we just map and save the object since ELFsh automatically rebuid SHT :) */
+/* We just map and save the object since ELFsh automatically rebuid SHT */
 int		main(int argc, char **argv)
 {
   elfshobj_t	*file;

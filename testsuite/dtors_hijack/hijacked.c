@@ -1,9 +1,9 @@
 /*
 **
-** $Id: hijacked.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: hijacked.c,v 1.3 2007-05-16 23:36:37 may Exp $
 **
 */
-
+#include <stdio.h>
 
 
 void	my_dtors() __attribute__ ((destructor));
@@ -13,7 +13,6 @@ void	new_dtors()
 {
   printf("hijacked dtors ! \n");
 }
-
 
 void	my_dtors()
 {

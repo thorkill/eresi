@@ -4,9 +4,11 @@
 ** Started on  Sun Mar 17 06:38:49 2002 mayhem
 ** Last update Sat Mar 23 11:00:10 2002 mayhem
 **
-** $Id: main.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: main.c,v 1.3 2007-05-16 23:36:37 may Exp $
 **
 */
+#include <stdio.h>
+#include <string.h>
 
 int	main()
 {

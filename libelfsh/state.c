@@ -4,7 +4,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 ** 
 **
-** $Id: state.c,v 1.11 2007-05-01 15:56:01 may Exp $
+** $Id: state.c,v 1.12 2007-05-16 23:36:37 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -107,4 +107,12 @@ void	elfsh_toggle_mode()
     elfsh_set_static_mode();
   else
     elfsh_set_debug_mode();
+}
+
+/**
+ * Print last error
+ */
+void	elfsh_error()
+{
+  profiler_error();
 }
