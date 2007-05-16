@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_segr_rm.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_mov_segr_rm.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,10 +9,13 @@
   <instruction func="op_mov_segr_rm" opcode="0x8e"/>
 */
 
-int op_mov_segr_rm(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_mov_segr_rm(asm_instr *new, u_char *opcode, u_int len, 
+		   asm_processor *proc)
+{
   struct s_modrm        *modrm;
   
   modrm = (struct s_modrm *) opcode + 1;
+  new->type = ASM_TYPE_ASSIGN;
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;

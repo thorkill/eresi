@@ -1,5 +1,5 @@
 /*
-** $Id: op_cmpsd.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_cmpsd.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -11,7 +11,8 @@
 
 int op_cmpsd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   new->len += 1;
-    new->ptr_instr = opcode;
+  new->ptr_instr = opcode;
+  new->type = ASM_TYPE_TEST | ASM_TYPE_CONTROL;
   new->instr = ASM_CMPSD;
 
 #if LIBASM_USE_OPERAND_VECTOR

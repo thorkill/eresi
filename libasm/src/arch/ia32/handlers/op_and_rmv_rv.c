@@ -1,5 +1,5 @@
 /*
-** $Id: op_and_rmv_rv.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_and_rmv_rv.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,9 +9,11 @@
   <instruction func="op_and_rmv_rv" opcode="0x21"/>
 */
 
-int op_and_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_and_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   new->len += 1;
   new->ptr_instr = opcode;
+  new->type = ASM_TYPE_ARITH;
   new->instr = ASM_AND;
   
   #if LIBASM_USE_OPERAND_VECTOR

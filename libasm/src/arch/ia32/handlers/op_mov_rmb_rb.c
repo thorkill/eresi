@@ -1,6 +1,6 @@
 /**
  * @file op_mov_rmb_rb.c
- * $Id: op_mov_rmb_rb.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+ * $Id: op_mov_rmb_rb.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -10,9 +10,12 @@
   <instruction func="op_mov_rmb_rb" opcode="0x88"/>
 */
 
-int op_mov_rmb_rb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_mov_rmb_rb(asm_instr *new, u_char *opcode, u_int len, 
+		  asm_processor *proc) 
+{
   new->len += 1;
   new->ptr_instr = opcode;
+  new->type = ASM_TYPE_ASSIGN;
   new->instr = ASM_MOV;
 #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc);

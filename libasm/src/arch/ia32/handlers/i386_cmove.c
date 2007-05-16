@@ -1,7 +1,8 @@
-/*
-** $Id: i386_cmove.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
-**
-*/
+/**
+ * @file i386_cmove.c
+ * $Id: i386_cmove.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 

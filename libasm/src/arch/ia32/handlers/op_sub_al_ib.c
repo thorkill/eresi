@@ -1,5 +1,5 @@
 /*
-** $Id: op_sub_al_ib.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_sub_al_ib.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,13 +9,12 @@
   <instruction func="op_sub_al_ib" opcode="0x2c"/>
 */
 
-int op_sub_al_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_sub_al_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   new->len += 1;
   new->instr = ASM_SUB;
-  
+  new->type = ASM_TYPE_ARITH;
   new->ptr_instr = opcode;
-  new->op1.type = ASM_OTYPE_FIXED;
-  new->op2.type = ASM_OTYPE_IMMEDIATE;
   
   #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
@@ -26,6 +25,8 @@ int op_sub_al_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->op1.base_reg = ASM_REG_AL;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATEBYTE, proc);
   #else
+  new->op1.type = ASM_OTYPE_FIXED;
+  new->op2.type = ASM_OTYPE_IMMEDIATE;
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op1.ptr = opcode;
   new->op1.len = 0;

@@ -1,5 +1,5 @@
 /*
-** $Id: op_or_rv_rmv.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_or_rv_rmv.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -10,8 +10,10 @@
   Instruction :         OR
 */
 
-int op_or_rv_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_or_rv_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   new->instr = ASM_OR;
+  new->type = ASM_TYPE_ARITH;
   new->ptr_instr = opcode;
   new->len += 1;
 #if LIBASM_USE_OPERAND_VECTOR

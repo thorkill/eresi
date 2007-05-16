@@ -1,11 +1,17 @@
 /*
-** $Id: i386_bsf.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_bsf.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
+ * Handler for instruction bsf, opcode 0x0f 0xbc
+ * @param new Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of instruction.
  <i386 func="i386_bsf" opcode"0xbc"/>
 */
 
