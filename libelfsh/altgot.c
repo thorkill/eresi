@@ -7,7 +7,7 @@
 ** Started on  Wed Jun 08 21:20:07 2005 mm
 **
 **
-** $Id: altgot.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: altgot.c,v 1.5 2007-05-16 13:33:47 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -133,7 +133,8 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file,
 
 
 /**
- * Shift relocation on IA32 for allowing non-present symbol resolving 
+ * Shift relocation tables at some point for allowing non-present symbol resolving 
+ * mostly applied on section injection for ET_DYN objects
  */
 int			elfsh_shift_ia32_relocs(elfshobj_t *file, 
 						elfsh_Addr  diff,
@@ -142,14 +143,29 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
 {
   elfsh_Rel		*l;
   int			index;
+  elfsh_Addr		reloff;
+  elfshsect_t		*parent;
+  elfsh_SAddr		off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   for (index = 0; index < relplt->shdr->sh_size / sizeof(elfsh_Rel); index++)
     {
       l = (elfsh_Rel *) relplt->data + index;
       if (ELFSH_NOLIMIT == limit || elfsh_get_reloffset((elfsh_Rel *) l) >= limit)
-	elfsh_set_reloffset((elfsh_Rel *) l, elfsh_get_reloffset((elfsh_Rel *) l) + diff);
+	{
+	  reloff = elfsh_get_reloffset((elfsh_Rel *) l);
+	  reloff += diff;
+	  elfsh_set_reloffset((elfsh_Rel *) l, reloff);
+
+	  /* Shifting memory -pointed- by the relative relocation */
+	  if (elfsh_get_reltype(l) != R_386_RELATIVE)
+	    continue;
+	  parent = elfsh_get_parent_section(file, reloff, &off);
+	  if (strstr(parent->name, "got") || strstr(parent->name, "bss") ||
+	      strstr(parent->name, "elfsh"))
+	    continue;
+	  *(elfsh_Addr *) ((char *) parent->data + off) += diff;
+	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

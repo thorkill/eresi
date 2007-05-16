@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.31 2007-05-09 21:40:42 mxatone Exp $
+** $Id: tables.c,v 1.32 2007-05-16 13:33:47 may Exp $
 **
 */
 #include "revm.h"
@@ -724,7 +724,7 @@ static void	setup_cmdhash()
   /* Interactive mode / Scripting mode commands */
   if (world.state.vm_mode != REVM_STATE_CMDLINE)
     {
-      vm_addcmd(CMD_LOAD      , (void *) cmd_load     , (void *) vm_getoption   , 0, HLP_LOAD);
+      vm_addcmd(CMD_LOAD      , (void *) cmd_load     , (void *) vm_getoption, 0, HLP_LOAD);
       vm_addcmd(CMD_UNLOAD    , (void *) cmd_unload   , (void *) vm_getoption   , 0, HLP_UNLOAD);
       vm_addcmd(CMD_SAVE      , (void *) cmd_save     , (void *) vm_getoption   , 1, HLP_SAVE);
       vm_addcmd(CMD_SWITCH    , (void *) cmd_doswitch , (void *) vm_getoption   , 0, HLP_SWITCH);

@@ -10,11 +10,8 @@ reladd 1 2
 #redir __libc_start_main fake_libc_start_main
 #redir strcpy fake_strcpy
 
-sym puts
-dynsym puts
-
-profile enable warn
 redir puts fake_puts
+redir legit_func fake_legit_func
 
 save fake_aout
 

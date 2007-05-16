@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.51 2007-05-01 15:56:01 may Exp $
+** $Id: libelfsh.h,v 1.52 2007-05-16 13:33:47 may Exp $
 **
 */
 
@@ -1157,7 +1157,6 @@ int     	elfsh_get_got_symbol_reloc(elfshobj_t *file, uint8 *name,
 int		elfsh_endianize_got(elfshsect_t *_new);
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file);
 int		elfsh_shift_got(elfshobj_t *file, u_int size, char *name);
-int		elfsh_shift_altgot(elfshobj_t *file, u_int size);
 
 /* dtors.c */
 elfsh_Addr     	*elfsh_get_dtors(elfshobj_t *file, int *num);

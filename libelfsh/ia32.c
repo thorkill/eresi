@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.13 2007-03-28 08:11:11 mxatone Exp $
+ * $Id: ia32.c,v 1.14 2007-05-16 13:33:47 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -478,10 +478,16 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
       break;
 
     case R_386_GOT32:   
-      section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
+      section = elfsh_get_sht_entry_by_name(new->parent, 
+					    ELFSH_SECTION_NAME_GOTPLT);
       if (section == NULL)
-         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Unable to find GOT for GOTOFF", -1);
+	{
+	  section = elfsh_get_sht_entry_by_name(new->parent, 
+						ELFSH_SECTION_NAME_GOT);
+	  if (!section)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to find GOT for GOTPC", -1);
+	}
       *dword = cur->r_offset - section->sh_addr;
       break;
     
@@ -489,7 +495,8 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
       if (elfsh_static_file(new->parent))
 	{
 #if	__DEBUG_RELADD__      
-	  printf("[DEBUG_RELADD] R_386_PLT32 on STATIC file : %s \n", new->parent->name);
+	  printf("[DEBUG_RELADD] R_386_PLT32 on STATIC file : %s \n", 
+		 new->parent->name);
 #endif      
 	  symname = elfsh_get_symname_from_reloc(mod->parent, cur); 
 #if	__DEBUG_RELADD__      
@@ -508,7 +515,8 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 	}
       else
 	{
-	  section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_PLT);
+	  section = elfsh_get_sht_entry_by_name(new->parent, 
+						ELFSH_SECTION_NAME_PLT);
 	  if (section == NULL)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to find PLT fot PLT32", -1);
@@ -529,19 +537,30 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
       break;
 
     case R_386_GOTOFF:
-      section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
+      section = elfsh_get_sht_entry_by_name(new->parent, 
+					    ELFSH_SECTION_NAME_GOTPLT);
       if (section == NULL)
-         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Unable to find GOT for GOTOFF", -1);
+	{
+	  section = elfsh_get_sht_entry_by_name(new->parent, 
+						ELFSH_SECTION_NAME_GOT);
+	  if (!section)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to find GOT for GOTPC", -1);
+	}
       *dword = addr - section->sh_addr;
       break;
 
     case R_386_GOTPC:
-      section = elfsh_get_sht_entry_by_name(new->parent, ELFSH_SECTION_NAME_GOT);
+      section = elfsh_get_sht_entry_by_name(new->parent, 
+					    ELFSH_SECTION_NAME_GOTPLT);
       if (section == NULL)
-         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                        "Unable to find GOT for GOTPC", -1);
-
+	{
+	  section = elfsh_get_sht_entry_by_name(new->parent, 
+						ELFSH_SECTION_NAME_GOT);
+	  if (!section)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to find GOT for GOTPC", -1);
+	}
       *dword = section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + 2;
 
 #if	__DEBUG_RELADD__        

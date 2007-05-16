@@ -4,7 +4,7 @@
 ** Started on  Sun Jun 24 21:30:41 2001 mayhem
 ** Last update Thu May 15 04:39:15 2003 mayhem
 **
-** $Id: got.c,v 1.7 2007-05-07 13:24:01 may Exp $
+** $Id: got.c,v 1.8 2007-05-16 13:33:47 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -44,37 +44,6 @@ int		elfsh_shift_got(elfshobj_t *file,
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
-
-/**
- * Shift ALTGOT on ET_DYN 
- */
-int		elfsh_shift_altgot(elfshobj_t *file, u_int size)
-{
-  elfshsect_t	*got;
-  int					nbr;
-  u_int				idx;
-  elfsh_Addr	*addr;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if	__DEBUG_ETRELintoETDYN__
-  printf("[DEBUG_ETRELintoETDYN] Shifting ALTGOT from %u bytes \n", size);
-#endif
-
-  got = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_ALTGOT, 
-				  NULL, NULL, &nbr);
-  if (!got)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-  nbr = nbr / sizeof(elfsh_Addr);
-  for (idx = 0; idx < nbr; idx++)
-    {
-      addr = elfsh_get_got_entry_by_index(got->data, idx);
-      if (*addr)
-	*addr += size;
-    }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
-}
-
 
 
 /**

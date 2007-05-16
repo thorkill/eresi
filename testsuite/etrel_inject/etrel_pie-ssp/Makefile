@@ -18,7 +18,7 @@ RM	= rm -f
 CFLAGS	= -fPIC -I../../libhash/include/
 
 all	: $(PIEOBJ) $(RELOBJ)
-	$(CC) $(PIEOBJ) -pie
+	$(CC) -g3 $(PIEOBJ) -pie
 
 clean	:
 	$(RM) *~ \#* *\# $(RELOBJ) $(PIEOBJ)

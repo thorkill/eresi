@@ -6,7 +6,7 @@
 ** Started on  Mon Jun 23 06:56:04 2003 mayhem
 ** Last update Sun Aug 17 17:41:48 2003 mayhem
 **
-** $Id: simple.c,v 1.5 2007-05-01 15:56:01 may Exp $
+** $Id: simple.c,v 1.6 2007-05-16 13:33:47 may Exp $
 **
 */
 #include <stdio.h>
@@ -45,13 +45,6 @@ int	fake_main(int argc, char **argv)
 }
 */
 
-/*
-char*	fake_strcpy(char *dst, char *src)
-{
-  printf("The binary wants to copy %s at address %08X \n", src, dst);
-  return ((char *) old_strcpy(dst, src));
-}
-*/
 
 
 /*
@@ -79,7 +72,21 @@ int fake_libc_start_main(void *one, void *two, void *three, void *four, void *fi
 }
 */
 
+/*
+char*	fake_strcpy(char *dst, char *src)
+{
+  printf("The binary wants to copy %s at address %08X \n", src, dst);
+  return ((char *) old_strcpy(dst, src));
+}
+*/
+
 int fake_puts(char *str)
 {
-  return (printf("Hijacked puts *%s*\n", str));
+  return (old_puts("Hijacked puts\n"));
+}
+
+int fake_legit_func(char *str)
+{
+  printf("Hijacked legit func %s ! \n", str);
+  return (old_legit_func(str));
 }

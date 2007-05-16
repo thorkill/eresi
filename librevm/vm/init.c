@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.21 2007-05-07 13:24:01 may Exp $
+** $Id: init.c,v 1.22 2007-05-16 13:33:47 may Exp $
 **
 */
 
@@ -283,13 +283,13 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
+  vm_setup_hashtables();
+  elfsh_setup_hooks();
 
   if (!mjr_init_session(&world.mjr_session))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "mjollnir session can't be initialized.", -1);
-  
-  vm_setup_hashtables();
-  elfsh_setup_hooks();
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

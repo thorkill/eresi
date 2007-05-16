@@ -6,7 +6,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.11 2007-05-01 15:56:01 may Exp $
+** $Id: inject.c,v 1.12 2007-05-16 13:33:47 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -181,14 +181,12 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 				  "Not a single relo table found", -1);
 	      break;
 	    }
-	  
 	  err = elfsh_shift_ia32_relocs(file, hdr.sh_size, relsect, 
 					sect->shdr->sh_addr + sect->shdr->sh_size);
 	  if (err < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Problem while shifting relocs", -1);
 	}
-
 
       err = elfsh_shift_symtab(file, sect->shdr->sh_addr, hdr.sh_size);
       if (err < 0)
@@ -217,10 +215,9 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Cannot shift .got.plt in ET_DYN", -1);
       
-      if (elfsh_shift_altgot(file, sect->shdr->sh_size) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                          "Cannot shift .alt.got in ET_DYN", -1);
-
+      /* ALTGOT section is not present in unmodified binaries so its not a fatal error */
+      elfsh_shift_got(file, sect->shdr->sh_size, ELFSH_SECTION_NAME_ALTGOT);
+	
       if (elfsh_shift_dtors(file, sect->shdr->sh_size) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Cannot shift dtors in ET_DYN", -1);

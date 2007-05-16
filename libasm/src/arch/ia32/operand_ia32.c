@@ -1,5 +1,5 @@
 /*
-** $Id: operand_ia32.c,v 1.3 2006-12-19 02:46:19 heroine Exp $
+** $Id: operand_ia32.c,v 1.4 2007-05-16 13:33:47 may Exp $
 **
 ** Author  : <sk at devhell dot org>
 ** Started : Tue May 28 13:06:39 2002
@@ -67,7 +67,6 @@ int	operand_rmb_rb(asm_instr *ins, u_char *opcode, int len,
   ins->op2.content = ASM_OP_BASE;
   ins->op2.regset = ASM_REGSET_R8;
   ins->op2.base_reg = (modrm->r);
-  
   ins->len += ins->op1.len + ins->op2.len;
   
   return (1);
