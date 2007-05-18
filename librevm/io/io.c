@@ -6,7 +6,7 @@
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.7 2007-04-30 13:39:37 may Exp $
+** $Id: io.c,v 1.8 2007-05-18 11:14:19 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -59,7 +59,8 @@ int		vm_fifo_io(revmjob_t *job)
   int		fd;
   int		fd2;
 
-  NOPROFILER_IN();
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!job)
     {
       fprintf(stderr, "error: input job is NULL in fifo_io \n");
@@ -96,7 +97,7 @@ int		vm_fifo_io(revmjob_t *job)
       dup2(fd, 0);
     }
 
-  NOPROFILER_ROUT(0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 

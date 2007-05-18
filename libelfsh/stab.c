@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:14:06 2001 mayhem
 ** 
 **
-** $Id: stab.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: stab.c,v 1.5 2007-05-18 11:14:19 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -40,6 +40,7 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
   int		strindex;
   int		index;
   int		nbr;
+  void		*ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   /* Fill the stab table */
@@ -53,30 +54,36 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
 			  "Unable to get STABS by name", NULL);
 
       file->secthash[ELFSH_SECTION_STAB] = sect;
-      file->secthash[ELFSH_SECTION_STAB]->data =
-	elfsh_load_section(file, sect->shdr);
-      if (file->secthash[ELFSH_SECTION_STAB]->data == NULL)
+      sect->data = elfsh_load_section(file, sect->shdr);
+
+      if (sect->data == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load STABS", NULL);
 
       /* Fill the stab string table */
       sect = elfsh_get_section_by_index(file, strindex, NULL, NULL);
+
       if (sect == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get STABS string table", NULL);
 
+      file->secthash[ELFSH_SECTION_STABSTR] = sect;
       sect->data = elfsh_load_section(file, sect->shdr);
+
       if (sect->data == NULL)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load STABS string table", NULL);
-
-      file->secthash[ELFSH_SECTION_STABSTR] = sect;
     }
 
   if (num != NULL)
-    *num = file->secthash[ELFSH_SECTION_STAB]->shdr->sh_size /
-      sizeof(elfshstabent_t);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(file->secthash[ELFSH_SECTION_STAB])));
+    {
+      nbr = file->secthash[ELFSH_SECTION_STAB]->shdr->sh_size;
+      *num = nbr / sizeof(elfshstabent_t);
+    }
+
+  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_STAB]);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

@@ -4,7 +4,7 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id: edfmt.c,v 1.10 2007-03-07 16:45:35 thor Exp $
+** $Id: edfmt.c,v 1.11 2007-05-18 11:14:19 mxatone Exp $
 **
 */
 
@@ -90,6 +90,12 @@ int			edfmt_format(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
 
+  /* We won't analyze libe2dbg library because, there's far too many information
+     in this library, which allocate too many memory */
+  if (file->name && !strcmp(basename(file->name), "libe2dbg32.so"))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "We don't analyze e2dbg library", -1);
+
   /* We call every elements of the structure */
   for (i = 0; debug_format[i].sect_name != NULL; i++)
     {
@@ -117,11 +123,7 @@ int			edfmt_format(elfshobj_t *file)
   /* No debugging format sections found */
   if (count == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Can't find at leat on debug format", -1);
-
-  /*printf("======= ADDED TYPES ================\n");
-  edfmt_uni_print(file);
-  printf("====================================\n");*/
+		      "Can't find at leat one debug format", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

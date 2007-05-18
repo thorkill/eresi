@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.13 2007-04-02 18:00:57 may Exp $
+** $Id: map.c,v 1.14 2007-05-18 11:14:19 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -18,7 +18,7 @@ void		      elfsh_fixup(elfshobj_t *file)
   elfsh_Shdr	*got;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  elfsh_get_symtab(file, NULL);
+
   if (file->hdr->e_type == ET_REL || elfsh_static_file(file))
     elfsh_sort_sht(file);
 
@@ -70,6 +70,22 @@ int		        elfsh_read_obj(elfshobj_t *file)
        index++);
 
   /*
+  ** Load sections placed after symtab
+  ** Added for Solaris
+  */
+  elfsh_get_comments(file);
+  elfsh_get_dwarf_info(file, NULL);
+  elfsh_get_dwarf_abbrev(file, NULL);
+  elfsh_get_dwarf_aranges(file, NULL);
+  elfsh_get_dwarf_frame(file, NULL);
+  elfsh_get_dwarf_line(file, NULL);
+  elfsh_get_dwarf_macinfo(file, NULL);
+  elfsh_get_dwarf_pubnames(file, NULL);
+  elfsh_get_dwarf_str(file, NULL);
+  elfsh_get_dwarf_loc(file, NULL);  
+  elfsh_get_stab(file, NULL);
+
+  /*
    ** We cannot use simply elfsh_get_anonymous_section() here
    ** because the object's section hash ptrs would not be filled.
    */
@@ -87,7 +103,7 @@ int		        elfsh_read_obj(elfshobj_t *file)
   elfsh_get_verdeftab(file, NULL);
   elfsh_get_hashtable(file, NULL);
 
-  elfsh_get_comments(file);
+  //elfsh_get_comments(file);
   elfsh_get_plt(file, NULL);
 
   /* Fill the multiple notes sections */

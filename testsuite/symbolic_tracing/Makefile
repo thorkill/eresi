@@ -9,7 +9,7 @@ include ../../config.h
 SRC 	= tracer.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32
+LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32
 NAM	= tracer
 RM	= rm -f 
 OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ \

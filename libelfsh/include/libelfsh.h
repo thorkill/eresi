@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.53 2007-05-16 23:36:37 may Exp $
+** $Id: libelfsh.h,v 1.54 2007-05-18 11:14:19 mxatone Exp $
 **
 */
 
@@ -925,6 +925,17 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t *file, elfsh_Addr sym_value, elfsh_SAd
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s);
 int		elfsh_set_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s, char *name);
 int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc);
+
+/* dwarf.c */
+void		*elfsh_get_dwarf_info(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_frame(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_line(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_str(elfshobj_t *file, int *num);
+void		*elfsh_get_dwarf_loc(elfshobj_t *file, int *num);
 
 /* sym_common.c */
 elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type, int binding, int vis, int idx);
