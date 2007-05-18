@@ -8,6 +8,8 @@ log session
 
 reladd 1 2
 redir puts puts_troj
+
+sym old
 save fake_aout
 
 log stop

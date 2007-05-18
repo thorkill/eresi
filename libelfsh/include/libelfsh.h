@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.54 2007-05-18 11:14:19 mxatone Exp $
+** $Id: libelfsh.h,v 1.55 2007-05-18 15:52:16 may Exp $
 **
 */
 
@@ -49,10 +49,10 @@
 #define		__DEBUG_MAP__		       0
 #define		__DEBUG_SECTS__		       0
 #define		__DEBUG_SORT__		       0	
-#define		__DEBUG_RELADD__	       0
+#define		__DEBUG_RELADD__	       1
 #define		__DEBUG_COPYPLT__	       0
 #define		__DEBUG_BSS__		       0
-#define		__DEBUG_REDIR__		       1
+#define		__DEBUG_REDIR__		       0
 #define		__DEBUG_RUNTIME__	       0
 #define		__DEBUG_CFLOW__		       0
 #define		__DEBUG_STATIC__	       0

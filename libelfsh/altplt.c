@@ -7,7 +7,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id: altplt.c,v 1.9 2007-05-01 15:56:01 may Exp $
+** $Id: altplt.c,v 1.10 2007-05-18 15:52:16 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -47,7 +47,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
       sym = elfsh_get_dynsymbol_by_name(file, "__libc_start_main");
       if (!sym)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot find __libc_start_main",  -1);
+		     "Cannot find __libc_start_main",  -1);
       
 #if __DEBUG_COPYPLT__	      
       printf("[DEBUG_COPYPLT] Found __libc_start_main MIPS at addr "
@@ -58,7 +58,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
     }
   else 
     addr = plt->shdr->sh_addr;
-
+  
   /* Call the libelfsh hook ALTPLT */
   if (elfsh_altplt(file, &newsym, addr) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -282,11 +282,16 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   for (off = 0; off < plt->shdr->sh_size; off += entsz)
     {
 
+      /* SPARC does not have ALTGOT */
+      if (FILE_IS_MIPS(file) || FILE_IS_ALPHA64(file) || FILE_IS_IA32(file))
+	diff = (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr;
+      else
+	diff = 0;
+
       /* Special case for the first plt entry */
-      if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, extplt, plt,
-					    (uint32_t) altgot->shdr->sh_addr - got->shdr->sh_addr) < 0)
+      if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, extplt, plt, diff) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  ".alt.plt on first entry failed", -1);
+		     "ALTPLT on first entry failed", -1);
       else if (off == 0)
 	continue;
       

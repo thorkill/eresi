@@ -9,7 +9,7 @@
 ** Last update Sat Jul 30 17:34:52 2005 mayhem
 **
 **
-** $Id: bss.c,v 1.9 2007-05-11 10:48:29 may Exp $
+** $Id: bss.c,v 1.10 2007-05-18 15:52:16 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -365,39 +365,64 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 
 
 /**
- * Map a new BSS in the current file or process as an additional section 
+ * Insert the BSS section in the destination file
  */
-elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
+elfshsect_t	*elfsh_insert_bss(elfshobj_t *file, elfshobj_t *rel, char *bssname)
 {
+  int		pagesize;
   elfshsect_t	*newbss;
   int		bsslen;
   char		buf[BUFSIZ];
-  elfshsect_t	*current;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  pagesize = elfsh_get_pagesize(file);
+  snprintf(buf, sizeof(buf), "%s%s", rel->name, bssname);
+  newbss = elfsh_insert_section(file, buf, NULL, ELFSH_DATA_INJECTION, pagesize, 0);
+  if (!newbss)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to insert bss section", NULL);
 
+  /* The size of the BSS is found in the host directly, so this call must be after the previous */
+  bsslen = elfsh_find_bsslen(file, rel, bssname);
+  if (bsslen == -1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to find bss size", NULL);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
+}
+
+
+
+/**
+ * Map a new BSS in the current file or process as an additional section 
+ */
+elfshsect_t*	elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
+{
+  elfshsect_t*	newbss;
+  elfshsect_t*	current;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   newbss = NULL;
   current = rel->sectlist;
   for (current = rel->sectlist; current; current = current->next)
     {
       if (elfsh_get_section_type(current->shdr) != SHT_NOBITS)
 	continue;
-      
-      snprintf(buf, sizeof(buf), "%s%s", rel->name, current->name);
-      newbss = elfsh_insert_section(file, buf, NULL, ELFSH_DATA_INJECTION,
-				    elfsh_get_pagesize(file), 0);
+      newbss = elfsh_insert_bss(file, rel, current->name);
       if (!newbss)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to insert runtime bss", NULL);
-      
-      bsslen = elfsh_find_bsslen(file, rel, current->name);
-      if (bsslen == -1)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find bss size", NULL);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
     }
 
-  /* There was simply no bss in the relocatable file, its not an error */
+  /* There was simply no bss in the relocatable file, create it with standard name */
   if (!newbss)
-    newbss = (elfshsect_t *) 0xdeadbeef;
+    {
+      newbss = elfsh_insert_bss(file, rel, ELFSH_SECTION_NAME_BSS);
+      if (!newbss)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to insert runtime bss", NULL);
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
 }

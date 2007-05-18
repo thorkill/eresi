@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.58 2007-04-30 13:39:37 may Exp $
+** $Id: revm.h,v 1.59 2007-05-18 15:52:16 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -252,6 +252,7 @@ extern asm_processor	proc;
 #define	CMD_SUB			"sub"
 #define	CMD_MUL			"mul"
 #define	CMD_DIV			"div"
+#define	CMD_TEST		"test"
 #define	CMD_MOD			"mod"
 #define	CMD_INFO		"info"
 #define	CMD_METACMD		"!"
@@ -762,6 +763,8 @@ int		cmd_sub();
 int		cmd_mul();
 int		cmd_div();
 int		cmd_mod();
+int		cmd_cmp();
+int		cmd_test();
 int		cmd_meta();
 int		cmd_write();
 int		cmd_append();
@@ -777,7 +780,6 @@ int		cmd_modunload();
 int		cmd_relinject();
 int		cmd_stop();
 int		cmd_hijack();
-int		cmd_cmp();
 int		cmd_insert();
 int		cmd_remove();
 int		cmd_sort();

@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.11 2007-03-27 20:56:03 mxatone Exp $
+** $Id: relinject.c,v 1.12 2007-05-18 15:52:16 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -61,7 +61,8 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 	{
 	  new->parent->listrel[new->parent->nbrel++] = reltab->parent;
 #if __DEBUG_RELADD__
-	  printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", reltab->parent->name);
+	  printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", 
+		 reltab->parent->name);
 #endif
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 	}
@@ -178,8 +179,8 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
   data = reltab->data;
 
 #if __DEBUG_RELADD__
-  printf("[DEBUG_RELADD] Using reloc table from %s [%s] data at %p \n",
-	 reltab->parent->name, 	 reltab->name, data);
+  fprintf(stderr, "[DEBUG_RELADD] Using reloc table from %s [%s] data at %p \n",
+	  reltab->parent->name, reltab->name, data);
 #endif
 
   /* Loop on the relocation table entries */
@@ -201,13 +202,12 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
     {
 
 #if __DEBUG_RELADD__
-      printf("[DEBUG_RELADD] relocation loop stage %u for section %s index %u \n", 
-	     stage, new->name, index);
+      fprintf(stderr, "[DEBUG_RELADD] relocation loop stage %u for section %s index %u \n", 
+	      stage, new->name, index);
 #endif
 
       /* We try a new relocation now that the ET_REL dependence is mapped */
     retry:
-
 
       /* Get symbol value in ET_REL */
       cur = (reltab->shdr->sh_type == SHT_RELA ?
@@ -238,30 +238,32 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  /* If the symbol is not found and we are still in
 	     the first stage relocation, just pass it */
 	  sym = elfsh_get_metasym_by_name(new->parent, name);
-	  if (!sym) switch (elfsh_find_relocsym(new, reltab, &sym, name, stage, symtype))
+	  if (!sym) 
 	    {
-	    case 2:
+	      switch (elfsh_find_relocsym(new, reltab, &sym, name, stage, symtype))
+		{
+		case 2:
 #if	__DEBUG_STATIC__
-	      printf("[DEBUG_STATIC] RETRY\n");
+		  fprintf(stderr, "[DEBUG_STATIC] RETRY\n");
 #endif
-	      goto retry;
-	      break;
-	    case 0:
-	      continue;
-	    case 1:
-	      break;
-	    case -1:
-	    default:
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				"Unable to satisfy symbol in ET_REL", -1);
+		  goto retry;
+		  break;
+		case 0:
+		  continue;
+		case 1:
+		  break;
+		case -1:
+		default:
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			       "Unable to satisfy symbol in ET_REL", -1);
+		}
 	    }
 	  
 	  addr = sym->st_value;
-
  
 #if	__DEBUG_RELADD__
-	  printf("[DEBUG_RELADD] Relocate using existing symbol %-20s " AFMT "]\n",
-		 name, (elfsh_Addr) addr);
+	  fprintf(stderr, "[DEBUG_RELADD] Relocate using existing symbol %-20s " AFMT "]\n",
+		  name, (elfsh_Addr) addr);
 #endif
 
 	}
@@ -282,6 +284,11 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Cant find extracted section in ET_REL", -1);
 
+#if	__DEBUG_RELADD__
+	  fprintf(stderr, "[DEBUG_RELADD] Found -%s- section (idx = %u), now looking at "
+		  "injected base address\n", sect->name, sect->index);
+#endif
+
 	  /* Find corresponding inserted section in ET_EXEC */
 	  snprintf(tmpname, sizeof(tmpname), "%s%s", reltab->parent->name, sect->name);
 	  sect = elfsh_get_section_by_name(new->parent, tmpname, NULL, NULL, NULL);
@@ -290,12 +297,12 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	    {
 
 #if	__DEBUG_RELADD__
-	      printf("[DEBUG_RELADD] Did not found %s section (sym = %s) \n", 
-		     tmpname, name);
+	      fprintf(stderr, "[DEBUG_RELADD] Did not found %s section (sym = %s) \n", 
+		      tmpname, name);
 #endif
  
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				"Cant find inserted section in ET_EXEC", -1);
+			   "Cant find inserted section in ET_EXEC", -1);
 	    }
 	  
 	  /* Compute pointer value */
@@ -305,11 +312,10 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 		    !FILE_IS_ALPHA64(sect->parent) &&
 		    !FILE_IS_MIPS(sect->parent)) ? 
 		   *dword : sym->st_value);
-	  
 
 #if __DEBUG_RELADD__
-	  printf("[DEBUG_RELADD] Relocate using section %-20s base [-> " AFMT "] \n",
-		 sect->name, (elfsh_Addr) addr);
+	  fprintf(stderr, "[DEBUG_RELADD] Relocate using section %-20s base [-> " AFMT "] \n",
+		  sect->name, (elfsh_Addr) addr);
 #endif
 
 

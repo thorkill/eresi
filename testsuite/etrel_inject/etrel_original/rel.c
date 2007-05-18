@@ -6,7 +6,7 @@
 ** Started on  Mon Jun 23 06:56:04 2003 mayhem
 ** Last update Sun Aug 17 17:41:48 2003 mayhem
 **
-** $Id: rel.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: rel.c,v 1.3 2007-05-18 15:52:16 may Exp $
 **
 */
 #include <stdio.h>
@@ -21,11 +21,13 @@ char	glvar_testreloc_bss2;
 short	glvar_testreloc_bss3;
 
 
+/*
 int	hook_func(char *str)
 {
   printf("HOOK FUNC %s !\n", str);
   return (old_legit_func(str));
 }
+*/
 
 
 int	puts_troj(char *str)

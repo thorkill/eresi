@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.21 2007-04-08 23:29:01 thor Exp $
+** $Id: revm-help.h,v 1.22 2007-05-18 15:52:16 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -158,6 +158,7 @@
 
 /* Scripting only commands */
 #define HLP_CMP			"Compare 2 parameters (modify $_ variable)"
+#define HLP_TEST		"Test enabled bits in first parameter (modify $_ variable)"
 #define	HLP_JMP			"Inconditional jump to script label"
 #define HLP_JE			"Jump on label if equal (use last cmp result)"
 #define	HLP_JNE			"Jump on label if nont equal (use last cmp result)"

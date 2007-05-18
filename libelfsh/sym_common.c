@@ -4,7 +4,7 @@
 ** Started on  Tue Dec 31 10:19:01 2002 mayhem
 ** 
 **
-** $Id: sym_common.c,v 1.6 2007-03-14 23:48:07 may Exp $
+** $Id: sym_common.c,v 1.7 2007-05-18 15:52:16 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -407,6 +407,9 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 				 elfshsect_t *symtab, 
 				 elfsh_Addr limit, int inc)
 {
+#if	__DEBUG_RELADD__
+  static u_int	totshift = 0;
+#endif
   u_int		nbr;
   u_int		idx;
   elfsh_Sym	*sym;
@@ -418,7 +421,6 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 		      "Invalid SYMTAB parameter", -1);
 
 #if	__DEBUG_RELADD__
-  static u_int	totshift = 0;
   totshift += inc;
   printf("[DEBUG_RELADD] Shifting symtab [LIM " AFMT 
 	 " .::. INC %08u .::. TOT %08u] \n",

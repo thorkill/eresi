@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.32 2007-05-16 13:33:47 may Exp $
+** $Id: tables.c,v 1.33 2007-05-18 15:52:16 may Exp $
 **
 */
 #include "revm.h"
@@ -815,6 +815,8 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_HIJACK  , (void *) cmd_hijack  , (void *) vm_getvarparams , 1, HLP_HIJACK);
   vm_addcmd(CMD_CMP     , (void *) cmd_cmp     , (void *) vm_getoption2   , 0, HLP_CMP);
   vm_addcmd(CMD_CMP2    , (void *) cmd_cmp     , (void *) vm_getoption2   , 0, HLP_CMP);
+  vm_addcmd(CMD_TEST    , (void *) cmd_test    , (void *) vm_getoption2   , 0, HLP_TEST);
+
   vm_addcmd(CMD_INSERT  , (void *) cmd_insert  , (void *) vm_getvarparams , 1, HLP_INSERT);
   vm_addcmd(CMD_INSERT2 , (void *) cmd_insert  , (void *) vm_getvarparams , 1, HLP_INSERT);
   vm_addcmd(CMD_REMOVE  , (void *) cmd_remove  , (void *) vm_getoption2   , 1, HLP_REMOVE);

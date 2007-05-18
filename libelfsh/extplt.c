@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.13 2007-04-20 12:37:10 may Exp $
+ * $Id: extplt.c,v 1.14 2007-05-18 15:52:16 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -39,13 +39,6 @@ int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 
   /* Search the correct file using hash version section 
    as every linker should do */
-
-  /* XXX tmp fix testing -mm */
-  fprintf(stderr, "Calling hash_getfile_def for sym %s \n", name);
-  //if (!strncmp(name, "old_", 4))
-  //name += 4;
-
-  
   sym_file = elfsh_hash_getfile_def(file, name);
   if (!sym_file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -196,8 +189,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfsh_Dyn   	*hashent;
 
   elfshsect_t	*relgot;
-
   char		*data;
+  char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,7 +215,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
     }
   
   /* grab relocation tables */
-  relplt = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELPLT, 0, 0, 0);
+  name = (FILE_IS_SPARC(file) ? ELFSH_SECTION_NAME_RELAPLT : ELFSH_SECTION_NAME_RELPLT);
+  relplt = elfsh_get_section_by_name(file, name, 0, 0, 0);
   if (!relplt)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find PLT relocation table", -1);
