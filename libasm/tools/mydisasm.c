@@ -3,7 +3,7 @@
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
 **
-** $Id: mydisasm.c,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: mydisasm.c,v 1.8 2007-05-19 23:59:12 heroine Exp $
 **
 */
 
@@ -68,13 +68,14 @@ int	main(int ac, char **av) {
   else
     vaddr = sym->st_value;
   
+  /*
   if (!vaddr)
     {
       printf("invalid start %s: null or cannot find symbol\n", av[2]);
       elfsh_unload_obj(obj);
       return (-1);
     }
-  
+  */
   /* fetching third argument if present L: <len> */
   
   if (av[3])
@@ -146,6 +147,7 @@ int	main(int ac, char **av) {
 	for (i = 0; i < instr.len; i++)
 	  printf("%02x ", *(ptr + curr + i));
 	puts("");
+	//asm_instruction_debug(&instr, stdout);
 	curr += asm_instr_len(&instr);
       } else
 	curr++;

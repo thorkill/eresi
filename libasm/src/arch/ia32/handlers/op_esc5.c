@@ -1,34 +1,46 @@
-/*
-** $Id: op_esc5.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
-**
-*/
+/**
+ * @file op_esc5.c
+ * $Id: op_esc5.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <instruction func="op_esc5" opcode="0xdd"/>
+/**
+ * Handler for esc5 instruction group, opcode 0xdd
+ * @param new Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of instruction.
 */
 
-int op_esc5(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_esc5(asm_instr *new, u_char *opcode, u_int len, 
+	    asm_processor *proc) 
+{
   struct s_modrm        *modrm;
   new->ptr_instr = opcode;
   
   modrm = (struct s_modrm *) opcode + 1;
   new->len += 1;
   if (modrm->mod == 3)
-    switch(modrm->r) {
-    case 3:
-      new->instr = ASM_FSTP;
-      break;
-    case 4:
-      new->instr = ASM_FUCOM;
-      break;
-    case 5:
-      new->instr = ASM_FUCOMP;
-      break;
-    default:
-      new->instr = ASM_BAD;
-      break;
+    {
+      new->len += 1;
+      switch(modrm->r) 
+	{
+	case 3:
+	  new->instr = ASM_FSTP;
+	  break;
+	case 4:
+	  new->instr = ASM_FUCOM;
+	  break;
+	case 5:
+	  new->instr = ASM_FUCOMP;
+	  break;
+	default:
+	  new->instr = ASM_BAD;
+	  break;
+	}
     }
   else
     switch (modrm->r) {

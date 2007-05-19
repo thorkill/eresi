@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_reg_iv.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
+** $Id: op_mov_reg_iv.c,v 1.4 2007-05-19 23:59:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -28,7 +28,7 @@ asm_processor *proc)
   new->len += 1;
 
   #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_OPMOD, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 0, ASM_OTYPE_OPMOD, proc);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATE, proc);
   #else
   

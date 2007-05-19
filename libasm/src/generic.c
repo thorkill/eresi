@@ -1,6 +1,6 @@
 /*
-** Latest edition Author : $Author: thor $
-** $Id: generic.c,v 1.8 2007-05-16 23:08:13 thor Exp $
+** Latest edition Author : $Author: heroine $
+** $Id: generic.c,v 1.9 2007-05-19 23:59:12 heroine Exp $
 ** Started : Wed Jul 24 18:45:15 2002
 ** Updated : Sat Mar 20 05:26:26 2004
 */
@@ -24,7 +24,8 @@
  * @return -1 on error or instruction fetched length
  */
 
-int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
+int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, 
+		       asm_processor *proc) {
   memset(i, 0, sizeof (asm_instr));
   i->proc = proc;
   return (proc->fetch(i, buf, len, proc));
@@ -34,9 +35,10 @@ int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, asm_processor *proc) {
  *
  *
  */
+
 int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
   /*
-  if (instr->op1)
+    if (instr->op1)
     asm_write_operand(instr->op1);
   if (instr->op2)
     asm_write_operand(instr->op1);
@@ -49,12 +51,13 @@ int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
 
 /**
  * Return instruction length
- * @param ins
+ * @param ins Pointer to instruction structure.
  */
 
 
-int	asm_instr_len(asm_instr *i) {
-  return (asm_instruction_get_len(i, 0, 0));
+int	asm_instr_len(asm_instr *ins) 
+{
+  return (asm_instruction_get_len(ins, 0, 0));
 }
 
 /**
@@ -312,8 +315,8 @@ int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) {
  * @param valptr is a filestream : FILE *
  * @return 1 on success, 0 on error.
  */
-
-int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) {
+int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) 
+{
   asm_operand	*op;
   FILE		*fp;
 
@@ -324,19 +327,97 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) {
     case 3: op = &ins->op1; break;
     default: return (-1);
     }
-  fp = (FILE *) valptr;
+  if (op->type)
+    {
+      fp = (FILE *) valptr;
 
-  fprintf(fp, "o%i len       = %i\n", num, op->len);
-  fprintf(fp, "o%i ptr       = %8p\n", num, op->ptr);
-  fprintf(fp, "o%i type      = %08x\n", num, op->type);
-  fprintf(fp, "o%i size      = %i\n", num, op->size);
-  fprintf(fp, "o%i content   = %i\n", num, op->content);
+      fprintf(fp, "o%i type=[%s] content=[%c%c%c%c]\n",
+	      num,
+	      asm_operand_type_string(op->type),
+	      op->content & ASM_OP_BASE ? 'B' : ' ',
+	      op->content & ASM_OP_INDEX ? 'I' : ' ',
+	      op->content & ASM_OP_SCALE ? 'S' : ' ',
+	      op->content & ASM_OP_VALUE ? 'V' : ' ');
+      /*
+      fprintf(fp, "o%i len       = %i\n", num, op->len);
+      fprintf(fp, "o%i ptr       = %8p\n", num, op->ptr);
+      fprintf(fp, "o%i type      = %08x\n", num, op->type);
+      fprintf(fp, "o%i size      = %i\n", num, op->size);
+      fprintf(fp, "o%i content   = [%i]\n", num, op->content);
 
-  fprintf(fp, "o%i immediate = %08X\n", num, op->imm);
-  fprintf(fp, "o%i basereg   = %i\n", num, op->base_reg);
-  fprintf(fp, "o%i indexreg  = %i\n", num, op->index_reg);
-  fprintf(fp, "o%i scale     = %i\n", num, op->scale);
+      fprintf(fp, "o%i immediate = %08X\n", num, op->imm);
+      fprintf(fp, "o%i basereg   = %i\n", num, op->base_reg);
+      fprintf(fp, "o%i indexreg  = %i\n", num, op->index_reg);
+      fprintf(fp, "o%i scale     = %i\n", num, op->scale);
+      */
+    }
   return (1);
+}
+
+/**
+ * Dump debugging information for an instruction.
+ * @param ins Pointer to instruction to debug.
+ * @param out Output FILE* stream.
+ */
+
+void	asm_instruction_debug(asm_instr *ins, FILE *out)
+{
+  int	i;
+
+  fprintf(out, "ins=[%s] len=[%i] types=[%c|%c%c%c]\n",
+	  asm_instr_get_memonic(ins, ins->proc), 
+	  asm_instr_len(ins),
+	  ins->type & ASM_TYPE_IMPBRANCH ? 'I' :
+	  ins->type & ASM_TYPE_CALLPROC ? 'C' : 
+	  ins->type & ASM_TYPE_CONDBRANCH ? 'J' : 
+	  ins->type & ASM_TYPE_RETPROC ? 'R' : ' ',
+	  ins->type & ASM_TYPE_ARITH ? 'c' : ' ',
+	  ins->type & ASM_TYPE_CONTROL ? 'f' : ' ',
+	  ins->type & ASM_TYPE_ASSIGN ? 'a' : ' ');
+  for (i = 0; i < 3; i++)
+    {
+      asm_operand_debug(ins, i, 0, out);
+    }
+}
+
+/**
+ *
+ * @param type Instruction type
+ *
+ */
+
+char	*asm_operand_type_string(int type)
+{
+  switch (type)
+    {
+    case ASM_OTYPE_FIXED: return ("fixed");
+    case ASM_OTYPE_OPMOD: return ("opmod");
+    case ASM_OTYPE_ADDRESS: return ("address");
+    case ASM_OTYPE_CONTROL: return ("control");
+    case ASM_OTYPE_DEBUG: return ("debug");
+    case ASM_OTYPE_ENCODED: return ("encoded");
+    case ASM_OTYPE_ENCODEDBYTE: return ("encodedbyte");
+    case ASM_OTYPE_FLAGS: return ("flags");
+    case ASM_OTYPE_GENERAL: return ("general");
+    case ASM_OTYPE_GENERALBYTE: return ("generalbyte");
+    case ASM_OTYPE_IMMEDIATE: return ("immediate");
+    case ASM_OTYPE_IMMEDIATEWORD: return ("immediateword");
+    case ASM_OTYPE_IMMEDIATEBYTE: return ("immediatebyte");
+    case ASM_OTYPE_SHORTJUMP: return ("shortjump");
+    case ASM_OTYPE_JUMP: return ("jump");
+    case ASM_OTYPE_MEMORY: return ("memory");
+    case ASM_OTYPE_OFFSET: return ("offset");
+    case ASM_OTYPE_PMMX: return ("pmmx");
+    case ASM_OTYPE_QMMX: return ("qmmx");
+    case ASM_OTYPE_REGISTER: return ("register");
+    case ASM_OTYPE_SEGMENT: return ("segment");
+    case ASM_OTYPE_TEST: return ("test");
+    case ASM_OTYPE_VSFP: return ("vsfp");
+    case ASM_OTYPE_WSFP: return ("wsfp");
+    case ASM_OTYPE_XSRC: return ("xsrc");
+    case ASM_OTYPE_YDEST: return ("ydest");
+    }
+  return ("undocumented type");
 }
 
 /**

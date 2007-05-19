@@ -1,5 +1,5 @@
 /*
-** $Id: tables_i386.c,v 1.8 2006-12-19 18:17:59 heroine Exp $
+** $Id: tables_i386.c,v 1.9 2007-05-19 23:59:12 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 22:42:50 2002
@@ -233,6 +233,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_LLDT] = "lldt";
   proc->instr_table[ASM_STMXCSR] = "stmxcsr";
   proc->instr_table[ASM_LDMXCSR] = "ldmxcsr";
+  proc->instr_table[ASM_BSF] = "bsf";
   
   /* FPU */
   proc->instr_table[ASM_FILD] = "fild";

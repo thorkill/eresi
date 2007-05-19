@@ -5,7 +5,7 @@
 ** Started : Mon Jun 10 22:42:50 2002
 ** Updated : Tue Feb 25 00:22:06 2003
 **
-** $Id: instr_table.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: instr_table.c,v 1.4 2007-05-19 23:59:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -195,6 +195,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_STR] = "str";
   proc->instr_table[ASM_LTR] = "ltr";
   proc->instr_table[ASM_LLDT] = "lldt";
+  proc->instr_table[ASM_BSF] = "bsf";
   
   /* FPU */
   proc->instr_table[ASM_FILD] = "fild";

@@ -1,15 +1,22 @@
-/*
-** $Id: i386_shld.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
-**
-*/
+/**
+ * @file i386_shld.c
+ * $Id: i386_shld.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <i386 func="i386_shld" opcode="0xa4"/>
+/**
+ * Handler for instruction shld, opcode 0x0f 0xa4
+ * @param new Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of instruction.
 */
 
-int i386_shld(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int i386_shld(asm_instr *new, u_char *opcode, u_int len, 
+	      asm_processor *proc) 
 {
   struct s_modrm        *modrm;
   new->len += 1;
@@ -18,9 +25,13 @@ int i386_shld(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->instr = ASM_SHLD;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_REGISTER, proc);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, proc);
-  new->len += asm_operand_fetch(&new->op3, opcode + 2, ASM_OTYPE_IMMEDIATEBYTE, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
+				ASM_OTYPE_REGISTER, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, 
+				ASM_OTYPE_GENERAL, proc);
+  new->len += asm_operand_fetch(&new->op3, opcode + 2, 
+				ASM_OTYPE_IMMEDIATEBYTE, proc);
+  new->len += 1;
 #else
 
   new->op1.type = ASM_OTYPE_REGISTER;

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.15 2007-05-19 18:28:09 thor Exp $
+** $Id: libasm.h,v 1.16 2007-05-19 23:59:12 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -193,6 +193,12 @@ int		asm_operand_get_value(asm_instr *, int, int, void *);
 int		asm_operand_debug(asm_instr *, int, int, void *);
 
 /**
+ * Dump content of instruction
+ *
+ */
+void		asm_instruction_debug(asm_instr *ins, FILE *out);
+
+/**
  * Get immediate value stored in operand.
  */
 
@@ -237,6 +243,11 @@ int		asm_operand_set_scale(asm_instr *, int num, int opt, void *);
 void		asm_set_resolve_handler(asm_processor *,
 					void (*)(void *, u_int, char *, u_int), 
 					void *);
+
+/**
+ *
+ */
+char    *asm_operand_type_string(int type);
 
 /**
  *
