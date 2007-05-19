@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: edfmt.c,v 1.3 2007-05-19 21:01:55 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -14,7 +14,7 @@ char buf[BUFSIZ];
 
 #define VM_EDFMT_VAR_QUEUE_NAME "vm_edfmt_varqueue"
 
-#define TYPE_MAX_ATTR 50
+#define TYPE_MAX_ATTR 500
 #define TYPE_ATTR_LEN 256
 char *tmp_arr[TYPE_MAX_ATTR];
 char arr_pool[TYPE_ATTR_LEN];
@@ -114,7 +114,9 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	    vm_edfmt_type_parse(child->child);
 	}
 
-      for (child = type->child, index = 0; child != NULL; child = child->next, index++)
+      for (child = type->child, index = 0; 
+	   child != NULL && index < TYPE_MAX_ATTR; 
+	   child = child->next, index++)
 	{
 	  if (child->parent == NULL || child->child == NULL)
 	    continue;
@@ -285,6 +287,7 @@ int			vm_edfmt_parse(elfshobj_t *file)
     {
       /* Global elements */
       vm_edfmt_types(info->types);
+
       vm_edfmt_add_var_queue(info->vars);
 
       /* Then local file elements */
