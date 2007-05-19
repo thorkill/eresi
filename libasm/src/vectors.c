@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.6 2007-05-16 23:08:13 thor Exp $
+ * $Id: vectors.c,v 1.7 2007-05-19 18:28:09 thor Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -92,7 +92,12 @@ int	asm_init_vectors(asm_processor *proc)
   config_add_item(ASM_CONFIG_ENDIAN_FLAG,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
-		  ASM_CONFIG_LITTLE_ENDIAN);
+		  (void *)ASM_CONFIG_LITTLE_ENDIAN);
+
+  config_add_item(ASM_CONFIG_ATT_MARGIN_FLAG,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *)ASM_CONFIG_ATT_MARGIN_DEFAULT);
  
   return (1);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.8 2007-05-16 23:08:13 thor Exp $
+** $Id: output_ia32.c,v 1.9 2007-05-19 18:28:09 thor Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -319,6 +319,7 @@ int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
 char	*asm_ia32_display_instr_att(asm_instr *instr, 
 			       int addr) {
   static char	buffer[1024];
+  int		len;
 
   if (!instr)
     return (0);
@@ -343,8 +344,12 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
   
   if (instr->op1.type) {
     instr->op1.proc = instr->proc;
-    while(strlen(buffer) < 14)
+
+    /* Add spaces */
+    len = strlen(buffer);
+    while(len++ < (int)config_get_data(ASM_CONFIG_ATT_MARGIN_FLAG))
       strcat(buffer, " ");
+
     if (instr->op3.type) {
       instr->op3.proc = instr->proc;
       asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.14 2007-05-16 23:08:13 thor Exp $
+** $Id: libasm.h,v 1.15 2007-05-19 18:28:09 thor Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -59,6 +59,9 @@
 #define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"
 #define ASM_CONFIG_LITTLE_ENDIAN 0
 #define ASM_CONFIG_BIG_ENDIAN 1
+
+#define ASM_CONFIG_ATT_MARGIN_DEFAULT	14
+#define ASM_CONFIG_ATT_MARGIN_FLAG "libasm.output.att.margin"
 
 /*
   typedef's
