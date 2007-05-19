@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.14 2007-05-18 11:14:19 mxatone Exp $
+** $Id: map.c,v 1.15 2007-05-19 08:06:23 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -74,15 +74,7 @@ int		        elfsh_read_obj(elfshobj_t *file)
   ** Added for Solaris
   */
   elfsh_get_comments(file);
-  elfsh_get_dwarf_info(file, NULL);
-  elfsh_get_dwarf_abbrev(file, NULL);
-  elfsh_get_dwarf_aranges(file, NULL);
-  elfsh_get_dwarf_frame(file, NULL);
-  elfsh_get_dwarf_line(file, NULL);
-  elfsh_get_dwarf_macinfo(file, NULL);
-  elfsh_get_dwarf_pubnames(file, NULL);
-  elfsh_get_dwarf_str(file, NULL);
-  elfsh_get_dwarf_loc(file, NULL);  
+  elfsh_get_dwarf(file);
   elfsh_get_stab(file, NULL);
 
   /*

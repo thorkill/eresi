@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.55 2007-05-18 15:52:16 may Exp $
+** $Id: libelfsh.h,v 1.56 2007-05-19 08:06:23 mxatone Exp $
 **
 */
 
@@ -927,6 +927,7 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s, char *name);
 int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc);
 
 /* dwarf.c */
+int		elfsh_get_dwarf(elfshobj_t *file);
 void		*elfsh_get_dwarf_info(elfshobj_t *file, int *num);
 void		*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num);
 void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num);

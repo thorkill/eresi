@@ -8,6 +8,23 @@
 */
 #include "libelfsh.h"
 
+int			elfsh_get_dwarf(elfshobj_t *file)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  elfsh_get_dwarf_info(file, NULL);
+  elfsh_get_dwarf_abbrev(file, NULL);
+  elfsh_get_dwarf_aranges(file, NULL);
+  elfsh_get_dwarf_frame(file, NULL);
+  elfsh_get_dwarf_line(file, NULL);
+  elfsh_get_dwarf_macinfo(file, NULL);
+  elfsh_get_dwarf_pubnames(file, NULL);
+  elfsh_get_dwarf_str(file, NULL);
+  elfsh_get_dwarf_loc(file, NULL);  
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 /**
  * Load dwarf info table
  * @param file file objet
