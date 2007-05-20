@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2.c,v 1.18 2007-03-28 08:11:11 mxatone Exp $
+** $Id: dwarf2.c,v 1.19 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -69,7 +69,7 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
 
   if (dw2_sections.info.sect == NULL || dw2_sections.info.data == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Main DWARF2 section unavailable", -1);
+		 "Main DWARF2 section unavailable", -1);
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, dwarf2_info, sizeof(edfmtdw2info_t), -1);
   memcpy(&(dwarf2_info->sections), &dw2_sections, sizeof(edfmtdw2sectlist_t));
@@ -115,7 +115,9 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
     }
 
   /* Start into the block entrie */
-  edfmt_dwarf2_block_entrie(file);
+  if (edfmt_dwarf2_block_entrie(file) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "DWARF2 block parsing failed", -1);
 
   /* Parse cfa informations */
   /* TODO: reimplement it when it will be usefull
@@ -166,8 +168,26 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       /* Read DWARF2 .dwarf2_info header */
       dwarf2_ipos(current_cu->length, info, u_int);
       current_cu->end_pos = dwarf2_pos(info) + current_cu->length;
+
+      /* A compil unit bigger than the section ? */
+      if (current_cu->end_pos > dwarf2_size(info))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "DWARF2 compil unit size incorrect", -1);
+
       dwarf2_ipos(current_cu->version, info, u_short);
+
+      /* Need this exact version */
+      if (current_cu->version != 2)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "DWARF2 version check failed", -1);
+
       dwarf2_ipos(current_cu->offset, info, u_int);
+
+      /* Valid offset ? */
+      if (current_cu->offset >= dwarf2_size(abbrev))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "DWARF2 compil unit abbrev offset incorrect", -1);
+
       dwarf2_ipos(current_cu->addr_size, info, u_char);
 
       current_cu->info_pos = dwarf2_pos(info);
@@ -176,7 +196,9 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       dwarf2_pos(abbrev) = current_cu->offset;
      
       /* Loop on the current compil unit */
-      edfmt_dwarf2_block_loop(current_cu->end_pos);
+      if (edfmt_dwarf2_block_loop(current_cu->end_pos) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "DWARF2 block looping failed", -1);
 
       /* We update info position, to finish at the right offset */
       dwarf2_pos(info) = current_cu->end_pos;
@@ -235,7 +257,9 @@ int			edfmt_dwarf2_block_loop(u_int endpos)
     hash_init(&(current_cu->abbrev_table), DWARF2_ABBREV_NAME, 30, ASPECT_TYPE_UNKNOW);
   
   /* Parse abbrev table on the appropriate offset */
-  edfmt_dwarf2_abbrev_enum(&(current_cu->abbrev_table));
+  if (edfmt_dwarf2_abbrev_enum(&(current_cu->abbrev_table)) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "DWARF2 abbrev enum failed", -1);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

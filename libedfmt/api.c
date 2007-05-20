@@ -4,7 +4,7 @@
 ** Started Jan 26 2007 11:54:22 mxatone
 **
 **
-** $Id: api.c,v 1.13 2007-03-28 08:11:11 mxatone Exp $
+** $Id: api.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -22,9 +22,16 @@ elfshobj_t *cu_obj = NULL;
 #define API_HVAR_NAME 	"edfmt_api_hvar"
 #define API_HFUNC_NAME 	"edfmt_api_hfunc"
 
-#define API_GETPTR(_size) \
-edfmt_alloc_pool(&(uniinfo->alloc_pool), &(uniinfo->alloc_pos), \
-		 &(uniinfo->alloc_size), API_ALLOC_STEP, _size) 
+#define API_GETPTR(_var, _size, _ret)	 	      	\
+do {						     	\
+  _var = edfmt_alloc_pool(&(uniinfo->alloc_pool),    	\
+		       &(uniinfo->alloc_pos), 	     	\
+		       &(uniinfo->alloc_size), 	       	\
+		       API_ALLOC_STEP, _size); 		\
+if (_var == NULL)					\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
+		 "Pool allocation failed", _ret);     	\
+} while (0)
 
 #define EDFMT_COPY_NAME(_dest, _source) 			\
 do { 								\
@@ -39,42 +46,42 @@ do { 								\
       _dest->name[index] = '_';					\
 } while (0)
 
-#define EDFMT_NEW_TYPE(_type, _name, _up) 		       	\
+#define EDFMT_NEW_TYPE(_type, _name, _up, _ret) 	      	\
 do { 								\
   _type = edfmt_check_type(_name);				\
   if (_type)							\
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _type);	\
-  _type = API_GETPTR(sizeof(edfmttype_t)); 			\
+  API_GETPTR(_type, sizeof(edfmttype_t), _ret); 	       	\
   EDFMT_COPY_NAME(_type, _name);				\
   if (_up)							\
     edfmt_update_type(_type);					\
 } while(0)
 
-#define EDFMT_NEW_VAR(_var, _name, _up) 		       	\
+#define EDFMT_NEW_VAR(_var, _name, _up, _ret) 		       	\
 do { 								\
   _var = edfmt_check_var(_name);				\
   if (_var)							\
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _var);	\
-  _var = API_GETPTR(sizeof(edfmtvar_t)); 			\
+  API_GETPTR(_var, sizeof(edfmtvar_t), _ret); 			\
   EDFMT_COPY_NAME(_var, _name);					\
   if (_up)							\
     edfmt_update_var(_var);					\
 } while(0)
 
-#define EDFMT_NEW_FUNC(_func, _name, _up) 		       	\
+#define EDFMT_NEW_FUNC(_func, _name, _up, _ret)		       	\
 do { 								\
   _func = edfmt_check_func(_name);				\
   if (_func)							\
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _func);	\
-  _func = API_GETPTR(sizeof(edfmtfunc_t)); 			\
+  API_GETPTR(_func, sizeof(edfmtfunc_t), _ret);			\
   EDFMT_COPY_NAME(_func, _name);				\
   if (_up)							\
     edfmt_update_func(_func);					\
 } while(0)
 
-#define EDFMT_NEW_ARG(_arg, _name) 				\
+#define EDFMT_NEW_ARG(_arg, _name, _ret) 			\
 do { 								\
-  _arg = API_GETPTR(sizeof(edfmtfuncarg_t)); 			\
+  API_GETPTR(_arg, sizeof(edfmtfuncarg_t), _ret); 		\
   EDFMT_COPY_NAME(_arg, _name);					\
 } while(0)
 
@@ -577,7 +584,7 @@ edfmttype_t		*edfmt_add_type_unk(char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_UNK;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
@@ -599,7 +606,7 @@ edfmttype_t		*edfmt_add_type_basic(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_BASIC;
   ltype->size = size;
 
@@ -624,7 +631,7 @@ edfmttype_t		*edfmt_add_type_array(char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_ARRAY;
   ltype->parent = type;
   ltype->size = size;
@@ -648,7 +655,7 @@ edfmttype_t		*edfmt_add_type_ptr(char *name, edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_PTR;
   ltype->parent = type;
   ltype->size = sizeof(void *);
@@ -672,7 +679,7 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_STRUCT;
   ltype->size = size;
 
@@ -695,7 +702,7 @@ edfmttype_t		*edfmt_add_type_union(char *name, int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_UNION;
   ltype->size = size;
 
@@ -722,7 +729,7 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 0);
+  EDFMT_NEW_TYPE(ltype, name, 0, NULL);
   ltype->type = EDFMT_TYPE_ATTR;
   ltype->parent = tstruct;
   ltype->child = type;
@@ -767,7 +774,7 @@ edfmttype_t		*edfmt_add_type_void(char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_VOID;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
@@ -789,7 +796,7 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_TYPE(ltype, name, 1);
+  EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_LINK;
   ltype->parent = type;
 
@@ -813,7 +820,7 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid paramters", NULL);
 
-  EDFMT_NEW_VAR(lvar, name, 1);
+  EDFMT_NEW_VAR(lvar, name, 1, NULL);
   lvar->scope = EDFMT_SCOPE_GLOBAL;
   lvar->addr = addr;
   lvar->type = type;
@@ -840,7 +847,7 @@ edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid paramters", NULL);
 
-  EDFMT_NEW_FUNC(lfunc, name, 1);
+  EDFMT_NEW_FUNC(lfunc, name, 1, NULL);
   lfunc->rettype = ret;
   lfunc->start = start;
   lfunc->end = end;
@@ -868,7 +875,7 @@ edfmtfuncarg_t		*edfmt_add_arg(edfmtfunc_t *func, char *name,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid paramters", NULL);
 
-  EDFMT_NEW_ARG(larg, name);
+  EDFMT_NEW_ARG(larg, name, NULL);
   larg->type = type;
   larg->reg = reg;
   larg->pos = pos;

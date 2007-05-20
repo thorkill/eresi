@@ -4,7 +4,7 @@
 ** Started on  Mon Dec 25 18:08:03 2006 mxatone
 **
 **
-** $Id: libedfmt-dwarf2.h,v 1.12 2007-03-07 16:45:35 thor Exp $
+** $Id: libedfmt-dwarf2.h,v 1.13 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -78,7 +78,7 @@ struct 		s_dw2abbent
   u_char 	children;		/* Do we have children ? */
   u_int		level;			/* Children lvel */
 
-#define DW2_MAX_ATTR 20
+#define DW2_MAX_ATTR 50
   edfmtdw2abbattr_t attr[DW2_MAX_ATTR];	/* List of attributes */
   u_int		attrsize;		/* Current attribute size */
 

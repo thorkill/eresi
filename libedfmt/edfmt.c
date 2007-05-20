@@ -4,7 +4,7 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id: edfmt.c,v 1.11 2007-05-18 11:14:19 mxatone Exp $
+** $Id: edfmt.c,v 1.12 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -72,7 +72,7 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 
 /** 
  * Main point of the debug format library 
- * This function manage this steps for every debugging formats:
+ * This function manages this steps for every debugging formats:
  *  - Parse the format and create / init an interface for the next step.
  *  - Transform the debugging format representation in the uniform debugging format.
  *  - Clean elements allocated by the first step.
@@ -92,7 +92,9 @@ int			edfmt_format(elfshobj_t *file)
 
   /* We won't analyze libe2dbg library because, there's far too many information
      in this library, which allocate too many memory */
-  if (file->name && !strcmp(basename(file->name), "libe2dbg32.so"))
+  if (file->name 
+      && (!strcmp(basename(file->name), "libe2dbg32.so")
+	  || !strcmp(basename(file->name), "libe2dbg64.so")))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "We don't analyze e2dbg library", -1);
 
@@ -112,7 +114,7 @@ int			edfmt_format(elfshobj_t *file)
 	  /* Transform */
 	  if (debug_format[i].trans)
 	    debug_format[i].trans(file);
-
+	  
 	  /* Clean */
 	  if (debug_format[i].clean)
 	    debug_format[i].clean(file);

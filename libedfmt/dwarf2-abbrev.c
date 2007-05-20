@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2-abbrev.c,v 1.13 2007-03-07 16:45:35 thor Exp $
+** $Id: dwarf2-abbrev.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -14,8 +14,16 @@ char *alloc_pool = NULL;
 int alloc_pos = 0;
 int alloc_size = 0;
 
-#define DW2_GETPTR(_size) \
-edfmt_alloc_pool(&alloc_pool, &alloc_pos, &alloc_size, DWARF2_ALLOC_STEP, _size)
+#define DW2_GETPTR(_var, _size, _ret)	 	      	\
+do {						     	\
+  _var = edfmt_alloc_pool(&alloc_pool, 			\
+		       &alloc_pos, 			\
+		       &alloc_size, 			\
+		       DWARF2_ALLOC_STEP, _size); 	\
+if (_var == NULL)					\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
+		 "Pool allocation failed", _ret);     	\
+} while (0)
 
 /**
  * Lookup on abbrev_table and retrieve en abbrev entity (structure)
@@ -141,7 +149,7 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
     if (num == 0)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-    ent = DW2_GETPTR(sizeof(edfmtdw2abbent_t));
+    DW2_GETPTR(ent, sizeof(edfmtdw2abbent_t), -1);
 
     dwarf2_iuleb128(ent->tag, abbrev);
     dwarf2_iread_1(ent->children, abbrev);
@@ -292,7 +300,7 @@ fvstart:
       attr->u.udata = *(u_long *) addr;
       break;
     case DW_FORM_addr:
-      attr->u.vbuf = DW2_GETPTR(current_cu->addr_size);
+      DW2_GETPTR(attr->u.vbuf, current_cu->addr_size, -1);
       for (i = 0; i < current_cu->addr_size; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
       break;
@@ -314,7 +322,7 @@ fvstart:
 
       if (attr->asize > 0)
 	{
-	  attr->u.vbuf = DW2_GETPTR(attr->asize);
+	  DW2_GETPTR(attr->u.vbuf, attr->asize, -1);
 	  
 	  for (i = 0; i < attr->asize; i++)
 	    dwarf2_ipos(attr->u.vbuf[i], info, u_char);
@@ -343,7 +351,7 @@ fvstart:
     case DW_FORM_block:
       dwarf2_iuleb128(attr->asize, info);
 
-      attr->u.vbuf = DW2_GETPTR(attr->asize);
+      DW2_GETPTR(attr->u.vbuf, attr->asize, -1);
 
       for (i = 0; i < attr->asize; i++)
 	dwarf2_ipos(attr->u.vbuf[i], info, char);
@@ -477,7 +485,7 @@ int			edfmt_dwarf2_mac(u_long offset)
       {
       case DW_MACINFO_define:
       case DW_MACINFO_undef:
-	mac = DW2_GETPTR(sizeof(edfmtdw2macro_t));
+	DW2_GETPTR(mac, sizeof(edfmtdw2macro_t), -1);
 
 	mac->fileno = file;
 	mac->def = type == DW_MACINFO_define ? 1 : 0;
@@ -951,7 +959,7 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      edfmt_dwarf2_line_rec(current_cu, line, column, addr, file - 1);
 		      break;
 		    case DW_LNE_set_address:
-		      read_addr = DW2_GETPTR(current_cu->addr_size);
+		      DW2_GETPTR(read_addr, current_cu->addr_size, -1);
 		      
 		      for (i = 0; i < current_cu->addr_size; i++)
 			dwarf2_ipos(read_addr[i], line, u_char);
@@ -1057,7 +1065,7 @@ int			edfmt_dwarf2_line(u_long offset)
     dwarf2_inc_pos(line, strlen(dwarf2_ac_pos(line))+1);
   dwarf2_pos(line) = prev_pos;
 
-  header.dirs = DW2_GETPTR(sizeof(char*)*i);
+  DW2_GETPTR(header.dirs, sizeof(char*)*i, -1);
   header.dirs_number = i+1;
 
   /* Dir second pass */
@@ -1079,10 +1087,10 @@ int			edfmt_dwarf2_line(u_long offset)
     }
   dwarf2_pos(line) = prev_pos;
 
-  header.files_name = DW2_GETPTR(sizeof(char*)*i);
-  header.files_dindex = DW2_GETPTR(sizeof(u_int)*i);
-  header.files_time = DW2_GETPTR(sizeof(u_int)*i);
-  header.files_len = DW2_GETPTR(sizeof(u_int)*i);
+  DW2_GETPTR(header.files_name, sizeof(char*)*i, -1);
+  DW2_GETPTR(header.files_dindex, sizeof(u_int)*i, -1);
+  DW2_GETPTR(header.files_time, sizeof(u_int)*i, -1);
+  DW2_GETPTR(header.files_len, sizeof(u_int)*i, -1);
 
   header.files_number = i+1;
 
@@ -1125,7 +1133,7 @@ int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  pline = DW2_GETPTR(sizeof(edfmtdw2line_t));
+  DW2_GETPTR(pline, sizeof(edfmtdw2line_t), -1);
 
   pline->addr = addr;
   pline->line = line;

@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.13 2007-03-25 13:46:26 mxatone Exp $
+** $Id: stabs.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 
@@ -100,9 +100,17 @@ edfmtstabsinfo_t *stabs_info = NULL;
 /**
  * Macro to gain time when fetch allocation pointer from the stabs pool
  */
-#define STABS_GETPTR(_size) \
-edfmt_alloc_pool(&(stabs_info->alloc_pool), &(stabs_info->alloc_pos), \
-		 &(stabs_info->alloc_size), STABS_ALLOC_STEP, _size) 
+#define STABS_GETPTR(_var, _size, _ret) 	      	\
+do {						     	\
+  _var = edfmt_alloc_pool(&(stabs_info->alloc_pool), 	\
+		       &(stabs_info->alloc_pos), 	\
+		       &(stabs_info->alloc_size), 	\
+		       STABS_ALLOC_STEP, _size); 	\
+if (_var == NULL)					\
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 	\
+		 "Pool allocation failed", _ret);     	\
+} while (0)
+
 
 /**
  * Actual parsed file 
@@ -115,10 +123,17 @@ elfshobj_t *afile = NULL;
  */
 edfmtstabsinfo_t 	*edfmt_stabs_getinfo(elfshobj_t *file)
 {
+  edfmtstabsinfo_t 	*fstabs = NULL;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (edfmtstabsinfo_t *) file->debug_format.stabs);
+  if (!file)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", NULL);
+
+  fstabs = (edfmtstabsinfo_t *) file->debug_format.stabs;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, fstabs);
 }
 
 /**
@@ -154,7 +169,7 @@ static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!type)
+  if (type == NULL || type->data == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", -1);
   
@@ -180,6 +195,10 @@ int	    		edfmt_stabs_addfile(char *dir, char *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (stabs_info == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid stabs_info", -1);
+
   /* At the end of the list ? */
   if (stabs_info->index_list >= stabs_info->num_list)
     {
@@ -198,7 +217,7 @@ int	    		edfmt_stabs_addfile(char *dir, char *file)
 	}
     }
 
-  /* Update list */
+  /* Update list pointers */
   stabs_info->dir_list[stabs_info->index_list] 	= dir;
   stabs_info->file_list[stabs_info->index_list] = file;
 
@@ -219,6 +238,10 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (func == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
   /* End of the current function ? */
   if (STABS_IVD_STR(str))
     {
@@ -227,8 +250,13 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 	  current_func->e_addr = func->s_addr + stabs_c_ent.value;
 	  current_func = NULL;
 	}
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+
+  if (current_file == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid current_file", NULL);
 
   current_func = func;
 
@@ -281,7 +309,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
 
   if (NULL == type || STABS_IVD_STR(str))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameter", NULL);
+		      "Invalid parameters", NULL);
 
   /* First we got a type */
   rtype = edfmt_stabs_type(str);
@@ -407,7 +435,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
   do {
     /* Allocate for a member */
-    tattr = STABS_GETPTR(sizeof(edfmtstabsattr_t));
+    STABS_GETPTR(tattr, sizeof(edfmtstabsattr_t), -1);
 
     /* Update link between elements */
     if (tstruct->attr == NULL)
@@ -472,7 +500,7 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
 
   while (**str != ';')
     {
-      enum_attr = STABS_GETPTR(sizeof(edfmtstabsenum_t));
+      STABS_GETPTR(enum_attr, sizeof(edfmtstabsenum_t), NULL);
 
       if (root_attr == NULL)
 	root_attr = enum_attr;
@@ -550,7 +578,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
       tnum.file = tnum.number = -1;
     }
 
-  type = STABS_GETPTR(sizeof(edfmtstabstype_t));
+  STABS_GETPTR(type, sizeof(edfmtstabstype_t), NULL);
   type->num = tnum;
 
  typestart:
@@ -733,7 +761,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Stabs type not found", NULL);
 
-  data = STABS_GETPTR(sizeof(edfmtstabsdata_t));
+  STABS_GETPTR(data, sizeof(edfmtstabsdata_t), NULL);
 
   strncpy(data->name, name, STABS_NAME_SIZE);
   data->name[STABS_NAME_SIZE - 1] = 0x00;
@@ -950,6 +978,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
   /* Init hash tables */
   if (type_ref.ent == NULL)
     hash_init(&type_ref, STABS_HNAME_TYPE_REF, 50, ASPECT_TYPE_UNKNOW);
+
   if (type_cross_ref.ent == NULL)
     hash_init(&type_cross_ref, STABS_HNAME_TYPE_CROSS_REF, 50, ASPECT_TYPE_UNKNOW);
   
@@ -987,7 +1016,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      sfile = sfile && sfile[1] != '\0' ? sfile+1 : current_file->file;
 	    }
 
-	  line = STABS_GETPTR(sizeof(edfmtstabsline_t));
+	  STABS_GETPTR(line, sizeof(edfmtstabsline_t), -1);
 
 	  /* Fill right informations */
 	  line->line = (u_int) stabs_c_ent.desc;
@@ -1001,6 +1030,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  
 	  current_file->last_line = line;
 	  break;
+
 	case STABS_TYPE_BINCL:
 	  if (!current_file)
 	    break;
@@ -1037,8 +1067,8 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      edfmt_stabs_addfile(NULL, str);
 	    }
 
-	  tmp = STABS_GETPTR(sizeof(edfmtstabsfile_t));
-	  
+	  STABS_GETPTR(tmp, sizeof(edfmtstabsfile_t), -1);
+
 	  if (inc)
 	    tmp->file = str;
 	  else
