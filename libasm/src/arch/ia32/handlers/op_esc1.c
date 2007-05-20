@@ -1,6 +1,6 @@
 /**
  * @file op_esc1.c
- * $Id: op_esc1.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ * $Id: op_esc1.c,v 1.4 2007-05-20 00:19:53 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -25,7 +25,6 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   if (modrm->mod == 3)
     {
-      new->len += 1;
     switch(modrm->r)
       {
       case 0:
@@ -62,6 +61,7 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
       case 2:
 	new->instr = ASM_FNOP; break;
       case 4:
+	new->len += 1;
 	switch(modrm->m) {
 	case 0: new->instr = ASM_FCHS; break;
 	case 1: new->instr = ASM_FABS; break;
@@ -96,6 +96,7 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
 	}
 	break;
       case 7:
+	new->len += 1;
 	switch(modrm->m) {
 	case 0: new->instr = ASM_FPREM; break;
 	case 1: new->instr = ASM_FYL2XP1; break;
