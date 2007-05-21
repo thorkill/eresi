@@ -1,104 +1,107 @@
 .\" define indentation for suboptions
-.nr SS 5
+.\" .nr SS 5
 .\" default indentation is 7, don't change!
-.nr IN 7
+.\" .nr IN 7
 .\" add new suboption
-.de IPs
-.IP "\\$1" \n(SS
-..
+.\" .de IPs
+.\" .IP "\\$1" \n(SS
+.\" ..
 .\" begin of first level suboptions, end with .RE
-.de RSs
-.RS \n(IN+3
-..
+.\" .de RSs
+.\" .RS \n(IN+3
+.\" ..
 .\" begin of 2nd level suboptions
-.de RSss
-.PD 0
-.RS \n(SS+3
-..
+.\" .de RSss
+.\" .PD 0
+.\" .RS \n(SS+3
+.\" ..
 .\" end of 2nd level suboptions
-.de REss
-.RE
-.PD 1
-..
-.TH ELFsh "1" "March 2006" "ELFsh 0.7" "User commands"
-.SH NAME
-ELFsh \- The ELF shell
-.SH SYNOPSIS
-.B ELFsh 
-[\fIOPTION\fR...]
-.SH DESCRIPTION
-The ELF shell is an interactive, modular, independent, unified and scriptable ELF (Executable & Linking Format) machine designed for executable files, shared libraries and relocatable ELF objects manipulation. Its innovative features make it usable by reverse engineers and security analysts for embedded debugging and plain C code injection in binary programs and processes, execution flow redirection that allow for dynamic analyzers generation and testing on binary programs. ELFsh is composed of libelfsh and libasm, it does provide a modular and reusable interface for external projects that is compatible with kernel hardening patches : It can perform operational modifications on non-executable stack and heap based systems for multiple architectures. 
-.SH OPTIONS
+.\" .de REss
+.\" .RE
+.\" .PD 1
+.\" ..
+.TH "ERESI" "1" "May 2007" "ERESI 0.78" "User commands"
+.SH "NAME"
+ERESI \- The ERESI Reverse Engineering Software Interface
+.SH "SYNOPSIS"
+.B elfsh  [\fIOPTIONS\fR]
 
-.B
-.IP -f
+.B etrace [\fIOPTIONS\fR]
+
+.B e2dbg  \fIprogramtodebug\fR
+.SH "DESCRIPTION"
+The ERESI Reverse Engineering Software Interface is a unified reverse engineering framework for UNIX operating systems based on the Executable & Linking Format (ELF) such as Linux, BSD, Solaris, IRIX, and BeOS. It has a command line interface that make it useful remotely, and can generate graph images from code analysis on demand. It has a real dedicated reverse engineering language that makes it scriptable and adaptable to the precise needs of the users. ERESI contains more than 10 innovative and exclusive features that turns it into an environment of choice for the instrumentation, analysis, debugging, tracing, hooking, or simply integrity checking and events logging of binary programs. ERESI is composed of ELFsh (the ELF shell), E2dbg (The Embedded ELF debugger) and Etrace (The Embedded ELF tracer). This documentation applies on all of the components. 
+.SH "OPTIONS"
+The ELF shell (part of ERESI) can take the following command line parameters:
+
+.B 
+.IP \-f
 input file
-.B
-.IP -w
+.B 
+.IP \-w
 output file
 
-.SH COMMANDS
 
-The following commands can be used on either the commandline when preceded by a - or on the ELFsh command prompt :
+Note that the command line is slightly different for E2dbg and Etrace which do
+NOT take those parameters.
+.SH "COMMANDS"
+E2dbg and Etrace have to be executed using a unique command line parameter (the program file to be debugged or traced). The following primitives can be used interactively in E2dbg, Etrace, and ELFsh, but also on command line when preceded by a \- (ELFsh only) at the UNIX shell command prompt.
 
-.TP
+.TP 
 \fBGeneral purpose commands\fP
 
 \fIcat edit exec exit help info list load lscripts nocolor profile quit sdir setcolor switch unload workspace\fR
 
-.TP
+.TP 
 \fBcat\fP
 print the file argument
 
-.TP
+.TP 
 \fBedit\fP
 Edit the file given in parameter
 
-.TP
+.TP 
 \fBexec\fP
 Fork and execute parameter command (with args)
 
-.TP
-\fBexit\fP
-Quit the shell without saving
-
-.TP
+.TP 
 \fBhelp\fP
 Print the help screen
 
-.TP
+.TP 
 \fBinfo\fP
 Print the extra details help screen 
 
-.TP
+.TP 
 \fBlist\fP
 List the loaded files and their ID
 
-.TP
+.TP 
 \fBload\fP \fIfilename\fR
 Load input file \fIfilename\fR
 
-.TP
+.TP 
 \fBlscripts\fP
 List macro commands
 
-.TP
+.TP 
 \fBnocolor\fP
 Toggle color status
 
-.TP
-\fBprofile\fP
-Change the ELFsh profiling behavior
+.TP 
+\fBprofile\fP (\fIenable\fR | \fIdisable\fR) (\fItraces\fR | \fIwarns\fR | \fIalloc\fR | \fIdebug\fR | \fIall\fR)
 
-.TP
+Change the ELFsh profiling behavior. Traces profiling print all the internal function calls done by the framework. Warning profiling prints all the (fatal and non\-fatal) warnings reported by the internal API : it very useful for tracking bugs and it should be used when reporting issues on the bugtracking system. Allocation and debug profiling are experimental and should only be used by experienced ERESI developers.
+
+.TP 
 \fBquit\fP
 Quit the shell without saving
 
-.TP
+.TP 
 \fBsdir\fP
-Change the script directory
+Change the script directory. This allows to make precise the location of complete ERESI library and bind script files on command names in the shell. 
 
-.TP
+.TP 
 \fBsetcolor\fP \fIAssociates data types to colors\fR
 
 \fBsetcolor\fP \fItype [bg,fg] color\fR
@@ -109,606 +112,746 @@ Change the script directory
 
 \fBAvailable colors :\fP \fIblack red green yellow blue magenta cyan white\fR
 
-.TP
+.TP 
 \fBswitch\fP (\fIfilename\fR | \fIfileID\fR)
 Change the current file to work on to \fIfilename\fR or \fIfileID\fR
 
-.TP
+.TP 
 \fBunload\fP (\fIfilename\fR | \fIfileID\fR)
 Unload file \fIfilename\fR or \fIfileID\fR without saving
 
-.TP
-\fBworkspace\fP
-List existing workspaces
+.TP 
+\fBworkspace\fP [\fIwname\fR]
+When executed without parameter, this command list existing workspaces. When given an existing workspace name, this command switch to that workspace. If given a non\-existing workspace name, this command creates a new workspace and switch to it.
 
-.TP
+.TP 
+\fBtables\fP [\fIregex\fR]
+If given without parameter, list all the existing hash tables in the ERESI framework. If given with a parameter,
+print the content of hash tables whoose name match the regular expression.
+
+
+.TP 
+\fBvectors\fP [\fIvname\fR[\fI:idx1:...:idxN\fR]] [\fIsymbol|addr\fR]
+If given without parameter, list all the existing vectors in the ERESI framework. If given with a parameter,
+print the content of this vector. If given one long parameter, print the content of a given vector entry. If
+given 2 parameters, modify the vector entry with a user provided address or resolved symbol address.
+
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBOndisk/Memory ELF commands\fP
 
-\fIadd cmp ctors disasm div dtors dyn dynsym elf findrel get got hexa interp mod mul notes pht print redir rel reladd set sht sub write\fR
+Those commands works in all components of the ERESI framework (ELFsh, E2dbg, and Etrace).
 
-.TP
+\fIadd cmp ctors disasm div dtors dyn dynsym elf findrel get got hexa interp mod mul notes pht print redir rel reladd set sht sub write test\fR
+
+.TP 
 \fBadd\fP
-Add the 2 parameters
+Add the 2 parameters and put the result in variable $_
 
-.TP
+.TP 
 \fBcmp\fP
-Compare 2 parameters (modify $_ variable)
+Compare 2 parameters. The difference is put in variable $_
 
-.TP
+.TP 
 \fBct ctors\fP [\fIRegex\fR]
 Print .ctors section entries matching \fIRegex\fR
 
-.TP
-\fBdisasm\fP
+.TP 
+\fBD disasm\fP [\fIRegex\fR]
 Disassemble matching binary objects in current file
 
 \fBdisasm parameter\fP
 
-ParamFormat : \fIregx regx:rva regx:rva%size regx%size\fR
- - regx : Regular expression (mandatory)
- - rva  : Byte offset from the beginning (optional)
- - size : Bytes number limit (optional)
+Allowed parameter format : \fIregx regx:rva regx:rva%size regx%size\fR
+ \- regx : Regular expression (mandatory)
+ \- rva  : Byte offset from the beginning (optional)
+ \- size : Bytes number limit (optional)
 
-.TP
+.TP 
 \fBdiv\fP
-Divide first param by second one
+Divide first param by second one and put the result in the first one
 
-.TP
+.TP 
 \fBdt dtors\fP [\fIRegex\fR]
 Print .dtors section entries matching \fIRegex\fR
 
-.TP
+.TP 
 \fBdyn\fP
 Print the ELF dynamic section
 
-.TP
+.TP 
 \fBds dynsym\fP [\fIRegex\fR]
 Print dynamic symtab (.dynsym) entries matching \fIRegex\fR
 
-.TP
+.TP 
 \fBe elf\fP
 Print the ELF header
 
-.TP
+.TP 
 \fBfindrel\fP
-Try to find back stripped relocation information
+Try to find back stripped relocation information. Note: retreiving this information in a
+very exact manner is very difficult, this command only gives you an approximative list
+of pointer accesses in the binary code. It does not deal either with constructed addresses
+using multiple arithmetic and logic instructions, or with false positives that appear to
+be valid mapped pointers but are not in reality (ex: Hashed data)
 
-.TP
+.TP 
 \fBget\fP
-Print parameter object value
+Print parameter object value. The parameter can be a constant or defined value, a variable or any
+ELF object that is part of any file loaded in the shell, provided you give its id at the beginning
+of the object path. See info command for the exact grammar of object paths. 
 
-.TP
+.TP 
 \fBg got\fP [\fIRegex\fR]
-Print the symbols in the Global Offset Table (GOT) matching \fIRegex\fR
+Print the entries of the Global Offset Table (GOT) matching \fIRegex\fR. The regex can apply on
+either an address, an entry index, or a resolved symbol from the entry address (or contained
+address).
 
-.TP
-\fBhexa\fP
-Dump matching binary objects in current file
+.TP 
+\fBX hexa\fP [\fIRegex\fR]
+Dump matching binary objects in current file. This has the same syntax than D/disasm command.
 
 \fBX parameter\fP
 
 ParamFormat : \fIregx regx:rva regx:rva%size regx%size\fR
- - regx : Regular expression (mandatory)
- - rva  : Byte offset from the beginning (optional)
- - size : Bytes number limit (optional)
+ \- regx : Regular expression (mandatory)
+ \- rva  : Byte offset from the beginning (optional)
+ \- size : Bytes number limit (optional)
 
-.TP
+.TP 
 \fBinterp\fP
-Print ELF interpreter path
+Print ELF interpreter path standing in .interp section.
 
-.TP
+.TP 
 \fBmod\fP
-Modulo operation between 2 parameters
+Modulo operation between 2 parameters. The result is put in the destination variable.
 
-.TP
+.TP 
 \fBmul\fP
-Multiply the 2 parameters
+Multiply the 2 parameters. The result is put in the destination variable.
 
-.TP
+.TP 
 \fBn notes\fP [\fIRegex\fR]
 Print the Notes sections entries matching \fIRegex\fR
 
-.TP
+.TP 
 \fBp pht\fP
 Print the Program Header Table (PHT)
 
-.TP
+.TP 
 \fBprint\fP [\fIObjectPath1 ObjectPath2 ... ObjectPathN\fR]
-Print the values of objects \fIObjectPath1 ObjectPath2 ... ObjectPathN\fR
+Print the values of objects \fIObjectPath1 ObjectPath2 ... ObjectPathN\fR. Objects can be
+constant strings, ELF objects, variables, defined values, and so on.
 
-.TP
+.TP 
 \fBredir\fP \fIfunc\fR (\fIfunc2\fR | \fIaddr\fR)
-Redirect calls to function \fIfunc\fR having a .plt entry to \fIfunc2\fR or address \fIaddr\fR.
+Redirect calls to function \fIfunc\fR to \fIfunc2\fR or address \fIaddr\fR. If the original function has a PLT entry, the ALTPLT technique is used to perform the redirection. If the function is internal (or if we are in a static binary) the CFLOW technique is used to perform the redirection. ALTPLT technique is available on INTEL, SPARC, MIPS, and ALPHA  architectures. CFLOW technique is currently not available on the SPARC architecture. The hook (second) function is usually an injected C code provided by the user and injected using the \fIreladd\fR primitive. In case the provided hook function calls other function which are not in the host binary, ERESI will use the EXTPLT technique (or EXTSTATIC technique on static binaries) to relink the host binary in order to add new relocation entries, dynamic symbols with their names, symbol versions, extra GOT and PLT entries (using additionally the ALTGOT technique on RISC architectures), and will fixup the .dynamic section to reflect those changes on the section list.
 
-.TP
+.TP 
 \fBr rel\fP [\fIRegex\fR]
 Print the relocation entries matching \fIRegex\fR
 
-.TP
-\fBreladd\fP \fIDestinationfileID\fR \fISourceFileID\fR
-Inject the ELF relocatable object \fISourceFileID\fR into the ELF executable object \fIDestinationFileID\fR
+.TP 
+\fBreladd\fP (\fIDestFilePath | \fIDestfileID\fR) (\fIRelocFilePath | \fIRelocFileID\fR)
+Inject the ELF relocatable object \fIRelocFileID\fR into the ELF executable object \fIDestFileID\fR. This command is used for injecting plain C compiled code linked into a .o file into a host ET_EXEC (executable) or ET_DYN (shared library) ELF file. 
 
-.TP
-\fBset\fP \fIDestinationObjectPath SourceObjectPath\fR
-Set the value of object \fIDestinationObjectPath\fR to \fISourceObjectPath\fR
+.TP 
+\fBset\fP \fIDestObjectPath SourceObjectPath\fR
+Set the value of object \fIDestObjectPath\fR to \fISourceObjectPath\fR. The $_ variable gets modified depending on the result. See the \fBinfo\fP command for a list of all accessible objects using the set command.
 
-.TP
+.TP 
 \fBs sht\fP [\fIRegex\fR]
 Print the sections in the Section Header Table (SHT) matching \fIRegex\fR
 
-.TP
+.TP 
 \fBsub\fP
-Substract 2nd parameter to the first one
+Substract 2nd parameter to the first one. The $_ variable is modified depending on the result.
 
-.TP
-\fBwrite\fP \fIDestinationObjectPath SourceObjectPath\fR
-Copy data from \fISourceObjectPath\fR to \fIDestinationObjectPath\fR
+.TP 
+\fBwrite\fP \fIDestObjectPath SourceObjectPath\fR
+Copy data from \fISourceObjectPath\fR to \fIDestObjectPath\fR. The destination object has to be of type RAW (the data field of a section) and the source object has to be of type RAW or STRING. See the info command for more detail about this.
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBDebugger commands\fP
 
-\fIbacktrace break continue dbgstack delete dumpregs linkmap stack step\fR
+\fIbacktrace break continue dbgstack delete dumpregs linkmap stack step display threads itrace\fR
 
-.TP
+.TP 
 \fBbacktrace\fR
-Print backtrace (needs frame pointer)
+Print backtrace (needs frame pointer).
 
-.TP
-\fBbreak\fR
-Put a breakpoint on symbol or address (0xADDR)
+.TP 
+\fBbreak (\fIBPsymbol\fR | \fI0xaddress\fR)\fR
+Put a breakpoint on symbol or address. Print all breakpoints if given without parameter.
 
-.TP
-\fBcontinue\fR
-Continue executing debuggee program after break
+.TP 
+\fBstep\fP
 
-.TP
-\fBdbgstack\fR
-Dump N words on debugger stack
+Enable or disable stepping of debuggee program. Use \fBcontinue\fP for singlestepping.
 
-.TP
-\fBdelete\fR
-Delete breakpoint by symbol, addr, or ID
+.TP 
+\fBcontinue\fP
 
-.TP
+Continue executing debuggee program after breakpoint or singlestep.
+
+.TP 
+\fBdelete\fP (\fIBPID\fR | \fIBPsymbol\fR | \fI0xaddress\fR)
+
+Delete breakpoint by symbol, address, or ID.
+
+.TP 
+\fBdbgstack\fP \fIWordsNBR\fR
+
+Dump N words (N given as first parameter) from the debugger stack. We can do that because the debugger is embedded into the debuggee process.
+
+.TP 
+\fBstack\fR \fIWordsNBR\fR
+
+Dump \fIWordsNBR\fR words on debuggee stack.
+
+.TP 
 \fBdumpregs\fR
-Dump registers of debuggee at breakpoint or step
 
-.TP
+Dump registers of debuggee at breakpoint or step.
+
+.TP 
 \fBlinkmap\fR
-Print Linkmap list for this process
 
-.TP
-\fBstack\fR
-Dump N words on debuggee stack
+Print Linkmap list for the debuggee process.
 
-.TP
-\fBstep\fR
-Enable stepping of debuggee program
+.TP 
+\fBdisplay\fR \fIBPid\fR \fIFull_ERESI_command\fR
+Set a command to be executed on event. The first parameter must be the breakpoint id that correspond to the event. The ERESI command can be any valid ERESI command, including the sourcing of an ERESI script.
 
-.TP
+.TP 
+\fBthreads\fR [\fIThreadID\fR]
+If called without parameter, this command list existing threads in the debuggee process. If called with a thread ID parameter, the current thread is switched to the thread indicated by the ID.
+
+.TP 
+\fBitrace\fR
+Singlestep the debuggee program until next breakpoint event, printing all executed instructions until it stops.
+
+
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBELFsh modules commands\fP
 
 \fImodhelp modload modunload\fR
 
-.TP
-\fBmodhelp\fP
-Print the ELFsh/E2dbg modules help information
+.TP 
+\fBmodhelp\fP \fIModuleFilePath\fR
+Print help for a loaded ERESI module.
 
-.TP
-\fBmodload\fP
-Load an ELFsh/E2dbg module
+.TP 
+\fBmodload\fP \fIModuleFilePath\fR
+Load an ERESI module. The path has to be absolute or relative to the registered module path.
 
-.TP
-\fBmodunload\fP
-Unload an ELFsh/E2dbg module
+.TP 
+\fBmodunload\fP \fIModuleFilePath\fR
+Unload an ERESI module. The path has to be absolute or relative to the registered module path.
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBELF objects flags\fP
 
 \fIfixup shtrm sstrip\fR
 
-.TP
+.TP 
 \fBfixup\fP
-Mark BSS section to be included in disk file
+Mark BSS section to be included in disk file. The BSS gets immediately fixed in the ELFsh internal descriptor
+of the object.
 
-.TP
+.TP 
 \fBshtrm\fP
-Mark Section Header Table as removed
+Mark Section Header Table as removed. The SHT will be removed only when the file is saved.
 
-.TP
+.TP 
 \fBsstrip\fP
-Mark the Section Header Table (SHT) and Symbol Table (.symtab) as stripped
+Mark the Section Header Table (SHT) and Symbol Table (.symtab) as stripped. They will be removed only when the
+file is saved.
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBOndisk only ELF commands\fP
+
+Those commands only works in ELFsh, or in E2dbg when switched to the static mode using the mode command.
 
 \fIappend extend flush insert remove save stab sym\fR
 
-.TP
+.TP 
 \fBappend\fP \fISectionName\fR \fISourceObjectPath\fR
 Append the data of object \fISourceObjectPath\fR to section \fISectionName\fR
 
-.TP
+.TP 
 \fBextend\fP \fISectionName\fR \fIlength\fR
 Extend section \fISectionName\fR with \fIlength\fR zero bytes
 
-.TP
+.TP 
 \fBflush\fP
-Flush all injected .o files from current file
+Flush all injected .o files from current file.
 
-.TP
+.TP 
 \fBinsert\fP
-Inject new object in current working file
+Inject new object (section, symbol, or program header) in current working file.
 
 insert sect  name code|data|unmap [sz] [align]
        sym   name value           [sz]
        phdr  type vaddr           [sz]
 
-.TP
+.TP 
 \fBremove\fP
-Remove ELF object from current working file
+Remove ELF object (section, symbol, or program header) from current working file
 
-remove params
+remove sect name
+       sym  name
+       phdr index
 
-Parameter format : sect name
-                   sym  name
-                   phdr index
-
-.TP
+.TP 
 \fBsave\fP \fIfilename\fR
-Dump output file \fIfilename\fR
+Dump current selected file to output file \fIfilename\fR. This command writes a file on disk.
 
-.TP
-\fBstab\fP [\fIRegex\fR]
-Print raw stab (.stabs) entries matching \fIRegex\fR
+.TP 
+\fBdebug\fP
+Print unified debug format information for the current file.
 
-.TP
+.TP 
 \fBst sym\fP [\fIRegex\fR]
-Print the symtab (.symtab) entries matching \fIRegex\fR
+Print the symtab (.symtab) entries matching \fIRegex\fR.
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
+\fBType related primitives\fP
+
+Those primitives allow to define and habitate types in the ERESI meta\-language:
+
+.TP 
+\fBtype\fP [\fIregex\fR]
+
+Print list of types (only those matching the regular expression if given in parameter).
+
+.TP 
+\fBtype\fP \fIname\fR = \fIfield1:type1\fR ... \fIfieldN:typeN\fR
+
+Define a new type in the ERESI meta\-language. Predefined types include byte, short, int,
+caddr, daddr, long, hash, vector, string, and raw.
+
+.TP 
+\fBtypedef\fP \fItname\fR \fItname2\fR
+
+Copy and rename a type. Any modification on one of the types will \fBnot\fP affect the other.
+
+.TP 
+\fBinform\fP \fItype\fR [\fIname\fR | \fIaddress\fR]
+
+Make type \fIname\fR habitated by the variable standing at address \fIname\fR. If called with
+a single type name parameter, the command list all variables that habitate this type. If given
+2 parameters, the name is interpreted as a symbol pointing on a variable. Its address is resolved
+and the type is informed about this variable. If only an address is given, its symbol is looked up
+and the variable corresponding to the symbol is informed. If no symbol corresponds to this address,
+a new one is created that points on the address, and the newly symbolic variable is informed.
+
+.TP 
+\fBuninform\fP \fItype\fR [\fIname\fR]
+
+Uninform a given variable from a type. If no variable name is given, all variables previously
+informed are removed from the type habitation.
+
+
+.TP 
+\fB========================================================================\fP
+
+
+.TP 
 \fBNetwork commands\fP
 
 \fIconnect disconnect net netkill netlist peerslist rcmd\fR
 
-.TP
+.TP 
 \fBconnect\fR
 Add a DUMP connection to given host
 
-.TP
+.TP 
 \fBdisconnect\fR
 Kill the DUMP connection from IP
 
-.TP
+.TP 
 \fBnet\fR
 Activate networking capabilities
 
-.TP
+.TP 
 \fBnetkill\fR
 Kill a network client by IP
 
-.TP
+.TP 
 \fBnetlist\fR
 List connected network clients
 
-.TP
+.TP 
 \fBpeerslist\fR
 List connected DUMP peers
 
-.TP
+.TP 
 \fBrcmd\fR
 Execute a command on a remote machine
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBAvailable prefixes\fP
 
 \fIalert all quiet sort verb\fR
 
-.TP
+.TP 
 \fBalert\fP
 Alert prefix : change alert regular expression
 
-.TP
+.TP 
 \fBa all\fP \fIregex\fR
 Set a global regular expression. All commands which take a regular expression as a parameter will default to use this global regular expression.
 
-.TP
+.TP 
 \fBquiet\fP
 Toggle quiet flag (do not print executed commands)
 
-.TP
+.TP 
 \fBsort\fP
-Sorting prefix (use a -addr- or s -size-)
+Sorting prefix (use a \-addr\- or s \-size\-)
 
-
-.TP
+.TP 
 \fBverb\fP
 Toggle verbose flag (undo the quiet flag)
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBAvailable Script jumps\fP
+
+A certain number of jumps construct are available:
 
 \fIje jg jge jl jle jmp jne\fR
 
-.TP
+.TP 
 \fBje\fP
 Jump on label if equal (use last cmp result)
 
-.TP
+.TP 
 \fBjg\fP
 Jump on label if greater (use last cmp result)
 
-.TP
+.TP 
 \fBjge\fP
 Jump on label if greater or equal (use last cmp result)
 
-.TP
+.TP 
 \fBjl\fP
 Jump on label if lower (use last cmp result)
 
-.TP
+.TP 
 \fBjle\fP
 Jump on label if lower or equal (use last cmp result)
 
-.TP
+.TP 
 \fBjmp\fP
 Unconditional jump to script label
 
-.TP
+.TP 
 \fBjne\fP
 Jump on label if nont equal (use last cmp result)
 
-.TP
+You might also consider using a \fBforeach\fP construct, which is not
+described in this manual page. 
+
+.TP 
 \fB========================================================================\fP
 
-.TP
+.TP 
 \fBAvailable modules\fP
 
 \fImodflow modremap modtest\fR
 
-.TP
+.TP 
 \fBmodflow\fR
 Modflow is an ELFsh module designed to perform control flow analysis on ELF binaries
 for detailed examples and usage see README in ELFsh/modules/modflow
 
-.TP
+.TP 
 \fBmodremap\fR
 Modflow is an ELFsh module designed to perform remapping sections in Elf binaries see ELFsh/modules/modremap for further details
 
-.TP
+.TP 
 \fBmodtest\fR
 Modtest is a ElFsh module designed to show the usage of adding new commands to ELFsh see ELFsh/modules/modtest for further details
 
-.TP
+.TP 
 \fB========================================================================\fP
 
-
-.P
-The following commands can only be used on the ELFsh interactive mode:
-
-.SH OBJECT PATH FORMAT
-This section explains how to access different objects in an ELF file. For most commands the object can also be a decimal or hexadecimal number. In this case the ObjectPath is the number.
+.SH "OBJECT PATH FORMAT"
+This section explains how to access different objects in an ELF file. For most commands the object can also be a decimal or hexadecimal numbers. In this case the ObjectPath is the number.
 
 .TP 
 \fBELF Header\fP
-filename.hdr.field
+filename.hdrfield
 
 ELF header fields are :
-.
-.RSs
-.IPs \fBmagic\fP
-Magic number
-.IPs \fBclass\fP
-File class
-.IPs \fBtype\fP
-Object file type
-.IPs \fBmachine\fP
-Architecture 
-.IPs \fBversion\fP
-Object file version
-.IPs \fBentry\fP
-Entry point virtual address
-.IPs \fBphoff\fP
-Program header table file offset
-.IPs \fBshoff\fP
-Section header table file offset
-.IPs \fBflags\fP
-Processor-specific Flags
-.IPs \fBehsize\fP
-Size of the ELF header in bytes
-.IPs \fBphentsize\fP
-Size of the program headers
-.IPs \fBshentsize\fP
-Size of the section headers
-.IPs \fBphnum\fP
-Number of program headers
-.IPs \fBshnum\fP
-Number of section headers
-.IPs \fBshstrndx\fP
-Section header string table index
-.IPs \fBpax_pageexec\fP
-PAX use paging based non-executable pages
-.IPs \fBpax_emultramp\fP
-PAX emulate trampolines 
-.IPs \fBpax_mprotect\fP
-PAX restrict mmap
-.IPs \fBpax_randmmap\fP
-PAX randomize mmap 
-.IPs \fBpax_randexec\fP
-PAX randomly map executable address
-.IPs \fBpax_segmexe\fP
-PAX use segmentation based non-executable pages
-.RE 
 
-.TP
+
+.IP \fBmagic\fP
+Magic number
+
+.IP \fBclass\fP
+File class
+
+.IP \fBtype\fP
+Object file type
+
+.IP \fBmachine\fP
+Architecture 
+
+.IP \fBversion\fP
+Object file version
+
+.IP \fBentry\fP
+Entry point virtual address
+
+.IP \fBphoff\fP
+Program header table file offset
+
+.IP \fBshoff\fP
+Section header table file offset
+
+.IP \fBflags\fP
+Processor\-specific Flags
+
+.IP \fBehsize\fP
+Size of the ELF header in bytes
+
+.IP \fBphentsize\fP
+Size of the program headers
+
+.IP \fBshentsize\fP
+Size of the section headers
+
+.IP \fBphnum\fP
+Number of program headers
+
+.IP \fBshnum\fP
+Number of section headers
+
+.IP \fBshstrndx\fP
+Section header string table index
+
+.IP \fBpax_pageexec\fP
+PAX use paging based non\-executable pages
+
+.IP \fBpax_emultramp\fP
+PAX emulate trampolines 
+
+.IP \fBpax_mprotect\fP
+PAX restrict mmap
+
+.IP \fBpax_randmmap\fP
+PAX randomize mmap 
+
+.IP \fBpax_randexec\fP
+PAX randomly map executable address
+
+.IP \fBpax_segmexec\fP
+PAX use segmentation based non\-executable pages
+
+.TP 
 \fBgot/ctors/dtors tables\fP
 (filename | fileID).(got|ctors|dtors)[index]
 
-.TP
+In this command, the index can also be a symbol
+name that corresponds to the requested GOT, CTORS, OR DTORS entry.
+
+.TP 
 \fBProgram segment header table\fP
-(filename | fileID).pht[index].field
+(filename | fileID).pht[index].fi eld
 
 Program segment header table entry fields are :
-.
-.RSs
-.IPs \fBtype\fP
-Segment type
-.IPs \fBoffset\fP
-Segment file offset 
-.IPs \fBpaddr\fP
-Segment physical address
-.IPs \fBvaddr\fP
-Segment virtual address
-.IPs \fBfilesz\fP
-Segment size in file
-.IPs \fBmemsz\fP
-Segment size in memory
-.IPs \fBflags\fP
-Segment flags
-.IPs \fBalign\fP
-Segment alignment
-.RE
 
-.TP
+.IP \fBtype\fP
+Segment type
+
+.IP \fBoffset\fP
+Segment file offset 
+
+.IP \fBpaddr\fP
+Segment physical address
+
+.IP \fBvaddr\fP
+Segment virtual address
+
+.IP \fBfilesz\fP
+Segment size in file
+
+.IP \fBmemsz\fP
+Segment size in memory
+
+.IP \fBflags\fP
+Segment flags
+
+.IP \fBalign\fP
+Segment alignment
+
+.TP 
 \fBSymbol/Dynamic symbol tables\fP
-(filename | fileID).(symtab|dynsym)[index].field
+(filename | fileID).(symtab|dynsym)[index].fi eld
 
 Symbol/Dynamic symbol table entry fields are :
-.
-.RSs
-.IPs \fBname\fP
+
+.IP \fBname\fP
 Symbol name
-.IPs \fBvalue\fP
+
+.IP \fBvalue\fP
 Symbol value
-.IPs \fBsize\fP
+
+.IP \fBsize\fP
 Symbol size
-.IPs \fBbind\fP
+
+.IP \fBbind\fP
 Symbol binding
-.IPs \fBtype\fP
+
+.IP \fBtype\fP
 Symbol type
-.IPs \fBother\fP
+
+.IP \fBother\fP
 Symbol visibility
-.RE
 
-.TP
+
+.TP 
 \fBDynamic section\fP
-(filename | fileID).dynamic[index].field
+(filename | fileID).dynamic[index].fi eld
 
-dynamic section entry fields are :
-.
-.RSs
-.IPs \fBval\fP
+The .dynamic section entry fields are :
+
+.IP \fBval\fP
 Integer or address value
-.IPs \fBtag\fP
+
+.IP \fBtag\fP
 Dynamic entry type
-.RE
 
-.TP
+.TP 
+
+
 \fBSection header table\fP
-(filename | fileID).sht[index].field
+(filename | fileID).sht[index].fi eld
 
-Section header table entry fields are :
-.
-.RSs
-.IPs \fBtype\fP
+The index can be the name of the section. Section Header Table entries fields are :
+
+.IP \fBtype\fP
 Section type
-.IPs \fBoffset\fP
+
+.IP \fBoffset\fP
 Section Offset in ELF file
-.IPs \fBaddr\fP
+
+.IP \fBaddr\fP
 Section Address
-.IPs \fBsize\fP
+
+.IP \fBsize\fP
 Section Size in bytes
-.IPs \fBlink\fP
+
+.IP \fBlink\fP
 Link to another section
-.IPs \fBinfo\fP
+
+.IP \fBinfo\fP
 Additional Info
-.IPs \fBalign\fP
+
+.IP \fBalign\fP
 Section Alignment
-.IPs \fBentsize\fP
+
+.IP \fBentsize\fP
 Entry size if section holds table
-.IPs \fBflags\fP 
+
+.IP \fBflags\fP 
 .RSss
-.IPs a 
-Occupies memory during execution
-.IPs w 
-Writeable
-.IPs x 
-Executable
-.IPs s 
-Contains nul-terminated strings
-.IPs m 
-Might be merged
-.IPs l
+
+.IP a 
+Section occupies memory during execution
+
+.IP w 
+Section is Writeable
+
+.IP x 
+Section is Executable
+
+.IP s 
+Contains nul\-terminated strings
+
+.IP m 
+Section might be merged
+
+.IP l
 Preserve order after combining
-.IPs o
+
+.IP o
 OS specific
-.REss
-.RE
 
-.TP
+
+.TP 
 \fBRelocation table\fP
-(filename | fileID).rel[indextable][indexentry].field
+(filename | fileID).rel[indextable][indexentry].fi eld
 
-relocation entry fields are :
-.
-.RSs
-.IPs \fBtype\fP
-Type
-.IPs \fBsym\fP
+Relocation entry fields are :
+
+.IP \fBtype\fP
+Relocation Type
+
+.IP \fBsym\fP
 Relocation symbol index
-.IPs \fBoffset\fP
+
+.IP \fBoffset\fP
 Address
-.RE
 
-.TP
-\fBAdditional section information\fP
-(filename | fileID).section[sectionindex].field
+.TP 
 
-section fields are :
-.
-.RSs
-.IPs \fBname\fP
+\fBAdditional sections information\fP
+(filename | fileID).section[sectionindex].fi eld
+
+The section object is not a real object of the binary, but a kind of
+virtual one. It holds all the information about a section that do not stand
+in the sectoin header table entries. Section fields are :
+
+.IP \fBname\fP
 Section name
-.IPs \fBraw\fP
-Section Raw data.
+
+.IP \fBraw\fP
+Section Raw data
+
 To access use following path format :
-.
-.RSss
-.IPs filename.section[index[:offset[%elemsize]]].raw
-.REss
-.RE
 
-.SH AUTHOR
-The ELFsh was written by the ELFsh crew <elfsh@devhell.org>.
-
-This manual page was created by Peter De Schrijver <p2@mind.be> for the Debian GNU/Linux system (but may be used by others).
-
-This manual was updated to ELFsh version 0.7 by stingduk.
+.IP filename.section[index[:offset[%elemsize]]].raw
 
 
-.SH SEE ALSO
-readelf(1), objdump(1), objcopy(1)
+
+.SH "AUTHOR"
+ERESI was created and developed by the ERESI team 
+
+			<eresi@asgardlabs.org>
+
+The complete list of ERESI contributors can be found on the website:
+
+			http://eresi.asgardlabs.org	
+
+This manual page was created by Julien Vanegue, from previous work on the ELFsh man page by Peter De Schrijver 
+for the Debian GNU/Linux system. Additional improvements were made by stingduk for version 0.7.
+
+
+.SH "SEE ALSO"
+readelf(1), objdump(1), objcopy(1), gdb(1), ltrace(1), strace(1)
