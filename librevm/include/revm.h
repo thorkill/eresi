@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.59 2007-05-18 15:52:16 may Exp $
+** $Id: revm.h,v 1.60 2007-05-21 16:09:35 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -233,7 +233,7 @@ extern asm_processor	proc;
 #define	CMD_INTERP2		"i"
 #define	CMD_NOTE		"notes"
 #define	CMD_NOTE2		"n"
-#define CMD_CORE_INFO		"ci"
+#define CMD_COREINFO		"coreinfo"
 #define	CMD_GOT			"got"
 #define	CMD_GOT2		"g"
 #define	CMD_CTORS		"ctors"

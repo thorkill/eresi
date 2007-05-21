@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.22 2007-05-18 15:52:16 may Exp $
+** $Id: revm-help.h,v 1.23 2007-05-21 16:09:35 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -38,7 +38,7 @@
 #define HLP_REL			"Print all relocation tables from current file"
 #define HLP_DYNAMIC		"Print the ELF dynamic section"
 #define HLP_SYM			"Print symbol table (.symtab)"
-#define HLP_CORE_INFO	"Print information about the core file"
+#define HLP_COREINFO		"Print information about the core file"
 #define HLP_DYNSYM		"Print dynamic symbol table (.dynsym)"
 #define HLP_SHT			"Print Section Header Table (SHT)"
 #define HLP_RSHT		"Print the runtime Section Header Table (RSHT)"
