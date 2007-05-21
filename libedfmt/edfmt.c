@@ -4,7 +4,7 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id: edfmt.c,v 1.12 2007-05-20 19:13:57 mxatone Exp $
+** $Id: edfmt.c,v 1.13 2007-05-21 18:30:15 mxatone Exp $
 **
 */
 
@@ -70,6 +70,25 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 		     file->secthash[hash]);
 }
 
+
+/* The internal basename function */
+static char    	*edfmt_basename(char *str)
+{
+  char		*cur;
+  char		*ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = NULL;
+  cur = str;
+  while ((cur = strchr(cur, '/')))
+    if (!*(cur + 1))
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No basename", (NULL));
+    else
+      ret = ++cur;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+}
+
 /** 
  * Main point of the debug format library 
  * This function manages this steps for every debugging formats:
@@ -83,6 +102,7 @@ int			edfmt_format(elfshobj_t *file)
   u_int			i;
   elfshsect_t 		*sect = NULL;
   u_int			count = 0;
+  char			*base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -90,13 +110,21 @@ int			edfmt_format(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
 
-  /* We won't analyze libe2dbg library because, there's far too many information
-     in this library, which allocate too many memory */
-  if (file->name 
-      && (!strcmp(basename(file->name), "libe2dbg32.so")
-	  || !strcmp(basename(file->name), "libe2dbg64.so")))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "We don't analyze e2dbg library", -1);
+
+  if (file->name)
+    {
+      /* Retrieve file basename */
+      base = edfmt_basename(file->name);
+      if (base == NULL)
+	base = file->name;
+      
+      /* We won't analyze libe2dbg library because, there's far too many information
+	 in this library, which allocate too many memory */    
+      if (!strcmp(base, "libe2dbg32.so")
+	  || !strcmp(base, "libe2dbg64.so"))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "We don't analyze e2dbg library", -1);
+    }
 
   /* We call every elements of the structure */
   for (i = 0; debug_format[i].sect_name != NULL; i++)
