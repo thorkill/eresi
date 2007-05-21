@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.60 2007-05-21 16:09:35 may Exp $
+** $Id: revm.h,v 1.61 2007-05-21 17:06:13 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -706,7 +706,9 @@ extern revmconst_t     elfsh_rel_type_sparc[ELFSH_RELOC_SPARC64_MAX];
 extern revmconst_t     elfsh_rel_type_alpha[ELFSH_RELOC_ALPHA_MAX];
 extern revmconst_t     elfsh_rel_type_mips[ELFSH_RELOC_MIPS_MAX];
 extern revmconst_t     elfsh_verentry_type[ELFSH_VERENTRY_MAX];
-extern int 				elfsh_load_core_info(elfshobj_t *);
+
+/* This has to be prototyped in libelfsh and not put in extern ! */
+extern int 		elfsh_load_core_info(elfshobj_t *);
 
 /* Network related variables */
 //extern hash_t      elfsh_net_client_list;  /* The client socket's list */
@@ -740,7 +742,7 @@ int		cmd_elf();
 int		cmd_interp();
 int		cmd_list();
 int		cmd_notes();
-int		cmd_core_info();
+int		cmd_coreinfo();
 int		cmd_sym();
 int		cmd_hexa();
 int		cmd_disasm();
