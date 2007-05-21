@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: libasm-i386.h,v 1.9 2007-05-16 18:49:40 heroine Exp $
+** $Id: libasm-i386.h,v 1.10 2007-05-21 19:04:46 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -144,6 +144,7 @@ enum
     ASM_FLAG_VIP = 1 << 20,
     ASM_FLAG_ID = 1 << 21
   } e_ia32_flags;
+
 
 /**
  * Content of the struct s_operand type field

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.16 2007-05-19 23:59:12 heroine Exp $
+** $Id: libasm.h,v 1.17 2007-05-21 19:04:46 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -36,24 +36,26 @@
 #define LIBASM_USE_OPERAND_VECTOR	1
 
 /* Instruction types */
-#define ASM_TYPE_NONE			  0x0	   //! Undefined instruction type.
-#define ASM_TYPE_IMPBRANCH	0x1    //! Branching instruction which always branch (jump).
-#define ASM_TYPE_CONDBRANCH	0x2    //! Conditionnal branching instruction.
-#define ASM_TYPE_CALLPROC		0x4    //! Sub Procedure calling instruction.
-#define ASM_TYPE_RETPROC		0x8    //! Return instruction
-#define ASM_TYPE_ARITH	  	0x10   //! Arithmetic (or logic) instruction.
-#define ASM_TYPE_LOAD		  	0x20   //! Instruction that reads from memory.
-#define ASM_TYPE_STORE		  0x40   //! Instruction that writes in memory.
-#define ASM_TYPE_ARCH			  0x80   //! Architecture dependent instruction.
-#define ASM_TYPE_FLAG			  0x100  //! Flag-modifier instruction.
-#define ASM_TYPE_INT			  0x200  //! Interrupt/call-gate instruction.
-#define ASM_TYPE_ASSIGN		  0x400  //! Assignment instruction.
-#define ASM_TYPE_TEST			  0x800  //! Instruction that performs comparison or test.
-#define ASM_TYPE_CONTROL    0x1000 //! Instruction modifies control registers.
-#define ASM_TYPE_NOP        0x2000 //! Instruction that does nothing.
-
-#define ASM_TYPE_OTHER		  0x4000 //! Type that doesn't fit the ones above.
-#define ASM_TYPE_TOUCHSP	  0x8000 //! Instruction modify stack pointer.
+enum 
+  {
+    ASM_TYPE_NONE		=    0x0, //! Undefined instruction type.
+    ASM_TYPE_IMPBRANCH		=    0x1, //! Branching instruction which always branch (jump).
+    ASM_TYPE_CONDBRANCH		=    0x2, //! Conditionnal branching instruction.
+    ASM_TYPE_CALLPROC		=    0x4, //! Sub Procedure calling instruction.
+    ASM_TYPE_RETPROC		=    0x8, //! Return instruction
+    ASM_TYPE_ARITH	  	=   0x10, //! Arithmetic (or logic) instruction.
+    ASM_TYPE_LOAD		=   0x20, //! Instruction that reads from memory.
+    ASM_TYPE_STORE		=   0x40, //! Instruction that writes in memory.
+    ASM_TYPE_ARCH		=   0x80, //! Architecture dependent instruction.
+    ASM_TYPE_FLAG		=  0x100, //! Flag-modifier instruction.
+    ASM_TYPE_INT		=  0x200, //! Interrupt/call-gate instruction.
+    ASM_TYPE_ASSIGN		=  0x400, //! Assignment instruction.
+    ASM_TYPE_TEST		=  0x800, //! Instruction that performs comparison or test.
+    ASM_TYPE_CONTROL		= 0x1000, //! Instruction modifies control registers.
+    ASM_TYPE_NOP		= 0x2000, //! Instruction that does nothing.
+    ASM_TYPE_OTHER		= 0x4000, //! Type that doesn't fit the ones above.
+    ASM_TYPE_TOUCHSP		= 0x8000  //! Instruction modify stack pointer.
+  } e_instr_types;
 
 /* this is needed for mips implementation */
 #define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"
@@ -62,6 +64,8 @@
 
 #define ASM_CONFIG_ATT_MARGIN_DEFAULT	14
 #define ASM_CONFIG_ATT_MARGIN_FLAG "libasm.output.att.margin"
+
+
 
 /*
   typedef's
