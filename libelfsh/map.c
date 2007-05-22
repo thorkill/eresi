@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.15 2007-05-19 08:06:23 mxatone Exp $
+** $Id: map.c,v 1.16 2007-05-22 15:18:28 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -18,6 +18,12 @@ void		      elfsh_fixup(elfshobj_t *file)
   elfsh_Shdr	*got;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* This line is subject to controversy */
+  /* Do not comment until it is made clear why this line is necessary
+     for ET_REL injection. It generates a bug on solaris with debug
+     sections but ET_REL injection needs to work in priority -may */
+  elfsh_get_symtab(file, NULL);
 
   if (file->hdr->e_type == ET_REL || elfsh_static_file(file))
     elfsh_sort_sht(file);
