@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.16 2007-05-22 15:18:28 may Exp $
+** $Id: map.c,v 1.17 2007-05-22 15:37:17 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -61,15 +61,6 @@ int		        elfsh_read_obj(elfshobj_t *file)
   puts("[DEBUG:read_obj] Loading all known typed sections\n");
 #endif
 
-  /* Fixup stuffs in the SHT */
-  elfsh_fixup(file);
-  
-  if (file->hdr->e_type == ET_CORE) 
-    {
-      elfsh_get_core_notes(file);
-      goto out;
-    }
-
   /* Fill multiple relocation sections */
   for (index = 0; NULL != 
        (actual = elfsh_get_reloc(file, index, NULL)); 
@@ -77,11 +68,21 @@ int		        elfsh_read_obj(elfshobj_t *file)
 
   /*
   ** Load sections placed after symtab
-  ** Added for Solaris
+  ** Added for Solaris to avoid file offset shifting after
+  ** the symtab have been extended.
   */
   elfsh_get_comments(file);
   elfsh_get_dwarf(file);
   elfsh_get_stab(file, NULL);
+
+  /* Fixup stuffs in the SHT and symtab */
+  elfsh_fixup(file);
+  
+  if (file->hdr->e_type == ET_CORE) 
+    {
+      elfsh_get_core_notes(file);
+      goto out;
+    }
 
   /*
    ** We cannot use simply elfsh_get_anonymous_section() here
