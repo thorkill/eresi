@@ -4,14 +4,14 @@ load a.out
 load rel.o
 
 profile enable warn
-log session
+#log session
 
 reladd 1 2
 redir puts puts_troj
 
-sym old
+#sym old
 save fake_aout
 
-log stop
+#log stop
 
 quit

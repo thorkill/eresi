@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.58 2007-05-23 16:05:39 may Exp $
+** $Id: libelfsh.h,v 1.59 2007-05-23 16:56:55 may Exp $
 **
 */
 
@@ -49,7 +49,7 @@
 #define		__DEBUG_MAP__		       0
 #define		__DEBUG_SECTS__		       0
 #define		__DEBUG_SORT__		       0	
-#define		__DEBUG_RELADD__	       1
+#define		__DEBUG_RELADD__	       0
 #define		__DEBUG_COPYPLT__	       0
 #define		__DEBUG_BSS__		       0
 #define		__DEBUG_REDIR__		       0
@@ -160,7 +160,10 @@
 
 #define		ELFSH_SECTION_NAME_RELGOT	".rel.got"
 #define		ELFSH_SECTION_NAME_RELDYN	".rel.dyn"
-#define		ELFSH_SECTION_NAME_ALTRELGOT	".elfsh.reldyn"
+#define		ELFSH_SECTION_NAME_RELABSS	".rela.bss"
+#define		ELFSH_SECTION_NAME_ALTRELDYN	".elfsh.reldyn"
+#define		ELFSH_SECTION_NAME_ALTRELGOT	".elfsh.relgot"
+#define		ELFSH_SECTION_NAME_ALTRELBSS	".elfsh.relabss"
 
 #define		ELFSH_SECTION_NAME_GOTPLT	".got.plt"
 #define		ELFSH_SECTION_NAME_INTERP	".interp"

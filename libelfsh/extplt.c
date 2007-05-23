@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.14 2007-05-18 15:52:16 may Exp $
+ * $Id: extplt.c,v 1.15 2007-05-23 16:56:55 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -187,10 +187,10 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfsh_Dyn	*dynent;
   elfsh_Dyn   	*versyment;
   elfsh_Dyn   	*hashent;
-
   elfshsect_t	*relgot;
   char		*data;
   char		*name;
+  char		*relgotname;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,7 +222,19 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 		      "Unable to find PLT relocation table", -1);
   relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELGOT, 0, 0, 0);
   if (!relgot)
-    relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELDYN, 0, 0, 0);
+    {
+      relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELDYN, 0, 0, 0);
+      if (!relgot)
+	{
+	  relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELABSS, 0, 0, 0);
+	  relgotname = ELFSH_SECTION_NAME_ALTRELBSS;
+	}
+      else
+	relgotname = ELFSH_SECTION_NAME_ALTRELDYN;
+    }
+  else
+    relgotname = ELFSH_SECTION_NAME_ALTRELGOT;
+
 
   /* Copy a double sized .dynsym somewhere else */
   new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
@@ -273,16 +285,15 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   /* Same for .rel.got, if relgot is NULL then there is no .rel.got, its not an error */
   if (relgot)
     {
-      new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELGOT, NULL,
-				 ELFSH_DATA_INJECTION, relgot->shdr->sh_size,
-				 sizeof(elfsh_Addr));
+      new = elfsh_insert_section(file, relgotname, NULL, ELFSH_DATA_INJECTION,
+				 relgot->shdr->sh_size, sizeof(elfsh_Addr));
       if (!new)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to inject ALTRELGOT", -1);
 
       data = elfsh_get_raw(new);
       memcpy(data, elfsh_get_raw(relgot), relgot->shdr->sh_size);
-      dynent = elfsh_get_dynamic_entry_by_type(file, DT_REL);
+      dynent = elfsh_get_dynamic_entry_by_type(file, IS_REL(dynamic) ? DT_REL : DT_RELA);
       if (!dynent)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get DT_REL", -1);
