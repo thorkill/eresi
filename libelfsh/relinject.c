@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.12 2007-05-18 15:52:16 may Exp $
+** $Id: relinject.c,v 1.13 2007-05-23 16:05:39 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -296,7 +296,8 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  if (sect == NULL)
 	    {
 
-#if	__DEBUG_RELADD__
+#if	 1 //__DEBUG_RELADD__
+	      elfsh_print_sectlist(reltab->parent, "HEH");
 	      fprintf(stderr, "[DEBUG_RELADD] Did not found %s section (sym = %s) \n", 
 		      tmpname, name);
 #endif

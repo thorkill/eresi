@@ -9,7 +9,7 @@
 ** Last update Sat Jul 30 17:34:52 2005 mayhem
 **
 **
-** $Id: bss.c,v 1.12 2007-05-23 15:00:30 may Exp $
+** $Id: bss.c,v 1.13 2007-05-23 16:05:39 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -395,6 +395,8 @@ elfshsect_t	*elfsh_insert_bss(elfshobj_t *file, elfshobj_t *rel, char *bssname)
 }
 
 
+
+
 /**
  * Map a new BSS in the current file or process as an additional section 
  */
@@ -430,7 +432,6 @@ elfshsect_t*	elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 }
 
 
-
 /**
  * Map a new BSS in the current file or process as an additional section 
  */
@@ -462,11 +463,11 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
       if (bsslen == -1)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
       "Unable to find bss size", NULL);
-      }
-      
-      //There was simply no bss in the relocatable file, its not an error
-      if (!newbss)
-      newbss = (elfshsect_t *) 0xdeadbeef;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
-      }
+    }
+  
+  //There was simply no bss in the relocatable file, its not an error
+  if (!newbss)
+    newbss = (elfshsect_t *) 0xdeadbeef;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
+}
 */

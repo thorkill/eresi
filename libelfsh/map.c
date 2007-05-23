@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.18 2007-05-23 15:00:30 may Exp $
+** $Id: map.c,v 1.19 2007-05-23 16:05:39 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -55,15 +55,6 @@ int		        elfsh_read_obj(elfshobj_t *file)
   puts("[DEBUG:read_obj] Loading all known typed sections\n");
 #endif
 
-  /* Fixup stuffs in the SHT */
-  elfsh_fixup(file);
-  
-  if (file->hdr->e_type == ET_CORE) 
-    {
-      elfsh_get_core_notes(file);
-      goto out;
-    }
-
   /* Fill multiple relocation sections */
   for (index = 0; NULL != 
        (actual = elfsh_get_reloc(file, index, NULL)); 
@@ -76,12 +67,23 @@ int		        elfsh_read_obj(elfshobj_t *file)
   elfsh_get_comments(file);
   elfsh_get_dwarf(file);
   elfsh_get_stab(file, NULL);
+  
+  if (file->hdr->e_type == ET_CORE) 
+    {
+      elfsh_get_core_notes(file);
+      goto out;
+    }
+
 
   /*
    ** We cannot use simply elfsh_get_anonymous_section() here
    ** because the object's section hash ptrs would not be filled.
    */
   elfsh_get_symtab(file, NULL);
+
+  /* Fixup stuffs in the SHT */
+  elfsh_fixup(file);
+
   elfsh_get_dynsymtab(file, NULL);
   elfsh_get_stab(file, NULL);
   elfsh_get_dynamic(file, NULL);
