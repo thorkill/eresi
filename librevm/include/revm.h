@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.61 2007-05-21 17:06:13 may Exp $
+** $Id: revm.h,v 1.62 2007-05-23 13:50:39 may Exp $
 **
 */
 #ifndef __REVM_H_
@@ -329,6 +329,9 @@ extern asm_processor	proc;
 #define	CMD_JGE			"jge"
 #define	CMD_FOREACH		"foreach"
 #define	CMD_FOREND		"forend"
+#define	CMD_MATCH		"match"
+#define	CMD_MATCHEND		"endmatch"
+#define	CMD_CASE		"case"
 
 /* Prefixes */
 #define	CMD_SORT		 "sort"
@@ -504,6 +507,7 @@ typedef struct        s_job
   hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
   elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
   asm_processor*      proc;		/* Processor structure */
+  char		      *curmatchtype;	/* Indicate if we are matching a type */
 }                     revmjob_t;
 
 
@@ -832,6 +836,9 @@ int		cmd_jge();
 int		cmd_jle();
 int		cmd_foreach();
 int		cmd_forend();
+int		cmd_match();
+int		cmd_matchend();
+int		cmd_case();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);
@@ -879,6 +886,7 @@ int		vm_getdisasm(u_int index, u_int argc, char **argv);
 int		vm_gethexa(u_int index, u_int argc, char **argv);
 int		vm_getvarparams(u_int index, u_int argc, char **argv);
 int		vm_getforparams(u_int index, u_int argc,  char **argv);
+int		vm_getmatchparams(u_int index, u_int argc, char **argv);
 
 /* Libasm resolve handlers */
 void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);

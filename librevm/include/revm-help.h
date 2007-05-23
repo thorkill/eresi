@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.23 2007-05-21 16:09:35 may Exp $
+** $Id: revm-help.h,v 1.24 2007-05-23 13:50:39 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -175,6 +175,15 @@
 				"(...)                                 \n\t"   \
 				"forend                                \n\n"
 #define	HLP_FOREND		HLP_FOREACH
+
+#define	HLP_MATCH		"Match code construction type	       \n\n\t"					\
+				"match construtname [list,of,objects]  \n\t"					\
+				" case [Type1(val, ...), ..., TypeN(...)] -> [ProducedType1(...), ...] \n\t"	\
+				" case [Type2(val, ...), ..., TypeM(...)] -> [ProducedType2(...), ...] \n\t"	\
+				"endmatch				\n\n"
+#define	HLP_MATCHEND		HLP_MATCH
+#define	HLP_CASE		HLP_MATCH
+
 
 /* Prefixes */
 #define	HLP_SORT		 "Sorting prefix (use a -addr- or s -size-)"

@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 mayhem
 **
-** $Id: parser.c,v 1.3 2007-03-27 20:56:03 mxatone Exp $
+** $Id: parser.c,v 1.4 2007-05-23 13:50:39 may Exp $
 **
 */
 #include "revm.h"
@@ -41,6 +41,80 @@ char			*vm_label_get(char *prefix)
 }
 
 
+
+/* Recognize a higher order construct : foreach, match .. */
+int			vm_parse_construct(char *curtok)
+{
+  char			*labl;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+	  
+  /* If we met a foreach/forend, update the nested loop labels stack */
+  if (!strcmp(curtok, CMD_FOREACH))
+    {
+      if (curnest >= REVM_MAXNEST_LOOP)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Too many nested construct", -1);
+      labl = vm_label_get("foreach");
+      hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
+      looplabels[curnest++] = labl;
+    }
+  
+  /* At forend, delay the label insertion to the next command */
+  else if (!strcmp(curtok, CMD_FOREND))
+    {
+      if (curnest == 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested forend statement", -1);
+      endlabl = vm_label_get("forend");
+
+      if (!strstr(looplabels[curnest - 1], "foreach"))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested loop-ending statement", -1);
+
+      forend = newcmd;
+      forend->endlabel = looplabels[--curnest];
+      nextlabel = 1;
+    }
+
+  /* Here the match parser */
+  /* If we met a foreach/forend, update the nested loop labels stack */
+  else if (!strcmp(curtok, CMD_MATCH))
+    {
+      if (curnest >= REVM_MAXNEST_LOOP)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Too many nested construct", -1);
+      labl = vm_label_get("match");
+      hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
+      looplabels[curnest++] = labl;
+    }
+  
+  /* At forend, delay the label insertion to the next command */
+  else if (!strcmp(curtok, CMD_MATCHEND))
+    {
+      if (curnest == 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested endmatch statement", -1);
+      endlabl = vm_label_get("matchend");
+
+      if (!strstr(looplabels[curnest - 1], "match"))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested match-ending statement", -1);
+
+      forend = newcmd;
+      forend->endlabel = looplabels[--curnest];
+      nextlabel = 1;
+    }
+
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+
 /* Parse the commands */
 int			vm_parseopt(int argc, char **argv)
 {
@@ -50,7 +124,6 @@ int			vm_parseopt(int argc, char **argv)
   volatile revmargv_t   *loopstart;
   char			*name;
   char			label[16];
-  char			*labl;
   char			c;
   char			cmdline;
 
@@ -106,31 +179,11 @@ int			vm_parseopt(int argc, char **argv)
 			     "Command not found", 
 			     (vm_doerror(vm_badparam, argv[index])));
 	    }
-	  
-	  /* If we met a foreach/forend, update the nested loop labels stack */
-	  if (!strcmp(argv[index], CMD_FOREACH))
-	    {
-	      if (curnest >= REVM_MAXNEST_LOOP)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			     "Too many nested loops", -1);
-	      labl = vm_label_get("foreach");
-	      hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
-	      looplabels[curnest++] = labl;
-	    }
-	  
-	  /* At forend, delay the label insertion to the next command */
-	  else if (!strcmp(argv[index], CMD_FOREND))
-	    {
-	      if (curnest == 0)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			     "Unknown loop at forend statement", -1);
-	      endlabl = vm_label_get("forend");
-	      forend = newcmd;
-	      forend->endlabel = looplabels[--curnest];
-	      nextlabel = 1;
-	    }
-	  index += ret;
 
+	  if (vm_parse_construct(argv[index]) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Invalid program construct in script file", -1);
+	  index += ret;
 	}
 
       /* We did -NOT- match command */
