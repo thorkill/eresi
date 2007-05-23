@@ -159,33 +159,33 @@
 ~save fake_aout  [1;31m[W][0m           <[31melfsh_get_section_by_type_withlist[0m@[32msection.c[0m:[36m328[0m> [1;31mSection not found ..[0m 
  [1;31m[W][0m          <[31melfsh_get_section_by_type[0m@[32msection.c[0m:[36m368[0m>  [1;31mSection remained unfound[0m 
  [1;31m[W][0m   <[31melfsh_get_reloc[0m@[32mreloc.c[0m:[36m242[0m>              [1;31mUnable to get reloc section[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_info[0m@[32mdwarf.c[0m:[36m32[0m>          [1;31mUnable to find Dwarf info table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_abbrev[0m@[32mdwarf.c[0m:[36m78[0m>        [1;31mUnable to find Dwarf abbrev table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_aranges[0m@[32mdwarf.c[0m:[36m124[0m>      [1;31mUnable to find Dwarf aranges table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_frame[0m@[32mdwarf.c[0m:[36m170[0m>        [1;31mUnable to find Dwarf frame table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_line[0m@[32mdwarf.c[0m:[36m216[0m>         [1;31mUnable to find Dwarf line table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_macinfo[0m@[32mdwarf.c[0m:[36m262[0m>      [1;31mUnable to find Dwarf abbrev table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_pubnames[0m@[32mdwarf.c[0m:[36m308[0m>     [1;31mUnable to find Dwarf pubnames table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_str[0m@[32mdwarf.c[0m:[36m354[0m>          [1;31mUnable to find Dwarf str table[0m 
- [1;31m[W][0m           <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
- [1;31m[W][0m          <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
- [1;31m[W][0m   <[31melfsh_get_dwarf_loc[0m@[32mdwarf.c[0m:[36m400[0m>          [1;31mUnable to find Dwarf loc table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_info[0m@[32mdwarf.c[0m:[36m49[0m>          [1;31mUnable to find Dwarf info table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_abbrev[0m@[32mdwarf.c[0m:[36m95[0m>        [1;31mUnable to find Dwarf abbrev table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_aranges[0m@[32mdwarf.c[0m:[36m141[0m>      [1;31mUnable to find Dwarf aranges table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_frame[0m@[32mdwarf.c[0m:[36m187[0m>        [1;31mUnable to find Dwarf frame table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_line[0m@[32mdwarf.c[0m:[36m233[0m>         [1;31mUnable to find Dwarf line table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_macinfo[0m@[32mdwarf.c[0m:[36m279[0m>      [1;31mUnable to find Dwarf abbrev table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_pubnames[0m@[32mdwarf.c[0m:[36m325[0m>     [1;31mUnable to find Dwarf pubnames table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_str[0m@[32mdwarf.c[0m:[36m371[0m>          [1;31mUnable to find Dwarf str table[0m 
+ [1;31m[W][0m            <[31melfsh_get_section_by_name_withlist[0m@[32msection.c[0m:[36m244[0m> [1;31mSection not found[0m 
+ [1;31m[W][0m           <[31melfsh_get_section_by_name[0m@[32msection.c[0m:[36m276[0m>  [1;31mSection not found[0m 
+ [1;31m[W][0m          <[31melfsh_get_dwarf_loc[0m@[32mdwarf.c[0m:[36m417[0m>          [1;31mUnable to find Dwarf loc table[0m 
  [1;31m[W][0m           <[31melfsh_get_section_by_type_withlist[0m@[32msection.c[0m:[36m328[0m> [1;31mSection not found ..[0m 
  [1;31m[W][0m          <[31melfsh_get_section_by_type[0m@[32msection.c[0m:[36m368[0m>  [1;31mSection remained unfound[0m 
  [1;31m[W][0m   <[31melfsh_get_versymtab[0m@[32mversion.c[0m:[36m1268[0m>       [1;31mUnable to find Symbol Version table[0m 

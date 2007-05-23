@@ -4,7 +4,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.17 2007-05-22 15:37:17 may Exp $
+** $Id: map.c,v 1.18 2007-05-23 15:00:30 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -18,12 +18,6 @@ void		      elfsh_fixup(elfshobj_t *file)
   elfsh_Shdr	*got;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* This line is subject to controversy */
-  /* Do not comment until it is made clear why this line is necessary
-     for ET_REL injection. It generates a bug on solaris with debug
-     sections but ET_REL injection needs to work in priority -may */
-  elfsh_get_symtab(file, NULL);
 
   if (file->hdr->e_type == ET_REL || elfsh_static_file(file))
     elfsh_sort_sht(file);
@@ -61,21 +55,7 @@ int		        elfsh_read_obj(elfshobj_t *file)
   puts("[DEBUG:read_obj] Loading all known typed sections\n");
 #endif
 
-  /* Fill multiple relocation sections */
-  for (index = 0; NULL != 
-       (actual = elfsh_get_reloc(file, index, NULL)); 
-       index++);
-
-  /*
-  ** Load sections placed after symtab
-  ** Added for Solaris to avoid file offset shifting after
-  ** the symtab have been extended.
-  */
-  elfsh_get_comments(file);
-  elfsh_get_dwarf(file);
-  elfsh_get_stab(file, NULL);
-
-  /* Fixup stuffs in the SHT and symtab */
+  /* Fixup stuffs in the SHT */
   elfsh_fixup(file);
   
   if (file->hdr->e_type == ET_CORE) 
@@ -83,6 +63,19 @@ int		        elfsh_read_obj(elfshobj_t *file)
       elfsh_get_core_notes(file);
       goto out;
     }
+
+  /* Fill multiple relocation sections */
+  for (index = 0; NULL != 
+       (actual = elfsh_get_reloc(file, index, NULL)); 
+       index++);
+
+  /*
+  ** Load sections placed after symtab
+  ** Added for Solaris
+  */
+  elfsh_get_comments(file);
+  elfsh_get_dwarf(file);
+  elfsh_get_stab(file, NULL);
 
   /*
    ** We cannot use simply elfsh_get_anonymous_section() here
