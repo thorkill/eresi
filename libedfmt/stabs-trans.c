@@ -4,7 +4,7 @@
 ** Started Fev 02 2007 14:35:03 mxatone
 **
 **
-** $Id: stabs-trans.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+** $Id: stabs-trans.c,v 1.9 2007-05-23 13:42:31 mxatone Exp $
 **
 */
 
@@ -150,6 +150,9 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
       if (etype == NULL)
 	{
 	  stype = edfmt_stabs_transform_type_adv(type->u.link, 0);
+
+	  if (!stype)
+	    break;
 	  
 	  switch(type->type)
 	    {

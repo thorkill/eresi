@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
+** $Id: stabs.c,v 1.15 2007-05-23 13:42:31 mxatone Exp $
 **
 */
 
@@ -1042,6 +1042,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  parse_str = 0;
 	  if (!inc && (!str || !str[0]))
 	    {
+	      if (!current_file)
+		break;
+
 	      /* We have the end addr */
 	      current_file->e_addr = stabs_c_ent.value;
 
@@ -1101,6 +1104,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	    }
 	  else
 	    {
+	      if (!current_file)
+		break;
+
 	      /* Do we already have some include ? */
 	      if (current_file->last_inc)
 		{
