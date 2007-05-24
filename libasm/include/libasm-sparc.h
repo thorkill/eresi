@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.7 2007-03-07 16:45:34 thor Exp $
+** $Id: libasm-sparc.h,v 1.8 2007-05-24 04:47:08 strauss Exp $
 **
 */
 
@@ -172,6 +172,16 @@ struct s_asm_ins_sparc {
   asm_operand	op2;
   asm_operand	op3;
 };
+
+/* SPARC "flags" (ie. condition codes) */
+
+enum {
+  ASM_SP_FLAG_C = 1 << 0, // Carry
+  ASM_SP_FLAG_V = 1 << 1, // oVerflow
+  ASM_SP_FLAG_Z = 1 << 2, // Zero
+  ASM_SP_FLAG_N = 1 << 3  // Negative
+} e_sparc_flags;
+
 
 struct s_asm_proc_sparc {
   /* handlers for x86 instructions referenced by opcode	*/

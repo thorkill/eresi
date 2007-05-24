@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_orcc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
+** $Id: asm_sparc_orcc.c,v 1.5 2007-05-24 04:47:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,8 @@ asm_sparc_orcc(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_ARITH | ASM_TYPE_CONTROL;
+  ins->type = ASM_TYPE_ARITH | ASM_TYPE_FLAG;
+  ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
 
   ins->nb_op = 3;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
@@ -38,7 +39,7 @@ asm_sparc_orcc(asm_instr * ins, u_char * buf, u_int len,
 	   ins->op3.base_reg == ASM_REG_G0) {
 
     ins->instr = ASM_SP_TST;
-    ins->type = ASM_TYPE_TEST | ASM_TYPE_CONTROL;
+    ins->type = ASM_TYPE_TEST | ASM_TYPE_FLAG;
     ins->nb_op = 1;
     ins->op1 = ins->op2;
   }

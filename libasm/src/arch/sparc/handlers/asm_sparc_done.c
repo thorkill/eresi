@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_done.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_done.c,v 1.4 2007-05-24 04:47:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,8 @@ asm_sparc_done(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_RETPROC;
+  ins->type = ASM_TYPE_RETPROC | ASM_TYPE_FLAG;
+  ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
 
   if (opcode.rd == 0)		/* DONE */
     ins->instr = ASM_SP_DONE;

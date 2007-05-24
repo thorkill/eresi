@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_udivcc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
+** $Id: asm_sparc_udivcc.c,v 1.5 2007-05-24 04:47:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,8 @@ asm_sparc_udivcc(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_ARITH | ASM_TYPE_CONTROL;
+  ins->type = ASM_TYPE_ARITH | ASM_TYPE_FLAG;
+  ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
 
   ins->nb_op = 3;
   ins->op1.type = ASM_SP_OTYPE_REGISTER;
