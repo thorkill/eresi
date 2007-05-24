@@ -19,6 +19,8 @@ LD			?= ld
 RM			= rm -f
 DBGNAME32		= libe2dbg32
 DBGNAME64		= libe2dbg64
+DBGNAME32O		= e2dbg-rel32.o
+DBGNAME64O		= e2dbg-rel64.o
 AR			= ar rc
 
 
@@ -60,10 +62,13 @@ all32			: ${OBJ32}
 			-o $(DBGNAME32).so
 			@$(AR) $(DBGNAME32).a $(OBJ32)
 			@$(RANLIB) $(DBGNAME32).a
+			@$(LD) -r $(OBJ32) $(EXTRAOBJ32) -o $(DBGNAME32O)
+
 
 all64			: ${OBJ64}
 			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
 			-o $(DBGNAME64).so
+			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)
 			@$(AR) $(DBGNAME64).a $(OBJ64)
 			@$(RANLIB) $(DBGNAME64).a
 
