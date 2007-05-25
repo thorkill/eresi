@@ -3,7 +3,7 @@
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
 **
-** $Id: mydisasm.c,v 1.8 2007-05-19 23:59:12 heroine Exp $
+** $Id: mydisasm.c,v 1.9 2007-05-25 22:07:35 thor Exp $
 **
 */
 
@@ -141,7 +141,7 @@ int	main(int ac, char **av) {
   while(curr < len) {
     if (asm_read_instr(&instr, ptr + curr, len - curr, &proc) > 0) {
       att_dump = asm_display_instr_att(&instr, (int) vaddr + curr);
-      if (att_dump) {
+      if (att_dump && (strcmp(att_dump,"int_err"))) {
 	printf("0x%08x:\t", (int) vaddr + curr);
 	printf("%30s\t", att_dump);
 	for (i = 0; i < instr.len; i++)
