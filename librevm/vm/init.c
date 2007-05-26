@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.22 2007-05-16 13:33:47 may Exp $
+** $Id: init.c,v 1.23 2007-05-26 19:46:54 mxatone Exp $
 **
 */
 
@@ -177,7 +177,9 @@ int		vm_loop(int argc, char **argv)
     /* We arrive here when we execute a continue command from a debugger script */
  e2dbg_continue:
 #if defined(USE_READLN)
-  rl_callback_handler_remove();
+  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER
+	&& world.state.vm_side == REVM_SIDE_SERVER))
+    readln_quit(world.state.vm_mode);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));

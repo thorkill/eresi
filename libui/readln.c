@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.16 2007-04-30 19:54:12 mxatone Exp $
+** $Id: readln.c,v 1.17 2007-05-26 19:46:54 mxatone Exp $
 **
 */
 #include "libui.h"
@@ -14,6 +14,26 @@
 
 rlcomp_t		comp;			/* Completion strings */
 rl_command_func_t	*rl_ctrll = NULL;
+char			readln_exited = 0;
+
+/* Clean readline */
+int		readln_quit(int mode)
+{
+  int 		exited = readln_exited;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (readln_exited == 0)
+    {
+      if (mode >= 0)
+	readln_history_dump(mode);
+      
+      rl_callback_handler_remove();
+      readln_exited = 1;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, exited);
+}
 
 
 /* Set rl_ctrl */
@@ -109,12 +129,19 @@ void		readln_completion_install(char mode, char side)
   rl_attempted_completion_function = readln_completion;
 
   str = "";
-  if (!(mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_SERVER)
-      && mode != REVM_STATE_CMDLINE && mode != REVM_STATE_SCRIPT
-      && mode != REVM_STATE_TRACER)
+  if (mode != REVM_STATE_DEBUGGER && mode != REVM_STATE_CMDLINE 
+      && mode != REVM_STATE_SCRIPT && mode != REVM_STATE_TRACER)
     str = vm_get_prompt();
 
   rl_callback_handler_install(str, vm_ln_handler);
+
+  /* We setup prompt after installation because we
+   don't want it directly */
+  if (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT)
+    {
+      rl_on_new_line_with_prompt();
+      rl_prompt = vm_get_prompt();
+    }
 
   rl_bind_key(CTRL('x'), vm_screen_switch);
   readln_install_clearscreen();

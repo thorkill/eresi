@@ -4,7 +4,7 @@
 ** Started on Sun Jan 22 19:04:04 2006 mxatone
 ** Updated on Tue Mar  6 08:42:17 2007 mayhem
 **
-** $Id: libui.h,v 1.12 2007-04-30 13:39:37 may Exp $
+** $Id: libui.h,v 1.13 2007-05-26 19:46:54 mxatone Exp $
 **
 */
 
@@ -32,6 +32,7 @@ typedef struct        s_comp
 }		      rlcomp_t;
 
 /* Prototypes for readline functions */
+int		readln_quit(int mode);
 void		readln_ctrl_set(int i, char c);
 char            *readln_match(const char *text, int state);
 void            readln_completion_install(char mode, char side);

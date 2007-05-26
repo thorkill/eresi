@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.9 2007-04-30 19:54:12 mxatone Exp $
+** $Id: select.c,v 1.10 2007-05-26 19:46:54 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -211,21 +211,27 @@ int			vm_preselect_prompt()
 	    {
 	      if (world.curjob->ws.io.buf != NULL) 
 		{
-		  
 		  /* On the client side, we consider that the prompt is already
 		     returned by the server */
-		  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
-			world.state.vm_side == REVM_SIDE_CLIENT))
-		    rl_forced_update_display();
+		  if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
+			world.state.vm_side == REVM_SIDE_CLIENT)
+		    {
+		      rl_on_new_line_with_prompt();
+		      rl_clear_message();
+		      //rl_redisplay();
+		    }
 		  else
-		    rl_on_new_line_with_prompt();
+		    rl_forced_update_display();
+
 		  vm_log(vm_get_prompt());
 		}
 	    }
 	  else 
 #endif
 	    {
-	      /* Do not display the prompt for the client side */
+	      /* Do not display the prompt for the client side 
+		 This part can't use any READLN stuff because
+		 we always be on server */
 	      if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
 		    world.state.vm_side == REVM_SIDE_CLIENT))
 		vm_display_prompt();

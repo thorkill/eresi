@@ -4,7 +4,7 @@
 ** Input related functions
 **
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** $Id: input.c,v 1.7 2007-04-30 19:54:12 mxatone Exp $
+** $Id: input.c,v 1.8 2007-05-26 19:46:54 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -141,15 +141,15 @@ char		*vm_fifoinput()
  world.curjob->ws.io.input = world.curjob->ws.io.old_input;
  
  /* Just debugging */ 
-  switch (world.state.vm_side)
-    {
-    case REVM_SIDE_CLIENT:
-      //fprintf(stderr, "BACK from reading fifo (client legit) ... \n");      
-      break;
-    case REVM_SIDE_SERVER:
-      //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
-      break;
-    }
+ switch (world.state.vm_side)
+   {
+   case REVM_SIDE_CLIENT:
+     //fprintf(stderr, "BACK from reading fifo (client legit) ... (%s)\n");      
+     break;
+   case REVM_SIDE_SERVER:
+     //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
+     break;
+   }
 
   return (ret);
 }
