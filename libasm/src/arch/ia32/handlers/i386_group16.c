@@ -1,7 +1,10 @@
-/*
-** $Id: i386_group16.c,v 1.1 2007-05-29 00:40:27 heroine Exp $
-**
-*/
+/**
+ * @file i386_group16.c
+ * $Id: i386_group16.c,v 1.2 2007-05-29 00:46:14 heroine Exp $
+ * 
+ * Changelog
+ * 2007-05-29: operand type fixed.
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
@@ -34,17 +37,17 @@ int i386_group16(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 1:
       new->instr = ASM_FXRSTORE;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_MEMORY, 
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
 				    new);
       break;
     case 2:
       new->instr = ASM_LDMXCSR;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_MEMORY, 
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
 				    new);
       break; 
     case 3:
       new->instr = ASM_STMXCSR;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_MEMORY, 
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
 				    new);
       break;
     case 4:
