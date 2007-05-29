@@ -544,7 +544,7 @@ echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makef
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libe2dbg/libe2dbg*.a libe2dbg/libe2dbg*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libasm/libasm.a \$(LIBPATH) "			>> Makefile
+echo "	@cp libasm/libasm.a libasm/libasm.so \$(LIBPATH) "	>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile
 echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile
