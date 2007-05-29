@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-# (C) 2006 Asgard Labs, thorolf
+# (C) 2006-2007 Asgard Labs, thorolf
 # BSD License
-# $Id: desDiff.pl,v 1.5 2006-12-18 21:03:36 thor Exp $
+# $Id: desDiff.pl,v 1.6 2007-05-29 08:57:42 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
@@ -17,16 +17,16 @@ $tmpFile = $b;
 $tmpFile =~ s/\//\###/g;
 $tmpFile = $$.".$tmpFile";
 
-print "[i] Checking: $b\n";
-print "[x] Objdump \n";
+print STDERR "[i] Checking: $b - ... ";
+print STDERR "Objdump, ";
 system("objdump -d -j .text $b > $tmpFile.objdump");
-print "[x] Mydisasm \n";
+print STDERR "Mydisasm, ";
 system("./mydisasm $b .text > $tmpFile.mydisasm");
 
 open(X1, "$tmpFile.mydisasm");
 open(X2, "$tmpFile.objdump");
 
-print "[i] Analisis started...\n";
+print STDERR "Analysis started...\n";
 while($l1 = <X1>) {
  chomp($l1);
  @d1 = split("\t",$l1);
@@ -36,13 +36,17 @@ while($l1 = <X1>) {
  x2();
  
  if ($a1 ne $a2) { 
-  $tmp = "[!] opcodes: ".  $a1 . " :: " . $a2 ."\n";
+  $tmp = "[!] opcodes: ".  $a1 . " :: " . $a2 ." in $b\n";
   $tmp .= "[X] LIBASM: ". $l1 . "\n";
-  $tmp .= "[X] OBJDUMP: ". $l2 . "\n";
+  $tmp .= "[X] OBJDUMP: ". $l2 . "\n[o] ======\n";
   $x = $a1;
   $x =~ s/$a2//g;
   x2();
-  if ($x ne $a2) {print $tmp;exit(1);}
+  if ($x ne $a2) {
+    print $tmp;
+    print STDERR "[o] diffs found\n";
+    exit(1);
+  }
  }
 
 }
