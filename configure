@@ -731,7 +731,7 @@ fi
 if [ "$CTAGS" = "1" ]; then
 echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
 echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
-echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c">> Makefile
+echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c \\">> Makefile
 echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
 echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "	elibc/include/*.h elibc/*.c\\"				>> Makefile

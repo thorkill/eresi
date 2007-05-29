@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.33 2007-05-06 18:16:33 thor Exp $
+** $Id: core.c,v 1.34 2007-05-29 17:54:21 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -50,8 +50,6 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
 
   /* Create block pointing to this section */
-  
-
   if (sct->shdr->sh_addr == e_point)
     {
       printf(" [*] Entry point: %lx\n", (unsigned long) e_point);
@@ -69,6 +67,12 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   while (curr < len) 
   {
     ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
+
+#if __DEBUG_READ__
+    fprintf(D_DESC,"[D] %s/%s,%d: ilen=%x\n",
+	    __FUNCTION__, __FILE__, __LINE__, ilen);
+#endif
+
     if (ilen > 0) 
       {
 	mjr_history_shift(sess->cur, instr, vaddr + curr);
