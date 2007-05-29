@@ -2,24 +2,50 @@
 
 # (C) 2006-2007 Asgard Labs, thorolf
 # BSD License
-# $Id: desDiff.pl,v 1.6 2007-05-29 08:57:42 thor Exp $
+# $Id: desDiff.pl,v 1.7 2007-05-29 12:01:56 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
 # disassembly between objdump and mydisasm/libasm
 
+$sparcObjDump = "sparc-rtems-objdump";
+$intelObjDump = "objdump";
+
+# overwrite default objdump
+if ($ENV{'ERESI_OBJDUMP'}) {
+    $sparcObjDump = $ENV{'ERESI_OBJDUMP'};
+    $intelObjDump = $ENV{'ERESI_OBJDUMP'};
+}
 
 if (!$ARGV[0]) {print "usage: ./desDiff.pl test.so\n";exit();}
 
 $b = $ARGV[0];
 
+open(SI,"file $b |");
+$tmp = <SI>;
+@fileInfo = split(',',$tmp);
+close(SI);
+
+$arch = $fileInfo[1];
+$arch =~ s/^ //;
+$arch =~ s/,//;
+
+if ($arch =~ /^Intel/) {
+ $objDump = $intelObjDump;
+} elsif ($arch =~ /SPARC$/) {
+ $objDump = $sparcObjDump;
+} else {
+ print "[E] Architecture [$arch] is not supported\n";
+ exit(1);
+}
+
 $tmpFile = $b;
 $tmpFile =~ s/\//\###/g;
 $tmpFile = $$.".$tmpFile";
 
-print STDERR "[i] Checking: $b - ... ";
+print STDERR "[i] Checking: $b [$arch] - ... ";
 print STDERR "Objdump, ";
-system("objdump -d -j .text $b > $tmpFile.objdump");
+system("$objDump -d -j .text $b > $tmpFile.objdump");
 print STDERR "Mydisasm, ";
 system("./mydisasm $b .text > $tmpFile.mydisasm");
 
@@ -27,27 +53,62 @@ open(X1, "$tmpFile.mydisasm");
 open(X2, "$tmpFile.objdump");
 
 print STDERR "Analysis started...\n";
-while($l1 = <X1>) {
- chomp($l1);
- @d1 = split("\t",$l1);
+
+$waitFlag = 0;
+
+while($myDisasmInput = <X1>) {
+ chomp($myDisasmInput);
+ @myDisasmLine = split("\t",$myDisasmInput);
+ $mdAddr = $myDisasmLine[0];
+ $mdAddr =~ s/ //g;
+ $mdAddr =~ s/://;
+ $mdInstr = $myDisasmLine[1];
+ $mdInstr =~ s/ //g;
+ $mdOpcode = $myDisasmLine[2];
+ $mdOpcode =~ s/ //g;
+
+ if (!$waitFlag) {
+  # objdump opcodes
+  @objDumpLine = x2();
+ }
+
+ $obAddr   = $objDumpLine[0];
+ $obAddr   =~ s/ //g;
+ $obAddr   =~ s/://g;
+ $obAddr   = "0x".$obAddr;
+ $obOpcode = $objDumpLine[1];
+ $obOpcode =~ s/ //g;
+ $obInstr  = $objDumpLine[2];
+
+## debug 
+# print "MD: ". $mdAddr . " " .$mdInstr . " " . $mdOpcode . "\n";
+# print "OD: ". $obAddr . " " .$obInstr . " " . $obOpcode . "\n";
+
+ if (oct($mdAddr) < oct($obAddr))
+   {
+    $waitFlag = 1;
+    next;
+   }
+
+ if ($mdOpcode ne $obOpcode) {
  
- $a1 = $d1[2];
- $a1 =~ s/ //g;
- x2();
- 
- if ($a1 ne $a2) { 
-  $tmp = "[!] opcodes: ".  $a1 . " :: " . $a2 ." in $b\n";
-  $tmp .= "[X] LIBASM: ". $l1 . "\n";
-  $tmp .= "[X] OBJDUMP: ". $l2 . "\n[o] ======\n";
-  $x = $a1;
-  $x =~ s/$a2//g;
+ if (($obOpcode ne "...") && ($mdInstr ne "illtrap"))
+  {
+  $tmp = "[!] opcodes: ".  $mdOpcode . " :: " . $obOpcode ." in $b\n";
+  $tmp .= "[X] LIBASM: ". $myDisasmInput . "\n";
+  $tmp .= "[X] OBJDUMP: ". $objDumpInput . "\n[o] ======\n";
+  $x = $mdOpcode;
+  $x =~ s/$obOpcode//g;
   x2();
-  if ($x ne $a2) {
+  if ($x ne $obOpcode) {
     print $tmp;
     print STDERR "[o] diffs found\n";
     exit(1);
   }
  }
+ }
+
+ $waitFlag = 0;
 
 }
 
@@ -57,15 +118,15 @@ close(X2);
 unlink("$tmpFile.objdump");
 unlink("$tmpFile.mydisasm");
 
+
+### Read objdump output
 sub x2 {
 
- $l2 = <X2>;
- if (!$l2) {exit();}
- chomp($l2);
- if ($l2 !~ /^\s+/) {x2();}
- @d2 = split("\t",$l2);
- $a2 = $d2[1];
- $a2 =~ s/ //g;
+ $objDumpInput = <X2>;
+ if (!$objDumpInput) {exit();}
+ chomp($objDumpInput);
+ if ($objDumpInput !~ /^\s+/) {x2();}
+ @objDumpLine = split("\t",$objDumpInput);
 
+ return (@objDumpLine);
 }
-
