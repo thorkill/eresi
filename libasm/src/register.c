@@ -1,5 +1,5 @@
 /**
- * $Id: register.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
+ * $Id: register.c,v 1.6 2007-05-29 08:04:35 strauss Exp $
  * @file register.c
  *
  */
@@ -15,15 +15,12 @@
 int	asm_register_ia32_opcode(int opcode, unsigned long fcn)
 {
   vector_t	*vec;
-  u_int		dim[4];
+  u_int		dim[1];
   
   LIBASM_PROFILE_FIN();
 
   vec = aspect_vector_get("disasm");
-  dim[0] = LIBASM_VECTOR_IA32;
-  dim[1] = opcode;
-  dim[2] = 0; /* sparc-only field */
-  dim[3] = 0; /* sparc-only field */
+  dim[0] = opcode;
 
   aspect_vectors_insert(vec, dim, fcn);
   LIBASM_PROFILE_FOUT(1);
@@ -35,17 +32,16 @@ int	asm_register_ia32_opcode(int opcode, unsigned long fcn)
  *
  */
 int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
-			      unsigned long fcn)
+                                   			      unsigned long fcn)
 {
   vector_t	*vec;
-  u_int		dim[4];
+  u_int		dim[3];
   
   LIBASM_PROFILE_FIN();
-  vec = aspect_vector_get("disasm");
-  dim[0] = LIBASM_VECTOR_SPARC;
-  dim[1] = opcode;
-  dim[2] = opcode2;
-  dim[3] = fpop;
+  vec = aspect_vector_get("disasm-sparc");
+  dim[0] = opcode;
+  dim[1] = opcode2;
+  dim[2] = fpop;
 
   aspect_vectors_insert(vec, dim, fcn);
   LIBASM_PROFILE_FOUT(1);

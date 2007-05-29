@@ -6,7 +6,7 @@
 ** Started : Sun Nov 30 20:13:12 2003
 ** Updated : Thu Dec  4 03:01:07 2003
 **
-** $Id: init_sparc.c,v 1.7 2007-03-07 16:45:34 thor Exp $
+** $Id: init_sparc.c,v 1.8 2007-05-29 08:04:35 strauss Exp $
 **
 */
 
@@ -16,7 +16,7 @@
 int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) 
 { 
   vector_t *vec;
-  u_int dim[4];
+  u_int dim[3];
   int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *); 
   
   int converted;  
@@ -56,32 +56,33 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->op2.address_space = 0x80;
   ins->op3.address_space = 0x80;
   
-  vec = aspect_vector_get("disasm");
-  dim[0] = LIBASM_VECTOR_SPARC;
-  dim[1] = (converted & 0xC0000000) >> 30;
+  vec = aspect_vector_get("disasm-sparc");
+  dim[0] = (converted & 0xC0000000) >> 30;
   
   if (MGETBIT(converted, 31)) {
   	if (MGETBIT(converted, 30)) {  	  	  
-	  dim[2] = (converted >> 19) & 0x3f;
-	  dim[3] = 0;
+  	  dim[1] = (converted >> 19) & 0x3f;
+  	  dim[2] = 0;
   	}
     else {
-      dim[2] = (converted >> 19) & 0x3f;
-      if (dim[2] == 0x35) /* FPop2 */
-	    dim[3] = (converted & 0x3E0) >> 5;
-	  else
-	    dim[3] = 0;
+      dim[1] = (converted >> 19) & 0x3f;
+
+      if (dim[1] == 0x35) /* FPop2 */
+  	    dim[2] = (converted & 0x3E0) >> 5;
+  	  else
+  	    dim[2] = 0;
     }
   }	
-  else
+  else {
   	if (MGETBIT(converted, 30)) {
+  	  dim[1] = 0;
   	  dim[2] = 0;
-	  dim[3] = 0;
   	}
     else {
-      dim[2] = (converted >> 22) & 0x7;
-	  dim[3] = 0;	  
+      dim[1] = (converted >> 22) & 0x7;
+  	  dim[2] = 0;	  
     }
+  }
   
   fetch = aspect_vectors_select(vec, dim);
   return (fetch(ins, (u_char*) &converted, len, proc));
@@ -117,6 +118,7 @@ void	asm_init_sparc(asm_processor *proc) {
   inter->tcc_table = sparc_tcc_list; 
   inter->op2_table = sparc_op2_table;
   inter->op3_table = sparc_op3_table;
-  
+ 
+  asm_init_vectors(proc);
   asm_arch_register(proc, 0);
 }

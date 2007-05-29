@@ -1,5 +1,5 @@
 /**
- * $Id: init_i386.c,v 1.10 2007-01-28 18:55:00 strauss Exp $
+ * $Id: init_i386.c,v 1.11 2007-05-29 08:04:35 strauss Exp $
  *
  */
 #ifndef I386_H_
@@ -38,16 +38,13 @@ int	fetch_i386(asm_instr *instr, u_char *buf, u_int len,
 			      asm_processor *proc)
 {
   vector_t	*vec;
-  u_int		dim[4];
+  u_int		dim[1];
   u_char	opcode;
   int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
   
   vec = aspect_vector_get("disasm");
-  dim[0] = LIBASM_VECTOR_IA32;
   opcode = *buf;
-  dim[1] = opcode;
-  dim[2] = 0; /* sparc-only field */
-  dim[3] = 0; /* sparc-only field */
+  dim[0] = opcode;
 
   fetch = aspect_vectors_select(vec, dim);
   return (fetch(instr, buf, len, proc));
@@ -67,8 +64,8 @@ void asm_init_i386(asm_processor *proc) {
 
   init_instr_table(proc);
 
-  asm_init_vectors(proc);
   proc->type = ASM_PROC_IA32;
+  asm_init_vectors(proc);
   asm_arch_register(proc, 1);  /* dummy parameters for the  moment */
   proc->resolve_immediate = asm_resolve_ia32;
   proc->resolve_data = 0;

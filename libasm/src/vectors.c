@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.8 2007-05-29 00:40:27 heroine Exp $
+ * $Id: vectors.c,v 1.9 2007-05-29 08:04:35 strauss Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -58,44 +58,71 @@ int	asm_init_vectors(asm_processor *proc)
   
   LIBASM_PROFILE_IN();
   aspect_init();
-  
-  dims = malloc(4 * sizeof (u_int));
-  if (!dims)
+ 
+  if (proc->type == ASM_PROC_IA32) {
+    /* Initializing IA-32 instruction handler vector */
+    dims = malloc(1 * sizeof (u_int));
+    if (!dims)
     {
       to_ret = 0;
       goto out;
     }
-  dimstr = malloc(4 * sizeof (char *));
-  if (!dimstr)
+    dimstr = malloc(1 * sizeof (char *));
+    if (!dimstr)
     {
       to_ret = 0;
       goto out;
     }
   
-  dims[0] = LIBASM_VECTOR_ARCHNUM;
-  dims[1] = 512;
-  dims[2] = 64;
-  dims[3] = 32;
+    dims[0] = 512;
   
-  dimstr[0] = "MACHINE";
-  dimstr[1] = "OPCODES";
-  dimstr[2] = "SECONDARY OPCODES (SPARC ONLY)"; /* Should be 0 when unused */
-  dimstr[3] = "FPOP OPCODE (SPARC ONLY)"; /* Should be 0 when unused */
-  aspect_register_vector("disasm",
-			 asm_fetch_default,
-			 dims, dimstr, 4, ASPECT_TYPE_CADDR);
+    dimstr[0] = "OPCODES";
+
+    aspect_register_vector("disasm", asm_fetch_default,
+                    			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+  }
+
+  else if (proc->type == ASM_PROC_SPARC) {
+    /* Initializing SPARC instruction handler vector */
+    dims = malloc(3 * sizeof (u_int));
+    if (!dims)
+    {
+      to_ret = 0;
+      goto out;
+    }
+    dimstr = malloc(3 * sizeof (char *));
+    if (!dimstr)
+    {
+      to_ret = 0;
+      goto out;
+    }
+  
+    dims[0] = 4;
+    dims[1] = 64;
+    dims[2] = 32;
+  
+    dimstr[0] = "OPCODES";
+    dimstr[1] = "SECONDARY OPCODES"; /* Should be 0 when unused */
+    dimstr[2] = "FPOP OPCODE"; /* Should be 0 when unused */
+
+    aspect_register_vector("disasm-sparc", asm_fetch_default,
+                    			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
+  }
+
+  /* Initializing operand handler vector */
   dims = malloc(2 * sizeof (u_int));
+
   if (!dims)
-    {
-      to_ret = 0;
-      goto out;
-    }
-  dimstr = malloc(4 * sizeof (char *));
+  {
+    to_ret = 0;
+    goto out;
+  }
+  dimstr = malloc(2 * sizeof (char *));
   if (!dimstr)
-    {
-      to_ret = 0;
-      goto out;
-    }
+  {
+    to_ret = 0;
+    goto out;
+  }
   
   dims[0] = LIBASM_VECTOR_ARCHNUM;
   dims[1] = ASM_OTYPE_NUM;
@@ -103,22 +130,21 @@ int	asm_init_vectors(asm_processor *proc)
   dimstr[0] = "MACHINE";
   dimstr[1] = "OPERAND";
   
-  aspect_register_vector("operand",
-			 asm_operand_fetch_default,
-			 dims, dimstr, 2, ASPECT_TYPE_CADDR);
-
+  aspect_register_vector("operand",  asm_operand_fetch_default,
+                   			 dims, dimstr, 2, ASPECT_TYPE_CADDR);
+                           
   config_add_item(ASM_CONFIG_ENDIAN_FLAG,
-		  CONFIG_TYPE_INT,
-		  CONFIG_MODE_RW,
-		  (void *)ASM_CONFIG_LITTLE_ENDIAN);
+            		  CONFIG_TYPE_INT,
+            		  CONFIG_MODE_RW,
+            		  (void *)ASM_CONFIG_LITTLE_ENDIAN);
 
   config_add_item(ASM_CONFIG_ATT_MARGIN_FLAG,
-		  CONFIG_TYPE_INT,
-		  CONFIG_MODE_RW,
-		  (void *)ASM_CONFIG_ATT_MARGIN_DEFAULT);
+            		  CONFIG_TYPE_INT,
+            		  CONFIG_MODE_RW,
+            		  (void *)ASM_CONFIG_ATT_MARGIN_DEFAULT);
  
  out:
-  LIBASM_PROFILE_FOUT(to_ret);
+   LIBASM_PROFILE_FOUT(to_ret);
 }
 
 
