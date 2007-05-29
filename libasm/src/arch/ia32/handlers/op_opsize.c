@@ -1,5 +1,5 @@
 /*
-** $Id: op_opsize.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_opsize.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,9 @@
   <instruction func="op_opsize" opcode="0x66"/>
  */
 
-int     op_opsize(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int     op_opsize(asm_instr *new, u_char *opcode, u_int len, 
+		  asm_processor *proc)
+{
   asm_i386_processor    *i386p;
   
   if (!new->ptr_prefix)
@@ -21,7 +23,5 @@ int     op_opsize(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->prefix |= ASM_PREFIX_OPSIZE;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
   i386p->internals->opsize = !i386p->internals->opsize;
-  #if LIBASM_USE_OPERAND_VECTOR
-  #endif
   return (len);
 }

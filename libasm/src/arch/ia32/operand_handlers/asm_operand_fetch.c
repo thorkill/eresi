@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch.c,v 1.1 2007-05-09 17:39:35 heroine Exp $
+ * $Id: asm_operand_fetch.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
  */
 
 #include <libasm.h>
@@ -16,19 +16,19 @@
  */
 
 int     asm_operand_fetch(asm_operand *op, u_char *opcode, int otype, 
-			  asm_processor *proc)
+			  asm_instr *ins)
 { 
   vector_t      *vec;
   u_int         dim[2];
   int           to_ret;
-  int           (*fetch)(asm_operand *, u_char *, int, asm_processor *);
+  int           (*fetch)(asm_operand *, u_char *, int, asm_instr *);
   
   vec = aspect_vector_get("operand");
   dim[0] = LIBASM_VECTOR_IA32;
   dim[1] = otype;
   
   fetch = aspect_vectors_select(vec, dim);
-  to_ret = fetch(op, opcode, otype, proc);
+  to_ret = fetch(op, opcode, otype, ins);
   if (to_ret == -1)
     {
       printf("%s:%i Unsupported operand type : %i\n", __FILE__, __LINE__, 

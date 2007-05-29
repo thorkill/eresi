@@ -1,5 +1,5 @@
 /*
-** $Id: output.c,v 1.3 2007-02-26 17:47:15 thor Exp $
+** $Id: output.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -18,7 +18,9 @@
 void	asm_resolve_immediate(asm_processor *proc, u_int val, 
 			      char *buf, u_int len) 
 {
+  LIBASM_PROFILE_FIN();
   proc->resolve_immediate(proc->resolve_data, val, buf, len);  
+  LIBASM_PROFILE_VOUT();
 }
 
 
@@ -32,11 +34,11 @@ void	asm_resolve_immediate(asm_processor *proc, u_int val,
 char	*asm_display_instr_att(asm_instr *instr, 
 			       int addr) 
 {
-  return (instr->proc->display_handle(instr, addr));
+  char	*to_ret;
+  LIBASM_PROFILE_FIN();
+  to_ret = instr->proc->display_handle(instr, addr);
+  LIBASM_PROFILE_ROUT(to_ret);
 }
-
-
-
 
 
 /**

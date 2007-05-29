@@ -1,5 +1,5 @@
 /*
-** $Id: op_esc6.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_esc6.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <instruction func="op_esc6" opcode="0xde"/>
  */
 
-int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+{
   struct s_modrm        *modrm;
   new->ptr_instr = opcode;
   
@@ -60,7 +61,8 @@ int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
         break;
       case 6: 
         switch(modrm->m) {
-        case 3: case 5: case 2: case 4: case 6: case 1: new->instr = ASM_FDIVP; break;
+        case 3: case 5: case 2: case 4: case 6: case 1: 
+	  new->instr = ASM_FDIVP; break;
         default: case 0: new->instr = ASM_FDIVP; break;
         }
         break;
@@ -76,12 +78,12 @@ int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
     if (!(*(opcode + 1) == 0xd9)) {
       #if LIBASM_USE_OPERAND_VECTOR
       new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, 
-				    proc);
+				    new);
       new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
       new->op1.len = 1;
       new->op1.scale = modrm->m;
       new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_FIXED, 
-				    proc);
+				    new);
       new->op2.content = ASM_OP_FPU | ASM_OP_BASE;
       new->op2.len = 0;
       #else

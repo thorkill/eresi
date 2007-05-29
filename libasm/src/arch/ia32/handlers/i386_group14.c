@@ -1,5 +1,5 @@
 /*
-** $Id: i386_group14.c,v 1.3 2007-05-11 10:48:29 may Exp $
+** $Id: i386_group14.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <i386 func="i386_group14" opcode="0x73"/>
  */
 
-int     i386_group14(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int     i386_group14(asm_instr *new, u_char *opcode, u_int len, 
+		     asm_processor *proc) 
 {
   int	olen;
   struct s_modrm *modrm = (struct s_modrm *) opcode + 1;
@@ -40,8 +41,10 @@ int     i386_group14(asm_instr *new, u_char *opcode, u_int len, asm_processor *p
     }
   
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_PMMX, proc));
-  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc);
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_PMMX, 
+					new));
+  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, 
+				ASM_OTYPE_IMMEDIATEBYTE, new);
 #else
   new->op1.type = ASM_OTYPE_PMMX;
   new->op1.size = ASM_OSIZE_QWORD;

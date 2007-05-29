@@ -1,13 +1,15 @@
 /**
- * $Id: libasm-int.h,v 1.6 2006-12-19 10:24:36 heroine Exp $
- *
- *
+ * @file libasm-int.h
+ * $Id: libasm-int.h,v 1.7 2007-05-29 00:40:27 heroine Exp $
+ * 
+ * This file contains the forward declarations of i386 instruction
+ * handlers and some internal functions prototypes.
  */
 #ifndef LIBASM_INT_H
 #define LIBASM_INT_H
 
 /**
- *
+ * Structure describing the modrm byte.
  */
 
 typedef struct s_modrm {
@@ -17,8 +19,7 @@ typedef struct s_modrm {
 } asm_modrm;
 
 /**
- *
- *
+ * Structure describing the sid byte.
  */
 
 typedef struct s_sidbyte {
@@ -29,7 +30,7 @@ typedef struct s_sidbyte {
 } asm_sidbyte;
 
 /**
- *
+ * 
  */
 
 enum {
@@ -56,6 +57,10 @@ int		asm_proc_vector_len(asm_processor *);
 int		asm_proc_is_protected(asm_processor *);
 
 /**
+ * Internal functions to extract operands.
+ *
+ * 
+ *
  *
  */
 
@@ -77,8 +82,7 @@ int	operand_rmv(asm_operand *, u_char *, u_int, asm_processor *);
 int	operand_rmb(asm_operand *, u_char *, u_int, asm_processor *);
 
 /**
- *
- *
+ * Handler for the i386 instructions.
  */
 
 int op_add_rmb_rb(asm_instr *, u_char *, u_int, asm_processor *);
@@ -396,6 +400,7 @@ int i386_xadd(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_group12(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_group14(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_group15(asm_instr *, u_char *, u_int, asm_processor *);
+int i386_group16(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_bswap(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_shld(asm_instr *, u_char *, u_int, asm_processor *);
 int i386_shld_rmv_rv_cl(asm_instr *, u_char *, u_int, asm_processor *);

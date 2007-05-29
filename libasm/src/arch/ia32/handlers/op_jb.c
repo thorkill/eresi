@@ -1,5 +1,5 @@
 /*
-** $Id: op_jb.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+** $Id: op_jb.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -20,7 +20,8 @@ int  op_jb(asm_instr *new, u_char *opcode, u_int len,
 
   
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_SHORTJUMP, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_SHORTJUMP, 
+				new);
 #else
   new->op1.content = ASM_OP_VALUE | ASM_OP_ADDRESS;
   new->op1.type = ASM_OTYPE_JUMP; 

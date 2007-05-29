@@ -1,6 +1,6 @@
 /**
  * @file op_esc1.c
- * $Id: op_esc1.c,v 1.4 2007-05-20 00:19:53 heroine Exp $
+ * $Id: op_esc1.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -30,7 +30,8 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
       case 0:
 	new->instr = ASM_FLD;
 #if LIBASM_USE_OPERAND_VECTOR
-	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
+	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, 
+				      new);
 	new->len += 1;
 	new->op1.content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
 	new->op1.len = 1;
@@ -45,7 +46,8 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
       case 1:
 	new->instr = ASM_FXCH;
 #if LIBASM_USE_OPERAND_VECTOR
-	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
+	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, 
+				      new);
 	new->len += 1;
 	new->op1.type = ASM_OTYPE_FIXED;
 	new->op1.len = 1;
@@ -144,7 +146,7 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
     {
 #if LIBASM_USE_OPERAND_VECTOR
       new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    proc);
+				    new);
 #else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);

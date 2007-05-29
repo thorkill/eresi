@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmv_cl.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_shift_rmv_cl.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <instruction func="op_shift_rmv_cl" opcode="0xd3"/>
 */
 
-int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len, 
+		    asm_processor *proc) 
 {
   struct s_modrm        *modrm;
   
@@ -34,8 +35,9 @@ int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor *pr
   }
     
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_FIXED, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
+				ASM_OTYPE_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_FIXED, new);
   new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op2.regset = ASM_REGSET_R8;
   new->op2.base_reg = ASM_REG_CL;

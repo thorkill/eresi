@@ -1,5 +1,5 @@
 /*
-** $Id: op_inc_reg.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_inc_reg.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -28,7 +28,7 @@ int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 
   
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
 #else
   new->op1.type = ASM_OTYPE_OPMOD;
   

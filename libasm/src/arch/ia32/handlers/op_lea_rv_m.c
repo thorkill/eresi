@@ -1,6 +1,6 @@
 /**
  * @file op_lea_rv_m
- * $Id: op_lea_rv_m.c,v 1.4 2007-05-09 18:01:47 heroine Exp $
+ * $Id: op_lea_rv_m.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -12,16 +12,18 @@
   <instruction func="op_lea_rv_m" opcode="0x8d"/>
 */
 
-int op_lea_rv_m(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_lea_rv_m(asm_instr *new, u_char *opcode, u_int len, 
+		asm_processor *proc) 
+{
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_LEA;
 
 #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
-				proc);
+				new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
-				proc);
+				new);
 #else
   new->op1.type = ASM_OTYPE_GENERAL;
   new->op1.size = ASM_OSIZE_VECTOR;

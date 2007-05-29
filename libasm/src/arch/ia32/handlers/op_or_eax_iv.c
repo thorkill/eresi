@@ -1,5 +1,5 @@
 /*
-** $Id: op_or_eax_iv.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
+** $Id: op_or_eax_iv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -18,12 +18,12 @@ int op_or_eax_iv(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
   new->len += 1;
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_FIXED | ASM_OP_BASE;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.base_reg = ASM_REG_EAX;
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_IMMEDIATE, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_IMMEDIATE, new);
 #else  
   new->op1.type = ASM_OP_FIXED;
   new->op1.content = ASM_OP_FIXED | ASM_OP_BASE;

@@ -1,6 +1,6 @@
 /**
  * @file op_esc5.c
- * $Id: op_esc5.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ * $Id: op_esc5.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -74,7 +74,7 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len,
     {
 #if LIBASM_USE_OPERAND_VECTOR
       new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, 
-				    proc);
+				    new);
       new->op1.content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
       new->op1.len = 1;
       new->op1.ptr = opcode + 1; 
@@ -91,7 +91,7 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len,
     {
 #if LIBASM_USE_OPERAND_VECTOR
       new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    proc);
+				    new);
 #else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);

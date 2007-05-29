@@ -1,17 +1,12 @@
-/*
-** Latest edition Author : $Author: heroine $
-** $Id: generic.c,v 1.9 2007-05-19 23:59:12 heroine Exp $
-** Started : Wed Jul 24 18:45:15 2002
-** Updated : Sat Mar 20 05:26:26 2004
-*/
-#include <libasm.h>
-#include <libasm-int.h>
-
 /**
  * @file generic.c
- *
- *
+ * Latest edition Author : $Author: heroine $
+ * $Id: generic.c,v 1.10 2007-05-29 00:40:27 heroine Exp $
+ * Started : Wed Jul 24 18:45:15 2002
+ * Updated : Sat Mar 20 05:26:26 2004
  */
+#include <libasm.h>
+#include <libasm-int.h>
 
 /** 
  * Fetch instruction using asm_processor handler
@@ -25,10 +20,15 @@
  */
 
 int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, 
-		       asm_processor *proc) {
+		       asm_processor *proc) 
+{
+  int	to_ret;
+  
+  LIBASM_PROFILE_FIN();
   memset(i, 0, sizeof (asm_instr));
   i->proc = proc;
-  return (proc->fetch(i, buf, len, proc));
+  to_ret = proc->fetch(i, buf, len, proc);
+  LIBASM_PROFILE_FOUT(to_ret);
 }
 
 /**
@@ -129,16 +129,13 @@ int     asm_proc_opsize(asm_processor *proc) {
 }
 
 /**
- * returns the value of the processor's current
- * address size
- */
-/**
  * returns the value of the processor's current address size
  * @param proc Pointer to the processor structure
  * @return 1 if addsize is set, 0 if not 
  */
 
-int     asm_proc_addsize(asm_processor *proc) {
+int     asm_proc_addsize(asm_processor *proc) 
+{
   asm_i386_processor       *i386p;
   
   i386p = (asm_i386_processor *) proc;
@@ -147,9 +144,6 @@ int     asm_proc_addsize(asm_processor *proc) {
   return (0);
 }
 
-/*
- * returns 4 or 2 depending on eventual OPLEN prefix
- */
 /**
  * Returns vector current size depending on oplen prefix
  * This is related to ia32 architecture only
@@ -157,16 +151,14 @@ int     asm_proc_addsize(asm_processor *proc) {
  * @return 4 or 2 depending on
  */
 
-int     asm_proc_vector_len(asm_processor *proc) {
+int     asm_proc_vector_len(asm_processor *proc) 
+{
   if (asm_proc_opsize(proc))
     return (2);
   else
     return (4);
 }
 
-/**
- * Return vector size depending on prefix
- */
 /**
  * Return vector size depending on prefix
  * This is ia32 related.
@@ -174,17 +166,14 @@ int     asm_proc_vector_len(asm_processor *proc) {
  * @return Return vector size.
  */
 
-int	asm_proc_vector_size(asm_processor *proc) {
+int	asm_proc_vector_size(asm_processor *proc) 
+{
   if (asm_proc_opsize(proc))
     return (2);
   else
     return (4);
 }
 
-/*
- * set the immediate part of the operand if present
- * return number of bytes written
- */
 /**
  * Set the immediate part of the operand if present
  * @param ins Pointer to instruction
@@ -293,7 +282,8 @@ char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
  * @return Return operand content field.
  */
 
-int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) {
+int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) 
+{
   switch(num)
     {
     case 1:

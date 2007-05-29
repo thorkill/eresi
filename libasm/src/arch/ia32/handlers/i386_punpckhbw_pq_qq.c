@@ -1,5 +1,5 @@
 /*
-** $Id: i386_punpckhbw_pq_qq.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_punpckhbw_pq_qq.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -18,9 +18,9 @@ int     i386_punpckhbw_pq_qq(asm_instr *new, u_char *opcode, u_int len,
   
   #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
-				proc);
+				new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
-				proc);
+				new);
   new->op1.regset = ASM_REGSET_MM;
   new->op2.regset = ASM_REGSET_MM;
   #else

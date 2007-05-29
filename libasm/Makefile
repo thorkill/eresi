@@ -1,6 +1,6 @@
 ##
 ## this is private - do not distribute
-## $Id: Makefile,v 1.21 2007-05-14 11:57:06 thor Exp $
+## $Id: Makefile,v 1.22 2007-05-29 00:40:27 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -32,6 +32,7 @@ SRCS_libasm 	=				\
 		src/arch/mips/output_mips.c	\
 		src/arch/mips/tables_mips.c	\
 		src/register.c			\
+		src/build.c			\
 		src/vectors.c			\
 		src/arch/ia32/operand_handlers/asm_operand_fetch.c \
 		src/arch/ia32/operand_handlers/asm_operand_fetch_address.c \
@@ -77,7 +78,7 @@ CC 		?= 	gcc
 LD		?=	ld
 CP 		= 	cp
 
-all:	lib
+all:	dep lib
 
 
 install:
@@ -86,6 +87,8 @@ install:
 	${CP} include/libasm-i386.h /usr/include
 	${CP} include/libasm-sparc.h /usr/include
 
+dep:
+	@rm -f src/build.o
 
 lib:	$(OBJS_libasm)
 	@ar rc ${NAME_libasm} ${OBJS_libasm}
@@ -93,6 +96,8 @@ lib:	$(OBJS_libasm)
 	@${RANLIB} ${NAME_libasm}
 	@echo "[RANLIB] ${NAME_libasm}"
 	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
+	@echo "[CC -shared] libasm.so"
+	@${CC} ${OBJS_libasm} -o libasm.so -shared
 
 clean:
 	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc

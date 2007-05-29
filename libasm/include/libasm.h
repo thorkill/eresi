@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.17 2007-05-21 19:04:46 heroine Exp $
+** $Id: libasm.h,v 1.18 2007-05-29 00:40:27 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -31,9 +31,46 @@
 #include <libaspect.h>
 
 
-
 #define	LIBASM_USE_VECTOR		1
 #define LIBASM_USE_OPERAND_VECTOR	1
+#define LIBASM_USE_PROFILE		0
+
+#if LIBASM_USE_PROFILE
+#define LIBASM_PROFILE_FIN()			\
+  fprintf(stderr, " ENTER %s\n", __FUNCTION__);
+
+
+#define LIBASM_PROFILE_IN()			\
+  fprintf(stderr, " ENTER %s\n", __FUNCTION__);
+
+#define LIBASM_PROFILE_FOUT(val)		\
+  fprintf(stderr, " LEAVE %s\n", __FUNCTION__);	\
+  return (val);
+
+#define LIBASM_PROFILE_VOUT()		\
+  fprintf(stderr, " LEAVE %s\n", __FUNCTION__);	\
+  return;
+
+#define LIBASM_PROFILE_ROUT(val)		\
+  fprintf(stderr, " LEAVE %s\n", __FUNCTION__);	\
+  return (val);
+
+
+#else
+//
+// Profile disabled.
+//
+#define LIBASM_PROFILE_FIN()
+#define LIBASM_PROFILE_IN()
+#define LIBASM_PROFILE_FOUT(val) return (val);
+
+#define LIBASM_PROFILE_VOUT() return;
+
+#define LIBASM_PROFILE_ROUT(val) return (val);
+#endif
+
+
+
 
 /* Instruction types */
 enum 
@@ -104,6 +141,11 @@ enum
  */
 
 void	asm_init_i386(asm_processor *);
+
+/**
+ * return build date.
+ */
+char	*asm_get_build(void);
 
 /**
  * Initialize an asm_processor structure to disassemble
@@ -265,51 +307,51 @@ int asm_operand_register();
 int asm_init_vectors(asm_processor *proc);
 
 int	asm_operand_fetch(asm_operand *operand, u_char *opcode, int type, 
-			  asm_processor *proc);
+			  asm_instr *ins);
 int	asm_operand_fetch_default(asm_operand *operand, u_char *opcode, int type, 
-				  asm_processor *proc);
+				  asm_instr *ins);
 int	asm_operand_fetch_opmod(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_encodedbyte(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_general(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_jump(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_shortjump(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_offset(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_address(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_register(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_xsrc(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_ydest(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_memory(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_immediateword(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 int	asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, int type,
-				asm_processor *proc);
+				asm_instr *ins);
 
 enum 
   {

@@ -1,5 +1,5 @@
 /*
-** $Id: op_pop_rmv.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_pop_rmv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -23,7 +23,8 @@ int op_pop_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->spdiff = 4;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
+				new);
 #else
   new->op1.type = ASM_OTYPE_ENCODED;
   operand_rmv(&new->op1, opcode + 1, len - 1, proc);

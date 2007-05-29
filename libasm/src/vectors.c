@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.7 2007-05-19 18:28:09 thor Exp $
+ * $Id: vectors.c,v 1.8 2007-05-29 00:40:27 heroine Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -18,10 +18,13 @@
 int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
 			  asm_processor *proc)
 {
+  int	to_ret;
+  LIBASM_PROFILE_FIN();
   if (proc->type == ASM_PROC_SPARC)
-  	return asm_sparc_illegal(ins, opcode, len, proc);
+    to_ret = asm_sparc_illegal(ins, opcode, len, proc);
   else	
-    return (-1);
+    to_ret = -1;
+  LIBASM_PROFILE_FOUT(to_ret);
 }
 
 /**
@@ -36,9 +39,10 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
  */
 
 int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
-				  asm_processor *proc)
+				  asm_instr *ins)
 {
-  return (-1);
+  LIBASM_PROFILE_FIN();
+  LIBASM_PROFILE_FOUT(-1);
 }
 
 /**
@@ -50,15 +54,23 @@ int	asm_init_vectors(asm_processor *proc)
 {
   u_int	*dims;
   char	**dimstr;
+  int	to_ret;
   
+  LIBASM_PROFILE_IN();
   aspect_init();
   
   dims = malloc(4 * sizeof (u_int));
   if (!dims)
-    return (0);
+    {
+      to_ret = 0;
+      goto out;
+    }
   dimstr = malloc(4 * sizeof (char *));
   if (!dimstr)
-    return (0);
+    {
+      to_ret = 0;
+      goto out;
+    }
   
   dims[0] = LIBASM_VECTOR_ARCHNUM;
   dims[1] = 512;
@@ -74,10 +86,16 @@ int	asm_init_vectors(asm_processor *proc)
 			 dims, dimstr, 4, ASPECT_TYPE_CADDR);
   dims = malloc(2 * sizeof (u_int));
   if (!dims)
-    return (0);
+    {
+      to_ret = 0;
+      goto out;
+    }
   dimstr = malloc(4 * sizeof (char *));
   if (!dimstr)
-    return (0);
+    {
+      to_ret = 0;
+      goto out;
+    }
   
   dims[0] = LIBASM_VECTOR_ARCHNUM;
   dims[1] = ASM_OTYPE_NUM;
@@ -99,7 +117,8 @@ int	asm_init_vectors(asm_processor *proc)
 		  CONFIG_MODE_RW,
 		  (void *)ASM_CONFIG_ATT_MARGIN_DEFAULT);
  
-  return (1);
+ out:
+  LIBASM_PROFILE_FOUT(to_ret);
 }
 
 

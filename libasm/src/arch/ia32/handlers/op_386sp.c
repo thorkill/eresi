@@ -1,5 +1,5 @@
 /*
-** $Id: op_386sp.c,v 1.3 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_386sp.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -12,7 +12,8 @@
  * Following byte must be fetched from i386 instruction table.
  */
 
-int op_386sp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_386sp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+{
   asm_i386_processor    *i386p;
   
   /* this is a bridge to i386 instructions, pentium, ... instructions */
@@ -36,8 +37,6 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   u_char        opcode;
   int           (*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
   
-#if LIBASM_USE_OPERAND_VECTOR
-#endif  
   vec = aspect_vector_get("disasm");
   dim[0] = LIBASM_VECTOR_IA32;
   opcode = *(buf + 1);
@@ -46,10 +45,10 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   dim[3] = 0;
   fetch = aspect_vectors_select(vec, dim);
   
-  ins->len += 1;  
+  ins->len += 1;
   #if LIBASM_VECTOR_IA32
   #endif
-  return (fetch(ins, buf + 1, len, proc)+1);
+  return (fetch(ins, buf + 1, len - 1, proc)+1);
 }
 
 #endif

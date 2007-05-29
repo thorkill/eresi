@@ -1,5 +1,5 @@
 /*
-** $Id: op_shr_rmb_ib.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_shr_rmb_ib.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <instruction func="op_shr_rmb_ib" opcode="0xc0"/>
 */
 
-int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, 
+		  asm_processor *proc) {
   struct s_modrm        *modrm;
   int			olen;
   
@@ -30,8 +31,10 @@ int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
     new->instr = ASM_SHL;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc));
-  new->len += (olen = asm_operand_fetch(&new->op2, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc));
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, 
+					ASM_OTYPE_ENCODEDBYTE, new));
+  new->len += (olen = asm_operand_fetch(&new->op2, opcode + 1 + olen, 
+					ASM_OTYPE_IMMEDIATEBYTE, new));
 #else
   new->op1.type = ASM_OTYPE_ENCODED;
   new->op2.type = ASM_OTYPE_IMMEDIATE;

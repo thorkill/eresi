@@ -1,5 +1,5 @@
 /*
-** $Id: op_retf_i2.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_retf_i2.c,v 1.4 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <instruction func="op_retf_i2" opcode="0xca"/>
 */
 
-int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, 
+	       asm_processor *proc) {
 #if !LIBASM_USE_OPERAND_VECTOR
   short *shrt_ptr;
 #endif
@@ -20,7 +21,8 @@ int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
   // new->type = IS_RET;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_IMMEDIATEWORD, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
+				ASM_OTYPE_IMMEDIATEWORD, new);
 #else
     new->op1.type = ASM_OTYPE_IMMEDIATE;
   new->op1.content = ASM_OP_VALUE;

@@ -1,6 +1,6 @@
 /**
  * @file op_sets_rmb.c
- * $Id: op_sets_rmb.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ * $Id: op_sets_rmb.c,v 1.4 2007-05-29 00:40:28 heroine Exp $
  */
 #include <libasm.h>
 #include <libasm-int.h>
@@ -14,12 +14,14 @@
  * @return Length of instruction.
 */
 
-int op_sets_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_sets_rmb(asm_instr *new, u_char *opcode, u_int len, 
+		asm_processor *proc) 
 {
   new->len += 1;
   new->instr = ASM_SET_SIGNED;
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+				new);
 #else
   new->op1.type = ASM_OTYPE_ENCODED;
   operand_rmb(&new->op1, opcode + 1, len - 1, proc);

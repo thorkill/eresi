@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: libasm-i386.h,v 1.10 2007-05-21 19:04:46 heroine Exp $
+** $Id: libasm-i386.h,v 1.11 2007-05-29 00:40:27 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Tue Dec  2 22:40:31 2003
@@ -79,7 +79,7 @@ struct s_asm_proc_i386 {
 #define ASM_OP_VALUE		1	/*!< immediate value present	*/
 #define ASM_OP_BASE		2	/*!< base register present	*/
 #define ASM_OP_INDEX		4	/*!< index register present	*/
-#define ASM_OP_SCALE		8	/*!< scale factor present		*/
+#define ASM_OP_SCALE		8	/*!< scale factor present	*/
 
 #define ASM_OP_FIXED		16
 #define ASM_OP_REFERENCE	32	/*!< reference			*/
@@ -818,6 +818,14 @@ enum asm_instr {
   ASM_EMMS,
 
   /*
+   *
+   */
+
+  ASM_FXRSTORE,
+  ASM_MFENCE,
+  ASM_SFENCE,
+
+  /*
    * FPU INSTRUCTIONS
    */
   ASM_F2XM1,		/* Function 2^X Minus 1 */
@@ -977,38 +985,6 @@ extern asm_i386_table *i386_table_esc6_2;
 extern asm_i386_table *i386_table_esc7_1;
 extern asm_i386_table *i386_table_esc7_2;
 
-/**
- * new API protocol
- * do not care about currently asshole :)
- */
-
-int	asm_disasm(asm_instr *, u_char *, u_int, asm_processor *);
-int	asm_disasm_1byte(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group1(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group2(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group3(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group4(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group5(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group6(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group7(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group8(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group9(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group10(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group11(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group12(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group13(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group14(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group15(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group16(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_group17(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc0(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc1(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc2(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc3(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc4(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc5(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc6(asm_instr *, u_char *, u_int, asm_i386_processor *);
-int	asm_disasm_esc7(asm_instr *, u_char *, u_int, asm_i386_processor *);
 int	asm_is_prefix(int);
 int	asm_is_group(int);
 

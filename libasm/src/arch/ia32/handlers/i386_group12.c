@@ -1,5 +1,5 @@
 /*
-** $Id: i386_group12.c,v 1.3 2007-05-11 10:48:29 may Exp $
+** $Id: i386_group12.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -39,9 +39,10 @@ int			i386_group12(asm_instr *new, u_char *opcode,
       break;
     }
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_PMMX,
-					proc));
-  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, ASM_OTYPE_IMMEDIATEBYTE, proc);
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, 
+					ASM_OTYPE_PMMX, new));
+  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, 
+				ASM_OTYPE_IMMEDIATEBYTE, new);
 #else
   new->op1.type = ASM_OTYPE_PMMX;
   new->op1.size = ASM_OSIZE_QWORD;

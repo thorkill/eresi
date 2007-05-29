@@ -1,12 +1,12 @@
 /*
 ** 
-** instruction.c in 
+** @file instruction.c
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Mon Mar 15 13:58:52 2004
 ** Updated : Mon Mar 22 01:35:03 2004
 **
-** $Id: instruction.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: instruction.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 

@@ -1,5 +1,5 @@
 /*
-** $Id: op_xchg_eax_reg.c,v 1.2 2007-04-13 06:56:35 heroine Exp $
+** $Id: op_xchg_eax_reg.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -15,7 +15,8 @@
   <instruction func="op_xchg_eax_reg" opcode="0x97"/>
 */
 
-int op_xchg_eax_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_xchg_eax_reg(asm_instr *new, u_char *opcode, u_int len, 
+		    asm_processor *proc) 
 {
   struct s_modrm        *modrm;
 
@@ -25,13 +26,14 @@ int op_xchg_eax_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *pr
   new->len += 1;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, 
+				new);
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op1.len = 0;
   new->op1.base_reg = ASM_REG_EAX;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_OPMOD, proc);
+  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_OPMOD, new);
 #else
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;

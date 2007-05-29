@@ -1,5 +1,5 @@
 /*
-** $Id: op_push_ss.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_push_ss.c,v 1.4 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,15 +9,17 @@
   <instruction func="op_push_ss" opcode="0x16"/>
 */
 
-int     op_push_ss(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int     op_push_ss(asm_instr *new, u_char *opcode, u_int len, 
+		   asm_processor *proc)
+{
   new->instr = ASM_PUSH;
   new->len += 1;
   new->ptr_instr = opcode;
   new->type = ASM_TYPE_TOUCHSP;
   new->type = -4;
 
-  #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_SREG;
   new->op1.base_reg = ASM_REG_SS;
@@ -26,6 +28,6 @@ int     op_push_ss(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_SREG;
   // new->type = IS_MEM_WRITE;
-  #endif
+#endif
   return (new->len);
 }

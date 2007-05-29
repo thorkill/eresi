@@ -1,5 +1,5 @@
 /*
-** $Id: i386_xstorenrg.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_xstorenrg.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <i386 func="i386_shld_rmv_rv_cl" opcode="0xa7"/>
 */
 
-int     i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int     i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len, 
+		       asm_processor *proc)
 { 
   switch(*(opcode + 1))
     {
@@ -20,8 +21,6 @@ int     i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len, asm_processor 
     default: new->instr = ASM_NONE;
     }
   new->len += 2;
-  #if LIBASM_USE_OPERAND_VECTOR
-#endif
   return (new->len);
 }
 

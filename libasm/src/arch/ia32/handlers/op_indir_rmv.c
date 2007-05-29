@@ -1,5 +1,5 @@
 /*
-** $Id: op_indir_rmv.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_indir_rmv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,9 @@
   <instruction func="op_indir_rmv" opcode="0xff"/>
 */
 
-int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, 
+		 asm_processor *proc)
+{
   struct s_modrm        *modrm;
   
   new->ptr_instr = opcode;
@@ -65,7 +67,7 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
       (new->op1.type == ASM_OTYPE_MEMORY)) {
 #if LIBASM_USE_OPERAND_VECTOR
     new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
-				  proc);
+				  new);
 #else
     operand_rmv(&new->op1, opcode + 1, len - 1, proc);
 #endif

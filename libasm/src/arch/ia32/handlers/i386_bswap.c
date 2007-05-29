@@ -1,5 +1,5 @@
 /*
-** $Id: i386_bswap.c,v 1.3 2007-05-16 18:38:13 heroine Exp $
+** $Id: i386_bswap.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -28,7 +28,7 @@ int i386_bswap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->instr = ASM_BSWAP;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
 #else
   new->op1.type = ASM_OTYPE_OPMOD;
   new->op1.regset = ASM_REGSET_R32;

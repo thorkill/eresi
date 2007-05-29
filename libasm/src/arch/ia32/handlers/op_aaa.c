@@ -1,5 +1,5 @@
 /*
-** $Id: op_aaa.c,v 1.3 2007-05-16 19:21:58 heroine Exp $
+** $Id: op_aaa.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -21,7 +21,5 @@ int     op_aaa(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->instr = ASM_AAA;
   new->type = ASM_TYPE_CONTROL | ASM_TYPE_ARITH;
   new->flags = ASM_FLAG_AF | ASM_FLAG_CF;
-#if LIBASM_USE_OPERAND_VECTOR
-#endif
   return (new->len);
 }

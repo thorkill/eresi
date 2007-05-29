@@ -1,5 +1,5 @@
 /*
-** $Id: i386_group15.c,v 1.3 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_group15.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,8 @@
   <instruction func="i386_group15" opcode="0xae"/>
  */
 
-int i386_group15(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int i386_group15(asm_instr *new, u_char *opcode, u_int len, 
+		 asm_processor *proc) 
 {
   struct s_modrm        *modrm;  
   modrm = (struct s_modrm *) opcode + 1;
@@ -22,7 +23,8 @@ int i386_group15(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
       new->instr = ASM_LDMXCSR;
       new->op1.type = ASM_OTYPE_ENCODED;
 #if LIBASM_USE_OPERAND_VECTOR
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
+				    new);
 #else
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);
       new->len += new->op1.len;
@@ -32,7 +34,8 @@ int i386_group15(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     case 3:
       new->instr = ASM_STMXCSR;
 #if LIBASM_USE_OPERAND_VECTOR
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
+      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
+				    new);
 #else
       new->op1.type = ASM_OTYPE_ENCODED;
       operand_rmv(&new->op1, opcode + 1, len - 1, proc);

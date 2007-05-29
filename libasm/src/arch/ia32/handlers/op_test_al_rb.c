@@ -1,5 +1,5 @@
 /*
-** $Id: op_test_al_rb.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_test_al_rb.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -14,17 +14,19 @@
  *
  */
 
-int op_test_al_rb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_test_al_rb(asm_instr *new, u_char *opcode, u_int len, 
+		  asm_processor *proc) 
 {
     new->instr = ASM_TEST;
     new->len += 1;
 
     #if LIBASM_USE_OPERAND_VECTOR
-    new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, proc);
+    new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
     new->op1.content = ASM_OP_BASE;
     new->op1.base_reg = ASM_REG_AL;
     new->op1.regset = ASM_REGSET_R8;
-    new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATEBYTE, proc);
+    new->len += asm_operand_fetch(&new->op2, opcode + 1, 
+				  ASM_OTYPE_IMMEDIATEBYTE, new);
     #else
     new->op1.type = ASM_OTYPE_FIXED;
     new->ptr_instr = opcode;

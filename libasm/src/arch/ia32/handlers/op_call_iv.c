@@ -1,5 +1,5 @@
 /*
-** $Id: op_call_iv.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_call_iv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -12,13 +12,14 @@
 int op_call_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
 {
   int	olen;
-    new->ptr_instr = opcode;
+  new->ptr_instr = opcode;
   new->instr = ASM_CALL;
   new->type = ASM_TYPE_CALLPROC | ASM_TYPE_TOUCHSP;
   new->type = -4;
   new->len += 1;
   #if LIBASM_USE_OPERAND_VECTOR
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_JUMP, proc));  
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, 
+					ASM_OTYPE_JUMP, new));  
 #else
   new->op1.type = ASM_OTYPE_JUMP;
   new->len += asm_proc_vector_len(proc);

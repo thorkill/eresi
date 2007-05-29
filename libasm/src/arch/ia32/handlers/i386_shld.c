@@ -1,6 +1,6 @@
 /**
  * @file i386_shld.c
- * $Id: i386_shld.c,v 1.3 2007-05-19 23:59:12 heroine Exp $
+ * $Id: i386_shld.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -26,11 +26,11 @@ int i386_shld(asm_instr *new, u_char *opcode, u_int len,
 
 #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_REGISTER, proc);
+				ASM_OTYPE_REGISTER, new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, 
-				ASM_OTYPE_GENERAL, proc);
+				ASM_OTYPE_GENERAL, new);
   new->len += asm_operand_fetch(&new->op3, opcode + 2, 
-				ASM_OTYPE_IMMEDIATEBYTE, proc);
+				ASM_OTYPE_IMMEDIATEBYTE, new);
   new->len += 1;
 #else
 

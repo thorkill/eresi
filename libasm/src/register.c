@@ -1,5 +1,5 @@
 /**
- * $Id: register.c,v 1.4 2007-04-13 06:56:34 heroine Exp $
+ * $Id: register.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
  * @file register.c
  *
  */
@@ -17,6 +17,8 @@ int	asm_register_ia32_opcode(int opcode, unsigned long fcn)
   vector_t	*vec;
   u_int		dim[4];
   
+  LIBASM_PROFILE_FIN();
+
   vec = aspect_vector_get("disasm");
   dim[0] = LIBASM_VECTOR_IA32;
   dim[1] = opcode;
@@ -24,7 +26,7 @@ int	asm_register_ia32_opcode(int opcode, unsigned long fcn)
   dim[3] = 0; /* sparc-only field */
 
   aspect_vectors_insert(vec, dim, fcn);
-  return (1);
+  LIBASM_PROFILE_FOUT(1);
 }
 
 /**
@@ -38,6 +40,7 @@ int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
   vector_t	*vec;
   u_int		dim[4];
   
+  LIBASM_PROFILE_FIN();
   vec = aspect_vector_get("disasm");
   dim[0] = LIBASM_VECTOR_SPARC;
   dim[1] = opcode;
@@ -45,7 +48,7 @@ int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
   dim[3] = fpop;
 
   aspect_vectors_insert(vec, dim, fcn);
-  return (1);
+  LIBASM_PROFILE_FOUT(1);
 }
 
 /**
@@ -56,6 +59,9 @@ int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
  */
 int	asm_arch_register(asm_processor *proc, int machine)
 {  
+  int	to_ret;
+  
+  LIBASM_PROFILE_FIN();
   if (proc->type == ASM_PROC_IA32) 
     {
       asm_operand_register();
@@ -346,7 +352,8 @@ int	asm_arch_register(asm_processor *proc, int machine)
       asm_register_ia32_opcode(0x100 + 0x6e, (unsigned long) i386_movd_pd_qd);
       asm_register_ia32_opcode(0x100 + 0x6f, (unsigned long) i386_movq_pq_qq);
       asm_register_ia32_opcode(0x100 + 0x71, (unsigned long) i386_group12);
-      asm_register_ia32_opcode(0x100 + 0x73, (unsigned long) i386_group14);
+      asm_register_ia32_opcode(0x100 + 0x72, (unsigned long) i386_group14);
+      asm_register_ia32_opcode(0x100 + 0x73, (unsigned long) i386_group15);
       asm_register_ia32_opcode(0x100 + 0x77, (unsigned long) i386_emms);
       asm_register_ia32_opcode(0x100 + 0x7f, (unsigned long) i386_movq_qq_pq);
       asm_register_ia32_opcode(0x100 + 0x82, (unsigned long) i386_jb);
@@ -389,7 +396,7 @@ int	asm_arch_register(asm_processor *proc, int machine)
       asm_register_ia32_opcode(0x100 + 0xab, (unsigned long) i386_bts);
       asm_register_ia32_opcode(0x100 + 0xac, (unsigned long) i386_shrd_rmv_rv_ib);
       asm_register_ia32_opcode(0x100 + 0xad, (unsigned long) i386_shrd_rmv_rv_cl);
-      asm_register_ia32_opcode(0x100 + 0xae, (unsigned long) i386_group15);
+      asm_register_ia32_opcode(0x100 + 0xae, (unsigned long) i386_group16);
       asm_register_ia32_opcode(0x100 + 0xaf, (unsigned long) i386_imul_rv_rmv);
       asm_register_ia32_opcode(0x100 + 0xb1, (unsigned long) op_cmp_xchg);
       asm_register_ia32_opcode(0x100 + 0xb2, (unsigned long) op_lss_rv_rmv);
@@ -547,8 +554,13 @@ int	asm_arch_register(asm_processor *proc, int machine)
       asm_register_sparc_opcode( 0x02, 0x13, 0x00, (unsigned long) asm_sparc_xorcc);  	
     }
   else
-    return (0);
-  return (1);
+    {
+      to_ret = 0;
+      goto out;
+    }
+  to_ret = 1;
+ out:
+  LIBASM_PROFILE_FOUT(to_ret);
 }
 
 /**
@@ -563,17 +575,19 @@ int	asm_register_ia32_operand(int operand_type, unsigned long fcn)
   vector_t	*vec;
   u_int		dim[2];
 
+  LIBASM_PROFILE_FIN();
   vec = aspect_vector_get("operand");
   dim[0] = LIBASM_VECTOR_IA32;
   dim[1] = operand_type;
   aspect_vectors_insert(vec, dim, fcn);
-  return (1);
+  LIBASM_PROFILE_FOUT(1);
 }
 
 
 
 int	asm_operand_register()
 {
+  LIBASM_PROFILE_FIN();
   asm_register_ia32_operand(ASM_OTYPE_NONE, (unsigned long) asm_operand_fetch_default);
   asm_register_ia32_operand(ASM_OTYPE_FIXED, (unsigned long) asm_operand_fetch_fixed);
   asm_register_ia32_operand(ASM_OTYPE_OPMOD, (unsigned long) asm_operand_fetch_opmod);
@@ -619,5 +633,6 @@ int	asm_operand_register()
   asm_register_ia32_operand(ASM_OTYPE_ST_5, (unsigned long) asm_operand_fetch_default);
   asm_register_ia32_operand(ASM_OTYPE_ST_6, (unsigned long) asm_operand_fetch_default);
   asm_register_ia32_operand(ASM_OTYPE_ST_7, (unsigned long) asm_operand_fetch_default);
-  return (1);
+  LIBASM_PROFILE_FOUT(1);
+
 }

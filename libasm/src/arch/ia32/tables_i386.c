@@ -1,10 +1,8 @@
-/*
-** $Id: tables_i386.c,v 1.9 2007-05-19 23:59:12 heroine Exp $
-** 
-** Author  : <sk at devhell dot org>
-** Started : Mon Jun 10 22:42:50 2002
-** Updated : Tue Feb 25 00:22:06 2003
-*/
+/**
+ *
+ * $Id: tables_i386.c,v 1.10 2007-05-29 00:40:27 heroine Exp $
+ * 
+ */
 #include <libasm.h>
 
 int init_instr_table(asm_processor *proc) {
@@ -234,7 +232,14 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_STMXCSR] = "stmxcsr";
   proc->instr_table[ASM_LDMXCSR] = "ldmxcsr";
   proc->instr_table[ASM_BSF] = "bsf";
-  
+
+  proc->instr_table[ASM_LFENCE] = "lfence";
+  proc->instr_table[ASM_MFENCE] = "mfence";
+  proc->instr_table[ASM_SFENCE] = "sfence";
+  proc->instr_table[ASM_FXSAVE] = "fxsave";
+  proc->instr_table[ASM_FXRSTORE] = "fxrstore";
+  proc->instr_table[ASM_LDMXCSR] = "ldmxcsr";
+  proc->instr_table[ASM_STMXCSR] = "stmxcsr";
   /* FPU */
   proc->instr_table[ASM_FILD] = "fild";
   proc->instr_table[ASM_FIMUL] = "fimul";

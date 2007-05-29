@@ -1,5 +1,5 @@
 /*
-** $Id: op_adc_rb_rmb.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: op_adc_rb_rmb.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,14 +9,18 @@
   <instruction func="op_adc_rb_rmb" opcode="0x12"/>
 */
 
-int op_adc_rb_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_adc_rb_rmb(asm_instr *new, u_char *opcode, u_int len, 
+		  asm_processor *proc)
+{
   new->len += 1;
   new->instr = ASM_ADC;
   new->ptr_instr = opcode;
 
   #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERALBYTE, proc);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODEDBYTE, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
+				ASM_OTYPE_GENERALBYTE, new);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, 
+				ASM_OTYPE_ENCODEDBYTE, new);
   #else
   new->op1.type = ASM_OTYPE_GENERAL;
   new->op1.size = ASM_OSIZE_BYTE;

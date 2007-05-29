@@ -1,5 +1,5 @@
 /*
-** $Id: i386_shld_rmv_rv_cl.c,v 1.2 2007-04-13 06:56:34 heroine Exp $
+** $Id: i386_shld_rmv_rv_cl.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,15 +9,18 @@
   <i386 func="i386_shld_rmv_rv_cl" opcode="0xa5"/>
 */
 
-int i386_shld_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int i386_shld_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len, 
+			asm_processor *proc) 
 {
   new->instr = ASM_SHRD;
   new->len += 1;
     
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, proc);
-  new->len += asm_operand_fetch(&new->op3, opcode + 1, ASM_OTYPE_FIXED, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
+				new);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, 
+				new);
+  new->len += asm_operand_fetch(&new->op3, opcode + 1, ASM_OTYPE_FIXED, new);
   new->op3.content = ASM_OP_BASE;
   new->op3.regset = ASM_REGSET_R8;
   new->op3.ptr = opcode;

@@ -5,7 +5,7 @@
 ** Started : Mon Jun 10 22:42:50 2002
 ** Updated : Tue Feb 25 00:22:06 2003
 **
-** $Id: instr_table.c,v 1.4 2007-05-19 23:59:12 heroine Exp $
+** $Id: instr_table.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -17,8 +17,9 @@
  * @return 1 on success, 0 on error.
  */
 
-int init_instr_table(asm_processor *proc) {
-  
+int init_instr_table(asm_processor *proc) 
+{
+  LIBASM_PROFILE_FIN();
   /* valgrind complained about mem leaks */
   proc->instr_table = malloc(sizeof(char *) * ASM_BAD + 4);
   
@@ -246,5 +247,6 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_FRNDINT] = "frndint";
   proc->instr_table[ASM_FPATAN] = "fpatan";
   proc->instr_table[ASM_BAD] = "(bad)";
+  LIBASM_PROFILE_FOUT();
   return (1);
 }

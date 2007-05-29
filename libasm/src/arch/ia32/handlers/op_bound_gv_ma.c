@@ -1,5 +1,5 @@
 /*
-** $Id: op_bound_gv_ma.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_bound_gv_ma.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,9 @@
   <instruction func="op_bound_gv_ma" opcode="0x62"/>
 */
 
-int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len, 
+		       asm_processor *proc)
+{
 #if !LIBASM_USE_OPERAND_VECTOR
   struct s_modrm        *modrm;
 #endif
@@ -19,8 +21,10 @@ int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len, asm_processor 
   new->ptr_instr = opcode;
 
   #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, proc);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_MEMORY, proc);
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
+				new);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_MEMORY, 
+				new);
 #else
   
   modrm = (struct s_modrm *) (opcode + 1);
