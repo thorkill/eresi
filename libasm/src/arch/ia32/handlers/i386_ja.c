@@ -1,11 +1,18 @@
-/*
-** $Id: i386_ja.c,v 1.4 2007-05-30 00:15:41 heroine Exp $
-**
-*/
+/**
+ * @file i386_ja.c
+ * $Id: i386_ja.c,v 1.5 2007-05-30 00:21:30 heroine Exp $
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
+ * Handler for far ja far instruction, opcode 0x0f 0x87
+ * @param new Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ *
   <i386 func="i386_ja" opcode="0x87"/>
 */
 
@@ -15,7 +22,6 @@ int i386_ja(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_CONDBRANCH;
   new->instr = ASM_BRANCH_U_GREATER;
   new->len += 1;
-  printf("kiko\n");
 #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_JUMP, new);
 #else
