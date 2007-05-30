@@ -1,5 +1,5 @@
 /*
-** $Id: operand.c,v 1.3 2007-02-21 03:43:51 heroine Exp $
+** $Id: operand.c,v 1.4 2007-05-30 15:53:58 heroine Exp $
 ** operand.c in 
 ** 
 ** Author  : <kahmm@altdev.net>
@@ -207,6 +207,7 @@ int    asm_operand_set_basereg(asm_instr *ins, int num,
   asm_operand	*op;
   int		*val;
   
+  return (-1);
   if (!op->ptr) {
     fprintf(stderr, "no pointer available");
   }
@@ -263,6 +264,7 @@ int    asm_operand_set_indexreg(asm_instr *ins, int num,
   struct s_sidbyte	*sidbyte;
   asm_operand		*op;
 
+  return (-1);
   if (op->content & ASM_OP_INDEX) {
     sidbyte = (struct s_sidbyte *) (op->ptr + 1);
     val = (int *) valptr;
@@ -296,6 +298,8 @@ int    asm_operand_set_scale(asm_instr *ins, int num,
   struct s_sidbyte      *sidbyte;
   asm_operand		*op;
   
+  return (-1);
+  op = &ins->op1;
   val = (int *) valptr;
   if (op && op->type & ASM_OP_SCALE) {
     

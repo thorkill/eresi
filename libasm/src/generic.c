@@ -1,7 +1,7 @@
 /**
  * @file generic.c
  * Latest edition Author : $Author: heroine $
- * $Id: generic.c,v 1.10 2007-05-29 00:40:27 heroine Exp $
+ * $Id: generic.c,v 1.11 2007-05-30 15:53:58 heroine Exp $
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */
@@ -191,6 +191,8 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
   int		len;
   asm_operand	*op;
 
+  op = 0;
+  off = len = 0;
   value = (int *) valptr;
   
   switch(num)
@@ -204,7 +206,12 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
     case 3:
       op = &ins->op3;
       break;   
+    default:
+      op = 0;
+      return (-1);
+      break;
     }
+
   if (op->ptr && (op->content & ASM_OP_VALUE)) {
     switch (op->len) {
     case 0:

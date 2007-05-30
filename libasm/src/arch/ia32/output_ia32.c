@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.9 2007-05-19 18:28:09 thor Exp $
+** $Id: output_ia32.c,v 1.10 2007-05-30 15:53:58 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -133,6 +133,7 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
   asm_operand *op;
   char	*buffer;
 
+  op = 0;
   buffer = bufptr;
 
   base_reg = index_reg = scale = imm = 0;

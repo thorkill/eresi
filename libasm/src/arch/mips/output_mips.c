@@ -1,5 +1,5 @@
 /**
- * $Id: output_mips.c,v 1.1 2007-01-23 09:53:03 heroine Exp $
+ * $Id: output_mips.c,v 1.2 2007-05-30 15:53:58 heroine Exp $
  *
  *
  *
@@ -68,6 +68,7 @@ void	asm_mips_dump_operand(asm_instr *ins, int num, unsigned int addr, char *buf
     case 1: op = &ins->op1; break;
     case 2: op = &ins->op2; break;
     case 3: op = &ins->op3; break;      
+    default: return;
     }
   
   switch(op->type)
