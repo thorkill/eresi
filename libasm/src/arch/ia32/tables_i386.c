@@ -1,6 +1,6 @@
 /**
  *
- * $Id: tables_i386.c,v 1.10 2007-05-29 00:40:27 heroine Exp $
+ * $Id: tables_i386.c,v 1.11 2007-05-30 00:15:41 heroine Exp $
  * 
  */
 #include <libasm.h>

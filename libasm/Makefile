@@ -1,6 +1,5 @@
 ##
-## this is private - do not distribute
-## $Id: Makefile,v 1.22 2007-05-29 00:40:27 heroine Exp $
+## $Id: Makefile,v 1.23 2007-05-30 00:15:41 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -71,7 +70,7 @@ OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
 CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH32 \
-			-I../libaspect/include
+			-I../libaspect/include -O2
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc

@@ -1,5 +1,5 @@
 /*
-** $Id: i386_ja.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: i386_ja.c,v 1.4 2007-05-30 00:15:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -12,10 +12,10 @@
 
 int i386_ja(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  // new->type = IS_COND_BRANCH;
+  new->type = ASM_TYPE_CONDBRANCH;
   new->instr = ASM_BRANCH_U_GREATER;
   new->len += 1;
-    
+  printf("kiko\n");
 #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_JUMP, new);
 #else
