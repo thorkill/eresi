@@ -4,7 +4,7 @@
 ** Started Jan 13 2007 18:09:02 mxatone
 **
 **
-** $Id: edfmt-utils.c,v 1.9 2007-05-31 14:45:51 may Exp $
+** $Id: edfmt-utils.c,v 1.10 2007-05-31 16:47:25 may Exp $
 **
 */
 
@@ -52,6 +52,11 @@ char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
+
+
+
+
+
 /**
  * Create a string from an addr (used in hash table) 
  * @param buf destination buffer
@@ -86,8 +91,6 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
   elfsh_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  elfsh_print_sectlist(file, "LOOKUP_ADDR");
 
   /* Lookup .symtab */
   sym = elfsh_get_symbol_by_name(file, param);

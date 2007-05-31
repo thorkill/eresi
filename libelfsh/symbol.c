@@ -4,10 +4,12 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.8 2007-05-07 13:24:01 may Exp $
+** $Id: symbol.c,v 1.9 2007-05-31 16:47:25 may Exp $
 **
 */
 #include "libelfsh.h"
+
+
 
 /**
  * Return the symbol name giving its index in the symbol string table
@@ -16,6 +18,7 @@
  */
 char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
+  elfshsect_t	*sect;
   void		*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -32,14 +35,30 @@ char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
 		      "Cannot retreive symbol table", NULL);
 
   /* Else use the symbol string table */
-  data = file->secthash[ELFSH_SECTION_STRTAB]->data;
-  if ((NULL == file->secthash[ELFSH_SECTION_STRTAB] || NULL == data) && 
-      NULL == elfsh_get_strtab(file, 0))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get STRTAB", NULL);
-
+  sect = file->secthash[ELFSH_SECTION_STRTAB];
+  if (!sect || !sect->data)
+    {
+      sect = elfsh_get_strtab(file, 0);
+      if (!sect)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to get STRTAB", NULL);
+      data = sect->data;
+    }
+  else
+    data = sect->data;
+  
+  /* A last check to avoid getting killed on corrupted symbol tables */
+  if (!data)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, "<unreadable>");
+  else if ((unsigned int) s->st_name > 
+	   (unsigned int) file->secthash[ELFSH_SECTION_STRTAB]->shdr->sh_size)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, "<corrupted>");
+  
+  /* Return name */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + s->st_name));
 }
+
+
 
 /**
  * Return the used offset in .strtab or -1 if failed 
