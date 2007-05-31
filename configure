@@ -200,7 +200,7 @@ break;
 ;;
 
 *)
-echo "Invalid configure option. Try --help."
+echo "Invalid configure '$1' option. Try --help."
 echo
 rm -f $CONFIGFILE Makefile
 exit
