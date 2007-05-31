@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.13 2007-05-07 13:24:01 may Exp $
+** $Id: resolv.c,v 1.14 2007-05-31 14:45:51 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -226,13 +226,13 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       for (nbr2 = 0; dyn[nbr2].d_tag != DT_NULL; nbr2++)
 	{
 	  if (dyn[nbr2].d_tag == DT_SYMTAB)
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 	    obj.symoff = curobj->laddr + dyn[nbr2].d_un.d_val;
 #else
 	    obj.symoff = dyn[nbr2].d_un.d_val;
 #endif
 	  else if (dyn[nbr2].d_tag == DT_STRTAB)
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 	    obj.stroff = curobj->laddr + dyn[nbr2].d_un.d_val;
 #else
 	    obj.stroff = dyn[nbr2].d_un.d_val;
@@ -274,7 +274,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       for (curoff = 0; 
 	   obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
 	{
-	  memcpy(&cursym, (void *) obj.symoff + curoff, sizeof(elfsh_Sym));
+	  memcpy(&cursym, (void *)obj.symoff + curoff, sizeof(elfsh_Sym));
 	  if (cursym.st_name >= obj.strsz)
 	    continue;
 	  if (!strcmp(strtab + cursym.st_name, sym2resolve) && 
@@ -310,7 +310,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   elfsh_Addr		*got;
   elfshlinkmap_t	*lm;
   char			*version;
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
   Obj_Entry		*oe;
 #endif
 
@@ -356,7 +356,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
   /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
   oe = (Obj_Entry *) got[1];
   lm = (elfshlinkmap_t *) &oe->linkmap;
 #else

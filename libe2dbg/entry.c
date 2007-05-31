@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.9 2007-05-11 10:48:29 may Exp $
+** $Id: entry.c,v 1.10 2007-05-31 14:45:51 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -28,7 +28,7 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   int			idx;
 #endif
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
   pn = __progname;
 #elif defined(sun)
   pn = getexecname();
@@ -164,7 +164,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__NetBSD__)
 
 
 

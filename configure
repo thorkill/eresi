@@ -149,14 +149,14 @@ echo  "CC		= g++"			>> $CONFIGFILE
 --set-shell*)
 shift
 echo  " [*] Setting UNIX shell to " $1
-echo  "#define ELFSH_SHELL        " $1		>> $VARSFILE
+echo  "#define ELFSH_SHELL        " \"$1\"		>> $VARSFILE
 SHELLSET="1"
 ;;
 
 --set-editor*)
 shift
 echo  " [*] Setting editor to " $1
-echo  "#define ELFSH_EDITOR        " $1		>> $VARSFILE
+echo  "#define ELFSH_EDITOR        " \"$1\"		>> $VARSFILE
 EDITORSET="1"
 ;;
 
@@ -170,14 +170,14 @@ COMPILERSET="1"
 --set-modpath*)
 shift
 echo " [*] Setting ELFsh modules path to " $1
-echo "#define ELFSH_MODPATH              " $1   >> $VARSFILE
+echo "#define ELFSH_MODPATH              " \"$1\"   >> $VARSFILE
 MODPATHSET="1"
 ;;
 
 --set-lib-path*)
 shift
 echo " [*] Setting ELFsh library search path to " $1
-echo "#define ELFSH_LIBPATH    		 " $1  >> $VARSFILE
+echo "#define ELFSH_LIBPATH    		 " \"$1\"  >> $VARSFILE
 LIBPATHSET="1"
 ;;
 
@@ -315,6 +315,16 @@ echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\" "   >> $VARSFILE
 
 MODPATHSET="1";
 FREEBSD="1";
+;;
+
+NetBSD*)
+    echo " [*] OS Version: $OSVER"
+    echo "RANLIB = ranlib"		>> $CONFIGFILE
+    SHELL="/bin/sh"
+if [ "$STATIC" = "0" ]; then
+    echo  " [*] Enabling dynamic linking."
+    echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
+fi
 ;;
 
 *BSD*)

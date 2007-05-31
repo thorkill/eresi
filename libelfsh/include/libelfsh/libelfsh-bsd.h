@@ -5,7 +5,7 @@
 ** 
 ** Last update Mon Feb 26 05:05:27 2005 mayhem
 **
-** $Id: libelfsh-bsd.h,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: libelfsh-bsd.h,v 1.8 2007-05-31 14:45:55 may Exp $
 **
 */
 
@@ -16,7 +16,11 @@
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <sys/param.h>
+#if defined(__NetBSD__)
+#include <elf.h>
+#else
 #include <sys/elf_common.h>
+#endif
 
 /**
  * Lists of shared object dependencies 
@@ -56,6 +60,7 @@ typedef struct				Struct_Objlist_Entry
 
 typedef STAILQ_HEAD(Struct_Objlist, Struct_Objlist_Entry) Objlist;
 
+#if defined(__FreeBSD__)
 /**
  * Shared object descriptor.
  *
@@ -142,6 +147,97 @@ typedef struct Struct_Obj_Entry {
     ino_t ino;                  /* Object's inode number */
     void *priv;                 /* Platform-dependant */
 } Obj_Entry;
+
+#elif defined(__NetBSD__)
+
+/*
+ * Shared object descriptor.
+ *
+ * Items marked with "(%)" are dynamically allocated, and must be freed
+ * when the structure is destroyed.
+ */
+
+#define RTLD_MAGIC      0xd550b87a
+#define RTLD_VERSION    1
+#define RTLD_MAIN       0x800
+
+typedef struct Struct_Obj_Entry {
+        u_int32_t      magic;          /* Magic number (sanity check) */
+        u_int32_t      version;        /* Version number of struct format */
+
+        struct Struct_Obj_Entry *next;
+        char           *path;           /* Pathname of underlying file (%) */
+        int             refcount;
+        int             dl_refcount;    /* Number of times loaded by dlopen */
+
+        /* These items are computed by map_object() or by digest_phdr(). */
+        caddr_t         mapbase;        /* Base address of mapped region */
+        size_t          mapsize;        /* Size of mapped region in bytes */
+        size_t          textsize;       /* Size of text segment in bytes */
+        u_int32_t        vaddrbase;      /* Base address in shared object file */
+        caddr_t         relocbase;      /* Reloc const = mapbase - *vaddrbase */
+        const u_int32_t        *dynamic;        /* Dynamic section */
+        caddr_t         entry;          /* Entry point */
+        const u_int32_t *__junk001;
+        size_t          pathlen;        /* Pathname length */
+
+        /* Items from the dynamic section. */
+        u_int32_t       *pltgot;         /* PLTGOT table */
+        const u_int32_t  *rel;            /* Relocation entries */
+        const u_int32_t  *rellim;         /* Limit of Relocation entries */
+        const u_int32_t *rela;           /* Relocation entries */
+        const u_int32_t *relalim;        /* Limit of Relocation entries */
+        const u_int32_t  *pltrel;         /* PLT relocation entries */
+        const u_int32_t  *pltrellim;      /* Limit of PLT relocation entries */
+        const u_int32_t *pltrela;        /* PLT relocation entries */
+        const u_int32_t *pltrelalim;     /* Limit of PLT relocation entries */
+        const u_int32_t  *symtab;         /* Symbol table */
+        const char     *strtab;         /* String table */
+        unsigned long   strsize;        /* Size in bytes of string table */
+#ifdef __mips__
+        u_int32_t        local_gotno;    /* Number of local GOT entries */
+        u_int32_t        symtabno;       /* Number of dynamic symbols */
+        u_int32_t        gotsym;         /* First dynamic symbol in GOT */
+#endif
+        const u_int32_t *buckets;        /* Hash table buckets array */
+        unsigned long   nbuckets;       /* Number of buckets */
+        const u_int32_t *chains;         /* Hash table chain array */
+        unsigned long   nchains;        /* Number of chains */
+
+        const char    *rpaths;         /* Search path specified in object */
+        Needed_Entry   *needed;         /* Shared objects needed by this (%) */
+
+        void            (*init)(void);  /* Initialization function to call */
+        void            (*fini)(void);  /* Termination function to call */
+
+        /* Entry points for dlopen() and friends. */
+        void           *(*dlopen)(const char *, int);
+        void           *(*dlsym)(void *, const char *);
+        char           *(*dlerror)(void);
+        int             (*dlclose)(void *);
+        int             (*dladdr)(const void *, Dl_info *);
+
+        u_int32_t       mainprog:1,     /* True if this is the main program */
+                        rtld:1,         /* True if this is the dynamic linker */
+                        textrel:1,      /* True if there are relocations to
+                                         * text seg */
+                        symbolic:1,     /* True if generated with
+                                         * "-Bsymbolic" */
+                        printed:1,      /* True if ldd has printed it */
+                        isdynamic:1,    /* True if this is a pure PIC object */
+                        mainref:1,      /* True if on _rtld_list_main */
+                        globalref:1;    /* True if on _rtld_list_global */
+
+        struct link_map linkmap;        /* for GDB */
+
+        /* These items are computed by map_object() or by digest_phdr(). */
+        const char     *interp; /* Pathname of the interpreter, if any */
+        Objlist         dldags; /* Object belongs to these dlopened DAGs (%) */
+        Objlist         dagmembers;     /* DAG has these members (%) */
+        dev_t           dev;            /* Object's filesystem's device */
+        ino_t           ino;            /* Object's inode number */
+} Obj_Entry;
+#endif
 
 #ifndef STT_TLS
   #define STT_TLS  6
@@ -248,6 +344,12 @@ typedef struct
  * Note section contents.  Each entry in the note section begins with
  * a header of a fixed form.
  */
+#if defined(__NetBSD__)
+/*
+ * Note section are not necessary since residing in <elf.h> already
+ * we avoid conflicting types
+ */
+#else
 typedef struct
 {
   Elf32_Word n_namesz;                  /* Length of the note's name.  */
@@ -261,6 +363,7 @@ typedef struct
   Elf64_Word n_descsz;                  /* Length of the note's descriptor.  */
   Elf64_Word n_type;                    /* Type of the note.  */
 } Elf64_Nhdr;
+#endif
 
 
 

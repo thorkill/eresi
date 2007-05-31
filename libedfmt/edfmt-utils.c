@@ -4,7 +4,7 @@
 ** Started Jan 13 2007 18:09:02 mxatone
 **
 **
-** $Id: edfmt-utils.c,v 1.8 2007-03-07 16:45:35 thor Exp $
+** $Id: edfmt-utils.c,v 1.9 2007-05-31 14:45:51 may Exp $
 **
 */
 
@@ -87,6 +87,8 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  elfsh_print_sectlist(file, "LOOKUP_ADDR");
+
   /* Lookup .symtab */
   sym = elfsh_get_symbol_by_name(file, param);
   if (sym != NULL && sym->st_value > 0)
@@ -112,6 +114,8 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unable to lookup address object", (elfsh_Addr) 0);
 }
+
+
 
 /** 
  * Create an allocation pool used to store different data and optimize performance

@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: linkmap.c,v 1.3 2007-05-07 13:24:01 may Exp $
+** $Id: linkmap.c,v 1.4 2007-05-31 14:45:51 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -127,7 +127,7 @@ int			e2dbg_linkmap_load(char *name)
       //fprintf(stderr, "[e2dbg_linkmap_load] after entry_by_index (linkmap_entry = %08x)\n",
       //      linkmap_entry);
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
       world.curjob->current->linkmap = (elfshlinkmap_t *)
 	&((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
 #else

@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.18 2007-05-29 00:40:27 heroine Exp $
+** $Id: libasm.h,v 1.19 2007-05-31 14:45:51 may Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#if defined(__FreeBSD__) || defined(sgi)
+#if defined(__FreeBSD__) || defined(sgi) || defined(__NetBSD__)
 #include <sys/endian.h>
 #elif !defined(sun)
 #include <endian.h>

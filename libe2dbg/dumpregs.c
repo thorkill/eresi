@@ -4,7 +4,7 @@
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 ** 
 **
-** $Id: dumpregs.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: dumpregs.c,v 1.3 2007-05-31 14:45:51 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -46,7 +46,7 @@ int		cmd_dumpregs()
 
 #if defined(__amd64__) && defined(__FreeBSD__)
   #error "Register context not filled on FreeBSD / AMD64"
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
   e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -56,6 +56,16 @@ int		cmd_dumpregs()
   e2dbg_register_dump("ESP", e2dbgworld.curthread->context->uc_mcontext.mc_esp);
   e2dbg_register_dump("EBP", e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
   e2dbg_register_dump("EIP", e2dbgworld.curthread->context->uc_mcontext.mc_eip);
+#elif defined(__NetBSD__)
+  e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EAX]);
+  e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EBX]);
+  e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ECX]);
+  e2dbg_register_dump("EDX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EDX]);
+  e2dbg_register_dump("ESI", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ESI]);
+  e2dbg_register_dump("EDI", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EDI]);
+  e2dbg_register_dump("ESP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ESP]);
+  e2dbg_register_dump("EBP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EBP]);
+  e2dbg_register_dump("EIP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EIP]);
 #elif defined(IRIX)
   e2dbg_register_dump("R0", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_R0]);
   e2dbg_register_dump("AT", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_AT]);

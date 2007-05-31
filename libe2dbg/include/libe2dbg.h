@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.17 2007-05-11 10:48:29 may Exp $
+** $Id: libe2dbg.h,v 1.18 2007-05-31 14:45:51 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -285,7 +285,7 @@ typedef struct		s_e2dbgworld
 extern e2dbgworld_t	e2dbgworld;
 
 /* Some libc extern */
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
  extern char		*__progname;
  extern char		**environ;
 #elif defined(sun)

@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.59 2007-05-23 16:56:55 may Exp $
+** $Id: libelfsh.h,v 1.60 2007-05-31 14:45:51 may Exp $
 **
 */
 
@@ -43,7 +43,12 @@
 #if !defined(sgi)
 #include <sys/user.h>
 #endif
+
+#if defined(__NetBSD__)
+#include <miscfs/procfs/procfs.h>
+#else
 #include <sys/procfs.h>
+#endif
 
 /* Configure the DEBUG modes for various part of the code */
 #define		__DEBUG_MAP__		       0
@@ -643,12 +648,13 @@ typedef struct user_fpregs
 
 /**
  * Documentation missing.
+ * XXX si_signo, si_code, si_errno exists in NetBSD.... <sys/siginfo.h>
  */
-typedef struct siginfo_t
+typedef struct s_siginfo
 {
-  int si_signo;     /* Signal number.  */
-  int si_code;      /* Extra code.  */
-  int si_errno;     /* Errno.  */
+  int esh_si_signo;     /* Signal number.  */
+  int esh_si_code;      /* Extra code.  */
+  int esh_si_errno;     /* Errno.  */
 } elfsh_siginfo_t;
 
 /**

@@ -9,10 +9,12 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.12 2007-05-30 15:45:36 rafael Exp $
+ ** $Id: sht_rebuild.c,v 1.13 2007-05-31 14:45:51 may Exp $
  **
  */
 #include "libelfsh.h"
+
+
 
 /** 
  * This function insert a SHT entry without shifting the address space
@@ -223,7 +225,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
       case PT_LOAD:
       case PT_DYNAMIC:
       case PT_INTERP:
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
       case PT_TLS:
       case PT_GNU_EH_FRAME:
       case PT_GNU_STACK:
@@ -253,7 +255,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
         type = SHT_DYNAMIC;
         break;
       case PT_LOAD: 
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
       case PT_GNU_EH_FRAME:
       case PT_GNU_STACK:
       case PT_TLS:
@@ -319,6 +321,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
   file->hdr->e_shstrndx = idx; 
 
   snames = ehnames = tlsnames = nnames = lnames = dnames = 0;
+
   /* fixup the section names */
   for(index = 0; index < total; index++)
     {
@@ -333,7 +336,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
       case PT_NOTE:
         snprintf(name, sizeof(name), ".note%d", nnames++);
         break;
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
       case PT_TLS:
         snprintf(name, sizeof(name), ".tls%d", tlsnames++);
         break;
@@ -341,7 +344,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
       case PT_DYNAMIC:
         snprintf(name, sizeof(name), ".dynamic%d", dnames++);
         break;
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
       case PT_GNU_EH_FRAME:
         snprintf(name, sizeof(name), ".eh_frame%d", ehnames++);
         break;
