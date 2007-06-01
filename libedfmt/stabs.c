@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.16 2007-06-01 17:26:59 mxatone Exp $
+** $Id: stabs.c,v 1.17 2007-06-01 18:35:39 mxatone Exp $
 **
 */
 
@@ -693,6 +693,9 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str, char *link)
 	    }
 	  break;
 	case STABS_STR_D_CREF:
+	  if (**str == 's')
+	    *(*str)++;
+
 	  /* We get the name from with the first part, then we can search the correct type */
 	  type->type = STABS_TYPE_CLINK;
 	  edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);
