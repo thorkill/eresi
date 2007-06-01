@@ -4,7 +4,7 @@
 ** Started Sat 13 2006 09:52:12 mxatone
 **
 **
-** $Id: libedfmt-stabs.h,v 1.7 2007-03-07 16:45:35 thor Exp $
+** $Id: libedfmt-stabs.h,v 1.8 2007-06-01 17:26:59 mxatone Exp $
 **
 */
 
@@ -402,7 +402,7 @@ enum stabs_type
 #define STABS_STR_AIX_VECTOR	'V'
 
 /* Usefull local functions */
-edfmtstabstype_t *edfmt_stabs_type(char **str);
+edfmtstabstype_t *edfmt_stabs_type(char **str, char *link);
 edfmtstabsdata_t *edfmt_stabs_data(char **str);
 
 #endif

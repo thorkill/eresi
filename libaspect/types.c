@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.7 2007-04-02 18:00:02 may Exp $
+** $Id: types.c,v 1.8 2007-06-01 17:26:59 mxatone Exp $
 **
 */
 #include "libaspect.h"
@@ -134,7 +134,7 @@ static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
 
 
 /* Create a new type */
-static aspectype_t	*aspect_type_create(char *label, 
+aspectype_t		*aspect_type_create(char *label, 
 					    char **fields, 
 					    u_int fieldnbr)
 {
@@ -282,20 +282,12 @@ static aspectype_t	*aspect_type_create(char *label,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);  
 }
 
-
-/* Interface for type creation */
-int		aspect_type_register(char *label, 
-				     char **fields, 
-				     u_int fieldnbr)
+int		aspect_type_register_adv(char *label, 
+					 aspectype_t *ntype)
 {
-  aspectype_t	*ret;
-  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  ret = aspect_type_create(label, fields, fieldnbr);
-  if (!ret)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid type declaration", -1);
-  hash_add(&types_hash, label, ret);
+
+  hash_add(&types_hash, label, ntype);
 
   /* The type ID is incremented here */
   aspect_type_nbr++;
@@ -303,8 +295,31 @@ int		aspect_type_register(char *label,
 	   aspect_typeinfo, aspect_typeinfo, 
 	   sizeof(typeinfo_t) * aspect_type_nbr, -1);
   aspect_typeinfo[aspect_type_nbr - 1].name = label;
-  aspect_typeinfo[aspect_type_nbr - 1].size = ret->size; 
+  aspect_typeinfo[aspect_type_nbr - 1].size = ntype->size; 
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* Interface for type creation */
+int		aspect_type_register(char *label, 
+				     char **fields, 
+				     u_int fieldnbr)
+{
+  aspectype_t	*ret;
+  int 		iret;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = aspect_type_create(label, fields, fieldnbr);
+
+  if (!ret)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid type declaration", -1);
+
+  iret = aspect_type_register_adv(label, ret);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

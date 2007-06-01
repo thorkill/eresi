@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.15 2007-05-23 13:42:31 mxatone Exp $
+** $Id: stabs.c,v 1.16 2007-06-01 17:26:59 mxatone Exp $
 **
 */
 
@@ -264,7 +264,7 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
   func->s_addr = stabs_c_ent.value;
   func->s_line = stabs_c_ent.desc;
 
-  func->rettype = edfmt_stabs_type(str);
+  func->rettype = edfmt_stabs_type(str, NULL);
 
   /* Update pointer list */
   if (current_file->func == NULL)
@@ -312,7 +312,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
 		      "Invalid parameters", NULL);
 
   /* First we got a type */
-  rtype = edfmt_stabs_type(str);
+  rtype = edfmt_stabs_type(str, NULL);
 
   if (**str == ';')
     (*str)++;
@@ -376,7 +376,7 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
     (*str)++;
 
   /* This type describe how index is managed .. we don't need it */
-  edfmt_stabs_type(str);
+  edfmt_stabs_type(str, NULL);
 
   if (**str == ';')
     (*str)++;
@@ -400,7 +400,7 @@ int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str,
   (*str)++;
 
   /* Describe array type */
-  rtype = edfmt_stabs_type(str);
+  rtype = edfmt_stabs_type(str, NULL);
 
   type->u.arr.low = low;
   type->u.arr.high = high;
@@ -452,7 +452,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
       break;
 
     /* Member type */
-    tattr->type = edfmt_stabs_type(str);
+    tattr->type = edfmt_stabs_type(str, NULL);
     
     if (**str != ',')
       break;
@@ -536,7 +536,7 @@ edfmtstabsenum_t 	*edfmt_stabs_enum(char **str)
  * @param str pointer on the string to parse
  * @return the generated type structure or an existing structure
  */
-edfmtstabstype_t 	*edfmt_stabs_type(char **str)
+edfmtstabstype_t 	*edfmt_stabs_type(char **str, char *link)
 {
   char			*save_str;
   char			token;
@@ -557,6 +557,10 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 
   tnum.file = tnum.number = 0;
 
+  /* Default case */
+  if (link)
+    *link = 0;
+
   /* Retrieve the type number */
   if (STABS_IS_SPECIAL(**str))
     {
@@ -566,6 +570,9 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	{
 	  edfmt_stabs_ctypenum(ctypenum, STABS_CTYPENUM_SIZE, &tnum);
 	  type = hash_get(&type_ref, ctypenum);
+
+	  if (link)
+	    *link = 1;
 
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 	}
@@ -603,7 +610,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	  /* Restore string position */
 	  *str = save_str;
 	  type->type = STABS_TYPE_LINK;
-	  type->u.link = edfmt_stabs_type(str);
+	  type->u.link = edfmt_stabs_type(str, NULL);
 	  if (type->u.link)
 	    type->u.link->parent_link = type;
 	}
@@ -648,7 +655,7 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 	      type->type = STABS_TYPE_CONST;
 	      break;
 	    }
-	  type->u.link = edfmt_stabs_type(str);
+	  type->u.link = edfmt_stabs_type(str, NULL);
 	  break;
 	case STABS_STR_D_ATTR:
 	  /* GNU C++ way - Class member*/
@@ -737,9 +744,10 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str)
 edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 {
   edfmt_res_size_t 	*res;
-  char			token, *save_str;
+  char			token, *save_str, link;
   char			name[STABS_NAME_SIZE];
   edfmtstabsdata_t 	*data;
+  edfmtstabstype_t 	*type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -769,7 +777,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
   if (STABS_IS_SPECIAL(**str))
     {
       data->scope = STABS_SCOPE_LVAR;
-      data->type = edfmt_stabs_type(str);
+      data->type = edfmt_stabs_type(str, NULL);
       data->u.stackpos = stabs_c_ent.value;
     }
   else
@@ -784,7 +792,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_PARAM_RREG:
 	  data->scope = STABS_SCOPE_ARGRREG;
 	  data->u.reg = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 
 	  /* A constant */
@@ -805,7 +813,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	      break;
 	    case STABS_STR_T_CONST_ENUM:
 	      data->scope = STABS_SCOPE_CONST_E;
-	      data->type = edfmt_stabs_type(str);
+	      data->type = edfmt_stabs_type(str, NULL);
 
 	      if (**str == ',')
 		(*str)++;
@@ -828,7 +836,7 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	  /* Global symbol (like a global enum) */
 	case STABS_STR_T_GVAR:
 	  data->scope = STABS_SCOPE_GVAR;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 
 	  if (data->type == NULL)
 	    break;
@@ -846,34 +854,34 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_ARGLIST:
 	  data->scope = STABS_SCOPE_ARG;
 	  data->u.stackpos = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 
 	  /* Argument pass into a register */
 	case STABS_STR_T_PARAM_REG:
 	  data->scope = STABS_SCOPE_ARGREG;
 	  data->u.reg = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 	  
 	  /* Variable stored in a register */
 	case STABS_STR_T_VAR_REG:
 	  data->scope = STABS_SCOPE_VARREG;
 	  data->u.reg = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 
 	  /* Static variable */
 	case STABS_STR_T_VAR_FSCOPE:
 	  data->scope = STABS_SCOPE_STATICVAR;
 	  data->u.addr = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 
 	  /* Local variable */
 	case STABS_STR_T_VAR_LOCAL:
 	  data->scope = STABS_SCOPE_LVAR;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  data->u.stackpos = stabs_c_ent.value;
 	  break;
 
@@ -882,7 +890,19 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_TYPE_NAME:
 	  data->scope = STABS_SCOPE_TYPE;
 	  save_str = *str;
-	  data->type = edfmt_stabs_type(str);
+
+	  data->type = edfmt_stabs_type(str, &link);
+	  
+	  /* If its a link, we duplicate it and then avoid infinite loop
+	     on type list of the file */
+	  if (link)
+	    {
+	      type = data->type;
+	      STABS_GETPTR(data->type, sizeof(edfmtstabstype_t), NULL);
+	      memcpy(data->type, type, sizeof(edfmtstabstype_t));
+	      data->type->next = NULL;
+	    }
+
 	  data->type->data = data;
 
 	  /* Resolve size for range types */
@@ -920,14 +940,14 @@ edfmtstabsdata_t 	*edfmt_stabs_data(char **str)
 	case STABS_STR_T_PARAM_REF:
 	  data->scope = STABS_SCOPE_ARGREF;
 	  data->u.stackpos = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 
 	  /* Procedure static variable */
 	case STABS_STR_T_PROC_SVAR:
 	  data->scope = STABS_SCOPE_PSTATICVAR;
 	  data->u.addr = stabs_c_ent.value;
-	  data->type = edfmt_stabs_type(str);
+	  data->type = edfmt_stabs_type(str, NULL);
 	  break;
 	}
     }
@@ -1095,6 +1115,10 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      if (current_file != NULL)
 		{
 		  last_file = current_file;
+
+		  if (current_file->next == tmp)
+		    break;
+
 		  current_file->next = tmp;
 		}
 	      else if (last_file != NULL)
@@ -1110,6 +1134,9 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	      /* Do we already have some include ? */
 	      if (current_file->last_inc)
 		{
+		  if (current_file->last_inc->next == tmp)
+		    break;
+
 		  current_file->last_inc->next = tmp;
 		  current_file->last_inc = tmp;
 		}
@@ -1167,18 +1194,38 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 		  if (current_file->types == NULL)
 		    current_file->types = data->type;
 		  else 
-		    current_file->ltype->next = data->type;
+		    {
+		      if (current_file->ltype == data->type)
+			break;
+		      
+		      current_file->ltype->next = data->type;
+		    }
 		  current_file->ltype = data->type;
 		  break;
 		case STABS_SCOPE_GVAR:
 		  if (current_file->vars == NULL)
 		    current_file->vars = data;
 		  else 
-		    current_file->lvar->next = data;
+		    {
+		      if (current_file->lvar == data)
+			break;
+
+		      current_file->lvar->next = data;
+		    }
 		  current_file->lvar = data;		  
 		  break;
 		}
 	    }
+	}
+      else
+	{
+#if __DEBUG_STABS__
+	  printf("[DEBUG_STABS]!(0x%x) %s - %s - %s\n", 
+		 stabs_c_ent.type,
+		 current_file ? current_file->path : "?", 
+		 current_file ? current_file->file : "?", 
+		 str);
+#endif
 	}
     }
 

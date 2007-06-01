@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.35 2007-05-23 13:50:39 may Exp $
+** $Id: tables.c,v 1.36 2007-06-01 17:26:59 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -769,7 +769,7 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
   vm_addcmd(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
   vm_addcmd(CMD_SHT     , (void *) cmd_sht     , (void *) vm_getregxoption, 1, HLP_SHT);
-  vm_addcmd(CMD_DEBUG   , (void *) cmd_debug   , (void *) vm_getregxoption, 1, HLP_DEBUG);
+  vm_addcmd(CMD_DEBUG   , (void *) cmd_debug   , (void *) vm_getvarparams , 0, HLP_DEBUG);
   vm_addcmd(CMD_REL     , (void *) cmd_rel     , (void *) vm_getregxoption, 1, HLP_REL);
   vm_addcmd(CMD_COMMENT , (void *) cmd_comments, (void *) vm_getregxoption, 1, HLP_COMMENT);
   vm_addcmd(CMD_PHT2    , (void *) cmd_pht     , (void *) vm_getregxoption, 1, HLP_PHT);
