@@ -4,7 +4,7 @@
 ** Started Fev 02 2007 14:35:03 mxatone
 **
 **
-** $Id: stabs-trans.c,v 1.10 2007-06-02 08:28:51 mxatone Exp $
+** $Id: stabs-trans.c,v 1.11 2007-06-02 19:18:11 mxatone Exp $
 **
 */
 
@@ -166,8 +166,11 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	      break;
 	    case STABS_TYPE_FUNC:
 	      snprintf(buf, BUFSIZ - 1, "(func:%s)()", stype->name);
+	      stype->size = sizeof(void *);
 	      str = buf;
 	      break;
+	    case STABS_TYPE_PTR:
+	      stype->size = sizeof(void *);
 	    default:
 	      str = type->data->name;
 	      if (str == NULL || !str[0])

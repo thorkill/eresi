@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.6 2007-06-02 08:30:42 mxatone Exp $
+** $Id: edfmt.c,v 1.7 2007-06-02 19:18:11 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -162,6 +162,8 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	{
 	  if (child->parent == NULL || child->child == NULL)
 	    continue;
+
+	  VM_EDFMT_PARSED(child);
 
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "%s:%s", child->name, child->child->name);
