@@ -4,7 +4,7 @@
 ** Started Fev 02 2006 09:53:25 mxatone
 **
 **
-** $Id: libedfmt-api.h,v 1.10 2007-03-07 16:45:35 thor Exp $
+** $Id: libedfmt-api.h,v 1.11 2007-06-02 08:28:51 mxatone Exp $
 **
 */
 
@@ -33,8 +33,11 @@ typedef struct 	       	s_etype
   u_char		type;
 
   int			start;
+  int			tmp_ssize;	/* Temporary structure size */
   int			size;
 
+  /* Flags */
+  u_char		valid;
   u_char       		parsed;
 
   struct s_etype       	*parent;   	/* Used in structure attribute, array and pointer */

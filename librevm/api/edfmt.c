@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.4 2007-06-01 17:26:59 mxatone Exp $
+** $Id: edfmt.c,v 1.5 2007-06-02 08:28:51 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -148,6 +148,10 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
       vm_edfmt_register_type(type->name, tmp_arr, 1);
       break;
     case EDFMT_TYPE_STRUCT:
+      printf("Struct: %s\n", type->name);
+      if (!strcmp(type->name, "s_asm_instr"))
+	asm("int3");
+
       /* Resolve all dependencies before */
       for (child = type->child, index = 0; child != NULL; child = child->next, index++)
 	{
@@ -199,7 +203,8 @@ static int		vm_edfmt_types(edfmttype_t *types)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (type = types; type != NULL; type = type->next)
-    vm_edfmt_type_parse(type);
+    if (type->valid)
+      vm_edfmt_type_parse(type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

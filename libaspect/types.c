@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.8 2007-06-01 17:26:59 mxatone Exp $
+** $Id: types.c,v 1.9 2007-06-02 08:28:50 mxatone Exp $
 **
 */
 #include "libaspect.h"
@@ -319,7 +319,7 @@ int		aspect_type_register(char *label,
 
   iret = aspect_type_register_adv(label, ret);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, iret);
 }
 
 

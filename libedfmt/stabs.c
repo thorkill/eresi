@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs.c,v 1.17 2007-06-01 18:35:39 mxatone Exp $
+** $Id: stabs.c,v 1.18 2007-06-02 08:28:51 mxatone Exp $
 **
 */
 
@@ -461,6 +461,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     /* Start at */
     edfmt_stabs_readnumber(str, ',', &tattr->start);
+    tattr->start /= 8;
 
     if (**str != ',')
       break;
@@ -469,6 +470,7 @@ int	      		edfmt_stabs_struct(edfmtstabsstruct_t *tstruct, char **str)
 
     /* End at */
     edfmt_stabs_readnumber(str, ';', &tattr->size);
+    tattr->size /= 8;
 
     if (**str != ';')
       break;
@@ -693,9 +695,6 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str, char *link)
 	    }
 	  break;
 	case STABS_STR_D_CREF:
-	  if (**str == 's')
-	    *(*str)++;
-
 	  /* We get the name from with the first part, then we can search the correct type */
 	  type->type = STABS_TYPE_CLINK;
 	  edfmt_stabs_readstr(name, STABS_NAME_SIZE, str, STABS_STR_DELIM);

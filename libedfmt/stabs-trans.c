@@ -4,7 +4,7 @@
 ** Started Fev 02 2007 14:35:03 mxatone
 **
 **
-** $Id: stabs-trans.c,v 1.9 2007-05-23 13:42:31 mxatone Exp $
+** $Id: stabs-trans.c,v 1.10 2007-06-02 08:28:51 mxatone Exp $
 **
 */
 
@@ -42,6 +42,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   edfmtstabsattr_t	*attr;
   char			*str = NULL;
   int			addtype = 1;
+  u_char		wasclink = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
@@ -144,7 +145,10 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	      etype = edfmt_add_type_unk("unk_cref");
 	    }
 	  else
-	    type->type = STABS_TYPE_LINK;
+	    {
+	      wasclink = 1;
+	      type->type = STABS_TYPE_LINK;
+	    }
 	}
 
       if (etype == NULL)
@@ -168,8 +172,16 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
 	      str = type->data->name;
 	      if (str == NULL || !str[0])
 		{
-		  snprintf(buf, BUFSIZ - 1, "*%s", stype->name);
-		  str = buf;
+		  if (wasclink)
+		    {
+		      snprintf(buf, BUFSIZ - 1, "%s", stype->name);
+		      str = buf;
+		    }
+		  else
+		    {
+		      snprintf(buf, BUFSIZ - 1, "*%s", stype->name);
+		      str = buf;
+		    }
 		}
 	    }
 	  

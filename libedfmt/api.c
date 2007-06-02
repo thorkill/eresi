@@ -4,7 +4,7 @@
 ** Started Jan 26 2007 11:54:22 mxatone
 **
 **
-** $Id: api.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
+** $Id: api.c,v 1.15 2007-06-02 08:28:50 mxatone Exp $
 **
 */
 
@@ -53,6 +53,7 @@ do { 								\
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, _type);	\
   API_GETPTR(_type, sizeof(edfmttype_t), _ret); 	       	\
   EDFMT_COPY_NAME(_type, _name);				\
+  _type->valid = 1;						\
   if (_up)							\
     edfmt_update_type(_type);					\
 } while(0)
@@ -682,6 +683,7 @@ edfmttype_t		*edfmt_add_type_struct(char *name, int size)
   EDFMT_NEW_TYPE(ltype, name, 1, NULL);
   ltype->type = EDFMT_TYPE_STRUCT;
   ltype->size = size;
+  ltype->valid = 0;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ltype);
 }
@@ -734,7 +736,15 @@ edfmttype_t		*edfmt_add_type_attr(edfmttype_t *tstruct, char *name,
   ltype->parent = tstruct;
   ltype->child = type;
   ltype->start = start;
-  ltype->size = size ? size : tstruct->size - start;
+  ltype->size = size ? size : ltype->size;
+
+  if (ltype->size <= 0)
+    ltype->size = tstruct->size - start;
+
+  tstruct->tmp_ssize += ltype->size;
+  
+  /* Update valid flag */
+  tstruct->valid = tstruct->tmp_ssize == tstruct->size ? 1 : 0;
 
   if (type && type->size > 0)
     ltype->size = type->size;
