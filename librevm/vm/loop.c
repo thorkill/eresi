@@ -6,7 +6,7 @@
 ** Started on  Wed Nov 19 23:02:04 2003 mayhem
 ** Updated on  Mon Aug 15 06:01:54 2005 mayhem
 **
-** $Id: loop.c,v 1.7 2007-04-16 16:29:17 may Exp $
+** $Id: loop.c,v 1.8 2007-06-04 21:20:33 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -205,6 +205,9 @@ int		vm_execmd()
        curjob->curcmd = cur = cur->next)
     if (cur->cmd != NULL && cur->cmd->exec != NULL)
       {
+	/* Reset profiler message before anything */
+	profiler_error_reset();
+
 	if (vm_implicit(cur->cmd) < 0)
 	  {
 	    profiler_error();

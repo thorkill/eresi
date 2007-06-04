@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.23 2007-06-01 17:26:59 mxatone Exp $
+** $Id: libaspect.h,v 1.24 2007-06-04 21:20:33 mxatone Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -295,6 +295,7 @@ int		profiler_print(char *file, char *func,
 void		profiler_err(char *file, char *func, 
 			     u_int line, char *msg);
 void		profiler_out(char *file, char *func, u_int line);
+
 void		profiler_error();
 void		profiler_incdepth();
 void		profiler_decdepth();
@@ -302,7 +303,7 @@ void		profiler_updir();
 int		profiler_enabled();
 int		profiler_is_enabled(u_char mask);
 u_char		profiler_started();
-
+void		profiler_error_reset();
 int		profiler_enable_err();
 int		profiler_enable_out();
 int		profiler_enable_alloc();

@@ -4,7 +4,7 @@
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm
 **
-** $Id: profiler.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id: profiler.c,v 1.7 2007-06-04 21:20:33 mxatone Exp $
 **
 */
 #include "libaspect.h"
@@ -467,8 +467,14 @@ void		profiler_decdepth()
   profiler_direction = '-';
 }
 
+void		profiler_error_reset()
+{
+  profiler_error_str = NULL;
+}
 
-/* Display last error message */
+/**
+ * Display last error message 
+ */
 void		profiler_error()
 {
   char		buf[BUFSIZ];
@@ -478,5 +484,6 @@ void		profiler_error()
       snprintf(buf, BUFSIZ, " [E] %s\n\n", profiler_error_str);
       aspectworld.profile_err(buf);
     }  
-  profiler_error_str = NULL;
+ 
+  profiler_error_reset(); 
 }
