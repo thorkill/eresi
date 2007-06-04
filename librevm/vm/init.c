@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.23 2007-05-26 19:46:54 mxatone Exp $
+** $Id: init.c,v 1.24 2007-06-04 19:26:21 thor Exp $
 **
 */
 
@@ -281,6 +281,11 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  (void *) 1);
 
   config_add_item(ELFSH_VMCONFIG_GRAPH_AUTOBUILD,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 1);
+
+  config_add_item(ELFSH_VMCONFIG_USE_MORE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);

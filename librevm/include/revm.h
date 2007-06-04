@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.62 2007-05-23 13:50:39 may Exp $
+** $Id: revm.h,v 1.63 2007-06-04 19:26:21 thor Exp $
 **
 */
 #ifndef __REVM_H_
@@ -380,6 +380,7 @@ extern asm_processor	proc;
 #define ELFSH_VMCONFIG_GRAPH_VIEWCMD	"graph.viewcmd"
 #define ELFSH_VMCONFIG_GRAPH_AUTOVIEW	"graph.autoview"
 #define ELFSH_VMCONFIG_GRAPH_AUTOBUILD	"graph.autobuild"
+#define ELFSH_VMCONFIG_USE_MORE         "vm.use_more"
 
 /* Manage string table */
 #define REVM_STRTABLE_GET(_out, _in) 	\

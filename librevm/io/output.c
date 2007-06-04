@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: output.c,v 1.3 2007-03-25 14:27:34 may Exp $
+** $Id: output.c,v 1.4 2007-06-04 19:26:21 thor Exp $
 **
 */
 #include "revm.h"
@@ -73,7 +73,8 @@ int		vm_output(char *str)
        world.state.vm_mode != REVM_STATE_DEBUGGER)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
-      || world.curjob->sourced)
+      || world.curjob->sourced
+      || !(int)config_get_data(ELFSH_VMCONFIG_USE_MORE))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	 (world.curjob->ws.io.output(str)));
 
