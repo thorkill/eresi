@@ -4,7 +4,7 @@
 ** Started on  Sun Mar 10 03:24:23 2002 mayhem
 ** Last update Sun May 25 17:40:19 2003 mayhem
 **
-** $Id: strtab.c,v 1.5 2007-05-31 16:47:25 may Exp $
+** $Id: strtab.c,v 1.6 2007-06-05 17:56:12 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -56,7 +56,7 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 		      "Invalid NULL parameter", NULL);
 
   s = file->secthash[ELFSH_SECTION_STRTAB];
-  if (s && s->data)
+  if (s)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, s);
   
   /* Read the string table */

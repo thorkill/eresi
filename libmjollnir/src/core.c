@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.35 2007-06-05 12:15:13 thor Exp $
+** $Id: core.c,v 1.36 2007-06-05 17:56:12 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -113,7 +113,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   if ((NULL == sess) || (NULL == sess->cur))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameters", -1);
-  
+
   /* Get section table */
   shtlist = elfsh_get_sht(sess->cur->obj, &num_sht);
   if (!shtlist)
