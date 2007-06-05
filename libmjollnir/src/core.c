@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.34 2007-05-29 17:54:21 thor Exp $
+** $Id: core.c,v 1.35 2007-06-05 12:15:13 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -32,6 +32,9 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
   fprintf(D_DESC, "[__DEBUG_MJOLLNIR__] %s: loading %s\n",
 	  __FUNCTION__, section_name);
 #endif
+
+  if (!section_name)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section name empty", -1);
   
   sct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
   if (!sct)
@@ -149,12 +152,13 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   {
     shdr    = (shtlist + idx_sht);
     sym     = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
-    shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
 
     if (!elfsh_get_section_execflag(shdr) ||
-	!elfsh_get_section_allocflag(shdr))
+	!elfsh_get_section_allocflag(shdr) ||
+	!sym)
       continue;
 
+    shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
     sct = elfsh_get_section_by_name(sess->cur->obj, shtName, NULL, NULL, NULL);
 
 #if __DEBUG_MJOLLNIR__
