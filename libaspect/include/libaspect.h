@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.24 2007-06-04 21:20:33 mxatone Exp $
+** $Id: libaspect.h,v 1.25 2007-06-07 12:01:00 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -171,6 +171,7 @@ typedef struct	s_vector
 
 /* Default names for config names */
 #define		CONFIG_NAME_SAFEMODE	"safemode"
+#define		CONFIG_USE_ASMDEBUG	"asm.debug"
 
 /* Config flags */
 #define		CONFIG_SAFEMODE_OFF	0

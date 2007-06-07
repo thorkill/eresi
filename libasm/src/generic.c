@@ -1,7 +1,7 @@
 /**
  * @file generic.c
- * Latest edition Author : $Author: heroine $
- * $Id: generic.c,v 1.11 2007-05-30 15:53:58 heroine Exp $
+ * Latest edition Author : $Author: may $
+ * $Id: generic.c,v 1.12 2007-06-07 12:01:00 may Exp $
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */
@@ -28,6 +28,11 @@ int	asm_read_instr(asm_instr *i, u_char *buf, u_int len,
   memset(i, 0, sizeof (asm_instr));
   i->proc = proc;
   to_ret = proc->fetch(i, buf, len, proc);
+  
+  /* Print debug information if requested */
+  if ((int) config_get_data(CONFIG_USE_ASMDEBUG))
+    asm_instruction_debug(i, stdout);
+
   LIBASM_PROFILE_FOUT(to_ret);
 }
 

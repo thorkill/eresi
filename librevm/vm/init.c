@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.24 2007-06-04 19:26:21 thor Exp $
+** $Id: init.c,v 1.25 2007-06-07 12:01:00 may Exp $
 **
 */
 
@@ -289,6 +289,11 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
+
+  config_add_item(CONFIG_USE_ASMDEBUG,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 0);
 
   vm_setup_hashtables();
   elfsh_setup_hooks();

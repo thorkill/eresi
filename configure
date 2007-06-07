@@ -77,13 +77,15 @@ BUILD_TARGET=all32
 MOD_TARGET=mod32
 ;;
 
---enable-network*)
-echo  " [*] Enable distributed ELFsh"
-ELFSHNET="1"
-echo  "LDDUMPOPT		= -ldump"		>> $CONFIGFILE
-echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
-BITS=$BITS" -DELFSHNET"
-;;
+
+#Not supported anymore at least since version 0.78
+#--enable-network*)
+#echo  " [*] Enable distributed ELFsh"
+#ELFSHNET="1"
+#echo  "LDDUMPOPT		= -ldump"		>> $CONFIGFILE
+#echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
+#BITS=$BITS" -DELFSHNET"
+#;;
 
 --enable-testing*)
 echo " [*] Enable compilation without install"
@@ -229,7 +231,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-32       : Build a ELF32 capable shell."
     echo "   --enable-64       : Build a ELF64 capable shell."
     echo "   --enable-readline : Link with readline"
-    echo "   --enable-network  : Build the distributed extension."
+#    echo "   --enable-network  : Build the distributed extension."
     echo "   --enable-static   : Link in static."
     echo "   --enable-testing  : Test ERESI without install"
     echo "   --enable-dmalloc  : Link with Electric Fence."
