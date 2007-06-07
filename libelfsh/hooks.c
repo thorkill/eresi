@@ -8,7 +8,7 @@
 ** Started Jan 11 2004 02:57:03 mayhem
 ** 
 **
-** $Id: hooks.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+** $Id: hooks.c,v 1.22 2007-06-07 16:19:23 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -862,33 +862,6 @@ void	elfsh_setup_hooks()
 			 ELFSH_OS_LINUX, elfsh_relocate_ia32);
   elfsh_register_altplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			    ELFSH_OS_BEOS, elfsh_void_altplthandler);  
-
-
-  /***********************************/
-  /* Now register break points hooks */
-  /***********************************/
-  
-  /* Usual breakpoint targets for ET_EXEC/IA32 */
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			   ELFSH_OS_LINUX, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			   ELFSH_OS_FREEBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			   ELFSH_OS_NETBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			   ELFSH_OS_OPENBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
-			   ELFSH_OS_SOLARIS, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
-			   ELFSH_OS_LINUX, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
-			   ELFSH_OS_FREEBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
-			   ELFSH_OS_NETBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
-			   ELFSH_OS_OPENBSD, elfsh_break_ia32);
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
-			   ELFSH_OS_SOLARIS, elfsh_break_ia32);
 
   /***********************************/
   /* Now register encodeplt points hooks */

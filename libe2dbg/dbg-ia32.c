@@ -8,7 +8,7 @@
 ** Vectors can also be accessed with 'vectors' cmd in any eresi interpreter 
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
-** $Id: dbg-ia32.c,v 1.2 2007-06-07 16:10:00 may Exp $
+** $Id: dbg-ia32.c,v 1.3 2007-06-07 16:19:23 may Exp $
 */
 #include "libe2dbg.h"
 
@@ -216,6 +216,7 @@ void		  e2dbg_resetstep_bsd_ia32()
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
+
 
 /**
  * Get the next frame pointer given the current one 
