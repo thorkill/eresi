@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.61 2007-06-07 16:10:00 may Exp $
+** $Id: libelfsh.h,v 1.62 2007-06-07 23:09:24 may Exp $
 **
 */
 
@@ -120,7 +120,6 @@
 #define		ELFSH_HOOK_PLT			"hook_plt"
 #define		ELFSH_HOOK_ENCODEPLT		"hook_encodeplt"
 #define		ELFSH_HOOK_ENCODEPLT1		"hook_encodeplt1"
-#define		ELFSH_HOOK_BREAK		"hook_setbreak"
 #define		ELFSH_HOOK_EXTPLT		"hook_extplt"
 #define		ELFSH_HOOK_ALTPLT		"hook_altplt"
 #define		ELFSH_HOOK_ARGC			"hook_argc"

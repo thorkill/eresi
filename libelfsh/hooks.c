@@ -8,7 +8,7 @@
 ** Started Jan 11 2004 02:57:03 mayhem
 ** 
 **
-** $Id: hooks.c,v 1.22 2007-06-07 16:19:23 may Exp $
+** $Id: hooks.c,v 1.23 2007-06-07 23:09:24 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -90,16 +90,6 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-/**
- *
- */
-int     elfsh_default_breakhandler(elfshobj_t   *null,
-				   elfshbp_t	*null3)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unsupported Arch, ELF type, or OS", -1);
-}
 
 /**
  *
@@ -355,37 +345,6 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
 }
 
 
-
-/**
- * Register a breakpoint redirection handler 
- */
-int	elfsh_register_breakhook(u_char archtype, u_char objtype, 
-				 u_char ostype, void *fct)
-{
-  vector_t	*breakp;
-  u_int		*dim;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  breakp = aspect_vector_get(ELFSH_HOOK_BREAK);
-
-  if (archtype >= ELFSH_ARCHNUM)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid Architecture type", -1);
-  if (objtype >= ELFSH_TYPENUM)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid Operating System type", -1);
-
-  dim = alloca(sizeof(u_int) * 4);
-  dim[0] = archtype;
-  dim[1] = objtype;
-  dim[2] = ostype;
-  aspect_vectors_insert(breakp, dim, (unsigned long) fct);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /**
  * Register a args counting redirection handler 
  */
@@ -451,9 +410,6 @@ int		elfsh_init_vectors()
 			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_CFLOW, 
 			elfsh_default_cflowhandler, 
-			dims, strdims, 3, ASPECT_TYPE_CADDR);
-  aspect_register_vector(ELFSH_HOOK_BREAK, 
-			elfsh_default_breakhandler, 
 			dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(ELFSH_HOOK_EXTPLT, 
 			elfsh_default_extplthandler, 
@@ -1239,45 +1195,6 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-
-
-/**
- * Call the breakpoint hook 
- */
-int		  elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp)
-{
-  vector_t	*breakh;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
-  int		ret;
-  int		(*fct)(elfshobj_t *file, elfshbp_t *bp);
-  u_int		dim[3];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  breakh = aspect_vector_get(ELFSH_HOOK_BREAK);
-
-  /* Fingerprint binary */
-  archtype = elfsh_get_archtype(file);
-  elftype = elfsh_get_elftype(file);
-  ostype = elfsh_get_ostype(file);
-  if (archtype == ELFSH_ARCH_ERROR ||
-      elftype  == ELFSH_TYPE_ERROR ||
-      ostype   == ELFSH_OS_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "SETBREAK handler unexistant for this ARCH/OS", -1);
-  
-  dim[0] = archtype;
-  dim[1] = elftype;
-  dim[2] = ostype;
-  fct    = aspect_vectors_select(breakh, dim);
-  ret  = fct(file, bp);
-  if (ret < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Breakpoint handler failed", (-1));
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
 
 /**
  * Call the arg count hook 

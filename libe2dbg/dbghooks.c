@@ -6,7 +6,7 @@
 ** Those hooks stay in the debugger and not in libelfsh.
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
-** $Id: dbghooks.c,v 1.5 2007-06-07 16:10:00 may Exp $
+** $Id: dbghooks.c,v 1.6 2007-06-07 23:09:24 may Exp $
 */
 #include "libe2dbg.h"
 
@@ -67,6 +67,15 @@ elfsh_Addr	e2dbg_default_getrethandler(elfsh_Addr a)
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
+int		e2dbg_default_breakhandler(elfshobj_t   *null,
+					   elfshbp_t	*null3)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unsupported Arch, ELF type, or OS", -1);
+}
+
+
 
 /* Register a next frame-pointer handler */
 int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype, 
@@ -96,6 +105,8 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   aspect_vectors_insert(nextfp, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
 
 /* Register a next return-addr handler */
 int		e2dbg_register_getrethook(u_char archtype, u_char hosttype, 
@@ -294,6 +305,37 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
 }
 
 
+/**
+ * Register a breakpoint redirection handler 
+ */
+int		e2dbg_register_breakhook(u_char archtype, u_char hosttype, 
+					 u_char ostype, void *fct)
+{
+  vector_t	*breakp;
+  u_int		*dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  breakp = aspect_vector_get(E2DBG_HOOK_BREAK);
+
+  if (archtype >= ELFSH_ARCHNUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Architecture type", -1);
+  if (hosttype >= E2DBG_HOSTNUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  if (ostype >= ELFSH_OSNUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Operating System type", -1);
+
+  dim = alloca(sizeof(u_int) * 4);
+  dim[0] = archtype;
+  dim[1] = hosttype;
+  dim[2] = ostype;
+  aspect_vectors_insert(breakp, dim, (unsigned long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
 
 
 /* Initialize libe2dbg.hook vectors */
@@ -338,6 +380,9 @@ static int	e2dbg_register_vectors()
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_GETRET, 
 			 e2dbg_default_getrethandler,
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
+  aspect_register_vector(E2DBG_HOOK_BREAK, 
+			 e2dbg_default_breakhandler, 
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -474,11 +519,8 @@ void		e2dbg_setup_hooks()
 			       ELFSH_OS_SOLARIS, e2dbg_resetstep_sysv_sparc32);
 
 
-
-
-
   /***********************************/
-  /* Now nextfp break points hooks */
+  /* Now nextfp hooks                */
   /***********************************/
   
   /* Usual nextfp targets for ET_EXEC/ET_DYN on IA32 */
@@ -524,12 +566,11 @@ void		e2dbg_setup_hooks()
 			   ELFSH_OS_OPENBSD, e2dbg_bt_sparc32);
   e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
 			   ELFSH_OS_SOLARIS, e2dbg_bt_sparc32);
-  
 
 
 
   /************************************/
-  /* Now getfp break points hooks     */
+  /* Now getfp hooks	              */
   /***********************************/
   
   /* Usual getfp targets for ET_EXEC/ET_DYN on IA32 */
@@ -578,7 +619,7 @@ void		e2dbg_setup_hooks()
 
 
   /***********************************/
-  /* Now register getret points hooks*/
+  /* Now register getret hooks       */
   /***********************************/
   
   /* Usual getret targets for ET_EXEC/IA32 */
@@ -625,6 +666,52 @@ void		e2dbg_setup_hooks()
   e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
 			    ELFSH_OS_SOLARIS, e2dbg_getret_sparc32);
 
+  /***********************************/
+  /* Now register breakpoint hooks   */
+  /***********************************/
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
+  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);
+
+  /* Now for sparc */
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
+  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);
+  
   done = 1;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -904,4 +991,45 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "GetRet handler failed", (-1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+
+
+/**
+ * Call the breakpoint hook 
+ */
+int		  e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
+{
+  vector_t	*breakh;
+  u_char        archtype;
+  u_char        hosttype;
+  u_char        ostype;
+  int		ret;
+  int		(*fct)(elfshobj_t *file, elfshbp_t *bp);
+  u_int		dim[3];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  breakh = aspect_vector_get(E2DBG_HOOK_BREAK);
+
+  /* Fingerprint binary */
+  archtype = elfsh_get_archtype(file);
+  hosttype = elfsh_get_hosttype(file);
+  ostype = elfsh_get_ostype(file);
+  if (archtype == ELFSH_ARCH_ERROR ||
+      hosttype == E2DBG_HOST_ERROR ||
+      ostype   == ELFSH_OS_ERROR)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "SETBREAK handler unexistant for this ARCH/OS", -1);
+  
+  dim[0] = archtype;
+  dim[1] = hosttype;
+  dim[2] = ostype;
+  fct    = aspect_vectors_select(breakh, dim);
+  ret  = fct(file, bp);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Breakpoint handler failed", (-1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.21 2007-06-07 16:10:00 may Exp $
+** $Id: libe2dbg.h,v 1.22 2007-06-07 23:09:24 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -37,6 +37,7 @@
 #define		E2DBG_HOOK_GETFP	"hook_getfp"
 #define		E2DBG_HOOK_NEXTFP	"hook_nextfp"
 #define		E2DBG_HOOK_GETRET	"hook_getret"
+#define		E2DBG_HOOK_BREAK	"hook_setbreak"
 
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
