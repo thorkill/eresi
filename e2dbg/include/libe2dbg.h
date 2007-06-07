@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mm
 **
 **
-** $Id: libe2dbg.h,v 1.3 2007-06-07 12:01:00 may Exp $
+** $Id: libe2dbg.h,v 1.4 2007-06-07 13:18:10 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -68,7 +68,6 @@
 #endif
 
 /* SPARC registers name */
-
 #define		E2DBG_TSTATE_VAR	"tstate"
 #define		E2DBG_NPC_VAR		"npc"
 #define		E2DBG_Y_VAR		"y"
