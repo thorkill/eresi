@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.60 2007-05-31 14:45:51 may Exp $
+** $Id: libelfsh.h,v 1.61 2007-06-07 16:10:00 may Exp $
 **
 */
 
@@ -1523,147 +1523,139 @@ int		*elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,
-                          char	*snull,
-                          elfsh_Sym*	null2,
-                          elfsh_Addr	null3);
+				    char	*snull,
+				    elfsh_Sym*	null2,
+				    elfsh_Addr	null3);
 int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
-                               elfsh_Sym *symbol,
-                               elfsh_Addr addr);
+					 elfsh_Sym *symbol,
+					 elfsh_Addr addr);
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file,
-                                  elfsh_Sym *symbol,
-                                  elfsh_Addr addr);
+					    elfsh_Sym *symbol,
+					    elfsh_Addr addr);
 int		elfsh_relocate_sparc32(elfshsect_t	*_new,
-                             elfsh_Rela	*cur,
-                             elfsh_Addr	*dword,
-                             elfsh_Addr       addr,
-                             elfshsect_t	*mod);
+				       elfsh_Rela	*cur,
+				       elfsh_Addr	*dword,
+				       elfsh_Addr       addr,
+				       elfshsect_t	*mod);
 
 /* sparc64.c */
 int		elfsh_cflow_sparc64(elfshobj_t  *null,
-                          char	*snull,
-                          elfsh_Sym	*null2,
-                          elfsh_Addr	null3);
+				    char	*snull,
+				    elfsh_Sym	*null2,
+				    elfsh_Addr	null3);
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
-                               elfsh_Sym *symbol,
-                               elfsh_Addr addr);
+					 elfsh_Sym *symbol,
+					 elfsh_Addr addr);
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
-                                  elfsh_Sym *symbol,
-                                  elfsh_Addr addr);
+					    elfsh_Sym *symbol,
+					    elfsh_Addr addr);
 int		elfsh_relocate_sparc64(elfshsect_t	*_new,
-                             elfsh_Rela      	*cur,
-                             elfsh_Addr      	*dword,
-                             elfsh_Addr       addr,
-                             elfshsect_t      *mod);
+				       elfsh_Rela      	*cur,
+				       elfsh_Addr      	*dword,
+				       elfsh_Addr       addr,
+				       elfshsect_t      *mod);
 
 /* ia64.c */
 int		elfsh_cflow_ia64(elfshobj_t     *null,
-                       char		*sname,
-                       elfsh_Sym	*null2,
-                       elfsh_Addr	null3);
+				 char		*sname,
+				 elfsh_Sym	*null2,
+				 elfsh_Addr	null3);
 int		elfsh_hijack_plt_ia64(elfshobj_t *file,
-                            elfsh_Sym *symbol,
-                            elfsh_Addr addr);
+				      elfsh_Sym *symbol,
+				      elfsh_Addr addr);
 int		elfsh_hijack_altplt_ia64(elfshobj_t *file,
-                               elfsh_Sym *symbol,
-                               elfsh_Addr addr);
+					 elfsh_Sym *symbol,
+					 elfsh_Addr addr);
 int		elfsh_relocate_ia64(elfshsect_t	*_new,
-                          elfsh_Rela   *cur,
-                          elfsh_Addr   *dword,
-                          elfsh_Addr   addr,
-                          elfshsect_t  *mod);
+				    elfsh_Rela   *cur,
+				    elfsh_Addr   *dword,
+				    elfsh_Addr   addr,
+				    elfshsect_t  *mod);
 
 /* alpha64.c */
 int		elfsh_cflow_alpha64(elfshobj_t  *null,
-                          char	*sname,
-                          elfsh_Sym	*null2,
-                          elfsh_Addr	null3);
+				    char	*sname,
+				    elfsh_Sym	*null2,
+				    elfsh_Addr	null3);
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
-                               elfsh_Sym *symbol,
-                               elfsh_Addr addr);
+					 elfsh_Sym *symbol,
+					 elfsh_Addr addr);
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
-                                  elfsh_Sym *symbol,
-                                  elfsh_Addr addr);
+					    elfsh_Sym *symbol,
+					    elfsh_Addr addr);
 int		elfsh_relocate_alpha64(elfshsect_t  *_new,
-                             elfsh_Rela   *cur,
-                             elfsh_Addr   *dword,
-                             elfsh_Addr   addr,
-                             elfshsect_t  *mod);
+				       elfsh_Rela   *cur,
+				       elfsh_Addr   *dword,
+				       elfsh_Addr   addr,
+				       elfshsect_t  *mod);
 
 /* mips32.c */
 int		elfsh_cflow_mips32(elfshobj_t   *null,
-                         char		*sname,
-                         elfsh_Sym	*null2,
-                         elfsh_Addr	null3);
+				   char		*sname,
+				   elfsh_Sym	*null2,
+				   elfsh_Addr	null3);
 int		elfsh_hijack_plt_mips32(elfshobj_t *file,
-                              elfsh_Sym *symbol,
-                              elfsh_Addr addr);
+					elfsh_Sym *symbol,
+					elfsh_Addr addr);
 int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
-                                 elfsh_Sym *symbol,
-                                 elfsh_Addr addr);
+					   elfsh_Sym *symbol,
+					   elfsh_Addr addr);
 int		elfsh_relocate_mips32(elfshsect_t  *_new,
-                            elfsh_Rel    *cur,
-                            elfsh_Addr   *dword,
-                            elfsh_Addr   addr,
-                            elfshsect_t  *mod);
+				      elfsh_Rel    *cur,
+				      elfsh_Addr   *dword,
+				      elfsh_Addr   addr,
+				      elfshsect_t  *mod);
 
 /* mips64.c */
 int		elfsh_cflow_mips64(elfshobj_t   *null,
-                         char		*sname,
-                         elfsh_Sym	*null2,
-                         elfsh_Addr	null3);
+				   char		*sname,
+				   elfsh_Sym	*null2,
+				   elfsh_Addr	null3);
 int		elfsh_hijack_plt_mips64(elfshobj_t *file,
-                              elfsh_Sym *symbol,
-                              elfsh_Addr addr);
+					elfsh_Sym *symbol,
+					elfsh_Addr addr);
 int		elfsh_hijack_altplt_mips64(elfshobj_t *file,
-                                 elfsh_Sym *symbol,
-                                 elfsh_Addr addr);
+					   elfsh_Sym *symbol,
+					   elfsh_Addr addr);
 int		elfsh_relocate_mips64(elfshsect_t  *_new,
-                            elfsh_Rel    *cur,
-                            elfsh_Addr   *dword,
-                            elfsh_Addr   addr,
-                            elfshsect_t  *mod);
-
+				      elfsh_Rel    *cur,
+				      elfsh_Addr   *dword,
+				      elfsh_Addr   addr,
+				      elfshsect_t  *mod);
 
 /* ia32.c */
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
-                                   elfshsect_t  *plt, 
-                                   uint32_t     diff, 
-                                   u_int	     off);
+					     elfshsect_t  *plt, 
+					     uint32_t     diff, 
+					     u_int	     off);
 int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
-                                         elfshsect_t *plt, 
-                                         uint32_t	diff);
-
+						   elfshsect_t *plt, 
+						   uint32_t	diff);
 int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
-                            elfshsect_t *plt, 
-                            elfshsect_t *extplt,
-                            elfsh_Addr diff);
+				      elfshsect_t *plt, 
+				      elfshsect_t *extplt,
+				      elfsh_Addr diff);
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
-                           elfshsect_t *plt, 
-                           elfsh_Addr diff,
-                           u_int	off);
-void		*elfsh_getret_ia32(void *frame);
-void		*elfsh_bt_ia32(void *frame);
-
+				     elfshsect_t *plt, 
+				     elfsh_Addr diff,
+				     u_int	off);
 int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
-                        elfshsect_t *dynsym, elfshsect_t *relplt);
-int		elfsh_break_ia32(elfshobj_t *f,
-                       elfshbp_t  *bp);
-
+				  elfshsect_t *dynsym, elfshsect_t *relplt);
 int		elfsh_cflow_ia32(elfshobj_t      *null,
-                       char		*sname,
-                       elfsh_Sym	*null2,
-                       elfsh_Addr	null3);
+				 char		*sname,
+				 elfsh_Sym	*null2,
+				 elfsh_Addr	null3);
 int		elfsh_hijack_plt_ia32(elfshobj_t *file,
-                            elfsh_Sym *symbol,
-                            elfsh_Addr addr);
+				      elfsh_Sym *symbol,
+				      elfsh_Addr addr);
 int		elfsh_hijack_plt_ia32_etdyn(elfshobj_t *file,
-                                  elfsh_Sym *symbol,
-                                  elfsh_Addr addr);
+					    elfsh_Sym *symbol,
+					    elfsh_Addr addr);
 int		elfsh_relocate_ia32(elfshsect_t	*_new,
-                          elfsh_Rel	*cur,
-                          elfsh_Addr	*dword,
-                          elfsh_Addr	addr,
-                          elfshsect_t *mod);
+				    elfsh_Rel	*cur,
+				    elfsh_Addr	*dword,
+				    elfsh_Addr	addr,
+				    elfshsect_t *mod);
 int           *elfsh_args_count_ia32(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
 
 /* reginfo.c */

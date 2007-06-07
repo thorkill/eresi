@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: stack.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: stack.c,v 1.3 2007-06-07 16:10:00 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -66,7 +66,7 @@ int		cmd_stack()
 
   param = vm_lookup_string(param);
 
-  ssp = hash_get(&vars_hash, ELFSH_SSPVAR);
+  ssp = hash_get(&vars_hash, E2DBG_SSP_VAR);
   if (!ssp)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No saved SP", -1);

@@ -5,7 +5,7 @@
 ** 
 ** Last update Wed Oct 11 18:22:59 2005 mayhem
 **
-** $Id: mutex.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: mutex.c,v 1.3 2007-06-07 16:10:00 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -15,20 +15,20 @@
 /* Mutex internal API */
 int		e2dbg_mutex_init(elfshmutex_t *m)
 {
-  *m = ELFSH_MUTEX_UNLOCKED;
+  *m = E2DBG_MUTEX_UNLOCKED;
   return (0);
 }
 
 /* This is not really real-time for now */
 int		e2dbg_mutex_lock(elfshmutex_t *m)
 {
-  while (*m == ELFSH_MUTEX_LOCKED)
+  while (*m == E2DBG_MUTEX_LOCKED)
     {
       if (e2dbgworld.exited)
 	_exit(0);
       usleep(200);
     }
-  *m = ELFSH_MUTEX_LOCKED;
+  *m = E2DBG_MUTEX_LOCKED;
   return (0);
 }
 
@@ -37,8 +37,8 @@ int		e2dbg_mutex_unlock(elfshmutex_t *m)
 {
   if (e2dbgworld.exited)
     _exit(0);
-  if (*m == ELFSH_MUTEX_UNLOCKED)
+  if (*m == E2DBG_MUTEX_UNLOCKED)
     return (-1);
-  *m = ELFSH_MUTEX_UNLOCKED;
+  *m = E2DBG_MUTEX_UNLOCKED;
   return (0);
 }

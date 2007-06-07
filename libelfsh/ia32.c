@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.14 2007-05-16 13:33:47 may Exp $
+ * $Id: ia32.c,v 1.15 2007-06-07 16:10:00 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -222,67 +222,6 @@ int		elfsh_encodeplt_ia32(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Reencoding of PLT+0 failed", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-/**
- * Get the next frame pointer given the current one 
- */
-void		*elfsh_bt_ia32(void *frame)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-
-  if (!frame)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     ((void *) *(long*) frame));
-}
-
-/**
- * Get the return address giving the current frame pointer 
- */
-void		*elfsh_getret_ia32(void *frame)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  if (!frame)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (void *) (*((long *) frame + 1)));
-}
-
-
-/**
- * Write a breakpoint 0xCC in memory
- * One of the 2 breakpoint technique of e2dbg 
- */
-int			elfsh_break_ia32(elfshobj_t *f,
-					 elfshbp_t  *bp)
-{
-  int			prot;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-#if __DEBUG_BREAKPOINTS__
-  printf("[DEBUG_BREAKPOINTS:ia32] bp->addr %08X \n", bp->addr);
-#endif
-
-  bp->savedinstr[0] = *(u_char *) bp->addr;
-  prot = elfsh_munprotect(f, bp->addr, 4);
-  if (prot == (-1))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
-  
-#if __DEBUG_BREAKPOINTS__
-  printf("[DEBUG_BREAKPOINTS:ia32] after munprotect\n");
-#endif
-  *(u_char *) bp->addr = 0xCC;
-#if __DEBUG_BREAKPOINTS__
-  printf("[DEBUG_BREAKPOINTS:ia32] after write\n");
-#endif
-  elfsh_mprotect(bp->addr, 4, prot);
-#if __DEBUG_BREAKPOINTS__
-  printf("[DEBUG_BREAKPOINTS:ia32] after mprotect\n");
-#endif
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 

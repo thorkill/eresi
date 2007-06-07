@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.20 2007-06-07 13:38:16 may Exp $
+** $Id: libe2dbg.h,v 1.21 2007-06-07 16:10:00 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -44,18 +44,18 @@
 #define		E2DBG_KERNELBASE	((elfsh_Addr) 0xC0000000)
 
 /* Generic register names */
-#define	        ELFSH_SSPVAR		"ssp"	/* Saved stack ptr */
-#define		ELFSH_SPVAR		"sp"
-#define		ELFSH_FPVAR		"fp"
-#define	        ELFSH_PCVAR		"pc"
+#define	        E2DBG_SSP_VAR		"ssp"	/* Saved stack ptr */
+#define		E2DBG_SP_VAR		"sp"
+#define		E2DBG_FP_VAR		"fp"
+#define	        E2DBG_PC_VAR		"pc"
 
 /* IA32 registers names */
-#define		ELFSH_EAXVAR		"eax"
-#define		ELFSH_EBXVAR		"ebx"
-#define		ELFSH_ECXVAR		"ecx"
-#define		ELFSH_EDXVAR		"edx"
-#define	        ELFSH_ESIVAR		"esi"
-#define	        ELFSH_EDIVAR		"edi"
+#define		E2DBG_EAX_VAR		"eax"
+#define		E2DBG_EBX_VAR		"ebx"
+#define		E2DBG_ECX_VAR		"ecx"
+#define		E2DBG_EDX_VAR		"edx"
+#define	        E2DBG_ESI_VAR		"esi"
+#define	        E2DBG_EDI_VAR		"edi"
 
 /* ia32 under solaris */
 #if (defined(__i386) && defined(sun))
@@ -71,7 +71,6 @@
 #define		REG_ESI		ESI
 #define		REG_EDI		EDI
 #endif
-
 
 /* SPARC registers name */
 #define		E2DBG_TSTATE_VAR	"tstate"
@@ -293,8 +292,8 @@ typedef struct		s_e2dbgworld
   u_int			threadgotnbr;			/* Number of threads with retreived contexts */
 
   /* Synchronization values */
-#define			ELFSH_MUTEX_UNLOCKED	0
-#define			ELFSH_MUTEX_LOCKED	1
+#define			E2DBG_MUTEX_UNLOCKED	0
+#define			E2DBG_MUTEX_LOCKED	1
   elfshmutex_t		dbgbp;				/* The breakpoint handler mutex */
 
   /* Exit status */
@@ -323,15 +322,17 @@ elfsh_Addr*     e2dbg_default_getpc();
 void            e2dbg_default_setstep();
 void            e2dbg_default_resetstep();
 void            e2dbg_setup_hooks();
-void            e2dbg_get_regvars_ia32_bsd();
-void            e2dbg_get_regvars_ia32_sysv();
-void            e2dbg_set_regvars_ia32_bsd();
-void            e2dbg_set_regvars_ia32_sysv();
 int		e2dbg_getregs();
 int		e2dbg_setregs();
 elfsh_Addr*     e2dbg_getpc();
 int             e2dbg_setstep();
 int             e2dbg_resetstep();
+
+/* Backend for ia32 */
+void            e2dbg_get_regvars_ia32_bsd();
+void            e2dbg_get_regvars_ia32_sysv();
+void            e2dbg_set_regvars_ia32_bsd();
+void            e2dbg_set_regvars_ia32_sysv();
 elfsh_Addr*     e2dbg_getpc_bsd_ia32();
 elfsh_Addr*     e2dbg_getpc_sysv_ia32();
 void            e2dbg_setstep_bsd_ia32();
@@ -340,7 +341,28 @@ void            e2dbg_resetstep_sysv_ia32();
 void            e2dbg_resetstep_bsd_ia32();
 elfsh_Addr*	e2dbg_getfp_sysv_ia32();
 elfsh_Addr*	e2dbg_getfp_bsd_ia32();
+void            *e2dbg_bt_ia32(void *frame);
+void            *e2dbg_getret_ia32(void *frame);
+int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
 
+/* Backend for sparc32 */
+void            e2dbg_get_regvars_sparc32_bsd();
+void            e2dbg_get_regvars_sparc32_sysv();
+void            e2dbg_set_regvars_sparc32_bsd();
+void            e2dbg_set_regvars_sparc32_sysv();
+elfsh_Addr*     e2dbg_getpc_bsd_sparc32();
+elfsh_Addr*     e2dbg_getpc_sysv_sparc32();
+elfsh_Addr*     e2dbg_getfp_bsd_sparc32();
+elfsh_Addr*     e2dbg_getfp_sysv_sparc32();
+void            e2dbg_setstep_bsd_sparc32();
+void            e2dbg_setstep_sysv_sparc32();
+void            e2dbg_resetstep_sysv_sparc32();
+void            e2dbg_resetstep_bsd_sparc32();
+void            *e2dbg_bt_sparc32(void *frame);
+void            *e2dbg_getret_sparc32(void *frame);
+int             e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp);
+
+/* e2dbg vector API for registration */
 int		e2dbg_register_sregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
