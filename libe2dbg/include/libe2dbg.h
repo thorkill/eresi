@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.18 2007-05-31 14:45:51 may Exp $
+** $Id: libe2dbg.h,v 1.19 2007-06-07 13:25:43 thor Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -421,5 +421,5 @@ int		cmd_threads();
 void		on_exit(void *exitptr, int param);
 #endif
 
-
 #endif
+
