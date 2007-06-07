@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.19 2007-06-07 13:25:43 thor Exp $
+** $Id: libe2dbg.h,v 1.20 2007-06-07 13:38:16 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -71,6 +71,28 @@
 #define		REG_ESI		ESI
 #define		REG_EDI		EDI
 #endif
+
+
+/* SPARC registers name */
+#define		E2DBG_TSTATE_VAR	"tstate"
+#define		E2DBG_NPC_VAR		"npc"
+#define		E2DBG_Y_VAR		"y"
+#define		E2DBG_G1_VAR		"g1"
+#define		E2DBG_G2_VAR		"g2"
+#define		E2DBG_G3_VAR		"g3"
+#define		E2DBG_G4_VAR		"g4"
+#define		E2DBG_G5_VAR		"g5"
+#define		E2DBG_G6_VAR		"g6"
+#define		E2DBG_G7_VAR		"g7"
+#define		E2DBG_O0_VAR		"o0"
+#define		E2DBG_O1_VAR		"o1"
+#define		E2DBG_O2_VAR		"o2"
+#define		E2DBG_O3_VAR		"o3"
+#define		E2DBG_O4_VAR		"o4"
+#define		E2DBG_O5_VAR		"o5"
+#define		E2DBG_O6_VAR		"o6"
+#define		E2DBG_O7_VAR		"o7"
+
 
 /* Debugger commands */
 #define		CMD_MODE		"mode"
