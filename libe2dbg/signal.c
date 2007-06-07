@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.13 2007-05-07 13:24:01 may Exp $
+** $Id: signal.c,v 1.14 2007-06-07 23:21:57 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -339,7 +339,7 @@ void			e2dbg_do_breakpoint()
       /* Call the architecture dependant hook for putting back the breakpoint */
       if (bp)
 	{
-	  ret = elfsh_setbreak(bp->obj, bp);
+	  ret = e2dbg_setbreak(bp->obj, bp);
 	  if (ret < 0)
 	    {
 	      e2dbg_output(" [E] Breakpoint reinsertion failed");

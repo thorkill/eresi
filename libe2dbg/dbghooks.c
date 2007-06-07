@@ -6,7 +6,7 @@
 ** Those hooks stay in the debugger and not in libelfsh.
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 mayhem
-** $Id: dbghooks.c,v 1.6 2007-06-07 23:09:24 may Exp $
+** $Id: dbghooks.c,v 1.7 2007-06-07 23:21:57 may Exp $
 */
 #include "libe2dbg.h"
 
@@ -669,47 +669,47 @@ void		e2dbg_setup_hooks()
   /***********************************/
   /* Now register breakpoint hooks   */
   /***********************************/
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
-  elfsh_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);
 
   /* Now for sparc */
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
-  elfsh_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);
   
   done = 1;

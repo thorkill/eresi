@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.7 2007-06-07 23:09:24 may Exp $
+** $Id: breakpoints.c,v 1.8 2007-06-07 23:21:57 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -49,7 +49,7 @@ int		elfsh_bp_add(hash_t	*bps,
 		      "Breakpoint already exist", -1);
 
   /* Call the architecture dependent hook for breakpoints */
-  ret = elfsh_setbreak(file, bp);
+  ret = e2dbg_setbreak(file, bp);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Breakpoint insertion failed", (-1));

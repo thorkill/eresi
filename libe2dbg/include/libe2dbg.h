@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.22 2007-06-07 23:09:24 may Exp $
+** $Id: libe2dbg.h,v 1.23 2007-06-07 23:21:57 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -316,18 +316,24 @@ extern e2dbgworld_t	e2dbgworld;
  extern char		*__progname_full;
 #endif
 
-/* libe2dbg.hooks */
+/* Default hook handler */
 void            e2dbg_default_getregs();
 void            e2dbg_default_setregs();
 elfsh_Addr*     e2dbg_default_getpc();
 void            e2dbg_default_setstep();
 void            e2dbg_default_resetstep();
 void            e2dbg_setup_hooks();
+
+/* libe2dbg.hooks */
 int		e2dbg_getregs();
 int		e2dbg_setregs();
 elfsh_Addr*     e2dbg_getpc();
 int             e2dbg_setstep();
 int             e2dbg_resetstep();
+int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);
+elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr);
+elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr);
+elfsh_Addr*     e2dbg_getfp();
 
 /* Backend for ia32 */
 void            e2dbg_get_regvars_ia32_bsd();
@@ -345,6 +351,7 @@ elfsh_Addr*	e2dbg_getfp_bsd_ia32();
 void            *e2dbg_bt_ia32(void *frame);
 void            *e2dbg_getret_ia32(void *frame);
 int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
+
 
 /* Backend for sparc32 */
 void            e2dbg_get_regvars_sparc32_bsd();
@@ -372,9 +379,7 @@ int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
-elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr);
-elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr);
-elfsh_Addr*     e2dbg_getfp();
+int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 
 /* More e2dbg API */
 char            *e2dbg_get_string(char **params);

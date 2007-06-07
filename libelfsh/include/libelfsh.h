@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.62 2007-06-07 23:09:24 may Exp $
+** $Id: libelfsh.h,v 1.63 2007-06-07 23:21:57 may Exp $
 **
 */
 
@@ -1490,7 +1490,6 @@ int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
 int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
 int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
 int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
-int		elfsh_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 int		elfsh_register_argchook(u_char a, u_char o, u_char os, void *fct);
 
 int             elfsh_register_vector(char      *name,
@@ -1500,7 +1499,7 @@ int             elfsh_register_vector(char      *name,
                                       u_int     dimsz);
 
 int		elfsh_get_pagesize(elfshobj_t *file);
-u_int		elfsh_get_breaksize(elfshobj_t *file);
+//u_int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
 
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);
@@ -1509,7 +1508,6 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
                             elfsh_Addr created);
 int             elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
                           elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m);
-int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
                                 elfsh_Addr diff, u_int off);
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
