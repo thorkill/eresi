@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.23 2007-06-07 23:21:57 may Exp $
+** $Id: libe2dbg.h,v 1.24 2007-06-08 18:46:44 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -20,7 +20,11 @@
  #include <pthread_np.h>
 #endif
 
-#define		__DEBUG_E2DBG__	        0
+#if defined(sun)
+ #include <sys/link.h>
+#endif
+
+#define		__DEBUG_E2DBG__	        1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
@@ -266,7 +270,11 @@ typedef struct		s_e2dbgsyms
   elfsh_Addr		pthreadcreate;		/* Resolved pthread_create */
   elfsh_Addr		pthreadexit;		/* Resolved pthread_exit */
   elfsh_Addr		signal;			/* Resolved signal function */
+#if defined(sun)
+  Link_map		*map;			/* Linkmap has a different format on solaris */
+#else
   elfshlinkmap_t	*map;			/* Early resolved linkmap */
+#endif
 }			e2dbgsyms_t;
 
 

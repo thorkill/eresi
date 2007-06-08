@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.14 2007-05-31 14:45:51 may Exp $
+** $Id: resolv.c,v 1.15 2007-06-08 18:46:44 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -187,6 +187,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   u_int			curoff;
   elfsh_Addr		found_sym = 0;
   elfshlinkmap_t	*curobj;
+  elfsh_Ehdr		hdr;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -206,9 +207,16 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   for (; curobj; curobj = curobj->lnext)
     {
 
-      if (!curobj->lname || !*curobj->lname || 
-	  strstr(curobj->lname, "e2dbg"))
+      if (!curobj->lname || !*curobj->lname || strstr(curobj->lname, "e2dbg"))
 	continue;
+      memset(&obj, 0x00, sizeof(obj));
+      XOPEN(obj.fd, curobj->lname, O_RDONLY, 0, 0);
+      XREAD(obj.fd, &hdr, sizeof(hdr), 0);
+      if (hdr.e_type != ET_DYN)
+	{
+	  XCLOSE(obj.fd, 0);
+	  continue;
+	}
 
 #if __DEBUG_E2DBG__
       write(2, " [*] e2dbg_dlsym called for resolving ", 38);
@@ -217,22 +225,20 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
       write(2, curobj->lname, strlen(curobj->lname));
       write(2, "\n", 1);
 #endif
-      
-      memset(&obj, 0x00, sizeof(obj));
-      XOPEN(obj.fd, curobj->lname, O_RDONLY, 0, 0);
+
       dyn = curobj->lld;
-      
+
       /* Getting needed address in the memory mapped PT_DYNAMIC segment */
       for (nbr2 = 0; dyn[nbr2].d_tag != DT_NULL; nbr2++)
 	{
 	  if (dyn[nbr2].d_tag == DT_SYMTAB)
-#if defined(__FreeBSD__) || defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(sun)
 	    obj.symoff = curobj->laddr + dyn[nbr2].d_un.d_val;
 #else
 	    obj.symoff = dyn[nbr2].d_un.d_val;
 #endif
 	  else if (dyn[nbr2].d_tag == DT_STRTAB)
-#if defined(__FreeBSD__) || defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(sun)
 	    obj.stroff = curobj->laddr + dyn[nbr2].d_un.d_val;
 #else
 	    obj.stroff = dyn[nbr2].d_un.d_val;
@@ -270,9 +276,8 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
 
       XCLOSE(obj.fd, 0);
       
-      /* XXX: Assume that strtab is always just after symtab */
-      for (curoff = 0; 
-	   obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
+      /* XXX: Assume that dynamic strtab is always just after dynamic symtab */
+      for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
 	{
 	  memcpy(&cursym, (void *)obj.symoff + curoff, sizeof(elfsh_Sym));
 	  if (cursym.st_name >= obj.strsz)
@@ -312,7 +317,10 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   char			*version;
 #if defined(__FreeBSD__) || defined(__NetBSD__)
   Obj_Entry		*oe;
+#elif defined(sun)
+  Dl_info		info;
 #endif
+
 
 #if __DEBUG_E2DBG__
   char      buf[BUFSIZ];
@@ -355,10 +363,12 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   write(2, buf, len);
 #endif
 
-  /* BSD has an intermediate structure between GOT[1] and the linkmap entry */
+  /* BSD and Solaris have an intermediate structure between GOT[1] and the linkmap entry */
 #if defined(__FreeBSD__) || defined(__NetBSD__)
   oe = (Obj_Entry *) got[1];
   lm = (elfshlinkmap_t *) &oe->linkmap;
+#elif defined(sun)
+  dladdr1(&reference, &info, (void **) &lm, RTLD_DL_LINKMAP);
 #else
   lm   = (elfshlinkmap_t *) got[1];
 #endif
@@ -469,15 +479,23 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  /* Non fatal symbols, especially on BSD */
-  e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
-  e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
-  e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
-
   e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Orig signal not found", (-1));
+
+#if __DEBUG_E2DBG__
+  len = snprintf(buf, sizeof(buf), 
+		 " [*] Libc SIGNAL() sym = %08X \n", 
+		 e2dbgworld.syms.signal);
+  write(2, buf, len);
+#endif
+
+
+  /* Non fatal symbols, especially on BSD */
+  e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
+  e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
+  e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
 
   /* Now we can use malloc cause allocation symbols are resolved */
   /* The allocator proxy will select between legit or alternative syms */

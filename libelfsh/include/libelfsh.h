@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.63 2007-06-07 23:21:57 may Exp $
+** $Id: libelfsh.h,v 1.64 2007-06-08 18:46:44 may Exp $
 **
 */
 
@@ -785,7 +785,13 @@ struct		 s_obj
   struct s_obj	 *original;		/* Original file (if its a copy) */
 
   hash_t	 redir_hash;		/* Redirections hash table */
+
+#if !defined(sun)
   elfshlinkmap_t *linkmap;		/* Linkmap */
+#else
+  Link_map	 *linkmap;		/* Solaris linkmap */
+#endif
+
   elfshdfmt_t	 debug_format;		/* Debug format informations */
 
   /* 

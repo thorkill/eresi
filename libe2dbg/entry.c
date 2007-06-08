@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 mayhem
 **
 **
-** $Id: entry.c,v 1.10 2007-05-31 14:45:51 may Exp $
+** $Id: entry.c,v 1.11 2007-06-08 18:46:44 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -164,8 +164,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-#elif defined(__FreeBSD__) || defined(__NetBSD__)
-
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(sun)
 
 
 /* Find the number of arguments by inspecting the environment on the stack */
@@ -274,39 +273,35 @@ int				atexit(void (*fini)(void))
 		     libc_atexit(fini));
 }
 
-
-
-#elif defined(sun)
-
-
 /* Entry point for Solaris */
-void			__fpstart(int argc, char**ubp_av)
-{
+/*
+  void			__fpstart(int argc, char **ubp_av)
+  {
   elfsh_Addr		orig;
   int			(*realfpstart)();
   char			*argv[3];
   e2dbgparams_t		params;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_E2DBG__
+  
+  #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] Start\n");
-#endif
-
-  /* Find the real symbol */
+  #endif
+  
+  //Find the real symbol
   orig = (elfsh_Addr) e2dbg_dlsym("__fpstart");
   if (!orig)
-    {
-      write(1, "Error : Orig __fpstart not found\n", 33);
-      return;
-    }  
+  {
+  write(1, "Error : Orig __fpstart not found\n", 33);
+  return;
+  }  
   realfpstart = (void *) orig;
-
-#if __DEBUG_E2DBG__
+  
+  #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] 2\n");
-#endif
-
-  /* Load the debugger */
+  #endif
+  
+  //Load the debugger
   argv[0] = E2DBG_ARGV0;
   argv[1] = ubp_av[0]; 
   argv[2] = NULL;
@@ -316,13 +311,15 @@ void			__fpstart(int argc, char**ubp_av)
   e2dbgworld.preloaded = 1;
   e2dbg_entry(&params); 
   //SETSIG;
-
-#if __DEBUG_E2DBG__
+  
+  #if __DEBUG_E2DBG__
   printf("[e2dbg__fpstart] End \n");
-#endif
-
+  #endif
+  
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
-}
+  }
+*/
+
 
 #else
  #warning "E2DBG Not yet implemented on this OS/Arch"

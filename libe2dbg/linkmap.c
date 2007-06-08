@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: linkmap.c,v 1.4 2007-05-31 14:45:51 may Exp $
+** $Id: linkmap.c,v 1.5 2007-06-08 18:46:44 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -16,7 +16,11 @@ int			e2dbg_linkmap_load(char *name)
   elfshsect_t		*got;
   elfsh_Addr		*linkmap_entry;
   void			*data;
+#if defined(sun)
+  Link_map		*actual;
+#else
   elfshlinkmap_t	*actual;
+#endif
   char			*gotname;
   char			*ename;
   elfsh_Ehdr		*hdr;
@@ -130,6 +134,8 @@ int			e2dbg_linkmap_load(char *name)
 #if defined(__FreeBSD__) || defined(__NetBSD__)
       world.curjob->current->linkmap = (elfshlinkmap_t *)
 	&((Obj_Entry *) elfsh_get_got_val(linkmap_entry))->linkmap;
+#elif defined(sun)
+      world.curjob->current->linkmap = e2dbgworld.syms.map;
 #else
       world.curjob->current->linkmap = (elfshlinkmap_t *) elfsh_get_got_val(linkmap_entry);
 #endif
@@ -143,6 +149,10 @@ int			e2dbg_linkmap_load(char *name)
   fprintf(stderr, "[e2dbg_linkmap_load] LINKMAP Found at " XFMT "\n", 
 	 world.curjob->current->linkmap);
 #endif
+
+
+
+
   
   vm_doswitch(1);
 
@@ -205,7 +215,11 @@ int			e2dbg_linkmap_load(char *name)
 int		 e2dbg_linkmap_print(elfshobj_t *file)
 {
   char		 logbuf[BUFSIZ];
+#if defined(sun)
+  Link_map	*actual;
+#else
   elfshlinkmap_t *actual;
+#endif
   int		 i = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
