@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.14 2007-06-08 00:27:33 may Exp $
+** $Id: main.c,v 1.15 2007-06-08 00:52:50 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -53,12 +53,15 @@ char*		vm_debugger_inject(elfshobj_t *file)
   char		*buf;
   elfshobj_t	*reloc;
   int		buflen;
-
+  char		*ptr;
+  char		*ptr2;
+  
+  /* Map host file */
+  ptr = ptr2 = NULL;
   buflen = strlen(ELFSH_DBGPATH) + strlen(file->name) + 20;
   buf = calloc(buflen, 1);
   snprintf(buf, buflen, "%s/e2dbg-rel%s.o", ELFSH_DBGPATH, version);
   reloc = elfsh_map_obj(buf);
-
   if (!reloc)
     {
       fprintf(stderr, 
@@ -67,6 +70,11 @@ char*		vm_debugger_inject(elfshobj_t *file)
       return (NULL);
     }
   fprintf(stderr, " [*] Now injecting debugger in target binary .. please wait .. \n");
+
+  /* Inject debugger in target file */
+  profiler_enable_err();
+  profiler_enable_out();
+
   if (elfsh_inject_etrel(file, reloc) < 0)
     {
       fprintf(stderr, 
@@ -74,14 +82,23 @@ char*		vm_debugger_inject(elfshobj_t *file)
 	      version);
       return (NULL);
     }
-  fprintf(stderr, " [*] Now saving target binary .. \n");
-  snprintf(buf, buflen, "%s.debuggee", file->name);
+  snprintf(buf, buflen, "%s.dbg", file->name);
+  fprintf(stderr, " [*] Now saving target binary : %s \n", buf);
+
+  /* Save object to be debugged */
   if (elfsh_save_obj(file, buf) < 0)
     {
-      snprintf(buf, buflen, "/tmp/%s.debuggee", file->name);
+      ptr = file->name;
+      while ((ptr = strchr(ptr, '/')))
+	ptr2 = ++ptr;
+      if (!ptr2)
+	ptr2 = file->name;
+      snprintf(buf, buflen, "/tmp/%s.dbg", ptr2);
+      fprintf(stderr, " [*] Now saving target binary : %s \n", buf);
       if (elfsh_save_obj(file, buf) < 0)
 	return (NULL);
     }
+
   return (buf);
 }
 
