@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.13 2007-05-24 23:10:17 may Exp $
+** $Id: main.c,v 1.14 2007-06-08 00:27:33 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -52,28 +52,33 @@ char*		vm_debugger_inject(elfshobj_t *file)
 {
   char		*buf;
   elfshobj_t	*reloc;
+  int		buflen;
 
-  snprintf(buf, sizeof(buf), "%s/e2dbg-rel%s.o", ELFSH_DBGPATH, version);
+  buflen = strlen(ELFSH_DBGPATH) + strlen(file->name) + 20;
+  buf = calloc(buflen, 1);
+  snprintf(buf, buflen, "%s/e2dbg-rel%s.o", ELFSH_DBGPATH, version);
   reloc = elfsh_map_obj(buf);
+
   if (!reloc)
     {
       fprintf(stderr, 
-	      " [E] Target binary is static and unable to load e2dbg%s.o \n",
-	      version);
+	      " [E] Static target and unable to load %s/e2dbg-rel%s.o \n",
+	      ELFSH_DBGPATH, version);
       return (NULL);
     }
+  fprintf(stderr, " [*] Now injecting debugger in target binary .. please wait .. \n");
   if (elfsh_inject_etrel(file, reloc) < 0)
     {
       fprintf(stderr, 
-	      " [E] Target binary is static and unable to inject e2dbg%s.o \n",
+	      " [E] Target binary is static and unable to inject e2dbg-rel%s.o \n",
 	      version);
       return (NULL);
     }
-  buf = calloc(BUFSIZ, 1);
-  snprintf(buf, BUFSIZ, "%s.debuggee", file->name);
+  fprintf(stderr, " [*] Now saving target binary .. \n");
+  snprintf(buf, buflen, "%s.debuggee", file->name);
   if (elfsh_save_obj(file, buf) < 0)
     {
-      snprintf(buf, BUFSIZ, "/tmp/%s.debuggee", file->name);
+      snprintf(buf, buflen, "/tmp/%s.debuggee", file->name);
       if (elfsh_save_obj(file, buf) < 0)
 	return (NULL);
     }
