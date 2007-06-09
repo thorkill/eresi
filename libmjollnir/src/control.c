@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: control.c,v 1.28 2007-05-04 09:02:16 thor Exp $
+** $Id: control.c,v 1.29 2007-06-09 22:35:16 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -156,9 +156,9 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
   mjr_function_register(context, vaddr, tmpcntnr);
   main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
   mjr_function_register(context, main_addr, main_container);
-  mjr_container_add_link(tmpcntnr, main_container->id, 
+  mjr_container_add_link(context, tmpcntnr, main_container->id, 
 			 MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-  mjr_container_add_link(main_container, tmpcntnr->id, 
+  mjr_container_add_link(context, main_container, tmpcntnr->id, 
 			 MJR_LINK_FUNC_CALL, MJR_LINK_IN);
   mjr_blocks_link_call(context, vaddr, main_addr, vaddr + dis);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);

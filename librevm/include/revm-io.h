@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.20 2007-06-07 12:01:00 may Exp $
+** $Id: revm-io.h,v 1.21 2007-06-09 22:35:16 thor Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -89,6 +89,9 @@ char	prompt_token[512];
 #define GVZ_COLOR_GREEN		"\"green\""
 #define GVZ_COLOR_BLACK		"\"black\""
 #define GVZ_COLOR_GREY		"\"grey\""
+#define GVZ_COLOR_BROWN		"\"brown\""
+#define GVZ_COLOR_PINK		"\"pink\""
+#define GVZ_COLOR_YELLOW	"\"yellow\""
 
 #define GVZ_NODE_EPOINT		0
 #define GVZ_NODE_MAIN		1
@@ -96,6 +99,8 @@ char	prompt_token[512];
 #define GVZ_NODE_EXTERN		3
 #define GVZ_NODE_UNKNOWN	4
 
+
+/* FIXME: Deprecated? */
 #define BLK_COLOR_FUNC		GVZ_COLOR_GREEN
 #define BLK_COLOR_NORM		GVZ_COLOR_CYAN
 #define BLK_COLOR_RET		GVZ_COLOR_CORAL
@@ -104,6 +109,12 @@ char	prompt_token[512];
 #define BLK_COLOR_CONT		GVZ_COLOR_BLACK
 #define BLK_COLOR_CALL		GVZ_COLOR_BLUE
 #define BLK_COLOR_JUMP		GVZ_COLOR_BLACK
+
+#define LNK_COLOR_CALL		GVZ_COLOR_BROWN
+#define LNK_COLOR_RET		GVZ_COLOR_YELLOW
+#define LNK_COLOR_TRUE		GVZ_COLOR_GREEN
+#define LNK_COLOR_FALSE		GVZ_COLOR_RED
+#define LNK_COLOR_DELAY		GVZ_COLOR_PINK
 
 #define FNC_COLOR_INTERN	GVZ_COLOR_GREY
 #define FNC_COLOR_EPOINT	GVZ_COLOR_GREEN

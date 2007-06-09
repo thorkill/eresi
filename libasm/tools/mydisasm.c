@@ -3,7 +3,7 @@
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
 **
-** $Id: mydisasm.c,v 1.9 2007-05-25 22:07:35 thor Exp $
+** $Id: mydisasm.c,v 1.10 2007-06-09 22:35:16 thor Exp $
 **
 */
 
@@ -30,6 +30,15 @@ int	usage(char *p) {
   printf("Usage: %s <binary> <sym/vaddr> <[len]>\n", 
 	  p);
   return (-1);
+}
+
+void	dump_opcodes(char *why, u_char *ptr, u_int curr, u_int vaddr)
+{
+  printf("0x%08x (%s): .byte 0x%02x\n", (int) vaddr + curr, why, *(ptr + curr));
+  printf(";; error reading instruction at %p\n", ptr + curr);
+  printf(";; dumping opcodes: %02x %02x %02x %02x\n", 
+	 *(ptr + curr), *(ptr + curr + 1), 
+	 *(ptr + curr + 2), *(ptr + curr + 3));
 }
 
 int	main(int ac, char **av) {
@@ -141,22 +150,24 @@ int	main(int ac, char **av) {
   while(curr < len) {
     if (asm_read_instr(&instr, ptr + curr, len - curr, &proc) > 0) {
       att_dump = asm_display_instr_att(&instr, (int) vaddr + curr);
-      if (att_dump && (strcmp(att_dump,"int_err"))) {
-	printf("0x%08x:\t", (int) vaddr + curr);
-	printf("%30s\t", att_dump);
-	for (i = 0; i < instr.len; i++)
-	  printf("%02x ", *(ptr + curr + i));
-	puts("");
-	//asm_instruction_debug(&instr, stdout);
-	curr += asm_instr_len(&instr);
-      } else
-	curr++;
+      if (att_dump && (strcmp(att_dump,"int_err"))) 
+	{
+	  printf("0x%08x:\t", (int) vaddr + curr);
+	  printf("%30s\t", att_dump);
+	  for (i = 0; i < instr.len; i++)
+	    printf("%02x ", *(ptr + curr + i));
+	  puts("");
+	  
+	  //asm_instruction_debug(&instr, stdout);
+	  curr += asm_instr_len(&instr);	
+	}
+      else
+	{
+	  dump_opcodes("int_err", ptr, curr, vaddr);
+	  curr++;
+	}
     } else {
-      printf("0x%08x: .byte 0x%02x\n", (int) vaddr + curr, *(ptr + curr));
-      printf(";; error reading instruction at %p\n", ptr + curr);
-      printf(";; dumping opcodes: %02x %02x %02x %02x\n", 
-	     *(ptr + curr), *(ptr + curr + 1), 
-	     *(ptr + curr + 2), *(ptr + curr + 3));
+      dump_opcodes("asm_read_instr",ptr,curr,vaddr);
       curr++;
     }
   }

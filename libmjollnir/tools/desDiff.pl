@@ -2,7 +2,7 @@
 
 # (C) 2006-2007 Asgard Labs, thorolf
 # BSD License
-# $Id: desDiff.pl,v 1.7 2007-05-29 12:01:56 thor Exp $
+# $Id: desDiff.pl,v 1.8 2007-06-09 22:35:16 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in
@@ -45,7 +45,7 @@ $tmpFile = $$.".$tmpFile";
 
 print STDERR "[i] Checking: $b [$arch] - ... ";
 print STDERR "Objdump, ";
-system("$objDump -d -j .text $b > $tmpFile.objdump");
+system("$objDump -w -d -j .text $b > $tmpFile.objdump");
 print STDERR "Mydisasm, ";
 system("./mydisasm $b .text > $tmpFile.mydisasm");
 
@@ -91,7 +91,6 @@ while($myDisasmInput = <X1>) {
    }
 
  if ($mdOpcode ne $obOpcode) {
- 
  if (($obOpcode ne "...") && ($mdInstr ne "illtrap"))
   {
   $tmp = "[!] opcodes: ".  $mdOpcode . " :: " . $obOpcode ." in $b\n";

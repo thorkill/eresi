@@ -4,7 +4,7 @@
  * 
  * Container related API
  *
- * $Id: container.c,v 1.12 2007-05-11 10:48:29 may Exp $
+ * $Id: container.c,v 1.13 2007-06-09 22:35:16 thor Exp $
  *
  */
 #include "libmjollnir.h"
@@ -169,7 +169,8 @@ int mjr_container_link_cleanup(mjrcontainer_t *c, int direction)
 /**
  *
  */
-mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
+mjrlink_t *mjr_container_add_link (mjrcontext_t *ctx,
+				   mjrcontainer_t *cntnr,
 				   unsigned int id,
 				   int link_type,
 				   int link_direction)
@@ -188,6 +189,42 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
 	    __FUNCTION__,id);
 #endif
 
+  /*
+    check if we are linked with container id by other link type
+  */
+  link = mjr_link_get_by_direction(cntnr, link_direction);
+  while(link)
+    {
+      if ((((mjrcontainer_t *)ctx->reg_containers[link->id])->type == cntnr->type)
+	  && (link->id == id))
+	{
+#if __DEBUG_CNTNR__
+	  fprintf(D_DESC,"[D] %s: allready linked with id:%d type:%d/%d\n",
+		  __FUNCTION__,id, link->type,link_type);
+#endif
+	  if (link->type == link_type)
+	    {
+#if __DEBUG_CNTNR__
+	      fprintf(D_DESC,"[D] %s: return link id:%d\n",
+		      __FUNCTION__,id);
+#endif
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
+	    }
+
+	  else if ((link->type == MJR_LINK_BLOCK_COND_ALWAYS) &&
+		   ((link_type == MJR_LINK_BLOCK_COND_TRUE) ||
+		    (link_type == MJR_LINK_BLOCK_COND_FALSE)))
+	    {
+#if __DEBUG_CNTNR__
+	      fprintf(D_DESC,"[D] %s: update link id:%d from type:%d to %d\n",
+		      __FUNCTION__,id, link->type,link_type);
+#endif
+	      link->type = MJR_LINK_DELETE;
+	    }
+	}
+      link = link->next;
+    }
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, link, 
 	 sizeof(mjrlink_t), NULL );
 
@@ -199,6 +236,7 @@ mjrlink_t *mjr_container_add_link (mjrcontainer_t *cntnr,
   fprintf(D_DESC,"[D] %s: link id:%d -> id:%d type:%d dir:%d\n",
 	  __FUNCTION__, cntnr->id, id, link_type, link_direction);
 #endif
+
 
   if (link_direction == MJR_LINK_IN) 
     {

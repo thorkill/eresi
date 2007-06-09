@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.37 2007-05-06 18:16:34 thor Exp $
+ * $Id: function.c,v 1.38 2007-06-09 22:35:16 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -328,7 +328,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 #endif
 
 	  if (tmpid)
-	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
+	    mjr_container_add_link(ctxt, curcntnr, tmpid, tmptype, MJR_LINK_IN);
 	}
     
       off = (u_int)curcntnr->output;
@@ -352,7 +352,7 @@ int			mjr_functions_load(mjrcontext_t *ctxt)
 #endif
 
 	  if (tmpid)
-	    mjr_container_add_link(curcntnr, tmpid , tmptype, MJR_LINK_OUT);
+	    mjr_container_add_link(ctxt, curcntnr, tmpid , tmptype, MJR_LINK_OUT);
 	}
 
 #if __DEBUG_FUNCS__
@@ -631,9 +631,9 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
 
   if (ctxt->curfunc)
     {
-      mjr_container_add_link(fun, ctxt->curfunc->id, 
+      mjr_container_add_link(ctxt, fun, ctxt->curfunc->id, 
 			     MJR_LINK_FUNC_RET, MJR_LINK_IN);
-      mjr_container_add_link(ctxt->curfunc, fun->id, 
+      mjr_container_add_link(ctxt, ctxt->curfunc, fun->id, 
 			     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
     }
 

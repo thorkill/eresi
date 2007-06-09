@@ -174,8 +174,11 @@ unsigned int mjr_register_container (mjrcontext_t*, mjrcontainer_t *cntnr);
 unsigned int mjr_register_container_id (mjrcontext_t*, mjrcontainer_t *cntnr);
 void mjr_unregister_container (mjrcontext_t*, u_int id);
 mjrcontainer_t *mjr_lookup_container (mjrcontext_t*,u_int id);
-mjrlink_t *mjr_container_add_link(mjrcontainer_t *cntnr, u_int id, 
-				  int link_type, int link_direction);
+mjrlink_t *mjr_container_add_link(mjrcontext_t *,
+				  mjrcontainer_t *cntnr, 
+				  u_int id, 
+				  int link_type, 
+				  int link_direction);
 
 mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
 

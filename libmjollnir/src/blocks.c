@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.61 2007-04-30 11:54:13 thor Exp $
+** $Id: blocks.c,v 1.62 2007-06-09 22:35:16 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -14,7 +14,8 @@
 /* Goto hash */
 hash_t		goto_hash;
 
-int	mjr_block_relink(mjrcontainer_t *src,
+int	mjr_block_relink(mjrcontext_t *ctx,
+			 mjrcontainer_t *src,
 			 mjrcontainer_t *dst,
 			 int direction)
 {
@@ -39,59 +40,9 @@ int	mjr_block_relink(mjrcontainer_t *src,
   while(lnk)
     {
       // 1 - add same links to dst
-      mjr_container_add_link(dst,lnk->id, lnk->type, direction);
+      mjr_container_add_link(ctx, dst,lnk->id, lnk->type, direction);
       // 2 - and remove it from src
       lnk->type = MJR_LINK_DELETE;
-      lnk = lnk->next;
-    }
-
-  mjr_container_link_cleanup(src,direction);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-}
-
-
-/**
- * This function moves dependency of blocks
- * which are continuation of src to dst
- * in specified direction and cleanups the old
- * in src
- */
-int	mjr_block_relink_cond_always(mjrcontainer_t *src,
-				     mjrcontainer_t *dst,
-				     int direction)
-{
-
-  mjrlink_t	*lnk;
-  u_int		nbr;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  lnk = mjr_link_get_by_direction(src, direction);
-
-#if __DEBUG_BLOCKS__
-  fprintf(D_DESC,"[D] %s: src:%d dst:%d dir:%d\n",
-	  __FUNCTION__, src->id, dst->id, direction);
-#endif
-
-  if (direction == MJR_LINK_IN)
-    nbr = src->in_nbr;
-  else
-    nbr = src->out_nbr;
-
-  /* We don't need relink on 1 link */
-  if (nbr <= 1)
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-
-  while(lnk)
-    {
-      if ((lnk->type == MJR_LINK_BLOCK_COND_ALWAYS) && (lnk->id != dst->id))
-	{
-	  // 1 - add same links to dst
-	  mjr_container_add_link(dst,lnk->id, MJR_LINK_BLOCK_COND_ALWAYS, direction);
-	  // 2 - and remove it from src
-	  lnk->type = MJR_LINK_DELETE;
-	}
       lnk = lnk->next;
     }
 
@@ -131,18 +82,18 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
 		 "Could not split the ret",0);
   
   /* link src and dst */
-  mjr_container_add_link(csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-  mjr_container_add_link(cdst, csrc->id, MJR_LINK_FUNC_CALL, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_FUNC_CALL, MJR_LINK_IN);
 
   /* link dst and ret */
-  mjr_container_add_link(cdst, cret->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
-  mjr_container_add_link(cret, cdst->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
+  mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
 
   // mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
   // mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
 
-  mjr_container_add_link(csrc, cret->id, MJR_LINK_TYPE_DELAY, MJR_LINK_OUT);
-  mjr_container_add_link(cret, csrc->id, MJR_LINK_TYPE_DELAY, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, MJR_LINK_OUT);
+  mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, MJR_LINK_IN);
 
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);
@@ -188,13 +139,13 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		   "Could not split the ret",0);
   
-  mjr_container_add_link(csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-  mjr_container_add_link(cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);
   
   if (cret)
     {
-      mjr_container_add_link(csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-      mjr_container_add_link(cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
       
       //      mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
       //      mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
@@ -249,9 +200,9 @@ mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
 
       if (link_with != NULL)
 	{
-	  mjr_block_relink(tmpdst, dstend, MJR_LINK_OUT);
-	  mjr_container_add_link(tmpdst, dstend->id, link_with, MJR_LINK_OUT);
-	  mjr_container_add_link(dstend, tmpdst->id, link_with, MJR_LINK_IN);
+	  mjr_block_relink(ctxt, tmpdst, dstend, MJR_LINK_OUT);
+	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, MJR_LINK_OUT);
+	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, MJR_LINK_IN);
 	}
     } 
   else 
@@ -398,7 +349,7 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
 	  
 	  /* this function increments in_nbr */
 	  if (tmpid)
-	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_IN);
+	    mjr_container_add_link(ctxt, curcntnr, tmpid, tmptype, MJR_LINK_IN);
 	}
 
       off = (u_int)curcntnr->output;
@@ -424,7 +375,7 @@ int   mjr_blocks_load(mjrcontext_t *ctxt)
 	  /* FIXME: we have some blocks where out_nbr is higher 
 	     than actual number of links DEBUG IT */
 	  if (tmpid)
-	    mjr_container_add_link(curcntnr, tmpid, tmptype, MJR_LINK_OUT);
+	    mjr_container_add_link(ctxt, curcntnr, tmpid, tmptype, MJR_LINK_OUT);
 	}
     }
 

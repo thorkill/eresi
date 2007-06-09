@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.9 2007-05-29 08:04:35 strauss Exp $
+ * $Id: vectors.c,v 1.10 2007-06-09 22:35:16 thor Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -58,6 +58,7 @@ int	asm_init_vectors(asm_processor *proc)
   
   LIBASM_PROFILE_IN();
   aspect_init();
+  to_ret = -1;
  
   if (proc->type == ASM_PROC_IA32) {
     /* Initializing IA-32 instruction handler vector */
