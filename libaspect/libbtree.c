@@ -6,7 +6,7 @@
 ** Started : Fri Oct 17 14:29:24 2003
 ** Updated : Thu Nov 27 23:29:29 2003
 **
-** $Id: libbtree.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: libbtree.c,v 1.6 2007-06-12 21:20:50 mxatone Exp $
 **
 */
 
@@ -98,9 +98,9 @@ void	*btree_get_elem(btree_t *root,	/* ptr to root		*/
   if (root->id == id)
     return (root->elem);
   /* switch on path */
-  if (root->id < id)
+  if (id < root->id)
     return (btree_get_elem(root->left, id));
-  else if (root->id > id)
+  else if (root->id < id)
     return (btree_get_elem(root->right, id));
   return (NULL);
 }
