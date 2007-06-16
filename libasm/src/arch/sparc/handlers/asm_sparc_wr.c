@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_wr.c,v 1.5 2007-05-24 04:47:08 strauss Exp $
+** $Id: asm_sparc_wr.c,v 1.6 2007-06-16 20:24:26 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -11,7 +11,7 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
-  sparc_convert_format3(&opcode, buf, proc);
+  sparc_convert_format3(&opcode, buf);
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
@@ -24,7 +24,7 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
     ins->instr = ASM_SP_SIR;
     ins->type = ASM_TYPE_INT;
     ins->nb_op = 1;
-    ins->op1.type = ASM_SP_OTYPE_IMMEDIATE;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     ins->op1.imm = opcode.imm;
   }
   else { /* WR */
@@ -35,21 +35,21 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
       ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
     }
 
-    ins->op1.type = ASM_SP_OTYPE_SREGISTER;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_SREGISTER, ins);
     if (opcode.rd == 4 || opcode.rd == 5)	/* can't write PC or TICK */
       ins->op1.base_reg = ASM_SREG_BAD;
     else
       ins->op1.base_reg = opcode.rd;
 
-    ins->op3.type = ASM_SP_OTYPE_REGISTER;
+    asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op3.base_reg = opcode.rs1;
 
     if (opcode.i == 0) {
-      ins->op2.type = ASM_SP_OTYPE_REGISTER;
+      asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
       ins->op2.base_reg = opcode.rs2;
     }
     else {
-      ins->op2.type = ASM_SP_OTYPE_IMMEDIATE;
+      asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
       ins->op2.imm = opcode.imm;
     }
     

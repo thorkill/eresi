@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch.c,v 1.3 2007-06-16 20:24:25 strauss Exp $
  */
 
 #include <libasm.h>
@@ -19,13 +19,12 @@ int     asm_operand_fetch(asm_operand *op, u_char *opcode, int otype,
 			  asm_instr *ins)
 { 
   vector_t      *vec;
-  u_int         dim[2];
+  u_int         dim[1];
   int           to_ret;
   int           (*fetch)(asm_operand *, u_char *, int, asm_instr *);
   
   vec = aspect_vector_get("operand");
-  dim[0] = LIBASM_VECTOR_IA32;
-  dim[1] = otype;
+  dim[0] = otype;
   
   fetch = aspect_vectors_select(vec, dim);
   to_ret = fetch(op, opcode, otype, ins);

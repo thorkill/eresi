@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_impdep2.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_impdep2.c,v 1.4 2007-06-16 20:24:25 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -11,7 +11,7 @@ asm_sparc_impdep2(asm_instr * ins, u_char * buf, u_int len,
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
-  sparc_convert_format3(&opcode, buf, proc);
+  sparc_convert_format3(&opcode, buf);
   
   ins->type = ASM_TYPE_ARCH;
 

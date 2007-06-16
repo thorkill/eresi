@@ -7,7 +7,7 @@
 ** Started on  Mon Apr 25 01:01:26 2005 #!HATE#@!
 ** Last update Tue Jun 14 09:18:36 2005 #!HATE#@!
 **
-** $Id: sparc_convert.c,v 1.5 2007-03-07 16:45:34 thor Exp $
+** $Id: sparc_convert.c,v 1.6 2007-06-16 20:24:25 strauss Exp $
 **
 */
 
@@ -24,8 +24,7 @@
 
 #include <libasm.h>
 
-void sparc_convert_pbranch(struct s_decode_pbranch	*opcode,
-			     			u_char *buf, asm_processor *proc)
+void sparc_convert_pbranch(struct s_decode_pbranch	*opcode, u_char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -51,8 +50,7 @@ void sparc_convert_pbranch(struct s_decode_pbranch	*opcode,
    	opcode->imm = opcode->immediate;
 }
 
-void sparc_convert_rbranch(struct s_decode_rbranch *opcode,
-			     			u_char *buf, asm_processor *proc)
+void sparc_convert_rbranch(struct s_decode_rbranch *opcode,	u_char *buf)
 {
   int d16;
   
@@ -80,8 +78,7 @@ void sparc_convert_rbranch(struct s_decode_rbranch *opcode,
   	opcode->d16 = d16;
 }
 
-void sparc_convert_branch(struct s_decode_branch *opcode,
-			     			u_char *buf, asm_processor *proc)
+void sparc_convert_branch(struct s_decode_branch *opcode, u_char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -104,8 +101,7 @@ void sparc_convert_branch(struct s_decode_branch *opcode,
    	opcode->imm = opcode->immediate;
 }
 
-void sparc_convert_call(struct s_decode_call *opcode,
-			   			u_char *buf, asm_processor *proc)
+void sparc_convert_call(struct s_decode_call *opcode,	u_char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -123,8 +119,7 @@ void sparc_convert_call(struct s_decode_call *opcode,
   	opcode->displacement = opcode->disp30;
 }
 
-void sparc_convert_format3(struct s_decode_format3 *opcode,
-						 	u_char *buf, asm_processor *proc)
+void sparc_convert_format3(struct s_decode_format3 *opcode,	u_char *buf)
 {
   int shcnt, immediate10; 
   int immediate;
@@ -174,8 +169,7 @@ void sparc_convert_format3(struct s_decode_format3 *opcode,
   opcode->cond = opcode->rs1 & 0xf;
 }
 
-void sparc_convert_format4(struct s_decode_format4 *opcode,
-				 			u_char *buf, asm_processor *proc)
+void sparc_convert_format4(struct s_decode_format4 *opcode, u_char *buf)
 {
   int immediate;
   

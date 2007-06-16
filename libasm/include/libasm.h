@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.19 2007-05-31 14:45:51 may Exp $
+** $Id: libasm.h,v 1.20 2007-06-16 20:24:25 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -303,7 +303,7 @@ int asm_register_ia32_opcode(int opcode, unsigned long fcn);
 int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
 			      unsigned long fcn);
 int asm_arch_register(asm_processor *proc, int machine);
-int asm_operand_register();
+int asm_operand_register(asm_processor *proc);
 int asm_init_vectors(asm_processor *proc);
 
 int	asm_operand_fetch(asm_operand *operand, u_char *opcode, int type, 

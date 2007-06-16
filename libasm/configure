@@ -1,5 +1,5 @@
 #!/bin/sh
-SRCS=$(ls src/arch/ia32/handlers/*.c; ls src/arch/sparc/handlers/*.c)
+SRCS=$(ls src/arch/ia32/handlers/*.c; ls src/arch/sparc/handlers/*.c; ls src/arch/sparc/operand_handlers/*.c)
 echo -n "SRCS_hdl = 	" > Makefile.inc
 FIRST="1"
 for i in ${SRCS} ; do

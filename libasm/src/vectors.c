@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.10 2007-06-09 22:35:16 thor Exp $
+ * $Id: vectors.c,v 1.11 2007-06-16 20:24:25 strauss Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -81,6 +81,28 @@ int	asm_init_vectors(asm_processor *proc)
 
     aspect_register_vector("disasm", asm_fetch_default,
                     			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+
+    /* Initializing IA-32 operand handler vector */
+    dims = malloc(1 * sizeof (u_int));
+
+    if (!dims)
+    {
+      to_ret = 0;
+      goto out;
+    }
+    dimstr = malloc(1 * sizeof (char *));
+    if (!dimstr)
+    {
+      to_ret = 0;
+      goto out;
+    }
+  
+    dims[0] = ASM_OTYPE_NUM;
+
+    dimstr[0] = "OPERAND";
+  
+    aspect_register_vector("operand",  asm_operand_fetch_default,
+                     			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
   }
 
   else if (proc->type == ASM_PROC_SPARC) {
@@ -108,31 +130,29 @@ int	asm_init_vectors(asm_processor *proc)
 
     aspect_register_vector("disasm-sparc", asm_fetch_default,
                     			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
-  }
 
-  /* Initializing operand handler vector */
-  dims = malloc(2 * sizeof (u_int));
+    /* Initializing SPARC operand handler vector */
+    dims = malloc(1 * sizeof (u_int));
 
-  if (!dims)
-  {
-    to_ret = 0;
-    goto out;
-  }
-  dimstr = malloc(2 * sizeof (char *));
-  if (!dimstr)
-  {
-    to_ret = 0;
-    goto out;
-  }
+    if (!dims)
+    {
+      to_ret = 0;
+      goto out;
+    }
+    dimstr = malloc(1 * sizeof (char *));
+    if (!dimstr)
+    {
+      to_ret = 0;
+      goto out;
+    }
   
-  dims[0] = LIBASM_VECTOR_ARCHNUM;
-  dims[1] = ASM_OTYPE_NUM;
+    dims[0] = ASM_SP_OTYPE_NUM;
 
-  dimstr[0] = "MACHINE";
-  dimstr[1] = "OPERAND";
+    dimstr[0] = "OPERAND";
   
-  aspect_register_vector("operand",  asm_operand_fetch_default,
-                   			 dims, dimstr, 2, ASPECT_TYPE_CADDR);
+    aspect_register_vector("operand-sparc",  asm_operand_fetch_default,
+                     			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+  }
                            
   config_add_item(ASM_CONFIG_ENDIAN_FLAG,
             		  CONFIG_TYPE_INT,

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_stwa.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: asm_sparc_stwa.c,v 1.4 2007-06-16 20:24:26 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -11,7 +11,7 @@ asm_sparc_stwa(asm_instr * ins, u_char * buf, u_int len,
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
-  sparc_convert_format3(&opcode, buf, proc);
+  sparc_convert_format3(&opcode, buf);
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
@@ -19,18 +19,18 @@ asm_sparc_stwa(asm_instr * ins, u_char * buf, u_int len,
 
   ins->nb_op = 2;
   if (opcode.i) {
-    ins->op1.type = ASM_SP_OTYPE_IMM_ADDRESS;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
     ins->op1.imm = opcode.imm;
     ins->op1.address_space = -1;
   }
   else {
-    ins->op1.type = ASM_SP_OTYPE_REG_ADDRESS;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
     ins->op1.index_reg = opcode.rs2;
     ins->op1.address_space = opcode.none;
   }
   ins->op1.base_reg = opcode.rs1;
 
-  ins->op2.type = ASM_SP_OTYPE_REGISTER;
+  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op2.base_reg = opcode.rd;
   
   return 4;

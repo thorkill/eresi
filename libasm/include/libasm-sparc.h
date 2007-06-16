@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.8 2007-05-24 04:47:08 strauss Exp $
+** $Id: libasm-sparc.h,v 1.9 2007-06-16 20:24:25 strauss Exp $
 **
 */
 
@@ -152,14 +152,41 @@ int asm_sparc_xnorcc (asm_instr *, u_char *, u_int, asm_processor *);
 int asm_sparc_xor (asm_instr *, u_char *, u_int, asm_processor *);
 int asm_sparc_xorcc (asm_instr *, u_char *, u_int, asm_processor *);
 
-void sparc_convert_pbranch(struct s_decode_pbranch *, u_char *, asm_processor *);
-void sparc_convert_rbranch(struct s_decode_rbranch *, u_char *, asm_processor *);
-void sparc_convert_branch(struct s_decode_branch *, u_char *, asm_processor *);
-void sparc_convert_call(struct s_decode_call *, u_char *, asm_processor *);
-void sparc_convert_format3(struct s_decode_format3 *, u_char *, asm_processor *);
-void sparc_convert_format4(struct s_decode_format4 *, u_char *, asm_processor *);
+void sparc_convert_pbranch(struct s_decode_pbranch *, u_char *);
+void sparc_convert_rbranch(struct s_decode_rbranch *, u_char *);
+void sparc_convert_branch(struct s_decode_branch *, u_char *);
+void sparc_convert_call(struct s_decode_call *, u_char *);
+void sparc_convert_format3(struct s_decode_format3 *, u_char *);
+void sparc_convert_format4(struct s_decode_format4 *, u_char *);
 
 void asm_resolve_sparc(void *, u_int, char *, u_int);
+
+/* SPARC operand handlers (ie. fetchers) */
+int asm_sparc_op_fetch (asm_operand *operand, u_char *opcode, 
+                        int otype, asm_instr *ins);
+
+int asm_sparc_op_fetch_register (asm_operand *operand, u_char *opcode,
+                                  int otype, asm_instr *ins);
+int asm_sparc_op_fetch_immediate (asm_operand *operand, u_char *opcode,
+                                   int otype, asm_instr *ins);
+int asm_sparc_op_fetch_displacement (asm_operand *operand, u_char *opcode,
+                                      int otype, asm_instr *ins);
+int asm_sparc_op_fetch_disp30 (asm_operand *operand, u_char *opcode,
+                               int otype, asm_instr *ins);
+int asm_sparc_op_fetch_sethi (asm_operand *operand, u_char *opcode,
+                               int otype, asm_instr *ins);
+int asm_sparc_op_fetch_fregister (asm_operand *operand, u_char *opcode,
+                                  int otype, asm_instr *ins);
+int asm_sparc_op_fetch_sregister (asm_operand *operand, u_char *opcode,
+                                  int otype, asm_instr *ins);
+int asm_sparc_op_fetch_pregister (asm_operand *operand, u_char *opcode,
+                                  int otype, asm_instr *ins);
+int asm_sparc_op_fetch_cc (asm_operand *operand, u_char *opcode,
+                             int otype, asm_instr *ins);
+int asm_sparc_op_fetch_imm_address (asm_operand *operand, u_char *opcode,
+                                    int otype, asm_instr *ins);
+int asm_sparc_op_fetch_reg_address (asm_operand *operand, u_char *opcode,
+                                    int otype, asm_instr *ins);
 
 
 /*****
@@ -321,7 +348,9 @@ enum {
   ASM_SP_OTYPE_PREGISTER,
   ASM_SP_OTYPE_CC,
   ASM_SP_OTYPE_IMM_ADDRESS, /* [ r[rs1] + imm ] */
-  ASM_SP_OTYPE_REG_ADDRESS /* [ r[rs1] + r[rs2] ] */ 
+  ASM_SP_OTYPE_REG_ADDRESS, /* [ r[rs1] + r[rs2] ] */ 
+
+  ASM_SP_OTYPE_NUM /* This element must be the last in the enum */
 };
 
 /***

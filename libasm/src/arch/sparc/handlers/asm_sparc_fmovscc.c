@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovscc.c,v 1.4 2007-04-22 20:48:41 strauss Exp $
+** $Id: asm_sparc_fmovscc.c,v 1.5 2007-06-16 20:24:25 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -11,7 +11,7 @@ asm_sparc_fmovscc(asm_instr * ins, u_char * buf, u_int len,
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
-  sparc_convert_format3(&opcode, buf, proc);
+  sparc_convert_format3(&opcode, buf);
 
   inter = proc->internals;
   ins->type = ASM_TYPE_ASSIGN;
@@ -28,11 +28,11 @@ asm_sparc_fmovscc(asm_instr * ins, u_char * buf, u_int len,
   }
   	  	  
   ins->nb_op = 3;
-  ins->op1.type = ASM_SP_OTYPE_FREGISTER;
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_FREGISTER, ins);
   ins->op1.base_reg = opcode.rd;
-  ins->op2.type = ASM_SP_OTYPE_FREGISTER;
+  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_FREGISTER, ins);
   ins->op2.base_reg = opcode.rs2;
-  ins->op3.type = ASM_SP_OTYPE_CC;
+  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_CC, ins);
   ins->op3.base_reg = opcode.opf_cc;
   	  	  
   return 4;
