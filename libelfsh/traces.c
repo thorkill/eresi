@@ -6,10 +6,11 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.12 2007-05-09 21:40:42 mxatone Exp $
+** $Id: traces.c,v 1.13 2007-06-17 19:50:42 mxatone Exp $
 **
 */
 #include "libelfsh.h"
+#include "libasm.h"
 
 #define TRACES_CFLOW 	1
 #define TRACES_PLT 	2
@@ -363,8 +364,10 @@ int			elfsh_traces_save(elfshobj_t *file)
   struct stat		s;
   elfsh_Addr		addr;
   elfsh_Sym		*dst;
+  elfsh_Sym		*symbol;
   int			err;
   char			*system[6];
+  elfshsect_t		*newsymsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -460,10 +463,12 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\tint index;\n"
 	   "\tchar elem;\n"
 	   "\tvoid (*prev_sig) (int sig);\n\n"
-	   "\tif (!ptr || size <= 0 || ptr < (void*)0x5000)\n"
+	   "\tif (!ptr || size <= 0 || ptr < (void*)0x5000 || ptr == (void *)-1)\n"
 	   "\t\treturn 0;\n\n"
-	   "\tif(T_setjmp(jBuf))\n"
-	   "\t\treturn 0;\n\n"
+	   "\tif(T_setjmp(jBuf)) {\n"
+	   "\tT_signal(SIGSEGV, prev_sig);\n"
+	   "\t\treturn 0;\n"
+	   "}\n\n"
 	   "\tprev_sig = T_signal(SIGSEGV, check_ptr_failed);\n\n"
 	   "\tfor (index = 0; index < size; index++)\n"
 	   "\t\telem = ((char *)ptr)[index];\n\n"
@@ -613,6 +618,31 @@ int			elfsh_traces_save(elfshobj_t *file)
     printf("[DEBUG TRACE] (%03u) HIJACK: %s / %s\n", index, trace_queue[index]->funcname, buf);
 #endif
 
+    /* Do we need to add the symbol right before hijacking ? */
+    symbol = elfsh_get_symbol_by_name(file, trace_queue[index]->funcname);
+
+    if (!symbol)
+      {
+	newsymsect = elfsh_get_parent_section(file, trace_queue[index]->vaddr, NULL);
+
+	if (!newsymsect)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Can't found parent section for a given address", -1);
+
+	/* Add a new function symbol */
+	if (elfsh_insert_funcsym(file, trace_queue[index]->funcname, 
+				 trace_queue[index]->vaddr,
+				 0, newsymsect->index) < 0)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Failed to add new function symbol for address tracing", -1);
+      }
+    else if (!symbol->st_value)
+      {
+	elfsh_traces_queue_clean();
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Already existing wrong symbol", -1);
+      }
+
     // Start to hijack the function 
     err = elfsh_hijack_function_by_name(file, 
 					ELFSH_HIJACK_TYPE_FLOW,
@@ -634,6 +664,10 @@ int			elfsh_traces_save(elfshobj_t *file)
   if (elfsh_save_relocate(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to relocate traced binary", -1);
+
+  /* Clean temp files */
+  unlink(rtfname);
+  unlink(rsofname);
 
   /* Ask for rewrite the SHT */
   file->hdr->e_shoff = 0;
@@ -766,6 +800,27 @@ static int		elfsh_traces_untracable(elfshobj_t *file, char *name)
 	hash_empty(TRACE_UNTRACABLE_NAME);
 
       hash_init(&traces_untracable, TRACE_UNTRACABLE_NAME, 11, ASPECT_TYPE_UNKNOW);
+
+      /* Not support printf like functions */
+      elfsh_traces_add_untracable("printf");
+      elfsh_traces_add_untracable("fprintf");
+      elfsh_traces_add_untracable("sprintf");
+      elfsh_traces_add_untracable("snprintf");
+      elfsh_traces_add_untracable("vprintf");
+      elfsh_traces_add_untracable("vfprintf");
+      elfsh_traces_add_untracable("vsprintf");
+      elfsh_traces_add_untracable("vsnprintf");
+
+      /* sscanf use a printf like prototype */
+      elfsh_traces_add_untracable("scanf");
+      elfsh_traces_add_untracable("fscanf");
+      elfsh_traces_add_untracable("sscanf");
+      elfsh_traces_add_untracable("vscanf");
+      elfsh_traces_add_untracable("vsscanf");
+      elfsh_traces_add_untracable("vfscanf");
+
+      /* ioctl use a printf like prototype */
+      elfsh_traces_add_untracable("ioctl");
       
       if (ostype == ELFSH_OS_LINUX)
 	{
@@ -778,7 +833,6 @@ static int		elfsh_traces_untracable(elfshobj_t *file, char *name)
 	  // x86 failed on this function
 	  // TODO: correct them
 	  elfsh_traces_add_untracable("getcwd");
-	  elfsh_traces_add_untracable("printf");
 	}
 
       untracable_ostype = ostype;
@@ -862,6 +916,279 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
     }
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Function not found", -1);
+}
+
+/**
+ * Setup asm_processor structure correctly
+ * @param proc pointer to asm_processor structure
+ */
+static int		elfsh_traces_setup_proc(elfshobj_t *file, asm_processor *proc)
+{
+  u_int         	arch;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !proc)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+  
+  arch = elfsh_get_arch(file->hdr);
+
+  switch(arch)
+    {
+    case EM_SPARC:
+    case EM_SPARCV9:
+    case EM_SPARC32PLUS:
+      asm_init_sparc(proc);
+      break;
+    case EM_386:
+      asm_init_i386(proc);
+      break;
+      /* Not ready yet ?
+    case EM_MIPS:
+      asm_init_mips(proc);
+      break;
+      */
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unsupported architecture for address tracing", -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Get function addr list from call search basic
+ * @param file target file
+ * @param addr address list
+ */
+int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
+{
+  int 			ret;
+  int			index;
+  asm_instr		instr;
+  elfsh_SAddr		foffset;
+  elfsh_Word		len;
+  char			*base;
+  asm_processor		proc;
+  elfsh_Addr		base_vaddr, caddr;
+  u_char		found = 0;
+  elfshsect_t		*text;
+  elfsh_Addr		*vaddr;
+  const int		astep = 20;
+  u_int			apos = 0;
+  btree_t		*broot = NULL;
+  u_int			diff;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !addr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Search entrypoint section, our address must be in this section */
+  text = elfsh_get_parent_section(file, elfsh_get_entrypoint(file->hdr), &foffset);
+
+  if (!text)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find parent section from entry point", -1);
+  
+  if (!elfsh_get_anonymous_section(file, text))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to get an anonymous section", -1);
+  
+  base = elfsh_get_raw(text);
+  len = text->shdr->sh_size;
+
+  /* Get the virtual address */
+  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
+		elfsh_get_section_addr(text->shdr));
+
+  /* Setup asm_processor structure */
+  if (elfsh_traces_setup_proc(file, &proc) < 0)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed during proc structure setup", -1);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, vaddr, sizeof(elfsh_Addr)*astep, -1);
+  
+  /* Despite the fact that we choose the right architecture to init asm,
+     Our approach is totally architecture independant as we search using
+     global type ASM_TYPE_CALLPROC and we know that op1.imm will contain a
+     relative value. */
+  for (index = 0; index < len; index += ret)
+    {
+      /* Read an instruction */
+      if ((ret = asm_read_instr(&instr, (u_char *) (base + index), len -  index, &proc)))
+	{
+	  /* Global assembler filter */
+	  if ((instr.type & ASM_TYPE_CALLPROC)
+	      && instr.op1.imm != 0)
+	    {
+	      caddr = base_vaddr + index + instr.op1.imm + instr.len;
+
+	      /* Found a call check its local */
+	      if (INTERVAL(base_vaddr, caddr, base_vaddr + len))
+		{
+		  found = 1;
+
+		  diff = (u_int) caddr;
+
+		  /* Avoid double entrie */
+		  if (btree_get_elem(broot, diff) != NULL)
+		    goto next;
+
+		  btree_insert(&broot, diff, (void *)0x1);
+
+		  /* Next will be the last of the current list
+		     then realloc */
+		  if ((apos+1) % astep == 0)
+		    {
+		      XREALLOC(__FILE__, __FUNCTION__, __LINE__, vaddr, vaddr,
+			       sizeof(elfsh_Addr)*(apos+1+astep), -1);
+
+		      /* Blank new elements */
+		      memset(&vaddr[apos], 0x00, astep*sizeof(elfsh_Addr));
+		    }
+
+		  vaddr[apos++] = caddr;
+		}
+	    }
+	}
+
+    next:
+
+      if (ret <= 0)
+	ret = 1;
+    }
+
+  /* If nothing found we free allocated buffer and
+     return an error */
+  if (!found)
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, vaddr);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "No call internal found", -3);
+    }
+  
+  btree_free(broot, 0);
+
+  *addr = vaddr;
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Search a call for a given address
+ * @param file target file
+ * @param addr supose to be a function
+ */
+int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
+{
+  int 			ret;
+  int			index;
+  asm_instr		instr;
+  elfsh_SAddr		foffset;
+  elfsh_Word		len;
+  char			*base;
+  asm_processor		proc;
+  elfsh_Addr		base_vaddr;
+  u_char		found = 0;
+  elfshsect_t		*text;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameter", -1);
+
+  /* Search entrypoint section, our address must be in this section */
+  text = elfsh_get_parent_section(file, elfsh_get_entrypoint(file->hdr), &foffset);
+
+  if (!text)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find parent section from entry point", -1);
+  
+  if (!elfsh_get_anonymous_section(file, text))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to get an anonymous section", -1);
+  
+  base = elfsh_get_raw(text);
+  len = text->shdr->sh_size;
+
+  /* Get the virtual address */
+  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
+		elfsh_get_section_addr(text->shdr));
+
+  /* Our address is valid ? */
+  if (!INTERVAL(base_vaddr, addr, (base_vaddr + len)))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Not in entrypoint section", -4);
+
+  /* Setup asm_processor structure */
+  if (elfsh_traces_setup_proc(file, &proc) < 0)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed during proc structure setup", -1);
+  
+  /* Despite the fact that we choose the right architecture to init asm,
+     Our approach is totally architecture independant as we search using
+     global type ASM_TYPE_CALLPROC and we know that op1.imm will contain a
+     relative value. */
+  for (index = 0; index < len; index += ret)
+    {
+      /* Read an instruction */
+      if ((ret = asm_read_instr(&instr, (u_char *) (base + index), len -  index, &proc)))
+	{
+	  /* Global assembler filter */
+	  if ((instr.type & ASM_TYPE_CALLPROC)
+	      && instr.op1.imm != 0)
+	    {
+	      /* Found the correct call */
+	      if (base_vaddr + index + instr.op1.imm + instr.len == addr)
+		{
+		  found = 1;
+		  break;
+		}
+	    }
+	}
+
+      if (ret <= 0)
+	ret = 1;
+    }
+
+  if (!found)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No call found", -3);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Check if a function address is valid or not
+ * @param file target file
+ * @param addr function address
+ * @param vaddr returned virtual address
+ */
+int			elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
+						 elfsh_Addr *vaddr, u_char *dynsym)
+{
+  int			retvalue;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file || !addr || !vaddr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Our addr must be called */
+  retvalue = elfsh_addr_is_called(file, addr);
+
+  if (retvalue >= 0)
+    *vaddr = addr;
+
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, retvalue);
 }
 
 /**
@@ -1216,6 +1543,76 @@ int			elfsh_traces_deletetrace(char *trace)
   hash_destroy(table);
 
   hash_del(&traces_table, trace);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * If submited function point into the plt, we return the file
+ * and its virtual address to point to remote function
+ * @param filein base file pointer
+ * @param vaddrin base virtual address
+ * @param fileout returned file pointer
+ * @param vaddrout returned virtual address
+ */
+int			elfsh_resolv_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+					      elfshobj_t **fileout, elfsh_Addr *vaddrout)
+{
+  elfshobj_t		*file;
+  elfshsect_t		*sect;
+  char			*data;
+  elfsh_SAddr		sfoffset;
+  char			*sym_name;
+  elfsh_Sym		*sym;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!filein || !fileout || !vaddrout)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Default returned values are -in */
+  *fileout = filein;
+  *vaddrout = vaddrin;
+
+  /* Get virtual address parent section */
+  sect = elfsh_get_parent_section(filein, vaddrin, &sfoffset);
+
+  if (!sect)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't get section", -1);
+
+  data = elfsh_get_section_name(filein, sect);
+
+  if (!data)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't get section name", -1);
+
+  /* Find the right function on dependencies */
+  if (!strncmp(data, ".plt", 4))
+    {
+      sym_name = elfsh_reverse_dynsymbol(filein, vaddrin, &sfoffset);
+
+      if (!sym_name)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find symbol name", -1);
+
+      file = elfsh_traces_search_sym(filein, sym_name);
+	      
+      if (!file)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find extern function file", -1);
+
+      sym = elfsh_get_dynsymbol_by_name(file, sym_name);
+
+      if (!sym)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find function symbol on dependencies", -1);
+
+      /* Update pointers */
+      *fileout = file;
+      *vaddrout = sym->st_value;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

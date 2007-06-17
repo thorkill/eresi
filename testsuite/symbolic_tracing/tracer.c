@@ -24,6 +24,9 @@ int		main(int argc, char **argv)
   if (NULL == host)
     goto err;
 
+  /* Setup world current */
+  world.curjob->current = host;
+
   /* Parse debugging informations */
   vm_edfmt_parse(host);
 
@@ -32,7 +35,7 @@ int		main(int argc, char **argv)
 
   /* Load dependences */
   vm_load_enumdep(host);
-  
+
   /* global scope */
   traces_add(host, "main", NULL);
 

@@ -4,13 +4,32 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.15 2007-06-07 16:10:00 may Exp $
+ * $Id: ia32.c,v 1.16 2007-06-17 19:50:42 mxatone Exp $
  *
  */
 #include "libelfsh.h"
 #include "libasm.h"
 
+#define ELFSH_IA32_ARG_MAXSIZE 	512
+#define ELFSH_IA32_PROLOG_MSTEP 3
 static asm_processor	proc;
+static int      	args[ELFSH_TRACE_MAX_ARGS+1];
+static u_int		arg_count;
+static u_int		max_arg_offset;
+
+#define ELFSH_IA32_PUSH_REGBASE(_i)			\
+(_i.instr == ASM_PUSH 					\
+ && _i.op1.regset == ASM_REGSET_R32			\
+ && (_i.op1.content & ~ASM_OP_FIXED) == ASM_OP_BASE)
+
+#define ELFSH_IA32_MOV_REGBASE(_i, _reg)		\
+(_i.instr == ASM_MOV 					\
+ && _i.op1.base_reg == _reg 				\
+ && _i.op2.base_reg == ASM_REG_ESP 			\
+ && _i.op1.regset == ASM_REGSET_R32 			\
+ && _i.op2.regset == ASM_REGSET_R32			\
+ && (_i.op1.content & ~ASM_OP_FIXED) == ASM_OP_BASE	\
+ && (_i.op2.content & ~ASM_OP_FIXED) == ASM_OP_BASE)
 
 /**
  * Start of hook code for EXTPLT 
@@ -516,21 +535,18 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-typedef struct s_int
-{
-  int		value;
-  struct s_int  *prec;
-  struct s_int	*next;
-}		s_sint;
-
 /**
  * Personnal func / define for args_count 
  */
-static int    elfsh_ac_is_arg_ebp(asm_operand *op)
+static int    elfsh_ac_is_arg_ebp(asm_operand *op, int regbased)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (op->base_reg == ASM_REG_EBP && op->imm > 0)
+  /* imm value must be superior to 4 because it is return addr 
+     malloc() use to look at the return address which make arg count
+     think that malloc should take 2 arguments.
+   */
+  if (op->base_reg == regbased && op->imm > 4)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -541,59 +557,90 @@ static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (op->base_reg == ASM_REG_ESP && op->imm > sub)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm - sub);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-static int    elfsh_ac_largs_add(s_sint *args, int add)
+static int    elfsh_ac_largs_add(int add)
 {
-  s_sint	      *p, *n;
-  int                 i;
+  u_int                 index;
+#if __DEBUG_ARG_COUNT__
+  u_int			z;
+#endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (add == 0 || args == NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+  if (add == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid argument", -1);
 
-  if (args->value == 0)
+  /* Empty list or next value is > to current max_arg_offset */
+  if ((arg_count == 0 && args[arg_count] == 0)
+      || max_arg_offset < add)
     {
-      args->value = add;
+#if __DEBUG_ARG_COUNT__
+      printf("[DEBUG_ARG_COUNT] MAX OR FIRST = %d\n", add);
+#endif
+
+      max_arg_offset = add;
+      args[arg_count++] = add;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  /* First entry */
-  while (args->prec)
-    args = args->prec;
+  /* Already got it */
+  if (max_arg_offset == add)
+    {
+#if __DEBUG_ARG_COUNT__
+      printf("[DEBUG_ARG_COUNT] ALREADY = %d\n", add);
+#endif
 
-  for (i = 0, p = args; i < ELFSH_TRACE_MAX_ARGS 
-	 && p != NULL; i++, p = p->next)
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  for (index = 0; index < ELFSH_TRACE_MAX_ARGS; index++)
     {
       /* Already add ? */
-      if (p->value == add)
-	break;
-
-      /* We sort result */
-      if (p->value > add)
+      if (args[index] == add)
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,n, sizeof(s_sint), -1);
-	  n->value = add;
-	  
-	  n->prec = p->prec;
-	  p->prec = n;
+#if __DEBUG_ARG_COUNT__
+	  printf("[DEBUG_ARG_COUNT] ALREADY = %d\n", add);
+#endif
 
-	  n->next = p;
 	  break;
 	}
 
-      /* Add at the tail */
-      if (p->next == NULL)
+      /* We sort result */
+      if (args[index] > add)
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,n, sizeof(s_sint), -1);
-	  n->value = add;
-	  
-	  p->next = n;
-	  n->prec = p;
+	  if (arg_count == ELFSH_TRACE_MAX_ARGS)
+	    {
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] MAX ARGUMENT\n");
+#endif
+
+	      arg_count--;
+	    }
+
+#if __DEBUG_ARG_COUNT__
+	  printf("[DEBUG_ARG_COUNT] Next values (b):\n");
+
+	  for (z = index; z < arg_count; z++)
+	    printf("[DEBUG_ARG_COUNT] :%d -> %d\n", z, args[z]);
+#endif
+
+	  /* Move arguments */
+	  memmove(&args[index + 1], &args[index], (arg_count - index)*sizeof(int));
+
+#if __DEBUG_ARG_COUNT__
+	  printf("[DEBUG_ARG_COUNT] Next values (a):\n");
+
+	  for (z = index; z < arg_count + 1; z++)
+	    printf("[DEBUG_ARG_COUNT] :%d -> %d\n", z, args[z]);
+#endif
+
+	  args[index] = add;
+	  arg_count++;
 	  break;
 	}
     }
@@ -601,6 +648,9 @@ static int    elfsh_ac_largs_add(s_sint *args, int add)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/*
+Used with Forward analysis
+TODO: Keep it ?
 static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *before)
 {
   u_int 	index;
@@ -634,10 +684,10 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
 
   for (index = 0; index < len; index += ret)
     {
-      /* Read an instruction */
+    // Read an instruction 
       if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
 	{
-	  /* Search a call to our address (near call) */
+	// Search a call to our address (near call) 
 	  if (i.instr == ASM_CALL)
 	    {
 	      if (base_vaddr + index + i.op1.imm + i.len == vaddr)
@@ -661,6 +711,7 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+*/
 
 static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
 {
@@ -687,162 +738,229 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
   int         	index;
   int         	ret;
   int	      	reserv = 0;
-  int	      	ffp = 0;
+  int	      	ffp = 1;
   const int    	asm_len = 1024;
-  int         	len = 0;
-  s_sint      	*args = NULL, *p = NULL;
+  //int         	len = 0;
   int	      	*final_args;
-  elfsh_Addr  	f_vaddr, up_vaddr;
+  //elfsh_Addr  	f_vaddr, up_vaddr;
   asm_instr   	i;
-  char      	*data, *sym_name;
-  elfshsect_t	*sect;
-  elfsh_SAddr	sfoffset;
-  elfsh_Sym	*sym;
+  char      	*data;
+  int		op;
+  u_char	prolog_setup = 0;
+  u_int		icount, regicount;
+  int		regbased = -1;
+  int		next_regbased = -1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Reset args */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, final_args, ELFSH_TRACE_MAX_ARGS * sizeof(int), NULL);
-
   asm_init_i386(&proc);
+  max_arg_offset = 0;
 
-  if (foffset == 0)
-    {
-      f_vaddr = elfsh_ac_foundcallto(file, vaddr, &up_vaddr);
-      
-      if (f_vaddr > 0)
-	{
-	  data = elfsh_ac_get_sect_ptr(file, up_vaddr);
-	  len = f_vaddr - up_vaddr;
+  /* Find the real function if this vaddr point to plt section */
+  elfsh_resolv_function(file, vaddr, &file, &vaddr);
 
-	  for (index = 0; index < len && data ; index += ret)
-	    {
-	      /* Read an instruction */
-	      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
-		{
-		  /* We don't want to read another function */
-		  if (i.instr == ASM_MOV && i.op1.base_reg == ASM_REG_ESP)
-		    {
-		      if (reserv == 0)
-			{
-			  XALLOC(__FILE__, __FUNCTION__, __LINE__, args, sizeof(s_sint), NULL);
-			  args->value = 0;
-			}
-
-		      elfsh_ac_largs_add(args, i.op1.imm + 16);
-		      reserv = 1;
-		    }
-		}
-
-	      ret = asm_instr_len(&i);
-	      if (!ret)
-		ret++;
-	    }
-
-	  /* We have something */
-	  if (reserv)
-	    goto setargs;
-
-	  sect = elfsh_get_parent_section(file, vaddr, &sfoffset);
-	  if (!sect)
-	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Can't get section", NULL);
-	    }
-
-	  data = elfsh_get_section_name(file, sect);
-
-	  if (!data)
-	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Can't get section name", NULL);
-	    }
-
-	  /* Find the right function on dependencies */
-	  if (!strncmp(data, ".plt", 4))
-	    {
-	      sym_name = elfsh_reverse_dynsymbol(file, vaddr, &sfoffset);
-
-	      if (sym_name == NULL)
-		{
-		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			       "Can't find symbol name", NULL);
-		}
-
-	      file = elfsh_traces_search_sym(file, sym_name);
-	      
-	      if (file == NULL)
-		{
-		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			       "Can't find extern function file", NULL);		  
-		}
-
-	      sym = elfsh_get_dynsymbol_by_name(file, sym_name);
-
-	      if (!sym)
-		{
-		  XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			       "Can't find function symbol on dependencies", NULL);
-		}
-
-	      vaddr = sym->st_value;
-	    }
-	}
-    }
-  else
-    {
-      vaddr = elfsh_get_vaddr_from_foffset(file, foffset);
-    }
+#if __DEBUG_ARG_COUNT__
+  printf("[DEBUG_ARG_COUNT] Arg count into file: %s with addr: 0x%x \n", file->name, vaddr);
+#endif
 
   data = elfsh_ac_get_sect_ptr(file, vaddr);
 
   if (!data)
-    {
-      XFREE(__FILE__, __FUNCTION__, __LINE__, final_args);
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
-    }
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+
+  /* Prepare args */
+  memset(args, 0x00, (ELFSH_TRACE_MAX_ARGS+1)*sizeof(int));
+  arg_count = 0;
+
+  reserv = 0;
+  regicount = 0;
 
   /* Enumerate all arguments */
-  for (index = 0; index < asm_len && data; index += ret)
+  for (icount = index = 0; index < asm_len && data; index += ret, icount++)
     {
       /* Read an instruction */
       if ((ret = asm_read_instr(&i, (u_char *) (data + index), asm_len -  index, &proc)) > 0)
 	{
+	  /* After 10 instruction, 
+	     no prolog anlysis should be done */
+	  if (!prolog_setup && icount == 10)
+	    prolog_setup = 1;
+
 	  /* We don't want to read another function */
 	  if (i.instr == ASM_RET)
-	    break;
-
-	  /* Check init form of the function */
-	  if (index == 0)
 	    {
-	      /* %esp based (-fomit-frame-pointer) */
-	      if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP)
-		{
-		  reserv = i.op2.imm;
-		  ffp = 1;
-		}
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] RET @ +%d (%x)\n", index, index);
+#endif
+	      break;
+	    }
 
-	      XALLOC(__FILE__, __FUNCTION__, __LINE__, args, sizeof(s_sint), NULL);
-	      args->value = 0;
+	  /* Seek if we are near a ebp like prolog */
+	  if (!prolog_setup)
+	    {
+	      if (ELFSH_IA32_PUSH_REGBASE(i))
+		{
+		  /* We register pushed register and go to see if 
+		     next instruction will be a mov $reg, $esp (look after) 
+
+		     This detection algorithm has been update for getopt()
+		     where I found a dispositin like this:
+
+		     push $ebp
+		     xor $eax, $eax
+		     mov $ebp, $esp
+		  */
+		  regbased = i.op1.base_reg;
+		  regicount = 0;
+		}
+	      else if (regbased != -1)
+		{
+		  /* mov %reg, %esp */
+		  if (ELFSH_IA32_MOV_REGBASE(i, regbased))
+		    {
+#if __DEBUG_ARG_COUNT__
+		      printf("[DEBUG_ARG_COUNT] EBP like based found @ +%d (%x) / reg = %d\n", 
+			     index, index, regbased);
+#endif
+
+		      /* We have a ebp like register, then prolog is found
+		         and now we will see for argument based on it */
+		      prolog_setup = 1;
+		      ffp = 0;
+		      continue;
+		    }
+
+		  /* We use a counter to control how many instruction can be behind
+		     the push & the mov */
+		  if (regicount < ELFSH_IA32_PROLOG_MSTEP)
+		    regicount++;
+		  else
+		    regbased = -1; /* Reset based register */
+		}
 	    }
 	  else
 	    {
-	      if (ffp == 0)
+	      /* TODO: Find a better way to find function end */
+	      if (ELFSH_IA32_PUSH_REGBASE(i))
 		{
-		  /* EBP based argument */
-		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_ebp(&i.op1));
-		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_ebp(&i.op2));
+		  /* This time we try to see if we reach another function
+		     Some function does not rely on ret 
+		     This fix has been made for my exit() function which did not
+		     has a ret, then we start parsing on_exit() */
+		  next_regbased = i.op1.base_reg;
+		  regicount = 0;
 		}
 	      else
 		{
-		  /* ESP based argument */
-		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_esp(&i.op1, reserv));
-		  elfsh_ac_largs_add(args, elfsh_ac_is_arg_esp(&i.op2, reserv));
+		  /* If its true, we reached another function */
+		  if (ELFSH_IA32_MOV_REGBASE(i, next_regbased))
+		    break; 
+
+		  if (regicount < ELFSH_IA32_PROLOG_MSTEP)
+		    regicount++;
+		  else
+		    next_regbased = -1; /* Reset based register */
+		}
+	      
+	    }
+
+	  if (ffp == 0)
+	    {
+	      /* EBP based argument */
+	      op = elfsh_ac_is_arg_ebp(&i.op1, regbased);
+		  
+	      if (op > 0)
+		{
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] EBP (1) @ +%d (%x) - %d\n", index, index, op);
+#endif
+		  elfsh_ac_largs_add(op);
+		}
+		  
+	      op = elfsh_ac_is_arg_ebp(&i.op2, regbased);
+
+	      if (op > 0)
+		{
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] EBP (2) @ +%d (%x) - %d\n", index, index, op);
+#endif
+		  elfsh_ac_largs_add(op);
+		}
+
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] @ +%d (%x) i.instr = %d\n", index, index, i.instr);
+#endif
+	    }
+	  else
+	    {
+	      /* sub $esp, x */
+	      if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP)
+		{
+		  reserv += i.op2.imm;
+
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
+			 i.op2.imm, reserv);
+#endif
+		  continue;
+		}
+	      /* add $esp, x */
+	      else if (i.instr == ASM_ADD && i.op1.base_reg == ASM_REG_ESP)
+		{
+		  reserv -= i.op2.imm;
+
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
+			 i.op2.imm, reserv);
+#endif
+		  continue;
+		}
+
+	      /* ESP based argument */
+	      op = elfsh_ac_is_arg_esp(&i.op1, reserv);
+
+	      if (op > 0)
+		{
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] ESP (1) @ +%d (%x) - %d\n", index, index, op);
+#endif
+		  elfsh_ac_largs_add(op);
+		}
+
+	      op = elfsh_ac_is_arg_esp(&i.op2, reserv);
+
+	      if (op > 0)
+		{
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] ESP (2) @ +%d (%x) - %d\n", index, index, op);
+#endif
+		  elfsh_ac_largs_add(op);
+		}
+
+	      /* On esp based functions, sometimes compiler optimisation is to not
+	         clear argument after a call (just at the end). Then we need to update
+	         stack state. Problem found in setupterm() */
+	      if (i.instr == ASM_PUSH) 
+		{
+		  reserv += sizeof(elfsh_Addr);
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
+			 sizeof(elfsh_Addr), reserv);
+#endif
+		}
+	      else if (i.instr == ASM_POP)
+		{
+		  reserv -= sizeof(elfsh_Addr);
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
+			 sizeof(elfsh_Addr), reserv);
+#endif
+		}
+	      else
+		{
+#if __DEBUG_ARG_COUNT__
+		  printf("[DEBUG_ARG_COUNT] @ +%d (%x) i.instr = %d\n", index, index, i.instr);
+#endif
 		}
 	    }
 	}
@@ -854,38 +972,89 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	ret++;
     }
 
- setargs:
+  /* Do we have something ? */
+  /*
+  if (arg_count > 0)
+    goto setargs;
+  */
 
-  /* Go at the end */
-  while (args->next)
-    args = args->next;
+  /**
+   * Backward anlysis
+   * We analyse a call to a specific function
+   * TODO: Keep this part ? at least optimise it. Seeking a call everytime is too long
 
-  final_args[0] = NULL;
-
-  /* Fill structure to return */
-  for (index = 0, p = args; index < ELFSH_TRACE_MAX_ARGS
-	 && p != NULL && p->value > 0; index++, p = p->prec)
+  f_vaddr = elfsh_ac_foundcallto(file, vaddr, &up_vaddr);
+      
+  if (f_vaddr > 0)
     {
-      /* Last entry */
-      if (p->next == NULL)
-	{
-	  if (ffp)
-	    final_args[index] = reserv - p->value + 20;
-	  else
-	    {
-	      final_args[index] = p->value - (16-(p->prec == NULL ? sizeof(elfsh_Addr) : 0));
+      data = elfsh_ac_get_sect_ptr(file, up_vaddr);
+      len = f_vaddr - up_vaddr;
 
-	      /* XXX: wrong readed argument */
-	      if (final_args[index] < (int)sizeof(elfsh_Addr))
-		final_args[index] = (int)sizeof(elfsh_Addr);
+      for (index = 0; index < len && data ; index += ret)
+	{
+	  // Read an instruction 
+	  if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
+	    {
+	      // We don't want to read another function 
+	      if (i.instr == ASM_MOV && i.op1.base_reg == ASM_REG_ESP)
+		elfsh_ac_largs_add(i.op1.imm + 16);
 	    }
 
-	  continue;
+	  ret = asm_instr_len(&i);
+	  if (!ret)
+	    ret++;
+	}
+    }
+
+
+  setargs:
+  */
+
+  /* No arguments */
+  if (arg_count == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't find arguments", NULL);
+
+  /* Add first offset 
+     Sometimes first argument is not use (__xstat64() case)
+     which creates a bug into arguments number 
+     Offset 8 should always be first argument */
+  elfsh_ac_largs_add(0x8);
+
+  for (index = 0; index < ELFSH_TRACE_MAX_ARGS && index < arg_count; index++)
+    {
+      /* Last entry */
+      if (index + 1 == arg_count)
+	{
+	  /* Can't know last argument size, presume elfsh_Addr
+	     size. This issue seems impossible to resolve without
+	     an advanced analyse engine */
+	  args[index] = (int) sizeof(elfsh_Addr);
+	}
+      else
+	{
+	  /* Argument size is next_offset - my_offset */
+	  args[index] = args[index + 1] - args[index];
 	}
 
-      /* Stock argument size which depend of the next entrie */
-      final_args[index] = p->next->value - p->value;
+      /* Aligned on address size (at least) */
+      if (args[index] < (int) sizeof(elfsh_Addr)
+	  || args[index] > ELFSH_IA32_ARG_MAXSIZE)
+	args[index] = (int) sizeof(elfsh_Addr);
     }
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, final_args, 
+	 (arg_count + 1) * sizeof(int), NULL);
+
+  /* Copy current arguments */
+  memcpy(final_args, args, (arg_count + 1) * sizeof(int));
+
+#if __DEBUG_ARG_COUNT__
+  printf("[DEBUG_ARG_COUNT] arg_count = %d\n[DEBUG_ARG_COUNT] RETURN LIST:\n", arg_count);
+
+  for (index = 0; index < arg_count + 1; index++)
+    printf("[DEBUG_ARG_COUNT] [%02d] %d\n", index, final_args[index]);
+#endif
   
-   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final_args);
 }

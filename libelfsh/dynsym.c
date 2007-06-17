@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.12 2007-05-01 15:56:01 may Exp $
+** $Id: dynsym.c,v 1.13 2007-06-17 19:50:42 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -172,6 +172,28 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+
+/**
+ * Get symtab entry by vaddr 
+ */
+elfsh_Sym	  *elfsh_get_dynsymbol_by_value(elfshobj_t	*file,
+						elfsh_Addr	vaddr,
+						int	*off,
+						int	mode)
+{
+  int		  num;
+  elfsh_Sym	  *data;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  data = elfsh_get_dynsymtab(file, &num);
+  if (data == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot retreive DYNSYM", NULL);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		     (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
+}
 
 
 /** 

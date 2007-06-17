@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.64 2007-06-08 18:46:44 may Exp $
+** $Id: libelfsh.h,v 1.65 2007-06-17 19:50:42 mxatone Exp $
 **
 */
 
@@ -64,6 +64,8 @@
 #define		__DEBUG_BREAKPOINTS__	       0
 #define		__DEBUG_ETRELintoETDYN__       0
 #define		__DEBUG_EXTPLT__	       0
+#define 	__DEBUG_TRACES__	       0
+#define 	__DEBUG_ARG_COUNT__	       0
 
 /* ELFsh architecture types */
 #define		ELFSH_ARCH_IA32			0
@@ -872,7 +874,8 @@ typedef struct 	s_traces_args
 typedef struct 	s_traces
 {
 #define ELFSH_TRACES_TYPE_DEFAULT "global"
-  char	       	*funcname;
+#define ELFSH_TRACES_FUNC_SIZE 256
+  char	       	funcname[ELFSH_TRACES_FUNC_SIZE];
   elfshobj_t	*file;
   u_char	enable;
   u_int		offset;
@@ -884,6 +887,8 @@ typedef struct 	s_traces
 #define	ELFSH_ARG_SIZE_BASED 0
 #define ELFSH_ARG_TYPE_BASED 1
   u_char	type;
+
+  elfsh_Addr	vaddr;
 
 #define ELFSH_TRACES_MAX_ARGS 20
   elfshtracesargs_t arguments[ELFSH_TRACES_MAX_ARGS];
@@ -923,6 +928,7 @@ char		*elfsh_reverse_symbol(elfshobj_t *file, elfsh_Addr sym_value, elfsh_SAddr 
 char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s);
 void		*elfsh_get_symtab(elfshobj_t *file, int *num);
 elfsh_Sym	*elfsh_get_symbol_by_value(elfshobj_t *file, elfsh_Addr vaddr, int *off, int mode);
+elfsh_Sym	*elfsh_get_dynsymbol_by_value(elfshobj_t *file, elfsh_Addr vaddr, int *off, int mode);
 int		elfsh_strip(elfshobj_t *file);
 int		elfsh_set_symbol_name(elfshobj_t *file, elfsh_Sym *s, char *name);
 int		elfsh_shift_symtab(elfshobj_t *file, elfsh_Addr lim, int inc);
@@ -1711,6 +1717,9 @@ int		elfsh_bp_add(hash_t *bps, elfshobj_t *file,
 int		*elfsh_traces_inittrace();
 hash_t		*elfsh_traces_createtrace(char *trace);
 hash_t		*elfsh_traces_gettrace(char *trace);
+int		elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr);
+int		elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr);
+int		elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr, elfsh_Addr *vaddr, u_char *dynsym);
 int 		elfsh_traces_tracable(elfshobj_t *file, char *name,
 				      elfsh_Addr *vaddr, u_char *dynsym);
 elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
@@ -1724,5 +1733,7 @@ int		elfsh_traces_funcrmall(char *trace);
 int		elfsh_traces_deletetrace(char *trace);
 int		elfsh_traces_save(elfshobj_t *file);
 elfshobj_t   	*elfsh_traces_search_sym(elfshobj_t *file, char *name);
+int		elfsh_resolv_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+				      elfshobj_t **fileout, elfsh_Addr *vaddrout);
 
 #endif /* __LIBELFSH_H_ */
