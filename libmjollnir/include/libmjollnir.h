@@ -84,16 +84,15 @@ int		mjr_create_context_as_current(mjrsession_t *, elfshobj_t *);
 mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *);
 
-/* control.c	*/
+/* findentry.c	*/
 elfsh_Addr	mjr_find_main(elfshobj_t	*obj,
 			      asm_processor	*proc,
 			      u_char		*buf,
 			      u_int		len,
 			      elfsh_Addr	vaddr,
 			      u_int		*dis);
-elfsh_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, u_int, elfsh_Addr);
-int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
-				  asm_instr *, elfsh_Addr a);
+elfsh_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, 
+				u_int, elfsh_Addr);
 
 /* core.c */
 int		mjr_analyse(mjrsession_t *sess, int flags);
@@ -108,32 +107,22 @@ u_int		mjr_block_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 char 		*_vaddr2str(elfsh_Addr);
 int		mjr_block_relink_cond_always(mjrcontainer_t *, mjrcontainer_t *, int);
-int		mjr_blocks_link_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
-int		mjr_blocks_link_jmp(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
-
-mjrcontainer_t	*mjr_split_block(mjrcontext_t *,elfsh_Addr, u_int);
 int		mjr_block_dump(mjrcontext_t*, mjrcontainer_t *);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(mjrcontainer_t *cntnr);
-int		mjr_fprint(mjrcontext_t 	*c,
-			   mjrcontainer_t   	*start, 
-			   int			type,
-			   int   		weight,
-			   int	    		curd,
-			   int	    		mind,
-			   int	    		maxd,
-			   int  		(*fprint)(mjrcontainer_t *));
+int		mjr_fprint(mjrcontext_t*, mjrcontainer_t*, int, int, 
+			   int, int, int, int (*fprint)(mjrcontainer_t*));
 
 /* display.c */
-//void		mjr_block_dump(mjrblock_t *b);
 int		mjr_blocks_display(mjrcontext_t *c, int);
 int		mjr_block_display(mjrcontext_t *, mjrcontainer_t *c, mjropt_t *opt);
 void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
-/* types.c */
-int		mjr_asm_flow(mjrcontext_t *c);
+/* cfg.c */
+int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
+				  asm_instr *, elfsh_Addr a);
 elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
 int		mjr_get_jmp_destaddr(mjrcontext_t *context);
 int		mjr_get_call_destaddr(mjrcontext_t *context);
@@ -152,19 +141,26 @@ u_int		mjr_function_flow_save(mjrcontainer_t *, u_int, mjrbuf_t *);
 int		mjr_functions_load(mjrcontext_t *);
 int		mjr_functions_get(mjrcontext_t *);
 int		mjr_functions_store(mjrcontext_t *);
-int		mjr_functions_link_call(mjrcontext_t *ctxt, 
-					elfsh_Addr src, 
-					elfsh_Addr dst, 
-					elfsh_Addr ret);
 int		mjr_function_register(mjrcontext_t *, 
 				      u_int,
 				      mjrcontainer_t *);
 mjrcontainer_t *mjr_function_get_by_vaddr(mjrcontext_t *, 
 					  u_int);
 
+
+/* link.c */
+int		mjr_link_block_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
+int		mjr_link_block_jump(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
+int		mjr_link_func_call(mjrcontext_t *ctxt, 
+				   elfsh_Addr src, 
+				   elfsh_Addr dst, 
+				   elfsh_Addr ret);
+
+
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
 void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
+
 
 /* container.c */
 void		mjr_init_containers(mjrcontext_t*);

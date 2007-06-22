@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: cfg.c,v 1.1 2007-06-22 16:16:05 may Exp $
+** $Id: cfg.c,v 1.2 2007-06-22 21:50:37 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -68,7 +68,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
 
     if (dstaddr != -1)
-      mjr_blocks_link_jmp(context, curvaddr, dstaddr, curvaddr + ilen);
+      mjr_link_block_jump(context, curvaddr, dstaddr, curvaddr + ilen);
 
     }
   else if (curins->type == ASM_TYPE_IMPBRANCH)
@@ -82,13 +82,13 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
 
       if (dstaddr != -1)
-	mjr_blocks_link_jmp(context, curvaddr, dstaddr, NULL);
+	mjr_link_block_jump(context, curvaddr, dstaddr, NULL);
 
     }
   else if (curins->type & ASM_TYPE_CALLPROC)
     {
       dstaddr = mjr_get_call_destaddr(context);
-    
+      
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[D] %s: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
@@ -107,10 +107,10 @@ int			mjr_trace_control(mjrcontext_t *context,
       if ((dstaddr) && (dstaddr != -1))
     	{
 	  /* Link block layer */
-	  mjr_blocks_link_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
+	  mjr_link_block_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
 
 	  /* Link function layer */
-	  mjr_functions_link_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
+	  mjr_link_func_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
     	}
     }
   else if (curins->type == ASM_TYPE_RETPROC)

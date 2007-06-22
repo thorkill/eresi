@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: findentry.c,v 1.1 2007-06-22 16:16:05 may Exp $
+** $Id: findentry.c,v 1.2 2007-06-22 21:50:37 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -160,6 +160,6 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
 			 MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
   mjr_container_add_link(context, main_container, tmpcntnr->id, 
 			 MJR_LINK_FUNC_CALL, MJR_LINK_IN);
-  mjr_blocks_link_call(context, vaddr, main_addr, vaddr + dis);
+  mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

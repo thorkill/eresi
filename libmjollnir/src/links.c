@@ -5,9 +5,14 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 mayhem
- * $Id: links.c,v 1.1 2007-06-22 16:58:26 may Exp $
+ * $Id: links.c,v 1.2 2007-06-22 21:50:37 may Exp $
  */
 #include <libmjollnir.h>
+
+
+/* Some prototypes of static functions of this file */
+static mjrcontainer_t	*mjr_block_split(mjrcontext_t *,elfsh_Addr, u_int);
+
 
 
 
@@ -18,10 +23,10 @@
  * @param dst destination address
  * @param ret return address
  */
-int			mjr_functions_link_call(mjrcontext_t *ctxt, 
-						elfsh_Addr src, 
-						elfsh_Addr dst, 
-						elfsh_Addr ret)
+int			mjr_link_func_call(mjrcontext_t *ctxt, 
+					   elfsh_Addr src, 
+					   elfsh_Addr dst, 
+					   elfsh_Addr ret)
 {
   mjrcontainer_t	*fun;
   mjrfunc_t		*tmpfunc;
@@ -31,7 +36,8 @@ int			mjr_functions_link_call(mjrcontext_t *ctxt,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_FUNCS__
-  fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n", __FUNCTION__, src, dst, ret);
+  fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n",
+	  __FUNCTION__, src, dst, ret);
 #endif
 
   /* Link/Prepare function layer. We use an intermediate variable, else
@@ -41,7 +47,8 @@ int			mjr_functions_link_call(mjrcontext_t *ctxt,
   if (!fun)
     {
       tmpstr = _vaddr2str(tmpaddr);
-      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+      fun = mjr_create_function_container(ctxt, tmpaddr, 0, 
+					  tmpstr, NULL, NULL);
       mjr_function_register(ctxt,tmpaddr, fun);
     }
 
@@ -66,53 +73,11 @@ int			mjr_functions_link_call(mjrcontext_t *ctxt,
 }
 
 
-
-
-
-int		mjr_block_relink(mjrcontext_t *ctx,
-				 mjrcontainer_t *src,
-				 mjrcontainer_t *dst,
-				 int direction)
-{
-
-  mjrlink_t	*lnk;
-  u_int		nbr;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  lnk = mjr_link_get_by_direction(src, direction);
-
-#if __DEBUG_BLOCKS__
-  fprintf(D_DESC,"[D] %s: src:%d dst:%d dir:%d\n",
-	  __FUNCTION__, src->id, dst->id, direction);
-#endif
-
-  if (direction == MJR_LINK_IN)
-    nbr = src->in_nbr;
-  else
-    nbr = src->out_nbr;
-
-  while(lnk)
-    {
-      // 1 - add same links to dst
-      mjr_container_add_link(ctx, dst,lnk->id, lnk->type, direction);
-      // 2 - and remove it from src
-      lnk->type = MJR_LINK_DELETE;
-      lnk = lnk->next;
-    }
-
-  mjr_container_link_cleanup(src,direction);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-}
-
-
-
-/* Create a link between blocks on a call */
-int	mjr_blocks_link_call(mjrcontext_t *ctxt,
-			     elfsh_Addr src,
-			     elfsh_Addr dst,
-			     elfsh_Addr ret)
+/** Create a link between blocks on a call */
+int	mjr_link_block_call(mjrcontext_t *ctxt,
+			    elfsh_Addr src,
+			    elfsh_Addr dst,
+			    elfsh_Addr ret)
 {
   mjrcontainer_t	*csrc,*cdst,*cret;
 
@@ -130,12 +95,12 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
   assert(csrc != NULL);
 
   /* search and/or split destination block */
-  if (!(cdst = mjr_split_block(ctxt,dst,NULL)))
+  if (!(cdst = mjr_block_split(ctxt,dst,NULL)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
   /* search and/or split - return block */
-  if (!(cret = mjr_split_block(ctxt,ret,NULL)))
+  if (!(cret = mjr_block_split(ctxt,ret,NULL)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the ret",0);
   
@@ -165,7 +130,7 @@ int	mjr_blocks_link_call(mjrcontext_t *ctxt,
 
 /** This function does prepare linking of blocks on conditional jumps
  **/
-int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
+int	mjr_link_block_jump(mjrcontext_t *ctxt,
 			    elfsh_Addr src,
 			    elfsh_Addr dst,
 			    elfsh_Addr ret)
@@ -180,7 +145,7 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
 	  src,dst,ret);
 #endif
   
-  if (!(cdst = mjr_split_block(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
+  if (!(cdst = mjr_block_split(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
   
@@ -191,7 +156,7 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
   cret = NULL;
   
   if (ret)
-    if (!(cret = mjr_split_block(ctxt,ret,MJR_LINK_BLOCK_COND_ALWAYS)))
+    if (!(cret = mjr_block_split(ctxt,ret,MJR_LINK_BLOCK_COND_ALWAYS)))
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		   "Could not split the ret",0);
   
@@ -208,25 +173,63 @@ int	mjr_blocks_link_jmp(mjrcontext_t *ctxt,
 
 
 
-/**
- * This function does split a block carried by given container
- * to 2 pices, a new container will be added by vaddr dst
+/* Those functions are static and should not be used by external API */
+
+
+
+/** Update link information when splitting a block */
+static int	mjr_block_relink(mjrcontext_t *ctx,
+				 mjrcontainer_t *src,
+				 mjrcontainer_t *dst,
+				 int direction)
+{
+
+  mjrlink_t	*lnk;
+  u_int		nbr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  lnk = mjr_link_get_by_direction(src, direction);
+
+#if __DEBUG_BLOCKS__
+  fprintf(D_DESC, "[D] %s: src:%d dst:%d dir:%d\n",
+	  __FUNCTION__, src->id, dst->id, direction);
+#endif
+
+  nbr = (direction == MJR_LINK_IN ? src->in_nbr : src->out_nbr);
+  while (lnk)
+    {
+      // 1 - add same links to dst
+      mjr_container_add_link(ctx, dst,lnk->id, lnk->type, direction);
+      // 2 - and remove it from src
+      lnk->type = MJR_LINK_DELETE;
+      lnk = lnk->next;
+    }
+
+  mjr_container_link_cleanup(src,direction);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
+
+
+
+/** This function does split a block carried by given container
+ * to 2 pieces, a new container will be added by vaddr dst
+ *
  * @param ctxt mjollnir context strucutre
  * @param dst  destination address of wanted block
  * @param link_with link splitted blocks with specified link type
  */
-mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
-				 elfsh_Addr dst,
-				 u_int link_with)
+static mjrcontainer_t	*mjr_block_split(mjrcontext_t	*ctxt,
+					 elfsh_Addr	dst,
+					 u_int		link_with)
 {
   mjrcontainer_t	*tmpdst,*dstend;
   mjrblock_t		*blkdst;
   int			new_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
-
   if (!tmpdst)
     {
       tmpdst = mjr_create_block_container(ctxt, 0, dst, 1);
@@ -260,9 +263,7 @@ mjrcontainer_t	*mjr_split_block(mjrcontext_t *ctxt,
 	}
     } 
   else 
-    {
-      dstend = tmpdst;
-    }
+    dstend = tmpdst;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dstend));
 }
