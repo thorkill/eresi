@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.39 2007-06-22 16:16:05 may Exp $
+ * $Id: function.c,v 1.40 2007-06-22 16:58:26 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -592,62 +592,6 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.block_counter);
 }
-
-/**
- * Link function layer
- * @param ctxt mjollnir context structure
- * @param str source address
- * @param dst destination address
- * @param ret return address
- */
-int			mjr_functions_link_call(mjrcontext_t *ctxt, 
-						elfsh_Addr src, 
-						elfsh_Addr dst, 
-						elfsh_Addr ret)
-{
-  mjrcontainer_t	*fun;
-  mjrfunc_t		*tmpfunc;
-  char			*tmpstr,*md5;
-  elfsh_Addr		tmpaddr;
- 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_FUNCS__
-  fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n", __FUNCTION__, src, dst, ret);
-#endif
-
-  /* Link/Prepare function layer. We use an intermediate variable, else
-   the compiler optimize too hard and that make segfault (bug in gcc ?) */
-  tmpaddr = dst;
-  fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-  if (!fun)
-    {
-      tmpstr = _vaddr2str(tmpaddr);
-      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-      mjr_function_register(ctxt,tmpaddr, fun);
-    }
-
-  /* Add links between functions */
-  if (ctxt->curfunc)
-    {
-      mjr_container_add_link(ctxt, fun, ctxt->curfunc->id, 
-			     MJR_LINK_FUNC_RET, MJR_LINK_IN);
-      mjr_container_add_link(ctxt, ctxt->curfunc, fun->id, 
-			     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-    }
-
-  // when a function start, we do a fingerprint of it
-  md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
-
-  tmpfunc = (mjrfunc_t *) fun->data;
-
-  if (md5)
-    snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
 
 
 /**
