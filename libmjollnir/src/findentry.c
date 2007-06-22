@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: control.c,v 1.29 2007-06-09 22:35:16 thor Exp $
+** $Id: findentry.c,v 1.1 2007-06-22 16:16:05 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -163,38 +163,3 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
   mjr_blocks_link_call(context, vaddr, main_addr, vaddr + dis);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
-
-
-/**
- * This function trace execution flow and creates block depending on instruction.
- *
- * If instruction break execution flow, block is considerated finished and added 
- * to linked list of blocks (that is the content of the .edfmt.blocks section)
- *
- */
-int			mjr_trace_control(mjrcontext_t	*context,
-					  elfshobj_t    *obj, 
-					  asm_instr     *ins, 
-					  elfsh_Addr	vaddr)
-{
-  int				ret;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  mjr_history_write(context, ins, vaddr, MJR_HISTORY_CUR);
-  
-  /* Now abstract interpret the operational semantics of the current 
-     instruction set using the typed instruction system of libasm */
-  context->obj = obj;
-
-  mjr_history_write(context, ins, vaddr, 0);
-
-  ret = mjr_asm_flow(context);
-  
-  if (ret < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to interpret instruction type", -1);
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-

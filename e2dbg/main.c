@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.15 2007-06-08 00:52:50 may Exp $
+** $Id: main.c,v 1.16 2007-06-22 16:16:05 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -72,8 +72,10 @@ char*		vm_debugger_inject(elfshobj_t *file)
   fprintf(stderr, " [*] Now injecting debugger in target binary .. please wait .. \n");
 
   /* Inject debugger in target file */
-  profiler_enable_err();
-  profiler_enable_out();
+  //profiler_enable_err();
+  //profiler_enable_out();
+
+  //sleep(5);
 
   if (elfsh_inject_etrel(file, reloc) < 0)
     {
@@ -82,6 +84,10 @@ char*		vm_debugger_inject(elfshobj_t *file)
 	      version);
       return (NULL);
     }
+
+  //profiler_disable_err();
+  //profiler_disable_out();
+
   snprintf(buf, buflen, "%s.dbg", file->name);
   fprintf(stderr, " [*] Now saving target binary : %s \n", buf);
 

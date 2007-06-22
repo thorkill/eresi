@@ -4,7 +4,7 @@
  * 
  * Basic blocks related structures for libmjollnir
  *
- * $Id: libmjollnir-blocks.h,v 1.18 2007-04-07 23:00:01 thor Exp $
+ * $Id: libmjollnir-blocks.h,v 1.19 2007-06-22 16:16:05 may Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -19,9 +19,9 @@
 /* This format is never saved ondisk */
 typedef struct		s_iblock 
 {
-  u_int						symoff;	 /* block name offset in string table   */
-  elfsh_Addr			vaddr;	 /* block starting virtual address	*/
-	u_int						size;
+  u_int			symoff;	 /* block name offset in string table   */
+  elfsh_Addr		vaddr;	 /* block starting virtual address	*/
+  u_int			size;
 }			mjrblock_t;
 
 

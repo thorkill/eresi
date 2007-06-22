@@ -22,7 +22,7 @@ DBGNAME64		= libe2dbg64
 DBGNAME32O		= e2dbg-rel32.o
 DBGNAME64O		= e2dbg-rel64.o
 AR			= ar rc
-
+STRIP			= strip
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
@@ -63,7 +63,7 @@ all32			: ${OBJ32}
 			@$(AR) $(DBGNAME32).a $(OBJ32)
 			@$(RANLIB) $(DBGNAME32).a
 			@$(LD) -r $(OBJ32) $(EXTRAOBJ32) -o $(DBGNAME32O)
-
+			#$(STRIP) $(DBGNAME32O)
 
 all64			: ${OBJ64}
 			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
@@ -71,6 +71,7 @@ all64			: ${OBJ64}
 			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)
 			@$(AR) $(DBGNAME64).a $(OBJ64)
 			@$(RANLIB) $(DBGNAME64).a
+			#$(STRIP) $(DBGNAME64O)
 
 # This target is work in progress (static files debugger)
 et_rel			: ${OBJ}

@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.13 2007-05-23 16:05:39 may Exp $
+** $Id: relinject.c,v 1.14 2007-06-22 16:16:05 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -343,11 +343,12 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
   elfshsect_t	*reltab;
   char		sctname[BUFSIZ];
   u_int		index;
+  u_int		found;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Last pass : relocate each inserted section */
-  for (index = 0; index < rel->hdr->e_shnum; index++)
+  for (found = index = 0; index < rel->hdr->e_shnum; index++)
     {
       sect = elfsh_get_section_by_index(rel, index, NULL, NULL);
       if (sect == NULL)
@@ -365,6 +366,7 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 	  reltab = elfsh_get_section_by_name(rel, sctname, NULL, NULL, NULL);
 	  if (reltab == NULL)
 	    continue;
+	  found++;
 
 	  /* Find the injected instance of this allocatable section in the ET_EXEC */
 	  snprintf(sctname, sizeof(sctname), "%s%s", sect->parent->name, sect->name);
@@ -376,8 +378,12 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to relocate section", -1);
 	}
-
     }
+
+  if (!found)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot find any relocation table", -1);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -665,6 +671,8 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Entering final relocation loop\n");
 #endif
+
+  elfsh_print_sectlist(file, "before relocation"); 
 
   /* Now call the relocation on the object's sections */
   ret = elfsh_relocate_object(file, rel, ELFSH_RELOC_STAGE1);

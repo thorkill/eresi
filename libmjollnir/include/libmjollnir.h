@@ -24,42 +24,41 @@
 typedef struct		s_history
 {
   elfsh_Addr  		vaddr;
-  asm_instr		    instr;
-}	mjrhistory_t;
+  asm_instr		instr;
+}			mjrhistory_t;
 
 /* The context of a single session */
 typedef struct		_mjrContext 
 {
-  elfshobj_t		*obj;        /* elfsh object */
-  asm_processor		proc;  	     /* proc */
-  mjrcontainer_t	*curblock;   /* current working block */
-  mjrcontainer_t	*curfunc;    /* current working function */
-  mjrcontainer_t	**reg_containers;	/* Registerd containers */
-  btree_t		*block_btree;	/* binary tree of blocks used
-					   to speedup fuzzy searches */
-  u_int			cntnrs_size;	/* size of current containers */
-  u_int			next_id;	/* next container id */
+  elfshobj_t		*obj;			/* ELF binary object */
+  asm_processor		proc;			/* ASM processor */
+  mjrcontainer_t	*curblock;		/* Current working block */
+  mjrcontainer_t	*curfunc;		/* Current working function */
+  mjrcontainer_t	**reg_containers;	/* Registered containers */
+  btree_t		*block_btree;		/* Blocks Binary tree (speedup parent search) */
+  u_int			cntnrs_size;		/* Size of current containers */
+  u_int			next_id;		/* Next free container id */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
 #define			MJR_HISTORY_PREV	(MJR_HISTORY_LEN - 2)
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)
-  mjrhistory_t		hist[MJR_HISTORY_LEN];     /* History of instructions */
+  mjrhistory_t		hist[MJR_HISTORY_LEN];  /* History of instructions */
 
-  hash_t		funchash;    /* functions hash table */
-  hash_t		blkhash;     /* blocks hash table for this obj */
-  unsigned char		analysed;    /* do we analysed it */
-  u_int			calls_seen;  /* how many CALL we have seen */
-  u_int			calls_found; /* how many dest has beed resolved */
-}	mjrcontext_t;
+  hash_t		funchash;		/* functions hash table */
+  hash_t		blkhash;		/* blocks hash table for this obj */
+  unsigned char		analysed;		/* do we analysed it */
+  u_int			calls_seen;		/* how many CALL we have seen */
+  u_int			calls_found;		/* how many dest has beed resolved */
+}			mjrcontext_t;
+
 
 /* The session structure. Yes, libmjollnir is multisession */
-typedef struct	s_session
+typedef struct		s_session
 {
  mjrcontext_t		*cur;
  hash_t			ctx;
 }			mjrsession_t;
-
 
 
 /* Size of temp buffers */
@@ -70,11 +69,11 @@ typedef struct	s_session
 #define MJR_COFING_CALL_PREFIX "mjr.callsprefix"
 
 /* Default subroutines prefix in symbol recovery */
-#define MJR_CALL_PREFIX	"sub_"
+#define	MJR_CALL_PREFIX	"sub_"
 
 /* OS for which we are able to match the entry point */
-#define			MJR_BIN_LINUX	0
-#define			MJR_BIN_FREEBSD	1
+#define	MJR_BIN_LINUX	0
+#define	MJR_BIN_FREEBSD	1
 
 /* The hash declared in VM for gotos */
 extern hash_t	goto_hash;
@@ -168,31 +167,31 @@ void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
 void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
 
 /* container.c */
-void mjr_init_containers(mjrcontext_t*);
-void mjr_resize_containers(mjrcontext_t*);
-unsigned int mjr_register_container (mjrcontext_t*, mjrcontainer_t *cntnr);
-unsigned int mjr_register_container_id (mjrcontext_t*, mjrcontainer_t *cntnr);
-void mjr_unregister_container (mjrcontext_t*, u_int id);
+void		mjr_init_containers(mjrcontext_t*);
+void		mjr_resize_containers(mjrcontext_t*);
+unsigned int	mjr_register_container (mjrcontext_t*, mjrcontainer_t *cntnr);
+unsigned int	mjr_register_container_id (mjrcontext_t*, mjrcontainer_t *cntnr);
+void		mjr_unregister_container (mjrcontext_t*, u_int id);
 mjrcontainer_t *mjr_lookup_container (mjrcontext_t*,u_int id);
-mjrlink_t *mjr_container_add_link(mjrcontext_t *,
-				  mjrcontainer_t *cntnr, 
-				  u_int id, 
-				  int link_type, 
-				  int link_direction);
+mjrlink_t	*mjr_container_add_link(mjrcontext_t *,
+					mjrcontainer_t *cntnr, 
+					u_int id, 
+					int link_type, 
+					int link_direction);
 
-mjrlink_t *mjr_get_link_of_type(mjrlink_t *link, int link_type);
+mjrlink_t	*mjr_get_link_of_type(mjrlink_t *link, int link_type);
 
-mjrcontainer_t *mjr_create_block_container(mjrcontext_t*,
-					   u_int 	symoff,
-					   elfsh_Addr	vaddr,
-					   u_int	size);
+mjrcontainer_t	*mjr_create_block_container(mjrcontext_t*,
+					    u_int 	symoff,
+					    elfsh_Addr	vaddr,
+					    u_int	size);
 
-mjrcontainer_t *mjr_create_function_container(mjrcontext_t*,
-					      elfsh_Addr	vaddr,
-					      u_int		size,
-					      char		*name,
-					      mjrblock_t	*first,
-					      char		*md5);
+mjrcontainer_t	*mjr_create_function_container(mjrcontext_t*,
+					       elfsh_Addr	vaddr,
+					       u_int		size,
+					       char		*name,
+					       mjrblock_t	*first,
+					       char		*md5);
 
 mjrcontainer_t	*mjr_get_container_by_vaddr(mjrcontext_t*,elfsh_Addr vaddr,int type);
 int		mjr_container_link_cleanup(mjrcontainer_t *c,int direction);

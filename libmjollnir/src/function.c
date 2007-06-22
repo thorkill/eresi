@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.38 2007-06-09 22:35:16 thor Exp $
+ * $Id: function.c,v 1.39 2007-06-22 16:16:05 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -12,46 +12,49 @@
 /**
  * Function dumping procedure for debug purposes
  */
-void mjr_function_dump(mjrcontext_t* ctxt, char *where, mjrcontainer_t *c)
+void		mjr_function_dump(mjrcontext_t* ctxt, char *where, mjrcontainer_t *c)
 {
-  mjrfunc_t *f, *tmp;
-  mjrlink_t *cur;
-  f = (mjrfunc_t *) c->data;
+  mjrfunc_t	*f, *tmp;
+  mjrlink_t	*cur;
 
+  f = (mjrfunc_t *) c->data;
   fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] ID:%d No. Children: %d, No. Parents: %d\n",
-	  where, f->vaddr, (f->name) ? f->name : NULL ,(f->md5) ? f->md5 : NULL , c->id, c->out_nbr, c->in_nbr);
+	  where, f->vaddr, (f->name) ? f->name : NULL ,
+	  (f->md5) ? f->md5 : NULL , c->id, c->out_nbr, c->in_nbr);
   
   if (c->output)
-  {
-    fprintf(D_DESC," [D] Child functions:\n [x] ");
-
-    cur = c->output;
-
-    while(cur)
-      {
-	tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
-	fprintf(D_DESC,"%x ", tmp->vaddr);
-	cur = cur->next;
-      }
-    
-    fprintf(D_DESC,"\n");
-  }
+    {
+      fprintf(D_DESC," [D] Child functions:\n [x] ");
+      
+      cur = c->output;
+      
+      while (cur)
+	{
+	  tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
+	  fprintf(D_DESC,"%x ", tmp->vaddr);
+	  cur = cur->next;
+	}
+      
+      fprintf(D_DESC,"\n");
+    }
   
   if (c->input)
-  {
-    fprintf(D_DESC," [D] Parent functions:\n [x] ");
-    cur = c->input;
-    
-    while(cur)
-      {
-	tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
-	fprintf(D_DESC,"%x ", tmp->vaddr);
-	cur = cur->next;
-      }
-    
-    fprintf(D_DESC,"\n");
-  }
+    {
+      fprintf(D_DESC," [D] Parent functions:\n [x] ");
+      cur = c->input;
+      
+      while(cur)
+	{
+	  tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
+	  fprintf(D_DESC,"%x ", tmp->vaddr);
+	  cur = cur->next;
+	}
+      
+      fprintf(D_DESC,"\n");
+    }
 }
+
+
 
 /**
  * Save and prepare a buffer which will be saved into the elfshobj.
@@ -60,7 +63,6 @@ void mjr_function_dump(mjrcontext_t* ctxt, char *where, mjrcontainer_t *c)
  * @param buf buffer which contains the data
  * @return an offset where the data has been saved
  */
-
 u_int	 mjr_function_flow_save(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
 {
   u_int curOff,nbr;
@@ -598,30 +600,26 @@ int			mjr_functions_store(mjrcontext_t *ctxt)
  * @param dst destination address
  * @param ret return address
  */
-int	mjr_functions_link_call(mjrcontext_t *ctxt, 
-				elfsh_Addr src, 
-				elfsh_Addr dst, 
-				elfsh_Addr ret)
+int			mjr_functions_link_call(mjrcontext_t *ctxt, 
+						elfsh_Addr src, 
+						elfsh_Addr dst, 
+						elfsh_Addr ret)
 {
-  u_int			tmpaddr;
-  mjrcontainer_t	*true,*fun;
+  mjrcontainer_t	*fun;
   mjrfunc_t		*tmpfunc;
   char			*tmpstr,*md5;
-  
+  elfsh_Addr		tmpaddr;
+ 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_FUNCS__
-  fprintf(D_DESC,"[D] %s: src:%x dst:%x ret:%x\n",
-	  __FUNCTION__, src, dst, ret);
+  fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n", __FUNCTION__, src, dst, ret);
 #endif
-  /* Link/Prepare function layer */
-  true = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_STRICT);
 
-  /* XXX: put this in a vector of fingerprinting techniques */
-  tmpaddr = ((mjrblock_t *)mjr_lookup_container(ctxt,true->id)->data)->vaddr;
-
-  fun = mjr_function_get_by_vaddr(ctxt,tmpaddr);
-
+  /* Link/Prepare function layer. We use an intermediate variable, else
+   the compiler optimize too hard and that make segfault (bug in gcc ?) */
+  tmpaddr = dst;
+  fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
   if (!fun)
     {
       tmpstr = _vaddr2str(tmpaddr);
@@ -629,6 +627,7 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
       mjr_function_register(ctxt,tmpaddr, fun);
     }
 
+  /* Add links between functions */
   if (ctxt->curfunc)
     {
       mjr_container_add_link(ctxt, fun, ctxt->curfunc->id, 
@@ -647,6 +646,9 @@ int	mjr_functions_link_call(mjrcontext_t *ctxt,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
 
 /**
  * Register function container in the context

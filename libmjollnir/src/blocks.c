@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 mayhem
 **
-** $Id: blocks.c,v 1.62 2007-06-09 22:35:16 thor Exp $
+** $Id: blocks.c,v 1.63 2007-06-22 16:16:05 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -639,9 +639,9 @@ int		mjr_blocks_store(mjrcontext_t *ctxt)
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
-					elfsh_Addr   	vaddr, 
-					int		mode)
+mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
+						elfsh_Addr   	vaddr, 
+						int		mode)
 {
   mjrcontainer_t	*ret;
   btree_t		*retbtree;
@@ -666,9 +666,9 @@ mjrcontainer_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 	    __FUNCTION__, vaddr);
 #endif
   
-  if ((mode == 0) || ((mode == 1) && (ret)))
+  if ((mode == MJR_BLOCK_GET_STRICT) || ((mode == MJR_BLOCK_GET_FUZZY) && (ret)))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-
+  
   retbtree = ctxt->block_btree;
   while(retbtree)
     {

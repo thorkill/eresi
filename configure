@@ -514,6 +514,11 @@ echo "	@cd etrace && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'ETrace has been built successfully.' 	"	>> Makefile
 echo ""								>> Makefile
 
+echo "	@echo 'Building Evarista'			"	>> Makefile
+echo "	@cd evarista && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile
+echo "	@echo 'Evarista has been built successfully.' 	"	>> Makefile
+echo ""								>> Makefile
+
 echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
 echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
@@ -532,6 +537,7 @@ echo "install64 :"						       >> Makefile
 echo "	@ln -sf \$(BINPATH)elfsh64         \$(BINPATH)elfsh"	       >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg64         \$(BINPATH)e2dbg"	       >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace64        \$(BINPATH)etrace"	       >> Makefile
+echo "	@ln -sf \$(BINPATH)evarista64      \$(BINPATH)evarista"	       >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect64.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh64.a    \$(LIBPATH)libelfsh.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg64.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
@@ -568,6 +574,7 @@ echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile
+echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
@@ -601,6 +608,7 @@ echo "	@chmod 644 \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	@chmod 755 \$(BINPATH)elfsh?? "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)e2dbg??"				>> Makefile
 echo "	@chmod 755 \$(BINPATH)etrace?? "		        >> Makefile
+echo "	@chmod 755 \$(BINPATH)evarista?? "		        >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
@@ -633,7 +641,7 @@ if [ "$FREEBSD" = "1" ]; then
     echo "	@ldconfig -R"                                   >> Makefile
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libe2dbg, \\"    >> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, Libe2dbg, \\" >> Makefile
 echo "Libmjollnir, Libasm, Libedfmt, Libui, Librevm, and \\"    >> Makefile
 echo "Libaspect installed successfully .'"			>> Makefile
 echo "	@echo Default installation is 32bits : make install64 if requested" >> Makefile
@@ -648,6 +656,7 @@ echo "uninstall: "						>> Makefile
 echo "	rm -f  \$(BINPATH)/elfsh*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/e2dbg*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace*"				>> Makefile
+echo "	rm -f  \$(BINPATH)/evarista*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libe2dbg*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
@@ -669,9 +678,9 @@ echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
 
-echo "	@echo 'ELFsh, E2dbg, Etrace, Libelfsh, Libmjollnir, \\" >> Makefile
-echo "Libaspect, Libedfmt, Libe2dbg, Libui and Libasm       \\" >> Makefile
-echo "uninstalled successfully' "				>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, \\"    >> Makefile
+echo "Libmjollnir, Libaspect, Libedfmt, Libe2dbg, Libui and \\" >> Makefile
+echo "Libasm uninstalled successfully' "			>> Makefile
 echo ""								>> Makefile
 
 echo "clean   : cleandoc "					>> Makefile
@@ -679,6 +688,7 @@ echo "	@echo 'Cleaning tree ...' "				>> Makefile
 echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
+echo "	cd evarista  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
@@ -699,6 +709,7 @@ echo "	@echo 'Fcleaning tree ...' "				>> Makefile
 echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd evarista  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile
@@ -736,8 +747,8 @@ echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
-echo "  elibc/include/*.h elibc/*.c etrace/*.c \\"		>> Makefile
-echo "  etrace/include/*.h "					>> Makefile
+echo "  elibc/include/*.h elibc/*.c etrace/*.c evarista/*.c \\" >> Makefile
+echo "  etrace/include/*.h evarista/include/*.h"		>> Makefile
 fi
 
 if [ "$CTAGS" = "1" ]; then
@@ -759,6 +770,7 @@ echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
 echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
+echo "  evarista/*.c evarista/include/*.h "			>> Makefile
 echo ""								>> Makefile
 fi
 
@@ -772,13 +784,14 @@ echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile
 echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile
 echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile
-echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c           " >> Makefile
+echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"         >> Makefile
+echo "  evarista/*.c evarista/include/*.h"                      >> Makefile
 echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
 echo "	libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*.c \\" >> Makefile
 echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
-echo "	libasm/src/arch/*/handlers/*.c libedfmt/*.c   "         >> Makefile
+echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c evarista/*.c" >> Makefile
 echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile
 echo "	@wc -l libaspect/*.c "					>> Makefile
 echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile
@@ -804,6 +817,8 @@ echo "	@echo '###############' E2DBG only '#############'"	>> Makefile
 echo "	@wc -l e2dbg/*.c "				        >> Makefile
 echo "	@echo '###############' ETRACE only '#############'"	>> Makefile
 echo "	@wc -l etrace/*.c "					>> Makefile
+echo "	@echo '###############' EVARISTA only '#############'"	>> Makefile
+echo "	@wc -l evarista/*.c "					>> Makefile
 echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
 echo "	@wc -l modules/*.c "					>> Makefile
 echo ""								>> Makefile

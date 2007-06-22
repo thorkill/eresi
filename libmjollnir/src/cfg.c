@@ -10,13 +10,17 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: types.c,v 1.37 2007-05-15 12:13:03 thor Exp $
+** $Id: cfg.c,v 1.1 2007-06-22 16:16:05 may Exp $
 **
 */
 #include "libmjollnir.h"
 
 
-/**
+/** This function trace execution flow and creates block depending on instruction.
+ *
+ * If instruction break execution flow, block is considerated finished and added 
+ * to linked list of blocks (that is the content of the .edfmt.blocks section)
+ *
  *  Depending on instruction type -based on IA32 instruction set-
  *
  *  ASM_TYPE_CONDBRANCH: jcc, loop, MAY NOT break execution flow
@@ -29,29 +33,30 @@
  * FIXME : this function must be tested on other architectures
  *
  */
-int		mjr_asm_flow(mjrcontext_t *context)
+int			mjr_trace_control(mjrcontext_t *context,
+					  elfshobj_t    *obj, 
+					  asm_instr     *curins, 
+					  elfsh_Addr	curvaddr)
 {
   int			ilen;
   mjrcontainer_t	*fun;
-  asm_instr		*curins;
-  elfsh_Addr		curvaddr, dstaddr;
+  elfsh_Addr		dstaddr;
+  u_int			addend;
 
+  /* Initialize stuffs */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  curins   = &context->hist[MJR_HISTORY_CUR].instr;
-  curvaddr = context->hist[MJR_HISTORY_CUR].vaddr;
-
-  ilen     = asm_instr_len(curins);  
-
-  if ((fun = mjr_function_get_by_vaddr(context, curvaddr)))
-      context->curfunc = fun;
+  context->obj = obj;
+  mjr_history_write(context, curins, curvaddr, MJR_HISTORY_CUR);
+  mjr_history_write(context, curins, curvaddr, 0);
+  ilen = asm_instr_len(curins);  
+  fun = mjr_function_get_by_vaddr(context, curvaddr);
+  if (fun)
+    context->curfunc = fun;
   else 
-      mjr_asm_check_function_start(context);
- 
+    mjr_asm_check_function_start(context);
   fun = NULL;
 
   /* Switch on instruction types provided by libasm */
-
   if (curins->type == ASM_TYPE_CONDBRANCH)
     {
       dstaddr = mjr_get_jmp_destaddr(context);
@@ -92,6 +97,9 @@ int		mjr_asm_flow(mjrcontext_t *context)
       
       context->calls_seen++;
 
+      /* For delay slot */
+      addend = (context->proc.type == ASM_PROC_SPARC ? 4 : 0);
+
       /* 20070102
        * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
        * possible libasm bug or mjollnir.
@@ -99,11 +107,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
       if ((dstaddr) && (dstaddr != -1))
     	{
 	  /* Link block layer */
-	  mjr_blocks_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
+	  mjr_blocks_link_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
 
 	  /* Link function layer */
-	  mjr_functions_link_call(context, curvaddr, dstaddr, curvaddr + ilen);
-
+	  mjr_functions_link_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
     	}
     }
   else if (curins->type == ASM_TYPE_RETPROC)
@@ -144,6 +151,10 @@ int		mjr_asm_flow(mjrcontext_t *context)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+
 
 
 /**
