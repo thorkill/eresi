@@ -9,7 +9,7 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.14 2007-06-08 19:10:23 rafael Exp $
+ ** $Id: sht_rebuild.c,v 1.15 2007-06-23 17:27:54 rival Exp $
  **
  */
 #include "libelfsh.h"
@@ -222,7 +222,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
 						case PT_LOAD:
 						case PT_DYNAMIC:
 						case PT_INTERP:
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
 						case PT_TLS:
 						case PT_GNU_EH_FRAME:
 						case PT_GNU_STACK:
@@ -275,7 +275,7 @@ static int		elfsh_init_sht(elfshobj_t *file, u_int num)
 								snprintf(name, sizeof(name), ".note%d", nnames++);
 								type = SHT_NOTE;
 								break;
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__NetBSD__)
 						case PT_TLS:
 								snprintf(name, sizeof(name), ".tls%d", tlsnames++);
 								type = SHT_PROGBITS;
