@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.36 2007-06-01 17:26:59 mxatone Exp $
+** $Id: tables.c,v 1.37 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -1120,13 +1120,15 @@ void setup_color_type()
 /* Setup all used sub functions */
 void setup_traces_table()
 {
-  traces_addcmd("add"    , (void *) traces_add    , 2, 1);
-  traces_addcmd("rm"     , (void *) traces_rm     , 2, 1);
-  traces_addcmd("enable" , (void *) traces_enable , 2, 1);
-  traces_addcmd("disable", (void *) traces_disable, 2, 1);
-  traces_addcmd("create" , (void *) traces_create , 2, 1);
-  traces_addcmd("delete" , (void *) traces_delete , 2, 0);
-  traces_addcmd("flush"  , (void *) traces_flush  , 2, 0);
+  traces_addcmd("add"      , (void *) traces_add      , 2, 1);
+  traces_addcmd("rm"       , (void *) traces_rm       , 2, 1);
+  traces_addcmd("exclude"  , (void *) traces_exclude  , 2, 1);
+  traces_addcmd("rmexclude", (void *) traces_rmexclude, 2, 1);
+  traces_addcmd("enable"   , (void *) traces_enable   , 2, 1);
+  traces_addcmd("disable"  , (void *) traces_disable  , 2, 1);
+  traces_addcmd("create"   , (void *) traces_create   , 2, 1);
+  traces_addcmd("delete"   , (void *) traces_delete   , 2, 0);
+  traces_addcmd("flush"    , (void *) traces_flush    , 2, 0);
 }
 
 /* Setup all hash tables */

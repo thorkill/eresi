@@ -6,7 +6,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.13 2007-06-17 19:50:42 mxatone Exp $
+** $Id: traces.c,v 1.14 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,12 +20,13 @@ char buf[BUFSIZ];
 
 #define TRACE_USED_longjmp		0
 #define TRACE_USED__setjmp		1
-#define TRACE_USED_signal		2
+#define TRACE_USED_sigaction		2
 #define TRACE_USED_snprintf		3
 #define TRACE_USED_memset		4
 #define TRACE_USED_gettimeofday		5
 #define TRACE_USED_write		6
-#define TRACE_USED_MAX			7
+#define TRACE_USED_exit			7
+#define TRACE_USED_MAX			8
 
 #define TRACE_UNTRACABLE_NAME "untracable"
 
@@ -49,11 +50,12 @@ trace_used trace_functions[] =
   { 
     TRACE_FUNCTIONS_ADD(longjmp),
     TRACE_FUNCTIONS_ADD(_setjmp),
-    TRACE_FUNCTIONS_ADD(signal),
+    TRACE_FUNCTIONS_ADD(sigaction),
     TRACE_FUNCTIONS_ADD(snprintf),
     TRACE_FUNCTIONS_ADD(memset),
     TRACE_FUNCTIONS_ADD(gettimeofday),
     TRACE_FUNCTIONS_ADD(write),
+    TRACE_FUNCTIONS_ADD(exit),
     { "", 0 }
   };
 
@@ -63,12 +65,31 @@ trace_used trace_functions[] =
 hash_t traces_table;
 
 /**
+ * Exclude hash table which contain regex
+ */
+hash_t exclude_table;
+
+/**
  * Whole active elements 
  */
 int trace_enabled_count = 0;
 
-#define ELFSH_TRACES_TABLE_NAME "elfsh_traces_table"
-#define ELFSH_TRACES_PATTERN "traces_%s"
+#define ELFSH_TRACES_TABLE_NAME 	"elfsh_traces_table"
+#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "elfsh_traces_exclude_table"
+#define ELFSH_TRACES_PATTERN 		"traces_%s"
+
+char *last_parsed_function = NULL;
+
+/**
+ * When an error occur in etrace. This function is used to show buggy function name.
+ * @return function name
+ */
+char			*elfsh_traces_geterrfunc()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, last_parsed_function);
+}
 
 /**
  * Check every function used on the new module if there already exist or not
@@ -190,6 +211,44 @@ static int		elfsh_traces_queue_clean()
 char		bufex[BUFSIZ];
 
 /**
+ * Check if this function name is excluded
+ * @param name function name
+ */
+static int		elfsh_traces_check_exclude(char *name)
+{
+  u_int			index;
+  int			keynbr;
+  char			**keys;
+  regex_t		*preg;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (name && exclude_table.ent)
+    {
+      keys = hash_get_keys(&exclude_table, &keynbr);
+      
+      if (keys)
+	{
+	  for (index = 0; index < keynbr; index++)
+	    {
+	      preg = hash_get(&exclude_table, keys[index]);
+
+	      if (preg)
+		{
+		  /* We exclude this function */
+		  if (regexec(preg, name, 0, 0, 0) == 0)
+		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+		}
+	    }
+
+	  hash_free_keys(keys);
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
  * Generate each function on the file 
  * @param fp file pointer
  * @param file object (target)
@@ -217,6 +276,11 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 
 	  if (ret_trace && ret_trace->enable && ret_trace->file->id == file->id)
 	    {
+	      /* We have an exclude hash table to check. This way, user has a total control
+		 on traced function using etrace for example. */
+	      if (elfsh_traces_check_exclude(ret_trace->funcname) < 0)
+		continue;
+
 	      /* Add in the queue */
 	      ret = elfsh_traces_queue_add(ret_trace);
 
@@ -249,6 +313,7 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 		       ")\n{\n"
 		       "\tint ret;\n\tunsigned char readable, isstring;\n"
 		       "\tstruct timeval before, after;\n"
+		       "\tINITSIGNAL();\n"
 		       "\tgettrace_time();\n"
 		       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %s(\", pad_print(1));\n"
 		       "\tWRITENOW();\n",
@@ -432,21 +497,43 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "#include <sys/resource.h>\n\n"
 	   "#define T_longjmp %slongjmp\n"
 	   "#define T_setjmp %s_setjmp\n"
-	   "#define T_signal %ssignal\n"
+	   "#define T_sigaction %ssigaction\n"
 	   "#define T_snprintf %ssnprintf\n"
 	   "#define T_memset %smemset\n"
 	   "#define T_gettimeofday %sgettimeofday\n"
 	   "#define T_write %swrite\n"
+	   "#define T_exit %sexit\n"
 	   "#define MAX_CHECK_CHAR 3\n"
 	   "#define PRINTABLE(c) (c >= 32 && c <= 126)\n"
 	   "#define STDERR 2\n"
 	   "#define ARG(_size) trace_arg_##_size\n"
-	   "#define WRITENOW() T_write(STDERR, logbuf, strlen(logbuf)+1)\n"
+	   "#define WRITENOW() do { T_write(STDERR, logbuf, strlen(logbuf)+1); } while(0)\n"
 	   "jmp_buf jBuf;\n"
 	   "#define LOGBUFSIZ 256\n"
 	   "char logbuf[LOGBUFSIZ];\n"
 	   "suseconds_t msec;\n"
 	   "time_t sec;\n"
+	   "u_char siginit = %d;\n"
+	   "#define INITSIGNAL() \\\ndo { if (siginit == 0) { initsignal(); siginit = 1; } } while(0)\n"
+	   "void sigcrash(int signal, siginfo_t *si, void *context)\n{\n"
+	   "\tsnprintf(logbuf, LOGBUFSIZ - 1, \n"
+	   "\t\" [!] The tracer received a signal %%s. "
+	   "Currently, the tracer is unable to follow context dependent functions.\\n\"\n"
+	   "\t\"\t~> Please check previous functions.\\n\", "
+	   "(signal == SIGILL ? \"SIGILL\" : (signal == SIGFPE ? \"SIGFPE\" : \"SIGSEGV\")));\n"
+	   "\tWRITENOW();\n"
+	   "\tT_exit(-1);\n"
+	   "}\n\n"
+	   "void initsignal()\n{\n"
+	   "\tstruct sigaction sa;\n"
+	   "\tsa.sa_sigaction = (void *) sigcrash;\n"
+	   "\tsa.sa_flags = SA_ONSTACK | SA_SIGINFO | SA_NODEFER;\n"
+	   "\tsigemptyset(&sa.sa_mask);\n"
+	   "\tT_sigaction(SIGSEGV, &sa, NULL);\n"
+	   "\tT_sigaction(SIGFPE, &sa, NULL);\n"
+	   "\tT_sigaction(SIGILL, &sa, NULL);\n"
+	   "\tT_sigaction(SIGBUS, &sa, NULL);\n"
+	   "}\n\n"
 	   "unsigned char is_string(const void *ptr)\n{\n"
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
@@ -462,17 +549,22 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "unsigned char check_read_ptr(const void *ptr, unsigned long size)\n{\n"
 	   "\tint index;\n"
 	   "\tchar elem;\n"
-	   "\tvoid (*prev_sig) (int sig);\n\n"
+	   "\tstruct sigaction sa, segvoldsa, busoldsa;\n"
 	   "\tif (!ptr || size <= 0 || ptr < (void*)0x5000 || ptr == (void *)-1)\n"
 	   "\t\treturn 0;\n\n"
-	   "\tif(T_setjmp(jBuf)) {\n"
-	   "\tT_signal(SIGSEGV, prev_sig);\n"
+	   "\tif(T_setjmp(jBuf))\n"
+	   "\t\treturn 0;\n\n"
+	   "\tsa.sa_handler = (void *) check_ptr_failed;\n"
+	   "\tsa.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_NODEFER;\n"
+	   "\tsigemptyset(&sa.sa_mask);\n"
+	   "\tif (T_sigaction(SIGSEGV, &sa, &segvoldsa) < 0)\n"
 	   "\t\treturn 0;\n"
-	   "}\n\n"
-	   "\tprev_sig = T_signal(SIGSEGV, check_ptr_failed);\n\n"
+	   "\tif (T_sigaction(SIGBUS, &sa, &busoldsa) < 0)\n"
+	   "\t\treturn 0;\n"
 	   "\tfor (index = 0; index < size; index++)\n"
 	   "\t\telem = ((char *)ptr)[index];\n\n"
-	   "\tT_signal(SIGSEGV, prev_sig);\n"
+	   "\tT_sigaction(SIGSEGV, &segvoldsa, NULL);\n"
+	   "\tT_sigaction(SIGBUS, &busoldsa, NULL);\n"
 	   "\treturn 1;\n"
 	   "}\n\n"
 	   "char tmpbuf[256];\n"
@@ -511,15 +603,17 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "}\n",
 	   FUNC_BEGIN(longjmp),
 	   FUNC_BEGIN(_setjmp),
-	   FUNC_BEGIN(signal),
+	   FUNC_BEGIN(sigaction),
 	   FUNC_BEGIN(snprintf),
 	   FUNC_BEGIN(memset),
 	   FUNC_BEGIN(gettimeofday),
-	   FUNC_BEGIN(write));
+	   FUNC_BEGIN(write),
+	   FUNC_BEGIN(exit),
+	   0);
   fwrite(buf, strlen(buf), sizeof(char), fp);
 
   /* Setup structures */
-  for (index = sizeof(elfsh_Addr); index < 255; index++)
+  for (index = sizeof(elfsh_Addr); index < 512; index++)
     {
       if (index > sizeof(elfsh_Addr))
 	{
@@ -597,12 +691,17 @@ int			elfsh_traces_save(elfshobj_t *file)
 		   "Failed to inject ET_REL with workspace", -1);
     }
 
-  // Hijack functions with the new functions injected 
+  last_parsed_function = NULL;
+
+  /* Hijack functions with the new functions injected */
   for (index = 0; index < queue_count && trace_queue[index]; index++)
   {
+    /* Keep function name for etrace */
+    last_parsed_function = trace_queue[index]->funcname;
+
     snprintf(buf, BUFSIZ, "%s_trace", trace_queue[index]->funcname);	  
 
-    // Retrieve symbol
+    /* Retrieve symbol */
     dst = elfsh_get_symbol_by_name(file, buf);
 
     if (dst == NULL)
@@ -655,6 +754,8 @@ int			elfsh_traces_save(elfshobj_t *file)
 		     "Failed to hijack a function", -1);
       }
   }
+
+  last_parsed_function = NULL;
 
   elfsh_traces_queue_clean();
 
@@ -826,6 +927,8 @@ static int		elfsh_traces_untracable(elfshobj_t *file, char *name)
 	{
 	  elfsh_traces_add_untracable("__libc_start_main");
 	  elfsh_traces_add_untracable("_start");
+	  elfsh_traces_add_untracable("_init");
+	  elfsh_traces_add_untracable("_fini");
 	}
 
       if (ostype == ELFSH_OS_FREEBSD)
@@ -899,11 +1002,6 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
       /* Compare names */
       if (strcmp(name, func_name) != 0)
 	continue;
-
-      // FIXME: A function name containing "." will not be compiled right with gcc 
-      if (strstr(func_name, "."))
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "We didn't support function name with a '.'", -1);
 
       /* Unusable symbol */
       if (symtab[index].st_value == 0)
@@ -1207,6 +1305,10 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!file || !name || !vaddr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
   /* Some function can't be traced */
   if (elfsh_traces_untracable(file, name) == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -1256,6 +1358,10 @@ elfshtraces_t 		*elfsh_traces_funcadd(char *trace,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!name || !newtrace)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", NULL);
+
   table = elfsh_traces_gettrace(trace);
 
   if (!table)
@@ -1284,6 +1390,10 @@ int			elfsh_traces_funcrm(char *trace, char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!trace || !name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
   table = elfsh_traces_gettrace(trace);
 
   if (!table)
@@ -1303,6 +1413,65 @@ int			elfsh_traces_funcrm(char *trace, char *name)
 }
 
 /**
+ * Exclude functions by regex during the last stage
+ * @param regstr reg string
+ */
+int			elfsh_traces_funcexclude(char *regstr)
+{
+  char			funcreg[256];
+  size_t		len;
+  regex_t		preg, *set;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (!regstr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Init table if needed */
+  if (exclude_table.ent == NULL)
+    hash_init(&exclude_table, ELFSH_TRACES_EXCLUDE_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
+
+  len = strlen(regstr);
+  snprintf(funcreg, 255, "%s%s%s", 
+	   regstr[0] != '^' ? "^" : "",
+	   regstr,
+	   regstr[len-1] != '$' ? "$" : "");
+
+  /* Check if its a valid regexec */
+  if (regcomp(&preg, funcreg, 0) != 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid regex", -1);
+
+  /* Alloc and copy our regex */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, set, sizeof(regex_t), -1);
+  memcpy(set, &preg, sizeof(regex_t));
+
+  /* Add it to the hash table */
+  hash_add(&exclude_table, strdup(regstr), set);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Remove an exclude function by regex during the last stage
+ * @param regstr reg string
+ */
+int			elfsh_traces_funcrmexclude(char *regstr)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (!regstr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  if (exclude_table.ent)
+    hash_del(&exclude_table, regstr);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
  * Enable the function from the trace table 
  * @param trace trace name
  * @param name function name
@@ -1313,6 +1482,10 @@ int			elfsh_traces_funcenable(char *trace, char *name)
   hash_t		*table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!trace || !name)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
 
   table = elfsh_traces_gettrace(trace);
 
@@ -1555,8 +1728,8 @@ int			elfsh_traces_deletetrace(char *trace)
  * @param fileout returned file pointer
  * @param vaddrout returned virtual address
  */
-int			elfsh_resolv_function(elfshobj_t *filein, elfsh_Addr vaddrin,
-					      elfshobj_t **fileout, elfsh_Addr *vaddrout)
+int			elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+						     elfshobj_t **fileout, elfsh_Addr *vaddrout)
 {
   elfshobj_t		*file;
   elfshsect_t		*sect;

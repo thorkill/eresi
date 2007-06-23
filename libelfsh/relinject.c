@@ -10,7 +10,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.14 2007-06-22 16:16:05 may Exp $
+** $Id: relinject.c,v 1.15 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -296,7 +296,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  if (sect == NULL)
 	    {
 
-#if	 1 //__DEBUG_RELADD__
+#if   	__DEBUG_RELADD__
 	      elfsh_print_sectlist(reltab->parent, "HEH");
 	      fprintf(stderr, "[DEBUG_RELADD] Did not found %s section (sym = %s) \n", 
 		      tmpname, name);
@@ -670,9 +670,9 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Entering final relocation loop\n");
-#endif
 
   elfsh_print_sectlist(file, "before relocation"); 
+#endif
 
   /* Now call the relocation on the object's sections */
   ret = elfsh_relocate_object(file, rel, ELFSH_RELOC_STAGE1);

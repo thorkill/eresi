@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.25 2007-06-07 12:01:00 may Exp $
+** $Id: init.c,v 1.26 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 
@@ -28,6 +28,8 @@ void		sigint_handler(int signum)
 /* The infinite main loop */
 int		vm_loop(int argc, char **argv)
 {
+  char		*buggyfunc;
+  char		logbuf[256];
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -160,7 +162,29 @@ int		vm_loop(int argc, char **argv)
   /* Implicit unload or save if we are not in interactive mode */
   if ((world.state.vm_mode == REVM_STATE_CMDLINE 
        || world.state.vm_mode == REVM_STATE_TRACER) && world.curjob->current)
-    ret = vm_unload_cwfiles();
+    {
+      /* Start tracing if we are on tracer state (etrace) */
+      if (world.state.vm_mode == REVM_STATE_TRACER)
+	{
+	  profiler_error_reset();
+	  if (traces_run(world.curjob->current, NULL, 0) < 0)
+	    {
+	      buggyfunc = elfsh_traces_geterrfunc();
+	      
+	      /* Not NULL if issue occurs when we iterate though functions */
+	      if (buggyfunc)
+		{
+		  snprintf(logbuf, 255, " [!] There is an issue with the function: %s\n",
+			   buggyfunc);
+		  vm_output(logbuf);
+		}
+
+	      profiler_error();
+	    }
+	}
+
+      ret = vm_unload_cwfiles();
+    }
 
 #if defined(USE_READLN)
   rl_callback_handler_remove();

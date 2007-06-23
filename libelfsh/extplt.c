@@ -6,7 +6,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.15 2007-05-23 16:56:55 may Exp $
+ * $Id: extplt.c,v 1.16 2007-06-23 17:11:00 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -403,7 +403,9 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 		      "Invalid NULL parameter", NULL);
   len = strlen(name);
 
-  fprintf(stderr, "Requesting a new PLT entry for symbol %s \n", name);
+  // This information is not always interering, add it when you need it
+  // add a DEBUG_ define, but do not commit uncommented.
+  //fprintf(stderr, "Requesting a new PLT entry for symbol %s \n", name);
 
   /* Get needed sections */
   extplt = file->secthash[ELFSH_SECTION_EXTPLT];

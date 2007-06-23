@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mxatone
 **
-** $Id: tables.c,v 1.4 2007-05-03 14:47:14 mxatone Exp $
+** $Id: tables.c,v 1.5 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "etrace.h"
@@ -23,13 +23,15 @@ void	setup_local_cmdhash()
   vm_addcmd(CMD_SHTRM , (void *) cmd_shtrm , (void *) NULL           , 1, HLP_SHTRM);
 
   /* Trace commands */
-  vm_addcmd(CMD_TRACES  , (void *) cmd_traces  , (void *) vm_getvarparams , 1, HLP_TRACES);
-  vm_addcmd(CMD_TRACEADD, (void *) cmd_traceadd, (void *) vm_getvarparams , 1, HLP_TRACEADD);
-  vm_addcmd(CMD_TRACERUN, (void *) cmd_tracerun, (void *) vm_getvarparams , 1, HLP_TRACERUN);
+  vm_addcmd(CMD_TRACES      , (void *) cmd_traces      , (void *) vm_getvarparams , 1, HLP_TRACES);
+  vm_addcmd(CMD_TRACEADD    , (void *) cmd_traceadd    , (void *) vm_getvarparams , 1, HLP_TRACEADD);
+  vm_addcmd(CMD_TRACEEXCLUDE, (void *) cmd_traceexclude, (void *) vm_getvarparams , 1, HLP_TRACEEXCLUDE);;
+  vm_addcmd(CMD_TRACERUN    , (void *) cmd_tracerun    , (void *) vm_getvarparams , 1, HLP_TRACERUN);
 
   if (world.state.vm_mode == REVM_STATE_TRACER)
     {
       /* Traces aliases */
-      vm_addcmd(CMD_TRACEADD_CMDLINE, (void *) cmd_traceadd, (void *) vm_getvarparams, 1, HLP_TRACEADD);
+      vm_addcmd(CMD_TRACEADD_CMDLINE , (void *) cmd_traceadd    , (void *) vm_getvarparams, 1, HLP_TRACEADD);
+      vm_addcmd(CMD_TRACEEXCL_CMDLINE, (void *) cmd_traceexclude, (void *) vm_getvarparams, 1, HLP_TRACEEXCLUDE);
     }
 }

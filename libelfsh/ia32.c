@@ -4,7 +4,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.16 2007-06-17 19:50:42 mxatone Exp $
+ * $Id: ia32.c,v 1.17 2007-06-23 17:11:00 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -757,7 +757,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
   max_arg_offset = 0;
 
   /* Find the real function if this vaddr point to plt section */
-  elfsh_resolv_function(file, vaddr, &file, &vaddr);
+  elfsh_resolv_remote_function(file, vaddr, &file, &vaddr);
 
 #if __DEBUG_ARG_COUNT__
   printf("[DEBUG_ARG_COUNT] Arg count into file: %s with addr: 0x%x \n", file->name, vaddr);

@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.24 2007-05-23 13:50:39 may Exp $
+** $Id: revm-help.h,v 1.25 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -76,16 +76,19 @@
 #define	HLP_RELINJCT		"Relocate a new .o file inside the current file or process"
 #define	HLP_STOP		"Raise a SIGSTOP to the current process"
 #define HLP_TRACES	    	"\t Trace some functions\n\n\t Trace command options: \n\n"  \
-	       			" add     funcname     [optional_traces_name] : add a function to a given trace\n"  \
-	       			" rm      funcname     [optional_traces_name] : remove a function from a given trace\n"  \
-	       			" enable  funcname|all [optional_traces_name] : enable tracing for a function in a given trace (enabled by default after a add)\n"   \
-	       			" disable funcname|all [optional_traces_name] : disable tracing for a function in a given trace\n"				     \
-	       			" create  tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default\n"		     \
-	       			" delete  tracename                           : delete a trace\n"								     \
-	       			" flush   tracename                           : remove all functions from a given trace\n"					     \
-	       			" [optional_traces_name]                      : list all available traces\n\n"
+	       			" add       funcreg      [optional_traces_name] : add a function to a given trace\n"  \
+	       			" rm        funcname     [optional_traces_name] : remove a function from a given trace\n"  \
+	       			" exclude   funcreg      <others funcreg>       : add a list of regex to exclude at the end\n"  \
+	       			" rmexclude funcreg      <others funcreg>       : delete a regex from the exclude list\n"  \
+	       			" enable    funcname|all [optional_traces_name] : enable tracing for a function in a given trace (enabled by default after a add)\n"   \
+	       			" disable   funcname|all [optional_traces_name] : disable tracing for a function in a given trace\n"				     \
+	       			" create    tracename    <optionals funcnames>  : create a new trace with a pool of traced functions by default\n"		     \
+	       			" delete    tracename                           : delete a trace\n"								     \
+	       			" flush     tracename                           : remove all functions from a given trace\n"					     \
+	       			" [optional_traces_name]                        : list all available traces\n\n"
 
 #define HLP_TRACEADD		"\t Add all submited functions on global traces scope.\n\n"
+#define HLP_TRACEEXCLUDE	"\t Add all submited functions to exclude list.\n\n"
 #define HLP_TRACERUN		"\t Run a traced binary directly.\n\n"
 
 #define HLP_COLOR               "Associates data types to colors \n\n\t"				 \

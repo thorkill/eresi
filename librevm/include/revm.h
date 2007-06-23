@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm.h,v 1.65 2007-06-17 19:50:42 mxatone Exp $
+** $Id: revm.h,v 1.66 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #ifndef __REVM_H_
@@ -273,8 +273,10 @@ extern asm_processor	proc;
 #define CMD_NOCOLOR             "nocolor"
 #define CMD_TRACES		"traces"
 #define CMD_TRACEADD		"traceadd"
+#define CMD_TRACEEXCLUDE	"traceexclude"
 #define CMD_TRACERUN		"tracerun"
 #define CMD_TRACEADD_CMDLINE	"t"
+#define CMD_TRACEEXCL_CMDLINE	"u"
 #define	CMD_TYPE		"type"
 #define	CMD_TYPEDEF		"typedef"
 
@@ -817,6 +819,7 @@ int		cmd_export();
 int		cmd_edit();
 int		cmd_traces();
 int		cmd_traceadd();
+int		cmd_traceexclude();
 int		cmd_tracerun();
 int		cmd_shared();
 int             cmd_verneed();
@@ -975,17 +978,20 @@ edfmtfunc_t 	*vm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_
 elfshtraces_t  	*vm_traces_createargs(elfshobj_t *file, char *name,
 					 edfmtfunc_t *func, elfsh_Addr vaddr,
 					 u_char external);
-FILE		  *vm_traces_init(char *tfname, char *rsofname, char *rtfname);
-int		  vm_traces_add(FILE *fp, int *argcount, char *func_name);
-int 	          traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
-int		  traces_add(elfshobj_t *file, char *name, char **optarg);
-int		  traces_rm(elfshobj_t *file, char *name, char **optarg);
-int		  traces_enable(elfshobj_t *file, char *name, char **optarg);
-int		  traces_disable(elfshobj_t *file, char *name, char **optarg);
-int		  traces_create(elfshobj_t *file, char *name, char **optarg);
-int		  traces_delete(elfshobj_t *file, char *name, char **optarg);
-int		  traces_flush(elfshobj_t *file, char *name, char **optarg);
-int		  traces_list(elfshobj_t *file, char *name, char **optarg);
+FILE	      	*vm_traces_init(char *tfname, char *rsofname, char *rtfname);
+int	       	vm_traces_add(FILE *fp, int *argcount, char *func_name);
+int 	       	traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
+int	       	traces_add(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_rm(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_exclude(elfshobj_t *file, char *freg, char **oreg);
+int		traces_rmexclude(elfshobj_t *file, char *freg, char **oreg);
+int	      	traces_enable(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_disable(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_create(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_delete(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_flush(elfshobj_t *file, char *name, char **optarg);
+int	       	traces_list(elfshobj_t *file, char *name, char **optarg);
+int		traces_run(elfshobj_t *file, char **argv, int argc);
 
 /* Hash functions */
 int             vm_hashunk(int i);

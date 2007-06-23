@@ -5,7 +5,7 @@
 ** 
 ** Started on  Fri Nov  2 15:17:02 2001 mayhem
 **
-** $Id: options.c,v 1.3 2007-05-23 13:50:39 may Exp $
+** $Id: options.c,v 1.4 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "revm.h"
@@ -110,6 +110,12 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
        idx < 254 && index + idx + 1 < argc;
        idx++)
     {
+      /* Add the '-' check which was not here and create bugs with cmdline */
+      if ((world.state.vm_mode == REVM_STATE_CMDLINE 
+	   || world.state.vm_mode == REVM_STATE_TRACER)
+	  && argv[index + idx + 1] && argv[index + idx + 1][0] == '-')
+	break;
+
       world.curjob->curcmd->param[idx] = argv[index + idx + 1];
       world.curjob->curcmd->argc++;
     }

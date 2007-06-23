@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.66 2007-06-22 16:16:05 may Exp $
+** $Id: libelfsh.h,v 1.67 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 
@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <regex.h>
 
 //#include "elfsh-libc.h"
 
@@ -54,7 +55,7 @@
 #define		__DEBUG_MAP__		       0
 #define		__DEBUG_SECTS__		       0
 #define		__DEBUG_SORT__		       0	
-#define		__DEBUG_RELADD__	       1
+#define		__DEBUG_RELADD__	       0
 #define		__DEBUG_COPYPLT__	       0
 #define		__DEBUG_BSS__		       0
 #define		__DEBUG_REDIR__		       0
@@ -898,6 +899,7 @@ typedef struct 	s_traces
 /* Extern data */
 extern libworld_t	dbgworld;
 extern hash_t 		traces_table;
+extern hash_t		exclude_table;
 
 /*
  **
@@ -1724,6 +1726,8 @@ int 		elfsh_traces_tracable(elfshobj_t *file, char *name,
 				      elfsh_Addr *vaddr, u_char *dynsym);
 elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
 int		elfsh_traces_funcrm(char *trace, char *name);
+int		elfsh_traces_funcexclude(char *regstr);
+int		elfsh_traces_funcrmexclude(char *regstr);
 int		elfsh_traces_funcenable(char *trace, char *name);
 int		elfsh_traces_funcsetstatus(hash_t *table, int status);
 int		elfsh_traces_funcenableall(char *trace);
@@ -1733,7 +1737,8 @@ int		elfsh_traces_funcrmall(char *trace);
 int		elfsh_traces_deletetrace(char *trace);
 int		elfsh_traces_save(elfshobj_t *file);
 elfshobj_t   	*elfsh_traces_search_sym(elfshobj_t *file, char *name);
-int		elfsh_resolv_function(elfshobj_t *filein, elfsh_Addr vaddrin,
-				      elfshobj_t **fileout, elfsh_Addr *vaddrout);
+char		*elfsh_traces_geterrfunc();
+int		elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+					     elfshobj_t **fileout, elfsh_Addr *vaddrout);
 
 #endif /* __LIBELFSH_H_ */

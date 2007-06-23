@@ -3,7 +3,7 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.8 2007-05-09 21:40:42 mxatone Exp $
+** $Id: main.c,v 1.9 2007-06-23 17:11:00 mxatone Exp $
 **
 */
 #include "etrace.h"
@@ -75,6 +75,8 @@ int		vm_main(int ac, char **av)
   u_int		state;
   u_char	trace_all = 0;
   char		**exav = NULL;
+  int		exac;
+  u_int		index;
 
   /* Interface tweak */
   vm_setup_quit_msg();
@@ -82,8 +84,20 @@ int		vm_main(int ac, char **av)
   
   /* Which state ? */
   state =  REVM_STATE_INTERACTIVE;
+
+  /* If we found the trace command we toggle to tracer state */
   if (ac > 2)
-    state = REVM_STATE_TRACER;
+    {
+      snprintf(logbuf, BUFSIZ - 1, "-%s", CMD_TRACEADD_CMDLINE);
+      for (index = 2; index < ac; index++)
+	{
+	  if (!strcmp(av[index], logbuf))
+	    {
+	      state = REVM_STATE_TRACER;
+	      break;
+	    }
+	}
+    }
 
   vm_setup(ac, av, state, 0);
 
@@ -96,20 +110,21 @@ int		vm_main(int ac, char **av)
       
       /* Switch to tracer mode */
       world.state.vm_mode = state = REVM_STATE_TRACER;
+      exac = ac;
       ac += 2;
 
       /* Allocated new argument list */
-      if ((av = (void*) calloc(sizeof(char*)*ac, 1)) == NULL)
+      if ((av = (void*) calloc(sizeof(char*)*(ac+1), 1)) == NULL)
 	{
 	  write(1, "Out of memory\n", 14);
 	  exit(1);
 	}
 
+      memcpy(av, exav, sizeof(char*)*exac);
+
       /* As we done a etrace <file> -t .* */
-      av[0] = exav[0];
-      av[1] = exav[1];
-      av[2] = "-t";
-      av[3] = ".*";
+      av[exac] = "-t";
+      av[exac+1] = ".*";
     }
 
   vm_print_etrace_banner();
@@ -151,6 +166,7 @@ int		vm_main(int ac, char **av)
 
   vm_config();
   setup_local_cmdhash();
+  vm_output(" [*] Type help for regular commands \n\n");
   return (vm_run(ac, av));
 }
 
