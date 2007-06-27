@@ -1,4 +1,5 @@
-/*
+/**
+ * @file runtime.c
 ** runtime.c for libelfsh
 ** 
 ** 
@@ -8,7 +9,7 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id: runtime.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: runtime.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

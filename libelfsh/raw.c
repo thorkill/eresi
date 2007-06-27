@@ -1,10 +1,11 @@
-/*
+/**
+ * @file raw.c
 ** raw.c for libelfsh
 ** 
 ** Started on  Wed Feb 27 19:41:45 2002 mayhem
 ** Last update Thu Mar 20 05:47:12 2003 mayhem
 **
-** $Id: raw.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: raw.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,4 +1,5 @@
-/*
+/**
+ * @file hooks.c
 ** hooks.c for libelfsh (The ELF shell library)
 ** 
 ** All the function pointers for all provided techniques.
@@ -8,7 +9,7 @@
 ** Started Jan 11 2004 02:57:03 mayhem
 ** 
 **
-** $Id: hooks.c,v 1.23 2007-06-07 23:09:24 may Exp $
+** $Id: hooks.c,v 1.24 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

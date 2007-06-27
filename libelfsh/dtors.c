@@ -1,9 +1,9 @@
-/*
- * libelfsh/dtors.c
+/**
+ * @file dtors.c
  *
  * Started on  Tue Feb 26 22:12:38 2002 mayhem
  *
- * $Id: dtors.c,v 1.4 2007-03-05 01:11:18 thor Exp $
+ * $Id: dtors.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
  *
  */
 

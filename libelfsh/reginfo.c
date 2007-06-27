@@ -1,11 +1,12 @@
-/*
+/**
+ * @file reginfo.c
 ** reginfo.c for libelfsh
 ** 
 ** Started on  Wed Mar 23 14:18:20 2005 ym
 ** Updated on  Wed Mar 23 14:21:32 2005 mayhem
 ** 
 **
-** $Id: reginfo.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: reginfo.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

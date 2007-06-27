@@ -1,6 +1,7 @@
 /**
  * @file i386_ja.c
- * $Id: i386_ja.c,v 1.5 2007-05-30 00:21:30 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: i386_ja.c,v 1.6 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>

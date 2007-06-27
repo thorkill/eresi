@@ -55,6 +55,9 @@ all64	: $(OBJ64)
 	@${RANLIB} ${NAME64}.a
 	@$(LD) -r $(OBJ64) -o $(NAME64).o
 
+docs:
+	doxygen doc/doxygen.conf
+
 clean:
 	rm -f $(OBJ) $(OBJ32) $(OBJ64) src/*~ src/\#* \
 	include/\#* include/*~ $(OBJT) $(OBJM)

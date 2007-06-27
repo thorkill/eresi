@@ -1,6 +1,7 @@
 /**
  * @file op_lodsb.c
- * $Id: op_lodsb.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_lodsb.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -23,7 +24,7 @@ int op_lodsb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
     new->op2.regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
-    new->op2.base_reg = ASM_REG_EAX;
+    new->op2.baser = ASM_REG_EAX;
 #else
     
     new->op1.type = ASM_OTYPE_YDEST;
@@ -31,12 +32,12 @@ int op_lodsb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 
     new->op1.regset = ASM_REGSET_R32;
     new->op1.prefix = ASM_PREFIX_ES;
-    new->op1.base_reg = ASM_REG_EDI;
+    new->op1.baser = ASM_REG_EDI;
 
     new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
     new->op2.regset = asm_proc_opsize(proc) ?
       ASM_REGSET_R16 : ASM_REGSET_R32;
-    new->op2.base_reg = ASM_REG_EAX;
+    new->op2.baser = ASM_REG_EAX;
 #endif
   return (new->len);
 }

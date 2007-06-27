@@ -1,10 +1,11 @@
-/*
+/**
+ * @file map.c
 ** map.c for libelfsh
 ** 
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.19 2007-05-23 16:05:39 may Exp $
+** $Id: map.c,v 1.20 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_prefetcha.c,v 1.5 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_prefetcha.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -27,10 +27,10 @@ asm_sparc_prefetcha(asm_instr * ins, u_char * buf, u_int len,
   }
   else {
     asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
-    ins->op2.index_reg = opcode.rs2;
+    ins->op2.indexr = opcode.rs2;
     ins->op2.address_space = opcode.none;
   }
-  ins->op2.base_reg = opcode.rs1;
+  ins->op2.baser = opcode.rs1;
   
   return 4;
   

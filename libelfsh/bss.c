@@ -1,4 +1,5 @@
-/*
+/**
+ * @file bss.c
 ** bss.c for elfsh
 **
 ** Contain various bss handling routines for injection
@@ -9,7 +10,7 @@
 ** Last update Sat Jul 30 17:34:52 2005 mayhem
 **
 **
-** $Id: bss.c,v 1.13 2007-05-23 16:05:39 may Exp $
+** $Id: bss.c,v 1.14 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

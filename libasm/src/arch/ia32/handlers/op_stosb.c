@@ -1,5 +1,7 @@
-/*
-** $Id: op_stosb.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+/**
+ * @file op_stosb.c
+ * @ingroup handlers_ia32
+** $Id: op_stosb.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -25,13 +27,13 @@ int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->op1.prefix = ASM_PREFIX_ES;
   new->op1.regset = ASM_REGSET_R32;
   new->op1.content = ASM_OP_FIXED | ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op1.base_reg = ASM_REG_EDI;
+  new->op1.baser = ASM_REG_EDI;
   new->op1.len = 0;
   
   new->op2.len = 0;
   new->op2.content = ASM_OP_BASE;
   new->op2.regset = ASM_REGSET_R8;
-  new->op2.base_reg = ASM_REG_AL;
+  new->op2.baser = ASM_REG_AL;
 #endif  
   return (new->len);
 }

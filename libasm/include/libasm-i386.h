@@ -1,11 +1,8 @@
 /*
-** 
-** $Id: libasm-i386.h,v 1.11 2007-05-29 00:40:27 heroine Exp $
-** 
-** Author  : <kahmm@altdev.net>
-** Started : Tue Dec  2 22:40:31 2003
-** Updated : Thu Dec  4 01:17:26 2003
-*/
+ * @file libasm-i396.h
+ * $Id: libasm-i386.h,v 1.12 2007-06-27 11:25:11 heroine Exp $
+ * 
+ */
 
 #ifndef LIBASM_I386_H_
 #define LIBASM_I386_H_
@@ -33,10 +30,16 @@ struct s_asm_proc_i386 {
   int			type;
   int			(*get_vect_size)(asm_processor *);
   
+
+  /*
+   * DEPRECATED - TO REMOVE
+   */
   /* handlers for x86 instructions referenced by opcode	*/
   int			(*cisc_set[256])(asm_instr *, u_char *, u_int, 
 					 asm_processor *);
-  
+  /*
+   * DEPRECATED - TO REMOVE
+   */
   /* handlers for i386 instr. prefixed by 0x0f by second opcode	*/
   int			(*cisc_i386[256])(asm_instr *, u_char *, u_int, 
 					  asm_processor *);
@@ -72,10 +75,9 @@ struct s_asm_proc_i386 {
 
 
 /** 
- * operand type
- * 
+ * Content of the operand.
+ * Those flags are stored in asm_operand.content field.
  */
-
 #define ASM_OP_VALUE		1	/*!< immediate value present	*/
 #define ASM_OP_BASE		2	/*!< base register present	*/
 #define ASM_OP_INDEX		4	/*!< index register present	*/
@@ -104,35 +106,45 @@ struct s_asm_proc_i386 {
  * 8: addsize
  */
 
-#define	ASM_PREFIX_REP		1
-#define ASM_PREFIX_REPNE	2
-
-#define ASM_PREFIX_SEG		60
-
-#define ASM_PREFIX_DS		4
-#define	ASM_PREFIX_ES		8
-#define ASM_PREFIX_SS		12
-#define ASM_PREFIX_CS           16
-#define ASM_PREFIX_FS		20
-#define ASM_PREFIX_GS		24
-
-#define ASM_PREFIX_MASK		60
-
-#define ASM_PREFIX_LOCK		64
-#define ASM_PREFIX_OPSIZE	128
-#define ASM_PREFIX_ADDSIZE	256
-
+/**
+ * Enum of the intel available prefixes.
+ */ 
 
 enum
   {
-    ASM_FLAG_CF = 1 << 0,
-    ASM_FLAG_PF = 1 << 2,
-    ASM_FLAG_AF = 1 << 4,
-    ASM_FLAG_ZF = 1 << 6,
-    ASM_FLAG_SF = 1 << 7,
-    ASM_FLAG_TF = 1 << 8,
-    ASM_FLAG_IF = 1 << 9,
-    ASM_FLAG_DF = 1 << 10,
+    ASM_PREFIX_REP	 =	1,	/*! rep prefix	*/
+    ASM_PREFIX_REPNE	 =      2,	/*! repne prefix	*/
+
+    ASM_PREFIX_SEG	=	60,	/*! Segment prefix mask	*/
+
+    ASM_PREFIX_DS	=	4,	/*! ds prefix	*/
+    ASM_PREFIX_ES	=	8,	/*! es prefix	*/
+    ASM_PREFIX_SS	=	12,	/*! ss prefix	*/
+    ASM_PREFIX_CS       =       16,	/*! cs prefix	*/
+    ASM_PREFIX_FS	=	20,	/*! fs prefix	*/
+    ASM_PREFIX_GS	=	24,
+
+    ASM_PREFIX_MASK	=	60,
+
+    ASM_PREFIX_LOCK	=	64,
+    ASM_PREFIX_OPSIZE	= 128,
+    ASM_PREFIX_ADDSIZE	= 256,
+  } e_ia32_prefix;
+
+/**
+ * Control register bit flags
+ *
+ */
+enum
+  {
+    ASM_FLAG_CF = 1 << 0,	/*! carry flag	*/
+    ASM_FLAG_PF = 1 << 2,	/*! parity flag	*/
+    ASM_FLAG_AF = 1 << 4,	/*! ?? flag	*/
+    ASM_FLAG_ZF = 1 << 6,	/*! zero flag	*/
+    ASM_FLAG_SF = 1 << 7,	/*! signed flag	*/
+    ASM_FLAG_TF = 1 << 8,	/*! ?? flag	*/
+    ASM_FLAG_IF = 1 << 9,	/*! interrupt flag	*/
+    ASM_FLAG_DF = 1 << 10,	/*! debug flag ?	*/
     ASM_FLAG_OF = 1 << 11,
     ASM_FLAG_IOPL = 1 << 12,
     ASM_FLAG_NT = 1 << 14,
@@ -610,6 +622,7 @@ enum asm_instr {
   ASM_LOAD,
   ASM_STORE,
   ASM_MOV,
+  ASM_MOVW,
   /* 40 */
   ASM_INT,
   ASM_RET,

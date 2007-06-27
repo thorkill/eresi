@@ -1,9 +1,10 @@
-/*
+/**
+ * @file sht.c
 ** sht.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:16:18 2001 mayhem
 **
-** $Id: sht.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: sht.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

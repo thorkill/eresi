@@ -1,6 +1,7 @@
 /**
  * @file op_mov_eax_ref_iv.c
- * $Id: op_mov_eax_ref_iv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_mov_eax_ref_iv.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -25,7 +26,7 @@ int op_mov_eax_ref_iv(asm_instr *new, u_char *opcode, u_int len,
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_OFFSET, new);
 #else
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
@@ -33,7 +34,7 @@ int op_mov_eax_ref_iv(asm_instr *new, u_char *opcode, u_int len,
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   
   new->op2.type = ASM_OTYPE_OFFSET;
   new->op2.content = ASM_OP_VALUE | ASM_OP_REFERENCE;

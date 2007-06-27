@@ -1,5 +1,5 @@
 /**
- * $Id: mips_decode.c,v 1.1 2007-01-23 09:53:03 heroine Exp $
+ * $Id: mips_decode.c,v 1.2 2007-06-27 11:25:12 heroine Exp $
  *
  *
  *
@@ -70,11 +70,11 @@ int	mips_decode_rtype(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
     {
       ins->instr = mips_func_table[opcode.fn];
       ins->op1.type = 1;
-      ins->op1.base_reg = opcode.rs;
+      ins->op1.baser = opcode.rs;
       ins->op2.type = 1;
-      ins->op2.base_reg = opcode.rt;
+      ins->op2.baser = opcode.rt;
       ins->op3.type = 1;
-      ins->op3.base_reg = opcode.rd;
+      ins->op3.baser = opcode.rd;
     }
   return (4);
 }

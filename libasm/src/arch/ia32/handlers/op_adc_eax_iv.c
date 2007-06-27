@@ -1,5 +1,5 @@
 /*
-** $Id: op_adc_eax_iv.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_adc_eax_iv.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -22,7 +22,7 @@ int op_adc_eax_iv(asm_instr *new, u_char *opcode, u_int len,
   new->op1.size = new->op2.size = asm_proc_vector_size(proc);
   
   new->op1.content = ASM_OP_FIXED | ASM_OP_BASE;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATE, 
 				new);
   #else
@@ -31,7 +31,7 @@ int op_adc_eax_iv(asm_instr *new, u_char *opcode, u_int len,
   new->op1.size = new->op2.size = asm_proc_vector_size(proc);
   
   new->op1.content = ASM_OP_FIXED | ASM_OP_BASE;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   
   new->op2.content = ASM_OP_VALUE;
   new->op2.ptr = opcode;

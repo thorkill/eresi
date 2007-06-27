@@ -1,4 +1,5 @@
-/*
+/**
+ * @file linkmap.c
 ** linkmap.c for libelfsh
 ** 
 ** TODO: Add linkmap object in scripting
@@ -6,7 +7,7 @@
 ** Started on  Mon Jul 25 21:26:54 2005 ym
 ** 
 **
-** $Id: linkmap.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: linkmap.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

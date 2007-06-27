@@ -1,4 +1,5 @@
-/*
+/**
+ * @file notes.c
 ** notes.c for libelfsh
 ** 
 ** Functions of this files are not intended to be used with e2dbg
@@ -6,7 +7,7 @@
 ** Started on  Sun Jun 10 22:57:09 2001 mayhem
 ** 
 **
-** $Id: notes.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: notes.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

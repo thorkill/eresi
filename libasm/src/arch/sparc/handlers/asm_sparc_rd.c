@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_rd.c,v 1.6 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_rd.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -21,11 +21,11 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
   if (opcode.rs1 != 15) {	/* RD*(-PR) */
     ins->nb_op = 2;
     asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
-    ins->op1.base_reg = opcode.rd;
+    ins->op1.baser = opcode.rd;
     asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_SREGISTER, ins);
-    ins->op2.base_reg = opcode.rs1;
+    ins->op2.baser = opcode.rs1;
     
-    if (ins->op1.base_reg == ASM_SREG_Y) {
+    if (ins->op1.baser == ASM_SREG_Y) {
   	  	ins->instr = ASM_SP_MOV;
   	}
   }

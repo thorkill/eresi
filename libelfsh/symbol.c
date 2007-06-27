@@ -1,10 +1,10 @@
-
-/*
+/**
+ * @file symbol.c
 ** symbol.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.9 2007-05-31 16:47:25 may Exp $
+** $Id: symbol.c,v 1.10 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

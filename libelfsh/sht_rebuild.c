@@ -1,4 +1,5 @@
-/*
+/**
+ * @file sht_rebuild.c
  ** sht_rebuild.c for elfsh
  ** 
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
@@ -9,7 +10,7 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.15 2007-06-23 17:27:54 rival Exp $
+ ** $Id: sht_rebuild.c,v 1.16 2007-06-27 11:25:12 heroine Exp $
  **
  */
 #include "libelfsh.h"

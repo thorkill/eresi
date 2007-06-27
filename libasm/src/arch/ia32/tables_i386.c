@@ -1,11 +1,12 @@
 /**
- *
- * $Id: tables_i386.c,v 1.11 2007-05-30 00:15:41 heroine Exp $
+ * @file tables_i386.c
+ * $Id: tables_i386.c,v 1.12 2007-06-27 11:25:11 heroine Exp $
  * 
  */
 #include <libasm.h>
 
-int init_instr_table(asm_processor *proc) {
+int init_instr_table(asm_processor *proc) 
+{
   
   proc->instr_table = malloc(sizeof(char *) * (ASM_BAD + 1));
   memset(proc->instr_table, 0, sizeof(char *) * (ASM_BAD + 1));
@@ -105,6 +106,7 @@ int init_instr_table(asm_processor *proc) {
   proc->instr_table[ASM_MOVZBL] = "movzbl";
   proc->instr_table[ASM_MUL] = "mull";
   proc->instr_table[ASM_MOV] = "mov";
+  proc->instr_table[ASM_MOVW] = "movw";
   proc->instr_table[ASM_MOVD] = "movd";
   proc->instr_table[ASM_MOVQ] = "movq";
 

@@ -1,4 +1,5 @@
-/*
+/**
+ * @file comment.c
 ** comment.c for elfsh in 
 ** 
 ** Made by mayhem
@@ -7,7 +8,7 @@
 ** Started on  Sun Dec  1 09:22:45 2002 mayhem
 **
 **
-** $Id: comment.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: comment.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

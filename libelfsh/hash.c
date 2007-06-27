@@ -1,10 +1,11 @@
-/*
+/**
+ * @file hash.c
 ** hash.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:15:44 2001 mayhem
 ** 
 **
-** $Id: hash.c,v 1.10 2007-03-25 14:27:34 may Exp $
+** $Id: hash.c,v 1.11 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

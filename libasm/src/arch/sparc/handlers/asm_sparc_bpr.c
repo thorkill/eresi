@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_bpr.c,v 1.3 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_bpr.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -21,7 +21,7 @@ asm_sparc_bpr(asm_instr * ins, u_char * buf, u_int len,
   asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
   ins->op1.imm = opcoder.d16;
   asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
-  ins->op2.base_reg = opcoder.rs1;
+  ins->op2.baser = opcoder.rs1;
   ins->annul = opcoder.a;
   ins->prediction = opcoder.p;
 

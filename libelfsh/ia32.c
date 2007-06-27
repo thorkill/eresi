@@ -1,10 +1,11 @@
-/*
+/**
+ * @file ia32.c
  * ia32.c for libelfsh
  *
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.17 2007-06-23 17:11:00 mxatone Exp $
+ * $Id: ia32.c,v 1.18 2007-06-27 11:25:12 heroine Exp $
  *
  */
 #include "libelfsh.h"
@@ -24,8 +25,8 @@ static u_int		max_arg_offset;
 
 #define ELFSH_IA32_MOV_REGBASE(_i, _reg)		\
 (_i.instr == ASM_MOV 					\
- && _i.op1.base_reg == _reg 				\
- && _i.op2.base_reg == ASM_REG_ESP 			\
+ && _i.op1.baser == _reg 				\
+ && _i.op2.baser == ASM_REG_ESP 			\
  && _i.op1.regset == ASM_REGSET_R32 			\
  && _i.op2.regset == ASM_REGSET_R32			\
  && (_i.op1.content & ~ASM_OP_FIXED) == ASM_OP_BASE	\
@@ -546,7 +547,7 @@ static int    elfsh_ac_is_arg_ebp(asm_operand *op, int regbased)
      malloc() use to look at the return address which make arg count
      think that malloc should take 2 arguments.
    */
-  if (op->base_reg == regbased && op->imm > 4)
+  if (op->baser == regbased && op->imm > 4)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -556,7 +557,7 @@ static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (op->base_reg == ASM_REG_ESP && op->imm > sub)
+  if (op->baser == ASM_REG_ESP && op->imm > sub)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, op->imm - sub);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -810,7 +811,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		     xor $eax, $eax
 		     mov $ebp, $esp
 		  */
-		  regbased = i.op1.base_reg;
+		  regbased = i.op1.baser;
 		  regicount = 0;
 		}
 	      else if (regbased != -1)
@@ -847,7 +848,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		     Some function does not rely on ret 
 		     This fix has been made for my exit() function which did not
 		     has a ret, then we start parsing on_exit() */
-		  next_regbased = i.op1.base_reg;
+		  next_regbased = i.op1.baser;
 		  regicount = 0;
 		}
 	      else
@@ -894,7 +895,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	  else
 	    {
 	      /* sub $esp, x */
-	      if (i.instr == ASM_SUB && i.op1.base_reg == ASM_REG_ESP)
+	      if (i.instr == ASM_SUB && i.op1.baser == ASM_REG_ESP)
 		{
 		  reserv += i.op2.imm;
 
@@ -905,7 +906,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		  continue;
 		}
 	      /* add $esp, x */
-	      else if (i.instr == ASM_ADD && i.op1.base_reg == ASM_REG_ESP)
+	      else if (i.instr == ASM_ADD && i.op1.baser == ASM_REG_ESP)
 		{
 		  reserv -= i.op2.imm;
 
@@ -996,7 +997,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	  if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
 	    {
 	      // We don't want to read another function 
-	      if (i.instr == ASM_MOV && i.op1.base_reg == ASM_REG_ESP)
+	      if (i.instr == ASM_MOV && i.op1.baser == ASM_REG_ESP)
 		elfsh_ac_largs_add(i.op1.imm + 16);
 	    }
 

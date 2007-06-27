@@ -1,5 +1,7 @@
-/*
-** $Id: op_xchg_rmv_rv.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+/**
+ * @file op_xchg_rmv_rv.c
+ * @ingroup handlers_ia32
+** $Id: op_xchg_rmv_rv.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include <libasm.h>

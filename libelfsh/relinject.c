@@ -1,4 +1,5 @@
-/*
+/**
+ * @file relinject.c
 ** relinject.c for libelfsh
 ** 
 ** This file contains all functions for relocating a ET_REL
@@ -10,7 +11,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.15 2007-06-23 17:11:00 mxatone Exp $
+** $Id: relinject.c,v 1.16 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

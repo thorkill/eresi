@@ -1,5 +1,5 @@
 /*
-** $Id: op_scasd.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_scasd.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -22,7 +22,7 @@ int op_scasd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_R8;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   
   new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_YDEST, new);
 #else
@@ -31,12 +31,12 @@ int op_scasd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_R8;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   
   new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
   new->op2.regset = ASM_REGSET_R32;
   new->op2.prefix = ASM_PREFIX_ES;
-  new->op2.base_reg = ASM_REG_EDI;
+  new->op2.baser = ASM_REG_EDI;
   new->instr = ASM_SCASD;
 #endif
   return (new->len);

@@ -1,5 +1,5 @@
 /*
-** $Id: i386_bswap.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: i386_bswap.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -35,7 +35,7 @@ int i386_bswap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->op1.content = ASM_OP_BASE;
   new->op1.ptr = opcode;
   
-  new->op1.base_reg = modrm->m;
+  new->op1.baser = modrm->m;
 #endif
   return (new->len);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_bound_gv_ma.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_bound_gv_ma.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -34,7 +34,7 @@ int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len,
   
   new->op2.content = ASM_OP_BASE;
   new->op2.regset = ASM_REGSET_R32;
-  new->op2.base_reg = modrm->r;
+  new->op2.baser = modrm->r;
   new->len += new->op1.len;
 #endif
   return (new->len);

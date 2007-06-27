@@ -1,4 +1,5 @@
-/*
+/**
+ * @file search.c
 ** search.c for libelfsh
 ** 
 ** This function contains the research function inside the ELF structures
@@ -6,7 +7,7 @@
 ** 
 ** Started on Sat Nov 25 21:19:53 2006 mayhem
 **
-** $Id: search.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: search.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

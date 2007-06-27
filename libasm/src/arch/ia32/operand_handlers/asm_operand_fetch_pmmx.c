@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_pmmx.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_pmmx.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -27,5 +27,6 @@ int     asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode,
   operand->type = ASM_OTYPE_PMMX;
   len = operand_rmv(operand, opcode, 4, ins->proc);
   operand->regset = ASM_REGSET_MM;
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   return (len);
 }

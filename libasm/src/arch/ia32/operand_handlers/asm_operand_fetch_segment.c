@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_segment.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_segment.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -29,7 +29,8 @@ int     asm_operand_fetch_segment(asm_operand *operand, u_char *opcode,
 
   operand->content = ASM_OP_BASE;
   operand->regset = ASM_REGSET_SREG;
-  operand->base_reg = modrm->r;
+  operand->baser = modrm->r;
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
 
   return (0);
 }

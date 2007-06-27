@@ -1,10 +1,11 @@
-/*
+/**
+ * @file hijack.c
 ** hijack.c in elfsh
 ** 
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.8 2007-05-09 21:40:42 mxatone Exp $
+** $Id: hijack.c,v 1.9 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

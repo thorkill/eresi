@@ -10,7 +10,7 @@
 ** 
 ** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: cfg.c,v 1.2 2007-06-22 21:50:37 may Exp $
+** $Id: cfg.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -377,9 +377,9 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
   else if (ctxt->proc.type == ASM_PROC_SPARC)
   {
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op1.base_reg == ASM_REG_O6 &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op1.baser == ASM_REG_O6 &&
         ctxt->hist[MJR_HISTORY_CUR].instr.op2.type == ASM_SP_OTYPE_IMMEDIATE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op3.base_reg == ASM_REG_O6)
+        ctxt->hist[MJR_HISTORY_CUR].instr.op3.baser == ASM_REG_O6)
   	{
   	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_CUR].vaddr);
   	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;

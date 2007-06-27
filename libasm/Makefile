@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.23 2007-05-30 00:15:41 heroine Exp $
+## $Id: Makefile,v 1.24 2007-06-27 11:25:11 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -123,6 +123,9 @@ mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
 	tools/mydisasm.c -DELFSH32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
 	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm
+
+test:
+	(cd testsuite/ia32 && sh launch_test.sh)
 
 Makefile.inc:	
 	$(SHELL) configure

@@ -1,5 +1,5 @@
 /*
-** $Id: op_add_al_ib.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_add_al_ib.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -22,7 +22,7 @@ int op_add_al_ib(asm_instr *new, u_char *opcode, u_int len,
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op1.ptr = opcode;
   new->op1.len = 0;
-  new->op1.base_reg = ASM_REG_AL;
+  new->op1.baser = ASM_REG_AL;
   new->op1.regset = ASM_REGSET_R8;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, 
 				ASM_OTYPE_IMMEDIATEBYTE, new);
@@ -35,7 +35,7 @@ int op_add_al_ib(asm_instr *new, u_char *opcode, u_int len,
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op1.ptr = opcode;
   new->op1.len = 0;
-  new->op1.base_reg = ASM_REG_AL;
+  new->op1.baser = ASM_REG_AL;
   new->op1.regset = ASM_REGSET_R8;
   
   new->op2.content = ASM_OP_VALUE;

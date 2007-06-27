@@ -1,10 +1,11 @@
-/*
+/**
+ * @file strtab.c
 ** strtab.c for libelfsh
 ** 
 ** Started on  Sun Mar 10 03:24:23 2002 mayhem
 ** Last update Sun May 25 17:40:19 2003 mayhem
 **
-** $Id: strtab.c,v 1.6 2007-06-05 17:56:12 thor Exp $
+** $Id: strtab.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

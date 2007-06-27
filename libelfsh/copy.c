@@ -1,10 +1,11 @@
-/*
+/**
+ * @file copy.c
 ** copy.c for elfsh
 ** 
 ** Started on  Tue Mar  4 01:15:23 2003 mayhem
 ** Last update Tue Mar 11 21:26:07 2003 mayhem
 **
-** $Id: copy.c,v 1.8 2007-03-17 17:26:06 mxatone Exp $
+** $Id: copy.c,v 1.9 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

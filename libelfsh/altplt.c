@@ -1,4 +1,5 @@
-/*
+/**
+ * @file altplt.c
 ** altplt.c for libelfsh
 ** 
 ** This file contain the architecture independant code 
@@ -7,7 +8,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id: altplt.c,v 1.10 2007-05-18 15:52:16 may Exp $
+** $Id: altplt.c,v 1.11 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

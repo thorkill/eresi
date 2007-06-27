@@ -1,5 +1,5 @@
-/*
-** strip.c for  in 
+/**
+ * @file strip.c
 ** 
 ** Made by mayhem
 ** Login   <mayhem@devhell.org>
@@ -7,7 +7,7 @@
 ** Started on  Sat Mar 15 03:45:54 2003 mayhem
 ** Last update Mon Mar 17 04:40:35 2003 mayhem
 **
-** $Id: strip.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: strip.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 

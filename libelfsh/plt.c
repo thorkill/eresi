@@ -1,10 +1,11 @@
-/*
+/**
+ * @file plt.c
 ** plt.c for libelfsh
 ** 
 ** Started on  Tue Jul 24 06:40:07 2001 mayhem
 ** 
 **
-** $Id: plt.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: plt.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

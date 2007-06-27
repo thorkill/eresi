@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_rm_segr.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_mov_rm_segr.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -34,7 +34,7 @@ int op_mov_rm_segr(asm_instr *new, u_char *opcode, u_int len,
   new->op2.type = ASM_OTYPE_SEGMENT;
   new->op2.content = ASM_OP_BASE;
   new->op2.regset = ASM_REGSET_SREG;
-  new->op2.base_reg = modrm->r;
+  new->op2.baser = modrm->r;
 #endif
   return (new->len);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmv_cl.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_shift_rmv_cl.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -40,7 +40,7 @@ int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len,
   new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_FIXED, new);
   new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op2.regset = ASM_REGSET_R8;
-  new->op2.base_reg = ASM_REG_CL;
+  new->op2.baser = ASM_REG_CL;
   new->op2.len = 0;
   new->op2.ptr = 0;
 #else
@@ -50,7 +50,7 @@ int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len,
 
   new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op2.regset = ASM_REGSET_R8;
-  new->op2.base_reg = ASM_REG_CL;
+  new->op2.baser = ASM_REG_CL;
   new->op2.len = 0;
   new->op2.ptr = 0;
     

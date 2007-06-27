@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch.c,v 1.3 2007-06-16 20:24:25 strauss Exp $
+ * $Id: asm_operand_fetch.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -32,6 +32,13 @@ int     asm_operand_fetch(asm_operand *op, u_char *opcode, int otype,
     {
       printf("%s:%i Unsupported operand type : %i\n", __FILE__, __LINE__, 
 	     otype);
+    }
+  else
+    {
+      op->sbaser = ((op->content & ASM_OP_BASE) ? 
+		    get_reg_intel(op->baser, op->regset) : "");
+      op->sindex = ((op->content & ASM_OP_BASE) ? 
+		    get_reg_intel(op->indexr, op->regset) : "");
     }
   return (to_ret);
 }

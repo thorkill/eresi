@@ -1,10 +1,11 @@
-/*
+/**
+ * @file pax.c
 ** pax.c for elfsh
 ** 
 ** Started on  Tue Feb 11 20:52:36 2003 mayhem
 ** Last update Tue Feb 18 06:17:27 2003 mayhem
 **
-** $Id: pax.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: pax.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

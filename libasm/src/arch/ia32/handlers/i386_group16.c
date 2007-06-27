@@ -1,6 +1,7 @@
 /**
  * @file i386_group16.c
- * $Id: i386_group16.c,v 1.2 2007-05-29 00:46:14 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: i386_group16.c,v 1.3 2007-06-27 11:25:11 heroine Exp $
  * 
  * Changelog
  * 2007-05-29: operand type fixed.

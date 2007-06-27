@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.10 2007-05-30 15:53:58 heroine Exp $
+** $Id: output_ia32.c,v 1.11 2007-06-27 11:25:11 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -80,7 +80,8 @@ void	output_instr(asm_instr *instr) {
  * @param regset Register Set (32 bits registers, 16 bits, control ...)
  */  
 
-char *get_reg_intel(u_int r, int regset) {
+char *get_reg_intel(int r, int regset) 
+{
   char	*rsub[8] ={ "al", "cl", "dl", "bl", "ah", "ch", "dh", "bh" };
   char	*r16[8] = { "ax", "cx", "dx", "bx", "sp", "bp", "si", "di" };
   char	*r32[8] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi" };
@@ -117,17 +118,20 @@ char *get_reg_intel(u_int r, int regset) {
 
 
 /**
+ * Dump an operand output in att syntax to a buffer.
  * @param instr Pointer to instruction structure
  * @param num Number of operand to dump
  * @param addr Virtual address of instruction
  * @param bufptr Buffer to dump operand to
+ * @bug 2007-06-16 : Raise a segfault when used lonely
  */
 
 void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
-			 void *bufptr) {
+			 void *bufptr) 
+{
   char	resolved[256];
-  int	base_reg;
-  int	index_reg;
+  int	baser;
+  int	indexr;
   int	scale;
   int	imm;
   asm_operand *op;
@@ -136,7 +140,7 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
   op = 0;
   buffer = bufptr;
 
-  base_reg = index_reg = scale = imm = 0;
+  baser = indexr = scale = imm = 0;
 
   switch(num)
     {
@@ -155,39 +159,39 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
   // if (op->content & ASM_OP_VALUE)
     asm_operand_get_immediate(ins, num, addr, &imm);
     // if (op->content & ASM_OP_BASE)
-    asm_operand_get_basereg(ins, num, addr, &base_reg);
+    asm_operand_get_basereg(ins, num, addr, &baser);
     // if (op->content & ASM_OP_INDEX)
-    asm_operand_get_indexreg(ins, num, addr, &index_reg);
+    asm_operand_get_indexreg(ins, num, addr, &indexr);
     // if (op->content & ASM_OP_SCALE)
     asm_operand_get_scale(ins, num, addr, &scale);
   
   if (ASM_OP_ADDRESS & op->content) {
     if (ASM_OP_REFERENCE & op->content) 
-      op->proc->resolve_immediate(op->proc->resolve_data, 
+      ins->proc->resolve_immediate(ins->proc->resolve_data, 
 					     imm, resolved, 256);
     else if (ASM_OP_VALUE & op->content)
-      op->proc->resolve_immediate(op->proc->resolve_data, 
+      ins->proc->resolve_immediate(ins->proc->resolve_data, 
 					     imm + addr + ins->len, resolved, 256);
     else
-      op->proc->resolve_immediate(op->proc->resolve_data, 
+      ins->proc->resolve_immediate(ins->proc->resolve_data, 
 					     imm + addr + ins->len, resolved, 256);
   } else
-    op->proc->resolve_immediate(op->proc->resolve_data,
+    ins->proc->resolve_immediate(ins->proc->resolve_data,
 					   imm, resolved, 256);
   
   switch(op->content & ~ASM_OP_FIXED) {
   case ASM_OP_BASE|ASM_OP_ADDRESS:
     sprintf(buffer, "*%%%s", 
-	    get_reg_intel(base_reg, op->regset));
+	    get_reg_intel(baser, op->regset));
     break;
   case ASM_OP_BASE:
     sprintf(buffer, "%%%s", 
-	    get_reg_intel(base_reg, op->regset));
+	    get_reg_intel(baser, op->regset));
     break;
     /*
       case OP_SUBREG: 
       sprintf(buffer, "%%%s",  
-      get_subreg_intel(base_reg)); 
+      get_subreg_intel(baser)); 
       break;
       case OP_SEGREG:
       break;
@@ -210,76 +214,76 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
     break;
   case ASM_OP_REFERENCE | ASM_OP_BASE:
     sprintf(buffer, "(%%%s)", 
-	    get_reg_intel(base_reg, op->regset));
+	    get_reg_intel(baser, op->regset));
     break;
   case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_ADDRESS:
     sprintf(buffer, "*(%%%s)", 
-	    get_reg_intel(base_reg, op->regset));
+	    get_reg_intel(baser, op->regset));
     break;
   case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE:
     sprintf(buffer, "%s(%%%s)", 
 	    resolved
-	    , get_reg_intel(base_reg, op->regset));
+	    , get_reg_intel(baser, op->regset));
     break;
   case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_ADDRESS:
     sprintf(buffer, "*%s(%%%s)", 
 	    resolved
-	    , get_reg_intel(base_reg, op->regset));
+	    , get_reg_intel(baser, op->regset));
     break;
   case 
     ASM_OP_REFERENCE | ASM_OP_ADDRESS | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
       sprintf(buffer, "*(%%%s,%%%s,%d)",
-	      get_reg_intel(base_reg, op->regset),
-	      get_reg_intel(index_reg, op->regset), 
+	      get_reg_intel(baser, op->regset),
+	      get_reg_intel(indexr, op->regset), 
 	      scale);
   break;
   case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_SCALE:
     sprintf(buffer, "(%%%s,%d)", 
-	    get_reg_intel(base_reg, op->regset),
+	    get_reg_intel(baser, op->regset),
 	    scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
     sprintf(buffer, "(%%%s,%%%s,%d)",
-	    get_reg_intel(base_reg, op->regset),
-	    get_reg_intel(index_reg, op->regset), 
+	    get_reg_intel(baser, op->regset),
+	    get_reg_intel(indexr, op->regset), 
 	    scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE:
     sprintf(buffer, "%s(%%%s,%d)",
 	    resolved,
-	    get_reg_intel(base_reg, op->regset),
+	    get_reg_intel(baser, op->regset),
 	    scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE | ASM_OP_VALUE:
     sprintf(buffer, "%s(%%%s,%%%s,%d)", 
 	    resolved, 
-	    get_reg_intel(base_reg, op->regset), 
-	    get_reg_intel(index_reg, op->regset), 
+	    get_reg_intel(baser, op->regset), 
+	    get_reg_intel(indexr, op->regset), 
 	    scale);
     break;
     case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE | 
       ASM_OP_VALUE | ASM_OP_ADDRESS:
 	sprintf(buffer, "*%s(%%%s,%%%s,%d)", 
 		resolved, 
-		get_reg_intel(base_reg, op->regset), 
-		get_reg_intel(index_reg, op->regset), 
+		get_reg_intel(baser, op->regset), 
+		get_reg_intel(indexr, op->regset), 
 		scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_VALUE | ASM_OP_SCALE |ASM_OP_ADDRESS:
     sprintf(buffer, "*%s(,%%%s,%d)",
 	    resolved,
-	    get_reg_intel(index_reg, op->regset),
+	    get_reg_intel(indexr, op->regset),
 	    scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_VALUE  | ASM_OP_INDEX | ASM_OP_SCALE:
     sprintf(buffer, "%s(,%%%s,%d)",
 	    resolved,
-	    get_reg_intel(index_reg, op->regset),
+	    get_reg_intel(indexr, op->regset),
 	    scale);
     break;
   case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_SCALE:
     sprintf(buffer, "(,%%%s,%d)",
-	    get_reg_intel(index_reg, op->regset),
+	    get_reg_intel(indexr, op->regset),
 	    scale);
     break;
   case ASM_OP_FPU | ASM_OP_BASE:
@@ -344,7 +348,7 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
   
   
   if (instr->op1.type) {
-    instr->op1.proc = instr->proc;
+    //instr->op1.proc = instr->proc;
 
     /* Add spaces */
     len = strlen(buffer);
@@ -352,7 +356,7 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
       strcat(buffer, " ");
 
     if (instr->op3.type) {
-      instr->op3.proc = instr->proc;
+      //instr->op3.proc = instr->proc;
       asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
       /*
       att_dump_operand(buffer + strlen(buffer), &instr->op3,
@@ -362,7 +366,7 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
     }
  
     if (instr->op2.type) {
-      instr->op2.proc = instr->proc;
+      //instr->op2.proc = instr->proc;
       switch(instr->op2.prefix & ASM_PREFIX_SEG) {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");

@@ -7,7 +7,7 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id: output_sparc.c,v 1.6 2007-03-07 16:45:34 thor Exp $
+** $Id: output_sparc.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
 **
 */
 
@@ -125,22 +125,22 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
   
   switch(op->type) {
     case ASM_SP_OTYPE_REGISTER:
-      sprintf(buf, "%s", get_sparc_register(op->base_reg));
+      sprintf(buf, "%s", get_sparc_register(op->baser));
       break;
     case ASM_SP_OTYPE_SREGISTER:
-      sprintf(buf, "%s", get_sparc_sregister(op->base_reg));
+      sprintf(buf, "%s", get_sparc_sregister(op->baser));
       break;
     case ASM_SP_OTYPE_PREGISTER:
-      sprintf(buf, "%s", get_sparc_pregister(op->base_reg));
+      sprintf(buf, "%s", get_sparc_pregister(op->baser));
       break;
     case ASM_SP_OTYPE_FREGISTER:
-      if (op->base_reg == ASM_FREG_FSR)
+      if (op->baser == ASM_FREG_FSR)
         sprintf(buf, "%%fsr");
       else
-        sprintf(buf, "%%f%i", op->base_reg);
+        sprintf(buf, "%%f%i", op->baser);
       break;
     case ASM_SP_OTYPE_CC:
-      sprintf(buf, "%s", get_sparc_cc(op->base_reg));
+      sprintf(buf, "%s", get_sparc_cc(op->baser));
       break;  
     case ASM_SP_OTYPE_IMMEDIATE:
       if (op->imm < 10)
@@ -163,7 +163,7 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, 42);
       break;
     case ASM_SP_OTYPE_IMM_ADDRESS:
-      sprintf(buf, "[ %s", get_sparc_register(op->base_reg));
+      sprintf(buf, "[ %s", get_sparc_register(op->baser));
       if (op->imm)
         sprintf(buf+strlen(buf), " + 0x%x", op->imm);
         
@@ -174,12 +174,12 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
 
       break;
     case ASM_SP_OTYPE_REG_ADDRESS:
-      if (op->index_reg > 0)
-        sprintf(buf, "[ %s + %s ]", get_sparc_register(op->base_reg),
-      								get_sparc_register(op->index_reg));
+      if (op->indexr > 0)
+        sprintf(buf, "[ %s + %s ]", get_sparc_register(op->baser),
+      								get_sparc_register(op->indexr));
       								
 	  else
-	    sprintf(buf, "[ %s ]", get_sparc_register(op->base_reg));
+	    sprintf(buf, "[ %s ]", get_sparc_register(op->baser));
       								
       if (op->address_space != ASM_SP_ASI_P)
         sprintf(buf+strlen(buf), " 0x%x", op->address_space);								

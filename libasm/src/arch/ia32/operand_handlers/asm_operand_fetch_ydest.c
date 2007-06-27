@@ -1,6 +1,7 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_ydest.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_ydest.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+ * 
  */
 
 #include <libasm.h>
@@ -20,8 +21,9 @@ int     asm_operand_fetch_ydest(asm_operand *operand, u_char *opcode, int otype,
 {
   operand->type = ASM_OTYPE_YDEST;
   operand->content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  operand->base_reg = ASM_REG_EDI;
+  operand->baser = ASM_REG_EDI;
   operand->regset = asm_proc_opsize(ins->proc) ? ASM_REGSET_R16 : ASM_REGSET_R32;
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   operand->prefix = ASM_PREFIX_ES;
   return (0);
 }

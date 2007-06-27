@@ -1,12 +1,14 @@
-/*
-** (C) Devhell Labs / Asgard Labs 2001-2007
-**
-** $id: Libmjollnir.H,V 1.8 2006/07/27 16:50:48 thor Exp $
-**
-** December 2006 : Merged the modflow API and the mjollnir API to make a unified
-** component. Adapted the data structures. Unified prefixing. -may
-**
-**/
+/**
+ * @file libmjollnir.h
+ * (C) Devhell Labs / Asgard Labs 2001-2007
+ *
+ * $id: Libmjollnir.H,V 1.8 2006/07/27 16:50:48 thor Exp $
+ *
+ * December 2006 : Merged the modflow API and the mjollnir API to make a 
+ * unified component. 
+ * Adapted the data structures. Unified prefixing. -may
+ *
+ */
 #if !defined(__MJOLLNIR__)
   #define __MJOLLNIR__ 1
 

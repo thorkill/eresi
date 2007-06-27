@@ -1,6 +1,7 @@
 /**
  * @file op_out_ref_ib_eax.c
- * $Id: op_out_ref_ib_eax.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_out_ref_ib_eax.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -24,7 +25,7 @@ int op_out_ref_ib_eax(asm_instr *new, u_char *opcode, u_int len,
 				  ASM_OTYPE_FIXED, new);
     new->op2.content = ASM_OP_BASE;
     new->op2.regset = ASM_REGSET_R32;
-    new->op2.base_reg = ASM_REG_EAX;
+    new->op2.baser = ASM_REG_EAX;
 #else
     new->op1.type = ASM_OTYPE_IMMEDIATE;
     new->op1.content = ASM_OP_VALUE;
@@ -35,7 +36,7 @@ int op_out_ref_ib_eax(asm_instr *new, u_char *opcode, u_int len,
     new->op2.type = ASM_OTYPE_FIXED;
     new->op2.content = ASM_OP_BASE;
     new->op2.regset = ASM_REGSET_R32;
-    new->op2.base_reg = ASM_REG_EAX;
+    new->op2.baser = ASM_REG_EAX;
     new->len += new->op1.len;
 #endif
     return (new->len);

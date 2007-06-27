@@ -1,10 +1,11 @@
-/*
+/**
+ * @file sym_common.c
 ** sym_common.c for elfsh
 ** 
 ** Started on  Tue Dec 31 10:19:01 2002 mayhem
 ** 
 **
-** $Id: sym_common.c,v 1.7 2007-05-18 15:52:16 may Exp $
+** $Id: sym_common.c,v 1.8 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

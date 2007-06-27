@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_general.c
- * $Id: asm_operand_fetch_general.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_general.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -29,6 +29,7 @@ int     asm_operand_fetch_general(asm_operand *operand, u_char *opcode,
   operand->regset = asm_proc_opsize(ins->proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;
   modrm = (struct s_modrm *) opcode;
-  operand->base_reg = modrm->r;
+  operand->baser = modrm->r;
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   return (operand->len = 0);
 }

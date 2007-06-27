@@ -1,6 +1,7 @@
 /**
  * @file i386_shld.c
- * $Id: i386_shld.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: i386_shld.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -39,14 +40,14 @@ int i386_shld(asm_instr *new, u_char *opcode, u_int len,
   new->op1.content = ASM_OP_BASE;
   new->op1.ptr = opcode + 1;
   new->op1.len = 0;
-  new->op1.base_reg = modrm->m;
+  new->op1.baser = modrm->m;
 
   new->op2.type = ASM_OTYPE_GENERAL;
   new->op2.regset = ASM_REGSET_R32;
   new->op2.content = ASM_OP_BASE;
   new->op2.ptr = opcode + 1;
   new->op2.len = 1;
-  new->op2.base_reg = modrm->r;
+  new->op2.baser = modrm->r;
 
   new->op3.type = ASM_OTYPE_IMMEDIATE;
   new->op3.content = ASM_OP_VALUE;

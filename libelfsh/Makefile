@@ -60,6 +60,10 @@ clean			:
 fclean			: clean
 			@$(RM) *.so *.a
 
+
+docs:
+			doxygen doc/doxygen.conf
+
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<
 %.64.o : %.c

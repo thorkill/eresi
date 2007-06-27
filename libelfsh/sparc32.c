@@ -1,10 +1,11 @@
-/*
+/**
+ * @file sparc32.c
 ** sparc32.c for libelfsh
 ** 
 ** Started on  Fri Jan 11 03:05:37 2003 mayhem
 ** 
 **
-** $Id: sparc32.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: sparc32.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

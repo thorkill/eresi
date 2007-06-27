@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_debug.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_debug.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -29,9 +29,11 @@ int     asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int otype,
   operand->type = ASM_OTYPE_DEBUG;
   operand->content = ASM_OP_BASE;
   operand->regset = ASM_REGSET_CREG;
-  operand->base_reg = modrm->r;
+  operand->baser = modrm->r;
   operand->ptr = opcode;
   operand->imm = 0;
   operand->len = 0;
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
+  operand->sindex = get_reg_intel(operand->indexr, operand->regset);
   return (1);
 }

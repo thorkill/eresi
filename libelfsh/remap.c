@@ -1,4 +1,5 @@
-/*
+/**
+ * @file remap.c
 ** remap.c for elfsh
 ** 
 ** elfsh_reloc_pht/sht/symtab() are based on spacewalker's 
@@ -7,7 +8,7 @@
 ** Started on  Mon Mar 17 09:30:33 2003 mayhem
 ** 
 **
-** $Id: remap.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: remap.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,10 +1,11 @@
-/*
+/**
+ * @file sanitize.c
 ** sanitize.c for elfsh
 ** 
 ** Started on  Sun Mar 30 04:13:03 2003 mayhem
 ** 
 **
-** $Id: sanitize.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: sanitize.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

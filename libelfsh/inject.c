@@ -1,4 +1,5 @@
-/*
+/**
+ * @file inject.c
 ** inject.c for libelfsh
 ** 
 ** Contains all section injection API that can be used directly by the user
@@ -6,7 +7,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.12 2007-05-16 13:33:47 may Exp $
+** $Id: inject.c,v 1.13 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

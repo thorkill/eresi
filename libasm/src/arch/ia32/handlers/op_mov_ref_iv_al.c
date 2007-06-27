@@ -1,6 +1,7 @@
 /**
  * @file op_mov_ref_iv_al.c
- * $Id: op_mov_ref_iv_al.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_mov_ref_iv_al.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -24,7 +25,7 @@ int op_mov_ref_iv_al(asm_instr *new, u_char *opcode, u_int len,
   new->op2.type = ASM_OTYPE_FIXED;
   new->op2.regset = ASM_REGSET_R8;
   new->op2.content = ASM_OP_BASE;
-  new->op2.base_reg = ASM_REG_AL;
+  new->op2.baser = ASM_REG_AL;
 #else
   new->op1.type = ASM_OTYPE_OFFSET;
   new->op1.len = 4;
@@ -34,7 +35,7 @@ int op_mov_ref_iv_al(asm_instr *new, u_char *opcode, u_int len,
   new->op2.type = ASM_OTYPE_FIXED;
   new->op2.regset = ASM_REGSET_R8;
   new->op2.content = ASM_OP_BASE;
-  new->op2.base_reg = ASM_REG_AL;
+  new->op2.baser = ASM_REG_AL;
   new->len += 4;
 #endif
   return (new->len);

@@ -1,6 +1,7 @@
 /**
  * @file op_mvo_subreg_ib.c
- * $Id: op_mov_subreg_ib.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_mov_subreg_ib.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -41,7 +42,7 @@ int op_mov_subreg_ib(asm_instr *new, u_char *opcode, u_int len,
   new->op1.regset = ASM_REGSET_R8;
   new->op1.ptr = opcode;
 
-  new->op1.base_reg = modrm->m;
+  new->op1.baser = modrm->m;
 
 
   new->op2.content = ASM_OP_VALUE;

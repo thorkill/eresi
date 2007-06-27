@@ -1,4 +1,5 @@
-/*
+/**
+ * @file sort.c
 ** sort.c for elfsh
 ** 
 ** Improved by spacewalker to use quicksort from libc
@@ -7,7 +8,7 @@
 ** Started on  Wed May 21 15:27:15 2003 mayhem
 ** 
 **
-** $Id: sort.c,v 1.4 2007-04-19 10:35:36 may Exp $
+** $Id: sort.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,6 +1,7 @@
 /**
  * @file op_lahf.c
- * $Id: op_lahf.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_lahf.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>

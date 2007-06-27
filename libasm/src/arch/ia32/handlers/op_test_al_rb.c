@@ -1,5 +1,7 @@
-/*
-** $Id: op_test_al_rb.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+/**
+ * @file op_test_al_rb.c
+ * @ingroup handlers_ia32
+** $Id: op_test_al_rb.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -23,7 +25,7 @@ int op_test_al_rb(asm_instr *new, u_char *opcode, u_int len,
     #if LIBASM_USE_OPERAND_VECTOR
     new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
     new->op1.content = ASM_OP_BASE;
-    new->op1.base_reg = ASM_REG_AL;
+    new->op1.baser = ASM_REG_AL;
     new->op1.regset = ASM_REGSET_R8;
     new->len += asm_operand_fetch(&new->op2, opcode + 1, 
 				  ASM_OTYPE_IMMEDIATEBYTE, new);
@@ -33,7 +35,7 @@ int op_test_al_rb(asm_instr *new, u_char *opcode, u_int len,
     new->op2.type = ASM_OTYPE_IMMEDIATE;
 
     new->op1.content = ASM_OP_BASE;
-    new->op1.base_reg = ASM_REG_AL;
+    new->op1.baser = ASM_REG_AL;
     new->op1.regset = ASM_REGSET_R8;
 
     new->op2.content = ASM_OP_VALUE;

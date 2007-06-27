@@ -1,4 +1,5 @@
-/*
+/**
+ * @file traces.c
 ** traces.c for libelfsh
 ** 
 ** All functions that help to trace content
@@ -6,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.14 2007-06-23 17:11:00 mxatone Exp $
+** $Id: traces.c,v 1.15 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

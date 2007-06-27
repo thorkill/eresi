@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_offset.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_offset.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -27,5 +27,6 @@ int     asm_operand_fetch_offset(asm_operand *operand, u_char *opcode,
   operand->imm = 0;
   operand->len = 4;
   memcpy(&operand->imm, opcode, 4);
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   return (4);
 }

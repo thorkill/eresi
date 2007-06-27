@@ -1,9 +1,10 @@
-/*
+/**
+ * @file ctors.c
  * ctors.c for libelfsh
  *
  * Started on  Tue Feb 26 22:11:12 2002 mayhem
  *
- * $Id: ctors.c,v 1.4 2007-03-05 01:11:18 thor Exp $
+ * $Id: ctors.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
  *
  */
 #include "libelfsh.h"

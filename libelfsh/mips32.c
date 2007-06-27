@@ -1,4 +1,5 @@
-/*
+/**
+ * @file mips32.c
 ** mips32.c for libelfsh
 **
 ** Started on  Sat Feb 26 23:25:37 2005 mayhem
@@ -6,7 +7,7 @@
 ** Skeleton cut & pasted from the sparc64 backend
 **
 **
-** $Id: mips32.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: mips32.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

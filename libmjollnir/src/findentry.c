@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 mayhem
 **
-** $Id: findentry.c,v 1.2 2007-06-22 21:50:37 may Exp $
+** $Id: findentry.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -105,12 +105,12 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
 	switch (ins.instr)
 	  {
      	  case ASM_SP_SETHI:
-     	    if (ins.op1.base_reg == ASM_REG_O0)
+     	    if (ins.op1.baser == ASM_REG_O0)
      	      main_addr = ins.op2.imm << 10;
      	    break;
      	  case ASM_SP_OR:
-     	    if (ins.op1.base_reg == ASM_REG_O0 &&
-		ins.op3.base_reg == ASM_REG_O0 &&
+     	    if (ins.op1.baser == ASM_REG_O0 &&
+		ins.op3.baser == ASM_REG_O0 &&
 		ins.op2.type == ASM_SP_OTYPE_IMMEDIATE)
      	      main_addr |= ins.op2.imm;
      	    break;

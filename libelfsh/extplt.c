@@ -1,4 +1,5 @@
-/*
+/**
+ * @file extplt.c
  * extplt.c for libelfsh
  * 
  * This file contain the architecture -dependant- code 
@@ -6,7 +7,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.16 2007-06-23 17:11:00 mxatone Exp $
+ * $Id: extplt.c,v 1.17 2007-06-27 11:25:12 heroine Exp $
  *
  */
 #include "libelfsh.h"

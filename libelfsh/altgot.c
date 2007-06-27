@@ -1,4 +1,5 @@
-/*
+/**
+ * @file altgot.c
 ** altgot.c for libelfsh
 ** 
 ** This file contain the architecture -dependant- code 
@@ -7,7 +8,7 @@
 ** Started on  Wed Jun 08 21:20:07 2005 mm
 **
 **
-** $Id: altgot.c,v 1.5 2007-05-16 13:33:47 may Exp $
+** $Id: altgot.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,9 +1,9 @@
-/*
- * debug.c for elfsh
+/**
+ * @file debug.c
  *
  * Started on  Thu Apr  3 21:36:55 2003 mayhem
  *
- * $Id: debug.c,v 1.6 2007-03-05 01:11:18 thor Exp $
+ * $Id: debug.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
  *
  */
 #include "libelfsh.h"

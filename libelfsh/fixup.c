@@ -1,10 +1,11 @@
-/*
+/**
+ * @file fixup.c
 ** fixup.c for elfsh
 ** 
 ** Started on  Fri Jul 27 04:56:06 2001 mayhem
 ** 
 **
-** $Id: fixup.c,v 1.10 2007-04-20 12:37:10 may Exp $
+** $Id: fixup.c,v 1.11 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

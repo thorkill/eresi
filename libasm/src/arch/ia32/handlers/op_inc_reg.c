@@ -1,5 +1,5 @@
 /*
-** $Id: op_inc_reg.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_inc_reg.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -37,7 +37,7 @@ int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.ptr = opcode;
   
-  new->op1.base_reg = modrm->m;
+  new->op1.baser = modrm->m;
 #endif
   return (new->len);  
 }

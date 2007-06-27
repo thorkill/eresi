@@ -1,5 +1,7 @@
 /**
- * $Id: init_i386.c,v 1.11 2007-05-29 08:04:35 strauss Exp $
+ * @file init_i386.c
+ * @ingroup Engine
+ * $Id: init_i386.c,v 1.12 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #ifndef I386_H_
@@ -30,8 +32,15 @@ int     fetch_i386(asm_instr *instr, u_char *buf, u_int len, asm_processor *proc
 
 #else
 /**
+ * Handler to fetch i386 bytecode.
+ * This handler is called throught a function pointer stored in 
+ * the asm_processor structure.
  *
- *
+ * @param instr Pointer to instruction structure to fill.
+ * @param buf Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of instruction or -1 on error.
  */
 
 int	fetch_i386(asm_instr *instr, u_char *buf, u_int len, 
@@ -52,14 +61,13 @@ int	fetch_i386(asm_instr *instr, u_char *buf, u_int len,
 #endif
 
 /**
- *
- *
- *
- *
+ * Intialize the processor structure to disassemble i386 bytecode.
+ * @param Pointer to a asm_processor structure.
  */
 
-void asm_init_i386(asm_processor *proc) {
-  int i;
+void asm_init_i386(asm_processor *proc)
+{
+  
   struct s_asm_proc_i386 *inter;
 
   init_instr_table(proc);
@@ -75,6 +83,11 @@ void asm_init_i386(asm_processor *proc) {
   inter = proc->internals = malloc(sizeof (struct s_asm_proc_i386));
   inter->opsize = inter->addsize = 0;
   inter->mode = INTEL_PROT;
+
+#if !LIBASM_USE_VECTOR
+  /*
+   * Deprecated. Should be definitively removed.
+   */
   // inter->get_vect_size = get_i386_vect_size;
   for (i = 0; i< 256; i++) {
     inter->cisc_set[i] = 0;
@@ -436,7 +449,7 @@ void asm_init_i386(asm_processor *proc) {
   inter->cisc_i386[0xdd] = i386_paddusw_pq_qq;
   inter->cisc_i386[0xeb] = i386_por_pq_qq;
   inter->cisc_i386[0xef] = i386_pxor_pq_qq;
-
+#endif
 }
 
 void asm_free_i386(asm_processor *proc) {

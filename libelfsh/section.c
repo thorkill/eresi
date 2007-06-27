@@ -1,4 +1,5 @@
-/*
+/**
+ * @file section.c
 ** section.c for libelfsh
 ** 
 ** All handlers and lowlevel routines for sections management
@@ -6,7 +7,7 @@
 ** Started on  Mon Feb 26 04:12:42 2001 mayhem
 ** 
 **
-** $Id: section.c,v 1.11 2007-05-01 15:56:01 may Exp $
+** $Id: section.c,v 1.12 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

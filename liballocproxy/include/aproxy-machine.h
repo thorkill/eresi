@@ -24,7 +24,7 @@
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
  #include <machine/atomic.h>
 #elif !defined(IRIX) && !defined(sun)
- #include <asm/atomic.h>
+// #include <asm/atomic.h>
 #endif
 
 //#if 0

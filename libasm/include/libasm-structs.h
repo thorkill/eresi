@@ -7,18 +7,18 @@
 ** Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
 ** Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
 **
-** $Id: libasm-structs.h,v 1.9 2007-05-16 18:50:47 heroine Exp $
+** $Id: libasm-structs.h,v 1.10 2007-06-27 11:25:11 heroine Exp $
 **
 */
 
 /**
- * Operand structure
+ * Operand structure.
  */
 
 struct s_asm_op 
 {  
   /* pointer to processor structure. - to remove -	*/
-  asm_processor *proc;
+  //asm_processor *proc;
   /** operand length. (usefull on ia32 only).
    * operands expressed in R byte from ModRM byte have a null size.	*/
   u_int	len;			
@@ -38,22 +38,29 @@ struct s_asm_op
   /* immediate value extracted from operand	*/
   int imm; 
   /* base register: primary register extracted	*/
-  int base_reg;
+  int baser;
   /* index register: auxiliary register */
-  int index_reg;
+  int indexr;
+  /* */
+  char	*sbaser;
+  /* */
+  char	*sindex;
   /* address space (sparc only) 
    * 
    * has to be different than ASM_SP_ASI_P for ASM_SP_OTYPE_IMM_ADDRESS
    * operands on "alternate space" instructions so the output can be correct
    */
-  int address_space;  
+  int address_space;
   /* scale factor (ia32 only) */
   unsigned int scale;
 };
 
 
 /**
- * instruction structure. 
+ * Instruction structure. 
+ *
+ * This contains all the fields related to an instruction: type, mnemonic,
+ * operand types, contents.
  */
 
 struct s_asm_instr 
@@ -94,6 +101,12 @@ struct s_asm_instr
 /**
  * Processor structure.
  * Contains architecture dependant handler.
+ *
+ * This structure contains several functions pointers which are used
+ * to as handlers to manage each architecture.
+ *
+ * NOTE: A vector should be implemented to replace thoses handlers
+ * by provided functions. 
  */
 
 struct s_asm_processor 

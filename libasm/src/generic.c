@@ -1,7 +1,7 @@
 /**
  * @file generic.c
- * Latest edition Author : $Author: may $
- * $Id: generic.c,v 1.12 2007-06-07 12:01:00 may Exp $
+ * Latest edition Author : $Author: heroine $
+ * $Id: generic.c,v 1.13 2007-06-27 11:25:11 heroine Exp $
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */
@@ -348,8 +348,8 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr)
       fprintf(fp, "o%i content   = [%i]\n", num, op->content);
 
       fprintf(fp, "o%i immediate = %08X\n", num, op->imm);
-      fprintf(fp, "o%i basereg   = %i\n", num, op->base_reg);
-      fprintf(fp, "o%i indexreg  = %i\n", num, op->index_reg);
+      fprintf(fp, "o%i basereg   = %i\n", num, op->baser);
+      fprintf(fp, "o%i indexreg  = %i\n", num, op->indexr);
       fprintf(fp, "o%i scale     = %i\n", num, op->scale);
       */
     }
@@ -439,3 +439,12 @@ int asm_config_get_endian()
   return (int) config_get_data(ASM_CONFIG_ENDIAN_FLAG);
 }
 
+/**
+ *
+ *
+ */
+
+int	asm_instruction_is_prefixed(asm_instr *ins, int prefix)
+{
+  return (ins->prefix & prefix);
+}

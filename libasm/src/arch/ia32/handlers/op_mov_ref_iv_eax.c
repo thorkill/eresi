@@ -1,6 +1,7 @@
 /**
  * @file op_mov_ref_iv_eax.c
- * $Id: op_mov_ref_iv_eax.c,v 1.5 2007-05-29 00:40:27 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_mov_ref_iv_eax.c,v 1.6 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -34,7 +35,7 @@ int op_mov_ref_iv_eax(asm_instr *new, u_char *opcode, u_int len,
 
   new->op2.content = ASM_OP_BASE | ASM_OP_FIXED;
   new->op2.len = 0;
-  new->op2.base_reg = ASM_REG_EAX;
+  new->op2.baser = ASM_REG_EAX;
   new->op2.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->len += 4;

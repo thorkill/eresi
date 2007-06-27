@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_wr.c,v 1.6 2007-06-16 20:24:26 strauss Exp $
+** $Id: asm_sparc_wr.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -37,23 +37,23 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
 
     asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_SREGISTER, ins);
     if (opcode.rd == 4 || opcode.rd == 5)	/* can't write PC or TICK */
-      ins->op1.base_reg = ASM_SREG_BAD;
+      ins->op1.baser = ASM_SREG_BAD;
     else
-      ins->op1.base_reg = opcode.rd;
+      ins->op1.baser = opcode.rd;
 
     asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
-    ins->op3.base_reg = opcode.rs1;
+    ins->op3.baser = opcode.rs1;
 
     if (opcode.i == 0) {
       asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
-      ins->op2.base_reg = opcode.rs2;
+      ins->op2.baser = opcode.rs2;
     }
     else {
       asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
       ins->op2.imm = opcode.imm;
     }
     
-    if (ins->op1.base_reg == ASM_SREG_Y && ins->op3.base_reg == ASM_REG_G0) {
+    if (ins->op1.baser == ASM_SREG_Y && ins->op3.baser == ASM_REG_G0) {
   	  	ins->instr = ASM_SP_MOV;
   	  	ins->nb_op = 2;
 	}  

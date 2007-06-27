@@ -1,6 +1,7 @@
 /**
  * @file op_aad.c
- * $Id: op_aad.c,v 1.3 2007-05-16 19:21:58 heroine Exp $
+ * @ingroup handlers_ia32
+ * $Id: op_aad.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
  *
  */
 #include <libasm.h>

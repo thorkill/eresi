@@ -1,10 +1,11 @@
-/*
+/** 
+ * @file interp.c
 ** interp.c for libelfsh
 ** 
 ** Started on  Sun Jun 10 20:29:18 2001 mayhem
 ** 
 **
-** $Id: interp.c,v 1.4 2007-03-25 14:27:34 may Exp $
+** $Id: interp.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

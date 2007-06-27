@@ -1,5 +1,5 @@
 /*
-** $Id: operand_ia32.c,v 1.4 2007-05-19 23:59:12 heroine Exp $
+** $Id: operand_ia32.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
 **
 ** Author  : <sk at devhell dot org>
 ** Started : Tue May 28 13:06:39 2002
@@ -41,8 +41,8 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.regset = ASM_REGSET_R32;
 	ins->op2.len = 2;
 	
-	ins->op2.base_reg  = sidbyte->base;
-	ins->op2.index_reg  = sidbyte->index;
+	ins->op2.baser  = sidbyte->base;
+	ins->op2.indexr  = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
       } else {
 	// lea 0x0(,%eax,4),%ebx 8d 1c 85 00 00 00 00
@@ -51,7 +51,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.ptr = opcode;
 	ins->op2.len = 6;
 	
-	ins->op2.index_reg = sidbyte->index;
+	ins->op2.indexr = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
 	
 	memcpy(&ins->op2.imm, opcode + 2, 4);
@@ -62,7 +62,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.regset = ASM_REGSET_R32;
       ins->op2.len = 5;
       
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
     }
     break;
     
@@ -82,7 +82,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	  ins->op2.imm = 0;
 	memcpy(&ins->op2.imm, opcode + 2, 1);
 	
-	ins->op2.base_reg = sidbyte->base;
+	ins->op2.baser = sidbyte->base;
 	ins->op2.scale = 1;
 	
 	
@@ -92,8 +92,8 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.regset = ASM_REGSET_R32;
 	ins->op2.ptr = opcode + 1;
 
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.index_reg = sidbyte->index;
+	ins->op2.baser = sidbyte->base;
+	ins->op2.indexr = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
 
 	if (*(opcode + 2) > 0x80u)
@@ -109,7 +109,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.regset = ASM_REGSET_R32;
       ins->op2.ptr = opcode;
 	
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
 
 	
       ins->op2.imm = 0;
@@ -129,7 +129,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
 	ins->op2.len = 6;
 	
-	ins->op2.base_reg = sidbyte->base;
+	ins->op2.baser = sidbyte->base;
 	ins->op2.regset = ASM_REGSET_R32;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
 	memcpy(&ins->op2.imm, opcode + 2, 4);
@@ -147,8 +147,8 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.imm = 0;
 	memcpy(&ins->op2.imm, opcode + 2, 4);
       
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.index_reg = sidbyte->index;
+	ins->op2.baser = sidbyte->base;
+	ins->op2.indexr = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid); 
       
       }    
@@ -158,7 +158,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
       ins->op2.ptr = opcode;
 	ins->op2.regset = ASM_REGSET_R32;
       ins->op2.len = 5;
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
 
       
       ins->op2.imm = 0;
@@ -173,7 +173,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.regset = ASM_REGSET_R32;
     ins->op2.len = 1;
 
-    ins->op2.base_reg = modrm->m;
+    ins->op2.baser = modrm->m;
     break;
   } 
 	
@@ -183,7 +183,7 @@ int	operand_rv_m(asm_instr *ins, u_char *opcode, int len,
   ins->op1.content = ASM_OP_BASE;
   ins->op1.len = 0;
 
-  ins->op1.base_reg = modrm->r;
+  ins->op1.baser = modrm->r;
   
   ins->len += ins->op1.len + ins->op2.len;
   
@@ -209,7 +209,7 @@ int	operand_rb_rmb(asm_instr *ins, u_char *opcode, int len,
   ins->op1.regset = ASM_REGSET_R8;
   ins->op1.len = 0;
   ins->op1.ptr= opcode;
-  ins->op1.base_reg = (modrm->r);
+  ins->op1.baser = (modrm->r);
   
   ins->len += ins->op1.len + ins->op2.len;
   
@@ -240,7 +240,7 @@ int	operand_rmb_rb(asm_instr *ins, u_char *opcode, int len,
   
   ins->op2.content = ASM_OP_BASE;
   ins->op2.regset = ASM_REGSET_R8;
-  ins->op2.base_reg = (modrm->r);
+  ins->op2.baser = (modrm->r);
   
   ins->len += ins->op1.len + ins->op2.len;
   
@@ -266,7 +266,7 @@ int	operand_rmv_rv(asm_instr *ins, u_char *opcode, int len,
       ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op2.ptr = opcode;
   ins->op2.len = 0;
-  ins->op2.base_reg = modrm->r;
+  ins->op2.baser = modrm->r;
   
   ins->len += ins->op1.len + ins->op2.len;
   return (1);
@@ -300,7 +300,7 @@ int	operand_rv_rmv(asm_instr *ins, u_char *opcode, int len,
   ins->op1.ptr = opcode;
   ins->op1.len = 0;
   
-  ins->op1.base_reg = modrm->r;
+  ins->op1.baser = modrm->r;
   ins->len += ins->op1.len + ins->op2.len;
   
   return (1);
@@ -324,7 +324,7 @@ int	operand_rv_rmb(asm_instr *ins, u_char *opcode, int len,
     ASM_REGSET_R16 : ASM_REGSET_R32;
   ins->op1.len = 0;
   ins->op1.ptr = opcode;
-  ins->op1.base_reg = modrm->r;
+  ins->op1.baser = modrm->r;
   operand_rmb(&ins->op2, opcode, len, proc);
   ins->len += ins->op2.len ? ins->op2.len : 1;
   return (1);
@@ -350,7 +350,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
     ins->op1.regset = ASM_REGSET_R32;
     ins->op1.len = 0;
     ins->op1.ptr = opcode;
-    ins->op1.base_reg = modrm->r;
+    ins->op1.baser = modrm->r;
 
     if (modrm->m == ASM_REG_EBP) {
       // movzwl 0x807a446,%eax ; opcode = '0f b7 05 46 a4 07 08'
@@ -366,7 +366,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.ptr = opcode;
 	ins->op2.regset = ASM_REGSET_R32;
 	
-	ins->op2.index_reg = sidbyte->index;
+	ins->op2.indexr = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
 	memcpy(&ins->op2.imm, opcode + 2, 4);
 
@@ -375,8 +375,8 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
 	ins->op2.len = 2;
 	ins->op2.ptr = opcode;
 	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.base_reg = sidbyte->base;
-	ins->op2.index_reg = sidbyte->index;
+	ins->op2.baser = sidbyte->base;
+	ins->op2.indexr = sidbyte->index;
 	ins->op2.scale = asm_int_pow2(sidbyte->sid);
       }
     } else {
@@ -386,7 +386,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
       ins->op2.ptr = opcode;
       ins->op2.regset = ASM_REGSET_R32;
 
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
     }
     ins->len += ins->op1.len + ins->op2.len; 
     break;
@@ -395,7 +395,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
     ins->op1.regset = ASM_REGSET_R32;
     ins->op1.len = 0;
     ins->op1.ptr = opcode;
-    ins->op1.base_reg = modrm->r;
+    ins->op1.baser = modrm->r;
     
     if (modrm->m == ASM_REG_ESP) {
 
@@ -411,8 +411,8 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
       else
 	ins->op2.imm = 0;
       memcpy(&ins->op2.imm, opcode + 2, 1);
-      ins->op2.base_reg = sidbyte->base;
-      ins->op2.index_reg = sidbyte->index;
+      ins->op2.baser = sidbyte->base;
+      ins->op2.indexr = sidbyte->index;
       ins->op2.scale = asm_int_pow2(sidbyte->sid);
       ins->len += 3;
 
@@ -428,7 +428,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
       else
 	ins->op2.imm = 0;
       memcpy(&ins->op2.imm, opcode + 1, 1);
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
 
       ins->len += 2;
     }
@@ -439,15 +439,15 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
     ins->op1.content = ASM_OP_BASE;
     ins->op1.len = 0;
     ins->op1.ptr = opcode;
-    ins->op1.base_reg = modrm->r;
+    ins->op1.baser = modrm->r;
     
     ins->op2.regset = ASM_REGSET_R32;
     switch(modrm->m) {
     case ASM_REG_ESP:
       // movzwl 0x888(%ebx,%esi,1),%eax ; opcode = '0f b7 84 33 88 08 00 00'
       ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-      ins->op2.base_reg = sidbyte->base;
-      ins->op2.index_reg = sidbyte->index;
+      ins->op2.baser = sidbyte->base;
+      ins->op2.indexr = sidbyte->index;
       ins->op2.scale = asm_int_pow2(sidbyte->sid);
       ins->op2.len = 6;
       memcpy(&ins->op2.imm, opcode + 2, 4);
@@ -457,7 +457,7 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
       ins->op2.ptr = opcode;
       ins->op2.len = 5;
       memcpy(&ins->op2.imm, opcode + 1, 4);
-      ins->op2.base_reg = modrm->m;
+      ins->op2.baser = modrm->m;
     }
     ins->len += ins->op1.len + ins->op2.len;
     break;
@@ -466,13 +466,13 @@ int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len,
     ins->op1.regset = ASM_REGSET_R32;
     ins->op1.len = 1;
     ins->op1.ptr = opcode;
-    ins->op1.base_reg = modrm->r;
+    ins->op1.baser = modrm->r;
 
     ins->op2.content = ASM_OP_BASE;
     ins->op2.regset = ASM_REGSET_R16;
     ins->op2.len = 0;
     ins->op2.ptr = opcode;
-    ins->op2.base_reg = modrm->m;
+    ins->op2.baser = modrm->m;
 
     ins->len += 1;
     
@@ -614,10 +614,10 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
 	  op->imm = 0;
 	memcpy((char *) &op->imm, opcode + 2, 4);
 	
-	op->index_reg = sidbyte->index;
+	op->indexr = sidbyte->index;
       } else {
 	
-	if ((op->index_reg = sidbyte->index) != ASM_REG_ESP)
+	if ((op->indexr = sidbyte->index) != ASM_REG_ESP)
 	  op->content = ASM_OP_REFERENCE | 
 	    ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	else
@@ -626,7 +626,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
       op->ptr = opcode;
 	op->regset = ASM_REGSET_R32;
       
-      op->base_reg = sidbyte->base;
+      op->baser = sidbyte->base;
       op->scale = asm_int_pow2(sidbyte->sid);
       
       }
@@ -642,7 +642,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
 	op->len = 1;
 	op->content = ASM_OP_REFERENCE | ASM_OP_BASE;
 	
-	op->base_reg = modrm->m;
+	op->baser = modrm->m;
 	op->regset = ASM_REGSET_R32;
       }
     }
@@ -657,7 +657,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
   case 1:
     if (modrm->m == ASM_REG_ESP) {
       
-      if ((op->index_reg = sidbyte->index) != ASM_REG_ESP)
+      if ((op->indexr = sidbyte->index) != ASM_REG_ESP)
 	op->content = ASM_OP_REFERENCE | 
 	  ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
       else
@@ -666,8 +666,8 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
       op->ptr = opcode;
       op->len = 3;
 	op->regset = ASM_REGSET_R32;
-      op->base_reg = sidbyte->base;
-      op->index_reg = sidbyte->index;
+      op->baser = sidbyte->base;
+      op->indexr = sidbyte->index;
       op->scale = asm_int_pow2(sidbyte->sid);
       if (*(opcode + 2) >= 0x80u)
 	memcpy((char *) &op->imm + 1, "\xff\xff\xff", 3);
@@ -677,7 +677,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
     } else {
     op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
     op->len = 2;
-    op->base_reg = modrm->m;
+    op->baser = modrm->m;
     
 	op->regset = ASM_REGSET_R32;
     if (*(opcode + 1) >= 0x80u)
@@ -705,8 +705,8 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
 	  ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
       
       op->regset = ASM_REGSET_R32;
-      op->base_reg = sidbyte->base;
-      op->index_reg = sidbyte->index;
+      op->baser = sidbyte->base;
+      op->indexr = sidbyte->index;
       op->scale = asm_int_pow2(sidbyte->sid);
       op->len = 6;
 	
@@ -718,7 +718,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
       op->len = 5;
       
       op->regset = ASM_REGSET_R32;
-      op->base_reg = modrm->m;
+      op->baser = modrm->m;
       op->imm = 0;
       memcpy(&op->imm, opcode + 1, 4);
     }
@@ -731,12 +731,12 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
     op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
     op->len = 5;
     
-    op->base_reg = modrm->m;
+    op->baser = modrm->m;
     op->regset = ASM_REGSET_R32;
     memcpy(&op->imm, opcode + 1, 4);
     
     /*
-    op->base_reg;
+    op->baser;
     op->imm;
     */
     break;
@@ -746,7 +746,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
     op->len = 1;
     op->ptr = opcode;
     
-    op->base_reg = modrm->m;
+    op->baser = modrm->m;
     break;
   }
 
@@ -785,14 +785,14 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	
 	      memcpy((char *) &op->imm, opcode + 2, 4);
 	
-	      op->base_reg = -1;
-	      op->index_reg = sidbyte->index;
+	      op->baser = -1;
+	      op->indexr = sidbyte->index;
 	    } 
 	  else if (sidbyte->base == ASM_REG_ESP) 
 	    {
 	      op->content = ASM_OP_REFERENCE | ASM_OP_SCALE | ASM_OP_BASE;
 	      op->len = 2;
-	      op->base_reg = sidbyte->base;
+	      op->baser = sidbyte->base;
 	      op->scale = asm_int_pow2(sidbyte->sid);
 
 	    } 
@@ -805,9 +805,9 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	      op->ptr = opcode;
       
 	      op->regset = ASM_REGSET_R32;
-	      op->base_reg = sidbyte->base;
+	      op->baser = sidbyte->base;
 	      op->scale = asm_int_pow2(sidbyte->sid);
-	      op->index_reg = sidbyte->index;
+	      op->indexr = sidbyte->index;
 	    }
 	} 
       else 
@@ -826,7 +826,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	      op->len = 1;
 	      op->content = ASM_OP_REFERENCE | ASM_OP_BASE;
 	
-	      op->base_reg = modrm->m;
+	      op->baser = modrm->m;
 	    }
 	}
       break;
@@ -841,8 +841,8 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	  op->ptr = opcode;
 	  op->len = 3;
 	  op->regset = ASM_REGSET_R32;
-	  op->base_reg = sidbyte->base;
-	  op->index_reg = sidbyte->index;
+	  op->baser = sidbyte->base;
+	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
 	  if (*(opcode + 2) >= 0x80u)
 	    memcpy((char *) &op->imm + 1, "\xff\xff\xff", 3);
@@ -855,7 +855,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	  op->len = 2;
 	  op->regset = ASM_REGSET_R32;
-	  op->base_reg = modrm->m;
+	  op->baser = modrm->m;
       
 	  if (*(opcode + 1) >= 0x80u)
 	    memcpy((char *) &op->imm + 1, "\xff\xff\xff", 3);
@@ -877,9 +877,9 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	  op->len = 6;
 	  op->ptr = opcode;
       
-	  op->base_reg = sidbyte->base;
+	  op->baser = sidbyte->base;
 	  op->regset = ASM_REGSET_R32;
-	  op->index_reg = sidbyte->index;
+	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
 	  memcpy(&op->imm, opcode + 2, 4);
 	
@@ -893,7 +893,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 	  op->ptr = opcode;
 	  op->regset = ASM_REGSET_R32;
       
-	  op->base_reg = modrm->m;
+	  op->baser = modrm->m;
 	  memcpy(&op->imm, opcode + 1, 4);
 	}
       break;
@@ -903,7 +903,7 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
       op->ptr = opcode;
       op->regset = asm_proc_opsize(proc) ?
 	ASM_REGSET_R16 : ASM_REGSET_R32;
-      op->base_reg = modrm->m;
+      op->baser = modrm->m;
       break;
     }
   return (op->len);

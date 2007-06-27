@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_tcc.c,v 1.5 2007-06-16 20:24:26 strauss Exp $
+** $Id: asm_sparc_tcc.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -26,12 +26,12 @@ asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
   }
   else {
     asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
-    ins->op1.index_reg = opcode4.rs2;
+    ins->op1.indexr = opcode4.rs2;
   }
-  ins->op1.base_reg = opcode4.rs1;
+  ins->op1.baser = opcode4.rs1;
 
   asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_CC, ins);
-  ins->op2.base_reg = (opcode4.cc & 0x3) + 4;
+  ins->op2.baser = (opcode4.cc & 0x3) + 4;
   
   return 4;
 

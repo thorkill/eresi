@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.20 2007-06-16 20:24:25 strauss Exp $
+** $Id: libasm.h,v 1.21 2007-06-27 11:25:11 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -10,6 +10,14 @@
 /**
  * @file libasm.h
  * It contains the main define types and prototypes.
+ */
+
+/**
+ * @defgroup operands Operands related API
+ */
+
+/**
+ * @defgroup handlers_ia32 IA32 Fechting handlers.
  */
 
 #ifndef LIBASM_H_
@@ -30,9 +38,17 @@
 
 #include <libaspect.h>
 
-
+/**
+ * Set to 1 to use libasm vector.
+ */
 #define	LIBASM_USE_VECTOR		1
+/**
+ * Set to 1 to use libasm operand vector.
+ */
 #define LIBASM_USE_OPERAND_VECTOR	1
+/**
+ * Set to 1 to use profiling.
+ */
 #define LIBASM_USE_PROFILE		0
 
 #if LIBASM_USE_PROFILE
@@ -70,28 +86,31 @@
 #endif
 
 
-
-
-/* Instruction types */
+/**
+ * Instruction types 
+ *
+ */
 enum 
   {
-    ASM_TYPE_NONE		=    0x0, //! Undefined instruction type.
-    ASM_TYPE_IMPBRANCH		=    0x1, //! Branching instruction which always branch (jump).
-    ASM_TYPE_CONDBRANCH		=    0x2, //! Conditionnal branching instruction.
-    ASM_TYPE_CALLPROC		=    0x4, //! Sub Procedure calling instruction.
-    ASM_TYPE_RETPROC		=    0x8, //! Return instruction
-    ASM_TYPE_ARITH	  	=   0x10, //! Arithmetic (or logic) instruction.
-    ASM_TYPE_LOAD		=   0x20, //! Instruction that reads from memory.
-    ASM_TYPE_STORE		=   0x40, //! Instruction that writes in memory.
-    ASM_TYPE_ARCH		=   0x80, //! Architecture dependent instruction.
-    ASM_TYPE_FLAG		=  0x100, //! Flag-modifier instruction.
-    ASM_TYPE_INT		=  0x200, //! Interrupt/call-gate instruction.
-    ASM_TYPE_ASSIGN		=  0x400, //! Assignment instruction.
-    ASM_TYPE_TEST		=  0x800, //! Instruction that performs comparison or test.
-    ASM_TYPE_CONTROL		= 0x1000, //! Instruction modifies control registers.
-    ASM_TYPE_NOP		= 0x2000, //! Instruction that does nothing.
-    ASM_TYPE_OTHER		= 0x4000, //! Type that doesn't fit the ones above.
-    ASM_TYPE_TOUCHSP		= 0x8000  //! Instruction modify stack pointer.
+    ASM_TYPE_NONE		=     0x0, //! Undefined instruction type.
+    ASM_TYPE_IMPBRANCH		=     0x1, //! Branching instruction which always branch (jump).
+    ASM_TYPE_CONDBRANCH		=     0x2, //! Conditionnal branching instruction.
+    ASM_TYPE_CALLPROC		=     0x4, //! Sub Procedure calling instruction.
+    ASM_TYPE_RETPROC		=     0x8, //! Return instruction
+    ASM_TYPE_ARITH	  	=    0x10, //! Arithmetic (or logic) instruction.
+    ASM_TYPE_LOAD		=    0x20, //! Instruction that reads from memory.
+    ASM_TYPE_STORE		=    0x40, //! Instruction that writes in memory.
+    ASM_TYPE_ARCH		=    0x80, //! Architecture dependent instruction.
+    ASM_TYPE_FLAG		=   0x100, //! Flag-modifier instruction.
+    ASM_TYPE_INT		=   0x200, //! Interrupt/call-gate instruction.
+    ASM_TYPE_ASSIGN		=   0x400, //! Assignment instruction.
+    ASM_TYPE_TEST		=   0x800, //! Instruction that performs comparison or test.
+    ASM_TYPE_CONTROL		=  0x1000, //! Instruction modifies control registers.
+    ASM_TYPE_NOP		=  0x2000, //! Instruction that does nothing.
+    ASM_TYPE_OTHER		=  0x4000, //! Type that doesn't fit the ones above.
+    ASM_TYPE_TOUCHSP		=  0x8000, //! Instruction modify stack pointer.
+    ASM_TYPE_BITTEST		= 0x10000, //! Instruction modify stack pointer.
+    ASM_TYPE_BITSET		= 0x20000  //! Instruction modify stack pointer.
   } e_instr_types;
 
 /* this is needed for mips implementation */
@@ -121,11 +140,15 @@ enum
   LIBASM_VECTOR_MIPS,
   LIBASM_VECTOR_ARCHNUM
 } e_vector_arch;
-  
+
+
+/**
+ * List of architecture.
+ */
 enum 
 {
-  ASM_PROC_IA32,
-  ASM_PROC_SPARC,
+  ASM_PROC_IA32,	//! Architecture IA32
+  ASM_PROC_SPARC,	//
   ASM_PROC_MIPS
 } e_proc_type;
 
@@ -284,6 +307,12 @@ int		asm_operand_get_scale(asm_instr *, int num, int opt, void *);
 int		asm_operand_set_scale(asm_instr *, int num, int opt, void *);
 
 /**
+ *
+ */
+int		asm_operand_is_reference(asm_operand *op);
+int		asm_instruction_is_prefixed(asm_instr *ins, int prefix);
+
+/**
  * Set resolve handler used by asm_display_instr() to resolve immediate value.
  */
 void		asm_set_resolve_handler(asm_processor *,
@@ -353,6 +382,18 @@ int	asm_operand_fetch_immediateword(asm_operand *operand, u_char *opcode, int ty
 int	asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, int type,
 				asm_instr *ins);
 
+/**
+ * Return an ascii static string corresponding to a register.
+ * @param reg Register
+ * @param regset Register set (ie: ASM_REGSET_R32)
+ * @return An ascii string.
+ */
+char	*get_reg_intel(int reg, int regset);
+
+/**
+ * LIBASM_ERROR_CODEm
+ * Currently not used. Should be integrated.
+ */
 enum 
   {
     LIBASM_ERROR_SUCCESS,

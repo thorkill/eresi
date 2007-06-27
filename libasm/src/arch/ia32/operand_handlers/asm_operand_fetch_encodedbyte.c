@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_encodedbyte.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_encodedbyte.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  */
 
 #include <libasm.h>
@@ -23,6 +23,11 @@
 int     asm_operand_fetch_encodedbyte(asm_operand *operand, u_char *opcode, 
 				      int otype, asm_instr *ins)
 { 
+  int	len;
+  
   operand->type = ASM_OTYPE_ENCODED;
-  return (operand_rmb(operand, opcode, 5, ins->proc));
+  len = operand_rmb(operand, opcode, 5, ins->proc);
+  operand->sbaser = get_reg_intel(operand->baser, operand->regset);
+  operand->sindex = get_reg_intel(operand->indexr, operand->regset);
+  return (len);
 }

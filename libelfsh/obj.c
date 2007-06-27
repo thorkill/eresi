@@ -1,10 +1,11 @@
-/*
+/**
+ * @file obj.c
 ** obj.c for elfsh
 ** 
 ** Started on  Wed Feb 12 00:07:06 2003 mayhem
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
 **
-** $Id: obj.c,v 1.5 2007-03-07 16:45:35 thor Exp $
+** $Id: obj.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

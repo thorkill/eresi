@@ -1,5 +1,5 @@
 /**
- * $Id: output_mips.c,v 1.2 2007-05-30 15:53:58 heroine Exp $
+ * $Id: output_mips.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
  *
  *
  *
@@ -74,7 +74,7 @@ void	asm_mips_dump_operand(asm_instr *ins, int num, unsigned int addr, char *buf
   switch(op->type)
     {
     case ASM_MIPS_OTYPE_REGISTER:
-      sprintf(buf, "%s", get_mips_register(op->base_reg));
+      sprintf(buf, "%s", get_mips_register(op->baser));
       break;
     default:
       sprintf(buf, "opp[%i]err", num);

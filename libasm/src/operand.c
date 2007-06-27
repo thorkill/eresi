@@ -1,10 +1,12 @@
-/*
-** $Id: operand.c,v 1.4 2007-05-30 15:53:58 heroine Exp $
-** operand.c in 
-** 
-** Author  : <kahmm@altdev.net>
-** Started : Sat Mar  6 06:28:22 2004
-** Updated : Wed Apr  7 19:54:38 2004
+/**
+ * @file operand.c
+ * @ingroup operands
+ * $Id: operand.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+ * operand.c in 
+ * 
+ * Author  : <kahmm@altdev.net>
+ * Started : Sat Mar  6 06:28:22 2004
+ * Updated : Wed Apr  7 19:54:38 2004
 */
 
 #include <libasm.h>
@@ -94,19 +96,19 @@ int     asm_operand_get_basereg(asm_instr *ins, int num,
     {
     case 1:
       if (ins->op1.type && (ins->op1.content & ASM_OP_BASE))
-	*val = ins->op1.base_reg;
+	*val = ins->op1.baser;
       else
 	return (-1);  
       break;
     case 2:
       if (ins->op2.type && (ins->op2.content & ASM_OP_BASE))
-	*val = ins->op2.base_reg;
+	*val = ins->op2.baser;
       else
 	return (-1);
       break;
     case 3:
       if (ins->op3.type && (ins->op3.content & ASM_OP_BASE))
-	*val = ins->op3.base_reg;
+	*val = ins->op3.baser;
       else
 	return (-1);        
       break;
@@ -132,19 +134,19 @@ int     asm_operand_get_indexreg(asm_instr *ins, int num,
     {
     case 1:
       if (ins->op1.type && (ins->op1.content & ASM_OP_INDEX))
-	*val = ins->op1.index_reg;
+	*val = ins->op1.indexr;
       else
 	return (-1);  
       break;
     case 2:
       if (ins->op2.type && (ins->op2.content & ASM_OP_INDEX))
-	*val = ins->op2.index_reg;
+	*val = ins->op2.indexr;
       else
 	return (-1);  
       break;
     case 3:
       if (ins->op3.type && (ins->op3.content & ASM_OP_INDEX))
-	*val = ins->op3.index_reg;
+	*val = ins->op3.indexr;
       else
 	return (-1);    
       break;
@@ -400,3 +402,15 @@ int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr)
     num++;
   return (num);
 }
+
+
+/**
+ * Return wether operand if a reference or not.
+ * @param op Pointer to operand structure.
+ * @return True if operand is a reference, or False.
+ */
+int	asm_operand_is_reference(asm_operand *op)
+{
+  return(op->content & ASM_OP_REFERENCE);
+}
+

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovqcc.c,v 1.5 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_fmovqcc.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -18,10 +18,10 @@ asm_sparc_fmovqcc(asm_instr * ins, u_char * buf, u_int len,
 
   if (opcode.opf_cc < 4)
     ins->instr = inter->fmovfcc_table[(((opcode.opf & 0x1f) - 1) * 8)
-  	    									+ opcode.cond];
+				      + opcode.cond];
   else if (opcode.opf_cc == 4 || opcode.opf_cc == 6)
     ins->instr = inter->fmovcc_table[(((opcode.opf & 0x1f) - 1) * 8)
-   	    									+ opcode.cond];
+				     + opcode.cond];
   else {
      ins->instr = ASM_SP_BAD;
   	 return 4;
@@ -29,11 +29,11 @@ asm_sparc_fmovqcc(asm_instr * ins, u_char * buf, u_int len,
   	  	  
   ins->nb_op = 3;
   asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op1.base_reg = opcode.rd;
+  ins->op1.baser = opcode.rd;
   asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op2.base_reg = opcode.rs2;
+  ins->op2.baser = opcode.rs2;
   asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_CC, ins);
-  ins->op3.base_reg = opcode.opf_cc;
+  ins->op3.baser = opcode.opf_cc;
   	  	  
   return 4;
 }

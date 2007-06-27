@@ -1,10 +1,11 @@
-/*
+/**
+ * @file dynsym.c
 ** Dynsym.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.13 2007-06-17 19:50:42 mxatone Exp $
+** $Id: dynsym.c,v 1.14 2007-06-27 11:25:12 heroine Exp $
 **
 */
 #include "libelfsh.h"

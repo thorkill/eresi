@@ -1,5 +1,5 @@
 /*
-** $Id: op_in_eax_ref_ib.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_in_eax_ref_ib.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -19,7 +19,7 @@ int op_in_eax_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, 
@@ -29,7 +29,7 @@ int op_in_eax_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   #else
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
-  new->op1.base_reg = ASM_REG_EAX;
+  new->op1.baser = ASM_REG_EAX;
   new->op1.regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   
