@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_saved.c,v 1.4 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_saved.c,v 1.5 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -24,7 +24,6 @@ asm_sparc_saved(asm_instr * ins, u_char * buf, u_int len,
     ins->instr = ASM_SP_RESTORED;
   else
     ins->instr = ASM_SP_BAD;
-    
-  return 4;
 
+  return 4;
 }

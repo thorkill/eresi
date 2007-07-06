@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_rd.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_rd.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -18,16 +18,17 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
   
   ins->type = ASM_TYPE_ASSIGN;
 
-  if (opcode.rs1 != 15) {	/* RD*(-PR) */
+  if (opcode.rs1 != 15) { /* RD*(-PR) */
     ins->nb_op = 2;
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
+
     ins->op1.baser = opcode.rd;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_SREGISTER, ins);
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op2.baser = opcode.rs1;
-    
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_SREGISTER, ins);
+
     if (ins->op1.baser == ASM_SREG_Y) {
-  	  	ins->instr = ASM_SP_MOV;
-  	}
+      ins->instr = ASM_SP_MOV;
+    }
   }
   else {
     if (opcode.rd != 0)
@@ -40,9 +41,10 @@ asm_sparc_rd(asm_instr * ins, u_char * buf, u_int len,
       ins->instr = ASM_SP_MEMBAR;
       ins->type = ASM_TYPE_OTHER;
       ins->nb_op = 1;
-      asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
+
       /* operand = cmask OR mmask */
       ins->op1.imm = ((opcode.imm & 0x70) >> 4) | (opcode.imm & 0xf);
+      asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     }
   }
   

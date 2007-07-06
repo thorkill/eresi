@@ -7,7 +7,7 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id: output_sparc.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
+** $Id: output_sparc.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
 **
 */
 
@@ -123,7 +123,7 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
     default: return;
   }
   
-  switch(op->type) {
+  switch(op->content) {
     case ASM_SP_OTYPE_REGISTER:
       sprintf(buf, "%s", get_sparc_register(op->baser));
       break;

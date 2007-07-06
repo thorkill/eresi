@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_illtrap.c,v 1.5 2007-06-16 20:24:25 strauss Exp $
+** $Id: asm_sparc_illtrap.c,v 1.6 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,8 +16,8 @@ asm_sparc_illtrap(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = ASM_SP_ILLTRAP;
   ins->nb_op = 1;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   ins->op1.imm = opcode.immediate;
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
 
   return 4;
 }

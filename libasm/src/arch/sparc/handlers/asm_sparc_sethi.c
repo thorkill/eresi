@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_sethi.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_sethi.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -22,10 +22,10 @@ asm_sparc_sethi(asm_instr * ins, u_char * buf, u_int len,
   else {
     ins->instr = ASM_SP_SETHI;
     ins->nb_op = 2;
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op1.baser = opcode.rd;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_SETHI, ins);
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op2.imm = opcode.imm;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_SETHI, ins);
   }
 
   return 4;

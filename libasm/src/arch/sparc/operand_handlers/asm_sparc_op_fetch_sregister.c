@@ -2,10 +2,10 @@
 #include <libasm-sparc.h>
 
 /**
- * Decode data for operand type ASM_SP_OTYPE_SREGISTER
+ * Decode data for operand content ASM_SP_OTYPE_SREGISTER
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to opcode data.
- * @param otype Operand type.
+ * @param otype Operand content.
  * @param ins Pointer to instruction structure.
  *
  * @return Operand length (currently unused in libasm-sparc)
@@ -14,7 +14,7 @@
 int asm_sparc_op_fetch_sregister(asm_operand *operand, u_char *opcode, 
                        				   int otype, asm_instr *ins)
 {
-  operand->type = ASM_SP_OTYPE_SREGISTER;
+  operand->content = ASM_SP_OTYPE_SREGISTER;
 
   return (0);
 }

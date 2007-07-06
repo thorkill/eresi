@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_bpcc.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_bpcc.c,v 1.6 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -24,13 +24,13 @@ asm_sparc_bpcc(asm_instr * ins, u_char * buf, u_int len,
   else
     ins->type = ASM_TYPE_CONDBRANCH;
 
-  ins->nb_op = 2;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
-  ins->op1.imm = opcodep.imm;
-  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_CC, ins);
+  ins->nb_op = 2;  
+  ins->op1.imm = opcodep.imm;  
   ins->op2.baser = opcodep.cc + 4;
   ins->annul = opcodep.a;
   ins->prediction = opcodep.p;
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
+  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_CC, ins);
 
   if (ins->instr == ASM_SP_BN &&
       ins->annul && ins->prediction && ins->op2.baser == ASM_SP_XCC) {

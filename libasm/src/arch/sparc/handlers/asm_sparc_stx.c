@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_stx.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_stx.c,v 1.6 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -19,35 +19,23 @@ asm_sparc_stx(asm_instr * ins, u_char * buf, u_int len,
 
   ins->nb_op = 2;
   if (opcode.i) {
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
+    ins->op1.baser = opcode.rs1;
     ins->op1.imm = opcode.imm;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
   }
   else {
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
+    ins->op1.baser = opcode.rs1;
     ins->op1.indexr = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
   }
-  ins->op1.baser = opcode.rs1;
 
-  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op2.baser = opcode.rd;
+  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
 
-  if (ins->instr == ASM_SP_STB && ins->op2.baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLRB;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STH && ins->op2.baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLRH;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STW && ins->op2.baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLR;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STX && ins->op2.baser == ASM_REG_G0) {
+  if (ins->op2.baser == ASM_REG_G0) {
     ins->instr = ASM_SP_CLRX;
     ins->nb_op = 1;
   }
-  
-  return 4;
 
+  return 4;
 }

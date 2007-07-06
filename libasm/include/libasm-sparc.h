@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.9 2007-06-16 20:24:25 strauss Exp $
+** $Id: libasm-sparc.h,v 1.10 2007-07-06 21:18:08 strauss Exp $
 **
 */
 
@@ -337,6 +337,7 @@ enum {
 } e_sparc_opcode;
 
 
+/* Possible values for SPARC openrands' content attribute */
 enum {
   ASM_SP_OTYPE_REGISTER,
   ASM_SP_OTYPE_IMMEDIATE,

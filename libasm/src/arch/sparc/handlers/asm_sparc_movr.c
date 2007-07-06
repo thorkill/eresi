@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_movr.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_movr.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -18,20 +18,19 @@ asm_sparc_movr(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = inter->movr_table[opcode.rcond];
   ins->nb_op = 3;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op1.baser = opcode.rd;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op3.baser = opcode.rs1;
+  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
 
   if (opcode.i == 0) {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op2.baser = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
   }
   else {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     ins->op2.imm = opcode.imm10;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
-  
-  return 4;
 
+  return 4;
 }

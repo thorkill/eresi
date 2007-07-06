@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_srl.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_srl.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -20,23 +20,22 @@ asm_sparc_srl(asm_instr * ins, u_char * buf, u_int len,
 				  ((opcode.imm & 0x1000) ? 1 : 0)];
 
   ins->nb_op = 3;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op1.baser = opcode.rd;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
   ins->op3.baser = opcode.rs1;
+  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
 
   if (opcode.i == 0) {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op2.baser = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
   }
   else {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     ins->op2.imm = opcode.shcnt;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
   /* Synthetics */
-  if (ins->instr == ASM_SP_SRL &&
-      ins->op2.type == ASM_SP_OTYPE_REGISTER &&
+  if (ins->op2.content == ASM_SP_OTYPE_REGISTER &&
       ins->op2.baser == ASM_REG_G0) {
 
     ins->instr = ASM_SP_CLRUW;
@@ -47,19 +46,6 @@ asm_sparc_srl(asm_instr * ins, u_char * buf, u_int len,
       ins->op2 = ins->op3;
     }
   }
-  else if (ins->instr == ASM_SP_SRA &&
-	   ins->op2.type == ASM_SP_OTYPE_REGISTER &&
-	   ins->op2.baser == ASM_REG_G0) {
 
-    ins->instr = ASM_SP_SIGNX;
-    if (ins->op3.baser == ins->op1.baser)
-      ins->nb_op = 1;
-    else {
-      ins->nb_op = 2;
-      ins->op2 = ins->op3;
-    }
-  }
-  
   return 4;
-
 }

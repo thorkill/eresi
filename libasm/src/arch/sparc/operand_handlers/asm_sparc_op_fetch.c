@@ -5,7 +5,7 @@
  * Main function, dispatch processing to handler.
  * @param op Pointer to operand to fill
  * @param opcode Pointer to operand data.
- * @param otype Type of operand to fetch : ASM_OTYPE_*
+ * @param otype Content of operand to fetch : ASM_OTYPE_*
  * @param proc Pointer to processor structure.
  * @return Operand length or -1 on error (should currently never occur)
  */
@@ -26,7 +26,7 @@ int asm_sparc_op_fetch(asm_operand *op, u_char *opcode, int otype,
 
   if (to_ret == -1)
   {
-    printf("%s:%i Unsupported operand type : %i\n", __FILE__, __LINE__, 
+    printf("%s:%i Unsupported operand content : %i\n", __FILE__, __LINE__, 
     	     otype);
   }
 

@@ -1,5 +1,5 @@
 /**
- * $Id: register.c,v 1.7 2007-06-16 20:24:25 strauss Exp $
+ * $Id: register.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
  * @file register.c
  *
  */
@@ -597,8 +597,8 @@ int	asm_register_ia32_operand(int operand_type, unsigned long fcn)
 
 
 /**
- * Register an handler for a ia32 operand type.
- * @param operand_type Type of the operand to register
+ * Register an handler for a sparc operand content.
+ * @param operand_type Content of the operand to register
  * @param fcn Function pointer.
  * @return 1 on success, 0 on error.
  */

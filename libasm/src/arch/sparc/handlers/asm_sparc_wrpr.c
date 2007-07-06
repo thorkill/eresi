@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_wrpr.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: asm_sparc_wrpr.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -18,24 +18,24 @@ asm_sparc_wrpr(asm_instr * ins, u_char * buf, u_int len,
   ins->type = ASM_TYPE_ASSIGN;
 
   ins->nb_op = 3;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_PREGISTER, ins);
-  if (opcode.rd == 31)		/* can't write VER */
+  if (opcode.rd == 31) /* can't write VER */
     ins->op1.baser = ASM_PREG_BAD16;
   else
     ins->op1.baser = opcode.rd;
 
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
+  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_PREGISTER, ins);
+
   ins->op3.baser = opcode.rs1;
+  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
 
   if (opcode.i == 0) {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
     ins->op2.baser = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
   }
   else {
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     ins->op2.imm = opcode.imm;
+    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
-  
-  return 4;
 
+  return 4;
 }
