@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 12 00:07:06 2003 mayhem
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
 **
-** $Id: obj.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: obj.c,v 1.7 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -52,29 +52,43 @@ void		elfsh_unload_obj(elfshobj_t *file)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XFREE(__FILE__, __FUNCTION__, __LINE__,file->hdr);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,file->pht);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,file->sht);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, file->hdr);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, file->pht);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, file->sht);
+
   for (sect = file->sectlist; sect; sect = next)
     {
       /* FIXME: Prevent dobule free() */
       if (sect->data == sect->altdata)
 	sect->altdata = NULL;
+
       if (sect->data == sect->terdata)
 	sect->terdata = NULL;
 
+      if (sect->data == sect->lastdata)
+	sect->lastdata = NULL;
+
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect->data);
+
       if (sect->altdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
+
       if (sect->terdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
+
+      if (sect->lastdata)
+	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->lastdata);
+
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect->name);
       next = sect->next;
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect);
     }
+
   if (file->fd)
     close(file->fd);
+
   XFREE(__FILE__, __FUNCTION__, __LINE__,file->name);
   XFREE(__FILE__, __FUNCTION__, __LINE__,file);
+
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

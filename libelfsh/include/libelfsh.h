@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.67 2007-06-23 17:11:00 mxatone Exp $
+** $Id: libelfsh.h,v 1.68 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 
@@ -262,6 +262,7 @@
 #define		ELFSH_NULL_STRING		"(NULL)"
 #define		ELFSH_SORT_BY_ADDR		'a'
 #define		ELFSH_SORT_BY_SIZE		's'
+#define		ELFSH_SORT_BY_NAME		'n'
 
 /* Dedicated to you know who */
 #define		ELFSH_MEANING			42
@@ -482,6 +483,7 @@ struct			s_sect
   /* Filled at analysing */
   void			*altdata;  /* Type dependant internal format		*/
   void			*terdata;  /* Alternate type dependant internal format	*/
+  void			*lastdata; /* Last type dependant internal format	*/
 
   /* Filled at 'unrelocation' : ELFsh private relocs fmt only used in experimental features */
   elfshrel_t		*rel;	   /* ELFsh private relocation table for this section	    */
@@ -778,9 +780,9 @@ struct		 s_obj
 
   char		 shtrb;			/* Reconstruct the SHT if non present */
 
-#define		 ELFSH_MAXREL	40	/* Maximum number of injected ET_REL, change it ! */
+#define		 ELFSH_MAXREL	1000	/* Maximum number of injected ET_REL, change it ! */
   struct s_obj	 *listrel[ELFSH_MAXREL];/* Array of injected ET_REL in this object */
-  u_char	 nbrel;			/* Number of injected ET_REL in this object */
+  u_int		 nbrel;			/* Number of injected ET_REL in this object */
   
   char		 buff[ELFSH_MEANING];	/* Internal buffer, sometimes used to avoid a malloc */
   const char	 *error;		/* Last error string */
@@ -796,6 +798,11 @@ struct		 s_obj
 #endif
 
   elfshdfmt_t	 debug_format;		/* Debug format informations */
+
+#define ELFSH_SYMHASH_NAME 	"elfsh_symhash"
+#define ELFSH_DYNSYMHASH_NAME 	"elfsh_dynsymhash"
+  hash_t	 symhash;		/* Symtab hash table */
+  hash_t	 dynsymhash;		/* Dynsym hash table */
 
   /* 
    ** Every object can have childs
@@ -925,6 +932,7 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size);
 int		elfsh_get_dynent_by_type(elfshobj_t *robj, elfsh_Dyn *data, elfsh_Word real_index);
 
 /* symbol.c */
+int		elfsh_init_symbol_hashtables(elfshobj_t *file);
 elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name);
 char		*elfsh_reverse_symbol(elfshobj_t *file, elfsh_Addr sym_value, elfsh_SAddr *offset);
 char		*elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s);

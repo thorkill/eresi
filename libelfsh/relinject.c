@@ -11,7 +11,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 mayhem
 ** 
 **
-** $Id: relinject.c,v 1.16 2007-06-27 11:25:12 heroine Exp $
+** $Id: relinject.c,v 1.17 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -57,14 +57,18 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 #if __DEBUG_RELADD__
       printf("[DEBUG_RELADD] %s symbol not found at RELOC_STAGE1, continue\n", name);
 #endif
-      if (new->parent->nbrel < ELFSH_MAXREL &&
-	  new->parent->listrel[new->parent->nbrel] != reltab->parent)
+      if (new->parent->nbrel < ELFSH_MAXREL)
 	{
-	  new->parent->listrel[new->parent->nbrel++] = reltab->parent;
+	  if (new->parent->listrel[new->parent->nbrel] != reltab->parent)
+	    {
+
+	      new->parent->listrel[new->parent->nbrel++] = reltab->parent;
 #if __DEBUG_RELADD__
-	  printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", 
-		 reltab->parent->name);
+	      printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", 
+		     reltab->parent->name);
 #endif
+	    }
+	  
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 	}
     }
@@ -643,6 +647,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
       ELFSH_SELECT_INJECTION(file,NULL,mode);
 
       pgsize = elfsh_get_pagesize(file);
+      pgsize *= 4; /* We need a lot more than a page to trace big binaries like ssh */
       hooks = elfsh_insert_section(file, 
 				   ELFSH_SECTION_NAME_HOOKS, 
 				   NULL,

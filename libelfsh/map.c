@@ -5,7 +5,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.20 2007-06-27 11:25:12 heroine Exp $
+** $Id: map.c,v 1.21 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -227,8 +227,15 @@ elfshobj_t	  *elfsh_map_obj(char *name)
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
                  "Unable to load object", NULL);
+
   file->rights = O_RDWR;
+
   elfsh_read_obj(file);
+
   hash_init(&file->redir_hash, "redirections", 51, ASPECT_TYPE_UNKNOW);
+  
+  /* Init search hash tables */
+  elfsh_init_symbol_hashtables(file);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }

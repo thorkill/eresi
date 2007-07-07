@@ -8,11 +8,12 @@
 ** Started on  Wed May 21 15:27:15 2003 mayhem
 ** 
 **
-** $Id: sort.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: sort.c,v 1.6 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
 
+elfshsect_t *symstrsect = NULL;
 
 /**
  * functions called by qsort()
@@ -58,7 +59,7 @@ int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
       break;
       /* Sort by address */
     case (ELFSH_SORT_BY_ADDR):
-      qsort(symtab, size, sizeof(elfsh_Sym), (void *)addrsort_compare);
+      qsort(symtab, size, sizeof(elfsh_Sym), (void *) addrsort_compare);
       break;
     default:
       /* Unknown sort mode */
@@ -78,21 +79,30 @@ int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (sect == NULL || sect->shdr == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL parameter", 
-		      -1);
-  if (sect->shdr->sh_type != SHT_SYMTAB && sect->shdr->sh_type != SHT_DYNSYM)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Param is not a symtab", 
-		      -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid NULL parameter", -1);
 
+  if (sect->shdr->sh_type != SHT_SYMTAB && sect->shdr->sh_type != SHT_DYNSYM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Param is not a symtab", -1);
+
+  nbr = sect->curend / sizeof(elfsh_Sym);
+
+  if (nbr == 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Current section is empty", -1);
+
+  /* Sort by address */
   if (sect->altdata != NULL)
     XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
 
-  nbr = sect->curend / sizeof(elfsh_Sym);
   sect->altdata = elfsh_copy_symtab(sect->data, nbr);
   elfsh_sort_symtab(sect->altdata, nbr, ELFSH_SORT_BY_ADDR);
   
+  /* Sort by size */
   if (sect->terdata != NULL)
     XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
+
   sect->terdata = elfsh_copy_symtab(sect->data, nbr);
   elfsh_sort_symtab(sect->terdata, nbr, ELFSH_SORT_BY_SIZE);
 

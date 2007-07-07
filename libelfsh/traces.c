@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.15 2007-06-27 11:25:12 heroine Exp $
+** $Id: traces.c,v 1.16 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -78,6 +78,341 @@ int trace_enabled_count = 0;
 #define ELFSH_TRACES_TABLE_NAME 	"elfsh_traces_table"
 #define ELFSH_TRACES_EXCLUDE_TABLE_NAME "elfsh_traces_exclude_table"
 #define ELFSH_TRACES_PATTERN 		"traces_%s"
+
+/**
+ * Static part of the file
+ */
+char trace_file_base[] = "#include <stdio.h>\n"
+"#include <setjmp.h>\n"
+"#include <signal.h>\n"
+"#include <string.h>\n"
+"#include <stdlib.h>\n"
+"#include <unistd.h>\n"
+"#include <sys/time.h>\n"
+"#include <sys/resource.h>\n"
+"\n"
+"#define T_longjmp %slongjmp\n"
+"#define T_setjmp %s_setjmp\n"
+"\n"
+"#define T_sigaction %ssigaction\n"
+"#define T_snprintf %ssnprintf\n"
+"#define T_memset %smemset\n"
+"#define T_gettimeofday %sgettimeofday\n"
+"#define T_write %swrite\n"
+"#define T_exit %sexit\n"
+"\n"
+"#define MAX_CHECK_CHAR 3\n"
+"#define PRINTABLE(c) (c >= 32 && c <= 126)\n"
+"#define STDERR 2\n"
+"#define ARG(_size) trace_arg_##_size\n"
+"#define WRITENOW() do { T_write(STDERR, logbuf, strlen(logbuf)+1); } while(0)\n"
+"#define MAX_CHAR_STR_PRINT 40\n"
+"#define STR_REPEAT_CHAR 4\n"
+"jmp_buf jBuf;\n"
+"#define LOGBUFSIZ 256\n"
+"char logbuf[LOGBUFSIZ];\n"
+"suseconds_t msec;\n"
+"time_t sec;\n"
+"u_char siginit = %d;\n"
+"u_char no_trace = 0;\n"
+"\n"
+"#define INITSIGNAL() \\\ndo { if (siginit == 0) { initsignal(); siginit = 1; } } while(0)\n"
+"\n"
+"static void sigcrash(int signal, siginfo_t *si, void *context)\n"
+"{\n"
+"  snprintf(logbuf, LOGBUFSIZ - 1, \" [!] The tracer received a signal %%s. \"\n"
+"	   \"Currently, the tracer is unable to follow context dependent functions.\\n\"\n"
+"	   \"\\t~> Please check previous functions.\\n\", \n"
+"	   (signal == SIGILL ? \"SIGILL\" : (signal == SIGFPE ? \"SIGFPE\" : \n"
+"					     (signal == SIGBUS ? \"SIGBUS\" : \"SIGSEGV\"))));\n"
+"  WRITENOW();\n"
+"  T_exit(-1);\n"
+"}\n"
+"\n"
+"static void initsignal()\n"
+"{\n"
+"  struct sigaction sa;\n"
+"	\n"
+"  sa.sa_sigaction = (void *) sigcrash;\n"
+"  sa.sa_flags = SA_ONSTACK | SA_SIGINFO | SA_NODEFER;\n"
+"  \n"
+"  sigemptyset(&sa.sa_mask);\n"
+"  \n"
+"  T_sigaction(SIGSEGV, &sa, NULL);\n"
+"  T_sigaction(SIGFPE, &sa, NULL);\n"
+"  T_sigaction(SIGILL, &sa, NULL);\n"
+"  T_sigaction(SIGBUS, &sa, NULL);\n"
+"}\n"
+"\n"
+"static unsigned char is_string(const void *ptr)\n"
+"{\n"
+"  int count;\n"
+"  char *cptr = (char*) ptr;\n"
+"  \n"
+"  for (count = 0; PRINTABLE(cptr[count]) && cptr[count] != 0x00; count++)\n"
+"    {\n"
+"      if (count >= MAX_CHECK_CHAR)\n"
+"	return 1;\n"
+"    }\n"
+"\n"
+"  return 0;\n"
+"}\n"
+"\n"
+"static void check_ptr_failed(int nSig)\n"
+"{\n"
+"  longjmp(jBuf, 1);\n"
+"}\n"
+"\n"
+"static unsigned char check_read_ptr(const void *ptr, unsigned long size)\n"
+"{\n"
+"  int index;\n"
+"  char elem;\n"
+"  struct sigaction sa, segvoldsa, busoldsa;\n"
+"\n"
+"  if (!ptr || size <= 0 || ptr < (void*)0x5000 || ptr == (void *)-1)\n"
+"    return 0;\n"
+"\n"
+"  if(T_setjmp(jBuf))\n"
+"    return 0;\n"
+"\n"
+"  sa.sa_handler = (void *) check_ptr_failed;\n"
+"  sa.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_NODEFER;\n"
+"  sigemptyset(&sa.sa_mask);\n"
+"\n"
+"  if (T_sigaction(SIGSEGV, &sa, &segvoldsa) < 0)\n"
+"    return 0;\n"
+"\n"
+"  if (T_sigaction(SIGBUS, &sa, &busoldsa) < 0)\n"
+"    return 0;\n"
+"\n"
+"  for (index = 0; index < size; index++)\n"
+"    elem = ((char *)ptr)[index];\n"
+"\n"
+"  T_sigaction(SIGSEGV, &segvoldsa, NULL);\n"
+"  T_sigaction(SIGBUS, &busoldsa, NULL);\n"
+"\n"
+"  return 1;\n"
+"}\n"
+"\n"
+"static void hex_to_str(const void *ptr)\n"
+"{\n"
+"  int count;\n"
+"  char *cptr = (char*) ptr;\n"
+"  unsigned int i;\n"
+"\n"
+"  T_snprintf(logbuf, LOGBUFSIZ - 1, \" = \");\n"
+"  WRITENOW();\n"
+"\n"
+"  for (i = 0; i < 4; i++)\n"
+"  {\n"
+"    T_snprintf(logbuf, LOGBUFSIZ - 1, \"0x%%02x\", cptr[i] & 0xFF);\n"
+"    WRITENOW();\n"
+"\n"
+"    if (cptr[i] == '\\n')\n"
+"    {\n"
+"      \n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \" '\\\\n'\"); \n"
+"      WRITENOW();\n"
+"    }\n"
+"    else if (cptr[i] == '\\r')\n"
+"    {\n"
+"      \n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \" '\\\\r'\"); \n"
+"      WRITENOW();\n"
+"    }\n"
+"    else if (cptr[i] == '\\t')\n"
+"    {\n"
+"      \n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \" '\\\\t'\"); \n"
+"      WRITENOW();\n"
+"    }\n"
+"    else if (PRINTABLE(cptr[i]))\n"
+"    {\n"
+"      T_snprintf(logbuf, BUFSIZ - 1, \" '%%c'\", cptr[i]);\n"
+"      WRITENOW();\n"
+"    }\n"
+"\n"
+"    if (i != 3)\n"
+"    {\n"
+"      T_snprintf(logbuf, BUFSIZ - 1, \" \");\n"
+"      WRITENOW();\n"
+"    }\n"
+"  }\n"
+"}\n"
+"\n"
+"char pad_str[64];\n"
+"int pad_count = 0;\n"
+"static char *pad_print(int inc)\n"
+"{\n"
+"  int i;\n"
+"\n"
+"  if (inc == 0 && pad_count >= 2)\n"
+"    pad_count -= 2;\n"
+"\n"
+"  T_memset(pad_str, ' ', pad_count);\n"
+"  pad_str[pad_count] = 0;\n"
+"\n"
+"  if (inc == 1 && pad_count <= (0xFFFF - 2))\n"
+"    pad_count += 2;\n"
+"\n"
+"  return pad_str;\n"
+"}\n"
+"\n"
+"int setup = 0;\n"
+"static void gettrace_time()\n"
+"{\n"
+"  double difftime = 0;\n"
+"  struct timeval now;\n"
+"\n"
+"  T_gettimeofday(&now, NULL);\n"
+"\n"
+"  if (setup == 0)\n"
+"    {\n"
+"      msec = now.tv_usec;\n"
+"      sec = now.tv_sec;\n"
+"    }\n"
+"\n"
+"  T_snprintf(logbuf, LOGBUFSIZ - 1, \"%%4d.%%06d \", now.tv_sec - sec, now.tv_usec - msec);\n"
+"  WRITENOW();\n"
+"\n"
+"  if (setup)\n"
+"    {\n"
+"      msec = now.tv_usec;\n"
+"      sec = now.tv_sec;\n"
+"    }\n"
+"\n"
+"  setup = 1;\n"
+"}\n"
+"static void func_prstr(char *str)\n"
+"{\n"
+"  unsigned int i, z, count;\n"
+"\n"
+"  for (i = 0; i < MAX_CHAR_STR_PRINT && str[i] != 0x00; i++, count = 0)\n"
+"    {\n"
+"      if (str[i+1] == str[i])\n"
+"	{\n"
+"	  for (count = 0, z = i; z < MAX_CHAR_STR_PRINT && str[z] == str[i]; count++, z++);\n"
+"\n"
+"	  if (count >= STR_REPEAT_CHAR)\n"
+"	    i = z - 1;\n"
+"	}\n"
+"\n"
+"      if (str[i] == '\\n')\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\\n\");\n"
+"	  WRITENOW();\n"
+"	}\n"
+"      else if (str[i] == '\\r')\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\\r\");\n"
+"	  WRITENOW();\n"
+"	}\n"
+"      else if (str[i] == '\\t')\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\\t\");\n"
+"	  WRITENOW();\n"
+"	}\n"
+"      else if (!PRINTABLE(str[i]))\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\\%%d\", (int) (str[i] & 0xFF));\n"
+"	  WRITENOW();\n"
+"	}\n"
+"	else\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"%%c\", str[i]);\n"
+"	  WRITENOW();\n"
+"	}\n"
+"\n"
+"      if (count >= STR_REPEAT_CHAR)\n"
+"	{\n"
+"	  T_snprintf(logbuf, LOGBUFSIZ - 1, \"{%%d times}\", count);\n"
+"	  WRITENOW();\n"
+"	}\n"
+"    }\n"
+"\n"
+"  if (i >= MAX_CHAR_STR_PRINT)\n"
+"    {\n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \"...\");	  \n"
+"      WRITENOW();\n"
+"    }\n"
+"}\n"
+"\n"
+"static void func_intro(const char *fname)\n"
+"{\n"
+"  INITSIGNAL();\n"
+"  gettrace_time();\n"
+"  T_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %%s(\", pad_print(1), fname);\n"
+"  WRITENOW();\n"
+"}\n"
+"\n"
+"static void func_fmtptr(void *ptr, unsigned char readable, unsigned char isstring)\n"
+"{\n"
+"  T_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s0x%%x\", \n"
+"	     readable ? \"*\" : \"\", ptr);\n"
+"  WRITENOW();\n"
+"\n"
+"  if (isstring)\n"
+"    {\n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \" \\\"\");\n"
+"      WRITENOW();	   \n"
+"\n"
+"      func_prstr((char *)ptr);\n"
+"\n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\"\");\n"
+"      WRITENOW();	   \n"
+"    }\n"
+"  else if (readable)\n"
+"    {\n"
+"      hex_to_str(ptr);\n"
+"    }\n"
+"}\n"
+"  \n"
+"static void func_argu(void *ptr, unsigned char first, char *tname, char *aname)\n"
+"{\n"
+"  unsigned char readable, isstring = 0;\n"
+"  readable = check_read_ptr(ptr, MAX_CHECK_CHAR+1);\n"
+"\n"
+"  if (readable)\n"
+"    isstring = is_string(ptr);\n"
+"\n"
+"  if (!first)\n"
+"    {\n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \", \");\n"
+"      WRITENOW();\n"
+"    }\n"
+"  \n"
+"  if (tname != NULL || aname != NULL)\n"
+"    {\n"
+"      T_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s %%s: \", tname, aname);\n"
+"      WRITENOW();\n"
+"    }\n"
+"\n"
+"  func_fmtptr(ptr, readable, isstring);\n"
+"}\n"
+"\n"
+"static void func_conclu()\n"
+"{\n"
+"  T_snprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
+"  WRITENOW(); \n"
+"}\n"
+"\n"
+"static void func_retu(const char *fname, void *ret, int t1, int t2)\n"
+"{\n"
+"  unsigned char readable, isstring = 0;\n"
+"\n"
+"  readable = check_read_ptr((void *)ret, MAX_CHECK_CHAR+1);\n"
+"\n"
+"  if (readable)\n"
+"    isstring = is_string(ret);\n"
+"\n"
+"  gettrace_time();\n"
+"\n"
+"  T_snprintf(logbuf, LOGBUFSIZ -1, \"%%s - %%s = \", pad_print(0), fname);\n"
+"  WRITENOW();\n"
+"  func_fmtptr(ret, readable, isstring);\n"
+"  T_snprintf(logbuf, LOGBUFSIZ -1, \" [time spent=%%d.%%06d]\\n\", t1, t2);\n"
+"  WRITENOW();\n"
+"}\n";
 
 char *last_parsed_function = NULL;
 
@@ -264,6 +599,7 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
   elfshtraces_t		*ret_trace;
   char			*start;
   int			ret;
+  u_char		typed;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -312,12 +648,12 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 
 	      snprintf(bufex, BUFSIZ - 1, 
 		       ")\n{\n"
-		       "\tint ret;\n\tunsigned char readable, isstring;\n"
+		       "\tint ret;\n"
 		       "\tstruct timeval before, after;\n"
-		       "\tINITSIGNAL();\n"
-		       "\tgettrace_time();\n"
-		       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %s(\", pad_print(1));\n"
-		       "\tWRITENOW();\n",
+		       "\tconst char fname[] = \"%s\";\n\n"
+		       "\tif (!no_trace)\n\t{\n"
+		       "\t\tno_trace = 1;\n"
+		       "\t\tfunc_intro(fname);\n",
 		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
@@ -326,42 +662,28 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 		{
 		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
 		    {
-		      start = z == 0 ? "" : ", ";
-		      
-		      snprintf(bufex, BUFSIZ - 1, 
-			       "\tisstring = 0;\n"
-			       "\treadable = check_read_ptr((void *)a%d.ptr, MAX_CHECK_CHAR+1);\n"
-			       "\tif (readable)\n\t\tisstring = is_string((void *)a%d.ptr);\n"
-			       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%s", z, z, start);
-		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
-		      
-		      if (ret_trace->type == ELFSH_ARG_TYPE_BASED)
-			{
-			  snprintf(bufex, BUFSIZ - 1, "%s %s: ", 
-				   ret_trace->arguments[z].typename,
-				   ret_trace->arguments[z].name);
-			  fwrite(bufex, strlen(bufex), sizeof(char), fp);
-			}
+		      typed = (ret_trace->type == ELFSH_ARG_TYPE_BASED);
 
 		      snprintf(bufex, BUFSIZ - 1, 
-			       "%%s0x%%x%%s%%s%%s\", "
-			       "readable ? \"*\" : \"\", "
-			       "(void*)a%d.ptr, "
-			       "isstring ? \" \\\"\" : \"\", "
-			       "(isstring ? (char*)a%d.ptr : (readable ? "
-			       "hex_to_str((void *)a%d.ptr) : \"\")), "
-			       "isstring ? \"\\\"\" : \"\");\n"
-			       "\tWRITENOW();\n", 
-			       z, z, z);
+			       "\t\tfunc_argu((void *) a%d.ptr, %d, %s%s%s, %s%s%s);\n",
+			       z, (z == 0), 
+			       typed ? "\"" : "",
+			       typed ? ret_trace->arguments[z].typename : "NULL",
+			       typed ? "\"" : "",
+			       typed ? "\"" : "",
+			       typed ? ret_trace->arguments[z].name : "NULL",
+			       typed ? "\"" : ""
+			       );
 		      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 		    }
 		}
 	      
 	      snprintf(bufex, BUFSIZ - 1, 
-		       "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
-		       "\tWRITENOW();\n"
-		       "\tT_gettimeofday(&before, NULL);\n"
-		       "\tret = old_%s(", ret_trace->funcname);
+		       "\t\tfunc_conclu();\n"
+		       "\t\tT_gettimeofday(&before, NULL);\n"
+		       "\t\tno_trace = 0;\n"
+		       "\t}\n\tret = old_%s(", 
+		       ret_trace->funcname);
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 
 	      /* Send arguments */
@@ -378,26 +700,14 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 
 	      snprintf(bufex, BUFSIZ - 1,
 		       ");\n"
-		       "\tT_gettimeofday(&after, NULL);\n"
-		       "\tisstring = 0;\n"
-		       "\treadable = check_read_ptr((void *)ret, MAX_CHECK_CHAR+1);\n"
-		       "\tif (readable)\n\t\tisstring = is_string((void *)ret);\n"
-		       "\tgettrace_time();\n"
-		       "\tT_snprintf(logbuf, LOGBUFSIZ -1, \"%%s - %s = \", "
-		       "pad_print(0));\n"
-		       "\tWRITENOW();\n"
-		       "\tT_snprintf(logbuf, LOGBUFSIZ -1, \"%%s0x%%x%%s%%s%%s "
-		       "[time spent=%%d.%%06d]\\n\", "
-		       "readable ? \"*\" : \"\", "
-		       "(void*)ret, "
-		       "isstring ? \" \\\"\" : \"\", "
-		       "(isstring ? (char*)ret : (readable ? "
-		       "hex_to_str((void *)ret) : \"\")), "
-		       "isstring ? \"\\\"\" : \"\", after.tv_sec - before.tv_sec, "
+		       "\tif (!no_trace)\n\t{\n"
+		       "\t\tno_trace = 1;\n"
+		       "\t\tT_gettimeofday(&after, NULL);\n"
+		       "\t\tfunc_retu(fname, (void *) ret, after.tv_sec - before.tv_sec, "
 		       "after.tv_usec - before.tv_usec);\n"
-		       "\tWRITENOW();\n"
-		       "\treturn ret;\n}\n",
-		       ret_trace->funcname);
+		       "\t\tno_trace = 0;\n"
+		       "\t}\n"
+		       "\treturn ret;\n}\n");
 	      fwrite(bufex, strlen(bufex), sizeof(char), fp);
 	    }
 	}
@@ -430,10 +740,8 @@ int			elfsh_traces_save(elfshobj_t *file)
   struct stat		s;
   elfsh_Addr		addr;
   elfsh_Sym		*dst;
-  elfsh_Sym		*symbol;
   int			err;
   char			*system[6];
-  elfshsect_t		*newsymsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -487,6 +795,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
   // Write basic stuff, include headers and
   //   pad functions (to have a tree like form)
+  /*
   snprintf(buf, BUFSIZ - 1, 
 	   "#include <stdio.h>\n"
 	   "#include <setjmp.h>\n"
@@ -509,23 +818,27 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "#define STDERR 2\n"
 	   "#define ARG(_size) trace_arg_##_size\n"
 	   "#define WRITENOW() do { T_write(STDERR, logbuf, strlen(logbuf)+1); } while(0)\n"
+	   "#define MAX_CHAR_STR_PRINT 256\n"
+	   "#define STR_REPEAT_CHAR 4\n"
 	   "jmp_buf jBuf;\n"
 	   "#define LOGBUFSIZ 256\n"
 	   "char logbuf[LOGBUFSIZ];\n"
 	   "suseconds_t msec;\n"
 	   "time_t sec;\n"
 	   "u_char siginit = %d;\n"
+	   "u_char no_trace = 0;\n"
 	   "#define INITSIGNAL() \\\ndo { if (siginit == 0) { initsignal(); siginit = 1; } } while(0)\n"
-	   "void sigcrash(int signal, siginfo_t *si, void *context)\n{\n"
+	   "static void sigcrash(int signal, siginfo_t *si, void *context)\n{\n"
 	   "\tsnprintf(logbuf, LOGBUFSIZ - 1, \n"
 	   "\t\" [!] The tracer received a signal %%s. "
 	   "Currently, the tracer is unable to follow context dependent functions.\\n\"\n"
 	   "\t\"\t~> Please check previous functions.\\n\", "
-	   "(signal == SIGILL ? \"SIGILL\" : (signal == SIGFPE ? \"SIGFPE\" : \"SIGSEGV\")));\n"
+	   "(signal == SIGILL ? \"SIGILL\" : (signal == SIGFPE ? \"SIGFPE\" : "
+	   "(signal == SIGBUS ? \"SIGBUS\" : \"SIGSEGV\"))));\n"
 	   "\tWRITENOW();\n"
 	   "\tT_exit(-1);\n"
 	   "}\n\n"
-	   "void initsignal()\n{\n"
+	   "static void initsignal()\n{\n"
 	   "\tstruct sigaction sa;\n"
 	   "\tsa.sa_sigaction = (void *) sigcrash;\n"
 	   "\tsa.sa_flags = SA_ONSTACK | SA_SIGINFO | SA_NODEFER;\n"
@@ -535,7 +848,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\tT_sigaction(SIGILL, &sa, NULL);\n"
 	   "\tT_sigaction(SIGBUS, &sa, NULL);\n"
 	   "}\n\n"
-	   "unsigned char is_string(const void *ptr)\n{\n"
+	   "static unsigned char is_string(const void *ptr)\n{\n"
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
 	   "\tfor (count = 0; PRINTABLE(cptr[count]) && cptr[count] != 0x00; count++)\n\t{\n"
@@ -544,10 +857,10 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\t}\n\n"
 	   "\treturn 0;\n"
 	   "}\n\n"
-	   "void check_ptr_failed(int nSig)\n{\n"
+	   "static void check_ptr_failed(int nSig)\n{\n"
 	   "\tlongjmp(jBuf, 1);\n"
 	   "}\n\n"
-	   "unsigned char check_read_ptr(const void *ptr, unsigned long size)\n{\n"
+	   "static unsigned char check_read_ptr(const void *ptr, unsigned long size)\n{\n"
 	   "\tint index;\n"
 	   "\tchar elem;\n"
 	   "\tstruct sigaction sa, segvoldsa, busoldsa;\n"
@@ -569,24 +882,24 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\treturn 1;\n"
 	   "}\n\n"
 	   "char tmpbuf[256];\n"
-	   "char *hex_to_str(const void *ptr)\n{\n"
+	   "static char *hex_to_str(const void *ptr)\n{\n"
 	   "\tint count;\n"
 	   "\tchar *cptr = (char*) ptr;\n\n"
-	   "\tT_snprintf(tmpbuf, 255, \" = 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
+	   "\tT_snprintf(tmpbuf, 255, \"= 0x%%02x 0x%%02x 0x%%02x 0x%%02x\", "
 	   "cptr[0] & 0xFF, cptr[1] & 0xFF, cptr[2] & 0xFF, cptr[3] & 0xFF);\n"
 	   "\treturn tmpbuf;\n"
 	   "}\n\n"
 	   "char pad_str[64];\n"
 	   "int pad_count = 0;\n\n"
-	   "char *pad_print(int inc)\n{\n"
+	   "static char *pad_print(int inc)\n{\n"
 	   "\tint i;\n"
-	   "\tif (inc == 0)\n\t\tpad_count -= 2;\n"
+	   "\tif (inc == 0 && pad_count >= 2)\n\t\tpad_count -= 2;\n"
 	   "\t\tT_memset(pad_str, ' ', pad_count);\n"
 	   "\t\tpad_str[pad_count] = 0;\n"
-	   "\tif (inc == 1)\n\t\tpad_count += 2;\n"
+	   "\tif (inc == 1 && pad_count <= (0xFFFF - 2))\n\t\tpad_count += 2;\n"
 	   "\treturn pad_str;\n}\n\n"
 	   "int setup = 0;\n"
-	   "void gettrace_time()\n{\n"
+	   "static void gettrace_time()\n{\n"
 	   "\tdouble difftime = 0;\n"
 	   "\tstruct timeval now;\n"
 	   "\tT_gettimeofday(&now, NULL);\n"
@@ -601,7 +914,98 @@ int			elfsh_traces_save(elfshobj_t *file)
 	   "\t\tsec = now.tv_sec;\n"
 	   "\t}\n"
 	   "\tsetup = 1;\n"
+	   "}\n"
+	   "static void func_prstr(char *str)\n{\n"
+	   "\tunsigned int i, z, count;\n"
+	   "\tfor (i = 0; i < MAX_CHAR_STR_PRINT && str[i] != 0x00; i++, count = 0)\n\t{\n"
+	   "\t\tif (str[i+1] == str[i])\n\t\t{\n"
+	   "\t\t\tfor (count = 0, z = i; z < MAX_CHAR_STR_PRINT && str[z] == str[i]; count++, z++);\n"
+	   "\t\t\tif (count >= STR_REPEAT_CHAR)\n"
+	   "\t\t\t\ti = z - 1;\n"
+	   "\t\t}\n"
+	   "\t\tif (str[i] == '\\n')\n\t\t{\n\t\t\tT_snprintf(logbuf, 255, \"\\\\n\");\n\t\t\tWRITENOW();\n\t\t}\n"
+	   "\t\telse if (str[i] == '\\r')\n\t\t{\n\t\t\t\tT_snprintf(logbuf, 255, \"\\\\r\");\n\t\t\tWRITENOW();\n\t\t}\n"
+	   "\t\telse if (!PRINTABLE(str[i]))\n\t\t{\n\t\t\tT_snprintf(logbuf, 255, \"\\\\%%d\", (int) (str[i] & 0xFF));\n\t\t\tWRITENOW();\n\t\t}\n"
+	   "\t\telse\n\t\t{\n"
+	   "\t\t\tT_snprintf(logbuf, 255, \"%%c\", str[i]);\n"
+	   "\t\t\tWRITENOW();\n"
+	   "\t\t}\n"
+	   "\t\tif (count >= STR_REPEAT_CHAR)\n\t\t{\n"
+	   "\t\t\tT_snprintf(logbuf, 255, \"{%%d times}\", count);\n"
+	   "\t\t\tWRITENOW();\n"
+	   "\t\t}\n"
+	   "\t}\n"
+	   "\tif (i >= MAX_CHAR_STR_PRINT)\n\t{\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"...\");\n"	  
+	   "\t\tWRITENOW();\n"
+	   "\t}\n"
+	   "}\n"
+	   "static void func_intro(const char *fname)\n{\n"
+	   "\t\n"
+	   "\tINITSIGNAL();\n"
+	   "\tgettrace_time();\n"
+	   "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s + %%s(\", pad_print(1), fname);\n"
+	   "\tWRITENOW();\n"
+	   "}\n"
+	   "static void func_fmtptr(void *ptr, unsigned char readable, unsigned char isstring)\n{\n"
+	   "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s0x%%x \", "
+	   "readable ? \"*\" : \"\", "
+	   "ptr);\n"
+	   "\tWRITENOW();\n"
+	   "\tif (isstring)\n\t{\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\"\");\n"
+	   "\t\tWRITENOW();\n"	   
+	   "\t\tfunc_prstr((char *)ptr);\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"\\\"\");\n"
+	   "\t\tWRITENOW();\n"	   
+	   "\t}\n"
+	   "\telse if (readable)\n\t{\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s\", hex_to_str(ptr));\n"
+	   "\t\tWRITENOW();\n"	   
+	   "\t}\n"
+	   "}\n"
+	   "static void func_argu(void *ptr, unsigned char first, char *tname, char *aname)\n{\n"
+	   "\tunsigned char readable, isstring = 0;\n"
+	   "\treadable = check_read_ptr(ptr, MAX_CHECK_CHAR+1);\n"
+	   "\tif (readable)\n\t\tisstring = is_string(ptr);\n"
+	   "\tif (!first)\n\t{\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \", \");\n"
+	   "\t\tWRITENOW();\n"
+	   "\t}\n"
+	   "\tif (tname != NULL || aname != NULL)\n\t{\n"
+	   "\t\tT_snprintf(logbuf, LOGBUFSIZ - 1, \"%%s %%s: \", tname, aname);\n"
+	   "\t\tWRITENOW();\n"
+	   "\t}\n"
+	   "\tfunc_fmtptr(ptr, readable, isstring);\n"
+	   "}\n"
+	   "static void func_conclu()\n{\n"
+	   "\tT_snprintf(logbuf, LOGBUFSIZ - 1, \")\\n%%s\", \"\");\n"
+	   "\tWRITENOW();\n" 
+	   "}\n"
+	   "static void func_retu(const char *fname, void *ret, int t1, int t2)\n{\n"
+	   "\tunsigned char readable, isstring = 0;\n"
+	   "\treadable = check_read_ptr((void *)ret, MAX_CHECK_CHAR+1);\n"
+	   "\tif (readable)\n\t\tisstring = is_string(ret);\n"
+	   "\tgettrace_time();\n"
+	   "\tT_snprintf(logbuf, LOGBUFSIZ -1, \"%%s - %%s = \", "
+	   "pad_print(0), "
+	   "fname);\n"
+	   "\tWRITENOW();\n"
+	   "\tfunc_fmtptr(ret, readable, isstring);\n"
+	   "\tT_snprintf(logbuf, LOGBUFSIZ -1, \" [time spent=%%d.%%06d]\\n\", t1, t2);\n"
+	   "\tWRITENOW();\n"
 	   "}\n",
+	   FUNC_BEGIN(longjmp),
+	   FUNC_BEGIN(_setjmp),
+	   FUNC_BEGIN(sigaction),
+	   FUNC_BEGIN(snprintf),
+	   FUNC_BEGIN(memset),
+	   FUNC_BEGIN(gettimeofday),
+	   FUNC_BEGIN(write),
+	   FUNC_BEGIN(exit),
+	   0);
+  */
+  snprintf(buf, BUFSIZ - 1, trace_file_base, 
 	   FUNC_BEGIN(longjmp),
 	   FUNC_BEGIN(_setjmp),
 	   FUNC_BEGIN(sigaction),
@@ -676,7 +1080,7 @@ int			elfsh_traces_save(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Compilation failed", -1);
 
-  // Load the new relocatable file for ET_REL injection
+  /* Load the new relocatable file for ET_REL injection */
   tobj = elfsh_map_obj(rsofname);
   if (!tobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -718,32 +1122,7 @@ int			elfsh_traces_save(elfshobj_t *file)
     printf("[DEBUG TRACE] (%03u) HIJACK: %s / %s\n", index, trace_queue[index]->funcname, buf);
 #endif
 
-    /* Do we need to add the symbol right before hijacking ? */
-    symbol = elfsh_get_symbol_by_name(file, trace_queue[index]->funcname);
-
-    if (!symbol)
-      {
-	newsymsect = elfsh_get_parent_section(file, trace_queue[index]->vaddr, NULL);
-
-	if (!newsymsect)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Can't found parent section for a given address", -1);
-
-	/* Add a new function symbol */
-	if (elfsh_insert_funcsym(file, trace_queue[index]->funcname, 
-				 trace_queue[index]->vaddr,
-				 0, newsymsect->index) < 0)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Failed to add new function symbol for address tracing", -1);
-      }
-    else if (!symbol->st_value)
-      {
-	elfsh_traces_queue_clean();
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Already existing wrong symbol", -1);
-      }
-
-    // Start to hijack the function 
+    /* Start to hijack the function */
     err = elfsh_hijack_function_by_name(file, 
 					ELFSH_HIJACK_TYPE_FLOW,
 					trace_queue[index]->funcname, 

@@ -5,7 +5,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 mayhem
  *
  *
- * $Id: ia32.c,v 1.18 2007-06-27 11:25:12 heroine Exp $
+ * $Id: ia32.c,v 1.19 2007-07-07 10:04:59 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -14,6 +14,7 @@
 #define ELFSH_IA32_ARG_MAXSIZE 	512
 #define ELFSH_IA32_PROLOG_MSTEP 3
 static asm_processor	proc;
+static u_char		proc_init = 0;
 static int      	args[ELFSH_TRACE_MAX_ARGS+1];
 static u_int		arg_count;
 static u_int		max_arg_offset;
@@ -295,7 +296,11 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   hook = elfsh_get_raw(hooks) + hooks->curend;
 
   /* Determine the minimal aligned length */
-  asm_init_i386(&proc);
+  if (!proc_init)
+    {
+      asm_init_i386(&proc);
+      proc_init = 1;
+    }
   for (idx = ret = 0; ret < 5 && idx < 5; idx++)
     ret += asm_read_instr(instrs + idx, buff + ret, 32 - ret, &proc);
 
@@ -754,7 +759,11 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  asm_init_i386(&proc);
+  if (!proc_init)
+    {
+      asm_init_i386(&proc);
+      proc_init = 1;
+    }
   max_arg_offset = 0;
 
   /* Find the real function if this vaddr point to plt section */

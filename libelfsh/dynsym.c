@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.14 2007-06-27 11:25:12 heroine Exp $
+** $Id: dynsym.c,v 1.15 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -300,7 +300,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
  */
 elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 {
-  elfsh_Sym	*ret;
+  elfsh_Sym	*sym;
   int		idx;
   int		size = 0;
   char		*actual;
@@ -311,18 +311,29 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
-  ret = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
-  if (ret == NULL)
+  if (file->dynsymhash.ent)
+    {
+      sym = (elfsh_Sym *) hash_get(&file->dynsymhash, name);
+      
+      if (sym == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Symbol not found", NULL);
+      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
+    }
+
+  sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
+  if (sym == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get DYNSYM", NULL);
+		 "Unable to get DYNSYM", NULL);
 
   for (idx = 0; idx < size; idx++)
     {
-      actual = elfsh_get_dynsymbol_name(file, ret + idx);
+      actual = elfsh_get_dynsymbol_name(file, sym + idx);
       if (actual && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret + idx));
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
     }
-  
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Symbol not found", NULL);
 }

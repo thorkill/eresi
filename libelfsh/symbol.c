@@ -4,12 +4,12 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.10 2007-06-27 11:25:12 heroine Exp $
+** $Id: symbol.c,v 1.11 2007-07-07 10:04:59 mxatone Exp $
 **
 */
 #include "libelfsh.h"
 
-
+#define ELFSH_SYMTAB_HASH_NAME 	"elfsh_symtab_hashbyname"
 
 /**
  * Return the symbol name giving its index in the symbol string table
@@ -244,6 +244,55 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
 		    "No valid symbol interval", NULL);
 }
 
+/**
+ * Fill symtab and dynsym hash table for _get_*_by_name functions
+ * @param file target file
+ */
+int		elfsh_init_symbol_hashtables(elfshobj_t *file)
+{
+  elfsh_Sym	*sym;
+  int		idx;
+  int		size;
+  char		*actual;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (file == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid NULL parameter", -1);
+
+  hash_init(&file->symhash, ELFSH_SYMHASH_NAME, 100, ASPECT_TYPE_UNKNOW);
+  hash_init(&file->dynsymhash, ELFSH_DYNSYMHASH_NAME, 100, ASPECT_TYPE_UNKNOW);
+
+  /* Symtab */
+  if (elfsh_get_symtab(file, &size))
+    {
+      sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_SYMTAB]->data;
+      
+      for (idx = 0; idx < size; idx++)
+	{
+	  actual = elfsh_get_symbol_name(file, sym + idx);
+	  if (actual)
+	    hash_add(&file->symhash, strdup(actual), (void *) (sym + idx));
+	}
+    }
+  
+  sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
+
+  /* Dynsym */
+  if (sym)
+    {
+      for (idx = 0; idx < size; idx++)
+	{
+	  actual = elfsh_get_dynsymbol_name(file, sym + idx);
+	  if (actual)
+	    hash_add(&file->dynsymhash, strdup(actual), (void *) (sym + idx));
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /**
  * Return the symbol entry giving its name 
@@ -260,19 +309,33 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
   if (file == NULL || name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
+
+  if (file->symhash.ent)
+    {
+      sym = (elfsh_Sym *) hash_get(&file->symhash, name);
+      
+      if (sym == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Symbol not found", NULL);
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
+    }
+
   if (elfsh_get_symtab(file, &size) == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get SYMTAB", NULL);
-
+		 "Unable to get SYMTAB", NULL);
+  
   sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_SYMTAB]->data;
+
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_symbol_name(file, sym + idx);
-      if (actual != NULL && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+      if (actual && !strcmp(actual, name))
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym + idx);
     }
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Symbol not found", NULL);
+	       "Symbol not found", NULL);
 }
 
 
@@ -337,6 +400,7 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
   elfsh_Sym	*orig;
   int		index;
   int		mode;
+  hash_t	*uptable;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -381,6 +445,27 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
   /* Insert symbol in .symtab */
   sym->st_name = index;
   index = elfsh_append_data_to_section(sect, sym, sizeof(elfsh_Sym));
+
+  /* Update hashtable */
+  switch(sect->shdr->sh_type)
+    {
+    case SHT_SYMTAB:
+      uptable = &sect->parent->symhash;
+      break;
+    case SHT_DYNSYM:
+      uptable = &sect->parent->dynsymhash;
+      break;
+    default:
+      uptable = NULL;
+      break;
+    }
+
+  if (uptable && uptable->ent)
+    {
+      sym = (elfsh_Sym *) sect->data;
+      hash_add(uptable, strdup(name), (void *) (sym + index));
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }
 
@@ -398,6 +483,7 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
   elfsh_Sym	*new;
   u_int   	off;
   u_int		movedsz;
+  hash_t 	*uptable = NULL;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -427,6 +513,21 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 
   /* We just cant remove the string because of ELF string table format */
   elfsh_sync_sorted_symtab(symtab);
+
+  /* Update hashtable */
+  switch(symtab->shdr->sh_type)
+    {
+    case SHT_SYMTAB:
+      uptable = &symtab->parent->symhash;
+      break;
+    case SHT_DYNSYM:
+      uptable = &symtab->parent->dynsymhash;
+      break;
+    }
+
+  if (uptable && uptable->ent)
+    hash_del(uptable, name);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
