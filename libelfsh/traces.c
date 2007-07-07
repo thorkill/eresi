@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.16 2007-07-07 10:04:59 mxatone Exp $
+** $Id: traces.c,v 1.17 2007-07-07 17:57:33 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -2093,8 +2093,12 @@ int			elfsh_traces_deletetrace(char *trace)
   elfsh_traces_funcrmall(trace);
 
   table = elfsh_traces_gettrace(trace);
-  hash_destroy(table);
 
+  if (!table)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't found this trace", -1);
+
+  hash_destroy(table);
   hash_del(&traces_table, trace);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
