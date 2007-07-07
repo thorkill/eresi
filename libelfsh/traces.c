@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.17 2007-07-07 17:57:33 mxatone Exp $
+** $Id: traces.c,v 1.18 2007-07-07 19:26:50 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -1770,7 +1770,7 @@ int			elfsh_traces_funcrm(char *trace, char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!trace || !name)
+  if (!name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
