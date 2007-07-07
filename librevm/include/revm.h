@@ -1,13 +1,10 @@
 /*
-** revm.h for librevm in elfsh
+** revm.h for librevm in ERESI
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
-**
-**
-** $Id: revm.h,v 1.66 2007-06-23 17:11:00 mxatone Exp $
-**
+** $Id: revm.h,v 1.67 2007-07-07 17:30:24 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -299,6 +296,8 @@ extern asm_processor	proc;
 /* Type related commands */
 #define	CMD_INFORM		"inform"
 #define	CMD_UNINFORM		"uninform"
+#define	CMD_INFORM2		"annotate"
+#define	CMD_UNINFORM2		"unannotate"
 
 /* Debugging format commands */
 #define CMD_DEBUG		"debug"
@@ -429,16 +428,16 @@ typedef struct		s_const
 
 
 /* ELFsh command handlers */
-typedef struct	s_cmdhandler
+typedef struct		s_cmdhandler
 {
-  int		(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
-  int		(*exec)();				/* Execution handler */
-  char		*arg1;					/* Option activation variable ptr */
-  void		*arg2;					/* Option regex ptr */
-  char		*arg3;					/* Regex switch ptr */
-  char		wflags;					/* 1 if the cmd need a valid curfile */
-  char		*help;					/* Help string */
-}		revmcmd_t;
+  int			(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
+  int			(*exec)();				/* Execution handler */
+  char			*arg1;					/* Option activation variable ptr */
+  void			*arg2;					/* Option regex ptr */
+  char			*arg3;					/* Regex switch ptr */
+  char			wflags;					/* 1 if the cmd need a valid curfile */
+  char			*help;					/* Help string */
+}			revmcmd_t;
 
 
 /* Thats the command line options registering structure */
@@ -457,6 +456,18 @@ typedef struct		s_args
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
+
+
+/* Trace structures, used by the tracer */
+typedef struct		s_revmtraces
+{
+  int			(*exec)(elfshobj_t*, char *, char **);	/* Function used */
+
+  /* Unexistant (0), optional (1), needed (2) */
+  char			flagName;	/* Need a first argument */
+  char			flagArg;       	/* Need a second argument */
+}			revmtraces_t;
+
 
 
 #include <libmjollnir.h>
@@ -535,114 +546,8 @@ typedef struct        s_world
 }		      revmworld_t;
 
 
-
-/* Structure for variable */
-typedef struct 		s_var
-{
-  int			nameoff;	/* Name offset */
-
-#define EDFMT_SCOPE_UNK    0
-#define EDFMT_SCOPE_GLOBAL 1
-#define EDFMT_SCOPE_FUNC   2
-  u_char 		scope;
-
-  elfsh_Addr 		addr; 		/* Global addr */
-  u_int 		reg;   		/* Function reg id base (stack) */
-  int 			relvalue;     	/* Relatif value based on reg */
-
-  u_int			typenum;	/* Type number */
-}			revmvar_t;
-
-
-/* Meta object : describe an object abstractly, whatever its hierarchy level */
-typedef	struct		s_path
-{
-
-  /* Handlers */
-  elfsh_Addr          (*get_obj)(void *parent);
-  int	              (*set_obj)(void *parent, elfsh_Addr value);
-  char                *(*get_name)(void*, void *obj);
-  int                 (*set_name)(void*, void *, char *);
-  char                *(*get_data)(void*, u_int off, u_int);
-  int                 (*set_data)(void*, u_int, char *, u_int, u_int);
-
-  elfshobj_t          *root;          /* Root parent */
-  void                *parent;        /* Direct parent */
-  u_int               off;            /* Optional byte offset */
-  u_int               size;           /* Size of the immediate string */
-  u_int               sizelem;        /* Size of element for OBJRAW */
-  char                immed;          /* Immediate binary flag */
-  u_int               type;	      /* The object type identifier */
-  char                perm;	      /* TRUE if obj is a script variable */
-
-  /* Only when describing elements of hash tables */
-  char		      *hname;		/* Name of parent hash table */
-  char		      *kname;		/* Name of key in hash table */
-
-  /* Immediate value if immed flag is set */
-  union               immval
-  {
-    u_char            byte;
-    u_short           half;
-    u_int             word;
-    elfsh_Addr        ent;
-    char              *str;
-  }                   immed_val;
-}                     revmobj_t;
-
-
-
-/* REVM Level 2 (= child of L1) object structure */
-typedef struct	s_L2handler
-{
-
-  /* For fields */
-  elfsh_Addr	(*get_obj)(void *obj);                          /* Read object */
-  int		(*set_obj)(void *par, elfsh_Addr arg);          /* Write object */
-  
-  /* For names */
-  char          *(*get_name)(elfshobj_t *, void *obj);          /* Get name */
-  int	        (*set_name)(elfshobj_t *, void *, char *);      /* Set name */
-  
-  /* For sections data */
-  char		*(*get_data)(elfshsect_t *, u_int, u_int);	/* Read data */
-  int		(*set_data)(elfshsect_t*, u_int, char*, u_int, u_int); /* Write data */
-  
-  u_char        type;                                           /* Object type */
-}               revmL2_t;
-
-
-
-/* ELFsh Level 1 object (= parent object) structure */
-typedef struct	s_L1handler
-{
-  hash_t	*l2list;					/* A ptr on the child L2 hashtable */
-  u_int		elem_size;					/* Size of one element of this object */
-  
-  /* Handlers */
-  void		*(*get_obj)(void *container, void *retarg); /* Read object and return size */
-  void		*(*get_obj_idx)(void *file, elfsh_Addr i, void *a); /* Read handler for arrays objects */
-  void		*(*get_obj_nam)(void *file, char *name); /* Read handler by name */
-  void		*(*get_entptr)(void *file, elfsh_Addr idx);     /* Get address */
-  elfsh_Addr   	(*get_entval)(void *ptr);			/* Get value */
-  elfsh_Addr   	(*set_entval)(void *ptr, elfsh_Addr vaddr);     /* Set value */
-}		revmL1_t;
-
-
-
-/* Trace structures */
-typedef struct 	s_revmtraces
-{
-  int 		(*exec)(elfshobj_t *file, char *name, char **optarg);	/* Function used */
-
-  /* Code for this options:
-  ** 0: doesn't exist
-  ** 1: optional
-  ** 2: needed
-  */
-  char		flagName;	/* Need a first argument */
-  char		flagArg;       	/* Need a second argument */
-}		revmtraces_t;
+/* We use a separate header for defnition of object structures */
+#include "revm-objects.h"
 
 
 /* The world */
@@ -735,6 +640,7 @@ extern u_int	   strtable_max;
 /* Commands execution handlers, each in their respective file */
 int		cmd_configure();
 int		cmd_type();
+int		cmd_declare();
 int		cmd_typedef();
 int		cmd_dyn();
 int		cmd_sht();
@@ -1074,7 +980,13 @@ int		vm_type_hashcreate(char *name);
 
 /* Data access related functions */
 aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
+revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type, char *objname, char *objpath);
 revmobj_t	*vm_revmobj_lookup(char *str);
+revmexpr_t	*revm_expr_read(char **datavalue);
+revmexpr_t	*revm_expr_set(char *curpath, revmexpr_t *curexpr, 
+			       aspectype_t *curtype, 
+			       void *srcdata, char *datavalue);
+
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	vm_generic_getobj(void *data);
@@ -1125,7 +1037,9 @@ int		vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
 int		vm_hash_add(hash_t *h, revmobj_t *o);
 int		vm_hash_del(hash_t *h, revmobj_t *o);
 int		vm_hash_set(char *tab, char *elm, void *obj, u_char type);
-
+int		vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
+int		vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
+int		vm_revmobj_set(revmobj_t *o1, revmobj_t *o2);
 
 /* Job related functions */
 int		vm_own_job(revmjob_t *job);
@@ -1145,6 +1059,7 @@ int		vm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
 int		vm_inform_type(char *type, char *varname, char *straddr, u_char print);
+int		vm_inform_type_addr(char *type, char *varname, elfsh_Addr a, u_char p);
 
 /* May not be defined */
 #if __BSD__

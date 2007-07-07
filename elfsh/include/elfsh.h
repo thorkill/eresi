@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 **
 **
-** $Id: elfsh.h,v 1.38 2007-03-07 16:45:34 thor Exp $
+** $Id: elfsh.h,v 1.39 2007-07-07 17:30:23 may Exp $
 **
 */
 #ifndef __ELFSH_H_
@@ -15,6 +15,10 @@
 
 /* Help strings */
 #include "elfsh-help.h"
+
+/* Constants */
+#define	ELFSH_NAME		"ELF shell"
+#define	ELFSH_SNAME		"elfsh"
 
 /* Commands */
 #define	CMD_STRIP		"strip"
@@ -30,7 +34,7 @@ int	cmd_cleanup();
 int	cmd_run();
 
 /* Top skeleton functions */
-int	vm_main(int ac, char **av);
+int	esh_main(int ac, char **av);
 
 /* Commands registration */
 void	setup_local_cmdhash();

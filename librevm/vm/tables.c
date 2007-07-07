@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.37 2007-06-23 17:11:00 mxatone Exp $
+** $Id: tables.c,v 1.38 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "revm.h"
@@ -719,6 +719,10 @@ static void	setup_L2hash()
 /* Setup the command hash table */
 static void	setup_cmdhash()
 {
+  typeinfo_t	*typeinfo;
+  unsigned int	typenbr;
+  unsigned int	index;
+
   hash_init(&cmd_hash, "commands", 101, ASPECT_TYPE_UNKNOW);
 
   /* Interactive mode / Scripting mode commands */
@@ -855,10 +859,12 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_CONFIGURE, cmd_configure       , vm_getvarparams, 0, HLP_CONFIGURE);
 
   /* Type related commands */
-  vm_addcmd(CMD_TYPE    , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
-  vm_addcmd(CMD_TYPEDEF , cmd_typedef         , vm_getvarparams, 0, HLP_TYPEDEF);
-  vm_addcmd(CMD_INFORM  , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
-  vm_addcmd(CMD_UNINFORM, cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
+  vm_addcmd(CMD_TYPE     , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
+  vm_addcmd(CMD_TYPEDEF  , cmd_typedef         , vm_getvarparams, 0, HLP_TYPEDEF);
+  vm_addcmd(CMD_INFORM   , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
+  vm_addcmd(CMD_UNINFORM , cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
+  vm_addcmd(CMD_INFORM2  , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
+  vm_addcmd(CMD_UNINFORM2, cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
   
 #if defined(ELFSHNET)
   /* DUMP network commands */
@@ -882,6 +888,12 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_SETGVL    , cmd_setgvl        , vm_getoption,    1, HLP_SETGVL);
   vm_addcmd(CMD_RENAME	  , cmd_rename        , vm_getoption2,   1, HLP_RENAME);  
   vm_addcmd(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+
+  /* Base type declarations commands */
+  typeinfo = aspect_basetype_get(&typenbr);
+  for (index = 0; index < typenbr; index++)
+    vm_addcmd(typeinfo[index].name, cmd_declare, 
+	      vm_getvarparams, 0, HLP_DECLARE);
 }
 
 /* Mix default library path with LD_LIBRARY_PATH variable */

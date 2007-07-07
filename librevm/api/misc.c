@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
 **
-** $Id: misc.c,v 1.4 2007-04-12 16:48:00 may Exp $
+** $Id: misc.c,v 1.5 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "revm.h"
@@ -20,7 +20,7 @@ char		*vm_get_mode_name()
   if (world.state.vm_mode == REVM_STATE_DEBUGGER)
     mode = E2DBG_NAME;
   else
-    mode = ELFSH_NAME;
+    mode = REVM_NAME;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mode));
 }
@@ -179,7 +179,7 @@ void		vm_print_banner()
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   vm_get_mode_name(),
-	   ELFSH_VERSION,
+	   REVM_VERSION,
 #if defined(ELFSH32)
 	   "32 bits built",
 #elif defined(ELFSH64)

@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.9 2007-06-02 08:28:50 mxatone Exp $
+** $Id: types.c,v 1.10 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "libaspect.h"
@@ -15,6 +15,7 @@
 hash_t		types_hash;
 
 /* Base types numbers, strings, and infos */
+/* Type Unknown is always at index 0 */
 int		aspect_type_nbr       = ASPECT_TYPE_BASENUM;
 typeinfo_t	*aspect_typeinfo      = NULL;
 typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] = 
@@ -157,11 +158,11 @@ aspectype_t		*aspect_type_create(char *label,
   /* Preliminary checks */
   if (!label || !fields || !fieldnbr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid NULL parameter", NULL);
+		 "Invalid NULL parameter", NULL);
   if (hash_get(&types_hash, label))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot create type : already exists", NULL);
-
+		 "Cannot create type : name already exists", NULL);
+  
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	 newtype, sizeof(aspectype_t), NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
@@ -368,6 +369,54 @@ int		aspect_basetypes_create()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
+/* Get a the type of a "child" field from field name */
+aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name)
+{
+  aspectype_t	*cur;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  for (cur = parent->childs; cur; cur = cur->next)
+    if (!strcmp(cur->fieldname, name))
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cur);  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Unknown child name", NULL);
+}
+
+/* Get a type by its type id */
+aspectype_t	*aspect_type_get_by_id(unsigned int id)
+{
+  aspectype_t	*type;
+  typeinfo_t    info;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (id >= aspect_type_nbr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid type ID", NULL);
+  info = aspect_typeinfo[id];
+  type = hash_get(&types_hash, info.name);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);  
+}
+
+/* Get a type by its type id */
+aspectype_t	*aspect_type_get_by_name(char *name)
+{
+  aspectype_t	*type;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  type = hash_get(&types_hash, name);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);  
+}
+
+
+
+/* Return the list of base types */
+typeinfo_t	*aspect_basetype_get(unsigned int *nbr)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (nbr)
+    *nbr = ASPECT_TYPE_BASENUM;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, aspect_typeinfo_base);  
+}
 
 
 /* Add a simple type */

@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.25 2007-06-07 12:01:00 may Exp $
+** $Id: libaspect.h,v 1.26 2007-07-07 17:30:24 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -288,6 +288,10 @@ aspectype_t	*aspect_type_copy(aspectype_t	*type,
 				  char		*fieldname,
 				  u_int		*dims);
 int		aspect_basetype_register(char *name, u_int size);
+typeinfo_t	*aspect_basetype_get(unsigned int *nbr);
+aspectype_t	*aspect_type_get_by_name(char *name);
+aspectype_t	*aspect_type_get_by_id(unsigned int id);
+aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name);
 
 /* profile.c : Profiler related functions */
 void		profiler_reset(u_int sel);

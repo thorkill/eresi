@@ -558,6 +558,7 @@ echo "install : prepareDir #mod_install "			>> Makefile
 echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
+echo "	@cp evarista/evarista?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile

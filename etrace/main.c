@@ -3,45 +3,46 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.9 2007-06-23 17:11:00 mxatone Exp $
+** $Id: main.c,v 1.10 2007-07-07 17:30:23 may Exp $
 **
 */
 #include "etrace.h"
 
-void		vm_setup_quit_msg()
+/* Prompt related functions */
+void		etrace_setup_quit_msg()
 {
   char		logbuf[BUFSIZ];
 
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
-	   ETRACE_NAME, ETRACE_VERSION);
+	   ETRACE_NAME, REVM_VERSION);
   vm_set_quit_msg(logbuf);
 }
 
-void		vm_create_prompt(char *buf, u_int size)
+void		etrace_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
 	   vm_colorget("%s", "pspecial", "("),
 	   vm_colorget("%s", "psname" , ETRACE_SNAME),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", ETRACE_VERSION),
+	   vm_colorget("%s", "pversion", REVM_VERSION),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", ETRACE_RELEASE),
+	   vm_colorget("%s", "prelease", REVM_RELEASE),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", ETRACE_EDITION),
+	   vm_colorget("%s", "pedition", REVM_EDITION),
 	   vm_colorget("%s", "pspecial", "@"),
 	   vm_colorget("%s", "psname", world.curjob->ws.name),
 	   vm_colorget("%s", "pspecial", ")"));
   vm_endline();
 }
 
-void 		vm_setup_prompt()
+void 		etrace_setup_prompt()
 {
-  vm_set_prompt(vm_create_prompt);
+  vm_set_prompt(etrace_create_prompt);
 }
 
 /* Print the etrace banner */
-void		vm_print_etrace_banner()
+void		etrace_banner_print()
 {
   char		logbuf[BUFSIZ];
 
@@ -50,7 +51,7 @@ void		vm_print_etrace_banner()
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   ETRACE_NAME,
-	   ETRACE_VERSION,
+	   REVM_VERSION,
 #if defined(ELFSH32)
 	   "32 bits built",
 #elif defined(ELFSH64)
@@ -65,12 +66,12 @@ void		vm_print_etrace_banner()
 }
 
 /* The real main function */
-int		vm_main(int ac, char **av)
+int		etrace_main(int ac, char **av)
 {
+  char		logbuf[BUFSIZ];
   int		ret;
   char		**argv;
   u_int		argc;
-  char		logbuf[BUFSIZ];
   char		*str;
   u_int		state;
   u_char	trace_all = 0;
@@ -79,8 +80,8 @@ int		vm_main(int ac, char **av)
   u_int		index;
 
   /* Interface tweak */
-  vm_setup_quit_msg();
-  vm_setup_prompt();
+  etrace_setup_quit_msg();
+  etrace_setup_prompt();
   
   /* Which state ? */
   state =  REVM_STATE_INTERACTIVE;
@@ -127,7 +128,7 @@ int		vm_main(int ac, char **av)
       av[exac+1] = ".*";
     }
 
-  vm_print_etrace_banner();
+  etrace_banner_print();
 
   /* Tracer state parsing */
   if (state == REVM_STATE_TRACER)
@@ -174,7 +175,7 @@ int		vm_main(int ac, char **av)
 /* The main Etrace routine */
 int		main(int ac, char **av)
 {
-  return (vm_main(ac, av));
+  return (etrace_main(ac, av));
 }
 
 

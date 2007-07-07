@@ -1,9 +1,9 @@
 /*
-** access.c : Implementation of scripting for language types
+** access.c : Implementation of scripting lookups for meta-language variables
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.12 2007-03-07 16:45:35 thor Exp $
+** $Id: access.c,v 1.13 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "revm.h"
@@ -17,8 +17,11 @@ void		*vm_get_raw(void *addr)
 
   sect = elfsh_get_parent_section(world.curjob->current, 
 				  (elfsh_Addr) addr, &offset);
+
+  /* This happens when the object is a ERESI variable */
   if (!sect)
-    return (NULL);
+    return (addr);
+
   if (elfsh_is_debug_mode())
     {
       if (!elfsh_section_is_runtime(sect))
@@ -95,7 +98,8 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
 
 
 /* Return offset given field name */
-aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
+aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, 
+				 u_int *off)
 {
   aspectype_t	*child;
   int		index;
@@ -117,7 +121,8 @@ aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 	*off = child->off;
 	
 	/* Get offset inside the array if we are accessing an array */
-	index = vm_arrayoff_get(field, child->size, child->dimnbr, child->elemnbr);
+	index = vm_arrayoff_get(field, child->size, 
+				child->dimnbr, child->elemnbr);
 	if (index < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid array access", NULL);
@@ -133,7 +138,8 @@ aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 
 
 /* Recursive function to lookup data from its type path */
-static aspectype_t	*vm_field_get(aspectype_t *type, char *param, void **data)
+static aspectype_t	*vm_field_get(aspectype_t *type, char *param, 
+				      void **data)
 {
   char			*str;
   char			*next;
@@ -177,50 +183,25 @@ static aspectype_t	*vm_field_get(aspectype_t *type, char *param, void **data)
 }
 
 
-/* Lookup the path for a complex typed object */
-revmobj_t	*vm_revmobj_lookup(char *str)
+
+/* Lookup _for real_ the path of a complex typed object */
+revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type, 
+					char *objname, char *objpath)
 {
-  char		filename[ELFSH_MEANING];
-  char		typename[ELFSH_MEANING];
-  char		hashname[ELFSH_MEANING];
-  char		objectname[ELFSH_MEANING];
-  hash_t	*typehash;
-  int		ret;
-  elfshobj_t	*obj;
-  aspectype_t	*type;
-  revmvar_t	*var;
+  revmannot_t	*var;
   void		*data;
   revmobj_t	*path;
-  
+  char		hashname[ELFSH_MEANING];
+  hash_t	*typehash;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
-
-  ret = sscanf(str, LOOKUP3_IDX, filename, typename, objectname);
-  if (ret != 3)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to resolve manual type object", NULL);
-  str += strlen(filename) + strlen(typename) + strlen(objectname) + 3;
-  if (!str[0] || !str[1])
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid truncated field name", NULL);
-  str++;
-
-  /* Get parent objects */
-  obj = vm_lookup_file(filename);
-  if (obj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object", NULL);
-  type = hash_get(&types_hash, typename);
-  if (!type)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested type", NULL);
-  snprintf(hashname, sizeof(hashname), "type_%s", typename);
+  snprintf(hashname, sizeof(hashname), "type_%s", type->name);
   typehash = hash_get(hash_hash, hashname);
   if (!typehash)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type map", NULL);
-  var = hash_get(typehash, objectname);
+  var = hash_get(typehash, objname);
   if (!var)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
@@ -228,13 +209,13 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   data = vm_get_raw(data);
 
   /* Get recursively the leaf type and data pointer */
-  type = vm_field_get(type, str, (void **) &data);
+  type = vm_field_get(type, objpath, (void **) &data);
   if (!type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup object", NULL);
-
+  
   /* Create the revmobj and fill its handlers */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,path, sizeof(revmobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, path, sizeof(revmobj_t), NULL);
   path->root     = (void *) type;
 
   /* Lookup again in the file if we are dealing with a pointer */
@@ -272,6 +253,7 @@ revmobj_t	*vm_revmobj_lookup(char *str)
       break;
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_LONG:
       path->set_obj  = (void *) vm_long_setobj;
       break;
     default:
@@ -284,6 +266,48 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
+
+
+/* Lookup the path for a complex typed object (using syntactic sugar) */
+revmobj_t	*vm_revmobj_lookup(char *str)
+{
+  char		filename[ELFSH_MEANING];
+  char		typename[ELFSH_MEANING];
+  char		objectname[ELFSH_MEANING];
+  int		ret;
+  elfshobj_t	*obj;
+  aspectype_t	*type;
+  revmobj_t	*path;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
+
+  ret = sscanf(str, LOOKUP3_IDX, filename, typename, objectname);
+  if (ret != 3)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to resolve manual type object", NULL);
+  str += strlen(filename) + strlen(typename) + strlen(objectname) + 3;
+  if (!str[0] || !str[1])
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid truncated field name", NULL);
+  str++;
+
+  /* Get parent objects */
+  obj = vm_lookup_file(filename);
+  if (obj == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested file object", NULL);
+  type = hash_get(&types_hash, typename);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested type", NULL);
+
+  path = vm_revmobj_lookup_real(type, objectname, str);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
+}
+
+
 
 
 
@@ -359,3 +383,6 @@ int		vm_generic_setdata(void *data, int off, void *newdata,
   memcpy((char *) data + (off * sizelm), newdata, size);
   return (0);
 }
+
+
+/**************** End of generic handlers *********************************/

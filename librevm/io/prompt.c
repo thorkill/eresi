@@ -6,7 +6,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Mon Mar  5 17:26:11 2007 mayhem
 **
-** $Id: prompt.c,v 1.4 2007-03-25 14:27:34 may Exp $
+** $Id: prompt.c,v 1.5 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "revm.h"
@@ -27,13 +27,13 @@ void	vm_create_default_prompt(char *name, u_int size)
 	   vm_colorget("%s", "pspecial", "("),
 	   (world.state.vm_mode == REVM_STATE_DEBUGGER ?
 	    vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
-	    vm_colorget("%s", "psname" , ELFSH_SNAME)),
+	    vm_colorget("%s", "psname" , REVM_NAME)),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", ELFSH_VERSION),
+	   vm_colorget("%s", "pversion", REVM_VERSION),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", ELFSH_RELEASE),
+	   vm_colorget("%s", "prelease", REVM_RELEASE),
 	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", ELFSH_EDITION),
+	   vm_colorget("%s", "pedition", REVM_EDITION),
 	   vm_colorget("%s", "pspecial", "@"),
 	   vm_colorget("%s", "psname", world.curjob->ws.name),
 	   vm_colorget("%s", "pspecial", ")"));

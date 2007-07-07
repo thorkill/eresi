@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.25 2007-06-23 17:11:00 mxatone Exp $
+** $Id: revm-help.h,v 1.26 2007-07-07 17:30:24 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -216,6 +216,10 @@
 
 #define HLP_PROFILE		"Change the ELFsh profiling behavior \n\n\t" \
 				CMD_PROFILE" enable|disable warn|trace|alloc|debug|all"
+
+#define	HLP_DECLARE		"Declare a new typed named variable \n\n\t" \
+				"<typename> <varname> = field1val ... fieldNval\n"
+
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"

@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.26 2007-06-23 17:11:00 mxatone Exp $
+** $Id: init.c,v 1.27 2007-07-07 17:30:24 may Exp $
 **
 */
 
@@ -197,9 +197,7 @@ int		vm_loop(int argc, char **argv)
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = NULL;
   world.curjob->lstcmd[world.curjob->sourced] = NULL;
-  
-    /* We arrive here when we execute a continue command from a debugger script */
- e2dbg_continue:
+
 #if defined(USE_READLN)
   if (!(world.state.vm_mode == REVM_STATE_DEBUGGER
 	&& world.state.vm_side == REVM_SIDE_SERVER))

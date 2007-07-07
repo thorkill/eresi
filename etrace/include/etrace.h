@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mxatone
 **
-** $Id: etrace.h,v 1.2 2007-03-07 16:45:34 thor Exp $
+** $Id: etrace.h,v 1.3 2007-07-07 17:30:24 may Exp $
 **
 */
 #ifndef __ETRACE_H_
@@ -15,12 +15,8 @@
 /* Help strings */
 #include "etrace-help.h"
 
-#define ETRACE_SNAME	       	"etrace"
-#define ETRACE_NAME		"Etrace shell"
-#define ETRACE_VERSION 		"0.1"
-#define	ETRACE_RELEASE		"a"
-#define ETRACE_EDITION		"dev"
-
+#define ETRACE_NAME	       	"Embedded ELF Tracer"
+#define	ETRACE_SNAME		"etrace"
 
 /* Commands */
 #define	CMD_STRIP		"strip"

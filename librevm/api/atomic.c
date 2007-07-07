@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
 **
-** $Id: atomic.c,v 1.3 2007-03-14 22:44:59 may Exp $
+** $Id: atomic.c,v 1.4 2007-07-07 17:30:24 may Exp $
 **
 */
 #include "revm.h"
@@ -127,7 +127,7 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
       snprintf(buf, sizeof(buf), " $_ = " DFMT "\n\n", dst);
       vm_output(buf);
     }
-
+  
   if (!o2->perm)
     XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
   if (!o1->perm)
@@ -246,5 +246,235 @@ int			vm_hash_set(char   *table,
 	h->type = type;
       hash_add(h, elmname, obj);
     }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* o1 = destination, o2 = source */
+int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
+{
+  revmobj_t		*last;
+  char                  *str;
+  elfsh_Addr            val64;
+  u_int                 val32;
+  u_char                val8;
+  u_short               val16;
+  hash_t		*hash;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* The $_ variable is updated as well */
+  last = hash_get(&vars_hash, REVM_VAR_RESULT);
+  if (last == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get result variable", -2);
+  last->type = o1->type;
+
+  /* Do the real assignation */
+  switch (o1->type)
+    {
+    case ASPECT_TYPE_STR:
+      str = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
+      if (o1->immed)
+        {
+          o1->immed_val.str = strdup(str);
+          o1->size = o2->size;
+        }
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+		    ASPECT_TYPE_STR);
+      else if (o1->set_name(o1->root, o1->parent, str) < 0)
+	{
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, str);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unable to set string variable", -1);
+	}
+      break;
+
+    case ASPECT_TYPE_BYTE:
+      val8 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
+      if (o1->immed)
+        o1->immed_val.byte = val8;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
+      else if (o1->set_obj(o1->parent, val8) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set byte variable", -1);
+      last->immed_val.byte = val8;
+      break;
+
+    case ASPECT_TYPE_SHORT:
+      val16 = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
+      if (o1->immed)
+	o1->immed_val.half = val16;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+      else if (o1->set_obj(o1->parent, val16) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set short variable", -1);
+      last->immed_val.half = val16;
+      break;
+
+    case ASPECT_TYPE_INT:
+      val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
+      if (o1->immed)
+	o1->immed_val.word = val32;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+      else if (o1->set_obj(o1->parent, val32) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set integer variable", -1);
+      last->immed_val.word = val32;
+      break;
+
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_LONG:
+      val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
+      if (o1->immed)
+	o1->immed_val.ent = val64;
+      else if (o1->hname && (o1->kname || o2->kname))
+	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+		    (void *) val64, o1->type);
+      else if (o1->set_obj(o1->parent, val64) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set long variable", -1);
+      last->immed_val.ent = val64;
+      break;
+
+    case ASPECT_TYPE_HASH:
+      hash = (hash_t *) o2->get_obj(o2->parent);
+      if (vm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set hashtable variable", -1);
+      break;
+
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Unknown type for SET parameter", -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+/* Comparison function */
+int			vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
+{
+  revmobj_t		*last;
+  char			*str;
+  char			*str2;
+  elfsh_Addr	       	val2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Lazy typing in action */
+  if ((o1->type != ASPECT_TYPE_INT   && 
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR && 
+       o1->type != ASPECT_TYPE_DADDR && 
+       o1->type != ASPECT_TYPE_LONG  &&
+       o1->type != ASPECT_TYPE_STR) ||
+      o1->type != o2->type)
+    {
+      vm_convert_object(o2, o1->type);
+      if (o2->type != o1->type)
+	{
+	  if (!o2->perm && o2->immed && 
+	      o2->type == ASPECT_TYPE_STR && str != NULL)
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,str);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Invalid parameters", -1);
+	}
+    }
+  str = NULL;
+
+  /* Set the last result variable */
+  last = hash_get(&vars_hash, REVM_VAR_RESULT);
+  if (last == NULL)
+    {
+      if (!o2->perm && o2->immed && 
+	  o2->type == ASPECT_TYPE_STR && str != NULL)
+	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unable to get last result variable", -1);
+    }
+  last->type = ASPECT_TYPE_INT;
+
+  /* Do the real assignation */
+  switch (o1->type)
+    {
+    case ASPECT_TYPE_STR:
+      str2 = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
+      str  = (o1->immed ? o1->immed_val.str : o1->get_name(o1->root, o1->parent));
+      if (!str || !str2)
+	*val = 1;
+      else
+	*val = strcmp(str, str2);
+      break;
+    case ASPECT_TYPE_BYTE:
+    case ASPECT_TYPE_SHORT:
+    case ASPECT_TYPE_INT:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+    case ASPECT_TYPE_LONG:
+      val2  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
+      *val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
+      *val -= val2;
+      break;      
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			"Uncomparable parameter type", -1);
+    }
+
+  last->immed_val.ent = *val;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
+
+
+
+/* Test a bit in a bitfield */
+int			vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
+{
+  revmobj_t		*last;
+  elfsh_Addr	       	val;
+  elfsh_Addr	       	val2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Lazy typing in action */
+  if ((o1->type != ASPECT_TYPE_INT   && 
+       o1->type != ASPECT_TYPE_BYTE  && 
+       o1->type != ASPECT_TYPE_SHORT && 
+       o1->type != ASPECT_TYPE_CADDR && 
+       o1->type != ASPECT_TYPE_DADDR && 
+       o1->type != ASPECT_TYPE_LONG) ||
+      o1->type != o2->type)
+    {
+      vm_convert_object(o2, o1->type);
+      if (o2->type != o1->type)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Invalid parameters", -1);
+    }
+
+  /* Set the last result variable */
+  last = hash_get(&vars_hash, REVM_VAR_RESULT);
+  if (last == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get last result variable", -1);
+  last->type = ASPECT_TYPE_INT;
+
+  /* Do the real assignation */
+  val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
+  val2 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
+  last->immed_val.ent = *result = (val & (~val2));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
