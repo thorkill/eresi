@@ -1,0 +1,17 @@
+#!elfsh/elfsh32
+
+#profile enable warn
+
+type struct0 = field0:long
+type struct1 = field1:byte field2:long
+type struct2 = field3:struct1 field4:long field5:struct1
+
+#long mylong = 42
+
+struct0 mystruct0 = (field0:42)
+struct1 mystruct1 = (field1:42,field2:43)
+struct2 mystruct2 = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+
+#vlist
+quit
+ 
