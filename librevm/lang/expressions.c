@@ -3,7 +3,7 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: expressions.c,v 1.1 2007-07-07 17:30:24 may Exp $
+** $Id: expressions.c,v 1.2 2007-07-08 00:28:31 may Exp $
 **
 */
 #include "revm.h"
@@ -11,7 +11,7 @@
 
 
 /* Get the real value of the parameter string for further revmobj initialization */
-revmexpr_t	*revm_expr_read(char **datavalue)
+static revmexpr_t *revm_expr_read(char **datavalue)
 {
   revmexpr_t	*expr;
   char		*datastr;
@@ -25,7 +25,7 @@ revmexpr_t	*revm_expr_read(char **datavalue)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, expr,
 	 sizeof(revmexpr_t), NULL);
   
-  /* First get the field (or root type) label */
+  /* First get the field (or top-level type) name */
   expr->label = datastr;
   while (*datastr && *datastr != '(' && *datastr != ':')
     datastr++;
@@ -110,14 +110,12 @@ revmexpr_t	*revm_expr_read(char **datavalue)
 }
 
 
-
-
 /* Initialize a (potentially record) ERESI variable */
-revmexpr_t	*revm_expr_set(char		*curpath, 
-			       revmexpr_t	*curexpr,
-			       aspectype_t	*curtype, 
-			       void		*srcdata,
-			       char		*datavalue)
+static revmexpr_t	*revm_expr_init(char		*curpath, 
+					revmexpr_t	*curexpr,
+					aspectype_t	*curtype, 
+					void		*srcdata,
+					char		*datavalue)
 {
   static u_int	pathsize = 0;
   char		pathbuf[BUFSIZ + 1] = {0x00};
@@ -186,12 +184,12 @@ revmexpr_t	*revm_expr_set(char		*curpath,
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, 
 			 ".%s", childtype->fieldname);
 	  vm_inform_type_addr(childtype->name, recpath, 
-			      (elfsh_Addr) childata, 0);
+			      (elfsh_Addr) childata, newexpr, 0);
 	  pathsize += len;
 
 	  /* Insert child where necessary */ 
-	  childexpr = revm_expr_set(recpath, newexpr, childtype, 
-				    childata, newexpr->strval);
+	  childexpr = revm_expr_init(recpath, newexpr, childtype, 
+				     childata, newexpr->strval);
 	  if (!newexpr->childs)
 	    newexpr->childs = childexpr;
 	  else
@@ -265,73 +263,69 @@ revmexpr_t	*revm_expr_set(char		*curpath,
 
 
 
-
-/* Print a specific type */
-/*
-int		revm_expr_print(revmexpr_t *curexpr, void *data)
+/* Compare or Set source and destination */
+static int		revm_expr_cmpset(revmexpr_t	*dest, 
+					 void		*datadest, 
+					 revmexpr_t	*source, 
+					 void		*datasrc,
+					 u_char		op)
 {
-  aspectype_t	*child;
-  char		pathbuf[BUFSIZ];
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  // Just for printing 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+/* Get (and optionally print) the tree of an expression */
+static int	revm_expr_printrec(revmexpr_t *expr, void *data)
+{
+  aspectype_t	*curtype;
+  aspectype_t	*child;
   char		buf[BUFSIZ];
   char		prefix[128];
-
-
   int		len;
   char		*size;
+  char		*typename;
+
+  /* Use unconfirmed yet */
   char		offset[128];
   int		idx;
   int		sz;
   char		*pad;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  // Preliminary checks
+  curtype = aspect_type_get_by_id(expr->typeid);
   typename = curtype->name;
-  
-  // Utiliser pathbuf comme string courante "str" pour vm_field_get !
-  //
-  //vm_field_get(type, str, (void **) &data);
-  //
-  //sur la variable revmannot_t (ou le revmobj_t ?) informee par cmd_declare
-  //
-  // et ce pour tout les fields du type
-  //
-  // XXX ALSO NEED TO DECLARE $typename_key ON VARIABLE CREATION ! 
-  // Set up things for printing
-  if (op == REVM_OBJECT_PRINT)
-  {
-      vm_endline();
-      snprintf(prefix, sizeof(prefix), "%s%s%s", 
-	       vm_colorfieldstr("{"),
-	       vm_colornumber("%u", curtype->size),
-	       vm_colorfieldstr("}"));
-      len = snprintf(buf, sizeof(buf), "  %s %-20s %s %-10s", 
-		     vm_colorfieldstr(typename),
-		     vm_colortypestr_fmt("%-20s", typevar), 
-		     vm_colorfieldstr("size"),
-		     prefix);
-      size = alloca(20);
-    }
+
+  /* Some printing header */
+  vm_endline();
+  snprintf(prefix, sizeof(prefix), "%s%s%s", 
+	   vm_colorfieldstr("{"),
+	   vm_colornumber("%u", curtype->size),
+	   vm_colorfieldstr("}"));
+  len = snprintf(buf, sizeof(buf), "  %s %-20s %s %-10s", 
+		 vm_colorfieldstr(typename),
+		 vm_colortypestr_fmt("%-20s", expr->label), 
+		 vm_colorfieldstr("size"),
+		 prefix);
+  size = alloca(20);
 
 
-    // If the type is a structure
-    if (curtype->childs)
+  /* If the type is a structure */
+  if (curtype->childs)
     {
 
       // Prepare the padding after each field name
       // -14 is dirty: some bug in colors 
-      if (op == REVM_OBJECT_PRINT)
-	{
-	  len += snprintf(buf + len, sizeof(buf) - len, "%s",
-			  vm_colorfieldstr(" = {"));
-	  sz = len - vm_color_size(buf) - 14; 
-	  pad = alloca(sz + 1);
-	  memset(pad, ' ', sz);
-	  pad[sz] = 0x00;
-	}
-
+      len += snprintf(buf + len, sizeof(buf) - len, "%s",
+		      vm_colorfieldstr(" = {"));
+      sz = len - vm_color_size(buf) - 14; 
+      pad = alloca(sz + 1);
+      memset(pad, ' ', sz);
+      pad[sz] = 0x00;
 
       // For each child field type
       for (child = curtype->childs; child; child = child->next)
@@ -384,36 +378,121 @@ int		revm_expr_print(revmexpr_t *curexpr, void *data)
     // Print non-structures types 
     else
     {
-    vm_output(buf);
-    vm_output("\n");
+      vm_output(buf);
+      vm_output("\n");
     }
 
-// Return success 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+  /* Return success  */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-*/
 
 
-
-
-
-
-
-/* Get an expression giving a variable name */
-/*
-revmexpr_t	*revm_expr_get(char *pathname)
+// Print an annotated expression
+int		revm_expr_print(char *pathname)
 {
+  aspectype_t	*type;
+  char		buf[BUFSIZ];
+  hash_t	*hash;
+  revmannot_t	*annot;
+  int		ret;
 
-
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  type = hash_get(&vartypes_hash, pathname);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unknown variable type", -1);
+  snprintf(buf, BUFSIZ, "type_%s", type->name);
+  hash = hash_find(buf);
+  if (!hash)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Inconsistant variable type", -1);
+  annot = hash_get(hash, pathname);
+  if (!annot || !annot->expr || !annot->addr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Incompletely informed typed variable", -1);
+  ret = revm_expr_printrec(annot->expr, (void *) annot->addr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-*/
 
+
+/* Get an expression from its name */
+revmannot_t	*revm_expr_get(char *pathname)
+{
+  aspectype_t	*type;
+  char		buf[BUFSIZ];
+  hash_t	*hash;
+  revmannot_t	*annot;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  type = hash_get(&vartypes_hash, pathname);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unknown variable type", NULL);
+  snprintf(buf, BUFSIZ, "type_%s", type->name);
+  hash = hash_find(buf);
+  if (!hash)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Inconsistant variable type", NULL);
+  annot = hash_get(hash, pathname);
+  if (!annot)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Uninformed variable", NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, annot);
+}
+
+/* Set an expression to the value of another (only if compatible) */
+int		revm_expr_set(char *dest, char *source)
+{
+  revmannot_t	*adst;
+  revmannot_t	*asrc;
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  adst = revm_expr_get(dest);
+  asrc = revm_expr_get(source);
+  if (!adst || !asrc)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input parameters", -1);
+  ret = revm_expr_cmpset(adst->expr, (void *) adst->addr, 
+			 asrc->expr, (void *) asrc->addr, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
 
 /* Compare 2 typed expressions */
-/*
-int		revm_expr_compare(revmexpr_t *source, void *sdata,
-				  revmexpr_t *candid, void *cdata)
+int		revm_expr_compare(char *source, char *candidate)
 {
+  revmannot_t	*adst;
+  revmannot_t	*asrc;
+  int		ret;
 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  adst = revm_expr_get(source);
+  asrc = revm_expr_get(candidate);
+  if (!adst || !asrc)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input parameters", -1);
+  ret = revm_expr_cmpset(adst->expr, (void *) adst->addr, 
+			 asrc->expr, (void *) asrc->addr, 1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-*/
+
+
+
+/* Create a new revm expression */
+revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
+				  char		*dataname,
+				  char		*datavalue) 
+{
+  revmexpr_t	*expr;
+  char		*data;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, -1);
+  vm_inform_type_addr(datatype->name, dataname, (elfsh_Addr) data, NULL, 0); 
+  expr = revm_expr_init(dataname, NULL, datatype, data, datavalue);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to create REVMEXPR", NULL);    
+  vm_inform_type_addr(datatype->name, dataname, (elfsh_Addr) data, expr, 0); 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+}

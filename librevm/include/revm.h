@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
-** $Id: revm.h,v 1.67 2007-07-07 17:30:24 may Exp $
+** $Id: revm.h,v 1.68 2007-07-08 00:28:31 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -562,6 +562,7 @@ extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
 extern hash_t		vars_hash;	 /* Scripting variables hash table */
+extern hash_t		vartypes_hash;	 /* ERESI expressions types hash */ 
 extern hash_t		labels_hash[10]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
@@ -982,11 +983,6 @@ int		vm_type_hashcreate(char *name);
 aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
 revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type, char *objname, char *objpath);
 revmobj_t	*vm_revmobj_lookup(char *str);
-revmexpr_t	*revm_expr_read(char **datavalue);
-revmexpr_t	*revm_expr_set(char *curpath, revmexpr_t *curexpr, 
-			       aspectype_t *curtype, 
-			       void *srcdata, char *datavalue);
-
 char		*vm_generic_getname(void *type, void *data);
 int		vm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	vm_generic_getobj(void *data);
@@ -1058,8 +1054,16 @@ int		vm_edfmt_parse(elfshobj_t *file);
 int		vm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
-int		vm_inform_type(char *type, char *varname, char *straddr, u_char print);
-int		vm_inform_type_addr(char *type, char *varname, elfsh_Addr a, u_char p);
+int		vm_inform_type(char *type, char *name, char *straddr, revmexpr_t *e, u_char print);
+int		vm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_char p);
+
+/* Expression related functions */
+revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
+revmannot_t	*revm_expr_get(char *pathname);
+int		revm_expr_compare(char *source, char *candid);
+int		revm_expr_set(char *dest, char *source);
+int		revm_expr_print(char *pathname);
+
 
 /* May not be defined */
 #if __BSD__

@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-objects.h,v 1.1 2007-07-07 17:30:24 may Exp $
+** $Id: revm-objects.h,v 1.2 2007-07-08 00:28:31 may Exp $
 **
 */
 #ifndef __REVM_OBJECTS_H_
@@ -53,31 +53,32 @@ typedef	struct		s_revm_object
 }                     revmobj_t;
 
 
-/* Structure for an expression in ERESI */
+/* Structure for an expression in ERESI : A tree of revmobj_t */
 typedef struct		s_revm_expr
 {
   char			*label;		/* Field label */
-  u_int			typeid;		/* The ID of type for this expr */
-  char			*strval;	/* ASCII representation of expression */
-  revmobj_t		*value;		/* Value of object, if terminal */
+  u_int			typeid;		/* Type ID of current expression object */
+  char			*strval;	/* ASCII form of current expression object */
+  revmobj_t		*value;		/* The meta-object, if terminal */
+  struct s_revm_expr	*childs;	/* Child objects list, if non-terminal */
   struct s_revm_expr	*next;		/* Next object if in record */
-  struct s_revm_expr	*childs;	/* Child objects, if non-terminal */
 }			revmexpr_t;
 
 
-/* Structure for (Variables) Annotations in ERESI */
+/* Generic structure for objects program annotations in ERESI */
 typedef struct 		s_revm_annotation
 {
 #define EDFMT_SCOPE_UNK    0
 #define EDFMT_SCOPE_GLOBAL 1
 #define EDFMT_SCOPE_FUNC   2
   u_char 		scope;		/* XXX: Unused for now ? */
-  elfsh_Addr 		addr; 		/* Global addr */
+  elfsh_Addr 		addr; 		/* Global address */
   revmexpr_t		*expr;		/* Available expression if any */
-  u_int			typenum;	/* Type number */
+  u_int			typenum;	/* Type id */
   u_int 		reg;   		/* Function reg id base (stack) */
   int 			relvalue;     	/* Relative value based on reg */
-  int			nameoff;	/* Name offset */
+  int			nameoff;	/* Name offset in string table */
+					/* XXX: should be a symbol instead */
 }			revmannot_t;
 
 
@@ -85,6 +86,7 @@ typedef struct 		s_revm_annotation
 /**********************************************************************************/
 /****** Those 2 objects are reminicescence of the old object system of elfsh ******/
 /**** Need to disapear to use only revmannot/revmobj/aspectype instead of those *****/
+/**************** This only affects ERESI types of ELF structures ******************/
 /**********************************************************************************/
 
 
