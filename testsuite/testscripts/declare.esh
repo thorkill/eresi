@@ -1,4 +1,4 @@
-#!elfsh/elfsh32
+#!evarista/evarista32
 
 #profile enable warn
 
@@ -9,9 +9,19 @@ type struct2 = field3:struct1 field4:long field5:struct1
 #long mylong = 42
 
 struct0 mystruct0 = (field0:42)
+struct0 mystruct0b = struct0(field0:42)
 struct1 mystruct1 = (field1:42,field2:43)
 struct2 mystruct2 = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
 
-#vlist
+tables expressions
+
+# Test de mauvais typage -OK- 
+#struct0 mystruct0b = struct1(field0:42)
+
+print $mystruct0
+print $mystruct0b
+print $mystruct1
+print $mystruct2
+
 quit
  

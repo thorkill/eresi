@@ -3,7 +3,7 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.13 2007-07-07 17:30:24 may Exp $
+** $Id: access.c,v 1.14 2007-07-11 19:52:00 may Exp $
 **
 */
 #include "revm.h"
@@ -195,6 +195,9 @@ revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type,
   hash_t	*typehash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s of type %s and wanted field %s)\n", 
+	  objname, type->name, objpath);
 
   snprintf(hashname, sizeof(hashname), "type_%s", type->name);
   typehash = hash_get(hash_hash, hashname);

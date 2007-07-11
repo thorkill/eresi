@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.8 2007-07-08 00:28:31 may Exp $
+** $Id: edfmt.c,v 1.9 2007-07-11 19:52:00 may Exp $
 **
 */
 #include "revm.h"
@@ -35,19 +35,15 @@ static int		vm_edfmt_register_type(char *label,
   aspectype_t		*cur, *new, *inew, *icur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   snprintf(buf, BUFSIZ - 1, "%s", label);
   len = strlen(buf);
-  
   for (index = 0; index < len && buf[index] == '*'; index++)
     buf[index] = 'p';
-
-  nlabel = strdup(label);
+  nlabel = (char *) aproxy_strdup(label);
 
   /* We create the type right now to compare to an existing
      type in case of double entry */
   new = aspect_type_create(nlabel, fields, fieldnbr);
-
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type declaration", -1);
@@ -56,16 +52,12 @@ static int		vm_edfmt_register_type(char *label,
   cur = hash_get(&types_hash, nlabel);
   if (cur)
     {
-      /* Same types ? */
+      /* Same types ? Compare field names & type names */
       for (inew = new->childs, icur = cur->childs; 
-	   inew && icur; 
-	   inew = inew->next, icur = icur->next)
-	{
-	  /* Compare field names & type names */
-	  if (strcmp(inew->fieldname, icur->fieldname) != 0
-	      || strcmp(inew->name, icur->name) != 0)
-	    goto diff;
-	}
+	   inew && icur; inew = inew->next, icur = icur->next)
+	if (strcmp(inew->fieldname, icur->fieldname) != 0
+	    || strcmp(inew->name, icur->name) != 0)
+	  goto diff;
 
       /* Are we okay ? */
       if (icur == inew)
@@ -76,19 +68,17 @@ static int		vm_edfmt_register_type(char *label,
 	       nlabel);
       vm_output(buf);
       vm_output(" [!] New type has been discarded \n\n");
-
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
     }
 
  add:
-
-  ret = aspect_type_register_adv(nlabel, new);
-
+  ret = aspect_type_register_real(nlabel, new);
   if (ret == 0)
     vm_type_hashcreate(nlabel);
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
+
+
 
 /* Analyze a given uniform type and add it into ERESI type engine */
 static int		vm_edfmt_type_parse(edfmttype_t *type)

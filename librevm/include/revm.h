@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
-** $Id: revm.h,v 1.68 2007-07-08 00:28:31 may Exp $
+** $Id: revm.h,v 1.69 2007-07-11 19:52:00 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -562,7 +562,7 @@ extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
 extern hash_t		vars_hash;	 /* Scripting variables hash table */
-extern hash_t		vartypes_hash;	 /* ERESI expressions types hash */ 
+extern hash_t		exprs_hash;	 /* ERESI expressions types hash */ 
 extern hash_t		labels_hash[10]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
@@ -934,6 +934,7 @@ char		*vm_get_mode_name();
 char            *vm_basename(char *str);
 void            vm_set_quit_msg(char *msg);
 int		vm_fifo_io(revmjob_t *job);
+void		vm_print_obj(revmobj_t *obj);
 
 /* Vector related functions */
 int		vm_vectors_getdims(char *str, unsigned int *dims);
@@ -1059,7 +1060,7 @@ int		vm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_
 
 /* Expression related functions */
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
-revmannot_t	*revm_expr_get(char *pathname);
+revmexpr_t	*revm_expr_get(char *pathname);
 int		revm_expr_compare(char *source, char *candid);
 int		revm_expr_set(char *dest, char *source);
 int		revm_expr_print(char *pathname);

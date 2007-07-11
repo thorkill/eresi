@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.26 2007-07-07 17:30:24 may Exp $
+** $Id: libaspect.h,v 1.27 2007-07-11 19:52:00 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -273,8 +273,8 @@ int		aspect_register_vector(char *, void*,
 /* Type related functions */
 char		*aspect_typename_get(u_int type);
 int		aspect_basetypes_create();
-int		aspect_type_register_adv(char *label, 
-					 aspectype_t *ntype);
+int		aspect_type_register_real(char *label, 
+					  aspectype_t *ntype);
 aspectype_t	*aspect_type_create(char *label, 
 				    char **fields, 
 				    u_int fieldnbr);

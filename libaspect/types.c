@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.10 2007-07-07 17:30:24 may Exp $
+** $Id: types.c,v 1.11 2007-07-11 19:52:00 may Exp $
 **
 */
 #include "libaspect.h"
@@ -283,21 +283,22 @@ aspectype_t		*aspect_type_create(char *label,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);  
 }
 
-int		aspect_type_register_adv(char *label, 
+
+/* The real type registering code */
+int		aspect_type_register_real(char *label, 
 					 aspectype_t *ntype)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_add(&types_hash, label, ntype);
-
   /* The type ID is incremented here */
+  hash_add(&types_hash, label, ntype);
   aspect_type_nbr++;
   XREALLOC(__FILE__, __FUNCTION__, __LINE__,
 	   aspect_typeinfo, aspect_typeinfo, 
 	   sizeof(typeinfo_t) * aspect_type_nbr, -1);
   aspect_typeinfo[aspect_type_nbr - 1].name = label;
   aspect_typeinfo[aspect_type_nbr - 1].size = ntype->size; 
-
+  ntype->type = aspect_type_nbr - 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -318,7 +319,7 @@ int		aspect_type_register(char *label,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid type declaration", -1);
 
-  iret = aspect_type_register_adv(label, ret);
+  iret = aspect_type_register_real(label, ret);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, iret);
 }

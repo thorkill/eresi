@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.39 2007-07-08 00:28:31 may Exp $
+** $Id: tables.c,v 1.40 2007-07-11 19:52:00 may Exp $
 **
 */
 #include "revm.h"
@@ -18,8 +18,8 @@ hash_t		labels_hash[REVM_MAXSRCNEST];
 /* Variables hash */
 hash_t		vars_hash;
 
-/* The hash table associating variable name to their type */
-hash_t		vartypes_hash;
+/* ERESI expressions hash */
+hash_t		exprs_hash;
 
 /* The command hash table : hash the command name and returns a revmcmd_t */
 hash_t		cmd_hash;
@@ -1163,7 +1163,7 @@ void		vm_setup_hashtables()
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&traces_cmd_hash  , "traces"     , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
-  hash_init(&vartypes_hash    , "vartypes"   , 51, ASPECT_TYPE_UNKNOW);
+  hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_UNKNOW);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();

@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
 **
-** $Id: misc.c,v 1.5 2007-07-07 17:30:24 may Exp $
+** $Id: misc.c,v 1.6 2007-07-11 19:52:00 may Exp $
 **
 */
 #include "revm.h"
@@ -159,11 +159,17 @@ int		vm_testscript(int ac, char **av)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Invalid script interpreter", 0);
     }
-  if (!strstr(buff, av[0]) && !strstr(buff, "elfsh"))
+
+  /* FIXME-XXX: Make it possible to register its interpreter name */
+  if (!strstr(buff, av[0]) && 
+      !strstr(buff, "elfsh") &&
+      !strstr(buff, "etrace") &&
+      !strstr(buff, "e2dbg") &&
+      !strstr(buff, "evarista"))
     {
       XCLOSE(fd, 0);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Not an ELFsh script", 0);
+			"Not an ERESI script", 0);
     }
   XCLOSE(fd, 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
