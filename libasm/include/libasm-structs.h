@@ -7,7 +7,7 @@
 ** Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
 ** Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
 **
-** $Id: libasm-structs.h,v 1.10 2007-06-27 11:25:11 heroine Exp $
+** $Id: libasm-structs.h,v 1.11 2007-07-11 22:06:46 strauss Exp $
 **
 */
 
@@ -26,9 +26,11 @@ struct s_asm_op
   u_char *ptr;
   /* operand type: contain operand type flags */
   u_int	type;
+  /* a pointer to the operand name in string format */
+  u_char *name;
   /* contain operand size flags	*/
   u_int	size;
-  /* Operand content flags (ia32 only) */
+  /* Operand content flags */
   u_int	content;
   /* register set: 8/16/32 bits general registers, segment registers ..
    * (ia32 only) */

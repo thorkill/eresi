@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.10 2007-07-06 21:18:08 strauss Exp $
+** $Id: libasm-sparc.h,v 1.11 2007-07-11 22:06:46 strauss Exp $
 **
 */
 
@@ -160,6 +160,15 @@ void sparc_convert_format3(struct s_decode_format3 *, u_char *);
 void sparc_convert_format4(struct s_decode_format4 *, u_char *);
 
 void asm_resolve_sparc(void *, u_int, char *, u_int);
+
+/* Get operand name */
+char *asm_sparc_get_op_name (asm_operand *op);
+
+char *get_sparc_register(int reg);
+char *get_sparc_sregister(int reg);
+char *get_sparc_pregister(int reg);
+char *get_sparc_fregister(int reg);
+char *get_sparc_cc(int cc);
 
 /* SPARC operand handlers (ie. fetchers) */
 int asm_sparc_op_fetch (asm_operand *operand, u_char *opcode, 
@@ -337,7 +346,7 @@ enum {
 } e_sparc_opcode;
 
 
-/* Possible values for SPARC openrands' content attribute */
+/* Possible values for SPARC operands' content attribute */
 enum {
   ASM_SP_OTYPE_REGISTER,
   ASM_SP_OTYPE_IMMEDIATE,

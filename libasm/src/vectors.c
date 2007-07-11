@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.11 2007-06-16 20:24:25 strauss Exp $
+ * $Id: vectors.c,v 1.12 2007-07-11 22:06:46 strauss Exp $
  * @file vectors.c
  *  Initialize the instruction and opcode vectors.
  */
@@ -126,7 +126,7 @@ int	asm_init_vectors(asm_processor *proc)
   
     dimstr[0] = "OPCODES";
     dimstr[1] = "SECONDARY OPCODES"; /* Should be 0 when unused */
-    dimstr[2] = "FPOP OPCODE"; /* Should be 0 when unused */
+    dimstr[2] = "FPOP2 OPCODE (OPF_LOW)"; /* Should be 0 when unused */
 
     aspect_register_vector("disasm-sparc", asm_fetch_default,
                     			 dims, dimstr, 3, ASPECT_TYPE_CADDR);

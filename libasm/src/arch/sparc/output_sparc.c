@@ -7,11 +7,12 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id: output_sparc.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
+** $Id: output_sparc.c,v 1.9 2007-07-11 22:06:46 strauss Exp $
 **
 */
 
 #include <libasm.h>
+#include <libasm-sparc.h>
 
 void asm_resolve_sparc(void *d, u_int val, char *buf, u_int len)
 {
@@ -96,6 +97,63 @@ char *get_sparc_pregister(int reg)
   }
 }
 
+/* Get SPARC floating-point register */
+char *get_sparc_fregister(int reg)
+{
+  switch(reg) {
+    case ASM_FREG_FSR: return "%fsr";
+    case 0: return "%f0";
+    case 1: return "%f1";
+    case 2: return "%f2";
+    case 3: return "%f3";
+    case 4: return "%f4";
+    case 5: return "%f5";
+    case 6: return "%f6";
+    case 7: return "%f7";
+    case 8: return "%f8";
+    case 9: return "%f9";
+    case 10: return "%f10";
+    case 11: return "%f11";
+    case 12: return "%f12";
+    case 13: return "%f13";
+    case 14: return "%f14";
+    case 15: return "%f15";
+    case 16: return "%f16";
+    case 17: return "%f17";
+    case 18: return "%f18";
+    case 19: return "%f19";
+    case 20: return "%f20";
+    case 21: return "%f21";
+    case 22: return "%f22";
+    case 23: return "%f23";
+    case 24: return "%f24";
+    case 25: return "%f25";
+    case 26: return "%f26";
+    case 27: return "%f27";
+    case 28: return "%f28";
+    case 29: return "%f29";
+    case 30: return "%f30";
+    case 31: return "%f31";
+    case 32: return "%f32";
+    case 34: return "%f34";
+    case 36: return "%f36";
+    case 38: return "%f38";
+    case 40: return "%f40";
+    case 42: return "%f42";
+    case 44: return "%f44";
+    case 46: return "%f46";
+    case 48: return "%f48";
+    case 50: return "%f50";
+    case 52: return "%f52";
+    case 54: return "%f54";
+    case 56: return "%f56";
+    case 58: return "%f58";
+    case 60: return "%f60";
+    case 62: return "%f62";
+    default: return "bad";
+  }  
+}
+
 /* Get SPARC condition code */
 char *get_sparc_cc(int cc)
 {
@@ -134,10 +192,7 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       sprintf(buf, "%s", get_sparc_pregister(op->baser));
       break;
     case ASM_SP_OTYPE_FREGISTER:
-      if (op->baser == ASM_FREG_FSR)
-        sprintf(buf, "%%fsr");
-      else
-        sprintf(buf, "%%f%i", op->baser);
+      sprintf(buf, "%s", get_sparc_fregister(op->baser));
       break;
     case ASM_SP_OTYPE_CC:
       sprintf(buf, "%s", get_sparc_cc(op->baser));
