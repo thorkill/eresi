@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
-** $Id: revm.h,v 1.69 2007-07-11 19:52:00 may Exp $
+** $Id: revm.h,v 1.70 2007-07-12 17:43:27 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -76,6 +76,8 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
+#define	__DEBUG_EXPRS__		0
+#define	__DEBUG_EXPRS_MORE__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
@@ -115,12 +117,14 @@ extern asm_processor	proc;
 #define REVM_VAR_STRIPLOG	"SLOG"
 
 /* REVM atomic operations */
-#define	REVM_OP_UNKNOW	      0
-#define	REVM_OP_ADD	      1
-#define	REVM_OP_SUB	      2
-#define	REVM_OP_MUL	      3
-#define	REVM_OP_DIV	      4
-#define	REVM_OP_MOD	      5
+#define	REVM_OP_UNKNOW		0
+#define	REVM_OP_ADD		1
+#define	REVM_OP_SUB		2
+#define	REVM_OP_MUL		3
+#define	REVM_OP_DIV		4
+#define	REVM_OP_MOD		5
+#define	REVM_OP_SET		6
+#define	REVM_OP_CMP		7
 
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \

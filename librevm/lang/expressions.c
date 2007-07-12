@@ -1,10 +1,10 @@
 /*
-** expressions.c : Implementation of scripting declarations for meta-language variables
+** expressions.c for librevm in ERESI
 **
-** Started Jan 23 2007 23:39:51 mayhem
+** Implementation of scripting declarations for meta-language variables
 **
-** $Id: expressions.c,v 1.3 2007-07-11 19:52:00 may Exp $
-**
+** Started on Jun 23 2007 23:39:51 mayhem
+** $Id: expressions.c,v 1.4 2007-07-12 17:43:27 may Exp $
 */
 #include "revm.h"
 
@@ -78,10 +78,11 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 		 *datastr-- = 0x00)
 	      *namend++ = 0x00;
 
-	    //DEBUG
-	    fprintf(stderr, "NEW REVMEXPR = %s :: %s \n", 
+#if __DEBUG_EXPRS__
+	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n", 
 		    expr->label, expr->strval);
-	    
+#endif
+
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 	  }
 	break;
@@ -96,10 +97,11 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	   *datastr-- = 0x00)
 	*namend++ = 0x00;
       
-      //DEBUG
-      fprintf(stderr, "NEW REVMEXPR =  %s ::: %s \n", 
+#if __DEBUG_EXPRS__
+      fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
 	      expr->label, expr->strval);
-      
+#endif
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
     }
   
@@ -132,7 +134,9 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
     toplevel = 1;
   newexpr = next = rootexpr = prevexpr = NULL;
 
+#if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Entering revm_expr_init with toplevel = %u\n", toplevel);
+#endif
 
   /* Preliminary processing */
   if (*curpath == '$')
@@ -144,15 +148,17 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
   else
     recpath = curpath;
 
-  // DEBUG
+#if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Current expr path(%s) \n", recpath);
+#endif
 
   /* Construct the expression until end of ascii string */
   while (*datavalue)
     {
       
-      // DEBUG
+#if __DEBUG_EXPRS__
       fprintf(stderr, " [D] Current datavalue = (%s) \n", datavalue);
+#endif
 
       /* Read next typed expression in string */
       newexpr    = revm_expr_read(&datavalue);
@@ -160,8 +166,12 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
       /* If we are at the root expression, type might have been implicit */
       if (toplevel && newexpr->label)
 	{
-	  //fprintf(stderr, " [D] Top level type with explicit type label = (%s) strval = (%s) \n", 
-	  //  newexpr->label, newexpr->strval);
+
+#if __DEBUG_EXPRS_MORE__
+	  fprintf(stderr, " [D] Top level type with explicit type label = (%s) strval = (%s) \n", 
+		  newexpr->label, newexpr->strval);
+#endif
+
 	  if (strcmp(newexpr->label, curtype->name))
 	    {
 	      pathsize = 0;
@@ -177,7 +187,11 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	{
 	  toplevel = 0;
 	  datavalue = newexpr->strval;
-	  //fprintf(stderr, " [D] No top-level label, continuing with datavalue = %s \n", datavalue);
+
+#if __DEBUG_EXPRS_MORE__
+	  fprintf(stderr, " [D] No top-level label, continuing with datavalue = %s \n", datavalue);
+#endif
+
 	  continue;
 	}
       else
@@ -202,9 +216,11 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
       /* Non-terminal case : we will need to recurse */
       if (childtype->childs)
 	{
-	  //DEBUG
-	  //fprintf(stderr, " [D] NOW RECORD field, recursing ! \n");
-	  
+
+#if __DEBUG_EXPRS_MORE__
+	  fprintf(stderr, " [D] NOW RECORD field, recursing ! \n");
+#endif
+
 	  childata = (char *) srcdata + childtype->off;
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, 
 			 ".%s", childtype->fieldname);
@@ -229,9 +245,11 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
       /* Terminal case : no recursion */
       else
 	{
-	  //DEBUG
-	  //fprintf(stderr, " [D] NOW Terminal field, setting its value\n");
-	  
+
+#if __DEBUG_EXPRS_MORE__
+	  fprintf(stderr, " [D] NOW Terminal field, setting its value\n");
+#endif
+
 	  /* Handle RAW terminal field */
 	  if (curtype->type == ASPECT_TYPE_RAW)
 	    {
@@ -315,13 +333,50 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 
 /* Compare or Set source and destination */
-/* OP = 0 (SET) or 1 (CMP) */
+/* OP = REVM_OP_SET or REVM_OP_CMP */
 static int		revm_expr_cmpset(revmexpr_t	*dest, 
 					 revmexpr_t	*source, 
 					 u_char		op)
 {
+  int			ret;
+  elfsh_Addr		cmpval;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Preliminary checks */
+  if (!dest || !source)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+  if (op != REVM_OP_SET && op != REVM_OP_CMP)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid requested operation", -1);
+
+  /* Recursive comparison or setting */
+  for (cmpval = 0; dest && source; dest = dest->next, source = source->next)
+    if (dest->childs || source->childs)
+      {
+	ret = revm_expr_cmpset(dest->childs, source->childs, op);
+	if (ret != 0)
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+      }
+    else switch (op)
+      {
+      case REVM_OP_SET:
+	if (vm_revmobj_set(dest->value, source->value) < 0)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Unable to set expression field", -1);
+	break;
+      case REVM_OP_CMP:	  
+	if (vm_cmp(dest->value, source->value, &cmpval) < 0)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Unable to compare expression fields", -1);
+	if (cmpval)
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+	break;
+      }
+  
+  /* Final checks and result */
+  if ((dest && !source) || (!dest && source))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -410,8 +465,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       else
 	*size = 0x00;
       
-      // Format the whole thing 
-      // FIXME-XXX: use absolute offset AND relative offset !
+      /* Format the offset */
       snprintf(offset, sizeof(offset), "@ off(%s)", 
 	       vm_colornumber("%u", typeoff));
       
@@ -434,7 +488,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
 }
   
   
-  // Print an annotated expression
+/* Print an annotated expression */
 int		revm_expr_print(char *pathname)
 {
   revmexpr_t	*expr;
@@ -489,7 +543,7 @@ int		revm_expr_set(char *dest, char *source)
   if (!adst || !asrc)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid input parameters", -1);
-  ret = revm_expr_cmpset(adst, asrc, 0);
+  ret = revm_expr_cmpset(adst, asrc, REVM_OP_SET);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -509,7 +563,7 @@ int		revm_expr_compare(char *original, char *candidate)
   if (!candid || !orig)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid input parameters", -1);
-  ret = revm_expr_cmpset(candid, orig, 1);
+  ret = revm_expr_cmpset(candid, orig, REVM_OP_CMP);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

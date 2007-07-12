@@ -8,20 +8,52 @@ type struct2 = field3:struct1 field4:long field5:struct1
 
 #long mylong = 42
 
-struct0 mystruct0 = (field0:42)
+struct0 mystruct0  = (field0:42)
 struct0 mystruct0b = struct0(field0:42)
-struct1 mystruct1 = (field1:42,field2:43)
-struct2 mystruct2 = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+struct0 mystruct0c = struct0(field0:43)
+
+struct1 mystruct1  = (field1:42,field2:43)
+struct1 mystruct1b = (field1:42,field2:43)
+struct1 mystruct1c = (field1:43,field2:42)
+
+struct2 mystruct2  = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+struct2 mystruct2b = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+struct2 mystruct2c = (field3(field1:42, field2:43), field4:44, field5(field1:46, field2:45))
 
 tables expressions
 
 # Test de mauvais typage -OK- 
 #struct0 mystruct0b = struct1(field0:42)
 
+print ************ Now testing printing of expressions *****************
 print $mystruct0
 print $mystruct0b
+print $mystruct0c
 print $mystruct1
 print $mystruct2
+
+print 
+print *********** Now testing comparison of expressions ****************
+
+profile enable warn
+
+cmp $mystruct0 $mystruct0b
+cmp $mystruct0b $mystruct0c
+cmp $mystruct1 $mystruct1b
+cmp $mystruct1b $mystruct1c
+cmp $mystruct2 $mystruct2b
+cmp $mystruct2b $mystruct2c
+
+set $mystruct0c $mystruct0b
+set $mystruct1c $mystruct1b
+set $mystruct2c $mystruct2b
+
+cmp $mystruct0 $mystruct0b
+cmp $mystruct0b $mystruct0c
+cmp $mystruct1 $mystruct1b
+cmp $mystruct1b $mystruct1c
+cmp $mystruct2 $mystruct2b
+cmp $mystruct2b $mystruct2c
 
 quit
  
