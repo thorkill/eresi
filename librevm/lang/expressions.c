@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 mayhem
-** $Id: expressions.c,v 1.4 2007-07-12 17:43:27 may Exp $
+** $Id: expressions.c,v 1.5 2007-07-12 23:56:31 may Exp $
 */
 #include "revm.h"
 
@@ -333,54 +333,63 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 
 /* Compare or Set source and destination */
-/* OP = REVM_OP_SET or REVM_OP_CMP */
-static int		revm_expr_cmpset(revmexpr_t	*dest, 
+/* OP = REVM_OP_SET or REVM_OP_MATCH */
+static int		revm_expr_handle(revmexpr_t	*dest, 
 					 revmexpr_t	*source, 
 					 u_char		op)
 {
   int			ret;
   elfsh_Addr		cmpval;
+  revmexpr_t		*cursource;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
   if (!dest || !source)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-  if (op != REVM_OP_SET && op != REVM_OP_CMP)
+  if (op != REVM_OP_SET && op != REVM_OP_MATCH)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid requested operation", -1);
 
   /* Recursive comparison or setting */
-  for (cmpval = 0; dest && source; dest = dest->next, source = source->next)
-    if (dest->childs || source->childs)
-      {
-	ret = revm_expr_cmpset(dest->childs, source->childs, op);
-	if (ret != 0)
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-      }
-    else switch (op)
-      {
-      case REVM_OP_SET:
-	if (vm_revmobj_set(dest->value, source->value) < 0)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Unable to set expression field", -1);
-	break;
-      case REVM_OP_CMP:	  
-	if (vm_cmp(dest->value, source->value, &cmpval) < 0)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Unable to compare expression fields", -1);
-	if (cmpval)
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-	break;
-      }
+  for (cmpval = 0; dest; dest = dest->next)
+    {
+
+      /* Find this field in the current hierarchy list of fields */
+      for (cursource = source; cursource; cursource = cursource->next)
+	if (!strcmp(dest->label, cursource->label))
+	  break;
+      if (!cursource)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Cannot find expression field", -1);
+
+      /* Now compare (or set) the fields */
+      if (dest->childs || cursource->childs)
+	{
+	  ret = revm_expr_handle(dest->childs, cursource->childs, op);
+	  if (ret != 0)
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+	}
+      else switch (op)
+	{
+	case REVM_OP_SET:
+	  if (vm_revmobj_set(dest->value, cursource->value) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to set expression field", -1);
+	  break;
+	case REVM_OP_MATCH:	  
+	  if (vm_cmp(dest->value, cursource->value, &cmpval) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to compare expression fields", -1);
+	  if (cmpval)
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+	  break;
+	}
+    }
   
   /* Final checks and result */
-  if ((dest && !source) || (!dest && source))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 
 
@@ -411,7 +420,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       len = snprintf(buf, sizeof(buf), "%-18s %s %s", 
 		     vm_colorfieldstr(typename),
 		     vm_colortypestr_fmt("%s", expr->label), 
-		     vm_colorfieldstr("= "));
+		     vm_colorwarn("= "));
 
       sz = (taboff < 21 ? 0 : len - vm_color_size(buf) - 20);
       pad = alloca(taboff + sz + 1);
@@ -422,12 +431,12 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       if (curtype->childs)
 	{
 	  vm_output(buf);
-	  vm_output(vm_colorfieldstr("{"));
+	  vm_output(vm_colorwarn("{"));
 	  vm_endline();
 	  revm_expr_printrec(expr->childs, 
 			     taboff + len - vm_color_size(buf) - 8, 
 			     typeoff);
-	  vm_output(vm_colorfieldstr("}"));
+	  vm_output(vm_colorwarn("}"));
 	  if (expr->next)
 	    {
 	      vm_output(",\n");
@@ -445,9 +454,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       size = alloca(30);
       if (curtype->type == ASPECT_TYPE_RAW)
 	snprintf(size, sizeof(size), "%s%s%s", 
-		 vm_colorfieldstr("["), 
+		 vm_colorwarn("["), 
 		 vm_colornumber("%u", curtype->size), 
-		 vm_colorfieldstr("]"));
+		 vm_colorwarn("]"));
       
       
       // FIXME-XXX: Print up 10 elements of array ...
@@ -458,9 +467,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
 	  size = alloca(sz);
 	  for (sz = idx = 0; idx < curtype->dimnbr; idx++)
 	    sz += sprintf(size + sz, "%s%s%s", 
-			  vm_colorfieldstr("["),
+			  vm_colorwarn("["),
 			  vm_colornumber("%u", curtype->elemnbr[idx]),
-			  vm_colorfieldstr("]"));
+			  vm_colorwarn("]"));
 	}
       else
 	*size = 0x00;
@@ -476,7 +485,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       vm_output(offset);
       if (expr->next)
 	{
-	  vm_output(",\n");
+	  vm_output(vm_colorwarn(",\n"));
 	  vm_output(pad);      
 	  typeoff += curtype->size;
 	}
@@ -502,10 +511,10 @@ int		revm_expr_print(char *pathname)
 		 "Unknown expression name", -1);
   snprintf(buf, BUFSIZ, "  $%s %s", 
 	   vm_colorfunction(pathname + 1),
-	   vm_colorfieldstr("= {"));
+	   vm_colorwarn("= {"));
   vm_output(buf);
   ret = revm_expr_printrec(expr, strlen(pathname) + 6, 0);
-  vm_output(vm_colorfieldstr("}"));
+  vm_output(vm_colorwarn("}"));
   vm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -543,7 +552,7 @@ int		revm_expr_set(char *dest, char *source)
   if (!adst || !asrc)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid input parameters", -1);
-  ret = revm_expr_cmpset(adst, asrc, REVM_OP_SET);
+  ret = revm_expr_handle(adst, asrc, REVM_OP_SET);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -563,7 +572,31 @@ int		revm_expr_compare(char *original, char *candidate)
   if (!candid || !orig)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid input parameters", -1);
-  ret = revm_expr_cmpset(candid, orig, REVM_OP_CMP);
+
+  /* A comparison is an inversible matching of the 2 objects */
+  ret = revm_expr_handle(candid, orig, REVM_OP_MATCH);
+  if (!ret)
+    ret = revm_expr_handle(orig, candid, REVM_OP_MATCH);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/* Match or not 2 typed expressions */
+int		revm_expr_match(char *original, char *candidate)
+{
+  revmexpr_t	*candid;
+  revmexpr_t	*orig;
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!candidate || !original || *candidate != '$' || *original != '$')
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid name for expression", -1);    
+  candid = revm_expr_get(candidate);
+  orig   = revm_expr_get(original);
+  if (!candid || !orig)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input parameters", -1);
+  ret = revm_expr_handle(candid, orig, REVM_OP_MATCH);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

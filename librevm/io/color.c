@@ -5,7 +5,7 @@
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: color.c,v 1.3 2007-05-16 23:08:13 thor Exp $
+** $Id: color.c,v 1.4 2007-07-12 23:56:31 may Exp $
 **
 */
 #include "revm.h"
@@ -309,6 +309,7 @@ char *vm_colornumber(char *pattern, u_int numb)
 { 
   return vm_colorget(pattern, "number", &numb); 
 }
+
 
 /* Misc functions */
 

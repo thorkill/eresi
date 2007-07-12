@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
-** $Id: revm.h,v 1.70 2007-07-12 17:43:27 may Exp $
+** $Id: revm.h,v 1.71 2007-07-12 23:56:31 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -125,6 +125,7 @@ extern asm_processor	proc;
 #define	REVM_OP_MOD		5
 #define	REVM_OP_SET		6
 #define	REVM_OP_CMP		7
+#define	REVM_OP_MATCH		8
 
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
@@ -188,7 +189,7 @@ extern asm_processor	proc;
 #define ELFSH_HELP		"elfsh_help"
 
 /* REVM files */
-#define	REVM_CONFIG		".elfshrc"
+#define	REVM_CONFIG		".eresirc"
 #define	REVM_FIFO_C2S		"/tmp/.revm.io.c2s"
 #define	REVM_FIFO_S2C		"/tmp/.revm.io.s2c"
 
@@ -1066,6 +1067,7 @@ int		vm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
 revmexpr_t	*revm_expr_get(char *pathname);
 int		revm_expr_compare(char *source, char *candid);
+int		revm_expr_match(char *source, char *candid);
 int		revm_expr_set(char *dest, char *source);
 int		revm_expr_print(char *pathname);
 

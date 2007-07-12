@@ -55,7 +55,6 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			$(READLNOPT)
 
 all			: all32 all64
-			@cp ../doc/elfshrc.example ~/.elfshrc
 
 all32			: $(OBJ32)
 			@$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)

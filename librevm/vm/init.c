@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.27 2007-07-07 17:30:24 may Exp $
+** $Id: init.c,v 1.28 2007-07-12 23:56:31 may Exp $
 **
 */
 
@@ -329,7 +329,7 @@ int		vm_setup(int ac, char **av, char mode, char side)
 
 
 
-/* Open the .elfshrc file and execute it */
+/* Open the .eresirc file and execute it */
 int		vm_config()
 {
   char		buff[BUFSIZ];

@@ -2,9 +2,13 @@
 
 #profile enable warn
 
+print ************ Now declarations of record types *****************
+
 type struct0 = field0:long
 type struct1 = field1:byte field2:long
 type struct2 = field3:struct1 field4:long field5:struct1
+
+print ************ Now declarations of variables *****************
 
 #long mylong = 42
 
@@ -15,45 +19,66 @@ struct0 mystruct0c = struct0(field0:43)
 struct1 mystruct1  = (field1:42,field2:43)
 struct1 mystruct1b = (field1:42,field2:43)
 struct1 mystruct1c = (field1:43,field2:42)
+struct1 mystruct1d = (field2:42,field1:43)
 
 struct2 mystruct2  = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
 struct2 mystruct2b = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
 struct2 mystruct2c = (field3(field1:42, field2:43), field4:44, field5(field1:46, field2:45))
 
-tables expressions
+# List all existing expressions at this state
+#tables expressions
 
 # Test de mauvais typage -OK- 
 #struct0 mystruct0b = struct1(field0:42)
+
+print ************ Now testing printing of types *****************
+
+type
+
 
 print ************ Now testing printing of expressions *****************
 print $mystruct0
 print $mystruct0b
 print $mystruct0c
 print $mystruct1
+print $mystruct1b
+print $mystruct1c
+print $mystruct1d
 print $mystruct2
+print $mystruct2b
+print $mystruct2c
 
-print 
 print *********** Now testing comparison of expressions ****************
 
-profile enable warn
+#profile enable warn
 
+cmp $mystruct0 $mystruct0
 cmp $mystruct0 $mystruct0b
 cmp $mystruct0b $mystruct0c
-cmp $mystruct1 $mystruct1b
+cmp $mystruct1 $mystruct1b	
 cmp $mystruct1b $mystruct1c
 cmp $mystruct2 $mystruct2b
 cmp $mystruct2b $mystruct2c
 
+print *********** Now testing comparison without field orders ****************
+
+cmp $mystruct1c $mystruct1d
+
+# Set works all very well
+print $mystruct0b $mystruct0c
 set $mystruct0c $mystruct0b
-set $mystruct1c $mystruct1b
-set $mystruct2c $mystruct2b
-
-cmp $mystruct0 $mystruct0b
 cmp $mystruct0b $mystruct0c
-cmp $mystruct1 $mystruct1b
+print $mystruct0b $mystruct0c
+
+print $mystruct1b $mystruct1c
+set $mystruct1c $mystruct1b
 cmp $mystruct1b $mystruct1c
-cmp $mystruct2 $mystruct2b
+print $mystruct1b $mystruct1c
+
+print $mystruct2c $mystruct2b
+set $mystruct2c $mystruct2b
 cmp $mystruct2b $mystruct2c
+print $mystruct2c $mystruct2b
 
 quit
  
