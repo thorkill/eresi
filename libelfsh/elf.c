@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:09:38 2001 mayhem
 ** Last update Mon Apr 21 20:58:41 2003 mayhem
 **
-** $Id: elf.c,v 1.15 2007-06-27 11:25:12 heroine Exp $
+** $Id: elf.c,v 1.16 2007-07-12 13:10:23 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -633,13 +633,11 @@ int	elfsh_load_hdr(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, (char *)PROFILER_ERRORS_ARRAY, 
 		 len);
 
-  /* This check will not make elfsh able to reconstruct SHT
-   ** if (!file->hdr->e_shnum)
-   ** PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-   ** "file->hdr->e_shnum is not valid", -1); 
-   */
-
-  if (!file->hdr->e_shentsize && (file->hdr->e_type != ET_CORE))
+  if (config_safemode() && (!file->hdr->e_shnum))
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+   "file->hdr->e_shnum is not valid", -1); 
+  
+  if (config_safemode() && (!file->hdr->e_shentsize && (file->hdr->e_type != ET_CORE)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "file->hdr->e_shentsize is not valid", -1); 
 
