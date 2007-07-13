@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.27 2007-07-11 19:52:00 may Exp $
+** $Id: libaspect.h,v 1.28 2007-07-13 18:37:42 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -93,7 +93,9 @@
 #endif
 
 /* Include this here since it contains an allocation too */
+#include "aproxy.h"
 #include "libaspect-hash.h"
+#include "libaspect-list.h"
 #include "libaspect-btree.h"
 #include "libaspect-profiler.h"
 

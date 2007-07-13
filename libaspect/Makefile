@@ -13,7 +13,7 @@ CFLAGS			+= -Iinclude -Wall -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DELFSH32
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DELFSH64
 SRC			= vectors.c libhash.c libbtree.c types.c init.c \
-			config.c profiler.c
+			config.c profiler.c liblist.c
 
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)

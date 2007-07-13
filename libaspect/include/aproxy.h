@@ -25,7 +25,7 @@
 #endif
 
 /*
-  $Id: aproxy.h,v 1.2 2007-07-13 18:37:42 may Exp $
+  $Id: aproxy.h,v 1.1 2007-07-13 18:37:42 may Exp $
   `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 
