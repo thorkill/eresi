@@ -1,0 +1,103 @@
+#!evarista/evarista32
+
+load /bin/ls
+
+set $curblock 1.blocks[1.hdr.entry]
+set $curaddr $curblock.vaddr
+
+# This create the instruction list for this block on demand
+reflect $curblock
+
+foreach $instr of 1.instrlist[$curblock]
+
+match $instr with
+
+# indirect branch (call, jmpl) 								
+case s_asm_instr(type:b, nb_op:1, op1(content:r)) -> Branch($curaddr, Reg($instr.op1.baser), 0)
+
+# direct branch (b, bp) 											
+case s_asm_instr(type:b, nb_op:1, op1(content:a)) -> Branch($curaddr, Addr($instr.op1.imm), 0) 			 
+
+# indirect call (op1 reg) 											
+case s_asm_instr(type:c, nb_op:1, op1(content:r)) -> Call($curaddr, Reg($instr.op1.baser), 0)			 
+
+# direct call (op1 addr) 											
+case s_asm_instr(type:c, nb_op:1, op1(content:a)) -> Call($curaddr, Addr($instr.op1.imm), 0)			 
+
+# traps 											 	
+case s_asm_instr(type:i) -> Interrupt($curaddr, Immed($instr.op1.imm), 0)	 
+
+# return, ret, retl 									 		
+case s_asm_instr(type:r) -> Return($curaddr, Immed($instr.op1.imm), 0) 	 
+
+# rett 													
+case s_asm_instr(type:ir) -> IReturn($curaddr, Reg($instr.op1.baser), 0) 	 
+
+# save 												
+case s_asm_instr(type:p) -> Prolog($curaddr, 0) 				 
+
+# restore 												
+case s_asm_instr(type:e) -> Epilog($curaddr, 0)				 
+
+# illtrap 										 			
+case s_asm_instr(type:s) -> Stop($curaddr, 0)				 
+
+# nop											 		
+case s_asm_instr(type:n) -> Nop($curaddr, 0)				
+
+# inc,dec (op1 = register) 									 	
+case s_asm_instr(type:ar:id, nb_op:1, op1(content:r)) -> Ternop($curaddr, Reg($instr.op1.baser), Reg($instr.op2.baser), Reg($instr.op3.baser), 0)		 
+
+# inc,dec (op1 = mem) 									              	
+case s_asm_instr(type:ar:id, nb_op:1, op1(content:m)) -> Ternop($curaddr, Mem(Reg($instr.op1.baser), Immed($instr.op1.imm)), Immed(1), 0)	 
+
+# andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg) 								 		
+case s_asm_instr(type:ar:wf, nb_op:3, op2(content:r)) -> Ternop($curaddr, Reg($instr.op1.baser), Reg($instr.op2.baser), Reg($instr.op3.baser), $instr.flags)  
+
+# andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)	 							 		
+case s_asm_instr(type:ar:wf, nb_op:3, op2(content:i)) -> Ternop($curaddr, Reg($instr.op1.baser), Immed($instr.op2.imm), Reg($instr.op3.baser), $instr.flags)  
+
+# sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 immed) 					 		
+case s_asm_instr(type:ar, nb_op:3, op2(content:i)) -> Ternop($curaddr, Reg($instr.op1.baser), Immed($instr.op2.imm), Reg($instr.op3.baser), 0)  
+
+# sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 reg)  						 	
+case s_asm_instr(type:ar, nb_op:3, op2(content:r)) -> Ternop($curaddr, Reg($instr.op1.baser), Reg($instr.op2.baser), Reg($instr.op3.baser), 0)  
+
+# clrx, clrh, clrb, clr (op1 = reg)  										 	
+case s_asm_instr(type:ar, nb_op:1, op1(content:r)) -> Assign($curaddr, Reg($instr.op1.baser), Immed(0), 0)		 
+
+# clrx, clrh, clrb, clr (op1 = mem)  										 		
+case s_asm_instr(type:ar, nb_op:1, op1(content:m)) -> Assign($curaddr, Mem(Reg($instr.op1.baser), Immed($instr.op1.imm)), Immed(0), 0) 	 
+
+# btog immed 														
+case s_asm_instr(type:ar, nb_op:2, op1(content:i)) -> Ternop($curaddr, Reg($instr.op2.baser), Immed($instr.op1.imm), Reg($instr.op2.baser), 0)   
+
+# btog register 												 		
+case  s_asm_instr(type:ar, nb_op:2, op1(content:r)) -> Ternop($curaddr, Reg($instr.op2.baser), Reg($instr.op1.baser), Reg($instr.op2.baser))	 
+
+# ld,ldd,ldub,ldx,lduw,lduh,ldsw,ldsb  									 		
+case s_asm_instr(type:a:rm) -> RMAssign($curaddr, Mem(Reg($instr.op1.baser), Immed($instr.op1.imm)), Reg($instr.op2.baser), 0)  
+
+# st,stb,stw,sth,std,stx 											 	
+case s_asm_instr(type:a:wm) -> WMAssign($curaddr, Reg($instr.op1.baser), Mem(Reg($instr.op2.baser), Immed($instr.op2.imm)), 0)
+
+# bset (op1 immed) 																
+case s_asm_instr(type:bs, op1(content:i)) -> BitSet($curaddr, Immed($instr.op1.imm), Reg($instr.op2.baser), 0)		 
+
+# tst (implicit 2e operand = immed 0 !) 											 		
+case s_asm_instr(type:cmp, nb_op:1, op1(content:r)) -> Cmp($curaddr, Reg($instr.op1.baser), 0)				 
+
+# cmp (op2 register) 											 			
+case s_asm_instr(type:cmp, nb_op:2, op1(content:r), op2(content:r)) -> Cmp($curaddr, Reg($instr.op1.baser), Reg($instr.op2.baser), 0)			 
+
+# cmp (op2 immed) 										 		
+case s_asm_instr(type:cmp, nb_op:2, op1(content:r), op2(content:i)) -> Cmp($curaddr, Reg($instr.op1.baser), Immed($instr.op2.imm), 0)	 		 
+
+# Defaultcase 													
+default print Unsupported instruction at address $curaddr	 
+
+endmatch 
+add $curaddr 4 
+endfor
+
+
