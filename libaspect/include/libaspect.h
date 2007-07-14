@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.28 2007-07-13 18:37:42 may Exp $
+** $Id: libaspect.h,v 1.29 2007-07-14 19:49:50 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -111,7 +111,8 @@
 #define         ASPECT_TYPE_CADDR        8  /* 4 or 8 bytes      */
 #define	        ASPECT_TYPE_VECT	 9  /* Vector type	 */
 #define		ASPECT_TYPE_HASH	10  /* Hash table type	 */
-#define         ASPECT_TYPE_BASENUM     11  /* BASE TYPES NUMBER */
+#define		ASPECT_TYPE_LIST	11
+#define         ASPECT_TYPE_BASENUM     12  /* BASE TYPES NUMBER */
 
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
 #define		ASPECT_TYPENAME_RAW	"raw"     
@@ -124,6 +125,7 @@
 #define		ASPECT_TYPENAME_CADDR	"caddr"   
 #define		ASPECT_TYPENAME_VECT	"vector" 
 #define		ASPECT_TYPENAME_HASH	"hash"
+#define		ASPECT_TYPENAME_LIST	"list"
 
 /* A structure for the type information */
 typedef struct		s_info

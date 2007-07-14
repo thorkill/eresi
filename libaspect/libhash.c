@@ -4,7 +4,7 @@
 ** Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
-** $Id: libhash.c,v 1.32 2007-07-13 18:37:42 may Exp $
+** $Id: libhash.c,v 1.33 2007-07-14 19:49:49 may Exp $
 */
 #include "libaspect.h"
 
@@ -21,7 +21,6 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
       hash_hash = (hash_t *) calloc(sizeof(hash_t), 1);
       hash_init(hash_hash, "hashes", 51, ASPECT_TYPE_UNKNOW);
     }
-
   if (type >= aspect_type_nbr)
     {
       fprintf(stderr, "Unable to initialize hash table %s \n", name);
@@ -41,8 +40,14 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
-
   hash_add(hash_hash, name, h);
+
+  /* Initialize the lists hash table too */
+  if (!hash_lists)
+    {
+      hash_lists = (hash_t *) calloc(sizeof(hash_t), 1);
+      hash_init(hash_lists, "lists", 51, ASPECT_TYPE_UNKNOW);
+    }
   NOPROFILER_ROUT(0);
 }
 

@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-objects.h,v 1.2 2007-07-08 00:28:31 may Exp $
+** $Id: revm-objects.h,v 1.3 2007-07-14 19:49:50 may Exp $
 **
 */
 #ifndef __REVM_OBJECTS_H_
@@ -40,6 +40,11 @@ typedef	struct		s_revm_object
   /* Only when describing elements of hash tables */
   char		      *hname;		/* Name of parent hash table */
   char		      *kname;		/* Name of key in hash table */
+
+#define	CONT_UNKNOW	0
+#define	CONT_HASH	1
+#define	CONT_LIST	2
+  char		      contype;		/* Container type */
 
   /* Immediate value if immed flag is set */
   union               immval

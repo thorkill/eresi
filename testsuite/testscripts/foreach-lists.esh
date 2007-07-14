@@ -1,0 +1,39 @@
+#!elfsh/elfsh32
+
+#quiet
+
+vlist
+
+add $list[test2] Intel
+add $list[test2] Alpha
+add $list[test2] Sparc32
+add $list[test2] Mips
+add $list[test2] Sparc64
+add $list[test2] AMD
+add $list[test2] Pa-risc
+lists test2
+
+# We need a parameter
+vlist
+cmp $# 2
+jne error
+
+beginning:
+print Starting first foreach
+
+foreach $elem of test2 matching Sparc
+  print Regex Matched $elem
+forend
+
+print Starting second foreach
+lists test2
+
+foreach $element of test2
+  print List contains element : $element
+forend
+
+quit
+
+error:
+print This script needs one parameter (a file name)
+quit

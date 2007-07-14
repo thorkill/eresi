@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:57:58 2003 mayhem
 **
-** $Id: grammar.c,v 1.14 2007-03-07 16:45:35 thor Exp $
+** $Id: grammar.c,v 1.15 2007-07-14 19:49:50 may Exp $
 **
 */
 #include "revm.h"
@@ -114,9 +114,65 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   ret->type     = (entryname ? hash->type : ASPECT_TYPE_HASH);
   ret->hname    = hashname;
   ret->kname    = (entryname ? strdup(entryname) : NULL);
+  ret->contype  = CONT_HASH;
   ret->perm     = 1;
   ret->immed    = 0;
   ret->get_obj  = vm_hash_getobj;
+  ret->set_obj  = (void *) (entryname ? vm_long_setobj : NULL);
+
+  /* Success */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+
+/* Parse a hash access */
+revmobj_t	*parse_list(char *param, char *fmt)
+{
+  u_int		size;
+  char		index[ELFSH_MEANING];
+  list_t	*list;
+  revmobj_t	*ret;
+  char		*entryname;
+  char		*listname;
+  void		*ptr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  size = parse_lookup_varlist(param, fmt, index);
+  if (size != 1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
+  
+  /* Get hash table and entry */
+  entryname = strchr(index, ':');
+  if (entryname)
+    *entryname++ = 0x00;
+  listname  = strdup(index);
+
+  /* In case the hash table does not exist, create it empty */
+  list = list_find(listname);
+  if (!list)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     list, sizeof(list_t), NULL);
+      list_init(list, listname, ASPECT_TYPE_UNKNOW);
+    }
+
+  /* Now deal with the entry */
+  ptr = (entryname ? list_get(list, entryname) : (void *) list);
+
+  /* Get an revm object */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, sizeof(revmobj_t), NULL);
+  ret->parent   = ptr;
+  ret->type     = (entryname ? list->type : ASPECT_TYPE_LIST);
+  ret->hname    = listname;
+  ret->kname    = (entryname ? strdup(entryname) : NULL);
+  ret->contype  = CONT_LIST;
+  ret->perm     = 1;
+  ret->immed    = 0;
+  ret->get_obj  = vm_hash_getobj; /* We can keep this one for lists too */
   ret->set_obj  = (void *) (entryname ? vm_long_setobj : NULL);
 
   /* Success */

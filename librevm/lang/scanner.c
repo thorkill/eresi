@@ -4,7 +4,7 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: scanner.c,v 1.9 2007-07-12 23:56:31 may Exp $
+** $Id: scanner.c,v 1.10 2007-07-14 19:49:50 may Exp $
 **
 */
 #include "revm.h"
@@ -153,8 +153,6 @@ u_int		vm_findblanks(char *buf)
     {
       while (IS_BLANK(*sav))
 	sav++;
-      if (*sav == '#')
-	*sav = 0x00;
       if (!*sav)
 	break;
       ptr = strchr(sav, ' ');

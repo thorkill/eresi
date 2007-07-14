@@ -1,5 +1,4 @@
-#!/usr/local/bin/elfsh
-
+#!elfsh/elfsh32
 set $hash[test1:key]  42
 tables test1
 

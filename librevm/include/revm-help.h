@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.26 2007-07-07 17:30:24 may Exp $
+** $Id: revm-help.h,v 1.27 2007-07-14 19:49:50 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -234,6 +234,10 @@
 				 CMD_TABLES"      : Print all tables \n\t"        \
 				 CMD_TABLES" regx : Print matching tables \n\n\t" \
 				 "If a single hash matches, its content is printed"
+#define	HLP_LISTS		 "Print linked lists and content \n\n\t"      \
+				 CMD_LISTS"      : Print all lists \n\t"        \
+				 CMD_LISTS" regx : Print matching lists \n\n\t" \
+				 "If a single list matches, its content is printed"
 
 #define	HLP_VECTORS		 "Act on reflective objects \n\n\t"				       \
 				 "vectors                                \t List existing vectors\n\t" \

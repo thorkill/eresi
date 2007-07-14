@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
 **
-** $Id: atomic.c,v 1.4 2007-07-07 17:30:24 may Exp $
+** $Id: atomic.c,v 1.5 2007-07-14 19:49:50 may Exp $
 **
 */
 #include "revm.h"
@@ -187,6 +187,57 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
 
 
 
+/* API for adding in hash */
+int			vm_list_add(list_t *h, revmobj_t *o)
+{
+  elfsh_Addr		elem;
+  char			*key;
+  list_t		*src;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If the source object is a hash, then we need to do a merge operation ! */
+  if (o->type == ASPECT_TYPE_LIST)
+    {
+      src = (list_t *) o->get_obj(o->parent);
+      list_merge(h, src);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Some checks */
+  if (!o->kname && !o->hname && !o->get_name)
+    {
+      if (vm_convert_object(o, ASPECT_TYPE_STR) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unknown key for source object", -1);
+      key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
+    }
+  else
+    key = (o->kname ? o->kname : o->hname ? o->hname : 
+	   o->get_name(o->root, o->parent));
+  if (!key)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown key for source object", -1);
+
+  /* In case the hash table was freshly created, assign its element type now */
+  if (h->type == ASPECT_TYPE_UNKNOW)
+    h->type = o->type;
+
+  /* Make sure we insert an element of the same type */
+  if (h->type != o->type && vm_convert_object(o, h->type))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Incompatible types between objects", -1);
+   
+  /* Add it to the hash table */
+  elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  list_add(h, key, (void *) elem);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
 /* API for deleting in hash */
 int			vm_hash_del(hash_t *h, revmobj_t *o)
 {
@@ -225,6 +276,47 @@ int			vm_hash_del(hash_t *h, revmobj_t *o)
 }
 
 
+
+/* API for deleting in hash */
+int			vm_list_del(list_t *h, revmobj_t *o)
+{
+  char			*name;
+  list_t		*src;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* If the source object is a hash, then we need to do a merge operation ! */
+  if (o->type == ASPECT_TYPE_LIST)
+    {
+      src = (list_t *) o->get_obj(o->parent);
+      list_unmerge(h, src);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* If second parameter was a string */
+  if (o->type == ASPECT_TYPE_STR)
+    {
+      if (o->get_name)
+	name = o->get_name(o->root, o->parent);
+      else
+	name = (o->immed ? o->immed_val.str : (char *) o->get_obj(o->parent));
+      if (list_get(h, name))
+	list_del(h, name);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Else if it was a hash element */
+  if ((h->type != o->type && vm_convert_object(o, h->type)) || !o->kname ||
+      !list_get(h, o->kname))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown hash element to remove", -1);
+  list_del(h, o->kname);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
 /* API for setting elements inside hash */
 int			vm_hash_set(char   *table, 
 				    char   *elmname, 
@@ -251,6 +343,33 @@ int			vm_hash_set(char   *table,
 
 
 
+
+/* API for setting elements inside hash */
+int			vm_list_set(char   *table, 
+				    char   *elmname, 
+				    void   *obj,
+				    u_char type)
+{
+  list_t		*h;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!table)
+    list_register((list_t *) obj, elmname);
+  else
+    {
+      h = list_find(table);
+      if (!h)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unknown destination list", -1);
+      if (h->type == ASPECT_TYPE_UNKNOW)
+	h->type = type;
+      list_add(h, elmname, obj);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
 /* o1 = destination, o2 = source */
 int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
 {
@@ -261,6 +380,7 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
   u_char                val8;
   u_short               val16;
   hash_t		*hash;
+  list_t		*list;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -282,8 +402,14 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
           o1->size = o2->size;
         }
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
-		    ASPECT_TYPE_STR);
+	{
+	  if (o1->contype == CONT_HASH)
+	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+			ASPECT_TYPE_STR);
+	  else if (o1->contype == CONT_LIST)
+	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+			ASPECT_TYPE_STR);
+	}
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
 	{
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, str);
@@ -297,8 +423,14 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       if (o1->immed)
         o1->immed_val.byte = val8;
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
+	{
+	  if (o1->contype == CONT_HASH)
+	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
+	  else if (o1->contype == CONT_LIST)
+	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+			ASPECT_TYPE_STR);
+	}
       else if (o1->set_obj(o1->parent, val8) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set byte variable", -1);
@@ -310,8 +442,15 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       if (o1->immed)
 	o1->immed_val.half = val16;
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+	{
+	  if (o1->contype == CONT_HASH)
+	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+	  else if (o1->contype == CONT_LIST)
+	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+	    
+	}
       else if (o1->set_obj(o1->parent, val16) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set short variable", -1);
@@ -323,8 +462,15 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       if (o1->immed)
 	o1->immed_val.word = val32;
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+	{
+	  if (o1->contype == CONT_HASH)
+	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+	  else if (o1->contype == CONT_LIST)
+	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+
+	}
       else if (o1->set_obj(o1->parent, val32) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set integer variable", -1);
@@ -338,8 +484,15 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       if (o1->immed)
 	o1->immed_val.ent = val64;
       else if (o1->hname && (o1->kname || o2->kname))
-	vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-		    (void *) val64, o1->type);
+	{
+	  if (o1->contype == CONT_HASH)
+	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) val64, o1->type);
+	  else if (o1->contype == CONT_LIST)
+	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			(void *) val64, o1->type);
+	  
+	}
       else if (o1->set_obj(o1->parent, val64) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set long variable", -1);
@@ -350,7 +503,14 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       hash = (hash_t *) o2->get_obj(o2->parent);
       if (vm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to set hashtable variable", -1);
+		     "Unable to set hash table variable", -1);
+      break;
+
+    case ASPECT_TYPE_LIST:
+      list = (list_t *) o2->get_obj(o2->parent);
+      if (vm_list_set(NULL, o1->hname, (void *) list, o1->type))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set list variable", -1);
       break;
 
     default:

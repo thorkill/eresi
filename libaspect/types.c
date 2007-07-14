@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.11 2007-07-11 19:52:00 may Exp $
+** $Id: types.c,v 1.12 2007-07-14 19:49:49 may Exp $
 **
 */
 #include "libaspect.h"
@@ -31,6 +31,7 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
+    {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
   };
 
 

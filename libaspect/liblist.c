@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 mayhem
-** $Id: liblist.c,v 1.1 2007-07-13 18:37:42 may Exp $
+** $Id: liblist.c,v 1.2 2007-07-14 19:49:49 may Exp $
 */
 #include "libaspect.h"
 
@@ -15,11 +15,6 @@ hash_t  *hash_lists = NULL;
 int list_init(list_t *h, char *name, u_int type)
 {
   NOPROFILER_IN();
-  if (!hash_lists)
-    {
-      hash_lists = (hash_t *) calloc(sizeof(hash_t), 1);
-      hash_init(hash_lists, "lists", 51, ASPECT_TYPE_UNKNOW);
-    }
   if (type >= aspect_type_nbr)
     {
       fprintf(stderr, "Unable to initialize list %s \n", name);
@@ -124,11 +119,11 @@ int		list_add(list_t *h, char *key, void *data)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	 cur, sizeof(listent_t), -1);
   next = h->head;
-  h->head = cur;
   cur->key = key;
   cur->data = data;
   cur->next = next;
   h->head = cur;
+  h->elmnbr++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -145,7 +140,8 @@ int		list_del(list_t *h, char *key)
 		 "Invalid NULL parameters", -1);
   curelem = h->head;
   prevelem = NULL;
-  while (curelem && strcmp(curelem->key, key))
+  for (curelem = h->head; curelem && strcmp(curelem->key, key); 
+       curelem = curelem->next)
     prevelem = curelem;
   if (!curelem)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -154,6 +150,8 @@ int		list_del(list_t *h, char *key)
   else
     prevelem->next = prevelem->next->next;
   h->elmnbr--;
+  if (!h->elmnbr)
+    h->head = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -217,10 +215,14 @@ char**		list_get_keys(list_t *h, int* n)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h)
-    return (NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, h->elmnbr, NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
+	 sizeof(char *) * h->elmnbr, NULL);
   for (idx = 0, curelem = h->head; curelem; curelem = curelem->next, idx++)
     keys[idx] = curelem->key;
+  if (n)
+    *n = h->elmnbr;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
 
@@ -290,12 +292,11 @@ int		list_merge(list_t *dst, list_t *src)
 /* Unmerge two lists */
 int		list_unmerge(list_t *dst, list_t *src)
 {
-  int           index;
   listent_t	*cur;
   
   if (!dst || !src)
     return (-1);
-  for (cur = src->head, index = 0; index < src->elmnbr; index++, cur = cur->next)
+  for (cur = src->head; cur; cur = cur->next)
     list_del(dst, cur->key);
   return 0;
 }

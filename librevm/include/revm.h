@@ -2,9 +2,9 @@
 ** revm.h for librevm in ERESI
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
-** 
 ** Moved from elfsh to librevm on January 2007 -may
-** $Id: revm.h,v 1.71 2007-07-12 23:56:31 may Exp $
+**
+** $Id: revm.h,v 1.72 2007-07-14 19:49:50 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -365,6 +365,7 @@ extern asm_processor	proc;
 #define	CMD_WORKSPACE2		 "w"
 #define	CMD_VECTORS		 "vectors"
 #define	CMD_TABLES		 "tables"
+#define	CMD_LISTS		 "lists"
 #define	CMD_EMPTY		 "empty"
 
 /* Code analysis commands */
@@ -740,6 +741,7 @@ int             cmd_version();
 int             cmd_hashx();
 int		cmd_vectors();
 int		cmd_tables();
+int		cmd_lists();
 int		cmd_empty();
 int		cmd_inform();
 int		cmd_uninform();
@@ -850,6 +852,7 @@ revmobj_t       *parse_lookup4(char *param, char *fmt, u_int sepnbr);
 revmobj_t       *parse_lookup5_index(char *param, char *fmt, u_int sepnbr);
 revmobj_t	*parse_vector(char *param, char *fmt);
 revmobj_t	*parse_hash(char *param, char *fmt);
+revmobj_t	*parse_list(char *param, char *fmt);
 
 /* Versions functions */
 int             vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
@@ -935,6 +938,7 @@ int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
 int		vm_is_loaded(char *name);
 int		vm_doswitch(int nbr);
 char		*vm_ascii_type(hash_t *cur);
+char		*vm_ascii_ltype(list_t *cur);
 char		*vm_get_mode_name();
 char            *vm_basename(char *str);
 void            vm_set_quit_msg(char *msg);
@@ -1038,7 +1042,10 @@ int             vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2);
 int		vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
 int		vm_hash_add(hash_t *h, revmobj_t *o);
 int		vm_hash_del(hash_t *h, revmobj_t *o);
+int		vm_list_add(list_t *h, revmobj_t *o);
+int		vm_list_del(list_t *h, revmobj_t *o);
 int		vm_hash_set(char *tab, char *elm, void *obj, u_char type);
+int		vm_list_set(char *tab, char *elm, void *obj, u_char type);
 int		vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
 int		vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
 int		vm_revmobj_set(revmobj_t *o1, revmobj_t *o2);

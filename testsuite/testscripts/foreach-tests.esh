@@ -1,4 +1,4 @@
-#!../../elfsh/elfsh32
+#!elfsh/elfsh32
 
 #quiet
 
@@ -12,7 +12,7 @@ add $hash[test2] Pa-risc
 tables test2
 
 # We need a parameter
-cmp $# 1
+cmp $# 2
 jne error
 
 beginning:

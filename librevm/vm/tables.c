@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.40 2007-07-11 19:52:00 may Exp $
+** $Id: tables.c,v 1.41 2007-07-14 19:49:50 may Exp $
 **
 */
 #include "revm.h"
@@ -746,6 +746,7 @@ static void	setup_cmdhash()
       vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
       vm_addcmd(CMD_VECTORS   , (void *) cmd_vectors  , (void *) vm_getvarparams, 0, HLP_VECTORS);
       vm_addcmd(CMD_TABLES    , (void *) cmd_tables   , (void *) vm_getvarparams, 0, HLP_TABLES);
+      vm_addcmd(CMD_LISTS     , (void *) cmd_lists    , (void *) vm_getvarparams, 0, HLP_LISTS);
       vm_addcmd(CMD_EMPTY     , (void *) cmd_empty    , (void *) vm_getvarparams, 0, HLP_EMPTY);
     }
 
@@ -1075,6 +1076,7 @@ void setup_grammar()
 #define LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"
 #define LOOKUP_VECT "$vector[%41[^]]]"
 #define LOOKUP_HASH "$hash[%41[^]]]"
+#define LOOKUP_LIST "$list[%41[^]]]"
 
   hash_add(&parser_hash, LOOKUP5_IDX, parse_lookup5_index);
   hash_add(&parser_hash, LOOKUP4_A, parse_lookup4);
@@ -1084,6 +1086,7 @@ void setup_grammar()
   hash_add(&parser_hash, LOOKUP3, parse_lookup3);
   hash_add(&parser_hash, LOOKUP_VECT, parse_vector);
   hash_add(&parser_hash, LOOKUP_HASH, parse_hash);
+  hash_add(&parser_hash, LOOKUP_LIST, parse_list);
 }
 
 
