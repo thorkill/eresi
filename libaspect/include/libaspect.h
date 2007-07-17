@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 mayhem
 **
 **
-** $Id: libaspect.h,v 1.29 2007-07-14 19:49:50 may Exp $
+** $Id: libaspect.h,v 1.30 2007-07-17 18:11:24 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -191,8 +191,8 @@ typedef struct	s_config_item
   u_int		type;			  /* int will use val, str *data */
   
   /* RO/RW - it's relevant to higher api
-   like vm_ allows direct updates to those values
-   when RW is set and enforces usage of vm_api
+   like revm_ allows direct updates to those values
+   when RW is set and enforces usage of revm_api
    when RO is set (see profile) */
   u_int		val;			  /* For int values 0-off/1-on ... */
 #define		CONFIG_MODE_RW	0

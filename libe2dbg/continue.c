@@ -4,7 +4,7 @@
 ** The continue command in e2dbg
 **
 **
-** $Id: continue.c,v 1.7 2007-05-07 13:24:01 may Exp $
+** $Id: continue.c,v 1.8 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -37,7 +37,7 @@ int		cmd_start()
   if (world.curjob->current->running)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Process is already started", -1);
-  if (!world.state.vm_quiet)
+  if (!world.state.revm_quiet)
     e2dbg_output(" [*] Starting process\n");
   e2dbg_start_proc();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
@@ -54,7 +54,7 @@ int	cmd_cont()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Current object not running", -1);
 
-  if (!world.state.vm_quiet)
+  if (!world.state.revm_quiet)
     e2dbg_output(" [*] Continuing process\n");
 
   /* Set back the current thread to the stopped thread */

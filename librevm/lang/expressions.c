@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 mayhem
-** $Id: expressions.c,v 1.6 2007-07-17 03:14:42 may Exp $
+** $Id: expressions.c,v 1.7 2007-07-17 18:11:25 may Exp $
 */
 #include "revm.h"
 
@@ -224,7 +224,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  childata = (char *) srcdata + childtype->off;
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, 
 			 ".%s", childtype->fieldname);
-	  vm_inform_type_addr(childtype->name, recpath + 1, 
+	  revm_inform_type_addr(childtype->name, recpath + 1, 
 			      (elfsh_Addr) childata, newexpr, 0);
 	  pathsize += len;
 
@@ -259,9 +259,9 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	    }
 
 	  /* Lookup scalar value and assign it to the field */
-	  newexpr->value = vm_revmobj_lookup_real(curtype, recpath + 1, 
+	  newexpr->value = revm_object_lookup_real(curtype, recpath + 1, 
 						  childtype->fieldname);
-	  curdata  = vm_lookup_immed(newexpr->strval);
+	  curdata  = revm_lookup_immed(newexpr->strval);
 	  if (!newexpr->value || !curdata)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
@@ -269,7 +269,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to lookup src or dst object", NULL);
 	    }
-	  if (vm_revmobj_set(newexpr->value, curdata) < 0)
+	  if (revm_revmobj_set(newexpr->value, curdata) < 0)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
 	      pathsize = 0;
@@ -373,12 +373,12 @@ static int		revm_expr_handle(revmexpr_t	*dest,
       else switch (op)
 	{
 	case REVM_OP_SET:
-	  if (vm_revmobj_set(dest->value, cursource->value) < 0)
+	  if (revm_revmobj_set(dest->value, cursource->value) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to set expression field", -1);
 	  break;
 	case REVM_OP_MATCH:	  
-	  if (vm_cmp(dest->value, cursource->value, &cmpval) < 0)
+	  if (revm_cmp(dest->value, cursource->value, &cmpval) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to compare expression fields", -1);
 	  if (cmpval)
@@ -415,14 +415,14 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       typename = curtype->name;
       
       /* Some printing header */
-      vm_endline();
+      revm_endline();
 
       len = snprintf(buf, sizeof(buf), "%-18s %s %s", 
-		     vm_colorfieldstr(typename),
-		     vm_colortypestr_fmt("%s", expr->label), 
-		     vm_colorwarn("= "));
+		     revm_colorfieldstr(typename),
+		     revm_colortypestr_fmt("%s", expr->label), 
+		     revm_colorwarn("= "));
 
-      sz = (taboff < 21 ? 0 : len - vm_color_size(buf) - 20);
+      sz = (taboff < 21 ? 0 : len - revm_color_size(buf) - 20);
       pad = alloca(taboff + sz + 1);
       memset(pad, ' ', taboff + sz);
       pad[taboff + sz] = 0x00;
@@ -430,20 +430,20 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       /* If the type is a structure */
       if (curtype->childs)
 	{
-	  vm_output(buf);
-	  vm_output(vm_colorwarn("{"));
-	  vm_endline();
+	  revm_output(buf);
+	  revm_output(revm_colorwarn("{"));
+	  revm_endline();
 	  revm_expr_printrec(expr->childs, 
-			     taboff + len - vm_color_size(buf) - 8, 
+			     taboff + len - revm_color_size(buf) - 8, 
 			     typeoff);
-	  vm_output(vm_colorwarn("}"));
+	  revm_output(revm_colorwarn("}"));
 	  if (expr->next)
 	    {
-	      vm_output(",\n");
+	      revm_output(",\n");
 	      pad2 = alloca(taboff + 1);
 	      memset(pad2, ' ', taboff);
 	      pad2[taboff] = 0x00;
-	      vm_output(pad2);
+	      revm_output(pad2);
 	    }
 
 	  typeoff += curtype->size;
@@ -454,9 +454,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
       size = alloca(30);
       if (curtype->type == ASPECT_TYPE_RAW)
 	snprintf(size, sizeof(size), "%s%s%s", 
-		 vm_colorwarn("["), 
-		 vm_colornumber("%u", curtype->size), 
-		 vm_colorwarn("]"));
+		 revm_colorwarn("["), 
+		 revm_colornumber("%u", curtype->size), 
+		 revm_colorwarn("]"));
       
       
       // FIXME-XXX: Print up 10 elements of array ...
@@ -467,29 +467,29 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff)
 	  size = alloca(sz);
 	  for (sz = idx = 0; idx < curtype->dimnbr; idx++)
 	    sz += sprintf(size + sz, "%s%s%s", 
-			  vm_colorwarn("["),
-			  vm_colornumber("%u", curtype->elemnbr[idx]),
-			  vm_colorwarn("]"));
+			  revm_colorwarn("["),
+			  revm_colornumber("%u", curtype->elemnbr[idx]),
+			  revm_colorwarn("]"));
 	}
       else
 	*size = 0x00;
       
       /* Format the offset */
       snprintf(offset, sizeof(offset), "@ off(%s)", 
-	       vm_colornumber("%u", typeoff));
+	       revm_colornumber("%u", typeoff));
       
       /* Print field and next padding */
-      vm_output(curtype->isptr ? "*" : "");
-      vm_output(buf);
-      vm_print_obj(expr->value);
-      vm_output(offset);
+      revm_output(curtype->isptr ? "*" : "");
+      revm_output(buf);
+      revm_object_print(expr->value);
+      revm_output(offset);
       if (expr->next)
 	{
-	  vm_output(vm_colorwarn(",\n"));
-	  vm_output(pad);      
+	  revm_output(revm_colorwarn(",\n"));
+	  revm_output(pad);      
 	  typeoff += curtype->size;
 	}
-      vm_endline();
+      revm_endline();
     }
       
   /* Return success  */
@@ -510,12 +510,12 @@ int		revm_expr_print(char *pathname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unknown expression name", -1);
   snprintf(buf, BUFSIZ, "  $%s %s", 
-	   vm_colorfunction(pathname + 1),
-	   vm_colorwarn("= {"));
-  vm_output(buf);
+	   revm_colorfunction(pathname + 1),
+	   revm_colorwarn("= {"));
+  revm_output(buf);
   ret = revm_expr_printrec(expr, strlen(pathname) + 6, 0);
-  vm_output(vm_colorwarn("}"));
-  vm_endline();
+  revm_output(revm_colorwarn("}"));
+  revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -620,11 +620,11 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname + 1;
-  vm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0); 
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0); 
   expr = revm_expr_init(dataname, NULL, datatype, data, datavalue);
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
-  vm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0); 
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0); 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

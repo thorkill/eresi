@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.31 2007-07-17 03:14:42 may Exp $
+** $Id: revm-io.h,v 1.32 2007-07-17 18:11:25 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -43,7 +43,7 @@ char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a1"
+#define	REVM_RELEASE	"a2"
 #define REVM_EDITION	"cam"
 
 /* Unused, feel free to try it, its awesome */
@@ -225,15 +225,15 @@ typedef struct		s_workspace
 /* Hold all the VM flags, sort of global context */
 typedef struct        s_state
 {
-  char                vm_quiet;       /* Quiet mode : 0 or 1 */
-  char                vm_gvl;         /* Graph verbose level : 0 or 1 */
-  char                vm_force;       /* Force mode : 0 or 1 */
-  char                vm_use_regx;    /* Is a global regx available ? */
-  regex_t             vm_regx;        /* Global regx */
-  char                *vm_sregx;      /* Global regx in string format */
-  char                vm_use_alert;   /* Is an alert regx available ? */
-  regex_t	      vm_alert;       /* Alert regx */
-  char                *vm_salert;     /* ALert regx in string format */
+  char                revm_quiet;       /* Quiet mode : 0 or 1 */
+  char                revm_gvl;         /* Graph verbose level : 0 or 1 */
+  char                revm_force;       /* Force mode : 0 or 1 */
+  char                revm_use_regx;    /* Is a global regx available ? */
+  regex_t             revm_regx;        /* Global regx */
+  char                *revm_sregx;      /* Global regx in string format */
+  char                revm_use_alert;   /* Is an alert regx available ? */
+  regex_t	      revm_alert;       /* Alert regx */
+  char                *revm_salert;     /* ALert regx in string format */
   char                *sort;          /* Actual sorting choice */
   char                *input;         /* Implicit File input (-f option) */
   char                *output;        /* Implicit File output (-w option) */
@@ -242,14 +242,14 @@ typedef struct        s_state
 #define       REVM_STATE_INTERACTIVE    2
 #define       REVM_STATE_DEBUGGER	3
 #define	      REVM_STATE_TRACER		4
-  char                vm_mode;        /* Command line, scripting, interactive, debugger ? */
+  char                revm_mode;        /* Command line, scripting, interactive, debugger ? */
 #define	      REVM_SIDE_CLIENT		0
 #define	      REVM_SIDE_SERVER		1
-  char		      vm_side;	      /* Useful for the bi-partite debugger */
-  char		      vm_sourcing;    /* Are we sourcing a script ? */
-  char                vm_stopped;     /* We are in a signal handler */
-  char                vm_shared;      /* Next opened object must be shared */
-  char                vm_net;         /* We are a node connected to the elf network */
+  char		      revm_side;	      /* Useful for the bi-partite debugger */
+  char		      revm_sourcing;    /* Are we sourcing a script ? */
+  char                revm_stopped;     /* We are in a signal handler */
+  char                revm_shared;      /* Next opened object must be shared */
+  char                revm_net;         /* We are a node connected to the elf network */
   u_int               lastid;         /* Last Object ID */
 }		       revmstate_t;
 
@@ -257,41 +257,41 @@ extern int		 elfsh_net_client_count;
 
 
 /* Parsing, Scanning, I/O functions */
-char            *vm_getln();
-int		vm_initio();
-char            **vm_input(int *argc);
-char		*vm_stdinput();
-char		*vm_fifoinput();
-int		vm_flush();
-int		vm_output(char *str);
-int		vm_output_nolog(char *str);
-int		vm_outerr(char *str);
-int		vm_output_bcast(char *str);
-int		vm_stdoutput(char *str);
-int		vm_display_prompt();
-void		vm_ln_handler (char *c);
-void		vm_setinput(revmworkspace_t *j, int fd);
-void		vm_setoutput(revmworkspace_t *j, int fd);
-void		vm_log(char *str);
-int             vm_closelog();
-char		*vm_get_prompt();
-void		vm_set_prompt(void (*func) (char *name, u_int size));
+char            *revm_getln();
+int		revm_initio();
+char            **revm_input(int *argc);
+char		*revm_stdinput();
+char		*revm_fifoinput();
+int		revm_flush();
+int		revm_output(char *str);
+int		revm_output_nolog(char *str);
+int		revm_outerr(char *str);
+int		revm_output_bcast(char *str);
+int		revm_stdoutput(char *str);
+int		revm_display_prompt();
+void		revm_ln_handler (char *c);
+void		revm_setinput(revmworkspace_t *j, int fd);
+void		revm_setoutput(revmworkspace_t *j, int fd);
+void		revm_log(char *str);
+int             revm_closelog();
+char		*revm_get_prompt();
+void		revm_set_prompt(void (*func) (char *name, u_int size));
 
 /* Network related functions */
-int		vm_net_init();
-void		vm_check_net_select(fd_set *sel_sockets, int sock);
-int		vm_select();
-char*		vm_net_input();
-int		vm_net_output(char *buf);
-int		vm_net_recvd();
-int		vm_net_accept();
-int		vm_dump_accept();
-int		vm_socket_del(char *inet_addr);
-int		vm_socket_get_nb_recvd(char *inet);
-int		vm_update_recvd(revmsock_t *socket);
-char*		vm_socket_merge_recvd(revmsock_t *socket);
-int             vm_getmaxfd();
-int             vm_clean_jobs();
+int		revm_net_init();
+void		revm_check_net_select(fd_set *sel_sockets, int sock);
+int		revm_select();
+char*		revm_net_input();
+int		revm_net_output(char *buf);
+int		revm_net_recvd();
+int		revm_net_accept();
+int		revm_dump_accept();
+int		revm_socket_del(char *inet_addr);
+int		revm_socket_get_nb_recvd(char *inet);
+int		revm_update_recvd(revmsock_t *socket);
+char*		revm_socket_merge_recvd(revmsock_t *socket);
+int             revm_getmaxfd();
+int             revm_clean_jobs();
 
 
 #endif

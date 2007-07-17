@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mxatone
 **
-** $Id: etrace.h,v 1.3 2007-07-07 17:30:24 may Exp $
+** $Id: etrace.h,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #ifndef __ETRACE_H_
@@ -32,7 +32,7 @@ int	cmd_cleanup();
 int	cmd_run();
 
 /* Top skeleton functions */
-int	vm_main(int ac, char **av);
+int	revm_main(int ac, char **av);
 
 /* Commands registration */
 void	setup_local_cmdhash();

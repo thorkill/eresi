@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.8 2007-06-07 23:21:57 may Exp $
+** $Id: breakpoints.c,v 1.9 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -81,7 +81,7 @@ int		e2dbg_breakpoint_add(elfsh_Addr addr, u_char flags)
 		      "Cannot resolve parent file for bp", -1);
 
   /* Resolve breakpoint address */
-  name = vm_resolve(file, addr, &off);
+  name = revm_resolve(file, addr, &off);
   if (off)
     snprintf(buf, BUFSIZ, "<%s + " DFMT ">", name, off);
   else
@@ -159,7 +159,7 @@ elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
     }
 
   /* Try to lookup by ID */
-  else if (vm_isnbr(name))
+  else if (revm_isnbr(name))
     {
       bpid = atoi(name);
       bp   = e2dbg_breakpoint_from_id(bpid);
@@ -347,7 +347,7 @@ int		cmd_bp()
 
   /* build argc */
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
-  str = vm_lookup_string(world.curjob->curcmd->param[0]);
+  str = revm_lookup_string(world.curjob->curcmd->param[0]);
 
   fprintf(stderr, "Putting breakpoint on %s \n", str);
 
@@ -362,7 +362,7 @@ int		cmd_bp()
       for (index = 0; index < keynbr; index++)
 	{
 	  cur = hash_get(&e2dbgworld.bp, keys[index]);
-	  name = vm_resolve(world.curjob->current, 
+	  name = revm_resolve(world.curjob->current, 
 			    (elfsh_Addr) cur->addr, &off);
 	  if (off)
 	    snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + " UFMT ">\n", 
@@ -413,7 +413,7 @@ int		cmd_bp()
 		     "Breakpoint insertion failed\n", (-1));
       if (ret >= 0)
 	{
-	  name = vm_resolve(world.curjob->current, addr, &off);
+	  name = revm_resolve(world.curjob->current, addr, &off);
 	  if (!off)
 	    snprintf(logbuf, BUFSIZ - 1, 
 		     " [*] %spoint added at <%s> (" XFMT ")\n\n", 

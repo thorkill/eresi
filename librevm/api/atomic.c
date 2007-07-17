@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
 **
-** $Id: atomic.c,v 1.5 2007-07-14 19:49:50 may Exp $
+** $Id: atomic.c,v 1.6 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "revm.h"
@@ -11,13 +11,13 @@
 
 /* Preconditions on atomic operations set */
 /* Only called by set */
-int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
+int                     revm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  *o1 = vm_lookup_param(world.curjob->curcmd->param[0]);
-  *o2 = vm_lookup_param(world.curjob->curcmd->param[1]);
+  *o1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  *o2 = revm_lookup_param(world.curjob->curcmd->param[1]);
   if (!*o1 || !*o2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup a parameter", -1);
@@ -29,8 +29,8 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Source parameter undefined", -1);
       if ((*o1)->type == ASPECT_TYPE_UNKNOW)
-        vm_convert_object(*o1, (*o2)->type);
-      else if (vm_convert_object(*o2, (*o1)->type) < 0)
+        revm_convert_object(*o1, (*o2)->type);
+      else if (revm_convert_object(*o2, (*o1)->type) < 0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "SET parameters type are not compatible", -1);
     }
@@ -46,7 +46,7 @@ int                     vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 
 /* Preconditions on arithmetic operations */
 /* Used by add, sub, mul, div, mod */
-int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
+int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 {
   elfsh_Addr		src;
   elfsh_Addr		dst;
@@ -69,14 +69,14 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
     o1->type = ASPECT_TYPE_INT;
   else if (o1->type == ASPECT_TYPE_STR)
-    vm_convert_object(o1, ASPECT_TYPE_INT);
+    revm_convert_object(o1, ASPECT_TYPE_INT);
   if ((o1->type != ASPECT_TYPE_INT   &&
        o1->type != ASPECT_TYPE_BYTE  && 
        o1->type != ASPECT_TYPE_SHORT && 
        o1->type != ASPECT_TYPE_CADDR &&
        o1->type != ASPECT_TYPE_DADDR &&
        o1->type != ASPECT_TYPE_LONG) ||
-      (o1->type != o2->type && vm_convert_object(o2, o1->type)))
+      (o1->type != o2->type && revm_convert_object(o2, o1->type)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
@@ -122,10 +122,10 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   res = hash_get(&vars_hash, REVM_VAR_RESULT);
   res->immed_val.ent = dst;
   res->immed = 1;
-  if (!world.state.vm_quiet)
+  if (!world.state.revm_quiet)
     {
       snprintf(buf, sizeof(buf), " $_ = " DFMT "\n\n", dst);
-      vm_output(buf);
+      revm_output(buf);
     }
   
   if (!o2->perm)
@@ -139,7 +139,7 @@ int			vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 
 
 /* API for adding in hash */
-int			vm_hash_add(hash_t *h, revmobj_t *o)
+int			revm_hash_add(hash_t *h, revmobj_t *o)
 {
   elfsh_Addr		elem;
   char			*key;
@@ -158,7 +158,7 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
   /* Some checks */
   if (!o->kname && !o->hname && !o->get_name)
     {
-      if (vm_convert_object(o, ASPECT_TYPE_STR) < 0)
+      if (revm_convert_object(o, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
       key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
@@ -175,7 +175,7 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
     h->type = o->type;
 
   /* Make sure we insert an element of the same type */
-  if (h->type != o->type && vm_convert_object(o, h->type))
+  if (h->type != o->type && revm_convert_object(o, h->type))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Incompatible types between objects", -1);
    
@@ -188,7 +188,7 @@ int			vm_hash_add(hash_t *h, revmobj_t *o)
 
 
 /* API for adding in hash */
-int			vm_list_add(list_t *h, revmobj_t *o)
+int			revm_list_add(list_t *h, revmobj_t *o)
 {
   elfsh_Addr		elem;
   char			*key;
@@ -207,7 +207,7 @@ int			vm_list_add(list_t *h, revmobj_t *o)
   /* Some checks */
   if (!o->kname && !o->hname && !o->get_name)
     {
-      if (vm_convert_object(o, ASPECT_TYPE_STR) < 0)
+      if (revm_convert_object(o, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
       key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
@@ -224,7 +224,7 @@ int			vm_list_add(list_t *h, revmobj_t *o)
     h->type = o->type;
 
   /* Make sure we insert an element of the same type */
-  if (h->type != o->type && vm_convert_object(o, h->type))
+  if (h->type != o->type && revm_convert_object(o, h->type))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Incompatible types between objects", -1);
    
@@ -239,7 +239,7 @@ int			vm_list_add(list_t *h, revmobj_t *o)
 
 
 /* API for deleting in hash */
-int			vm_hash_del(hash_t *h, revmobj_t *o)
+int			revm_hash_del(hash_t *h, revmobj_t *o)
 {
   char			*name;
   hash_t		*src;
@@ -267,7 +267,7 @@ int			vm_hash_del(hash_t *h, revmobj_t *o)
     }
 
   /* Else if it was a hash element */
-  if ((h->type != o->type && vm_convert_object(o, h->type)) || !o->kname ||
+  if ((h->type != o->type && revm_convert_object(o, h->type)) || !o->kname ||
       !hash_get(h, o->kname))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown hash element to remove", -1);
@@ -278,7 +278,7 @@ int			vm_hash_del(hash_t *h, revmobj_t *o)
 
 
 /* API for deleting in hash */
-int			vm_list_del(list_t *h, revmobj_t *o)
+int			revm_list_del(list_t *h, revmobj_t *o)
 {
   char			*name;
   list_t		*src;
@@ -306,7 +306,7 @@ int			vm_list_del(list_t *h, revmobj_t *o)
     }
 
   /* Else if it was a hash element */
-  if ((h->type != o->type && vm_convert_object(o, h->type)) || !o->kname ||
+  if ((h->type != o->type && revm_convert_object(o, h->type)) || !o->kname ||
       !list_get(h, o->kname))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown hash element to remove", -1);
@@ -318,7 +318,7 @@ int			vm_list_del(list_t *h, revmobj_t *o)
 
 
 /* API for setting elements inside hash */
-int			vm_hash_set(char   *table, 
+int			revm_hash_set(char   *table, 
 				    char   *elmname, 
 				    void   *obj,
 				    u_char type)
@@ -345,7 +345,7 @@ int			vm_hash_set(char   *table,
 
 
 /* API for setting elements inside hash */
-int			vm_list_set(char   *table, 
+int			revm_list_set(char   *table, 
 				    char   *elmname, 
 				    void   *obj,
 				    u_char type)
@@ -371,7 +371,7 @@ int			vm_list_set(char   *table,
 
 
 /* o1 = destination, o2 = source */
-int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
+int			revm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
 {
   revmobj_t		*last;
   char                  *str;
@@ -404,10 +404,10 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       else if (o1->hname && (o1->kname || o2->kname))
 	{
 	  if (o1->contype == CONT_HASH)
-	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	  else if (o1->contype == CONT_LIST)
-	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	}
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
@@ -425,10 +425,10 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       else if (o1->hname && (o1->kname || o2->kname))
 	{
 	  if (o1->contype == CONT_HASH)
-	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
 	  else if (o1->contype == CONT_LIST)
-	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	}
       else if (o1->set_obj(o1->parent, val8) < 0)
@@ -444,10 +444,10 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       else if (o1->hname && (o1->kname || o2->kname))
 	{
 	  if (o1->contype == CONT_HASH)
-	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
 	  else if (o1->contype == CONT_LIST)
-	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
 	    
 	}
@@ -464,10 +464,10 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       else if (o1->hname && (o1->kname || o2->kname))
 	{
 	  if (o1->contype == CONT_HASH)
-	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
 	  else if (o1->contype == CONT_LIST)
-	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
 
 	}
@@ -486,10 +486,10 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
       else if (o1->hname && (o1->kname || o2->kname))
 	{
 	  if (o1->contype == CONT_HASH)
-	    vm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) val64, o1->type);
 	  else if (o1->contype == CONT_LIST)
-	    vm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) val64, o1->type);
 	  
 	}
@@ -501,14 +501,14 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
 
     case ASPECT_TYPE_HASH:
       hash = (hash_t *) o2->get_obj(o2->parent);
-      if (vm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
+      if (revm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set hash table variable", -1);
       break;
 
     case ASPECT_TYPE_LIST:
       list = (list_t *) o2->get_obj(o2->parent);
-      if (vm_list_set(NULL, o1->hname, (void *) list, o1->type))
+      if (revm_list_set(NULL, o1->hname, (void *) list, o1->type))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set list variable", -1);
       break;
@@ -526,7 +526,7 @@ int			vm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
 
 
 /* Comparison function */
-int			vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
+int			revm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
 {
   revmobj_t		*last;
   char			*str;
@@ -545,7 +545,7 @@ int			vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
        o1->type != ASPECT_TYPE_STR) ||
       o1->type != o2->type)
     {
-      vm_convert_object(o2, o1->type);
+      revm_convert_object(o2, o1->type);
       if (o2->type != o1->type)
 	{
 	  if (!o2->perm && o2->immed && 
@@ -602,7 +602,7 @@ int			vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
 
 
 /* Test a bit in a bitfield */
-int			vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
+int			revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
 {
   revmobj_t		*last;
   elfsh_Addr	       	val;
@@ -619,7 +619,7 @@ int			vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
        o1->type != ASPECT_TYPE_LONG) ||
       o1->type != o2->type)
     {
-      vm_convert_object(o2, o1->type);
+      revm_convert_object(o2, o1->type);
       if (o2->type != o1->type)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid parameters", -1);

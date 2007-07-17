@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:57:58 2003 mayhem
 **
-** $Id: grammar.c,v 1.15 2007-07-14 19:49:50 may Exp $
+** $Id: grammar.c,v 1.16 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -45,16 +45,16 @@ revmobj_t	*parse_vector(char *param, char *fmt)
                       "Index parser failed", NULL);
 
   /* Grab the vector */
-  dimnbr = vm_vectors_getdimnbr(index);
+  dimnbr = revm_vectors_getdimnbr(index);
   dims = alloca(dimnbr * sizeof(unsigned int));
-  vm_vectors_getdims(index, dims);
+  revm_vectors_getdims(index, dims);
   cur = aspect_vector_get(index);
 
   /* Early sanity checks */
   if (!cur)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unknown requested vector", NULL);
-  if (vm_vector_bad_dims(cur, dims, dimnbr))
+  if (revm_vector_bad_dims(cur, dims, dimnbr))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Requested vector with bad dimensions", NULL);
 
@@ -64,8 +64,8 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   ret->type     = cur->type;
   ret->perm     = 1;
   ret->immed    = 0;
-  ret->get_obj  = (void *) vm_generic_getobj;
-  ret->set_obj  = (void *) vm_long_setobj;
+  ret->get_obj  = (void *) revm_generic_getobj;
+  ret->set_obj  = (void *) revm_long_setobj;
 
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -117,8 +117,8 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   ret->contype  = CONT_HASH;
   ret->perm     = 1;
   ret->immed    = 0;
-  ret->get_obj  = vm_hash_getobj;
-  ret->set_obj  = (void *) (entryname ? vm_long_setobj : NULL);
+  ret->get_obj  = revm_hash_getobj;
+  ret->set_obj  = (void *) (entryname ? revm_long_setobj : NULL);
 
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -172,8 +172,8 @@ revmobj_t	*parse_list(char *param, char *fmt)
   ret->contype  = CONT_LIST;
   ret->perm     = 1;
   ret->immed    = 0;
-  ret->get_obj  = vm_hash_getobj; /* We can keep this one for lists too */
-  ret->set_obj  = (void *) (entryname ? vm_long_setobj : NULL);
+  ret->get_obj  = revm_hash_getobj; /* We can keep this one for lists too */
+  ret->set_obj  = (void *) (entryname ? revm_long_setobj : NULL);
 
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -210,7 +210,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 		      "Parser handling failed", NULL);
   
   // Let's ask the hash table for the current working file
-  robj = vm_lookup_file(obj);
+  robj = revm_lookup_file(obj);
   if (robj == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", NULL);
@@ -225,14 +225,14 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Bad object path", NULL);
   
-  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
+  pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Lookup object 
   o1 = l1->get_obj(robj, &size);
 
   // Lookup index 
-  real_index = vm_lookup_index(index);
+  real_index = revm_lookup_index(index);
   
   //printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n", 
   // real_index, real_index, real_index);
@@ -276,7 +276,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
   pobj->type    = ASPECT_TYPE_CADDR;
-  pobj          = vm_check_object(pobj);
+  pobj          = revm_check_object(pobj);
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
@@ -311,7 +311,7 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 		      "Parser handling failed", NULL);
 
   // Let's ask the hash table for the current working file 
-  robj = vm_lookup_file(obj);
+  robj = revm_lookup_file(obj);
   if (robj == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object",
@@ -336,13 +336,13 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 		      NULL);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
+  pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
   pobj->type    = l2->type;
   pobj->parent  = l1->get_obj(robj, NULL);
-  pobj          = vm_check_object(pobj);
+  pobj          = revm_check_object(pobj);
 
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -410,7 +410,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   
   /* Let's ask the hash table for the current working file */
-  robj = vm_lookup_file(obj);
+  robj = revm_lookup_file(obj);
   if (NULL == robj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
 		   NULL);
@@ -436,11 +436,11 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
 		   NULL);
   
-  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
+  pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
   // Do lookup by index or by name 
-  real_index = (int) vm_lookup_index(index);
+  real_index = (int) revm_lookup_index(index);
   
 #if __DEBUG_LANG__
   printf("LOOKUP4 object index = %s, real_index = %u (signed = %d) \n", 
@@ -466,7 +466,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   if (pobj->parent == NULL)
     {
 
-      if (!strcmp(L1field, "dynamic") && !vm_isnbr(index))
+      if (!strcmp(L1field, "dynamic") && !revm_isnbr(index))
 	real_index = elfsh_get_dynent_by_type(robj, o1, real_index);
       
       isversion = (!strcmp(L1field, "version") ||
@@ -500,7 +500,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   pobj->root     = robj;
 
   // Error checking 
-  pobj = vm_check_object(pobj);
+  pobj = revm_check_object(pobj);
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
@@ -546,7 +546,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 		      "Parser handling failed", NULL);
 
   // Let's ask the hash table for the current working file 
-  robj = vm_lookup_file(obj);
+  robj = revm_lookup_file(obj);
   if (robj == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", 
@@ -576,14 +576,14 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 	       !strcmp(L1field, "verneed"));
 
   // Get indexes 
-  real_index  = (int) vm_lookup_index(index);
-  real_index2 = (int) vm_lookup_index(index2);
+  real_index  = (int) revm_lookup_index(index);
+  real_index2 = (int) revm_lookup_index(index2);
 
 #if 0
  snprintf(logbuf, BUFSIZ - 1, 
 	  "[DEBUG_MODEL] Lookup5_index : index(" UFMT ") rindex(" UFMT ") \n", 
 	  real_index, real_index2);
- vm_output(logbuf);
+ revm_output(logbuf);
 #endif
 
   // Do index sanity 
@@ -609,7 +609,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   o1 = elfsh_get_raw(sect);
 
   // Finally we fill the intermediate object format for the guessed object 
-  pobj = vm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
+  pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
@@ -625,7 +625,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 		      NULL);
 
   // Error checking 
-  pobj = vm_check_object(pobj);
+  pobj = revm_check_object(pobj);
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
@@ -635,7 +635,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 
 
 /** Parse the parameter and fill the revmobj_t */
-revmobj_t		*vm_lookup_param(char *param)
+revmobj_t		*revm_lookup_param(char *param)
 {
   revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
   char			**keys;
@@ -668,15 +668,15 @@ revmobj_t		*vm_lookup_param(char *param)
     }
 
   /* If still not found, try manually inserted types */
-  res = vm_revmobj_lookup(param);
+  res = revm_object_lookup(param);
   if (res)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);  
 
   /* If no good syntax is available, print error if we are not in probe mode */
-  res = vm_lookup_immed(param);
+  res = revm_lookup_immed(param);
   if (!res)
     {
-      vm_badparam(param);
+      revm_badparam(param);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to resolve object", NULL);
     }

@@ -4,7 +4,7 @@
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 ** 
 **
-** $Id: dumpregs.c,v 1.3 2007-05-31 14:45:51 may Exp $
+** $Id: dumpregs.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -17,7 +17,7 @@ void		e2dbg_register_dump(char *name, uint32_t reg)
   elfsh_SAddr	off;
   char		*str;
 
-  str = vm_resolve(world.curjob->current, reg, &off);
+  str = revm_resolve(world.curjob->current, reg, &off);
 
   if (!off)
     printf("\t [%s] %08X (%010u) <%s> \n", 

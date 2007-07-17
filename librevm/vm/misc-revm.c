@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Fri Sep 11 17:26:11 2005 mayhem
 **
-** $Id: misc-revm.c,v 1.7 2007-03-07 16:45:36 thor Exp $
+** $Id: misc-revm.c,v 1.8 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -15,40 +15,40 @@
 
 char buf[BUFSIZ];
 
-void    vm_set_prompt(void (*func) (char *name, u_int size))
+void    revm_set_prompt(void (*func) (char *name, u_int size))
 {
   prompt_token_setup = func;
 }
 
-void	vm_create_default_prompt(char *name, u_int size)
+void	revm_create_default_prompt(char *name, u_int size)
 {
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   vm_colorget("%s", "pspecial", "("),
-	   (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER ?
-	    vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
-	    vm_colorget("%s", "psname" , ELFSH_SNAME)),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", ELFSH_VERSION),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", ELFSH_RELEASE),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", ELFSH_EDITION),
-	   vm_colorget("%s", "pspecial", "@"),
-	   vm_colorget("%s", "psname", world.curjob->name),
-	   vm_colorget("%s", "pspecial", ")"));
-  vm_endline();
+	   revm_colorget("%s", "pspecial", "("),
+	   (world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER ?
+	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
+	    revm_colorget("%s", "psname" , ELFSH_SNAME)),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pversion", ELFSH_VERSION),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "prelease", ELFSH_RELEASE),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pedition", ELFSH_EDITION),
+	   revm_colorget("%s", "pspecial", "@"),
+	   revm_colorget("%s", "psname", world.curjob->name),
+	   revm_colorget("%s", "pspecial", ")"));
+  revm_endline();
 }
 
 /* return the right prompt */
-char	*vm_get_prompt()
+char	*revm_get_prompt()
 {
-  if (world.state.vm_mode == ELFSH_VMSTATE_IMODE ||
-      world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+  if (world.state.revm_mode == ELFSH_VMSTATE_IMODE ||
+      world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
-	vm_set_prompt(vm_create_default_prompt);
+	revm_set_prompt(revm_create_default_prompt);
 
       if (prompt_token_setup)
 	prompt_token_setup(prompt_token, sizeof(prompt_token));
@@ -57,26 +57,26 @@ char	*vm_get_prompt()
 
 #if defined(USE_READLN)
       /* Prompt on readline need some modifications */
-      vm_rl_update_prompt(prompt_token, sizeof(prompt_token));
+      revm_rl_update_prompt(prompt_token, sizeof(prompt_token));
 #endif
 
       return prompt_token;
     }
 
-  if (world.state.vm_mode == ELFSH_VMSTATE_SCRIPT)
+  if (world.state.revm_mode == ELFSH_VMSTATE_SCRIPT)
     return "";
 
   return "UNKNOWN MODE> ";
 }
 
 /* return the project name accordingly to mode */
-char		*vm_get_mode_name()
+char		*revm_modename_get()
 {
   char          *mode;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.vm_mode == ELFSH_VMSTATE_DEBUGGER)
+  if (world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER)
     mode = E2DBG_NAME;
   else
     mode = ELFSH_NAME;
@@ -86,7 +86,7 @@ char		*vm_get_mode_name()
 
 
 /* Our system implementation */
-int		vm_system(char *cmd)
+int		revm_system(char *cmd)
 {
   char		buf[BUFSIZ];
   int		ret;
@@ -102,8 +102,8 @@ int		vm_system(char *cmd)
     snprintf(buf, BUFSIZ, "%s ", cmd);
 
   /* If the user shell is unspecified we use system */
-  nbr = vm_findblanks(cmd);
-  av = vm_doargv(nbr, (u_int *)&argc, cmd);
+  nbr = revm_findblanks(cmd);
+  av = revm_doargv(nbr, (u_int *)&argc, cmd);
   av++;
   if (!fork())
     ret = execvp(av[0], av);
@@ -119,7 +119,7 @@ int		vm_system(char *cmd)
 
 
 /* Decide what to do for exiting depending on the current input */
-void	vm_exit(int err)
+void	revm_exit(int err)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   _exit(err);
@@ -127,7 +127,7 @@ void	vm_exit(int err)
 }
 
 /* Bad parameter handler */
-void	vm_badparam(char *str)
+void	revm_badparam(char *str)
 {
   char	buf[BUFSIZ];
 
@@ -136,13 +136,13 @@ void	vm_badparam(char *str)
   snprintf(buf, BUFSIZ,
 	   "\n [!] Invalid parameters for command %s .::. "
 	   "type 'help' for command list \n\n", str);
-  vm_output(buf);
+  revm_output(buf);
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Unknow command handler */
-void	vm_unknown(char *str)
+void	revm_unknown(char *str)
 {
   char	buf[BUFSIZ];
 
@@ -150,26 +150,26 @@ void	vm_unknown(char *str)
 
   snprintf(buf, BUFSIZ, "\n [!] Unknown command %s .::. "
 	   "type 'help' for command list \n\n", str);
-  vm_output(buf);
+  revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Generic error message handler */
 
-void	vm_error(char *label, char *param)
+void	revm_error(char *label, char *param)
 {
   char	buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(buf, BUFSIZ, " [!] %s [%s] \n\n", label, param);
-  vm_output(buf);
+  revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /* Open the script file */
-int		vm_openscript(char **av)
+int		revm_openscript(char **av)
 {
   int		fd;
   int		idx;
@@ -187,20 +187,20 @@ int		vm_openscript(char **av)
   for (idx = 1; av[idx]; idx++)
     {
       snprintf(actual, sizeof(actual), "%u", idx);
-      new = vm_create_IMMEDSTR(1, strdup(av[idx]));
+      new = revm_create_IMMEDSTR(1, strdup(av[idx]));
  
       hash_add(&vars_hash, strdup(actual), new);
  
     }
 
-  new = vm_create_IMMED(ASPECT_TYPE_INT, 1, idx);
+  new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx);
   hash_add(&vars_hash, ELFSH_ARGVAR, new);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Say if we are in script mode */
-int		vm_testscript(int ac, char **av)
+int		revm_testscript(int ac, char **av)
 {
   int		fd;
   char		buff[30];
@@ -229,7 +229,7 @@ int		vm_testscript(int ac, char **av)
 }
 
 /* Print the banner */
-void		vm_print_banner()
+void		revm_banner_print()
 {
   char		logbuf[BUFSIZ];
 
@@ -237,7 +237,7 @@ void		vm_print_banner()
 
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
-	   vm_get_mode_name(),
+	   revm_modename_get(),
 	   ELFSH_VERSION,
 #if defined(ELFSH32)
 	   "32 bits built",
@@ -248,12 +248,12 @@ void		vm_print_banner()
 #endif
 	   "\t .::. This software is under the General Public License V.2 \n"
 	   "\t .::. Please visit http://www.gnu.org \n\n");
-  vm_output(logbuf);
+  revm_output(logbuf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Print the Unknown buffer */
-char		*vm_build_unknown(char *buf, const char *str, u_long type)
+char		*revm_build_unknown(char *buf, const char *str, u_long type)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -265,7 +265,7 @@ char		*vm_build_unknown(char *buf, const char *str, u_long type)
 
 
 /* Retreive a file object giving its unique ID */
-elfshobj_t	*vm_getfile(u_int id)
+elfshobj_t	*revm_getfile(u_int id)
 {
   elfshobj_t	*cur;
   elfshobj_t	*subcur;
@@ -285,7 +285,7 @@ elfshobj_t	*vm_getfile(u_int id)
 	  if (cur->id == id)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 
-	  if ((subcur = vm_is_depid(cur, id)) != NULL)
+	  if ((subcur = revm_is_depid(cur, id)) != NULL)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
 	}
     }
@@ -300,7 +300,7 @@ elfshobj_t	*vm_getfile(u_int id)
 	  if (cur->id == id)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 
-	  if ((subcur = vm_is_depid(cur, id)) != NULL)
+	  if ((subcur = revm_is_depid(cur, id)) != NULL)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
 	}
     }
@@ -310,7 +310,7 @@ elfshobj_t	*vm_getfile(u_int id)
 }
 
 /* Retreive a module object giving its unique ID */
-revmmod_t	*vm_getmod(u_int index)
+revmmod_t	*revm_getmod(u_int index)
 {
   revmmod_t	*cur;
 
@@ -324,11 +324,11 @@ revmmod_t	*vm_getmod(u_int index)
 }
 
 /* Print error depending on the state of the machine */
-int		vm_doerror(void (*fct)(char *str), char *str)
+int		revm_doerror(void (*fct)(char *str), char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.vm_mode != ELFSH_VMSTATE_CMDLINE || world.state.vm_net)
+  if (world.state.revm_mode != ELFSH_VMSTATE_CMDLINE || world.state.revm_net)
     fct(str);
   else
     {
@@ -341,10 +341,10 @@ int		vm_doerror(void (*fct)(char *str), char *str)
 
 
 /* Change the shell variable */
-int		vm_setshell(char *str)
+int		revm_setshell(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (vm_setvar_str(ELFSH_SHELLVAR, str) < 0)
+  if (revm_setvar_str(ELFSH_SHELLVAR, str) < 0)
    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Cannot modify shell var", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -352,7 +352,7 @@ int		vm_setshell(char *str)
 
 
 /* The internal basename function */
-char		*vm_basename(char *str)
+char		*revm_basename(char *str)
 {
   char		*cur;
   char		*ret;
@@ -372,7 +372,7 @@ char		*vm_basename(char *str)
 
 
 /* Useful to differentiate 0 and a string */
-int	vm_isnbr(char *string)
+int	revm_isnbr(char *string)
 {
   size_t len = strlen(string);
   size_t ii;

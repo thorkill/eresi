@@ -3,14 +3,14 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.15 2007-07-12 17:43:27 may Exp $
+** $Id: access.c,v 1.16 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Get the buffered address from the real virtual address */
-void		*vm_get_raw(void *addr)
+void		*revm_get_raw(void *addr)
 {
   elfshsect_t	*sect;
   elfsh_SAddr	offset;
@@ -38,7 +38,7 @@ void		*vm_get_raw(void *addr)
 
 
 /* Return the requested projections in case of an array */
-int		vm_arrayoff_get(char *field, u_int elmsize, 
+int		revm_arrayoff_get(char *field, u_int elmsize, 
 				u_int dimnbr, u_int *dims)
 {
   char		*strindex;
@@ -98,7 +98,7 @@ int		vm_arrayoff_get(char *field, u_int elmsize,
 
 
 /* Return offset given field name */
-aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field, 
+aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, 
 				 u_int *off)
 {
   aspectype_t	*child;
@@ -121,7 +121,7 @@ aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field,
 	*off = child->off;
 	
 	/* Get offset inside the array if we are accessing an array */
-	index = vm_arrayoff_get(field, child->size, 
+	index = revm_arrayoff_get(field, child->size, 
 				child->dimnbr, child->elemnbr);
 	if (index < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -138,7 +138,7 @@ aspectype_t	*vm_fieldoff_get(aspectype_t *parent, char *field,
 
 
 /* Recursive function to lookup data from its type path */
-static aspectype_t	*vm_field_get(aspectype_t *type, char *param, 
+static aspectype_t	*revm_field_get(aspectype_t *type, char *param, 
 				      void **data)
 {
   char			*str;
@@ -152,7 +152,7 @@ static aspectype_t	*vm_field_get(aspectype_t *type, char *param,
   /* This is the leaf field */
   if (!str)
     {
-      child = vm_fieldoff_get(type, param, &off);
+      child = revm_fieldoff_get(type, param, &off);
       if (off == REVM_INVALID_FIELD)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot find terminal field", NULL);
@@ -164,7 +164,7 @@ static aspectype_t	*vm_field_get(aspectype_t *type, char *param,
   *str = 0x00;
   next = str + 1;
 
-  child = vm_fieldoff_get(type, param, &off);
+  child = revm_fieldoff_get(type, param, &off);
   if (off == REVM_INVALID_FIELD)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find field", NULL);
@@ -174,7 +174,7 @@ static aspectype_t	*vm_field_get(aspectype_t *type, char *param,
   if (child->isptr)
     *data = (void *) *(elfsh_Addr *) *data;
 
-  child = vm_field_get(child, next, data);
+  child = revm_field_get(child, next, data);
   if (!child)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested field", NULL);
@@ -185,7 +185,7 @@ static aspectype_t	*vm_field_get(aspectype_t *type, char *param,
 
 
 /* Lookup _for real_ the path of a complex typed object */
-revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type, 
+revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
 					char *objname, char *objpath)
 {
   revmannot_t	*var;
@@ -211,10 +211,10 @@ revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
   data = (void *) var->addr;
-  data = vm_get_raw(data);
+  data = revm_get_raw(data);
 
   /* Get recursively the leaf type and data pointer */
-  type = vm_field_get(type, objpath, (void **) &data);
+  type = revm_field_get(type, objpath, (void **) &data);
   if (!type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to lookup object", NULL);
@@ -227,39 +227,39 @@ revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type,
   if (type->type == ASPECT_TYPE_STR || type->isptr)
     {
       data = (void *) *(elfsh_Addr *) data;
-      data = vm_get_raw(data);
+      data = revm_get_raw(data);
     }
 
   /* Fill type specific object handlers */
   path->parent   = (void *) data;
   if (type->type == ASPECT_TYPE_STR)
     {
-      path->get_name = (void *) vm_generic_getname;
-      path->set_name = (void *) vm_generic_setname;
+      path->get_name = (void *) revm_generic_getname;
+      path->set_name = (void *) revm_generic_setname;
     }
   if (type->type == ASPECT_TYPE_RAW)
     {
-      path->get_data = (void *) vm_generic_getdata;
-      path->set_data = (void *) vm_generic_setdata;
+      path->get_data = (void *) revm_generic_getdata;
+      path->set_data = (void *) revm_generic_setdata;
     }
-  path->get_obj  = (void *) vm_generic_getobj;
+  path->get_obj  = (void *) revm_generic_getobj;
 
   /* This handler is size dependant */
   switch (type->type)
     {
     case ASPECT_TYPE_BYTE:
-      path->set_obj  = (void *) vm_byte_setobj;
+      path->set_obj  = (void *) revm_byte_setobj;
       break;
     case ASPECT_TYPE_SHORT:
-      path->set_obj  = (void *) vm_short_setobj;
+      path->set_obj  = (void *) revm_short_setobj;
       break;
     case ASPECT_TYPE_INT:
-      path->set_obj  = (void *) vm_int_setobj;
+      path->set_obj  = (void *) revm_int_setobj;
       break;
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     case ASPECT_TYPE_LONG:
-      path->set_obj  = (void *) vm_long_setobj;
+      path->set_obj  = (void *) revm_long_setobj;
       break;
     default:
       break;
@@ -274,7 +274,7 @@ revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type,
 
 
 /* Lookup the path for a complex typed object (using syntactic sugar) */
-revmobj_t	*vm_revmobj_lookup(char *str)
+revmobj_t	*revm_object_lookup(char *str)
 {
   char		filename[ELFSH_MEANING];
   char		typename[ELFSH_MEANING];
@@ -299,7 +299,7 @@ revmobj_t	*vm_revmobj_lookup(char *str)
   str++;
 
   /* Get parent objects */
-  obj = vm_lookup_file(filename);
+  obj = revm_lookup_file(filename);
   if (obj == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested file object", NULL);
@@ -308,7 +308,7 @@ revmobj_t	*vm_revmobj_lookup(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type", NULL);
 
-  path = vm_revmobj_lookup_real(type, objectname, str);
+  path = revm_object_lookup_real(type, objectname, str);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
@@ -320,28 +320,28 @@ revmobj_t	*vm_revmobj_lookup(char *str)
 
 
 
-char		*vm_generic_getname(void *type, void *data)
+char		*revm_generic_getname(void *type, void *data)
 {
   return (data);
 }
 
-int		vm_generic_setname(void *type, void *data, void *newdata)
+int		revm_generic_setname(void *type, void *data, void *newdata)
 {
   strcpy(data, newdata);
   return (0);
 }
 
-elfsh_Addr	vm_generic_getobj(void *data)
+elfsh_Addr	revm_generic_getobj(void *data)
 {
   return (*(elfsh_Addr *) data);
 }
 
-elfsh_Addr	vm_hash_getobj(void *data)
+elfsh_Addr	revm_hash_getobj(void *data)
 {
   return ((elfsh_Addr) data);
 }
 
-int		vm_byte_setobj(void *data, elfsh_Addr value)
+int		revm_byte_setobj(void *data, elfsh_Addr value)
 {
   unsigned char	*byte;
 
@@ -350,7 +350,7 @@ int		vm_byte_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		vm_short_setobj(void *data, elfsh_Addr value)
+int		revm_short_setobj(void *data, elfsh_Addr value)
 {
   u_short	*half;
 
@@ -359,7 +359,7 @@ int		vm_short_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		vm_int_setobj(void *data, elfsh_Addr value)
+int		revm_int_setobj(void *data, elfsh_Addr value)
 {
   unsigned int	*val;
 
@@ -368,7 +368,7 @@ int		vm_int_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		vm_long_setobj(void *data, elfsh_Addr value)
+int		revm_long_setobj(void *data, elfsh_Addr value)
 {
   elfsh_Addr	*dst;
 
@@ -377,12 +377,12 @@ int		vm_long_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-char		*vm_generic_getdata(void *data, int off, int sizelm)
+char		*revm_generic_getdata(void *data, int off, int sizelm)
 {
   return ((char *) data + (off * sizelm));
 }
 
-int		vm_generic_setdata(void *data, int off, void *newdata, 
+int		revm_generic_setdata(void *data, int off, void *newdata, 
 				   int size, int sizelm)
 {
   memcpy((char *) data + (off * sizelm), newdata, size);

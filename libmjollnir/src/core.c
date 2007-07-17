@@ -3,7 +3,7 @@
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.36 2007-06-05 17:56:12 thor Exp $
+** $Id: core.c,v 1.37 2007-07-17 18:11:24 may Exp $
 */
 
 #include "libmjollnir.h"
@@ -121,7 +121,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 		 "Failed to get SHT", -1);
   
   /* Make sure we do what the user desires */
-  /* XXX: should go in elfsh analyse command and use vm_output */
+  /* XXX: should go in elfsh analyse command and use revm_output */
   // Just to make sure we remove previously done analysis if user call
   // analyse a second time
   if (sess->cur->analysed)

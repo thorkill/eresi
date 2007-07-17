@@ -5,14 +5,14 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.9 2007-07-11 19:52:00 may Exp $
+** $Id: edfmt.c,v 1.10 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "revm.h"
 
 char buf[BUFSIZ];
 
-#define VM_EDFMT_VAR_QUEUE_NAME "vm_edfmt_varqueue"
+#define VM_EDFMT_VAR_QUEUE_NAME "revm_edfmt_varqueue"
 
 #define TYPE_MAX_ATTR 500
 #define TYPE_ATTR_LEN 256
@@ -25,7 +25,7 @@ _type->parsed = 1
 hash_t var_queue;
 
 /* Register a type (and transform its name if needed) */
-static int		vm_edfmt_register_type(char *label, 
+static int		revm_edfmt_register_type(char *label, 
 					       char **fields, 
 					       u_int fieldnbr)
 {
@@ -66,22 +66,22 @@ static int		vm_edfmt_register_type(char *label,
     diff:
       snprintf(buf, BUFSIZ - 1, " [!] %s has 2 different versions \n",
 	       nlabel);
-      vm_output(buf);
-      vm_output(" [!] New type has been discarded \n\n");
+      revm_output(buf);
+      revm_output(" [!] New type has been discarded \n\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
     }
 
  add:
   ret = aspect_type_register_real(nlabel, new);
   if (ret == 0)
-    vm_type_hashcreate(nlabel);
+    revm_type_hashcreate(nlabel);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 
 /* Analyze a given uniform type and add it into ERESI type engine */
-static int		vm_edfmt_type_parse(edfmttype_t *type)
+static int		revm_edfmt_type_parse(edfmttype_t *type)
 {
   edfmttype_t		*child = NULL;
   int			index = 0;
@@ -105,7 +105,7 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
     case EDFMT_TYPE_ARRAY:
       if (type->parent)
 	{
-	  vm_edfmt_type_parse(type->parent);
+	  revm_edfmt_type_parse(type->parent);
 
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "elm:%s[%d]", type->parent->name, type->size+1);
@@ -113,18 +113,18 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "array%d%s", type->size+1, type->parent->name);
 	  
-	  vm_edfmt_register_type(arr_pool, tmp_arr, 1);  
+	  revm_edfmt_register_type(arr_pool, tmp_arr, 1);  
 	}
       break;
     case EDFMT_TYPE_PTR:
       if (type->parent)
 	{
-	  vm_edfmt_type_parse(type->parent);
+	  revm_edfmt_type_parse(type->parent);
 
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "elm:%s", type->parent->name);
 	  tmp_arr[index] = strdup(arr_pool);
-	  vm_edfmt_register_type(type->name, tmp_arr, 1);
+	  revm_edfmt_register_type(type->name, tmp_arr, 1);
 	}
       break;
     case EDFMT_TYPE_VOID:
@@ -135,7 +135,7 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
       snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 	       "elm%%%d", type->size);
       tmp_arr[index] = strdup(arr_pool);
-      vm_edfmt_register_type(type->name, tmp_arr, 1);
+      revm_edfmt_register_type(type->name, tmp_arr, 1);
       break;
     case EDFMT_TYPE_STRUCT:
       /* Resolve all dependencies before */
@@ -143,7 +143,7 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	{
 	  /* We try to avoid infinite loops */
 	  if (child->child && child->child != type)
-	    vm_edfmt_type_parse(child->child);
+	    revm_edfmt_type_parse(child->child);
 	}
 
       for (child = type->child, index = 0; 
@@ -160,12 +160,12 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	  tmp_arr[index] = strdup(arr_pool);
 	}
 
-      vm_edfmt_register_type(type->name, tmp_arr, index);
+      revm_edfmt_register_type(type->name, tmp_arr, index);
       break;
     case EDFMT_TYPE_LINK:
       if (type->parent)
 	{
-	  vm_edfmt_type_parse(type->parent);
+	  revm_edfmt_type_parse(type->parent);
 	  if (type->name[0] == '*')
 	    {
 	      typeid = EDFMT_TYPE_PTR;
@@ -173,8 +173,8 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 	    }
 	  else
 	    {
-	      if (vm_type_copy(type->parent->name, type->name) == 0)
-		vm_type_hashcreate(type->name);
+	      if (revm_type_copy(type->parent->name, type->name) == 0)
+		revm_type_hashcreate(type->name);
 	    }
 	}
       break;
@@ -184,7 +184,7 @@ static int		vm_edfmt_type_parse(edfmttype_t *type)
 }
 
 /* Add global type into ERESI engine */
-static int		vm_edfmt_types(edfmttype_t *types)
+static int		revm_edfmt_types(edfmttype_t *types)
 {
   edfmttype_t		*type;
 
@@ -192,13 +192,13 @@ static int		vm_edfmt_types(edfmttype_t *types)
 
   for (type = types; type != NULL; type = type->next)
     if (type->valid)
-      vm_edfmt_type_parse(type);
+      revm_edfmt_type_parse(type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Add global variable into ERESI engine */
-static int		vm_edfmt_inform(edfmtvar_t *var)
+static int		revm_edfmt_inform(edfmtvar_t *var)
 {
   int			index = 0, len;
   char			*str;
@@ -225,13 +225,13 @@ static int		vm_edfmt_inform(edfmtvar_t *var)
   else
     str = var->type->name;
 
-  vm_inform_type(str, buf, buf, NULL, 0);
+  revm_inform_type(str, buf, buf, NULL, 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Add some global variable waiting to be added at the end */
-static int		vm_edfmt_add_var_queue(edfmtvar_t *vars)
+static int		revm_edfmt_add_var_queue(edfmtvar_t *vars)
 {
   edfmtvar_t		*var;
 
@@ -255,7 +255,7 @@ static int		vm_edfmt_add_var_queue(edfmtvar_t *vars)
 }
 
 /* Proceed variable waiting to be added, then clean the hash table */
-static int		vm_edfmt_proceed_var_queue()
+static int		revm_edfmt_proceed_var_queue()
 {
   char			**keys;
   u_int			index;
@@ -273,7 +273,7 @@ static int		vm_edfmt_proceed_var_queue()
 	  var = hash_get(&var_queue, keys[index]);
 
 	  if (var)
-	    vm_edfmt_inform(var);
+	    revm_edfmt_inform(var);
 	}
 
       hash_free_keys(keys);
@@ -285,7 +285,7 @@ static int		vm_edfmt_proceed_var_queue()
 }
 
 /* Iterate each file */
-static int	        vm_edfmt_file(edfmtfile_t *files)
+static int	        revm_edfmt_file(edfmtfile_t *files)
 {
   edfmtfile_t		*file;
 
@@ -293,18 +293,18 @@ static int	        vm_edfmt_file(edfmtfile_t *files)
 
   for (file = files; file != NULL; file = file->next)
     {
-      vm_edfmt_types(file->types);
-      vm_edfmt_add_var_queue(file->vars);
+      revm_edfmt_types(file->types);
+      revm_edfmt_add_var_queue(file->vars);
 
       if (file->child)
-	vm_edfmt_file(file->child);
+	revm_edfmt_file(file->child);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Manage libedfmt and fill inform / types from debuggin informations */
-int			vm_edfmt_parse(elfshobj_t *file)
+int			revm_edfmt_parse(elfshobj_t *file)
 {
   edfmtinfo_t		*info;
 
@@ -321,15 +321,15 @@ int			vm_edfmt_parse(elfshobj_t *file)
   if (info)
     {
       /* Global elements */
-      vm_edfmt_types(info->types);
+      revm_edfmt_types(info->types);
 
-      vm_edfmt_add_var_queue(info->vars);
+      revm_edfmt_add_var_queue(info->vars);
 
       /* Then local file elements */
-      vm_edfmt_file(info->files);
+      revm_edfmt_file(info->files);
 
       /* Add register variables */
-      vm_edfmt_proceed_var_queue();
+      revm_edfmt_proceed_var_queue();
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

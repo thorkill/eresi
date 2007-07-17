@@ -3,14 +3,14 @@
 ** 
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **
-** $Id: job.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: job.c,v 1.3 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Create a new job structure */
-revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
+revmjob_t	*revm_clone_job(char *newname, revmjob_t *job)
 {
   revmjob_t    *new;
   int		i;
@@ -46,7 +46,7 @@ revmjob_t	*vm_clone_job(char *newname, revmjob_t *job)
 
 
 /* Switch of current job */
-void		vm_switch_job(revmjob_t      *job)
+void		revm_switch_job(revmjob_t      *job)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -65,14 +65,14 @@ void		vm_switch_job(revmjob_t      *job)
   job->ws.active = 1;
 
 #if defined(USE_READLN)
-  rl_set_prompt(vm_get_prompt());
+  rl_set_prompt(revm_get_prompt());
 #endif
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Is this workspace valid for switching ? */
-int		vm_valid_workspace(char *name)
+int		revm_valid_workspace(char *name)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!name)
@@ -92,7 +92,7 @@ int		vm_valid_workspace(char *name)
 
 
 /* Is this workspace the current one ? */
-int		vm_own_job(revmjob_t *job)
+int		revm_own_job(revmjob_t *job)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: select.c,v 1.10 2007-05-26 19:46:54 mxatone Exp $
+** $Id: select.c,v 1.11 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -15,7 +15,7 @@
 
 /* Return the greatest socket from the elfsh_net_client_list and sock. */
 #if defined(ELFSHNET)
-int             vm_getmaxfd()
+int             revm_getmaxfd()
 {
   int           index;
   int		keynbr;
@@ -61,7 +61,7 @@ int             vm_getmaxfd()
     }
 
   hash_free_keys(keys);
-  if (world.state.vm_mode == REVM_STATE_DEBUGGER && world.fifofd > ret)
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER && world.fifofd > ret)
     ret = world.fifofd;
   return (ret);
 }
@@ -74,7 +74,7 @@ int             vm_getmaxfd()
 
 /** Add a main socket and client's sockets to the sockets list used by select
 ** and call get_max_fd to get the greatest */
-int		vm_prepare_select(fd_set *sel_sockets)
+int		revm_prepare_select(fd_set *sel_sockets)
 {
   int           index;
   char		**keys;
@@ -124,40 +124,40 @@ int		vm_prepare_select(fd_set *sel_sockets)
     }
 
   /* Also set the debugger fifo if we are in debugger mode */
-  if (world.state.vm_mode == REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
     {
-      if (world.state.vm_side == REVM_SIDE_CLIENT)
+      if (world.state.revm_side == REVM_SIDE_CLIENT)
 	FD_SET(world.fifo_s2c, sel_sockets);
       else
 	FD_SET(world.fifo_c2s, sel_sockets);
     }
 
   hash_free_keys(keys);
-  return (vm_getmaxfd());
+  return (revm_getmaxfd());
 }
 
 
 
 /* Check if we had any network event */
-void			vm_check_net_select(fd_set *sel_sockets, 
+void			revm_check_net_select(fd_set *sel_sockets, 
 					    int cursock)
 {
 #if defined(ELFSHNET)
   // Read net command if any.
-  if (vm_net_recvd(sel_sockets) < 0)
-    fprintf(stderr, "vmnet_select : vm_net_recvd() failed\n");
+  if (revm_net_recvd(sel_sockets) < 0)
+    fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
   
   /* Check remote clients */
   if (FD_ISSET(cursock, sel_sockets))
     {
-      if (vm_net_accept() < 0)
+      if (revm_net_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
     }
   
   /* Check the DUMP connection */
   if (FD_ISSET(dump_world.sock, sel_sockets))
     {
-      if (vm_dump_accept() < 0)
+      if (revm_dump_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
     }
 #endif
@@ -168,7 +168,7 @@ void			vm_check_net_select(fd_set *sel_sockets,
 
 
 /* Set IO to the choosen socket */
-int			vm_socket_getnew()
+int			revm_socket_getnew()
 {
   revmjob_t		*cur;
   int			index;
@@ -196,11 +196,11 @@ int			vm_socket_getnew()
   return (0);
 }
 
-int			vm_preselect_prompt()
+int			revm_preselect_prompt()
 {
   // In the case of normal loop print prompt
-  if (world.state.vm_mode != REVM_STATE_CMDLINE ||
-      world.state.vm_net)
+  if (world.state.revm_mode != REVM_STATE_CMDLINE ||
+      world.state.revm_net)
     {
       if (world.curjob->ws.io.type != REVM_IO_DUMP)
 	{
@@ -213,8 +213,8 @@ int			vm_preselect_prompt()
 		{
 		  /* On the client side, we consider that the prompt is already
 		     returned by the server */
-		  if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
-			world.state.vm_side == REVM_SIDE_CLIENT)
+		  if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
+			world.state.revm_side == REVM_SIDE_CLIENT)
 		    {
 		      rl_on_new_line_with_prompt();
 		      rl_clear_message();
@@ -223,7 +223,7 @@ int			vm_preselect_prompt()
 		  else
 		    rl_forced_update_display();
 
-		  vm_log(vm_get_prompt());
+		  revm_log(revm_get_prompt());
 		}
 	    }
 	  else 
@@ -232,9 +232,9 @@ int			vm_preselect_prompt()
 	      /* Do not display the prompt for the client side 
 		 This part can't use any READLN stuff because
 		 we always be on server */
-	      if (!(world.state.vm_mode == REVM_STATE_DEBUGGER &&
-		    world.state.vm_side == REVM_SIDE_CLIENT))
-		vm_display_prompt();
+	      if (!(world.state.revm_mode == REVM_STATE_DEBUGGER &&
+		    world.state.revm_side == REVM_SIDE_CLIENT))
+		revm_display_prompt();
 	    }
 	}
     }
@@ -244,7 +244,7 @@ int			vm_preselect_prompt()
 
 
 /* Wait for all input */
-int                     vm_select()
+int                     revm_select()
 {
   fd_set		sel_sockets;
   int                   max_fd;
@@ -258,21 +258,21 @@ int                     vm_select()
   init = hash_get(&world.jobs, "net_init");
 
   /* Flush pending outputs */
-  vm_flush();
+  revm_flush();
 
   /* In case of not already handle data */
-  if (vm_socket_getnew())
+  if (revm_socket_getnew())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 
   /* clean jobs hash table */
-  vm_clean_jobs();
+  revm_clean_jobs();
 
   do
     {
       FD_ZERO(&sel_sockets);
 
 #if defined(ELFSHNET)
-      if (world.state.vm_net && init)
+      if (world.state.revm_net && init)
         {
           FD_SET(init->ws.sock.socket, &sel_sockets);
 	  FD_SET(dump_world.sock, &sel_sockets);
@@ -280,10 +280,10 @@ int                     vm_select()
 #endif
 
       // Prepare for the select() call
-      max_fd = vm_prepare_select(&sel_sockets);
+      max_fd = revm_prepare_select(&sel_sockets);
 
       /* Display the prompt */
-      vm_preselect_prompt();
+      revm_preselect_prompt();
       
     retry:
       err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
@@ -295,12 +295,12 @@ int                     vm_select()
 
       /* Select which command will be proceded */
 #if defined(ELFSHNET)
-      if (world.state.vm_net)
+      if (world.state.revm_net)
 	{
 	  if (init)
-	    vm_check_net_select(&sel_sockets, init->ws.sock.socket);
+	    revm_check_net_select(&sel_sockets, init->ws.sock.socket);
 	  
-	  if (vm_socket_getnew())
+	  if (revm_socket_getnew())
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 	  
 #if __DEBUG_NETWORK__
@@ -312,11 +312,11 @@ int                     vm_select()
 #endif
       
       /* Come back now if we are in command line */
-      if (world.state.vm_mode == REVM_STATE_CMDLINE)
+      if (world.state.revm_mode == REVM_STATE_CMDLINE)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 
       /* If we are in interactive mode .. */
-      world.curjob = vm_localjob_get();
+      world.curjob = revm_localjob_get();
       if (!world.curjob)
 	{
 	  //fprintf(stderr, "Entering NOCURJOB condition .. \n");
@@ -325,23 +325,23 @@ int                     vm_select()
 	  
       /* If the event appeared on the debugger FIFO, 
 	 change the input file descriptor for it */
-      if (world.state.vm_mode == REVM_STATE_DEBUGGER)
+      if (world.state.revm_mode == REVM_STATE_DEBUGGER)
 	{
-	  fifofd = (world.state.vm_side == REVM_SIDE_CLIENT ?
+	  fifofd = (world.state.revm_side == REVM_SIDE_CLIENT ?
 		    world.fifo_s2c : world.fifo_c2s);
 	  
 	  if (FD_ISSET(fifofd, &sel_sockets))
 	    {
 	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
-	      world.curjob->ws.io.input = vm_fifoinput;
+	      world.curjob->ws.io.input = revm_fifoinput;
 	      
 	      /* Debug only */
 	      /*
-	      if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
-		  world.state.vm_side == REVM_SIDE_CLIENT)
+	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+		  world.state.revm_side == REVM_SIDE_CLIENT)
 		fprintf(stderr, "(client) Event appeared on fifo \n");
-	      else if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
-		       world.state.vm_side == REVM_SIDE_SERVER)
+	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+		       world.state.revm_side == REVM_SIDE_SERVER)
 		fprintf(stderr, "(server) Event appeared on fifo \n");
 	      */
 
@@ -349,7 +349,7 @@ int                     vm_select()
 	}
 	  
 #if defined (USE_READLN)
-      if (world.state.vm_side == REVM_SIDE_CLIENT && FD_ISSET(0, &sel_sockets))
+      if (world.state.revm_side == REVM_SIDE_CLIENT && FD_ISSET(0, &sel_sockets))
 	readln_prompt_restore();
 #endif
 

@@ -8,14 +8,14 @@
 ** Started on  Mon Feb 24 12:21:12 2003 mayhem
 **
 **
-** $Id: objects.c,v 1.8 2007-03-07 16:45:36 thor Exp $
+** $Id: objects.c,v 1.9 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Create constant object : Perm == 1 if the object is writable */
-revmobj_t	*vm_create_IMMED(char type, char perm, u_int val)
+revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
 {
   revmobj_t	*new;
 
@@ -37,7 +37,7 @@ revmobj_t	*vm_create_IMMED(char type, char perm, u_int val)
 }
 
 /* Create constant object */
-revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
 
@@ -55,7 +55,7 @@ revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val)
 
 
 /* Create constant object */
-revmobj_t	*vm_create_CADDR(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
 
@@ -72,7 +72,7 @@ revmobj_t	*vm_create_CADDR(char perm, elfsh_Addr val)
 }
 
 /* Create constant object */
-revmobj_t	*vm_create_DADDR(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
 
@@ -90,7 +90,7 @@ revmobj_t	*vm_create_DADDR(char perm, elfsh_Addr val)
 
 
 /* Create constant object */
-revmobj_t	*vm_create_SHORT(char perm, u_short val)
+revmobj_t	*revm_create_SHORT(char perm, u_short val)
 {
   revmobj_t	*new;
 
@@ -109,7 +109,7 @@ revmobj_t	*vm_create_SHORT(char perm, u_short val)
 }
 
 /* Create constant object */
-revmobj_t	*vm_create_BYTE(char perm, u_char val)
+revmobj_t	*revm_create_BYTE(char perm, u_char val)
 {
   revmobj_t	*new;
 
@@ -129,7 +129,7 @@ revmobj_t	*vm_create_BYTE(char perm, u_char val)
 
 
 /* Create constant string object */
-revmobj_t	*vm_create_IMMEDSTR(char perm, char *str)
+revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
 {
   revmobj_t	*new;
 
@@ -147,7 +147,7 @@ revmobj_t	*vm_create_IMMEDSTR(char perm, char *str)
 }
 
 /* Create a redirection abstract object */
-elfshredir_t	*vm_create_REDIR(u_char type, char *sname, char *dname, 
+elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
 				 elfsh_Addr saddr, elfsh_Addr daddr)
 {
   elfshredir_t	*redir;
@@ -166,7 +166,7 @@ elfshredir_t	*vm_create_REDIR(u_char type, char *sname, char *dname,
 
 
 /* Now comes Level 1 objects hash functions */
-revmL1_t	*vm_create_L1ENT(void	*get_obj,
+revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_obj_idx,
 				 void	*get_obj_nam,
 				 hash_t	*l2_hash,
@@ -193,7 +193,7 @@ revmL1_t	*vm_create_L1ENT(void	*get_obj,
 
 
 /* Now comes Level 2 objects hash functions */
-revmL2_t	*vm_create_L2ENT(void	*get_obj,
+revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*set_obj,
 				 char	type,
 				 void	*get_name,
@@ -221,7 +221,7 @@ revmL2_t	*vm_create_L2ENT(void	*get_obj,
 
 
 /* The high level function for object conversion */
-int		vm_convert_object(revmobj_t *obj, u_int objtype)
+int		revm_convert_object(revmobj_t *obj, u_int objtype)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -244,21 +244,21 @@ int		vm_convert_object(revmobj_t *obj, u_int objtype)
   switch (objtype)
     {
     case ASPECT_TYPE_STR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2str(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2str(obj));
     case ASPECT_TYPE_CADDR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2caddr(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2caddr(obj));
     case ASPECT_TYPE_DADDR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2daddr(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2daddr(obj));
     case ASPECT_TYPE_LONG:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2long(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2long(obj));
     case ASPECT_TYPE_INT:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2int(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2int(obj));
     case ASPECT_TYPE_BYTE:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2byte(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2byte(obj));
     case ASPECT_TYPE_SHORT:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2short(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2short(obj));
     case ASPECT_TYPE_RAW:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, vm_convert2raw(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2raw(obj));
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Destination type unknown", -1);
@@ -268,7 +268,7 @@ int		vm_convert_object(revmobj_t *obj, u_int objtype)
 
 
 /* Verify an object sanity */
-revmobj_t		*vm_check_object(revmobj_t *pobj)
+revmobj_t		*revm_check_object(revmobj_t *pobj)
 {
   char			buf[BUFSIZ];
 
@@ -306,7 +306,7 @@ revmobj_t		*vm_check_object(revmobj_t *pobj)
       break;
     default:
       snprintf(buf, BUFSIZ, "[DEBUG_OBJECT] Failed to handle unknown object type = %u \n", pobj->type);
-      vm_output(buf);
+      revm_output(buf);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown object type", NULL);
     }
@@ -315,7 +315,7 @@ revmobj_t		*vm_check_object(revmobj_t *pobj)
 
 
 /* Destroy an object */
-void		vm_destroy_object(revmobj_t *pobj)
+void		revm_destroy_object(revmobj_t *pobj)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (pobj->type == ASPECT_TYPE_STR && pobj->immed)
@@ -325,7 +325,7 @@ void		vm_destroy_object(revmobj_t *pobj)
 }
 
 /* Destroy an object */
-revmobj_t	 *vm_copy_object(revmobj_t *pobj)
+revmobj_t	 *revm_copy_object(revmobj_t *pobj)
 {
   revmobj_t	*copy;
   char		*str;

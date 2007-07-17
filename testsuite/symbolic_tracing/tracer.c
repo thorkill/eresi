@@ -17,7 +17,7 @@ int		main(int argc, char **argv)
   char		*mainnode[] = {"mainnodes", NULL};
   char		logbuf[BUFSIZ];
 
-  vm_setup_hashtables();
+  revm_tables_setup();
 
   /* Map host file */
   host = elfsh_map_obj(HOST_FILE);
@@ -28,13 +28,13 @@ int		main(int argc, char **argv)
   world.curjob->current = host;
 
   /* Parse debugging informations */
-  vm_edfmt_parse(host);
+  revm_edfmt_parse(host);
 
   /* Init hash dep */
-  vm_load_init_dephash(host, host->name);
+  revm_load_init_dephash(host, host->name);
 
   /* Load dependences */
-  vm_load_enumdep(host);
+  revm_load_enumdep(host);
 
   /* global scope */
   traces_add(host, "main", NULL);

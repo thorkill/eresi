@@ -3,19 +3,19 @@
 ** 
 ** Started on  Sat Jan 25 11:20:49 2003 mayhem
 **
-** $Id: doswitch.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: doswitch.c,v 1.3 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "revm.h"
 
 /* Do the switch */
-int		vm_doswitch(int nbr)
+int		revm_doswitch(int nbr)
 {
   elfshobj_t	*actual; 
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  actual = (nbr ? vm_getfile(nbr) : 
+  actual = (nbr ? revm_getfile(nbr) : 
 	    hash_get(&file_hash, world.curjob->curcmd->param[0]));
 					     
   if (actual == NULL)

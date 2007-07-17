@@ -5,7 +5,7 @@
 **
 ** Started September 16 03:11:04 2005 mayhem
 **
-** $Id: log.c,v 1.4 2007-05-11 10:48:29 may Exp $
+** $Id: log.c,v 1.5 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -97,7 +97,7 @@ static void		logtofile(char *str)
 
 
 /* Log a line */
-void			vm_log(char *str)
+void			revm_log(char *str)
 {
   int			check = 0, size = 0;
   char			*tmp = NULL;
@@ -153,15 +153,15 @@ void			vm_log(char *str)
       world.curjob->ws.screen.head = world.curjob->ws.screen.tail =
 	world.curjob->ws.screen.buf;
 
-      /* Refill the screen using vm_log() */
+      /* Refill the screen using revm_log() */
       if (t_head < t_tail)
-	vm_log(t_head);
+	revm_log(t_head);
       else
 	{
 	  snprintf(buf, t_end - t_head, "%s", t_head);
-	  vm_log(buf);
+	  revm_log(buf);
 	  snprintf(buf, BUFSIZ * 4 - 1, "%s", t_tail);
-	  vm_log(buf);
+	  revm_log(buf);
 	}
       
       /* Free at the end */
@@ -230,14 +230,14 @@ void			vm_log(char *str)
 
 
 /* Stop logging */
-int			vm_closelog()
+int			revm_closelog()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   XCLOSE(world.curjob->ws.logfd, -1);
 
-  if (!world.state.vm_quiet)
-    vm_output(" [*] Saved logging session \n\n");
+  if (!world.state.revm_quiet)
+    revm_output(" [*] Saved logging session \n\n");
   world.curjob->ws.state &= (~REVM_JOB_LOGGED);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

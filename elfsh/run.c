@@ -3,7 +3,7 @@
 ** 
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 **
-** $Id: run.c,v 1.5 2007-03-07 16:45:34 thor Exp $
+** $Id: run.c,v 1.6 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "elfsh.h"
@@ -30,7 +30,7 @@ int		cmd_run()
 
 
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 

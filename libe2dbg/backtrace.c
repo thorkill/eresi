@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: backtrace.c,v 1.3 2007-03-14 12:51:45 may Exp $
+** $Id: backtrace.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -58,7 +58,7 @@ int		e2dbg_bt()
       /* Resolve and print current trace frame */
       if (i == 0)
 	ret = *(e2dbg_getpc());
-      name = vm_resolve(world.curjob->current, (elfsh_Addr) ret, &off);
+      name = revm_resolve(world.curjob->current, (elfsh_Addr) ret, &off);
       if (!name)
 	name = "?";
 
@@ -68,7 +68,7 @@ int		e2dbg_bt()
 	  snprintf(logbuf, BUFSIZ - 1, "%u", 
 		   (unsigned int) e2dbgworld.stoppedthread->tid);
 	  t = hash_get(&e2dbgworld.threads, logbuf);
-	  name2 = vm_resolve(world.curjob->current, (elfsh_Addr) t->entry, &off2);
+	  name2 = revm_resolve(world.curjob->current, (elfsh_Addr) t->entry, &off2);
 	  if (name2)
 	    {
 	      if (off2)

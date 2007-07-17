@@ -6,7 +6,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 mayhem
 ** Updated on  Mon Mar  5 17:26:11 2007 mayhem
 **
-** $Id: prompt.c,v 1.5 2007-07-07 17:30:24 may Exp $
+** $Id: prompt.c,v 1.6 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -15,40 +15,40 @@
 //char buf[BUFSIZ];
 
 
-void    vm_set_prompt(void (*func) (char *name, u_int size))
+void    revm_set_prompt(void (*func) (char *name, u_int size))
 {
   prompt_token_setup = func;
 }
 
-void	vm_create_default_prompt(char *name, u_int size)
+void	revm_create_default_prompt(char *name, u_int size)
 {
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   vm_colorget("%s", "pspecial", "("),
-	   (world.state.vm_mode == REVM_STATE_DEBUGGER ?
-	    vm_colorget("%s", "psname" , E2DBG_ARGV0)    :
-	    vm_colorget("%s", "psname" , REVM_NAME)),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", REVM_VERSION),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", REVM_RELEASE),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", REVM_EDITION),
-	   vm_colorget("%s", "pspecial", "@"),
-	   vm_colorget("%s", "psname", world.curjob->ws.name),
-	   vm_colorget("%s", "pspecial", ")"));
-  vm_endline();
+	   revm_colorget("%s", "pspecial", "("),
+	   (world.state.revm_mode == REVM_STATE_DEBUGGER ?
+	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
+	    revm_colorget("%s", "psname" , REVM_NAME)),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pversion", REVM_VERSION),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "prelease", REVM_RELEASE),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pedition", REVM_EDITION),
+	   revm_colorget("%s", "pspecial", "@"),
+	   revm_colorget("%s", "psname", world.curjob->ws.name),
+	   revm_colorget("%s", "pspecial", ")"));
+  revm_endline();
 }
 
 /* return the right prompt */
-char*	vm_get_prompt()
+char*	revm_get_prompt()
 {
-  if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
-      world.state.vm_mode == REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+      world.state.revm_mode == REVM_STATE_DEBUGGER)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
-	vm_set_prompt(vm_create_default_prompt);
+	revm_set_prompt(revm_create_default_prompt);
 
       if (prompt_token_setup)
 	prompt_token_setup(prompt_token, sizeof(prompt_token));
@@ -63,7 +63,7 @@ char*	vm_get_prompt()
       return prompt_token;
     }
 
-  if (world.state.vm_mode == REVM_STATE_SCRIPT)
+  if (world.state.revm_mode == REVM_STATE_SCRIPT)
     return "";
 
   return "UNKNOWN MODE> ";
@@ -71,17 +71,17 @@ char*	vm_get_prompt()
 
 
 /* Display the prompt */
-int		vm_display_prompt()
+int		revm_display_prompt()
 {
   char		*buf;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  buf = ((world.state.vm_mode == REVM_STATE_INTERACTIVE ||
-	  world.state.vm_mode == REVM_STATE_DEBUGGER ||
-	  (world.state.vm_net && world.curjob->ws.io.type != REVM_IO_STD)) ?
-	 vm_get_prompt() : "");
-  vm_output(buf);
+  buf = ((world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+	  world.state.revm_mode == REVM_STATE_DEBUGGER ||
+	  (world.state.revm_net && world.curjob->ws.io.type != REVM_IO_STD)) ?
+	 revm_get_prompt() : "");
+  revm_output(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

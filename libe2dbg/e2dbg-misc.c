@@ -6,7 +6,7 @@
 ** Started on  Fri Jun 05 15:21:56 2005 mayhem
 **
 **
-** $Id: e2dbg-misc.c,v 1.6 2007-04-02 18:00:31 may Exp $
+** $Id: e2dbg-misc.c,v 1.7 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -44,35 +44,11 @@ elfshobj_t      *e2dbg_get_parent_object(elfsh_Addr addr)
 }
 
 
-/* Concatenate all parameters and return a single string */
-char	*e2dbg_get_string(char **params)
-{
-  char	buff[BUFSIZ];
-  int	idx;
-  int	len;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  for (len = idx = 0; params[idx]; idx++)
-    len += snprintf(buff + len, BUFSIZ - len, "%s%s", 
-		    (idx ? " " : ""), params[idx]);
-   
-
-  if (len)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		       strdup(buff));
- 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Empty display", NULL);
-}
-
-
-
 /* Realize the output */
 /* XXX: Need a vector */
 int		e2dbg_output(char *str)
 {
-  //vm_output(str);
+  //revm_output(str);
   fprintf(stderr, str);
   return (0);
 }

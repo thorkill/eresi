@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 **
-** $Id: e2dbg.h,v 1.21 2007-05-31 14:45:51 may Exp $
+** $Id: e2dbg.h,v 1.22 2007-07-17 18:11:24 may Exp $
 **
 */
 #ifndef __E2DBG_H_
@@ -17,7 +17,7 @@
 #endif
 
 /* Top skeleton functions */
-int	vm_main(int ac, char **av);
+int	revm_main(int ac, char **av);
 
 #endif /* __E2DBG_H_ */
 

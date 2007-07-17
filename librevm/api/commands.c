@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 24 15:52:06 2003 mayhem
 ** Last update Thu Mar 11 14:39:06 2004 mayhem
 **
-** $Id: commands.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: commands.c,v 1.3 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "revm.h"
@@ -12,7 +12,7 @@
 
 
 /* Create the cmdhandler passed to hash_add() */
-revmcmd_t	*vm_create_CMDENT(int  (*exec)(void *file, void *av),
+revmcmd_t	*revm_create_CMDENT(int  (*exec)(void *file, void *av),
 				  int  (*reg)(u_int index, u_int argc, char **argv),
 				  int  flags,
 				  char *help)
@@ -31,7 +31,7 @@ revmcmd_t	*vm_create_CMDENT(int  (*exec)(void *file, void *av),
 
 
 /* Change the handler for an ELFsh command */
-int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
+int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 {
   hashent_t	*ent;
   revmcmd_t	*act;
@@ -44,7 +44,7 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
     {
       snprintf(logbuf, BUFSIZ - 1,
 	       "\n [!] Unknown command %s \n\n", world.curjob->curcmd->param[0]);
-      vm_output(logbuf);
+      revm_output(logbuf);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Supplied handler invalid", (-1));
     }
@@ -59,17 +59,17 @@ int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur)
 }
 
 /* Add a command */
-int		vm_addcmd(char *cmd, void *exec, void *reg, u_int needfile, 
+int		revm_command_add(char *cmd, void *exec, void *reg, u_int needfile, 
 			  char *help)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  hash_add(&cmd_hash, cmd , (void *) vm_create_CMDENT(exec, reg, needfile, help));
+  hash_add(&cmd_hash, cmd , (void *) revm_create_CMDENT(exec, reg, needfile, help));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Delete a command */
-int		vm_delcmd(char *cmd)
+int		revm_command_del(char *cmd)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

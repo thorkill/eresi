@@ -3,11 +3,11 @@
 ** 
 ** Contain printing functions for debug purpose only
 **
-** FIXME: needs to use vm_output() and not printf inside elfsh.
+** FIXME: needs to use revm_output() and not printf inside elfsh.
 **
 ** Started on  Tue Jan 02 04:04:18 2006 mayhem
 **
-** $Id: display.c,v 1.12 2007-04-09 15:18:05 thor Exp $
+** $Id: display.c,v 1.13 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libmjollnir.h"

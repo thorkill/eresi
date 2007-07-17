@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
-** $Id: librevm-color.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: librevm-color.h,v 1.3 2007-07-17 18:11:25 may Exp $
 **
 */
 
@@ -55,35 +55,35 @@ typedef struct          s_color
 extern u_int		nocolor;
 
 /* Color functions */
-color_t         *vm_colortable(char *t, char *te);
-int             vm_colorpattern(color_t *t, char *te, char *p);
-color_t         *vm_colorblank();
-char            *vm_colorget(char *p, char *ty, void *o);
-void            vm_endline();
+color_t         *revm_colortable(char *t, char *te);
+int             revm_colorpattern(color_t *t, char *te, char *p);
+color_t         *revm_colorblank();
+char            *revm_colorget(char *p, char *ty, void *o);
+void            revm_endline();
 
 /* Simple */
-char		*vm_colorinstr(char *text);
-char            *vm_colorstr(char *t);
-char            *vm_colorfieldstr(char *t);
-char            *vm_colortypestr(char *t);
-char		*vm_colorend(char *text); 
-char		*vm_colorwarn(char *text);
-char 		*vm_colorfunction(char *text);
-char 		*vm_colorfilename(char *text);
+char		*revm_colorinstr(char *text);
+char            *revm_colorstr(char *t);
+char            *revm_colorfieldstr(char *t);
+char            *revm_colortypestr(char *t);
+char		*revm_colorend(char *text); 
+char		*revm_colorwarn(char *text);
+char 		*revm_colorfunction(char *text);
+char 		*revm_colorfilename(char *text);
 
 /* Advanced */
-char 		*vm_coloradv(char *ty, char *p, char *te);
-char		*vm_colorinstr_fmt(char* p, char *t);
-char            *vm_coloraddress(char *p, elfsh_Addr a);
-char            *vm_colornumber(char *p, u_int n);
-char            *vm_colorstr_fmt(char *p, char *t);
-char            *vm_colorfieldstr_fmt(char *p, char *t);
-char            *vm_colortypestr_fmt(char *p, char *t);
-char		*vm_colorwarn_fmt(char *pattern, char *text);
+char 		*revm_coloradv(char *ty, char *p, char *te);
+char		*revm_colorinstr_fmt(char* p, char *t);
+char            *revm_coloraddress(char *p, elfsh_Addr a);
+char            *revm_colornumber(char *p, u_int n);
+char            *revm_colorstr_fmt(char *p, char *t);
+char            *revm_colorfieldstr_fmt(char *p, char *t);
+char            *revm_colortypestr_fmt(char *p, char *t);
+char		*revm_colorwarn_fmt(char *pattern, char *text);
 
 /* Misc */
-int		vm_color_count(char *string);
-int		vm_color_size(char *string);
+int		revm_color_count(char *string);
+int		revm_color_size(char *string);
 
 /* Readline functions */
 int		readln_prompt_update(char *ptr, int size);

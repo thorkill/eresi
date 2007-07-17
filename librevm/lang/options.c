@@ -5,14 +5,14 @@
 ** 
 ** Started on  Fri Nov  2 15:17:02 2001 mayhem
 **
-** $Id: options.c,v 1.5 2007-07-17 03:14:42 may Exp $
+** $Id: options.c,v 1.6 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Read the input file parameter */
-int		vm_getoption(u_int index, u_int argc, char **argv)
+int		revm_getoption(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -25,7 +25,7 @@ int		vm_getoption(u_int index, u_int argc, char **argv)
 }
 
 /* Read the input file parameter */
-int		vm_getinput(u_int index, u_int argc, char **argv)
+int		revm_getinput(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -38,7 +38,7 @@ int		vm_getinput(u_int index, u_int argc, char **argv)
 }
 
 /* Read the output file parameter */
-int		vm_getoutput(u_int index, u_int argc, char **argv)
+int		revm_getoutput(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -51,7 +51,7 @@ int		vm_getoutput(u_int index, u_int argc, char **argv)
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
-int		vm_getoption2(u_int index, u_int argc, char **argv)
+int		revm_getoption2(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -66,7 +66,7 @@ int		vm_getoption2(u_int index, u_int argc, char **argv)
 }
 
 /* Activate a 2-non-regx-mandatory-parameters option */
-int		vm_getoption3(u_int index, u_int argc, char **argv)
+int		revm_getoption3(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -82,7 +82,7 @@ int		vm_getoption3(u_int index, u_int argc, char **argv)
 }
 
 /* Activate a non-mandatory-regex-parameter option */
-int		vm_getregxoption(u_int index, u_int argc, char **argv)
+int		revm_getregxoption(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -101,7 +101,7 @@ int		vm_getregxoption(u_int index, u_int argc, char **argv)
 }
 
 /* Fetch parameters until we find NULL or something starting by '-' */
-int		vm_getvarparams(u_int index, u_int argc, char **argv)
+int		revm_getvarparams(u_int index, u_int argc, char **argv)
 {
   u_int		idx;
 
@@ -111,8 +111,8 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
        idx++)
     {
       /* Add the '-' check which was not here and create bugs with cmdline */
-      if ((world.state.vm_mode == REVM_STATE_CMDLINE 
-	   || world.state.vm_mode == REVM_STATE_TRACER)
+      if ((world.state.revm_mode == REVM_STATE_CMDLINE 
+	   || world.state.revm_mode == REVM_STATE_TRACER)
 	  && argv[index + idx + 1] && argv[index + idx + 1][0] == '-')
 	break;
 
@@ -124,7 +124,7 @@ int		vm_getvarparams(u_int index, u_int argc, char **argv)
 }
 
 /* Format the input of a loop */
-int		vm_getforparams(u_int index, u_int argc, char **argv)
+int		revm_getforparams(u_int index, u_int argc, char **argv)
 {
   char		*p;
   char		flag;
@@ -162,12 +162,12 @@ int		vm_getforparams(u_int index, u_int argc, char **argv)
   /* Set the current and maximum indexes to uninitialized */
   world.curjob->curcmd->curidx = REVM_IDX_UNINIT;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		vm_getvarparams(index, argc, argv));
+		revm_getvarparams(index, argc, argv));
 }
 
 
 /* Format the input of a match */
-int		vm_getmatchparams(u_int index, u_int argc, char **argv)
+int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (argc - index != 3)
@@ -175,14 +175,14 @@ int		vm_getmatchparams(u_int index, u_int argc, char **argv)
   if (strcmp(argv[index + 2], CMD_PARAM_INTO))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		vm_getoption2(index, argc, argv));
+		revm_getoption2(index, argc, argv));
 }
 
 
 
 
 /* Add an entry to the requested dump list */
-static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
+static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
 {
   char		*off;							
   int		idx = index;
@@ -232,18 +232,18 @@ static int      vm_add2list(char outtype, u_int index, int argc, char **argv)
 }
 
 /* Add an DISASM typed entry */
-int		vm_getdisasm(u_int index, u_int argc, char **argv)
+int		revm_getdisasm(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     vm_add2list(REVM_VIEW_DISASM, index, argc, argv));
+		     revm_add2list(REVM_VIEW_DISASM, index, argc, argv));
 }
 
 /* Add an HEXA typed entry */
-int		vm_gethexa(u_int index, u_int argc, char **argv)
+int		revm_gethexa(u_int index, u_int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     vm_add2list(REVM_VIEW_HEX, index, argc, argv));
+		     revm_add2list(REVM_VIEW_HEX, index, argc, argv));
 }

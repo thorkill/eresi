@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: linkmap.c,v 1.5 2007-06-08 18:46:44 may Exp $
+** $Id: linkmap.c,v 1.6 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -36,14 +36,14 @@ int			e2dbg_linkmap_load(char *name)
 #endif
 
   e2dbg_setup_hooks();
-  vm_config();
+  revm_config();
 
   /* Load debugged file */
   if (name)
     {
 
       /* No need to fill ET_EXEC base addr */
-      if (!vm_is_loaded(name) && vm_load_file(name, 0, NULL) < 0)
+      if (!revm_is_loaded(name) && revm_file_load(name, 0, NULL) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot load file", -1);
       
@@ -60,7 +60,7 @@ int			e2dbg_linkmap_load(char *name)
 #endif
   
   /* Switch to obj 1 */
-  if (vm_doswitch(1) < 0)
+  if (revm_doswitch(1) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Cannot switch on object 1", -1);    
   
@@ -154,7 +154,7 @@ int			e2dbg_linkmap_load(char *name)
 
 
   
-  vm_doswitch(1);
+  revm_doswitch(1);
 
   
   /* now load all linkmap's files */
@@ -169,9 +169,9 @@ int			e2dbg_linkmap_load(char *name)
 #endif
       
       ename = elfsh_linkmap_get_lname(actual);
-      if (ename && *ename && !vm_is_loaded(ename))
+      if (ename && *ename && !revm_is_loaded(ename))
 	{
-	  if (vm_load_file(ename, elfsh_linkmap_get_laddr(actual), 
+	  if (revm_file_load(ename, elfsh_linkmap_get_laddr(actual), 
 			   world.curjob->current->linkmap) < 0)
 	    e2dbg_output(" [EE] Loading failed");
 	}      
@@ -193,9 +193,9 @@ int			e2dbg_linkmap_load(char *name)
 	      actual, ename, actual->laddr);
 #endif
 
-      if (ename && *ename && !vm_is_loaded(ename))
+      if (ename && *ename && !revm_is_loaded(ename))
 	{
-	  if (vm_load_file(ename, elfsh_linkmap_get_laddr(actual), 
+	  if (revm_file_load(ename, elfsh_linkmap_get_laddr(actual), 
 			   world.curjob->current->linkmap) < 0)
 	    e2dbg_output(" [EE] Loading failed");
 	}      
@@ -204,7 +204,7 @@ int			e2dbg_linkmap_load(char *name)
   /* Everything was OK */
   e2dbg_output("\n");
   //elfsh_set_debug_mode();
-  vm_doswitch(1);
+  revm_doswitch(1);
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -283,9 +283,9 @@ int		cmd_linkmap()
       old = world.curjob->current->id;
 
       /* switch to the main program file */
-      vm_doswitch(1);
+      revm_doswitch(1);
       ret = e2dbg_linkmap_print(world.curjob->current);
-      vm_doswitch(old);
+      revm_doswitch(old);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
     }
   else

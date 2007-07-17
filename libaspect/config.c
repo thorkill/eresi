@@ -4,7 +4,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 mayhem
 **
 **
-** $Id: config.c,v 1.8 2007-05-07 13:24:01 may Exp $
+** $Id: config.c,v 1.9 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libaspect.h"
@@ -191,7 +191,7 @@ int	profiler_is_enabled(u_char mask)
 }
 
 /* Change the profiling output function */
-/* Usually vm_output located in elfsh VM */
+/* Usually revm_output located in elfsh VM */
 void	profiler_install(int (*profile)(char *), 
 			 int (*profile_err)(char *))
 {

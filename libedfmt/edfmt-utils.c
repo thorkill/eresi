@@ -4,7 +4,7 @@
 ** Started Jan 13 2007 18:09:02 mxatone
 **
 **
-** $Id: edfmt-utils.c,v 1.10 2007-05-31 16:47:25 may Exp $
+** $Id: edfmt-utils.c,v 1.11 2007-07-17 18:11:24 may Exp $
 **
 */
 
@@ -78,7 +78,7 @@ char 			*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr)
 }
 
 /**
- * like vm_lookup_addr - Get address value 
+ * like revm_lookup_addr - Get address value 
  * @param file host file
  * @param param name to search
  * @return addresse found or 0

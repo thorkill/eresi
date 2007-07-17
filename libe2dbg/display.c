@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: display.c,v 1.3 2007-04-16 16:29:16 may Exp $
+** $Id: display.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -99,7 +99,7 @@ int		e2dbg_display(char **cmd, u_int nbr)
 	/* Register displayed command in the script control flow */
 	str = strdup(cmd[idx]);
  
-	if (vm_exec_str(cmd[idx]) < 0)
+	if (revm_exec_str(cmd[idx]) < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Display execrequest failed", -1);
 	cmd[idx] = str;
@@ -107,7 +107,7 @@ int		e2dbg_display(char **cmd, u_int nbr)
 	/* Execute displayed command */
 	cur = world.curjob->curcmd;
 	world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
-	if (vm_execmd() < 0)
+	if (revm_execmd() < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			    "Display execution failed", -1);
 	world.curjob->curcmd = cur;
@@ -136,12 +136,12 @@ int		cmd_display()
   }
   
   /* Add a global display */
-  if (!vm_isnbr(world.curjob->curcmd->param[0]))
+  if (!revm_isnbr(world.curjob->curcmd->param[0]))
     {
       if (e2dbgworld.displaynbr >= E2DBG_STEPCMD_MAX)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Too many global displays", 0);
-      str = e2dbg_get_string(world.curjob->curcmd->param);
+      str = revm_string_get(world.curjob->curcmd->param);
       snprintf(buf, BUFSIZ, "\n [*] Adding global display %u [%s] \n\n", 
 	       e2dbgworld.displaynbr, str);
       e2dbg_output(buf);
@@ -158,7 +158,7 @@ int		cmd_display()
       if (bp->cmdnbr >= 10)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Too many local displays", 0);
-      str = e2dbg_get_string(&world.curjob->curcmd->param[1]);
+      str = revm_string_get(&world.curjob->curcmd->param[1]);
       snprintf(buf, BUFSIZ, "\n [*] Adding display %u [%s] for breakpoint %u "
 	       "[" XFMT "] %s \n\n", bp->cmdnbr, str, 
 	       bp->id, bp->addr, bp->symname);

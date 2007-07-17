@@ -4,14 +4,14 @@
 ** Started on  Thu Mar 13 23:27:58 2003 mayhem
 ** Last update Sat Mar 15 07:00:38 2003 mayhem
 **
-** $Id: filter.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: filter.c,v 1.3 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libui.h"
 
 
 /* Filter \x00 in the OBJ_TYPESTR object */
-void			vm_filter_zero(char *buf)
+void			revm_filter_zero(char *buf)
 {
   char			*ptr;
   u_int			size;
@@ -48,7 +48,7 @@ void			vm_filter_zero(char *buf)
 
 
 /* Replace \xNUM taking care of the \x00 in a string */
-char		*vm_filter_param(char *buf, char *ptr)
+char		*revm_filter_param(char *buf, char *ptr)
 {
   u_int		nbr;
   char		c;

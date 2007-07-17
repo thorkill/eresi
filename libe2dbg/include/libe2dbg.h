@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 mayhem
 **
 **
-** $Id: libe2dbg.h,v 1.24 2007-06-08 18:46:44 may Exp $
+** $Id: libe2dbg.h,v 1.25 2007-07-17 18:11:24 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -162,7 +162,7 @@ do							\
   r = hash_get(&vars_hash, name);			\
   if (!r)						\
     {							\
-      r = vm_create_LONG(1, val);			\
+      r = revm_create_LONG(1, val);			\
       hash_add(&vars_hash, name, r);			\
     }							\
   else							\
@@ -178,7 +178,7 @@ do							\
   r = hash_get(&vars_hash, name);			\
   if (!r)						\
     {							\
-      r = vm_create_LONG(1, val);			\
+      r = revm_create_LONG(1, val);			\
       hash_add(&vars_hash, name, r);			\
     }							\
   else							\
@@ -392,9 +392,9 @@ int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 /* More e2dbg API */
 char            *e2dbg_get_string(char **params);
 int		e2dbg_linkmap(elfshobj_t *file);
-char		*vm_get_prompt();
-char		*vm_get_mode_name();
-int		vm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
+char		*revm_get_prompt();
+char		*revm_modename_get();
+int		revm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
 int             e2dbg_self();
 int		e2dbg_kill(int pid, int sig);
 

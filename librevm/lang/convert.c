@@ -20,14 +20,14 @@
 ** Started on  Tue Feb 08 12:21:12 2005 mayhem
 **
 **
-** $Id: convert.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: convert.c,v 1.3 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Convert to string object */
-int		vm_convert2str(revmobj_t *obj)
+int		revm_convert2str(revmobj_t *obj)
 {
   u_char	val8;
   u_short	val16;
@@ -97,7 +97,7 @@ int		vm_convert2str(revmobj_t *obj)
 }
 
 /* Convert to 4 bytes object */
-int		vm_convert2int(revmobj_t *obj)
+int		revm_convert2int(revmobj_t *obj)
 {
   elfsh_Addr	val64;
   u_int		val32;
@@ -162,7 +162,7 @@ int		vm_convert2int(revmobj_t *obj)
 
 
 /* Convert to a long object */
-int		vm_convert2addr(revmobj_t *obj, u_int type)
+int		revm_convert2addr(revmobj_t *obj, u_int type)
 {
   elfsh_Addr	val64;
 
@@ -227,26 +227,26 @@ int		vm_convert2addr(revmobj_t *obj, u_int type)
 
 
 /* Small handlers for same sized types */
-int		vm_convert2caddr(revmobj_t *obj)
+int		revm_convert2caddr(revmobj_t *obj)
 {
-  return (vm_convert2addr(obj, ASPECT_TYPE_CADDR));
+  return (revm_convert2addr(obj, ASPECT_TYPE_CADDR));
 }
 
-int		vm_convert2daddr(revmobj_t *obj)
+int		revm_convert2daddr(revmobj_t *obj)
 {
-  return (vm_convert2addr(obj, ASPECT_TYPE_DADDR));
+  return (revm_convert2addr(obj, ASPECT_TYPE_DADDR));
 }
 
-int		vm_convert2long(revmobj_t *obj)
+int		revm_convert2long(revmobj_t *obj)
 {
-  return (vm_convert2addr(obj, ASPECT_TYPE_LONG));
+  return (revm_convert2addr(obj, ASPECT_TYPE_LONG));
 }
 
 
 
 
 /* Convert to a raw data object */
-int		vm_convert2raw(revmobj_t *obj)
+int		revm_convert2raw(revmobj_t *obj)
 {
   u_char	val8;
   u_short	val16;
@@ -314,7 +314,7 @@ int		vm_convert2raw(revmobj_t *obj)
 }
 
 /* Convert to a raw data object */
-int		vm_convert2byte(revmobj_t *obj)
+int		revm_convert2byte(revmobj_t *obj)
 {
   u_char	val8;
   u_short	val16;
@@ -378,7 +378,7 @@ int		vm_convert2byte(revmobj_t *obj)
 }
 
 /* Convert to a raw data object */
-int		vm_convert2short(revmobj_t *obj)
+int		revm_convert2short(revmobj_t *obj)
 {
   u_char	val8;
   u_short	val16;

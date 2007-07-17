@@ -4,14 +4,14 @@
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
 ** Updated on  Fri Mar  5 18:47:41 2007 mayhem
 **
-** $Id: scanner.c,v 1.10 2007-07-14 19:49:50 may Exp $
+** $Id: scanner.c,v 1.11 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Replace \xNUM by the value, I wished readline could have done that */
-void			vm_findhex(u_int argc, char **argv)
+void			revm_findhex(u_int argc, char **argv)
 {
   u_int			index;
   char			*buf;
@@ -28,13 +28,13 @@ void			vm_findhex(u_int argc, char **argv)
 
       /* Find "\x" sequences */
       for (ptr = strstr(buf, "\\x"); ptr != NULL; ptr = strstr(buf, "\\x"))
-	buf = vm_filter_param(buf, ptr);
+	buf = revm_filter_param(buf, ptr);
     }
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Translate a speblanks string */
-int			vm_trans_speblank(const char *in, char ***av, u_int *ac)
+int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
 {
   char			**argv;
   u_int			argc = 1;
@@ -92,7 +92,7 @@ int			vm_trans_speblank(const char *in, char ***av, u_int *ac)
     argv[index] = strdup(ptr);
 
   /* Replace '\ ' */
-  vm_replace_speblanks(argc, argv);
+  revm_replace_speblanks(argc, argv);
 
   if (av)
     *av = argv;
@@ -104,7 +104,7 @@ int			vm_trans_speblank(const char *in, char ***av, u_int *ac)
 }
 
 /* Replace '\ ' by the ' ', I wished readline could have done that */
-void			vm_replace_speblanks(u_int argc, char **argv)
+void			revm_replace_speblanks(u_int argc, char **argv)
 {
   u_int			index;
   char			*buf;
@@ -134,7 +134,7 @@ void			vm_replace_speblanks(u_int argc, char **argv)
 
 
 /* Count blanks, so that we can allocate argv */
-u_int		vm_findblanks(char *buf)
+u_int		revm_findblanks(char *buf)
 {
   int		index;
   int		len;
@@ -173,7 +173,7 @@ u_int		vm_findblanks(char *buf)
 
 #if __DEBUG_SCANNER__
   snprintf(logbuf, BUFSIZ - 1, "[DEBUG_SCANNER:findblanks] nbr = %u \n", nbr);
-  vm_output(logbuf);
+  revm_output(logbuf);
 #endif
 
   return (nbr);
@@ -181,7 +181,7 @@ u_int		vm_findblanks(char *buf)
 
 
 /* Cut words of the newline and create argv */
-char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
+char		**revm_doargv(u_int nbr, u_int *argc, char *buf)
 {
   u_int		index;
   char		*sav;
@@ -210,7 +210,7 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
       snprintf(logbuf, BUFSIZ - 1,
 	       "[DEBUG_SCANNER:lexer_doargv] Adding argv[%u] = *%s* \n", 
 	       index, sav);
-      vm_output(logbuf);
+      revm_output(logbuf);
 #endif 
 
       ptr = strchr(sav, ' ');
@@ -224,15 +224,15 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
     }
 
 #if __DEBUG_SCANNER__
-  vm_output("\n");
+  revm_output("\n");
   for (index = 0; index < nbr + 1; index++)
     if (argv[index])
       {
 	snprintf(logbuf, BUFSIZ - 1, "[DEBUG_SCANNER:lexer_doargv] %u/ *%s* \n",
 		 index, argv[index]);
-	vm_output(logbuf);
+	revm_output(logbuf);
       }
-  vm_output("\n");
+  revm_output("\n");
 #endif
 
   *argc = nbr + 1;
@@ -248,7 +248,7 @@ char		**vm_doargv(u_int nbr, u_int *argc, char *buf)
 
 
 /* Its lighter than flex ... */
-char		**vm_input(int *argc)
+char		**revm_input(int *argc)
 {
   char		**argv;
   char		*buf;
@@ -258,7 +258,7 @@ char		**vm_input(int *argc)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Read, and sanitize a first time to avoid blank lines and various special returns */
-  buf = vm_getln();
+  buf = revm_getln();
   if ((int) buf == 0 || 
       (int) buf == REVM_INPUT_VOID || 
       (int) buf == REVM_INPUT_EXIT || 
@@ -266,14 +266,14 @@ char		**vm_input(int *argc)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char **) buf);
 
   /* Log the read line */
-  if (world.state.vm_mode != REVM_STATE_SCRIPT &&
+  if (world.state.revm_mode != REVM_STATE_SCRIPT &&
       world.curjob->ws.io.type == REVM_IO_STD)
     {
 #if defined(USE_READLN)
       readln_input_log(buf);
 #else
-      vm_log(buf);
-      vm_log("\n\n");
+      revm_log(buf);
+      revm_log("\n\n");
 #endif
     }
 
@@ -292,8 +292,8 @@ char		**vm_input(int *argc)
 
   /* If we are in the client part of the debugger, 
      we have a special behavior */
-  if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
-      world.state.vm_side == REVM_SIDE_CLIENT)
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+      world.state.revm_side == REVM_SIDE_CLIENT)
     {
       write(world.fifo_c2s, buf, len);
 #if defined(USE_READLN)
@@ -304,10 +304,10 @@ char		**vm_input(int *argc)
     }
 
   /* Allocate the correct pointer array for argv */
-  nbr = vm_findblanks(buf);
-  argv = vm_doargv(nbr, (u_int *) argc, buf);
+  nbr = revm_findblanks(buf);
+  argv = revm_doargv(nbr, (u_int *) argc, buf);
 
   /* Find and replace "\xXX" sequences, then return the array */
-  vm_findhex(*argc, argv);
+  revm_findhex(*argc, argv);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (argv));
 }

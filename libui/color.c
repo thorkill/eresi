@@ -5,7 +5,7 @@
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: color.c,v 1.14 2007-05-16 23:08:13 thor Exp $
+** $Id: color.c,v 1.15 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "libui.h"
@@ -25,7 +25,7 @@ u_int 		nocolor = 1;
  * Init color structure 
  * @return an allocated color structure
  */
-color_t 	*vm_colorblank()
+color_t 	*revm_colorblank()
 {
   color_t 	*c;
 
@@ -47,13 +47,13 @@ color_t 	*vm_colorblank()
  * @param text text to color to filter for warnstring type
  * @return color structure
  */
-color_t 	*vm_colortable(char *type, char *text)
+color_t 	*revm_colortable(char *type, char *text)
 {
   NOPROFILER_IN();
 
   /* Override color by warning color if we match the alert regex */
-  if (world.state.vm_use_alert && 
-      !regexec(&world.state.vm_alert, text, 0, 0, 0))
+  if (world.state.revm_use_alert && 
+      !regexec(&world.state.revm_alert, text, 0, 0, 0))
     NOPROFILER_ROUT(hash_get(&t_color_hash, "warnstring"));
 
   NOPROFILER_ROUT(hash_get(&t_color_hash, type)); 
@@ -73,7 +73,7 @@ set = 1; } 								\
  * @param text text to color (not used on this function)
  * @param pattern pattern will be save on this buffer
  */
-int		vm_colorpattern(color_t *t, char *text, char *pattern)
+int		revm_colorpattern(color_t *t, char *text, char *pattern)
 {
   char		bo[16], ul[16], fg[16], bg[16];
   u_short      	set = 0;
@@ -107,7 +107,7 @@ int		vm_colorpattern(color_t *t, char *text, char *pattern)
  * @param object objet to print using the string
  * @return generate string
  */
-static char	*vm_colornothing(char *sp, void *object)
+static char	*revm_colornothing(char *sp, void *object)
 {
   NOPROFILER_IN();
 
@@ -180,7 +180,7 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
  * Build color text 
  * 
  */
-char 		*vm_colorget(char *sp, char *type, void *object)
+char 		*revm_colorget(char *sp, char *type, void *object)
 {
   color_t 	*t;
   char		pattern[COLOR_TOKEN_LEN];
@@ -207,17 +207,17 @@ char 		*vm_colorget(char *sp, char *type, void *object)
 
   /* Color isn't activated */
   if (!nocolor)
-    NOPROFILER_ROUT(vm_colornothing(sp, object));
+    NOPROFILER_ROUT(revm_colornothing(sp, object));
 
-  t = vm_colortable(type, text);
+  t = revm_colortable(type, text);
 
   /* Color not found */
   if (t == NULL)
-    NOPROFILER_ROUT(vm_colornothing(sp, object));
+    NOPROFILER_ROUT(revm_colornothing(sp, object));
 
   /* Invalid pattern */
-  if (vm_colorpattern(t, text, pattern) != 0)
-    NOPROFILER_ROUT(vm_colornothing(sp, object));
+  if (revm_colorpattern(t, text, pattern) != 0)
+    NOPROFILER_ROUT(revm_colornothing(sp, object));
 
   pText = text;
 
@@ -235,29 +235,29 @@ char 		*vm_colorget(char *sp, char *type, void *object)
 }
 
 /* Reset token */
-void 		vm_endline()
+void 		revm_endline()
 {
   curtok = 0;
 }
 
 /* Simple functions */
-char *vm_colorinstr(char *text) 	{ return vm_colorget("%s", "instr"     , text); }
-char *vm_colorstr(char *text) 		{ return vm_colorget("%s", "string"     , text); }
-char *vm_colorfieldstr(char *text) 	{ return vm_colorget("%s", "fieldstring", text); }
-char *vm_colortypestr(char *text) 	{ return vm_colorget("%s", "typestring" , text); }
-char *vm_colorend(char *text) 		{ return vm_colorget("%s", "endstring"  , text); }
-char *vm_colorwarn(char *text) 		{ return vm_colorget("%s", "warnstring" , text); }
-char *vm_colorfunction(char *text) 	{ return vm_colorget("%s", "function"   , text); }
-char *vm_colorfilename(char *text) 	{ return vm_colorget("%s", "filename"   , text); }
+char *revm_colorinstr(char *text) 	{ return revm_colorget("%s", "instr"     , text); }
+char *revm_colorstr(char *text) 		{ return revm_colorget("%s", "string"     , text); }
+char *revm_colorfieldstr(char *text) 	{ return revm_colorget("%s", "fieldstring", text); }
+char *revm_colortypestr(char *text) 	{ return revm_colorget("%s", "typestring" , text); }
+char *revm_colorend(char *text) 		{ return revm_colorget("%s", "endstring"  , text); }
+char *revm_colorwarn(char *text) 		{ return revm_colorget("%s", "warnstring" , text); }
+char *revm_colorfunction(char *text) 	{ return revm_colorget("%s", "function"   , text); }
+char *revm_colorfilename(char *text) 	{ return revm_colorget("%s", "filename"   , text); }
 
 /* Special functions */
-char 		*vm_coloradv(char *type, char *pattern, char *text)
+char 		*revm_coloradv(char *type, char *pattern, char *text)
 {
   char 		*p;
 
   NOPROFILER_IN();
 
-  p = vm_colorget(pattern, type, text); 
+  p = revm_colorget(pattern, type, text); 
 
   strncpy(text, p, BUFSIZ);
   text[BUFSIZ-1] = 0;
@@ -267,49 +267,49 @@ char 		*vm_coloradv(char *type, char *pattern, char *text)
 }
 
 /* Advanced functions */
-char *vm_colorinstr_fmt(char *pattern, char *text)		
+char *revm_colorinstr_fmt(char *pattern, char *text)		
 { 
-  return vm_colorget(pattern, "instr", text); 
+  return revm_colorget(pattern, "instr", text); 
 }
 
-char *vm_colorstr_fmt(char *pattern, char *text) 		
+char *revm_colorstr_fmt(char *pattern, char *text) 		
 { 
-  return vm_colorget(pattern, "string", text); 
+  return revm_colorget(pattern, "string", text); 
 }
-char *vm_colorfieldstr_fmt(char *pattern, char *text)
+char *revm_colorfieldstr_fmt(char *pattern, char *text)
 { 
-  return vm_colorget(pattern, "fieldstring", text); 
-}
-
-char *vm_colortypestr_fmt(char *pattern, char *text) 		
-{ 
-  return vm_colorget(pattern, "typestring", text); 
+  return revm_colorget(pattern, "fieldstring", text); 
 }
 
-char *vm_colorend_fmt(char *pattern, char *text) 		
+char *revm_colortypestr_fmt(char *pattern, char *text) 		
 { 
-  return vm_colorget(pattern, "endstring", text); 
+  return revm_colorget(pattern, "typestring", text); 
 }
 
-char *vm_colorwarn_fmt(char *pattern, char *text) 		
+char *revm_colorend_fmt(char *pattern, char *text) 		
 { 
-  return vm_colorget(pattern, "warnstring", text); 
+  return revm_colorget(pattern, "endstring", text); 
 }
 
-char *vm_coloraddress(char *pattern, elfsh_Addr addr) 		
+char *revm_colorwarn_fmt(char *pattern, char *text) 		
 { 
-  return vm_colorget(pattern, "address", &addr); 
+  return revm_colorget(pattern, "warnstring", text); 
 }
 
-char *vm_colornumber(char *pattern, u_int numb) 		
+char *revm_coloraddress(char *pattern, elfsh_Addr addr) 		
 { 
-  return vm_colorget(pattern, "number", &numb); 
+  return revm_colorget(pattern, "address", &addr); 
+}
+
+char *revm_colornumber(char *pattern, u_int numb) 		
+{ 
+  return revm_colorget(pattern, "number", &numb); 
 }
 
 /* Misc functions */
 
 /* Return number of color chars (not total size) */
-int		vm_color_count(char *string)
+int		revm_color_count(char *string)
 {
   int		count = 0;
   int		len;
@@ -332,7 +332,7 @@ int		vm_color_count(char *string)
 }
 
 /* Return total size of colors on a string */
-int		vm_color_size(char *string)
+int		revm_color_size(char *string)
 {
   int		size = 0;
   int		len;

@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.40 2007-06-22 16:58:26 may Exp $
+ * $Id: function.c,v 1.41 2007-07-17 18:11:24 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -473,7 +473,7 @@ int			mjr_function_save(mjrcontainer_t *cur, mjrbuf_t *buf)
 }
 
 
-/* XXX: You should never use printf but vm_output */
+/* XXX: You should never use printf but revm_output */
 int			mjr_functions_store(mjrcontext_t *ctxt) 
 {
   elfsh_Shdr		shdr;

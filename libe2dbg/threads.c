@@ -5,7 +5,7 @@
 **
 ** Last Update Thu July 06 19:37:26 2006 mm
 **
-** $Id: threads.c,v 1.7 2007-05-11 10:48:29 may Exp $
+** $Id: threads.c,v 1.8 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -253,7 +253,7 @@ void		e2dbg_threads_print()
 	  default:
 	    state = "UNKNOWN";
 	  }
-	entry = vm_resolve(world.curjob->current, (elfsh_Addr) cur->entry, NULL);
+	entry = revm_resolve(world.curjob->current, (elfsh_Addr) cur->entry, NULL);
 	snprintf(logbuf, BUFSIZ, 
 		 " Thread ID %10u %c %8s --[ started on %s from %s \n", 
 		 (unsigned int) cur->tid, c, state, time, entry);

@@ -6,7 +6,7 @@
 ** Started Wed Feb 25 22:22:35 2004 yann_malcom
 ** Updated Mon Mar 05 04:37:10 2007 mayhem 
 **
-** $Id: network.c,v 1.5 2007-04-30 13:39:37 may Exp $
+** $Id: network.c,v 1.6 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -20,7 +20,7 @@ int  	       elfsh_net_client_count = 0;
 /* Is net support enable ? */
 #if defined(ELFSHNET)
 /* Add a client socket to the elfsh_net_client_list. */
-revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
+revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
   revmjob_t	*new;
   char		logbuf[30];
@@ -52,8 +52,8 @@ revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
   new->ws.io.type      = REVM_IO_NET;
   new->ws.io.input_fd  = socket;
   new->ws.io.output_fd = socket;
-  new->ws.io.input     = vm_net_input;
-  new->ws.io.output    = vm_net_output;
+  new->ws.io.input     = revm_net_input;
+  new->ws.io.output    = revm_net_output;
   new->ws.createtime   = time(&new->ws.createtime);
   new->ws.active       = 1;
 
@@ -70,7 +70,7 @@ revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
 
 
 /* Return the number of buffer in a revmsock_t recvd */
-int		vm_socket_get_nb_recvd(char *inet)
+int		revm_socket_get_nb_recvd(char *inet)
 {
   revmjob_t	*tmp;
   int		i;
@@ -96,7 +96,7 @@ int		vm_socket_get_nb_recvd(char *inet)
 		  old = world.curjob;
 		  world.curjob = tmp;
 
-		  if (vm_own_job((revmjob_t *) actual->data) && 
+		  if (revm_own_job((revmjob_t *) actual->data) && 
 		      ((revmjob_t *) actual->data)->ws.active)
 		    {
 		      world.curjob = old;
@@ -148,7 +148,7 @@ int		vm_socket_get_nb_recvd(char *inet)
 }
 
 /* Only close a socket */
-int vm_socket_close(int socket)
+int revm_socket_close(int socket)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -170,7 +170,7 @@ int vm_socket_close(int socket)
 ** Remove a client socket from the list and close it, return (-1) if socket 
 ** not found
 */
-int		 vm_socket_del(char *inet_addr)
+int		 revm_socket_del(char *inet_addr)
 {
   revmjob_t	 *tmp;
   int		 nbargc;
@@ -196,7 +196,7 @@ int		 vm_socket_del(char *inet_addr)
 	  old = world.curjob;
 	  world.curjob = tmp;
 	  
-	  if (vm_own_job((revmjob_t *) actual->data))
+	  if (revm_own_job((revmjob_t *) actual->data))
 	    {
 	      hash_del(&world.jobs, actual->key);
 	    }
@@ -206,7 +206,7 @@ int		 vm_socket_del(char *inet_addr)
 	}
     }
   
-  if (vm_socket_close(tmp->ws.sock.socket) < 0)
+  if (revm_socket_close(tmp->ws.sock.socket) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to close socket", (-1));
 
@@ -214,7 +214,7 @@ int		 vm_socket_del(char *inet_addr)
   if (tmp->ws.sock.recvd_f == NEW)
     {
       /* We assume that buffer are not referenced, and so won't be used */
-      nbargc = vm_socket_get_nb_recvd(inet_ntoa(tmp->ws.sock.addr.sin_addr));
+      nbargc = revm_socket_get_nb_recvd(inet_ntoa(tmp->ws.sock.addr.sin_addr));
       for (i = 0 ; i < nbargc ; i++)
 	XFREE (__FILE__, __FUNCTION__, __LINE__, tmp->ws.sock.recvd[i]);
 
@@ -232,7 +232,7 @@ int		 vm_socket_del(char *inet_addr)
 
 
 /* Really send the data */
-int vm_netsend(char *buf, unsigned int len)
+int revm_netsend(char *buf, unsigned int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  
@@ -250,7 +250,7 @@ int vm_netsend(char *buf, unsigned int len)
 
 
 /* send buf on a socket */
-int	vm_net_output(char *buf)
+int	revm_net_output(char *buf)
 {
   int	ret;
 
@@ -263,23 +263,23 @@ int	vm_net_output(char *buf)
 	      "send too much data.\n",
 	      world.curjob->ws.io.output_fd);
 #endif
-      if (vm_netsend(buf, REVM_MAX_SEND_SIZE) >= 0)
+      if (revm_netsend(buf, REVM_MAX_SEND_SIZE) >= 0)
 	{
-	  ret = vm_net_output((char *) (buf + REVM_MAX_SEND_SIZE));
+	  ret = revm_net_output((char *) (buf + REVM_MAX_SEND_SIZE));
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 	}
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Failed to send on net interface", (-1));
     }
 
-  ret = vm_netsend(buf, strlen(buf));
+  ret = revm_netsend(buf, strlen(buf));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
 
 /* Create le main socket and bind it to ELFSH_LISTEN_PORT. */
-int	vm_create_server(int			*serv_sock, 
+int	revm_create_server(int			*serv_sock, 
 			 struct sockaddr_in	*addr,
 			 u_int			port)
 {
@@ -319,7 +319,7 @@ int	vm_create_server(int			*serv_sock,
 
 
 /* Update revmsock_t recvd buffer */
-int		vm_update_recvd(revmsock_t *socket)
+int		revm_update_recvd(revmsock_t *socket)
 {
   char		*buf;
   char		**buf2;
@@ -364,13 +364,13 @@ int		vm_update_recvd(revmsock_t *socket)
 	  if (socket->recvd_f == OLD)
             {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
-	      vm_socket_del(inet_ntoa(socket->addr.sin_addr));
+	      revm_socket_del(inet_ntoa(socket->addr.sin_addr));
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
             }
 	  else
             {
 	      //TODO : XFREE all buffer, if buffers are marked OLD,
-	      //vm_net_input has been called so vm_socket_merge_recvd too.
+	      //revm_net_input has been called so revm_socket_merge_recvd too.
 	      XFREE (__FILE__, __FUNCTION__, __LINE__, buf);
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
             }
@@ -416,8 +416,8 @@ int		vm_update_recvd(revmsock_t *socket)
 	     "data in the buffer which has not been read.\n");
 #endif
 
-      /* Something got wrong in vm_socket_get_nb_recvd() */	
-      bufnb = vm_socket_get_nb_recvd(inet_ntoa(socket->addr.sin_addr));
+      /* Something got wrong in revm_socket_get_nb_recvd() */	
+      bufnb = revm_socket_get_nb_recvd(inet_ntoa(socket->addr.sin_addr));
       if (bufnb < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Cannot receive on socket", -1);
@@ -474,7 +474,7 @@ int		vm_update_recvd(revmsock_t *socket)
 
 
 /* send buf on a dump connection */
-int	vm_dump_output(char *buf)
+int	revm_dump_output(char *buf)
 {
   int	ret = 0;
   char	*tmp;
@@ -493,7 +493,7 @@ int	vm_dump_output(char *buf)
 
 
 /* Return the first packet data */
-char	*vm_dump_input()
+char	*revm_dump_input()
 {
   char	*tmp;
 
@@ -507,7 +507,7 @@ char	*vm_dump_input()
 
 
 /* accept a DUMP connection */
-int			vm_dump_accept()
+int			revm_dump_accept()
 {
   struct sockaddr_in    cli_addr;
   u_int                 cli_len;
@@ -559,7 +559,7 @@ int			vm_dump_accept()
 
 
 /* Accept new connection if there is */
-int			vm_net_accept()
+int			revm_net_accept()
 {
   socklen_t		temp_addr_len;
   struct sockaddr_in	*temp_addr;
@@ -595,7 +595,7 @@ int			vm_net_accept()
 	      "accepted on socket %d.\n",temp_sock);
 #endif
 
-      curjob = vm_socket_add(temp_sock, temp_addr);
+      curjob = revm_socket_add(temp_sock, temp_addr);
       if (curjob == NULL)
         {
 #if __DEBUG_NETWORK__
@@ -622,8 +622,8 @@ int			vm_net_accept()
     {
       oldjob = world.curjob;
       world.curjob = curjob;
-      vm_output("\n [*] Connection granted to ELFsh daemon\n\n");
-      vm_display_prompt();
+      revm_output("\n [*] Connection granted to ELFsh daemon\n\n");
+      revm_display_prompt();
       world.curjob = oldjob;
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
@@ -633,7 +633,7 @@ int			vm_net_accept()
 
 
 /* One listening step */
-int			vm_net_recvd(fd_set *sel_sockets)
+int			revm_net_recvd(fd_set *sel_sockets)
 {
   revmsock_t           *temp_socket;
   hashent_t             *actual;
@@ -677,7 +677,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 		      temp_socket->socket);
 #endif
 	      // Let's update the revmsock_t recvd data */
-	      if (vm_update_recvd(temp_socket) < 0)
+	      if (revm_update_recvd(temp_socket) < 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			     "Cannot receive on socket", -1);
             }
@@ -742,7 +742,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 		      switch (((char *)((pkt_t *)data)->data)[0])
 			{
 
-			  /* elfsh cmd, pass it to vm_input() */
+			  /* elfsh cmd, pass it to revm_input() */
 			case REVM_DUMP_CMD:
 			  snprintf(tmp, sizeof (tmp)-1, "DUMP_%s", 
 				   inet_ntoa(((pkt_t *)data)->src)); 
@@ -770,8 +770,8 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			  new->ws.io.type      = REVM_IO_DUMP;
 			  new->ws.io.input_fd  = (-1);
 			  new->ws.io.output_fd = (-1);
-			  new->ws.io.input     = vm_dump_input;
-			  new->ws.io.output    = vm_dump_output;
+			  new->ws.io.input     = revm_dump_input;
+			  new->ws.io.output    = revm_dump_output;
 			  new->ws.io.new       = 1;
 			  new->ws.io.pkt       = data;
 			  new->ws.createtime   = time(&new->ws.createtime);
@@ -781,12 +781,12 @@ int			vm_net_recvd(fd_set *sel_sockets)
 			  break;
 			  /* message, display it */
 			case REVM_DUMP_MSG:
-			  vm_output((char *)((pkt_t *) data)->data + 1);
+			  revm_output((char *)((pkt_t *) data)->data + 1);
 			  dump_free(data);
 			  break;
 			  /* unknown */
 			default:
-			  vm_output("unknown ELFSH_DUMP packet type\n");
+			  revm_output("unknown ELFSH_DUMP packet type\n");
 			  dump_free(data);
 			  break;
 			}
@@ -807,7 +807,7 @@ int			vm_net_recvd(fd_set *sel_sockets)
 
 
 /* Merge buffers */
-char	*vm_socket_merge_recvd(revmsock_t *socket)
+char	*revm_socket_merge_recvd(revmsock_t *socket)
 {
   char	*ret;
   int	nb_recvd;
@@ -817,7 +817,7 @@ char	*vm_socket_merge_recvd(revmsock_t *socket)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  nb_recvd = vm_socket_get_nb_recvd(inet_ntoa(socket->addr.sin_addr));
+  nb_recvd = revm_socket_get_nb_recvd(inet_ntoa(socket->addr.sin_addr));
   if (nb_recvd < 0)  
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to receive on socket", NULL);    
@@ -848,7 +848,7 @@ char	*vm_socket_merge_recvd(revmsock_t *socket)
 
 
 /* Return the first buffers */
-char			*vm_net_input()
+char			*revm_net_input()
 {
   revmsock_t		*temp_socket;
   hashent_t		*actual;
@@ -861,7 +861,7 @@ char			*vm_net_input()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_NETWORK__
-  fprintf(stderr, "[DEBUG NETWORK] vm_net_input\n");
+  fprintf(stderr, "[DEBUG NETWORK] revm_net_input\n");
 #endif
 
   for (index = 0; index < world.jobs.size; index++)
@@ -881,12 +881,12 @@ char			*vm_net_input()
 	      temp_socket->ready_f == YES)
             {
 #if __DEBUG_NETWORK__
-	      fprintf(stderr, "[DEBUG NETWORK] vm_network_input "
+	      fprintf(stderr, "[DEBUG NETWORK] revm_network_input "
 		      "on %d -> NEW buffer\n",
 		      temp_socket->socket);
 #endif
 
-	      ret = vm_socket_merge_recvd(temp_socket);
+	      ret = revm_socket_merge_recvd(temp_socket);
 
 #if __DEBUG_NETWORK__
 	      fprintf(stderr, "ret : %s\n", ret);
@@ -902,7 +902,7 @@ char			*vm_net_input()
 
   /* No new buffer */
 #if __DEBUG_NETWORK__
-  fprintf(stderr, "[DEBUG NETWORK] vm_network_input no new buffer\n");
+  fprintf(stderr, "[DEBUG NETWORK] revm_network_input no new buffer\n");
 #endif 
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
@@ -914,7 +914,7 @@ char			*vm_net_input()
 
 
 /* Listening initialisation */
-int			vm_net_init()
+int			revm_net_init()
 {
   revmjob_t		*init;
   struct sockaddr_in	dump_sockaddr_main;
@@ -926,13 +926,13 @@ int			vm_net_init()
 		 "Cannot find initial net job", (-1));
 
   /* remote client main socket */
-  if (vm_create_server(&(init->ws.sock.socket), 
+  if (revm_create_server(&(init->ws.sock.socket), 
 		       &(init->ws.sock.addr), REVM_PORT) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to create net server", (-1));
 
   /* remote elfsh main socket (DUMP) */
-  if (vm_create_server(&(dump_world.sock), 
+  if (revm_create_server(&(dump_world.sock), 
 		       &(dump_sockaddr_main), REVM_DUMP_PORT) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Fail to create dump server", (-1));
@@ -949,7 +949,7 @@ int			vm_net_init()
 
 
 /* Stopping network | not workspace compliant ... */
-int		      vm_net_stop()
+int		      revm_net_stop()
 {
   hashent_t           *actual;
   int                 index;
@@ -973,7 +973,7 @@ int		      vm_net_stop()
 		  "socket : %d \n", temp_socket->socket);
 #endif
 
-	  if (vm_socket_del(inet_ntoa(temp_socket->addr.sin_addr)) < 0)
+	  if (revm_socket_del(inet_ntoa(temp_socket->addr.sin_addr)) < 0)
             {
 #if __DEBUG_NETWORK__
 	      fprintf(stderr, "[DEBUG NETWORK] error on deleting a socket\n");    
@@ -1003,7 +1003,7 @@ int		      vm_net_stop()
 
   /* Closing DUMP main socket */
   close(dump_world.sock);
-  if (serv == NULL || vm_socket_close(serv->ws.sock.socket) < 0)
+  if (serv == NULL || revm_socket_close(serv->ws.sock.socket) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to close socket", (-1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1012,7 +1012,7 @@ int		      vm_net_stop()
 
 
 /* Clean jobs */
-int			vm_clean_jobs()
+int			revm_clean_jobs()
 {
   revmjob_t		*job;
   int			index;
@@ -1051,93 +1051,93 @@ int			vm_clean_jobs()
 #else
 
 
-int		vm_clean_jobs()
+int		revm_clean_jobs()
 {
   return (0);
 }
 
-int		vm_getmaxfd() 
+int		revm_getmaxfd() 
 { 
-  if (world.state.vm_mode != REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode != REVM_STATE_DEBUGGER)
     return (0);
-  if (world.state.vm_side == REVM_SIDE_CLIENT)
+  if (world.state.revm_side == REVM_SIDE_CLIENT)
     return (world.fifo_s2c); 
   else
     return (world.fifo_c2s); 
 }
 
-revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr)
+revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
   return (NULL);
 }
 
-int		vm_socket_get_nb_recvd(char *inet)
+int		revm_socket_get_nb_recvd(char *inet)
 {
   return (0);
 }
 
-int		vm_socket_close(int socket)
+int		revm_socket_close(int socket)
 {
   return (0);
 }
 
-int		 vm_socket_del(char *inet_addr)
+int		 revm_socket_del(char *inet_addr)
 {
   return (0);
 }
 
-int		vm_netsend(char *buf, unsigned int len)
+int		revm_netsend(char *buf, unsigned int len)
 {
   return (0);
 }
 
-int		vm_net_output(char *buf)
+int		revm_net_output(char *buf)
 {
   return (0);
 }
 
-int		vm_create_server(int *serv_sock, 
+int		revm_create_server(int *serv_sock, 
 				 struct sockaddr_in *addr)
 {
   return (0);
 }
 
-int		vm_update_recvd(revmsock_t *socket)
+int		revm_update_recvd(revmsock_t *socket)
 {
   return (0);
 }
 
-int		vm_net_accept_connection()
+int		revm_net_accept_connection()
 {
   return (0);
 }
 
-int		vm_dump_accept_connection()
+int		revm_dump_accept_connection()
 {
   return (0);
 }
 
-int		vm_net_recvd(fd_set *sel_sockets)
+int		revm_net_recvd(fd_set *sel_sockets)
 {
   return (0);
 }
 
-char		*vm_socket_merge_recvd(revmsock_t *socket)
+char		*revm_socket_merge_recvd(revmsock_t *socket)
 {
   return (NULL);
 }
 
-char		*vm_net_input()
+char		*revm_net_input()
 {
   return (NULL);
 }
 
-int		vm_net_init()
+int		revm_net_init()
 {
   return (0);
 }
 
-int		vm_net_stop()
+int		revm_net_stop()
 {
   return (0);
 }

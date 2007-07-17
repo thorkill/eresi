@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.73 2007-07-17 03:14:42 may Exp $
+** $Id: revm.h,v 1.74 2007-07-17 18:11:25 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -96,8 +96,8 @@ extern asm_processor	proc;
 #define	REVM_SCRIPT_QUIT	(3)
 
 /* General usage macros */
-#define FATAL(a)		{ perror(a); vm_exit(-1);		      }
-#define QUIT_ERROR(a)		{ vm_exit(a);				      }
+#define FATAL(a)		{ perror(a); revm_exit(-1);		      }
+#define QUIT_ERROR(a)		{ revm_exit(a);				      }
 #define RET(a)			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, a)
 #define RETERR(a)		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, a, -1)
 #define	PERROR_RET(a, b)	{ perror(a); RETERR (b);		      }
@@ -130,7 +130,7 @@ extern asm_processor	proc;
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
 			     &world.curjob->curcmd->regx[idx] :               \
-			     world.state.vm_use_regx ? &world.state.vm_regx : \
+			     world.state.revm_use_regx ? &world.state.revm_regx : \
 			     NULL)
 #define	FIRSTREGX(r)	     CHOOSE_REGX(r, 0)
 #define	SECONDREGX(r)	     CHOOSE_REGX(r, 1)
@@ -168,7 +168,7 @@ extern asm_processor	proc;
 #define	ELFSH_RELOC_ALPHA_MAX	43
 #define	ELFSH_RELOC_MIPS_MAX	35
 
-#define ELFSH_RELOC_MAX(file)   vm_getmaxrelnbr(file)
+#define ELFSH_RELOC_MAX(file)   revm_getmaxrelnbr(file)
 
 #define	ELFSH_FEATURE_MAX	2
 #define	ELFSH_POSFLAG_MAX	2
@@ -196,11 +196,11 @@ extern asm_processor	proc;
 /* Traces directory */
 #define	REVM_TRACE_REP		".etrace"
 
-/* For vm_display_object() */
+/* For revm_object_display() */
 #define	REVM_VIEW_HEX		0
 #define	REVM_VIEW_DISASM	1
 
-/* For elfsh/elfsh/modules.c:vm_change_handler() */
+/* For elfsh/elfsh/modules.c:revm_change_handler() */
 #define	ELFSH_ORIG		((void *) -1)
 
 /* For lang/access.c */
@@ -801,54 +801,54 @@ int		cmd_undisplay();
 int		cmd_debug();
 
 /* Registration handlers for options from opt.c */
-int		vm_getoption(u_int index, u_int argc, char **argv);
-int		vm_getoption2(u_int index, u_int argc, char **argv);
-int		vm_getoption3(u_int index, u_int argc, char **argv);
-int		vm_getregxoption(u_int index, u_int argc, char **argv);
-int		vm_getinput(u_int index, u_int argc, char **argv);
-int		vm_getoutput(u_int index, u_int argc, char **argv);
-int		vm_getdisasm(u_int index, u_int argc, char **argv);
-int		vm_gethexa(u_int index, u_int argc, char **argv);
-int		vm_getvarparams(u_int index, u_int argc, char **argv);
-int		vm_getforparams(u_int index, u_int argc,  char **argv);
-int		vm_getmatchparams(u_int index, u_int argc, char **argv);
+int		revm_getoption(u_int index, u_int argc, char **argv);
+int		revm_getoption2(u_int index, u_int argc, char **argv);
+int		revm_getoption3(u_int index, u_int argc, char **argv);
+int		revm_getregxoption(u_int index, u_int argc, char **argv);
+int		revm_getinput(u_int index, u_int argc, char **argv);
+int		revm_getoutput(u_int index, u_int argc, char **argv);
+int		revm_getdisasm(u_int index, u_int argc, char **argv);
+int		revm_gethexa(u_int index, u_int argc, char **argv);
+int		revm_getvarparams(u_int index, u_int argc, char **argv);
+int		revm_getforparams(u_int index, u_int argc,  char **argv);
+int		revm_getmatchparams(u_int index, u_int argc, char **argv);
 
 /* Libasm resolve handlers */
 void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);
-char		*vm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roff);
+char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
-revmobj_t	*vm_lookup_param(char *param);
-revmobj_t	*vm_check_object(revmobj_t *pobj);
-void		vm_destroy_object(revmobj_t *pobj);
-revmobj_t	 *vm_copy_object(revmobj_t *pobj);
-elfshobj_t	*vm_getfile(u_int index);
-revmmod_t	*vm_getmod(u_int index);
-char		*vm_reverse(elfshobj_t *file, u_int vaddr);
+revmobj_t	*revm_lookup_param(char *param);
+revmobj_t	*revm_check_object(revmobj_t *pobj);
+void		revm_destroy_object(revmobj_t *pobj);
+revmobj_t	 *revm_copy_object(revmobj_t *pobj);
+elfshobj_t	*revm_getfile(u_int index);
+revmmod_t	*revm_getmod(u_int index);
+char		*revm_reverse(elfshobj_t *file, u_int vaddr);
 
 /* Lookup functions */
-revmobj_t	*vm_lookup_immed(char *param);
-revmobj_t	*vm_lookup_var(char *param);
-elfshobj_t	*vm_lookup_file(char *param);
-u_int		vm_lookup_index(char *param);
-char		*vm_lookup_string(char *param);
-elfsh_Addr	vm_lookup_addr(char *param);
+revmobj_t	*revm_lookup_immed(char *param);
+revmobj_t	*revm_lookup_var(char *param);
+elfshobj_t	*revm_lookup_file(char *param);
+u_int		revm_lookup_index(char *param);
+char		*revm_lookup_string(char *param);
+elfsh_Addr	revm_lookup_addr(char *param);
 
 /* Lazy Abstract Type system functions */
-int		vm_convert2str(revmobj_t *obj);
-int		vm_convert2int(revmobj_t *obj);
-int		vm_convert2long(revmobj_t *obj);
-int		vm_convert2raw(revmobj_t *obj);
-int		vm_convert2byte(revmobj_t *obj);
-int		vm_convert2short(revmobj_t *obj);
-int		vm_convert2daddr(revmobj_t *obj);
-int		vm_convert2caddr(revmobj_t *obj);
+int		revm_convert2str(revmobj_t *obj);
+int		revm_convert2int(revmobj_t *obj);
+int		revm_convert2long(revmobj_t *obj);
+int		revm_convert2raw(revmobj_t *obj);
+int		revm_convert2byte(revmobj_t *obj);
+int		revm_convert2short(revmobj_t *obj);
+int		revm_convert2daddr(revmobj_t *obj);
+int		revm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
-int		vm_setcmd(char *cmd, void *exec, void *reg, u_int needcur);
-int		vm_addcmd(char *cmd, void *exec, void *reg, 
+int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur);
+int		revm_command_add(char *cmd, void *exec, void *reg, 
 			  u_int needfile, char *help);
-int		vm_delcmd(char *cmd);
+int		revm_command_del(char *cmd);
 
 /* Default grammar handlers */
 revmobj_t       *parse_lookup3_index(char *param, char *fmt, u_int sepnbr);
@@ -860,46 +860,46 @@ revmobj_t	*parse_hash(char *param, char *fmt);
 revmobj_t	*parse_list(char *param, char *fmt);
 
 /* Versions functions */
-int             vm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
+int             revm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
 				char *n, char *t, regex_t *r);
-int             vm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id, 
+int             revm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id, 
 				 char *n, char *t, regex_t *r);
-int             vm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
+int             revm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
 
 /* Disassembling and hexadecimal view functions */
-u_int		vm_display_instr(int, u_int, elfsh_Addr, u_int, u_int,
+u_int		revm_instr_display(int, u_int, elfsh_Addr, u_int, u_int,
 				 char *, u_int, char *);
-int		vm_display_section(elfshsect_t *s, char *name, revmlist_t *re);
-int		vm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual);
-int		vm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
+int		revm_section_display(elfshsect_t *s, char *name, revmlist_t *re);
+int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual);
+int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
 				revmlist_t *actual, int flag);
-int		vm_match_special(elfshobj_t *file, elfsh_Addr vaddr, revmlist_t*);
-int             vm_display_object(elfshsect_t *parent, elfsh_Sym *sym, int size, 
+int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr, revmlist_t*);
+int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
 				  u_int off, u_int foffset, elfsh_Addr vaddr, 
 				  char *name, char otype);
 
 /* Parsing / Scanning functions */
-char		*vm_filter_param(char *buf, char *ptr);
-char		*vm_build_unknown(char *buf, const char *str, u_long type);
-void		vm_filter_zero(char *str);
-int		vm_parseopt(int argc, char **argv);
-void            vm_findhex(u_int argc, char **argv);
-int		vm_trans_speblank(const char *in, char ***av, u_int *ac);
-void		vm_replace_speblanks(u_int argc, char **argv);
-u_int           vm_findblanks(char *buf);
-char            **vm_doargv(u_int nbr, u_int *argc, char *buf);
+char		*revm_filter_param(char *buf, char *ptr);
+char		*revm_build_unknown(char *buf, const char *str, u_long type);
+void		revm_filter_zero(char *str);
+int		revm_parseopt(int argc, char **argv);
+void            revm_findhex(u_int argc, char **argv);
+int		revm_trans_speblank(const char *in, char ***av, u_int *ac);
+void		revm_replace_speblanks(u_int argc, char **argv);
+u_int           revm_findblanks(char *buf);
+char            **revm_doargv(u_int nbr, u_int *argc, char *buf);
 
 /* String functions */
-int		vm_strtable_add(char *string);
+int		revm_strtable_add(char *string);
 
 /* Trace functions */
-int		vm_traces_add_arguments(int argc, char **argv);
-edfmtfunc_t 	*vm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
-elfshtraces_t  	*vm_traces_createargs(elfshobj_t *file, char *name,
+int		revm_traces_add_arguments(int argc, char **argv);
+edfmtfunc_t 	*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
+elfshtraces_t  	*revm_traces_createargs(elfshobj_t *file, char *name,
 					 edfmtfunc_t *func, elfsh_Addr vaddr,
 					 u_char external);
-FILE	      	*vm_traces_init(char *tfname, char *rsofname, char *rtfname);
-int	       	vm_traces_add(FILE *fp, int *argcount, char *func_name);
+FILE	      	*revm_traces_init(char *tfname, char *rsofname, char *rtfname);
+int	       	revm_traces_add(FILE *fp, int *argcount, char *func_name);
 int 	       	traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
 int	       	traces_add(elfshobj_t *file, char *name, char **optarg);
 int	       	traces_rm(elfshobj_t *file, char *name, char **optarg);
@@ -914,104 +914,105 @@ int	       	traces_list(elfshobj_t *file, char *name, char **optarg);
 int		traces_run(elfshobj_t *file, char **argv, int argc);
 
 /* Hash functions */
-int             vm_hashunk(int i);
-int             vm_hashbucketprint(int, int, int, char *, int, int, int);
-int             vm_hashchainprint(int i, int s, char *n, int r, int h);
+int             revm_hashunk(int i);
+int             revm_hashbucket_print(int, int, int, char *, int, int, int);
+int             revm_hashchain_print(int i, int s, char *n, int r, int h);
 
 /* Internal functions */
-revmmod_t	*vm_modprobe();
-void		vm_setup_hashtables();
-int		vm_doerror(void (*fct)(char *str), char *str);
-void		vm_error(char *label, char *param);
-void		vm_badparam(char *str);
-void		vm_unknown(char *str);
-void		vm_exit(int err);
-void		vm_print_banner();
-void		vm_dynentinfo(elfshobj_t *f, elfsh_Dyn *ent, char *info);
-int		vm_usage(char *str);
-int		vm_modlist();
-int		vm_isnbr(char *string);
-void		vm_load_cwfiles();
-int		vm_implicit(revmcmd_t *actual);
-int	        vm_unload_cwfiles();
+revmmod_t	*revm_modprobe();
+void		revm_tables_setup();
+int		revm_doerror(void (*fct)(char *str), char *str);
+void		revm_error(char *label, char *param);
+void		revm_badparam(char *str);
+void		revm_unknown(char *str);
+void		revm_exit(int err);
+void		revm_banner_print();
+void		revm_dynentinfo(elfshobj_t *f, elfsh_Dyn *ent, char *info);
+int		revm_usage(char *str);
+int		revm_modlist();
+int		revm_isnbr(char *string);
+void		revm_workfiles_load();
+int		revm_implicit(revmcmd_t *actual);
+int	        revm_workfiles_unload();
 int		dprintf(int fd, char *format, ...);
-void	        vm_print_pht(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
-char		*vm_fetch_sht_typedesc(elfsh_Word typenum);
-int             vm_print_sht(elfsh_Shdr *shdr, u_int num, char rtflag);
-int		vm_load_init_dephash(elfshobj_t *file, char *name);
-int		vm_load_file(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
-int		vm_is_loaded(char *name);
-int		vm_doswitch(int nbr);
-char		*vm_ascii_type(hash_t *cur);
-char		*vm_ascii_ltype(list_t *cur);
-char		*vm_get_mode_name();
-char            *vm_basename(char *str);
-void            vm_set_quit_msg(char *msg);
-int		vm_fifo_io(revmjob_t *job);
-void		vm_print_obj(revmobj_t *obj);
+void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base);
+char		*revm_fetch_sht_typedesc(elfsh_Word typenum);
+int             revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag);
+int		revm_load_init_dephash(elfshobj_t *file, char *name);
+int		revm_file_load(char *name, elfsh_Addr base, elfshlinkmap_t *lm);
+int		revm_is_loaded(char *name);
+int		revm_doswitch(int nbr);
+char		*revm_ascii_type(hash_t *cur);
+char		*revm_ascii_ltype(list_t *cur);
+char		*revm_modename_get();
+char            *revm_basename(char *str);
+void            revm_quitmsg_set(char *msg);
+int		revm_fifo_io(revmjob_t *job);
+void		revm_object_print(revmobj_t *obj);
+char		*revm_string_get(char **params);
 
 /* Vector related functions */
-int		vm_vectors_getdims(char *str, unsigned int *dims);
-char		*vm_ascii_vtype(vector_t *cur);
-int		vm_vectors_getdimnbr(char *str);
-int		vm_vector_bad_dims(vector_t *v, unsigned int *dims, u_int dimnbr);
+int		revm_vectors_getdims(char *str, unsigned int *dims);
+char		*revm_ascii_vtype(vector_t *cur);
+int		revm_vectors_getdimnbr(char *str);
+int		revm_vector_bad_dims(vector_t *v, unsigned int *dims, u_int dimnbr);
 
 /* Dependences related information : deps.c */
-int		vm_load_enumdep(elfshobj_t *obj);
-int		vm_load_dep(elfshobj_t *p, char *n, elfsh_Addr b, elfshlinkmap_t *);
-char	     	*vm_load_searchlib(char *name);
-elfshobj_t	*vm_is_dep(elfshobj_t *obj, char *path);
-elfshobj_t	*vm_is_depid(elfshobj_t *obj, int id);
-int		vm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
+int		revm_load_enumdep(elfshobj_t *obj);
+int		revm_load_dep(elfshobj_t *p, char *n, elfsh_Addr b, elfshlinkmap_t *);
+char	     	*revm_load_searchlib(char *name);
+elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path);
+elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id);
+int		revm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
 
 /* Top skeleton functions */
-int		vm_init() __attribute__((constructor));
-int		vm_loop(int argc, char **argv);
-int		vm_setup(int ac, char **av, char mode, char side);
-int		vm_run(int ac, char **av);
-int		vm_config();
+int		revm_init() __attribute__((constructor));
+int		revm_loop(int argc, char **argv);
+int		revm_setup(int ac, char **av, char mode, char side);
+int		revm_run(int ac, char **av);
+int		revm_config();
 
 /* Scripting flow functions */
-int		vm_execscript();
-int		vm_execmd();
-int		vm_move_pc(char *idx);
-int		vm_openscript(char **av);
-int		vm_testscript(int ac, char **av);
-int		vm_exec_str(char *str);
-int	        vm_restore_dbgcontext(int, char, revmargv_t*, void*, char**, char*);
+int		revm_execscript();
+int		revm_execmd();
+int		revm_move_pc(char *idx);
+int		revm_openscript(char **av);
+int		revm_testscript(int ac, char **av);
+int		revm_exec_str(char *str);
+int	        revm_restore_dbgcontext(int, char, revmargv_t*, void*, char**, char*);
 
 /* Variable functions */
-int             vm_setvar_str(char *varname, char *value);
-int             vm_setvar_raw(char *varname, char *value, u_int len);
-int             vm_setvar_byte(char *varname, u_char byte);
-int             vm_setvar_short(char *varname, u_short val);
-int             vm_setvar_int(char *varname, u_int val);
-int             vm_setvar_long(char *varname, u_long val);
+int             revm_setvar_str(char *varname, char *value);
+int             revm_setvar_raw(char *varname, char *value, u_int len);
+int             revm_setvar_byte(char *varname, u_char byte);
+int             revm_setvar_short(char *varname, u_short val);
+int             revm_setvar_int(char *varname, u_int val);
+int             revm_setvar_long(char *varname, u_long val);
 
 /* Type related functions */
-int		vm_types_print();
-int		vm_type_print(char *type, char mode);
-int		vm_type_copy(char *from, char *to);
-int		vm_type_hashcreate(char *name);
+int		revm_types_print();
+int		revm_type_print(char *type, char mode);
+int		revm_type_copy(char *from, char *to);
+int		revm_type_hashcreate(char *name);
 
 /* Data access related functions */
-aspectype_t	*vm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
-revmobj_t	*vm_revmobj_lookup_real(aspectype_t *type, char *objname, char *objpath);
-revmobj_t	*vm_revmobj_lookup(char *str);
-char		*vm_generic_getname(void *type, void *data);
-int		vm_generic_setname(void *type, void *data, void *newdata);
-elfsh_Addr	vm_generic_getobj(void *data);
-elfsh_Addr	vm_hash_getobj(void *data);
-int		vm_byte_setobj(void *data, elfsh_Addr value);
-int		vm_short_setobj(void *data, elfsh_Addr value);
-int		vm_int_setobj(void *data, elfsh_Addr value);
-int		vm_long_setobj(void *data, elfsh_Addr value);
-char		*vm_generic_getdata(void *data, int off, int sizelm);
-int		vm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
+aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
+revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath);
+revmobj_t	*revm_object_lookup(char *str);
+char		*revm_generic_getname(void *type, void *data);
+int		revm_generic_setname(void *type, void *data, void *newdata);
+elfsh_Addr	revm_generic_getobj(void *data);
+elfsh_Addr	revm_hash_getobj(void *data);
+int		revm_byte_setobj(void *data, elfsh_Addr value);
+int		revm_short_setobj(void *data, elfsh_Addr value);
+int		revm_int_setobj(void *data, elfsh_Addr value);
+int		revm_long_setobj(void *data, elfsh_Addr value);
+char		*revm_generic_getdata(void *data, int off, int sizelm);
+int		revm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 
 /* Object creation/verification functions */
-int		vm_convert_object(revmobj_t *obj, u_int objtype);
-revmL1_t	*vm_create_L1ENT(void	*get_obj,
+int		revm_convert_object(revmobj_t *obj, u_int objtype);
+revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_obj_idx,
 				 void	*get_obj_nam,
 				 hash_t	*l2_hash,
@@ -1019,61 +1020,61 @@ revmL1_t	*vm_create_L1ENT(void	*get_obj,
 				 void	*get_entval,
 				 void	*set_entval,
 				 u_int	elem_size);
-revmL2_t	*vm_create_L2ENT(void	*get_obj,
+revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*set_obj,
 				 char	type,
 				 void	*get_name,
 				 void	*set_name,
 				 void	*get_data,
 				 void	*set_data);
-revmcmd_t	*vm_create_CMDENT(int	(*exec)(void *file, void *av),
+revmcmd_t	*revm_create_CMDENT(int	(*exec)(void *file, void *av),
 				  int	(*reg)(u_int i, u_int ac, char **av),
 				  int	flags, char *help);
-elfshredir_t	*vm_create_REDIR(u_char type, char *sname, char *dname, 
+elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
 				 elfsh_Addr saddr, elfsh_Addr daddr);
-revmobj_t	*vm_create_IMMED(char type, char perm, u_int val);
-revmobj_t	*vm_create_IMMEDSTR(char perm, char *str);
-revmobj_t	*vm_create_LONG(char perm, elfsh_Addr val);
-revmobj_t	*vm_create_CADDR(char perm, elfsh_Addr val);
-revmobj_t	*vm_create_DADDR(char perm, elfsh_Addr val);
+revmobj_t	*revm_create_IMMED(char type, char perm, u_int val);
+revmobj_t	*revm_create_IMMEDSTR(char perm, char *str);
+revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val);
+revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val);
+revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val);
 
 /* Interface related functions */
-int		vm_system(char *cmd);
-void		vm_dbgid_set(u_int pid);
-u_int		vm_dbgid_get();
+int		revm_system(char *cmd);
+void		revm_dbgid_set(u_int pid);
+u_int		revm_dbgid_get();
 
 /* Atomic operations */
-int             vm_preconds_atomics(revmobj_t **o1, revmobj_t **o2);
-int		vm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
-int		vm_hash_add(hash_t *h, revmobj_t *o);
-int		vm_hash_del(hash_t *h, revmobj_t *o);
-int		vm_list_add(list_t *h, revmobj_t *o);
-int		vm_list_del(list_t *h, revmobj_t *o);
-int		vm_hash_set(char *tab, char *elm, void *obj, u_char type);
-int		vm_list_set(char *tab, char *elm, void *obj, u_char type);
-int		vm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
-int		vm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
-int		vm_revmobj_set(revmobj_t *o1, revmobj_t *o2);
+int             revm_preconds_atomics(revmobj_t **o1, revmobj_t **o2);
+int		revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
+int		revm_hash_add(hash_t *h, revmobj_t *o);
+int		revm_hash_del(hash_t *h, revmobj_t *o);
+int		revm_list_add(list_t *h, revmobj_t *o);
+int		revm_list_del(list_t *h, revmobj_t *o);
+int		revm_hash_set(char *tab, char *elm, void *obj, u_char type);
+int		revm_list_set(char *tab, char *elm, void *obj, u_char type);
+int		revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
+int		revm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
+int		revm_revmobj_set(revmobj_t *o1, revmobj_t *o2);
 
 /* Job related functions */
-int		vm_own_job(revmjob_t *job);
-int		vm_valid_workspace(char *name);
-void		vm_switch_job(revmjob_t *job);
-revmjob_t	*vm_clone_job(char *name, revmjob_t *job);
-int		vm_add_script_cmd(char *dirstr);
-revmjob_t	*vm_localjob_get();
-revmjob_t	*vm_socket_add(int socket, struct sockaddr_in *addr);
-int              vm_screen_switch();
-int              vm_screen_clear(int i, char c);
-int              vm_screen_update(u_short isnew, u_short prompt_display);
+int		revm_own_job(revmjob_t *job);
+int		revm_valid_workspace(char *name);
+void		revm_switch_job(revmjob_t *job);
+revmjob_t	*revm_clone_job(char *name, revmjob_t *job);
+int		revm_add_script_cmd(char *dirstr);
+revmjob_t	*revm_localjob_get();
+revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
+int              revm_screen_switch();
+int              revm_screen_clear(int i, char c);
+int              revm_screen_update(u_short isnew, u_short prompt_display);
 
 /* libedfmt related functions */
-int		vm_edfmt_parse(elfshobj_t *file);
-int		vm_edfmt_uni_print(elfshobj_t *file);
+int		revm_edfmt_parse(elfshobj_t *file);
+int		revm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
-int		vm_inform_type(char *type, char *name, char *straddr, revmexpr_t *e, u_char print);
-int		vm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_char p);
+int		revm_inform_type(char *type, char *name, char *straddr, revmexpr_t *e, u_char print);
+int		revm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_char p);
 
 /* Expression related functions */
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);

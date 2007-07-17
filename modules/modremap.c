@@ -11,7 +11,7 @@
 **
 ** Fixed by ELFsh crew for the ELFsh project
 **
-** $Id: modremap.c,v 1.3 2007-03-07 16:45:36 thor Exp $
+** $Id: modremap.c,v 1.4 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "elfsh.h"
@@ -59,7 +59,7 @@ int		remap_cmd()
 
   if (new_base & 0xfff)
     {
-      vm_output(" [*] Base address adapted to be congruent pagesize \n");
+      revm_output(" [*] Base address adapted to be congruent pagesize \n");
       new_base &= 0xfffff000;
     }
   diff = new_base - real_base;
@@ -105,15 +105,15 @@ int		remap_cmd()
 
 void elfsh_init()
 {
-  vm_output(" [*] ELFsh modremap init -OK- \n");
-  vm_addcmd(CMD_REMAP, remap_cmd, vm_getoption, 1, 
+  revm_output(" [*] ELFsh modremap init -OK- \n");
+  revm_command_add(CMD_REMAP, remap_cmd, revm_getoption, 1, 
 	    "Try to remap a non-relocatable file");
 }
 
 void elfsh_fini()
 {
-  vm_output(" [*] ELFsh modremap fini -OK- \n");
-  vm_delcmd(CMD_REMAP);
+  revm_output(" [*] ELFsh modremap fini -OK- \n");
+  revm_command_del(CMD_REMAP);
 }
 
 

@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 21:17:33 2003 mayhem
 ** Last update Wed Aug 13 23:22:59 2005 mayhem
 **
-** $Id: signal.c,v 1.14 2007-06-07 23:21:57 may Exp $
+** $Id: signal.c,v 1.15 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -200,9 +200,9 @@ void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
     return;
   
   sect   = elfsh_get_parent_section(parent, addr, NULL);
-  name   = vm_resolve(parent, addr, &off);
+  name   = revm_resolve(parent, addr, &off);
   sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
-  vm_display_object(sect, sym, 16, 0, off, addr, name, REVM_VIEW_DISASM);
+  revm_object_display(sect, sym, 16, 0, off, addr, name, REVM_VIEW_DISASM);
 }
 #endif
 
@@ -241,7 +241,7 @@ void			e2dbg_do_breakpoint()
   bpsz = elfsh_get_breaksize(parent);
 
   /* Print variables and registers on breakpoints */
-  //if (!world.state.vm_quiet)
+  //if (!world.state.revm_quiet)
   //cmd_vlist();
 
   /* Try to find the breakpoint at current instruction pointer */
@@ -275,7 +275,7 @@ void			e2dbg_do_breakpoint()
 	  if (!ret)
 	    ret++;
 	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
-	  name   = vm_resolve(parent, (elfsh_Addr) *pc, &off);
+	  name   = revm_resolve(parent, (elfsh_Addr) *pc, &off);
 	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, 
 					      &off, ELFSH_LOWSYM);
 
@@ -284,7 +284,7 @@ void			e2dbg_do_breakpoint()
 		 (elfsh_Addr) parent, parent->name, name, sect->name);
 #endif
 
-	  vm_display_object(sect, sym, ret, 0, off, 
+	  revm_object_display(sect, sym, ret, 0, off, 
 			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	  if (!e2dbgworld.stoppedthread->trace)
@@ -374,7 +374,7 @@ void			e2dbg_do_breakpoint()
   /* Breakpoint case */
   else
     {
-      name = vm_resolve(parent, (elfsh_Addr) *pc - bpsz, &off);
+      name = revm_resolve(parent, (elfsh_Addr) *pc - bpsz, &off);
       s    = (e2dbg_is_watchpoint(bp) ? "Watch" : "Break");
 
 

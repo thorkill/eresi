@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.15 2007-03-07 16:45:34 thor Exp $
+** $Id: tables.c,v 1.16 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "elfsh.h"
@@ -16,9 +16,9 @@ void	setup_local_cmdhash()
 {
 
   /* Interactive mode / Scripting mode commands */
-  if (world.state.vm_mode != REVM_STATE_CMDLINE)
-    vm_addcmd(CMD_RUN , (void *) cmd_run   , (void *) vm_getvarparams, 0, HLP_RUN);
-  vm_addcmd(CMD_STRIP , (void *) cmd_strip , (void *) NULL           , 1, HLP_STRIP);
-  vm_addcmd(CMD_SSTRIP, (void *) cmd_sstrip, (void *) NULL           , 1, HLP_SSTRIP);
-  vm_addcmd(CMD_SHTRM , (void *) cmd_shtrm , (void *) NULL           , 1, HLP_SHTRM);
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
+    revm_command_add(CMD_RUN , (void *) cmd_run   , (void *) revm_getvarparams, 0, HLP_RUN);
+  revm_command_add(CMD_STRIP , (void *) cmd_strip , (void *) NULL           , 1, HLP_STRIP);
+  revm_command_add(CMD_SSTRIP, (void *) cmd_sstrip, (void *) NULL           , 1, HLP_SSTRIP);
+  revm_command_add(CMD_SHTRM , (void *) cmd_shtrm , (void *) NULL           , 1, HLP_SHTRM);
 }

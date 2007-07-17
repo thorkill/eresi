@@ -5,14 +5,14 @@
 **
 ** Started September 16 03:11:04 2005 mayhem
 **
-** $Id: curjob.c,v 1.3 2007-03-25 14:27:34 may Exp $
+** $Id: curjob.c,v 1.4 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Return the current local job */
-revmjob_t		*vm_localjob_get()
+revmjob_t		*revm_localjob_get()
 {
   revmjob_t		*job;
   int                   index;

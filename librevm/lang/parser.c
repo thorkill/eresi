@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 mayhem
 **
-** $Id: parser.c,v 1.4 2007-05-23 13:50:39 may Exp $
+** $Id: parser.c,v 1.5 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -23,7 +23,7 @@ static revmargv_t	*newcmd      = NULL;
 
 
 /* Create a fresh label name */
-char			*vm_label_get(char *prefix)
+char			*revm_label_get(char *prefix)
 {
   char			buf[BUFSIZ];
   int			idx;
@@ -43,7 +43,7 @@ char			*vm_label_get(char *prefix)
 
 
 /* Recognize a higher order construct : foreach, match .. */
-int			vm_parse_construct(char *curtok)
+int			revm_parse_construct(char *curtok)
 {
   char			*labl;
 
@@ -55,7 +55,7 @@ int			vm_parse_construct(char *curtok)
       if (curnest >= REVM_MAXNEST_LOOP)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Too many nested construct", -1);
-      labl = vm_label_get("foreach");
+      labl = revm_label_get("foreach");
       hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
       looplabels[curnest++] = labl;
     }
@@ -66,7 +66,7 @@ int			vm_parse_construct(char *curtok)
       if (curnest == 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested forend statement", -1);
-      endlabl = vm_label_get("forend");
+      endlabl = revm_label_get("forend");
 
       if (!strstr(looplabels[curnest - 1], "foreach"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -84,7 +84,7 @@ int			vm_parse_construct(char *curtok)
       if (curnest >= REVM_MAXNEST_LOOP)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Too many nested construct", -1);
-      labl = vm_label_get("match");
+      labl = revm_label_get("match");
       hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
       looplabels[curnest++] = labl;
     }
@@ -95,7 +95,7 @@ int			vm_parse_construct(char *curtok)
       if (curnest == 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested endmatch statement", -1);
-      endlabl = vm_label_get("matchend");
+      endlabl = revm_label_get("matchend");
 
       if (!strstr(looplabels[curnest - 1], "match"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -116,7 +116,7 @@ int			vm_parse_construct(char *curtok)
 
 
 /* Parse the commands */
-int			vm_parseopt(int argc, char **argv)
+int			revm_parseopt(int argc, char **argv)
 {
   u_int			index;
   int			ret;
@@ -130,9 +130,9 @@ int			vm_parseopt(int argc, char **argv)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We are at command line */
-  cmdline = ((world.state.vm_mode == REVM_STATE_CMDLINE 
-	     || world.state.vm_mode == REVM_STATE_TRACER)
-	     && !world.state.vm_net);
+  cmdline = ((world.state.revm_mode == REVM_STATE_CMDLINE 
+	     || world.state.revm_mode == REVM_STATE_TRACER)
+	     && !world.state.revm_net);
 
   /* Main option reading loop : using the command hash table */
   for (index = 1; index < argc; index++)
@@ -177,17 +177,17 @@ int			vm_parseopt(int argc, char **argv)
 	      if (ret < 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			     "Command not found", 
-			     (vm_doerror(vm_badparam, argv[index])));
+			     (revm_doerror(revm_badparam, argv[index])));
 	    }
 
-	  if (vm_parse_construct(argv[index]) < 0)
+	  if (revm_parse_construct(argv[index]) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Invalid program construct in script file", -1);
 	  index += ret;
 	}
 
       /* We did -NOT- match command */
-      else if (world.state.vm_mode == REVM_STATE_SCRIPT)
+      else if (world.state.revm_mode == REVM_STATE_SCRIPT)
 	{
 	  /* Try to match a label */
 	  ret = sscanf(name, "%15[^:]%c", label, &c);
@@ -201,7 +201,7 @@ int			vm_parseopt(int argc, char **argv)
 	  
 	  /* No label matched, enable lazy evaluation */
 	  /* because it may be a module command */
-	  ret = vm_getvarparams(index - 1, argc, argv);
+	  ret = revm_getvarparams(index - 1, argc, argv);
 	  index += ret;
 	}
       
@@ -209,7 +209,7 @@ int			vm_parseopt(int argc, char **argv)
       else
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown parsing error", 
-		     (vm_doerror(vm_unknown, argv[index])));
+		     (revm_doerror(revm_unknown, argv[index])));
 
       /* Put the newcmd command at the end of the list */
       newcmd->name = name;

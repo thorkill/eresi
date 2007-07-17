@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: stack.c,v 1.3 2007-06-07 16:10:00 may Exp $
+** $Id: stack.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -29,7 +29,7 @@ int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cannot dump anymore : end of stack", -1);
 
-      name = vm_resolve(world.curjob->current, *i, &off);
+      name = revm_resolve(world.curjob->current, *i, &off);
       if (!name)
 	name = "?";
       if (off)
@@ -64,7 +64,7 @@ int		cmd_stack()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));
 
-  param = vm_lookup_string(param);
+  param = revm_lookup_string(param);
 
   ssp = hash_get(&vars_hash, E2DBG_SSP_VAR);
   if (!ssp)
@@ -72,7 +72,7 @@ int		cmd_stack()
 		      "No saved SP", -1);
 
   /* Dump debuggee stack */
-  if (vm_isnbr(param))
+  if (revm_isnbr(param))
     {
       if (sscanf(param, UFMT, &size) != 1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -104,10 +104,10 @@ int		cmd_dbgstack()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));
 
-  param = vm_lookup_string(param);
+  param = revm_lookup_string(param);
 
   /* Dump debugger stack */
-  if (vm_isnbr(param))
+  if (revm_isnbr(param))
     {
       if (sscanf(param, UFMT, &size) != 1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

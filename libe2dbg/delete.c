@@ -5,7 +5,7 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: delete.c,v 1.3 2007-04-16 16:29:16 may Exp $
+** $Id: delete.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -28,7 +28,7 @@ int		cmd_delete()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lookup breakpoint */
-  bp = e2dbg_breakpoint_lookup(vm_lookup_string(world.curjob->curcmd->param[0]));
+  bp = e2dbg_breakpoint_lookup(revm_lookup_string(world.curjob->curcmd->param[0]));
   if (!bp)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown breakpoint", -1);
@@ -39,7 +39,7 @@ int		cmd_delete()
   *(u_char *) addr = bp->savedinstr[0];
   elfsh_mprotect(addr, 1, prot);
 
-  name = vm_resolve(bp->obj, addr, &off);
+  name = revm_resolve(bp->obj, addr, &off);
   snprintf(logbuf, BUFSIZ, XFMT, addr);
   hash_del(&e2dbgworld.bp, logbuf);
 

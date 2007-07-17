@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 19 08:20:07 2003 mayhem
 ** Last update Thu Mar  4 20:21:56 2004 mayhem
 **
-** $Id: modtest.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: modtest.c,v 1.3 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "elfsh.h"
@@ -36,14 +36,14 @@ void	elfsh_help()
 void	elfsh_init()
 {
   puts(" [*] ELFsh modtest init -OK- \n");
-  vm_setcmd(CMD_PRINT, mod_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
-  vm_addcmd(CMD_TEST, mod_newcmd, NULL, 0, "Simple example command");
+  revm_command_set(CMD_PRINT, mod_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
+  revm_command_add(CMD_TEST, mod_newcmd, NULL, 0, "Simple example command");
 }
 
 void	elfsh_fini()
 {
   puts(" [*] ELFsh modtest fini -OK- \n");
-  vm_setcmd(CMD_PRINT, cmd_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
-  vm_delcmd(CMD_TEST);
+  revm_command_set(CMD_PRINT, cmd_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
+  revm_command_del(CMD_TEST);
 }
 

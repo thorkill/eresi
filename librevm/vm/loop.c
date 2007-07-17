@@ -6,14 +6,14 @@
 ** Started on  Wed Nov 19 23:02:04 2003 mayhem
 ** Updated on  Mon Aug 15 06:01:54 2005 mayhem
 **
-** $Id: loop.c,v 1.8 2007-06-04 21:20:33 mxatone Exp $
+** $Id: loop.c,v 1.9 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Debug purpose */
-int		vm_printscript(revmargv_t *start)
+int		revm_printscript(revmargv_t *start)
 {
   revmargv_t	*list;
   u_int		index;
@@ -21,7 +21,7 @@ int		vm_printscript(revmargv_t *start)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  vm_output("  .:: Printing Script: \n");
+  revm_output("  .:: Printing Script: \n");
 
   if (start)
     list = start;
@@ -32,14 +32,14 @@ int		vm_printscript(revmargv_t *start)
     {
       snprintf(logbuf, BUFSIZ - 1, "[%03u] ~%s %p \n",
 	       index, list->name, list);
-      vm_output(logbuf);
+      revm_output(logbuf);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /* Scripting report purpose */
-void		vm_print_actual(revmargv_t *cur)
+void		revm_print_actual(revmargv_t *cur)
 {
   int		idx;
   char		logbuf[BUFSIZ];
@@ -47,11 +47,11 @@ void		vm_print_actual(revmargv_t *cur)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1, "~%s ", cur->name);
-  vm_output(logbuf);
+  revm_output(logbuf);
   for (idx = 0; cur->param[idx] && idx < 10; idx++)
     {
       snprintf(logbuf, BUFSIZ - 1, "%s ", cur->param[idx]);
-      vm_output(logbuf);
+      revm_output(logbuf);
     }
   putchar('\n');
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -61,7 +61,7 @@ void		vm_print_actual(revmargv_t *cur)
 
 /* Execute the script (only used in script mode) */
 /* Script mode include sourced scripts in elfsh or e2dbg */
-int		vm_execscript()
+int		revm_execscript()
 {
   revmargv_t	*cur;
   revmargv_t	*next;
@@ -70,7 +70,7 @@ int		vm_execscript()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Restore the command pointer if we used 'cont' */
-  if (world.state.vm_sourcing)
+  if (world.state.revm_sourcing)
     {
       cur = world.context.curcmd;
       world.curjob->curcmd = cur;
@@ -97,7 +97,7 @@ int		vm_execscript()
 	      if (cur->cmd->reg(0, cur->argc, cur->param) < 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				  "Commande parsing failed",
-				  vm_doerror(vm_badparam, cur->param[0]));
+				  revm_doerror(revm_badparam, cur->param[0]));
 	    }
 	}
 
@@ -106,7 +106,7 @@ int		vm_execscript()
 	{
 	  next                    = cur->next;
 	  world.context.curcmd    = next;
-	  world.state.vm_sourcing = 1;
+	  world.state.revm_sourcing = 1;
 	  fprintf(stderr, "Found -continue- in script, sourcing flag now -ON- \n");
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			REVM_SCRIPT_CONTINUE);
@@ -115,9 +115,9 @@ int		vm_execscript()
       /* Execute instruction */
       if (cur->cmd != NULL && cur->cmd->exec != NULL)
 	{
-	  if (!world.state.vm_quiet)
-	    vm_print_actual(cur);
-	  if (vm_implicit(cur->cmd) < 0)
+	  if (!world.state.revm_quiet)
+	    revm_print_actual(cur);
+	  if (revm_implicit(cur->cmd) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Implicit operations failed", -1);
 	  status = cur->cmd->exec();
@@ -126,7 +126,7 @@ int		vm_execscript()
 			      "Command execution failed", -1);
 	}
       else
-	 vm_error("Lazy evaluation failed for command", cur->param[0]);
+	 revm_error("Lazy evaluation failed for command", cur->param[0]);
 
       /* Current instruction modified the script control flow ? */
       if (cur == world.curjob->curcmd)
@@ -146,7 +146,7 @@ int		vm_execscript()
 	  goto end;
 	case REVM_SCRIPT_CONTINUE:
 	  world.context.curcmd    = next;
-	  world.state.vm_sourcing = 1;
+	  world.state.revm_sourcing = 1;
 	  fprintf(stderr, "Found -start- in script, sourcing flag now -ON- \n");
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 			REVM_SCRIPT_CONTINUE);
@@ -158,14 +158,14 @@ int		vm_execscript()
  end:
 
   /* If we had a saved context, restore it */
-  if (world.state.vm_sourcing)
+  if (world.state.revm_sourcing)
     {
 
       fprintf(stderr, " [D] Restoring e2dbg context from sourced script \n");
       //sleep(20);
 
       world.curjob->lstcmd[world.curjob->sourced] = NULL;
-      vm_restore_dbgcontext(world.context.savedfd,
+      revm_restore_dbgcontext(world.context.savedfd,
 			    world.context.savedmode,
 			    world.context.savedcmd,
 			    world.context.savedinput,
@@ -173,7 +173,7 @@ int		vm_execscript()
 			    world.context.savedname);
 
       world.curjob->curcmd = NULL;
-      world.state.vm_sourcing = 0;
+      world.state.revm_sourcing = 0;
 
 
       fprintf(stderr, " [D] Restored e2dbg context ! \n");
@@ -181,14 +181,14 @@ int		vm_execscript()
   
   /* Make sure we switch to interactive mode if we issued a stop command */
   if (status == REVM_SCRIPT_STOP)
-    world.state.vm_mode = REVM_STATE_INTERACTIVE;
+    world.state.revm_mode = REVM_STATE_INTERACTIVE;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }
 
 
 
 /* Execute the ELFsh current command (only used in interactive mode) */
-int		vm_execmd()
+int		revm_execmd()
 {
   //revmargv_t	*next;
   revmjob_t	*curjob;
@@ -208,7 +208,7 @@ int		vm_execmd()
 	/* Reset profiler message before anything */
 	profiler_error_reset();
 
-	if (vm_implicit(cur->cmd) < 0)
+	if (revm_implicit(cur->cmd) < 0)
 	  {
 	    profiler_error();
 	    err = -1;
@@ -259,7 +259,7 @@ int		vm_execmd()
 
 
 /* Take the ELF machine control flow in charge */
-int		vm_move_pc(char *param)
+int		revm_move_pc(char *param)
 {
   int		index;
   int		jmp;

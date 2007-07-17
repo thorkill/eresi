@@ -5,7 +5,7 @@
 **
 ** Started on  Sat May 31 23:48:41 2005 mayhem
 **
-** $Id: cleanup.c,v 1.3 2007-03-07 16:45:34 thor Exp $
+** $Id: cleanup.c,v 1.4 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "elfsh.h"
@@ -23,7 +23,7 @@ int		cmd_cleanup()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  obj = vm_lookup_file(world.curjob->curcmd->param[0]);
+  obj = revm_lookup_file(world.curjob->curcmd->param[0]);
   if (!obj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
@@ -34,7 +34,7 @@ int		cmd_cleanup()
     if (strstr(sect->name, ".o.") || strstr(sect->name, "elfsh"))
       {
 	snprintf(buf, BUFSIZ, "Set section header %u as removed \n", index);
-	vm_output(buf);
+	revm_output(buf);
 	sect->flags = sect->flags | ELFSH_SECTION_REMOVED;
 	nbr++;
       }
@@ -42,6 +42,6 @@ int		cmd_cleanup()
   world.curjob->current->nbrm = nbr;
   //world.curjob->current->strip = 1;
 
-  vm_output("\n [*] File marked for cleanup-on-save \n\n");
+  revm_output("\n [*] File marked for cleanup-on-save \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

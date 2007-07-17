@@ -4,7 +4,7 @@
 ** Input related functions
 **
 ** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** $Id: input.c,v 1.8 2007-05-26 19:46:54 mxatone Exp $
+** $Id: input.c,v 1.9 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -12,7 +12,7 @@
 
 
 /* Read a new line, avoiding comments and void lines */
-char		*vm_getln()
+char		*revm_getln()
 {
   char		*buf;
   char		*sav;
@@ -38,15 +38,15 @@ char		*vm_getln()
       if (!*sav || *sav == REVM_COMMENT_START)
 	{
 
-	  vm_log(sav);
-	  vm_log("\n");
+	  revm_log(sav);
+	  revm_log("\n");
 
 #if !defined(USE_READLN)
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, buf);
 #endif
 	  
-	  if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
-	      world.state.vm_mode == REVM_STATE_DEBUGGER)
+	  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+	      world.state.revm_mode == REVM_STATE_DEBUGGER)
 	    NOPROFILER_ROUT((char*) REVM_INPUT_VOID);
 
           buf = NULL;
@@ -54,9 +54,9 @@ char		*vm_getln()
 	    continue;
 	}
 
-      if (world.state.vm_mode != REVM_STATE_SCRIPT)
+      if (world.state.revm_mode != REVM_STATE_SCRIPT)
 	{
-	  vm_output_nolog("\n");
+	  revm_output_nolog("\n");
 
           /* avoid looping with readline */
 #if defined(USE_READLN)
@@ -77,7 +77,7 @@ char		*vm_getln()
 
 
 /* Read input from the file descriptor */
-char		*vm_read_input()
+char		*revm_read_input()
 {
   char		tmpbuf[BUFSIZ + 1];
   int		len;
@@ -96,8 +96,8 @@ char		*vm_read_input()
 		//fprintf(stderr, "Read length 0 ... \n");
 		NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
 	      }
-	    if (world.state.vm_mode == REVM_STATE_DEBUGGER &&
-		world.state.vm_side == REVM_SIDE_CLIENT)
+	    if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
+		world.state.revm_side == REVM_SIDE_CLIENT)
 	      tmpbuf[len + 1] = 0x00;
 	    else
 	      tmpbuf[len] = 0x00;
@@ -116,7 +116,7 @@ char		*vm_read_input()
 
 
 /* Input handler for the FIFO */
-char		*vm_fifoinput()
+char		*revm_fifoinput()
 {
   int		fd;
   char		*ret;
@@ -124,7 +124,7 @@ char		*vm_fifoinput()
   fd = world.curjob->ws.io.input_fd;
   
   /* Just debugging */
-  switch (world.state.vm_side)
+  switch (world.state.revm_side)
     {
     case REVM_SIDE_CLIENT:
       //fprintf(stderr, "Goto read fifo (client legit) ... \n");      
@@ -136,12 +136,12 @@ char		*vm_fifoinput()
       break;
     }
  
- ret = vm_read_input();
+ ret = revm_read_input();
  world.curjob->ws.io.input_fd = fd;
  world.curjob->ws.io.input = world.curjob->ws.io.old_input;
  
  /* Just debugging */ 
- switch (world.state.vm_side)
+ switch (world.state.revm_side)
    {
    case REVM_SIDE_CLIENT:
      //fprintf(stderr, "BACK from reading fifo (client legit) ... (%s)\n");      
@@ -156,7 +156,7 @@ char		*vm_fifoinput()
 
 
 /* INPUT handler for stdin */
-char		*vm_stdinput()
+char		*revm_stdinput()
 {
   char		*str;
 
@@ -165,7 +165,7 @@ char		*vm_stdinput()
 
   /* Case if we are using readline */
 #if defined(USE_READLN)
-  if (world.state.vm_mode != REVM_STATE_SCRIPT)
+  if (world.state.revm_mode != REVM_STATE_SCRIPT)
     {
       str = readln_input_check();
       NOPROFILER_ROUT(str);
@@ -173,12 +173,12 @@ char		*vm_stdinput()
 #endif
 
   /* If not, read the stdin file descriptor */
-  NOPROFILER_ROUT(vm_read_input());
+  NOPROFILER_ROUT(revm_read_input());
 }
 
 
 /* Change the Input file */
-void	vm_setinput(revmworkspace_t *ws, int fd)
+void	revm_setinput(revmworkspace_t *ws, int fd)
 {
   ws->io.input_fd = fd;
 }

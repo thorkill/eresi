@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.16 2007-06-22 16:16:05 may Exp $
+** $Id: main.c,v 1.17 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -16,7 +16,7 @@ char		*version;
 
 
 /* Setup LD_PRELOAD for dynamic binaries debugging */
-void		vm_debugger_preload()
+void		revm_debugger_preload()
 {
 #if defined(sun)
   char		envbuf[BUFSIZ / 2];
@@ -48,7 +48,7 @@ void		vm_debugger_preload()
 
 
 /* Inject the .o debugger file into the static binary */
-char*		vm_debugger_inject(elfshobj_t *file)
+char*		revm_debugger_inject(elfshobj_t *file)
 {
   char		*buf;
   elfshobj_t	*reloc;
@@ -111,7 +111,7 @@ char*		vm_debugger_inject(elfshobj_t *file)
 
 
 /* Execute the debuggee program */
-int		vm_execute_debuggee(int ac, char **av)
+int		revm_execute_debuggee(int ac, char **av)
 {
   char          **args;
   int		index;
@@ -129,10 +129,10 @@ int		vm_execute_debuggee(int ac, char **av)
   /* Map the debugger in the debuggee */
   file = elfsh_map_obj(av[1]);
   if (!file || !elfsh_static_file(file))
-    vm_debugger_preload();
+    revm_debugger_preload();
   else
     {
-      av[1] = vm_debugger_inject(file);
+      av[1] = revm_debugger_inject(file);
       if (av[1] == NULL)
 	exit(-1);
     }
@@ -153,11 +153,11 @@ int		e2dbg_main(int ac, char **av)
   pid_t		pid;
   int		status;
 
-  vm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_CLIENT);
-  vm_config();
+  revm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_CLIENT);
+  revm_config();
   pid = fork();
   if (!pid)
-    vm_execute_debuggee(ac, av);
+    revm_execute_debuggee(ac, av);
   else
     {
 
@@ -168,16 +168,16 @@ int		e2dbg_main(int ac, char **av)
 
       if (waitpid(pid, &status, WNOHANG) != 0)
 	{
-	  vm_output("\n [E] Target binary not found\n");
-	  vm_output("\n Syntax : ");
-	  vm_output(av[0]);
-	  vm_output(" target_binary \n\n");
+	  revm_output("\n [E] Target binary not found\n");
+	  revm_output("\n Syntax : ");
+	  revm_output(av[0]);
+	  revm_output(" target_binary \n\n");
 	  exit(-1);
 	}
     }
 
-  vm_output(" [*] Type help for regular commands \n\n");
-  return (vm_run(ac, av));
+  revm_output(" [*] Type help for regular commands \n\n");
+  return (revm_run(ac, av));
 }
 
 

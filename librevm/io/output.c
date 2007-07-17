@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 mayhem
 ** Updated on Mon Mar 5 18:47:41 2007 mayhem
 **
-** $Id: output.c,v 1.4 2007-06-04 19:26:21 thor Exp $
+** $Id: output.c,v 1.5 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -14,7 +14,7 @@
 
 
 /* Display str on all term */
-int		vm_output_bcast(char *str)
+int		revm_output_bcast(char *str)
 {
   int		index;
   int		ret = 0;
@@ -28,7 +28,7 @@ int		vm_output_bcast(char *str)
   old = world.curjob;
 
   /* Net's outputs */
-  if (world.state.vm_net)
+  if (world.state.revm_net)
     {
       keys = hash_get_keys(&world.jobs, &keynbr);
       for (index = 0; index < keynbr; index++)
@@ -38,16 +38,16 @@ int		vm_output_bcast(char *str)
 	      !strncmp(keys[index], "DUMP", 4) || !old->ws.active);
 	  continue;
 	  world.curjob = old;
-	  ret |= vm_output(str);
-	  vm_flush();
+	  ret |= revm_output(str);
+	  revm_flush();
 	}
     }
 
   /* stdout */
-  if (world.state.vm_mode != REVM_STATE_CMDLINE)
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
     {
       world.curjob = hash_get(&world.jobs, "local");
-      ret |= vm_output(str);
+      ret |= revm_output(str);
     }
 
   /* Restore */
@@ -58,7 +58,7 @@ int		vm_output_bcast(char *str)
 
 
 /* OUTPUT handler for stdout */
-int		vm_output(char *str)
+int		revm_output(char *str)
 {
   char		*tmp;
   char		c;
@@ -66,11 +66,11 @@ int		vm_output(char *str)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  vm_log(str);
+  revm_log(str);
 
   /* No -- more -- in some modes */
-  if ((world.state.vm_mode != REVM_STATE_INTERACTIVE &&
-       world.state.vm_mode != REVM_STATE_DEBUGGER)
+  if ((world.state.revm_mode != REVM_STATE_INTERACTIVE &&
+       world.state.revm_mode != REVM_STATE_DEBUGGER)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
       || world.curjob->sourced
@@ -99,17 +99,17 @@ int		vm_output(char *str)
   /* Is there any lines remaining ? */
   if (world.curjob->ws.io.outcache.nblines < 0)
     {
-      vm_flush();
+      revm_flush();
       tmp = "-- press enter for more ('q/n' to quit / next) --\n";
       world.curjob->ws.io.output(tmp);
 
-      /* We decided to discard further output (until next vm_flush) */
+      /* We decided to discard further output (until next revm_flush) */
       if ((read(world.curjob->ws.io.input_fd, &c, 1) == 1) && (c == 'q' || c == 'n'))
 	{
 	  if (c == 'q')
 	    world.curjob->ws.io.outcache.ignore = 1;
 	  world.curjob->ws.io.output("\n");
-	  vm_log("\n");
+	  revm_log("\n");
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  
 			     (c == 'q' ? -1 : -2));
 	}
@@ -121,7 +121,7 @@ int		vm_output(char *str)
 
 
 /* Output without buffering/log */
-int		vm_output_nolog(char *str)
+int		revm_output_nolog(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
@@ -131,9 +131,9 @@ int		vm_output_nolog(char *str)
 
 
 /* ERR output function (stderr) */
-int		vm_outerr(char *str)
+int		revm_outerr(char *str)
 {
-  vm_log(str);
+  revm_log(str);
   fprintf(stderr, "%s", str);
   return (0);
 }
@@ -141,7 +141,7 @@ int		vm_outerr(char *str)
 
 
 /* OUTPUT handler for stdout */
-int		vm_stdoutput(char *str)
+int		revm_stdoutput(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   printf("%s", str);
@@ -151,7 +151,7 @@ int		vm_stdoutput(char *str)
 
 
 /* Change the Output file */
-void	vm_setoutput(revmworkspace_t *ws, int fd)
+void	revm_setoutput(revmworkspace_t *ws, int fd)
 {
   ws->io.output_fd = fd;
 }

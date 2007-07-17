@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Wed Jan 03 17:51:04 2007 mayhem
 **
-** $Id: main.c,v 1.17 2007-07-07 17:30:23 may Exp $
+** $Id: main.c,v 1.18 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "elfsh.h"
@@ -18,30 +18,30 @@ void		esh_setup_quit_msg()
 
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
 	   ELFSH_NAME, REVM_VERSION);
-  vm_set_quit_msg(logbuf);
+  revm_quitmsg_set(logbuf);
 }
 
 void		esh_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   vm_colorget("%s", "pspecial", "("),
-	   vm_colorget("%s", "psname" , ELFSH_SNAME),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", REVM_VERSION),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", REVM_RELEASE),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", REVM_EDITION),
-	   vm_colorget("%s", "pspecial", "@"),
-	   vm_colorget("%s", "psname", world.curjob->ws.name),
-	   vm_colorget("%s", "pspecial", ")"));
-  vm_endline();
+	   revm_colorget("%s", "pspecial", "("),
+	   revm_colorget("%s", "psname" , ELFSH_SNAME),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pversion", REVM_VERSION),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "prelease", REVM_RELEASE),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pedition", REVM_EDITION),
+	   revm_colorget("%s", "pspecial", "@"),
+	   revm_colorget("%s", "psname", world.curjob->ws.name),
+	   revm_colorget("%s", "pspecial", ")"));
+  revm_endline();
 }
 
 void 		esh_setup_prompt()
 {
-  vm_set_prompt(esh_create_prompt);
+  revm_set_prompt(esh_create_prompt);
 }
 
 
@@ -65,7 +65,7 @@ void		esh_banner_print()
 #endif
 	   "\t .::. This software is under the General Public License V.2 \n"
 	   "\t .::. Please visit http://www.gnu.org \n\n");
-  vm_output(logbuf);
+  revm_output(logbuf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
@@ -74,13 +74,13 @@ int		esh_main(int ac, char **av)
 {
   esh_setup_quit_msg();
   esh_setup_prompt();
-  vm_setup(ac, av, 0, 0);
-  if (world.state.vm_mode != REVM_STATE_CMDLINE)
+  revm_setup(ac, av, 0, 0);
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
     esh_banner_print(av[1]);
-  vm_config();
+  revm_config();
   setup_local_cmdhash();
-  vm_output(" [*] Type help for regular commands \n\n");
-  return (vm_run(ac, av));
+  revm_output(" [*] Type help for regular commands \n\n");
+  return (revm_run(ac, av));
 }
 
 

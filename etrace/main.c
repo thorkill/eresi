@@ -3,7 +3,7 @@
 **
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.10 2007-07-07 17:30:23 may Exp $
+** $Id: main.c,v 1.11 2007-07-17 18:11:24 may Exp $
 **
 */
 #include "etrace.h"
@@ -15,30 +15,30 @@ void		etrace_setup_quit_msg()
 
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
 	   ETRACE_NAME, REVM_VERSION);
-  vm_set_quit_msg(logbuf);
+  revm_quitmsg_set(logbuf);
 }
 
 void		etrace_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   vm_colorget("%s", "pspecial", "("),
-	   vm_colorget("%s", "psname" , ETRACE_SNAME),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pversion", REVM_VERSION),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "prelease", REVM_RELEASE),
-	   vm_colorget("%s", "pspecial", "-"),
-	   vm_colorget("%s", "pedition", REVM_EDITION),
-	   vm_colorget("%s", "pspecial", "@"),
-	   vm_colorget("%s", "psname", world.curjob->ws.name),
-	   vm_colorget("%s", "pspecial", ")"));
-  vm_endline();
+	   revm_colorget("%s", "pspecial", "("),
+	   revm_colorget("%s", "psname" , ETRACE_SNAME),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pversion", REVM_VERSION),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "prelease", REVM_RELEASE),
+	   revm_colorget("%s", "pspecial", "-"),
+	   revm_colorget("%s", "pedition", REVM_EDITION),
+	   revm_colorget("%s", "pspecial", "@"),
+	   revm_colorget("%s", "psname", world.curjob->ws.name),
+	   revm_colorget("%s", "pspecial", ")"));
+  revm_endline();
 }
 
 void 		etrace_setup_prompt()
 {
-  vm_set_prompt(etrace_create_prompt);
+  revm_set_prompt(etrace_create_prompt);
 }
 
 /* Print the etrace banner */
@@ -61,7 +61,7 @@ void		etrace_banner_print()
 #endif
 	   "\t .::. This software is under the General Public License V.2 \n"
 	   "\t .::. Please visit http://www.gnu.org \n\n");
-  vm_output(logbuf);
+  revm_output(logbuf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
@@ -100,17 +100,17 @@ int		etrace_main(int ac, char **av)
 	}
     }
 
-  vm_setup(ac, av, state, 0);
+  revm_setup(ac, av, state, 0);
 
   /* In this case we will trace all function of the binary */
   if (ac > 1 && state == REVM_STATE_INTERACTIVE
-      && world.state.vm_mode != REVM_STATE_SCRIPT)
+      && world.state.revm_mode != REVM_STATE_SCRIPT)
     {
       trace_all = 1;
       exav = av;
       
       /* Switch to tracer mode */
-      world.state.vm_mode = state = REVM_STATE_TRACER;
+      world.state.revm_mode = state = REVM_STATE_TRACER;
       exac = ac;
       ac += 2;
 
@@ -134,28 +134,28 @@ int		etrace_main(int ac, char **av)
   if (state == REVM_STATE_TRACER)
     {
       /* Parse first argument */
-      if (vm_trans_speblank(av[1], &argv, &argc) < 0)
+      if (revm_trans_speblank(av[1], &argv, &argc) < 0)
 	return -1;
 
       world.state.input = argv[0];
-      str = vm_lookup_string(world.state.input);
+      str = revm_lookup_string(world.state.input);
 
       if (!str)
 	{
-	  vm_output("Unable to lookup file\n");
+	  revm_output("Unable to lookup file\n");
 	  return -1;
 	}
 
       /* Load submited file */
-      vm_output("\n");
-      ret = vm_load_file(str, 0, NULL);
-      vm_output("\n");
+      revm_output("\n");
+      ret = revm_file_load(str, 0, NULL);
+      revm_output("\n");
       
       if (ret < 0)
 	return ret;
       
       if (argc > 1)
-	vm_traces_add_arguments(argc - 1, argv+1);
+	revm_traces_add_arguments(argc - 1, argv+1);
       
       XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
 
@@ -165,10 +165,10 @@ int		etrace_main(int ac, char **av)
       av++;
     }
 
-  vm_config();
+  revm_config();
   setup_local_cmdhash();
-  vm_output(" [*] Type help for regular commands \n\n");
-  return (vm_run(ac, av));
+  revm_output(" [*] Type help for regular commands \n\n");
+  return (revm_run(ac, av));
 }
 
 

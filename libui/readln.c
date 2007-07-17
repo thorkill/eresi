@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.17 2007-05-26 19:46:54 mxatone Exp $
+** $Id: readln.c,v 1.18 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "libui.h"
@@ -131,19 +131,19 @@ void		readln_completion_install(char mode, char side)
   str = "";
   if (mode != REVM_STATE_DEBUGGER && mode != REVM_STATE_CMDLINE 
       && mode != REVM_STATE_SCRIPT && mode != REVM_STATE_TRACER)
-    str = vm_get_prompt();
+    str = revm_get_prompt();
 
-  rl_callback_handler_install(str, vm_ln_handler);
+  rl_callback_handler_install(str, revm_ln_handler);
 
   /* We setup prompt after installation because we
    don't want it directly */
   if (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT)
     {
       rl_on_new_line_with_prompt();
-      rl_prompt = vm_get_prompt();
+      rl_prompt = revm_get_prompt();
     }
 
-  rl_bind_key(CTRL('x'), vm_screen_switch);
+  rl_bind_key(CTRL('x'), revm_screen_switch);
   readln_install_clearscreen();
   readln_column_update();
   signal(SIGWINCH, (void *) readln_column_update);
@@ -313,7 +313,7 @@ int		readln_prompt_update(char *ptr, int size)
 
 
 /* readline line handler */
-void    vm_ln_handler(char *c)
+void    revm_ln_handler(char *c)
 {
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
@@ -324,7 +324,7 @@ void    vm_ln_handler(char *c)
   if (c != NULL)
     {
       if (!c[0])
-	vm_log("\n");
+	revm_log("\n");
     }
 
   /* special to enable exit on CTRL-D */
@@ -400,11 +400,11 @@ void		readln_input_log(char *str)
   //if (world.curjob->io.buf[0] != '\0')
   if (*str)
     {
-      vm_log(str);
-      vm_log("\n\n");
+      revm_log(str);
+      revm_log("\n\n");
     }
   else
-    vm_log("\n");
+    revm_log("\n");
   
 #if 0
   printf ("[READLN] history : [%s]\n", buf);
@@ -453,7 +453,7 @@ void		readln_install_clearscreen()
   keyseq[0] = CTRL('l');
   keyseq[1] = '\0';
   rl_ctrll  = rl_function_of_keyseq(keyseq, map, NULL);
-  rl_bind_key(CTRL('l'), (rl_command_func_t *) vm_screen_clear);
+  rl_bind_key(CTRL('l'), (rl_command_func_t *) revm_screen_clear);
 }
 
 
@@ -463,7 +463,7 @@ void		readln_screen_change(u_short isnew, char prompt_display)
   /* Setup on new screen */
   if (isnew)
     {
-      vm_log(vm_get_prompt());
+      revm_log(revm_get_prompt());
       rl_on_new_line();
       world.curjob->ws.io.savebuf = NULL;
     }
@@ -496,7 +496,7 @@ void		readln_history_dump(char mode)
 {
   if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_DEBUGGER)
     {
-      vm_output(" [*] Writting history (.elfsh_history) \n");
+      revm_output(" [*] Writting history (.elfsh_history) \n");
       write_history(".elfsh_history");
     }
 

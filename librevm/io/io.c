@@ -6,14 +6,14 @@
 ** Started on  Fri Mar  5 00:55:40 2004 mayhem
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.8 2007-05-18 11:14:19 mxatone Exp $
+** $Id: io.c,v 1.9 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
 
 
 /* Reset lines counters and ignore output state */
-int		vm_flush()
+int		revm_flush()
 {
   int  lines = 80;
   int  cols = 200;
@@ -21,8 +21,8 @@ int		vm_flush()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Cache output only in IMODE/DEBUGGER mode */
-  if (world.state.vm_mode != REVM_STATE_INTERACTIVE &&
-      world.state.vm_mode != REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
+      world.state.revm_mode != REVM_STATE_DEBUGGER)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
 #ifdef USE_READLN
@@ -40,21 +40,21 @@ int		vm_flush()
 }
 
 /* Set workspace configuration to standard I/O */
-int		vm_std_io(revmjob_t *job)
+int		revm_std_io(revmjob_t *job)
 {
   NOPROFILER_IN();
   if (!job)
     NOPROFILER_ROUT(0);
   job->ws.io.type      = REVM_IO_STD;
   job->ws.io.input_fd  = 0;
-  job->ws.io.input     = vm_stdinput;
+  job->ws.io.input     = revm_stdinput;
   job->ws.io.output_fd = 1;
-  job->ws.io.output    = vm_stdoutput;
+  job->ws.io.output    = revm_stdoutput;
   NOPROFILER_ROUT(0);
 }
 
 /* Set workspace configuration to standard I/O */
-int		vm_fifo_io(revmjob_t *job)
+int		revm_fifo_io(revmjob_t *job)
 {
   int		fd;
   int		fd2;
@@ -68,7 +68,7 @@ int		vm_fifo_io(revmjob_t *job)
     }
 
   /* Remove the FIFO is already existing */
-  if (world.state.vm_side == REVM_SIDE_CLIENT)
+  if (world.state.revm_side == REVM_SIDE_CLIENT)
     {
       if (!access(REVM_FIFO_C2S, F_OK))
 	unlink(REVM_FIFO_C2S);
@@ -88,12 +88,12 @@ int		vm_fifo_io(revmjob_t *job)
 
   /* If we are in the embedded server part of the debugger, 
      do all I/O on the FIFO */
-  if (world.state.vm_side == REVM_SIDE_SERVER)
+  if (world.state.revm_side == REVM_SIDE_SERVER)
     {
       job->ws.io.input_fd  = fd2;
-      job->ws.io.input     = vm_stdinput;
+      job->ws.io.input     = revm_stdinput;
       job->ws.io.output_fd = fd;
-      job->ws.io.output    = vm_stdoutput;
+      job->ws.io.output    = revm_stdoutput;
       dup2(fd, 0);
     }
 
@@ -102,7 +102,7 @@ int		vm_fifo_io(revmjob_t *job)
 
 
 /* Initialize Input/Output hooks */
-int		vm_initio()
+int		revm_initio()
 {
   static int	done = 0;
   revmjob_t	*initial;
@@ -115,7 +115,7 @@ int		vm_initio()
   XALLOC(__FILE__, __FUNCTION__, __LINE__,initial, sizeof(revmjob_t), -1);
   memset(initial, 0, sizeof(revmjob_t));
 
-  vm_std_io(initial);
+  revm_std_io(initial);
   initial->ws.active	   = 1;
   initial->ws.createtime   = time(&initial->ws.createtime);
 
@@ -131,12 +131,12 @@ int		vm_initio()
 	    "initial_dbgloaded_files",
 	    11, ASPECT_TYPE_UNKNOW);
 
-  profiler_setcolor(vm_endline, vm_colorinstr, vm_colorstr, 
-		    vm_colorfieldstr, vm_colortypestr, vm_colorend, 
-		    vm_colorwarn, vm_colorfunction, vm_colorfilename);
-  profiler_setmorecolor(vm_coloradv, vm_colorinstr_fmt, vm_coloraddress,
-			vm_colornumber, vm_colorstr_fmt, 
-			vm_colorfieldstr_fmt, 
-			vm_colortypestr_fmt, vm_colorwarn_fmt);
+  profiler_setcolor(revm_endline, revm_colorinstr, revm_colorstr, 
+		    revm_colorfieldstr, revm_colortypestr, revm_colorend, 
+		    revm_colorwarn, revm_colorfunction, revm_colorfilename);
+  profiler_setmorecolor(revm_coloradv, revm_colorinstr_fmt, revm_coloraddress,
+			revm_colornumber, revm_colorstr_fmt, 
+			revm_colorfieldstr_fmt, 
+			revm_colortypestr_fmt, revm_colorwarn_fmt);
   NOPROFILER_ROUT(0);
 }

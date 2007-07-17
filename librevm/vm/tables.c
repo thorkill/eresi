@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.42 2007-07-17 03:14:42 may Exp $
+** $Id: tables.c,v 1.43 2007-07-17 18:11:25 may Exp $
 **
 */
 #include "revm.h"
@@ -72,19 +72,19 @@ char	       elfsh_libpath[BUFSIZ];
 static void	setup_L1hash()
 {
   hash_init(&L1_hash, "L1objects", 29, ASPECT_TYPE_HASH);
-  hash_add(&L1_hash, "hdr"     , (void *) vm_create_L1ENT(elfsh_get_hdr,
+  hash_add(&L1_hash, "hdr"     , (void *) revm_create_L1ENT(elfsh_get_hdr,
 							  NULL, NULL,
 							  &elf_L2_hash,
 							  NULL, NULL, NULL, 0));
 
-  hash_add(&L1_hash, "pht"     , (void *) vm_create_L1ENT(elfsh_get_pht,
+  hash_add(&L1_hash, "pht"     , (void *) revm_create_L1ENT(elfsh_get_pht,
 							  NULL, NULL,
 							  &pht_L2_hash,
 							  elfsh_get_pht_entry_by_index,
 							  NULL, NULL, 
 							  sizeof (elfsh_Phdr)));
 
-  hash_add(&L1_hash, "rpht"    , (void *) vm_create_L1ENT(elfsh_get_rpht,
+  hash_add(&L1_hash, "rpht"    , (void *) revm_create_L1ENT(elfsh_get_rpht,
 							  NULL, NULL,
 							  &pht_L2_hash,
 							  elfsh_get_pht_entry_by_index,
@@ -92,7 +92,7 @@ static void	setup_L1hash()
 							  sizeof (elfsh_Phdr)));
 
 
-  hash_add(&L1_hash, "symtab"  , (void *) vm_create_L1ENT(elfsh_get_symtab,
+  hash_add(&L1_hash, "symtab"  , (void *) revm_create_L1ENT(elfsh_get_symtab,
 							  NULL,
 							  elfsh_get_symbol_by_name,
 							  &sym_L2_hash,
@@ -100,7 +100,7 @@ static void	setup_L1hash()
 							  NULL, NULL,
 							  sizeof (elfsh_Sym)));
 
-  hash_add(&L1_hash, "dynsym"  , (void *) vm_create_L1ENT(elfsh_get_dynsymtab,
+  hash_add(&L1_hash, "dynsym"  , (void *) revm_create_L1ENT(elfsh_get_dynsymtab,
 							  NULL,
 							  elfsh_get_dynsymbol_by_name,
 							  &dynsym_L2_hash,
@@ -108,7 +108,7 @@ static void	setup_L1hash()
 							  NULL, NULL,
 							  sizeof (elfsh_Sym)));
 
-  hash_add(&L1_hash, "got"     , (void *) vm_create_L1ENT(elfsh_get_got,
+  hash_add(&L1_hash, "got"     , (void *) revm_create_L1ENT(elfsh_get_got,
 							  elfsh_get_got_by_idx,  
 							  elfsh_get_got_entry_by_name,
 							  &got_L2_hash,
@@ -118,14 +118,14 @@ static void	setup_L1hash()
 							  sizeof (elfsh_Addr)));
 
 
-  hash_add(&L1_hash, "dynamic" , (void *) vm_create_L1ENT(elfsh_get_dynamic,
+  hash_add(&L1_hash, "dynamic" , (void *) revm_create_L1ENT(elfsh_get_dynamic,
 							  NULL, NULL,
 							  &dyn_L2_hash,
 							  elfsh_get_dynamic_entry_by_index,
 							  NULL, NULL,
 							  sizeof (elfsh_Dyn)));
 
-  hash_add(&L1_hash, "ctors"   , (void *) vm_create_L1ENT(elfsh_get_ctors,
+  hash_add(&L1_hash, "ctors"   , (void *) revm_create_L1ENT(elfsh_get_ctors,
 							  NULL, 
 							  elfsh_get_ctors_entry_by_name,
 							  NULL,
@@ -134,7 +134,7 @@ static void	setup_L1hash()
 							  elfsh_set_ctors_entry,
 							  sizeof (elfsh_Addr)));
 
-  hash_add(&L1_hash, "dtors"   , (void *) vm_create_L1ENT(elfsh_get_dtors,
+  hash_add(&L1_hash, "dtors"   , (void *) revm_create_L1ENT(elfsh_get_dtors,
 							  NULL, 
 							  elfsh_get_dtors_entry_by_name,
 							  NULL,
@@ -143,7 +143,7 @@ static void	setup_L1hash()
 							  elfsh_set_dtors_entry,
 							  sizeof (elfsh_Addr)));
   
-  hash_add(&L1_hash, "rel"     , (void *) vm_create_L1ENT(NULL,
+  hash_add(&L1_hash, "rel"     , (void *) revm_create_L1ENT(NULL,
 							  elfsh_get_reloc, // slot 2
 							  elfsh_get_relent_by_name,
 							  &rel_L2_hash,
@@ -151,7 +151,7 @@ static void	setup_L1hash()
 							  NULL, NULL,
 							  sizeof (elfsh_Rel)));
   
-  hash_add(&L1_hash, "sht"     , (void *) vm_create_L1ENT(elfsh_get_sht,
+  hash_add(&L1_hash, "sht"     , (void *) revm_create_L1ENT(elfsh_get_sht,
 							  NULL,
 							  elfsh_get_sht_entry_by_name,
 							  &sht_L2_hash,
@@ -159,7 +159,7 @@ static void	setup_L1hash()
 							  NULL, NULL,
 							  sizeof (elfsh_Shdr)));
 
-  hash_add(&L1_hash, "rsht"     , (void *) vm_create_L1ENT(elfsh_get_runtime_sht,
+  hash_add(&L1_hash, "rsht"     , (void *) revm_create_L1ENT(elfsh_get_runtime_sht,
 							   NULL,
 							   elfsh_get_sht_entry_by_name,
 							   &sht_L2_hash,
@@ -167,7 +167,7 @@ static void	setup_L1hash()
 							   NULL, NULL,
 							   sizeof (elfsh_Shdr)));
   
-  hash_add(&L1_hash, "section", (void *) vm_create_L1ENT(elfsh_get_section_list, 
+  hash_add(&L1_hash, "section", (void *) revm_create_L1ENT(elfsh_get_section_list, 
 							 NULL,
 							 elfsh_get_section_by_nam,
 							 &sct_L2_hash,
@@ -175,7 +175,7 @@ static void	setup_L1hash()
 							 NULL, NULL,
 							 sizeof (elfshsect_t)));
 
-  hash_add(&L1_hash, "version", (void *) vm_create_L1ENT(elfsh_get_versymtab,
+  hash_add(&L1_hash, "version", (void *) revm_create_L1ENT(elfsh_get_versymtab,
 							 NULL,
 							 elfsh_get_versym_by_name,
 							 &vers_L2_hash,
@@ -183,7 +183,7 @@ static void	setup_L1hash()
 							 NULL, NULL,
 							 sizeof (elfsh_Half)));
   
-  hash_add(&L1_hash, "verdef", (void *) vm_create_L1ENT(elfsh_get_verdeftab,
+  hash_add(&L1_hash, "verdef", (void *) revm_create_L1ENT(elfsh_get_verdeftab,
 							elfsh_get_verdeftab_by_idx,
 							NULL,
 							&verd_L2_hash,
@@ -191,7 +191,7 @@ static void	setup_L1hash()
 							NULL, NULL,
 							sizeof (elfsh_Verdef)));
   
-  hash_add(&L1_hash, "verneed", (void *) vm_create_L1ENT(elfsh_get_verneedtab,
+  hash_add(&L1_hash, "verneed", (void *) revm_create_L1ENT(elfsh_get_verneedtab,
 							 NULL,
 							 elfsh_get_verneed_by_name,
 							 &vern_L2_hash,
@@ -199,7 +199,7 @@ static void	setup_L1hash()
 							 NULL, NULL,
 							 sizeof (elfsh_Verneed)));
 
-  hash_add(&L1_hash, "hashbucket", (void *) vm_create_L1ENT(elfsh_get_hashtable,
+  hash_add(&L1_hash, "hashbucket", (void *) revm_create_L1ENT(elfsh_get_hashtable,
 							    NULL,
 							    elfsh_get_hashbucket_by_name,
 							    &hashb_L2_hash,
@@ -207,7 +207,7 @@ static void	setup_L1hash()
 							    NULL, NULL,
 							    sizeof (int)));
 
-  hash_add(&L1_hash, "hashchain", (void *) vm_create_L1ENT(elfsh_get_hashtable,
+  hash_add(&L1_hash, "hashchain", (void *) revm_create_L1ENT(elfsh_get_hashtable,
 							   NULL,
 							   elfsh_get_hashchain_by_name,
 							   &hashc_L2_hash,
@@ -221,112 +221,112 @@ static void	setup_L1hash()
 static void	setup_elfhash()
 {
   hash_init(&elf_L2_hash, "elfL2objects", 29, ASPECT_TYPE_UNKNOW);
-  hash_add(&elf_L2_hash, "magic"        , vm_create_L2ENT(elfsh_get_magic, 
+  hash_add(&elf_L2_hash, "magic"        , revm_create_L2ENT(elfsh_get_magic, 
 							  elfsh_set_magic, 
 							  ASPECT_TYPE_INT,
 							  NULL, NULL, 
 							  NULL, NULL));
 							  
-  hash_add(&elf_L2_hash, "class"        , vm_create_L2ENT(elfsh_get_class, 
+  hash_add(&elf_L2_hash, "class"        , revm_create_L2ENT(elfsh_get_class, 
 							  elfsh_set_class, 
 							  ASPECT_TYPE_INT,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "type"         , vm_create_L2ENT(elfsh_get_objtype, 
+  hash_add(&elf_L2_hash, "type"         , revm_create_L2ENT(elfsh_get_objtype, 
 							  elfsh_set_objtype, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "machine"      , vm_create_L2ENT(elfsh_get_arch, 
+  hash_add(&elf_L2_hash, "machine"      , revm_create_L2ENT(elfsh_get_arch, 
 							  elfsh_set_arch, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "version"      , vm_create_L2ENT(elfsh_get_version, 
+  hash_add(&elf_L2_hash, "version"      , revm_create_L2ENT(elfsh_get_version, 
 							  elfsh_set_version, 
 							  ASPECT_TYPE_INT,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "entry"        , vm_create_L2ENT(elfsh_get_entrypoint, 
+  hash_add(&elf_L2_hash, "entry"        , revm_create_L2ENT(elfsh_get_entrypoint, 
 							  elfsh_set_entrypoint, 
 							  ASPECT_TYPE_CADDR,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "phoff"        , vm_create_L2ENT(elfsh_get_phtoff, 
+  hash_add(&elf_L2_hash, "phoff"        , revm_create_L2ENT(elfsh_get_phtoff, 
 							  elfsh_set_phtoff, 
 							  ASPECT_TYPE_LONG,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "rphoff"       , vm_create_L2ENT(elfsh_get_rphtoff, 
+  hash_add(&elf_L2_hash, "rphoff"       , revm_create_L2ENT(elfsh_get_rphtoff, 
 							  elfsh_set_rphtoff, 
 							  ASPECT_TYPE_LONG,
 							  NULL, NULL,
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "shoff"        , vm_create_L2ENT(elfsh_get_shtoff, 
+  hash_add(&elf_L2_hash, "shoff"        , revm_create_L2ENT(elfsh_get_shtoff, 
 							  elfsh_set_shtoff, 
 							  ASPECT_TYPE_LONG,
 							  NULL, NULL, NULL, NULL));
-  hash_add(&elf_L2_hash, "flags"        , vm_create_L2ENT(elfsh_get_flags, 
+  hash_add(&elf_L2_hash, "flags"        , revm_create_L2ENT(elfsh_get_flags, 
 							  elfsh_set_flags, 
 							  ASPECT_TYPE_INT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "ehsize"       , vm_create_L2ENT(elfsh_get_ehsize,
+  hash_add(&elf_L2_hash, "ehsize"       , revm_create_L2ENT(elfsh_get_ehsize,
 							  elfsh_set_ehsize, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "phentsize"    , vm_create_L2ENT(elfsh_get_phentsize,
+  hash_add(&elf_L2_hash, "phentsize"    , revm_create_L2ENT(elfsh_get_phentsize,
 							  elfsh_set_phentsize, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "shentsize"    , vm_create_L2ENT(elfsh_get_shentsize,
+  hash_add(&elf_L2_hash, "shentsize"    , revm_create_L2ENT(elfsh_get_shentsize,
 							  elfsh_set_shentsize, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "phnum"        , vm_create_L2ENT(elfsh_get_phtnbr,
+  hash_add(&elf_L2_hash, "phnum"        , revm_create_L2ENT(elfsh_get_phtnbr,
 							  elfsh_set_phtnbr, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "shnum"        , vm_create_L2ENT(elfsh_get_shtnbr,
+  hash_add(&elf_L2_hash, "shnum"        , revm_create_L2ENT(elfsh_get_shtnbr,
 							  elfsh_set_shtnbr, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "shstrndx"     , vm_create_L2ENT(elfsh_get_shstrtab_index,
+  hash_add(&elf_L2_hash, "shstrndx"     , revm_create_L2ENT(elfsh_get_shstrtab_index,
 							  elfsh_set_shstrtab_index,
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_pageexec" , vm_create_L2ENT(elfsh_get_pax_pageexec, 
+  hash_add(&elf_L2_hash, "pax_pageexec" , revm_create_L2ENT(elfsh_get_pax_pageexec, 
 							  elfsh_set_pax_pageexec, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_emultramp", vm_create_L2ENT(elfsh_get_pax_emultramp, 
+  hash_add(&elf_L2_hash, "pax_emultramp", revm_create_L2ENT(elfsh_get_pax_emultramp, 
 							  elfsh_set_pax_emultramp, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_mprotect" , vm_create_L2ENT(elfsh_get_pax_mprotect, 
+  hash_add(&elf_L2_hash, "pax_mprotect" , revm_create_L2ENT(elfsh_get_pax_mprotect, 
 							  elfsh_set_pax_mprotect, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_randmmap" , vm_create_L2ENT(elfsh_get_pax_randmmap, 
+  hash_add(&elf_L2_hash, "pax_randmmap" , revm_create_L2ENT(elfsh_get_pax_randmmap, 
 							  elfsh_set_pax_randmmap, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_randexec" , vm_create_L2ENT(elfsh_get_pax_randexec, 
+  hash_add(&elf_L2_hash, "pax_randexec" , revm_create_L2ENT(elfsh_get_pax_randexec, 
 							  elfsh_set_pax_randexec, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
 							  NULL, NULL));
-  hash_add(&elf_L2_hash, "pax_segmexec" , vm_create_L2ENT(elfsh_get_pax_segmexec, 
+  hash_add(&elf_L2_hash, "pax_segmexec" , revm_create_L2ENT(elfsh_get_pax_segmexec, 
 							  elfsh_set_pax_segmexec, 
 							  ASPECT_TYPE_SHORT,
 							  NULL, NULL, 
@@ -339,60 +339,60 @@ static void	setup_elfhash()
 static void	setup_shthash()
 {
   hash_init(&sht_L2_hash, "shtL2objects", 29, ASPECT_TYPE_UNKNOW);
-  hash_add(&sht_L2_hash, "type"     , vm_create_L2ENT(elfsh_get_section_type, 
+  hash_add(&sht_L2_hash, "type"     , revm_create_L2ENT(elfsh_get_section_type, 
 						      elfsh_set_section_type, 
 						      0, NULL, NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "addr"     , vm_create_L2ENT(elfsh_get_section_addr, 
+  hash_add(&sht_L2_hash, "addr"     , revm_create_L2ENT(elfsh_get_section_addr, 
 						      elfsh_set_section_addr, 
 						      ASPECT_TYPE_LONG, NULL, 
 						      NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "offset"   , vm_create_L2ENT(elfsh_get_section_foffset, 
+  hash_add(&sht_L2_hash, "offset"   , revm_create_L2ENT(elfsh_get_section_foffset, 
 						      elfsh_set_section_foffset, 
 						      ASPECT_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "size"     , vm_create_L2ENT(elfsh_get_section_size, 
+  hash_add(&sht_L2_hash, "size"     , revm_create_L2ENT(elfsh_get_section_size, 
 						      elfsh_set_section_size, 
 						      ASPECT_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "link"     , vm_create_L2ENT(elfsh_get_section_link, 
+  hash_add(&sht_L2_hash, "link"     , revm_create_L2ENT(elfsh_get_section_link, 
 						      elfsh_set_section_link, 
 						      0, NULL, NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "info"     , vm_create_L2ENT(elfsh_get_section_info, 
+  hash_add(&sht_L2_hash, "info"     , revm_create_L2ENT(elfsh_get_section_info, 
 						      elfsh_set_section_info, 
 						      0, NULL, NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "align"    , vm_create_L2ENT(elfsh_get_section_align, 
+  hash_add(&sht_L2_hash, "align"    , revm_create_L2ENT(elfsh_get_section_align, 
 						      elfsh_set_section_align, 
 						      ASPECT_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "entsize"  , vm_create_L2ENT(elfsh_get_section_entsize, 
+  hash_add(&sht_L2_hash, "entsize"  , revm_create_L2ENT(elfsh_get_section_entsize, 
 						      elfsh_set_section_entsize,
 						      ASPECT_TYPE_LONG, NULL,
 						      NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "a"  , vm_create_L2ENT(elfsh_get_section_allocflag, 
+  hash_add(&sht_L2_hash, "a"  , revm_create_L2ENT(elfsh_get_section_allocflag, 
 						elfsh_set_section_allocflag, 
 						ASPECT_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "w"  , vm_create_L2ENT(elfsh_get_section_writableflag, 
+  hash_add(&sht_L2_hash, "w"  , revm_create_L2ENT(elfsh_get_section_writableflag, 
 						elfsh_set_section_writableflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "x"  , vm_create_L2ENT(elfsh_get_section_execflag, 
+  hash_add(&sht_L2_hash, "x"  , revm_create_L2ENT(elfsh_get_section_execflag, 
 						elfsh_set_section_execflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "s"  , vm_create_L2ENT(elfsh_get_section_strflag, 
+  hash_add(&sht_L2_hash, "s"  , revm_create_L2ENT(elfsh_get_section_strflag, 
 						elfsh_set_section_strflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "m"  , vm_create_L2ENT(elfsh_get_section_mergeableflag, 
+  hash_add(&sht_L2_hash, "m"  , revm_create_L2ENT(elfsh_get_section_mergeableflag, 
 						elfsh_set_section_mergeableflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "l"  , vm_create_L2ENT(elfsh_get_section_linkflag, 
+  hash_add(&sht_L2_hash, "l"  , revm_create_L2ENT(elfsh_get_section_linkflag, 
 						elfsh_set_section_linkflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
-  hash_add(&sht_L2_hash, "o"  , vm_create_L2ENT(elfsh_get_section_orderflag, 
+  hash_add(&sht_L2_hash, "o"  , revm_create_L2ENT(elfsh_get_section_orderflag, 
 						elfsh_set_section_orderflag, 
 						ASPECT_TYPE_LONG, NULL,
 						NULL, NULL, NULL));
@@ -402,33 +402,33 @@ static void	setup_shthash()
 static void	setup_phthash()
 {
   hash_init(&pht_L2_hash, "phtL2objects", 29, ASPECT_TYPE_UNKNOW);
-  hash_add(&pht_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_segment_type, 
+  hash_add(&pht_L2_hash, "type"  , revm_create_L2ENT(elfsh_get_segment_type, 
 						   elfsh_set_segment_type, 
 						   0, NULL, NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "offset", vm_create_L2ENT(elfsh_get_segment_offset, 
+  hash_add(&pht_L2_hash, "offset", revm_create_L2ENT(elfsh_get_segment_offset, 
 						   elfsh_set_segment_offset, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "vaddr" , vm_create_L2ENT(elfsh_get_segment_vaddr, 
+  hash_add(&pht_L2_hash, "vaddr" , revm_create_L2ENT(elfsh_get_segment_vaddr, 
 						   elfsh_set_segment_vaddr, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "paddr" , vm_create_L2ENT(elfsh_get_segment_paddr, 
+  hash_add(&pht_L2_hash, "paddr" , revm_create_L2ENT(elfsh_get_segment_paddr, 
 						   elfsh_set_segment_paddr, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "filesz", vm_create_L2ENT(elfsh_get_segment_filesz, 
+  hash_add(&pht_L2_hash, "filesz", revm_create_L2ENT(elfsh_get_segment_filesz, 
 						   elfsh_set_segment_filesz, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "memsz" , vm_create_L2ENT(elfsh_get_segment_memsz, 
+  hash_add(&pht_L2_hash, "memsz" , revm_create_L2ENT(elfsh_get_segment_memsz, 
 						   elfsh_set_segment_memsz, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "flags" , vm_create_L2ENT(elfsh_get_segment_flags, 
+  hash_add(&pht_L2_hash, "flags" , revm_create_L2ENT(elfsh_get_segment_flags, 
 						   elfsh_set_segment_flags, 
 						   0, NULL, NULL, NULL, NULL));
-  hash_add(&pht_L2_hash, "align" , vm_create_L2ENT(elfsh_get_segment_align, 
+  hash_add(&pht_L2_hash, "align" , revm_create_L2ENT(elfsh_get_segment_align, 
 						   elfsh_set_segment_align, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
@@ -440,33 +440,33 @@ static void	setup_symhash()
 {
   hash_init(&sym_L2_hash, "symL2objects", 23, ASPECT_TYPE_UNKNOW);
 
-  hash_add(&sym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR, 
+  hash_add(&sym_L2_hash, "name" , revm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR, 
 						  elfsh_get_symbol_name,
 						  elfsh_set_symbol_name,
 						  NULL, NULL));
 
-  hash_add(&sym_L2_hash, "value", vm_create_L2ENT(elfsh_get_symbol_value, 
+  hash_add(&sym_L2_hash, "value", revm_create_L2ENT(elfsh_get_symbol_value, 
 						  elfsh_set_symbol_value, 
 						  ASPECT_TYPE_LONG, NULL,
 						  NULL, NULL, NULL));
-  hash_add(&sym_L2_hash, "size" , vm_create_L2ENT(elfsh_get_symbol_size, 
+  hash_add(&sym_L2_hash, "size" , revm_create_L2ENT(elfsh_get_symbol_size, 
 						  elfsh_set_symbol_size, 
 						  ASPECT_TYPE_LONG, NULL,
 						  NULL, NULL, NULL));
-  hash_add(&sym_L2_hash, "bind" , vm_create_L2ENT(elfsh_get_symbol_bind, 
+  hash_add(&sym_L2_hash, "bind" , revm_create_L2ENT(elfsh_get_symbol_bind, 
 						  elfsh_set_symbol_bind, 
 						  ASPECT_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
-  hash_add(&sym_L2_hash, "type" , vm_create_L2ENT(elfsh_get_symbol_type, 
+  hash_add(&sym_L2_hash, "type" , revm_create_L2ENT(elfsh_get_symbol_type, 
 						  elfsh_set_symbol_type, 
 						  ASPECT_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
-  hash_add(&sym_L2_hash, "other", vm_create_L2ENT(elfsh_get_symbol_visibility, 
+  hash_add(&sym_L2_hash, "other", revm_create_L2ENT(elfsh_get_symbol_visibility, 
 						  elfsh_set_symbol_visibility, 
 						  ASPECT_TYPE_BYTE, NULL, 
 						  NULL, NULL, NULL));
 
-  hash_add(&sym_L2_hash, "link", vm_create_L2ENT(elfsh_get_symbol_link, 
+  hash_add(&sym_L2_hash, "link", revm_create_L2ENT(elfsh_get_symbol_link, 
 						 elfsh_set_symbol_link, 
 						 ASPECT_TYPE_SHORT, NULL, 
 						 NULL, NULL, NULL));
@@ -478,31 +478,31 @@ static void	setup_symhash()
 static void	setup_dynsymhash()
 {
   hash_init(&dynsym_L2_hash, "dynsymL2objects", 23, ASPECT_TYPE_UNKNOW);
-  hash_add(&dynsym_L2_hash, "name" , vm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR,
+  hash_add(&dynsym_L2_hash, "name" , revm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR,
 						     elfsh_get_dynsymbol_name,
 						     elfsh_set_dynsymbol_name,
 						     NULL, NULL));
-  hash_add(&dynsym_L2_hash, "value", vm_create_L2ENT(elfsh_get_symbol_value, 
+  hash_add(&dynsym_L2_hash, "value", revm_create_L2ENT(elfsh_get_symbol_value, 
 						     elfsh_set_symbol_value, 
 						     ASPECT_TYPE_LONG, NULL,
 						     NULL, NULL, NULL));
-  hash_add(&dynsym_L2_hash, "size" , vm_create_L2ENT(elfsh_get_symbol_size, 
+  hash_add(&dynsym_L2_hash, "size" , revm_create_L2ENT(elfsh_get_symbol_size, 
 						     elfsh_set_symbol_size, 
 						     ASPECT_TYPE_LONG, NULL,
 						     NULL, NULL, NULL));
-  hash_add(&dynsym_L2_hash, "bind" , vm_create_L2ENT(elfsh_get_symbol_bind, 
+  hash_add(&dynsym_L2_hash, "bind" , revm_create_L2ENT(elfsh_get_symbol_bind, 
 						     elfsh_set_symbol_bind, 
 						     ASPECT_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
-  hash_add(&dynsym_L2_hash, "type" , vm_create_L2ENT(elfsh_get_symbol_type, 
+  hash_add(&dynsym_L2_hash, "type" , revm_create_L2ENT(elfsh_get_symbol_type, 
 						     elfsh_set_symbol_type, 
 						     ASPECT_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
-  hash_add(&dynsym_L2_hash, "other", vm_create_L2ENT(elfsh_get_symbol_visibility, 
+  hash_add(&dynsym_L2_hash, "other", revm_create_L2ENT(elfsh_get_symbol_visibility, 
 						     elfsh_set_symbol_visibility, 
 						     ASPECT_TYPE_BYTE, NULL, 
 						     NULL, NULL, NULL));
-  hash_add(&dynsym_L2_hash, "link", vm_create_L2ENT(elfsh_get_symbol_link, 
+  hash_add(&dynsym_L2_hash, "link", revm_create_L2ENT(elfsh_get_symbol_link, 
 						    elfsh_set_symbol_link, 
 						    ASPECT_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));
@@ -512,19 +512,19 @@ static void	setup_dynsymhash()
 static void	setup_relhash()
 {
   hash_init(&rel_L2_hash, "relL2objects", 23, ASPECT_TYPE_UNKNOW);
-  hash_add(&rel_L2_hash, "type"  , vm_create_L2ENT(elfsh_get_reltype, 
+  hash_add(&rel_L2_hash, "type"  , revm_create_L2ENT(elfsh_get_reltype, 
 						   elfsh_set_reltype, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&rel_L2_hash, "sym"   , vm_create_L2ENT(elfsh_get_relsym, 
+  hash_add(&rel_L2_hash, "sym"   , revm_create_L2ENT(elfsh_get_relsym, 
 						   elfsh_set_relsym, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&rel_L2_hash, "offset", vm_create_L2ENT(elfsh_get_reloffset, 
+  hash_add(&rel_L2_hash, "offset", revm_create_L2ENT(elfsh_get_reloffset, 
 						   elfsh_set_reloffset, 
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-  hash_add(&rel_L2_hash, "addend", vm_create_L2ENT(elfsh_get_reladdend, 
+  hash_add(&rel_L2_hash, "addend", revm_create_L2ENT(elfsh_get_reladdend, 
 						   elfsh_set_reladdend,
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
@@ -534,11 +534,11 @@ static void	setup_relhash()
 static void	setup_dynhash()
 {
   hash_init(&dyn_L2_hash, "dynL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&dyn_L2_hash, "val", vm_create_L2ENT(elfsh_get_dynentry_val, 
+  hash_add(&dyn_L2_hash, "val", revm_create_L2ENT(elfsh_get_dynentry_val, 
 						elfsh_set_dynentry_val, 
 						ASPECT_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
-  hash_add(&dyn_L2_hash, "tag", vm_create_L2ENT(elfsh_get_dynentry_type, 
+  hash_add(&dyn_L2_hash, "tag", revm_create_L2ENT(elfsh_get_dynentry_type, 
 						elfsh_set_dynentry_type, 
 						ASPECT_TYPE_LONG, NULL, 
 						NULL, NULL, NULL));
@@ -555,11 +555,11 @@ static void	setup_gothash()
 {
   
   hash_init(&got_L2_hash, "gotL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&got_L2_hash, "val" , vm_create_L2ENT(elfsh_get_got_val, elfsh_set_got_val,
+  hash_add(&got_L2_hash, "val" , revm_create_L2ENT(elfsh_get_got_val, elfsh_set_got_val,
 						 ASPECT_TYPE_LONG, NULL,
 						 NULL, NULL, NULL));
-  //hash_add(&got_L2_hash, "idx" , vm_create_L2ENT());
-  hash_add(&got_L2_hash, "addr", vm_create_L2ENT(elfsh_get_got_addr, elfsh_set_got_addr,
+  //hash_add(&got_L2_hash, "idx" , revm_create_L2ENT());
+  hash_add(&got_L2_hash, "addr", revm_create_L2ENT(elfsh_get_got_addr, elfsh_set_got_addr,
 						 ASPECT_TYPE_LONG, NULL,
 						 NULL, NULL, NULL));
 }
@@ -570,12 +570,12 @@ static void	setup_gothash()
 static void	setup_scthash()
 {
   hash_init(&sct_L2_hash, "sectsL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&sct_L2_hash, "name", vm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR,
+  hash_add(&sct_L2_hash, "name", revm_create_L2ENT(NULL, NULL, ASPECT_TYPE_STR,
 						 elfsh_get_section_name,
 						 elfsh_set_section_name,
 						 NULL, NULL));
   
-  hash_add(&sct_L2_hash, "raw", vm_create_L2ENT(NULL, NULL, 
+  hash_add(&sct_L2_hash, "raw", revm_create_L2ENT(NULL, NULL, 
 						ASPECT_TYPE_RAW,
 						NULL, NULL, 
 						elfsh_get_section_data,
@@ -590,81 +590,81 @@ static void   setup_vershash()
   
   /* Version symbols */
   hash_init(&vers_L2_hash, "versionL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&vers_L2_hash, "value", vm_create_L2ENT(elfsh_get_versym_val,
+  hash_add(&vers_L2_hash, "value", revm_create_L2ENT(elfsh_get_versym_val,
 						   elfsh_set_versym_val,
 						   ASPECT_TYPE_SHORT, NULL,
 						   NULL, NULL, NULL));
   
   /* Version def */
   hash_init(&verd_L2_hash, "verdefsL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&verd_L2_hash, "index", vm_create_L2ENT(elfsh_get_verdef_ndx,
+  hash_add(&verd_L2_hash, "index", revm_create_L2ENT(elfsh_get_verdef_ndx,
 						   elfsh_set_verdef_ndx,
 						   ASPECT_TYPE_SHORT, NULL,
 						   NULL, NULL, NULL));
-   hash_add(&verd_L2_hash, "count", vm_create_L2ENT(elfsh_get_verdef_cnt,
+   hash_add(&verd_L2_hash, "count", revm_create_L2ENT(elfsh_get_verdef_cnt,
 						    elfsh_set_verdef_cnt,
 						    ASPECT_TYPE_SHORT, NULL,
 						    NULL, NULL, NULL));
-   hash_add(&verd_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verdef_hash, 
+   hash_add(&verd_L2_hash, "hash", revm_create_L2ENT(elfsh_get_verdef_hash, 
 						   elfsh_set_verdef_hash, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
-   hash_add(&verd_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verdef_flags, 
+   hash_add(&verd_L2_hash, "flag", revm_create_L2ENT(elfsh_get_verdef_flags, 
 						   elfsh_set_verdef_flags, 
 						   ASPECT_TYPE_SHORT, NULL, 
 						   NULL, NULL, NULL));
-   hash_add(&verd_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verdef_aux, 
+   hash_add(&verd_L2_hash, "aux", revm_create_L2ENT(elfsh_get_verdef_aux, 
 						  elfsh_set_verdef_aux, 
 						  ASPECT_TYPE_LONG, NULL, 
 						  NULL, NULL, NULL));
 
 
    /* Child & parent */
-   hash_add(&verd_L2_hash, "next", vm_create_L2ENT(elfsh_get_verdef_next, 
+   hash_add(&verd_L2_hash, "next", revm_create_L2ENT(elfsh_get_verdef_next, 
 						   elfsh_set_verdef_next, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    /* Child */
-   hash_add(&verd_L2_hash, "name", vm_create_L2ENT(elfsh_get_verdef_cname, 
+   hash_add(&verd_L2_hash, "name", revm_create_L2ENT(elfsh_get_verdef_cname, 
 						   elfsh_set_verdef_cname, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    
    /* Version need */
    hash_init(&vern_L2_hash, "verneedL2objects", 11, ASPECT_TYPE_UNKNOW);
-   hash_add(&vern_L2_hash, "index", vm_create_L2ENT(elfsh_get_verneed_ndx, 
+   hash_add(&vern_L2_hash, "index", revm_create_L2ENT(elfsh_get_verneed_ndx, 
 						    elfsh_set_verneed_ndx, 
 						    ASPECT_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));  
    
-   hash_add(&vern_L2_hash, "name", vm_create_L2ENT(elfsh_get_verneed_name, 
+   hash_add(&vern_L2_hash, "name", revm_create_L2ENT(elfsh_get_verneed_name, 
 						   elfsh_set_verneed_name, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    
-   hash_add(&vern_L2_hash, "hash", vm_create_L2ENT(elfsh_get_verneed_hash,
+   hash_add(&vern_L2_hash, "hash", revm_create_L2ENT(elfsh_get_verneed_hash,
 						   elfsh_set_verneed_hash,
 						   ASPECT_TYPE_LONG, NULL,
 						   NULL, NULL, NULL));
-   hash_add(&vern_L2_hash, "flag", vm_create_L2ENT(elfsh_get_verneed_flags, 
+   hash_add(&vern_L2_hash, "flag", revm_create_L2ENT(elfsh_get_verneed_flags, 
 						   elfsh_set_verneed_flags, 
 						   ASPECT_TYPE_SHORT, NULL, 
 						   NULL, NULL, NULL));
    /* child && parent */
-   hash_add(&vern_L2_hash, "next", vm_create_L2ENT(elfsh_get_verneed_next, 
+   hash_add(&vern_L2_hash, "next", revm_create_L2ENT(elfsh_get_verneed_next, 
 						   elfsh_set_verneed_next, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
    /* parent */
-   hash_add(&vern_L2_hash, "file", vm_create_L2ENT(elfsh_get_verneed_file, 
+   hash_add(&vern_L2_hash, "file", revm_create_L2ENT(elfsh_get_verneed_file, 
 						   elfsh_set_verneed_file, 
 						   ASPECT_TYPE_LONG, NULL, 
 						   NULL, NULL, NULL));
-   hash_add(&vern_L2_hash, "count", vm_create_L2ENT(elfsh_get_verneed_cnt, 
+   hash_add(&vern_L2_hash, "count", revm_create_L2ENT(elfsh_get_verneed_cnt, 
 						    elfsh_set_verneed_cnt, 
 						    ASPECT_TYPE_SHORT, NULL, 
 						    NULL, NULL, NULL));
-   hash_add(&vern_L2_hash, "aux", vm_create_L2ENT(elfsh_get_verneed_aux, 
+   hash_add(&vern_L2_hash, "aux", revm_create_L2ENT(elfsh_get_verneed_aux, 
 						  elfsh_set_verneed_aux, 
 						  ASPECT_TYPE_LONG, NULL, 
 						  NULL, NULL, NULL));
@@ -678,21 +678,21 @@ static void   setup_hashhash()
 
   /* Hash bucket */
   hash_init(&hashb_L2_hash, "hashbucketsL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&hashb_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashbucket_value, 
+  hash_add(&hashb_L2_hash, "value", revm_create_L2ENT(elfsh_get_hashbucket_value, 
 						    elfsh_set_hashbucket_value, 
 						    ASPECT_TYPE_INT, NULL, 
 						    NULL, NULL, NULL));  
-  hash_add(&hashb_L2_hash, "nbucket", vm_create_L2ENT(elfsh_get_hashbucket_num, 
+  hash_add(&hashb_L2_hash, "nbucket", revm_create_L2ENT(elfsh_get_hashbucket_num, 
 						      elfsh_set_hashbucket_num, 
 						      ASPECT_TYPE_INT, NULL, 
 						      NULL, NULL, NULL)); 
   /* Hash chain */
   hash_init(&hashc_L2_hash, "hashchainL2objects", 11, ASPECT_TYPE_UNKNOW);
-  hash_add(&hashc_L2_hash, "value", vm_create_L2ENT(elfsh_get_hashchain_value, 
+  hash_add(&hashc_L2_hash, "value", revm_create_L2ENT(elfsh_get_hashchain_value, 
 						    elfsh_set_hashchain_value, 
 						    ASPECT_TYPE_INT, NULL, 
 						    NULL, NULL, NULL));  
-  hash_add(&hashc_L2_hash, "nchain", vm_create_L2ENT(elfsh_get_hashchain_num, 
+  hash_add(&hashc_L2_hash, "nchain", revm_create_L2ENT(elfsh_get_hashchain_num, 
 						     elfsh_set_hashchain_num, 
 						     ASPECT_TYPE_INT, NULL, 
 						     NULL, NULL, NULL));   
@@ -729,177 +729,177 @@ static void	setup_cmdhash()
   hash_init(&cmd_hash, "commands", 101, ASPECT_TYPE_UNKNOW);
 
   /* Interactive mode / Scripting mode commands */
-  if (world.state.vm_mode != REVM_STATE_CMDLINE)
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
     {
-      vm_addcmd(CMD_LOAD      , (void *) cmd_load     , (void *) vm_getoption, 0, HLP_LOAD);
-      vm_addcmd(CMD_UNLOAD    , (void *) cmd_unload   , (void *) vm_getoption   , 0, HLP_UNLOAD);
-      vm_addcmd(CMD_SAVE      , (void *) cmd_save     , (void *) vm_getoption   , 1, HLP_SAVE);
-      vm_addcmd(CMD_SWITCH    , (void *) cmd_doswitch , (void *) vm_getoption   , 0, HLP_SWITCH);
-      vm_addcmd(CMD_METACMD   , (void *) cmd_meta     , (void *) NULL           , 0, HLP_METACMD);
-      vm_addcmd(CMD_QUIT      , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
-      vm_addcmd(CMD_QUIT2     , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
-      vm_addcmd(CMD_LIST      , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
-      vm_addcmd(CMD_LIST2     , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
-      vm_addcmd(CMD_STOP      , (void *) cmd_stop     , (void *) NULL           , 0, HLP_STOP);
-      vm_addcmd(CMD_WORKSPACE , (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
-      vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
-      vm_addcmd(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) vm_getvarparams, 0, HLP_WORKSPACE);
-      vm_addcmd(CMD_VECTORS   , (void *) cmd_vectors  , (void *) vm_getvarparams, 0, HLP_VECTORS);
-      vm_addcmd(CMD_TABLES    , (void *) cmd_tables   , (void *) vm_getvarparams, 0, HLP_TABLES);
-      vm_addcmd(CMD_LISTS     , (void *) cmd_lists    , (void *) vm_getvarparams, 0, HLP_LISTS);
-      vm_addcmd(CMD_EMPTY     , (void *) cmd_empty    , (void *) vm_getvarparams, 0, HLP_EMPTY);
+      revm_command_add(CMD_LOAD      , (void *) cmd_load     , (void *) revm_getoption, 0, HLP_LOAD);
+      revm_command_add(CMD_UNLOAD    , (void *) cmd_unload   , (void *) revm_getoption   , 0, HLP_UNLOAD);
+      revm_command_add(CMD_SAVE      , (void *) cmd_save     , (void *) revm_getoption   , 1, HLP_SAVE);
+      revm_command_add(CMD_SWITCH    , (void *) cmd_doswitch , (void *) revm_getoption   , 0, HLP_SWITCH);
+      revm_command_add(CMD_METACMD   , (void *) cmd_meta     , (void *) NULL           , 0, HLP_METACMD);
+      revm_command_add(CMD_QUIT      , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
+      revm_command_add(CMD_QUIT2     , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
+      revm_command_add(CMD_LIST      , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
+      revm_command_add(CMD_LIST2     , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
+      revm_command_add(CMD_STOP      , (void *) cmd_stop     , (void *) NULL           , 0, HLP_STOP);
+      revm_command_add(CMD_WORKSPACE , (void *) cmd_workspace, (void *) revm_getvarparams, 0, HLP_WORKSPACE);
+      revm_command_add(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) revm_getvarparams, 0, HLP_WORKSPACE);
+      revm_command_add(CMD_WORKSPACE2, (void *) cmd_workspace, (void *) revm_getvarparams, 0, HLP_WORKSPACE);
+      revm_command_add(CMD_VECTORS   , (void *) cmd_vectors  , (void *) revm_getvarparams, 0, HLP_VECTORS);
+      revm_command_add(CMD_TABLES    , (void *) cmd_tables   , (void *) revm_getvarparams, 0, HLP_TABLES);
+      revm_command_add(CMD_LISTS     , (void *) cmd_lists    , (void *) revm_getvarparams, 0, HLP_LISTS);
+      revm_command_add(CMD_EMPTY     , (void *) cmd_empty    , (void *) revm_getvarparams, 0, HLP_EMPTY);
     }
 
   /* Command line only commands */
-  if (world.state.vm_mode == REVM_STATE_CMDLINE)
+  if (world.state.revm_mode == REVM_STATE_CMDLINE)
     {
-      vm_addcmd(CMD_BINFILE_W, (void *) NULL, (void *) vm_getoutput, 0, "");
-      vm_addcmd(CMD_BINFILE_R, (void *) NULL, (void *) vm_getinput , 0, "");
+      revm_command_add(CMD_BINFILE_W, (void *) NULL, (void *) revm_getoutput, 0, "");
+      revm_command_add(CMD_BINFILE_R, (void *) NULL, (void *) revm_getinput , 0, "");
     }
 
   /* General purpose command */
-  vm_addcmd(CMD_MODLOAD , (void *) cmd_modload  , (void *) vm_getoption   , 0, HLP_MODLOAD);
-  vm_addcmd(CMD_MODULOAD, (void *) cmd_modunload, (void *) vm_getoption   , 0, HLP_MODULOAD);
-  vm_addcmd(CMD_DISASM  , (void *) cmd_disasm  , (void *) vm_getdisasm    , 1, HLP_DISASM);
-  vm_addcmd(CMD_DISASM2 , (void *) cmd_disasm  , (void *) vm_getdisasm    , 1, HLP_DISASM);
-  vm_addcmd(CMD_HEXA    , (void *) cmd_disasm  , (void *) vm_gethexa      , 1, HLP_HEXA);
-  vm_addcmd(CMD_HEXA2   , (void *) cmd_disasm  , (void *) vm_gethexa      , 1, HLP_HEXA);
-  vm_addcmd(CMD_PRINT   , (void *) cmd_print   , (void *) vm_getvarparams , 0, HLP_PRINT);
-  vm_addcmd(CMD_EXEC    , (void *) cmd_exec    , (void *) vm_getvarparams , 0, HLP_EXEC);
-  vm_addcmd(CMD_EDIT    , (void *) cmd_edit    , (void *) vm_getoption    , 0, HLP_EDIT);
-  vm_addcmd(CMD_PHT     , (void *) cmd_pht     , (void *) vm_getregxoption, 1, HLP_PHT);
-  vm_addcmd(CMD_GOT     , (void *) cmd_got     , (void *) vm_getregxoption, 1, HLP_GOT);
-  vm_addcmd(CMD_CTORS   , (void *) cmd_ctors   , (void *) vm_getregxoption, 1, HLP_CTORS);
-  vm_addcmd(CMD_DTORS   , (void *) cmd_dtors   , (void *) vm_getregxoption, 1, HLP_DTORS);
-  vm_addcmd(CMD_NOTE    , (void *) cmd_notes   , (void *) vm_getregxoption, 1, HLP_NOTES);
-  vm_addcmd(CMD_COREINFO, (void *) cmd_coreinfo, (void *) NULL	          , 1, HLP_COREINFO);
-  vm_addcmd(CMD_SYM     , (void *) cmd_sym     , (void *) vm_getregxoption, 1, HLP_SYM);
-  vm_addcmd(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
-  vm_addcmd(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
-  vm_addcmd(CMD_SHT     , (void *) cmd_sht     , (void *) vm_getregxoption, 1, HLP_SHT);
-  vm_addcmd(CMD_DEBUG   , (void *) cmd_debug   , (void *) vm_getvarparams , 0, HLP_DEBUG);
-  vm_addcmd(CMD_REL     , (void *) cmd_rel     , (void *) vm_getregxoption, 1, HLP_REL);
-  vm_addcmd(CMD_COMMENT , (void *) cmd_comments, (void *) vm_getregxoption, 1, HLP_COMMENT);
-  vm_addcmd(CMD_PHT2    , (void *) cmd_pht     , (void *) vm_getregxoption, 1, HLP_PHT);
-  vm_addcmd(CMD_GOT2    , (void *) cmd_got     , (void *) vm_getregxoption, 1, HLP_GOT);
-  vm_addcmd(CMD_CTORS2  , (void *) cmd_ctors   , (void *) vm_getregxoption, 1, HLP_CTORS);
-  vm_addcmd(CMD_DTORS2  , (void *) cmd_dtors   , (void *) vm_getregxoption, 1, HLP_DTORS);
-  vm_addcmd(CMD_NOTE2   , (void *) cmd_notes   , (void *) vm_getregxoption, 1, HLP_NOTES);
-  vm_addcmd(CMD_SYM2    , (void *) cmd_sym     , (void *) vm_getregxoption, 1, HLP_SYM);
-  vm_addcmd(CMD_DYNAMIC2, (void *) cmd_dyn     , (void *) vm_getregxoption, 1, HLP_DYNAMIC);
-  vm_addcmd(CMD_DYNSYM2 , (void *) cmd_dynsym  , (void *) vm_getregxoption, 1, HLP_DYNSYM);
-  vm_addcmd(CMD_SHT2    , (void *) cmd_sht     , (void *) vm_getregxoption, 1, HLP_SHT);
-  vm_addcmd(CMD_REL2    , (void *) cmd_rel     , (void *) vm_getregxoption, 1, HLP_REL);
-  vm_addcmd(CMD_COMMENT2, (void *) cmd_comments, (void *) vm_getregxoption, 1, HLP_COMMENT);
-  vm_addcmd(CMD_SET     , (void *) cmd_set     , (void *) vm_getoption2   , 0, HLP_SET);
-  vm_addcmd(CMD_ADD     , (void *) cmd_add     , (void *) vm_getoption2   , 0, HLP_ADD);
-  vm_addcmd(CMD_SUB     , (void *) cmd_sub     , (void *) vm_getoption2   , 0, HLP_SUB);
-  vm_addcmd(CMD_MUL     , (void *) cmd_mul     , (void *) vm_getoption2   , 0, HLP_MUL);
-  vm_addcmd(CMD_DIV     , (void *) cmd_div     , (void *) vm_getoption2   , 0, HLP_DIV);
-  vm_addcmd(CMD_MOD     , (void *) cmd_set     , (void *) vm_getoption2   , 0, HLP_MOD);
-  vm_addcmd(CMD_INFO    , (void *) cmd_info    , (void *) NULL            , 0, HLP_INFO);
-  vm_addcmd(CMD_FIXUP   , (void *) cmd_fixup   , (void *) NULL            , 1, HLP_FIXUP);
-  vm_addcmd(CMD_ELF2    , (void *) cmd_elf     , (void *) NULL            , 1, HLP_ELF);
-  vm_addcmd(CMD_INTERP2 , (void *) cmd_interp  , (void *) NULL            , 1, HLP_INTERP);
-  vm_addcmd(CMD_ELF     , (void *) cmd_elf     , (void *) NULL            , 1, HLP_ELF);
-  vm_addcmd(CMD_INTERP  , (void *) cmd_interp  , (void *) NULL            , 1, HLP_INTERP);
-  vm_addcmd(CMD_HELP    , (void *) cmd_help    , (void *) vm_getvarparams , 0, HLP_HELP);
-  vm_addcmd(CMD_MODHELP , (void *) cmd_modhelp , (void *) vm_getoption    , 0, HLP_MODHELP);
-  vm_addcmd(CMD_QUIET   , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
-  vm_addcmd(CMD_QUIET2  , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
-  vm_addcmd(CMD_FORCE   , (void *) cmd_force   , (void *) NULL            , 0, HLP_FORCE);
-  vm_addcmd(CMD_VERB    , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
-  vm_addcmd(CMD_VERB2   , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
-  vm_addcmd(CMD_SORT    , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
-  vm_addcmd(CMD_SORT2   , (void *) cmd_sort    , (void *) vm_getoption    , 0, HLP_SORT);
-  vm_addcmd(CMD_ALL	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
-  vm_addcmd(CMD_ALL2	, (void *) cmd_glregx  , (void *) vm_getoption    , 0, HLP_ALL);
-  vm_addcmd(CMD_ALERT	, (void *) cmd_alert   , (void *) vm_getoption    , 0, HLP_ALERT);
-  vm_addcmd(CMD_FINDREL , (void *) cmd_findrel , (void *) NULL            , 1, HLP_FINDREL);
-  vm_addcmd(CMD_WRITE	, (void *) cmd_write   , (void *) vm_getvarparams , 1, HLP_WRITE);
-  vm_addcmd(CMD_APPEND  , (void *) cmd_append  , (void *) vm_getoption2   , 1, HLP_APPEND);
-  vm_addcmd(CMD_EXTEND  , (void *) cmd_extend  , (void *) vm_getoption2   , 1, HLP_EXTEND);
-  vm_addcmd(CMD_RELINJCT, (void *) cmd_relinject,(void *) vm_getoption2   , 0, HLP_RELINJCT);
-  vm_addcmd(CMD_HIJACK  , (void *) cmd_hijack  , (void *) vm_getvarparams , 1, HLP_HIJACK);
-  vm_addcmd(CMD_CMP     , (void *) cmd_cmp     , (void *) vm_getoption2   , 0, HLP_CMP);
-  vm_addcmd(CMD_CMP2    , (void *) cmd_cmp     , (void *) vm_getoption2   , 0, HLP_CMP);
-  vm_addcmd(CMD_TEST    , (void *) cmd_test    , (void *) vm_getoption2   , 0, HLP_TEST);
+  revm_command_add(CMD_MODLOAD , (void *) cmd_modload  , (void *) revm_getoption   , 0, HLP_MODLOAD);
+  revm_command_add(CMD_MODULOAD, (void *) cmd_modunload, (void *) revm_getoption   , 0, HLP_MODULOAD);
+  revm_command_add(CMD_DISASM  , (void *) cmd_disasm  , (void *) revm_getdisasm    , 1, HLP_DISASM);
+  revm_command_add(CMD_DISASM2 , (void *) cmd_disasm  , (void *) revm_getdisasm    , 1, HLP_DISASM);
+  revm_command_add(CMD_HEXA    , (void *) cmd_disasm  , (void *) revm_gethexa      , 1, HLP_HEXA);
+  revm_command_add(CMD_HEXA2   , (void *) cmd_disasm  , (void *) revm_gethexa      , 1, HLP_HEXA);
+  revm_command_add(CMD_PRINT   , (void *) cmd_print   , (void *) revm_getvarparams , 0, HLP_PRINT);
+  revm_command_add(CMD_EXEC    , (void *) cmd_exec    , (void *) revm_getvarparams , 0, HLP_EXEC);
+  revm_command_add(CMD_EDIT    , (void *) cmd_edit    , (void *) revm_getoption    , 0, HLP_EDIT);
+  revm_command_add(CMD_PHT     , (void *) cmd_pht     , (void *) revm_getregxoption, 1, HLP_PHT);
+  revm_command_add(CMD_GOT     , (void *) cmd_got     , (void *) revm_getregxoption, 1, HLP_GOT);
+  revm_command_add(CMD_CTORS   , (void *) cmd_ctors   , (void *) revm_getregxoption, 1, HLP_CTORS);
+  revm_command_add(CMD_DTORS   , (void *) cmd_dtors   , (void *) revm_getregxoption, 1, HLP_DTORS);
+  revm_command_add(CMD_NOTE    , (void *) cmd_notes   , (void *) revm_getregxoption, 1, HLP_NOTES);
+  revm_command_add(CMD_COREINFO, (void *) cmd_coreinfo, (void *) NULL	          , 1, HLP_COREINFO);
+  revm_command_add(CMD_SYM     , (void *) cmd_sym     , (void *) revm_getregxoption, 1, HLP_SYM);
+  revm_command_add(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) revm_getregxoption, 1, HLP_DYNAMIC);
+  revm_command_add(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) revm_getregxoption, 1, HLP_DYNSYM);
+  revm_command_add(CMD_SHT     , (void *) cmd_sht     , (void *) revm_getregxoption, 1, HLP_SHT);
+  revm_command_add(CMD_DEBUG   , (void *) cmd_debug   , (void *) revm_getvarparams , 0, HLP_DEBUG);
+  revm_command_add(CMD_REL     , (void *) cmd_rel     , (void *) revm_getregxoption, 1, HLP_REL);
+  revm_command_add(CMD_COMMENT , (void *) cmd_comments, (void *) revm_getregxoption, 1, HLP_COMMENT);
+  revm_command_add(CMD_PHT2    , (void *) cmd_pht     , (void *) revm_getregxoption, 1, HLP_PHT);
+  revm_command_add(CMD_GOT2    , (void *) cmd_got     , (void *) revm_getregxoption, 1, HLP_GOT);
+  revm_command_add(CMD_CTORS2  , (void *) cmd_ctors   , (void *) revm_getregxoption, 1, HLP_CTORS);
+  revm_command_add(CMD_DTORS2  , (void *) cmd_dtors   , (void *) revm_getregxoption, 1, HLP_DTORS);
+  revm_command_add(CMD_NOTE2   , (void *) cmd_notes   , (void *) revm_getregxoption, 1, HLP_NOTES);
+  revm_command_add(CMD_SYM2    , (void *) cmd_sym     , (void *) revm_getregxoption, 1, HLP_SYM);
+  revm_command_add(CMD_DYNAMIC2, (void *) cmd_dyn     , (void *) revm_getregxoption, 1, HLP_DYNAMIC);
+  revm_command_add(CMD_DYNSYM2 , (void *) cmd_dynsym  , (void *) revm_getregxoption, 1, HLP_DYNSYM);
+  revm_command_add(CMD_SHT2    , (void *) cmd_sht     , (void *) revm_getregxoption, 1, HLP_SHT);
+  revm_command_add(CMD_REL2    , (void *) cmd_rel     , (void *) revm_getregxoption, 1, HLP_REL);
+  revm_command_add(CMD_COMMENT2, (void *) cmd_comments, (void *) revm_getregxoption, 1, HLP_COMMENT);
+  revm_command_add(CMD_SET     , (void *) cmd_set     , (void *) revm_getoption2   , 0, HLP_SET);
+  revm_command_add(CMD_ADD     , (void *) cmd_add     , (void *) revm_getoption2   , 0, HLP_ADD);
+  revm_command_add(CMD_SUB     , (void *) cmd_sub     , (void *) revm_getoption2   , 0, HLP_SUB);
+  revm_command_add(CMD_MUL     , (void *) cmd_mul     , (void *) revm_getoption2   , 0, HLP_MUL);
+  revm_command_add(CMD_DIV     , (void *) cmd_div     , (void *) revm_getoption2   , 0, HLP_DIV);
+  revm_command_add(CMD_MOD     , (void *) cmd_set     , (void *) revm_getoption2   , 0, HLP_MOD);
+  revm_command_add(CMD_INFO    , (void *) cmd_info    , (void *) NULL            , 0, HLP_INFO);
+  revm_command_add(CMD_FIXUP   , (void *) cmd_fixup   , (void *) NULL            , 1, HLP_FIXUP);
+  revm_command_add(CMD_ELF2    , (void *) cmd_elf     , (void *) NULL            , 1, HLP_ELF);
+  revm_command_add(CMD_INTERP2 , (void *) cmd_interp  , (void *) NULL            , 1, HLP_INTERP);
+  revm_command_add(CMD_ELF     , (void *) cmd_elf     , (void *) NULL            , 1, HLP_ELF);
+  revm_command_add(CMD_INTERP  , (void *) cmd_interp  , (void *) NULL            , 1, HLP_INTERP);
+  revm_command_add(CMD_HELP    , (void *) cmd_help    , (void *) revm_getvarparams , 0, HLP_HELP);
+  revm_command_add(CMD_MODHELP , (void *) cmd_modhelp , (void *) revm_getoption    , 0, HLP_MODHELP);
+  revm_command_add(CMD_QUIET   , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
+  revm_command_add(CMD_QUIET2  , (void *) cmd_quiet   , (void *) NULL            , 0, HLP_QUIET);
+  revm_command_add(CMD_FORCE   , (void *) cmd_force   , (void *) NULL            , 0, HLP_FORCE);
+  revm_command_add(CMD_VERB    , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
+  revm_command_add(CMD_VERB2   , (void *) cmd_verb    , (void *) NULL            , 0, HLP_VERB);
+  revm_command_add(CMD_SORT    , (void *) cmd_sort    , (void *) revm_getoption    , 0, HLP_SORT);
+  revm_command_add(CMD_SORT2   , (void *) cmd_sort    , (void *) revm_getoption    , 0, HLP_SORT);
+  revm_command_add(CMD_ALL	, (void *) cmd_glregx  , (void *) revm_getoption    , 0, HLP_ALL);
+  revm_command_add(CMD_ALL2	, (void *) cmd_glregx  , (void *) revm_getoption    , 0, HLP_ALL);
+  revm_command_add(CMD_ALERT	, (void *) cmd_alert   , (void *) revm_getoption    , 0, HLP_ALERT);
+  revm_command_add(CMD_FINDREL , (void *) cmd_findrel , (void *) NULL            , 1, HLP_FINDREL);
+  revm_command_add(CMD_WRITE	, (void *) cmd_write   , (void *) revm_getvarparams , 1, HLP_WRITE);
+  revm_command_add(CMD_APPEND  , (void *) cmd_append  , (void *) revm_getoption2   , 1, HLP_APPEND);
+  revm_command_add(CMD_EXTEND  , (void *) cmd_extend  , (void *) revm_getoption2   , 1, HLP_EXTEND);
+  revm_command_add(CMD_RELINJCT, (void *) cmd_relinject,(void *) revm_getoption2   , 0, HLP_RELINJCT);
+  revm_command_add(CMD_HIJACK  , (void *) cmd_hijack  , (void *) revm_getvarparams , 1, HLP_HIJACK);
+  revm_command_add(CMD_CMP     , (void *) cmd_cmp     , (void *) revm_getoption2   , 0, HLP_CMP);
+  revm_command_add(CMD_CMP2    , (void *) cmd_cmp     , (void *) revm_getoption2   , 0, HLP_CMP);
+  revm_command_add(CMD_TEST    , (void *) cmd_test    , (void *) revm_getoption2   , 0, HLP_TEST);
 
-  vm_addcmd(CMD_INSERT  , (void *) cmd_insert  , (void *) vm_getvarparams , 1, HLP_INSERT);
-  vm_addcmd(CMD_INSERT2 , (void *) cmd_insert  , (void *) vm_getvarparams , 1, HLP_INSERT);
-  vm_addcmd(CMD_REMOVE  , (void *) cmd_remove  , (void *) vm_getoption2   , 1, HLP_REMOVE);
-  vm_addcmd(CMD_REMOVE2 , (void *) cmd_remove  , (void *) vm_getoption2   , 1, HLP_REMOVE);
-  vm_addcmd(CMD_FLUSH   , (void *) cmd_flush   , (void *) NULL            , 1, HLP_FLUSH);
-  vm_addcmd(CMD_COLOR   , (void *) cmd_color   , (void *) vm_getoption3   , 0, HLP_COLOR);
-  vm_addcmd(CMD_NOCOLOR , (void *) cmd_nocolor , (void *) NULL            , 0, HLP_NOCOLOR);
+  revm_command_add(CMD_INSERT  , (void *) cmd_insert  , (void *) revm_getvarparams , 1, HLP_INSERT);
+  revm_command_add(CMD_INSERT2 , (void *) cmd_insert  , (void *) revm_getvarparams , 1, HLP_INSERT);
+  revm_command_add(CMD_REMOVE  , (void *) cmd_remove  , (void *) revm_getoption2   , 1, HLP_REMOVE);
+  revm_command_add(CMD_REMOVE2 , (void *) cmd_remove  , (void *) revm_getoption2   , 1, HLP_REMOVE);
+  revm_command_add(CMD_FLUSH   , (void *) cmd_flush   , (void *) NULL            , 1, HLP_FLUSH);
+  revm_command_add(CMD_COLOR   , (void *) cmd_color   , (void *) revm_getoption3   , 0, HLP_COLOR);
+  revm_command_add(CMD_NOCOLOR , (void *) cmd_nocolor , (void *) NULL            , 0, HLP_NOCOLOR);
 
-  vm_addcmd(CMD_JMP     , (void *) cmd_jmp     , (void *) vm_getoption    , 0, HLP_JMP);
-  vm_addcmd(CMD_JE      , (void *) cmd_je      , (void *) vm_getoption    , 0, HLP_JE);
-  vm_addcmd(CMD_JNE     , (void *) cmd_jne     , (void *) vm_getoption    , 0, HLP_JNE);
-  vm_addcmd(CMD_JG      , (void *) cmd_jg      , (void *) vm_getoption    , 0, HLP_JG);
-  vm_addcmd(CMD_JL      , (void *) cmd_jl      , (void *) vm_getoption    , 0, HLP_JL);
-  vm_addcmd(CMD_JGE     , (void *) cmd_jge     , (void *) vm_getoption    , 0, HLP_JGE);
-  vm_addcmd(CMD_JLE     , (void *) cmd_jle     , (void *) vm_getoption    , 0, HLP_JLE);
+  revm_command_add(CMD_JMP     , (void *) cmd_jmp     , (void *) revm_getoption    , 0, HLP_JMP);
+  revm_command_add(CMD_JE      , (void *) cmd_je      , (void *) revm_getoption    , 0, HLP_JE);
+  revm_command_add(CMD_JNE     , (void *) cmd_jne     , (void *) revm_getoption    , 0, HLP_JNE);
+  revm_command_add(CMD_JG      , (void *) cmd_jg      , (void *) revm_getoption    , 0, HLP_JG);
+  revm_command_add(CMD_JL      , (void *) cmd_jl      , (void *) revm_getoption    , 0, HLP_JL);
+  revm_command_add(CMD_JGE     , (void *) cmd_jge     , (void *) revm_getoption    , 0, HLP_JGE);
+  revm_command_add(CMD_JLE     , (void *) cmd_jle     , (void *) revm_getoption    , 0, HLP_JLE);
 
-  vm_addcmd(CMD_FOREACH , (void *) cmd_foreach , (void *) vm_getforparams , 0, HLP_FOREACH);
-  vm_addcmd(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL            , 0, HLP_FOREND);
-  vm_addcmd(CMD_MATCH   , (void *) cmd_match   , (void *) vm_getmatchparams, 0, HLP_MATCH);
-  vm_addcmd(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL            , 0, HLP_MATCHEND);
-  vm_addcmd(CMD_CASE    , (void *) cmd_case    , (void *) vm_getoption3   , 0, HLP_CASE);
-  vm_addcmd(CMD_DEFAULT , (void *) cmd_default , (void *) vm_getvarparams , 0, HLP_DEFAULT);
-  vm_addcmd(CMD_REFLECT , (void *) cmd_reflect , (void *) vm_getoption    , 0, HLP_REFLECT);
+  revm_command_add(CMD_FOREACH , (void *) cmd_foreach , (void *) revm_getforparams , 0, HLP_FOREACH);
+  revm_command_add(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL            , 0, HLP_FOREND);
+  revm_command_add(CMD_MATCH   , (void *) cmd_match   , (void *) revm_getmatchparams, 0, HLP_MATCH);
+  revm_command_add(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL            , 0, HLP_MATCHEND);
+  revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getoption3   , 0, HLP_CASE);
+  revm_command_add(CMD_DEFAULT , (void *) cmd_default , (void *) revm_getvarparams , 0, HLP_DEFAULT);
+  revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getoption    , 0, HLP_REFLECT);
 
-  vm_addcmd(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) vm_getoption  , 0, HLP_SDIR);
-  vm_addcmd(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
-  vm_addcmd(CMD_SOURCE  , (void *) cmd_source  , (void *) vm_getvarparams , 0, HLP_SOURCE);
-  vm_addcmd(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL		  , 0, HLP_LSCRIPTS);
-  vm_addcmd(CMD_CAT	, (void *) cmd_cat     , (void *) vm_getoption    , 0, HLP_CAT);
-  vm_addcmd(CMD_PROFILE	, (void *) cmd_profile , (void *) vm_getvarparams , 0, HLP_PROFILE);
-  vm_addcmd(CMD_LOG     , (void *) cmd_log     , (void *) vm_getvarparams , 0, HLP_LOG);
-  vm_addcmd(CMD_EXPORT  , (void *) cmd_export  , (void *) vm_getoption2   , 0, HLP_EXPORT);
-  vm_addcmd(CMD_SHARED  , (void *) cmd_shared  , (void *) NULL            , 0, HLP_SHARED);
-  vm_addcmd(CMD_VERSION , (void *) cmd_version , (void *) vm_getregxoption, 1, HLP_VERSION);
-  vm_addcmd(CMD_VERNEED , (void *) cmd_verneed , (void *) vm_getregxoption, 1, HLP_VERNEED);
-  vm_addcmd(CMD_VERDEF  , (void *) cmd_verdef  , (void *) vm_getregxoption, 1, HLP_VERDEF);
-  vm_addcmd(CMD_HASH    , (void *) cmd_hashx   , (void *) vm_getregxoption, 1, HLP_HASH);
-  vm_addcmd(CMD_CONFIGURE, cmd_configure       , vm_getvarparams, 0, HLP_CONFIGURE);
+  revm_command_add(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) revm_getoption  , 0, HLP_SDIR);
+  revm_command_add(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
+  revm_command_add(CMD_SOURCE  , (void *) cmd_source  , (void *) revm_getvarparams , 0, HLP_SOURCE);
+  revm_command_add(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL		  , 0, HLP_LSCRIPTS);
+  revm_command_add(CMD_CAT	, (void *) cmd_cat     , (void *) revm_getoption    , 0, HLP_CAT);
+  revm_command_add(CMD_PROFILE	, (void *) cmd_profile , (void *) revm_getvarparams , 0, HLP_PROFILE);
+  revm_command_add(CMD_LOG     , (void *) cmd_log     , (void *) revm_getvarparams , 0, HLP_LOG);
+  revm_command_add(CMD_EXPORT  , (void *) cmd_export  , (void *) revm_getoption2   , 0, HLP_EXPORT);
+  revm_command_add(CMD_SHARED  , (void *) cmd_shared  , (void *) NULL            , 0, HLP_SHARED);
+  revm_command_add(CMD_VERSION , (void *) cmd_version , (void *) revm_getregxoption, 1, HLP_VERSION);
+  revm_command_add(CMD_VERNEED , (void *) cmd_verneed , (void *) revm_getregxoption, 1, HLP_VERNEED);
+  revm_command_add(CMD_VERDEF  , (void *) cmd_verdef  , (void *) revm_getregxoption, 1, HLP_VERDEF);
+  revm_command_add(CMD_HASH    , (void *) cmd_hashx   , (void *) revm_getregxoption, 1, HLP_HASH);
+  revm_command_add(CMD_CONFIGURE, cmd_configure       , revm_getvarparams, 0, HLP_CONFIGURE);
 
   /* Type related commands */
-  vm_addcmd(CMD_TYPE     , cmd_type            , vm_getvarparams, 0, HLP_TYPE);
-  vm_addcmd(CMD_TYPEDEF  , cmd_typedef         , vm_getvarparams, 0, HLP_TYPEDEF);
-  vm_addcmd(CMD_INFORM   , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
-  vm_addcmd(CMD_UNINFORM , cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
-  vm_addcmd(CMD_INFORM2  , cmd_inform          , vm_getvarparams, 1, HLP_INFORM);
-  vm_addcmd(CMD_UNINFORM2, cmd_uninform        , vm_getvarparams, 0, HLP_UNINFORM);
+  revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
+  revm_command_add(CMD_TYPEDEF  , cmd_typedef         , revm_getvarparams, 0, HLP_TYPEDEF);
+  revm_command_add(CMD_INFORM   , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
+  revm_command_add(CMD_UNINFORM , cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
+  revm_command_add(CMD_INFORM2  , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
+  revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
   
 #if defined(ELFSHNET)
   /* DUMP network commands */
-  vm_addcmd(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
-  vm_addcmd(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
-  vm_addcmd(CMD_NETLIST   , (void *) cmd_netlist  , (void *) NULL            , 0, HLP_NETLIST);
-  vm_addcmd(CMD_NETKILL   , (void *) cmd_netkill  , (void *) vm_getoption    , 0, HLP_NETKILL);
-  vm_addcmd(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL            , 0, HLP_PEERSLIST);
-  vm_addcmd(CMD_CONNECT   , (void *) cmd_connect  , (void *) vm_getoption    , 0, HLP_CONNECT);
-  vm_addcmd(CMD_DISCON    , (void *) cmd_discon   , (void *) vm_getoption    , 0, HLP_DISCON);
-  vm_addcmd(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) vm_getvarparams , 0, HLP_RCMD);
+  revm_command_add(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
+  revm_command_add(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
+  revm_command_add(CMD_NETLIST   , (void *) cmd_netlist  , (void *) NULL            , 0, HLP_NETLIST);
+  revm_command_add(CMD_NETKILL   , (void *) cmd_netkill  , (void *) revm_getoption    , 0, HLP_NETKILL);
+  revm_command_add(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL            , 0, HLP_PEERSLIST);
+  revm_command_add(CMD_CONNECT   , (void *) cmd_connect  , (void *) revm_getoption    , 0, HLP_CONNECT);
+  revm_command_add(CMD_DISCON    , (void *) cmd_discon   , (void *) revm_getoption    , 0, HLP_DISCON);
+  revm_command_add(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) revm_getvarparams , 0, HLP_RCMD);
 #endif
 
   /* Flow analysis commands */
-  vm_addcmd(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
-  vm_addcmd(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
-  vm_addcmd(CMD_GRAPH     , cmd_graph         , vm_getvarparams, 1, HLP_GRAPH);
-  vm_addcmd(CMD_INSPECT   , cmd_inspect       , vm_getoption,    1, HLP_INSPECT);
-  vm_addcmd(CMD_FLOWJACK  , cmd_flowjack      , vm_getoption2,   1, HLP_FLOWJACK);
-  vm_addcmd(CMD_ADDGOTO   , cmd_addgoto       , vm_getoption2,   1, HLP_ADDGOTO);
-  vm_addcmd(CMD_SETGVL    , cmd_setgvl        , vm_getoption,    1, HLP_SETGVL);
-  vm_addcmd(CMD_RENAME	  , cmd_rename        , vm_getoption2,   1, HLP_RENAME);  
-  vm_addcmd(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+  revm_command_add(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
+  revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
+  revm_command_add(CMD_GRAPH     , cmd_graph         , revm_getvarparams, 1, HLP_GRAPH);
+  revm_command_add(CMD_INSPECT   , cmd_inspect       , revm_getoption,    1, HLP_INSPECT);
+  revm_command_add(CMD_FLOWJACK  , cmd_flowjack      , revm_getoption2,   1, HLP_FLOWJACK);
+  revm_command_add(CMD_ADDGOTO   , cmd_addgoto       , revm_getoption2,   1, HLP_ADDGOTO);
+  revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
+  revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
+  revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
 
   /* Base type declarations commands */
   typeinfo = aspect_basetype_get(&typenbr);
   for (index = 0; index < typenbr; index++)
-    vm_addcmd(typeinfo[index].name, cmd_declare, 
-	      vm_getvarparams, 0, HLP_DECLARE);
+    revm_command_add(typeinfo[index].name, cmd_declare, 
+	      revm_getvarparams, 0, HLP_DECLARE);
 }
 
 /* Mix default library path with LD_LIBRARY_PATH variable */
@@ -946,13 +946,13 @@ static void	setup_varshash()
   revmobj_t	*l;
   revmobj_t	*o;
 
-  f = vm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  g = vm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  r = vm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
-  s = vm_create_IMMEDSTR(1, ELFSH_SHELL);
-  e = vm_create_IMMEDSTR(1, ELFSH_EDITOR);
-  l = vm_create_IMMEDSTR(1, get_libpath());
-  o = vm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
+  g = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
+  r = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
+  s = revm_create_IMMEDSTR(1, ELFSH_SHELL);
+  e = revm_create_IMMEDSTR(1, ELFSH_EDITOR);
+  l = revm_create_IMMEDSTR(1, get_libpath());
+  o = revm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
 
   hash_init(&vars_hash, "variables", 251, ASPECT_TYPE_UNKNOW);
   hash_add(&vars_hash, REVM_VAR_RESULT, f);
@@ -1119,21 +1119,21 @@ void setup_color()
 
 void setup_color_type()
 {
-  hash_add(&t_color_hash, "string"     , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "fieldstring", (void *) vm_colorblank()); 
-  hash_add(&t_color_hash, "typestring" , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "address"    , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "number"     , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "endstring"  , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "warnstring" , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "pspecial"   , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "psname"     , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "pversion"   , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "prelease"   , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "pedition"   , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "instr"      , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "function"   , (void *) vm_colorblank());
-  hash_add(&t_color_hash, "filename"   , (void *) vm_colorblank());
+  hash_add(&t_color_hash, "string"     , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "fieldstring", (void *) revm_colorblank()); 
+  hash_add(&t_color_hash, "typestring" , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "address"    , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "number"     , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "endstring"  , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "warnstring" , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "pspecial"   , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "psname"     , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "pversion"   , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "prelease"   , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "pedition"   , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "instr"      , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "function"   , (void *) revm_colorblank());
+  hash_add(&t_color_hash, "filename"   , (void *) revm_colorblank());
 }
 
 
@@ -1152,7 +1152,7 @@ void setup_traces_table()
 }
 
 /* Setup all hash tables */
-void		vm_setup_hashtables()
+void		revm_tables_setup()
 {
   static int	done = 0;
 

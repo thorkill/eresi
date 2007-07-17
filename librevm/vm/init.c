@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 mayhem
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.28 2007-07-12 23:56:31 may Exp $
+** $Id: init.c,v 1.29 2007-07-17 18:11:25 may Exp $
 **
 */
 
@@ -19,14 +19,14 @@ revmworld_t	world;
 /* Signal handler for SIGINT */
 void		sigint_handler(int signum)
 {
-  if (world.state.vm_mode == REVM_STATE_CMDLINE)
-    vm_exit(0);
+  if (world.state.revm_mode == REVM_STATE_CMDLINE)
+    revm_exit(0);
 }
 
 
 
 /* The infinite main loop */
-int		vm_loop(int argc, char **argv)
+int		revm_loop(int argc, char **argv)
 {
   char		*buggyfunc;
   char		logbuf[256];
@@ -41,32 +41,32 @@ int		vm_loop(int argc, char **argv)
   reenter:
 
     /* Fill argv from stdin if we are in interactive mode */
-    if ((world.state.vm_mode != REVM_STATE_CMDLINE 
-	 && world.state.vm_mode != REVM_STATE_TRACER) 
-	|| world.state.vm_net == 1)
+    if ((world.state.revm_mode != REVM_STATE_CMDLINE 
+	 && world.state.revm_mode != REVM_STATE_TRACER) 
+	|| world.state.revm_net == 1)
       {
-	if (world.state.vm_mode != REVM_STATE_SCRIPT)
+	if (world.state.revm_mode != REVM_STATE_SCRIPT)
 	  {
-	    if (vm_select() < 0)
+	    if (revm_select() < 0)
 	      {
-		fprintf(stderr,"vm_select : failed \n");
-		vm_exit(-1);
+		fprintf(stderr,"revm_select : failed \n");
+		revm_exit(-1);
 	      }
 
 	    /* If the FIFO does not exist anymore, 
 	       the server has quit, so we quit too */
-	    if (world.state.vm_mode == REVM_STATE_DEBUGGER && 
+	    if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
 		(access(REVM_FIFO_S2C, F_OK) < 0 || 
 		 access(REVM_FIFO_C2S, F_OK) < 0))
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);	      
 	  }
 
 	/* Take a line, execute old command if void line */
-	argv = vm_input(&argc);
-	if (world.state.vm_mode == REVM_STATE_INTERACTIVE ||
-	    world.state.vm_mode == REVM_STATE_DEBUGGER    ||
-	    world.state.vm_mode == REVM_STATE_SCRIPT      ||
-	    world.state.vm_net)
+	argv = revm_input(&argc);
+	if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+	    world.state.revm_mode == REVM_STATE_DEBUGGER    ||
+	    world.state.revm_mode == REVM_STATE_SCRIPT      ||
+	    world.state.revm_net)
 	  {
 	    if (argv == ((char **) REVM_INPUT_VOID))
 	      continue;
@@ -77,14 +77,14 @@ int		vm_loop(int argc, char **argv)
 	/* CTRL-D -> !argv */
 	if (!argv)
 	  {
-	    vm_output("\n");
+	    revm_output("\n");
 
 	    /* when debugging -> back to main program */
-	    if (world.state.vm_mode == REVM_STATE_DEBUGGER)
+	    if (world.state.revm_mode == REVM_STATE_DEBUGGER)
 	      goto e2dbg_cleanup;
 
 	    /* if net is enable but we are not in e2dbg -> ignore */
-	    if (world.state.vm_net)
+	    if (world.state.revm_net)
 	      continue;
 
 	    /* othewise exit */
@@ -94,28 +94,28 @@ int		vm_loop(int argc, char **argv)
       }
 
     /* Fetch the current scripting command */
-    if (vm_parseopt(argc, argv) < 0)
+    if (revm_parseopt(argc, argv) < 0)
       {
-	if (world.state.vm_mode != REVM_STATE_CMDLINE
-	    && world.state.vm_mode != REVM_STATE_TRACER)
+	if (world.state.revm_mode != REVM_STATE_CMDLINE
+	    && world.state.revm_mode != REVM_STATE_TRACER)
 	  {
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
-	    if (world.state.vm_mode != REVM_STATE_INTERACTIVE &&
-		world.state.vm_mode != REVM_STATE_DEBUGGER)
+	    if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
+		world.state.revm_mode != REVM_STATE_DEBUGGER)
 	      goto end;
 	  }
-	else if(!world.state.vm_net)
-	  vm_exit(-1);
+	else if(!world.state.revm_net)
+	  revm_exit(-1);
       }
 
     /* Just execute one command if we are not in script mode */
-    if (world.state.vm_mode != REVM_STATE_SCRIPT)
+    if (world.state.revm_mode != REVM_STATE_SCRIPT)
       {
 	world.curjob->curcmd = world.curjob->script[0];
-	switch (vm_execmd())
+	switch (revm_execmd())
 	  {
 	  case REVM_SCRIPT_CONTINUE:
-	    //printf(" [*] e2dbg continue from vm_execmd \n");
+	    //printf(" [*] e2dbg continue from revm_execmd \n");
 	    goto e2dbg_cleanup;
 	  case REVM_SCRIPT_ERROR:
 	    profiler_error();
@@ -125,21 +125,21 @@ int		vm_loop(int argc, char **argv)
       }
 
     /* Quit parsing if necessary */
-    if ((!world.curjob->curcmd && world.state.vm_mode == REVM_STATE_SCRIPT) ||
+    if ((!world.curjob->curcmd && world.state.revm_mode == REVM_STATE_SCRIPT) ||
 	(world.curjob->curcmd && world.curjob->curcmd->name &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
 	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
       break;
   }
-  while ((world.state.vm_mode != REVM_STATE_CMDLINE
-	  && world.state.vm_mode != REVM_STATE_TRACER)
-	 || world.state.vm_net);
+  while ((world.state.revm_mode != REVM_STATE_CMDLINE
+	  && world.state.revm_mode != REVM_STATE_TRACER)
+	 || world.state.revm_net);
 
   /* If we are in scripting, execute commands list now */
-  if (world.state.vm_mode == REVM_STATE_SCRIPT)
+  if (world.state.revm_mode == REVM_STATE_SCRIPT)
     {
       world.curjob->curcmd = world.curjob->script[0];
-      ret = vm_execscript();
+      ret = revm_execscript();
       if (ret == REVM_SCRIPT_STOP)
 	{
 	  XCLOSE(world.curjob->ws.io.input_fd, -1);
@@ -151,20 +151,20 @@ int		vm_loop(int argc, char **argv)
     }
 
  end:
-  if (!world.state.vm_quiet && world.state.vm_mode == REVM_STATE_SCRIPT)
+  if (!world.state.revm_quiet && world.state.revm_mode == REVM_STATE_SCRIPT)
     {
       if (ret < 0)
-	vm_output("\n [E] Script execution failed \n\n");
+	revm_output("\n [E] Script execution failed \n\n");
       else
-	vm_output("\n [*] Script execution ended succesfully \n\n");
+	revm_output("\n [*] Script execution ended succesfully \n\n");
     }
 
   /* Implicit unload or save if we are not in interactive mode */
-  if ((world.state.vm_mode == REVM_STATE_CMDLINE 
-       || world.state.vm_mode == REVM_STATE_TRACER) && world.curjob->current)
+  if ((world.state.revm_mode == REVM_STATE_CMDLINE 
+       || world.state.revm_mode == REVM_STATE_TRACER) && world.curjob->current)
     {
       /* Start tracing if we are on tracer state (etrace) */
-      if (world.state.vm_mode == REVM_STATE_TRACER)
+      if (world.state.revm_mode == REVM_STATE_TRACER)
 	{
 	  profiler_error_reset();
 	  if (traces_run(world.curjob->current, NULL, 0) < 0)
@@ -176,14 +176,14 @@ int		vm_loop(int argc, char **argv)
 		{
 		  snprintf(logbuf, 255, " [!] There is an issue with the function: %s\n",
 			   buggyfunc);
-		  vm_output(logbuf);
+		  revm_output(logbuf);
 		}
 
 	      profiler_error();
 	    }
 	}
 
-      ret = vm_unload_cwfiles();
+      ret = revm_workfiles_unload();
     }
 
 #if defined(USE_READLN)
@@ -199,9 +199,9 @@ int		vm_loop(int argc, char **argv)
   world.curjob->lstcmd[world.curjob->sourced] = NULL;
 
 #if defined(USE_READLN)
-  if (!(world.state.vm_mode == REVM_STATE_DEBUGGER
-	&& world.state.vm_side == REVM_SIDE_SERVER))
-    readln_quit(world.state.vm_mode);
+  if (!(world.state.revm_mode == REVM_STATE_DEBUGGER
+	&& world.state.revm_side == REVM_SIDE_SERVER))
+    readln_quit(world.state.revm_mode);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
@@ -212,7 +212,7 @@ int		vm_loop(int argc, char **argv)
 
 /* Only one time initialisations */
 /* Called from CTORS */
-int		vm_init()
+int		revm_init()
 {
 
   /* Must be here in case of script params presence */
@@ -223,11 +223,11 @@ int		vm_init()
   /* Set the world up */
   asm_init_i386(&world.proc);
   asm_init_sparc(&world.proc_sparc);
-  vm_initio();
+  revm_initio();
 
   /* setting libelfsh profile function */
   /* error on stdout, profile on stderr */
-  profiler_install(vm_outerr, vm_output);
+  profiler_install(revm_outerr, revm_output);
 
   if (aspect_called_ctors_finished())
     e2dbg_presence_reset();
@@ -239,7 +239,7 @@ int		vm_init()
 
 
 /* Setup ELFsh/e2dbg hash tables and structures */
-int		vm_setup(int ac, char **av, char mode, char side)
+int		revm_setup(int ac, char **av, char mode, char side)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -247,9 +247,9 @@ int		vm_setup(int ac, char **av, char mode, char side)
   if (mode == REVM_STATE_DEBUGGER)
     {
       /* Set the mode, side, and IO of the debugger */
-      world.state.vm_mode = mode;
-      world.state.vm_side = side;
-      vm_fifo_io(world.curjob);
+      world.state.revm_mode = mode;
+      world.state.revm_side = side;
+      revm_fifo_io(world.curjob);
 
 #if defined(USE_READLN)
       world.curjob->ws.io.buf = NULL;
@@ -260,8 +260,8 @@ int		vm_setup(int ac, char **av, char mode, char side)
     {
       elfsh_set_static_mode();
 
-      world.state.vm_mode = mode;
-      world.state.vm_side = side;
+      world.state.revm_mode = mode;
+      world.state.revm_side = side;
     }
   /* Set REVM in static mode */
   else
@@ -269,12 +269,12 @@ int		vm_setup(int ac, char **av, char mode, char side)
       elfsh_set_static_mode();
 
       if (ac == 1)
-	world.state.vm_mode = REVM_STATE_INTERACTIVE;
-      else if (vm_testscript(ac, av))
+	world.state.revm_mode = REVM_STATE_INTERACTIVE;
+      else if (revm_testscript(ac, av))
 	{
-	  world.state.vm_mode = REVM_STATE_SCRIPT;
-	  vm_setup_hashtables();
-	  if (vm_openscript(&av[1]) < 0)
+	  world.state.revm_mode = REVM_STATE_SCRIPT;
+	  revm_tables_setup();
+	  if (revm_openscript(&av[1]) < 0)
 	    QUIT_ERROR(-1);
 	  ac = 1;
 	  av[1] = NULL;
@@ -317,7 +317,7 @@ int		vm_setup(int ac, char **av, char mode, char side)
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
-  vm_setup_hashtables();
+  revm_tables_setup();
   elfsh_setup_hooks();
 
   if (!mjr_init_session(&world.mjr_session))
@@ -330,7 +330,7 @@ int		vm_setup(int ac, char **av, char mode, char side)
 
 
 /* Open the .eresirc file and execute it */
-int		vm_config()
+int		revm_config()
 {
   char		buff[BUFSIZ];
   char		*home;
@@ -357,7 +357,7 @@ int		vm_config()
       XFREE(__FILE__, __FUNCTION__, __LINE__,new);
     }
   if (ret < 0)
-    vm_output("\n [*] No configuration in ~/" REVM_CONFIG " \n\n");
+    revm_output("\n [*] No configuration in ~/" REVM_CONFIG " \n\n");
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -366,11 +366,11 @@ int		vm_config()
 
 
 /* Interface initialisation && loop entry point */
-int		vm_run(int ac, char **av)
+int		revm_run(int ac, char **av)
 {
 
   /* Do not handle signals in debugger mode */
-  if (world.state.vm_mode != REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode != REVM_STATE_DEBUGGER)
     {
       signal(SIGQUIT, SIG_IGN);
       signal(SIGTERM, SIG_IGN);
@@ -378,17 +378,17 @@ int		vm_run(int ac, char **av)
     }
 
 #if __DEBUG_SIGHANDLER__
-  vm_output("[elfsh:main] started !\n");
+  revm_output("[elfsh:main] started !\n");
 #endif
 
 #if defined(USE_READLN)
-  readln_completion_install(world.state.vm_mode, world.state.vm_side);
+  readln_completion_install(world.state.revm_mode, world.state.revm_side);
 #endif
-  vm_flush();
+  revm_flush();
 #if defined (USE_READLN)
-  vm_log(vm_get_prompt());
+  revm_log(revm_get_prompt());
 #endif
 
   /* Now run f0r3st */
-  return (vm_loop(ac, av));
+  return (revm_loop(ac, av));
 }
