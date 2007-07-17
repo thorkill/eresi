@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 mayhem
-** $Id: expressions.c,v 1.5 2007-07-12 23:56:31 may Exp $
+** $Id: expressions.c,v 1.6 2007-07-17 03:14:42 may Exp $
 */
 #include "revm.h"
 
@@ -614,6 +614,10 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   if (!dataname || *dataname != '$')
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid name for expression", NULL);    
+  if (!datatype)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid type for expression", NULL);    
+    
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname + 1;
   vm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0); 

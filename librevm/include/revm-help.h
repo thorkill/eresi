@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 mayhem
 **
-** $Id: revm-help.h,v 1.27 2007-07-14 19:49:50 may Exp $
+** $Id: revm-help.h,v 1.28 2007-07-17 03:14:42 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -179,14 +179,19 @@
 				"forend                                \n\n"
 #define	HLP_FOREND		HLP_FOREACH
 
-#define	HLP_MATCH		"Match code construction type	       \n\n\t"					\
-				"match construtname [list,of,objects]  \n\t"					\
-				" case [Type1(val, ...), ..., TypeN(...)] -> [ProducedType1(...), ...] \n\t"	\
-				" case [Type2(val, ...), ..., TypeM(...)] -> [ProducedType2(...), ...] \n\t"	\
-				"endmatch				\n\n"
+#define	HLP_MATCH		"Conditional program transformation using rewriting \n\n\t"					  \
+				"rewrite $variable into \n\n\t"								          \
+				" case CandidateType1(fieldname:value, ...) -> ProducedType1(...)::ProducedType2(...)::... \n\t"  \
+				" case CandidateType2(fieldname:value, ...) -> ProducedType2(...)::ProducedType2(...)::... \\n\t" \
+				" .... \n\t" \
+				" default print No match; other eresi commands \n\n\t" \
+				"endmatch				\n"
 #define	HLP_MATCHEND		HLP_MATCH
 #define	HLP_CASE		HLP_MATCH
-
+#define	HLP_DEFAULT		HLP_MATCH
+#define	HLP_REFLECT		"Reflect instruction list for a given basic block \n\n\t" \
+				"reflect <$block|0xaddr> \n\n\t"			  \
+				"Instruction list is then accessible from fileid.instrlist[0xaddr] \n"
 
 /* Prefixes */
 #define	HLP_SORT		 "Sorting prefix (use a -addr- or s -size-)"

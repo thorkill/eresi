@@ -5,7 +5,7 @@
 ** 
 ** Started on  Fri Nov  2 15:17:02 2001 mayhem
 **
-** $Id: options.c,v 1.4 2007-06-23 17:11:00 mxatone Exp $
+** $Id: options.c,v 1.5 2007-07-17 03:14:42 may Exp $
 **
 */
 #include "revm.h"
@@ -172,7 +172,7 @@ int		vm_getmatchparams(u_int index, u_int argc, char **argv)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (argc - index != 3)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
-  if (strcmp(argv[index + 2], "with"))
+  if (strcmp(argv[index + 2], CMD_PARAM_INTO))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		vm_getoption2(index, argc, argv));

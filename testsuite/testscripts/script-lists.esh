@@ -1,0 +1,43 @@
+#!elfsh/elfsh32
+
+set $list[test1:key]  42
+lists test1
+
+set $list[test2] $list[test1]
+lists test
+
+set $list[test1:key2] 43
+lists test
+lists test1
+lists test2
+
+add $list[test2] $list[test1:key2]
+lists test2
+
+sub $list[test2] key2
+lists test2
+
+# test error checking
+sub $list[test2] key2
+lists test2
+
+#profile enable warn
+
+add $list[test2] 42
+add $list[test2] 43
+add $list[test2] 44
+add $list[test2] 45
+add $list[test2] 46
+add $list[test2] 47
+add $list[test2] 48
+
+lists test2
+lists test1
+sub $list[test2] $list[test1]
+lists test2
+lists test1
+add $list[test2] $list[test1]
+lists test2
+lists test1
+
+quit

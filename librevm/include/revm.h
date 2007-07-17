@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.72 2007-07-14 19:49:50 may Exp $
+** $Id: revm.h,v 1.73 2007-07-17 03:14:42 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -336,9 +336,12 @@ extern asm_processor	proc;
 #define	CMD_JGE			"jge"
 #define	CMD_FOREACH		"foreach"
 #define	CMD_FOREND		"forend"
-#define	CMD_MATCH		"match"
-#define	CMD_MATCHEND		"endmatch"
+#define	CMD_MATCH		"rewrite"
+#define	CMD_PARAM_INTO		"into"
+#define	CMD_MATCHEND		"endrewrite"
 #define	CMD_CASE		"case"
+#define	CMD_REFLECT		"reflect"
+#define	CMD_DEFAULT		"default"
 
 /* Prefixes */
 #define	CMD_SORT		 "sort"
@@ -759,6 +762,8 @@ int		cmd_forend();
 int		cmd_match();
 int		cmd_matchend();
 int		cmd_case();
+int		cmd_reflect();
+int		cmd_default();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);

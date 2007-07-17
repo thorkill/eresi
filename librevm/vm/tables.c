@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.41 2007-07-14 19:49:50 may Exp $
+** $Id: tables.c,v 1.42 2007-07-17 03:14:42 may Exp $
 **
 */
 #include "revm.h"
@@ -846,6 +846,8 @@ static void	setup_cmdhash()
   vm_addcmd(CMD_MATCH   , (void *) cmd_match   , (void *) vm_getmatchparams, 0, HLP_MATCH);
   vm_addcmd(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL            , 0, HLP_MATCHEND);
   vm_addcmd(CMD_CASE    , (void *) cmd_case    , (void *) vm_getoption3   , 0, HLP_CASE);
+  vm_addcmd(CMD_DEFAULT , (void *) cmd_default , (void *) vm_getvarparams , 0, HLP_DEFAULT);
+  vm_addcmd(CMD_REFLECT , (void *) cmd_reflect , (void *) vm_getoption    , 0, HLP_REFLECT);
 
   vm_addcmd(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) vm_getoption  , 0, HLP_SDIR);
   vm_addcmd(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
