@@ -1,5 +1,5 @@
 /*
-** $Id: i386_bsr_rv_rmb.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: i386_bsr_rv_rmb.c,v 1.5 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -19,17 +19,14 @@ int i386_bsr_rv_rmb(asm_instr *new, u_char *opcode, u_int len,
 {
   new->len += 1;
   new->instr = ASM_BSR;
+
+  new->type = ASM_TYPE_BITTEST | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_ZF;
     
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
 				new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
 				new);
-#else
-  new->op1.type = ASM_OTYPE_GENERAL;
-  new->op2.type = ASM_OTYPE_ENCODED;
-    
-  operand_rv_rmb(new, opcode + 1, len - 1, proc);
-#endif
+
   return (new->len);
 }

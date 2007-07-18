@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovqr.c,v 1.8 2007-07-11 22:06:47 strauss Exp $
+** $Id: asm_sparc_fmovqr.c,v 1.9 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -14,7 +14,7 @@ asm_sparc_fmovqr(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf);
 
   inter = proc->internals;
-  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_TEST;
+  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_COMPARISON;
 
   ins->instr = inter->fmovr_table[(((opcode.opf & 0x1f) - 6) * 8)
 				  + opcode.rcond];

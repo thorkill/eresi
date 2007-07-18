@@ -1,5 +1,5 @@
 /*
-** $Id: op_cmp_eax_iv.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_cmp_eax_iv.c,v 1.6 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -13,7 +13,7 @@ int op_cmp_eax_iv(asm_instr *new, u_char *opcode, u_int len,
 		  asm_processor *proc)
 {
   new->instr = ASM_CMP;
-  new->type = ASM_TYPE_TEST | ASM_TYPE_CONTROL;
+  new->type = ASM_TYPE_COMPARISON | ASM_TYPE_CONTROL;
   new->ptr_instr = opcode;
   new->len += 1;
 

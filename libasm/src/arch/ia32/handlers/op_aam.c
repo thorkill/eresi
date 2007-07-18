@@ -1,5 +1,5 @@
 /*
-** $Id: op_aam.c,v 1.3 2007-05-16 19:21:58 heroine Exp $
+** $Id: op_aam.c,v 1.4 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -20,6 +20,6 @@ int op_aam(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->ptr_instr = opcode;
   new->instr = ASM_AAM;
   new->type = ASM_TYPE_ARITH | ASM_TYPE_CONTROL;
-  new->flags = ASM_FLAG_SF | ASM_FLAG_ZF | ASM_FLAG_PF;
+  new->flagswritten = ASM_FLAG_SF | ASM_FLAG_ZF | ASM_FLAG_PF;
   return (new->len);
 }

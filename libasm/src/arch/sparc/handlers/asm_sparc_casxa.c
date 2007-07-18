@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_casxa.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_casxa.c,v 1.9 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -15,7 +15,7 @@ asm_sparc_casxa(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
-  ins->type = ASM_TYPE_LOAD | ASM_TYPE_ASSIGN | ASM_TYPE_TEST | ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_LOAD | ASM_TYPE_ASSIGN | ASM_TYPE_COMPARISON | ASM_TYPE_STORE;
 
   ins->nb_op = 3;
   ins->op1.baser = opcode.rd;

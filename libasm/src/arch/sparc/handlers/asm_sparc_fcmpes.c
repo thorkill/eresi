@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fcmpes.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_fcmpes.c,v 1.8 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,7 @@ asm_sparc_fcmpes(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_TEST;
+  ins->type = ASM_TYPE_COMPARISON;
 
   ins->instr = inter->fcmp_table[(opcode.opf & 0x1f) - 16];
   ins->nb_op = 3;

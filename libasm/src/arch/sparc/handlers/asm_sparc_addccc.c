@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_addccc.c,v 1.9 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_addccc.c,v 1.10 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,8 +16,8 @@ asm_sparc_addccc(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_ARITH | ASM_TYPE_FLAG;
-  ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
+  ins->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  ins->flagswritten = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
 
   ins->nb_op = 3;  
   ins->op1.baser = opcode.rd;

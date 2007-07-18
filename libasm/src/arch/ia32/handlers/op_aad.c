@@ -1,7 +1,7 @@
 /**
  * @file op_aad.c
  * @ingroup handlers_ia32
- * $Id: op_aad.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+ * $Id: op_aad.c,v 1.5 2007-07-18 15:47:10 strauss Exp $
  *
  */
 #include <libasm.h>
@@ -21,6 +21,6 @@ int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->ptr_instr = opcode;
   new->instr = ASM_AAD;
   new->type = ASM_TYPE_CONTROL | ASM_TYPE_ARITH;
-  new->flags = ASM_FLAG_SF | ASM_FLAG_ZF | ASM_FLAG_PF;
+  new->flagswritten = ASM_FLAG_SF | ASM_FLAG_ZF | ASM_FLAG_PF;
   return (new->len);
 }

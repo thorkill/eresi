@@ -7,7 +7,7 @@
 ** Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
 ** Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
 **
-** $Id: libasm-structs.h,v 1.11 2007-07-11 22:06:46 strauss Exp $
+** $Id: libasm-structs.h,v 1.12 2007-07-18 15:47:10 strauss Exp $
 **
 */
 
@@ -78,7 +78,9 @@ struct s_asm_instr
   /* stack offset difference. push/pop/ret/call related */
   int	spdiff;
   /* bitfield of flags which could have been modified */
-  int	flags;
+  int	flagswritten;
+  /* bitfield of flags which were read */
+  int	flagsread;
   /* Pointer to instruction prefix (ia32 only)	*/
   void *ptr_prefix;  
   /* pointer to instruction buffer */

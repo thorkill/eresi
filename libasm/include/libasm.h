@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.21 2007-06-27 11:25:11 heroine Exp $
+** $Id: libasm.h,v 1.22 2007-07-18 15:47:10 strauss Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -91,27 +91,28 @@
  *
  */
 enum 
-  {
-    ASM_TYPE_NONE		=     0x0, //! Undefined instruction type.
-    ASM_TYPE_IMPBRANCH		=     0x1, //! Branching instruction which always branch (jump).
-    ASM_TYPE_CONDBRANCH		=     0x2, //! Conditionnal branching instruction.
-    ASM_TYPE_CALLPROC		=     0x4, //! Sub Procedure calling instruction.
-    ASM_TYPE_RETPROC		=     0x8, //! Return instruction
-    ASM_TYPE_ARITH	  	=    0x10, //! Arithmetic (or logic) instruction.
-    ASM_TYPE_LOAD		=    0x20, //! Instruction that reads from memory.
-    ASM_TYPE_STORE		=    0x40, //! Instruction that writes in memory.
-    ASM_TYPE_ARCH		=    0x80, //! Architecture dependent instruction.
-    ASM_TYPE_FLAG		=   0x100, //! Flag-modifier instruction.
-    ASM_TYPE_INT		=   0x200, //! Interrupt/call-gate instruction.
-    ASM_TYPE_ASSIGN		=   0x400, //! Assignment instruction.
-    ASM_TYPE_TEST		=   0x800, //! Instruction that performs comparison or test.
-    ASM_TYPE_CONTROL		=  0x1000, //! Instruction modifies control registers.
-    ASM_TYPE_NOP		=  0x2000, //! Instruction that does nothing.
-    ASM_TYPE_OTHER		=  0x4000, //! Type that doesn't fit the ones above.
-    ASM_TYPE_TOUCHSP		=  0x8000, //! Instruction modify stack pointer.
-    ASM_TYPE_BITTEST		= 0x10000, //! Instruction modify stack pointer.
-    ASM_TYPE_BITSET		= 0x20000  //! Instruction modify stack pointer.
-  } e_instr_types;
+{
+  ASM_TYPE_NONE	        = 0x0, //! Undefined instruction type.
+  ASM_TYPE_IMPBRANCH    = 0x1, //! Branching instruction which always branch (jump).
+  ASM_TYPE_CONDBRANCH	  = 0x2, //! Conditionnal branching instruction.
+  ASM_TYPE_CALLPROC	    = 0x4, //! Sub Procedure calling instruction.
+  ASM_TYPE_RETPROC      = 0x8, //! Return instruction
+  ASM_TYPE_ARITH        = 0x10, //! Arithmetic (or logic) instruction.
+  ASM_TYPE_LOAD	        = 0x20, //! Instruction that reads from memory.
+  ASM_TYPE_STORE        = 0x40, //! Instruction that writes in memory.
+  ASM_TYPE_ARCH	        = 0x80, //! Architecture dependent instruction.
+  ASM_TYPE_WRITEFLAG    = 0x100, //! Flag-modifier instruction.
+  ASM_TYPE_READFLAG     = 0x200, //! Flag-reader instruction.
+  ASM_TYPE_INT          = 0x400, //! Interrupt/call-gate instruction.
+  ASM_TYPE_ASSIGN	      = 0x800, //! Assignment instruction.
+  ASM_TYPE_COMPARISON	  = 0x1000, //! Instruction that performs comparison or test.
+  ASM_TYPE_CONTROL      = 0x2000, //! Instruction modifies control registers.
+  ASM_TYPE_NOP          = 0x4000, //! Instruction that does nothing.
+  ASM_TYPE_OTHER        = 0x8000, //! Type that doesn't fit the ones above.
+  ASM_TYPE_TOUCHSP      = 0x10000, //! Instruction modifies stack pointer.
+  ASM_TYPE_BITTEST      = 0x20000, //! Instruction investigates values of bits in the operands.
+  ASM_TYPE_BITSET	      = 0x40000  //! Instruction modifies values of bits in the operands.
+} e_instr_types;
 
 /* this is needed for mips implementation */
 #define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"

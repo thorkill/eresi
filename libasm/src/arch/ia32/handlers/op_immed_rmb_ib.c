@@ -1,5 +1,5 @@
 /*
-** $Id: op_immed_rmb_ib.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_immed_rmb_ib.c,v 1.5 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -57,7 +57,7 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 7:
       new->instr = ASM_CMP;
-      new->type = ASM_TYPE_TEST | ASM_TYPE_CONTROL;
+      new->type = ASM_TYPE_COMPARISON | ASM_TYPE_CONTROL;
       new->op2.imm &= 0xff;
       break;
     }

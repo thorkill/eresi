@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_wr.c,v 1.8 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_wr.c,v 1.9 2007-07-18 15:47:10 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -31,8 +31,8 @@ asm_sparc_wr(asm_instr * ins, u_char * buf, u_int len,
     ins->nb_op = 3;
 
     if (opcode.rd == 2) { /* WRCCR overwrites the condition codes */
-      ins->type |= ASM_TYPE_FLAG;
-      ins->flags = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
+      ins->type |= ASM_TYPE_WRITEFLAG;
+      ins->flagswritten = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
     }
 
     if (opcode.rd == 4 || opcode.rd == 5) /* can't write PC or TICK */
