@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.15 2007-07-07 10:04:59 mxatone Exp $
+** $Id: dynsym.c,v 1.16 2007-07-18 08:11:00 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -297,6 +297,9 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 
 /**
  * Return the symbol entry giving its name 
+ * @param file target file
+ * @param name dynamic symbol name
+ * @return symbol pointer or NULL
  */
 elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 {
@@ -304,28 +307,41 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   int		idx;
   int		size = 0;
   char		*actual;
+  elfshsect_t	*sect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Check arguments */
   if (file == NULL || name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
-  if (file->dynsymhash.ent)
-    {
-      sym = (elfsh_Sym *) hash_get(&file->dynsymhash, name);
-      
-      if (sym == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Symbol not found", NULL);
-      
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
-    }
-
   sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
+
+  /* Check DYNSYM section data pointer */
   if (sym == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get DYNSYM", NULL);
+
+  sect = file->secthash[ELFSH_SECTION_DYNSYM];
+
+  /* Check DYNSYM section pointer */
+  if (sect == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get DYNSYM section pointer", NULL);
+
+  if (file->dynsymhash.ent)
+    {
+      /* idx is the symbol number in the section */
+      idx = (int) hash_get(&file->dynsymhash, name);
+
+      /* Check if idx is in the section */
+      if (idx <= 0 || idx >= sect->shdr->sh_size)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Symbol not found", NULL);
+      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+    }
 
   for (idx = 0; idx < size; idx++)
     {

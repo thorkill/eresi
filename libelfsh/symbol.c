@@ -4,7 +4,7 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.11 2007-07-07 10:04:59 mxatone Exp $
+** $Id: symbol.c,v 1.12 2007-07-18 08:11:00 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -273,7 +273,7 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 	{
 	  actual = elfsh_get_symbol_name(file, sym + idx);
 	  if (actual)
-	    hash_add(&file->symhash, strdup(actual), (void *) (sym + idx));
+	    hash_add(&file->symhash, strdup(actual), (void *) idx);
 	}
     }
   
@@ -286,7 +286,7 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 	{
 	  actual = elfsh_get_dynsymbol_name(file, sym + idx);
 	  if (actual)
-	    hash_add(&file->dynsymhash, strdup(actual), (void *) (sym + idx));
+	    hash_add(&file->dynsymhash, strdup(actual), (void *) idx);
 	}
     }
 
@@ -296,6 +296,9 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 
 /**
  * Return the symbol entry giving its name 
+ * @param file target file
+ * @param name symbol name
+ * @return symbol pointer or NULL
  */
 elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
 {
@@ -303,35 +306,53 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
   int		idx;
   int		size;
   char		*actual;
+  elfshsect_t	*sect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  /* Check arguments */
   if (file == NULL || name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
-  if (file->symhash.ent)
-    {
-      sym = (elfsh_Sym *) hash_get(&file->symhash, name);
-      
-      if (sym == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Symbol not found", NULL);
-
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
-    }
-
+  /* Setup symtab pointers */
   if (elfsh_get_symtab(file, &size) == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get SYMTAB", NULL);
-  
-  sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_SYMTAB]->data;
+
+  sect = file->secthash[ELFSH_SECTION_SYMTAB];
+
+  /* Invalid section pointer */
+  if (sect == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get SYMTAB (invalid section pointer)", NULL);
+
+  sym = (elfsh_Sym *) sect->data;
+
+  /* Invalid section data */
+  if (sym == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get SYMTAB data", NULL);
+
+  if (file->symhash.ent)
+    {
+      /* idx is the symbol number in the section */
+      idx = (int) hash_get(&file->symhash, name);
+
+      /* Check if idx is in the section */
+      if (idx <= 0 || idx >= sect->shdr->sh_size)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Symbol not found", NULL);
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+    }
+ 
 
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_symbol_name(file, sym + idx);
       if (actual && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym + idx);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
     }
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -461,10 +482,7 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
     }
 
   if (uptable && uptable->ent)
-    {
-      sym = (elfsh_Sym *) sect->data;
-      hash_add(uptable, strdup(name), (void *) (sym + index));
-    }
+    hash_add(uptable, strdup(name), (void *) (index / sizeof(elfsh_Sym)));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }
