@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.11 2007-07-11 22:06:46 strauss Exp $
+** $Id: libasm-sparc.h,v 1.12 2007-07-19 07:20:55 strauss Exp $
 **
 */
 
@@ -212,10 +212,16 @@ struct s_asm_ins_sparc {
 /* SPARC "flags" (ie. condition codes) */
 
 enum {
+  /* Flags inside the integer condition codes (icc, xcc) */
   ASM_SP_FLAG_C = 1 << 0, // Carry
   ASM_SP_FLAG_V = 1 << 1, // oVerflow
   ASM_SP_FLAG_Z = 1 << 2, // Zero
-  ASM_SP_FLAG_N = 1 << 3  // Negative
+  ASM_SP_FLAG_N = 1 << 3, // Negative
+  /* Floating-point condition codes */
+  ASM_SP_FLAG_FCC0 = 1 << 4,
+  ASM_SP_FLAG_FCC1 = 1 << 5,
+  ASM_SP_FLAG_FCC2 = 1 << 6,
+  ASM_SP_FLAG_FCC3 = 1 << 7
 } e_sparc_flags;
 
 

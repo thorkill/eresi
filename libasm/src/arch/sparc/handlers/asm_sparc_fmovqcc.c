@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovqcc.c,v 1.8 2007-07-11 22:06:47 strauss Exp $
+** $Id: asm_sparc_fmovqcc.c,v 1.9 2007-07-19 07:20:55 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -14,14 +14,20 @@ asm_sparc_fmovqcc(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf);
 
   inter = proc->internals;
-  ins->type = ASM_TYPE_ASSIGN;
+  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_READFLAG;
 
-  if (opcode.opf_cc < 4)
+  if (opcode.opf_cc < 4) {
     ins->instr = inter->fmovfcc_table[(((opcode.opf & 0x1f) - 1) * 8)
 				      + opcode.cond];
-  else if (opcode.opf_cc == 4 || opcode.opf_cc == 6)
+
+    ins->flagsread = ASM_SP_FLAG_FCC0 << opcode.opf_cc;
+  }
+  else if (opcode.opf_cc == 4 || opcode.opf_cc == 6) {
     ins->instr = inter->fmovcc_table[(((opcode.opf & 0x1f) - 1) * 8)
 				     + opcode.cond];
+
+    ins->flagsread = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_N | ASM_SP_FLAG_Z;
+  }
   else {
     ins->instr = ASM_SP_BAD;
     return 4;

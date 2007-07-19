@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_tcc.c,v 1.8 2007-07-18 15:47:10 strauss Exp $
+** $Id: asm_sparc_tcc.c,v 1.9 2007-07-19 07:20:55 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,8 @@ asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format4(&opcode4, buf);
 
   inter = proc->internals;
-  ins->type = ASM_TYPE_INT | ASM_TYPE_COMPARISON;
+  ins->type = ASM_TYPE_INT | ASM_TYPE_READFLAG;
+  ins->flagsread = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_N | ASM_SP_FLAG_Z;
 
   ins->instr = inter->tcc_table[opcode4.cond];
   ins->nb_op = 2;

@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_movcc.c,v 1.8 2007-07-18 15:47:10 strauss Exp $
+** $Id: asm_sparc_movcc.c,v 1.9 2007-07-19 07:20:55 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -16,13 +16,15 @@ asm_sparc_movcc(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format4(&opcode4, buf);
 
   inter = proc->internals;
-  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_COMPARISON;
+  ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_READFLAG;
 
   if (opcode4.cc2 == 0) { /* fcc{0,1,2,3,4} */
    	ins->instr = inter->movcc_table[opcode4.cond];  	  	
+    ins->flagsread = ASM_SP_FLAG_FCC0 << opcode4.cc;
   }
   else if (opcode4.cc0 == 0) { /* icc or xcc */
    	ins->instr = inter->movfcc_table[opcode4.cond];
+    ins->flagsread = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_N | ASM_SP_FLAG_Z;
   }
   else {
     ins->instr = ASM_SP_BAD;

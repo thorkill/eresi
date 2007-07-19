@@ -4,7 +4,7 @@
 #define ASM_POOL_SIZE 100
 #define ASM_OP_NAME_LEN 64
 
-/* LIFO sort-of memory manager */
+/* FIFO sort-of memory manager */
 char *asm_name_pool_alloc() {
   static char* asm_name_pool[ASM_POOL_SIZE] = {};
   static int index = 0;
