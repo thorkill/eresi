@@ -3,7 +3,7 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.17 2007-07-19 02:41:26 may Exp $
+** $Id: access.c,v 1.18 2007-07-19 17:14:30 may Exp $
 **
 */
 #include "revm.h"
@@ -172,7 +172,10 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 
   /* Dereference pointers */
   if (child->isptr)
-    *data = (void *) *(elfsh_Addr *) *data;
+    {
+      *data = (void *) *(elfsh_Addr *) *data;
+      *data = revm_get_raw(*data);
+    }
 
   child = revm_field_get(child, next, data);
   if (!child)
