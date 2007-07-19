@@ -3,7 +3,7 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.16 2007-07-17 18:11:25 may Exp $
+** $Id: access.c,v 1.17 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "revm.h"
@@ -186,7 +186,8 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 
 /* Lookup _for real_ the path of a complex typed object */
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
-					char *objname, char *objpath)
+					 char	     *objname, 
+					 char	     *objpath)
 {
   revmannot_t	*var;
   void		*data;

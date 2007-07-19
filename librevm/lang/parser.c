@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 mayhem
 **
-** $Id: parser.c,v 1.5 2007-07-17 18:11:25 may Exp $
+** $Id: parser.c,v 1.6 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "revm.h"
@@ -16,6 +16,7 @@ static char		*looplabels[REVM_MAXNEST_LOOP];
 static char		*endlabl     = NULL;
 static u_int		nextlabel    = 0;
 static revmargv_t	*forend      = NULL;
+static revmargv_t	*defaultcmd  = NULL;
 
 /* Pending label information : support labels */
 static u_int		pendinglabel = 0;
@@ -66,7 +67,6 @@ int			revm_parse_construct(char *curtok)
       if (curnest == 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested forend statement", -1);
-      endlabl = revm_label_get("forend");
 
       if (!strstr(looplabels[curnest - 1], "foreach"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -88,6 +88,18 @@ int			revm_parse_construct(char *curtok)
       hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
       looplabels[curnest++] = labl;
     }
+
+  /* when we find a default, fill endlabel but do not create any label */
+  else if (!strcmp(curtok, CMD_DEFAULT))
+    {
+      if (curnest == 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested endmatch statement", -1);
+      if (!strstr(looplabels[curnest - 1], "match"))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Incorrectly nested match-ending statement", -1);
+      defaultcmd = newcmd;
+    }
   
   /* At forend, delay the label insertion to the next command */
   else if (!strcmp(curtok, CMD_MATCHEND))
@@ -96,17 +108,17 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested endmatch statement", -1);
       endlabl = revm_label_get("matchend");
-
+      
       if (!strstr(looplabels[curnest - 1], "match"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested match-ending statement", -1);
-
+      
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
     }
-
-
+  
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -159,8 +171,9 @@ int			revm_parseopt(int argc, char **argv)
       if (actual != NULL)
 	{
 
-	  /* If there is a forend label waiting, insert it */
+	  /* If there is a forend/matchend label waiting, insert it here */
 	  /* The forend label must point on the -following- command */
+	  /* Inform the foreach and default command (if any) about the end label too */
 	  if (nextlabel)
 	    {
 	      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
@@ -168,6 +181,8 @@ int			revm_parseopt(int argc, char **argv)
 				   looplabels[curnest]);
 	      loopstart->endlabel = endlabl;
 	      nextlabel = 0;
+	      if (defaultcmd)
+		defaultcmd->endlabel = endlabl;
 	    }
 
 	  /* Dont call registration handler if there is not (0 param commands) */
@@ -180,9 +195,10 @@ int			revm_parseopt(int argc, char **argv)
 			     (revm_doerror(revm_badparam, argv[index])));
 	    }
 
+	  /* Handle control flow constructs of the eresi script */
 	  if (revm_parse_construct(argv[index]) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Invalid program construct in script file", -1);
+			 "Invalid eresi program nesting construct", -1);
 	  index += ret;
 	}
 

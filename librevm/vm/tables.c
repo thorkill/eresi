@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 mayhem
 **
-** $Id: tables.c,v 1.43 2007-07-17 18:11:25 may Exp $
+** $Id: tables.c,v 1.44 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "revm.h"
@@ -18,8 +18,9 @@ hash_t		labels_hash[REVM_MAXSRCNEST];
 /* Variables hash */
 hash_t		vars_hash;
 
-/* ERESI expressions hash */
+/* ERESI expressions hash and expressions type hash */
 hash_t		exprs_hash;
+hash_t		exprtypes_hash;
 
 /* The command hash table : hash the command name and returns a revmcmd_t */
 hash_t		cmd_hash;
@@ -842,10 +843,10 @@ static void	setup_cmdhash()
   revm_command_add(CMD_JLE     , (void *) cmd_jle     , (void *) revm_getoption    , 0, HLP_JLE);
 
   revm_command_add(CMD_FOREACH , (void *) cmd_foreach , (void *) revm_getforparams , 0, HLP_FOREACH);
-  revm_command_add(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL            , 0, HLP_FOREND);
+  revm_command_add(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL              , 0, HLP_FOREND);
   revm_command_add(CMD_MATCH   , (void *) cmd_match   , (void *) revm_getmatchparams, 0, HLP_MATCH);
-  revm_command_add(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL            , 0, HLP_MATCHEND);
-  revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getoption3   , 0, HLP_CASE);
+  revm_command_add(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL              , 0, HLP_MATCHEND);
+  revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getvarparams , 0, HLP_CASE);
   revm_command_add(CMD_DEFAULT , (void *) cmd_default , (void *) revm_getvarparams , 0, HLP_DEFAULT);
   revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getoption    , 0, HLP_REFLECT);
 
@@ -1168,7 +1169,8 @@ void		revm_tables_setup()
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&traces_cmd_hash  , "traces"     , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
-  hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_UNKNOW);
+  hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
+  hash_init(&exprtypes_hash   , "exprtypes"  , 51, ASPECT_TYPE_UNKNOW);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();

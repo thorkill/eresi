@@ -4,7 +4,7 @@
 ** Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 mayhem
-** $Id: libaspect-list.h,v 1.1 2007-07-13 18:37:42 may Exp $
+** $Id: libaspect-list.h,v 1.2 2007-07-19 02:41:26 may Exp $
 */
 
 #ifndef _LIBLIST_H_
@@ -24,6 +24,7 @@ typedef struct          s_aspect_list
   listent_t             *head;
   int			elmnbr;
   u_int			type;
+  u_char		linearity;
 }                       list_t;
 
 
@@ -52,6 +53,9 @@ int		list_merge(list_t *dst, list_t *src);	/* Fuse lists */
 int		list_unmerge(list_t *dst, list_t *src); /* Quotient lists */
 int		list_size(list_t *hash);		/* Return the elm nbr */
 int		list_set(list_t *h, char *key, void *data); /* Change meta data for a key */
-int		list_compare(list_t *first, list_t *two);
+int		list_replace(list_t *h, char *k, list_t *nl); /* Replace one elem by a list */
+int		list_compare(list_t *first, list_t *two);     /* Compare the content of 2 lists */
+u_char		list_linearity_get(list_t *l);		      /* Get linearity of a list */
+void		list_linearity_set(list_t *l, u_char val);    /* Set linearity of a list */
 
 #endif /* _LIBLIST_H_ */

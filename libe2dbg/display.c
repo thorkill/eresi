@@ -3,13 +3,10 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: display.c,v 1.4 2007-07-17 18:11:24 may Exp $
+** $Id: display.c,v 1.5 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "libe2dbg.h"
-
-
-
 
 
 /* Print all display commands */
@@ -86,34 +83,32 @@ int		e2dbg_display(char **cmd, u_int nbr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (idx = 0; idx < nbr; idx++)
     {
-      fprintf(stderr, "executing display entry %u \n", idx);
-
-    if (cmd[idx])
-      {
-	
-	snprintf(buf, BUFSIZ, 
-		 "\t .:: Display %u [%s] result ::. \n", 
-		 idx, cmd[idx]);
-	e2dbg_output(buf);
-	
-	/* Register displayed command in the script control flow */
-	str = strdup(cmd[idx]);
- 
-	if (revm_exec_str(cmd[idx]) < 0)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Display execrequest failed", -1);
-	cmd[idx] = str;
-	
-	/* Execute displayed command */
-	cur = world.curjob->curcmd;
-	world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
-	if (revm_execmd() < 0)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			    "Display execution failed", -1);
-	world.curjob->curcmd = cur;
-      }
+      fprintf(stderr, "executing display entry %u \n", idx);      
+      if (cmd[idx])
+	{
+	  
+	  snprintf(buf, BUFSIZ, 
+		   "\t .:: Display %u [%s] result ::. \n", 
+		   idx, cmd[idx]);
+	  e2dbg_output(buf);
+	  
+	  /* Register displayed command in the script control flow */
+	  str = strdup(cmd[idx]);
+	  
+	  if (revm_exec_str(cmd[idx]) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Display execrequest failed", -1);
+	  cmd[idx] = str;
+	  
+	  /* Execute displayed command */
+	  cur = world.curjob->curcmd;
+	  world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
+	  if (revm_execmd() < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Display execution failed", -1);
+	  world.curjob->curcmd = cur;
+	}
     }
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

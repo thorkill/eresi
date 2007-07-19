@@ -4,7 +4,7 @@
 ** Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 mayhem
-** $Id: libhash.c,v 1.33 2007-07-14 19:49:49 may Exp $
+** $Id: libhash.c,v 1.34 2007-07-19 02:41:25 may Exp $
 */
 #include "libaspect.h"
 
@@ -485,4 +485,21 @@ void*   hash_get_one(hash_t *hash)
     return (NULL);
   keys = hash_get_keys(hash, &index);
   return (hash_get(hash, keys[0]));
+}
+
+
+/* Linear typing of list API */
+u_char		hash_linearity_get(hash_t *h)
+{
+  if (!h)
+    return (0);
+  return (h->linearity);
+}
+
+/* Linear typing of list API */
+void		hash_linearity_set(hash_t *h, u_char val)
+{
+  if (!h)
+    return;
+  h->linearity = val;
 }

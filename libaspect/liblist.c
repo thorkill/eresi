@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 mayhem
-** $Id: liblist.c,v 1.2 2007-07-14 19:49:49 may Exp $
+** $Id: liblist.c,v 1.3 2007-07-19 02:41:25 may Exp $
 */
 #include "libaspect.h"
 
@@ -205,6 +205,36 @@ int		list_set(list_t *h, char *key, void *data)
   return (-1);
 }
 
+/* Replace a single element by a list of elements */
+int		list_replace(list_t *h, char *key, list_t *newlist)
+{
+  listent_t	*cur;
+  listent_t	*lastent;
+  listent_t	*prev;
+
+  if (!h || !key || !newlist)
+    return (-1);
+  for (lastent = newlist->head; lastent && lastent->next; lastent = lastent->next);
+  if (!lastent)
+    return (-1);
+  for (prev = NULL, cur = h->head; cur; prev = cur, cur = cur->next)
+    if (!strcmp(cur->key, key))
+      {
+	if (!prev)
+	  {
+	    lastent->next = h->head;
+	    h->head = newlist->head;
+	    h->elmnbr++;
+	    return (0);
+	  }
+	lastent->next = cur->next;
+	prev->next = newlist->head;
+	h->elmnbr += newlist->elmnbr;
+	return (0);
+      }
+  return (-1);
+}
+
 
 /* Return the array of keys */
 char**		list_get_keys(list_t *h, int* n)
@@ -311,8 +341,23 @@ int		list_size(list_t *h)
 
 /* Compare two lists */
 /* Unimplemented */
-int   list_compare(list_t *first, list_t *two)
+int		list_compare(list_t *first, list_t *two)
 {
   return (-1);
 }
 
+/* Linear typing of list API */
+u_char		list_linearity_get(list_t *l)
+{
+  if (!l)
+    return (0);
+  return (l->linearity);
+}
+
+/* Linear typing of list API */
+void		list_linearity_set(list_t *l, u_char val)
+{
+  if (!l)
+    return;
+  l->linearity = val;
+}

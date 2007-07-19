@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 mayhem
 **
-** $Id: atomic.c,v 1.6 2007-07-17 18:11:24 may Exp $
+** $Id: atomic.c,v 1.7 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "revm.h"
@@ -371,7 +371,7 @@ int			revm_list_set(char   *table,
 
 
 /* o1 = destination, o2 = source */
-int			revm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
+int			revm_object_set(revmobj_t *o1, revmobj_t *o2)
 {
   revmobj_t		*last;
   char                  *str;
@@ -526,7 +526,7 @@ int			revm_revmobj_set(revmobj_t *o1, revmobj_t *o2)
 
 
 /* Comparison function */
-int			revm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
+int			revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
 {
   revmobj_t		*last;
   char			*str;

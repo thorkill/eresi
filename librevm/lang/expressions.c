@@ -4,9 +4,35 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 mayhem
-** $Id: expressions.c,v 1.7 2007-07-17 18:11:25 may Exp $
+** $Id: expressions.c,v 1.8 2007-07-19 02:41:26 may Exp $
 */
 #include "revm.h"
+
+
+
+/* Read the requested type for an expression */
+aspectype_t	*revm_exprtype_get(char *exprvalue)
+{
+  aspectype_t	*type;
+  char		*typename;
+  u_int		typenamelen;
+  char		*curexprvalue;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!exprvalue)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", NULL);
+  type = NULL;
+  for (curexprvalue = exprvalue, typenamelen = 0; *curexprvalue != '('; typenamelen++)
+    curexprvalue++;
+  typename = alloca(typenamelen + 1);
+  strcpy(typename, exprvalue);
+  type = aspect_type_get_by_name(typename);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unknown expression type", NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
+}
 
 
 
@@ -269,7 +295,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to lookup src or dst object", NULL);
 	    }
-	  if (revm_revmobj_set(newexpr->value, curdata) < 0)
+	  if (revm_object_set(newexpr->value, curdata) < 0)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
 	      pathsize = 0;
@@ -373,12 +399,12 @@ static int		revm_expr_handle(revmexpr_t	*dest,
       else switch (op)
 	{
 	case REVM_OP_SET:
-	  if (revm_revmobj_set(dest->value, cursource->value) < 0)
+	  if (revm_object_set(dest->value, cursource->value) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to set expression field", -1);
 	  break;
 	case REVM_OP_MATCH:	  
-	  if (revm_cmp(dest->value, cursource->value, &cmpval) < 0)
+	  if (revm_object_compare(dest->value, cursource->value, &cmpval) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to compare expression fields", -1);
 	  if (cmpval)
@@ -537,7 +563,7 @@ revmexpr_t	*revm_expr_get(char *pathname)
 }
 
 /* Set an expression to the value of another (only if compatible) */
-int		revm_expr_set(char *dest, char *source)
+int		revm_expr_set_by_name(char *dest, char *source)
 {
   revmexpr_t	*adst;
   revmexpr_t	*asrc;
@@ -556,8 +582,23 @@ int		revm_expr_set(char *dest, char *source)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Set an expression to the value of another (only if compatible) */
+int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!adst || !asrc)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);    
+  ret = revm_expr_handle(adst, asrc, REVM_OP_SET);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
 /* Compare 2 typed expressions */
-int		revm_expr_compare(char *original, char *candidate)
+int		revm_expr_compare_by_name(char *original, char *candidate)
 {
   revmexpr_t	*candid;
   revmexpr_t	*orig;
@@ -580,8 +621,22 @@ int		revm_expr_compare(char *original, char *candidate)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Compare 2 typed expressions */
+int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* A comparison is an inversible matching of the 2 objects */
+  ret = revm_expr_handle(candid, orig, REVM_OP_MATCH);
+  if (!ret)
+    ret = revm_expr_handle(orig, candid, REVM_OP_MATCH);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
 /* Match or not 2 typed expressions */
-int		revm_expr_match(char *original, char *candidate)
+int		revm_expr_match_by_name(char *original, char *candidate)
 {
   revmexpr_t	*candid;
   revmexpr_t	*orig;
@@ -596,6 +651,19 @@ int		revm_expr_match(char *original, char *candidate)
   if (!candid || !orig)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid input parameters", -1);
+  ret = revm_expr_handle(candid, orig, REVM_OP_MATCH);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/* Match or not 2 typed expressions */
+int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!candid || !orig)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", -1);    
   ret = revm_expr_handle(candid, orig, REVM_OP_MATCH);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

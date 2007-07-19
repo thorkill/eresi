@@ -4,7 +4,7 @@
 ** Started on  Fri Jan 24 20:25:42 2003 mayhem
 ** Last update Fri Dec 22 00:14:56 2006 mayhem
 **
-** $Id: libaspect-hash.h,v 1.5 2007-04-09 02:37:53 thor Exp $
+** $Id: libaspect-hash.h,v 1.6 2007-07-19 02:41:26 may Exp $
 **
 */
 
@@ -34,6 +34,7 @@ typedef struct          s_hash
   int                   size;
   int			elmnbr;
   u_int			type;
+  u_char		linearity;
 }                       hash_t;
 
 
@@ -63,5 +64,7 @@ int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */
 void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
 int		hash_set(hash_t *h, char *key, void *data); /* Change meta data for a key */
+u_char		hash_linearity_get(hash_t *h);		/* Get hash table linearity */
+void		hash_linearity_set(hash_t *h, u_char v); /* Set hash table linearity */
 
 #endif /* _LIBHASH_H_ */

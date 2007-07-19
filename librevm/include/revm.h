@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.74 2007-07-17 18:11:25 may Exp $
+** $Id: revm.h,v 1.75 2007-07-19 02:41:26 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -459,9 +459,9 @@ typedef struct		s_args
   char			argc;		/* Number of args in param[] */
   revmcmd_t		*cmd;		/* Command descriptor */
   char			*name;		/* Command name */
+  char		        *endlabel;	/* Co-Label for foreach/forend */
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int			curidx;		/* Current iteration index (foreach) */
-  char			*endlabel;	/* Label for forend (or foreach) */
+  u_int		        listidx;       /* Iteration index for this foreach */
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
@@ -517,22 +517,37 @@ typedef struct		s_revmcontext
 /* We use a separate header for the generic IO sublib */
 #include "revm-io.h"
 
+/* We use a separate header for defnition of object structures */
+#include "revm-objects.h"
+
 
 /* REVM job structure, one per client */
 typedef struct        s_job
 {
   revmworkspace_t     ws;		/* The job workspace */
+
+  /* Scripting machine job context */
 #define		      REVM_MAXSRCNEST  10
   revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
   revmargv_t         *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
   u_int               sourced;          /* script depth (if beeing sourced) */
+
+  /* File job context */
   revmargv_t	      *curcmd;          /* Next command to be executed */
   hash_t              loaded;           /* List of loaded ELF objects */
   elfshobj_t          *current;         /* Current working ELF object */
+  asm_processor*      proc;		/* Processor structure */
+
+  /* Debugger job context */
   hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
   elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
-  asm_processor*      proc;		/* Processor structure */
-  char		      *curmatchtype;	/* Indicate if we are matching a type */
+
+  /* Job context in a rewrite construct */
+#define	REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int		      *curlistidx;      /* Current iteration index (most-nested foreach) */
+  list_t	      *itlist;		/* Current list being iterated */
+  revmexpr_t	      *matchexpr;	/* Expression to match if inside a rewrite construct */
+  char		      *matchexprname;	/* Name of matchme expression */
 }                     revmjob_t;
 
 
@@ -555,16 +570,11 @@ typedef struct        s_world
 }		      revmworld_t;
 
 
-/* We use a separate header for defnition of object structures */
-#include "revm-objects.h"
-
-
 /* The world */
 extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
 extern hash_t		cmd_hash;	 /* commands handlers */
-//extern hash_t		types_hash;	 /* language types */
 extern hash_t		parser_hash;	 /* parsers handlers */
 extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
@@ -572,6 +582,7 @@ extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
 extern hash_t		vars_hash;	 /* Scripting variables hash table */
 extern hash_t		exprs_hash;	 /* ERESI expressions types hash */ 
+extern hash_t		exprtypes_hash;	 /* Types of expressions */
 extern hash_t		labels_hash[10]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
@@ -1053,8 +1064,8 @@ int		revm_list_del(list_t *h, revmobj_t *o);
 int		revm_hash_set(char *tab, char *elm, void *obj, u_char type);
 int		revm_list_set(char *tab, char *elm, void *obj, u_char type);
 int		revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
-int		revm_cmp(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
-int		revm_revmobj_set(revmobj_t *o1, revmobj_t *o2);
+int		revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
+int		revm_object_set(revmobj_t *o1, revmobj_t *o2);
 
 /* Job related functions */
 int		revm_own_job(revmjob_t *job);
@@ -1079,10 +1090,14 @@ int		revm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, 
 /* Expression related functions */
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
 revmexpr_t	*revm_expr_get(char *pathname);
-int		revm_expr_compare(char *source, char *candid);
-int		revm_expr_match(char *source, char *candid);
-int		revm_expr_set(char *dest, char *source);
+int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid);
+int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig);
+int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc);
 int		revm_expr_print(char *pathname);
+int		revm_expr_match_by_name(char *original, char *candidate);
+int		revm_expr_compare_by_name(char *original, char *candidate);
+int		revm_expr_set_by_name(char *dest, char *source);
+aspectype_t	*revm_exprtype_get(char *exprvalue);
 
 
 /* May not be defined */

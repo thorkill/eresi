@@ -5,7 +5,7 @@
 ** 
 ** Started on  Fri Nov  2 15:17:02 2001 mayhem
 **
-** $Id: options.c,v 1.6 2007-07-17 18:11:25 may Exp $
+** $Id: options.c,v 1.7 2007-07-19 02:41:26 may Exp $
 **
 */
 #include "revm.h"
@@ -160,7 +160,7 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
       }
 
   /* Set the current and maximum indexes to uninitialized */
-  world.curjob->curcmd->curidx = REVM_IDX_UNINIT;
+  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getvarparams(index, argc, argv));
 }
