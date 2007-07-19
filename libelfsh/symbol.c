@@ -4,7 +4,7 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.13 2007-07-19 15:20:15 mxatone Exp $
+** $Id: symbol.c,v 1.14 2007-07-19 16:23:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -273,20 +273,20 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 	{
 	  actual = elfsh_get_symbol_name(file, sym + idx);
 	  if (actual)
-	    hash_add(&file->symhash, strdup(actual), (void *) idx);
+	    hash_add(&file->symhash, aproxy_strdup(actual), (void *) idx);
 	}
     }
+
+  sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
   
   /* Dynsym */
-  if (elfsh_get_dynsymtab(file, &size))
+  if (sym)
     {
-      sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_DYNSYM]->data;
-
       for (idx = 0; idx < size; idx++)
 	{
 	  actual = elfsh_get_dynsymbol_name(file, sym + idx);
 	  if (actual)
-	    hash_add(&file->dynsymhash, strdup(actual), (void *) idx);
+	    hash_add(&file->dynsymhash, aproxy_strdup(actual), (void *) idx);
 	}
     }
 
@@ -482,7 +482,7 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
     }
 
   if (uptable && uptable->ent)
-    hash_add(uptable, strdup(name), (void *) (index / sizeof(elfsh_Sym)));
+    hash_add(uptable, aproxy_strdup(name), (void *) (index / sizeof(elfsh_Sym)));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }

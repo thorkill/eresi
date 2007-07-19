@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.17 2007-07-19 15:20:15 mxatone Exp $
+** $Id: dynsym.c,v 1.18 2007-07-19 16:23:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -316,13 +316,14 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
+  sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
+
   /* Check DYNSYM section data pointer */
-  if (elfsh_get_dynsymtab(file, &size) == NULL)
+  if (sym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get DYNSYM", NULL);
 
   sect = file->secthash[ELFSH_SECTION_DYNSYM];
-  sym = (elfsh_Sym *) sect->data;
 
   /* Check DYNSYM section pointer */
   if (sect == NULL)

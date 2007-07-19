@@ -5,7 +5,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 mayhem
 ** 
 **
-** $Id: map.c,v 1.21 2007-07-07 10:04:59 mxatone Exp $
+** $Id: map.c,v 1.22 2007-07-19 16:23:26 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -233,9 +233,6 @@ elfshobj_t	  *elfsh_map_obj(char *name)
   elfsh_read_obj(file);
 
   hash_init(&file->redir_hash, "redirections", 51, ASPECT_TYPE_UNKNOW);
-  
-  /* Init search hash tables */
-  elfsh_init_symbol_hashtables(file);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
