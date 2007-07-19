@@ -4,7 +4,7 @@
 ** Started on  Mon Dec 25 18:08:03 2006 mxatone
 **
 **
-** $Id: libedfmt-dwarf2.h,v 1.13 2007-05-20 19:13:57 mxatone Exp $
+** $Id: libedfmt-dwarf2.h,v 1.14 2007-07-19 15:20:15 mxatone Exp $
 **
 */
 
@@ -256,11 +256,21 @@ extern edfmtdw2cu_t *current_cu;
 /* I/O management */
 #define dwarf2_pos(name) 	dwarf2_info->sections.name.pos
 #define dwarf2_size(name) 	dwarf2_info->sections.name.sect->shdr->sh_size
-#define dwarf2_data(name) 	dwarf2_info->sections.name.data
+#define dwarf2_data(name) 	((char *)dwarf2_info->sections.name.data)
 #define dwarf2_a_pos(name) 	(dwarf2_data(name) + dwarf2_pos(name))
 #define dwarf2_ac_pos(name) 	(char *) dwarf2_a_pos(name)
 
-#define dwarf2_get_pos(val, name, type) val = *(type *) dwarf2_a_pos(name)
+#define dwarf2_get_1(val) (val[0])
+#define dwarf2_get_2(val) (val[0] | (val[1] << 8))
+#define dwarf2_get_4(val) (val[0] | (val[1] << 8) | (val[2] << 16) | (val[3] << 24))
+#define dwarf2_get_8(val) (val[0] | (val[1] << 8) | (val[2] << 16) | (val[3] << 24) \
+		       | (val[4] << 32) | (val[5] << 40) | (val[6] << 48) | (val[7] << 56))
+
+#define dwarf2_get_pos(val, name, type) \
+val = (type) (sizeof(type) == 1 ? dwarf2_get_1(dwarf2_a_pos(name)) \
+	   : (sizeof(type) == 2 ? dwarf2_get_2(dwarf2_a_pos(name)) \
+	   : (sizeof(type) == 4 ? dwarf2_get_4(dwarf2_a_pos(name)) \
+           : (sizeof(type) == 8 ? dwarf2_get_8(dwarf2_a_pos(name)) : 0 ))))
 
 #define dwarf2_inc_pos(name, value) 			\
 do {							\

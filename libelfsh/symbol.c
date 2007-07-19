@@ -4,7 +4,7 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.12 2007-07-18 08:11:00 mxatone Exp $
+** $Id: symbol.c,v 1.13 2007-07-19 15:20:15 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -277,11 +277,11 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 	}
     }
   
-  sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
-
   /* Dynsym */
-  if (sym)
+  if (elfsh_get_dynsymtab(file, &size))
     {
+      sym = (elfsh_Sym *) file->secthash[ELFSH_SECTION_DYNSYM]->data;
+
       for (idx = 0; idx < size; idx++)
 	{
 	  actual = elfsh_get_dynsymbol_name(file, sym + idx);

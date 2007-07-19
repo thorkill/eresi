@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2-trans.c,v 1.10 2007-03-07 20:56:52 mxatone Exp $
+** $Id: dwarf2-trans.c,v 1.11 2007-07-19 15:20:15 mxatone Exp $
 **
 */
 
@@ -140,7 +140,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 
 		      /* Set position */
 		      dwarf2_pos(loc) = abbent->attr[i].u.udata;
-		      bufptr = dwarf2_a_pos(loc);
+		      bufptr = (u_char *) dwarf2_a_pos(loc);
 
 		      /* Read length, we don't care about start & end */
 		      len = *(u_short *) (bufptr + (current_cu->addr_size * 2));
@@ -154,7 +154,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 	      
 		      /* Read the location */
 		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), 
-				       dwarf2_a_pos(loc), len);		
+				       (u_char *) dwarf2_a_pos(loc), len);		
 		      break;
 		    }
 		  break;
