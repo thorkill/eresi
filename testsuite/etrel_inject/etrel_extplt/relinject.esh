@@ -4,13 +4,13 @@ load a.out
 load rel.o
 
 #stop
-#profile enable warn
+profile enable warn
 
 reladd 1 2
 
 dynsym puts
 sym puts
-profile enable warn
+#profile enable warn
 redir puts puts_troj
 redir legit_func hook_func
 

@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.68 2007-07-07 10:04:59 mxatone Exp $
+** $Id: libelfsh.h,v 1.69 2007-07-20 08:01:19 mxatone Exp $
 **
 */
 
@@ -67,6 +67,7 @@
 #define		__DEBUG_EXTPLT__	       0
 #define 	__DEBUG_TRACES__	       0
 #define 	__DEBUG_ARG_COUNT__	       0
+#define 	__DEBUG_HASH_BY_NAME__	       0
 
 /* ELFsh architecture types */
 #define		ELFSH_ARCH_IA32			0

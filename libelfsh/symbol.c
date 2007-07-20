@@ -4,7 +4,7 @@
 ** 
 ** Started on  Mon Feb 26 04:11:46 2001 mayhem
 **
-** $Id: symbol.c,v 1.14 2007-07-19 16:23:26 mxatone Exp $
+** $Id: symbol.c,v 1.15 2007-07-20 08:01:19 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -339,12 +339,17 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
       /* idx is the symbol number in the section */
       idx = (int) hash_get(&file->symhash, name);
 
+#if __DEBUG_HASH_BY_NAME__
+      printf("[DEBUG_HASH_BY_NAME] SYM HASH Search by name for %s => %d\n",
+	     name, idx);
+#else
       /* Check if idx is in the section */
       if (idx <= 0 || idx >= sect->shdr->sh_size)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Symbol not found", NULL);
 
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+#endif
     }
  
 
@@ -352,8 +357,18 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
     {
       actual = elfsh_get_symbol_name(file, sym + idx);
       if (actual && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+	{
+#if __DEBUG_HASH_BY_NAME__
+	  printf("[DEBUG_HASH_BY_NAME] SYM ITERATE Search by name for %s => %d\n", 
+		 name, idx);
+#endif
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+	}
     }
+
+#if __DEBUG_HASH_BY_NAME__
+  printf("[DEBUG_HASH_BY_NAME] SYM ITERATE Search by name for %s => NOT FOUND\n", name);
+#endif
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	       "Symbol not found", NULL);

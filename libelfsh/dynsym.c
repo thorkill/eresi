@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:13:29 2001 mayhem
 ** 
 **
-** $Id: dynsym.c,v 1.18 2007-07-19 16:23:26 mxatone Exp $
+** $Id: dynsym.c,v 1.19 2007-07-20 08:01:19 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -319,7 +319,7 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   sym = (elfsh_Sym *) elfsh_get_dynsymtab(file, &size);
 
   /* Check DYNSYM section data pointer */
-  if (sym)
+  if (sym == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get DYNSYM", NULL);
 
@@ -335,20 +335,35 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
       /* idx is the symbol number in the section */
       idx = (int) hash_get(&file->dynsymhash, name);
 
+#if __DEBUG_HASH_BY_NAME__
+      printf("[DEBUG_HASH_BY_NAME] DYNSYM HASH Search by name for %s => %d\n",
+	     name, idx);
+#else
       /* Check if idx is in the section */
       if (idx <= 0 || idx >= sect->shdr->sh_size)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Symbol not found", NULL);
       
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+#endif
     }
 
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_dynsymbol_name(file, sym + idx);
       if (actual && !strcmp(actual, name))
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+	{
+#if __DEBUG_HASH_BY_NAME__
+	  printf("[DEBUG_HASH_BY_NAME] DYNSYM ITERATE Search by name for %s => %d\n", 
+		 name, idx);
+#endif
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
+	}
     }
+
+#if __DEBUG_HASH_BY_NAME__
+  printf("[DEBUG_HASH_BY_NAME] DYNSYM ITERATE Search by name for %s => NOT FOUND\n", name);
+#endif
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Symbol not found", NULL);
