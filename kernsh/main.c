@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: main.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -39,6 +39,38 @@ void		kernsh_create_prompt(char *buf, u_int size)
 void 		kernsh_setup_prompt()
 {
   revm_set_prompt(kernsh_create_prompt);
+}
+
+int kernsh_config()
+{
+  char          buff[BUFSIZ];
+  char          *home;
+  int           ret;
+  static int    done = 0;
+  revmargv_t    *new;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (done)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  
+  ret = -1;
+  home = getenv("HOME");
+  if (home)
+    {
+      snprintf(buff, sizeof(buff), "%s/%s", home, KERNSH_CONFIG);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+             new, sizeof(revmargv_t), -1);
+      memset(new, 0, sizeof(revmargv_t));
+      world.curjob->curcmd = new;
+      world.curjob->curcmd->param[0] = buff;
+      ret = cmd_source();
+      world.curjob->curcmd = NULL;
+      XFREE(__FILE__, __FUNCTION__, __LINE__,new);
+    }
+  if (ret < 0)
+    revm_output("\n [*] No configuration in ~/" KERNSH_CONFIG " \n\n");
+  done = 1;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Print the kernsh banner */

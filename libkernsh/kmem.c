@@ -1,7 +1,7 @@
 /*
 ** kmem.c for libkernsh
 **
-** $Id: kmem.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: kmem.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -14,7 +14,7 @@ int kernsh_openmem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("OPEN KMEM 2.6\n");
+  printf("OPEN KMEM 2.6\n");
 
   if (libkernshworld.mmap)
     {
@@ -31,7 +31,7 @@ int kernsh_closemem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("CLOSE KMEM 2.6\n");
+  printf("CLOSE KMEM 2.6\n");
 
   XCLOSE(libkernshworld.fd, -1);
 
@@ -42,7 +42,7 @@ int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("READ KMEM 2.6\n");
+  printf("READ KMEM 2.6\n");
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
@@ -57,7 +57,7 @@ int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("WRITE KMEM 2.6\n");
+  printf("WRITE KMEM 2.6\n");
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);

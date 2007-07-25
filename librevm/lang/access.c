@@ -3,13 +3,10 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.19 2007-07-25 19:48:21 pouik Exp $
+** $Id: access.c,v 1.20 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "revm.h"
-#if defined(KERNSH)
-#include "libkernsh.h"
-#endif
 
 /* Get the buffered address from the real virtual address */
 void		*revm_get_raw(void *addr)

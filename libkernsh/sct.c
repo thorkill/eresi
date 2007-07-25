@@ -1,7 +1,7 @@
 /*
 ** sct.c for libkernsh
 **
-** $Id: sct.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: sct.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -37,7 +37,7 @@ int kernsh_sct_linux()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("SCT LINUX\n");
+  printf("SCT LINUX\n");
 
   if (kernsh_is_static_mode())
     {
@@ -51,11 +51,13 @@ int kernsh_sct_linux()
 		       "Memory not open !", -1);
 	}
 
+      /*
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff), 
 	       "%s\n\n",
 	       revm_colorfieldstr("[+] SYS_CALL_TABLE"));
       revm_output(buff);
+      */
 
       for (i = 0; 
 	   i < (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS); 
@@ -67,7 +69,7 @@ int kernsh_sct_linux()
 			 sizeof(unsigned long));
 	  
 	  kernsh_resolve_systemmap(syscall.addr, syscall.name, sizeof(syscall.name));
-	  memset(buff, '\0', sizeof(buff));
+	  /* memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff),
 		   "%s %-40s %s %s\n", 
 		   revm_colornumber("id:%-10u", (unsigned int)i),
@@ -75,7 +77,7 @@ int kernsh_sct_linux()
 		   revm_colorstr("@"),
 		   revm_coloraddress(XFMT, (elfsh_Addr) syscall.addr));
 	  revm_output(buff);
-	  revm_endline();
+	  revm_endline();*/
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
@@ -83,7 +85,8 @@ int kernsh_sct_linux()
 
 int kernsh_syscall(int num, int argc, unsigned int argv[])
 {
-  int __ret;
+  int __ret = 0;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   if (argc > 5 || argc < 0)

@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: memory.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -21,7 +21,7 @@ int kernsh_openmem()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("OPENMEM\n");
+  printf("OPENMEM\n");
 
   if (libkernshworld.os == LIBKERNSH_OS_LINUX_2_6 || 
       libkernshworld.os == LIBKERNSH_OS_LINUX_2_4)

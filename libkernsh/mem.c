@@ -1,7 +1,7 @@
 /*
 ** mem.c for libkernsh
 **
-** $Id: mem.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: mem.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -14,7 +14,7 @@ int kernsh_openmem_mem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  revm_output("OPEN MEM 2.6\n");
+  printf("OPEN MEM 2.6\n");
   
   XOPEN(libkernshworld.fd, "/dev/mem", libkernshworld.fdmode, 0, -1);
 
@@ -33,7 +33,7 @@ int kernsh_closemem_mem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  revm_output("CLOSE MEM 2.6\n");
+  printf("CLOSE MEM 2.6\n");
 
   if (libkernshworld.mmap)
     {
@@ -53,7 +53,7 @@ int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  revm_output("READ MEM 2.6\n");
+  //  printf("READ MEM 2.6\n");
 
   roffset = offset - libkernshworld.page_offset;
 
@@ -82,7 +82,7 @@ int kernsh_writemem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("WRITE MEM 2.6\n");
+  printf("WRITE MEM 2.6\n");
 
   roffset = offset - libkernshworld.page_offset;
 
@@ -116,7 +116,7 @@ int kernsh_openmem_netbsd()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  revm_output("OPEN MEM NETBSD\n");
+  printf("OPEN MEM NETBSD\n");
 
 #if defined(__NetBSD__)
   libkernshworld.kd = krevm_openfiles(NULL, NULL, NULL, libkernshworld.fdmode, errbuf);
@@ -139,7 +139,7 @@ int kernsh_closemem_netbsd()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  revm_output("CLOSE MEM NETBSD\n");
+  printf("CLOSE MEM NETBSD\n");
 
 #if defined(__NetBSD__)
   if(krevm_close(libkernshworld.kd) < 0)
@@ -158,7 +158,7 @@ int kernsh_readmem_netbsd(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("READ MEM NETBSD\n");
+  printf("READ MEM NETBSD\n");
 
 #if defined(__NetBSD__)
   if (krevm_read(libkernshworld.kd, offset, buf, size) < 0)
@@ -175,7 +175,7 @@ int kernsh_writemem_netbsd(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("WRITE MEM NETBSD\n");
+  printf("WRITE MEM NETBSD\n");
 
 #if defined(__NetBSD__)
   if (krevm_write(libkernshworld.kd, offset, buf, size) < 0)

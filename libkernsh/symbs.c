@@ -1,7 +1,7 @@
 /*
 ** symbs.c for libkernsh
 **
-** $Id: symbs.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: symbs.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -15,7 +15,7 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  revm_output("SYMBS ABN\n");
+  //  printf("SYMBS ABN\n");
 
   if (!libkernshworld.open)
     {
@@ -43,7 +43,7 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-//  revm_output("SYMBS NBA\n");
+//  printf("SYMBS NBA\n");
 
   if (!libkernshworld.open)
     {
@@ -139,7 +139,7 @@ int kernsh_get_addr_by_name_linux_2_6(char *name, unsigned long *addr, size_t si
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  revm_output("SYMBS ABN LINUX 2.6\n");
+  //  printf("SYMBS ABN LINUX 2.6\n");
 
   if(libkernshworld.mmap)
     {
@@ -163,7 +163,7 @@ int kernsh_get_name_by_addr_linux_2_6(unsigned long addr, char *name, size_t siz
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  revm_output("SYMBS NBA LINUX 2.6\n");
+  //  printf("SYMBS NBA LINUX 2.6\n");
 
   ret = kernsh_resolve_systemmap(addr, name, size);
 

@@ -7,13 +7,10 @@
 ** Started on  Mon Feb 26 04:12:42 2001 mayhem
 ** 
 **
-** $Id: section.c,v 1.13 2007-07-25 19:48:21 pouik Exp $
+** $Id: section.c,v 1.14 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libelfsh.h"
-#if defined(KERNSH)
-#include "libkernsh.h"
-#endif
 
 /**
  * Just used to avoid code redundancy in elfsh_add_section()

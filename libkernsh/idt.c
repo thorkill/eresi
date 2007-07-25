@@ -1,7 +1,7 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: idt.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: idt.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -50,11 +50,13 @@ int kernsh_idt_linux()
 		       "Memory not open !", -1);
 	}
 
+      /*
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff), 
 	       "%s\n\n",
 	       revm_colorfieldstr("[+] IDT"));
       revm_output(buff);
+      */
 
       for (i = 0;
 	   i < (libkernshworld.idt_limit + 1) / (sizeof(unsigned long) * 2); 
@@ -67,7 +69,7 @@ int kernsh_idt_linux()
 
 	  dint.addr = (unsigned long)(idt.off2 << 16) + idt.off1;
 	  kernsh_resolve_systemmap(dint.addr, dint.name, sizeof(dint.name));
-
+	  /*
           memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff),
 		   "%s %-40s %s %s\n",
@@ -77,6 +79,7 @@ int kernsh_idt_linux()
 		   revm_coloraddress(XFMT, (elfsh_Addr) dint.addr));
 	  revm_output(buff);
 	  revm_endline();
+	  */
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 

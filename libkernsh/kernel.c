@@ -1,7 +1,7 @@
 /*
 ** kernel.c for libkernsh
 **
-** $Id: kernel.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: kernel.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -17,7 +17,7 @@ int kernsh_decompkernel()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  revm_output("DECOMP KERNEL\n");
+  printf("DECOMP KERNEL\n");
 
   decomp = aspect_vector_get("decompkernel");
 
@@ -42,7 +42,7 @@ int kernsh_decompkernel_linux()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("DECOMP KERNEL LINUX\n");
+  printf("DECOMP KERNEL LINUX\n");
         
   XOPEN(fd, (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNEL), O_RDONLY, 0, -1);
 
@@ -52,8 +52,10 @@ int kernsh_decompkernel_linux()
     }
   
   //printf("SIZE %d\n", st.st_size);
-  
+
+#if defined(__linux__)  
   XMMAP(zone, NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0, -1);
+#endif
 
   begin = kernsh_find_pattern(zone, st.st_size, magic, 3);
   //printf("0x%x 0x%x %d\n", zone, begin, (int)begin - (int)zone);
@@ -72,9 +74,11 @@ int kernsh_decompkernel_linux()
       
   XWRITE(fz, begin, size, -1);
   XCLOSE(fz, -1);
-  
+
+#if defined(__linux__)  
   XMUNMAP(zone, st.st_size, -1);
-        
+#endif
+
   XCLOSE(fd, -1);
   
   memset(decomp, '\0', sizeof(decomp));
@@ -97,7 +101,7 @@ int kernsh_loadkernel()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("LOAD KERNEL\n");
+  printf("LOAD KERNEL\n");
 
   load = aspect_vector_get("loadkernel");
 
@@ -115,7 +119,8 @@ int kernsh_loadkernel_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_file_load("./vmlinux", 0, NULL);
+  elfshobj_t    *file;
+  file = elfsh_map_obj("./vmlinux");
 
   libkernshworld.open_static = 1;
 
@@ -130,7 +135,7 @@ int kernsh_loadkernel_linux_old()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("LOAD KERNEL LINUX\n");
+  printf("LOAD KERNEL LINUX\n");
 
   memset(bufgz, '\0', sizeof(bufgz));
   snprintf(bufgz, sizeof(bufgz), "%s%s", 
@@ -170,32 +175,32 @@ int kernsh_loadkernel_linux_old()
   read(fd, image, st.st_size);
   close(fd);
 
-  printf("0x%lx\n", image);
+  //  printf("0x%lx\n", image);
   
   offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_text, 4);
   diff = (unsigned long)offset - (unsigned long)image;
-  printf("_TEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
+  //printf("_TEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
 
   offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_etext, 4);
   diff = (unsigned long)offset - (unsigned long)image;
-  printf("_ETEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
+  //printf("_ETEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
 
   offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_edata, 4);
   diff = (unsigned long)offset - (unsigned long)image;
-  printf("_EDATA OFFSET 0x%lx 0x%lx\n", offset, diff);
+  //printf("_EDATA OFFSET 0x%lx 0x%lx\n", offset, diff);
 
-  //  revm_output("\n");
+  //  printf("\n");
   //revm_load_file(bufelf, 0, NULL);
-  //revm_output("\n");
+  //printf("\n");
 
-  elfshobj_t    *file;
-  file = elfsh_map_obj("/tmp/vmlinux");
+  //elfshobj_t    *file;
+  //file = elfsh_map_obj("/tmp/vmlinux");
   
-  printf("0x%lx\n", elfsh_get_entrypoint(file));
+  //printf("0x%lx\n", elfsh_get_entrypoint(file));
   //elfsh_set_entrypoint(file, 0x100000);
-  printf("0x%lx\n", elfsh_get_entrypoint(file));
+  //printf("0x%lx\n", elfsh_get_entrypoint(file));
   
-  elfsh_save_obj(file, "/tmp/prout");
+  //elfsh_save_obj(file, "/tmp/prout");
 
   //revm_load_file("/tmp/prout", 0, NULL);
 

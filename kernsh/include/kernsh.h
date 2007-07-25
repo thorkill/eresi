@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: kernsh.h,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__
@@ -18,7 +18,7 @@
 #define KERNSH_VERSION 		"0.8"
 #define KERNSH_RELEASE		"a"
 #define KERNSH_EDITION		"dev"
-
+#define KERNSH_CONFIG		".kernshrc"
 
 /* Commands */
 #define	CMD_OPENMEM		"openmem"
@@ -35,6 +35,8 @@ int	cmd_kmode();
 int     cmd_sct();
 int	cmd_idt();
 int	cmd_mem();
+
+int	kernsh_config();
 
 /* Top skeleton functions */
 int	vm_main(int ac, char **av);

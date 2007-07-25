@@ -1,13 +1,14 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: libkernsh.h,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
  #define __LIBKERNSH_H__
 
-#include "revm.h"
+#include "libaspect.h"
+#include "libelfsh.h"
 
 #if defined(__NetBSD__)
 #include <kvm.h>
@@ -92,8 +93,6 @@ enum
 #define LIBPAGE_AMD64_LINUX_MAX			0xffffffffffffffff
 
 #define GFP_KERNEL 208
-
-#define LIBKERNSH_CONFIG			".kernshrc"
 
 struct {
   unsigned short limit;
@@ -191,7 +190,6 @@ extern libkernshworld_t     libkernshworld;
 /* Init lib */
 int kernsh_init_i386(char *, char *);
 int kernsh_del_i386();
-int kernsh_config();
 void *kernsh_elfsh_get_raw(void *);
 void *kernsh_revm_get_raw(void *);
 int kernsh_info();

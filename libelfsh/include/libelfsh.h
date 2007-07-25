@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.69 2007-07-20 08:01:19 mxatone Exp $
+** $Id: libelfsh.h,v 1.70 2007-07-25 21:55:06 pouik Exp $
 **
 */
 
@@ -49,6 +49,10 @@
 #include <miscfs/procfs/procfs.h>
 #else
 #include <sys/procfs.h>
+#endif
+
+#if defined(KERNSH)
+#include "libkernsh.h"
 #endif
 
 /* Configure the DEBUG modes for various part of the code */

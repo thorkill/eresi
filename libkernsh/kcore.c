@@ -1,7 +1,7 @@
 /*
 ** kcore.c for libkernsh
 **
-** $Id: kcore.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: kcore.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
 **
 */
 #define _LARGEFILE64_SOURCE
@@ -50,7 +50,7 @@ int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("READ KCORE 2.6\n");
+  printf("READ KCORE 2.6\n");
 
   roffset = offset - libkernshworld.page_offset + 0x1000;
 
@@ -77,7 +77,7 @@ int kernsh_writemem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  revm_output("WRITE KCORE 2.6\n");
+  printf("WRITE KCORE 2.6\n");
 
   roffset = offset - libkernshworld.page_offset + 0x1000;
 

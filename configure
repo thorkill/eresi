@@ -191,7 +191,6 @@ SLOGSET="1";
 ;;
 
 --enable-kernsh*)
-shift
 echo " [*] Enabling kernsh and libkernsh"
 if [ -e "$(which uname)" ] ; then
 arch=`uname -m`
@@ -256,6 +255,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-testing  : Test ERESI without install"
     echo "   --enable-dmalloc  : Link with Electric Fence."
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
+    echo "   --enable-kernsh   : Build kernsh and libkernsh"
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
     echo "   --use-cpp         : Build the project as C++"
@@ -658,9 +658,11 @@ echo "	@chmod 755 \$(BINPATH)elfsh?? "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)e2dbg??"				>> Makefile
 echo "	@chmod 755 \$(BINPATH)etrace?? "		        >> Makefile
 echo "	@chmod 755 \$(BINPATH)evarista?? "		        >> Makefile
+if [ "$KERNSH" = "1" ]; then
 echo "	@chmod 755 \$(BINPATH)kernsh?? "                        >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libkernsh*.so "                   >> Makefile
 echo "	@chmod 644 \$(INCPATH)libkernsh*.h "                    >> Makefile
+fi
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
@@ -813,7 +815,11 @@ echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
 echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
 echo "  elibc/include/*.h elibc/*.c etrace/*.c evarista/*.c \\" >> Makefile
-echo "  etrace/include/*.h evarista/include/*.h"		>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
+echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Mafefile
+fi
+echo "  etrace/include/*.h evarista/include/*.h "		>> Makefile
 fi
 
 if [ "$CTAGS" = "1" ]; then
@@ -835,6 +841,10 @@ echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
 echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
+echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Mafefile
+fi
 echo "  evarista/*.c evarista/include/*.h "			>> Makefile
 echo ""								>> Makefile
 fi
