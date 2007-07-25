@@ -3,20 +3,31 @@
 **
 ** Started Jan 23 2007 23:39:51 mayhem
 **
-** $Id: access.c,v 1.18 2007-07-19 17:14:30 may Exp $
+** $Id: access.c,v 1.19 2007-07-25 19:48:21 pouik Exp $
 **
 */
 #include "revm.h"
-
+#if defined(KERNSH)
+#include "libkernsh.h"
+#endif
 
 /* Get the buffered address from the real virtual address */
 void		*revm_get_raw(void *addr)
 {
   elfshsect_t	*sect;
   elfsh_SAddr	offset;
+#if defined(KERNSH)
+  void *dataptr;
+#endif
 
   sect = elfsh_get_parent_section(world.curjob->current, 
 				  (elfsh_Addr) addr, &offset);
+
+#if defined(KERNSH)
+  dataptr = kernsh_revm_get_raw(addr);
+  if(dataptr != NULL)
+    return dataptr;
+#endif
 
   /* This happens when the object is a ERESI variable */
   if (!sect)

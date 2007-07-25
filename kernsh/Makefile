@@ -1,20 +1,20 @@
 ##
-## Makefile for etrace
+## Makefile for kernsh
 ##
-## Started on  Fri Nov  2 16:32:29 2001 mxatone
+## Started on  Mon Jun  4 21:49:42 2007 pouik
 ##
 
 include ../config.h
 
-SRC			= main.c tables.c rlheap.c cleanup.c run.c misc.c
+SRC			= main.c run.c tables.c
 OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 RM			= rm -f
-NAME			= etrace
-NAME32			= etrace32
-NAME64			= etrace64
+NAME			= kernsh
+NAME32			= kernsh32 
+NAME64			= kernsh64
 
 CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../libelfsh/include/ -I../elibc/include/ \
@@ -22,7 +22,9 @@ CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libaspect/include/ -I../librevm/include/ \
-			-I../libedfmt/include/ -DELFSH_INTERN $(STATOPT2) \
+			-I../libedfmt/include/ \
+			-I../libkernsh/include/ \
+			-DELFSH_INTERN $(STATOPT2) \
 			$(ASMOPT) -DELFSH32 $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
@@ -31,7 +33,9 @@ CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libaspect/include/ -I../librevm/include/ \
-			-I../libedfmt/include/ -DELFSH_INTERN $(STATOPT2) \
+			-I../libedfmt/include/ \
+			-I../libkernsh/include/ \
+			-DELFSH_INTERN $(STATOPT2) \
 			$(ASMOPT) -DELFSH64 $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
@@ -40,8 +44,8 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libasm/ -lasm -L../libui/ -lui32 -g3		  \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
+			-L../libkernsh/ -lkernsh32 \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
-			$(LIBKERNSH32)						  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
@@ -50,12 +54,12 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
+			-L../libkernsh/ -lkernsh64 \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
-			$(LIBKERNSH64)						  \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
 			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
-all			: all32 all64
+all			: all32
 
 all32			: $(OBJ32)
 			@$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)

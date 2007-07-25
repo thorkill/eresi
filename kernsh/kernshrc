@@ -1,0 +1,207 @@
+#!elfsh
+
+# My systemmap
+# configure libkernsh.systemmap /boot/System.map-genkernel-x86-2.6.21.5
+
+# Make all type
+type atomic_t = counter:int 
+#define asm/atomic.h
+
+type list_head = next:*list_head prev:*list_head 
+#define linux/list.h
+
+type prio_array = nr_active:int bitmap:long[5] queue:list_head[140] 
+#define kernel/sched.c
+
+type cpumask_t = bits:long[2] 
+#define linux/cpumask.h
+
+type mm_struct = entier:int
+
+type module = entier:int 
+
+type linux_binfmt = next:*linux_binfmt module:*module load_binary:long load_shlib:long core_dump:long min_coredump:long hasvdso:int
+#define linux/binfmts.h
+
+type hlist_node = next:*hlist_node pprev:**hlist_node 
+#define linux/list.h 
+
+type hlist_head = first:*hlist_node 
+#define linux/list.h
+
+type plist_head = prio_list:list_head node_list:list_head
+#define linux/plist.h
+
+type rcu_head = next:*rcu_head func:long 
+#define linux/rcupdate.h
+
+type pid = count:atomic_t nr:int pid_chain:hlist_node tasks:hlist_head[3] rcu:rcu_head 
+#define linux/pid.h
+
+type pid_link = node:hlist_node pid:*pid 
+#define linux/pid.h
+
+type raw_spinlock_t = slock:int 
+#define linux/spinlock_types_up.h
+
+type spinlock_t = raw_lock:raw_spinlock_t break_lock:int 
+#define linux/spinlock_types.h
+
+type wait_queue_t = flags:int private:*long func:*long task_list:list_head
+#define linux/wait.h
+
+type wait_queue_head_t = lock:spinlock_t task_list:list_head
+#define linux/wait.h
+
+type completion = done:int wait:wait_queue_head_t
+#define linux/completion.h
+
+#type cputime_t = long
+#define asm-generic/cputime.h
+
+#type time_t = long
+type timespec = tv_sec:long tv_nsec:long
+#define linux/time.h
+
+type group_info = ngroups:int usage:atomic_t small_block:int[32] nblocks:int blocks:*int[0]
+#define linux/sched.h 
+
+type kernel_cap_t = cap:int
+#define linux/capability.h
+
+type user_struct = __count:atomic_t processes:atomic_t files:atomic_t sigpending:atomic_t mq_bytes:long locked_shm:long uidhash_list:list_head uid:int
+#define linux/sched.h
+
+type thread_info = entier:int
+#define asm/thread_info.h
+
+type desc_struct = entier:int
+
+type i387_union = entier:int
+
+type vm86_struct = entier:int
+
+type thread_struct = tls_array:desc_struct[3] esp0:long sysenter_cs:long eip:long esp:long fs:long gs:long debugreg:long[8] cr2:long trap_no:long error_code:long i387:i387_union vm86_info:*vm86_struct screen_bitmap:long v86flags:long v86mask:long saved_esp0:long saved_fs:long saved_gs:long io_bitmap_ptr:*long iopl:long io_bitmap_max:long
+#define asm/processor.h
+
+type rwlock_t = entier:int
+
+type dentry = entier:int
+
+type vfsmount = entier:int
+
+type fs_struct = count:atomic_t lock:rwlock_t umask:int root:*dentry pwd:*dentry altroot:*dentry rootmnt:*vfsmount pwdmnt:*vfsmount altrootmnt:*vfsmount
+#define linux/fs_struct.h
+
+type fdtable = entier:int
+
+type embedded_fd_set = entier:int
+
+type file = entier:int
+
+type files_struct = count:atomic_t fdt:*fdtable fdtab:fdtable ____cacheline_aligned_in_smp:spinlock_t next_fd:int close_on_exec_init:embedded_fd_set open_fds_init:embedded_fd_set fd_array:*file[32]
+#define linux/file.h
+
+type uts_namespace = entier:int
+type ipc_namespace = entier:int
+type mnt_namespace = entier:int
+type pid_namespace = entier:int
+
+type nsproxy = count:atomic_t nslock:spinlock_t uts_ns:*uts_namespace ipc_ns:*ipc_namespace mnt_ns:*mnt_namespace pid_ns:*pid_namespace
+#define linux/nsproxy.h
+
+type sigpending = entier:int
+
+type signal_struct = count:atomic_t live:atomic_t wait_chldexit:wait_queue_head_t curr_target:*task_struct shared_pending:sigpending group_exit_code:int group_exit_task:*task_struct notify_count:int group_stop_count:int flags:int posix_timers:list_head
+#define linux/sched.h NOT FINISH
+
+type __sighandler_t = entier:int
+
+type __sigrestore_t = entier:int
+
+type sa_mask = entier:int
+
+type sigset_t = entier:int
+
+type sigaction = sa_handler:__sighandler_t sa_flags:long sa_restorer:__sigrestore_t sa_mask:sigset_t
+#define asm/signal.h
+
+type k_sigaction = sa:sigaction
+#define asm/signal.h
+
+type sighand_struct = count:atomic_t action:k_sigaction[64] siglock:spinlock_t
+#define linux/sched.h
+
+type audit_context = entier:int
+
+type seccomp_t = mode:int
+#define linux/seccomp.h
+
+type reclaim_state = reclaimed_slab:long
+#define linux/swap.h
+
+type backing_dev_info = ra_pages:long state:long capabilities:int congested_fn:*long congested_data:*long unplug_io_fn:*long unplug_io_data:*long
+#define linux/backing-dev.h
+
+type as_io_context = lock:spinlock_t dtor:*long exit:*long state:long nr_queud:atomic_t nr_dispatched:atomic_t last_end_request:long ttime_total:long ttime_samples:long ttime_mean:long seek_samples:int last_request_pas:long seek_total:long seek_mean:long
+#define linux/blkdev.h
+
+type rb_node = rb_parent_color:long rb_right:*rb_node rb_left:*rb_node
+#define linux/rbtree.h
+
+type rb_root = rb_node:*rb_node
+#define linux/rbtree.h
+
+type io_context = refcount:atomic_t task:*task_struct ioprio_changed:int last_waited:long nr_batch_requests:int aic:*as_io_context cic_root:rb_root
+#define linux/blkdev.h
+
+type siginfo_t = si_signo:int si_errno:int si_code:int
+#define asm-generic/siginfo.h NOT FINISH
+
+type task_io_accounting = read_bytes:long write_bytes:long cancelled_write_bytes:long
+#define linux/task_io_accounting.h
+
+type robust_list = next:*robust_list
+#define linux/futex.h
+
+type robust_list_head = list:robust_list futex_offset:long list_op_pending:*robust_list
+#define linux/futex.h
+
+type rt_mutex = wait_lock:spinlock_t wait_list:plist_head owner:*task_struct 
+#define linux/rt_mutex.h
+
+type futex_pi_state = list:list_head pi_mutex:rt_mutex owned:*task_struct refcount:atomic_t key:int
+#define kernel/futex.c NOT FINISH
+
+type page = entier:int
+
+type fasync_struct = entier:int
+
+type inode = entier:int
+
+type pipe_buf_operations = can_merge:int map:*long unmap:*long pin:*long release:*long steal:*long get:*long
+#define linux/pipe_fs_i.h
+
+type pipe_buffer = page:*page offset:int len:int ops:*pipe_buf_operations flags:int
+#define linux/pipe_fs_i.h
+
+type pipe_inode_info = wait:wait_queue_head_t nrbufs:int curbuf:int tmp_page:*page readers:int writers:int waiting_writers:int r_counter:int w_counter:int fasync_readers:*fasync_struct fasync_writers:*fasync_struct inode:*inode bufs:pipe_buffer[16]
+#define linux/pipe_fs_i.h
+
+type task_struct = state:long thread_info:*thread_info usage:atomic_t flags:long ptrace:long lock_depth:int load_weight:int prio:int static_prio:int normal_prio:int run_list:list_head array:*prio_array ioprio:short sleep_avg:long timestamp:long last_ran:long sched_time:long sleep_type:int policy:long cpus_allowed:cpumask_t time_slice:int first_time_slice:int tasks:list_head ptrace_children:list_head ptrace_list:list_head mm:*mm_struct active_mm:*mm_struct binfmt:*linux_binfmt exit_state:long exit_code:int exit_signal:int pdeath_signal:int personality:long did_exec:int pid:int tgid:int real_parent:*task_struct parent:*task_struct children:list_head sibling:list_head group_leader:*task_struct pids:pid_link[3] thread_group:list_head vfork_done:*completion set_child_tid:*int clear_child_tid:*int rt_priority:long utime:long stime:long nvcsw:long nivcsw:long start_time:timespec min_flt:long maj_flt:long if_prof_expires:long it_virt_expires:long it_sched_expires:long cpu_timers:list_head[3] uid:int euid:int suid:int fsuid:int gid:int egid:int sgid:int fsgid:int group_info:*group_info cap_effective:kernel_cap_t cap_inheritable:kernel_cap_t cap_permitted:kernel_cap_t keep_capabilites:int user:*user_struct fpu_counter:byte oomkilladj:int comm:string[16] link_count:int total_link_count:int thread:thread_struct fs:*fs_struct files:*files_struct nsproxy:*nsproxy signal:*signal_struct sighand:*sighand_struct blocked:sigset_t real_blocked:sigset_t saved_sigmask:sigset_t pending:sigpending sas_ss_sp:long sas_ss_size:int notifier:long notifier_data:long notifier_mask:*sigset_t security:*long audit_context:*audit_context seccomp:seccomp_t parent_exec_id:int self_exec_id:int allock_lock:spinlock_t pi_lock:spinlock_t journal_info:*long reclaim_state:*reclaim_state backing_dev_info:*backing_dev_info io_context:*io_context ptrace_message:long last_siginfo:*siginfo_t io_wait:*wait_queue_t  ioac:task_io_accounting robust_list:*robust_list_head pi_state_list:list_head pi_state_cache:*futex_pi_state fs_execl:atomic_t rcu:rcu_head splice_pipe:*pipe_inode_info
+#define linux/sched.h
+
+type ksct = sys:long[320]
+type kint = off1:short sel:short none:byte flags:byte off2:short
+type kidt = idt:kint[256]
+
+# Open memory
+openmem
+
+# Inform type
+inform task_struct init_task
+inform ksct sys_call_table
+inform kidt idt_table
+
+# For netbsd/freebsd
+#inform syscalltable sysent

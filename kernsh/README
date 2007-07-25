@@ -1,0 +1,175 @@
+			]=------ kernsh : support@kernsh.org ------=[
+
+
+Kernsh uses Libkernsh which is a library to play with kernel image in real time or on disk.
+You can obtain all information necessary about kernel(syscalls, idt, gdt, 
+symbols, ...), insert module inside the memory. hijack functions, etc
+You can profite of eresi's language to define you own structure and 
+communicate with the kernel.
+
+Features :
+	-
+	-
+	-
+	-
+	-
+	-
+
+
+Depends : libasm, librevm, libaspect, libmjollnir, libelfsh
+
+Portability :
+
+ -------------------------------------------------------------------------
+|   \  ARCH   |  IA32  |  SPARC  | SPARC64 |  MIPS  |  ALPHA  |
+| OS \        |        |         |         |        |         |
+ -------------------------------------------------------------------------
+|  LINUX 2.4  |        |         |         |        |         |
+|             |        |         |         |        |         |
+ -------------------------------------------------------------------------
+|  LINUX 2.6  |        |         |         |        |         |
+|             |        |         |         |        |         |
+ -------------------------------------------------------------------------
+|    NETBSD   |        |         |         |        |         |
+|             |        |         |         |        |         |
+ -------------------------------------------------------------------------
+|   FREEBSD   |        |         |         |        |         |
+|             |        |         |         |        |         |
+ -------------------------------------------------------------------------
+
+
+Details :
+
+ -------------------------------------------------------------------------
+|   \  FEAT   | MEMORY | KERNEL  |  SYMBS  |        |
+| OS \        |        |         |         |        |
+ -------------------------------------------------------------------------
+|  LINUX 2.4  |  WIP   |         |         |        |
+|    IA32     |        |         |         |        |
+ -------------------------------------------------------------------------
+|  LINUX 2.4  |  WIP   |         |         |        |
+|    SPARC    |        |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.4  |  WIP   |         |         |        |
+|   SPARC64   |        |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.4  |  WIP   |         |         |        |
+|    MIPS     |        |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.4  |  WIP   |         |         |        |
+|    ALPHA    |        |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |         |         |        |
+|    IA32     |        |         |         |        |
+ -------------------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |         |         |        |
+|    SPARC    |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |         |         |        |
+|   SPARC64   |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |         |         |        |
+|    MIPS     |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |         |         |        |
+|    ALPHA    |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|   NETBSD    |  DONE  |         |         |        |
+|    IA32     |        |         |         |        |
+ -------------------------------------------------------------------------
+|   NETBSD    |  DONE  |         |         |        |
+|    SPARC    |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|   NETBSD    |  DONE  |         |         |        |
+|   SPARC64   |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|   NETBSD    |  DONE  |         |         |        |
+|    MIPS     |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+|   NETBSD    |  DONE  |         |         |        |
+|    ALPHA    |   UT   |         |         |        |
+ ------------------------------------------------------------------------
+
+
+[ legends :
+	- WIP		: 	Work In Progress
+	- UT 		: 	Untested
+]
+
+Memory :
+ 	- device 	:	 /dev/mem
+	- mode   	: 	mmap-write
+
+Command : 
+	- openmem :
+		args 	:	no
+		return 	:	int
+		func 	:	open memory and by default static kernel
+
+	- closemem :
+		args 	:	no
+		return	:	int
+		func	:	close memory
+
+	- mode :
+		args	:	yes (not obligatory), "static" and "dynamic"
+		return  :	int
+		func	:	with no args display the mode
+
+	- sct :
+
+
+	- idt :
+
+	- mem :
+		args : alloc, free, alloc_nc, free_nc
+			alloc : alloc contiguous memory
+				args : size
+			free : free contiguous memory
+				args : addr to free
+			alloc_nc : alloc non contiguous memory
+				args : size
+			free_nc : free non contiguous memory
+				args : addr to free
+
+
+Configure :
+ [legends : (D) => default,	(L) => specific to Linux]
+
+	- libkernsh.device :
+		- /dev/mem (D)
+		- /dev/kmem (L)
+		- /proc/kcore (L)
+
+	- libkernsh.mode :
+		- read
+		- write (D)
+	
+	- libkernsh.mmap :
+		- 0
+		- 1 (D)
+
+	- libkernsh.mmap_size :
+		- 200 * 1024 * 1024 (D)
+		- X
+	
+	- libkernsh.systemmap : (L)
+		- /boot/System.map-`uname -r`
+
+	- libkernsh.kernel :
+
+	- libkernsh.gzipcmd :
+
+	- libkernsh.objcopycmd :
+
+	- libkernsh.kernelgz :
+
+	- libkernsh.kernelelf :
+
+	- libkernsh.storagepath :
+
+	- libkernsh.nbsyscalls :
+		- 320 (D) (L)
+
+	- libkernsh.nilsyscalls :
+		- 17 (D) (L)	

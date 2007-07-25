@@ -190,6 +190,26 @@ echo "#define ELFSH_SLOG 1" 		      >> $VARSFILE
 SLOGSET="1";
 ;;
 
+--enable-kernsh*)
+shift
+echo " [*] Enabling kernsh and libkernsh"
+if [ -e "$(which uname)" ] ; then
+arch=`uname -m`
+os=`uname -s`
+release=`uname -r`
+echo "" > kernsh/include/info.h
+echo "#ifndef __INFO_H__" >> kernsh/include/info.h
+echo " #define __INFO_H__" >> kernsh/include/info.h
+echo "" >> kernsh/include/info.h 
+echo "#define ARCH \"$arch\"" >> kernsh/include/info.h
+echo "#define OS \"$os\"" >> kernsh/include/info.h
+echo "#define RELEASE \"$release\"" >> kernsh/include/info.h
+echo "" >> kernsh/include/info.h
+echo "#endif" >> kernsh/include/info.h
+KERNSH="1"
+fi
+;;
+
 --prefix*)
 shift
 echo " [*] Prefix:  " $1
@@ -400,6 +420,13 @@ echo "LPTHREAD=	$LPTHREAD"		>> $CONFIGFILE
 echo "BITS = " $BITS			>> $CONFIGFILE
 echo "SHELL= " $SHELL			>> $CONFIGFILE
 
+if [ "$KERNSH" = "1" ]; then
+	echo "KERNSH = -DKERNSH"               		>> $CONFIGFILE
+	echo "KERNSHLIB32 = -lkernsh32 -L../libkernsh/" >> $CONFIGFILE
+	echo "KERNSHLIB64 = -lkernsh64 -L../libkernsh/" >> $CONFIGFILE
+	echo "KERNSHINC = -I../libkernsh/include" 	>> $CONFIGFILE
+fi
+
 #case "$(uname -m)" in
 #i686)
 #LOCALBITS=32
@@ -455,6 +482,11 @@ echo "	@echo 'Libaspect has been built successfully.' "	>> Makefile
 echo "	@echo 'Building libasm...' "				>> Makefile
 echo "	@cd libasm && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@echo 'Building libkernsh...'                   "       >> Makefile
+echo "	@cd libkernsh && \$(MAKE) \$(BUILD_TARGET)      "       >> Makefile
+echo "	@echo 'Libkernsh has been built successfully.'  "       >> Makefile
+fi
 echo "	@echo 'Building libelfsh...' "				>> Makefile
 echo "	@cd libelfsh && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
@@ -519,6 +551,13 @@ echo "	@cd evarista && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'Evarista has been built successfully.' 	"	>> Makefile
 echo ""								>> Makefile
 
+if [ "$KERNSH" = "1" ]; then
+echo "	@echo 'Building kernsh...'                      "       >> Makefile
+echo "	@cd kernsh && \$(MAKE) \$(BUILD_TARGET)         "       >> Makefile
+echo "	@echo 'Kernsh has been built successfully.'     "       >> Makefile
+fi
+
+
 echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
 echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
@@ -571,6 +610,11 @@ echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile
 echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
 echo "	@cp doc/eresirc.example ~/.eresirc "			>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
+echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "                      >> Makefile
+fi
+
 
 # Create links
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
@@ -601,6 +645,9 @@ echo "	@cp libedfmt/include/*.h \$(INCPATH) "			>> Makefile
 echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
 echo "	@cp elibc/include/elfsh-libc.h \$(INCPATH) "		>> Makefile
 echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@cp libkernsh/include/libkernsh.h \$(INCPATH) "         >> Makefile
+fi
 
 # Install mans
 echo "	@cp doc/eresi.1 \$(MANPATH)/man1/ "			>> Makefile
@@ -611,6 +658,9 @@ echo "	@chmod 755 \$(BINPATH)elfsh?? "				>> Makefile
 echo "	@chmod 755 \$(BINPATH)e2dbg??"				>> Makefile
 echo "	@chmod 755 \$(BINPATH)etrace?? "		        >> Makefile
 echo "	@chmod 755 \$(BINPATH)evarista?? "		        >> Makefile
+echo "	@chmod 755 \$(BINPATH)kernsh?? "                        >> Makefile
+echo "	@chmod 644 \$(LIBPATH)libkernsh*.so "                   >> Makefile
+echo "	@chmod 644 \$(INCPATH)libkernsh*.h "                    >> Makefile
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
@@ -679,6 +729,11 @@ echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	rm -f  \$(BINPATH)/kernsh*"                             >> Makefile
+echo "	rm -f  \$(LIBPATH)/libkernsh*"                          >> Makefile
+echo "	rm -f  \$(INCPATH)/libkernsh*"                          >> Makefile
+fi
 
 echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, \\"    >> Makefile
 echo "Libmjollnir, Libaspect, Libedfmt, Libe2dbg, Libui and \\" >> Makefile
@@ -691,6 +746,10 @@ echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd evarista  && \$(MAKE) -s clean "			>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	cd kernsh && \$(MAKE) -s clean"                         >> Makefile
+echo "	cd libkernsh && \$(MAKE) -s clean"                      >> Makefile
+fi
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
@@ -712,6 +771,10 @@ echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd evarista  && \$(MAKE) -s fclean "			>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	cd kernsh && \$(MAKE) -s fclean"                        >> Makefile
+echo "	cd libkernsh && \$(MAKE) -s fclean"                     >> Makefile
+fi
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile

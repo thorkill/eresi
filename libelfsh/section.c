@@ -7,11 +7,13 @@
 ** Started on  Mon Feb 26 04:12:42 2001 mayhem
 ** 
 **
-** $Id: section.c,v 1.12 2007-06-27 11:25:12 heroine Exp $
+** $Id: section.c,v 1.13 2007-07-25 19:48:21 pouik Exp $
 **
 */
 #include "libelfsh.h"
-
+#if defined(KERNSH)
+#include "libkernsh.h"
+#endif
 
 /**
  * Just used to avoid code redundancy in elfsh_add_section()
@@ -878,6 +880,12 @@ void			*elfsh_get_raw(elfshsect_t *sect)
   void			*dataptr = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(KERNSH)
+  dataptr = kernsh_elfsh_get_raw(sect);
+  if (dataptr != NULL)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
+#endif
 
   if (elfsh_is_debug_mode())
     {

@@ -4,7 +4,7 @@
 ** Started on  Wed Jan  1 07:51:24 2003 mayhem
 ** Last update Thu Mar 20 06:19:53 2003 mayhem
 **
-** $Id: libaspect-profiler.h,v 1.6 2007-03-25 14:27:34 may Exp $
+** $Id: libaspect-profiler.h,v 1.7 2007-07-25 19:48:21 pouik Exp $
 **
 */
 
@@ -191,6 +191,55 @@ do							    \
 		      (char *)PROFILER_ERRORS_ARRAY, b);    \
 }							    \
 while (0)
+
+/**
+ * Safe mmap
+ */
+#define XMMAP(a, b, c, d, e, f, g, h)			    \
+do							    \
+{							    \
+  if ((a = mmap(b, c, d, e, f, g)) == MAP_FAILED)	    \
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,          \
+		 (char *)PROFILER_ERRORS_ARRAY, h);	    \
+}							    \
+while (0)
+
+
+/**
+ * Safe munmap
+ */
+#define XMUNMAP(a, b, c)				    \
+do							    \
+{							    \
+  if (munmap(a, b) == -1)				    \
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,          \
+		 (char *)PROFILER_ERRORS_ARRAY, c);         \
+}							    \
+while(0)
+
+/**
+ * Safe msync
+ */
+#define XMSYNC(a, b, c, d)				    \
+do							    \
+{							    \
+  if (msync(a, b, c) == -1)				    \
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,          \
+		 (char *)PROFILER_ERRORS_ARRAY, d);	    \
+}							    \
+while(0)
+
+/**
+ * Safe lseek64
+ */
+#define XLSEEK64(a, b, c, d)				    \
+do							    \
+{							    \
+  if (lseek64(a, (off64_t)b, c) == -1)			    \
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,          \
+		 (char *)PROFILER_ERRORS_ARRAY, d);	    \
+}							    \
+while(0)
 
 
 /**
