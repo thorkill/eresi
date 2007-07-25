@@ -1,0 +1,23 @@
+#!../../elfsh/elfsh32
+
+add $list[test] 1
+add $list[test] 2
+add $list[test] 3
+lists test
+
+quiet
+#profile enable warn
+
+foreach $element of test
+  add $element 3
+forend
+
+foreach $elem of test
+  print List contains element : $elem
+forend
+
+print End of script
+
+lists test
+
+quit

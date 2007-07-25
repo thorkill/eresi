@@ -1,4 +1,4 @@
-#!/usr/local/bin/elfsh
+#!../../elfsh/elfsh32
 
 # comment it for enabling trace mode
 quiet
