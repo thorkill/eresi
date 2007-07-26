@@ -1,7 +1,7 @@
 /*
 ** kcore.c for libkernsh
 **
-** $Id: kcore.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: kcore.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #define _LARGEFILE64_SOURCE
@@ -10,15 +10,28 @@
 int kernsh_openmem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNSH__  
   printf("OPEN KCORE 2.6\n");
-  
-  XOPEN(libkernshworld.fd, "/proc/kcore", libkernshworld.fdmode, 0, -1);
+#endif
+
+  XOPEN(libkernshworld.fd, 
+	LIBKERNSH_STRING_DEVICE_KCORE, 
+	libkernshworld.fdmode, 
+	0, 
+	-1);
 
   if (libkernshworld.mmap)
     {
-      XMMAP(libkernshworld.ptr, 0, libkernshworld.mmap_size, libkernshworld.protmode,
-	    libkernshworld.flagsmode, libkernshworld.fd, 0, -1);
+#if defined(__linux__)
+      XMMAP(libkernshworld.ptr, 
+	    0, libkernshworld.mmap_size, 
+	    libkernshworld.protmode,
+	    libkernshworld.flagsmode, 
+	    libkernshworld.fd, 
+	    0, 
+	    -1);
+#endif
     }
 
   libkernshworld.open = 1;
@@ -30,11 +43,15 @@ int kernsh_closemem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
+#if __DEBUG_KERNSH__
   printf("CLOSE KCORE 2.6\n");
+#endif
 
   if (libkernshworld.mmap)
     {
+#if defined(__linux__)
       XMUNMAP(libkernshworld.ptr, libkernshworld.mmap_size, -1);
+#endif
     }
 
   XCLOSE(libkernshworld.fd, -1);
@@ -50,7 +67,7 @@ int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  printf("READ KCORE 2.6\n");
+  //  printf("READ KCORE 2.6\n");
 
   roffset = offset - libkernshworld.page_offset + 0x1000;
 
@@ -64,7 +81,9 @@ int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
     }
   else
     {
+#if defined(__linux__)
       XLSEEK64(libkernshworld.fd, roffset, SEEK_SET, -1);
+#endif
       XREAD(libkernshworld.fd, buf, size, -1);
     }
 
@@ -77,7 +96,7 @@ int kernsh_writemem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  printf("WRITE KCORE 2.6\n");
+  //  printf("WRITE KCORE 2.6\n");
 
   roffset = offset - libkernshworld.page_offset + 0x1000;
 
@@ -88,12 +107,15 @@ int kernsh_writemem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Memcpy failed !", -1);
 	}
-       
-      XMSYNC(libkernshworld.ptr, 200 * 1024 * 1024, MS_SYNC, -1);
+#if defined(__linux__)       
+      XMSYNC(libkernshworld.ptr, libkernshworld.mmap_size, MS_SYNC, -1);
+#endif
     }
   else
     {
+#if defined (__linux__)
       XLSEEK64(libkernshworld.fd, roffset, SEEK_SET, -1);
+#endif
       XWRITE(libkernshworld.fd, buf, size, -1);
     }
 

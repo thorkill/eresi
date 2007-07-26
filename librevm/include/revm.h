@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 mayhem
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.76 2007-07-25 21:55:06 pouik Exp $
+** $Id: revm.h,v 1.77 2007-07-26 14:33:52 pouik Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -456,7 +456,7 @@ typedef struct		s_cmdhandler
 /* Thats the command line options registering structure */
 typedef struct		s_args
 {
-  char			*param[10];	/* option parameters */
+  char			*param[128];	/* option parameters */
   char			use_regx[2];	/* 1 if the option use a regx */
   regex_t		regx[2];	/* regx */
   revmlist_t		disasm[2];	/* D/X parameters */

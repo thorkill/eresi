@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: kernsh.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -47,7 +47,7 @@ int kernsh_init_i386(char *os, char *release)
       config_add_item(LIBKERNSH_VMCONFIG_DEVICE,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
-		      (char *)"/dev/mem");
+		      (char *) LIBKERNSH_STRING_DEVICE_MEM);
       
       config_add_item(LIBKERNSH_VMCONFIG_MODE,
 		      CONFIG_TYPE_STR,
@@ -62,7 +62,7 @@ int kernsh_init_i386(char *os, char *release)
       config_add_item(LIBKERNSH_VMCONFIG_MMAP_SIZE,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
-		      (void *)(200 * 1024 * 1024));
+		      (void *) LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE);
 
       memset(buffer, '\0', sizeof(buffer));
       snprintf(buffer, sizeof(buffer), "%s-%s", LIBKERNSH_DEFAULT_LINUX_KERNEL, release);
@@ -98,12 +98,12 @@ int kernsh_init_i386(char *os, char *release)
       config_add_item(LIBKERNSH_VMCONFIG_GZIP,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
-		      (char *) "gzip");
+		      (char *) LIBKERNSH_DEFAULT_GZIP);
       
       config_add_item(LIBKERNSH_VMCONFIG_OBJCOPY,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
-		      (char *) "objcopy");
+		      (char *) LIBKERNSH_DEFAULT_OBJCOPY);
 
       config_add_item(LIBKERNSH_VMCONFIG_NB_SYSCALLS,
 		      CONFIG_TYPE_INT,
@@ -137,8 +137,10 @@ int kernsh_init_i386(char *os, char *release)
 		   "Memcpy failed", -1);
     }
 
+#if __DEBUG_KERNSH__
   printf("RELEASE %s\n", libkernshworld.release);
-  
+#endif
+
   kernsh_init_vectors();
   kernsh_register_vectors();
 
@@ -204,12 +206,17 @@ void *kernsh_elfsh_get_raw(void *addr)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
+  printf("kernsh_elfsh_get_raw\n");
+#endif
+
   if (libkernshworld.open && kernsh_is_mem_mode())
     {
+      printf("prout\n");
       sect = (elfshsect_t *)addr;   
       dataptr = libkernshworld.ptr - libkernshworld.kernel_start;
-      sect->parent->rhdr.base = 0;
-      sect->shdr->sh_addr = 0;
+      //sect->parent->rhdr.base = 0;
+      //sect->shdr->sh_addr = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
 
@@ -223,6 +230,10 @@ void *kernsh_revm_get_raw(void *addr)
   void *dataptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNSH__
+  printf("kernsh_revm_get_raw\n");
+#endif
 
   if (libkernshworld.open && kernsh_is_mem_mode())
     {    
@@ -271,18 +282,22 @@ int kernsh_info_linux()
   libkernshworld.idt_base = idtr.base;
   libkernshworld.idt_limit = idtr.limit;
 
+#if __DEBUG_KERNSH__
   printf("IDTR BASE 0x%lx LIMIT 0x%x\n", idtr.base,idtr.limit);
-      
+#endif
+
   kernsh_readmem(idtr.base+(2*sizeof(unsigned long))*0x80, 
 		 &idt, 
 		 sizeof(idt));
   system_call = (idt.off2 << 16) | idt.off1;
-  
+
+#if __DEBUG_KERNSH__
   printf("idt80: flags = %d flags=%X sel=%X off1=%x off2=%X\n",
 	 idt.flags,(unsigned)idt.flags,(unsigned)idt.sel,(unsigned)idt.off1, 
 	 (unsigned)idt.off2);
   printf("SYSTEM_CALL : 0x%lx\n", system_call);
-  
+#endif
+
   kernsh_readmem(system_call, buffer, 255);
   p = (char *)kernsh_find_pattern(buffer,255,"\xff\x14\x85",3);
       
@@ -293,8 +308,11 @@ int kernsh_info_linux()
     }
   
   libkernshworld.sct = *(unsigned long *)(p + 3);
+
+#if __DEBUG_KERNSH__
   printf("Sys Call Table 0x%lx\n", libkernshworld.sct);
-    
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

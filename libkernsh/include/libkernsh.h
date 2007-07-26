@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: libkernsh.h,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -56,6 +56,8 @@ enum
     LIBKERNSH_STATIC_MODE,
   } libkernsh_e_debug_type;
 
+#define	__DEBUG_KERNSH__			1
+
 #define LIBKERNSH_VMCONFIG_NOSTATIC		"libkernsh.nostatic"
 #define LIBKERNSH_VMCONFIG_DEVICE		"libkernsh.device"
 #define LIBKERNSH_VMCONFIG_MODE			"libkernsh.mode"
@@ -76,9 +78,17 @@ enum
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
 #define LIBKERNSH_DEFAULT_LINUX_KERNELGZ	"vmlinuz.gz"
 #define LIBKERNSH_DEFAULT_LINUX_KERNELELF	"vmlinux"
-#define LIBKERNSH_DEFAULT_STORAGE_PATH		"/tmp/"
 #define LIBKERNSH_DEFAULT_LINUX_NB_SYSCALLS	320
 #define LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL	17
+#define LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE	209715200
+#define LIBKERNSH_DEFAULT_STORAGE_PATH		"/tmp/"
+#define LIBKERNSH_DEFAULT_GZIP			"gzip"
+#define LIBKERNSH_DEFAULT_OBJCOPY		"objcopy"
+
+#define LIBKERNSH_STRING_DEVICE_MEM		"/dev/mem"
+#define LIBKERNSH_STRING_DEVICE_KMEM		"/dev/kmem"
+#define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
+
 
 #define LIBKERNEL_I386_LINUX_START		0xc0000000      
 #define LIBKERNEL_I386_LINUX_END	      	0xc1000000

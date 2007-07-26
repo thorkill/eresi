@@ -422,9 +422,10 @@ echo "SHELL= " $SHELL			>> $CONFIGFILE
 
 if [ "$KERNSH" = "1" ]; then
 	echo "KERNSH = -DKERNSH"               		>> $CONFIGFILE
-	echo "KERNSHLIB32 = -lkernsh32 -L../libkernsh/" >> $CONFIGFILE
-	echo "KERNSHLIB64 = -lkernsh64 -L../libkernsh/" >> $CONFIGFILE
+	echo "KERNSHLIB32 = -L../libkernsh/ -lkernsh32" >> $CONFIGFILE
+	echo "KERNSHLIB64 = -L../libkernsh/ -lkernsh64" >> $CONFIGFILE
 	echo "KERNSHINC = -I../libkernsh/include" 	>> $CONFIGFILE
+	echo "KERNSHINCINC = -I../../libkernsh/include" >> $CONFIGFILE
 fi
 
 #case "$(uname -m)" in

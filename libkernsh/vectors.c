@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: vectors.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -156,7 +156,9 @@ int kernsh_init_vectors()
   aspect_init();
   
   /* Memory ARCH, OS, DEVICE */
+#if __DEBUG_KERNSH__
   printf("INIT MEMORY VECTORS\n");
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
@@ -185,8 +187,10 @@ int kernsh_init_vectors()
 
 
   /* Syscalls ARCH, OS */
+#if __DEBUG_KERNSH__
   printf("INIT SCT VECTORS\n");
-  
+#endif
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
@@ -202,8 +206,10 @@ int kernsh_init_vectors()
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
   /* IDT ARCH, OS */
+#if __DEBUG_KERNSH__
   printf("INIT IDT VECTORS\n");
-  
+#endif
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
@@ -219,8 +225,10 @@ int kernsh_init_vectors()
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
   
   /* Info ARCH, OS */
+#if __DEBUG_KERNSH__
   printf("INIT INFO VECTORS\n");
-  
+#endif
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
@@ -234,8 +242,9 @@ int kernsh_init_vectors()
   aspect_register_vector("info",
 			 kernsh_info_default,
 			 dims, strdims, 2, ASPECT_TYPE_CADDR);
-
+#if __DEBUG_KERNSH__
   printf("INIT KERNEL DECOMP VECTORS\n");
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
@@ -248,8 +257,9 @@ int kernsh_init_vectors()
   aspect_register_vector("decompkernel", 
                          kernsh_decompkernel_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-
+#if __DEBUG_KERNSH__
   printf("INIT KERNEL LOAD VECTORS\n");
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
@@ -265,8 +275,9 @@ int kernsh_init_vectors()
                          kernsh_loadkernel_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);  
 
-
+#if __DEBUG_KERNSH__
   printf("INIT SYMBS VECTORS\n");
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
@@ -286,7 +297,9 @@ int kernsh_init_vectors()
                          kernsh_symbs_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR); 
 
+#if __DEBUG_KERNSH__
   printf("INIT ALLOC CONTIGUOUS VECTORS\n");
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
@@ -424,8 +437,10 @@ int kernsh_register_openmem(u_int archtype, u_int ostype, u_int devicetype,
   dim[1] = ostype;
   dim[2] = devicetype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER OPENMEM\n");
-  
+#endif
+
   aspect_vectors_insert(mem, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -446,8 +461,10 @@ int kernsh_register_closemem(u_int archtype, u_int ostype, u_int devicetype,
   dim[1] = ostype;
   dim[2] = devicetype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER CLOSEMEM\n");
-  
+#endif
+
   aspect_vectors_insert(mem, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -469,8 +486,10 @@ int kernsh_register_readmem(u_int archtype, u_int ostype, u_int devicetype,
   dim[1] = ostype;
   dim[2] = devicetype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER READMEM\n");
-  
+#endif
+
   aspect_vectors_insert(mem, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -492,8 +511,10 @@ int kernsh_register_writemem(u_int archtype, u_int ostype, u_int devicetype,
   dim[1] = ostype;
   dim[2] = devicetype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER WRITEMEM\n");
-  
+#endif
+
   aspect_vectors_insert(mem, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -512,8 +533,10 @@ int kernsh_register_sct(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER SCT\n");
-  
+#endif
+
   aspect_vectors_insert(sct, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -532,8 +555,10 @@ int kernsh_register_idt(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER IDT\n");
-  
+#endif
+
   aspect_vectors_insert(idt, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -552,8 +577,10 @@ int kernsh_register_info(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER INFO\n");
-  
+#endif
+
   aspect_vectors_insert(info, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -572,8 +599,10 @@ int kernsh_register_decompkernel(u_int ostype, void *fct)
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER DECOMP KERNEL\n");
-  
+#endif
+
   aspect_vectors_insert(decomp, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -593,8 +622,10 @@ int kernsh_register_loadkernel(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER LOAD KERNEL\n");
-  
+#endif
+
   aspect_vectors_insert(load, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -613,8 +644,10 @@ int kernsh_register_symbs_abn(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER SYMBS ABN\n");
-  
+#endif
+
   aspect_vectors_insert(abn, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -633,8 +666,10 @@ int kernsh_register_symbs_nba(u_int archtype, u_int ostype, void *fct)
   dim[0] = archtype;
   dim[1] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER SYMBS NBA\n");
-  
+#endif
+
   aspect_vectors_insert(nba, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -653,8 +688,10 @@ int kernsh_register_alloc_contiguous(u_int ostype, void *fct)
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER ALLOC CONTIGUOUS\n");
-  
+#endif
+
   aspect_vectors_insert(alloc, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -673,8 +710,10 @@ int kernsh_register_alloc_noncontiguous(u_int ostype, void *fct)
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER ALLOC NON CONTIGUOUS\n");
-  
+#endif
+
   aspect_vectors_insert(alloc, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -693,8 +732,10 @@ int kernsh_register_free_contiguous(u_int ostype, void *fct)
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER FREE CONTIGUOUS\n");
-  
+#endif
+
   aspect_vectors_insert(alloc, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -713,8 +754,10 @@ int kernsh_register_free_noncontiguous(u_int ostype, void *fct)
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
 
+#if __DEBUG_KERNSH__
   printf("REGISTER FREE NON CONTIGUOUS\n");
-  
+#endif
+
   aspect_vectors_insert(alloc, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -1,7 +1,7 @@
 /*
 ** kernel.c for libkernsh
 **
-** $Id: kernel.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: kernel.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -16,8 +16,10 @@ int kernsh_decompkernel()
   int (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNSH__  
   printf("DECOMP KERNEL\n");
+#endif
 
   decomp = aspect_vector_get("decompkernel");
 
@@ -42,9 +44,15 @@ int kernsh_decompkernel_linux()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("DECOMP KERNEL LINUX\n");
+#endif
         
-  XOPEN(fd, (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNEL), O_RDONLY, 0, -1);
+  XOPEN(fd, 
+	(char *) config_get_data(LIBKERNSH_VMCONFIG_KERNEL), 
+	O_RDONLY, 
+	0, 
+	-1);
 
   if(fstat(fd, &st) == -1)
     {
@@ -101,7 +109,9 @@ int kernsh_loadkernel()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("LOAD KERNEL\n");
+#endif
 
   load = aspect_vector_get("loadkernel");
 
@@ -118,9 +128,17 @@ int kernsh_loadkernel()
 int kernsh_loadkernel_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  /*
   elfshobj_t    *file;
+
   file = elfsh_map_obj("./vmlinux");
+  if(file == NULL)
+    {
+      printf("la !!\n");
+    }
+  */
+
+  revm_file_load("./vmlinux", 0, NULL);
 
   libkernshworld.open_static = 1;
 
@@ -135,7 +153,9 @@ int kernsh_loadkernel_linux_old()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("LOAD KERNEL LINUX\n");
+#endif
 
   memset(bufgz, '\0', sizeof(bufgz));
   snprintf(bufgz, sizeof(bufgz), "%s%s", 
@@ -207,7 +227,6 @@ int kernsh_loadkernel_linux_old()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-// A FINIR
 int kernsh_unloadkernel()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

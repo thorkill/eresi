@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: memory.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -21,7 +21,9 @@ int kernsh_openmem()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("OPENMEM\n");
+#endif
 
   if (libkernshworld.os == LIBKERNSH_OS_LINUX_2_6 || 
       libkernshworld.os == LIBKERNSH_OS_LINUX_2_4)
@@ -44,15 +46,15 @@ int kernsh_openmem()
 	}
       
       //check device and mode
-      if (!strcmp(device, "/dev/kmem"))
+      if (!strcmp(device, LIBKERNSH_STRING_DEVICE_KMEM))
 	{
 	  libkernshworld.device = LIBKERNSH_DEVICE_KMEM;
 	}
-      else if (!strcmp(device, "/dev/mem"))
+      else if (!strcmp(device, LIBKERNSH_STRING_DEVICE_MEM))
 	{
 	  libkernshworld.device = LIBKERNSH_DEVICE_MEM;
 	}
-      else if (!strcmp(device, "/proc/kcore"))
+      else if (!strcmp(device, LIBKERNSH_STRING_DEVICE_KCORE))
 	{
 	  libkernshworld.device = LIBKERNSH_DEVICE_KCORE;
 	}
@@ -80,8 +82,10 @@ int kernsh_openmem()
       
       libkernshworld.mmap = mmap;
       libkernshworld.mmap_size = mmap_size;
-      
+
+#if  __DEBUG_KERNSH__     
       printf("SYSTEM %s\n", (char *) config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP));
+#endif
 
     }
   else if (libkernshworld.os == LIBKERNSH_OS_NETBSD)

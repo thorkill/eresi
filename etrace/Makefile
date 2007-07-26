@@ -40,8 +40,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libasm/ -lasm -L../libui/ -lui32 -g3		  \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
-			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
-			$(LIBKERNSH32)						  \
+			-lallocproxy $(LDMJOLLNIR) $(KERNSHLIB32) $(DLOPT)  	  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
@@ -51,14 +50,14 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
-			$(LIBKERNSH64)						  \
+			$(KERNSHLIB64)						  \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
 			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)
+			$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)
 
 all64			: $(OBJ64)
 			@$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) $(STATOPT)

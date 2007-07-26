@@ -1,7 +1,7 @@
 /*
 ** symbs.c for libkernsh
 **
-** $Id: symbs.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: symbs.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -86,7 +86,8 @@ unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_
 	   x < libkernshworld.kernel_end - libkernshworld.kernel_start; 
 	   x++, i++)
 	{
-	  
+
+#if __DEBUG_KERNSH__  
 	  if (i % 500000 == 0)
 	    write (1, "?", 1);
 	  else if (i == 4000001)
@@ -94,6 +95,7 @@ unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_
 	      write (1, "\b\b\b\b\b\b\b\b        \b\b\b\b\b\b\b\b", 24);
 	      i = 0;
 	    }
+#endif
 	  if(memcmp ((unsigned char *) (libkernshworld.ptr + x), srch, size) == 0)
 	    {
 	      kstrtab = libkernshworld.kernel_start + x + 1;
@@ -102,15 +104,18 @@ unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_
 	}
       j++;
       srch[0] = tab[j];
+
+#if __DEBUG_KERNSH__
       printf("kstrtab = 0x%.8lx\n", (unsigned long)kstrtab);
-          
+#endif
+
       if(kstrtab != 0)
 	{
 	  for (x = 0, i = 0; 
 	       x < libkernshworld.kernel_end - libkernshworld.kernel_start; 
 	       x++, i++)
 	    {
-	    
+#if __DEBUG_KERNSH__	    
 	      if (i % 500000 == 0)
 		write (1, "?", 1);
 	      else if(i == 4000001)
@@ -118,6 +123,7 @@ unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_
 		  write (1, "\b\b\b\b\b\b\b\b        \b\b\b\b\b\b\b\b", 24);
 		  i = 0;
 		}
+#endif
 	      if (*(unsigned long *) (libkernshworld.ptr + x) == kstrtab)
 		{
 		  *addr = *(unsigned long *) (libkernshworld.ptr + x - sizeof(unsigned long));
