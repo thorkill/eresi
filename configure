@@ -557,6 +557,9 @@ echo "	@cd kernsh && \$(MAKE) \$(BUILD_TARGET)         "       >> Makefile
 echo "	@echo 'Kernsh has been built successfully.'     "       >> Makefile
 fi
 
+if [ ! -e ~/.eresirc ]; then
+echo "	@cp doc/eresirc.example ~/.eresirc "                    >> Makefile
+fi
 
 echo ".PHONY: modules "						>> Makefile
 echo "modules: "						>> Makefile
@@ -609,7 +612,7 @@ echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile
 echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile
 echo "	@cp elibc/libcelfsh*.a \$(LIBPATH) "			>> Makefile
-echo "	@cp doc/eresirc.example ~/.eresirc "			>> Makefile
+
 if [ "$KERNSH" = "1" ]; then
 echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
 echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "                      >> Makefile

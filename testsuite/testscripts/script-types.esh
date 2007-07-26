@@ -39,10 +39,10 @@ set 107.archaddr[elfsh_arch_type].types[1] 0x42424242
 set 107.archaddr[elfsh_arch_type].types[2] 0x43434343
 set 107.archaddr[elfsh_arch_type].types[3] 0x44444444
 
-get 107.archaddr[elfsh_arch_type].types[0]
-get 107.archaddr[elfsh_arch_type].types[1]
-get 107.archaddr[elfsh_arch_type].types[2]
-get 107.archaddr[elfsh_arch_type].types[3]
+print 107.archaddr[elfsh_arch_type].types[0]
+print 107.archaddr[elfsh_arch_type].types[1]
+print 107.archaddr[elfsh_arch_type].types[2]
+print 107.archaddr[elfsh_arch_type].types[3]
 
 quit
 
