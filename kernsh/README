@@ -1,9 +1,12 @@
-			]=------ kernsh : support@kernsh.org ------=[
+			]=------ kernsh ------=[
 
 
-Kernsh uses Libkernsh which is a library to play with kernel image in real time or on disk.
+Kernsh uses Libkernsh which is a library to play with kernel image in real 
+time or on disk.
+
 You can obtain all information necessary about kernel(syscalls, idt, gdt, 
 symbols, ...), insert module inside the memory. hijack functions, etc
+
 You can profite of eresi's language to define you own structure and 
 communicate with the kernel.
 
@@ -18,7 +21,26 @@ Features :
 
 Depends : libasm, librevm, libaspect, libmjollnir, libelfsh
 
-Portability :
+
+By default, Libkernsh do the following action :
+	- If libkernsh.without_kernel is set to 0
+		- If libkernsh.use_kernel is set to 1 :
+			- Open libkernsh.storagepath + libkernsh.kernelelf
+
+		- Else :
+			- Open libkernsh.storagepath + libkernsh.kernel
+			- Extract/Gunzip it
+			- Open the final kernel
+
+	- Open memory device in libkernsh.device with mode libkernsh.mode and mmap it if 
+	  libkernsh.mmap is set to 1 (with a size of libkernsh.mmap_size)
+
+	- Have fun !
+
+You can define all the libkernsh.*, see section Options below.
+
+
+[+] Portability :
 
  -------------------------------------------------------------------------
 |   \  ARCH   |  IA32  |  SPARC  | SPARC64 |  MIPS  |  ALPHA  |
@@ -38,7 +60,7 @@ Portability :
  -------------------------------------------------------------------------
 
 
-Details :
+[+] Details :
 
  -------------------------------------------------------------------------
 |   \  FEAT   | MEMORY | KERNEL  |  SYMBS  |        |
@@ -62,66 +84,71 @@ Details :
 |  LINUX 2.6  |  DONE  |         |         |        |
 |    IA32     |        |         |         |        |
  -------------------------------------------------------------------------
-|  LINUX 2.6  |  DONE  |         |         |        |
+|  LINUX 2.6  |        |         |         |        |
 |    SPARC    |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|  LINUX 2.6  |  DONE  |         |         |        |
+|  LINUX 2.6  |        |         |         |        |
 |   SPARC64   |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|  LINUX 2.6  |  DONE  |         |         |        |
+|  LINUX 2.6  |        |         |         |        |
 |    MIPS     |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|  LINUX 2.6  |  DONE  |         |         |        |
+|  LINUX 2.6  |        |         |         |        |
 |    ALPHA    |   UT   |         |         |        |
  ------------------------------------------------------------------------
 |   NETBSD    |  DONE  |         |         |        |
 |    IA32     |        |         |         |        |
  -------------------------------------------------------------------------
-|   NETBSD    |  DONE  |         |         |        |
+|   NETBSD    |        |         |         |        |
 |    SPARC    |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|   NETBSD    |  DONE  |         |         |        |
+|   NETBSD    |        |         |         |        |
 |   SPARC64   |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|   NETBSD    |  DONE  |         |         |        |
+|   NETBSD    |        |         |         |        |
 |    MIPS     |   UT   |         |         |        |
  ------------------------------------------------------------------------
-|   NETBSD    |  DONE  |         |         |        |
+|   NETBSD    |        |         |         |        |
 |    ALPHA    |   UT   |         |         |        |
  ------------------------------------------------------------------------
 
 
-[ legends :
+[ 
+ legends :
 	- WIP		: 	Work In Progress
 	- UT 		: 	Untested
 ]
 
-Memory :
- 	- device 	:	 /dev/mem
-	- mode   	: 	mmap-write
 
-Command : 
+[+] Commands : 
 	- openmem :
+		func 	:	open memory and by default gzip kernel	
 		args 	:	no
 		return 	:	int
-		func 	:	open memory and by default static kernel
+		option  :
 
 	- closemem :
+		func	:	close memory
 		args 	:	no
 		return	:	int
-		func	:	close memory
 
 	- mode :
+		func	:	with no args display the mode
 		args	:	yes (not obligatory), "static" and "dynamic"
 		return  :	int
-		func	:	with no args display the mode
 
 	- sct :
-
+		func :
+		args :
+		return :
 
 	- idt :
+		func :		
+		args :
+		return :
 
 	- mem :
+		func :
 		args : alloc, free, alloc_nc, free_nc
 			alloc : alloc contiguous memory
 				args : size
@@ -132,44 +159,101 @@ Command :
 			free_nc : free non contiguous memory
 				args : addr to free
 
+		return :
 
-Configure :
- [legends : (D) => default,	(L) => specific to Linux]
+[+] Options :
 
-	- libkernsh.device :
+An option can be set directly in the shell or in the .kernshrc :
+	configure libkernsh.option VALUE
+
+[
+ legends : (D) => default, (L) => specific to Linux, (N) => specific to Netbsd,
+           (F) => specific to Freebsd 
+	   [S*] => any string value
+	   [I*] => any integer value 
+]
+	
+	- libkernsh.device : The memory device which will be opened
 		- /dev/mem (D)
 		- /dev/kmem (L)
 		- /proc/kcore (L)
 
-	- libkernsh.mode :
+	- libkernsh.mode : The mode to open the memory
 		- read
 		- write (D)
 	
-	- libkernsh.mmap :
+	- libkernsh.mmap : Mmap the memory (Must be USED to have all features)
 		- 0
 		- 1 (D)
 
-	- libkernsh.mmap_size :
+	- libkernsh.mmap_size : Mmap's size of the memory
 		- 200 * 1024 * 1024 (D)
-		- X
+		- [I*]
 	
-	- libkernsh.systemmap : (L)
-		- /boot/System.map-`uname -r`
+	- libkernsh.systemmap : (L) Path of the system map
+		- /boot/System.map-`uname -r` (D)
+		- [S*]
 
-	- libkernsh.kernel :
+	- libkernsh.kernel : Path of the gzip kernel
+		- /boot/vmlinuz (D) (L)
+		- [S*]
 
-	- libkernsh.gzipcmd :
+	- libkernsh.gzipcmd : Which is the gzid command
+		- gzip (D)
+		- [S*]
 
-	- libkernsh.objcopycmd :
+	- libkernsh.objcopycmd : Which is  the objcopy command
+		- objcopy
+		- [S*]
 
-	- libkernsh.kernelgz :
+	- libkernsh.kernelgz : The name to save the extract gzip kernel
+		- vmlinuz.gz (D) (L)
+		- [S*]		
 
-	- libkernsh.kernelelf :
+	- libkernsh.kernelelf : The name of the extract/gunzip kernel
+		- vmlinux (D) (L)
+		- [S*]
 
-	- libkernsh.storagepath :
+	- libkernsh.storagepath : A path to store kernel and to open debug kernel
+		- /tmp/ (D)
+		- [S*]
 
-	- libkernsh.nbsyscalls :
+	- libkernsh.nbsyscalls : The number of syscalls
 		- 320 (D) (L)
+		- [I*]
 
-	- libkernsh.nilsyscalls :
-		- 17 (D) (L)	
+	- libkernsh.nilsyscalls : A position inside the syscall table of a free syscall
+		- 17 (D) (L)
+		- [I*]	
+
+	- libkernsh.use_kernel : use the full debug kernel(not the gzip kernel)
+		- 0 (D)
+		- 1
+
+	- libkernsh.without_kernel : not use the kernel, only memory
+		- 0 (D)
+		- 1
+
+[+] Authors 
+
+Original version (0.1 => 0.2c) started in 2001 : sauron, zorgon, kstat
+
+The project has been transfered to pouik in 2007.
+
+[+] Contacts
+
+Information about kernsh : support at kernsh.org
+
+author's mail : pouik at kernsh.org
+
+[+] Bugs
+
+Please use http://bts.eresi-project.org/
+
+[+] Url
+
+eresi : http://www.eresi-project.org
+
+kernsh : http://www.kernsh.org
+
+blog : http://blog.kernsh.org

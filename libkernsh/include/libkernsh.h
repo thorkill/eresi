@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: libkernsh.h,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -19,12 +19,25 @@
 #endif
 
 #if defined(__linux__)
-#define SYSCALL0(num) asm volatile ( "\n\tint $0x80" : "=a"(__ret) : "0"(num) );
-#define SYSCALL1(num,arg0) asm volatile ( "\n\tint $0x80": "=a"(__ret) : "0"(num), "b" (arg0) );
-#define SYSCALL2(num,arg0,arg1) asm volatile ( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1) );
-#define SYSCALL3(num,arg0,arg1,arg2) asm volatile ( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2) );
-#define SYSCALL4(num,arg0,arg1,arg2,arg3) asm volatile ( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2),"S"(arg3) );
-#define SYSCALL5(num,arg0,arg1,arg2,arg3,arg4) asm volatile ( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2),"S"(arg3),"D"(arg4) );
+
+#define SYSCALL0(num) asm volatile \
+( "\n\tint $0x80" : "=a"(__ret) : "0"(num) );
+
+#define SYSCALL1(num,arg0) asm volatile \
+( "\n\tint $0x80": "=a"(__ret) : "0"(num), "b" (arg0) );
+
+#define SYSCALL2(num,arg0,arg1) asm volatile \
+( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1) );
+
+#define SYSCALL3(num,arg0,arg1,arg2) asm volatile \
+( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2) );
+
+#define SYSCALL4(num,arg0,arg1,arg2,arg3) asm volatile \
+( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2),"S"(arg3) );
+
+#define SYSCALL5(num,arg0,arg1,arg2,arg3,arg4) asm volatile \
+( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2),"S"(arg3),"D"(arg4) );
+
 #endif
 
 enum
@@ -56,9 +69,9 @@ enum
     LIBKERNSH_STATIC_MODE,
   } libkernsh_e_debug_type;
 
-#define	__DEBUG_KERNSH__			1
+#define	__DEBUG_KERNSH__			0
 
-#define LIBKERNSH_VMCONFIG_NOSTATIC		"libkernsh.nostatic"
+#define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
 #define LIBKERNSH_VMCONFIG_DEVICE		"libkernsh.device"
 #define LIBKERNSH_VMCONFIG_MODE			"libkernsh.mode"
 #define LIBKERNSH_VMCONFIG_SYSTEMMAP		"libkernsh.systemmap"
@@ -69,7 +82,7 @@ enum
 #define LIBKERNSH_VMCONFIG_OBJCOPY		"libkernsh.objcopycmd"
 #define LIBKERNSH_VMCONFIG_KERNELGZ		"libkernsh.kernelgz"
 #define LIBKERNSH_VMCONFIG_KERNELELF		"libkernsh.kernelelf"
-
+#define LIBKERNSH_VMCONFIG_USE_KERNEL		"libkernsh.use_kernel"
 #define LIBKERNSH_VMCONFIG_STORAGE_PATH		"libkernsh.storagepath"
 #define LIBKERNSH_VMCONFIG_NB_SYSCALLS		"libkernsh.nbsyscalls"
 #define LIBKERNSH_VMCONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
@@ -155,6 +168,7 @@ typedef struct s_libkernshint
   char name[64];
 } libkernshint_t;
 
+/* World kernsh struct */
 typedef struct s_libkernshworld
 {
 
@@ -188,10 +202,14 @@ typedef struct s_libkernshworld
 
   int mem;
 
+  int physical;
+
   unsigned long idt_base;
   int idt_limit;
 
   unsigned long sct;
+
+  elfshobj_t *root;
 
 } libkernshworld_t;
 
@@ -200,8 +218,12 @@ extern libkernshworld_t     libkernshworld;
 /* Init lib */
 int kernsh_init_i386(char *, char *);
 int kernsh_del_i386();
+
+/* Get raw */
 void *kernsh_elfsh_get_raw(void *);
 void *kernsh_revm_get_raw(void *);
+
+/* Information about kernel */
 int kernsh_info();
 int kernsh_info_linux();
 int kernsh_info_netbsd();
@@ -212,7 +234,6 @@ int kernsh_is_mem_mode();
 int kernsh_set_mem_mode();
 int kernsh_is_static_mode();
 int kernsh_set_static_mode();
-int kernsh_is_nostatic_mode();
 
 /* Init vectors */
 int kernsh_init_vectors();
@@ -259,18 +280,18 @@ int kernsh_writemem_kcore_linux_2_6(unsigned long, void *, int);
 int kernsh_writemem_netbsd(unsigned long, void *, int);
 
 /* Syscalls table */
-int kernsh_sct();
-int kernsh_sct_linux();
-int kernsh_sct_netbsd();
-int kernsh_sct_freebsd();
+int kernsh_sct(list_t *);
+int kernsh_sct_linux(list_t *);
+int kernsh_sct_netbsd(list_t *);
+int kernsh_sct_freebsd(list_t *);
 
 int kernsh_syscall(int, int, unsigned int []);
 
 /* IDT */
-int kernsh_idt();
-int kernsh_idt_linux();
-int kernsh_idt_netbsd();
-int kernsh_idt_freebsd();
+int kernsh_idt(list_t *);
+int kernsh_idt_linux(list_t *);
+int kernsh_idt_netbsd(list_t *);
+int kernsh_idt_freebsd(list_t *);
 
 
 /* Symbols */
@@ -280,7 +301,7 @@ int kernsh_get_name_by_addr(unsigned long, char *, size_t);
 int kernsh_get_addr_by_name_linux_2_6(char *, unsigned long *, size_t);
 int kernsh_get_name_by_addr_linux_2_6(unsigned long, char *, size_t);
 
-unsigned long kernsh_walk_kstrtab(const char *, unsigned long *addr, size_t);
+int kernsh_walk_kstrtab(const char *, unsigned long *addr, size_t);
 
 /* Tasks */
 
@@ -304,7 +325,7 @@ int kernsh_free_noncontiguous_linux(unsigned long);
 int kernsh_decompkernel();
 int kernsh_decompkernel_linux();
 
-/* Kernel Loader */
+/* Kernel Un/Loader */
 int kernsh_loadkernel();
 int kernsh_loadkernel_linux();
 

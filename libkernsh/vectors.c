@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: vectors.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -14,7 +14,9 @@ int kernsh_openmem_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("OPENMEM DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -23,7 +25,9 @@ int kernsh_closemem_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("CLOSEMEM DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -32,7 +36,9 @@ int kernsh_readmem_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("READMEM DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -41,7 +47,9 @@ int kernsh_writemem_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("WRITEMEM DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -50,7 +58,9 @@ int kernsh_sct_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("SCT DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -59,7 +69,9 @@ int kernsh_idt_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("IDT DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -68,7 +80,9 @@ int kernsh_info_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("INFO DEFAULT!!!\n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -77,8 +91,10 @@ int kernsh_decompkernel_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("DECOMPKERNEL DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -86,8 +102,10 @@ int kernsh_loadkernel_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("LOADKERNEL DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -95,53 +113,65 @@ int kernsh_autovariables_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNEL__
   printf("AUTOVARIABLES DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_symbs_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNEL__
   printf("SYMBS DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_alloc_contiguous_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNEL__
   printf("ALLOC CONTIGUOUS DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_alloc_noncontiguous_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNEL__
   printf("ALLOC NON CONTIGUOUS DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_free_contiguous_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNEL__
   printf("FREE CONTIGUOUS DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_free_noncontiguous_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
+#if __DEBUG_KERNEL__
   printf("FREE NON CONTIGUOUS DEFAULT!!!\n");
-  
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

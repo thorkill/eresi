@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: kernsh.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -10,6 +10,7 @@
 
 libkernshworld_t libkernshworld;
 
+/* Init kernsh for i386 */
 int kernsh_init_i386(char *os, char *release)
 {
   char buffer[256];
@@ -23,11 +24,17 @@ int kernsh_init_i386(char *os, char *release)
   /* By default we use static kernel */
   kernsh_set_static_mode();
   
-  config_add_item(LIBKERNSH_VMCONFIG_NOSTATIC,
+  config_add_item(LIBKERNSH_VMCONFIG_WITHOUT_KERNEL,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 0);
+
+  config_add_item(LIBKERNSH_VMCONFIG_USE_KERNEL,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
   
+  /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {
       if (!strncmp(release, "2.6", 3))
@@ -81,7 +88,7 @@ int kernsh_init_i386(char *os, char *release)
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_KERNELELF);
-      
+
       config_add_item(LIBKERNSH_VMCONFIG_STORAGE_PATH,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
@@ -126,10 +133,12 @@ int kernsh_init_i386(char *os, char *release)
 		   "Os not supported", -1);
     }
   
-
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, libkernshworld.release, 
-	 strlen(release) + 1, -1);
+  XALLOC(__FILE__, 
+	 __FUNCTION__,
+	 __LINE__, 
+	 libkernshworld.release, 
+	 strlen(release) + 1, 
+	 -1);
   
   if (memcpy(libkernshworld.release, release, strlen(release)) == NULL)
     {
@@ -191,18 +200,11 @@ int kernsh_set_static_mode()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_is_nostatic_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		((int) config_get_data(LIBKERNSH_VMCONFIG_NOSTATIC)));
-}
-
+/* This function is called in elfsh_get_raw to interact with the memory */
 void *kernsh_elfsh_get_raw(void *addr)
 {
   void *dataptr;
-  elfshsect_t *sect;
+  //  elfshsect_t *sect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -210,11 +212,16 @@ void *kernsh_elfsh_get_raw(void *addr)
   printf("kernsh_elfsh_get_raw\n");
 #endif
 
-  if (libkernshworld.open && kernsh_is_mem_mode())
+  if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
     {
-      printf("prout\n");
-      sect = (elfshsect_t *)addr;   
-      dataptr = libkernshworld.ptr - libkernshworld.kernel_start;
+      //sect = (elfshsect_t *)addr;   
+      
+      /* We use physical memory ? */
+      if (libkernshworld.physical)
+	dataptr = libkernshworld.ptr - libkernshworld.kernel_start;
+      else
+	dataptr = libkernshworld.ptr;
+      
       //sect->parent->rhdr.base = 0;
       //sect->shdr->sh_addr = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
@@ -223,10 +230,9 @@ void *kernsh_elfsh_get_raw(void *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
+/* This function is called in elfsh_get_raw to interact with the memory */
 void *kernsh_revm_get_raw(void *addr)
 {
-  //elfshsect_t	*sect;
-  //elfsh_SAddr	offset;
   void *dataptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -235,18 +241,20 @@ void *kernsh_revm_get_raw(void *addr)
   printf("kernsh_revm_get_raw\n");
 #endif
 
-  if (libkernshworld.open && kernsh_is_mem_mode())
-    {    
-      //sect = elfsh_get_parent_section(world.curjob->current,
-      //			      (elfsh_Addr) addr, &offset);
-      
-      dataptr = libkernshworld.ptr + ((elfsh_Addr) addr - libkernshworld.kernel_start);
-      
+  if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
+    {
+      /* We use physical memory ? */
+      if (libkernshworld.physical)
+	dataptr = libkernshworld.ptr + ((elfsh_Addr) addr - libkernshworld.kernel_start);
+      else
+	dataptr = libkernshworld.ptr + (elfsh_Addr) addr;
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
+/* Get some information about the kernel */
 int kernsh_info()
 {
   int ret;

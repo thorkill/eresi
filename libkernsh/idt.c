@@ -1,12 +1,13 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: idt.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: idt.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
-int kernsh_idt()
+/* Put idt inside the list lidt */
+int kernsh_idt(list_t *lidt)
 {
   int ret;
   u_int         dim[3];
@@ -15,6 +16,11 @@ int kernsh_idt()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if(lidt == NULL)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "List is NULL !", -1);
+    }
   
   idt = aspect_vector_get("idt");
   dim[0] = libkernshworld.type;
@@ -22,25 +28,28 @@ int kernsh_idt()
 
   fct = aspect_vectors_select(idt, dim);
 
-  ret = fct();
+  ret = fct(lidt);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
-int kernsh_idt_linux()
+int kernsh_idt_linux(list_t *lidt)
 {
   int i;
-  char buff[512];
-  libkernshint_t dint;
+  char *key;
+  libkernshint_t *dint;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("IDT LINUX\n");
+#endif
 
   if (kernsh_is_static_mode())
     {
-      //elfsh_reverse_metasym_by_name
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unable to get idt in static mode !", -1);
     }
   else 
     {
@@ -50,38 +59,57 @@ int kernsh_idt_linux()
 		       "Memory not open !", -1);
 	}
 
-      /*
-      memset(buff, '\0', sizeof(buff));
-      snprintf(buff, sizeof(buff), 
-	       "%s\n\n",
-	       revm_colorfieldstr("[+] IDT"));
-      revm_output(buff);
-      */
-
-      for (i = 0;
-	   i < (libkernshworld.idt_limit + 1) / (sizeof(unsigned long) * 2); 
-	   i++)
+      for (i = (libkernshworld.idt_limit + 1) / (sizeof(unsigned long) * 2) - 1;
+	   i >= 0;
+	   i--)
 	{
-	  memset(&dint, '\0', sizeof(dint));
 	  kernsh_readmem(libkernshworld.idt_base+sizeof(unsigned long)*2*i,
 			 &idt,
 			 sizeof(idt));
 
-	  dint.addr = (unsigned long)(idt.off2 << 16) + idt.off1;
-	  kernsh_resolve_systemmap(dint.addr, dint.name, sizeof(dint.name));
-	  /*
-          memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff),
-		   "%s %-40s %s %s\n",
-		   revm_colornumber("id:%-10u", (unsigned int)i),
-		   revm_colortypestr_fmt("%s", dint.name),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) dint.addr));
-	  revm_output(buff);
-	  revm_endline();
-	  */
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 dint,
+		 sizeof(libkernshint_t), 
+		 -1);
+
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 key,
+		 BUFSIZ, 
+		 -1);
+
+	  memset(dint, '\0', sizeof(libkernshint_t)); 
+	  memset(key, '\0', BUFSIZ);
+	  snprintf(key,
+		   BUFSIZ,
+		   "%d",
+		   i);
+
+	  dint->addr = (unsigned long)(idt.off2 << 16) + idt.off1;
+	  kernsh_resolve_systemmap(dint->addr, 
+				   dint->name, 
+				   sizeof(dint->name));
+	  
+	  list_add(lidt, key, (void *) dint);
 	}
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 
+int kernsh_idt_netbsd(list_t *lidt)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_idt_freebsd(list_t *lidt)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

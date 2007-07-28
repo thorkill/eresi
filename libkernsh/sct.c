@@ -1,12 +1,13 @@
 /*
 ** sct.c for libkernsh
 **
-** $Id: sct.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: sct.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
-int kernsh_sct()
+/* Put sct inside the list lsct */
+int kernsh_sct(list_t *lsct)
 {
   int ret;
   u_int         dim[3];
@@ -15,6 +16,11 @@ int kernsh_sct()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if(lsct == NULL)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "List is NULL !", -1);
+    }
   
   sct = aspect_vector_get("sct");
   dim[0] = libkernshworld.type;
@@ -22,65 +28,129 @@ int kernsh_sct()
 
   fct = aspect_vectors_select(sct, dim);
 
-  ret = fct();
+  ret = fct(lsct);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
-int kernsh_sct_linux()
+int kernsh_sct_linux(list_t *lsct)
 {
   int i;
-  char buff[512];
-
-  libkernshsyscall_t syscall;
+  char *key;
+  libkernshsyscall_t *syscall;
+  elfsh_SAddr   offset;
+  unsigned long start;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_KERNSH__
   printf("SCT LINUX\n");
+#endif
+
 
   if (kernsh_is_static_mode())
     {
-      //elfsh_reverse_metasym_by_name
+      offset = 0;
+      for (i = (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS) - 1;
+	   i >= 0;
+	   i--)
+	{
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 syscall,
+		 sizeof(libkernshsyscall_t), 
+		 -1);
+	  
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 key,
+		 BUFSIZ, 
+		 -1);
+	  
+	  memset(syscall, '\0', sizeof(libkernshsyscall_t)); 
+	  memset(key, '\0', BUFSIZ);
+	  snprintf(key,
+		   BUFSIZ,
+		   "%d",
+		   i);
+
+	  start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
+					       libkernshworld.sct + sizeof(unsigned long)*i);
+
+	  elfsh_raw_read(libkernshworld.root,
+			 start,
+			 &syscall->addr,
+			 sizeof(unsigned long));
+
+	  memcpy(syscall->name, 
+		 elfsh_reverse_symbol(libkernshworld.root, 
+				      (elfsh_Addr) syscall->addr, 
+				      &offset),
+		 sizeof(syscall->name));
+
+	  list_add(lsct, key, (void *) syscall);
+	}
     }
-  else 
-    {
+  else {
       if (!libkernshworld.open)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Memory not open !", -1);
 	}
 
-      /*
-      memset(buff, '\0', sizeof(buff));
-      snprintf(buff, sizeof(buff), 
-	       "%s\n\n",
-	       revm_colorfieldstr("[+] SYS_CALL_TABLE"));
-      revm_output(buff);
-      */
-
-      for (i = 0; 
-	   i < (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS); 
-	   i++)
+      for (i = (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS) - 1;
+	   i >= 0;
+	   i--)
 	{
-	  memset(&syscall, '\0', sizeof(syscall));
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 syscall,
+		 sizeof(libkernshsyscall_t), 
+		 -1);
+
+	  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 key,
+		 BUFSIZ, 
+		 -1);
+
+	  memset(syscall, '\0', sizeof(libkernshsyscall_t)); 
+	  memset(key, '\0', BUFSIZ);
+	  snprintf(key,
+		   BUFSIZ,
+		   "%d",
+		   i);
+
 	  kernsh_readmem(libkernshworld.sct + sizeof(unsigned long) * i, 
-			 &syscall.addr, 
+			 &syscall->addr, 
 			 sizeof(unsigned long));
 	  
-	  kernsh_resolve_systemmap(syscall.addr, syscall.name, sizeof(syscall.name));
-	  /* memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff),
-		   "%s %-40s %s %s\n", 
-		   revm_colornumber("id:%-10u", (unsigned int)i),
-		   revm_colortypestr_fmt("%s", syscall.name),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) syscall.addr));
-	  revm_output(buff);
-	  revm_endline();*/
+	  kernsh_resolve_systemmap(syscall->addr, 
+				   syscall->name, 
+				   sizeof(syscall->name));
+
+	  list_add(lsct, key, (void *) syscall);
 	}
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+}
+
+int kernsh_sct_netbsd(list_t *lsct)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_sct_freebsd(list_t *lsct)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_syscall(int num, int argc, unsigned int argv[])

@@ -1,11 +1,12 @@
 /*
 ** misc.c for libkernsh
 **
-** $Id: misc.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: misc.c,v 1.2 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
+/* This function find a needle inside a haystack */
 void *kernsh_find_pattern(const void *haystack, int haystack_len,
 			  const void *needle, int needle_len)
 {
@@ -29,6 +30,7 @@ void *kernsh_find_pattern(const void *haystack, int haystack_len,
   return NULL;
 }
 
+/* Resolve name with addr */
 int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
 {
   FILE *input;
@@ -75,6 +77,7 @@ int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot get name", -1);
 }
 
+/* Resolve add with name */
 int kernsh_rresolve_systemmap(const char *name, unsigned long *addr, size_t size)
 {
   FILE *input;

@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: main.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -100,6 +100,7 @@ void		kernsh_banner_print()
 /* The real main function */
 int		kernsh_main(int ac, char **av)
 {
+  int ret;
   /* Interface tweak */
   kernsh_setup_quit_msg();
   kernsh_setup_prompt();
@@ -113,7 +114,8 @@ int		kernsh_main(int ac, char **av)
   setup_local_cmdhash();
   
   if (strstr(ARCH, "i"))
-    kernsh_init_i386(OS, RELEASE);
+    ret = kernsh_init_i386(OS, RELEASE);
+  /* Other arch ?? */
   
   kernsh_config();
   return (revm_run(ac, av));

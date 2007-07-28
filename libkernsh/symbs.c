@@ -1,11 +1,12 @@
 /*
 ** symbs.c for libkernsh
 **
-** $Id: symbs.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: symbs.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
+/* Get an addr by name */
 int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 {
   int ret;
@@ -34,6 +35,7 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Get name by addr */
 int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
 {
   int ret;
@@ -62,8 +64,8 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Based on phalanx rootkit :) */
-unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
+/* This function resolve a symbol with kstrtab methode : based on phalanx rootkit :) */
+int kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
 {
   char srch[512];
   char tab[] = { '\0', '\xff' };
@@ -135,6 +137,7 @@ unsigned long kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_
       j++;
       srch[0] = tab[j];
     }
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to find symbol", -1);
 }

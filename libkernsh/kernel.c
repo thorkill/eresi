@@ -1,13 +1,14 @@
 /*
 ** kernel.c for libkernsh
 **
-** $Id: kernel.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: kernel.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "libkernsh.h"
 #include "libaspect.h"
 #include "libaspect-profiler.h"
 
+/* Extract/Gunzip the kernel */
 int kernsh_decompkernel()
 {
   int ret;
@@ -94,12 +95,16 @@ int kernsh_decompkernel_linux()
 	   (char *) config_get_data(LIBKERNSH_VMCONFIG_GZIP), 
 	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
 	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELGZ));
-  //printf("DECOMP %s\n", decomp);
+
+#if __DEBUG_KERNSH__
+  printf("DECOMP %s\n", decomp);
+#endif
   system(decomp);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Load the kernel */
 int kernsh_loadkernel()
 {
   int ret;
@@ -128,18 +133,7 @@ int kernsh_loadkernel()
 int kernsh_loadkernel_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  /*
-  elfshobj_t    *file;
-
-  file = elfsh_map_obj("./vmlinux");
-  if(file == NULL)
-    {
-      printf("la !!\n");
-    }
-  */
-
-  revm_file_load("./vmlinux", 0, NULL);
-
+  
   libkernshworld.open_static = 1;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -227,6 +221,7 @@ int kernsh_loadkernel_linux_old()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Unload the kernel */
 int kernsh_unloadkernel()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

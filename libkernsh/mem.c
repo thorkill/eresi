@@ -1,7 +1,7 @@
 /*
 ** mem.c for libkernsh
 **
-** $Id: mem.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: mem.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -31,6 +31,8 @@ int kernsh_openmem_mem_linux_2_6()
 	    libkernshworld.flagsmode, libkernshworld.fd, 0, -1);
 #endif
     }
+
+  libkernshworld.physical = 1;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

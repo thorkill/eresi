@@ -1,9 +1,20 @@
 #!elfsh
 
+quiet
+
+print \x20[*] Load Kernshrc
+
 # My systemmap
 # configure libkernsh.systemmap /boot/System.map-genkernel-x86-2.6.21.5
 
+# Use debug kernel ?
+# configure libkernsh.use_kernel 1
+
+# Do not use any kernel ?
+# configure libkernsh.without_kernel 1
+
 # Make all type
+
 type atomic_t = counter:int 
 #define asm/atomic.h
 

@@ -1,161 +1,63 @@
 /*
-** run.c for kernsh
+** mem.c for kernsh
 ** 
-** $Id: run.c,v 1.1 2007-07-25 19:53:01 pouik Exp $
+** $Id: mem.c,v 1.1 2007-07-28 15:02:23 pouik Exp $
 **
 */
 #include "kernsh.h"
 #include "libkernsh.h"
 
-
-/* Open the memory device */
-int		cmd_openmem()
-{
-  int		ret;
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  /* Check if no static is set */
-  if (!(int) config_get_data(LIBKERNSH_VMCONFIG_NOSTATIC))
-    {
-      // DECOMP THE KERNEL !!
-      // ret = kernsh_decompkernel();
-      // LOAD IT !!!
-      ret = kernsh_loadkernel();
-
-      if (ret)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to load kernel", -1);
-    }
-  else 
-    {
-      kernsh_set_mem_mode();
-    }
-
-  ret = kernsh_openmem();
-
-  if (ret)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Cannot open memory", -1);
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
-  readln_column_update();
-#endif
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* Close the memory device */
-int		cmd_closemem()
-{
-  int		ret;
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  ret = kernsh_unloadkernel();
-    
-  ret = kernsh_closemem();
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
-  readln_column_update();
-#endif
-
-  if (ret)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot close memory", -1);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/*  */
-int		cmd_kmode()
-{
-  char          *param;
-  char		buf[256];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  param = world.curjob->curcmd->param[0];
-
-  if (param)
-    {
-      if (*param == 's' || *param == 'S')
-	{
-	  if (!libkernshworld.open_static)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Static kernel is not loaded !", -1);
-	  
-	  kernsh_set_static_mode();
-	  printf(" [*] kernsh is now in STATIC mode\n\n");
-	}
-      else if (*param == 'd' || *param == 'D')
-	{
-	  if (!libkernshworld.open)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unable to switch to dynamic mode, please open the memory !", -1);
-	  
-	  kernsh_set_mem_mode();
-	  printf(" [*] kernsh is now in DYNAMIC mode\n\n");
-	}
-      
-      else
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unknown mode for kernsh !", -1);
-	}
-    }
-  else
-    {
-      if (kernsh_is_static_mode())
-	param = "STATIC";
-      
-      else if (kernsh_is_mem_mode())
-	param = "DYNAMIC";
-      
-      else
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Unknown kernsh mode", -1);
-      
-      snprintf(buf, sizeof(buf), " [*] kernsh is in %s MODE \n\n", param);
-	  printf("%s", buf);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
-
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
-  readln_column_update();
-#endif
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /* Display the sys_call_table */
 int		cmd_sct()
 {
   int		ret;
-  
+  int		index;
+  listent_t     *actual;
+  list_t	*h;
+  libkernshsyscall_t *sct;
+  char		buff[BUFSIZ];
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
 
-  ret = kernsh_sct();
+  XALLOC(__FILE__, 
+	 __FUNCTION__, 
+	 __LINE__,
+	 h,
+	 sizeof(list_t),
+	 -1);
+
+  list_init(h, "cmd_sct_list", ASPECT_TYPE_UNKNOW);
+
+  ret = kernsh_sct(h);
+
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff), 
+	   "%s\n\n",
+	   revm_colorfieldstr("[+] SYS_CALL_TABLE"));
+  revm_output(buff);
+
+  for (index = 0, actual = h->head; 
+       index < h->elmnbr; 
+       index++, actual = actual->next)
+    {
+      sct = (libkernshsyscall_t *) actual->data;
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "%s %-40s %s %s\n", 
+	       revm_colornumber("id:%-10u", (unsigned int)index),
+	       revm_colortypestr_fmt("%s", sct->name),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) sct->addr));
+      revm_output(buff);
+      revm_endline();
+      
+    }
+  
+  list_destroy(h);
 
 #if defined(USE_READLN)
   rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
@@ -169,18 +71,55 @@ int		cmd_sct()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/*Display the idt */
+/* Display the idt */
 int		cmd_idt()
 {
   int		ret;
-  
+  int		index;
+  listent_t     *actual;
+  list_t	*h;
+  libkernshint_t *dint;
+  char		buff[BUFSIZ];
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
 
-  ret = kernsh_idt();
+  XALLOC(__FILE__, 
+	 __FUNCTION__, 
+	 __LINE__,
+	 h,
+	 sizeof(list_t),
+	 -1);
+
+  list_init(h, "cmd_idt_list", ASPECT_TYPE_UNKNOW);
+
+  ret = kernsh_idt(h);
+        
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff), 
+	   "%s\n\n",
+	   revm_colorfieldstr("[+] IDT"));
+  revm_output(buff);
+  
+  for (index = 0, actual = h->head; 
+       index < h->elmnbr; 
+       index++, actual = actual->next)
+    {
+      dint = (libkernshint_t *) actual->data;
+      snprintf(buff, sizeof(buff),
+	       "%s %-40s %s %s\n",
+	       revm_colornumber("id:%-10u", (unsigned int)index),
+	       revm_colortypestr_fmt("%s", dint->name),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) dint->addr));
+      revm_output(buff);
+      revm_endline();
+    }
+  
+  list_destroy(h);
 
 #if defined(USE_READLN)
   rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);

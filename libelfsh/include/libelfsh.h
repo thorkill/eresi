@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.70 2007-07-25 21:55:06 pouik Exp $
+** $Id: libelfsh.h,v 1.71 2007-07-28 15:02:23 pouik Exp $
 **
 */
 
@@ -49,10 +49,6 @@
 #include <miscfs/procfs/procfs.h>
 #else
 #include <sys/procfs.h>
-#endif
-
-#if defined(KERNSH)
-#include "libkernsh.h"
 #endif
 
 /* Configure the DEBUG modes for various part of the code */
@@ -912,6 +908,10 @@ typedef struct 	s_traces
 extern libworld_t	dbgworld;
 extern hash_t 		traces_table;
 extern hash_t		exclude_table;
+
+#if defined(KERNSH)
+#include "libkernsh.h"
+#endif
 
 /*
  **
