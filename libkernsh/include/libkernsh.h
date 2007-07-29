@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.4 2007-07-28 15:02:23 pouik Exp $
+** $Id: libkernsh.h,v 1.5 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -52,6 +52,7 @@ enum
     LIBKERNSH_OS_LINUX_2_6,
     LIBKERNSH_OS_LINUX_2_4,
     LIBKERNSH_OS_NETBSD,
+    LIBKERNSH_OS_FREEBSD,
     LIBKERNSH_OSNUM
   } libkernsh_e_os_type;
 
@@ -66,7 +67,7 @@ enum
 enum
   {
     LIBKERNSH_MEM_MODE,
-    LIBKERNSH_STATIC_MODE,
+    LIBKERNSH_STATIC_MODE
   } libkernsh_e_debug_type;
 
 #define	__DEBUG_KERNSH__			0
@@ -86,6 +87,9 @@ enum
 #define LIBKERNSH_VMCONFIG_STORAGE_PATH		"libkernsh.storagepath"
 #define LIBKERNSH_VMCONFIG_NB_SYSCALLS		"libkernsh.nbsyscalls"
 #define LIBKERNSH_VMCONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
+#define LIBKERNSH_VMCONFIG_KERNEL_START		"libkernsh.kernel_start"
+#define LIBKERNSH_VMCONFIG_KERNEL_END		"libkernsh.kernel_end"
+#define LIBKERNSH_VMCONFIG_PAGE_OFFSET		"libkernsh.page_offset"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -103,237 +107,238 @@ enum
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
 
 
-#define LIBKERNEL_I386_LINUX_START		0xc0000000      
-#define LIBKERNEL_I386_LINUX_END	      	0xc1000000
+#define LIBKERNSH_I386_LINUX_START		0xc0000000      
+#define LIBKERNSH_I386_LINUX_END	      	0xc1000000
 
-#define LIBPAGE_I386_LINUX_OFFSET		0xc0000000
-#define LIBPAGE_I386_LINUX_MAX			0xffffffff
+#define LIBKERNSH_PAGE_I386_LINUX_OFFSET	0xc0000000
 
-#define LIBKERNEL_AMD64_LINUX_START		0xffffffff80000000
-#define LIBKERNEL_AMD64_LINUX_END		0xffffffff81000000
 
-#define LIBPAGE_AMD64_LINUX_OFFSET		0xffff810000000000
-#define LIBPAGE_AMD64_LINUX_MAX			0xffffffffffffffff
+#define GFP_KERNEL				208
+#define NAMESIZ					64
 
-#define GFP_KERNEL 208
-
-struct {
-  unsigned short limit;
-  unsigned long base;
+/* Idtr segment struct */
+struct 
+{
+	unsigned short limit;
+	unsigned long base;
 } __attribute__((packed)) idtr;
 
-struct {
-  unsigned short off1;
-  unsigned short sel;
-  unsigned char none,flags;
-  unsigned short off2;
+/* Interrupt descriptor */
+struct 
+{
+	unsigned short off1;
+	unsigned short sel;
+	unsigned char none,flags;
+	unsigned short off2;
 } __attribute__ ((packed)) idt;
 
+/* Kmalloc struct */
 typedef struct s_libkernshkma 
 {
-  unsigned long ( *kexec )( size_t, int );
-  int size;
-  int flags;
-  unsigned long mem;
+	unsigned long ( *kexec )( size_t, int );     /* Execution of kmalloc */
+	int size;	/* Size to alloc */
+	int flags;	/* Flags, by default GFP_KERNEL */
+	unsigned long mem; /* The address where the allocation has been done */
 } libkernshkma_t ;
 
+/* Kfree struct */
 typedef struct s_libkernshkfr 
 {
-  unsigned long ( *kexec )( const void * );
-  const void * address;
+	unsigned long ( *kexec )( const void * );     /* Execution of kfree */
+	const void * address;			      /* Address to be free */
 } libkernshkfr_t;
 
+/* Vmalloc struct */
 typedef struct s_libkernshvma 
 {
-  unsigned long ( *kexec )( size_t );
-  int size;
-  unsigned long mem;
+	unsigned long ( *kexec )( size_t );	/* Execution of vmalloc */
+	int size;				/* Size to alloc */
+	unsigned long mem; /* The address where the allocation has been done */
 } libkernshvma_t;
 
+/* Vfree struct */
 typedef struct s_libkernshvfr 
 {
-  unsigned long ( *kexec )( void * );
-  void * address;
+	unsigned long ( *kexec )( void * );	/* Execution of vfree */
+	void * address;				/* Address to be free */
 } libkernshvfr_t;
 
+/* Syscall struct */
 typedef struct s_libkernshsyscall
 {
-  unsigned long addr;
-  char name[64];
+	unsigned long addr;
+	char name[NAMESIZ];
 } libkernshsyscall_t;
 
+/* Interrupt struct */
 typedef struct s_libkernshint
 {
-  unsigned long addr;
-  char name[64];
+	unsigned long addr;
+	char name[NAMESIZ];
 } libkernshint_t;
 
 /* World kernsh struct */
 typedef struct s_libkernshworld
 {
+	u_int arch;	/* Arch type */
+	u_int os;	/* Os type */
+	u_int device;	/* Device type */
 
-  u_int type;
-  u_int os;
-  u_int device;
+	int open;	/* 0 => memory close, 1 => memory open */
+	int open_static;	/* 0 => static kernel close,
+				   1 => static kernel open */
 
-  int open;
-  int open_static;
+	char *release;	/* Release name */
 
-  char *release;
-  char *mode;
+	int fd;		/* File descriptor for the memory */
+	int fdmode;	/* Mode to open memory (read/write) */
+	int protmode;	/* Protection mode to mmap */
+	int flagsmode;	/* Flags mode to mmap */
 
-  int fd;
-  int fdmode;
-  int protmode;
-  int flagsmode; 
+	int mmap;	/* 0 => memory not mmap
+			   1 => memory mmap */
+	int mmap_size;	/* Size of the mmap */
+	void *ptr;	/* Pointer of the mmap*/
+  
+	unsigned long kernel_start;	/* Address of kernel start */
+	unsigned long kernel_end;	/* Address of kernel end */
+	unsigned long page_offset;	/* Page offset */
 
-  int mmap;
-  int mmap_size;
-  void *ptr;
+	int mem;	/* Static/Mem mode */
 
-#if defined(__linux__)
-  char *systemmap;
-#endif
+	int physical;	/* 0 => virtual memory address 
+			   1 => physical memory address */
 
-  unsigned long kernel_start;
-  unsigned long kernel_end;
-  unsigned long page_offset;
-  unsigned long page_max;
+	unsigned long idt_base;	/* Address of idt table */
+	int idt_limit;		/* Length */
 
-  int mem;
+	unsigned long sct;	/* Address of syscall table */
 
-  int physical;
-
-  unsigned long idt_base;
-  int idt_limit;
-
-  unsigned long sct;
-
-  elfshobj_t *root;
-
+	elfshobj_t *root;	/* Pointer to the kernel's elfshobj_t*/
 } libkernshworld_t;
 
-extern libkernshworld_t     libkernshworld;
+extern libkernshworld_t     libkernshworld; /* Global libkernsh struct
+					       W00t W00t use it please !*/
 
 /* Init lib */
-int kernsh_init_i386(char *, char *);
-int kernsh_del_i386();
+int	kernsh_init_i386(char *, char *);
+int	kernsh_del_i386();
 
 /* Get raw */
-void *kernsh_elfsh_get_raw(void *);
-void *kernsh_revm_get_raw(void *);
+void	*kernsh_elfsh_get_raw(void *);
+void	*kernsh_revm_get_raw(void *);
 
 /* Information about kernel */
-int kernsh_info();
-int kernsh_info_linux();
-int kernsh_info_netbsd();
-int kernsh_info_freebsd();
+int	kernsh_info();
+int	kernsh_info_linux();
+int	kernsh_info_netbsd();
+int	kernsh_info_freebsd();
 
 /* Memory or Static mode */
-int kernsh_is_mem_mode();
-int kernsh_set_mem_mode();
-int kernsh_is_static_mode();
-int kernsh_set_static_mode();
+int	kernsh_is_mem_mode();
+int	kernsh_set_mem_mode();
+int	kernsh_is_static_mode();
+int	kernsh_set_static_mode();
 
 /* Init vectors */
-int kernsh_init_vectors();
-int kernsh_register_vectors();
-int kernsh_register_openmem(u_int, u_int, u_int, void *);
-int kernsh_register_closemem(u_int, u_int, u_int, void *);
-int kernsh_register_readmem(u_int, u_int, u_int, void *);
-int kernsh_register_writemem(u_int, u_int, u_int, void *);
-int kernsh_register_sct(u_int, u_int, void *);
-int kernsh_register_idt(u_int, u_int, void *);
-int kernsh_register_info(u_int, u_int, void *);
-int kernsh_register_decompkernel(u_int, void *);
-int kernsh_register_loadkernel(u_int, u_int, void *);
-int kernsh_register_symbs_abn(u_int, u_int, void *);
-int kernsh_register_symbs_nba(u_int, u_int, void *);
-int kernsh_register_alloc_contiguous(u_int, void *);
-int kernsh_register_alloc_noncontiguous(u_int, void *);
-int kernsh_register_free_contiguous(u_int, void *);
-int kernsh_register_free_noncontiguous(u_int, void *);
+int	kernsh_init_vectors();
+int	kernsh_register_vectors();
+int	kernsh_register_openmem(u_int, u_int, u_int, void *);
+int	kernsh_register_closemem(u_int, u_int, u_int, void *);
+int	kernsh_register_readmem(u_int, u_int, u_int, void *);
+int	kernsh_register_writemem(u_int, u_int, u_int, void *);
+int	kernsh_register_sct(u_int, u_int, void *);
+int	kernsh_register_idt(u_int, u_int, void *);
+int	kernsh_register_info(u_int, u_int, void *);
+int	kernsh_register_decompkernel(u_int, void *);
+int	kernsh_register_loadkernel(u_int, u_int, void *);
+int	kernsh_register_symbs_abn(u_int, u_int, void *);
+int	kernsh_register_symbs_nba(u_int, u_int, void *);
+int	kernsh_register_alloc_contiguous(u_int, void *);
+int	kernsh_register_alloc_noncontiguous(u_int, void *);
+int	kernsh_register_free_contiguous(u_int, void *);
+int	kernsh_register_free_noncontiguous(u_int, void *);
 
 /* Memory */
-int kernsh_openmem();
-int kernsh_openmem_kmem_linux_2_6();
-int kernsh_openmem_mem_linux_2_6();
-int kernsh_openmem_kcore_linux_2_6();
-int kernsh_openmem_netbsd();
+int	kernsh_openmem();
+int	kernsh_openmem_kmem_linux_2_6();
+int	kernsh_openmem_mem_linux_2_6();
+int	kernsh_openmem_kcore_linux_2_6();
+int	kernsh_openmem_netbsd();
 
-int kernsh_closemem();
-int kernsh_closemem_kmem_linux_2_6();
-int kernsh_closemem_mem_linux_2_6();
-int kernsh_closemem_kcore_linux_2_6();
-int kernsh_closemem_netbsd();
+int	kernsh_closemem();
+int	kernsh_closemem_kmem_linux_2_6();
+int	kernsh_closemem_mem_linux_2_6();
+int	kernsh_closemem_kcore_linux_2_6();
+int	kernsh_closemem_netbsd();
 
-int kernsh_readmem(unsigned long, void *, int);
-int kernsh_readmem_kmem_linux_2_6(unsigned long, void *, int);
-int kernsh_readmem_mem_linux_2_6(unsigned long, void *, int);
-int kernsh_readmem_kcore_linux_2_6(unsigned long, void *, int);
-int kernsh_readmem_netbsd(unsigned long, void *, int);
+int	kernsh_readmem(unsigned long, void *, int);
+int	kernsh_readmem_kmem_linux_2_6(unsigned long, void *, int);
+int	kernsh_readmem_mem_linux_2_6(unsigned long, void *, int);
+int	kernsh_readmem_kcore_linux_2_6(unsigned long, void *, int);
+int	kernsh_readmem_netbsd(unsigned long, void *, int);
 
-int kernsh_writemem(unsigned long, void *, int);
-int kernsh_writemem_kmem_linux_2_6(unsigned long, void *, int);
-int kernsh_writemem_mem_linux_2_6(unsigned long, void *, int);
-int kernsh_writemem_kcore_linux_2_6(unsigned long, void *, int);
-int kernsh_writemem_netbsd(unsigned long, void *, int);
+int	kernsh_writemem(unsigned long, void *, int);
+int	kernsh_writemem_kmem_linux_2_6(unsigned long, void *, int);
+int	kernsh_writemem_mem_linux_2_6(unsigned long, void *, int);
+int	kernsh_writemem_kcore_linux_2_6(unsigned long, void *, int);
+int	kernsh_writemem_netbsd(unsigned long, void *, int);
 
 /* Syscalls table */
-int kernsh_sct(list_t *);
-int kernsh_sct_linux(list_t *);
-int kernsh_sct_netbsd(list_t *);
-int kernsh_sct_freebsd(list_t *);
+int	kernsh_sct(list_t *);
+int	kernsh_sct_linux(list_t *);
+int	kernsh_sct_netbsd(list_t *);
+int	kernsh_sct_freebsd(list_t *);
 
-int kernsh_syscall(int, int, unsigned int []);
+int	kernsh_syscall(int, int, unsigned int []);
 
 /* IDT */
-int kernsh_idt(list_t *);
-int kernsh_idt_linux(list_t *);
-int kernsh_idt_netbsd(list_t *);
-int kernsh_idt_freebsd(list_t *);
+int	kernsh_idt(list_t *);
+int	kernsh_idt_linux(list_t *);
+int	kernsh_idt_netbsd(list_t *);
+int	kernsh_idt_freebsd(list_t *);
 
 
 /* Symbols */
-int kernsh_get_addr_by_name(char *, unsigned long *, size_t);
-int kernsh_get_name_by_addr(unsigned long, char *, size_t);
+int	kernsh_get_addr_by_name(char *, unsigned long *, size_t);
+int	kernsh_get_name_by_addr(unsigned long, char *, size_t);
 
-int kernsh_get_addr_by_name_linux_2_6(char *, unsigned long *, size_t);
-int kernsh_get_name_by_addr_linux_2_6(unsigned long, char *, size_t);
+int	kernsh_get_addr_by_name_linux_2_6(char *, unsigned long *, size_t);
+int	kernsh_get_name_by_addr_linux_2_6(unsigned long, char *, size_t);
 
-int kernsh_walk_kstrtab(const char *, unsigned long *addr, size_t);
+int	kernsh_walk_kstrtab(const char *, unsigned long *, size_t);
 
 /* Tasks */
 
 
 /* Alloc-Free */
-int kernsh_alloc_contiguous(size_t, unsigned long *);
-int kernsh_free_contiguous(unsigned long);
-int kernsh_alloc_noncontiguous(size_t, unsigned long *);
-int kernsh_free_noncontiguous(unsigned long);
+int	kernsh_alloc_contiguous(size_t, unsigned long *);
+int	kernsh_free_contiguous(unsigned long);
+int	kernsh_alloc_noncontiguous(size_t, unsigned long *);
+int	kernsh_free_noncontiguous(unsigned long);
 
-int kernsh_alloc_contiguous_linux(size_t, unsigned long *);
-int kernsh_free_contiguous_linux(unsigned long);
-int kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
-int kernsh_free_noncontiguous_linux(unsigned long);
+int	kernsh_alloc_contiguous_linux(size_t, unsigned long *);
+int	kernsh_free_contiguous_linux(unsigned long);
+int	kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
+int	kernsh_free_noncontiguous_linux(unsigned long);
 
 
 /* Hijack */
 
 
 /* Kernel Decompression */
-int kernsh_decompkernel();
-int kernsh_decompkernel_linux();
+int	kernsh_decompkernel();
+int	kernsh_decompkernel_linux();
 
 /* Kernel Un/Loader */
-int kernsh_loadkernel();
-int kernsh_loadkernel_linux();
+int	kernsh_loadkernel();
+int	kernsh_loadkernel_linux();
 
-int kernsh_unloadkernel();
+int	kernsh_unloadkernel();
 
 /* Misc */
-void *kernsh_find_pattern(const void *, int, const void *, int);
-int kernsh_resolve_systemmap(unsigned long, char *, size_t);
-int kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
+void	*kernsh_find_pattern(const void *, int, const void *, int);
+int	kernsh_resolve_systemmap(unsigned long, char *, size_t);
+int	kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
 
 #endif

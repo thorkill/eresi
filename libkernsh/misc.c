@@ -1,7 +1,7 @@
 /*
 ** misc.c for libkernsh
 **
-** $Id: misc.c,v 1.2 2007-07-28 15:02:23 pouik Exp $
+** $Id: misc.c,v 1.3 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -49,6 +49,7 @@ int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
       if ((input = fopen((char *) config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP), 
 			 "r")) == NULL)
 	{
+	  memcpy(name, "UNKNOWN_NAME", size - 1);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to open systemmap", -1);
 	}

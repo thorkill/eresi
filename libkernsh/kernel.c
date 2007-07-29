@@ -1,7 +1,7 @@
 /*
 ** kernel.c for libkernsh
 **
-** $Id: kernel.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
+** $Id: kernel.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -33,6 +33,7 @@ int kernsh_decompkernel()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Extract/Gunzip the kernel on Linux */
 int kernsh_decompkernel_linux()
 {
   char magic[] = { 0x1f, 0x8b, 0x08 };
@@ -120,7 +121,7 @@ int kernsh_loadkernel()
 
   load = aspect_vector_get("loadkernel");
 
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
   fct = aspect_vectors_select(load, dim);

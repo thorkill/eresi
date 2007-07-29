@@ -1,7 +1,7 @@
 /*
 ** mem.c for libkernsh
 **
-** $Id: mem.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
+** $Id: mem.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -10,6 +10,7 @@
 
 #include "libkernsh.h"
 
+/* Open /dev/mem on Linux 2.6.X */
 int kernsh_openmem_mem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -24,6 +25,7 @@ int kernsh_openmem_mem_linux_2_6()
 	0, 
 	-1);
 
+  /* If mmap is specified */
   if (libkernshworld.mmap)
     {
 #if defined(__linux__)
@@ -37,6 +39,7 @@ int kernsh_openmem_mem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Close /dev/mem on Linux 2.6.X */
 int kernsh_closemem_mem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -57,6 +60,7 @@ int kernsh_closemem_mem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Read /dev/mem on Linux 2.6 */
 int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
@@ -65,6 +69,7 @@ int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 
   //  printf("READ MEM 2.6\n");
 
+  /* We must subtrack page_offset to get the physical address */
   roffset = offset - libkernshworld.page_offset;
 
   if (libkernshworld.mmap)
@@ -86,6 +91,7 @@ int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Write in /dev/mem on Linux 2.6.X */
 int kernsh_writemem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
@@ -94,6 +100,7 @@ int kernsh_writemem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 
   //  printf("WRITE MEM 2.6\n");
 
+  /* We must subtrack page_offset to get the physical address */
   roffset = offset - libkernshworld.page_offset;
 
   if (libkernshworld.mmap)
@@ -103,9 +110,6 @@ int kernsh_writemem_mem_linux_2_6(unsigned long offset, void *buf, int size)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Memcpy failed !", -1);
 	}
-#if defined(__linux__)       
-      XMSYNC(libkernshworld.ptr, libkernshworld.mmap_size, MS_SYNC, -1);
-#endif
     }
   else
     {

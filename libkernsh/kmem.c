@@ -1,7 +1,7 @@
 /*
 ** kmem.c for libkernsh
 **
-** $Id: kmem.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: kmem.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -10,6 +10,7 @@
 
 #include "libkernsh.h"
 
+/* Open /dev/kmem on Linux 2.6.X */
 int kernsh_openmem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -33,6 +34,7 @@ int kernsh_openmem_kmem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Close /dev/kmem on Linux 2.6 */
 int kernsh_closemem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -46,6 +48,7 @@ int kernsh_closemem_kmem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Read /dev/kmem on Linux 2.6.X */
 int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -61,6 +64,7 @@ int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* Write in /dev/kmem on Linux 2.6.X */
 int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

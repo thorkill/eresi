@@ -125,27 +125,31 @@ You can define all the libkernsh.*, see section Options below.
 		func 	:	open memory and by default gzip kernel	
 		args 	:	no
 		return 	:	int
-		option  :
+		options  :
 
 	- closemem :
 		func	:	close memory
 		args 	:	no
 		return	:	int
+		options :
 
 	- mode :
 		func	:	with no args display the mode
 		args	:	yes (not obligatory), "static" and "dynamic"
 		return  :	int
+		options :
 
 	- sct :
 		func :
 		args :
 		return :
+		options :
 
 	- idt :
 		func :		
 		args :
 		return :
+		options :
 
 	- mem :
 		func :
@@ -159,7 +163,9 @@ You can define all the libkernsh.*, see section Options below.
 			free_nc : free non contiguous memory
 				args : addr to free
 
-		return :
+		return : variable $_ is set with the alloc address or
+			 the return value 
+		options :
 
 [+] Options :
 
@@ -167,10 +173,14 @@ An option can be set directly in the shell or in the .kernshrc :
 	configure libkernsh.option VALUE
 
 [
- legends : (D) => default, (L) => specific to Linux, (N) => specific to Netbsd,
+ legends : (D) => default, 
+	   (L) => specific to Linux, 
+	   (N) => specific to Netbsd,
            (F) => specific to Freebsd 
+	   
 	   [S*] => any string value
 	   [I*] => any integer value 
+	   [L*] => any long value
 ]
 	
 	- libkernsh.device : The memory device which will be opened
@@ -234,9 +244,22 @@ An option can be set directly in the shell or in the .kernshrc :
 		- 0 (D)
 		- 1
 
+	- libkernsh.kernel_start : address of kernel start
+		- 0xc0000000 (D) (L)
+		- [L*]
+
+	- libkernsh.kernel_end : address of kernel end
+		- 0xc1000000 (D) (L)
+		- [L*]
+
+	- libkernsh.page_offset : page_offset
+		- 0xc0000000 (D) (L)
+		- [L*]
+
 [+] Authors 
 
-Original version (0.1 => 0.2c) started in 2001 : sauron, zorgon, kstat
+Original version (0.1 => 0.2c) started in 2001 and original authors : 
+	sauron, zorgon, kstat
 
 The project has been transfered to pouik in 2007.
 
@@ -249,6 +272,13 @@ author's mail : pouik at kernsh.org
 [+] Bugs
 
 Please use http://bts.eresi-project.org/
+
+Compile libkernsh in debug mode, change in libkernsh/include/libkernsh.h 
+the define :
+	#define	__DEBUG_KERNSH__			0
+in
+	#define	__DEBUG_KERNSH__			1
+	
 
 [+] Url
 

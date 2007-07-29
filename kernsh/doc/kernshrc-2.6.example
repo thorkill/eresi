@@ -213,6 +213,3 @@ openmem
 inform task_struct init_task
 inform ksct sys_call_table
 inform kidt idt_table
-
-# For netbsd/freebsd
-#inform syscalltable sysent

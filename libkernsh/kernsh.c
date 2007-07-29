@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
+** $Id: kernsh.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -19,7 +19,7 @@ int kernsh_init_i386(char *os, char *release)
 
   memset(&libkernshworld, '\0', sizeof(libkernshworld_t));
 
-  libkernshworld.type = LIBKERNSH_ARCH_I386;
+  libkernshworld.arch = LIBKERNSH_ARCH_I386;
 
   /* By default we use static kernel */
   kernsh_set_static_mode();
@@ -33,7 +33,7 @@ int kernsh_init_i386(char *os, char *release)
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
-  
+
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {
@@ -122,10 +122,20 @@ int kernsh_init_i386(char *os, char *release)
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL);
 
-      libkernshworld.kernel_start = LIBKERNEL_I386_LINUX_START;
-      libkernshworld.kernel_end = LIBKERNEL_I386_LINUX_END;
-      libkernshworld.page_offset = LIBPAGE_I386_LINUX_OFFSET;
-      libkernshworld.page_max = LIBPAGE_I386_LINUX_MAX;
+      config_add_item(LIBKERNSH_VMCONFIG_KERNEL_START,
+		      CONFIG_TYPE_INT,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_I386_LINUX_START);
+      
+      config_add_item(LIBKERNSH_VMCONFIG_KERNEL_END,
+		      CONFIG_TYPE_INT,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_I386_LINUX_END);
+
+      config_add_item(LIBKERNSH_VMCONFIG_PAGE_OFFSET,
+		      CONFIG_TYPE_INT,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_PAGE_I386_LINUX_OFFSET);
     }
   else
     {
@@ -265,7 +275,7 @@ int kernsh_info()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
     
   info = aspect_vector_get("info");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   
   fct = aspect_vectors_select(info, dim);

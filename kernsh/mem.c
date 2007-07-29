@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.1 2007-07-28 15:02:23 pouik Exp $
+** $Id: mem.c,v 1.2 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -153,8 +153,11 @@ int		cmd_mem()
     {
       if (param2 && !strcmp(param, "alloc"))
 	{
-	  if(kernsh_alloc_contiguous(atoi(param2), &addr))
+	  if (kernsh_alloc_contiguous(atoi(param2), &addr))
 	    {
+	      revm_setvar_int("_", -1);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Cannot alloc contiguous memory", -1);
 	    }
 	  memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff), 
@@ -166,27 +169,34 @@ int		cmd_mem()
 		   revm_colorstr("@"),
 		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
 	  revm_output(buff);
-	    
+	  revm_setvar_long("_", addr);
 	}
       else if (param2 && !strcmp(param, "free"))
 	{
 	  addr = strtoul( param2, NULL, 16 );
 	  if(kernsh_free_contiguous(addr))
 	    {
+	      revm_setvar_int("_", -1);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Cannot free contiguous memory", -1);
 	    }
 	  memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff), 
 		   "%s %s %s %s\n\n",
 		   revm_colorfieldstr("FREE"),
+		   revm_colorfieldstr("CONTIGUOUS MEMORY"),
 		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr),
-		   revm_colorfieldstr("OF CONTIGUOUS MEMORY"));
+		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
 	  revm_output(buff);
+	  revm_setvar_int("_", 0);
 	}
       else if (param2 && !strcmp(param, "alloc_nc"))
 	{
 	  if(kernsh_alloc_noncontiguous(atoi(param2), &addr))
 	    {
+	      revm_setvar_int("_", -1);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Cannot get alloc non contiguous memory", -1);
 	    }
 	  memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff), 
@@ -198,31 +208,38 @@ int		cmd_mem()
 		   revm_colorstr("@"),
 		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
 	  revm_output(buff);
+	  revm_setvar_long("_", addr);
 	}
       else if (param2 && !strcmp(param, "free_nc"))
 	{
 	  addr = strtoul( param2, NULL, 16 );
 	  if(kernsh_free_noncontiguous(addr))
 	    {
+	      revm_setvar_int("_", -1);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Cannot get free non contiguous memory", -1);
 	    }
 	  memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff), 
 		   "%s %s %s %s\n\n",
 		   revm_colorfieldstr("FREE"),
+		   revm_colorfieldstr("NONCONTIGUOUS MEMORY"),
 		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr),
-		   revm_colorfieldstr("OF NONCONTIGUOUS MEMORY"));
+		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
 	  revm_output(buff);
+	  revm_setvar_int("_", 0);
 	}
       else 
 	{
 
+	  revm_setvar_int("_", -1);
 	}
     }
+
 #if defined(USE_READLN)
   rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
   readln_column_update();
 #endif
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

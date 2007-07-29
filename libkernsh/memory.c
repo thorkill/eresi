@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.3 2007-07-26 14:33:52 pouik Exp $
+** $Id: memory.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -25,16 +25,31 @@ int kernsh_openmem()
   printf("OPENMEM\n");
 #endif
 
+  libkernshworld.kernel_start = (unsigned long) 
+    config_get_data(LIBKERNSH_VMCONFIG_KERNEL_START);
+  
+  libkernshworld.kernel_end = (unsigned long) 
+    config_get_data(LIBKERNSH_VMCONFIG_KERNEL_END);
+
+  libkernshworld.page_offset = (unsigned long) 
+    config_get_data(LIBKERNSH_VMCONFIG_PAGE_OFFSET);
+
+#if __DEBUG_KERNSH__
+  printf("KERNEL_START 0x%lx\n", libkernshworld.kernel_start);
+  printf("KERNEL_END   0x%lx\n", libkernshworld.kernel_end);
+  printf("PAGE_OFFSET  0x%lx\n", libkernshworld.page_offset);
+#endif
+
   if (libkernshworld.os == LIBKERNSH_OS_LINUX_2_6 || 
       libkernshworld.os == LIBKERNSH_OS_LINUX_2_4)
     {
-      //CHECK configure device, mode etc
+      /* Check configure device, mode etc */
 
       device = (char *) config_get_data(LIBKERNSH_VMCONFIG_DEVICE);
       mode = (char *) config_get_data(LIBKERNSH_VMCONFIG_MODE);
       mmap = (int) config_get_data(LIBKERNSH_VMCONFIG_MMAP);
       mmap_size = (int) config_get_data(LIBKERNSH_VMCONFIG_MMAP_SIZE);
-      
+
       if (device == NULL)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Device is NULL", -1);
@@ -45,7 +60,7 @@ int kernsh_openmem()
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Mode is NULL", -1);
 	}
       
-      //check device and mode
+      /* check device and mode */
       if (!strcmp(device, LIBKERNSH_STRING_DEVICE_KMEM))
 	{
 	  libkernshworld.device = LIBKERNSH_DEVICE_KMEM;
@@ -92,6 +107,10 @@ int kernsh_openmem()
     {
 
     }
+  else if (libkernshworld.os == LIBKERNSH_OS_FREEBSD)
+    {
+      
+    }
   else
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -105,7 +124,7 @@ int kernsh_openmem()
     }
 
   mem = aspect_vector_get("openmem");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
 
@@ -122,6 +141,7 @@ int kernsh_openmem()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Close kernel memory */
 int kernsh_closemem()
 {
   int ret;
@@ -138,7 +158,7 @@ int kernsh_closemem()
     }
 
   mem = aspect_vector_get("closemem");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
   
@@ -149,12 +169,14 @@ int kernsh_closemem()
   kernsh_set_static_mode();
 
   libkernshworld.open = 0;
-
-  XFREE(__FILE__, __FUNCTION__, __LINE__, libkernshworld.systemmap);
+  libkernshworld.idt_base = 0;
+  libkernshworld.idt_limit = 0;
+  libkernshworld.sct = 0;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Read kernel memory */
 int kernsh_readmem(unsigned long offset, void *buf, int size)
 {
   int ret;
@@ -171,7 +193,7 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
     }
 
   mem = aspect_vector_get("readmem");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
   
@@ -182,6 +204,7 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Write in kernel memory */
 int kernsh_writemem(unsigned long offset, void *buf, int size)
 {
   int ret;
@@ -198,7 +221,7 @@ int kernsh_writemem(unsigned long offset, void *buf, int size)
     }
 
   mem = aspect_vector_get("writemem");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
   

@@ -1,12 +1,12 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: idt.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
+** $Id: idt.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
-/* Put idt inside the list lidt */
+/* Put interrupts inside the list lidt */
 int kernsh_idt(list_t *lidt)
 {
   int ret;
@@ -23,7 +23,7 @@ int kernsh_idt(list_t *lidt)
     }
   
   idt = aspect_vector_get("idt");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
   fct = aspect_vectors_select(idt, dim);
@@ -33,7 +33,7 @@ int kernsh_idt(list_t *lidt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
+/* This function get the interrupts on Linux */
 int kernsh_idt_linux(list_t *lidt)
 {
   int i;
@@ -46,6 +46,7 @@ int kernsh_idt_linux(list_t *lidt)
   printf("IDT LINUX\n");
 #endif
 
+  /* Interrupts is not set in static kernel ! */
   if (kernsh_is_static_mode())
     {
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -92,7 +93,8 @@ int kernsh_idt_linux(list_t *lidt)
 	  kernsh_resolve_systemmap(dint->addr, 
 				   dint->name, 
 				   sizeof(dint->name));
-	  
+
+	  /* Add the interrupt in the list */
 	  list_add(lidt, key, (void *) dint);
 	}
     }

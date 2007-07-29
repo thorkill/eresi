@@ -1,12 +1,12 @@
 /*
 ** sct.c for libkernsh
 **
-** $Id: sct.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
+** $Id: sct.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
 **
 */
 #include "libkernsh.h"
 
-/* Put sct inside the list lsct */
+/* Put syscalls inside the list lsct */
 int kernsh_sct(list_t *lsct)
 {
   int ret;
@@ -23,7 +23,7 @@ int kernsh_sct(list_t *lsct)
     }
   
   sct = aspect_vector_get("sct");
-  dim[0] = libkernshworld.type;
+  dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
   fct = aspect_vectors_select(sct, dim);
@@ -34,6 +34,7 @@ int kernsh_sct(list_t *lsct)
 }
 
 
+/* Get syscalls on Linux */
 int kernsh_sct_linux(list_t *lsct)
 {
   int i;
@@ -49,6 +50,7 @@ int kernsh_sct_linux(list_t *lsct)
 #endif
 
 
+  /* Get syscalls in the static kernel */
   if (kernsh_is_static_mode())
     {
       offset = 0;
@@ -91,9 +93,11 @@ int kernsh_sct_linux(list_t *lsct)
 				      &offset),
 		 sizeof(syscall->name));
 
+	  /* Add syscall to the list */
 	  list_add(lsct, key, (void *) syscall);
 	}
     }
+  /* Get syscalls in the memory */
   else {
       if (!libkernshworld.open)
 	{
@@ -134,6 +138,7 @@ int kernsh_sct_linux(list_t *lsct)
 				   syscall->name, 
 				   sizeof(syscall->name));
 
+	  /* Add syscall in the list */
 	  list_add(lsct, key, (void *) syscall);
 	}
     }
