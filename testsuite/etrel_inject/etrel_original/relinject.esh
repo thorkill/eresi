@@ -3,11 +3,12 @@
 load a.out
 load rel.o
 
-profile enable warn
+#profile enable warn
 #log session
 
 reladd 1 2
-redir puts puts_troj
+#redir puts puts_troj
+redir legit_func hook_func
 
 #sym old
 save fake_aout

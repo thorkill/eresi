@@ -7,7 +7,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.17 2007-06-27 11:25:12 heroine Exp $
+ * $Id: extplt.c,v 1.18 2007-07-29 14:13:33 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -174,7 +174,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 
 /**
  * When performing EXTPLT technique, we need to mirror some sections
- * if we want to be able to extend them : .rel.plt, .dynsym, .dynstr 
+ * if we want to be able to extend them : .rel(a).{got,dyn,plt}, .dynsym, .dynstr 
  */
 int		elfsh_extplt_mirror_sections(elfshobj_t *file) 
 {
@@ -221,6 +221,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!relplt)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find PLT relocation table", -1);
+
+  /* Pretty ugly code that needs to be cleaned up in a separate function */
   relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELGOT, 0, 0, 0);
   if (!relgot)
     {
@@ -228,13 +230,21 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       if (!relgot)
 	{
 	  relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELABSS, 0, 0, 0);
-	  relgotname = ELFSH_SECTION_NAME_ALTRELBSS;
+	  if (!relgot)
+	    {
+	      relgot = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_RELADYN, 0, 0, 0);
+	      relgotname = ELFSH_SECTION_NAME_ALTRELADYN;
+	    }
+	  else
+	    relgotname = ELFSH_SECTION_NAME_ALTRELBSS;
 	}
       else
 	relgotname = ELFSH_SECTION_NAME_ALTRELDYN;
     }
   else
     relgotname = ELFSH_SECTION_NAME_ALTRELGOT;
+
+  fprintf(stderr, "found relgotname = %s \n", relgotname);
 
 
   /* Copy a double sized .dynsym somewhere else */

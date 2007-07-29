@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 mayhem
 **
 **
-** $Id: libelfsh.h,v 1.71 2007-07-28 15:02:23 pouik Exp $
+** $Id: libelfsh.h,v 1.72 2007-07-29 14:13:33 mxatone Exp $
 **
 */
 
@@ -168,8 +168,10 @@
 
 #define		ELFSH_SECTION_NAME_RELGOT	".rel.got"
 #define		ELFSH_SECTION_NAME_RELDYN	".rel.dyn"
+#define		ELFSH_SECTION_NAME_RELADYN	".rela.dyn"
 #define		ELFSH_SECTION_NAME_RELABSS	".rela.bss"
 #define		ELFSH_SECTION_NAME_ALTRELDYN	".elfsh.reldyn"
+#define		ELFSH_SECTION_NAME_ALTRELADYN	".elfsh.reladyn"
 #define		ELFSH_SECTION_NAME_ALTRELGOT	".elfsh.relgot"
 #define		ELFSH_SECTION_NAME_ALTRELBSS	".elfsh.relabss"
 

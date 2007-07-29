@@ -5,7 +5,7 @@
 ** Started on  Fri Jan 11 03:05:37 2003 mayhem
 ** 
 **
-** $Id: sparc32.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: sparc32.c,v 1.5 2007-07-29 14:13:33 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,9 +20,96 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    elfsh_Sym	*symbol,
 					    elfsh_Addr  addr)
 {
+  u_int			ret;
+  int			off;
+  u_char		buff[4];
+  elfshsect_t		*hooks;
+  char			*hook;
+  int			prot;
+  uint32_t		*opcode;
+  int			diff;
+  char			bufname[BUFSIZ];
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "CFLOW unimplemented yet for SPARC", -1);
+
+#if 	__DEBUG_CFLOW__      
+  printf("[DEBUG_CFLOW] Requesting hijack addr = %08X, sym.st_value = %08X, name = %s\n", 
+	 addr, symbol->st_value, name);
+#endif
+
+  off = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
+  if (!off) 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid address to hijack", -1);
+
+  /* Read two instruction */
+  ret = elfsh_raw_read(file, off, buff, 8);
+  if (ret != 8)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to read an opcode", -1);
+
+  /* If the hook section does not exist, create it */
+  hooks = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_HOOKS, 
+				    0, 0, 0); 
+
+  if (!hooks)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot get and inject .hooks", -1);
+
+  hook = elfsh_get_raw(hooks) + hooks->curend;
+  opcode = (uint32_t *) hook;
+
+#define SPARC32_B_OPCODE(_size) 0x10000000 + (_size < 0 ? 0xb00000 : 0x800000) + (((_size - (_size % 4)) / 4) & 0xFFFFF)
+#define SPARC32_NOP 0x01000000
+
+  /* Create the hook for this function */
+  prot = elfsh_munprotect(file, (elfsh_Addr) hook, 28);
+
+  diff = addr - (hooks->shdr->sh_addr + (hook - (char *) elfsh_get_raw(hooks)));
+  opcode[0] = SPARC32_B_OPCODE(diff); // b <redirect function>
+  opcode[1] = SPARC32_NOP;
+
+  /* Copy ovewrited opcode */
+  memcpy((void *)&opcode[2], buff, 8);
+
+  opcode[4] = SPARC32_NOP;
+
+  diff = symbol->st_value - (hooks->shdr->sh_addr + hooks->curend + 20) + 8;
+  opcode[5] = SPARC32_B_OPCODE(diff); // b <original function+8>
+  opcode[6] = SPARC32_NOP;
+
+  elfsh_mprotect((elfsh_Addr) hook, 28, prot);
+
+  opcode = (void *) buff;
+
+  /* Add b instruction at function start */
+  diff = (hooks->shdr->sh_addr + hooks->curend) - symbol->st_value; 
+  opcode[0] = SPARC32_B_OPCODE(diff);
+  opcode[1] = SPARC32_NOP;
+
+  ret = elfsh_raw_write(file, off, buff, 8);
+  if (ret != 8)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Error during hook installation", -1);
+
+  /* Insert the old symbol on the original saved bytes (do the insertion AFTER all use of symbol !!) */
+  snprintf(bufname, BUFSIZ, "old_%s", name);
+  elfsh_insert_funcsym(file, bufname, hooks->shdr->sh_addr + hooks->curend + 8,
+		       16, hooks->index);
+  snprintf(bufname, BUFSIZ, "hook_%s", name);
+  elfsh_insert_funcsym(file, bufname, hooks->shdr->sh_addr + hooks->curend,
+		       8, hooks->index);
+
+#if	__DEBUG_CFLOW__      
+  printf("[DEBUG_CFLOW] hook_legit_func = %08X, old_legit_func = %08X \n", 
+	 hooks->shdr->sh_addr + hooks->curend, 
+	 hooks->shdr->sh_addr + hooks->curend + 5);
+#endif
+
+  /* Everything OK */
+  hooks->curend += 28;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
