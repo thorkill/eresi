@@ -4,7 +4,7 @@
 ** Started on  Tue Feb 18 04:15:42 2003 jfv
 ** Last update Mon Feb 23 16:23:43 2004 jfv
 **
-** $Id: libelfsh-compat.h,v 1.10 2007-07-31 03:28:47 may Exp $
+** $Id: libelfsh-compat.h,v 1.11 2007-07-31 23:30:35 may Exp $
 **
 */
 
@@ -113,7 +113,7 @@ typedef char uint8;
 #define	DFMT11	"%011d"
 
 /* 64 bits support */
-#if defined(ELFSH64)
+#if defined(ERESI64)
 typedef Elf64_Phdr	elfsh_Phdr;
 typedef Elf64_Shdr	elfsh_Shdr;
 typedef Elf64_Nhdr	elfsh_Nhdr;
@@ -160,7 +160,7 @@ typedef int64_t		elfsh_SAddr;
 
 
 /* 32 bits support */
-#elif defined(ELFSH32)
+#elif defined(ERESI32)
 
 typedef Elf32_Phdr	elfsh_Phdr;
 typedef Elf32_Shdr	elfsh_Shdr;

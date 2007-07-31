@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.24 2007-06-27 11:25:11 heroine Exp $
+## $Id: Makefile,v 1.25 2007-07-31 23:30:35 may Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -69,7 +69,7 @@ SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
-CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH32 \
+CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
 			-I../libaspect/include -O2
 RM 		= 	rm -f
 ETAGS 		= 	etags
@@ -121,7 +121,7 @@ docs:
 
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
-	tools/mydisasm.c -DELFSH32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
+	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
 	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm
 
 test:

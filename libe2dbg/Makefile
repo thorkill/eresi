@@ -30,7 +30,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DELFSH32	 \
+			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI32	 \
 			-DE2DBG_PRESENT
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
@@ -39,7 +39,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DELFSH64	 \
+			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI64	 \
 			-DE2DBG_PRESENT
 
 LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)

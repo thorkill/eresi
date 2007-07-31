@@ -6,7 +6,7 @@
 ** 
 ** Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.4 2007-07-31 03:28:47 may Exp $
+** $Id: cfg.c,v 1.5 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -78,7 +78,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
 
       if (dstaddr != (elfsh_Addr) -1)
-	mjr_link_block_jump(context, curvaddr, dstaddr, NULL);
+	mjr_link_block_jump(context, curvaddr, dstaddr, 0);
 
     }
   else if (curins->type & ASM_TYPE_CALLPROC)

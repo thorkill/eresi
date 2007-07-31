@@ -23,7 +23,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
-			-DELFSH32
+			-DERESI32
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
@@ -32,7 +32,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
-			-DELFSH64
+			-DERESI64
 
 LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
@@ -40,7 +40,7 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			-L../libmjollnir -lmjollnir32 -g3 -L../elibc/ -lcelfsh32    \
 			-L../libui/ -lui32 -L../libedfmt -ledfmt32 $(LDASMOPT) 	    \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
-			-DELFSH32 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB32)\
+			-DERESI32 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB32)\
 			$(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
@@ -49,7 +49,7 @@ LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libmjollnir -lmjollnir64 -g3 -L../elibc/ -lcelfsh64    \
 			-L../libui/ -lui64 -L../libedfmt -ledfmt64 $(LDASMOPT)      \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
-			-DELFSH64 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB64)\
+			-DERESI64 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB64)\
 			$(NCURSESLNOPT) $(READLNOPT)
 
 all			: all32 all64

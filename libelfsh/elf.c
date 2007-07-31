@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:09:38 2001 jfv
 ** Last update Mon Apr 21 20:58:41 2003 jfv
 **
-** $Id: elf.c,v 1.17 2007-07-31 03:28:46 may Exp $
+** $Id: elf.c,v 1.18 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -647,9 +647,9 @@ int	elfsh_load_hdr(elfshobj_t *file)
   if (config_safemode())
     elfsh_check_hdr(file);
 
-#if defined(ELFSH32)
+#if defined(ERESI32)
   if (file->hdr->e_ident[EI_CLASS] != ELFCLASS32)
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
     if (file->hdr->e_ident[EI_CLASS] != ELFCLASS64)    
 #endif
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

@@ -3,7 +3,7 @@
  * 
  * An API for generic containers data structures
  *
- * $Id: container.c,v 1.14 2007-07-31 03:28:47 may Exp $
+ * $Id: container.c,v 1.15 2007-07-31 23:30:35 may Exp $
  */
 #include "libmjollnir.h"
 
@@ -260,12 +260,12 @@ int			mjr_create_container_linklist(mjrcontainer_t *container,
     {
     case MJR_LINK_IN:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(elfsh_Addr *) container->data, "inputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), 0);
       list_init(container->inlinks, strdup(bufname), container->type);
       break;
     case MJR_LINK_OUT:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(elfsh_Addr *) container->data, "outputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), 0);
       list_init(container->outlinks, strdup(bufname), container->type);
       break;
     default:

@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 21 22:02:36 2001 jfv
 ** Updated on  Wed Jan 03 17:51:04 2007 jfv
 **
-** $Id: main.c,v 1.18 2007-07-31 03:28:46 may Exp $
+** $Id: main.c,v 1.19 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "e2dbg.h"
@@ -117,9 +117,9 @@ int		revm_execute_debuggee(int ac, char **av)
   int		index;
   elfshobj_t	*file;
 
-#if defined(ELFSH32)
+#if defined(ERESI32)
   version = "32";
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
   version = "64";
 #else
   printf("Unknown debugger version : fatal error \n");

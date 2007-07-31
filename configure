@@ -53,7 +53,7 @@ if [ $CHOSENBIT = "1" ]; then
     exit
 fi
 echo  " [*] Enabling ELF64 support"
-BITS="-DELFSH64"
+BITS="-DERESI64"
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all64
@@ -69,7 +69,7 @@ if [ $CHOSENBIT = "1" ]; then
     exit
 fi
 echo  " [*] Enabling ELF32 support"
-BITS="-DELFSH32"
+BITS="-DERESI32"
 
 echo  "//#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"

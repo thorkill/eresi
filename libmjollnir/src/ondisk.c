@@ -4,7 +4,7 @@
 ** Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.1 2007-07-31 03:28:47 may Exp $
+** $Id: ondisk.c,v 1.2 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -312,8 +312,8 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
       curunit    = (char *) sect->data + done;
       done      += unitsize;
 
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpunit, unitsize, NULL);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpcntnr, sizeof(mjrcontainer_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpunit, unitsize, 0);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpcntnr, sizeof(mjrcontainer_t), 0);
 
       memcpy(tmpcntnr, container, sizeof(mjrcontainer_t));
       memcpy(tmpunit, curunit, unitsize);

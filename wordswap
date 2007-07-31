@@ -18,7 +18,7 @@ y*)
 	exit;;
 esac
 
-for i in `find . -name "*.c" -o -name "*.h" | xargs`;
+for i in `find . -name "*.c" -o -name "*.h" -o -name Makefile | xargs`;
 do
 	echo Swapping inside file $i
 

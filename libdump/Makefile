@@ -25,9 +25,9 @@ all	: $(OBJ)
 
 test:   all dump_main.o
 #	$(CC) $(CFLAGS) $(LDFLAGS) dump_main.o -o dump_main 
-	gcc  -Wall -DELFSH32 -g3 -Iinclude -I../libhash/include/ \
+	gcc  -Wall -DERESI32 -g3 -Iinclude -I../libhash/include/ \
 	-DELFSH_INTERN -L./ -L../libelfsh/ -llibelfsh -L/usr/pkg/lib/ \
-	-ltermcap -lreadline -DELFSH32  ../libhash/hash.o dump.o recv.o\
+	-ltermcap -lreadline -DERESI32  ../libhash/hash.o dump.o recv.o\
 	send.o dump_main.c -o dump_main
 
 clean	:

@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Fri Sep 11 17:26:11 2005 jfv
 **
-** $Id: misc.c,v 1.8 2007-07-31 03:28:47 may Exp $
+** $Id: misc.c,v 1.9 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "revm.h"
@@ -186,9 +186,9 @@ void		revm_banner_print()
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   revm_modename_get(),
 	   REVM_VERSION,
-#if defined(ELFSH32)
+#if defined(ERESI32)
 	   "32 bits built",
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
 	   "64 bits built",
 #else
 	   "Unknown built",

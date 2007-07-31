@@ -5,7 +5,7 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.3 2007-07-31 03:28:47 may Exp $
+ * $Id: links.c,v 1.4 2007-07-31 23:30:35 may Exp $
  */
 #include <libmjollnir.h>
 
@@ -107,14 +107,14 @@ int	mjr_link_block_call(mjrcontext_t *ctxt,
   assert(csrc != NULL);
 
   /* search and/or split destination block */
-  if (!(cdst = mjr_block_split(ctxt,dst,NULL)))
+  if (!(cdst = mjr_block_split(ctxt, dst, 0)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
   /* search and/or split - return block */
-  if (!(cret = mjr_block_split(ctxt,ret,NULL)))
+  if (!(cret = mjr_block_split(ctxt, ret, 0)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		 "Could not split the ret",0);
+		 "Could not split the ret", 0);
   
   /* link src and dst */
   mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
@@ -265,7 +265,7 @@ static mjrcontainer_t	*mjr_block_split(mjrcontext_t	*ctxt,
       dstend		= mjr_create_block_container(ctxt, 0, dst, new_size);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
 
-      if (link_with != NULL)
+      if (link_with)
 	{
 	  mjr_block_relink(ctxt, tmpdst, dstend, MJR_LINK_OUT);
 	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, MJR_LINK_OUT);

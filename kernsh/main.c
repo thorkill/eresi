@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.3 2007-07-28 15:02:23 pouik Exp $
+** $Id: main.c,v 1.4 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "kernsh.h"
@@ -84,9 +84,9 @@ void		kernsh_banner_print()
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   KERNSH_NAME,
 	   KERNSH_VERSION,
-#if defined(ELFSH32)
+#if defined(ERESI32)
 	   "32 bits built",
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
 	   "64 bits built",
 #else
 	   "Unknown built",

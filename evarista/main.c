@@ -4,7 +4,7 @@
 ** The entry point of the static analyzer
 **
 ** Started on  Fri Jun 22 14:42:36 2007 jfv
-** $Id: main.c,v 1.4 2007-07-31 03:28:46 may Exp $
+** $Id: main.c,v 1.5 2007-07-31 23:30:35 may Exp $
 */
 #include "evarista.h"
 
@@ -54,9 +54,9 @@ void		eva_banner_print()
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   EVARISTA_NAME,
 	   REVM_VERSION,
-#if defined(ELFSH32)
+#if defined(ERESI32)
 	   "32 bits built",
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
 	   "64 bits built",
 #else
 	   "Unknown built",

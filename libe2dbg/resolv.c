@@ -5,7 +5,7 @@
 **
 ** Last Update Thu Oct 13 19:37:26 2005 mm
 **
-** $Id: resolv.c,v 1.15 2007-06-08 18:46:44 may Exp $
+** $Id: resolv.c,v 1.16 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -332,9 +332,9 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   write(2, buf, len);
 #endif
 
-#if defined(ELFSH32)
+#if defined(ERESI32)
   version = "32";
-#elif defined(ELFSH64)
+#elif defined(ERESI64)
   version = "64";
 #else
   printf("Unknown debugger version : fatal error \n");
