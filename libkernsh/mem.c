@@ -1,7 +1,7 @@
 /*
 ** mem.c for libkernsh
 **
-** $Id: mem.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
+** $Id: mem.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #if defined(__linux__)
@@ -10,13 +10,13 @@
 
 #include "libkernsh.h"
 
-/* Open /dev/mem on Linux 2.6.X */
-int kernsh_openmem_mem_linux_2_6()
+/* Open /dev/mem on Linux 2.X */
+int kernsh_openmem_mem_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_KERNSH__  
-  printf("OPEN MEM 2.6\n");
+  printf("OPEN MEM 2.X\n");
 #endif
 
   XOPEN(libkernshworld.fd, 
@@ -29,8 +29,14 @@ int kernsh_openmem_mem_linux_2_6()
   if (libkernshworld.mmap)
     {
 #if defined(__linux__)
-      XMMAP(libkernshworld.ptr, 0, libkernshworld.mmap_size, libkernshworld.protmode,
-	    libkernshworld.flagsmode, libkernshworld.fd, 0, -1);
+      XMMAP(libkernshworld.ptr, 
+	    0, 
+	    libkernshworld.mmap_size, 
+	    libkernshworld.protmode,
+	    libkernshworld.flagsmode, 
+	    libkernshworld.fd, 
+	    0, 
+	    -1);
 #endif
     }
 
@@ -39,13 +45,13 @@ int kernsh_openmem_mem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Close /dev/mem on Linux 2.6.X */
-int kernsh_closemem_mem_linux_2_6()
+/* Close /dev/mem on Linux 2.X */
+int kernsh_closemem_mem_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_KERNSH__  
-  printf("CLOSE MEM 2.6\n");
+  printf("CLOSE MEM 2.X\n");
 #endif
 
   if (libkernshworld.mmap)
@@ -60,17 +66,17 @@ int kernsh_closemem_mem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read /dev/mem on Linux 2.6 */
-int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
+/* Read /dev/mem on Linux 2.X */
+int kernsh_readmem_mem_linux(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  printf("READ MEM 2.6\n");
+  //  printf("READ MEM 2.X\n");
 
-  /* We must subtrack page_offset to get the physical address */
-  roffset = offset - libkernshworld.page_offset;
+  /* We must subtrack kernel_start(page_offset) to get the physical address */
+  roffset = offset - libkernshworld.kernel_start;
 
   if (libkernshworld.mmap)
     {
@@ -91,24 +97,24 @@ int kernsh_readmem_mem_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Write in /dev/mem on Linux 2.6.X */
-int kernsh_writemem_mem_linux_2_6(unsigned long offset, void *buf, int size)
+/* Write in /dev/mem on Linux 2.X */
+int kernsh_writemem_mem_linux(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  printf("WRITE MEM 2.6\n");
+  //  printf("WRITE MEM 2.X\n");
 
-  /* We must subtrack page_offset to get the physical address */
-  roffset = offset - libkernshworld.page_offset;
+  /* We must subtrack kernel_start (page_offset) to get the physical address */
+  roffset = offset - libkernshworld.kernel_start;
 
   if (libkernshworld.mmap)
     {
       if (memcpy(libkernshworld.ptr+roffset, buf, size) == NULL)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Memcpy failed !", -1);
+		       "Memcpy failed !", -1);
 	}
     }
   else
@@ -130,7 +136,7 @@ int kernsh_openmem_netbsd()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("OPEN MEM NETBSD\n");
 #endif
 

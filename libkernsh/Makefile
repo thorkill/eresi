@@ -14,11 +14,11 @@ NAME64_libkernsh        =       libkernsh64.a
 NAME64_libkernsh_o      =       libkernsh64.o
 
 CFLAGS32	= 	-Iinclude -Isrc/include -Wall -g3 -DELFSH32 \
-			-I../libaspect/include -I../librevm/include \
+			-I../libaspect/include \
 			-I../libasm/include -I../libelfsh/include \
 			-I../libedfmt/include -I../libmjollnir/include -O2
 CFLAGS64	=	-Iinclude -Isrc/include -Wall -g3 -fPIC -DELFSH64 \
-			-I../libaspect/include -I../librevm/include \
+			-I../libaspect/include \
 			-I../libasm/include -I../libelfsh/include \
 			-I../libedfmt/include -I../libmjollnir/include -O2
 RM 		= 	rm -f

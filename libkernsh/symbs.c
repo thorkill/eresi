@@ -1,10 +1,15 @@
 /*
 ** symbs.c for libkernsh
 **
-** $Id: symbs.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
+** $Id: symbs.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "libkernsh.h"
+#include "libkernsh-info.h"
+
+#if __LINUX_2_4__
+#include <linux/module.h>
+#endif
 
 /* Get an addr by name */
 int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
@@ -193,6 +198,73 @@ int kernsh_get_name_by_addr_linux_2_6(unsigned long addr, char *name, size_t siz
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   //  printf("SYMBS NBA LINUX 2.6\n");
+
+  ret = kernsh_resolve_systemmap(addr, name, size);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int kernsh_get_kernel_syms(char *name, unsigned long *addr, size_t size)
+{
+#if defined(__linux__)
+#if __LINUX_2_4__
+  int i, numsyms;
+  struct kernel_sym tab_kernel_sym[8192];
+#endif
+#endif
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(__linux__)
+#if __LINUX_2_4__ 
+  numsyms = get_kernel_syms(NULL);
+  if (numsyms < 0 || numsyms > 8192)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Can't get symbol by get_kernel_syms", -1);
+    }
+
+  get_kernel_syms(tab_kernel_sym);
+
+  for (i = 0; i < numsyms; i++)
+    {
+      if (!strncmp(name, tab_kernel_sym[i].name, size))
+	{
+	  *addr = tab_kernel_sym[i].value;
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+    }
+#endif
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+}
+
+/* This function find an addr by name on Linux 2.4.X */
+int kernsh_get_addr_by_name_linux_2_4(char *name, unsigned long *addr, size_t size)
+{
+  int ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //  printf("SYMBS ABN LINUX 2.4\n");
+
+  ret = kernsh_get_kernel_syms(name, addr, size);
+
+  if (ret)
+    ret = kernsh_rresolve_systemmap(name, addr, size);
+   
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/* This function find a name by an addr on Linux 2.4.X */
+int kernsh_get_name_by_addr_linux_2_4(unsigned long addr, char *name, size_t size)
+{
+  int ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //  printf("SYMBS NBA LINUX 2.4\n");
 
   ret = kernsh_resolve_systemmap(addr, name, size);
 

@@ -1,11 +1,12 @@
 /*
 ** alloc.c for libkernsh : allocation contiguous/non contiguous
 **
-** $Id: alloc.c,v 1.2 2007-07-28 15:02:23 pouik Exp $
+** $Id: alloc.c,v 1.3 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "libkernsh.h"
 #include "libkernsh-symbols.h"
+#include "libkernsh-info.h"
 
 /* Alloc contiguous memory */
 int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
@@ -123,7 +124,12 @@ int kernsh_alloc_contiguous_linux(size_t size, unsigned long *addr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get kmalloc's addr */
+#if __LINUX_2_4__
+  ret = kernsh_get_addr_by_name("kmalloc", &kaddr, strlen("kmalloc"));
+#else
   ret = kernsh_get_addr_by_name("__kmalloc", &kaddr, strlen("__kmalloc"));
+#endif
+
   if(ret)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

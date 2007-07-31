@@ -2,7 +2,7 @@
 
 quiet
 
-print \x20[*] Load Kernshrc
+print \x20[*] Load Kernshrc 2.6
 
 # My systemmap
 # configure libkernsh.systemmap /boot/System.map-genkernel-x86-2.6.21.5

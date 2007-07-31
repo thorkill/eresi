@@ -1,11 +1,10 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.5 2007-07-29 16:54:36 pouik Exp $
+** $Id: kernsh.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "libkernsh.h"
-#include "revm.h"
 #include "libaspect-profiler.h"
 
 libkernshworld_t libkernshworld;
@@ -132,10 +131,6 @@ int kernsh_init_i386(char *os, char *release)
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_I386_LINUX_END);
 
-      config_add_item(LIBKERNSH_VMCONFIG_PAGE_OFFSET,
-		      CONFIG_TYPE_INT,
-		      CONFIG_MODE_RW,
-		      (void *) LIBKERNSH_PAGE_I386_LINUX_OFFSET);
     }
   else
     {
@@ -214,7 +209,7 @@ int kernsh_set_static_mode()
 void *kernsh_elfsh_get_raw(void *addr)
 {
   void *dataptr;
-  //  elfshsect_t *sect;
+  elfshsect_t *sect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -224,16 +219,15 @@ void *kernsh_elfsh_get_raw(void *addr)
 
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
     {
-      //sect = (elfshsect_t *)addr;   
+      sect = (elfshsect_t *)addr;   
       
       /* We use physical memory ? */
       if (libkernshworld.physical)
-	dataptr = libkernshworld.ptr - libkernshworld.kernel_start;
-      else
-	dataptr = libkernshworld.ptr;
+	sect->parent->rhdr.base = libkernshworld.kernel_start;
+
       
-      //sect->parent->rhdr.base = 0;
-      //sect->shdr->sh_addr = 0;
+      dataptr = libkernshworld.ptr;
+      
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
 
@@ -317,7 +311,7 @@ int kernsh_info_linux()
 #endif
 
   kernsh_readmem(system_call, buffer, 255);
-  p = (char *)kernsh_find_pattern(buffer,255,"\xff\x14\x85",3);
+  p = (char *)kernsh_find_pattern(buffer, 255, "\xff\x14\x85", 3);
       
   if (p == NULL)
     {

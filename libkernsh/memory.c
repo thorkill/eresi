@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
+** $Id: memory.c,v 1.5 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -31,13 +31,10 @@ int kernsh_openmem()
   libkernshworld.kernel_end = (unsigned long) 
     config_get_data(LIBKERNSH_VMCONFIG_KERNEL_END);
 
-  libkernshworld.page_offset = (unsigned long) 
-    config_get_data(LIBKERNSH_VMCONFIG_PAGE_OFFSET);
 
 #if __DEBUG_KERNSH__
   printf("KERNEL_START 0x%lx\n", libkernshworld.kernel_start);
   printf("KERNEL_END   0x%lx\n", libkernshworld.kernel_end);
-  printf("PAGE_OFFSET  0x%lx\n", libkernshworld.page_offset);
 #endif
 
   if (libkernshworld.os == LIBKERNSH_OS_LINUX_2_6 || 
@@ -165,8 +162,6 @@ int kernsh_closemem()
   fct = aspect_vectors_select(mem, dim);
   
   ret = fct();
-  
-  kernsh_set_static_mode();
 
   libkernshworld.open = 0;
   libkernshworld.idt_base = 0;

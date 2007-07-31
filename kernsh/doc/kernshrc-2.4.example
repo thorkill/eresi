@@ -1,0 +1,27 @@
+#!elfsh
+
+quiet
+
+print \x20[*] Load Kernshrc 2.4
+
+# My systemmap
+# configure libkernsh.systemmap /boot/System.map-2.4.33
+
+# Use debug kernel ?
+# configure libkernsh.use_kernel 1
+
+# Do not use any kernel ?
+# configure libkernsh.without_kernel 1
+
+# Make all type
+
+type ksct = sys:long[320]
+type kint = off1:short sel:short none:byte flags:byte off2:short
+type kidt = idt:kint[256]
+
+# Open memory
+openmem
+
+# Inform type
+inform ksct sys_call_table
+inform kidt idt_table

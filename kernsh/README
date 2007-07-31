@@ -162,8 +162,9 @@ You can define all the libkernsh.*, see section Options below.
 				args : size
 			free_nc : free non contiguous memory
 				args : addr to free
-
-		return : variable $_ is set with the alloc address or
+			symb : get an address of a symbol
+				args : symbol's name
+		return : variable $_ is set with the return address or
 			 the return value 
 		options :
 
@@ -250,10 +251,6 @@ An option can be set directly in the shell or in the .kernshrc :
 
 	- libkernsh.kernel_end : address of kernel end
 		- 0xc1000000 (D) (L)
-		- [L*]
-
-	- libkernsh.page_offset : page_offset
-		- 0xc0000000 (D) (L)
 		- [L*]
 
 [+] Authors 

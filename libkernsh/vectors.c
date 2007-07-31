@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.4 2007-07-28 15:02:23 pouik Exp $
+** $Id: vectors.c,v 1.5 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -18,7 +18,8 @@ int kernsh_openmem_default()
   printf("OPENMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "openmem default !", -1);
 }
 
 int kernsh_closemem_default()
@@ -29,7 +30,8 @@ int kernsh_closemem_default()
   printf("CLOSEMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "closemem default !", -1);
 }
 
 int kernsh_readmem_default()
@@ -40,7 +42,8 @@ int kernsh_readmem_default()
   printf("READMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "readmem default !", -1);
 }
 
 int kernsh_writemem_default()
@@ -51,7 +54,8 @@ int kernsh_writemem_default()
   printf("WRITEMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "writemem default !", -1);
 }
 
 int kernsh_sct_default()
@@ -62,7 +66,8 @@ int kernsh_sct_default()
   printf("SCT DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "sct default !", -1);
 }
 
 int kernsh_idt_default()
@@ -73,7 +78,8 @@ int kernsh_idt_default()
   printf("IDT DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "idt default !", -1);
 }
 
 int kernsh_info_default()
@@ -84,7 +90,8 @@ int kernsh_info_default()
   printf("INFO DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "info default !", -1);
 }
 
 int kernsh_decompkernel_default()
@@ -95,7 +102,8 @@ int kernsh_decompkernel_default()
   printf("DECOMPKERNEL DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "decompkernel default !", -1);  
 }
 
 int kernsh_loadkernel_default()
@@ -106,7 +114,8 @@ int kernsh_loadkernel_default()
   printf("LOADKERNEL DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	     "loadkernel default !", -1);
 }
 
 int kernsh_autovariables_default()
@@ -117,7 +126,8 @@ int kernsh_autovariables_default()
   printf("AUTOVARIABLES DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "autovariables default !", -1);
 }
 
 int kernsh_symbs_default()
@@ -128,7 +138,8 @@ int kernsh_symbs_default()
   printf("SYMBS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "symbs default !", -1);
 }
 
 int kernsh_alloc_contiguous_default()
@@ -139,7 +150,8 @@ int kernsh_alloc_contiguous_default()
   printf("ALLOC CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "alloc contiguous default !", -1);
 }
 
 int kernsh_alloc_noncontiguous_default()
@@ -150,7 +162,8 @@ int kernsh_alloc_noncontiguous_default()
   printf("ALLOC NON CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "alloc non contiguous default !", -1);
 }
 
 int kernsh_free_contiguous_default()
@@ -161,7 +174,8 @@ int kernsh_free_contiguous_default()
   printf("FREE CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "free contiguous default !", -1);
 }
 
 int kernsh_free_noncontiguous_default()
@@ -171,8 +185,9 @@ int kernsh_free_noncontiguous_default()
 #if __DEBUG_KERNEL__
   printf("FREE NON CONTIGUOUS DEFAULT!!!\n");
 #endif
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "free non contiguous default !", -1);
 }
 
 /* Init vectors */
@@ -361,19 +376,36 @@ int kernsh_register_vectors()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, 
-			  LIBKERNSH_DEVICE_KMEM,kernsh_openmem_kmem_linux_2_6);
+			  LIBKERNSH_DEVICE_KMEM,
+			  kernsh_openmem_kmem_linux_2_6);
+  kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, 
+			  LIBKERNSH_DEVICE_KMEM,
+			  kernsh_openmem_kmem_linux_2_4);
   kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, 
-			  LIBKERNSH_DEVICE_MEM, kernsh_openmem_mem_linux_2_6);
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_openmem_mem_linux);
+  kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, 
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_openmem_mem_linux);
   kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			  LIBKERNSH_DEVICE_KCORE, 
 			  kernsh_openmem_kcore_linux_2_6);
   kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
-			  LIBKERNSH_DEVICE_MEM, kernsh_openmem_netbsd);
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_openmem_netbsd);
   
   kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_KMEM, kernsh_closemem_kmem_linux_2_6);
+			   LIBKERNSH_DEVICE_KMEM, 
+			   kernsh_closemem_kmem_linux_2_6);
+  kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_KMEM, 
+			   kernsh_closemem_kmem_linux_2_4);
   kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_MEM, kernsh_closemem_mem_linux_2_6);
+			   LIBKERNSH_DEVICE_MEM, 
+			   kernsh_closemem_mem_linux);
+  kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_MEM, 
+			   kernsh_closemem_mem_linux);
   kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			   LIBKERNSH_DEVICE_KCORE, 
 			   kernsh_closemem_kcore_linux_2_6);
@@ -382,19 +414,36 @@ int kernsh_register_vectors()
 			   kernsh_closemem_netbsd);
 
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_KMEM, kernsh_readmem_kmem_linux_2_6);
+			  LIBKERNSH_DEVICE_KMEM, 
+			  kernsh_readmem_kmem_linux_2_6);
+  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			  LIBKERNSH_DEVICE_KMEM, 
+			  kernsh_readmem_kmem_linux_2_4);
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_MEM, kernsh_readmem_mem_linux_2_6);
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_readmem_mem_linux);
+  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_readmem_mem_linux);
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			  LIBKERNSH_DEVICE_KCORE, 
 			  kernsh_readmem_kcore_linux_2_6);
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
-			  LIBKERNSH_DEVICE_MEM, kernsh_readmem_netbsd);
+			  LIBKERNSH_DEVICE_MEM, 
+			  kernsh_readmem_netbsd);
 
   kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_KMEM, kernsh_writemem_kmem_linux_2_6);
+			   LIBKERNSH_DEVICE_KMEM, 
+			   kernsh_writemem_kmem_linux_2_6);
+  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_KMEM, 
+			   kernsh_writemem_kmem_linux_2_4);
   kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_MEM, kernsh_writemem_mem_linux_2_6);
+			   LIBKERNSH_DEVICE_MEM, 
+			   kernsh_writemem_mem_linux);
+  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_MEM, 
+			   kernsh_writemem_mem_linux);
   kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			   LIBKERNSH_DEVICE_KCORE, 
 			   kernsh_writemem_kcore_linux_2_6);
@@ -416,18 +465,30 @@ int kernsh_register_vectors()
   kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
 		       kernsh_info_linux);
 
-  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_6, kernsh_decompkernel_linux);
-  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_4, kernsh_decompkernel_linux);
+  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_6, 
+			       kernsh_decompkernel_linux);
+  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_4, 
+			       kernsh_decompkernel_linux);
 
   kernsh_register_loadkernel(LIBKERNSH_ARCH_I386, 
-			     LIBKERNSH_OS_LINUX_2_6, kernsh_loadkernel_linux);
+			     LIBKERNSH_OS_LINUX_2_6, 
+			     kernsh_loadkernel_linux);
   kernsh_register_loadkernel(LIBKERNSH_ARCH_I386,
-			     LIBKERNSH_OS_LINUX_2_4, kernsh_loadkernel_linux);
+			     LIBKERNSH_OS_LINUX_2_4,
+			     kernsh_loadkernel_linux);
 
   kernsh_register_symbs_abn(LIBKERNSH_ARCH_I386, 
-			    LIBKERNSH_OS_LINUX_2_6, kernsh_get_addr_by_name_linux_2_6);
+			    LIBKERNSH_OS_LINUX_2_6, 
+			    kernsh_get_addr_by_name_linux_2_6);
+  kernsh_register_symbs_abn(LIBKERNSH_ARCH_I386, 
+			    LIBKERNSH_OS_LINUX_2_4, 
+			    kernsh_get_addr_by_name_linux_2_4);
   kernsh_register_symbs_nba(LIBKERNSH_ARCH_I386,
-			    LIBKERNSH_OS_LINUX_2_6, kernsh_get_name_by_addr_linux_2_6);
+			    LIBKERNSH_OS_LINUX_2_6, 
+			    kernsh_get_name_by_addr_linux_2_6);
+  kernsh_register_symbs_nba(LIBKERNSH_ARCH_I386,
+			    LIBKERNSH_OS_LINUX_2_4, 
+			    kernsh_get_name_by_addr_linux_2_4);
 
   kernsh_register_alloc_contiguous(LIBKERNSH_OS_LINUX_2_6, 
 				   kernsh_alloc_contiguous_linux);

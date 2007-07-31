@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.5 2007-07-29 16:54:36 pouik Exp $
+** $Id: libkernsh.h,v 1.6 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -89,7 +89,6 @@ enum
 #define LIBKERNSH_VMCONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
 #define LIBKERNSH_VMCONFIG_KERNEL_START		"libkernsh.kernel_start"
 #define LIBKERNSH_VMCONFIG_KERNEL_END		"libkernsh.kernel_end"
-#define LIBKERNSH_VMCONFIG_PAGE_OFFSET		"libkernsh.page_offset"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -202,7 +201,6 @@ typedef struct s_libkernshworld
   
 	unsigned long kernel_start;	/* Address of kernel start */
 	unsigned long kernel_end;	/* Address of kernel end */
-	unsigned long page_offset;	/* Page offset */
 
 	int mem;	/* Static/Mem mode */
 
@@ -262,25 +260,29 @@ int	kernsh_register_free_noncontiguous(u_int, void *);
 /* Memory */
 int	kernsh_openmem();
 int	kernsh_openmem_kmem_linux_2_6();
-int	kernsh_openmem_mem_linux_2_6();
+int	kernsh_openmem_kmem_linux_2_4();
+int	kernsh_openmem_mem_linux();
 int	kernsh_openmem_kcore_linux_2_6();
 int	kernsh_openmem_netbsd();
 
 int	kernsh_closemem();
 int	kernsh_closemem_kmem_linux_2_6();
-int	kernsh_closemem_mem_linux_2_6();
+int	kernsh_closemem_kmem_linux_2_4();
+int	kernsh_closemem_mem_linux();
 int	kernsh_closemem_kcore_linux_2_6();
 int	kernsh_closemem_netbsd();
 
 int	kernsh_readmem(unsigned long, void *, int);
 int	kernsh_readmem_kmem_linux_2_6(unsigned long, void *, int);
-int	kernsh_readmem_mem_linux_2_6(unsigned long, void *, int);
+int	kernsh_readmem_kmem_linux_2_4(unsigned long, void *, int);
+int	kernsh_readmem_mem_linux(unsigned long, void *, int);
 int	kernsh_readmem_kcore_linux_2_6(unsigned long, void *, int);
 int	kernsh_readmem_netbsd(unsigned long, void *, int);
 
 int	kernsh_writemem(unsigned long, void *, int);
 int	kernsh_writemem_kmem_linux_2_6(unsigned long, void *, int);
-int	kernsh_writemem_mem_linux_2_6(unsigned long, void *, int);
+int	kernsh_writemem_kmem_linux_2_4(unsigned long, void *, int);
+int	kernsh_writemem_mem_linux(unsigned long, void *, int);
 int	kernsh_writemem_kcore_linux_2_6(unsigned long, void *, int);
 int	kernsh_writemem_netbsd(unsigned long, void *, int);
 
@@ -305,8 +307,11 @@ int	kernsh_get_name_by_addr(unsigned long, char *, size_t);
 
 int	kernsh_get_addr_by_name_linux_2_6(char *, unsigned long *, size_t);
 int	kernsh_get_name_by_addr_linux_2_6(unsigned long, char *, size_t);
+int	kernsh_get_addr_by_name_linux_2_4(char *, unsigned long *, size_t);
+int	kernsh_get_name_by_addr_linux_2_4(unsigned long, char *, size_t);
 
 int	kernsh_walk_kstrtab(const char *, unsigned long *, size_t);
+int	kernsh_get_kernel_syms(char *, unsigned long *, size_t);
 
 /* Tasks */
 

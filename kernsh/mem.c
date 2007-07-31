@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.2 2007-07-29 16:54:36 pouik Exp $
+** $Id: mem.c,v 1.3 2007-07-31 12:31:54 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -228,6 +228,25 @@ int		cmd_mem()
 		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
 	  revm_output(buff);
 	  revm_setvar_int("_", 0);
+	}
+      else if (param2 && !strcmp(param, "symb"))
+	{
+	  if(kernsh_get_addr_by_name(param2, &addr, strlen(param2)))
+	    {
+	      revm_setvar_int("_", -1);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Cannot get symbol", -1);
+	    }
+	  memset(buff, '\0', sizeof(buff));
+	  snprintf(buff, sizeof(buff), 
+		   "%s %s %s %s %s\n\n",
+		   revm_colorfieldstr("SYMBOL"),
+		   revm_colorstr(param2),
+		   revm_colorfieldstr("is"),
+		   revm_colorstr("@"),
+		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	  revm_output(buff);
+	  revm_setvar_long("_", addr);
 	}
       else 
 	{

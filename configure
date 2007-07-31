@@ -203,6 +203,19 @@ echo "" >> kernsh/include/info.h
 echo "#define ARCH \"$arch\"" >> kernsh/include/info.h
 echo "#define OS \"$os\"" >> kernsh/include/info.h
 echo "#define RELEASE \"$release\"" >> kernsh/include/info.h
+if [ $os == 'Linux' ]; then
+    echo "" > libkernsh/include/libkernsh-info.h
+    echo "#ifndef __LIBKERNSH_INFO_H__" >> libkernsh/include/libkernsh-info.h
+    echo " #define __LIBKERNSH_INFO_H__" >> libkernsh/include/libkernsh-info.h
+    res=`expr match "$release" '2.4.*'`
+    if [ $res == 8 ]; then
+	echo "#define __LINUX_2_4__  1" >> libkernsh/include/libkernsh-info.h
+    else
+	echo "#define __LINUX_2_4__  0" >> libkernsh/include/libkernsh-info.h
+    fi
+    echo "" >> libkernsh/include/libkernsh-info.h
+    echo "#endif" >> libkernsh/include/libkernsh-info.h
+fi     
 echo "" >> kernsh/include/info.h
 echo "#endif" >> kernsh/include/info.h
 KERNSH="1"
