@@ -1,7 +1,7 @@
 /*
 ** open.c for kernsh
 ** 
-** $Id: open.c,v 1.2 2007-07-31 12:31:54 pouik Exp $
+** $Id: open.c,v 1.3 2007-07-31 14:41:32 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -37,9 +37,9 @@ int		cmd_openmem()
       
       ret = revm_file_load(buff, 0, NULL);
 
-      //      if (ret)
-      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-      //	     "Unable to load kernel", -1);
+      if (ret)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to load kernel", -1);
     
       libkernshworld.root = revm_lookup_file(buff);
       

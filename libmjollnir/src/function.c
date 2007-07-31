@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  *
  * BSD License
- * $Id: function.c,v 1.42 2007-07-31 03:28:47 may Exp $
+ * $Id: function.c,v 1.43 2007-07-31 14:41:33 pouik Exp $
  *
  */
 #include <libmjollnir.h>
@@ -40,7 +40,7 @@ int		mjr_functions_get(mjrcontext_t *ctxt)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "Flow analysis failed", 0);
+	       "Flow analysis failed", -1);
 }
 
 

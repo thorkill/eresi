@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.65 2007-07-31 03:28:47 may Exp $
+** $Id: blocks.c,v 1.66 2007-07-31 14:41:33 pouik Exp $
 **
 */
 #include "libmjollnir.h"
@@ -43,7 +43,7 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
   if (cnt != 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Flow analysis failed", cnt);
+		    "Flow analysis failed", -1);
 }
 
 
