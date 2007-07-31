@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.24 2007-04-30 11:54:13 thor Exp $
+ * $Id: init.c,v 1.25 2007-07-31 03:28:47 may Exp $
  *
  * Initialization functions
  *
@@ -20,10 +20,14 @@ int		mjr_init_session(mjrsession_t *sess)
   hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ASPECT_TYPE_UNKNOW);
 
   /* register configurable parameters */
-  config_add_item(MJR_COFING_CALL_PREFIX,
+  config_add_item(MJR_CONFIG_BLOC_PREFIX,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
-		  MJR_CALL_PREFIX);
+		  MJR_BLOC_PREFIX);
+  config_add_item(MJR_CONFIG_FUNC_PREFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  MJR_FUNC_PREFIX);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
@@ -49,7 +53,7 @@ int		mjr_set_current_context(mjrsession_t *sess, char *name)
 int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx) 
 {
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
- hash_add(&sess->ctx,ctx->obj->name,ctx);
+ hash_add(&sess->ctx, ctx->obj->name, ctx);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
@@ -82,8 +86,8 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  XALLOC(__FILE__, __FUNCTION__, __LINE__,ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ASPECT_TYPE_UNKNOW);
- hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge, ASPECT_TYPE_UNKNOW);
+ hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
+ hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge    , ASPECT_TYPE_BLOC);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
  ctx->next_id = 1;
  ctx->block_btree=NULL;

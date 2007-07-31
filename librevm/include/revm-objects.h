@@ -1,12 +1,12 @@
 /*
 ** revm.h for librevm in elfsh
 ** 
-** Started on  Thu Feb 22 07:19:04 2001 mayhem
+** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-objects.h,v 1.3 2007-07-14 19:49:50 may Exp $
+** $Id: revm-objects.h,v 1.4 2007-07-31 03:28:47 may Exp $
 **
 */
 #ifndef __REVM_OBJECTS_H_
@@ -31,20 +31,17 @@ typedef	struct		s_revm_object
   u_int               off;            /* Optional byte offset */
   u_int               size;           /* Size of the immediate string */
   u_int               sizelem;        /* Size of element for OBJRAW */
-  char                immed;          /* Immediate binary flag */
-  char                perm;	      /* TRUE if obj is a script variable */
-
-  /* Type information */
+  u_char              immed;          /* Immediate binary flag */
+  u_char              perm;	      /* TRUE if obj is a script variable */
   u_int               type;	      /* The object type identifier */
 
-  /* Only when describing elements of hash tables */
-  char		      *hname;		/* Name of parent hash table */
-  char		      *kname;		/* Name of key in hash table */
-
-#define	CONT_UNKNOW	0
-#define	CONT_HASH	1
-#define	CONT_LIST	2
-  char		      contype;		/* Container type */
+  /* Only when describing elements of hash tables or list */
+#define		      CONT_UNKNOW	0
+#define		      CONT_HASH		1
+#define		      CONT_LIST		2
+  u_char	      contype;		/* Container type */
+  char		      *hname;		/* Name of parent container */
+  char		      *kname;		/* Name of element in container */
 
   /* Immediate value if immed flag is set */
   union               immval

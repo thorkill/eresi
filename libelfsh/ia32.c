@@ -2,10 +2,10 @@
  * @file ia32.c
  * ia32.c for libelfsh
  *
- * Started on  Fri Jan 11 03:05:37 2003 mayhem
+ * Started on  Fri Jan 11 03:05:37 2003 jfv
  *
  *
- * $Id: ia32.c,v 1.19 2007-07-07 10:04:59 mxatone Exp $
+ * $Id: ia32.c,v 1.20 2007-07-31 03:28:46 may Exp $
  *
  */
 #include "libelfsh.h"

@@ -3,10 +3,10 @@
 **
 ** The debugger file for signal handlers
 ** 
-** Started on  Tue Feb 11 21:17:33 2003 mayhem
-** Last update Wed Aug 13 23:22:59 2005 mayhem
+** Started on  Tue Feb 11 21:17:33 2003 jfv
+** Last update Wed Aug 13 23:22:59 2005 jfv
 **
-** $Id: signal.c,v 1.15 2007-07-17 18:11:24 may Exp $
+** $Id: signal.c,v 1.16 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

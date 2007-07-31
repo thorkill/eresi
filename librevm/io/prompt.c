@@ -3,10 +3,10 @@
 **
 ** Interface for prompt management
 **
-** Started on  Fri Nov  2 15:21:56 2001 mayhem
-** Updated on  Mon Mar  5 17:26:11 2007 mayhem
+** Started on  Fri Nov  2 15:21:56 2001 jfv
+** Updated on  Mon Mar  5 17:26:11 2007 jfv
 **
-** $Id: prompt.c,v 1.6 2007-07-17 18:11:25 may Exp $
+** $Id: prompt.c,v 1.7 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

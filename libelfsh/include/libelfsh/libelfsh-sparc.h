@@ -4,10 +4,10 @@
 ** 
 ** Define all the relocation types that can be undefined on various OS
 ** 
-** Last update Sat Feb 27 16:57:02 2005 mayhem
+** Last update Sat Feb 27 16:57:02 2005 jfv
 ** 
 **
-** $Id: libelfsh-sparc.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: libelfsh-sparc.h,v 1.3 2007-07-31 03:28:47 may Exp $
 **
 */
 

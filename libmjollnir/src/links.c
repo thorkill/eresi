@@ -4,8 +4,8 @@
  * All the functions that deal with linking other objects, such
  * as functions, blocks, or others.
  *
- * Started on Fri Jun 22 2007 mayhem
- * $Id: links.c,v 1.2 2007-06-22 21:50:37 may Exp $
+ * Started on Fri Jun 22 2007 jfv
+ * $Id: links.c,v 1.3 2007-07-31 03:28:47 may Exp $
  */
 #include <libmjollnir.h>
 
@@ -30,15 +30,22 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 {
   mjrcontainer_t	*fun;
   mjrfunc_t		*tmpfunc;
-  char			*tmpstr,*md5;
+  char			*tmpstr;
+  char			*md5;
   elfsh_Addr		tmpaddr;
- 
+  elfshsect_t		*dstsect;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_FUNCS__
   fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n",
 	  __FUNCTION__, src, dst, ret);
 #endif
+
+  /* Check if we are not pointing into BSS */
+  dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
+  if (!dstsect || !dstsect->data)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Link/Prepare function layer. We use an intermediate variable, else
    the compiler optimize too hard and that make segfault (bug in gcc ?) */
@@ -49,7 +56,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
       tmpstr = _vaddr2str(tmpaddr);
       fun = mjr_create_function_container(ctxt, tmpaddr, 0, 
 					  tmpstr, NULL, NULL);
-      mjr_function_register(ctxt,tmpaddr, fun);
+      mjr_function_register(ctxt, tmpaddr, fun);
     }
 
   /* Add links between functions */
@@ -80,14 +87,19 @@ int	mjr_link_block_call(mjrcontext_t *ctxt,
 			    elfsh_Addr ret)
 {
   mjrcontainer_t	*csrc,*cdst,*cret;
+  elfshsect_t		*dstsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_BLOCKS__
   fprintf(D_DESC,"[D] %s: linking %x CALL %x RET %x\n",
-	  __FUNCTION__,
-	  src,dst,ret);
+	  __FUNCTION__, src, dst, ret);
 #endif
+
+  /* Check if we are not pointing into BSS */
+  dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
+  if (!dstsect || !dstsect->data)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* at this point we must have src block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
@@ -183,30 +195,28 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
 				 mjrcontainer_t *dst,
 				 int direction)
 {
-
+  list_t       *linklist;
+  listent_t	*curent;
+  listent_t	*savednext;
   mjrlink_t	*lnk;
-  u_int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  lnk = mjr_link_get_by_direction(src, direction);
+  linklist = mjr_link_get_by_direction(src, direction);
 
 #if __DEBUG_BLOCKS__
   fprintf(D_DESC, "[D] %s: src:%d dst:%d dir:%d\n",
 	  __FUNCTION__, src->id, dst->id, direction);
 #endif
 
-  nbr = (direction == MJR_LINK_IN ? src->in_nbr : src->out_nbr);
-  while (lnk)
+  /* First same links to dest, then remove links from source */
+  for (curent = linklist->head; curent; curent = savednext)
     {
-      // 1 - add same links to dst
-      mjr_container_add_link(ctx, dst,lnk->id, lnk->type, direction);
-      // 2 - and remove it from src
-      lnk->type = MJR_LINK_DELETE;
-      lnk = lnk->next;
+      savednext = curent->next;
+      lnk = (mjrlink_t *) curent->data;
+      mjr_container_add_link(ctx, dst, lnk->id, lnk->type, direction);
+      list_del(linklist, curent->key);
     }
 
-  mjr_container_link_cleanup(src,direction);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 

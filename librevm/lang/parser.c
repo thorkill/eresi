@@ -3,9 +3,9 @@
 **
 ** The top level parser of the language
 **
-** Started on Wed Feb 28 19:19:04 2007 mayhem
+** Started on Wed Feb 28 19:19:04 2007 jfv
 **
-** $Id: parser.c,v 1.6 2007-07-19 02:41:26 may Exp $
+** $Id: parser.c,v 1.7 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"
@@ -68,6 +68,8 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested forend statement", -1);
 
+      endlabl = revm_label_get("forend");
+
       if (!strstr(looplabels[curnest - 1], "foreach"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested loop-ending statement", -1);
@@ -75,6 +77,8 @@ int			revm_parse_construct(char *curtok)
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
+
+      fprintf(stderr, "Forend END label = %s \n", forend->endlabel);
     }
 
   /* Here the match parser */
@@ -116,6 +120,9 @@ int			revm_parse_construct(char *curtok)
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
+
+      fprintf(stderr, "Matchend END label = %s \n", forend->endlabel);
+      fprintf(stderr, "New pending (match) END label = %s \n", endlabl);
     }
   
   

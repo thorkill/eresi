@@ -3,9 +3,9 @@
 **
 ** This command cleanup a file by marking as removed all injected sections
 **
-** Started on  Sat May 31 23:48:41 2005 mayhem
+** Started on  Sat May 31 23:48:41 2005 jfv
 **
-** $Id: cleanup.c,v 1.4 2007-07-17 18:11:24 may Exp $
+** $Id: cleanup.c,v 1.5 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "elfsh.h"

@@ -3,10 +3,10 @@
 **
 ** The interface for I/O based on select()
 **
-** Started on Fri Mar 5 00:55:40 2004 mayhem
-** Updated on Mon Mar 5 18:47:41 2007 mayhem
+** Started on Fri Mar 5 00:55:40 2004 jfv
+** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id: select.c,v 1.11 2007-07-17 18:11:25 may Exp $
+** $Id: select.c,v 1.12 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

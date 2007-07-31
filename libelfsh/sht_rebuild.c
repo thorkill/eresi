@@ -6,11 +6,11 @@
  ** This code is functional as it, but it is WORK IN PROGRESS 
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
  ** 
- ** Started on  Tue Mar 26 19:07:23 2002 mayhem
+ ** Started on  Tue Mar 26 19:07:23 2002 jfv
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.16 2007-06-27 11:25:12 heroine Exp $
+ ** $Id: sht_rebuild.c,v 1.17 2007-07-31 03:28:47 may Exp $
  **
  */
 #include "libelfsh.h"

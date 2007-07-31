@@ -6,11 +6,11 @@
 **
 ** This file contains FILE MODIFICATION only (no debugger)
 **
-** Started on  Sun Apr  6 08:35:07 2003 mayhem
-** Last update Sat Jul 30 17:34:52 2005 mayhem
+** Started on  Sun Apr  6 08:35:07 2003 jfv
+** Last update Sat Jul 30 17:34:52 2005 jfv
 **
 **
-** $Id: bss.c,v 1.14 2007-06-27 11:25:12 heroine Exp $
+** $Id: bss.c,v 1.15 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

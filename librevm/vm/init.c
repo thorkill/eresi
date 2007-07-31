@@ -1,10 +1,10 @@
 /*
 ** elfsh.c for elfsh
 **
-** Started on  Wed Feb 21 22:02:36 2001 mayhem
+** Started on  Wed Feb 21 22:02:36 2001 jfv
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: init.c,v 1.29 2007-07-17 18:11:25 may Exp $
+** $Id: init.c,v 1.30 2007-07-31 03:28:48 may Exp $
 **
 */
 

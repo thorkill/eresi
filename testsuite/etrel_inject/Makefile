@@ -1,11 +1,11 @@
 ##
 ## Makefile for elfsh testsuite/etrel_inject
 ## 
-## Made by mayhem
-## Login   <mayhem@epita.fr>
+## Made by jfv
+## Login   <jfv@epita.fr>
 ## 
-## Started on  Sun Dec 15 01:34:42 2002 mayhem
-## Last update Sat May 24 17:45:46 2003 mayhem
+## Started on  Sun Dec 15 01:34:42 2002 jfv
+## Last update Sat May 24 17:45:46 2003 jfv
 ##
 
 all	:

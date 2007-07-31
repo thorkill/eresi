@@ -3,10 +3,10 @@
 **
 ** Misc routines for the debugger
 ** 
-** Started on  Fri Jun 05 15:21:56 2005 mayhem
+** Started on  Fri Jun 05 15:21:56 2005 jfv
 **
 **
-** $Id: e2dbg-misc.c,v 1.7 2007-07-17 18:11:24 may Exp $
+** $Id: e2dbg-misc.c,v 1.8 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

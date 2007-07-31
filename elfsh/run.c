@@ -1,9 +1,9 @@
 /*
 ** run.c for elfsh
 ** 
-** Started on  Wed Feb 21 22:02:36 2001 mayhem
+** Started on  Wed Feb 21 22:02:36 2001 jfv
 **
-** $Id: run.c,v 1.6 2007-07-17 18:11:24 may Exp $
+** $Id: run.c,v 1.7 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "elfsh.h"

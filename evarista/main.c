@@ -3,8 +3,8 @@
 **
 ** The entry point of the static analyzer
 **
-** Started on  Fri Jun 22 14:42:36 2007 mayhem
-** $Id: main.c,v 1.3 2007-07-17 18:11:24 may Exp $
+** Started on  Fri Jun 22 14:42:36 2007 jfv
+** $Id: main.c,v 1.4 2007-07-31 03:28:46 may Exp $
 */
 #include "evarista.h"
 

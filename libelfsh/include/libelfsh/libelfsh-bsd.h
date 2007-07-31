@@ -3,9 +3,9 @@
 ** 
 ** Various undefined macros on BSD
 ** 
-** Last update Mon Feb 26 05:05:27 2005 mayhem
+** Last update Mon Feb 26 05:05:27 2005 jfv
 **
-** $Id: libelfsh-bsd.h,v 1.8 2007-05-31 14:45:55 may Exp $
+** $Id: libelfsh-bsd.h,v 1.9 2007-07-31 03:28:47 may Exp $
 **
 */
 

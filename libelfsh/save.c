@@ -2,10 +2,10 @@
  * @file save.c
 ** save.c for elfsh
 ** 
-** Started on  Tue Mar  4 01:14:01 2003 mayhem
+** Started on  Tue Mar  4 01:14:01 2003 jfv
 ** Last update Thu Mar 23 23:21:08 2006 thorkill
 **
-** $Id: save.c,v 1.10 2007-06-27 11:25:12 heroine Exp $
+** $Id: save.c,v 1.11 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

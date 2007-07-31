@@ -2,12 +2,12 @@
  * @file version.c
 ** version.c for elfsh
 ** 
-** Started     Nov 25 2003 mayhem
-** Last update Nov 25 2003 mayhem
+** Started     Nov 25 2003 jfv
+** Last update Nov 25 2003 jfv
 ** Last update Sep 27 2005 mxatone
 ** 
 **
-** $Id: version.c,v 1.9 2007-06-27 11:25:12 heroine Exp $
+** $Id: version.c,v 1.10 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

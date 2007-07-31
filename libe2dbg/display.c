@@ -1,9 +1,9 @@
 /*
 ** display.c for e2dbg
 **    
-** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
+** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
 **
-** $Id: display.c,v 1.5 2007-07-19 02:41:26 may Exp $
+** $Id: display.c,v 1.6 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

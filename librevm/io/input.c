@@ -3,8 +3,8 @@
 **
 ** Input related functions
 **
-** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** $Id: input.c,v 1.9 2007-07-17 18:11:25 may Exp $
+** Started on  Fri Feb  7 20:53:25 2003 jfv
+** $Id: input.c,v 1.10 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

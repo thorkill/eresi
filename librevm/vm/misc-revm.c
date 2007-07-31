@@ -1,10 +1,10 @@
 /*
 ** misc.c for elfsh
 **
-** Started on  Fri Nov  2 15:21:56 2001 mayhem
-** Updated on  Fri Sep 11 17:26:11 2005 mayhem
+** Started on  Fri Nov  2 15:21:56 2001 jfv
+** Updated on  Fri Sep 11 17:26:11 2005 jfv
 **
-** $Id: misc-revm.c,v 1.8 2007-07-17 18:11:25 may Exp $
+** $Id: misc-revm.c,v 1.9 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

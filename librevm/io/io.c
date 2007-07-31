@@ -3,10 +3,10 @@
 **
 ** Initialize the IO system
 **
-** Started on  Fri Mar  5 00:55:40 2004 mayhem
+** Started on  Fri Mar  5 00:55:40 2004 jfv
 ** Updated on  Mon Mar  5 18:47:41 2005 ym
 **
-** $Id: io.c,v 1.9 2007-07-17 18:11:25 may Exp $
+** $Id: io.c,v 1.10 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

@@ -2,10 +2,10 @@
  * @file state.c
 ** state.c for elfsh
 ** 
-** Started on  Sat Jun  2 15:20:18 2005 mayhem
+** Started on  Sat Jun  2 15:20:18 2005 jfv
 ** 
 **
-** $Id: state.c,v 1.13 2007-06-27 11:25:12 heroine Exp $
+** $Id: state.c,v 1.14 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,7 +1,7 @@
 ##
 ## Makefile for libe2dbg in the ERESI framework
 ##
-## Started on  Tue Aug  16 06:32:29 2005 mayhem
+## Started on  Tue Aug  16 06:32:29 2005 jfv
 ## $id$
 ##
 

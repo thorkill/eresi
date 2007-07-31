@@ -3,10 +3,10 @@
 ** 
 ** This file include the control flow support for scripting
 **
-** Started on  Wed Nov 19 23:02:04 2003 mayhem
-** Updated on  Mon Aug 15 06:01:54 2005 mayhem
+** Started on  Wed Nov 19 23:02:04 2003 jfv
+** Updated on  Mon Aug 15 06:01:54 2005 jfv
 **
-** $Id: loop.c,v 1.9 2007-07-17 18:11:25 may Exp $
+** $Id: loop.c,v 1.10 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

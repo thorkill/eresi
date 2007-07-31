@@ -1,9 +1,9 @@
 /**
  * @file debug.c
  *
- * Started on  Thu Apr  3 21:36:55 2003 mayhem
+ * Started on  Thu Apr  3 21:36:55 2003 jfv
  *
- * $Id: debug.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
+ * $Id: debug.c,v 1.8 2007-07-31 03:28:46 may Exp $
  *
  */
 #include "libelfsh.h"

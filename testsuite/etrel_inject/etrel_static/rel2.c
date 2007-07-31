@@ -3,10 +3,10 @@
 **
 ** Contain all tests for ET_REL injection
 **
-** Started on  Mon Jun 23 06:56:04 2003 mayhem
-** Last update Sun Aug 17 17:41:48 2003 mayhem
+** Started on  Mon Jun 23 06:56:04 2003 jfv
+** Last update Sun Aug 17 17:41:48 2003 jfv
 **
-** $Id: rel2.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: rel2.c,v 1.3 2007-07-31 03:28:48 may Exp $
 **
 */
 #include <stdio.h>

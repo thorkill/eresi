@@ -12,12 +12,18 @@ foreach $element of test
   add $element 3
 forend
 
+print
+lists test
+
 foreach $elem of test
   print List contains element : $elem
 forend
 
-print End of script
-
+print
 lists test
+
+foreach $elem of test
+  print List contains element : $elem
+forend
 
 quit

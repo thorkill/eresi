@@ -2,9 +2,9 @@
 ** control.c in libmjollnir for elfsh
 **
 ** Started : Thu May 29 20:44:39 2003 sk
-** Updated : Sun Dec 30 16:45:48 2006 mayhem
+** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+** $Id: findentry.c,v 1.4 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libmjollnir.h"

@@ -1,10 +1,10 @@
 /*
 ** libhash.h for libaspect from elfsh
 **
-** Started on  Fri Jan 24 20:25:42 2003 mayhem
-** Last update Fri Dec 22 00:14:56 2006 mayhem
+** Started on  Fri Jan 24 20:25:42 2003 jfv
+** Last update Fri Dec 22 00:14:56 2006 jfv
 **
-** $Id: libaspect-hash.h,v 1.6 2007-07-19 02:41:26 may Exp $
+** $Id: libaspect-hash.h,v 1.7 2007-07-31 03:28:46 may Exp $
 **
 */
 
@@ -20,7 +20,7 @@
 */
 typedef struct          s_hashent
 {
-  char                  *key;
+  char                *key;
   void                  *data;
   struct s_hashent      *next;
 }                       hashent_t;
@@ -42,12 +42,12 @@ typedef struct          s_hash
 extern hash_t		*hash_hash;
 
 /* hash.c */
-int		hash_init(hash_t *, char*, int, u_int);	/* Allocate the table */
+int		hash_init(hash_t*, char*, int, u_int);  /* Allocate the table */
 hash_t		*hash_find(char *name);			/* Find a hash table */
 int		hash_register(hash_t *h, char *name);	/* Register a hash table */
 hash_t		*hash_empty(char *name);		/* Empty the hash table */
 void		hash_destroy(hash_t *h);		/* Free the table */
-int		hash_add(hash_t *h, char *k, void *d);	/* Add an entry */
+int		hash_add(hash_t*, char*, void *);       /* Add an entry */
 int		hash_del(hash_t *h, char *key);		/* Delete an entry */
 void		*hash_get(hash_t *h, char *key);	/* Get data from key */
 void 		*hash_select(hash_t *h, char *key);	/* Get an entry pointer */

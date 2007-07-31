@@ -3,10 +3,10 @@
 **
 ** The embedded ELF debugger
 **
-** Started on  Wed Feb 21 22:02:36 2001 mayhem
-** Updated on  Wed Jan 03 17:51:04 2007 mayhem
+** Started on  Wed Feb 21 22:02:36 2001 jfv
+** Updated on  Wed Jan 03 17:51:04 2007 jfv
 **
-** $Id: main.c,v 1.17 2007-07-17 18:11:24 may Exp $
+** $Id: main.c,v 1.18 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "e2dbg.h"

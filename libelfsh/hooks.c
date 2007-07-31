@@ -6,10 +6,10 @@
 ** 
 ** This is using the libaspect vectors
 ** 
-** Started Jan 11 2004 02:57:03 mayhem
+** Started Jan 11 2004 02:57:03 jfv
 ** 
 **
-** $Id: hooks.c,v 1.24 2007-06-27 11:25:12 heroine Exp $
+** $Id: hooks.c,v 1.25 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

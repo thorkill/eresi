@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.13 2007-07-19 02:41:25 may Exp $
+** $Id: types.c,v 1.14 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libaspect.h"
@@ -33,6 +33,8 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
     {ASPECT_TYPENAME_EXPR    , 21		}, /* XXX: should be sizeof(revmexpr_t) */
+    {ASPECT_TYPENAME_BLOC    , 12		}, /* XXX: should be sizeof(mjrblock_t) */
+    {ASPECT_TYPENAME_FUNC    , 110		}, /* XXX: should be sizeof(mjrfunc_t) */
   };
 
 

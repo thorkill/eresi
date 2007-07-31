@@ -1,9 +1,9 @@
 /*
 ** mode.c for e2dbg
 ** 
-** Started on  Tue Aug 16 09:38:03 2005 mayhem
+** Started on  Tue Aug 16 09:38:03 2005 jfv
 **
-** $Id: mode.c,v 1.3 2007-03-18 12:35:04 may Exp $
+** $Id: mode.c,v 1.4 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

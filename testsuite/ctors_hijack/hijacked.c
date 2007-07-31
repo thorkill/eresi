@@ -1,10 +1,10 @@
 /*
 ** hijacked.c for elfsh
 ** 
-** Started on  Sun Mar 10 02:41:10 2002 mayhem
-** Last update Sun Mar 10 02:54:44 2002 mayhem
+** Started on  Sun Mar 10 02:41:10 2002 jfv
+** Last update Sun Mar 10 02:54:44 2002 jfv
 **
-** $Id: hijacked.c,v 1.3 2007-05-16 23:36:37 may Exp $
+** $Id: hijacked.c,v 1.4 2007-07-31 03:28:48 may Exp $
 **
 */
 #include <stdio.h>

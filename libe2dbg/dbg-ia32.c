@@ -7,8 +7,8 @@
 **
 ** Vectors can also be accessed with 'vectors' cmd in any eresi interpreter 
 ** 
-** Started   Sat Sep 24 07:17:33 2005 mayhem
-** $Id: dbg-ia32.c,v 1.3 2007-06-07 16:19:23 may Exp $
+** Started   Sat Sep 24 07:17:33 2005 jfv
+** $Id: dbg-ia32.c,v 1.4 2007-07-31 03:28:46 may Exp $
 */
 #include "libe2dbg.h"
 

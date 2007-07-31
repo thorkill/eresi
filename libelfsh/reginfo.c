@@ -3,10 +3,10 @@
 ** reginfo.c for libelfsh
 ** 
 ** Started on  Wed Mar 23 14:18:20 2005 ym
-** Updated on  Wed Mar 23 14:21:32 2005 mayhem
+** Updated on  Wed Mar 23 14:21:32 2005 jfv
 ** 
 **
-** $Id: reginfo.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: reginfo.c,v 1.5 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

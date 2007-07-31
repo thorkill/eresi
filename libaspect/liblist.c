@@ -3,8 +3,8 @@
 ** 
 ** Contain ELFsh internal lists related API
 **
-** Started on  Fri Jul 13 20:26:18 2007 mayhem
-** $Id: liblist.c,v 1.3 2007-07-19 02:41:25 may Exp $
+** Started on  Fri Jul 13 20:26:18 2007 jfv
+** $Id: liblist.c,v 1.4 2007-07-31 03:28:46 may Exp $
 */
 #include "libaspect.h"
 

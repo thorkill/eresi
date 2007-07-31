@@ -3,8 +3,8 @@
 **
 ** Implementation of scripting declarations for meta-language variables
 **
-** Started on Jun 23 2007 23:39:51 mayhem
-** $Id: expressions.c,v 1.8 2007-07-19 02:41:26 may Exp $
+** Started on Jun 23 2007 23:39:51 jfv
+** $Id: expressions.c,v 1.9 2007-07-31 03:28:48 may Exp $
 */
 #include "revm.h"
 
@@ -149,7 +149,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
   static u_int	pathsize = 0;
   char		pathbuf[BUFSIZ + 1] = {0x00};
   char		*recpath;
-  revmexpr_t	*newexpr, *rootexpr, *next, *prevexpr;
+  revmexpr_t	*newexpr, *rootexpr, *prevexpr;
   void		*childata;
   aspectype_t	*childtype;
   revmobj_t	*curdata;
@@ -158,7 +158,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!curexpr)
     toplevel = 1;
-  newexpr = next = rootexpr = prevexpr = NULL;
+  newexpr = rootexpr = prevexpr = NULL;
 
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Entering revm_expr_init with toplevel = %u\n", toplevel);
@@ -251,7 +251,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, 
 			 ".%s", childtype->fieldname);
 	  revm_inform_type_addr(childtype->name, recpath + 1, 
-			      (elfsh_Addr) childata, newexpr, 0);
+			      (elfsh_Addr) childata, newexpr, 0, 0);
 	  pathsize += len;
 
 	  /* Insert child where necessary */ 
@@ -267,8 +267,8 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  pathsize -= len;
 	  bzero(pathbuf + pathsize, len);
 	}
-
-      /* Terminal case : no recursion */
+      
+       /* Terminal case : no recursion */
       else
 	{
 
@@ -286,7 +286,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 	  /* Lookup scalar value and assign it to the field */
 	  newexpr->value = revm_object_lookup_real(curtype, recpath + 1, 
-						  childtype->fieldname);
+						   childtype->fieldname);
 	  curdata  = revm_lookup_immed(newexpr->strval);
 	  if (!newexpr->value || !curdata)
 	    {
@@ -337,11 +337,9 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	      prevexpr = newexpr;
 	    }
 	  else
-	    {
-	      prevexpr = newexpr;
-	      rootexpr = newexpr;
-	    }
+	    rootexpr = prevexpr = newexpr;
 	}
+
     }
 
   /* Return success or error */
@@ -688,11 +686,11 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname + 1;
-  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0); 
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0, 0); 
   expr = revm_expr_init(dataname, NULL, datatype, data, datavalue);
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
-  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0); 
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0); 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

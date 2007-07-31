@@ -5,10 +5,10 @@
 **
 ** See lts.c for Lazy Type System implementation
 ** 
-** Started on  Mon Feb 24 12:21:12 2003 mayhem
+** Started on  Mon Feb 24 12:21:12 2003 jfv
 **
 **
-** $Id: objects.c,v 1.9 2007-07-17 18:11:25 may Exp $
+** $Id: objects.c,v 1.10 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"
@@ -210,9 +210,7 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
   new->set_obj  = set_obj;
   new->get_name = get_name;
   new->set_name = set_name;
-
   new->type     = type;
-
   new->get_data = get_data;
   new->set_data = set_data;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));

@@ -5,8 +5,8 @@
 **
 ** Those hooks stay in the debugger and not in libelfsh.
 ** 
-** Started   Sat Sep 24 07:17:33 2005 mayhem
-** $Id: dbghooks.c,v 1.7 2007-06-07 23:21:57 may Exp $
+** Started   Sat Sep 24 07:17:33 2005 jfv
+** $Id: dbghooks.c,v 1.8 2007-07-31 03:28:46 may Exp $
 */
 #include "libe2dbg.h"
 

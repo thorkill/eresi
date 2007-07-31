@@ -4,9 +4,9 @@
 ** The high-level network interface
 **
 ** Started Wed Feb 25 22:22:35 2004 yann_malcom
-** Updated Mon Mar 05 04:37:10 2007 mayhem 
+** Updated Mon Mar 05 04:37:10 2007 jfv 
 **
-** $Id: network.c,v 1.6 2007-07-17 18:11:25 may Exp $
+** $Id: network.c,v 1.7 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

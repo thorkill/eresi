@@ -1,9 +1,9 @@
 /*
-** (C) 2006 Devhell Labs / Asgard Labs : sk, mayhem, thorolf
+** (C) 2006 Devhell Labs / Asgard Labs : sk, jfv, thorolf
 ** 
 ** Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.37 2007-07-17 18:11:24 may Exp $
+** $Id: core.c,v 1.38 2007-07-31 03:28:47 may Exp $
 */
 
 #include "libmjollnir.h"
@@ -14,7 +14,7 @@
  * @param sess Mjollnir session
  * @param section_name The name of the section we want to analyse
  */
-int		  mjr_analyse_section(mjrsession_t *sess, char *section_name) 
+int			mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   mjrcontainer_t	*cntnr;
   elfshsect_t    	*sct;
@@ -68,26 +68,26 @@ int		  mjr_analyse_section(mjrsession_t *sess, char *section_name)
 
   /* Read all instructions of the section */
   while (curr < len) 
-  {
-    ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
-
+    {
+      ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
+      
 #if __DEBUG_READ__
-    fprintf(D_DESC,"[D] %s/%s,%d: ilen=%x\n",
-	    __FUNCTION__, __FILE__, __LINE__, ilen);
+      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%x\n",
+	      __FUNCTION__, __FILE__, __LINE__, ilen);
 #endif
-
-    if (ilen > 0) 
-      {
-	mjr_history_shift(sess->cur, instr, vaddr + curr);
-	mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
-      } 
-    else
-      {
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "asm_read_instr returned <= 0 lenght", -1);
-      }
-    curr += ilen;
-  }
+      
+      if (ilen > 0) 
+	{
+	  mjr_history_shift(sess->cur, instr, vaddr + curr);
+	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
+	} 
+      else
+	{
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "asm_read_instr returned <= 0 lenght", -1);
+	}
+      curr += ilen;
+    }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -179,7 +179,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Can't create initial blocks", 0);
 
-    hash_add(&sess->cur->blkhash,_vaddr2str(sct->shdr->sh_addr), fcnt);
+    hash_add(&sess->cur->blkhash, _vaddr2str(sct->shdr->sh_addr), fcnt);
 
   }
   
@@ -203,15 +203,14 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   }
 
   /* Store analyzed functions in file */
-  if (mjr_functions_store(sess->cur) < 0)
+  if (mjr_flow_store(sess->cur, ASPECT_TYPE_FUNC) <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to store functions in file", -1);
   
   /* Store analyzed blocks in file */
-  if (mjr_blocks_store(sess->cur) < 0)
+  if (mjr_flow_store(sess->cur, ASPECT_TYPE_BLOC) <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to store blocks in file", -1);
-  
   
   /* Set the flag and return */
   sess->cur->analysed = 1;

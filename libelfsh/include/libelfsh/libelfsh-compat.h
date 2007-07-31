@@ -1,10 +1,10 @@
 /*
 ** libelfsh-compat.h for libelfsh
 ** 
-** Started on  Tue Feb 18 04:15:42 2003 mayhem
-** Last update Mon Feb 23 16:23:43 2004 mayhem
+** Started on  Tue Feb 18 04:15:42 2003 jfv
+** Last update Mon Feb 23 16:23:43 2004 jfv
 **
-** $Id: libelfsh-compat.h,v 1.9 2007-03-07 16:45:35 thor Exp $
+** $Id: libelfsh-compat.h,v 1.10 2007-07-31 03:28:47 may Exp $
 **
 */
 

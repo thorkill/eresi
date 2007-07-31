@@ -5,9 +5,9 @@
 ** This function contains the research function inside the ELF structures
 ** of the address space of the process or program.
 ** 
-** Started on Sat Nov 25 21:19:53 2006 mayhem
+** Started on Sat Nov 25 21:19:53 2006 jfv
 **
-** $Id: search.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: search.c,v 1.6 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

@@ -3,8 +3,8 @@
 **
 ** This file contains all command and objects definitions for specific Evarista scripting
 **
-** Started on Fri Jun 22 07:48:41 2007 mayhem
-** $Id: tables.c,v 1.2 2007-07-17 18:11:24 may Exp $
+** Started on Fri Jun 22 07:48:41 2007 jfv
+** $Id: tables.c,v 1.3 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "evarista.h"

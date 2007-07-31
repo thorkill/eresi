@@ -2,14 +2,14 @@
  * @file sparc64.c
 ** sparc64.c for libelfsh
 ** 
-** Started on  Sat Jan 15 14:25:37 2005 mayhem
-** Last update Sat Jan 15 14:26:39 2005 mayhem
+** Started on  Sat Jan 15 14:25:37 2005 jfv
+** Last update Sat Jan 15 14:26:39 2005 jfv
 ** 
 ** Cut & Pasted from the sparc32 backend
 ** 64 bits backend work-in-progress
 ** 
 **
-** $Id: sparc64.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: sparc64.c,v 1.5 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

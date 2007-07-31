@@ -1,9 +1,9 @@
 /*
 ** access.c : Implementation of scripting lookups for meta-language variables
 **
-** Started Jan 23 2007 23:39:51 mayhem
+** Started Jan 23 2007 23:39:51 jfv
 **
-** $Id: access.c,v 1.20 2007-07-25 21:55:06 pouik Exp $
+** $Id: access.c,v 1.21 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

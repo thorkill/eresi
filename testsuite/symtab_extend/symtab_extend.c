@@ -1,10 +1,10 @@
 /*
 ** symtab_extend.c for elfsh testsuite
 ** 
-** Started on  Sun Mar 10 01:18:51 2002 mayhem
-** Last update Mon Jun 30 11:13:50 2003 mayhem
+** Started on  Sun Mar 10 01:18:51 2002 jfv
+** Last update Mon Jun 30 11:13:50 2003 jfv
 **
-** $Id: symtab_extend.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: symtab_extend.c,v 1.3 2007-07-31 03:28:48 may Exp $
 **
 */
 #include	"libelfsh.h"

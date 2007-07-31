@@ -1,11 +1,11 @@
 /*
- * 2001-2007 Devhell Labs
- * 2006-2007 Asgard Labs, thorolf
- * 2007      Rfdlabs, Strauss 
+ * 2001-2007 Devhell Labs, Asgardlabs, Rfdlabs
  *
  * Container structures for libmjollnir
  *
- * $Id: libmjollnir-container.h,v 1.9 2007-05-11 10:48:29 may Exp $
+ * Implementation by jfv, heroine, thorkill, and strauss
+ *
+ * $Id: libmjollnir-container.h,v 1.10 2007-07-31 03:28:47 may Exp $
  *
  */
 #if !defined(__MJR_CONTAINER__)
@@ -26,35 +26,32 @@
  * - an id field to reference the destination container of this link
  * - a pointer to the next link in this list of links
  */
-typedef	struct		s_link 
+
+/* XXX: the type field has to be changed for a real eresi type id if 
+   we hope to do any shape analysis in ERESI */
+typedef	struct	s_link 
 {
 #define MJR_LINK_FUNC_CALL		0 /* a call between functions	*/
 #define MJR_LINK_FUNC_RET		1 /* a function returning control */
 #define MJR_LINK_BLOCK_COND_TRUE	2 /* 'true' condition of a branch */
 #define MJR_LINK_BLOCK_COND_FALSE	3 /* 'false' condition of a branch */
 #define MJR_LINK_BLOCK_COND_ALWAYS	4 /* uncoditional branch */
-#define MJR_LINK_DELETE			5 /* internal mark for link delete */
-#define MJR_LINK_TYPE_DELAY		6 /* should be ignored on 
-					     graph based analysis */
-#define	MJR_LINK_UNKNOWN		7 /* unknown type */
-  unsigned int		id;
-  int			type;
-  struct s_link		*next;
-}			mjrlink_t;
+#define MJR_LINK_TYPE_DELAY		5 /* generally ignored but useful */
+#define	MJR_LINK_UNKNOWN		6 /* unknown type */
+  unsigned int	id;
+  int		type;
+}		mjrlink_t;
 
+/* Structure to define a generic container */
 typedef struct	s_container	
 {
-#define MJR_CNTNR_FUNC		0 /* object contained is a mjrfunc_t */
-#define MJR_CNTNR_BLOCK		1 /* object contained is a mjrblock_t */
-#define MJR_CNTNR_CNTNR		2 /* object contained is a mjrcontainer_t */
-#define MJR_CNTNR_UNKNOWN	3 /* object contained is of unknown type */
   unsigned int 	id;	  	  /* unique id of this container */
   void		*data;		  /* points to the desired object */
-  u_int		type;		  /* type of the object */
-  mjrlink_t	*input;		  /* a way we came to this container */
-  unsigned int	in_nbr;		  /* number of input links */
-  mjrlink_t	*output;	  /* a way to the next container */
-  unsigned int	out_nbr;	  /* number of output links */
+  u_int		type;		  /* Contained object type */
+  u_int		nbrinlinks;	  /* Number of -ondisk- input links */
+  u_int		nbroutlinks;	  /* Number of -ondisk- output links */
+  list_t	*inlinks;	  /* Input links for this container */
+  list_t	*outlinks;	  /* Output links for this container */
 }		mjrcontainer_t;
 
 #endif

@@ -1,7 +1,7 @@
 /*
-** (C) 2001-2007 Devhell Labs / Asgard Labs : thorolf / sk / mayhem
+** (C) 2001-2007 Devhell Labs / Asgard Labs : thorolf / sk / jfv
 **
-** $Id: history.c,v 1.13 2007-06-22 16:16:05 may Exp $
+** $Id: history.c,v 1.14 2007-07-31 03:28:47 may Exp $
 */
 #include "libmjollnir.h"
 

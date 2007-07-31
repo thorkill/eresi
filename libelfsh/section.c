@@ -4,10 +4,10 @@
 ** 
 ** All handlers and lowlevel routines for sections management
 ** 
-** Started on  Mon Feb 26 04:12:42 2001 mayhem
+** Started on  Mon Feb 26 04:12:42 2001 jfv
 ** 
 **
-** $Id: section.c,v 1.14 2007-07-25 21:55:06 pouik Exp $
+** $Id: section.c,v 1.15 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

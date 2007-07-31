@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.10 2007-07-17 18:11:24 may Exp $
+** $Id: edfmt.c,v 1.11 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"
@@ -225,7 +225,7 @@ static int		revm_edfmt_inform(edfmtvar_t *var)
   else
     str = var->type->name;
 
-  revm_inform_type(str, buf, buf, NULL, 0);
+  revm_inform_type(str, buf, buf, NULL, 0, 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

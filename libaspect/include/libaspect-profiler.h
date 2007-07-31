@@ -1,10 +1,10 @@
 /*
 ** libelfsh-internal.h for elfsh
 ** 
-** Started on  Wed Jan  1 07:51:24 2003 mayhem
-** Last update Thu Mar 20 06:19:53 2003 mayhem
+** Started on  Wed Jan  1 07:51:24 2003 jfv
+** Last update Thu Mar 20 06:19:53 2003 jfv
 **
-** $Id: libaspect-profiler.h,v 1.7 2007-07-25 19:48:21 pouik Exp $
+** $Id: libaspect-profiler.h,v 1.8 2007-07-31 03:28:46 may Exp $
 **
 */
 

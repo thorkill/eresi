@@ -2,10 +2,10 @@
  * @file stabs.c
 ** stabs.c for libelfsh
 ** 
-** Started on  Mon Feb 26 04:14:06 2001 mayhem
+** Started on  Mon Feb 26 04:14:06 2001 jfv
 ** 
 **
-** $Id: stab.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: stab.c,v 1.7 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

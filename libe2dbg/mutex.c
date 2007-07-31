@@ -3,9 +3,9 @@
 **
 ** The debugger needs mutexes inside signal handlers so we do not use pthread mutexes
 ** 
-** Last update Wed Oct 11 18:22:59 2005 mayhem
+** Last update Wed Oct 11 18:22:59 2005 jfv
 **
-** $Id: mutex.c,v 1.3 2007-06-07 16:10:00 may Exp $
+** $Id: mutex.c,v 1.4 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

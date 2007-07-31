@@ -3,10 +3,10 @@
 **
 ** The header file for modular objects in the framework
 **
-** Started Dec 22 2006 02:57:03 mayhem
+** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: libaspect.h,v 1.31 2007-07-19 02:41:26 may Exp $
+** $Id: libaspect.h,v 1.32 2007-07-31 03:28:46 may Exp $
 **
 */
 #if !defined(__ASPECT_H__)
@@ -113,7 +113,9 @@
 #define		ASPECT_TYPE_HASH	10  /* Hash table type	 */
 #define		ASPECT_TYPE_LIST	11  /* List type         */
 #define		ASPECT_TYPE_EXPR	12  /* Expression type   */
-#define         ASPECT_TYPE_BASENUM     13  /* BASE TYPES NUMBER */
+#define		ASPECT_TYPE_BLOC	13  /* Block type        */
+#define		ASPECT_TYPE_FUNC	14  /* Function type     */
+#define         ASPECT_TYPE_BASENUM     15  /* BASE TYPES NUMBER */
 
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
 #define		ASPECT_TYPENAME_RAW	"raw"     
@@ -128,6 +130,9 @@
 #define		ASPECT_TYPENAME_HASH	"hash"
 #define		ASPECT_TYPENAME_LIST	"list"
 #define		ASPECT_TYPENAME_EXPR	"expr"
+#define		ASPECT_TYPENAME_BLOC	"block"
+#define		ASPECT_TYPENAME_FUNC	"func"
+
 
 /* A structure for the type information */
 typedef struct		s_info

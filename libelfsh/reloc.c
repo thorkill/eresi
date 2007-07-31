@@ -2,10 +2,10 @@
  * @file reloc.c
 ** reloc.c for elfsh
 ** 
-** Started on  Tue Feb 27 14:34:50 2001 mayhem
+** Started on  Tue Feb 27 14:34:50 2001 jfv
 ** 
 **
-** $Id: reloc.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: reloc.c,v 1.5 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

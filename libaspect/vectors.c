@@ -3,10 +3,10 @@
 **
 ** Implement the modularity for the framework
 **
-** Started Dec 22 2006 02:57:03 mayhem
+** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: vectors.c,v 1.21 2007-03-07 16:45:35 thor Exp $
+** $Id: vectors.c,v 1.22 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libaspect.h"

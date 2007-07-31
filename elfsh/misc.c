@@ -1,10 +1,10 @@
 /*
 ** misc.c for elfsh
 **
-** Started on  Fri Nov  2 15:21:56 2001 mayhem
-** Updated on  Wed Jan 03 17:31:11 2007 mayhem
+** Started on  Fri Nov  2 15:21:56 2001 jfv
+** Updated on  Wed Jan 03 17:31:11 2007 jfv
 **
-** $Id: misc.c,v 1.15 2007-07-17 18:11:24 may Exp $
+** $Id: misc.c,v 1.16 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "elfsh.h"

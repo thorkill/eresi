@@ -1,7 +1,7 @@
 ##
 ## Makefile for elfsh
 ##
-## Started on  Fri Nov  2 16:32:29 2001 mayhem
+## Started on  Fri Nov  2 16:32:29 2001 jfv
 ##
 
 include ../config.h

@@ -3,9 +3,9 @@
 **
 ** Implement the commands registration handlers
 ** 
-** Started on  Fri Nov  2 15:17:02 2001 mayhem
+** Started on  Fri Nov  2 15:17:02 2001 jfv
 **
-** $Id: options.c,v 1.7 2007-07-19 02:41:26 may Exp $
+** $Id: options.c,v 1.8 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

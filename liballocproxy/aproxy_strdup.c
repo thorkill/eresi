@@ -1,10 +1,10 @@
 /*
 ** A version of the strdup function that proxy allocation
 **
-** Made by mayhem for the ERESI project
+** Made by jfv for the ERESI project
 **
 **
-** $Id: aproxy_strdup.c,v 1.4 2007-03-07 16:45:34 thor Exp $
+** $Id: aproxy_strdup.c,v 1.5 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "aproxy.h"

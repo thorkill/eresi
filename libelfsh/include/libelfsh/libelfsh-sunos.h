@@ -1,10 +1,10 @@
 /*
 ** libelfsh-sunos.h
 **
-** Started on  Fri Dec  7 21:29:00 2001 mayhem
-** Last update Mon Feb 26 05:05:27 2005 mayhem
+** Started on  Fri Dec  7 21:29:00 2001 jfv
+** Last update Mon Feb 26 05:05:27 2005 jfv
 **
-** $Id: libelfsh-sunos.h,v 1.3 2007-05-11 10:48:29 may Exp $
+** $Id: libelfsh-sunos.h,v 1.4 2007-07-31 03:28:47 may Exp $
 **
 */
 

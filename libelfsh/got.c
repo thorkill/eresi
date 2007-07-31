@@ -2,10 +2,10 @@
  * @file got.c
 ** got.c for elfsh
 ** 
-** Started on  Sun Jun 24 21:30:41 2001 mayhem
-** Last update Thu May 15 04:39:15 2003 mayhem
+** Started on  Sun Jun 24 21:30:41 2001 jfv
+** Last update Thu May 15 04:39:15 2003 jfv
 **
-** $Id: got.c,v 1.9 2007-06-27 11:25:12 heroine Exp $
+** $Id: got.c,v 1.10 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

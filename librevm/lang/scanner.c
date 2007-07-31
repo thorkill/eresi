@@ -1,10 +1,10 @@
 /*
 ** lexer.c for elfsh
 ** 
-** Started on  Fri Feb  7 20:53:25 2003 mayhem
-** Updated on  Fri Mar  5 18:47:41 2007 mayhem
+** Started on  Fri Feb  7 20:53:25 2003 jfv
+** Updated on  Fri Mar  5 18:47:41 2007 jfv
 **
-** $Id: scanner.c,v 1.11 2007-07-17 18:11:25 may Exp $
+** $Id: scanner.c,v 1.12 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

@@ -2,10 +2,10 @@
 **
 ** libe2dbg.h for The Embedded ELF debugger 
 **
-** Started on Sun 05 Jun 2005 17:54:01 mayhem
+** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.25 2007-07-17 18:11:24 may Exp $
+** $Id: libe2dbg.h,v 1.26 2007-07-31 03:28:46 may Exp $
 **
 */
 #ifndef __E2DBG_H__

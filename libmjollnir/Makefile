@@ -1,15 +1,15 @@
 #
 # LibMjollnir Makefile
 #
-# (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, mayhem, thorolf)
+# (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, jfv, thorolf)
 #
 # BSD License 
 #
 include ../config.h
 
-SRC	= src/blocks.c src/core.c src/function.c src/history.c src/init.c \
-	src/container.c src/symtab.c src/findentry.c src/cfg.c src/fingerprint.c \
-	src/display.c src/links.c
+SRC	= src/blocks.c src/core.c src/history.c src/init.c src/symtab.c \
+	src/findentry.c src/cfg.c src/fingerprint.c src/display.c src/links.c \
+	src/ondisk.c src/function.c src/container.c
 
 OBJ	= ${SRC:.c=.o}
 OBJ32	= ${SRC:.c=.32.o}

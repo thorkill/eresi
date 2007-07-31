@@ -1,10 +1,10 @@
 /*
 ** sht_inject.c
 ** 
-** Started on  Sun Mar 17 05:57:23 2002 mayhem
-** Last update Thu Mar 20 06:36:23 2003 mayhem
+** Started on  Sun Mar 17 05:57:23 2002 jfv
+** Last update Thu Mar 20 06:36:23 2003 jfv
 **
-** $Id: section_inject.c,v 1.2 2007-03-07 16:45:36 thor Exp $
+** $Id: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,11 +1,11 @@
 ##
 ## Makefile for  in 
 ## 
-## Made by mayhem
-## Login   <mayhem@epita.fr>
+## Made by jfv
+## Login   <jfv@epita.fr>
 ## 
-## Started on  Sun Mar 10 01:19:24 2002 mayhem
-## Last update Sun Dec 15 01:55:25 2002 mayhem
+## Started on  Sun Mar 10 01:19:24 2002 jfv
+## Last update Sun Dec 15 01:55:25 2002 jfv
 ##
 
 include ../../config.h

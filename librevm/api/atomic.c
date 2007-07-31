@@ -1,9 +1,9 @@
 /*
 ** arith.c for elfsh
 ** 
-** Started on  Sun Feb  9 22:43:34 2003 mayhem
+** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.7 2007-07-19 02:41:26 may Exp $
+** $Id: atomic.c,v 1.8 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"
@@ -52,6 +52,7 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   elfsh_Addr		dst;
   char			buf[BUFSIZ];
   revmobj_t		*res;
+  u_char		wastr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -66,10 +67,14 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 		      "Destination parameter must not be a constant", -1);
 
   /* Preliminary checks */
+  wastr = 0;
   if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
     o1->type = ASPECT_TYPE_INT;
   else if (o1->type == ASPECT_TYPE_STR)
-    revm_convert_object(o1, ASPECT_TYPE_INT);
+    {
+      revm_convert_object(o1, ASPECT_TYPE_INT);
+      wastr = 1;
+    }
   if ((o1->type != ASPECT_TYPE_INT   &&
        o1->type != ASPECT_TYPE_BYTE  && 
        o1->type != ASPECT_TYPE_SHORT && 
@@ -128,6 +133,10 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
       revm_output(buf);
     }
   
+  /* If the object was a string, translate it back */
+  if (wastr)
+    revm_convert_object(o1, ASPECT_TYPE_STR);
+
   if (!o2->perm)
     XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
   if (!o1->perm)
@@ -142,7 +151,7 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 int			revm_hash_add(hash_t *h, revmobj_t *o)
 {
   elfsh_Addr		elem;
-  char			*key;
+  u_char		*key;
   hash_t		*src;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -161,11 +170,11 @@ int			revm_hash_add(hash_t *h, revmobj_t *o)
       if (revm_convert_object(o, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
+      key = (u_char *) (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
     }
   else
-    key = (o->kname ? o->kname : o->hname ? o->hname : 
-	   o->get_name(o->root, o->parent));
+    key = (u_char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
+	   
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown key for source object", -1);
@@ -181,7 +190,7 @@ int			revm_hash_add(hash_t *h, revmobj_t *o)
    
   /* Add it to the hash table */
   elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
-  hash_add(h, key, (void *) elem);
+  hash_add(h, (char *) key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -213,8 +222,7 @@ int			revm_list_add(list_t *h, revmobj_t *o)
       key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
     }
   else
-    key = (o->kname ? o->kname : o->hname ? o->hname : 
-	   o->get_name(o->root, o->parent));
+    key = (o->kname ? o->kname : o->hname ? o->hname : o->get_name(o->root, o->parent));
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown key for source object", -1);
@@ -318,10 +326,7 @@ int			revm_list_del(list_t *h, revmobj_t *o)
 
 
 /* API for setting elements inside hash */
-int			revm_hash_set(char   *table, 
-				    char   *elmname, 
-				    void   *obj,
-				    u_char type)
+int			revm_hash_set(char *table, char *elmname, void *obj, u_int type)
 {
   hash_t		*h;
 
@@ -345,10 +350,7 @@ int			revm_hash_set(char   *table,
 
 
 /* API for setting elements inside hash */
-int			revm_list_set(char   *table, 
-				    char   *elmname, 
-				    void   *obj,
-				    u_char type)
+int			revm_list_set(char *table, char *elmname, void *obj, u_int type)
 {
   list_t		*h;
 

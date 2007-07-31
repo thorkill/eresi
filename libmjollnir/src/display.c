@@ -5,9 +5,9 @@
 **
 ** FIXME: needs to use revm_output() and not printf inside elfsh.
 **
-** Started on  Tue Jan 02 04:04:18 2006 mayhem
+** Started on  Tue Jan 02 04:04:18 2006 jfv
 **
-** $Id: display.c,v 1.13 2007-07-17 18:11:24 may Exp $
+** $Id: display.c,v 1.14 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -28,6 +28,7 @@
  */
 int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disopt)
 {
+  listent_t		*curent;
   mjrlink_t		*ccal;
   char			*str;
   char			*end_str;
@@ -36,7 +37,8 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
   char			buf1[30];
   char			buf2[30];
   mjrblock_t		*block;
-  
+  mjrblock_t		*tmp;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   block = cur->data;
@@ -49,7 +51,8 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
     *buf1 = 0x00;
   else
     snprintf(buf1, sizeof (buf1), "<%s + " UFMT ">", str, offset);
-  if (end_str == NULL || !(mjr_get_link_of_type(cur->output, MJR_LINK_BLOCK_COND_TRUE)))
+
+  if (end_str == NULL || !(mjr_get_link_by_type(cur->outlinks, MJR_LINK_BLOCK_COND_TRUE)))
     *buf2 = 0x00;
   else
     snprintf(buf2, sizeof (buf2), "<%s + " UFMT ">", end_str, end_offset);
@@ -57,7 +60,8 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
   printf("[%8lx:%05i] %-30s --> %-30s ", 
 	 (unsigned long) block->vaddr, block->size, buf1, buf2);
   
-  /*  if (cur->false == 0xFFFFFFFF)
+  /*  
+      if (cur->false == 0xFFFFFFFF)
       printf(" [?]");
       else if (cur->false != NULL)
       {
@@ -65,11 +69,13 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
       printf(" [%s + " UFMT "]", (str ? str : ""), offset);
       }
   */      
+
   printf("\n");
   if (disopt->level > 0)
-    for (ccal = cur->input; ccal; ccal = ccal->next) 
+    for (curent = cur->inlinks->head; curent; curent = curent->next) 
       {
-	mjrblock_t *tmp = mjr_lookup_container(ctxt, ccal->id)->data;
+	ccal = (mjrlink_t *) curent->data;
+	tmp = mjr_lookup_container(ctxt, ccal->id)->data;
 	str = elfsh_reverse_metasym(disopt->file, tmp->vaddr, &offset);
 	printf("\texecuted from: (" AFMT ") <%s + " UFMT ">\n",
 	       tmp->vaddr, (str ? str : ""), (elfsh_SAddr) offset);
@@ -81,26 +87,26 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
 /**
  * Print the content of the control flow section 
  */
-int		mjr_blocks_display(mjrcontext_t	*c, int level)
+int			mjr_blocks_display(mjrcontext_t	*c, int level)
 {
   mjropt_t		opt;
   mjrcontainer_t	*block;
   char			**keys;
   int			index;
   int			blocnbr;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   opt.counter = 0;
   opt.level   = level;
   opt.file    = c->obj;
   keys        = hash_get_keys(&c->blkhash, &blocnbr);
-
+  
   for (index = 0; index < blocnbr; index++)
-  {
-    block = hash_get(&c->blkhash, keys[index]);
-    mjr_block_display(c, block, &opt);
-  }
-
+    {
+      block = hash_get(&c->blkhash, keys[index]);
+      mjr_block_display(c, block, &opt);
+    }
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, opt.counter);
 }
 
@@ -115,22 +121,22 @@ void		mjr_function_display(mjrfunc_t *func)
 /**
  * Print the functions in the function hash for the current context 
  */
-void		mjr_funcs_display(mjrcontext_t *c)
+void		 mjr_funcs_display(mjrcontext_t *c)
 {
-  char						**keys;
-  int							keynbr;
-  int							index;
-  mjrfunc_t				*current;
-	mjrcontainer_t 	*cntnr;
-
+  char		**keys;
+  int		 keynbr;
+  int		 index;
+  mjrfunc_t	 *current;
+  mjrcontainer_t *cntnr;
+  
   keys = hash_get_keys(&c->funchash, &keynbr);
   for (index = 0; index < keynbr; index++)
-  {
-    cntnr = hash_get(&c->funchash, keys[index]);
-		current = cntnr->data;
-    mjr_function_display(current);
-  }
-  hash_free_keys((char **) keys);
+    {
+      cntnr = hash_get(&c->funchash, keys[index]);
+      current = cntnr->data;
+      mjr_function_display(current);
+    }
+  hash_free_keys(keys);
 }
 
 
@@ -144,6 +150,6 @@ char	*_vaddr2str(elfsh_Addr addr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, tmp, BSIZE_SMALL, NULL);
   snprintf(tmp, BSIZE_SMALL, AFMT, addr);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char *) tmp);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, tmp);
 }
 

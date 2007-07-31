@@ -3,9 +3,9 @@
 **
 ** Implement job API necessary for revm-io
 **
-** Started September 16 03:11:04 2005 mayhem
+** Started September 16 03:11:04 2005 jfv
 **
-** $Id: curjob.c,v 1.4 2007-07-17 18:11:25 may Exp $
+** $Id: curjob.c,v 1.5 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

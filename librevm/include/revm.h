@@ -1,10 +1,10 @@
 /*
 ** revm.h for librevm in ERESI
 ** 
-** Started on  Thu Feb 22 07:19:04 2001 mayhem
+** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.77 2007-07-26 14:33:52 pouik Exp $
+** $Id: revm.h,v 1.78 2007-07-31 03:28:47 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -1065,8 +1065,8 @@ int		revm_hash_add(hash_t *h, revmobj_t *o);
 int		revm_hash_del(hash_t *h, revmobj_t *o);
 int		revm_list_add(list_t *h, revmobj_t *o);
 int		revm_list_del(list_t *h, revmobj_t *o);
-int		revm_hash_set(char *tab, char *elm, void *obj, u_char type);
-int		revm_list_set(char *tab, char *elm, void *obj, u_char type);
+int		revm_hash_set(char *tab, char *elm, void *obj, u_int type);
+int		revm_list_set(char *tab, char *elm, void *obj, u_int type);
 int		revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
 int		revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
 int		revm_object_set(revmobj_t *o1, revmobj_t *o2);
@@ -1088,8 +1088,8 @@ int		revm_edfmt_parse(elfshobj_t *file);
 int		revm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
-int		revm_inform_type(char *type, char *name, char *straddr, revmexpr_t *e, u_char print);
-int		revm_inform_type_addr(char *type, char *name, elfsh_Addr a, revmexpr_t *e, u_char p);
+int		revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
+int		revm_inform_type_addr(char *t, char *n, elfsh_Addr a, revmexpr_t *, u_char p, u_char r);
 
 /* Expression related functions */
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);

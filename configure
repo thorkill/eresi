@@ -439,7 +439,7 @@ fi
 echo "##"							 > Makefile 
 echo "## Makefile "						>> Makefile
 echo "## "							>> Makefile
-echo "## Started on  Fri Dec  7 06:54:35 2001 mayhem "		>> Makefile
+echo "## Started on  Fri Dec  7 06:54:35 2001 jfv"		>> Makefile
 echo "## Automatically generated from the configure script"	>> Makefile
 echo "## "							>> Makefile
 echo ""								>> Makefile

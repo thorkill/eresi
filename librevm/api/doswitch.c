@@ -1,9 +1,9 @@
 /*
 ** doswitch.c for elfsh
 ** 
-** Started on  Sat Jan 25 11:20:49 2003 mayhem
+** Started on  Sat Jan 25 11:20:49 2003 jfv
 **
-** $Id: doswitch.c,v 1.3 2007-07-17 18:11:24 may Exp $
+** $Id: doswitch.c,v 1.4 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

@@ -2,7 +2,7 @@
  * @file libmjollnir-int.h
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-int.h,v 1.20 2007-06-27 11:25:12 heroine Exp $
+ * $Id: libmjollnir-int.h,v 1.21 2007-07-31 03:28:47 may Exp $
  *
  */
 
@@ -18,12 +18,11 @@
 #define __DEBUG_CNTNR_LOOKUP__	0
 #define __DEBUG_FUNCS__		0
 #define __DEBUG_FUCNS_LOOKUP__	0
-
-/* Debug Fingerprinting */
 #define __DEBUG_FNG__		0
+#define	__DEBUG_ONDISK__	0
 
 /* Debug descriptor */
-#define D_DESC		stdout
+#define D_DESC		stderr
 
 #define mjrHashVerySmall 64
 #define mjrHashSmall 	 1024

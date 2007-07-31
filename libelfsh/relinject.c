@@ -8,10 +8,10 @@
 ** 
 ** BeoS fixes by zadig
 ** 
-** Started on  Fri Mar 28 14:55:37 2003 mayhem
+** Started on  Fri Mar 28 14:55:37 2003 jfv
 ** 
 **
-** $Id: relinject.c,v 1.17 2007-07-07 10:04:59 mxatone Exp $
+** $Id: relinject.c,v 1.18 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

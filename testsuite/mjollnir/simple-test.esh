@@ -1,9 +1,12 @@
-#!/usr/local/bin/elfsh32
+#!../../elfsh/elfsh32
 
 # Created: Tue Jan  2 22:44:33 CET 2007
 
 load /bin/ls
-
 analyse
-control
+save ls.saved
+load ls.saved
+s
+#control
+quit
 

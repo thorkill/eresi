@@ -1,10 +1,10 @@
 /*
 ** etrel_inject.c for testsuite in elfsh
 ** 
-** Started on  Sat May 10 07:01:59 2003 mayhem
-** Last update Mon Jun 30 07:38:12 2003 mayhem
+** Started on  Sat May 10 07:01:59 2003 jfv
+** Last update Mon Jun 30 07:38:12 2003 jfv
 **
-** $Id: etrel_inject.c,v 1.3 2007-05-16 23:36:37 may Exp $
+** $Id: etrel_inject.c,v 1.4 2007-07-31 03:28:48 may Exp $
 **
 */
 #include	"libelfsh.h"

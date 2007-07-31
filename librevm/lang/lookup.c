@@ -3,12 +3,8 @@
 **
 ** Various object lookup functions built in the language
 **
-** Started      Nov 21 2003 mayhem
-** Last update  Mar 01 2007 mayhem
-**
-**
-** $Id: lookup.c,v 1.15 2007-07-17 18:11:25 may Exp $
-**
+** Started Nov 21 2003 jfv
+** $Id: lookup.c,v 1.16 2007-07-31 03:28:48 may Exp $
 */
 #include "revm.h"
 

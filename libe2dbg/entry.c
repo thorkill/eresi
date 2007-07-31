@@ -3,10 +3,10 @@
 **
 ** The debugger file for OS dependant entry points
 ** 
-** Started on  Tue Jul 11 20:37:33 2003 mayhem
+** Started on  Tue Jul 11 20:37:33 2003 jfv
 **
 **
-** $Id: entry.c,v 1.11 2007-06-08 18:46:44 may Exp $
+** $Id: entry.c,v 1.12 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libe2dbg.h"

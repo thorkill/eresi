@@ -2,9 +2,9 @@
 ** libui.h for libui
 ** 
 ** Started on Sun Jan 22 19:04:04 2006 mxatone
-** Updated on Tue Mar  6 08:42:17 2007 mayhem
+** Updated on Tue Mar  6 08:42:17 2007 jfv
 **
-** $Id: libui.h,v 1.13 2007-05-26 19:46:54 mxatone Exp $
+** $Id: libui.h,v 1.14 2007-07-31 03:28:48 may Exp $
 **
 */
 

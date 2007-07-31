@@ -3,8 +3,8 @@
 ** 
 ** Contain ELFsh internal hashtables library calls
 **
-** Started on  Fri Jan 24 20:26:18 2003 mayhem
-** $Id: libhash.c,v 1.34 2007-07-19 02:41:25 may Exp $
+** Started on  Fri Jan 24 20:26:18 2003 jfv
+** $Id: libhash.c,v 1.35 2007-07-31 03:28:46 may Exp $
 */
 #include "libaspect.h"
 
@@ -90,7 +90,7 @@ int		hash_register(hash_t *table, char *name)
 hash_t    *hash_empty(char *name)
 {
   hash_t  *hash;
-  char    *newname;
+  char  *newname;
   int	  size;
   char    type;
 
@@ -176,10 +176,10 @@ int		hash_add(hash_t *h, char *key, void *data)
 
 
 /* Delete an entry from the hash table */
-int   hash_del(hash_t *h, char *key)
+int		hash_del(hash_t *h, char *key)
 {
-  hashent_t *actual;
-  hashent_t *todel;
+  hashent_t	*actual;
+  hashent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -223,9 +223,9 @@ int   hash_del(hash_t *h, char *key)
 
 
 /* Retrieve the metadata for a given key */
-void    *hash_get(hash_t *h, char *key)
+void		*hash_get(hash_t *h, char *key)
 {
-  hashent_t *actual;
+  hashent_t	*actual;
 
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
@@ -236,9 +236,9 @@ void    *hash_get(hash_t *h, char *key)
 }
 
 /* Retrieve the data pointer for a given key */
-void    *hash_select(hash_t *h, char *key)
+void		*hash_select(hash_t *h, char *key)
 {
-  hashent_t *actual;
+  hashent_t	*actual;
 
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
@@ -251,9 +251,9 @@ void    *hash_select(hash_t *h, char *key)
 
 
 /* Change the metadata for an existing entry, giving its key */
-int   hash_set(hash_t *h, char *key, void *data)
+int		hash_set(hash_t *h, char *key, void *data)
 {
-  hashent_t *ent;
+  hashent_t	*ent;
 
   ent = hash_get_ent(h, key);
   if (!ent)
@@ -291,14 +291,13 @@ hashent_t *hash_get_head(hash_t *h, char *backup)
 
 
 /* Used to create arrays of keys for completion */
-char    **hash_get_keys(hash_t *h, int *n)
+char		**hash_get_keys(hash_t *h, int *n)
 {
-  int   j, i;
-  char    **keys;
-  hashent_t *entry;
+  int		j, i;
+  char		**keys;
+  hashent_t	*entry;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
   keys = NULL;
   for (i = j = 0; j < h->size; j++) 
     {
@@ -414,12 +413,11 @@ int		hash_compare(hash_t *first, hash_t *two)
 
 /* Merge hash tables in the first one */
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
-int   hash_merge(hash_t *dst,
-         hash_t *src)
+int		hash_merge(hash_t *dst, hash_t *src)
 {
   hashent_t     *actual;
   int           index;
-  int   ret;
+  int		ret;
 
   /* Make sure we dont inject element already presents */
   if (!src || !dst || src->elmnbr == 0)
@@ -436,12 +434,11 @@ int   hash_merge(hash_t *dst,
 
 /* Delete all elements of source hash in destination hash */
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
-int   hash_unmerge(hash_t *dst,
-           hash_t *src)
+int		hash_unmerge(hash_t *dst, hash_t *src)
 {
-  hashent_t *actual;
+  hashent_t	*actual;
   int           index;
-  int   ret;
+  int		ret;
   
   /* Make sure we dont inject element already presents */
   if (!src || !dst || src->elmnbr == 0)
@@ -463,10 +460,10 @@ int   hash_size(hash_t *hash)
 }
 
 /* Return the only element of this hash */
-void*   hash_get_single(hash_t *hash)
+void		*hash_get_single(hash_t *hash)
 {
-  char    **keys;
-  int   idx;
+  char		**keys;
+  int		idx;
 
   if (!hash || hash_size(hash) != 1)
     return (NULL);
@@ -476,10 +473,10 @@ void*   hash_get_single(hash_t *hash)
 
 /* Return an element of this hash */
 /* The choice is non-deterministic */
-void*   hash_get_one(hash_t *hash)
+void*		hash_get_one(hash_t *hash)
 {
-  char    **keys;
-  int   index;
+  char		**keys;
+  int		index;
 
   if (!hash || !hash_size(hash))
     return (NULL);

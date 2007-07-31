@@ -1,10 +1,10 @@
 /*
 ** main.c
 ** 
-** Started on  Sun Mar 17 06:38:49 2002 mayhem
-** Last update Sat Mar 23 11:00:10 2002 mayhem
+** Started on  Sun Mar 17 06:38:49 2002 jfv
+** Last update Sat Mar 23 11:00:10 2002 jfv
 **
-** $Id: main.c,v 1.3 2007-05-16 23:36:37 may Exp $
+** $Id: main.c,v 1.4 2007-07-31 03:28:48 may Exp $
 **
 */
 #include <stdio.h>

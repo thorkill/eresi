@@ -3,10 +3,10 @@
 **
 ** The output vector interface
 **
-** Started on Fri Mar 5 00:55:40 2004 mayhem
-** Updated on Mon Mar 5 18:47:41 2007 mayhem
+** Started on Fri Mar 5 00:55:40 2004 jfv
+** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id: output.c,v 1.5 2007-07-17 18:11:25 may Exp $
+** $Id: output.c,v 1.6 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "revm.h"

@@ -2,13 +2,13 @@
  * @file comment.c
 ** comment.c for elfsh in 
 ** 
-** Made by mayhem
-** Login   <mayhem@devhell.org>
+** Made by jfv
+** Login   <jfv@devhell.org>
 ** 
-** Started on  Sun Dec  1 09:22:45 2002 mayhem
+** Started on  Sun Dec  1 09:22:45 2002 jfv
 **
 **
-** $Id: comment.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: comment.c,v 1.7 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

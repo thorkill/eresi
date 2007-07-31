@@ -1,7 +1,7 @@
 
 ## Makefile for elfsh
 ##
-## Started on  Sun Mar 10 01:19:24 2002 mayhem
+## Started on  Sun Mar 10 01:19:24 2002 jfv
 ##
 ##
 

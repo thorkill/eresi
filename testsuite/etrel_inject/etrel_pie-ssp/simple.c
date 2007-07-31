@@ -3,10 +3,10 @@
 **
 ** Contain all tests for ET_REL injection
 **
-** Started on  Mon Jun 23 06:56:04 2003 mayhem
-** Last update Sun Aug 17 17:41:48 2003 mayhem
+** Started on  Mon Jun 23 06:56:04 2003 jfv
+** Last update Sun Aug 17 17:41:48 2003 jfv
 **
-** $Id: simple.c,v 1.6 2007-05-16 13:33:47 may Exp $
+** $Id: simple.c,v 1.7 2007-07-31 03:28:48 may Exp $
 **
 */
 #include <stdio.h>

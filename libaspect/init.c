@@ -3,10 +3,10 @@
 **
 ** Implement the modularity for the framework
 **
-** Started Dec 22 2006 02:57:03 mayhem
+** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: init.c,v 1.5 2007-05-01 15:56:00 may Exp $
+** $Id: init.c,v 1.6 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libaspect.h"

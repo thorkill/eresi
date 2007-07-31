@@ -5,10 +5,10 @@
 ** elfsh_reloc_pht/sht/symtab() are based on spacewalker's 
 ** original modremap.c
 ** 
-** Started on  Mon Mar 17 09:30:33 2003 mayhem
+** Started on  Mon Mar 17 09:30:33 2003 jfv
 ** 
 **
-** $Id: remap.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: remap.c,v 1.5 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

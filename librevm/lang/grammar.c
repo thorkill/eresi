@@ -1,11 +1,10 @@
 /*
-** grammar.c for elfsh
+** grammar.c for librevm in ERESI
 ** 
 ** We dont use bison and have our own parser generator
 **
-** Started on  Sun Feb  9 22:57:58 2003 mayhem
-**
-** $Id: grammar.c,v 1.16 2007-07-17 18:11:25 may Exp $
+** Started on  Sun Feb  9 22:57:58 2003 jfv
+** $Id: grammar.c,v 1.17 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

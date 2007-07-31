@@ -5,10 +5,10 @@
 ** Improved by spacewalker to use quicksort from libc
 ** instead of some ugly homemade bubble sort
 ** 
-** Started on  Wed May 21 15:27:15 2003 mayhem
+** Started on  Wed May 21 15:27:15 2003 jfv
 ** 
 **
-** $Id: sort.c,v 1.6 2007-07-07 10:04:59 mxatone Exp $
+** $Id: sort.c,v 1.7 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

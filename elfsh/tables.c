@@ -3,9 +3,9 @@
 **
 ** This file contains all command and objects definitions for scripting
 **
-** Started on  Sat Jan 25 07:48:41 2003 mayhem
+** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.16 2007-07-17 18:11:24 may Exp $
+** $Id: tables.c,v 1.17 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "elfsh.h"

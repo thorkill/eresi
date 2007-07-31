@@ -1,10 +1,10 @@
 /*
 ** elfsh.h for elfsh
 ** 
-** Started on  Thu Feb 22 07:19:04 2001 mayhem
+** Started on  Thu Feb 22 07:19:04 2001 jfv
 **
 **
-** $Id: elfsh.h,v 1.39 2007-07-07 17:30:23 may Exp $
+** $Id: elfsh.h,v 1.40 2007-07-31 03:28:46 may Exp $
 **
 */
 #ifndef __ELFSH_H_

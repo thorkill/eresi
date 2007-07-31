@@ -1,16 +1,12 @@
 /*
 ** (C) 2006-2007 Devhell Labs / Asgard Labs 
-**  - sk, mayhem, thorolf, strauss
+**  - sk, jfv, thorolf, strauss
 **
 ** \file libmjollnir/types.c
 ** 
 ** Functions that use the typed instructions information in libasm
-** 
-** Made by mayhem, thorkill, sk
-** 
-** Updated Thu Dec 29 16:14:39 2006 mayhem
 **
-** $Id: cfg.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+** $Id: cfg.c,v 1.4 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -81,7 +77,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 
-      if (dstaddr != -1)
+      if (dstaddr != (elfsh_Addr) -1)
 	mjr_link_block_jump(context, curvaddr, dstaddr, NULL);
 
     }
@@ -102,9 +98,9 @@ int			mjr_trace_control(mjrcontext_t *context,
 
       /* 20070102
        * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
-       * possible libasm bug or mjollnir.
+       * Possible libasm or mjollnir bug.
        */
-      if ((dstaddr) && (dstaddr != -1))
+      if (dstaddr && dstaddr != (elfsh_Addr) -1)
     	{
 	  /* Link block layer */
 	  mjr_link_block_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
@@ -120,32 +116,12 @@ int			mjr_trace_control(mjrcontext_t *context,
       fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
 	      __FUNCTION__, curvaddr);
 #endif
-      //
-      //      tmpcntnr = mjr_create_block_container(0, 0, 0);
-      //      if (!true)
-      //      	true = mjr_container_add_link(context->curblock, 
-      //                        				      tmpcntnr->id,
-      //                        				      MJR_LINK_BLOCK_COND_TRUE,
-      //                        				      MJR_LINK_OUT);
-      //      else
-      //      	true->id = tmpcntnr->id;
-      //      
-      //      tmpcntnr = mjr_create_block_container(0, 0, 0);
-      //      if (!false)
-      //      	false = mjr_container_add_link(context->curblock, 
-      //                        				       tmpcntnr->id,
-      //                        				       MJR_LINK_BLOCK_COND_FALSE,
-      //                        				       MJR_LINK_OUT);
-      //      else
-      //      	false->id = tmpcntnr->id;
-      //
-      //      context->curblock        = 0;
-      //context->hist[MJR_HISTORY_PREV].vaddr = 0;
     }
   else
     {
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", __FUNCTION__, curvaddr, curins->type);
+      fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", 
+	      __FUNCTION__, curvaddr, curins->type);
 #endif
     }
   
@@ -179,7 +155,7 @@ int			mjr_trace_control(mjrcontext_t *context,
  *
  * FIXME : this function must be ported to the SPARC architecture
  */
-elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
+elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 {
   char		tmp[255];
   char		*ret;
@@ -187,7 +163,7 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  printf(" [*] Found function pointer at %lx\n", 
+  printf(" [*] Found function pointer called from 0x%08lx\n", 
 	 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
   snprintf(tmp, sizeof(tmp), "%lx", 
 	   (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
@@ -205,16 +181,25 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
       dest = context->hist[MJR_HISTORY_PPREV].instr.op2.imm;
 
       if (dest < elfsh_get_entrypoint(context->obj->hdr))
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid target vaddr for function pointer",
-			  (elfsh_Addr) -1);
+	{
+	  printf(" [*] FAILED to resolve function pointer called from 0x%08lx \n", 
+		 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
+
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid target vaddr for function pointer",
+		       (elfsh_Addr) -1);
+	}
 
 #if __DEBUG_MJOLLNIR__
       printf(" [*] 0x%lx Detected possible FUNCPTR at [%lx/%ld] \n",
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
 	     (unsigned long) dest, (unsigned long) dest);
 #endif
-
+      
+      printf(" [*] RESOLVED function pointer called from 0x%08lx -> 0x%08lx \n", 
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+	     (unsigned long) dest);
+      
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
     }
 
@@ -228,11 +213,14 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
   /* So the keys for this hash tables are the vaddr of the instruction that does
      the complex function pointer call */
   
- ret = (char *) hash_get(&goto_hash, tmp);
+  ret = (char *) hash_get(&goto_hash, tmp);
   if (!ret) 
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to compute function pointer target",
-		      (elfsh_Addr) -1);
+    {
+      printf(" [*] UNABLE to resolve function pointer called from 0x%08lx\n", 
+	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unable to compute function pointer target", (elfsh_Addr) -1);
+    }
 
   dest = strtol(ret, (char **) NULL, 16);
   if (dest)
@@ -243,6 +231,10 @@ elfsh_Addr		mjr_compute_fctptr(mjrcontext_t	*context)
 	     (unsigned long) dest);
 #endif
     }
+
+  printf(" [*] RESOLVED function pointer called from 0x%08lx -> 0x%08lx \n", 
+	 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
+	 (unsigned long) dest);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
@@ -347,7 +339,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
  * Check if we missed some function start
  * @param ctxt mjollnir context structure
  */
-int mjr_asm_check_function_start(mjrcontext_t *ctxt)
+int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
   u_int			tmpaddr;
@@ -361,18 +353,18 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
     	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
     	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
-  	{
-  	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
-  	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
-
+      {
+	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
+	tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
+	
 #if __DEBUG_FLOW__
-  	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
-        		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+	fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
+		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-  	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	  mjr_function_register(ctxt, tmpaddr, fun);
-  	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-  	}
+	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+	mjr_function_register(ctxt, tmpaddr, fun);
+	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+      }
   }
   else if (ctxt->proc.type == ASM_PROC_SPARC)
   {
@@ -388,6 +380,7 @@ int mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
+
   	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
 	  mjr_function_register(ctxt, tmpaddr, fun);
   	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);

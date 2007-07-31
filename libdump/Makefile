@@ -1,7 +1,7 @@
 ##
 ## Makefile for libdump in elfsh 
 ## 
-## Started on  Sat Jan 25 05:41:19 2003 mayhem
+## Started on  Sat Jan 25 05:41:19 2003 jfv
 ## Last update Tue Feb 15 12:58:45 2005 ym
 ##
 

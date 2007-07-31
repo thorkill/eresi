@@ -17,10 +17,10 @@
 ** See table.c for a hint on how to use the object constructors 
 **     objects.c for the object constructors themself
 **
-** Started on  Tue Feb 08 12:21:12 2005 mayhem
+** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id: convert.c,v 1.3 2007-07-17 18:11:25 may Exp $
+** $Id: convert.c,v 1.4 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"

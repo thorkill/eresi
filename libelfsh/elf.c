@@ -2,10 +2,10 @@
  * @file elf.c
 ** elf.c for libelfsh
 ** 
-** Started on  Mon Feb 26 04:09:38 2001 mayhem
-** Last update Mon Apr 21 20:58:41 2003 mayhem
+** Started on  Mon Feb 26 04:09:38 2001 jfv
+** Last update Mon Apr 21 20:58:41 2003 jfv
 **
-** $Id: elf.c,v 1.16 2007-07-12 13:10:23 thor Exp $
+** $Id: elf.c,v 1.17 2007-07-31 03:28:46 may Exp $
 **
 */
 #include "libelfsh.h"

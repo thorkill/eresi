@@ -2,9 +2,9 @@
  * @file symbol.c
 ** symbol.c for libelfsh
 ** 
-** Started on  Mon Feb 26 04:11:46 2001 mayhem
+** Started on  Mon Feb 26 04:11:46 2001 jfv
 **
-** $Id: symbol.c,v 1.15 2007-07-20 08:01:19 mxatone Exp $
+** $Id: symbol.c,v 1.16 2007-07-31 03:28:47 may Exp $
 **
 */
 #include "libelfsh.h"

@@ -1,8 +1,8 @@
 ##
 ## Makefile for elfsh
 ## 
-## Started on  Sun Mar 10 01:19:24 2002 mayhem
-## Last update Mon Jun 30 11:01:15 2003 mayhem
+## Started on  Sun Mar 10 01:19:24 2002 jfv
+## Last update Mon Jun 30 11:01:15 2003 jfv
 ##
 
 include ../../config.h

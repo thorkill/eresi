@@ -1,10 +1,10 @@
 /*
 ** libelfsh.h for libelfsh
 **
-** Started on  Mon Jul 23 15:47:12 2001 mayhem
+** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.72 2007-07-29 14:13:33 mxatone Exp $
+** $Id: libelfsh.h,v 1.73 2007-07-31 03:28:47 may Exp $
 **
 */
 
@@ -765,7 +765,7 @@ struct		 s_obj
   int		 coretype;
 
   int		 fd;			/* File descriptor for the original file */
-  char		 *name;			/* Object path */
+  char		*name;			/* Object path */
   struct stat	 fstat;			/* File stat */
   int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
   int		 rights;		/* 0 = RO, 1 = WR */

@@ -3,10 +3,10 @@
 **
 ** Contain functions for easy variables accesses
 **
-** Started September 16 2005 04:01:03 mayhem
+** Started September 16 2005 04:01:03 jfv
 **
 **
-** $Id: variables.c,v 1.5 2007-07-17 18:11:25 may Exp $
+** $Id: variables.c,v 1.6 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "revm.h"
