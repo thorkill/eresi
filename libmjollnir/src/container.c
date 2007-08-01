@@ -3,7 +3,7 @@
  * 
  * An API for generic containers data structures
  *
- * $Id: container.c,v 1.15 2007-07-31 23:30:35 may Exp $
+ * $Id: container.c,v 1.16 2007-08-01 00:38:43 may Exp $
  */
 #include "libmjollnir.h"
 
@@ -14,10 +14,6 @@
 int	mjr_init_containers(mjrcontext_t *ctx)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  fprintf(stderr, " ************* Initialized containers (file %s) ! \n",
-	  ctx->obj->name);
-
   XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->reg_containers, 
 	 sizeof(mjrcontainer_t*) * ctx->cntnrs_size, -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
