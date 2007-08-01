@@ -7,7 +7,7 @@
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
 ** 
 **
-** $Id: section.c,v 1.15 2007-07-31 03:28:47 may Exp $
+** $Id: section.c,v 1.16 2007-08-01 14:35:57 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -886,9 +886,6 @@ void			*elfsh_get_raw(elfshsect_t *sect)
 
   if (elfsh_is_debug_mode())
     {
-
-      //fprintf(stderr, "We are in debug mode (get_raw) for %s data request in file %s\n",
-      //      sect->name, sect->parent->name);
 
       /* The address of the section */
       dataptr = (void *) sect->shdr->sh_addr;

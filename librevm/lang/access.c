@@ -3,7 +3,7 @@
 **
 ** Started Jan 23 2007 23:39:51 jfv
 **
-** $Id: access.c,v 1.21 2007-07-31 03:28:47 may Exp $
+** $Id: access.c,v 1.22 2007-08-01 14:35:57 may Exp $
 **
 */
 #include "revm.h"
@@ -195,41 +195,12 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 
 
 
-/* Lookup _for real_ the path of a complex typed object */
-revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
-					 char	     *objname, 
-					 char	     *objpath)
+/* Create the REVM object that is to be returned */
+revmobj_t	*revm_object_create(aspectype_t *type, void *data)
 {
-  revmannot_t	*var;
-  void		*data;
   revmobj_t	*path;
-  char		hashname[ELFSH_MEANING];
-  hash_t	*typehash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_EXPRS__
-  fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s of type %s and wanted field %s)\n", 
-	  objname, type->name, objpath);
-#endif
-
-  snprintf(hashname, sizeof(hashname), "type_%s", type->name);
-  typehash = hash_get(hash_hash, hashname);
-  if (!typehash)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested type map", NULL);
-  var = hash_get(typehash, objname);
-  if (!var)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested data object", NULL);
-  data = (void *) var->addr;
-  data = revm_get_raw(data);
-
-  /* Get recursively the leaf type and data pointer */
-  type = revm_field_get(type, objpath, (void **) &data);
-  if (!type)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to lookup object", NULL);
   
   /* Create the revmobj and fill its handlers */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, path, sizeof(revmobj_t), NULL);
@@ -285,6 +256,54 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 }
 
 
+
+
+/* Lookup _for real_ the path of a complex typed object */
+revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
+					 char	     *objname, 
+					 char	     *objpath)
+{
+  revmannot_t	*var;
+  void		*data;
+  revmobj_t	*path;
+  char		hashname[ELFSH_MEANING];
+  hash_t	*typehash;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_EXPRS__
+  fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s of type %s and wanted field %s)\n", 
+	  objname, type->name, objpath);
+#endif
+
+  snprintf(hashname, sizeof(hashname), "type_%s", type->name);
+  typehash = hash_get(hash_hash, hashname);
+  if (!typehash)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested type map", NULL);
+  var = hash_get(typehash, objname);
+  if (!var)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find requested data object", NULL);
+  data = (void *) var->addr;
+  data = revm_get_raw(data);
+
+  /* Get recursively the leaf type and data pointer */
+  /* If the objpath is empty, its a scalar that was requested */
+  if (*objpath)
+    {
+      type = revm_field_get(type, objpath, (void **) &data);
+      if (!type)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to lookup object", NULL);
+    }
+
+  /* Create and return the object describing the field */
+  path = revm_object_create(type, data);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
+}
+
+
 /* Lookup the path for a complex typed object (using syntactic sugar) */
 revmobj_t	*revm_object_lookup(char *str)
 {
@@ -305,10 +324,8 @@ revmobj_t	*revm_object_lookup(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to resolve manual type object", NULL);
   str += strlen(filename) + strlen(typename) + strlen(objectname) + 3;
-  if (!str[0] || !str[1])
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid truncated field name", NULL);
-  str++;
+  if (str[0] && str[1])
+    str++;
 
   /* Get parent objects */
   obj = revm_lookup_file(filename);

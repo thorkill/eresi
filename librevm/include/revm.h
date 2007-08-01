@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.79 2007-08-01 12:21:11 may Exp $
+** $Id: revm.h,v 1.80 2007-08-01 14:35:57 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -1014,6 +1014,7 @@ int		revm_type_hashcreate(char *name);
 aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath);
 revmobj_t	*revm_object_lookup(char *str);
+revmobj_t	*revm_object_create(aspectype_t *type, void *data);
 char		*revm_generic_getname(void *type, void *data);
 int		revm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	revm_generic_getobj(void *data);
