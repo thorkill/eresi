@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
+** $Id: kernsh.c,v 1.7 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -206,10 +206,9 @@ int kernsh_set_static_mode()
 }
 
 /* This function is called in elfsh_get_raw to interact with the memory */
-void *kernsh_elfsh_get_raw(void *addr)
+void *kernsh_elfsh_get_raw(elfshsect_t *sect)
 {
   void *dataptr;
-  elfshsect_t *sect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -218,17 +217,27 @@ void *kernsh_elfsh_get_raw(void *addr)
 #endif
 
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
-    {
-      sect = (elfshsect_t *)addr;   
-      
+    { 
       /* We use physical memory ? */
       if (libkernshworld.physical)
-	sect->parent->rhdr.base = libkernshworld.kernel_start;
+	{
+	  sect->parent->rhdr.base = 
+	    libkernshworld.kernel_start - sect->shdr->sh_addr;
+#if __DEBUG_KERNSH__
+	  printf("RHDR BASE 0x%lx KERNEL_START 0x%lx SH_ADDR 0x%lx\n",
+		 (unsigned long) sect->parent->rhdr.base, 
+		 (unsigned long) libkernshworld.kernel_start,
+		 (unsigned long) sect->shdr->sh_addr);
+#endif  
+	}
 
-      
       dataptr = libkernshworld.ptr;
       
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
+    }
+  else
+    {
+      sect->parent->rhdr.base = 0;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
@@ -245,6 +254,7 @@ void *kernsh_revm_get_raw(void *addr)
   printf("kernsh_revm_get_raw\n");
 #endif
 
+  //printf("ADDR 0x%lx\n", addr);
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
     {
       /* We use physical memory ? */
@@ -325,6 +335,18 @@ int kernsh_info_linux()
   printf("Sys Call Table 0x%lx\n", libkernshworld.sct);
 #endif
 
+
+#if defined(__linux__)
+  asm("sgdt %0" : "=m" (gdtr));
+#endif
+
+#if __DEBUG_KERNSH__
+  printf("GDTR BASE 0x%lx LIMIT 0x%x\n", gdtr.base,gdtr.limit);
+#endif
+
+  libkernshworld.gdt_base = gdtr.base;
+  libkernshworld.gdt_limit = gdtr.limit;
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

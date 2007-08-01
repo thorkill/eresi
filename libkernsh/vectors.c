@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.5 2007-07-31 12:31:54 pouik Exp $
+** $Id: vectors.c,v 1.6 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -80,6 +80,18 @@ int kernsh_idt_default()
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 	       "idt default !", -1);
+}
+
+int kernsh_gdt_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("GDT DEFAULT!!!\n");
+#endif
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "gdt default !", -1);
 }
 
 int kernsh_info_default()
@@ -264,11 +276,30 @@ int kernsh_init_vectors()
   strdims[0] = "ARCHTYPE";
   strdims[1] = "OSTYPE";
 
-  /* Register sct default vectors */
+  /* Register idt default vectors */
   aspect_register_vector("idt", 
                          kernsh_idt_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
   
+  /* GDT ARCH, OS */
+#if __DEBUG_KERNSH__
+  printf("INIT GDT VECTORS\n");
+#endif
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
+
+  dims[0]    = LIBKERNSH_ARCHNUM;
+  dims[1]    = LIBKERNSH_OSNUM;
+
+  strdims[0] = "ARCHTYPE";
+  strdims[1] = "OSTYPE";
+
+  /* Register gdt default vectors */
+  aspect_register_vector("gdt", 
+                         kernsh_gdt_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
   /* Info ARCH, OS */
 #if __DEBUG_KERNSH__
   printf("INIT INFO VECTORS\n");
@@ -459,6 +490,11 @@ int kernsh_register_vectors()
 		      kernsh_idt_linux);
   kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
 		      kernsh_idt_linux);
+
+  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
+		      kernsh_gdt_linux);
+  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+		      kernsh_gdt_linux);
 
   kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 		       kernsh_info_linux);
@@ -651,6 +687,28 @@ int kernsh_register_idt(u_int archtype, u_int ostype, void *fct)
 #endif
 
   aspect_vectors_insert(idt, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_gdt(u_int archtype, u_int ostype, void *fct)
+{
+  vector_t *gdt;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  gdt = aspect_vector_get("gdt");
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = archtype;
+  dim[1] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER GDT\n");
+#endif
+
+  aspect_vectors_insert(gdt, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

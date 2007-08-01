@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.6 2007-07-31 12:31:54 pouik Exp $
+** $Id: libkernsh.h,v 1.7 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -96,7 +96,7 @@ enum
 #define LIBKERNSH_DEFAULT_LINUX_KERNELELF	"vmlinux"
 #define LIBKERNSH_DEFAULT_LINUX_NB_SYSCALLS	320
 #define LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL	17
-#define LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE	209715200
+#define LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE	0x3e800000
 #define LIBKERNSH_DEFAULT_STORAGE_PATH		"/tmp/"
 #define LIBKERNSH_DEFAULT_GZIP			"gzip"
 #define LIBKERNSH_DEFAULT_OBJCOPY		"objcopy"
@@ -130,6 +130,13 @@ struct
 	unsigned char none,flags;
 	unsigned short off2;
 } __attribute__ ((packed)) idt;
+
+/* gdtr */
+struct 
+{
+	unsigned short limit;
+	unsigned long base;
+} __attribute__ ((packed))gdtr;
 
 /* Kmalloc struct */
 typedef struct s_libkernshkma 
@@ -176,6 +183,14 @@ typedef struct s_libkernshint
 	char name[NAMESIZ];
 } libkernshint_t;
 
+/* Gdt segment struct */
+typedef struct s_libkernshsgdt
+{
+	unsigned long addr;
+	unsigned long deb;
+	unsigned long fin;
+} libkernshsgdt_t;
+
 /* World kernsh struct */
 typedef struct s_libkernshworld
 {
@@ -208,9 +223,12 @@ typedef struct s_libkernshworld
 			   1 => physical memory address */
 
 	unsigned long idt_base;	/* Address of idt table */
-	int idt_limit;		/* Length */
+	unsigned short idt_limit;	/* Length */
 
 	unsigned long sct;	/* Address of syscall table */
+
+	unsigned long gdt_base; /* Address of the gdt table */
+	unsigned short gdt_limit; /* Lenght */
 
 	elfshobj_t *root;	/* Pointer to the kernel's elfshobj_t*/
 } libkernshworld_t;
@@ -223,7 +241,7 @@ int	kernsh_init_i386(char *, char *);
 int	kernsh_del_i386();
 
 /* Get raw */
-void	*kernsh_elfsh_get_raw(void *);
+void	*kernsh_elfsh_get_raw(elfshsect_t *);
 void	*kernsh_revm_get_raw(void *);
 
 /* Information about kernel */
@@ -247,6 +265,7 @@ int	kernsh_register_readmem(u_int, u_int, u_int, void *);
 int	kernsh_register_writemem(u_int, u_int, u_int, void *);
 int	kernsh_register_sct(u_int, u_int, void *);
 int	kernsh_register_idt(u_int, u_int, void *);
+int	kernsh_register_gdt(u_int, u_int, void *);
 int	kernsh_register_info(u_int, u_int, void *);
 int	kernsh_register_decompkernel(u_int, void *);
 int	kernsh_register_loadkernel(u_int, u_int, void *);
@@ -300,6 +319,11 @@ int	kernsh_idt_linux(list_t *);
 int	kernsh_idt_netbsd(list_t *);
 int	kernsh_idt_freebsd(list_t *);
 
+/* GDT */
+int	kernsh_gdt(list_t *);
+int	kernsh_gdt_linux(list_t *);
+int	kernsh_gdt_netbsd(list_t *);
+int	kernsh_gdt_freebsd(list_t *);
 
 /* Symbols */
 int	kernsh_get_addr_by_name(char *, unsigned long *, size_t);

@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.3 2007-07-31 12:31:54 pouik Exp $
+** $Id: mem.c,v 1.4 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -57,8 +57,11 @@ int		cmd_sct()
       
     }
   
+  revm_output("\n");
+
   list_destroy(h);
 
+  
 #if defined(USE_READLN)
   rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
   readln_column_update();
@@ -109,6 +112,7 @@ int		cmd_idt()
        index++, actual = actual->next)
     {
       dint = (libkernshint_t *) actual->data;
+
       snprintf(buff, sizeof(buff),
 	       "%s %-40s %s %s\n",
 	       revm_colornumber("id:%-10u", (unsigned int)index),
@@ -118,7 +122,8 @@ int		cmd_idt()
       revm_output(buff);
       revm_endline();
     }
-  
+
+  revm_output("\n");
   list_destroy(h);
 
 #if defined(USE_READLN)
@@ -129,6 +134,74 @@ int		cmd_idt()
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get idt", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Display the gdt */
+int		cmd_gdt()
+{
+  int		ret;
+  int		index;
+  int		i;
+  listent_t     *actual;
+  list_t	*h;
+  libkernshsgdt_t *sgdt;
+  char		buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  XALLOC(__FILE__, 
+	 __FUNCTION__, 
+	 __LINE__,
+	 h,
+	 sizeof(list_t),
+	 -1);
+
+  list_init(h, "cmd_gdt_list", ASPECT_TYPE_UNKNOW);
+
+  ret = kernsh_gdt(h);
+        
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff), 
+	   "%s\n\n",
+	   revm_colorfieldstr("[+] GDT"));
+  revm_output(buff);
+  
+  for (i = 0, index = 0, actual = h->head; 
+       index < h->elmnbr; 
+       i+=8, index++, actual = actual->next)
+    {
+      sgdt = (libkernshsgdt_t *) actual->data;
+      
+      snprintf(buff, sizeof(buff),
+	       "%s%s %s %s\n",
+	       revm_coloraddress("%.8lX", (elfsh_Addr) sgdt->deb),
+	       revm_coloraddress("%.8lX", (elfsh_Addr) sgdt->fin),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) sgdt->addr));
+
+      revm_output(buff);
+      
+      revm_endline();
+    } 
+	     
+  revm_output("\n");
+
+  list_destroy(h);
+
+#if defined(USE_READLN)
+  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  readln_column_update();
+#endif
+
+  if (ret)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot get gdt", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

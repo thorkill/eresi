@@ -197,8 +197,8 @@ An option can be set directly in the shell or in the .kernshrc :
 		- 0
 		- 1 (D)
 
-	- libkernsh.mmap_size : Mmap's size of the memory
-		- 200 * 1024 * 1024 (D)
+	- libkernsh.mmap_size : Mmap's size of the main memory
+		- 1000 * 1024 * 1024 (D)
 		- [I*]
 	
 	- libkernsh.systemmap : (L) Path of the system map

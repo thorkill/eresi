@@ -7,7 +7,7 @@
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
 ** 
 **
-** $Id: section.c,v 1.16 2007-08-01 14:35:57 may Exp $
+** $Id: section.c,v 1.17 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -883,7 +883,7 @@ void			*elfsh_get_raw(elfshsect_t *sect)
   if (dataptr != NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
 #endif
-
+  
   if (elfsh_is_debug_mode())
     {
 

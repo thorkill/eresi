@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.2 2007-07-25 21:55:06 pouik Exp $
+** $Id: kernsh.h,v 1.3 2007-08-01 18:38:31 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__
@@ -26,6 +26,7 @@
 #define CMD_KMODE		"mode"
 #define CMD_SCT		        "sct"
 #define CMD_IDT			"idt"
+#define CMD_GDT			"gdt"
 #define CMD_MEM			"mem"
 
 /* Commands execution handlers, each in their respective file */
@@ -34,6 +35,7 @@ int     cmd_closemem();
 int	cmd_kmode();
 int     cmd_sct();
 int	cmd_idt();
+int	cmd_gdt();
 int	cmd_mem();
 
 int	kernsh_config();
