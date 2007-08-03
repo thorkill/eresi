@@ -1,11 +1,11 @@
 /*
-** stringtable.c for elfsh
+** @file stringtable.c
 **
-** All functions about string table management
+** @brief All functions about string table management
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: stringtable.c,v 1.3 2007-07-17 18:11:25 may Exp $
+** $Id: stringtable.c,v 1.4 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

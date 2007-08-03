@@ -4,13 +4,13 @@
 ** 
 ** Started on  Mon Feb 26 04:16:18 2001 jfv
 **
-** $Id: sht.c,v 1.7 2007-07-31 03:28:47 may Exp $
+** $Id: sht.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
- * Sort SHT by file offset on ET_REL objects
+ * @brief Sort SHT by file offset on ET_REL objects
  * Mandatory on gcc 2.95.2/2.96 generated bins, maybe others 
  */
 int			elfsh_sort_sht(elfshobj_t *file)
@@ -152,7 +152,7 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
 }
 
 /**
- * Synchronize SHT (mostly used when removing sections) 
+ * @brief Synchronize SHT (mostly used when removing sections) 
  */
 void		elfsh_sync_sht(elfshobj_t *file)
 {
@@ -214,7 +214,7 @@ void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 
 
 /**
- * Return a ptr on the section header table 
+ * @brief Return a ptr on the section header table 
  */
 void		*elfsh_get_sht(elfshobj_t *file, int *num)
 {

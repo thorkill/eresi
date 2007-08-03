@@ -1,17 +1,19 @@
-/*
-** liblist.c for libaspect in ERESI
+/**
+** @file liblist.c
 ** 
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id: liblist.c,v 1.4 2007-07-31 03:28:46 may Exp $
+** $Id: liblist.c,v 1.5 2007-08-03 11:50:59 heroine Exp $
 */
 #include "libaspect.h"
 
 /* Hash tables of hash tables */
 hash_t  *hash_lists = NULL;
 
-/* Initialize the hash table */
+/**
+ * @brief Initialize the hash table 
+ */
 int list_init(list_t *h, char *name, u_int type)
 {
   NOPROFILER_IN();
@@ -37,13 +39,17 @@ int list_init(list_t *h, char *name, u_int type)
   NOPROFILER_ROUT(0);
 }
 
-/* Return a list by its name */
+/** 
+ * @brief Return a list by its name 
+ */
 list_t		*list_find(char *name)
 {
   return ((list_t *) hash_get(hash_lists, name));
 }
 
-/* Set a list by its name (overwrite if existing ) */
+/** 
+ * @brief Set a list by its name (overwrite if existing ) 
+ */
 int		list_register(list_t *list, char *name)
 {
   list_t	*h;
@@ -67,7 +73,9 @@ int		list_register(list_t *list, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Empty a list */
+/** 
+ * @brief Empty a list 
+ */
 list_t		*list_empty(char *name)
 {
   list_t	*list;
@@ -106,7 +114,9 @@ void		list_destroy(list_t *h)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Add an element at the head of the list */
+/** 
+ * @brief Add an element at the head of the list 
+ */
 int		list_add(list_t *h, char *key, void *data)
 {
   listent_t	*cur;
@@ -128,7 +138,9 @@ int		list_add(list_t *h, char *key, void *data)
 }
 
 
-/* Delete an element from a list */
+/** 
+ * @brief Delete an element from a list 
+ */
 int		list_del(list_t *h, char *key)
 {
   listent_t	*curelem;
@@ -155,7 +167,9 @@ int		list_del(list_t *h, char *key)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Get the list element giving the key */
+/** 
+ * @brief Get the list element giving the key 
+ */
 void		*list_get(list_t *h, char *key)
 {
   listent_t	*cur;
@@ -168,7 +182,9 @@ void		*list_get(list_t *h, char *key)
   return (NULL);
 }
 
-/* Get the list data giving the key */
+/** 
+ * @brief Get the list data giving the key 
+ */
 void 		*list_select(list_t *h, char *key)
 {
   listent_t	*cur;
@@ -205,7 +221,9 @@ int		list_set(list_t *h, char *key, void *data)
   return (-1);
 }
 
-/* Replace a single element by a list of elements */
+/** 
+ * @brief Replace a single element by a list of elements 
+ */
 int		list_replace(list_t *h, char *key, list_t *newlist)
 {
   listent_t	*cur;

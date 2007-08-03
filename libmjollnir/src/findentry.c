@@ -1,16 +1,18 @@
 /*
-** control.c in libmjollnir for elfsh
+** @file control.c
 **
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.4 2007-07-31 03:28:47 may Exp $
+** $Id: findentry.c,v 1.5 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libmjollnir.h"
 
 
 /**
+ * @brief Search main function from binary entry point.
+ *
  * This function inspect the code at entry point and inject the resolved
  * symbol for the main function. This is a separate function so that it
  * can be called frmo the tracer and benefit from the main symbol presence

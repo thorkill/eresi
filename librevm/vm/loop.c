@@ -1,18 +1,20 @@
 /*
-** loop.c for elfsh
-** 
-** This file include the control flow support for scripting
-**
-** Started on  Wed Nov 19 23:02:04 2003 jfv
-** Updated on  Mon Aug 15 06:01:54 2005 jfv
-**
-** $Id: loop.c,v 1.10 2007-07-31 03:28:48 may Exp $
-**
-*/
+ * @file loop.c
+ * 
+ * This file include the control flow support for scripting
+ *
+ * Started on  Wed Nov 19 23:02:04 2003 jfv
+ * Updated on  Mon Aug 15 06:01:54 2005 jfv
+ *
+ * $Id: loop.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Debug purpose */
+/** 
+ * Debug purpose 
+ */
 int		revm_printscript(revmargv_t *start)
 {
   revmargv_t	*list;
@@ -38,7 +40,9 @@ int		revm_printscript(revmargv_t *start)
 }
 
 
-/* Scripting report purpose */
+/** 
+ * Scripting report purpose 
+ */
 void		revm_print_actual(revmargv_t *cur)
 {
   int		idx;
@@ -59,8 +63,10 @@ void		revm_print_actual(revmargv_t *cur)
 
 
 
-/* Execute the script (only used in script mode) */
-/* Script mode include sourced scripts in elfsh or e2dbg */
+/**
+ * Execute the script (only used in script mode)
+ * Script mode include sourced scripts in elfsh or e2dbg
+ */
 int		revm_execscript()
 {
   revmargv_t	*cur;
@@ -187,7 +193,9 @@ int		revm_execscript()
 
 
 
-/* Execute the ELFsh current command (only used in interactive mode) */
+/** 
+ * Execute the ELFsh current command (only used in interactive mode) 
+ */
 int		revm_execmd()
 {
   //revmargv_t	*next;
@@ -258,7 +266,9 @@ int		revm_execmd()
 
 
 
-/* Take the ELF machine control flow in charge */
+/** 
+ * Take the ELF machine control flow in charge 
+ */
 int		revm_move_pc(char *param)
 {
   int		index;

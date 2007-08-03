@@ -1,18 +1,20 @@
-/*
-** io.c for librevm in ERESI
-**
-** Initialize the IO system
-**
-** Started on  Fri Mar  5 00:55:40 2004 jfv
-** Updated on  Mon Mar  5 18:47:41 2005 ym
-**
-** $Id: io.c,v 1.10 2007-07-31 03:28:47 may Exp $
-**
-*/
+/**
+ * @file io.c
+ *
+ * Initialize the IO system
+ *
+ * Started on  Fri Mar  5 00:55:40 2004 jfv
+ * Updated on  Mon Mar  5 18:47:41 2005 ym
+ *
+ * $Id: io.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Reset lines counters and ignore output state */
+/**
+ * Reset lines counters and ignore output state 
+ */
 int		revm_flush()
 {
   int  lines = 80;
@@ -39,7 +41,9 @@ int		revm_flush()
 
 }
 
-/* Set workspace configuration to standard I/O */
+/** 
+ * Set workspace configuration to standard I/O 
+ */
 int		revm_std_io(revmjob_t *job)
 {
   NOPROFILER_IN();
@@ -53,7 +57,9 @@ int		revm_std_io(revmjob_t *job)
   NOPROFILER_ROUT(0);
 }
 
-/* Set workspace configuration to standard I/O */
+/** 
+ * Set workspace configuration to standard I/O 
+ */
 int		revm_fifo_io(revmjob_t *job)
 {
   int		fd;
@@ -101,7 +107,9 @@ int		revm_fifo_io(revmjob_t *job)
 }
 
 
-/* Initialize Input/Output hooks */
+/** 
+ * Initialize Input/Output hooks 
+ */
 int		revm_initio()
 {
   static int	done = 0;

@@ -1,11 +1,11 @@
 /*
-** edfmt.c for elfsh
+** @file edfmt.c
 **
-** All functions dealing with libedfmt
+** @brief All functions dealing with libedfmt
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.11 2007-07-31 03:28:47 may Exp $
+** $Id: edfmt.c,v 1.12 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

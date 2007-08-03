@@ -1,9 +1,9 @@
 /*
-** arith.c for elfsh
+** @file arith.c
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.8 2007-07-31 03:28:47 may Exp $
+** $Id: atomic.c,v 1.9 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

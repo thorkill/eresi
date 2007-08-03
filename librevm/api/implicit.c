@@ -1,9 +1,9 @@
 /*
-** implicit.c for elfsh
+** @file implicit.c
 ** 
 ** Started on  Tue Feb 18 06:45:35 2003 jfv
 **
-** $Id: implicit.c,v 1.4 2007-07-31 03:28:47 may Exp $
+** $Id: implicit.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

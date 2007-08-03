@@ -1,11 +1,11 @@
 /*
- * links.c in libmjollnir for ERESI
+ * @file links.c
  *
- * All the functions that deal with linking other objects, such
+ * @brief All the functions that deal with linking other objects, such
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.4 2007-07-31 23:30:35 may Exp $
+ * $Id: links.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
  */
 #include <libmjollnir.h>
 
@@ -17,7 +17,7 @@ static mjrcontainer_t	*mjr_block_split(mjrcontext_t *,elfsh_Addr, u_int);
 
 
 /**
- * Link function layer
+ * @brief Link function layer
  * @param ctxt mjollnir context structure
  * @param str source address
  * @param dst destination address
@@ -80,7 +80,9 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 }
 
 
-/** Create a link between blocks on a call */
+/** 
+ * @brief Create a link between blocks on a call 
+ */
 int	mjr_link_block_call(mjrcontext_t *ctxt,
 			    elfsh_Addr src,
 			    elfsh_Addr dst,
@@ -140,8 +142,9 @@ int	mjr_link_block_call(mjrcontext_t *ctxt,
 }
 
 
-/** This function does prepare linking of blocks on conditional jumps
- **/
+/** 
+ * @brief This function does prepare linking of blocks on conditional jumps
+ */
 int	mjr_link_block_jump(mjrcontext_t *ctxt,
 			    elfsh_Addr src,
 			    elfsh_Addr dst,
@@ -189,7 +192,9 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
 
 
 
-/** Update link information when splitting a block */
+/** 
+ * @brief Update link information when splitting a block 
+ */
 static int	mjr_block_relink(mjrcontext_t *ctx,
 				 mjrcontainer_t *src,
 				 mjrcontainer_t *dst,
@@ -223,7 +228,8 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
 
 
 
-/** This function does split a block carried by given container
+/**
+ * @brief This function does split a block carried by given container
  * to 2 pieces, a new container will be added by vaddr dst
  *
  * @param ctxt mjollnir context strucutre

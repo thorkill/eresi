@@ -1,12 +1,12 @@
-/*
-** vectors.c for libaspect in elfsh
+/**
+** @file vectors.c
 **
-** Implement the modularity for the framework
+** @brief Implement the modularity for the framework
 **
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: init.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: init.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libaspect.h"
@@ -28,7 +28,9 @@ void		aspect_called_ctors_inc()
   called_ctors++;
 }
 
-/* Test if we called all constructors or not, currently we have 3 */
+/**
+ * @brief  Test if we called all constructors or not, currently we have 3 
+ */
 int		aspect_called_ctors_finished()
 {
   return (called_ctors == 3);
@@ -38,7 +40,9 @@ int		aspect_called_ctors_finished()
 /*************** E2DBG presence help functions *******************/
 
 
-/* Debugger presence set */
+/** 
+ * @brief Debugger presence set 
+ */
 void		e2dbg_presence_set() 
 { 
   dbgpresent = 1; 

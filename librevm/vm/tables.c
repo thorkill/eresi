@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.45 2007-07-31 03:28:48 may Exp $
+** $Id: tables.c,v 1.46 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"
@@ -69,7 +69,9 @@ char	       elfsh_libpath[BUFSIZ];
 
 
 
-/* Fill all the Level 1 Objects hash tables */
+/**
+ * Fill all the Level 1 Objects hash tables 
+ */
 static void	setup_L1hash()
 {
   hash_init(&L1_hash, "L1objects", 29, ASPECT_TYPE_HASH);
@@ -218,7 +220,9 @@ static void	setup_L1hash()
 }
 
 
-/* Hash table for ELF header fields */
+/** 
+ * Hash table for ELF header fields 
+ */
 static void	setup_elfhash()
 {
   hash_init(&elf_L2_hash, "elfL2objects", 29, ASPECT_TYPE_UNKNOW);
@@ -336,7 +340,9 @@ static void	setup_elfhash()
 
 
 
-/* Hash table for SHT fields */
+/** 
+ * Hash table for SHT fields 
+ */
 static void	setup_shthash()
 {
   hash_init(&sht_L2_hash, "shtL2objects", 29, ASPECT_TYPE_UNKNOW);
@@ -399,7 +405,9 @@ static void	setup_shthash()
 						NULL, NULL, NULL));
 }
 
-/* Hash table for PHT fields */
+/** 
+ * Hash table for PHT fields 
+ */
 static void	setup_phthash()
 {
   hash_init(&pht_L2_hash, "phtL2objects", 29, ASPECT_TYPE_UNKNOW);
@@ -436,7 +444,9 @@ static void	setup_phthash()
 }
 
 
-/* Hash table for symbol table */
+/**
+ * Hash table for symbol table 
+ */
 static void	setup_symhash()
 {
   hash_init(&sym_L2_hash, "symL2objects", 23, ASPECT_TYPE_UNKNOW);
@@ -475,7 +485,9 @@ static void	setup_symhash()
 
 
 
-/* Hash table for dynamic symbol table */
+/** 
+ * Hash table for dynamic symbol table 
+ */
 static void	setup_dynsymhash()
 {
   hash_init(&dynsym_L2_hash, "dynsymL2objects", 23, ASPECT_TYPE_UNKNOW);
@@ -509,7 +521,9 @@ static void	setup_dynsymhash()
 						    NULL, NULL, NULL));
 }
 
-/* Hash table for .rel sections */
+/** 
+ * Hash table for .rel sections 
+ */
 static void	setup_relhash()
 {
   hash_init(&rel_L2_hash, "relL2objects", 23, ASPECT_TYPE_UNKNOW);
@@ -531,7 +545,9 @@ static void	setup_relhash()
 						   NULL, NULL, NULL));
 }
 
-/* Hash table for .dynamic section */
+/** 
+ * Hash table for .dynamic section 
+ */
 static void	setup_dynhash()
 {
   hash_init(&dyn_L2_hash, "dynL2objects", 11, ASPECT_TYPE_UNKNOW);
@@ -547,11 +563,11 @@ static void	setup_dynhash()
 
 
 
-/* 
-** Hash tables for GOT L2 objects : UNIMPLEMENTED for now, only 
-** the value of the entry can be changed in this version of 
-** the ELF shell using the got[name|idx] format without L2 field.
-*/
+/** 
+ * Hash tables for GOT L2 objects : UNIMPLEMENTED for now, only 
+ * the value of the entry can be changed in this version of 
+ * the ELF shell using the got[name|idx] format without L2 field.
+ */
 static void	setup_gothash()
 {
   
@@ -567,7 +583,9 @@ static void	setup_gothash()
 
 
 
-/* Hash tables for sections data */
+/** 
+ * Hash tables for sections data 
+ */
 static void	setup_scthash()
 {
   hash_init(&sct_L2_hash, "sectsL2objects", 11, ASPECT_TYPE_UNKNOW);
@@ -585,7 +603,9 @@ static void	setup_scthash()
 
 
 
-/* Hash table for versions sections */
+/** 
+ * Hash table for versions sections
+ */
 static void   setup_vershash()
 {
   
@@ -672,8 +692,9 @@ static void   setup_vershash()
 }
 
 
-
-
+/**
+ * TO COMMENT
+ */
 static void   setup_hashhash()
 {
 
@@ -702,7 +723,9 @@ static void   setup_hashhash()
 
 
 
-/* Now comes Level 2 objects hash functions */
+/**
+ * Now comes Level 2 objects hash functions 
+ */
 static void	setup_L2hash()
 {
   setup_elfhash();
@@ -720,7 +743,9 @@ static void	setup_L2hash()
 
 
 
-/* Setup the command hash table */
+/** 
+ * Setup the command hash table 
+ */
 static void	setup_cmdhash()
 {
   typeinfo_t	*typeinfo;
@@ -903,7 +928,9 @@ static void	setup_cmdhash()
 	      revm_getvarparams, 0, HLP_DECLARE);
 }
 
-/* Mix default library path with LD_LIBRARY_PATH variable */
+/**
+ * Mix default library path with LD_LIBRARY_PATH variable 
+ */
 static char	*get_libpath()
 {
   int		len;
@@ -933,10 +960,11 @@ static char	*get_libpath()
 }
 
 
-/* Setup variables hash :
+/**
+ * Setup variables hash :
  * - Initialize $_ (last result variable) to 0 
  * - Initialize $! (last openered file) to 0
-*/
+ */
 static void	setup_varshash()
 {
   revmobj_t	*f;
@@ -966,7 +994,9 @@ static void	setup_varshash()
 }
 
 
-/* Setup ELF constants hash tables */
+/**
+ * Setup ELF constants hash tables 
+ */
 static void	setup_consthash()
 {
   u_int		index;
@@ -1064,8 +1094,10 @@ static void	setup_consthash()
 }
 
 
-/* Setup default grammar */
-/* XXX: This function is temporary and we not remain in the new type system */
+/** 
+ * Setup default grammar
+ * XXX: This function is temporary and we not remain in the new type system 
+ */
 void setup_grammar()
 {
   hash_init(&parser_hash, "parsers", 11, ASPECT_TYPE_CADDR);
@@ -1094,7 +1126,9 @@ void setup_grammar()
 
 
 
-/* Setup color table */
+/** 
+ * Setup color table 
+ */
 void setup_color()
 {
   hash_add(&fg_color_hash, "none"   , (void *) COLOR_RESET);
@@ -1118,6 +1152,10 @@ void setup_color()
   hash_add(&bg_color_hash, "white"  , (void *) COLOR_BG_WHITE);
 }
 
+
+/**
+ * TOCOMMENT
+ */
 void setup_color_type()
 {
   hash_add(&t_color_hash, "string"     , (void *) revm_colorblank());
@@ -1138,7 +1176,9 @@ void setup_color_type()
 }
 
 
-/* Setup all used sub functions */
+/** 
+ * Setup all used sub functions 
+ */
 void setup_traces_table()
 {
   traces_addcmd("add"      , (void *) traces_add      , 2, 1);
@@ -1152,7 +1192,9 @@ void setup_traces_table()
   traces_addcmd("flush"    , (void *) traces_flush    , 2, 0);
 }
 
-/* Setup all hash tables */
+/** 
+ * Setup all hash tables 
+ */
 void		revm_tables_setup()
 {
   static int	done = 0;

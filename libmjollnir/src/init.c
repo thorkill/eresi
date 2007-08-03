@@ -1,15 +1,15 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.25 2007-07-31 03:28:47 may Exp $
- *
- * Initialization functions
+ * $Id: init.c,v 1.26 2007-08-03 11:50:59 heroine Exp $
+ * @file init.c
+ * @brief Initialization functions
  *
  */
 #include "libmjollnir.h"
 
 /**
- * Initialize the world for libmjollnir 
+ * @brief Initialize the world for libmjollnir 
  * @param sess The session structure
  */
 int		mjr_init_session(mjrsession_t *sess) 
@@ -33,7 +33,7 @@ int		mjr_init_session(mjrsession_t *sess)
 }
 
 /**
- * Change the current analysis context
+ * @brief Change the current analysis context
  * @param sess The session structure
  * @param name The name of the session
  */
@@ -46,7 +46,7 @@ int		mjr_set_current_context(mjrsession_t *sess, char *name)
 }
 
 /**
- * Create a new analysis context 
+ * @brief Create a new analysis context 
  * @param sess The session structure
  * @param ctx The context structure
  */
@@ -58,7 +58,7 @@ int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx)
 }
 
 /**
- * Create a context and set it as the current one 
+ * @brief Create a context and set it as the current one 
  * @param sess The session strucutre
  * @param obj elfshell obj
  */
@@ -75,7 +75,7 @@ int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
 
 
 /**
- * Create a new context 
+ * @brief Create a new context 
  * @param obj elf shell object
  */
 mjrcontext_t	*mjr_create_context(elfshobj_t *obj) 

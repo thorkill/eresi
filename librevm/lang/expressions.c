@@ -1,16 +1,18 @@
 /*
-** expressions.c for librevm in ERESI
-**
-** Implementation of scripting declarations for meta-language variables
-**
-** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.9 2007-07-31 03:28:48 may Exp $
+* @file expressions.c
+*
+* Implementation of scripting declarations for meta-language variables
+*
+* Started on Jun 23 2007 23:39:51 jfv
+* $Id: expressions.c,v 1.10 2007-08-03 11:51:00 heroine Exp $
 */
 #include "revm.h"
 
 
 
-/* Read the requested type for an expression */
+/** 
+ * Read the requested type for an expression 
+ */
 aspectype_t	*revm_exprtype_get(char *exprvalue)
 {
   aspectype_t	*type;

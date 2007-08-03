@@ -1,12 +1,12 @@
-/*
-** elfsh.c for elfsh
-**
-** Started on  Wed Feb 21 22:02:36 2001 jfv
-** Updated on  Tue Jun 27 23:51:04 2006 mxatone
-**
-** $Id: init.c,v 1.30 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file elfsh.c
+ *
+ * Started on  Wed Feb 21 22:02:36 2001 jfv
+ * Updated on  Tue Jun 27 23:51:04 2006 mxatone
+ *
+ * $Id: init.c,v 1.31 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 
 #include "revm.h"
 
@@ -16,7 +16,9 @@ revmworld_t	world;
 
 
 
-/* Signal handler for SIGINT */
+/** 
+ * Signal handler for SIGINT 
+ */
 void		sigint_handler(int signum)
 {
   if (world.state.revm_mode == REVM_STATE_CMDLINE)
@@ -25,7 +27,9 @@ void		sigint_handler(int signum)
 
 
 
-/* The infinite main loop */
+/** 
+ * The infinite main loop 
+ */
 int		revm_loop(int argc, char **argv)
 {
   char		*buggyfunc;
@@ -210,8 +214,10 @@ int		revm_loop(int argc, char **argv)
 
 
 
-/* Only one time initialisations */
-/* Called from CTORS */
+/**
+ * Only one time initialisations
+ * Called from CTORS 
+ */
 int		revm_init()
 {
 
@@ -238,7 +244,9 @@ int		revm_init()
 
 
 
-/* Setup ELFsh/e2dbg hash tables and structures */
+/** 
+ * Setup ELFsh/e2dbg hash tables and structures 
+ */
 int		revm_setup(int ac, char **av, char mode, char side)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -329,7 +337,9 @@ int		revm_setup(int ac, char **av, char mode, char side)
 
 
 
-/* Open the .eresirc file and execute it */
+/** 
+ * Open the .eresirc file and execute it 
+ */
 int		revm_config()
 {
   char		buff[BUFSIZ];
@@ -365,7 +375,9 @@ int		revm_config()
 
 
 
-/* Interface initialisation && loop entry point */
+/** 
+ * Interface initialisation && loop entry point 
+ */
 int		revm_run(int ac, char **av)
 {
 

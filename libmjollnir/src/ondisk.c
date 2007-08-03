@@ -1,10 +1,10 @@
 /*
-** ondisk.c for libmjollnir in ERESI
+** @file ondisk.c
 ** 
-** Implement routines to store and load analysis data on disk
+** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.2 2007-07-31 23:30:35 may Exp $
+** $Id: ondisk.c,v 1.3 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -13,7 +13,7 @@
 
 
 /**
- * Save and prepare a buffer which will be saved into the elfshobj.
+ * @brief Save and prepare a buffer which will be saved into the elfshobj.
  *
  * @param c a block container containing links to be stores
  * @param type 0 for inout/1 for output
@@ -82,7 +82,7 @@ static int	mjr_flow_store_links(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
 
 
 /**
- * Link containers in the control flow graph
+ * @brief Link containers in the control flow graph
  */
 static int	mjr_flow_load_links(mjrcontext_t	*ctxt, 
 				    mjrcontainer_t	*container, 
@@ -143,7 +143,7 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
 
 
 /**
- * Create the data dump to be saved in file 
+ * @brief Create the data dump to be saved in file 
  */
 static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
 {
@@ -238,9 +238,9 @@ static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
 
 
 /**
- * Create the control flow graph using the information stored in .elfsh.control 
+ * @brief Create the control flow graph using the information stored in .elfsh.control 
  *
- * Returns the number of saved data units (0 probably means something is wrong)
+ * @return Returns the number of saved data units (0 probably means something is wrong)
  */
 int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
 {
@@ -350,7 +350,7 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
 
 
 /**
- * Store the blocks and functions on disk
+ * @brief Store the blocks and functions on disk
  *
  * This loops on all block/func, and call mjr_unit_save() on each element
  *

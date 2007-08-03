@@ -1,19 +1,21 @@
-/*
-** variables.c for elfsh
-**
-** Contain functions for easy variables accesses
-**
-** Started September 16 2005 04:01:03 jfv
-**
-**
-** $Id: variables.c,v 1.6 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file variables.c
+ *
+ * Contain functions for easy variables accesses
+ *
+ * Started September 16 2005 04:01:03 jfv
+ *
+ *
+ * $Id: variables.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
 
-/* Set a variable to a string value */
+/**
+ * Set a variable to a string value 
+ */
 int		revm_setvar_str(char *varname, char *value)
 {
   revmobj_t	*var;
@@ -40,7 +42,9 @@ int		revm_setvar_str(char *varname, char *value)
 }
 
 
-/* Set a variable to a string value */
+/** 
+ * Set a variable to a string value 
+ */
 int             revm_setvar_raw(char *varname, char *value, u_int len)
 {
   revmobj_t   *var;
@@ -66,7 +70,9 @@ int             revm_setvar_raw(char *varname, char *value, u_int len)
 
 
 
-/* Set a variable to a string value */
+/** 
+ * Set a variable to a string value 
+ */
 int		revm_setvar_byte(char *varname, u_char byte)
 {
   revmobj_t	*var;
@@ -90,7 +96,9 @@ int		revm_setvar_byte(char *varname, u_char byte)
 }
 
 
-/* Set a variable to a string value */
+/** 
+ * Set a variable to a string value 
+ */
 int		revm_setvar_short(char *varname, u_short val)
 {
   revmobj_t	*var;
@@ -112,7 +120,9 @@ int		revm_setvar_short(char *varname, u_short val)
 }
 
 
-/* Set a variable to a string value */
+/** 
+ * Set a variable to a string value 
+ */
 int		revm_setvar_int(char *varname, u_int val)
 {
   revmobj_t	*var;
@@ -134,7 +144,9 @@ int		revm_setvar_int(char *varname, u_int val)
 }
 
 
-/* Set a variable to a string value */
+/** 
+ * Set a variable to a string value 
+ */
 int             revm_setvar_long(char *varname, u_long val)
 {
   revmobj_t   *var;

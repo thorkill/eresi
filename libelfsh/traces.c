@@ -2,12 +2,12 @@
  * @file traces.c
 ** traces.c for libelfsh
 ** 
-** All functions that help to trace content
+** @brief All functions that help to trace content
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.18 2007-07-07 19:26:50 mxatone Exp $
+** $Id: traces.c,v 1.19 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -61,17 +61,17 @@ trace_used trace_functions[] =
   };
 
 /**
- * Store every traces, this table store another hash table for each key 
+ * @brief Store every traces, this table store another hash table for each key 
  */
 hash_t traces_table;
 
 /**
- * Exclude hash table which contain regex
+ * @brief Exclude hash table which contain regex
  */
 hash_t exclude_table;
 
 /**
- * Whole active elements 
+ * @brief Whole active elements 
  */
 int trace_enabled_count = 0;
 

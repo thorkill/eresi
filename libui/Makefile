@@ -63,6 +63,9 @@ clean		:
 		@$(RM) \#* *\# *~ .\#* include/\#* include/*\#  \
 		$(OBJ) $(OBJ32) $(OBJ64) include/*~ include/.\#*
 
+docs:
+		@doxygen doc/doxygen.conf
+
 tags		:
 		@$(ETAGS) -a *.c include/*.h *.c
 		@echo TAGS generated succesfully

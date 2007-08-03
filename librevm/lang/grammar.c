@@ -1,16 +1,18 @@
-/*
-** grammar.c for librevm in ERESI
-** 
-** We dont use bison and have our own parser generator
-**
-** Started on  Sun Feb  9 22:57:58 2003 jfv
-** $Id: grammar.c,v 1.17 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file grammar.c
+ * 
+ * We dont use bison and have our own parser generator
+ *
+ * Started on  Sun Feb  9 22:57:58 2003 jfv
+ * $Id: grammar.c,v 1.18 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Get a va_list of parameters */
+/**
+ * @brief Get a va_list of parameters 
+ */
 static int	parse_lookup_varlist(char *param, char *fmt, ...)
 {
   int		rc;
@@ -23,7 +25,9 @@ static int	parse_lookup_varlist(char *param, char *fmt, ...)
 }
 
 
-/* Parse a vector access */
+/** 
+ * @brief Parse a vector access 
+ */
 revmobj_t	*parse_vector(char *param, char *fmt)
 {
   u_int		size;
@@ -71,7 +75,9 @@ revmobj_t	*parse_vector(char *param, char *fmt)
 }
 
 
-/* Parse a hash access */
+/** 
+ * @brief Parse a hash access 
+ */
 revmobj_t	*parse_hash(char *param, char *fmt)
 {
   u_int		size;
@@ -126,7 +132,9 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 
 
 
-/* Parse a hash access */
+/** 
+ * @brief Parse a hash access 
+ */
 revmobj_t	*parse_list(char *param, char *fmt)
 {
   u_int		size;
@@ -182,8 +190,10 @@ revmobj_t	*parse_list(char *param, char *fmt)
 
 
 
-/* Lookup a parameter with 3 fields, 3rd field beeing an index 
-** Used by GOT, CTORS, DTORS */
+/**
+ * @brief Lookup a parameter with 3 fields, 3rd field beeing an index 
+ * Used by GOT, CTORS, DTORS 
+ */
 revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
@@ -285,8 +295,10 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 
 
 
-/* Lookup a parameter with 3 fields, all fields beeing non indexed 
-** Only used by ELF header 'til now */
+/**
+ * Lookup a parameter with 3 fields, all fields beeing non indexed 
+ * Only used by ELF header 'til now 
+ */
 revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
@@ -352,12 +364,12 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 
 
 
-/* 
-** Lookup a parameter with 4 fields, 3rd field beeing an index 
-** Used by SHT, PHT, SYMTAB, DYNSYM , Sections, .dynamic
-**
-** Here need to add 1.rel[name].{L2fields} lookup
-*/
+/** 
+ * Lookup a parameter with 4 fields, 3rd field beeing an index 
+ * Used by SHT, PHT, SYMTAB, DYNSYM , Sections, .dynamic
+ *
+ * Here need to add 1.rel[name].{L2fields} lookup
+ */
 revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
@@ -509,8 +521,10 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
 
 
 
-/* Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
-** Used for Relocation tables and GOT tables */
+/**
+ * Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
+ * Used for Relocation tables and GOT tables 
+ */
 revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 {
   revmL1_t		*l1;
@@ -633,7 +647,9 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 
 
 
-/** Parse the parameter and fill the revmobj_t */
+/** 
+ * Parse the parameter and fill the revmobj_t 
+ */
 revmobj_t		*revm_lookup_param(char *param)
 {
   revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);

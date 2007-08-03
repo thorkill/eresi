@@ -1,12 +1,12 @@
 /*
 ** 
-** libbtree.h in 
+** @file libbtree.h
 ** 
 ** Author  : <IDSAFQREOFASOCASDCAADS>
 ** Started : Fri Oct 17 14:30:27 2003
 ** Updated : Thu Nov 27 23:27:49 2003
 **
-** $Id: libaspect-btree.h,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id: libaspect-btree.h,v 1.3 2007-08-03 11:50:59 heroine Exp $
 **
 */
 
@@ -14,26 +14,39 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+/**
+ * @brief Graphviz node pattern for debugging purpose
+ */
 #define BTREE_DEBUG_NODE	"\"btree_%08x\" [\n"\
 "label = \"<ptr> %8x| <L> %8x|<R> %8x\n"\
 "shape = \"record\"\n"\
 "];\n"
 
+/**
+ * @brief Graphviz link pattern for debugging purpose
+ */
 #define BTREE_DEBUG_LINK  "\"btree_%08x\":%s -> \"btree_%08x\":ptr [\n"\
 "id = %i\n"\
 "];\n"
 
+/**
+ *
+ */
 struct s_debug {
   FILE	*fp;
   int	link;
 };
 
+/**
+ * @brief Binary tree structure.
+ */
 typedef struct s_btree
 {
-  unsigned int		id;
-  void			*elem;
-  struct s_btree	*left;
-  struct s_btree	*right;
+  unsigned int		id;	/*!< Id of the node		*/
+  void			*elem;	/*!< Pointer to element of the node */
+  struct s_btree	*left;	/*!< Left link of the tree	*/
+  struct s_btree	*right;	/*!< Right link of the tree	*/
 } btree_t;
 
 #define BTREE_FREE_ELEM	1

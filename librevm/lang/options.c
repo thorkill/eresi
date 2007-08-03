@@ -1,17 +1,19 @@
-/*
-** opt.c for librevm in ERESI
-**
-** Implement the commands registration handlers
-** 
-** Started on  Fri Nov  2 15:17:02 2001 jfv
-**
-** $Id: options.c,v 1.8 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file opt.c
+ *
+ * Implement the commands registration handlers
+ * 
+ * Started on  Fri Nov  2 15:17:02 2001 jfv
+ *
+ * $Id: options.c,v 1.9 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Read the input file parameter */
+/** 
+ * Read the input file parameter 
+ */
 int		revm_getoption(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -24,7 +26,9 @@ int		revm_getoption(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Read the input file parameter */
+/** 
+ * Read the input file parameter 
+*/
 int		revm_getinput(u_int index, u_int argc, char **argv)
 {
 
@@ -37,7 +41,9 @@ int		revm_getinput(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Read the output file parameter */
+/** 
+ * Read the output file parameter 
+*/
 int		revm_getoutput(u_int index, u_int argc, char **argv)
 {
 
@@ -50,7 +56,9 @@ int		revm_getoutput(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Activate a 2-non-regx-mandatory-parameters option */
+/** 
+ * Activate a 2-non-regx-mandatory-parameters option 
+*/
 int		revm_getoption2(u_int index, u_int argc, char **argv)
 {
 
@@ -65,7 +73,9 @@ int		revm_getoption2(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
-/* Activate a 2-non-regx-mandatory-parameters option */
+/** 
+ * Activate a 2-non-regx-mandatory-parameters option 
+*/
 int		revm_getoption3(u_int index, u_int argc, char **argv)
 {
 
@@ -81,7 +91,9 @@ int		revm_getoption3(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (3));
 }
 
-/* Activate a non-mandatory-regex-parameter option */
+/**
+ * Activate a non-mandatory-regex-parameter option 
+*/
 int		revm_getregxoption(u_int index, u_int argc, char **argv)
 {
 
@@ -100,7 +112,9 @@ int		revm_getregxoption(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Fetch parameters until we find NULL or something starting by '-' */
+/** 
+ * Fetch parameters until we find NULL or something starting by '-' 
+ */
 int		revm_getvarparams(u_int index, u_int argc, char **argv)
 {
   u_int		idx;
@@ -123,7 +137,9 @@ int		revm_getvarparams(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
-/* Format the input of a loop */
+/** 
+ * Format the input of a loop 
+*/
 int		revm_getforparams(u_int index, u_int argc, char **argv)
 {
   char		*p;
@@ -166,7 +182,9 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
 }
 
 
-/* Format the input of a match */
+/** 
+ * Format the input of a match 
+ */
 int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -181,7 +199,9 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 
 
 
-/* Add an entry to the requested dump list */
+/** 
+ * Add an entry to the requested dump list 
+*/
 static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
 {
   char		*off;							
@@ -231,7 +251,9 @@ static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (2));
 }
 
-/* Add an DISASM typed entry */
+/** 
+ * Add an DISASM typed entry 
+*/
 int		revm_getdisasm(u_int index, u_int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -239,7 +261,9 @@ int		revm_getdisasm(u_int index, u_int argc, char **argv)
 		     revm_add2list(REVM_VIEW_DISASM, index, argc, argv));
 }
 
-/* Add an HEXA typed entry */
+/** 
+ * Add an HEXA typed entry 
+*/
 int		revm_gethexa(u_int index, u_int argc, char **argv)
 {
 

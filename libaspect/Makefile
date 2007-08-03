@@ -49,3 +49,5 @@ fclean		: clean
 %.64.o 		: %.c
 		$(CC) $(CFLAGS64) -c -o $@ $<
 
+docs:
+		doxygen doc/doxygen.conf

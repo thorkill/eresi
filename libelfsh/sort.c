@@ -8,7 +8,7 @@
 ** Started on  Wed May 21 15:27:15 2003 jfv
 ** 
 **
-** $Id: sort.c,v 1.7 2007-07-31 03:28:47 may Exp $
+** $Id: sort.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -16,7 +16,7 @@
 elfshsect_t *symstrsect = NULL;
 
 /**
- * functions called by qsort()
+ * @brief functions called by qsort()
  */
 int		      sizesort_compare(const elfsh_Sym * p, const elfsh_Sym * q)
 {
@@ -28,7 +28,7 @@ int		      sizesort_compare(const elfsh_Sym * p, const elfsh_Sym * q)
 }
 
 /**
- * Missing
+ * @brief Missing
  */
 int		      addrsort_compare(const elfsh_Sym * p,const elfsh_Sym * q)
 {
@@ -40,7 +40,7 @@ int		      addrsort_compare(const elfsh_Sym * p,const elfsh_Sym * q)
 }
 
 /**
- * Sort the symtab given in parameter 
+ * @brief Sort the symtab given in parameter 
  */
 int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
 {

@@ -1,11 +1,11 @@
 /*
-** readln.c for libui in ERESI
+** @file readln.c
 **
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.18 2007-07-17 18:11:25 may Exp $
+** $Id: readln.c,v 1.19 2007-08-03 11:51:01 heroine Exp $
 **
 */
 #include "libui.h"
@@ -16,7 +16,9 @@ rlcomp_t		comp;			/* Completion strings */
 rl_command_func_t	*rl_ctrll = NULL;
 char			readln_exited = 0;
 
-/* Clean readline */
+/**
+ * @brief Clean readline 
+ */
 int		readln_quit(int mode)
 {
   int 		exited = readln_exited;
@@ -36,14 +38,18 @@ int		readln_quit(int mode)
 }
 
 
-/* Set rl_ctrl */
+/**
+ * @brief Set rl_ctrl 
+ */
 void		readln_ctrl_set(int i, char c)
 {
   if (rl_ctrll)
     rl_ctrll(i, c);
 }
 
-/* Completion fonction for the command list */
+/** 
+ * @brief Completion fonction for the command list 
+ */
 char		*readln_match(const char *text, int state)
 {
   static int	i, len, tab;
@@ -93,14 +99,18 @@ char		*readln_match(const char *text, int state)
 
 
 
-/* Add commands to completion */
+/** 
+ * @brief Add commands to completion 
+ */
 void		readln_completion_commands(hash_t *cmd_hash)
 {
   comp.cmds[0] = hash_get_keys(cmd_hash, NULL);
 }
 
 
-/* Install the completion strings */
+/** 
+ * @brief Install the completion strings 
+ */
 void		readln_completion_install(char mode, char side)
 {
   char		*str;
@@ -153,7 +163,9 @@ void		readln_completion_install(char mode, char side)
 
 
 
-/* Perform completion */
+/** 
+ * @brief Perform completion 
+ */
 char	**readln_completion(const char* text, int start, int end) 
 {
   char	**matches = (char**) NULL;
@@ -217,9 +229,11 @@ char	**readln_completion(const char* text, int start, int end)
 }
 
 
-/* This function was used to update columns on a readline colored prompt
-   another solution has been found that work well (see readln_prompt_update).
-   We keep this function because it can be useful later. */
+/**
+ * This function was used to update columns on a readline colored prompt
+ *  another solution has been found that work well (see readln_prompt_update).
+ *  We keep this function because it can be useful later. 
+ */
 int 	readln_column_update() 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -232,7 +246,9 @@ int 	readln_column_update()
 
 
 
-/* A prompt need some update to fit correctly on readline (with color) */
+/** 
+ * @brief A prompt need some update to fit correctly on readline (with color) 
+ */
 int		readln_prompt_update(char *ptr, int size)
 {
   int		i, tmpi;
@@ -312,7 +328,9 @@ int		readln_prompt_update(char *ptr, int size)
 
 
 
-/* readline line handler */
+/** 
+ * @brief readline line handler 
+ */
 void    revm_ln_handler(char *c)
 {
   
@@ -337,8 +355,10 @@ void    revm_ln_handler(char *c)
 
 
 
-/* Restore readline prompt that will be display on next 
-** rl_forced_update_display() or rl_callback_read_char() */
+/** 
+ * Restore readline prompt that will be display on next 
+ * rl_forced_update_display() or rl_callback_read_char() 
+ */
 int		readln_prompt_restore()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -356,7 +376,9 @@ int		readln_prompt_restore()
 
 
 
-/* Perform some checks on the input given by readline */
+/** 
+ * Perform some checks on the input given by readline 
+ */
 char		*readln_input_check()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -388,7 +410,9 @@ char		*readln_input_check()
 }
 
 
-/* Log the input of readline */
+/** 
+ * Log the input of readline 
+ */
 void		readln_input_log(char *str)
 {
 #if 0
@@ -443,7 +467,9 @@ void		readln_input_log(char *str)
 
 
 
-/* Install the shortcut for clearing the screen */
+/** 
+ * @brief Install the shortcut for clearing the screen 
+ */
 void		readln_install_clearscreen()
 {
   Keymap	map;
@@ -457,7 +483,9 @@ void		readln_install_clearscreen()
 }
 
 
-/* Change the screen content */
+/** 
+ * @brief Change the screen content 
+ */
 void		readln_screen_change(u_short isnew, char prompt_display)
 {
   /* Setup on new screen */
@@ -491,7 +519,9 @@ void		readln_screen_change(u_short isnew, char prompt_display)
 }
 
 
-/* Write readline history on quit */
+/** 
+ * @brief Write readline history on quit 
+ */
 void		readln_history_dump(char mode)
 {
   if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_DEBUGGER)
@@ -503,14 +533,18 @@ void		readln_history_dump(char mode)
   rl_callback_handler_remove();
 }
 
-/* Prepare readline terminal */
+/** 
+ * @brief Prepare readline terminal 
+ */
 void		readln_terminal_prepare(char mode)
 {
   if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
     rl_prep_terminal(1);
 }
 
-/* Prepare readline terminal */
+/** 
+ * @brief Prepare readline terminal 
+ */
 void		readln_terminal_unprepare(char mode)
 {
   if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)

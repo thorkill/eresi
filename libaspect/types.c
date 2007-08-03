@@ -1,17 +1,19 @@
-/*
-** types.c for libaspect in ERESI
+/**
+** @file types.c
 ** 
-** The base of the unified type system
+** @brief The base of the unified type system
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.14 2007-07-31 03:28:46 may Exp $
+** $Id: types.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libaspect.h"
 
 
-/* Available types hash */
+/**
+ * @brief Available types hash 
+ */
 hash_t		types_hash;
 
 /* Base types numbers, strings, and infos */
@@ -38,7 +40,9 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
   };
 
 
-/* Copy the parameter type by change its offset */
+/** 
+ * @brief Copy the parameter type by change its offset 
+ */
 aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
 					  u_char	isptr, 
@@ -62,7 +66,9 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
 
 
 
-/* Add a field to a type */
+/** 
+ * Add a field to a type 
+ */
 static int		aspect_type_addfield(aspectype_t *parent, 
 					     aspectype_t *field)
 {
@@ -84,7 +90,9 @@ static int		aspect_type_addfield(aspectype_t *parent,
 
 
 
-/* Find the number of dimensions for a field */
+/** 
+ * @brief Find the number of dimensions for a field 
+*/
 static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
 {
   char		*idxname;

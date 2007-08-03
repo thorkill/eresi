@@ -1,16 +1,17 @@
 /*
 ** (C) 2006 Devhell Labs / Asgard Labs : sk, jfv, thorolf
 ** 
-** Implement low-level functions of the libmjollnir library
+** @file core.c
+** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.38 2007-07-31 03:28:47 may Exp $
+** $Id: core.c,v 1.39 2007-08-03 11:50:59 heroine Exp $
 */
 
 #include "libmjollnir.h"
 
 
 /**
- * This function will find calls including calls trought a pointer 
+ * @brief This function will find calls including calls trought a pointer 
  * @param sess Mjollnir session
  * @param section_name The name of the section we want to analyse
  */
@@ -93,7 +94,7 @@ int			mjr_analyse_section(mjrsession_t *sess, char *section_name)
 }
 
 /**
- * Main analysis function 
+ * @brief Main analysis function 
  * @param sess Mjollnir session strucutre
  * @param flags <FIXME:NotImplemented>
  */

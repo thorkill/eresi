@@ -1,9 +1,9 @@
 /*
-** job.c for elfsh
+** @file job.c
 ** 
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **
-** $Id: job.c,v 1.3 2007-07-17 18:11:24 may Exp $
+** $Id: job.c,v 1.4 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

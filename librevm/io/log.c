@@ -1,13 +1,13 @@
-/*
-** log.c for librevm in ERESI
-**
-** Implement logging facilities 
-**
-** Started September 16 03:11:04 2005 jfv
-**
-** $Id: log.c,v 1.6 2007-07-31 03:28:47 may Exp $
-**
-*/
+/**
+ * @file log.c
+ *
+ * Implement logging facilities 
+ *
+ * Started September 16 03:11:04 2005 jfv
+ *
+ * $Id: log.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
@@ -96,7 +96,9 @@ static void		logtofile(char *str)
 }
 
 
-/* Log a line */
+/**
+ * Log a line 
+ */
 void			revm_log(char *str)
 {
   int			check = 0, size = 0;
@@ -229,7 +231,9 @@ void			revm_log(char *str)
 }
 
 
-/* Stop logging */
+/**
+ * Stop logging 
+ */
 int			revm_closelog()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

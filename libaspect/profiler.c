@@ -1,10 +1,10 @@
-/*
-** error.c for libelfsh
+/**
+** @file error.c
 ** 
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm
 **
-** $Id: profiler.c,v 1.7 2007-06-04 21:20:33 mxatone Exp $
+** $Id: profiler.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libaspect.h"
@@ -39,7 +39,9 @@ static u_int	profiler_adepth = 0;
 
 
 
-/* Find an entry in the allocation profiler cache */
+/**
+ * @brief  Find an entry in the allocation profiler cache 
+ */
 profallocentry_t	*profiler_alloc_find(u_char direction,
 					     u_long addr, 
 					     u_char optype)
@@ -69,7 +71,9 @@ profallocentry_t	*profiler_alloc_find(u_char direction,
 }
 
 
-/* Print the warning string */
+/** 
+ * @brief Print the warning string 
+ */
 void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 {
   char	        buf[BUFSIZ];
@@ -95,7 +99,9 @@ void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 
 
 
-/* Warn if anything bad is happening */
+/** 
+ * @brief Warn if anything bad is happening 
+ */
 void			profiler_alloc_warning(u_char warntype)
 {
   profallocentry_t	*ent;
@@ -196,7 +202,9 @@ void			profiler_alloc_warning(u_char warntype)
 
 
 
-/* Shift the allocation history */
+/** 
+ * @brief Shift the allocation history 
+ */
 void			profiler_alloc_shift()
 {
   int			index;
@@ -208,7 +216,9 @@ void			profiler_alloc_shift()
 
 
 
-/* Add an entry in the allocation cache */
+/** 
+ * @brief Add an entry in the allocation cache 
+ */
 static void		profiler_alloc_add(char *file, char *func, 
 					  u_int line, u_long addr, 
 					  u_char atype, u_char otype)
@@ -223,7 +233,9 @@ static void		profiler_alloc_add(char *file, char *func,
 }
 
 
-/* Update allocation cache with a new entry */
+/** 
+ * @brief Update allocation cache with a new entry 
+ */
 int			profiler_alloc_update(char *file, char *func, 
 					      u_int line, u_long addr, 
 					      u_char atype, u_char otype)
@@ -262,7 +274,9 @@ int			profiler_alloc_update(char *file, char *func,
 
 
 
-/* Reset profiler memory */
+/** 
+ * @brief Reset profiler memory 
+ */
 void		profiler_reset(u_int lsel)
 {
   u_int		idx;
@@ -275,7 +289,9 @@ void		profiler_reset(u_int lsel)
 }
 
 
-/* Generic routine for profiler output */
+/** 
+ * @brief Generic routine for profiler output 
+ */
 int		profiler_print(char *file, char *func, 
 			       u_int line, char *msg)
 {
@@ -348,7 +364,9 @@ int		profiler_print(char *file, char *func,
 }
 
 
-/* Write the last error information */
+/** 
+ * @brief Write the last error information 
+ */
 void		profiler_err(char *file, char *func, 
 			     u_int line, char *msg)
 {
@@ -398,7 +416,9 @@ void		profiler_err(char *file, char *func,
 }
 
 
-/* Write the last profiling information */
+/** 
+ * @brief Write the last profiling information 
+ */
 void		profiler_out(char *file, char *func, u_int line)
 {
   char		buff[160];
@@ -442,14 +462,18 @@ void		profiler_out(char *file, char *func, u_int line)
     aspectworld.endline();
 }
 
-/* Profiler is started ? */
+/** 
+ * @brief Profiler is started ? 
+ */
 u_char		profiler_started()
 {
   return (aspectworld.profstarted);
 }
 
 
-/* Set the current function depth and direction */
+/** 
+ * @brief Set the current function depth and direction 
+ */
 void		profiler_incdepth()
 {
   profiler_depth++;
@@ -473,7 +497,7 @@ void		profiler_error_reset()
 }
 
 /**
- * Display last error message 
+ * @brief Display last error message 
  */
 void		profiler_error()
 {

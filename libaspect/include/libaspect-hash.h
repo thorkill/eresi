@@ -1,10 +1,10 @@
 /*
-** libhash.h for libaspect from elfsh
+** @file libhash.h
 **
 ** Started on  Fri Jan 24 20:25:42 2003 jfv
 ** Last update Fri Dec 22 00:14:56 2006 jfv
 **
-** $Id: libaspect-hash.h,v 1.7 2007-07-31 03:28:46 may Exp $
+** $Id: libaspect-hash.h,v 1.8 2007-08-03 11:50:59 heroine Exp $
 **
 */
 
@@ -15,9 +15,9 @@
  #include <bsd_mem.h>
 #endif
 
-/*
-** Hash table entry
-*/
+/**
+ * @brief Hash table entry
+ */
 typedef struct          s_hashent
 {
   char                *key;
@@ -25,9 +25,9 @@ typedef struct          s_hashent
   struct s_hashent      *next;
 }                       hashent_t;
 
-/*
-** Hash table
-*/
+/**
+ * @brief Hash table
+ */
 typedef struct          s_hash
 {
   hashent_t             *ent;
@@ -38,7 +38,9 @@ typedef struct          s_hash
 }                       hash_t;
 
 
-/* The hash table of hash tables is accessible to the public */
+/**
+ * @brief  The hash table of hash tables is accessible to the public 
+ */
 extern hash_t		*hash_hash;
 
 /* hash.c */

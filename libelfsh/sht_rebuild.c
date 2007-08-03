@@ -10,13 +10,13 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.17 2007-07-31 03:28:47 may Exp $
+ ** $Id: sht_rebuild.c,v 1.18 2007-08-03 11:50:59 heroine Exp $
  **
  */
 #include "libelfsh.h"
 
 /** 
- * This function insert a SHT entry without shifting the address space
+ * @brief This function insert a SHT entry without shifting the address space
  * I.E. it does truncate some sections for creating new ones.
  *
  * This is necessary when we do SHT reconstruction or when we unmerge

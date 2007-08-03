@@ -2,17 +2,18 @@
 ** (C) 2006-2007 Devhell Labs / Asgard Labs 
 **  - sk, jfv, thorolf, strauss
 **
-** \file libmjollnir/types.c
+** @file libmjollnir/types.c
 ** 
-** Functions that use the typed instructions information in libasm
+** @brief Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.5 2007-07-31 23:30:35 may Exp $
+** $Id: cfg.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libmjollnir.h"
 
 
-/** This function trace execution flow and creates block depending on instruction.
+/** 
+ * @brief This function trace execution flow and creates block depending on instruction.
  *
  * If instruction break execution flow, block is considerated finished and added 
  * to linked list of blocks (that is the content of the .edfmt.blocks section)
@@ -134,7 +135,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 
 
 /**
- * Support function pointers computations
+ * @brief Support function pointers computations
  *
  * Handle something like this : call *%reg
  *
@@ -240,7 +241,7 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 }
 
 /**
- * Resolve the destination address of current call 
+ * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
  */
 int		mjr_get_call_destaddr(mjrcontext_t *context)
@@ -288,7 +289,7 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
 }
 
 /**
- * Resolve the destination address of current jmp instruction
+ * @brief Resolve the destination address of current jmp instruction
  * @param context mjollnir context structure
  */
 int		mjr_get_jmp_destaddr(mjrcontext_t *context)
@@ -336,7 +337,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
 }
 
 /**
- * Check if we missed some function start
+ * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
  */
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)

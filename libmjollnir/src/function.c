@@ -2,18 +2,18 @@
  * (C) 2006-2007 Asgard Labs, thorolf
  *     2006-2007 devhell, jfv
  *     2007      rfd labs, strauss
- *
+ * @file function.c
  * BSD License
- * $Id: function.c,v 1.43 2007-07-31 14:41:33 pouik Exp $
+ * $Id: function.c,v 1.44 2007-08-03 11:50:59 heroine Exp $
  *
  */
 #include <libmjollnir.h>
 
 
 /** 
- * Retrieve control flow section content if any 
+ * @brief Retrieve control flow section content if any 
  * @param ctxt mjorllnir context
- * returns the number of functions (0 probably means something is wrong)
+ * @return returns the number of functions (0 probably means something is wrong)
  */
 int		mjr_functions_get(mjrcontext_t *ctxt)
 {
@@ -46,7 +46,7 @@ int		mjr_functions_get(mjrcontext_t *ctxt)
 
 
 /**
- * Function dumping procedure for debug purposes
+ * @brief Function dumping procedure for debug purposes
  */
 void		mjr_function_dump(mjrcontext_t *ctxt, char *where, mjrcontainer_t *c)
 {
@@ -85,7 +85,9 @@ void		mjr_function_dump(mjrcontext_t *ctxt, char *where, mjrcontainer_t *c)
 }
 
 
-/* Copy the function in a special buffer to fingerprint it */
+/** 
+ * @brief Copy the function in a special buffer to fingerprint it 
+ */
 int		mjr_function_copy(mjrcontext_t  *ctx, 
 				  unsigned char *src, 
 				  unsigned char *dst, 
@@ -136,7 +138,9 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
 
 
 
-/* Finger print a function using X method */
+/** 
+ * @brief Finger print a function using X method 
+ */
 void			*mjr_fingerprint_function(mjrcontext_t  *ctx, 
 						  elfsh_Addr	addr, 
 						  int		type) 
@@ -199,7 +203,7 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
 
 
 /**
- * Register function container in the context
+ * @brief Register function container in the context
  * @param ctx mjollnir context structure
  * @param vaddr virtual address of the function
  * @param fun function container
@@ -229,7 +233,7 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, mjrcontainer_t *fun)
 
 
 /**
- * Get function container by vaddr
+ * @brief Get function container by vaddr
  * @param ctx mjollnir context structure
  * @param vaddr virtual address of requested function
  */

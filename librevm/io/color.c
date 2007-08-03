@@ -1,17 +1,19 @@
-/*
-** color.c for libui from elfsh
-**
-** All functions about colors
-**
-** Started on Sept 11 2005 mxatone
-**
-** $Id: color.c,v 1.5 2007-07-17 18:11:25 may Exp $
-**
-*/
+/**
+ * @file color.c
+ *
+ * All functions about colors
+ *
+ * Started on Sept 11 2005 mxatone
+ *
+ * $Id: color.c,v 1.6 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Token system */
+/**
+ * Token system 
+ */
 static char 	tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
 static u_int 	curtok = 0;
 
@@ -238,7 +240,9 @@ char 		*revm_colorget(char *sp, char *type, void *object)
   NOPROFILER_ROUT(tokens[curtok++]);
 }
 
-/* Reset token */
+/** 
+ * Reset token 
+ */
 void 		revm_endline()
 {
   curtok = 0;
@@ -270,7 +274,9 @@ char 		*revm_coloradv(char *type, char *pattern, char *text)
   NOPROFILER_ROUT(text);
 }
 
-/* Advanced functions */
+/** 
+ * Advanced functions 
+ */
 char *revm_colorinstr_fmt(char *pattern, char *text)		
 { 
   return revm_colorget(pattern, "instr", text); 
@@ -336,7 +342,9 @@ int		revm_color_count(char *string)
   NOPROFILER_ROUT(count);
 }
 
-/* Return total size of colors on a string */
+/** 
+ * Return total size of colors on a string 
+ */
 int		revm_color_size(char *string)
 {
   int		size = 0;

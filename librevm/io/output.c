@@ -1,19 +1,21 @@
-/*
-** output.c for librevm in ERESI
-**
-** The output vector interface
-**
-** Started on Fri Mar 5 00:55:40 2004 jfv
-** Updated on Mon Mar 5 18:47:41 2007 jfv
-**
-** $Id: output.c,v 1.6 2007-07-31 03:28:47 may Exp $
-**
-*/
+/**
+ * @file output.c
+ *
+ * The output vector interface
+ *
+ * Started on Fri Mar 5 00:55:40 2004 jfv
+ * Updated on Mon Mar 5 18:47:41 2007 jfv
+ *
+ * $Id: output.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
 
-/* Display str on all term */
+/**
+ * @brief Display str on all term 
+ */
 int		revm_output_bcast(char *str)
 {
   int		index;
@@ -140,7 +142,9 @@ int		revm_outerr(char *str)
 
 
 
-/* OUTPUT handler for stdout */
+/** 
+ * OUTPUT handler for stdout 
+ */
 int		revm_stdoutput(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -150,7 +154,9 @@ int		revm_stdoutput(char *str)
 }
 
 
-/* Change the Output file */
+/** 
+ * Change the Output file 
+ */
 void	revm_setoutput(revmworkspace_t *ws, int fd)
 {
   ws->io.output_fd = fd;

@@ -1,10 +1,10 @@
 /*
-** cmdapi.c for elfsh
+** @file cmdapi.c
 ** 
 ** Started on  Mon Feb 24 15:52:06 2003 jfv
 ** Last update Thu Mar 11 14:39:06 2004 jfv
 **
-** $Id: commands.c,v 1.4 2007-07-31 03:28:47 may Exp $
+** $Id: commands.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"

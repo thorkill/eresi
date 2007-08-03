@@ -1,5 +1,5 @@
 /**
- * @file libmjollnir.h for libmjollnir in ERESI
+ * @file libmjollnir.h
  * 
  * (C) Devhell Labs / Asgard Labs 2001-2007
  *
@@ -40,7 +40,9 @@
 /* Fingerprinting types */
 #define	MJR_FPRINT_TYPE_MD5	0
 
-/* The hash declared in VM for gotos */
+/**
+ * @brief The hash declared in VM for gotos 
+ */
 extern hash_t	goto_hash;
 
 /* init.c */

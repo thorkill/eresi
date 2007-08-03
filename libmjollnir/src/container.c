@@ -1,14 +1,14 @@
 /*
  * 2001-2007 Devhell Labs, Rfdslabs, Asgardlabs
- * 
- * An API for generic containers data structures
+ * @file container.c
+ * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.16 2007-08-01 00:38:43 may Exp $
+ * $Id: container.c,v 1.17 2007-08-03 11:50:59 heroine Exp $
  */
 #include "libmjollnir.h"
 
 /**
- * Initialize containers for context
+ * @brief Initialize containers for context
  * @param ctx mjollnir context
  */
 int	mjr_init_containers(mjrcontext_t *ctx)
@@ -20,7 +20,7 @@ int	mjr_init_containers(mjrcontext_t *ctx)
 }
 
 /**
- * Resize containers for given context
+ * @brief Resize containers for given context
  * @param ctx mjollnir context
  */
 int	mjr_resize_containers(mjrcontext_t *ctx, unsigned int resize)
@@ -34,7 +34,7 @@ int	mjr_resize_containers(mjrcontext_t *ctx, unsigned int resize)
 }
 
 /**
- * Reigster new container for given context
+ * @brief Register new container for given context
  * @param ctx mjollnir context
  * @param cntnr container
  */
@@ -91,7 +91,7 @@ unsigned int mjr_register_container_id(mjrcontext_t *ctx, mjrcontainer_t *cntnr)
 }
 
 /**
- * Unregister container by id
+ * @brief Unregister container by id
  * @param ctx mjollnir context
  * @param id container id
  */
@@ -227,7 +227,7 @@ int		match_block(void *elem, void *match)
 
 
 /**
- * Create container lists
+ * @brief Create container lists
  */
 int			mjr_create_container_linklist(mjrcontainer_t *container,
 						      u_int	      linktype)
@@ -275,7 +275,7 @@ int			mjr_create_container_linklist(mjrcontainer_t *container,
 
 
 /**
- * Creates a block container
+ * @brief Creates a block container
  */
 mjrcontainer_t		*mjr_create_block_container(mjrcontext_t	*ctx,
 						    u_int		symoff,
@@ -371,7 +371,7 @@ mjrcontainer_t		*mjr_create_function_container(mjrcontext_t	*ctx,
 
 
 /**
- * This function should be used only for debug
+ * @brief This function should be used only for debug
  * It is O(n) since this api doesn't know about hashes in the mjr context
  */
 mjrcontainer_t		*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
@@ -411,7 +411,9 @@ void			mjr_container_dump(mjrcontext_t *ctx, int what)
 }
 
 
-/* Get the list of links for the desired direction (input or output) */
+/**
+ * @brief Get the list of links for the desired direction (input or output) 
+ */
 list_t		*mjr_link_get_by_direction(mjrcontainer_t *c, int dir)
 {
   list_t	*ret;

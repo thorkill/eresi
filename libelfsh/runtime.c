@@ -9,14 +9,14 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id: runtime.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: runtime.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
 
 
 /**
- * Set PHT entry rights from elfsh section mode 
+ * @brief Set PHT entry rights from elfsh section mode 
  */
 int		elfsh_set_phdr_prot(u_int mode)
 {
@@ -31,7 +31,7 @@ int		elfsh_set_phdr_prot(u_int mode)
 }
 
 /**
- * Map a new area in memory 
+ * @brief Map a new area in memory 
  */
 elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 {
@@ -96,7 +96,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
 
 /**
- * Unmap a previously requested area 
+ * @brief Unmap a previously requested area 
  */
 int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 {
@@ -134,7 +134,7 @@ int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 }
 
 /**
- * Synchronize ondisk modifications in memory 
+ * @brief Synchronize ondisk modifications in memory 
  */
 int		elfsh_runtime_sync()
 {
@@ -145,7 +145,7 @@ int		elfsh_runtime_sync()
 }
 
 /**
- * Put write capability on the zone 
+ * @brief Put write capability on the zone 
  */
 int		elfsh_munprotect(elfshobj_t *file, 
 				 elfsh_Addr addr, 
@@ -190,7 +190,7 @@ int		elfsh_munprotect(elfshobj_t *file,
 }
 
 /**
- * Restore original rights 
+ * @brief Restore original rights 
  */
 int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
 {

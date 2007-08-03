@@ -1,12 +1,12 @@
 /*
-** libmjollnir/src/blocks.c
+** @file libmjollnir/src/blocks.c
 ** 
 ** Authors : sk, jfv, thorkill, strauss
 ** 
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.66 2007-07-31 14:41:33 pouik Exp $
+** $Id: blocks.c,v 1.67 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -16,9 +16,9 @@ hash_t		goto_hash;
 
 
 /**
- * Retreive control flow section content if any 
+ * @brief Retreive control flow section content if any 
  *
- * returns the number of blocks (0 probably means something is wrong)
+ * @return returns the number of blocks (0 probably means something is wrong)
  */
 int			mjr_blocks_get(mjrcontext_t *ctxt)
 {
@@ -49,8 +49,8 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
 
 
 
-/*
- * Get a block by vaddr
+/**
+ * @brief Get a block by vaddr
  *
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
@@ -117,7 +117,9 @@ mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 
 
 
-/* Simple debug function for block containers */
+/** 
+ * @brief Simple debug function for block containers 
+ */
 int		mjr_block_dump(mjrcontext_t* ctxt, mjrcontainer_t *c)
 {
   mjrblock_t	*blk;

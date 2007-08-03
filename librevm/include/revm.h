@@ -1,10 +1,10 @@
-/*
-** revm.h for librevm in ERESI
+/**
+** @file revm.h
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.80 2007-08-01 14:35:57 may Exp $
+** $Id: revm.h,v 1.81 2007-08-03 11:51:00 heroine Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_

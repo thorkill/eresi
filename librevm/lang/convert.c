@@ -1,5 +1,5 @@
-/*
-** objects.c for elfsh
+/**
+** @file objects.c
 **
 ** The implementation of the Lazy Abstract Type System (LATS)
 **
@@ -20,13 +20,15 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id: convert.c,v 1.4 2007-07-31 03:28:48 may Exp $
+** $Id: convert.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"
 
 
-/* Convert to string object */
+/** 
+ * Convert to string object 
+ */
 int		revm_convert2str(revmobj_t *obj)
 {
   u_char	val8;
@@ -96,7 +98,9 @@ int		revm_convert2str(revmobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Convert to 4 bytes object */
+/** 
+ * Convert to 4 bytes object 
+ */
 int		revm_convert2int(revmobj_t *obj)
 {
   elfsh_Addr	val64;
@@ -161,7 +165,9 @@ int		revm_convert2int(revmobj_t *obj)
 }
 
 
-/* Convert to a long object */
+/** 
+ * Convert to a long object 
+ */
 int		revm_convert2addr(revmobj_t *obj, u_int type)
 {
   elfsh_Addr	val64;
@@ -226,7 +232,9 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
 }
 
 
-/* Small handlers for same sized types */
+/** 
+ * Small handlers for same sized types 
+ */
 int		revm_convert2caddr(revmobj_t *obj)
 {
   return (revm_convert2addr(obj, ASPECT_TYPE_CADDR));
@@ -245,7 +253,9 @@ int		revm_convert2long(revmobj_t *obj)
 
 
 
-/* Convert to a raw data object */
+/** 
+ * Convert to a raw data object 
+ */
 int		revm_convert2raw(revmobj_t *obj)
 {
   u_char	val8;
@@ -313,7 +323,9 @@ int		revm_convert2raw(revmobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Convert to a raw data object */
+/** 
+ * Convert to a raw data object 
+ */
 int		revm_convert2byte(revmobj_t *obj)
 {
   u_char	val8;
@@ -377,7 +389,9 @@ int		revm_convert2byte(revmobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Convert to a raw data object */
+/** 
+ * Convert to a raw data object 
+*/
 int		revm_convert2short(revmobj_t *obj)
 {
   u_char	val8;

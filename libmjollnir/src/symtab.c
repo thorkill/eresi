@@ -1,7 +1,9 @@
-/*
+/**
+ * @file symtab.c
+ *
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.18 2007-07-31 03:28:47 may Exp $
+ * $Id: symtab.c,v 1.19 2007-08-03 11:51:00 heroine Exp $
  *
  */
 #include <libmjollnir.h>
@@ -38,7 +40,9 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  return 1;
 }
 
-/* This function inserts new symbol as a function. Shortcut for insert/set */
+/**
+ * @brief This function inserts new symbol as a function. Shortcut for insert/set 
+ */
 int		mjr_symbol_add(mjrsession_t	*sess, 
 			       elfsh_Addr	vaddr, 
 			       char		*fname)
@@ -65,7 +69,9 @@ int		mjr_symbol_add(mjrsession_t	*sess,
 }
 
 
-/* Remove symbol by name */
+/** 
+ * @brief Remove symbol by name 
+ */
 int		mjr_symbol_delete_by_name(mjrsession_t *sess, char *symbol) 
 { 
 #if __DEBUG_MJOLLNIR__
@@ -76,7 +82,9 @@ int		mjr_symbol_delete_by_name(mjrsession_t *sess, char *symbol)
   return 1;
 }
 
-/* Rename symbol FIXME */
+/** 
+ * @brief Rename symbol FIXME 
+ */
 int		mjr_symbol_rename(mjrsession_t  *sess, 
 				  char		*old_name, 
 				  char		*new_name) 

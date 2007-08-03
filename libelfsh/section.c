@@ -2,18 +2,18 @@
  * @file section.c
 ** section.c for libelfsh
 ** 
-** All handlers and lowlevel routines for sections management
+** @brief All handlers and lowlevel routines for sections management
 ** 
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
 ** 
 **
-** $Id: section.c,v 1.17 2007-08-01 18:38:31 pouik Exp $
+** $Id: section.c,v 1.18 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
- * Just used to avoid code redundancy in elfsh_add_section()
+ * @brief Just used to avoid code redundancy in elfsh_add_section()
  */
 char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
 {
@@ -182,7 +182,7 @@ int		elfsh_add_section(elfshobj_t	*file,
 
 
 /**
- * Add a runtime section
+ * @brief Add a runtime section
  * This function is internal, do not use it directly 
  */
 int             elfsh_add_runtime_section(elfshobj_t    *file,
@@ -205,7 +205,7 @@ int             elfsh_add_runtime_section(elfshobj_t    *file,
 }
 
 /**
- * Internal function 
+ * @brief Internal function 
  */
 static 
 elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
@@ -245,7 +245,7 @@ elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
 }
 
 /**
- * Return a pointer on a section giving its name 
+ * @brief Return a pointer on a section giving its name 
  */
 elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
 					   char		*name,

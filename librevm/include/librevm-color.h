@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
-** $Id: librevm-color.h,v 1.3 2007-07-17 18:11:25 may Exp $
+** $Id: librevm-color.h,v 1.4 2007-08-03 11:51:00 heroine Exp $
 **
 */
 
@@ -18,7 +18,9 @@
 #define COLOR_TOKENS       50
 #define COLOR_TOKEN_LEN    140
 
-/* ELFsh color structure */
+/** 
+ * ELFsh color structure 
+ */
 typedef struct          s_color
 {
 

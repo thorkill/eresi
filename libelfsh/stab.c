@@ -5,13 +5,13 @@
 ** Started on  Mon Feb 26 04:14:06 2001 jfv
 ** 
 **
-** $Id: stab.c,v 1.7 2007-07-31 03:28:47 may Exp $
+** $Id: stab.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
- * Return the debugging symbol name giving its index in the stab string table 
+ * @brief Return the debugging symbol name giving its index in the stab string table 
  */
 char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 {
@@ -33,7 +33,7 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 }
 
 /**
- * Load the stab information from the file 
+ * @brief Load the stab information from the file 
  */
 void		*elfsh_get_stab(elfshobj_t *file, int *num)
 {
@@ -89,7 +89,7 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
 
 
 /**
- * Return the symbol type name giving its index in the symtype array 
+ * @brief Return the symbol type name giving its index in the symtype array 
  */
 u_int	elfsh_get_stab_type(elfshstabent_t *s)
 {

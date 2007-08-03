@@ -1,10 +1,10 @@
 /*
-** state.c for elfsh
+** @file state.c
 ** 
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
 **
 **
-** $Id: config.c,v 1.10 2007-07-31 03:28:46 may Exp $
+** $Id: config.c,v 1.11 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libaspect.h"
@@ -14,8 +14,10 @@ aspectworld_t	aspectworld;
 
 
 
-/* this function is a wrapper for updating data/val which depend 
-   on datatype */
+/**
+ * @brief this function is a wrapper for updating data/val which depend 
+ * on datatype 
+ */
 static void __config_update_item(configitem_t *item,void *data)
 {
 
@@ -59,9 +61,9 @@ void	config_add_item(char *name,
 }
 
 /**
-*** This function updates the value of val/data in already
-*** existing in config_hash.
-**/
+ * @brief This function updates the value of val/data in already
+ * existing in config_hash.
+ */
 void		config_update_key(char *name,void *data)
 {
   configitem_t	*tmp;
@@ -75,8 +77,8 @@ void		config_update_key(char *name,void *data)
   hash_add(&aspectworld.config_hash, tmp->name, tmp);
 }
 
-/*
-  returns val/data 
+/**
+ * @brief returns val/data 
  */
 void		*config_get_data(char *name) 
 {
@@ -98,7 +100,9 @@ void		*config_get_data(char *name)
     }
 }
 
-/* Functions to turn on/off safemode */
+/** 
+ * @brief Functions to turn on/off safemode 
+ */
 void 	config_safemode_set()
 {
   config_update_key(CONFIG_NAME_SAFEMODE, 
@@ -117,7 +121,9 @@ int	config_safemode()
   return (int) config_get_data(CONFIG_NAME_SAFEMODE);
 }
 
-/* Here the functions for the profiler option */
+/** 
+ * @brief Here the functions for the profiler option 
+ */
 int	profiler_enable_err()
 {
   aspectworld.proflevel |= PROFILE_WARN;
@@ -202,7 +208,9 @@ void	profiler_install(int (*profile)(char *),
 /* We setup two functions for colors because we have 
    too many functions */
 
-/* Change simple color functions */
+/** 
+ * @brief Change simple color functions 
+ */
 void	profiler_setcolor(void (*endline)(), 
 			  char *(*colorinstr)(char *text),
 			  char *(*colorstr)(char *t), 
@@ -224,7 +232,9 @@ void	profiler_setcolor(void (*endline)(),
   aspectworld.colorfilename = colorfilename;
 }
 
-/* Change advanced color functions */
+/** 
+ * @brief Change advanced color functions 
+ */
 void	profiler_setmorecolor(char *(*coloradv)(char *ty, char *p, char *te),
 			      char *(*colorinstr_fmt)(char* p, char *t),
 			      char *(*coloraddress)(char *p, u_long a),

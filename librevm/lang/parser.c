@@ -1,13 +1,13 @@
-/*
-** parse.c for librevm in ERESI
-**
-** The top level parser of the language
-**
-** Started on Wed Feb 28 19:19:04 2007 jfv
-**
-** $Id: parser.c,v 1.7 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file parse.c
+ *
+ * The top level parser of the language
+ *
+ * Started on Wed Feb 28 19:19:04 2007 jfv
+ *
+ * $Id: parser.c,v 1.8 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 /* Nested loop labels memory : support foreach/forend construct */
@@ -23,7 +23,9 @@ static u_int		pendinglabel = 0;
 static revmargv_t	*newcmd      = NULL;
 
 
-/* Create a fresh label name */
+/**
+ * Create a fresh label name 
+ */
 char			*revm_label_get(char *prefix)
 {
   char			buf[BUFSIZ];
@@ -43,7 +45,9 @@ char			*revm_label_get(char *prefix)
 
 
 
-/* Recognize a higher order construct : foreach, match .. */
+/** 
+ * Recognize a higher order construct : foreach, match .. 
+ */
 int			revm_parse_construct(char *curtok)
 {
   char			*labl;
@@ -134,7 +138,9 @@ int			revm_parse_construct(char *curtok)
 
 
 
-/* Parse the commands */
+/** 
+ * Parse the commands 
+ */
 int			revm_parseopt(int argc, char **argv)
 {
   u_int			index;

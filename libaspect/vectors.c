@@ -1,12 +1,12 @@
 /*
-** vectors.c for libaspect in elfsh
+** @file vectors.c
 **
-** Implement the modularity for the framework
+** @brief Implement the modularity for the framework
 **
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: vectors.c,v 1.22 2007-07-31 03:28:46 may Exp $
+** $Id: vectors.c,v 1.23 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libaspect.h"
@@ -14,7 +14,12 @@
 hash_t	       *vector_hash = NULL;
 
 
-/* Retreive a vector from the hash table giving its name */
+/**
+ * @brief Retreive a vector from the hash table giving its name 
+ *
+ * @param name
+ * @return 
+ */
 vector_t*	aspect_vector_get(char *name)
 {
   vector_t	*vect;
@@ -29,14 +34,24 @@ vector_t*	aspect_vector_get(char *name)
   return (vect);
 }
 
-/* Retreive the hash table : useful when iterating over it */
+/** 
+ * @brief Retreive the hash table : useful when iterating over it 
+ *
+ * @return Return a pointer to the global hash table
+ */
 hash_t*		aspect_vecthash_get()
 {
   return (vector_hash);
 }
 
 
-/* Project each dimension and write the desired function pointer */
+/** 
+ * @brief Project each dimension and write the desired function pointer 
+ *
+ * @param vect
+ * @param dim
+ * @param fct
+ */
 void		aspect_vectors_insert(vector_t	   *vect, 
 				      unsigned int *dim, 
 				      unsigned long fct)
@@ -57,7 +72,13 @@ void		aspect_vectors_insert(vector_t	   *vect,
 }
 
 
-/* Project each dimension and get the requested function pointer */
+/**
+ * @brief Project each dimension and get the requested function pointer 
+ *
+ * @param vect
+ * @param dim
+ * @return Return a function pointer
+ */
 void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 {
   unsigned long		*tmp;
@@ -75,7 +96,13 @@ void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 }
 
 
-/* Project each dimension and get the requested data pointer */
+/** 
+ * @brief Project each dimension and get the requested data pointer 
+ *
+ * @param vect
+ * @param dim
+ * @return
+ */
 void		*aspect_vectors_selectptr(vector_t * vect, 
 					  unsigned int *dim)
 {
@@ -97,7 +124,15 @@ void		*aspect_vectors_selectptr(vector_t * vect,
 
 
 
-/* Allocate recursively the hook array */
+/** 
+ * @brief Allocate recursively the hook array
+ *
+ * @param tab
+ * @param dims
+ * @param depth
+ * @param dimsz
+ * return 
+ */
 static int	aspect_vectors_recalloc(unsigned long *tab, 
 					unsigned int *dims, 
 					unsigned int depth, 
@@ -139,7 +174,9 @@ static int	aspect_vectors_recalloc(unsigned long *tab,
 }
 
 
-/* Initialize recursively the hook array */
+/** 
+ * @brief Initialize recursively the hook array 
+ */
 static int	aspect_vectors_recinit(unsigned long *tab, 
 				       unsigned int *dims, 
 				       unsigned int depth, 
@@ -165,7 +202,17 @@ static int	aspect_vectors_recinit(unsigned long *tab,
 
 
 
-/* Register a new vector. A vector is an multidimentional array of hooks */
+/** 
+ * @brief Register a new vector. A vector is an multidimentional array of hooks
+ *
+ * @param name
+ * @param defaultfunc
+ * @param dimensions 
+ * @param strdims
+ * @param dimsz
+ * @param vectype
+ *
+ */
 int		aspect_register_vector(char		*name, 
 				       void		*defaultfunc,
 				       unsigned int	*dimensions, 

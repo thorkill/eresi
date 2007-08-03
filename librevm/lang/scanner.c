@@ -1,16 +1,18 @@
-/*
-** lexer.c for elfsh
-** 
-** Started on  Fri Feb  7 20:53:25 2003 jfv
-** Updated on  Fri Mar  5 18:47:41 2007 jfv
-**
-** $Id: scanner.c,v 1.12 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file lexer.c
+ * 
+ * Started on  Fri Feb  7 20:53:25 2003 jfv
+ * Updated on  Fri Mar  5 18:47:41 2007 jfv
+ *
+ * $Id: scanner.c,v 1.13 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Replace \xNUM by the value, I wished readline could have done that */
+/**
+ * Replace \xNUM by the value, I wished readline could have done that 
+ */
 void			revm_findhex(u_int argc, char **argv)
 {
   u_int			index;
@@ -33,7 +35,9 @@ void			revm_findhex(u_int argc, char **argv)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Translate a speblanks string */
+/** 
+ * Translate a speblanks string 
+ */
 int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
 {
   char			**argv;
@@ -103,7 +107,9 @@ int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Replace '\ ' by the ' ', I wished readline could have done that */
+/** 
+ * Replace '\ ' by the ' ', I wished readline could have done that 
+ */
 void			revm_replace_speblanks(u_int argc, char **argv)
 {
   u_int			index;
@@ -133,7 +139,9 @@ void			revm_replace_speblanks(u_int argc, char **argv)
 
 
 
-/* Count blanks, so that we can allocate argv */
+/** 
+ * Count blanks, so that we can allocate argv 
+ */
 u_int		revm_findblanks(char *buf)
 {
   int		index;
@@ -180,7 +188,9 @@ u_int		revm_findblanks(char *buf)
 }
 
 
-/* Cut words of the newline and create argv */
+/** 
+ * Cut words of the newline and create argv 
+ */
 char		**revm_doargv(u_int nbr, u_int *argc, char *buf)
 {
   u_int		index;

@@ -5,14 +5,14 @@
 ** Started on  Sun Mar 30 04:13:03 2003 jfv
 ** 
 **
-** $Id: sanitize.c,v 1.5 2007-07-31 03:28:47 may Exp $
+** $Id: sanitize.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
 
 
 /**
- * Update the sh_name field in the section header table entry
+ * @brief Update the sh_name field in the section header table entry
  */
 void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
 {

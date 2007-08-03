@@ -78,3 +78,5 @@ clean		       :
 fclean		       : clean
 		       @$(RM) *.o *.so *.a $(OBJ_DYN)
 
+docs:
+			doxygen doc/doxygen.conf

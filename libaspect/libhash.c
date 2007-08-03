@@ -1,10 +1,10 @@
 /*
-** libhash.c for libaspect in ERESI
+** @file libhash.c
 ** 
-** Contain ELFsh internal hashtables library calls
+** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.35 2007-07-31 03:28:46 may Exp $
+** $Id: libhash.c,v 1.36 2007-08-03 11:50:59 heroine Exp $
 */
 #include "libaspect.h"
 
@@ -12,7 +12,9 @@
 /* Hash tables of hash tables */
 hash_t  *hash_hash = NULL;
 
-/* Initialize the hash table */
+/** 
+ * @brief Initialize the hash table 
+ */
 int hash_init(hash_t *h, char *name, int size, u_int type)
 {
   NOPROFILER_IN();
@@ -51,7 +53,9 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
   NOPROFILER_ROUT(0);
 }
 
-/* Return a hash table by its name */
+/** 
+ * @brief Return a hash table by its name 
+ */
 hash_t  *hash_find(char *name)
 {
   return ((hash_t *) hash_get(hash_hash, name));
@@ -86,7 +90,9 @@ int		hash_register(hash_t *table, char *name)
 }
 
 
-/* Empty a hash table */
+/** 
+ * @brief Empty a hash table 
+ */
 hash_t    *hash_empty(char *name)
 {
   hash_t  *hash;
@@ -132,7 +138,9 @@ void		hash_destroy(hash_t *h)
 }
 
 
-/* Add an entry to the hash table */
+/** 
+ * @brief Add an entry to the hash table 
+ */
 int		hash_add(hash_t *h, char *key, void *data)
 {
   hashent_t	*actual;
@@ -175,7 +183,9 @@ int		hash_add(hash_t *h, char *key, void *data)
 
 
 
-/* Delete an entry from the hash table */
+/** 
+ * @brief Delete an entry from the hash table 
+ */
 int		hash_del(hash_t *h, char *key)
 {
   hashent_t	*actual;
@@ -222,7 +232,9 @@ int		hash_del(hash_t *h, char *key)
 
 
 
-/* Retrieve the metadata for a given key */
+/** 
+ * @brief Retrieve the metadata for a given key 
+ */
 void		*hash_get(hash_t *h, char *key)
 {
   hashent_t	*actual;
@@ -263,7 +275,9 @@ int		hash_set(hash_t *h, char *key, void *data)
 }
 
 
-/* Retrieve the -entry- for a given key */
+/** 
+ * @brief Retrieve the -entry- for a given key 
+ */
 hashent_t   *hash_get_ent(hash_t *h, char *key)
 {
   hashent_t *actual;
@@ -290,7 +304,9 @@ hashent_t *hash_get_head(hash_t *h, char *backup)
 
 
 
-/* Used to create arrays of keys for completion */
+/** 
+ * @brief Used to create arrays of keys for completion 
+ */
 char		**hash_get_keys(hash_t *h, int *n)
 {
   int		j, i;
@@ -329,7 +345,9 @@ char		**hash_get_keys(hash_t *h, int *n)
 
 
 
-/* Free the keys returned by hash_get_keys() */
+/** 
+ * @brief Free the keys returned by hash_get_keys() 
+ */
 void    hash_free_keys(char **keys)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -356,7 +374,9 @@ void            hash_print(hash_t *h)
     }
 }
 
-/* Apply func all entries */
+/** 
+ * @brief Apply func all entries 
+*/
 int   hash_apply(hash_t      *h, 
 		 void        *ptr, 
 		 int         (*func)(hashent_t *ph, void *pptr))

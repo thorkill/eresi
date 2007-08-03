@@ -7,7 +7,7 @@
 ** 
 ** Started on Sat Nov 25 21:19:53 2006 jfv
 **
-** $Id: search.c,v 1.6 2007-07-31 03:28:47 may Exp $
+** $Id: search.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,7 +20,7 @@ static hash_t *hash_shared = NULL;
 
 
 /**
- * Register list of objects to work with 
+ * @brief Register list of objects to work with 
  */
 int		elfsh_register_working_objects(hash_t *prvhash,
 					       hash_t *sharedhash)

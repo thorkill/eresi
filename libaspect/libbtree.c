@@ -1,12 +1,12 @@
-/*
+/**
 ** 
-** libbtree.c in 
+** @file libbtree.c
 ** 
 ** Author  : <087432084750432042>
 ** Started : Fri Oct 17 14:29:24 2003
 ** Updated : Thu Nov 27 23:29:29 2003
 **
-** $Id: libbtree.c,v 1.6 2007-06-12 21:20:50 mxatone Exp $
+** $Id: libbtree.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
 **
 */
 
@@ -15,13 +15,16 @@
 #include "libaspect.h"
 
 /**
- * insert element in tree using id to sort it
+ * @brief insert element in tree using id to sort it
+ *
+ *
+ *
  *
  */
 
-void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
-		     u_int id,			/* element id		*/
-		     void *elem)		/* ptr to element	*/
+void	btree_insert(btree_t **proot,		/*!< ptr to btree root	*/
+		     u_int id,			/*!< element id		*/
+		     void *elem)		/*!< ptr to element	*/
 {
   btree_t	*root;
   void		*ptr;
@@ -47,7 +50,8 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
 }
 
 /**
- * insert element in tree using a function to sort it.
+ * @brief Insert element in tree using a function to sort it.
+ * 
  * depending on function return value, element is insert
  * in left or right path:
  * if return value is null, element is already present in
@@ -60,9 +64,9 @@ void	btree_insert(btree_t **proot,		/* ptr to btree root	*/
  * 
  */
 
-void	btree_insert_sort(btree_t **proot,		/* ptr to root	*/
-			  int (*apply)(void *, void *), /* cmp handler	*/
-			  void *elem)			/* element	*/
+void	btree_insert_sort(btree_t **proot,		/*!< ptr to root  */
+			  int (*apply)(void *, void *), /*!< cmp handler  */
+			  void *elem)			/*!< element	  */
 {
   btree_t	*root;
   int		ret;
@@ -83,14 +87,14 @@ void	btree_insert_sort(btree_t **proot,		/* ptr to root	*/
 }    
 
 /**
- * return an element by providing its id.
+ * @brief return an element by providing its id.
  * id is id provided to insert element
  * with btree_insert();
  * do not use on trees built with btree_insert_sort
  */
 
-void	*btree_get_elem(btree_t *root,	/* ptr to root		*/
-			u_int id)	/* element id to fetch	*/
+void	*btree_get_elem(btree_t *root,	/* !< ptr to root		*/
+			u_int id)	/* !< element id to fetch	*/
 {
   if (!root)
     return (NULL);
@@ -143,8 +147,9 @@ void	*btree_find_elem(btree_t *root,
 }
 
 /**
- * browse tree and call function apply on each element.
- * ptr is a pointer passed as second argument of apply
+ * @brief browse tree and call function apply on each element.
+ * 
+ * @param ptr ptr is a pointer passed as second argument of apply
  *
  */
 
@@ -186,8 +191,8 @@ void	btree_browse_suffix(btree_t *root, int (*apply)(void *, void *), void *ptr)
 }
 
 /**
- * free full try.
- * if mode is not null, elem is free-ed too
+ * @brief free full try.
+ * @param mode if mode is not null, elem is free-ed too
  */
 
 void	btree_free(btree_t *root, int mode)

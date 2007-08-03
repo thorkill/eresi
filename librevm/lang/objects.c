@@ -1,20 +1,22 @@
-/*
-** objects.c for elfsh
-**
-** Methods for creation of objects
-**
-** See lts.c for Lazy Type System implementation
-** 
-** Started on  Mon Feb 24 12:21:12 2003 jfv
-**
-**
-** $Id: objects.c,v 1.10 2007-07-31 03:28:48 may Exp $
-**
-*/
+/**
+ * @file objects.c
+ *
+ * Methods for creation of objects
+ *
+ * See lts.c for Lazy Type System implementation
+ * 
+ * Started on  Mon Feb 24 12:21:12 2003 jfv
+ *
+ *
+ * $Id: objects.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
-/* Create constant object : Perm == 1 if the object is writable */
+/**
+ * @brief Create constant object : Perm == 1 if the object is writable 
+ */
 revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
 {
   revmobj_t	*new;
@@ -36,7 +38,9 @@ revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-/* Create constant object */
+/**
+ * @brief Create constant object 
+ */
 revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
@@ -54,7 +58,9 @@ revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
 }
 
 
-/* Create constant object */
+/** 
+ * @brief Create constant object 
+ */
 revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
@@ -71,7 +77,13 @@ revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-/* Create constant object */
+/** 
+ * @brief Create constant object
+ *
+ * @param perm
+ * @param val
+ * @return
+ */
 revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val)
 {
   revmobj_t	*new;
@@ -89,7 +101,9 @@ revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val)
 }
 
 
-/* Create constant object */
+/** 
+ * @brief Create constant object 
+ */
 revmobj_t	*revm_create_SHORT(char perm, u_short val)
 {
   revmobj_t	*new;
@@ -108,7 +122,9 @@ revmobj_t	*revm_create_SHORT(char perm, u_short val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-/* Create constant object */
+/** 
+ * @brief Create constant object 
+ */
 revmobj_t	*revm_create_BYTE(char perm, u_char val)
 {
   revmobj_t	*new;
@@ -128,7 +144,9 @@ revmobj_t	*revm_create_BYTE(char perm, u_char val)
 }
 
 
-/* Create constant string object */
+/** 
+ * @brief Create constant string object 
+ */
 revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
 {
   revmobj_t	*new;
@@ -146,7 +164,9 @@ revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-/* Create a redirection abstract object */
+/** 
+ * @brief Create a redirection abstract object 
+ */
 elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
 				 elfsh_Addr saddr, elfsh_Addr daddr)
 {
@@ -165,7 +185,9 @@ elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname,
 
 
 
-/* Now comes Level 1 objects hash functions */
+/** 
+ * @brief Now comes Level 1 objects hash functions 
+ */
 revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_obj_idx,
 				 void	*get_obj_nam,
@@ -192,7 +214,9 @@ revmL1_t	*revm_create_L1ENT(void	*get_obj,
 }
 
 
-/* Now comes Level 2 objects hash functions */
+/** 
+ * Now comes Level 2 objects hash functions 
+ */
 revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*set_obj,
 				 char	type,
@@ -218,7 +242,9 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
 
 
 
-/* The high level function for object conversion */
+/**
+ * @brief The high level function for object conversion 
+ */
 int		revm_convert_object(revmobj_t *obj, u_int objtype)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -265,7 +291,9 @@ int		revm_convert_object(revmobj_t *obj, u_int objtype)
 
 
 
-/* Verify an object sanity */
+/** 
+ * @brief Verify an object sanity 
+ */
 revmobj_t		*revm_check_object(revmobj_t *pobj)
 {
   char			buf[BUFSIZ];
@@ -312,7 +340,9 @@ revmobj_t		*revm_check_object(revmobj_t *pobj)
 }
 
 
-/* Destroy an object */
+/** 
+ * @brief Destroy an object 
+ */
 void		revm_destroy_object(revmobj_t *pobj)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -322,7 +352,9 @@ void		revm_destroy_object(revmobj_t *pobj)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Destroy an object */
+/** 
+ * @brief Destroy an object 
+ */
 revmobj_t	 *revm_copy_object(revmobj_t *pobj)
 {
   revmobj_t	*copy;

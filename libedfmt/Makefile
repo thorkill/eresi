@@ -50,6 +50,9 @@ clean			:
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \
 			include/*~ include/.\#*
 
+docs:
+			doxygen doc/doxygen.conf
+
 fclean			: clean
 			@$(RM) $(NAME).so $(NAME).a \
 			$(NAME32).so $(NAME32).a \

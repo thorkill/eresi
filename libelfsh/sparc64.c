@@ -9,7 +9,7 @@
 ** 64 bits backend work-in-progress
 ** 
 **
-** $Id: sparc64.c,v 1.5 2007-07-31 03:28:47 may Exp $
+** $Id: sparc64.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,7 +20,7 @@
 */
 
 /**
- * Static hooking for Sparc64 
+ * @brief Static hooking for Sparc64 
  */
 int	elfsh_cflow_sparc64(elfshobj_t  *null,
 			    char	*snull,
@@ -33,7 +33,7 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
 }
 
 /**
- * PLT hijacking on SPARC64 
+ * @brief PLT hijacking on SPARC64 
  */
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -90,7 +90,7 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
 */
 
 /**
- * hijack altplt on sparc64
+ * @brief hijack altplt on sparc64
  */
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -153,7 +153,7 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
 }
 
 /**
- * Perform relocation on entry for SPARC64 architecture
+ * @brief Perform relocation on entry for SPARC64 architecture
  * Shared relocation function with augmented SPARC32 
  */
 int       elfsh_relocate_sparc64(elfshsect_t       *new,

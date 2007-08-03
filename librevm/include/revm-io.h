@@ -1,12 +1,12 @@
-/*
-** revm.h for librevm in elfsh
+/**
+** @file revm.h
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** 
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.40 2007-08-01 14:35:57 may Exp $
+** $Id: revm-io.h,v 1.41 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -127,7 +127,9 @@ char	prompt_token[512];
 #define REVM_INPUT_EXIT		(-2)
 #define	REVM_INPUT_TRANSFERED	(-3)
 
-/* Elfsh Output Caching structure */
+/** 
+ * Elfsh Output Caching structure 
+ */
 typedef struct          s_outbuf
 {
   int			nblines;
@@ -137,34 +139,36 @@ typedef struct          s_outbuf
 }			revmoutbuf_t;
 
 
-/* Input / Output template for ELFsh */
+/** 
+ * Input / Output template for ELFsh 
+ */
 typedef struct	s_io
 {  
 #define		REVM_IO_STD     1
 #define		REVM_IO_NET     2
 #define		REVM_IO_DUMP    3
 #define		REVM_IO_NUM     4
-  char		type;                   /* IO type           */
-  int		input_fd;               /* Input file        */
-  int		output_fd;              /* Output file       */
-  char		*(*input)();            /* Read Input data   */
-  char		*(*old_input)();        /* Old Input handler */
-  int		(*output)(char *buf);   /* Write output data */
+  char		type;                   /*! IO type           */
+  int		input_fd;               /*! Input file        */
+  int		output_fd;              /*! Output file       */
+  char		*(*input)();            /*! Read Input data   */
+  char		*(*old_input)();        /*! Old Input handler */
+  int		(*output)(char *buf);   /*! Write output data */
   revmoutbuf_t	outcache;
 
   /* Readline IO specific */
-  char		*buf;                  /* readline line */
+  char		*buf;                  /*! readline line */
   char		*savebuf;
   int		rl_point;
   int		rl_end;
 
   /* DUMP IO specific */
-  int		new;                   /* 0 if already used */
+  int		new;                   /*! 0 if already used */
 
 #if defined(ELFSHNET)
-  pkt_t		*pkt;                  /* Last received dump */
+  pkt_t		*pkt;                  /*! Last received dump */
 #else
-  void		*pkt;		       /* Unused else */
+  void		*pkt;		       /*! Unused else */
 #endif
 
 }               revmio_t;
@@ -172,85 +176,93 @@ typedef struct	s_io
 
 
 
-/* REVM socket structure */
+/** 
+ * REVM socket structure 
+ */
 typedef struct       s_socket
 {
-  struct sockaddr_in addr;        /* sockaddr_in struct */
-  int                socket;      /* The socket */
-  char               **recvd;     /* List of received buffer */
+  struct sockaddr_in addr;        /*! sockaddr_in struct */
+  int                socket;      /*! The socket */
+  char               **recvd;     /*! List of received buffer */
   
   /* XXX: NEW/OLD is not explicit enough, rename ... */
 #define NEW   1
 #define OLD   0
-  int                recvd_f;     /* NEW if the buffer was not passed to the parser yet */
+  int                recvd_f;     /*! NEW if the buffer was not passed to the parser yet */
 #define YES 1
 #define NO  0
-  int                ready_f;     /* Have we received the trailing \n ? */
+  int                ready_f;     /*! Have we received the trailing \n ? */
 }                    revmsock_t;
 
 
 
-/* Screen cache for each workspace */
+/**
+ * Screen cache for each workspace 
+ */
 typedef struct        s_screen
 {
-  unsigned int        x;              /* Screen height */
-  unsigned int        y;              /* Screen width */
-  char                *buf;           /* Screen buffer */
-  char                *head;          /* Buffer's beginning */
-  char                *tail;          /* Buffer's end */
+  unsigned int        x;              /*! Screen height */
+  unsigned int        y;              /*! Screen width */
+  char                *buf;           /*! Screen buffer */
+  char                *head;          /*! Buffer's beginning */
+  char                *tail;          /*! Buffer's end */
 }                     revmscreen_t;
 
 
-/* REVM job structure, one per client */
+/** 
+ * @brief REVM job structure, one per client 
+ */
 typedef struct		s_workspace
 {
-  char			*name;		  /* Name of the job */
-  revmsock_t		sock;		  /* Unused in initial job */
-  u_char		active;		  /* Is the workspace active ? */
-  time_t		createtime;       /* Workspace creation time */
-  int			logfd;            /* Log file descriptor */
-  revmscreen_t		screen;           /* Last printed screen */
-  char			*oldline;	  /* Previous command line */
+  char			*name;		  /*! Name of the job */
+  revmsock_t		sock;		  /*! Unused in initial job */
+  u_char		active;		  /*! Is the workspace active ? */
+  time_t		createtime;       /*! Workspace creation time */
+  int			logfd;            /*! Log file descriptor */
+  revmscreen_t		screen;           /*! Last printed screen */
+  char			*oldline;	  /*! Previous command line */
 
 #define			REVM_JOB_LOGGED (1 << 0)
-  u_char                state;            /* Job state flags */
+  u_char                state;            /*! Job state flags */
 
 #define			REVM_INPUT     0
 #define			REVM_OUTPUT    1
-  revmio_t		io;		  /* Current IO for this job */
+  revmio_t		io;		  /*! Current IO for this job */
 
 }			revmworkspace_t;
 
 
-/* Hold all the VM flags, sort of global context */
+/**
+ * @brief Hold all the VM flags, sort of global context 
+ */
 typedef struct        s_state
 {
-  char                revm_quiet;       /* Quiet mode : 0 or 1 */
-  char                revm_gvl;         /* Graph verbose level : 0 or 1 */
-  char                revm_force;       /* Force mode : 0 or 1 */
-  char                revm_use_regx;    /* Is a global regx available ? */
-  regex_t             revm_regx;        /* Global regx */
-  char                *revm_sregx;      /* Global regx in string format */
-  char                revm_use_alert;   /* Is an alert regx available ? */
-  regex_t	      revm_alert;       /* Alert regx */
-  char                *revm_salert;     /* ALert regx in string format */
-  char                *sort;          /* Actual sorting choice */
-  char                *input;         /* Implicit File input (-f option) */
-  char                *output;        /* Implicit File output (-w option) */
+  char                revm_quiet;       /*! Quiet mode : 0 or 1 */
+  char                revm_gvl;         /*! Graph verbose level : 0 or 1 */
+  char                revm_force;       /*! Force mode : 0 or 1 */
+  char                revm_use_regx;    /*! Is a global regx available ? */
+  regex_t             revm_regx;        /*! Global regx */
+  char                *revm_sregx;      /*! Global regx in string format */
+  char                revm_use_alert;   /*! Is an alert regx available ? */
+  regex_t	      revm_alert;       /*! Alert regx */
+  char                *revm_salert;     /*! ALert regx in string format */
+  char                *sort;          /*! Actual sorting choice */
+  char                *input;         /*! Implicit File input (-f option) */
+  char                *output;        /*! Implicit File output (-w option) */
 #define       REVM_STATE_CMDLINE	0
 #define       REVM_STATE_SCRIPT		1
 #define       REVM_STATE_INTERACTIVE    2
 #define       REVM_STATE_DEBUGGER	3
 #define	      REVM_STATE_TRACER		4
-  char                revm_mode;        /* Command line, scripting, interactive, debugger ? */
+  char                revm_mode;        /*! Command line, scripting, interactive, debugger ? */
 #define	      REVM_SIDE_CLIENT		0
 #define	      REVM_SIDE_SERVER		1
-  char		      revm_side;	      /* Useful for the bi-partite debugger */
-  char		      revm_sourcing;    /* Are we sourcing a script ? */
-  char                revm_stopped;     /* We are in a signal handler */
-  char                revm_shared;      /* Next opened object must be shared */
-  char                revm_net;         /* We are a node connected to the elf network */
-  u_int               lastid;         /* Last Object ID */
+  char		      revm_side;	      /*! Useful for the bi-partite debugger */
+  char		      revm_sourcing;    /*! Are we sourcing a script ? */
+  char                revm_stopped;     /*! We are in a signal handler */
+  char                revm_shared;      /*! Next opened object must be shared */
+  char                revm_net;         /*! We are a node connected to the elf network */
+  u_int               lastid;         /*! Last Object ID */
 }		       revmstate_t;
 
 extern int		 elfsh_net_client_count;

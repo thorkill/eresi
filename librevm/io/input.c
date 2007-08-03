@@ -1,17 +1,19 @@
-/*
-** input.c for librevm in ERESI
-**
-** Input related functions
-**
-** Started on  Fri Feb  7 20:53:25 2003 jfv
-** $Id: input.c,v 1.10 2007-07-31 03:28:47 may Exp $
-**
-*/
+/**
+ * @file input.c
+ *
+ * Input related functions
+ *
+ * Started on  Fri Feb  7 20:53:25 2003 jfv
+ * $Id: input.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
 
-/* Read a new line, avoiding comments and void lines */
+/**
+ * @brief Read a new line, avoiding comments and void lines 
+ */
 char		*revm_getln()
 {
   char		*buf;
@@ -76,7 +78,9 @@ char		*revm_getln()
 }
 
 
-/* Read input from the file descriptor */
+/** 
+ * @brief Read input from the file descriptor 
+ */
 char		*revm_read_input()
 {
   char		tmpbuf[BUFSIZ + 1];
@@ -115,7 +119,9 @@ char		*revm_read_input()
 }
 
 
-/* Input handler for the FIFO */
+/** 
+ * Input handler for the FIFO 
+ */
 char		*revm_fifoinput()
 {
   int		fd;
@@ -155,7 +161,9 @@ char		*revm_fifoinput()
 }
 
 
-/* INPUT handler for stdin */
+/** 
+ * INPUT handler for stdin 
+ */
 char		*revm_stdinput()
 {
   char		*str;
@@ -177,7 +185,9 @@ char		*revm_stdinput()
 }
 
 
-/* Change the Input file */
+/** 
+ * Change the Input file 
+ */
 void	revm_setinput(revmworkspace_t *ws, int fd)
 {
   ws->io.input_fd = fd;

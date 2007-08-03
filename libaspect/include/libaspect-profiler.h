@@ -1,10 +1,10 @@
 /*
-** libelfsh-internal.h for elfsh
+** @file libelfsh-internal.h
 ** 
 ** Started on  Wed Jan  1 07:51:24 2003 jfv
 ** Last update Thu Mar 20 06:19:53 2003 jfv
 **
-** $Id: libaspect-profiler.h,v 1.8 2007-07-31 03:28:46 may Exp $
+** $Id: libaspect-profiler.h,v 1.9 2007-08-03 11:50:59 heroine Exp $
 **
 */
 
@@ -40,17 +40,17 @@ typedef	struct		s_allocentry
 #define			PROFILER_ALLOC_UNKNOW	0
 #define			PROFILER_ALLOC_LEGIT	1
 #define			PROFILER_ALLOC_PROXY	2
-  u_char		alloctype;	/* Inform about the allocator */
+  u_char		alloctype;	/*!< Inform about the allocator */
 
 #define			PROFILER_OP_UNKNOW	0
 #define			PROFILER_OP_ALLOC	1
 #define			PROFILER_OP_REALLOC	2
 #define			PROFILER_OP_FREE	3
-  u_char		optype;		/* Inform about alloc/free/etc */
-  char			*filename;	/* Inform about file location */
-  char			*funcname;	/* Inform about func location */
-  u_int			linenbr;	/* Inform about line number */
-  u_long		addr;		/* Address of allocation */
+  u_char		optype;		/*!< Inform about alloc/free/etc */
+  char			*filename;	/*!< Inform about file location */
+  char			*funcname;	/*!< Inform about func location */
+  u_int			linenbr;	/*!< Inform about line number */
+  u_long		addr;		/*!< Address of allocation */
 }			profallocentry_t;
 
 /**
@@ -193,7 +193,7 @@ do							    \
 while (0)
 
 /**
- * Safe mmap
+ * @brief Safe mmap
  */
 #define XMMAP(a, b, c, d, e, f, g, h)			    \
 do							    \
@@ -206,7 +206,7 @@ while (0)
 
 
 /**
- * Safe munmap
+ * @brief Safe munmap
  */
 #define XMUNMAP(a, b, c)				    \
 do							    \
@@ -218,7 +218,7 @@ do							    \
 while(0)
 
 /**
- * Safe msync
+ * @brief Safe msync
  */
 #define XMSYNC(a, b, c, d)				    \
 do							    \
@@ -230,7 +230,7 @@ do							    \
 while(0)
 
 /**
- * Safe lseek64
+ * @brief Safe lseek64
  */
 #define XLSEEK64(a, b, c, d)				    \
 do							    \

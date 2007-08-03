@@ -1,11 +1,11 @@
 /*
-** color.c for libui from elfsh
+** @file color.c
 **
-** All functions about colors
+** @brief All functions about colors
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: color.c,v 1.15 2007-07-17 18:11:25 may Exp $
+** $Id: color.c,v 1.16 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "libui.h"
@@ -16,13 +16,13 @@ static char 	tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
 static u_int 	curtok = 0;
 
 /**
- * Indicate if we print color 
+ * @brief Indicate if we print color 
  * 0 = color, 1 = without color
  */
 u_int 		nocolor = 1;
 
 /**
- * Init color structure 
+ * @brief Init color structure 
  * @return an allocated color structure
  */
 color_t 	*revm_colorblank()
@@ -42,7 +42,7 @@ color_t 	*revm_colorblank()
 }
 
 /**
- * Retrieve a color information structure from a color type
+ * @brief Retrieve a color information structure from a color type
  * @param type color type
  * @param text text to color to filter for warnstring type
  * @return color structure
@@ -68,7 +68,7 @@ set = 1; } 								\
 } while(0)
 
 /**
- * Generate the color pattern for a given color structure
+ * @brief Generate the color pattern for a given color structure
  * @param t color structure
  * @param text text to color (not used on this function)
  * @param pattern pattern will be save on this buffer
@@ -102,7 +102,7 @@ int		revm_colorpattern(color_t *t, char *text, char *pattern)
 }
 
 /**
- * Return without color 
+ * @brief Return without color 
  * @param sp given string (pattern like %s or %d etc ..)
  * @param object objet to print using the string
  * @return generate string
@@ -123,7 +123,7 @@ static char	*revm_colornothing(char *sp, void *object)
 }
 
 /**
- * Trim a string from blank char and copy it on to argument 
+ * @brief Trim a string from blank char and copy it on to argument 
  * @param from source
  * @param to destination
  * @param size buffer size
@@ -177,8 +177,10 @@ static int	trim(char *from, char *to, u_int size, char *start, char *end)
 }
 
 /**
- * Build color text 
- * 
+ * @brief Build color text 
+ * @param sp
+ * @param type
+ * @param object
  */
 char 		*revm_colorget(char *sp, char *type, void *object)
 {
@@ -234,7 +236,9 @@ char 		*revm_colorget(char *sp, char *type, void *object)
   NOPROFILER_ROUT(tokens[curtok++]);
 }
 
-/* Reset token */
+/** 
+ * @brief Reset token 
+ */
 void 		revm_endline()
 {
   curtok = 0;
@@ -250,7 +254,9 @@ char *revm_colorwarn(char *text) 		{ return revm_colorget("%s", "warnstring" , t
 char *revm_colorfunction(char *text) 	{ return revm_colorget("%s", "function"   , text); }
 char *revm_colorfilename(char *text) 	{ return revm_colorget("%s", "filename"   , text); }
 
-/* Special functions */
+/** 
+ *  @brief Special functions 
+ */
 char 		*revm_coloradv(char *type, char *pattern, char *text)
 {
   char 		*p;
@@ -266,7 +272,9 @@ char 		*revm_coloradv(char *type, char *pattern, char *text)
   NOPROFILER_ROUT(text);
 }
 
-/* Advanced functions */
+/** 
+ * Advanced functions 
+ */
 char *revm_colorinstr_fmt(char *pattern, char *text)		
 { 
   return revm_colorget(pattern, "instr", text); 
@@ -308,7 +316,9 @@ char *revm_colornumber(char *pattern, u_int numb)
 
 /* Misc functions */
 
-/* Return number of color chars (not total size) */
+/** 
+ * @brief Return number of color chars (not total size) 
+ */
 int		revm_color_count(char *string)
 {
   int		count = 0;
@@ -331,7 +341,9 @@ int		revm_color_count(char *string)
   NOPROFILER_ROUT(count);
 }
 
-/* Return total size of colors on a string */
+/** 
+ * @brief Return total size of colors on a string 
+ */
 int		revm_color_size(char *string)
 {
   int		size = 0;

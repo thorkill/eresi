@@ -1,19 +1,21 @@
-/*
-** select.c for librevm in ERESI
-**
-** The interface for I/O based on select()
-**
+/**
+ * @file select.c
+ **
+ ** The interface for I/O based on select()
+ **
 ** Started on Fri Mar 5 00:55:40 2004 jfv
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id: select.c,v 1.12 2007-07-31 03:28:47 may Exp $
+** $Id: select.c,v 1.13 2007-08-03 11:51:00 heroine Exp $
 **
 */
 #include "revm.h"
 
 
 
-/* Return the greatest socket from the elfsh_net_client_list and sock. */
+/**
+ * @brief Return the greatest socket from the elfsh_net_client_list and sock. 
+ */
 #if defined(ELFSHNET)
 int             revm_getmaxfd()
 {

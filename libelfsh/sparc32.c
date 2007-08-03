@@ -5,7 +5,7 @@
 ** Started on  Fri Jan 11 03:05:37 2003 jfv
 ** 
 **
-** $Id: sparc32.c,v 1.6 2007-07-31 03:28:47 may Exp $
+** $Id: sparc32.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,7 +13,7 @@
 
 
 /**
- * Static hooking for Sparc 
+ * @brief Static hooking for Sparc 
  */
 int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    char	*name,
@@ -113,7 +113,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 }
 
 /**
- * PLT hijacking on SPARC
+ * @brief PLT hijacking on SPARC
  * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
  * Slight patch by emsi to support function call when the high bit is set
  */
@@ -152,7 +152,7 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
 
 
 /**
- * PLT hijacking on SPARC
+ * @brief PLT hijacking on SPARC
  * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
  * Slight patch by emsi to support function call when the high bit is set 
  */
@@ -217,7 +217,7 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
 */
 
 /**
- * hijack altptl on sparc32
+ * @brief hijack altptl on sparc32
  */
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -295,7 +295,7 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1
 }
 
 /**
- * Perform relocation on entry for SPARC architecture
+ * @brief Perform relocation on entry for SPARC architecture
  * First version by thegrugq adapted by elfsh crew
  */
 int       elfsh_relocate_sparc32(elfshsect_t       *new,

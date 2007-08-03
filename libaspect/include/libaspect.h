@@ -1,14 +1,14 @@
-/*
-** libaspect.h for libaspect in elfsh
-**
-** The header file for modular objects in the framework
-**
-** Started Dec 22 2006 02:57:03 jfv
-**
-**
-** $Id: libaspect.h,v 1.32 2007-07-31 03:28:46 may Exp $
-**
-*/
+/**
+ ** @file libaspect.h
+ **
+ ** @brief The header file for modular objects in the framework
+ **
+ ** Started Dec 22 2006 02:57:03 jfv
+ **
+ **
+ ** $Id: libaspect.h,v 1.33 2007-08-03 11:50:59 heroine Exp $
+ **
+ */
 #if !defined(__ASPECT_H__)
  #define __ASPECT_H__ 1
 
@@ -100,22 +100,22 @@
 #include "libaspect-profiler.h"
 
 /* Those types are only the builtin types */
-#define         ASPECT_TYPE_UNKNOW       0  /* Unknown           */
-#define         ASPECT_TYPE_RAW          1  /* Raw               */
-#define		ASPECT_TYPE_BYTE	 2  /* Byte	         */
-#define         ASPECT_TYPE_STR          3  /* String            */
-#define         ASPECT_TYPE_SHORT        4  /* 2 bytes           */
-#define         ASPECT_TYPE_INT          5  /* 4 bytes		 */
-#define         ASPECT_TYPE_LONG         6  /* 4 or 8 bytes      */
-#define         ASPECT_TYPE_DADDR        7  /* 4 or 8 bytes      */
-#define         ASPECT_TYPE_CADDR        8  /* 4 or 8 bytes      */
-#define	        ASPECT_TYPE_VECT	 9  /* Vector type	 */
-#define		ASPECT_TYPE_HASH	10  /* Hash table type	 */
-#define		ASPECT_TYPE_LIST	11  /* List type         */
-#define		ASPECT_TYPE_EXPR	12  /* Expression type   */
-#define		ASPECT_TYPE_BLOC	13  /* Block type        */
-#define		ASPECT_TYPE_FUNC	14  /* Function type     */
-#define         ASPECT_TYPE_BASENUM     15  /* BASE TYPES NUMBER */
+#define         ASPECT_TYPE_UNKNOW       0  /*!< Unknown           */
+#define         ASPECT_TYPE_RAW          1  /*!< Raw               */
+#define		ASPECT_TYPE_BYTE	 2  /*!< Byte	         */
+#define         ASPECT_TYPE_STR          3  /*!< String            */
+#define         ASPECT_TYPE_SHORT        4  /*!< 2 bytes           */
+#define         ASPECT_TYPE_INT          5  /*!< 4 bytes		 */
+#define         ASPECT_TYPE_LONG         6  /*!< 4 or 8 bytes      */
+#define         ASPECT_TYPE_DADDR        7  /*!< 4 or 8 bytes      */
+#define         ASPECT_TYPE_CADDR        8  /*!< 4 or 8 bytes      */
+#define	        ASPECT_TYPE_VECT	 9  /*!< Vector type	 */
+#define		ASPECT_TYPE_HASH	10  /*!< Hash table type	 */
+#define		ASPECT_TYPE_LIST	11  /*!< List type         */
+#define		ASPECT_TYPE_EXPR	12  /*!< Expression type   */
+#define		ASPECT_TYPE_BLOC	13  /*!< Block type        */
+#define		ASPECT_TYPE_FUNC	14  /*!< Function type     */
+#define         ASPECT_TYPE_BASENUM     15  /*!< BASE TYPES NUMBER */
 
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
 #define		ASPECT_TYPENAME_RAW	"raw"     
@@ -142,49 +142,59 @@ typedef struct		s_info
 }			typeinfo_t;
 
 
-/* Structure for type */
+/**
+ * @brief Structure for type 
+ */
 typedef struct		s_type
 {
-  u_int			type;		/* Plain or pointed type */
+  u_int			type;		/*!< @brief Plain or pointed type */
 
-  u_char		isptr;		/* the type is a pointer */
-  u_int			size;		/* Type full memsize     */
-  u_int			off;		/* Offset inside parent  */
+  u_char		isptr;		/*!< @brief the type is a pointer */
+  u_int			size;		/*!< @brief Type full memsize     */
+  u_int			off;		/*!< @brief Offset inside parent  */
 
-  u_int			dimnbr;		/* Nbr of array dimensions */
-  u_int			*elemnbr;	/* Nbr of elements per dim */
-  char			*name;		/* Type name             */
-  char			*fieldname;	/* Field name		 */
+  u_int			dimnbr;		/*!< @brief Nbr of array dimensions */
+  u_int			*elemnbr;	/*!< @brief Nbr of elements per dim */
+  char			*name;		/*!< @brief Type name             */
+  char			*fieldname;	/*!< @brief Field name		 */
 
   /* We have a list of child, and a list
   ** of nexts in case we are ourselves 
   ** a child of a structure object */
-  struct s_type		*childs;	/* Curobj fields if any */
-  struct s_type		*next;		/* Next parent field */
+  struct s_type		*childs;	/*!< @brief Curobj fields if any */
+  struct s_type		*next;		/*!< @brief Next parent field */
 }			aspectype_t;
 
 
-/* The structure of multidimensional vectors */
+/** 
+ * @brief The structure of multidimensional vectors 
+ */
 typedef struct	s_vector
 {
-  void		*hook;		   /* The vector data */
-  void		*register_func;	   /* Registration function */
-  void		*default_func;	   /* Default registered function */
-  u_int		*arraydims;	   /* Size of each dimension */
-  char		**strdims;	   /* Label for each dimension */
-  u_int		arraysz;	   /* Number of dimensions */
-  u_int   	type;		   /* Elements type in this vector */
+  void		*hook;		   /*!< @brief The vector data */
+  void		*register_func;	   /*!< @brief Registration function */
+  void		*default_func;	   /*!< @brief Default registered function */
+  u_int		*arraydims;	   /*!< @brief Size of each dimension */
+  char		**strdims;	   /*!< @brief Label for each dimension */
+  u_int		arraysz;	   /*!< @brief Number of dimensions */
+  u_int   	type;		   /*!< @brief Elements type in this vector */
 }		vector_t;
 
 
-/* Config related data types */
+/**
+ * @brief Config related data types 
+ */
 #define		CONFIG_HASH_SIZE	256
 
-/* Default names for config names */
+/**
+ * @brief Default names for config names 
+ */
 #define		CONFIG_NAME_SAFEMODE	"safemode"
 #define		CONFIG_USE_ASMDEBUG	"asm.debug"
 
-/* Config flags */
+/** 
+ * @brief Config flags 
+ */
 #define		CONFIG_SAFEMODE_OFF	0
 #define		CONFIG_SAFEMODE_ON	1
 
@@ -195,13 +205,13 @@ typedef struct	s_config_item
   char		*name;
 #define		CONFIG_TYPE_INT	0
 #define		CONFIG_TYPE_STR	1
-  u_int		type;			  /* int will use val, str *data */
+  u_int		type;			  /*!< int will use val, str *data */
   
   /* RO/RW - it's relevant to higher api
    like revm_ allows direct updates to those values
    when RW is set and enforces usage of revm_api
    when RO is set (see profile) */
-  u_int		val;			  /* For int values 0-off/1-on ... */
+  u_int		val;			  /*!< For int values 0-off/1-on ... */
 #define		CONFIG_MODE_RW	0
 #define		CONFIG_MODE_RO	1
   u_int		mode;			  
@@ -210,21 +220,23 @@ typedef struct	s_config_item
 
 
 
-/* The library has its world itself */
-/* There stands all the flags that are used by libelfsh */
+/**
+ * The library has its world itself 
+ * There stands all the flags that are used by libelfsh 
+ */
 typedef struct	s_aspectworld
 {
-  hash_t	config_hash;		/* Configuration */
+  hash_t	config_hash;		/*!< Configuration */
 
 #define		PROFILE_NONE	0
 #define		PROFILE_WARN    (1 << 0)
 #define		PROFILE_FUNCS   (1 << 1)
 #define		PROFILE_ALLOC   (1 << 2)
 #define		PROFILE_DEBUG	(1 << 3)
-  u_char	proflevel;		/* Profiling switch */
-  u_char	profstarted;		/* Profiling started ? */
-  int           (*profile)(char *);	/* Profiling output func */
-  int           (*profile_err)(char *);	/* Profiling error func */
+  u_char	proflevel;		/*!< Profiling switch */
+  u_char	profstarted;		/*!< Profiling started ? */
+  int           (*profile)(char *);	/*!< Profiling output func */
+  int           (*profile_err)(char *);	/*!< Profiling error func */
   
   /* Libui pointers */
   void	     	(*endline)();

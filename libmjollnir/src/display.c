@@ -1,13 +1,13 @@
 /*
-** display.c for libmjollnir in elfsh
+** @file display.c
 ** 
-** Contain printing functions for debug purpose only
+** @brief Contain printing functions for debug purpose only
 **
 ** FIXME: needs to use revm_output() and not printf inside elfsh.
 **
 ** Started on  Tue Jan 02 04:04:18 2006 jfv
 **
-** $Id: display.c,v 1.14 2007-07-31 03:28:47 may Exp $
+** $Id: display.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -24,7 +24,7 @@
 
 
 /**
- * Display all information about a block 
+ * @brief Display all information about a block 
  */
 int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disopt)
 {
@@ -85,7 +85,7 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
 
 
 /**
- * Print the content of the control flow section 
+ * @brief Print the content of the control flow section 
  */
 int			mjr_blocks_display(mjrcontext_t	*c, int level)
 {
@@ -111,7 +111,7 @@ int			mjr_blocks_display(mjrcontext_t	*c, int level)
 }
 
 /**
- * Print information for functions 
+ * @brief Print information for functions 
  */
 void		mjr_function_display(mjrfunc_t *func)
 {
@@ -119,7 +119,7 @@ void		mjr_function_display(mjrfunc_t *func)
 }
 
 /**
- * Print the functions in the function hash for the current context 
+ * @brief Print the functions in the function hash for the current context 
  */
 void		 mjr_funcs_display(mjrcontext_t *c)
 {
@@ -141,7 +141,7 @@ void		 mjr_funcs_display(mjrcontext_t *c)
 
 
 /**
- * Shortcut for vaddr 2 string with allocation .. 
+ * @brief Shortcut for vaddr 2 string with allocation .. 
  */
 char	*_vaddr2str(elfsh_Addr addr)
 {

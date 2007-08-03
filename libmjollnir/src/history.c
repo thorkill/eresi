@@ -1,7 +1,8 @@
 /*
 ** (C) 2001-2007 Devhell Labs / Asgard Labs : thorolf / sk / jfv
-**
-** $Id: history.c,v 1.14 2007-07-31 03:28:47 may Exp $
+** @file history.c
+** 
+** $Id: history.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
 */
 #include "libmjollnir.h"
 

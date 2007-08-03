@@ -1,15 +1,17 @@
-/*
-** lookup.c for librevm in ERESI
-**
-** Various object lookup functions built in the language
-**
-** Started Nov 21 2003 jfv
-** $Id: lookup.c,v 1.16 2007-07-31 03:28:48 may Exp $
-*/
+/**
+ * @file lookup.c
+ *
+ * Various object lookup functions built in the language
+ *
+ * Started Nov 21 2003 jfv
+ * $Id: lookup.c,v 1.17 2007-08-03 11:51:00 heroine Exp $
+ */
 #include "revm.h"
 
 
-/* Support for double (or multiple) variables : $$name, $$$name, etc */
+/** 
+ * @brief Support for double (or multiple) variables : $$name, $$$name, etc 
+ */
 revmobj_t		*revm_lookup_var(char *param)
 {
   revmobj_t		*ptr;
@@ -43,7 +45,9 @@ revmobj_t		*revm_lookup_var(char *param)
 }
 
 
-/* Get address value */
+/** 
+ * @brief Get address value 
+ */
 elfsh_Addr		revm_lookup_addr(char *param)
 {
   elfsh_Sym		*sym;
@@ -98,7 +102,9 @@ elfsh_Addr		revm_lookup_addr(char *param)
 
 
 
-/* Get immediate value */
+/** 
+ * @brief Get immediate value 
+ */
 revmobj_t		*revm_lookup_immed(char *param)
 {
   elfsh_Sym		*sym;
@@ -200,7 +206,9 @@ revmobj_t		*revm_lookup_immed(char *param)
 
 
 
-/* Lookup an index */
+/** 
+ * @brief Lookup an index 
+ */
 u_int     		revm_lookup_index(char *param)
 {
   revmconst_t		*actual;
@@ -257,7 +265,9 @@ u_int     		revm_lookup_index(char *param)
 
 
 
-/* Lookup an index */
+/** 
+ * @brief Lookup an index 
+ */
 char			*revm_lookup_string(char *param)
 {
   revmobj_t		*ptr;
@@ -291,7 +301,9 @@ char			*revm_lookup_string(char *param)
 
 
 
-/* Lookup the file pointed by name */
+/** 
+ * @brief Lookup the file pointed by name 
+ */
 elfshobj_t		*revm_lookup_file(char *param)
 {
   u_int			idx;

@@ -1,14 +1,14 @@
-/*
-** network.c for librevm in ERESI
-**
-** The high-level network interface
-**
-** Started Wed Feb 25 22:22:35 2004 yann_malcom
-** Updated Mon Mar 05 04:37:10 2007 jfv 
-**
-** $Id: network.c,v 1.7 2007-07-31 03:28:47 may Exp $
-**
-*/
+/**
+ * @file network.c
+ *
+ * The high-level network interface
+ *
+ * Started Wed Feb 25 22:22:35 2004 yann_malcom
+ * Updated Mon Mar 05 04:37:10 2007 jfv 
+ *
+ * $Id: network.c,v 1.8 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
 
@@ -19,7 +19,9 @@ int  	       elfsh_net_client_count = 0;
 
 /* Is net support enable ? */
 #if defined(ELFSHNET)
-/* Add a client socket to the elfsh_net_client_list. */
+/**
+ * Add a client socket to the elfsh_net_client_list. 
+ */
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
   revmjob_t	*new;
@@ -69,7 +71,9 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 
 
 
-/* Return the number of buffer in a revmsock_t recvd */
+/** 
+ * @brief Return the number of buffer in a revmsock_t recvd 
+ */
 int		revm_socket_get_nb_recvd(char *inet)
 {
   revmjob_t	*tmp;

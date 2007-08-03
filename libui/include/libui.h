@@ -1,10 +1,10 @@
 /*
-** libui.h for libui
+** @file libui.h
 ** 
 ** Started on Sun Jan 22 19:04:04 2006 mxatone
 ** Updated on Tue Mar  6 08:42:17 2007 jfv
 **
-** $Id: libui.h,v 1.14 2007-07-31 03:28:48 may Exp $
+** $Id: libui.h,v 1.15 2007-08-03 11:51:01 heroine Exp $
 **
 */
 
@@ -24,11 +24,13 @@
 
 //extern int	(*rl_getc)(FILE*);
 
-/* Completion structure */
+/** 
+ * @brief Completion structure 
+ */
 typedef struct        s_comp
 {
 #define		      ELFSH_COMPMAX   16
-  char		      **cmds[ELFSH_COMPMAX];         /* Matchs list for readline */
+  char		      **cmds[ELFSH_COMPMAX];         /* !< @brief Matchs list for readline */
 }		      rlcomp_t;
 
 /* Prototypes for readline functions */

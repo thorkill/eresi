@@ -5,7 +5,7 @@
 ** Started on  Tue Mar  4 01:14:01 2003 jfv
 ** Last update Thu Mar 23 23:21:08 2006 thorkill
 **
-** $Id: save.c,v 1.11 2007-07-31 03:28:47 may Exp $
+** $Id: save.c,v 1.12 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,7 +13,7 @@
 
 
 /**
- * Find a string in a random buffer of size n
+ * @brief Find a string in a random buffer of size n
  */
 static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 {

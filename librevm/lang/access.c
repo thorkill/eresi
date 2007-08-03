@@ -1,14 +1,17 @@
-/*
-** access.c : Implementation of scripting lookups for meta-language variables
-**
-** Started Jan 23 2007 23:39:51 jfv
-**
-** $Id: access.c,v 1.22 2007-08-01 14:35:57 may Exp $
-**
-*/
+/**
+ * @file access.c
+ *
+ * Started Jan 23 2007 23:39:51 jfv
+ * @brief Implementation of scripting lookups for meta-language variables
+ *
+ * $Id: access.c,v 1.23 2007-08-03 11:51:00 heroine Exp $
+ *
+ */
 #include "revm.h"
 
-/* Get the buffered address from the real virtual address */
+/**
+ * @brief Get the buffered address from the real virtual address 
+ */
 void		*revm_get_raw(void *addr)
 {
   elfshsect_t	*sect;
@@ -45,7 +48,9 @@ void		*revm_get_raw(void *addr)
 }
 
 
-/* Return the requested projections in case of an array */
+/** 
+ * @brief Return the requested projections in case of an array 
+ */
 int		revm_arrayoff_get(char *field, u_int elmsize, 
 				u_int dimnbr, u_int *dims)
 {
@@ -105,7 +110,9 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 
 
 
-/* Return offset given field name */
+/** 
+ * @brief Return offset given field name 
+ */
 aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, 
 				 u_int *off)
 {
@@ -145,7 +152,9 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field,
 }
 
 
-/* Recursive function to lookup data from its type path */
+/** 
+ * @brief Recursive function to lookup data from its type path 
+ */
 static aspectype_t	*revm_field_get(aspectype_t *type, char *param, 
 				      void **data)
 {
@@ -195,7 +204,9 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 
 
 
-/* Create the REVM object that is to be returned */
+/** 
+ * @brief Create the REVM object that is to be returned 
+ */
 revmobj_t	*revm_object_create(aspectype_t *type, void *data)
 {
   revmobj_t	*path;
@@ -258,7 +269,9 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data)
 
 
 
-/* Lookup _for real_ the path of a complex typed object */
+/**
+ * @brief Lookup _for real_ the path of a complex typed object 
+ */
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
 					 char	     *objname, 
 					 char	     *objpath)
@@ -304,7 +317,9 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 }
 
 
-/* Lookup the path for a complex typed object (using syntactic sugar) */
+/** 
+ * @brief Lookup the path for a complex typed object (using syntactic sugar) 
+ */
 revmobj_t	*revm_object_lookup(char *str)
 {
   char		filename[ELFSH_MEANING];

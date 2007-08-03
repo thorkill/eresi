@@ -1,16 +1,18 @@
 /*
-** libaspect-list.h for libaspect in ERESI
+** @file libaspect-list.h
 **
-** Prototypes of API for ERESI lists
+** @brief Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 jfv
-** $Id: libaspect-list.h,v 1.3 2007-07-31 03:28:46 may Exp $
+** $Id: libaspect-list.h,v 1.4 2007-08-03 11:50:59 heroine Exp $
 */
 
 #ifndef _LIBLIST_H_
  #define _LIBLIST_H_ 1
 
-/* List entry data structure */
+/** 
+ * @brief List entry data structure 
+ */
 typedef struct          s_listent
 {
   char                  *key;
@@ -18,7 +20,9 @@ typedef struct          s_listent
   struct s_listent      *next;
 }                       listent_t;
 
-/* List data structure */
+/** 
+ * @brief List data structure 
+ */
 typedef struct          s_aspect_list
 {
   listent_t             *head;
@@ -28,7 +32,9 @@ typedef struct          s_aspect_list
 }                       list_t;
 
 
-/* The hash table of list is accessible to the public */
+/** 
+ * @brief The hash table of list is accessible to the public 
+ */
 extern hash_t		*hash_lists;
 
 /* list.c */

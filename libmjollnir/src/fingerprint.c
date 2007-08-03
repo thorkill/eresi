@@ -1,18 +1,18 @@
 /*
-** fingerprint.c in libmjollnir for elfsh
+** @file fingerprint.c
 ** 
-** Functions for fingerprinting inside libmjollnir
+** @brief Functions for fingerprinting inside libmjollnir
 **
 ** Started : Mon Jan 02 01:18:14 2007 jfv
 **
-** $Id: fingerprint.c,v 1.14 2007-07-31 03:28:47 may Exp $
+** $Id: fingerprint.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libmjollnir.h"
 
 
 /**
- * Say if a block is the start of a function or not 
+ * @brief Say if a block is the start of a function or not 
  */
 int		 mjr_block_funcstart(mjrcontainer_t *cntnr) 
 {
@@ -49,7 +49,7 @@ int		 mjr_block_funcstart(mjrcontainer_t *cntnr)
 
 
 /**
- * Depth First Search: distance fingerprinting algorithm
+ * @brief Depth First Search: distance fingerprinting algorithm
  * @param c mjollnir context
  * @param start mjollnir container
  * @param type 0 for forward-fingerprinting, 1 for backwards

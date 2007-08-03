@@ -5,7 +5,7 @@
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
 ** 
 **
-** $Id: state.c,v 1.14 2007-07-31 03:28:47 may Exp $
+** $Id: state.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -18,7 +18,7 @@ void    elfsh_init() __attribute__ ((constructor));
 
 
 /**
- * Initialize the elfsh world
+ * @brief Initialize the elfsh world
  */
 void    elfsh_init()
 {
@@ -37,7 +37,7 @@ void    elfsh_init()
 
 
 /**
- * The functions for simple ondisk/memory state flag 
+ * @brief The functions for simple ondisk/memory state flag 
  */
 u_char	elfsh_is_static_mode()
 {
@@ -45,7 +45,7 @@ u_char	elfsh_is_static_mode()
 }
 
 /**
- * Set static mode
+ * @brief Set static mode
  */
 void	elfsh_set_static_mode()
 {
@@ -54,7 +54,7 @@ void	elfsh_set_static_mode()
 
 
 /**
- * check if we are running in debug mode
+ * @ brief check if we are running in debug mode
  */
 u_char	elfsh_is_debug_mode()
 {
@@ -62,7 +62,7 @@ u_char	elfsh_is_debug_mode()
 }
 
 /** 
- * set debug mode
+ * @brief set debug mode
  */
 void	elfsh_set_debug_mode()
 {
@@ -71,7 +71,7 @@ void	elfsh_set_debug_mode()
 }
 
 /**
- * set mode
+ * @brief set mode
  */
 void	elfsh_set_mode(u_char mode)
 {
@@ -82,7 +82,7 @@ void	elfsh_set_mode(u_char mode)
 }
 
 /**
- * get mode
+ * @brief get mode
  */
 u_char	elfsh_get_mode()
 {
@@ -99,7 +99,7 @@ u_char	elfsh_debugger_present()
 
 
 /**
- * toggle modes
+ * @brief toggle modes
  */
 
 void	elfsh_toggle_mode()
@@ -111,7 +111,7 @@ void	elfsh_toggle_mode()
 }
 
 /**
- * Print last error
+ * @brief Print last error
  */
 void	elfsh_error()
 {

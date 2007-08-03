@@ -1,13 +1,13 @@
-/*
-** prompt.c for librevm in ERESI
-**
-** Interface for prompt management
-**
-** Started on  Fri Nov  2 15:21:56 2001 jfv
-** Updated on  Mon Mar  5 17:26:11 2007 jfv
-**
-** $Id: prompt.c,v 1.7 2007-07-31 03:28:47 may Exp $
-**
+/**
+ * @file prompt.c
+ *
+ * Interface for prompt management
+ *
+ * Started on  Fri Nov  2 15:21:56 2001 jfv
+ * Updated on  Mon Mar  5 17:26:11 2007 jfv
+ *
+ * $Id: prompt.c,v 1.8 2007-08-03 11:51:00 heroine Exp $
+ *
 */
 #include "revm.h"
 
@@ -40,7 +40,9 @@ void	revm_create_default_prompt(char *name, u_int size)
   revm_endline();
 }
 
-/* return the right prompt */
+/** 
+ * return the right prompt 
+ */
 char*	revm_get_prompt()
 {
   if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
