@@ -915,6 +915,14 @@ echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
 echo "	@wc -l modules/*.c "					>> Makefile
 echo ""								>> Makefile
 
+echo "docs:"							>> Makefile
+echo "	(cd libasm && make docs)"				>> Makefile
+echo "	(cd libelfsh && make docs)"				>> Makefile
+echo "	(cd librevm && make docs)"				>> Makefile
+echo "	(cd libmjollnir && make docs)"				>> Makefile
+echo "	(cd libui && make docs)"				>> Makefile
+echo "	(cd libedfmt && make docs)"				>> Makefile
+
 echo
 echo " Now make && make install"
 echo 
