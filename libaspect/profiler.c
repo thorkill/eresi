@@ -4,7 +4,7 @@
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm
 **
-** $Id: profiler.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
+** $Id: profiler.c,v 1.9 2007-08-03 14:25:40 heroine Exp $
 **
 */
 #include "libaspect.h"
@@ -64,8 +64,9 @@ profallocentry_t	*profiler_alloc_find(u_char direction,
       return (NULL);
     case PROFILER_WARNING_UNKNOW:
     default:
-      aspectworld.profile(" [E] Unknown alloc optype requested to the "
-			  "allocator profiler\n");
+      if (aspectworld.profile)
+	aspectworld.profile(" [E] Unknown alloc optype requested to the "
+			    "allocator profiler\n");
       return (NULL);
     }
 }
@@ -91,7 +92,8 @@ void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 	   allocentries[idx].filename,
 	   allocentries[idx].funcname,
 	   allocentries[idx].linenbr);
-  aspectworld.profile(buf);	
+  if (aspectworld.profile)
+    aspectworld.profile(buf);	
   if (fatal)
     exit(-1);
 }
@@ -193,8 +195,9 @@ void			profiler_alloc_warning(u_char warntype)
       /* Just an error detection message */
     default:
     case PROFILER_WARNING_UNKNOW: 
-      aspectworld.profile(" [E] Unknown warning type requested to the "
-			  "allocator profiler\n");
+      if (aspectworld.profile)
+	aspectworld.profile(" [E] Unknown warning type requested to the "
+			    "allocator profiler\n");
       exit(-1);
       break;
     }
@@ -275,7 +278,8 @@ int			profiler_alloc_update(char *file, char *func,
 
 
 /** 
- * @brief Reset profiler memory 
+ * @brief Reset profiler memory
+ * @param lsel
  */
 void		profiler_reset(u_int lsel)
 {
@@ -457,7 +461,9 @@ void		profiler_out(char *file, char *func, u_int line)
 	       space, profiler_depth, profiler_direction, 
 	       func, file,line);
     }
-  aspectworld.profile(buff);	
+  if (aspectworld.profile)
+    aspectworld.profile(buff);
+  
   if (aspectworld.endline != NULL)
     aspectworld.endline();
 }
@@ -506,7 +512,10 @@ void		profiler_error()
   if (profiler_error_str)
     {
       snprintf(buf, BUFSIZ, " [E] %s\n\n", profiler_error_str);
-      aspectworld.profile_err(buf);
+      if (aspectworld.profile_err)
+	aspectworld.profile_err(buf);
+      else
+	printf("[WARNING] : profile_err() is NULL . Reverting to prinf.\n%s\n", buf);
     }  
  
   profiler_error_reset(); 
