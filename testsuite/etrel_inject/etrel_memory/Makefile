@@ -26,9 +26,9 @@ CFLAGS	= $(OPT)
 
 all	: $(OBJ)
 	$(CC) $(OPT) $(HOSTSRC)
-	@strip a.out
+	#@strip a.out
 	$(CC) $(OPT) $(HOSTSRC) -pie -o $(PIEBIN)
-	@strip $(PIEBIN)
+	#@strip $(PIEBIN)
 	$(CC) $(OPT) $(RTSRC) -o $(RTOBJ) -c
 	@echo Now run etrelmem.esh inside e2dbg
 

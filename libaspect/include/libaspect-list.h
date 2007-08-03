@@ -4,7 +4,7 @@
 ** @brief Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 jfv
-** $Id: libaspect-list.h,v 1.4 2007-08-03 11:50:59 heroine Exp $
+** $Id: libaspect-list.h,v 1.5 2007-08-03 18:05:03 may Exp $
 */
 
 #ifndef _LIBLIST_H_
@@ -30,12 +30,6 @@ typedef struct          s_aspect_list
   u_int			type;
   u_char		linearity;
 }                       list_t;
-
-
-/** 
- * @brief The hash table of list is accessible to the public 
- */
-extern hash_t		*hash_lists;
 
 /* list.c */
 int		list_init(list_t *, char*, u_int);	/* Allocate the list */

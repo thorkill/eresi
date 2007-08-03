@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: dump.c,v 1.4 2007-03-07 16:45:35 thor Exp $
+** $Id: dump.c,v 1.5 2007-08-03 18:05:03 may Exp $
 **
 */
 
@@ -159,7 +159,7 @@ int	dump_lookup_Rr_recently_seen(pkt_id_t id)
 /* clean recently seen table */
 int		dump_clean_recently_seen()
 {
-  hashent_t	*actual;
+  listent_t	*actual;
   time_t	current;
   int		index;
 
@@ -370,7 +370,7 @@ int	dump_print_pkt(pkt_t *pkt)
 /* is my id ? */
 int		dump_is_myid(dump_id_t id) 
 {
-  hashent_t	*actual;
+  listent_t	*actual;
   int		index;
 
   for (index = 0; index < dump_world.myids.size; index++)
@@ -396,7 +396,7 @@ dump_id_t	dump_get_myid(int s)
   char		tmp[5];
   char		*tmp2;
 
-  hashent_t	*actual;
+  listent_t	*actual;
   int		index;
 
   /* special case ... */
@@ -469,7 +469,7 @@ int	dump_del_myid(int s)
 /* disconnect from given peer */
 int		dump_disconnect(int s)
 {
-  hashent_t	*actual;
+  listent_t	*actual;
   int		index;
 
   /* special case ... */

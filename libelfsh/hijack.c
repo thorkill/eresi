@@ -5,7 +5,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.9 2007-06-27 11:25:12 heroine Exp $
+** $Id: hijack.c,v 1.10 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -124,6 +124,12 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to perform CFLOW redir", -1);
+
+      /* Perform a second stage runtime relocation after injecting this new old symbol */
+      if (elfsh_is_debug_mode() && elfsh_save_relocate(file) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Failed second stage runtime relocation", -1);
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ELFSH_REDIR_CFLOW);
 
       /* GOT entry hijacking */

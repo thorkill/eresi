@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
 **
-** $Id: display.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: display.c,v 1.7 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -16,7 +16,7 @@ void		e2dbg_display_print()
   int		idx;
   int		printed;
 
-  hashent_t     *actual;
+  listent_t     *actual;
   elfshbp_t     *curbp;
   int		idx2;
 

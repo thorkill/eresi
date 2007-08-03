@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.23 2007-08-03 11:51:00 heroine Exp $
+ * $Id: access.c,v 1.24 2007-08-03 18:05:03 may Exp $
  *
  */
 #include "revm.h"
@@ -303,7 +303,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 
   /* Get recursively the leaf type and data pointer */
   /* If the objpath is empty, its a scalar that was requested */
-  if (*objpath)
+  if (objpath && *objpath)
     {
       type = revm_field_get(type, objpath, (void **) &data);
       if (!type)

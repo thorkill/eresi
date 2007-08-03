@@ -4,7 +4,7 @@
 ** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.36 2007-08-03 11:50:59 heroine Exp $
+** $Id: libhash.c,v 1.37 2007-08-03 18:05:03 may Exp $
 */
 #include "libaspect.h"
 
@@ -38,7 +38,7 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
   }
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 h->ent, size * sizeof(hashent_t), -1);
+	 h->ent, size * sizeof(listent_t), -1);
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
@@ -143,8 +143,8 @@ void		hash_destroy(hash_t *h)
  */
 int		hash_add(hash_t *h, char *key, void *data)
 {
-  hashent_t	*actual;
-  hashent_t	*newent;
+  listent_t	*actual;
+  listent_t	*newent;
   char		*backup;
   u_int		index;
 
@@ -168,7 +168,7 @@ int		hash_add(hash_t *h, char *key, void *data)
   else
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	     newent, sizeof(hashent_t), -1);
+	     newent, sizeof(listent_t), -1);
       newent->key  = key;
       newent->data = data;
       actual = h->ent + index;
@@ -188,8 +188,8 @@ int		hash_add(hash_t *h, char *key, void *data)
  */
 int		hash_del(hash_t *h, char *key)
 {
-  hashent_t	*actual;
-  hashent_t	*todel;
+  listent_t	*actual;
+  listent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -207,7 +207,7 @@ int		hash_del(hash_t *h, char *key)
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
 	}
       else
-	bzero(actual, sizeof (hashent_t));
+	bzero(actual, sizeof (listent_t));
       h->elmnbr--;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -237,7 +237,7 @@ int		hash_del(hash_t *h, char *key)
  */
 void		*hash_get(hash_t *h, char *key)
 {
-  hashent_t	*actual;
+  listent_t	*actual;
 
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
@@ -250,7 +250,7 @@ void		*hash_get(hash_t *h, char *key)
 /* Retrieve the data pointer for a given key */
 void		*hash_select(hash_t *h, char *key)
 {
-  hashent_t	*actual;
+  listent_t	*actual;
 
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
@@ -265,7 +265,7 @@ void		*hash_select(hash_t *h, char *key)
 /* Change the metadata for an existing entry, giving its key */
 int		hash_set(hash_t *h, char *key, void *data)
 {
-  hashent_t	*ent;
+  listent_t	*ent;
 
   ent = hash_get_ent(h, key);
   if (!ent)
@@ -275,12 +275,12 @@ int		hash_set(hash_t *h, char *key, void *data)
 }
 
 
-/** 
+/**
  * @brief Retrieve the -entry- for a given key 
  */
-hashent_t   *hash_get_ent(hash_t *h, char *key)
+listent_t   *hash_get_ent(hash_t *h, char *key)
 {
-  hashent_t *actual;
+  listent_t *actual;
   
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
@@ -293,7 +293,7 @@ hashent_t   *hash_get_ent(hash_t *h, char *key)
 
 
 /* Retreive a Hash entry head giving the key */
-hashent_t *hash_get_head(hash_t *h, char *backup)
+listent_t *hash_get_head(hash_t *h, char *backup)
 {
   u_int   index;
 
@@ -311,7 +311,7 @@ char		**hash_get_keys(hash_t *h, int *n)
 {
   int		j, i;
   char		**keys;
-  hashent_t	*entry;
+  listent_t	*entry;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   keys = NULL;
@@ -358,7 +358,7 @@ void    hash_free_keys(char **keys)
 /* Print the hash table (DEBUG PURPOSE) */
 void            hash_print(hash_t *h)
 {
-  hashent_t     *actual;
+  listent_t     *actual;
   int           index;
 
   if (!h)
@@ -379,9 +379,9 @@ void            hash_print(hash_t *h)
 */
 int   hash_apply(hash_t      *h, 
 		 void        *ptr, 
-		 int         (*func)(hashent_t *ph, void *pptr))
+		 int         (*func)(listent_t *ph, void *pptr))
 {
-  hashent_t     *actual;
+  listent_t     *actual;
   int           index;
   int		ret = 0;
   
@@ -403,8 +403,8 @@ int		hash_compare(hash_t *first, hash_t *two)
 {
   int		index;
   int		m;
-  hashent_t	*actual;
-  hashent_t	*bis;
+  listent_t	*actual;
+  listent_t	*bis;
 
   if (first->size != two->size) 
     return (-1);
@@ -435,7 +435,7 @@ int		hash_compare(hash_t *first, hash_t *two)
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
 int		hash_merge(hash_t *dst, hash_t *src)
 {
-  hashent_t     *actual;
+  listent_t     *actual;
   int           index;
   int		ret;
 
@@ -456,7 +456,7 @@ int		hash_merge(hash_t *dst, hash_t *src)
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
 int		hash_unmerge(hash_t *dst, hash_t *src)
 {
-  hashent_t	*actual;
+  listent_t	*actual;
   int           index;
   int		ret;
   

@@ -6,7 +6,7 @@
  * Started Wed Feb 25 22:22:35 2004 yann_malcom
  * Updated Mon Mar 05 04:37:10 2007 jfv 
  *
- * $Id: network.c,v 1.8 2007-08-03 11:51:00 heroine Exp $
+ * $Id: network.c,v 1.9 2007-08-03 18:05:03 may Exp $
  *
  */
 #include "revm.h"
@@ -80,7 +80,7 @@ int		revm_socket_get_nb_recvd(char *inet)
   int		i;
   int		index;
   revmjob_t	*old;
-  hashent_t	*actual;
+  listent_t	*actual;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -179,7 +179,7 @@ int		 revm_socket_del(char *inet_addr)
   revmjob_t	 *tmp;
   int		 nbargc;
   int		 i;
-  hashent_t	*actual;
+  listent_t	*actual;
   int		index;
   revmjob_t	*old;
 
@@ -640,7 +640,7 @@ int			revm_net_accept()
 int			revm_net_recvd(fd_set *sel_sockets)
 {
   revmsock_t           *temp_socket;
-  hashent_t             *actual;
+  listent_t             *actual;
   int                   index;
   revmjob_t		*init;
   int			sd;
@@ -855,7 +855,7 @@ char	*revm_socket_merge_recvd(revmsock_t *socket)
 char			*revm_net_input()
 {
   revmsock_t		*temp_socket;
-  hashent_t		*actual;
+  listent_t		*actual;
   int			index;
   char			*ret;
 #if __DEBUG_NETWORK__
@@ -955,7 +955,7 @@ int			revm_net_init()
 /* Stopping network | not workspace compliant ... */
 int		      revm_net_stop()
 {
-  hashent_t           *actual;
+  listent_t           *actual;
   int                 index;
   revmsock_t         *temp_socket;
   revmjob_t	      *serv;

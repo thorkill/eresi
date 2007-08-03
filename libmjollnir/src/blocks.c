@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.67 2007-08-03 11:50:59 heroine Exp $
+** $Id: blocks.c,v 1.68 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -86,7 +86,7 @@ mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
   
   retbtree = ctxt->block_btree;
-  while(retbtree)
+  while (retbtree)
     {
 
       /* Parent match */

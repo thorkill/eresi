@@ -5,7 +5,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 jfv
  *
  *
- * $Id: ia32.c,v 1.20 2007-07-31 03:28:46 may Exp $
+ * $Id: ia32.c,v 1.21 2007-08-03 18:05:03 may Exp $
  *
  */
 #include "libelfsh.h"
@@ -329,7 +329,6 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   /* Ret: the minimal instruction aligned length for installing the hook caller-side properly */
   hookbuf = alloca(ret);
-
   //prot = elfsh_munprotect(hookbuf, 16);
   memcpy(hookbuf, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hookbuf + 1) = (hooks->shdr->sh_addr + hooks->curend) - (symbol->st_value + 5); 

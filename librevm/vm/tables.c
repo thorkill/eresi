@@ -5,12 +5,15 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.46 2007-08-03 11:51:00 heroine Exp $
+** $Id: tables.c,v 1.47 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "revm.h"
 
 
+
+/* Hash of instruction lists */
+hash_t		instrlists_hash;
 
 /* Labels hash */
 hash_t		labels_hash[REVM_MAXSRCNEST];
@@ -774,6 +777,9 @@ static void	setup_cmdhash()
       revm_command_add(CMD_TABLES    , (void *) cmd_tables   , (void *) revm_getvarparams, 0, HLP_TABLES);
       revm_command_add(CMD_LISTS     , (void *) cmd_lists    , (void *) revm_getvarparams, 0, HLP_LISTS);
       revm_command_add(CMD_EMPTY     , (void *) cmd_empty    , (void *) revm_getvarparams, 0, HLP_EMPTY);
+
+      revm_command_add(CMD_DEFINE    , (void *) cmd_define   , (void *) revm_getoption2   , 0, HLP_DEFINE);
+      revm_command_add(CMD_UNDEF     , (void *) cmd_undef    , (void *) revm_getoption    , 0, HLP_UNDEF);
     }
 
   /* Command line only commands */
@@ -1213,6 +1219,7 @@ void		revm_tables_setup()
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
   hash_init(&exprtypes_hash   , "exprtypes"  , 51, ASPECT_TYPE_UNKNOW);
+  hash_init(&exprtypes_hash   , "instrlists" , 51, ASPECT_TYPE_LIST);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();

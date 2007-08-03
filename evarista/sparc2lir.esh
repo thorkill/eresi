@@ -25,11 +25,12 @@ type Cmp       = uflags:Immed curaddr:Immed fst:Immed rfst:Reg snd:Immed rsnd:Re
 # Find entry point for analysis
 
 load /bin/ls
-set $curblock 1.blocks[1.hdr.entry]
-set $curaddr $curblock.vaddr
+
 
 # This create on-demand the block instruction list in the eresi runtime
-reflect $curblock
+reflect main
+set $curblock $_
+set $curaddr $curblock.vaddr
 
 # We now iterate over the content of that list
 foreach $instr of 1.instrlist[$curblock]

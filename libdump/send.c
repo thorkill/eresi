@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: send.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: send.c,v 1.4 2007-08-03 18:05:03 may Exp $
 **
 */
 
@@ -146,7 +146,7 @@ int		dump_send(dump_id_t dst, void *data, dump_len_t len)
   dump_id_t	*path;
   int		next_hop_socket;
   int		index;
-  hashent_t	*actual;
+  listent_t	*actual;
   pkt_t		*pkt;
 
   NOPROFILER_IN();

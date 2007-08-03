@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.9 2007-08-03 11:51:00 heroine Exp $
+** $Id: atomic.c,v 1.10 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "revm.h"
@@ -124,9 +124,11 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   else
     o1->set_obj(o1->parent, dst);
 
-  res = hash_get(&vars_hash, REVM_VAR_RESULT);
+  /* Store last-result variable */
+  res                = hash_get(&vars_hash, REVM_VAR_RESULT);
+  res->type          = o1->type;
   res->immed_val.ent = dst;
-  res->immed = 1;
+  res->immed         = 1;
   if (!world.state.revm_quiet)
     {
       snprintf(buf, sizeof(buf), " $_ = " DFMT "\n\n", dst);

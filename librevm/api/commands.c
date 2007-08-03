@@ -4,7 +4,7 @@
 ** Started on  Mon Feb 24 15:52:06 2003 jfv
 ** Last update Thu Mar 11 14:39:06 2004 jfv
 **
-** $Id: commands.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: commands.c,v 1.6 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "revm.h"
@@ -33,7 +33,7 @@ revmcmd_t	*revm_create_CMDENT(int  (*exec)(void *file, void *av),
 /* Change the handler for an ELFsh command */
 int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 {
-  hashent_t	*ent;
+  listent_t	*ent;
   revmcmd_t	*act;
   char		logbuf[BUFSIZ];
 

@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 jfv
 **
-** $Id: revm-help.h,v 1.29 2007-07-31 03:28:47 may Exp $
+** $Id: revm-help.h,v 1.30 2007-08-03 18:05:03 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -113,6 +113,9 @@
 #define HLP_VERDEF              "Print the defined versions table"
 #define HLP_VERNEED             "Print the needed versions table"
 #define HLP_HASH                "Print the dynsymbols ELF hash table (.hash)"
+
+#define	HLP_DEFINE		"Define a given name (param 1) to a constant value (param 2)"
+#define	HLP_UNDEF		"Undefine a given name to its value"
 
 /* Configuration commands */
 #define	HLP_HIJACK		"Redirect a function to another function \n\n\t" \

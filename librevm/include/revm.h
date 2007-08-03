@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.81 2007-08-03 11:51:00 heroine Exp $
+** $Id: revm.h,v 1.82 2007-08-03 18:05:03 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -216,6 +216,8 @@ extern asm_processor	proc;
 #define	REVM_CREATE_NEWID	(1 << 2)
 
 /* Commands */
+#define	CMD_DEFINE		"define"
+#define	CMD_UNDEF		"undef"
 #define CMD_DISASM		"disasm"
 #define	CMD_DISASM2		"D"
 #define	CMD_HEXA		"hexa"
@@ -779,6 +781,8 @@ int		cmd_matchend();
 int		cmd_case();
 int		cmd_reflect();
 int		cmd_default();
+int		cmd_define();
+int		cmd_undef();
 
 /* Flow analysis commands */
 int		cmd_flowload(void);

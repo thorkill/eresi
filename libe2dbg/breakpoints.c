@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.10 2007-07-31 03:28:46 may Exp $
+** $Id: breakpoints.c,v 1.11 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -112,7 +112,7 @@ int		e2dbg_is_watchpoint(elfshbp_t *b)
 /* Find breakpoint by ID */
 elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid)
 {
-  hashent_t     *actual;
+  listent_t     *actual;
   elfshbp_t	*cur;
   int           index;
 

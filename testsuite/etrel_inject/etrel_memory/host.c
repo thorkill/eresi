@@ -1,11 +1,12 @@
 /*
 **
-** $Id: host.c,v 1.3 2007-05-16 13:33:47 may Exp $
+** $Id: host.c,v 1.4 2007-08-03 18:05:03 may Exp $
 **
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 int	legit_func(char *str)
 {
@@ -22,18 +23,11 @@ int main(int argc, char **argv)
   char	*str;
   char	buff[BUFSIZ];
 
-
-
   printf ("[host] main argc %d\n", argc);
-  
-
   printf("[host] argv[0] is : %s\n", argv[0]);
 
   if (argc == 2)
     printf("[host] argv[1] is : %s\n", argv[1]);
-
-
-  
 
   //read(0, buff, BUFSIZ-1);
 

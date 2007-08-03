@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 27 19:41:45 2002 jfv
 ** Last update Thu Mar 20 05:47:12 2003 jfv
 **
-** $Id: raw.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: raw.c,v 1.6 2007-08-03 18:05:03 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -23,7 +23,7 @@ int		elfsh_raw_write(elfshobj_t	*file,
   elfshsect_t	*sect;
   int		sect_off;
   void		*dst;
-  //int		prot;
+  int		prot;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -43,9 +43,9 @@ int		elfsh_raw_write(elfshobj_t	*file,
 
   if (elfsh_is_debug_mode())
     {
-      //prot = elfsh_munprotect(dst + sect_off, len);
+      prot = elfsh_munprotect(file, (elfsh_Addr) dst + sect_off, len);
       memcpy(dst + sect_off, src_buff, len);
-      //elfsh_mprotect(dst + sect_off, len, prot);
+      elfsh_mprotect((elfsh_Addr) dst + sect_off, len, prot);
     }
   else
     memcpy(dst + sect_off, src_buff, len);

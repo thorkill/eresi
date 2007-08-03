@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: recv.c,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id: recv.c,v 1.4 2007-08-03 18:05:03 may Exp $
 **
 */
 
@@ -195,7 +195,7 @@ int		dump_receive_RR(pkt_t *pkt)
 {
   dump_id_t	prev;
   dump_id_t	*npath;
-  hashent_t	*actual;
+  listent_t	*actual;
   int		index;
     
   NOPROFILER_IN();

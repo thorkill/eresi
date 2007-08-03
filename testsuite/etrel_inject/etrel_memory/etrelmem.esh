@@ -3,10 +3,16 @@
 load myputs.o
 switch 1
 mode dynamic
-dynsym
-sym
-reladd 1 myputs.o
+
+#dynsym
+#sym
+
 profile enable warn
+
+reladd 1 myputs.o
+
 redir puts myputs
+redir legit_func new_legit_func
+D new_legit_func
 start
 

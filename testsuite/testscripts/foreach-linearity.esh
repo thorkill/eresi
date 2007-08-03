@@ -1,0 +1,30 @@
+#!../../elfsh/elfsh32
+
+add $list[test] Intel
+add $list[test] Alpha
+add $list[test] Sparc32
+add $list[test] Mips
+add $list[test] Sparc64
+add $list[test] AMD
+add $list[test] Pa-risc
+
+add $list[test2] HEHEHE
+
+lists test
+lists test2
+
+#profile enable warn
+#quiet
+
+foreach $element of test
+
+  # Should print an error
+  foreach $element2 of test
+    print List2 contains element : $element2
+  forend
+
+  print List contains element : $element
+
+forend
+
+quit
