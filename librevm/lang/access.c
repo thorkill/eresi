@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.24 2007-08-03 18:05:03 may Exp $
+ * $Id: access.c,v 1.25 2007-08-04 04:00:45 may Exp $
  *
  */
 #include "revm.h"
@@ -17,7 +17,7 @@ void		*revm_get_raw(void *addr)
   elfshsect_t	*sect;
   elfsh_SAddr	offset;
 #if defined(KERNSH)
-  void *dataptr;
+  void		*dataptr;
 #endif
 
   sect = elfsh_get_parent_section(world.curjob->current, 
@@ -25,7 +25,7 @@ void		*revm_get_raw(void *addr)
 
 #if defined(KERNSH)
   dataptr = kernsh_revm_get_raw(addr);
-  if(dataptr != NULL)
+  if (dataptr != NULL)
     return dataptr;
 #endif
 
@@ -156,7 +156,8 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field,
  * @brief Recursive function to lookup data from its type path 
  */
 static aspectype_t	*revm_field_get(aspectype_t *type, char *param, 
-				      void **data)
+					void **data, char translateaddr)
+					
 {
   char			*str;
   char			*next;
@@ -191,10 +192,11 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
   if (child->isptr)
     {
       *data = (void *) *(elfsh_Addr *) *data;
-      *data = revm_get_raw(*data);
+      if (translateaddr)
+	*data = revm_get_raw(*data);
     }
 
-  child = revm_field_get(child, next, data);
+  child = revm_field_get(child, next, data, translateaddr);
   if (!child)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested field", NULL);
@@ -207,7 +209,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 /** 
  * @brief Create the REVM object that is to be returned 
  */
-revmobj_t	*revm_object_create(aspectype_t *type, void *data)
+revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
 {
   revmobj_t	*path;
 
@@ -221,7 +223,8 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data)
   if (type->type == ASPECT_TYPE_STR || type->isptr)
     {
       data = (void *) *(elfsh_Addr *) data;
-      data = revm_get_raw(data);
+      if (translateaddr)
+	data = revm_get_raw(data);
     }
 
   /* Fill type specific object handlers */
@@ -267,14 +270,13 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data)
 }
 
 
-
-
 /**
  * @brief Lookup _for real_ the path of a complex typed object 
  */
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, 
 					 char	     *objname, 
-					 char	     *objpath)
+					 char	     *objpath,
+					 char	     translateaddr)
 {
   revmannot_t	*var;
   void		*data;
@@ -299,20 +301,21 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
   data = (void *) var->addr;
-  data = revm_get_raw(data);
+  if (translateaddr)
+    data = revm_get_raw(data);
 
   /* Get recursively the leaf type and data pointer */
   /* If the objpath is empty, its a scalar that was requested */
   if (objpath && *objpath)
     {
-      type = revm_field_get(type, objpath, (void **) &data);
+      type = revm_field_get(type, objpath, (void **) &data, translateaddr);
       if (!type)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to lookup object", NULL);
     }
 
   /* Create and return the object describing the field */
-  path = revm_object_create(type, data);
+  path = revm_object_create(type, data, translateaddr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
@@ -352,7 +355,7 @@ revmobj_t	*revm_object_lookup(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type", NULL);
 
-  path = revm_object_lookup_real(type, objectname, str);
+  path = revm_object_lookup_real(type, objectname, str, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 

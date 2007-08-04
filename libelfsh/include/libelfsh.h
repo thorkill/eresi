@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.75 2007-08-03 18:05:03 may Exp $
+** $Id: libelfsh.h,v 1.76 2007-08-04 04:00:45 may Exp $
 **
 */
 
@@ -55,7 +55,7 @@
 #define		__DEBUG_MAP__		       0
 #define		__DEBUG_SECTS__		       0
 #define		__DEBUG_SORT__		       0	
-#define		__DEBUG_RELADD__	       1
+#define		__DEBUG_RELADD__	       0
 #define		__DEBUG_COPYPLT__	       0
 #define		__DEBUG_BSS__		       0
 #define		__DEBUG_REDIR__		       0

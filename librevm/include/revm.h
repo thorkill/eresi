@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.82 2007-08-03 18:05:03 may Exp $
+** $Id: revm.h,v 1.83 2007-08-04 04:00:45 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -580,6 +580,7 @@ typedef struct        s_world
 extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
+extern hash_t		instrlists_hash; /* Tables of expression lists */
 extern hash_t		cmd_hash;	 /* commands handlers */
 extern hash_t		parser_hash;	 /* parsers handlers */
 extern hash_t		file_hash;	 /* elfshobj_t pointers */
@@ -1016,9 +1017,11 @@ int		revm_type_hashcreate(char *name);
 
 /* Data access related functions */
 aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
-revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath);
+revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath, char trans);
 revmobj_t	*revm_object_lookup(char *str);
-revmobj_t	*revm_object_create(aspectype_t *type, void *data);
+revmobj_t	*revm_object_create(aspectype_t *type, void *data, char transaddr);
+
+/* Generic handlers for data accesses */
 char		*revm_generic_getname(void *type, void *data);
 int		revm_generic_setname(void *type, void *data, void *newdata);
 elfsh_Addr	revm_generic_getobj(void *data);
@@ -1093,11 +1096,12 @@ int		revm_edfmt_parse(elfshobj_t *file);
 int		revm_edfmt_uni_print(elfshobj_t *file);
 
 /* Inform related functions */
-int		revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
-int		revm_inform_type_addr(char *t, char *n, elfsh_Addr a, revmexpr_t *, u_char p, u_char r);
+revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
+revmexpr_t	*revm_inform_type_addr(char *t, char *n, elfsh_Addr a, revmexpr_t *, u_char p, u_char r);
 int		revm_check_addr(elfshobj_t *obj, elfsh_Addr add);
 
 /* Expression related functions */
+revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value);
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
 revmexpr_t	*revm_expr_get(char *pathname);
 int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid);
@@ -1108,6 +1112,9 @@ int		revm_expr_match_by_name(char *original, char *candidate);
 int		revm_expr_compare_by_name(char *original, char *candidate);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
+
+/* Containers related */
+mjrcontainer_t		*revm_exprcontainer_create(revmexpr_t *expr);
 
 
 /* May not be defined */

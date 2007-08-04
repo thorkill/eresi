@@ -1,18 +1,16 @@
 /*
-* @file expressions.c
-*
-* Implementation of scripting declarations for meta-language variables
-*
-* Started on Jun 23 2007 23:39:51 jfv
-* $Id: expressions.c,v 1.10 2007-08-03 11:51:00 heroine Exp $
+** expressions.c for librevm in ERESI
+**
+** Implementation of scripting declarations for meta-language variables
+**
+** Started on Jun 23 2007 23:39:51 jfv
+** $Id: expressions.c,v 1.11 2007-08-04 04:00:45 may Exp $
 */
 #include "revm.h"
 
 
 
-/** 
- * Read the requested type for an expression 
- */
+/* Read the requested type for an expression */
 aspectype_t	*revm_exprtype_get(char *exprvalue)
 {
   aspectype_t	*type;
@@ -288,7 +286,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 	  /* Lookup scalar value and assign it to the field */
 	  newexpr->value = revm_object_lookup_real(curtype, recpath + 1, 
-						   childtype->fieldname);
+						   childtype->fieldname, 0);
 	  curdata  = revm_lookup_immed(newexpr->strval);
 	  if (!newexpr->value || !curdata)
 	    {
@@ -694,5 +692,30 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
   revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0); 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+}
+
+
+/* Simply create an expression from an revmobj_t */
+revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value)
+{
+  revmexpr_t	*expr;
+  revmobj_t	*obj;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, expr, sizeof(revmexpr_t), NULL);
+  if (value)
+    obj = revm_lookup_immed(value);
+  else
+    obj = revm_object_lookup_real(datatype, name + 1, NULL, 0);
+  if (!obj)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to create REVMEXPR", NULL);
+  expr->typeid = datatype->type;
+  expr->strval = value;
+  expr->value  = obj;
+  expr->label  = name;
+  hash_add(&exprs_hash    , (char *) aproxy_strdup(name + 1), (void *) expr);
+  hash_add(&exprtypes_hash, (char *) aproxy_strdup(name + 1), (void *) datatype);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

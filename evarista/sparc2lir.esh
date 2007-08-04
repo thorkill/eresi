@@ -31,9 +31,10 @@ load /bin/ls
 reflect main
 set $curblock $_
 set $curaddr $curblock.vaddr
+set $curlist $instrlists[$curaddr]
 
 # We now iterate over the content of that list
-foreach $instr of 1.instrlist[$curblock]
+foreach $instr of $curlist
 
 # Start the transformation
 rewrite $instr into
