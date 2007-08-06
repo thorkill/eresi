@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.83 2007-08-04 04:00:45 may Exp $
+** $Id: revm.h,v 1.84 2007-08-06 15:40:39 pouik Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -53,10 +53,6 @@
 
 #if defined(__FreeBSD__)
   extern char **environ;
-#endif
-
-#if defined(KERNSH)
-#include "libkernsh.h"
 #endif
 
 /* Thanks to sk from Devhell Labs we have a libasm */
@@ -390,6 +386,9 @@ extern asm_processor	proc;
 
 /* config commands */
 #define CMD_CONFIGURE		"configure"
+
+#define	CMD_RSHT		"rsht"
+#define	CMD_RPHT		"rpht"
 
 /* config strings */
 #define ELFSH_VMCONFIG_ONLOAD_RCONTROL	"onload.restore_control"

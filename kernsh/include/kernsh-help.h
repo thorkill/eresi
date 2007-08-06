@@ -1,7 +1,7 @@
 /*
 ** kernsh-help.h for kernsh
 **
-** $Id: kernsh-help.h,v 1.2 2007-08-01 18:38:31 pouik Exp $
+** $Id: kernsh-help.h,v 1.3 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #ifndef __KERNSH_HELP_H_
@@ -15,5 +15,6 @@
 #define HLP_IDT			"display the idt"
 #define HLP_GDT			"display the gdt"
 #define HLP_MEM			"manipulate memory device"
+#define HLP_AUTOTYPES		"autotypes"
 
 #endif

@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.7 2007-08-01 18:38:31 pouik Exp $
+** $Id: kernsh.c,v 1.8 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -29,6 +29,11 @@ int kernsh_init_i386(char *os, char *release)
 		  (void *) 0);
 
   config_add_item(LIBKERNSH_VMCONFIG_USE_KERNEL,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 0);
+
+  config_add_item(LIBKERNSH_VMCONFIG_ALLOC,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
@@ -185,6 +190,8 @@ int kernsh_set_mem_mode()
 
   libkernshworld.mem= LIBKERNSH_MEM_MODE;
 
+  elfsh_set_debug_mode();
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -200,7 +207,10 @@ int kernsh_set_static_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  
   libkernshworld.mem= LIBKERNSH_STATIC_MODE;
+
+  elfsh_set_static_mode();
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -221,19 +231,31 @@ void *kernsh_elfsh_get_raw(elfshsect_t *sect)
       /* We use physical memory ? */
       if (libkernshworld.physical)
 	{
-	  sect->parent->rhdr.base = 
-	    libkernshworld.kernel_start - sect->shdr->sh_addr;
 #if __DEBUG_KERNSH__
-	  printf("RHDR BASE 0x%lx KERNEL_START 0x%lx SH_ADDR 0x%lx\n",
+	  printf("PTR 0x%lx RHDR BASE 0x%lx KERNEL_START 0x%lx SH_ADDR 0x%lx DATA 0x%lx 0x%lx\n",
+		 (unsigned long) libkernshworld.ptr,
 		 (unsigned long) sect->parent->rhdr.base, 
 		 (unsigned long) libkernshworld.kernel_start,
-		 (unsigned long) sect->shdr->sh_addr);
+		 (unsigned long) sect->shdr->sh_addr,
+		 (unsigned long) sect->data,
+		 (unsigned long) sect->phdr);
 #endif  
+	
+	  dataptr = libkernshworld.ptr;
+	  
+	  if(elfsh_section_is_runtime(sect))
+	    {
+	      sect->parent->rhdr.base = 0;
+	      dataptr += sect->shdr->sh_addr - libkernshworld.kernel_start;
+	    }
+	  else
+	    {
+	      sect->parent->rhdr.base = 
+		libkernshworld.kernel_start - sect->shdr->sh_addr;
+	    }
+	
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
 	}
-
-      dataptr = libkernshworld.ptr;
-      
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
   else
     {

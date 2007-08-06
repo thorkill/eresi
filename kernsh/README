@@ -1,28 +1,38 @@
-			]=------ kernsh ------=[
+                        	]=------ kernsh ------=[
 
 
 Kernsh uses Libkernsh which is a library to play with kernel image in real 
 time or on disk.
 
 You can obtain all information necessary about kernel(syscalls, idt, gdt, 
-symbols, ...), insert module inside the memory. hijack functions, etc
+symbols, ...), insert module inside the memory, hijack functions, etc
 
 You can profite of eresi's language to define you own structure and 
 communicate with the kernel.
 
 Features :
-	-
-	-
-	-
-	-
+	- Support Linux 2.X /dev/(k)mem
+	- Read/Write anywhere in the kernel, direcly with eresi's language
+	- Dismantling kernel memory with libasm
+	- Alloc/Free kernel memory (contiguous and non contiguous)
+	- ET_REL injection in kernel memory
+	- 
 	-
 	-
 
 
-Depends : libasm, librevm, libaspect, libmjollnir, libelfsh
+Depends libkernsh : libaspect, libelfsh
+Depends kernsh : librevm, libaspect
+
+
+[+] Installation
+
+
+Compile Eresi with --enable-kernsh during configure. "make" and "make install".
 
 
 By default, Libkernsh do the following action :
+	- Load ~/.kernshrc
 	- If libkernsh.without_kernel is set to 0
 		- If libkernsh.use_kernel is set to 1 :
 			- Open libkernsh.storagepath + libkernsh.kernelelf
@@ -32,8 +42,9 @@ By default, Libkernsh do the following action :
 			- Extract/Gunzip it
 			- Open the final kernel
 
-	- Open memory device in libkernsh.device with mode libkernsh.mode and mmap it if 
-	  libkernsh.mmap is set to 1 (with a size of libkernsh.mmap_size)
+	- Open memory device in libkernsh.device with mode libkernsh.mode 
+		and mmap it if libkernsh.mmap is set to 1 (with a size of 
+		libkernsh.mmap_size). Mmap is necessary to use all features.
 
 	- Have fun !
 
@@ -42,75 +53,22 @@ You can define all the libkernsh.*, see section Options below.
 
 [+] Portability :
 
- -------------------------------------------------------------------------
+ -------------------------------------------------------------
 |   \  ARCH   |  IA32  |  SPARC  | SPARC64 |  MIPS  |  ALPHA  |
 | OS \        |        |         |         |        |         |
- -------------------------------------------------------------------------
-|  LINUX 2.4  |        |         |         |        |         |
+ -------------------------------------------------------------
+|  LINUX 2.4  |  DONE  |   UT    |   UT    |   UT   |   UT    |
 |             |        |         |         |        |         |
- -------------------------------------------------------------------------
-|  LINUX 2.6  |        |         |         |        |         |
+ -------------------------------------------------------------
+|  LINUX 2.6  |  DONE  |   UT    |   UT    |   UT   |   UT    |
 |             |        |         |         |        |         |
- -------------------------------------------------------------------------
-|    NETBSD   |        |         |         |        |         |
+ -------------------------------------------------------------
+|    NETBSD   |  WIP   |         |         |        |         |
 |             |        |         |         |        |         |
- -------------------------------------------------------------------------
-|   FREEBSD   |        |         |         |        |         |
+ -------------------------------------------------------------
+|   FREEBSD   |  WIP   |         |         |        |         |
 |             |        |         |         |        |         |
- -------------------------------------------------------------------------
-
-
-[+] Details :
-
- -------------------------------------------------------------------------
-|   \  FEAT   | MEMORY | KERNEL  |  SYMBS  |        |
-| OS \        |        |         |         |        |
- -------------------------------------------------------------------------
-|  LINUX 2.4  |  WIP   |         |         |        |
-|    IA32     |        |         |         |        |
- -------------------------------------------------------------------------
-|  LINUX 2.4  |  WIP   |         |         |        |
-|    SPARC    |        |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.4  |  WIP   |         |         |        |
-|   SPARC64   |        |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.4  |  WIP   |         |         |        |
-|    MIPS     |        |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.4  |  WIP   |         |         |        |
-|    ALPHA    |        |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.6  |  DONE  |         |         |        |
-|    IA32     |        |         |         |        |
- -------------------------------------------------------------------------
-|  LINUX 2.6  |        |         |         |        |
-|    SPARC    |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.6  |        |         |         |        |
-|   SPARC64   |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.6  |        |         |         |        |
-|    MIPS     |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|  LINUX 2.6  |        |         |         |        |
-|    ALPHA    |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|   NETBSD    |  DONE  |         |         |        |
-|    IA32     |        |         |         |        |
- -------------------------------------------------------------------------
-|   NETBSD    |        |         |         |        |
-|    SPARC    |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|   NETBSD    |        |         |         |        |
-|   SPARC64   |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|   NETBSD    |        |         |         |        |
-|    MIPS     |   UT   |         |         |        |
- ------------------------------------------------------------------------
-|   NETBSD    |        |         |         |        |
-|    ALPHA    |   UT   |         |         |        |
- ------------------------------------------------------------------------
+ -------------------------------------------------------------
 
 
 [ 
@@ -140,33 +98,38 @@ You can define all the libkernsh.*, see section Options below.
 		options :
 
 	- sct :
-		func :
-		args :
-		return :
-		options :
+		func :		display syscall table
+		args :		no
+		return :	no
+		options :	no
 
 	- idt :
-		func :		
-		args :
-		return :
-		options :
+		func :		display the idt
+		args :		no
+		return :	no
+		options :	no
+
+	- gdt :
+		func :		display the gdt
+		args :		no
+		return :	no
+		options :	no
 
 	- mem :
 		func :
 		args : alloc, free, alloc_nc, free_nc
-			alloc : alloc contiguous memory
-				args : size
-			free : free contiguous memory
-				args : addr to free
-			alloc_nc : alloc non contiguous memory
-				args : size
-			free_nc : free non contiguous memory
-				args : addr to free
-			symb : get an address of a symbol
-				args : symbol's name
+			alloc		: alloc contiguous memory
+				args	: size
+			free		: free contiguous memory
+				args	: addr to free
+			alloc_nc	: alloc non contiguous memory
+				args	: size
+			free_nc		: free non contiguous memory
+				args	: addr to free
+			sym		: get an address of a symbol
+				args	: symbol's name
 		return : variable $_ is set with the return address or
-			 the return value 
-		options :
+			 the return value
 
 [+] Options :
 
@@ -225,7 +188,8 @@ An option can be set directly in the shell or in the .kernshrc :
 		- vmlinux (D) (L)
 		- [S*]
 
-	- libkernsh.storagepath : A path to store kernel and to open debug kernel
+	- libkernsh.storagepath : A path to store kernel and to 
+				  open debug kernel
 		- /tmp/ (D)
 		- [S*]
 
@@ -233,7 +197,8 @@ An option can be set directly in the shell or in the .kernshrc :
 		- 320 (D) (L)
 		- [I*]
 
-	- libkernsh.nilsyscalls : A position inside the syscall table of a free syscall
+	- libkernsh.nilsyscalls : A position inside the syscall table 
+				  of a free syscall
 		- 17 (D) (L)
 		- [I*]	
 
@@ -252,6 +217,15 @@ An option can be set directly in the shell or in the .kernshrc :
 	- libkernsh.kernel_end : address of kernel end
 		- 0xc1000000 (D) (L)
 		- [L*]
+
+	- libkernsh.alloc : alloc/free contiguous memory(0) 
+			    or non contiguous(1) 
+		- 0 (D)
+		- 1
+[+] Examples
+
+
+
 
 [+] Authors 
 

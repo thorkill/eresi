@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.4 2007-07-31 23:30:35 may Exp $
+** $Id: main.c,v 1.5 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -94,24 +94,38 @@ void		kernsh_banner_print()
 	   "\t .::. This software is under the General Public License V.2 \n"
 	   "\t .::. Please visit http://www.gnu.org \n\n");
   revm_output(logbuf);
+
+  memset(logbuf, '\0', sizeof(logbuf));
+  snprintf(logbuf, 
+	   sizeof(logbuf),
+	   "\t%s\n \t%s\n \t%s\n \t%s\n \t%s\n \t%s\n\n",
+	   revm_colorget("%s", "psname","    __                             ___"),
+	   revm_colorget("%s", "psname","   /  \\ /\\ ____ ____  ____  ____  /   /"),
+	   revm_colorget("%s", "pversion","   \\   /  /   _\\    \\/    \\/  __\\/   /_ "),
+	   revm_colorget("%s", "pversion","   /   \\  \\ ___/  \\_/   \\  \\__   \\  \\  \\"),
+	   revm_colorget("%s", "pedition","   \\__\\   /___ \\__/ /___/  /\\__  /__/  /"),
+	   revm_colorget("%s", "pedition","        \\/    \\/         \\/    \\/    \\/"));
+  revm_output(logbuf);
+
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* The real main function */
 int		kernsh_main(int ac, char **av)
 {
-  int ret;
+  int		ret;
+
   /* Interface tweak */
   kernsh_setup_quit_msg();
   kernsh_setup_prompt();
   
   revm_setup(ac, av, 0, 0);
 
-  if (world.state.revm_mode != REVM_STATE_CMDLINE)
-    kernsh_banner_print(av[1]);
-
   revm_config();
   setup_local_cmdhash();
+
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
+    kernsh_banner_print(av[1]);
   
   if (strstr(ARCH, "i"))
     ret = kernsh_init_i386(OS, RELEASE);

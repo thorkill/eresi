@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.6 2007-08-01 18:38:31 pouik Exp $
+** $Id: vectors.c,v 1.7 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -130,16 +130,16 @@ int kernsh_loadkernel_default()
 	     "loadkernel default !", -1);
 }
 
-int kernsh_autovariables_default()
+int kernsh_autotypes_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_KERNEL__
-  printf("AUTOVARIABLES DEFAULT!!!\n");
+  printf("AUTOTYPES DEFAULT!!!\n");
 #endif
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "autovariables default !", -1);
+	       "autotypes default !", -1);
 }
 
 int kernsh_symbs_default()
@@ -398,6 +398,25 @@ int kernsh_init_vectors()
 			 kernsh_free_noncontiguous_default,
 			 dims, strdims, 1, ASPECT_TYPE_CADDR);
 
+  /* autotypes ARCH, OS, DEVICE */
+#if __DEBUG_KERNSH__
+  printf("INIT AUTOTYPES VECTORS\n");
+#endif
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
+
+  dims[0]    = LIBKERNSH_ARCHNUM;
+  dims[1]    = LIBKERNSH_OSNUM;
+
+  strdims[0] = "ARCHTYPE";
+  strdims[1] = "OSTYPE";
+
+  /* Register memory default vectors */
+  aspect_register_vector("autotypes", 
+                         kernsh_autotypes_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -545,6 +564,10 @@ int kernsh_register_vectors()
 				     kernsh_free_noncontiguous_linux);
   kernsh_register_free_noncontiguous(LIBKERNSH_OS_LINUX_2_4, 
 				     kernsh_free_noncontiguous_linux);
+
+  kernsh_register_autotypes(LIBKERNSH_ARCH_I386, 
+			    LIBKERNSH_OS_LINUX_2_6,
+	      		    kernsh_autotypes_linux_2_6);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -908,6 +931,28 @@ int kernsh_register_free_noncontiguous(u_int ostype, void *fct)
 #endif
 
   aspect_vectors_insert(alloc, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_autotypes(u_int archtype, u_int ostype, void *fct)
+{
+  vector_t *autotypes;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  autotypes = aspect_vector_get("autotypes");
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = archtype;
+  dim[1] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER AUTOTYPES\n");
+#endif
+
+  aspect_vectors_insert(autotypes, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

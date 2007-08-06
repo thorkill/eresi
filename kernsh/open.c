@@ -1,7 +1,7 @@
 /*
 ** open.c for kernsh
 ** 
-** $Id: open.c,v 1.3 2007-07-31 14:41:32 pouik Exp $
+** $Id: open.c,v 1.4 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -43,6 +43,14 @@ int		cmd_openmem()
     
       libkernshworld.root = revm_lookup_file(buff);
       
+      /*elfsh_Shdr toto = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 0xc0000000, 0, 1073741823, 0, 0, 0, 0);
+      elfshsect_t     *new = elfsh_create_section("totosec");
+      
+      ret = elfsh_insert_runtime_shdr(libkernshworld.root, toto, libkernshworld.root->rhdr.rshtnbr, new->name, 1);
+      
+      ret = elfsh_add_runtime_section(libkernshworld.root, new, 1,libkernshworld.ptr);
+      */
+
       libkernshworld.open_static = 1;
     }
   else 

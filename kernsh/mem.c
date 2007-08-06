@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.4 2007-08-01 18:38:31 pouik Exp $
+** $Id: mem.c,v 1.5 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -302,7 +302,7 @@ int		cmd_mem()
 	  revm_output(buff);
 	  revm_setvar_int("_", 0);
 	}
-      else if (param2 && !strcmp(param, "symb"))
+      else if (param2 && !strcmp(param, "sym"))
 	{
 	  if(kernsh_get_addr_by_name(param2, &addr, strlen(param2)))
 	    {

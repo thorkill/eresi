@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.7 2007-08-01 18:38:31 pouik Exp $
+** $Id: libkernsh.h,v 1.8 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -89,6 +89,7 @@ enum
 #define LIBKERNSH_VMCONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
 #define LIBKERNSH_VMCONFIG_KERNEL_START		"libkernsh.kernel_start"
 #define LIBKERNSH_VMCONFIG_KERNEL_END		"libkernsh.kernel_end"
+#define LIBKERNSH_VMCONFIG_ALLOC		"libkernsh.alloc"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -191,6 +192,14 @@ typedef struct s_libkernshsgdt
 	unsigned long fin;
 } libkernshsgdt_t;
 
+typedef struct s_autotask
+{
+	int offset_name;
+        int offset_list;
+	int offset_next;
+	int offset_pid;
+	int offset_uid;
+} autotask_t;
 /* World kernsh struct */
 typedef struct s_libkernshworld
 {
@@ -275,6 +284,7 @@ int	kernsh_register_alloc_contiguous(u_int, void *);
 int	kernsh_register_alloc_noncontiguous(u_int, void *);
 int	kernsh_register_free_contiguous(u_int, void *);
 int	kernsh_register_free_noncontiguous(u_int, void *);
+int	kernsh_register_autotypes(u_int, u_int, void *);
 
 /* Memory */
 int	kernsh_openmem();
@@ -341,6 +351,9 @@ int	kernsh_get_kernel_syms(char *, unsigned long *, size_t);
 
 
 /* Alloc-Free */
+int	kernsh_alloc(size_t, unsigned long *);
+int	kernsh_free(unsigned long);
+
 int	kernsh_alloc_contiguous(size_t, unsigned long *);
 int	kernsh_free_contiguous(unsigned long);
 int	kernsh_alloc_noncontiguous(size_t, unsigned long *);
@@ -351,9 +364,22 @@ int	kernsh_free_contiguous_linux(unsigned long);
 int	kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
 int	kernsh_free_noncontiguous_linux(unsigned long);
 
-
 /* Hijack */
 
+
+/* Auto Types */
+
+
+int kernsh_autotypes();
+int kernsh_autotypes_linux_2_6();
+int kernsh_autotypes_linux_2_4();
+int kernsh_autotypes_netbsd();
+int kernsh_autotypes_freebsd();
+
+int kernsh_autotask_linux_2_6();
+int kernsh_autotask_linux_2_4();
+int kernsh_autotask_netbsd();
+int kernsh_autotask_freebsd();
 
 /* Kernel Decompression */
 int	kernsh_decompkernel();

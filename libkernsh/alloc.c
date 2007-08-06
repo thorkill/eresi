@@ -1,12 +1,48 @@
 /*
 ** alloc.c for libkernsh : allocation contiguous/non contiguous
 **
-** $Id: alloc.c,v 1.3 2007-07-31 12:31:54 pouik Exp $
+** $Id: alloc.c,v 1.4 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "libkernsh.h"
 #include "libkernsh-symbols.h"
 #include "libkernsh-info.h"
+
+/* Auto alloc with libkernsh.alloc => 0 : contiguous
+				   => 1 : non contiguous
+*/
+int kernsh_alloc(size_t size, unsigned long *addr)
+{
+  int mode, ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  mode = (int) config_get_data(LIBKERNSH_VMCONFIG_ALLOC);
+  if (mode == 0)
+    ret = kernsh_alloc_contiguous(size, addr);
+  else
+    ret = kernsh_alloc_noncontiguous(size, addr);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/* Auto free with libkernsh.alloc => 0 : contiguous
+				  => 1 : non contiguous
+*/
+int kernsh_free(unsigned long addr)
+{
+  int mode, ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  mode = (int) config_get_data(LIBKERNSH_VMCONFIG_ALLOC);
+  if (mode == 0)
+    ret = kernsh_free_contiguous(addr);
+  else
+    ret = kernsh_free_noncontiguous(addr);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
 
 /* Alloc contiguous memory */
 int kernsh_alloc_contiguous(size_t size, unsigned long *addr)

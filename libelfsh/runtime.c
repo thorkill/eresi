@@ -9,7 +9,7 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id: runtime.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
+** $Id: runtime.c,v 1.7 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -51,6 +51,20 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
   printf("[DEBUG_RUNTIME] MMAP: " XFMT " of %d bytes \n", segment->p_vaddr, segment->p_memsz);
 #endif
 
+#if defined(KERNSH)
+
+  if (kernsh_is_mem_mode())
+    {
+      if(kernsh_alloc(segment->p_memsz, &addr) == -1)
+	{
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot alloc memory", -1);
+	}
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
+    }
+
+#endif
 
 #if defined(IRIX)
 {
@@ -157,6 +171,15 @@ int		elfsh_munprotect(elfshobj_t *file,
   int		prot;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+#if defined(KERNSH)
+
+  if (kernsh_is_mem_mode())
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+#endif
+
   if (!elfsh_is_debug_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
@@ -197,6 +220,14 @@ int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
   int		retval;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+#if defined(KERNSH)
+  
+  if (kernsh_is_mem_mode())
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+#endif
   if (!elfsh_is_debug_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 

@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.3 2007-08-01 18:38:31 pouik Exp $
+** $Id: kernsh.h,v 1.4 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__
@@ -9,6 +9,7 @@
 
 /* User defined configuration */
 #include "revm.h"
+#include "revm-help.h"
 
 /* Help strings */
 #include "kernsh-help.h"
@@ -28,6 +29,7 @@
 #define CMD_IDT			"idt"
 #define CMD_GDT			"gdt"
 #define CMD_MEM			"mem"
+#define CMD_AUTOTYPES		"autotypes"
 
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
@@ -37,6 +39,7 @@ int     cmd_sct();
 int	cmd_idt();
 int	cmd_gdt();
 int	cmd_mem();
+int	cmd_autotypes();
 
 int	kernsh_config();
 

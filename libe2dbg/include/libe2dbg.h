@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.26 2007-07-31 03:28:46 may Exp $
+** $Id: libe2dbg.h,v 1.27 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -116,8 +116,6 @@
 #define		CMD_RUN			"run"
 #define		CMD_DISPLAY		"display"
 #define		CMD_UNDISPLAY		"undisplay"
-#define		CMD_RSHT		"rsht"
-#define		CMD_RPHT		"rpht"
 #define		CMD_THREADS		"threads"
 
 

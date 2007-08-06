@@ -7,7 +7,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id: inject.c,v 1.13 2007-06-27 11:25:12 heroine Exp $
+** $Id: inject.c,v 1.14 2007-08-06 15:40:39 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -570,9 +570,19 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   printf("[DEBUG_RUNTIME] Writing data (%p) in memory at addr %08X (pid = %hu) \n", 
 	 data, phdr.p_vaddr, getpid());
 #endif
-  
 
+#if defined(KERNSH)
+  if(kernsh_is_mem_mode())
+    {
+      kernsh_writemem(phdr.p_vaddr, data, rsize);
+    }
+  else
+    {
+      memcpy((void *) phdr.p_vaddr, data, rsize);
+    }
+#else
   memcpy((void *) phdr.p_vaddr, data, rsize);
+#endif
 
   /* Modify some ondisk information */
   phdr.p_paddr  = phdr.p_vaddr;
