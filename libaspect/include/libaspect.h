@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.33 2007-08-03 11:50:59 heroine Exp $
+ ** $Id: libaspect.h,v 1.34 2007-08-07 07:13:27 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -182,6 +182,27 @@ typedef struct	s_vector
 
 
 /**
+ * @brief Structure to define a generic container 
+ */
+typedef struct	s_container	
+{
+  unsigned int 	id;	  	  /* !< @brief unique id of this container */
+  void		*data;		  /* !< @brief points to the desired object */
+  u_int		type;		  /* !< @brief Contained object type */
+  u_int		nbrinlinks;	  /* !< @brief Number of -ondisk- input links */
+  u_int		nbroutlinks;	  /* !< @brief Number of -ondisk- output links */
+  list_t	*inlinks;	  /* !< @brief Input links for this container */
+  list_t	*outlinks;	  /* !< @brief Output links for this container */
+}		container_t;
+
+
+/**
+ * @brief Input and Output links for containers
+ */
+#define CONTAINER_LINK_IN		0
+#define CONTAINER_LINK_OUT		1
+
+/**
  * @brief Config related data types 
  */
 #define		CONFIG_HASH_SIZE	256
@@ -293,8 +314,14 @@ int		aspect_register_vector(char *, void*,
 				       char **, unsigned int, 
 				       unsigned int);
 
+/* Container related functions */
+container_t	*container_create(u_int type, void *data, list_t *in, list_t *out);
+int		container_linklists_create(container_t *container,
+					   u_int	linktype);
+
 /* Type related functions */
 char		*aspect_typename_get(u_int type);
+u_int		aspect_typesize_get(u_int type);
 int		aspect_basetypes_create();
 int		aspect_type_register_real(char *label, 
 					  aspectype_t *ntype);

@@ -5,7 +5,7 @@
  * 
  * @brief All structures of libmjollnir
  *
- * $Id: libmjollnir-objects.h,v 1.2 2007-08-03 11:50:59 heroine Exp $
+ * $Id: libmjollnir-objects.h,v 1.3 2007-08-07 07:13:27 may Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -40,6 +40,34 @@ typedef struct	s_function
   mjrblock_t	*first;		/* !< @brief First function block */
   char		md5[34];	/* !< @brief MD5 Checksum */
 }		mjrfunc_t;
+
+
+/*
+ * struct s_link is to reference links between functions or blocks
+ * field type may help us to analyse blocks to build higher
+ * logical structures. It contains :
+ *
+ * - a type field specifying which kind of link this is
+ * - an id field to reference the destination container of this link
+ * - a pointer to the next link in this list of links
+ */
+
+/* XXX: the type field has to be changed for a real eresi type id if 
+   we hope to do any shape analysis in ERESI */
+typedef	struct	s_link 
+{
+#define MJR_LINK_FUNC_CALL		0 /* !< @brief a call between functions	*/
+#define MJR_LINK_FUNC_RET		1 /* !< @brief a function returning control */
+#define MJR_LINK_BLOCK_COND_TRUE	2 /* !< @brief 'true' condition of a branch */
+#define MJR_LINK_BLOCK_COND_FALSE	3 /* !< @brief 'false' condition of a branch */
+#define MJR_LINK_BLOCK_COND_ALWAYS	4 /* !< @brief uncoditional branch */
+#define MJR_LINK_TYPE_DELAY		5 /* !< @brief generally ignored but useful */
+#define	MJR_LINK_UNKNOWN		6 /* !< @brief unknown type */
+  unsigned int	id;
+  int		type;
+}		mjrlink_t;
+
+
  
 /** 
  * @brief An history entry 
@@ -57,9 +85,9 @@ typedef struct		_mjrContext
 {
   elfshobj_t		*obj;			/* !< @brief ELF binary object */
   asm_processor		proc;			/* !< @brief ASM processor */
-  mjrcontainer_t	*curblock;		/* !< @brief Current working block */
-  mjrcontainer_t	*curfunc;		/* !< @brief Current working function */
-  mjrcontainer_t	**reg_containers;	/* !< @brief Registered containers */
+  container_t	*curblock;		/* !< @brief Current working block */
+  container_t	*curfunc;		/* !< @brief Current working function */
+  container_t	**reg_containers;	/* !< @brief Registered containers */
   btree_t		*block_btree;		/* !< @brief Blocks Binary tree (speedup parent search) */
   u_int			cntnrs_size;		/* !< @brief Size of current containers */
   u_int			next_id;		/* !< @brief Next free container id */

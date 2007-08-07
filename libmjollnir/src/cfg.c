@@ -6,7 +6,7 @@
 ** 
 ** @brief Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
+** $Id: cfg.c,v 1.7 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -36,7 +36,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 					  elfsh_Addr	curvaddr)
 {
   int			ilen;
-  mjrcontainer_t	*fun;
+  container_t	*fun;
   elfsh_Addr		dstaddr;
   u_int			addend;
 
@@ -344,7 +344,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
   u_int			tmpaddr;
-  mjrcontainer_t	*fun;
+  container_t	*fun;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

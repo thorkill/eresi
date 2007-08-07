@@ -15,6 +15,6 @@ int asm_sparc_op_fetch_sethi(asm_operand *operand, u_char *opcode,
                    				   int otype, asm_instr *ins)
 {
   operand->content = ASM_SP_OTYPE_SETHI;
-
+  operand->type    = ASM_OPTYPE_IMM;
   return (0);
 }

@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.11 2007-08-04 04:00:45 may Exp $
+** $Id: expressions.c,v 1.12 2007-08-07 07:13:27 may Exp $
 */
 #include "revm.h"
 
@@ -556,9 +556,10 @@ revmexpr_t	*revm_expr_get(char *pathname)
   expr = hash_get(&exprs_hash, pathname + 1);
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unknown expression name", NULL);
+		 "Invalid expression name", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
+
 
 /* Set an expression to the value of another (only if compatible) */
 int		revm_expr_set_by_name(char *dest, char *source)

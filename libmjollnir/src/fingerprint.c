@@ -5,7 +5,7 @@
 **
 ** Started : Mon Jan 02 01:18:14 2007 jfv
 **
-** $Id: fingerprint.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
+** $Id: fingerprint.c,v 1.16 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -14,7 +14,7 @@
 /**
  * @brief Say if a block is the start of a function or not 
  */
-int		 mjr_block_funcstart(mjrcontainer_t *cntnr) 
+int		 mjr_block_funcstart(container_t *cntnr) 
 {
   listent_t	 *cur;
   mjrlink_t	 *curlink;
@@ -60,22 +60,22 @@ int		 mjr_block_funcstart(mjrcontainer_t *cntnr)
  * @param fprint : any intrabloc fingerprinting function that you like
  */
 int		mjr_fingerprint(mjrcontext_t 	*c,
-				mjrcontainer_t	*start,
+				container_t	*start,
 				int		type,
 				int		weight,
 				int		curd, // cur depth
 				int		mind, // min depth to match
 				int		maxd, // max depth to match
-				int		(*fprint)(mjrcontainer_t *))
+				int		(*fprint)(container_t *))
 {
-  mjrcontainer_t *tmp;
+  container_t *tmp;
   list_t	*listlink;
   listent_t	*cur;
   mjrlink_t	*curlink;
 
-  if (type == MJR_LINK_OUT)
+  if (type == CONTAINER_LINK_OUT)
     listlink = start->outlinks;
-  else if (type == MJR_LINK_IN)
+  else if (type == CONTAINER_LINK_IN)
     listlink = start->inlinks;
   else
     return 0;

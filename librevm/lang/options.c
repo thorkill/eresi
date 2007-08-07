@@ -5,7 +5,7 @@
  * 
  * Started on  Fri Nov  2 15:17:02 2001 jfv
  *
- * $Id: options.c,v 1.9 2007-08-03 11:51:00 heroine Exp $
+ * $Id: options.c,v 1.10 2007-08-07 07:13:27 may Exp $
  *
  */
 #include "revm.h"
@@ -192,6 +192,8 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
   if (strcmp(argv[index + 2], CMD_PARAM_INTO))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
+
+  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getoption2(index, argc, argv));
 }

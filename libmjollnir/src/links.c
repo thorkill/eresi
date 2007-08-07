@@ -5,13 +5,13 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+ * $Id: links.c,v 1.6 2007-08-07 07:13:27 may Exp $
  */
 #include <libmjollnir.h>
 
 
 /* Some prototypes of static functions of this file */
-static mjrcontainer_t	*mjr_block_split(mjrcontext_t *,elfsh_Addr, u_int);
+static container_t	*mjr_block_split(mjrcontext_t *,elfsh_Addr, u_int);
 
 
 
@@ -28,7 +28,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 					   elfsh_Addr dst, 
 					   elfsh_Addr ret)
 {
-  mjrcontainer_t	*fun;
+  container_t	*fun;
   mjrfunc_t		*tmpfunc;
   char			*tmpstr;
   char			*md5;
@@ -63,9 +63,9 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
   if (ctxt->curfunc)
     {
       mjr_container_add_link(ctxt, fun, ctxt->curfunc->id, 
-			     MJR_LINK_FUNC_RET, MJR_LINK_IN);
+			     MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
       mjr_container_add_link(ctxt, ctxt->curfunc, fun->id, 
-			     MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+			     MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
     }
 
   // when a function start, we do a fingerprint of it
@@ -88,7 +88,7 @@ int	mjr_link_block_call(mjrcontext_t *ctxt,
 			    elfsh_Addr dst,
 			    elfsh_Addr ret)
 {
-  mjrcontainer_t	*csrc,*cdst,*cret;
+  container_t	*csrc,*cdst,*cret;
   elfshsect_t		*dstsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -119,18 +119,18 @@ int	mjr_link_block_call(mjrcontext_t *ctxt,
 		 "Could not split the ret", 0);
   
   /* link src and dst */
-  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
-  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_FUNC_CALL, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
 
   /* link dst and ret */
-  mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, MJR_LINK_OUT);
-  mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
 
-  // mjr_block_relink_cond_always(csrc,cret,MJR_LINK_OUT);
-  // mjr_block_relink_cond_always(cret,csrc,MJR_LINK_IN);
+  // mjr_block_relink_cond_always(csrc,cret,CONTAINER_LINK_OUT);
+  // mjr_block_relink_cond_always(cret,csrc,CONTAINER_LINK_IN);
 
-  mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, MJR_LINK_OUT);
-  mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, MJR_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_IN);
 
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);
@@ -150,7 +150,7 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
 			    elfsh_Addr dst,
 			    elfsh_Addr ret)
 {
-  mjrcontainer_t	*csrc,*cdst,*cret;
+  container_t	*csrc,*cdst,*cret;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -175,12 +175,12 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		   "Could not split the ret",0);
   
-  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_OUT);
-  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_IN);  
+  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, CONTAINER_LINK_IN);  
   if (cret)
     {
-      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_OUT);
-      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, CONTAINER_LINK_IN);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -196,8 +196,8 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
  * @brief Update link information when splitting a block 
  */
 static int	mjr_block_relink(mjrcontext_t *ctx,
-				 mjrcontainer_t *src,
-				 mjrcontainer_t *dst,
+				 container_t *src,
+				 container_t *dst,
 				 int direction)
 {
   list_t       *linklist;
@@ -236,11 +236,11 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
  * @param dst  destination address of wanted block
  * @param link_with link splitted blocks with specified link type
  */
-static mjrcontainer_t	*mjr_block_split(mjrcontext_t	*ctxt,
+static container_t	*mjr_block_split(mjrcontext_t	*ctxt,
 					 elfsh_Addr	dst,
 					 u_int		link_with)
 {
-  mjrcontainer_t	*tmpdst,*dstend;
+  container_t	*tmpdst,*dstend;
   mjrblock_t		*blkdst;
   int			new_size;
 
@@ -273,9 +273,9 @@ static mjrcontainer_t	*mjr_block_split(mjrcontext_t	*ctxt,
 
       if (link_with)
 	{
-	  mjr_block_relink(ctxt, tmpdst, dstend, MJR_LINK_OUT);
-	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, MJR_LINK_OUT);
-	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, MJR_LINK_IN);
+	  mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
+	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, CONTAINER_LINK_OUT);
+	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, CONTAINER_LINK_IN);
 	}
     } 
   else 

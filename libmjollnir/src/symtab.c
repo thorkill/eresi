@@ -3,7 +3,7 @@
  *
  * (C) 2006 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.19 2007-08-03 11:51:00 heroine Exp $
+ * $Id: symtab.c,v 1.20 2007-08-07 07:13:27 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -18,7 +18,7 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  int		cn;
  int		x;
  char		**tab;
- mjrcontainer_t *tmp;
+ container_t *tmp;
  mjrblock_t	*n;
  char		s[BSIZE];
 

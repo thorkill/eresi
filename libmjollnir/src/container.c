@@ -4,7 +4,7 @@
  * @file container.c
  * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.18 2007-08-04 04:00:45 may Exp $
+ * $Id: container.c,v 1.19 2007-08-07 07:13:27 may Exp $
  */
 #include "libmjollnir.h"
 
@@ -16,7 +16,7 @@ int	mjr_init_containers(mjrcontext_t *ctx)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->reg_containers, 
-	 sizeof(mjrcontainer_t*) * ctx->cntnrs_size, -1);
+	 sizeof(container_t*) * ctx->cntnrs_size, -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -30,7 +30,7 @@ int	mjr_resize_containers(mjrcontext_t *ctx, unsigned int resize)
   ctx->cntnrs_size += (resize ? resize + 1 : MJR_CNTNRS_INCREMENT);
   XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	   ctx->reg_containers, ctx->reg_containers,
-	   sizeof(mjrcontainer_t*) * ctx->cntnrs_size, -1);
+	   sizeof(container_t*) * ctx->cntnrs_size, -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -39,7 +39,7 @@ int	mjr_resize_containers(mjrcontext_t *ctx, unsigned int resize)
  * @param ctx mjollnir context
  * @param cntnr container
  */
-unsigned int mjr_register_container(mjrcontext_t *ctx, mjrcontainer_t *cntnr)
+unsigned int mjr_register_container(mjrcontext_t *ctx, container_t *cntnr)
 {
 
   /* Allocate more memory if we lack some */
@@ -66,7 +66,7 @@ unsigned int mjr_register_container(mjrcontext_t *ctx, mjrcontainer_t *cntnr)
  * Register container in context by id
  * @param ctx mjollnir context
  */
-unsigned int mjr_register_container_id(mjrcontext_t *ctx, mjrcontainer_t *cntnr)
+unsigned int mjr_register_container_id(mjrcontext_t *ctx, container_t *cntnr)
 {
 
   /* When reloading containers from on-disk, containers can be stored in any ID order, thus
@@ -106,7 +106,7 @@ void mjr_unregister_container(mjrcontext_t *ctx, unsigned int id)
  * @param ctx mjollnir context
  * @param id container id
  */
-mjrcontainer_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
+container_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
 {
   return ctx->reg_containers[id];
 }
@@ -116,7 +116,7 @@ mjrcontainer_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
  * Add a generic link (input or output) to a container
  */
 mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
-					mjrcontainer_t  *cntnr,
+					container_t	*cntnr,
 					unsigned int	id,
 					int		link_type,
 					int		link_direction)
@@ -125,7 +125,7 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
   listent_t	*listent;
   listent_t	*savednext;
   mjrlink_t	*link;
-  mjrcontainer_t *cnt;
+  container_t *cnt;
   char		linkname[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -220,71 +220,25 @@ int		match_block(void *elem, void *match)
 {
   mjrblock_t	*blk_elem, *blk_match;
 
-  blk_elem = (mjrblock_t *)((mjrcontainer_t *)elem)->data;
-  blk_match = (mjrblock_t *)((mjrcontainer_t *)match)->data;
+  blk_elem = (mjrblock_t *)((container_t *)elem)->data;
+  blk_match = (mjrblock_t *)((container_t *)match)->data;
 
   return (blk_match->vaddr - blk_elem->vaddr);
 }
 
-
-/**
- * @brief Create container lists
- */
-int			mjr_create_container_linklist(mjrcontainer_t *container,
-						      u_int	      linktype)
-{
-  char			bufname[BUFSIZ];
-  char			*prefix;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Check for prefix (XXX: change to lookup user-configured prefixes ?) */
-  switch (container->type)
-    {
-    case ASPECT_TYPE_BLOC:
-      prefix = "bloc";
-      break;
-    case ASPECT_TYPE_FUNC:
-      prefix = "func";
-      break;
-    default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unknown container type", -1);  
-    }
-  
-  /* Now really allocate the list */
-  switch (linktype)
-    {
-    case MJR_LINK_IN:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(elfsh_Addr *) container->data, "inputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), 0);
-      list_init(container->inlinks, strdup(bufname), container->type);
-      break;
-    case MJR_LINK_OUT:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(elfsh_Addr *) container->data, "outputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), 0);
-      list_init(container->outlinks, strdup(bufname), container->type);
-      break;
-    default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unknown link type", -1);  
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
 
 
 
 /**
  * @brief Creates a block container
  */
-mjrcontainer_t		*mjr_create_block_container(mjrcontext_t	*ctx,
-						    u_int		symoff,
-						    elfsh_Addr		vaddr,
-						    u_int		size)
+container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
+					    u_int		symoff,
+					    elfsh_Addr		vaddr,
+					    u_int		size)
 {
-  mjrblock_t 		*newblock;
-  mjrcontainer_t	*newcntnr;
+  mjrblock_t 	*newblock;
+  container_t	*newcntnr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -298,23 +252,16 @@ mjrcontainer_t		*mjr_create_block_container(mjrcontext_t	*ctx,
     }
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newblock, sizeof(mjrblock_t), NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newcntnr, sizeof(mjrcontainer_t), NULL);
-
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newblock, sizeof(mjrblock_t), NULL);
   newblock->symoff = symoff;
-  newblock->vaddr = vaddr;
-  newblock->size = size;
-  newcntnr->data = newblock;
-  newcntnr->type = ASPECT_TYPE_BLOC;
-  mjr_create_container_linklist(newcntnr, MJR_LINK_IN);
-  mjr_create_container_linklist(newcntnr, MJR_LINK_OUT);
+  newblock->vaddr  = vaddr;
+  newblock->size   = size;
+  newcntnr         = container_create(ASPECT_TYPE_BLOC, newblock, NULL, NULL);
 
 #if __DEBUG_CNTNR__
-  fprintf(D_DESC,"[D] %s: create block %x (%d)\n",
-	  __FUNCTION__, vaddr, size);
+  fprintf(D_DESC, "[D] %s: create block %x (%d)\n", __FUNCTION__, vaddr, size);
 #endif
+
   mjr_register_container(ctx, newcntnr);
 
   /* fill the btree */
@@ -326,33 +273,26 @@ mjrcontainer_t		*mjr_create_block_container(mjrcontext_t	*ctx,
 /**
  * Creates function container
  */
-mjrcontainer_t		*mjr_create_function_container(mjrcontext_t	*ctx,
-						       elfsh_Addr	vaddr,
-						       u_int		size,
-						       char		*name,
-						       mjrblock_t	*first,
-						       char		*md5)
+container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
+					       elfsh_Addr	vaddr,
+					       u_int		size,
+					       char		*name,
+					       mjrblock_t	*first,
+					       char		*md5)
 {
-  mjrfunc_t		*newfunction;
-  mjrcontainer_t	*newcntnr;
+  mjrfunc_t	*newfunction;
+  container_t	*newcntnr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Allocate the new container and its links lists */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newfunction, sizeof(mjrfunc_t), NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newcntnr, sizeof(mjrcontainer_t), NULL);
-  newcntnr->type     = ASPECT_TYPE_FUNC;
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newfunction, sizeof(mjrfunc_t), NULL);
   newfunction->vaddr = vaddr;
   newfunction->size  = size;
-  newcntnr->data     = newfunction;
-  mjr_create_container_linklist(newcntnr, MJR_LINK_IN);
-  mjr_create_container_linklist(newcntnr, MJR_LINK_OUT);
 
   /* Create name and md5 string for function */
   if (name)
-    strncpy(newfunction->name, (char *) name, sizeof(newfunction->name)-1);
+    strncpy(newfunction->name, (char *) name, sizeof(newfunction->name) - 1);
   else
     newfunction->name[0] = 0;  
   newfunction->first = NULL;
@@ -366,6 +306,7 @@ mjrcontainer_t		*mjr_create_function_container(mjrcontext_t	*ctx,
 	  __FUNCTION__, vaddr, name, size, md5);
 #endif
 
+  newcntnr = container_create(ASPECT_TYPE_FUNC, newfunction, NULL, NULL);
   mjr_register_container(ctx, newcntnr);  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
@@ -375,9 +316,9 @@ mjrcontainer_t		*mjr_create_function_container(mjrcontext_t	*ctx,
  * @brief This function should be used only for debug
  * It is O(n) since this api doesn't know about hashes in the mjr context
  */
-mjrcontainer_t		*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
+container_t		*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
 {
-  mjrcontainer_t	*cur;
+  container_t	*cur;
   u_int			idx;
 
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
@@ -393,7 +334,7 @@ mjrcontainer_t		*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr,
 /* Debug output help function for containers */
 void			mjr_container_dump(mjrcontext_t *ctx, int what)
 {
-  mjrcontainer_t	*cur;
+  container_t	*cur;
   mjrfunc_t		*tf;
   u_int			idx;
 
@@ -415,15 +356,15 @@ void			mjr_container_dump(mjrcontext_t *ctx, int what)
 /**
  * @brief Get the list of links for the desired direction (input or output) 
  */
-list_t		*mjr_link_get_by_direction(mjrcontainer_t *c, int dir)
+list_t		*mjr_link_get_by_direction(container_t *c, int dir)
 {
   list_t	*ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = NULL;
-  if (dir == MJR_LINK_IN)
+  if (dir == CONTAINER_LINK_IN)
     ret = c->inlinks;
-  else if (dir == MJR_LINK_OUT)
+  else if (dir == CONTAINER_LINK_OUT)
     ret = c->outlinks;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

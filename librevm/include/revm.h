@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.84 2007-08-06 15:40:39 pouik Exp $
+** $Id: revm.h,v 1.85 2007-08-07 07:13:27 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -149,6 +149,8 @@ extern asm_processor	proc;
 #define ELFSH_VERENTRY_MAX    4
 
 /* Used to store ascii description for different structures types in data.c */
+#define	ELFSH_INSTRTYPE_MAX	24
+#define	ELFSH_OPTYPE_MAX	4
 #define ELFSH_SEGTYPE_MAX	7
 #define	ELFSH_SHTYPE_MAX	16
 #define	ELFSH_OBJTYPE_MAX	5
@@ -160,7 +162,6 @@ extern asm_processor	proc;
 #define ELFSH_MIPSDYN_MAX	43
 #define	ELFSH_ARCHTYPE_MAX	56
 #define	ELFSH_EXTSEG_MAX	5
-
 #define	ELFSH_RELOC_i386_MAX	11
 #define	ELFSH_RELOC_IA64_MAX	81
 #define	ELFSH_RELOC_SPARC_MAX	55
@@ -338,9 +339,9 @@ extern asm_processor	proc;
 #define	CMD_JGE			"jge"
 #define	CMD_FOREACH		"foreach"
 #define	CMD_FOREND		"forend"
-#define	CMD_MATCH		"rewrite"
+#define	CMD_MATCH		"transform"
 #define	CMD_PARAM_INTO		"into"
-#define	CMD_MATCHEND		"endrewrite"
+#define	CMD_MATCHEND		"endtransf"
 #define	CMD_CASE		"case"
 #define	CMD_REFLECT		"reflect"
 #define	CMD_DEFAULT		"default"
@@ -551,8 +552,8 @@ typedef struct        s_job
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
   u_int		      *curlistidx;      /* Current iteration index (most-nested foreach) */
   list_t	      *itlist;		/* Current list being iterated */
-  revmexpr_t	      *matchexpr;	/* Expression to match if inside a rewrite construct */
-  char		      *matchexprname;	/* Name of matchme expression */
+  container_t	      *matchexpr;	/* Expression to match if inside a rewrite construct */
+  char		      *matchexprname;	/* Name (key) of matchme expression in list */
 }                     revmjob_t;
 
 
@@ -625,6 +626,9 @@ extern char		*(*hooks_input[REVM_IO_NUM])();
 extern int		(*hooks_output[REVM_IO_NUM])(char *buf);
 
 /* Data value/string/description arrays */
+extern revmconst_t     asm_instr_type[ELFSH_INSTRTYPE_MAX];
+extern revmconst_t     asm_operand_type[ELFSH_OPTYPE_MAX];
+
 extern revmconst_t     elfsh_extseg_type[ELFSH_EXTSEG_MAX];
 extern revmconst_t     elfsh_seg_type[ELFSH_SEGTYPE_MAX];
 extern revmconst_t     elfsh_sh_type[ELFSH_SHTYPE_MAX];
@@ -1111,10 +1115,6 @@ int		revm_expr_match_by_name(char *original, char *candidate);
 int		revm_expr_compare_by_name(char *original, char *candidate);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
-
-/* Containers related */
-mjrcontainer_t		*revm_exprcontainer_create(revmexpr_t *expr);
-
 
 /* May not be defined */
 #if __BSD__

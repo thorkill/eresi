@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_restore.c,v 1.6 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_restore.c,v 1.7 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,7 @@ asm_sparc_restore(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_OTHER;
+  ins->type = ASM_TYPE_EPILOG;
 
   ins->nb_op = 3;
   ins->op1.baser = opcode.rd;

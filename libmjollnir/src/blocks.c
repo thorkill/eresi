@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.68 2007-08-03 18:05:03 may Exp $
+** $Id: blocks.c,v 1.69 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -55,11 +55,11 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
+container_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
 						elfsh_Addr   	vaddr, 
 						int		mode)
 {
-  mjrcontainer_t	*ret;
+  container_t	*ret;
   btree_t		*retbtree;
   mjrblock_t		*tmpblock;
 
@@ -90,7 +90,7 @@ mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
     {
 
       /* Parent match */
-      ret = (mjrcontainer_t *)retbtree->elem;
+      ret = (container_t *)retbtree->elem;
       tmpblock = (mjrblock_t *)ret->data;
 
 #if __DEBUG_BLK_LOOKUP__      
@@ -120,7 +120,7 @@ mjrcontainer_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 /** 
  * @brief Simple debug function for block containers 
  */
-int		mjr_block_dump(mjrcontext_t* ctxt, mjrcontainer_t *c)
+int		mjr_block_dump(mjrcontext_t* ctxt, container_t *c)
 {
   mjrblock_t	*blk;
   mjrblock_t	*tblk;

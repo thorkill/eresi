@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.10 2007-08-03 18:05:03 may Exp $
+** $Id: atomic.c,v 1.11 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "revm.h"
@@ -351,7 +351,7 @@ int			revm_hash_set(char *table, char *elmname, void *obj, u_int type)
 
 
 
-/* API for setting elements inside hash */
+/* API for setting elements inside lists */
 int			revm_list_set(char *table, char *elmname, void *obj, u_int type)
 {
   list_t		*h;
@@ -373,7 +373,12 @@ int			revm_list_set(char *table, char *elmname, void *obj, u_int type)
 }
 
 
-
+/** 
+ * @brief Copy a simply typed object into another one
+ * @param o1 Destination object
+ * @param o2 Source object
+ * @return Success:0 Error:-1
+ */
 /* o1 = destination, o2 = source */
 int			revm_object_set(revmobj_t *o1, revmobj_t *o2)
 {

@@ -7,7 +7,7 @@
 **
 ** Started on  Tue Jan 02 04:04:18 2006 jfv
 **
-** $Id: display.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
+** $Id: display.c,v 1.16 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -26,7 +26,7 @@
 /**
  * @brief Display all information about a block 
  */
-int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disopt)
+int			mjr_block_display(mjrcontext_t *ctxt, container_t *cur, mjropt_t *disopt)
 {
   listent_t		*curent;
   mjrlink_t		*ccal;
@@ -90,7 +90,7 @@ int			mjr_block_display(mjrcontext_t *ctxt, mjrcontainer_t *cur, mjropt_t *disop
 int			mjr_blocks_display(mjrcontext_t	*c, int level)
 {
   mjropt_t		opt;
-  mjrcontainer_t	*block;
+  container_t	*block;
   char			**keys;
   int			index;
   int			blocnbr;
@@ -127,7 +127,7 @@ void		 mjr_funcs_display(mjrcontext_t *c)
   int		 keynbr;
   int		 index;
   mjrfunc_t	 *current;
-  mjrcontainer_t *cntnr;
+  container_t *cntnr;
   
   keys = hash_get_keys(&c->funchash, &keynbr);
   for (index = 0; index < keynbr; index++)

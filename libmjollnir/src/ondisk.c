@@ -4,7 +4,7 @@
 ** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.3 2007-08-03 11:51:00 heroine Exp $
+** $Id: ondisk.c,v 1.4 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -20,7 +20,7 @@
  * @param buf buffer which contains the data
  * @return an offset where the data has been saved
  */
-static int	mjr_flow_store_links(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
+static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
 {
   u_int		nbr;
   listent_t	*cur;
@@ -31,11 +31,11 @@ static int	mjr_flow_store_links(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
   /* Make sure we have correct parameters */
   switch (type)
     {
-    case MJR_LINK_IN:
+    case CONTAINER_LINK_IN:
       cur = c->inlinks->head;
       nbr = c->nbrinlinks;
       break;
-    case MJR_LINK_OUT:
+    case CONTAINER_LINK_OUT:
       cur = c->outlinks->head;
       nbr = c->nbroutlinks;
       break;
@@ -85,7 +85,7 @@ static int	mjr_flow_store_links(mjrcontainer_t *c, u_int type, mjrbuf_t *buf)
  * @brief Link containers in the control flow graph
  */
 static int	mjr_flow_load_links(mjrcontext_t	*ctxt, 
-				    mjrcontainer_t	*container, 
+				    container_t	*container, 
 				    u_int		linktype,
 				    char		*sectdata,
 				    u_int		*curoff)
@@ -101,15 +101,15 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
   /* Make sure we deal with the right list of links */
   switch (linktype)
     {
-    case MJR_LINK_IN:
+    case CONTAINER_LINK_IN:
       off    = (u_int) container->inlinks;
       tmpnbr = container->nbrinlinks;
-      mjr_create_container_linklist(container, MJR_LINK_IN);
+      container_linklists_create(container, CONTAINER_LINK_IN);
       break;
-    case MJR_LINK_OUT:
+    case CONTAINER_LINK_OUT:
       off   = (u_int) container->outlinks;
       tmpnbr = container->nbroutlinks;
-      mjr_create_container_linklist(container, MJR_LINK_OUT);
+      container_linklists_create(container, CONTAINER_LINK_OUT);
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -145,13 +145,13 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
 /**
  * @brief Create the data dump to be saved in file 
  */
-static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
+static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 {
   char			buffer[BUFSIZ];
   elfsh_Sym		bsym;
   elfsh_Sym		*sym;
   void			*curunit;
-  mjrcontainer_t	*container;
+  container_t	*container;
   char			*prefix;
   u_int			unitsize;
   u_int			symtype;
@@ -201,7 +201,7 @@ static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
       XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
       buf->maxlen = 0;
     }
-  else if (buf->allocated  < (buf->maxlen + unitsize + sizeof(mjrcontainer_t)))
+  else if (buf->allocated  < (buf->maxlen + unitsize + sizeof(container_t)))
     {
       buf->allocated += getpagesize();
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
@@ -209,10 +209,10 @@ static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
     }
   
   /* Unit copy in the buffer */
-  container = (mjrcontainer_t *) ((char *) buf->data + buf->maxlen);
-  curunit   = (char *) buf->data + buf->maxlen + sizeof(mjrcontainer_t);
+  container = (container_t *) ((char *) buf->data + buf->maxlen);
+  curunit   = (char *) buf->data + buf->maxlen + sizeof(container_t);
 
-  memcpy(container, cur, sizeof(mjrcontainer_t));
+  memcpy(container, cur, sizeof(container_t));
   memcpy(curunit, cur->data, unitsize);
   
   /* Then we create the symbol for the bloc and returns */
@@ -224,7 +224,7 @@ static int		mjr_unit_save(mjrcontainer_t *cur, mjrbuf_t *buf, u_int typeid)
     }
 
   /* Return result */
-  buf->maxlen += sizeof(mjrcontainer_t);
+  buf->maxlen += sizeof(container_t);
   buf->maxlen += unitsize;
   buf->counter++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -248,8 +248,8 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
   elfshsect_t           *sect, *flowsect;
   char			name[20];
   char			**keys;
-  mjrcontainer_t	*container;
-  mjrcontainer_t	*tmpcntnr;
+  container_t	*container;
+  container_t	*tmpcntnr;
   u_int			flowdone;
   u_int			unitsize;
   u_int			unitnbr;
@@ -291,7 +291,7 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "No control flow section : use analyse command", 0);
-  if (sect->shdr->sh_size % (unitsize + sizeof(mjrcontainer_t)))
+  if (sect->shdr->sh_size % (unitsize + sizeof(container_t)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Corrupted edfmt section : modulo-test failed", 0);
   flowsect = elfsh_get_section_by_name(ctxt->obj, debugsect2, 0, 0, 0);
@@ -301,21 +301,21 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
     
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new data units but use the data from the section */
-  unitnbr = sect->shdr->sh_size / (sizeof(mjrcontainer_t) + unitsize);
+  unitnbr = sect->shdr->sh_size / (sizeof(container_t) + unitsize);
   for (done = index = 0; index < unitnbr; index++)
     {
       
       /* Ondisk format ondisk is the exact same format that we manipulate
 	 in this lib. So its very practical to reload/store the info ondisk */
-      container  = (mjrcontainer_t *) ((char *) sect->data + done);
-      done      += sizeof(mjrcontainer_t);
+      container  = (container_t *) ((char *) sect->data + done);
+      done      += sizeof(container_t);
       curunit    = (char *) sect->data + done;
       done      += unitsize;
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpunit, unitsize, 0);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpcntnr, sizeof(mjrcontainer_t), 0);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, tmpcntnr, sizeof(container_t), 0);
 
-      memcpy(tmpcntnr, container, sizeof(mjrcontainer_t));
+      memcpy(tmpcntnr, container, sizeof(container_t));
       memcpy(tmpunit, curunit, unitsize);
       tmpcntnr->data = tmpunit;
 
@@ -336,8 +336,8 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
     {
       container = hash_get(table, keys[index]);
       flowdone  = 0;
-      mjr_flow_load_links(ctxt, container, MJR_LINK_IN , flowsect->data, &flowdone);
-      mjr_flow_load_links(ctxt, container, MJR_LINK_OUT, flowsect->data, &flowdone);
+      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_IN , flowsect->data, &flowdone);
+      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_OUT, flowsect->data, &flowdone);
     }
 
   /* Prevent double analysis */
@@ -360,7 +360,7 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   mjrbuf_t		buf, cfbuf;
-  mjrcontainer_t	*container;
+  container_t	*container;
   int			err;
   char			**keys;
   int			keynbr;
@@ -458,8 +458,8 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
 #endif
 
       /* Store block flow and get new offsets */
-      flow_off_in  = mjr_flow_store_links(container, MJR_LINK_IN, &cfbuf);
-      flow_off_out = mjr_flow_store_links(container, MJR_LINK_OUT, &cfbuf);
+      flow_off_in  = mjr_flow_store_links(container, CONTAINER_LINK_IN, &cfbuf);
+      flow_off_out = mjr_flow_store_links(container, CONTAINER_LINK_OUT, &cfbuf);
       if (flow_off_in < 0 || flow_off_out < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to save flow analysis information", 0);

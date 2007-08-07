@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.5 2007-08-03 11:50:59 heroine Exp $
+** $Id: findentry.c,v 1.6 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -136,8 +136,8 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
 				   elfsh_Addr	vaddr)
 {
   elfsh_Addr	    main_addr;
-  mjrcontainer_t   *main_container;
-  mjrcontainer_t   *tmpcntnr;
+  container_t   *main_container;
+  container_t   *tmpcntnr;
   u_int		   dis;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -159,9 +159,9 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
   main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
   mjr_function_register(context, main_addr, main_container);
   mjr_container_add_link(context, tmpcntnr, main_container->id, 
-			 MJR_LINK_FUNC_CALL, MJR_LINK_OUT);
+			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
   mjr_container_add_link(context, main_container, tmpcntnr->id, 
-			 MJR_LINK_FUNC_CALL, MJR_LINK_IN);
+			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
   mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

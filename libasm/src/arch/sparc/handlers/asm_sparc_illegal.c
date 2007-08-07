@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_illegal.c,v 1.2 2007-03-07 16:45:34 thor Exp $
+** $Id: asm_sparc_illegal.c,v 1.3 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libasm.h"
@@ -10,5 +10,6 @@ asm_sparc_illegal(asm_instr * ins, u_char * buf, u_int len,
 		  asm_processor * proc)
 {
   ins->instr = ASM_SP_BAD;
+  ins->type  = ASM_TYPE_STOP;
   return 4;
 }

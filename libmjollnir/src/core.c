@@ -4,7 +4,7 @@
 ** @file core.c
 ** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.39 2007-08-03 11:50:59 heroine Exp $
+** $Id: core.c,v 1.40 2007-08-07 07:13:27 may Exp $
 */
 
 #include "libmjollnir.h"
@@ -17,7 +17,7 @@
  */
 int			mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
-  mjrcontainer_t	*cntnr;
+  container_t	*cntnr;
   elfshsect_t    	*sct;
   asm_instr		instr;
   unsigned char		*ptr;
@@ -104,7 +104,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   elfsh_Shdr	*shtlist, *shdr;
   elfsh_Sym	*sym;
   elfshsect_t	*sct;
-  mjrcontainer_t *fcnt;
+  container_t *fcnt;
   int		num_sht, idx_sht;
   char		c;
 

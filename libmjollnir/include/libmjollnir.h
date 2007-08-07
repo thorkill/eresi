@@ -17,9 +17,16 @@
 #include <openssl/md5.h>
 #include "libelfsh.h"
 #include "libasm.h"
-#include "libmjollnir-container.h"
 #include "libmjollnir-objects.h"
 #include "libmjollnir-int.h"
+
+/* Some defined  values for containers array */
+#define MJR_CNTNRS_INCREMENT 	200
+#define MJR_MAX_INCREMENTS	200
+
+/* Input and Output links */
+#define CONTAINER_LINK_IN		0
+#define CONTAINER_LINK_OUT		1
 
 /* Size of temp buffers */
 #define BSIZE_SMALL		32
@@ -57,20 +64,20 @@ int		mjr_analyse_section(mjrsession_t *s, char *sectname);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);
-mjrcontainer_t* mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
+container_t* mjr_block_get_by_vaddr(mjrcontext_t *ctxt, elfsh_Addr, int);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 char 		*_vaddr2str(elfsh_Addr);
-int		mjr_block_relink_cond_always(mjrcontainer_t *, mjrcontainer_t *, int);
-int		mjr_block_dump(mjrcontext_t*, mjrcontainer_t *);
+int		mjr_block_relink_cond_always(container_t *, container_t *, int);
+int		mjr_block_dump(mjrcontext_t*, container_t *);
 
 /* fingerprint.c */
-int		mjr_block_funcstart(mjrcontainer_t *cntnr);
-int		mjr_fingerprint(mjrcontext_t*, mjrcontainer_t*, int, int, 
-				int, int, int, int (*fprint)(mjrcontainer_t*));
+int		mjr_block_funcstart(container_t *cntnr);
+int		mjr_fingerprint(mjrcontext_t*, container_t*, int, int, 
+				int, int, int, int (*fprint)(container_t*));
 
 /* display.c */
 int		mjr_blocks_display(mjrcontext_t *c, int);
-int		mjr_block_display(mjrcontext_t *, mjrcontainer_t *c, mjropt_t *opt);
+int		mjr_block_display(mjrcontext_t *, container_t *c, mjropt_t *opt);
 void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
@@ -90,10 +97,10 @@ int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 
 /* function.c */
 void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
-void		mjr_function_dump(mjrcontext_t*, char *,mjrcontainer_t *);
+void		mjr_function_dump(mjrcontext_t*, char *,container_t *);
 int		mjr_functions_get(mjrcontext_t *);
-int		mjr_function_register(mjrcontext_t *, u_int, mjrcontainer_t *);
-mjrcontainer_t *mjr_function_get_by_vaddr(mjrcontext_t *, u_int);
+int		mjr_function_register(mjrcontext_t *, u_int, container_t *);
+container_t *mjr_function_get_by_vaddr(mjrcontext_t *, u_int);
 
 /* ondisk.c */
 int		mjr_flow_load(mjrcontext_t *c, u_int datatypeid);
@@ -111,26 +118,26 @@ void		mjr_history_write(mjrcontext_t*, asm_instr*, elfsh_Addr a, int i);
 /* container.c */
 int		mjr_init_containers(mjrcontext_t*);
 int		mjr_resize_containers(mjrcontext_t*, u_int resize);
-unsigned int	mjr_register_container (mjrcontext_t*, mjrcontainer_t *cntnr);
-unsigned int	mjr_register_container_id (mjrcontext_t*, mjrcontainer_t *cntnr);
+unsigned int	mjr_register_container (mjrcontext_t*, container_t *cntnr);
+unsigned int	mjr_register_container_id (mjrcontext_t*, container_t *cntnr);
 void		mjr_unregister_container(mjrcontext_t*, u_int id);
-mjrcontainer_t *mjr_lookup_container (mjrcontext_t*,u_int id);
-mjrcontainer_t	*mjr_get_container_by_vaddr(mjrcontext_t*, elfsh_Addr vaddr, int type);
-list_t		*mjr_link_get_by_direction(mjrcontainer_t *c, int dir);
+container_t *mjr_lookup_container (mjrcontext_t*,u_int id);
+container_t	*mjr_get_container_by_vaddr(mjrcontext_t*, elfsh_Addr vaddr, int type);
+list_t		*mjr_link_get_by_direction(container_t *c, int dir);
 mjrlink_t	*mjr_get_link_by_type(list_t *listlink, int link_type);
-int		mjr_create_container_linklist(mjrcontainer_t *cur, u_int linktype);
-mjrcontainer_t	*mjr_create_block_container(mjrcontext_t*,
+int		mjr_create_container_linklist(container_t *cur, u_int linktype);
+container_t	*mjr_create_block_container(mjrcontext_t*,
 					    u_int 	symoff,
 					    elfsh_Addr	vaddr,
 					    u_int	size);
-mjrcontainer_t	*mjr_create_function_container(mjrcontext_t*,
+container_t	*mjr_create_function_container(mjrcontext_t*,
 					       elfsh_Addr	vaddr,
 					       u_int		size,
 					       char		*name,
 					       mjrblock_t	*first,
 					       char		*md5);
 mjrlink_t	*mjr_container_add_link(mjrcontext_t *ctxt,
-					mjrcontainer_t *cntnr, 
+					container_t *cntnr, 
 					u_int id, 
 					int link_type, 
 					int link_direction);

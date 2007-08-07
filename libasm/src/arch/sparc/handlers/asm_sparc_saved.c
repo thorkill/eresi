@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_saved.c,v 1.5 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_saved.c,v 1.6 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libasm.h"
@@ -16,7 +16,7 @@ asm_sparc_saved(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_OTHER;
+  ins->type = ASM_TYPE_PROLOG;
 
   if (opcode.rd == 0)
     ins->instr = ASM_SP_SAVED;

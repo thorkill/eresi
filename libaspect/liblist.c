@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id: liblist.c,v 1.5 2007-08-03 11:50:59 heroine Exp $
+** $Id: liblist.c,v 1.6 2007-08-07 07:13:27 may Exp $
 */
 #include "libaspect.h"
 
@@ -113,6 +113,43 @@ void		list_destroy(list_t *h)
   XFREE(__FILE__, __FUNCTION__, __LINE__, h);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
+
+/* Copy a list */
+list_t		*list_copy(list_t *h)
+{
+  list_t	*newlist;
+  listent_t	*newent;
+  listent_t	*prevent;
+  listent_t	*curent;
+  void		*newelem;
+  int		size;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newlist, sizeof(list_t), NULL);
+  *newlist = *h;
+  prevent = NULL;
+  size = aspect_typesize_get(h->type);
+
+  /* Copy the list */
+  for (curent = h->head; curent; curent = curent->next)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, newent, sizeof(listent_t), NULL);
+      *newent = *curent;
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, newelem, size, NULL);
+      memcpy(newelem, curent->data, size);
+      newent->data = newelem;
+      newent->next = NULL;
+      if (prevent)
+	prevent->next = newent;
+      else
+	newlist->head = newent;
+      prevent = newent;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);
+}
+
+
 
 /** 
  * @brief Add an element at the head of the list 
@@ -229,28 +266,36 @@ int		list_replace(list_t *h, char *key, list_t *newlist)
   listent_t	*cur;
   listent_t	*lastent;
   listent_t	*prev;
+  int		idx;
+  char		namebuf[BUFSIZ];
 
-  if (!h || !key || !newlist)
-    return (-1);
+  /* Preliminary checks */
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!h || !key || !newlist || !newlist->head)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", 0);
+
+  /* Just find the latest entry */
   for (lastent = newlist->head; lastent && lastent->next; lastent = lastent->next);
-  if (!lastent)
-    return (-1);
+
+  /* Now find the original element to swap with the new list */
   for (prev = NULL, cur = h->head; cur; prev = cur, cur = cur->next)
     if (!strcmp(cur->key, key))
       {
 	if (!prev)
-	  {
-	    lastent->next = h->head;
-	    h->head = newlist->head;
-	    h->elmnbr++;
-	    return (0);
-	  }
-	lastent->next = cur->next;
-	prev->next = newlist->head;
+	  h->head = newlist->head;
+	else
+	  prev->next = newlist->head;
+	lastent->next = cur->next;	
 	h->elmnbr += newlist->elmnbr;
-	return (0);
+	XFREE(__FILE__, __FUNCTION__, __LINE__, cur->data);
+	XFREE(__FILE__, __FUNCTION__, __LINE__, cur);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       }
-  return (-1);
+
+  /* Could not find the element to swap */
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	       "Cannot find element to be swapped", -1);
 }
 
 

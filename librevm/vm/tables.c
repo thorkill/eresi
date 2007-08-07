@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.47 2007-08-03 18:05:03 may Exp $
+** $Id: tables.c,v 1.48 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "revm.h"
@@ -777,9 +777,8 @@ static void	setup_cmdhash()
       revm_command_add(CMD_TABLES    , (void *) cmd_tables   , (void *) revm_getvarparams, 0, HLP_TABLES);
       revm_command_add(CMD_LISTS     , (void *) cmd_lists    , (void *) revm_getvarparams, 0, HLP_LISTS);
       revm_command_add(CMD_EMPTY     , (void *) cmd_empty    , (void *) revm_getvarparams, 0, HLP_EMPTY);
-
-      revm_command_add(CMD_DEFINE    , (void *) cmd_define   , (void *) revm_getoption2   , 0, HLP_DEFINE);
-      revm_command_add(CMD_UNDEF     , (void *) cmd_undef    , (void *) revm_getoption    , 0, HLP_UNDEF);
+      revm_command_add(CMD_DEFINE    , (void *) cmd_define   , (void *) revm_getvarparams, 0, HLP_DEFINE);
+      revm_command_add(CMD_UNDEF     , (void *) cmd_undef    , (void *) revm_getoption   , 0, HLP_UNDEF);
     }
 
   /* Command line only commands */
@@ -1097,6 +1096,16 @@ static void	setup_consthash()
     hash_add(&const_hash, 
 	     (char *) elfsh_mipsflags[index].name, 
 	     elfsh_mipsflags + index);
+
+  for (index = 0; index < ELFSH_INSTRTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) asm_instr_type[index].name, 
+	     asm_instr_type + index);
+
+  for (index = 0; index < ELFSH_OPTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) asm_operand_type[index].name, 
+	     asm_operand_type + index);
 }
 
 

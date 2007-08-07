@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
+** $Id: types.c,v 1.16 2007-08-07 07:13:27 may Exp $
 **
 */
 #include "libaspect.h"
@@ -473,3 +473,12 @@ char		*aspect_typename_get(u_int type)
     return (NULL);
   return (aspect_typeinfo[type].name);
 }
+
+/* Retreive the ascii name of a type */
+u_int		aspect_typesize_get(u_int type)
+{
+  if (type >= aspect_type_nbr)
+    return (0);
+  return (aspect_typeinfo[type].size);
+}
+

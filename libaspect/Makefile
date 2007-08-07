@@ -12,7 +12,7 @@ AR		= ar rc
 CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI32
 CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI64
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
-		config.c profiler.c liblist.c
+		config.c profiler.c liblist.c containers.c
 
 OBJ32		= $(SRC:.c=.32.o)
 OBJ64		= $(SRC:.c=.64.o)

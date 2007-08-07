@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  * @file function.c
  * BSD License
- * $Id: function.c,v 1.44 2007-08-03 11:50:59 heroine Exp $
+ * $Id: function.c,v 1.45 2007-08-07 07:13:27 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -48,7 +48,7 @@ int		mjr_functions_get(mjrcontext_t *ctxt)
 /**
  * @brief Function dumping procedure for debug purposes
  */
-void		mjr_function_dump(mjrcontext_t *ctxt, char *where, mjrcontainer_t *c)
+void		mjr_function_dump(mjrcontext_t *ctxt, char *where, container_t *c)
 {
   mjrfunc_t	*f, *tmp;
   listent_t	*ent;
@@ -208,7 +208,7 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
  * @param vaddr virtual address of the function
  * @param fun function container
  */
-int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, mjrcontainer_t *fun)
+int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
 {
   char		*tmpstr;
   
@@ -237,9 +237,9 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, mjrcontainer_t *fun)
  * @param ctx mjollnir context structure
  * @param vaddr virtual address of requested function
  */
-mjrcontainer_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
+container_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
 {
-  mjrcontainer_t	*container;
+  container_t	*container;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -247,6 +247,6 @@ mjrcontainer_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
   fprintf(D_DESC,"[D] %s: vaddr:%x\n",__FUNCTION__,vaddr);
 #endif
 
-  container = (mjrcontainer_t *) hash_get(&ctx->funchash, _vaddr2str(vaddr));
+  container = (container_t *) hash_get(&ctx->funchash, _vaddr2str(vaddr));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, container);
 }
