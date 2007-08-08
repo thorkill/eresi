@@ -1,9 +1,11 @@
 /*
-** @file arith.c
+** @file atomic.c
 ** 
+** @brief Implement the API for atomic arithmetic and logic ERESI commands
+**
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.11 2007-08-07 07:13:27 may Exp $
+** $Id: atomic.c,v 1.12 2007-08-08 13:47:24 may Exp $
 **
 */
 #include "revm.h"

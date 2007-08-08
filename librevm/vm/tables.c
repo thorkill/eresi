@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.48 2007-08-07 07:13:27 may Exp $
+** $Id: tables.c,v 1.49 2007-08-08 13:47:24 may Exp $
 **
 */
 #include "revm.h"
@@ -1228,7 +1228,7 @@ void		revm_tables_setup()
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
   hash_init(&exprtypes_hash   , "exprtypes"  , 51, ASPECT_TYPE_UNKNOW);
-  hash_init(&exprtypes_hash   , "instrlists" , 51, ASPECT_TYPE_LIST);
+  hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();

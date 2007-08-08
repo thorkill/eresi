@@ -5,7 +5,7 @@
  *
  * Started on Wed Feb 28 19:19:04 2007 jfv
  *
- * $Id: parser.c,v 1.9 2007-08-07 07:13:27 may Exp $
+ * $Id: parser.c,v 1.10 2007-08-08 13:47:24 may Exp $
  *
  */
 #include "revm.h"
@@ -107,7 +107,6 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested match-ending statement", -1);
       defaultcmd = newcmd;
-      forend->endlabel = looplabels[curnest - 1];
     }
   
   /* At forend, delay the label insertion to the next command */

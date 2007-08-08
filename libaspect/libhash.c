@@ -4,7 +4,7 @@
 ** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.37 2007-08-03 18:05:03 may Exp $
+** $Id: libhash.c,v 1.38 2007-08-08 13:47:24 may Exp $
 */
 #include "libaspect.h"
 
@@ -269,7 +269,7 @@ int		hash_set(hash_t *h, char *key, void *data)
 
   ent = hash_get_ent(h, key);
   if (!ent)
-    return (-1);
+    return (hash_add(h, key, data));
   ent->data = data;
   return (0);
 }
