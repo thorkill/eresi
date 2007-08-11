@@ -1,0 +1,48 @@
+#!evarista/evarista32
+
+# This create on-demand the block instruction list in the eresi runtime
+
+reflect $1
+
+set $curb $_
+set $curaddr $curb.vaddr
+
+# Just debug printing
+#inspect $curb
+#profile enable warn
+
+# Start the transformation
+foreach $instr in $hash[instrlists:$curaddr]
+
+print Dataflow on instr : $instr
+
+rewrite $instr into
+
+case IndBranch() -> . ? use $instr.dst $curb.registry
+case Branch()    -> .
+case IndCall()   -> . ?	use $instr.dst $curb.registry
+case Call()      -> .
+case Interrupt() -> .
+case Return()    -> .
+case Prolog()    -> .
+case Epilog()    -> .
+case Stop()      -> .
+case Nop()       -> .
+case TernopR3()  -> . ? use $instr.src1 $instr.src2 $curb.registry; def $instr.dst $curb.registry
+case TernopRI()  -> . ? use $instr.rsrc $curb.registry; def $instr.dst $curb.registry
+case AssignIR()  -> . ? def $instr.dst $curb.registry
+case AssignIM()  -> . ? use $instr.dst.base $curb.registry; def $instr.dst.name $curb.registry
+case AssignMR()  -> . ? use $instr.src.base $instr.src.name $curb.registry; def $instr.dst $curb.registry
+case AssignRM()  -> . ? use $instr.dst.base $instr.src $curb.registry; def $instr.dst.name $curb.registry
+case BitSet()    -> . ? def $instr.dst $curb.registry
+case CmpRI()     -> . ? use $instr.snd $curb.registry
+case CmpRR()     -> . ? use $instr.fst $instr.snd $curb.registry
+
+default print Unsupported LIR instruction at address $curaddr	 
+
+endrwt
+
+add $curaddr 4 
+
+endfor
+
