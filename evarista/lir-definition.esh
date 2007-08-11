@@ -1,0 +1,56 @@
+#!evarista/evarista32
+
+# Attributes for ASM instructions
+define b	ASM_TYPE_IMPBRANCH
+define cb	ASM_TYPE_CONDBRANCH
+define c	ASM_TYPE_CALLPROC
+define i	ASM_TYPE_INT
+define r	ASM_TYPE_RETPROC
+define p	ASM_TYPE_PROLOG
+define cmp	ASM_TYPE_COMPARISON
+define bs	ASM_TYPE_BITSET
+define a	ASM_TYPE_ASSIGN
+define wm	ASM_TYPE_STORE
+define rm	ASM_TYPE_LOAD
+define e	ASM_TYPE_EPILOG
+define s	ASM_TYPE_STOP
+define n	ASM_TYPE_NOP
+define ar	ASM_TYPE_ARITH
+define wf	ASM_TYPE_WRITEFLAG
+define i-r      i  r
+define ar-wf    ar wf
+define ar-wm    ar wm
+define a-rm     a  rm
+define a-wm     a  wm
+
+# Attributes for ASM operands
+define reg	ASM_OPTYPE_REG
+define imm	ASM_OPTYPE_IMM
+define mem	ASM_OPTYPE_MEM
+
+# Types of LIR operands
+type Reg            = id:int
+type Immed          = val:long
+type Mem            = base:Reg off:Immed name:string
+type Ins            = uflags:Immed addr:Immed
+
+# Types of LIR instructions
+type IndBranch::Ins = dst:Reg
+type Branch::Ins    = dst:Immed
+type Call::Ins      = dst:Immed
+type IndCall::Ins   = dst:Reg
+type Interrupt::Ins = dst:Immed
+type Return::Ins    = dst:Immed
+type TernopR3::Ins  = dst:Reg src1:Reg src2:Reg
+type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
+type AssignIR::Ins  = dst:Reg src:Immed
+type AssignIM::Ins  = dst:Mem src:Immed
+type AssignMR::Ins  = dst:Reg src:Mem
+type AssignRM::Ins  = dst:Mem src:Reg
+type BitSet::Ins    = src:Immed dst:Reg
+type CmpRI::Ins     = fst:Immed snd:Reg
+type CmpRR::Ins     = fst:Reg snd:Reg
+type Prolog::Ins    = framesz:Immed
+type Epilog::Ins
+type Stop::Ins
+type Nop::Ins
