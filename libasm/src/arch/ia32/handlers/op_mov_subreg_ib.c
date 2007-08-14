@@ -1,7 +1,7 @@
 /**
  * @file op_mvo_subreg_ib.c
  * @ingroup handlers_ia32
- * $Id: op_mov_subreg_ib.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+ * $Id: op_mov_subreg_ib.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
  *
  */
 #include <libasm.h>
@@ -20,37 +20,19 @@
 */
 
 int op_mov_subreg_ib(asm_instr *new, u_char *opcode, u_int len, 
-		     asm_processor *proc)
+                     asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode;
   new->ptr_instr = opcode;
   new->type = ASM_TYPE_ASSIGN;
   new->instr = ASM_MOV;
   new->len += 1;
 
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, 
-				ASM_OTYPE_IMMEDIATEBYTE, new);
-#else
-  new->op1.type = ASM_OTYPE_OPMOD;
-  new->op2.type = ASM_OTYPE_IMMEDIATE;
+  new->len += asm_operand_fetch(&new->op2, opcode + 1,
+                                ASM_OTYPE_IMMEDIATEBYTE, new);
 
-  new->op1.content = ASM_OP_BASE;
-  new->op1.regset = ASM_REGSET_R8;
-  new->op1.ptr = opcode;
-
-  new->op1.baser = modrm->m;
-
-
-  new->op2.content = ASM_OP_VALUE;
-  new->op2.ptr = opcode + 1;
-    
-  new->op2.imm = 0;
-  memcpy(&new->op2.imm, opcode + 1, 1);
-  new->len += 1;
-#endif
   return (new->len);
 }

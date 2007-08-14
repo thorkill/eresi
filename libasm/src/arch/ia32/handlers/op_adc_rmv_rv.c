@@ -1,5 +1,5 @@
 /*
-** $Id: op_adc_rmv_rv.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_adc_rmv_rv.c,v 1.4 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -15,17 +15,16 @@ int op_adc_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_ADC;
-#if LIBASM_USE_OPERAND_VECTOR
+
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_READFLAG | ASM_TYPE_WRITEFLAG;
+  new->flagsread = ASM_FLAG_CF;
+  new->flagswritten = ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF | 
+                       ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_PF;
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);
+                                new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op1.size= ASM_OSIZE_VECTOR;
-  new->op2.type = ASM_OTYPE_GENERAL;
-  new->op2.size= ASM_OSIZE_VECTOR;
-  operand_rmv_rv(new, opcode + 1, len - 1, proc);
-#endif
+                                new);
+
   return (new->len);
 }

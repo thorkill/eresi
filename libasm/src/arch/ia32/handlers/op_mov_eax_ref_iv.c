@@ -1,7 +1,7 @@
 /**
  * @file op_mov_eax_ref_iv.c
  * @ingroup handlers_ia32
- * $Id: op_mov_eax_ref_iv.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+ * $Id: op_mov_eax_ref_iv.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
  *
  */
 #include <libasm.h>
@@ -14,35 +14,20 @@
 */
 
 int op_mov_eax_ref_iv(asm_instr *new, u_char *opcode, u_int len, 
-		      asm_processor *proc) 
+                      asm_processor *proc) 
 {
   new->instr = ASM_MOV;
   new->ptr_instr = opcode;
   new->len += 1;
   new->type = ASM_TYPE_ASSIGN;
-#if LIBASM_USE_OPERAND_VECTOR
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, new);
   new->op1.ptr = opcode;
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.regset = asm_proc_opsize(proc) ?
-    ASM_REGSET_R16 : ASM_REGSET_R32;
+                      ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op1.baser = ASM_REG_EAX;
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_OFFSET, new);
-#else
-  new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
-  new->op1.ptr = opcode;
-  new->op1.type = ASM_OTYPE_FIXED;
-  new->op1.regset = asm_proc_opsize(proc) ?
-    ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.baser = ASM_REG_EAX;
-  
-  new->op2.type = ASM_OTYPE_OFFSET;
-  new->op2.content = ASM_OP_VALUE | ASM_OP_REFERENCE;
-  new->op2.len = 4;
-  new->op2.ptr = opcode + 1;
-  
-  memcpy(&new->op2.imm, opcode + 1, 4);
-  new->len += 4;
-#endif
+
   return (new->len);
 }

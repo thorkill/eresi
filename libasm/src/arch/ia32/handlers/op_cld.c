@@ -1,5 +1,5 @@
 /*
-** $Id: op_cld.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_cld.c,v 1.4 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -14,5 +14,7 @@ int op_cld(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_CLD;
+  new->type = ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_DF;
   return (new->len);
 }

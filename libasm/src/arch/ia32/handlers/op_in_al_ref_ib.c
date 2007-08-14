@@ -1,5 +1,5 @@
 /*
-** $Id: op_in_al_ref_ib.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_in_al_ref_ib.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,20 +10,19 @@
 */
 
 int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len, 
-		    asm_processor *proc) 
+                    asm_processor *proc)
 {
   new->instr = ASM_IN;
   new->ptr_instr = opcode;
   new->len += 1;
+  new->type = ASM_TYPE_LOAD;
 
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_R8;
   new->op1.baser = ASM_REG_AL;
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, 
-				ASM_OTYPE_IMMEDIATEBYTE, new);
-#endif
+  new->len += asm_operand_fetch(&new->op2, opcode + 1,
+                                ASM_OTYPE_IMMEDIATEBYTE, new);
 
   new->op1.type = ASM_OTYPE_FIXED;
   new->op1.content = ASM_OP_BASE;
@@ -36,6 +35,6 @@ int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->op2.imm = 0;
   memcpy(&new->op2.imm, opcode + 1, 1);
-  
+
   return (new->len);
 }

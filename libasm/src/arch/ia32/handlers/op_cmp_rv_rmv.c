@@ -1,5 +1,5 @@
 /*
-** $Id: op_cmp_rv_rmv.c,v 1.5 2007-07-18 15:47:10 strauss Exp $
+** $Id: op_cmp_rv_rmv.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,22 +10,20 @@
 */
 
 int op_cmp_rv_rmv(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc)
+                  asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;
-  new->type = ASM_TYPE_COMPARISON | ASM_TYPE_CONTROL;
   new->instr = ASM_CMP;
-  
-#if LIBASM_USE_OPERAND_VECTOR
+
+  new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_PF |
+                        ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
-				new);
+                                new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_GENERAL;
-  new->op2.type = ASM_OTYPE_ENCODED;
-  operand_rv_rmv(new, opcode + 1, len - 1, proc);
-#endif
+                                new);
+
   return (new->len);
 }

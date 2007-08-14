@@ -1,5 +1,5 @@
 /*
-** $Id: op_lodsd.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_lodsd.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -14,22 +14,10 @@ int op_lodsd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->instr = ASM_LODSD;
   new->ptr_instr = opcode;
+  new->type = ASM_TYPE_LOAD;
 
-  #if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, new);
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_XSRC, new);
-  #else
-  
-  new->op1.type = ASM_OTYPE_YDEST;
-  new->op2.type = ASM_OTYPE_XSRC;
-  
-  new->op1.regset = ASM_REGSET_R32;
-  new->op1.prefix = ASM_PREFIX_ES;
-  new->op1.baser = ASM_REG_EDI;
-  
-  new->op2.regset = ASM_REGSET_R32;
-  new->op2.prefix = ASM_PREFIX_DS;
-  new->op2.baser = ASM_REG_ESI;
-  #endif
+
   return (new->len);
 }

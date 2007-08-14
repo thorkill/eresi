@@ -1,5 +1,5 @@
 /*
-** $Id: op_incdec_rmb.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_incdec_rmb.c,v 1.4 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,38 +10,37 @@
 */
 
 int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc)
+                  asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   new->ptr_instr = opcode;
   modrm = (struct s_modrm *) opcode + 1;
   new->len += 1;
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_INCDEC | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_AF | ASM_FLAG_OF | ASM_FLAG_PF |
+                        ASM_FLAG_SF | ASM_FLAG_ZF;
+
   switch(modrm->r) {
-  case 0:
-    new->instr = ASM_INC;
-    break;
-  case 1:
-    new->instr = ASM_DEC;
-    break;
-  case 2:
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-  case 7:
-    break;
-  default:
-    break;
+    case 0:
+      new->instr = ASM_INC;
+      break;
+    case 1:
+      new->instr = ASM_DEC;
+      break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+      break;
+    default:
+      break;
   }
 
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  operand_rmb(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
-#endif
+                                new);
+
   return (new->len);
 }

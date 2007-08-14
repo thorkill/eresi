@@ -1,5 +1,5 @@
 /*
-** $Id: op_dec_reg.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_dec_reg.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -17,24 +17,20 @@
 */
 
 int op_dec_reg(asm_instr *new, u_char *opcode, u_int len, 
-	       asm_processor *proc)
+               asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode;
   new->ptr_instr = opcode;
   new->instr = ASM_DEC;
   new->len += 1;
-  
-  #if LIBASM_USE_OPERAND_VECTOR
+
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_INCDEC | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_AF | ASM_FLAG_OF | ASM_FLAG_PF | 
+                        ASM_FLAG_SF | ASM_FLAG_ZF;
+
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
-  #else
-  new->op1.type = ASM_OTYPE_OPMOD;
-  new->op1.content = ASM_OP_BASE;
-  new->op1.ptr = opcode;
-  new->op1.regset = asm_proc_opsize(proc) ?
-    ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.baser = modrm->m;
-#endif
-    return (new->len);
+
+  return (new->len);
 }

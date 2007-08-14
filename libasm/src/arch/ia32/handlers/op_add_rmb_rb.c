@@ -1,5 +1,5 @@
 /*
-** $Id: op_add_rmb_rb.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_add_rmb_rb.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -16,20 +16,17 @@ int op_add_rmb_rb(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   new->instr = ASM_ADD;
-  new->type = ASM_TYPE_ARITH;
   new->ptr_instr = opcode;
   new->len++;
-  #if LIBASM_USE_OPERAND_VECTOR
+
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_CF | ASM_FLAG_ZF | ASM_FLAG_PF |
+                      ASM_FLAG_OF | ASM_FLAG_AF | ASM_FLAG_SF;
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
-				new);
+                                new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERALBYTE, 
-				new);
-  #else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op1.size = ASM_OSIZE_BYTE;
-  new->op2.type = ASM_OTYPE_GENERAL;
-  new->op2.size = ASM_OSIZE_BYTE;
-  operand_rmb_rb(new, opcode + 1, len - 1, proc);
-#endif
+                                new);
+
   return (new->len);
 }

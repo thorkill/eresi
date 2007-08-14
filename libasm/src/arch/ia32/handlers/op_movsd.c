@@ -1,5 +1,5 @@
 /*
-** $Id: op_movsd.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_movsd.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -18,24 +18,10 @@ int op_movsd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   else
     new->instr = ASM_MOVSD;
 
-#if LIBASM_USE_OPERAND_VECTOR
+  new->type = ASM_TYPE_LOAD | ASM_TYPE_STORE | ASM_TYPE_ASSIGN;
+
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, new);
   new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_XSRC, new);
-#else
-  new->op1.type = ASM_OTYPE_YDEST;
-  new->op2.type = ASM_OTYPE_XSRC;
-  
-  new->op1.prefix = ASM_PREFIX_ES;
-  new->op1.regset = ASM_REGSET_R32;
-  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op1.baser = ASM_REG_EDI;
-  new->op1.len = 0;
-  
-  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op2.len = 0;
-  new->op2.prefix = ASM_PREFIX_DS;
-  new->op2.regset = ASM_REGSET_R32;
-  new->op2.baser = ASM_REG_ESI;
-#endif
+
   return (new->len);
 }

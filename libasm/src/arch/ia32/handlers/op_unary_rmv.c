@@ -1,7 +1,7 @@
 /**
  * @file op_unary_rmv.c
  * @ingroup handlers_ia32
- * $Id: op_unary_rmv.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+ * $Id: op_unary_rmv.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
  *
 */
 #include <libasm.h>
@@ -12,14 +12,15 @@
 */
 
 int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len, 
-		 asm_processor *proc) 
+                 asm_processor *proc) 
 {
   struct s_modrm        *modrm;
-  int			olen;
- 
+  int                   olen;
+
   modrm = (struct s_modrm *) (opcode + 1);
   new->ptr_instr = opcode;
   new->len += 1;
+  new->type = ASM_TYPE_ARITH;
   switch (modrm->r) {
   case 0:
     new->instr = ASM_TEST;
@@ -31,12 +32,18 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len,
     break;
   case 3:
     new->instr = ASM_NEG;
+    new->type |= ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_CF;
     break;
   case 4:
     new->instr = ASM_MUL;
+    new->type |= ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF;
     break;
   case 5:
     new->instr = ASM_IMUL;
+    new->type |= ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF;
     break;
   case 6:
     new->instr = ASM_DIV;
@@ -45,29 +52,13 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len,
     new->instr = ASM_IDIV;
     break;
   } /* switch */
-  #if LIBASM_USE_OPERAND_VECTOR
-    new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, 
-					  ASM_OTYPE_ENCODED, new));
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op1.size = ASM_OSIZE_VECTOR;
-    
-  operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
-#endif
+
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
+                                        ASM_OTYPE_ENCODED, new));
+
   if (new->instr == ASM_TEST) {
-#if LIBASM_USE_OPERAND_VECTOR
-    new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen, 
-				  ASM_OTYPE_IMMEDIATE, new);
-#else
-    new->op2.type = ASM_OTYPE_IMMEDIATE;
-    new->op2.len = asm_proc_vector_len(proc);
-    new->op2.content = ASM_OP_VALUE;
-    new->op2.ptr = opcode + 1 + new->op1.len;
-    memcpy(&new->op2.imm, opcode + 1 + new->op1.len, 
-	   asm_proc_vector_len(proc));
-    new->len += new->op2.len;
-#endif
+    new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
+                                  ASM_OTYPE_IMMEDIATE, new);
   }
   return (new->len);
 }

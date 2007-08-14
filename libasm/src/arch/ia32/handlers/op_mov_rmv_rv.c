@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_rmv_rv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_mov_rmv_rv.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,23 +10,30 @@
 */
 
 int op_mov_rmv_rv(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc)
+                  asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->type = ASM_TYPE_ASSIGN;
   new->len += 1;
   new->instr = ASM_MOV;
-#if LIBASM_USE_OPERAND_VECTOR
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);
+                                new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op1.size = ASM_OSIZE_VECTOR;
-  new->op2.type = ASM_OTYPE_GENERAL;
-  new->op1.size = ASM_OSIZE_VECTOR;
-  operand_rmv_rv(new, opcode + 1, len - 1, proc);
-#endif
+                                new);
+
+  if (new->op1.content == ASM_OP_BASE &&
+      new->op1.baser == ASM_REG_EBP &&
+      new->op2.baser == ASM_REG_ESP) {
+
+    new->type |= ASM_TYPE_PROLOG;
+  }
+  else if (new->op1.content == ASM_OP_BASE &&
+            new->op1.baser == ASM_REG_ESP &&
+            new->op2.baser == ASM_REG_EBP) {
+
+    new->type |= ASM_TYPE_EPILOG;
+  }
+
   return (new->len);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_in_eax_dx.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+** $Id: op_in_eax_dx.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -9,14 +9,14 @@
   <instruction func="op_in_eax_dx" opcode="0xed"/>
  */
 
-int     op_in_eax_dx(asm_instr *new, u_char *opcode, u_int len,
-                         asm_processor *proc) 
+int op_in_eax_dx(asm_instr *new, u_char *opcode, u_int len,
+                 asm_processor *proc) 
 {
   new->len += 1;
   new->instr = ASM_IN;
   new->ptr_instr = opcode;
- 
-#if LIBASM_USE_OPERAND_VECTOR
+  new->type = ASM_TYPE_LOAD;
+
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_R32;
@@ -26,17 +26,5 @@ int     op_in_eax_dx(asm_instr *new, u_char *opcode, u_int len,
   new->op2.baser = ASM_REG_DX;  
   new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
 
-#else
- 
-  new->op1.type = ASM_OTYPE_FIXED;
-  new->op1.content = ASM_OP_BASE;
-  new->op1.regset = ASM_REGSET_R32;
-  new->op1.baser = ASM_REG_EAX;
-  
-  new->op2.type = ASM_OTYPE_FIXED;
-  new->op2.regset = ASM_REGSET_R16;
-  new->op2.baser = ASM_REG_DX;  
-  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  #endif
   return (new->len);
 }
