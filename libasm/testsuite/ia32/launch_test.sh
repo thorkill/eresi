@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: launch_test.sh,v 1.3 2007-06-27 11:25:12 heroine Exp $
+# $Id: launch_test.sh,v 1.4 2007-08-15 15:57:18 heroine Exp $
 # 
 # This script launch lbmjollnir script to make diffs
 # between an objdump dump and a mydisasm dump of each
@@ -21,7 +21,27 @@ function init_test
 function diff_test
 {
     for i in *.asm ; do
-	perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/}
+	if perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/}
+	    then
+	    echo success
+	else
+	    echo Error detected. Check output bellow and press enter when you are ready to launch gdb on mydisasm
+	    echo While in gdb, type run_it to launch gdb tracing until asm_read_instr
+	    read
+	    cat >> tmp.gdb <<EOF
+define run_it
+echo [01 loading]\n
+file ../../mydisasm
+b main
+run ${i/.asm/} .text
+echo [02 putting breakpoint]\n
+b asm_read_instr
+echo >>> You can now type continue to reach next asm_read_instr\n
+end
+EOF
+	    gdb -x tmp.gdb mydisasm
+	    rm tmp.gdb
+	fi
     done
 }
 
@@ -44,4 +64,4 @@ fi
 
 init_test $ARG
 diff_test $ARG
-#purge_test $ARG
+purge_test $ARG
