@@ -1,5 +1,5 @@
 /*
-** $Id: op_retf_i2.c,v 1.4 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_retf_i2.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,29 +10,15 @@
 */
 
 int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, 
-	       asm_processor *proc) {
-#if !LIBASM_USE_OPERAND_VECTOR
-  short *shrt_ptr;
-#endif
-
+               asm_processor *proc)
+{
   new->instr = ASM_RETF;
   new->ptr_instr = opcode;
   new->len += 1;
-  // new->type = IS_RET;
+  new->type = ASM_TYPE_RETPROC | ASM_TYPE_TOUCHSP | ASM_TYPE_EPILOG;
 
-#if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_IMMEDIATEWORD, new);
-#else
-    new->op1.type = ASM_OTYPE_IMMEDIATE;
-  new->op1.content = ASM_OP_VALUE;
-  shrt_ptr = (short *) (opcode + 1);
-  if (*shrt_ptr < 0)
-    memcpy((char *) &new->op1.imm + 2, "\xff\xff", 2);
-  else
-    new->op1.imm = 0;
-  memcpy(&new->op1.imm, opcode + 1, 2);
-  new->len += 2;
-#endif
+  new->len += asm_operand_fetch(&new->op1, opcode + 1,
+                                ASM_OTYPE_IMMEDIATEWORD, new);
+
   return (new->len);
 }

@@ -1,7 +1,7 @@
 /**
  * @file op_unary_rmb.c
  * @ingroup handlers_ia32
-* $Id: op_unary_rmb.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
+* $Id: op_unary_rmb.c,v 1.6 2007-08-15 21:30:21 strauss Exp $
 *
 */
 #include <libasm.h>
@@ -25,6 +25,9 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
   switch(modrm->r) {
     case 0:
       new->instr = ASM_TEST;
+      new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
+      new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF | ASM_FLAG_PF |
+                          ASM_FLAG_SF | ASM_FLAG_ZF;
       new->op1.type = ASM_OTYPE_ENCODED;
 
       new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
@@ -64,7 +67,7 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
       break;
   }
 
-  if (!new->op1.type) 
+  if (!new->op1.type)
   {
     new->len += asm_operand_fetch(&new->op1, opcode + 1,
                                   ASM_OTYPE_ENCODEDBYTE, new);

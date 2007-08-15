@@ -1,5 +1,5 @@
 /*
-** $Id: op_push_reg.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: op_push_reg.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -17,26 +17,21 @@
 */
 
 int op_push_reg(asm_instr *new, u_char *opcode, u_int len, 
-		asm_processor *proc)
+                asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode;
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_PUSH;
-  new->type = ASM_TYPE_TOUCHSP;
+  new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
   new->spdiff = -4;
 
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
-#else
-  new->op1.type = ASM_OTYPE_OPMOD;
-  new->op1.regset = asm_proc_opsize(proc) ?
-    ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op1.content = ASM_OP_BASE;
-  new->op1.ptr = opcode;
-  new->op1.baser = modrm->m;
-#endif
+
+  if (new->op1.baser == ASM_REG_EBP)
+    new->type |= ASM_TYPE_PROLOG;
+
   return (new->len);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmb_1.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_shift_rmb_1.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,21 +10,17 @@
  */
 
 int op_shift_rmb_1(asm_instr *new, u_char *opcode, u_int len, 
-		   asm_processor *proc)
+                   asm_processor *proc)
 {
-  new->instr = ASM_SHIFT;
   new->ptr_instr = opcode;
   new->len += 1;
-  
-
   new->instr = ASM_SHR;
-#if LIBASM_USE_OPERAND_VECTOR
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF |
+                        ASM_FLAG_CF | ASM_FLAG_OF;
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  operand_rmb(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
-  #endif
+                                new);
+
   return (new->len);
 }

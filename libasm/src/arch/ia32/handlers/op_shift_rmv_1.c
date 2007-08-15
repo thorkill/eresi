@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmv_1.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_shift_rmv_1.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,13 +10,17 @@
  */
 
 int op_shift_rmv_1(asm_instr *new, u_char *opcode, u_int len, 
-		   asm_processor *proc)
+                   asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode + 1;
   new->ptr_instr = opcode;
   new->len += 1;
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF |
+                        ASM_FLAG_CF | ASM_FLAG_OF;
+
   switch(modrm->r) {
   case ASM_REG_EDI:
     new->instr = ASM_SAR;
@@ -28,15 +32,9 @@ int op_shift_rmv_1(asm_instr *new, u_char *opcode, u_int len,
     new->instr = ASM_SHR;
     break;
   }
-  
-#if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-  
-  new->len += new->op1.len;
-  #endif
+
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
+                                new);
+
   return (new->len);
 }

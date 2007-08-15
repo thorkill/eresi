@@ -1,5 +1,5 @@
 /*
-** $Id: op_pop_rmv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_pop_rmv.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -19,16 +19,11 @@ int op_pop_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->instr = ASM_POP;
   new->ptr_instr = opcode;
-  new->type = ASM_TYPE_TOUCHSP;
+  new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_ASSIGN | ASM_TYPE_LOAD;
   new->spdiff = 4;
 
-#if LIBASM_USE_OPERAND_VECTOR
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
-				new);
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
-#endif
+                                new);
+
   return (new->len);
 }

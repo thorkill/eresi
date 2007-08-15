@@ -1,7 +1,7 @@
 /**
  * @file op_sub_rmb_rb.c
  * @ingroup handlers_ia32
-** $Id: op_sub_rmb_rb.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+** $Id: op_sub_rmb_rb.c,v 1.6 2007-08-15 21:30:21 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -11,23 +11,19 @@
   <instruction func="op_sub_rmb_rb" opcode="0x28"/>
 */
 
-
-
 int op_sub_rmb_rb(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc) {
+                  asm_processor *proc)
+{
   new->len += 1;
   new->instr = ASM_SUB;
-  new->type = ASM_TYPE_ARITH;
-  #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
-				new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERALBYTE, 
-				new);
-  #else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->ptr_instr = opcode;
-  new->op2.type = ASM_OTYPE_GENERAL;
-  operand_rmb_rb(new, opcode + 1, len - 1, proc);
-  #endif
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_PF |
+                        ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
+
+  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+                                new);
+  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERALBYTE,
+                                new);
+
   return (new->len);
 }

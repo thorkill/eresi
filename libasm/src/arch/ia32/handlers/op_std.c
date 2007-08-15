@@ -1,7 +1,7 @@
 /**
  * @file op_std.c
  * @ingroup handlers_ia32
-** $Id: op_std.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: op_std.c,v 1.5 2007-08-15 21:30:21 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -16,5 +16,7 @@ int op_std(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_STD;
+  new->type = ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_DF;
   return (new->len);
 }

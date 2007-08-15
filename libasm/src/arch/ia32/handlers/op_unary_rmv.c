@@ -1,7 +1,7 @@
 /**
  * @file op_unary_rmv.c
  * @ingroup handlers_ia32
- * $Id: op_unary_rmv.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
+ * $Id: op_unary_rmv.c,v 1.6 2007-08-15 21:30:21 strauss Exp $
  *
 */
 #include <libasm.h>
@@ -24,6 +24,9 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len,
   switch (modrm->r) {
   case 0:
     new->instr = ASM_TEST;
+    new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF | ASM_FLAG_PF |
+                          ASM_FLAG_SF | ASM_FLAG_ZF;
     break;
   case 1:
     return (0);

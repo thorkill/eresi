@@ -1,5 +1,5 @@
 /*
-** $Id: op_shr_rmb_ib.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+** $Id: op_shr_rmb_ib.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -10,35 +10,39 @@
 */
 
 int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc) {
+                  asm_processor *proc) {
   struct s_modrm        *modrm;
-  int			olen;
-  
+  int                   olen;
+
   modrm = (struct s_modrm *) (opcode + 1);
   new->ptr_instr = opcode;
   new->len += 1;
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF;
+
   if (modrm->r == ASM_REG_EAX)
     new->instr = ASM_ROL;
-  else if (modrm->r == ASM_REG_EBP)
+  else if (modrm->r == ASM_REG_EBP) {
     new->instr = ASM_SHR;
-  else if (modrm->r == ASM_REG_EDI)
+    new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+  }
+  else if (modrm->r == ASM_REG_EDI) {
     new->instr = ASM_SAR;
+    new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+  }
   else if (modrm->r == ASM_REG_ECX)
       new->instr = ASM_ROR;
   else if (modrm->r == 3)
     new->instr = ASM_RCR;
-  else
+  else {
     new->instr = ASM_SHL;
+    new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+  }
 
-#if LIBASM_USE_OPERAND_VECTOR
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1, 
-					ASM_OTYPE_ENCODEDBYTE, new));
-  new->len += (olen = asm_operand_fetch(&new->op2, opcode + 1 + olen, 
-					ASM_OTYPE_IMMEDIATEBYTE, new));
-#else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op2.type = ASM_OTYPE_IMMEDIATE;
-  operand_rmb_ib(new, opcode + 1, len - 1, proc);
-  #endif
+  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
+                                        ASM_OTYPE_ENCODEDBYTE, new));
+  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
+                                ASM_OTYPE_IMMEDIATEBYTE, new);
+
   return (new->len);
 }

@@ -1,7 +1,7 @@
 /**
  * @file op_xor_rv_rmv.c
  * @ingroup handlers_ia32
- * $Id: op_xor_rv_rmv.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+ * $Id: op_xor_rv_rmv.c,v 1.5 2007-08-15 21:30:21 strauss Exp $
  *
  */
 #include <libasm.h>
@@ -17,21 +17,17 @@
  */
 
 int op_xor_rv_rmv(asm_instr *new, u_char *opcode, u_int len, 
-		  asm_processor *proc) 
+                  asm_processor *proc)
 {
-  
   new->instr = ASM_XOR;
   new->ptr_instr = opcode;
   new->len += 1;
-#if LIBASM_USE_OPERAND_VECTOR
+  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF | ASM_FLAG_PF |
+                        ASM_FLAG_ZF | ASM_FLAG_SF;
+
   new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, new);
   new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, new);
-#else
-    new->op1.type = ASM_OTYPE_GENERAL;
-  new->op1.size = ASM_OSIZE_VECTOR;
-  new->op2.type = ASM_OTYPE_ENCODED;
-  new->op2.size = ASM_OSIZE_VECTOR;
-  operand_rv_rmv(new, opcode + 1, len - 1, proc);
-  #endif
+
   return (new->len);
 }

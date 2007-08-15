@@ -1,5 +1,5 @@
 /*
-** $Id: op_in_eax_dx.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_in_eax_dx.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -15,7 +15,7 @@ int op_in_eax_dx(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->instr = ASM_IN;
   new->ptr_instr = opcode;
-  new->type = ASM_TYPE_LOAD;
+  new->type = ASM_TYPE_LOAD | ASM_TYPE_IO;
 
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;
