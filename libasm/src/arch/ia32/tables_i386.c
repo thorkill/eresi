@@ -1,9 +1,16 @@
 /**
  * @file tables_i386.c
- * $Id: tables_i386.c,v 1.12 2007-06-27 11:25:11 heroine Exp $
+ * @brief Initialization of ia32 processor mnemonic table.
+ * $Id: tables_i386.c,v 1.13 2007-08-16 23:22:12 heroine Exp $
  * 
  */
 #include <libasm.h>
+
+/**
+ * @brief Initialize ia32 mnemonic table.
+ * @param proc Pointer to processor structure.
+ * @return Returns 1
+ */
 
 int init_instr_table(asm_processor *proc) 
 {
@@ -144,6 +151,7 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_RET] = "ret";
   proc->instr_table[ASM_REPNZ] = "repnz";
   proc->instr_table[ASM_REPZ] = "repz";
+  proc->instr_table[ASM_RCL] = "rcl";
   proc->instr_table[ASM_ROL] = "rol";
   proc->instr_table[ASM_ROR] = "ror";
   proc->instr_table[ASM_RCR] = "rcr";
