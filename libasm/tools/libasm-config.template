@@ -1,0 +1,30 @@
+#
+# $Id: libasm-config.template,v 1.1 2007-08-17 01:27:22 heroine Exp $
+# 
+# Template of configuration script for building project with libasm
+# Copy this script to libasm-config and set your own values
+# 
+# Note: libasm depends on libaspect.
+#!/bin/sh
+
+if echo "$0"  | grep "libasm-config.template" > /dev/null ; then
+echo Copy this script to libasm-config and set your own values
+exit 0
+fi
+
+# Paths
+ROOT_PATH=/usr/local/
+LIBASM_PATH=${ROOT_PATH}/libasm
+LIBASPECT_PATH=${ROOT_PATH}/libaspect
+
+case "$1" in 
+--cflags)
+echo -I${LIBASM_PATH}/include -I${LIBASPECT_PATH}/include 
+;;
+--libraries32)
+echo -L${LIBASM_PATH} -lasm -L${LIBASPECT_PATH} -laspect32
+;;
+*)
+echo "Argument: [--clags|--libraires32|--all]"
+;;
+esac
