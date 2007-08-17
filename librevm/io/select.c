@@ -1,12 +1,12 @@
 /**
  * @file select.c
- **
- ** The interface for I/O based on select()
+ ** @ingroup io
+ ** @brief The interface for I/O based on select()
  **
 ** Started on Fri Mar 5 00:55:40 2004 jfv
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id: select.c,v 1.13 2007-08-03 11:51:00 heroine Exp $
+** $Id: select.c,v 1.14 2007-08-17 15:38:52 heroine Exp $
 **
 */
 #include "revm.h"
@@ -15,6 +15,7 @@
 
 /**
  * @brief Return the greatest socket from the elfsh_net_client_list and sock. 
+ * @ingroup io
  */
 #if defined(ELFSHNET)
 int             revm_getmaxfd()
@@ -74,8 +75,11 @@ int             revm_getmaxfd()
 
 
 
-/** Add a main socket and client's sockets to the sockets list used by select
-** and call get_max_fd to get the greatest */
+/**
+ * @brief Add a main socket and client's sockets to the sockets list used by select
+ * and call get_max_fd to get the greatest 
+ * @ingroup io
+ */
 int		revm_prepare_select(fd_set *sel_sockets)
 {
   int           index;
@@ -140,7 +144,10 @@ int		revm_prepare_select(fd_set *sel_sockets)
 
 
 
-/* Check if we had any network event */
+/**
+ * @brief Check if we had any network event
+ * @ingroup io
+ */
 void			revm_check_net_select(fd_set *sel_sockets, 
 					    int cursock)
 {
@@ -169,7 +176,10 @@ void			revm_check_net_select(fd_set *sel_sockets,
 
 
 
-/* Set IO to the choosen socket */
+/** 
+ * @brief Set IO to the choosen socket 
+ * @ingroup io 
+*/
 int			revm_socket_getnew()
 {
   revmjob_t		*cur;
@@ -198,6 +208,10 @@ int			revm_socket_getnew()
   return (0);
 }
 
+/***
+ * @brief TO COMPLETE
+ *
+ */
 int			revm_preselect_prompt()
 {
   // In the case of normal loop print prompt
@@ -245,7 +259,10 @@ int			revm_preselect_prompt()
 }
 
 
-/* Wait for all input */
+/**
+ * @brief Wait for all input 
+ * @ingroup io
+ */
 int                     revm_select()
 {
   fd_set		sel_sockets;

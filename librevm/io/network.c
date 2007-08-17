@@ -6,7 +6,7 @@
  * Started Wed Feb 25 22:22:35 2004 yann_malcom
  * Updated Mon Mar 05 04:37:10 2007 jfv 
  *
- * $Id: network.c,v 1.9 2007-08-03 18:05:03 may Exp $
+ * $Id: network.c,v 1.10 2007-08-17 15:38:52 heroine Exp $
  *
  */
 #include "revm.h"
@@ -20,7 +20,8 @@ int  	       elfsh_net_client_count = 0;
 /* Is net support enable ? */
 #if defined(ELFSHNET)
 /**
- * Add a client socket to the elfsh_net_client_list. 
+ * @brief Add a client socket to the elfsh_net_client_list. 
+ * @ingroup io
  */
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
@@ -73,6 +74,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 
 /** 
  * @brief Return the number of buffer in a revmsock_t recvd 
+ * @ingroup io
  */
 int		revm_socket_get_nb_recvd(char *inet)
 {
@@ -151,7 +153,10 @@ int		revm_socket_get_nb_recvd(char *inet)
 	       "Failed to receive", (-1));
 }
 
-/* Only close a socket */
+/**
+ * @brief Only close a socket 
+ * @ingroup io
+*/
 int revm_socket_close(int socket)
 {
 
@@ -170,9 +175,10 @@ int revm_socket_close(int socket)
 
 
 
-/*
-** Remove a client socket from the list and close it, return (-1) if socket 
-** not found
+/**
+* @brief Remove a client socket from the list and close it, return (-1) if socket 
+* not found
+* @ingroup io
 */
 int		 revm_socket_del(char *inet_addr)
 {
@@ -235,7 +241,10 @@ int		 revm_socket_del(char *inet_addr)
 
 
 
-/* Really send the data */
+/**
+ * @brief Really send the data 
+ * @ingroup io
+ */
 int revm_netsend(char *buf, unsigned int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -253,7 +262,10 @@ int revm_netsend(char *buf, unsigned int len)
 
 
 
-/* send buf on a socket */
+/**
+ * @brief send buf on a socket 
+ * @ingroup io
+*/
 int	revm_net_output(char *buf)
 {
   int	ret;
@@ -282,7 +294,10 @@ int	revm_net_output(char *buf)
 
 
 
-/* Create le main socket and bind it to ELFSH_LISTEN_PORT. */
+/**
+ * @brief  Create le main socket and bind it to ELFSH_LISTEN_PORT. 
+ * @ingroup io
+*/
 int	revm_create_server(int			*serv_sock, 
 			 struct sockaddr_in	*addr,
 			 u_int			port)
@@ -322,7 +337,10 @@ int	revm_create_server(int			*serv_sock,
 
 
 
-/* Update revmsock_t recvd buffer */
+/**
+ * @brief Update revmsock_t recvd buffer 
+ * @ingroup io
+*/
 int		revm_update_recvd(revmsock_t *socket)
 {
   char		*buf;
@@ -477,7 +495,10 @@ int		revm_update_recvd(revmsock_t *socket)
 
 
 
-/* send buf on a dump connection */
+/**
+ * @brief  send buf on a dump connection 
+ * @ingroup io
+ */
 int	revm_dump_output(char *buf)
 {
   int	ret = 0;
@@ -496,7 +517,10 @@ int	revm_dump_output(char *buf)
 
 
 
-/* Return the first packet data */
+/** 
+ * @brief Return the first packet data 
+ * @ingroup io
+*/
 char	*revm_dump_input()
 {
   char	*tmp;
@@ -510,7 +534,10 @@ char	*revm_dump_input()
 
 
 
-/* accept a DUMP connection */
+/** 
+ * @brief accept a DUMP connection 
+ * @ingroup io
+*/
 int			revm_dump_accept()
 {
   struct sockaddr_in    cli_addr;
@@ -562,7 +589,10 @@ int			revm_dump_accept()
 
 
 
-/* Accept new connection if there is */
+/**
+ * @brief  Accept new connection if there is 
+ * @ingroup io
+*/
 int			revm_net_accept()
 {
   socklen_t		temp_addr_len;
@@ -636,7 +666,10 @@ int			revm_net_accept()
 
 
 
-/* One listening step */
+/**
+ * @brief  One listening step 
+ * @ingroup io
+*/
 int			revm_net_recvd(fd_set *sel_sockets)
 {
   revmsock_t           *temp_socket;
@@ -810,7 +843,10 @@ int			revm_net_recvd(fd_set *sel_sockets)
 
 
 
-/* Merge buffers */
+/**
+ * @brief  Merge buffers 
+ * @ingroup io
+*/
 char	*revm_socket_merge_recvd(revmsock_t *socket)
 {
   char	*ret;
@@ -851,7 +887,10 @@ char	*revm_socket_merge_recvd(revmsock_t *socket)
 
 
 
-/* Return the first buffers */
+/**
+ * @brief  Return the first buffers 
+ * @ingroup io
+ */
 char			*revm_net_input()
 {
   revmsock_t		*temp_socket;
@@ -917,7 +956,10 @@ char			*revm_net_input()
 
 
 
-/* Listening initialisation */
+/** 
+ * @brief Listening initialisation 
+ * @ingroup io
+*/
 int			revm_net_init()
 {
   revmjob_t		*init;
@@ -952,7 +994,10 @@ int			revm_net_init()
 
 
 
-/* Stopping network | not workspace compliant ... */
+/** 
+ * @brief Stopping network | not workspace compliant ... 
+ * @ingroup io
+*/
 int		      revm_net_stop()
 {
   listent_t           *actual;
@@ -1015,7 +1060,10 @@ int		      revm_net_stop()
 
 
 
-/* Clean jobs */
+/** 
+ * @brief Clean jobs 
+ * @ingroup io
+*/
 int			revm_clean_jobs()
 {
   revmjob_t		*job;
@@ -1054,12 +1102,19 @@ int			revm_clean_jobs()
 /* Case where the network is not enabled */
 #else
 
-
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_clean_jobs()
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_getmaxfd() 
 { 
   if (world.state.revm_mode != REVM_STATE_DEBUGGER)
@@ -1070,77 +1125,137 @@ int		revm_getmaxfd()
     return (world.fifo_c2s); 
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
   return (NULL);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_socket_get_nb_recvd(char *inet)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_socket_close(int socket)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		 revm_socket_del(char *inet_addr)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_netsend(char *buf, unsigned int len)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_net_output(char *buf)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_create_server(int *serv_sock, 
 				 struct sockaddr_in *addr)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_update_recvd(revmsock_t *socket)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_net_accept_connection()
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_dump_accept_connection()
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_net_recvd(fd_set *sel_sockets)
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 char		*revm_socket_merge_recvd(revmsock_t *socket)
 {
   return (NULL);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 char		*revm_net_input()
 {
   return (NULL);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_net_init()
 {
   return (0);
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 int		revm_net_stop()
 {
   return (0);

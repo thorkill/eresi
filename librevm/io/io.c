@@ -1,16 +1,19 @@
 /**
  * @file io.c
- *
- * Initialize the IO system
+ * @ingroup io
+ * @brief Initialize the IO system
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
  * Updated on  Mon Mar  5 18:47:41 2005 ym
  *
- * $Id: io.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ * $Id: io.c,v 1.12 2007-08-17 15:38:52 heroine Exp $
  *
  */
 #include "revm.h"
 
+/**
+ * @defgroup io librevm Input/output
+ */
 
 /**
  * Reset lines counters and ignore output state 

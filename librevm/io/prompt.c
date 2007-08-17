@@ -1,12 +1,12 @@
 /**
  * @file prompt.c
  *
- * Interface for prompt management
- *
+ * @brief Interface for prompt management
+ * @ingroup io
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv
  *
- * $Id: prompt.c,v 1.8 2007-08-03 11:51:00 heroine Exp $
+ * $Id: prompt.c,v 1.9 2007-08-17 15:38:52 heroine Exp $
  *
 */
 #include "revm.h"
@@ -14,12 +14,19 @@
 
 //char buf[BUFSIZ];
 
-
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 void    revm_set_prompt(void (*func) (char *name, u_int size))
 {
   prompt_token_setup = func;
 }
 
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
 void	revm_create_default_prompt(char *name, u_int size)
 {
   snprintf(name, size - 1,
@@ -41,7 +48,8 @@ void	revm_create_default_prompt(char *name, u_int size)
 }
 
 /** 
- * return the right prompt 
+ * @brief return the right prompt
+ * @ingroup io
  */
 char*	revm_get_prompt()
 {
@@ -72,7 +80,10 @@ char*	revm_get_prompt()
 }
 
 
-/* Display the prompt */
+/**
+ * @brief Display the prompt 
+ * @ingroup io
+ */
 int		revm_display_prompt()
 {
   char		*buf;

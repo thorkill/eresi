@@ -1,17 +1,20 @@
 /**
  * @file log.c
- *
- * Implement logging facilities 
+ * @ingroup io
+ * @brief Implement logging facilities 
  *
  * Started September 16 03:11:04 2005 jfv
  *
- * $Id: log.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ * $Id: log.c,v 1.8 2007-08-17 15:38:52 heroine Exp $
  *
  */
 #include "revm.h"
 
 
-/* Strip a char from a string */
+/**
+ * @brief  Strip a char from a string 
+ * @ingroup io
+ */
 #if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
 static void		__strip_char(char *str, char c)
 {

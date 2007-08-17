@@ -6,7 +6,7 @@
  * Started on Fri Mar 5 00:55:40 2004 jfv
  * Updated on Mon Mar 5 18:47:41 2007 jfv
  *
- * $Id: output.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ * $Id: output.c,v 1.8 2007-08-17 15:38:52 heroine Exp $
  *
  */
 #include "revm.h"
@@ -14,7 +14,8 @@
 
 
 /**
- * @brief Display str on all term 
+ * @brief Display str on all term
+ * @ingroup io
  */
 int		revm_output_bcast(char *str)
 {
@@ -59,7 +60,10 @@ int		revm_output_bcast(char *str)
 
 
 
-/* OUTPUT handler for stdout */
+/**
+ * @brief OUTPUT handler for stdout
+ * @ingroup io
+ */
 int		revm_output(char *str)
 {
   char		*tmp;
@@ -122,7 +126,10 @@ int		revm_output(char *str)
 
 
 
-/* Output without buffering/log */
+/**
+ * @brief  Output without buffering/log 
+ * @ingroup io
+*/
 int		revm_output_nolog(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -132,7 +139,10 @@ int		revm_output_nolog(char *str)
 
 
 
-/* ERR output function (stderr) */
+/**
+ * @brief ERR output function (stderr) 
+ * @ingroup io 
+*/
 int		revm_outerr(char *str)
 {
   revm_log(str);
@@ -143,7 +153,8 @@ int		revm_outerr(char *str)
 
 
 /** 
- * OUTPUT handler for stdout 
+ * @brief OUTPUT handler for stdout 
+ * @ingroup io
  */
 int		revm_stdoutput(char *str)
 {
@@ -155,7 +166,8 @@ int		revm_stdoutput(char *str)
 
 
 /** 
- * Change the Output file 
+ * @bief Change the Output file 
+ * @ingroup io
  */
 void	revm_setoutput(revmworkspace_t *ws, int fd)
 {
