@@ -4,7 +4,7 @@
 ** Started Sat 13 2006 09:52:12 mxatone
 **
 **
-** $Id: libedfmt-stabs.h,v 1.8 2007-06-01 17:26:59 mxatone Exp $
+** $Id: libedfmt-stabs.h,v 1.9 2007-08-17 01:45:46 heroine Exp $
 **
 */
 
@@ -27,15 +27,15 @@ stabs_ent[stabs_index]
 (stabs_datastr + stabs_c_ent.strindex)
 
 /**
- * Represent an entrie on the stab section 
+ * @brief Represent an entrie on the stab section 
  */
 typedef struct	s_stabsent
 {
-  elfsh_Addr   	strindex; 	/* The index to find the string on the string stab section */
-  u_char       	type;		/* Type id */
-  u_char	other;		/* Never use, already @ 0 */
-  u_short	desc;		/* Used to store short information like line */
-  elfsh_Addr  	value;		/* Used to store addr aligned informations */
+  elfsh_Addr   	strindex; 	/*!< The index to find the string on the string stab section */
+  u_char       	type;		/*!< Type id */
+  u_char	other;		/*!< Never use, already @ 0 */
+  u_short	desc;		/*!< Used to store short information like line */
+  elfsh_Addr  	value;		/*!< Used to store addr aligned informations */
 }	     	edfmtstabsent_t;
 
 /* Forward declaration */
@@ -45,44 +45,44 @@ struct s_stabstype;
 typedef struct s_stabstype edfmtstabstype_t;
 
 /**
- * A type is defined as two number, file and type number 
+ * @brief A type is defined as two number, file and type number 
  */
 typedef struct 	s_stabstypenum
 {
-  long		file;
-  long		number;
+  long		file;			/*!< TO COMPLETE */
+  long		number;			/*!< TO COMPLETE */
 }		edfmtstabstypenum_t;
 
 /**
- * A structure attribute 
+ * @brief A structure attribute 
  */
 typedef struct	s_stabsattr
 {
-  char		name[STABS_NAME_SIZE];
+  char		name[STABS_NAME_SIZE];	/*!< TO COMPLETE */
 
   edfmtstabstype_t *type;
 
-  /* Start offset and size */
-  long		start;
-  long		size;
 
-  struct s_stabsattr *next;
+  long		start;			/*!< Start offset */
+  long		size;			/*!< Start size */
+
+  struct s_stabsattr *next;		/*!< TO COMPLETE */
 }		edfmtstabsattr_t;
 
 /**
- * Describe a structure 
+ * @brief Describe a structure 
  */
 typedef struct 	s_stabsstruct
 {
-  /* Total size */
-  long		size;
+  
+  long		size;		/*!< Total size */
 
-  /* Attribute list */
-  edfmtstabsattr_t *attr;
+  
+  edfmtstabsattr_t *attr;	/*!< Attribute list */
 }		edfmtstabsstruct_t;
 
 /**
- * Describe an enum 
+ * @brief Describe an enum 
  */
 typedef struct 	s_stabsenum
 {
@@ -108,7 +108,7 @@ typedef struct	s_stabsrange
 }		edfmtstabsrange_t;
 
 /**
- * Describe an array 
+ * @brief Describe an array 
  */
 typedef struct	s_stabsarray
 {
@@ -123,7 +123,7 @@ typedef struct	s_stabsarray
 }		edfmtstabsarray_t;
 
 /**
- * Represent a function 
+ * @brief Represent a function 
  */
 typedef struct 	s_stabsfunc
 {
@@ -144,7 +144,7 @@ typedef struct 	s_stabsfunc
 }		edfmtstabsfunc_t;
 
 /** 
- * Describe a type, a type isn't always basic 
+ * @brief Describe a type, a type isn't always basic 
  */
 struct		s_stabstype
 {
@@ -244,7 +244,8 @@ typedef struct	s_stabsline
 }		edfmtstabsline_t;
 
 /**
- * Describe a file:
+ * @brief Describe a file
+ *
  * There is two different types of files so (object file) and include (header file) 
  * - an object file wouldn't have any parent
  * - an include file can have others include file but always have a parent 
