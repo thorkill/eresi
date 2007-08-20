@@ -1,5 +1,5 @@
 /*
-** $Id: op_add_eax_iv.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_add_eax_iv.c,v 1.7 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -15,7 +15,6 @@ int op_add_eax_iv(asm_instr *new, u_char *opcode, u_int len,
 {
   
   new->instr = ASM_ADD;
-  new->type = ASM_TYPE_ARITH;
   new->ptr_instr = opcode;
   new->len += 1;
 

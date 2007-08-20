@@ -2,7 +2,7 @@
  * @file op_sti.c
  * @ingroup handlers_ia32
  *
-** $Id: op_sti.c,v 1.5 2007-08-15 21:30:21 strauss Exp $
+** $Id: op_sti.c,v 1.6 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -19,7 +19,6 @@ int op_sti(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;
-  new->type = ASM_TYPE_CONTROL;
   new->instr = ASM_STI;
   new->type = ASM_TYPE_WRITEFLAG;
   /* Should be VIF for CPL = 3 and IOPL < CPL */

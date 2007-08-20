@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_or.c,v 1.6 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_or.c,v 1.7 2007-08-20 07:21:05 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -38,7 +38,7 @@ asm_sparc_or(asm_instr * ins, u_char * buf, u_int len,
     ins->nb_op = 2;
   }
   else if (ins->op3.baser == ASM_REG_G0) {
-    if (ins->op2.content == ASM_OTYPE_REGISTER &&
+    if (ins->op2.content == ASM_SP_OTYPE_REGISTER &&
         ins->op2.baser == ASM_REG_G0) {
 
       ins->instr = ASM_SP_CLR;

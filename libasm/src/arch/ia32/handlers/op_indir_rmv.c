@@ -1,5 +1,5 @@
 /*
-** $Id: op_indir_rmv.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_indir_rmv.c,v 1.5 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -20,11 +20,17 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
   switch(modrm->r) {
   case 0:
     new->instr = ASM_INC;
+    new->type = ASM_TYPE_INCDEC | ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_AF | ASM_FLAG_OF | ASM_FLAG_PF |
+                        ASM_FLAG_SF | ASM_FLAG_ZF;
     new->op1.type = ASM_OTYPE_ENCODED;
     new->op1.size = ASM_OSIZE_VECTOR;
     break;
   case 1:
     new->instr = ASM_DEC;
+    new->type = ASM_TYPE_INCDEC | ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+    new->flagswritten = ASM_FLAG_AF | ASM_FLAG_OF | ASM_FLAG_PF |
+                        ASM_FLAG_SF | ASM_FLAG_ZF;
     new->op1.type = ASM_OTYPE_ENCODED;
     new->op1.size = ASM_OSIZE_VECTOR;
     break;
@@ -35,7 +41,7 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
     new->op1.type = ASM_OTYPE_MEMORY;
     break;
   case 3:
-    new->type = ASM_TYPE_CALLPROC;
+    new->type = ASM_TYPE_CALLPROC | ASM_TYPE_TOUCHSP;
     new->instr = ASM_CALL;
     new->op1.type = ASM_OTYPE_MEMORY;
 
@@ -52,6 +58,7 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
     break;
   case 6:
     new->instr = ASM_PUSH;
+    new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
     new->op1.type = ASM_OTYPE_ENCODED;
     new->op1.size = ASM_OSIZE_VECTOR;
     break;
@@ -65,18 +72,13 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
   } /* switch */
   if ((new->op1.type == ASM_OTYPE_ENCODED) || 
       (new->op1.type == ASM_OTYPE_MEMORY)) {
-#if LIBASM_USE_OPERAND_VECTOR
+
     new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
 				  new);
-#else
-    operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-#endif
+
     if (new->op1.type == ASM_OTYPE_MEMORY)
       new->op1.content |= ASM_OP_ADDRESS;
   }
-#if LIBASM_USE_OPERAND_VECTOR
-#else
-  new->len += new->op1.len;  
-#endif
+
   return (new->len);
 }

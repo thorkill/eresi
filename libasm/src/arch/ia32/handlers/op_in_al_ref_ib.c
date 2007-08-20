@@ -1,5 +1,5 @@
 /*
-** $Id: op_in_al_ref_ib.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_in_al_ref_ib.c,v 1.7 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -21,14 +21,9 @@ int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   new->op1.content = ASM_OP_BASE;
   new->op1.regset = ASM_REGSET_R8;
   new->op1.baser = ASM_REG_AL;
+
   new->len += asm_operand_fetch(&new->op2, opcode + 1,
                                 ASM_OTYPE_IMMEDIATEBYTE, new);
-
-  new->op1.type = ASM_OTYPE_FIXED;
-  new->op1.content = ASM_OP_BASE;
-  new->op1.regset = ASM_REGSET_R8;
-  new->op1.baser = ASM_REG_AL;
-
   new->op2.type = ASM_OTYPE_IMMEDIATE;
   new->op2.content = ASM_OP_VALUE;
 

@@ -1,5 +1,5 @@
 /*
-** $Id: op_popa.c,v 1.3 2007-05-11 16:40:58 heroine Exp $
+** $Id: op_popa.c,v 1.4 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -19,6 +19,6 @@ int op_popa(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->ptr_instr = opcode;
   new->instr = ASM_POPA;
   new->spdiff = 8 * 4;
-  new->type = ASM_TYPE_TOUCHSP;
+  new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_LOAD;
   return (new->len);
 }

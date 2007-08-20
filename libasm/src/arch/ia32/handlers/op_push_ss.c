@@ -1,5 +1,5 @@
 /*
-** $Id: op_push_ss.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_push_ss.c,v 1.7 2007-08-20 07:21:04 strauss Exp $
 **
 */
 #include <libasm.h>
@@ -16,7 +16,7 @@ int     op_push_ss(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->ptr_instr = opcode;
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
-  new->type = -4;
+  new->spdiff = -4;
 
   new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
   new->op1.content = ASM_OP_BASE;

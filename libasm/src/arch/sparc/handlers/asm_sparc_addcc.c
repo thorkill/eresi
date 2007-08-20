@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_addcc.c,v 1.9 2007-07-18 15:47:10 strauss Exp $
+** $Id: asm_sparc_addcc.c,v 1.10 2007-08-20 07:21:05 strauss Exp $
 **
 */
 #include "libasm.h"
@@ -35,7 +35,7 @@ asm_sparc_addcc(asm_instr * ins, u_char * buf, u_int len,
   }
 
   if ((ins->op1.baser == ins->op3.baser) &&
-  		ins->op2.content == ASM_OTYPE_IMMEDIATE) {
+  		ins->op2.content == ASM_SP_OTYPE_IMMEDIATE) {
 
     ins->instr = ASM_SP_INCCC;
 
