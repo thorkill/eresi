@@ -1,6 +1,7 @@
 #!evarista/evarista32
-
-# This create on-demand the block instruction list in the eresi runtime
+#
+# Intra-bloc LIR data-flow analysis
+#
 
 reflect $1
 

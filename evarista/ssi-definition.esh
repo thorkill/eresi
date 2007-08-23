@@ -1,0 +1,26 @@
+#!evarista/evarista32
+
+# Types of variables in SSI
+
+type RVar::container = name:string regid:int
+type MVar::container = name:string baseid:int off:int
+
+# Types of operations in SSI
+
+type IGoto::Ins     = dst:RVar
+type ICall::Ins     = dst:RVar
+type RITernop::Ins  = dst:RVar rsrc:RVar isrc:Immed
+type IRAssign::Ins  = dst:RVar src:Immed
+type SetBit::Ins    = src:Immed dst:RVar
+type RICmp::Ins     = fst:Immed snd:RVar
+
+type MRAssign::Ins  = dst:RVar src:MVar
+type RRCmp::Ins     = fst:RVar snd:RVar
+type RMAssign::Ins  = dst:MVar src:RVar
+type IMAssign::Ins  = dst:MVar src:Immed
+type RRRTernop::Ins = dst:RVar src1:RVar src2:RVar
+
+type RPhi::Ins      = dst:RVar
+type RSigma::Ins    = src:RVar
+type MPhi::Ins      = dst:MVar
+type MSigma::Ins    = src:MVar

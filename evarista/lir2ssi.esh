@@ -1,0 +1,139 @@
+#!evarista/evarista32
+#
+# Intra-bloc LIR data-flow analysis
+#
+
+reflect $1
+
+set $curb $_
+set $curaddr $curb.vaddr
+
+#inspect $curb
+#profile enable warn
+
+
+# Start the transformation for the current block
+
+# Note  : do we need rdst(inlist/innbr) linked to rsrc ?
+# Note2 : inlink and outlink can points on ELIR instructions, not SSI !
+
+foreach $instr in $instrlists[$curaddr]
+  
+  # Rewrite the current instruction in the bloc
+  rewrite $instr
+
+    case IndBranch(dst(nbrin:1))
+    pre namegen $nam1 $instr.dst.id
+    into IGoto(dst(name:$nam1 regid:$instr.dst.id 
+ 	           inlist:$instr.dst.inlist nbrin:$instr.dst.nbrin
+                   outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post print Rewriting IndBranch into IGoto at $curaddr
+        
+    case IndBranch() 
+    pre namegen $nam1 $instr.dst.id
+    pre namegen $nam2 $instr.dst.id
+    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
+                  in_nbr:$instr.dst.nbrin))::dst--dst::IGoto(dst(name:$nam2 regid:$instr.dst.id))
+    post print Rewriting IndBranch into RPhi::IGoto at $curaddr
+
+    case IndCall(dst(nbrin:1)) 
+    pre namegen $nam1 $instr.dst.id
+    into ICall(dst(name:$nam1 regid:$instr.dst.id 
+ 	           inlist:$instr.dst.inlist nbrin:$instr.dst.nbrin
+                   outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post print Rewriting IndCall into ICall at $curaddr
+
+    case IndCall() 
+    pre namegen $nam1 $instr.dst.id
+    pre namegen $nam2 $instr.dst.id
+    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
+                  nbrin:$instr.dst.nbrin))::dst--dst::ICall(dst(name:$nam2 regid:$instr.dst.id))
+    post print Rewriting IndCall into RPhi::ICall at $curaddr
+
+    case TernopRI(rsrc(nbrin:1))
+    pre namegen $nam1 $instr.rsrc.id
+    pre namegen $nam2 $instr.dst.id
+    into RITernop(isrc:$instr.isrc, rsrc(regid:$instr.rsrc.id name:$nam1 inlist:$instr.rsrc.inlist 
+	          nbrin:$instr.dst.nbrin) dst(regid:$instr.dst.id name:$nam2 
+                  outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post Rewriting TernopRI into RITernop at $curaddr
+
+    case TernopRI()
+    pre namegen $nam1 $instr.rsrc.id
+    pre namegen $nam2 $instr.rsrc.id
+    pre namegen $nam3 $instr.dst.id
+    into RPhi(dst(name:$nam1 regid:$instr.rsrc.id inlist:$instr.rsrc.inlist
+	      nbrin:$instr.rsrc.nbrin))::dst--rsrc::RITernop(isrc:$instr.isrc, 
+	      rsrc(regid:$instr.rsrc.id name:$nam2 inlist:$instr.rsrc.inlist nbrin:$instr.rsrc.nbrin)
+	      dst(regid:$instr.dst.id name:$nam3 outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post Rewriting TernopRI into Phi::RITernop at $curaddr
+
+    case BitSet(dst(nbrin:1))    
+    pre namegen $nam1 $instr.dst.id 
+    into SetBit(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist nbrin:1 
+	        outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout) src($instr.src))
+    post Rewriting BitSet into SetBit at $curaddr
+
+    case BitSet()    
+    pre namegen $nam1 $instr.dst.id 
+    pre namegen $nam2 $instr.dst.id 
+    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
+                  nbrin:$instr.dst.nbrin))::dst--dst::SetBit(src($instr.src) 
+              dst(name:$nam2 regid:$instr.dst.id outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post Rewriting BitSet into SetBit at $curaddr
+
+    case CmpRI(snd(nbrin:1))     
+    pre namegen $nam1 $instr.snd.id 
+    into RICmp(snd(name:$nam1 regid:$instr.snd.id inlist:$instr.snd.inlist nbrin:1 
+	       outlist:$instr.snd.outlist nbrout:$instr.snd.nbrout) fst($instr.fst))
+    post Rewriting CmpRI into RICmp at $curaddr
+
+    case CmpRI()    
+    pre namegen $nam1 $instr.snd.id 
+    pre namegen $nam2 $instr.snd.id
+    into RPhi(dst(name:$nam1 regid:$instr.snd.id inlist:$instr.snd.inlist 
+                  nbrin:$instr.snd.nbrin))::dst--dst::RICmp(fst($instr.fst) 
+              snd(name:$nam2 regid:$instr.snd.id outlist:$instr.snd.outlist nbrout:$instr.snd.nbrout))
+    post Rewriting BitSet into SetBit at $curaddr
+
+    # Intermediate complicated : memory access
+    # -> Multiple input operands so nbrin can be > 2 on different operands
+    case AssignMR(src(base(nbrin:1) nbrin:1))  
+    pre  namegen $nam1 $instr.dst.id
+    into MRAssign(dst(name: regid: nbrout: outlist:)
+                  src())
+    post print Rewriting of AssignMR into MRAssign at $curaddr
+
+    case AssignMR(src(nbrin:1))  
+    pre namegen $nam1 $instr.src.base.id
+    pre namegen $nam2 $instr.src.base.id
+    pre namegen $nam3 $instr.dst.id
+    into MPhi(dst(name:$nam1 baseid:$instr.src.base.id 
+	          off:$instr.src.off inlist:$instr.dst.inlist 
+		  in_nbr:$instr.dst.nbrin))::dst-dst::IGoto(dst(name:$newnam2 regid:$instr.dst.id))
+    post print Inserted Phi for AssignMR at $curaddr
+
+    # Ici il faut RPhi::MRAssign
+    case AssignMR(src(base(nbrin:1)))
+    pre  namegen $nam1 $instr.src.name; namegen $nam2 $instr.src.name
+
+    # Ici il faut RPhi::MPhi::MRAssign
+    case AssignMR()
+    pre  namegen $nam1 $instr.src.name; namegen $nam2 $instr.src.name
+
+    # TODO
+
+    case CmpRR()     
+    case AssignRM()  
+    case AssignIM()  
+    case TernopR3() 
+
+    case _
+    post print Unsupported LIR instruction at address $curaddr	 
+
+  endrwt
+
+  add $curaddr 4 
+
+eend: endfor
+

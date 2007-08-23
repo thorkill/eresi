@@ -29,10 +29,11 @@ define imm	ASM_OPTYPE_IMM
 define mem	ASM_OPTYPE_MEM
 
 # Types of LIR operands
-type Reg            = id:int
-type Immed          = val:long
-type Mem            = base:Reg off:Immed name:string
-type Ins            = uflags:Immed addr:Immed
+type Ins               = uflags:Immed addr:Immed
+type Immed             = val:long
+type Reg::container    = id:int
+type Mem::container    = base:Reg off:Immed name:string
+
 
 # Types of LIR instructions
 type IndBranch::Ins = dst:Reg
@@ -45,7 +46,9 @@ type TernopR3::Ins  = dst:Reg src1:Reg src2:Reg
 type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
 type AssignIR::Ins  = dst:Reg src:Immed
 type AssignIM::Ins  = dst:Mem src:Immed
+
 type AssignMR::Ins  = dst:Reg src:Mem
+
 type AssignRM::Ins  = dst:Mem src:Reg
 type BitSet::Ins    = src:Immed dst:Reg
 type CmpRI::Ins     = fst:Immed snd:Reg
