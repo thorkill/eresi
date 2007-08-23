@@ -1,6 +1,6 @@
 #!evarista/evarista32
 #
-# Intra-bloc LIR data-flow analysis
+# Conversion from ELIR to SSI form
 #
 
 reflect $1
