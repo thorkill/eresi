@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2-trans.c,v 1.11 2007-07-19 15:20:15 mxatone Exp $
+** $Id: dwarf2-trans.c,v 1.12 2007-08-25 17:13:05 mxatone Exp $
 **
 */
 
@@ -75,7 +75,9 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (pos <= 0 || current_cu == NULL)
+  if (pos <= 0 
+      || current_cu == NULL 
+      || pos > current_cu->length)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);
 
@@ -553,7 +555,7 @@ int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (pos <= 0)
+  if (pos == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 

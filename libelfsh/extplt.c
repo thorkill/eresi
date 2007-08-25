@@ -7,7 +7,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.18 2007-07-29 14:13:33 mxatone Exp $
+ * $Id: extplt.c,v 1.19 2007-08-25 17:13:05 mxatone Exp $
  *
  */
 #include "libelfsh.h"
@@ -36,7 +36,7 @@ int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 
   /* Versym expand is only for linux */
   if (elfsh_get_ostype(file) != ELFSH_OS_LINUX)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Search the correct file using hash version section 
    as every linker should do */
@@ -112,7 +112,8 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 		 "Invalid Parameters", -1);
 
   /* Dynsym data & size */
-  ret = (elfsh_Sym *) dynsym->data;
+  ret = elfsh_get_raw(dynsym);
+
   size = dynsym->curend ? dynsym->curend / sizeof(elfsh_Sym) : 
     dynsym->shdr->sh_size / sizeof(elfsh_Sym);
 
@@ -133,7 +134,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 		 "Cannot find dynamic symbol by name", -1);
 
   /* Hash pointer */
-  data = hash->data;
+  data = elfsh_get_raw(hash);
 
   /* Get bucket & chain pointers */
   bucket = elfsh_get_hashbucket(data);

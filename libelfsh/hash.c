@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 jfv
 ** 
 **
-** $Id: hash.c,v 1.12 2007-07-31 03:28:46 may Exp $
+** $Id: hash.c,v 1.13 2007-08-25 17:13:05 mxatone Exp $
 **
 */
 #include "libelfsh.h"
@@ -576,25 +576,17 @@ elfsh_Verdef  	*elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, i
 }
 
 /**
- * Research a function on dependences file using hash version
+ * Check if this file match directly
  * @param file target file
  * @param name function name
  * @return file object
  */
-elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
+static elfshobj_t	*elfsh_hash_getfile_def_direct(elfshobj_t *file, char *name)
 {
-  char		**keys;
-  u_int		index;
-  int		keynbr;
-  elfshobj_t	*getfile;
-  void		*defdata;
-  int		defsize;
+  int			defsize;
+  void			*defdata;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* We need original file to use child_hash */
-  if (file->original)
-    file = file->original;
 
   /* Check if a version def section exist else we do nothing */
   defdata = elfsh_get_verdeftab(file, &defsize);
@@ -607,25 +599,90 @@ elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
     }
 
-  if (hash_size(&file->child_hash))
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+}
+
+/**
+ * Research a function on dependences file using hash version
+ * @param file target file
+ * @param name function name
+ * @return file object
+ */
+elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
+{
+  char		**keys;
+  u_int		index;
+  int		keynbr;
+  elfshobj_t	*getfile;
+#if defined(sun)
+  Link_map	*actual;
+#else
+  elfshlinkmap_t *actual;
+#endif
+  char		*fname;
+  hash_t	*filehash;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* We need original file to use child_hash */
+  if (file->original)
+    file = file->original;
+
+  /* Check directly this file */
+  if (elfsh_hash_getfile_def_direct(file, name))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
+
+  /* Debug mode use a different dependences technique for mapped files */
+  if (elfsh_is_debug_mode())
     {
-      /* Search on his childs */
-      keys = hash_get_keys(&file->child_hash, &keynbr);
-      if (keys)
+      filehash = hash_find("files");
+
+      if (!filehash)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find file list", NULL);
+
+      /* Iterate linkmap list */
+      for (actual = elfsh_linkmap_get_lnext(file->linkmap);
+	   actual != NULL; 
+	   actual = elfsh_linkmap_get_lnext(actual))
 	{
-	  for (index = 0; index < keynbr; index++)
+	  fname = elfsh_linkmap_get_lname(actual);
+
+	  if (fname && *fname)
 	    {
-	      getfile = (elfshobj_t *) hash_get(&file->child_hash, keys[index]);
+	      getfile = (elfshobj_t *) hash_get(filehash, fname);
+
 	      if (getfile)
 		{
-		  getfile = elfsh_hash_getfile_def(getfile, name);
-
-		  if (getfile)
+		  /* Check directly this file */
+		  if (elfsh_hash_getfile_def_direct(getfile, name))
 		    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, getfile);
 		}
 	    }
-
-	  hash_free_keys(keys);
+	}
+    }
+  else /* Use static file dependence hash table */
+    {
+      if (hash_size(&file->child_hash))
+	{
+	  /* Search on his childs */
+	  keys = hash_get_keys(&file->child_hash, &keynbr);
+	  if (keys)
+	    {
+	      for (index = 0; index < keynbr; index++)
+		{
+		  getfile = (elfshobj_t *) hash_get(&file->child_hash, keys[index]);
+		  if (getfile)
+		    {
+		      getfile = elfsh_hash_getfile_def(getfile, name);
+		      
+		      if (getfile)
+			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, getfile);
+		    }
+		}
+	      
+	      hash_free_keys(keys);
+	    }
 	}
     }
 

@@ -1,4 +1,4 @@
-#!../../../vm/elfsh
+#!../../../elfsh/elfsh32
 
 load myputs.o
 switch 1
@@ -7,7 +7,7 @@ mode dynamic
 #dynsym
 #sym
 
-profile enable warn
+#profile enable warn
 
 reladd 1 myputs.o
 
