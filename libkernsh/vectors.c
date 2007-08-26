@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.7 2007-08-06 15:40:39 pouik Exp $
+** $Id: vectors.c,v 1.8 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -200,6 +200,54 @@ int kernsh_free_noncontiguous_default()
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 	       "free non contiguous default !", -1);
+}
+
+int kernsh_relink_module_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("RELINK MODULE DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "relink module default !", -1);
+}
+
+int kernsh_infect_module_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("INFECT MODULE DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "infect module default !", -1);
+}
+
+int kernsh_kload_module_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KLOAD MODULE DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kload module default !", -1);
+}
+
+int kernsh_kunload_module_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KUNLOAD MODULE DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kunload module default !", -1);
 }
 
 /* Init vectors */
@@ -417,6 +465,39 @@ int kernsh_init_vectors()
                          kernsh_autotypes_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
+#if __DEBUG_KERNSH__
+  printf("INIT RELINK MODULE VECTORS\n");
+#endif
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
+
+  dims[0]    = LIBKERNSH_OSNUM;
+
+  strdims[0] = "OSTYPE";
+
+  /* Register relink module vectors */
+  aspect_register_vector("relink_module", 
+                         kernsh_relink_module_default,
+                         dims, strdims, 1, ASPECT_TYPE_CADDR);
+
+#if __DEBUG_KERNSH__
+  printf("INIT INFECT MODULE VECTORS\n");
+#endif
+  
+  /* Register infect module vectors */
+  aspect_register_vector("infect_module", 
+                         kernsh_infect_module_default,
+                         dims, strdims, 1, ASPECT_TYPE_CADDR);
+  
+  aspect_register_vector("kload_module", 
+                         kernsh_kload_module_default,
+                         dims, strdims, 1, ASPECT_TYPE_CADDR);
+
+  aspect_register_vector("kunload_module", 
+                         kernsh_kload_module_default,
+                         dims, strdims, 1, ASPECT_TYPE_CADDR);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -568,6 +649,27 @@ int kernsh_register_vectors()
   kernsh_register_autotypes(LIBKERNSH_ARCH_I386, 
 			    LIBKERNSH_OS_LINUX_2_6,
 	      		    kernsh_autotypes_linux_2_6);
+
+
+  kernsh_register_relink(LIBKERNSH_OS_LINUX_2_4, 
+			 kernsh_relink_module_linux);
+  kernsh_register_relink(LIBKERNSH_OS_LINUX_2_6, 
+			 kernsh_relink_module_linux);
+
+  kernsh_register_infect(LIBKERNSH_OS_LINUX_2_6, 
+			 kernsh_infect_module_linux_2_6);
+  kernsh_register_infect(LIBKERNSH_OS_LINUX_2_4, 
+			 kernsh_infect_module_linux_2_4);
+
+  kernsh_register_kload(LIBKERNSH_OS_LINUX_2_6, 
+			 kernsh_kload_module_linux);
+  kernsh_register_kload(LIBKERNSH_OS_LINUX_2_4, 
+			  kernsh_kload_module_linux);
+
+  kernsh_register_kunload(LIBKERNSH_OS_LINUX_2_6, 
+			  kernsh_kunload_module_linux);
+  kernsh_register_kunload(LIBKERNSH_OS_LINUX_2_4, 
+			  kernsh_kunload_module_linux);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -953,6 +1055,94 @@ int kernsh_register_autotypes(u_int archtype, u_int ostype, void *fct)
 #endif
 
   aspect_vectors_insert(autotypes, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_relink(u_int ostype, void *fct)
+{
+
+  vector_t *rel;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  rel = aspect_vector_get("relink_module");
+
+  dim    = alloca(sizeof(u_int) * 1);
+  dim[0] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER RELINK MODULE\n");
+#endif
+
+  aspect_vectors_insert(rel, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_infect(u_int ostype, void *fct)
+{
+
+  vector_t *inf;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  inf = aspect_vector_get("infect_module");
+
+  dim    = alloca(sizeof(u_int) * 1);
+  dim[0] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER INFECT MODULE\n");
+#endif
+
+  aspect_vectors_insert(inf, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kload(u_int ostype, void *fct)
+{
+
+  vector_t *kload;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  kload = aspect_vector_get("kload_module");
+
+  dim    = alloca(sizeof(u_int) * 1);
+  dim[0] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KLOAD MODULE\n");
+#endif
+
+  aspect_vectors_insert(kload, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kunload(u_int ostype, void *fct)
+{
+
+  vector_t *kunload;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  kunload = aspect_vector_get("kunload_module");
+
+  dim    = alloca(sizeof(u_int) * 1);
+  dim[0] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KUNLOAD MODULE\n");
+#endif
+
+  aspect_vectors_insert(kunload, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

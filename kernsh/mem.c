@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.5 2007-08-06 15:40:39 pouik Exp $
+** $Id: mem.c,v 1.6 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -63,7 +63,7 @@ int		cmd_sct()
 
   
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 
@@ -127,7 +127,7 @@ int		cmd_idt()
   list_destroy(h);
 
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 
@@ -195,7 +195,7 @@ int		cmd_gdt()
   list_destroy(h);
 
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 
@@ -206,11 +206,11 @@ int		cmd_gdt()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Manipulate memory device */
-int		cmd_mem()
+/* */
+int		cmd_kalloc()
 {
-  char          *param, *param2;
-  char		buff[256];
+  char          *param;
+  char		buff[BUFSIZ];
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -220,118 +220,291 @@ int		cmd_mem()
 #endif
 
   param = world.curjob->curcmd->param[0];
-  param2 = world.curjob->curcmd->param[1];
 
   if (param)
     {
-      if (param2 && !strcmp(param, "alloc"))
-	{
-	  if (kernsh_alloc_contiguous(atoi(param2), &addr))
+      if (kernsh_alloc_contiguous(atoi(param), &addr))
 	    {
 	      revm_setvar_int("_", -1);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			   "Cannot alloc contiguous memory", -1);
 	    }
-	  memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff), 
-		   "%s %s %s %s %s %s\n\n",
-		   revm_colorfieldstr("ALLOCATE"),
-		   revm_colornumber("%u", (unsigned int)atoi(param2)),
-		   revm_colorfieldstr("octet(s)"),
-		   revm_colorfieldstr("OF CONTIGUOUS MEMORY"),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
-	  revm_output(buff);
-	  revm_setvar_long("_", addr);
-	}
-      else if (param2 && !strcmp(param, "free"))
-	{
-	  addr = strtoul( param2, NULL, 16 );
-	  if(kernsh_free_contiguous(addr))
-	    {
-	      revm_setvar_int("_", -1);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Cannot free contiguous memory", -1);
-	    }
-	  memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff), 
-		   "%s %s %s %s\n\n",
-		   revm_colorfieldstr("FREE"),
-		   revm_colorfieldstr("CONTIGUOUS MEMORY"),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
-	  revm_output(buff);
-	  revm_setvar_int("_", 0);
-	}
-      else if (param2 && !strcmp(param, "alloc_nc"))
-	{
-	  if(kernsh_alloc_noncontiguous(atoi(param2), &addr))
-	    {
-	      revm_setvar_int("_", -1);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Cannot get alloc non contiguous memory", -1);
-	    }
-	  memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff), 
-		   "%s %s %s %s %s %s\n\n",
-		   revm_colorfieldstr("ALLOCATE"),
-		   revm_colornumber("%u", (unsigned int)atoi(param2)),
-		   revm_colorfieldstr("octet(s)"),
-		   revm_colorfieldstr("OF NON CONTIGUOUS MEMORY"),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
-	  revm_output(buff);
-	  revm_setvar_long("_", addr);
-	}
-      else if (param2 && !strcmp(param, "free_nc"))
-	{
-	  addr = strtoul( param2, NULL, 16 );
-	  if(kernsh_free_noncontiguous(addr))
-	    {
-	      revm_setvar_int("_", -1);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Cannot get free non contiguous memory", -1);
-	    }
-	  memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff), 
-		   "%s %s %s %s\n\n",
-		   revm_colorfieldstr("FREE"),
-		   revm_colorfieldstr("NONCONTIGUOUS MEMORY"),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
-	  revm_output(buff);
-	  revm_setvar_int("_", 0);
-	}
-      else if (param2 && !strcmp(param, "sym"))
-	{
-	  if(kernsh_get_addr_by_name(param2, &addr, strlen(param2)))
-	    {
-	      revm_setvar_int("_", -1);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Cannot get symbol", -1);
-	    }
-	  memset(buff, '\0', sizeof(buff));
-	  snprintf(buff, sizeof(buff), 
-		   "%s %s %s %s %s\n\n",
-		   revm_colorfieldstr("SYMBOL"),
-		   revm_colorstr(param2),
-		   revm_colorfieldstr("is"),
-		   revm_colorstr("@"),
-		   revm_coloraddress(XFMT, (elfsh_Addr) addr));
-	  revm_output(buff);
-	  revm_setvar_long("_", addr);
-	}
-      else 
-	{
-
-	  revm_setvar_int("_", -1);
-	}
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), 
+	       "%s %s %s %s %s %s\n\n",
+	       revm_colorfieldstr("ALLOCATE"),
+	       revm_colornumber("%u", (unsigned int)atoi(param)),
+	       revm_colorfieldstr("octet(s)"),
+	       revm_colorfieldstr("OF CONTIGUOUS MEMORY"),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+      revm_output(buff);
+      revm_setvar_long("_", addr);
     }
-
+   
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* */
+int		cmd_kfree()
+{
+  char          *param;
+  char		buff[BUFSIZ];
+  unsigned long	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  param = world.curjob->curcmd->param[0];
+
+  if (param)
+    {
+      addr = strtoul( param, NULL, 16 );
+      if(kernsh_free_contiguous(addr))
+	{
+	  revm_setvar_int("_", -1);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot free contiguous memory", -1);
+	}
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), 
+	       "%s %s %s %s\n\n",
+	       revm_colorfieldstr("FREE"),
+	       revm_colorfieldstr("CONTIGUOUS MEMORY"),
+		   revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+      revm_output(buff);
+      revm_setvar_int("_", 0);
+    }
+
+#if defined(USE_READLN)
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  readln_column_update();
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/* */
+int		cmd_kallocnc()
+{
+  char          *param;
+  char		buff[BUFSIZ];
+  unsigned long	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  param = world.curjob->curcmd->param[0];
+
+  if (param)
+    {
+      if(kernsh_alloc_noncontiguous(atoi(param), &addr))
+	{
+	  revm_setvar_int("_", -1);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot get alloc non contiguous memory", -1);
+	}
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), 
+		   "%s %s %s %s %s %s\n\n",
+	       revm_colorfieldstr("ALLOCATE"),
+	       revm_colornumber("%u", (unsigned int)atoi(param)),
+	       revm_colorfieldstr("octet(s)"),
+	       revm_colorfieldstr("OF NON CONTIGUOUS MEMORY"),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+      revm_output(buff);
+      revm_setvar_long("_", addr);
+    }
+  
+#if defined(USE_READLN)
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  readln_column_update();
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* */
+int		cmd_kfreenc()
+{
+  char          *param;
+  char		buff[BUFSIZ];
+  unsigned long	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  param = world.curjob->curcmd->param[0];
+
+  if (param)
+    {
+      addr = strtoul( param, NULL, 16 );
+      if(kernsh_free_noncontiguous(addr))
+	{
+	  revm_setvar_int("_", -1);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot get free non contiguous memory", -1);
+	}
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), 
+	       "%s %s %s %s\n\n",
+	       revm_colorfieldstr("FREE"),
+	       revm_colorfieldstr("NONCONTIGUOUS MEMORY"),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+      revm_output(buff);
+      revm_setvar_int("_", 0);
+    }
+ 
+#if defined(USE_READLN)
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  readln_column_update();
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* */
+int		cmd_ksym()
+{
+  char          *param;
+  char		buff[BUFSIZ];
+  unsigned long	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  param = world.curjob->curcmd->param[0];
+
+  if (param)
+    {
+      if(kernsh_get_addr_by_name(param, &addr, strlen(param)))
+	{
+	  revm_setvar_int("_", -1);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot get symbol", -1);
+	}
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), 
+	       "%s %s %s %s %s\n\n",
+	       revm_colorfieldstr("SYMBOL"),
+	       revm_colorstr(param),
+	       revm_colorfieldstr("is"),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+      revm_output(buff);
+      revm_setvar_long("_", addr);
+    }
+
+#if defined(USE_READLN)
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  readln_column_update();
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* */
+int		cmd_kmodule()
+{
+  int	ret;
+  char  *param, *param2, *param3, *param4;
+  char	buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(USE_READLN)
+  rl_callback_handler_remove();
+#endif
+
+  memset(buff, '\0', sizeof(buff));
+
+  param = world.curjob->curcmd->param[0];
+  param2 = world.curjob->curcmd->param[1];
+  param3 = world.curjob->curcmd->param[2];
+  param4 = world.curjob->curcmd->param[3];
+
+  if (param)
+    {
+      if (param2 && !strcmp(param, "-l"))
+	{
+	  ret = kernsh_kload_module(param2);
+	  if (ret == 0)
+	    {
+	      snprintf(buff, sizeof(buff), 
+		       "Module %s is loaded\n\n",
+		       revm_colorstr(param2));
+	      revm_output(buff);
+	    }
+	    
+	}
+      else if (param2 && !strcmp(param, "-u"))
+	{
+	  ret = kernsh_kunload_module(param2);
+	  if (ret == 0)
+	    {
+	      snprintf(buff, sizeof(buff), 
+		       "Module %s is unloaded\n\n",
+		       revm_colorstr(param2));
+	      revm_output(buff);
+	    }
+	}
+      else if (param2 && param3 && !strcmp(param, "-r"))
+	{
+	  ret = kernsh_relink_module(param2, param3, param4);
+	  if (ret == 0)
+	    {
+	      snprintf(buff, sizeof(buff), 
+		       "Module %s and %s is linked in %s\n\n",
+		       revm_colorstr(param2),
+		       revm_colorstr(param3),
+		       revm_colorstr(param4));
+	      revm_output(buff);
+	    }
+	}
+      else if (param2 && param3 && param4 && !strcmp(param, "-i"))
+	{
+	  ret = kernsh_infect_module(param2, param3, param4);
+	  if (ret == 0)
+	    {
+	      snprintf(buff, sizeof(buff), 
+		       "%s have been replaced by %s in %s\n\n",
+		       revm_colorstr(param3),
+		       revm_colorstr(param4),
+		       revm_colorstr(param2));
+	      revm_output(buff);
+	    }
+	}
+    }
+
+#if defined(USE_READLN)
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  readln_column_update();
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

@@ -16,7 +16,7 @@ Features :
 	- Dismantling kernel memory with libasm
 	- Alloc/Free kernel memory (contiguous and non contiguous)
 	- ET_REL injection in kernel memory
-	- 
+	- Infect loadable kernel module
 	-
 	-
 
@@ -98,39 +98,104 @@ You can define all the libkernsh.*, see section Options below.
 		options :
 
 	- sct :
-		func :		display syscall table
-		args :		no
+		func :		handel the syscall table
+		args :		-d : display syscall table
+				-n : create new syscall table
 		return :	no
 		options :	no
 
 	- idt :
-		func :		display the idt
-		args :		no
+		func :		handle the idt
+		args :		-d : display the idt
 		return :	no
 		options :	no
 
 	- gdt :
-		func :		display the gdt
-		args :		no
+		func :		handle the gdt
+		args :		-d : display the gdt
 		return :	no
 		options :	no
 
-	- mem :
-		func :
-		args : alloc, free, alloc_nc, free_nc
-			alloc		: alloc contiguous memory
-				args	: size
-			free		: free contiguous memory
-				args	: addr to free
-			alloc_nc	: alloc non contiguous memory
-				args	: size
-			free_nc		: free non contiguous memory
-				args	: addr to free
-			sym		: get an address of a symbol
-				args	: symbol's name
-		return : variable $_ is set with the return address or
-			 the return value
+	- alloc :
+		func : alloc contiguous kernel memory
+		args : size (mandatory)
+		return : $_ is set with the return address
+		options : /
 
+	- free :
+		func : free contiguous kernel memory
+		args : addr (mandatory)
+		return : $_ is set with the return value  
+		options : /
+
+	- alloc_nc :
+		func : alloc non contiguous kernel memory
+		args : size (mandatory)
+		return : $_ is set with the return address
+		options : /
+
+	- free_nc : 
+		func : free non contiguous kernel memory
+		args : addr (mandatory)
+		return : $_ is set with the return value
+		options : /
+
+	- kmodule : 
+		func : handle kernel module
+		args : 
+			-l : load a module with insmod
+				sub args : module
+					- module : module's pathname (mandatory)
+			-u : unload a module with rmmod
+				sub args : module
+					- module : module's pathname (mandatory)
+			-r : link module with another
+				sub args : module1 module2 moduleres
+					- module1 : first module's pathname (mandatory)
+					- module2 : second module's pathname (mandatory)
+					- moduleres : result of two modules (mandatory)
+			-i : infect a module
+				sub args : module original_name evil_name
+					- module : module's pathname (mandatory)
+					- original_name : name of the hijacked function
+					- evil_name : name of the hijack function
+		return :
+		options :
+
+	- ksym :
+		func : get an address of a symbol
+		args : symbol's name
+		return : $_ is set with the return address
+		options : /
+	
+	- virtm : IN PROGRESS
+		func :
+		args :
+		return :
+		options :
+
+	- process : IN PROGRESS
+		func :
+		args : 
+			-d : display linked list
+			-c : check hidden process			
+		return :
+		options :
+
+	- kmd5 : IN PROGRESS
+		func :
+		args :  sa output, sa:rva output, sa%rva%size output, 
+			sa%size output, check:format, check input
+			- sa : symbol or addr
+				- special symbol : sct, idt, gdt
+			- rva :
+			- size :
+			- output : file output
+			- input : file input
+			
+		return :
+		options :
+	
 [+] Options :
 
 An option can be set directly in the shell or in the .kernshrc :
@@ -173,11 +238,24 @@ An option can be set directly in the shell or in the .kernshrc :
 		- [S*]
 
 	- libkernsh.gzipcmd : Which is the gzid command
-		- gzip (D)
+		- /bin/gzip (D)
 		- [S*]
 
-	- libkernsh.objcopycmd : Which is  the objcopy command
-		- objcopy
+	- libkernsh.objcopycmd : Which is the objcopy command
+		- /bin/objcopy (D)
+		- [S*]
+
+	
+	- libkernsh.ldcmd : Which is the ld command
+		- /bin/ld
+		- [S*]
+
+	- libkernsh.kload : Which is the insert kernel module command
+		- /bin/insmod (D) (L)
+		- [S*]
+
+	- libkernsh.kunload : Which is the remove kernel module command
+		- /bin/rmmod (D) (L)
 		- [S*]
 
 	- libkernsh.kernelgz : The name to save the extract gzip kernel

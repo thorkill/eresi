@@ -1,7 +1,7 @@
 /*
 ** mode.c for kernsh
 ** 
-** $Id: mode.c,v 1.1 2007-07-28 15:02:23 pouik Exp $
+** $Id: mode.c,v 1.2 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -68,7 +68,7 @@ int		cmd_kmode()
   revm_endline();
 
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
   

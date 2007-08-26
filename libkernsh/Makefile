@@ -2,7 +2,7 @@ include ../config.h
 #
 # Architecture source files
 #
-SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c symbs.c alloc.c autotypes.c misc.c kernel.c
+SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c md5.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c
 
 OBJS32_libkernsh	=	${SRCS_libkernsh:.c=.32.o} 
 OBJS64_libkernsh	=	${SRCS_libkernsh:.64.c=.o}

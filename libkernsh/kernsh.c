@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.8 2007-08-06 15:40:39 pouik Exp $
+** $Id: kernsh.c,v 1.9 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -38,6 +38,21 @@ int kernsh_init_i386(char *os, char *release)
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
+  config_add_item(LIBKERNSH_VMCONFIG_GZIP,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) LIBKERNSH_DEFAULT_GZIP);
+  
+  config_add_item(LIBKERNSH_VMCONFIG_OBJCOPY,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) LIBKERNSH_DEFAULT_OBJCOPY);
+
+  config_add_item(LIBKERNSH_VMCONFIG_LD,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) LIBKERNSH_DEFAULT_LD);
+  
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {
@@ -105,16 +120,6 @@ int kernsh_init_i386(char *os, char *release)
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (char *) buffer);
-      
-      config_add_item(LIBKERNSH_VMCONFIG_GZIP,
-		      CONFIG_TYPE_STR,
-		      CONFIG_MODE_RW,
-		      (char *) LIBKERNSH_DEFAULT_GZIP);
-      
-      config_add_item(LIBKERNSH_VMCONFIG_OBJCOPY,
-		      CONFIG_TYPE_STR,
-		      CONFIG_MODE_RW,
-		      (char *) LIBKERNSH_DEFAULT_OBJCOPY);
 
       config_add_item(LIBKERNSH_VMCONFIG_NB_SYSCALLS,
 		      CONFIG_TYPE_INT,
@@ -135,6 +140,16 @@ int kernsh_init_i386(char *os, char *release)
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_I386_LINUX_END);
+
+      config_add_item(LIBKERNSH_VMCONFIG_KLOAD,
+		      CONFIG_TYPE_STR,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_DEFAULT_LINUX_INSMOD);
+
+      config_add_item(LIBKERNSH_VMCONFIG_KUNLOAD,
+		      CONFIG_TYPE_STR,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_DEFAULT_LINUX_RMMOD);
 
     }
   else
@@ -384,4 +399,24 @@ int kernsh_info_freebsd()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+elfshobj_t *kernsh_load_file(char *name)
+{
+  elfshobj_t *ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = elfsh_load_obj(name);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+void kernsh_unload_file(elfshobj_t *file)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  elfsh_unload_obj(file);
+  
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

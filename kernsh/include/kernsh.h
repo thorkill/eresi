@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.4 2007-08-06 15:40:39 pouik Exp $
+** $Id: kernsh.h,v 1.5 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__
@@ -15,7 +15,7 @@
 #include "kernsh-help.h"
 
 #define KERNSH_SNAME	       	"kernsh"
-#define KERNSH_NAME		"Kernsh shell"
+#define KERNSH_NAME		"Kernel shell"
 #define KERNSH_VERSION 		"0.8"
 #define KERNSH_RELEASE		"a"
 #define KERNSH_EDITION		"dev"
@@ -28,8 +28,14 @@
 #define CMD_SCT		        "sct"
 #define CMD_IDT			"idt"
 #define CMD_GDT			"gdt"
-#define CMD_MEM			"mem"
+#define CMD_KALLOC		"kalloc"
+#define CMD_KFREE		"kfree"
+#define CMD_KALLOCNC		"kallocnc"
+#define CMD_KFREENC		"kfreenc"
+#define CMD_KSYM		"ksym"
+#define CMD_KMODULE		"kmodule"
 #define CMD_AUTOTYPES		"autotypes"
+#define CMD_DUMP		"dump"
 
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
@@ -38,8 +44,14 @@ int	cmd_kmode();
 int     cmd_sct();
 int	cmd_idt();
 int	cmd_gdt();
-int	cmd_mem();
+int	cmd_kalloc();
+int	cmd_kfree();
+int	cmd_kallocnc();
+int	cmd_kfreenc();
+int	cmd_ksym();
+int	cmd_kmodule();
 int	cmd_autotypes();
+int	cmd_dump();
 
 int	kernsh_config();
 

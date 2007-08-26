@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.8 2007-08-06 15:40:39 pouik Exp $
+** $Id: libkernsh.h,v 1.9 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -39,6 +39,29 @@
 ( "\n\tint $0x80": "=a"(__ret) : "0"(num),"b" (arg0),"c"(arg1),"d"(arg2),"S"(arg3),"D"(arg4) );
 
 #endif
+
+#define GET_32BIT_LSB_FIRST(cp) \
+	(((unsigned long)(unsigned char)(cp)[0]) | \
+	((unsigned long)(unsigned char)(cp)[1] << 8) | \
+	((unsigned long)(unsigned char)(cp)[2] << 16) | \
+	((unsigned long)(unsigned char)(cp)[3] << 24))
+
+#define PUT_32BIT_LSB_FIRST(cp, value) do { \
+	(cp)[0] = (value); \
+	(cp)[1] = (value) >> 8; \
+	(cp)[2] = (value) >> 16; \
+	(cp)[3] = (value) >> 24; } while (0)
+
+/* The four core functions - F1 is optimized somewhat */
+
+#define F1(x, y, z) (z ^ (x & (y ^ z)))
+#define F2(x, y, z) F1(z, x, y)
+#define F3(x, y, z) (x ^ y ^ z)
+#define F4(x, y, z) (y ^ (x | ~z))
+
+/* This is the central step in the MD5 algorithm. */
+#define MD5STEP(f, w, x, y, z, data, s) \
+	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 
 enum
   {
@@ -81,6 +104,7 @@ enum
 #define LIBKERNSH_VMCONFIG_KERNEL	        "libkernsh.kernel"
 #define LIBKERNSH_VMCONFIG_GZIP			"libkernsh.gzipcmd"
 #define LIBKERNSH_VMCONFIG_OBJCOPY		"libkernsh.objcopycmd"
+#define LIBKERNSH_VMCONFIG_LD			"libkernsh.ldcmd"
 #define LIBKERNSH_VMCONFIG_KERNELGZ		"libkernsh.kernelgz"
 #define LIBKERNSH_VMCONFIG_KERNELELF		"libkernsh.kernelelf"
 #define LIBKERNSH_VMCONFIG_USE_KERNEL		"libkernsh.use_kernel"
@@ -90,6 +114,8 @@ enum
 #define LIBKERNSH_VMCONFIG_KERNEL_START		"libkernsh.kernel_start"
 #define LIBKERNSH_VMCONFIG_KERNEL_END		"libkernsh.kernel_end"
 #define LIBKERNSH_VMCONFIG_ALLOC		"libkernsh.alloc"
+#define LIBKERNSH_VMCONFIG_KLOAD		"libkernsh.kload"
+#define LIBKERNSH_VMCONFIG_KUNLOAD		"libkernsh.kunload"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -98,14 +124,17 @@ enum
 #define LIBKERNSH_DEFAULT_LINUX_NB_SYSCALLS	320
 #define LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL	17
 #define LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE	0x3e800000
+#define LIBKERNSH_DEFAULT_LINUX_INSMOD		"/sbin/insmod"
+#define LIBKERNSH_DEFAULT_LINUX_RMMOD		"/sbin/rmmod"
 #define LIBKERNSH_DEFAULT_STORAGE_PATH		"/tmp/"
-#define LIBKERNSH_DEFAULT_GZIP			"gzip"
-#define LIBKERNSH_DEFAULT_OBJCOPY		"objcopy"
+#define LIBKERNSH_DEFAULT_GZIP			"/bin/gzip"
+#define LIBKERNSH_DEFAULT_OBJCOPY		"/usr/bin/objcopy"
+#define LIBKERNSH_DEFAULT_LD			"/usr/bin/ld"
 
 #define LIBKERNSH_STRING_DEVICE_MEM		"/dev/mem"
 #define LIBKERNSH_STRING_DEVICE_KMEM		"/dev/kmem"
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
-
+#define LIBKERNSH_STRING_REL_GNU		".rel.gnu.linkonce.this_module"
 
 #define LIBKERNSH_I386_LINUX_START		0xc0000000      
 #define LIBKERNSH_I386_LINUX_END	      	0xc1000000
@@ -192,6 +221,22 @@ typedef struct s_libkernshsgdt
 	unsigned long fin;
 } libkernshsgdt_t;
 
+
+typedef struct s_libkernshmd5context
+{
+  unsigned long buf[4];
+  unsigned long bits[2];
+  unsigned char in[64];
+} libkernshmd5context_t;
+
+
+typedef struct s_dectask
+{
+	int dec_list;
+	int dec_pid;
+	int dec_uid;
+} dectask_t;
+
 typedef struct s_autotask
 {
 	int offset_name;
@@ -199,7 +244,10 @@ typedef struct s_autotask
 	int offset_next;
 	int offset_pid;
 	int offset_uid;
+
+	dectask_t dectask;
 } autotask_t;
+
 /* World kernsh struct */
 typedef struct s_libkernshworld
 {
@@ -239,6 +287,8 @@ typedef struct s_libkernshworld
 	unsigned long gdt_base; /* Address of the gdt table */
 	unsigned short gdt_limit; /* Lenght */
 
+	autotask_t typetask;
+	
 	elfshobj_t *root;	/* Pointer to the kernel's elfshobj_t*/
 } libkernshworld_t;
 
@@ -258,6 +308,9 @@ int	kernsh_info();
 int	kernsh_info_linux();
 int	kernsh_info_netbsd();
 int	kernsh_info_freebsd();
+
+elfshobj_t	*kernsh_load_file(char *);
+void		kernsh_unload_file(elfshobj_t *);
 
 /* Memory or Static mode */
 int	kernsh_is_mem_mode();
@@ -285,6 +338,11 @@ int	kernsh_register_alloc_noncontiguous(u_int, void *);
 int	kernsh_register_free_contiguous(u_int, void *);
 int	kernsh_register_free_noncontiguous(u_int, void *);
 int	kernsh_register_autotypes(u_int, u_int, void *);
+int	kernsh_register_relink(u_int, void *);
+int	kernsh_register_infect(u_int, void *);
+int	kernsh_register_kload(u_int, void *);
+int	kernsh_register_kunload(u_int, void *);
+
 
 /* Memory */
 int	kernsh_openmem();
@@ -364,12 +422,35 @@ int	kernsh_free_contiguous_linux(unsigned long);
 int	kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
 int	kernsh_free_noncontiguous_linux(unsigned long);
 
+/* Module */
+int kernsh_kload_module(char *);
+int kernsh_kload_module_linux(char *);
+
+int kernsh_kunload_module(char *);
+int kernsh_kunload_module_linux(char *);
+
+int kernsh_relink_module(char *, char *, char *);
+int kernsh_relink_module_linux(char *, char *, char *);
+
+int kernsh_infect_module(char *, char *, char *);
+int kernsh_infect_module_linux_2_6(char *, elfshobj_t *, char *, char *);
+int kernsh_infect_module_linux_2_4(char *, elfshobj_t *, char *, char *);
+
 /* Hijack */
 
+/* MD5 */
+
+int kernsh_md5init(libkernshmd5context_t *);
+int kernsh_md5update(libkernshmd5context_t *, 
+		     unsigned char *, 
+		     unsigned);
+int kernsh_md5final(unsigned char digest[16], libkernshmd5context_t *);
+int kernsh_md5transform(unsigned long buf[4], const unsigned char inext[64]);
+int kernsh_md5dump(unsigned char *, 
+		   int, 
+		   unsigned char md5buffer[BUFSIZ]);
 
 /* Auto Types */
-
-
 int kernsh_autotypes();
 int kernsh_autotypes_linux_2_6();
 int kernsh_autotypes_linux_2_4();
@@ -380,6 +461,9 @@ int kernsh_autotask_linux_2_6();
 int kernsh_autotask_linux_2_4();
 int kernsh_autotask_netbsd();
 int kernsh_autotask_freebsd();
+
+int kernsh_autotask_offsetname_linux_2_6(char *, size_t);
+int kernsh_autotask_offsetlist_linux_2_6(char *, size_t);
 
 /* Kernel Decompression */
 int	kernsh_decompkernel();

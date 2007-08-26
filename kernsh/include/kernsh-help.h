@@ -1,7 +1,7 @@
 /*
 ** kernsh-help.h for kernsh
 **
-** $Id: kernsh-help.h,v 1.3 2007-08-06 15:40:39 pouik Exp $
+** $Id: kernsh-help.h,v 1.4 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #ifndef __KERNSH_HELP_H_
@@ -14,7 +14,13 @@
 #define HLP_SCT		        "display the syscalltable"
 #define HLP_IDT			"display the idt"
 #define HLP_GDT			"display the gdt"
-#define HLP_MEM			"manipulate memory device"
+#define HLP_KALLOC		"manipulate memory device"
+#define HLP_KFREE		"manipulate memory device"
+#define HLP_KALLOCNC		"manipulate memory device"
+#define HLP_KFREENC		"manipulate memory device"
+#define HLP_KSYM		"manipulate memory device"
+#define HLP_KMODULE		"blabla"
 #define HLP_AUTOTYPES		"autotypes"
+#define HLP_DUMP		"dump"
 
 #endif

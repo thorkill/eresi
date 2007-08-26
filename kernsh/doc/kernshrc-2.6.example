@@ -74,7 +74,7 @@ type completion = done:int wait:wait_queue_head_t
 type timespec = tv_sec:long tv_nsec:long
 #define linux/time.h
 
-type group_info = ngroups:int usage:atomic_t small_block:int[32] nblocks:int blocks:*int[0]
+type group_info = ngroups:int usage:atomic_t small_block:int[32] nblocks:int blocks:*int
 #define linux/sched.h 
 
 type kernel_cap_t = cap:int

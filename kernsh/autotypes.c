@@ -1,7 +1,7 @@
 /*
 ** autotypes.c for kernsh
 ** 
-** $Id: autotypes.c,v 1.1 2007-08-06 15:40:39 pouik Exp $
+** $Id: autotypes.c,v 1.2 2007-08-26 18:07:09 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -26,7 +26,7 @@ int		cmd_autotypes()
 		 "Cannot autotypes", -1);
 
 #if defined(USE_READLN)
-  rl_callback_handler_install(vm_get_prompt(), vm_ln_handler);
+  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
   readln_column_update();
 #endif
 
