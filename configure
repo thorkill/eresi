@@ -638,6 +638,7 @@ echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefile
+echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"        >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
@@ -652,6 +653,8 @@ echo "	@ln -sf \$(LIBPATH)libmjollnir32.so \$(LIBPATH)libmjollnir.so" >> Makefil
 echo "	@ln -sf \$(LIBPATH)librevm32.so     \$(LIBPATH)librevm.so"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt32.so    \$(LIBPATH)libedfmt.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui32.so       \$(LIBPATH)libui.so"       >> Makefile
+echo "	@ln -sf \$(LIBPATH)libkernsh32.a   \$(LIBPATH)libkernsh.a"   >> Makefile
+echo "	@ln -sf \$(LIBPATH)libkernsh32.so   \$(LIBPATH)libkernsh.so"   >> Makefile
 
 # Install headers
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile

@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.6 2007-08-26 18:07:09 pouik Exp $
+** $Id: mem.c,v 1.7 2007-08-27 10:01:38 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -478,6 +478,8 @@ int		cmd_kmodule()
 	  ret = kernsh_relink_module(param2, param3, param4);
 	  if (ret == 0)
 	    {
+	      if (param4 == NULL)
+		param4 = param2;
 	      snprintf(buff, sizeof(buff), 
 		       "Module %s and %s is linked in %s\n\n",
 		       revm_colorstr(param2),

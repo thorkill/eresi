@@ -89,84 +89,84 @@ You can define all the libkernsh.*, see section Options below.
 		func	:	close memory
 		args 	:	no
 		return	:	int
-		options :
+		options :	/
 
 	- mode :
 		func	:	with no args display the mode
 		args	:	yes (not obligatory), "static" and "dynamic"
 		return  :	int
-		options :
+		options :	
 
 	- sct :
 		func :		handel the syscall table
 		args :		-d : display syscall table
 				-n : create new syscall table
 		return :	no
-		options :	no
+		options :	/
 
 	- idt :
 		func :		handle the idt
 		args :		-d : display the idt
 		return :	no
-		options :	no
+		options :	/
 
 	- gdt :
 		func :		handle the gdt
 		args :		-d : display the gdt
 		return :	no
-		options :	no
+		options :	/
 
 	- alloc :
-		func : alloc contiguous kernel memory
-		args : size (mandatory)
-		return : $_ is set with the return address
-		options : /
+		func :		alloc contiguous kernel memory
+		args :		size (mandatory)
+		return :	$_ is set with the return address
+		options :	/
 
 	- free :
-		func : free contiguous kernel memory
-		args : addr (mandatory)
-		return : $_ is set with the return value  
-		options : /
+		func :		free contiguous kernel memory
+		args :		addr (mandatory)
+		return :	$_ is set with the return value  
+		options :	/
 
 	- alloc_nc :
-		func : alloc non contiguous kernel memory
-		args : size (mandatory)
-		return : $_ is set with the return address
-		options : /
+		func :		alloc non contiguous kernel memory
+		args :		size (mandatory)
+		return :	$_ is set with the return address
+		options :	/
 
 	- free_nc : 
-		func : free non contiguous kernel memory
-		args : addr (mandatory)
-		return : $_ is set with the return value
-		options : /
+		func :		free non contiguous kernel memory
+		args :		addr (mandatory)
+		return :	$_ is set with the return value
+		options :	/
 
 	- kmodule : 
 		func : handle kernel module
 		args : 
 			-l : load a module with insmod
 				sub args : module
-					- module : module's pathname (mandatory)
+				- module : module's pathname (mandatory)
 			-u : unload a module with rmmod
 				sub args : module
-					- module : module's pathname (mandatory)
+				- module : module's pathname (mandatory)
 			-r : link module with another
 				sub args : module1 module2 moduleres
-					- module1 : first module's pathname (mandatory)
-					- module2 : second module's pathname (mandatory)
-					- moduleres : result of two modules (mandatory)
+				- module1 : first module's pathname (mandatory)
+				- module2 : second module's pathname (mandatory)
+				- moduleres : result of two modules (mandatory)
 			-i : infect a module
 				sub args : module original_name evil_name
-					- module : module's pathname (mandatory)
-					- original_name : name of the hijacked function
-					- evil_name : name of the hijack function
+				- module : module's pathname (mandatory)
+				- original_name : name of the hijacked function
+				- evil_name : name of the hijack function
 		return :
-		options :
+		options : /
 
 	- ksym :
-		func : get an address of a symbol
-		args : symbol's name
-		return : $_ is set with the return address
-		options : /
+		func :		get an address of a kernel symbol
+		args :		symbol's name
+		return :	$_ is set with the return address
+		options :	/
 	
 	- virtm : IN PROGRESS
 		func :
@@ -238,16 +238,16 @@ An option can be set directly in the shell or in the .kernshrc :
 		- [S*]
 
 	- libkernsh.gzipcmd : Which is the gzid command
-		- /bin/gzip (D)
+		- /bin/gzip (D) (L)
 		- [S*]
 
 	- libkernsh.objcopycmd : Which is the objcopy command
-		- /bin/objcopy (D)
+		- /bin/objcopy (D) (L)
 		- [S*]
 
 	
 	- libkernsh.ldcmd : Which is the ld command
-		- /bin/ld
+		- /bin/ld (D) (L)
 		- [S*]
 
 	- libkernsh.kload : Which is the insert kernel module command
@@ -300,10 +300,14 @@ An option can be set directly in the shell or in the .kernshrc :
 			    or non contiguous(1) 
 		- 0 (D)
 		- 1
+[+] Kernshrc 
+
+You can use a .kernshrc in your home directory. There is some kernshrc in doc
+directory.
+
 [+] Examples
 
-
-
+See examples directory.
 
 [+] Authors 
 
