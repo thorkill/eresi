@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.5 2007-08-26 18:07:09 pouik Exp $
+** $Id: kernsh.h,v 1.6 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__
@@ -35,7 +35,8 @@
 #define CMD_KSYM		"ksym"
 #define CMD_KMODULE		"kmodule"
 #define CMD_AUTOTYPES		"autotypes"
-#define CMD_DUMP		"dump"
+#define CMD_KMD5		"kmd5"
+#define CMD_KCMD5		"kcmd5"
 
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
@@ -51,7 +52,12 @@ int	cmd_kfreenc();
 int	cmd_ksym();
 int	cmd_kmodule();
 int	cmd_autotypes();
-int	cmd_dump();
+int	cmd_kmd5();
+int	cmd_kcmd5();
+
+int	export_var(char *, unsigned long, int, char *, int);
+int	extract_info(char *, unsigned long *, int *, int *, int *, 
+		     unsigned char *, size_t);
 
 int	kernsh_config();
 

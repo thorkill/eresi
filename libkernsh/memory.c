@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.5 2007-07-31 12:31:54 pouik Exp $
+** $Id: memory.c,v 1.6 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -187,13 +187,19 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
 		   "Memory not open !", -1);
     }
 
+  if (size < 0)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Size is negative", -1);
+    }
+
   mem = aspect_vector_get("readmem");
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
   
   fct = aspect_vectors_select(mem, dim);
-  
+
   ret = fct(offset, buf, size);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -213,6 +219,12 @@ int kernsh_writemem(unsigned long offset, void *buf, int size)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Memory not open !", -1);
+    }
+
+  if (size < 0)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Size is negative", -1);
     }
 
   mem = aspect_vector_get("writemem");

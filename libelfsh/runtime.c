@@ -9,7 +9,7 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id: runtime.c,v 1.7 2007-08-06 15:40:39 pouik Exp $
+** $Id: runtime.c,v 1.8 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -55,7 +55,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
   if (kernsh_is_mem_mode())
     {
-      if(kernsh_alloc(segment->p_memsz, &addr) == -1)
+      if(kernsh_alloc(segment->p_memsz, ((unsigned long *)&addr)) == -1)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Cannot alloc memory", -1);

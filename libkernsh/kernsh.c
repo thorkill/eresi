@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.9 2007-08-26 18:07:09 pouik Exp $
+** $Id: kernsh.c,v 1.10 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -19,7 +19,7 @@ int kernsh_init_i386(char *os, char *release)
   memset(&libkernshworld, '\0', sizeof(libkernshworld_t));
 
   libkernshworld.arch = LIBKERNSH_ARCH_I386;
-
+  
   /* By default we use static kernel */
   kernsh_set_static_mode();
   
@@ -52,7 +52,12 @@ int kernsh_init_i386(char *os, char *release)
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_LD);
-  
+
+  config_add_item(LIBKERNSH_VMCONFIG_FENDSIZE,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) LIBKERNSH_DEFAULT_FENDSIZE);
+
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {
@@ -178,6 +183,8 @@ int kernsh_init_i386(char *os, char *release)
   kernsh_init_vectors();
   kernsh_register_vectors();
 
+  asm_init_i386(&libkernshworld.proc);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -227,6 +234,35 @@ int kernsh_set_static_mode()
 
   elfsh_set_static_mode();
 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_get_mode()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, libkernshworld.mem);
+}
+
+int kernsh_set_mode(int mode)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  switch (mode)
+    {
+    case LIBKERNSH_MEM_MODE :
+      libkernshworld.mem = LIBKERNSH_MEM_MODE;
+      elfsh_set_debug_mode();
+      break;
+    case LIBKERNSH_STATIC_MODE :
+      libkernshworld.mem = LIBKERNSH_STATIC_MODE;
+      elfsh_set_static_mode();
+      break;
+    default :
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Invalide mode", -1);
+    }
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -349,6 +385,10 @@ int kernsh_info_linux()
 		 &idt, 
 		 sizeof(idt));
   system_call = (idt.off2 << 16) | idt.off1;
+
+#if defined(__linux__)
+  libkernshworld.system_call = system_call;
+#endif
 
 #if __DEBUG_KERNSH__
   printf("idt80: flags = %d flags=%X sel=%X off1=%x off2=%X\n",

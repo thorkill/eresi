@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.9 2007-08-26 18:07:09 pouik Exp $
+** $Id: libkernsh.h,v 1.10 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -9,6 +9,7 @@
 
 #include "libaspect.h"
 #include "libelfsh.h"
+#include "libasm.h"
 
 #if defined(__NetBSD__)
 #include <kvm.h>
@@ -116,6 +117,7 @@ enum
 #define LIBKERNSH_VMCONFIG_ALLOC		"libkernsh.alloc"
 #define LIBKERNSH_VMCONFIG_KLOAD		"libkernsh.kload"
 #define LIBKERNSH_VMCONFIG_KUNLOAD		"libkernsh.kunload"
+#define LIBKERNSH_VMCONFIG_FENDSIZE		"libkernsh.fendsize"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -130,7 +132,7 @@ enum
 #define LIBKERNSH_DEFAULT_GZIP			"/bin/gzip"
 #define LIBKERNSH_DEFAULT_OBJCOPY		"/usr/bin/objcopy"
 #define LIBKERNSH_DEFAULT_LD			"/usr/bin/ld"
-
+#define LIBKERNSH_DEFAULT_FENDSIZE		0x1000
 #define LIBKERNSH_STRING_DEVICE_MEM		"/dev/mem"
 #define LIBKERNSH_STRING_DEVICE_KMEM		"/dev/kmem"
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
@@ -140,7 +142,6 @@ enum
 #define LIBKERNSH_I386_LINUX_END	      	0xc1000000
 
 #define LIBKERNSH_PAGE_I386_LINUX_OFFSET	0xc0000000
-
 
 #define GFP_KERNEL				208
 #define NAMESIZ					64
@@ -284,11 +285,15 @@ typedef struct s_libkernshworld
 
 	unsigned long sct;	/* Address of syscall table */
 
+#if defined(__linux__)
+	unsigned long system_call;
+#endif
 	unsigned long gdt_base; /* Address of the gdt table */
 	unsigned short gdt_limit; /* Lenght */
 
-	autotask_t typetask;
+	autotask_t typetask;	/* Make type for task_struct */
 	
+	asm_processor proc;	/* To play with libasm of course */
 	elfshobj_t *root;	/* Pointer to the kernel's elfshobj_t*/
 } libkernshworld_t;
 
@@ -317,6 +322,8 @@ int	kernsh_is_mem_mode();
 int	kernsh_set_mem_mode();
 int	kernsh_is_static_mode();
 int	kernsh_set_static_mode();
+int	kernsh_get_mode();
+int	kernsh_set_mode(int);
 
 /* Init vectors */
 int	kernsh_init_vectors();
@@ -423,32 +430,35 @@ int	kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
 int	kernsh_free_noncontiguous_linux(unsigned long);
 
 /* Module */
-int kernsh_kload_module(char *);
-int kernsh_kload_module_linux(char *);
+int	kernsh_kload_module(char *);
+int	kernsh_kload_module_linux(char *);
 
-int kernsh_kunload_module(char *);
-int kernsh_kunload_module_linux(char *);
+int	kernsh_kunload_module(char *);
+int	kernsh_kunload_module_linux(char *);
 
-int kernsh_relink_module(char *, char *, char *);
-int kernsh_relink_module_linux(char *, char *, char *);
+int	kernsh_relink_module(char *, char *, char *);
+int	kernsh_relink_module_linux(char *, char *, char *);
 
-int kernsh_infect_module(char *, char *, char *);
-int kernsh_infect_module_linux_2_6(char *, elfshobj_t *, char *, char *);
-int kernsh_infect_module_linux_2_4(char *, elfshobj_t *, char *, char *);
+int	kernsh_infect_module(char *, char *, char *);
+int	kernsh_infect_module_linux_2_6(char *, elfshobj_t *, char *, char *);
+int	kernsh_infect_module_linux_2_4(char *, elfshobj_t *, char *, char *);
 
 /* Hijack */
 
 /* MD5 */
 
-int kernsh_md5init(libkernshmd5context_t *);
-int kernsh_md5update(libkernshmd5context_t *, 
-		     unsigned char *, 
-		     unsigned);
-int kernsh_md5final(unsigned char digest[16], libkernshmd5context_t *);
-int kernsh_md5transform(unsigned long buf[4], const unsigned char inext[64]);
-int kernsh_md5dump(unsigned char *, 
+int	kernsh_md5init(libkernshmd5context_t *);
+int	kernsh_md5update(libkernshmd5context_t *, 
+			 unsigned char *, 
+			 unsigned);
+int	kernsh_md5final(unsigned char [16], libkernshmd5context_t *);
+int	kernsh_md5transform(unsigned long [4], 
+			    const unsigned char [64]);
+int	kernsh_md5dump(unsigned char *, 
 		   int, 
-		   unsigned char md5buffer[BUFSIZ]);
+		   unsigned char [BUFSIZ]);
+
+int	kernsh_md5(unsigned long, int, unsigned char [BUFSIZ]);
 
 /* Auto Types */
 int kernsh_autotypes();
@@ -479,5 +489,6 @@ int	kernsh_unloadkernel();
 void	*kernsh_find_pattern(const void *, int, const void *, int);
 int	kernsh_resolve_systemmap(unsigned long, char *, size_t);
 int	kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
+int	kernsh_find_end(unsigned long);
 
 #endif

@@ -1,7 +1,7 @@
 /*
 ** md5.c for libkernsh
 ** 
-** $Id: md5.c,v 1.1 2007-08-26 18:07:09 pouik Exp $
+** $Id: md5.c,v 1.2 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -252,8 +252,8 @@ int kernsh_md5transform(unsigned long buf[4], const unsigned char inext[64])
 /* end code riped */
 
 int kernsh_md5dump(unsigned char *pass, 
-		    int value, 
-		    unsigned char md5buffer[BUFSIZ])
+		   int value, 
+		   unsigned char md5buffer[BUFSIZ])
 {
   libkernshmd5context_t md;
   int i;
@@ -279,4 +279,56 @@ int kernsh_md5dump(unsigned char *pass,
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_md5(unsigned long addr, int size, unsigned char md5buffer[BUFSIZ])
+{
+  unsigned char *buff;
+  unsigned long start;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+	
+  if (size < 0)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Size is negative", -1);
+    }
+
+  memset(md5buffer, '\0', BUFSIZ);
+
+  /* We must find ret */
+  if (size == 0)
+    {
+      size = kernsh_find_end(addr);
+      if (!size)
+	{
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Can't find the size", -1);
+	}
+    }
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, buff, size + 1, -1);
+  memset(buff, '\0', size);
+
+  if (kernsh_is_mem_mode())
+    {
+      kernsh_readmem(addr, buff, size);
+    }
+  else
+    {
+      start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
+					   addr);
+      elfsh_raw_read(libkernshworld.root, start, buff, size);
+    }
+
+  if (kernsh_md5dump(buff, size, md5buffer))
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, buff);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unable to make md5 dump", -1);
+    }
+  
+  XFREE(__FILE__, __FUNCTION__, __LINE__, buff);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }

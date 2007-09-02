@@ -80,65 +80,75 @@ You can define all the libkernsh.*, see section Options below.
 
 [+] Commands : 
 	- openmem :
-		func 	:	open memory and by default gzip kernel	
-		args 	:	no
-		return 	:	int
-		options  :
+		func 	: open kernel memory and by default 
+			  gzip static kernel	
+		args 	: no
+		return 	: /
+		options :
+		mode	: /
 
 	- closemem :
-		func	:	close memory
-		args 	:	no
-		return	:	int
-		options :	/
+		func	: close kernel memory and static kernel
+		args 	: no
+		return	: int
+		options : /
+		mode	: /
 
 	- mode :
-		func	:	with no args display the mode
-		args	:	yes (not obligatory), "static" and "dynamic"
-		return  :	int
+		func	: with no args display the mode
+		args	: yes (not obligatory), "static" and "dynamic"
+		return  : /
 		options :	
-
+	
 	- sct :
-		func :		handel the syscall table
-		args :		-d : display syscall table
-				-n : create new syscall table
-		return :	no
-		options :	/
+		func	: handle the syscall table
+		args	: -d : display syscall table
+			  -n : create new syscall table
+		return	: /
+		options : /
+		mode	: static/dynamic
 
 	- idt :
-		func :		handle the idt
-		args :		-d : display the idt
-		return :	no
-		options :	/
+		func	: handle the idt
+		args	: -d : display the idt
+		return	: /
+		options : /
+		mode	: dynamic
 
 	- gdt :
-		func :		handle the gdt
-		args :		-d : display the gdt
-		return :	no
-		options :	/
-
+		func	: handle the gdt
+		args	: -d : display the gdt
+		return	: no
+		options : /
+		mode	: static/dynamic
+		
 	- alloc :
-		func :		alloc contiguous kernel memory
-		args :		size (mandatory)
-		return :	$_ is set with the return address
-		options :	/
+		func	: alloc contiguous kernel memory
+		args	: size (mandatory)
+		return	: $_ is set with the return address
+		options : /
+		mode	: dynamic
 
 	- free :
-		func :		free contiguous kernel memory
-		args :		addr (mandatory)
-		return :	$_ is set with the return value  
-		options :	/
+		func	: free contiguous kernel memory
+		args	: addr (mandatory)
+		return	: $_ is set with the return value  
+		options : /
+		mode	: dynamic
 
 	- alloc_nc :
-		func :		alloc non contiguous kernel memory
-		args :		size (mandatory)
-		return :	$_ is set with the return address
-		options :	/
+		func	: alloc non contiguous kernel memory
+		args	: size (mandatory)
+		return	: $_ is set with the return address
+		options : /
+		mode	: dynamic
 
 	- free_nc : 
-		func :		free non contiguous kernel memory
-		args :		addr (mandatory)
-		return :	$_ is set with the return value
-		options :	/
+		func	: free non contiguous kernel memory
+		args	: addr (mandatory)
+		return	: $_ is set with the return value
+		options : /
+		mode	: dynamic
 
 	- kmodule : 
 		func : handle kernel module
@@ -146,56 +156,82 @@ You can define all the libkernsh.*, see section Options below.
 			-l : load a module with insmod
 				sub args : module
 				- module : module's pathname (mandatory)
+			return	:
+			options :
+			mode	: static
 			-u : unload a module with rmmod
 				sub args : module
 				- module : module's pathname (mandatory)
+			return	:
+			options :
+			mode	: static
+			
 			-r : link module with another
 				sub args : module1 module2 moduleres
 				- module1 : first module's pathname (mandatory)
 				- module2 : second module's pathname (mandatory)
 				- moduleres : result of two modules (mandatory)
+			return	:
+			options :
+			mode	: static
 			-i : infect a module
 				sub args : module original_name evil_name
 				- module : module's pathname (mandatory)
 				- original_name : name of the hijacked function
 				- evil_name : name of the hijack function
-		return :
-		options : /
+			return	:
+			options :
+			mode	: static
 
 	- ksym :
-		func :		get an address of a kernel symbol
-		args :		symbol's name
-		return :	$_ is set with the return address
-		options :	/
-	
+		func	: get an address of a kernel symbol
+		args	: symbol's name
+		return	: $_ is set with the return address
+		options : /
+		mode	: dynamic
+		
 	- virtm : IN PROGRESS
-		func :
-		args :
-		return :
+		func	:
+		args	:
+		return	:
 		options :
+		mode	:
 
 	- process : IN PROGRESS
-		func :
-		args : 
+		func	:
+		args	: 
 			-d : display linked list
 			-c : check hidden process			
-		return :
+		return	:
 		options :
+		mode	:
 
-	- kmd5 : IN PROGRESS
-		func :
-		args :  sa output, sa:rva output, sa%rva%size output, 
-			sa%size output, check:format, check input
-			- sa : symbol or addr
-				- special symbol : sct, idt, gdt
-			- rva :
-			- size :
-			- output : file output
-			- input : file input
+	- kmd5 :
+		func	:
+		args	:  sa output, sa:rva output, sa%rva%size output, 
+			   sa%size output
+				- sa : Symbol or addr
+				- rva : Byte offset form the beginning (optional) 
+				- size : Bytes number limit (optional)
+					- If size is 0 or not put, we search 
+					  the end of the function.
+				- output : file output (optional)
 			
-		return :
-		options :
-	
+		return	: $_ contains the md5 and $md5 contains the format
+		options : /
+		mode	: static/dynamic
+
+	- kcmd5 : 
+		func	:
+		args	:  format, file
+				- format : addr:mode:size:off:md5
+				- file : filename
+		return	: $_ is egal to the number of mismatch
+		options	: /
+		mode	: static/dynamic
+
+	- kcore	: IN PROGRESS
+
 [+] Options :
 
 An option can be set directly in the shell or in the .kernshrc :
@@ -300,6 +336,21 @@ An option can be set directly in the shell or in the .kernshrc :
 			    or non contiguous(1) 
 		- 0 (D)
 		- 1
+
+	- libkernsh.fendsize : maximum size of a function
+		- 0x1000 (D)
+		- [L*]
+
+[+] Variables
+
+Some variables are available when the memory device is opened :
+	$sys_call_table (D)
+	$idt_base (D)
+	$idt_limit (D)
+	$gdt_base (D)
+	$gdt_limit (D)
+	$system_call (D) (L)
+
 [+] Kernshrc 
 
 You can use a .kernshrc in your home directory. There is some kernshrc in doc
@@ -318,9 +369,9 @@ The project has been transfered to pouik in 2007.
 
 [+] Contacts
 
-Information about kernsh : support at kernsh.org
+Information about kernsh : support at -nospam-kernsh.org
 
-author's mail : pouik at kernsh.org
+author's mail : pouik at -nospam-kernsh.org
 
 [+] Bugs
 

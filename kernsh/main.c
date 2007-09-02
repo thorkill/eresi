@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.5 2007-08-06 15:40:39 pouik Exp $
+** $Id: main.c,v 1.6 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -114,6 +114,9 @@ void		kernsh_banner_print()
 int		kernsh_main(int ac, char **av)
 {
   int		ret;
+  char		logbuf[BUFSIZ];
+
+  memset(logbuf, '\0', sizeof(logbuf));
 
   /* Interface tweak */
   kernsh_setup_quit_msg();
@@ -128,8 +131,26 @@ int		kernsh_main(int ac, char **av)
     kernsh_banner_print(av[1]);
   
   if (strstr(ARCH, "i"))
-    ret = kernsh_init_i386(OS, RELEASE);
+    {
+      ret = kernsh_init_i386(OS, RELEASE);
+      if (ret == -1)
+	{
+	  snprintf(logbuf, 
+		   sizeof(logbuf),
+		   "Sorry, your os is not yet supported");
+	  revm_output(logbuf);
+	  exit(-1);
+	}
+    }
   /* Other arch ?? */
+  else
+    {
+      snprintf(logbuf, 
+	       sizeof(logbuf),
+	       "Sorry, your architecture is not yet supported");
+      revm_output(logbuf);
+      exit(-1);
+    }
   
   kernsh_config();
   return (revm_run(ac, av));

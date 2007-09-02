@@ -1,7 +1,7 @@
 /*
 ** misc.c for libkernsh
 **
-** $Id: misc.c,v 1.3 2007-07-29 16:54:36 pouik Exp $
+** $Id: misc.c,v 1.4 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -110,4 +110,67 @@ int kernsh_rresolve_systemmap(const char *name, unsigned long *addr, size_t size
   
   fclose(input);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot get addr", -1);
+}
+
+int kernsh_find_end(unsigned long addr)
+{
+  unsigned char buff[BUFSIZ];
+  int curr, sizemax;
+  unsigned long addrcur, addrfinal, start;
+  asm_instr instr;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  addrcur = addr;
+  sizemax = (int) config_get_data(LIBKERNSH_VMCONFIG_FENDSIZE);
+  addrfinal = addr+sizemax;
+
+  while (addrcur < addrfinal)
+    {
+      if (kernsh_is_mem_mode())
+	{
+	  kernsh_readmem(addrcur, buff, sizeof(buff));
+	}
+      else
+	{
+	  start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
+					       addrcur);
+	  elfsh_raw_read(libkernshworld.root, start, buff, sizeof(buff));
+
+	}
+      curr = 0;
+      while(curr < sizeof(buff))
+	{
+	  if (asm_read_instr(&instr, 
+			     buff + curr, sizeof(buff) - curr, 
+			     &libkernshworld.proc) > 0)
+	    {
+#if __DEBUG_KERNSH__
+	      printf("CURR %d INSTR %d TYPE %d => ", 
+		     curr, instr.instr, instr.type);
+	      int i;
+	      for (i = 0; i < instr.len; i++)
+		printf("%02x ", *(buff + curr + i));
+	      printf("\n");
+#endif
+	      curr += asm_instr_len(&instr);
+	      
+	      if (instr.instr == ASM_RET || instr.instr == ASM_IRET)
+		{
+		  PROFILER_ROUT(__FILE__, 
+				__FUNCTION__, 
+				__LINE__, 
+				curr + (addrcur - addr));
+		}
+	    }
+	  else
+	    {
+	      curr++;
+	    }
+	}
+      
+      addrcur += sizeof(buff);
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find the end", 0);
 }

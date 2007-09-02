@@ -6,7 +6,7 @@
  * Started September 16 2005 04:01:03 jfv
  *
  *
- * $Id: variables.c,v 1.7 2007-08-03 11:51:00 heroine Exp $
+ * $Id: variables.c,v 1.8 2007-09-02 21:47:25 pouik Exp $
  *
  */
 #include "revm.h"
@@ -38,6 +38,7 @@ int		revm_setvar_str(char *varname, char *value)
     XREALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     var->immed_val.str, var->immed_val.str, len, -1);
   memcpy(var->immed_val.str, value, len - 1);
+  var->immed_val.str[len - 1] = '\0';
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 

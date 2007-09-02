@@ -1,7 +1,7 @@
 /*
 ** tables.c for kernsh
 **
-** $Id: tables.c,v 1.4 2007-08-26 18:07:09 pouik Exp $
+** $Id: tables.c,v 1.5 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -65,11 +65,15 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_AUTOTYPES);
 
-  /*  revm_command_add(CMD_DUMP, (void *)cmd_dump, 
-		   (void*) revm_getvarparams, 
-		   0, 
-		   HLP_DUMP);
-  */
+  revm_command_add(CMD_KMD5, (void *)cmd_kmd5, 
+		   (void *) revm_getdisasm,
+		   0,
+		   HLP_KMD5);
+
+  revm_command_add(CMD_KCMD5, (void *)cmd_kcmd5, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KCMD5);
 
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 
