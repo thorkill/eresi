@@ -20,11 +20,25 @@ define s	ASM_TYPE_STOP
 define n	ASM_TYPE_NOP
 define ar	ASM_TYPE_ARITH
 define wf	ASM_TYPE_WRITEFLAG
+define rf	ASM_TYPE_READFLAG
+define io	ASM_TYPE_IO
+define sp	ASM_TYPE_TOUCHSP
+
+# Combinations of flags
 define i-r      i  r
 define ar-wf    ar wf
 define ar-wm    ar wm
 define a-rm     a  rm
 define a-wm     a  wm
+define cmp-wf   cmp wf
+define io-rm    io  rm
+define io-wm    io  wm
+define i-rf-bt  i   rf bt
+define a-rm-wm  a   rm wm
+define sp-rm    sp  rm
+define sp-rm-wf sp  rm wf
+define sp-wm-rf sp  wm rf
+define wm-rm    wm  rm
 
 # Attributes for ASM operands
 define reg	ASM_OPTYPE_REG
@@ -35,28 +49,59 @@ define mem	ASM_OPTYPE_MEM
 type Ins               = uflags:Immed addr:Immed
 type Immed             = val:long
 type Reg::container    = id:int
-type Mem::container    = base:Reg off:Immed name:string
-
+type Mem::container    = base:Reg off:Immed name:string index:Reg scale:Immed
 
 # Types of LIR instructions
-type IndBranch::Ins = dst:Reg
-type Branch::Ins    = dst:Immed
-type Call::Ins      = dst:Immed
-type IndCall::Ins   = dst:Reg
-type Interrupt::Ins = dst:Immed
-type Return::Ins    = dst:Immed
+
+# Control-flow operations
+type IndBranchR::Ins = dst:Reg
+type IndBranchM::Ins = dst:Mem
+type Branch::Ins     = dst:Immed
+type Call::Ins       = dst:Immed
+type IndCallR::Ins   = dst:Reg
+type IndCallM::Ins   = dst:Mem
+type Interrupt::Ins  = dst:Immed
+type Return::Ins     = dst:Immed
+
+# Ternary operations
+type TernopMI::Ins  = dst:Mem msrc:Mem isrc:Immed
+type TernopMR::Ins  = dst:Mem msrc:Mem rsrc:Reg
+type TernopRM::Ins  = dst:Reg rsrc:Reg msrc:Mem
+type TernopRMI::Ins = dst:Reg rsrc:Reg msrc:Mem isrc:Imm
 type TernopR3::Ins  = dst:Reg src1:Reg src2:Reg
+type TernopM3::Ins  = dst:Mem msrc1:Mem msrc2:Mem
 type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
+
+# Assignments
 type AssignIR::Ins  = dst:Reg src:Immed
 type AssignIM::Ins  = dst:Mem src:Immed
-
 type AssignMR::Ins  = dst:Reg src:Mem
-
 type AssignRM::Ins  = dst:Mem src:Reg
-type BitSet::Ins    = src:Immed dst:Reg
+type AssignRM::Ins   = dst:Reg src:Mem
+type AssignMR::Ins   = dst:Mem src:Reg
+type AssignMM::Ins   = dst:Mem src:Mem
+type AssignRR::Ins   = dst:Reg src:Reg
+
+# Comparisons
 type CmpRI::Ins     = fst:Immed snd:Reg
 type CmpRR::Ins     = fst:Reg snd:Reg
+type CmpRM::Ins     = fst:Mem snd:Reg
+type CmpMR::Ins     = fst:Reg snd:Mem
+type CmpMI::Ins     = fst:Immed snd:Mem
+
+# Other special operations
+type XchgRR::Ins    = fst:Reg snd:Reg
+type XchgMR::Ins    = fst:Mem snd:Reg
 type Prolog::Ins    = framesz:Immed
-type Epilog::Ins
-type Stop::Ins
-type Nop::Ins
+type BitSet::Ins    = src:Immed dst:Reg
+type IoRR::Ins      = dst:Reg src:Reg
+type IoIR::Ins      = dst:Immed src:Reg
+type IoRI::Ins      = dst:Reg src:Immed
+
+# Types that have no additional info than an instruction
+typedef IReturn Ins
+typedef FlagR   Ins
+typedef FlagW   Ins
+typedef Epilog  Ins
+typedef Stop    Ins
+typedef Nop     Ins

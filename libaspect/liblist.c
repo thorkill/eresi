@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id: liblist.c,v 1.6 2007-08-07 07:13:27 may Exp $
+** $Id: liblist.c,v 1.7 2007-09-17 02:26:03 may Exp $
 */
 #include "libaspect.h"
 
@@ -34,7 +34,7 @@ int list_init(list_t *h, char *name, u_int type)
   h->head   = NULL;
   h->type   = type;
   h->elmnbr = 0;
-
+  h->linearity = 0;
   hash_add(hash_lists, name, h);
   NOPROFILER_ROUT(0);
 }

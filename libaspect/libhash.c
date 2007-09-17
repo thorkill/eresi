@@ -4,7 +4,7 @@
 ** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.38 2007-08-08 13:47:24 may Exp $
+** $Id: libhash.c,v 1.39 2007-09-17 02:26:03 may Exp $
 */
 #include "libaspect.h"
 
@@ -18,6 +18,10 @@ hash_t  *hash_hash = NULL;
 int hash_init(hash_t *h, char *name, int size, u_int type)
 {
   NOPROFILER_IN();
+
+  /* First checks */
+  /* Initialize the global hash table of lists and 
+     the global hash table of hash tables */
   if (!hash_hash)
     {
       hash_hash = (hash_t *) calloc(sizeof(hash_t), 1);
@@ -27,24 +31,25 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
     {
       fprintf(stderr, "Unable to initialize hash table %s \n", name);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-       "Unable to initialize hash table", -1);
+		   "Unable to initialize hash table", -1);
     }
   if (h != hash_hash && hash_find(name) && h->ent)
-  {
+    {
 #if __DEBUG__
-    fprint(stderr, "Hash table already exists and initialized\n");
+      fprint(stderr, "Hash table already exists and initialized\n");
 #endif
-    NOPROFILER_ROUT(1);
-  }
-
+      NOPROFILER_ROUT(1);
+    }
+  
+  /* Add a new element */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 h->ent, size * sizeof(listent_t), -1);
   h->size   = size;
   h->type   = type;
   h->elmnbr = 0;
+  h->linearity = 0;
   hash_add(hash_hash, name, h);
 
-  /* Initialize the lists hash table too */
   if (!hash_lists)
     {
       hash_lists = (hash_t *) calloc(sizeof(hash_t), 1);
@@ -131,7 +136,8 @@ void		hash_destroy(hash_t *h)
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
-    XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
+    if (keys[idx])
+      XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   hash_free_keys(keys);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h->ent);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

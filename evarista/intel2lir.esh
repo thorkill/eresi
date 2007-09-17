@@ -39,194 +39,257 @@ print Transforming instruction: $instr
 transform $instr into
 
 # INC, DEC (reg)
-case instr_t(type:ar-id-wf, nb_op:1, op1(type:reg)) -> TernopRI(addr:$curaddr, dst(id:$instr.op1.baser), rsrc(id:$instr.op1.baser), isrc(val:1), uflags:$instr.wflags)
+case instr_t(type:ar-id-wf, nb_op:1, op1(type:reg)) 
+into TernopRI(addr:$curaddr, dst(id:$instr.op1.baser), rsrc(id:$instr.op1.baser), isrc(val:1), uflags:$instr.wflags)
 
 # INC, DEC (mem)
-case instr_t(type:ar-id-wf, nb_op:1, op1(type:mem)) -> TernopMI(addr:$curaddr, dst(id:$instr.op1.baser), msrc(name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm)), isrc(val:1), uflags:$instr.wflags)
+case instr_t(type:ar-id-wf, nb_op:1, op1(type:mem)) 
+into TernopMI(addr:$curaddr, dst(id:$instr.op1.baser), msrc(name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm)), isrc(val:1), uflags:$instr.wflags)
 
 # AAA, AAD, AAM, AAS, DAD, DAS
-case instr_t(type:ar-wf, nb_op:0) -> TernopR3(addr:$curaddr, dst(id:EAX), rsrc1(id:EAX), rsrc2(id:EAX), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:0) 
+into TernopR3(addr:$curaddr, dst(id:EAX), src1(id:EAX), src2(id:EAX), uflags:$instr.wflags)
 
 # ADC, ADD, AND, OR, RCR, ROL ROR, SAR, SBB, SHL, SHR, SUB, XOR (reg, reg)
-case instr_t(type:ar-wf, nb_op:2, op1(type:reg), op2(type:reg)) -> TernopR3(addr:$curaddr, dst(id:$instr.op2.baser), rsrc1(id:$instr.op2.baser), rsrc2(id:$instr.op1.baser), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:2, op1(type:reg), op2(type:reg)) 
+into TernopR3(addr:$curaddr, dst(id:$instr.op2.baser), src1(id:$instr.op2.baser), src2(id:$instr.op1.baser), uflags:$instr.wflags)
 
 # ADC, ADD, AND, OR, RCR, ROL ROR, SAR, SBB, SHL, SHR, SUB, XOR (reg, imm)
-case instr_t(type:ar-wf, nb_op:2, op1(type:imm), op2(type:reg)) -> TernopRI(addr:$curaddr, dst(id:$instr.op2.baser), rsrc(id:$instr.op2.baser), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:2, op1(type:imm), op2(type:reg)) 
+into TernopRI(addr:$curaddr, dst(id:$instr.op2.baser), rsrc(id:$instr.op2.baser), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # ADC, ADD, AND, OR, RCR, ROL ROR, SAR, SBB, SHL, SHR, SUB, XOR (reg, mem)
-case instr_t(type:ar-wf, nb_op:2, op1(type:mem), op2(type:reg)) -> TernopRM(addr:$curaddr, dst(id:$instr.op2.baser), rsrc(id:$instr.op2.baser), msrc(name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm)), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:2, op1(type:mem), op2(type:reg)) 
+into TernopRM(addr:$curaddr, dst(id:$instr.op2.baser), rsrc(id:$instr.op2.baser), msrc(name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm)), uflags:$instr.wflags)
 
 # ADC, ADD, AND, OR, RCR, ROL ROR, SAR, SBB, SHL, SHR, SUB, XOR (mem, imm)
-case instr_t(type:ar-wf, nb_op:2, op1(type:imm), op2(type:mem)) -> TernopMI(addr:$curaddr, dst(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:2, op1(type:imm), op2(type:mem)) 
+into TernopMI(addr:$curaddr, dst(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # ADC, ADD, AND, OR, RCR, ROL ROR, SAR, SBB, SHL, SHR, SUB, XOR (mem, reg)
-case instr_t(type:ar-wf, nb_op:2, op1(type:reg), op2(type:mem)) -> TernopMR(addr:$curaddr, dst(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), rsrc(id:$instr.op1.baser), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:2, op1(type:reg), op2(type:mem)) 
+into TernopMR(addr:$curaddr, dst(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), rsrc(id:$instr.op1.baser), uflags:$instr.wflags)
 
 # IMUL (reg, reg, imm)
-case instr_t(type:ar-wf, nb_op:3, op1(type:imm), op2(type:reg), op3(type:reg)) -> TernopRI(addr:$curaddr, dst(id:$instr.op3.baser), rsrc(id:$instr.op2.baser), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:3, op1(type:imm), op2(type:reg), op3(type:reg)) 
+into TernopRI(addr:$curaddr, dst(id:$instr.op3.baser), rsrc(id:$instr.op2.baser), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # IMUL (reg, mem, imm)
-case instr_t(type:ar-wf, nb_op:3, op1(type:imm), op2(type:mem), op3(type:reg)) -> TernopRMI(addr:$curaddr, dst(id:$instr.op3.baser), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:3, op1(type:imm), op2(type:mem), op3(type:reg)) 
+into TernopRMI(addr:$curaddr, dst(id:$instr.op3.baser), msrc(name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm)), isrc(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # NEG (reg)
-case instr_t(instr:NEG, op1(type:reg)) -> TernopR3(addr:$curaddr, dst(id:$instr.op1.baser), rsrc1(id:$instr.op1.baser), rsrc2(id:$instr.op1.baser), uflags:$instr.wflags)
+case instr_t(instr:NEG, op1(type:reg)) 
+into TernopR3(addr:$curaddr, dst(id:$instr.op1.baser), src1(id:$instr.op1.baser), src2(id:$instr.op1.baser), uflags:$instr.wflags)
 
 # NEG (mem)
-case instr_t(instr:NEG, op1(type:mem)) -> TernopM3(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), msrc1((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), msrc2((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:$instr.wflags)
+case instr_t(instr:NEG, op1(type:mem)) 
+into TernopM3(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), msrc1((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), msrc2((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:$instr.wflags)
 
 # MUL, IMUL (reg)
-case instr_t(type:ar-wf, nb_op:1, op1(type:reg)) -> TernopR3(addr:$curaddr, dst(id:EAX), rsrc1(id:$instr.op1.baser), rsrc2(id:EAX), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:1, op1(type:reg)) 
+into TernopR3(addr:$curaddr, dst(id:EAX), src1(id:$instr.op1.baser), src2(id:EAX), uflags:$instr.wflags)
 
 # MUL, IMUL (mem)
-case instr_t(type:ar-wf, nb_op:1, op1(type:mem)) -> TernopR3(addr:$curaddr, dst(id:EAX), rsrc1((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), rsrc2(id:EAX), uflags:$instr.wflags)
+case instr_t(type:ar-wf, nb_op:1, op1(type:mem)) 
+into TernopR3(addr:$curaddr, dst(id:EAX), src1((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), src2(id:EAX), uflags:$instr.wflags)
 
 # CWD, CBW
-case instr_t(type:ar, nb_op:0) -> TernopR3(addr:$curaddr, dst(id:EAX), rsrc1(id:EAX), rsrc2(id:EAX), uflags:0)
+case instr_t(type:ar, nb_op:0) 
+into TernopR3(addr:$curaddr, dst(id:EAX), src1(id:EAX), src2(id:EAX), uflags:0)
 
 # LEA (reg, mem)
-case instr_t(type:ar, nb_op:2) -> TernopRM(addr:$curaddr, dst(id:$instr.op1.baser), rsrc(id:$instr.op1.baser), msrc((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:ar, nb_op:2) 
+into TernopRM(addr:$curaddr, dst(id:$instr.op1.baser), rsrc(id:$instr.op1.baser), msrc((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # NOT, DIV, IDIV (reg)
-case instr_t(type:ar, nb_op:1, op1(type:reg)) -> TernopR3(addr:$curaddr, dst(id:EAX), rsrc1(id:EAX), rsrc2(id:$instr.op1.baser), uflags:0)
+case instr_t(type:ar, nb_op:1, op1(type:reg)) 
+into TernopR3(addr:$curaddr, dst(id:EAX), src1(id:EAX), src2(id:$instr.op1.baser), uflags:0)
 
 # NOT, DIV, IDIV (mem)
-case instr_t(type:ar, nb_op:1, op1(type:mem)) -> TernopRM(addr:$curaddr, dst(id:EAX), rsrc(id:EAX), msrc((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:ar, nb_op:1, op1(type:mem)) 
+into TernopRM(addr:$curaddr, dst(id:EAX), rsrc(id:EAX), msrc((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # CALL (reg)
-case instr_t(type:c, op1(type:reg)) -> IndCallR(addr:$curaddr, dst(id:$instr.op1.baser), uflags:0)
+case instr_t(type:c, op1(type:reg)) 
+into IndCallR(addr:$curaddr, dst(id:$instr.op1.baser), uflags:0)
 
 # CALL (mem)
-case instr_t(type:c, op1(type:mem)) -> IndCallM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:c, op1(type:mem)) 
+into IndCallM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # CALL (imm)
-case instr_t(type:c, op1(type:imm)) -> Call(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
+case instr_t(type:c, op1(type:imm)) 
+into Call(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
 
 # CMP, TEST (reg, imm)
-case instr_t(type:cmp-wr, op1(type:imm), op2(type:reg)) -> CmpRI(addr:$curaddr, snd(id:$instr.op2.baser), fst(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:cmp-wr, op1(type:imm), op2(type:reg)) 
+into CmpRI(addr:$curaddr, snd(id:$instr.op2.baser), fst(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # CMP, TEST, CMPSB, CMPSD, SCASB, SCASD (reg, reg)
-case instr_t(type:cmp-wr, op1(type:reg), op2(type:reg)) -> CmpRR(addr:$curaddr, snd(id:$instr.op2.baser), fst(id:$instr.op1.baser), uflags:$instr.wflags)
+case instr_t(type:cmp-wr, op1(type:reg), op2(type:reg)) 
+into CmpRR(addr:$curaddr, snd(id:$instr.op2.baser), fst(id:$instr.op1.baser), uflags:$instr.wflags)
 
 # CMP (reg, mem)
-case instr_t(type:cmp-wr, op1(type:mem), op2(type:reg)) -> CmpRM(addr:$curaddr, snd(id:$instr.op2.baser), fst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:$instr.wflags)
+case instr_t(type:cmp-wr, op1(type:mem), op2(type:reg)) 
+into CmpRM(addr:$curaddr, snd(id:$instr.op2.baser), fst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:$instr.wflags)
 
 # CMP, TEST (mem, reg)
-case instr_t(type:cmp-wr, op1(type:reg), op2(type:mem)) -> CmpMR(addr:$curaddr, snd((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), fst(id:$instr.op1.baser), uflags:$instr.wflags)
+case instr_t(type:cmp-wr, op1(type:reg), op2(type:mem)) 
+into CmpMR(addr:$curaddr, snd((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), fst(id:$instr.op1.baser), uflags:$instr.wflags)
 
 # TEST (mem, imm)
-case instr_t(type:cmp-wr, op1(type:imm), op2(type:mem)) -> CmpMI(addr:$curaddr, snd((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), fst(val:$instr.op1.imm), uflags:$instr.wflags)
+case instr_t(type:cmp-wr, op1(type:imm), op2(type:mem)) 
+into CmpMI(addr:$curaddr, snd((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), fst(val:$instr.op1.imm), uflags:$instr.wflags)
 
 # HLT
-case instr_t(type:s) -> Stop(addr:$curaddr, uflags:0)
+case instr_t(type:s) 
+into Stop(addr:$curaddr, uflags:0)
 
 # IN (reg, reg)
-case instr_t(type:io-rm, op1(type:reg)) -> IoRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:io-rm, op1(type:reg)) 
+into IoRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
 
 # IN (reg, imm)
-case instr_t(type:io-rm, op1(type:imm)) -> IoRI(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
+case instr_t(type:io-rm, op1(type:imm)) 
+into IoRI(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
 
 # INTO
-case instr_t(type:i-rf-bt) -> Interrupt(addr:$curaddr, dst(val:4), uflags:0)
+case instr_t(type:i-rf-bt) 
+into Interrupt(addr:$curaddr, dst(val:4), uflags:0)
 
 # IRET
-case instr_t(type:i-r) -> IReturn(addr:$curaddr, uflags:0)
+case instr_t(type:i-r) 
+into IReturn(addr:$curaddr, uflags:0)
 
 # INT3
-case inst_t(type:i, nb_op:0) -> Interrupt(addr:$curaddr, dst(val:3), uflags:0)
+case inst_t(type:i, nb_op:0) 
+into Interrupt(addr:$curaddr, dst(val:3), uflags:0)
 
 # INT (imm)
-case instr_t(type:i) -> Interrupt(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
+case instr_t(type:i) 
+into Interrupt(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
 
 # Jxx, LOOP, LOOPE, LOOPNE (imm)
 # Jxx = JA, JAE, JB, JBE, JE, JECXZ, JG, JGE, JL, JLE, JNE, JNO, JNP, JNS, JO, JP, JS
-case instr_t(type:cb) -> Branch(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
+case instr_t(type:cb) 
+into Branch(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
 
 # JMP (imm)
-case instr_t(type:b, op1(type:imm)) -> Branch(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
+case instr_t(type:b, op1(type:imm)) 
+into Branch(addr:$curaddr, dst(val:$instr.op1.imm), uflags:0)
 
 # JMP (reg)
-case instr_t(type:b, op1(type:reg)) -> IndBranchR(addr:$curaddr, dst(id:$instr.op1.baser), uflags:0)
+case instr_t(type:b, op1(type:reg)) 
+into IndBranchR(addr:$curaddr, dst(id:$instr.op1.baser), uflags:0)
 
 # JMP (mem)
-case instr_t(type:b, op1(type:mem)) -> IndBranchM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:b, op1(type:mem)) 
+into IndBranchM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # MOVSB, MOVSD (mem, mem)
-case instr_t(type:a-rm-wm) -> AssignMM(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:a-rm-wm) 
+into AssignMM(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # NOP, WAIT/FWAIT
-case instr_t(type:n) -> Nop(addr:$curaddr, uflags:0)
+case instr_t(type:n) 
+into Nop(addr:$curaddr, uflags:0)
 
 # OUT (reg, reg)
-case instr_t(type:io-wm, op2(type:reg)) -> IoRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:io-wm, op2(type:reg)) 
+into IoRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
 
 # OUT (imm, reg)
-case instr_t(type:io-wm, op2(type:imm)) -> IoIR(addr:$curaddr, dst(val:$instr.op2.imm), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:io-wm, op2(type:imm)) 
+into IoIR(addr:$curaddr, dst(val:$instr.op2.imm), src(id:$instr.op1.baser), uflags:0)
 
 # POP (reg)
-case instr_t(type:sp-rm, op1(type:reg)) -> AssignRM(addr:$curaddr, dst(id:$instr.op1.baser), src(base(id:ESP)), uflags:0)
+case instr_t(type:sp-rm, op1(type:reg)) 
+into AssignRM(addr:$curaddr, dst(id:$instr.op1.baser), src(base(id:ESP)), uflags:0)
 
 # POP (mem)
-case instr_t(type:sp-rm, op1(type:mem)) -> AssignMM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), src(base(id:ESP)), uflags:0)
+case instr_t(type:sp-rm, op1(type:mem)) 
+into AssignMM(addr:$curaddr, dst((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), src(base(id:ESP)), uflags:0)
 
 # PUSH (reg)
-case instr_t(type:sp-wm, op1(type:reg)) -> AssignMR(addr:$curaddr, dst(base(id:ESP)), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:sp-wm, op1(type:reg)) 
+into AssignMR(addr:$curaddr, dst(base(id:ESP)), src(id:$instr.op1.baser), uflags:0)
 
 # PUSH (imm)
-case instr_t(type:sp-wm, op1(type:imm)) -> AssignMI(addr:$curaddr, dst(base(id:ESP)), src(val:$instr.op1.imm), uflags:0)
+case instr_t(type:sp-wm, op1(type:imm)) 
+into AssignIM(addr:$curaddr, dst(base(id:ESP)), src(val:$instr.op1.imm), uflags:0)
 
 # POPF
-case instr_t(type:sp-rm-wf) -> AssignRM(addr:$curaddr, dst(id:EFLAGS), src(base(id:ESP)), uflags:$instr.wflags)
+case instr_t(type:sp-rm-wf) 
+into AssignRM(addr:$curaddr, dst(id:EFLAGS), src(base(id:ESP)), uflags:$instr.wflags)
 
 # PUSHF
-case instr_t(type:sp-wm-rf) -> AssignMR(addr:$curaddr, dst(base(id:ESP)), src(id:EFLAGS), uflags:$instr.rflags)
+case instr_t(type:sp-wm-rf) 
+into AssignMR(addr:$curaddr, dst(base(id:ESP)), src(id:EFLAGS), uflags:$instr.rflags)
 
 # RET, RETF
-case instr_t(type:r) -> Return(addr:$curaddr, dst(val:0), uflags:0)
+case instr_t(type:r) 
+into Return(addr:$curaddr, dst(val:0), uflags:0)
 
 # XCHG (reg, reg)
-case instr_t(type:wm-rm, op2(type:reg)) -> XchgRR(addr:$curaddr, fst(id:$instr.op2.baser), snd(id:$instr.op1.baser), uflags:0)
+case instr_t(type:wm-rm, op2(type:reg)) 
+into XchgRR(addr:$curaddr, fst(id:$instr.op2.baser), snd(id:$instr.op1.baser), uflags:0)
 
 # XCHG (mem, reg)
-case instr_t(type:wm-rm, op2(type:mem)) -> XchgMR(addr:$curaddr, fst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), snd(id:$instr.op1.baser), uflags:0)
+case instr_t(type:wm-rm, op2(type:mem)) 
+into XchgMR(addr:$curaddr, fst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), snd(id:$instr.op1.baser), uflags:0)
 
 # XLATB
-case instr_t(type:a-rm) -> AssignRM(addr:$curaddr, dst(id:EAX), src(base(id:EBX), index(id:EAX)), uflags:0)
+case instr_t(type:a-rm) 
+into AssignRM(addr:$curaddr, dst(id:EAX), src(base(id:EBX), index(id:EAX)), uflags:0)
 
 # STOSB, STOSD (mem, reg)
-case instr_t(type:wm) -> AssignMR(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:wm) 
+into AssignMR(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(id:$instr.op1.baser), uflags:0)
 
 # MOV (reg, imm)
-case instr_t(type:a, op1(type:imm), op2(type:reg)) -> AssignRI(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
+case instr_t(type:a, op1(type:imm), op2(type:reg)) 
+into AssignIR(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
 
 # MOV (reg, mem)
-case instr_t(type:a, op1(type:mem), op2(type:reg)) -> AssignRM(addr:$curaddr, dst(id:$instr.op2.baser), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:a, op1(type:mem), op2(type:reg)) 
+into AssignRM(addr:$curaddr, dst(id:$instr.op2.baser), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # MOV (reg, reg)
-case instr_t(type:a, op1(type:reg), op2(type:reg)) -> AssignRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:a, op1(type:reg), op2(type:reg)) 
+into AssignRR(addr:$curaddr, dst(id:$instr.op2.baser), src(id:$instr.op1.baser), uflags:0)
 
 # MOV (mem, reg)
-case instr_t(type:a, op1(type:reg), op2(type:mem)) -> AssignMR(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(id:$instr.op1.baser), uflags:0)
+case instr_t(type:a, op1(type:reg), op2(type:mem)) 
+into AssignMR(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(id:$instr.op1.baser), uflags:0)
 
 # MOV (mem, imm)
-case instr_t(type:a, op1(type:imm), op2(type:mem)) -> AssignMI(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(val:$instr.op1.imm), uflags:0)
+case instr_t(type:a, op1(type:imm), op2(type:mem)) 
+into AssignIM(addr:$curaddr, dst((name:$instr.op2.name base(id:$instr.op2.baser), index(id:$instr.op2.indexr), scale(val:$instr.op2.scale), off(val:$instr.op2.imm))), src(val:$instr.op1.imm), uflags:0)
 
 # LDS, LES (reg, imm)
-case instr_t(type:rm, op1(type:imm)) -> AssignRI(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
+case instr_t(type:rm, op1(type:imm)) 
+into AssignIR(addr:$curaddr, dst(id:$instr.op2.baser), src(val:$instr.op1.imm), uflags:0)
 
 # LODSB, LODSD (reg, mem)
-case instr_t(type:rm) -> AssignRM(addr:$curaddr, dst(id:$instr.op2.baser), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
+case instr_t(type:rm) 
+into AssignRM(addr:$curaddr, dst(id:$instr.op2.baser), src((name:$instr.op1.name base(id:$instr.op1.baser), index(id:$instr.op1.indexr), scale(val:$instr.op1.scale), off(val:$instr.op1.imm))), uflags:0)
 
 # LAHF
-case instr_t(type:rf) -> FlagR(addr:$curaddr, uflags:$instr.rflags)
+case instr_t(type:rf) 
+into FlagR(addr:$curaddr, uflags:$instr.rflags)
 
 # CLC, CLD, CLI, CMC, SAHF, STC, STD, STI
-case instr_t(type:wf) -> FlagW(addr:$curaddr, uflags:$instr.rflags)
+case instr_t(type:wf) 
+into FlagW(addr:$curaddr, uflags:$instr.rflags)
 
 # Prolog - SUB (ESP, imm)
-case instr_t(instr:SUB, op2(baser:ESP), op1(type:imm)) -> Prolog(addr:$curaddr, framesz(val:$instr.op1.imm), uflags:0)
+case instr_t(instr:SUB, op2(baser:ESP), op1(type:imm)) 
+into Prolog(addr:$curaddr, framesz(val:$instr.op1.imm), uflags:0)
 
 # Epilog - MOV (ESP, EBP)
-case instr_t(instr:MOV, op2(baser:ESP), op1(baser:EBP)) -> Epilog(addr:$curaddr, uflags:0)
+case instr_t(instr:MOV, op2(baser:ESP), op1(baser:EBP)) 
+into Epilog(addr:$curaddr, uflags:0)
 
 # Defaultcase
 default print Unsupported instruction at address $curaddr

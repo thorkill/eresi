@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.16 2007-08-07 07:13:27 may Exp $
+** $Id: types.c,v 1.17 2007-09-17 02:26:03 may Exp $
 **
 */
 #include "libaspect.h"
@@ -41,7 +41,7 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
 
 
 /** 
- * @brief Copy the parameter type by change its offset 
+ * @brief Copy the structure representing a data type for creating a new meta-type instance
  */
 aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
@@ -64,15 +64,58 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);
 }
 
+/**
+ * @brief Copy the structure representing a data type and change its name to create a new meta-type
+ *
+ */
+aspectype_t		*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fieldshash)
+{
+  aspectype_t		*newtype;
+  aspectype_t		*result;
+  aspectype_t		*next;
+  aspectype_t		*prev;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Allocate and name the new type */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	 newtype, sizeof(aspectype_t), NULL);
+  memcpy(newtype, type, sizeof(aspectype_t));
+  if (name)
+    newtype->name = strdup(name);
+  if (fieldshash && newtype->fieldname)
+    hash_add(fieldshash, strdup(newtype->fieldname), (void *) 1);
+  prev = result = newtype;
+  if (newtype->childs)
+    newtype->childs = aspect_type_copy_by_name(newtype->childs, NULL, 
+					       !newtype->fieldname ? fieldshash : NULL);
+
+  /* Copy all the field types, if we are dealing with a record type */
+  for (next = newtype->next; next; next = next->next)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     newtype, sizeof(aspectype_t), NULL);
+      memcpy(newtype, next, sizeof(aspectype_t));
+      if (fieldshash)
+	hash_add(fieldshash, strdup(newtype->fieldname), (void *) 1);
+      if (next->childs)
+	newtype->childs = aspect_type_copy_by_name(next->childs, NULL, NULL);
+      prev->next = newtype;
+      prev = newtype;
+    }
+
+  /* Return copied root type as a result */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, result);
+}
 
 
 /** 
- * Add a field to a type 
+ * @brief Add a field to a meta-type
  */
-static int		aspect_type_addfield(aspectype_t *parent, 
-					     aspectype_t *field)
+int		aspect_type_addfield(aspectype_t *parent, 
+				     aspectype_t *field)
 {
-  aspectype_t		*next;
+  volatile aspectype_t		*next;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!parent || !field)
@@ -154,6 +197,7 @@ aspectype_t		*aspect_type_create(char *label,
   aspectype_t		*newtype;      
   aspectype_t		*childtype;
   aspectype_t		*copy;
+  aspectype_t		*supertype;
   int			index;
   char			*fieldname;
   char			*typename;
@@ -164,6 +208,7 @@ aspectype_t		*aspect_type_create(char *label,
   u_int			*dims;
   u_int			idx;
   u_int			size;
+  hash_t		fields_hash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -171,21 +216,49 @@ aspectype_t		*aspect_type_create(char *label,
   if (!label || !fields || !fieldnbr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", NULL);
+
+  /* Subtyping was specified */
+  supertype = NULL;
+  typename = strstr(label, "::");
+  if (typename)
+    {
+      *typename = 0x00;
+      typename += 2;
+      supertype = aspect_type_get_by_name(typename);
+      if (!supertype)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid record derivation", NULL); 
+    }
+  
+  /* Check that the created type name is not existing already */
   if (hash_get(&types_hash, label))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot create type : name already exists", NULL);
-  
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-	 newtype, sizeof(aspectype_t), NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-	 newtype->childs, sizeof(hash_t), NULL);
 
-  newtype->childs = NULL;
-  newtype->name   = strdup(label);
- 
-    
+
+  /* Just remember the name of fields we have already created */
+  bzero(&fields_hash, sizeof(hash_t));
+  hash_init(&fields_hash, "localfields", 10, ASPECT_TYPE_UNKNOW);
+  
+  /* Allocate the new type structure */
+  if (!supertype)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     newtype, sizeof(aspectype_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     newtype->childs, sizeof(hash_t), NULL);
+      newtype->childs = NULL;
+      newtype->name = strdup(label);   
+      curoff = 0;
+    }
+  else
+    {
+      newtype = aspect_type_copy_by_name(supertype, label, &fields_hash);
+      curoff = newtype->size;
+    }
+  
   /* Add fields to types */
-  for (dims = NULL, off = dimnbr = isptr = curoff = index = 0; 
+  for (dims = NULL, off = dimnbr = isptr = index = 0; 
        index < fieldnbr; 
        index++, off = dimnbr = isptr = 0, dims = NULL)
     {
@@ -203,15 +276,18 @@ aspectype_t		*aspect_type_create(char *label,
 	*fieldsz++ = 0x00;
 
       /* Either you provide the size or the typename */
-      if (!*fieldname || (!typename && !fieldsz) || 
-	  (typename && fieldsz) || (typename && !*typename) || 
-	  (fieldsz && (!*fieldsz || !atoi(fieldsz))))
+      if (!*fieldname || hash_get(&fields_hash, fieldname) || 
+	  (!typename && !fieldsz) || (typename && fieldsz) || 
+	  (typename && !*typename) || (fieldsz && (!*fieldsz || !atoi(fieldsz))))
+	  
 	{
+	  hash_destroy(&fields_hash);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype->name);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			    "Invalid type structure", NULL);
+			    "Invalid use of fieldname or typename", NULL);
 	}
+      hash_add(&fields_hash, strdup(fieldname), (void *) 1);
 
       /* Support raw types determined by their size */
       if (!typename) 
@@ -239,10 +315,11 @@ aspectype_t		*aspect_type_create(char *label,
 	  dims = aspect_type_getdims(typename, &dimnbr);
 	  if (dimnbr < 0)
 	    {
+	      hash_destroy(&fields_hash);
 	      XFREE(__FILE__, __FUNCTION__, __LINE__,newtype->name);
 	      XFREE(__FILE__, __FUNCTION__, __LINE__,newtype);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				"Invalid array structure", NULL);
+				"Invalid array dimensions", NULL);
 	    }
 
 	  /* Lookup field type */
@@ -269,6 +346,7 @@ aspectype_t		*aspect_type_create(char *label,
 		}
 	      else
 		{
+		  hash_destroy(&fields_hash);
 		  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype->name);
 		  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype);
 		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -292,6 +370,7 @@ aspectype_t		*aspect_type_create(char *label,
   
   /* Add type to global type hash table and return success */
   newtype->size = curoff;
+  hash_destroy(&fields_hash);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);  
 }
 

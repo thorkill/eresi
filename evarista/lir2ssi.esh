@@ -24,7 +24,7 @@ foreach $instr in $instrlists[$curaddr]
 
     case IndBranch(dst(nbrin:1))
     pre namegen $nam1 $instr.dst.id
-    into IGoto(dst(name:$nam1 regid:$instr.dst.id 
+    into IGoto(dst(name:$nam1 id:$instr.dst.id 
  	           inlist:$instr.dst.inlist nbrin:$instr.dst.nbrin
                    outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
     post print Rewriting IndBranch into IGoto at $curaddr
@@ -32,13 +32,14 @@ foreach $instr in $instrlists[$curaddr]
     case IndBranch() 
     pre namegen $nam1 $instr.dst.id
     pre namegen $nam2 $instr.dst.id
-    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
-                  in_nbr:$instr.dst.nbrin))::dst--dst::IGoto(dst(name:$nam2 regid:$instr.dst.id))
+    into RPhi(dst(name:$nam1 id:$instr.dst.id inlist:$instr.dst.inlist 
+                  in_nbr:$instr.dst.nbrin))::IGoto(dst(name:$nam2 id:$instr.dst.id))
+    post link @2.dst @1.dst
     post print Rewriting IndBranch into RPhi::IGoto at $curaddr
 
     case IndCall(dst(nbrin:1)) 
     pre namegen $nam1 $instr.dst.id
-    into ICall(dst(name:$nam1 regid:$instr.dst.id 
+    into ICall(dst(name:$nam1 id:$instr.dst.id 
  	           inlist:$instr.dst.inlist nbrin:$instr.dst.nbrin
                    outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
     post print Rewriting IndCall into ICall at $curaddr
@@ -46,15 +47,16 @@ foreach $instr in $instrlists[$curaddr]
     case IndCall() 
     pre namegen $nam1 $instr.dst.id
     pre namegen $nam2 $instr.dst.id
-    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
-                  nbrin:$instr.dst.nbrin))::dst--dst::ICall(dst(name:$nam2 regid:$instr.dst.id))
+    into RPhi(dst(name:$nam1 id:$instr.dst.id inlist:$instr.dst.inlist 
+                  nbrin:$instr.dst.nbrin))::ICall(dst(name:$nam2 id:$instr.dst.id))
+    post link @2.dst @1.dst
     post print Rewriting IndCall into RPhi::ICall at $curaddr
 
     case TernopRI(rsrc(nbrin:1))
     pre namegen $nam1 $instr.rsrc.id
     pre namegen $nam2 $instr.dst.id
-    into RITernop(isrc:$instr.isrc, rsrc(regid:$instr.rsrc.id name:$nam1 inlist:$instr.rsrc.inlist 
-	          nbrin:$instr.dst.nbrin) dst(regid:$instr.dst.id name:$nam2 
+    into RITernop(isrc:$instr.isrc, rsrc(id:$instr.rsrc.id name:$nam1 inlist:$instr.rsrc.inlist 
+	          nbrin:$instr.dst.nbrin) dst(id:$instr.dst.id name:$nam2 
                   outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
     post Rewriting TernopRI into RITernop at $curaddr
 
@@ -62,64 +64,105 @@ foreach $instr in $instrlists[$curaddr]
     pre namegen $nam1 $instr.rsrc.id
     pre namegen $nam2 $instr.rsrc.id
     pre namegen $nam3 $instr.dst.id
-    into RPhi(dst(name:$nam1 regid:$instr.rsrc.id inlist:$instr.rsrc.inlist
-	      nbrin:$instr.rsrc.nbrin))::dst--rsrc::RITernop(isrc:$instr.isrc, 
-	      rsrc(regid:$instr.rsrc.id name:$nam2 inlist:$instr.rsrc.inlist nbrin:$instr.rsrc.nbrin)
-	      dst(regid:$instr.dst.id name:$nam3 outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    into RPhi(dst(name:$nam1 id:$instr.rsrc.id inlist:$instr.rsrc.inlist
+	      nbrin:$instr.rsrc.nbrin))::
+         RITernop(isrc:$instr.isrc rsrc(id:$instr.rsrc.id name:$nam2 inlist:$instr.rsrc.inlist 
+                  nbrin:$instr.rsrc.nbrin) dst(id:$instr.dst.id name:$nam3
+                  outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post link @2.rsrc @1.dst
     post Rewriting TernopRI into Phi::RITernop at $curaddr
 
     case BitSet(dst(nbrin:1))    
     pre namegen $nam1 $instr.dst.id 
-    into SetBit(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist nbrin:1 
+    into SetBit(dst(name:$nam1 id:$instr.dst.id inlist:$instr.dst.inlist nbrin:1 
 	        outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout) src($instr.src))
     post Rewriting BitSet into SetBit at $curaddr
 
     case BitSet()    
     pre namegen $nam1 $instr.dst.id 
     pre namegen $nam2 $instr.dst.id 
-    into RPhi(dst(name:$nam1 regid:$instr.dst.id inlist:$instr.dst.inlist 
-                  nbrin:$instr.dst.nbrin))::dst--dst::SetBit(src($instr.src) 
-              dst(name:$nam2 regid:$instr.dst.id outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    into RPhi(dst(name:$nam1 id:$instr.dst.id inlist:$instr.dst.inlist 
+                  nbrin:$instr.dst.nbrin))
+         ::SetBit(src($instr.src) dst(name:$nam2 id:$instr.dst.id
+              outlist:$instr.dst.outlist nbrout:$instr.dst.nbrout))
+    post link @2.dst @1.dst
     post Rewriting BitSet into SetBit at $curaddr
 
     case CmpRI(snd(nbrin:1))     
     pre namegen $nam1 $instr.snd.id 
-    into RICmp(snd(name:$nam1 regid:$instr.snd.id inlist:$instr.snd.inlist nbrin:1 
+    into RICmp(snd(name:$nam1 id:$instr.snd.id inlist:$instr.snd.inlist nbrin:1 
 	       outlist:$instr.snd.outlist nbrout:$instr.snd.nbrout) fst($instr.fst))
     post Rewriting CmpRI into RICmp at $curaddr
 
     case CmpRI()    
     pre namegen $nam1 $instr.snd.id 
     pre namegen $nam2 $instr.snd.id
-    into RPhi(dst(name:$nam1 regid:$instr.snd.id inlist:$instr.snd.inlist 
-                  nbrin:$instr.snd.nbrin))::dst--dst::RICmp(fst($instr.fst) 
-              snd(name:$nam2 regid:$instr.snd.id outlist:$instr.snd.outlist nbrout:$instr.snd.nbrout))
+    into RPhi(dst(name:$nam1 id:$instr.snd.id inlist:$instr.snd.inlist 
+                  nbrin:$instr.snd.nbrin))
+         ::RICmp(fst($instr.fst) snd(name:$nam2 id:$instr.snd.id 
+                 outlist:$instr.snd.outlist nbrout:$instr.snd.nbrout))
+    post link @2.snd @1.dst
     post Rewriting BitSet into SetBit at $curaddr
 
     # Intermediate complicated : memory access
     # -> Multiple input operands so nbrin can be > 2 on different operands
     case AssignMR(src(base(nbrin:1) nbrin:1))  
     pre  namegen $nam1 $instr.dst.id
-    into MRAssign(dst(name: regid: nbrout: outlist:)
-                  src())
+    pre  namegen $nam2 $instr.src.base.id
+    pre  namegen $nam3 $instr.src.name
+    into MRAssign(dst(name:$nam1 id:$instr.dst.id nbrout:$instr.dst.nbrout 
+                      outlist:$instr.dst.outlist)
+                  src(name:$nam3 base(id:$instr.src.base.id name:$nam2) off:$instr.src.off 
+                      nbrin:$instr.src.nbrin inlist:$instr.src.inlist))
     post print Rewriting of AssignMR into MRAssign at $curaddr
 
+    # Phi function inserted on the base register of the memory access
     case AssignMR(src(nbrin:1))  
     pre namegen $nam1 $instr.src.base.id
     pre namegen $nam2 $instr.src.base.id
     pre namegen $nam3 $instr.dst.id
-    into MPhi(dst(name:$nam1 baseid:$instr.src.base.id 
-	          off:$instr.src.off inlist:$instr.dst.inlist 
-		  in_nbr:$instr.dst.nbrin))::dst-dst::IGoto(dst(name:$newnam2 regid:$instr.dst.id))
-    post print Inserted Phi for AssignMR at $curaddr
+    pre namegen $nam4 $instr.src.name
+    into RPhi(dst(name:$nam1 id:$instr.src.base.id inlist:$instr.src.base.inlist 
+                  in_nbr:$instr.src.base.nbrin))
+         ::MRAssign(dst(name:$nam3 id:$instr.dst.id nbrout:$instr.dst.nbrout 
+                   outlist:$instr.dst.outlist) src(name:$nam4 off:$instr.src.off
+                   base(id:$instr.src.base.id name:$nam2)))
+    post link @2.src.base @1.dst
+    post print Inserted Phi on base register for AssignMR at $curaddr
 
-    # Ici il faut RPhi::MRAssign
+    # Phi function inserted on the full memory name
     case AssignMR(src(base(nbrin:1)))
-    pre  namegen $nam1 $instr.src.name; namegen $nam2 $instr.src.name
+    pre namegen $nam1 $instr.src.name
+    pre namegen $nam2 $instr.src.name
+    pre namegen $nam3 $instr.dst.id
+    pre namegen $nam4 $instr.src.base.id
+    pre namegen $nam5 $instr.src.base.id
+    into MPhi(dst(name:$nam1 base(id:$instr.src.base.id name:$nam4) inlist:$instr.src.inlist 
+                  in_nbr:$instr.src.nbrin))
+         ::MRAssign(dst(name:$nam3 id:$instr.dst.id nbrout:$instr.dst.nbrout 
+              outlist:$instr.dst.outlist) src(name:$nam2 off:$instr.src.off 
+              base(id:$instr.src.base.id name:$nam5)))
+    post link @2.src @1.dst
+    post print Inserted Phi on base register for AssignMR at $curaddr
 
     # Ici il faut RPhi::MPhi::MRAssign
     case AssignMR()
-    pre  namegen $nam1 $instr.src.name; namegen $nam2 $instr.src.name
+    pre namegen $nam1 $instr.src.name
+    pre namegen $nam2 $instr.src.name
+    pre namegen $nam3 $instr.src.base.id
+    pre namegen $nam4 $instr.src.base.id
+    pre namegen $nam5 $instr.src.base.id
+    pre namegen $nam6 $instr.dst.id
+    into MPhi(dst(name:$nam1 base(id:$instr.src.base.id name:$nam3) inlist:$instr.src.inlist 
+                  in_nbr:$instr.src.nbrin))
+         ::RPhi(dst(name:$nam5 id:$instr.src.base.id inlist:$instr.src.base.inlist
+                  in_nbr:$instr.src.base.nbrin)))
+         ::MRAssign(dst(name:$nam6 id:$instr.dst.id nbrout:$instr.dst.nbrout 
+                    outlist:$instr.dst.outlist) src(name:$nam2 base(id:$instr.src.base.id 
+                    name:$nam4) off:$instr.src.off))
+    post link @3.src @1.dst
+    post link @3.src.base @2.dst
+    post print Inserted MPhi::RPhi for AssignMR at $curaddr
 
     # TODO
 

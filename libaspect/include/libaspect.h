@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.34 2007-08-07 07:13:27 may Exp $
+ ** $Id: libaspect.h,v 1.35 2007-09-17 02:26:03 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -320,7 +320,7 @@ int		container_linklists_create(container_t *container,
 					   u_int	linktype);
 
 /* Type related functions */
-char		*aspect_typename_get(u_int type);
+char		*aspect_type_get(u_int type);
 u_int		aspect_typesize_get(u_int type);
 int		aspect_basetypes_create();
 int		aspect_type_register_real(char *label, 
@@ -337,6 +337,7 @@ aspectype_t	*aspect_type_copy(aspectype_t	*type,
 				  u_int		elemnbr, 
 				  char		*fieldname,
 				  u_int		*dims);
+aspectype_t	*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fields_hash);
 int		aspect_basetype_register(char *name, u_int size);
 typeinfo_t	*aspect_basetype_get(unsigned int *nbr);
 aspectype_t	*aspect_type_get_by_name(char *name);

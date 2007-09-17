@@ -5,8 +5,9 @@
 
 # Types of variables in SSI
 
-type RVar::container = name:string regid:int
-type MVar::container = name:string baseid:int off:int
+type RVar::container = name:string id:int
+#type MVar::container = name:string baseid:int off:int
+type MVar::container = name:string base:RVar off:int
 
 # Types of operations in SSI
 
