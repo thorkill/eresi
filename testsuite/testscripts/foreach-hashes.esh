@@ -1,4 +1,4 @@
-#!elfsh/elfsh32
+#!../../elfsh/elfsh32
 
 #quiet
 
@@ -29,6 +29,7 @@ foreach $element of test2
   print Table contains element : $element
 forend
 
+quit
 verb
 
 load /usr/bin/ssh

@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.12 2007-08-08 13:47:24 may Exp $
+** $Id: atomic.c,v 1.13 2007-09-17 22:58:18 may Exp $
 **
 */
 #include "revm.h"
@@ -54,7 +54,7 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
   elfsh_Addr		dst;
   char			buf[BUFSIZ];
   revmobj_t		*res;
-  u_char		wastr;
+  int			oldtype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -69,14 +69,11 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 		      "Destination parameter must not be a constant", -1);
 
   /* Preliminary checks */
-  wastr = 0;
+  oldtype = o1->type;
   if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
     o1->type = ASPECT_TYPE_INT;
   else if (o1->type == ASPECT_TYPE_STR)
-    {
-      revm_convert_object(o1, ASPECT_TYPE_INT);
-      wastr = 1;
-    }
+    revm_convert_object(o1, ASPECT_TYPE_INT);
   if ((o1->type != ASPECT_TYPE_INT   &&
        o1->type != ASPECT_TYPE_BYTE  && 
        o1->type != ASPECT_TYPE_SHORT && 
@@ -138,8 +135,8 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
     }
   
   /* If the object was a string, translate it back */
-  if (wastr)
-    revm_convert_object(o1, ASPECT_TYPE_STR);
+  if (o1->type != oldtype)
+    revm_convert_object(o1, oldtype);
 
   if (!o2->perm)
     XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
@@ -206,7 +203,8 @@ int			revm_list_add(list_t *h, revmobj_t *o)
   elfsh_Addr		elem;
   char			*key;
   list_t		*src;
-  
+  revmobj_t		*copy;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the source object is a hash, then we need to do a merge operation ! */
@@ -220,13 +218,18 @@ int			revm_list_add(list_t *h, revmobj_t *o)
   /* Some checks */
   if (!o->kname && !o->hname && !o->get_name)
     {
-      if (revm_convert_object(o, ASPECT_TYPE_STR) < 0)
+      copy = revm_copy_object(o);
+      if (revm_convert_object(copy, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
+      key = strdup(copy->immed_val.str);
+      revm_destroy_object(copy);
     }
   else
-    key = (o->kname ? o->kname : o->hname ? o->hname : o->get_name(o->root, o->parent));
+    {
+      key = (o->kname ? o->kname : o->hname ? o->hname : o->get_name(o->root, o->parent));
+      key = strdup(key);
+    }
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown key for source object", -1);
