@@ -30,6 +30,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
+			$(KERNSHINC) $(KERNSH)					 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI32	 \
 			-DE2DBG_PRESENT
 
@@ -39,6 +40,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
+			$(KERNSHINC) $(KERNSH)					 \
 			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI64	 \
 			-DE2DBG_PRESENT
 
@@ -59,6 +61,7 @@ all			: all32 all64
 
 all32			: ${OBJ32}
 			@$(CC) -shared $(OBJ32) $(EXTRAOBJ32) $(LDFLAGS32) \
+			$(KERNSHLIB32)					   \
 			-o $(DBGNAME32).so
 			@$(AR) $(DBGNAME32).a $(OBJ32)
 			@$(RANLIB) $(DBGNAME32).a
@@ -67,6 +70,7 @@ all32			: ${OBJ32}
 
 all64			: ${OBJ64}
 			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
+			$(KERNSHLIB64) \
 			-o $(DBGNAME64).so
 			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)
 			@$(AR) $(DBGNAME64).a $(OBJ64)

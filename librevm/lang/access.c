@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.25 2007-08-04 04:00:45 may Exp $
+ * $Id: access.c,v 1.26 2007-09-18 13:05:08 pouik Exp $
  *
  */
 #include "revm.h"
@@ -54,6 +54,7 @@ void		*revm_get_raw(void *addr)
 int		revm_arrayoff_get(char *field, u_int elmsize, 
 				u_int dimnbr, u_int *dims)
 {
+  revmobj_t	*obj;
   char		*strindex;
   char		*endindex;
   int		offset;
@@ -80,7 +81,34 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array syntax", -1);
 	  *endindex = 0x00;
-	  index = atoi(strindex + 1);
+	  obj = revm_lookup_var((char *)(strindex + 1));
+	  if (obj != NULL)
+	    {
+	      switch (obj->type)
+		{
+		case ASPECT_TYPE_LONG:
+		case ASPECT_TYPE_CADDR:
+		case ASPECT_TYPE_DADDR:
+		  index = (obj->immed ? 
+			   obj->immed_val.ent : obj->get_obj(obj->parent));
+		  break;
+		case ASPECT_TYPE_INT:
+		  index = (obj->immed ? 
+			   obj->immed_val.word : obj->get_obj(obj->parent));
+		  
+		  break;
+		  
+		default :
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			       "Invalid index syntax", -1);
+		  break;
+		}
+	    }
+	  else
+	    {
+	      index = atoi(strindex + 1);
+	    }
+
 	  if (index >= dims[iter] || (strindex + 1) == endindex)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array index", -1);

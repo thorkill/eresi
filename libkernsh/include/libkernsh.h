@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.10 2007-09-02 21:47:25 pouik Exp $
+** $Id: libkernsh.h,v 1.11 2007-09-18 13:05:08 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -94,7 +94,7 @@ enum
     LIBKERNSH_STATIC_MODE
   } libkernsh_e_debug_type;
 
-#define	__DEBUG_KERNSH__			0
+#define	__DEBUG_KERNSH__			0	
 
 #define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
 #define LIBKERNSH_VMCONFIG_DEVICE		"libkernsh.device"

@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.25 2007-07-31 23:30:35 may Exp $
+## $Id: Makefile,v 1.26 2007-09-18 13:05:08 pouik Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -105,8 +105,9 @@ clean:
 	@echo "Cleaning source tree"
 
 fclean: clean
-	$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump} 
-	$(RM) mydisasm
+	@$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump}
+	@$(RM) *.so *.o *.a
+	@$(RM) mydisasm
 
 tags:
 	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c

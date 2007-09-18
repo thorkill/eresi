@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.10 2007-09-02 21:47:25 pouik Exp $
+** $Id: kernsh.c,v 1.11 2007-09-18 13:05:08 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -310,7 +310,8 @@ void *kernsh_elfsh_get_raw(elfshsect_t *sect)
     }
   else
     {
-      sect->parent->rhdr.base = 0;
+      if (libkernshworld.open)
+	sect->parent->rhdr.base = 0;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
