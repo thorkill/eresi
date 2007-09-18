@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.24 2007-08-15 21:30:20 strauss Exp $
+** $Id: libasm.h,v 1.25 2007-09-18 21:41:12 may Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -290,6 +290,11 @@ int		asm_operand_debug(asm_instr *, int, int, void *);
 void		asm_instruction_debug(asm_instr *ins, FILE *out);
 
 /**
+ * Free asm processor internal structures
+ */
+void		asm_free_i386(asm_processor *proc);
+
+/**
  * Get immediate value stored in operand.
  */
 
@@ -411,6 +416,7 @@ int	asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, int type,
  * @return An ascii string.
  */
 char	*get_reg_intel(int reg, int regset);
+
 
 /**
  * LIBASM_ERROR_CODEm

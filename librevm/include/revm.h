@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.85 2007-08-07 07:13:27 may Exp $
+** $Id: revm.h,v 1.86 2007-09-18 21:41:13 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -982,11 +982,12 @@ int		revm_vector_bad_dims(vector_t *v, unsigned int *dims, u_int dimnbr);
 
 /* Dependences related information : deps.c */
 int		revm_load_enumdep(elfshobj_t *obj);
-int		revm_load_dep(elfshobj_t *p, char *n, elfsh_Addr b, elfshlinkmap_t *);
+int		revm_load_dep(elfshobj_t *p, char *n, elfsh_Addr b, elfshlinkmap_t *, hash_t*);
+int		revm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
 char	     	*revm_load_searchlib(char *name);
 elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path);
 elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id);
-int		revm_unload_dep(elfshobj_t *obj, elfshobj_t *root);
+
 
 /* Top skeleton functions */
 int		revm_init() __attribute__((constructor));

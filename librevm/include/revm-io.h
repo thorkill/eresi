@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.47 2007-09-17 02:26:03 may Exp $
+** $Id: revm-io.h,v 1.48 2007-09-18 21:41:13 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -43,7 +43,7 @@ char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a17"
+#define	REVM_RELEASE	"a18"
 #define REVM_EDITION	"cam"
 
 /* Unused, feel free to try it, its awesome */
@@ -63,7 +63,7 @@ char	prompt_token[512];
 "\033[00;01;30m)"        \
 "\033[00m " 
 
-/* The ELF shell crew prompt */
+/* The ERESI team crew prompt */
 #define ELFSH_CREW_PROMPT  \
 "\033[00;01;30m("          \
  "\033[00;01;31melfsh"     \
@@ -82,6 +82,7 @@ char	prompt_token[512];
 #define  ELFSH_PROMPT ELFSH_CREW_PROMPT
 //#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
 
+/* Now some strings for graphviz/dot */
 #define GVZ_COLOR_BLUE		"\"blue\""
 #define GVZ_COLOR_CORAL		"\"coral\""
 #define GVZ_COLOR_CYAN		"\"cyan\""
@@ -99,8 +100,7 @@ char	prompt_token[512];
 #define GVZ_NODE_EXTERN		3
 #define GVZ_NODE_UNKNOWN	4
 
-
-/* FIXME: Deprecated? */
+/* XXX: Deprecated? */
 #define BLK_COLOR_FUNC		GVZ_COLOR_GREEN
 #define BLK_COLOR_NORM		GVZ_COLOR_CYAN
 #define BLK_COLOR_RET		GVZ_COLOR_CORAL

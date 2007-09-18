@@ -1,0 +1,24 @@
+#!evarista/evarista32
+
+sdir .
+quiet
+
+cmp $# 3
+jne end
+print Fact with params $1 $2
+
+mul $2 $1
+set $2 $_
+sub $1 1
+cmp $1 1
+je result
+fact $1 $2
+quit
+
+end:
+print This program needs 2 parameters
+quit
+
+result:
+print Factorial result = $2
+quit

@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 12 00:07:06 2003 jfv
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
 **
-** $Id: obj.c,v 1.8 2007-07-31 03:28:46 may Exp $
+** $Id: obj.c,v 1.9 2007-09-18 21:41:12 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -51,6 +51,8 @@ void		elfsh_unload_obj(elfshobj_t *file)
   elfshsect_t	*next;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  fprintf(stderr, "Unloading %s \n", file->name);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, file->hdr);
   XFREE(__FILE__, __FUNCTION__, __LINE__, file->pht);

@@ -1,0 +1,20 @@
+#!../../elfsh/elfsh32
+
+load /usr/src/linux/vmlinux
+type example1 = sys:int[320]
+inform example1 toto sys_call_table
+
+print 1.example1[toto].sys[0]
+
+set $i 0
+
+boucle:
+
+cmp $i 2
+je end
+print 1.example1[toto].sys[$i]
+add $i 1
+jmp boucle
+
+end:
+print "Bye !"

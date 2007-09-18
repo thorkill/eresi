@@ -1,9 +1,9 @@
 /*
 ** breakpoints.c for e2dbg
 **    
-** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
+** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
 **
-** $Id: breakpoints.c,v 1.11 2007-08-03 18:05:03 may Exp $
+** $Id: breakpoints.c,v 1.12 2007-09-18 21:41:12 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -112,23 +112,21 @@ int		e2dbg_is_watchpoint(elfshbp_t *b)
 /* Find breakpoint by ID */
 elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid)
 {
-  listent_t     *actual;
   elfshbp_t	*cur;
   int           index;
+  char		**keys;
+  int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  for (index = 0; index < e2dbgworld.bp.size; index++)
-    for (actual = e2dbgworld.bp.ent + index;
-	 actual != NULL && actual->key != NULL;
-	 actual = actual->next)
-      {
-	cur = (elfshbp_t *) actual->data;
-	if (cur->id == bpid)
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     cur);
-      }
-
+  keys = hash_get_keys(&e2dbgworld.bp, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      cur = hash_get(&e2dbgworld.bp, keys[index]);
+      if (cur->id == bpid)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		      cur);
+    }
+  hash_free_keys(keys);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                     "Unable to find breakpoing by ID", NULL);
 }
@@ -246,6 +244,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
   
   if (sym && parent->hdr->e_type == ET_DYN)
     sym->st_value += parent->rhdr.base;
+
   if (sym && sym->st_value)
     {
       sect = elfsh_get_parent_section(parent, sym->st_value, NULL);

@@ -7,8 +7,8 @@
 **
 ** Vectors can also be accessed with 'vectors' cmd in any eresi interpreter 
 ** 
-** Started   Thu Jun 07 07:17:33 2007 jfv
-** $Id: dbg-sparc32.c,v 1.3 2007-07-31 03:28:46 may Exp $
+** Started   Thu Jun 07 07:17:33 2007 mayhem
+** $Id: dbg-sparc32.c,v 1.4 2007-09-18 21:41:12 may Exp $
 */
 #include "libe2dbg.h"
 
@@ -232,34 +232,118 @@ void            *e2dbg_getret_sparc32(void *frame)
 
 
 /**
- * Write a breakpoint 0xCC in memory
+ * Write a sparc breakpoint in memory
  * One of the 2 breakpoint technique of e2dbg
  */
+#if !defined(SPARC)
+int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
+{
+  return (0);
+}
+#else
 int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
 {
   int                   prot;
+  unsigned long		addr;
+  unsigned long long	addr64;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_BREAKPOINTS__
-  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] bp->addr %08X \n", bp->addr);
+  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] bp->addr %016x \n", bp->addr);
 #endif
 
-  bp->savedinstr[0] = *(u_long *) bp->addr;
-  prot = elfsh_munprotect(f, bp->addr, 4);
+  memcpy(bp->savedinstr, (u_char *) bp->addr, 8);
+
+  prot = elfsh_munprotect(f, bp->addr, 8);
   if (prot == (-1))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
 
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after munprotect\n");
 #endif
-  *(u_long *) bp->addr = 0x91d02001;
+
+  //*(u_long *)  bp->addr      = 0x91d02001;		/* opcode for ta 1 */
+
+  *((u_long *) bp->addr)     = 0x01000000;		/* put nop here */
+  *((u_long *) bp->addr + 1) = 0x01000000;		/* put nop here */
+
+  addr = (bp->addr & (~7));
+
 #if __DEBUG_BREAKPOINTS__
-  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after write\n");
+  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] Address to be flushed: %016lx \n", addr);
 #endif
-  elfsh_mprotect(bp->addr, 4, prot);
+  
+  /* Testing .... */
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (0));
+
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (8));
+
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (16));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (0));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (8));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr), 
+		       "r" (16));
+
+  addr64 = 0xffffffff00000000 + addr;
+
+#if __DEBUG_BREAKPOINTS__
+  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] Address64 to be flushed: %016llx \n", addr64);
+#endif
+
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (0));
+
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (8));
+
+  __asm__ __volatile__("iflush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (16));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (0));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (8));
+
+  __asm__ __volatile__("flush %0 + %1 \n\t" ::
+		       "r" ((unsigned long) addr64), 
+		       "r" (16));
+
+
+#if __DEBUG_BREAKPOINTS__
+  fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after sleep & write\n");
+#endif
+
+  elfsh_mprotect(bp->addr, 8, prot);
+
+  sleep(2);
+
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after mprotect\n");
 #endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
+#endif /* defined(SPARC) */
+
+

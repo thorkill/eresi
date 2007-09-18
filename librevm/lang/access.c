@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.26 2007-09-18 13:05:08 pouik Exp $
+ * $Id: access.c,v 1.27 2007-09-18 21:41:13 may Exp $
  *
  */
 #include "revm.h"
@@ -48,13 +48,62 @@ void		*revm_get_raw(void *addr)
 }
 
 
+/**
+ * @brief Return the index for an array access giving a string
+ */
+int		revm_arrayindex_get(char *strindex)
+{
+  int		index;
+  revmobj_t	*obj;
+  char		*str;
+  int		idx;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* First remove the ] in a copy of the string */
+  str = strdup(strindex + 1);
+  for (idx = 0; str[idx] && str[idx] != ']'; idx++);
+  if (str[idx])
+    str[idx] = 0x00;
+
+  /* Lookup the value of the index string */
+  obj = revm_lookup_var(str);
+  if (obj == NULL)
+    {
+      idx = atoi(str);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, str);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
+    }
+  switch (obj->type)
+    {
+    case ASPECT_TYPE_LONG:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+      index = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
+      break;
+    case ASPECT_TYPE_INT:
+      index = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));      
+      break;
+    case ASPECT_TYPE_SHORT:
+      index = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));      
+      break;
+    case ASPECT_TYPE_BYTE:
+      index = (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));      
+      break;
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Invalid index syntax", -1);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, index);
+}
+
+
 /** 
  * @brief Return the requested projections in case of an array 
  */
 int		revm_arrayoff_get(char *field, u_int elmsize, 
-				u_int dimnbr, u_int *dims)
+				  u_int dimnbr, u_int *dims)
 {
-  revmobj_t	*obj;
   char		*strindex;
   char		*endindex;
   int		offset;
@@ -62,17 +111,21 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
   int		iter;
   int		liter;
   u_int		*dimoff;
+  char		*lfield;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   dimoff = alloca(dimnbr * sizeof(int));
+  iter   = strlen(field);
+  lfield = alloca(iter + 1);
+  memcpy(lfield, field, iter);
 
   /* Compute offset for each dimension in the first pass */
   for (iter = 0; 
-       field && *field && iter < dimnbr; 
-       field = endindex + 1, iter++)
+       lfield && *lfield && iter < dimnbr; 
+       lfield = endindex + 1, iter++)
     {
-      strindex = strchr(field, '[');
+      strindex = strchr(lfield, '[');
       if (strindex)
 	{
 	  *strindex = 0x00;
@@ -81,39 +134,12 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array syntax", -1);
 	  *endindex = 0x00;
-	  obj = revm_lookup_var((char *)(strindex + 1));
-	  if (obj != NULL)
-	    {
-	      switch (obj->type)
-		{
-		case ASPECT_TYPE_LONG:
-		case ASPECT_TYPE_CADDR:
-		case ASPECT_TYPE_DADDR:
-		  index = (obj->immed ? 
-			   obj->immed_val.ent : obj->get_obj(obj->parent));
-		  break;
-		case ASPECT_TYPE_INT:
-		  index = (obj->immed ? 
-			   obj->immed_val.word : obj->get_obj(obj->parent));
-		  
-		  break;
-		  
-		default :
-		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			       "Invalid index syntax", -1);
-		  break;
-		}
-	    }
-	  else
-	    {
-	      index = atoi(strindex + 1);
-	    }
-
-	  if (index >= dims[iter] || (strindex + 1) == endindex)
+	  index = revm_arrayindex_get(strindex);
+	  if (index < 0 || index >= dims[iter] || (strindex + 1) == endindex)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Invalid array index", -1);
 
-	  /* Example [2][3][2] = (2 * dim2 * dim3 + 3 * dim3 + 2) * sizeof(int) */
+	  /* Example : [2][3][2] -> (2 * dim2 * dim3 + 3 * dim3 + 2) * sizeof(int) */
 	  dimoff[iter] = index * sizeof(int);
 	  for (liter = 0; liter != iter; liter++)
 	    dimoff[liter] *= dims[iter];

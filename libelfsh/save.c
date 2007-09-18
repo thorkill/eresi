@@ -5,7 +5,7 @@
 ** Started on  Tue Mar  4 01:14:01 2003 jfv
 ** Last update Thu Mar 23 23:21:08 2006 thorkill
 **
-** $Id: save.c,v 1.12 2007-08-03 11:50:59 heroine Exp $
+** $Id: save.c,v 1.13 2007-09-18 21:41:12 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -188,17 +188,20 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 
   /* Insert a padding section to make the latest top-injected code section starting on a page bound */
   actual = file->sectlist;
-  while (!actual->shdr->sh_addr)
+  while (actual && actual->shdr && !actual->shdr->sh_addr)
     actual = actual->next;
-  totsize = actual->shdr->sh_addr - sizeof(elfsh_Ehdr) - (sizeof(elfsh_Phdr) * file->hdr->e_phnum);
-  if (totsize % elfsh_get_pagesize(file))
+  if (actual)
     {
-      actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, 
-				    NULL, ELFSH_CODE_INJECTION,
-				    totsize % elfsh_get_pagesize(file), 0);
-      if (!actual)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to inject page padding section", -1);
+      totsize = actual->shdr->sh_addr - sizeof(elfsh_Ehdr) - (sizeof(elfsh_Phdr) * file->hdr->e_phnum);
+      if (totsize % elfsh_get_pagesize(file))
+	{
+	  actual = elfsh_insert_section(file, ELFSH_SECTION_NAME_PADPAGE, 
+					NULL, ELFSH_CODE_INJECTION,
+					totsize % elfsh_get_pagesize(file), 0);
+	  if (!actual)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to inject page padding section", -1);
+	}
     }
 
   /* Copy the object before saving (so that we dont strip the working file) */
@@ -208,7 +211,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 		      "Unable to copy object", -1);
 
   /* Apply awaiting tracing */
-  if (elfsh_traces_save(file) < 0)
+  if (file->hdr->e_type != ET_REL && elfsh_traces_save(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Tracing failed", -1);
  
