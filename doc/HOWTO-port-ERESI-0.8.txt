@@ -1,0 +1,294 @@
+
+
+ $ HOWTO-port-ERESI version 0.8 Thu Sep 20 17:13:18 2007 jfv
+
+ ------------------------------------------------------------------
+
+Dear ERESI users and developers,
+
+Since The ELF shell and the Embedded ELF debugger starts to be
+really modular and we now have a complete separation between
+portable parts and non-portable parts using our handlers system,
+let's see how to port it on a new architecture or a new OS. This
+system is also now used in the Kernel shell and it has proven
+perfectly adapted to develop highly portable software in the 
+ERESI framework.
+
+Each of these componant has a certain number of internal hooks,
+called "aspect vector" in the code, that can be created to
+demultiplex a particular non-standard feature for which the
+implementation is different from one OS to another, or from
+one architecture to another, or from one binary target file to 
+another, and so on.
+
+
+1. THE VECTOR API
+-----------------
+
+The structure of a vector is vector_t. All vectors are stored
+and looked up using a hash table. The vector name can lookup 
+the vector data structure in the hash table. Each vector is a
+multi-dimensional array of function pointers. Each function pointer
+corresponds to the implementation for a given combination
+of architecture, OS, file type, (or more generally, any 
+information you wish to discriminate on).
+
+
+/* Retreive pointer on the vector hash table */
+hash_t*         aspect_vecthash_get();
+
+/* Retreive a vector from the vectors hash table */
+vector_t*       aspect_vector_get(char *name);
+
+/* Add a new vector in the vectors hash table */
+int             aspect_register_vector(char *, void*, 
+                                       unsigned int*,
+                                       char **, unsigned int, 
+                                       unsigned int);
+
+/* Add the function pointer to the vector at requested coordonates */
+void            aspect_vectors_insert(vector_t *vect, 
+                                      unsigned int *dim, 
+                                      unsigned long fct);
+
+/* Get the function pointer at given position in the vector */
+void*           aspect_vectors_select(vector_t *vect, 
+                                      unsigned int *dim);
+
+
+Additionally, another API can be useful, but you certainly
+dont need it if you dont touch in the scripting engine:
+
+
+/* Project each dimension and get the cell pointer containing
+   the desired element in the vector (useful for update) */
+void            *aspect_vectors_selectptr(vector_t *vect, 
+                                          unsigned int *dim);
+
+
+Here is the list of hooks to be implemented as backends in order to 
+complete a full port on some unsupported OS or architecture.
+
+2. LIBELFSH PORTING
+-------------------
+
+
+Adding the ALTPLT handler for ALTPLT redirection for an architecture/OS/filetype
+
+* ELFSH_HOOK_REL	  : The relocation function used in ET_REL injection
+* ELFSH_HOOK_CFLOW	  : The routine performing static function hijacking
+* ELFSH_HOOK_PLT	  : The routine performing external function hijacking
+* ELFSH_HOOK_ALTPLT	  : The routine performing a more elaborate external function hijacking
+* ELFSH_HOOK_EXTPLT	  : The routine performing partial binary relinking
+* ELFSH_HOOK_ENCODEPLT	  : The routine encoding a new PLT entry
+* ELFSH_HOOK_ENCODEPLT1	  : The routine reencoding the first PLT entry
+* ELFSH_HOOK_ARGC	  : The routine performig function argument counting
+
+
+Be also sure to add a 'case' in those information switch located in the functions :
+
+int       elfsh_get_pagesize(elfshobj_t *file)
+u_int     elfsh_get_breaksize(elfshobj_t *file)
+
+If you add the support for a new OS, do the same in :
+
+u_char    elfsh_get_ostype(elfshobj_t *file)
+u_char    elfsh_get_real_ostype(elfshobj_t *file)
+
+and add your OS in :
+
+u_char  elfsh_ostype[5] = {
+  ELFOSABI_LINUX,
+  [....]
+  ADD YOUR OS HERE
+};
+
+
+
+If you add the support for a new architecture, do the same in :
+
+u_char    elfsh_get_archtype(elfshobj_t *file);
+
+All of this beeing located in libelfsh/hooks.c.
+
+
+
+You can use this internal API for adding your own hooks entries directly in the 
+elfsh_setup_hooks() function, without having to use the vector API directly:
+
+int     elfsh_register_breakhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_cflowhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_plthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int     elfsh_register_altplthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+
+
+When requesting a feature from one of the command in elfsh/e2dbg/etrace/kernsh, the code
+implementing this command remains in librevm/cmd/commandname.c . Such code calls the internal
+libelfsh API. On its turn, the libelfsh API calls the  vector API provided by libaspect. For
+each portable feature architectured using a vector, there is one libelfsh function which is
+called:
+
+
+libelfsh/relinject.c     ret = elfsh_rel(new->parent, new, reloc, dword, addr, mod);
+
+libelfsh/hijack.c        ret = elfsh_plt(file, symbol, addr);
+
+libelfsh/altplt.c        if (elfsh_altplt(file, &newsym, addr) < 0)
+
+libelfsh/bp.c            ret = elfsh_setbreak(file, bp);
+
+libelfsh/hijack.c        ret = elfsh_cflow(file, name, symbol, addr);
+
+libelfsh/hijack.c        ret = elfsh_cflow(file, name, symbol, addr);
+
+
+
+II. E2DBG PORTING
+-----------------
+
+
+Now we have a certain number of hooks inside e2dbg directly. Those are most related
+to the scripting language and the relations with stepping and access to registers
+context or processor state for all architectures. The list of hooks in e2dbg/vmhooks 
+is as follow :
+
+./libe2dbg/dbghooks.c:  getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
+./libe2dbg/dbghooks.c:  getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
+./libe2dbg/dbghooks.c:  nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
+./libe2dbg/dbghooks.c:  getret = aspect_vector_get(E2DBG_HOOK_GETRET);
+./libe2dbg/dbghooks.c:  setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
+./libe2dbg/dbghooks.c:  getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
+./libe2dbg/dbghooks.c:  setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
+./libe2dbg/dbghooks.c:  resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
+./libe2dbg/dbghooks.c:  breakp = aspect_vector_get(E2DBG_HOOK_BREAK);
+
+Those hooks are used for :
+
+- E2DBG_HOOK_GETPC	 : Returning a pointer on the Program Counter context entry for later read or write
+- E2DBG_HOOK_GETFP	 : Returning a pointer on the Frame Pointer context entry for later read or write
+- E2DBG_HOOK_NEXTFP	 : Returning the next Frame Pointer giving the actual Frame Pointer
+- E2DBG_HOOK_GETRET	 : Returning the current Return address depending on the actual Frame Pointer
+- E2DBG_HOOK_SETREGS	 : Update the ucontext registers entries for further reuse by the debuggee program
+- E2DBG_HOOK_GETREGS	 : Obtain the ucontext registers entries for further modifications in the debugger
+- E2DBG_HOOK_SETSTEP	 : Enable the singlestep mode on the processor
+- E2DBG_HOOK_RESETSTEP	 : Disable the singlestep mode on the processor
+- E2DBG_HOOK_BREAK	 : Install a breakpoint
+
+Again, we have an API that allow for registering hooks for a given architecture, host type (user, kernel.. ) and OS type :
+
+int      e2dbg_register_sregshook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a setreg handler
+int      e2dbg_register_gregshook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a getreg handler
+int      e2dbg_register_getpchook(u_char     archtype, u_char hosttype, u_char ostype, void *fct); # register a getpc handler
+int      e2dbg_register_setstephook(u_char   archtype, u_char hosttype, u_char ostype, void *fct); # register a setstep handler
+int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char ostype, void *fct); # register a resetstep handler
+int      e2dbg_register_nextfphook(u_char    archtype, u_char hosttype, u_char ostype, void *fct); # register a nextfp handler
+int      e2dbg_register_getrethook(u_char    archtype, u_char hosttype, u_char ostype, void *fct); # register a getret handler                                  
+
+
+Those e2dbg hooks, once registered, are called from e2dbg at various place, that you should not have to modify.
+As stated before, the only thing you have to do when adding a new handler for a new combination of OS/arch/binarytype
+for a given feature is to use the above mentioned API for the correct feature. The location of the libelfsh interface
+for *calling* your function pointer or retreiving it from the vector is hidden, even to the programmer, using these
+functions:
+
+
+e2dbg/signal.c            e2dbg_getregs();
+
+e2dbg/continue.c          e2dbg_setregs();
+
+e2dbg/signal.c            pc = e2dbg_getpc();
+
+e2dbg/backtrace.c         frame = (elfsh_Addr) e2dbg_getfp();
+
+e2dbg/signal.c            e2dbg_setstep();
+
+e2dbg/signal.c            e2dbg_resetstep();
+
+e2dbg/backtrace.c         frame = e2dbg_nextfp(world.curjob->current, (elfsh_Addr) frame);    
+
+e2dbg/backtrace.c         ret = (elfsh_Addr) e2dbg_getret(world.curjob->current, (elfsh_Addr) frame);
+
+                                  
+You can add your additional support directly in e2dbg/dbghooks.c:e2dbg_setup_hooks()
+in the form of calls to e2dbg_register_*() function calls (depending on the feature you
+are porting).
+
+
+
+III. LIBASM PORTING:
+--------------------
+
+FIXME
+
+
+
+IV. LIBKERNSH PORTING:
+----------------------
+
+
+FIXME
+
+
+
+V. ALGORITHM INFORMATION RELEVANT TO PORTING
+----------------------------------------------
+
+Some features like ALTGOT, ALTPLT, and EXTPLT are kind of complementary and more easily implemented
+in a single algorithm. This algorithm is located in libelfsh/altplt.c:elfsh_relink_plt() and more
+generally the functions located in that file are used for it. It is work in progress to think how
+this function could be modularized more than how it currently done. If you feel like adding small
+fixes for your architecture, please do it in proper conditions, respecting the convention used in
+the file.
+
+- ALTGOT redirection (see altplt.c + libelfsh/altgot.c for that), works on MIPS & ALPHA for now, 
+and UNTESTED ALL RISC architectures. Should not need a dedicated hook.
+
+- EXTPLT postlinking (see altplt.c + libelfsh/extplt.c for that), works on IA32, UNTESTED on all 
+other architectures, one hook will be added to virtualize the PLT reencoding.
+
+In libelfsh, all architecture dependant hooks entry are located in a file dedicated to the 
+architecture. You can find those in libelfsh/ia*,mips*,sparc*,alpha64.c files. Please place
+your handler functions entries there in libelfsh.
+
+In e2dbg, if you do the support for a new architecture, create a new file and add it in the Makefile
+of the local directory. Current supported architectures are INTEL (dbg-intel.c) and SPARC (dbg-sparc32.c).
+
+
+VI. OTHER SPECIAL PORTING CONSIDERATIONS
+----------------------------------------
+
+You may want to know special considerations on porting stuff on exotic architectures:
+
+* If the architecture does not support singlestepping natively (like MIPS), you may need to add a state
+to the counter variable in the generic breakpoint handler for obtaining the correct result in the debugger. 
+This is located in e2dbg/signal.c:e2dbg_generic_breakpoint() .
+
+* ALTGOT and ALTPLT are complementary, if you implement one of them on an architecture, you dont need the
+other one.
+
+* All quoted features works on both ET_EXEC and ET_DYN ELF objects. Please verify that your handlers
+works on both types as well, or precise which kind of ELF object your handlers are manipulating while
+you register them.
+
+* Be careful with the difference between a libelfsh hook and a e2dbg hook. The first is parametrised by a 
+ELF file type (ET_EXEC, ET_DYN, ..), the second is parametrized by a HOST type (for now, only PROC, but
+will be used in the future for the KERNEL target. We could imagine more specialized target as well, like
+the NOFP target, or stuff like that).
+
+* If you want to add a hook, there is not yet an API to do that but you can copy an existing one, located
+in libelfsh/hooks.c or e2dbg/dbghooks.c, depending on the interaction level of it (ONDISK vs MEMORY hooks).
+
+If you read this file and wish to participate in the porting of ERESI, and you are not subscribed
+on the mailing list, consult the ERESI website: http://www.eresi-project.org for more information on
+how to subscribe.
+
+
+Enjoy the framework and happy reversing $
+
+
+The ERESI team
+
+
+
+
