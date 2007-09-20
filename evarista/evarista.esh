@@ -1,0 +1,29 @@
+#!evarista/evarista32
+
+quiet
+cmp $# 2
+jne end
+sdir evarista/
+print 
+print ******************** The Evarista static analyzer version 0.8 *********************
+print
+verb
+
+load $1
+analyse
+
+#profile enable warn
+#profile enable trace
+
+set $mainbloc $hash[blocks:main]
+set $mainaddr $mainbloc.curaddr
+
+print Main found at addr $mainaddr
+
+cfg-walk $mainaddr
+
+end:
+print Syntax: evarista <ELF_binary_file_path>
+print
+quit
+ 

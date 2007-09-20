@@ -2,17 +2,11 @@
 
 # This create on-demand the block instruction list in the eresi runtime
 
-reflect $1
-
-set $curblock $_
-set $curaddr $curblock.vaddr
-
-# Just debug printing
-#inspect $curblock
-#profile enable warn
+set $curaddr $1
+reflect $curaddr
 
 # Start the transformation
-foreach $instr in $instrlists[$curaddr]
+foreach $instr in $hash[instrlists:$curaddr]
 
 print Transforming instruction: $instr
 

@@ -1,0 +1,24 @@
+#!evarista/evarista32
+
+cmp $# 2
+jne end
+
+set $block $hash[blocks:$1]
+set $hash[visitedblocks:$1] 1
+
+print Now ASM to ELIR on block at $block.curaddr
+sparc2lir $1
+
+foreach $nextblock in $block.outlist
+
+  set $addr  $nextblock.curaddr
+  set $found $hash[visitedblocks:$curaddr]
+  cmp $found 1
+  je next
+  cfg-walk $nextblock.curaddr
+
+next: forend
+
+end:
+print This function needs two parameters
+quit
