@@ -1,7 +1,7 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: idt.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
+** $Id: idt.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -22,7 +22,7 @@ int kernsh_idt(list_t *lidt)
 		   "List is NULL !", -1);
     }
   
-  idt = aspect_vector_get("idt");
+  idt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_IDT);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 

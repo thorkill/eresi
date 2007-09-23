@@ -1,7 +1,7 @@
 /*
 ** symbs.c for libkernsh
 **
-** $Id: symbs.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
+** $Id: symbs.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -29,7 +29,7 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 		   "Memory not open !", -1);
     }
 
-  symbs = aspect_vector_get("addr_by_name");
+  symbs = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ADDRBYNAME);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
@@ -58,7 +58,7 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
 		   "Memory not open !", -1);
     }
 
-  symbs = aspect_vector_get("name_by_addr");
+  symbs = aspect_vector_get(LIBKERNSH_VECTOR_NAME_NAMEBYADDR);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 

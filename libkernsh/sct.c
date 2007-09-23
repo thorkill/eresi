@@ -1,7 +1,7 @@
 /*
 ** sct.c for libkernsh
 **
-** $Id: sct.c,v 1.4 2007-07-29 16:54:36 pouik Exp $
+** $Id: sct.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -22,7 +22,7 @@ int kernsh_sct(list_t *lsct)
 		   "List is NULL !", -1);
     }
   
-  sct = aspect_vector_get("sct");
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_SCT);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
@@ -159,6 +159,25 @@ int kernsh_sct_freebsd(list_t *lsct)
 }
 
 int kernsh_syscall(int num, int argc, unsigned int argv[])
+{
+  int ret;
+  u_int         dim[2];
+  vector_t      *csct;
+  int          (*fct)();
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  csct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CALLSC);
+  dim[0] = libkernshworld.os;
+
+  fct = aspect_vectors_select(csct, dim);
+
+  ret = fct(num, argc, argv);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int kernsh_syscall_linux(int num, int argc, unsigned int argv[])
 {
   int __ret = 0;
 

@@ -1,7 +1,7 @@
 /*
 ** open.c for kernsh
 ** 
-** $Id: open.c,v 1.6 2007-09-02 21:47:25 pouik Exp $
+** $Id: open.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -147,27 +147,11 @@ int		cmd_openmem()
 		     "Unable to load kernel", -1);
     
       libkernshworld.root = revm_lookup_file(buff);
-      /*
-      printf("la\n");
-      elfsh_Phdr phdr = elfsh_create_phdr(PT_LOAD, 0, 50, 0);
-      printf("la\n");
-      elfsh_Phdr *tmp = elfsh_insert_phdr(libkernshworld.root, &phdr);
-      printf("0x%lx\n", tmp);
-
-      elfsh_Shdr toto = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 0xc0100000, 0, 1073741823, 0, 0, 0, 0);
-      elfshsect_t     *new = elfsh_create_section(".text");
-      
-      printf("libkernshworld.root->hdr->e_shnum %d\n", libkernshworld.root->hdr->e_shnum);
-      ret = elfsh_insert_shdr(libkernshworld.root, toto,  libkernshworld.root->hdr->e_shnum, new->name, 0);
-      printf("ret %d\n", ret);
-      ret = elfsh_add_section(libkernshworld.root, new, libkernshworld.root->hdr->e_shnum-1, libkernshworld.ptr, ELFSH_SHIFTING_NONE);
-      printf("ret %d\n", ret);
-
-      elfsh_set_entrypoint(libkernshworld.root->hdr, (elfsh_Addr)0x100000);
-      elfsh_set_objtype(libkernshworld.root->hdr, ET_EXEC);
-
-      */
-  
+      if (libkernshworld.root == NULL)
+	{
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unable to get elf file", -1);
+	}
       libkernshworld.open_static = 1;
     }
   else 

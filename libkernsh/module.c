@@ -1,7 +1,7 @@
 /*
 ** module.c for libkernsh
 ** 
-** $Id: module.c,v 1.1 2007-08-26 18:07:09 pouik Exp $
+** $Id: module.c,v 1.2 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -40,7 +40,7 @@ int kernsh_kload_module(char *name)
 		   buff, -1);
     }
   
-  kload = aspect_vector_get("kload_module");
+  kload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KLOADMODULE);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(kload, dim);
@@ -91,7 +91,7 @@ int kernsh_kunload_module(char *name)
 		   "Paramater must be not null", -1);
     }
 
-  kunload = aspect_vector_get("kunload_module");
+  kunload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KUNLOADMODULE);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(kunload, dim);
@@ -165,7 +165,7 @@ int kernsh_relink_module(char *orig, char *injec, char *evil)
 		   buff, -1);
     }
 
-  rel = aspect_vector_get("relink_module");
+  rel = aspect_vector_get(LIBKERNSH_VECTOR_NAME_RELINKMODULE);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(rel, dim);
@@ -239,7 +239,7 @@ int kernsh_infect_module(char *module,
 		   "Unable to load module", -1);
     }
 
-  inf = aspect_vector_get("infect_module");
+  inf = aspect_vector_get(LIBKERNSH_VECTOR_NAME_INFECTMODULE);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(inf, dim);

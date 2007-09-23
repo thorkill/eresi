@@ -1,7 +1,7 @@
 /*
 ** alloc.c for libkernsh : allocation contiguous/non contiguous
 **
-** $Id: alloc.c,v 1.4 2007-08-06 15:40:39 pouik Exp $
+** $Id: alloc.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -60,7 +60,7 @@ int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
 		   "Memory not open !", -1);
     }
 
-  alloc = aspect_vector_get("alloc_contiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(alloc, dim);
@@ -86,7 +86,7 @@ int kernsh_alloc_noncontiguous(size_t size, unsigned long *addr)
 		   "Memory not open !", -1);
     }
 
-  alloc = aspect_vector_get("alloc_noncontiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(alloc, dim);
@@ -112,7 +112,7 @@ int kernsh_free_contiguous(unsigned long addr)
 		   "Memory not open !", -1);
     }
 
-  alloc = aspect_vector_get("free_contiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(alloc, dim);
@@ -138,7 +138,7 @@ int kernsh_free_noncontiguous(unsigned long addr)
 		   "Memory not open !", -1);
     }
 
-  alloc = aspect_vector_get("free_noncontiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS);
   dim[0] = libkernshworld.os;
 
   fct = aspect_vectors_select(alloc, dim);

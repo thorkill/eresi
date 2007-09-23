@@ -1,7 +1,7 @@
 /*
 ** memory.c for libkernsh
 **
-** $Id: memory.c,v 1.6 2007-09-02 21:47:25 pouik Exp $
+** $Id: memory.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -120,7 +120,7 @@ int kernsh_openmem()
 		   "Memory already open, you must close it !", -1);
     }
 
-  mem = aspect_vector_get("openmem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_OPENMEM);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
@@ -154,7 +154,7 @@ int kernsh_closemem()
 		   "Memory not open !", -1);
     }
 
-  mem = aspect_vector_get("closemem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CLOSEMEM);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
@@ -193,7 +193,7 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
 		   "Size is negative", -1);
     }
 
-  mem = aspect_vector_get("readmem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_READMEM);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;
@@ -227,7 +227,7 @@ int kernsh_writemem(unsigned long offset, void *buf, int size)
 		   "Size is negative", -1);
     }
 
-  mem = aspect_vector_get("writemem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_WRITEMEM);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   dim[2] = libkernshworld.device;

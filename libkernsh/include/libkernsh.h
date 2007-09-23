@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.11 2007-09-18 13:05:08 pouik Exp $
+** $Id: libkernsh.h,v 1.12 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -145,6 +145,28 @@ enum
 
 #define GFP_KERNEL				208
 #define NAMESIZ					64
+
+#define LIBKERNSH_VECTOR_NAME_OPENMEM		"openmem"
+#define LIBKERNSH_VECTOR_NAME_CLOSEMEM		"closemem"
+#define LIBKERNSH_VECTOR_NAME_READMEM		"readmem"
+#define LIBKERNSH_VECTOR_NAME_WRITEMEM		"writemem"
+#define LIBKERNSH_VECTOR_NAME_SCT		"sct"
+#define LIBKERNSH_VECTOR_NAME_IDT		"idt"
+#define LIBKERNSH_VECTOR_NAME_GDT		"gdt"
+#define LIBKERNSH_VECTOR_NAME_INFO		"info"
+#define LIBKERNSH_VECTOR_NAME_DECOMPKERNEL	"decompkernel"
+#define LIBKERNSH_VECTOR_NAME_ADDRBYNAME	"addr_by_name"
+#define LIBKERNSH_VECTOR_NAME_NAMEBYADDR	"name_by_addr"
+#define LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS	"alloc_contiguous"
+#define LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS	"alloc_noncontiguous"
+#define LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS	"free_contiguous"
+#define LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS	"free_noncontiguous"
+#define LIBKERNSH_VECTOR_NAME_AUTOTYPES		"autotypes"
+#define LIBKERNSH_VECTOR_NAME_RELINKMODULE	"relink_module"
+#define LIBKERNSH_VECTOR_NAME_INFECTMODULE	"infect_module"
+#define LIBKERNSH_VECTOR_NAME_KLOADMODULE	"kload_module"
+#define LIBKERNSH_VECTOR_NAME_KUNLOADMODULE	"kunload_module"
+#define LIBKERNSH_VECTOR_NAME_CALLSC		"call_syscall"
 
 /* Idtr segment struct */
 struct 
@@ -333,11 +355,11 @@ int	kernsh_register_closemem(u_int, u_int, u_int, void *);
 int	kernsh_register_readmem(u_int, u_int, u_int, void *);
 int	kernsh_register_writemem(u_int, u_int, u_int, void *);
 int	kernsh_register_sct(u_int, u_int, void *);
+int	kernsh_register_callsc(u_int, void *);
 int	kernsh_register_idt(u_int, u_int, void *);
 int	kernsh_register_gdt(u_int, u_int, void *);
 int	kernsh_register_info(u_int, u_int, void *);
 int	kernsh_register_decompkernel(u_int, void *);
-int	kernsh_register_loadkernel(u_int, u_int, void *);
 int	kernsh_register_symbs_abn(u_int, u_int, void *);
 int	kernsh_register_symbs_nba(u_int, u_int, void *);
 int	kernsh_register_alloc_contiguous(u_int, void *);
@@ -387,6 +409,7 @@ int	kernsh_sct_netbsd(list_t *);
 int	kernsh_sct_freebsd(list_t *);
 
 int	kernsh_syscall(int, int, unsigned int []);
+int	kernsh_syscall_linux(int, int, unsigned int []);
 
 /* IDT */
 int	kernsh_idt(list_t *);
@@ -478,12 +501,6 @@ int kernsh_autotask_offsetlist_linux_2_6(char *, size_t);
 /* Kernel Decompression */
 int	kernsh_decompkernel();
 int	kernsh_decompkernel_linux();
-
-/* Kernel Un/Loader */
-int	kernsh_loadkernel();
-int	kernsh_loadkernel_linux();
-
-int	kernsh_unloadkernel();
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

@@ -1,7 +1,7 @@
 /*
 ** kernel.c for libkernsh
 **
-** $Id: kernel.c,v 1.6 2007-08-26 18:07:09 pouik Exp $
+** $Id: kernel.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -22,7 +22,7 @@ int kernsh_decompkernel()
   printf("DECOMP KERNEL\n");
 #endif
 
-  decomp = aspect_vector_get("decompkernel");
+  decomp = aspect_vector_get(LIBKERNSH_VECTOR_NAME_DECOMPKERNEL);
 
   dim[0] = libkernshworld.os;
 
@@ -144,129 +144,3 @@ int kernsh_decompkernel_linux()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Load the kernel */
-int kernsh_loadkernel()
-{
-  int ret;
-  u_int dim[2];
-  vector_t *load;
-  int (*fct)();
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_KERNSH__
-  printf("LOAD KERNEL\n");
-#endif
-
-  load = aspect_vector_get("loadkernel");
-
-  dim[0] = libkernshworld.arch;
-  dim[1] = libkernshworld.os;
-
-  fct = aspect_vectors_select(load, dim);
-
-  ret = fct();
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-int kernsh_loadkernel_linux()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  libkernshworld.open_static = 1;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-int kernsh_loadkernel_linux_old()
-{
-  char bufgz[256];
-  char bufelf[256];
-  char buf[1024];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_KERNSH__
-  printf("LOAD KERNEL LINUX\n");
-#endif
-
-  memset(bufgz, '\0', sizeof(bufgz));
-  snprintf(bufgz, sizeof(bufgz), "%s%s", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELGZ));
-
-  bufgz[strlen(bufgz) - 3] = '\0';
-
-
-  memset(bufelf, '\0', sizeof(bufelf));
-  snprintf(bufelf, sizeof(bufelf), "%s%s",
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELELF));
-
-  memset(buf, '\0', sizeof(buf));
-  snprintf(buf, sizeof(buf) , "%s -B i386 -I binary -O elf32-i386 %s %s",
-	 (char *) config_get_data(LIBKERNSH_VMCONFIG_OBJCOPY),
-	 bufgz,
-	 bufelf);
-
-  //printf("BUF %s\n", buf);
-  system(buf);
-
-
-  int fd;
-  struct stat st;
-  char image[4096000];
-  unsigned long _text = 0xc0100000;
-  unsigned long _etext = 0xc02fd465;
-  unsigned long _edata = 0xc03908b4;
-  unsigned long offset;
-  unsigned long diff;
-
-
-  fd = open(bufelf, O_RDONLY);
-  fstat(fd, &st);
-  read(fd, image, st.st_size);
-  close(fd);
-
-  //  printf("0x%lx\n", image);
-  
-  offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_text, 4);
-  diff = (unsigned long)offset - (unsigned long)image;
-  //printf("_TEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
-
-  offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_etext, 4);
-  diff = (unsigned long)offset - (unsigned long)image;
-  //printf("_ETEXT OFFSET 0x%lx 0x%lx\n", offset, diff);
-
-  offset = (unsigned long)kernsh_find_pattern((void *)image, sizeof(image), &_edata, 4);
-  diff = (unsigned long)offset - (unsigned long)image;
-  //printf("_EDATA OFFSET 0x%lx 0x%lx\n", offset, diff);
-
-  //  printf("\n");
-  //revm_load_file(bufelf, 0, NULL);
-  //printf("\n");
-
-  //elfshobj_t    *file;
-  //file = elfsh_map_obj("/tmp/vmlinux");
-  
-  //printf("0x%lx\n", elfsh_get_entrypoint(file));
-  //elfsh_set_entrypoint(file, 0x100000);
-  //printf("0x%lx\n", elfsh_get_entrypoint(file));
-  
-  //elfsh_save_obj(file, "/tmp/prout");
-
-  //revm_load_file("/tmp/prout", 0, NULL);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/* Unload the kernel */
-int kernsh_unloadkernel()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  libkernshworld.open_static = 0;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}

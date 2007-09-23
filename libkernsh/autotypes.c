@@ -1,7 +1,7 @@
 /*
 ** autotypes.c for libkernsh
 **
-** $Id: autotypes.c,v 1.2 2007-08-26 18:07:09 pouik Exp $
+** $Id: autotypes.c,v 1.3 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -22,7 +22,7 @@ int kernsh_autotypes()
 		   "Memory not open !", -1);
     }
 
-  autotypes = aspect_vector_get("autotypes");
+  autotypes = aspect_vector_get(LIBKERNSH_VECTOR_NAME_AUTOTYPES);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
   

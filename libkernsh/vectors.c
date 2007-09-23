@@ -1,7 +1,7 @@
 /*
 ** vectors.c for libkernsh
 **
-** $Id: vectors.c,v 1.8 2007-08-26 18:07:09 pouik Exp $
+** $Id: vectors.c,v 1.9 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -68,6 +68,18 @@ int kernsh_sct_default()
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 	       "sct default !", -1);
+}
+
+int kernsh_callsc_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("CALL SC DEFAULT!!!\n");
+#endif
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "call sc default !", -1);
 }
 
 int kernsh_idt_default()
@@ -277,17 +289,20 @@ int kernsh_init_vectors()
   strdims[2] = "DEVICETYPE";
 
   /* Register memory default vectors */
-  aspect_register_vector("openmem", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_OPENMEM, 
                          kernsh_openmem_default,
                          dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-  aspect_register_vector("closemem", kernsh_closemem_default,
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_CLOSEMEM, 
+			 kernsh_closemem_default,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-  aspect_register_vector("readmem", kernsh_readmem_default,
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_READMEM, 
+			 kernsh_readmem_default,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-  aspect_register_vector("writemem", kernsh_writemem_default,
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_WRITEMEM, 
+			 kernsh_writemem_default,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
 
@@ -306,9 +321,27 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
 
   /* Register sct default vectors */
-  aspect_register_vector("sct", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_SCT, 
                          kernsh_sct_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
+
+  /* Call syscall OS */
+#if __DEBUG_KERNSH__
+  printf("INIT CALL SYSCALL VECTORS\n");
+#endif
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
+
+  dims[0]    = LIBKERNSH_OSNUM;
+
+  strdims[0] = "OSTYPE";
+
+  /* Register call syscall default vectors */
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_CALLSC,
+                         kernsh_callsc_default,
+                         dims, strdims, 1, ASPECT_TYPE_CADDR);
+
 
   /* IDT ARCH, OS */
 #if __DEBUG_KERNSH__
@@ -325,7 +358,7 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
 
   /* Register idt default vectors */
-  aspect_register_vector("idt", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_IDT, 
                          kernsh_idt_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
   
@@ -344,7 +377,7 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
 
   /* Register gdt default vectors */
-  aspect_register_vector("gdt", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_GDT, 
                          kernsh_gdt_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
@@ -363,7 +396,7 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
 
   /* Register info default vectors */
-  aspect_register_vector("info",
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_INFO,
 			 kernsh_info_default,
 			 dims, strdims, 2, ASPECT_TYPE_CADDR);
 #if __DEBUG_KERNSH__
@@ -378,26 +411,9 @@ int kernsh_init_vectors()
   strdims[0] = "OSTYPE";
 
   /* Register kernel default vectors */
-  aspect_register_vector("decompkernel", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_DECOMPKERNEL, 
                          kernsh_decompkernel_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-#if __DEBUG_KERNSH__
-  printf("INIT KERNEL LOAD VECTORS\n");
-#endif
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
-
-  dims[0]    = LIBKERNSH_ARCHNUM;
-  dims[1]    = LIBKERNSH_OSNUM;
-
-  strdims[0] = "ARCHTYPE";
-  strdims[1] = "OSTYPE";
-
-  /* Register kernel default vectors */
-  aspect_register_vector("loadkernel", 
-                         kernsh_loadkernel_default,
-                         dims, strdims, 2, ASPECT_TYPE_CADDR);  
 
 #if __DEBUG_KERNSH__
   printf("INIT SYMBS VECTORS\n");
@@ -413,11 +429,11 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
   
   /* Register symbs default vectors */
-  aspect_register_vector("addr_by_name", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ADDRBYNAME, 
                          kernsh_symbs_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR); 
 
-  aspect_register_vector("name_by_addr", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_NAMEBYADDR, 
                          kernsh_symbs_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR); 
 
@@ -433,16 +449,19 @@ int kernsh_init_vectors()
   strdims[0] = "OSTYPE";
 
   /* Register alloc/free default vectors */
-  aspect_register_vector("alloc_contiguous", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS,
                          kernsh_alloc_contiguous_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-  aspect_register_vector("alloc_noncontiguous", 
+
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS,
                          kernsh_alloc_noncontiguous_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-  aspect_register_vector("free_contiguous", 
+
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS, 
                          kernsh_free_contiguous_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-  aspect_register_vector("free_noncontiguous", 
+
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS, 
 			 kernsh_free_noncontiguous_default,
 			 dims, strdims, 1, ASPECT_TYPE_CADDR);
 
@@ -461,7 +480,7 @@ int kernsh_init_vectors()
   strdims[1] = "OSTYPE";
 
   /* Register memory default vectors */
-  aspect_register_vector("autotypes", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_AUTOTYPES, 
                          kernsh_autotypes_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
@@ -477,7 +496,7 @@ int kernsh_init_vectors()
   strdims[0] = "OSTYPE";
 
   /* Register relink module vectors */
-  aspect_register_vector("relink_module", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_RELINKMODULE, 
                          kernsh_relink_module_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
 
@@ -486,16 +505,16 @@ int kernsh_init_vectors()
 #endif
   
   /* Register infect module vectors */
-  aspect_register_vector("infect_module", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_INFECTMODULE, 
                          kernsh_infect_module_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
   
-  aspect_register_vector("kload_module", 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KLOADMODULE, 
                          kernsh_kload_module_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
 
-  aspect_register_vector("kunload_module", 
-                         kernsh_kload_module_default,
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KUNLOADMODULE, 
+                         kernsh_kunload_module_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -586,6 +605,11 @@ int kernsh_register_vectors()
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
 		      kernsh_sct_linux);
 
+  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_6, 
+			 kernsh_syscall_linux);
+  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_4, 
+			 kernsh_syscall_linux);
+
   kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 		      kernsh_idt_linux);
   kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
@@ -605,13 +629,6 @@ int kernsh_register_vectors()
 			       kernsh_decompkernel_linux);
   kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_4, 
 			       kernsh_decompkernel_linux);
-
-  kernsh_register_loadkernel(LIBKERNSH_ARCH_I386, 
-			     LIBKERNSH_OS_LINUX_2_6, 
-			     kernsh_loadkernel_linux);
-  kernsh_register_loadkernel(LIBKERNSH_ARCH_I386,
-			     LIBKERNSH_OS_LINUX_2_4,
-			     kernsh_loadkernel_linux);
 
   kernsh_register_symbs_abn(LIBKERNSH_ARCH_I386, 
 			    LIBKERNSH_OS_LINUX_2_6, 
@@ -682,7 +699,7 @@ int kernsh_register_openmem(u_int archtype, u_int ostype, u_int devicetype,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  mem = aspect_vector_get("openmem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_OPENMEM);
 
   dim    = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
@@ -706,7 +723,7 @@ int kernsh_register_closemem(u_int archtype, u_int ostype, u_int devicetype,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  mem = aspect_vector_get("closemem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CLOSEMEM);
 
   dim    = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
@@ -731,7 +748,7 @@ int kernsh_register_readmem(u_int archtype, u_int ostype, u_int devicetype,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  mem = aspect_vector_get("readmem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_READMEM);
 
   dim    = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
@@ -756,7 +773,7 @@ int kernsh_register_writemem(u_int archtype, u_int ostype, u_int devicetype,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  mem = aspect_vector_get("writemem");
+  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_WRITEMEM);
 
   dim    = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
@@ -779,7 +796,7 @@ int kernsh_register_sct(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  sct = aspect_vector_get("sct");
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_SCT);
 
   dim    = alloca(sizeof(u_int) * 3);
   dim[0] = archtype;
@@ -794,6 +811,28 @@ int kernsh_register_sct(u_int archtype, u_int ostype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+int kernsh_register_callsc(u_int ostype, void *fct)
+{
+
+  vector_t *csc;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  csc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CALLSC);
+
+  dim    = alloca(sizeof(u_int) * 1);
+  dim[0] = ostype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER CALLSC CONTIGUOUS\n");
+#endif
+
+  aspect_vectors_insert(csc, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 int kernsh_register_idt(u_int archtype, u_int ostype, void *fct)
 {
   vector_t *idt;
@@ -801,7 +840,7 @@ int kernsh_register_idt(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  idt = aspect_vector_get("idt");
+  idt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_IDT);
 
   dim    = alloca(sizeof(u_int) * 3);
   dim[0] = archtype;
@@ -823,7 +862,7 @@ int kernsh_register_gdt(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  gdt = aspect_vector_get("gdt");
+  gdt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_GDT);
 
   dim    = alloca(sizeof(u_int) * 3);
   dim[0] = archtype;
@@ -845,7 +884,7 @@ int kernsh_register_info(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  info = aspect_vector_get("info");
+  info = aspect_vector_get(LIBKERNSH_VECTOR_NAME_INFO);
 
   dim    = alloca(sizeof(u_int) * 3);
   dim[0] = archtype;
@@ -868,7 +907,7 @@ int kernsh_register_decompkernel(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  decomp = aspect_vector_get("decompkernel");
+  decomp = aspect_vector_get(LIBKERNSH_VECTOR_NAME_DECOMPKERNEL);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -882,29 +921,6 @@ int kernsh_register_decompkernel(u_int ostype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_register_loadkernel(u_int archtype, u_int ostype, void *fct)
-{
-
-  vector_t *load;
-  u_int *dim;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  load = aspect_vector_get("loadkernel");
-
-  dim    = alloca(sizeof(u_int) * 2);
-  dim[0] = archtype;
-  dim[1] = ostype;
-
-#if __DEBUG_KERNSH__
-  printf("REGISTER LOAD KERNEL\n");
-#endif
-
-  aspect_vectors_insert(load, dim, (int)fct);
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 int kernsh_register_symbs_abn(u_int archtype, u_int ostype, void *fct)
 {
   vector_t *abn;
@@ -912,7 +928,7 @@ int kernsh_register_symbs_abn(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  abn = aspect_vector_get("addr_by_name");
+  abn = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ADDRBYNAME);
 
   dim    = alloca(sizeof(u_int) * 2);
   dim[0] = archtype;
@@ -934,7 +950,7 @@ int kernsh_register_symbs_nba(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  nba = aspect_vector_get("name_by_addr");
+  nba = aspect_vector_get(LIBKERNSH_VECTOR_NAME_NAMEBYADDR);
 
   dim    = alloca(sizeof(u_int) * 2);
   dim[0] = archtype;
@@ -957,7 +973,7 @@ int kernsh_register_alloc_contiguous(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  alloc = aspect_vector_get("alloc_contiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -979,7 +995,7 @@ int kernsh_register_alloc_noncontiguous(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  alloc = aspect_vector_get("alloc_noncontiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1001,7 +1017,7 @@ int kernsh_register_free_contiguous(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  alloc = aspect_vector_get("free_contiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1023,7 +1039,7 @@ int kernsh_register_free_noncontiguous(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  alloc = aspect_vector_get("free_noncontiguous");
+  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1044,7 +1060,7 @@ int kernsh_register_autotypes(u_int archtype, u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  autotypes = aspect_vector_get("autotypes");
+  autotypes = aspect_vector_get(LIBKERNSH_VECTOR_NAME_AUTOTYPES);
 
   dim    = alloca(sizeof(u_int) * 3);
   dim[0] = archtype;
@@ -1067,7 +1083,7 @@ int kernsh_register_relink(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  rel = aspect_vector_get("relink_module");
+  rel = aspect_vector_get(LIBKERNSH_VECTOR_NAME_RELINKMODULE);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1089,7 +1105,7 @@ int kernsh_register_infect(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  inf = aspect_vector_get("infect_module");
+  inf = aspect_vector_get(LIBKERNSH_VECTOR_NAME_INFECTMODULE);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1111,7 +1127,7 @@ int kernsh_register_kload(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  kload = aspect_vector_get("kload_module");
+  kload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KLOADMODULE);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;
@@ -1133,7 +1149,7 @@ int kernsh_register_kunload(u_int ostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  kunload = aspect_vector_get("kunload_module");
+  kunload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KUNLOADMODULE);
 
   dim    = alloca(sizeof(u_int) * 1);
   dim[0] = ostype;

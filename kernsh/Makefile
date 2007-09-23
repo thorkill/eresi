@@ -6,7 +6,7 @@
 
 include ../config.h
 
-SRC			= main.c open.c close.c mem.c mode.c autotypes.c tables.c
+SRC			= main.c open.c close.c mem.c md5.c alloc.c mode.c autotypes.c tables.c
 OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
