@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.13 2007-09-17 22:58:18 may Exp $
+** $Id: atomic.c,v 1.14 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "revm.h"
@@ -25,17 +25,16 @@ int                     revm_preconds_atomics(revmobj_t **o1, revmobj_t **o2)
 		      "Unable to lookup a parameter", -1);
 
   /* Lazy typing in action */
-  if ((*o1)->type != (*o2)->type)
-    {
-      if ((*o2)->type == ASPECT_TYPE_UNKNOW)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Source parameter undefined", -1);
-      if ((*o1)->type == ASPECT_TYPE_UNKNOW)
-        revm_convert_object(*o1, (*o2)->type);
-      else if (revm_convert_object(*o2, (*o1)->type) < 0)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "SET parameters type are not compatible", -1);
-    }
+  if (!(*o2)->otype)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Source parameter undefined", -1);
+
+  if (!(*o1)->otype)
+    revm_convert_object(*o1, (*o2)->otype->type);
+  else if ((*o1)->otype->type != (*o2)->otype->type)
+    if (revm_convert_object(*o2, (*o1)->otype->type) < 0)
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "SET parameters type are not compatible", -1);
   
   /* Make sure we dont want to write in a constant */
   if ((*o1)->immed && !(*o1)->perm)
@@ -69,18 +68,18 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 		      "Destination parameter must not be a constant", -1);
 
   /* Preliminary checks */
-  oldtype = o1->type;
-  if (o1->type == ASPECT_TYPE_UNKNOW && o1->perm)
-    o1->type = ASPECT_TYPE_INT;
-  else if (o1->type == ASPECT_TYPE_STR)
+  oldtype = o1->otype->type;
+  if (o1->otype->type == ASPECT_TYPE_UNKNOW && o1->perm)
+    o1->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
+  else if (o1->otype->type == ASPECT_TYPE_STR)
     revm_convert_object(o1, ASPECT_TYPE_INT);
-  if ((o1->type != ASPECT_TYPE_INT   &&
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR &&
-       o1->type != ASPECT_TYPE_DADDR &&
-       o1->type != ASPECT_TYPE_LONG) ||
-      (o1->type != o2->type && revm_convert_object(o2, o1->type)))
+  if ((o1->otype->type != ASPECT_TYPE_INT   &&
+       o1->otype->type != ASPECT_TYPE_BYTE  && 
+       o1->otype->type != ASPECT_TYPE_SHORT && 
+       o1->otype->type != ASPECT_TYPE_CADDR &&
+       o1->otype->type != ASPECT_TYPE_DADDR &&
+       o1->otype->type != ASPECT_TYPE_LONG) ||
+      (o1->otype->type != o2->otype->type && revm_convert_object(o2, o1->otype->type)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Parameter has not INTEGER type", -1);
 
@@ -125,7 +124,7 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
 
   /* Store last-result variable */
   res                = hash_get(&vars_hash, REVM_VAR_RESULT);
-  res->type          = o1->type;
+  res->otype         = o1->otype;
   res->immed_val.ent = dst;
   res->immed         = 1;
   if (!world.state.revm_quiet)
@@ -135,7 +134,7 @@ int			revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op)
     }
   
   /* If the object was a string, translate it back */
-  if (o1->type != oldtype)
+  if (o1->otype->type != oldtype)
     revm_convert_object(o1, oldtype);
 
   if (!o2->perm)
@@ -158,7 +157,7 @@ int			revm_hash_add(hash_t *h, revmobj_t *o)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the source object is a hash, then we need to do a merge operation ! */
-  if (o->type == ASPECT_TYPE_HASH)
+  if (o->otype->type == ASPECT_TYPE_HASH)
     {
       src = (hash_t *) o->get_obj(o->parent);
       hash_merge(h, src);
@@ -171,7 +170,7 @@ int			revm_hash_add(hash_t *h, revmobj_t *o)
       if (revm_convert_object(o, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = (u_char *) (h->type != o->type ? strdup(o->immed_val.str) : o->immed_val.str);
+      key = (u_char *) (h->type != o->otype->type ? strdup(o->immed_val.str) : o->immed_val.str);
     }
   else
     key = (u_char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
@@ -182,10 +181,10 @@ int			revm_hash_add(hash_t *h, revmobj_t *o)
 
   /* In case the hash table was freshly created, assign its element type now */
   if (h->type == ASPECT_TYPE_UNKNOW)
-    h->type = o->type;
+    h->type = o->otype->type;
 
   /* Make sure we insert an element of the same type */
-  if (h->type != o->type && revm_convert_object(o, h->type))
+  if (h->type != o->otype->type && revm_convert_object(o, h->type))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Incompatible types between objects", -1);
    
@@ -208,7 +207,7 @@ int			revm_list_add(list_t *h, revmobj_t *o)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the source object is a hash, then we need to do a merge operation ! */
-  if (o->type == ASPECT_TYPE_LIST)
+  if (o->otype->type == ASPECT_TYPE_LIST)
     {
       src = (list_t *) o->get_obj(o->parent);
       list_merge(h, src);
@@ -236,10 +235,10 @@ int			revm_list_add(list_t *h, revmobj_t *o)
 
   /* In case the hash table was freshly created, assign its element type now */
   if (h->type == ASPECT_TYPE_UNKNOW)
-    h->type = o->type;
+    h->type = o->otype->type;
 
   /* Make sure we insert an element of the same type */
-  if (h->type != o->type && revm_convert_object(o, h->type))
+  if (h->type != o->otype->type && revm_convert_object(o, h->type))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Incompatible types between objects", -1);
    
@@ -262,7 +261,7 @@ int			revm_hash_del(hash_t *h, revmobj_t *o)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the source object is a hash, then we need to do a merge operation ! */
-  if (o->type == ASPECT_TYPE_HASH)
+  if (o->otype->type == ASPECT_TYPE_HASH)
     {
       src = (hash_t *) o->get_obj(o->parent);
       hash_unmerge(h, src);
@@ -270,7 +269,7 @@ int			revm_hash_del(hash_t *h, revmobj_t *o)
     }
 
   /* If second parameter was a string */
-  if (o->type == ASPECT_TYPE_STR)
+  if (o->otype->type == ASPECT_TYPE_STR)
     {
       if (o->get_name)
 	name = o->get_name(o->root, o->parent);
@@ -282,7 +281,7 @@ int			revm_hash_del(hash_t *h, revmobj_t *o)
     }
 
   /* Else if it was a hash element */
-  if ((h->type != o->type && revm_convert_object(o, h->type)) || !o->kname ||
+  if ((h->type != o->otype->type && revm_convert_object(o, h->type)) || !o->kname ||
       !hash_get(h, o->kname))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown hash element to remove", -1);
@@ -301,7 +300,7 @@ int			revm_list_del(list_t *h, revmobj_t *o)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the source object is a hash, then we need to do a merge operation ! */
-  if (o->type == ASPECT_TYPE_LIST)
+  if (o->otype->type == ASPECT_TYPE_LIST)
     {
       src = (list_t *) o->get_obj(o->parent);
       list_unmerge(h, src);
@@ -309,7 +308,7 @@ int			revm_list_del(list_t *h, revmobj_t *o)
     }
 
   /* If second parameter was a string */
-  if (o->type == ASPECT_TYPE_STR)
+  if (o->otype->type == ASPECT_TYPE_STR)
     {
       if (o->get_name)
 	name = o->get_name(o->root, o->parent);
@@ -321,7 +320,7 @@ int			revm_list_del(list_t *h, revmobj_t *o)
     }
 
   /* Else if it was a hash element */
-  if ((h->type != o->type && revm_convert_object(o, h->type)) || !o->kname ||
+  if ((h->type != o->otype->type && revm_convert_object(o, h->type)) || !o->kname ||
       !list_get(h, o->kname))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown hash element to remove", -1);
@@ -403,10 +402,10 @@ int			revm_object_set(revmobj_t *o1, revmobj_t *o2)
   if (last == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get result variable", -2);
-  last->type = o1->type;
+  last->otype = o1->otype;
 
   /* Do the real assignation */
-  switch (o1->type)
+  switch (o1->otype->type)
     {
     case ASPECT_TYPE_STR:
       str = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
@@ -501,10 +500,10 @@ int			revm_object_set(revmobj_t *o1, revmobj_t *o2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) val64, o1->type);
+			(void *) val64, o1->otype->type);
 	  else if (o1->contype == CONT_LIST)
 	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) val64, o1->type);
+			(void *) val64, o1->otype->type);
 	  
 	}
       else if (o1->set_obj(o1->parent, val64) < 0)
@@ -515,21 +514,22 @@ int			revm_object_set(revmobj_t *o1, revmobj_t *o2)
 
     case ASPECT_TYPE_HASH:
       hash = (hash_t *) o2->get_obj(o2->parent);
-      if (revm_hash_set(NULL, o1->hname, (void *) hash, o1->type))
+      if (revm_hash_set(NULL, o1->hname, (void *) hash, o1->otype->type))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set hash table variable", -1);
       break;
 
     case ASPECT_TYPE_LIST:
       list = (list_t *) o2->get_obj(o2->parent);
-      if (revm_list_set(NULL, o1->hname, (void *) list, o1->type))
+      if (revm_list_set(NULL, o1->hname, (void *) list, o1->otype->type))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set list variable", -1);
       break;
 
     default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unknown type for SET parameter", -1);
+      *o1 = *o2;
+      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      //"Unknown type for SET parameter", -1);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -550,20 +550,20 @@ int			revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lazy typing in action */
-  if ((o1->type != ASPECT_TYPE_INT   && 
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR && 
-       o1->type != ASPECT_TYPE_DADDR && 
-       o1->type != ASPECT_TYPE_LONG  &&
-       o1->type != ASPECT_TYPE_STR) ||
-      o1->type != o2->type)
+  if ((o1->otype->type != ASPECT_TYPE_INT   && 
+       o1->otype->type != ASPECT_TYPE_BYTE  && 
+       o1->otype->type != ASPECT_TYPE_SHORT && 
+       o1->otype->type != ASPECT_TYPE_CADDR && 
+       o1->otype->type != ASPECT_TYPE_DADDR && 
+       o1->otype->type != ASPECT_TYPE_LONG  &&
+       o1->otype->type != ASPECT_TYPE_STR) ||
+      o1->otype->type != o2->otype->type)
     {
-      revm_convert_object(o2, o1->type);
-      if (o2->type != o1->type)
+      revm_convert_object(o2, o1->otype->type);
+      if (o2->otype->type != o1->otype->type)
 	{
 	  if (!o2->perm && o2->immed && 
-	      o2->type == ASPECT_TYPE_STR && str != NULL)
+	      o2->otype->type == ASPECT_TYPE_STR && str != NULL)
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,str);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid parameters", -1);
@@ -576,15 +576,15 @@ int			revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val)
   if (last == NULL)
     {
       if (!o2->perm && o2->immed && 
-	  o2->type == ASPECT_TYPE_STR && str != NULL)
+	  o2->otype->type == ASPECT_TYPE_STR && str != NULL)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to get last result variable", -1);
     }
-  last->type = ASPECT_TYPE_INT;
+  last->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
 
   /* Do the real assignation */
-  switch (o1->type)
+  switch (o1->otype->type)
     {
     case ASPECT_TYPE_STR:
       str2 = (o2->immed ? o2->immed_val.str : o2->get_name(o2->root, o2->parent));
@@ -625,16 +625,16 @@ int			revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lazy typing in action */
-  if ((o1->type != ASPECT_TYPE_INT   && 
-       o1->type != ASPECT_TYPE_BYTE  && 
-       o1->type != ASPECT_TYPE_SHORT && 
-       o1->type != ASPECT_TYPE_CADDR && 
-       o1->type != ASPECT_TYPE_DADDR && 
-       o1->type != ASPECT_TYPE_LONG) ||
-      o1->type != o2->type)
+  if ((o1->otype->type != ASPECT_TYPE_INT   && 
+       o1->otype->type != ASPECT_TYPE_BYTE  && 
+       o1->otype->type != ASPECT_TYPE_SHORT && 
+       o1->otype->type != ASPECT_TYPE_CADDR && 
+       o1->otype->type != ASPECT_TYPE_DADDR && 
+       o1->otype->type != ASPECT_TYPE_LONG) ||
+      o1->otype->type != o2->otype->type)
     {
-      revm_convert_object(o2, o1->type);
-      if (o2->type != o1->type)
+      revm_convert_object(o2, o1->otype->type);
+      if (o2->otype->type != o1->otype->type)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid parameters", -1);
     }
@@ -644,7 +644,7 @@ int			revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result)
   if (last == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get last result variable", -1);
-  last->type = ASPECT_TYPE_INT;
+  last->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
 
   /* Do the real assignation */
   val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));

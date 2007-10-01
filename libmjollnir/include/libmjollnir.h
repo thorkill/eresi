@@ -25,8 +25,8 @@
 #define MJR_MAX_INCREMENTS	200
 
 /* Input and Output links */
-#define CONTAINER_LINK_IN		0
-#define CONTAINER_LINK_OUT		1
+#define CONTAINER_LINK_IN	0
+#define CONTAINER_LINK_OUT	1
 
 /* Size of temp buffers */
 #define BSIZE_SMALL		32

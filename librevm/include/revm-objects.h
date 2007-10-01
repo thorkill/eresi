@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-objects.h,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: revm-objects.h,v 1.6 2007-10-01 01:13:08 may Exp $
 **
 */
 #ifndef __REVM_OBJECTS_H_
@@ -35,7 +35,10 @@ typedef	struct		s_revm_object
   u_int               sizelem;        /* Size of element for OBJRAW */
   u_char              immed;          /* Immediate binary flag */
   u_char              perm;	      /* TRUE if obj is a script variable */
-  u_int               type;	      /* The object type identifier */
+
+  aspectype_t	      *otype;
+
+  //u_int               type;	      /* The object type identifier */
 
   /* Only when describing elements of hash tables or list */
 #define		      CONT_UNKNOW	0
@@ -62,8 +65,12 @@ typedef	struct		s_revm_object
  */
 typedef struct		s_revm_expr
 {
-  char			*label;		/*! Field label */
-  u_int			typeid;		/*! Type ID of current expression object */
+  char			*label;		/*! Relative current field name */
+
+  //u_int			typeid;		/*! Type ID of current expression object */
+  aspectype_t		*type;
+
+
   char			*strval;	/*! ASCII form of current expression object */
   revmobj_t		*value;		/*! The meta-object, if terminal */
   struct s_revm_expr	*childs;	/*! Child objects list, if non-terminal */

@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.17 2007-09-17 02:26:03 may Exp $
+** $Id: types.c,v 1.18 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libaspect.h"
@@ -31,6 +31,7 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_LONG    , sizeof(u_long)	},
     {ASPECT_TYPENAME_DADDR   , sizeof(u_long)	},
     {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
+
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
@@ -39,9 +40,18 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_FUNC    , 110		}, /* XXX: should be sizeof(mjrfunc_t) */
   };
 
+/**
+ * @brief Indicate if a type is simple (1) or not (0)
+ */
+int			aspect_type_simple(int typeid)
+{
+  if (typeid != ASPECT_TYPE_UNKNOW && typeid < ASPECT_TYPE_SIMPLENUM)
+    return (1);
+  return (0);
+}
 
 /** 
- * @brief Copy the structure representing a data type for creating a new meta-type instance
+ * @Brief Copy the structure representing a data type for creating a new meta-type instance
  */
 aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
@@ -68,7 +78,11 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
  * @brief Copy the structure representing a data type and change its name to create a new meta-type
  *
  */
-aspectype_t		*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fieldshash)
+aspectype_t		*aspect_type_copy_by_name(aspectype_t   *type, 
+						  char		*name, 
+						  hash_t	*fieldshash,
+						  u_int		curdepth,
+						  u_int		maxdepth)
 {
   aspectype_t		*newtype;
   aspectype_t		*result;
@@ -76,6 +90,9 @@ aspectype_t		*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fi
   aspectype_t		*prev;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (curdepth > maxdepth)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid depth parameters", NULL);
 
   /* Allocate and name the new type */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
@@ -86,20 +103,55 @@ aspectype_t		*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fi
   if (fieldshash && newtype->fieldname)
     hash_add(fieldshash, strdup(newtype->fieldname), (void *) 1);
   prev = result = newtype;
+
+  /* Here check if newtype->childs is a pointer */
   if (newtype->childs)
-    newtype->childs = aspect_type_copy_by_name(newtype->childs, NULL, 
-					       !newtype->fieldname ? fieldshash : NULL);
+    {
+      if (!newtype->isptr || curdepth != maxdepth || !maxdepth)
+	{
+	  if (newtype->isptr)
+	    curdepth++;
+	  newtype->childs = aspect_type_copy_by_name(newtype->childs, NULL, 
+						     (!newtype->fieldname ? fieldshash : NULL),
+						     curdepth, maxdepth);
+	  if (newtype->isptr)
+	    curdepth--;
+	}
+      else
+	newtype->childs = NULL;
+    }
 
   /* Copy all the field types, if we are dealing with a record type */
   for (next = newtype->next; next; next = next->next)
     {
+
+      /* Copy the type structure */
       XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     newtype, sizeof(aspectype_t), NULL);
       memcpy(newtype, next, sizeof(aspectype_t));
+
+      /* Set this field name as used to avoid doubles */
       if (fieldshash)
 	hash_add(fieldshash, strdup(newtype->fieldname), (void *) 1);
+
+      /* Here check if next->childs is a pointer */
       if (next->childs)
-	newtype->childs = aspect_type_copy_by_name(next->childs, NULL, NULL);
+	{
+	  if (!next->childs->isptr || curdepth != maxdepth || !maxdepth)
+	    {
+	      if (next->childs->isptr)
+		curdepth++;
+	      newtype->childs = aspect_type_copy_by_name(next->childs, 
+							 NULL, NULL, 
+							 curdepth, maxdepth);
+	      if (next->childs->isptr)
+		curdepth--;
+	    }
+	  else
+	    next->childs = NULL;
+	}
+
+      /* Now next type in structure */
       prev->next = newtype;
       prev = newtype;
     }
@@ -209,6 +261,7 @@ aspectype_t		*aspect_type_create(char *label,
   u_int			idx;
   u_int			size;
   hash_t		fields_hash;
+  u_char		updatetype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -218,6 +271,7 @@ aspectype_t		*aspect_type_create(char *label,
 		 "Invalid NULL parameter", NULL);
 
   /* Subtyping was specified */
+  updatetype = 0;
   supertype = NULL;
   typename = strstr(label, "::");
   if (typename)
@@ -231,10 +285,11 @@ aspectype_t		*aspect_type_create(char *label,
     }
   
   /* Check that the created type name is not existing already */
-  if (hash_get(&types_hash, label))
+  /* It is authorized to update/change some specific types: bloc, func, vector, hash, list .. */
+  newtype = hash_get(&types_hash, label);
+  if (newtype && (newtype->type < ASPECT_TYPE_SIMPLENUM || newtype->type >= ASPECT_TYPE_BASENUM))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot create type : name already exists", NULL);
-
 
   /* Just remember the name of fields we have already created */
   bzero(&fields_hash, sizeof(hash_t));
@@ -253,7 +308,7 @@ aspectype_t		*aspect_type_create(char *label,
     }
   else
     {
-      newtype = aspect_type_copy_by_name(supertype, label, &fields_hash);
+      newtype = aspect_type_copy_by_name(supertype, label, &fields_hash, 0, ASPECT_TYPE_MAXPTRDEPTH);
       curoff = newtype->size;
     }
   
@@ -376,12 +431,24 @@ aspectype_t		*aspect_type_create(char *label,
 
 
 /* The real type registering code */
-int		aspect_type_register_real(char *label, 
-					 aspectype_t *ntype)
+int		aspect_type_register_real(char	      *label, 
+					  aspectype_t *ntype)
 {
+  aspectype_t	*update;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* The type ID is incremented here */
+  /* We do a type update of one of the base type */
+  update = hash_get(&types_hash, label);
+  if (update)
+    {
+      ntype->type = update->type;
+      hash_set(&types_hash, label, ntype);
+      aspect_typeinfo[ntype->type].size = ntype->size;
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* A real new type incrementing the last type id */
   hash_add(&types_hash, label, ntype);
   aspect_type_nbr++;
   XREALLOC(__FILE__, __FUNCTION__, __LINE__,

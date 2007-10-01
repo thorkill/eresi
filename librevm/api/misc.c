@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Fri Sep 11 17:26:11 2005 jfv
 **
-** $Id: misc.c,v 1.10 2007-08-03 11:51:00 heroine Exp $
+** $Id: misc.c,v 1.11 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "revm.h"
@@ -150,6 +150,7 @@ int		revm_testscript(int ac, char **av)
 
   if (ac < 2 || (av[1] && av[1][0] == REVM_DASH))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   XOPEN(fd, av[1], O_RDONLY, 0, 0);
   XREAD(fd, buff, 30, 0);
   buff[29] = 0x00;

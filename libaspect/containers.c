@@ -4,7 +4,7 @@
 ** @brief Implement generic routines for containers
 **
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
-** $Id: containers.c,v 1.1 2007-08-07 07:13:27 may Exp $
+** $Id: containers.c,v 1.2 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libaspect.h"
@@ -67,11 +67,16 @@ int		container_linklists_create(container_t *container,
 container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *outlist)
 {
   container_t	*newcntnr;
+  aspectype_t	*rtype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  rtype = aspect_type_get_by_id(type);
+  if (!rtype)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unknown container element type", NULL);  
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newcntnr, sizeof(container_t), NULL);
-  newcntnr->data = data;
+	 newcntnr, sizeof(container_t) + rtype->size, NULL);
+  newcntnr->data = (char *) newcntnr + sizeof(container_t);
   newcntnr->type = type;
   if (inlist)
     newcntnr->inlinks = list_copy(inlist);
@@ -81,5 +86,8 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
     newcntnr->outlinks = list_copy(outlist);
   else
     container_linklists_create(newcntnr, CONTAINER_LINK_OUT);
+  
+  /* Make sure the container and contained data are contiguous */
+  memcpy((char *) newcntnr + sizeof(container_t), (char *) data, rtype->size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }

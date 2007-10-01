@@ -4,7 +4,7 @@
 ** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.4 2007-08-07 07:13:27 may Exp $
+** $Id: ondisk.c,v 1.5 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -85,7 +85,7 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
  * @brief Link containers in the control flow graph
  */
 static int	mjr_flow_load_links(mjrcontext_t	*ctxt, 
-				    container_t	*container, 
+				    container_t		*container, 
 				    u_int		linktype,
 				    char		*sectdata,
 				    u_int		*curoff)
@@ -360,7 +360,7 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;
   mjrbuf_t		buf, cfbuf;
-  container_t	*container;
+  container_t		*container;
   int			err;
   char			**keys;
   int			keynbr;

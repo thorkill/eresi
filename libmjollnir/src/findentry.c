@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.6 2007-08-07 07:13:27 may Exp $
+** $Id: findentry.c,v 1.7 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -130,15 +130,17 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
  * a call is found. This allow to fetch the main address in an OS-dependent 
  * manner 
  */
-elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
-				   u_char	*buf,
-				   u_int	len,
-				   elfsh_Addr	vaddr)
+elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
+				u_char		*buf,
+				u_int		len,
+				elfsh_Addr	vaddr)
 {
-  elfsh_Addr	    main_addr;
+  elfsh_Addr	main_addr;
   container_t   *main_container;
   container_t   *tmpcntnr;
-  u_int		   dis;
+  u_int		dis;
+  elfsh_Sym	*sym;
+  elfsh_Sym	bsym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!context || !buf)
@@ -163,5 +165,15 @@ elfsh_Addr	   mjr_trace_start(mjrcontext_t	*context,
   mjr_container_add_link(context, main_container, tmpcntnr->id, 
 			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
   mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
+
+  /* Create symbols for main */
+  /* Then we create the symbol for the bloc and returns */
+  sym = elfsh_get_symbol_by_value(context->obj, main_addr, 0, ELFSH_EXACTSYM);
+  if (!sym)
+    {
+      bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
+      elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

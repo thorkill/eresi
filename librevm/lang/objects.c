@@ -8,7 +8,7 @@
  * Started on  Mon Feb 24 12:21:12 2003 jfv
  *
  *
- * $Id: objects.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ * $Id: objects.c,v 1.12 2007-10-01 01:13:08 may Exp $
  *
  */
 #include "revm.h"
@@ -31,9 +31,9 @@ revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
-  new->perm = perm;
-  new->type = type;
-  new->size = 4;
+  new->perm  = perm;
+  new->otype = aspect_type_get_by_id(type);
+  new->size  = 4;
   new->immed_val.word = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
@@ -50,9 +50,9 @@ revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
   /* Please use create_IMMEDSTR for that */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
-  new->perm = perm;
-  new->type = ASPECT_TYPE_LONG;
-  new->size = sizeof(val);
+  new->perm  = perm;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_LONG);
+  new->size  = sizeof(val);
   new->immed_val.ent = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
@@ -70,9 +70,9 @@ revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
   /* Please use create_IMMEDSTR for that */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
-  new->perm = perm;
-  new->type = ASPECT_TYPE_CADDR;
-  new->size = sizeof(val);
+  new->perm  = perm;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_CADDR);
+  new->size  = sizeof(val);
   new->immed_val.ent = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
@@ -94,7 +94,7 @@ revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ASPECT_TYPE_DADDR;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_DADDR);
   new->size = sizeof(val);
   new->immed_val.ent = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -116,7 +116,7 @@ revmobj_t	*revm_create_SHORT(char perm, u_short val)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ASPECT_TYPE_SHORT;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_SHORT);
   new->size = 2;
   new->immed_val.half = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -137,7 +137,7 @@ revmobj_t	*revm_create_BYTE(char perm, u_char val)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ASPECT_TYPE_BYTE;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
   new->size = 1;
   new->immed_val.byte = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -158,7 +158,7 @@ revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm = perm;
-  new->type = ASPECT_TYPE_STR;
+  new->otype = aspect_type_get_by_id(ASPECT_TYPE_STR);
   new->immed_val.str = str;
   new->size = strlen(new->immed_val.str);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
@@ -259,9 +259,9 @@ int		revm_convert_object(revmobj_t *obj, u_int objtype)
 #endif  
 
   /* Automatic conversion */
-  if (obj->type == ASPECT_TYPE_UNKNOW || obj->type == objtype)
+  if (!obj->otype || obj->otype->type == objtype)
     {
-      obj->type = objtype;
+      obj->otype = aspect_type_get_by_id(objtype);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
@@ -302,7 +302,7 @@ revmobj_t		*revm_check_object(revmobj_t *pobj)
 
   //printf("checking object %p of type %u \n", pobj, pobj->type);
 
-  switch (pobj->type)
+  switch (pobj->otype->type)
     {
     case ASPECT_TYPE_RAW:
       if (pobj->immed == 1)
@@ -331,7 +331,8 @@ revmobj_t		*revm_check_object(revmobj_t *pobj)
 			  "Invalid object path", NULL);
       break;
     default:
-      snprintf(buf, BUFSIZ, "[DEBUG_OBJECT] Failed to handle unknown object type = %u \n", pobj->type);
+      snprintf(buf, BUFSIZ, "[DEBUG_OBJECT] Failed to handle unknown object type = %u \n", 
+	       pobj->otype->type);
       revm_output(buf);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Unknown object type", NULL);
@@ -346,7 +347,7 @@ revmobj_t		*revm_check_object(revmobj_t *pobj)
 void		revm_destroy_object(revmobj_t *pobj)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (pobj->type == ASPECT_TYPE_STR && pobj->immed)
+  if (pobj->otype->type == ASPECT_TYPE_STR && pobj->immed)
     XFREE(__FILE__, __FUNCTION__, __LINE__, pobj->immed_val.str);
   XFREE(__FILE__, __FUNCTION__, __LINE__, pobj);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -365,7 +366,7 @@ revmobj_t	 *revm_copy_object(revmobj_t *pobj)
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", NULL);
-  if (pobj->type == ASPECT_TYPE_STR && pobj->immed)
+  if (pobj->otype->type == ASPECT_TYPE_STR && pobj->immed)
     str = strdup(pobj->immed_val.str);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copy, sizeof(revmobj_t), NULL);
   memcpy(copy, pobj, sizeof(revmobj_t));

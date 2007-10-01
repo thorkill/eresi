@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-io.h,v 1.48 2007-09-18 21:41:13 may Exp $
+** $Id: revm-io.h,v 1.49 2007-10-01 01:13:08 may Exp $
 **
 */
 #ifndef __REVM_IO_H_
@@ -43,8 +43,8 @@ char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a18"
-#define REVM_EDITION	"cam"
+#define	REVM_RELEASE	"a19"
+#define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT \

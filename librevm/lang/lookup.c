@@ -4,7 +4,7 @@
  * Various object lookup functions built in the language
  *
  * Started Nov 21 2003 jfv
- * $Id: lookup.c,v 1.17 2007-08-03 11:51:00 heroine Exp $
+ * $Id: lookup.c,v 1.18 2007-10-01 01:13:08 may Exp $
  */
 #include "revm.h"
 
@@ -76,9 +76,9 @@ elfsh_Addr		revm_lookup_addr(char *param)
   ptr = revm_lookup_var(param);
   if (ptr)
     {
-      if (ptr->type == ASPECT_TYPE_LONG  ||
-	  ptr->type == ASPECT_TYPE_CADDR ||
-	  ptr->type == ASPECT_TYPE_DADDR)
+      if (ptr->otype->type == ASPECT_TYPE_LONG  ||
+	  ptr->otype->type == ASPECT_TYPE_CADDR ||
+	  ptr->otype->type == ASPECT_TYPE_DADDR)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		      (ptr->immed ? ptr->immed_val.ent : 
 		       (elfsh_Addr) ptr->get_obj(ptr->parent)));
@@ -197,7 +197,7 @@ revmobj_t		*revm_lookup_immed(char *param)
  good:
   
   /* Now replace \x00 patterns if any */
-  if (ptr->type == ASPECT_TYPE_STR)
+  if (ptr->otype->type == ASPECT_TYPE_STR)
     revm_filter_zero(ptr->immed_val.str);
 
   /* We matched -- returns OK */
@@ -226,12 +226,12 @@ u_int     		revm_lookup_index(char *param)
   ptr = revm_lookup_var(param);
   if (ptr)
     {
-      if (ptr->type == ASPECT_TYPE_INT   || 
-	  ptr->type == ASPECT_TYPE_SHORT || 
-	  ptr->type == ASPECT_TYPE_BYTE  || 
-	  ptr->type == ASPECT_TYPE_LONG  ||
-	  ptr->type == ASPECT_TYPE_CADDR ||
-	  ptr->type == ASPECT_TYPE_DADDR)
+      if (ptr->otype->type == ASPECT_TYPE_INT   || 
+	  ptr->otype->type == ASPECT_TYPE_SHORT || 
+	  ptr->otype->type == ASPECT_TYPE_BYTE  || 
+	  ptr->otype->type == ASPECT_TYPE_LONG  ||
+	  ptr->otype->type == ASPECT_TYPE_CADDR ||
+	  ptr->otype->type == ASPECT_TYPE_DADDR)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		      (ptr->immed ? (u_int) ptr->immed_val.ent : 
 		       (u_int) ptr->get_obj(ptr->parent)));
@@ -284,10 +284,10 @@ char			*revm_lookup_string(char *param)
       revm_filter_zero(param);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, param);
     }
-  if (ptr->type != ASPECT_TYPE_STR)
+  if (ptr->otype->type != ASPECT_TYPE_STR)
     {
       revm_convert_object(ptr, ASPECT_TYPE_STR);
-      if (ptr->type != ASPECT_TYPE_STR)
+      if (ptr->otype->type != ASPECT_TYPE_STR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unexpected object type", NULL);
     }
@@ -320,9 +320,9 @@ elfshobj_t		*revm_lookup_file(char *param)
   ptr = revm_lookup_var(param);
   if (!ptr)
     idx = atoi(param);
-  else if (ptr->type == ASPECT_TYPE_INT)
+  else if (ptr->otype->type == ASPECT_TYPE_INT)
     idx = ptr->immed_val.ent;
-  else if (ptr->type == ASPECT_TYPE_STR)
+  else if (ptr->otype->type == ASPECT_TYPE_STR)
     param = ptr->immed_val.str;
   else
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

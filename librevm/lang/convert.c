@@ -20,7 +20,7 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id: convert.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: convert.c,v 1.6 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "revm.h"
@@ -39,37 +39,37 @@ int		revm_convert2str(revmobj_t *obj)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%hhd", val8);
+      snprintf(tmp, sizeof(tmp), "%02hhX", val8);
       obj->immed_val.byte = 0;
       obj->immed_val.str = strdup(tmp);
  
-      obj->type = ASPECT_TYPE_STR;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_STR);
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_SHORT:
       val16 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%hd", val16);
+      snprintf(tmp, sizeof(tmp), "%04hX", val16);
       obj->immed_val.half = 0;
       obj->immed_val.str = strdup(tmp);
  
-      obj->type = ASPECT_TYPE_STR;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_STR);
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_INT:
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%d", val32);
+      snprintf(tmp, sizeof(tmp), "%08X", val32);
       obj->immed_val.word = 0;
       obj->immed_val.str = strdup(tmp);
  
-      obj->type = ASPECT_TYPE_STR;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_STR);
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
@@ -82,10 +82,10 @@ int		revm_convert2str(revmobj_t *obj)
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), RDFMT, val64);
+      snprintf(tmp, sizeof(tmp), AFMT, val64);
       obj->immed_val.ent = 0;
       obj->immed_val.str = strdup(tmp);
-      obj->type = ASPECT_TYPE_STR;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_STR);
       obj->immed = 1;
       obj->size = strlen(tmp);
       obj->sizelem = 0;
@@ -110,14 +110,14 @@ int		revm_convert2int(revmobj_t *obj)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (u_char) (obj->immed ? obj->immed_val.byte : 
 		       obj->get_obj(obj->parent));
       obj->immed_val.byte = 0;
       obj->immed_val.word = val8;
-      obj->type = ASPECT_TYPE_INT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -127,7 +127,7 @@ int		revm_convert2int(revmobj_t *obj)
 			 obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.word = val16;
-      obj->type = ASPECT_TYPE_INT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -140,7 +140,7 @@ int		revm_convert2int(revmobj_t *obj)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.word = val32;
-      obj->type = ASPECT_TYPE_INT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -152,7 +152,7 @@ int		revm_convert2int(revmobj_t *obj)
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.word = (int) val64;
-      obj->type = ASPECT_TYPE_INT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -174,14 +174,14 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
       val64 = (obj->immed ? obj->immed_val.byte : 
 	       obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.ent = val64;
-      obj->type = type;
+      obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -191,7 +191,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
 	       obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.ent = val64;
-      obj->type = type;
+      obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -204,7 +204,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.ent = val64;
-      obj->type = type;
+      obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -213,7 +213,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
       val64 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.ent = val64;
-      obj->type = type;
+      obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -221,7 +221,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     case ASPECT_TYPE_LONG:
-      obj->type = type;
+      obj->otype = aspect_type_get_by_id(type);
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -266,13 +266,13 @@ int		revm_convert2raw(revmobj_t *obj)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str, 2, -1);
       *obj->immed_val.str = val8;
-      obj->type = ASPECT_TYPE_RAW;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 1;
@@ -282,7 +282,7 @@ int		revm_convert2raw(revmobj_t *obj)
 	     obj->get_name(obj->root, obj->parent));
       XREALLOC(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str, obj->immed_val.str, obj->size, -1);
       memcpy(obj->immed_val.str, str, obj->size);
-      obj->type = ASPECT_TYPE_RAW;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
       //obj->size; No size change
       obj->sizelem = 0;
@@ -291,7 +291,7 @@ int		revm_convert2raw(revmobj_t *obj)
       val16 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str, sizeof(val16) + 1, -1);
       memcpy(obj->immed_val.str, &val16, sizeof(val16));	// FIXME: Take care of endianess !
-      obj->type = ASPECT_TYPE_RAW;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
@@ -300,7 +300,7 @@ int		revm_convert2raw(revmobj_t *obj)
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
       XALLOC(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str, sizeof(val32) + 1, -1);
       memcpy(obj->immed_val.str, &val32, sizeof(val32));	// FIXME: Take care of endianess !
-      obj->type = ASPECT_TYPE_RAW;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
       obj->size = 4;
       obj->sizelem = 0;
@@ -311,7 +311,7 @@ int		revm_convert2raw(revmobj_t *obj)
       val64 = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
       XALLOC(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str, sizeof(val64) + 1, -1);
       memcpy(obj->immed_val.str, &val64, sizeof(val64)); // FIXME: Take care of endianess !
-      obj->type = ASPECT_TYPE_RAW;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
       obj->size = sizeof(elfsh_Addr);
       obj->sizelem = 0;
@@ -335,14 +335,14 @@ int		revm_convert2byte(revmobj_t *obj)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_SHORT:
       val16 = (u_short) (obj->immed ? obj->immed_val.half : 
 			 obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
       obj->immed_val.byte = (u_char) val16;
-      obj->type = ASPECT_TYPE_BYTE;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
@@ -355,7 +355,7 @@ int		revm_convert2byte(revmobj_t *obj)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.byte = val8;
-      obj->type = ASPECT_TYPE_BYTE;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
@@ -365,7 +365,7 @@ int		revm_convert2byte(revmobj_t *obj)
 		       obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.byte = (u_char) val32;
-      obj->type = ASPECT_TYPE_BYTE;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
@@ -377,7 +377,7 @@ int		revm_convert2byte(revmobj_t *obj)
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.byte = (u_char) val64;
-      obj->type = ASPECT_TYPE_BYTE;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
       obj->sizelem = 0;
@@ -401,14 +401,14 @@ int		revm_convert2short(revmobj_t *obj)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (u_char) (obj->immed ? obj->immed_val.byte : 
 		       obj->get_obj(obj->parent));;
       obj->immed_val.byte = 0;
       obj->immed_val.half = (u_short) val8;
-      obj->type = ASPECT_TYPE_SHORT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_SHORT);
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
@@ -421,7 +421,7 @@ int		revm_convert2short(revmobj_t *obj)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str);
       obj->immed_val.str = 0;
       obj->immed_val.half = val16;
-      obj->type = ASPECT_TYPE_SHORT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_SHORT);
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
@@ -431,7 +431,7 @@ int		revm_convert2short(revmobj_t *obj)
 		       obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.half = (u_short) val32;
-      obj->type = ASPECT_TYPE_SHORT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_SHORT);
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;
@@ -443,7 +443,7 @@ int		revm_convert2short(revmobj_t *obj)
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.half = (u_short) val64;
-      obj->type = ASPECT_TYPE_SHORT;
+      obj->otype = aspect_type_get_by_id(ASPECT_TYPE_SHORT);
       obj->immed = 1;
       obj->size = 2;
       obj->sizelem = 0;

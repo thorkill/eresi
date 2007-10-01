@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.76 2007-08-04 04:00:45 may Exp $
+** $Id: libelfsh.h,v 1.77 2007-10-01 01:13:08 may Exp $
 **
 */
 
@@ -1528,7 +1528,7 @@ int             elfsh_register_vector(char      *name,
                                       u_int     dimsz);
 
 int		elfsh_get_pagesize(elfshobj_t *file);
-//u_int		elfsh_get_breaksize(elfshobj_t *file);
+u_int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
 
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr created);

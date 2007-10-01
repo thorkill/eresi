@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.35 2007-09-17 02:26:03 may Exp $
+ ** $Id: libaspect.h,v 1.36 2007-10-01 01:13:08 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -102,21 +102,24 @@
 /* Those types are only the builtin types */
 #define         ASPECT_TYPE_UNKNOW       0  /*!< Unknown           */
 #define         ASPECT_TYPE_RAW          1  /*!< Raw               */
-#define		ASPECT_TYPE_BYTE	 2  /*!< Byte	         */
+#define		ASPECT_TYPE_BYTE	 2  /*!< Byte	           */
 #define         ASPECT_TYPE_STR          3  /*!< String            */
 #define         ASPECT_TYPE_SHORT        4  /*!< 2 bytes           */
-#define         ASPECT_TYPE_INT          5  /*!< 4 bytes		 */
+#define         ASPECT_TYPE_INT          5  /*!< 4 bytes           */
 #define         ASPECT_TYPE_LONG         6  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_DADDR        7  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_CADDR        8  /*!< 4 or 8 bytes      */
-#define	        ASPECT_TYPE_VECT	 9  /*!< Vector type	 */
-#define		ASPECT_TYPE_HASH	10  /*!< Hash table type	 */
+#define		ASPECT_TYPE_SIMPLENUM	 9  /*!< SIMPLE TYPES NUMBER */
+
+#define	        ASPECT_TYPE_VECT	 9  /*!< Vector type	   */
+#define		ASPECT_TYPE_HASH	10  /*!< Hash table type   */
 #define		ASPECT_TYPE_LIST	11  /*!< List type         */
 #define		ASPECT_TYPE_EXPR	12  /*!< Expression type   */
 #define		ASPECT_TYPE_BLOC	13  /*!< Block type        */
 #define		ASPECT_TYPE_FUNC	14  /*!< Function type     */
 #define         ASPECT_TYPE_BASENUM     15  /*!< BASE TYPES NUMBER */
 
+/* Type names */
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
 #define		ASPECT_TYPENAME_RAW	"raw"     
 #define		ASPECT_TYPENAME_BYTE	"byte"    
@@ -125,14 +128,17 @@
 #define		ASPECT_TYPENAME_INT	"int"     
 #define		ASPECT_TYPENAME_LONG	"long"    
 #define		ASPECT_TYPENAME_DADDR	"daddr"   
-#define		ASPECT_TYPENAME_CADDR	"caddr"   
+#define		ASPECT_TYPENAME_CADDR	"caddr" 
+  
 #define		ASPECT_TYPENAME_VECT	"vector" 
 #define		ASPECT_TYPENAME_HASH	"hash"
 #define		ASPECT_TYPENAME_LIST	"list"
 #define		ASPECT_TYPENAME_EXPR	"expr"
-#define		ASPECT_TYPENAME_BLOC	"block"
+#define		ASPECT_TYPENAME_BLOC	"bloc"
 #define		ASPECT_TYPENAME_FUNC	"func"
 
+/* Max pointer depth for a compound type */
+#define		ASPECT_TYPE_MAXPTRDEPTH	1
 
 /* A structure for the type information */
 typedef struct		s_info
@@ -187,12 +193,12 @@ typedef struct	s_vector
 typedef struct	s_container	
 {
   unsigned int 	id;	  	  /* !< @brief unique id of this container */
-  void		*data;		  /* !< @brief points to the desired object */
   u_int		type;		  /* !< @brief Contained object type */
   u_int		nbrinlinks;	  /* !< @brief Number of -ondisk- input links */
   u_int		nbroutlinks;	  /* !< @brief Number of -ondisk- output links */
   list_t	*inlinks;	  /* !< @brief Input links for this container */
   list_t	*outlinks;	  /* !< @brief Output links for this container */
+  void		*data;		  /* !< @brief Pointer to the contained object */
 }		container_t;
 
 
@@ -320,6 +326,7 @@ int		container_linklists_create(container_t *container,
 					   u_int	linktype);
 
 /* Type related functions */
+int		aspect_type_simple(int typeid);
 char		*aspect_type_get(u_int type);
 u_int		aspect_typesize_get(u_int type);
 int		aspect_basetypes_create();
@@ -337,12 +344,13 @@ aspectype_t	*aspect_type_copy(aspectype_t	*type,
 				  u_int		elemnbr, 
 				  char		*fieldname,
 				  u_int		*dims);
-aspectype_t	*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fields_hash);
+aspectype_t	*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fields, u_int, u_int);
 int		aspect_basetype_register(char *name, u_int size);
 typeinfo_t	*aspect_basetype_get(unsigned int *nbr);
 aspectype_t	*aspect_type_get_by_name(char *name);
 aspectype_t	*aspect_type_get_by_id(unsigned int id);
 aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name);
+char		*aspect_typename_get(u_int typeid);
 
 /* profile.c : Profiler related functions */
 void		profiler_reset(u_int sel);

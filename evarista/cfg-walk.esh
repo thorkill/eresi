@@ -1,5 +1,7 @@
 #!evarista/evarista32
 
+print Now entered cfg-walk
+
 cmp $# 2
 jne end
 
@@ -7,7 +9,8 @@ set $block $hash[blocks:$1]
 set $hash[visitedblocks:$1] 1
 
 print Now ASM to ELIR on block at $block.curaddr
-sparc2lir $1
+sparc2lir    $1
+lir-dataflow $1
 
 foreach $nextblock in $block.outlist
 

@@ -5,7 +5,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 jfv
 ** 
 **
-** $Id: map.c,v 1.23 2007-07-31 03:28:46 may Exp $
+** $Id: map.c,v 1.24 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -109,7 +109,8 @@ int		        elfsh_read_obj(elfshobj_t *file)
   {
     /* Fix first section size */
     if (actual->shdr->sh_size == 0 && actual->next &&
-        actual->next->shdr->sh_offset != actual->shdr->sh_offset)
+        actual->next->shdr->sh_offset != actual->shdr->sh_offset &&
+	actual->next->shdr->sh_addr   != actual->shdr->sh_addr)
       actual->shdr->sh_size =
         actual->next->shdr->sh_offset - actual->shdr->sh_offset;
 

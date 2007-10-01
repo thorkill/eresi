@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.27 2007-08-06 15:40:39 pouik Exp $
+** $Id: libe2dbg.h,v 1.28 2007-10-01 01:13:08 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -336,10 +336,10 @@ int		e2dbg_setregs();
 elfsh_Addr*     e2dbg_getpc();
 int             e2dbg_setstep();
 int             e2dbg_resetstep();
-int		elfsh_setbreak(elfshobj_t *file, elfshbp_t *bp);
 elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr);
 elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr);
 elfsh_Addr*     e2dbg_getfp();
+int		e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp);
 
 /* Backend for ia32 */
 void            e2dbg_get_regvars_ia32_bsd();

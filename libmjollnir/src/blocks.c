@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.69 2007-08-07 07:13:27 may Exp $
+** $Id: blocks.c,v 1.70 2007-10-01 01:13:08 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -55,13 +55,13 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
  * If mode = 0, return block only if vaddr is equal to block starting address
  * else return block if vaddr belong to block
  */
-container_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
-						elfsh_Addr   	vaddr, 
-						int		mode)
+container_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
+					elfsh_Addr   	vaddr, 
+					int		mode)
 {
   container_t	*ret;
-  btree_t		*retbtree;
-  mjrblock_t		*tmpblock;
+  btree_t	*retbtree;
+  mjrblock_t	*tmpblock;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -70,9 +70,9 @@ container_t		*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 		 "missing context", (NULL));
 
 #if __DEBUG_BLOCKS__
-  fprintf(D_DESC,"[D] %s: get %x (%d)\n",
-	  __FUNCTION__, vaddr, mode);
+  fprintf(D_DESC,"[D] %s: get %x (%d)\n", __FUNCTION__, vaddr, mode);
 #endif
+
   /* Exact match */
   ret = hash_get(&ctxt->blkhash, _vaddr2str(vaddr));
 

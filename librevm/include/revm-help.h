@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 jfv
 **
-** $Id: revm-help.h,v 1.30 2007-08-03 18:05:03 may Exp $
+** $Id: revm-help.h,v 1.31 2007-10-01 01:13:08 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -74,7 +74,7 @@
 #define HLP_MODHELP		"Print the ELFsh/E2dbg modules help information"
 #define	HLP_HELP		"Print the help summary"
 #define	HLP_RELINJCT		"Relocate a new .o file inside the current file or process"
-#define	HLP_STOP		"Raise a SIGSTOP to the current process"
+#define	HLP_STOP		"Stop executing a script and switch to interactive mode"
 #define HLP_TRACES	    	"\t Trace some functions\n\n\t Trace command options: \n\n"  \
 	       			" add       funcreg      [optional_traces_name] : add a function to a given trace\n"  \
 	       			" rm        funcname     [optional_traces_name] : remove a function from a given trace\n"  \

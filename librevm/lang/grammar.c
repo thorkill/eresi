@@ -4,7 +4,7 @@
  * We dont use bison and have our own parser generator
  *
  * Started on  Sun Feb  9 22:57:58 2003 jfv
- * $Id: grammar.c,v 1.18 2007-08-03 11:51:00 heroine Exp $
+ * $Id: grammar.c,v 1.19 2007-10-01 01:13:08 may Exp $
  *
  */
 #include "revm.h"
@@ -64,7 +64,7 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   /* Get a pointer on the desired entry of the vector */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = aspect_vectors_selectptr(cur, dims);
-  ret->type     = cur->type;
+  ret->otype    = aspect_type_get_by_id(cur->type);
   ret->perm     = 1;
   ret->immed    = 0;
   ret->get_obj  = (void *) revm_generic_getobj;
@@ -87,9 +87,9 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   char		*entryname;
   char		*hashname;
   void		*ptr;
+  revmobj_t	*entry;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   size = parse_lookup_varlist(param, fmt, index);
   if (size != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -99,7 +99,15 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   entryname = strchr(index, ':');
   if (entryname)
     *entryname++ = 0x00;
-  hashname  = strdup(index);
+  hashname  = revm_lookup_string(index);
+  if (entryname)
+    {
+      entry = revm_lookup_immed(entryname);
+      if (revm_convert_object(entry, ASPECT_TYPE_STR) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to convert hash entry name", NULL);
+      entryname = entry->immed_val.str;
+    }
 
   /* In case the hash table does not exist, create it empty */
   hash = hash_find(hashname);
@@ -116,8 +124,8 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   /* Get an revm object */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
   ret->parent   = ptr;
-  ret->type     = (entryname ? hash->type : ASPECT_TYPE_HASH);
-  ret->hname    = hashname;
+  ret->otype    = aspect_type_get_by_id((entryname ? hash->type : ASPECT_TYPE_HASH));
+  ret->hname    = (hashname ? strdup(hashname) : NULL);
   ret->kname    = (entryname ? strdup(entryname) : NULL);
   ret->contype  = CONT_HASH;
   ret->perm     = 1;
@@ -173,8 +181,8 @@ revmobj_t	*parse_list(char *param, char *fmt)
   /* Get an revm object */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, sizeof(revmobj_t), NULL);
   ret->parent   = ptr;
-  ret->type     = (entryname ? list->type : ASPECT_TYPE_LIST);
-  ret->hname    = listname;
+  ret->otype    = aspect_type_get_by_id((entryname ? list->type : ASPECT_TYPE_LIST));
+  ret->hname    = (listname ? strdup(listname) : NULL);
   ret->kname    = (entryname ? strdup(entryname) : NULL);
   ret->contype  = CONT_LIST;
   ret->perm     = 1;
@@ -284,7 +292,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
   // Finally we fill the intermediate object format for the guessed object 
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
-  pobj->type    = ASPECT_TYPE_CADDR;
+  pobj->otype   = aspect_type_get_by_id(ASPECT_TYPE_CADDR);
   pobj          = revm_check_object(pobj);
   if (!pobj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -351,7 +359,7 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
-  pobj->type    = l2->type;
+  pobj->otype   = aspect_type_get_by_id(l2->type);
   pobj->parent  = l1->get_obj(robj, NULL);
   pobj          = revm_check_object(pobj);
 
@@ -505,7 +513,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   pobj->get_data = (void *) l2->get_data;
   pobj->set_data = (void *) l2->set_data;
 
-  pobj->type     = l2->type;
+  pobj->otype    = aspect_type_get_by_id(l2->type);
   pobj->off      = off;
   pobj->sizelem  = sizelem;
   pobj->root     = robj;
@@ -626,7 +634,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
-  pobj->type    = l2->type;
+  pobj->otype   = aspect_type_get_by_id(l2->type);
 
   // ugly flag to put for dynamic Rel vs Rela information 
   elfsh_setrel(IS_REL(sect));

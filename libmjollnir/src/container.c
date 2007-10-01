@@ -4,7 +4,7 @@
  * @file container.c
  * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.19 2007-08-07 07:13:27 may Exp $
+ * $Id: container.c,v 1.20 2007-10-01 01:13:08 may Exp $
  */
 #include "libmjollnir.h"
 
@@ -246,20 +246,24 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
   newcntnr = mjr_get_container_by_vaddr(ctx, vaddr, ASPECT_TYPE_BLOC);
   if (newcntnr)
     {
-      fprintf(D_DESC,"[D] %s: block container %x id:%d is there\n",
+      fprintf(D_DESC,"[D] %s: block container %x id:%d is there ALREADY\n",
 	      __FUNCTION__, vaddr, newcntnr->id);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
     }
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, newblock, sizeof(mjrblock_t), NULL);
+  newblock         = alloca(sizeof(mjrblock_t));
+  bzero(newblock, sizeof(mjrblock_t));
   newblock->symoff = symoff;
   newblock->vaddr  = vaddr;
   newblock->size   = size;
   newcntnr         = container_create(ASPECT_TYPE_BLOC, newblock, NULL, NULL);
+  if (!newcntnr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to create block container", NULL);  
 
 #if __DEBUG_CNTNR__
-  fprintf(D_DESC, "[D] %s: create block %x (%d)\n", __FUNCTION__, vaddr, size);
+  fprintf(D_DESC, "[D] %s: create block addr %x (sz %d)\n", __FUNCTION__, vaddr, size);
 #endif
 
   mjr_register_container(ctx, newcntnr);
@@ -285,28 +289,37 @@ container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
+#if __DEBUG_CNTNR__
+  newcntnr = mjr_get_container_by_vaddr(ctx, vaddr, ASPECT_TYPE_FUNC);
+  if (newcntnr)
+    {
+      fprintf(D_DESC,"[D] %s: func container addr %x id:%d is there ALREADY\n",
+	      __FUNCTION__, vaddr, newcntnr->id);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
+    }
+#endif
+
   /* Allocate the new container and its links lists */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, newfunction, sizeof(mjrfunc_t), NULL);
+  newfunction = alloca(sizeof(mjrfunc_t));
+  bzero(newfunction, sizeof(mjrfunc_t));
   newfunction->vaddr = vaddr;
   newfunction->size  = size;
 
   /* Create name and md5 string for function */
   if (name)
     strncpy(newfunction->name, (char *) name, sizeof(newfunction->name) - 1);
-  else
-    newfunction->name[0] = 0;  
-  newfunction->first = NULL;
   if (md5)
     memcpy(newfunction->md5, md5, sizeof(newfunction->md5));
-  else
-    memset(newfunction->md5, 0, sizeof(newfunction->md5));
 
 #if __DEBUG_CNTNR__
-  fprintf(D_DESC,"[D] %s: create func %x/<%s> (%d) %s\n",
+  fprintf(D_DESC,"[D] %s: create func addr: %x name: <%s> (sz %d) (md5 %s)\n",
 	  __FUNCTION__, vaddr, name, size, md5);
 #endif
 
   newcntnr = container_create(ASPECT_TYPE_FUNC, newfunction, NULL, NULL);
+  if (!newcntnr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to create function container", NULL);  
   mjr_register_container(ctx, newcntnr);  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
@@ -316,10 +329,10 @@ container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
  * @brief This function should be used only for debug
  * It is O(n) since this api doesn't know about hashes in the mjr context
  */
-container_t		*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
+container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
 {
   container_t	*cur;
-  u_int			idx;
+  u_int		idx;
 
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 

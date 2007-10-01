@@ -5,7 +5,7 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.6 2007-08-07 07:13:27 may Exp $
+ * $Id: links.c,v 1.7 2007-10-01 01:13:08 may Exp $
  */
 #include <libmjollnir.h>
 
@@ -37,7 +37,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_FUNCS__
+#if __DEBUG_LINKS__
   fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n",
 	  __FUNCTION__, src, dst, ret);
 #endif
@@ -83,17 +83,17 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 /** 
  * @brief Create a link between blocks on a call 
  */
-int	mjr_link_block_call(mjrcontext_t *ctxt,
-			    elfsh_Addr src,
-			    elfsh_Addr dst,
-			    elfsh_Addr ret)
+int			mjr_link_block_call(mjrcontext_t *ctxt,
+					    elfsh_Addr src,
+					    elfsh_Addr dst,
+					    elfsh_Addr ret)
 {
-  container_t	*csrc,*cdst,*cret;
+  container_t		*csrc,*cdst,*cret;
   elfshsect_t		*dstsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_BLOCKS__
+#if __DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s: linking %x CALL %x RET %x\n",
 	  __FUNCTION__, src, dst, ret);
 #endif
@@ -154,7 +154,7 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-#if __DEBUG_BLOCKS__
+#if __DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s: linking JMP %x TRUE %x FALSE %x\n",
 	  __FUNCTION__,
 	  src,dst,ret);
@@ -208,8 +208,8 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   linklist = mjr_link_get_by_direction(src, direction);
 
-#if __DEBUG_BLOCKS__
-  fprintf(D_DESC, "[D] %s: src:%d dst:%d dir:%d\n",
+#if __DEBUG_LINKS__
+  fprintf(D_DESC, "[D] Relinking blocks %s: src:%d dst:%d dir:%d\n",
 	  __FUNCTION__, src->id, dst->id, direction);
 #endif
 
@@ -255,9 +255,9 @@ static container_t	*mjr_block_split(mjrcontext_t	*ctxt,
 
   blkdst = (mjrblock_t *)tmpdst->data;
 
-#if __DEBUG_BLOCKS__
+#if __DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s: wanted dst:%x got:%x\n",
-	  __FUNCTION__,dst,blkdst->vaddr);
+	  __FUNCTION__, dst,blkdst->vaddr);
 #endif
 
   if (blkdst->vaddr != dst)

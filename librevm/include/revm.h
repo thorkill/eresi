@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.86 2007-09-18 21:41:13 may Exp $
+** $Id: revm.h,v 1.87 2007-10-01 01:13:08 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -126,6 +126,7 @@ extern asm_processor	proc;
 #define	REVM_OP_SET		6
 #define	REVM_OP_CMP		7
 #define	REVM_OP_MATCH		8
+#define	REVM_OP_COPY		9
 
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
@@ -1103,6 +1104,8 @@ int		revm_edfmt_uni_print(elfshobj_t *file);
 revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
 revmexpr_t	*revm_inform_type_addr(char *t, char *n, elfsh_Addr a, revmexpr_t *, u_char p, u_char r);
 int		revm_check_addr(elfshobj_t *obj, elfsh_Addr add);
+int             revm_informed_print(char *name);
+int             revm_uninform_type(char *type, char *varname, u_char print);
 
 /* Expression related functions */
 revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value);
@@ -1116,6 +1119,8 @@ int		revm_expr_match_by_name(char *original, char *candidate);
 int		revm_expr_compare_by_name(char *original, char *candidate);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
+revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname);
 
 /* May not be defined */
 #if __BSD__

@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.27 2007-09-18 21:41:13 may Exp $
+ * $Id: access.c,v 1.28 2007-10-01 01:13:08 may Exp $
  *
  */
 #include "revm.h"
@@ -74,7 +74,7 @@ int		revm_arrayindex_get(char *strindex)
       XFREE(__FILE__, __FUNCTION__, __LINE__, str);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
     }
-  switch (obj->type)
+  switch (obj->otype->type)
     {
     case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_CADDR:
@@ -288,7 +288,7 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
       path->get_name = (void *) revm_generic_getname;
       path->set_name = (void *) revm_generic_setname;
     }
-  if (type->type == ASPECT_TYPE_RAW)
+  if (!type)
     {
       path->get_data = (void *) revm_generic_getdata;
       path->set_data = (void *) revm_generic_setdata;
@@ -296,28 +296,29 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   path->get_obj  = (void *) revm_generic_getobj;
 
   /* This handler is size dependant */
-  switch (type->type)
-    {
-    case ASPECT_TYPE_BYTE:
-      path->set_obj  = (void *) revm_byte_setobj;
-      break;
-    case ASPECT_TYPE_SHORT:
-      path->set_obj  = (void *) revm_short_setobj;
-      break;
-    case ASPECT_TYPE_INT:
-      path->set_obj  = (void *) revm_int_setobj;
-      break;
-    case ASPECT_TYPE_CADDR:
-    case ASPECT_TYPE_DADDR:
-    case ASPECT_TYPE_LONG:
-      path->set_obj  = (void *) revm_long_setobj;
-      break;
-    default:
-      break;
-    }
-  path->type     = type->type;
-  path->immed    = 0;		/* Value is not immediate */
-  path->perm	 = 1;		/* Do not free after use  */
+  if (type)
+    switch (type->type)
+      {
+      case ASPECT_TYPE_BYTE:
+	path->set_obj  = (void *) revm_byte_setobj;
+	break;
+      case ASPECT_TYPE_SHORT:
+	path->set_obj  = (void *) revm_short_setobj;
+	break;
+      case ASPECT_TYPE_INT:
+	path->set_obj  = (void *) revm_int_setobj;
+	break;
+      case ASPECT_TYPE_CADDR:
+      case ASPECT_TYPE_DADDR:
+      case ASPECT_TYPE_LONG:
+	path->set_obj  = (void *) revm_long_setobj;
+	break;
+      default:
+	break;
+      }
+  path->otype = type;
+  path->immed = 0;		/* Value is not immediate */
+  path->perm  = 1;		/* Do not free after use  */
 
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
