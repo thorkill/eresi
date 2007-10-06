@@ -1,7 +1,7 @@
 /*
 ** md5.c for kernsh
 ** 
-** $Id: md5.c,v 1.1 2007-09-23 17:53:35 pouik Exp $
+** $Id: md5.c,v 1.2 2007-10-06 15:50:41 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -47,7 +47,7 @@ int		cmd_kmd5()
 	{
 	  obj = revm_lookup_param(actual->rname);
 
-	  switch (obj->type)
+	  switch (obj->otype->type)
 	    {
 	    case ASPECT_TYPE_LONG:
 	    case ASPECT_TYPE_CADDR:
@@ -204,7 +204,7 @@ int		cmd_kcmd5()
   if (param != NULL)
     {
       obj = revm_lookup_param(param);
-      if (obj->type == ASPECT_TYPE_STR)
+      if (obj->otype->type == ASPECT_TYPE_STR)
 	{
 	  str = (obj->immed ? obj->immed_val.str : 
 		 obj->get_name(obj->root, obj->parent));

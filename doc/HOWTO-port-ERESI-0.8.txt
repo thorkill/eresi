@@ -227,7 +227,101 @@ IV. LIBKERNSH PORTING:
 ----------------------
 
 
-FIXME
+Due to the diffence between each systems, we have a lot's of hooks :
+
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_OPENMEM, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_CLOSEMEM, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_READMEM, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_WRITEMEM, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_SCT, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_CALLSC,
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_IDT, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_GDT, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_INFO,
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_DECOMPKERNEL, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ADDRBYNAME, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_NAMEBYADDR, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS,
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS,
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_AUTOTYPES, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_RELINKMODULE, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_INFECTMODULE, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KLOADMODULE, 
+vectors.c:  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KUNLOADMODULE,
+
+Those hooks are used for :
+
+- LIBKERNSH_VECTOR_NAME_OPENMEM		: Opening the static kernel and the system/kernel memory
+- LIBKERNSH_VECTOR_NAME_CLOSEMEM	: Closing the static kernel and the system/kernel memory
+- LIBKERNSH_VECTOR_NAME_READMEM		: Reading the system/kernel memory
+- LIBKERNSH_VECTOR_NAME_WRITEMEM	: Writing in the system/kernel memory
+- LIBKERNSH_VECTOR_NAME_SCT		: Returning the system call table
+- LIBKERNSH_VECTOR_NAME_CALLSC		: Calling a system call
+- LIBKERNSH_VECTOR_NAME_IDT		: Returning the Interrupt Descriptor Table
+- LIBKERNSH_VECTOR_NAME_GDT		: Returning the Global Descriptor Table
+- LIBKERNSH_VECTOR_NAME_INFO		: Returning basic information on the kernel
+- LIBKERNSH_VECTOR_NAME_DECOMPKERNEL	: Reconstruct the compress kernel
+- LIBKERNSH_VECTOR_NAME_ADDRBYNAME	: Resolving a symbol with his name
+- LIBKERNSH_VECTOR_NAME_NAMEBYADDR	: Resolving a symbol with his addr
+- LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS	: Allocating contiguous kernel's memory
+- LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS	: Allocating non contiguous kernel's memory
+- LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS	: Free contiguous kernel's memory
+- LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS	: Free non contiguous kernel's memory
+- LIBKERNSH_VECTOR_NAME_AUTOTYPES	: Making automatic type
+- LIBKERNSH_VECTOR_NAME_RELINKMODULE	: Relinking two LKM
+- LIBKERNSH_VECTOR_NAME_INFECTMODULE	: Infecting LKM init
+- LIBKERNSH_VECTOR_NAME_KLOADMODULE	: Loading LKM
+- LIBKERNSH_VECTOR_NAME_KUNLOADMODULE	: Unloading LKM
+
+This is the API that allow for registering hooks for a given architecture and OS type :
+
+int	kernsh_register_openmem(u_int, u_int, u_int, void *);	# register a openmem handler
+int	kernsh_register_closemem(u_int, u_int, u_int, void *);	# register a closemem handler
+int	kernsh_register_readmem(u_int, u_int, u_int, void *);	# register a readmem handler
+int	kernsh_register_writemem(u_int, u_int, u_int, void *);	# register a writemem handler
+int	kernsh_register_sct(u_int, u_int, void *);		# register a sct handler
+int	kernsh_register_callsc(u_int, void *);			# register a callsc handler
+int	kernsh_register_idt(u_int, u_int, void *);		# register a idt handler
+int	kernsh_register_gdt(u_int, u_int, void *);		# register a gdt handler
+int	kernsh_register_info(u_int, u_int, void *);		# register a info handler
+int	kernsh_register_decompkernel(u_int, void *);		# register a decompkernel handler
+int	kernsh_register_symbs_abn(u_int, u_int, void *);	# register a addrbyname handler
+int	kernsh_register_symbs_nba(u_int, u_int, void *);	# register a namebyaddr handler
+int	kernsh_register_alloc_contiguous(u_int, void *);	# register a alloc_contiguous handler
+int	kernsh_register_alloc_noncontiguous(u_int, void *);	# register a alloc_noncontiguous handler
+int	kernsh_register_free_contiguous(u_int, void *);		# register a free contiguous handler
+int	kernsh_register_free_noncontiguous(u_int, void *);	# register a free non contiguous handler
+int	kernsh_register_autotypes(u_int, u_int, void *);	# register a autotypes handler
+int	kernsh_register_relink(u_int, void *);			# register a relink handler
+int	kernsh_register_infect(u_int, void *);			# register a infect handler
+int	kernsh_register_kload(u_int, void *);			# register a kload handler
+int	kernsh_register_kunload(u_int, void *);			# register a kunload handler
+
+These hooks are called from libkernsh at various place :
+
+alloc.c:  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS);
+alloc.c:  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS);
+alloc.c:  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS);
+alloc.c:  alloc = aspect_vector_get(LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS);
+autotypes.c:  autotypes = aspect_vector_get(LIBKERNSH_VECTOR_NAME_AUTOTYPES);
+gdt.c:  gdt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_GDT);
+idt.c:  idt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_IDT);
+kernel.c:  decomp = aspect_vector_get(LIBKERNSH_VECTOR_NAME_DECOMPKERNEL);
+kernsh.c:  info = aspect_vector_get(LIBKERNSH_VECTOR_NAME_INFO);
+memory.c:  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_OPENMEM);
+memory.c:  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CLOSEMEM);
+memory.c:  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_READMEM);
+memory.c:  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_WRITEMEM);
+module.c:  kload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KLOADMODULE);
+module.c:  kunload = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KUNLOADMODULE);
+module.c:  rel = aspect_vector_get(LIBKERNSH_VECTOR_NAME_RELINKMODULE);
+module.c:  inf = aspect_vector_get(LIBKERNSH_VECTOR_NAME_INFECTMODULE);
+sct.c:  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_SCT);
+sct.c:  csct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_CALLSC);
+symbs.c:  symbs = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ADDRBYNAME);
+symbs.c:  symbs = aspect_vector_get(LIBKERNSH_VECTOR_NAME_NAMEBYADDR);
 
 
 
