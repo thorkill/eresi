@@ -29,6 +29,8 @@ ERESI \- The ERESI Reverse Engineering Software Interface
 .B etrace [\fIOPTIONS\fR]
 
 .B e2dbg  \fIprogramtodebug\fR
+
+.B kernsh
 .SH "DESCRIPTION"
 The ERESI Reverse Engineering Software Interface is a unified reverse engineering framework for UNIX operating systems based on the Executable & Linking Format (ELF) such as Linux, BSD, Solaris, IRIX, and BeOS. It has a command line interface that make it useful remotely, and can generate graph images from code analysis on demand. It has a real dedicated reverse engineering language that makes it scriptable and adaptable to the precise needs of the users. ERESI contains more than 10 innovative and exclusive features that turns it into an environment of choice for the instrumentation, analysis, debugging, tracing, hooking, or simply integrity checking and events logging of binary programs. ERESI is composed of ELFsh (the ELF shell), E2dbg (The Embedded ELF debugger) and Etrace (The Embedded ELF tracer). This documentation applies on all of the components. 
 .SH "OPTIONS"
@@ -428,6 +430,89 @@ Print unified debug format information for the current file.
 .TP 
 \fBst sym\fP [\fIRegex\fR]
 Print the symtab (.symtab) entries matching \fIRegex\fR.
+
+.TP
+\fB========================================================================\fP
+
+.TP 
+\fBKernsh modules commands\fP
+
+Those commands only works in Kernsh.
+
+.TP 
+\fBopenmem\fP
+Open kernel memory and static kernel
+
+.TP 
+\fBclosemem\fP
+Close kernel memory and static kernel
+
+.TP 
+\fBsct\fP
+Display the syscall table
+
+.TP 
+\fBidt\fP
+Display the interrupt descriptor table
+
+.TP 
+\fBgdt\fP
+Display the global descriptor table
+
+.TP 
+\fBalloc\fP
+Alloc contiguous kernel memory
+
+.TP 
+\fBfree\fP
+Free contiguous kernel memory
+
+.TP 
+\fBalloc_nc\fP
+Alloc non contiguous kernel memory
+
+.TP 
+\fBfree_nc\fP
+Free non contiguous kernel memory
+
+.TP 
+\fBkmodule\fP
+Handle kernel module
+
+kmodule -l module : load a lkm
+
+kmodule -u module : unload a lkm
+
+kmodule -r module1 module2 moduleout : link module with another
+
+kmodule -i module original_name evil_name : change lkm init (original_name) with another function (evil_name)
+
+.TP 
+\fBksym\fP
+Get an address of a kernel symbol
+
+.TP 
+\fBkmd5\fP \fIsa output\fR | \fIsa:rva output\fR | \fIsa%rva%size output\fR | \fIsa%size output\fR
+Make a md5sum.
+
+sa : Symbol or addr
+
+rva : Byte offset form the beginning (optional)
+
+size : Bytes number limit (optional) (if size is 0 or not put, we search the end of the function)
+
+output : file output (optional)
+
+
+.TP 
+\fBkcmd5\fP \fIformat\fR | \fIfile\fR 
+Check a md5.
+
+format : addr:mode:size:off:md5
+
+file : filename
+
+
 
 .TP 
 \fB========================================================================\fP
