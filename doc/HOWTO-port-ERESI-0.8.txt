@@ -219,8 +219,111 @@ are porting).
 III. LIBASM PORTING:
 --------------------
 
-FIXME
+Architecture disassembling is managed throught vectors of handlers, one to disassemble instructions,
+and the other to decode operands. Each architecture has its own two vectors.
+To add support for a new architecture, you have to create thoses two vectors and associated handlers.
 
+Three functions have to be defined : 
+1/ The asm_processor initializing function
+2/ The fetching handler.
+3/ The opcode handlers.
+4/ The operand handlers.
+5/ The output handler.
+
+Create a new directory src/arch/newarch/
+All the code related to that new architecture will be in this directory.
+
+You will also have to create a new header file for your architecture.
+Name it libasm-newarch.h in the include directory.
+
+You have then three functions to implement : 
+int	asm_init_arch(asm_processor *proc);
+int	asm_fetch_arch(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+int	asm_free_i386(asm_processor *proc)
+
+
+III.1) Initializing libasm:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a function to initilize an asm_processor structure:
+
+int	asm_init_newarch()
+{
+	/**
+	 * You must call asm_init_vectors() to initialize libaspect.
+	 */
+	asm_init_vectors();
+	/**
+	 * Setting the disassembling handlers.
+	 */
+	proc->fcn_etch = asm_fetch_newarch;
+	/**
+	 * Setting 
+	 */
+	proc->fcn_display = asm_display_;
+	proc->type = ASM_PROC_NEWARCH;
+}
+
+You have to call your own architecture initialization function in src/register.c in function
+asm_arch_register().
+
+III.2) The fetching handler:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+     int	asm_fetch_newarch(asm_instr *ins, u_char *opcode, u_int len, asm_processor *proc);
+
+This handler is the main entry point to disassemble opcodes. It is called by asm_read_instr().
+In that function, you have to use your own vectors to disassemble data.
+Once instruction is disassembled, any operand decoding by type must be implemented in the operand
+handlers.
+
+III.3) Disassembling handlers:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In that subdirectory, opcode handlers are stored in the subdirectory src/arch/handlers.
+
+opcode handler prototype : 
+
+int	asm_opcode_fetch_xxx(asm_instr *ins, u_char *opcode, u_int len, asm_processor *proc);
+
+	ins is a pointer to the instruction structure to fill.
+	opcode is a pointer to data to disassemble.
+	len is the length of buffer pointed to.
+	proc is a pointer to the processor structure.
+
+
+III.4) Operand handlers:
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note about operand order in asm_instr structure.
+The first element of the operand array is considered as the destination operand.
+The second element of the operand array is considered as the source operand.
+The third element of the operand array is a possible second source operand.
+The 
+
+operand handler prototype :
+
+int	asm_operand_fetch_xxx(asm_operand *op, u_char *opcode, int otype, asm_instr *ins, in opt);
+	
+	op is a pointer to current opcode to decode.
+	opcode is a pointer to operand data to decode.
+	otype is the operand type.
+	ins is a pointer to the current instruction being disassembled.
+	opt is a optional parameter. You may use this for anything you want.
+
+III.5) The output handler:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You then have to implement the ascii output function:
+
+char *asm_display_newarch(asm_instr *ins, int vaddr);
+
+     ins is a pointer to the instruction structure to display.
+     vaddr is the current virtual address of the instruction. This may be used to compute relative jump.
+
+
+This function stores an ascii representation of an instruction in a static lenght
+buffer returned to function caller.
 
 
 IV. LIBKERNSH PORTING:
