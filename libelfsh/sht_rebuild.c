@@ -10,7 +10,7 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.19 2007-10-09 14:02:35 rafael Exp $
+ ** $Id: sht_rebuild.c,v 1.20 2007-10-11 15:05:53 rafael Exp $
  **
  */
 #include "libelfsh.h"
@@ -207,9 +207,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
   void	  	*data;
   unsigned int	nnames,lnames,dnames;
   unsigned int	tlsnames,ehnames,snames;
-  long		type, total, section_offset,
-                vaddr_offset, p_offset;
-  int		flags,i;
+  long		type, total, section_offset, base_addr = 0;
+  int		flags;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -232,15 +231,17 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
         }
     }
   
-  file->hdr->e_shnum     = total+1; /* +1 for the shstrtab */
+  file->hdr->e_shnum     = 100;//total+1; /* total, for the shstrtab */
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
-  file->hdr->e_shoff     = file->fstat.st_size; /* insert the sht at the end of the file */
+  /* insert the sht at the end of the file */
+  file->hdr->e_shoff     = file->fstat.st_size;
   section_offset         = 0;
   
   /* Create the initial SHT */ 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, file->sht, 
-         file->hdr->e_shentsize * file->hdr->e_shnum, -1);
+	 file->hdr->e_shentsize * (total + 1), -1);
 
+  printf("SHT @ 0x%p\n", file->sht);
   snames = ehnames = tlsnames = nnames = lnames = dnames = 0;
   
   /* rebuild the sht based on the pht entries */
@@ -248,8 +249,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
     {
       /* setup the flags of this section */
       flags = SHF_ALLOC;
-      flags |= (elfsh_segment_is_writable(file->pht + index)    ? SHF_WRITE     : 0);
-      flags |= (elfsh_segment_is_executable(file->pht + index)  ? SHF_EXECINSTR : 0);
+      flags |= (elfsh_segment_is_writable(file->pht+index)?SHF_WRITE:0);
+      flags |= (elfsh_segment_is_executable(file->pht+index)?SHF_EXECINSTR:0);
       
       switch(file->pht[index].p_type)
         {
@@ -273,11 +274,17 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 		  break;
 		}
 	      /* .text */
-	      if(file->pht[index].p_vaddr >= 0x8000000 && elfsh_segment_is_executable(file->pht + index))
-		snprintf(name, sizeof(name), ELFSH_SECTION_NAME_TEXT);
+	      if(file->pht[index].p_vaddr >= 0x8000000 && 
+		 elfsh_segment_is_executable(file->pht + index)) 
+		{
+		  snprintf(name, sizeof(name), ELFSH_SECTION_NAME_TEXT);
+		  base_addr = file->pht[index].p_vaddr;
+		}
 	      /* .data */
-	      else if(file->pht[index].p_vaddr >= 0x8000000 && elfsh_segment_is_writable(file->pht + index))
+	      else if(file->pht[index].p_vaddr >= 0x8000000 && 
+		      elfsh_segment_is_writable(file->pht + index))
 		snprintf(name, sizeof(name), ELFSH_SECTION_NAME_DATA);
+
 	      type = SHT_PROGBITS;
 	    }
 	  break;
@@ -310,9 +317,12 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       
       /* create the new shdr based on the address from the pht entry */
       file->sht[idx] = elfsh_create_shdr(0, type, flags, 
-                                         file->pht[index].p_vaddr, file->pht[index].p_offset,
-                                         file->pht[index].p_filesz ? file->pht[index].p_memsz:0, 0, 0, 
-                                         file->pht[index].p_align, sizeof(elfsh_Shdr));
+                                         file->pht[index].p_vaddr, 
+					 file->pht[index].p_offset,
+                                         file->pht[index].p_filesz ? 
+					 file->pht[index].p_memsz:0, 0, 0, 
+                                         file->pht[index].p_align,
+					 sizeof(elfsh_Shdr));
       
       if(file->pht[index].p_filesz) 
 	{ 
@@ -329,42 +339,171 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name=strdup(name); 
-      
+      printf("IDX[%d]: %s\n", idx, sect->name);
       if (elfsh_add_section(file, sect, idx++, data, ELFSH_SHIFTING_ABSENT)<0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "Unable to add section", -1);
       
       /* the section_offset must be the biggest offset from all sht entries */
       if(file->pht[index].p_offset)
-        if((file->pht[index].p_offset + file->pht[index].p_filesz) > section_offset)
+        if((file->pht[index].p_offset+file->pht[index].p_filesz)>section_offset)
           section_offset = file->pht[index].p_offset + file->pht[index].p_filesz;
     } 
-  
+
+  printf("TOTAL: %d, IDX: %d\n", total, idx);
+
+  /* SHSTRTAB */
   /* Insert the section header string table (.shstrtab) */
   shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, section_offset, 
                            0, 0, 0, 0, sizeof(elfsh_Shdr));
-  file->sht[total] = shdr;
-  file->sht[total].sh_offset = section_offset;
+
+  file->sht[idx] = shdr;
   
   XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
   sect->name = strdup(ELFSH_SECTION_NAME_SHSTRTAB);
-  
-  if (elfsh_add_section(file, sect, total, NULL, ELFSH_SHIFTING_ABSENT) < 0)
+
+  if (elfsh_add_section(file, sect, idx, NULL, ELFSH_SHIFTING_ABSENT) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Unable to add section", -1);
   
   file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
-  file->hdr->e_shstrndx = total;
-  file->sht[total].sh_name = elfsh_insert_in_shstrtab(file, ELFSH_SECTION_NAME_SHSTRTAB); 
-  
+
+  file->hdr->e_shstrndx = idx;
+  file->hdr->e_shnum = idx+1;
+  //  file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr->sh_name = elfsh_insert_in_shstrtab(file, ".shstrtab");
+    
+  section_offset += sizeof(elfsh_Shdr);
+
   /* insert the names of the sections in the .shstrtab */
-  for (sect = file->sectlist; sect; sect=sect->next) 
-    sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
+  for (idx= 0, sect = file->sectlist; sect; sect=sect->next, idx++) 
+    {
+      //if(!sect->shdr->sh_name || sect->shdr->sh_name < 0)
+      sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
+      printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
+	     sect->name, sect->shdr->sh_addr);
+      section_offset += strlen(sect->name) + 1;
+    }
+
+  /* final round for the sht reconstruction 
+     extract data from the .dynamic section 
+
+     WORK IN PROGRESS.
+  */
+  elfsh_Dyn *dyn;
+  elfsh_Addr sect_addr;
+  elfsh_Word sect_size, ent_size;
+
+  /* DYNSYM */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_SYMTAB)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      sect_size = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB)->d_un.d_ptr - sect_addr;
+
+      ent_size = elfsh_get_dynamic_entry_by_type(file, DT_SYMENT)->d_un.d_val;
+            
+      /* sh_link must point to the .dynstr section index */
+      /* sh_info is the total number of entries in dynsym plus one */
+      shdr = elfsh_create_shdr(0, SHT_DYNSYM, 0, sect_addr, 
+			       section_offset, sect_size, idx+1,
+			       (sect_size / dyn->d_un.d_val) + 1, 4,
+			       ent_size);
+
+      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynsym", ELFSH_SHIFTING_ABSENT);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".dynsym");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data,
+	     (sect_size*6)+1, -1);
+      XREAD(file->fd, data, (sect_size*6), -1);
+      
+      if(elfsh_add_section(file, sect, idx, data,ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      file->secthash[ELFSH_SECTION_DYNSYM] = sect;
+
+      section_offset += sect_size;
+      idx++;
+    }
+
+#if 1
+  /* DYNSTR */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
+      sect_size = dyn->d_un.d_val;
+      
+      shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, sect_addr, 
+			       section_offset, sect_size,0,0,0,
+			       0);
+
+      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynstr", ELFSH_SHIFTING_ABSENT);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".dynstr");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      file->secthash[ELFSH_SECTION_DYNSTR] = sect;
+      
+      section_offset += sect_size;
+      idx++;
+    }
+
+#endif
+  /* .hash */
+#if 1
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_HASH)))
+    {
+      elfsh_Word nbucket, nchain;
+      sect_addr = dyn->d_un.d_ptr;
+
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XREAD(file->fd, &nbucket, 4, -1);
+      XREAD(file->fd, &nchain, 4, -1);
+
+      sect_size = (2 + nbucket + nchain) * sizeof(elfsh_Word);
+      shdr = elfsh_create_shdr(0, SHT_HASH, SHF_ALLOC, sect_addr, 
+			       section_offset,sect_size,0,0,0,
+			       sizeof(elfsh_Word));
+
+      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".hash", ELFSH_SHIFTING_ABSENT);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".hash");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data,ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      file->secthash[ELFSH_SECTION_HASH] = sect;
+      
+      section_offset += sect_size;
+    }
+#endif
+
+  //elfsh_sort_sht(file);
 
   /* sync the sht entries and name */
-  elfsh_sync_sht(file); 
   elfsh_sync_sectnames(file); 
-  
+  //  printf("-------------------------\n");
+  elfsh_sync_sht(file); 
+  //  printf("-------------------------\n");
+  //  elfsh_sync_sectnames(file); 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
