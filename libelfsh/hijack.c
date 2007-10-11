@@ -5,7 +5,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.10 2007-08-03 18:05:03 may Exp $
+** $Id: hijack.c,v 1.11 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -91,7 +91,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 #endif
 
       /* Perform PLT redirection if we deal with a PLT symbol */
-      if (ispltent)
+      if (ispltent == 1)
 	{
 
 	  /* MIPS handling */

@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.87 2007-10-01 01:13:08 may Exp $
+** $Id: revm.h,v 1.88 2007-10-11 18:25:17 pouik Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -53,6 +53,10 @@
 
 #if defined(__FreeBSD__)
   extern char **environ;
+#endif
+
+#if defined(KERNSH)
+#include "libkernsh.h"
 #endif
 
 /* Thanks to sk from Devhell Labs we have a libasm */

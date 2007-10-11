@@ -1,7 +1,7 @@
 /*
 ** main.c for kernsh
 **
-** $Id: main.c,v 1.6 2007-09-02 21:47:25 pouik Exp $
+** $Id: main.c,v 1.7 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -132,7 +132,7 @@ int		kernsh_main(int ac, char **av)
   
   if (strstr(ARCH, "i"))
     {
-      ret = kernsh_init_i386(OS, RELEASE);
+      ret = kernsh_init_ia32(OS, RELEASE);
       if (ret == -1)
 	{
 	  snprintf(logbuf, 

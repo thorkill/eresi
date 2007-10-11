@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 27 19:41:45 2002 jfv
 ** Last update Thu Mar 20 05:47:12 2003 jfv
 **
-** $Id: raw.c,v 1.6 2007-08-03 18:05:03 may Exp $
+** $Id: raw.c,v 1.7 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #include "libelfsh.h"
@@ -26,6 +26,13 @@ int		elfsh_raw_write(elfshobj_t	*file,
   int		prot;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(KERNSH)
+  if (kernsh_raw_write(file, foffset, src_buff, len) == len)
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
+    }
+#endif
 
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
@@ -66,6 +73,13 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   int		sect_off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(KERNSH)
+  if (kernsh_raw_read(file, foffset, dest_buff, len) == len)
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
+    }
+#endif
 
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)

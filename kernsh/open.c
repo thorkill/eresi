@@ -1,7 +1,7 @@
 /*
 ** open.c for kernsh
 ** 
-** $Id: open.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
+** $Id: open.c,v 1.8 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -172,6 +172,7 @@ int		cmd_openmem()
 	   revm_colorfieldstr("[+] OPEN MEMORY"));
   revm_output(buff);
   revm_endline();
+
 
   export_vars();
 

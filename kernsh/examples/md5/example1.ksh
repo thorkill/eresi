@@ -1,6 +1,10 @@
 #!/usr/local/bin/kernsh
 # Hijack a syscall and check it
 
+configure libkernsh.use_kernel 1
+
+openmem
+
 type example1 = sys:int[320]
 print "Sys_call_table " $sct
 inform example1 toto $sct
@@ -30,3 +34,5 @@ end:
 #RESTORE
 set 1.example1[toto].sys[17] $save_addr
 print 1.example1[toto].sys[17]
+
+closemem

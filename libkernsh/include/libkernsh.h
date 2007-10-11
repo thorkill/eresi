@@ -1,7 +1,7 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.12 2007-09-23 17:53:35 pouik Exp $
+** $Id: libkernsh.h,v 1.13 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -94,7 +94,7 @@ enum
     LIBKERNSH_STATIC_MODE
   } libkernsh_e_debug_type;
 
-#define	__DEBUG_KERNSH__			0	
+#define	__DEBUG_KERNSH__			0
 
 #define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
 #define LIBKERNSH_VMCONFIG_DEVICE		"libkernsh.device"
@@ -277,7 +277,8 @@ typedef struct s_libkernshworld
 	u_int arch;	/* Arch type */
 	u_int os;	/* Os type */
 	u_int device;	/* Device type */
-
+	
+	int present;	/* Flag to test kernsh's present */
 	int open;	/* 0 => memory close, 1 => memory open */
 	int open_static;	/* 0 => static kernel close,
 				   1 => static kernel open */
@@ -323,8 +324,8 @@ extern libkernshworld_t     libkernshworld; /* Global libkernsh struct
 					       W00t W00t use it please !*/
 
 /* Init lib */
-int	kernsh_init_i386(char *, char *);
-int	kernsh_del_i386();
+int	kernsh_init_ia32(char *, char *);
+int	kernsh_del_ia32();
 
 /* Get raw */
 void	*kernsh_elfsh_get_raw(elfshsect_t *);
@@ -346,6 +347,13 @@ int	kernsh_is_static_mode();
 int	kernsh_set_static_mode();
 int	kernsh_get_mode();
 int	kernsh_set_mode(int);
+
+void kernsh_present_set();
+int kernsh_is_present();
+
+/* Raw mode */
+int kernsh_raw_write(elfshobj_t *, u_int, void *, int);
+int kernsh_raw_read(elfshobj_t *,  u_int, void *, int);
 
 /* Init vectors */
 int	kernsh_init_vectors();

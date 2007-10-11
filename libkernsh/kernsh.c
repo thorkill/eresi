@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.12 2007-09-23 17:53:35 pouik Exp $
+** $Id: kernsh.c,v 1.13 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -9,8 +9,8 @@
 
 libkernshworld_t libkernshworld;
 
-/* Init kernsh for i386 */
-int kernsh_init_i386(char *os, char *release)
+/* Init kernsh for ia32 */
+int kernsh_init_ia32(char *os, char *release)
 {
   char buffer[256];
 
@@ -182,6 +182,7 @@ int kernsh_init_i386(char *os, char *release)
 
   kernsh_init_vectors();
   kernsh_register_vectors();
+  kernsh_present_set();
 
   asm_init_i386(&libkernshworld.proc);
 
@@ -189,7 +190,7 @@ int kernsh_init_i386(char *os, char *release)
 }
 
 
-int kernsh_del_i386()
+int kernsh_del_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -304,7 +305,7 @@ void *kernsh_elfsh_get_raw(elfshsect_t *sect)
 	      sect->parent->rhdr.base = 
 		libkernshworld.kernel_start - sect->shdr->sh_addr;
 	    }
-	
+	  
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
 	}
     }
@@ -328,7 +329,6 @@ void *kernsh_revm_get_raw(void *addr)
   printf("kernsh_revm_get_raw\n");
 #endif
 
-  //printf("ADDR 0x%lx\n", addr);
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
     {
       /* We use physical memory ? */
@@ -460,4 +460,54 @@ void kernsh_unload_file(elfshobj_t *file)
   elfsh_unload_obj(file);
   
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (kernsh_is_mem_mode())
+    {
+      kernsh_writemem(elfsh_get_vaddr_from_foffset(file, foffset), 
+			  src_buff, 
+			  len);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	       "Mode is wrong", -1);
+}
+
+int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (kernsh_is_mem_mode())
+    {
+      kernsh_readmem(elfsh_get_vaddr_from_foffset(file, foffset), 
+		     dest_buff, 
+		     len);
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	       "Mode is wrong", -1);
+}
+
+void kernsh_present_set()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  libkernshworld.present = 1;
+
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+int kernsh_is_present()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+		(libkernshworld.present == 1));
 }

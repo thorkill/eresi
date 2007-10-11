@@ -11,15 +11,16 @@ You can profite of eresi's language to define you own structure and
 communicate with the kernel.
 
 Features :
-	- Support Linux 2.X /dev/(k)mem
-	- Read/Write anywhere in the kernel, direcly with eresi's language
-	- Dismantling kernel memory with libasm
-	- Alloc/Free kernel memory (contiguous and non contiguous)
-	- ET_REL injection in kernel memory
-	- Infect loadable kernel module
-	-
-	-
-
+    - Read/Write anywhere in the kernel (static/memory), 
+	direcly in ERESI language
+    - Display syscalls, idt, gdt, symbols..
+    - Disassembling kernel memory
+    - Read and modify the static kernel image
+    - Alloc/Free kernel memory (contiguous and non contiguous)
+    - Inject new compiled LKM code into a static kernel or kernel memory
+    - Make md5 of kernel function and portion of code
+    - Redirect initialisation of loadable kernel module
+    - Redir function
 
 Depends libkernsh : libaspect, libelfsh
 Depends kernsh : librevm, libaspect
