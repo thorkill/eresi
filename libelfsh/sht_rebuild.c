@@ -10,11 +10,11 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.20 2007-10-11 15:05:53 rafael Exp $
+ ** $Id: sht_rebuild.c,v 1.21 2007-10-11 21:37:20 rafael Exp $
  **
  */
 #include "libelfsh.h"
-
+#include "libasm.h"
 /** 
  * @brief This function insert a SHT entry without shifting the address space
  * I.E. it does truncate some sections for creating new ones.
@@ -207,7 +207,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
   void	  	*data;
   unsigned int	nnames,lnames,dnames;
   unsigned int	tlsnames,ehnames,snames;
-  long		type, total, section_offset, base_addr = 0;
+  long		type, total, section_offset, base_addr = 0, dyn_addr = 0, dyn_size;
   int		flags;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -230,16 +230,17 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  break;
         }
     }
-  
+  total++;
   file->hdr->e_shnum     = 100;//total+1; /* total, for the shstrtab */
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
+
   /* insert the sht at the end of the file */
   file->hdr->e_shoff     = file->fstat.st_size;
   section_offset         = 0;
   
   /* Create the initial SHT */ 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, file->sht, 
-	 file->hdr->e_shentsize * (total + 1), -1);
+	 file->hdr->e_shentsize * (total + 8), -1);
 
   printf("SHT @ 0x%p\n", file->sht);
   snames = ehnames = tlsnames = nnames = lnames = dnames = 0;
@@ -260,6 +261,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  type = SHT_PROGBITS;
 	  break;
 	case PT_LOAD:
+	  /* XXX: not working */
 	  if(file->pht[index].p_memsz < file->pht[index].p_filesz)
 	    { /* .bss */
 	      snprintf(name, sizeof(name), ELFSH_SECTION_NAME_BSS);
@@ -290,8 +292,16 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  break;
 	case PT_NOTE:
 	  /* .note */
-	  snprintf(name, sizeof(name), ".note%d", nnames++);
-	  type = SHT_NOTE;
+	  if(file->coretype==ELFSH_CORE_LINUX)
+	    {
+	      snprintf(name, sizeof(name), ".note%d", nnames++);
+	      type = SHT_NOTE;
+	    }
+	  else
+	    {
+	      snprintf(name, sizeof(name), ".note-ABI.tag");
+	      type=SHT_NOTE;
+	    }
 	  break;
 #if !defined(sgi) && !defined(__NetBSD__)
 	case PT_TLS:
@@ -323,7 +333,11 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 					 file->pht[index].p_memsz:0, 0, 0, 
                                          file->pht[index].p_align,
 					 sizeof(elfsh_Shdr));
-      
+      if(type==SHT_DYNAMIC) 
+	{
+	  dyn_addr = file->pht[index].p_vaddr;
+	  dyn_size = file->pht[index].p_filesz;
+	}
       if(file->pht[index].p_filesz) 
 	{ 
 	  /* duplicate the data */
@@ -350,8 +364,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
           section_offset = file->pht[index].p_offset + file->pht[index].p_filesz;
     } 
 
-  printf("TOTAL: %d, IDX: %d\n", total, idx);
-
+#if 0
   /* SHSTRTAB */
   /* Insert the section header string table (.shstrtab) */
   shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, section_offset, 
@@ -370,20 +383,18 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 
   file->hdr->e_shstrndx = idx;
   file->hdr->e_shnum = idx+1;
-  //  file->secthash[ELFSH_SECTION_SHSTRTAB]->shdr->sh_name = elfsh_insert_in_shstrtab(file, ".shstrtab");
     
   section_offset += sizeof(elfsh_Shdr);
 
   /* insert the names of the sections in the .shstrtab */
   for (idx= 0, sect = file->sectlist; sect; sect=sect->next, idx++) 
     {
-      //if(!sect->shdr->sh_name || sect->shdr->sh_name < 0)
       sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
       printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
 	     sect->name, sect->shdr->sh_addr);
-      section_offset += strlen(sect->name) + 1;
+      section_offset += strlen(sect->name)+1;
     }
-
+#endif
   /* final round for the sht reconstruction 
      extract data from the .dynamic section 
 
@@ -393,62 +404,29 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
   elfsh_Addr sect_addr;
   elfsh_Word sect_size, ent_size;
 
-  /* DYNSYM */
-  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_SYMTAB)) != NULL)
-    {
-      sect_addr = dyn->d_un.d_ptr;
-      sect_size = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB)->d_un.d_ptr - sect_addr;
-
-      ent_size = elfsh_get_dynamic_entry_by_type(file, DT_SYMENT)->d_un.d_val;
-            
-      /* sh_link must point to the .dynstr section index */
-      /* sh_info is the total number of entries in dynsym plus one */
-      shdr = elfsh_create_shdr(0, SHT_DYNSYM, 0, sect_addr, 
-			       section_offset, sect_size, idx+1,
-			       (sect_size / dyn->d_un.d_val) + 1, 4,
-			       ent_size);
-
-      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynsym", ELFSH_SHIFTING_ABSENT);
-
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
-      sect->name = strdup(".dynsym");
-      
-      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, data,
-	     (sect_size*6)+1, -1);
-      XREAD(file->fd, data, (sect_size*6), -1);
-      
-      if(elfsh_add_section(file, sect, idx, data,ELFSH_SHIFTING_ABSENT)<0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unable to add section", -1);
-      
-      file->secthash[ELFSH_SECTION_DYNSYM] = sect;
-
-      section_offset += sect_size;
-      idx++;
-    }
-
 #if 1
-  /* DYNSTR */
+  /* .dynstr */
   if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB)) != NULL)
     {
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      
-      shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, sect_addr, 
+      printf("@0x%08x => SECT SIZE: %x %d bytes\n", sect_addr - base_addr, sect_size, sect_size);
+     
+      shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,
 			       0);
 
-      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynstr", ELFSH_SHIFTING_ABSENT);
+      //elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynstr", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name = strdup(".dynstr");
       
       XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
-      XREAD(file->fd, data, sect_size, -1);
-      
+      printf("READ: %d bytes\n", read(file->fd, data, sect_size));
+
       if(elfsh_add_section(file, sect, idx, data, 
 			   ELFSH_SHIFTING_ABSENT)<0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -461,6 +439,44 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
     }
 
 #endif
+
+  /* .dynsym */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_SYMTAB)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      sect_size = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB)->d_un.d_ptr - sect_addr;
+
+      ent_size = elfsh_get_dynamic_entry_by_type(file, DT_SYMENT)->d_un.d_val;
+            
+      /* sh_link must point to the .dynstr section index */
+      /* sh_info is the total number of entries in dynsym plus one */
+      shdr = elfsh_create_shdr(0, SHT_DYNSYM, SHF_ALLOC, sect_addr, 
+			       section_offset, sect_size, idx-1,
+			       (sect_size / dyn->d_un.d_val) + 1, 4,
+			       ent_size);
+
+      //elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".dynsym", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".dynsym");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data,
+	     (sect_size*6)+1, -1);
+      XREAD(file->fd, data, (sect_size*6), -1);
+      
+      if(elfsh_add_section(file, sect, idx, data,ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+
+      //      elfsh_fixup_dynsymtab(sect);
+
+      file->secthash[ELFSH_SECTION_DYNSYM] = sect;
+      section_offset += sect_size;
+      idx++;
+    }
+  
   /* .hash */
 #if 1
   if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_HASH)))
@@ -477,7 +493,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 			       section_offset,sect_size,0,0,0,
 			       sizeof(elfsh_Word));
 
-      elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".hash", ELFSH_SHIFTING_ABSENT);
+      //elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".hash", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name = strdup(".hash");
@@ -493,18 +510,290 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       file->secthash[ELFSH_SECTION_HASH] = sect;
       
       section_offset += sect_size;
+      idx++;
+    }
+#endif
+#if 1
+  /* .rel.dyn */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_REL)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      sect_size = elfsh_get_dynamic_entry_by_type(file, DT_RELSZ)->d_un.d_val;
+      ent_size  = elfsh_get_dynamic_entry_by_type(file, DT_RELENT)->d_un.d_val;
+      
+      shdr = elfsh_create_shdr(0, SHT_REL, SHF_ALLOC, sect_addr, 
+			       section_offset,sect_size,idx-2,1,0,
+			       ent_size);
+
+      //elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".rel.dyn", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".rel.dyn");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      section_offset += sect_size;
+      idx++;
+    }
+#endif
+#if 1
+  /* .rel.plt */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_JMPREL)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      sect_size = elfsh_get_dynamic_entry_by_type(file, DT_PLTRELSZ)->d_un.d_val;
+      //ent_size  = elfsh_get_dynamic_entry_by_type(file, DT_RELENT)->d_un.d_val;
+      
+      shdr = elfsh_create_shdr(0, SHT_REL, SHF_ALLOC, sect_addr, 
+			       section_offset,sect_size,idx-3,1,0,
+			       sizeof(elfsh_Rel));
+
+      // elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".rel.plt", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".rel.plt");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      section_offset += sect_size;
+      idx++;
+    }
+#endif
+#if 1
+  /* .got */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_PLTGOT)) != NULL)
+    {
+      sect_addr = dyn->d_un.d_ptr;
+      sect_size = sect_addr - (dyn_addr + dyn_size); //elfsh_get_dynamic_entry_by_type(file, DT_PLTRELSZ)->d_un.d_val;
+      //ent_size  = elfsh_get_dynamic_entry_by_type(file, DT_RELENT)->d_un.d_val;
+      sect_addr -= sect_size;
+      
+      shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC|SHF_WRITE, sect_addr, 
+			       section_offset,sect_size,0,0,4,
+			       4);
+
+      // elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".rel.plt", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".got");
+      
+      printf("OFFSET: %x (size: %d)\n", sect_addr, (dyn_size));
+      XSEEK(file->fd, sect_addr - (base_addr + 0x1000), SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      section_offset += sect_size;
+      idx++;
+    }
+#endif
+#if 1
+  /* .init */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_INIT)) != NULL)
+    {
+      asm_instr instr;
+      asm_processor proc;
+      u_char temp[1024];
+      int curr;
+
+      sect_addr = dyn->d_un.d_ptr;
+
+      switch(elfsh_get_arch(file->hdr))
+	{
+	case EM_SPARC32PLUS:
+	case EM_SPARC:
+	case EM_SPARCV9:
+	  asm_init_sparc(&proc);
+	  break;
+	case EM_386:
+	  asm_init_i386(&proc);
+	  break;
+	case EM_MIPS:
+	  asm_init_mips(&proc);
+	  break;
+	}
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XREAD(file->fd, temp, 1024, -1);
+      
+      //elfsh_read_raw(file, sect_addr - base_addr, data, 1024);
+
+      sect_size = 0;
+      while(sect_size < 1024)
+	{
+	  if(asm_read_instr(&instr, temp + sect_size, 1024 - sect_size, &proc) > 0)
+	    {
+	      if(instr.instr==ASM_RET)
+		{
+		  //		  printf("RET RET RET: %d\n", sect_size);
+		  sect_size += asm_instr_len(&instr);
+		  break;
+		}
+	    }
+	  sect_size += asm_instr_len(&instr);
+	}
+
+      shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC|SHF_EXECINSTR, sect_addr, 
+			       section_offset,sect_size,0,0,4, 4);
+
+      // elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".rel.plt", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".init");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      section_offset += sect_size;
+      idx++;
+    }
+#endif
+#if 1
+  /* .fini */
+  if((dyn = elfsh_get_dynamic_entry_by_type(file, DT_FINI)) != NULL)
+    {
+      asm_instr instr;
+      asm_processor proc;
+      u_char temp[1024];
+
+      sect_addr = dyn->d_un.d_ptr;
+
+      switch(elfsh_get_arch(file->hdr))
+	{
+	case EM_SPARC32PLUS:
+	case EM_SPARC:
+	case EM_SPARCV9:
+	  asm_init_sparc(&proc);
+	  break;
+	case EM_386:
+	  asm_init_i386(&proc);
+	  break;
+	case EM_MIPS:
+	  asm_init_mips(&proc);
+	  break;
+	}
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XREAD(file->fd, temp, 1024, -1);
+      
+      sect_size = 0;
+      while(sect_size < 1024)
+	{
+	  if(asm_read_instr(&instr, temp + sect_size, 1024 - sect_size, &proc) > 0)
+	    {
+	      if(instr.instr==ASM_RET)
+		{
+		  sect_size += asm_instr_len(&instr);
+		  break;
+		}
+	    }
+	  sect_size += asm_instr_len(&instr);
+	}
+
+      shdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC|SHF_EXECINSTR, sect_addr, 
+			       section_offset,sect_size,0,0,4, 4);
+
+      // elfsh_insert_shdr(file, shdr, ELFSH_SECTION_LAST, ".rel.plt", ELFSH_SHIFTING_ABSENT);
+      file->sht[idx] = shdr;
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
+      sect->name = strdup(".fini");
+      
+      XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+      XREAD(file->fd, data, sect_size, -1);
+      
+      if(elfsh_add_section(file, sect, idx, data, 
+			   ELFSH_SHIFTING_ABSENT)<0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to add section", -1);
+      
+      section_offset += sect_size;
+      idx++;
     }
 #endif
 
+#if 1
+  /* SHSTRTAB */
+  /* Insert the section header string table (.shstrtab) */
+  shdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, section_offset, 
+                           0, 0, 0, 0, sizeof(elfsh_Shdr));
+
+  file->sht[idx] = shdr;
+  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,sect, sizeof(elfshsect_t), -1);
+  sect->name = strdup(ELFSH_SECTION_NAME_SHSTRTAB);
+
+  if (elfsh_add_section(file, sect, idx, NULL, ELFSH_SHIFTING_ABSENT) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Unable to add section", -1);
+  
+  file->secthash[ELFSH_SECTION_SHSTRTAB] = sect;
+
+  file->hdr->e_shstrndx = idx;
+  file->hdr->e_shnum = idx+1;
+    
+  section_offset += sizeof(elfsh_Shdr);
+
+  /* insert the names of the sections in the .shstrtab */
+  for (idx= 0, sect = file->sectlist; sect; sect=sect->next, idx++) 
+    {
+      sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
+      printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
+	     sect->name, sect->shdr->sh_addr);
+      section_offset += strlen(sect->name)+1;
+    }
+#endif
   //elfsh_sort_sht(file);
 
   /* sync the sht entries and name */
   elfsh_sync_sectnames(file); 
-  //  printf("-------------------------\n");
   elfsh_sync_sht(file); 
-  //  printf("-------------------------\n");
-  //  elfsh_sync_sectnames(file); 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  //  elfsh_fixup_symtab(file, &total);
+
+  /*  elfsh_Sym newent;
+  int symsz;
+  elfshsect_t *symtab = elfsh_get_symtab(file, &symsz);
+
+  for(idx = 0; idx != (file->hdr->e_phnum * file->hdr->e_phentsize); idx++)
+    {
+      if(file->pht[idx].p_type == PT_DYNAMIC)
+	{
+	  newent = elfsh_create_symbol(file->pht[idx].p_vaddr,
+				       0, STT_OBJECT,0,0,symsz);
+	  elfsh_insert_symbol(symtab, &newent, "_DYNAMIC");
+	}
+	}*/
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 #if 0
