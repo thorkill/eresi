@@ -7,7 +7,7 @@
 ** Started on  Sat Mar 15 03:45:54 2003 jfv
 ** Last update Mon Mar 17 04:40:35 2003 jfv
 **
-** $Id: strip.c,v 1.5 2007-07-31 03:28:47 may Exp $
+** $Id: strip.c,v 1.6 2007-10-13 21:49:52 thor Exp $
 **
 */
 
@@ -35,15 +35,15 @@ int		elfsh_strip(elfshobj_t *file)
   while (bss)
     {
       next = bss->next;
-	  if ((bss->index != 0) || (
-	      (bss->index != file->hdr->e_shstrndx) &&
-	       elfsh_remove_section(file, bss->name)))
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Unable to remove section", -1);
-
+      if ((bss->index == 0) || 
+	  ((bss->index != file->hdr->e_shstrndx) &&
+	   elfsh_remove_section(file, bss->name)))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to remove section", -1);
+      
       bss = next;
     }
-
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
