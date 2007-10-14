@@ -5,7 +5,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 jfv
  *
  *
- * $Id: ia32.c,v 1.21 2007-08-03 18:05:03 may Exp $
+ * $Id: ia32.c,v 1.22 2007-10-14 00:03:46 heroine Exp $
  *
  */
 #include "libelfsh.h"
@@ -21,17 +21,17 @@ static u_int		max_arg_offset;
 
 #define ELFSH_IA32_PUSH_REGBASE(_i)			\
 (_i.instr == ASM_PUSH 					\
- && _i.op1.regset == ASM_REGSET_R32			\
- && (_i.op1.content & ~ASM_OP_FIXED) == ASM_OP_BASE)
+ && _i.op[0].regset == ASM_REGSET_R32			\
+ && (_i.op[0].content & ~ASM_OP_FIXED) == ASM_OP_BASE)
 
 #define ELFSH_IA32_MOV_REGBASE(_i, _reg)		\
 (_i.instr == ASM_MOV 					\
- && _i.op1.baser == _reg 				\
- && _i.op2.baser == ASM_REG_ESP 			\
- && _i.op1.regset == ASM_REGSET_R32 			\
- && _i.op2.regset == ASM_REGSET_R32			\
- && (_i.op1.content & ~ASM_OP_FIXED) == ASM_OP_BASE	\
- && (_i.op2.content & ~ASM_OP_FIXED) == ASM_OP_BASE)
+ && _i.op[0].baser == _reg 				\
+ && _i.op[1].baser == ASM_REG_ESP 			\
+ && _i.op[0].regset == ASM_REGSET_R32 			\
+ && _i.op[1].regset == ASM_REGSET_R32			\
+ && (_i.op[0].content & ~ASM_OP_FIXED) == ASM_OP_BASE	\
+ && (_i.op[1].content & ~ASM_OP_FIXED) == ASM_OP_BASE)
 
 /**
  * Start of hook code for EXTPLT 
@@ -298,7 +298,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   /* Determine the minimal aligned length */
   if (!proc_init)
     {
-      asm_init_i386(&proc);
+      asm_init_ia32(&proc);
       proc_init = 1;
     }
   for (idx = ret = 0; ret < 5 && idx < 5; idx++)
@@ -695,7 +695,7 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
 	// Search a call to our address (near call) 
 	  if (i.instr == ASM_CALL)
 	    {
-	      if (base_vaddr + index + i.op1.imm + i.len == vaddr)
+	      if (base_vaddr + index + i.op[0].imm + i.len == vaddr)
 		{
 		  if (before)
 		    *before = last_vaddr;
@@ -760,7 +760,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 
   if (!proc_init)
     {
-      asm_init_i386(&proc);
+      asm_init_ia32(&proc);
       proc_init = 1;
     }
   max_arg_offset = 0;
@@ -819,7 +819,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		     xor $eax, $eax
 		     mov $ebp, $esp
 		  */
-		  regbased = i.op1.baser;
+		  regbased = i.op[0].baser;
 		  regicount = 0;
 		}
 	      else if (regbased != -1)
@@ -856,7 +856,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		     Some function does not rely on ret 
 		     This fix has been made for my exit() function which did not
 		     has a ret, then we start parsing on_exit() */
-		  next_regbased = i.op1.baser;
+		  next_regbased = i.op[0].baser;
 		  regicount = 0;
 		}
 	      else
@@ -876,7 +876,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	  if (ffp == 0)
 	    {
 	      /* EBP based argument */
-	      op = elfsh_ac_is_arg_ebp(&i.op1, regbased);
+	      op = elfsh_ac_is_arg_ebp(&i.op[0], regbased);
 		  
 	      if (op > 0)
 		{
@@ -886,7 +886,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		  elfsh_ac_largs_add(op);
 		}
 		  
-	      op = elfsh_ac_is_arg_ebp(&i.op2, regbased);
+	      op = elfsh_ac_is_arg_ebp(&i.op[1], regbased);
 
 	      if (op > 0)
 		{
@@ -903,30 +903,30 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	  else
 	    {
 	      /* sub $esp, x */
-	      if (i.instr == ASM_SUB && i.op1.baser == ASM_REG_ESP)
+	      if (i.instr == ASM_SUB && i.op[0].baser == ASM_REG_ESP)
 		{
-		  reserv += i.op2.imm;
+		  reserv += i.op[1].imm;
 
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
-			 i.op2.imm, reserv);
+			 i.op[1].imm, reserv);
 #endif
 		  continue;
 		}
 	      /* add $esp, x */
-	      else if (i.instr == ASM_ADD && i.op1.baser == ASM_REG_ESP)
+	      else if (i.instr == ASM_ADD && i.op[0].baser == ASM_REG_ESP)
 		{
-		  reserv -= i.op2.imm;
+		  reserv -= i.op[1].imm;
 
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
-			 i.op2.imm, reserv);
+			 i.op[1].imm, reserv);
 #endif
 		  continue;
 		}
 
 	      /* ESP based argument */
-	      op = elfsh_ac_is_arg_esp(&i.op1, reserv);
+	      op = elfsh_ac_is_arg_esp(&i.op[0], reserv);
 
 	      if (op > 0)
 		{
@@ -936,7 +936,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 		  elfsh_ac_largs_add(op);
 		}
 
-	      op = elfsh_ac_is_arg_esp(&i.op2, reserv);
+	      op = elfsh_ac_is_arg_esp(&i.op[1], reserv);
 
 	      if (op > 0)
 		{
@@ -1005,8 +1005,8 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	  if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
 	    {
 	      // We don't want to read another function 
-	      if (i.instr == ASM_MOV && i.op1.baser == ASM_REG_ESP)
-		elfsh_ac_largs_add(i.op1.imm + 16);
+	      if (i.instr == ASM_MOV && i.op[0].baser == ASM_REG_ESP)
+		elfsh_ac_largs_add(i.op[0].imm + 16);
 	    }
 
 	  ret = asm_instr_len(&i);

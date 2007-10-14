@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.19 2007-08-03 11:50:59 heroine Exp $
+** $Id: traces.c,v 1.20 2007-10-14 00:03:46 heroine Exp $
 **
 */
 #include "libelfsh.h"
@@ -1420,7 +1420,7 @@ static int		elfsh_traces_setup_proc(elfshobj_t *file, asm_processor *proc)
       asm_init_sparc(proc);
       break;
     case EM_386:
-      asm_init_i386(proc);
+      asm_init_ia32(proc);
       break;
       /* Not ready yet ?
     case EM_MIPS:
@@ -1492,7 +1492,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
   
   /* Despite the fact that we choose the right architecture to init asm,
      Our approach is totally architecture independant as we search using
-     global type ASM_TYPE_CALLPROC and we know that op1.imm will contain a
+     global type ASM_TYPE_CALLPROC and we know that op[0].imm will contain a
      relative value. */
   for (index = 0; index < len; index += ret)
     {
@@ -1501,9 +1501,9 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
 	{
 	  /* Global assembler filter */
 	  if ((instr.type & ASM_TYPE_CALLPROC)
-	      && instr.op1.imm != 0)
+	      && instr.op[0].imm != 0)
 	    {
-	      caddr = base_vaddr + index + instr.op1.imm + instr.len;
+	      caddr = base_vaddr + index + instr.op[0].imm + instr.len;
 
 	      /* Found a call check its local */
 	      if (INTERVAL(base_vaddr, caddr, base_vaddr + len))
@@ -1611,7 +1611,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
   
   /* Despite the fact that we choose the right architecture to init asm,
      Our approach is totally architecture independant as we search using
-     global type ASM_TYPE_CALLPROC and we know that op1.imm will contain a
+     global type ASM_TYPE_CALLPROC and we know that op[0].imm will contain a
      relative value. */
   for (index = 0; index < len; index += ret)
     {
@@ -1620,10 +1620,10 @@ int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
 	{
 	  /* Global assembler filter */
 	  if ((instr.type & ASM_TYPE_CALLPROC)
-	      && instr.op1.imm != 0)
+	      && instr.op[0].imm != 0)
 	    {
 	      /* Found the correct call */
-	      if (base_vaddr + index + instr.op1.imm + instr.len == addr)
+	      if (base_vaddr + index + instr.op[0].imm + instr.len == addr)
 		{
 		  found = 1;
 		  break;

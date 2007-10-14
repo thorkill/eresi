@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.7 2007-10-01 01:13:08 may Exp $
+** $Id: findentry.c,v 1.8 2007-10-14 00:03:46 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -79,7 +79,7 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
   	  {
     	  case ASM_PUSH:
     	    if (*dis && (arch_bin == MJR_BIN_LINUX) && 
-		ins.op1.type == ASM_OTYPE_IMMEDIATE)
+		ins.op[0].type == ASM_OTYPE_IMMEDIATE)
     	      asm_operand_get_immediate(&ins, 1, 0, &main_addr);
     	    break;
     	  case ASM_CALL:
@@ -107,14 +107,14 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
 	switch (ins.instr)
 	  {
      	  case ASM_SP_SETHI:
-     	    if (ins.op1.baser == ASM_REG_O0)
-     	      main_addr = ins.op2.imm << 10;
+     	    if (ins.op[0].baser == ASM_REG_O0)
+     	      main_addr = ins.op[1].imm << 10;
      	    break;
      	  case ASM_SP_OR:
-     	    if (ins.op1.baser == ASM_REG_O0 &&
-		ins.op3.baser == ASM_REG_O0 &&
-		ins.op2.type == ASM_SP_OTYPE_IMMEDIATE)
-     	      main_addr |= ins.op2.imm;
+     	    if (ins.op[0].baser == ASM_REG_O0 &&
+		ins.op[2].baser == ASM_REG_O0 &&
+		ins.op[1].type == ASM_SP_OTYPE_IMMEDIATE)
+     	      main_addr |= ins.op[1].imm;
      	    break;
      	  case ASM_SP_CALL:
 	    stop = 1;

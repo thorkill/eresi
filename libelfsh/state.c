@@ -1,11 +1,12 @@
 /**
  * @file state.c
-** state.c for elfsh
 ** 
+** @brief Provide initialization and debugger state related functions.
+**
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
 ** 
 **
-** $Id: state.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
+** $Id: state.c,v 1.16 2007-10-14 00:03:46 heroine Exp $
 **
 */
 #include "libelfsh.h"

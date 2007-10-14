@@ -6,7 +6,7 @@
 ** 
 ** @brief Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.8 2007-10-01 01:13:08 may Exp $
+** $Id: cfg.c,v 1.9 2007-10-14 00:03:46 heroine Exp $
 **
 */
 #include "libmjollnir.h"
@@ -179,7 +179,7 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
       context->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV  &&
       context->hist[MJR_HISTORY_PPREV].instr.instr == ASM_MOV)
     {
-      dest = context->hist[MJR_HISTORY_PPREV].instr.op2.imm;
+      dest = context->hist[MJR_HISTORY_PPREV].instr.op[1].imm;
 
       if (dest < elfsh_get_entrypoint(context->obj->hdr))
 	{
@@ -257,7 +257,7 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
   if (context->proc.type == ASM_PROC_IA32)
   {
   	/* The target block is called directly */
-    if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+    if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
     {    
     	ilen = asm_instr_len(ins);
     	asm_operand_get_immediate(ins, 1, 0, &dest);
@@ -265,7 +265,7 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
     }
     /* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
-    else if (ins->op1.content & ASM_OP_BASE)
+    else if (ins->op[0].content & ASM_OP_BASE)
       dest = mjr_compute_fctptr(context);
     else
       dest = -1;
@@ -274,9 +274,9 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
   {
     if (ins->instr == ASM_SP_CALL)
     {
-    	if (ins->op1.type == ASM_SP_OTYPE_DISP30)
+    	if (ins->op[0].type == ASM_SP_OTYPE_DISP30)
    	  {
-  	    dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+  	    dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
    	  }
     	else /* Indirect call (special case of JMPL) */
     	  dest = -1;
@@ -305,7 +305,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
   if (context->proc.type == ASM_PROC_IA32)
   {
   	/* The target block is called directly */
-    if ((ins->op1.content & ASM_OP_VALUE) && !(ins->op1.content & ASM_OP_REFERENCE)) 
+    if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
     {    
     	ilen = asm_instr_len(ins);
     	asm_operand_get_immediate(ins, 1, 0, &dest);
@@ -314,7 +314,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
     
     /* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
-    else if (ins->op1.content & ASM_OP_BASE)
+    else if (ins->op[0].content & ASM_OP_BASE)
       dest = mjr_compute_fctptr(context);
     else
       dest = -1;
@@ -327,7 +327,7 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
       }
     else if (ins->type == ASM_TYPE_CONDBRANCH)
       {
-    	dest = (ins->op1.imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+    	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       }
   }
   else
@@ -370,9 +370,9 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   else if (ctxt->proc.type == ASM_PROC_SPARC)
   {
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op1.baser == ASM_REG_O6 &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op2.type == ASM_SP_OTYPE_IMMEDIATE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op3.baser == ASM_REG_O6)
+        ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op[1].type == ASM_SP_OTYPE_IMMEDIATE &&
+        ctxt->hist[MJR_HISTORY_CUR].instr.op[2].baser == ASM_REG_O6)
   	{
   	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_CUR].vaddr);
   	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;
