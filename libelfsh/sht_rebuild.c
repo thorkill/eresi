@@ -10,7 +10,7 @@
  ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
  ** 
  **
- ** $Id: sht_rebuild.c,v 1.22 2007-10-11 21:54:53 rafael Exp $
+ ** $Id: sht_rebuild.c,v 1.23 2007-10-14 09:55:38 heroine Exp $
  **
  */
 #include "libelfsh.h"
@@ -627,7 +627,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  asm_init_sparc(&proc);
 	  break;
 	case EM_386:
-	  asm_init_i386(&proc);
+	  asm_init_ia32(&proc);
 	  break;
 	case EM_MIPS:
 	  asm_init_mips(&proc);
@@ -694,7 +694,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  asm_init_sparc(&proc);
 	  break;
 	case EM_386:
-	  asm_init_i386(&proc);
+	  asm_init_ia32(&proc);
 	  break;
 	case EM_MIPS:
 	  asm_init_mips(&proc);

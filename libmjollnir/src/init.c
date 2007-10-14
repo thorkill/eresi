@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.26 2007-08-03 11:50:59 heroine Exp $
+ * $Id: init.c,v 1.27 2007-10-14 09:56:46 heroine Exp $
  * @file init.c
  * @brief Initialization functions
  *
@@ -112,7 +112,7 @@ int		mjr_setup_processor(mjrsession_t *sess)
      asm_init_sparc(&sess->cur->proc);
      break;
    case EM_386:
-     asm_init_i386(&sess->cur->proc);
+     asm_init_ia32(&sess->cur->proc);
      break;
    default:
      fprintf(D_DESC," [E] Libmjollnir unsupported architecture\n");
