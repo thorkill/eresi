@@ -1,7 +1,7 @@
 /*
 ** kernsh.c for libkernsh : initialisation, get_raw and mode switch
 **
-** $Id: kernsh.c,v 1.13 2007-10-11 18:25:17 pouik Exp $
+** $Id: kernsh.c,v 1.14 2007-10-14 09:59:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -184,7 +184,7 @@ int kernsh_init_ia32(char *os, char *release)
   kernsh_register_vectors();
   kernsh_present_set();
 
-  asm_init_i386(&libkernshworld.proc);
+  asm_init_ia32(&libkernshworld.proc);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
