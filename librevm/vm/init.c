@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.31 2007-08-03 11:51:00 heroine Exp $
+ * $Id: init.c,v 1.32 2007-10-14 09:54:10 heroine Exp $
  *
  */
 
@@ -227,7 +227,7 @@ int		revm_init()
   aspect_called_ctors_inc();
 
   /* Set the world up */
-  asm_init_i386(&world.proc);
+  asm_init_ia32(&world.proc);
   asm_init_sparc(&world.proc_sparc);
   revm_initio();
 
