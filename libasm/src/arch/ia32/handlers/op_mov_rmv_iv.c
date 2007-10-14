@@ -1,7 +1,7 @@
 /**
  * @file op_mov_rmv_iv.c
  * @ingroup handlers_ia32
- * $Id: op_mov_rmv_iv.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
+ * $Id: op_mov_rmv_iv.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
  * ChangeLog:
  *
  */
@@ -17,7 +17,7 @@
  * @return Length of instruction.
  */
 
-int op_mov_rmv_iv(asm_instr *new, u_char *opcode, u_int len, 
+int op_mov_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   int olen;
@@ -26,14 +26,20 @@ int op_mov_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;
 
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
-                                        ASM_OTYPE_ENCODED, new));
-  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
-                                ASM_OTYPE_IMMEDIATE, new);
+#if WIP
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODED, new, 0));
+#else
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODED, new));
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATE, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATE, new);
+#endif
 
   if (asm_instruction_is_prefixed(new, ASM_PREFIX_OPSIZE))
   {
-    if (asm_operand_is_reference(&new->op1))
+    if (asm_operand_is_reference(&new->op[0]))
     {
       new->instr = ASM_MOVW;
     }

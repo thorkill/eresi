@@ -3,7 +3,7 @@
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
 **
-** $Id: mydisasm.c,v 1.10 2007-06-09 22:35:16 thor Exp $
+** $Id: mydisasm.c,v 1.11 2007-10-14 00:01:42 heroine Exp $
 **
 */
 
@@ -26,7 +26,8 @@
 #include <libasm.h>
 
 
-int	usage(char *p) {
+int	usage(char *p) 
+{
   printf("Usage: %s <binary> <sym/vaddr> <[len]>\n", 
 	  p);
   return (-1);
@@ -114,7 +115,7 @@ int	main(int ac, char **av) {
       asm_init_sparc(&proc);
       break;
     case EM_386:
-      asm_init_i386(&proc);
+      asm_init_ia32(&proc);
       break;
     case EM_MIPS:
       asm_init_mips(&proc);
@@ -132,13 +133,15 @@ int	main(int ac, char **av) {
   ptr = malloc(len + 1);
   memset(ptr, 0, len + 1);
   start = elfsh_get_foffset_from_vaddr(obj, vaddr);
-
+  if (!start)
+  printf("Converted vaddr %08x to file offset : %i\n", vaddr, start);
   
   
   curr = elfsh_raw_read(obj, start, ptr, len);
   if (curr != len)
     {
       printf("error reading %li bytes at %li -> read %i bytes\n", len, start, curr);
+      elfsh_error();
       elfsh_unload_obj(obj);
       return (-1);
     }

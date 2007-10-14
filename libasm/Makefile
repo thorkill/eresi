@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.26 2007-09-18 13:05:08 pouik Exp $
+## $Id: Makefile,v 1.27 2007-10-14 00:01:41 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -12,50 +12,29 @@ include ../config.h
 # Architecture source files
 #
 SRCS_libasm 	=				\
-		src/arch/ia32/init_i386.c	\
-		src/arch/ia32/tables_i386.c	\
-		src/arch/ia32/operand_ia32.c	\
-		src/arch/sparc/init_sparc.c	\
-		src/arch/sparc/tables_sparc.c	\
-		src/arch/sparc/sparc_convert.c	\
-		src/arch/ia32/output_ia32.c	\
-		src/arch/sparc/output_sparc.c	\
 		src/generic.c			\
 		src/output.c			\
 		src/error.c			\
 		src/operand.c			\
 		src/instruction.c		\
+		src/register.c			\
+		src/build.c			\
+		src/vectors.c			\
+		src/arch/ia32/init_i386.c	\
+		src/arch/ia32/register.c	\
+		src/arch/ia32/tables_i386.c	\
+		src/arch/ia32/output_ia32.c	\
+		src/arch/ia32/operand_ia32.c	\
+		src/arch/sparc/init_sparc.c	\
+		src/arch/sparc/register.c	\
+		src/arch/sparc/tables_sparc.c	\
+		src/arch/sparc/output_sparc.c	\
+		src/arch/sparc/sparc_convert.c	\
 		src/arch/mips/init_mips.c	\
 		src/arch/mips/mips_convert.c	\
 		src/arch/mips/mips_decode.c	\
 		src/arch/mips/output_mips.c	\
-		src/arch/mips/tables_mips.c	\
-		src/register.c			\
-		src/build.c			\
-		src/vectors.c			\
-		src/arch/ia32/operand_handlers/asm_operand_fetch.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_address.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_control.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_debug.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_encoded.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_encodedbyte.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_fixed.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_general.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_generalbyte.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_immediate.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_immediatebyte.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_immediateword.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_jump.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_memory.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_offset.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_opmod.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_pmmx.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_register.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_segment.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_shortjump.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_xsrc.c \
-		src/arch/ia32/operand_handlers/asm_operand_fetch_ydest.c
-
+		src/arch/mips/tables_mips.c
 
 
 
@@ -70,7 +49,8 @@ OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
 CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
-			-I../libaspect/include -O2
+			-I../libaspect/include
+#CFLAGS		+=	-O2
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc
@@ -87,6 +67,7 @@ install:
 	${CP} include/libasm-sparc.h /usr/include
 
 dep:
+	@sh configure
 	@rm -f src/build.o
 
 lib:	$(OBJS_libasm)

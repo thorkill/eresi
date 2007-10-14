@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fmovscc.c,v 1.8 2007-07-19 07:20:55 strauss Exp $
+** $Id: asm_sparc_fmovscc.c,v 1.9 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -34,12 +34,12 @@ asm_sparc_fmovscc(asm_instr * ins, u_char * buf, u_int len,
   }
 
   ins->nb_op = 3;
-  ins->op1.baser = opcode.rd;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op2.baser = opcode.rs2;
-  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op3.baser = opcode.opf_cc;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_CC, ins);
+  ins->op[0].baser = opcode.rd;
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_FREGISTER, ins);
+  ins->op[1].baser = opcode.rs2;
+  asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_FREGISTER, ins);
+  ins->op[2].baser = opcode.opf_cc;
+  asm_sparc_op_fetch(&ins->op[2], buf, ASM_SP_OTYPE_CC, ins);
 
   return 4;
 }

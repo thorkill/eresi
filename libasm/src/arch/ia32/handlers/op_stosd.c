@@ -1,7 +1,7 @@
 /**
  * @file op_stosd.c
  * @ingroup handlers_ia32
-** $Id: op_stosd.c,v 1.5 2007-08-15 21:30:21 strauss Exp $
+** $Id: op_stosd.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -18,13 +18,22 @@ int op_stosd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->type = ASM_TYPE_STORE;
 
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, new);
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_FIXED, new);
-  new->op2.content = ASM_OP_BASE;
-  new->op2.len = 0;
-  new->op2.regset = asm_proc_opsize(proc) ?
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_FIXED, new, 
+				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_EAX,
+					       asm_proc_is_protected(proc) ?
+					       ASM_REGSET_R32 : ASM_REGSET_R16));
+
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_FIXED, new);
+  new->op[1].content = ASM_OP_BASE;
+  new->op[1].len = 0;
+  new->op[1].regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->op2.baser = ASM_REG_EAX;
+  new->op[1].baser = ASM_REG_EAX;
+#endif
 
   return (new->len);
 }

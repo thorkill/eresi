@@ -4,7 +4,7 @@
 ** 
 ** 
 **
-** $Id: init_mips.c,v 1.5 2007-05-16 23:08:13 thor Exp $
+** $Id: init_mips.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 
@@ -49,7 +49,7 @@ int	fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 
 
 
-void	asm_init_mips(asm_processor *proc)
+int	asm_init_mips(asm_processor *proc)
 {
   
   proc->fetch = fetch_mips;
@@ -109,7 +109,7 @@ void	asm_init_mips(asm_processor *proc)
   proc->instr_table[ASM_MIPS_XOR] = "xor";
   proc->instr_table[ASM_MIPS_XORI] = "xori";
   proc->instr_table[ASM_MIPS_BAD] = "bad";
-
+  return (1);
   // asm_config_get_endian()
   // asm_config_set_endian()
 }

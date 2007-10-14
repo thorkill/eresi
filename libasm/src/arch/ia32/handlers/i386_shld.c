@@ -1,7 +1,7 @@
 /**
  * @file i386_shld.c
  * @ingroup handlers_ia32
- * $Id: i386_shld.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+ * $Id: i386_shld.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -16,46 +16,55 @@
  * @return Length of instruction.
 */
 
-int i386_shld(asm_instr *new, u_char *opcode, u_int len, 
-	      asm_processor *proc) 
+int i386_shld(asm_instr *new, u_char *opcode, u_int len,
+	      asm_processor *proc)
 {
   struct s_modrm        *modrm;
   new->len += 1;
-  
+
   modrm = (struct s_modrm *) opcode + 1;
   new->instr = ASM_SHLD;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_REGISTER, new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, 
-				ASM_OTYPE_GENERAL, new);
-  new->len += asm_operand_fetch(&new->op3, opcode + 2, 
-				ASM_OTYPE_IMMEDIATEBYTE, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_REGISTER, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_REGISTER, new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_OTYPE_GENERAL, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_OTYPE_GENERAL, new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[2], opcode + 2,				ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[2], opcode + 2,				ASM_OTYPE_IMMEDIATEBYTE, new);
+#endif
   new->len += 1;
 #else
 
-  new->op1.type = ASM_OTYPE_REGISTER;
-  new->op1.regset = ASM_REGSET_R32;
-  new->op1.content = ASM_OP_BASE;
-  new->op1.ptr = opcode + 1;
-  new->op1.len = 0;
-  new->op1.baser = modrm->m;
+  new->op[0].type = ASM_OTYPE_REGISTER;
+  new->op[0].regset = ASM_REGSET_R32;
+  new->op[0].content = ASM_OP_BASE;
+  new->op[0].ptr = opcode + 1;
+  new->op[0].len = 0;
+  new->op[0].baser = modrm->m;
 
-  new->op2.type = ASM_OTYPE_GENERAL;
-  new->op2.regset = ASM_REGSET_R32;
-  new->op2.content = ASM_OP_BASE;
-  new->op2.ptr = opcode + 1;
-  new->op2.len = 1;
-  new->op2.baser = modrm->r;
+  new->op[1].type = ASM_OTYPE_GENERAL;
+  new->op[1].regset = ASM_REGSET_R32;
+  new->op[1].content = ASM_OP_BASE;
+  new->op[1].ptr = opcode + 1;
+  new->op[1].len = 1;
+  new->op[1].baser = modrm->r;
 
-  new->op3.type = ASM_OTYPE_IMMEDIATE;
-  new->op3.content = ASM_OP_VALUE;
-  new->op3.ptr = opcode + 2;
-  new->op3.len = 1;
-  new->op3.imm = 0;
-  memcpy(&new->op3.imm, opcode + 2, 1);
-  new->len += new->op1.len + new->op2.len + new->op3.len;
+  new->op[2].type = ASM_OTYPE_IMMEDIATE;
+  new->op[2].content = ASM_OP_VALUE;
+  new->op[2].ptr = opcode + 2;
+  new->op[2].len = 1;
+  new->op[2].imm = 0;
+  memcpy(&new->op[2].imm, opcode + 2, 1);
+  new->len += new->op[0].len + new->op[1].len + new->op[2].len;
 #endif
   return (new->len);
 }

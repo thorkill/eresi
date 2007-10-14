@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: launch_test.sh,v 1.4 2007-08-15 15:57:18 heroine Exp $
+# $Id: launch_test.sh,v 1.5 2007-10-14 00:01:42 heroine Exp $
 # 
 # This script launch lbmjollnir script to make diffs
 # between an objdump dump and a mydisasm dump of each
@@ -64,4 +64,4 @@ fi
 
 init_test $ARG
 diff_test $ARG
-purge_test $ARG
+#purge_test $ARG

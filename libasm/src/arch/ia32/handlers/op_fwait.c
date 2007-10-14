@@ -1,5 +1,5 @@
 /*
-** $Id: op_fwait.c,v 1.5 2007-08-20 07:21:04 strauss Exp $
+** $Id: op_fwait.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_fwait" opcode="0x9b"/>
  */
 
-int op_fwait(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_fwait(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

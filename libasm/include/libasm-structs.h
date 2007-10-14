@@ -1,15 +1,15 @@
-/*
-** libasm-structs.h for  in /hate/home/hate/code/libasm_current
-** 
-** Made by #!HATE#@!
-** Login   <hate@epita.fr>
-** 
-** Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
-** Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
-**
-** $Id: libasm-structs.h,v 1.13 2007-07-19 07:20:55 strauss Exp $
-**
-*/
+/**
+ * @file libasm-structs.h
+ * 
+ * Made by #!HATE#@!
+ * Login   <hate@epita.fr>
+ * 
+ * Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
+ * Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
+ *
+ * $Id: libasm-structs.h,v 1.14 2007-10-14 00:01:41 heroine Exp $
+ *
+ */
 
 /**
  * Operand structure.
@@ -91,12 +91,8 @@ struct s_asm_instr
   int prediction;    
   /* number of operand */
   int nb_op;
-  /* first operand : destination */
-  asm_operand op1;
-  /* second operand : source */
-  asm_operand op2;
-  /* third operand : optional */
-  asm_operand op3;
+  /* Array of operands */
+  asm_operand	op[3];
   /* instruction/operands full lengh */
   u_int len;   
 };
@@ -129,4 +125,8 @@ struct s_asm_processor
   char *(*display_handle)(asm_instr *instr, int addr);
   /* pointer to an internal structure. */
   void *internals;
+  /* Last operation error code */
+  int	error_code;
+  
+  
 };

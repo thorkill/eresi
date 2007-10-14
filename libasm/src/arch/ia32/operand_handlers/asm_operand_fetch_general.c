@@ -1,26 +1,30 @@
 /**
  * @file asm_operand_fetch_general.c
- * $Id: asm_operand_fetch_general.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+ * @ingroup operand_handler
+ * $Id: asm_operand_fetch_general.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ * @brief Operand Handler to decode data for operand type ASM_OTYPE_GENERAL
  */
 
 #include <libasm.h>
 #include <libasm-int.h>
 
 /**
-* Fetch ASM_OTYPE_GENERAL operand
-*
-*/
-/**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * @brief Decode data for operand type ASM_OTYPE_GENERAL
+ * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
- * @param otype
+ * @param type Not used.
  * @param ins Pointer to instruction structure.
  * @return Operand length
  */
 
+#if WIP
+int     asm_operand_fetch_general(asm_operand *operand, u_char *opcode, 
+				  int type, asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_general(asm_operand *operand, u_char *opcode, 
 				  int type, asm_instr *ins)
+#endif
 {
   struct s_modrm        *modrm;
   

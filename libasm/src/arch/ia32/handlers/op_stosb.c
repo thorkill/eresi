@@ -1,7 +1,7 @@
 /**
  * @file op_stosb.c
  * @ingroup handlers_ia32
-** $Id: op_stosb.c,v 1.5 2007-08-15 21:30:21 strauss Exp $
+** $Id: op_stosb.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -18,8 +18,13 @@ int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->type = ASM_TYPE_STORE;
 
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_YDEST, new);
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_XSRC, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new);
+#endif
 
   return (new->len);
 }

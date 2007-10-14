@@ -1,7 +1,7 @@
 /**
  * @file generic.c
  * Latest edition Author : $Author: heroine $
- * $Id: generic.c,v 1.13 2007-06-27 11:25:11 heroine Exp $
+ * $Id: generic.c,v 1.14 2007-10-14 00:01:41 heroine Exp $
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */
@@ -13,32 +13,37 @@
  * func asm_read_instr
  * fetch instruction stored in buffer of max length len
  * according to specified processor.
- * @param i instruction to fill.
+ * @param instr instruction to fill.
  * @param buf pointer to opcode to disassemble
  * @param len maximum length of opcode to disassemble
  * @return -1 on error or instruction fetched length
  */
 
-int	asm_read_instr(asm_instr *i, u_char *buf, u_int len, 
+int	asm_read_instr(asm_instr *instr, u_char *buf, 
+		       u_int len, 
 		       asm_processor *proc) 
 {
   int	to_ret;
   
   LIBASM_PROFILE_FIN();
-  memset(i, 0, sizeof (asm_instr));
-  i->proc = proc;
-  to_ret = proc->fetch(i, buf, len, proc);
+  memset(instr, 0, sizeof (asm_instr));
+  instr->proc = proc;
+  to_ret = proc->fetch(instr, buf, len, proc);
   
   /* Print debug information if requested */
   if ((int) config_get_data(CONFIG_USE_ASMDEBUG))
-    asm_instruction_debug(i, stdout);
-
+    asm_instruction_debug(instr, stdout);
+  
   LIBASM_PROFILE_FOUT(to_ret);
 }
 
 /**
- *
- *
+ * @brief Reassemble instruction operands. WORK IN PROGRESS
+ * 
+ * @param instr Pointer to instruction structure.
+ * @param buf Pointer to instruction buffer
+ * @param len Length of buffer.
+ * @return Length of written instruction or -1 on error.
  */
 
 int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
@@ -51,14 +56,14 @@ int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
     asm_write_operand(instr->op1)
   fprintf(stderr, "asm_write unimplemented\n");
   */
-  return (0);
+  return (-1);
 }
 
 /**
- * Return instruction length
+ * @brief Return instruction length
  * @param ins Pointer to instruction structure.
+ * @return 
  */
-
 
 int	asm_instr_len(asm_instr *ins) 
 {
@@ -74,15 +79,8 @@ int     asm_int_pow2(int val) {
   return (val ? (2 * asm_int_pow2(val - 1)) :  1);
 }
 
-
-/*
-int	asm_int_pow2(int i) {
-  return (i ? (2 * asm_int_pow2(i - 1)) :  1);
-}
-*/
-
 /**
- * Set the resolving handler to display addresses.
+ * @brief Set the resolving handler to display addresses.
  * @param proc Pointer to processor structure.
  * @param fcn The resolving handler to use
  */
@@ -93,11 +91,8 @@ void	asm_set_resolve_handler(asm_processor *proc,
   proc->resolve_data = d;
 }
 
-/*
-** returns 1 if OPLEN is not activated
-*/
 /**
- * returns 1 if OPLEN is not activated
+ * @brief returns 1 if OPLEN is not activated
  * This is related only to ia32 architecture.
  * @param proc The pointer to the processor structure. 
  * @return 1 if OPLEN is activated, 0 if not.
@@ -114,11 +109,7 @@ int     asm_proc_is_protected(asm_processor *proc) {
 
 
 /**
- * returns the value of the processor's current
- * operand length
- */
-/**
- * returns the value of the processor's current operand length
+ * @brief returns the value of the processor's current operand length
  * This is related only to ia32 architecture.
  * @param proc Pointer to the processor structure.
  * @return 1 if opsize is set, 0 if not.
@@ -134,7 +125,7 @@ int     asm_proc_opsize(asm_processor *proc) {
 }
 
 /**
- * returns the value of the processor's current address size
+ * @brief Returns the value of the processor's current address size
  * @param proc Pointer to the processor structure
  * @return 1 if addsize is set, 0 if not 
  */
@@ -150,7 +141,7 @@ int     asm_proc_addsize(asm_processor *proc)
 }
 
 /**
- * Returns vector current size depending on oplen prefix
+ * @brief Returns vector current size depending on oplen prefix
  * This is related to ia32 architecture only
  * @param proc Pointer to the processor structure.
  * @return 4 or 2 depending on
@@ -165,7 +156,7 @@ int     asm_proc_vector_len(asm_processor *proc)
 }
 
 /**
- * Return vector size depending on prefix
+ * @brief Return vector size depending on prefix
  * This is ia32 related.
  * @param proc Pointer to the processor structure
  * @return Return vector size.
@@ -203,13 +194,13 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      op = &ins->op1;
+      op = &ins->op[0];
       break;
     case 2:
-      op = &ins->op2;
+      op = &ins->op[1];
       break;
     case 3:
-      op = &ins->op3;
+      op = &ins->op[2];
       break;   
     default:
       op = 0;
@@ -286,7 +277,7 @@ char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
 }
 
 /**
- * Return content field of an operand.
+ * @brief Return content field of an operand.
  * @param ins Pointer to an instruction structure.
  * @param num Number of the operand to get content from.
  * @param opt Currently not used.
@@ -299,18 +290,18 @@ int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr)
   switch(num)
     {
     case 1:
-      return (ins->op1.content);
+      return (ins->op[0].content);
     case 2:
-      return (ins->op2.content);
+      return (ins->op[1].content);
     case 3:
-      return (ins->op3.content);
+      return (ins->op[2].content);
     default:
       return (0);
     }
 }
 
 /**
- * Dump debug output of operand to a file stream.
+ * @brief Dump debug output of operand to a file stream.
  * @param ins Pointer to the instruction structure
  * @param num Number of the operand to dump
  * @param opt optional parameter. Currently not used.
@@ -324,9 +315,9 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr)
 
   switch(num)
     {
-    case 1: op = &ins->op1; break;
-    case 2: op = &ins->op1; break;
-    case 3: op = &ins->op1; break;
+    case 1: op = &ins->op[0]; break;
+    case 2: op = &ins->op[1]; break;
+    case 3: op = &ins->op[2]; break;
     default: return (-1);
     }
   if (op->type)
@@ -382,45 +373,6 @@ void	asm_instruction_debug(asm_instr *ins, FILE *out)
     }
 }
 
-/**
- *
- * @param type Instruction type
- *
- */
-
-char	*asm_operand_type_string(int type)
-{
-  switch (type)
-    {
-    case ASM_OTYPE_FIXED: return ("fixed");
-    case ASM_OTYPE_OPMOD: return ("opmod");
-    case ASM_OTYPE_ADDRESS: return ("address");
-    case ASM_OTYPE_CONTROL: return ("control");
-    case ASM_OTYPE_DEBUG: return ("debug");
-    case ASM_OTYPE_ENCODED: return ("encoded");
-    case ASM_OTYPE_ENCODEDBYTE: return ("encodedbyte");
-    case ASM_OTYPE_FLAGS: return ("flags");
-    case ASM_OTYPE_GENERAL: return ("general");
-    case ASM_OTYPE_GENERALBYTE: return ("generalbyte");
-    case ASM_OTYPE_IMMEDIATE: return ("immediate");
-    case ASM_OTYPE_IMMEDIATEWORD: return ("immediateword");
-    case ASM_OTYPE_IMMEDIATEBYTE: return ("immediatebyte");
-    case ASM_OTYPE_SHORTJUMP: return ("shortjump");
-    case ASM_OTYPE_JUMP: return ("jump");
-    case ASM_OTYPE_MEMORY: return ("memory");
-    case ASM_OTYPE_OFFSET: return ("offset");
-    case ASM_OTYPE_PMMX: return ("pmmx");
-    case ASM_OTYPE_QMMX: return ("qmmx");
-    case ASM_OTYPE_REGISTER: return ("register");
-    case ASM_OTYPE_SEGMENT: return ("segment");
-    case ASM_OTYPE_TEST: return ("test");
-    case ASM_OTYPE_VSFP: return ("vsfp");
-    case ASM_OTYPE_WSFP: return ("wsfp");
-    case ASM_OTYPE_XSRC: return ("xsrc");
-    case ASM_OTYPE_YDEST: return ("ydest");
-    }
-  return ("undocumented type");
-}
 
 /**
  * set config flag to specified endian

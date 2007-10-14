@@ -1,5 +1,5 @@
 /*
-** $Id: op_or_rb_rmb.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_or_rb_rmb.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,9 +9,9 @@
   Opcode :              0x0a
   */
 
-int op_or_rb_rmb(asm_instr *new, u_char *opcode, u_int len, 
+int op_or_rb_rmb(asm_instr *new, u_char *opcode, u_int len,
                  asm_processor *proc)
-{  
+{
   new->instr = ASM_OR;
   new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   new->ptr_instr = opcode;
@@ -19,10 +19,16 @@ int op_or_rb_rmb(asm_instr *new, u_char *opcode, u_int len,
   new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF | ASM_FLAG_PF |
                         ASM_FLAG_ZF | ASM_FLAG_SF;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERALBYTE,
-                                new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODEDBYTE,
-                                new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERALBYTE,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERALBYTE,                                new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new);
+#endif
 
   return (new->len);
 }

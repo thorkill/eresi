@@ -1,5 +1,5 @@
 /*
-** $Id: op_push_ib.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_push_ib.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -17,8 +17,13 @@ int op_push_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
   new->spdiff = -4;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1,
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
+                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
                                 ASM_OTYPE_IMMEDIATEBYTE, new);
+#endif
 
   return (new->len);
 }

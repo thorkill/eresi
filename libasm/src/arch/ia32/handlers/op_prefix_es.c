@@ -1,5 +1,5 @@
 /*
-** $Id: op_prefix_es.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_prefix_es.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_prefix_es" opcode="0x26"/>
 */
 
-int     op_prefix_es(asm_instr *new, u_char *opcode, u_int len, 
+int     op_prefix_es(asm_instr *new, u_char *opcode, u_int len,
 		     asm_processor *proc)
 {
   new->prefix |= ASM_PREFIX_ES;

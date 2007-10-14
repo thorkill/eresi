@@ -1,5 +1,5 @@
 /*
-** $Id: op_arpl_ew_rw.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_arpl_ew_rw.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,8 +9,8 @@
   <instruction func="op_arpl_ew_rw" opcode="0x63"/>
 */
 
-int     op_arpl_ew_rw(asm_instr *new, u_char *opcode, u_int len, 
-		      asm_processor *proc) 
+int     op_arpl_ew_rw(asm_instr *new, u_char *opcode, u_int len,
+		      asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->instr = ASM_ARPL;

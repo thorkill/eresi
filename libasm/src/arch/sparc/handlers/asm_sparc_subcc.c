@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_subcc.c,v 1.10 2007-08-20 07:21:05 strauss Exp $
+** $Id: asm_sparc_subcc.c,v 1.11 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -20,33 +20,33 @@ asm_sparc_subcc(asm_instr * ins, u_char * buf, u_int len,
   ins->flagswritten = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
 
   ins->nb_op = 3;
-  ins->op1.baser = opcode.rd;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
-  ins->op3.baser = opcode.rs1;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
+  ins->op[0].baser = opcode.rd;
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REGISTER, ins);
+  ins->op[2].baser = opcode.rs1;
+  asm_sparc_op_fetch(&ins->op[2], buf, ASM_SP_OTYPE_REGISTER, ins);
 
   if (opcode.i == 0) {
-    ins->op2.baser = opcode.rs2;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
+    ins->op[1].baser = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_REGISTER, ins);
   }
   else {
-    ins->op2.imm = opcode.imm;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
+    ins->op[1].imm = opcode.imm;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
-  if (ins->op1.baser == ASM_REG_G0) {
+  if (ins->op[0].baser == ASM_REG_G0) {
     ins->instr = ASM_SP_CMP;
     ins->type |= ASM_TYPE_COMPARISON;
     ins->nb_op = 2;
-    ins->op1 = ins->op2;
-    ins->op2 = ins->op3;
+    ins->op[0] = ins->op[1];
+    ins->op[1] = ins->op[2];
   }
-  else if ((ins->op1.baser == ins->op3.baser) &&
-            ins->op2.content == ASM_SP_OTYPE_IMMEDIATE) {
+  else if ((ins->op[0].baser == ins->op[2].baser) &&
+            ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) {
 
     ins->instr = ASM_SP_DECCC;
 
-    if (ins->op2.imm == 1)
+    if (ins->op[1].imm == 1)
       ins->nb_op = 1;
     else
       ins->nb_op = 2;

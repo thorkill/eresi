@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_tcc.c,v 1.9 2007-07-19 07:20:55 strauss Exp $
+** $Id: asm_sparc_tcc.c,v 1.10 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -22,18 +22,18 @@ asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
   ins->instr = inter->tcc_table[opcode4.cond];
   ins->nb_op = 2;
   if (opcode4.i) {
-    ins->op1.baser = opcode4.rs1;
-    ins->op1.imm = opcode4.sw_trap;
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
+    ins->op[0].baser = opcode4.rs1;
+    ins->op[0].imm = opcode4.sw_trap;
+    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
   }
   else {
-    ins->op1.baser = opcode4.rs1;
-    ins->op1.indexr = opcode4.rs2;
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
+    ins->op[0].baser = opcode4.rs1;
+    ins->op[0].indexr = opcode4.rs2;
+    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
   }
 
-  ins->op2.baser = (opcode4.cc & 0x3) + 4;
-  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_CC, ins);
+  ins->op[1].baser = (opcode4.cc & 0x3) + 4;
+  asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_CC, ins);
 
   return 4;
 }

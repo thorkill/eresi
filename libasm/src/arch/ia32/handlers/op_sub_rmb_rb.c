@@ -1,7 +1,7 @@
 /**
  * @file op_sub_rmb_rb.c
  * @ingroup handlers_ia32
-** $Id: op_sub_rmb_rb.c,v 1.6 2007-08-15 21:30:21 strauss Exp $
+** $Id: op_sub_rmb_rb.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -20,10 +20,17 @@ int op_sub_rmb_rb(asm_instr *new, u_char *opcode, u_int len,
   new->flagswritten = ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_PF |
                         ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+                                new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_GENERALBYTE,
+                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
                                 new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERALBYTE,
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_GENERALBYTE,
                                 new);
+#endif
 
   return (new->len);
 }

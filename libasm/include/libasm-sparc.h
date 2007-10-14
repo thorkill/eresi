@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.12 2007-07-19 07:20:55 strauss Exp $
+** $Id: libasm-sparc.h,v 1.13 2007-10-14 00:01:41 heroine Exp $
 **
 */
 
@@ -197,6 +197,12 @@ int asm_sparc_op_fetch_imm_address (asm_operand *operand, u_char *opcode,
 int asm_sparc_op_fetch_reg_address (asm_operand *operand, u_char *opcode,
                                     int otype, asm_instr *ins);
 
+/**
+ * Registration functions.
+ *
+ */
+
+int	asm_register_sparc();
 
 /*****
  * sparc processor internals

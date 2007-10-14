@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_lddfa.c,v 1.8 2007-07-11 22:06:47 strauss Exp $
+** $Id: asm_sparc_lddfa.c,v 1.9 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -18,20 +18,20 @@ asm_sparc_lddfa(asm_instr * ins, u_char * buf, u_int len,
   ins->type = ASM_TYPE_LOAD | ASM_TYPE_ASSIGN;
 
   ins->nb_op = 2;
-  ins->op1.baser = ((opcode.rd & 1) << 5) | (opcode.rd & 0x1E);
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_FREGISTER, ins);
+  ins->op[0].baser = ((opcode.rd & 1) << 5) | (opcode.rd & 0x1E);
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_FREGISTER, ins);
 
   if (opcode.i) {
-    ins->op2.baser = opcode.rs1;
-    ins->op2.imm = opcode.imm;
-    ins->op2.address_space = -1;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
+    ins->op[1].baser = opcode.rs1;
+    ins->op[1].imm = opcode.imm;
+    ins->op[1].address_space = -1;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
   }
   else {
-    ins->op2.baser = opcode.rs1;
-    ins->op2.indexr = opcode.rs2;
-    ins->op2.address_space = opcode.none;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
+    ins->op[1].baser = opcode.rs1;
+    ins->op[1].indexr = opcode.rs2;
+    ins->op[1].address_space = opcode.none;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
   }
 
   return 4;

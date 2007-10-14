@@ -1,7 +1,7 @@
 /**
  * @file op_setne_rmb.c
  * @ingroup handlers_ia32
- * $Id: op_setne_rmb.c,v 1.5 2007-06-27 11:25:12 heroine Exp $
+ * $Id: op_setne_rmb.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -21,13 +21,12 @@ int op_setne_rmb(asm_instr *new, u_char *opcode, u_int len,
 {
   new->len += 1;
   new->instr = ASM_SET_NOT_EQUAL;
-#if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_ENCODEDBYTE, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, 
+				ASM_OTYPE_ENCODEDBYTE, new, 0);
 #else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  operand_rmb(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, 
+				ASM_OTYPE_ENCODEDBYTE, new);
 #endif
   return (new->len);
 }

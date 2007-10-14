@@ -1,16 +1,26 @@
-/*
+/**
  * @file libasm-i396.h
- * $Id: libasm-i386.h,v 1.12 2007-06-27 11:25:11 heroine Exp $
- * 
+ * @brief Contains structures,prototypes and defines/enum related to ia32.
+ * $Id: libasm-i386.h,v 1.13 2007-10-14 00:01:41 heroine Exp $
  */
 
 #ifndef LIBASM_I386_H_
 #define LIBASM_I386_H_
 
+#include <libasm-ia32-hdl.h>
 typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
 void	asm_resolve_ia32(void *d, u_int, char *, u_int);
+
+/**
+ * ia32 related functions.
+ */
+
+
+int	asm_content_pack(asm_operand *, int, int);
+int	asm_fixed_pack(int, int, int, int);
+
 
 /**
  * this structure is internal and may not be accessed by user
@@ -20,57 +30,15 @@ void	asm_resolve_ia32(void *d, u_int, char *, u_int);
 
 struct s_asm_proc_i386 {
   /* compatibility				*/
-  /* processor state: opsize actived or not	*/
-  int			mode;
+  
+  int			mode;		/*!< processor state: opsize actived or not	*/
   
   int			vect_size;
-  int			addsize;
-  int			opsize;
+  int			addsize;	/*!< WIPcurrent state of the processor addsize prefix */
+  int			opsize;		/*!< WIPcurrent state of the processor addsize prefix */
     
-  int			type;
-  int			(*get_vect_size)(asm_processor *);
-  
-
-  /*
-   * DEPRECATED - TO REMOVE
-   */
-  /* handlers for x86 instructions referenced by opcode	*/
-  int			(*cisc_set[256])(asm_instr *, u_char *, u_int, 
-					 asm_processor *);
-  /*
-   * DEPRECATED - TO REMOVE
-   */
-  /* handlers for i386 instr. prefixed by 0x0f by second opcode	*/
-  int			(*cisc_i386[256])(asm_instr *, u_char *, u_int, 
-					  asm_processor *);
-  /*	internal opcode tables	*/
-  asm_i386_table	*table_1byte;
-  asm_i386_table	*table_2bytes;
-  asm_i386_table	*group1;
-  asm_i386_table	*group2;
-  asm_i386_table	*group3;
-  asm_i386_table	*group4;
-  asm_i386_table	*group5;
-  asm_i386_table	*group6;
-  asm_i386_table	*group7;
-  asm_i386_table	*group8;
-  asm_i386_table	*group9;
-  asm_i386_table	*group10;
-  asm_i386_table	*group11;
-  asm_i386_table	*group12;
-  asm_i386_table	*group13;
-  asm_i386_table	*group14;
-  asm_i386_table	*group15;
-  asm_i386_table	*group16;
-  asm_i386_table	*group17;
-  asm_i386_table	*esc0;
-  asm_i386_table	*esc1;
-  asm_i386_table	*esc2;
-  asm_i386_table	*esc3;
-  asm_i386_table	*esc4;
-  asm_i386_table	*esc5;
-  asm_i386_table	*esc6;
-  asm_i386_table	*esc7;
+  int			type;		/*!< WIPcurrent state of the processor addsize prefix */
+  //int			(*get_vect_size)(asm_processor *); /*!< Internal handler unused */
 };
 
 
@@ -112,16 +80,16 @@ struct s_asm_proc_i386 {
 
 enum
   {
-    ASM_PREFIX_REP	 =	1,	/*! rep prefix	*/
-    ASM_PREFIX_REPNE	 =      2,	/*! repne prefix	*/
+    ASM_PREFIX_REP	 =	1,	/*!< rep prefix	*/
+    ASM_PREFIX_REPNE	 =      2,	/*!< repne prefix	*/
 
-    ASM_PREFIX_SEG	=	60,	/*! Segment prefix mask	*/
+    ASM_PREFIX_SEG	=	60,	/*!< Segment prefix mask	*/
 
-    ASM_PREFIX_DS	=	4,	/*! ds prefix	*/
-    ASM_PREFIX_ES	=	8,	/*! es prefix	*/
-    ASM_PREFIX_SS	=	12,	/*! ss prefix	*/
-    ASM_PREFIX_CS       =       16,	/*! cs prefix	*/
-    ASM_PREFIX_FS	=	20,	/*! fs prefix	*/
+    ASM_PREFIX_DS	=	4,	/*!< ds prefix	*/
+    ASM_PREFIX_ES	=	8,	/*!< es prefix	*/
+    ASM_PREFIX_SS	=	12,	/*!< ss prefix	*/
+    ASM_PREFIX_CS       =       16,	/*!< cs prefix	*/
+    ASM_PREFIX_FS	=	20,	/*!< fs prefix	*/
     ASM_PREFIX_GS	=	24,
 
     ASM_PREFIX_MASK	=	60,
@@ -137,14 +105,14 @@ enum
  */
 enum
   {
-    ASM_FLAG_CF = 1 << 0,	/*! carry flag	*/
-    ASM_FLAG_PF = 1 << 2,	/*! parity flag	*/
-    ASM_FLAG_AF = 1 << 4,	/*! ?? flag	*/
-    ASM_FLAG_ZF = 1 << 6,	/*! zero flag	*/
-    ASM_FLAG_SF = 1 << 7,	/*! signed flag	*/
-    ASM_FLAG_TF = 1 << 8,	/*! ?? flag	*/
-    ASM_FLAG_IF = 1 << 9,	/*! interrupt flag	*/
-    ASM_FLAG_DF = 1 << 10,	/*! debug flag ?	*/
+    ASM_FLAG_CF = 1 << 0,	/*!< carry flag	*/
+    ASM_FLAG_PF = 1 << 2,	/*!< parity flag	*/
+    ASM_FLAG_AF = 1 << 4,	/*!< ?? flag	*/
+    ASM_FLAG_ZF = 1 << 6,	/*!< zero flag	*/
+    ASM_FLAG_SF = 1 << 7,	/*!< signed flag	*/
+    ASM_FLAG_TF = 1 << 8,	/*!< ?? flag	*/
+    ASM_FLAG_IF = 1 << 9,	/*!< interrupt flag	*/
+    ASM_FLAG_DF = 1 << 10,	/*!< debug flag ?	*/
     ASM_FLAG_OF = 1 << 11,
     ASM_FLAG_IOPL = 1 << 12,
     ASM_FLAG_NT = 1 << 14,
@@ -411,7 +379,7 @@ enum {
 } e_asm_reg16;
 
 /**
- * 32 bits registers set.
+ * @brief 32 bits registers set.
  */
 
 enum e_regset_r32 {
@@ -426,7 +394,7 @@ enum e_regset_r32 {
  } e_asm_reg32;
 
 /**
- * MM registers set.
+ * @brief MM registers set.
  */
 
 enum {
@@ -440,7 +408,7 @@ enum {
 } e_asm_regmm;
 
 /**
- * XMMS registers set.
+ * @brief XMMS registers set.
  */
 enum {
   ASM_REG_XMM0,	/* 110	*/
@@ -454,7 +422,7 @@ enum {
 } e_asm_regxmm;
 
 /**
- * Segment registers set.
+ * @brief Segment registers set.
  */
 
 enum {
@@ -470,7 +438,7 @@ enum {
 } e_asm_sreg;
 
 /**
- * Control registers set.
+ * @brief Control registers set.
  */
 
 enum {
@@ -485,7 +453,7 @@ enum {
 } e_asm_creg;
 
 /**
- * Debug registers set
+ * @brief Debug registers set
  */
 
 enum {
@@ -500,7 +468,7 @@ enum {
 } e_asm_dreg;
 
 /**
- * Instruction list.
+ * @brief Instruction list.
  * Last instruction must be ASM_BAD
  * If NOT, this may produce allocation error as ASM_BAD is used to allocate 
  * size of the instruction label array.
@@ -960,47 +928,6 @@ enum asm_instr {
   ASM_BAD    
 
 };
-
-extern asm_i386_table *i386_1bye_table;
-
-extern asm_i386_table *i386_table_group1;
-extern asm_i386_table *i386_table_group2;
-extern asm_i386_table *i386_table_group3;
-extern asm_i386_table *i386_table_group4;
-extern asm_i386_table *i386_table_group5;
-extern asm_i386_table *i386_table_group6;
-extern asm_i386_table *i386_table_group7;
-extern asm_i386_table *i386_table_group8;
-extern asm_i386_table *i386_table_group9;
-extern asm_i386_table *i386_table_group10;
-extern asm_i386_table *i386_table_group11;
-extern asm_i386_table *i386_table_group12;
-extern asm_i386_table *i386_table_group13;
-extern asm_i386_table *i386_table_group14;
-extern asm_i386_table *i386_table_group15;
-extern asm_i386_table *i386_table_group16;
-extern asm_i386_table *i386_table_group17;
-
-extern asm_i386_table *i386_table_esc0_1;
-extern asm_i386_table *i386_table_esc0_2;
-extern asm_i386_table *i386_table_esc1_1;
-extern asm_i386_table *i386_table_esc1_2;
-extern asm_i386_table *i386_table_esc2_1;
-extern asm_i386_table *i386_table_esc2_2;
-extern asm_i386_table *i386_table_esc3_1;
-extern asm_i386_table *i386_table_esc3_2;
-extern asm_i386_table *i386_table_esc4_1;
-extern asm_i386_table *i386_table_esc4_2;
-extern asm_i386_table *i386_table_esc5_1;
-extern asm_i386_table *i386_table_esc5_2;
-extern asm_i386_table *i386_table_esc6_1;
-extern asm_i386_table *i386_table_esc6_2;
-extern asm_i386_table *i386_table_esc7_1;
-extern asm_i386_table *i386_table_esc7_2;
-
-int	asm_is_prefix(int);
-int	asm_is_group(int);
-
 /*
  * specialisation asm_processor for i386
  */
@@ -1026,30 +953,5 @@ struct s_asm_i386_processor {
   /*	pointer to an internal structure.	*/
   struct s_asm_proc_i386                  *internals;
 };
-
-/*
- * struct s_asm_table
- *
- * this structure is internally used to
- * map instruction refering to sandpile.org
- * documentation.
- *
- */
-
-struct s_optable {
-    int	coded;
-    int	size;
-};
-
-struct s_asm_i386_table {
-  u_char	id;
-  int		instr;
-  int		type;
-  struct s_optable	op1;
-  struct s_optable	op2;
-  struct s_optable	op3;
-};
-
-
 
 #endif

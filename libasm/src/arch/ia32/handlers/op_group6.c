@@ -1,15 +1,15 @@
 /*
-** $Id: op_group6.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_group6.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-int     op_group6(asm_instr *new, u_char *opcode, u_int len, 
+int     op_group6(asm_instr *new, u_char *opcode, u_int len,
 		  asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   new->len += 1;
   modrm = (struct s_modrm *) opcode + 1;
   switch(modrm->r) {
@@ -33,15 +33,18 @@ int     op_group6(asm_instr *new, u_char *opcode, u_int len,
   }
 
   #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);
-  new->op1.regset = ASM_REGSET_R16;
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new);
+#endif
+  new->op[0].regset = ASM_REGSET_R16;
   #else
-  new->op1.type = ASM_OTYPE_ENCODED;
-  new->op1.size = ASM_OSIZE_VECTOR;
-  operand_rmv(&new->op1, opcode + 1, len - 1, proc);
-  new->len += new->op1.len;
-  new->op1.regset = ASM_REGSET_R16;
+  new->op[0].type = ASM_OTYPE_ENCODED;
+  new->op[0].size = ASM_OSIZE_VECTOR;
+  operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
+  new->len += new->op[0].len;
+  new->op[0].regset = ASM_REGSET_R16;
 #endif
   return (new->len);
 }

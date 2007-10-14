@@ -1,7 +1,7 @@
 /**
  * @file modrm.c
- * $Id: modrm.c,v 1.1 2007-05-29 00:40:28 heroine Exp $
- * Little utility to display modrm byte to debug ia32.
+ * $Id: modrm.c,v 1.2 2007-10-14 00:01:42 heroine Exp $
+ * @brief Little utility to display modrm byte to debug ia32.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +27,7 @@ int     main(int ac, char **av)
   if (ac < 2)
     {
       printf("Usage: %s [hex modrmbyte]\n", av[0]);
-      exit(0);
+      exit(-1);
     }
   hex = strtoul(av[1], 0, 16);
   memcpy(&val, &hex, 1);

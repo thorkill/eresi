@@ -1,7 +1,7 @@
 /**
  * @file i386_bsf.c
  * @ingroup handlers_ia32
- * $Id: i386_bsf.c,v 1.7 2007-07-18 15:47:10 strauss Exp $
+ * $Id: i386_bsf.c,v 1.8 2007-10-14 00:01:41 heroine Exp $
  *
 */
 #include <libasm.h>
@@ -25,10 +25,16 @@ int i386_bsf(asm_instr *new, u_char *opcode, u_int len,
   new->type = ASM_TYPE_BITTEST | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_ZF;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERAL, 
+			       new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODED, 
+				new, 0);
+#else 
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERAL, 
 			       new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODED, 
 				new);
-
+#endif
   return (new->len);
 }

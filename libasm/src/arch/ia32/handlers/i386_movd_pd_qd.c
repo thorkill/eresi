@@ -1,5 +1,5 @@
 /*
-** $Id: i386_movd_pd_qd.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: i386_movd_pd_qd.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <i386 func="i386_movq_pq_qq" opcode="0x6e"/>
  */
 
-int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len, 
+int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len,
 			asm_processor *proc)
 {
   new->ptr_instr = opcode;
@@ -17,19 +17,25 @@ int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_MOVD;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_GENERAL, new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1,
-				ASM_OTYPE_ENCODED, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_GENERAL, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_GENERAL, new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_OTYPE_ENCODED, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_OTYPE_ENCODED, new);
+#endif
 #else
 
-  new->op1.type = ASM_OTYPE_PMMX;
-  new->op1.size = ASM_OSIZE_DWORD;
-  new->op2.type = ASM_OTYPE_QMMX;
-  new->op2.size = ASM_OSIZE_DWORD;
-  
+  new->op[0].type = ASM_OTYPE_PMMX;
+  new->op[0].size = ASM_OSIZE_DWORD;
+  new->op[1].type = ASM_OTYPE_QMMX;
+  new->op[1].size = ASM_OSIZE_DWORD;
+
   operand_rv_rmv(new, opcode + 1, len - 1, proc);
-  new->op1.regset = ASM_REGSET_MM;
+  new->op[0].regset = ASM_REGSET_MM;
   #endif
   return (new->len);
 }

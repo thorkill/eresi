@@ -1,5 +1,5 @@
 /*
-** $Id: op_immed_rmv_ib.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_immed_rmv_ib.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_immed_rmv_ib" opcode="0x83"/>
 */
 
-int op_immed_rmv_ib(asm_instr *new, u_char *opcode, u_int len, 
+int op_immed_rmv_ib(asm_instr *new, u_char *opcode, u_int len,
                     asm_processor *proc)
 {
   int                   olen;
@@ -46,8 +46,8 @@ int op_immed_rmv_ib(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 5:
       new->instr = ASM_SUB;
-      if (new->op1.content == ASM_OP_BASE &&
-            new->op1.baser == ASM_REG_ESP)
+      if (new->op[0].content == ASM_OP_BASE &&
+            new->op[0].baser == ASM_REG_ESP)
         new->type |= ASM_TYPE_EPILOG;
       break;
     case 6:
@@ -60,10 +60,16 @@ int op_immed_rmv_ib(asm_instr *new, u_char *opcode, u_int len,
       break;
     }
 
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
-                                        ASM_OTYPE_ENCODED, new));
-  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
-                                ASM_OTYPE_IMMEDIATEBYTE, new);
+#if WIP
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODED, new, 0));
+#else
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODED, new));
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new);
+#endif
 
   return (new->len);
 }

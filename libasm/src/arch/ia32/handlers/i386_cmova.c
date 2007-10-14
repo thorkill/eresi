@@ -1,5 +1,5 @@
 /*
-** $Id: i386_cmova.c,v 1.5 2007-07-18 15:47:10 strauss Exp $
+** $Id: i386_cmova.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <i386 func="i386_cmova" opcode="0x47"/>
  */
 
-int     i386_cmova(asm_instr *new, u_char *opcode, u_int len, 
+int     i386_cmova(asm_instr *new, u_char *opcode, u_int len,
 		   asm_processor *proc)
 {
   new->len += 1;
@@ -17,10 +17,16 @@ int     i386_cmova(asm_instr *new, u_char *opcode, u_int len,
 
   new->type = ASM_TYPE_ASSIGN | ASM_TYPE_COMPARISON;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_GENERAL, 
-				new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_ENCODED, 
-				new);    
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERAL,				new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_GENERAL,				new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODED,				new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_ENCODED,				new);
+#endif
 
   return (new->len);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_incdec_rmb.c,v 1.4 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_incdec_rmb.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_incdec_rmb" opcode="0xfe"/>
 */
 
-int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len, 
+int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   struct s_modrm        *modrm;
@@ -39,8 +39,11 @@ int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len,
       break;
   }
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
-                                new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new);
+#endif
 
   return (new->len);
 }

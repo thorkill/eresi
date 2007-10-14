@@ -1,5 +1,5 @@
 /*
-** $Id: i386_cpuid.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: i386_cpuid.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -10,7 +10,7 @@
   Instruction :         CPUID
  */
 
-int i386_cpuid(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int i386_cpuid(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->instr = ASM_CPUID;

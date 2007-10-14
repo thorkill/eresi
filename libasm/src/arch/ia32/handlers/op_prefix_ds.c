@@ -1,7 +1,7 @@
 /**
  * @file op_prefix_ds.c
  * @ingroup handlers_ia32
- * $Id: op_prefix_ds.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+ * $Id: op_prefix_ds.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
  *
  * Changelog
  * 200-07-29 : instruction length was not incremented. fixed.
@@ -13,7 +13,7 @@
   <instruction func="op_prefix_ds" opcode="0x3e"/>
 */
 
-int op_prefix_ds(asm_instr *new, u_char *opcode, u_int len, 
+int op_prefix_ds(asm_instr *new, u_char *opcode, u_int len,
 		 asm_processor *proc)
 {
   if (!new->ptr_prefix)

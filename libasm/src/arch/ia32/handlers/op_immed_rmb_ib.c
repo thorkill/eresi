@@ -1,5 +1,5 @@
 /*
-** $Id: op_immed_rmb_ib.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_immed_rmb_ib.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -10,7 +10,7 @@
   <instruction func="op_immed_rmb_ib" opcode="0x82"/>
 */
 
-int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len, 
+int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
                     asm_processor *proc)
 {
   int                   olen;
@@ -23,10 +23,16 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
   new->flagswritten = ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_OF |
                         ASM_FLAG_PF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
-  new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
-                                        ASM_OTYPE_ENCODEDBYTE, new));
-  new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
-                                ASM_OTYPE_IMMEDIATEBYTE, new);
+#if WIP
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new, 0));
+#else
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new));
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new);
+#endif
 
   switch(modrm->r)
     {
@@ -36,7 +42,7 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
     case 1:
       new->instr = ASM_ORB;
       new->flagswritten ^= ASM_FLAG_AF;
-      new->op2.imm &= 0xff;
+      new->op[1].imm &= 0xff;
       break;
     case 2:
       new->instr = ASM_ADC;
@@ -51,12 +57,12 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
     case 4:
       new->instr = ASM_AND;
       new->flagswritten ^= ASM_FLAG_AF;
-      new->op2.imm &= 0xff;
+      new->op[1].imm &= 0xff;
       break;
     case 5:
       new->instr = ASM_SUB;
-      if (new->op1.content == ASM_OP_BASE &&
-            new->op1.baser == ASM_REG_ESP)
+      if (new->op[0].content == ASM_OP_BASE &&
+            new->op[0].baser == ASM_REG_ESP)
         new->type |= ASM_TYPE_EPILOG;
       break;
     case 6:
@@ -66,7 +72,7 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
     case 7:
       new->instr = ASM_CMP;
       new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
-      new->op2.imm &= 0xff;
+      new->op[1].imm &= 0xff;
       break;
     }
 

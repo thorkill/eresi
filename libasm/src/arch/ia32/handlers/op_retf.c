@@ -1,5 +1,5 @@
 /*
-** $Id: op_retf.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_retf.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_retf" opcode="0xcb"/>
 */
 
-int op_retf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_retf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

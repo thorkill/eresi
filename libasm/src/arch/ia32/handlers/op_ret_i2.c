@@ -1,7 +1,7 @@
 /**
  * @file op_ret_i2.c
  * @ingroup handlers_ia32
- * $Id: op_ret_i2.c,v 1.7 2007-08-15 21:30:20 strauss Exp $
+ * $Id: op_ret_i2.c,v 1.8 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -25,8 +25,13 @@ int op_ret_i2(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_RET;
   new->ptr_instr = opcode;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1,
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
+                                ASM_OTYPE_IMMEDIATEWORD, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
                                 ASM_OTYPE_IMMEDIATEWORD, new);
+#endif
 
   return (new->len);
 }

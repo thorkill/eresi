@@ -1,12 +1,13 @@
 /**
  * @file operand.c
  * @ingroup operands
- * $Id: operand.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+ * $Id: operand.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
  * operand.c in 
  * 
  * Author  : <kahmm@altdev.net>
  * Started : Sat Mar  6 06:28:22 2004
  * Updated : Wed Apr  7 19:54:38 2004
+ * @brief Contains operand manipulation functions.
 */
 
 #include <libasm.h>
@@ -32,9 +33,9 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
 
   switch(num) 
     {
-    case 1: op = &ins->op1; break;
-    case 2: op = &ins->op2; break;
-    case 3: op = &ins->op3; break;
+    case 1: op = &ins->op[0]; break;
+    case 2: op = &ins->op[1]; break;
+    case 3: op = &ins->op[2]; break;
     default:
       return (-1);
     }
@@ -95,20 +96,20 @@ int     asm_operand_get_basereg(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op1.type && (ins->op1.content & ASM_OP_BASE))
-	*val = ins->op1.baser;
+      if (ins->op[0].type && (ins->op[0].content & ASM_OP_BASE))
+	*val = ins->op[0].baser;
       else
 	return (-1);  
       break;
     case 2:
-      if (ins->op2.type && (ins->op2.content & ASM_OP_BASE))
-	*val = ins->op2.baser;
+      if (ins->op[1].type && (ins->op[1].content & ASM_OP_BASE))
+	*val = ins->op[1].baser;
       else
 	return (-1);
       break;
     case 3:
-      if (ins->op3.type && (ins->op3.content & ASM_OP_BASE))
-	*val = ins->op3.baser;
+      if (ins->op[2].type && (ins->op[2].content & ASM_OP_BASE))
+	*val = ins->op[2].baser;
       else
 	return (-1);        
       break;
@@ -133,20 +134,20 @@ int     asm_operand_get_indexreg(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op1.type && (ins->op1.content & ASM_OP_INDEX))
-	*val = ins->op1.indexr;
+      if (ins->op[0].type && (ins->op[0].content & ASM_OP_INDEX))
+	*val = ins->op[0].indexr;
       else
 	return (-1);  
       break;
     case 2:
-      if (ins->op2.type && (ins->op2.content & ASM_OP_INDEX))
-	*val = ins->op2.indexr;
+      if (ins->op[1].type && (ins->op[1].content & ASM_OP_INDEX))
+	*val = ins->op[1].indexr;
       else
 	return (-1);  
       break;
     case 3:
-      if (ins->op3.type && (ins->op3.content & ASM_OP_INDEX))
-	*val = ins->op3.indexr;
+      if (ins->op[2].type && (ins->op[2].content & ASM_OP_INDEX))
+	*val = ins->op[2].indexr;
       else
 	return (-1);    
       break;
@@ -170,20 +171,20 @@ int     asm_operand_get_scale(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op1.type && (ins->op1.content & ASM_OP_SCALE))
-	*val = ins->op1.scale;
+      if (ins->op[0].type && (ins->op[0].content & ASM_OP_SCALE))
+	*val = ins->op[0].scale;
       else
 	return (-1);  
       break;
     case 2:
-      if (ins->op2.type && (ins->op2.content & ASM_OP_SCALE))
-	*val = ins->op2.scale;
+      if (ins->op[1].type && (ins->op[1].content & ASM_OP_SCALE))
+	*val = ins->op[1].scale;
       else
 	return (-1);  
       break;
     case 3:
-      if (ins->op3.type && (ins->op3.content & ASM_OP_SCALE))
-	*val = ins->op3.scale;
+      if (ins->op[2].type && (ins->op[2].content & ASM_OP_SCALE))
+	*val = ins->op[2].scale;
       else
 	return (-1);        
       break;
@@ -301,7 +302,7 @@ int    asm_operand_set_scale(asm_instr *ins, int num,
   asm_operand		*op;
   
   return (-1);
-  op = &ins->op1;
+  op = &ins->op[0];
   val = (int *) valptr;
   if (op && op->type & ASM_OP_SCALE) {
     
@@ -337,11 +338,11 @@ int	asm_operand_get_type(asm_instr *ins, int num, int opt, void *valptr) {
     switch(num)
       {
       case 1:
-	return (*val = ins->op1.type);
+	return (*val = ins->op[0].type);
       case 2:
-	return (*val = ins->op2.type);
+	return (*val = ins->op[1].type);
       case 3:
-	return (*val = ins->op3.type);
+	return (*val = ins->op[2].type);
       }
   return (-1);
 }
@@ -354,15 +355,15 @@ int	asm_operand_get_size(asm_instr *ins, int num, int opt, void *valptr) {
   switch(num)
     {
     case 1:
-      *val = ins->op1.size;
+      *val = ins->op[0].size;
       to_ret = 1;
       break;
     case 2:
-      *val = ins->op2.size;
+      *val = ins->op[1].size;
       to_ret = 1;
       break;
     case 3:
-      *val = ins->op3.size;
+      *val = ins->op[2].size;
       to_ret = 1;
       break;
     default:
@@ -375,11 +376,11 @@ int	asm_operand_get_len(asm_instr *ins, int num, int opt, void *valptr) {
   switch(num)
     {
     case 1:
-      return (ins->op1.len);
+      return (ins->op[0].len);
     case 2:
-      return (ins->op2.len);
+      return (ins->op[1].len);
     case 3:
-      return (ins->op3.len);
+      return (ins->op[2].len);
     default:
       return (0);
     }
@@ -394,11 +395,11 @@ int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr)
   if (!ins)
     return (-1);
   num = 0;
-  if (ins->op1.content)
+  if (ins->op[0].content)
     num++;
-  if (ins->op2.content)
+  if (ins->op[1].content)
     num++;
-  if (ins->op3.content)
+  if (ins->op[2].content)
     num++;
   return (num);
 }

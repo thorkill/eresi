@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_rdpr.c,v 1.7 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_rdpr.c,v 1.8 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -20,10 +20,10 @@ asm_sparc_rdpr(asm_instr * ins, u_char * buf, u_int len,
 
   if (opcode.rs1 < ASM_PREG_BAD16 || opcode.rs1 > ASM_PREG_BAD30) {
     ins->nb_op = 2;
-    ins->op1.baser = opcode.rd;
-    asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
-    ins->op2.baser = opcode.rs1;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_PREGISTER, ins);
+    ins->op[0].baser = opcode.rd;
+    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REGISTER, ins);
+    ins->op[1].baser = opcode.rs1;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_PREGISTER, ins);
   }
   else
     ins->instr = ASM_SP_BAD;

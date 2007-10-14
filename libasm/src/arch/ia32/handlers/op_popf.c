@@ -1,5 +1,5 @@
 /*
-** $Id: op_popf.c,v 1.5 2007-08-20 07:21:04 strauss Exp $
+** $Id: op_popf.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction name="popf" func="op_popf" opcode="0x9d"/>
 */
 
-int op_popf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_popf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;
@@ -20,7 +20,7 @@ int op_popf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
                         ASM_FLAG_ZF | ASM_FLAG_SF | ASM_FLAG_TF |
                         ASM_FLAG_IF | ASM_FLAG_DF | ASM_FLAG_OF |
                         ASM_FLAG_IOPL | ASM_FLAG_NT | ASM_FLAG_RF |
-                        ASM_FLAG_AC | ASM_FLAG_VIF | ASM_FLAG_VIP | 
+                        ASM_FLAG_AC | ASM_FLAG_VIF | ASM_FLAG_VIP |
                         ASM_FLAG_ID;
   return (new->len);
 }

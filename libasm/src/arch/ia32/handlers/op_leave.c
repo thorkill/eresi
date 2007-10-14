@@ -1,7 +1,7 @@
 /**
  * @file op_leave.c
  * @ingroup handlers_ia32
- * $Id: op_leave.c,v 1.4 2007-06-27 11:25:11 heroine Exp $
+ * $Id: op_leave.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -15,7 +15,7 @@
  * @param proc Pointer to processor structure.
 */
 
-int op_leave(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_leave(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

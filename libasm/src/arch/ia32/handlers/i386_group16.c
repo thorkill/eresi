@@ -1,8 +1,8 @@
 /**
  * @file i386_group16.c
  * @ingroup handlers_ia32
- * $Id: i386_group16.c,v 1.3 2007-06-27 11:25:11 heroine Exp $
- * 
+ * $Id: i386_group16.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ *
  * Changelog
  * 2007-05-29: operand type fixed.
  */
@@ -18,8 +18,8 @@
  * @return Length of instruction
 */
 
-int i386_group16(asm_instr *new, u_char *opcode, u_int len, 
-		 asm_processor *proc) 
+int i386_group16(asm_instr *new, u_char *opcode, u_int len,
+		 asm_processor *proc)
 {
   struct s_modrm	*modrm;
   if (new->ptr_instr != 0)
@@ -33,23 +33,35 @@ int i386_group16(asm_instr *new, u_char *opcode, u_int len,
     {
     case 0:
       new->instr = ASM_FXSAVE;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    new);
+#if WIP
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+#else
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+#endif
       break;
     case 1:
       new->instr = ASM_FXRSTORE;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    new);
+#if WIP
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+#else
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+#endif
       break;
     case 2:
       new->instr = ASM_LDMXCSR;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    new);
-      break; 
+#if WIP
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+#else
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+#endif
+      break;
     case 3:
       new->instr = ASM_STMXCSR;
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    new);
+#if WIP
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+#else
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+#endif
       break;
     case 4:
       new->instr = ASM_BAD;

@@ -1,5 +1,5 @@
 /*
-** $Id: op_pop_es.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_pop_es.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -17,10 +17,17 @@ int op_pop_es(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->spdiff = 4;
   new->len += 1;
 
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
-  new->op1.content = ASM_OP_BASE | ASM_OP_FIXED;
-  new->op1.regset = ASM_REGSET_SREG;
-  new->op1.baser = ASM_REG_ES;
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new,
+				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_ES,
+					       ASM_REGSET_SREG));
+
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new);
+  new->op[0].content = ASM_OP_BASE | ASM_OP_FIXED;
+  new->op[0].regset = ASM_REGSET_SREG;
+  new->op[0].baser = ASM_REG_ES;
+#endif
 
   return (new->len);
 }

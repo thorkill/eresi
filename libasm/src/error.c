@@ -1,6 +1,6 @@
 /*
 ** 
-** $Id: error.c,v 1.3 2007-04-13 06:56:34 heroine Exp $
+** $Id: error.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Sun Nov 30 19:58:38 2003
@@ -18,23 +18,21 @@
  */
 void	asm_set_error(asm_instr *ins, int err, char *msg)
 {
-  // ins->proc->error_code = err;
+  if (ins && ins->proc)
+    ins->proc->error_code = err;
 }
 
 
 /**
- * Set error message
+ * Set error message.
+ * This is currently not implemented.
  * @param ins Pointer to instruction structure
  * @param msg Error message
  */
 
 void	asm_set_errormsg(asm_instr *ins, char *msg)
 {
-
-
 }
-
-
 
 
 /**
@@ -51,10 +49,22 @@ int	asm_get_error(asm_instr *ins)
 /**
  * Return error message.
  * @param ins Pointer to instruction structure.
- * @return return error message
+ * @return Return a pointer to a static string containing error message.
  */
 
-const char	*asm_get_errormsg(asm_instr *ins)
+const char	*asm_get_errormsg(asm_processor *proc)
 {
-  return ("no error implemented");
+  if (proc)
+    {
+      switch(proc->error_code)
+	{
+	case LIBASM_ERROR_SUCCESS: return (LIBASM_MSG_SUCCESS);
+	case LIBASM_ERROR_NSUCH_CONTENT: return (LIBASM_MSG_SUCCESS);
+	case LIBASM_ERROR_ILLEGAL: return (LIBASM_MSG_SUCCESS);
+	case LIBASM_ERROR_TOOSHORT: return (LIBASM_MSG_TOOSHORT);
+	}
+      return (LIBASM_MSG_ERRORNOTIMPLEMENTED);
+    }
+  else
+    return ("asm_get_errormsg: proc is NULL");
 }

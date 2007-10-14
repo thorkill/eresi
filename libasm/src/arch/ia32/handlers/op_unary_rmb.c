@@ -1,15 +1,21 @@
 /**
  * @file op_unary_rmb.c
  * @ingroup handlers_ia32
-* $Id: op_unary_rmb.c,v 1.6 2007-08-15 21:30:21 strauss Exp $
-*
-*/
+ * @brief Handler for instruction unary rmb opcode 0xf6
+ * $Id: op_unary_rmb.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <instruction func="op_unary_rmb" opcode="0xf6"/>
-*/
+/**
+ * @brief Handler for instruction unary rmb opcode 0xf6
+ * @param instr Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of instruction.
+ */
 
 int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len, 
                  asm_processor *proc)
@@ -28,12 +34,19 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
       new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
       new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF | ASM_FLAG_PF |
                           ASM_FLAG_SF | ASM_FLAG_ZF;
-      new->op1.type = ASM_OTYPE_ENCODED;
+      new->op[0].type = ASM_OTYPE_ENCODED;
 
-      new->len += (olen = asm_operand_fetch(&new->op1, opcode + 1,
+#if WIP
+      new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
+                                            ASM_OTYPE_ENCODEDBYTE, new, 0));
+      new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
+                                    ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+#else
+      new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
                                             ASM_OTYPE_ENCODEDBYTE, new));
-      new->len += asm_operand_fetch(&new->op2, opcode + 1 + olen,
+      new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
                                     ASM_OTYPE_IMMEDIATEBYTE, new);
+#endif
 
       break;
     case 1:
@@ -67,10 +80,15 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
       break;
   }
 
-  if (!new->op1.type)
+  if (!new->op[0].type)
   {
-    new->len += asm_operand_fetch(&new->op1, opcode + 1,
+#if WIP
+    new->len += asm_operand_fetch(&new->op[0], opcode + 1,
+                                  ASM_OTYPE_ENCODEDBYTE, new, 0);
+#else
+    new->len += asm_operand_fetch(&new->op[0], opcode + 1,
                                   ASM_OTYPE_ENCODEDBYTE, new);
+#endif
   }
   return (new->len);
 }

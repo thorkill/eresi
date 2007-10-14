@@ -6,13 +6,20 @@
 ** Started : Sun Nov 30 20:13:12 2003
 ** Updated : Thu Dec  4 03:01:07 2003
 **
-** $Id: init_sparc.c,v 1.8 2007-05-29 08:04:35 strauss Exp $
+** $Id: init_sparc.c,v 1.9 2007-10-14 00:01:41 heroine Exp $
 **
 */
 
 #include <libasm.h>
 #include <libasm-int.h>
 
+/**
+ * Fetching handler of the sparc architecture.
+ * @param ins
+ * @param buf
+ * @param len
+ * @param proc
+ */ 
 int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) 
 { 
   vector_t *vec;
@@ -52,9 +59,9 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->nb_op = 0;
   ins->type = ASM_TYPE_NONE;
   /* Primary (implicit) address space */
-  ins->op1.address_space = 0x80;
-  ins->op2.address_space = 0x80;
-  ins->op3.address_space = 0x80;
+  ins->op[0].address_space = 0x80;
+  ins->op[1].address_space = 0x80;
+  ins->op[2].address_space = 0x80;
   
   vec = aspect_vector_get("disasm-sparc");
   dim[0] = (converted & 0xC0000000) >> 30;
@@ -91,7 +98,13 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   return (-1);
 }
 
-void	asm_init_sparc(asm_processor *proc) {
+/**
+ * Initialize the sparc processor.
+ *
+ */
+
+int	asm_init_sparc(asm_processor *proc) 
+{
   struct s_asm_proc_sparc	*inter;
   
   proc->instr_table = sparc_instr_list;
@@ -119,6 +132,12 @@ void	asm_init_sparc(asm_processor *proc) {
   inter->op2_table = sparc_op2_table;
   inter->op3_table = sparc_op3_table;
  
+
+  /**
+   * XXX: Check this code and update if necessary to follow line developpement.
+   */
+  
   asm_init_vectors(proc);
   asm_arch_register(proc, 0);
+  return (1);
 }

@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_rmv_rv.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_mov_rmv_rv.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,7 +9,7 @@
   <instruction func="op_mov_rmv_rv" opcode="0x89"/>
 */
 
-int op_mov_rmv_rv(asm_instr *new, u_char *opcode, u_int len, 
+int op_mov_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   new->ptr_instr = opcode;
@@ -17,20 +17,26 @@ int op_mov_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->instr = ASM_MOV;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-                                new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_GENERAL, 
-                                new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,                                new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_GENERAL,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_GENERAL,                                new);
+#endif
 
-  if (new->op1.content == ASM_OP_BASE &&
-      new->op1.baser == ASM_REG_EBP &&
-      new->op2.baser == ASM_REG_ESP) {
+  if (new->op[0].content == ASM_OP_BASE &&
+      new->op[0].baser == ASM_REG_EBP &&
+      new->op[1].baser == ASM_REG_ESP) {
 
     new->type |= ASM_TYPE_PROLOG;
   }
-  else if (new->op1.content == ASM_OP_BASE &&
-            new->op1.baser == ASM_REG_ESP &&
-            new->op2.baser == ASM_REG_EBP) {
+  else if (new->op[0].content == ASM_OP_BASE &&
+            new->op[0].baser == ASM_REG_ESP &&
+            new->op[1].baser == ASM_REG_EBP) {
 
     new->type |= ASM_TYPE_EPILOG;
   }

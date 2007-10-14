@@ -1,5 +1,5 @@
 /*
-** $Id: op_shift_rmv_1.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_shift_rmv_1.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -33,8 +33,13 @@ int op_shift_rmv_1(asm_instr *new, u_char *opcode, u_int len,
     break;
   }
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED,
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
                                 new);
+#endif
 
   return (new->len);
 }

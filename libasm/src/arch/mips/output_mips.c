@@ -1,24 +1,37 @@
 /**
- * $Id: output_mips.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
- *
- *
- *
+ * @file output_mips.c
+ * $Id: output_mips.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
  *
  */
 
 #include <libasm.h>
 
+/**
+ *
+ *
+ */
 void	complete_buffer(char *buf)
 {
   while (strlen(buf) < 16)
     strcat(buf, " ");
 }
 
+/**
+ *
+ *
+ *
+ */
 void	asm_resolve_mips(void *d, u_int val, char *buf, u_int len)
 {
   sprintf(buf, "0x%x", val);
 }
 
+
+/**
+ * Return asciii string for a register index.
+ * @param r Register index
+ * @return A pointer to a static ascii buffer.
+ */
 char	*get_mips_register(int r)
 {
   switch (r)
@@ -59,15 +72,21 @@ char	*get_mips_register(int r)
   return ("err");
 }
 
+/**
+ *
+ *
+ *
+ */
+
 void	asm_mips_dump_operand(asm_instr *ins, int num, unsigned int addr, char *buf)
 {
   asm_operand	*op;
   
   switch(num)
     {
-    case 1: op = &ins->op1; break;
-    case 2: op = &ins->op2; break;
-    case 3: op = &ins->op3; break;      
+    case 1: op = &ins->op[0]; break;
+    case 2: op = &ins->op[1]; break;
+    case 3: op = &ins->op[2]; break;      
     default: return;
     }
   
@@ -82,6 +101,12 @@ void	asm_mips_dump_operand(asm_instr *ins, int num, unsigned int addr, char *buf
     }
 }
 
+/**
+ *
+ *
+ *
+ */
+
 char	*asm_mips_display_instr(asm_instr *ins, int addr)
 {
   static char	buffer[1024];
@@ -90,17 +115,17 @@ char	*asm_mips_display_instr(asm_instr *ins, int addr)
   strcpy(buffer, ins->proc->instr_table[ins->instr]);
   complete_buffer(buffer);
   
-  if (ins->op1.type)
+  if (ins->op[0].type)
     {
       asm_mips_dump_operand(ins, 1, addr, buffer + strlen(buffer));
       strcat(buffer, ",");
     }
-  if (ins->op2.type)
+  if (ins->op[1].type)
     {
       asm_mips_dump_operand(ins, 2, addr, buffer + strlen(buffer));
       strcat(buffer, ",");
     }
-  if (ins->op3.type)
+  if (ins->op[2].type)
     {
       asm_mips_dump_operand(ins, 3, addr, buffer + strlen(buffer));
       //strcat(buffer, ",");

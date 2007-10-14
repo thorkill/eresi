@@ -1,5 +1,5 @@
 /*
-** $Id: i386_bswap.c,v 1.6 2007-07-18 15:47:10 strauss Exp $
+** $Id: i386_bswap.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -16,20 +16,24 @@
  <i386 func="i386_bswap" opcode="0xcf"/>
 */
 
-int i386_bswap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int i386_bswap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  
+
   struct s_modrm        *modrm;
   modrm = (struct s_modrm *) opcode;
-  
+
   new->len += 1;
-  
+
   new->ptr_instr = opcode;
   new->instr = ASM_BSWAP;
 
   new->type = ASM_TYPE_OTHER;
 
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_OPMOD, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_OPMOD, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_OPMOD, new);
+#endif
 
   return (new->len);
 }

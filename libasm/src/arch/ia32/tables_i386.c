@@ -1,7 +1,7 @@
 /**
  * @file tables_i386.c
  * @brief Initialization of ia32 processor mnemonic table.
- * $Id: tables_i386.c,v 1.13 2007-08-16 23:22:12 heroine Exp $
+ * $Id: tables_i386.c,v 1.14 2007-10-14 00:01:41 heroine Exp $
  * 
  */
 #include <libasm.h>
@@ -11,10 +11,13 @@
  * @param proc Pointer to processor structure.
  * @return Returns 1
  */
-
 int init_instr_table(asm_processor *proc) 
 {
   
+  /**
+   *  XXX: should be replaced by a static array ?
+   */
+
   proc->instr_table = malloc(sizeof(char *) * (ASM_BAD + 1));
   memset(proc->instr_table, 0, sizeof(char *) * (ASM_BAD + 1));
   

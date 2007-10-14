@@ -1,5 +1,5 @@
 /*
-** $Id: op_enter.c,v 1.4 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_enter.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -13,7 +13,7 @@
  * @param proc Pointer to processor structure.
 */
 
-int op_enter(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_enter(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->instr = ASM_ENTER;
   new->len += 1;
@@ -21,19 +21,22 @@ int op_enter(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, 
-				ASM_OTYPE_IMMEDIATEWORD, new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_IMMEDIATEWORD, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_OTYPE_IMMEDIATEWORD, new);
+#endif
 #else
 
-  new->op1.type = ASM_OTYPE_IMMEDIATE;
-  new->op1.content = ASM_OP_VALUE;
-  new->op1.len = 2;
-  new->op1.ptr = opcode + 1;
-    
-  new->op1.imm = 0;
-  memcpy(&new->op1.imm, opcode + 1, 2);
+  new->op[0].type = ASM_OTYPE_IMMEDIATE;
+  new->op[0].content = ASM_OP_VALUE;
+  new->op[0].len = 2;
+  new->op[0].ptr = opcode + 1;
+
+  new->op[0].imm = 0;
+  memcpy(&new->op[0].imm, opcode + 1, 2);
   new->len += 2;
 #endif
-  new->spdiff = -new->op1.imm;
+  new->spdiff = -new->op[0].imm;
   return (new->len);
 }

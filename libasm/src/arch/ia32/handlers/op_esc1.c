@@ -1,7 +1,7 @@
 /**
  * @file op_esc1.c
  * @ingroup handlers_ia32
- * $Id: op_esc1.c,v 1.6 2007-06-27 11:25:11 heroine Exp $
+ * $Id: op_esc1.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -16,11 +16,11 @@
  * @return Length of instruction.
 */
 
-int op_esc1(asm_instr *new, u_char *opcode, u_int len, 
-	    asm_processor *proc) 
+int op_esc1(asm_instr *new, u_char *opcode, u_int len,
+	    asm_processor *proc)
 {
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode + 1;
   new->ptr_instr = opcode;
   new->len += 1;
@@ -31,34 +31,48 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
       case 0:
 	new->instr = ASM_FLD;
 #if LIBASM_USE_OPERAND_VECTOR
-	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, 
-				      new);
-	new->len += 1;
-	new->op1.content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
-	new->op1.len = 1;
-	new->op1.scale = modrm->m;
+#if WIP
+	new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new, 
+				      asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_EAX,
+						     asm_proc_is_protected(proc) ?
+						     ASM_REGSET_R32 : ASM_REGSET_R16));
+	
 #else
-	new->op1.type = ASM_OTYPE_FIXED;
-	new->op1.content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
-	new->op1.len = 1;
-	new->op1.scale = modrm->m;
+	new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED,				      new);
+#endif
+	new->len += 1;
+	new->op[0].content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
+	new->op[0].len = 1;
+	new->op[0].scale = modrm->m;
+#else
+	new->op[0].type = ASM_OTYPE_FIXED;
+	new->op[0].content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
+	new->op[0].len = 1;
+	new->op[0].scale = modrm->m;
 #endif
 	break;
       case 1:
 	new->instr = ASM_FXCH;
 #if LIBASM_USE_OPERAND_VECTOR
-	new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, 
-				      new);
-	new->len += 1;
-	new->op1.type = ASM_OTYPE_FIXED;
-	new->op1.len = 1;
-	new->op1.content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
-	new->op1.scale = modrm->m;      
+#if WIP
+	new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED,				      new, 
+				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_EAX,
+					       asm_proc_is_protected(proc) ?
+					       ASM_REGSET_R32 : ASM_REGSET_R16));
+
 #else
-	new->op1.type = ASM_OTYPE_FIXED;
-	new->op1.len = 1;
-	new->op1.content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
-	new->op1.scale = modrm->m;
+	new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED,				      new);
+#endif
+	new->len += 1;
+	new->op[0].type = ASM_OTYPE_FIXED;
+	new->op[0].len = 1;
+	new->op[0].content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
+	new->op[0].scale = modrm->m;
+#else
+	new->op[0].type = ASM_OTYPE_FIXED;
+	new->op[0].len = 1;
+	new->op[0].content = ASM_OP_FPU | ASM_OP_SCALE | ASM_OP_BASE;
+	new->op[0].scale = modrm->m;
 #endif
 	break;
       case 2:
@@ -115,7 +129,7 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
     }
   else /* modrm != 3 */
     {
-      switch(modrm->r) 
+      switch(modrm->r)
 	{
 	case 0:
 	  new->instr = ASM_FLD;
@@ -143,21 +157,24 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
 	  break;
 	}
     }
-  if (modrm->mod < 3) 
+  if (modrm->mod < 3)
     {
 #if LIBASM_USE_OPERAND_VECTOR
-      new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODED, 
-				    new);
+#if WIP
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
 #else
-      new->op1.type = ASM_OTYPE_ENCODED;
-      operand_rmv(&new->op1, opcode + 1, len - 1, proc);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
 #endif
-    } 
-  
+#else
+      new->op[0].type = ASM_OTYPE_ENCODED;
+      operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
+#endif
+    }
+
 #if LIBASM_USE_OPERAND_VECTOR
 #else
-  if (new->op1.type)
-    new->len += new->op1.len;
+  if (new->op[0].type)
+    new->len += new->op[0].len;
   else
     new->len += 1;
 #endif

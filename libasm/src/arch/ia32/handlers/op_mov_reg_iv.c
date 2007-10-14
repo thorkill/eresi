@@ -1,5 +1,5 @@
 /*
-** $Id: op_mov_reg_iv.c,v 1.7 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_mov_reg_iv.c,v 1.8 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -16,8 +16,8 @@
   <instruction func="op_mov_reg_iv" opcode="0xbf"/>
 */
 
-int op_mov_reg_iv(asm_instr *new, u_char *opcode, u_int len, 
-asm_processor *proc) 
+int op_mov_reg_iv(asm_instr *new, u_char *opcode, u_int len,
+asm_processor *proc)
 {
   struct s_modrm        *modrm;
 
@@ -27,10 +27,16 @@ asm_processor *proc)
   new->instr = ASM_MOV;
   new->len += 1;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 0, ASM_OTYPE_OPMOD, 
-                                new);
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_IMMEDIATE, 
-                                new);
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_OTYPE_OPMOD,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_OTYPE_OPMOD,                                new);
+#endif
+#if WIP
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATE,                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATE,                                new);
+#endif
 
   return (new->len);
 }

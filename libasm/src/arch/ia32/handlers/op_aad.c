@@ -1,7 +1,7 @@
 /**
  * @file op_aad.c
  * @ingroup handlers_ia32
- * $Id: op_aad.c,v 1.6 2007-08-14 06:52:55 strauss Exp $
+ * $Id: op_aad.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -15,7 +15,7 @@
  * @param proc Pointer to processor structure.
  * @return Length of disassembled instruction.
  */
-int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

@@ -1,7 +1,7 @@
 /**
  * @file op_shift_rmb_cl.c
  * @ingroup handlers_ia32
- * $Id: op_shift_rmb_cl.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
+ * $Id: op_shift_rmb_cl.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
  *
  * Changelog
  * 2007-05-29 : instruction set was not complete.
@@ -10,58 +10,61 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <instruction func="op_shift_rmb_cl" opcode="0xd2"/>
+/**
+ * Handler for instruction shit rmb,cl opcode 0xd2
+ * <instruction func="op_shift_rmb_cl" opcode="0xd2"/>
  */
 
-int op_shift_rmb_cl(asm_instr *new, u_char *opcode, u_int len, 
+int op_shift_rmb_cl(asm_instr *instr, u_char *opcode, u_int len, 
                     asm_processor *proc)
 {
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode + 1;
-  new->ptr_instr = opcode;
-  new->len += 1;
-  new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
-  new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF;
+  instr->ptr_instr = opcode;
+  instr->len += 1;
+  instr->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
+  instr->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF;
 
   switch(modrm->r)
   {
-    case 0: new->instr = ASM_ROL; break;
-    case 1: new->instr = ASM_ROR; break;
-    case 2: new->instr = ASM_RCL; break;
-    case 3: new->instr = ASM_RCR; break;
+    case 0: instr->instr = ASM_ROL; break;
+    case 1: instr->instr = ASM_ROR; break;
+    case 2: instr->instr = ASM_RCL; break;
+    case 3: instr->instr = ASM_RCR; break;
     case 4:
-      new->instr = ASM_SHL;
-      new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+      instr->instr = ASM_SHL;
+      instr->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
     case 5:
-      new->instr = ASM_SHR;
-      new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+      instr->instr = ASM_SHR;
+      instr->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
     case 6:
-      new->instr = ASM_SAL;
-      new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+      instr->instr = ASM_SAL;
+      instr->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
     case 7:
-      new->instr = ASM_SAR;
-      new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
+      instr->instr = ASM_SAR;
+      instr->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
   }
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_ENCODEDBYTE,
-                                new);
-  /**
-   * @bug
-   * This may raise some bug. Should be checked as soon as possible.
-   * Check wether fetching ASM_OTYPE_ENCODED* should return 0 or 1 if
-   * only the modrm byte is used.
-   */
-  new->len += 1;
-  new->len += asm_operand_fetch(&new->op2, opcode + 1, ASM_OTYPE_FIXED, new);
-  new->op2.content = ASM_OP_BASE;
-  new->op2.regset = ASM_REGSET_R8;
-  new->op2.baser = ASM_REG_CL;
+#if WIP
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+                                instr, 0);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_FIXED, instr,
+				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_CL,
+					       ASM_REGSET_R8));
 
-  return (new->len);
+#else
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+                                instr);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_FIXED, instr);
+  instr->op[1].content = ASM_OP_BASE;
+  instr->op[1].regset = ASM_REGSET_R8;
+  instr->op[1].baser = ASM_REG_CL;
+#endif
+
+  return (instr->len);
 }

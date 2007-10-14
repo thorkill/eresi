@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_restore.c,v 1.7 2007-08-07 07:13:27 may Exp $
+** $Id: asm_sparc_restore.c,v 1.8 2007-10-14 00:01:42 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -19,18 +19,18 @@ asm_sparc_restore(asm_instr * ins, u_char * buf, u_int len,
   ins->type = ASM_TYPE_EPILOG;
 
   ins->nb_op = 3;
-  ins->op1.baser = opcode.rd;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_REGISTER, ins);
-  ins->op3.baser = opcode.rs1;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_REGISTER, ins);
+  ins->op[0].baser = opcode.rd;
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REGISTER, ins);
+  ins->op[2].baser = opcode.rs1;
+  asm_sparc_op_fetch(&ins->op[2], buf, ASM_SP_OTYPE_REGISTER, ins);
 
   if (opcode.i == 0) {
-    ins->op2.baser = opcode.rs2;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_REGISTER, ins);
+    ins->op[1].baser = opcode.rs2;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_REGISTER, ins);
   }
   else {
-    ins->op2.imm = opcode.imm;
-    asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_IMMEDIATE, ins);
+    ins->op[1].imm = opcode.imm;
+    asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
   return 4;

@@ -1,30 +1,35 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_shortjump.c,v 1.2 2007-05-29 00:40:28 heroine Exp $
+ * $Id: asm_operand_fetch_shortjump.c,v 1.3 2007-10-14 00:01:41 heroine Exp $
+ * @ingroup operand_handler
  */
 
 #include <libasm.h>
 #include <libasm-int.h>
 
 /**
- *
- *
- */
-/**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * @brief Decode data for operand type ASM_OTYPE_SHORTJUMP
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
  * @param ins Pointer to instruction structure.
  * @return Operand length
  */
-
+#if WIP
+int     asm_operand_fetch_shortjump(asm_operand *operand, u_char *opcode, 
+				    int otype, asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_shortjump(asm_operand *operand, u_char *opcode, 
 				    int otype, asm_instr *ins)
+#endif
 {
+  
+#if WIP
+  asm_content_pack(operand, ASM_OP_VALUE | ASM_OP_ADDRESS, ASM_OTYPE_JUMP);
+#else
+  operand->content = ASM_OP_VALUE |ASM_OP_ADDRESS;
   operand->type = ASM_OTYPE_JUMP;
-  operand->content = ASM_OP_VALUE | ASM_OP_ADDRESS;
-
+#endif
   operand->len = 1;
   operand->imm = 0;
   if (*(opcode) >= 0x80u)

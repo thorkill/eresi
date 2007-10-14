@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_fcmpd.c,v 1.10 2007-07-19 07:20:55 strauss Exp $
+** $Id: asm_sparc_fcmpd.c,v 1.11 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -21,12 +21,12 @@ asm_sparc_fcmpd(asm_instr * ins, u_char * buf, u_int len,
    
   ins->instr = inter->fcmp_table[(opcode.opf & 0x1f) - 16];
   ins->nb_op = 3;
-  ins->op1.baser = ((opcode.rs2 & 1) << 5) | (opcode.rs2 & 0x1E);
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op2.baser = ((opcode.rs1 & 1) << 5) | (opcode.rs1 & 0x1E);
-  asm_sparc_op_fetch(&ins->op2, buf, ASM_SP_OTYPE_FREGISTER, ins);
-  ins->op3.baser = opcode.cc;
-  asm_sparc_op_fetch(&ins->op3, buf, ASM_SP_OTYPE_CC, ins);
+  ins->op[0].baser = ((opcode.rs2 & 1) << 5) | (opcode.rs2 & 0x1E);
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_FREGISTER, ins);
+  ins->op[1].baser = ((opcode.rs1 & 1) << 5) | (opcode.rs1 & 0x1E);
+  asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_FREGISTER, ins);
+  ins->op[2].baser = opcode.cc;
+  asm_sparc_op_fetch(&ins->op[2], buf, ASM_SP_OTYPE_CC, ins);
   
   return 4;
 }

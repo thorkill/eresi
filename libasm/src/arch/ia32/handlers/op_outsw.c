@@ -1,5 +1,5 @@
 /*
-** $Id: op_outsw.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: op_outsw.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -20,23 +20,18 @@ int op_outsw(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   else
     new->instr = ASM_OUTSD;
 
-  #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op1, opcode, ASM_OTYPE_FIXED, new);
-  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op1.regset = ASM_REGSET_R16;
-  new->op1.baser = ASM_REG_DX;
-  new->len += asm_operand_fetch(&new->op2, opcode, ASM_OTYPE_XSRC, new);
-  #else
-  new->op1.type = ASM_OTYPE_FIXED;
-  new->op1.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op1.regset = ASM_REGSET_R16;
-  new->op1.baser = ASM_REG_DX;
-  
-  new->op2.type = ASM_OTYPE_XSRC;
-  new->op2.content = ASM_OP_BASE | ASM_OP_REFERENCE;
-  new->op2.baser = ASM_REG_ESI;
-  new->op2.regset = asm_proc_addsize(proc) ? ASM_REGSET_R16 :
-    ASM_REGSET_R32;
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new,
+				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_DX,
+					       ASM_REGSET_R16));
+
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new);
+  new->op[0].content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  new->op[0].regset = ASM_REGSET_R16;
+  new->op[0].baser = ASM_REG_DX;
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new);
 #endif
   return (new->len);
 }

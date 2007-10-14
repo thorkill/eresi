@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.11 2007-06-27 11:25:11 heroine Exp $
+** $Id: output_ia32.c,v 1.12 2007-10-14 00:01:41 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -39,8 +39,8 @@ char	*asm_get_instr_name(asm_instr *i) {
 void	output_instr(asm_instr *instr) {
   
   printf("%10s  ", instr->proc->instr_table[instr->instr]);
-  if (instr->op1.type) {
-    switch(instr->op1.content) {
+  if (instr->op[0].type) {
+    switch(instr->op[0].content) {
       
     }
   } /* !instr->op1 */ else {
@@ -145,13 +145,13 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
   switch(num)
     {
     case 1:
-      op = &ins->op1;
+      op = &ins->op[0];
       break;
     case 2:
-      op = &ins->op2;
+      op = &ins->op[1];
       break;
     case 3:
-      op = &ins->op3;
+      op = &ins->op[2];
       break;
     }
 
@@ -316,9 +316,10 @@ int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
 
 
 /**
- *
- *
- *
+ * @brief Return at&t ascii representation of an instruction
+ * @param instr Pointer to an instruction structure.
+ * @param addr Address of the instruction. May be used to compute offset of branch.
+ * @return A Pointer to a static buffer containing ascii instruction
  */
 
 char	*asm_ia32_display_instr_att(asm_instr *instr, 
@@ -338,36 +339,41 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
   if (instr->prefix & ASM_PREFIX_REPNE)
     strcat(buffer, "repnz ");
   
-  if (instr->instr >= 0 && instr->instr <= ASM_BAD && instr->proc->instr_table[instr->instr] != NULL) 
-    sprintf(buffer + strlen(buffer), "%s", instr->proc->instr_table[instr->instr]);
-  else 
+  if (instr->instr >= 0 && instr->instr <= ASM_BAD)
+    { 
+      if (instr->proc->instr_table[instr->instr] != NULL)
+	sprintf(buffer + strlen(buffer), "%s", instr->proc->instr_table[instr->instr]);
+      else
+	sprintf(buffer + strlen(buffer), "missing");
+    }  
+else 
     {
-      sprintf(buffer + strlen(buffer), "int_err");
+      sprintf(buffer + strlen(buffer), "out_of_range");
       return (buffer);
     }
   
   
-  if (instr->op1.type) {
-    //instr->op1.proc = instr->proc;
+  if (instr->op[0].type) {
+    //instr->op[0].proc = instr->proc;
 
     /* Add spaces */
     len = strlen(buffer);
     while(len++ < (int)config_get_data(ASM_CONFIG_ATT_MARGIN_FLAG))
       strcat(buffer, " ");
 
-    if (instr->op3.type) {
-      //instr->op3.proc = instr->proc;
+    if (instr->op[2].type) {
+      //instr->op[2].proc = instr->proc;
       asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
       /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op3,
+      att_dump_operand(buffer + strlen(buffer), &instr->op[2],
 		       addr + instr->len);
       */    
       strcat(buffer, ",");
     }
  
-    if (instr->op2.type) {
-      //instr->op2.proc = instr->proc;
-      switch(instr->op2.prefix & ASM_PREFIX_SEG) {
+    if (instr->op[1].type) {
+      //instr->op[1].proc = instr->proc;
+      switch(instr->op[1].prefix & ASM_PREFIX_SEG) {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");
 	break;
@@ -377,12 +383,12 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
       }
       asm_operand_get_att(instr, 2, addr, buffer + strlen(buffer));
       /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op2, 
+      att_dump_operand(buffer + strlen(buffer), &instr->op[1], 
 		       addr + instr->len);
       */
       strcat(buffer, ",");
     }
-      switch(instr->op1.prefix & ASM_PREFIX_SEG) {
+      switch(instr->op[0].prefix & ASM_PREFIX_SEG) {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");
 	break;
@@ -413,7 +419,7 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
       }
       asm_operand_get_att(instr, 1, addr, buffer + strlen(buffer));
       /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op1, 
+      att_dump_operand(buffer + strlen(buffer), &instr->op[0], 
 		       addr + instr->len);
       */
   }

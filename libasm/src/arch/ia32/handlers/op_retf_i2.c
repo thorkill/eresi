@@ -1,5 +1,5 @@
 /*
-** $Id: op_retf_i2.c,v 1.5 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_retf_i2.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -9,16 +9,20 @@
   <instruction func="op_retf_i2" opcode="0xca"/>
 */
 
-int op_retf_i2(asm_instr *new, u_char *opcode, u_int len, 
+int op_retf_i2(asm_instr *instr, u_char *opcode, u_int len, 
                asm_processor *proc)
 {
-  new->instr = ASM_RETF;
-  new->ptr_instr = opcode;
-  new->len += 1;
-  new->type = ASM_TYPE_RETPROC | ASM_TYPE_TOUCHSP | ASM_TYPE_EPILOG;
+  instr->instr = ASM_RETF;
+  instr->ptr_instr = opcode;
+  instr->len += 1;
+  instr->type = ASM_TYPE_RETPROC | ASM_TYPE_TOUCHSP | ASM_TYPE_EPILOG;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1,
-                                ASM_OTYPE_IMMEDIATEWORD, new);
-
-  return (new->len);
+#if WIP
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
+                                ASM_OTYPE_IMMEDIATEWORD, instr, 0);
+#else
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
+                                ASM_OTYPE_IMMEDIATEWORD, instr);
+#endif
+  return (instr->len);
 }

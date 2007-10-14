@@ -1,6 +1,7 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_xsrc.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+ * $Id: asm_operand_fetch_xsrc.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ * @ingroup operand_handler
  */
 
 #include <libasm.h>
@@ -16,11 +17,20 @@
  * @return Operand length
  */
 
+#if WIP
+int     asm_operand_fetch_xsrc(asm_operand *operand, u_char *opcode, 
+			       int otype, asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_xsrc(asm_operand *operand, u_char *opcode, 
 			       int otype, asm_instr *ins)
+#endif
 {
+#if WIP
+  asm_content_pack(operand, ASM_OP_BASE | ASM_OP_REFERENCE, ASM_OTYPE_XSRC);
+#else
   operand->type = ASM_OTYPE_XSRC;
   operand->content = ASM_OP_BASE | ASM_OP_REFERENCE;
+#endif
   operand->baser = ASM_REG_ESI;
   operand->regset = asm_proc_opsize(ins->proc) ? 
     ASM_REGSET_R16 : ASM_REGSET_R32;

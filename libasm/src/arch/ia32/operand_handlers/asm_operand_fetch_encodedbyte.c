@@ -1,18 +1,15 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_encodedbyte.c,v 1.3 2007-06-27 11:25:12 heroine Exp $
+ * @ingroup operand_handler
+ * $Id: asm_operand_fetch_encodedbyte.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
  */
 
 #include <libasm.h>
 #include <libasm-int.h>
 
 /**
- * Fetch ASM_OTYPE_ENCODED operand
- *
- *
- */
-/**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * @ingroup operand_handler
+ * Decode data for operand type ASM_OTYPE_ENCODEDBYTE
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -20,8 +17,13 @@
  * @return Operand length
  */
 
+#if WIP
+int     asm_operand_fetch_encodedbyte(asm_operand *operand, u_char *opcode, int otype, 
+				asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_encodedbyte(asm_operand *operand, u_char *opcode, 
 				      int otype, asm_instr *ins)
+#endif
 { 
   int	len;
   

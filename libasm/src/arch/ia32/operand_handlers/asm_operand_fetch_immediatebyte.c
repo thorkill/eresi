@@ -1,6 +1,7 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_immediatebyte.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+ * @ingroup operand_handler
+ * $Id: asm_operand_fetch_immediatebyte.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
  */
 
 #include <libasm.h>
@@ -8,6 +9,7 @@
 
 /**
  * Handler to fetch ASM_OTYPE_IMMEDIATEBYTE operand.
+ * @ingroup operand_handler
  * @param operand Pointer to operand structure.
  * @param opcode Pointer to data to disassemble.
  * @param otype Operand type.
@@ -15,8 +17,13 @@
  * @return Operand Length
  */
 
+#if WIP
+int     asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode, int otype, 
+				asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode, 
 					int otype, asm_instr *ins)
+#endif
 { 
   operand->type = ASM_OTYPE_IMMEDIATE;
   operand->content = ASM_OP_VALUE;

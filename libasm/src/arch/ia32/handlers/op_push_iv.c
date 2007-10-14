@@ -1,7 +1,7 @@
 /**
  * @file o_push_iv.c
  * @ingroup handlers_ia32
- * $Id: op_push_iv.c,v 1.6 2007-08-15 21:30:20 strauss Exp $
+ * $Id: op_push_iv.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>
@@ -21,8 +21,13 @@ int op_push_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
   new->spdiff = -4;
 
-  new->len += asm_operand_fetch(&new->op1, opcode + 1, ASM_OTYPE_IMMEDIATE,
+#if WIP
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_IMMEDIATE,
+                                new, 0);
+#else
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_IMMEDIATE,
                                 new);
+#endif
 
   return (new->len);
 }

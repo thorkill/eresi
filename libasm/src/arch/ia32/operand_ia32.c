@@ -1,5 +1,5 @@
 /*
-** $Id: operand_ia32.c,v 1.5 2007-06-27 11:25:11 heroine Exp $
+** $Id: operand_ia32.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 ** Author  : <sk at devhell dot org>
 ** Started : Tue May 28 13:06:39 2002
@@ -9,383 +9,48 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  CommonType:int
-  CommonProto:(struct s_instr *, u_char *, int, struct dis_i386 *)
-  
-  FunctionName:operand_rb_rmb
-  
-  @param a pointer to the current instruction structure
-  @param a pointer to the current opcode structure
-  @param length of opcode
-  @param a pointer to a processor structure.
-*/
-
-int	operand_rb_rmb(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-
-  modrm = (struct s_modrm *) opcode;
-  operand_rmb(&ins->op2, opcode, len, proc);
-  
-  /*
-  operand_rb(&ins->op1, opcode, len, proc);
-  */
-  ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = ASM_REGSET_R8;
-  ins->op1.len = 0;
-  ins->op1.ptr= opcode;
-  ins->op1.baser = (modrm->r);
-  
-  ins->len += ins->op1.len + ins->op2.len;
-  
-  return (1);
-}
-
-/*
-  FunctionName:operand_rmb_rb
-  
-  in any case, source is a byte register.
-  if ModRM is 00, destination is a byte register.
-  if ModRM is 01, destination reference and a byte offset
-  if ModRM is 02, is a register reference and a vector offset
-  if ModRM is 03, destination is a register reference
-
- */
-// to correct
-int	operand_rmb_rb(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-
-  modrm = (struct s_modrm *) opcode;
-  
-  operand_rmb(&ins->op1, opcode, len, proc);
-  
-  ins->op2.ptr = opcode;
-  ins->op2.len = 0;
-  
-  ins->op2.content = ASM_OP_BASE;
-  ins->op2.regset = ASM_REGSET_R8;
-  ins->op2.baser = (modrm->r);
-  ins->len += ins->op1.len + ins->op2.len;
-  
-  return (1);
-  
-}
-
-/*
-  FunctionName:operand_rmv_rv
-
-  
-*/
-
-int	operand_rmv_rv(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-  
-  modrm = (struct s_modrm *) opcode;
-  operand_rmv(&ins->op1, opcode, len, proc);
-  
-  ins->op2.content = ASM_OP_BASE;
-  ins->op2.regset = asm_proc_opsize(proc) ?
-      ASM_REGSET_R16 : ASM_REGSET_R32;
-  ins->op2.ptr = opcode;
-  ins->op2.len = 0;
-  ins->op2.baser = modrm->r;
-  
-  ins->len += ins->op1.len + ins->op2.len;
-  return (1);
-}
-
-/*
-  FunctionName:operand_rv_rmv
-    ModRM byte
-    Mod:2
-    R:3
-    M:3
-    Mod = 0b00 -> dst is a register
-    Mod = 0b01 -> dst a register followed by a byte offset
-    Mod = 0b10 -> dst a register reference followed by a vector offset
-    Mod = 0b11 -> dst is a register reference
-
-
- */
-
-
-int	operand_rv_rmv(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-  
-  modrm = (struct s_modrm *) opcode;
-  operand_rmv(&ins->op2, opcode, len, proc);
-  
-  ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_opsize(proc) ? 
-    ASM_REGSET_R16 : ASM_REGSET_R32;
-  ins->op1.ptr = opcode;
-  ins->op1.len = 0;
-  
-  ins->op1.baser = modrm->r;
-  ins->len += ins->op1.len + ins->op2.len;
-  
-  return (1);
-}
-
-
-/*
-  FunctionName:operand_rv_rmb
-
- */
-
-int	operand_rv_rmb(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-
-  modrm = (struct s_modrm *) opcode;
-
-  
-  ins->op1.content = ASM_OP_BASE;
-  ins->op1.regset = asm_proc_opsize(proc) ? 
-    ASM_REGSET_R16 : ASM_REGSET_R32;
-  ins->op1.len = 0;
-  ins->op1.ptr = opcode;
-  ins->op1.baser = modrm->r;
-  operand_rmb(&ins->op2, opcode, len, proc);
-  ins->len += ins->op2.len ? ins->op2.len : 1;
-  return (1);
-}
-
-
-/*
-  FunctionName:operand_rv_rm2
-
- */
-
-int	operand_rv_rm2(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-  struct s_sidbyte	*sidbyte;
-  
-  modrm = (struct s_modrm *) opcode;
-  sidbyte = (struct s_sidbyte *) opcode + 1;
-
-  switch(modrm->mod) {
-  case 0:
-    ins->op1.content = ASM_OP_BASE;
-    ins->op1.regset = ASM_REGSET_R32;
-    ins->op1.len = 0;
-    ins->op1.ptr = opcode;
-    ins->op1.baser = modrm->r;
-
-    if (modrm->m == ASM_REG_EBP) {
-      // movzwl 0x807a446,%eax ; opcode = '0f b7 05 46 a4 07 08'
-      ins->op2.len = 5;
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE;
-      ins->op2.ptr = opcode + 1;
-      
-      memcpy(&ins->op2.imm, opcode + 1, 4);
-    } else if (modrm->m == ASM_REG_ESP) {
-      if (sidbyte->base == ASM_REG_EBP) {
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.len = 6;
-	ins->op2.ptr = opcode;
-	ins->op2.regset = ASM_REGSET_R32;
-	
-	ins->op2.indexr = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-	memcpy(&ins->op2.imm, opcode + 2, 4);
-
-      } else {
-	ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-	ins->op2.len = 2;
-	ins->op2.ptr = opcode;
-	ins->op2.regset = ASM_REGSET_R32;
-	ins->op2.baser = sidbyte->base;
-	ins->op2.indexr = sidbyte->index;
-	ins->op2.scale = asm_int_pow2(sidbyte->sid);
-      }
-    } else {
-  
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE;
-      ins->op2.len = 1;
-      ins->op2.ptr = opcode;
-      ins->op2.regset = ASM_REGSET_R32;
-
-      ins->op2.baser = modrm->m;
-    }
-    ins->len += ins->op1.len + ins->op2.len; 
-    break;
-  case 1:
-    ins->op1.content = ASM_OP_BASE;
-    ins->op1.regset = ASM_REGSET_R32;
-    ins->op1.len = 0;
-    ins->op1.ptr = opcode;
-    ins->op1.baser = modrm->r;
-    
-    if (modrm->m == ASM_REG_ESP) {
-
-      ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | 
-	ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-      ins->op2.ptr = opcode;
-      ins->op2.len = 2;
-    
-    
-      if (*(opcode + 2) >= 0x80u)
-	memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-      else
-	ins->op2.imm = 0;
-      memcpy(&ins->op2.imm, opcode + 2, 1);
-      ins->op2.baser = sidbyte->base;
-      ins->op2.indexr = sidbyte->index;
-      ins->op2.scale = asm_int_pow2(sidbyte->sid);
-      ins->len += 3;
-
-    } else {
-      ins->op2.regset = ASM_REGSET_R32;
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE;
-      ins->op2.ptr = opcode;
-      ins->op2.len = 2;
-    
-    
-      if (*(opcode + 1) >= 0x80u)
-	memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-      else
-	ins->op2.imm = 0;
-      memcpy(&ins->op2.imm, opcode + 1, 1);
-      ins->op2.baser = modrm->m;
-
-      ins->len += 2;
-    }
-    break;
-  case 2:
-
-    ins->op1.regset = ASM_REGSET_R32;
-    ins->op1.content = ASM_OP_BASE;
-    ins->op1.len = 0;
-    ins->op1.ptr = opcode;
-    ins->op1.baser = modrm->r;
-    
-    ins->op2.regset = ASM_REGSET_R32;
-    switch(modrm->m) {
-    case ASM_REG_ESP:
-      // movzwl 0x888(%ebx,%esi,1),%eax ; opcode = '0f b7 84 33 88 08 00 00'
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-      ins->op2.baser = sidbyte->base;
-      ins->op2.indexr = sidbyte->index;
-      ins->op2.scale = asm_int_pow2(sidbyte->sid);
-      ins->op2.len = 6;
-      memcpy(&ins->op2.imm, opcode + 2, 4);
-      break;
-    default:
-      ins->op2.content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
-      ins->op2.ptr = opcode;
-      ins->op2.len = 5;
-      memcpy(&ins->op2.imm, opcode + 1, 4);
-      ins->op2.baser = modrm->m;
-    }
-    ins->len += ins->op1.len + ins->op2.len;
-    break;
-  case 3:
-    ins->op1.content = ASM_OP_BASE;
-    ins->op1.regset = ASM_REGSET_R32;
-    ins->op1.len = 1;
-    ins->op1.ptr = opcode;
-    ins->op1.baser = modrm->r;
-
-    ins->op2.content = ASM_OP_BASE;
-    ins->op2.regset = ASM_REGSET_R16;
-    ins->op2.len = 0;
-    ins->op2.ptr = opcode;
-    ins->op2.baser = modrm->m;
-
-    ins->len += 1;
-    
-    break;
-  }
-  
-  return (1);
-}
 
 /**
- * operand_rmv_iv
+ * Extracts operands from memory and stores them in instruction.
+ *
+ * @todo
+ * This function should not be called.
+ *
+ *
+ *
  *
  */
-
-int	operand_rmv_iv(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-  
-  modrm = (struct s_modrm *)opcode;
-  operand_rmv(&ins->op1, opcode, len, proc);
-
-  ins->op2.ptr = opcode + ins->op1.len;
-  ins->op2.len = asm_proc_vector_len(proc);
-  ins->op2.content = ASM_OP_VALUE;
-  ins->op2.imm = 0;
-  if (((unsigned char) *(opcode + 1)) >= 0x80)
-    memcpy((char *) &ins->op2.imm + 2, "\xff\xff", 2);
-  memcpy(&ins->op2.imm, ins->op2.ptr, asm_proc_vector_len(proc));
-  ins->len += ins->op1.len + ins->op2.len;
-  return (1);
-}
-
-/*
-  FunctionName:operand_rmv_ib
-
-  
-  00: dst: imm vect  src: imm byte
-  01: 
-  02:
-  03:
- */
-
-int	operand_rmv_ib(asm_instr *ins, u_char *opcode, int len, 
-		       asm_processor *proc) {
-  struct s_modrm	*modrm;
-
-  modrm = (struct s_modrm *) opcode;
-
-  operand_rmv(&ins->op1, opcode, len, proc);
-  ins->op2.content = ASM_OP_VALUE;
-  ins->op2.ptr = opcode + 1;
-  ins->op2.imm = 0;
-  ins->op2.len = 1;
-  if (*(opcode + ins->op1.len) >= 0x80u)
-    memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
-  memcpy(&ins->op2.imm, opcode + ins->op1.len, 1);
-  
-  ins->len += ins->op1.len + ins->op2.len;
-  
-  return (1);
-}
-
-/*
-  FunctionName:operand_rmb_ib
-*/
 
 int	operand_rmb_ib(asm_instr *ins, u_char *opcode, int len, 
 		       asm_processor *proc) {
   struct s_modrm	*modrm;
   
   modrm = (struct s_modrm *) opcode;
-  operand_rmb(&ins->op1, opcode, len, proc);
-  ins->op2.content = ASM_OP_VALUE;
-  ins->op2.len = 1;
-  ins->op2.ptr = opcode + (ins->op1.len ? ins->op1.len : 1);
+  operand_rmb(&ins->op[0], opcode, len, proc);
+  ins->op[1].content = ASM_OP_VALUE;
+  ins->op[1].len = 1;
+  ins->op[1].ptr = opcode + (ins->op[0].len ? ins->op[0].len : 1);
   // if (*(opcode + ins->op1.len) >= 0x80u)
   //   memcpy((char *) &ins->op2.imm + 1, "\xff\xff\xff", 3);
   // else
-  ins->op2.imm = 0;
-  memcpy(&ins->op2.imm, opcode + (ins->op1.len ? ins->op1.len : 1), 1);
+  ins->op[1].imm = 0;
+  memcpy(&ins->op[1].imm, opcode + (ins->op[0].len ? ins->op[0].len : 1), 1);
     
-  ins->len += (ins->op1.len ? ins->op1.len : 1) + ins->op2.len;
+  ins->len += (ins->op[0].len ? ins->op[0].len : 1) + ins->op[1].len;
   return (1);
 }
 
-/*
-  FunctionName:operand_iv
-*/
+/**
+ * @brief Decode a modRM operand of size Byte.
+ *
+ * @param op Pointer to operand to fill.
+ * @param opcode Pointer to operand bytes.
+ * @param len Length of data.
+ * @param proc Pointer to processor structure
+ * @return Length of the operand.
+ *
+*/ 
+
 
 int operand_rmb(asm_operand *op, u_char *opcode, u_int len, 
 				     asm_processor *proc) {
@@ -697,6 +362,54 @@ int        operand_rmv(asm_operand *op, u_char *opcode, u_int len,
 }
 
 
+/**
+ * Note about operand content field.
+ * This field contain two packed value
+ * one for the content of the operand, which is a bitfield,
+ * and an otype value which is the type of the operand.
+ * This type is related to the sandpile.org reference and
+ * to the enum ASM_OTYPE_* (!!add link to enum!!)
+ */
+
+/**
+ * Pack content and otype values of the content field.
+ * @param content
+ * @param otype
+ */
+int	asm_content_pack(asm_operand *op, int content, int otype)
+{
+  
+  return (0);
+}
+
+/**
+ * Return content part of the content field
+ */
+int	asm_content_extract_otype(asm_operand *op)
+{
+  return (0);
+}
+
+/**
+ * Return otype part of the content field
+ * param asm_op_content Content field of an operand.
+ */
+int	asm_content_extract_content(asm_operand *op)
+{
+  return (0);
+}
+
+/**
+ * Return a packed value for asm_operand_fetch_fixed optional parameters.
+ * @todo Implement this correctly.
+ * opt may be a regset or nothing
+ * value may be a register, or a fixed value
+ * otype is an 
+ */
+int	asm_fixed_pack(int otype, int content, int value, int opt)
+{
+  return (otype | content | value | opt);
+}
 
 
 

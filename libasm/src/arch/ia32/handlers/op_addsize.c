@@ -1,5 +1,5 @@
 /*
-** $Id: op_addsize.c,v 1.3 2007-05-29 00:40:27 heroine Exp $
+** $Id: op_addsize.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -13,13 +13,13 @@ int     op_addsize(asm_instr *new, u_char *opcode, u_int len,
                    asm_processor *proc)
 {
   asm_i386_processor    *i386p;
-  
+
   if (!new->ptr_prefix)
     new->ptr_prefix = opcode;
-  
+
   i386p = (asm_i386_processor *) proc;
   new->prefix |= ASM_PREFIX_ADDSIZE;
-  
+
   i386p->internals->addsize = !i386p->internals->addsize;
   len = proc->fetch(new, opcode + 1, len - 1, proc);
   i386p->internals->addsize = !i386p->internals->addsize;

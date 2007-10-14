@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_bicc.c,v 1.5 2007-07-06 21:18:08 strauss Exp $
+** $Id: asm_sparc_bicc.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include "libasm.h"
@@ -25,10 +25,10 @@ asm_sparc_bicc(asm_instr * ins, u_char * buf, u_int len,
     ins->type = ASM_TYPE_CONDBRANCH;
 
   ins->nb_op = 1;  
-  ins->op1.imm = opcode.imm;  
+  ins->op[0].imm = opcode.imm;  
   ins->annul = opcode.a;
   ins->prediction = 1;
-  asm_sparc_op_fetch(&ins->op1, buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
+  asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
 
   return 4;
 }

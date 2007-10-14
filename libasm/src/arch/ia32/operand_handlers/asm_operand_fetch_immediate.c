@@ -1,6 +1,7 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_immediate.c,v 1.3 2007-05-29 00:40:28 heroine Exp $
+ * @ingroup operand_handler
+ * $Id: asm_operand_fetch_immediate.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
  */
 
 #include <libasm.h>
@@ -12,6 +13,7 @@
  */
 /**
  * Decode data for operand type ASM_OTYPE_YDEST
+ * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -19,8 +21,13 @@
  * @return Operand length
  */
 
+#if WIP
+int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, int otype, 
+				asm_instr *ins, int opt)
+#else
 int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, 
 				    int otype, asm_instr *ins)
+#endif
 {
   operand->type = ASM_OTYPE_IMMEDIATE;
   operand->content = ASM_OP_VALUE;

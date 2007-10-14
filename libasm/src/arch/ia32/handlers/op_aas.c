@@ -1,5 +1,5 @@
 /*
-** $Id: op_aas.c,v 1.5 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_aas.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>
@@ -14,7 +14,7 @@
  * @return Length of disassembled instruction.
  */
 
-int     op_aas(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int     op_aas(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

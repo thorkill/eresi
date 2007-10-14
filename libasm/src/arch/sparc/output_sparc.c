@@ -7,7 +7,7 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id: output_sparc.c,v 1.9 2007-07-11 22:06:46 strauss Exp $
+** $Id: output_sparc.c,v 1.10 2007-10-14 00:01:41 heroine Exp $
 **
 */
 
@@ -168,16 +168,26 @@ char *get_sparc_cc(int cc)
   }
 }
 
+/**
+ * Dump a sparc operand to a buffer.
+ * @param ins Pointer to instruction structure.
+ * @param num Number of the operand to dump
+ * @param addr Address of the instruction
+ * @param buf Buffer to store operand ascii representation.
+ */
+
 void	asm_sparc_dump_operand(asm_instr *ins, int num, 
 			       unsigned int addr, char *buf)
 {
   asm_operand *op;
   int address;
-  
+  /**
+   *
+   */
   switch(num) {
-    case 1: op = &ins->op1; break;
-    case 2: op = &ins->op2; break;
-    case 3: op = &ins->op3; break;
+    case 1: op = &ins->op[0]; break;
+    case 2: op = &ins->op[1]; break;
+    case 3: op = &ins->op[2]; break;
     default: return;
   }
   
@@ -245,6 +255,11 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
   }
 }
 
+/**
+ * Return a pointer to a static buffer containing
+ *
+ *
+ */
 char *asm_sparc_display_instr(asm_instr *instr, int addr)
 {
   static char buffer[1024];  

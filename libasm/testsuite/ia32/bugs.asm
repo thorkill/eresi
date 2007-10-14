@@ -1,16 +1,14 @@
-// $Id: bugs.asm,v 1.1 2007-05-29 00:36:12 heroine Exp $
+// $Id: bugs.asm,v 1.2 2007-10-14 00:01:42 heroine Exp $
 movw   $0x2,0xffffffbc(%ebp)
 mov    $0x10,%di
 andw   $0xfff,0xffffff90(%ebp)
-seta   %dl
-seta   %dl
 movw   $0x0,0xfffffeda(%ebp)
 jb     0x80499c0
 jb     0x8048c88
 setge  %al
 setge  %al
 jb     0x8049035
-seta   %dl
+;seta   %dl
 jb     0x8049644
 movw   $0x1ff,0xffffff7e(%ebp)
 andw   $0xf3ff,0x8(%eax)
@@ -21,23 +19,23 @@ movw   $0xe180,0xffffff90(%ebp)
 movw   $0xe180,0xffffff90(%ebp)
 mov    $0x2000,%ax
 jb     0x8048753
-seta   %dl
+;seta   %dl
 movw   $0x0,(%eax)
 setle  %al
 setle  %al
-seta   %dl
-seta   %dl
+;seta   %dl
+;seta   %dl
 shld   $0x10,%ecx,%ebx
 movw   $0x20,0x8050a7f(%ecx)
-seta   %dl
+;seta   %dl
 movw   $0x6d,0xffffffa0(%ebp)
 shrd   $0x3,%edx,%eax
 movw   $0x0,0x804f128
 movw   $0x0,0x804f128
 mov    $0x1388,%ax
-seta   %dl
+;seta   %dl
 shld   $0x9,%ebx,%esi
-seta   %dl
+;seta   %dl
 ret    $0x4
 movw   $0x0,0xfffffffa(%ebp)
 movw   $0x0,0x48(%eax)
@@ -77,7 +75,7 @@ jb     0x8048c98
 jb     0x8048ed0
 jb     0x8048ed0
 movw   $0x61b6,0xffffffea(%ebp)
-seta   %dl
+;seta   %dl
 movw   $0x32,0x8(%eax)
 movw   $0x32,0x8(%ebx)
 jb     0x8049574
@@ -89,7 +87,7 @@ movw   $0x2,0xffffffdc(%ebp)
 movw   $0x0,0x2(%edi)
 movw   $0x0,0x8050be2
 jb     0x8049494
-seta   %dl
+;seta   %dl
 movw   $0x2f2e,(%ecx)
 movw   $0x2f2e,(%ecx)
 jb     0x80493a6
@@ -98,7 +96,7 @@ movw   $0x802,0xffffffda(%ebp)
 setle  %al
 shrd   $0x18,%ebx,%ecx
 movw   $0x46,0x804d8a4(%ecx)
-seta   %dl
+;seta   %dl
 mov    $0x1,%di
 movw   $0x2f,0x804b904
 movw   $0xc023,0xffffff64(%ebp)
@@ -106,6 +104,6 @@ jb     0x8048ff1
 jb     0x80490bb
 jb     0x80490bb
 jb     0x80490bb
-seta   %dl
-seta   %dl
-seta   %al
+;seta   %dl
+;seta   %dl
+;seta   %al
