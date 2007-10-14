@@ -1,5 +1,5 @@
 /*
-** $Id: libasm.h,v 1.26 2007-10-14 00:01:41 heroine Exp $
+** $Id: libasm.h,v 1.27 2007-10-14 09:45:06 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Sat Oct 26 01:18:46 2002
@@ -25,7 +25,7 @@
 #define LIBASM_H_
 
 
-#include <config.h>
+//#include <config.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
