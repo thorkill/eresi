@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.9 2007-09-23 17:53:35 pouik Exp $
+** $Id: mem.c,v 1.10 2007-10-15 13:04:07 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -319,8 +319,16 @@ int		cmd_kmodule()
 		       revm_colorstr(param3),
 		       revm_colorstr(param4),
 		       revm_colorstr(param2));
-	      revm_output(buff);
 	    }
+	  else
+	    {
+	      snprintf(buff, sizeof(buff), 
+		       "Impossible to replace %s by %s in %s\n\n",
+		       revm_colorstr(param3),
+		       revm_colorstr(param4),
+		       revm_colorstr(param2));
+	    }
+	  revm_output(buff); 
 	}
     }
 

