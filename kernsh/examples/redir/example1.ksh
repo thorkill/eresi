@@ -1,6 +1,6 @@
 #!/usr/local/bin/kernsh
 
-openmem
+#openmem
 
 load lkm-sys_setdomainname.ko
 

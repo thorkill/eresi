@@ -203,7 +203,7 @@ echo "" >> kernsh/include/info.h
 echo "#define ARCH \"$arch\"" >> kernsh/include/info.h
 echo "#define OS \"$os\"" >> kernsh/include/info.h
 echo "#define RELEASE \"$release\"" >> kernsh/include/info.h
-if [ $os == 'Linux' ]; then
+if [ $os = 'Linux' ]; then
     echo "" > libkernsh/include/libkernsh-info.h
     echo "#ifndef __LIBKERNSH_INFO_H__" >> libkernsh/include/libkernsh-info.h
     echo " #define __LIBKERNSH_INFO_H__" >> libkernsh/include/libkernsh-info.h

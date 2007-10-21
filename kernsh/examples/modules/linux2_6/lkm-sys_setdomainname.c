@@ -2,7 +2,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
-int new_sys_setdomainname(const char *name, size_t len)
+int asmlinkage new_sys_setdomainname(const char *name, size_t len)
 {
 	printk("NEW SYS DOMAINNAME\n");
 
