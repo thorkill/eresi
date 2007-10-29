@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.20 2007-10-14 00:03:46 heroine Exp $
+** $Id: traces.c,v 1.21 2007-10-29 02:52:39 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -538,6 +538,7 @@ static int		elfsh_traces_queue_clean()
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, trace_queue);
       trace_queue = NULL;
+      queue_count = 0;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
