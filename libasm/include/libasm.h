@@ -1,11 +1,18 @@
-/*
-** $Id: libasm.h,v 1.27 2007-10-14 09:45:06 heroine Exp $
-** 
-** Author  : <sk at devhell dot org>
-** Started : Sat Oct 26 01:18:46 2002
-** Updated : Thu Apr  8 00:45:41 2004
-** 
-*/
+/**
+ * @file libasm.h
+ * $Id: libasm.h,v 1.28 2007-10-29 11:26:44 heroine Exp $
+ * 
+ * Author  : <sk at devhell dot org>
+ * Started : Sat Oct 26 01:18:46 2002
+ * Updated : Thu Apr  8 00:45:41 2004
+ *
+ * This is the main definition file for libasm.h
+ * Definitions, enums, prototypes or anything related
+ * to a specific architecture MUST be stored in that specific
+ * architecture include files.
+ *
+ * 
+ */
 
 /**
  * @file libasm.h
@@ -40,16 +47,17 @@
 
 #include <libaspect.h>
 
-
 #define LIBASM_SUPPORT_SPARC		1
 #define LIBASM_SUPPORT_IA32		1
-#define LIBASM_SUPPORT_MIPS		0	/*<! XXX: Wanted	*/
-#define LIBASM_SUPPORT_POWERPC		0	/*<! XXX: Wanted	*/
-#define LIBASM_SUPPORT_ARM		0	/*<! XXX: Wanted	*/
+#define LIBASM_SUPPORT_MIPS		0	/*<! XXX: Work in progress	*/
+#define LIBASM_SUPPORT_POWERPC		0	/*<! XXX: Wanted		*/
+#define LIBASM_SUPPORT_ARM		0	/*<! XXX: Wanted		*/
 #define	LIBASM_VECTOR_OPCODE_IA32	"opcode-ia32"
 #define	LIBASM_VECTOR_OPCODE_SPARC	"opcode-sparc"
+#define	LIBASM_VECTOR_OPCODE_MIPS	"opcode-mips"
 #define	LIBASM_VECTOR_OPERAND_IA32	"operand-ia32"
 #define	LIBASM_VECTOR_OPERAND_SPARC	"operand-sparc"
+#define	LIBASM_VECTOR_OPERAND_MIPS	"operand-mips"
 
 
 /**
@@ -158,6 +166,8 @@ enum
 #define ASM_CONFIG_ATT_MARGIN_FLAG "libasm.output.att.margin"
 
 
+#define LIBASM_HANDLER_FETCH(fcn)	int	(*fcn)(asm_instr *, u_char *, u_int, asm_processor *)
+#define LIBASM_HANDLER_DISPLAY(fcn)	char	*(*fcn)(asm_instr *, int)
 
 /*
   typedef's
@@ -199,6 +209,11 @@ int	asm_init_ia32(asm_processor *proc);
 int	asm_init_i386(asm_processor *proc); /*!< XXX:Obsolete */
 int	asm_init_sparc(asm_processor *proc);
 int	asm_init_mips(asm_processor *proc);
+
+/**
+ * Return endianess
+ */
+int asm_config_get_endian();
 
 /**
  * return build date.

@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.27 2007-10-14 00:01:41 heroine Exp $
+## $Id: Makefile,v 1.28 2007-10-29 11:26:44 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -31,10 +31,12 @@ SRCS_libasm 	=				\
 		src/arch/sparc/output_sparc.c	\
 		src/arch/sparc/sparc_convert.c	\
 		src/arch/mips/init_mips.c	\
-		src/arch/mips/mips_convert.c	\
-		src/arch/mips/mips_decode.c	\
 		src/arch/mips/output_mips.c	\
-		src/arch/mips/tables_mips.c
+		src/arch/mips/tables_mips.c	\
+		src/arch/mips/register_mips.c
+
+#		src/arch/mips/mips_convert.c	\
+#		src/arch/mips/mips_decode.c	\
 
 
 
@@ -53,7 +55,7 @@ CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
 #CFLAGS		+=	-O2
 RM 		= 	rm -f
 ETAGS 		= 	etags
-CC 		?= 	gcc
+CC 		?= 	gcc -E
 LD		?=	ld
 CP 		= 	cp
 

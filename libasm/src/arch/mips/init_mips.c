@@ -1,115 +1,140 @@
-/*
-** 
-** 
-** 
-** 
-**
-** $Id: init_mips.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
-**
-*/
+/**
+ * @file init_mips.c
+ *
+ * Manuel Martin - 2007 
+ */
 
 #include <libasm.h>
 
 
-
-int	fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+/**
+ * Mips main fetching handler.
+ * This function is called by asm_read_instr
+ * @param ins
+ * @param buf
+ * @param len
+ * @param proc
+ * @return Lengh of instruction or 0 on error.
+ */
+int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 {
-  int	op6;
-  int	converted;
-
+  vector_t *vec = 0;
+  int i = 0, converted = 0;
+  u_int dim[2];
+  LIBASM_HANDLER_FETCH(fetch);
+  //int (*fetch)(asm_instr *,u_char *,u_int,asm_processor *) = 0;
+  
+  /* we have to convert to the endiannes of the architecture
+   * were libasm is running keeping in mind that the target
+   * object can be either in big or little endian. */
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-  u_char	*ptr;
-  int		i;
-  
-  ptr = (u_char *) &converted;
-  for (i = 0; i < 4; i++)
-    *(ptr + i) = *(buf + 3 - i);  
+  if(asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+    memcpy((char *)&converted,buf,sizeof(converted));
+  } else {
+    for(i=0;i<4;i++)
+      ((char *)(&converted))[3-i] = *(buf + i);
+  }
 #else
-  memcpy((char *) &converted, buf, sizeof(converted));
+  if(asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+    memcpy((char *)&converted,buf,sizeof(converted));
+  } else {
+      for(i=0;i<4;i++)
+	((char *)(&converted))[i] = *(buf + 3 - i);
+  }
 #endif
-
-  printf("opcode = [%i%i%i%i%i%i] function = [%i%i%i%i%i%i]",
-	 MGETBIT(converted, 31),MGETBIT(converted, 30),MGETBIT(converted, 29),
-	 MGETBIT(converted, 28),MGETBIT(converted, 27),MGETBIT(converted, 26),
-	 
-	 MGETBIT(converted, 5),MGETBIT(converted, 4),MGETBIT(converted, 3),
-	 MGETBIT(converted, 2),MGETBIT(converted, 1),MGETBIT(converted, 0));
-  op6 = mips_extract_opcode(converted);
   
-  ins->len = 4;
-  if (op6 == 0)
-    return (mips_decode_rtype(ins, (u_char *) &converted, len, proc));
-  else if (op6 & 0x2)
-    return (mips_decode_jtype(ins, (u_char *) &converted, len, proc));
-  else if (op6 & 0x10)
-    return (mips_decode_ctype(ins, (u_char *) &converted, len, proc));
-  else
-    return (mips_decode_itype(ins, (u_char *) &converted, len, proc));
+   ins->proc = proc;
+   ins->len = 4;
+   ins->ptr_instr = buf;
+   ins->nb_op = 0;
+   ins->type = ASM_TYPE_NONE;
+   
+   vec = aspect_vector_get("disasm-mips");
+
+/*
+ * Instruction hierarchy, lacks COP0 COP1 COP2 and COP1X
+ * subclasses wich are fpu/privileged/coprocessor 2 stuff
+ *
+ * dim[0] = 0-63 = base class : 64 combinations
+ *    dim[1] = 0-63 = SPECIAL subclass : 64 combinations
+ *       dim[2] = 0-1 = MOVCI subclass
+ *       dim[2] = 2-3 = SRL subclass
+ *       dim[2] = 4-5 = SRLV subclass 
+ *    dim[1] = 64-95 = REGIMM subclass : 32 combinations
+ *    dim[1] = 96-159 = SPECIAL2 subclass : 64 combinations
+ *    dim[1] = 160-223 = SPECIAL3 subclass : 64 combinations
+ *       dim[2] = 6-37 = BSHFL subclass : 32 combinations
+ */
+
+   dim[0] = converted >> 24;
+
+   switch(dim[0])
+   {
+      case MIPS_OPCODE_SPECIAL:
+      {
+	dim[1] = converted & 0x3f;
+	switch(dim[1])
+         {
+            case MIPS_OPCODE_MOVCI:
+               dim[2] = (converted & 0x10000 ) >> 16;
+               break;
+            case MIPS_OPCODE_SRL:
+               dim[2] = ((converted & 0x200000 ) >> 21) + 2;
+               break;
+            case MIPS_OPCODE_SRLV:
+               dim[2] = ((converted & 0x40) >> 6) + 4;
+               break;
+         }
+         break;
+      }
+      case MIPS_OPCODE_REGIMM:
+         dim[1] = (converted & 0x3f) + 
+                  MIPS_SPECIAL_FUNCTION_NUM; 
+         break;
+      case MIPS_OPCODE_SPECIAL2:
+         dim[1] = (converted & 0x3f) + 
+                  MIPS_SPECIAL_FUNCTION_NUM +
+                  MIPS_REGIMM_FUNCTION_NUM;
+         break;
+      case MIPS_OPCODE_SPECIAL3:
+         dim[1] = (converted & 0x3f) + 
+                  MIPS_SPECIAL_FUNCTION_NUM +
+                  MIPS_REGIMM_FUNCTION_NUM +
+                  MIPS_SPECIAL2_FUNCTION_NUM;
+         switch(dim[1])
+         {
+            case MIPS_OPCODE_BSHFL:
+	      dim[2] = ((converted & 0x7c0) >> 6) + 6;
+         }
+         break;
+   }
+   
+   fetch = aspect_vectors_select(vec,dim);
+   return (fetch(ins,(u_char *)&converted,len,proc));
 }
 
+/**
+ * XXX: Move this to a place more appropriate.
+ */
+void	asm_register_mips(asm_processor *proc, int opt);
 
-
+/**
+ * Mips initialization function. 
+ * @param proc
+ * @return Always 1
+ */
 int	asm_init_mips(asm_processor *proc)
 {
-  
   proc->fetch = fetch_mips;
   proc->display_handle = asm_mips_display_instr;
   proc->internals = 0;
-  proc->instr_table = malloc(sizeof (char*) * (ASM_MIPS_BAD + 1));
-  proc->instr_table[ASM_MIPS_] = "unimp";
-  proc->instr_table[ASM_MIPS_ADD] = "add";
-  proc->instr_table[ASM_MIPS_ADDI] = "addi";
-  proc->instr_table[ASM_MIPS_ADDIU] = "addiu";
-  proc->instr_table[ASM_MIPS_ADDU] = "addu";
-  proc->instr_table[ASM_MIPS_AND] = "and";
-  proc->instr_table[ASM_MIPS_ANDI] = "andi";
-  proc->instr_table[ASM_MIPS_BEQ] = "beq";
-  proc->instr_table[ASM_MIPS_BGTZ] = "bgtz";
-  proc->instr_table[ASM_MIPS_BLEZ] = "blez";
-  proc->instr_table[ASM_MIPS_BNE] = "bne";
-  proc->instr_table[ASM_MIPS_DIV] = "duv";
-  proc->instr_table[ASM_MIPS_DIVU] = "divu";
-  proc->instr_table[ASM_MIPS_J] = "j";
-  proc->instr_table[ASM_MIPS_JAL] = "jal";
-  proc->instr_table[ASM_MIPS_JALR] = "jalr";
-  proc->instr_table[ASM_MIPS_JR] = "jr";
-  proc->instr_table[ASM_MIPS_LB] = "lb";
-  proc->instr_table[ASM_MIPS_LBU] = "lbu";
-  proc->instr_table[ASM_MIPS_LH] = "lh";
-  proc->instr_table[ASM_MIPS_LHI] = "lhi";
-  proc->instr_table[ASM_MIPS_LHU] = "lhu";
-  proc->instr_table[ASM_MIPS_LO] = "lo";
-  proc->instr_table[ASM_MIPS_LW] = "lw";
-  proc->instr_table[ASM_MIPS_MFHI] = "mfhi";
-  proc->instr_table[ASM_MIPS_MFLO] = "mflo";
-  proc->instr_table[ASM_MIPS_MTHI] = "mthi";
-  proc->instr_table[ASM_MIPS_MTLO] = "mtlo";
-  proc->instr_table[ASM_MIPS_MULT] = "mult";
-  proc->instr_table[ASM_MIPS_MULTU] = "multu";
-  proc->instr_table[ASM_MIPS_NOR] = "nor";
-  proc->instr_table[ASM_MIPS_OR] = "or";
-  proc->instr_table[ASM_MIPS_ORI] = "ori";
-  proc->instr_table[ASM_MIPS_REG] = "ERR";
-  proc->instr_table[ASM_MIPS_SB] = "sb";
-  proc->instr_table[ASM_MIPS_SH] = "sh";
-  proc->instr_table[ASM_MIPS_SLL] = "sll";
-  proc->instr_table[ASM_MIPS_SLLV] = "sllv";
-  proc->instr_table[ASM_MIPS_SLT] = "slt";
-  proc->instr_table[ASM_MIPS_SLTI] = "slti";
-  proc->instr_table[ASM_MIPS_SLTIU] = "sltiu";
-  proc->instr_table[ASM_MIPS_SLTU] = "sltu";
-  proc->instr_table[ASM_MIPS_SRA] = "sra";
-  proc->instr_table[ASM_MIPS_SRAV] = "srav";
-  proc->instr_table[ASM_MIPS_SRL] = "srl";
-  proc->instr_table[ASM_MIPS_SRLV] = "srlv";
-  proc->instr_table[ASM_MIPS_SUB] = "sub";
-  proc->instr_table[ASM_MIPS_SUBU] = "subu";
-  proc->instr_table[ASM_MIPS_SW] = "sw";
-  proc->instr_table[ASM_MIPS_TRAP] = "trap";
-  proc->instr_table[ASM_MIPS_XOR] = "xor";
-  proc->instr_table[ASM_MIPS_XORI] = "xori";
-  proc->instr_table[ASM_MIPS_BAD] = "bad";
+  proc->type = ASM_PROC_MIPS;
+  proc->instr_table = (char **)e_mips_instrs;
+
+  asm_init_vectors(proc);
+  asm_register_mips(proc,0);
   return (1);
-  // asm_config_get_endian()
-  // asm_config_set_endian()
 }
+
+
+

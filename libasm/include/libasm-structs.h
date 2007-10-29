@@ -7,14 +7,13 @@
  * Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
  * Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
  *
- * $Id: libasm-structs.h,v 1.14 2007-10-14 00:01:41 heroine Exp $
+ * $Id: libasm-structs.h,v 1.15 2007-10-29 11:26:44 heroine Exp $
  *
  */
 
 /**
  * Operand structure.
  */
-
 struct s_asm_op 
 {  
   /* pointer to processor structure. - to remove -	*/
@@ -120,7 +119,8 @@ struct s_asm_processor
   /* array to instruction memonic by instr field of asm_instr */
   char **instr_table;
   /* fetching instruction. points to processor fetching function. */
-  int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *proc);
+  LIBASM_HANDLER_FETCH(fetch);
+  //int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *proc);
   /* output handler. print instruction in a readable string	*/
   char *(*display_handle)(asm_instr *instr, int addr);
   /* pointer to an internal structure. */

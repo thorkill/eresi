@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: launch_test.sh,v 1.5 2007-10-14 00:01:42 heroine Exp $
+# $Id: launch_test.sh,v 1.6 2007-10-29 11:26:44 heroine Exp $
 # 
 # This script launch lbmjollnir script to make diffs
 # between an objdump dump and a mydisasm dump of each
@@ -12,8 +12,10 @@ function init_test
 {
 
     for i in *.asm; do 
-      as $i -o ${i/asm/o}
-      ld ${i/asm/o} -o ${i/.asm/}
+	as $i -o ${i/asm/o} 2> /dev/null 
+	if ! ld ${i/asm/o} -o ${i/.asm/} 2> /dev/null ; then 
+	    echo "[ER] Failed compiling $i"
+	fi
     done
     ln -sf ../../mydisasm mydisasm
 }
@@ -21,9 +23,10 @@ function init_test
 function diff_test
 {
     for i in *.asm ; do
-	if perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/}
+	echo -n "[Testing] $i:"
+	if perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/} 2> /dev/null
 	    then
-	    echo success
+	    echo "[OK] Test ok"
 	else
 	    echo Error detected. Check output bellow and press enter when you are ready to launch gdb on mydisasm
 	    echo While in gdb, type run_it to launch gdb tracing until asm_read_instr
@@ -64,4 +67,4 @@ fi
 
 init_test $ARG
 diff_test $ARG
-#purge_test $ARG
+purge_test $ARG
