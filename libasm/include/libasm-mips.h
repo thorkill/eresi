@@ -1,6 +1,6 @@
 /**
  * @file libasm-mips.h
- * $Id: libasm-mips.h,v 1.2 2007-10-29 11:26:44 heroine Exp $
+ * $Id: libasm-mips.h,v 1.3 2007-11-15 02:59:35 thor Exp $
  * Manuel Martin - 2007
  */
 
@@ -22,6 +22,7 @@
 
 char	*asm_mips_display_instr(asm_instr *, int);
 int	fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
+void	asm_register_mips_operands(asm_processor *proc);
 
 #define Ob(x)  ((unsigned)Ob_(0 ## x ## uL))
 #define Ob_(x) ((x & 1) | ((x >> 2) & 2) | ((x >> 4) & 4) | ((x >> 6) & 8) |    \

@@ -1,6 +1,6 @@
 /**
  * @file register_mips.c
- * $Id: register_mips.c,v 1.1 2007-10-30 17:23:31 heroine Exp $
+ * $Id: register_mips.c,v 1.2 2007-11-15 02:59:35 thor Exp $
  * Manuel Martin - 2007 
  * This file contains mips architecture registration code.
 */
@@ -59,7 +59,8 @@ int asm_register_mips_opcodes()
 int	asm_register_mips(asm_processor *proc, int opt)
 {
   asm_register_mips_opcodes();
-  asm_register_mips_operands();
+  asm_register_mips_operands(NULL);
+  return 0;
 }
 
 /**
