@@ -15,7 +15,7 @@ RM		= rm -f
 NAME32		= revm-io.32.o
 NAME64		= revm-io.64.o
 
-CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)           \
+CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)           \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
 		-I../../elibc/include/					     \
 		-I../../libui/include/ -I../../libasm/include/               \
@@ -23,7 +23,7 @@ CFLAGS32	+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)           \
 		 -I../../libdump/include/ $(BUILDOP) -DELFSH_INTERN          \
 		$(STATOPT2) $(ASMOPT) $(BITS) -DERESI32 $(READLNOPT)			
 
-CFLAGS64	+= -fPIC -g3 -gstabs+ -Wall -I../include -Iinclude $(DYNOPT) \
+CFLAGS64	+= -fPIC -g3 -Wall -I../include -Iinclude $(DYNOPT) \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
 		-I../../elibc/include/					     \
 		-I../../libui/include/ -I../../libasm/include/               \

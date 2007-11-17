@@ -4,7 +4,7 @@
 ** @file core.c
 ** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.40 2007-08-07 07:13:27 may Exp $
+** $Id: core.c,v 1.41 2007-11-17 22:07:26 thor Exp $
 */
 
 #include "libmjollnir.h"
@@ -161,6 +161,11 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 
     shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
     sct = elfsh_get_section_by_name(sess->cur->obj, shtName, NULL, NULL, NULL);
+
+    if (!sct)
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Can't get section", 0);
+
 
 #if __DEBUG_MJOLLNIR__
     fprintf(D_DESC, "[__DEBUG__] %s: 1st run - Executable section name=(%14s) "

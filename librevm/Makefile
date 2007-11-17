@@ -49,7 +49,7 @@ lib32			:
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
-			ranlib ${NAME32}.a
+			@$(RANLIB) ${NAME32}.a
 			@echo LINKED LIBREVM32
 
 mod64			:

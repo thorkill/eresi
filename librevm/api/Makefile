@@ -16,7 +16,7 @@ RM			= rm -f
 NAME32			= revm-api.32.o
 NAME64			= revm-api.64.o
 
-CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)        \
+CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
 			 -I../../libelfsh/include/ -I../../elibc/include/         \
 			 -I../../libdump/include/ -I../../libasm/include/         \
 			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)   \
@@ -25,7 +25,7 @@ CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT)        \
 			-DELFSH_INTERN $(STATOPT2) $(ASMOPT) -DERESI32 		  \
 			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
-CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -I../include $(DYNOPT) 	  \
+CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
 			 -I../../libelfsh/include/ -I../../elibc/include/	  \
 			 -I../../libdump/include/ -I../../libasm/include/         \
 			 -I/usr/pkg/include/  -I../../libaspect/include/          \

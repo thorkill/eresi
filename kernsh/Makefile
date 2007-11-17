@@ -16,7 +16,7 @@ NAME			= kernsh
 NAME32			= kernsh32 
 NAME64			= kernsh64
 
-CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
+CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../libelfsh/include/ -I../elibc/include/ \
 			 -I../libdump/include/ -I../libasm/include/ \
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
@@ -27,7 +27,7 @@ CFLAGS32		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			-DELFSH_INTERN $(STATOPT2) \
 			$(ASMOPT) -DERESI32 $(NCURSESLNOPT) $(READLNOPT)
 
-CFLAGS64		+= -fPIC -g3 -gstabs+ -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
+CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../libelfsh/include/ -I../elibc/include/ \
 			 -I../libdump/include/ -I../libasm/include/ \
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \

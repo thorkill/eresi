@@ -11,6 +11,7 @@ READLN="0"
 ELFSHNET="0"
 LIBMJOLLNIR="1"
 TESTING="0"
+GSTABS=""
 PREFIX=""
 OSVER=`uname -r | cut -d "." -f1`
 CONFIGFILE="config.h"
@@ -131,6 +132,12 @@ echo  "EXTRAOPT		= $EXTRAOPT -ldmalloc"  >> $CONFIGFILE
 echo  " [*] Enabling ELFsh 64bits binary built"
 echo  "BUILDOPT		= -m64 -DM64"		>> $CONFIGFILE
 M64="1"
+;;
+
+--enable-gstabs*)
+echo  " [*] Enabling gstabs+ support"
+echo  "GSTABS		= -gstabs+"		>> $CONFIGFILE
+GSTABS="1"
 ;;
 
 --use-etags*)
@@ -268,6 +275,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-testing  : Test ERESI without install"
     echo "   --enable-dmalloc  : Link with Electric Fence."
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
+    echo "   --enable-gstabs+  : Enable gstabs+ support"
     echo "   --enable-kernsh   : Build kernsh and libkernsh"
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
@@ -372,6 +380,13 @@ HP-UX*)
 ;;
 
 IRIX*)
+    echo "#define ELFSH_SHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
+
+if [ "$SHELLSET" != "1" ]; then
+    echo "#define ELFSH_SHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
+    SHELLSET="1"
+fi
+    SHELL="/usr/freeware/bin/bash"
     echo "#define IRIX 1" 		  >> $LIBVARSFILE
     echo "RANLIB  = /usr/bin/ar -rs"      >> $CONFIGFILE
     echo "CC = gcc"                       >> $CONFIGFILE

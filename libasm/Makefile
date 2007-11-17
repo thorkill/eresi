@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.28 2007-10-29 11:26:44 heroine Exp $
+## $Id: Makefile,v 1.29 2007-11-17 22:07:26 thor Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -79,7 +79,7 @@ lib:	$(OBJS_libasm)
 	@echo "[RANLIB] ${NAME_libasm}"
 	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
 	@echo "[CC -shared] libasm.so"
-	@${CC} ${OBJS_libasm} -o libasm.so -shared
+	@$(LD) ${OBJS_libasm} -o libasm.so -shared
 
 clean:
 	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
