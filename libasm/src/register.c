@@ -1,5 +1,5 @@
 /**
- * $Id: register.c,v 1.9 2007-10-14 00:01:41 heroine Exp $
+ * $Id: register.c,v 1.10 2007-11-28 00:21:37 strauss Exp $
  *
  * @file register.c
  * @brief Registration of instruction and operand handlers.
@@ -27,6 +27,10 @@ int	asm_arch_register(asm_processor *proc, int machine)
   else if (proc->type == ASM_PROC_SPARC) 
     {
       asm_register_sparc();
+    }
+  else if (proc->type == ASM_PROC_MIPS)
+    {
+      asm_register_mips();
     }
   //
   // Add your architecture handler here.

@@ -49,7 +49,7 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
    ins->nb_op = 0;
    ins->type = ASM_TYPE_NONE;
    
-   vec = aspect_vector_get("disasm-mips");
+   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_MIPS);
 
 /*
  * Instruction hierarchy, lacks COP0 COP1 COP2 and COP1X
@@ -67,6 +67,8 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
  */
 
    dim[0] = converted >> 24;
+   dim[1] = 0;
+   dim[2] = 0;
 
    switch(dim[0])
    {
@@ -114,14 +116,9 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 }
 
 /**
- * XXX: Move this to a place more appropriate.
- */
-void	asm_register_mips(asm_processor *proc, int opt);
-
-/**
  * Mips initialization function. 
  * @param proc
- * @return Always 1
+ * @return Always 0
  */
 int	asm_init_mips(asm_processor *proc)
 {
@@ -131,9 +128,9 @@ int	asm_init_mips(asm_processor *proc)
   proc->type = ASM_PROC_MIPS;
   proc->instr_table = (char **)e_mips_instrs;
 
-  asm_init_vectors(proc);
-  asm_register_mips(proc,0);
-  return (1);
+  asm_arch_register(proc, 0);
+
+  return (0);
 }
 
 

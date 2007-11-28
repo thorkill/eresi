@@ -6,7 +6,7 @@
 ** Started : Sun Nov 30 20:13:12 2003
 ** Updated : Thu Dec  4 03:01:07 2003
 **
-** $Id: init_sparc.c,v 1.9 2007-10-14 00:01:41 heroine Exp $
+** $Id: init_sparc.c,v 1.10 2007-11-28 00:21:37 strauss Exp $
 **
 */
 
@@ -63,8 +63,10 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->op[1].address_space = 0x80;
   ins->op[2].address_space = 0x80;
   
-  vec = aspect_vector_get("disasm-sparc");
+  vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_SPARC);
   dim[0] = (converted & 0xC0000000) >> 30;
+  dim[1] = 0;
+  dim[2] = 0;
   
   if (MGETBIT(converted, 31)) {
   	if (MGETBIT(converted, 30)) {  	  	  
@@ -137,7 +139,6 @@ int	asm_init_sparc(asm_processor *proc)
    * XXX: Check this code and update if necessary to follow line developpement.
    */
   
-  asm_init_vectors(proc);
   asm_arch_register(proc, 0);
   return (1);
 }

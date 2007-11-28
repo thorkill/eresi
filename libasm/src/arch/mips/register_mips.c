@@ -1,6 +1,6 @@
 /**
  * @file register_mips.c
- * $Id: register_mips.c,v 1.2 2007-11-15 02:59:35 thor Exp $
+ * $Id: register_mips.c,v 1.3 2007-11-28 00:21:37 strauss Exp $
  * Manuel Martin - 2007 
  * This file contains mips architecture registration code.
 */
@@ -56,28 +56,72 @@ int asm_register_mips_opcodes()
  *
  *
  */
-int	asm_register_mips(asm_processor *proc, int opt)
+int asm_register_mips()
 {
+  u_int	*dims;
+  char  **dimstr;
+  
+  dims = malloc(3 * sizeof (u_int));
+  if (!dims)
+    {
+      goto out;
+    }
+  dimstr = malloc(3 * sizeof (char *));
+  if (!dimstr)
+    {
+      goto out;
+    }
+    
+  /* TODO: These sizes _HAVE_ to be reviewed */
+  dims[0] = 64;
+  dims[1] = 64;
+  dims[2] = 64;
+    
+  dimstr[0] = "OPCODES";
+  dimstr[1] = "SECONDARY OPCODES"; /* Should be 0 when unused */
+  dimstr[2] = "TERTIARY OPCODES"; /* Should be 0 when unused */
+
+  aspect_register_vector(LIBASM_VECTOR_OPCODE_MIPS, asm_fetch_default,
+			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
+
+  /* Initializing MIPS operand handler vector */
+  /* This section is just a stub for when the operand vector is actually
+   * implemented.
+   
+  dims = malloc(1 * sizeof (u_int));
+
+  if (!dims)
+    {
+      goto out;
+    }
+  dimstr = malloc(1 * sizeof (char *));
+  if (!dimstr)
+    {
+      goto out;
+    }
+  
+  dims[0] = ???;
+
+  dimstr[0] = "OPERAND";
+  
+  aspect_register_vector(LIBASM_VECTOR_OPERAND_MIPS,  asm_operand_fetch_default,
+			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+
+  */
+  
   asm_register_mips_opcodes();
-  asm_register_mips_operands(NULL);
-  return 0;
+  asm_register_mips_operands();
+
+  out:
+    return (1);
 }
 
 /**
  * Register mips operand handlers.
  * This is currently not implemented.
  */
-void asm_register_mips_operands(asm_processor *proc)
+int asm_register_mips_operands()
 {
-   return;
+   return (1);
 }
 
-/**
- * Register the mips vector handlers.
- * @param proc Pointer to the asm processor structure.
- */
-void asm_register_mips_arch(asm_processor *proc)
-{
-   asm_register_mips_operands(proc);
-   asm_register_mips_opcodes();
-}

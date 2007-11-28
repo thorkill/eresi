@@ -1,6 +1,6 @@
 
 /**
- * $Id: register.c,v 1.1 2007-10-14 00:01:41 heroine Exp $
+ * $Id: register.c,v 1.2 2007-11-28 00:21:37 strauss Exp $
  * @file register.c
  * @brief 
  *
@@ -8,6 +8,9 @@
 
 #include <libasm.h>
 #include <libasm-int.h>
+
+int asm_register_sparc_instructions();
+int asm_register_sparc_operands();
 
 /**
  * Initialize sparc vector.
@@ -64,9 +67,12 @@ int	asm_register_sparc()
   
   aspect_register_vector(LIBASM_VECTOR_OPERAND_SPARC,  asm_operand_fetch_default,
 			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+
+  asm_register_sparc_instructions();
+  asm_register_sparc_operands();
   
- out:
-  return (1);
+  out:
+    return (1);
 }
 
 /**
@@ -236,7 +242,7 @@ int asm_register_sparc_instructions()
  * @return 1 on success, 0 on error.
  */
 
-int	asm_register_sparc_operand(int operand_type, unsigned long fcn)
+int asm_register_sparc_operand(int operand_type, unsigned long fcn)
 {
   LIBASM_PROFILE_FIN();
   asm_register_operand(LIBASM_VECTOR_OPERAND_SPARC, operand_type, fcn);
@@ -248,7 +254,7 @@ int	asm_register_sparc_operand(int operand_type, unsigned long fcn)
  *
  */
 
-int	asm_register_sparc_operands(asm_processor *proc)
+int asm_register_sparc_operands()
 {
   asm_register_sparc_operand(ASM_SP_OTYPE_REGISTER, (unsigned long) asm_sparc_op_fetch_register);
   asm_register_sparc_operand(ASM_SP_OTYPE_IMMEDIATE, (unsigned long) asm_sparc_op_fetch_immediate);
