@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
-** $Id: librevm-color.h,v 1.4 2007-08-03 11:51:00 heroine Exp $
+** $Id: librevm-color.h,v 1.5 2007-11-28 07:56:09 may Exp $
 **
 */
 
@@ -16,7 +16,7 @@
 #define C_STARTCOLOR '\033'
 
 #define COLOR_TOKENS       50
-#define COLOR_TOKEN_LEN    140
+#define COLOR_TOKEN_LEN    256
 
 /** 
  * ELFsh color structure 

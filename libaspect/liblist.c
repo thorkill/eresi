@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id: liblist.c,v 1.7 2007-09-17 02:26:03 may Exp $
+** $Id: liblist.c,v 1.8 2007-11-28 07:56:08 may Exp $
 */
 #include "libaspect.h"
 
@@ -30,11 +30,10 @@ int list_init(list_t *h, char *name, u_int type)
 #endif
       NOPROFILER_ROUT(1);
     }
-  
-  h->head   = NULL;
+
+  bzero(h, sizeof(list_t));
   h->type   = type;
-  h->elmnbr = 0;
-  h->linearity = 0;
+  h->name   = name;
   hash_add(hash_lists, name, h);
   NOPROFILER_ROUT(0);
 }
@@ -95,6 +94,32 @@ list_t		*list_empty(char *name)
   list_init(list, newname, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
+
+
+/* Reverse a list */
+list_t		*list_reverse(list_t *l)
+{
+  list_t	*newlist;
+  listent_t	*nextent;
+  listent_t	*curent;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  hash_del(hash_lists, l->name);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newlist, sizeof(list_t), NULL);
+  list_init(newlist, l->name, l->type);
+
+  /* Copy the list inserting at the beginning all the time */
+  for (curent = l->head; curent; curent = nextent)
+    {
+      list_add(newlist, curent->key, curent->data);
+      nextent = curent->next;
+      XFREE(__FILE__, __FUNCTION__, __LINE__, curent);
+    }
+
+  XFREE(__FILE__, __FUNCTION__, __LINE__, l);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);  
+}
+
 
 /* Destroy a list */
 void		list_destroy(list_t *h)

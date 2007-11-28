@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.18 2007-10-01 01:13:08 may Exp $
+** $Id: types.c,v 1.19 2007-11-28 07:56:08 may Exp $
 **
 */
 #include "libaspect.h"
@@ -31,7 +31,6 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_LONG    , sizeof(u_long)	},
     {ASPECT_TYPENAME_DADDR   , sizeof(u_long)	},
     {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
-
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
@@ -45,9 +44,10 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
  */
 int			aspect_type_simple(int typeid)
 {
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (typeid != ASPECT_TYPE_UNKNOW && typeid < ASPECT_TYPE_SIMPLENUM)
-    return (1);
-  return (0);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /** 
@@ -73,6 +73,7 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
   newtype->elemnbr    = dims;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);
 }
+
 
 /**
  * @brief Copy the structure representing a data type and change its name to create a new meta-type
@@ -287,7 +288,7 @@ aspectype_t		*aspect_type_create(char *label,
   /* Check that the created type name is not existing already */
   /* It is authorized to update/change some specific types: bloc, func, vector, hash, list .. */
   newtype = hash_get(&types_hash, label);
-  if (newtype && (newtype->type < ASPECT_TYPE_SIMPLENUM || newtype->type >= ASPECT_TYPE_BASENUM))
+  if (newtype && (newtype->type < ASPECT_TYPE_CORENUM || newtype->type >= ASPECT_TYPE_BASENUM))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot create type : name already exists", NULL);
 

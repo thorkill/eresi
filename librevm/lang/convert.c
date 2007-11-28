@@ -20,7 +20,7 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id: convert.c,v 1.6 2007-10-01 01:13:08 may Exp $
+** $Id: convert.c,v 1.7 2007-11-28 07:56:09 may Exp $
 **
 */
 #include "revm.h"
@@ -43,7 +43,7 @@ int		revm_convert2str(revmobj_t *obj)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%02hhX", val8);
+      snprintf(tmp, sizeof(tmp), "%02hhu", val8);
       obj->immed_val.byte = 0;
       obj->immed_val.str = strdup(tmp);
  
@@ -54,7 +54,7 @@ int		revm_convert2str(revmobj_t *obj)
       break;
     case ASPECT_TYPE_SHORT:
       val16 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%04hX", val16);
+      snprintf(tmp, sizeof(tmp), "%04hu", val16);
       obj->immed_val.half = 0;
       obj->immed_val.str = strdup(tmp);
  
@@ -65,7 +65,7 @@ int		revm_convert2str(revmobj_t *obj)
       break;
     case ASPECT_TYPE_INT:
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%08X", val32);
+      snprintf(tmp, sizeof(tmp), "%08u", val32);
       obj->immed_val.word = 0;
       obj->immed_val.str = strdup(tmp);
  

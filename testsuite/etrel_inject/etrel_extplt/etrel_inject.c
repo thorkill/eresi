@@ -4,7 +4,7 @@
 ** Started on  Sat May 10 07:01:59 2003 jfv
 ** Last update Mon Jun 30 07:38:12 2003 jfv
 **
-** $Id: etrel_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
+** $Id: etrel_inject.c,v 1.4 2007-11-28 07:56:09 may Exp $
 **
 */
 #include	"libelfsh.h"
@@ -54,6 +54,6 @@ int		main(int argc, char **argv)
   puts("[*] ET_REL injected");
   return (0);
  err:
-  //elfsh_error();
+  elfsh_error();
   return (-1);
 }

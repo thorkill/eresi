@@ -8,7 +8,7 @@
  * Started on  Mon Feb 24 12:21:12 2003 jfv
  *
  *
- * $Id: objects.c,v 1.12 2007-10-01 01:13:08 may Exp $
+ * $Id: objects.c,v 1.13 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -245,44 +245,55 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
 /**
  * @brief The high level function for object conversion 
  */
-int		revm_convert_object(revmobj_t *obj, u_int objtype)
+int		revm_convert_object(revmexpr_t *expr, u_int objtype)
 {
+  aspectype_t	*type;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!obj)
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", (-1));
+  type = aspect_type_get_by_id(objtype);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid parameter type", (-1));
 
 #if 0
   printf("[DEBUG_OBJECT] Trying to convert type %u into type %u \n", 
-	 obj->type, objtype);
+	 (expr->type ? expr->type->type : 0), objtype);
 #endif  
 
   /* Automatic conversion */
-  if (!obj->otype || obj->otype->type == objtype)
+  if (!expr->type)
     {
-      obj->otype = aspect_type_get_by_id(objtype);
+      expr->type         = type;
+      if (expr->value)
+	expr->value->otype = expr->type;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+  if (expr->type->type == objtype)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
+  expr->type = type;
   switch (objtype)
     {
     case ASPECT_TYPE_STR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2str(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2str(expr->value));
     case ASPECT_TYPE_CADDR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2caddr(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2caddr(expr->value));
     case ASPECT_TYPE_DADDR:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2daddr(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2daddr(expr->value));
     case ASPECT_TYPE_LONG:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2long(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2long(expr->value));
     case ASPECT_TYPE_INT:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2int(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2int(expr->value));
     case ASPECT_TYPE_BYTE:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2byte(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2byte(expr->value));
     case ASPECT_TYPE_SHORT:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2short(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2short(expr->value));
     case ASPECT_TYPE_RAW:
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2raw(obj));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_convert2raw(expr->value));
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Destination type unknown", -1);

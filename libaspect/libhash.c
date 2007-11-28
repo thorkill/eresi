@@ -4,7 +4,7 @@
 ** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.39 2007-09-17 02:26:03 may Exp $
+** $Id: libhash.c,v 1.40 2007-11-28 07:56:08 may Exp $
 */
 #include "libaspect.h"
 
@@ -44,10 +44,11 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
   /* Add a new element */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 h->ent, size * sizeof(listent_t), -1);
-  h->size   = size;
-  h->type   = type;
-  h->elmnbr = 0;
+  h->size      = size;
+  h->type      = type;
+  h->elmnbr    = 0;
   h->linearity = 0;
+  h->name      = name;
   hash_add(hash_hash, name, h);
 
   if (!hash_lists)
@@ -63,6 +64,8 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
  */
 hash_t  *hash_find(char *name)
 {
+  if (!name)
+    return (NULL);
   return ((hash_t *) hash_get(hash_hash, name));
 }
 
@@ -133,6 +136,9 @@ void		hash_destroy(hash_t *h)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  //if (strstr(h->name, "label"))
+  //fprintf(stderr, "Destroying label hash table named %s \n", h->name);
+
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
@@ -166,6 +172,9 @@ int		hash_add(hash_t *h, char *key, void *data)
     index += *backup;
   index %= h->size;
 
+  if (strstr(h->name, "label"))
+    fprintf(stderr, " [D] ******** Adding new label of key %s \n", key);
+
   if (h->ent[index].key == NULL)
     {
       h->ent[index].key  = key;
@@ -198,6 +207,9 @@ int		hash_del(hash_t *h, char *key)
   listent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //if (strstr(h->name, "label"))
+  //fprintf(stderr, " [D] ******** Deleting new label of key %s \n", key);
 
   /* Check the first entry for this hash */
   //printf("before h = %p key = %p (%s) \n", h, key, (key ? key : ""));
@@ -274,7 +286,7 @@ int		hash_set(hash_t *h, char *key, void *data)
   listent_t	*ent;
 
   ent = hash_get_ent(h, key);
-  if (!ent)
+  if (!ent || (!ent->key && !ent->data))
     return (hash_add(h, key, data));
   ent->data = data;
   return (0);

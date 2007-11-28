@@ -11,8 +11,11 @@ add $hash[test2] AMD
 add $hash[test2] Pa-risc
 tables test2
 
+vlist
+type
+
 # We need a parameter
-cmp $# 2
+cmp $# 1
 jne error
 
 beginning:
@@ -29,11 +32,9 @@ foreach $element of test2
   print Table contains element : $element
 forend
 
-quit
-verb
-
 load /usr/bin/ssh
 
+vlist
 set $entnbr 1.sht[.dynsym].size
 div $entnbr 1.sht[.dynsym].entsize
 vlist

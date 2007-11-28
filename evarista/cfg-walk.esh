@@ -2,17 +2,25 @@
 
 print Now entered cfg-walk
 
-cmp $# 2
+
+
+cmp $# 1
 jne end
+print $1
+
+profile enable warn
 
 set $block $hash[blocks:$1]
+print $1
 set $hash[visitedblocks:$1] 1
+print $block
+print Now ASM to ELIR on block at $block.vaddr
+print $hash[visitedblocks:$1]
 
-print Now ASM to ELIR on block at $block.curaddr
 sparc2lir    $1
 lir-dataflow $1
 
-foreach $nextblock in $block.outlist
+foreach $nextblock of $block.outlist
 
   set $addr  $nextblock.curaddr
   set $found $hash[visitedblocks:$curaddr]

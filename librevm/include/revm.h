@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.88 2007-10-11 18:25:17 pouik Exp $
+** $Id: revm.h,v 1.89 2007-11-28 07:56:09 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -80,8 +80,8 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
-#define	__DEBUG_EXPRS__		0
-#define	__DEBUG_EXPRS_MORE__	0
+#define	__DEBUG_EXPRS__		1
+#define	__DEBUG_EXPRS_MORE__	1
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
@@ -110,15 +110,17 @@ extern asm_processor	proc;
 #define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	IS_BLANK(c)		(c == ' ' || c == '\t')
 
-#define	REVM_VAR_ARGC		"#"
+#define	REVM_VAR_ARGC		"$#"
+#define REVM_VAR_RESULT		"$_"
+#define	REVM_VAR_LOAD		"$!"
+#define	REVM_VAR_ERROR		"$ERR"
+#define	REVM_VAR_SHELL		"$SHELL"
+#define	REVM_VAR_EDITOR		"$EDITOR"
+#define REVM_VAR_LIBPATH	"$LPATH"
+#define REVM_VAR_STRIPLOG	"$SLOG"
+#define	REVM_TMPVAR_PREFIX	"$TMPVAR"
 #define	REVM_VAR_PREFIX		'$'
-#define REVM_VAR_RESULT		"_"
-#define	REVM_VAR_LOAD		"!"
-#define	REVM_VAR_ERROR		"ERR"
-#define	REVM_VAR_SHELL		"SHELL"
-#define	REVM_VAR_EDITOR		"EDITOR"
-#define REVM_VAR_LIBPATH	"LPATH"
-#define REVM_VAR_STRIPLOG	"SLOG"
+
 
 /* REVM atomic operations */
 #define	REVM_OP_UNKNOW		0
@@ -183,6 +185,7 @@ extern asm_processor	proc;
 #define ELFSH_MIPSFLAGS_MAX	16
 
 /* REVM general parameters */
+#define	REVM_MAXARGC		128
 #define	REVM_SEP		"."
 #define	REVM_COMMENT_START	'#'
 #define REVM_DASH		'-'
@@ -296,6 +299,7 @@ extern asm_processor	proc;
 #define	CMD_REMOVE2		"rm"
 #define	CMD_FLUSH		"flush"
 #define	CMD_VLIST		"vlist"
+#define	CMD_VARLIST		"varlist"
 #define	CMD_SOURCE		"source"
 #define CMD_SDIR		"sdir"
 #define	CMD_CLEANUP		"cleanup"
@@ -344,9 +348,9 @@ extern asm_processor	proc;
 #define	CMD_JGE			"jge"
 #define	CMD_FOREACH		"foreach"
 #define	CMD_FOREND		"forend"
-#define	CMD_MATCH		"transform"
+#define	CMD_MATCH		"rewrite"
 #define	CMD_PARAM_INTO		"into"
-#define	CMD_MATCHEND		"endtransf"
+#define	CMD_MATCHEND		"rwtend"
 #define	CMD_CASE		"case"
 #define	CMD_REFLECT		"reflect"
 #define	CMD_DEFAULT		"default"
@@ -463,16 +467,16 @@ typedef struct		s_cmdhandler
 /* Thats the command line options registering structure */
 typedef struct		s_args
 {
-  char			*param[128];	/* option parameters */
-  char			use_regx[2];	/* 1 if the option use a regx */
-  regex_t		regx[2];	/* regx */
-  revmlist_t		disasm[2];	/* D/X parameters */
-  char			argc;		/* Number of args in param[] */
-  revmcmd_t		*cmd;		/* Command descriptor */
-  char			*name;		/* Command name */
-  char		        *endlabel;	/* Co-Label for foreach/forend */
+  char			*param[REVM_MAXARGC];	/* Parameters */
+  char			use_regx[2];		/* 1 if the option use a regx */
+  regex_t		regx[2];		/* Regx */
+  revmlist_t		disasm[2];		/* D/X parameters */
+  char			argc;			/* Number of args in param[] */
+  revmcmd_t		*cmd;			/* Command descriptor */
+  char			*name;			/* Command name */
+  char		        *endlabel;		/* Co-Label for foreach/forend */
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int		        listidx;       /* Iteration index for this foreach */
+  u_int		        listidx;		/* Iteration index for this foreach */
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
@@ -585,6 +589,7 @@ typedef struct        s_world
 extern revmworld_t	world;
 
 /* All the StandAlone hashtables */
+extern list_t		frames_list;     /* List of frames for the ERESI interpreter */
 extern hash_t		instrlists_hash; /* Tables of expression lists */
 extern hash_t		cmd_hash;	 /* commands handlers */
 extern hash_t		parser_hash;	 /* parsers handlers */
@@ -592,9 +597,7 @@ extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
-extern hash_t		vars_hash;	 /* Scripting variables hash table */
 extern hash_t		exprs_hash;	 /* ERESI expressions types hash */ 
-extern hash_t		exprtypes_hash;	 /* Types of expressions */
 extern hash_t		labels_hash[10]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
@@ -846,7 +849,7 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);
 char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
-revmobj_t	*revm_lookup_param(char *param);
+revmexpr_t	*revm_lookup_param(char *param);
 revmobj_t	*revm_check_object(revmobj_t *pobj);
 void		revm_destroy_object(revmobj_t *pobj);
 revmobj_t	 *revm_copy_object(revmobj_t *pobj);
@@ -856,7 +859,8 @@ char		*revm_reverse(elfshobj_t *file, u_int vaddr);
 
 /* Lookup functions */
 revmobj_t	*revm_lookup_immed(char *param);
-revmobj_t	*revm_lookup_var(char *param);
+revmexpr_t	*revm_lookup_var(char *param);
+
 elfshobj_t	*revm_lookup_file(char *param);
 u_int		revm_lookup_index(char *param);
 char		*revm_lookup_string(char *param);
@@ -885,6 +889,7 @@ revmobj_t       *parse_lookup4(char *param, char *fmt, u_int sepnbr);
 revmobj_t       *parse_lookup5_index(char *param, char *fmt, u_int sepnbr);
 revmobj_t	*parse_vector(char *param, char *fmt);
 revmobj_t	*parse_hash(char *param, char *fmt);
+revmobj_t	*parse_hash_field(char *param, char *fmt);
 revmobj_t	*parse_list(char *param, char *fmt);
 
 /* Versions functions */
@@ -1010,15 +1015,17 @@ int		revm_testscript(int ac, char **av);
 int		revm_exec_str(char *str);
 int	        revm_restore_dbgcontext(int, char, revmargv_t*, void*, char**, char*);
 
-/* Variable functions */
+/* ERESI variables related functions */
 int             revm_setvar_str(char *varname, char *value);
 int             revm_setvar_raw(char *varname, char *value, u_int len);
 int             revm_setvar_byte(char *varname, u_char byte);
 int             revm_setvar_short(char *varname, u_short val);
 int             revm_setvar_int(char *varname, u_int val);
 int             revm_setvar_long(char *varname, u_long val);
+char		*revm_tmpvar_create();
+int		revm_variable_istemp(revmexpr_t *e);
 
-/* Type related functions */
+/* ERESI types related functions */
 int		revm_types_print();
 int		revm_type_print(char *type, char mode);
 int		revm_type_copy(char *from, char *to);
@@ -1043,7 +1050,7 @@ char		*revm_generic_getdata(void *data, int off, int sizelm);
 int		revm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 
 /* Object creation/verification functions */
-int		revm_convert_object(revmobj_t *obj, u_int objtype);
+int		revm_convert_object(revmexpr_t *e, u_int objtype);
 revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_obj_idx,
 				 void	*get_obj_nam,
@@ -1076,17 +1083,18 @@ void		revm_dbgid_set(u_int pid);
 u_int		revm_dbgid_get();
 
 /* Atomic operations */
-int             revm_preconds_atomics(revmobj_t **o1, revmobj_t **o2);
-int		revm_arithmetics(revmobj_t *o1, revmobj_t *o2, u_char op);
-int		revm_hash_add(hash_t *h, revmobj_t *o);
-int		revm_hash_del(hash_t *h, revmobj_t *o);
-int		revm_list_add(list_t *h, revmobj_t *o);
-int		revm_list_del(list_t *h, revmobj_t *o);
+int             revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2);
+int		revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2);
+int		revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op);
+int		revm_hash_add(hash_t *h, revmexpr_t *e);
+int		revm_hash_del(hash_t *h, revmexpr_t *e);
+int		revm_list_add(list_t *h, revmexpr_t *e);
+int		revm_list_del(list_t *h, revmexpr_t *e);
 int		revm_hash_set(char *tab, char *elm, void *obj, u_int type);
 int		revm_list_set(char *tab, char *elm, void *obj, u_int type);
-int		revm_testbit(revmobj_t *o1, revmobj_t *o2, u_int *result);
-int		revm_object_compare(revmobj_t *o1, revmobj_t *o2, elfsh_Addr *val);
-int		revm_object_set(revmobj_t *o1, revmobj_t *o2);
+int		revm_testbit(revmexpr_t *o1, revmexpr_t *o2, u_int *result);
+int		revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val);
+int		revm_object_set(revmexpr_t *e1, revmexpr_t *e2);
 
 /* Job related functions */
 int		revm_own_job(revmjob_t *job);
@@ -1115,16 +1123,17 @@ int             revm_uninform_type(char *type, char *varname, u_char print);
 revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value);
 revmexpr_t	*revm_expr_create(aspectype_t *type, char *name, char *val);
 revmexpr_t	*revm_expr_get(char *pathname);
-int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid);
+int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, elfsh_Addr *val);
 int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig);
 int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc);
 int		revm_expr_print(char *pathname);
 int		revm_expr_match_by_name(char *original, char *candidate);
-int		revm_expr_compare_by_name(char *original, char *candidate);
+int		revm_expr_compare_by_name(char *original, char *candidate, elfsh_Addr *val);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname);
+int		revm_expr_destroy(char *e);
 
 /* May not be defined */
 #if __BSD__

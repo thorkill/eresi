@@ -5,7 +5,7 @@
  *
  * Started September 16 03:11:04 2005 jfv
  *
- * $Id: log.c,v 1.8 2007-08-17 15:38:52 heroine Exp $
+ * $Id: log.c,v 1.9 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -58,15 +58,17 @@ static void		__strip_group_char(char *str, char s, char e)
 }
 
 
-
+/**
+ * Log to file
+ */
 static void		logtofile(char *str)
 {
+  revmexpr_t		*stripexpr;
   revmobj_t		*stripvar;
   char			*tmp;
   u_int			len;
 
   NOPROFILER_IN();
-
   len = strlen(str);
   tmp = alloca(len + 1);
 
@@ -76,25 +78,22 @@ static void		logtofile(char *str)
 
   /* We made only local modifications */
   strcpy(tmp, str);
-
-  stripvar = hash_get(&vars_hash, REVM_VAR_STRIPLOG);
+  stripexpr = revm_expr_get(REVM_VAR_STRIPLOG);
+  if (stripexpr)
+    stripvar = stripexpr->value;
   
-  /* We strip depending of $SLOG variable value */
-  if (stripvar != NULL && stripvar->immed_val.word != 0)
-    {
-      /* Clean color parts */
-      __strip_group_char(tmp, C_STARTCOLOR, 'm');
-    }
+  /* We strip the color part depending of $SLOG variable value */
+  if (stripvar && stripvar->immed_val.word)
+    __strip_group_char(tmp, C_STARTCOLOR, 'm');
 
-#if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
   /* Strip RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE */
+#if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
   __strip_char(tmp, RL_PROMPT_START_IGNORE);
   __strip_char(tmp, RL_PROMPT_END_IGNORE);
 #endif
 
   len = strlen(tmp);
   XWRITE(world.curjob->ws.logfd, tmp, len, );
-
   NOPROFILER_OUT();
 }
 

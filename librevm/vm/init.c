@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.32 2007-10-14 09:54:10 heroine Exp $
+ * $Id: init.c,v 1.33 2007-11-28 07:56:09 may Exp $
  *
  */
 
@@ -108,7 +108,7 @@ int		revm_loop(int argc, char **argv)
 		world.state.revm_mode != REVM_STATE_DEBUGGER)
 	      goto end;
 	  }
-	else if(!world.state.revm_net)
+	else if (!world.state.revm_net)
 	  revm_exit(-1);
       }
 
@@ -129,10 +129,10 @@ int		revm_loop(int argc, char **argv)
       }
 
     /* Quit parsing if necessary */
-    if ((!world.curjob->curcmd && world.state.revm_mode == REVM_STATE_SCRIPT) ||
-	(world.curjob->curcmd && world.curjob->curcmd->name &&
+    if ((!world.curjob->curcmd && world.state.revm_mode == REVM_STATE_SCRIPT)) //||
+	/*(world.curjob->curcmd && world.curjob->curcmd->name &&
 	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
-	  !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))
+	 !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))*/
       break;
   }
   while ((world.state.revm_mode != REVM_STATE_CMDLINE
@@ -227,6 +227,7 @@ int		revm_init()
   aspect_called_ctors_inc();
 
   /* Set the world up */
+  aspect_init();
   asm_init_ia32(&world.proc);
   asm_init_sparc(&world.proc_sparc);
   revm_initio();
@@ -327,7 +328,7 @@ int		revm_setup(int ac, char **av, char mode, char side)
 
   revm_tables_setup();
   elfsh_setup_hooks();
-
+  
   if (!mjr_init_session(&world.mjr_session))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "mjollnir session can't be initialized.", -1);

@@ -6,7 +6,7 @@
  * Started September 16 2005 04:01:03 jfv
  *
  *
- * $Id: variables.c,v 1.8 2007-09-02 21:47:25 pouik Exp $
+ * $Id: variables.c,v 1.9 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -18,6 +18,7 @@
  */
 int		revm_setvar_str(char *varname, char *value)
 {
+  revmexpr_t	*expr;
   revmobj_t	*var;
   int		len;
 
@@ -26,10 +27,11 @@ int		revm_setvar_str(char *varname, char *value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid NULL parameter", (-1));
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unknown variable", (-1));
+		      "Cannot convert variable", (-1));
+  var = expr->value;
   if (revm_convert2str(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed string conversion", (-1));
@@ -39,6 +41,7 @@ int		revm_setvar_str(char *varname, char *value)
 	     var->immed_val.str, var->immed_val.str, len, -1);
   memcpy(var->immed_val.str, value, len - 1);
   var->immed_val.str[len - 1] = '\0';
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -48,17 +51,19 @@ int		revm_setvar_str(char *varname, char *value)
  */
 int             revm_setvar_raw(char *varname, char *value, u_int len)
 {
-  revmobj_t   *var;
+  revmexpr_t	*expr;
+  revmobj_t	*var;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!varname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid NULL parameter", (-1));
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unknown variable", (-1));
+                      "Cannot convert variable", (-1));
+  var = expr->value;
   if (revm_convert2raw(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed string conversion", (-1));
@@ -66,6 +71,7 @@ int             revm_setvar_raw(char *varname, char *value, u_int len)
     XREALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     var->immed_val.str, var->immed_val.str, len, -1);
   memcpy(var->immed_val.str, value, len - 1);
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -76,6 +82,7 @@ int             revm_setvar_raw(char *varname, char *value, u_int len)
  */
 int		revm_setvar_byte(char *varname, u_char byte)
 {
+  revmexpr_t	*expr;
   revmobj_t	*var;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -83,16 +90,16 @@ int		revm_setvar_byte(char *varname, u_char byte)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", (-1));  
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unknown variable", (-1));
-  
+		      "Cannot convert variable", (-1));
+  var = expr->value;
   if (revm_convert2byte(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed byte conversion", (-1));
-
   var->immed_val.byte = byte;
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -102,6 +109,7 @@ int		revm_setvar_byte(char *varname, u_char byte)
  */
 int		revm_setvar_short(char *varname, u_short val)
 {
+  revmexpr_t	*expr;
   revmobj_t	*var;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -109,14 +117,16 @@ int		revm_setvar_short(char *varname, u_short val)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", (-1));  
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unknown variable", (-1));
+  var = expr->value;
   if (revm_convert2short(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed short conversion", (-1));
   var->immed_val.half = val;
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -126,6 +136,7 @@ int		revm_setvar_short(char *varname, u_short val)
  */
 int		revm_setvar_int(char *varname, u_int val)
 {
+  revmexpr_t	*expr;
   revmobj_t	*var;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -133,14 +144,16 @@ int		revm_setvar_int(char *varname, u_int val)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", (-1));  
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unknown variable", (-1));  
+		      "Unknown variable", (-1));
+  var = expr->value;
   if (revm_convert2int(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed integer conversion", (-1));
   var->immed_val.word = val;
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
@@ -150,20 +163,51 @@ int		revm_setvar_int(char *varname, u_int val)
  */
 int             revm_setvar_long(char *varname, u_long val)
 {
-  revmobj_t   *var;
+  revmexpr_t	*expr;
+  revmobj_t     *var;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!varname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", (-1));  
   varname = revm_lookup_string(varname);
-  var = hash_get(&vars_hash, varname);
-  if (!var)
+  expr = revm_expr_get(varname);
+  if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unknown variable", (-1));  
+		      "Unknown variable", (-1));
+  var = expr->value;
   if (revm_convert2long(var) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Failed long conversion", (-1));
   var->immed_val.ent = val;
+  expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+}
+
+
+
+/* Allocate a new temporary variable name */
+char		*revm_tmpvar_create()
+{
+  static u_int	lastid = 1;
+  char		*name;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, name, 20, NULL);
+  snprintf(name, 20, "%s%u", REVM_TMPVAR_PREFIX, lastid);
+  lastid++;
+
+  //printf(" [D] Created new temp variable %s \n", name);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name);
+}
+
+
+/* Return 1 if variable is temporary, 0 if not */
+int		revm_variable_istemp(revmexpr_t *e)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!e || strncmp(e->label, REVM_TMPVAR_PREFIX, strlen(REVM_TMPVAR_PREFIX)))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }

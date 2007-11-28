@@ -2,129 +2,139 @@
 
 # This create on-demand the block instruction list in the eresi runtime
 
+#vlist
+#exec sleep 120
+#profile disable warn
+
 set $curaddr $1
 reflect $curaddr
 
+print $curaddr
+
+#profile enable warn
+
 # Start the transformation
-foreach $instr in $hash[instrlists:$curaddr]
+foreach $instr of $hash[instrlists:$curaddr]
 
 print Transforming instruction: $instr
+
+vlist
 
 rewrite $instr into
 
 # indirect always branch without link
-case instr_t(type:b, nb_op:1, op1(type:reg))
+case instr(type:b, nb_op:1, op1(type:reg))
 into IndBranchR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
 # direct always branch (b, bp) 											
-case instr_t(type:b, nb_op:1, op1(type:imm))
+case instr(type:b, nb_op:1, op1(type:imm))
 into Branch(addr:$curaddr, dst:Immed($instr.op1.imm)) 			 
 
 # indirect conditional branch without link
 # XXX lacks flag translation
-case instr_t(type:cb, nb_op:1, op1(type:reg))
+case instr(type:cb, nb_op:1, op1(type:reg))
 into IndBranchR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
 # direct always branch (bcc, bpcc) 											
 # XXX lacks flag translation
-case instr_t(type:cb, nb_op:1, op1(type:imm))
+case instr(type:cb, nb_op:1, op1(type:imm))
 into Branch(addr:$curaddr, dst:Immed($instr.op1.imm))
 
 # indirect call (op1 reg) 											
-case instr_t(type:c, nb_op:1, op1(type:reg)) 
+case instr(type:c, nb_op:1, op1(type:reg)) 
 into IndCallR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))			 
 
 # direct call (op1 addr) 											
-case instr_t(type:c, nb_op:1, op1(type:imm))
+case instr(type:c, nb_op:1, op1(type:imm))
 into Call(addr:$curaddr, idest:Addr($instr.op1.imm))			 
 
 # ta* (traps)
-case instr_t(type:i)
+case instr(type:i)
 into Interrupt(addr:$curaddr, Immed(val:$instr.op1.imm))	 
 
 # ret, retl 									 		
-case instr_t(type:r) 
+case instr(type:r) 
 into Return(addr:$curaddr, Immed(val:$instr.op1.imm)) 	 
 
 # save 												
-case instr_t(type:p) 
+case instr(type:p) 
 into Prolog(addr:$curaddr) 				 
 
 # restore 												
-case instr_t(type:e) into Epilog(addr:$curaddr)				 
+case instr(type:e) into Epilog(addr:$curaddr)				 
 
 # illtrap 										 			
-case instr_t(type:s) into Stop(addr:$curaddr)				 
+case instr(type:s) into Stop(addr:$curaddr)				 
 
 # nop											 		
-case instr_t(type:n) into Nop(addr:$curaddr)				
+case instr(type:n) into Nop(addr:$curaddr)				
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg) 								 		
 # XXX: lack flags translation
-case instr_t(type:ar-wf, nb_op:3, op2(type:reg))
+case instr(type:ar-wf, nb_op:3, op2(type:reg))
 into TernopR3(addr:$curaddr, dst(id:$instr.op1.baser), src1(id:$instr.op2.baser), src2(id:$instr.op3.baser), uflags:$instr.flags)  
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)	 							 		
 # XXX: lack flags translation
-case instr_t(type:ar-wf, nb_op:3, op2(type:imm))
+case instr(type:ar-wf, nb_op:3, op2(type:imm))
 into TernopRI(addr:$curaddr, dst(id:$instr.op1.baser), isrc(val:$instr.op2.imm), rsrc(id:$instr.op3.baser), uflags:$instr.flags)  
 
 # sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 immed) 					 		
-case instr_t(type:ar, nb_op:3, op2(type:imm))
+case instr(type:ar, nb_op:3, op2(type:imm))
 into TernopRI(addr:$curaddr, dst(id:$instr.op1.baser), isrc(val:$instr.op2.imm), rsrc(id:$instr.op3.baser))  
 
 # sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 reg)  						 	
-case instr_t(type:ar, nb_op:3, op2(type:reg))
+case instr(type:ar, nb_op:3, op2(type:reg))
 into TernopR3(addr:$curaddr, dst(id:$instr.op1.baser), src1(id:$instr.op2.baser), src2(id:$instr.op3.baser))  
 
 # clrx, clrh, clrb, clr (op1 = reg)  										 	
-case instr_t(type:ar, nb_op:1, op1(type:reg))
+case instr(type:ar, nb_op:1, op1(type:reg))
 into AssignIR(addr:$curaddr, dst(id:$instr.op1.baser), src(val:0))		 
 
 # clrx, clrh, clrb, clr (op1 = mem)  										 		
-case instr_t(type:ar-wm, nb_op:1, op1(type:mem)) 
+case instr(type:ar-wm, nb_op:1, op1(type:mem)) 
 into AssignIM(addr:$curaddr, dst(name:$instr.op1.name base(id:$instr.op1.baser), off(val:$instr.op1.imm)), isrc(val:0)) 	 
 
 # btog immed 														
-case instr_t(type:ar, nb_op:2, op1(type:imm))
+case instr(type:ar, nb_op:2, op1(type:imm))
 into TernopRI(addr:$curaddr, dst:Reg(id:$instr.op2.baser), isrc:Immed(val:$instr.op1.imm), rsrc:Reg(id:$instr.op2.baser))
 
 # btog register 												 		
-case  instr_t(type:ar, nb_op:2, op1(type:reg))
+case  instr(type:ar, nb_op:2, op1(type:reg))
 into TernopR3(addr:$curaddr, dst:Reg(id:$instr.op2.baser), src1:Reg(id:$instr.op1.baser), src2:Reg(id:$instr.op2.baser))	 
 
 # ld,ldd,ldub,ldx,lduw,lduh,ldsw,ldsb  									 		
-case instr_t(type:a-rm)
+case instr(type:a-rm)
 into AssignMR(addr:$curaddr, src(name:$instr.op1.name base(id:$instr.op1.baser), off(val:$instr.op1.imm)), dst(id:$instr.op2.baser))  
 
 # st,stb,stw,sth,std,stx (src = reg)
-case instr_t(type:a-wm, op1(type:reg))
+case instr(type:a-wm, op1(type:reg))
 into AssignRM(addr:$curaddr, src(id:$instr.op1.baser), dst(name:$instr.op2.name base(id:$instr.op2.baser), off(val:$instr.op2.imm)))
 
 # st,stb,stw,sth,std,stx (src = immed)
-case instr_t(type:a-wm, op1(type:imm))
+case instr(type:a-wm, op1(type:imm))
 into AssignIM(addr:$curaddr, src(val:$instr.op1.imm), dst(name:$instr.op2.name base(id:$instr.op2.baser), off(val:$instr.op2.imm)))
 
 # bset (op1 immed) 																
-case instr_t(type:bs, op1(type:imm))
+case instr(type:bs, op1(type:imm))
 into BitSet(addr:$curaddr, src(val:$instr.op1.imm), dst(id:$instr.op2.baser))		 
 
 # tst (implicit 2e operand = immed 0 !) 											 		
-case instr_t(type:cmp, nb_op:1, op1(type:reg)) 
+case instr(type:cmp, nb_op:1, op1(type:reg)) 
 into CmpRI(addr:$curaddr, snd(id:$instr.op1.baser), fst(val:0))				 
 
 # cmp (op2 register)
-case instr_t(type:cmp, nb_op:2, op1(type:reg), op2(type:reg))
+case instr(type:cmp, nb_op:2, op1(type:reg), op2(type:reg))
 into CmpRR(addr:$curaddr, fst(id:$instr.op1.baser), snd(id:$instr.op2.baser))			 
 
 # cmp (op2 immed) 										 		
-case instr_t(type:cmp, nb_op:2, op1(type:reg), op2(type:imm))
+case instr(type:cmp, nb_op:2, op1(type:reg), op2(type:imm))
 into CmpRI(addr:$curaddr, snd(id:$instr.op1.baser), snd(val:$instr.op2.imm))	 		 
 
 # Defaultcase 													
 default print Unsupported instruction at address $curaddr	 
 
-endrwt
+rwtend
 
 add $curaddr 4 
 

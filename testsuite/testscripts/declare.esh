@@ -1,4 +1,4 @@
-#!evarista/evarista32
+#!../../evarista/evarista32
 
 #profile enable warn
 
@@ -10,20 +10,41 @@ type struct2 = field3:struct1 field4:long field5:struct1
 
 print ************ Now declarations of variables *****************
 
-#long mylong = 42
+#profile enable trace
+
+long mylong = 42
+vlist
 
 struct0 mystruct0  = (field0:42)
 struct0 mystruct0b = struct0(field0:42)
 struct0 mystruct0c = struct0(field0:43)
 
 struct1 mystruct1  = (field1:42,field2:43)
-struct1 mystruct1b = (field1:42,field2:43)
+
+struct1 mystruct1b = $mystruct1
+#struct1 mystruct1b  = (field1:42,field2:43)
+
 struct1 mystruct1c = (field1:43,field2:42)
 struct1 mystruct1d = (field2:42,field1:43)
 
-struct2 mystruct2  = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
-struct2 mystruct2b = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+tables expressions
+
+#struct2 mystruct2 = (field3:$mystruct1, field4:44, field5(field1:45, field2:46))
+struct2 mystruct2 = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+
+print $mystruct2
+
+tables expressions
+
+struct2 mystruct2b  = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+
+tables expressions
+
+print $mystruct2b
+
 struct2 mystruct2c = (field3(field1:42, field2:43), field4:44, field5(field1:46, field2:45))
+
+print $mystruct2c
 
 # List all existing expressions at this state
 #tables expressions
@@ -35,20 +56,19 @@ print ************ Now testing printing of types *****************
 
 type
 
-
 print ************ Now testing printing of expressions *****************
 print $mystruct0
 print $mystruct0b
 print $mystruct0c
-print $mystruct1
 print $mystruct1b
+print $mystruct1
 print $mystruct1c
 print $mystruct1d
 print $mystruct2
 print $mystruct2b
 print $mystruct2c
 
-print *********** Now testing comparison of expressions ****************
+print *********** Now testing basic whole-expression comparison ****************
 
 #profile enable warn
 
@@ -60,25 +80,46 @@ cmp $mystruct1b $mystruct1c
 cmp $mystruct2 $mystruct2b
 cmp $mystruct2b $mystruct2c
 
-print *********** Now testing comparison without field orders ****************
+print *********** Now testing field-order insensitive comparison ****************
 
 cmp $mystruct1c $mystruct1d
 
 # Set works all very well
 print $mystruct0b $mystruct0c
 set $mystruct0c $mystruct0b
-cmp $mystruct0b $mystruct0c
 print $mystruct0b $mystruct0c
+cmp $mystruct0b $mystruct0c
 
 print $mystruct1b $mystruct1c
 set $mystruct1c $mystruct1b
-cmp $mystruct1b $mystruct1c
 print $mystruct1b $mystruct1c
+cmp $mystruct1b $mystruct1c
 
 print $mystruct2c $mystruct2b
 set $mystruct2c $mystruct2b
-cmp $mystruct2b $mystruct2c
 print $mystruct2c $mystruct2b
+cmp $mystruct2b $mystruct2c
+
+
+print *********** Now testing subexpressions comparisons **************
+
+print $mystruct2c.field3
+print $mystruct2c.field5
+print $mystruct1b
+
+cmp $mystruct2c.field3 $mystruct2c.field5
+cmp $mystruct2c.field3 $mystruct2b.field3
+cmp $mystruct2c.field3 $mystruct1b
+cmp $mystruct1b        $mystruct2c.field5
+
+print *********** Now testing setting subexpressions *********
+
+print $mystruct2c.field5 $mystruct1
+cmp $mystruct2c.field5 $mystruct1
+set $mystructbackup $mystruct2c.field5
+print $mystructbackup $mystruct2c.field5 $mystruct1
+set $mystruct2c.field5 $mystruct1
+print $mystructbackup $mystruct2c.field5 $mystruct1
+cmp $mystruct2c.field5 $mystruct1
 
 quit
- 

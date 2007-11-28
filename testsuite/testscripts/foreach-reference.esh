@@ -5,7 +5,7 @@ add $list[test] 2
 add $list[test] 3
 lists test
 
-quiet
+#quiet
 #profile enable warn
 
 foreach $element of test

@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.19 2007-08-03 11:51:01 heroine Exp $
+** $Id: readln.c,v 1.20 2007-11-28 07:56:09 may Exp $
 **
 */
 #include "libui.h"
@@ -119,7 +119,7 @@ void		readln_completion_install(char mode, char side)
   //fprintf(stderr, "Installing completion now \n");
   
   comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
-  comp.cmds[1]  = hash_get_keys(&vars_hash   , NULL);
+  comp.cmds[1]  = hash_get_keys(&exprs_hash  , NULL);
   comp.cmds[2]  = hash_get_keys(&const_hash  , NULL);
   comp.cmds[3]  = hash_get_keys(&mod_hash    , NULL);
   comp.cmds[4]  = hash_get_keys(&L1_hash     , NULL);

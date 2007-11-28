@@ -4,7 +4,7 @@
  * Various object lookup functions built in the language
  *
  * Started Nov 21 2003 jfv
- * $Id: lookup.c,v 1.18 2007-10-01 01:13:08 may Exp $
+ * $Id: lookup.c,v 1.19 2007-11-28 07:56:09 may Exp $
  */
 #include "revm.h"
 
@@ -12,10 +12,12 @@
 /** 
  * @brief Support for double (or multiple) variables : $$name, $$$name, etc 
  */
-revmobj_t		*revm_lookup_var(char *param)
+revmexpr_t		*revm_lookup_var(char *param)
 {
+  revmexpr_t		*e;
   revmobj_t		*ptr;
   int			indir;
+  char			namebuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
@@ -23,25 +25,28 @@ revmobj_t		*revm_lookup_var(char *param)
 		      "Invalid NULL parameter", NULL);
 
   for (indir = 0; *param == REVM_VAR_PREFIX; indir++, param++);  
+  e = NULL;
   ptr = NULL;
   if (!*param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
   while (indir--)
     {
-      ptr = (void *) hash_get(&vars_hash, param);
-      if (ptr == NULL)
+      snprintf(namebuf, sizeof(namebuf), "$%s", param);
+      e = revm_expr_get(namebuf);
+      if (!e || !e->value)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unknown variable", (NULL));
+		     "Unknown variable", NULL);
+      ptr = e->value;
       if (indir)
 	{
-	  if (revm_convert_object(ptr, ASPECT_TYPE_STR) < 0 || !ptr->immed)
+	  if (revm_convert_object(e, ASPECT_TYPE_STR) < 0 || !ptr->immed)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Unknown variable", (NULL));
 	  param = ptr->immed_val.str;
 	}
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, e);
 }
 
 
@@ -55,6 +60,7 @@ elfsh_Addr		revm_lookup_addr(char *param)
   char			eol;
   int			ret;
   revmobj_t		*ptr;
+  revmexpr_t		*expr;
   elfsh_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -73,9 +79,10 @@ elfsh_Addr		revm_lookup_addr(char *param)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym->st_value);
 
   /* Lookup a variable */
-  ptr = revm_lookup_var(param);
-  if (ptr)
+  expr = revm_lookup_var(param);
+  if (expr && expr->value)
     {
+      ptr = expr->value;
       if (ptr->otype->type == ASPECT_TYPE_LONG  ||
 	  ptr->otype->type == ASPECT_TYPE_CADDR ||
 	  ptr->otype->type == ASPECT_TYPE_DADDR)
@@ -113,6 +120,7 @@ revmobj_t		*revm_lookup_immed(char *param)
   int			ret;
   char			lbuf[4096];
   revmobj_t		*ptr;
+  revmexpr_t		*expr;
   elfsh_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -121,15 +129,15 @@ revmobj_t		*revm_lookup_immed(char *param)
 		 "Invalid NULL parameter", (NULL));
 
   /* Lookup a known variable */
-  ptr = revm_lookup_var(param);
-  if (ptr)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
+  expr = revm_lookup_var(param);
+  if (expr && expr->value)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr->value);
 
   /* Support for lazy creation of variables */
   if (*param == REVM_VAR_PREFIX)
     {
       ptr = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
-      hash_add(&vars_hash, strdup(++param), ptr);
+      expr = revm_expr_create_from_object(ptr, param);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
@@ -213,6 +221,7 @@ u_int     		revm_lookup_index(char *param)
 {
   revmconst_t		*actual;
   revmobj_t		*ptr;
+  revmexpr_t		*expr;
   char			eol;
   int			ret;
   u_int		       	val;
@@ -223,9 +232,10 @@ u_int     		revm_lookup_index(char *param)
 		 "Invalid NULL parameter", 0);
 
   /* Support for lazy creation of variables */
-  ptr = revm_lookup_var(param);
-  if (ptr)
+  expr = revm_lookup_var(param);
+  if (expr && expr->value)
     {
+      ptr = expr->value;
       if (ptr->otype->type == ASPECT_TYPE_INT   || 
 	  ptr->otype->type == ASPECT_TYPE_SHORT || 
 	  ptr->otype->type == ASPECT_TYPE_BYTE  || 
@@ -236,7 +246,7 @@ u_int     		revm_lookup_index(char *param)
 		      (ptr->immed ? (u_int) ptr->immed_val.ent : 
 		       (u_int) ptr->get_obj(ptr->parent)));
       
-      if (revm_convert_object(ptr, ASPECT_TYPE_INT) < 0)
+      if (revm_convert_object(expr, ASPECT_TYPE_INT) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid parameter", 0);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    (ptr->immed ? (u_int) ptr->immed_val.ent : 
@@ -270,6 +280,7 @@ u_int     		revm_lookup_index(char *param)
  */
 char			*revm_lookup_string(char *param)
 {
+  revmexpr_t		*expr;
   revmobj_t		*ptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -278,15 +289,16 @@ char			*revm_lookup_string(char *param)
 		     "Invalid NULL parameter", (NULL));
 
   /* Support for lazy creation of variables */
-  ptr = revm_lookup_var(param);
-  if (!ptr)
+  expr = revm_lookup_var(param);
+  if (!expr || !expr->value)
     {
       revm_filter_zero(param);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, param);
     }
+  ptr = expr->value;
   if (ptr->otype->type != ASPECT_TYPE_STR)
     {
-      revm_convert_object(ptr, ASPECT_TYPE_STR);
+      revm_convert_object(expr, ASPECT_TYPE_STR);
       if (ptr->otype->type != ASPECT_TYPE_STR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unexpected object type", NULL);
@@ -308,6 +320,7 @@ elfshobj_t		*revm_lookup_file(char *param)
 {
   u_int			idx;
   revmobj_t		*ptr;
+  revmexpr_t		*expr;
   elfshobj_t		*ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -317,16 +330,20 @@ elfshobj_t		*revm_lookup_file(char *param)
   if (!param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid NULL parameter", (NULL));
-  ptr = revm_lookup_var(param);
-  if (!ptr)
+  expr = revm_lookup_var(param);
+  if (!expr || !expr->value)
     idx = atoi(param);
-  else if (ptr->otype->type == ASPECT_TYPE_INT)
-    idx = ptr->immed_val.ent;
-  else if (ptr->otype->type == ASPECT_TYPE_STR)
-    param = ptr->immed_val.str;
   else
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unexpected variable type", (NULL));
+    {
+      ptr = expr->value;
+      if (ptr->otype->type == ASPECT_TYPE_INT)
+	idx = ptr->immed_val.ent;
+      else if (ptr->otype->type == ASPECT_TYPE_STR)
+	param = ptr->immed_val.str;
+      else
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unexpected variable type", (NULL));
+    }
 
   /* Let's ask the hash table for the current working file */
   ret = (idx ? revm_getfile(idx) : hash_get(&file_hash, param));
@@ -334,4 +351,70 @@ elfshobj_t		*revm_lookup_file(char *param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "File not found", (NULL));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+
+
+/** 
+ * Parse the parameter and fill the revmobj_t 
+ */
+revmexpr_t		*revm_lookup_param(char *param)
+{
+  revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
+  char			**keys;
+  int			keynbr;
+  char			*parm;
+  unsigned int		sepnbr;
+  unsigned int		index;
+  revmobj_t		*res;
+  revmexpr_t		*expr;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  expr = revm_expr_get(param);
+  if (expr)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+
+  /* Find the number of fields in param */
+  for (sepnbr = 0, parm = param; *parm; parm++)
+    if (*parm == REVM_SEP[0] || *parm == ':' || *parm == '%')
+      {
+	if (parm > param && parm[-1] == '[')
+	  continue;
+	sepnbr++;
+      }
+  
+  /* Find the correct parsing handler */
+  keys = hash_get_keys(&parser_hash, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      funcptr = hash_get(&parser_hash, keys[index]);
+      res = funcptr(param, keys[index], sepnbr);
+      if (!res)
+	continue;
+      expr = revm_expr_create_from_object(res, param);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+    }
+
+  /* If still not found, try manually inserted types */
+  res = revm_object_lookup(param);
+  if (res)
+    {
+      expr = revm_expr_create_from_object(res, param);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+    }
+
+  /* If no good syntax is available, print error if we are not in probe mode */
+  res = revm_lookup_immed(param);
+  if (!res)
+    {
+      revm_badparam(param);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unable to resolve object", NULL);
+    }
+
+  expr = revm_expr_create_from_object(res, param);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

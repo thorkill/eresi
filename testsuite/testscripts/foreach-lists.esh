@@ -15,7 +15,7 @@ lists test2
 
 # We need a parameter
 vlist
-cmp $# 2
+cmp $# 0
 jne error
 
 beginning:

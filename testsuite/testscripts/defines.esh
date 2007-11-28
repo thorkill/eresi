@@ -1,4 +1,6 @@
-#!evarista/evarista32
+#!../../evarista/evarista32
+
+#profile enable warn
 
 # Attributes for instructions
 define b        ASM_TYPE_IMPBRANCH

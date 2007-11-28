@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Fri Sep 11 17:26:11 2005 jfv
  *
- * $Id: misc-revm.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ * $Id: misc-revm.c,v 1.12 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -198,27 +198,24 @@ int		revm_openscript(char **av)
   int		idx;
   char		actual[16];
   revmobj_t	*new;
+  revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Open script file */
   XOPEN(fd, av[0], O_RDONLY, 0, -1);
-
   world.curjob->io.input_fd = fd;
 
   /* Add argument variables */
   for (idx = 1; av[idx]; idx++)
     {
-      snprintf(actual, sizeof(actual), "%u", idx);
+      snprintf(actual, sizeof(actual), "$%u", idx);
       new = revm_create_IMMEDSTR(1, strdup(av[idx]));
- 
-      hash_add(&vars_hash, strdup(actual), new);
- 
+      expr = revm_expr_create_from_object(new, actual);
     }
 
-  new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx);
-  hash_add(&vars_hash, ELFSH_ARGVAR, new);
-
+  new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
+  expr = revm_expr_create_from_object(new, REVM_VAR_ARGC);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

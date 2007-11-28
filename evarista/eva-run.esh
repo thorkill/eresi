@@ -1,40 +1,43 @@
 #!evarista32
 
 #quiet
+#print $#
+#profile enable warn
 
-cmp  $# 2
-jne  end
+vlist
+cmp  $# 1
+jne end
 sdir .
 
-#profile enable warn
-#eva-typedecl
-
-type listent         = key:string data:long next:*listent                                                                                                                                                                 
-type list            = head:*listent elmnbr:int type:int linearity:byte                                                                                                                                                   
-type hash            = ent:*listent size:int elmnbr:int type:int linearity:byte                                                                                                                                           
-type container       = id:int type:int nbrin:int nbrout:int inlinks:*list outlinks:*list data:long
-type op              = len:int ptr:*byte type:int name:string size:int content:int regset:int prefix:int imm:int baser:int indexr:int sbaser:string sindex:string address_space:int scale:int                             
-type instr           = proc%4 instr:int type:int prefix:int spdiff:int flagswritten:int flagsread:int ptr_prefix:*byte ptr_instr:*byte annul:int prediction:int nb_op:int op1:op op2:op op3:op len:int                    
-type bloc::container = vaddr:long size:int symoff:int                                                                                                                                                                     
-type func::container = vaddr:long size:int name:byte[64] first:*bloc md5:byte[34]
+eva-typedecl 42
 
 print 
-print ******************** The Evarista static analyzer version 0.8 *********************
+print ******************** The Evarista static analyzer .::. Welcome *********************
 print
-verb
+#verb
+#vlist
 
 load $1
 analyse
 
 sym main
-set $mainfunc $hash[functions:main]
+set $mainaddr main
+print Main-Function found at addr $mainaddr
 
-print Main found at addr $mainfunc.vaddr
-print $mainfunc
+#vlist
+set $mainfunc $hash[functions:$mainaddr]
 
-#stop
+#print $hash[functions:$mainaddr]
+#print $mainfunc
+#print $mainfunc.vaddr
 
 cfg-walk $mainfunc.vaddr
+
+quiet
+print 
+print ******************** The Evarista static analyzer .::. Good bye *********************
+print
+quit
 
 end:
 print Syntax: evarista <ELF_binary_file_path>

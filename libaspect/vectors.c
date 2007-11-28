@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: vectors.c,v 1.23 2007-08-03 11:50:59 heroine Exp $
+** $Id: vectors.c,v 1.24 2007-11-28 07:56:08 may Exp $
 **
 */
 #include "libaspect.h"
@@ -27,6 +27,7 @@ vector_t*	aspect_vector_get(char *name)
   if (!vector_hash)
     {
       printf("Tried to get a vector when hash table = NULL \n");
+      sleep(30);
       return (NULL);
     }
 

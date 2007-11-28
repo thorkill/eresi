@@ -5,25 +5,19 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.49 2007-08-08 13:47:24 may Exp $
+** $Id: tables.c,v 1.50 2007-11-28 07:56:09 may Exp $
 **
 */
 #include "revm.h"
 
-
-
-/* Hash of instruction lists */
-hash_t		instrlists_hash;
-
 /* Labels hash */
 hash_t		labels_hash[REVM_MAXSRCNEST];
 
-/* Variables hash */
-hash_t		vars_hash;
+/* ERESI script machine frames list */
+list_t		frames_list;
 
-/* ERESI expressions hash and expressions type hash */
+/* Eresi expressions hash and expressions type hash */
 hash_t		exprs_hash;
-hash_t		exprtypes_hash;
 
 /* The command hash table : hash the command name and returns a revmcmd_t */
 hash_t		cmd_hash;
@@ -70,6 +64,8 @@ hash_t		traces_cmd_hash;
 /* Lib path store variable */
 char	       elfsh_libpath[BUFSIZ];
 
+/* Hash of instruction lists */
+hash_t		instrlists_hash;
 
 
 /**
@@ -827,7 +823,7 @@ static void	setup_cmdhash()
   revm_command_add(CMD_SUB     , (void *) cmd_sub     , (void *) revm_getoption2   , 0, HLP_SUB);
   revm_command_add(CMD_MUL     , (void *) cmd_mul     , (void *) revm_getoption2   , 0, HLP_MUL);
   revm_command_add(CMD_DIV     , (void *) cmd_div     , (void *) revm_getoption2   , 0, HLP_DIV);
-  revm_command_add(CMD_MOD     , (void *) cmd_set     , (void *) revm_getoption2   , 0, HLP_MOD);
+  revm_command_add(CMD_MOD     , (void *) cmd_mod     , (void *) revm_getoption2   , 0, HLP_MOD);
   revm_command_add(CMD_INFO    , (void *) cmd_info    , (void *) NULL            , 0, HLP_INFO);
   revm_command_add(CMD_FIXUP   , (void *) cmd_fixup   , (void *) NULL            , 1, HLP_FIXUP);
   revm_command_add(CMD_ELF2    , (void *) cmd_elf     , (void *) NULL            , 1, HLP_ELF);
@@ -881,7 +877,8 @@ static void	setup_cmdhash()
   revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getoption    , 0, HLP_REFLECT);
 
   revm_command_add(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) revm_getoption  , 0, HLP_SDIR);
-  revm_command_add(CMD_VLIST   , (void *) cmd_vlist   , (void *) NULL            , 0, HLP_VLIST);
+  revm_command_add(CMD_VLIST   , (void *) cmd_vlist   , (void *) revm_getregxoption, 0, HLP_VLIST);
+  revm_command_add(CMD_VARLIST , (void *) cmd_vlist   , (void *) revm_getregxoption, 0, HLP_VLIST);
   revm_command_add(CMD_SOURCE  , (void *) cmd_source  , (void *) revm_getvarparams , 0, HLP_SOURCE);
   revm_command_add(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL		  , 0, HLP_LSCRIPTS);
   revm_command_add(CMD_CAT	, (void *) cmd_cat     , (void *) revm_getoption    , 0, HLP_CAT);
@@ -973,29 +970,24 @@ static char	*get_libpath()
 static void	setup_varshash()
 {
   revmobj_t	*f;
-  revmobj_t	*g;
-  revmobj_t	*r;
-  revmobj_t	*s;
-  revmobj_t	*e;
-  revmobj_t	*l;
-  revmobj_t	*o;
+  revmexpr_t	*expr;
+  char		*str;
 
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  g = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  r = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
-  s = revm_create_IMMEDSTR(1, ELFSH_SHELL);
-  e = revm_create_IMMEDSTR(1, ELFSH_EDITOR);
-  l = revm_create_IMMEDSTR(1, get_libpath());
-  o = revm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
-
-  hash_init(&vars_hash, "variables", 251, ASPECT_TYPE_UNKNOW);
-  hash_add(&vars_hash, REVM_VAR_RESULT, f);
-  hash_add(&vars_hash, REVM_VAR_LOAD, g);
-  hash_add(&vars_hash, REVM_VAR_ERROR, r);
-  hash_add(&vars_hash, REVM_VAR_SHELL, s);
-  hash_add(&vars_hash, REVM_VAR_EDITOR, e);
-  hash_add(&vars_hash, REVM_VAR_LIBPATH, l);
-  hash_add(&vars_hash, REVM_VAR_STRIPLOG, o);
+  expr = revm_expr_create_from_object(f, REVM_VAR_RESULT);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
+  expr = revm_expr_create_from_object(f, REVM_VAR_LOAD);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
+  expr = revm_expr_create_from_object(f, REVM_VAR_ERROR);
+  f = revm_create_IMMEDSTR(1, ELFSH_SHELL);
+  expr = revm_expr_create_from_object(f, REVM_VAR_SHELL);
+  f = revm_create_IMMEDSTR(1, ELFSH_EDITOR);
+  expr = revm_expr_create_from_object(f, REVM_VAR_EDITOR);
+  str = get_libpath();
+  f = revm_create_IMMEDSTR(1, str);
+  expr = revm_expr_create_from_object(f, REVM_VAR_LIBPATH);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
+  expr = revm_expr_create_from_object(f, REVM_VAR_STRIPLOG);
 }
 
 
@@ -1115,18 +1107,18 @@ static void	setup_consthash()
  */
 void setup_grammar()
 {
-  hash_init(&parser_hash, "parsers", 11, ASPECT_TYPE_CADDR);
 
   /* Default grammar rules */
-#define LOOKUP5_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"
-#define LOOKUP4_A   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"REVM_SEP"%41s"
-#define LOOKUP4_B   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^]]]"REVM_SEP"%41s"
-#define LOOKUP4_C   "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"
-#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
-#define LOOKUP3     "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"
-#define LOOKUP_VECT "$vector[%41[^]]]"
-#define LOOKUP_HASH "$hash[%41[^]]]"
-#define LOOKUP_LIST "$list[%41[^]]]"
+#define LOOKUP5_IDX  "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]][%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_A    "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^%%]%%%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_B    "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^:]:%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP4_C    "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP3_IDX  "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
+#define LOOKUP3      "%41[^"REVM_SEP"]"REVM_SEP"%41[^"REVM_SEP"]"REVM_SEP"%41s"
+#define LOOKUP_VECT  "$vector[%41[^]]]"
+#define LOOKUP_HASH  "$hash[%41[^]]]"
+  //#define LOOKUP_HASH1 "$hash[%41[^]]]"REVM_SEP"%41s"
+#define LOOKUP_LIST  "$list[%41[^]]]"
 
   hash_add(&parser_hash, LOOKUP5_IDX, parse_lookup5_index);
   hash_add(&parser_hash, LOOKUP4_A, parse_lookup4);
@@ -1136,6 +1128,7 @@ void setup_grammar()
   hash_add(&parser_hash, LOOKUP3, parse_lookup3);
   hash_add(&parser_hash, LOOKUP_VECT, parse_vector);
   hash_add(&parser_hash, LOOKUP_HASH, parse_hash);
+  //hash_add(&parser_hash, LOOKUP_HASH1, parse_hash_field);
   hash_add(&parser_hash, LOOKUP_LIST, parse_list);
 }
 
@@ -1207,6 +1200,7 @@ void setup_traces_table()
   traces_addcmd("flush"    , (void *) traces_flush    , 2, 0);
 }
 
+
 /** 
  * Setup all hash tables 
  */
@@ -1220,15 +1214,16 @@ void		revm_tables_setup()
 
   hash_init(&file_hash        , "files"      , 251, ASPECT_TYPE_UNKNOW);
   hash_init(&mod_hash         , "modules"    , 51, ASPECT_TYPE_UNKNOW);
-  hash_init(&labels_hash[0]   , "labels"     , 51, ASPECT_TYPE_STR);
+  hash_init(&labels_hash[0]   , "labels"     , 51, ASPECT_TYPE_UNKNOW);
   hash_init(&fg_color_hash    , "fgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&bg_color_hash    , "bgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&traces_cmd_hash  , "traces"     , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
-  hash_init(&exprtypes_hash   , "exprtypes"  , 51, ASPECT_TYPE_UNKNOW);
   hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
+  hash_init(&parser_hash      , "parsers"    , 11, ASPECT_TYPE_CADDR);
+  list_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
   setup_varshash();
   setup_cmdhash();
   setup_consthash();
@@ -1240,3 +1235,9 @@ void		revm_tables_setup()
   setup_grammar();
   aspect_init();
 }
+
+
+
+// XXX: frames list in source.c should not store element by 
+// function name -> will generate collisions for recursive functions
+// -> use "world.curjob->sourced" value

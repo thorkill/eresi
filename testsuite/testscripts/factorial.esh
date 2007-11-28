@@ -1,18 +1,22 @@
-#!evarista/evarista32
+#!../../evarista/evarista32
 
 sdir .
 quiet
 
-cmp $# 3
+cmp $# 2
 jne end
 print Fact with params $1 $2
-
+#vlist
 mul $2 $1
+#vlist
 set $2 $_
+#vlist
 sub $1 1
 cmp $1 1
+print $1 $2 $_
+
 je result
-fact $1 $2
+factorial $1 $2
 quit
 
 end:

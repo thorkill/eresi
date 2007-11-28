@@ -1,4 +1,4 @@
-#!elfsh/elfsh32
+#!../../elfsh/elfsh32
 
 set $list[test1:key]  42
 lists test1
@@ -33,6 +33,7 @@ add $list[test2] 48
 
 lists test2
 lists test1
+
 sub $list[test2] $list[test1]
 lists test2
 lists test1

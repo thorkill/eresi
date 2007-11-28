@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.28 2007-10-01 01:13:08 may Exp $
+** $Id: libe2dbg.h,v 1.29 2007-11-28 07:56:08 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -27,7 +27,7 @@
 #define		__DEBUG_E2DBG__	        1
 #define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	0
+#define		__DEBUG_LINKMAP__	1
 #define		__DEBUG_THREADS__	0
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
@@ -157,14 +157,15 @@ do							\
 do							\
 {							\
   revmobj_t		*r;				\
-  r = hash_get(&vars_hash, name);			\
-  if (!r)						\
+  revmexpr_t		*e;				\
+  e = revm_expr_get(name);				\
+  if (!e || !e->value)					\
     {							\
       r = revm_create_LONG(1, val);			\
-      hash_add(&vars_hash, name, r);			\
+      e = revm_expr_create_from_object(r, name);        \
     }							\
   else							\
-    r->immed_val.ent = val;				\
+    e->value->immed_val.ent = val;			\
 }							\
 while (0)
 
@@ -173,14 +174,15 @@ while (0)
 do							\
 {							\
   revmobj_t		*r;				\
-  r = hash_get(&vars_hash, name);			\
-  if (!r)						\
+  revmexpr_t		*e;				\
+  e = revm_expr_get(name);				\
+  if (!e || !e->value)					\
     {							\
       r = revm_create_LONG(1, val);			\
-      hash_add(&vars_hash, name, r);			\
+      e = revm_expr_create_from_object(r, name);	\
     }							\
   else							\
-   val = r->immed_val.ent;	                        \
+   val = e->value->immed_val.ent;	                \
 }							\
 while (0)
 

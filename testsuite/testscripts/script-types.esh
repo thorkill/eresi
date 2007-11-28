@@ -1,11 +1,11 @@
-#!/usr/local/bin/elfsh
+#!../../elfsh/elfsh32
 
 load ../../elfsh/elfsh32
 switch 107
 
 # Just some examples of type that can be used to map internal framework structures 
 type context = savedfd:int savedmode:byte savedcmd:*long savedinput:*long savedargv:*long savedname:*long curcmd:*long
-type state = flags:byte[4] glregex%32 sregx:*long alert:byte alertregex%32 strs:*long[4] flags:byte[5] lastid:int
+type state = flags:byte[4] glregex%32 sregx:*long alertf:byte alertregex%32 strs:*long[4] moreflags:byte[5] lastid:int
 type world = state:state ctxt:context
 
 # Lets see an example of printing of real variables arrays of the framework
@@ -30,9 +30,12 @@ print Now print addresses
 print
 print Entry 1 : 107.archaddr[elfsh_arch_type].types[0]
 print Entry 2 : 107.archaddr[elfsh_arch_type].types[1] 
-print Entry 2 : 107.archaddr[elfsh_arch_type].types[2]
+print Entry 3 : 107.archaddr[elfsh_arch_type].types[2]
 print Entry 4 : 107.archaddr[elfsh_arch_type].types[3]
 print
+
+verb
+#profile enable warn
 
 set 107.archaddr[elfsh_arch_type].types[0] 0x41414141
 set 107.archaddr[elfsh_arch_type].types[1] 0x42424242

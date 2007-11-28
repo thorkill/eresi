@@ -4,7 +4,7 @@
 ** @brief Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 jfv
-** $Id: libaspect-list.h,v 1.6 2007-08-07 07:13:27 may Exp $
+** $Id: libaspect-list.h,v 1.7 2007-11-28 07:56:08 may Exp $
 */
 
 #ifndef _LIBLIST_H_
@@ -29,6 +29,7 @@ typedef struct          s_aspect_list
   int			elmnbr;
   u_int			type;
   u_char		linearity;
+  char			*name;
 }                       list_t;
 
 /* list.c */
@@ -36,6 +37,7 @@ int		list_init(list_t *, char*, u_int);	/* Allocate the list */
 list_t		*list_find(char *name);			/* Find a list */
 int		list_register(list_t *h, char *name);	/* Register a list */
 list_t		*list_empty(char *name);		/* Empty the list */
+list_t		*list_reverse(list_t *l);		/* Reverse the list */
 void		list_destroy(list_t *h);		/* Free the list */
 list_t		*list_copy(list_t *h);			/* Copy a list */
 int		list_add(list_t *h, char *k, void *d);	/* Add an entry */

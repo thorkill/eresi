@@ -6,7 +6,7 @@
  * Started on  Wed Nov 19 23:02:04 2003 jfv
  * Updated on  Mon Aug 15 06:01:54 2005 jfv
  *
- * $Id: loop.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ * $Id: loop.c,v 1.12 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -166,8 +166,7 @@ int		revm_execscript()
   /* If we had a saved context, restore it */
   if (world.state.revm_sourcing)
     {
-
-      fprintf(stderr, " [D] Restoring e2dbg context from sourced script \n");
+      //fprintf(stderr, " [D] Restoring e2dbg context from sourced script \n");
       //sleep(20);
 
       world.curjob->lstcmd[world.curjob->sourced] = NULL;
@@ -177,12 +176,10 @@ int		revm_execscript()
 			    world.context.savedinput,
 			    world.context.savedargv,
 			    world.context.savedname);
-
       world.curjob->curcmd = NULL;
       world.state.revm_sourcing = 0;
 
-
-      fprintf(stderr, " [D] Restored e2dbg context ! \n");
+      //fprintf(stderr, " [D] Restored e2dbg context ! \n");
     }
   
   /* Make sure we switch to interactive mode if we issued a stop command */

@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
 **
-** $Id: stack.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: stack.c,v 1.6 2007-11-28 07:56:08 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -52,6 +52,7 @@ int		cmd_stack()
   char		*param;
   elfsh_Addr	  size;
   revmobj_t	*ssp;
+  revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -65,11 +66,10 @@ int		cmd_stack()
 		      "Invalid argument", (-1));
 
   param = revm_lookup_string(param);
-
-  ssp = hash_get(&vars_hash, E2DBG_SSP_VAR);
-  if (!ssp)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No saved SP", -1);
+  expr = revm_expr_get(E2DBG_SSP_VAR);
+  if (!expr || !expr->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No saved SP", -1);
+  ssp = expr->value;
 
   /* Dump debuggee stack */
   if (revm_isnbr(param))

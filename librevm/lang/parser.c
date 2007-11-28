@@ -5,7 +5,7 @@
  *
  * Started on Wed Feb 28 19:19:04 2007 jfv
  *
- * $Id: parser.c,v 1.10 2007-08-08 13:47:24 may Exp $
+ * $Id: parser.c,v 1.11 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -82,7 +82,7 @@ int			revm_parse_construct(char *curtok)
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
 
-      fprintf(stderr, "Forend END label = %s \n", forend->endlabel);
+      //fprintf(stderr, "Forend END label = %s \n", forend->endlabel);
     }
 
   /* Here the match parser */
@@ -179,6 +179,9 @@ int			revm_parseopt(int argc, char **argv)
       /* Retreive command descriptor in the hash table */
       name = argv[index] + cmdline;
       actual = hash_get(&cmd_hash, name);
+
+      //fprintf(stderr, " [D] *********** curcmd->name = %s (nextlabel = %p, mode = %u) \n", 
+      //      name, nextlabel, world.state.revm_mode);
     
       /* We matched a command : call the registration handler */
       if (actual != NULL)
@@ -222,6 +225,8 @@ int			revm_parseopt(int argc, char **argv)
 	  ret = sscanf(name, "%15[^:]%c", label, &c);
 	  if (ret == 2 && c == ':')
 	    {
+	      //fprintf(stderr, " [D] ******* Adding label %s (before) \n", label);
+
 	      hash_add(&labels_hash[world.curjob->sourced], 
 		       strdup(label), newcmd); 
 	      pendinglabel = 1;

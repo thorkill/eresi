@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.1 2007-10-01 01:13:08 may Exp $
+** $Id: inform.c,v 1.2 2007-11-28 07:56:08 may Exp $
 **
 */
 #include "revm.h"
@@ -36,8 +36,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
   newexpr = rootexpr = prevexpr = NULL;
 
   /* We are at the first iteration : create root expression */
-  pathsize = snprintf(pathbuf, sizeof(pathbuf), "%s%s", 
-		      (*curpath == '$' ? "" : "$"), curpath);
+  pathsize = snprintf(pathbuf, sizeof(pathbuf), "%s", curpath);
   
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [I] Current expr path before loop (%s) \n", pathbuf);
@@ -60,7 +59,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 	  fprintf(stderr, " [I] Curchild expr path will be informed recursively (%s) \n", pathbuf);
 #endif
 	  
-	  revm_inform_type_addr(curtype->name, pathbuf + 1, childaddr, newexpr, 0, 0);
+	  revm_inform_type_addr(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
 	  pathsize += len;
 	  revm_inform_subtype(pathbuf, newexpr, curtype, childaddr, translateaddr);
 	  pathsize -= len;
@@ -77,9 +76,9 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 #endif
 	  
 	  newexpr->label = curtype->fieldname;
-	  newexpr->value = revm_object_lookup_real(type, pathbuf + 1, curtype->fieldname, translateaddr);
+	  newexpr->value = revm_object_lookup_real(type, pathbuf, curtype->fieldname, translateaddr);
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, ".%s", curtype->fieldname);
-	  revm_inform_type_addr(curtype->name, pathbuf + 1, childaddr, newexpr, 0, 0);
+	  revm_inform_type_addr(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
 	  bzero(pathbuf + pathsize, len);
 	}
       
@@ -241,15 +240,12 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 		      "Invalid variable name", NULL);
 
   /* Adding expression and its type to hash tables */
-#if 1 //__DEBUG_EXPRS__
-  fprintf(stderr, " [D] Variable %s added to exprs_hash with type %s \n", realname, rtype->name);
+#if __DEBUG_EXPRS__
+  fprintf(stderr, " [D] Variable %40s TO BE added to exprs_hash with type %s \n", realname, rtype->name);
 #endif
 
   if (hash_get(&exprs_hash, realname))
-    {
-      hash_del(&exprs_hash, realname);
-      hash_del(&exprtypes_hash, realname);
-    }
+    hash_del(&exprs_hash, realname);
 
   /* If just the address was given, lookup or create a name for the variable */
   if (IS_VADDR(realname))
@@ -276,9 +272,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   tvar->expr = expr;
 
   /* Overwrite existing entry */
-  if (hash_get(hash, realname))
-    hash_del(hash, realname);
-  if (hash_add(hash, realname, (void *) tvar) < 0)
+  if (hash_set(hash, strdup(realname), (void *) tvar) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Add a new hash entry failed", NULL);
 
@@ -296,9 +290,13 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
     revm_inform_subtype(realname, expr, rtype, oaddr, print);
   
   /* Register the expression */
-  hash_add(&exprs_hash    , (char *) aproxy_strdup(realname), (void *) expr);
-  hash_add(&exprtypes_hash, (char *) aproxy_strdup(realname), (void *) rtype);
+  hash_set(&exprs_hash    , (char *) strdup(realname), (void *) expr);
   tvar->expr = expr;
+
+  /* Adding expression and its type to hash tables */
+#if __DEBUG_EXPRS__
+  fprintf(stderr, " [D] Variable %40s added to exprs_hash with type %s \n", realname, rtype->name);
+#endif
 
   /* Success message and exit */
   if (print)

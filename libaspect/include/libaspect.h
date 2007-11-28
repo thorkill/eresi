@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.36 2007-10-01 01:13:08 may Exp $
+ ** $Id: libaspect.h,v 1.37 2007-11-28 07:56:08 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -109,11 +109,16 @@
 #define         ASPECT_TYPE_LONG         6  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_DADDR        7  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_CADDR        8  /*!< 4 or 8 bytes      */
-#define		ASPECT_TYPE_SIMPLENUM	 9  /*!< SIMPLE TYPES NUMBER */
+#define		ASPECT_TYPE_CORENUM	 9  /*!< Core types number */
 
+/* Vectors, tables and hash are considered simple types : 
+   you cannot copy them or look inside them without foreach */
 #define	        ASPECT_TYPE_VECT	 9  /*!< Vector type	   */
 #define		ASPECT_TYPE_HASH	10  /*!< Hash table type   */
 #define		ASPECT_TYPE_LIST	11  /*!< List type         */
+#define		ASPECT_TYPE_SIMPLENUM	12  /*!< SIMPLE TYPES NUMBER */
+
+/* Now come complex types which are part of the base types */
 #define		ASPECT_TYPE_EXPR	12  /*!< Expression type   */
 #define		ASPECT_TYPE_BLOC	13  /*!< Block type        */
 #define		ASPECT_TYPE_FUNC	14  /*!< Function type     */

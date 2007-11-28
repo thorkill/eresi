@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.28 2007-10-01 01:13:08 may Exp $
+ * $Id: access.c,v 1.29 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -53,8 +53,9 @@ void		*revm_get_raw(void *addr)
  */
 int		revm_arrayindex_get(char *strindex)
 {
-  int		index;
+  revmexpr_t	*expr;
   revmobj_t	*obj;
+  int		index;
   char		*str;
   int		idx;
 
@@ -67,13 +68,14 @@ int		revm_arrayindex_get(char *strindex)
     str[idx] = 0x00;
 
   /* Lookup the value of the index string */
-  obj = revm_lookup_var(str);
-  if (obj == NULL)
+  expr = revm_lookup_var(str);
+  if (!expr || !expr->value)
     {
       idx = atoi(str);
       XFREE(__FILE__, __FUNCTION__, __LINE__, str);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
     }
+  obj = expr->value;
   switch (obj->otype->type)
     {
     case ASPECT_TYPE_LONG:
@@ -167,8 +169,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 /** 
  * @brief Return offset given field name 
  */
-aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, 
-				 u_int *off)
+aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 {
   aspectype_t	*child;
   int		index;

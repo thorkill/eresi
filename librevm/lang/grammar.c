@@ -4,7 +4,7 @@
  * We dont use bison and have our own parser generator
  *
  * Started on  Sun Feb  9 22:57:58 2003 jfv
- * $Id: grammar.c,v 1.19 2007-10-01 01:13:08 may Exp $
+ * $Id: grammar.c,v 1.20 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"
@@ -87,7 +87,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   char		*entryname;
   char		*hashname;
   void		*ptr;
-  revmobj_t	*entry;
+  revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   size = parse_lookup_varlist(param, fmt, index);
@@ -99,14 +99,56 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   entryname = strchr(index, ':');
   if (entryname)
     *entryname++ = 0x00;
-  hashname  = revm_lookup_string(index);
+
+  /* Resolve hash name without messing with variable type */
+  expr = revm_expr_get(index);
+  if (expr)
+    {
+      if (!expr->type || !expr->value)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Parser handling failed", NULL);
+      ret = revm_copy_object(expr->value);	  
+      if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
+	{
+	  revm_destroy_object(expr->value);
+	  expr->value = ret;
+	  expr->type  = ret->otype;
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unknown key for source object", NULL);
+	}
+      hashname = strdup(expr->value->immed_val.str);
+      revm_destroy_object(expr->value);
+      expr->value = ret;
+      expr->type  = ret->otype;
+    }
+  else
+    hashname = revm_lookup_string(index);
+  
+  /* Resolve entry name without messing with variable type */
   if (entryname)
     {
-      entry = revm_lookup_immed(entryname);
-      if (revm_convert_object(entry, ASPECT_TYPE_STR) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unable to convert hash entry name", NULL);
-      entryname = entry->immed_val.str;
+      expr = revm_expr_get(entryname);
+      if (expr)
+	{
+	  if (!expr->type || !expr->value)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Parser handling failed", NULL);
+	  ret = revm_copy_object(expr->value);	  
+	  if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
+	    {
+	      revm_destroy_object(expr->value);
+	      expr->value = ret;
+	      expr->type = ret->otype;
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Unknown key for source object", NULL);
+	    }
+	  entryname = strdup(expr->value->immed_val.str);
+	  revm_destroy_object(expr->value);
+	  expr->value = ret;
+	  expr->type  = ret->otype;
+	}
+      else
+	entryname = revm_lookup_string(entryname);
     }
 
   /* In case the hash table does not exist, create it empty */
@@ -115,7 +157,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	     hash, sizeof(hash_t), NULL);
-      hash_init(hash, hashname, 7, ASPECT_TYPE_UNKNOW);
+      hash_init(hash, strdup(hashname), 7, ASPECT_TYPE_UNKNOW);
     }
 
   /* Now deal with the entry */
@@ -651,57 +693,4 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid REVM object", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
-}
-
-
-
-/** 
- * Parse the parameter and fill the revmobj_t 
- */
-revmobj_t		*revm_lookup_param(char *param)
-{
-  revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
-  char			**keys;
-  int			keynbr;
-  char			*parm;
-  unsigned int		sepnbr;
-  unsigned int		index;
-  revmobj_t		*res;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  /* Find the number of fields in param */
-  for (sepnbr = 0, parm = param; *parm; parm++)
-    if (*parm == REVM_SEP[0] || *parm == ':' || *parm == '%')
-      {
-	if (parm > param && parm[-1] == '[')
-	  continue;
-	sepnbr++;
-      }
-  
-  /* Find the correct parsing handler */
-  keys = hash_get_keys(&parser_hash, &keynbr);
-  for (index = 0; index < keynbr; index++)
-    {
-      funcptr = hash_get(&parser_hash, keys[index]);
-      res = funcptr(param, keys[index], sepnbr);
-      if (!res)
-	continue;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);  
-    }
-
-  /* If still not found, try manually inserted types */
-  res = revm_object_lookup(param);
-  if (res)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);  
-
-  /* If no good syntax is available, print error if we are not in probe mode */
-  res = revm_lookup_immed(param);
-  if (!res)
-    {
-      revm_badparam(param);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unable to resolve object", NULL);
-    }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }

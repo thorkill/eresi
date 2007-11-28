@@ -4,7 +4,9 @@ load a.out
 load rel.o
 
 #stop
-profile enable warn
+#profile enable warn
+#profile enable trace
+quiet
 
 reladd 1 2
 

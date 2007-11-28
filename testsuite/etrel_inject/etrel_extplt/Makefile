@@ -15,7 +15,7 @@ LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../elibc \
 	-lcelfsh32 -L../../../liballocproxy -lallocproxy -L../../../libaspect/    \
 	-laspect32 -lpthread
 OPT	= -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
-	-I../../../libaspect/include/ $(BITS)
+	-I../../../libaspect/include/ $(BITS) -g3
 
 NAM	= etrel_injecter
 HOSTSRC	= host.c
