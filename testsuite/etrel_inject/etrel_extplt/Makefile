@@ -13,7 +13,7 @@ CC	= gcc
 
 LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm -L../../../elibc \
 	-lcelfsh32 -L../../../liballocproxy -lallocproxy -L../../../libaspect/    \
-	-laspect32 -lpthread
+	-laspect32 -lpthread -L../../../libetrace -letrace32
 OPT	= -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
 	-I../../../libaspect/include/ $(BITS) -g3
 
