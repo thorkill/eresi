@@ -520,6 +520,10 @@ echo "	@echo 'Building libelfsh...' "				>> Makefile
 echo "	@cd libelfsh && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
 
+echo "	@echo 'Building libetrace...' "				>> Makefile
+echo "	@cd libetrace && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
+echo "	@echo 'Libetrace has been built successfully.' "		>> Makefile
+
 echo "	@echo 'Building libedfmt...'                     "	>> Makefile
 echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile
 echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
@@ -619,6 +623,7 @@ echo "	@ln -sf \$(LIBPATH)libui64.a       \$(LIBPATH)libui.a"        >> Makefile
 
 echo "	@ln -sf \$(LIBPATH)libaspect64.so   \$(LIBPATH)libaspect.so"   >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh64.so    \$(LIBPATH)libelfsh.so"    >> Makefile
+echo "	@ln -sf \$(LIBPATH)libetrace64.so    \$(LIBPATH)libetrace.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg64.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir64.so \$(LIBPATH)libmjollnir.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm64.so     \$(LIBPATH)librevm.so"     >> Makefile
@@ -633,6 +638,7 @@ echo "	@cp evarista/evarista?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
+echo "	@cp libetrace/libetrace*.a libetrace/libetrace*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libe2dbg/libe2dbg*.a libe2dbg/libe2dbg*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libasm/libasm.a libasm/libasm.so \$(LIBPATH) "	>> Makefile
 echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
@@ -656,6 +662,7 @@ echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefil
 echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"        >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
+echo "	@ln -sf \$(LIBPATH)libetrace32.a    \$(LIBPATH)libetrace.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir32.a \$(LIBPATH)libmjollnir.a"  >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm32.a     \$(LIBPATH)librevm.a"      >> Makefile
@@ -663,6 +670,7 @@ echo "	@ln -sf \$(LIBPATH)libedfmt32.a    \$(LIBPATH)libedfmt.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"        >> Makefile
 echo "	@ln -sf \$(LIBPATH)libaspect32.so   \$(LIBPATH)libaspect.so"   >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.so    \$(LIBPATH)libelfsh.so"    >> Makefile
+echo "	@ln -sf \$(LIBPATH)libetrace32.so    \$(LIBPATH)libetrace.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir32.so \$(LIBPATH)libmjollnir.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm32.so     \$(LIBPATH)librevm.so"     >> Makefile
@@ -673,6 +681,7 @@ echo "	@ln -sf \$(LIBPATH)libkernsh32.so   \$(LIBPATH)libkernsh.so"   >> Makefil
 
 # Install headers
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
+echo "	@cp -R libetrace/include/* \$(INCPATH) "			>> Makefile
 echo "	@cp libasm/include/*.h \$(INCPATH)"		        >> Makefile
 echo "	@cp libaspect/include/*.h \$(INCPATH)"		        >> Makefile
 echo "	@cp librevm/include/*.h \$(INCPATH)"		        >> Makefile
@@ -699,6 +708,7 @@ echo "	@chmod 644 \$(LIBPATH)libkernsh*.so "                   >> Makefile
 echo "	@chmod 644 \$(INCPATH)libkernsh*.h "                    >> Makefile
 fi
 echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libetrace*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
 echo "	@chmod 644 \$(LIBPATH)libaspect*.a "			>> Makefile
@@ -747,6 +757,7 @@ echo "	rm -f  \$(BINPATH)/e2dbg*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/evarista*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh*"				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libetrace*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libe2dbg*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/liballocproxy*"			>> Makefile
@@ -788,6 +799,7 @@ echo "	cd kernsh && \$(MAKE) -s clean"                         >> Makefile
 echo "	cd libkernsh && \$(MAKE) -s clean"                      >> Makefile
 fi
 echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libetrace && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
@@ -813,6 +825,7 @@ echo "	cd kernsh && \$(MAKE) -s fclean"                        >> Makefile
 echo "	cd libkernsh && \$(MAKE) -s fclean"                     >> Makefile
 fi
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libetrace && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd elibc     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
@@ -841,6 +854,7 @@ echo "	@echo Doing tags ... "					>> Makefile
 if [ "$ETAGS" = "1" ]; then
 echo "	@\$(ETAGS) elfsh/*.c elfsh/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
+echo "	libetrace/*.c libetrace/include/*.h \\"		>> Makefile
 echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
 echo "	libaspect/*.c libe2dbg/*.c libaspect/include/*.h \\"    >> Makefile
@@ -866,6 +880,8 @@ echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "	elibc/include/*.h elibc/*.c\\"				>> Makefile
 echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
 echo "  libelfsh/include/*.h \\"    				>> Makefile
+echo "  libetrace/include/*.h \\"    				>> Makefile
+echo "  libetrace/*.c \\" 					>> Makefile
 echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile
 echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
@@ -887,6 +903,7 @@ fi
 echo "info    : "						>> Makefile
 echo "	@echo '###############' TOTAL '###############'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
+echo "	libetrace/*.c libetrace/include/*.h \\"	>> Makefile
 echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile
 echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
@@ -906,6 +923,8 @@ echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile
 echo "	@wc -l libaspect/*.c "					>> Makefile
 echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile
 echo "	@wc -l libelfsh/*.c "					>> Makefile
+echo "	@echo '#############' LIBETRACE ONLY '#######'"	        >> Makefile
+echo "	@wc -l libetrace/*.c "					>> Makefile
 echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile
 echo "	@wc -l libe2dbg/*.c "					>> Makefile
 echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile

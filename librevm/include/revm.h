@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.90 2007-11-28 08:18:17 may Exp $
+** $Id: revm.h,v 1.91 2007-11-28 09:32:07 rival Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -41,6 +41,7 @@
 #include <regex.h>
 
 #include <libelfsh.h>
+//#include <libetrace.h>
 #include <libedfmt.h>
 
 #if defined(ELFSHNET)

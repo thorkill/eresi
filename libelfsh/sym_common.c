@@ -5,7 +5,7 @@
 ** Started on  Tue Dec 31 10:19:01 2002 jfv
 ** 
 **
-** $Id: sym_common.c,v 1.9 2007-07-31 03:28:47 may Exp $
+** $Id: sym_common.c,v 1.10 2007-11-28 09:32:06 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -446,5 +446,75 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
       }
 
   elfsh_sync_sorted_symtab(symtab);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * If submited function point into the plt, we return the file
+ * and its virtual address to point to remote function
+ * @param filein base file pointer
+ * @param vaddrin base virtual address
+ * @param fileout returned file pointer
+ * @param vaddrout returned virtual address
+ */
+int			elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+						     elfshobj_t **fileout, elfsh_Addr *vaddrout)
+{
+  elfshobj_t		*file;
+  elfshsect_t		*sect;
+  char			*data;
+  elfsh_SAddr		sfoffset;
+  char			*sym_name;
+  elfsh_Sym		*sym;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!filein || !fileout || !vaddrout)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Default returned values are -in */
+  *fileout = filein;
+  *vaddrout = vaddrin;
+
+  /* Get virtual address parent section */
+  sect = elfsh_get_parent_section(filein, vaddrin, &sfoffset);
+
+  if (!sect)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't get section", -1);
+
+  data = elfsh_get_section_name(filein, sect);
+
+  if (!data)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Can't get section name", -1);
+
+  /* Find the right function on dependencies */
+  if (!strncmp(data, ".plt", 4))
+    {
+      sym_name = elfsh_reverse_dynsymbol(filein, vaddrin, &sfoffset);
+
+      if (!sym_name)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find symbol name", -1);
+
+      file = elfsh_traces_search_sym(filein, sym_name);
+	      
+      if (!file)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find extern function file", -1);
+
+      sym = elfsh_get_dynsymbol_by_name(file, sym_name);
+
+      if (!sym)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can't find function symbol on dependencies", -1);
+
+      /* Update pointers */
+      *fileout = file;
+      *vaddrout = sym->st_value;
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

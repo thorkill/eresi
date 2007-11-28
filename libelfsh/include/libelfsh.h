@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.77 2007-10-01 01:13:08 may Exp $
+** $Id: libelfsh.h,v 1.78 2007-11-28 09:32:06 rival Exp $
 **
 */
 
@@ -1001,6 +1001,8 @@ void		elfsh_symtab_endianize(elfshsect_t *tab);
 int		elfsh_endianize_symtab(elfshsect_t *tab);
 int		elfsh_shift_syms(elfshobj_t *file, elfshsect_t *symtab, 
                        elfsh_Addr limit, int inc);
+int		elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
+					     elfshobj_t **fileout, elfsh_Addr *vaddrout);
 
 /* obj.c */
 elfshobj_t	*elfsh_load_obj(char *name);
@@ -1730,30 +1732,5 @@ int		elfsh_bp_add(hash_t *bps, elfshobj_t *file,
                    char *resolv, elfsh_Addr addr, 
                    u_char flags);
 
-/* traces.c */
-int		*elfsh_traces_inittrace();
-hash_t		*elfsh_traces_createtrace(char *trace);
-hash_t		*elfsh_traces_gettrace(char *trace);
-int		elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr);
-int		elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr);
-int		elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr, elfsh_Addr *vaddr, u_char *dynsym);
-int 		elfsh_traces_tracable(elfshobj_t *file, char *name,
-				      elfsh_Addr *vaddr, u_char *dynsym);
-elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
-int		elfsh_traces_funcrm(char *trace, char *name);
-int		elfsh_traces_funcexclude(char *regstr);
-int		elfsh_traces_funcrmexclude(char *regstr);
-int		elfsh_traces_funcenable(char *trace, char *name);
-int		elfsh_traces_funcsetstatus(hash_t *table, int status);
-int		elfsh_traces_funcenableall(char *trace);
-int		elfsh_traces_funcdisableall(char *trace);
-int		elfsh_traces_funcdisable(char *trace, char *name);
-int		elfsh_traces_funcrmall(char *trace);
-int		elfsh_traces_deletetrace(char *trace);
-int		elfsh_traces_save(elfshobj_t *file);
-elfshobj_t   	*elfsh_traces_search_sym(elfshobj_t *file, char *name);
-char		*elfsh_traces_geterrfunc();
-int		elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
-					     elfshobj_t **fileout, elfsh_Addr *vaddrout);
 
 #endif /* __LIBELFSH_H_ */

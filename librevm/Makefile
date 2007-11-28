@@ -19,6 +19,7 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-lcelfsh32 -L../libasm/ -lasm $(LDUIOPT32) -g3		  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
+			-L../libetrace/ -letrace32				  \
 			$(KERNSHLIB32)                                            \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
@@ -29,6 +30,7 @@ LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-lcelfsh64 -L../libasm/ -lasm $(LDUIOPT64) -g3		  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
+			-L../libetrace/ -letrace32				  \
 			$(KERNSHLIB64)						  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
