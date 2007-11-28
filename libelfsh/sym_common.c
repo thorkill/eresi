@@ -5,10 +5,11 @@
 ** Started on  Tue Dec 31 10:19:01 2002 jfv
 ** 
 **
-** $Id: sym_common.c,v 1.10 2007-11-28 09:32:06 rival Exp $
+** $Id: sym_common.c,v 1.11 2007-11-28 10:12:37 rival Exp $
 **
 */
 #include "libelfsh.h"
+#include "libetrace.h"
 
 /**
  * Return the symbol size 

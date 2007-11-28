@@ -5,10 +5,11 @@
  ** Started on  Tue Mar  4 01:14:01 2003 jfv
  ** Last update Thu Mar 23 23:21:08 2006 thorkill
  **
- ** $Id: save.c,v 1.15 2007-11-28 09:32:06 rival Exp $
+ ** $Id: save.c,v 1.16 2007-11-28 10:12:37 rival Exp $
  **
  */
 #include "libelfsh.h"
+#include "libetrace.h"
 
 
 /**

@@ -18,6 +18,7 @@ DBGNAME64		= e2dbg64
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
+			-I../libetrace/include/ 							 \
 			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
@@ -27,6 +28,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
+			-I../libetrace/include/ 							 \
 			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
@@ -35,6 +37,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-DERESI64
 
 LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
+			-L../libetrace/ -letrace32									\
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
 			-L../libmjollnir -lmjollnir32 -g3 -L../elibc/ -lcelfsh32    \
@@ -44,6 +47,7 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			$(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
+			-L../libetrace/ -letrace64									\
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64           \
 			-L../libmjollnir -lmjollnir64 -g3 -L../elibc/ -lcelfsh64    \

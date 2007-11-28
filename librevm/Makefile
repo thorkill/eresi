@@ -30,7 +30,7 @@ LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-lcelfsh64 -L../libasm/ -lasm $(LDUIOPT64) -g3		  \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
-			-L../libetrace/ -letrace32				  \
+			-L../libetrace/ -letrace64				  \
 			$(KERNSHLIB64)						  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
