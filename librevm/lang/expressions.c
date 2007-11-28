@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.14 2007-11-28 07:56:09 may Exp $
+** $Id: expressions.c,v 1.15 2007-11-28 08:18:17 may Exp $
 */
 #include "revm.h"
 
@@ -32,7 +32,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
       if (expr)
 	{
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
 	  fprintf(stderr, " [D] FOUND REVMEXPR = %s :: %s (recursing!) \n", 
 		  expr->label, expr->strval);
 #endif
@@ -98,7 +98,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 		 *datastr-- = 0x00)
  	      *namend++ = 0x00;
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
 	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n", 
 		    expr->label, expr->strval);
 #endif
@@ -117,7 +117,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	   *datastr-- = 0x00)
 	*namend++ = 0x00;
       
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
       fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
 	      expr->label, expr->strval);
 #endif
@@ -246,7 +246,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 #endif
 
 	  childata = (char *) srcdata + childtype->off;
-	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,			// pathbuf -> recpath
+	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,			
 			 ".%s", childtype->fieldname);
 	  revm_inform_type_addr(childtype->name, recpath, 
 				(elfsh_Addr) childata, newexpr, 0, 0);
@@ -275,7 +275,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 #endif
 
 	  /* Handle RAW terminal field */
-	  if (childtype->type == ASPECT_TYPE_RAW)				//XXX
+	  if (childtype->type == ASPECT_TYPE_RAW)			       
 	    {
 	      //FIXME: Call hexa converter curval.datastr and set field
 	      fprintf(stderr, " [E] Raw object initialization yet unsupported.\n");
@@ -284,7 +284,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 	  /* Lookup scalar value and assign it to the field */
 	  newexpr->value = revm_object_lookup_real(curtype, recpath, 
-						   childtype->fieldname, 0);	//XXX
+						   childtype->fieldname, 0);	
 	  curdata  = revm_lookup_param(newexpr->strval);
 	  if (!newexpr->value || !curdata)
 	    {
@@ -306,7 +306,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	    revm_expr_destroy(curdata->label);
 
 	  /* Handle terminal Array fields */
-	  if (childtype->dimnbr && childtype->elemnbr)			//XXX
+	  if (childtype->dimnbr && childtype->elemnbr)			
 	    {
 	      //FIXME: Use child->elemnbr[idx] foreach size of dim (Use previous code in loop)
 	      fprintf(stderr, 
@@ -315,12 +315,12 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	    }
 
 	  /* Inform the runtime system about this terminal field */
-	  childata = (char *) srcdata + childtype->off;			//XXX
-	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,		// pathbuf -> recpath
-			 ".%s", childtype->fieldname);			//XXX
-	  revm_inform_type_addr(childtype->name, recpath,		//XXX
-				(elfsh_Addr) childata, newexpr, 0, 0);	///XXX: NULL -> newexpr
-	  bzero(recpath + pathsize, len);				// pathbuf -> recpath
+	  childata = (char *) srcdata + childtype->off;			
+	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,		
+			 ".%s", childtype->fieldname);			
+	  revm_inform_type_addr(childtype->name, recpath,		
+				(elfsh_Addr) childata, newexpr, 0, 0); 
+	  bzero(recpath + pathsize, len);				
 	}
 
       /* Link next field of current structure */
@@ -401,8 +401,6 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 	  ret = revm_expr_handle(dest->childs, cursource->childs, op);
 	  if (ret != 0)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-
-	  /* FIXED : to confirm this addition */
 	  continue;
 	}
 
@@ -418,6 +416,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 			 "Unable to set expression field", ret);
 	  break;
 	case REVM_OP_MATCH:	  
+	  // Not sure this is necessary (initialization of structures with pointers)
 	  //if (dest->childs || cursource->childs)
 	  //{
 	  //  ret = revm_expr_handle(dest->childs, cursource->childs, op);
@@ -741,7 +740,7 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name)
 
   hash_add(&exprs_hash    , (char *) strdup(name), (void *) dest);
 
-#if 0 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Create_Expr_From_Object %s added with type = %s \n", 
 	  name, (type ? type->name : "UNKNOWN TYPE"));
 #endif
@@ -1030,13 +1029,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname;
 
-  // This should not error, since we can indeed return NULL if the next test is true
-  if (!revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0, 0))
-    {
-      //printf("revm_inform_type_addr returned NULL : single-field structure ? \n");
-      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-      //	 "Unable to inform created expression", NULL);
-    }
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0, 0);
 
   if (!datatype->next && datatype->childs)
     {
@@ -1048,16 +1041,12 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     }
   else
     expr = revm_expr_init(dataname, NULL, datatype, data, datavalue);
-
-  //printf("after expr_init : annotation again \n");
   
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
 
-  if (!revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0))
-    printf("revm_inform_type_addr returned NULL *AGAIN* : single-field structure ? \n");
-
+  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
@@ -1136,7 +1125,7 @@ int		revm_expr_destroy(char *e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
 
-#if 0 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   printf("\n [D] DestroyExpr %s \n", e);
 #endif
 

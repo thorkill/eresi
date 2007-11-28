@@ -4,7 +4,7 @@
 ** @brief Contain ELFsh internal hashtables library calls
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.40 2007-11-28 07:56:08 may Exp $
+** $Id: libhash.c,v 1.41 2007-11-28 08:18:17 may Exp $
 */
 #include "libaspect.h"
 
@@ -136,9 +136,6 @@ void		hash_destroy(hash_t *h)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //if (strstr(h->name, "label"))
-  //fprintf(stderr, "Destroying label hash table named %s \n", h->name);
-
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
@@ -171,9 +168,6 @@ int		hash_add(hash_t *h, char *key, void *data)
   for (index = 0, backup = key; *backup; backup++)
     index += *backup;
   index %= h->size;
-
-  if (strstr(h->name, "label"))
-    fprintf(stderr, " [D] ******** Adding new label of key %s \n", key);
 
   if (h->ent[index].key == NULL)
     {
@@ -208,14 +202,8 @@ int		hash_del(hash_t *h, char *key)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //if (strstr(h->name, "label"))
-  //fprintf(stderr, " [D] ******** Deleting new label of key %s \n", key);
-
   /* Check the first entry for this hash */
-  //printf("before h = %p key = %p (%s) \n", h, key, (key ? key : ""));
   actual = hash_get_head(h, key);
-  //printf("after  h = %p key = %p (%s) \n", h, key, (key ? key : ""));
-
   if (actual->key != NULL && !strcmp(actual->key, key))
     {
       if (actual->next)

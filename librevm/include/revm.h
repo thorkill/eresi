@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.89 2007-11-28 07:56:09 may Exp $
+** $Id: revm.h,v 1.90 2007-11-28 08:18:17 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -80,8 +80,8 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
-#define	__DEBUG_EXPRS__		1
-#define	__DEBUG_EXPRS_MORE__	1
+#define	__DEBUG_EXPRS__		0
+#define	__DEBUG_EXPRS_MORE__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
