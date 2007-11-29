@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.33 2007-11-28 07:56:09 may Exp $
+ * $Id: init.c,v 1.34 2007-11-29 10:25:02 rival Exp $
  *
  */
 
@@ -173,7 +173,7 @@ int		revm_loop(int argc, char **argv)
 	  profiler_error_reset();
 	  if (traces_run(world.curjob->current, NULL, 0) < 0)
 	    {
-	      buggyfunc = elfsh_traces_geterrfunc();
+	      buggyfunc = etrace_geterrfunc();
 	      
 	      /* Not NULL if issue occurs when we iterate though functions */
 	      if (buggyfunc)

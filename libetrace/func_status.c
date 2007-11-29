@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: func_status.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: func_status.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -19,10 +19,10 @@
  * Change the status of a whole trace 
  * @param table trace hash table
  * @param status new status (0 = disable, 1 = enable)
- * @see elfsh_traces_funcenableall
- * @see elfsh_traces_funcdisableall
+ * @see etrace_funcenableall
+ * @see etrace_funcdisableall
  */
-int			elfsh_traces_funcsetstatus(hash_t *table, int status)
+int			etrace_funcsetstatus(hash_t *table, int status)
 {
   u_int			index;
   int			keynbr;
@@ -35,7 +35,7 @@ int			elfsh_traces_funcsetstatus(hash_t *table, int status)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  elfsh_traces_inittrace();
+  etrace_inittrace();
 
   keys = hash_get_keys(table, &keynbr);
 

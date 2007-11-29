@@ -5,7 +5,7 @@
 ** This file contain trace save function 
 **
 **
-** $Id: save.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: save.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 
@@ -19,7 +19,7 @@ char		bufex[BUFSIZ];
  * Check if this function name is excluded
  * @param name function name
  */
-static int		elfsh_traces_check_exclude(char *name)
+static int		etrace_check_exclude(char *name)
 {
   u_int			index;
   int			keynbr;
@@ -91,10 +91,10 @@ int queue_step = 0;
  * The aglorithm is two differents function then I don't wanna
  * recheck which function must be traced.
  * @param elm function to queue
- * @see elfsh_traces_save_table
- * @see elfsh_traces_save
+ * @see etrace_save_table
+ * @see etrace_save
  */
-static int		elfsh_traces_queue_add(elfshtraces_t *elm)
+static int		etrace_queue_add(elfshtraces_t *elm)
 {
   u_int			index;
 
@@ -129,7 +129,7 @@ static int		elfsh_traces_queue_add(elfshtraces_t *elm)
 /**
  * Clean the queue if we setup one 
  */
-static int		elfsh_traces_queue_clean() 
+static int		etrace_queue_clean() 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -149,7 +149,7 @@ static int		elfsh_traces_queue_clean()
  * @param file object (target)
  * @param table a trace hash table
  */
-static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
+static int		etrace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 {
   int			z = 0;
   u_int			index;
@@ -174,11 +174,11 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	    {
 	      /* We have an exclude hash table to check. This way, user has a total control
 		 on traced function using etrace for example. */
-	      if (elfsh_traces_check_exclude(ret_trace->funcname) < 0)
+	      if (etrace_check_exclude(ret_trace->funcname) < 0)
 		continue;
 
 	      /* Add in the queue */
-	      ret = elfsh_traces_queue_add(ret_trace);
+	      ret = etrace_queue_add(ret_trace);
 
 	      /* Allocation failed */
 	      if (ret == -1)
@@ -282,7 +282,7 @@ static int		elfsh_traces_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
  * @param file target file that is a copy of the original
  * @see cmd_save
  */
-int			elfsh_traces_save(elfshobj_t *file)
+int			etrace_save(elfshobj_t *file)
 {
   u_int			index;
   int			keynbr;
@@ -603,7 +603,7 @@ int			elfsh_traces_save(elfshobj_t *file)
       table = hash_get(&traces_table, keys[index]);
       
       if (table)
-	elfsh_traces_save_table(fp, file, table);
+	etrace_save_table(fp, file, table);
     }
 
   hash_free_keys(keys);
@@ -616,7 +616,7 @@ int			elfsh_traces_save(elfshobj_t *file)
   // Compile the tmp c file to create a relocatable file to inject
   if (rename(tfname, rtfname) < 0)
     {
-      elfsh_traces_queue_clean();
+      etrace_queue_clean();
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Rename failed", (-1));
     }
@@ -650,7 +650,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
   if (idx < 0)
     {
-      elfsh_traces_queue_clean();
+      etrace_queue_clean();
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Failed to inject ET_REL with workspace", -1);
     }
@@ -670,7 +670,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
     if (dst == NULL)
       {
-	elfsh_traces_queue_clean();
+	etrace_queue_clean();
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Failed to find trace function", -1);
       }
@@ -688,7 +688,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 					addr, NULL);
     if (err < 0)
       {
-	elfsh_traces_queue_clean();
+	etrace_queue_clean();
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Failed to hijack a function", -1);
       }
@@ -696,7 +696,7 @@ int			elfsh_traces_save(elfshobj_t *file)
 
   last_parsed_function = NULL;
 
-  elfsh_traces_queue_clean();
+  etrace_queue_clean();
 
   /* Save procedure already relocate but we made some modifications too
      then we restart this procedure.

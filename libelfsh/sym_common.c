@@ -5,7 +5,7 @@
 ** Started on  Tue Dec 31 10:19:01 2002 jfv
 ** 
 **
-** $Id: sym_common.c,v 1.11 2007-11-28 10:12:37 rival Exp $
+** $Id: sym_common.c,v 1.12 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -500,7 +500,7 @@ int			elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Can't find symbol name", -1);
 
-      file = elfsh_traces_search_sym(filein, sym_name);
+      file = etrace_search_sym(filein, sym_name);
 	      
       if (!file)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

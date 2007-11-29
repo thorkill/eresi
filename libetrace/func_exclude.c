@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: func_exclude.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: func_exclude.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -19,7 +19,7 @@
  * Exclude functions by regex during the last stage
  * @param regstr reg string
  */
-int			elfsh_traces_funcexclude(char *regstr)
+int			etrace_funcexclude(char *regstr)
 {
   char			funcreg[256];
   size_t		len;
@@ -60,7 +60,7 @@ int			elfsh_traces_funcexclude(char *regstr)
  * Remove an exclude function by regex during the last stage
  * @param regstr reg string
  */
-int			elfsh_traces_funcrmexclude(char *regstr)
+int			etrace_funcrmexclude(char *regstr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   

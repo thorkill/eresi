@@ -5,7 +5,7 @@
 ** This file contain one function for error collection
 **
 **
-** $Id: errfunc.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: errfunc.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 
@@ -16,7 +16,7 @@
  * When an error occur in etrace. This function is used to show buggy function name.
  * @return function name
  */
-char			*elfsh_traces_geterrfunc()
+char			*etrace_geterrfunc()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 

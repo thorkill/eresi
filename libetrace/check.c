@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: check.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: check.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -22,9 +22,9 @@
  * @param num number of symbol on the table
  * @param dynsym 0 = symtab 1 = dynsym (internal/external)
  * @param vaddr fill symbol virtual address
- * @see elfsh_traces_tracable
+ * @see etrace_tracable
  */
-static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
+static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
 						  int num, u_char dynsym, elfsh_Addr *vaddr)
 {
   u_int			index;
@@ -89,7 +89,7 @@ static int		elfsh_traces_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *s
  * @param addr function address
  * @param vaddr returned virtual address
  */
-int			elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
+int			etrace_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
 						 elfsh_Addr *vaddr, u_char *dynsym)
 {
   int			retvalue;
@@ -117,9 +117,9 @@ int			elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
  * @param name function name
  * @param vaddr pointer where save the function virtual address
  * @param external pointer where save the status internal / external of the function
- * @see elfsh_traces_tracable_sym
+ * @see etrace_tracable_sym
  */
-int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
+int 			etrace_tracable(elfshobj_t *file, char *name,
 					      elfsh_Addr *vaddr, u_char *external)
 {
   elfsh_Sym		*symtab, *dynsym;
@@ -132,7 +132,7 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
 		 "Invalid parameters", -1);
 
   /* Some function can't be traced */
-  if (elfsh_traces_untracable(file, name) == 0)
+  if (etrace_untracable(file, name) == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Untracable function", -2);    
 
@@ -145,7 +145,7 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
 		 "No symbols found", -1);
 
   /* sym */
-  if (elfsh_traces_tracable_sym(file, name, symtab, symnum, 0, vaddr) == 0)
+  if (etrace_tracable_sym(file, name, symtab, symnum, 0, vaddr) == 0)
     {
       if (external)
 	*external = 0;
@@ -154,7 +154,7 @@ int 			elfsh_traces_tracable(elfshobj_t *file, char *name,
     }
 
   /* dynsym */
-  if (elfsh_traces_tracable_sym(file, name, dynsym, dynsymnum, 1, vaddr) == 0)
+  if (etrace_tracable_sym(file, name, dynsym, dynsymnum, 1, vaddr) == 0)
     {
       if (external)
 	*external = 1;

@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: func_enable.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: func_enable.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,7 +20,7 @@
  * @param trace trace name
  * @param name function name
  */
-int			elfsh_traces_funcenable(char *trace, char *name)
+int			etrace_funcenable(char *trace, char *name)
 {
   elfshtraces_t		*ret_trace;
   hash_t		*table;
@@ -31,7 +31,7 @@ int			elfsh_traces_funcenable(char *trace, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  table = elfsh_traces_gettrace(trace);
+  table = etrace_gettrace(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -54,9 +54,9 @@ int			elfsh_traces_funcenable(char *trace, char *name)
 /**
  * Enable all functions of a trace 
  * @param trace trace name
- * @see elfsh_traces_funcsetstatus
+ * @see etrace_funcsetstatus
  */
-int			elfsh_traces_funcenableall(char *trace)
+int			etrace_funcenableall(char *trace)
 {
   u_int			index;
   int			keynbr;
@@ -68,7 +68,7 @@ int			elfsh_traces_funcenableall(char *trace)
   if (!trace)
     trace = ELFSH_TRACES_TYPE_DEFAULT;
 
-  elfsh_traces_inittrace();
+  etrace_inittrace();
 
   keys = hash_get_keys(&traces_table, &keynbr);
 
@@ -79,7 +79,7 @@ int			elfsh_traces_funcenableall(char *trace)
 	  table = (hash_t *) hash_get(&traces_table, keys[index]);
 	  
 	  if (table)
-	    elfsh_traces_funcsetstatus(table, 1);
+	    etrace_funcsetstatus(table, 1);
 	}
 
       hash_free_keys(keys);

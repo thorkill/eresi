@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: traces.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: traces.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,7 +20,7 @@
  * @param trace trace name
  * @return trace hash table
  */
-hash_t			*elfsh_traces_createtrace(char *trace)
+hash_t			*etrace_createtrace(char *trace)
 {
   hash_t		*newhash;
 
@@ -30,7 +30,7 @@ hash_t			*elfsh_traces_createtrace(char *trace)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", NULL);
 
-  elfsh_traces_inittrace();
+  etrace_inittrace();
 
   /* Create a new trace tracename */
   snprintf(buf, BUFSIZ - 1, ELFSH_TRACES_PATTERN, trace);
@@ -43,7 +43,7 @@ hash_t			*elfsh_traces_createtrace(char *trace)
 }
 
 /* Init the table and add the default trace (global) */
-int			*elfsh_traces_inittrace()
+int			*etrace_inittrace()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
@@ -51,7 +51,7 @@ int			*elfsh_traces_inittrace()
   if (traces_table.ent == NULL)
     {
       hash_init(&traces_table, ELFSH_TRACES_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
-      elfsh_traces_createtrace(ELFSH_TRACES_TYPE_DEFAULT);
+      etrace_createtrace(ELFSH_TRACES_TYPE_DEFAULT);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -62,13 +62,13 @@ int			*elfsh_traces_inittrace()
  * @param trace trace name
  * @return trace hash table
  */
-hash_t			*elfsh_traces_gettrace(char *trace)
+hash_t			*etrace_gettrace(char *trace)
 {
   hash_t		*table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
-  elfsh_traces_inittrace();
+  etrace_inittrace();
 
   /* Default trace by default */
   if (!trace)

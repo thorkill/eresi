@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: search_addr.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: search_addr.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -19,7 +19,7 @@
  * Setup asm_processor structure correctly
  * @param proc pointer to asm_processor structure
  */
-static int		elfsh_traces_setup_proc(elfshobj_t *file, asm_processor *proc)
+static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)
 {
   u_int         	arch;
 
@@ -103,7 +103,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
 		elfsh_get_section_addr(text->shdr));
 
   /* Setup asm_processor structure */
-  if (elfsh_traces_setup_proc(file, &proc) < 0)
+  if (etrace_setup_proc(file, &proc) < 0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed during proc structure setup", -1);
 
@@ -224,7 +224,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
 		 "Not in entrypoint section", -4);
 
   /* Setup asm_processor structure */
-  if (elfsh_traces_setup_proc(file, &proc) < 0)
+  if (etrace_setup_proc(file, &proc) < 0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed during proc structure setup", -1);
   

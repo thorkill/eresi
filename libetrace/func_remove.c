@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: func_remove.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: func_remove.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,7 +20,7 @@
  * @param trace trace name
  * @param name function name
  */
-int			elfsh_traces_funcrm(char *trace, char *name)
+int			etrace_funcrm(char *trace, char *name)
 {
   elfshtraces_t		*ret_trace;
   hash_t		*table;
@@ -31,7 +31,7 @@ int			elfsh_traces_funcrm(char *trace, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  table = elfsh_traces_gettrace(trace);
+  table = etrace_gettrace(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -53,7 +53,7 @@ int			elfsh_traces_funcrm(char *trace, char *name)
  * Delete all functions of a trace 
  * @param trace trace name
  */
-int			elfsh_traces_funcrmall(char *trace)
+int			etrace_funcrmall(char *trace)
 {
   char			**keys;
   u_int			index;
@@ -63,7 +63,7 @@ int			elfsh_traces_funcrmall(char *trace)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  table = elfsh_traces_gettrace(trace);
+  table = etrace_gettrace(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

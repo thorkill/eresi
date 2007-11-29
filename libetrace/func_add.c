@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: func_add.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: func_add.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 #include "libelfsh.h"
@@ -22,7 +22,7 @@
  * @param newtrace allocated structure that describe the trace
  * @return newtrace pointer or NULL in case of failure
  */
-elfshtraces_t 		*elfsh_traces_funcadd(char *trace, 
+elfshtraces_t 		*etrace_funcadd(char *trace, 
 					      char *name,
 					      elfshtraces_t *newtrace)
 {
@@ -34,7 +34,7 @@ elfshtraces_t 		*elfsh_traces_funcadd(char *trace,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", NULL);
 
-  table = elfsh_traces_gettrace(trace);
+  table = etrace_gettrace(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

@@ -7,7 +7,7 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
 **
-** $Id: search.c,v 1.1 2007-11-28 09:32:06 rival Exp $
+** $Id: search.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 
@@ -21,7 +21,7 @@
  * @param name symbol name
  * @return file object that containt the symbol (on dynsym)
  */
-elfshobj_t   		*elfsh_traces_search_sym(elfshobj_t *file, char *name)
+elfshobj_t   		*etrace_search_sym(elfshobj_t *file, char *name)
 {
   char			**keys;
   int			keynbr;
@@ -67,7 +67,7 @@ elfshobj_t   		*elfsh_traces_search_sym(elfshobj_t *file, char *name)
 	    }
 	  
 	  /* Search deeper on this child */
-	  find = elfsh_traces_search_sym(child, name);
+	  find = etrace_search_sym(child, name);
 	  
 	  if (find)
 	    break;

@@ -5,7 +5,7 @@
  ** Started on  Tue Mar  4 01:14:01 2003 jfv
  ** Last update Thu Mar 23 23:21:08 2006 thorkill
  **
- ** $Id: save.c,v 1.16 2007-11-28 10:12:37 rival Exp $
+ ** $Id: save.c,v 1.17 2007-11-29 10:25:02 rival Exp $
  **
  */
 #include "libelfsh.h"
@@ -213,7 +213,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 				"Unable to copy object", -1);
 
 	/* Apply awaiting function tracing hooks */
-	if (file->hdr->e_type != ET_REL && elfsh_traces_save(file) < 0)
+	if (file->hdr->e_type != ET_REL && etrace_save(file) < 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				"Tracing failed", -1);
 

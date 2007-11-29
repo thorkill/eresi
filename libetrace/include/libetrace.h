@@ -4,7 +4,7 @@
 ** Started on  Sat Nov 17 12:10:12 2007 eau
 **
 **
-** $Id: libetrace.h,v 1.1 2007-11-28 09:32:07 rival Exp $
+** $Id: libetrace.h,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 
@@ -116,58 +116,58 @@ hash_t exclude_table;
  */
 /* int trace_enabled_count = 0;*/
 
-#define ELFSH_TRACES_TABLE_NAME 	"elfsh_traces_table"
-#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "elfsh_traces_exclude_table"
+#define ELFSH_TRACES_TABLE_NAME 	"etrace_table"
+#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "etrace_exclude_table"
 #define ELFSH_TRACES_PATTERN 		"traces_%s"
 
 /* traces.c */
-int		*elfsh_traces_inittrace();
-hash_t		*elfsh_traces_createtrace(char *trace);
-hash_t		*elfsh_traces_gettrace(char *trace);
+int		*etrace_inittrace();
+hash_t		*etrace_createtrace(char *trace);
+hash_t		*etrace_gettrace(char *trace);
 
 /* check.c */
-int		elfsh_traces_valid_faddr(elfshobj_t *file, elfsh_Addr addr, elfsh_Addr *vaddr, u_char *dynsym);
-int 		elfsh_traces_tracable(elfshobj_t *file, char *name,
+int		etrace_valid_faddr(elfshobj_t *file, elfsh_Addr addr, elfsh_Addr *vaddr, u_char *dynsym);
+int 		etrace_tracable(elfshobj_t *file, char *name,
 				      elfsh_Addr *vaddr, u_char *dynsym);
 /* check_untracable.c */
-int		elfsh_traces_untracable(elfshobj_t *file, char *name);
+int		etrace_untracable(elfshobj_t *file, char *name);
 
 /* func_add.c */
-elfshtraces_t 	*elfsh_traces_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
+elfshtraces_t 	*etrace_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
 
 /* func_remove.c */
-int		elfsh_traces_funcrm(char *trace, char *name);
-int		elfsh_traces_funcrmall(char *trace);
+int		etrace_funcrm(char *trace, char *name);
+int		etrace_funcrmall(char *trace);
 
 /* func_exclude.c */
-int		elfsh_traces_funcexclude(char *regstr);
-int		elfsh_traces_funcrmexclude(char *regstr);
+int		etrace_funcexclude(char *regstr);
+int		etrace_funcrmexclude(char *regstr);
 
 /* func_enable.c */
-int		elfsh_traces_funcenable(char *trace, char *name);
-int		elfsh_traces_funcenableall(char *trace);
+int		etrace_funcenable(char *trace, char *name);
+int		etrace_funcenableall(char *trace);
 
 /* func_disable.c */
-int		elfsh_traces_funcdisable(char *trace, char *name);
-int		elfsh_traces_funcdisableall(char *trace);
+int		etrace_funcdisable(char *trace, char *name);
+int		etrace_funcdisableall(char *trace);
 
 /* func_status.c */
-int		elfsh_traces_funcsetstatus(hash_t *table, int status);
+int		etrace_funcsetstatus(hash_t *table, int status);
 
 /* delete.c */
-int		elfsh_traces_deletetrace(char *trace);
+int		etrace_deletetrace(char *trace);
 
 /* save.c */
-int		elfsh_traces_save(elfshobj_t *file);
+int		etrace_save(elfshobj_t *file);
 
 /* search.c */
-elfshobj_t   	*elfsh_traces_search_sym(elfshobj_t *file, char *name);
+elfshobj_t   	*etrace_search_sym(elfshobj_t *file, char *name);
 
 /* search_addr.c */
 int		elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr);
 int		elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr);
 
 /* errfunc.c */
-char		*elfsh_traces_geterrfunc();
+char		*etrace_geterrfunc();
 
 #endif
