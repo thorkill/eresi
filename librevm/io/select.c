@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 jfv
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id: select.c,v 1.14 2007-08-17 15:38:52 heroine Exp $
+** $Id: select.c,v 1.15 2007-11-29 14:01:56 may Exp $
 **
 */
 #include "revm.h"
@@ -209,41 +209,16 @@ int			revm_socket_getnew()
 }
 
 /***
- * @brief TO COMPLETE
- *
+ * @brief Print prompt depending on the current REVM mode
+ * @ingroup io
  */
 int			revm_preselect_prompt()
 {
-  // In the case of normal loop print prompt
-  if (world.state.revm_mode != REVM_STATE_CMDLINE ||
-      world.state.revm_net)
+  if (world.state.revm_mode != REVM_STATE_CMDLINE || world.state.revm_net)
     {
       if (world.curjob->ws.io.type != REVM_IO_DUMP)
 	{
-
-	  // Display prompt
-#if defined(USE_READLN)
-	  if (world.curjob->ws.io.type == REVM_IO_STD)
-	    {
-	      if (world.curjob->ws.io.buf != NULL) 
-		{
-		  /* On the client side, we consider that the prompt is already
-		     returned by the server */
-		  if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
-			world.state.revm_side == REVM_SIDE_CLIENT)
-		    {
-		      rl_on_new_line_with_prompt();
-		      rl_clear_message();
-		      //rl_redisplay();
-		    }
-		  else
-		    rl_forced_update_display();
-
-		  revm_log(revm_get_prompt());
-		}
-	    }
-	  else 
-#endif
+	  if (revm_is_stdinput())
 	    {
 	      /* Do not display the prompt for the client side 
 		 This part can't use any READLN stuff because
@@ -254,7 +229,6 @@ int			revm_preselect_prompt()
 	    }
 	}
     }
-
   return (0);
 }
 
@@ -354,24 +328,18 @@ int                     revm_select()
 	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
 	      world.curjob->ws.io.input = revm_fifoinput;
 	      
-	      /* Debug only */
-	      /*
+#if __DEBUG_NETWORK__
 	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
 		  world.state.revm_side == REVM_SIDE_CLIENT)
 		fprintf(stderr, "(client) Event appeared on fifo \n");
 	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
 		       world.state.revm_side == REVM_SIDE_SERVER)
 		fprintf(stderr, "(server) Event appeared on fifo \n");
-	      */
+#endif
 
 	    }
 	}
-	  
-#if defined (USE_READLN)
-      if (world.state.revm_side == REVM_SIDE_CLIENT && FD_ISSET(0, &sel_sockets))
-	readln_prompt_restore();
-#endif
-
+      revm_prompt_postselect_restore(&sel_sockets);
     } while (0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));

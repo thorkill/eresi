@@ -6,7 +6,7 @@
  * Started on  Fri Mar  5 00:55:40 2004 jfv
  * Updated on  Mon Mar  5 18:47:41 2005 ym
  *
- * $Id: io.c,v 1.12 2007-08-17 15:38:52 heroine Exp $
+ * $Id: io.c,v 1.13 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
@@ -30,9 +30,7 @@ int		revm_flush()
       world.state.revm_mode != REVM_STATE_DEBUGGER)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-#ifdef USE_READLN
-  rl_get_screen_size(&lines, &cols);
-#endif
+  revm_screen_getsize(&lines, &cols);
 
   /* We * 2 because color take a lot of place !!! */
   world.curjob->ws.io.outcache.lines = lines * 2;

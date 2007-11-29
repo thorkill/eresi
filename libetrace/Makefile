@@ -12,13 +12,11 @@ LD			?= ld
 RM			= rm -f 
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../elibc/include 	    \
-			-I../libaspect/include/ -I../libelfsh/include/      \
-			-DERESI32 $(BUILDOP)
+			-I../libasm/include/ -I../libaspect/include/        \
+                        -I../libelfsh/include/ -DERESI32 $(BUILDOP)
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../elibc/include	            \
-			-I../libaspect/include/ -I../libelfsh/include/      \
-			-DERESI64 $(BUILDOP)
+			-I../libasm/include/ -I../libaspect/include/        \
+                        -I../libelfsh/include/ -DERESI64 $(BUILDOP)
 SRC			= errfunc.c save.c search.c search_addr.c delete.c  \
 			check.c check_untracable.c func_add.c func_remove.c \
 			func_exclude.c func_enable.c func_disable.c	    \
@@ -31,7 +29,7 @@ NAME64			= libetrace64
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ \
+			@$(CC) -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect32 -DERESI32 \
 			-lelfsh32 -L../libelfsh/ -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
@@ -39,7 +37,7 @@ all32			: $(OBJ32)
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			:  $(OBJ64)
-			@$(CC) -L../elibc/ -lcelfsh64 -L../liballocproxy/ \
+			@$(CC) -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect64 -DERESI64 \
 			-lelfsh64 -L../libelfsh/ -shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)

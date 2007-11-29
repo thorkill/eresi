@@ -1,7 +1,8 @@
 ##
-## Makefile for elfsh
+## Makefile for e2dbg in ERESI
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
+## $Id
 ##
 
 include ../config.h
@@ -18,8 +19,8 @@ DBGNAME64		= e2dbg64
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libetrace/include/ 							 \
-			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
+			-I../libetrace/include/ -I../libstderesi/include/	 \
+			-I../libasm/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
@@ -28,8 +29,8 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libetrace/include/ 							 \
-			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
+			-I../libetrace/include/ -I../libstderesi/include/	 \
+			-I../libasm/include/ \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
@@ -37,20 +38,20 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-DERESI64
 
 LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
-			-L../libetrace/ -letrace32									\
+			-L../libetrace/ -letrace32 -L../libstderesi -lstderesi32    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
-			-L../libmjollnir -lmjollnir32 -g3 -L../elibc/ -lcelfsh32    \
+			-L../libmjollnir -lmjollnir32 -g3 \
 			-L../libui/ -lui32 -L../libedfmt -ledfmt32 $(LDASMOPT) 	    \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
 			-DERESI32 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB32)\
 			$(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
-			-L../libetrace/ -letrace64									\
+			-L../libetrace/ -letrace64 -L../libstderesi -lstderesi64    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm            \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64           \
-			-L../libmjollnir -lmjollnir64 -g3 -L../elibc/ -lcelfsh64    \
+			-L../libmjollnir -lmjollnir64 -g3 \
 			-L../libui/ -lui64 -L../libedfmt -ledfmt64 $(LDASMOPT)      \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
 			-DERESI64 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB64)\

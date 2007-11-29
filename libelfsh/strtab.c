@@ -5,7 +5,7 @@
 ** Started on  Sun Mar 10 03:24:23 2002 jfv
 ** Last update Sun May 25 17:40:19 2003 jfv
 **
-** $Id: strtab.c,v 1.8 2007-07-31 03:28:47 may Exp $
+** $Id: strtab.c,v 1.9 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "libelfsh.h"
@@ -30,11 +30,7 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__,strtab, sizeof (elfshsect_t), NULL);
       hdr = elfsh_create_shdr(0, SHT_STRTAB, 0, 0, 0, 0, 0, 0, 0, 0);
-
-      /* Use strdup from libcelfsh */
- 
-      strtab->name = strdup(ELFSH_SECTION_NAME_STRTAB);
- 
+      strtab->name = strdup(ELFSH_SECTION_NAME_STRTAB); 
       strtab->parent = file;
       elfsh_insert_unmapped_section(file, strtab, hdr, NULL);
       file->secthash[ELFSH_SECTION_STRTAB] = strtab;

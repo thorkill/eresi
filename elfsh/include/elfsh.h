@@ -4,14 +4,14 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 **
 **
-** $Id: elfsh.h,v 1.40 2007-07-31 03:28:46 may Exp $
+** $Id: elfsh.h,v 1.41 2007-11-29 14:01:55 may Exp $
 **
 */
 #ifndef __ELFSH_H_
  #define __ELFSH_H_
 
 /* User defined configuration */
-#include "revm.h"
+#include "libstderesi.h"
 
 /* Help strings */
 #include "elfsh-help.h"

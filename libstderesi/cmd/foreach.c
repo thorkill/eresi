@@ -1,0 +1,254 @@
+/*
+** @file foreach.c
+**
+** @brief Implement the iteration on arrays, lists, and hash tables
+**
+** Started on Wed Feb 28 19:19:04 2007 jfv
+**
+** $Id: foreach.c,v 1.1 2007-11-29 14:01:56 may Exp $
+**
+*/
+#include "libstderesi.h"
+
+
+/* Start an iteration */
+int		cmd_foreach()
+{
+  revmexpr_t	*indexpr;
+  revmobj_t	*var;
+  u_char	flag;
+  char		**keys;
+  int		keynbr;
+  hash_t	*table;
+  list_t	*list;
+  int		index;
+  void		*elem;
+  int		infbound;
+  int		upbound;
+  u_int		typeid;
+  elfsh_Addr	lastvalue;
+  char		*tablename;
+  revmexpr_t	*tablexpr;
+  revmobj_t	*tableobj;
+  char		*typename;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Depends the mode we are in */
+  flag = (world.curjob->curcmd->argc == 3   ? 1 : 
+	  world.curjob->curcmd->use_regx[0] ? 2 : 3);
+
+  /* Create or get the induction variable */
+  indexpr = revm_lookup_var(world.curjob->curcmd->param[0]);
+  if (!indexpr)
+    {
+      if (world.curjob->curcmd->listidx != REVM_IDX_UNINIT)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find induction variable", -1);
+      var = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
+      indexpr = revm_expr_create_from_object(var, world.curjob->curcmd->param[0]);
+    }
+  else
+    var = indexpr->value;
+
+  /* Perform subcommand */
+  switch (flag)
+    {
+      /* foreach elmvar of list/hash [as regx] */
+    case 1:
+    case 2:
+
+      /* First try to lookup the table name */
+      tablexpr = revm_lookup_param(world.curjob->curcmd->param[2]);
+      tableobj = (tablexpr ? tablexpr->value : NULL);
+      tablename = NULL;
+      if (tableobj)
+	{
+	  if (tableobj->otype->type == ASPECT_TYPE_STR)
+	    tablename = (tableobj->immed ? tableobj->immed_val.str : 
+			 tableobj->get_name(tableobj->root, tableobj->parent));
+	  else if (tableobj->otype->type == ASPECT_TYPE_HASH ||
+		   tableobj->otype->type == ASPECT_TYPE_LIST)
+	    tablename = (tableobj->kname ? tableobj->kname : tableobj->hname);
+	}
+      else
+	tablename = world.curjob->curcmd->param[2];
+      tablename = strdup(tablename);
+
+      if (tablexpr)
+	revm_expr_destroy(tablexpr->label);
+
+      /* Try to find a hash or a list out of this variable */
+      table = hash_find(tablename);
+      if (!table)
+	{
+	  list = list_find(tablename);
+	  if (!list)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Unable to find hash table", -1);
+	    }
+	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && list_linearity_get(list))
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Cannot iterate again on linearly typed list", -1);
+	    }
+	  list_linearity_set(list, 1);
+	  keys = list_get_keys(list, &keynbr);
+	  world.curjob->itlist = list;
+	}
+      else
+	{
+	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && hash_linearity_get(table))
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Cannot iterate again on linearly typed table", -1);
+	    }
+	  hash_linearity_set(table, 1);
+	  keys = hash_get_keys(table, &keynbr);
+	}
+
+      /* Use the correct keys array index depending on foreach iteration nbr */
+    nextelem:
+      if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT)
+	{
+	  index = 0;
+	  world.curjob->curcmd->listidx += 2;
+	}
+      
+      /* The induction variable existed already : record its previous value into the parent list */
+      else
+	{
+	  index = world.curjob->curcmd->listidx++;
+	  if (flag != 2 || !regexec(&world.curjob->curcmd->regx[0], keys[index - 1], 0, 0, 0))
+	    {
+	      
+	      /* No need to back-update if the data type is complex */
+	      if (indexpr->type && aspect_type_simple(indexpr->type->type) && !indexpr->type->next)
+		{
+		  lastvalue = (var->immed ? var->immed_val.ent : var->get_obj(var->parent));
+		  if (table)
+		    hash_set(table, keys[index - 1], (void *) lastvalue);
+		  else
+		    list_set(list, keys[index - 1], (void *) lastvalue);
+		  //printf("back-assignment into the list for element %s at index %u of value %X \n", 
+		  //keys[index - 1], index - 1, lastvalue);
+		}
+	    }
+	}
+
+      /* For nested foreach ! */
+      world.curjob->curlistidx = &world.curjob->curcmd->listidx;
+
+      /* Bound check : go to the loop end when necessary */
+      if (index >= keynbr)
+	{
+	  if (!world.curjob->curcmd->endlabel)
+	    cmd_quit();
+	  if (table)
+	    hash_linearity_set(table, 0);
+	  else if (list)
+	    list_linearity_set(list, 0);
+	  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
+	  revm_move_pc(world.curjob->curcmd->endlabel);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+
+      /* Get the next elem if the current one is not matching */
+      if (flag == 2 && regexec(&world.curjob->curcmd->regx[0], 
+			       keys[index], 0, 0, 0))
+	goto nextelem;
+
+      /* The element matched, process it */
+      if (table)
+	{
+	  elem = hash_get(table, keys[index]);
+	  typeid = table->type;
+	}
+      else
+	{
+	  elem = list_get(list, keys[index]);
+	  typeid = list->type;
+	}
+      if (!indexpr->type || indexpr->type->type != typeid)
+        revm_convert_object(indexpr, typeid);
+      if (indexpr->type->type != typeid)
+	{
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid type for induction variable", -1);
+	}
+
+      /* Update depends if the type is simple or complex */
+      if (aspect_type_simple(indexpr->type->type) && !indexpr->type->next)
+	{
+	  var->immed = 1;
+	  var->immed_val.ent = (elfsh_Addr) elem;
+	  //fprintf(stderr, "Setting indvar->immed_val.ent = %X \n", (elfsh_Addr) elem);
+	}
+      else 
+	{
+	  typename = indexpr->type->name;
+	  revm_expr_destroy(world.curjob->curcmd->param[0]);
+	  indexpr = revm_inform_type_addr(typename, world.curjob->curcmd->param[0], 
+					  (elfsh_Addr) elem, NULL, 0, 1);
+	  if (!indexpr)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Unable to create expression for induction variable", -1);
+	    }
+	}
+      break;
+      
+      /* foreach idxvar of minint until maxint */
+    case 3:
+      if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT)
+	{
+	  infbound = revm_lookup_index(world.curjob->curcmd->param[2]);
+	  world.curjob->curcmd->listidx = infbound + 1;
+	}
+      else
+	infbound = world.curjob->curcmd->listidx++;
+
+      upbound  = revm_lookup_index(world.curjob->curcmd->param[4]);
+
+      /* Bound check */
+      if (infbound >= upbound)
+	{
+	  if (!world.curjob->curcmd->endlabel)
+	    cmd_quit();
+	  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
+	  revm_move_pc(world.curjob->curcmd->endlabel);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+
+      /* Set the induction variable */
+      if (!indexpr->type || indexpr->type->type != ASPECT_TYPE_INT)
+        revm_convert_object(indexpr, ASPECT_TYPE_INT);
+      if (!indexpr->type || indexpr->type->type != ASPECT_TYPE_INT)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid type for induction variable", -1);
+
+      var->immed = 1;
+      var->immed_val.word = infbound++;
+      break;
+    }
+  
+  /* Support when until goes decreasing */
+  /* Here set the induction variable (3 cases : first, iterating, last) */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+ /* End an iteration */
+ int		cmd_forend()
+ {
+   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+   revm_move_pc(world.curjob->curcmd->endlabel);
+   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.34 2007-11-29 10:25:02 rival Exp $
+ * $Id: init.c,v 1.35 2007-11-29 14:01:56 may Exp $
  *
  */
 
@@ -190,10 +190,7 @@ int		revm_loop(int argc, char **argv)
       ret = revm_workfiles_unload();
     }
 
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
   
   /* Clean the script machine state when a script is over */
@@ -201,13 +198,7 @@ int		revm_loop(int argc, char **argv)
  e2dbg_cleanup:
   world.curjob->script[world.curjob->sourced] = NULL;
   world.curjob->lstcmd[world.curjob->sourced] = NULL;
-
-#if defined(USE_READLN)
-  if (!(world.state.revm_mode == REVM_STATE_DEBUGGER
-	&& world.state.revm_side == REVM_SIDE_SERVER))
-    readln_quit(world.state.revm_mode);
-#endif
-
+  revm_conditional_rlquit();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
@@ -259,10 +250,7 @@ int		revm_setup(int ac, char **av, char mode, char side)
       world.state.revm_mode = mode;
       world.state.revm_side = side;
       revm_fifo_io(world.curjob);
-
-#if defined(USE_READLN)
-      world.curjob->ws.io.buf = NULL;
-#endif
+      revm_buffer_reset(1);
       elfsh_set_debug_mode();
     }
   else if (mode == REVM_STATE_TRACER)
@@ -363,7 +351,7 @@ int		revm_config()
       memset(new, 0, sizeof(revmargv_t));
       world.curjob->curcmd = new;
       world.curjob->curcmd->param[0] = buff;
-      ret = cmd_source();
+      ret = revm_source(world.curjob->curcmd->param);
       world.curjob->curcmd = NULL;
       XFREE(__FILE__, __FUNCTION__, __LINE__,new);
     }
@@ -394,13 +382,9 @@ int		revm_run(int ac, char **av)
   revm_output("[elfsh:main] started !\n");
 #endif
 
-#if defined(USE_READLN)
-  readln_completion_install(world.state.revm_mode, world.state.revm_side);
-#endif
+  revm_completion_install(world.state.revm_mode, world.state.revm_side);
   revm_flush();
-#if defined (USE_READLN)
-  revm_log(revm_get_prompt());
-#endif
+  revm_prompt_log();
 
   /* Now run f0r3st */
   return (revm_loop(ac, av));

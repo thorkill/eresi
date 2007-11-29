@@ -1,7 +1,7 @@
 /*
 ** md5.c for kernsh
 ** 
-** $Id: md5.c,v 1.2 2007-10-06 15:50:41 pouik Exp $
+** $Id: md5.c,v 1.3 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "kernsh.h"
@@ -10,25 +10,18 @@
 /* Make md5 ! */
 int		cmd_kmd5()
 {
-  int	ret;
+  int		ret;
   revmlist_t    *actual, *second;
   revmobj_t     *obj;
   char          buff[BUFSIZ];
   elfsh_Addr    vaddr;
   int		fd;
-
   unsigned char md5buffer[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   memset(buff, '\0', sizeof(buff));
-
-  vaddr = -1;
-  
+  vaddr = -1;  
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
 
@@ -113,13 +106,9 @@ int		cmd_kmd5()
 	}
     }
   
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   revm_endline();
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -189,11 +178,7 @@ int		cmd_kcmd5()
   FILE *fd;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
+  revm_callback_handler_remove();
   
   val = 0;
   memset(buff, '\0', sizeof(buff));
@@ -342,14 +327,9 @@ int		cmd_kcmd5()
 	}
     }
 
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
-  revm_setvar_int("_", val);
-  
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
+  revm_setvar_int("_", val);  
   revm_endline();
-    
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

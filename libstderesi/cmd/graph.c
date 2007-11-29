@@ -1,0 +1,687 @@
+/*
+** @file graph.c
+**
+** @brief Dump graphviz output
+**
+** Started : Fri Mar  7 07:18:03 2003 jfv
+** Updated : Fri Dec 10 02:04:19 2006 jfv
+**
+** $Id: graph.c,v 1.1 2007-11-29 14:01:56 may Exp $
+**
+*/
+#include "libstderesi.h"
+
+static hash_t   dumped;
+
+
+/* Generate the legend for the graph in HTML format */
+void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
+{
+  char	buf[BUFSIZ];
+
+  snprintf(buf,BUFSIZ-1,"graph [label=<\n\
+		<table border=\"1\">\n\
+			<tr><td>Legend:</td><td>%s</td></tr>\
+			<tr><td>min: 0x%08X</td><td>max: 0x%08X</td></tr>\
+			<tr><td align=\"left\"><font color=%s>COND TRUE</font></td>\n\
+			    <td align=\"left\"><font color=%s>COND FALSE</font></td></tr>\n\
+			<tr><td align=\"left\"><font color=%s>CALL</font></td>\n\
+			    <td align=\"left\"><font color=%s>RET</font></td></tr>\n\
+			<tr><td align=\"left\"><font color=%s>DELAY</font></td><td></td></tr>\n\
+		</table>\n\
+	>]\n",fnc, min, max,
+	   LNK_COLOR_TRUE,
+	   LNK_COLOR_FALSE,
+	   LNK_COLOR_CALL,
+	   LNK_COLOR_RET,
+	   LNK_COLOR_DELAY);
+
+  write(fd,buf,strlen(buf));
+
+}
+
+
+/* Disassemble a block */
+void		revm_disasm_block(int fd, mjrblock_t *blk)
+{
+  char		*buffer;
+  char		*name;
+  elfsh_SAddr	off;
+  u_int		index = 0;
+  int		revm_quiet,revm_colors;
+  int		ret,cur;
+  u_int		foffset;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  revm_quiet = world.state.revm_quiet;
+  world.state.revm_quiet = 0;
+  revm_colors = nocolor;
+  nocolor = 0;
+  cur = 1;
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
+  foffset = elfsh_get_foffset_from_vaddr(world.curjob->current, blk->vaddr);
+  ret     = elfsh_raw_read(world.curjob->current, foffset, buffer, blk->size);
+  if (ret > 0)
+    {
+      name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &off);
+      while ((index < blk->size) && cur)
+	{
+	  cur = revm_instr_display(fd, index, blk->vaddr, 0, blk->size,
+				 name, index + off, buffer);
+	  if (cur <= 0)
+	    goto end;
+
+	  index += cur;
+	  write(fd, "\\l", 2);
+	  revm_endline();
+	}
+    }
+ end:
+  XFREE(__FILE__, __FUNCTION__, __LINE__,buffer);
+  world.state.revm_quiet = revm_quiet;
+  nocolor = revm_colors;
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+
+
+/**
+ * Create .dot -> .png files and execute the graphic viewer
+ */
+int revm_graph_compile_graphic(char *dotfile)
+{
+  char buf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if ((int) config_get_data(ELFSH_VMCONFIG_GRAPH_AUTOBUILD))
+    {
+      snprintf(buf,sizeof(buf),"dot -Tpng -o %s.png %s",dotfile,dotfile);
+      system(buf);
+
+      if ((int) config_get_data(ELFSH_VMCONFIG_GRAPH_AUTOVIEW))
+	{
+	  snprintf(buf,sizeof(buf),
+		   "%s %s.png",
+		   (char *)config_get_data(ELFSH_VMCONFIG_GRAPH_VIEWCMD),
+		   dotfile);
+	  system(buf);
+	}
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(1));
+}
+
+/**
+ * Returns converted path name into string without '.'
+ */
+char		*revm_flattern_path(char *path)
+{
+  char *r,*p;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+
+  r = strdup(path);
+  p = r;
+
+  while(*p != '\0')
+    {
+      if (*p == '.')
+	*p = '_';
+      p++;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,r);
+}
+
+
+
+/**
+ * Prepare directory tree for graph storage
+ */
+int		revm_prepare_storage_dir(void)
+{
+  mode_t	omode = S_IRWXU | S_IRWXG | S_IRWXO;
+  char		*token, *brkt;
+  char		*sep = "/";
+  char		tmp[BUFSIZ], path[BUFSIZ];
+  u_int		cur;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  cur = 0;
+  memset(tmp,0x00, BUFSIZ);
+  memset(path,0x00, BUFSIZ);
+
+  snprintf(path,BUFSIZ-1,"%s/%s",(char *)config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH),
+	   revm_flattern_path(world.mjr_session.cur->obj->name));
+
+  for (token = strtok_r(path,sep,&brkt);
+       token;
+       token = strtok_r(NULL,sep,&brkt))
+    {
+      tmp[cur++] = '/';
+      strncat(tmp, token, strlen(token));
+      cur += strlen(token);
+      
+      mkdir(tmp, omode);
+    }
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
+/**
+ * This function prepares a path string to .dot file
+ */
+char		*revm_get_dotfile_name(char *opt,char *prefix)
+{
+  int		namelen;
+  char		*dotfile;
+  char		*str1;
+  char		*str2;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!opt)
+    opt = "dump";
+  if (!prefix)
+    prefix = "";
+
+  str1 = (char *) config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH);
+  str2 = revm_flattern_path(world.mjr_session.cur->obj->name);
+  namelen = strlen(str1) + strlen(str2) + strlen(opt) + strlen(prefix) + 32;
+
+  XALLOC(__FILE__,__FUNCTION__,__LINE__, dotfile, namelen, NULL);
+  if (!revm_prepare_storage_dir())
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot prepare storage directory", NULL);
+  
+  snprintf(dotfile,namelen,"%s%s/%s-%s.dot",
+	   (char *)config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH),
+	   revm_flattern_path(world.mjr_session.cur->obj->name),
+	   prefix,opt);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dotfile));
+}
+
+/**
+ * Converts string to vaddr by looking up the symbol name
+ * or converting it to hex
+ */
+u_int		revm_get_vaddr(char *s)
+{
+  elfsh_Sym	*sym;
+  u_int		min;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Get parameters */
+  if ((sym = elfsh_get_metasym_by_name(world.curjob->current,s)))
+    min = sym->st_value;
+  else
+    min = strtoul(s, 0, 16);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(min));
+}
+
+/**
+ * Returns next function vaddress 
+ */
+u_int		revm_get_next_function_vaddr(u_int min)
+{
+  container_t *cntnr;
+  u_int		max,tmp,ltmp;
+  char		**keys;
+  int		idx,fnbr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  keys = hash_get_keys(&world.mjr_session.cur->funchash, &fnbr);
+  max = ltmp = min;
+
+  for (idx = 0; idx < fnbr; idx++)
+    {
+      cntnr = hash_get(&world.mjr_session.cur->funchash, keys[idx]);
+      tmp = ((mjrfunc_t *)cntnr->data)->vaddr;
+      
+      if (((max == min) || (tmp < max)) && (tmp > min))
+	max = tmp;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(max));
+}
+
+/**
+ * Get color name for string, it does check alert
+ * and lookups the color name
+ */
+char		*revm_get_colored_str(char *str,int type)
+{
+  color_t	*t;
+  int		idx,c,t2;
+  char		**keys;
+  char		*color;
+  char		buf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  color = FNC_COLOR_DEFAULT;
+  
+  if (world.state.revm_use_alert && 
+      !regexec(&world.state.revm_alert, str, 0, 0, 0))
+    {
+      t = hash_get(&t_color_hash, "warnstring");
+      
+      keys = hash_get_keys(&fg_color_hash, &idx);
+      
+      for (c = 0; c < idx; c++)
+	{
+	  t2 = (int) hash_get(&fg_color_hash, keys[c]);
+	  if (t2 == t->fground)
+	    {
+	      snprintf(buf, sizeof(buf), "\"%s\"", keys[c]);
+	      color = strdup(buf);
+	      break;
+	    }
+	}
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (color));
+    }
+  
+  switch (type)
+    {
+    case GVZ_NODE_EPOINT:
+      color = FNC_COLOR_EPOINT;
+	break;
+    case GVZ_NODE_MAIN:
+      color = FNC_COLOR_MAIN;
+      break;
+    case GVZ_NODE_INTERN:
+      color = FNC_COLOR_INTERN;
+      break;
+    case GVZ_NODE_EXTERN:
+      color = FNC_COLOR_EXTERN;
+      break;
+    case GVZ_NODE_UNKNOWN:
+      color = GVZ_COLOR_CORAL;
+      break;
+    default:
+      color = FNC_COLOR_DEFAULT;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (color));
+}
+
+int		revm_graph_get_function_type(mjrfunc_t *fnc)
+{
+  elfshsect_t   *parent;
+  int		ftype;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  parent = elfsh_get_parent_section(world.curjob->current, fnc->vaddr, NULL);
+
+  if (fnc->vaddr == elfsh_get_entrypoint(elfsh_get_hdr(world.mjr_session.cur->obj)))
+    ftype = GVZ_NODE_EPOINT;
+  else if ((parent == NULL)||(parent->name == NULL))
+    ftype = GVZ_NODE_UNKNOWN;
+  else if (parent && parent->name && strcmp(".text",parent->name))
+    ftype = GVZ_NODE_EXTERN;
+  else
+    ftype = GVZ_NODE_INTERN;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ftype);
+}
+
+/* A recursive function for graphing in dot format */
+int		revm_graph_blocks(container_t *cntnr,
+				  int		 fd,
+				  elfsh_Addr	min,
+				  elfsh_Addr	max,
+				  int		dir,
+				  int		maxdepth,
+				  int		curdepth)
+{
+  mjrblock_t	*blk,*cblk;
+  mjrlink_t	*lnk;
+  char		buf[BUFSIZ];
+  char		*vaddr_str;
+  char		*col_arrow;
+  container_t *nextcnt;
+  mjrblock_t	*nextblk;    
+  list_t	*linklist;
+  listent_t	*curent;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  blk = (mjrblock_t *) cntnr->data;
+
+  vaddr_str =_vaddr2str(blk->vaddr);
+
+  if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  hash_add(&dumped, vaddr_str, cntnr);
+
+  linklist = cntnr->outlinks;
+
+  snprintf(buf, sizeof(buf),
+    	   "\"%x\" [shape=\"box\" color=%s label=\"<%x>:\\l",
+      	   blk->vaddr, "\"grey\"", blk->vaddr);
+
+  write(fd,buf,strlen(buf));
+
+  revm_disasm_block(fd, blk);
+
+  snprintf(buf, sizeof(buf), "\"];\n");
+
+  write(fd,buf,strlen(buf));
+
+  /* Print all links */
+  for (curent = linklist->head; curent; curent = curent->next)
+    {
+      lnk  = (mjrlink_t *)  curent->data;
+      cblk = (mjrblock_t *) mjr_lookup_container(world.mjr_session.cur, lnk->id)->data;
+
+      switch (lnk->type)
+	{
+	case MJR_LINK_BLOCK_COND_TRUE:
+	  col_arrow = LNK_COLOR_TRUE;
+	  break;
+	case MJR_LINK_BLOCK_COND_FALSE:
+	  col_arrow = LNK_COLOR_FALSE;
+	  break;
+	case MJR_LINK_BLOCK_COND_ALWAYS:
+	  continue;
+	case MJR_LINK_FUNC_CALL:
+	  col_arrow = LNK_COLOR_CALL;
+	  break;
+	case MJR_LINK_FUNC_RET:
+	  col_arrow = LNK_COLOR_RET;
+	  break;
+	case MJR_LINK_TYPE_DELAY:
+	  col_arrow = LNK_COLOR_DELAY;
+	  break;
+	default:
+	  fprintf(D_DESC, "[D] %s 1st: lnk->type:%d\n", __FUNCTION__, lnk->type);
+	  col_arrow = "\"black\"";
+	  break;
+	}
+
+      snprintf(buf, sizeof(buf), "\"%x\" -> \"%x\" [color=%s];\n",
+	       blk->vaddr, cblk->vaddr, col_arrow);
+
+#if __DEBUG_GRAPH__
+      fprintf(D_DESC,"[D] %s: %x -> %x %d\n",
+	      __FUNCTION__, blk->vaddr, cblk->vaddr, lnk->type);
+#endif
+
+      write(fd, buf, strlen(buf));
+    }
+
+  /* Now recurse on the children */
+  for (curent = linklist->head; curent; curent = curent->next)
+    {
+      lnk = (mjrlink_t *) curent->data;
+      if (lnk->type == MJR_LINK_BLOCK_COND_ALWAYS)
+	continue;
+      
+      nextcnt = mjr_lookup_container(world.mjr_session.cur, lnk->id);
+      nextblk = (mjrblock_t *) nextcnt->data;
+
+      if ((nextblk->vaddr >= min) && (nextblk->vaddr <= max))
+	revm_graph_blocks(nextcnt, fd, min, max, 0, 0, curdepth + 1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/**
+ * This function does dump a function container in graphviz format
+ * @param direction input/output
+ * @param type 0 - we are dumping only out, 1 - we generate .dot file for
+ *			both directions
+ */
+int		revm_graph_function(container_t	*cntnr,
+				    int			fd,
+				    int			direction,
+				    int			type,
+				    int			maxdepth, 
+				    int			curdepth)
+{
+  int	    	ftype, offset;
+  mjrfunc_t	*fnc, *tmpfnc;
+  mjrlink_t	*curlnk;
+  char		*n1, *n2, *vaddr_str;
+  char		buf[BUFSIZ];
+  list_t	*linklist;
+  listent_t	*curent;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  fnc = (mjrfunc_t *)cntnr->data;
+  vaddr_str =_vaddr2str(fnc->vaddr);
+
+  if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  hash_add(&dumped, vaddr_str, cntnr);
+  
+  n1 = elfsh_reverse_metasym(world.curjob->current,fnc->vaddr, &offset);
+
+  ftype = revm_graph_get_function_type(fnc);
+  
+  snprintf(buf, sizeof(buf), "\"%s\" [color=%s];\n",
+      	   (n1 ? n1 : fnc->name), 
+	   revm_get_colored_str((n1) ? n1 : fnc->name, ftype));
+  
+  write(fd,buf,strlen(buf));
+
+  linklist = mjr_link_get_by_direction(cntnr,direction);
+
+  /* Print all links of this function */
+  for (curent = linklist->head; curent; curent = curent->next)
+    {
+      curlnk = (mjrlink_t *) curent->data;
+      tmpfnc = (mjrfunc_t *) mjr_lookup_container(world.mjr_session.cur,curlnk->id)->data;
+      
+      /* resolve the symbols */
+      n2 = elfsh_reverse_metasym(world.curjob->current, tmpfnc->vaddr, &offset);
+      ftype = revm_graph_get_function_type(tmpfnc);
+      
+      if (type)
+	{
+	  snprintf(buf, sizeof(buf),
+		   "\"%s\" [color=%s];\n",
+		   (n2) ? n2 : tmpfnc->name,
+		   revm_get_colored_str((n2) ? n2 : tmpfnc->name, ftype));
+	  
+	  write(fd,buf,strlen(buf));
+	}
+      
+      if (direction == CONTAINER_LINK_OUT)
+	snprintf(buf,sizeof(buf),
+		 "\"%s\" -> \"%s\";\n",
+		 (n1) ? n1 : fnc->name,
+		 (n2) ? n2 : tmpfnc->name);
+      
+      else if (direction == CONTAINER_LINK_IN)
+	{
+	  snprintf(buf,sizeof(buf),
+		   "\"%s\" -> \"%s\";\n",
+		   (n2) ? n2 : tmpfnc->name,
+		   (n1) ? n1 : fnc->name);
+	}
+      
+      write(fd,buf,strlen(buf));
+    }
+  
+  /* Recurse on children */
+  for (curent = linklist->head; curent; curent = curent->next)
+    {
+      curlnk = (mjrlink_t *) curent->data;
+      revm_graph_function(mjr_lookup_container(world.mjr_session.cur, curlnk->id), 
+			  fd, direction, type, maxdepth, curdepth + 1);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Open the file for putting the dot description */
+int	revm_open_dot_file(char *dotfile, int *fd)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  printf(" [*] .dot file: %s\n", dotfile);
+
+  *fd = open(dotfile, O_RDWR | O_CREAT | O_TRUNC, 0644);
+  if (*fd == -1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot create graphviz file", -1);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+}
+
+u_int		revm_get_min_param(void)
+{
+  revmexpr_t	*expr;
+  revmobj_t	*var;
+  u_int		min;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  expr = revm_lookup_var(world.curjob->curcmd->param[1]);
+  if (expr && expr->value)
+    {
+      var = expr->value;
+      min = revm_get_vaddr(var->immed ? var->immed_val.str : 
+			   var->get_name(var->root, var->parent));
+    }
+  else
+    min = revm_get_vaddr(world.curjob->curcmd->param[1]);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (min));
+}
+
+
+/* Graph the binary */
+int			cmd_graph(void)
+{
+  container_t	*cntnr;
+  int			fd;
+  char		        buf[BUFSIZ];
+  u_int		        min;
+  u_int		        max;
+  char		        *dotfile;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  hash_init(&dumped, "dumped_containers", mjrHashVerySmall, ASPECT_TYPE_UNKNOW);
+  
+  /* Some preliminary checks */
+  if (!world.mjr_session.cur->analysed)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Control flow section not found"
+		 " : use analyse command", -1);
+  
+  /* Select use depending on number of arguments */
+  switch (world.curjob->curcmd->argc)
+    {
+    case 0:
+      
+      dotfile = revm_get_dotfile_name(NULL,"object");
+      
+      revm_open_dot_file(dotfile, &fd);
+
+      snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
+      write(fd,buf,strlen(buf));
+      
+      printf(" [*] Dumping %d functions\n", 
+	     world.mjr_session.cur->funchash.elmnbr);
+      
+      cntnr = mjr_get_container_by_vaddr(world.mjr_session.cur, 
+					 world.mjr_session.cur->obj->hdr->e_entry, 
+					 ASPECT_TYPE_FUNC);
+
+      revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,0, 0, 1);
+      
+      write(fd,"}\n",2);
+      close(fd);
+
+      revm_graph_compile_graphic(dotfile);
+ 
+      break;
+
+    case 2:
+
+    	if (strcmp("func",world.curjob->curcmd->param[0]) == 0)
+  	  {
+  	    /* resolve the block vaddr */
+  	    min = revm_get_min_param();
+	    cntnr = hash_get(&world.mjr_session.cur->funchash,
+			      _vaddr2str(min));
+	    
+	    if (!cntnr)
+	      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+			   "Function not found",-1);
+
+	    
+	    dotfile = revm_get_dotfile_name(_vaddr2str(min),"function");
+	    revm_open_dot_file(dotfile, &fd);
+	    
+  	    snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
+  	    write(fd,buf,strlen(buf));
+	    
+  	    revm_graph_function(cntnr,fd,CONTAINER_LINK_IN,1, 0, 1);
+  	    revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,1, 0, 1);
+
+  	    write(fd,"}\n",2);
+  	    close(fd);
+
+  	    revm_graph_compile_graphic(dotfile);
+
+	    }
+    	else if (strcmp("bloc",world.curjob->curcmd->param[0]) == 0)
+  	  {
+	    min = revm_get_min_param();
+  	    max = revm_get_next_function_vaddr(min);
+	    
+	    cntnr = hash_get(&world.mjr_session.cur->blkhash,
+			     _vaddr2str(min));
+
+	    if (!cntnr)
+	      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+			   "Function not found",-1);
+
+  	    printf(" [D] MIN:%x MAX:%x\n",min,max);
+
+	    dotfile = revm_get_dotfile_name(_vaddr2str(min),"block");
+	    revm_open_dot_file(dotfile, &fd);
+
+  	    snprintf(buf, sizeof(buf),"strict digraph prof {\n");
+  	    write(fd,buf,strlen(buf));
+
+	    revm_graph_legend(fd, "DEFAULT", min, max);
+	    revm_graph_blocks(cntnr,fd,min,max,0,0,1);
+
+	    write(fd,"}\n",2);
+	    close(fd);
+
+	    revm_graph_compile_graphic(dotfile);
+
+  	    printf(" [*] Dump function blocks\n");
+  	  }
+	else
+  	  {
+  	    printf(" [!] Use help\n");
+  	  }
+	
+	break;
+
+    default:
+    	printf(" [!] use help \n");
+    
+  }
+
+  hash_empty("dumped_containers");
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

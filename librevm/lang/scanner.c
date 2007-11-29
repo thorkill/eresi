@@ -4,7 +4,7 @@
  * Started on  Fri Feb  7 20:53:25 2003 jfv
  * Updated on  Fri Mar  5 18:47:41 2007 jfv
  *
- * $Id: scanner.c,v 1.13 2007-08-03 11:51:00 heroine Exp $
+ * $Id: scanner.c,v 1.14 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
@@ -278,14 +278,7 @@ char		**revm_input(int *argc)
   /* Log the read line */
   if (world.state.revm_mode != REVM_STATE_SCRIPT &&
       world.curjob->ws.io.type == REVM_IO_STD)
-    {
-#if defined(USE_READLN)
-      readln_input_log(buf);
-#else
-      revm_log(buf);
-      revm_log("\n\n");
-#endif
-    }
+    revm_input_prelog(buf);
 
   /* Save the line for future references */
   if (world.curjob->ws.oldline && *world.curjob->ws.oldline)
@@ -306,9 +299,7 @@ char		**revm_input(int *argc)
       world.state.revm_side == REVM_SIDE_CLIENT)
     {
       write(world.fifo_c2s, buf, len);
-#if defined(USE_READLN)
-      write(world.fifo_c2s, "\n", 1);
-#endif
+      revm_rlfifo_write();
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    ((char **) REVM_INPUT_TRANSFERED));      
     }

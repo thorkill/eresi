@@ -3,14 +3,14 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mxatone
 **
-** $Id: etrace.h,v 1.4 2007-07-17 18:11:24 may Exp $
+** $Id: etrace.h,v 1.5 2007-11-29 14:01:55 may Exp $
 **
 */
 #ifndef __ETRACE_H_
  #define __ETRACE_H_
 
 /* User defined configuration */
-#include "revm.h"
+#include "libstderesi.h"
 
 /* Help strings */
 #include "etrace-help.h"

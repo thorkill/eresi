@@ -5,7 +5,7 @@
  *
  * Started on Wed Feb 28 19:19:04 2007 jfv
  *
- * $Id: parser.c,v 1.12 2007-11-28 08:18:17 may Exp $
+ * $Id: parser.c,v 1.13 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
@@ -44,9 +44,8 @@ char			*revm_label_get(char *prefix)
 }
 
 
-
 /** 
- * Recognize a higher order construct : foreach, match .. 
+ * Recognize a special command pattern 
  */
 int			revm_parse_construct(char *curtok)
 {

@@ -5,34 +5,11 @@
  *
  * Started September 16 03:11:04 2005 jfv
  *
- * $Id: log.c,v 1.9 2007-11-28 07:56:09 may Exp $
+ * $Id: log.c,v 1.10 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
 
-
-/**
- * @brief  Strip a char from a string 
- * @ingroup io
- */
-#if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
-static void		__strip_char(char *str, char c)
-{
-  u_int			len, pos;
-  char			*search;
-
-  NOPROFILER_IN();
-  len = strlen(str);
-  for (search = str; (search = strchr(search, c)) != NULL;)
-    {
-      pos = search - str;
-      /* Realign others */
-      memmove(search, search+1, len - (pos + 1));
-      len--;
-    }
-  NOPROFILER_OUT();
-}
-#endif
 
 /* Strip a group of char */
 static void		__strip_group_char(char *str, char s, char e)
@@ -87,10 +64,8 @@ static void		logtofile(char *str)
     __strip_group_char(tmp, C_STARTCOLOR, 'm');
 
   /* Strip RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE */
-#if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
-  __strip_char(tmp, RL_PROMPT_START_IGNORE);
-  __strip_char(tmp, RL_PROMPT_END_IGNORE);
-#endif
+  revm_strip_char(tmp, RL_PROMPT_START_IGNORE);
+  revm_strip_char(tmp, RL_PROMPT_END_IGNORE);
 
   len = strlen(tmp);
   XWRITE(world.curjob->ws.logfd, tmp, len, );

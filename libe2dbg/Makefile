@@ -26,7 +26,7 @@ STRIP			= strip
 
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
+			-I../libasm/include/ -I../libstderesi/include/		 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
@@ -36,7 +36,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../vm/include/ -I../elibc/include/ \
+			-I../libasm/include/ -I../libstderesi/include/		 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
@@ -47,15 +47,17 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 
-EXTRAOBJ32		= ../libasm/libasm.o ../libmjollnir/libmjollnir32.o     \
-			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o       \
-			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	\
-			../libaspect/libaspect32.o $(LDDUMPOBJ)
+EXTRAOBJ32		= ../libasm/libasm.o ../libmjollnir/libmjollnir32.o       \
+			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o         \
+			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	  \
+			../libaspect/libaspect32.o ../libstderesi/libstderesi32.o \
+			$(LDDUMPOBJ)
 
-EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o     \
-			../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o       \
-			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o	\
-			../libaspect/libaspect64.o $(LDDUMPOBJ)
+EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o       \
+			../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o         \
+			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o	  \
+			../libaspect/libaspect64.o ../libstderesi/libstderesi64.o \
+			$(LDDUMPOBJ)
 
 all			: all32 all64
 

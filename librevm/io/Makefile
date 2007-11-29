@@ -6,7 +6,7 @@
 include ../../config.h
 
 SRC		= color.c curjob.c input.c io.c log.c network.c output.c \
-		prompt.c select.c
+		prompt.c select.c readln.c
 OBJ32		= $(SRC:.c=.32.o)
 OBJ64		= $(SRC:.c=.64.o)
 CC		?= gcc

@@ -3,7 +3,7 @@
 ** 
 ** Started on  Tue Feb 18 06:45:35 2003 jfv
 **
-** $Id: implicit.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: implicit.c,v 1.6 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "revm.h"
@@ -19,8 +19,8 @@ void				revm_workfiles_load()
 
   if (world.state.input == NULL)
     {
-      cmd_help();
-      revm_exit (-1);
+      revm_help(NULL);
+      revm_exit(-1);
     }
   world.curjob->current = (world.state.output != NULL ? 
 			   elfsh_map_obj(world.state.input) :
@@ -111,7 +111,7 @@ int		revm_implicit(revmcmd_t *actual)
 	revm_workfiles_load();
       if (!world.curjob->current)
 	{
-	  cmd_help();
+	  revm_help(NULL);
 	  revm_exit(-1);
 	}
     }
@@ -120,10 +120,7 @@ int		revm_implicit(revmcmd_t *actual)
   else if (((world.state.revm_mode == REVM_STATE_INTERACTIVE ||
 	     world.state.revm_mode == REVM_STATE_SCRIPT) && 
 	    !world.curjob->current))
-    {
-      cmd_dolist();
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
 
   /* We need to set it here since the CURRENT object can change */
   asm_set_resolve_handler(&world.proc, asm_do_resolve, world.curjob->current);

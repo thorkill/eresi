@@ -6,7 +6,7 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv
  *
- * $Id: prompt.c,v 1.9 2007-08-17 15:38:52 heroine Exp $
+ * $Id: prompt.c,v 1.10 2007-11-29 14:01:56 may Exp $
  *
 */
 #include "revm.h"
@@ -66,11 +66,8 @@ char*	revm_get_prompt()
 	snprintf(prompt_token, sizeof(prompt_token) - 1, "prompt-error");
 
       /* Prompt on readline need some modifications */
-#if defined(USE_READLN)
-      readln_prompt_update(prompt_token, sizeof(prompt_token));
-#endif
-
-      return prompt_token;
+      revm_prompt_update(prompt_token, sizeof(prompt_token));
+      return (prompt_token);
     }
 
   if (world.state.revm_mode == REVM_STATE_SCRIPT)

@@ -4,14 +4,16 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Fri Sep 11 17:26:11 2005 jfv
  *
- * $Id: misc-revm.c,v 1.12 2007-11-28 07:56:09 may Exp $
+ * $Id: misc-revm.c,v 1.13 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
 
+/* XXX: to remove ?
 #if defined(USE_READLN)
  rl_command_func_t *rl_ctrll = NULL;
 #endif
+*/
 
 char buf[BUFSIZ];
 
@@ -64,12 +66,9 @@ char	*revm_get_prompt()
       else
 	snprintf(prompt_token, sizeof(prompt_token) - 1, "prompt-error");
 
-#if defined(USE_READLN)
       /* Prompt on readline need some modifications */
-      revm_rl_update_prompt(prompt_token, sizeof(prompt_token));
-#endif
-
-      return prompt_token;
+      revm_prompt_update(prompt_token, sizeof(prompt_token));
+      return (prompt_token);
     }
 
   if (world.state.revm_mode == ELFSH_VMSTATE_SCRIPT)

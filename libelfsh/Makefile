@@ -12,13 +12,11 @@ LD			?= ld
 RM			= rm -f 
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../elibc/include 	    \
-			-I../libetrace/include							\
+			-I../libasm/include/ -I../libetrace/include         \
 			-I../libaspect/include/ $(KERNSHINC)		    \
 			$(KERNSH) -DERESI32 $(BUILDOP)
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../elibc/include	            \
-			-I../libetrace/include/								\
+			-I../libasm/include/ -I../libetrace/include/        \
 			-I../libaspect/include/ $(KERNSHINC)		    \
 			$(KERNSH) -DERESI64 $(BUILDOP)
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
@@ -31,7 +29,7 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
 			inject.c linkmap.c bp.c rpht.c version.c dwarf.c
-#			inject.c linkmap.c bp.c rpht.c version.c traces.c 
+
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 NAME32			= libelfsh32
@@ -40,19 +38,17 @@ NAME64			= libelfsh64
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(CC) -L../elibc/ -lcelfsh32 -L../liballocproxy/ \
-			-lallocproxy -L../libaspect/ -laspect32 -DERESI32 \
-			$(KERNSHLIB32)				          \
-			-shared $(OBJ32) -o $(NAME32).so
+			@$(CC) -L../liballocproxy/ -lallocproxy \
+                        -L../libaspect/ -laspect32 -DERESI32 \
+			$(KERNSHLIB32) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			:  $(OBJ64)
-			@$(CC) -L../elibc/ -lcelfsh64 -L../liballocproxy/ \
-			-lallocproxy -L../libaspect/ -laspect64 -DERESI64 \
-			$(KERNSHLIB64) 					  \ 
-			-shared $(OBJ64) -o $(NAME64).so 
+			@$(CC) -L../liballocproxy/ -lallocproxy \
+                        -L../libaspect/ -laspect64 -DERESI64 \
+			$(KERNSHLIB64) -shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o

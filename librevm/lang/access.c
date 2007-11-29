@@ -4,7 +4,7 @@
  * Started Jan 23 2007 23:39:51 jfv
  * @brief Implementation of scripting lookups for meta-language variables
  *
- * $Id: access.c,v 1.29 2007-11-28 07:56:09 may Exp $
+ * $Id: access.c,v 1.30 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
@@ -334,7 +334,8 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 					 char	     *objpath,
 					 char	     translateaddr)
 {
-  revmannot_t	*var;
+  revmexpr_t	*expr;
+  revmannot_t	*annot;
   void		*data;
   revmobj_t	*path;
   char		hashname[ELFSH_MEANING];
@@ -352,11 +353,12 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
   if (!typehash)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type map", NULL);
-  var = hash_get(typehash, objname);
-  if (!var)
+  expr = hash_get(typehash, objname);
+  if (!expr || !expr->annot)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested data object", NULL);
-  data = (void *) var->addr;
+  annot = expr->annot;
+  data = (void *) annot->addr;
   if (translateaddr)
     data = revm_get_raw(data);
 

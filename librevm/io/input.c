@@ -4,7 +4,7 @@
  * Input related functions
  *
  * Started on  Fri Feb  7 20:53:25 2003 jfv
- * $Id: input.c,v 1.11 2007-08-03 11:51:00 heroine Exp $
+ * $Id: input.c,v 1.12 2007-11-29 14:01:56 may Exp $
  *
  */
 #include "revm.h"
@@ -42,10 +42,7 @@ char		*revm_getln()
 
 	  revm_log(sav);
 	  revm_log("\n");
-
-#if !defined(USE_READLN)
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, buf);
-#endif
+	  revm_buffer_free(buf);
 	  
 	  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
 	      world.state.revm_mode == REVM_STATE_DEBUGGER)
@@ -61,15 +58,10 @@ char		*revm_getln()
 	  revm_output_nolog("\n");
 
           /* avoid looping with readline */
-#if defined(USE_READLN)
-          if (buf == NULL)
-	    {
-	      //fprintf(stderr, "Entered readline test .. returning void input \n");
-              NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
-	    }
-          break;
-#endif
-	  
+          if (revm_is_enabled() && buf == NULL)
+	    NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+	  if (revm_is_enabled())
+	    break;
 	}
     }
   while (buf == NULL);
@@ -172,13 +164,11 @@ char		*revm_stdinput()
   str = NULL;
 
   /* Case if we are using readline */
-#if defined(USE_READLN)
-  if (world.state.revm_mode != REVM_STATE_SCRIPT)
+  if (revm_is_enabled() && world.state.revm_mode != REVM_STATE_SCRIPT)
     {
-      str = readln_input_check();
+      str = revm_input_check();
       NOPROFILER_ROUT(str);
     }
-#endif
 
   /* If not, read the stdin file descriptor */
   NOPROFILER_ROUT(revm_read_input());

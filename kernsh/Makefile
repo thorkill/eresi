@@ -17,44 +17,44 @@ NAME32			= kernsh32
 NAME64			= kernsh64
 
 CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
-			 -I../libelfsh/include/ -I../elibc/include/ \
+			 -I../libelfsh/include/ \
 			 -I../libdump/include/ -I../libasm/include/ \
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libaspect/include/ -I../librevm/include/ \
-			-I../libedfmt/include/ \
+			-I../libedfmt/include/ -I../libstderesi/include/ \
 			-I../libkernsh/include/ \
 			-DELFSH_INTERN $(STATOPT2) \
 			$(ASMOPT) -DERESI32 $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
-			 -I../libelfsh/include/ -I../elibc/include/ \
+			 -I../libelfsh/include/ \
 			 -I../libdump/include/ -I../libasm/include/ \
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libaspect/include/ -I../librevm/include/ \
-			-I../libedfmt/include/ \
+			-I../libedfmt/include/  -I../libstderesi/include/ \
 			-I../libkernsh/include/ \
 			-DELFSH_INTERN $(STATOPT2) \
 			$(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/		  \
-			-lmjollnir32 $(LPTHREAD) -L../elibc -lcelfsh32		  \
+			-lmjollnir32 $(LPTHREAD)		  \
 			-L../libasm/ -lasm -L../libui/ -lui32 -g3		  \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
-			-L../libkernsh/ -lkernsh32 \
+			-L../libkernsh/ -lkernsh32 -L../libstderesi/ -lstderesi32 \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
-			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
-			-lcelfsh64 -L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
+			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) 	  \
+			-L../libasm/ -lasm -L../libui/ -lui64 -g3 	  \
 			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
-			-L../libkernsh/ -lkernsh64 \
+			-L../libkernsh/ -lkernsh64 -L../libstderesi/ -lstderesi64 \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
 			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)

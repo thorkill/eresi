@@ -1,7 +1,7 @@
 /*
 ** mode.c for kernsh
 ** 
-** $Id: mode.c,v 1.2 2007-08-26 18:07:09 pouik Exp $
+** $Id: mode.c,v 1.3 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "kernsh.h"
@@ -14,11 +14,7 @@ int		cmd_kmode()
   char		buf[256];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -66,11 +62,7 @@ int		cmd_kmode()
     }
   
   revm_endline();
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-  
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

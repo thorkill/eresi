@@ -1,0 +1,895 @@
+/**
+** @file disasm.c
+** 
+** Started on  Fri Nov  2 15:41:34 2001 jfv
+**
+**
+** $Id: disasm.c,v 1.1 2007-11-29 14:01:56 may Exp $
+**
+*/
+#include "libstderesi.h"
+
+
+static revmlist_t* second = NULL;
+
+
+/**
+ * Resolve symbol in one file or all (mapped) if we are in e2dbg
+ * Runtime compatible 
+*/
+char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr, 
+			    elfsh_SAddr *roffset)
+{
+  listent_t	*ent;
+  int		index;
+  elfshobj_t	*actual;
+  char		*name = NULL;
+  char		*dname = NULL;
+  elfsh_SAddr	offset = 0;
+  elfsh_SAddr	doffset = 0;
+  char		*bestname = NULL;
+  elfsh_SAddr	bestoffset;
+  elfshobj_t	*bestfile;
+  char		buf[BUFSIZ];
+  char		*str;
+
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!file)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid NULL argument", NULL);
+
+  actual = file;
+  name = elfsh_reverse_symbol(actual, addr, &offset);
+  dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+
+  if (!name || (dname && !strcmp(name, ELFSH_SECTION_NAME_PLT)) || 
+      (offset < 0) || (dname && doffset < offset && doffset >= 0))
+    {
+      name = dname;
+      offset = doffset;
+    }  
+  
+  bestname = name;
+  bestoffset = offset;
+  bestfile = actual;
+  
+
+#if __DEBUG_RESOLVE__
+  printf("[elfsh:resolve] file : %s name %s %d\n", actual->name, name, offset);
+#endif
+  
+  /* Find the best symbol by searching in all the objects of the process */
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+      for (index = 0; index < world.curjob->loaded.size; index++)
+	for (ent = &world.curjob->loaded.ent[index];
+	     ent != NULL && ent->key != NULL;
+	     ent = ent->next)
+	  {
+	    actual = ent->data;
+	    if (!actual->linkmap)
+	      continue;
+	    
+	    name = elfsh_reverse_symbol(actual, addr, &offset);
+	    dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+	    
+	    if (!name || (offset < 0) || 
+		(dname && doffset < offset && doffset >= 0))
+	      {
+		name = dname;
+		offset = doffset;
+	      }  
+	    
+	    if (!bestname || 
+		(bestoffset < 0) || (name && offset < bestoffset && offset >= 0))
+	      {
+		bestname = name;
+		bestoffset = offset;
+		bestfile = actual;
+	      }
+	    
+#if __DEBUG_RESOLVE__
+	    printf("[elfsh:resolve] file : %s name %s %d\n", 
+		   actual->name, name, offset);
+#endif
+	  }
+  
+#if __DEBUG_RESOLVE__
+  printf("[elfsh:resolve] BEST name %s %d\n", bestname, bestoffset);
+#endif
+
+  if (roffset)
+    *roffset = bestoffset;
+  
+  if (bestname == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Unable to resolve best name", (NULL));
+
+  if (elfsh_is_debug_mode())
+    {
+      str = revm_basename(bestfile->name);
+      snprintf(buf, BUFSIZ, "%s@%s", 
+	       bestname, (str ? str : "CORRUPTED"));
+    }
+  else
+    snprintf(buf, BUFSIZ, "%s", bestname);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, strdup(buf));
+ 
+}
+
+
+/**
+ *  Symbol resolving handler for libasm
+ * Runtime compatible 
+ */
+void		asm_do_resolve(void *data, elfsh_Addr vaddr, 
+			       char *buf, u_int maxlen)
+{
+  elfshobj_t	*file;
+  elfshsect_t	*parent;
+  char		*name;
+  elfsh_SAddr	off;
+  int		len;
+  char		*sep;
+
+  /* Retreive the nearest symbol */
+  file = data;
+  parent = elfsh_get_parent_section(file, vaddr, 0);
+  if (NULL != parent && parent->shdr->sh_addr)
+    name = revm_resolve(file, vaddr, &off);      
+  else
+    name = NULL;
+
+  /* Print the symbol name in 'buf' so that libasm can print it */
+  len = (NULL == name ? 10 : strlen(name) + 25);
+  if (name != NULL && *name != 0x00)
+    {
+      sep = (off > 0 ? " + " : off < 0 ? " - " : "");
+      len = snprintf(buf, maxlen - 1, "%s%s%s%s", 
+		     revm_colorfieldstr("<"),
+		     revm_colortypestr(name), 
+		     (off ? revm_colorfieldstr(sep) : ""),
+		     (off ? "" : revm_colorfieldstr(">")));
+
+      if (off)
+	snprintf(buf + len, maxlen - len -  1, "%s%s", 
+		 revm_colornumber("%u", (u_int) off),
+		 revm_colorfieldstr(">"));
+    }
+  else
+    snprintf(buf, maxlen - 1, AFMT, vaddr);
+}
+
+
+
+/*------------------ to clean !! ******/
+
+
+
+
+/** 
+ * Display An instruction 
+ * Runtime compatible 
+ */
+u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr, 
+				 u_int foffset, u_int size, char *name, 
+				 u_int nindex, char *buff)
+			      
+{
+  char		*s;
+  char		buf[256];
+  u_int		idx_bytes;
+  u_int		ret;
+  asm_instr	ptr;
+  char		base[16] = "0123456789ABCDEF";
+  char		logbuf[BUFSIZ];
+  char		c1[2];
+  char		c2[2];
+  u_int		strsz;
+  elfsh_Half	machine;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!buff)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid argument", (-1));    
+
+  /* Init proc */			  
+  if (!world.curjob->proc) 
+    {
+      switch (machine = elfsh_get_arch(world.curjob->current->hdr))
+	{
+	case EM_386:
+	  world.curjob->proc = &world.proc;
+	  break;
+	case EM_SPARC:
+	case EM_SPARC32PLUS:
+	case EM_SPARCV9:
+	  world.curjob->proc = &world.proc_sparc;
+	  break;
+	default:
+	  snprintf(logbuf, sizeof (logbuf) - 1, 
+		   "Architecture %s not supported. No disassembly available\n",
+		   elfsh_get_machine_string(machine));
+	  revm_output(logbuf);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+    }
+
+  /* Print the instr. itself : vaddr and relative symbol resolution */
+  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + 10, 
+		       world.curjob->proc);
+  if (ret == -1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "asm_read_instruction faild (-1)", (ret));
+
+  s = (!ret ? "(bad)" : asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
+
+  /* Libasm test */
+  if (fd == -1)
+    {
+
+      /* Are we in quiet mode ? */
+      if (world.state.revm_quiet)
+	{
+	  snprintf(buf, sizeof(buf), " %s %s + %s", 
+		   revm_coloraddress(XFMT, vaddr + index), 
+		   revm_colorstr(name),
+		   revm_colornumber("%u", nindex));
+	  size = snprintf(logbuf, BUFSIZ, "%-40s %-30s ", 
+			  buf, revm_colorinstr(s));
+	}
+      else
+	{
+	  size = snprintf(buf, sizeof(buf), " %s [%s %s] %s + %s", 
+			  revm_coloraddress(XFMT, vaddr + index), 
+			  revm_colorfieldstr("foff:"), 
+			  revm_colornumber("%u", foffset + index), 
+			  revm_colorstr(name), 
+			  revm_colornumber("%u", nindex));
+	  strsz = strlen(s);
+	  size = snprintf(logbuf, BUFSIZ, "%-*s %-*s ", 
+			  (size > 95 ? 125 : 
+			   size > 87 ? 100 : 
+			   size > 75 ? 108 : 
+			   size > 50 ? 88 : 55),
+			  buf,
+			  (strsz > 95 ? 125 : 
+			   strsz > 87 ? 100 : 
+			   strsz > 75 ? 108 : 
+			   strsz > 50 ? 88 : 55),
+			  revm_colorinstr(s));
+	}
+      
+      /* Print bytes in hexa for this instruction */
+      ret = asm_instr_len(&ptr);
+      if (!ret)
+	ret++;
+
+      if (!world.state.revm_quiet)
+	for (idx_bytes = 0; idx_bytes < ret; idx_bytes++)
+	  {
+	    c1[0] = base[(buff[index + idx_bytes] >> 4) & 0x0F];
+	    c2[0] = base[buff[index + idx_bytes] & 0x0F];
+	    c1[1] = c2[1] = 0x00;
+	    size += snprintf(logbuf + size, sizeof(logbuf) - size, "%s%s ", 
+			     revm_colorfieldstr(c1), 
+			     revm_colorfieldstr(c2));
+	  }
+
+      if (!world.curjob->curcmd || !world.curjob->curcmd->use_regx[1] || 
+	  !regexec(&second->name, logbuf, 0, 0, 0))
+	{
+	  revm_output(logbuf);
+	  revm_output("\n");
+	}
+      revm_endline();
+    }
+  else
+    write(fd, s, strlen(s));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+}
+
+
+/** 
+ * Disassemble a function 
+ */
+int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
+				  u_int off, u_int foffset, elfsh_Addr vaddr, 
+				  char *name, char otype)
+{
+  char		*buff;
+  u_int		index;
+  elfsh_SAddr   idx_bytes;
+  char		buf[256];
+  char		base[16] = "0123456789ABCDEF";
+  elfsh_Addr    loff;
+  char		str[256];
+  elfshsect_t	*targ;
+  char		*s;
+  u_int		ret;
+  int		value;
+  char		logbuf[BUFSIZ];
+  char		tmp[BUFSIZ];
+  char		c1[2], c2[2];
+  char		*pStr;
+  void		*tmpbuff;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!parent)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "parent section is NULL", -1);
+
+  /* Special case if the symbol is a plt entry */
+  if (sym && elfsh_is_pltentry(parent->parent, sym) == 1 && 
+      size > ELFSH_PLT_ENTRY_SIZE)
+    size = ELFSH_PLT_ENTRY_SIZE;
+
+#if __DEBUG_DISASM__
+  snprintf(logbuf, BUFSIZ - 1, 
+	   "[debug:revm_object_display] %s off(%u) size(%u) vaddr(%08X) "
+	   "foffset(%u), parent(%p, %s) \n",
+	   name, off, size, vaddr, foffset, parent, 
+	   (parent ? parent->name : "UNK"));
+  revm_output(logbuf);
+#endif
+
+  /* Get the pointer on relevant data */
+  buff  = elfsh_get_raw(parent);
+  index = off;
+  buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
+
+#if defined(KERNSH)  
+  if (kernsh_is_mem_mode())
+      parent->parent->rhdr.base = 0;
+#endif  
+
+  /* Filter requests on void sections (ex: bss when not inserted in file) */
+  if (!parent || !parent->data)
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			"No data at this address", -1);
+  
+  /* If the regex match a pointers array, print the pointed elements too */
+  if (sym && 
+      (elfsh_get_symbol_type(sym) == STT_OBJECT  ||
+       elfsh_get_symbol_type(sym) == STT_COMMON) && 
+      !(sym->st_size % sizeof(elfsh_Addr)))
+    {
+      
+      for (index = 0; index * sizeof(elfsh_Addr) < sym->st_size; index++)
+	{
+	  
+	  /* Do not print more than 250 entries at a time */
+	  /* Use an offset for more dumping */
+	  if (index >= 250)
+	    {
+	      revm_output("-- symbol size is bigger (use an offset) --\n");
+	      break;
+	    }
+	  
+	  /* For each entry of the array */
+	  /* Dont forget the section offset at the end */
+	  tmpbuff  = elfsh_get_raw(parent);
+	  tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
+
+#if defined(KERNSH)
+	  if (kernsh_is_mem_mode())
+	    parent->parent->rhdr.base = 0;
+#endif
+
+	  tmpbuff += index * sizeof(elfsh_Addr);
+	  loff     = * (elfsh_Addr *) tmpbuff;
+	  
+	  snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
+		   elfsh_is_debug_mode() ? 
+		   parent->parent->rhdr.base + vaddr + index * sizeof(elfsh_Addr) :
+		   vaddr   + index * sizeof(elfsh_Addr), 
+		   foffset + index * sizeof(elfsh_Addr), 
+		   name, 
+		   ((sym->st_size / sizeof(elfsh_Addr)) < 100  ? 2 : 
+		    (sym->st_size / sizeof(elfsh_Addr)) < 1000 ? 3 : 4),
+		   index,
+		   loff);
+
+	  /* If the target pointer is not valid */
+	  targ = elfsh_get_parent_section(parent->parent, loff, 
+					  (elfsh_SAddr *) &off);
+	  if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
+	    {
+	      s = elfsh_reverse_symbol(parent->parent, loff, &idx_bytes);
+	      if (NULL == s || idx_bytes > 1000)
+		s = elfsh_reverse_dynsymbol(parent->parent, loff, &idx_bytes);
+	      if (NULL == s || idx_bytes > 1000)
+		{
+		  if (targ != NULL)
+		    {
+		      s = targ->name;
+		      idx_bytes = off;
+		    }
+		  else
+		    idx_bytes = 0;
+		}
+	      if (idx_bytes)
+		snprintf(str, sizeof(str), "%s + %u", 
+			 (s ? s : "<?>"), (u_int) idx_bytes);
+	      else
+		snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
+	      snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
+	    }
+
+	  /* else if yes, print the pointed data too */
+	  else
+	    {
+	      s = elfsh_get_raw(targ);
+	      s += off;
+	      memcpy(str, s, 
+		     (sizeof(str) > (targ->shdr->sh_size - off)) ?
+		     targ->shdr->sh_size - off : sizeof(str));   
+	      snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
+	    }
+	  
+	  /* maybe the user asked to quit the display */
+	  revm_output(logbuf);
+	}
+    }
+  
+  
+  
+  /* We want asm + hexa output of the code */
+  else if (otype == REVM_VIEW_DISASM)
+    {
+#if defined(KERNSH)
+      if (!kernsh_is_present() && elfsh_is_debug_mode())
+	  vaddr += parent->parent->rhdr.base;
+#else
+      if (elfsh_is_debug_mode())
+	vaddr += parent->parent->rhdr.base;
+#endif
+
+      idx_bytes = (sym ? vaddr + index - sym->st_value : index);
+      
+      while (index < size && size > 0)
+	{
+	  value = revm_instr_display(-1, index, vaddr, 
+				   foffset, size, name,
+				   idx_bytes, buff);
+	  if (value <= 0)
+	    break;
+	  index += value;
+	  idx_bytes += value;
+	}
+    }
+
+  /* We want hexa + ascii output of the data */
+  else if (REVM_VIEW_HEX == otype)
+    {
+      if (name == NULL || !*name)
+	name = ELFSH_NULL_STRING;
+
+      while (index < size && size > 0)
+	{
+	  /* Take care of quiet mode */
+	  if (world.state.revm_quiet)
+	    {
+	      sprintf(buf, " %s %s + %s", 
+		      revm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
+		      revm_colorstr(name), revm_colornumber("%u", index));
+	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
+	      revm_output(logbuf);
+	    }
+	  else
+	    {
+	      sprintf(buf, " %s [%s %s] %s + %s", 
+		      revm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
+		      revm_colorfieldstr("foff:"),
+		      revm_colornumber(DFMT, foffset + index), 
+		      revm_colorstr(name), revm_colornumber("%u", index));
+	      snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + revm_color_size(buf), buf);
+	      revm_output(logbuf);
+	    }
+	  revm_endline();
+	  ret = (world.state.revm_quiet ? 8 : 16);
+	  tmp[0] = c1[1] = c2[1] = 0x00;
+
+	  /* Print hexa */
+	  for (loff = 0; loff < ret; loff++)
+	    {
+	      c1[0] = c2[0] = ' ';
+	      if (index + loff < size)
+		{
+		  c1[0] = base[(buff[index + loff] >> 4) & 0x0F];
+		  c2[0] = base[(buff[index + loff] >> 0) & 0x0F];
+		}
+	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
+	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
+		strcat(tmp, logbuf);
+	    }
+
+	  revm_output(revm_colorfieldstr(tmp));
+	  revm_endline();
+	  tmp[0] = 0x00;
+
+	  /* Print ascii */
+	  for (loff = 0; loff < ret; loff++)
+	    {
+	      c1[0] = buff[index + loff];
+	      pStr = (index + loff >= size ? " " : 
+		      (PRINTABLE(buff[index + loff]) ? c1 : "."));
+	      if (strlen(tmp) + 1 < BUFSIZ)
+		strcat(tmp, pStr);
+	    }
+
+	  revm_output(revm_colorstr(tmp));
+	  revm_endline();
+	  revm_output("\n");
+	  index += ret;
+	}
+  }
+
+  revm_output("\n");
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+
+/** 
+ * Print all variables and functions of the section 
+ */
+int		revm_section_display(elfshsect_t	*s, 
+				   char		*name, 
+				   revmlist_t	*re)
+{
+  elfsh_Sym	*actual;
+  int		size, symtab_size;
+  int		index;
+  elfsh_SAddr  	offset;
+  int		tot;
+  char		*symname;
+  char		logbuf[BUFSIZ];
+  int		err;
+  elfsh_Addr	addr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Hello message ;) */
+  snprintf(logbuf, BUFSIZ - 1, " [*] Analysing section %s [*] \n\n", name);
+  revm_output(logbuf);
+  actual = elfsh_get_symtab(s->parent, &symtab_size);
+  tot = 0;
+  if (s && !elfsh_get_raw(s))
+    elfsh_get_anonymous_section(s->parent, s);
+  
+  if (!actual)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Section has no symbol associated", -1);
+
+  /* Display all symbols data pointing in the section */
+  for (index = 0; index < symtab_size; index++)
+    if (elfsh_get_parent_section(s->parent, actual[index].st_value, &offset) == s)
+      {
+	if (re->size)
+	  size = ((re->size + re->off) > actual[index].st_size ? 
+		  actual[index].st_size : re->size + re->off);
+	else
+	  size = actual[index].st_size;
+	
+	symname = elfsh_get_symbol_name(s->parent, actual + index);
+	addr    = s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr;
+	err     = revm_object_display(s, actual + index, size, re->off, addr,
+				    actual[index].st_value, symname, re->otype);
+	
+	if (err == -1)
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
+	tot++;
+      }
+
+  /* If no symbol points to our section, we display it as a whole */
+  if (!tot)
+    {
+      if (re->size)
+	size = ((re->size + re->off) > s->shdr->sh_size ? s->shdr->sh_size :
+		re->size + re->off);
+      else
+	size = s->shdr->sh_size;
+      actual = elfsh_get_symbol_by_name(s->parent, name);
+      if (revm_object_display(s, actual, size, re->off, s->shdr->sh_offset, 
+			    s->shdr->sh_addr, name, re->otype) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Unable to display section data", -1);
+    }
+
+  /* Everything went ok */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+/** 
+ * Match regular expressions in a SHT (SHT or RSHT) 
+ */
+int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual)
+{
+  elfshsect_t	*s;
+  char		*name;
+  int		matchs = 0;
+#if __DEBUG_DISASM__
+  char		logbuf[BUFSIZ];
+#endif
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Now find matches in the list of section */
+  for (s = l; s != NULL; s = s->next)
+    {
+      name = s->name;
+      if (name == NULL || !*name || regexec(&actual->name, name, 0, 0, 0))
+	continue;
+      matchs++;
+      
+#if __DEBUG_DISASM__
+     snprintf(logbuf, BUFSIZ - 1, 
+	      "[debug_disasm:cmd_disasm] Found section regx (%s) \n", name);
+     revm_output(logbuf);
+#endif
+      
+     if (revm_section_display(s, name, actual) < 0)
+       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matchs);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matchs);
+}
+
+
+
+
+
+/** 
+ * Match regular expressions in the symbol tables 
+ */
+int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
+				revmlist_t *actual, int flag)
+{
+  elfshsect_t	*s;
+  char		*name;
+  int		matchs = 0;
+  u_int		saved_size;
+  elfsh_Sym	*sym;
+  elfsh_Addr	addr;
+  int		index;
+#if __DEBUG_DISASM__
+  char		logbuf[BUFSIZ];
+#endif
+
+  /* Natural checks */
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!file || !symtab || !actual)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Invalid NULL parameter", -1);
+  saved_size = actual->size;
+  
+  /* Iterate on symbols */
+  sym = (flag ? elfsh_get_raw(symtab) : (elfsh_Sym *) symtab->altdata);
+  for (index = 0; index < symtab->shdr->sh_size / sizeof(elfsh_Sym); index++)
+    {
+      
+      /* Match ? */
+      name = (flag ? elfsh_get_dynsymbol_name(file, sym + index) : 
+	      elfsh_get_symbol_name(file, sym + index));      
+      if (name == NULL || *name == 0x00 || !DUMPABLE(sym + index) ||
+	  elfsh_get_symbol_type(sym + index) == STT_SECTION ||
+	  regexec(&actual->name, name, 0, 0, 0))
+	continue;
+      matchs++;
+      if (!actual->size)
+	actual->size = elfsh_get_symbol_size(sym + index);
+      else
+	actual->size = ((actual->size + actual->off) > 
+			elfsh_get_symbol_size(sym + index) ?
+			elfsh_get_symbol_size(sym + index) : 
+			actual->size + actual->off);
+      
+#if __DEBUG_DISASM__
+      snprintf(logbuf, BUFSIZ - 1, 
+	       "[debug_disasm:cmd_disasm] Found dynsym regx (%s) (" AFMT ")\n", 
+	       name, elfsh_get_symbol_value(sym + index));
+      revm_output(logbuf);
+#endif
+
+      /* Only use toggle mode when inspecting .dynsym */
+      if (flag && !elfsh_get_symbol_value(sym + index))
+	{
+	  elfsh_toggle_mode();
+	  sym = elfsh_get_raw(symtab);
+	  elfsh_toggle_mode();
+	  s = elfsh_get_parent_section(file, 
+				       file->rhdr.base + sym[index].st_value,
+				       NULL);
+	}
+      else
+	s = elfsh_get_parent_section(file, sym[index].st_value, NULL);
+
+      /* Display matched object */
+      addr = elfsh_get_foffset_from_vaddr(file, sym[index].st_value);
+      if (revm_object_display(s, sym + index, actual->size, actual->off, addr,
+			    sym[index].st_value, name, actual->otype) == -1)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Error while displaying matched object", -1);
+      
+      if (!flag)
+	actual->size = saved_size;
+    }
+
+  /* Everything went ok */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matchs);
+}
+
+
+
+
+
+
+/** 
+ * Match a special regular expression 
+ */
+int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
+				 revmlist_t *actual)
+{
+  elfsh_Sym	*sym;
+  char		*name;
+  int		off;
+  u_int		matchs;
+  elfshsect_t	*s;
+
+#if __DEBUG_DISASM__
+  char		logbuf[BUFSIZ];
+#endif
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+#if __DEBUG_DISASM__
+  snprintf(logbuf, BUFSIZ - 1, 
+	   "[debug:cmd_disasm] SPECIAL with vaddr(" AFMT ") \n", vaddr);
+  revm_output(logbuf);
+#endif
+  
+  if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+    vaddr -= file->rhdr.base;
+  sym = elfsh_get_symbol_by_value(file, vaddr, &off, ELFSH_LOWSYM);
+  if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+    vaddr += file->rhdr.base;
+  if (sym == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No matching symbol for offset", -1);
+  actual->off += off;
+  if (!actual->size)
+    actual->size = elfsh_get_symbol_size(sym);
+  else
+    actual->size = ((actual->size + actual->off) > elfsh_get_symbol_size(sym) ?
+		    elfsh_get_symbol_size(sym) : actual->size + actual->off);
+  name = elfsh_get_symbol_name(file, sym);
+  matchs++;
+  
+#if __DEBUG_DISASM__
+  snprintf(logbuf, BUFSIZ - 1, "[debug_disasm:cmd_disasm] Found special regx "
+	   "(%s with off %d)  sym = " AFMT "\n", name, off, sym->st_value);
+  revm_output(logbuf);
+#endif
+
+  s = elfsh_get_parent_section(file, vaddr, NULL);
+  if (!s)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "No matching section for address", -1);
+
+  if (!actual->size)
+    actual->size = s->shdr->sh_size;
+  revm_object_display(s, sym, actual->size, actual->off,
+		    elfsh_get_foffset_from_vaddr(file, vaddr),
+		    vaddr, name, actual->otype);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+
+
+
+/* Display ASM code for a given function, or every functions of a section */
+int             cmd_disasm()
+{
+  revmlist_t	*actual;
+  elfshobj_t	*file;
+  int		matchs;
+  elfsh_Addr	vaddr;
+  char		logbuf[BUFSIZ];
+  elfsh_Half	machine;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* First check the architecture */
+  switch (machine = elfsh_get_arch(world.curjob->current->hdr))
+    {
+    case EM_386:
+      world.curjob->proc = &world.proc;
+      break;
+    case EM_SPARC32PLUS:
+    case EM_SPARC:
+    case EM_SPARCV9:
+      world.curjob->proc = &world.proc_sparc;
+      break;
+    default:
+      snprintf(logbuf, sizeof (logbuf) - 1, 
+	       "Architecture %s not supported. No disassembly available\n",
+	       elfsh_get_machine_string(machine));
+      revm_output(logbuf);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Make sure we get symtabs of current object */
+  elfsh_get_symtab(world.curjob->current, NULL);
+  elfsh_get_dynsymtab(world.curjob->current, NULL);
+  revm_output("\n");
+  
+  /* now walk the regex list for this option */
+  actual = world.curjob->curcmd->disasm + 0;
+  second = world.curjob->curcmd->disasm + 1;
+  matchs = vaddr = 0;
+  file = world.curjob->current;
+
+  /* If the regex contains a vaddr instead of a symbol name */
+  if (actual->rname)
+    {
+      if (IS_VADDR(actual->rname))
+	{
+	  if (sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Invalid virtual address requested", 
+			      -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     revm_match_special(file, vaddr, actual));
+	}
+  
+      /* else if it contains a file offset */
+      else if (isdigit((int) *actual->rname))
+	{
+	  vaddr = elfsh_get_vaddr_from_foffset(file, atoi(actual->rname));
+	  if (vaddr == 0xFFFFFFFF && 
+	      sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			      "Invalid file offset requested",
+			      -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     revm_match_special(file, vaddr, actual));
+	}
+    }
+
+  /* Try to match in the sectlist and runtime sectlist */
+  matchs += revm_match_sht(file, file->sectlist, actual);
+  matchs += revm_match_sht(file, file->rsectlist, actual);
+  
+  /* Now find matches in the symbol table .symtab */
+  /* Last parameter says if we are in symtab or dynsymtab */
+  matchs += revm_match_symtab(file, file->secthash[ELFSH_SECTION_SYMTAB], actual, 0);
+  matchs += revm_match_symtab(file, file->secthash[ELFSH_SECTION_DYNSYM], actual, 1);
+  
+  /* Printing a warning message if we have no match */
+  if (!world.state.revm_quiet && !matchs)
+    {
+      snprintf(logbuf, BUFSIZ - 1, " [E] No match for request %s\n\n", 
+	       actual->rname);
+      revm_output(logbuf);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+

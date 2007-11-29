@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.30 2007-11-28 08:18:17 may Exp $
+** $Id: libe2dbg.h,v 1.31 2007-11-29 14:01:55 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include "revm.h"
 #include "aproxy.h"
+#include "libstderesi.h"
 
 #if defined(__FreeBSD__)
  #include <pthread_np.h>

@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.15 2007-11-28 08:18:17 may Exp $
+** $Id: expressions.c,v 1.16 2007-11-29 14:01:56 may Exp $
 */
 #include "revm.h"
 
@@ -636,7 +636,6 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname)
   char		newname[BUFSIZ] = {0x00};
   int		curoff;
   char		*copydata;
-  revmannot_t	*annot;
   hash_t	*thash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -646,11 +645,10 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copydata, type->size, NULL);
   snprintf(newname, sizeof(newname), "type_%s", type->name);
   thash = hash_find(newname);
-  annot = hash_get(thash, srcname);
 
   /* Constants are not annotated, we might want not to do anything here */
-  if (annot)
-    memcpy(copydata, (char *) annot->addr, type->size);
+  if (source->annot)
+    memcpy(copydata, (char *) source->annot->addr, type->size);
 
   /* Create a temporary variable if necessary */
   if (*dstname != REVM_VAR_PREFIX || 

@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.2 2007-11-28 07:56:08 may Exp $
+** $Id: inform.c,v 1.3 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "revm.h"
@@ -119,7 +119,8 @@ int		revm_informed_print(char *name)
 {
   hash_t	*hash;
   char		buf[BUFSIZ];
-  revmannot_t	*tvar;
+  revmexpr_t	*expr;
+  revmannot_t	*annot;
   char		**keys;
   int		index;
   int		keynbr;
@@ -138,8 +139,9 @@ int		revm_informed_print(char *name)
     revm_output("  .:: Registered variables for this type \n\n");
   for (index = 0; index < keynbr; index++)
     {
-      tvar = (revmannot_t *) hash_get(hash, keys[index]);
-      snprintf(buf, sizeof(buf), "  + ["AFMT"] %-30s \n", tvar->addr, keys[index]);
+      expr = hash_get(hash, keys[index]);
+      annot = expr->annot;
+      snprintf(buf, sizeof(buf), "  + ["AFMT"] %-30s \n", annot->addr, keys[index]);
       revm_output(buf);
     }
 
@@ -209,7 +211,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   elfsh_Addr	oaddr;
   char		*realname;
   char		*symname;
-  revmannot_t	*tvar;
+  revmannot_t	*annot;
   elfsh_SAddr	off;
   aspectype_t	*rtype;
   
@@ -262,19 +264,13 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
     }
   addr = oaddr;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, tvar, sizeof(revmannot_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, annot, sizeof(revmannot_t), NULL);
 
   /* Setup current string table offset, type, scope, and representation */
-  tvar->nameoff = revm_strtable_add(realname);
-  tvar->typenum = rtype->type; 
-  tvar->scope = EDFMT_SCOPE_GLOBAL; 
-  tvar->addr = addr;
-  tvar->expr = expr;
-
-  /* Overwrite existing entry */
-  if (hash_set(hash, strdup(realname), (void *) tvar) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Add a new hash entry failed", NULL);
+  annot->nameoff = revm_strtable_add(realname);
+  annot->typenum = rtype->type; 
+  annot->scope = EDFMT_SCOPE_GLOBAL; 
+  annot->addr = addr;
 
   /* If no expression was given (manual inform) we need to create one ad-hoc */
   if (!expr)
@@ -290,8 +286,9 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
     revm_inform_subtype(realname, expr, rtype, oaddr, print);
   
   /* Register the expression */
-  hash_set(&exprs_hash    , (char *) strdup(realname), (void *) expr);
-  tvar->expr = expr;
+  expr->annot = annot;
+  hash_set(hash, strdup(realname), (void *) expr);
+  hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */
 #if __DEBUG_EXPRS__
@@ -303,7 +300,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
     {
       snprintf(buf, sizeof(buf), 
 	       " [*] Type %s succesfully informed of variable %s [" XFMT "]\n\n", 
-	       type, realname, tvar->addr);
+	       type, realname, annot->addr);
       revm_output(buf);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);

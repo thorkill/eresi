@@ -1,13 +1,9 @@
 /**
-** @file revm.h
+** @file revm.h for librevm in ERESI
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
-** 
-** Moved from elfsh to librevm on January 2007 -may
-**
-**
-** $Id: revm-io.h,v 1.51 2007-11-28 08:18:17 may Exp $
-**
+** Moved from elfsh to librevm on January 2007 jfv
+** $Id: revm-io.h,v 1.52 2007-11-29 14:01:56 may Exp $
 */
 #ifndef __REVM_IO_H_
  #define __REVM_IO_H_
@@ -43,7 +39,7 @@ char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a21"
+#define	REVM_RELEASE	"a22"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -305,5 +301,34 @@ char*		revm_socket_merge_recvd(revmsock_t *socket);
 int             revm_getmaxfd();
 int             revm_clean_jobs();
 
+/* Readline interface */
+int             revm_quit(int mode);
+void            revm_ctrl_set(int i, char c);
+void            revm_completion_install(char mode, char side);
+void            revm_completion_commands(hash_t *cmd_hash);
+char            **revm_completion(const char* text, int start, int end);
+int             revm_column_update();
+int             revm_prompt_update(char *ptr, int size);
+int             revm_prompt_restore();
+void		revm_prompt_log();
+void		revm_prompt_postselect_restore(fd_set *sel_sockets);
+char            *revm_input_check();
+void            revm_input_log(char *str);
+void		revm_input_prelog(char *buf);
+void            revm_screen_change(u_short isnew, char promptdisplay);
+void            revm_terminal_prepare(char mode);
+void            revm_terminal_unprepare(char mode);
+void		revm_buffer_reset(u_short isnew);
+void		revm_job_preswitch();
+void		revm_job_postswitch();
+void		revm_screen_getsize(int *lines, int *cols);
+void		revm_buffer_free(char *buf);
+void		revm_strip_char(char *str, char c);
+void		revm_callback_handler_remove();
+void		revm_conditional_rlquit();
+void		revm_rlfifo_write();
+int		revm_is_enabled();
+int		revm_is_stdinput();
+void		revm_callback_handler_install(char *prompt, void (*fct)(char *str));
 
 #endif

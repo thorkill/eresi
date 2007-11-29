@@ -4,6 +4,8 @@
 #
 
 export LD_LIBRARY_PATH=`pwd`/libelfsh
+export LD_LIBRARY_PATH=`pwd`/libetrace:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=`pwd`/libstderesi:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libasm/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libui/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/librevm/:$LD_LIBRARY_PATH

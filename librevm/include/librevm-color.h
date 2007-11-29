@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
-** $Id: librevm-color.h,v 1.5 2007-11-28 07:56:09 may Exp $
+** $Id: librevm-color.h,v 1.6 2007-11-29 14:01:56 may Exp $
 **
 */
 
@@ -86,8 +86,5 @@ char		*revm_colorwarn_fmt(char *pattern, char *text);
 /* Misc */
 int		revm_color_count(char *string);
 int		revm_color_size(char *string);
-
-/* Readline functions */
-int		readln_prompt_update(char *ptr, int size);
 
 #endif

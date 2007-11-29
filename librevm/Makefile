@@ -1,7 +1,8 @@
 ##
-## Makefile for elfsh
+## Makefile for librevm in ERESI
 ##
 ## Started on  Fri Nov  2 16:32:29 2001 jfv
+## Updated on  Wed Nov 28 12:57:38 2001 jfv
 ##
 
 include ../config.h
@@ -15,8 +16,8 @@ NAME64			= librevm64
 
 LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
-			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD) -L../elibc 	  \
-			-lcelfsh32 -L../libasm/ -lasm $(LDUIOPT32) -g3		  \
+			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD)       	  \
+			-L../libasm/ -lasm $(LDUIOPT32) -g3		          \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace32				  \
@@ -26,8 +27,8 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 
 LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
-			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) -L../elibc 	  \
-			-lcelfsh64 -L../libasm/ -lasm $(LDUIOPT64) -g3		  \
+			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD)      	  \
+			-L../libasm/ -lasm $(LDUIOPT64) -g3		          \
 			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace64				  \
@@ -41,9 +42,7 @@ all64			: mod64 lib64
 
 mod32			:
 			$(MAKE) -C lang all32
-			$(MAKE) -C elf  all32
 			$(MAKE) -C vm   all32
-			$(MAKE) -C cmd  all32
 			$(MAKE) -C io   all32
 			$(MAKE) -C api  all32
 
@@ -56,9 +55,7 @@ lib32			:
 
 mod64			:
 			$(MAKE) -C lang all64
-			$(MAKE) -C elf  all64
 			$(MAKE) -C vm   all64
-			$(MAKE) -C cmd  all64
 			$(MAKE) -C io   all64
 			$(MAKE) -C api  all64
 
@@ -71,9 +68,7 @@ lib64			:
 
 clean		       :
 			$(MAKE) -C lang clean
-			$(MAKE) -C elf  clean
 			$(MAKE) -C vm   clean
-			$(MAKE) -C cmd  clean
 			$(MAKE) -C io   clean
 			$(MAKE) -C api  clean
 		        @$(RM) *~ \#* *\# .\#*

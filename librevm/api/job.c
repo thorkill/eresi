@@ -3,7 +3,7 @@
 ** 
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **
-** $Id: job.c,v 1.4 2007-08-03 11:51:00 heroine Exp $
+** $Id: job.c,v 1.5 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "revm.h"
@@ -51,23 +51,11 @@ void		revm_switch_job(revmjob_t      *job)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Save the active buffer line */
-#if defined(USE_READLN)
-  if (world.curjob->ws.io.savebuf)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->ws.io.savebuf);
-  world.curjob->ws.io.savebuf = strdup(rl_line_buffer); 
-  world.curjob->ws.io.buf = NULL;
-  world.curjob->ws.io.rl_point = rl_point;
-  world.curjob->ws.io.rl_end = rl_end;
-#endif
-
+  revm_job_preswitch();
   world.curjob->ws.active = 0;
   world.curjob = job;
   job->ws.active = 1;
-
-#if defined(USE_READLN)
-  rl_set_prompt(revm_get_prompt());
-#endif
-
+  revm_job_postswitch();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

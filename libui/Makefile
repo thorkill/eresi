@@ -15,31 +15,29 @@ NAME32	 	= libui32
 NAME64	 	= libui64
 
 CFLAGS32	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
-		-I../libelfsh/include/ -I../elibc/include/ -I../libdump/include/ \
+		-I../libelfsh/include/ -I../libdump/include/                    \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/  			\
-		-I../libetrace/include/						\
-		-I../libedfmt/include/ -DELFSH_INTERN 				\
+		-I../libetrace/include/ -I../libedfmt/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DERESI32		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
-		-I../libelfsh/include/ -I../elibc/include/ -I../libdump/include/ \
+		-I../libelfsh/include/ -I../libdump/include/                    \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/			\
-		-I../libetrace/include/						\
-		-I../libedfmt/include/ -DELFSH_INTERN 				\
+		-I../libetrace/include/ -I../libedfmt/include/ -DELFSH_INTERN 	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DERESI64		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32	+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../elibc -lcelfsh32 -L../libasm/ -lasm 		\
+		$(LPTHREAD) -L../libasm/ -lasm					\
 		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64	+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../elibc -lcelfsh64 -L../libasm/ -lasm 		\
+		$(LPTHREAD) -L../libasm/ -lasm					\
 		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)

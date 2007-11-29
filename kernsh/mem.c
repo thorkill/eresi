@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.11 2007-11-28 07:56:08 may Exp $
+** $Id: mem.c,v 1.12 2007-11-29 14:01:55 may Exp $
 **
 */
 #include "kernsh.h"
@@ -18,20 +18,9 @@ int		cmd_sct()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  XALLOC(__FILE__, 
-	 __FUNCTION__, 
-	 __LINE__,
-	 h,
-	 sizeof(list_t),
-	 -1);
-
+  revm_callback_handler_remove();
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
   list_init(h, "cmd_sct_list", ASPECT_TYPE_UNKNOW);
-
   ret = kernsh_sct(h);
 
   memset(buff, '\0', sizeof(buff));
@@ -58,15 +47,9 @@ int		cmd_sct()
     }
   
   revm_output("\n");
-
   list_destroy(h);
-
-  
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get syscalltable", -1);
@@ -85,20 +68,9 @@ int		cmd_idt()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  XALLOC(__FILE__, 
-	 __FUNCTION__, 
-	 __LINE__,
-	 h,
-	 sizeof(list_t),
-	 -1);
-
+  revm_callback_handler_remove();
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
   list_init(h, "cmd_idt_list", ASPECT_TYPE_UNKNOW);
-
   ret = kernsh_idt(h);
         
   memset(buff, '\0', sizeof(buff));
@@ -125,12 +97,8 @@ int		cmd_idt()
 
   revm_output("\n");
   list_destroy(h);
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get idt", -1);
@@ -150,17 +118,8 @@ int		cmd_gdt()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
-  XALLOC(__FILE__, 
-	 __FUNCTION__, 
-	 __LINE__,
-	 h,
-	 sizeof(list_t),
-	 -1);
+  revm_callback_handler_remove();
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
 
   list_init(h, "cmd_gdt_list", ASPECT_TYPE_UNKNOW);
 
@@ -191,14 +150,9 @@ int		cmd_gdt()
     } 
 	     
   revm_output("\n");
-
   list_destroy(h);
-
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get gdt", -1);
@@ -214,11 +168,7 @@ int		cmd_ksym()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -241,11 +191,8 @@ int		cmd_ksym()
       revm_setvar_long("_", addr);
     }
 
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -257,11 +204,7 @@ int		cmd_kmodule()
   char	buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   memset(buff, '\0', sizeof(buff));
 
   param = world.curjob->curcmd->param[0];
@@ -324,40 +267,29 @@ int		cmd_kmodule()
 	}
     }
 
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 /* Make md5 ! */
 int		cmd_kmd5()
 {
-  int	ret;
+  int		ret;
   revmlist_t    *actual, *second;
   revmobj_t     *obj;
   revmexpr_t	*expr;
   char          buff[BUFSIZ];
   elfsh_Addr    vaddr;
   int		fd;
-
   unsigned char md5buffer[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-
+  revm_callback_handler_remove();
   memset(buff, '\0', sizeof(buff));
-
-  vaddr = -1;
-  
+  vaddr  = -1;
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
-
   if (actual->rname)
     {
       /* Is it directly an addr ? */
@@ -441,13 +373,9 @@ int		cmd_kmd5()
 	}
     }
   
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   revm_endline();
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -459,8 +387,8 @@ int		extract_info(char *origbuf,
 			     unsigned char *buffer,
 			     size_t sizeb)
 {
-  int i;
-  char *p;
+  int		i;
+  char		*p;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -516,11 +444,7 @@ int		cmd_kcmd5()
   FILE		*fd;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(USE_READLN)
-  rl_callback_handler_remove();
-#endif
-  
+  revm_callback_handler_remove();
   val = 0;
   memset(buff, '\0', sizeof(buff));
   memset(buff2, '\0', sizeof(buff2));
@@ -664,10 +588,7 @@ int		cmd_kcmd5()
 	}
     }
 
-#if defined(USE_READLN)
-  rl_callback_handler_install(revm_get_prompt(), revm_ln_handler);
-  readln_column_update();
-#endif
-
+  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

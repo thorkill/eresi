@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.20 2007-11-28 07:56:09 may Exp $
+** $Id: readln.c,v 1.21 2007-11-29 14:01:56 may Exp $
 **
 */
 #include "libui.h"
@@ -114,7 +114,6 @@ void		readln_completion_commands(hash_t *cmd_hash)
 void		readln_completion_install(char mode, char side)
 {
   char		*str;
-  FILE		*fifofile;
 
   //fprintf(stderr, "Installing completion now \n");
   
