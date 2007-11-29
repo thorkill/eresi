@@ -1,0 +1,20 @@
+#!../../elfsh/elfsh32
+
+load ../../a.out
+type example1 = sys:string[3]
+inform example1 toto array
+
+print 1.example1[toto].sys[0]
+
+set $i 0
+
+boucle:
+
+cmp $i 3
+je end
+print INDEX $i = 1.example1[toto].sys[$i]
+add $i 1
+jmp boucle
+
+end:
+print "Bye !"

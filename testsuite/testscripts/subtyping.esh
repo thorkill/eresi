@@ -1,0 +1,18 @@
+#!../../evarista/evarista32
+
+print ************ Now declarations of subtypes *****************
+
+type struct0 = field0:long
+type
+type struct1::struct0 = field1:byte field2:long
+type
+type struct2::struct1 = field3:struct1 field4:long field5:struct1
+type
+
+# This is not allowed (collision in field names)
+#verb
+#type struct3::struct0 = field0:string
+#type
+#type struct4 = field0:string field0:int
+#type
+
