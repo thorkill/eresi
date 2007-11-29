@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.12 2007-11-29 14:01:55 may Exp $
+** $Id: mem.c,v 1.13 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"
@@ -48,7 +48,7 @@ int		cmd_sct()
   
   revm_output("\n");
   list_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -97,7 +97,7 @@ int		cmd_idt()
 
   revm_output("\n");
   list_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -151,7 +151,7 @@ int		cmd_gdt()
 	     
   revm_output("\n");
   list_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -191,7 +191,7 @@ int		cmd_ksym()
       revm_setvar_long("_", addr);
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -267,7 +267,7 @@ int		cmd_kmodule()
 	}
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -373,7 +373,7 @@ int		cmd_kmd5()
 	}
     }
   
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -588,7 +588,7 @@ int		cmd_kcmd5()
 	}
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

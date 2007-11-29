@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.3 2007-11-29 14:01:55 may Exp $
+** $Id: inform.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "revm.h"
@@ -279,6 +279,9 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 	expr = revm_inform_subtype(realname, NULL, rtype, oaddr, print);
       else if (!rtype->childs)
 	expr = revm_simple_expr_create(rtype, realname, NULL);
+
+      // si ya des childs et que rec == 0, expr = NULL !
+
     }
 
   /* Else if recursion is asked on an existing expression (set $expr $existingexpr) */

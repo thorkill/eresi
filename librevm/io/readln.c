@@ -7,7 +7,7 @@
  * when the user recompiles enabling/disabling readline.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
- * $Id: readln.c,v 1.1 2007-11-29 14:08:47 may Exp $
+ * $Id: readln.c,v 1.2 2007-11-29 15:33:39 may Exp $
  */
 #include "revm.h"
 
@@ -276,5 +276,12 @@ int		revm_is_stdinput()
     return (1);
 #else
   return (1);
+#endif
+}
+
+void          revm_line_handler(char *c)
+{
+#if defined(USE_READLN)
+  readln_ln_handler(c);
 #endif
 }

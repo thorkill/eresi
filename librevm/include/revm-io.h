@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 jfv
-** $Id: revm-io.h,v 1.52 2007-11-29 14:01:56 may Exp $
+** $Id: revm-io.h,v 1.53 2007-11-29 15:33:39 may Exp $
 */
 #ifndef __REVM_IO_H_
  #define __REVM_IO_H_
@@ -277,7 +277,6 @@ int		revm_outerr(char *str);
 int		revm_output_bcast(char *str);
 int		revm_stdoutput(char *str);
 int		revm_display_prompt();
-void		revm_ln_handler (char *c);
 void		revm_setinput(revmworkspace_t *j, int fd);
 void		revm_setoutput(revmworkspace_t *j, int fd);
 void		revm_log(char *str);
@@ -330,5 +329,6 @@ void		revm_rlfifo_write();
 int		revm_is_enabled();
 int		revm_is_stdinput();
 void		revm_callback_handler_install(char *prompt, void (*fct)(char *str));
+void		revm_line_handler(char *c);
 
 #endif

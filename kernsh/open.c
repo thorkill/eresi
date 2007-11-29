@@ -1,7 +1,7 @@
 /*
 ** open.c for kernsh
 ** 
-** $Id: open.c,v 1.9 2007-11-29 14:01:55 may Exp $
+** $Id: open.c,v 1.10 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"
@@ -170,7 +170,7 @@ int		cmd_openmem()
   revm_output(buff);
   revm_endline();
   export_vars();
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

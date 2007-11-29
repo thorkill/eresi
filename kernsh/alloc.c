@@ -1,7 +1,7 @@
 /*
 ** alloc.c for kernsh
 ** 
-** $Id: alloc.c,v 1.2 2007-11-29 14:01:55 may Exp $
+** $Id: alloc.c,v 1.3 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"
@@ -39,7 +39,7 @@ int		cmd_kalloc()
       revm_setvar_long("_", addr);
     }
    
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -77,7 +77,7 @@ int		cmd_kfree()
       revm_setvar_int("_", 0);
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -116,7 +116,7 @@ int		cmd_kallocnc()
       revm_setvar_long("_", addr);
     }
   
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -153,7 +153,7 @@ int		cmd_kfreenc()
       revm_setvar_int("_", 0);
     }
  
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

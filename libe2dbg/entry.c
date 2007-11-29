@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 11 20:37:33 2003 jfv
 **
 **
-** $Id: entry.c,v 1.12 2007-07-31 03:28:46 may Exp $
+** $Id: entry.c,v 1.13 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "libe2dbg.h"
@@ -63,6 +63,9 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
   if (e2dbgworld.curthread == NULL)
     e2dbg_curthread_init();
   
+  /* Make sure libstderesi handlers are filled */
+  eresi_stdconstructor();
+
   /* Call the debugger */
   e2dbg_entry(&params);
 

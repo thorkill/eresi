@@ -3,7 +3,7 @@
 ** 
 ** Started on  Wed Feb 21 22:02:36 2001 mxatone
 **
-** $Id: run.c,v 1.5 2007-11-29 14:01:55 may Exp $
+** $Id: run.c,v 1.6 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "etrace.h"
@@ -24,7 +24,7 @@ int		cmd_run()
   revm_callback_handler_remove();
   ret = execv(world.curjob->curcmd->param[0], 
 	      world.curjob->curcmd->param);
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

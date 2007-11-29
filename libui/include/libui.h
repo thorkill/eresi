@@ -4,7 +4,7 @@
 ** Started on Sun Jan 22 19:04:04 2006 mxatone
 ** Updated on Tue Mar  6 08:42:17 2007 jfv
 **
-** $Id: libui.h,v 1.15 2007-08-03 11:51:01 heroine Exp $
+** $Id: libui.h,v 1.16 2007-11-29 15:33:39 may Exp $
 **
 */
 
@@ -50,5 +50,6 @@ void            readln_screen_change(u_short isnew, char promptdisplay);
 void            readln_history_dump(char mode);
 void            readln_terminal_prepare(char mode);
 void            readln_terminal_unprepare(char mode);
+void		readln_ln_handler(char *c);
 
 #endif

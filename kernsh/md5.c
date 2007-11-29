@@ -1,7 +1,7 @@
 /*
 ** md5.c for kernsh
 ** 
-** $Id: md5.c,v 1.3 2007-11-29 14:01:55 may Exp $
+** $Id: md5.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"
@@ -106,7 +106,7 @@ int		cmd_kmd5()
 	}
     }
   
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -327,7 +327,7 @@ int		cmd_kcmd5()
 	}
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_ln_handler);
+  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   revm_setvar_int("_", val);  
   revm_endline();

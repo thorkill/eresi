@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.21 2007-11-29 14:01:56 may Exp $
+** $Id: readln.c,v 1.22 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "libui.h"
@@ -142,7 +142,7 @@ void		readln_completion_install(char mode, char side)
       && mode != REVM_STATE_SCRIPT && mode != REVM_STATE_TRACER)
     str = revm_get_prompt();
 
-  rl_callback_handler_install(str, revm_ln_handler);
+  rl_callback_handler_install(str, readln_ln_handler);
 
   /* We setup prompt after installation because we
    don't want it directly */
@@ -330,7 +330,7 @@ int		readln_prompt_update(char *ptr, int size)
 /** 
  * @brief readline line handler 
  */
-void    revm_ln_handler(char *c)
+void    readln_ln_handler(char *c)
 {
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
