@@ -5,17 +5,15 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.12 2007-08-03 11:51:00 heroine Exp $
+** $Id: edfmt.c,v 1.13 2007-11-30 10:13:54 may Exp $
 **
 */
 #include "revm.h"
 
-char buf[BUFSIZ];
-
 #define VM_EDFMT_VAR_QUEUE_NAME "revm_edfmt_varqueue"
-
 #define TYPE_MAX_ATTR 500
 #define TYPE_ATTR_LEN 256
+
 char *tmp_arr[TYPE_MAX_ATTR];
 char arr_pool[TYPE_ATTR_LEN];
 
@@ -29,6 +27,8 @@ static int		revm_edfmt_register_type(char *label,
 					       char **fields, 
 					       u_int fieldnbr)
 {
+
+  char			buf[BUFSIZ];
   int			index = 0, len;
   int 			ret = 0;
   char			*nlabel;
@@ -202,6 +202,7 @@ static int		revm_edfmt_inform(edfmtvar_t *var)
 {
   int			index = 0, len;
   char			*str;
+  char			buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

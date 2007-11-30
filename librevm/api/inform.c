@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.4 2007-11-29 15:33:39 may Exp $
+** $Id: inform.c,v 1.5 2007-11-30 10:13:54 may Exp $
 **
 */
 #include "revm.h"
@@ -119,7 +119,6 @@ int		revm_informed_print(char *name)
 {
   hash_t	*hash;
   char		buf[BUFSIZ];
-  revmexpr_t	*expr;
   revmannot_t	*annot;
   char		**keys;
   int		index;
@@ -139,8 +138,7 @@ int		revm_informed_print(char *name)
     revm_output("  .:: Registered variables for this type \n\n");
   for (index = 0; index < keynbr; index++)
     {
-      expr = hash_get(hash, keys[index]);
-      annot = expr->annot;
+      annot = hash_get(hash, keys[index]);
       snprintf(buf, sizeof(buf), "  + ["AFMT"] %-30s \n", annot->addr, keys[index]);
       revm_output(buf);
     }
@@ -281,6 +279,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 	expr = revm_simple_expr_create(rtype, realname, NULL);
 
       // si ya des childs et que rec == 0, expr = NULL !
+      // - quand on a un tableau
+      // - quand on cree l'annotation d'une expression pas encore construite
 
     }
 
@@ -289,8 +289,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
     revm_inform_subtype(realname, expr, rtype, oaddr, print);
   
   /* Register the expression */
-  expr->annot = annot;
-  hash_set(hash, strdup(realname), (void *) expr);
+  annot->expr = expr;
+  hash_set(hash, strdup(realname), (void *) annot);
   hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */

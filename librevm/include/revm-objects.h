@@ -6,7 +6,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id: revm-objects.h,v 1.8 2007-11-29 14:01:56 may Exp $
+** $Id: revm-objects.h,v 1.9 2007-11-30 10:13:54 may Exp $
 **
 */
 #ifndef __REVM_OBJECTS_H_
@@ -57,6 +57,19 @@ typedef	struct		s_revm_object
 }                     revmobj_t;
 
 
+/**
+ * @brief Structure for an expression in ERESI : A tree of revmobj_t 
+ */
+typedef struct		s_revm_expr
+{
+  char			*label;		/*! Relative current field name */
+  char			*strval;	/*! ASCII form of current expression object */
+  aspectype_t		*type;		/*! Expression type */
+  revmobj_t		*value;		/*! The meta-object, if terminal */
+  struct s_revm_expr	*childs;	/*! Child objects list, if non-terminal */
+  struct s_revm_expr	*next;		/*! Next object if in record */
+}			revmexpr_t;
+
 
 /**
  * @brief Generic structure for objects program annotations in ERESI 
@@ -73,23 +86,8 @@ typedef struct 		s_revm_annotation
   int 			relvalue;     	/*! Relative value based on reg */
   int			nameoff;	/*! Name offset in string table */
 					/* XXX: should be a symbol instead */
+  revmexpr_t		*expr;		/* Annotated expression, if already constructed */
 }			revmannot_t;
-
-/**
- * @brief Structure for an expression in ERESI : A tree of revmobj_t 
- */
-typedef struct		s_revm_expr
-{
-  char			*label;		/*! Relative current field name */
-  char			*strval;	/*! ASCII form of current expression object */
-
-  revmannot_t		*annot;		/*! Expression annotation */
-  aspectype_t		*type;		/*! Expression type */
-  revmobj_t		*value;		/*! The meta-object, if terminal */
-
-  struct s_revm_expr	*childs;	/*! Child objects list, if non-terminal */
-  struct s_revm_expr	*next;		/*! Next object if in record */
-}			revmexpr_t;
 
 
 /**********************************************************************************/

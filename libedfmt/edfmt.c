@@ -4,14 +4,13 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id: edfmt.c,v 1.13 2007-05-21 18:30:15 mxatone Exp $
+** $Id: edfmt.c,v 1.14 2007-11-30 10:13:54 may Exp $
 **
 */
 
 #include "libedfmt.h"
 
-#define EDFMT_SET_FUNCS(_name) \
-_name##_parse, _name##_transform, _name##_clean
+#define EDFMT_SET_FUNCS(_name) _name##_parse, _name##_transform, _name##_clean
 
 /**
  * This structure list all debug format that we support and with which function 
@@ -119,7 +118,7 @@ int			edfmt_format(elfshobj_t *file)
 	base = file->name;
       
       /* We won't analyze libe2dbg library because, there's far too many information
-	 in this library, which allocate too many memory */    
+	 in this library, which allocate too much memory */    
       if (!strcmp(base, "libe2dbg32.so")
 	  || !strcmp(base, "libe2dbg64.so"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
