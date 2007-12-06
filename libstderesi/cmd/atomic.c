@@ -4,7 +4,7 @@
  ** @brief Implement arithmetic operations
  **
  ** Started on  Sun Feb  9 22:43:34 2003 jfv
- ** $Id: atomic.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ ** $Id: atomic.c,v 1.2 2007-12-06 05:11:58 may Exp $
  */
 #include "libstderesi.h"
 
@@ -63,18 +63,25 @@ int			cmd_set()
 		       "Invalid destination variable", (-1));
 	}
     }
-
-  /* Set value */
+  
+  /* Set converted value */
   if (e2->value)
     {
-      if (!e1->type || e1->type->type != e2->type->type)
-	if (revm_convert_object(e1, e2->type->type) < 0)
-	  {
-	    if (e2->value && !e2->value->perm)
-	      revm_expr_destroy(e2->label);
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unable to convert destination type expression", (-1));
-	  }
+      if (!e1->type && revm_convert_object(e1, e2->type->type) < 0)
+	{
+	  if (e2->value && !e2->value->perm)
+	    revm_expr_destroy(e2->label);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unable to convert destination type expression", (-1));
+	}
+      if (e1->type->type != e2->type->type &&
+	  revm_convert_object(e2, e1->type->type) < 0)
+	{
+	  if (e2->value && !e2->value->perm)
+	    revm_expr_destroy(e2->label);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unable to convert source type expression", (-1));
+	}
       if (revm_expr_set(e1, e2) < 0)
 	{
 	  if (e2->value && !e2->value->perm)
@@ -90,7 +97,7 @@ int			cmd_set()
       if (!e1->type)
 	{
 	  revm_expr_destroy(e1->label);
-	  e1 = revm_expr_copy(e2, e2->label, world.curjob->curcmd->param[0]);
+	  e1 = revm_expr_copy(e2, world.curjob->curcmd->param[0]);
 	  if (!e1)
 	    {
 	      if (e2->value && !e2->value->perm)

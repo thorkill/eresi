@@ -1,0 +1,31 @@
+#!../../evarista/evarista32
+
+cmp $ESHLVL 0
+jne factstart
+sdir .
+quiet
+
+factstart:
+cmp $# 2
+jne end
+mul $2 $1
+sub $1 1
+cmp $1 1
+je result
+
+factorial-withret $1 $2
+set $2 $_
+
+result:
+cmp $ESHLVL 0
+je printres
+return $2
+
+printres:
+print Factorial result:
+print $2
+quit
+
+end:
+print This program needs 2 parameters
+quit

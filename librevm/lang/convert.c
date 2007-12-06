@@ -20,7 +20,7 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id: convert.c,v 1.7 2007-11-28 07:56:09 may Exp $
+** $Id: convert.c,v 1.8 2007-12-06 05:11:58 may Exp $
 **
 */
 #include "revm.h"
@@ -349,8 +349,7 @@ int		revm_convert2byte(revmobj_t *obj)
       break;
     case ASPECT_TYPE_RAW:
     case ASPECT_TYPE_STR:
-      val8 = atoi((obj->immed ? obj->immed_val.str : 
-		   obj->get_name(obj->root, obj->parent)));
+      val8 = *(obj->immed ? obj->immed_val.str : obj->get_name(obj->root, obj->parent));
       if (obj->immed && obj->immed_val.str)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,obj->immed_val.str);
       obj->immed_val.str = 0;

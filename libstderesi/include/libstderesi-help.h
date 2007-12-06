@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 jfv
 **
-** $Id: libstderesi-help.h,v 1.1 2007-11-29 14:08:47 may Exp $
+** $Id: libstderesi-help.h,v 1.2 2007-12-06 05:11:58 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -234,6 +234,7 @@
 #define	HLP_UNLOAD		 "Unload file (id or name)"
 #define	HLP_SAVE		 "Dump output file at parameter location"
 #define	HLP_QUIT		 "Quit current session or script"
+#define	HLP_RETURN		 "Return from current ERESI script (put retval in $_)"
 #define	HLP_SWITCH		 "Change the current working object"
 #define	HLP_LIST		 "List loaded ELF objects"
 #define	HLP_WORKSPACE		 "Syntax: workspace [name] : List or switch workspaces"

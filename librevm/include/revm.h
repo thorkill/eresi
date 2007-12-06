@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.92 2007-11-29 14:01:56 may Exp $
+** $Id: revm.h,v 1.93 2007-12-06 05:11:58 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -94,6 +94,8 @@ extern asm_processor	proc;
 #define	CMD_CONTINUE2		"cont"
 #define	CMD_QUIT		 "quit"
 #define	CMD_QUIT2		 "exit"
+#define	CMD_RETURN		"return"
+#define	CMD_RETURN2		"ret"
 #define	CMD_PARAM_INTO		"into"
 #define	CMD_FOREACH		"foreach"
 #define	CMD_FOREND		"forend"
@@ -128,6 +130,7 @@ extern asm_processor	proc;
 #define REVM_VAR_LIBPATH	"$LPATH"
 #define REVM_VAR_STRIPLOG	"$SLOG"
 #define	REVM_TMPVAR_PREFIX	"$TMPVAR"
+#define	REVM_VAR_ESHLEVEL	"$ESHLVL"
 #define	REVM_VAR_PREFIX		'$'
 
 
@@ -660,6 +663,8 @@ void		revm_object_print(revmobj_t *obj);
 char		*revm_string_get(char **params);
 int		revm_source(char **params);
 int		revm_help(char *command);
+void		revm_print_actual(revmargv_t *cur);
+int		revm_printscript(revmargv_t *start);
 
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);
@@ -690,7 +695,7 @@ int		revm_move_pc(char *idx);
 int		revm_openscript(char **av);
 int		revm_testscript(int ac, char **av);
 int		revm_exec_str(char *str);
-int	        revm_restore_dbgcontext(int, char, revmargv_t*, void*, char**, char*);
+int	        revm_context_restore(int, char, revmargv_t*, void*, char**, char*);
 
 /* ERESI variables related functions */
 int             revm_setvar_str(char *varname, char *value);
@@ -810,7 +815,7 @@ int		revm_expr_compare_by_name(char *original, char *candidate, elfsh_Addr *val)
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname);
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname);
 int		revm_expr_destroy(char *e);
 
 /* May not be defined */

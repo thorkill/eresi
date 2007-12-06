@@ -12,7 +12,7 @@ SRC			= cat.c flow.c graph.c help.c insert.c list.c prefixes.c \
 			  vectors.c types.c hashes.c inform.c debug.c foreach.c  \
 			  atomic.c fcthijack.c jmp.c configure.c color.c log.c   \
 			  modules.c exec.c switch.c job.c match.c declare.c      \
-			  lists.c reflect.c define.c init.c
+			  lists.c reflect.c define.c init.c return.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

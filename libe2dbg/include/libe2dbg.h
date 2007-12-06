@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id: libe2dbg.h,v 1.31 2007-11-29 14:01:55 may Exp $
+** $Id: libe2dbg.h,v 1.32 2007-12-06 05:11:58 may Exp $
 **
 */
 #ifndef __E2DBG_H__
@@ -395,7 +395,6 @@ char            *e2dbg_get_string(char **params);
 int		e2dbg_linkmap(elfshobj_t *file);
 char		*revm_get_prompt();
 char		*revm_modename_get();
-int		revm_restore_dbgcontext(int, char, revmargv_t*, void *, char **, char*);
 int             e2dbg_self();
 int		e2dbg_kill(int pid, int sig);
 

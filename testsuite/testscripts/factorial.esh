@@ -5,17 +5,15 @@ quiet
 
 cmp $# 2
 jne end
-print Fact with params $1 $2
-#vlist
+print Fact with params :
+print $1 $2
 mul $2 $1
-#vlist
 set $2 $_
-#vlist
 sub $1 1
 cmp $1 1
-print $1 $2 $_
-
 je result
+print Variables at current iteration : 
+print $1 $2 $_
 factorial $1 $2
 quit
 
@@ -24,5 +22,6 @@ print This program needs 2 parameters
 quit
 
 result:
-print Factorial result = $2
+print Factorial result:
+print $2
 quit

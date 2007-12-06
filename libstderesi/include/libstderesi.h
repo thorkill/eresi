@@ -2,7 +2,7 @@
 ** @file libstderesi.h
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
-** $Id: libstderesi.h,v 1.1 2007-11-29 14:08:47 may Exp $
+** $Id: libstderesi.h,v 1.2 2007-12-06 05:11:58 may Exp $
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
@@ -218,6 +218,7 @@ int		cmd_comments();
 int		cmd_modhelp();
 int		cmd_help();
 int		cmd_quit();
+int		cmd_return();
 int		cmd_load();
 int		cmd_unload();
 int		cmd_save();

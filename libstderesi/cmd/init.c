@@ -3,7 +3,7 @@
 **
 ** @brief Constructors for the ERESI standard library
 **
-** $Id: init.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: init.c,v 1.2 2007-12-06 05:11:58 may Exp $
 */
 #include <libstderesi.h>
 
@@ -22,13 +22,15 @@ void		eresi_commands_init()
   /* Interactive mode / Scripting mode commands */
   if (world.state.revm_mode != REVM_STATE_CMDLINE)
     {
-      revm_command_add(CMD_LOAD      , (void *) cmd_load     , (void *) revm_getoption, 0, HLP_LOAD);
-      revm_command_add(CMD_UNLOAD    , (void *) cmd_unload   , (void *) revm_getoption   , 0, HLP_UNLOAD);
-      revm_command_add(CMD_SAVE      , (void *) cmd_save     , (void *) revm_getoption   , 1, HLP_SAVE);
-      revm_command_add(CMD_SWITCH    , (void *) cmd_doswitch , (void *) revm_getoption   , 0, HLP_SWITCH);
+      revm_command_add(CMD_LOAD      , (void *) cmd_load     , (void *) revm_getoption , 0, HLP_LOAD);
+      revm_command_add(CMD_UNLOAD    , (void *) cmd_unload   , (void *) revm_getoption , 0, HLP_UNLOAD);
+      revm_command_add(CMD_SAVE      , (void *) cmd_save     , (void *) revm_getoption , 1, HLP_SAVE);
+      revm_command_add(CMD_SWITCH    , (void *) cmd_doswitch , (void *) revm_getoption , 0, HLP_SWITCH);
       revm_command_add(CMD_METACMD   , (void *) cmd_meta     , (void *) NULL           , 0, HLP_METACMD);
       revm_command_add(CMD_QUIT      , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
       revm_command_add(CMD_QUIT2     , (void *) cmd_quit     , (void *) NULL           , 0, HLP_QUIT);
+      revm_command_add(CMD_RETURN    , (void *) cmd_return   , (void *) revm_getoption , 0, HLP_RETURN);
+      revm_command_add(CMD_RETURN2   , (void *) cmd_return   , (void *) revm_getoption , 0, HLP_RETURN);
       revm_command_add(CMD_LIST      , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
       revm_command_add(CMD_LIST2     , (void *) cmd_dolist   , (void *) NULL           , 0, HLP_LIST);
       revm_command_add(CMD_STOP      , (void *) cmd_stop     , (void *) NULL           , 0, HLP_STOP);

@@ -912,7 +912,7 @@ fi
 echo "info    : "						>> Makefile
 echo "	@echo '###############' TOTAL '###############'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
-echo "	libetrace/*.c libetrace/include/*.h \\"	>> Makefile
+echo "	libetrace/*.c libetrace/include/*.h                \\"	>> Makefile
 echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile
 echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
@@ -926,7 +926,7 @@ echo "  evarista/*.c evarista/include/*.h"                      >> Makefile
 echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
-echo "	libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*.c \\" >> Makefile
+echo "  libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*.c \\" >> Makefile
 echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
 echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"		>> Makefile
 echo "  evarista/*.c libstderesi/*/*.c"				>> Makefile

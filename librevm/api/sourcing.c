@@ -4,7 +4,7 @@
 ** Started on  Fri May 16 15:18:35 2005 jfv
 **
 **
-** $Id: sourcing.c,v 1.1 2007-11-29 14:08:47 may Exp $
+** $Id: sourcing.c,v 1.2 2007-12-06 05:11:58 may Exp $
 **
 */
 #include "revm.h"
@@ -100,7 +100,7 @@ int		revm_source(char **params)
 	  actual, (expr->type ? expr->type->name : "UNKNOWN TYPE"));
 #endif
 
-      expr = revm_expr_copy(expr, params[ac], actual);
+      expr = revm_expr_copy(expr, actual);
     }
   argv[ac + 1] = NULL;
 
@@ -108,8 +108,8 @@ int		revm_source(char **params)
   prevargc = revm_expr_get(REVM_VAR_ARGC);
   if (prevargc)
     hash_del(&exprs_hash, (char *) REVM_VAR_ARGC);
-  new  = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
-  expr = revm_expr_create_from_object(new, REVM_VAR_ARGC);
+  new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
+  revm_expr_create_from_object(new, REVM_VAR_ARGC);
   list_add(&frames_list, strdup(framename), (void *) newframe);
 
   /* Prepare the interpreter for executing a new script */
@@ -117,6 +117,8 @@ int		revm_source(char **params)
   world.curjob->sourced++;
   snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
   hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 251, ASPECT_TYPE_STR);
+  expr = revm_expr_get(REVM_VAR_ESHLEVEL);
+  expr->value->immed_val.ent = world.curjob->sourced;
 
   /* Save state for restoring on "continue" */
   savedfd    = world.curjob->ws.io.input_fd;
@@ -171,9 +173,10 @@ int		revm_source(char **params)
     }
 
   /* Restore the context immediately if no continue is met */
-  ret = revm_restore_dbgcontext(savedfd, savedmode, savedcmd, savedinput, argv, str);
+  ret = revm_context_restore(savedfd, savedmode, savedcmd, savedinput, argv, str);
   if (prevargc)
     hash_set(&exprs_hash, strdup((char *) REVM_VAR_ARGC), prevargc);
+  expr->value->immed_val.ent = world.curjob->sourced;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -181,12 +184,12 @@ int		revm_source(char **params)
 
 /* Restore the previous debugger control context */
 /* Mostly useful when using 'continue' command from a debugger script */
-int	       revm_restore_dbgcontext(int		savedfd, 
-				       char		savedmode, 
-				       revmargv_t	*savedcmd, 
-				       void		*savedinput, 
-				       char		**argv,
-				       char		*savedname)
+int	       revm_context_restore(int		savedfd, 
+				    char	savedmode, 
+				    revmargv_t	*savedcmd, 
+				    void	*savedinput, 
+				    char	**argv,
+				    char	*savedname)
 {
   list_t	*lastframe;
   char		buf[BUFSIZ];

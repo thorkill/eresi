@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.17 2007-11-30 10:13:54 may Exp $
+** $Id: expressions.c,v 1.18 2007-12-06 05:11:58 may Exp $
 */
 #include "revm.h"
 
@@ -26,6 +26,8 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	 sizeof(revmexpr_t), NULL);
 
   /* Check if a variable is given as value */
+  /* FIXME: this is not good ! strval contains the initial value and not
+     the current value of the source variable */
   if (*datastr == REVM_VAR_PREFIX)
     {
       expr = revm_expr_get(datastr);
@@ -136,7 +138,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 static revmexpr_t	*revm_expr_init(char		*curpath, 
 					revmexpr_t	*curexpr,
 					aspectype_t	*curtype, 
-					void		*srcdata,
+    					void		*srcdata,
 					char		*datavalue)
 {
   static u_int	toplevel = 1;
@@ -238,7 +240,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
       newexpr->strval = (char *) strdup(newexpr->strval);
 
       /* Non-terminal case : we will need to recurse */
-      if (childtype->childs)
+      if (childtype->childs && !childtype->dimnbr)
 	{
 
 #if __DEBUG_EXPRS_MORE__
@@ -293,6 +295,10 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to lookup src or dst object", NULL);
 	    }
+
+	  /* Convert source data to recipient type and set it */
+	  if (newexpr->type->type != curdata->type->type)
+	    revm_convert_object(curdata, newexpr->type->type);
 	  if (revm_object_set(newexpr, curdata) < 0)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
@@ -628,7 +634,7 @@ static int		revm_expr_copyrec(revmexpr_t	*dest,
 
 
 /* Copy an expression (set $e1 $e2) */
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname)
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
 {
   revmexpr_t	*dest;
   aspectype_t	*type;
@@ -646,7 +652,7 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copydata, type->size, NULL);
   snprintf(newname, sizeof(newname), "type_%s", type->name);
   thash = hash_find(newname);
-  annot = hash_get(thash, srcname);
+  annot = hash_get(thash, source->label);
 
   /* Constants are not annotated, we might not want to do anything here */
   if (annot)
@@ -665,7 +671,7 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *srcname, char *dstname)
   strncpy(newname, dstname, sizeof(newname));
   curoff = strlen(newname);
   if (source->strval)
-    dest->strval   = strdup(source->strval);
+    dest->strval = strdup(source->strval);
   dest->label    = strdup(newname);
   dest->type     = type;
   if (!revm_inform_type_addr(type->name, dstname, (elfsh_Addr) copydata, dest, 0, 0))

@@ -4,68 +4,194 @@
  * This file include the control flow support for scripting
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
- * Updated on  Mon Aug 15 06:01:54 2005 jfv
- *
- * $Id: loop.c,v 1.12 2007-11-28 07:56:09 may Exp $
- *
+ * $Id: loop.c,v 1.13 2007-12-06 05:11:58 may Exp $
  */
 #include "revm.h"
 
 
-/** 
- * Debug purpose 
- */
-int		revm_printscript(revmargv_t *start)
-{
-  revmargv_t	*list;
-  u_int		index;
-  char		logbuf[BUFSIZ];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  revm_output("  .:: Printing Script: \n");
-
-  if (start)
-    list = start;
-  else
-    list = world.curjob->script[world.curjob->sourced];
-
-  for (index = 0; list; list = list->next, index++)
-    {
-      snprintf(logbuf, BUFSIZ - 1, "[%03u] ~%s %p \n",
-	       index, list->name, list);
-      revm_output(logbuf);
-    }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
 
 
 /** 
- * Scripting report purpose 
+ * The infinite main loop of the interactive command
  */
-void		revm_print_actual(revmargv_t *cur)
+int		revm_loop(int argc, char **argv)
 {
-  int		idx;
-  char		logbuf[BUFSIZ];
-    
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  char		*buggyfunc;
+  char		logbuf[256];
+  int		ret;
 
-  snprintf(logbuf, BUFSIZ - 1, "~%s ", cur->name);
-  revm_output(logbuf);
-  for (idx = 0; cur->param[idx] && idx < 10; idx++)
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  ret = 0;
+
+  do {
+
+    /* Come back to the loop if a script turns into interactive mode */
+  reenter:
+
+    /* Fill argv from stdin if we are in interactive mode */
+    if ((world.state.revm_mode != REVM_STATE_CMDLINE 
+	 && world.state.revm_mode != REVM_STATE_TRACER) 
+	|| world.state.revm_net == 1)
+      {
+	if (world.state.revm_mode != REVM_STATE_SCRIPT)
+	  {
+	    if (revm_select() < 0)
+	      {
+		fprintf(stderr,"revm_select : failed \n");
+		revm_exit(-1);
+	      }
+
+	    /* If the FIFO does not exist anymore, 
+	       the server has quit, so we quit too */
+	    if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+		(access(REVM_FIFO_S2C, F_OK) < 0 || 
+		 access(REVM_FIFO_C2S, F_OK) < 0))
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);	      
+	  }
+
+	/* Take a line, execute old command if void line */
+	argv = revm_input(&argc);
+	if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+	    world.state.revm_mode == REVM_STATE_DEBUGGER    ||
+	    world.state.revm_mode == REVM_STATE_SCRIPT      ||
+	    world.state.revm_net)
+	  {
+	    if (argv == ((char **) REVM_INPUT_VOID))
+	      continue;
+	    else if (argv == ((char **) REVM_INPUT_TRANSFERED))
+	      continue;
+	  }
+
+	/* CTRL-D -> !argv */
+	if (!argv)
+	  {
+	    revm_output("\n");
+
+	    /* when debugging -> back to main program */
+	    if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+	      goto e2dbg_cleanup;
+
+	    /* if net is enable but we are not in e2dbg -> ignore */
+	    if (world.state.revm_net)
+	      continue;
+
+	    /* othewise exit */
+	    break;
+
+	  }
+      }
+
+    /* Fetch the current scripting command */
+    if (revm_parseopt(argc, argv) < 0)
+      {
+	if (world.state.revm_mode != REVM_STATE_CMDLINE
+	    && world.state.revm_mode != REVM_STATE_TRACER)
+	  {
+	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
+	    if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
+		world.state.revm_mode != REVM_STATE_DEBUGGER)
+	      goto end;
+	  }
+	else if (!world.state.revm_net)
+	  revm_exit(-1);
+      }
+
+    /* Just execute one command if we are not in script mode */
+    if (world.state.revm_mode != REVM_STATE_SCRIPT)
+      {
+	world.curjob->curcmd = world.curjob->script[0];
+	switch (revm_execmd())
+	  {
+	  case REVM_SCRIPT_CONTINUE:
+	    //printf(" [*] e2dbg continue from revm_execmd \n");
+	    goto e2dbg_cleanup;
+	  case REVM_SCRIPT_ERROR:
+	    profiler_error();
+	  default:
+	    break;
+	  }
+      }
+
+    /* Quit parsing if necessary */
+    if ((!world.curjob->curcmd && world.state.revm_mode == REVM_STATE_SCRIPT)) //||
+	/*(world.curjob->curcmd && world.curjob->curcmd->name &&
+	 (!strcmp(world.curjob->curcmd->name, CMD_QUIT) ||
+	 !strcmp(world.curjob->curcmd->name, CMD_QUIT2))))*/
+      break;
+  }
+  while ((world.state.revm_mode != REVM_STATE_CMDLINE
+	  && world.state.revm_mode != REVM_STATE_TRACER)
+	 || world.state.revm_net);
+
+  /* If we are in scripting, execute commands list now */
+  if (world.state.revm_mode == REVM_STATE_SCRIPT)
     {
-      snprintf(logbuf, BUFSIZ - 1, "%s ", cur->param[idx]);
-      revm_output(logbuf);
+      world.curjob->curcmd = world.curjob->script[0];
+      ret = revm_execscript();
+      if (ret == REVM_SCRIPT_STOP)
+	{
+	  XCLOSE(world.curjob->ws.io.input_fd, -1);
+	  world.curjob->ws.io.input_fd = 0;
+	  goto reenter;
+	}
+      else if (ret < 0)
+	profiler_error();
     }
-  putchar('\n');
-  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+
+ end:
+  if (!world.state.revm_quiet && world.state.revm_mode == REVM_STATE_SCRIPT)
+    {
+      if (ret < 0)
+	revm_output("\n [E] Script execution failed \n\n");
+      else
+	revm_output("\n [*] Script execution ended succesfully \n\n");
+    }
+
+  /* Implicit unload or save if we are not in interactive mode */
+  if ((world.state.revm_mode == REVM_STATE_CMDLINE 
+       || world.state.revm_mode == REVM_STATE_TRACER) && world.curjob->current)
+    {
+      /* Start tracing if we are on tracer state (etrace) */
+      if (world.state.revm_mode == REVM_STATE_TRACER)
+	{
+	  profiler_error_reset();
+	  if (traces_run(world.curjob->current, NULL, 0) < 0)
+	    {
+	      buggyfunc = etrace_geterrfunc();
+	      
+	      /* Not NULL if issue occurs when we iterate though functions */
+	      if (buggyfunc)
+		{
+		  snprintf(logbuf, 255, " [!] There is an issue with the function: %s\n",
+			   buggyfunc);
+		  revm_output(logbuf);
+		}
+
+	      profiler_error();
+	    }
+	}
+
+      ret = revm_workfiles_unload();
+    }
+
+  revm_callback_handler_remove();
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  
+  /* Clean the script machine state when a script is over */
+  world.curjob->curcmd = NULL;
+ e2dbg_cleanup:
+  world.curjob->script[world.curjob->sourced] = NULL;
+  world.curjob->lstcmd[world.curjob->sourced] = NULL;
+  revm_conditional_rlquit();
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
+
+
 
 
 
 /**
- * Execute the script (only used in script mode)
- * Script mode include sourced scripts in elfsh or e2dbg
+ * Execute an ERESI script (only used in non-interactive mode or when sourcing a script)
  */
 int		revm_execscript()
 {
@@ -166,20 +292,15 @@ int		revm_execscript()
   /* If we had a saved context, restore it */
   if (world.state.revm_sourcing)
     {
-      //fprintf(stderr, " [D] Restoring e2dbg context from sourced script \n");
-      //sleep(20);
-
       world.curjob->lstcmd[world.curjob->sourced] = NULL;
-      revm_restore_dbgcontext(world.context.savedfd,
-			    world.context.savedmode,
-			    world.context.savedcmd,
-			    world.context.savedinput,
-			    world.context.savedargv,
-			    world.context.savedname);
+      revm_context_restore(world.context.savedfd,
+			   world.context.savedmode,
+			   world.context.savedcmd,
+			   world.context.savedinput,
+			   world.context.savedargv,
+			   world.context.savedname);
       world.curjob->curcmd = NULL;
       world.state.revm_sourcing = 0;
-
-      //fprintf(stderr, " [D] Restored e2dbg context ! \n");
     }
   
   /* Make sure we switch to interactive mode if we issued a stop command */
@@ -191,7 +312,7 @@ int		revm_execscript()
 
 
 /** 
- * Execute the ELFsh current command (only used in interactive mode) 
+ * Execute the current script command (only used in interactive mode) 
  */
 int		revm_execmd()
 {
@@ -264,7 +385,7 @@ int		revm_execmd()
 
 
 /** 
- * Take the ELF machine control flow in charge 
+ * Take the ERESI machine control flow in charge 
  */
 int		revm_move_pc(char *param)
 {

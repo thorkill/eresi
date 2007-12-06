@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.52 2007-11-29 15:33:39 may Exp $
+** $Id: tables.c,v 1.53 2007-12-06 05:11:58 may Exp $
 **
 */
 #include "revm.h"
@@ -799,6 +799,8 @@ static void	setup_varshash()
   expr = revm_expr_create_from_object(f, REVM_VAR_LIBPATH);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
   expr = revm_expr_create_from_object(f, REVM_VAR_STRIPLOG);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
+  expr = revm_expr_create_from_object(f, REVM_VAR_ESHLEVEL);
 }
 
 
