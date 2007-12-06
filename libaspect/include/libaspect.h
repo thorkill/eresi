@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.37 2007-11-28 07:56:08 may Exp $
+ ** $Id: libaspect.h,v 1.38 2007-12-06 06:40:16 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -335,12 +335,15 @@ int		aspect_type_simple(int typeid);
 char		*aspect_type_get(u_int type);
 u_int		aspect_typesize_get(u_int type);
 int		aspect_basetypes_create();
+int		aspect_type_find_union_size(aspectype_t *type);
 int		aspect_type_register_real(char *label, 
 					  aspectype_t *ntype);
-aspectype_t	*aspect_type_create(char *label, 
+aspectype_t	*aspect_type_create(u_char isunion,
+				    char *label, 
 				    char **fields, 
 				    u_int fieldnbr);
-int		aspect_type_register(char *label, 
+int		aspect_type_register(u_char isunion,
+				     char *label, 
 				     char **fields, 
 				     u_int fieldnbr);
 aspectype_t	*aspect_type_copy(aspectype_t	*type, 

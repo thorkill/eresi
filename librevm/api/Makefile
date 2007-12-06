@@ -7,7 +7,7 @@ include ../../config.h
 
 SRC			= atomic.c commands.c doswitch.c edfmt.c filter.c job.c \
 			implicit.c misc.c modlist.c screen.c stringtable.c \
-			inform.c sourcing.c helping.c printing.c
+			inform.c sourcing.c helping.c printing.c typing.c
 
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)

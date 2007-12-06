@@ -1,0 +1,27 @@
+#!../../evarista/evarista32
+
+#profile enable warn
+
+print ************ Now declarations of record types *****************
+
+type struct1 = field1:long field2:byte
+union union1 = field3:struct1 field4:long field5:struct1
+type
+type union1
+
+print ************ Now declarations of variables *****************
+
+union1 myunion1 = (field3(field1:42, field2:43), field4:44, field5(field1:45, field2:46))
+print $myunion1
+
+tables expressions
+profile enable warn
+set $myunion1.field4 42
+
+print $myunion1
+set $myunion1.field3.field1 31337
+print $myunion1
+set $myunion1.field5.field2 A
+print $myunion1
+
+quit

@@ -2,7 +2,7 @@
 ** @file libstderesi.h
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
-** $Id: libstderesi.h,v 1.2 2007-12-06 05:11:58 may Exp $
+** $Id: libstderesi.h,v 1.3 2007-12-06 06:40:16 may Exp $
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
@@ -84,6 +84,7 @@
 #define CMD_TRACEADD_CMDLINE	"t"
 #define CMD_TRACEEXCL_CMDLINE	"u"
 #define	CMD_TYPE		"type"
+#define	CMD_UNION		"union"
 #define	CMD_TYPEDEF		"typedef"
 
 #define CMD_INSERT		"insert"

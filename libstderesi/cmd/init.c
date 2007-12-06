@@ -3,7 +3,7 @@
 **
 ** @brief Constructors for the ERESI standard library
 **
-** $Id: init.c,v 1.2 2007-12-06 05:11:58 may Exp $
+** $Id: init.c,v 1.3 2007-12-06 06:40:16 may Exp $
 */
 #include <libstderesi.h>
 
@@ -162,6 +162,7 @@ void		eresi_commands_init()
 
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
+  revm_command_add(CMD_UNION    , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
   revm_command_add(CMD_TYPEDEF  , cmd_typedef         , revm_getvarparams, 0, HLP_TYPEDEF);
   revm_command_add(CMD_INFORM   , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
   revm_command_add(CMD_UNINFORM , cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);

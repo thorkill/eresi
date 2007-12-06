@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.93 2007-12-06 05:11:58 may Exp $
+** $Id: revm.h,v 1.94 2007-12-06 06:40:16 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -795,12 +795,15 @@ int		revm_workspace_next();
 int		revm_edfmt_parse(elfshobj_t *file);
 int		revm_edfmt_uni_print(elfshobj_t *file);
 
-/* Inform related functions */
+/* Type/Inform related functions */
 revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
 revmexpr_t	*revm_inform_type_addr(char *t, char *n, elfsh_Addr a, revmexpr_t *, u_char p, u_char r);
 int		revm_check_addr(elfshobj_t *obj, elfsh_Addr add);
 int             revm_informed_print(char *name);
 int             revm_uninform_type(char *type, char *varname, u_char print);
+int		revm_type_copy(char *from, char *to);
+int		revm_type_hashcreate(char *name);
+int		revm_type_print(char *type, char mode);
 
 /* Expression related functions */
 revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value);

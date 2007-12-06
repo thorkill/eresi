@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.18 2007-12-06 05:11:58 may Exp $
+** $Id: expressions.c,v 1.19 2007-12-06 06:40:16 may Exp $
 */
 #include "revm.h"
 
@@ -501,7 +501,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 	      revm_output(pad2);
 	    }
 
-	  typeoff += curtype->size;
+	  /* Do not add offset if we are in union */
+	  if (expr->next && expr->next->type->off != curtype->off)
+	    typeoff += curtype->size;
 	  continue;
 	}
       
@@ -550,7 +552,10 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 	{
 	  revm_output(revm_colorwarn(",\n"));
 	  revm_output(pad);      
-	  typeoff += curtype->size;
+
+	  /* Do not add size if we are in a union */
+	  if (expr->next->type->off != curtype->off)
+	    typeoff += curtype->size;
 	}
       revm_endline();
     }

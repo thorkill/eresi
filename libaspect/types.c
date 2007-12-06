@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.19 2007-11-28 07:56:08 may Exp $
+** $Id: types.c,v 1.20 2007-12-06 06:40:16 may Exp $
 **
 */
 #include "libaspect.h"
@@ -242,8 +242,31 @@ static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
 }
 
 
+/* Find the size of an union type */
+int			aspect_type_find_union_size(aspectype_t *utype)
+{
+  int			biggest = 0;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!utype)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input type", NULL);
+  if (!utype->next && utype->childs)
+    utype = utype->childs;
+  while (utype)
+    {
+      if (utype->size > biggest)
+	biggest = utype->size;
+      utype = utype->next;
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, biggest);
+}
+
+
+
 /* Create a new type */
-aspectype_t		*aspect_type_create(char *label, 
+aspectype_t		*aspect_type_create(u_char isunion,
+					    char *label, 
 					    char **fields, 
 					    u_int fieldnbr)
 {
@@ -413,10 +436,9 @@ aspectype_t		*aspect_type_create(char *label,
 	    off = (isptr ? sizeof(unsigned long) : childtype->size);
 	}
       
-      /* Copy an existing base type for this child and 
-	 change type offset */
-      copy    = aspect_type_copy(childtype, curoff, isptr, 
-				 dimnbr, fieldname, dims);
+      /* Copy an existing base type for this child and change type offset */
+      copy = aspect_type_copy(childtype, (isunion ? 0 : curoff), isptr, 
+			      dimnbr, fieldname, dims);
       for (size = off, idx = 0; dims != NULL && idx < dimnbr; idx++)
 	size *= dims[idx];
 
@@ -425,7 +447,7 @@ aspectype_t		*aspect_type_create(char *label,
     }
   
   /* Add type to global type hash table and return success */
-  newtype->size = curoff;
+  newtype->size = (isunion ? aspect_type_find_union_size(newtype) : curoff);
   hash_destroy(&fields_hash);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);  
 }
@@ -463,7 +485,8 @@ int		aspect_type_register_real(char	      *label,
 
 
 /* Interface for type creation */
-int		aspect_type_register(char *label, 
+int		aspect_type_register(u_char isunion,
+				     char *label, 
 				     char **fields, 
 				     u_int fieldnbr)
 {
@@ -472,7 +495,7 @@ int		aspect_type_register(char *label,
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ret = aspect_type_create(label, fields, fieldnbr);
+  ret = aspect_type_create(isunion, label, fields, fieldnbr);
 
   if (!ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
