@@ -6,7 +6,7 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.38 2007-12-06 06:40:16 may Exp $
+ ** $Id: libaspect.h,v 1.39 2007-12-06 20:59:11 may Exp $
  **
  */
 #if !defined(__ASPECT_H__)
@@ -109,25 +109,27 @@
 #define         ASPECT_TYPE_LONG         6  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_DADDR        7  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_CADDR        8  /*!< 4 or 8 bytes      */
-#define		ASPECT_TYPE_CORENUM	 9  /*!< Core types number */
+#define		ASPECT_TYPE_BIT		 9  /*!< just 1 bit        */
+#define		ASPECT_TYPE_CORENUM	10  /*!< Core types number */
 
 /* Vectors, tables and hash are considered simple types : 
    you cannot copy them or look inside them without foreach */
-#define	        ASPECT_TYPE_VECT	 9  /*!< Vector type	   */
-#define		ASPECT_TYPE_HASH	10  /*!< Hash table type   */
-#define		ASPECT_TYPE_LIST	11  /*!< List type         */
-#define		ASPECT_TYPE_SIMPLENUM	12  /*!< SIMPLE TYPES NUMBER */
+#define	        ASPECT_TYPE_VECT	10  /*!< Vector type	   */
+#define		ASPECT_TYPE_HASH	11  /*!< Hash table type   */
+#define		ASPECT_TYPE_LIST	12  /*!< List type         */
+#define		ASPECT_TYPE_SIMPLENUM	13  /*!< SIMPLE TYPES NUMBER */
 
 /* Now come complex types which are part of the base types */
-#define		ASPECT_TYPE_EXPR	12  /*!< Expression type   */
-#define		ASPECT_TYPE_BLOC	13  /*!< Block type        */
-#define		ASPECT_TYPE_FUNC	14  /*!< Function type     */
-#define         ASPECT_TYPE_BASENUM     15  /*!< BASE TYPES NUMBER */
+#define		ASPECT_TYPE_EXPR	13  /*!< Expression type   */
+#define		ASPECT_TYPE_BLOC	14  /*!< Block type        */
+#define		ASPECT_TYPE_FUNC	15  /*!< Function type     */
+#define         ASPECT_TYPE_BASENUM     16  /*!< BASE TYPES NUMBER */
 
 /* Type names */
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
 #define		ASPECT_TYPENAME_RAW	"raw"     
 #define		ASPECT_TYPENAME_BYTE	"byte"    
+#define		ASPECT_TYPENAME_BIT	"bit"
 #define		ASPECT_TYPENAME_STR	"string"  
 #define		ASPECT_TYPENAME_SHORT	"short"   
 #define		ASPECT_TYPENAME_INT	"int"     

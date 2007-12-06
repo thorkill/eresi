@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.21 2007-12-06 20:12:11 may Exp $
+** $Id: types.c,v 1.22 2007-12-06 20:59:11 may Exp $
 **
 */
 #include "libaspect.h"
@@ -31,6 +31,7 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_LONG    , sizeof(u_long)	},
     {ASPECT_TYPENAME_DADDR   , sizeof(u_long)	},
     {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
+    {ASPECT_TYPENAME_BIT     , sizeof(u_char)	},
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
@@ -442,6 +443,13 @@ aspectype_t		*aspect_type_create(u_char isunion,
       for (size = off, idx = 0; dims != NULL && idx < dimnbr; idx++)
 	size *= dims[idx];
 
+      /* Compute the correct size for bitfields */
+      if (childtype->type == ASPECT_TYPE_BIT)
+	{
+	  size /= 8;
+	  size++;
+	}
+
       curoff += size;
       aspect_type_addfield(newtype, copy);
     }
@@ -644,7 +652,7 @@ char		*aspect_typename_get(u_int type)
   return (aspect_typeinfo[type].name);
 }
 
-/* Retreive the ascii name of a type */
+/* Retreive the size (in bytes) of a type */
 u_int		aspect_typesize_get(u_int type)
 {
   if (type >= aspect_type_nbr)
