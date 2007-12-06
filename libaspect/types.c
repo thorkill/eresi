@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.20 2007-12-06 06:40:16 may Exp $
+** $Id: types.c,v 1.21 2007-12-06 20:12:11 may Exp $
 **
 */
 #include "libaspect.h"
@@ -250,7 +250,7 @@ int			aspect_type_find_union_size(aspectype_t *utype)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!utype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid input type", NULL);
+		 "Invalid input type", 0);
   if (!utype->next && utype->childs)
     utype = utype->childs;
   while (utype)

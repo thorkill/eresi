@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 jfv
-** $Id: revm-io.h,v 1.53 2007-11-29 15:33:39 may Exp $
+** $Id: revm-io.h,v 1.54 2007-12-06 20:12:11 may Exp $
 */
 #ifndef __REVM_IO_H_
  #define __REVM_IO_H_
@@ -39,7 +39,7 @@ char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a22"
+#define	REVM_RELEASE	"a24"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */

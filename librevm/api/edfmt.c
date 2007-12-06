@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.13 2007-11-30 10:13:54 may Exp $
+** $Id: edfmt.c,v 1.14 2007-12-06 20:12:11 may Exp $
 **
 */
 #include "revm.h"
@@ -23,9 +23,10 @@ _type->parsed = 1
 hash_t var_queue;
 
 /* Register a type (and transform its name if needed) */
-static int		revm_edfmt_register_type(char *label, 
-					       char **fields, 
-					       u_int fieldnbr)
+static int		revm_edfmt_register_type(char isunion,
+						 char *label, 
+						 char **fields, 
+						 u_int fieldnbr)
 {
 
   char			buf[BUFSIZ];
@@ -43,7 +44,7 @@ static int		revm_edfmt_register_type(char *label,
 
   /* We create the type right now to compare to an existing
      type in case of double entry */
-  new = aspect_type_create(nlabel, fields, fieldnbr);
+  new = aspect_type_create(isunion, nlabel, fields, fieldnbr);
   if (!new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type declaration", -1);
@@ -113,7 +114,7 @@ static int		revm_edfmt_type_parse(edfmttype_t *type)
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "array%d%s", type->size+1, type->parent->name);
 	  
-	  revm_edfmt_register_type(arr_pool, tmp_arr, 1);  
+	  revm_edfmt_register_type(0, arr_pool, tmp_arr, 1);  
 	}
       break;
     case EDFMT_TYPE_PTR:
@@ -124,7 +125,7 @@ static int		revm_edfmt_type_parse(edfmttype_t *type)
 	  snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 		   "elm:%s", type->parent->name);
 	  tmp_arr[index] = strdup(arr_pool);
-	  revm_edfmt_register_type(type->name, tmp_arr, 1);
+	  revm_edfmt_register_type(0, type->name, tmp_arr, 1);
 	}
       break;
     case EDFMT_TYPE_VOID:
@@ -135,7 +136,7 @@ static int		revm_edfmt_type_parse(edfmttype_t *type)
       snprintf(arr_pool, TYPE_ATTR_LEN - 1,
 	       "elm%%%d", type->size);
       tmp_arr[index] = strdup(arr_pool);
-      revm_edfmt_register_type(type->name, tmp_arr, 1);
+      revm_edfmt_register_type(1, type->name, tmp_arr, 1);
       break;
     case EDFMT_TYPE_STRUCT:
       /* Resolve all dependencies before */
@@ -160,7 +161,7 @@ static int		revm_edfmt_type_parse(edfmttype_t *type)
 	  tmp_arr[index] = strdup(arr_pool);
 	}
 
-      revm_edfmt_register_type(type->name, tmp_arr, index);
+      revm_edfmt_register_type(0, type->name, tmp_arr, index);
       break;
     case EDFMT_TYPE_LINK:
       if (type->parent)

@@ -4,7 +4,7 @@
  ** @brief Implement arithmetic operations
  **
  ** Started on  Sun Feb  9 22:43:34 2003 jfv
- ** $Id: atomic.c,v 1.2 2007-12-06 05:11:58 may Exp $
+ ** $Id: atomic.c,v 1.3 2007-12-06 20:12:11 may Exp $
  */
 #include "libstderesi.h"
 
@@ -51,7 +51,7 @@ int			cmd_set()
   if (!e1)
     {
       e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-      if (e1 && e1->value && e1->value->immed)
+      if (e1 && e1->value && !e1->value->perm)
 	{
 	  revm_expr_destroy(e1->label);
 	  e1 = NULL;

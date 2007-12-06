@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.19 2007-12-06 06:40:16 may Exp $
+** $Id: expressions.c,v 1.20 2007-12-06 20:12:11 may Exp $
 */
 #include "revm.h"
 
@@ -422,14 +422,6 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 			 "Unable to set expression field", ret);
 	  break;
 	case REVM_OP_MATCH:	  
-	  // Not sure this is necessary (initialization of structures with pointers)
-	  //if (dest->childs || cursource->childs)
-	  //{
-	  //  ret = revm_expr_handle(dest->childs, cursource->childs, op);
-	  //  if (ret != 0)
-	  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-	  //}
-
 	  if ((ret = revm_object_compare(dest, cursource, &cmpval)) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to compare expression fields", ret);
@@ -566,7 +558,8 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 
 
 /* Recursive copy of an expression */
-static int		revm_expr_copyrec(revmexpr_t	*dest, 
+static int		revm_expr_copyrec(aspectype_t	*parentype,
+					  revmexpr_t	*dest, 
 					  revmexpr_t	*source,
 					  char		*newname,
 					  u_int		namelen,
@@ -600,7 +593,7 @@ static int		revm_expr_copyrec(revmexpr_t	*dest,
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
 	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest->childs, 0, 0);
-	  ret = revm_expr_copyrec(dest->childs, source->childs, newname, 
+	  ret = revm_expr_copyrec(source->type, dest->childs, source->childs, newname, 
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -615,11 +608,17 @@ static int		revm_expr_copyrec(revmexpr_t	*dest,
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->value, sizeof(revmobj_t), -1);
 	  type = source->value->otype;
-	  memcpy(dest->value, source->value, sizeof(revmobj_t));
+	  dest->value = revm_object_lookup_real(parentype, newname, source->label, 0);
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
 	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
 	  bzero(newname + nameoff, len);
+	  if (revm_object_set(dest, source) < 0)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, dest);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Failed to copy terminal object", -1);
+	    }
 	}
 
       /* Allocate next element */
@@ -684,10 +683,11 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
 		 "Unable to inform copy expression", NULL);
 
   /* Some (structure) expressions have an extra top-level type, copy was done before the recursion */
-  if (!source->next && source->childs && source->label && *source->label == REVM_VAR_PREFIX) 
+  if (source->childs) 
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), NULL);
-      ret = revm_expr_copyrec(dest->childs, source->childs, newname, BUFSIZ, curoff, copydata);
+      ret = revm_expr_copyrec(dest->type, dest->childs, source->childs, 
+			      newname, BUFSIZ, curoff, copydata);
     }
 
   /* Simple object copy is easier */
@@ -700,14 +700,15 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
       ret = revm_object_set(dest, source);
     }
 
-  /* Default case */
+  /* Default case : complex types without top-level */
   else
-    ret = revm_expr_copyrec(dest, source, newname, BUFSIZ, curoff, copydata);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to copy expression in impossible default case", NULL);
+
+  /* Return error or success */
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to copy expression", NULL);
-
-  /* Return success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
@@ -776,6 +777,12 @@ int		revm_expr_print(char *pathname)
   if (!expr || !expr->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unknown expression name", -1);
+
+  /* Make sure we only print the subrecord if requested */
+  if (expr->childs)
+    expr = expr->childs;
+
+  /* Guess if we need to iterate printing or not */
   iter = (aspect_type_simple(expr->type->type) && !expr->next ? 0 : 1);
 
   /* If we are printing a simple type or a subtype expression, we need to print a top level */
@@ -785,7 +792,7 @@ int		revm_expr_print(char *pathname)
       revm_output(buf);
       revm_endline();
     }
-  iter = revm_expr_printrec(expr, (!iter || !expr->next ? strlen(pathname) + 6 : 1), 0, iter);
+  revm_expr_printrec(expr, (!iter || !expr->next ? strlen(pathname) + 6 : 1), 0, iter);
   if (!iter || expr->next)
     revm_output(revm_colorwarn("}"));
   revm_endline();
@@ -846,13 +853,13 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 		 "Invalid NULL parameter", -1);    
   
   /* Take care of top-level structure types */
-  if (!asrc->next && asrc->childs)
+  if (asrc->childs)
     asrc = asrc->childs;
-  if (!adst->next && adst->childs)
+  if (adst->childs)
     adst = adst->childs;
 
   /* Necessary for assignment of scalar values */
-  if (adst->value && asrc->value && !adst->next && !asrc->next)
+  if (adst->value && asrc->value && !asrc->next)
     {
       /* See if object conversion is necessary and/or possible */
       if (revm_nextconds_atomics(adst, asrc) < 0)
@@ -914,9 +921,9 @@ int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, elfsh_Addr *val)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Take care of top-level structure types */
-  if (!orig->next && orig->childs)
+  if (orig->childs)
     orig = orig->childs;
-  if (!candid->next && candid->childs)
+  if (candid->childs)
     candid = candid->childs;
 
   /* Comparison between simple objects */

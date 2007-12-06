@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.94 2007-12-06 06:40:16 may Exp $
+** $Id: revm.h,v 1.95 2007-12-06 20:12:11 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -708,8 +708,8 @@ char		*revm_tmpvar_create();
 int		revm_variable_istemp(revmexpr_t *e);
 
 /* ERESI types related functions */
-int		revm_types_print();
-int		revm_type_print(char *type, char mode);
+int		revm_type_prints();
+int		revm_type_print_regex(char *regex);
 int		revm_type_copy(char *from, char *to);
 int		revm_type_hashcreate(char *name);
 
