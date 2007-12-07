@@ -2,7 +2,7 @@
 ** (C) 2001-2007 Devhell Labs / Asgard Labs : thorolf / sk / jfv
 ** @file history.c
 ** 
-** $Id: history.c,v 1.15 2007-08-03 11:50:59 heroine Exp $
+** $Id: history.c,v 1.16 2007-12-07 16:49:49 may Exp $
 */
 #include "libmjollnir.h"
 
@@ -21,10 +21,8 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
       (cur->proc.type == ASM_PROC_SPARC && inst.instr == ASM_SP_NOP))
     PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
   
-  for (i = 0; i < MJR_HISTORY_LEN; i++) 
-    {
-      memcpy(&cur->hist[i], &cur->hist[i+1], sizeof(mjrhistory_t));
-    }
+  for (i = 0; i < MJR_HISTORY_LEN - 1; i++) 
+    memcpy(&cur->hist[i], &cur->hist[i + 1], sizeof(mjrhistory_t));
   mjr_history_write(cur, &inst, addr, MJR_HISTORY_CUR);
   
 #if __DEBUG_OPERAND__

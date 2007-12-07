@@ -5,7 +5,7 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.7 2007-10-01 01:13:08 may Exp $
+ * $Id: links.c,v 1.8 2007-12-07 16:49:49 may Exp $
  */
 #include <libmjollnir.h>
 
@@ -28,7 +28,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 					   elfsh_Addr dst, 
 					   elfsh_Addr ret)
 {
-  container_t	*fun;
+  container_t		*fun;
   mjrfunc_t		*tmpfunc;
   char			*tmpstr;
   char			*md5;
@@ -74,7 +74,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
   tmpfunc = (mjrfunc_t *) fun->data;
 
   if (md5)
-    snprintf(tmpfunc->md5,sizeof(tmpfunc->md5),"%s",md5);
+    memcpy(tmpfunc->md5, md5, sizeof(tmpfunc->md5));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

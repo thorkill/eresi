@@ -4,7 +4,7 @@
 ** @file core.c
 ** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.41 2007-11-17 22:07:26 thor Exp $
+** $Id: core.c,v 1.42 2007-12-07 16:49:49 may Exp $
 */
 
 #include "libmjollnir.h"
@@ -164,7 +164,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 
     if (!sct)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Can't get section", 0);
+		   "Can't get section", -1);
 
 
 #if __DEBUG_MJOLLNIR__
@@ -183,7 +183,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 				      sct->shdr->sh_size);
     if (!fcnt)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Can't create initial blocks", 0);
+		   "Can't create initial blocks", -1);
 
     hash_add(&sess->cur->blkhash, _vaddr2str(sct->shdr->sh_addr), fcnt);
 

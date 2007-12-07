@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  * @file function.c
  * BSD License
- * $Id: function.c,v 1.45 2007-08-07 07:13:27 may Exp $
+ * $Id: function.c,v 1.46 2007-12-07 16:49:49 may Exp $
  *
  */
 #include <libmjollnir.h>
@@ -143,8 +143,8 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
  */
 void			*mjr_fingerprint_function(mjrcontext_t  *ctx, 
 						  elfsh_Addr	addr, 
-						  int		type) 
-{
+						  int		type) {
+
   MD5_CTX		md5ctx;
   unsigned char		fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
   unsigned char		digest[16];
@@ -181,12 +181,12 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
       MD5_Init(&md5ctx);
       MD5_Update(&md5ctx, fbuf, mlen);
       MD5_Final(digest, &md5ctx);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, 33, NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, 34, NULL);
       
       if (!ret)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
       
-      memset(ret, 0, 33);
+      memset(ret, 0, 34);
       pt = ret;
       
       for (i = 0; i < 16; i++, pt += 2) 

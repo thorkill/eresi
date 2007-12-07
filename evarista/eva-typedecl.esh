@@ -15,3 +15,5 @@ type op               = len:int ptr:*byte type:int name:string size:int content:
 type instr::container = proc%4 icode:int semflags:int prefix:int spdiff:int flagswritten:int flagsread:int ptr_prefix:*byte ptr_instr:*byte annul:int prediction:int nb_op:int op1:op op2:op op3:op len:int 
 type bloc::container  = vaddr:long size:int symoff:int
 type func::container  = vaddr:long size:int name:byte[64] first:*bloc md5:byte[34]
+
+type
