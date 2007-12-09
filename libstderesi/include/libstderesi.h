@@ -2,7 +2,7 @@
 ** @file libstderesi.h
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
-** $Id: libstderesi.h,v 1.3 2007-12-06 06:40:16 may Exp $
+** $Id: libstderesi.h,v 1.4 2007-12-09 23:00:18 may Exp $
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
@@ -86,6 +86,10 @@
 #define	CMD_TYPE		"type"
 #define	CMD_UNION		"union"
 #define	CMD_TYPEDEF		"typedef"
+
+#define	CMD_PRE			"pre"
+#define	CMD_POST		"post"
+#define	CMD_INTO		"into"
 
 #define CMD_INSERT		"insert"
 #define	CMD_INSERT2		"ins"
@@ -306,6 +310,9 @@ int		cmd_forend();
 int		cmd_match();
 int		cmd_matchend();
 int		cmd_case();
+int		cmd_into();
+int		cmd_pre();
+int		cmd_post();
 int		cmd_reflect();
 int		cmd_default();
 int		cmd_define();

@@ -46,10 +46,10 @@ define imm	ASM_OPTYPE_IMM
 define mem	ASM_OPTYPE_MEM
 
 # Types of LIR operands
-type Ins               = uflags:Immed addr:Immed
 type Immed             = val:long
-type Reg::container    = id:int
+type Reg::container    = rid:int
 type Mem::container    = base:Reg off:Immed name:string index:Reg scale:Immed
+type Ins               = uflags:Immed addr:Immed
 
 # Types of LIR instructions
 
@@ -67,7 +67,7 @@ type Return::Ins     = dst:Immed
 type TernopMI::Ins  = dst:Mem msrc:Mem isrc:Immed
 type TernopMR::Ins  = dst:Mem msrc:Mem rsrc:Reg
 type TernopRM::Ins  = dst:Reg rsrc:Reg msrc:Mem
-type TernopRMI::Ins = dst:Reg rsrc:Reg msrc:Mem isrc:Imm
+type TernopRMI::Ins = dst:Reg rsrc:Reg msrc:Mem isrc:Immed
 type TernopR3::Ins  = dst:Reg src1:Reg src2:Reg
 type TernopM3::Ins  = dst:Mem msrc1:Mem msrc2:Mem
 type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
@@ -75,12 +75,10 @@ type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
 # Assignments
 type AssignIR::Ins  = dst:Reg src:Immed
 type AssignIM::Ins  = dst:Mem src:Immed
-type AssignMR::Ins  = dst:Reg src:Mem
-type AssignRM::Ins  = dst:Mem src:Reg
-type AssignRM::Ins   = dst:Reg src:Mem
-type AssignMR::Ins   = dst:Mem src:Reg
-type AssignMM::Ins   = dst:Mem src:Mem
-type AssignRR::Ins   = dst:Reg src:Reg
+type AssignMR::Ins  = dst:Mem src:Reg
+type AssignRM::Ins  = dst:Reg src:Mem
+type AssignMM::Ins  = dst:Mem src:Mem
+type AssignRR::Ins  = dst:Reg src:Reg
 
 # Comparisons
 type CmpRI::Ins     = fst:Immed snd:Reg
@@ -99,9 +97,9 @@ type IoIR::Ins      = dst:Immed src:Reg
 type IoRI::Ins      = dst:Reg src:Immed
 
 # Types that have no additional info than an instruction
-typedef IReturn Ins
-typedef FlagR   Ins
-typedef FlagW   Ins
-typedef Epilog  Ins
-typedef Stop    Ins
-typedef Nop     Ins
+typedef Ins IReturn
+typedef Ins FlagR
+typedef Ins FlagW
+typedef Ins Epilog
+typedef Ins Stop
+typedef Ins Nop

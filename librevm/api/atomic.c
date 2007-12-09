@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.15 2007-11-28 07:56:08 may Exp $
+** $Id: atomic.c,v 1.16 2007-12-09 23:00:18 may Exp $
 **
 */
 #include "revm.h"
@@ -546,6 +546,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     case ASPECT_TYPE_LONG:
+    ptrcopy:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.ent = val64;
@@ -567,18 +568,26 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 
     case ASPECT_TYPE_HASH:
       hash = (hash_t *) o2->get_obj(o2->parent);
-      if (revm_hash_set(NULL, o1->hname, (void *) hash, o1->otype->type))
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to set hash table variable", -1);
-      break;
-
+      if (!o1->otype->isptr)
+	{
+	  if (revm_hash_set(NULL, o1->hname, (void *) hash, o1->otype->type))
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to set hash table variable", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+      o1->immed = 1;
+      goto ptrcopy;
     case ASPECT_TYPE_LIST:
       list = (list_t *) o2->get_obj(o2->parent);
-      if (revm_list_set(NULL, o1->hname, (void *) list, o1->otype->type))
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to set list variable", -1);
-      break;
-
+      if (!o1->otype->isptr)
+	{
+	  if (revm_list_set(NULL, o1->hname, (void *) list, o1->otype->type))
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to set list variable", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+      o1->immed = 1;
+      goto ptrcopy;
     default:
       *o1 = *o2;
     }

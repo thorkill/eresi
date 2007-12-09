@@ -27,9 +27,10 @@ print Main-Function found at addr $mainaddr
 #vlist
 set $mainfunc $hash[functions:$mainaddr]
 
-#print $hash[functions:$mainaddr]
-#print $mainfunc
-#print $mainfunc.vaddr
+tables expressions
+print $hash[functions:$mainaddr]
+print $mainfunc
+print $mainfunc.vaddr
 
 cfg-walk $mainfunc.vaddr
 

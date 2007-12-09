@@ -5,7 +5,7 @@
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **
-** $Id: match.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: match.c,v 1.2 2007-12-09 23:00:18 may Exp $
 */
 #include "libstderesi.h"
 
@@ -46,51 +46,282 @@ static int	revm_case_format(revmargv_t *cmdargs)
       len += snprintf(curstr + len, BUFSIZ - len, "%s", cmdargs->param[index]);
 
   /* Finished parsing and reporting potential errors */
-  if (!hasarrow || !*inputstr || !*outputstr)
+  if (!*inputstr || (hasqmark && !hasarrow))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid format for parameters", -1);
   if (hasqmark && !*cmdstr)
     hasqmark = 0;
-  cmdargs->param[0] = aproxy_strdup(inputstr);
-  cmdargs->param[1] = aproxy_strdup(outputstr);
-  cmdargs->param[2] = (hasqmark ? aproxy_strdup(cmdstr) : NULL);
+  if (hasarrow && !*outputstr)
+    hasarrow = 0;
+  cmdargs->param[0] = strdup(inputstr);
+  cmdargs->param[1] = (hasarrow ? strdup(outputstr) : NULL);
+  cmdargs->param[2] = (hasqmark ? strdup(cmdstr) : NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hasqmark);
 }
 
+
+/* Propagate the link between 2 objects */
+static int	revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
+{
+  char		srcname[BUFSIZ];
+  char		dstname[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Propagate input links */
+  snprintf(srcname, sizeof(srcname), "%s.inlinks", source->label);
+  snprintf(dstname, sizeof(dstname), "%s.inlinks", dest->label);
+  dest = revm_expr_get(dstname);
+  source = revm_expr_get(srcname);
+  if (!dest && !source)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  else if (!dest || !source)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "One expression should be in container", -1);
+  else if (!dest->value || !source->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Input links list should be a pointer", -1);
+  if (revm_object_set(dest, source) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to copy input links list", -1);
+
+  /* Propagate output links */
+  snprintf(srcname, sizeof(srcname), "%s.outlinks", source->label);
+  snprintf(dstname, sizeof(dstname), "%s.outlinks", dest->label);
+  dest = revm_expr_get(dstname);
+  source = revm_expr_get(srcname);
+  if (!dest || !source)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "One expression should be in container", -1);
+  else if (!dest->value || !source->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Output links list should be a pointer", -1);
+  if (revm_object_set(dest, source) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to copy output links list", -1);
+
+  /* Propagate input links size */
+  snprintf(srcname, sizeof(srcname), "%s.nbrinlinks", source->label);
+  snprintf(dstname, sizeof(dstname), "%s.nbrinlinks", dest->label);
+  dest = revm_expr_get(dstname);
+  source = revm_expr_get(srcname);
+  if (!dest || !source)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "One expression should be in container", -1);
+  else if (!dest->value || !source->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "InLinks size should be a scalar", -1);
+  if (revm_object_set(dest, source) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to copy inlinks list size", -1);
+
+  /* Propagate output links size */
+  snprintf(srcname, sizeof(srcname), "%s.nbroutlinks", source->label);
+  snprintf(dstname, sizeof(dstname), "%s.nbroutlinks", dest->label);
+  dest = revm_expr_get(dstname);
+  source = revm_expr_get(srcname);
+  if (!dest || !source)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "One expression should be in container", -1);
+  else if (!dest->value || !source->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "OutLinks size should be a scalar", -1);
+  if (revm_object_set(dest, source) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to copy outlinks list size", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** Perform the transformation (can be called from case or into commands) */
+static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
+{
+  u_int		dstnbr;
+  char		*curptr;
+  char		*foundptr;
+  u_int		curidx;
+  list_t	exprlist;
+  aspectype_t	*type;
+  char		namebuf[BUFSIZ];
+  char		*rname;
+  revmexpr_t	*candid;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* We matched : first find how many elements there is in the target (list) type */
+  dstnbr = 1;
+  list_init(&exprlist, "curdestlist", ASPECT_TYPE_EXPR);
+  for (curidx = *world.curjob->iter.curindex - 1, curptr = destvalue; 
+       curptr && *curptr; 
+       curptr = foundptr + 2, curidx++, dstnbr++)
+    {
+      foundptr = strstr(curptr, "::");
+      if (!foundptr)
+	break;                                                          
+      *foundptr = 0x00;
+      type   = revm_exprtype_get(curptr);
+      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
+      rname = strdup(namebuf);
+      candid = revm_expr_create(type, rname, curptr);
+      list_add(&exprlist, rname, candid);
+    }
+
+  /* FIXME: The rewritten element is not part of any list */
+  if (!world.curjob->iter.list)
+    {
+      if (dstnbr == 1)
+	;
+      else
+	;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Rewriting of non-list element currently not supported", -1);
+    }
+    
+  /* Simply replace the current list element now */
+  /* The type of the list (list_t->type) does not change : it still is a list of revmexpr_t */
+
+  /* Just one element to swap */
+  else if (dstnbr == 1)
+    {
+      list_destroy(&exprlist);
+
+      /* No transformation, keep the original expression */
+      if (!strcmp(destvalue, "."))
+	candid = matchme;
+      else
+	{
+	  rname  = strdup(matchme->label);
+	  type   = revm_exprtype_get(destvalue);
+	  revm_expr_destroy(matchme->label);
+	  candid = revm_expr_create(type, rname, destvalue);
+	  if (!candid)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Malformed destination type", -1);
+	  if (revm_links_propagate(candid, matchme) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Error while propagating dataflow links", -1);
+	  list_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
+	}
+    }
+
+  /* Insert a list at a certain offset of the list */
+  else
+    {
+      list_replace(world.curjob->iter.list, world.curjob->iter.curkey, &exprlist);
+      *world.curjob->iter.curindex += exprlist.elmnbr - 1;
+      list_destroy(&exprlist);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/** Execute side-effects command at some transformation point */
+static int	revm_case_execmd(char *str)
+{
+  revmargv_t	*curcmd;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (revm_exec_str(str) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Side-effects preparation failed", -1);
+  curcmd = world.curjob->curcmd;
+  world.curjob->curcmd = world.curjob->script[world.curjob->sourced];
+  if (revm_execmd() < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Side-effects execution failed", -1);
+  world.curjob->curcmd = curcmd;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** Translate in destination type */
+int		cmd_into()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!world.curjob->rwrt.matched)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (world.curjob->rwrt.replaced)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot transform a second time", -1);
+  if (!world.curjob->rwrt.matchexpr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot transform outside a rewrite", -1);
+  if (revm_case_transform(world.curjob->rwrt.matchexpr, world.curjob->curcmd->param[0]) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to transform expression", -1);
+  world.curjob->rwrt.replaced = 1;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** Perform pre-side-effects */
+int		cmd_pre()
+{
+  char		*str;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!world.curjob->rwrt.matched)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (world.curjob->rwrt.replaced)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot perform pre-side-effects after transformation", -1);
+  if (!world.curjob->rwrt.matchexpr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Command cannot execute outside a rewrite", -1);
+  str = revm_string_get(world.curjob->curcmd->param);
+  if (revm_case_execmd(str) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Pre-side-effects commands failed", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** Perform pre-side-effects */
+int		cmd_post()
+{
+  char		*str;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!world.curjob->rwrt.matched)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (!world.curjob->rwrt.replaced)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot perform post-side-effects before transformation", -1);
+  if (!world.curjob->rwrt.matchexpr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Command cannot execute outside a rewrite", -1);
+  str = revm_string_get(world.curjob->curcmd->param);
+  if (revm_case_execmd(str) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Post-side-effects commands failed", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
 /** Check input type, translate if matching */
 int		cmd_case()
 {
-  container_t	*container;
+  aspectype_t	*exprtype;
   revmexpr_t	*matchme;
   revmexpr_t	*candid;
   int		ret;
-  char		*curptr;
-  char		*foundptr;
-  list_t	exprlist;
-  aspectype_t	*type;
-  aspectype_t	*exprtype;
-  char		namebuf[BUFSIZ];
-  char		*rname;
-  u_int		curidx;
   u_int		qmark;
-  u_int		dstnbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!world.curjob->matchexpr)
+  if (!world.curjob->rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Case is not in a match", -1);
-
-  /* The transformed element is not part of any list ! */
-  if (!world.curjob->itlist)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unsupported use of transform command without list parameter", -1);
-
-  exprtype = aspect_type_get_by_name("revmexpr_t");
+  exprtype = aspect_type_get_by_id(ASPECT_TYPE_EXPR);
   if (!exprtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Expression type not found : lacking reflection ?", -1);
+
+  /* If a previous case has already matched, simply end the transformation now :
+     We must do that here because some "post" commands can be put after a matching 
+     "case", so we only stop rewriting at the first case -following- a matchcase */
+  if (world.curjob->rwrt.matched)
+    {
+      revm_move_pc(world.curjob->curcmd->endlabel);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   /* Call a small parser for parameters */
   qmark = revm_case_format(world.curjob->curcmd);
@@ -98,165 +329,53 @@ int		cmd_case()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid syntax for case parameters", -1);
 
-  /* If type matched, do translation */
-  matchme = (revmexpr_t *)  world.curjob->matchexpr->data;
-  type    = (aspectype_t *) matchme->type;
-  if (!type)
+  /* Check if we match */
+  matchme = (revmexpr_t *) world.curjob->rwrt.matchexpr;
+  if (!matchme->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type for matchme expression", -1);
-  candid = revm_expr_create(type, "$candid", world.curjob->curcmd->param[0]);
-  ret    = revm_expr_match(matchme, candid);
+  candid = revm_expr_create(matchme->type, "$candid", world.curjob->curcmd->param[0]);
+  ret = (!candid ? 1 : revm_expr_match(matchme, candid));
   
   /* No match or bad match : nothing happens */
   if (ret)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-  /* We matched : first find how many elements there is in the target (list) type */
-  dstnbr = 1;
-  list_init(&exprlist, "curdestlist", ASPECT_TYPE_EXPR);
-  for (curidx = *world.curjob->curlistidx - 1, curptr = world.curjob->curcmd->param[1]; 
-       curptr && *curptr; 
-       curptr = foundptr + 2, curidx++, dstnbr++)
     {
-      foundptr = strstr(curptr, "::");
-      if (!foundptr)
-	break;
-      *foundptr = 0x00;
-      type   = revm_exprtype_get(curptr);
-      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->matchexprname, curidx); 
-      rname = aproxy_strdup(namebuf);
-      candid = revm_expr_create(type, rname, curptr);
-      if (!candid)
-	{
-	  list_destroy(&exprlist);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Malformed destination expression", -1);
-	}	
-
-      /* Create container and put expr in, with the same links */
-      container = container_create(exprtype->type, candid, 
-				   world.curjob->matchexpr->inlinks,
-				   world.curjob->matchexpr->outlinks);
-      list_add(&exprlist, rname, container);
-    }
-    
-  /* Simply replace the current list element now */
-  /* The type of the list (list_t->type) does not change : it still is a list of revmexpr_t */
-
-  /* Just one element to swap */
-  if (dstnbr == 1)
-    {
-      list_destroy(&exprlist);
-
-      /* No transformation, keep the original expression */
-      if (!strcmp(world.curjob->curcmd->param[1], "."))
-	candid = matchme;
-      else
-	{
-	  type   = revm_exprtype_get(world.curjob->curcmd->param[1]);
-	  candid = revm_expr_create(type, aproxy_strdup(world.curjob->matchexprname), 
-				    world.curjob->curcmd->param[1]);
-	  if (!candid)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Malformed destination type", -1);
-	}
-
-      /* Create container and put expr inn, with the same links */
-      container = container_create(exprtype->type, candid, 
-				   world.curjob->matchexpr->inlinks,
-				   world.curjob->matchexpr->outlinks);
-      list_set(world.curjob->itlist, aproxy_strdup(world.curjob->matchexprname), container);
-    }
-
-  /* Insert a list at a certain offset of the list */
-  else
-    {
-      list_replace(world.curjob->itlist, world.curjob->matchexprname, &exprlist);
-      *world.curjob->curlistidx += exprlist.elmnbr - 1;
-      list_destroy(&exprlist);
-    }
-  
-  /* FIXME: Now execute commands of that case if any */
-  if (qmark)
-    revm_output(" [D] Commands in a case are not yet supported, but case was performed\n");
-
-  /* Jump to end of the match construct */
-  revm_move_pc(world.curjob->curcmd->endlabel);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/** Begining of the transform command, open a transformation switch */
-int			cmd_match()
-{
-  revmexpr_t		*matchme;
-  revmexpr_t		*param;
-  int			index;
-  static list_t		*list = NULL;
-  static listent_t	*ent = NULL;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  matchme = NULL;
-
-  /* The first time we enter this command, we have to fetch the params */
-  if (!list)
-    {
-      param = revm_lookup_param(world.curjob->curcmd->param[0]);
-      if (!param || !param->value)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid input expression for match", -1);
-      if (param->type->type != ASPECT_TYPE_LIST)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Transformation only acts on list", -1);
-
-      if (param->value->kname)
-	list = list_find(param->value->hname);
-      else
-	list = list_find(param->value->kname);
-      if (!list || list->type != ASPECT_TYPE_EXPR)
-	{
-	  list = NULL;
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Invalid input expressions list", -1);
-	}
-
-      /* Configure the list to make it the "currently iterated" one */
-      list_linearity_set(list, 1);
-      world.curjob->itlist = list;
-    }
-  
-  /* Select current element to transform */
-  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT)
-    {
-      index = 0;
-      world.curjob->curcmd->listidx += 2;
-    }
-  else
-    index = world.curjob->curcmd->listidx++;
-  
-  /* Check if we are at the end of the list */
-  if (index >= list->elmnbr)
-    {
-      if (!world.curjob->curcmd->endlabel)
-	cmd_quit();
-      list_linearity_set(list, 0);
-      revm_move_pc(world.curjob->curcmd->endlabel);
-      list = NULL;
-      ent = NULL;
-      world.curjob->matchexpr     = NULL;
-      world.curjob->matchexprname = NULL;
-
-      hash_del(&exprs_hash, "$matchme");
-
+      world.curjob->rwrt.matched = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  ent                         = (!ent ? list->head : ent->next);
-  world.curjob->matchexpr     = (container_t *) ent->data;
-  world.curjob->matchexprname = ent->key;
+  /* Matched : transform and execute post side effects if any */
+  world.curjob->rwrt.matched = 1;
+  if (!world.curjob->curcmd->param[1])
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  revm_case_transform(matchme, world.curjob->curcmd->param[1]);
+  if (world.curjob->curcmd->param[2] && revm_case_execmd(world.curjob->curcmd->param[2]) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Post-side-effects commands failed", -1);
+  
+  /* Jump to end of the match construct */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
-  hash_set(&exprs_hash, "$matchme",
-	   (revmexpr_t *) world.curjob->matchexpr->data);
 
+/** Beginning of the transform command, open a transformation switch */
+int			cmd_match()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* The first time we enter this command, we have to fetch the params */
+  if (world.curjob->iter.list && !strcmp(world.curjob->iter.curname, world.curjob->curcmd->param[0]))
+    {
+      if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Match/Rewrite can only works on expressions", -1);
+
+      fprintf(stderr, "We -ARE- matching on a list \n");
+    }
+  else
+    fprintf(stderr, "We are -NOT- matching on a list \n");
+
+  world.curjob->rwrt.matchexpr = revm_lookup_param(world.curjob->curcmd->param[0]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -264,25 +383,8 @@ int			cmd_match()
 /* End of match. Do nothing. */
 int		cmd_matchend()
 {
-  char		*str;
-  revmargv_t	*cur;
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  str = revm_string_get(world.curjob->curcmd->param);
-  if (revm_exec_str(str) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Exec-on-endtransf failed", -1);
-
-  /* Execute parameter command */
-  cur = world.curjob->curcmd;
-  world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
-  if (revm_execmd() < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Default command execution failed", -1);
-  world.curjob->curcmd = cur;
-
-  /* Simply comes back to the opening command of the construct */
-  revm_move_pc(world.curjob->curcmd->endlabel);
+  bzero(&world.curjob->rwrt, sizeof(revmrewrite_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

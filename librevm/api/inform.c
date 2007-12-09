@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.5 2007-11-30 10:13:54 may Exp $
+** $Id: inform.c,v 1.6 2007-12-09 23:00:18 may Exp $
 **
 */
 #include "revm.h"
@@ -48,6 +48,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
       XALLOC(__FILE__, __FUNCTION__, __LINE__, newexpr, sizeof(revmexpr_t), NULL);
       newexpr->type   = curtype;
       childaddr       = addr + curtype->off;
+      newexpr->label  = curtype->fieldname;
 
       /* Recurse over record children. */
       /* Do not recurse on pointers else we get infinite loops ! */
@@ -74,8 +75,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 	  fprintf(stderr, " [I] Current TERMINAL path inside loop (%s::%s) \n", 
 		  pathbuf, curtype->fieldname);
 #endif
-	  
-	  newexpr->label = curtype->fieldname;
+
 	  newexpr->value = revm_object_lookup_real(type, pathbuf, curtype->fieldname, translateaddr);
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, ".%s", curtype->fieldname);
 	  revm_inform_type_addr(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
@@ -270,18 +270,25 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   annot->scope = EDFMT_SCOPE_GLOBAL; 
   annot->addr = addr;
 
+  /* This must be done before informing subtypes, as we will need 
+     the annotation to create subfields of pointed expressions (e.g. hash/list elems) */
+  hash_set(hash, strdup(realname), (void *) annot);
+  
   /* If no expression was given (manual inform) we need to create one ad-hoc */
   if (!expr)
     {
+      
+      /* FIXME: Note that expr can remain NULL if rec == 0 and childs != NULL (arrays) */
       if (rtype->childs && rec)
-	expr = revm_inform_subtype(realname, NULL, rtype, oaddr, print);
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, expr, sizeof(revmexpr_t), NULL);
+	  expr->strval = NULL;
+	  expr->label  = realname;
+	  expr->type   = rtype;
+	  expr->childs = revm_inform_subtype(realname, NULL, rtype, oaddr, print);
+	}
       else if (!rtype->childs)
 	expr = revm_simple_expr_create(rtype, realname, NULL);
-
-      // si ya des childs et que rec == 0, expr = NULL !
-      // - quand on a un tableau
-      // - quand on cree l'annotation d'une expression pas encore construite
-
     }
 
   /* Else if recursion is asked on an existing expression (set $expr $existingexpr) */
@@ -290,7 +297,6 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   
   /* Register the expression */
   annot->expr = expr;
-  hash_set(hash, strdup(realname), (void *) annot);
   hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */

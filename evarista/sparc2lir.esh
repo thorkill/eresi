@@ -18,7 +18,7 @@ foreach $instr of $hash[instrlists:$curaddr]
 
 print Transforming instruction: $instr
 
-vlist
+profile enable warn
 
 rewrite $instr into
 
@@ -26,7 +26,7 @@ rewrite $instr into
 case instr(type:b, nb_op:1, op1(type:reg))
 into IndBranchR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
-# direct always branch (b, bp) 											
+# direct always branch (b, bp) 										
 case instr(type:b, nb_op:1, op1(type:imm))
 into Branch(addr:$curaddr, dst:Immed($instr.op1.imm)) 			 
 
@@ -35,16 +35,16 @@ into Branch(addr:$curaddr, dst:Immed($instr.op1.imm))
 case instr(type:cb, nb_op:1, op1(type:reg))
 into IndBranchR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
-# direct always branch (bcc, bpcc) 											
+# direct always branch (bcc, bpcc) 					
 # XXX lacks flag translation
 case instr(type:cb, nb_op:1, op1(type:imm))
 into Branch(addr:$curaddr, dst:Immed($instr.op1.imm))
 
-# indirect call (op1 reg) 											
+# indirect call (op1 reg) 								
 case instr(type:c, nb_op:1, op1(type:reg)) 
 into IndCallR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))			 
 
-# direct call (op1 addr) 											
+# direct call (op1 addr) 									
 case instr(type:c, nb_op:1, op1(type:imm))
 into Call(addr:$curaddr, idest:Addr($instr.op1.imm))			 
 
@@ -63,18 +63,18 @@ into Prolog(addr:$curaddr)
 # restore 												
 case instr(type:e) into Epilog(addr:$curaddr)				 
 
-# illtrap 										 			
+# illtrap 							 			
 case instr(type:s) into Stop(addr:$curaddr)				 
 
 # nop											 		
 case instr(type:n) into Nop(addr:$curaddr)				
 
-# andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg) 								 		
+# andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg)				 		
 # XXX: lack flags translation
 case instr(type:ar-wf, nb_op:3, op2(type:reg))
 into TernopR3(addr:$curaddr, dst(id:$instr.op1.baser), src1(id:$instr.op2.baser), src2(id:$instr.op3.baser), uflags:$instr.flags)  
 
-# andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)	 							 		
+# andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)
 # XXX: lack flags translation
 case instr(type:ar-wf, nb_op:3, op2(type:imm))
 into TernopRI(addr:$curaddr, dst(id:$instr.op1.baser), isrc(val:$instr.op2.imm), rsrc(id:$instr.op3.baser), uflags:$instr.flags)  

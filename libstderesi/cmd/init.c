@@ -3,7 +3,7 @@
 **
 ** @brief Constructors for the ERESI standard library
 **
-** $Id: init.c,v 1.3 2007-12-06 06:40:16 may Exp $
+** $Id: init.c,v 1.4 2007-12-09 23:00:18 may Exp $
 */
 #include <libstderesi.h>
 
@@ -141,6 +141,11 @@ void		eresi_commands_init()
   revm_command_add(CMD_MATCH   , (void *) cmd_match   , (void *) revm_getmatchparams, 0, HLP_MATCH);
   revm_command_add(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL              , 0, HLP_MATCHEND);
   revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getvarparams , 0, HLP_CASE);
+
+  revm_command_add(CMD_PRE    , (void *) cmd_pre    , (void *) revm_getvarparams , 0, HLP_PRE);
+  revm_command_add(CMD_POST    , (void *) cmd_post   , (void *) revm_getvarparams , 0, HLP_POST);
+  revm_command_add(CMD_INTO    , (void *) cmd_into   , (void *) revm_getvarparams , 0, HLP_INTO);
+
   revm_command_add(CMD_DEFAULT , (void *) cmd_default , (void *) revm_getvarparams , 0, HLP_DEFAULT);
   revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getoption    , 0, HLP_REFLECT);
 

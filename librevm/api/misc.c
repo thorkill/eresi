@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Fri Sep 11 17:26:11 2005 jfv
 **
-** $Id: misc.c,v 1.13 2007-11-29 14:01:55 may Exp $
+** $Id: misc.c,v 1.14 2007-12-09 23:00:18 may Exp $
 **
 */
 #include "revm.h"
@@ -349,5 +349,4 @@ char	*revm_string_get(char **params)
 		  strdup(buff));
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	       "Empty parameter", NULL);
-
 }

@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.95 2007-12-06 20:12:11 may Exp $
+** $Id: revm.h,v 1.96 2007-12-09 23:00:18 may Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
@@ -360,13 +360,31 @@ typedef struct		s_revmcontext
   revmargv_t		*curcmd;
 }			revmcontext_t;
 
-
 /* We use a separate header for the generic IO sublib */
 #include "revm-io.h"
 
 /* We use a separate header for defnition of object structures */
 #include "revm-objects.h"
 
+
+
+/* This structure stores the last iteration state for a job */
+typedef struct		s_revmiteration
+{
+#define	REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int			*curindex;	/* Current iteration index (most-nested foreach) */
+  char			*curkey;	/* Name (key) of matchme expression in list */
+  char			*curname;	/* Name (bound) of induction variable if any */
+  list_t		*list;		/* Current list being iterated */
+}			revmiter_t;  
+
+/* This structure stores the transformation state for a job */
+typedef struct	      s_revmrewrite
+{
+  revmexpr_t	      *matchexpr;	/* Expression to rewrite */
+  u_char	      matched;		/* Matched flag : just 0 or 1 depending on last try */
+  u_char	      replaced;		/* Indicate if we have already transformed */
+}		      revmrewrite_t;
 
 /* REVM job structure, one per client */
 typedef struct        s_job
@@ -389,12 +407,9 @@ typedef struct        s_job
   hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
   elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
 
-  /* Job context in a rewrite construct */
-#define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int		      *curlistidx;      /* Current iteration index (most-nested foreach) */
-  list_t	      *itlist;		/* Current list being iterated */
-  container_t	      *matchexpr;	/* Expression to match if inside a rewrite construct */
-  char		      *matchexprname;	/* Name (key) of matchme expression in list */
+  /* Job iteration and rewritten expression name if any */
+  revmiter_t	      iter;		/* Iteration context */
+  revmrewrite_t	      rwrt;		/* Rewrite  context */
 }                     revmjob_t;
 
 

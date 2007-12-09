@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 jfv
 **
-** $Id: foreach.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: foreach.c,v 1.2 2007-12-09 23:00:18 may Exp $
 **
 */
 #include "libstderesi.h"
@@ -31,6 +31,7 @@ int		cmd_foreach()
   revmexpr_t	*tablexpr;
   revmobj_t	*tableobj;
   char		*typename;
+  char		*indname;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -97,7 +98,7 @@ int		cmd_foreach()
 	    }
 	  list_linearity_set(list, 1);
 	  keys = list_get_keys(list, &keynbr);
-	  world.curjob->itlist = list;
+	  world.curjob->iter.list = list;
 	}
       else
 	{
@@ -140,8 +141,13 @@ int		cmd_foreach()
 	    }
 	}
 
-      /* For nested foreach ! */
-      world.curjob->curlistidx = &world.curjob->curcmd->listidx;
+      /* Export iteration information to revmjob so it can be used in other commands */
+      if (!table && list)
+	{
+	  world.curjob->iter.curindex = &world.curjob->curcmd->listidx;
+	  world.curjob->iter.curkey   = keys[index];
+	  world.curjob->iter.curname  = world.curjob->curcmd->param[0];
+	}
 
       /* Bound check : go to the loop end when necessary */
       if (index >= keynbr)
@@ -174,6 +180,17 @@ int		cmd_foreach()
 	  elem = list_get(list, keys[index]);
 	  typeid = list->type;
 	}
+
+      /* If the element is already an expression, copy it to the induction variable */
+      if (typeid == ASPECT_TYPE_EXPR)
+	{
+	  indname = strdup(indexpr->label);
+	  revm_expr_destroy(indexpr->label);
+	  indexpr = revm_expr_copy((revmexpr_t *) elem, indname);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+
+      /* If the element is not an expression, act depending on its type */
       if (!indexpr->type || indexpr->type->type != typeid)
         revm_convert_object(indexpr, typeid);
       if (indexpr->type->type != typeid)

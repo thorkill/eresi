@@ -4,7 +4,7 @@
 ** Implementation of scripting declarations for meta-language variables
 **
 ** Started on Jun 23 2007 23:39:51 jfv
-** $Id: expressions.c,v 1.20 2007-12-06 20:12:11 may Exp $
+** $Id: expressions.c,v 1.21 2007-12-09 23:00:18 may Exp $
 */
 #include "revm.h"
 
@@ -682,16 +682,8 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to inform copy expression", NULL);
 
-  /* Some (structure) expressions have an extra top-level type, copy was done before the recursion */
-  if (source->childs) 
-    {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), NULL);
-      ret = revm_expr_copyrec(dest->type, dest->childs, source->childs, 
-			      newname, BUFSIZ, curoff, copydata);
-    }
-
   /* Simple object copy is easier */
-  else if (aspect_type_simple(type->type) && !type->next)
+  if (source->value)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->value, sizeof(revmobj_t), NULL);
       dest->value->otype = dest->type;
@@ -700,7 +692,16 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
       ret = revm_object_set(dest, source);
     }
 
-  /* Default case : complex types without top-level */
+  /* Some (structure) expressions have an extra top-level type, copy was done before the recursion */
+  else if (source->childs) 
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), NULL);
+      ret = revm_expr_copyrec(dest->type, dest->childs, source->childs, 
+			      newname, BUFSIZ, curoff, copydata);
+    }
+
+
+  /* Failure: no value or complex type for source expr ? */
   else
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to copy expression in impossible default case", NULL);
@@ -780,10 +781,12 @@ int		revm_expr_print(char *pathname)
 
   /* Make sure we only print the subrecord if requested */
   if (expr->childs)
-    expr = expr->childs;
-
-  /* Guess if we need to iterate printing or not */
-  iter = (aspect_type_simple(expr->type->type) && !expr->next ? 0 : 1);
+    {
+      expr = expr->childs;
+      iter = 1;
+    }
+  else
+    iter = (aspect_type_simple(expr->type->type) ? 0 : 1);
 
   /* If we are printing a simple type or a subtype expression, we need to print a top level */
   if (!iter || expr->next)

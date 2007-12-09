@@ -2,13 +2,11 @@
 
 print Now entered cfg-walk
 
-
-
 cmp $# 1
 jne end
-print $1
 
-profile enable warn
+tables expressions
+print $1
 
 set $block $hash[blocks:$1]
 print $1

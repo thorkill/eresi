@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 jfv
 **
-** $Id: libstderesi-help.h,v 1.2 2007-12-06 05:11:58 may Exp $
+** $Id: libstderesi-help.h,v 1.3 2007-12-09 23:00:18 may Exp $
 **
 */
 #ifndef __REVM_HELP_H_
@@ -192,6 +192,10 @@
 #define	HLP_MATCHEND		HLP_MATCH
 #define	HLP_CASE		HLP_MATCH
 #define	HLP_DEFAULT		HLP_MATCH
+#define	HLP_PRE			"Execute side-effects ERESI commands before transformation (see rewrite)"
+#define	HLP_POST		"Execute side-effects ERESI commands after transformation (see rewrite)"
+#define	HLP_INTO		"Transform a matching expression (see rewrite command)"
+
 #define	HLP_REFLECT		"Reflect instruction list for a given basic block \n\n\t" \
 				"reflect <$block|0xaddr> \n\n\t"			  \
 				"Instruction list is then accessible from fileid.instrlist[0xaddr] \n"

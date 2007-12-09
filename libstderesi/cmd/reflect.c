@@ -5,7 +5,7 @@
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **
-** $Id: reflect.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: reflect.c,v 1.2 2007-12-09 23:00:18 may Exp $
 */
 #include "libstderesi.h"
 
@@ -22,24 +22,17 @@ int		cmd_reflect()
   elfsh_Addr	addr;
   int		off;
   int		ret;
-  //aspectype_t	*contype;
   aspectype_t	*curtype;
-  //aspectype_t	*exprtype;
   void		*blocdata;
   int		fileoff;
-  revmobj_t	*last;
+  revmexpr_t	*last;
   list_t	*instrlist;
   revmexpr_t	*expr;
+  int		insnbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Preliminary checks */
   curtype  = aspect_type_get_by_name("instr");
-
-  //contype  = aspect_type_get_by_name("container");
-  //exprtype = aspect_type_get_by_id(ASPECT_TYPE_EXPR);
-
-  if (!curtype) // || !contype || !exprtype)
+  if (!curtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed reflection : unknown type instruction", -1);
 
@@ -96,15 +89,14 @@ int		cmd_reflect()
   /* Create the new list of instructions in expression form */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, instrlist, sizeof(list_t), -1);
   snprintf(logbuf, sizeof(logbuf), "%08X", curblock->vaddr);
-  list_init(instrlist, strdup(logbuf), curtype->type);
+  list_init(instrlist, strdup(logbuf), ASPECT_TYPE_EXPR);
 
   /* Reflection all instructions of the basic bloc in the list */
-  for (off = 0; off < curblock->size; off += ret)
+  for (insnbr = off = 0; off < curblock->size; off += ret, insnbr++)
     {
-
+      
       /* Fetch the current instruction */
       XALLOC(__FILE__, __FUNCTION__, __LINE__, cur, sizeof(asm_instr), -1);
-
       ret = asm_read_instr(cur, (u_char *) blocdata + off, 
 			   curblock->size - off + 10, world.curjob->proc);
       if (ret < 0)
@@ -114,26 +106,12 @@ int		cmd_reflect()
 		       "Unable to fetch code for basic bloc", -1);
 	}
 
-      /* Bind the instruction on a special variable */
-      /*
-      snprintf(logbuf, sizeof (logbuf), "$instr_%08X", curblock->vaddr + off); 
-      expr = revm_inform_type_addr(curtype->name, strdup(logbuf),
-				   (elfsh_Addr) &cur, NULL, 0, 1);
-      if (!expr)
-	{
-	  fprintf(stderr, "Unable to reflect instr at addr %08X (off = %u, typename = %s) \n", 
-		  curblock->vaddr + off, off, curtype->name);
-	  
-	  list_destroy(instrlist);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unable to reflect instruction in bloc", -1);
-	}
-      */
-
       /* Also add the instruction to the current reflected list for this block */
       instrcontainer = container_create(curtype->type, cur, NULL, NULL);
-      snprintf(logbuf, sizeof (logbuf), "%08X", curblock->vaddr + off); 
-      list_add(instrlist, strdup(logbuf), instrcontainer);
+      snprintf(logbuf, sizeof (logbuf), "$instr-0x%08X", curblock->vaddr + off); 
+      expr = revm_inform_type_addr(curtype->name, strdup(logbuf),
+				   (elfsh_Addr) instrcontainer, NULL, 0, 1);
+      list_add(instrlist, strdup(logbuf), expr);
     }
 
   /* Inverse the list and add it */
@@ -144,16 +122,13 @@ int		cmd_reflect()
   if (!world.state.revm_quiet)
     {
       snprintf(logbuf, sizeof(logbuf), 
-	       " [*] Basic bloc at address %08X reflected succesfully \n\n", 
-	       curblock->vaddr);
+	       " [*] Basic bloc at address %08X reflected succesfully (%u instrs) \n\n", 
+	       curblock->vaddr, insnbr);
       revm_output(logbuf);
     }
 
   /* Put the current bloc in the last result variable */
-  expr		      = revm_expr_get(REVM_VAR_RESULT);
-  last                = expr->value;
-  last->immed_val.ent = (elfsh_Addr) container;
-  last->immed         = 1;
-  last->otype         = aspect_type_get_by_id(container->type);
+  revm_expr_destroy(REVM_VAR_RESULT);
+  revm_expr_copy(expr, REVM_VAR_RESULT);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
