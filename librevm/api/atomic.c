@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.16 2007-12-09 23:00:18 may Exp $
+** $Id: atomic.c,v 1.17 2007-12-10 12:58:45 may Exp $
 **
 */
 #include "revm.h"
@@ -146,7 +146,7 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
   res->immed         = 1;
   if (!world.state.revm_quiet)
     {
-      snprintf(buf, sizeof(buf), " $_ = " DFMT "\n\n", dst);
+      snprintf(buf, sizeof(buf), " $_ = 0x" XFMT "\n\n", dst);
       revm_output(buf);
     }
   

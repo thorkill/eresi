@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.8 2007-10-14 00:03:46 heroine Exp $
+** $Id: findentry.c,v 1.9 2007-12-10 12:58:45 may Exp $
 **
 */
 #include "libmjollnir.h"
@@ -125,6 +125,7 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
 
+
 /** 
  * This function traces the entry point and save the last push argument until 
  * a call is found. This allow to fetch the main address in an OS-dependent 
@@ -152,7 +153,7 @@ elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
 		      "Object is not ET_EXEC", 0);
   
 #if defined(__DEBUG_MJOLLNIR__)
-  printf(" [*] _start found at %lx\n", (unsigned long) vaddr);
+  printf(" [*] _start found at 0x%lx\n", (unsigned long) vaddr);
 #endif
 
   main_addr = mjr_find_main(context->obj, &context->proc, buf, len, vaddr, &dis);
