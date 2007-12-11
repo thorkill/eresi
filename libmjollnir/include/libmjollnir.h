@@ -9,6 +9,7 @@
  * unified component. Adapted the data structures. Unified prefixing. -may
  *
  */
+
 #if !defined(__MJOLLNIR__)
   #define __MJOLLNIR__ 1
 
