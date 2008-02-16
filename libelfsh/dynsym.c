@@ -5,17 +5,16 @@
 ** Started on  Mon Feb 26 04:13:29 2001 jfv
 ** 
 **
-** $Id: dynsym.c,v 1.20 2007-07-31 03:28:46 may Exp $
+** $Id: dynsym.c,v 1.21 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-
-
-
-
 /**
  * Return the dynsymbol name giving its index in the dynamic symbol string table 
+ * @param file
+ * @param s
+ * @return
  */
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
@@ -42,6 +41,10 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 
 /**
  * Return the used offset in .dynstr or -1 if failed 
+ * @param file
+ * @param s
+ * @param name
+ * @return
  */
 int		elfsh_set_dynsymbol_name(elfshobj_t *file, 
 					 elfsh_Sym *s, char *name)
@@ -92,6 +95,9 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
 
 /**
  * Return a ptr on the dynamic symbol table num is filled with the entries total number 
+ * @param file
+ * @param num
+ * @return
  */
 void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 {
@@ -176,6 +182,11 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 
 /**
  * Get symtab entry by vaddr 
+ * @param file
+ * @param vaddr
+ * @param off
+ * @param mode
+ * @return
  */
 elfsh_Sym	  *elfsh_get_dynsymbol_by_value(elfshobj_t	*file,
 						elfsh_Addr	vaddr,
@@ -200,6 +211,11 @@ elfsh_Sym	  *elfsh_get_dynsymbol_by_value(elfshobj_t	*file,
 /** 
  * Return the dynamic symbol name giving its value, 
  * Fill 'offset' with the difference between sym->st_value and 'value'
+ *
+ * @param file
+ * @param value
+ * @param offset
+ * @return
  */
 char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 					 elfsh_Addr	value, 
@@ -291,10 +307,6 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 }
 
 
-
-
-
-
 /**
  * Return the symbol entry giving its name 
  * @param file target file
@@ -373,6 +385,10 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 
 /**
  * Shift the dynamic symbol table, mostly useful on ET_DYN objects 
+ * @param file
+ * @param limit
+ * @param inc
+ * @return
  */
 int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc)
 {

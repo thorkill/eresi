@@ -9,7 +9,7 @@
 ** Started Jan 11 2004 02:57:03 jfv
 ** 
 **
-** $Id: hooks.c,v 1.25 2007-07-31 03:28:46 may Exp $
+** $Id: hooks.c,v 1.26 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -28,6 +28,11 @@ u_char	elfsh_ostype[5] = {
 								
 /**
  * Default hooks handlers
+ *
+ * @param null
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_default_plthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
@@ -41,6 +46,11 @@ int	elfsh_default_plthandler(elfshobj_t *null,
 /**
  * Used for encoding a random PLT entry
  * Do nothing by default, this is not fatal 
+ *
+ * @param file
+ * @param sect
+ * @param diff
+ * @return
  */
 int	elfsh_default_encodeplthandler(elfshobj_t *file, 
 				       elfshsect_t *sect, 
@@ -53,6 +63,11 @@ int	elfsh_default_encodeplthandler(elfshobj_t *file,
 
 /**
  * Used for encoding of the first PLT entry 
+ *
+ * @param file
+ * @param sect
+ * @param sect2
+ * @return
  */
 int	elfsh_default_encodeplt1handler(elfshobj_t *file, 
 					elfshsect_t *sect,
@@ -66,6 +81,11 @@ int	elfsh_default_encodeplt1handler(elfshobj_t *file,
 
 /**
  *
+ * @param null
+ * @param null2
+ * @param null3
+ * @param null4
+ * @param null5
  */
 int	elfsh_default_relhandler(elfshsect_t *null, 
 				 elfsh_Rel  * null2, 
@@ -80,6 +100,11 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 
 /**
  *
+ * @param null
+ * @param nulls
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   char		*nulls,
@@ -94,6 +119,11 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 
 /**
  *
+ * @param o
+ * @param d
+ * @param t
+ * @param f
+ * @return
  */
 int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d, 
 				    elfshsect_t *t, elfshsect_t *f)
@@ -106,6 +136,11 @@ int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d,
 /**
  * Used on architectures where altplt hijack is not required, thus induce no fatal error
  * DO NOT use this as a default handler, unless you know exactly what you are doing
+ *
+ * @param null
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_void_altplthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
@@ -117,6 +152,8 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
 
 /**
  *
+ * @param addr
+ * @return
  */
 int	elfsh_default_argchandler(elfsh_Addr addr)
 {
@@ -127,6 +164,12 @@ int	elfsh_default_argchandler(elfsh_Addr addr)
 
 /**
  * Registration handlers 
+ *
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_altplthook(u_char archtype, 
 				  u_char objtype, 
@@ -160,6 +203,12 @@ int	elfsh_register_altplthook(u_char archtype,
 
 /**
  * Register an EXTPLT handler 
+ *
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int		elfsh_register_extplthook(u_char archtype, 
 					  u_char objtype, 
@@ -193,6 +242,12 @@ int		elfsh_register_extplthook(u_char archtype,
 
 /**
  * Register an PLT handler 
+ *
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int		elfsh_register_plthook(u_char archtype, u_char objtype, 
 				       u_char ostype, void *fct)
@@ -223,6 +278,11 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
 
 /** 
  * Register an ENCODEPLT handler 
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_encodeplthook(u_char archtype, u_char objtype, 
 				     u_char ostype, void *fct)
@@ -254,6 +314,11 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
 
 /**
  * Register an ENCODEPLT1 handler 
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype, 
 				      u_char ostype, void *fct)
@@ -286,6 +351,11 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
 
 /**
  * Register an ET_REL injection handler 
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
 			       void *fct)
@@ -317,6 +387,11 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
 
 /**
  * Register a control flow redirection handler 
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_cflowhook(u_char archtype, u_char objtype, 
 				 u_char ostype, void *fct)
@@ -348,6 +423,11 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
 
 /**
  * Register a args counting redirection handler 
+ * @param archtype
+ * @param objtype
+ * @param ostype
+ * @param fct
+ * @return
  */
 int	elfsh_register_argchook(u_char archtype, u_char objtype, 
 				u_char ostype, void *fct)
@@ -381,6 +461,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
 
 /**
  * Initialize hook hash table 
+ * @return
  */
 int		elfsh_init_vectors()
 {
@@ -915,6 +996,13 @@ void	elfsh_setup_hooks()
 
 /**
  * Call the relocation hook 
+ * @param file
+ * @param s
+ * @param r
+ * @param l
+ * @param a
+ * @param m
+ * @return
  */
 int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r, 
 			    elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m)
@@ -962,6 +1050,11 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
 
 /**
  * Call the relocation hook 
+ * @param file
+ * @param name
+ * @param old
+ * @param new
+ * @return
  */
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old, 
 			    elfsh_Addr new)
@@ -1001,6 +1094,10 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
 
 /**
  * Call the PLT hook 
+ * @param file
+ * @param s
+ * @param new
+ * @return
  */
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 {
@@ -1040,6 +1137,12 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 
 /**
  * Call the ENCODEPLT hook 
+ *
+ * @param file
+ * @param plt
+ * @param diff
+ * @param off
+ * @return
  */
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
 				elfsh_Addr diff, u_int off)
@@ -1081,6 +1184,12 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
 
 /** 
  * Call the ENCODEPLT1 hook 
+ *
+ * @param file
+ * @param plt
+ * @param extplt 
+ * @param diff
+ * @return
  */
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
 				 elfshsect_t *extplt, elfsh_Addr diff)
@@ -1122,6 +1231,11 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 
 /**
  * Call the ALTPLT hook 
+ *
+ * @param file
+ * @param s
+ * @param new
+ * @return
  */
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 {
@@ -1160,6 +1274,12 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
 
 /**
  * Call the EXTPLT hook 
+ *
+ * @param extplt
+ * @param altgot
+ * @param dynsym
+ * @param relplt
+ * @return
  */
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
 			     elfshsect_t *dynsym, elfshsect_t *relplt)
@@ -1199,6 +1319,11 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
 
 /**
  * Call the arg count hook 
+ *
+ * @param file
+ * @param off
+ * @param vaddr
+ * @return
  */
 int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
 {
@@ -1234,6 +1359,9 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
 
 /**
  * Translate ELF architecture type into ELFsh architecture type 
+ *
+ * @param file
+ * @return
  */
 u_char		elfsh_get_archtype(elfshobj_t *file)
 {
@@ -1280,6 +1408,8 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
 
 /**
  * Translate ELF object type into ELFsh object type 
+ * @param file
+ * @return
  */
 u_char		elfsh_get_elftype(elfshobj_t *file)
 {
@@ -1299,6 +1429,8 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
       
 /**
  * Retreive ELFsh OS type from ELF header 
+ * @param file
+ * @return
  */
 u_char  elfsh_get_real_ostype(elfshobj_t *file)
 {
@@ -1327,6 +1459,9 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
 /**
  * For now, always return the type of a userland process
  * Need to be extended for the kernel memory type 
+ *
+ * @param file
+ * @return
  */
 u_char		elfsh_get_hosttype(elfshobj_t *file)
 {
@@ -1337,6 +1472,9 @@ u_char		elfsh_get_hosttype(elfshobj_t *file)
 
 /**
  * Fill up ELFsh Operating System type 
+ *
+ * @param file
+ * @return
  */
 u_char		elfsh_get_ostype(elfshobj_t *file)
 {
@@ -1419,6 +1557,9 @@ u_char		elfsh_get_ostype(elfshobj_t *file)
 
 /**
  * Return the page size 
+ *
+ * @param file
+ * @return
  */
 int       elfsh_get_pagesize(elfshobj_t *file)
 {
@@ -1447,6 +1588,9 @@ int       elfsh_get_pagesize(elfshobj_t *file)
 
 /**
  * Return the page size 
+ *
+ * @param file
+ * @return
  */
 u_int       elfsh_get_breaksize(elfshobj_t *file)
 {

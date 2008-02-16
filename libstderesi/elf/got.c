@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:20:18 2001 jfv
 **
 **
-** $Id: got.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: got.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -32,7 +32,7 @@ int		cmd_got()
   FIRSTREGX(tmp);
 
   index2 = 0;
-  if ((got = elfsh_get_got_by_idx(world.curjob->current, index2, (u_int *)&size))
+  if ((got = elfsh_get_got_by_idx(world.curjob->curfile, index2, (u_int *)&size))
 		 	== NULL)
     RET(-1);
   
@@ -43,8 +43,8 @@ int		cmd_got()
       data = elfsh_get_raw(got);
     
       snprintf(logbuf, BUFSIZ - 1, " [Global Offset Table .::. GOT : %s ]\n [Object %s]\n\n", 
-	       elfsh_get_section_name(world.curjob->current, got),
-	       world.curjob->current->name);
+	       elfsh_get_section_name(world.curjob->curfile, got),
+	       world.curjob->curfile->name);
       revm_output(logbuf);
       off[0] = 0;
 
@@ -52,7 +52,7 @@ int		cmd_got()
       for (index = 0; index < size; index++)
 	{
 
-	  name = revm_resolve(world.curjob->current, *((elfsh_Addr *) data + index), &offset);
+	  name = revm_resolve(world.curjob->curfile, *((elfsh_Addr *) data + index), &offset);
 
 	  if (off != NULL)
 	    snprintf(off, sizeof(off), " %s %s", 
@@ -83,7 +83,7 @@ int		cmd_got()
 	}
       
     next:
-      got = elfsh_get_got_by_idx(world.curjob->current, index2 + 1, (u_int *)&size);
+      got = elfsh_get_got_by_idx(world.curjob->curfile, index2 + 1, (u_int *)&size);
       revm_output("\n");
     }
 

@@ -4,7 +4,7 @@
  * Started on  Sat Jan 25 11:21:52 2003 jfv
  * Last update Thu Mar 11 07:56:36 2004 jfv
  *
- * $Id: unload.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: unload.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -57,16 +57,16 @@ int		cmd_unload()
   revm_output("\n");
 
   /* If the file is the current working one, swap to another one */
-  if (cur == world.curjob->current)
+  if (cur == world.curjob->curfile)
     {
       loaded = (hash_size(&world.curjob->loaded) ? 
 		&world.curjob->loaded : hash_size(&world.shared_hash) ? 
 		&world.shared_hash : NULL);
       if (!loaded)
-	world.curjob->current = NULL;
+	world.curjob->curfile = NULL;
       else 
 	do cur = hash_get_one(loaded);
-	while (cur == world.curjob->current);
+	while (cur == world.curjob->curfile);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

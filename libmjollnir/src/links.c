@@ -5,14 +5,9 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.8 2007-12-07 16:49:49 may Exp $
+ * $Id: links.c,v 1.9 2008-02-16 12:32:27 thor Exp $
  */
 #include <libmjollnir.h>
-
-
-/* Some prototypes of static functions of this file */
-static container_t	*mjr_block_split(mjrcontext_t *,elfsh_Addr, u_int);
-
 
 
 
@@ -57,6 +52,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
       fun = mjr_create_function_container(ctxt, tmpaddr, 0, 
 					  tmpstr, NULL, NULL);
       mjr_function_register(ctxt, tmpaddr, fun);
+      mjr_function_symbol(ctxt, fun);
     }
 
   /* Add links between functions */
@@ -68,11 +64,9 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
 			     MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
     }
 
-  // when a function start, we do a fingerprint of it
+  /* Fingerprint function */
   md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
-
   tmpfunc = (mjrfunc_t *) fun->data;
-
   if (md5)
     memcpy(tmpfunc->md5, md5, sizeof(tmpfunc->md5));
 
@@ -94,7 +88,7 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: linking %x CALL %x RET %x\n",
+  fprintf(D_DESC,"[D] %s: linking " AFMT " CALL " AFMT " RET " AFMT "\n",
 	  __FUNCTION__, src, dst, ret);
 #endif
 
@@ -105,8 +99,9 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
 
   /* at this point we must have src block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
-
+  fprintf(stderr, "Calling location source " XFMT "\n", src);
   assert(csrc != NULL);
+  mjr_block_symbol(ctxt, csrc, src, 1);
 
   /* search and/or split destination block */
   if (!(cdst = mjr_block_split(ctxt, dst, 0)))
@@ -145,12 +140,12 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
 /** 
  * @brief This function does prepare linking of blocks on conditional jumps
  */
-int	mjr_link_block_jump(mjrcontext_t *ctxt,
-			    elfsh_Addr src,
-			    elfsh_Addr dst,
-			    elfsh_Addr ret)
+int		mjr_link_block_jump(mjrcontext_t *ctxt,
+				    elfsh_Addr	 src,
+				    elfsh_Addr   dst,
+				    elfsh_Addr   ret)
 {
-  container_t	*csrc,*cdst,*cret;
+  container_t	*csrc, *cdst, *cret;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -159,17 +154,17 @@ int	mjr_link_block_jump(mjrcontext_t *ctxt,
 	  __FUNCTION__,
 	  src,dst,ret);
 #endif
-  
+
+  /* Insert symbol on terminated block */
+  csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
+  assert(csrc != NULL);
+  mjr_block_symbol(ctxt, csrc, src, 1);
+
+  /* Now split destination blocks */
   if (!(cdst = mjr_block_split(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
-  
-  csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
-  
-  assert(csrc != NULL);
-  
   cret = NULL;
-  
   if (ret)
     if (!(cret = mjr_block_split(ctxt,ret,MJR_LINK_BLOCK_COND_ALWAYS)))
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
@@ -219,7 +214,7 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
       savednext = curent->next;
       lnk = (mjrlink_t *) curent->data;
       mjr_container_add_link(ctx, dst, lnk->id, lnk->type, direction);
-      list_del(linklist, curent->key);
+      elist_del(linklist, curent->key);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -236,40 +231,50 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
  * @param dst  destination address of wanted block
  * @param link_with link splitted blocks with specified link type
  */
-static container_t	*mjr_block_split(mjrcontext_t	*ctxt,
+container_t		*mjr_block_split(mjrcontext_t	*ctxt,
 					 elfsh_Addr	dst,
 					 u_int		link_with)
 {
-  container_t	*tmpdst,*dstend;
+  container_t		*tmpdst,*dstend;
   mjrblock_t		*blkdst;
   int			new_size;
+  elfsh_Sym		*sym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if we need to split a bloc */
   tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
   if (!tmpdst)
     {
-      tmpdst = mjr_create_block_container(ctxt, 0, dst, 1);
+      tmpdst = mjr_create_block_container(ctxt, 0, dst, 1, 1);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
     }
 
-  blkdst = (mjrblock_t *)tmpdst->data;
+  /* Find existing symbol for split bloc */
+  blkdst = (mjrblock_t *) tmpdst->data;
+  sym = elfsh_get_symbol_by_value(ctxt->obj, blkdst->vaddr, NULL, ELFSH_EXACTSYM);
+  assert(sym != NULL);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: wanted dst:%x got:%x\n",
-	  __FUNCTION__, dst,blkdst->vaddr);
+  fprintf(D_DESC,"[D] %s: wanted dst:%x got:%x\n", __FUNCTION__, dst, blkdst->vaddr);
 #endif
 
+  /* Recompute sizes */
   if (blkdst->vaddr != dst)
     {
-      new_size		= blkdst->size - (dst - blkdst->vaddr);
-      blkdst->size	-= new_size;
+      new_size	    = blkdst->size - (dst - blkdst->vaddr);
+      blkdst->size -= new_size;
 
       assert(new_size > 0);
       assert(blkdst->size > 0);
-
-      dstend		= mjr_create_block_container(ctxt, 0, dst, new_size);
+      
+      dstend = mjr_create_block_container(ctxt, 0, dst, new_size, 1);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
+      
+      /* Correct existing symbol size and add new symbol */
+      sym->st_size = blkdst->size;
+      mjr_block_symbol(ctxt, dstend, NULL, 0);
 
       if (link_with)
 	{

@@ -5,7 +5,7 @@
 **
 ** Last update December 10 2006 may
 **
-** $Id: hammer.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: hammer.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -72,7 +72,9 @@ int		cmd_analyse()
      for (index = 1; index < nbr; index++)
        {
 	 container = hash_get(&world.mjr_session.cur->funchash, keys[index]);
-	 snprintf(logbuf, sizeof(logbuf), "func_%08X", *(elfsh_Addr *) container->data);
+	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
+		  (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX),
+		  *(elfsh_Addr *) container->data);
 	 revm_inform_type_addr(curtype->name, logbuf, (elfsh_Addr) container, NULL, 0, 1);
        }
      hash_free_keys(keys);
@@ -80,7 +82,9 @@ int		cmd_analyse()
      for (index = 1; index < nbr; index++)
        {
 	 container = hash_get(&world.mjr_session.cur->blkhash, keys[index]);
-	 snprintf(logbuf, sizeof(logbuf), "bloc_%08X", *(elfsh_Addr *) container->data);
+	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
+		  (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX),
+		  *(elfsh_Addr *) container->data);
 	 revm_inform_type_addr(curtype->name, logbuf, (elfsh_Addr) container, NULL, 0, 1);
        }
      hash_free_keys(keys);

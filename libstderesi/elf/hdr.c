@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:21:14 2001 jfv
  * Last update Thu Mar 11 15:02:24 2004 jfv
  *
- * $Id: hdr.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: hdr.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -90,7 +90,7 @@ int		cmd_elf()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch ELF header */
-  header = elfsh_get_hdr(world.curjob->current);
+  header = elfsh_get_hdr(world.curjob->curfile);
   if (header == NULL)
     RET(-1);
   
@@ -107,7 +107,7 @@ int		cmd_elf()
   /* Resolve entry point */
   magic = elfsh_get_magic(header);
 
-  //name = elfsh_reverse_metasym(world.curjob->current, header->e_entry, &offset);
+  //name = elfsh_reverse_metasym(world.curjob->curfile, header->e_entry, &offset);
   name = NULL;
   if (name != NULL)
     {
@@ -134,7 +134,7 @@ int		cmd_elf()
 
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n [ELF HEADER]\n [Object %s, MAGIC 0x%08X]\n\n",
-	   world.curjob->current->name, magic);
+	   world.curjob->curfile->name, magic);
   revm_output(logbuf);
   
   snprintf(logbuf, BUFSIZ, 
@@ -177,7 +177,7 @@ int		cmd_elf()
 	   revm_colorfieldstr_fmt("%-20s", "Runtime PHT offset"),
 	   revm_colornumber("%18u", elfsh_get_rphtoff(header)),
 	   revm_colorfieldstr_fmt("%-20s", "Fingerprinted OS"),
-	   revm_colorstr_fmt("%14s", revm_printostype(world.curjob->current)),
+	   revm_colorstr_fmt("%14s", revm_printostype(world.curjob->curfile)),
 	   revm_colorfieldstr_fmt("%-20s", "Entry point"),
 	   revm_coloraddress(XFMT18, header->e_entry), 
 	   (name != NULL ? revm_colorstr_fmt("[%s]", buf) : revm_colorwarn("[?]")), 

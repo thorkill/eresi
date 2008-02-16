@@ -1,7 +1,7 @@
 /**
  * @file generic.c
- * Latest edition Author : $Author: heroine $
- * $Id: generic.c,v 1.14 2007-10-14 00:01:41 heroine Exp $
+ * Latest edition Author : $Author: thor $
+ * $Id: generic.c,v 1.15 2008-02-16 12:32:26 thor Exp $
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */
@@ -20,8 +20,7 @@
  */
 
 int	asm_read_instr(asm_instr *instr, u_char *buf, 
-		       u_int len, 
-		       asm_processor *proc) 
+		       u_int len, asm_processor *proc) 
 {
   int	to_ret;
   

@@ -5,7 +5,7 @@
 ** Started on  Tue Feb 27 14:34:50 2001 jfv
 ** 
 **
-** $Id: reloc.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: reloc.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -24,6 +24,10 @@ static char	isrel = 1;
 
 /**
  * Create relocation entry 
+ * @param type
+ * @param sym
+ * @param off
+ * @return
  */
 elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym, 
 				    elfsh_Addr off)
@@ -40,6 +44,11 @@ elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym,
 
 /**
  * Create relocation entry 
+ * @param type
+ * @param sym
+ * @param off
+ * @param add
+ * @return
  */
 elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym, 
 				     elfsh_Addr off, elfsh_Addr add)
@@ -60,6 +69,8 @@ elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym,
 
 /**
  * Return the relocation type 
+ * @param r
+ * @return
  */
 u_int	elfsh_get_reltype(elfsh_Rel *r)
 {
@@ -73,6 +84,9 @@ u_int	elfsh_get_reltype(elfsh_Rel *r)
 
 /**
  * Return the relocation type 
+ * @param r
+ * @param type
+ * @return
  */
 u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
 {
@@ -87,6 +101,8 @@ u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
 
 /**
  * Return the relocation symbol index 
+ * @param r
+ * @return
  */
 u_int	elfsh_get_relsym(elfsh_Rel *r)
 {
@@ -100,6 +116,9 @@ u_int	elfsh_get_relsym(elfsh_Rel *r)
 
 /**
  * Change the relocation symbol index 
+ * @param r
+ * @param sym
+ * @return
  */
 u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
 {
@@ -115,6 +134,8 @@ u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
 
 /**
  * Return the relocation offset 
+ * @param r
+ * @return
  */
 elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
 {
@@ -128,6 +149,9 @@ elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
 
 /**
  * Change the relocation offset for this entry 
+ * @param r
+ * @param off
+ * @return
  */
 int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
 {
@@ -143,6 +167,8 @@ int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
 
 /**
  * Return the add-end 
+ * @param r
+ * @return
  */
 elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
 {
@@ -156,6 +182,9 @@ elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
 
 /**
  * Change the add-end 
+ * @param r
+ * @param val
+ * @return
  */
 int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
 {
@@ -170,6 +199,8 @@ int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
 
 /**
  * Change endianess of relocation tables 
+ * @param s
+ * @return
  */
 int		elfsh_endianize_relocs(elfshsect_t *s)
 {
@@ -217,6 +248,10 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
 
 /**
  * Return the 'range'th relocation table 
+ * @param file
+ * @param range
+ * @param nbr
+ * @return
  */
 elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, 
 				 elfsh_Addr range, 
@@ -265,6 +300,9 @@ elfshsect_t	*elfsh_get_reloc(elfshobj_t *file,
 
 /**
  * Insert a symbol in the given symbol table 
+ * @param sect
+ * @param rel
+ * @return
  */
 int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
 
@@ -293,6 +331,9 @@ int		elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
 
 /**
  * Return the symbol name associated with the relocation entry 
+ * @param file
+ * @param r
+ * @return
  */
 char		*elfsh_get_symname_from_reloc(elfshobj_t *file,
 					      elfsh_Rel	 *r)
@@ -319,6 +360,9 @@ char		*elfsh_get_symname_from_reloc(elfshobj_t *file,
 
 /**
  * Return the Symbol associated with the relocation entry 
+ * @param file
+ * @param r
+ * @return
  */
 elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
 					     elfsh_Rel	*r)
@@ -364,6 +408,7 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
  * Ugly hook, but necessary for keeping track of the reloc element type
  * since elfsh_get_relent_by_index cannot do it since it shares a function
  * pointer with other elf objects in the scripting engine. -m
+ * @param b
  */
 void		elfsh_setrel(char b) 
 {
@@ -377,6 +422,9 @@ void		elfsh_setrel(char b)
 
 /**
  * Used as internal handler for elfsh hashes 
+ * @param table
+ * @param index
+ * @return
  */
 elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
 {
@@ -396,6 +444,9 @@ elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
 
 /**
  * Used as internal handler for elfsh hashes 
+ * @param file
+ * @param name
+ * @return
  */
 elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 {
@@ -440,6 +491,8 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 
 /**
  * Create relocation table for section 
+ * @param sect
+ * @return
  */
 elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
 {

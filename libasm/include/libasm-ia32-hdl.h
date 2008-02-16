@@ -12,7 +12,7 @@ int	asm_register_ia32_operands();
 /**
  * Operand fetching handlers.
  */
-#if WIP
+#ifdef WIP
 int	asm_operand_fetch(asm_operand *operand, u_char *opcode, int type, 
 			  asm_instr *ins, int opt);
 int	asm_operand_fetch_default(asm_operand *operand, u_char *opcode, int type, 

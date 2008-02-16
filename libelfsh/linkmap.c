@@ -7,13 +7,15 @@
 ** Started on  Mon Jul 25 21:26:54 2005 ym
 ** 
 **
-** $Id: linkmap.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: linkmap.c,v 1.5 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
  */
 
 elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
@@ -28,6 +30,9 @@ elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @param laddr
+ * @return
  */
 void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, elfsh_Addr laddr)
 {
@@ -42,6 +47,8 @@ void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, elfsh_Addr laddr)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
  */
 char		*elfsh_linkmap_get_lname(elfshlinkmap_t *lm)
 {
@@ -55,6 +62,9 @@ char		*elfsh_linkmap_get_lname(elfshlinkmap_t *lm)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @param name
+ * @return
  */
 void		elfsh_linkmap_set_lname(elfshlinkmap_t *lm, char *name)
 {
@@ -69,6 +79,8 @@ void		elfsh_linkmap_set_lname(elfshlinkmap_t *lm, char *name)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
  */
 elfsh_Dyn	*elfsh_linkmap_get_lld(elfshlinkmap_t *lm)
 {
@@ -82,6 +94,9 @@ elfsh_Dyn	*elfsh_linkmap_get_lld(elfshlinkmap_t *lm)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @param lld
+ * @return
  */
 void		elfsh_linkmap_set_lld(elfshlinkmap_t *lm, elfsh_Dyn *lld)
 {
@@ -96,6 +111,8 @@ void		elfsh_linkmap_set_lld(elfshlinkmap_t *lm, elfsh_Dyn *lld)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
  */
 elfshlinkmap_t	*elfsh_linkmap_get_lnext(elfshlinkmap_t *lm)
 {
@@ -109,6 +126,9 @@ elfshlinkmap_t	*elfsh_linkmap_get_lnext(elfshlinkmap_t *lm)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @param lnext
+ * @return
  */
 void		elfsh_linkmap_set_lnext(elfshlinkmap_t *lm, elfshlinkmap_t *lnext)
 {
@@ -123,6 +143,8 @@ void		elfsh_linkmap_set_lnext(elfshlinkmap_t *lm, elfshlinkmap_t *lnext)
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
  */
 elfshlinkmap_t	*elfsh_linkmap_get_lprev(elfshlinkmap_t *lm)
 {
@@ -134,7 +156,12 @@ elfshlinkmap_t	*elfsh_linkmap_get_lprev(elfshlinkmap_t *lm)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lm->lprev);
 }
 
-
+/**
+ * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @return
+ *
+ */
 void		elfsh_linkmap_set_lprev(elfshlinkmap_t *lm, 
 					elfshlinkmap_t *lprev)
 {
@@ -150,6 +177,9 @@ void		elfsh_linkmap_set_lprev(elfshlinkmap_t *lm,
 
 /**
  * Documentation missing.
+ * @param lm Pointer to linkmap structure.
+ * @param name
+ * @return
  */
 elfshlinkmap_t	*elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name)
 {

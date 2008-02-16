@@ -6,7 +6,7 @@
 ** 
 ** Started on  Sat Oct 01 14:37:33 2005  jfv
 **
-** $Id: rpht.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
+** $Id: rpht.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,9 @@
 
 /**
  * @brief Return a ptr on the program header table 
+ * @param file
+ * @param num
+ * @return
  */
 void    *elfsh_get_rpht(elfshobj_t *file, int *num)
 {
@@ -30,6 +33,8 @@ void    *elfsh_get_rpht(elfshobj_t *file, int *num)
 
 /**
  * Create and insert the Runtime PHT 
+ * @param file
+ * @return
  */
 int             elfsh_create_rpht(elfshobj_t *file)
 {
@@ -46,6 +51,9 @@ int             elfsh_create_rpht(elfshobj_t *file)
 
 /**
  * Insert a PHT entry in the RPHT (e2dbg safe) 
+ * @param file
+ * @param h
+ * @return
  */
 elfsh_Phdr	*elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h)
 {

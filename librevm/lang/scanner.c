@@ -4,7 +4,7 @@
  * Started on  Fri Feb  7 20:53:25 2003 jfv
  * Updated on  Fri Mar  5 18:47:41 2007 jfv
  *
- * $Id: scanner.c,v 1.14 2007-11-29 14:01:56 may Exp $
+ * $Id: scanner.c,v 1.15 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "revm.h"
@@ -258,7 +258,7 @@ char		**revm_doargv(u_int nbr, u_int *argc, char *buf)
 
 
 /* Its lighter than flex ... */
-char		**revm_input(int *argc)
+char		**revm_input(int *argc, char *available_line)
 {
   char		**argv;
   char		*buf;
@@ -267,8 +267,11 @@ char		**revm_input(int *argc)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Read, and sanitize a first time to avoid blank lines and various special returns */
-  buf = revm_getln();
+  if (!available_line)
+    buf = revm_getln();
+  else
+    buf = available_line;
+
   if ((int) buf == 0 || 
       (int) buf == REVM_INPUT_VOID || 
       (int) buf == REVM_INPUT_EXIT || 
@@ -304,11 +307,14 @@ char		**revm_input(int *argc)
 		    ((char **) REVM_INPUT_TRANSFERED));      
     }
 
-  /* Allocate the correct pointer array for argv */
+  /* Read, and sanitize to avoid blank lines and various special returns */
   nbr = revm_findblanks(buf);
+
+  /* Allocate the correct pointer array for argv */
   argv = revm_doargv(nbr, (u_int *) argc, buf);
 
   /* Find and replace "\xXX" sequences, then return the array */
   revm_findhex(*argc, argv);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (argv));
 }

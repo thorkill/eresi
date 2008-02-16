@@ -8,7 +8,7 @@
 ** Started on  Mon Mar 17 09:30:33 2003 jfv
 ** 
 **
-** $Id: remap.c,v 1.5 2007-07-31 03:28:47 may Exp $
+** $Id: remap.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -16,6 +16,9 @@
 
 /**
  * Remap the Program Header Table 
+ * @param file
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
 {
@@ -49,6 +52,9 @@ int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
 
 /**
  * Remap the Section Header Table 
+ * @param file
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
 {
@@ -74,6 +80,9 @@ int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
 
 /**
  * Remap a section which type is SHT_SYMTAB or SHT_DYNSYM 
+ * @param s
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
 {
@@ -112,6 +121,9 @@ int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
 
 /**
  * Remap a section using its extra relocation entries 
+ * @param cur
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 {
@@ -158,6 +170,9 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 
 /**
  * Remap the .dynamic section 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -195,6 +210,9 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Remap sections of type SHT_REL and SHT_RELA 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -231,6 +249,11 @@ int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Remap section's whoose type is a data array (GOT, CTORS, DTORS ..) 
+ * @param file
+ * @param array
+ * @param size
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_array(elfshobj_t *file, 
 				  elfsh_Addr *array, 
@@ -260,7 +283,10 @@ int		elfsh_reloc_array(elfshobj_t *file,
 }
 
 /**
- * Remap Global Offset Table 
+ * Remap Global Offset Table
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -280,6 +306,9 @@ int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Remap .ctors section 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -300,6 +329,9 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Remap .dtors section 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -321,6 +353,9 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Not used ATM since it triggers more false positives ;P 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -341,6 +376,9 @@ int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 
 /**
  * Call the type dependant remapping routine for this section 
+ * @param sect
+ * @param diff
+ * @return
  */
 int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
 {
@@ -386,6 +424,10 @@ int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
  * - Change objtype and entryp in ELF header
  * - Relocate PHT and SHT
  * - Change reloc section size in .dynamic *
+ *
+ * @param file
+ * @param new_addr
+ * @return
  */
 int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
 {

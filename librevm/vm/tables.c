@@ -5,7 +5,7 @@
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
-** $Id: tables.c,v 1.53 2007-12-06 05:11:58 may Exp $
+** $Id: tables.c,v 1.54 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -1036,7 +1036,7 @@ void		revm_tables_setup()
   hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
   hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
   hash_init(&parser_hash      , "parsers"    , 11, ASPECT_TYPE_CADDR);
-  list_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
+  elist_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
 
   if (world.cmd_init)
     (*world.cmd_init)();

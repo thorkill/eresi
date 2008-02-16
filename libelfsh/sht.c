@@ -4,7 +4,7 @@
 ** 
 ** Started on  Mon Feb 26 04:16:18 2001 jfv
 **
-** $Id: sht.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
+** $Id: sht.c,v 1.9 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -12,6 +12,8 @@
 /**
  * @brief Sort SHT by file offset on ET_REL objects
  * Mandatory on gcc 2.95.2/2.96 generated bins, maybe others 
+ * @param file
+ * @return
  */
 int			elfsh_sort_sht(elfshobj_t *file)
 {
@@ -132,6 +134,8 @@ int			elfsh_sort_sht(elfshobj_t *file)
 
 /**
  * Synchronize duplicated names for sections 
+ * @param file
+ * @return
  */
 void		elfsh_sync_sectnames(elfshobj_t *file)
 {
@@ -153,6 +157,8 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
 
 /**
  * @brief Synchronize SHT (mostly used when removing sections) 
+ * @param file
+ * @return
  */
 void		elfsh_sync_sht(elfshobj_t *file)
 {
@@ -173,6 +179,9 @@ void		elfsh_sync_sht(elfshobj_t *file)
 
 /**
  * Return a pointer on the runtime SHT 
+ * @param file
+ * @param num
+ * @return
  */
 void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 {
@@ -215,6 +224,9 @@ void		*elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 
 /**
  * @brief Return a ptr on the section header table 
+ * @param file
+ * @param num
+ * @return
  */
 void		*elfsh_get_sht(elfshobj_t *file, int *num)
 {
@@ -259,6 +271,10 @@ void		*elfsh_get_sht(elfshobj_t *file, int *num)
 
 /**
  * Change endianess of SHT 
+ * @param s
+ * @param byteorder
+ * @param shnum
+ * @return
  */
 int		elfsh_endianize_sht(elfsh_Shdr *s, 
 				    char byteorder, 
@@ -300,6 +316,8 @@ int		elfsh_endianize_sht(elfsh_Shdr *s,
 
 /**
  * Return an array of section header 
+ * @param file
+ * @return
  */
 int		elfsh_load_sht(elfshobj_t *file)
 {
@@ -352,6 +370,9 @@ int		elfsh_load_sht(elfshobj_t *file)
 
 /**
  * Retreive the section header giving the section symbol from .symtab 
+ * @param file
+ * @param sym
+ * @return
  */
 elfsh_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
 						     elfsh_Sym	*sym)
@@ -366,7 +387,10 @@ elfsh_Shdr		*elfsh_get_shtentry_from_sym(elfshobj_t *file,
 }
 
 /**
- * Retreive the symbol for the section giving the section header 
+ * Retreive the symbol for the section giving the section header
+ * @param file
+ * @param hdr
+ * @return
  */
 elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 						     elfsh_Shdr *hdr)
@@ -411,6 +435,18 @@ elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 
 /**
  * Create a section header 
+ *
+ * @param name
+ * @param type
+ * @param flags
+ * @param addr
+ * @param offset
+ * @param size
+ * @param link
+ * @param info
+ * @param align
+ * @param entsize
+ * @return
  */
 elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
 					  elfsh_Word type,
@@ -442,6 +478,12 @@ elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
 
 /**
  * Add a section header to the object 
+ * @param file
+ * @param hdr
+ * @param range
+ * @param name
+ * @param shiftflag
+ * @return
  */
 int		elfsh_insert_shdr(elfshobj_t	*file,
 				  elfsh_Shdr	hdr,
@@ -530,6 +572,12 @@ int		elfsh_insert_shdr(elfshobj_t	*file,
 
 /**
  * Add a section header to the object 
+ * @param file
+ * @param hdr
+ * @param range
+ * @param name
+ * @param shiftflag
+ * @return
  */
 int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
 					  elfsh_Shdr	hdr,
@@ -616,7 +664,10 @@ int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
 }
 
 /**
- * Get the section's name in .shstrtab 
+ * Get the section's name in .shstrtab
+ * @param file
+ * @param s
+ * @return
  */
 char		*elfsh_get_section_name(elfshobj_t *file,
 					elfshsect_t *s)
@@ -652,6 +703,10 @@ char		*elfsh_get_section_name(elfshobj_t *file,
 
 /**
  * Set the section's name in .shstrtab 
+ * @param file
+ * @param s
+ * @param name
+ * @return
  */
 int			elfsh_set_section_name(elfshobj_t	*file,
 					       elfshsect_t	*s,
@@ -703,6 +758,7 @@ int			elfsh_set_section_name(elfshobj_t	*file,
 
 /**
  * Tell elfsh that we dont want the sht in the output file 
+ * @param file
  */
 void		elfsh_remove_sht(elfshobj_t *file)
 {
@@ -715,6 +771,8 @@ void		elfsh_remove_sht(elfshobj_t *file)
 
 /**
  * SET/GET the allocatable flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_allocflag(elfsh_Shdr *s)
 {
@@ -729,6 +787,9 @@ char	elfsh_get_section_allocflag(elfsh_Shdr *s)
 
 /**
  * Set the allocatable flag
+ * @param s
+ * @param f
+ * @return
  */
 char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -746,6 +807,8 @@ char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the writable flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_writableflag(elfsh_Shdr *s)
 {
@@ -760,6 +823,9 @@ char	elfsh_get_section_writableflag(elfsh_Shdr *s)
 
 /**
  * SET writableflag
+ * @param s
+ * @param f
+ * @return
  */
 char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -777,6 +843,8 @@ char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the executable flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_execflag(elfsh_Shdr *s)
 {
@@ -791,6 +859,9 @@ char	elfsh_get_section_execflag(elfsh_Shdr *s)
 
 /**
  * SET executable flag
+ * @param s
+ * @param f
+ * @return
  */
 char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -808,6 +879,8 @@ char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the mergeable flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
 {
@@ -822,6 +895,9 @@ char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
 
 /**
  * SET the mergeable flag
+ * @param s
+ * @param f
+ * @return
  */
 char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -839,6 +915,8 @@ char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the string flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_strflag(elfsh_Shdr *s)
 {
@@ -853,6 +931,9 @@ char	elfsh_get_section_strflag(elfsh_Shdr *s)
 
 /**
  * SET the string flag
+ * @param s
+ * @param f
+ * @return
  */
 char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
 {
@@ -871,6 +952,8 @@ char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the link flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_linkflag(elfsh_Shdr *s)
 {
@@ -885,6 +968,9 @@ char	elfsh_get_section_linkflag(elfsh_Shdr *s)
 
 /**
  * SET the link flag
+ * @param s
+ * @param f
+ * @return
  */
 
 char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
@@ -903,6 +989,8 @@ char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * SET/GET the order flag 
+ * @param s
+ * @return
  */
 char	elfsh_get_section_orderflag(elfsh_Shdr *s)
 {
@@ -917,6 +1005,9 @@ char	elfsh_get_section_orderflag(elfsh_Shdr *s)
 
 /**
  * SET the order flag
+ * @param s
+ * @param f
+ * @return
  */
 
 char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
@@ -935,6 +1026,8 @@ char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
 
 /**
  * All the next functions are dumb read/write field access routine 
+ * @param s
+ * @return
  */
 elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
 {
@@ -948,6 +1041,9 @@ elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
 
 /**
  * Set section info
+ * @param s
+ * @param info
+ * @return
  */
 int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
 {
@@ -962,6 +1058,8 @@ int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
 
 /**
  * get section entsize
+ * @param s Pointer to section structure.
+ * @return Return section entry size or -1 on error.
  */
 elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
 {
@@ -975,6 +1073,9 @@ elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
 
 /**
  * set section entsize
+ * @param s
+ * @param entsize
+ * @return
  */
 int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
 {
@@ -989,6 +1090,8 @@ int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
 
 /**
  * get section link
+ * @param s
+ * @return
  */
 elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
 {
@@ -1002,6 +1105,9 @@ elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
 
 /**
  * set section link
+ * @param s
+ * @param link
+ * @return
  */
 int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
 {
@@ -1016,6 +1122,8 @@ int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
 
 /**
  * get section foffset
+ * @param s
+ * @return
  */
 elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
 {
@@ -1029,6 +1137,9 @@ elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
 
 /**
  * set section foffset
+ * @param s
+ * @param offset
+ * @return
  */
 int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
 {
@@ -1043,6 +1154,8 @@ int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
 
 /**
  * get section addr
+ * @param s Pointer to section structure.
+ * @return Return section address or -1 on error.
  */
 elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
 {
@@ -1056,6 +1169,9 @@ elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
 
 /**
  * set section addr
+ * @param s Pointer to section structure.
+ * @param addr New address of section
+ * @return Returns 0 on success or -1 on error.
  */
 int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
 {
@@ -1070,6 +1186,8 @@ int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
 
 /**
  * get section align
+ * @param s
+ * @return
  */
 elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
 {
@@ -1083,6 +1201,9 @@ elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
 
 /**
  * set section align
+ * @param s
+ * @param align
+ * @return
  */
 int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
 {
@@ -1097,6 +1218,8 @@ int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
 
 /**
  * get section size
+ * @param s
+ * @return
  */
 elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
 {
@@ -1110,6 +1233,9 @@ elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
 
 /**
  * set section size
+ * @param s Pointer to section structure.
+ * @param size New size of section.
+ * @return Returns 0 on success or -1 on error.
  */
 int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
 {
@@ -1124,6 +1250,8 @@ int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
 
 /**
  * get section type
+ * @param s
+ * @return Return section type or -1 on error.
  */
 elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
 {
@@ -1137,6 +1265,9 @@ elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
 
 /**
  * set section type
+ * @param s
+ * @param type
+ * @return Returns 0 on success or -1 on error.
  */
 int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
 {
@@ -1158,7 +1289,10 @@ int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
  */
 
 /**
- * Get SHT or runtime SHT entry by index 
+ * Get SHT or runtime SHT entry by index
+ * @param s
+ * @param index
+ * @return Pointer to a section structure.
  */
 elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s, 
 						      elfsh_Addr index)
@@ -1168,7 +1302,11 @@ elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s,
 }
 
 /**
- * Get SHT entry by name */
+ * Get SHT entry by name 
+ * @param file
+ * @param name
+ * @return
+ */
 elfsh_Shdr		*elfsh_get_sht_entry_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t		*sect;

@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:18:35 2001 jfv
  *
  *
- * $Id: pht.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: pht.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -152,15 +152,15 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
 
   snprintf(logbuf, BUFSIZ - 1, 
 	   "\n [SHT correlation]"
-	   "\n [Object %s]\n\n", world.curjob->current->name);
+	   "\n [Object %s]\n\n", world.curjob->curfile->name);
   revm_output(logbuf);
 
   /* Retreive the sht */
-  if ((shdr = elfsh_get_sht(world.curjob->current, &shtnum)) == 0)
+  if ((shdr = elfsh_get_sht(world.curjob->curfile, &shtnum)) == 0)
     PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1, " [*] SHT %s \n", 
-	   (world.curjob->current->shtrb ? 
+	   (world.curjob->curfile->shtrb ? 
 	    "has been rebuilt \n" :
 	    "is not stripped \n"));
   revm_output(logbuf);
@@ -181,7 +181,7 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
       revm_endline();
       
       /* In SHT */
-      for (index2 = 0, list = world.curjob->current->sectlist; 
+      for (index2 = 0, list = world.curjob->curfile->sectlist; 
 	   list; list = list->next)
 	if (elfsh_segment_is_parent(list, phdr + index))
 	  {
@@ -189,14 +189,14 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
 	    snprintf(logbuf, BUFSIZ - 1, "%s%s ", 
 		     (list->shdr->sh_offset + list->shdr->sh_size > 
 		      phdr[index].p_offset + phdr[index].p_filesz ? "|" : ""),
-		     revm_colorstr(elfsh_get_section_name(world.curjob->current, list)));
+		     revm_colorstr(elfsh_get_section_name(world.curjob->curfile, list)));
 	    revm_output(logbuf);
 
 	    revm_endline();
 	  }
 
       /* In RSHT */
-      for (index2 = 0, list = world.curjob->current->rsectlist; 
+      for (index2 = 0, list = world.curjob->curfile->rsectlist; 
 	   list; list = list->next)
 	if (elfsh_segment_is_parent(list, phdr + index))
 	  {
@@ -204,7 +204,7 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
 	    snprintf(logbuf, BUFSIZ - 1, "%s%s ", 
 		     (list->shdr->sh_addr + list->shdr->sh_size > 
 		      phdr[index].p_vaddr + phdr[index].p_memsz ? "|" : ""),
-		     revm_colorstr(elfsh_get_section_name(world.curjob->current, list)));
+		     revm_colorstr(elfsh_get_section_name(world.curjob->curfile, list)));
 	    revm_output(logbuf);
 
 	    revm_endline();
@@ -230,15 +230,15 @@ int		cmd_pht()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch and Print PHT */
-  if ((phdr = elfsh_get_pht(world.curjob->current, &num)) == 0)
+  if ((phdr = elfsh_get_pht(world.curjob->curfile, &num)) == 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get PHT", -1);
   
   snprintf(logbuf, BUFSIZ - 1, 
 	   " [Program Header Table .::. PHT]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
-  revm_pht_print(phdr, num, world.curjob->current->rhdr.base);
+  revm_pht_print(phdr, num, world.curjob->curfile->rhdr.base);
 
   /* End */
   revm_output("\n");
@@ -259,13 +259,13 @@ int             cmd_rpht()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch and Print Runtime (alternative) PHT */
-  if ((phdr = elfsh_get_rpht(world.curjob->current, &num)) == 0)
+  if ((phdr = elfsh_get_rpht(world.curjob->curfile, &num)) == 0)
     RET(-1);
   snprintf(logbuf, BUFSIZ, 
 	   "\n [Runtime Program Header Table .::. RPHT]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
-  revm_pht_print(phdr, num, world.curjob->current->rhdr.base);
+  revm_pht_print(phdr, num, world.curjob->curfile->rhdr.base);
   
   /* End */
   revm_output("\n");

@@ -4,7 +4,7 @@
  * Input related functions
  *
  * Started on  Fri Feb  7 20:53:25 2003 jfv
- * $Id: input.c,v 1.12 2007-11-29 14:01:56 may Exp $
+ * $Id: input.c,v 1.13 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "revm.h"
@@ -39,11 +39,9 @@ char		*revm_getln()
 
       if (!*sav || *sav == REVM_COMMENT_START)
 	{
-
 	  revm_log(sav);
 	  revm_log("\n");
-	  revm_buffer_free(buf);
-	  
+	  revm_buffer_free(buf); 
 	  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
 	      world.state.revm_mode == REVM_STATE_DEBUGGER)
 	    NOPROFILER_ROUT((char*) REVM_INPUT_VOID);

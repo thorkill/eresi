@@ -4,13 +4,16 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Fri Sep 11 17:26:11 2005 jfv
 **
-** $Id: misc.c,v 1.14 2007-12-09 23:00:18 may Exp $
+** $Id: misc.c,v 1.15 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
 
 
-/* return the project name accordingly to mode */
+/** 
+ * return the project name accordingly to mode 
+ * @return
+ */
 char		*revm_modename_get()
 {
   char          *mode;
@@ -26,7 +29,10 @@ char		*revm_modename_get()
 }
 
 
-/* Our system implementation */
+/** 
+ * Our system implementation 
+ * @param cmd
+ */
 int		revm_system(char *cmd)
 {
   char		buf[BUFSIZ];
@@ -59,7 +65,11 @@ int		revm_system(char *cmd)
 }
 
 
-/* Decide what to do for exiting depending on the current input */
+/** 
+ * Decide what to do for exiting depending on the current input 
+ * @param err
+ * @return
+ */
 void	revm_exit(int err)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -67,7 +77,11 @@ void	revm_exit(int err)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Bad parameter handler */
+/** 
+ * Bad parameter handler 
+ * @param str
+ * @return
+ */
 void	revm_badparam(char *str)
 {
   char	buf[BUFSIZ];
@@ -82,7 +96,10 @@ void	revm_badparam(char *str)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Unknow command handler */
+/** 
+ * Unknow command handler 
+ * @param str
+ */
 void	revm_unknown(char *str)
 {
   char	buf[BUFSIZ];
@@ -95,7 +112,12 @@ void	revm_unknown(char *str)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Generic error message handler */
+/**
+ * Generic error message handler 
+ *
+ * @param label
+ * @param param
+ */
 
 void	revm_error(char *label, char *param)
 {
@@ -109,7 +131,9 @@ void	revm_error(char *label, char *param)
 }
 
 
-/* Open the script file */
+/** 
+ * Open the script file 
+ */
 int		revm_openscript(char **av)
 {
   int		fd;
@@ -137,7 +161,9 @@ int		revm_openscript(char **av)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Say if we are in script mode */
+/** 
+ * Say if we are in script mode 
+ */
 int		revm_testscript(int ac, char **av)
 {
   int		fd;
@@ -173,7 +199,9 @@ int		revm_testscript(int ac, char **av)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/* Print the banner */
+/** 
+ * Print the banner 
+ */
 void		revm_banner_print()
 {
   char		logbuf[BUFSIZ];
@@ -198,7 +226,9 @@ void		revm_banner_print()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Print the Unknown buffer */
+/** 
+ * Print the Unknown buffer 
+ */
 char		*revm_build_unknown(char *buf, const char *str, u_long type)
 {
 
@@ -210,7 +240,9 @@ char		*revm_build_unknown(char *buf, const char *str, u_long type)
 }
 
 
-/* Retreive a file object giving its unique ID */
+/** 
+ * Retreive a file object giving its unique ID 
+ */
 elfshobj_t	*revm_getfile(u_int id)
 {
   elfshobj_t	*cur;
@@ -255,7 +287,9 @@ elfshobj_t	*revm_getfile(u_int id)
 		    "Unable to find file", (NULL));
 }
 
-/* Retreive a module object giving its unique ID */
+/** 
+ * Retreive a module object giving its unique ID 
+ */
 revmmod_t	*revm_getmod(u_int index)
 {
   revmmod_t	*cur;
@@ -269,7 +303,9 @@ revmmod_t	*revm_getmod(u_int index)
 		    "Unable to find module", (NULL));
 }
 
-/* Print error depending on the state of the machine */
+/** 
+ * Print error depending on the state of the machine 
+ */
 int		revm_doerror(void (*fct)(char *str), char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -286,7 +322,9 @@ int		revm_doerror(void (*fct)(char *str), char *str)
 }
 
 
-/* Change the shell variable */
+/** 
+ * Change the shell variable 
+ */
 int		revm_setshell(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -297,7 +335,9 @@ int		revm_setshell(char *str)
 }
 
 
-/* The internal basename function */
+/** 
+ * The internal basename function 
+ */
 char		*revm_basename(char *str)
 {
   char		*cur;
@@ -317,7 +357,9 @@ char		*revm_basename(char *str)
 
 
 
-/* Useful to differentiate 0 and a string */
+/** 
+ * Useful to differentiate 0 and a string 
+ */
 int	revm_isnbr(char *string)
 {
   size_t len = strlen(string);
@@ -333,7 +375,9 @@ int	revm_isnbr(char *string)
 
 
 
-/* Concatenate all parameters and return a single string */
+/**
+ *  Concatenate all parameters and return a single string 
+ */
 char	*revm_string_get(char **params)
 {
   char	buff[BUFSIZ];

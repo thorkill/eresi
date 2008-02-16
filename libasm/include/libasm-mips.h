@@ -1,6 +1,6 @@
 /**
  * @file libasm-mips.h
- * $Id: libasm-mips.h,v 1.4 2007-11-28 00:21:37 strauss Exp $
+ * $Id: libasm-mips.h,v 1.5 2008-02-16 12:32:26 thor Exp $
  * Manuel Martin - 2007
  */
 
@@ -135,7 +135,7 @@ struct s_mips_insn_reg_deret
 
 #define ASM_MIPS_TABLE_END -1
 
-enum {
+enum opcode_field_encoding {
    MIPS_OPCODE_SPECIAL, /* class */
    MIPS_OPCODE_REGIMM, /* class */
    MIPS_OPCODE_J,
@@ -187,9 +187,9 @@ enum {
    MIPS_OPCODE_SWC2, /* 3rd party */
    MIPS_OPCODE_SDC1 = Ob(111101),
    MIPS_OPCODE_SDC2 /* 3rd party */
-} opcode_field_encoding;
+};
 
-enum {
+enum SPECIAL_function_field_encoding {
    MIPS_OPCODE_SLL,
    MIPS_OPCODE_MOVCI, /* class */
    MIPS_OPCODE_SRL, /* class */
@@ -228,9 +228,9 @@ enum {
    MIPS_OPCODE_TLTU,
    MIPS_OPCODE_TEQ,
    MIPS_OPCODE_TNE = Ob(110110)
-} SPECIAL_function_field_encoding;
+};
 
-enum {
+enum REGIMM_rt_field_encoding {
    MIPS_OPCODE_BLTZ,
    MIPS_OPCODE_BGEZ,
    MIPS_OPCODE_BLTZL, /* obsolete */
@@ -246,9 +246,9 @@ enum {
    MIPS_OPCODE_BLTZALL, /* obsolete */
    MIPS_OPCODE_BGEZALL, /* obsolete */
    MIPS_OPCODE_SYNCI = Ob(11111) /* release 2 */
-} REGIMM_rt_field_encoding;
+};
 
-enum {
+enum SPECIAL2_function_field_encoding {
    MIPS_OPCODE_MADD,
    MIPS_OPCODE_MADDU,
    MIPS_OPCODE_MUL,
@@ -257,38 +257,38 @@ enum {
    MIPS_OPCODE_CLZ = Ob(100000),
    MIPS_OPCODE_CLO,
    MIPS_OPCODE_SDBBP = Ob(111111) /* EJTAG */
-} SPECIAL2_function_field_encoding;
+};
 
 /* only for release 2*/
-enum {
+enum SPECIAL3_function_field_encoding {
    MIPS_OPCODE_EXT,
    MIPS_OPCODE_INS = Ob(000100),
    MIPS_OPCODE_BSHFL = Ob(100000), /* class */
    MIPS_OPCODE_RDHWR = Ob(111011),
-} SPECIAL3_function_field_encoding;
+};
 
-enum {
+enum MOVCI_tf_field_encoding {
    MIPS_OPCODE_MOVF,
    MIPS_OPCODE_MOVT
-} MOVCI_tf_field_encoding;
+};
 
-enum {
+enum SRL_shiftrotate_field_encoding {
   // XXX: _42 was added to allow compiling because MIPS_OPCODE_SRL is already in an other enum.
   MIPS_OPCODE_SRL_42,
   MIPS_OPCODE_ROTR
-} SRL_shiftrotate_field_encoding;
+};
 
-enum {
+enum SRLV_shiftrotate_field_ecoding {
   // XXX: _42 was added to allow compiling because MIPS_OPCODE_SRL is already in an other enum.
    MIPS_OPCODE_SRLV_42,
    MIPS_OPCODE_ROTRV
-} SRLV_shiftrotate_field_ecoding;
+};
 
-enum {
+enum BSHFL_sa_field_encoding {
    MIPS_OPCODE_WSBH = Ob(00010),
    MIPS_OPCODE_SEB = Ob(10000),
    MIPS_OPCODE_SEH = Ob(11000)
-} BSHFL_sa_field_encoding;
+};
 
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
@@ -306,7 +306,7 @@ enum {} COP1_function_field_encoding_rsPS;
  * r2 after an instruction means that instruction
  * is only available in the MIPS32 release 2 specification
  * */
-enum
+enum e_mips_instr_types
 {
    /* arithmetics */
    ASM_MIPS_ADD,
@@ -435,11 +435,11 @@ enum
     * */
 
    ASM_MIPS_BAD
-} e_mips_instr_types;
+};
 
 typedef int	e_mips_register_type;
 
-enum
+enum e_mips_register_types
 {
    ASM_MIPS_REG_ZERO, /* Zero register (always 0)*/
    ASM_MIPS_REG_AT, /* Assembler temporary (reserved) */
@@ -473,15 +473,15 @@ enum
    ASM_MIPS_REG_SP, /* Stack pointer */
    ASM_MIPS_REG_FP, /* Frame pointer */
    ASM_MIPS_REG_RA  /* Return Address */
-} e_mips_register_types;
+};
 
 /*  operand types */
-enum
+enum e_mips_operand_type
 {
    ASM_MIPS_OTYPE_NONE,
    ASM_MIPS_OTYPE_REGISTER,
    ASM_MIPS_OTYPE_IMMEDIATE
-} e_mips_operand_type;
+};
 
 /**
  * Structure to declare a mips instruction in e_mips_instr table.
@@ -511,13 +511,12 @@ struct e_mips_register
  * 
  *
  */
-enum 
+enum e_fix_compile_errors
   {
     MIPS_OPCODE_EHB,
     MIPS_OPCODE_NOP,
     MIPS_OPCODE_SSNOP
-  } e_fix_compile_errors;
-
+  };
 
 /**
  * Those structures arrays are declared in src/arch/mips/tables_mips.c

@@ -5,7 +5,7 @@
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **
-** $Id: match.c,v 1.2 2007-12-09 23:00:18 may Exp $
+** $Id: match.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 
@@ -150,7 +150,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
   /* We matched : first find how many elements there is in the target (list) type */
   dstnbr = 1;
-  list_init(&exprlist, "curdestlist", ASPECT_TYPE_EXPR);
+  elist_init(&exprlist, "curdestlist", ASPECT_TYPE_EXPR);
   for (curidx = *world.curjob->iter.curindex - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
@@ -163,7 +163,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
-      list_add(&exprlist, rname, candid);
+      elist_add(&exprlist, rname, candid);
     }
 
   /* FIXME: The rewritten element is not part of any list */
@@ -183,7 +183,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Just one element to swap */
   else if (dstnbr == 1)
     {
-      list_destroy(&exprlist);
+      elist_destroy(&exprlist);
 
       /* No transformation, keep the original expression */
       if (!strcmp(destvalue, "."))
@@ -200,16 +200,16 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  if (revm_links_propagate(candid, matchme) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Error while propagating dataflow links", -1);
-	  list_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
+	  elist_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
 	}
     }
 
   /* Insert a list at a certain offset of the list */
   else
     {
-      list_replace(world.curjob->iter.list, world.curjob->iter.curkey, &exprlist);
+      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, &exprlist);
       *world.curjob->iter.curindex += exprlist.elmnbr - 1;
-      list_destroy(&exprlist);
+      elist_destroy(&exprlist);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

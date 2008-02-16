@@ -5,7 +5,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 jfv
 ** 
 **
-** $Id: map.c,v 1.24 2007-10-01 01:13:08 may Exp $
+** $Id: map.c,v 1.25 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,8 @@
 
 /**
  * Fixup the binary, inject symbols and sort SHT 
+ * @param file
+ * @return
  */
 void		      elfsh_fixup(elfshobj_t *file)
 {
@@ -33,8 +35,10 @@ void		      elfsh_fixup(elfshobj_t *file)
 
 
 /**
- * Load all the part of the binary 
+ * Load all the part of the binary.
  * This function should not be used by e2dbg 
+ * @param file
+ * @return
  */
 int		        elfsh_read_obj(elfshobj_t *file)
 {
@@ -154,6 +158,8 @@ out:
 /**
  * Called from elfsh_fixup_symtab
  * When trying to inject part of the libc, some bss symbols have a wrong sctndx 
+ * @param symtab
+ * @return
  */
 elfshsect_t   *elfsh_fixup_sctndx(elfshsect_t *symtab)
 {
@@ -217,6 +223,8 @@ elfshsect_t   *elfsh_fixup_sctndx(elfshsect_t *symtab)
 
 /**
  * Map in memory all ressources for this file 
+ * @param name
+ * @return
  */
 elfshobj_t	  *elfsh_map_obj(char *name)
 {

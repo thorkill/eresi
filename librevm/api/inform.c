@@ -4,7 +4,7 @@
 ** @brief API for annotating program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.6 2007-12-09 23:00:18 may Exp $
+** $Id: inform.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -232,7 +232,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   oaddr    = revm_lookup_addr(straddr);
 
   /* Only check for addr range if print flag (manual inform) is on */
-  if (print && (!oaddr || !revm_check_addr(world.curjob->current, oaddr)))
+  if (print && (!oaddr || !revm_check_addr(world.curjob->curfile, oaddr)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid variable address", NULL);
   if (!realname)
@@ -251,7 +251,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   if (IS_VADDR(realname))
     {
       sscanf(realname + 2, AFMT, &addr);
-      symname = elfsh_reverse_symbol(world.curjob->current, addr, &off);
+      symname = elfsh_reverse_symbol(world.curjob->curfile, addr, &off);
       if (symname && !off)
 	realname = strdup(symname);
       else

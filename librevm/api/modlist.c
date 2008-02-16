@@ -3,13 +3,17 @@
 **
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **
-** $Id: modlist.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: modlist.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
 
 
-/* List the loaded ERESI modules */
+/** 
+ * List the loaded ERESI modules 
+ *
+ * @return
+ */
 int             revm_modlist()
 {
   revmmod_t     *actual;

@@ -4,16 +4,16 @@
 ** Started on  Wed Feb 19 08:20:07 2003 jfv
 ** Last update Thu Mar  4 20:21:56 2004 jfv
 **
-** $Id: modtest.c,v 1.4 2007-07-31 03:28:48 may Exp $
+** $Id: modtest.c,v 1.5 2008-02-16 12:32:27 thor Exp $
 **
 */
-#include "elfsh.h"
+#include "libstderesi.h"
 
 
 /* ELFSH_DECMD(mod_newcmd); */
 
 
-#define	CMD_TEST	"cmdtest"
+#define	CMD_MYTEST	"cmdtest"
 
 int	mod_print()
 {
@@ -37,13 +37,13 @@ void	elfsh_init()
 {
   puts(" [*] ELFsh modtest init -OK- \n");
   revm_command_set(CMD_PRINT, mod_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
-  revm_command_add(CMD_TEST, mod_newcmd, NULL, 0, "Simple example command");
+  revm_command_add(CMD_MYTEST, mod_newcmd, NULL, 0, "Simple example command");
 }
 
 void	elfsh_fini()
 {
   puts(" [*] ELFsh modtest fini -OK- \n");
   revm_command_set(CMD_PRINT, cmd_print, ELFSH_ORIG, (u_int) ELFSH_ORIG);
-  revm_command_del(CMD_TEST);
+  revm_command_del(CMD_MYTEST);
 }
 

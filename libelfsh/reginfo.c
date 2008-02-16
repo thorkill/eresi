@@ -6,7 +6,7 @@
 ** Updated on  Wed Mar 23 14:21:32 2005 jfv
 ** 
 **
-** $Id: reginfo.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: reginfo.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,8 @@
 
 /**
  * Get gpvalue 
+ * @param file
+ * @return
  */
 elfsh_Sword	elfsh_get_gpvalue(elfshobj_t* file)
 {
@@ -28,6 +30,9 @@ elfsh_Sword	elfsh_get_gpvalue(elfshobj_t* file)
 
 /**
  * Set gpvalue 
+ * @param file
+ * @param gp
+ * @return
  */
 int		elfsh_set_gpvalue(elfshobj_t* file, elfsh_Addr gp)
 {
@@ -48,6 +53,8 @@ int		elfsh_set_gpvalue(elfshobj_t* file, elfsh_Addr gp)
 
 /**
  * Return a pointer on ".reginfo" ri_gp_value 
+ * @param file
+ * @return
  */
 elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file)
 {

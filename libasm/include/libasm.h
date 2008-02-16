@@ -1,6 +1,6 @@
 /**
  * @file libasm.h
- * $Id: libasm.h,v 1.28 2007-10-29 11:26:44 heroine Exp $
+ * $Id: libasm.h,v 1.29 2008-02-16 12:32:26 thor Exp $
  * 
  * Author  : <sk at devhell dot org>
  * Started : Sat Oct 26 01:18:46 2002
@@ -32,17 +32,20 @@
 #define LIBASM_H_
 
 
-//#include <config.h>
+#ifndef __KERNEL__
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#if defined(__FreeBSD__) || defined(sgi) || defined(__NetBSD__)
+#if defined(__OpenBSD__) ||defined(__FreeBSD__) || defined(sgi) || defined(__NetBSD__)
 #include <sys/endian.h>
 #elif !defined(sun)
 #include <endian.h>
 #else
 #include <db.h>
+#endif
+
 #endif
 
 #include <libaspect.h>
@@ -115,7 +118,7 @@
  * Architecture-independant instruction types 
  *
  */
-enum 
+enum e_instr_types
   {
     ASM_TYPE_NONE	        = 0x0, //!< Undefined instruction type.
     ASM_TYPE_IMPBRANCH    = 0x1, //!< Branching instruction which always branch (jump).
@@ -142,20 +145,20 @@ enum
     ASM_TYPE_EPILOG       = 0x200000, //!< Instruction creates a new function epilog
     ASM_TYPE_STOP         = 0x400000, //!< Instruction stops the program
     ASM_TYPE_IO           = 0x80000 //!< Instruction accesses I/O locations (e.g. ports).
-  } e_instr_types;
+  };
 
 
 /**
  * Architecture-independant operand types 
  *
  */
-enum
+enum e_op_types
   {
     ASM_OPTYPE_NONE = 0x0, //!< Undefined operand type
     ASM_OPTYPE_IMM  = 0x1, //!< Immediate operand type
     ASM_OPTYPE_REG  = 0x2, //!< Register operand type
     ASM_OPTYPE_MEM  = 0x4  //!< Memory access operand type
-  } e_op_types;
+  };
 
 /* this is needed for mips implementation */
 #define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"
@@ -177,24 +180,24 @@ typedef struct s_asm_processor  asm_processor;
 typedef struct s_asm_instr      asm_instr;
 typedef struct s_asm_op         asm_operand;
 
-enum 
+enum e_vector_arch
 {
   LIBASM_VECTOR_IA32,
   LIBASM_VECTOR_SPARC,
   LIBASM_VECTOR_MIPS,
   LIBASM_VECTOR_ARCHNUM
-} e_vector_arch;
+};
 
 
 /**
  * List of architecture.
  */
-enum 
+enum e_proc_type
 {
   ASM_PROC_IA32,	//!< Architecture IA32
   ASM_PROC_SPARC,	//!< Architecture SPARC
   ASM_PROC_MIPS		//!< Architecture MIPS
-} e_proc_type;
+};
 
 
 /*
@@ -304,11 +307,13 @@ int		asm_operand_get_len(asm_instr *, int, int, void *);
 int		asm_operand_set_value(asm_instr *, int, int, void *);
 int		asm_operand_get_value(asm_instr *, int, int, void *);
 
+
+#ifndef __KERNEL__
+
 /**
  * immediate field may be a 1,2,4,8 ... byte long value
  * to set it,
  */
-
 int		asm_operand_debug(asm_instr *, int, int, void *);
 
 /**
@@ -316,6 +321,8 @@ int		asm_operand_debug(asm_instr *, int, int, void *);
  *
  */
 void		asm_instruction_debug(asm_instr *ins, FILE *out);
+
+#endif
 
 /**
  * Free asm processor internal structures
@@ -428,7 +435,7 @@ char	*get_reg_intel(int reg, int regset);
  * @brief enum of the error codes available in asm_processor->error_code.
  * XXX: Being implemented. Currently not accurate.
  */
-enum 
+enum e_libasm_errorcode
   {
 #define LIBASM_MSG_ERRORNOTIMPLEMENTED	"error message not implemented"
     LIBASM_ERROR_SUCCESS,
@@ -439,7 +446,7 @@ enum
 #define LIBASM_MSG_ILLEGAL		"illegal instruction"
     LIBASM_ERROR_TOOSHORT,
 #define LIBASM_MSG_TOOSHORT		"data length too short"
-  } e_libasm_errorcode;
+  };
 
 #include <libasm-structs.h>
 #include <libasm-i386.h>

@@ -1,0 +1,13 @@
+#!../../elfsh/elfsh32
+
+info
+vlist
+load /bin/ls
+vlist
+e
+vlist
+set 1.hdr.shnum 42
+vlist
+e
+vlist
+quit

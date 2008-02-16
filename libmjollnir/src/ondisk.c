@@ -4,11 +4,10 @@
 ** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.5 2007-10-01 01:13:08 may Exp $
+** $Id: ondisk.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libmjollnir.h"
-
 
 
 
@@ -50,7 +49,7 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
       buf->allocated = nbr * sizeof(unsigned int) * 2;
       XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
     }
-  else
+  else if (buf->allocated)
     {
       buf->allocated += nbr * sizeof(unsigned int) * 2;
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
@@ -147,14 +146,9 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
  */
 static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 {
-  char			buffer[BUFSIZ];
-  elfsh_Sym		bsym;
-  elfsh_Sym		*sym;
   void			*curunit;
-  container_t	*container;
-  char			*prefix;
+  container_t		*container;
   u_int			unitsize;
-  u_int			symtype;
   elfsh_Addr		addr;
   u_int			size;
 
@@ -165,13 +159,9 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
     {
     case ASPECT_TYPE_BLOC:
       unitsize = sizeof(mjrblock_t);
-      prefix   = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
-      symtype  = STT_BLOCK;
       break;
     case ASPECT_TYPE_FUNC:
       unitsize = sizeof(mjrfunc_t);
-      prefix   = (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX);
-      symtype  = STT_FUNC;
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -184,11 +174,6 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   /* This is why addr and size fields should always be in first in mjrblock/mjrfunc */
   addr    = *(elfsh_Addr *) curunit;
   size    = *(u_int      *) ((char *) curunit + sizeof(elfsh_Addr));
-
-  snprintf(buffer, sizeof(buffer), "%s%lX", prefix, (unsigned long) addr);
-  sym = elfsh_get_symbol_by_name(buf->obj, buffer);
-  if (sym)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
   
 #if __DEBUG_ONDISK__
   fprintf(D_DESC," [*] Saving data unit %s \n", buffer);
@@ -214,14 +199,6 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 
   memcpy(container, cur, sizeof(container_t));
   memcpy(curunit, cur->data, unitsize);
-  
-  /* Then we create the symbol for the bloc and returns */
-  sym = elfsh_get_symbol_by_value(buf->obj, addr, 0, ELFSH_EXACTSYM);
-  if (!sym)
-    {
-      bsym = elfsh_create_symbol(addr, size, symtype, 0, 0, 0);
-      elfsh_insert_symbol(buf->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
-    }
 
   /* Return result */
   buf->maxlen += sizeof(container_t);
@@ -248,8 +225,8 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
   elfshsect_t           *sect, *flowsect;
   char			name[20];
   char			**keys;
-  container_t	*container;
-  container_t	*tmpcntnr;
+  container_t		*container;
+  container_t		*tmpcntnr;
   u_int			flowdone;
   u_int			unitsize;
   u_int			unitnbr;

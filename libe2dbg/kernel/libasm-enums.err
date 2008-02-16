@@ -1,0 +1,1119 @@
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:52: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:52: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:53: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:55: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:55: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:56: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:56: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:53: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:52: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:52: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:61: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:61: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:61: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:62: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:62: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:62: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:62: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:62: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:59: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:65: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:121: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.o: In function `ke2dbg_screen_prepare':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/video.c:117: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:20: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:20: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:22: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:22: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_clean':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:18: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:30: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:30: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:31: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:30: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:31: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:31: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:31: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:31: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `strcpy':
+/usr/src/linux-headers-2.6.20-16-generic/include/asm/string.h:30: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `strcpy':
+/usr/src/linux-headers-2.6.20-16-generic/include/asm/string.h:30: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `strcpy':
+/usr/src/linux-headers-2.6.20-16-generic/include/asm/string.h:30: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `strcpy':
+/usr/src/linux-headers-2.6.20-16-generic/include/asm/string.h:32: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `strcpy':
+/usr/src/linux-headers-2.6.20-16-generic/include/asm/string.h:32: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:33: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:33: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:33: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:33: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:33: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_insert':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:34: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:40: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:43: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:43: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:43: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:43: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:43: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_command_recall':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:48: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o: In function `ke2dbg_logbuf_end':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.c:141: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/buffering.o:(.bss+0x2e0): multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:61: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:68: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:69: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:69: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:73: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:80: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:80: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:81: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_inl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:85: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:93: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:93: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:93: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_outb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:99: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:99: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:99: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:99: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_outw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:110: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:110: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:110: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:110: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_outl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:121: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:121: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:121: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:121: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `bad':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:130: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:130: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:130: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:130: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:144: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:144: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:144: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:155: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:144: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:155: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:156: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:156: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:159: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:159: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:159: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:159: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_sprintf':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:159: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_isdigit':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:281: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o: In function `ke2dbg_isspace':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:292: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:17: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:17: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:17: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:17: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:20: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:23: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:23: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:24: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:24: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:24: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:24: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:45: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:46: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:21: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:46: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:46: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:34: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:34: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:34: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:34: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:34: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:35: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:35: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:35: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:37: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:59: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.o: In function `pci_conf_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/pci.c:77: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_basetp':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:32: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_basetp':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:32: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_basetp':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:32: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_basetp':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:32: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:34: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:34: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:47: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:47: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:48: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:48: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:76: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:76: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:76: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:76: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:121: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:122: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:124: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:124: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:125: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:126: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:128: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:130: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:130: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:130: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:135: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:134: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:137: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:144: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:145: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:147: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:147: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:147: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:147: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:151: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:153: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:153: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:155: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:159: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:139: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_pageinfo_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:140: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `ke2dbg_page_exist':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:164: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `write_save_dirty':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:295: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.o: In function `kedbg_physpage_get':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/page.c:307: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:226: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:227: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:228: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:229: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:230: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_register_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:231: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_printf_disasm':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:319: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.o: In function `ke2dbg_printf_disasm':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/interrupts.c:336: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:6: multiple definition of `ke2dbg_inb'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:61: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:18: multiple definition of `ke2dbg_inw'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:73: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:30: multiple definition of `ke2dbg_inl'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:85: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:44: multiple definition of `ke2dbg_outb'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:99: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:55: multiple definition of `ke2dbg_outw'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:110: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:66: multiple definition of `ke2dbg_outl'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/utils.c:121: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:6: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:13: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:14: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:14: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:18: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:25: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:25: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:26: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_inl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:30: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:38: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:38: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:38: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outb':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:44: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:44: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:44: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:44: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outw':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:55: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:55: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:55: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:55: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o: In function `ke2dbg_outl':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.c:66: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x54): multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x58): multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x5c): multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x60): multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x64): multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x68): multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x6c): multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x70): multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x74): multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x78): multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x7c): multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x80): multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x84): multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x88): multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x8c): multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x90): multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x94): multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x98): multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x9c): multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0xa0): multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x2a0): multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ports.o:(.bss+0x2c0): multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:8: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:9: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:10: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:11: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `ke2dbg_commands_install':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:12: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `cmd_rr0d_inthook':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:89: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.o: In function `cmd_rr0d_inthook':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/commands.c:107: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_wait':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:44: multiple definition of `e_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:149: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_wait':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:48: multiple definition of `e_op_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:148: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_wait':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:48: multiple definition of `e_vector_arch'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_wait':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:48: multiple definition of `e_proc_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:50: multiple definition of `e_libasm_errorcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:50: multiple definition of `e_ia32_prefix'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:151: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:54: multiple definition of `e_ia32_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:55: multiple definition of `e_asm_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:62: multiple definition of `e_asm_operand_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:155: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:62: multiple definition of `e_asm_enc'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:62: multiple definition of `e_asm_size'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:63: multiple definition of `e_asm_reg8'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:161: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:60: multiple definition of `e_asm_reg16'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:60: multiple definition of `e_asm_reg32'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:163: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:60: multiple definition of `e_asm_regmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:61: multiple definition of `e_asm_regxmm'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:165: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:63: multiple definition of `e_asm_sreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:63: multiple definition of `e_asm_creg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:69: multiple definition of `e_asm_dreg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:173: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:70: multiple definition of `e_sparc_flags'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:77: multiple definition of `e_sparc_gregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:70: multiple definition of `e_sparc_sregisters'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:175: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:81: multiple definition of `e_sparc_state_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:72: multiple definition of `e_sparc_privileged_registers'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:73: multiple definition of `e_sparc_condition_codes'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:177: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:73: multiple definition of `e_sparc_opcode'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:178: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:73: multiple definition of `e_sparc_instr'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:180: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:80: multiple definition of `opcode_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:80: multiple definition of `SPECIAL_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keyboard_write':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:81: multiple definition of `REGIMM_rt_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:134: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:84: multiple definition of `SPECIAL2_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:89: multiple definition of `SPECIAL3_function_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:89: multiple definition of `MOVCI_tf_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:132: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:89: multiple definition of `SRL_shiftrotate_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:91: multiple definition of `SRLV_shiftrotate_field_ecoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:91: multiple definition of `BSHFL_sa_field_encoding'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:136: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:92: multiple definition of `e_mips_instr_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:118: multiple definition of `e_mips_register_types'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:119: multiple definition of `e_mips_operand_type'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:138: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:95: multiple definition of `e_fix_compile_errors'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_keystroke_print':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:97: multiple definition of `quit_msg'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:157: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_scancode_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:199: multiple definition of `prompt_token_setup'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:436: first defined here
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.o: In function `ke2dbg_scancode_read':
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/keyboard.c:201: multiple definition of `prompt_token'
+/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.o:/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/kern-bp.c:460: first defined here
+make[2]: *** [/home/lmbdwr/ERESI/cvs/libe2dbg/kernel/ke2dbg.o] Error 1
+make[1]: *** [_module_/home/lmbdwr/ERESI/cvs/libe2dbg/kernel] Error 2
+make: *** [all] Error 2

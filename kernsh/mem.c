@@ -1,7 +1,7 @@
 /*
 ** mem.c for kernsh
 ** 
-** $Id: mem.c,v 1.13 2007-11-29 15:33:39 may Exp $
+** $Id: mem.c,v 1.14 2008-02-16 12:32:26 thor Exp $
 **
 */
 #include "kernsh.h"
@@ -20,7 +20,7 @@ int		cmd_sct()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_callback_handler_remove();
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
-  list_init(h, "cmd_sct_list", ASPECT_TYPE_UNKNOW);
+  elist_init(h, "cmd_sct_list", ASPECT_TYPE_UNKNOW);
   ret = kernsh_sct(h);
 
   memset(buff, '\0', sizeof(buff));
@@ -47,7 +47,7 @@ int		cmd_sct()
     }
   
   revm_output("\n");
-  list_destroy(h);
+  elist_destroy(h);
   revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
@@ -70,7 +70,7 @@ int		cmd_idt()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_callback_handler_remove();
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
-  list_init(h, "cmd_idt_list", ASPECT_TYPE_UNKNOW);
+  elist_init(h, "cmd_idt_list", ASPECT_TYPE_UNKNOW);
   ret = kernsh_idt(h);
         
   memset(buff, '\0', sizeof(buff));
@@ -96,7 +96,7 @@ int		cmd_idt()
     }
 
   revm_output("\n");
-  list_destroy(h);
+  elist_destroy(h);
   revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)
@@ -121,7 +121,7 @@ int		cmd_gdt()
   revm_callback_handler_remove();
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
 
-  list_init(h, "cmd_gdt_list", ASPECT_TYPE_UNKNOW);
+  elist_init(h, "cmd_gdt_list", ASPECT_TYPE_UNKNOW);
 
   ret = kernsh_gdt(h);
         
@@ -150,7 +150,7 @@ int		cmd_gdt()
     } 
 	     
   revm_output("\n");
-  list_destroy(h);
+  elist_destroy(h);
   revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
   revm_column_update();
   if (ret)

@@ -1,16 +1,18 @@
-/*
-** run.c for elfsh
-** 
-** Started on  Wed Feb 21 22:02:36 2001 jfv
-**
-** $Id: run.c,v 1.9 2007-11-29 15:33:39 may Exp $
-**
-*/
+/**
+ * @file run.c
+ * 
+ * Started on  Wed Feb 21 22:02:36 2001 jfv
+ *
+ * $Id: run.c,v 1.10 2008-02-16 12:31:34 thor Exp $
+ *
+ */
 #include "elfsh.h"
 
 
 
-/* Run the binary */
+/** 
+ * Run the binary 
+ */
 int		cmd_run()
 {
   int		ret;

@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:19:38 2001 jfv
  *
  *
- * $Id: sym.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: sym.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -70,17 +70,17 @@ int		ds(elfshobj_t	*file,
       bind = (char *) (bindnum >= ELFSH_SYMBIND_MAX ?
 		       revm_build_unknown(bind_unk, "type", bindnum) : 
 		       elfsh_sym_bind[bindnum].desc);
-      name = get_symname(world.curjob->current, table + index);
+      name = get_symname(world.curjob->curfile, table + index);
       sect_name = NULL;
-      sect = elfsh_get_parent_section(world.curjob->current, 
+      sect = elfsh_get_parent_section(world.curjob->curfile, 
 				      table[index].st_value, 
 				      NULL);
       if (sect == NULL && table[index].st_shndx)
-	sect = elfsh_get_section_by_index(world.curjob->current, 
+	sect = elfsh_get_section_by_index(world.curjob->curfile, 
 					  table[index].st_shndx,
 					  NULL, NULL);
       if (sect != NULL)
-	sect_name = elfsh_get_section_name(world.curjob->current, sect);
+	sect_name = elfsh_get_section_name(world.curjob->curfile, sect);
 
       /* Fixup names */
       if (name == NULL || *name == 0)
@@ -92,7 +92,7 @@ int		ds(elfshobj_t	*file,
       if (sect_name == NULL)
 	sect_name = ELFSH_NULL_STRING;
       foff = (!table[index].st_value ? 0 : 
-	      elfsh_get_foffset_from_vaddr(world.curjob->current, 
+	      elfsh_get_foffset_from_vaddr(world.curjob->curfile, 
 					   table[index].st_value));
 					
       if (sect && sect->shdr->sh_addr != table[index].st_value)
@@ -172,19 +172,19 @@ int		cmd_sym()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  symtab = elfsh_get_symtab(world.curjob->current, &num);
+  symtab = elfsh_get_symtab(world.curjob->curfile, &num);
   if (symtab == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Can't retrieve symtab", -1);
 
-  sct = elfsh_get_section_by_type(world.curjob->current, 
+  sct = elfsh_get_section_by_type(world.curjob->curfile, 
 				  SHT_SYMTAB, 0, NULL, NULL, 0);
   snprintf(logbuf, BUFSIZ - 1, " [SYMBOL TABLE]\n [Object %s]\n\n",
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
   FIRSTREGX(tmp);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     ds(world.curjob->current, sct, symtab, 
+		     ds(world.curjob->curfile, sct, symtab, 
 			num, tmp, elfsh_get_symbol_name));
 }
 
@@ -204,16 +204,16 @@ int		cmd_dynsym()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  dynsym = elfsh_get_dynsymtab(world.curjob->current, &num);
+  dynsym = elfsh_get_dynsymtab(world.curjob->curfile, &num);
   if (dynsym == NULL)
     RET(-1);
   else
     {      
-      sct = elfsh_get_section_by_name(world.curjob->current, 
+      sct = elfsh_get_section_by_name(world.curjob->curfile, 
 				      ELFSH_SECTION_NAME_ALTDYNSYM, 
 				      NULL, NULL, &num);
       if (!sct)
-	sct = elfsh_get_section_by_type(world.curjob->current, SHT_DYNSYM, 0, 
+	sct = elfsh_get_section_by_type(world.curjob->curfile, SHT_DYNSYM, 0, 
 					NULL, NULL, &num);
       
       if (!sct)
@@ -223,12 +223,12 @@ int		cmd_dynsym()
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [DYNAMIC SYMBOL TABLE]\n [Object %s]\n [Section %s]\n", 
-	   world.curjob->current->name, sct->name);
+	   world.curjob->curfile->name, sct->name);
   
   revm_output(logbuf);
   FIRSTREGX(tmp);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		ds(world.curjob->current, sct, dynsym, 
+		ds(world.curjob->curfile, sct, dynsym, 
 		   num, tmp, elfsh_get_dynsymbol_name));
 }
 

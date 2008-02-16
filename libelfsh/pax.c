@@ -5,7 +5,7 @@
 ** Started on  Tue Feb 11 20:52:36 2003 jfv
 ** Last update Tue Feb 18 06:17:27 2003 jfv
 **
-** $Id: pax.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: pax.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,9 @@
 
 /**
  * Change the ELF header flags field 
+ * @param hdr
+ * @param flags
+ * @return
  */
 int		elfsh_set_paxflags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 {
@@ -31,6 +34,8 @@ int		elfsh_set_paxflags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 
 /**
  * Return the ELF header flags field 
+ * @param hdr
+ * @return
  */
 elfsh_Word	elfsh_get_paxflags(elfsh_Ehdr *hdr)
 {
@@ -48,6 +53,9 @@ elfsh_Word	elfsh_get_paxflags(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_pageexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -68,6 +76,8 @@ char		elfsh_set_pax_pageexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_pageexec(elfsh_Ehdr *hdr)
 {
@@ -87,6 +97,9 @@ char		elfsh_get_pax_pageexec(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_emultramp(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -107,6 +120,8 @@ char		elfsh_set_pax_emultramp(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_emultramp(elfsh_Ehdr *hdr)
 {
@@ -124,6 +139,9 @@ char		elfsh_get_pax_emultramp(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_mprotect(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -144,6 +162,8 @@ char		elfsh_set_pax_mprotect(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_mprotect(elfsh_Ehdr *hdr)
 {
@@ -161,6 +181,9 @@ char		elfsh_get_pax_mprotect(elfsh_Ehdr *hdr)
 
 /** 
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_randmmap(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -181,6 +204,8 @@ char		elfsh_set_pax_randmmap(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /** 
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_randmmap(elfsh_Ehdr *hdr)
 {
@@ -199,6 +224,9 @@ char		elfsh_get_pax_randmmap(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_randexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -219,6 +247,8 @@ char		elfsh_set_pax_randexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_randexec(elfsh_Ehdr *hdr)
 {
@@ -236,6 +266,9 @@ char		elfsh_get_pax_randexec(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 char		elfsh_set_pax_segmexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -256,6 +289,8 @@ char		elfsh_set_pax_segmexec(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 char		elfsh_get_pax_segmexec(elfsh_Ehdr *hdr)
 {

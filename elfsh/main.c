@@ -1,17 +1,19 @@
-/*
-** main.c for elfsh
-**
-** Started on  Wed Feb 21 22:02:36 2001 jfv
-** Updated on  Wed Jan 03 17:51:04 2007 jfv
-**
-** $Id: main.c,v 1.20 2007-07-31 23:30:35 may Exp $
-**
-*/
+/**
+ * @file main.c
+ *
+ * Started on  Wed Feb 21 22:02:36 2001 jfv
+ * Updated on  Wed Jan 03 17:51:04 2007 jfv
+ *
+ * $Id: main.c,v 1.21 2008-02-16 12:31:34 thor Exp $
+ *
+ */
 #include "elfsh.h"
 
 
 
-/* Prompt related functions for elfsh */
+/**
+ * Prompt related functions for elfsh 
+ */
 void		esh_setup_quit_msg()
 {
   char		logbuf[BUFSIZ];
@@ -21,6 +23,11 @@ void		esh_setup_quit_msg()
   revm_quitmsg_set(logbuf);
 }
 
+/**
+ * FIXME
+ * @param buf
+ * @param size
+ */
 void		esh_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
@@ -39,13 +46,18 @@ void		esh_create_prompt(char *buf, u_int size)
   revm_endline();
 }
 
+/**
+ * FIXME
+ */
 void 		esh_setup_prompt()
 {
   revm_set_prompt(esh_create_prompt);
 }
 
 
-/* Print the etrace banner */
+/**
+ * Print the etrace banner 
+ */
 void		esh_banner_print()
 {
   char		logbuf[BUFSIZ];
@@ -69,7 +81,12 @@ void		esh_banner_print()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* The real main function */
+/** 
+ * The real main function
+ * @param ac
+ * @param av
+ * @return
+ */
 int		esh_main(int ac, char **av)
 {
   esh_setup_quit_msg();
@@ -84,7 +101,12 @@ int		esh_main(int ac, char **av)
 }
 
 
-/* The main ELFsh routine */
+/** 
+ * The main ELFsh routine 
+ * @param ac
+ * @param av
+ * @return
+ */
 int		main(int ac, char **av)
 {
   return (esh_main(ac, av));

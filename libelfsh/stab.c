@@ -1,17 +1,21 @@
 /**
  * @file stabs.c
-** stabs.c for libelfsh
-** 
-** Started on  Mon Feb 26 04:14:06 2001 jfv
-** 
-**
-** $Id: stab.c,v 1.8 2007-08-03 11:50:59 heroine Exp $
-**
-*/
+ * stabs.c for libelfsh
+ * 
+ * Started on  Mon Feb 26 04:14:06 2001 jfv
+ * 
+ *
+ * $Id: stab.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 /**
- * @brief Return the debugging symbol name giving its index in the stab string table 
+ * @brief Return the debugging symbol name giving its index in 
+ * the stab string table.
+ * @param file
+ * @param s
+ * @return
  */
 char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 {
@@ -33,7 +37,10 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 }
 
 /**
- * @brief Load the stab information from the file 
+ * @brief Load the stab information from the file.
+ * @param file
+ * @param num
+ * @return
  */
 void		*elfsh_get_stab(elfshobj_t *file, int *num)
 {
@@ -90,6 +97,8 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
 
 /**
  * @brief Return the symbol type name giving its index in the symtype array 
+ * @param s
+ * @return
  */
 u_int	elfsh_get_stab_type(elfshstabent_t *s)
 {
@@ -99,6 +108,8 @@ u_int	elfsh_get_stab_type(elfshstabent_t *s)
 
 /**
  * Not used yet 
+ * @param s
+ * @return
  */
 elfsh_Addr	elfsh_get_stab_offset(elfshstabent_t *s)
 {

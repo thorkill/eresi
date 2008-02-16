@@ -6,7 +6,7 @@
 ** December 10 2006 : merged from modflow to the ELFsh vm -may
 ** December 31 2006 : factored and cleaned code -may
 **
-** $Id: flowjack.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: flowjack.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -38,7 +38,7 @@ int			cmd_flowjack(void)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  sect = elfsh_get_section_by_name(world.curjob->current, 
+  sect = elfsh_get_section_by_name(world.curjob->curfile, 
 				   ELFSH_SECTION_NAME_EDFMT_BLOCKS, 
 				   0, 0, 0);
 
@@ -48,7 +48,7 @@ int			cmd_flowjack(void)
 		 " : use analyse command", -1);
 
   /* Lookup parameters */
-  file  = world.curjob->current;
+  file  = world.curjob->curfile;
   param = world.curjob->curcmd->param[0];
   sym = elfsh_get_metasym_by_name(file, param);
   if (sym)
@@ -56,7 +56,7 @@ int			cmd_flowjack(void)
   else
     addr = strtoul(world.curjob->curcmd->param[0], 0, 16);
 
-  if ((sym = elfsh_get_metasym_by_name(world.curjob->current, 
+  if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile, 
 				       world.curjob->curcmd->param[1])))
     new_addr = sym->st_value;
   else
@@ -82,7 +82,7 @@ int			cmd_flowjack(void)
   for (buffer = 0, listent = linklist->head; listent; listent = listent->next)
     {
       caller = (mjrlink_t *) listent->data;
-      name = elfsh_reverse_metasym(world.curjob->current, addr, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, addr, &off);
       printf(" [*] patching block %s + " DFMT "\n", name, off);
 
       cal = mjr_lookup_container(world.mjr_session.cur, caller->id)->data;
@@ -91,14 +91,14 @@ int			cmd_flowjack(void)
       to_hijack = cntnr_to_hijack->data;
 
       size = to_hijack->size - (cal->vaddr - to_hijack->vaddr);
-      foff = elfsh_get_foffset_from_vaddr(world.curjob->current, cal->vaddr);
+      foff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, cal->vaddr);
 
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, buffer, size, -1);
-      elfsh_raw_read(world.curjob->current, foff, buffer, size);
+      elfsh_raw_read(world.curjob->curfile, foff, buffer, size);
       asm_read_instr(&ins, (u_char *) buffer, size, &world.proc);
       
       puts(" [*] would patch -> ");
-      name = elfsh_reverse_metasym(world.curjob->current, cal->vaddr, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, cal->vaddr, &off);
 
       index = cal->vaddr - to_hijack->vaddr;      
       revm_instr_display(-1, 0, cal->vaddr, 0, size, name, off, buffer);
@@ -120,7 +120,7 @@ int			cmd_flowjack(void)
       /* display for debug */
       puts(" * patched ->");
       revm_instr_display(-1, 0, cal->vaddr, 0, size, name, off, buffer);
-      elfsh_raw_write(world.curjob->current, foff, buffer, size);
+      elfsh_raw_write(world.curjob->curfile, foff, buffer, size);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));

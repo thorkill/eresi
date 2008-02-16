@@ -4,7 +4,7 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.9 2007-12-10 12:58:45 may Exp $
+** $Id: findentry.c,v 1.10 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -169,12 +169,14 @@ elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
 
   /* Create symbols for main */
   /* Then we create the symbol for the bloc and returns */
-  sym = elfsh_get_symbol_by_value(context->obj, main_addr, 0, ELFSH_EXACTSYM);
-  if (!sym)
+  sym = elfsh_get_symbol_by_name(context->obj, "main");
+  if (!sym || !sym->st_value)
     {
       bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
       elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
     }
+  else
+    main_addr = sym->st_value;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

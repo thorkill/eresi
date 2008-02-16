@@ -15,11 +15,12 @@ SRC3	= modremap.c
 OBJ3	= $(SRC3:.c=.o)
 NAM3	= modremap.so
 
-CFLAGS	= -I../vm/include/ -I../libhash/include/ -I../libui/include/           \
+CFLAGS	= -I../librevm/include/ -I../libhash/include/ -I../libui/include/      \
 	  -I../libdump/include/ -I../libelfsh/include/  -I../libaspect/include \
 	  -I../libasm/include/ -I../e2dbg/include/ -I../libc/include/          \
-	  -I../libmjollnir/include/ -Wall -g3 -O2 -fPIC 		       \
-	  -DELFSH_INTERN $(DYNOPT) $(BITS) $(NCURSESLNOPT) $(READLNOPT) $(BUILDOP)
+	  -I../libmjollnir/include/ -I../libedfmt/include/ -I../libstderesi/include/ \
+	  -Wall -g3 -O2 -fPIC -DELFSH_INTERN $(DYNOPT) $(BITS) $(NCURSESLNOPT) \
+          $(READLNOPT) $(BUILDOP)
 
 CC	= gcc
 LD	= gcc

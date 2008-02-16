@@ -5,7 +5,7 @@
 ** Started on  Fri Jul 27 04:56:06 2001 jfv
 ** 
 **
-** $Id: fixup.c,v 1.12 2007-07-31 03:28:46 may Exp $
+** $Id: fixup.c,v 1.13 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -15,6 +15,10 @@
 /**
  * TERMINAL FUNCTION ! Fixup size for section symbols, if symtab doesnt exist, create it
  * This function only works on FILE and is not e2dbg safe 
+ *
+ * @param file
+ * @param strindex
+ * @return
  */
 elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 {
@@ -138,6 +142,12 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
 /**
  * Recompute .dynsym symbols address which are zeroed by new versions of ld 
+ *
+ * @param file
+ * @param plt
+ * @param off
+ * @param dynsym
+ * @return
  */
 elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, 
 				      u_int off, elfshsect_t *dynsym)
@@ -240,6 +250,9 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 /**
  * Fixup the dynamic symbol table (recompute all zeroed symbols)
  * Useful on recent versions of ld 
+ *
+ * @param dynsym
+ * @return
  */
 int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 {

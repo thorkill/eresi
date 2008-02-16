@@ -4,12 +4,10 @@
  * @brief Initialize the IO system
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
- * Updated on  Mon Mar  5 18:47:41 2005 ym
- *
- * $Id: io.c,v 1.13 2007-11-29 14:01:56 may Exp $
- *
+ * $Id: io.c,v 1.14 2008-02-16 12:32:27 thor Exp $
  */
 #include "revm.h"
+
 
 /**
  * @defgroup io librevm Input/output
@@ -88,20 +86,32 @@ int		revm_fifo_io(revmjob_t *job)
     }
 
   /* Register the FIFO as an I/O */
-  XOPEN(fd, REVM_FIFO_S2C, O_RDWR, 0600, -1);
-  world.fifo_s2c = fd;
-  XOPEN(fd2, REVM_FIFO_C2S, O_RDWR, 0600, -1);
-  world.fifo_c2s = fd2;
-
-  /* If we are in the embedded server part of the debugger, 
-     do all I/O on the FIFO */
-  if (world.state.revm_side == REVM_SIDE_SERVER)
+  if (!e2dbg_kpresence_get())
     {
-      job->ws.io.input_fd  = fd2;
-      job->ws.io.input     = revm_stdinput;
-      job->ws.io.output_fd = fd;
-      job->ws.io.output    = revm_stdoutput;
-      dup2(fd, 0);
+      XOPEN(fd, REVM_FIFO_S2C, O_RDWR, 0600, -1);
+      world.fifo_s2c = fd;
+      XOPEN(fd2, REVM_FIFO_C2S, O_RDWR, 0600, -1);
+      world.fifo_c2s = fd2;
+      
+      /* If we are in the embedded server part of the debugger, 
+	 do all I/O on the FIFO */
+      if (world.state.revm_side == REVM_SIDE_SERVER)
+	{
+	  job->ws.io.input_fd  = fd2;
+	  job->ws.io.input     = revm_stdinput;
+	  job->ws.io.output_fd = fd;
+	  job->ws.io.output    = revm_stdoutput;
+	  dup2(fd, 0);
+	}
+    }
+
+  /* We dont let this between #ifdef's KERNEL to avoid recompiling
+     this code multiple times for the userland and kernel debuggers */
+  else
+    {
+      job->ws.io.input   = NULL;
+      // FIXME: need IO vector ?
+      //job->ws.io.output  = ke2dbg_output;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

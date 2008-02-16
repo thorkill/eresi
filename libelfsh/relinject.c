@@ -11,7 +11,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 jfv
 ** 
 **
-** $Id: relinject.c,v 1.18 2007-07-31 03:28:46 may Exp $
+** $Id: relinject.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,6 +20,12 @@
 
 /**
  * Perform relocation on entry (Now use ELFsh 0.6 hooks model) 
+ * @param new
+ * @param reloc
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
 static int      elfsh_relocate_entry(elfshsect_t        *new,
                                      void               *reloc,
@@ -40,6 +46,13 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
 
 /**
  * Find the host symbol we rely on for performing the relocation 
+ * @param new
+ * @param reltab
+ * @param sym
+ * @param name
+ * @param stage
+ * @param symtype
+ * @return
  */
 static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 				    elfsh_Sym **sym, char *name, char stage, 
@@ -158,6 +171,10 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 
 /**
  * Relocate the just injected section 
+ * @param new
+ * @param reltab
+ * @param stage
+ * @return
  */
 static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 					     elfshsect_t	*reltab,
@@ -341,6 +358,10 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 /**
  * Relocate the object 
+ * @param file
+ * @param rel
+ * @param stage
+ * @return
  */
 int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 {
@@ -397,6 +418,10 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 
 /**
  * Inject a section from ET_REL object into ET_EXEC 
+ * @param file
+ * @param sect
+ * @param mod
+ * @return
  */
 static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int mod)
 {
@@ -461,6 +486,10 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
 /**
  * The intermediate pass of theglobal algorithm for ET_REL injection
  * We fuze symbol tables from the ET_REL and the host binary 
+ *
+ * @param file
+ * @param rel
+ * @return
  */
 int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
 {
@@ -533,6 +562,10 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
 
 /**
  * Inject ET_REL bss inside host BSS 
+ *
+ * @param file
+ * @param rel
+ * @return
  */
 int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
 {
@@ -547,6 +580,9 @@ int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
 
 /**
  * Inject a ET_REL object into a ET_EXEC object 
+ * @param file
+ * @param rel
+ * @return
  */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 {
@@ -689,6 +725,12 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 
 /**
  * Front end function for injection in static binaries with module dependences 
+ *
+ * @param host
+ * @param rel
+ * @param listw
+ * @param listsh
+ * @return
  */
 int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel, 
 					hash_t *listw, hash_t *listsh)

@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:19:19 2001 jfv
  *
  *
- * $Id: rel.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: rel.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -107,14 +107,14 @@ int		cmd_rel()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  sect = elfsh_get_reloc(world.curjob->current, 0, &size);
+  sect = elfsh_get_reloc(world.curjob->curfile, 0, &size);
   if (sect == NULL)
     RET(-1);
 
   /* Choose between global or local regx */
   FIRSTREGX(tmp);
   snprintf(logbuf, BUFSIZ - 1, " [RELOCATION TABLES]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
 
   /* We need to iterate as much as there is .rel* sections */
@@ -122,7 +122,7 @@ int		cmd_rel()
     {
 
       snprintf(logbuf, BUFSIZ - 1,
-	       " {Section %s} \n", elfsh_get_section_name(world.curjob->current, sect));
+	       " {Section %s} \n", elfsh_get_section_name(world.curjob->curfile, sect));
       revm_output(logbuf);
 
       /* Iterate on the .rel entries array for each .rel section */
@@ -146,13 +146,13 @@ int		cmd_rel()
 
 
 	  /* Get linked symbol name */
-	  name = elfsh_get_symname_from_reloc(world.curjob->current, rel);
+	  name = elfsh_get_symname_from_reloc(world.curjob->curfile, rel);
 	  typenum  = elfsh_get_reltype(rel);
-	  types = revm_getrelascii(world.curjob->current);
+	  types = revm_getrelascii(world.curjob->curfile);
 
-	  type      = (char *) (typenum > ELFSH_RELOC_MAX(world.curjob->current) ? NULL :
+	  type      = (char *) (typenum > ELFSH_RELOC_MAX(world.curjob->curfile) ? NULL :
 				types[typenum].desc);
-	  typeshort = (char *) (typenum > ELFSH_RELOC_MAX(world.curjob->current) ? NULL :
+	  typeshort = (char *) (typenum > ELFSH_RELOC_MAX(world.curjob->curfile) ? NULL :
 				types[typenum].name);
 
 	  /* Output is different depending on the quiet flag */
@@ -197,7 +197,7 @@ int		cmd_rel()
 	}
 
     next:
-       sect = elfsh_get_reloc(world.curjob->current, index2 + 1, &size);
+       sect = elfsh_get_reloc(world.curjob->curfile, index2 + 1, &size);
        revm_output("\n");
     }
 

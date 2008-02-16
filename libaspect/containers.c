@@ -4,7 +4,7 @@
 ** @brief Implement generic routines for containers
 **
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
-** $Id: containers.c,v 1.2 2007-10-01 01:13:08 may Exp $
+** $Id: containers.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -12,6 +12,9 @@
 
 /**
  * @brief Create container lists
+ * @param container Container holding the lists
+ * @param linktype CONTAINER_LINK_IN or CONTAINER_LINK_OUT for input or output links list
+ * @return -1 on error and 0 on success
  */
 int		container_linklists_create(container_t *container,
 					   u_int	linktype)
@@ -45,12 +48,12 @@ int		container_linklists_create(container_t *container,
     case CONTAINER_LINK_IN:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "inputs");
       XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), -1);
-      list_init(container->inlinks, strdup(bufname), container->type);
+      elist_init(container->inlinks, strdup(bufname), container->type);
       break;
     case CONTAINER_LINK_OUT:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "outputs");
       XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), -1);
-      list_init(container->outlinks, strdup(bufname), container->type);
+      elist_init(container->outlinks, strdup(bufname), container->type);
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -63,6 +66,11 @@ int		container_linklists_create(container_t *container,
 
 /**
  * @brief Create a new container
+ * @param type Type of element inside container
+ * @param data Data pointer for contained element
+ * @param inlist Input links list if any (else it will be created empty)
+ * @Param outlist Output links list if any (else it will be created empty)
+ * @return Container newly created
  */
 container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *outlist)
 {
@@ -79,11 +87,11 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
   newcntnr->data = (char *) newcntnr + sizeof(container_t);
   newcntnr->type = type;
   if (inlist)
-    newcntnr->inlinks = list_copy(inlist);
+    newcntnr->inlinks = elist_copy(inlist);
   else
     container_linklists_create(newcntnr, CONTAINER_LINK_IN);
   if (outlist)
-    newcntnr->outlinks = list_copy(outlist);
+    newcntnr->outlinks = elist_copy(outlist);
   else
     container_linklists_create(newcntnr, CONTAINER_LINK_OUT);
   

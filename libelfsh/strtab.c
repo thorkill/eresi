@@ -1,17 +1,19 @@
 /**
  * @file strtab.c
-** strtab.c for libelfsh
-** 
-** Started on  Sun Mar 10 03:24:23 2002 jfv
-** Last update Sun May 25 17:40:19 2003 jfv
-**
-** $Id: strtab.c,v 1.9 2007-11-29 14:01:55 may Exp $
-**
-*/
+ * strtab.c for libelfsh
+ * 
+ * Started on  Sun Mar 10 03:24:23 2002 jfv
+ * Last update Sun May 25 17:40:19 2003 jfv
+ *
+ * $Id: strtab.c,v 1.10 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 /**
  * Rebuild symbol string table if unexistant 
+ * @param file
+ * @return
  */
 elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
 {
@@ -40,6 +42,9 @@ elfshsect_t	*elfsh_rebuild_strtab(elfshobj_t *file)
 
 /**
  * Retreive strtab 
+ * @param file
+ * @param index
+ * @return
  */
 elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 {
@@ -85,6 +90,9 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 
 /**
  * Add a symbol name in .strtab 
+ * @param file
+ * @param name
+ * @return
  */
 int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 {
@@ -120,6 +128,9 @@ int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 
 /**
  * Add a symbol name in .dynstr 
+ * @param file
+ * @param name
+ * @return
  */
 int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
 {
@@ -146,6 +157,9 @@ int		elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
 
 /**
  * Add a section name in section string table 
+ * @param file
+ * @param name
+ * @return
  */
 int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 {
@@ -171,6 +185,9 @@ int		elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
 
 /**
  * Add a section name in runtime section string table 
+ * @param file
+ * @param name
+ * @return
  */
 int		elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
 {

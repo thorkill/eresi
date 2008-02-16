@@ -2,47 +2,21 @@
 ## Makefile for libe2dbg in the ERESI framework
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
-## $id$
+## $Id: Makefile,v 1.17 2008-02-16 12:32:27 thor Exp $
 ##
 
 include ../config.h
 
-SRC			= e2dbg.c backtrace.c breakpoints.c delete.c display.c \
-			signal.c mode.c stack.c step.c linkmap.c dumpregs.c    \
-			dbghooks.c mutex.c continue.c alloc-proxy.c resolv.c   \
-			threads.c entry.c e2dbg-misc.c dbg-ia32.c dbg-sparc32.c
-OBJ			= $(SRC:.c=.o)
-OBJ32			= $(SRC:.c=.32.o)
-OBJ64			= $(SRC:.c=.64.o)
-CC			?= gcc
 LD			?= ld
 RM			= rm -f
 DBGNAME32		= libe2dbg32
 DBGNAME64		= libe2dbg64
 DBGNAME32O		= e2dbg-rel32.o
 DBGNAME64O		= e2dbg-rel64.o
+KDBGNAME32O		= ke2dbg-rel32.o
+KDBGNAME64O		= ke2dbg-rel64.o
 AR			= ar rc
 STRIP			= strip
-
-CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
-			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../libstderesi/include/		 \
-			-I../libui/include/ -I../libmjollnir/include/ 		 \
-			-I../libaspect/include -I../librevm/include/		 \
-			-I../libedfmt/include/ -I../liballocproxy/include/	 \
-			$(KERNSHINC) $(KERNSH)					 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI32	 \
-			-DE2DBG_PRESENT
-
-CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
-			-I../libelfsh/include/ -I../libdump/include/      	 \
-			-I../libasm/include/ -I../libstderesi/include/		 \
-			-I../libui/include/ -I../libmjollnir/include/ 		 \
-			-I../libaspect/include -I../librevm/include/		 \
-			-I../libedfmt/include/ -I../liballocproxy/include/       \
-			$(KERNSHINC) $(KERNSH)					 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI64	 \
-			-DE2DBG_PRESENT
 
 LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
@@ -59,24 +33,44 @@ EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o       \
 			../libaspect/libaspect64.o ../libstderesi/libstderesi64.o \
 			$(LDDUMPOBJ)
 
+COBJ32			= common/*.32.o
+COBJ64			= common/*.64.o
+KOBJ32			= kernel/*.32.o
+KOBJ64			= kernel/*.64.o
+UOBJ32			= user/*.32.o
+UOBJ64			= user/*.64.o
+
 all			: all32 all64
 
-all32			: ${OBJ32}
-			@$(CC) -shared $(OBJ32) $(EXTRAOBJ32) $(LDFLAGS32) \
-			$(KERNSHLIB32)					   \
-			-o $(DBGNAME32).so
-			@$(AR) $(DBGNAME32).a $(OBJ32)
+all32			: mod32 lib32
+
+mod32			:
+			$(MAKE) -C common all32
+			$(MAKE) -C user   all32
+ifdef USE_KE2DBG
+			$(MAKE) -C kernel 
+endif
+
+lib32:
+			@$(CC) -shared $(COBJ32) $(EXTRAOBJ32) $(UOBJ32) $(LDFLAGS32) \
+			$(KERNSHLIB32) -o $(DBGNAME32).so
+			@$(AR) $(DBGNAME32).a $(COBJ32) $(UOBJ32) $(EXTRAOBJ32)
 			@$(RANLIB) $(DBGNAME32).a
-			@$(LD) -r $(OBJ32) $(EXTRAOBJ32) -o $(DBGNAME32O)
+			@$(LD) -r $(COBJ32) $(EXTRAOBJ32) $(UOBJ32) -o $(DBGNAME32O)
 			#$(STRIP) $(DBGNAME32O)
 
-all64			: ${OBJ64}
-			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(LDFLAGS64) \
-			$(KERNSHLIB64) \
-			-o $(DBGNAME64).so
-			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)
+all64			: mod64 lib64
+
+mod64			:
+			$(MAKE) -C common all64
+			$(MAKE) -C user   all64
+
+lib64			:
+			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(UOBJ64) $(LDFLAGS64) \
+			$(KERNSHLIB64) -o $(DBGNAME64).so
 			@$(AR) $(DBGNAME64).a $(OBJ64)
 			@$(RANLIB) $(DBGNAME64).a
+			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)
 			#$(STRIP) $(DBGNAME64O)
 
 # This target is work in progress (static files debugger)
@@ -88,13 +82,15 @@ et_rel			: ${OBJ}
 			-o $(DBGNAME)_rel.o	  
 
 clean		       :
-		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+		       @$(MAKE) -C common clean
+		       @$(MAKE) -C kernel clean
+		       @$(MAKE) -C user   clean
+		       @$(RM) *~ \#* *\# .\#*
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
 fclean		       : clean
-		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32).so
-		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64).so
-		       @$(RM) $(DBGNAME32).a $(DBGNAME64).a
+		       @$(RM) $(KDBGNAME64O) $(KDBGNAME32O) $(DBGNAME32O) $(DBGNAME64O)
+		       @$(RM) $(DBGNAME32).so $(DBGNAME64).so $(DBGNAME32).a $(DBGNAME64).a
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

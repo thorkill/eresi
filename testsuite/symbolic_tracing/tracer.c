@@ -25,7 +25,7 @@ int		main(int argc, char **argv)
     goto err;
 
   /* Setup world current */
-  world.curjob->current = host;
+  world.curjob->curfile = host;
 
   /* Parse debugging informations */
   revm_edfmt_parse(host);

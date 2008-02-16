@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: init.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
+** $Id: init.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -20,7 +20,9 @@ static u_char aspect_initialized = 0;
 static u_char called_ctors = 0;
 static u_char dbgpresent   = 0;
 
-/* Count the number of constructors already called in the framework */
+/**
+ * @brief Count the number of constructors already called in the framework (update internal variable)
+ */
 void		aspect_called_ctors_inc()
 {
   if (!called_ctors)
@@ -29,7 +31,7 @@ void		aspect_called_ctors_inc()
 }
 
 /**
- * @brief  Test if we called all constructors or not, currently we have 3 
+ * @brief Test if we called all constructors or not (currently we have 3)
  */
 int		aspect_called_ctors_finished()
 {
@@ -41,7 +43,7 @@ int		aspect_called_ctors_finished()
 
 
 /** 
- * @brief Debugger presence set 
+ * @brief Set debugger presence
  */
 void		e2dbg_presence_set() 
 { 
@@ -53,7 +55,7 @@ void		e2dbg_presence_set()
 
 }
 
-/* Debugger presence reset */
+/** @brief Reset debugger presence */
 void		e2dbg_presence_reset() 
 { 
   dbgpresent = 0; 
@@ -75,17 +77,29 @@ u_char		e2dbg_presence_get()
 }	
 
 
+/** Are we in kernel mode */
+u_char		e2dbg_kpresence_get()
+{
+  return (aspectworld.kernel_mode);
+}
+
+/** Enable or disable kernel mode */
+void		e2dbg_kpresence_set(u_char pres)
+{
+  aspectworld.kernel_mode = pres;
+}
+
 /**************** LIBASPECT initiazation ******************/
 
 
-/* Initialize the vector hash */
+/** @brief Initialize the vector hash table */
 static void	aspect_vectors_init()
 {
   vector_hash = (hash_t *) hash_find("type_vector");
 }
 
 
-/* Initialize base types : each type has a hash table of typed objects */
+/** @brief Initialize base types : each type has a hash table of typed objects */
 static void	aspect_types_init()
 {
   hash_init(&types_hash, "types", 11, ASPECT_TYPE_UNKNOW);
@@ -93,7 +107,7 @@ static void	aspect_types_init()
 }
 
 
-/** Configuration initialization in libaspect */
+/** @brief Configuration initialization in libaspect */
 static void	aspect_config_init()
 {
   memset(&aspectworld, 0x00, sizeof(aspectworld_t));
@@ -113,7 +127,7 @@ static void	aspect_config_init()
 }
 
 
-/* Initialize Libaspect */
+/** @brief Initialize everything Libaspect */
 int		aspect_init()
 {
   if (!aspect_initialized)

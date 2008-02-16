@@ -5,7 +5,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id: hijack.c,v 1.11 2007-10-11 18:25:17 pouik Exp $
+** $Id: hijack.c,v 1.12 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,13 @@
 
 /**
  * Perform custom function hijack, return 0 on success -1 on error 
+ *
+ * @param file
+ * @param type
+ * @param name
+ * @param addr
+ * @param hooked
+ * @return
  */
 int		elfsh_hijack_function_by_name(elfshobj_t *file, 
 					      uint32_t	 type,

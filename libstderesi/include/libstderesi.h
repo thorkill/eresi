@@ -2,7 +2,7 @@
 ** @file libstderesi.h
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
-** $Id: libstderesi.h,v 1.4 2007-12-09 23:00:18 may Exp $
+** $Id: libstderesi.h,v 1.5 2008-02-16 12:32:27 thor Exp $
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
@@ -189,6 +189,12 @@
 
 #define	CMD_RSHT		"rsht"
 #define	CMD_RPHT		"rpht"
+
+/* Extern variables */
+extern char	quit_msg[512];
+extern void	(*prompt_token_setup)(char *name, u_int size);
+extern char	prompt_token[512];
+extern u_char  quit_msg_setup;
 
 /* Constructors */
 void            eresi_commands_init();

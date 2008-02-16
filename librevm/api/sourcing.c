@@ -2,13 +2,16 @@
 ** @file sourcing.c
 ** 
 ** Started on  Fri May 16 15:18:35 2005 jfv
-** $Id: sourcing.c,v 1.3 2007-12-09 23:00:18 may Exp $
+** $Id: sourcing.c,v 1.4 2008-02-16 12:32:27 thor Exp $
 */
 #include "revm.h"
 
 
 /** 
  * @brief Command interface for ERESI script sourcing
+ *
+ * @param params
+ * @return
  */
 int		revm_source(char **params)
 {
@@ -63,7 +66,7 @@ int		revm_source(char **params)
   /* Copy all procedure parameters as new objects arguments */
   snprintf(framename, sizeof(framename), "%u", world.curjob->sourced);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newframe, sizeof(list_t), -1);
-  list_init(newframe, strdup(framename), ASPECT_TYPE_EXPR);
+  elist_init(newframe, strdup(framename), ASPECT_TYPE_EXPR);
 
   /* Create new parameters and store the old ones in a frame */
   for (ac = 1; params[ac]; ac++)
@@ -79,7 +82,7 @@ int		revm_source(char **params)
       param = revm_expr_get(actual);
       if (param)
 	{
-	  list_add(newframe, strdup(actual), (void *) param);
+	  elist_add(newframe, strdup(actual), (void *) param);
 	  hash_del(&exprs_hash, (char *) actual);
 
 #if __DEBUG_EXPRS__
@@ -107,7 +110,7 @@ int		revm_source(char **params)
     hash_del(&exprs_hash, (char *) REVM_VAR_ARGC);
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
   revm_expr_create_from_object(new, REVM_VAR_ARGC);
-  list_add(&frames_list, strdup(framename), (void *) newframe);
+  elist_add(&frames_list, strdup(framename), (void *) newframe);
 
   /* Prepare the interpreter for executing a new script */
   XOPEN(fd, str, O_RDONLY, 0, -1);
@@ -131,7 +134,7 @@ int		revm_source(char **params)
 
   /* A simple dedicated interpretation loop on the script file */
   do {
-    av = revm_input(&ac);
+    av = revm_input(&ac, NULL);
     if (av == ((char **) REVM_INPUT_VOID))
       continue;
     else if (!av || !world.curjob->curcmd)
@@ -165,22 +168,32 @@ int		revm_source(char **params)
     case (-1):
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Failed to execute script", (-1));
+      
+      /* Restore the context immediately if no continue is met */
     default:
-      break;
+      ret = revm_context_restore(savedfd, savedmode, savedcmd, savedinput, argv, str);
+      if (prevargc)
+	hash_set(&exprs_hash, strdup((char *) REVM_VAR_ARGC), prevargc);
+      expr->value->immed_val.ent = world.curjob->sourced;
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
     }
-
-  /* Restore the context immediately if no continue is met */
-  ret = revm_context_restore(savedfd, savedmode, savedcmd, savedinput, argv, str);
-  if (prevargc)
-    hash_set(&exprs_hash, strdup((char *) REVM_VAR_ARGC), prevargc);
-  expr->value->immed_val.ent = world.curjob->sourced;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  
 }
 
 
 
-/* Restore the previous debugger control context */
-/* Mostly useful when using 'continue' command from a debugger script */
+/**
+ * Restore the previous debugger control context.
+ * Mostly useful when using 'continue' command from a debugger script 
+ *
+ * @param savedfd
+ * @param savedmode
+ * @param savedcmd
+ * @param savedinput
+ * @param argv
+ * @param savedname
+ * @return
+ */
 int	       revm_context_restore(int		savedfd, 
 				    char	savedmode, 
 				    revmargv_t	*savedcmd, 
@@ -192,7 +205,7 @@ int	       revm_context_restore(int		savedfd,
   char		buf[BUFSIZ];
   u_int		idx;
   char		**keys;
-  u_int		keynbr;
+  int		keynbr;
   revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -210,13 +223,13 @@ int	       revm_context_restore(int		savedfd,
 
   /* Link back all parameters and their types */
   snprintf(buf, BUFSIZ, "%u", world.curjob->sourced - 1);
-  lastframe      = list_get(&frames_list, buf);
+  lastframe      = elist_get(&frames_list, buf);
   if (!lastframe)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  keys = list_get_keys(lastframe, &keynbr);
+  keys = elist_get_keys(lastframe, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     {
-      expr = list_get(lastframe, keys[idx]);
+      expr = elist_get(lastframe, keys[idx]);
       hash_set(&exprs_hash    , keys[idx], expr);
 
 #if __DEBUG_EXPRS__
@@ -227,9 +240,9 @@ int	       revm_context_restore(int		savedfd,
     }
 
   /* Destroy frame */
-  list_destroy(lastframe);
-  list_del(&frames_list, buf);
-  list_free_keys(keys);
+  elist_destroy(lastframe);
+  elist_del(&frames_list, buf);
+  elist_free_keys(keys);
   world.curjob->script[world.curjob->sourced] = NULL;
 
   hash_destroy(&labels_hash[world.curjob->sourced]);
@@ -241,10 +254,12 @@ int	       revm_context_restore(int		savedfd,
 }
 
 
-
-
-
-/* Execute a command given by a string in the current job */
+/**
+ * Execute a command given by a string in the current job 
+ *
+ * @param str
+ * @return
+ */
 int	revm_exec_str(char *str)
 {
   int	nbr;

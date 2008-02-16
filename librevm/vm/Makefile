@@ -5,7 +5,7 @@
 ##
 include ../../config.h
 
-SRC			= init.c loop.c tables.c
+SRC			= init.c loop.c tables.c fini.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

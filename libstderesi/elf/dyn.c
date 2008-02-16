@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:17:36 2001 jfv
  *
  *
- * $Id: dyn.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: dyn.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -344,11 +344,11 @@ int		cmd_dyn()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Fetch the section and init the regex */
-  if ((actual = elfsh_get_dynamic(world.curjob->current, &num)) == NULL)
+  if ((actual = elfsh_get_dynamic(world.curjob->curfile, &num)) == NULL)
     RET(-1);
   FIRSTREGX(tmp);
   snprintf(info, BUFSIZ - 1, 
-	   " [SHT_DYNAMIC]\n [Object %s]\n\n", world.curjob->current->name);
+	   " [SHT_DYNAMIC]\n [Object %s]\n\n", world.curjob->curfile->name);
   revm_output(info);
 
   /* Loop on the section */
@@ -371,7 +371,7 @@ int		cmd_dyn()
 	}
 	
       bzero(info, sizeof(info));
-      revm_dynentinfo(world.curjob->current, actual + index, info);
+      revm_dynentinfo(world.curjob->curfile, actual + index, info);
 
       p = NULL;
       if (strlen(info) == 14)

@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: debug.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: debug.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -282,7 +282,7 @@ int			cmd_debug()
       submit_rx = &rx;
     }
   
-  info = edfmt_get_uniinfo(world.curjob->current);
+  info = edfmt_get_uniinfo(world.curjob->curfile);
 
   if (!info)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

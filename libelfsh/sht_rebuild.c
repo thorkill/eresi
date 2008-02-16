@@ -7,22 +7,26 @@
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
  ** 
  ** Started on  Tue Mar 26 19:07:23 2002 jfv
- ** Updated on  Thu Mar 23 23:21:08 2006 thorkill
- ** 
- **
- ** $Id: sht_rebuild.c,v 1.23 2007-10-14 09:55:38 heroine Exp $
- **
+ ** $Id: sht_rebuild.c,v 1.24 2008-02-16 12:32:27 thor Exp $
  */
 #include "libelfsh.h"
 #include "libasm.h"
+
+
+
 /** 
  * @brief This function insert a SHT entry without shifting the address space
  * I.E. it does truncate some sections for creating new ones.
  *
  * This is necessary when we do SHT reconstruction or when we unmerge
  * the PLT section from the TEXT section on the MIPS architecture.
+ *
+ * @param file
+ * @param phdr_index
+ * @param shdr
+ * @param name
+ * @return
  */
-
 int	elfsh_merge_shtentry(elfshobj_t *file, 
 			     int phdr_index, 
 			     elfsh_Shdr shdr, 
@@ -197,6 +201,10 @@ int	elfsh_merge_shtentry(elfshobj_t *file,
 /** 
  * INTERNAL FUNCTION : Rebuild an initial SHT and 
  * create some sections based on the pht entries 
+ *
+ * @param file
+ * @param num
+ * @return
  */
 static int elfsh_init_sht(elfshobj_t *file, u_int num)
 {
@@ -207,7 +215,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
   void	  	*data;
   unsigned int	nnames,lnames,dnames;
   unsigned int	tlsnames,ehnames,snames;
-  long		type, total, section_offset, base_addr = 0, dyn_addr = 0, dyn_size;
+  long		type, total, section_offset, base_addr = 0, dyn_addr = 0, dyn_size = 0;
   int		flags;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -411,7 +419,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      printf("@0x%08x => SECT SIZE: %x %d bytes\n", sect_addr - base_addr, sect_size, sect_size);
+      printf("@" XFMT " => SECT SIZE: %x %d bytes\n", sect_addr - base_addr, sect_size, sect_size);
      
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,
@@ -594,7 +602,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name = strdup(".got");
       
-      printf("OFFSET: %x (size: %d)\n", sect_addr, (dyn_size));
+      printf("OFFSET: " AFMT " (size: " DFMT ")\n", sect_addr, (dyn_size));
       XSEEK(file->fd, sect_addr - (base_addr + 0x1000), SEEK_SET, -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
       XREAD(file->fd, data, sect_size, -1);
@@ -615,7 +623,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       asm_instr instr;
       asm_processor proc;
       u_char temp[1024];
-      int curr;
+      //int curr;
 
       sect_addr = dyn->d_un.d_ptr;
 
@@ -769,7 +777,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
       printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
 	     sect->name, sect->shdr->sh_addr);
-      section_offset += strlen(sect->name)+1;
+      section_offset += strlen(sect->name) + 1;
     }
 #endif
   //elfsh_sort_sht(file);
@@ -876,6 +884,10 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
 
 /**
  * INTERNAL FUNCTION: guess .text, .data, .init, .fini, and .bss bounds 
+ *
+ * @param file
+ * @param num
+ * @return
  */
 static void	sht_second_round(elfshobj_t *file, u_int num)
 {
@@ -918,6 +930,9 @@ static void	sht_second_round(elfshobj_t *file, u_int num)
 
 /**
  * Recreate the section header table examining the program header table 
+ *
+ * @param file
+ * @return
  */
 int		elfsh_rebuild_sht(elfshobj_t *file)
 {

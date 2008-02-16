@@ -4,7 +4,7 @@
 * Various API for manipulating types
 *
 * Started on Sun Jan 9 07:23:58 2007 jfv
-* $Id: typing.c,v 1.1 2007-12-07 16:49:49 may Exp $
+* $Id: typing.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -46,6 +46,9 @@ int		revm_type_copy(char *from, char *to)
 
 /**
  * Init the global type table 
+ *
+ * @param name
+ * @return
  */
 int		revm_type_hashcreate(char *name)
 {
@@ -63,7 +66,13 @@ int		revm_type_hashcreate(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Print a specific type */
+/**
+ * Print a specific type 
+ * 
+ * @param type
+ * @param mode
+ * @return
+ */
 int		revm_type_print(char *type, char mode)
 {
   aspectype_t	*cur;
@@ -175,7 +184,12 @@ int		revm_type_print(char *type, char mode)
 }
 
 
-/* Print types matching a regular expression */
+/**
+ * Print types matching a regular expression 
+ *
+ * @param regex
+ * @return
+ */
 int		revm_type_print_regex(char *regex)
 {
   regex_t	rx;
@@ -208,7 +222,11 @@ int		revm_type_print_regex(char *regex)
 
 
 
-/* Print available types */
+/**
+ * Print available types 
+ *
+ * @return
+ */
 int		revm_type_prints()
 {
   int		keynbr;

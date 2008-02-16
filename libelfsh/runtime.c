@@ -9,7 +9,7 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id: runtime.c,v 1.8 2007-09-02 21:47:25 pouik Exp $
+** $Id: runtime.c,v 1.9 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -17,6 +17,8 @@
 
 /**
  * @brief Set PHT entry rights from elfsh section mode 
+ * @param mode
+ * @return
  */
 int		elfsh_set_phdr_prot(u_int mode)
 {
@@ -32,6 +34,8 @@ int		elfsh_set_phdr_prot(u_int mode)
 
 /**
  * @brief Map a new area in memory 
+ * @param segment
+ * @return
  */
 elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 {
@@ -111,6 +115,8 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
 /**
  * @brief Unmap a previously requested area 
+ * @param segment
+ * @return
  */
 int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 {
@@ -128,6 +134,9 @@ int		elfsh_runtime_unmap(elfsh_Phdr *segment)
 
 /**
  * Remap an existing zone with a bigger size 
+ * @param segment
+ * @param moresize
+ * @return
  */
 int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 {
@@ -148,7 +157,8 @@ int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 }
 
 /**
- * @brief Synchronize ondisk modifications in memory 
+ * @brief Synchronize ondisk modifications in memory
+ * @return Always returns 0
  */
 int		elfsh_runtime_sync()
 {
@@ -160,6 +170,10 @@ int		elfsh_runtime_sync()
 
 /**
  * @brief Put write capability on the zone 
+ * @param file 
+ * @param addr
+ * @param sz
+ * @return
  */
 int		elfsh_munprotect(elfshobj_t *file, 
 				 elfsh_Addr addr, 
@@ -214,6 +228,10 @@ int		elfsh_munprotect(elfshobj_t *file,
 
 /**
  * @brief Restore original rights 
+ * @param addr
+ * @param sz
+ * @param prot
+ * @return
  */
 int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
 {

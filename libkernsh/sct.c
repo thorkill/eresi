@@ -1,7 +1,7 @@
 /*
 ** sct.c for libkernsh
 **
-** $Id: sct.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
+** $Id: sct.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libkernsh.h"
@@ -94,7 +94,7 @@ int kernsh_sct_linux(list_t *lsct)
 		 sizeof(syscall->name));
 
 	  /* Add syscall to the list */
-	  list_add(lsct, key, (void *) syscall);
+	  elist_add(lsct, key, (void *) syscall);
 	}
     }
   /* Get syscalls in the memory */
@@ -139,7 +139,7 @@ int kernsh_sct_linux(list_t *lsct)
 				   sizeof(syscall->name));
 
 	  /* Add syscall in the list */
-	  list_add(lsct, key, (void *) syscall);
+	  elist_add(lsct, key, (void *) syscall);
 	}
     }
 

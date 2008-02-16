@@ -4,7 +4,7 @@
  * Started on Fri Jan 26 21:00:33 BRST 2007
  *
  *
- * $Id: core.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: core.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -42,13 +42,13 @@ int 		cmd_coreinfo()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   snprintf(buff,sizeof(buff)," [CORE FILE NOTES_ENTRY]\n [Object %s | %s]\n\n",
-	   world.curjob->current->name, 
-	   world.curjob->current->coretype == ELFSH_CORE_LINUX ?
+	   world.curjob->curfile->name, 
+	   world.curjob->curfile->coretype == ELFSH_CORE_LINUX ?
 	   "Linux":"FreeBSD");
 
   revm_output(buff);
 
-  switch(world.curjob->current->coretype) 
+  switch(world.curjob->curfile->coretype) 
     {
     case ELFSH_CORE_LINUX:
       {
@@ -56,8 +56,8 @@ int 		cmd_coreinfo()
 	elfsh_prpsinfo_t	*pr;
 	elfsh_uregset_t		regs;
 
-	ps = &world.curjob->current->core.prstatus;
-	pr = &world.curjob->current->core.prpsinfo;
+	ps = &world.curjob->curfile->core.prstatus;
+	pr = &world.curjob->curfile->core.prpsinfo;
 
 	snprintf(buff, sizeof(buff), " Received Signal: %d (%s)\n\n", 
 		 ps->pr_cursig, get_signal(ps->pr_cursig));
@@ -98,8 +98,8 @@ int 		cmd_coreinfo()
 	elfsh_bsdprpsinfo_t		*pr;
 	elfsh_bsduregset_t		regs;
 
-	ps = &world.curjob->current->bsdcore.prstatus;
-	pr = &world.curjob->current->bsdcore.prpsinfo;
+	ps = &world.curjob->curfile->bsdcore.prstatus;
+	pr = &world.curjob->curfile->bsdcore.prpsinfo;
 
 	snprintf(buff, sizeof(buff), " Received Signal: %d (%s)\n\n", 
 		 ps->pr_cursig, get_signal(ps->pr_cursig));

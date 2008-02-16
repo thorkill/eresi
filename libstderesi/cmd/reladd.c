@@ -4,7 +4,7 @@
  * Started on  Fri Mar 28 14:58:57 2003 jfv
  * Last update Thu Mar 11 14:39:48 2004 jfv
  *
- * $Id: reladd.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: reladd.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -64,7 +64,7 @@ int		cmd_relinject()
 		      "Failed to inject ET_REL with workspace", (-1));
 
   /* Success : put the modified object as current */
-  world.curjob->current = host;
+  world.curjob->curfile = host;
   if (!world.state.revm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1,

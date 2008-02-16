@@ -5,7 +5,7 @@
 ** Started on  Sun Jun 24 21:30:41 2001 jfv
 ** Last update Thu May 15 04:39:15 2003 jfv
 **
-** $Id: got.c,v 1.10 2007-07-31 03:28:46 may Exp $
+** $Id: got.c,v 1.11 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -15,6 +15,11 @@
 
 /**
  * Shift GOT on ET_DYN 
+ *
+ * @param file
+ * @param size
+ * @param name
+ * @return
  */
 int		elfsh_shift_got(elfshobj_t *file, 
 				u_int size,
@@ -49,27 +54,30 @@ int		elfsh_shift_got(elfshobj_t *file,
 
 /**
  * Change endianess of GOT 
+ *
+ * @param newsect
+ * @return
  */
-int		elfsh_endianize_got(elfshsect_t *new)
+int		elfsh_endianize_got(elfshsect_t *newsect)
 {
   elfsh_Addr	*cur;  
   int		idx;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  if (!new)
+  if (!newsect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
   
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-  if (new->parent->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
+  if (newsect->parent->hdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 #elif __BYTE_ORDER == __BIG_ENDIAN
-  if (new->parent->hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
+  if (newsect->parent->hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
 #else
 #error Unexpected __BYTE_ORDER !
 #endif
-    cur = elfsh_get_raw(new);
-    for (idx = 0; idx < new->shdr->sh_size / new->shdr->sh_entsize; idx++)
+    cur = elfsh_get_raw(newsect);
+    for (idx = 0; idx < newsect->shdr->sh_size / newsect->shdr->sh_entsize; idx++)
       cur[idx] = swaplong(cur[idx]);
   }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -79,6 +87,10 @@ int		elfsh_endianize_got(elfshsect_t *new)
   
 /**
  * Read the global offset table in section .got 
+ *
+ * @param file
+ * @param num
+ * @return
  */
 elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 {
@@ -129,6 +141,9 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
  
 /**
  * Return the real GOT section 
+ *
+ * @param file
+ * @return
  */
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
 {
@@ -160,6 +175,11 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
 
 /**
  * Return the 'range'th got - seems ok 
+ *
+ * @param file
+ * @param range
+ * @param nbr
+ * @return
  */
 elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, 
 				      elfsh_Addr range, 
@@ -232,6 +252,11 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
 
 /**
  * Modify a GOT entry 
+ *
+ * @param file
+ * @param i
+ * @param n
+ * @return
  */
 int		elfsh_set_got_entry_by_index(elfshobj_t *file, 
 					     int i, 
@@ -258,6 +283,11 @@ int		elfsh_set_got_entry_by_index(elfshobj_t *file,
 
 /**
  * Modify the got entry for the dynamic symbol 'n' 
+ *
+ * @param f
+ * @param n
+ * @param a
+ * @return
  */
 int		elfsh_set_got_entry_by_name(elfshobj_t *f, 
 					    char *n, 
@@ -282,6 +312,9 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *f,
 
 /**
  * Return a entry giving its parent and its index 
+ * @param got
+ * @param index
+ * @return
  */
 elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got, 
 					      elfsh_Addr index)
@@ -298,6 +331,10 @@ elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got,
 
 /**
  * Return a entry giving its parent and its index 
+ *
+ * @param file
+ * @param name
+ * @return
  */
 elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 {
@@ -341,6 +378,10 @@ elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 /**
  * Return a entry giving its parent and 
  * its index : used as INTERNAL hash handler 
+ *
+ * @param got
+ * @param vaddr
+ * @return
  */
 int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
 {
@@ -358,6 +399,9 @@ int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
 /**
  * Return a entry value giving its parent and its 
  * index : used as INTERNAL hash handler 
+ *
+ * @param got
+ * @return
  */
 elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 {
@@ -373,6 +417,9 @@ elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
 
 /**
  * Return a GOT entry value 
+ *
+ * @param got
+ * @return
  */
 elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 {
@@ -388,6 +435,9 @@ elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
 
 /**
  * Return a GOT entry address 
+ *
+ * @param got
+ * @return
  */
 elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 {
@@ -403,6 +453,10 @@ elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
 
 /**
  * Change a GOT entry val 
+ *
+ * @param got
+ * @param val
+ * @return
  */
 u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 {
@@ -419,6 +473,10 @@ u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
 
 /**
  * Change a GOT entry addr 
+ *
+ * @param got
+ * @param val
+ * @return
  */
 u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
 {
@@ -437,6 +495,10 @@ u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
  * Only used on BeoS 
  * Tested and developed by zadig@myrealbox.com
  *
+ * @param file
+ * @param name
+ * @param rel_entry
+ * @param
  */
 int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
 				 uint8		*name,

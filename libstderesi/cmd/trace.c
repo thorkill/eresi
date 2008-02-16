@@ -6,7 +6,7 @@
 * Started Jul 2 2005 00:03:44 mxatone
 *
 *
-* $Id: trace.c,v 1.1 2007-11-29 14:01:56 may Exp $
+* $Id: trace.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 *
 */
 #include "libstderesi.h"
@@ -104,7 +104,7 @@ static int		revm_traces_match_in_symtable(elfshsect_t	*sect,
 	  || table[index].st_value == 0)
 	continue;
 
-      name = get_symname(world.curjob->current, table + index);
+      name = get_symname(world.curjob->curfile, table + index);
 
       /* Check if this name is valid */
       if (name == NULL || *name == 0)
@@ -161,19 +161,19 @@ static int		revm_traces_match_in_addrtable(char ***func_list, u_int *count)
   cnum = *count;
   
   /* Retrieve all called address in this binary */
-  if (elfsh_addr_get_func_list(world.curjob->current, &alist) < 0)
+  if (elfsh_addr_get_func_list(world.curjob->curfile, &alist) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Can't get call function list", -1);
 
   for (index = 0; alist[index]; index++)
     {
-      sym = elfsh_get_symbol_by_value(world.curjob->current, alist[index], 
+      sym = elfsh_get_symbol_by_value(world.curjob->curfile, alist[index], 
 				      0, ELFSH_EXACTSYM);
       
       /* Find a symbol for this address */
       if (sym)
 	{
-	  toadd = elfsh_get_symbol_name(world.curjob->current, sym);
+	  toadd = elfsh_get_symbol_name(world.curjob->curfile, sym);
 	}
       else
 	{
@@ -249,22 +249,22 @@ static int		revm_traces_match_funcname(char *funcname, char ***func_list)
       /* Prealloc the list */
       XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, sizeof(char*)*2, -1);
 
-      sym = elfsh_get_symbol_by_value(world.curjob->current, addr, 0, ELFSH_EXACTSYM);
+      sym = elfsh_get_symbol_by_value(world.curjob->curfile, addr, 0, ELFSH_EXACTSYM);
       
       /* We have a symbol for this address */
       if (sym)
 	{
-	  f_list[0] = elfsh_get_symbol_name(world.curjob->current, sym);
+	  f_list[0] = elfsh_get_symbol_name(world.curjob->curfile, sym);
 	  f_list[1] = NULL;
 	}
       else
 	{
-	  sym = elfsh_get_dynsymbol_by_value(world.curjob->current, addr, 0, ELFSH_EXACTSYM);
+	  sym = elfsh_get_dynsymbol_by_value(world.curjob->curfile, addr, 0, ELFSH_EXACTSYM);
 
 	  /* We have a dynamic symbol for this address */
 	  if (sym)
 	    {
-	      f_list[0] = elfsh_get_dynsymbol_name(world.curjob->current, sym);
+	      f_list[0] = elfsh_get_dynsymbol_name(world.curjob->curfile, sym);
 	      f_list[1] = NULL;
 	    }
 	  else
@@ -314,11 +314,11 @@ static int		revm_traces_match_funcname(char *funcname, char ***func_list)
   /**
    * Match on symbol table
    */
-  symtab = elfsh_get_symtab(world.curjob->current, &num);
+  symtab = elfsh_get_symtab(world.curjob->curfile, &num);
   
   if (symtab != NULL)
     { 
-      sect = elfsh_get_section_by_type(world.curjob->current, 
+      sect = elfsh_get_section_by_type(world.curjob->curfile, 
 				       SHT_SYMTAB, 0, NULL, NULL, 0);
       
       /* Match function regex in the symbol table */
@@ -328,16 +328,16 @@ static int		revm_traces_match_funcname(char *funcname, char ***func_list)
   /**
    * Match on dynamic symbol table
    */
-  symtab = elfsh_get_dynsymtab(world.curjob->current, &num);
+  symtab = elfsh_get_dynsymtab(world.curjob->curfile, &num);
 
   if (symtab != NULL)
     { 
 
-      sect = elfsh_get_section_by_name(world.curjob->current, 
+      sect = elfsh_get_section_by_name(world.curjob->curfile, 
 				      ELFSH_SECTION_NAME_ALTDYNSYM, 
 				      NULL, NULL, &num);
       if (!sect)
-	sect = elfsh_get_section_by_type(world.curjob->current, SHT_DYNSYM, 0, 
+	sect = elfsh_get_section_by_type(world.curjob->curfile, SHT_DYNSYM, 0, 
 					NULL, NULL, &num);
 
       num /= sizeof(elfsh_Sym);
@@ -1314,7 +1314,7 @@ int 			cmd_traces()
   switch(world.curjob->curcmd->argc)
     {
     case 0:
-      traces_list(world.curjob->current, NULL, NULL);
+      traces_list(world.curjob->curfile, NULL, NULL);
       break;
     case 1:
       table = etrace_gettrace(world.curjob->curcmd->param[0]);
@@ -1355,7 +1355,7 @@ int 			cmd_traces()
 	    }
 	}
 
-      ret = cmd->exec(world.curjob->current, fArg, sArg);      
+      ret = cmd->exec(world.curjob->curfile, fArg, sArg);      
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
@@ -1377,7 +1377,7 @@ int 			cmd_traceadd()
   /* Loop on each passed functions */
   for (index = 0; index < world.curjob->curcmd->argc; index++) 
     {
-      if (traces_add(world.curjob->current, world.curjob->curcmd->param[index], NULL) < 0)
+      if (traces_add(world.curjob->curfile, world.curjob->curcmd->param[index], NULL) < 0)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
     }
   
@@ -1397,7 +1397,7 @@ int 			cmd_traceexclude()
   /* Loop on each passed functions */
   for (index = 0; index < world.curjob->curcmd->argc; index++) 
     {
-      if (traces_exclude(world.curjob->current, world.curjob->curcmd->param[index], NULL) < 0)
+      if (traces_exclude(world.curjob->curfile, world.curjob->curcmd->param[index], NULL) < 0)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
     }
   
@@ -1408,7 +1408,7 @@ int			cmd_tracerun()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (traces_run(world.curjob->current, 
+  if (traces_run(world.curjob->curfile, 
 		 world.curjob->curcmd->param, 
 		 world.curjob->curcmd->argc) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

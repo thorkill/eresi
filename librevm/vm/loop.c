@@ -4,11 +4,9 @@
  * This file include the control flow support for scripting
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
- * $Id: loop.c,v 1.13 2007-12-06 05:11:58 may Exp $
+ * $Id: loop.c,v 1.14 2008-02-16 12:32:27 thor Exp $
  */
 #include "revm.h"
-
-
 
 
 /** 
@@ -16,8 +14,6 @@
  */
 int		revm_loop(int argc, char **argv)
 {
-  char		*buggyfunc;
-  char		logbuf[256];
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -50,7 +46,7 @@ int		revm_loop(int argc, char **argv)
 	  }
 
 	/* Take a line, execute old command if void line */
-	argv = revm_input(&argc);
+	argv = revm_input(&argc, NULL);
 	if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
 	    world.state.revm_mode == REVM_STATE_DEBUGGER    ||
 	    world.state.revm_mode == REVM_STATE_SCRIPT      ||
@@ -69,7 +65,10 @@ int		revm_loop(int argc, char **argv)
 
 	    /* when debugging -> back to main program */
 	    if (world.state.revm_mode == REVM_STATE_DEBUGGER)
-	      goto e2dbg_cleanup;
+	      {
+		revm_cleanup();
+		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+	      }
 
 	    /* if net is enable but we are not in e2dbg -> ignore */
 	    if (world.state.revm_net)
@@ -87,7 +86,7 @@ int		revm_loop(int argc, char **argv)
 	if (world.state.revm_mode != REVM_STATE_CMDLINE
 	    && world.state.revm_mode != REVM_STATE_TRACER)
 	  {
-	    XFREE(__FILE__, __FUNCTION__, __LINE__,argv);
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
 	    if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
 		world.state.revm_mode != REVM_STATE_DEBUGGER)
 	      goto end;
@@ -104,7 +103,8 @@ int		revm_loop(int argc, char **argv)
 	  {
 	  case REVM_SCRIPT_CONTINUE:
 	    //printf(" [*] e2dbg continue from revm_execmd \n");
-	    goto e2dbg_cleanup;
+	    revm_cleanup();
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);		
 	  case REVM_SCRIPT_ERROR:
 	    profiler_error();
 	  default:
@@ -126,6 +126,8 @@ int		revm_loop(int argc, char **argv)
   /* If we are in scripting, execute commands list now */
   if (world.state.revm_mode == REVM_STATE_SCRIPT)
     {
+      fprintf(stderr, "we are in script mode from revm_loop ! \n");
+
       world.curjob->curcmd = world.curjob->script[0];
       ret = revm_execscript();
       if (ret == REVM_SCRIPT_STOP)
@@ -139,54 +141,15 @@ int		revm_loop(int argc, char **argv)
     }
 
  end:
-  if (!world.state.revm_quiet && world.state.revm_mode == REVM_STATE_SCRIPT)
-    {
-      if (ret < 0)
-	revm_output("\n [E] Script execution failed \n\n");
-      else
-	revm_output("\n [*] Script execution ended succesfully \n\n");
-    }
-
-  /* Implicit unload or save if we are not in interactive mode */
-  if ((world.state.revm_mode == REVM_STATE_CMDLINE 
-       || world.state.revm_mode == REVM_STATE_TRACER) && world.curjob->current)
-    {
-      /* Start tracing if we are on tracer state (etrace) */
-      if (world.state.revm_mode == REVM_STATE_TRACER)
-	{
-	  profiler_error_reset();
-	  if (traces_run(world.curjob->current, NULL, 0) < 0)
-	    {
-	      buggyfunc = etrace_geterrfunc();
-	      
-	      /* Not NULL if issue occurs when we iterate though functions */
-	      if (buggyfunc)
-		{
-		  snprintf(logbuf, 255, " [!] There is an issue with the function: %s\n",
-			   buggyfunc);
-		  revm_output(logbuf);
-		}
-
-	      profiler_error();
-	    }
-	}
-
-      ret = revm_workfiles_unload();
-    }
-
+  revm_postexec(ret);
   revm_callback_handler_remove();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
-  
+
   /* Clean the script machine state when a script is over */
-  world.curjob->curcmd = NULL;
- e2dbg_cleanup:
-  world.curjob->script[world.curjob->sourced] = NULL;
-  world.curjob->lstcmd[world.curjob->sourced] = NULL;
-  revm_conditional_rlquit();
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  //XXX: looks never called now -- world.curjob->curcmd = NULL;
+  //revm_cleanup();
+  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 
 

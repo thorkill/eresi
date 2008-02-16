@@ -1,7 +1,7 @@
 /**
  * @file tables_i386.c
  * @brief Initialization of ia32 processor mnemonic table.
- * $Id: tables_i386.c,v 1.14 2007-10-14 00:01:41 heroine Exp $
+ * $Id: tables_i386.c,v 1.15 2008-02-16 12:32:26 thor Exp $
  * 
  */
 #include <libasm.h>
@@ -257,6 +257,8 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_FILD] = "fild";
   proc->instr_table[ASM_FIMUL] = "fimul";
   proc->instr_table[ASM_FSTP] = "fstp";
+  proc->instr_table[ASM_FSAVE] = "fsave";
+  proc->instr_table[ASM_FNSAVE] = "fnsave";
   proc->instr_table[ASM_FCOM] = "fcom";
   proc->instr_table[ASM_FCOMP] = "fcomp";
   proc->instr_table[ASM_FCOMPP] = "fcompp";
@@ -294,11 +296,13 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_FUCOM] = "fucom";
   proc->instr_table[ASM_FUCOMP] = "fucomp";
   proc->instr_table[ASM_FUCOMPP] = "fucompp";
+  proc->instr_table[ASM_FSTSW] = "fstsw";
   proc->instr_table[ASM_FNSTSW] = "fnstsw";
   proc->instr_table[ASM_FPREM] = "fprem";
   proc->instr_table[ASM_FSCALE] = "fscale";
   proc->instr_table[ASM_FSQRT] = "fsqrt";
   proc->instr_table[ASM_FNSTCW] = "fnstcw";
+  proc->instr_table[ASM_FSTCW] = "fstcw";
   proc->instr_table[ASM_FRNDINT] = "frndint";
   proc->instr_table[ASM_FPATAN] = "fpatan";
   proc->instr_table[ASM_BAD] = "(bad)";

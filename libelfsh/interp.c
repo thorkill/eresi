@@ -5,7 +5,7 @@
 ** Started on  Sun Jun 10 20:29:18 2001 jfv
 ** 
 **
-** $Id: interp.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: interp.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,9 @@
 
 /**
  * modify the niterpreter string : the new name len must be <= to the old one 
+ * @param file
+ * @param interp
+ * @return
  */
 int             elfsh_write_interp(elfshobj_t *file, char *interp)
 {
@@ -41,6 +44,8 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
 
 /**
  * Find the interpreter (pht lookup method) 
+ * @param file
+ * @return
  */
 char		*elfsh_get_interp(elfshobj_t *file)
 {

@@ -5,7 +5,7 @@
 **
 ** Started on  Sat May 31 23:48:41 2005 mxatone
 **
-** $Id: cleanup.c,v 1.3 2007-07-17 18:11:24 may Exp $
+** $Id: cleanup.c,v 1.4 2008-02-16 12:32:20 thor Exp $
 **
 */
 #include "etrace.h"
@@ -28,7 +28,7 @@ int		cmd_cleanup()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
 
-  sect = world.curjob->current->sectlist;
+  sect = world.curjob->curfile->sectlist;
   nbr = 0;
   for (index = 0; index < obj->hdr->e_shnum; index++, sect = sect->next)
     if (strstr(sect->name, ".o.") || strstr(sect->name, "elfsh"))
@@ -39,8 +39,8 @@ int		cmd_cleanup()
 	nbr++;
       }
 
-  world.curjob->current->nbrm = nbr;
-  //world.curjob->current->strip = 1;
+  world.curjob->curfile->nbrm = nbr;
+  //world.curjob->curfile->strip = 1;
 
   revm_output("\n [*] File marked for cleanup-on-save \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

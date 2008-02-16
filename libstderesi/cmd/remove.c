@@ -6,7 +6,7 @@
 ** Started on Nov 22 2003 jfv
 **
 **
-** $Id: remove.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: remove.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -35,22 +35,22 @@ int		cmd_remove()
 
   /* Remove a section */
   if (!strcmp(world.curjob->curcmd->param[0], "sect"))
-    err = elfsh_remove_section(world.curjob->current, name);
+    err = elfsh_remove_section(world.curjob->curfile, name);
 
   /* Remove a symbol after looking up symbol value */
   else if (!strcmp(world.curjob->curcmd->param[0], "sym"))
     {
-      symtab = elfsh_get_symtab(world.curjob->current, NULL);
+      symtab = elfsh_get_symtab(world.curjob->curfile, NULL);
       if (!symtab)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot find symbol table", -1);
-      symtab = world.curjob->current->secthash[ELFSH_SECTION_SYMTAB];
+      symtab = world.curjob->curfile->secthash[ELFSH_SECTION_SYMTAB];
       err = elfsh_remove_symbol(symtab, name);
     }
 
   /* Remove a segment */
   else if (!strcmp(world.curjob->curcmd->param[0], "phdr"))
-    err = elfsh_remove_phdr(world.curjob->current, atoi(name));
+    err = elfsh_remove_phdr(world.curjob->curfile, atoi(name));
 
   /* Error */
   else

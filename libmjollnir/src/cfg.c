@@ -6,7 +6,7 @@
 ** 
 ** @brief Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.9 2007-10-14 00:03:46 heroine Exp $
+** $Id: cfg.c,v 1.10 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -54,7 +54,7 @@ int			mjr_trace_control(mjrcontext_t *context,
   fun = NULL;
 
   /* Switch on instruction types provided by libasm */
-  if (curins->type == ASM_TYPE_CONDBRANCH)
+  if (curins->type & ASM_TYPE_CONDBRANCH)
     {
       dstaddr = mjr_get_jmp_destaddr(context);
       
@@ -66,7 +66,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 
     if (dstaddr != -1)
       mjr_link_block_jump(context, curvaddr, dstaddr, curvaddr + ilen);
-
+    
     }
   else if (curins->type == ASM_TYPE_IMPBRANCH)
     {
@@ -164,10 +164,9 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  printf(" [*] Found function pointer called from 0x%08lx\n", 
-	 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
-  snprintf(tmp, sizeof(tmp), "%lx", 
-	   (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
+  printf(" [*] Found function pointer called from " XFMT "\n", 
+	 context->hist[MJR_HISTORY_CUR].vaddr);
+  snprintf(tmp, sizeof(tmp), AFMT, context->hist[MJR_HISTORY_CUR].vaddr);
 
   /* We deal with a constructed address */
 
@@ -183,8 +182,8 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
       if (dest < elfsh_get_entrypoint(context->obj->hdr))
 	{
-	  printf(" [*] FAILED to resolve function pointer called from 0x%08lx \n", 
-		 (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
+	  printf(" [*] FAILED to resolve function pointer called from " XFMT "\n", 
+		 context->hist[MJR_HISTORY_CUR].vaddr);
 
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid target vaddr for function pointer",
@@ -244,7 +243,7 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
  * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
  */
-int		mjr_get_call_destaddr(mjrcontext_t *context)
+elfsh_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
 {
   int		ilen;
   elfsh_Addr	dest;
@@ -274,7 +273,7 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
   {
     if (ins->instr == ASM_SP_CALL)
     {
-    	if (ins->op[0].type == ASM_SP_OTYPE_DISP30)
+    	if (ins->op[0].content & ASM_SP_OTYPE_DISP30)
    	  {
   	    dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
    	  }
@@ -292,7 +291,7 @@ int		mjr_get_call_destaddr(mjrcontext_t *context)
  * @brief Resolve the destination address of current jmp instruction
  * @param context mjollnir context structure
  */
-int		mjr_get_jmp_destaddr(mjrcontext_t *context)
+elfsh_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 {
   int		ilen;
   elfsh_Addr	dest;
@@ -321,11 +320,11 @@ int		mjr_get_jmp_destaddr(mjrcontext_t *context)
   }
   else if (context->proc.type == ASM_PROC_SPARC)
   {
-    if (ins->instr == ASM_SP_JMPL) /* Indirect jump */
+    if (ins->instr & ASM_SP_JMPL) /* Indirect jump */
       {
     	dest = -1;
       }
-    else if (ins->type == ASM_TYPE_CONDBRANCH)
+    else if (ins->type & ASM_TYPE_CONDBRANCH)
       {
     	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       }

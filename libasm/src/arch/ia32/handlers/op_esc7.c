@@ -1,69 +1,82 @@
-/*
-** $Id: op_esc7.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
-**
-*/
+/**
+ * $Id: op_esc7.c,v 1.6 2008-02-16 12:32:26 thor Exp $
+ * @param 
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <instruction func="op_esc7" opcode="0xdf"/>
+/**
+ * Handler for fpu instruction for opcode 0xdf
+ *
+ * @param instr Pointer to instruction structure.
+ * @param opcode Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
+ *
+ <instruction func="op_esc7" opcode="0xdf"/>
 */
 
-int op_esc7(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_esc7(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
 {
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode + 1;
-  new->ptr_instr = opcode;
-  new->len += 1;
-  if (*(opcode + 1) == 0xe0) {
-    new->instr = ASM_FNSTSW;
-    new->op[0].type = ASM_OTYPE_FIXED;
-    new->op[0].content = ASM_OP_BASE;
-    new->op[0].regset = ASM_REGSET_R16;
-    new->op[0].baser = ASM_REG_EAX;
-  } else
-    switch (modrm->r) {
-    case 0:
-      new->instr = ASM_FILD;
-      break;
+  instr->ptr_instr = opcode;
+  instr->len += 1;
+  if (*(opcode + 1) == 0xe0) 
+  {
+    if (!(instr->prefix & ASM_PREFIX_FWAIT))
+      instr->instr = ASM_FNSTSW;
+    else
+      instr->instr = ASM_FSTSW;
+    instr->op[0].type = ASM_OTYPE_FIXED;
+    instr->op[0].content = ASM_OP_BASE;
+    instr->op[0].regset = ASM_REGSET_R16;
+    instr->op[0].baser = ASM_REG_EAX;
+  } 
+  else
+  switch (modrm->r) 
+  {
+    case 0:    
+    instr->instr = ASM_FILD;
+    break;
     case 1:
-      // bad new->instr = ASM_;
-      break;
+    // bad instr->instr = ASM_;
+    break;
     case 2:
-      new->instr = ASM_FIST;
-      break;
+    instr->instr = ASM_FIST;
+    break;
     case 3:
-      new->instr = ASM_FISTP;
-      break;
+    instr->instr = ASM_FISTP;
+    break;
     case 4:
-      new->instr = ASM_FBLD;
-      break;
+    instr->instr = ASM_FBLD;
+    break;
     case 5:
-      new->instr = ASM_FILD;
-      break;
+    instr->instr = ASM_FILD;
+    break;
     case 6:
-      new->instr = ASM_FBSTP;
-      break;
+    instr->instr = ASM_FBSTP;
+    break;
     case 7:
-      new->instr = ASM_FISTP;
-      break;
-    }
+    instr->instr = ASM_FISTP;
+    break;
+  }
   if (*(opcode + 1) != 0xe0) {
-    #if LIBASM_USE_OPERAND_VECTOR
+#if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
-				  new, 0);
+    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+				  instr, 0);
 #else
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
-				  new);
+    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+				  instr);
 #endif
-    #else
-    new->op[0].type = ASM_OTYPE_ENCODED;
-    operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
-    new->len += new->op[0].len;
-    #endif
+#else
+    instr->op[0].type = ASM_OTYPE_ENCODED;
+    operand_rmv(&instr->op[0], opcode + 1, len - 1, proc);
+    instr->len += instr->op[0].len;
+#endif
   } else
-    new->len++;
-  return (new->len);
+  instr->len++;
+  return (instr->len);
 }

@@ -5,7 +5,7 @@
  * 
  * Started on  Sun Oct 07 10:20:18 2005 mxatone
  *
- * $Id: hash.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: hash.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 *
 */
 #include "libstderesi.h"
@@ -125,7 +125,7 @@ int		revm_hashprint(elfshsect_t *sect, elfsh_Sym *sym, int nbr)
   for (index = 0; index < nbucket; index++)
     {
       symid = bucket[index];
-      name = elfsh_get_dynsymbol_name(world.curjob->current,
+      name = elfsh_get_dynsymbol_name(world.curjob->curfile,
 				      sym + symid);
 
       rhash = elfsh_get_symbol_hash(name);
@@ -146,7 +146,7 @@ int		revm_hashprint(elfshsect_t *sect, elfsh_Sym *sym, int nbr)
 	  if (symid == STN_UNDEF)
 	    break;
 
-	  name = elfsh_get_dynsymbol_name(world.curjob->current,
+	  name = elfsh_get_dynsymbol_name(world.curjob->curfile,
 					  sym + symid);
 	  rchash = elfsh_get_symbol_hash(name);
 	  chash = rchash % nbucket;
@@ -160,7 +160,7 @@ int		revm_hashprint(elfshsect_t *sect, elfsh_Sym *sym, int nbr)
   for(index = 0; index < nchain; index++)
     {
       symid = chain[index];
-      name = elfsh_get_dynsymbol_name(world.curjob->current,
+      name = elfsh_get_dynsymbol_name(world.curjob->curfile,
 				      sym + symid);
 
       rhash = elfsh_get_symbol_hash(name);
@@ -190,27 +190,27 @@ int 		cmd_hashx()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  sym = elfsh_get_dynsymtab(world.curjob->current, NULL);
+  sym = elfsh_get_dynsymtab(world.curjob->curfile, NULL);
   if (sym == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Cannot get DYNSYM",  0);
-  if (!elfsh_get_hashtable(world.curjob->current, NULL))
+  if (!elfsh_get_hashtable(world.curjob->curfile, NULL))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Cannot get .hash section",  0);
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [HASH SYMBOL TABLE]\n [Object %s]\n\n",
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   
   revm_output(logbuf);
   revm_endline();
 
-  sect = elfsh_get_hashtable_by_range(world.curjob->current, range, &nbr);
+  sect = elfsh_get_hashtable_by_range(world.curjob->curfile, range, &nbr);
 
   while (sect != NULL)
     {
       revm_hashprint(sect, sym, nbr);
-      sect = elfsh_get_hashtable_by_range(world.curjob->current, ++range, &nbr);
+      sect = elfsh_get_hashtable_by_range(world.curjob->curfile, ++range, &nbr);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

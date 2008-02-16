@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sat Jan 25 11:20:49 2003 jfv
 **
-** $Id: doswitch.c,v 1.5 2007-08-03 11:51:00 heroine Exp $
+** $Id: doswitch.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -22,7 +22,7 @@ int		revm_doswitch(int nbr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unknown requested object", (-1));
     
-  world.curjob->current = actual;
+  world.curjob->curfile = actual;
   
   /* Switch to static mode if current file is not mapped */
   if (elfsh_is_debug_mode() && !actual->linkmap)

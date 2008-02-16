@@ -5,7 +5,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 jfv
  *
  *
- * $Id: ia32.c,v 1.22 2007-10-14 00:03:46 heroine Exp $
+ * $Id: ia32.c,v 1.23 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"
@@ -35,6 +35,12 @@ static u_int		max_arg_offset;
 
 /**
  * Start of hook code for EXTPLT 
+ *
+ * @param extplt
+ * @param altgot
+ * @param dynsym
+ * @param relplt
+ * @return
  */
 int		elfsh_extplt_ia32(elfshsect_t *extplt, 
 				  elfshsect_t *altgot,
@@ -103,6 +109,12 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 /**
  * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got
  * Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp) 
+ *
+ * @param file
+ * @param plt
+ * @param diff
+ * @param off
+ * @return
  */
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
 					     elfshsect_t  *plt, 
@@ -179,6 +191,11 @@ int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
 /**
  * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got 
  * Should work on both ET_EXEC and ET_DYN 
+ *
+ * @param file
+ * @param plt
+ * @param diff
+ * @return
  */
 int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
 						   elfshsect_t *plt, 
@@ -210,6 +227,12 @@ int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
 
 /**
  * Hook for ENCODEPLT1 on IA32 : Simple wrapper for both calls 
+ *
+ * @param file
+ * @param plt
+ * @param extplt
+ * @param diff
+ * @return
  */
 int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
 				      elfshsect_t *plt, 
@@ -232,6 +255,12 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
 
 /**
  * Hook for ENCODEPLT on IA32 
+ *
+ * @param file
+ * @param plt
+ * @param diff
+ * @param off
+ * @return
  */
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
 				     elfshsect_t *plt, 
@@ -249,6 +278,11 @@ int		elfsh_encodeplt_ia32(elfshobj_t *file,
 
 /**
  * Static hooking for IA32 
+ * @param file
+ * @param name
+ * @param symbol
+ * @param addr
+ * @return
  */
 int			elfsh_cflow_ia32(elfshobj_t	*file,
 					 char		*name,
@@ -366,6 +400,10 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
 /**
  * PLT hijacking on i386 for ET_DYN objects 
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_ia32(elfshobj_t *file, 
 				      elfsh_Sym *symbol,
@@ -412,9 +450,15 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
 
 
 /**
- * Perform relocation on entry for INTEL architecture
+ * Perform relocation on entry for INTEL architecture.
+ * XXX: not endianess independant - ym 
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
-/* XXX: not endianess independant - ym */
 int      elfsh_relocate_ia32(elfshsect_t	*new,
 			     elfsh_Rel		*cur,
 			     elfsh_Addr		*dword,
@@ -542,6 +586,10 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 
 /**
  * Personnal func / define for args_count 
+ *
+ * @param op
+ * @param regbased
+ * @return
  */
 static int    elfsh_ac_is_arg_ebp(asm_operand *op, int regbased)
 {
@@ -567,6 +615,11 @@ static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ *
+ * @param add
+ * @return
+ */
 static int    elfsh_ac_largs_add(int add)
 {
   u_int                 index;
@@ -718,6 +771,12 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
 }
 */
 
+/**
+ *
+ * @param file
+ * @param vaddr
+ * @return
+ */
 static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
 {
   elfshsect_t	*sect;
@@ -737,7 +796,14 @@ static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-/* TODO: implement forward / backward */
+/**
+ * TODO: implement forward / backward 
+ *
+ * @param file
+ * @param foffset
+ * @param vaddr
+ * @return
+ */
 int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
 {
   int         	index;

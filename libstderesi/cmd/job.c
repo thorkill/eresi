@@ -3,7 +3,7 @@
 ** 
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **
-** $Id: job.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: job.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -54,7 +54,7 @@ int		cmd_workspace()
 		    {
 		      obj = hash_get(&job->loaded, loadedkeys[idx]);
 		      snprintf(logbuf, BUFSIZ - 1, " \t %c %s \n", 
-			       (job->current == obj ? '*' : ' '), obj->name);
+			       (job->curfile == obj ? '*' : ' '), obj->name);
 		      revm_output(logbuf);
 		    }
 		  

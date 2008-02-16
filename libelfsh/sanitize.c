@@ -5,7 +5,7 @@
 ** Started on  Sun Mar 30 04:13:03 2003 jfv
 ** 
 **
-** $Id: sanitize.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
+** $Id: sanitize.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,10 @@
 
 /**
  * @brief Update the sh_name field in the section header table entry
+ * @param file
+ * @param offset
+ * @param len
+ * @return
  */
 void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
 {
@@ -29,6 +33,10 @@ void		elfsh_update_nameidx(elfshobj_t *file, int offset, int len)
 
 /**
  * Update the sh_link for all sections linked to a specific shifted one
+ * @param file
+ * @param low_index
+ * @param diff
+ * @return
  */
 void		elfsh_update_linkidx(elfshobj_t *file, int low_index, int diff)
 {
@@ -44,6 +52,10 @@ void		elfsh_update_linkidx(elfshobj_t *file, int low_index, int diff)
 
 /**
  * Update the sh_link for all section linked to a specific one
+ * @param file
+ * @param idx
+ * @param diff
+ * @return
  */
 void		elfsh_update_linkidx_equ(elfshobj_t *file, int idx, int diff)
 {
@@ -61,6 +73,10 @@ void		elfsh_update_linkidx_equ(elfshobj_t *file, int idx, int diff)
 
 /**
  * Update the sh_link for all section linked to a specific one 
+ * @param file
+ * @param idx
+ * @param diff
+ * @return
  */
 void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
 {
@@ -86,6 +102,11 @@ void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
 
 /**
  * Update sh_link fields for the given section 
+ * @param file
+ * @param tab
+ * @param idx
+ * @param diff
+ * @return
  */
 void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
 {
@@ -111,6 +132,10 @@ void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
 
 /**
  * Update the sh_link for all section linked to a specific one 
+ * @param file
+ * @param idx
+ * @param diff
+ * @return
  */
 void		elfsh_update_dynsym_shidx(elfshobj_t *file, int idx, int diff)
 {
@@ -127,6 +152,9 @@ void		elfsh_update_dynsym_shidx(elfshobj_t *file, int idx, int diff)
 
 /**
  * Update the sh_link for all section linked to a specific one 
+ * @param file
+ * @param idx
+ * @param diff
  */
 void		elfsh_update_symtab_shidx(elfshobj_t *file, int idx, int diff)
 {

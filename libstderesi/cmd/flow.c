@@ -6,7 +6,7 @@
 ** Merged in the ELFsh VM by the ELFsh crew.
 **
 **
-** $Id: flow.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: flow.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -77,7 +77,7 @@ int		cmd_control()
   elfshobj_t	*current;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  current = world.curjob->current;
+  current = world.curjob->curfile;
   sect = elfsh_get_section_by_name(current, 
 				   ELFSH_SECTION_NAME_EDFMT_BLOCKS,
 				   0, 0, 0);

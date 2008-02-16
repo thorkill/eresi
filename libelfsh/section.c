@@ -7,13 +7,17 @@
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
 ** 
 **
-** $Id: section.c,v 1.18 2007-08-03 11:50:59 heroine Exp $
+** $Id: section.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
  * @brief Just used to avoid code redundancy in elfsh_add_section()
+ * @param sct
+ * @param tmp
+ * @param mode
+ * @return
  */
 char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
 {
@@ -54,6 +58,12 @@ char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
  *
  * See libelfsh/inject.c for the user-friendly section injection API
  *
+ * @param file
+ * @param sct
+ * @param range
+ * @param dat
+ * @param shiftmode
+ * @return
  */
 int		elfsh_add_section(elfshobj_t	*file,
 				  elfshsect_t	*sct,
@@ -184,6 +194,11 @@ int		elfsh_add_section(elfshobj_t	*file,
 /**
  * @brief Add a runtime section
  * This function is internal, do not use it directly 
+ * @param file
+ * @param sct
+ * @param range
+ * @param dat
+ * @return
  */
 int             elfsh_add_runtime_section(elfshobj_t    *file,
 					  elfshsect_t   *sct,
@@ -206,6 +221,13 @@ int             elfsh_add_runtime_section(elfshobj_t    *file,
 
 /**
  * @brief Internal function 
+ * @param file
+ * @param name
+ * @param idx
+ * @param strindex
+ * @param num
+ * @param sectlist
+ * @return
  */
 static 
 elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
@@ -246,6 +268,12 @@ elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
 
 /**
  * @brief Return a pointer on a section giving its name 
+ * @param file
+ * @param name
+ * @param idx
+ * @param strindex
+ * @param num
+ * @return
  */
 elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
 					   char		*name,
@@ -283,6 +311,15 @@ elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
 /**
  * Search section by type, with list parameter
  * This is an internal function it should not be used directly 
+ * @param file
+ * @param type
+ * @param range
+ * @param index
+ * @param strindex
+ * @param num
+ * @param sectlist
+ * @param shnum
+ * @return
  */
 static
 elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
@@ -331,6 +368,13 @@ elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
 /**
  * Return the section header for the 'range' occurence of a 'type typed section
  * Return NULL if failed 
+ * @param file
+ * @param type
+ * @param range
+ * @param index
+ * @param strindex
+ * @param num
+ * @return
  */
 elfshsect_t		*elfsh_get_section_by_type(elfshobj_t	*file,
 						   u_int	type,
@@ -372,6 +416,11 @@ elfshsect_t		*elfsh_get_section_by_type(elfshobj_t	*file,
 
 /**
  * Return the section pointer giving the section index in the sht 
+ * @param file
+ * @param index
+ * @param strindex
+ * @param num
+ * @return
  */
 elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
 						    elfsh_Addr	index,
@@ -410,6 +459,11 @@ elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
 
 /**
  * Same that index research but for runtime injected sections 
+ * @param file
+ * @param index
+ * @param strindex
+ * @param num
+ * @return
  */
 elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
 						    elfsh_Addr	index,
@@ -449,6 +503,9 @@ elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
 /**
  * Load the code of a section giving its header
  * Should be called after a elfsh_get_section_by_{name,type} to load the code
+ * @param file
+ * @param shdr
+ * @return
  */
 void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr)
 {
@@ -468,6 +525,9 @@ void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr)
 
 /**
  * Fill an anonymous (unknown content) section 
+ * @param file
+ * @param sect
+ * @return
  */
 void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 {
@@ -487,7 +547,9 @@ void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 }
 
 /**
- * Creation a new orphelin section 
+ * Creation a new orphelin section
+ * @param name
+ * @return
  */
 elfshsect_t	*elfsh_create_section(char *name)
 {
@@ -506,6 +568,10 @@ elfshsect_t	*elfsh_create_section(char *name)
 
 /**
  * Return the parent section for this virtual address 
+ * @param file
+ * @param value
+ * @param offset
+ * @return
  */
 elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 					  elfsh_Addr   	value,
@@ -558,6 +624,10 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 /**
  * Return the parent section for this file offset, else NULL
  * This function is only revelant for ondisk sections 
+ * @param file
+ * @param foff
+ * @param offset
+ * @return
  */
 elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 						     u_int	foff,
@@ -591,6 +661,9 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 
 /**
  * Retreive the section giving the section symbol from .symtab 
+ * @param file
+ * @param sym
+ * @return
  */
 elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file, 
 						    elfsh_Sym *sym)
@@ -621,6 +694,10 @@ elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file,
 
 /**
  * This function appends a single char to a section by extending it 
+ * @param sect
+ * @param c
+ * @param size
+ * @return
  */
 int		elfsh_fill_section(elfshsect_t	*sect, 
 				   char		c,
@@ -656,6 +733,11 @@ int		elfsh_fill_section(elfshsect_t	*sect,
  * Only strong dataflow engine seems to be the solution for those.
  *
  * This function is not e2dbg safe and should only be used ondisk !
+ *
+ * @param sect
+ * @param input
+ * @param len
+ * @return
  */
 int		elfsh_append_data_to_section(elfshsect_t	*sect,
 					     void		*input,
@@ -755,6 +837,9 @@ int		elfsh_append_data_to_section(elfshsect_t	*sect,
 /**
  * Remove a section
  * XXX-runtime : This section should only be used for ondisk modifications 
+ * @param obj Pointer to elfsh object.
+ * @param name Section name
+ * @return
  */
 int			elfsh_remove_section(elfshobj_t *obj, char *name)
 {
@@ -871,6 +956,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
  * Nice embedded debugging trick
  * Return a pointer on the section data
  * This function makes the difference between data and pdata, beeing the process data 
+ * @param sect
  */
 void			*elfsh_get_raw(elfshsect_t *sect)
 {
@@ -908,6 +994,8 @@ void			*elfsh_get_raw(elfshsect_t *sect)
 
 /**
  * Return the last section of the list 
+ * @param file
+ * @return
  */
 elfshsect_t		*elfsh_get_tail_section(elfshobj_t *file)
 {
@@ -924,6 +1012,8 @@ elfshsect_t		*elfsh_get_tail_section(elfshobj_t *file)
 
 /**
  * Return the last section of the runtime list 
+ * @param file
+ * @return
  */
 elfshsect_t		*elfsh_get_tail_rsection(elfshobj_t *file)
 {
@@ -949,6 +1039,9 @@ elfshsect_t		*elfsh_get_tail_rsection(elfshobj_t *file)
 
 /**
  * Return the section list 
+ * @param file
+ * @param num
+ * @return
  */
 elfshsect_t		*elfsh_get_section_list(elfshobj_t *file, int *num)
 {
@@ -968,6 +1061,9 @@ elfshsect_t		*elfsh_get_section_list(elfshobj_t *file, int *num)
 
 /**
  * Return the section list 
+ * @param file
+ * @param num
+ * @return
  */
 elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
 {
@@ -988,6 +1084,9 @@ elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
 
 /**
  * Return the section giving its index 
+ * @param list
+ * @param index
+ * @return
  */
 elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list, 
 						  elfsh_Addr index)
@@ -1003,6 +1102,9 @@ elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list,
 
 /**
  * Return the section giving its name 
+ * @param file
+ * @param name
+ * @return
  */
 elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
 {
@@ -1014,6 +1116,10 @@ elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
 
 /**
  * Section objects 'raw' child read access 
+ * @param obj
+ * @param off
+ * @param sizelem
+ * @return
  */
 void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, 
 					u_int sizelem)
@@ -1042,6 +1148,12 @@ void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
 
 /**
  * Section objects 'raw' child write access 
+ * @param sect
+ * @param off
+ * @param data
+ * @param size
+ * @param sizelem
+ * @return
  */
 int		elfsh_write_section_data(elfshsect_t		*sect,
 					 u_int			off,
@@ -1070,6 +1182,8 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
 
 /**
  * Is it a runtime section ?
+ * @param sect
+ * @return
  */
 int		elfsh_section_is_runtime(elfshsect_t *sect)
 {

@@ -4,7 +4,7 @@
 ** Contain ELFsh internal lists related API
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id: liblist.c,v 1.8 2007-11-28 07:56:08 may Exp $
+** $Id: liblist.c,v 1.9 2008-02-16 12:32:27 thor Exp $
 */
 #include "libaspect.h"
 
@@ -14,7 +14,7 @@ hash_t  *hash_lists = NULL;
 /**
  * @brief Initialize the hash table 
  */
-int list_init(list_t *h, char *name, u_int type)
+int elist_init(list_t *h, char *name, u_int type)
 {
   NOPROFILER_IN();
   if (type >= aspect_type_nbr)
@@ -23,7 +23,7 @@ int list_init(list_t *h, char *name, u_int type)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Unable to initialize list", -1);
     }
-  if (list_find(name))
+  if (elist_find(name))
     {
 #if __DEBUG__
       fprint(stderr, "List already exists\n");
@@ -41,7 +41,7 @@ int list_init(list_t *h, char *name, u_int type)
 /** 
  * @brief Return a list by its name 
  */
-list_t		*list_find(char *name)
+list_t		*elist_find(char *name)
 {
   return ((list_t *) hash_get(hash_lists, name));
 }
@@ -49,7 +49,7 @@ list_t		*list_find(char *name)
 /** 
  * @brief Set a list by its name (overwrite if existing ) 
  */
-int		list_register(list_t *list, char *name)
+int		elist_register(list_t *list, char *name)
 {
   list_t	*h;
 
@@ -63,41 +63,41 @@ int		list_register(list_t *list, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Incompatible lists", -1);
       if (h->elmnbr)
-	h = list_empty(name);
-      list_merge(h, list);
+	h = elist_empty(name);
+      elist_merge(h, list);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }  
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
-  list_init(h, name, h->type);
+  elist_init(h, name, h->type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /** 
  * @brief Empty a list 
  */
-list_t		*list_empty(char *name)
+list_t		*elist_empty(char *name)
 {
   list_t	*list;
   char		*newname;
   char		type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  list = list_find(name);
+  list = elist_find(name);
   if (!list)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   type    = list->type;
   hash_del(hash_lists, name);
-  list_destroy(list);
+  elist_destroy(list);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 newname, strlen(name) + 1, NULL);
   strcpy(newname, name);
-  list_init(list, newname, type);
+  elist_init(list, newname, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
 
 
 /* Reverse a list */
-list_t		*list_reverse(list_t *l)
+list_t		*elist_reverse(list_t *l)
 {
   list_t	*newlist;
   listent_t	*nextent;
@@ -106,12 +106,12 @@ list_t		*list_reverse(list_t *l)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash_del(hash_lists, l->name);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newlist, sizeof(list_t), NULL);
-  list_init(newlist, l->name, l->type);
+  elist_init(newlist, l->name, l->type);
 
   /* Copy the list inserting at the beginning all the time */
   for (curent = l->head; curent; curent = nextent)
     {
-      list_add(newlist, curent->key, curent->data);
+      elist_add(newlist, curent->key, curent->data);
       nextent = curent->next;
       XFREE(__FILE__, __FUNCTION__, __LINE__, curent);
     }
@@ -122,7 +122,7 @@ list_t		*list_reverse(list_t *l)
 
 
 /* Destroy a list */
-void		list_destroy(list_t *h)
+void		elist_destroy(list_t *h)
 {
   char		**keys;
   int		idx;
@@ -131,16 +131,16 @@ void		list_destroy(list_t *h)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We should not destroy the elements as they might be in other hashes */
-  keys = list_get_keys(h, &keynbr);
+  keys = elist_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
-  list_free_keys(keys);
+  elist_free_keys(keys);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 /* Copy a list */
-list_t		*list_copy(list_t *h)
+list_t		*elist_copy(list_t *h)
 {
   list_t	*newlist;
   listent_t	*newent;
@@ -179,7 +179,7 @@ list_t		*list_copy(list_t *h)
 /** 
  * @brief Add an element at the head of the list 
  */
-int		list_add(list_t *h, char *key, void *data)
+int		elist_add(list_t *h, char *key, void *data)
 {
   listent_t	*cur;
   listent_t	*next;
@@ -203,7 +203,7 @@ int		list_add(list_t *h, char *key, void *data)
 /** 
  * @brief Delete an element from a list 
  */
-int		list_del(list_t *h, char *key)
+int		elist_del(list_t *h, char *key)
 {
   listent_t	*curelem;
   listent_t	*prevelem;
@@ -232,7 +232,7 @@ int		list_del(list_t *h, char *key)
 /** 
  * @brief Get the list element giving the key 
  */
-void		*list_get(list_t *h, char *key)
+void		*elist_get(list_t *h, char *key)
 {
   listent_t	*cur;
   
@@ -247,7 +247,7 @@ void		*list_get(list_t *h, char *key)
 /** 
  * @brief Get the list data giving the key 
  */
-void 		*list_select(list_t *h, char *key)
+void 		*elist_select(list_t *h, char *key)
 {
   listent_t	*cur;
   
@@ -260,7 +260,7 @@ void 		*list_select(list_t *h, char *key)
 }
 
 /* Get the list head */
-listent_t	*list_get_head(list_t *h)
+listent_t	*elist_get_head(list_t *h)
 {
   if (!h)
     return (NULL);
@@ -268,7 +268,7 @@ listent_t	*list_get_head(list_t *h)
 }
 
 /* Change the metadata for an existing entry, giving its key */
-int		list_set(list_t *h, char *key, void *data)
+int		elist_set(list_t *h, char *key, void *data)
 {
   listent_t	*cur;
   
@@ -286,7 +286,7 @@ int		list_set(list_t *h, char *key, void *data)
 /** 
  * @brief Replace a single element by a list of elements 
  */
-int		list_replace(list_t *h, char *key, list_t *newlist)
+int		elist_replace(list_t *h, char *key, list_t *newlist)
 {
   listent_t	*cur;
   listent_t	*lastent;
@@ -325,7 +325,7 @@ int		list_replace(list_t *h, char *key, list_t *newlist)
 
 
 /* Return the array of keys */
-char**		list_get_keys(list_t *h, int* n)
+char**		elist_get_keys(list_t *h, int* n)
 {
   char		**keys;
   listent_t	*curelem;
@@ -345,7 +345,7 @@ char**		list_get_keys(list_t *h, int* n)
 }
 
 /* Free the keys array */
-void		list_free_keys(char **keys)
+void		elist_free_keys(char **keys)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
@@ -353,7 +353,7 @@ void		list_free_keys(char **keys)
 }
 
 /* Get -the list entry- for a given key */
-listent_t 	*list_get_ent(list_t *h, char *key)
+listent_t 	*elist_get_ent(list_t *h, char *key)
 {
   listent_t	*cur;
   
@@ -366,7 +366,7 @@ listent_t 	*list_get_ent(list_t *h, char *key)
 }
 
 /* Print list content */
-void		list_print(list_t *h)
+void		elist_print(list_t *h)
 {
   listent_t     *actual;
   int           index;
@@ -380,7 +380,7 @@ void		list_print(list_t *h)
 }
 
 /* Apply a function on all elements of the list */
-int             list_apply(list_t *h, void *ptr, 
+int             elist_apply(list_t *h, void *ptr, 
 			   int (*func)(listent_t *e, void *p))
 {
   int           index;
@@ -395,7 +395,7 @@ int             list_apply(list_t *h, void *ptr,
 }
 
 /* Merge two list */
-int		list_merge(list_t *dst, list_t *src)
+int		elist_merge(list_t *dst, list_t *src)
 {
   int           index;
   listent_t	*cur;
@@ -403,24 +403,24 @@ int		list_merge(list_t *dst, list_t *src)
   if (!dst || !src)
     return (-1);
   for (cur = src->head, index = 0; index < src->elmnbr; index++, cur = cur->next)
-    list_add(dst, cur->key, cur->data);
+    elist_add(dst, cur->key, cur->data);
   return 0;
 }
 
 /* Unmerge two lists */
-int		list_unmerge(list_t *dst, list_t *src)
+int		elist_unmerge(list_t *dst, list_t *src)
 {
   listent_t	*cur;
   
   if (!dst || !src)
     return (-1);
   for (cur = src->head; cur; cur = cur->next)
-    list_del(dst, cur->key);
+    elist_del(dst, cur->key);
   return 0;
 }
 
 /* Return the size of a list */
-int		list_size(list_t *h)
+int		elist_size(list_t *h)
 {
   if (!h)
     return (0);
@@ -429,13 +429,13 @@ int		list_size(list_t *h)
 
 /* Compare two lists */
 /* Unimplemented */
-int		list_compare(list_t *first, list_t *two)
+int		elist_compare(list_t *first, list_t *two)
 {
   return (-1);
 }
 
 /* Linear typing of list API */
-u_char		list_linearity_get(list_t *l)
+u_char		elist_linearity_get(list_t *l)
 {
   if (!l)
     return (0);
@@ -443,7 +443,7 @@ u_char		list_linearity_get(list_t *l)
 }
 
 /* Linear typing of list API */
-void		list_linearity_set(list_t *l, u_char val)
+void		elist_linearity_set(list_t *l, u_char val)
 {
   if (!l)
     return;

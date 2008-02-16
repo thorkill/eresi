@@ -6,7 +6,7 @@
 **
 ** Started on Sat Nov 25 11:21:18 2006 jfv
 **
-** $Id: deps.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: deps.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -498,11 +498,11 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
 	}
 
       /* The current pointer must be NULL if it was us */
-      if (world.curjob->current && world.curjob->current->id == actual->id)
+      if (world.curjob->curfile && world.curjob->curfile->id == actual->id)
 	{
-	  world.curjob->current = hash_get_one(&world.curjob->loaded);
-	  if (!world.curjob->current)
-	    world.curjob->current = hash_get_one(&world.shared_hash);
+	  world.curjob->curfile = hash_get_one(&world.curjob->loaded);
+	  if (!world.curjob->curfile)
+	    world.curjob->curfile = hash_get_one(&world.shared_hash);
 	}
 
       /* A dependence can have its own dependences */

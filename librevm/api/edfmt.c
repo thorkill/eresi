@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.14 2007-12-06 20:12:11 may Exp $
+** $Id: edfmt.c,v 1.15 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -40,7 +40,7 @@ static int		revm_edfmt_register_type(char isunion,
   len = strlen(buf);
   for (index = 0; index < len && buf[index] == '*'; index++)
     buf[index] = 'p';
-  nlabel = (char *) aproxy_strdup(label);
+  nlabel = (char *) strdup(label);
 
   /* We create the type right now to compare to an existing
      type in case of double entry */

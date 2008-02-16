@@ -2,9 +2,7 @@
 ** @file state.c
 ** 
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
-**
-**
-** $Id: config.c,v 1.11 2007-08-03 11:50:59 heroine Exp $
+** $Id: config.c,v 1.12 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -15,10 +13,11 @@ aspectworld_t	aspectworld;
 
 
 /**
- * @brief this function is a wrapper for updating data/val which depend 
- * on datatype 
+ * @brief Wrapper for updating value depending on data type
+ * @param item Configuration item structure
+ * @param data Configuration item value
  */
-static void __config_update_item(configitem_t *item,void *data)
+static void __config_update_item(configitem_t *item, void *data)
 {
 
  switch(item->type) 
@@ -36,7 +35,13 @@ static void __config_update_item(configitem_t *item,void *data)
    }
 }
 
-/* create new item */
+/**
+ * @brief Add a configure item to the configuration items hash table
+ * @param name Configuration item string name
+ * @param type Configuration item type identifier
+ * @param mode Configuration mode (RW or RO)
+ * @param data Configuration item value
+ */
 void	config_add_item(char *name,
 			u_int type,	/* int, string ... */
 			u_int mode,	/* RW, RO */
@@ -61,8 +66,9 @@ void	config_add_item(char *name,
 }
 
 /**
- * @brief This function updates the value of val/data in already
- * existing in config_hash.
+ * @brief Update value of an existing configuration item
+ * @param name Configuration item string name
+ * @param data Configuration item value
  */
 void		config_update_key(char *name,void *data)
 {
@@ -77,8 +83,11 @@ void		config_update_key(char *name,void *data)
   hash_add(&aspectworld.config_hash, tmp->name, tmp);
 }
 
+
 /**
- * @brief returns val/data 
+ * @brief Retreive the value of a configuration item
+ * @param name Requested configuration item name
+ * @return A pointer on the configuration item value
  */
 void		*config_get_data(char *name) 
 {
@@ -101,7 +110,7 @@ void		*config_get_data(char *name)
 }
 
 /** 
- * @brief Functions to turn on/off safemode 
+ * @brief Function to turn on safemode 
  */
 void 	config_safemode_set()
 {
@@ -109,20 +118,27 @@ void 	config_safemode_set()
 		    (void *) CONFIG_SAFEMODE_ON);
 }
 
+/** 
+ * @brief Functions to turn off safemode 
+ */
 void	config_safemode_reset()
 {
   config_update_key(CONFIG_NAME_SAFEMODE,
 		    (void *) CONFIG_SAFEMODE_OFF);
 }
 
-/* Say if we are in safe mode or not */
+/**
+ * @brief Indicate safemode state
+ * @return Current safemode state
+ */
 int	config_safemode()
 {
   return (int) config_get_data(CONFIG_NAME_SAFEMODE);
 }
 
 /** 
- * @brief Here the functions for the profiler option 
+ * @brief Enable profile verbose printing for internal ERESI warnings
+ * @return Always 0
  */
 int	profiler_enable_err()
 {
@@ -130,54 +146,90 @@ int	profiler_enable_err()
   return (0);
 }
 
+/** 
+ * @brief Enable profile verbose printing for internal ERESI functions tracing
+ * @return Always 0
+ */
 int	profiler_enable_out()
 {
   aspectworld.proflevel |= PROFILE_FUNCS;
   return (0);
 }
 
+/** 
+ * @brief Enable profile verbose printing for internal memory allocations
+ * @return Always 0
+ */
 int	profiler_enable_alloc()
 {
   aspectworld.proflevel |= PROFILE_ALLOC;
   return (0);
 }
 
+/** 
+ * @brief Enable profile verbose printing for internal debugging informations
+ * @return Always 0
+ */
 int	profiler_enable_debug()
 {
   aspectworld.proflevel |= PROFILE_DEBUG;
   return (0);
 }
 
+/** 
+ * @brief Disable profile verbose printing for internal warnings
+ * @return Always 0
+ */
 int	profiler_disable_err()
 {
   aspectworld.proflevel &= (~PROFILE_WARN);
   return (0);
 }
 
+/** 
+ * @brief Disable profile verbose printing for internal ERESI functions tracing
+ * @return Always 0
+ */
 int	profiler_disable_out()
 {
   aspectworld.proflevel &= (~PROFILE_FUNCS);
   return (0);
 }
 
+/** 
+ * @brief Disable profile verbose printing for internal memory allocations
+ * @return Always 0
+ */
 int	profiler_disable_alloc()
 {
   aspectworld.proflevel &= (~PROFILE_ALLOC);
   return (0);
 }
 
+/** 
+ * @brief Disable profile verbose printing for internal debugging informations
+ * @return Always 0
+ */
 int	profiler_disable_debug()
 {
   aspectworld.proflevel &= (~PROFILE_DEBUG);
   return (0);
 }
 
+/** 
+ * @brief Disable all profiling printing
+ * @return Always 0
+ */
 int	profiler_disable_all()
 {
   aspectworld.proflevel = PROFILE_NONE;
   return 0;
 }
 
+/** 
+ * @brief Enable all profiling printing
+ * @return Always 0
+ */
 int	profiler_enable_all()
 {
   profiler_enable_err();
@@ -186,18 +238,30 @@ int	profiler_enable_all()
   return 0;
 }
 
+/** 
+ * @brief Test if profiling is enabled
+ * @return Integer value of the profiling level
+ */
 int	profiler_enabled()
 {
   return (aspectworld.proflevel);
 }
 
+/** 
+ * @brief Test if profiler is enabled under certain flags
+ * @param mask Bitmask of bits to be tested
+ * @return A Bitmask of enabled profiling flags
+ */
 int	profiler_is_enabled(u_char mask)
 {
   return (aspectworld.proflevel & mask);
 }
 
-/* Change the profiling output function */
-/* Usually revm_output located in elfsh VM */
+/**
+ * @brief Change the profiling output function (default: revm_output in librevm)
+ * @param profile Function pointer of type int fct(char*) to be registered for standard profiling
+ * @param profile_err Function pointer of type int fct(char*) to be registered for error profiling
+ */
 void	profiler_install(int (*profile)(char *), 
 			 int (*profile_err)(char *))
 {
@@ -205,11 +269,19 @@ void	profiler_install(int (*profile)(char *),
   aspectworld.profile_err = profile_err;
 }
 
-/* We setup two functions for colors because we have 
-   too many functions */
+/* We setup two functions for colors because we have too many functions */
 
 /** 
- * @brief Change simple color functions 
+ * @brief Change simple color functions handlers
+ * @param endline Function pointer of type void fct() handling ends of line (default: revm_endline)
+ * @param colorinstr Function pointer of type char *fct(char *str) handling instruction printing
+ * @param colorstr Function pointer of type char *fct(char *str) handling string printing
+ * @param colorfieldstr Function pointer of type char *fct(char *str) handling field printing
+ * @param colortypestr Function pointer of type char *fct(char *str) handling type printing
+ * @param colorend Function pointer of type char *fct(char *str) handling ending lines printing
+ * @param colorwarn Function pointer of type char *fct(char *str) handling priting of warnings
+ * @param colorfunction Function pointer of type char *fct(char *str) handling function name printing
+ * @param colorfilename Function pointer of type char *fct(char *str) handling file name printing
  */
 void	profiler_setcolor(void (*endline)(), 
 			  char *(*colorinstr)(char *text),
@@ -234,6 +306,14 @@ void	profiler_setcolor(void (*endline)(),
 
 /** 
  * @brief Change advanced color functions 
+ * @param coloradv Function pointer of type char *fct(char*, char*, char*) formatting end lines
+ * @param colorinstr_fmt Function pointer of type char *fct(char *, char *) formatting instructions
+ * @param coloraddress Function pointer of type char *fct(char *, u_long) formatting addresses
+ * @param colornumber Function pointer of type char *fct(char *, u_int) formatting decimal numbers
+ * @param colorstr_fmt Function pointer of type char *fct(char *, char *) formatting strings
+ * @param colorfieldstr_fmt Function pointer of type char *fct(char *, char *) formatting field strings
+ * @param colortypestr_fmt Function pointer of type char *fct(char *, char *) formatting type names
+ * @param colorwarn_fmt Function pointer of type char *fct(char *, char *) formatting warnings
  */
 void	profiler_setmorecolor(char *(*coloradv)(char *ty, char *p, char *te),
 			      char *(*colorinstr_fmt)(char* p, char *t),

@@ -4,7 +4,7 @@
  *     2007      rfd labs, strauss
  * @file function.c
  * BSD License
- * $Id: function.c,v 1.46 2007-12-07 16:49:49 may Exp $
+ * $Id: function.c,v 1.47 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include <libmjollnir.h>
@@ -55,7 +55,7 @@ void		mjr_function_dump(mjrcontext_t *ctxt, char *where, container_t *c)
   mjrlink_t	*cur;
 
   f = (mjrfunc_t *) c->data;
-  fprintf(D_DESC," [D] FUNC DUMP in {%s}: %x/<%s>[%s] ID:%d No. Children: %d, No. Parents: %d\n",
+  fprintf(D_DESC," [D] FUNC DUMP in {%s}: " AFMT "/<%s>[%s] ID:%d No. Children: %d, No. Parents: %d\n",
 	  where, f->vaddr, (f->name) ? f->name : NULL ,
 	  (f->md5) ? f->md5 : NULL , c->id, c->outlinks->elmnbr, c->inlinks->elmnbr);
   
@@ -66,7 +66,7 @@ void		mjr_function_dump(mjrcontext_t *ctxt, char *where, container_t *c)
 	{
 	  cur = (mjrlink_t *) ent->data;
 	  tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
-	  fprintf(D_DESC,"%x ", tmp->vaddr);
+	  fprintf(D_DESC, AFMT" ", tmp->vaddr);
 	}
       fprintf(D_DESC,"\n");
     }
@@ -78,7 +78,7 @@ void		mjr_function_dump(mjrcontext_t *ctxt, char *where, container_t *c)
 	{
 	  cur = (mjrlink_t *) ent->data;
 	  tmp = (mjrfunc_t *) mjr_lookup_container(ctxt,cur->id)->data;
-	  fprintf(D_DESC,"%x ", tmp->vaddr);
+	  fprintf(D_DESC, AFMT" ", tmp->vaddr);
 	}
       fprintf(D_DESC,"\n");
     }
@@ -249,4 +249,32 @@ container_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
 
   container = (container_t *) hash_get(&ctx->funchash, _vaddr2str(vaddr));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, container);
+}
+
+
+
+
+/**
+ * @brief Inject a symbol associated to a function container
+ * @param csrc Container for which a symbol has to be injected
+ * @param curaddr Address of currently analyzed instruction
+ * @return Always 0
+ */
+int			mjr_function_symbol(mjrcontext_t *ctxt, container_t *csrc)
+{
+  mjrfunc_t		*func;
+  elfsh_Sym		bsym;
+  elfsh_Sym		*sym;
+  char			*prefix;
+  char			buffer[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Insert new function symbol */
+  func   = (mjrfunc_t *) csrc->data;
+  prefix = (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX);
+  snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, func->vaddr);
+  bsym = elfsh_create_symbol(func->vaddr, func->size, STT_FUNC, 0, 0, 0);
+  elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

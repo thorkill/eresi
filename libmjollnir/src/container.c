@@ -4,7 +4,7 @@
  * @file container.c
  * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.20 2007-10-01 01:13:08 may Exp $
+ * $Id: container.c,v 1.21 2008-02-16 12:32:27 thor Exp $
  */
 #include "libmjollnir.h"
 
@@ -172,7 +172,7 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
 		      __FUNCTION__,id, link->type,link_type);
 #endif
 
-	      list_del(linklist, listent->key);
+	      elist_del(linklist, listent->key);
 	    }
 	}
     }
@@ -187,7 +187,7 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
   link->id   = id;
   link->type = link_type;
   snprintf(linkname, sizeof(linkname), "link_%u", id);
-  list_add(linklist, strdup(linkname), link);
+  elist_add(linklist, strdup(linkname), link);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
 }
 
@@ -235,7 +235,8 @@ int		match_block(void *elem, void *match)
 container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
 					    u_int		symoff,
 					    elfsh_Addr		vaddr,
-					    u_int		size)
+					    u_int		size,
+					    u_char		seen)
 {
   mjrblock_t 	*newblock;
   container_t	*newcntnr;
@@ -257,13 +258,14 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
   newblock->symoff = symoff;
   newblock->vaddr  = vaddr;
   newblock->size   = size;
+  newblock->seen   = seen;
   newcntnr         = container_create(ASPECT_TYPE_BLOC, newblock, NULL, NULL);
   if (!newcntnr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create block container", NULL);  
 
-#if __DEBUG_CNTNR__
-  fprintf(D_DESC, "[D] %s: create block addr %x (sz %d)\n", __FUNCTION__, vaddr, size);
+#if 1 //__DEBUG_CNTNR__
+  fprintf(D_DESC, "[D] %s: create block addr " XFMT " (sz %d)\n", __FUNCTION__, vaddr, size);
 #endif
 
   mjr_register_container(ctx, newcntnr);
@@ -345,12 +347,12 @@ container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int
 
 
 /* Debug output help function for containers */
-void			mjr_container_dump(mjrcontext_t *ctx, int what)
+void		mjr_container_dump(mjrcontext_t *ctx, int what)
 {
   container_t	*cur;
-  mjrfunc_t		*tf;
-  u_int			idx;
-
+  mjrfunc_t	*tf;
+  u_int		idx;
+  
   for (idx = 1, cur = ctx->reg_containers[idx]; cur; cur = ctx->reg_containers[++idx])
     {
       if (cur->type == what)
@@ -358,7 +360,7 @@ void			mjr_container_dump(mjrcontext_t *ctx, int what)
 	  if (cur->type == ASPECT_TYPE_FUNC)
 	    {
 	      tf = cur->data;
-	      printf("FOUND: FUNC T:%d V:%x I:%d O:%d\n",
+	      printf("FOUND: FUNC T:%d V:" AFMT " I:%d O:%d\n",
 		     what, tf->vaddr, cur->inlinks->elmnbr, cur->outlinks->elmnbr);
 	    }
 	}

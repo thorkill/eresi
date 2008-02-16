@@ -4,7 +4,7 @@
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm
 **
-** $Id: profiler.c,v 1.9 2007-08-03 14:25:40 heroine Exp $
+** $Id: profiler.c,v 1.10 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -40,7 +40,11 @@ static u_int	profiler_adepth = 0;
 
 
 /**
- * @brief  Find an entry in the allocation profiler cache 
+ * @brief Find an entry in the allocation profiler cache 
+ * @param direction Either PROFILER_WARNING_LAST, PROFILER_WARNING_FIRST, or PROFILER_WARNING_UNKNOW
+ * @param addr Allocated address to be found in profiling cache
+ * @param optype Type of operation to be found
+ * @return Allocation profiler entry corresponding to input criterions
  */
 profallocentry_t	*profiler_alloc_find(u_char direction,
 					     u_long addr, 
@@ -74,6 +78,9 @@ profallocentry_t	*profiler_alloc_find(u_char direction,
 
 /** 
  * @brief Print the warning string 
+ * @param str Header string to be printed
+ * @param fatal 1 if error is fatal (exit afterwards)
+ * @param idx Index corresponding to allocation entry to print
  */
 void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 {
@@ -103,6 +110,7 @@ void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 
 /** 
  * @brief Warn if anything bad is happening 
+ * @param warntype Either PROFILER_WARNING_LAST, PROFILER_WARNING_FIRST or PROFILER_WARNING_UNKNOW
  */
 void			profiler_alloc_warning(u_char warntype)
 {
@@ -221,10 +229,16 @@ void			profiler_alloc_shift()
 
 /** 
  * @brief Add an entry in the allocation cache 
+ * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
+ * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
+ * @param line Generally called with __LINE__ (gcc), contains the line number in related file
+ * @param addr Newly allocated address
+ * @param atype Type of allocation
+ * @param otype Type of allocation operation
  */
 static void		profiler_alloc_add(char *file, char *func, 
-					  u_int line, u_long addr, 
-					  u_char atype, u_char otype)
+					   u_int line, u_long addr, 
+					   u_char atype, u_char otype)
 {
   allocentries[profiler_adepth].alloctype = atype;
   allocentries[profiler_adepth].optype    = otype;
@@ -238,6 +252,13 @@ static void		profiler_alloc_add(char *file, char *func,
 
 /** 
  * @brief Update allocation cache with a new entry 
+ * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
+ * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
+ * @param line Generally called with __LINE__ (gcc), contains the line number in related file
+ * @param addr Newly allocated address
+ * @param atype Type of allocation
+ * @param otype Type of allocation operation
+ * @return 0 if we are filling the last cache entry, 0 if not
  */
 int			profiler_alloc_update(char *file, char *func, 
 					      u_int line, u_long addr, 
@@ -279,7 +300,7 @@ int			profiler_alloc_update(char *file, char *func,
 
 /** 
  * @brief Reset profiler memory
- * @param lsel
+ * @param lsel Identifiant for profiler cache bank to be used
  */
 void		profiler_reset(u_int lsel)
 {
@@ -295,6 +316,11 @@ void		profiler_reset(u_int lsel)
 
 /** 
  * @brief Generic routine for profiler output 
+ * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
+ * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
+ * @param line Generally called with __LINE__ (gcc), contains the line number in related file
+ * @param msg Profiling message suffix to be printed
+ * @return 1 if message is already present in bank, 0 if not
  */
 int		profiler_print(char *file, char *func, 
 			       u_int line, char *msg)
@@ -369,7 +395,11 @@ int		profiler_print(char *file, char *func,
 
 
 /** 
- * @brief Write the last error information 
+ * @brief Generic routine for profiler error output
+ * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
+ * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
+ * @param line Generally called with __LINE__ (gcc), contains the line number in related file
+ * @param msg Profiling message suffix to be printed
  */
 void		profiler_err(char *file, char *func, 
 			     u_int line, char *msg)
@@ -422,6 +452,9 @@ void		profiler_err(char *file, char *func,
 
 /** 
  * @brief Write the last profiling information 
+ * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
+ * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
+ * @param line Generally called with __LINE__ (gcc), contains the line number in related file
  */
 void		profiler_out(char *file, char *func, u_int line)
 {
@@ -485,11 +518,17 @@ void		profiler_incdepth()
   profiler_depth++;
 }
 
+/** 
+ * @brief Set current function direction to be UP (function entering)
+ */
 void		profiler_updir()
 {
   profiler_direction = '+';
 }
 
+/** 
+ * @brief Set current function direction to be DOWN (function exiting)
+ */
 void		profiler_decdepth()
 {
   if (profiler_depth > 0)
@@ -497,6 +536,9 @@ void		profiler_decdepth()
   profiler_direction = '-';
 }
 
+/** 
+ * @brief Remove lastly generated error (nulify error string)
+ */
 void		profiler_error_reset()
 {
   profiler_error_str = NULL;

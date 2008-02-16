@@ -5,7 +5,7 @@
  * 
  * @brief All structures of libmjollnir
  *
- * $Id: libmjollnir-objects.h,v 1.3 2007-08-07 07:13:27 may Exp $
+ * $Id: libmjollnir-objects.h,v 1.4 2008-02-16 12:32:27 thor Exp $
  *
  */
 #if !defined(__MJR_BLOCKS__)
@@ -27,6 +27,7 @@ typedef struct	s_iblock
   elfsh_Addr	vaddr;		/* !< @brief block starting virtual address    */
   u_int		size;		/* !< @brief block code size                   */
   u_int		symoff;		/* !< @brief block name offset in string table */
+  u_char	seen;		/* !< @brief block live status (0 means dead)  */
 }		mjrblock_t;
 
 /** 
@@ -85,9 +86,9 @@ typedef struct		_mjrContext
 {
   elfshobj_t		*obj;			/* !< @brief ELF binary object */
   asm_processor		proc;			/* !< @brief ASM processor */
-  container_t	*curblock;		/* !< @brief Current working block */
-  container_t	*curfunc;		/* !< @brief Current working function */
-  container_t	**reg_containers;	/* !< @brief Registered containers */
+  container_t		*curblock;		/* !< @brief Current working block */
+  container_t		*curfunc;		/* !< @brief Current working function */
+  container_t		**reg_containers;	/* !< @brief Registered containers */
   btree_t		*block_btree;		/* !< @brief Blocks Binary tree (speedup parent search) */
   u_int			cntnrs_size;		/* !< @brief Size of current containers */
   u_int			next_id;		/* !< @brief Next free container id */

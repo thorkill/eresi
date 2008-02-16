@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:20:58 2001 jfv
 **
 **
-** $Id: notes.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: notes.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -26,12 +26,12 @@ int			cmd_notes()
 
   snprintf(buff, sizeof(buff),
 	   " [SHT_NOTES]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(buff);
 
   FIRSTREGX(tmp);
   range = 0;
-  sect = elfsh_get_notes(world.curjob->current, range);
+  sect = elfsh_get_notes(world.curjob->curfile, range);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get notes", (-1));
@@ -39,7 +39,7 @@ int			cmd_notes()
   while (sect)
     {
       snprintf(buff, sizeof(buff),
-	       " {Section %s} \n", elfsh_get_section_name(world.curjob->current, sect));
+	       " {Section %s} \n", elfsh_get_section_name(world.curjob->curfile, sect));
       revm_output(buff);
       for (index = 0, e = sect->altdata; e; e = e->next, index++)
 	{
@@ -50,7 +50,7 @@ int			cmd_notes()
 	}
       revm_output("\n");
       range++;
-      sect = elfsh_get_notes(world.curjob->current, range);
+      sect = elfsh_get_notes(world.curjob->curfile, range);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

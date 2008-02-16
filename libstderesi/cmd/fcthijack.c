@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Jun 19 17:02:55 2003 jfv
 **
-** $Id: fcthijack.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: fcthijack.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -35,8 +35,8 @@ int		cmd_hijack()
       printed = 0;
 
       /* Simple printing */
-      for (idx2 = idx = 0; idx < world.curjob->current->redir_hash.size; idx++)
-	for (actual = world.curjob->current->redir_hash.ent + idx;
+      for (idx2 = idx = 0; idx < world.curjob->curfile->redir_hash.size; idx++)
+	for (actual = world.curjob->curfile->redir_hash.ent + idx;
 	     actual != NULL && actual->key != NULL;
 	     actual = actual->next)
 	  {
@@ -73,12 +73,12 @@ int		cmd_hijack()
 		      "Redirection destination needed", (-1));
 
   /* Resolve destination parameter */
-  dst = elfsh_get_metasym_by_name(world.curjob->current, 
+  dst = elfsh_get_metasym_by_name(world.curjob->curfile, 
 				  world.curjob->curcmd->param[1]);
   if (!dst)
     {
       elfsh_toggle_mode();
-      dst = elfsh_get_metasym_by_name(world.curjob->current, 
+      dst = elfsh_get_metasym_by_name(world.curjob->curfile, 
 				      world.curjob->curcmd->param[1]);
       elfsh_toggle_mode();
     }
@@ -90,19 +90,19 @@ int		cmd_hijack()
 		   (elfsh_Addr *) &addr);
       
       /* If the hook function is not supplied as an address */
-      if (err != 1 && elfsh_dynamic_file(world.curjob->current))
+      if (err != 1 && elfsh_dynamic_file(world.curjob->curfile))
 	{
 	  elfsh_setup_hooks();
 
 	  /* First bootstrap ALTPLT if not done */
-	  err = elfsh_copy_plt(world.curjob->current, 
-			       elfsh_get_pagesize(world.curjob->current));
+	  err = elfsh_copy_plt(world.curjob->curfile, 
+			       elfsh_get_pagesize(world.curjob->curfile));
 	  if (err < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Failed at copying PLT", (-1));		  
 	  
 	  /* Request a PLT entry since we have no symbol yet */
-	  dst = elfsh_request_pltent(world.curjob->current, 
+	  dst = elfsh_request_pltent(world.curjob->curfile, 
 				     world.curjob->curcmd->param[1]);
 	  if (dst)
 	    addr = dst->st_value;
@@ -116,7 +116,7 @@ int		cmd_hijack()
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Need a symbol to redirect", -1);
       
-      rev = revm_reverse(world.curjob->current, addr);
+      rev = revm_reverse(world.curjob->curfile, addr);
     }
 
   /* The first resolution worked, we take the address */
@@ -132,7 +132,7 @@ int		cmd_hijack()
 #endif
 
   /* Hijack function */
-  err = elfsh_hijack_function_by_name(world.curjob->current, 
+  err = elfsh_hijack_function_by_name(world.curjob->curfile, 
 				      ELFSH_HIJACK_TYPE_FLOW,
 				      world.curjob->curcmd->param[0], 
 				      addr, &hookedaddr);
@@ -145,7 +145,7 @@ int		cmd_hijack()
   /* Add it to redirection hash table */
   redir = revm_create_REDIR((u_char) err, world.curjob->curcmd->param[0], 
 			  world.curjob->curcmd->param[1], hookedaddr, addr);
-  hash_add(&world.curjob->current->redir_hash, 
+  hash_add(&world.curjob->curfile->redir_hash, 
 	   world.curjob->curcmd->param[0], 
 	   (void *) redir);
 

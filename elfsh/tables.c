@@ -1,17 +1,20 @@
-/*
-** tables.c for elfsh
-**
-** This file contains all command and objects definitions for scripting
-**
-** Started on  Sat Jan 25 07:48:41 2003 jfv
-**
-** $Id: tables.c,v 1.17 2007-07-31 03:28:46 may Exp $
-**
-*/
+/**
+ * @file tables.c
+ *
+ * This file contains all command and objects definitions for scripting
+ *
+ * Started on  Sat Jan 25 07:48:41 2003 jfv
+ *
+ * $Id: tables.c,v 1.18 2008-02-16 12:31:34 thor Exp $
+ *
+ */
 #include "elfsh.h"
 
 
-/* Setup the command hash table */
+/**
+ * Setup the command hash table 
+ *
+ */
 void	setup_local_cmdhash()
 {
 

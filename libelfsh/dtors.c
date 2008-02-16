@@ -3,17 +3,18 @@
  *
  * Started on  Tue Feb 26 22:12:38 2002 jfv
  *
- * $Id: dtors.c,v 1.6 2007-07-31 03:28:46 may Exp $
+ * $Id: dtors.c,v 1.7 2008-02-16 12:32:27 thor Exp $
  *
  */
 
 #include "libelfsh.h"
 
 
-
-
 /**
  * Read the destructor array in .dtors 
+ * @param file
+ * @param num
+ * @return
  */
 elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 {
@@ -58,6 +59,9 @@ elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 
 /**
  * Shift DTORS on ET_DYN 
+ * @param file
+ * @param size
+ * @return
  */
 int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
 {
@@ -82,7 +86,13 @@ int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-/* Modify a DTORS entry */
+/**
+ * Modify a DTORS entry 
+ * @param file
+ * @param index
+ * @param addr
+ * @return
+ */
 int		elfsh_set_dtors_entry_by_index(elfshobj_t	*file, 
 					       int		index, elfsh_Addr      	addr)
 {
@@ -107,10 +117,13 @@ int		elfsh_set_dtors_entry_by_index(elfshobj_t	*file,
 }
 
 
-
-
-
-/* Modify a DTORS entry using its name */
+/**
+ * Modify a DTORS entry using its name 
+ * @param file
+ * @param name
+ * @param new_addr
+ * @return
+ */
 int		elfsh_set_dtors_entry_by_name(elfshobj_t	*file, 
 					      char		*name,
 					      elfsh_Addr       	new_addr)
@@ -128,7 +141,12 @@ int		elfsh_set_dtors_entry_by_name(elfshobj_t	*file,
 }
 
 
-/* Get DTORS entry by name */
+/**
+ * Get DTORS entry by name 
+ * @param file
+ * @param name
+ * @return
+ */
 elfsh_Addr     	*elfsh_get_dtors_entry_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
@@ -160,7 +178,12 @@ elfsh_Addr     	*elfsh_get_dtors_entry_by_name(elfshobj_t *file, char *name)
 
 
 
-/* Return a entry giving its parent and its index : used as INTERNAL hash handler */
+/**
+ * Return a entry giving its parent and its index : used as INTERNAL hash handler 
+ * @param dtors
+ * @param index
+ * @return
+ */
 elfsh_Addr     	*elfsh_get_dtors_entry_by_index(elfsh_Addr *dtors, elfsh_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -172,7 +195,12 @@ elfsh_Addr     	*elfsh_get_dtors_entry_by_index(elfsh_Addr *dtors, elfsh_Addr in
 }
 
 
-/* Return a entry giving its parent and its index : used as INTERNAL hash handler */
+/**
+ * Return a entry giving its parent and its index : used as INTERNAL hash handler 
+ * @param dtors
+ * @param vaddr
+ * @return
+ */
 int		elfsh_set_dtors_entry(elfsh_Addr *dtors, elfsh_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -185,7 +213,11 @@ int		elfsh_set_dtors_entry(elfsh_Addr *dtors, elfsh_Addr vaddr)
 }
 
 
-/* Return a entry value giving its parent and its index : used as INTERNAL hash handler */
+/**
+ * Return a entry value giving its parent and its index : used as INTERNAL hash handler 
+ * @param dtors
+ * @return
+ */
 elfsh_Addr     	elfsh_get_dtors_entry(elfsh_Addr *dtors)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -5,13 +5,16 @@
 ** Started on  Mon Feb 26 04:09:38 2001 jfv
 ** Last update Mon Apr 21 20:58:41 2003 jfv
 **
-** $Id: elf.c,v 1.18 2007-07-31 23:30:35 may Exp $
+** $Id: elf.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
  * Change the ELF header flags field 
+ * @param hdr
+ * @param flags
+ * @return
  */
 int		elfsh_set_flags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 {
@@ -26,6 +29,8 @@ int		elfsh_set_flags(elfsh_Ehdr *hdr, elfsh_Addr flags)
 
 /**
  * Return the ELF header flags field 
+ * @param hdr
+ * @return
  */
 elfsh_Word	elfsh_get_flags(elfsh_Ehdr *hdr)
 {
@@ -39,6 +44,9 @@ elfsh_Word	elfsh_get_flags(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table file offset 
+ * @param hdr
+ * @param off
+ * @return
  */
 int		elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off)
 {
@@ -53,6 +61,8 @@ int		elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off)
 
 /**
  * Return the section header table file offset 
+ * @param hdr
+ * @return
  */
 elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
 {
@@ -67,6 +77,9 @@ elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
 
 /**
  * Change the section header table entry count 
+ * @param hdr
+ * @param num
+ * @return
  */
 int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
@@ -81,6 +94,8 @@ int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 
 /**
  * Return the section header table entry count 
+ * @param hdr
+ * @return
  */
 elfsh_Half	elfsh_get_shtnbr(elfsh_Ehdr *hdr)
 {
@@ -95,6 +110,9 @@ elfsh_Half	elfsh_get_shtnbr(elfsh_Ehdr *hdr)
 
 /**
  * Change the program header table file offset 
+ * @param hdr
+ * @param num
+ * @return
  */
 int		elfsh_set_phtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
@@ -109,6 +127,8 @@ int		elfsh_set_phtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 
 /**
  * Return the program header table file offset 
+ * @param hdr
+ * @return
  */
 elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
 {
@@ -122,6 +142,9 @@ elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
 
 /**
  * Change the program header table file offset 
+ * @param hdr
+ * @param num
+ * @return 
  */
 int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
@@ -136,6 +159,8 @@ int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
 
 /**
  * Return the program header table file offset 
+ * @param hdr
+ * @return 
  */
 elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
 {
@@ -150,6 +175,9 @@ elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
 
 /**
  * Change the program header table entry count 
+ * @param hdr
+ * @param num
+ * @return 
  */
 int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 {
@@ -164,6 +192,8 @@ int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
 
 /**
  * Return the program header table entry count 
+ * @param hdr
+ * @return 
  */
 elfsh_Half	elfsh_get_phtnbr(elfsh_Ehdr *hdr)
 {
@@ -176,7 +206,10 @@ elfsh_Half	elfsh_get_phtnbr(elfsh_Ehdr *hdr)
 }
 
 /** 
- *Change the program entry point 
+ * Change the program entry point 
+ * @param hdr
+ * @param addr
+ * @return 
  */
 int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
 {
@@ -191,6 +224,8 @@ int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
 
 /** 
  * Return the program entry point 
+ * @param hdr
+ * @return 
  */
 elfsh_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
 {
@@ -204,46 +239,57 @@ elfsh_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
 
 /**
  * Return the machine type giving its e_arch field 
+ * @param hdr
+ * @param num
+ * @return 
  */
-elfsh_Half	elfsh_get_arch(elfsh_Ehdr *e)
+elfsh_Half	elfsh_get_arch(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!e)
+  if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", (elfsh_Half) -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_machine));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_machine));
 }
 
 /**
  * Change the machine type e_arch field 
+ * @param hdr
+ * @param val
+ * @return 
  */
-u_int	elfsh_set_arch(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_arch(elfsh_Ehdr *hdr, elfsh_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!e)
+  if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", (u_int) -1);
-  e->e_machine = (elfsh_Half) val;
+  hdr->e_machine = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
  * Return the ELF object type giving its e_type field 
+ * @param hdr
+ * @return 
  */
-elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *e)
+elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!e)
+  if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", (elfsh_Half) -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_type));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_type));
 }
 
 /**
  * Return the ELF object type giving its e_type field 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_objtype(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -258,6 +304,8 @@ u_int	elfsh_set_objtype(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Return the ELF section string table index field 
+ * @param e
+ * @return 
  */
 elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
 {
@@ -271,6 +319,9 @@ elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
 
 /**
  * Set the ELF section string table index field 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -285,6 +336,9 @@ u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Change the e_version flag 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_version(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -299,6 +353,8 @@ u_int	elfsh_set_version(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Read the version flags 
+ * @param e
+ * @return 
  */
 elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
 {
@@ -312,6 +368,9 @@ elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
 
 /**
  * Change the ELF header size field 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_ehsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -326,6 +385,8 @@ u_int	elfsh_set_ehsize(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Return the ELF header size field 
+ * @param e
+ * @return 
  */
 elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
 {
@@ -339,6 +400,9 @@ elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
 
 /**
  * Change the Program Header Entry size field 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_phentsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -353,6 +417,8 @@ u_int	elfsh_set_phentsize(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Return the Program Header Entry size field 
+ * @param e
+ * @return 
  */
 elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
 {
@@ -366,6 +432,9 @@ elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
 
 /**
  * Change the Section Header Entry size field 
+ * @param e
+ * @param val
+ * @return 
  */
 u_int	elfsh_set_shentsize(elfsh_Ehdr *e, elfsh_Addr val)
 {
@@ -380,6 +449,8 @@ u_int	elfsh_set_shentsize(elfsh_Ehdr *e, elfsh_Addr val)
 
 /**
  * Return the Section Header Entry size field 
+ * @param e
+ * @return 
  */
 elfsh_Half	elfsh_get_shentsize(elfsh_Ehdr *e)
 {
@@ -394,6 +465,8 @@ elfsh_Half	elfsh_get_shentsize(elfsh_Ehdr *e)
 
 /**
  * Return the encoding type 
+ * @param hdr
+ * @return 
  */
 int		elfsh_get_encoding(elfsh_Ehdr *hdr)
 {
@@ -407,6 +480,9 @@ int		elfsh_get_encoding(elfsh_Ehdr *hdr)
 
 /**
  * Change the encoding (little endian, big endian, or else) 
+ * @param hdr
+ * @param type
+ * @return 
  */
 int		elfsh_set_encoding(elfsh_Ehdr *hdr, elfsh_Addr type)
 {
@@ -421,6 +497,8 @@ int		elfsh_set_encoding(elfsh_Ehdr *hdr, elfsh_Addr type)
 
 /**
  * Return the magic 
+ * @param hdr
+ * @return 
  */
 int		elfsh_get_magic(elfsh_Ehdr *hdr)
 {
@@ -434,6 +512,9 @@ int		elfsh_get_magic(elfsh_Ehdr *hdr)
 
 /**
  * Change the magic 
+ * @param hdr
+ * @param mag
+ * @return 
  */
 int		elfsh_set_magic(elfsh_Ehdr *hdr, elfsh_Addr mag)
 {
@@ -448,6 +529,8 @@ int		elfsh_set_magic(elfsh_Ehdr *hdr, elfsh_Addr mag)
 
 /**
  * Return the class 
+ * @param hdr
+ * @return 
  */
 int		elfsh_get_class(elfsh_Ehdr *hdr)
 {
@@ -461,6 +544,9 @@ int		elfsh_get_class(elfsh_Ehdr *hdr)
 
 /**
  * Change the class 
+ * @param hdr
+ * @param eclass
+ * @return 
  */
 int		elfsh_set_class(elfsh_Ehdr *hdr, elfsh_Addr eclass)
 {
@@ -475,6 +561,9 @@ int		elfsh_set_class(elfsh_Ehdr *hdr, elfsh_Addr eclass)
 
 /**
  * Endianize ELF header 
+ * @param e
+ * @param byteorder
+ * @return 
  */
 void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder)
 {
@@ -507,6 +596,8 @@ void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder)
 
 /**
  * Sanity check of header type
+ * @param file
+ * @return 
  */
 int elfsh_check_hdr_type(elfshobj_t *file) 
 {  
@@ -531,6 +622,8 @@ int elfsh_check_hdr_type(elfshobj_t *file)
 
 /**
  * Sanity check of machin type
+ * @param file
+ * @return 
  */
 int elfsh_check_hdr_machine(elfshobj_t *file) 
 {
@@ -550,6 +643,8 @@ int elfsh_check_hdr_machine(elfshobj_t *file)
 
 /**
  * Sanity check of version value
+ * @param file
+ * @return 
  */
 int elfsh_check_hdr_version(elfshobj_t *file) 
 {
@@ -567,6 +662,8 @@ int elfsh_check_hdr_version(elfshobj_t *file)
 
 /**
  * Sanity check of phoff value
+ * @param file
+ * @return 
  */
 int elfsh_check_hdr_phoff(elfshobj_t *file) 
 {
@@ -584,6 +681,8 @@ int elfsh_check_hdr_phoff(elfshobj_t *file)
 
 /**
  * Sanity check of shoff value
+ * @param file
+ * @return 
  */
 int elfsh_check_hdr_shoff(elfshobj_t *file) 
 {
@@ -600,6 +699,8 @@ int elfsh_check_hdr_shoff(elfshobj_t *file)
 
 /**
  * perform some sanity checks on ELF header 
+ * @param file
+ * @return 
  */
 int		elfsh_check_hdr(elfshobj_t *file) 
 {
@@ -616,6 +717,8 @@ int		elfsh_check_hdr(elfshobj_t *file)
 
 /**
  * Load the ELF header 
+ * @param file
+ * @return 
  */
 int	elfsh_load_hdr(elfshobj_t *file)
 {
@@ -661,6 +764,8 @@ int	elfsh_load_hdr(elfshobj_t *file)
 
 /**
  * Return a ptr on the ELF header (load it before if not done yet) 
+ * @param file
+ * @return 
  */
 void	*elfsh_get_hdr(elfshobj_t *file)
 {
@@ -676,6 +781,8 @@ void	*elfsh_get_hdr(elfshobj_t *file)
 
 
 /**
+ * 
+ * @param file
  * @return 1 if the file is static or dynamic 
  */
 int		elfsh_static_file(elfshobj_t *file)
@@ -689,6 +796,7 @@ int		elfsh_static_file(elfshobj_t *file)
 }
 
 /**
+ * @param file
  * @return 1 if the file is dynamic
  */
 int		elfsh_dynamic_file(elfshobj_t *file)
@@ -700,6 +808,8 @@ int		elfsh_dynamic_file(elfshobj_t *file)
 
 /**
  * Get notes section from core
+ * @param file
+ * @return
  */
 int elfsh_get_core_notes(elfshobj_t *file)
 {
@@ -732,8 +842,8 @@ int elfsh_get_core_notes(elfshobj_t *file)
 	    if(read(file->fd, &nhdr, sizeof(nhdr)) != sizeof(nhdr))
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
-	    namesz = roundup(nhdr.n_namesz, 4);
-	    descsz = roundup(nhdr.n_descsz, 4);
+	    namesz = elfsh_roundup(nhdr.n_namesz, 4);
+	    descsz = elfsh_roundup(nhdr.n_descsz, 4);
 
 	    if(namesz > 16) continue;
 

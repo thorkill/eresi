@@ -4,7 +4,7 @@
  *
  * Started on  Tue Feb 26 22:11:12 2002 jfv
  *
- * $Id: ctors.c,v 1.6 2007-07-31 03:28:46 may Exp $
+ * $Id: ctors.c,v 1.7 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"
@@ -13,6 +13,9 @@
 
 /**
  * Read the constructor array in .ctors 
+ * @param file
+ * @param num
+ * @return
  */
 elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 {
@@ -57,7 +60,12 @@ elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 
 
 
-/* Shift CTORS on ET_DYN */
+/**
+ * Shift CTORS on ET_DYN 
+ * @param file
+ * @param size
+ * @return
+ */
 int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
 {
   elfshsect_t	*ctors;
@@ -83,7 +91,13 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
 
 
 
-/* Modify a CTORS entry using its index */
+/**
+ * Modify a CTORS entry using its index 
+ * @param file
+ * @param index
+ * @param addr
+ * @return
+ */
 int		elfsh_set_ctors_entry_by_index(elfshobj_t	*file, 
 					       int		index, 
 					       elfsh_Addr     	addr)
@@ -108,7 +122,13 @@ int		elfsh_set_ctors_entry_by_index(elfshobj_t	*file,
 
 
 
-/* Modify a CTORS entry using its name */
+/**
+ * Modify a CTORS entry using its name 
+ * @param file
+ * @param name
+ * @param new_addr
+ * @return
+ */
 int		elfsh_set_ctors_entry_by_name(elfshobj_t	*file, 
 					      char		*name,
 					      elfsh_Addr       	new_addr)
@@ -127,7 +147,12 @@ int		elfsh_set_ctors_entry_by_name(elfshobj_t	*file,
 
 
 
-/* Return a entry giving its parent and its index */
+/** 
+ * Return a entry giving its parent and its index 
+ * @param ctors
+ * @param index
+ * @return
+ */
 elfsh_Addr     	*elfsh_get_ctors_entry_by_index(elfsh_Addr *ctors, elfsh_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -140,7 +165,12 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL parameter",
 
 
 
-/* Return an entry giving the matching symbol name */
+/**
+ * Return an entry giving the matching symbol name 
+ * @param file
+ * @param name
+ * @return
+ */
 elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
@@ -170,7 +200,12 @@ elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
 }
 
 
-/* Return a entry giving its parent and its index : used as INTERNAL hash handler */
+/**
+ * Return a entry giving its parent and its index : used as INTERNAL hash handler 
+ * @param ctors
+ * @param vaddr
+ * @return
+ */
 int		elfsh_set_ctors_entry(elfsh_Addr *ctors, elfsh_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -182,7 +217,11 @@ int		elfsh_set_ctors_entry(elfsh_Addr *ctors, elfsh_Addr vaddr)
 }
 
 
-/* Return a entry value giving its parent and its index : used as INTERNAL hash handler */
+/** 
+ * Return a entry value giving its parent and its index : used as INTERNAL hash handler 
+ * @param ctors
+ * @return
+ */
 elfsh_Addr     	elfsh_get_ctors_entry(elfsh_Addr *ctors)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

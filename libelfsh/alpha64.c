@@ -7,7 +7,7 @@
 ** Skeleton cut & pasted from the sparc64 backend
 **
 **
-** $Id: alpha64.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: alpha64.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -20,6 +20,7 @@
  * @param name the name of the section
  * @param sym the name of symbol
  * @param addr the address
+ * @return
  */
 int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 			    char	*name,
@@ -71,6 +72,7 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
  * @param file elfshobj
  * @param symbol elfsh symbol sturcture
  * @param addr address
+ * @return
  */
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -163,18 +165,12 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
 }
 
 
-
-
-
-
-
-
-
 /**
  * PLT hijacking on ALPHA64 
  * @param file elfshobj
  * @param symbol elfsh symbol sturcture
  * @param addr address
+ * @return
  */
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -237,6 +233,10 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
 
 /**
  * Find the address of modgot entry for this value 
+ *
+ * @param modgot
+ * @param addr
+ * @return
  */
 elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
 {
@@ -263,6 +263,10 @@ elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
 
 /**
  * Handle the mod.o.got section 
+ *
+ * @param infile
+ * @param modrel
+ * @return
  */
 elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 {
@@ -415,6 +419,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
  * @param dword
  * @param addr
  * @param mod
+ * @return
  */
 int       elfsh_relocate_alpha64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,

@@ -7,13 +7,14 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.19 2007-08-25 17:13:05 mxatone Exp $
+ * $Id: extplt.c,v 1.20 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"
 
 /**
  * Add a new entry on ALTVERSYM (.elfsh.version)
+ * @param file elfsh object.
  * @param versym section pointer of target section
  * @param name function name
  */
@@ -85,7 +86,9 @@ int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *na
 
 /**
  * Add a new entry on ALTHASH (.elfsh.hash)
+ * @param file
  * @param hash section pointer of target section
+ * @param dynsym
  * @param name function name
  */
 int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash, 
@@ -176,6 +179,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 /**
  * When performing EXTPLT technique, we need to mirror some sections
  * if we want to be able to extend them : .rel(a).{got,dyn,plt}, .dynsym, .dynstr 
+ * @param file
  */
 int		elfsh_extplt_mirror_sections(elfshobj_t *file) 
 {
@@ -392,6 +396,10 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 /**
  * Insert a new function entry point for dynamic resolution
  * Return the symbol pointing on this new definition (its .plt entry) 
+ *
+ * @param file
+ * @param name
+ * @return
  */
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)	
 {

@@ -7,14 +7,10 @@
 ** Skeleton cut & pasted from the sparc64 backend
 **
 **
-** $Id: mips32.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: mips32.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
-
-
-
-
 
 /**
  * Static hooking for Mips32
@@ -23,6 +19,11 @@
  * change the way it should be implemented)
  *
  * Make sure to ask anything before deciding to implement it
+ *
+ * @param file
+ * @param name
+ * @param symbol
+ * @param addr
  */
 int			elfsh_cflow_mips32(elfshobj_t *file,
 					   char	      *name,
@@ -168,6 +169,10 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
 
 /**
  * PLT hijacking on MIPS32, not needed thus unimplemented for now 
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_mips32(elfshobj_t *file, 
 					elfsh_Sym *symbol,
@@ -194,6 +199,11 @@ int		elfsh_hijack_plt_mips32(elfshobj_t *file,
  * fill those only one time, before calling __libc_start_main
  *  
  * The code works and is functional -mm
+ *
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_altplt_mips32(elfshobj_t *file, 
 					   elfsh_Sym *symbol,
@@ -321,30 +331,17 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Perform relocation on entry for MIPS32 architecture 
-   XXX Not really endianess respectful - ym
-*/
+/**
+ * Perform relocation on entry for MIPS32 architecture 
+ *  XXX Not really endianess respectful - ym
+ *
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
+ */
 int			elfsh_relocate_mips32(elfshsect_t       *new,
 					      elfsh_Rel         *cur,
 					      elfsh_Addr        *dword,

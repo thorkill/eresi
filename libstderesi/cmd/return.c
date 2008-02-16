@@ -2,7 +2,7 @@
 ** @file return.c
 ** 
 ** Started on  Sat Jan 25 11:19:53 2003 jfv
-** $Id: return.c,v 1.1 2007-12-06 05:11:58 may Exp $
+** $Id: return.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 
@@ -66,7 +66,7 @@ int		cmd_return()
 		  snprintf(logbuf, BUFSIZ - 1, 
 			   " \t[*] Unloading object %u (%s) %c \n", 
 			   index + 1, cur->name, 
-			   (curjob->current == cur ? '*' : ' '));
+			   (curjob->curfile == cur ? '*' : ' '));
 		  revm_output(logbuf);
 		}
 	      elfsh_unload_obj(cur);

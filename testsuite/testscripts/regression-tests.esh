@@ -1,4 +1,4 @@
-#!/usr/local/bin/elfsh
+#!../../elfsh/elfsh32
 #
 # Additional tests suite for shell commands .
 #
@@ -44,16 +44,16 @@ print   phnum = 1.hdr.phnum
 mul     1.hdr.phnum 5
 print   phnum = 1.hdr.phnum
 
-
-
 # Playing a bit with the modules
 cmdtest
 modload ../../modules/modtest.so
 print hehe
 cmdtest
+list
+
+profile enable all
 modunload ../../modules/modtest.so
 print hehe
-
 
 # ELF header tests
 # Illustrate the object affectations between files

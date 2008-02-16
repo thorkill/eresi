@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 13 04:06:45 2003 jfv
 ** Last update Wed Mar 10 12:31:49 2004 jfv
 **
-** $Id: fileops.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: fileops.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -110,10 +110,10 @@ int		cmd_append()
       if (!index)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Cannot convert section value !", -1);
-      sect = elfsh_get_section_by_index(world.curjob->current, index, NULL, NULL);
+      sect = elfsh_get_section_by_index(world.curjob->curfile, index, NULL, NULL);
     } 
   else
-    sect = elfsh_get_section_by_name(world.curjob->current, world.curjob->curcmd->param[0], 
+    sect = elfsh_get_section_by_name(world.curjob->curfile, world.curjob->curcmd->param[0], 
 				     NULL, NULL, NULL);
   if (sect == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -184,10 +184,10 @@ int		cmd_extend()
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot convert section value", 
 			  -1);
-      sect = elfsh_get_section_by_index(world.curjob->current, index, NULL, NULL);
+      sect = elfsh_get_section_by_index(world.curjob->curfile, index, NULL, NULL);
     } 
   else
-    sect = elfsh_get_section_by_name(world.curjob->current, 
+    sect = elfsh_get_section_by_name(world.curjob->curfile, 
 				     world.curjob->curcmd->param[0], 
 				     NULL, NULL, NULL);
   if (sect == NULL)
@@ -225,10 +225,10 @@ int		cmd_fixup()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.curjob->current == NULL)
+  if (world.curjob->curfile == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  if (elfsh_fixup_bss(world.curjob->current) != NULL)
+  if (elfsh_fixup_bss(world.curjob->curfile) != NULL)
     {
       revm_output(" [*] BSS fixed up\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

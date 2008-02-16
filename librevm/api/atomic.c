@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **
-** $Id: atomic.c,v 1.17 2007-12-10 12:58:45 may Exp $
+** $Id: atomic.c,v 1.18 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -217,7 +217,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
 
 
 /* API for adding in hash */
-int			revm_list_add(list_t *h, revmexpr_t *e)
+int			revm_elist_add(list_t *h, revmexpr_t *e)
 {
   elfsh_Addr		elem;
   char			*key;
@@ -238,7 +238,7 @@ int			revm_list_add(list_t *h, revmexpr_t *e)
   if (o->otype->type == ASPECT_TYPE_LIST)
     {
       src = (list_t *) o->get_obj(o->parent);
-      list_merge(h, src);
+      elist_merge(h, src);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
@@ -273,7 +273,7 @@ int			revm_list_add(list_t *h, revmexpr_t *e)
    
   /* Add it to the hash table */
   elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
-  list_add(h, key, (void *) elem);
+  elist_add(h, key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -329,7 +329,7 @@ int			revm_hash_del(hash_t *h, revmexpr_t *e)
 
 
 /* REVM API for deleting in lists */
-int			revm_list_del(list_t *h, revmexpr_t *e)
+int			revm_elist_del(list_t *h, revmexpr_t *e)
 {
   char			*name;
   list_t		*src;
@@ -348,7 +348,7 @@ int			revm_list_del(list_t *h, revmexpr_t *e)
   if (o->otype->type == ASPECT_TYPE_LIST)
     {
       src = (list_t *) o->get_obj(o->parent);
-      list_unmerge(h, src);
+      elist_unmerge(h, src);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
@@ -359,17 +359,17 @@ int			revm_list_del(list_t *h, revmexpr_t *e)
 	name = o->get_name(o->root, o->parent);
       else
 	name = (o->immed ? o->immed_val.str : (char *) o->get_obj(o->parent));
-      if (list_get(h, name))
-	list_del(h, name);
+      if (elist_get(h, name))
+	elist_del(h, name);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Else if it was a hash element */
   if ((h->type != o->otype->type && revm_convert_object(e, h->type)) || !o->kname ||
-      !list_get(h, o->kname))
+      !elist_get(h, o->kname))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown hash element to remove", -1);
-  list_del(h, o->kname);
+  elist_del(h, o->kname);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -401,22 +401,22 @@ int			revm_hash_set(char *table, char *elmname, void *obj, u_int type)
 
 
 /* API for setting elements inside lists */
-int			revm_list_set(char *table, char *elmname, void *obj, u_int type)
+int			revm_elist_set(char *table, char *elmname, void *obj, u_int type)
 {
   list_t		*h;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!table)
-    list_register((list_t *) obj, elmname);
+    elist_register((list_t *) obj, elmname);
   else
     {
-      h = list_find(table);
+      h = elist_find(table);
       if (!h)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown destination list", -1);
       if (h->type == ASPECT_TYPE_UNKNOW)
 	h->type = type;
-      list_add(h, elmname, obj);
+      elist_add(h, elmname, obj);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -472,7 +472,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	  else if (o1->contype == CONT_LIST)
-	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	}
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
@@ -494,7 +494,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
 	  else if (o1->contype == CONT_LIST)
-	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	}
       else if (o1->set_obj(o1->parent, val8) < 0)
@@ -513,7 +513,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
 	  else if (o1->contype == CONT_LIST)
-	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
 	    
 	}
@@ -533,7 +533,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
 	  else if (o1->contype == CONT_LIST)
-	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
 
 	}
@@ -556,7 +556,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			  (void *) val64, o1->otype->type);
 	  else if (o1->contype == CONT_LIST)
-	    revm_list_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			  (void *) val64, o1->otype->type);
 	  
 	}
@@ -581,7 +581,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       list = (list_t *) o2->get_obj(o2->parent);
       if (!o1->otype->isptr)
 	{
-	  if (revm_list_set(NULL, o1->hname, (void *) list, o1->otype->type))
+	  if (revm_elist_set(NULL, o1->hname, (void *) list, o1->otype->type))
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Unable to set list variable", -1);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

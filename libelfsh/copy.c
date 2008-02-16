@@ -5,16 +5,17 @@
 ** Started on  Tue Mar  4 01:15:23 2003 jfv
 ** Last update Tue Mar 11 21:26:07 2003 jfv
 **
-** $Id: copy.c,v 1.10 2007-07-31 03:28:46 may Exp $
+** $Id: copy.c,v 1.11 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
-
-
 /**
  * Used by elfsh_save_obj(). Do not use outside ELFsh 
  * May not be perfect, to modify if some param is zeroified because of the copy 
+ *
+ * @param file
+ * @return
  */
 elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 {

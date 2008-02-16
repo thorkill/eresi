@@ -4,7 +4,7 @@
  * Started on  Tue Feb 26 22:07:58 2002 jfv
  *
  *
- * $Id: ctors.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: ctors.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
 */
 #include "libstderesi.h"
@@ -31,21 +31,21 @@ int		cmd_ctors()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ctors = elfsh_get_ctors(world.curjob->current, &size);
+  ctors = elfsh_get_ctors(world.curjob->curfile, &size);
   if (ctors == NULL)
     RET(-1);
   FIRSTREGX(tmp);
   snprintf(logbuf, BUFSIZ - 1,
 	   " [Constructors array .::. CTORS]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
   off[0] = 0;
 
   for (index = 0; index < size; index++)
     {
 
-      name = elfsh_reverse_symbol(world.curjob->current, ctors[index], &offset);
-      dname = elfsh_reverse_dynsymbol(world.curjob->current, ctors[index], &doffset);
+      name = elfsh_reverse_symbol(world.curjob->curfile, ctors[index], &offset);
+      dname = elfsh_reverse_dynsymbol(world.curjob->curfile, ctors[index], &doffset);
       if (dname && doffset < offset)
 	{
 	  name = dname;

@@ -1,7 +1,7 @@
 /**
  * @file libasm-i396.h
  * @brief Contains structures,prototypes and defines/enum related to ia32.
- * $Id: libasm-i386.h,v 1.13 2007-10-14 00:01:41 heroine Exp $
+ * $Id: libasm-i386.h,v 1.14 2008-02-16 12:32:26 thor Exp $
  */
 
 #ifndef LIBASM_I386_H_
@@ -78,7 +78,7 @@ struct s_asm_proc_i386 {
  * Enum of the intel available prefixes.
  */ 
 
-enum
+enum e_ia32_prefix
   {
     ASM_PREFIX_REP	 =	1,	/*!< rep prefix	*/
     ASM_PREFIX_REPNE	 =      2,	/*!< repne prefix	*/
@@ -95,15 +95,16 @@ enum
     ASM_PREFIX_MASK	=	60,
 
     ASM_PREFIX_LOCK	=	64,
-    ASM_PREFIX_OPSIZE	= 128,
-    ASM_PREFIX_ADDSIZE	= 256,
-  } e_ia32_prefix;
+    ASM_PREFIX_OPSIZE	=	128,
+    ASM_PREFIX_ADDSIZE	=	256,
+    ASM_PREFIX_FWAIT	=	512,
+  };
 
 /**
  * Control register bit flags
  *
  */
-enum
+enum e_ia32_flags
   {
     ASM_FLAG_CF = 1 << 0,	/*!< carry flag	*/
     ASM_FLAG_PF = 1 << 2,	/*!< parity flag	*/
@@ -123,14 +124,14 @@ enum
     ASM_FLAG_VIF = 1 << 19,
     ASM_FLAG_VIP = 1 << 20,
     ASM_FLAG_ID = 1 << 21
-  } e_ia32_flags;
+  };
 
 
 /**
  * Content of the struct s_operand type field
  */
 
-enum {
+enum e_asm_operand_type {
   /* no operand				
    */
   ASM_OTYPE_NONE,	
@@ -247,14 +248,14 @@ enum {
   ASM_OTYPE_ST_6,
   ASM_OTYPE_ST_7,
   ASM_OTYPE_NUM
-} e_asm_operand_type;
+};
 
 /**
  * Content of the struct s_operand size field
  *
  */
 
-enum {
+enum e_asm_operand_size {
   ASM_OSIZE_NONE,
   ASM_OSIZE_BYTE,
   ASM_OSIZE_WORD,
@@ -266,13 +267,13 @@ enum {
   ASM_OSIZE_POINTER,
   ASM_OSIZE_ADDRESS,
   ASM_OSIZE_6BYTES
-} e_asm_operand_size;
+};
 
 
 /**
  * Currently unsupported.
  */
-enum {
+enum e_asm_enc {
   ASM_ENC_NONE,
   ASM_ENC_ADDRESS,
   ASM_ENC_CONTROL,
@@ -302,7 +303,7 @@ enum {
   ASM_ENC_REG5,
   ASM_ENC_REG6,
   ASM_ENC_REG7
-} e_asm_enc;
+};
 
 #define ASM_ENC_ANY	(  ASM_ENC_ADDRESS | ASM_ENC_CONTROL | ASM_ENC_DEBUG | \
   ASM_ENC_ENCODED | ASM_ENC_FLAGS | ASM_ENC_GENERAL | ASM_ENC_IMMEDIATE | \
@@ -312,7 +313,7 @@ enum {
   ASM_ENC_REG0 | ASM_ENC_REG1 | ASM_ENC_REG2 | ASM_ENC_REG3 | ASM_ENC_REG4 | \
   ASM_ENC_REG5 | ASM_ENC_REG6 | ASM_ENC_REG7)
 
-enum {
+enum e_asm_size {
   ASM_SIZE_BYTE,
   ASM_SIZE_WORD,
   ASM_SIZE_DWORD,
@@ -321,7 +322,7 @@ enum {
   ASM_SIZE_CWORD,
   ASM_SIZE_VECTOR,
   ASM_SIZE_30BITS
-} e_asm_size;
+};
 
 #define ASM_SIZE_ANY	(ASM_SIZE_BYTE | ASM_SIZE_WORD | ASM_SIZE_DWORD |\
  ASM_SIZE_QWORD | ASM_SIZE_CWORD | ASM_SIZE_VECTOR)
@@ -352,7 +353,7 @@ enum {
  * 8 bits registers set.
  */
 
-enum {
+enum e_asm_reg8 {
   ASM_REG_AL,	/* 000	*/
   ASM_REG_CL,	/* 001	*/
   ASM_REG_DL,	/* 010	*/
@@ -361,13 +362,13 @@ enum {
   ASM_REG_CH,	/* 101	*/
   ASM_REG_DH,	/* 110	*/
   ASM_REG_BH	/* 111	*/
-} e_asm_reg8;
+};
 
 /**
  * 16 bits registers set.
  */
 
-enum {
+enum e_asm_reg16 {
   ASM_REG_AX,	/* 000	*/
   ASM_REG_CX,	/* 001	*/
   ASM_REG_DX,	/* 010	*/
@@ -376,7 +377,7 @@ enum {
   ASM_REG_BP,	/* 101	*/
   ASM_REG_SI,	/* 110	*/
   ASM_REG_DI	/* 111	*/
-} e_asm_reg16;
+};
 
 /**
  * @brief 32 bits registers set.
@@ -391,13 +392,13 @@ enum e_regset_r32 {
   ASM_REG_EBP,	/* 101	*/
   ASM_REG_ESI,	/* 110	*/
   ASM_REG_EDI	/* 111	*/
- } e_asm_reg32;
+ };
 
 /**
  * @brief MM registers set.
  */
 
-enum {
+enum e_asm_regmm {
   ASM_REG_MM0,	/* 110	*/
   ASM_REG_MM1,	/* 110	*/
   ASM_REG_MM2,	/* 110	*/
@@ -405,12 +406,12 @@ enum {
   ASM_REG_MM4,	/* 110	*/
   ASM_REG_MM6,	/* 110	*/
   ASM_REG_MM7	/* 110	*/
-} e_asm_regmm;
+};
 
 /**
  * @brief XMMS registers set.
  */
-enum {
+enum e_asm_regxmm {
   ASM_REG_XMM0,	/* 110	*/
   ASM_REG_XMM1,	/* 110	*/
   ASM_REG_XMM2,	/* 110	*/
@@ -419,13 +420,13 @@ enum {
   ASM_REG_XMM5,	/* 110	*/
   ASM_REG_XMM6,	/* 110	*/
   ASM_REG_XMM7	/* 110	*/
-} e_asm_regxmm;
+};
 
 /**
  * @brief Segment registers set.
  */
 
-enum {
+enum e_asm_sreg {
   ASM_REG_ES,	/* 000	*/
   ASM_REG_CS,	/* 001	*/
   ASM_REG_SS,	/* 010	*/
@@ -435,13 +436,13 @@ enum {
   ASM_REG_SREGRES1,
   ASM_REG_SREGRES2
 
-} e_asm_sreg;
+};
 
 /**
  * @brief Control registers set.
  */
 
-enum {
+enum e_asm_creg {
   ASM_REG_CR0,	/* 000	*/
   ASM_REG_CR1,	/* 001	*/
   ASM_REG_CR2,	/* 010	*/
@@ -450,13 +451,13 @@ enum {
   ASM_REG_CR5,	/* 101	*/
   ASM_REG_CR6,	/* 110	*/
   ASM_REG_CR7	/* 111	*/
-} e_asm_creg;
+};
 
 /**
  * @brief Debug registers set
  */
 
-enum {
+enum e_asm_dreg {
   ASM_REG_DR0,	/* 000	*/
   ASM_REG_DR1,	/* 001	*/
   ASM_REG_DR2,	/* 010	*/
@@ -465,7 +466,7 @@ enum {
   ASM_REG_DR5,	/* 101	*/
   ASM_REG_DR6,	/* 110	*/
   ASM_REG_DR7	/* 111	*/
-} e_asm_dreg;
+};
 
 /**
  * @brief Instruction list.
@@ -868,6 +869,7 @@ enum asm_instr {
   ASM_FMULP,		/*						*/
   ASM_FRSTOR,		/*						*/
   ASM_FSAVE,		/*						*/
+  ASM_FNSAVE,		/*						*/
   ASM_FSTP,		/* Function STore real and Pop - 8087		*/
   ASM_FSUB,		/*						*/
   ASM_FSUBR,		/*						*/
@@ -925,8 +927,7 @@ enum asm_instr {
    * keep this in last position unless 
    * you know what you are doing 
    **/
-  ASM_BAD    
-
+  ASM_BAD
 };
 /*
  * specialisation asm_processor for i386

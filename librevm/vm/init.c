@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.36 2007-12-06 05:11:58 may Exp $
+ * $Id: init.c,v 1.37 2008-02-16 12:32:27 thor Exp $
  *
  */
 
@@ -60,7 +60,8 @@ int		revm_init()
 /** 
  * Setup ELFsh/e2dbg hash tables and structures 
  */
-int		revm_setup(int ac, char **av, char mode, char side)
+int		revm_setup(int ac, char **av, 
+			   char mode, char side)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -184,7 +185,6 @@ int		revm_config()
 
 
 
-
 /** 
  * Interface initialisation && loop entry point 
  */
@@ -203,7 +203,8 @@ int		revm_run(int ac, char **av)
   revm_output("[elfsh:main] started !\n");
 #endif
 
-  revm_completion_install(world.state.revm_mode, world.state.revm_side);
+  revm_completion_install(world.state.revm_mode, 
+			  world.state.revm_side);
   revm_flush();
   revm_prompt_log();
 

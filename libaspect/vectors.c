@@ -6,7 +6,7 @@
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: vectors.c,v 1.24 2007-11-28 07:56:08 may Exp $
+** $Id: vectors.c,v 1.25 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -16,9 +16,8 @@ hash_t	       *vector_hash = NULL;
 
 /**
  * @brief Retreive a vector from the hash table giving its name 
- *
- * @param name
- * @return 
+ * @param name Vector name
+ * @return Found vector, or NULL if unfound
  */
 vector_t*	aspect_vector_get(char *name)
 {
@@ -37,7 +36,6 @@ vector_t*	aspect_vector_get(char *name)
 
 /** 
  * @brief Retreive the hash table : useful when iterating over it 
- *
  * @return Return a pointer to the global hash table
  */
 hash_t*		aspect_vecthash_get()
@@ -48,10 +46,9 @@ hash_t*		aspect_vecthash_get()
 
 /** 
  * @brief Project each dimension and write the desired function pointer 
- *
- * @param vect
- * @param dim
- * @param fct
+ * @param vect Vector in which handlers are to be inserted
+ * @param dim Dimension arrays where handler is to be inserted
+ * @param fct Handler to be inserted (casted to unsigned long)
  */
 void		aspect_vectors_insert(vector_t	   *vect, 
 				      unsigned int *dim, 
@@ -75,10 +72,9 @@ void		aspect_vectors_insert(vector_t	   *vect,
 
 /**
  * @brief Project each dimension and get the requested function pointer 
- *
- * @param vect
- * @param dim
- * @return Return a function pointer
+ * @param vect Vector to be looked up
+ * @param dim DImension arrays where handler is to be selected
+ * @return Return Function pointer for selected handler
  */
 void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 {
@@ -98,11 +94,10 @@ void*			aspect_vectors_select(vector_t *vect, unsigned int *dim)
 
 
 /** 
- * @brief Project each dimension and get the requested data pointer 
- *
- * @param vect
- * @param dim
- * @return
+ * @brief Project each dimension and get the requested vector element pointer 
+ * @param vect Vector to be looked up
+ * @param dim Dimension arrays for vector element
+ * @return The element of the vector containing the requested handler
  */
 void		*aspect_vectors_selectptr(vector_t * vect, 
 					  unsigned int *dim)
@@ -126,13 +121,12 @@ void		*aspect_vectors_selectptr(vector_t * vect,
 
 
 /** 
- * @brief Allocate recursively the hook array
- *
- * @param tab
- * @param dims
- * @param depth
- * @param dimsz
- * return 
+ * @brief Allocate recursively the hook array for a vector (internal function)
+ * @param tab Vector hook array to be allocated
+ * @param dims Vector dimensions array
+ * @param depth Vector depth remaining to be allocated
+ * @param dimsz Number of dimensions in vector
+ * return 0 in success or -1 if error
  */
 static int	aspect_vectors_recalloc(unsigned long *tab, 
 					unsigned int *dims, 
@@ -176,7 +170,13 @@ static int	aspect_vectors_recalloc(unsigned long *tab,
 
 
 /** 
- * @brief Initialize recursively the hook array 
+ * @brief Initialize recursively the hook array in a vector (internal function)
+ * @param tab Vector hopl array to be initialized
+ * @param dims Dimension array for vector
+ * @param depth Vector depth remaining to be initialized
+ * @param dimsz Number of dimensions for vector
+ * @param defaultelem Default element for vector
+ * @return Always 0
  */
 static int	aspect_vectors_recinit(unsigned long *tab, 
 				       unsigned int *dims, 
@@ -205,14 +205,13 @@ static int	aspect_vectors_recinit(unsigned long *tab,
 
 /** 
  * @brief Register a new vector. A vector is an multidimentional array of hooks
- *
- * @param name
- * @param defaultfunc
- * @param dimensions 
- * @param strdims
- * @param dimsz
- * @param vectype
- *
+ * @param name Vector name to be registered
+ * @param defaultfunc Default handler for initializing all vector elements
+ * @param dimensions Dimension arrays for the vector
+ * @param strdims Dimension arrays for dimension description (to be printed)
+ * @param dimsz Number of dimensions
+ * @param vectype Type of elements inside this new vector
+ * @return 0 on success and -1 on error
  */
 int		aspect_register_vector(char		*name, 
 				       void		*defaultfunc,

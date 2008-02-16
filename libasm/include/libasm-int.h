@@ -1,6 +1,6 @@
 /**
  * @file libasm-int.h
- * $Id: libasm-int.h,v 1.7 2007-05-29 00:40:27 heroine Exp $
+ * $Id: libasm-int.h,v 1.8 2008-02-16 12:32:26 thor Exp $
  * 
  * This file contains the forward declarations of i386 instruction
  * handlers and some internal functions prototypes.
@@ -33,10 +33,10 @@ typedef struct s_sidbyte {
  * 
  */
 
-enum {
+enum e_asm_proc_mode {
   INTEL_REAL,
   INTEL_PROT
-} e_asm_proc_mode;
+};
 
 
 int		asm_int_pow2(int);

@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 12 00:07:06 2003 jfv
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
 **
-** $Id: obj.c,v 1.10 2007-11-28 08:18:17 may Exp $
+** $Id: obj.c,v 1.11 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,8 @@
 
 /**
  * Open the file 'name' and returns the elfshobj_t 
+ * @param name
+ * @return
  */
 elfshobj_t		*elfsh_load_obj(char *name)
 {
@@ -22,9 +24,7 @@ elfshobj_t		*elfsh_load_obj(char *name)
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
-
   file->name = strdup(name);
- 
 
   /* Get the file size on disk */
   if (0 != fstat(file->fd,&file->fstat))
@@ -36,6 +36,7 @@ elfshobj_t		*elfsh_load_obj(char *name)
   if (file->hdr == NULL || file->name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get ELF header", NULL);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
 

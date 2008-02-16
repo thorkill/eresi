@@ -7,7 +7,7 @@
 ** Skeleton cut & pasted from the sparc64 backend
 ** 
 **
-** $Id: mips64.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: mips64.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -15,6 +15,11 @@
 
 /**
  * Static hooking for Mips64 
+ * @param null
+ * @param snull
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_cflow_mips64(elfshobj_t   *null,
 			   char		*snull,
@@ -29,6 +34,10 @@ int	elfsh_cflow_mips64(elfshobj_t   *null,
 
 /**
  * PLT hijacking on MIPS64 
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_mips64(elfshobj_t *file, 
 					elfsh_Sym *symbol,
@@ -41,6 +50,10 @@ int		elfsh_hijack_plt_mips64(elfshobj_t *file,
 
 /**
  * ALTPLT hijacking on MIPS64 
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_altplt_mips64(elfshobj_t *file, 
 					elfsh_Sym *symbol,
@@ -55,6 +68,12 @@ int		elfsh_hijack_altplt_mips64(elfshobj_t *file,
 
 /**
  * Perform relocation on entry for MIPS64 architecture 
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
 int       elfsh_relocate_mips64(elfshsect_t       *new,
 				elfsh_Rel         *cur,

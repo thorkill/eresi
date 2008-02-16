@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
-** $Id: librevm-color.h,v 1.6 2007-11-29 14:01:56 may Exp $
+** $Id: librevm-color.h,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 
@@ -77,7 +77,7 @@ char 		*revm_colorfilename(char *text);
 char 		*revm_coloradv(char *ty, char *p, char *te);
 char		*revm_colorinstr_fmt(char* p, char *t);
 char            *revm_coloraddress(char *p, elfsh_Addr a);
-char            *revm_colornumber(char *p, u_int n);
+char            *revm_colornumber(char *p, elfsh_Off n);
 char            *revm_colorstr_fmt(char *p, char *t);
 char            *revm_colorfieldstr_fmt(char *p, char *t);
 char            *revm_colortypestr_fmt(char *p, char *t);

@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.13 2007-10-14 00:01:41 heroine Exp $
+** $Id: libasm-sparc.h,v 1.14 2008-02-16 12:32:26 thor Exp $
 **
 */
 
@@ -215,9 +215,10 @@ struct s_asm_ins_sparc {
   asm_operand	op3;
 };
 
-/* SPARC "flags" (ie. condition codes) */
-
-enum {
+/**
+ * SPARC "flags" (ie. condition codes) 
+ */
+enum e_sparc_flags {
   /* Flags inside the integer condition codes (icc, xcc) */
   ASM_SP_FLAG_C = 1 << 0, // Carry
   ASM_SP_FLAG_V = 1 << 1, // oVerflow
@@ -228,7 +229,7 @@ enum {
   ASM_SP_FLAG_FCC1 = 1 << 5,
   ASM_SP_FLAG_FCC2 = 1 << 6,
   ASM_SP_FLAG_FCC3 = 1 << 7
-} e_sparc_flags;
+};
 
 
 struct s_asm_proc_sparc {
@@ -250,12 +251,13 @@ struct s_asm_proc_sparc {
   int *op3_table;
 };
 
-enum {
+
+enum e_sparc_gregisters {
   ASM_REG_R0,
   ASM_REG_R1
-} e_sparc_gregisters;
+} ;
 
-enum {
+enum e_sparc_sregisters {
   ASM_REG_G0,
   ASM_REG_G1,
   ASM_REG_G2,
@@ -288,9 +290,9 @@ enum {
   ASM_REG_I5,
   ASM_REG_I6,
   ASM_REG_I7
-} e_sparc_sregisters;
+} ;
 
-enum {
+enum e_sparc_state_registers {
   ASM_SREG_Y,
   ASM_SREG_BAD,
   ASM_SREG_CCR,
@@ -299,9 +301,9 @@ enum {
   ASM_SREG_PC,
   ASM_SREG_FPRS
   /* Values from 7 to 31 are either unused or implementation-specific */
-} e_sparc_state_registers;
+};
 
-enum {
+enum e_sparc_privileged_registers {
   ASM_PREG_TPC,
   ASM_PREG_TNPC,
   ASM_PREG_TSTATE,
@@ -334,9 +336,9 @@ enum {
   ASM_PREG_BAD29,
   ASM_PREG_BAD30,
   ASM_PREG_VER
-} e_sparc_privileged_registers;
+};
 
-enum {
+enum e_sparc_condition_codes {
   ASM_SP_FCC0,
   ASM_SP_FCC1,
   ASM_SP_FCC2,
@@ -344,22 +346,20 @@ enum {
   ASM_SP_ICC,
   ASM_SP_BADCC, /* 5 and 7 are reserved */
   ASM_SP_XCC  
-} e_sparc_condition_codes;
+};
 
 /**
  * Instruction family, depending on op field
  */
-
-enum {
+enum e_sparc_opcode {
   ASM_SPARC_OP0_BRANCH,
   ASM_SPARC_OP1_CALL,
   ASM_SPARC_OP2_FORMAT3,
   ASM_SPARC_OP3_FORMAT3
-} e_sparc_opcode;
-
+};
 
 /* Possible values for SPARC operands' content attribute */
-enum {
+enum e_sparc_operand {
   ASM_SP_OTYPE_REGISTER,
   ASM_SP_OTYPE_IMMEDIATE,
   ASM_SP_OTYPE_DISPLACEMENT,
@@ -375,13 +375,13 @@ enum {
   ASM_SP_OTYPE_NUM /* This element must be the last in the enum */
 };
 
+
 /***
  * Instruction list
  * 
  * Last instruction must be ASM_SP_BAD
  */
-
-enum {
+enum e_sparc_instr {
   ASM_SP_,
   
   ASM_SP_ADD, /* ADD */
@@ -760,7 +760,7 @@ enum {
   ASM_SP_MOV,
     
   ASM_SP_BAD
-} e_sparc_instr;
+};
 
 extern char *sparc_instr_list[ASM_SP_BAD + 1];
 extern int sparc_bcc_list[16];

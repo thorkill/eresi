@@ -6,7 +6,7 @@
 ** Started     Nov 22 01:26:01 2003 jfv
 **
 **
-** $Id: insert.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: insert.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -80,7 +80,7 @@ int		cmd_insert()
       size = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
     }
   else
-    size = elfsh_get_pagesize(world.curjob->current); 
+    size = elfsh_get_pagesize(world.curjob->curfile); 
 
   /* Lookup object alignment (5th optional parameter) */
   if (param4)
@@ -99,7 +99,7 @@ int		cmd_insert()
       if (type == ELFSH_UNKNOWN_INJECTION)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unknown injection type", -1);
-      sct = elfsh_insert_section(world.curjob->current, name, 
+      sct = elfsh_insert_section(world.curjob->curfile, name, 
 				 NULL, type, size, modulo);
       if (!sct)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -117,12 +117,12 @@ int		cmd_insert()
 			  "Invalid symbol value", -1);
       obj = expr->value;
       val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-      if (!elfsh_get_symtab(world.curjob->current, NULL))
+      if (!elfsh_get_symtab(world.curjob->curfile, NULL))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Cannot retreive symbol table", -1);
 
       sym = elfsh_create_symbol(val, size, 0, 0, 0, 0);
-      if (elfsh_insert_symbol(world.curjob->current->secthash[ELFSH_SECTION_SYMTAB],
+      if (elfsh_insert_symbol(world.curjob->curfile->secthash[ELFSH_SECTION_SYMTAB],
 			      &sym, name) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Cannot insert symbol", -1);
@@ -147,11 +147,11 @@ int		cmd_insert()
       phdr = elfsh_create_phdr(ptype, val, size, 0);
       if (!strcmp(param0, "phdr"))
 	{
-	  if (NULL == elfsh_insert_phdr(world.curjob->current, &phdr))
+	  if (NULL == elfsh_insert_phdr(world.curjob->curfile, &phdr))
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			      "Unable to insert new PHDR", -1);
 	}
-      else if (NULL == elfsh_insert_runtime_phdr(world.curjob->current, &phdr))
+      else if (NULL == elfsh_insert_runtime_phdr(world.curjob->curfile, &phdr))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to insert new runtime PHDR", -1);
     }

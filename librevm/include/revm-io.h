@@ -3,17 +3,19 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 jfv
-** $Id: revm-io.h,v 1.55 2007-12-06 20:59:11 may Exp $
+** $Id: revm-io.h,v 1.56 2008-02-16 12:32:27 thor Exp $
 */
 #ifndef __REVM_IO_H_
  #define __REVM_IO_H_
 
-#include <regex.h>
-#include <sys/types.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifndef __KERNEL__
+ #include <regex.h>
+ #include <sys/types.h>
+ #include <sys/select.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+#endif
 
 #include "librevm-color.h"
 
@@ -30,12 +32,6 @@
 /* DUMP related defines */
 #define REVM_DUMP_CMD	1
 #define REVM_DUMP_MSG	2
-
-extern u_char quit_msg_setup;
-
-char	quit_msg[512];
-void	(*prompt_token_setup)(char *name, u_int size);
-char	prompt_token[512];
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
@@ -177,7 +173,6 @@ typedef struct	s_io
  */
 typedef struct       s_socket
 {
-  struct sockaddr_in addr;        /*! sockaddr_in struct */
   int                socket;      /*! The socket */
   char               **recvd;     /*! List of received buffer */
   
@@ -188,6 +183,11 @@ typedef struct       s_socket
 #define YES 1
 #define NO  0
   int                ready_f;     /*! Have we received the trailing \n ? */
+
+#ifndef __KERNEL__
+  struct sockaddr_in addr;        /*! sockaddr_in struct */
+#endif
+
 }                    revmsock_t;
 
 
@@ -261,13 +261,14 @@ typedef struct        s_state
   u_int               lastid;         /*! Last Object ID */
 }		       revmstate_t;
 
+/* Extern variables */
 extern int		 elfsh_net_client_count;
 
 
 /* Parsing, Scanning, I/O functions */
 char            *revm_getln();
 int		revm_initio();
-char            **revm_input(int *argc);
+char            **revm_input(int *argc, char *mayhavealine);
 char		*revm_stdinput();
 char		*revm_fifoinput();
 int		revm_flush();

@@ -1,7 +1,7 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: gdt.c,v 1.2 2007-09-23 17:53:35 pouik Exp $
+** $Id: gdt.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libkernsh.h"
@@ -98,7 +98,7 @@ int kernsh_gdt_linux(list_t *lgdt)
 
 	  
 	  /* Add the segment in the list */
-	  list_add(lgdt, key, (void *) sgdt);
+	  elist_add(lgdt, key, (void *) sgdt);
 	}
     }
 

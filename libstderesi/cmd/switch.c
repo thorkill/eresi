@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sat Jan 25 11:20:49 2003 jfv
 **
-** $Id: switch.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: switch.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -35,7 +35,7 @@ int             cmd_doswitch()
     }
   else
     {
-      cur = world.curjob->current;
+      cur = world.curjob->curfile;
 
 #if defined(USE_MJOLLNIR)
       mjr_set_current_context(&world.mjr_session, cur->name);

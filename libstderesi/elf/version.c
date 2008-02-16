@@ -5,7 +5,7 @@
  * 
  * Started on  Sun Sep 25 15:20:18 2005 mxatone
  *
- * $Id: version.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: version.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -72,7 +72,7 @@ int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
 
   dauxnames[0] = dauxnames[1] = dauxnames[2] = NULL;
 
-  elfsh_get_verdauxnamelist(world.curjob->current, 
+  elfsh_get_verdauxnamelist(world.curjob->curfile, 
 			    pdef, dauxnames, 2);
 
   vtype = (auxid <= STB_GLOBAL ? ELFSH_VERTYPE_NONE : ELFSH_VERTYPE_DEF);
@@ -132,9 +132,9 @@ int			revm_version_pneed(hashneed_t *pneed, u_int auxid,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
-  file = elfsh_get_verneedfile(world.curjob->current, 
+  file = elfsh_get_verneedfile(world.curjob->curfile, 
 			       pneed->need);
-  auxname = elfsh_get_vernauxname(world.curjob->current, 
+  auxname = elfsh_get_vernauxname(world.curjob->curfile, 
 				  pneed->aux);
   svtype = (char*) elfsh_verentry_type[ELFSH_VERTYPE_NEED].desc;
 
@@ -208,13 +208,13 @@ int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table,
       type = (char *) (typenum >= ELFSH_SYMTYPE_MAX ? 
 		       revm_build_unknown(type_unk, "type", typenum) : 
 		       elfsh_sym_type[typenum].desc);
-      name = elfsh_get_dynsymbol_name(world.curjob->current, dsym_table + index);
+      name = elfsh_get_dynsymbol_name(world.curjob->curfile, dsym_table + index);
 
-      dsym_sect = elfsh_get_parent_section(world.curjob->current, 
+      dsym_sect = elfsh_get_parent_section(world.curjob->curfile, 
 				      dsym_table[index].st_value, 
 				      NULL);
       if (dsym_sect == NULL && dsym_table[index].st_shndx)
-	dsym_sect = elfsh_get_section_by_index(world.curjob->current, 
+	dsym_sect = elfsh_get_section_by_index(world.curjob->curfile, 
 					  dsym_table[index].st_shndx,
 					  NULL, NULL);
 
@@ -257,7 +257,7 @@ int 			cmd_version()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Load dynsym table */
-  dynsym = elfsh_get_dynsymtab(world.curjob->current, &dsymsize);
+  dynsym = elfsh_get_dynsymtab(world.curjob->curfile, &dsymsize);
   if (dynsym == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to load dynsym section", -1);
@@ -266,7 +266,7 @@ int 			cmd_version()
   hash_init(&t_def , "versions_defs", dsymsize, ASPECT_TYPE_UNKNOW);
 
   /* Load need table */
-  need = elfsh_get_verneedtab(world.curjob->current, &needsize);
+  need = elfsh_get_verneedtab(world.curjob->curfile, &needsize);
   if (need == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to load version need section", -1);
@@ -276,7 +276,7 @@ int 			cmd_version()
 		      "Unable to load version need section", -1);
 
   /* Load def table (we wanna know if a sym is for def or need) */
-  def = elfsh_get_verdeftab(world.curjob->current, &defsize);
+  def = elfsh_get_verdeftab(world.curjob->curfile, &defsize);
   if (def != NULL)
     {
       if (elfsh_load_deftable(&t_def, def, defsize*sizeof(elfsh_Verdef)) != 0)
@@ -285,7 +285,7 @@ int 			cmd_version()
     }
 
   /* Load sym table */
-  sect = elfsh_get_versymtab_by_range(world.curjob->current, 0, &symsize);
+  sect = elfsh_get_versymtab_by_range(world.curjob->curfile, 0, &symsize);
 
   if (sect == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -293,14 +293,14 @@ int 			cmd_version()
 
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION SYMBOL TABLE]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
 
   FIRSTREGX(tmp);
 
   do {
     snprintf(logbuf, BUFSIZ - 1, " {Section %s}\n", 
-	     elfsh_get_section_name(world.curjob->current, sect));
+	     elfsh_get_section_name(world.curjob->curfile, sect));
     revm_output(logbuf);    
 
     if (revm_version_print(sect->data, dynsym, symsize, &t_need, &t_def, tmp) < 0)
@@ -308,7 +308,7 @@ int 			cmd_version()
 
     revm_output("\n");
 
-    sect = elfsh_get_versymtab_by_range(world.curjob->current, ++range, &symsize);
+    sect = elfsh_get_versymtab_by_range(world.curjob->curfile, ++range, &symsize);
   } while (sect != NULL);
 
   /* free need table */
@@ -354,12 +354,12 @@ int 			cmd_verneed()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Load need table */
-  data = elfsh_get_verneedtab(world.curjob->current, &size);
+  data = elfsh_get_verneedtab(world.curjob->curfile, &size);
   if (data == NULL)
   	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load Version Need table", -1);
 
-  sect = elfsh_get_section_by_type(world.curjob->current, SHT_GNU_verneed, 0, 
+  sect = elfsh_get_section_by_type(world.curjob->curfile, SHT_GNU_verneed, 0, 
 				   NULL, &strindex, &nbr);
 
   if (sect == NULL)
@@ -369,7 +369,7 @@ int 			cmd_verneed()
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION NEED TABLE]\n [Object %s]\n"
 	   " [Section %s]\n\n", 
-	   world.curjob->current->name, sect->name);
+	   world.curjob->curfile->name, sect->name);
   
   revm_output(logbuf);
 
@@ -379,7 +379,7 @@ int 			cmd_verneed()
     {
       table = data + offset;
 
-      file = elfsh_get_verneedfile(world.curjob->current, 
+      file = elfsh_get_verneedfile(world.curjob->curfile, 
 				   table);
 
       snprintf(logbuf, BUFSIZ - 1, 
@@ -408,7 +408,7 @@ int 			cmd_verneed()
 	{
 	  tableaux = data + auxset;
 
-	  auxname = elfsh_get_vernauxname(world.curjob->current, 
+	  auxname = elfsh_get_vernauxname(world.curjob->curfile, 
 					  tableaux);
 
 	  snprintf(logbuf, BUFSIZ - 1, 
@@ -462,12 +462,12 @@ int 			cmd_verdef()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  data = elfsh_get_verdeftab(world.curjob->current, &num);
+  data = elfsh_get_verdeftab(world.curjob->curfile, &num);
   if (data == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load Version Def table", -1);
 
-  sect = elfsh_get_section_by_type(world.curjob->current, SHT_GNU_verdef, 0, 
+  sect = elfsh_get_section_by_type(world.curjob->curfile, SHT_GNU_verdef, 0, 
 				   NULL, &strindex, &nbr);
 
   if (sect == NULL)
@@ -477,7 +477,7 @@ int 			cmd_verdef()
   snprintf(logbuf, BUFSIZ - 1,
 	   " [VERSION DEFINITION TABLE]\n [Object %s]\n"
 	   " [Section %s]\n\n", 
-	   world.curjob->current->name, sect->name);
+	   world.curjob->curfile->name, sect->name);
   
   revm_output(logbuf);
 
@@ -517,7 +517,7 @@ int 			cmd_verdef()
 	{
 	  tableaux = data + auxset;
 
-	  auxname = elfsh_get_verdauxname(world.curjob->current, tableaux);
+	  auxname = elfsh_get_verdauxname(world.curjob->curfile, tableaux);
 
 	  snprintf(logbuf, BUFSIZ - 1, 
 		   " \t %s%s %s%s\n", 

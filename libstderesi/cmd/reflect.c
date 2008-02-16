@@ -5,7 +5,7 @@
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **
-** $Id: reflect.c,v 1.2 2007-12-09 23:00:18 may Exp $
+** $Id: reflect.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 
@@ -25,7 +25,6 @@ int		cmd_reflect()
   aspectype_t	*curtype;
   void		*blocdata;
   int		fileoff;
-  revmexpr_t	*last;
   list_t	*instrlist;
   revmexpr_t	*expr;
   int		insnbr;
@@ -48,7 +47,7 @@ int		cmd_reflect()
   /* Init proc */			  
   if (!world.curjob->proc) 
     {
-      switch (machine = elfsh_get_arch(world.curjob->current->hdr))
+      switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
 	{
 	case EM_386:
 	  world.curjob->proc = &world.proc;
@@ -80,16 +79,16 @@ int		cmd_reflect()
 
   /* Load the data from the bloc */
   blocdata = alloca(curblock->size);
-  fileoff = elfsh_get_foffset_from_vaddr(world.curjob->current, curblock->vaddr);
-  if (elfsh_raw_read(world.curjob->current, fileoff, 
+  fileoff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, curblock->vaddr);
+  if (elfsh_raw_read(world.curjob->curfile, fileoff, 
 		     blocdata, curblock->size) != curblock->size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to read data from bloc", -1);
 
   /* Create the new list of instructions in expression form */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, instrlist, sizeof(list_t), -1);
-  snprintf(logbuf, sizeof(logbuf), "%08X", curblock->vaddr);
-  list_init(instrlist, strdup(logbuf), ASPECT_TYPE_EXPR);
+  snprintf(logbuf, sizeof(logbuf), AFMT, curblock->vaddr);
+  elist_init(instrlist, strdup(logbuf), ASPECT_TYPE_EXPR);
 
   /* Reflection all instructions of the basic bloc in the list */
   for (insnbr = off = 0; off < curblock->size; off += ret, insnbr++)
@@ -101,28 +100,28 @@ int		cmd_reflect()
 			   curblock->size - off + 10, world.curjob->proc);
       if (ret < 0)
 	{
-	  list_destroy(instrlist);
+	  elist_destroy(instrlist);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to fetch code for basic bloc", -1);
 	}
 
       /* Also add the instruction to the current reflected list for this block */
       instrcontainer = container_create(curtype->type, cur, NULL, NULL);
-      snprintf(logbuf, sizeof (logbuf), "$instr-0x%08X", curblock->vaddr + off); 
+      snprintf(logbuf, sizeof (logbuf), "$instr-"XFMT, curblock->vaddr + off); 
       expr = revm_inform_type_addr(curtype->name, strdup(logbuf),
 				   (elfsh_Addr) instrcontainer, NULL, 0, 1);
-      list_add(instrlist, strdup(logbuf), expr);
+      elist_add(instrlist, strdup(logbuf), expr);
     }
 
   /* Inverse the list and add it */
-  instrlist = list_reverse(instrlist);
+  instrlist = elist_reverse(instrlist);
   hash_add(&instrlists_hash, strdup(logbuf), instrlist);
 
   /* Printing message if we are not in quiet mode */
   if (!world.state.revm_quiet)
     {
       snprintf(logbuf, sizeof(logbuf), 
-	       " [*] Basic bloc at address %08X reflected succesfully (%u instrs) \n\n", 
+	       " [*] Basic bloc at address " AFMT " reflected succesfully (%u instrs) \n\n", 
 	       curblock->vaddr, insnbr);
       revm_output(logbuf);
     }

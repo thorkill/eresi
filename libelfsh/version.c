@@ -1,23 +1,23 @@
 /**
  * @file version.c
-** version.c for elfsh
-** 
-** Started     Nov 25 2003 jfv
-** Last update Nov 25 2003 jfv
-** Last update Sep 27 2005 mxatone
-** 
-**
-** $Id: version.c,v 1.10 2007-07-31 03:28:47 may Exp $
-**
-*/
+ * version.c for elfsh
+ * 
+ * Started     Nov 25 2003 jfv
+ * Last update Nov 25 2003 jfv
+ * Last update Sep 27 2005 mxatone
+ * 
+ *
+ * $Id: version.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 static int version_parent = -1;
 static int version_need = -1;
 
 /**
- * Check an equivalence between a version def entry and a version need entry on 
- * two different files
+ * Check an equivalence between a version def entry and a version need 
+ * entry on two different files
  * @param file file for version need section
  * @param deffile file for version def section
  * @param need version need entry
@@ -67,7 +67,7 @@ elfsh_Vernaux		*elfsh_check_defneed_eq(elfshobj_t *file, elfshobj_t *deffile,
 
 	      /* Check the name */
 	      if (!strcmp(needname, defname))
-		  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, needaux);
+		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, needaux);
 
 	      if (defaux->vda_next == 0)
 		break;

@@ -4,7 +4,7 @@
 ** Started on  Tue Feb 18 04:15:42 2003 jfv
 ** Last update Mon Feb 23 16:23:43 2004 jfv
 **
-** $Id: libelfsh-compat.h,v 1.11 2007-07-31 23:30:35 may Exp $
+** $Id: libelfsh-compat.h,v 1.12 2008-02-16 12:32:27 thor Exp $
 **
 */
 
@@ -46,10 +46,14 @@ typedef char uint8;
 #endif
 
 /* Portability Stuffs */
+#ifdef __KERNEL__
+ #include "libelfsh-versions.h"
+#else
 #if defined(__OpenBSD__) || defined(__NetBSD__)
  #include <sys/exec_elf.h>
 #elif defined(__linux__) || defined(__FreeBSD__) || defined(sun)
  #include <elf.h>
+#endif
 #endif
 
 
@@ -69,6 +73,9 @@ typedef char uint8;
  #define EM_PARISC    15
 #endif
 
+#ifndef STT_NUM
+ #define STT_NUM	7
+#endif
 
 /* ELFOSABI index in e_ident[] */
 #ifndef EI_OSABI
@@ -134,7 +141,6 @@ typedef Elf64_Verdaux   elfsh_Verdaux;
 
 typedef int64_t		elfsh_SAddr;
 
-
 #define ELFSH_ST_BIND		ELF64_ST_BIND		
 #define ELFSH_ST_TYPE		ELF64_ST_TYPE
 #define ELFSH_ST_INFO		ELF64_ST_INFO
@@ -146,18 +152,25 @@ typedef int64_t		elfsh_SAddr;
 #define ELFSH_M_SIZE		ELF64_M_SIZE
 #define ELFSH_M_INFO		ELF64_M_INFO
 
-#define	XFMT		"0x%016llX"
-#define	AFMT		"%016llX"
-#define	UFMT		"%016llu"
-#define DFMT		"%016lld"
-#define RDFMT		"%lld"
-
-#if !defined(__mips64)
- #define	swaplong(x)	swap64(x)
-#else
- #define	swaplong(x)	swap32(x)
+#if __WORDSIZE == 32
+ #define	XFMT		"0x%016llX"
+ #define	AFMT		"%016llX"
+ #define	UFMT		"%016llu"
+ #define        DFMT		"%016lld"
+ #define        RDFMT		"%lld"
+#elif __WORDSIZE == 64
+ #define	XFMT		"0x%016lX"
+ #define	AFMT		"%016lX"
+ #define	UFMT		"%016lu"
+ #define        DFMT		"%016ld"
+ #define        RDFMT		"%ld"
 #endif
 
+#if defined(__mips64)
+ #define	swaplong(x)	swap32(x)
+#else
+  #define	swaplong(x)	swap64(x)
+#endif
 
 /* 32 bits support */
 #elif defined(ERESI32)
@@ -199,7 +212,8 @@ typedef int32_t		elfsh_SAddr;
 #define UFMT		"%08u"
 #define DFMT		"%08d"
 #define	RDFMT		"%d"
-#define swaplong(x)	swap32(x)
+
+ #define swaplong(x)	swap32(x)
 
 #endif	/* BITS */
 

@@ -1,17 +1,17 @@
 /**
  * @file sparc64.c
-** sparc64.c for libelfsh
-** 
-** Started on  Sat Jan 15 14:25:37 2005 jfv
-** Last update Sat Jan 15 14:26:39 2005 jfv
-** 
-** Cut & Pasted from the sparc32 backend
-** 64 bits backend work-in-progress
-** 
-**
-** $Id: sparc64.c,v 1.6 2007-08-03 11:50:59 heroine Exp $
-**
-*/
+ * sparc64.c for libelfsh
+ * 
+ * Started on  Sat Jan 15 14:25:37 2005 jfv
+ * Last update Sat Jan 15 14:26:39 2005 jfv
+ * 
+ * Cut & Pasted from the sparc32 backend
+ * 64 bits backend work-in-progress
+ * 
+ *
+ * $Id: sparc64.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 /*
@@ -21,6 +21,11 @@
 
 /**
  * @brief Static hooking for Sparc64 
+ * @param null
+ * @param snull
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_cflow_sparc64(elfshobj_t  *null,
 			    char	*snull,
@@ -33,7 +38,11 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
 }
 
 /**
- * @brief PLT hijacking on SPARC64 
+ * @brief PLT hijacking on SPARC64
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -91,6 +100,10 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
 
 /**
  * @brief hijack altplt on sparc64
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -153,8 +166,14 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
 }
 
 /**
- * @brief Perform relocation on entry for SPARC64 architecture
- * Shared relocation function with augmented SPARC32 
+ * @brief Perform relocation on entry for SPARC64 architecture.
+ * Shared relocation function with augmented SPARC32
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
 int       elfsh_relocate_sparc64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,

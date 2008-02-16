@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 26 04:07:33 2001 jfv
 ** 
 **
-** $Id: pht.c,v 1.6 2007-07-31 03:28:46 may Exp $
+** $Id: pht.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,8 @@
 
 /**
  * Check if segment is readable 
+ * @param p
+ * @return
  */
 int	elfsh_segment_is_readable(elfsh_Phdr *p)
 {
@@ -24,6 +26,8 @@ int	elfsh_segment_is_readable(elfsh_Phdr *p)
 
 /**
  * Check if segment is writable
+ * @param p
+ * @return
  */
 int	elfsh_segment_is_writable(elfsh_Phdr *p)
 {
@@ -33,8 +37,9 @@ int	elfsh_segment_is_writable(elfsh_Phdr *p)
 }
 /**
  * Check if segment is executable
+ * @param p
+ * @return
  */
-
 int	elfsh_segment_is_executable(elfsh_Phdr *p)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -44,6 +49,9 @@ int	elfsh_segment_is_executable(elfsh_Phdr *p)
 
 /**
  * Tiny write access functions for program headers 
+ * @param p
+ * @param flags
+ * @return
  */
 int	elfsh_set_segment_flags(elfsh_Phdr *p, elfsh_Addr flags)
 {
@@ -59,6 +67,8 @@ int	elfsh_set_segment_flags(elfsh_Phdr *p, elfsh_Addr flags)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Word	elfsh_get_segment_flags(elfsh_Phdr *p)
 {
@@ -72,6 +82,9 @@ elfsh_Word	elfsh_get_segment_flags(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param align
+ * @return
  */
 int	elfsh_set_segment_align(elfsh_Phdr *p, elfsh_Addr align)
 {
@@ -85,6 +98,8 @@ int	elfsh_set_segment_align(elfsh_Phdr *p, elfsh_Addr align)
 }
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Word	elfsh_get_segment_align(elfsh_Phdr *p)
 {
@@ -98,6 +113,9 @@ elfsh_Word	elfsh_get_segment_align(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param memsz
+ * @return
  */
 int	elfsh_set_segment_memsz(elfsh_Phdr *p, elfsh_Addr memsz)
 {
@@ -112,6 +130,8 @@ int	elfsh_set_segment_memsz(elfsh_Phdr *p, elfsh_Addr memsz)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Word	elfsh_get_segment_memsz(elfsh_Phdr *p)
 {
@@ -125,6 +145,9 @@ elfsh_Word	elfsh_get_segment_memsz(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param filesz
+ * @return
  */
 int	elfsh_set_segment_filesz(elfsh_Phdr *p, elfsh_Addr filesz)
 {
@@ -139,6 +162,8 @@ int	elfsh_set_segment_filesz(elfsh_Phdr *p, elfsh_Addr filesz)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Word	elfsh_get_segment_filesz(elfsh_Phdr *p)
 {
@@ -152,6 +177,9 @@ elfsh_Word	elfsh_get_segment_filesz(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param paddr
+ * @return
  */
 int	elfsh_set_segment_paddr(elfsh_Phdr *p, elfsh_Addr paddr)
 {
@@ -166,6 +194,8 @@ int	elfsh_set_segment_paddr(elfsh_Phdr *p, elfsh_Addr paddr)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Addr	elfsh_get_segment_paddr(elfsh_Phdr *p)
 {
@@ -179,6 +209,9 @@ elfsh_Addr	elfsh_get_segment_paddr(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param vaddr
+ * @return
  */
 int	elfsh_set_segment_vaddr(elfsh_Phdr *p, elfsh_Addr vaddr)
 {
@@ -193,6 +226,8 @@ int	elfsh_set_segment_vaddr(elfsh_Phdr *p, elfsh_Addr vaddr)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Addr	elfsh_get_segment_vaddr(elfsh_Phdr *p)
 {
@@ -206,6 +241,9 @@ elfsh_Addr	elfsh_get_segment_vaddr(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param type
+ * @return
  */
 int		elfsh_set_segment_type(elfsh_Phdr *p, elfsh_Addr type)
 {
@@ -220,6 +258,8 @@ int		elfsh_set_segment_type(elfsh_Phdr *p, elfsh_Addr type)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Word	elfsh_get_segment_type(elfsh_Phdr *p)
 {
@@ -233,6 +273,9 @@ elfsh_Word	elfsh_get_segment_type(elfsh_Phdr *p)
 
 /**
  * Documentation missing.
+ * @param p
+ * @param offset
+ * @return
  */
 int		elfsh_set_segment_offset(elfsh_Phdr *p, elfsh_Addr offset)
 {
@@ -247,6 +290,8 @@ int		elfsh_set_segment_offset(elfsh_Phdr *p, elfsh_Addr offset)
 
 /**
  * Documentation missing.
+ * @param p
+ * @return
  */
 elfsh_Off	elfsh_get_segment_offset(elfsh_Phdr *p)
 {
@@ -260,6 +305,10 @@ elfsh_Off	elfsh_get_segment_offset(elfsh_Phdr *p)
 
 /**
  * Retreive the 'range'th segment header of type 'type' 
+ * @param file
+ * @param type
+ * @param range
+ * @return
  */
 elfsh_Phdr	*elfsh_get_segment_by_type(elfshobj_t	*file, 
 					   int		type, 
@@ -294,6 +343,10 @@ elfsh_Phdr	*elfsh_get_segment_by_type(elfshobj_t	*file,
 
 /**
  * Change endianess of PHT 
+ * @param p
+ * @param byteorder
+ * @param sz
+ * @return
  */
 void		elfsh_endianize_pht(elfsh_Phdr *p, char byteorder, uint16_t sz)
 {
@@ -328,6 +381,8 @@ void		elfsh_endianize_pht(elfsh_Phdr *p, char byteorder, uint16_t sz)
 
 /**
  * Return an array of program (segment) header 
+ * @param file
+ * @return
  */
 int		elfsh_load_pht(elfshobj_t *file)
 {
@@ -364,6 +419,9 @@ int		elfsh_load_pht(elfshobj_t *file)
 
 /**
  * Find the parent segment for this section 
+ * @param file
+ * @param new
+ * @return
  */
 elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
 {
@@ -409,6 +467,9 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
 
 /**
  * Tell if the section belongs to the segment or not 
+ * @param new
+ * @param p
+ * @return
  */
 int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 {
@@ -432,6 +493,8 @@ int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 
 /**
  * Get the base virtual address for an object 
+ * @param file
+ * @return
  */
 elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
 {
@@ -461,6 +524,9 @@ elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
 
 /**
  * Return a ptr on the program header table 
+ * @param file
+ * @param num
+ * @return
  */
 void	*elfsh_get_pht(elfshobj_t *file, int *num)
 {
@@ -477,6 +543,9 @@ void	*elfsh_get_pht(elfshobj_t *file, int *num)
 
 /**
  * Return a entry giving its parent and its index 
+ * @param pht
+ * @param index
+ * @return
  */
 elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht, 
 					      elfsh_Addr index)
@@ -489,6 +558,11 @@ elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht,
 
 /**
  * Create a new PHT entry 
+ * @param t
+ * @param a
+ * @param z
+ * @param al
+ * @return
  */
 elfsh_Phdr	elfsh_create_phdr(elfsh_Word t, 
 				  elfsh_Addr a, 
@@ -511,6 +585,9 @@ elfsh_Phdr	elfsh_create_phdr(elfsh_Word t,
 /**
  * Insert a PHT entry ondisk
  * Should be OK if called in last from section injection routine 
+ * @param file
+ * @param h
+ * @return
  */
 elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
 {
@@ -612,6 +689,9 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
 
 /**
  * Remove a PHDR 
+ * @param current
+ * @param index
+ * @return
  */
 int		elfsh_remove_phdr(elfshobj_t *current, int index)
 {

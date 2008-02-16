@@ -6,11 +6,13 @@
  ** Started Dec 22 2006 02:57:03 jfv
  **
  **
- ** $Id: libaspect.h,v 1.39 2007-12-06 20:59:11 may Exp $
+ ** $Id: libaspect.h,v 1.40 2008-02-16 12:32:27 thor Exp $
  **
  */
 #if !defined(__ASPECT_H__)
  #define __ASPECT_H__ 1
+
+#ifndef __KERNEL__
 
 #include <unistd.h>
 #include <stdio.h>
@@ -29,10 +31,21 @@
  #include <dlfcn.h>
 #endif
 
+#endif /* __KERNEL__ */
+
 /* Endianess definitions */
 #if defined(__linux__) || defined (__BEOS__)
+
+#ifndef __KERNEL__
  #include <endian.h>
+#else
+ #define __LITTLE_ENDIAN 1234
+ #define __BIG_ENDIAN    4321
+ #define __PDP_ENDIAN    3412
+#endif
+
 #elif defined(__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__)
+
 #include <machine/endian.h>
  #define __LITTLE_ENDIAN _LITTLE_ENDIAN
  #define __BIG_ENDIAN    _BIG_ENDIAN
@@ -41,26 +54,34 @@
  #else
   #define __BYTE_ORDER    BYTE_ORDER
  #endif
+
 #elif defined(sun)
+
  #define __LITTLE_ENDIAN 1234
  #define __BIG_ENDIAN	 4321
+
 #if !defined(__i386)
  #define __BYTE_ORDER    __BIG_ENDIAN
 #else
  #define __BYTE_ORDER    __LITTLE_ENDIAN
 #endif
+
 #elif defined(HPUX)
+
  #include <arpa/nameser_compat.h>
  #undef ADD
  #define __LITTLE_ENDIAN LITTLE_ENDIAN
  #define __BIG_ENDIAN    BIG_ENDIAN
  #define __BYTE_ORDER    BYTE_ORDER
+
 #elif defined(IRIX)
+
  #include <standards.h>
  #include <sys/endian.h>
  #define __LITTLE_ENDIAN LITTLE_ENDIAN
  #define __BIG_ENDIAN    BIG_ENDIAN
  #define __BYTE_ORDER    BIG_ENDIAN
+
 #endif
 
 #ifndef swap32
@@ -82,18 +103,20 @@
 #ifndef swap64
 #define	swap64(x)						    \
 	((uint64_t)(						    \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x00000000000000ffU) << 56) | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x000000000000ff00U) << 40) | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x0000000000ff0000U) << 24) | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x00000000ff000000U) << 8)  | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x000000ff00000000U) >> 8)  | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x0000ff0000000000U) >> 24) | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0x00ff000000000000U) >> 40) | \
-	((uint64_t)((uint64_t)(x) & (uint64_t) 0xff00000000000000U) >> 56)))
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x00000000000000ffULL) << 56) | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x000000000000ff00ULL) << 40) | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x0000000000ff0000ULL) << 24) | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x00000000ff000000ULL) << 8)  | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x000000ff00000000ULL) >> 8)  | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x0000ff0000000000ULL) >> 24) | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0x00ff000000000000ULL) >> 40) | \
+	((uint64_t)(((uint64_t)x) & (uint64_t) 0xff00000000000000ULL) >> 56)))
 #endif
 
 /* Include this here since it contains an allocation too */
-#include "aproxy.h"
+#ifndef __KERNEL__
+ #include "aproxy.h"
+#endif
 #include "libaspect-hash.h"
 #include "libaspect-list.h"
 #include "libaspect-btree.h"
@@ -261,6 +284,7 @@ typedef struct	s_config_item
 typedef struct	s_aspectworld
 {
   hash_t	config_hash;		/*!< Configuration */
+  u_char	kernel_mode;		/*!< Kernel residence */
 
 #define		PROFILE_NONE	0
 #define		PROFILE_WARN    (1 << 0)
@@ -298,9 +322,15 @@ typedef struct	s_aspectworld
 /* Make it accessible from all files */
 extern aspectworld_t	aspectworld;
 
-
-/* Initialize the library */
+/* Low-level constructor-time related functions */
 int		aspect_init();
+void		aspect_called_ctors_inc();
+int		aspect_called_ctors_finished();
+void		e2dbg_presence_set();
+void		e2dbg_presence_reset();
+u_char		e2dbg_presence_get();
+u_char		e2dbg_kpresence_get();
+void		e2dbg_kpresence_set(u_char pres);
 
 /* Retreive pointer on the vector hash table */
 hash_t*		aspect_vecthash_get();
@@ -440,12 +470,5 @@ void		*config_get_data(char *name);
 void 		config_safemode_set();
 void		config_safemode_reset();
 int		config_safemode();
-
-/* Debugger / Constructors related functions */
-void		aspect_called_ctors_inc();
-int		aspect_called_ctors_finished();
-void		e2dbg_presence_set();
-void		e2dbg_presence_reset();
-u_char		e2dbg_presence_get();
 
 #endif

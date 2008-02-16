@@ -3,15 +3,16 @@
  *
  * Started on  Thu Apr  3 21:36:55 2003 jfv
  *
- * $Id: debug.c,v 1.8 2007-07-31 03:28:46 may Exp $
+ * $Id: debug.c,v 1.9 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"
 
-
-
 /**
  * Debug : print the section list 
+ * @param obj
+ * @param label
+ * @return
  */
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 {

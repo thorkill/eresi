@@ -4,7 +4,7 @@
  ** @brief Implement arithmetic operations
  **
  ** Started on  Sun Feb  9 22:43:34 2003 jfv
- ** $Id: atomic.c,v 1.3 2007-12-06 20:12:11 may Exp $
+ ** $Id: atomic.c,v 1.4 2008-02-16 12:32:27 thor Exp $
  */
 #include "libstderesi.h"
 
@@ -51,11 +51,6 @@ int			cmd_set()
   if (!e1)
     {
       e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-      if (e1 && e1->value && !e1->value->perm)
-	{
-	  revm_expr_destroy(e1->label);
-	  e1 = NULL;
-	}
       if (!e1)
 	{
 	  revm_expr_destroy(e2->label);
@@ -116,8 +111,11 @@ int			cmd_set()
     }
 
   /* Everything OK */
+  if (e1->value && !e1->value->perm)
+    revm_expr_destroy(e1->label);
   if (e2->value && !e2->value->perm)
     revm_expr_destroy(e2->label);
+
   if (!world.state.revm_quiet)
     revm_output(" [*] Expression set succesfully \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -227,7 +225,7 @@ int			cmd_test()
   /* Everything was OK */
   if (!world.state.revm_quiet)
     {
-      snprintf(logbuf, BUFSIZ - 1, " [*] $_ = " DFMT " \n\n", res);
+      snprintf(logbuf, BUFSIZ - 1, " [*] $_ = %u \n\n", res);
       revm_output(logbuf);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -283,7 +281,7 @@ int			cmd_add()
   /* In case we have a hash table as parameter */
   else if (o1->otype->type == ASPECT_TYPE_LIST)
     {
-      ret = revm_list_add(o1->parent, e2);		
+      ret = revm_elist_add(o1->parent, e2);		
       revm_expr_destroy(e1->label);		// destroy the source alias variable
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -359,7 +357,7 @@ int			cmd_sub()
   /* In case we have a hash table as parameter */
   else if (o1->otype->type == ASPECT_TYPE_LIST)
     {
-      ret = revm_list_del(o1->parent, e2);
+      ret = revm_elist_del(o1->parent, e2);
       if (ret < 0)
 	{
 	  if (e2 && e2->value && !e2->value->perm)

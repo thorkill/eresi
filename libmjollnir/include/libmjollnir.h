@@ -13,9 +13,12 @@
 #if !defined(__MJOLLNIR__)
   #define __MJOLLNIR__ 1
 
+#ifndef __KERNEL__
 #include <stddef.h>
 #include <assert.h>
 #include <openssl/md5.h>
+#endif
+
 #include "libelfsh.h"
 #include "libasm.h"
 #include "libmjollnir-objects.h"
@@ -36,10 +39,12 @@
 /* Names used in config hash */
 #define MJR_CONFIG_BLOC_PREFIX	"mjr.bloc_prefix"
 #define MJR_CONFIG_FUNC_PREFIX	"mjr.func_prefix"
+#define	MJR_CONFIG_BLOC_POSTFIX	"mjr.bloc_postfix"
 
 /* Default subroutines prefix in symbol recovery */
 #define	MJR_FUNC_PREFIX		"sub_"
 #define	MJR_BLOC_PREFIX		"bloc_"
+#define	MJR_BLOC_POSTFIX	"_unseen"
 
 /* OS for which we are able to match the entry point */
 #define	MJR_BIN_LINUX		0
@@ -70,6 +75,7 @@ int		mjr_block_point(mjrcontext_t*, asm_instr*, elfsh_Addr, elfsh_Addr);
 char 		*_vaddr2str(elfsh_Addr);
 int		mjr_block_relink_cond_always(container_t *, container_t *, int);
 int		mjr_block_dump(mjrcontext_t*, container_t *);
+int		mjr_block_symbol(mjrcontext_t*, container_t*, elfsh_Addr curaddr, u_char resize);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(container_t *cntnr);
@@ -86,8 +92,8 @@ void		mjr_funcs_display(mjrcontext_t *c);
 int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
 				  asm_instr *, elfsh_Addr a);
 elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
-int		mjr_get_jmp_destaddr(mjrcontext_t *context);
-int		mjr_get_call_destaddr(mjrcontext_t *context);
+elfsh_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context);
+elfsh_Addr	mjr_get_call_destaddr(mjrcontext_t *context);
 int		mjr_asm_check_function_start(mjrcontext_t *ctxt);
 
 /* symtab.c */
@@ -101,7 +107,8 @@ void		*mjr_fingerprint_function(mjrcontext_t *, elfsh_Addr addr, int);
 void		mjr_function_dump(mjrcontext_t*, char *,container_t *);
 int		mjr_functions_get(mjrcontext_t *);
 int		mjr_function_register(mjrcontext_t *, u_int, container_t *);
-container_t *mjr_function_get_by_vaddr(mjrcontext_t *, u_int);
+container_t	*mjr_function_get_by_vaddr(mjrcontext_t *, u_int);
+int		mjr_function_symbol(mjrcontext_t*, container_t *);
 
 /* ondisk.c */
 int		mjr_flow_load(mjrcontext_t *c, u_int datatypeid);
@@ -111,6 +118,7 @@ int		mjr_flow_store(mjrcontext_t *c, u_int datatypeid);
 int		mjr_link_block_call(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 int		mjr_link_block_jump(mjrcontext_t *, elfsh_Addr, elfsh_Addr, elfsh_Addr);
 int		mjr_link_func_call(mjrcontext_t *ctxt, elfsh_Addr src, elfsh_Addr dst, elfsh_Addr ret);
+container_t	*mjr_block_split(mjrcontext_t *ctxt, elfsh_Addr	dst, u_int link_with);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, elfsh_Addr a);
@@ -127,10 +135,7 @@ container_t	*mjr_get_container_by_vaddr(mjrcontext_t*, elfsh_Addr vaddr, int typ
 list_t		*mjr_link_get_by_direction(container_t *c, int dir);
 mjrlink_t	*mjr_get_link_by_type(list_t *listlink, int link_type);
 int		mjr_create_container_linklist(container_t *cur, u_int linktype);
-container_t	*mjr_create_block_container(mjrcontext_t*,
-					    u_int 	symoff,
-					    elfsh_Addr	vaddr,
-					    u_int	size);
+container_t	*mjr_create_block_container(mjrcontext_t*, u_int symoff, elfsh_Addr v, u_int s, u_char);
 container_t	*mjr_create_function_container(mjrcontext_t*,
 					       elfsh_Addr	vaddr,
 					       u_int		size,

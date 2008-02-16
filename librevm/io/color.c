@@ -5,7 +5,7 @@
  *
  * Started on Sept 11 2005 mxatone
  *
- * $Id: color.c,v 1.6 2007-08-03 11:51:00 heroine Exp $
+ * $Id: color.c,v 1.7 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "revm.h"
@@ -119,7 +119,7 @@ static char	*revm_colornothing(char *sp, void *object)
     NOPROFILER_ROUT((char *) object);
 
   if (strchr(sp, 's') == NULL)
-    snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, *(long *) object);
+    snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, *(elfsh_Addr *) object);
   else
     snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, object);
 
@@ -205,9 +205,11 @@ char 		*revm_colorget(char *sp, char *type, void *object)
       NOPROFILER_ROUT(NULL);
     }
 
+  //printf("Before token = %016llX \n", (elfsh_Addr *) object);
+  
   //snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
   if (strchr(sp, 's') == NULL)
-    snprintf(text, COLOR_TOKEN_LEN - 1, sp, *(long *) object);
+    snprintf(text, COLOR_TOKEN_LEN - 1, sp, *(elfsh_Addr *) object);
   else
     snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
 
@@ -311,7 +313,7 @@ char *revm_coloraddress(char *pattern, elfsh_Addr addr)
   return revm_colorget(pattern, "address", &addr); 
 }
 
-char *revm_colornumber(char *pattern, u_int numb) 		
+char *revm_colornumber(char *pattern, elfsh_Off numb) 		
 { 
   return revm_colorget(pattern, "number", &numb); 
 }

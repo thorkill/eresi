@@ -3,7 +3,7 @@
  * 
  * Started on  Sat Jan 25 11:21:18 2003 jfv
  *
- * $Id: load.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: load.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -22,7 +22,7 @@ int		revm_is_loaded(char *name)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (!world.curjob)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  if (!world.curjob->current)
+  if (!world.curjob->curfile)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   
   for (index = 0; index < world.curjob->loaded.size; index++)
@@ -126,7 +126,7 @@ int		revm_file_load(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
   
   /* Add the object to the list of opened objects */
   new->id = ++world.state.lastid;
-  world.curjob->current = new;
+  world.curjob->curfile = new;
   expr = revm_expr_get(REVM_VAR_LOAD);
   if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -244,7 +244,7 @@ int		cmd_load()
   /* Restore dynamic mode */
   if (was_dynamic)
     {
-      if (world.curjob->current && world.curjob->current->linkmap)
+      if (world.curjob->curfile && world.curjob->curfile->linkmap)
 	elfsh_set_debug_mode();
       else 
 	revm_output("\n [!] Loaded file not present in linkmap"

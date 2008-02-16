@@ -5,7 +5,7 @@
 ** Started on  Wed Feb 27 19:41:45 2002 jfv
 ** Last update Thu Mar 20 05:47:12 2003 jfv
 **
-** $Id: raw.c,v 1.7 2007-10-11 18:25:17 pouik Exp $
+** $Id: raw.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -14,6 +14,11 @@
 
 /**
  * Perform a raw write on the object cache data 
+ * @param file
+ * @param foffset
+ * @param src_buff
+ * @param len
+ * @return
  */
 int		elfsh_raw_write(elfshobj_t	*file, 
 				u_int		foffset, 
@@ -65,6 +70,11 @@ int		elfsh_raw_write(elfshobj_t	*file,
 
 /**
  * Perform a raw read on the object cache data 
+ * @param file
+ * @param foffset
+ * @param dest_buff
+ * @param len
+ * @return
  */
 int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 {
@@ -101,6 +111,9 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 
 /**
  * Retreive the file offset from the virtual address 
+ * @param file
+ * @param vaddr
+ * @return
  */
 int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
 {
@@ -122,6 +135,9 @@ int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
 
 /**
  * Retreive the virtual address given the file offset 
+ * @param file
+ * @param foffset
+ * @return
  */
 int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset)
 {

@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.70 2007-10-01 01:13:08 may Exp $
+** $Id: blocks.c,v 1.71 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -128,24 +128,58 @@ int		mjr_block_dump(mjrcontext_t* ctxt, container_t *c)
   mjrlink_t	*lnk;
 
   blk = (mjrblock_t *) c->data;
-  fprintf(D_DESC,"[D] %s: vaddr:%x size:%d in container ID:%d OUT:%d IN:%d\n",
-	  __FUNCTION__,
-	  blk->vaddr, blk->size,
-	  c->id, c->outlinks->elmnbr, c->inlinks->elmnbr);
+  fprintf(D_DESC,"[D] %s: vaddr:" AFMT " size:%d in container ID:%d OUT:%d IN:%d\n",
+	  __FUNCTION__, blk->vaddr, blk->size, c->id, c->outlinks->elmnbr, c->inlinks->elmnbr);
 
   for (llnk = c->inlinks->head; llnk; llnk = llnk->next)
     {
       lnk = (mjrlink_t *) llnk->data;
       tblk = (mjrblock_t *) mjr_lookup_container(ctxt, lnk->id)->data;
-      fprintf(D_DESC,"[D] %s: %x linked IN from vaddr:%x size:%d type:%d\n",
+      fprintf(D_DESC,"[D] %s: " AFMT " linked IN from vaddr:" AFMT " size:%d type:%d\n",
 	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
     }
   for (llnk = c->outlinks->head; llnk; llnk = llnk->next)
     {
       lnk = (mjrlink_t *) llnk->data;
       tblk = (mjrblock_t *) mjr_lookup_container(ctxt, lnk->id)->data;
-      fprintf(D_DESC,"[D] %s: %x linked OUT to vaddr:%x size:%d type:%d\n",
+      fprintf(D_DESC,"[D] %s: " AFMT " linked OUT to vaddr:" AFMT " size:%d type:%d\n",
 	      __FUNCTION__, blk->vaddr, tblk->vaddr, tblk->size, lnk->type);
     }
   return 0;
+}
+
+
+
+
+/**
+ * @brief Inject a symbol associated to a block container
+ * @param csrc Container for which a symbol has to be injected
+ * @param curaddr Address of currently analyzed instruction
+ * @param resize 1 if current block size has to be computed from the value of curaddr
+ * @return Always 0
+ */
+int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc, 
+					 elfsh_Addr curaddr, u_char resize)
+{
+  mjrblock_t		*block;
+  elfsh_Sym		bsym;
+  elfsh_Sym		*sym;
+  char			*prefix;
+  char			buffer[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Insert new block symbol */
+  block = (mjrblock_t *) csrc->data;
+  prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
+  if (resize)
+    block->size = curaddr - block->vaddr + asm_instr_len(&ctxt->hist[MJR_HISTORY_CUR].instr);
+  snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, block->vaddr);
+  sym = elfsh_get_symbol_by_name(ctxt->obj, buffer);
+  if (!sym)
+    {
+      bsym = elfsh_create_symbol(block->vaddr, block->size, STT_BLOCK, 0, 0, 0);
+      elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

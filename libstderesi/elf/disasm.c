@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:41:34 2001 jfv
 **
 **
-** $Id: disasm.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: disasm.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -199,7 +199,7 @@ u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr,
   /* Init proc */			  
   if (!world.curjob->proc) 
     {
-      switch (machine = elfsh_get_arch(world.curjob->current->hdr))
+      switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
 	{
 	case EM_386:
 	  world.curjob->proc = &world.proc;
@@ -816,7 +816,7 @@ int             cmd_disasm()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First check the architecture */
-  switch (machine = elfsh_get_arch(world.curjob->current->hdr))
+  switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
     {
     case EM_386:
       world.curjob->proc = &world.proc;
@@ -835,15 +835,15 @@ int             cmd_disasm()
     }
 
   /* Make sure we get symtabs of current object */
-  elfsh_get_symtab(world.curjob->current, NULL);
-  elfsh_get_dynsymtab(world.curjob->current, NULL);
+  elfsh_get_symtab(world.curjob->curfile, NULL);
+  elfsh_get_dynsymtab(world.curjob->curfile, NULL);
   revm_output("\n");
   
   /* now walk the regex list for this option */
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
   matchs = vaddr = 0;
-  file = world.curjob->current;
+  file = world.curjob->curfile;
 
   /* If the regex contains a vaddr instead of a symbol name */
   if (actual->rname)

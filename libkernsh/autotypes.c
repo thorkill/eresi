@@ -1,7 +1,7 @@
 /*
 ** autotypes.c for libkernsh
 **
-** $Id: autotypes.c,v 1.3 2007-09-23 17:53:35 pouik Exp $
+** $Id: autotypes.c,v 1.4 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libkernsh.h"
@@ -201,7 +201,7 @@ int kernsh_autotask_offsetuid_linux_2_6(char *buffer, size_t size)
 
 int kernsh_autotask_linux_2_6()
 {
-  unsigned long init_task, list_addr, current_addr;
+  unsigned long init_task, lst_addr, current_addr;
   char buffer[1024];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -239,13 +239,13 @@ int kernsh_autotask_linux_2_6()
 #endif
 
   kernsh_readmem(init_task + libkernshworld.typetask.offset_list,
-		 &list_addr,
+		 &lst_addr,
 		 sizeof(unsigned long));
 
-  kernsh_readmem(list_addr, buffer, 256);
+  kernsh_readmem(lst_addr, buffer, 256);
 
 #if __DEBUG_KERNSH__
-  printf("LIST_ADDR 0x%lx\n", list_addr);
+  printf("LST_ADDR 0x%lx\n", lst_addr);
 #endif
 
   libkernshworld.typetask.offset_next = 
@@ -256,7 +256,7 @@ int kernsh_autotask_linux_2_6()
 #endif
 
 
-  kernsh_readmem(list_addr + libkernshworld.typetask.offset_next,
+  kernsh_readmem(lst_addr + libkernshworld.typetask.offset_next,
 		 &current_addr,
 		 sizeof(unsigned long));
 

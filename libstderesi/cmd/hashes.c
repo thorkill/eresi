@@ -6,7 +6,7 @@
 ** Started Jan 20 2007 18:57:03 jfv
 **
 **
-** $Id: hashes.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: hashes.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -180,7 +180,7 @@ int		cmd_empty()
       hash = hash_find(world.curjob->curcmd->param[index]);
       if (!hash)
 	{
-	  list = list_find(world.curjob->curcmd->param[index]);
+	  list = elist_find(world.curjob->curcmd->param[index]);
 	  if (!list)
 	    {
 	      snprintf(buf, sizeof(buf), " [W] Unknown list or hash table %s \n\n",
@@ -191,7 +191,7 @@ int		cmd_empty()
 	  snprintf(buf, sizeof(buf), "   .:: Empty list %s \n\n",
 		   world.curjob->curcmd->param[index]);
 	  revm_output(buf);
-	  list_empty(world.curjob->curcmd->param[index]);
+	  elist_empty(world.curjob->curcmd->param[index]);
 	}      
       else
 	{

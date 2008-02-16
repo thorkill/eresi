@@ -5,7 +5,7 @@
  ** Started on  Tue Mar  4 01:14:01 2003 jfv
  ** Last update Thu Mar 23 23:21:08 2006 thorkill
  **
- ** $Id: save.c,v 1.17 2007-11-29 10:25:02 rival Exp $
+ ** $Id: save.c,v 1.18 2008-02-16 12:32:27 thor Exp $
  **
  */
 #include "libelfsh.h"
@@ -14,6 +14,10 @@
 
 /**
  * @brief Find a string in a random buffer of size n
+ * @param buffer
+ * @param neddle
+ * @param n
+ * @return
  */
 static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 {
@@ -35,6 +39,9 @@ static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 
 /**
  * Find the number of removed shdr before a given index 
+ * @param file
+ * @param idx
+ * @return
  */
 static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 {
@@ -54,6 +61,9 @@ static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 
 /**
  * Save SHT taking care of removed shdr if the file was cleaned up 
+ * @param file
+ * @param fd
+ * @return
  */
 static int		elfsh_save_sht(elfshobj_t *file, int fd)
 {
@@ -136,6 +146,8 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
 
 /**
  * Relocate during save process
+ * @param file
+ * @return
  */
 int		elfsh_save_relocate(elfshobj_t *file)
 {
@@ -163,6 +175,9 @@ int		elfsh_save_relocate(elfshobj_t *file)
 
 /**
  * Unmap and free all ressources for this file
+ * @param file
+ * @param name
+ * @return
  */
 int		elfsh_save_obj(elfshobj_t *file, char *name)
 {

@@ -1,7 +1,8 @@
-/*
-** $Id: op_esc4.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
-**
-*/
+/**
+ * $Id: op_esc4.c,v 1.5 2008-02-16 12:32:26 thor Exp $
+ * @file op_esc4.c
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 

@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.27 2007-10-14 09:56:46 heroine Exp $
+ * $Id: init.c,v 1.28 2008-02-16 12:32:27 thor Exp $
  * @file init.c
  * @brief Initialization functions
  *
@@ -24,6 +24,10 @@ int		mjr_init_session(mjrsession_t *sess)
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  MJR_BLOC_PREFIX);
+  config_add_item(MJR_CONFIG_BLOC_POSTFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  MJR_BLOC_POSTFIX);
   config_add_item(MJR_CONFIG_FUNC_PREFIX,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,

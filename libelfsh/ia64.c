@@ -7,7 +7,7 @@
 ** Skeleton cut & pasted from the sparc64 backend
 ** 
 **
-** $Id: ia64.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: ia64.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -15,6 +15,11 @@
 
 /**
  * Static hooking for IA64 
+ * @param null
+ * @param sname
+ * @param null2
+ * @param null3
+ * @return
  */
 int	elfsh_cflow_ia64(elfshobj_t     *null,
 			 char		*sname,
@@ -29,6 +34,11 @@ int	elfsh_cflow_ia64(elfshobj_t     *null,
 
 /**
  * PLT hijacking on IA64 
+ *
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_ia64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -41,6 +51,11 @@ int		elfsh_hijack_plt_ia64(elfshobj_t *file,
 
 /**
  * ALTPLT hijacking on IA64 
+ *
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_altplt_ia64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -53,6 +68,13 @@ int		elfsh_hijack_altplt_ia64(elfshobj_t *file,
 
 /**
  * Perform relocation on entry for IA64 architecture 
+ *
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
 int       elfsh_relocate_ia64(elfshsect_t       *new,
 			      elfsh_Rela        *cur,

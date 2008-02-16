@@ -5,7 +5,7 @@
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id: stringtable.c,v 1.4 2007-08-03 11:51:00 heroine Exp $
+** $Id: stringtable.c,v 1.5 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
@@ -17,7 +17,12 @@ char *strtable = NULL;
 u_int strtable_current = 0;
 u_int strtable_max = 0;
 
-/* Add a new element to the string table */
+/**
+ * Add a new element to the string table 
+ *
+ * @param string
+ * @return
+ */
 int			revm_strtable_add(char *string)
 {
   u_int			string_len;

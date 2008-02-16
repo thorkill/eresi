@@ -8,7 +8,7 @@
 ** Started on  Sun Dec  1 09:22:45 2002 jfv
 **
 **
-** $Id: comment.c,v 1.7 2007-07-31 03:28:46 may Exp $
+** $Id: comment.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -16,6 +16,8 @@
 
 /**
  * Get comment section 
+ * @param file
+ * @return
  */
 elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 {
@@ -49,6 +51,9 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 
 /**
  * Get an entry from .comment 
+ * @param file
+ * @param range
+ * @return
  */
 char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
 {

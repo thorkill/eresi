@@ -1,14 +1,14 @@
 /**
  * @file state.c
-** 
-** @brief Provide initialization and debugger state related functions.
-**
-** Started on  Sat Jun  2 15:20:18 2005 jfv
-** 
-**
-** $Id: state.c,v 1.16 2007-10-14 00:03:46 heroine Exp $
-**
-*/
+ * 
+ * @brief Provide initialization and debugger state related functions.
+ *
+ * Started on  Sat Jun  2 15:20:18 2005 jfv
+ * 
+ *
+ * $Id: state.c,v 1.17 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 
@@ -73,6 +73,7 @@ void	elfsh_set_debug_mode()
 
 /**
  * @brief set mode
+ * @param mode
  */
 void	elfsh_set_mode(u_char mode)
 {

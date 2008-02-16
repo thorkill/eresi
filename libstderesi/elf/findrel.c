@@ -4,7 +4,7 @@
 ** Started on  Sat Feb 22 17:06:17 2003 jfv
 **
 **
-** $Id: findrel.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: findrel.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -139,7 +139,7 @@ int		cmd_findrel()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  file = world.curjob->current;
+  file = world.curjob->curfile;
   if (file == NULL)
     RETERR("[elfsh:findrel] Invalid NULL parameter\n");
   if (elfsh_read_obj(file) < 0)
@@ -224,7 +224,7 @@ int		cmd_findrel()
   
   /* Print final banner */
  snprintf(logbuf, BUFSIZ - 1, "\n [*] ET_EXEC relocation entries number : %u\n\n", count);
-  for (cur = world.curjob->current->sectlist; cur; cur = cur->next)
+  for (cur = world.curjob->curfile->sectlist; cur; cur = cur->next)
    snprintf(logbuf, BUFSIZ - 1, " [*] Section %-20s srcref[%010u] dstref[%010u] \n", 
 	   cur->name, cur->srcref, cur->dstref);
   revm_output("\n");

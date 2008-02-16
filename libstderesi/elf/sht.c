@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:17:58 2001 jfv
  * 
  *
- * $Id: sht.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id: sht.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"
@@ -68,17 +68,17 @@ int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
       
       /* Get section name */
       if (!rtflag)
-	cur = elfsh_get_section_by_index(world.curjob->current, index, NULL, NULL);
+	cur = elfsh_get_section_by_index(world.curjob->curfile, index, NULL, NULL);
       else
-	cur = elfsh_get_rsection_by_index(world.curjob->current, index, NULL, NULL);
-      name = elfsh_get_section_name(world.curjob->current, cur);
+	cur = elfsh_get_rsection_by_index(world.curjob->curfile, index, NULL, NULL);
+      name = elfsh_get_section_name(world.curjob->curfile, cur);
       if (name == NULL)
 	name = ELFSH_NULL_STRING;
 
       /* Compute section address */
       /* Base for ET_EXEC is always 0 */
       addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(cur) ?
-	      world.curjob->current->rhdr.base + elfsh_get_section_addr(shdr + index) :
+	      world.curjob->curfile->rhdr.base + elfsh_get_section_addr(shdr + index) :
 	      elfsh_get_section_addr(shdr + index));
 
       /* Output is different depending on the quiet flag */
@@ -152,13 +152,13 @@ int		cmd_sht()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Fetch SHT and choose regex */
-  shdr = elfsh_get_sht(world.curjob->current, &num);
+  shdr = elfsh_get_sht(world.curjob->curfile, &num);
   if (shdr == NULL)
     QUIT_ERROR(-1);
   snprintf(logbuf, BUFSIZ - 1, " [SECTION HEADER TABLE .::. SHT %s]\n"
 	   " [Object %s]\n\n", 
-	   (world.curjob->current->shtrb ? "has been rebuilt" : "is not stripped"),
-	   world.curjob->current->name);
+	   (world.curjob->curfile->shtrb ? "has been rebuilt" : "is not stripped"),
+	   world.curjob->curfile->name);
   revm_output(logbuf);
   revm_sht_print(shdr, num, 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -177,13 +177,13 @@ int		cmd_rsht()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Fetch RSHT */
-  shdr = elfsh_get_runtime_sht(world.curjob->current, &num);
+  shdr = elfsh_get_runtime_sht(world.curjob->curfile, &num);
   if (shdr == NULL)
     QUIT_ERROR(-1);
   
   snprintf(logbuf, BUFSIZ - 1, 
 	   " [RUNTIME SECTION HEADER TABLE .::. RSHT resides in memory only]\n"
-	   " [Object %s]\n\n", world.curjob->current->name);
+	   " [Object %s]\n\n", world.curjob->curfile->name);
   revm_output(logbuf);
   revm_sht_print(shdr, num, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

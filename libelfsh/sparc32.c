@@ -1,19 +1,24 @@
 /**
  * @file sparc32.c
-** sparc32.c for libelfsh
-** 
-** Started on  Fri Jan 11 03:05:37 2003 jfv
-** 
-**
-** $Id: sparc32.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
-**
-*/
+ * sparc32.c for libelfsh
+ * 
+ * Started on  Fri Jan 11 03:05:37 2003 jfv
+ * 
+ *
+ * $Id: sparc32.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 
 
 
 /**
  * @brief Static hooking for Sparc 
+ * @param file
+ * @param name
+ * @param symbol
+ * @param addr
+ * @return
  */
 int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    char	*name,
@@ -116,6 +121,10 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
  * @brief PLT hijacking on SPARC
  * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
  * Slight patch by emsi to support function call when the high bit is set
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_sparc32(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -155,6 +164,10 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
  * @brief PLT hijacking on SPARC
  * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
  * Slight patch by emsi to support function call when the high bit is set 
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file, 
 						elfsh_Sym *symbol,
@@ -218,6 +231,10 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
 
 /**
  * @brief hijack altptl on sparc32
+ * @param file
+ * @param symbol
+ * @param addr
+ * @return
  */
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -297,6 +314,12 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1
 /**
  * @brief Perform relocation on entry for SPARC architecture
  * First version by thegrugq adapted by elfsh crew
+ * @param new
+ * @param cur
+ * @param dword
+ * @param addr
+ * @param mod
+ * @return
  */
 int       elfsh_relocate_sparc32(elfshsect_t       *new,
 				 elfsh_Rela        *cur,

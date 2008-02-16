@@ -1,18 +1,20 @@
 /**
  * @file sym_common.c
-** sym_common.c for elfsh
-** 
-** Started on  Tue Dec 31 10:19:01 2002 jfv
-** 
-**
-** $Id: sym_common.c,v 1.12 2007-11-29 10:25:02 rival Exp $
-**
-*/
+ * sym_common.c for elfsh
+ * 
+ * Started on  Tue Dec 31 10:19:01 2002 jfv
+ * 
+ *
+ * $Id: sym_common.c,v 1.13 2008-02-16 12:32:27 thor Exp $
+ *
+ */
 #include "libelfsh.h"
 #include "libetrace.h"
 
 /**
  * Return the symbol size 
+ * @param s Symbol
+ * @return
  */
 elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
 {
@@ -26,6 +28,9 @@ elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
 
 /**
  * Change the symbol size 
+ * @param s Symbol
+ * @param size New size of symbol
+ * @return 0 on success or -1 on error.
  */
 int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
 {
@@ -39,7 +44,9 @@ int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
 }
 
 /**
- * Return the symbol offset giving its elfsh_Sym entry 
+ * Return the symbol offset giving its elfsh_Sym entry
+ * @param s
+ * @return
  */
 elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
 {
@@ -52,7 +59,10 @@ elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
 }
 
 /**
- * Change the symbol offset giving its elfsh_Sym entry 
+ * Change the symbol offset giving its elfsh_Sym entry
+ * @param s
+ * @param value
+ * @return
  */
 int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
 {
@@ -67,7 +77,9 @@ int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
 
 
 /**
- * Return the symbol binding 
+ * Return the symbol binding
+ * @param s
+ * @return
  */
 u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
 {
@@ -80,7 +92,10 @@ u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
 }
 
 /**
- * Change the symbol binding 
+ * Change the symbol binding
+ * @param s
+ * @param opt
+ * @return
  */
 u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
 {
@@ -94,7 +109,9 @@ u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
 }
 
 /**
- * Return the symbol type 
+ * Return the symbol type
+ * @param s
+ * @return
  */
 u_char	elfsh_get_symbol_type(elfsh_Sym *s)
 {
@@ -108,6 +125,9 @@ u_char	elfsh_get_symbol_type(elfsh_Sym *s)
 
 /**
  * Change the symbol type 
+ * @param s
+ * @param type
+ * @return
  */
 u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
 {
@@ -121,7 +141,9 @@ u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
 }
 
 /**
- * Return the symbol type 
+ * Return the symbol type
+ * @param s
+ * @return
  */
 u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
 {
@@ -134,7 +156,11 @@ u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
 }
 
 /**
- * Change the symbol type 
+ * Change the symbol type
+ * @param s
+ * @param vis
+ * @return
+ * 
  */
 u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
 {
@@ -148,7 +174,9 @@ u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
 }
 
 /**
- * Return the symbol linked section index 
+ * Return the symbol linked section index
+ * @param s
+ * @return
  */
 u_int	elfsh_get_symbol_link(elfsh_Sym *s) 
 {
@@ -161,7 +189,10 @@ u_int	elfsh_get_symbol_link(elfsh_Sym *s)
 }
 
 /**
- * Change the symbol linked section index 
+ * Change the symbol linked section index
+ * @param s
+ * @param val
+ * @return
  */
 u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
 {
@@ -176,8 +207,14 @@ u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
 
 /**
  * High level procedure for get_sym_by_value() 
+ * @param file
+ * @param vaddr
+ * @param off
+ * @param mode
+ * @return
  */
-elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file, elfsh_Addr vaddr, 
+elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file, 
+					    elfsh_Addr vaddr, 
 					    int *off, int mode)
 {
   elfsh_Sym	*dynsym;
@@ -203,7 +240,13 @@ elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file, elfsh_Addr vaddr,
 
 
 /**
- * Internal generic function for symbol research by value 
+ * Internal generic function for symbol research by value
+ * @param sym
+ * @param num
+ * @param vaddr
+ * @param off
+ * @param mode
+ * @return
  */
 elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num, 
 					  elfsh_Addr vaddr, int *off, int mode)
@@ -267,7 +310,14 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
 
 
 /**
- * Create a symbol 
+ * Create a symbol
+ * @param value
+ * @param size
+ * @param type
+ * @param binding
+ * @param vis
+ * @param sctidx
+ * @return
  */
 elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type, 
 				    int binding, int vis, int sctidx)
@@ -287,7 +337,10 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
 
 
 /**
- * Just copy the symtab . The returned symbol table need to be freed 
+ * Just copy the symtab . The returned symbol table need to be freed.
+ * @param data
+ * @param size
+ * @return
  */
 elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 {
@@ -304,7 +357,10 @@ elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 }
 
 /**
- * Get symbol by index 
+ * Get symbol by index
+ * @param symtab
+ * @param index
+ * @return
  */
 elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab, 
 						   elfsh_Addr index)
@@ -317,6 +373,9 @@ elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab,
 
 /**
  * Get a symbol value by its name 
+ * @param file
+ * @param name
+ * @return
  */
 elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name)
 {
@@ -365,6 +424,8 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 
 /**
  * Endianize the table 
+ * @param tab
+ * @return
  */
 int		elfsh_endianize_symtab(elfshsect_t *tab)
 {
@@ -403,7 +464,12 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
   
 
 /**
- * Shift the symbol table 
+ * Shift the symbol table
+ * @param file
+ * @param symtab
+ * @param limit
+ * @param inc
+ * @return
  */
   int		elfsh_shift_syms(elfshobj_t *file, 
 				 elfshsect_t *symtab, 
@@ -457,6 +523,7 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
  * @param vaddrin base virtual address
  * @param fileout returned file pointer
  * @param vaddrout returned virtual address
+ * @return
  */
 int			elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
 						     elfshobj_t **fileout, elfsh_Addr *vaddrout)

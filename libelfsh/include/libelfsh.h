@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.78 2007-11-28 09:32:06 rival Exp $
+** $Id: libelfsh.h,v 1.79 2008-02-16 12:32:27 thor Exp $
 **
 */
 
@@ -12,6 +12,8 @@
 #define __LIBELFSH_H_
 
 #include "libvars.h"
+
+#ifndef __KERNEL__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,12 +26,14 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <regex.h>
-
-//#include "elfsh-libc.h"
-
 #include <elf.h>
+
+#endif
+
 #include "libaspect.h"
-#include <libelfsh/libelfsh-compat.h>
+#include "libelfsh/libelfsh-compat.h"
+
+#ifndef __KERNEL__
 
 #ifdef __BEOS__
 #include <bsd_mem.h>
@@ -49,6 +53,8 @@
 #include <miscfs/procfs/procfs.h>
 #else
 #include <sys/procfs.h>
+#endif
+
 #endif
 
 /* Configure the DEBUG modes for various part of the code */
@@ -542,7 +548,7 @@ typedef struct	s_dfmt
 #define ELFSH_CORE_HAS_PRPSINFO		0x00010
 #define ELFSH_CORE_HAS_FPREGSET		0x00100
 
-#define roundup(x, y)			((((x)+((y)-1))/(y))*(y))
+#define elfsh_roundup(x, y)		((((x)+((y)-1))/(y))*(y))
 
 #define PRFNAMESZ		16  	 /* Maximum command length saved */
 #define PRARGSZ			80  	 /* Maximum argument bytes saved */
@@ -1725,12 +1731,15 @@ elfshlinkmap_t	*elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name);
 
 /* bt.c */
 void		*elfsh_bt(void *frame);
+
+#ifndef __KERNEL__
 void		*elfsh_bt_get_frame(ucontext_t *);
+#endif
 
 /* bp.c */
 int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
-                   char *resolv, elfsh_Addr addr, 
-                   u_char flags);
+			     char *resolv, elfsh_Addr addr, 
+			     u_char flags);
 
 
 #endif /* __LIBELFSH_H_ */

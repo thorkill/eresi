@@ -6,7 +6,7 @@
 ** Started : Fri Mar  7 07:18:03 2003 jfv
 ** Updated : Fri Dec 10 02:04:19 2006 jfv
 **
-** $Id: graph.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: graph.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -60,11 +60,11 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
   cur = 1;
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
-  foffset = elfsh_get_foffset_from_vaddr(world.curjob->current, blk->vaddr);
-  ret     = elfsh_raw_read(world.curjob->current, foffset, buffer, blk->size);
+  foffset = elfsh_get_foffset_from_vaddr(world.curjob->curfile, blk->vaddr);
+  ret     = elfsh_raw_read(world.curjob->curfile, foffset, buffer, blk->size);
   if (ret > 0)
     {
-      name = elfsh_reverse_metasym(world.curjob->current, blk->vaddr, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
       while ((index < blk->size) && cur)
 	{
 	  cur = revm_instr_display(fd, index, blk->vaddr, 0, blk->size,
@@ -216,7 +216,7 @@ u_int		revm_get_vaddr(char *s)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get parameters */
-  if ((sym = elfsh_get_metasym_by_name(world.curjob->current,s)))
+  if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile,s)))
     min = sym->st_value;
   else
     min = strtoul(s, 0, 16);
@@ -318,7 +318,7 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  parent = elfsh_get_parent_section(world.curjob->current, fnc->vaddr, NULL);
+  parent = elfsh_get_parent_section(world.curjob->curfile, fnc->vaddr, NULL);
 
   if (fnc->vaddr == elfsh_get_entrypoint(elfsh_get_hdr(world.mjr_session.cur->obj)))
     ftype = GVZ_NODE_EPOINT;
@@ -365,7 +365,7 @@ int		revm_graph_blocks(container_t *cntnr,
   linklist = cntnr->outlinks;
 
   snprintf(buf, sizeof(buf),
-    	   "\"%x\" [shape=\"box\" color=%s label=\"<%x>:\\l",
+    	   "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
       	   blk->vaddr, "\"grey\"", blk->vaddr);
 
   write(fd,buf,strlen(buf));
@@ -407,11 +407,11 @@ int		revm_graph_blocks(container_t *cntnr,
 	  break;
 	}
 
-      snprintf(buf, sizeof(buf), "\"%x\" -> \"%x\" [color=%s];\n",
+      snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"" AFMT "\" [color=%s];\n",
 	       blk->vaddr, cblk->vaddr, col_arrow);
 
 #if __DEBUG_GRAPH__
-      fprintf(D_DESC,"[D] %s: %x -> %x %d\n",
+      fprintf(D_DESC,"[D] %s: " AFMT " -> " AFMT " %d\n",
 	      __FUNCTION__, blk->vaddr, cblk->vaddr, lnk->type);
 #endif
 
@@ -450,7 +450,8 @@ int		revm_graph_function(container_t	*cntnr,
 				    int			maxdepth, 
 				    int			curdepth)
 {
-  int	    	ftype, offset;
+  elfsh_SAddr	offset;
+  int	    	ftype;
   mjrfunc_t	*fnc, *tmpfnc;
   mjrlink_t	*curlnk;
   char		*n1, *n2, *vaddr_str;
@@ -468,7 +469,7 @@ int		revm_graph_function(container_t	*cntnr,
 
   hash_add(&dumped, vaddr_str, cntnr);
   
-  n1 = elfsh_reverse_metasym(world.curjob->current,fnc->vaddr, &offset);
+  n1 = elfsh_reverse_metasym(world.curjob->curfile,fnc->vaddr, &offset);
 
   ftype = revm_graph_get_function_type(fnc);
   
@@ -487,7 +488,7 @@ int		revm_graph_function(container_t	*cntnr,
       tmpfnc = (mjrfunc_t *) mjr_lookup_container(world.mjr_session.cur,curlnk->id)->data;
       
       /* resolve the symbols */
-      n2 = elfsh_reverse_metasym(world.curjob->current, tmpfnc->vaddr, &offset);
+      n2 = elfsh_reverse_metasym(world.curjob->curfile, tmpfnc->vaddr, &offset);
       ftype = revm_graph_get_function_type(tmpfnc);
       
       if (type)

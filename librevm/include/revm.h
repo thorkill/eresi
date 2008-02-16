@@ -4,13 +4,16 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.96 2007-12-09 23:00:18 may Exp $
+** $Id: revm.h,v 1.97 2008-02-16 12:32:27 thor Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_
 
 /* User defined configuration */
 #include "revm-vars.h"
+
+/* Do not put all those headers when compiling for kernel */
+#ifndef __KERNEL__
 
 #define __USE_ISOC99
 
@@ -39,6 +42,9 @@
 #include <pthread.h>
 #include <stdarg.h> 
 #include <regex.h>
+#else
+ #include "../../libregex/regex.h"
+#endif
 
 #include <libelfsh.h>
 //#include <libetrace.h>
@@ -400,7 +406,7 @@ typedef struct        s_job
   /* File job context */
   revmargv_t	      *curcmd;          /* Next command to be executed */
   hash_t              loaded;           /* List of loaded ELF objects */
-  elfshobj_t          *current;         /* Current working ELF object */
+  elfshobj_t          *curfile;         /* Current working ELF object */
   asm_processor*      proc;		/* Processor structure */
 
   /* Debugger job context */
@@ -524,6 +530,10 @@ extern char	   *strtable;
 extern u_int	   strtable_current;
 extern u_int	   strtable_max;
 
+/* Prompt storage */
+extern void	(*prompt_token_setup)(char *name, u_int size);
+extern char	prompt_token[512];
+
 /* Registration handlers for options from opt.c */
 int		revm_getoption(u_int index, u_int argc, char **argv);
 int		revm_getoption2(u_int index, u_int argc, char **argv);
@@ -619,25 +629,24 @@ char            **revm_doargv(u_int nbr, u_int *argc, char *buf);
 int		revm_strtable_add(char *string);
 
 /* Trace functions */
+int             traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);   
+int             traces_add(elfshobj_t *file, char *name, char **optarg);  
+int             traces_rm(elfshobj_t *file, char *name, char **optarg);  
+int             traces_exclude(elfshobj_t *file, char *freg, char **oreg);  
+int             traces_rmexclude(elfshobj_t *file, char *freg, char **oreg);  
+int             traces_enable(elfshobj_t *file, char *name, char **optarg);  
+int             traces_disable(elfshobj_t *file, char *name, char **optarg);  
+int             traces_create(elfshobj_t *file, char *name, char **optarg);  
+int             traces_delete(elfshobj_t *file, char *name, char **optarg);  
+int             traces_flush(elfshobj_t *file, char *name, char **optarg);  
+int             traces_list(elfshobj_t *file, char *name, char **optarg);  
+int             traces_run(elfshobj_t *file, char **argv, int argc);
+
 int		revm_traces_add_arguments(int argc, char **argv);
 edfmtfunc_t 	*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
 elfshtraces_t  	*revm_traces_createargs(elfshobj_t *file, char *name,
 					 edfmtfunc_t *func, elfsh_Addr vaddr,
 					 u_char external);
-FILE	      	*revm_traces_init(char *tfname, char *rsofname, char *rtfname);
-int	       	revm_traces_add(FILE *fp, int *argcount, char *func_name);
-int 	       	traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);
-int	       	traces_add(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_rm(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_exclude(elfshobj_t *file, char *freg, char **oreg);
-int		traces_rmexclude(elfshobj_t *file, char *freg, char **oreg);
-int	      	traces_enable(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_disable(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_create(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_delete(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_flush(elfshobj_t *file, char *name, char **optarg);
-int	       	traces_list(elfshobj_t *file, char *name, char **optarg);
-int		traces_run(elfshobj_t *file, char **argv, int argc);
 
 /* Hash functions */
 int             revm_hashunk(int i);
@@ -702,6 +711,8 @@ int		revm_loop(int argc, char **argv);
 int		revm_setup(int ac, char **av, char mode, char side);
 int		revm_run(int ac, char **av);
 int		revm_config();
+void		revm_postexec(int retval);
+void		revm_cleanup();
 
 /* Scripting flow functions */
 int		revm_execscript();
@@ -785,10 +796,10 @@ int		revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2);
 int		revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op);
 int		revm_hash_add(hash_t *h, revmexpr_t *e);
 int		revm_hash_del(hash_t *h, revmexpr_t *e);
-int		revm_list_add(list_t *h, revmexpr_t *e);
-int		revm_list_del(list_t *h, revmexpr_t *e);
+int		revm_elist_add(list_t *h, revmexpr_t *e);
+int		revm_elist_del(list_t *h, revmexpr_t *e);
 int		revm_hash_set(char *tab, char *elm, void *obj, u_int type);
-int		revm_list_set(char *tab, char *elm, void *obj, u_int type);
+int		revm_elist_set(char *tab, char *elm, void *obj, u_int type);
 int		revm_testbit(revmexpr_t *o1, revmexpr_t *o2, u_int *result);
 int		revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val);
 int		revm_object_set(revmexpr_t *e1, revmexpr_t *e2);
@@ -800,7 +811,13 @@ void		revm_switch_job(revmjob_t *job);
 revmjob_t	*revm_clone_job(char *name, revmjob_t *job);
 int		revm_add_script_cmd(char *dirstr);
 revmjob_t	*revm_localjob_get();
+
+#ifdef __KERNEL__
+revmjob_t	*revm_socket_add(int socket, void *addr);
+#else
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
+#endif
+
 int              revm_screen_switch();
 int              revm_screen_clear(int i, char c);
 int              revm_screen_update(u_short isnew, u_short prompt_display);
@@ -837,7 +854,9 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname);
 int		revm_expr_destroy(char *e);
 
 /* May not be defined */
-#if __BSD__
+#ifndef __KERNEL__
+
+#ifdef __BSD__
 extern int vsscanf(const char * restrict str, const char * restrict format,
 		     va_list ap);
 #elif defined(__linux__)
@@ -845,8 +864,9 @@ extern int vsscanf (__const char *__restrict __s,
                     __const char *__restrict __format, _G_va_list __arg);
 #endif
 
-
 void		wait4exit(void *);
+
+#endif /* __KERNEL__ */
 
 #endif /* __ELFSH_H_ */
 

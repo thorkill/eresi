@@ -1,7 +1,7 @@
 /**
  * @file op_esc1.c
  * @ingroup handlers_ia32
- * $Id: op_esc1.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_esc1.c,v 1.8 2008-02-16 12:32:26 thor Exp $
  *
  */
 #include <libasm.h>
@@ -150,10 +150,16 @@ int op_esc1(asm_instr *new, u_char *opcode, u_int len,
 	  new->instr = ASM_FLDCW;
 	  break;
 	case 6:
-	  new->instr = ASM_FNSTENV;
+	  if (!(new->prefix & ASM_PREFIX_FWAIT))
+	    new->instr = ASM_FNSTENV;
+	  else
+	    new->instr = ASM_FSTENV;
 	  break;
 	case 7:
-	  new->instr = ASM_FNSTCW;
+	  if (!(new->prefix & ASM_PREFIX_FWAIT))
+	    new->instr = ASM_FNSTCW;
+	  else
+	    new->instr = ASM_FSTCW;
 	  break;
 	}
     }

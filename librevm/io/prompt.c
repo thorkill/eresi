@@ -6,13 +6,16 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv
  *
- * $Id: prompt.c,v 1.10 2007-11-29 14:01:56 may Exp $
+ * $Id: prompt.c,v 1.11 2008-02-16 12:32:27 thor Exp $
  *
 */
 #include "revm.h"
 
 
-//char buf[BUFSIZ];
+void	(*prompt_token_setup)(char *name, u_int size);
+char	prompt_token[512];
+
+
 
 /**
  * @brief TO COMPLETE

@@ -7,13 +7,16 @@
 ** Started on  Sun Jun 10 22:57:09 2001 jfv
 ** 
 **
-** $Id: notes.c,v 1.7 2007-07-31 03:28:46 may Exp $
+** $Id: notes.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
 
 /**
  * Return the content of the 'range'th section of type SHT_NOTE 
+ * @param file
+ * @param range
+ * @return
  */
 elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 {
@@ -79,6 +82,7 @@ elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
 
 /**
  * Free the notes section linked list 
+ * @param file
  */
 void			elfsh_free_notes(elfshobj_t *file)
 {

@@ -5,7 +5,7 @@
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 ** 
 **
-** $Id: dumpregs.c,v 1.4 2007-06-27 11:25:12 heroine Exp $
+** $Id: dumpregs.c,v 1.5 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -26,10 +26,7 @@ struct		s_regs_ia32
   uint32_t	ebx;
   uint32_t	es;	/* 16bits but we want to keep alignment */
   uint32_t	ds;	/* 16bits but we want to keep alignment */
-
 }		ia32regs_t;
-
-
 
 
 

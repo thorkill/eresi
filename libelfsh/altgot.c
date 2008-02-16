@@ -8,7 +8,7 @@
 ** Started on  Wed Jun 08 21:20:07 2005 mm
 **
 **
-** $Id: altgot.c,v 1.6 2007-06-27 11:25:12 heroine Exp $
+** $Id: altgot.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -26,6 +26,10 @@
  * diff contains the difference to add to the offset for obtaining
  * .alt.got address that we need to add to the HI16 relocations 
  * matching the signature.
+ *
+ * @param file
+ * @param diff
+ * @return
  */
 void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 {
@@ -69,6 +73,12 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 
 /**
  * Shift the ALPHA relocations 
+ *
+ * @param file
+ * @param name
+ * @param altgot
+ * @param off
+ * @return
  */
 int			elfsh_shift_alpha_relocs(elfshobj_t *file, 
 						 char *name, 
@@ -114,6 +124,11 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file,
 
 /**
  * Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt 
+ *
+ * @param file
+ * @param diff
+ * @param relplt
+ * @return
  */
 int			elfsh_shift_generic_relocs(elfshobj_t *file, 
 						   elfsh_Addr diff, 
@@ -136,6 +151,12 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file,
 /**
  * Shift relocation tables at some point for allowing non-present symbol resolving 
  * mostly applied on section injection for ET_DYN objects
+ *
+ * @param file
+ * @param diff
+ * @param relplt
+ * @param limit
+ * @return
  */
 int			elfsh_shift_ia32_relocs(elfshobj_t *file, 
 						elfsh_Addr  diff,
@@ -173,6 +194,11 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
 
 /**
  * Same arch independant code for the SPARC case 
+ *
+ * @param file
+ * @param diff
+ * @param relplt
+ * @return
  */
 int			elfsh_shift_sparc_relocs(elfshobj_t	*file, 
 						 elfsh_Addr	diff, 
@@ -189,6 +215,13 @@ int			elfsh_shift_sparc_relocs(elfshobj_t	*file,
 /**
  * Change the DT_PLTGOT entry in the .dynamic
  * section to change the relocation base address
+ *
+ * @param file
+ * @param altgot
+ * @param got
+ * @param plt
+ * @param altplt
+ * @return
  */
 int			elfsh_redirect_pltgot(elfshobj_t *file, 
 					      elfshsect_t *altgot, 

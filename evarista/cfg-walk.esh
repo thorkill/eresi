@@ -5,8 +5,14 @@ print Now entered cfg-walk
 cmp $# 1
 jne end
 
-tables expressions
+# debug
 print $1
+sym main
+sort a
+sym bloc
+sym FUNC
+tables blocks
+#
 
 set $block $hash[blocks:$1]
 print $1

@@ -4,7 +4,7 @@
  * We dont use bison and have our own parser generator
  *
  * Started on  Sun Feb  9 22:57:58 2003 jfv
- * $Id: grammar.c,v 1.20 2007-11-28 07:56:09 may Exp $
+ * $Id: grammar.c,v 1.21 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "revm.h"
@@ -209,16 +209,16 @@ revmobj_t	*parse_list(char *param, char *fmt)
   listname  = strdup(index);
 
   /* In case the hash table does not exist, create it empty */
-  list = list_find(listname);
+  list = elist_find(listname);
   if (!list)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	     list, sizeof(list_t), NULL);
-      list_init(list, listname, ASPECT_TYPE_UNKNOW);
+      elist_init(list, listname, ASPECT_TYPE_UNKNOW);
     }
 
   /* Now deal with the entry */
-  ptr = (entryname ? list_get(list, entryname) : (void *) list);
+  ptr = (entryname ? elist_get(list, entryname) : (void *) list);
 
   /* Get an revm object */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, ret, sizeof(revmobj_t), NULL);

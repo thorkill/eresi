@@ -4,7 +4,7 @@
  * Various object lookup functions built in the language
  *
  * Started Nov 21 2003 jfv
- * $Id: lookup.c,v 1.19 2007-11-28 07:56:09 may Exp $
+ * $Id: lookup.c,v 1.20 2008-02-16 12:32:27 thor Exp $
  */
 #include "revm.h"
 
@@ -69,12 +69,12 @@ elfsh_Addr		revm_lookup_addr(char *param)
 		 "Invalid NULL parameter", 0);
 
   /* Lookup .symtab */
-  sym = elfsh_get_symbol_by_name(world.curjob->current, param);
+  sym = elfsh_get_symbol_by_name(world.curjob->curfile, param);
   if (sym != NULL && sym->st_value > 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym->st_value);
 
   /* Lookup .dynsym */
-  sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
+  sym = elfsh_get_dynsymbol_by_name(world.curjob->curfile, param);
   if (sym != NULL && sym->st_value > 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym->st_value);
 
@@ -142,11 +142,11 @@ revmobj_t		*revm_lookup_immed(char *param)
     }
 
   /* Not necessary to call those functions if there is no loaded file */
-  if (world.curjob->current)
+  if (world.curjob->curfile)
     {
 
       /* Lookup .symtab */
-      sym = elfsh_get_symbol_by_name(world.curjob->current, param);
+      sym = elfsh_get_symbol_by_name(world.curjob->curfile, param);
       if (sym != NULL && sym->st_value)
 	{
 	  ptr = revm_create_LONG(0, sym->st_value);
@@ -154,7 +154,7 @@ revmobj_t		*revm_lookup_immed(char *param)
 	}
       
       /* Lookup .dynsym */
-      sym = elfsh_get_dynsymbol_by_name(world.curjob->current, param);
+      sym = elfsh_get_dynsymbol_by_name(world.curjob->curfile, param);
       if (sym != NULL && sym->st_value)
 	{
 	  ptr = revm_create_LONG(0, sym->st_value);
@@ -224,7 +224,7 @@ u_int     		revm_lookup_index(char *param)
   revmexpr_t		*expr;
   char			eol;
   int			ret;
-  u_int		       	val;
+  elfsh_Addr	       	val;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)

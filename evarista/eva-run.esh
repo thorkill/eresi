@@ -1,4 +1,4 @@
-#!evarista32
+#!evarista64
 
 #quiet
 #print $#

@@ -7,7 +7,7 @@
 **
 ** December 10 2006 : Merged from modflow to the ELFsh vm -may
 **
-** $Id: inspect.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: inspect.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 
@@ -47,14 +47,14 @@ int			cmd_inspect()
   
   /* Preliminary checks */
   cntnr = NULL;
-  obj = world.curjob->current;
+  obj = world.curjob->curfile;
   if (!world.mjr_session.cur->analysed)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Control flow section not found"
 		 " : use analyse command", -1);
   
   /* Try to find block by symbol or address */
-  if ((sym = elfsh_get_metasym_by_name(world.curjob->current, 
+  if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile, 
 				       world.curjob->curcmd->param[0])))
     vaddr = sym->st_value;
   else
@@ -68,11 +68,11 @@ int			cmd_inspect()
       if (!cntnr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to find block symbol or address", -1);
-      name = elfsh_reverse_metasym(world.curjob->current, *(elfsh_Addr *) cntnr->data, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, *(elfsh_Addr *) cntnr->data, &off);
     }
   else
     {
-      name = elfsh_reverse_metasym(world.curjob->current, vaddr, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, vaddr, &off);
       cntnr = mjr_block_get_by_vaddr(world.mjr_session.cur, vaddr, 1);
       if (!cntnr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -91,7 +91,7 @@ int			cmd_inspect()
     {
       cal      = curent->data;
       tmpblock = mjr_lookup_container(world.mjr_session.cur,cal->id)->data;
-      pname    = elfsh_reverse_metasym(world.curjob->current, tmpblock->vaddr, &off);
+      pname    = elfsh_reverse_metasym(world.curjob->curfile, tmpblock->vaddr, &off);
       
       /* FIXME: we have to work out the lack of the 'type' field for blocks */
       switch (cal->type)

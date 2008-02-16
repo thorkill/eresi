@@ -4,13 +4,18 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:22:11 2007 jfv
 **
-** $Id: screen.c,v 1.6 2007-11-29 14:01:55 may Exp $
+** $Id: screen.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"
 
 
-/* Clear the content of the current screen */
+/**
+ * Clear the content of the current screen 
+ * @param i
+ * @param c
+ * @return
+ */
 int		revm_screen_clear(int i, char c)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -22,7 +27,13 @@ int		revm_screen_clear(int i, char c)
 }
 
 
-/* Update the screen depending of the actual job */
+/** 
+ * Update the screen depending of the actual job 
+ *
+ * @param isnew
+ * @param prompt_display
+ * @return
+ */
 int		revm_screen_update(u_short isnew, u_short prompt_display)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -49,7 +60,10 @@ int		revm_screen_update(u_short isnew, u_short prompt_display)
 }
 
 
-/* Switch screen with switching workspace */
+/** 
+ * Switch screen with switching workspace 
+ *
+ */
 int		revm_screen_switch()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -59,7 +73,10 @@ int		revm_screen_switch()
 }
 
 
-/* Switch to the next workspace */
+/**
+ * Switch to the next workspace 
+ *
+ */
 int		revm_workspace_next()
 {
   u_int		index, entrie;

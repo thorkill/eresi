@@ -4,7 +4,7 @@
 ** @brief Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 jfv
-** $Id: libaspect-list.h,v 1.7 2007-11-28 07:56:08 may Exp $
+** $Id: libaspect-list.h,v 1.8 2008-02-16 12:32:27 thor Exp $
 */
 
 #ifndef _LIBLIST_H_
@@ -33,31 +33,31 @@ typedef struct          s_aspect_list
 }                       list_t;
 
 /* list.c */
-int		list_init(list_t *, char*, u_int);	/* Allocate the list */
-list_t		*list_find(char *name);			/* Find a list */
-int		list_register(list_t *h, char *name);	/* Register a list */
-list_t		*list_empty(char *name);		/* Empty the list */
-list_t		*list_reverse(list_t *l);		/* Reverse the list */
-void		list_destroy(list_t *h);		/* Free the list */
-list_t		*list_copy(list_t *h);			/* Copy a list */
-int		list_add(list_t *h, char *k, void *d);	/* Add an entry */
-int		list_del(list_t *h, char *key);		/* Delete an entry */
-void		*list_get(list_t *h, char *key);	/* Get data from key */
-void 		*list_select(list_t *h, char *key);	/* Get an entry pointer */
-listent_t	*list_get_head(list_t *h);		/* Get a list head */
-listent_t 	*list_get_ent(list_t *h, char *key);	/* Get an entry metadata */
-void		list_print(list_t *h);			/* Print the list */
-char**		list_get_keys(list_t *h, int* n);	/* Create array of keys */
-void		list_free_keys(char **keys);		/* Free keys */
-int             list_apply(list_t *h, void *ptr, 
+int		elist_init(list_t *, char*, u_int);	/* Allocate the list */
+list_t		*elist_find(char *name);			/* Find a list */
+int		elist_register(list_t *h, char *name);	/* Register a list */
+list_t		*elist_empty(char *name);		/* Empty the list */
+list_t		*elist_reverse(list_t *l);		/* Reverse the list */
+void		elist_destroy(list_t *h);		/* Free the list */
+list_t		*elist_copy(list_t *h);			/* Copy a list */
+int		elist_add(list_t *h, char *k, void *d);	/* Add an entry */
+int		elist_del(list_t *h, char *key);		/* Delete an entry */
+void		*elist_get(list_t *h, char *key);	/* Get data from key */
+void 		*elist_select(list_t *h, char *key);	/* Get an entry pointer */
+listent_t	*elist_get_head(list_t *h);		/* Get a list head */
+listent_t 	*elist_get_ent(list_t *h, char *key);	/* Get an entry metadata */
+void		elist_print(list_t *h);			/* Print the list */
+char**		elist_get_keys(list_t *h, int* n);	/* Create array of keys */
+void		elist_free_keys(char **keys);		/* Free keys */
+int             elist_apply(list_t *h, void *ptr, 
 			   int (*f)(listent_t *e, void *p)); /* Apply function */
-int		list_merge(list_t *dst, list_t *src);	/* Fuse lists */
-int		list_unmerge(list_t *dst, list_t *src); /* Quotient lists */
-int		list_size(list_t *hash);		/* Return the elm nbr */
-int		list_set(list_t *h, char *key, void *data); /* Change meta data for a key */
-int		list_replace(list_t *h, char *k, list_t *nl); /* Replace one elem by a list */
-int		list_compare(list_t *first, list_t *two);     /* Compare the content of 2 lists */
-u_char		list_linearity_get(list_t *l);		      /* Get linearity of a list */
-void		list_linearity_set(list_t *l, u_char val);    /* Set linearity of a list */
+int		elist_merge(list_t *dst, list_t *src);	/* Fuse lists */
+int		elist_unmerge(list_t *dst, list_t *src); /* Quotient lists */
+int		elist_size(list_t *hash);		/* Return the elm nbr */
+int		elist_set(list_t *h, char *key, void *data); /* Change meta data for a key */
+int		elist_replace(list_t *h, char *k, list_t *nl); /* Replace one elem by a list */
+int		elist_compare(list_t *first, list_t *two);     /* Compare the content of 2 lists */
+u_char		elist_linearity_get(list_t *l);		      /* Get linearity of a list */
+void		elist_linearity_set(list_t *l, u_char val);    /* Set linearity of a list */
 
 #endif /* _LIBLIST_H_ */

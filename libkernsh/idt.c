@@ -1,7 +1,7 @@
 /*
 ** idt.c for libkernsh
 **
-** $Id: idt.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
+** $Id: idt.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libkernsh.h"
@@ -95,7 +95,7 @@ int kernsh_idt_linux(list_t *lidt)
 				   sizeof(dint->name));
 
 	  /* Add the interrupt in the list */
-	  list_add(lidt, key, (void *) dint);
+	  elist_add(lidt, key, (void *) dint);
 	}
     }
 

@@ -8,7 +8,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id: altplt.c,v 1.11 2007-06-27 11:25:12 heroine Exp $
+** $Id: altplt.c,v 1.12 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -17,6 +17,15 @@
 /**
  * The first PLT entry is always a special case and it is handled by this 
  * function 
+ *
+ * @param new
+ * @param off
+ * @param symtab
+ * @param file
+ * @param extplt
+ * @param plt
+ * @param diff
+ * @return
  */
 int		elfsh_altplt_firstent(elfshsect_t	*new, 
 				      u_int		*off,
@@ -84,6 +93,10 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
 /**
  * Copy the PLT of an ET_EXEC object for the ALTPLT technique.
  * Copy the GOT of an ET_EXEC object for the ALTGOT technique.
+ *
+ * @param file
+ * @param mod
+ * @return
  */
 int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 {
@@ -417,6 +430,9 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
  * entry in the .dynamic section and continue to rely on the ALTPLT 
  * technique (call's the original functions using the injected 'old_' 
  * symbol) just like ALTPLT redirection on other architectures. -mm
+ *
+ * @param file
+ * @return
  */
 int		elfsh_build_plt(elfshobj_t *file)
 {
@@ -522,6 +538,10 @@ int		elfsh_build_plt(elfshobj_t *file)
 
 /**
  * This is the main entry point for the ALTPLT, ALTGOT, and EXTPLT techniques 
+ *
+ * @param file
+ * @param modulo
+ * @return
  */
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo)
 {

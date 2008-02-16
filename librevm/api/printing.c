@@ -4,7 +4,7 @@
  * This file contains various printing facilities API
  *
  * Started on  Wed Dec 05 23:02:04 2003 jfv
- * $Id: printing.c,v 1.1 2007-12-06 05:11:58 may Exp $
+ * $Id: printing.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  */
 #include "revm.h"
 
@@ -12,6 +12,9 @@
 
 /** 
  * Debug purpose 
+ *
+ * @param start
+ * @return
  */
 int		revm_printscript(revmargv_t *start)
 {
@@ -40,6 +43,8 @@ int		revm_printscript(revmargv_t *start)
 
 /** 
  * Scripting report purpose 
+ * @param cur
+ * @return
  */
 void		revm_print_actual(revmargv_t *cur)
 {

@@ -1,12 +1,11 @@
 /*
-** (C) 2006 Devhell Labs / Asgard Labs : sk, jfv, thorolf
+** (C) 2006-2007 The ERESI team
 ** 
 ** @file core.c
 ** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.42 2007-12-07 16:49:49 may Exp $
+** $Id: core.c,v 1.43 2008-02-16 12:32:27 thor Exp $
 */
-
 #include "libmjollnir.h"
 
 
@@ -15,16 +14,16 @@
  * @param sess Mjollnir session
  * @param section_name The name of the section we want to analyse
  */
-int			mjr_analyse_section(mjrsession_t *sess, char *section_name) 
+int		mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   container_t	*cntnr;
-  elfshsect_t    	*sct;
-  asm_instr		instr;
-  unsigned char		*ptr;
-  unsigned long		curr, len;
-  u_int			vaddr, ilen;
-  elfsh_Addr		e_point;
-  elfsh_Addr		main_addr;
+  elfshsect_t   *sct;
+  asm_instr	instr;
+  unsigned char	*ptr;
+  unsigned long	curr, len;
+  u_int		ilen;
+  elfsh_Addr	e_point, vaddr;
+  elfsh_Addr	main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -56,9 +55,9 @@ int			mjr_analyse_section(mjrsession_t *sess, char *section_name)
   /* Create block pointing to this section */
   if (sct->shdr->sh_addr == e_point)
     {
-      printf(" [*] Entry point: %lx\n", (unsigned long) e_point);
+      printf(" [*] Entry point: " AFMT "\n", e_point);
       main_addr = mjr_trace_start(sess->cur, ptr, sct->shdr->sh_size, e_point);
-      printf(" [*] main located at %lx\n", (unsigned long) main_addr);
+      printf(" [*] main located at " AFMT "\n", main_addr);
     }
   else
     {
@@ -73,8 +72,7 @@ int			mjr_analyse_section(mjrsession_t *sess, char *section_name)
       ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
       
 #if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%x\n",
-	      __FUNCTION__, __FILE__, __LINE__, ilen);
+      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", __FUNCTION__, __FILE__, __LINE__, ilen);
 #endif
       
       if (ilen > 0) 
@@ -93,6 +91,8 @@ int			mjr_analyse_section(mjrsession_t *sess, char *section_name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+
 /**
  * @brief Main analysis function 
  * @param sess Mjollnir session strucutre
@@ -102,10 +102,12 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 {
   char		*shtName;
   elfsh_Shdr	*shtlist, *shdr;
-  elfsh_Sym	*sym;
+  elfsh_Sym	*sym, *lastsym;
   elfshsect_t	*sct;
-  container_t *fcnt;
+  container_t	*fcnt;
   int		num_sht, idx_sht;
+  int		index, blocksize;
+  elfsh_Addr	addr;
   char		c;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -121,33 +123,31 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to get SHT", -1);
   
-  /* Make sure we do what the user desires */
-  /* XXX: should go in elfsh analyse command and use revm_output */
-  // Just to make sure we remove previously done analysis if user call
-  // analyse a second time
+  /* Make sure we do what the user desires (remove previously stored analysis) */
+  /* FIXME: should go in libstderesi/cmd_analyse command and use revm_output */
   if (sess->cur->analysed)
-  {
-    printf(" [*] %s section present ! \n"
-	   "     Analysis will remove currently stored information. "
-	   "continue ? [N/y]", ELFSH_SECTION_NAME_EDFMT_BLOCKS);
-    
-    c = getchar();
-    puts("");
-    
-    if (c != 'y')
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Flow analysis aborted", 0);
-    
-    elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS);
-  }
+    {
+      printf(" [*] %s section present ! \n"
+	     "     Analysis will remove currently stored information. "
+	     "continue ? [N/y]", ELFSH_SECTION_NAME_EDFMT_BLOCKS);
+      
+      c = getchar();
+      puts("");
+      
+      if (c != 'y')
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Flow analysis aborted", 0);
+      
+      elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS);
+    }
   
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
 #endif
 
   /* 
-     First run, create blocks starting at section vaddr
-     and in size of the section 
+  ** First run, create blocks starting at section vaddr
+  ** and in size of the section 
   */
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
   {
@@ -166,21 +166,13 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Can't get section", -1);
 
-
 #if __DEBUG_MJOLLNIR__
     fprintf(D_DESC, "[__DEBUG__] %s: 1st run - Executable section name=(%14s) "
 	    "index=(%02i) vaddr=(%x) size=(%d)\n", 
-	    __FUNCTION__,
-	    shtName, 
-	    idx_sht,
-	    sct->shdr->sh_addr,
-	    sct->shdr->sh_size);
+	    __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
 #endif
 
-    fcnt = mjr_create_block_container(sess->cur,
-				      0, 
-				      sct->shdr->sh_addr,
-				      sct->shdr->sh_size);
+    fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, sct->shdr->sh_size, 1);
     if (!fcnt)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Can't create initial blocks", -1);
@@ -189,6 +181,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 
   }
   
+
   /* Analyse all executable sections */
   for (idx_sht = 0; idx_sht < num_sht; idx_sht++) 
   {
@@ -208,6 +201,30 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
     mjr_analyse_section(sess, shtName);
   }
 
+  /* Find all unseen blocks (may be dead code) */
+  for (lastsym = NULL, index = 0, sym = sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB]->altdata;
+       index < sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(elfsh_Sym);
+       index++)
+    {
+      if (elfsh_get_symbol_type(sym + index) != STT_BLOCK)
+	continue;
+      if (!lastsym)
+	{
+	  lastsym = sym;
+	  continue;
+	}
+      if (lastsym->st_value + lastsym->st_size != sym->st_value)
+	{
+	  addr = lastsym->st_value + lastsym->st_size;
+	  blocksize = sym->st_value - addr;
+	  mjr_create_block_container(sess->cur, 0, addr, blocksize, 0);
+	  lastsym = sym;
+	  
+	  fprintf(stderr, " [D] Adding UNLINKED block at " XFMT " ! \n", addr);
+
+	}
+    }
+       
   /* Store analyzed functions in file */
   if (mjr_flow_store(sess->cur, ASPECT_TYPE_FUNC) <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

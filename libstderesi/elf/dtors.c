@@ -4,7 +4,7 @@
 ** Started on  Tue Feb 26 22:08:20 2002 jfv
 **
 **
-** $Id: dtors.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: dtors.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -31,21 +31,21 @@ int		cmd_dtors()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  dtors = elfsh_get_dtors(world.curjob->current, &size);
+  dtors = elfsh_get_dtors(world.curjob->curfile, &size);
   if (dtors == NULL)
     RET(-1);
   FIRSTREGX(tmp);
   snprintf(logbuf, BUFSIZ - 1,
 	   " [Destructors array .::. DTORS]\n [Object %s]\n\n", 
-	   world.curjob->current->name);
+	   world.curjob->curfile->name);
   revm_output(logbuf);
   off[0] = 0;
 
   for (index = 0; index < size; index++)
     {
 
-      name = elfsh_reverse_symbol(world.curjob->current, dtors[index], &offset);
-      dname = elfsh_reverse_dynsymbol(world.curjob->current, dtors[index], &doffset);
+      name = elfsh_reverse_symbol(world.curjob->curfile, dtors[index], &offset);
+      dname = elfsh_reverse_dynsymbol(world.curjob->curfile, dtors[index], &doffset);
       if (dname && doffset < offset)
 	{
 	  name = dname;

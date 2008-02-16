@@ -3,7 +3,7 @@
 ** 
 ** Started on  Sat Jan 25 11:20:20 2003 jfv
 **
-** $Id: list.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id: list.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -69,7 +69,7 @@ int		cmd_dolist()
 	  nl = strchr(time, '\n');
 	  if (nl)
 	    *nl = 0x00;
-	  c = (world.curjob->current == actual ? '*' : ' ');
+	  c = (world.curjob->curfile == actual ? '*' : ' ');
 	  c2 = ((actual->linkmap || actual->rhdr.base) ? 'M' : ' ');
 	  if (elfsh_is_debug_mode())
 	    snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
@@ -108,7 +108,7 @@ int		cmd_dolist()
 	  nl = strchr(time, '\n');
 	  if (nl)
 	    *nl = 0x00;
-	  c = (world.curjob->current == actual ? '*' : ' ');
+	  c = (world.curjob->curfile == actual ? '*' : ' ');
 	  c2 = (actual->linkmap ? 'L' : ' ');
 	  if (elfsh_is_debug_mode())
 	    snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);

@@ -1,19 +1,29 @@
-/*
-** $Id: op_fwait.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
-**
-*/
+/** 
+ * $Id: op_fwait.c,v 1.7 2008-02-16 12:32:26 thor Exp $
+ * @file  op_fwait.c
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
-  <instruction func="op_fwait" opcode="0x9b"/>
+/**
+ * Instruction handler for opcode 0x9b.
+ * This opcode is the for fwait prefix opcode.
+ * Disassembling is forwarded on next byte after execution of this
+ * handler.
+ * 
+ * @param new Pointer to instruction structure.
+ * @param opcode Pointer to buffer to disassemble.
+ * @param len Length of buffer to disassemble.
+ * @param proc Pointer to processor structure.
+ * @return Length of disassembled instruction.
  */
 
 int op_fwait(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
+  puts("w00t w00t");
   new->len += 1;
-  new->ptr_instr = opcode;
-  new->instr = ASM_FWAIT;
-  new->type = ASM_TYPE_NOP;
-  return (new->len);
+  if (!new->ptr_prefix)
+    new->ptr_instr = opcode;
+  new->prefix |= ASM_PREFIX_FWAIT;
+  return (proc->fetch(new, opcode + 1, len - 1, proc));
 }

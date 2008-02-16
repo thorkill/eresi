@@ -5,7 +5,7 @@
 ** Started on  Tue Jul 24 06:40:07 2001 jfv
 ** 
 **
-** $Id: plt.c,v 1.5 2007-07-31 03:28:46 may Exp $
+** $Id: plt.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,9 @@
 
 /**
  * Load the Procedure Linkage Table 
+ * @param file
+ * @param num
+ * @return
  */
 elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num)
 {
@@ -50,6 +53,9 @@ elfshsect_t	*elfsh_get_plt(elfshobj_t *file, int *num)
 
 /**
  * Return 1 if the section is the plt or 0 if its not 
+ * @param file
+ * @param sct
+ * @return
  */
 int		elfsh_is_plt(elfshobj_t *file, elfshsect_t *sct)
 {
@@ -65,6 +71,9 @@ int		elfsh_is_plt(elfshobj_t *file, elfshsect_t *sct)
 
 /**
  * Return 1 if the section is the plt or 0 if its not 
+ * @param file
+ * @param sct
+ * @return
  */
 int		elfsh_is_altplt(elfshobj_t *file, elfshsect_t *sct)
 {
@@ -80,6 +89,9 @@ int		elfsh_is_altplt(elfshobj_t *file, elfshsect_t *sct)
 
 /**
  * Return 1 if the symbol points in the PLT, 0 if not, -1 if the PLT cant be found 
+ * @param file
+ * @param sym
+ * @return
  */
 int			elfsh_is_pltentry(elfshobj_t *file, elfsh_Sym *sym)
 {
@@ -103,6 +115,8 @@ int			elfsh_is_pltentry(elfshobj_t *file, elfsh_Sym *sym)
 
 /**
  * Return the size of 1 PLT entry 
+ * @param file
+ * @return
  */
 int		elfsh_get_pltentsz(elfshobj_t *file)
 {
@@ -140,6 +154,8 @@ int		elfsh_get_pltentsz(elfshobj_t *file)
 /**
  * Return the size of the FIRST PLT entry on this arch
  * Its a different size on Alpha and Sparc 
+ * @param file
+ * @return
  */
 int		 elfsh_get_first_pltentsz(elfshobj_t *file)
 {

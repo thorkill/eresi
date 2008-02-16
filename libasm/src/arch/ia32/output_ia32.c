@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.12 2007-10-14 00:01:41 heroine Exp $
+** $Id: output_ia32.c,v 1.13 2008-02-16 12:32:26 thor Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002
@@ -338,7 +338,7 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
     strcat(buffer, "repz ");
   if (instr->prefix & ASM_PREFIX_REPNE)
     strcat(buffer, "repnz ");
-  
+
   if (instr->instr >= 0 && instr->instr <= ASM_BAD)
     { 
       if (instr->proc->instr_table[instr->instr] != NULL)

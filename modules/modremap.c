@@ -11,10 +11,10 @@
 **
 ** Fixed by ELFsh crew for the ELFsh project
 **
-** $Id: modremap.c,v 1.4 2007-07-17 18:11:25 may Exp $
+** $Id: modremap.c,v 1.5 2008-02-16 12:32:27 thor Exp $
 **
 */
-#include "elfsh.h"
+#include "libstderesi.h"
 
 
 #define		CMD_REMAP	"remap"
@@ -41,7 +41,7 @@ int		remap_cmd()
   if (new_base == 0 || i != 1) 
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid new base address", -1);
-  file = world.curjob->current;
+  file = world.curjob->curfile;
 
   if (elfsh_read_obj(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

@@ -7,7 +7,7 @@
 ** 
 ** Started on Sat Nov 25 21:19:53 2006 jfv
 **
-** $Id: search.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
+** $Id: search.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -21,6 +21,9 @@ static hash_t *hash_shared = NULL;
 
 /**
  * @brief Register list of objects to work with 
+ * @param prvhash
+ * @param sharedhash
+ * @return
  */
 int		elfsh_register_working_objects(hash_t *prvhash,
 					       hash_t *sharedhash)
@@ -37,6 +40,10 @@ int		elfsh_register_working_objects(hash_t *prvhash,
  * Return the strongest symbol in the object
  * FIXME : we dont support symbol selection when 2 'concurrent' 
  * symbols are in the same object, take care 
+ *
+ * @param choice
+ * @param candidate
+ * @return
  */
 elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 {
@@ -56,6 +63,8 @@ elfsh_Sym	*elfsh_strongest_symbol(elfsh_Sym *choice, elfsh_Sym *candidate)
 
 /**
  * Find in the available objects list the most important symbol with this name 
+ * @param name
+ * @return
  */
 elfshobj_t	*elfsh_find_obj_by_symbol(char *name)
 {

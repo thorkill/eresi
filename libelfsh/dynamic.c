@@ -5,7 +5,7 @@
 ** Started on  Tue Feb 27 04:36:53 2001 jfv
 ** 
 **
-** $Id: dynamic.c,v 1.10 2007-07-31 03:28:46 may Exp $
+** $Id: dynamic.c,v 1.11 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -13,6 +13,8 @@
 
 /**
  * Change endianess of .dynamic 
+ * @param newent
+ * @return
  */
 int		elfsh_endianize_dynamic(elfshsect_t *newent)
 {	  
@@ -47,6 +49,9 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
 
 /**
  * Return a ptr on the dynamic section 
+ * @param file
+ * @param num
+ * @return
  */
 elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 {
@@ -89,6 +94,8 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
 
 /**
  * Return the tag field of the dynamic entry 
+ * @param d
+ * @return
  */
 elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
 {
@@ -102,6 +109,9 @@ elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
 
 /**
  * Change the tag field of the dynamic entry 
+ * @param d
+ * @param tag
+ * @return
  */
 int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
 {
@@ -117,6 +127,8 @@ int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
 
 /**
  * Return the tag field of the dynamic entry 
+ * @param d
+ * @return
  */
 elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
 {
@@ -130,6 +142,9 @@ elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
 
 /**
  * Change the val field of the dynamic entry 
+ * @param d
+ * @param val
+ * @return
  */
 int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
 {
@@ -145,6 +160,9 @@ int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
 
 /**
  * Retreive the information giving the entry 
+ * @param file elfsh object.
+ * @param ent
+ * @return
  */
 char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 {
@@ -172,6 +190,9 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 
 /**
  * Get .dynamic entries by type 
+ * @param file
+ * @param type
+ * @return
  */
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, 
 						 elfsh_Word type)
@@ -199,9 +220,11 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
 		    "No dynamic entry with that type", NULL);
 }
 
-
 /**
  * Return a elfsh_Dyn entry by its index 
+ * @param dynamic
+ * @param index
+ * @return
  */
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, 
 						  elfsh_Addr index)
@@ -210,9 +233,10 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dynamic + index));
 }
 
-
 /**
  * Say if the entry is a pointer 
+ * @param ent
+ * @return
  */
 int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 {
@@ -240,6 +264,10 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
 
 /**
  * Shift the .dynamic section in ET_DYN files 
+ *
+ * @param file
+ * @param size
+ * @return
  */
 int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 {
@@ -264,6 +292,10 @@ int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
 /**
  * FIXME: TEST?
  * Just a test 
+ * @param robj
+ * @param data
+ * @param real_index
+ * @return
  */
 int		elfsh_get_dynent_by_type(elfshobj_t	*robj, 
 					 elfsh_Dyn	*data,

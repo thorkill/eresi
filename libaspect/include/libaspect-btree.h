@@ -6,14 +6,15 @@
 ** Started : Fri Oct 17 14:30:27 2003
 ** Updated : Thu Nov 27 23:27:49 2003
 **
-** $Id: libaspect-btree.h,v 1.3 2007-08-03 11:50:59 heroine Exp $
+** $Id: libaspect-btree.h,v 1.4 2008-02-16 12:32:27 thor Exp $
 **
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#ifndef __KERNEL__
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+#endif
 
 /**
  * @brief Graphviz node pattern for debugging purpose
@@ -30,13 +31,16 @@
 "id = %i\n"\
 "];\n"
 
+#ifndef __KERNEL__
 /**
  *
  */
-struct s_debug {
+struct s_debug 
+{
   FILE	*fp;
   int	link;
 };
+#endif
 
 /**
  * @brief Binary tree structure.

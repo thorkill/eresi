@@ -5,7 +5,7 @@
 **
 ** Started on Wed Feb 28 19:19:04 2007 jfv
 **
-** $Id: foreach.c,v 1.2 2007-12-09 23:00:18 may Exp $
+** $Id: foreach.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"
@@ -83,21 +83,21 @@ int		cmd_foreach()
       table = hash_find(tablename);
       if (!table)
 	{
-	  list = list_find(tablename);
+	  list = elist_find(tablename);
 	  if (!list)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to find hash table", -1);
 	    }
-	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && list_linearity_get(list))
+	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && elist_linearity_get(list))
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Cannot iterate again on linearly typed list", -1);
 	    }
-	  list_linearity_set(list, 1);
-	  keys = list_get_keys(list, &keynbr);
+	  elist_linearity_set(list, 1);
+	  keys = elist_get_keys(list, &keynbr);
 	  world.curjob->iter.list = list;
 	}
       else
@@ -134,7 +134,7 @@ int		cmd_foreach()
 		  if (table)
 		    hash_set(table, keys[index - 1], (void *) lastvalue);
 		  else
-		    list_set(list, keys[index - 1], (void *) lastvalue);
+		    elist_set(list, keys[index - 1], (void *) lastvalue);
 		  //printf("back-assignment into the list for element %s at index %u of value %X \n", 
 		  //keys[index - 1], index - 1, lastvalue);
 		}
@@ -157,7 +157,7 @@ int		cmd_foreach()
 	  if (table)
 	    hash_linearity_set(table, 0);
 	  else if (list)
-	    list_linearity_set(list, 0);
+	    elist_linearity_set(list, 0);
 	  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
 	  revm_move_pc(world.curjob->curcmd->endlabel);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
@@ -177,7 +177,7 @@ int		cmd_foreach()
 	}
       else
 	{
-	  elem = list_get(list, keys[index]);
+	  elem = elist_get(list, keys[index]);
 	  typeid = list->type;
 	}
 

@@ -5,7 +5,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id: types.c,v 1.23 2007-12-07 16:49:49 may Exp $
+** $Id: types.c,v 1.24 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"
@@ -42,6 +42,8 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
 
 /**
  * @brief Indicate if a type is simple (1) or not (0)
+ * @param typeid Type identifier to be checked 
+ * @return 1 if type is simple, 0 if not
  */
 int			aspect_type_simple(int typeid)
 {
@@ -52,7 +54,14 @@ int			aspect_type_simple(int typeid)
 }
 
 /** 
- * @Brief Copy the structure representing a data type for creating a new meta-type instance
+ * @brief Copy the structure representing a field data type for creating a new meta-type instance
+ * @param type Type structure for the field data type 
+ * @param off Offset in parent data type
+ * @param isptr Indicate if field data type is a pointer
+ * @param elemnbr Element numbers (if typing an array)
+ * @param fieldname Name for typed field
+ * @param dims Dimension array for type
+ * @return Type structure derived from input information
  */
 aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
@@ -78,7 +87,12 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
 
 /**
  * @brief Copy the structure representing a data type and change its name to create a new meta-type
- *
+ * @param type Type structure to be copied
+ * @param name Type name to be copied
+ * @param fieldshash Hash table of fields for this type (if structure type)
+ * @param curdepth Number of pointer indirections since start of copy
+ * @param maxdepth Maximum number of pointer indirections for whole copy
+ * @return Copied meta-type structure
  */
 aspectype_t		*aspect_type_copy_by_name(aspectype_t   *type, 
 						  char		*name, 
@@ -165,6 +179,9 @@ aspectype_t		*aspect_type_copy_by_name(aspectype_t   *type,
 
 /** 
  * @brief Add a field to a meta-type
+ * @param parent Parent data type 
+ * @param field Field data type to add to parent
+ * @return 0 on succes and -1 on error
  */
 int		aspect_type_addfield(aspectype_t *parent, 
 				     aspectype_t *field)
@@ -174,7 +191,7 @@ int		aspect_type_addfield(aspectype_t *parent,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!parent || !field)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid NULL parameter", 0);
+		      "Invalid NULL parameter", -1);
   if (!parent->childs)
     parent->childs = field;
   else 
@@ -182,13 +199,16 @@ int		aspect_type_addfield(aspectype_t *parent,
       for (next = parent->childs; next->next; next = next->next);
       next->next = field;
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
 /** 
  * @brief Find the number of dimensions for a field 
+ * @param typename Complete type name string (can be array)
+ * @param dimnbr Pointer on dimension number integer to be filled
+ * @return NULL on error or dimension array on succesfull allocation
 */
 static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
 {
@@ -243,7 +263,11 @@ static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
 }
 
 
-/* Find the size of an union type */
+/**
+ * @brief Find the size of an union type 
+ * @param utype Union type whose size is to be infered
+ * @return Total size for union type
+ */
 int			aspect_type_find_union_size(aspectype_t *utype)
 {
   int			biggest = 0;
@@ -265,7 +289,14 @@ int			aspect_type_find_union_size(aspectype_t *utype)
 
 
 
-/* Create a new type */
+/**
+ * @brief Create a new (meta description) type
+ * @param isunion 1 if type to be created is a union
+ * @param label String name for new type
+ * @param fields List of fields for type
+ * @param fieldnbr Number of fields for type
+ * @return Created type structure
+ */
 aspectype_t		*aspect_type_create(u_char isunion,
 					    char *label, 
 					    char **fields, 
@@ -461,7 +492,12 @@ aspectype_t		*aspect_type_create(u_char isunion,
 }
 
 
-/* The real type registering code */
+/**
+ * @brief The real type registering code 
+ * @param label Name for type to be registered
+ * @param ntype Type structure to be registered
+ * @return 0 on success and -1 on error
+ */
 int		aspect_type_register_real(char	      *label, 
 					  aspectype_t *ntype)
 {
@@ -492,7 +528,14 @@ int		aspect_type_register_real(char	      *label,
 }
 
 
-/* Interface for type creation */
+/**
+ * @brief Wrapper for easy type creation and registration
+ * @param isunion 1 if registered type is a union
+ * @param label Name of registered type
+ * @param fields Array of field names for registered type
+ * @param fieldnbr Number of fields for registered type
+ * @return 0 on success and -1 on error
+ */
 int		aspect_type_register(u_char isunion,
 				     char *label, 
 				     char **fields, 
@@ -515,7 +558,12 @@ int		aspect_type_register(u_char isunion,
 }
 
 
-/* Create a type with a single field */
+/** 
+ * @brief Create a new type with a single field (internal function)
+ * @param type Type identifier to be created
+ * @param info Internal typeinfo structure related to newly created type
+ * @return 0 on success and -1 on error
+ */
 static int	aspect_basetype_create(u_int type, typeinfo_t *info)
 {
   aspectype_t	*newtype;
@@ -540,7 +588,10 @@ static int	aspect_basetype_create(u_int type, typeinfo_t *info)
 }
 
 
-/* Create all simple types */
+/**
+ * @brief Create all simple types 
+ * @return 0 on success and -1 on error
+ */
 int		aspect_basetypes_create()
 {
   int		index;
@@ -560,7 +611,12 @@ int		aspect_basetypes_create()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
-/* Get a the type of a "child" field from field name */
+/**
+ * @brief Get field type from field name and parent type
+ * @param parent Parent type structure
+ * @param name Field name to lookup
+ * @return Type for looked-up field
+ */
 aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name)
 {
   aspectype_t	*cur;
@@ -573,7 +629,11 @@ aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name)
 	       "Unknown child name", NULL);
 }
 
-/* Get a type by its type id */
+/**
+ * @brief Get a type by its type id 
+ * @param id Type identifier to be found
+ * @return Structure for matching type
+ */
 aspectype_t	*aspect_type_get_by_id(unsigned int id)
 {
   aspectype_t	*type;
@@ -588,7 +648,11 @@ aspectype_t	*aspect_type_get_by_id(unsigned int id)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);  
 }
 
-/* Get a type by its type id */
+/** 
+ * @brief Get a type by its type id 
+ * @param name Type name to be found
+ * @return Structure for matching type
+ */
 aspectype_t	*aspect_type_get_by_name(char *name)
 {
   aspectype_t	*type;
@@ -600,7 +664,11 @@ aspectype_t	*aspect_type_get_by_name(char *name)
 
 
 
-/* Return the list of base types */
+/**
+ * @brief Return the list of base types 
+ * @param nbr Integer pointer that will be filled with the number of base types
+ * @return Pointer on array of internal Typeinfo structures
+ */
 typeinfo_t	*aspect_basetype_get(unsigned int *nbr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -610,7 +678,12 @@ typeinfo_t	*aspect_basetype_get(unsigned int *nbr)
 }
 
 
-/* Add a simple type */
+/**
+ * @brief Create and register a new simple type 
+ * @param name Name for new base type
+ * @param size Total size for new base type
+ * @return -1 on error and 0 on success
+ */
 int		aspect_basetype_register(char *name, u_int size)
 {
   typeinfo_t	info;
@@ -644,7 +717,11 @@ int		aspect_basetype_register(char *name, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
-/* Retreive the ascii name of a type */
+/** 
+ * @brief Retreive the ascii name of a type 
+ * @param type Requested type identifier
+ * @return Name associated to type identifier
+ */
 char		*aspect_typename_get(u_int type)
 {
   if (type >= aspect_type_nbr)
@@ -652,7 +729,11 @@ char		*aspect_typename_get(u_int type)
   return (aspect_typeinfo[type].name);
 }
 
-/* Retreive the size (in bytes) of a type */
+/**
+ * @brief Retreive the size (in bytes) of a type 
+ * @param type Requested type identifier
+ * @return Size of requested type
+ */
 u_int		aspect_typesize_get(u_int type)
 {
   if (type >= aspect_type_nbr)

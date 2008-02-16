@@ -6,7 +6,7 @@
 ** Started : Fri Oct 17 14:29:24 2003
 ** Updated : Thu Nov 27 23:29:29 2003
 **
-** $Id: libbtree.c,v 1.7 2007-08-03 11:50:59 heroine Exp $
+** $Id: libbtree.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 
@@ -191,8 +191,8 @@ void	btree_browse_suffix(btree_t *root, int (*apply)(void *, void *), void *ptr)
 }
 
 /**
- * @brief free full try.
- * @param mode if mode is not null, elem is free-ed too
+ * @brief free full tree.
+ * @param mode if mode is not null, tree elements are also freed
  */
 
 void	btree_free(btree_t *root, int mode)
@@ -206,6 +206,9 @@ void	btree_free(btree_t *root, int mode)
       XFREE(__FILE__, __FUNCTION__, __LINE__, root);
     }
 }
+
+
+#ifndef __KERNEL__
 
 /**
  *
@@ -268,3 +271,4 @@ void	btree_debug(btree_t *root, char *filename,
     }
 }
 
+#endif

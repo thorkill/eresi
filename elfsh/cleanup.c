@@ -1,18 +1,20 @@
-/*
-** cleanup.c for elfsh
-**
-** This command cleanup a file by marking as removed all injected sections
-**
-** Started on  Sat May 31 23:48:41 2005 jfv
-**
-** $Id: cleanup.c,v 1.5 2007-07-31 03:28:46 may Exp $
-**
-*/
+/**
+ * @file cleanup.c
+ *
+ * This command cleanup a file by marking as removed all injected sections
+ *
+ * Started on  Sat May 31 23:48:41 2005 jfv
+ *
+ * $Id: cleanup.c,v 1.6 2008-02-16 12:31:34 thor Exp $
+ *
+ */
 #include "elfsh.h"
 
 
-
-
+/**
+ * FIXME
+ * @return
+ */
 int		cmd_cleanup()
 {
   elfshobj_t	*obj;
@@ -28,7 +30,7 @@ int		cmd_cleanup()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
 
-  sect = world.curjob->current->sectlist;
+  sect = world.curjob->curfile->sectlist;
   nbr = 0;
   for (index = 0; index < obj->hdr->e_shnum; index++, sect = sect->next)
     if (strstr(sect->name, ".o.") || strstr(sect->name, "elfsh"))
@@ -39,8 +41,8 @@ int		cmd_cleanup()
 	nbr++;
       }
 
-  world.curjob->current->nbrm = nbr;
-  //world.curjob->current->strip = 1;
+  world.curjob->curfile->nbrm = nbr;
+  //world.curjob->curfile->strip = 1;
 
   revm_output("\n [*] File marked for cleanup-on-save \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

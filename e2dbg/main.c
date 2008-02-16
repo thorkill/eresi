@@ -1,21 +1,25 @@
 /*
-** main.c for e2dbg
-**
-** The embedded ELF debugger
-**
-** Started on  Wed Feb 21 22:02:36 2001 jfv
-** Updated on  Wed Jan 03 17:51:04 2007 jfv
-**
-** $Id: main.c,v 1.19 2007-07-31 23:30:35 may Exp $
-**
-*/
+ * @file main.c
+ *
+ * The embedded ELF debugger
+ *
+ * Started on  Wed Feb 21 22:02:36 2001 jfv
+ * Updated on  Wed Jan 03 17:51:04 2007 jfv
+ *
+ * $Id: main.c,v 1.20 2008-02-16 12:30:23 thor Exp $
+ *
+ */
 #include "e2dbg.h"
 
 
 char		*version;
 
+//#undef ELFSH_DBGPATH
+//#define ELFSH_DBGPATH	"/home/enioreh/devhell/eresi/libe2dbg"
 
-/* Setup LD_PRELOAD for dynamic binaries debugging */
+/**
+ * Setup LD_PRELOAD for dynamic binaries debugging 
+ */
 void		revm_debugger_preload()
 {
 #if defined(sun)
@@ -47,7 +51,11 @@ void		revm_debugger_preload()
 
 
 
-/* Inject the .o debugger file into the static binary */
+/**
+ * Inject the .o debugger file into the static binary 
+ * @param file
+ * @return
+ */
 char*		revm_debugger_inject(elfshobj_t *file)
 {
   char		*buf;
@@ -110,7 +118,12 @@ char*		revm_debugger_inject(elfshobj_t *file)
 
 
 
-/* Execute the debuggee program */
+/**
+ * Execute the debuggee program 
+ * @param ac Number of arguments.
+ * @param av Array of arguments.
+ * @return
+ */
 int		revm_execute_debuggee(int ac, char **av)
 {
   char          **args;
@@ -147,7 +160,12 @@ int		revm_execute_debuggee(int ac, char **av)
 }
 
 
-/* The real main function */
+/**
+ * The real main function 
+ * @param ac
+ * @param av
+ * @return
+ */
 int		e2dbg_main(int ac, char **av)
 {
   pid_t		pid;
@@ -181,7 +199,12 @@ int		e2dbg_main(int ac, char **av)
 }
 
 
-/* The main ELFsh routine */
+/**
+ * The main ELFsh routine 
+ * @param ac
+ * @param av
+ * @return
+ */
 int		main(int ac, char **av)
 {
   //fprintf(stderr, "e2dbg client main -----------> \n");
