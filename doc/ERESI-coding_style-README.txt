@@ -51,7 +51,7 @@ D/ DOCUMENTATION
 
    1. Write text files to explain the API of what you have done
    2. Comment your code in a reasonable fashion
-
+   3. Use doxygen tags
 
 
 
@@ -409,7 +409,38 @@ D/ DOCUMENTATION :
       return (blah);
     }
 
+    3. Use doxygen tags
+    -------------------
+    The eresi project grows and evolves too much to be kept appart from the source code.
+    To facilitate documentation process, an effort has been made to migrate source code from
+    comments with no constitency to doxygen commented source files.
+    
+    Use doxygen tags at last for files and functions.
+    This will provide an API reference for future developpers which can be browsed online.
+    Following tags are mandatory :
 
+    Each .c file must begin with a section like this:
+
+    /**
+     * @file path/to/the/file.c
+     * Quick description fo file content.
+     */
+
+    Functions must be preceded by comments like this:
+
+    /**
+     * Brief description of behavior
+     *
+     * Extended description.
+     *
+     * @param obj Pointer to data object
+     * @param str String describing element
+     * @return Returns variable lenght or NULL on error
+     */
+    int extract_length(objet_t *obj, char *str)
+    {
+      // ...
+    }
 
 
 ----------------------------------------------------------------------------

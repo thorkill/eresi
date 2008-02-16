@@ -229,6 +229,17 @@ KERNSH="1"
 fi
 ;;
 
+--enable-ke2dbg*)
+kos=`uname -s`
+if [ $kos = 'Linux' ]; then
+ echo " [*] Enable ke2dbg kernel debugger"
+ echo  "USE_KE2DBG	= 1"		>> $CONFIGFILE
+else
+ echo "Error: ke2dbg currently only works on Linux, do not enable it on this machine"
+ exit
+fi
+;;
+
 --prefix*)
 shift
 echo " [*] Prefix:  " $1
@@ -277,6 +288,7 @@ if [ $CHOSENBIT = "0" ]; then
     echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
     echo "   --enable-gstabs+  : Enable gstabs+ support"
     echo "   --enable-kernsh   : Build kernsh and libkernsh"
+    echo "   --enable-ke2dbg   : Build ke2dbg kernel debugger"
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
     echo "   --use-cpp         : Build the project as C++"
@@ -506,6 +518,7 @@ echo "	@echo 'Building libaspect..' "			        >> Makefile
 echo "	@cd libaspect && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libaspect has been built successfully.' "	>> Makefile
 echo "	@echo 'Building libasm...' "				>> Makefile
+echo "	@cd libasm && sh configure "				>> Makefile
 echo "	@cd libasm && \$(MAKE) "				>> Makefile
 echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
 if [ "$KERNSH" = "1" ]; then
@@ -815,6 +828,7 @@ echo "	cd libedfmt  && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libaspect && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s clean "		        >> Makefile
+echo "	cd libasm    && sh configure "				>> Makefile
 echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd liballocproxy && \$(MAKE) -s clean "			>> Makefile
 echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
@@ -835,6 +849,7 @@ fi
 echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libetrace && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libasm    && sh configure "				>> Makefile
 echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libstderesi && \$(MAKE) -s fclean "			>> Makefile
@@ -865,7 +880,7 @@ echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
 echo "	libetrace/*.c libetrace/include/*.h \\"		>> Makefile
 echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
-echo "	libaspect/*.c libe2dbg/*.c libaspect/include/*.h \\"    >> Makefile
+echo "	libaspect/*.c libe2dbg/*/*.c libaspect/include/*.h \\"  >> Makefile
 echo "	librevm/*/*.c librevm/include/*.h libe2dbg/include/*.h \\" >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
@@ -885,7 +900,7 @@ echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
 echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
 echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c \\">> Makefile
 echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
-echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
+echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
 echo "  libelfsh/include/*.h \\"    				>> Makefile
 echo "  libetrace/include/*.h \\"    				>> Makefile
@@ -918,7 +933,7 @@ echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
 echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile
 echo "  libstderesi/*/*.c libstderesi/include/*.h  \\"	        >> Makefile
-echo "  libe2dbg/*.c libe2dbg/include/*.h \\"			>> Makefile
+echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile
 echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile
 echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile
 echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"         >> Makefile
@@ -926,7 +941,7 @@ echo "  evarista/*.c evarista/include/*.h"                      >> Makefile
 echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
 echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
-echo "  libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*.c \\" >> Makefile
+echo "  libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*/*.c \\" >> Makefile
 echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
 echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"		>> Makefile
 echo "  evarista/*.c libstderesi/*/*.c"				>> Makefile
@@ -937,7 +952,7 @@ echo "	@wc -l libelfsh/*.c "					>> Makefile
 echo "	@echo '#############' LIBETRACE ONLY '#######'"	        >> Makefile
 echo "	@wc -l libetrace/*.c "					>> Makefile
 echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile
-echo "	@wc -l libe2dbg/*.c "					>> Makefile
+echo "	@wc -l libe2dbg/*/*.c "					>> Makefile
 echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile
 echo "	@wc -l libasm/src/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile
 echo "  libasm/src/arch/sparc/*.c"				>> Makefile

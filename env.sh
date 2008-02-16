@@ -15,5 +15,8 @@ export LD_LIBRARY_PATH=`pwd`/testsuite/e2dbg-multithread:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libaspect:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libedfmt/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/testsuite/e2dbg_multithreads/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/lib/debug/:$LD_LIBRARY_PATH
+
+
 
 echo Environment now ready for testing ERESI without install
