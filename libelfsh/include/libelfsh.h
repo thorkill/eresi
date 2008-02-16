@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id: libelfsh.h,v 1.79 2008-02-16 12:32:27 thor Exp $
+** $Id: libelfsh.h,v 1.80 2008-02-16 13:44:47 thor Exp $
 **
 */
 
@@ -26,8 +26,9 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <regex.h>
+#if ! __FreeBSD_version > 505100
 #include <elf.h>
-
+#endif
 #endif
 
 #include "libaspect.h"

@@ -5,7 +5,7 @@
 ** 
 ** Last update Mon Feb 26 05:05:27 2005 jfv
 **
-** $Id: libelfsh-bsd.h,v 1.9 2007-07-31 03:28:47 may Exp $
+** $Id: libelfsh-bsd.h,v 1.10 2008-02-16 13:44:47 thor Exp $
 **
 */
 
@@ -251,6 +251,8 @@ typedef struct Struct_Obj_Entry {
 #define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
 
 
+#if __FreeBSD_version > 505100
+#else
 /**
  * Version definition sections (32Bit)
  */
@@ -280,6 +282,7 @@ typedef struct
   Elf64_Word	vd_next;		/* Offset in bytes to next verdef
 					   entry */
 } Elf64_Verdef;
+#endif
 
 
 /* Legal values for vd_version (version revision).  */
@@ -287,15 +290,16 @@ typedef struct
 #define VER_DEF_CURRENT	1		/* Current version */
 #define VER_DEF_NUM	2		/* Given version number */
 
-/* Legal values for vd_flags (version information flags).  */
-#define VER_FLG_BASE	0x1		/* Version definition of file itself */
-#define VER_FLG_WEAK	0x2		/* Weak version identifier */
-
 /* Versym symbol index values.  */
 #define	VER_NDX_LOCAL		0	/* Symbol is local.  */
 #define	VER_NDX_GLOBAL		1	/* Symbol is global.  */
 #define	VER_NDX_LORESERVE	0xff00	/* Beginning of reserved entries.  */
 #define	VER_NDX_ELIMINATE	0xff01	/* Symbol is to be eliminated.  */
+
+#if ! __FreeBSD_version > 505100
+/* Legal values for vd_flags (version information flags).  */
+#define VER_FLG_BASE	0x1		/* Version definition of file itself */
+#define VER_FLG_WEAK	0x2		/* Weak version identifier */
 
 /**
  * Auxialiary version information.
@@ -340,11 +344,13 @@ typedef struct
 					   entry */
 } Elf64_Verneed;
 
+#endif
+
 /**
  * Note section contents.  Each entry in the note section begins with
  * a header of a fixed form.
  */
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || __FreeBSD_version > 505100
 /*
  * Note section are not necessary since residing in <elf.h> already
  * we avoid conflicting types
@@ -372,6 +378,8 @@ typedef struct
 #define VER_NEED_CURRENT 1		/* Current version */
 #define VER_NEED_NUM	 2		/* Given version number */
 
+
+#if ! __FreeBSD_version > 505100
 /**
  * Auxiliary needed version information.
  */
@@ -395,9 +403,8 @@ typedef struct
 					   entry */
 } Elf64_Vernaux;
 
+#endif
 
-/* Legal values for vna_flags.  */
-#define VER_FLG_WEAK	0x2		/* Weak version identifier */
 
 /* Advanced .dynamic entries : Undefined on BSD */
 #ifndef O_SYNC			
