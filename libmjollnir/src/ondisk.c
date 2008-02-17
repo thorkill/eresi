@@ -4,7 +4,7 @@
 ** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id: ondisk.c,v 1.7 2008-02-17 13:35:11 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -44,7 +44,7 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
     }
   
   /* Allocate the good size for ondisk buffer */
-  if (!buf->data)
+  if (!buf->data || !buf->allocated)
     {
       buf->allocated = nbr * sizeof(unsigned int) * 2;
       XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
@@ -60,15 +60,16 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
   while (cur)
     {
       curlink = (mjrlink_t *) cur->data;
-      memcpy(buf->data + buf->maxlen, (char *) &curlink->id , sizeof(unsigned int));
-      buf->maxlen += sizeof(unsigned int);
-      memcpy(buf->data + buf->maxlen, (char *) &curlink->type , sizeof(unsigned int));
-      buf->maxlen += sizeof(unsigned int);
-      
+
 #if __DEBUG_ONDISK__
       fprintf(D_DESC,"[D] %s.%d: stored dep id:%d dir:%d cid:%d type:%d\n",
 	      __FUNCTION__, __LINE__, c->id, type, curlink->id, curlink->type);
 #endif
+
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->id , sizeof(unsigned int));
+      buf->maxlen += sizeof(unsigned int);
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->type , sizeof(unsigned int));
+      buf->maxlen += sizeof(unsigned int);
       
       cur = cur->next;
     }
@@ -176,7 +177,7 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   size    = *(u_int      *) ((char *) curunit + sizeof(elfsh_Addr));
   
 #if __DEBUG_ONDISK__
-  fprintf(D_DESC," [*] Saving data unit %s \n", buffer);
+  fprintf(D_DESC," [*] Saving data unit %s\n", buf);
 #endif
 
   /* Else insert the block in the global buffer for the .control section */

@@ -4,7 +4,7 @@
  * @file container.c
  * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.21 2008-02-16 12:32:27 thor Exp $
+ * $Id: container.c,v 1.22 2008-02-17 13:35:11 thor Exp $
  */
 #include "libmjollnir.h"
 
@@ -264,7 +264,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create block container", NULL);  
 
-#if 1 //__DEBUG_CNTNR__
+#if __DEBUG_CNTNR__
   fprintf(D_DESC, "[D] %s: create block addr " XFMT " (sz %d)\n", __FUNCTION__, vaddr, size);
 #endif
 
@@ -362,6 +362,10 @@ void		mjr_container_dump(mjrcontext_t *ctx, int what)
 	      tf = cur->data;
 	      printf("FOUND: FUNC T:%d V:" AFMT " I:%d O:%d\n",
 		     what, tf->vaddr, cur->inlinks->elmnbr, cur->outlinks->elmnbr);
+	    }
+	  else if (cur->type == ASPECT_TYPE_BLOC)
+	    {
+	      mjr_block_dump(ctx, cur);
 	    }
 	}
     }

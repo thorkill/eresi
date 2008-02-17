@@ -6,7 +6,7 @@
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
-** $Id: blocks.c,v 1.71 2008-02-16 12:32:27 thor Exp $
+** $Id: blocks.c,v 1.72 2008-02-17 13:35:11 thor Exp $
 **
 */
 #include "libmjollnir.h"
@@ -174,6 +174,7 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc,
   prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
   if (resize)
     block->size = curaddr - block->vaddr + asm_instr_len(&ctxt->hist[MJR_HISTORY_CUR].instr);
+
   snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, block->vaddr);
   sym = elfsh_get_symbol_by_name(ctxt->obj, buffer);
   if (!sym)

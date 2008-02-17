@@ -5,7 +5,7 @@
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+ * $Id: links.c,v 1.10 2008-02-17 13:35:11 thor Exp $
  */
 #include <libmjollnir.h>
 
@@ -101,7 +101,7 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
   fprintf(stderr, "Calling location source " XFMT "\n", src);
   assert(csrc != NULL);
-  mjr_block_symbol(ctxt, csrc, src, 1);
+  mjr_block_symbol(ctxt, csrc, src, 0);
 
   /* search and/or split destination block */
   if (!(cdst = mjr_block_split(ctxt, dst, 0)))
@@ -158,7 +158,7 @@ int		mjr_link_block_jump(mjrcontext_t *ctxt,
   /* Insert symbol on terminated block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
   assert(csrc != NULL);
-  mjr_block_symbol(ctxt, csrc, src, 1);
+  mjr_block_symbol(ctxt, csrc, src, 0);
 
   /* Now split destination blocks */
   if (!(cdst = mjr_block_split(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
@@ -195,7 +195,7 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
 				 container_t *dst,
 				 int direction)
 {
-  list_t       *linklist;
+  list_t	*linklist;
   listent_t	*curent;
   listent_t	*savednext;
   mjrlink_t	*lnk;
@@ -257,13 +257,18 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
   assert(sym != NULL);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: wanted dst:%x got:%x\n", __FUNCTION__, dst, blkdst->vaddr);
+  fprintf(D_DESC,"[D] %s:%d: wanted dst:%x got:%x\n", __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
   /* Recompute sizes */
   if (blkdst->vaddr != dst)
     {
       new_size	    = blkdst->size - (dst - blkdst->vaddr);
+
+#if __DEBUG_LINKS__
+      fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
+      fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
+#endif
       blkdst->size -= new_size;
 
       assert(new_size > 0);
