@@ -20,7 +20,6 @@
 
 int op_fwait(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  puts("w00t w00t");
   new->len += 1;
   if (!new->ptr_prefix)
     new->ptr_instr = opcode;

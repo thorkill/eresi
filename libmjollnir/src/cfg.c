@@ -108,6 +108,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 
 	  /* Link function layer */
 	  mjr_link_func_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
+	  context->calls_found++;
     	}
     }
   else if (curins->type == ASM_TYPE_RETPROC)
