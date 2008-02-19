@@ -1,7 +1,7 @@
 /**
  * @file op_esc5.c
  * @ingroup handlers_ia32
- * $Id: op_esc5.c,v 1.7 2008-02-16 12:32:26 thor Exp $
+ * $Id: op_esc5.c,v 1.7 2008/01/07 01:32:56 heroine Exp $
  *
  */
 #include <libasm.h>

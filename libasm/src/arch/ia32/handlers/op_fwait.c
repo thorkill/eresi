@@ -1,5 +1,5 @@
 /** 
- * $Id: op_fwait.c,v 1.7 2008-02-16 12:32:26 thor Exp $
+ * $Id: op_fwait.c,v 1.7 2008/01/07 01:32:56 heroine Exp $
  * @file  op_fwait.c
  */
 #include <libasm.h>

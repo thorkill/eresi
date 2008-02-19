@@ -3,7 +3,7 @@
  * @brief Handler for instruction sub rv,rmv opcode 0x2b
  * @ingroup handlers_ia32
  * 
- * $Id: op_sub_rv_rmv.c,v 1.7 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_sub_rv_rmv.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

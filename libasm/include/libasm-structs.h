@@ -7,7 +7,7 @@
  * Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
  * Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
  *
- * $Id: libasm-structs.h,v 1.15 2007-10-29 11:26:44 heroine Exp $
+ * $Id: libasm-structs.h,v 1.15 2007/10/29 11:26:44 heroine Exp $
  *
  */
 

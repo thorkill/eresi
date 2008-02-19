@@ -1,5 +1,5 @@
 /*
-** $Id: op_sahf.c,v 1.4 2007-08-15 21:30:20 strauss Exp $
+** $Id: op_sahf.c,v 1.4 2007/08/15 21:30:20 strauss Exp $
 **
 */
 #include <libasm.h>

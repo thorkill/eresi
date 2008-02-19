@@ -432,6 +432,7 @@ typedef struct        s_world
   char                *scriptsdir;    /* Directory which contains script commands */
   asm_processor       proc;           /* Libasm world */
   asm_processor	      proc_sparc;     /* Libasm Sparc */
+  asm_processor	      proc_mips;      /* Libasm Mips */
   mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
   int		      fifo_s2c;	      /* Fd for the debugger IO FIFO */
   int		      fifo_c2s;	      /* Fd for the debugger IO FIFO */

@@ -1,6 +1,6 @@
 
 /**
- * $Id: register.c,v 1.2 2007-11-28 00:21:37 strauss Exp $
+ * $Id: register.c,v 1.2 2007/11/28 00:21:37 strauss Exp $
  * @file register.c
  * @brief 
  *

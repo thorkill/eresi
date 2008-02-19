@@ -1,4 +1,4 @@
-// $Id: memory.asm,v 1.1 2007-05-29 00:36:12 heroine Exp $
+// $Id: memory.asm,v 1.1 2007/05/29 00:36:12 heroine Exp $
 lea    (%ecx,%eax,1),%eax
 lea    (%edx,%eax,1),%eax
 lea    (%ebx,%eax,1),%eax

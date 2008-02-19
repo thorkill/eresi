@@ -1,7 +1,7 @@
 /**
  * @file op_shift_rmb_cl.c
  * @ingroup handlers_ia32
- * $Id: op_shift_rmb_cl.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_shift_rmb_cl.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  * Changelog
  * 2007-05-29 : instruction set was not complete.

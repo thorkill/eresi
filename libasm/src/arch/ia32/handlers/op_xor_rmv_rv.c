@@ -2,7 +2,7 @@
  * @file op_xor_rmv_rv.c
  * @ingroup handlers_ia32
  * @brief Handler for instruction xor rmv,rv opcode 0x31
- * $Id: op_xor_rmv_rv.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_xor_rmv_rv.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

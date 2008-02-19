@@ -1,6 +1,10 @@
 /**
  * @file libasm-mips.h
- * $Id: libasm-mips.h,v 1.5 2008-02-16 12:32:26 thor Exp $
+ * $Id: libasm-mips.h,v 1.5 2008/01/07 01:29:53 heroine Exp $
+ *
+ * fix and fill
+ *          - Adam 'pi3' Zabrocki
+ *
  * Manuel Martin - 2007
  */
 
@@ -186,7 +190,19 @@ enum opcode_field_encoding {
    MIPS_OPCODE_SWC1,
    MIPS_OPCODE_SWC2, /* 3rd party */
    MIPS_OPCODE_SDC1 = Ob(111101),
-   MIPS_OPCODE_SDC2 /* 3rd party */
+   MIPS_OPCODE_SDC2, /* 3rd party */
+   
+   MIPS_OPCODE_DADDI = Ob(011000),
+   MIPS_OPCODE_DADDIU,
+   MIPS_OPCODE_LDL,//          011010
+   MIPS_OPCODE_LDR,
+   MIPS_OPCODE_LLD = Ob(110100),
+   MIPS_OPCODE_LD = Ob(110111),
+   MIPS_OPCODE_LWU = Ob(100111),
+   MIPS_OPCODE_SCD = Ob(111100),
+   MIPS_OPCODE_SD = Ob(111111),
+   MIPS_OPCODE_SDL = Ob(101100),
+   MIPS_OPCODE_SDR
 };
 
 enum SPECIAL_function_field_encoding {
@@ -227,7 +243,25 @@ enum SPECIAL_function_field_encoding {
    MIPS_OPCODE_TLT,
    MIPS_OPCODE_TLTU,
    MIPS_OPCODE_TEQ,
-   MIPS_OPCODE_TNE = Ob(110110)
+   MIPS_OPCODE_TNE = Ob(110110),
+   
+   MIPS_OPCODE_DADD = Ob(101100),
+   MIPS_OPCODE_DADDU,
+   MIPS_OPCODE_DSUB,
+   MIPS_OPCODE_DSUBU,
+   MIPS_OPCODE_DMULT = Ob(011100),
+   MIPS_OPCODE_DMULTU,
+   MIPS_OPCODE_DDIV,
+   MIPS_OPCODE_DDIVU,
+   MIPS_OPCODE_DSLL = Ob(111000),
+   MIPS_OPCODE_DSLL32 = Ob(111100),
+   MIPS_OPCODE_DSLLV = Ob(010100),
+   MIPS_OPCODE_DSRL = Ob(111010),
+   MIPS_OPCODE_DSRA,
+   MIPS_OPCODE_DSRL32 = Ob(111110),
+   MIPS_OPCODE_DSRA32,
+   MIPS_OPCODE_DSRLV = Ob(010110),
+   MIPS_OPCODE_DSRAV
 };
 
 enum REGIMM_rt_field_encoding {
@@ -256,7 +290,10 @@ enum SPECIAL2_function_field_encoding {
    MIPS_OPCODE_MSUBU,
    MIPS_OPCODE_CLZ = Ob(100000),
    MIPS_OPCODE_CLO,
-   MIPS_OPCODE_SDBBP = Ob(111111) /* EJTAG */
+   MIPS_OPCODE_SDBBP = Ob(111111), /* EJTAG */
+   
+   MIPS_OPCODE_DCLZ = Ob(100100),
+   MIPS_OPCODE_DCLO
 };
 
 /* only for release 2*/
@@ -290,6 +327,16 @@ enum BSHFL_sa_field_encoding {
    MIPS_OPCODE_SEH = Ob(11000)
 };
 
+enum COP2_func {
+   MIPS_OPCODE_MF,
+   MIPS_OPCODE_DMF,
+   MIPS_OPCODE_CF,
+   MIPS_OPCODE_MT = Ob(00100),
+   MIPS_OPCODE_DMT,
+   MIPS_OPCODE_CT,
+   MIPS_OPCODE_BC = Ob(01000),
+};
+
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
 enum {} COP0_rs_field_encoding;
@@ -315,8 +362,24 @@ enum e_mips_instr_types
    ASM_MIPS_ADDU,
    ASM_MIPS_CLO,
    ASM_MIPS_CLZ,
+   /* mips64v2 */
+   ASM_MIPS_DADD,
+   ASM_MIPS_DADDI,
+   ASM_MIPS_DADDIU,
+   ASM_MIPS_DADDU,
+   ASM_MIPS_DCLO,
+   ASM_MIPS_DCLZ,
+   ASM_MIPS_DDIV,
+   ASM_MIPS_DDIVU,
+   /* mips64v2 */
    ASM_MIPS_DIV,
    ASM_MIPS_DIVU,
+   /* mips64v2 */
+   ASM_MIPS_DMULT,
+   ASM_MIPS_DMULTU,
+   ASM_MIPS_DSUB,
+   ASM_MIPS_DSUBU,
+   /* mips64v2 */
    ASM_MIPS_MADD,
    ASM_MIPS_MADDU,
    ASM_MIPS_MSUB,
@@ -365,15 +428,32 @@ enum e_mips_instr_types
    /* memory */
    ASM_MIPS_LB,
    ASM_MIPS_LBU,
+   /* mips64v2 */
+   ASM_MIPS_LD,
+   ASM_MIPS_LDL,
+   ASM_MIPS_LDR,
+   /* mips64v2 */
    ASM_MIPS_LH,
    ASM_MIPS_LHU,
    ASM_MIPS_LL,
+   /* mips64v2 */
+   ASM_MIPS_LLD,
+   /* mips64v2 */
    ASM_MIPS_LW,
    ASM_MIPS_LWL,
    ASM_MIPS_LWR,
+   /* mips64v2 */
+   ASM_MIPS_LWU,
+   /* mips64v2 */
    ASM_MIPS_PREF,
    ASM_MIPS_SB,
    ASM_MIPS_SC,
+   /* mips64v2 */
+   ASM_MIPS_SCD,
+   ASM_MIPS_SD,
+   ASM_MIPS_SDL,
+   ASM_MIPS_SDR,
+   /* mips64v2 */
    ASM_MIPS_SH,
    ASM_MIPS_SW,
    ASM_MIPS_SWL,
@@ -406,6 +486,17 @@ enum e_mips_instr_types
    /* shift */
    ASM_MIPS_ROTR, /*r2*/
    ASM_MIPS_ROTRV, /*r2*/
+   /* mips64v2 */
+   ASM_MIPS_DSLL,
+   ASM_MIPS_DSLL32,
+   ASM_MIPS_DSLLV,
+   ASM_MIPS_DSRA,
+   ASM_MIPS_DSRA32,
+   ASM_MIPS_DSRAV,
+   ASM_MIPS_DSRL,
+   ASM_MIPS_DSRL32,
+   ASM_MIPS_DSRLV,
+   /* mips64v2 */
    ASM_MIPS_SLL,
    ASM_MIPS_SLLV,
    ASM_MIPS_SRA,
@@ -427,7 +518,22 @@ enum e_mips_instr_types
    ASM_MIPS_TLTU,
    ASM_MIPS_TNE,
    ASM_MIPS_TNEI,
-
+   /* COP2 Instructions */
+   ASM_MIPS_BC2F0,
+   ASM_MIPS_BC2T0,
+   ASM_MIPS_COP2,
+   ASM_MIPS_LDC2,
+   ASM_MIPS_LWC2,
+   ASM_MIPS_SDC2,
+   ASM_MIPS_SWC2,
+   ASM_MIPS_CFC2,
+   ASM_MIPS_CTC2,
+   ASM_MIPS_DMFC2,
+   ASM_MIPS_DMTC2,
+   ASM_MIPS_MFC2,
+   ASM_MIPS_MTC2,
+   ASM_MIPS_BC2FL,
+   ASM_MIPS_BC2TL,
    /*TODO:
     * - FPU insns
     * - COP2 insns
@@ -493,6 +599,7 @@ struct e_mips_instr
    int index1;
    int index2;
    int index3;
+  int (*func_op)(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 };
 
 /**
@@ -513,8 +620,8 @@ struct e_mips_register
  */
 enum e_fix_compile_errors
   {
-    MIPS_OPCODE_EHB,
-    MIPS_OPCODE_NOP,
+//    MIPS_OPCODE_EHB,
+    MIPS_OPCODE_NOP = Ob(00000),
     MIPS_OPCODE_SSNOP
   };
 
@@ -525,3 +632,170 @@ extern struct e_mips_instr e_mips_instrs[];
 extern struct e_mips_register e_mips_registers[];
 
 #endif
+
+int asm_mips_add(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_addi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_addiu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_addu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_and(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_andi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_b(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bal(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_beq(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_beql(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgez(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgezal(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgezall(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgezl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgtz(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bgtzl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_blez(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_blezl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bltz(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bltzal(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bltzall(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bltzl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bne(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bnel(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_break(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_clo(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_clz(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_div(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_divu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+//int asm_mips_ehb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ext(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ins(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_j(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_jal(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_jalr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_jalr_hb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_jr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_jr_hb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lbu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lh(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lhu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ll(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lui(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lw(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lwl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lwr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_madd(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_maddu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mfhi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mflo(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movf(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movn(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movt(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movz(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_msub(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_msubu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mthi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mtlo(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mul(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mult(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_multu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nop(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nor(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_or(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ori(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_pref(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_rdhwr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_rotr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_rotrv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_seb(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_seh(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sh(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sllv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_slt(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_slti(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sltiu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sltu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sra(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_srav(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_srl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_srlv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ssnop(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sub(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_subu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sw(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_swl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_swr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sync(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_synci(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_syscall(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_teq(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_teqi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tge(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tgei(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tgeiu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tgeu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlt(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlti(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tltiu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tltu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tne(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tnei(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_wsbh(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_xor(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_xori(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// Hehe... ;-)
+int asm_mips_dadd(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_daddi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_daddiu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_daddu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dclo(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dclz(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ddiv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ddivu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_dmult(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmultu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsub(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsubu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_ld(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ldl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ldr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_lld(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_lwu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_scd(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sd(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+int asm_mips_dsll(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsll32(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsllv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsra(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsra32(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsrav(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsrl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsrl32(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dsrlv(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+
+// Coprocesor 2 functions...
+
+int asm_mips_bc2f(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bc2t(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cop2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ldc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lwc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_swc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cfc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ctc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmfc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmtc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mfc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mtc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bc2fl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bc2tl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

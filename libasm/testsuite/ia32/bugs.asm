@@ -1,4 +1,4 @@
-// $Id: bugs.asm,v 1.2 2007-10-14 00:01:42 heroine Exp $
+// $Id: bugs.asm,v 1.2 2007/10/14 00:01:42 heroine Exp $
 movw   $0x2,0xffffffbc(%ebp)
 mov    $0x10,%di
 andw   $0xfff,0xffffff90(%ebp)

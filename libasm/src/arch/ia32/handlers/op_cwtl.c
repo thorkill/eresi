@@ -1,5 +1,5 @@
 /*
-** $Id: op_cwtl.c,v 1.4 2007-08-14 06:52:55 strauss Exp $
+** $Id: op_cwtl.c,v 1.4 2007/08/14 06:52:55 strauss Exp $
 **
 */
 #include <libasm.h>

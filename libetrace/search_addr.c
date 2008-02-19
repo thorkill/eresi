@@ -41,11 +41,11 @@ static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)
     case EM_386:
       asm_init_ia32(proc);
       break;
-      /* Not ready yet ?
     case EM_MIPS:
+    case EM_MIPS_RS3_LE:
+    case EM_MIPS_X:
       asm_init_mips(proc);
       break;
-      */
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unsupported architecture for address tracing", -1);

@@ -8,8 +8,7 @@
  #define __KERNSH_H__
 
 /* User defined configuration */
-#include "revm.h"
-#include "revm-help.h"
+#include "libstderesi.h"
 
 /* Help strings */
 #include "kernsh-help.h"

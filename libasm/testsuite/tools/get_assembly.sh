@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: get_assembly.sh,v 1.2 2007-10-02 20:55:22 heroine Exp $
+# $Id: get_assembly.sh,v 1.2 2007/10/02 20:55:22 heroine Exp $
 #
 if [ ! -z "$1" ]; then
 objdump -d $1 -w  | grep -v Disassembly | grep -v '>:' | grep -v elf32 | cut -f3 | cut -f1 -d'<' | egrep -v '^call' | egrep -v '^j' | grep -v 'repz ret' |sort -u 

@@ -1,5 +1,5 @@
 /**
- * $Id: asm_operand_fetch_segment.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ * $Id: asm_operand_fetch_segment.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
  * @file asm_operand_fetch.c
  * @ingroup operand_handler
  */

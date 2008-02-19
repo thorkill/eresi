@@ -1,5 +1,5 @@
 /**
- * $Id: asm_operand_fetch_ydest.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ * $Id: asm_operand_fetch_ydest.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
  * @file asm_operand_fetch.c
  * @brief Wrapper to call operand handler.
  * @ingroup operand_handler

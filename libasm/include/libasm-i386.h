@@ -1,7 +1,7 @@
 /**
  * @file libasm-i396.h
  * @brief Contains structures,prototypes and defines/enum related to ia32.
- * $Id: libasm-i386.h,v 1.14 2008-02-16 12:32:26 thor Exp $
+ * $Id: libasm-i386.h,v 1.14 2008/01/07 01:29:53 heroine Exp $
  */
 
 #ifndef LIBASM_I386_H_

@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch.c
- * $Id: asm_operand_fetch_memory.c,v 1.4 2007-10-14 00:01:41 heroine Exp $
+ * $Id: asm_operand_fetch_memory.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
  */
 
 #include <libasm.h>

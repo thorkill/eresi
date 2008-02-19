@@ -1,6 +1,10 @@
 /**
  * @file register_mips.c
- * $Id: register_mips.c,v 1.3 2007-11-28 00:21:37 strauss Exp $
+ * $Id: register_mips.c,v 1.3 2007/11/28 00:21:37 strauss Exp $
+ *
+ * fix and fill
+ *          - Adam 'pi3' Zabrocki
+ *
  * Manuel Martin - 2007 
  * This file contains mips architecture registration code.
 */
@@ -47,7 +51,7 @@ int asm_register_mips_opcodes()
   insns = e_mips_instrs;
   for(i=0;insns[i].code != ASM_MIPS_TABLE_END;i++)
     {
-      asm_register_mips_opcode(insns[i].index1,insns[i].index2,insns[i].index3, NULL);
+      asm_register_mips_opcode(insns[i].index1,insns[i].index2,insns[i].index3, insns[i].func_op);
     }
   return (1);
 }

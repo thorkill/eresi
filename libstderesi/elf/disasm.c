@@ -209,6 +209,11 @@ u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr,
 	case EM_SPARCV9:
 	  world.curjob->proc = &world.proc_sparc;
 	  break;
+	case EM_MIPS:
+	case EM_MIPS_RS3_LE:
+	case EM_MIPS_X:
+	  world.curjob->proc = &world.proc_mips;
+	  break;
 	default:
 	  snprintf(logbuf, sizeof (logbuf) - 1, 
 		   "Architecture %s not supported. No disassembly available\n",
@@ -825,6 +830,11 @@ int             cmd_disasm()
     case EM_SPARC:
     case EM_SPARCV9:
       world.curjob->proc = &world.proc_sparc;
+      break;
+    case EM_MIPS:
+    case EM_MIPS_RS3_LE:
+    case EM_MIPS_X:
+      world.curjob->proc = &world.proc_mips;
       break;
     default:
       snprintf(logbuf, sizeof (logbuf) - 1, 

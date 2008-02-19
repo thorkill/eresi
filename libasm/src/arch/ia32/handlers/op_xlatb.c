@@ -2,7 +2,7 @@
  * @file op_xlatb.c
  * @ingroup handlers_ia32
  * @brief <instruction opcode="0xd7" func="op_xlatb"/>
- * $Id: op_xlatb.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_xlatb.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

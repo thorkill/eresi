@@ -638,6 +638,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	  asm_init_ia32(&proc);
 	  break;
 	case EM_MIPS:
+	case EM_MIPS_RS3_LE:
+	case EM_MIPS_X:
 	  asm_init_mips(&proc);
 	  break;
 	}

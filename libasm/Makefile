@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.30 2008-02-16 12:32:26 thor Exp $
+## $Id: Makefile,v 1.31 2008/01/01 17:07:26 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004
@@ -104,8 +104,8 @@ docs:
 
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
-	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
-	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm -L../libetrace -letrace32
+	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
+	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm -L../libetrace -letrace
 
 test:
 	(cd testsuite/ia32 && sh launch_test.sh)

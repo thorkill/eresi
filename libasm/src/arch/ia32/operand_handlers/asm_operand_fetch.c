@@ -1,7 +1,7 @@
 /**
  * @file asm_operand_fetch.c
  * @ingroup operand_handler
- * $Id: asm_operand_fetch.c,v 1.5 2007-10-14 00:01:41 heroine Exp $
+ * $Id: asm_operand_fetch.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
  */
 
 /**

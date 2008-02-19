@@ -1,5 +1,5 @@
 /*
-** $Id: output_ia32.c,v 1.13 2008-02-16 12:32:26 thor Exp $
+** $Id: output_ia32.c,v 1.13 2008/01/07 01:32:56 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002

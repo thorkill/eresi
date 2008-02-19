@@ -1,6 +1,6 @@
 /**
  * @file op_sbb_eax_iv.c
-** $Id: op_sbb_eax_iv.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+** $Id: op_sbb_eax_iv.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

@@ -1,6 +1,6 @@
 /**
  * @file libasm-int.h
- * $Id: libasm-int.h,v 1.8 2008-02-16 12:32:26 thor Exp $
+ * $Id: libasm-int.h,v 1.8 2008/01/07 01:29:53 heroine Exp $
  * 
  * This file contains the forward declarations of i386 instruction
  * handlers and some internal functions prototypes.

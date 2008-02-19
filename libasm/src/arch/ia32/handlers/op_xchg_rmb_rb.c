@@ -2,7 +2,7 @@
  * @file op_xchg_rmb_rb.c
  * @brief Handler for instruction xchg rmb,rb opcode 0x86
  * @ingroup handlers_ia32
- * $Id: op_xchg_rmb_rb.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_xchg_rmb_rb.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

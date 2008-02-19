@@ -1,6 +1,6 @@
 /*
 **
-** $Id: asm_sparc_saved.c,v 1.6 2007-08-07 07:13:27 may Exp $
+** $Id: asm_sparc_saved.c,v 1.6 2007/08/07 07:13:27 may Exp $
 **
 */
 #include "libasm.h"

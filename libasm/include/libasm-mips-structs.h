@@ -1,5 +1,5 @@
 /**
- * $Id: libasm-mips-structs.h,v 1.1 2007-01-23 09:53:03 heroine Exp $
+ * $Id: libasm-mips-structs.h,v 1.1 2007/01/23 09:53:03 heroine Exp $
  *
  *
  */

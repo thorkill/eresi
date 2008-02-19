@@ -1,5 +1,5 @@
 /**
- * $Id: mips_convert.c,v 1.1 2007-01-23 09:53:03 heroine Exp $
+ * $Id: mips_convert.c,v 1.1 2007/01/23 09:53:03 heroine Exp $
  *
  *
  *

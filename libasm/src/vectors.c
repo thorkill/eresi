@@ -1,5 +1,5 @@
 /**
- * $Id: vectors.c,v 1.13 2007-10-14 00:01:41 heroine Exp $
+ * $Id: vectors.c,v 1.13 2007/10/14 00:01:41 heroine Exp $
  * @file vectors.c
  * @brief Initialization the instruction and opcode vectors.
  */

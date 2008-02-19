@@ -1,7 +1,7 @@
 /**
  * @file operand.c
  * @ingroup operands
- * $Id: operand.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: operand.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  * operand.c in 
  * 
  * Author  : <kahmm@altdev.net>

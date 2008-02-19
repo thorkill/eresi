@@ -1,6 +1,9 @@
 /**
  * @file init_mips.c
  *
+ * fix and fill
+ *          - Adam 'pi3' Zabrocki
+ *
  * Manuel Martin - 2007 
  */
 
@@ -19,29 +22,35 @@
 int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 {
   vector_t *vec = 0;
-  int i = 0, converted = 0;
-  u_int dim[2];
+  u_int i = 0, converted = 0;
+  u_int dim[3];
+  u_char *for_help;
   LIBASM_HANDLER_FETCH(fetch);
   //int (*fetch)(asm_instr *,u_char *,u_int,asm_processor *) = 0;
   
   /* we have to convert to the endiannes of the architecture
    * were libasm is running keeping in mind that the target
    * object can be either in big or little endian. */
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-  if(asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
-    memcpy((char *)&converted,buf,sizeof(converted));
+//#if __BYTE_ORDER == __LITTLE_ENDIAN
+//  if(asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+//    memcpy((char *)&converted,buf,sizeof(converted));
+//  } else {
+//    for(i=0;i<4;i++)
+//      ((char *)(&converted))[3-i] = *(buf + i);
+//  }
+//#else
+  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+     memcpy((char *)&converted,buf,sizeof(converted));
+  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  
+     for_help = (u_char*)&converted;
+     for(i=0;i<4;i++)
+       *(for_help + i) = *(buf + 3 - i);
   } else {
-    for(i=0;i<4;i++)
-      ((char *)(&converted))[3-i] = *(buf + i);
+     printf("Where am I ?!?!?!\n");
+     exit(-1);
   }
-#else
-  if(asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
-    memcpy((char *)&converted,buf,sizeof(converted));
-  } else {
-      for(i=0;i<4;i++)
-	((char *)(&converted))[i] = *(buf + 3 - i);
-  }
-#endif
+//#endif
   
    ins->proc = proc;
    ins->len = 4;
@@ -66,7 +75,8 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
  *       dim[2] = 6-37 = BSHFL subclass : 32 combinations
  */
 
-   dim[0] = converted >> 24;
+//   dim[0] = converted >> 24;
+   dim[0] = converted >> 26;
    dim[1] = 0;
    dim[2] = 0;
 
@@ -86,29 +96,62 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
             case MIPS_OPCODE_SRLV:
                dim[2] = ((converted & 0x40) >> 6) + 4;
                break;
+//	    case MIPS_OPCODE_SLL:
+//	       dim[2] = (converted >> 6) & 0xFFFFF;
+//	       break;
          }
          break;
       }
       case MIPS_OPCODE_REGIMM:
+/*
          dim[1] = (converted & 0x3f) + 
                   MIPS_SPECIAL_FUNCTION_NUM; 
+*/
+         dim[1] = ((converted >> 16) & 0x1F);
          break;
       case MIPS_OPCODE_SPECIAL2:
+/*
          dim[1] = (converted & 0x3f) + 
                   MIPS_SPECIAL_FUNCTION_NUM +
                   MIPS_REGIMM_FUNCTION_NUM;
+*/
+         dim[1] = converted & 0x3F;
          break;
       case MIPS_OPCODE_SPECIAL3:
+/*
          dim[1] = (converted & 0x3f) + 
                   MIPS_SPECIAL_FUNCTION_NUM +
                   MIPS_REGIMM_FUNCTION_NUM +
                   MIPS_SPECIAL2_FUNCTION_NUM;
+*/
+         dim[1] = converted & 0x3F;
          switch(dim[1])
          {
             case MIPS_OPCODE_BSHFL:
 	      dim[2] = ((converted & 0x7c0) >> 6) + 6;
          }
          break;
+
+      case MIPS_OPCODE_COP0:
+         break;
+      case MIPS_OPCODE_COP1:
+         break;
+      case MIPS_OPCODE_COP2:
+         do {
+            u_int tmp = (converted >> 25) & 0x1;
+	 
+	    if (tmp)
+	       dim[1] = tmp;
+	    else {
+               dim[1] = (converted >> 21) & 0x1F;
+	       if (dim[1] == MIPS_OPCODE_BC)
+	          dim[2] = (converted >> 16) & 0x3;
+	    }
+	 } while(0);
+         break;
+      case MIPS_OPCODE_COP1X:
+         break;
+
    }
    
    fetch = aspect_vectors_select(vec,dim);

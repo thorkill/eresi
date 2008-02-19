@@ -3,7 +3,7 @@
  * @ingroup handlers_ia32
  * @brief Handler for instruction xor al,ib opcode 0x34
  * 
- * $Id: op_xor_al_ib.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+ * $Id: op_xor_al_ib.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

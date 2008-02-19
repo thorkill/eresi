@@ -1,5 +1,5 @@
 /*
-** $Id: operand_ia32.c,v 1.6 2007-10-14 00:01:41 heroine Exp $
+** $Id: operand_ia32.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 ** Author  : <sk at devhell dot org>
 ** Started : Tue May 28 13:06:39 2002

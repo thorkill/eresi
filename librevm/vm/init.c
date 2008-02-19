@@ -42,6 +42,7 @@ int		revm_init()
   aspect_init();
   asm_init_ia32(&world.proc);
   asm_init_sparc(&world.proc_sparc);
+  asm_init_mips(&world.proc_mips);
   revm_initio();
 
   /* setting libelfsh profile function */
