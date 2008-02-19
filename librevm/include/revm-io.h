@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.8"
-#define	REVM_RELEASE	"a25"
+#define	REVM_RELEASE	"a26"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
