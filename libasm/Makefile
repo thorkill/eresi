@@ -104,8 +104,8 @@ docs:
 
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
-	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 -L../elibc/ -lcelfsh32 \
-	-L../libaspect/ -laspect32 -L../liballocproxy/ -lallocproxy -L./ -lasm -L../libetrace -letrace
+	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
+	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace -letrace
 
 test:
 	(cd testsuite/ia32 && sh launch_test.sh)

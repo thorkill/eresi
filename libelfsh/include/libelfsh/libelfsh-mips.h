@@ -20,6 +20,10 @@
  #define EM_MIPS_RS3_LE 10
 #endif
 
+#ifndef EM_MIPS_X
+ #define EM_MIPS_X    51                 /* Stanford MIPS-X */
+#endif
+
 /* MIPS relocations.  */
 #ifndef R_MIPS_NONE
  #define R_MIPS_NONE             0       /* No reloc */
