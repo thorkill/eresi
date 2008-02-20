@@ -6,6 +6,6 @@
 int asm_mips_sw(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"sw\n");
+   ins->instr = ASM_MIPS_SW;
    return 777;
 }

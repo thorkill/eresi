@@ -6,6 +6,6 @@
 int asm_mips_dmtc2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dmtc2\n");
+   ins->instr = ASM_MIPS_DMTC2;
    return 777;
 }

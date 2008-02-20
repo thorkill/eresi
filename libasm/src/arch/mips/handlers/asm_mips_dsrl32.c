@@ -6,6 +6,6 @@
 int asm_mips_dsrl32(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dsrl32\n");
+   ins->instr = ASM_MIPS_DSRL32;
    return 777;
 }

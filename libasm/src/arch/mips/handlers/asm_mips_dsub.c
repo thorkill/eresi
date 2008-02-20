@@ -6,6 +6,6 @@
 int asm_mips_dsub(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dsub\n");
+   ins->instr = ASM_MIPS_DSUB;
    return 777;
 }

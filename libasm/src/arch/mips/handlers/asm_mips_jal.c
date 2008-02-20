@@ -6,6 +6,6 @@
 int asm_mips_jal(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"jal\n");
+   ins->instr = ASM_MIPS_JAL;
    return 777;
 }

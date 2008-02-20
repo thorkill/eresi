@@ -6,6 +6,6 @@
 int asm_mips_tlti(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"tlti\n");
+   ins->instr = ASM_MIPS_TLTI;
    return 777;
 }

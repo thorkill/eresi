@@ -6,6 +6,6 @@
 int asm_mips_break(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"break\n");
+   ins->instr = ASM_MIPS_BREAK;
    return 777;
 }

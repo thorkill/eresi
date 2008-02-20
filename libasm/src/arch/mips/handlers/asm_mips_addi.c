@@ -6,7 +6,6 @@
 int asm_mips_addi(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-
-   fprintf(stderr,"addi\n");
+   ins->instr = ASM_MIPS_ADDI;
    return 777;
 }

@@ -6,6 +6,6 @@
 int asm_mips_sdc2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"sdc2\n");
+   ins->instr = ASM_MIPS_SDC2;
    return 777;
 }

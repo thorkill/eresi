@@ -6,6 +6,6 @@
 int asm_mips_teq(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"teq\n");
+   ins->instr = ASM_MIPS_TEQ;
    return 777;
 }

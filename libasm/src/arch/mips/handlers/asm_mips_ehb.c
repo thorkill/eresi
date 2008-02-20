@@ -6,6 +6,6 @@
 int asm_mips_ehb(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"ehb\n");
+   ins->instr = ASM_MIPS_BAD;
    return 777;
 }

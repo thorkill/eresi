@@ -6,6 +6,6 @@
 int asm_mips_sdr(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"sdr\n");
+   ins->instr = ASM_MIPS_SDR;
    return 777;
 }

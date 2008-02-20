@@ -6,6 +6,6 @@
 int asm_mips_tge(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"tge\n");
+   ins->instr = ASM_MIPS_TGE;
    return 777;
 }

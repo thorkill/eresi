@@ -6,6 +6,6 @@
 int asm_mips_rdhwr(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"rdhwr\n");
+   ins->instr = ASM_MIPS_RDHWR;
    return 777;
 }

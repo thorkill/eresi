@@ -6,6 +6,6 @@
 int asm_mips_movn(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"movn\n");
+   ins->instr = ASM_MIPS_MOVN;
    return 777;
 }

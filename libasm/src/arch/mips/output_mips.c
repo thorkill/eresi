@@ -89,7 +89,12 @@ char *asm_mips_display_instr(asm_instr *ins,int addr)
 
     return buf;
   */
-  return ("unimplemented");
+//  return ("unimplemented");
+   static char buf[32];
+
+   bzero(buf,sizeof(buf));
+   snprintf(buf,32,"%s",e_mips_instrs[ins->instr].mnemonic);
+   return buf;
 }
 
 

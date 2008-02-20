@@ -6,6 +6,6 @@
 int asm_mips_ddiv(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"ddiv\n");
+   ins->instr = ASM_MIPS_DDIV;
    return 777;
 }

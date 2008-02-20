@@ -387,14 +387,14 @@ enum e_mips_instr_types
    ASM_MIPS_MUL,
    ASM_MIPS_MULT,
    ASM_MIPS_MULTU,
-   ASM_MIPS_SEB, /*r2*/
-   ASM_MIPS_SEH, /*r2*/
    ASM_MIPS_SLT,
    ASM_MIPS_SLTI,
    ASM_MIPS_SLTIU,
    ASM_MIPS_SLTU,
    ASM_MIPS_SUB,
    ASM_MIPS_SUBU,
+   ASM_MIPS_SEB, /*r2*/
+   ASM_MIPS_SEH, /*r2*/
    /* branch */
    ASM_MIPS_B,
    ASM_MIPS_BAL,
@@ -409,20 +409,11 @@ enum e_mips_instr_types
    ASM_MIPS_J,
    ASM_MIPS_JAL,
    ASM_MIPS_JALR,
-   ASM_MIPS_JALR_HB,
    ASM_MIPS_JR,
+   ASM_MIPS_JALR_HB,
    ASM_MIPS_JR_HB,
-   /* obsolete branch */
-   ASM_MIPS_BEQL,
-   ASM_MIPS_BGEZALL,
-   ASM_MIPS_BGEZL,
-   ASM_MIPS_BGTZL,
-   ASM_MIPS_BLEZL,
-   ASM_MIPS_BLTZALL,
-   ASM_MIPS_BLTZL,
-   ASM_MIPS_BNEL,
    /* cpu execution control*/
-   ASM_MIPS_EHB, /*r2*/
+//   ASM_MIPS_EHB, /*r2*/
    ASM_MIPS_NOP,
    ASM_MIPS_SSNOP,
    /* memory */
@@ -482,10 +473,7 @@ enum e_mips_instr_types
    ASM_MIPS_MOVZ,
    ASM_MIPS_MTHI,
    ASM_MIPS_MTLO,
-   ASM_MIPS_RDHWR, /*r2*/
    /* shift */
-   ASM_MIPS_ROTR, /*r2*/
-   ASM_MIPS_ROTRV, /*r2*/
    /* mips64v2 */
    ASM_MIPS_DSLL,
    ASM_MIPS_DSLL32,
@@ -503,6 +491,9 @@ enum e_mips_instr_types
    ASM_MIPS_SRAV,
    ASM_MIPS_SRL,
    ASM_MIPS_SRLV,
+   ASM_MIPS_RDHWR, /*r2*/
+   ASM_MIPS_ROTR, /*r2*/
+   ASM_MIPS_ROTRV, /*r2*/
    /* traps */
    ASM_MIPS_BREAK,
    ASM_MIPS_SYSCALL,
@@ -518,9 +509,19 @@ enum e_mips_instr_types
    ASM_MIPS_TLTU,
    ASM_MIPS_TNE,
    ASM_MIPS_TNEI,
+   /* obsolete branch */
+   ASM_MIPS_BEQL,
+   ASM_MIPS_BGEZALL,
+   ASM_MIPS_BGEZL,
+   ASM_MIPS_BGTZL,
+   ASM_MIPS_BLEZL,
+   ASM_MIPS_BLTZALL,
+   ASM_MIPS_BLTZL,
+   ASM_MIPS_BNEL,
+
    /* COP2 Instructions */
-   ASM_MIPS_BC2F0,
-   ASM_MIPS_BC2T0,
+   ASM_MIPS_BC2F,
+   ASM_MIPS_BC2T,
    ASM_MIPS_COP2,
    ASM_MIPS_LDC2,
    ASM_MIPS_LWC2,

@@ -6,6 +6,6 @@
 int asm_mips_mthi(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"mthi\n");
+   ins->instr = ASM_MIPS_MTHI;
    return 777;
 }

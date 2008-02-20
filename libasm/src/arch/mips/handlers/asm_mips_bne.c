@@ -6,6 +6,6 @@
 int asm_mips_bne(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"bne\n");
+   ins->instr = ASM_MIPS_BNE;
    return 777;
 }

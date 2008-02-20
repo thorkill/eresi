@@ -6,6 +6,6 @@
 int asm_mips_dclo(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dclo\n");
+   ins->instr = ASM_MIPS_DCLO;
    return 777;
 }

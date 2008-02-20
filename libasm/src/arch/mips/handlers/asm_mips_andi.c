@@ -6,6 +6,6 @@
 int asm_mips_andi(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"andi\n");
+   ins->instr = ASM_MIPS_ANDI;
    return 777;
 }

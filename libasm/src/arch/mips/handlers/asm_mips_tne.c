@@ -6,6 +6,6 @@
 int asm_mips_tne(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"tne\n");
+   ins->instr = ASM_MIPS_TNE;
    return 777;
 }

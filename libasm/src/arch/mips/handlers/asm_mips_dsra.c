@@ -6,6 +6,6 @@
 int asm_mips_dsra(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dsra\n");
+   ins->instr = ASM_MIPS_DSRA;
    return 777;
 }

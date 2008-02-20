@@ -6,6 +6,6 @@
 int asm_mips_beql(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"beql\n");
+   ins->instr = ASM_MIPS_BEQL;
    return 777;
 }

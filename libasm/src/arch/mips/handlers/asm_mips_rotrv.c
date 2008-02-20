@@ -6,6 +6,6 @@
 int asm_mips_rotrv(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"rotrv\n");
+   ins->instr = ASM_MIPS_ROTRV;
    return 777;
 }

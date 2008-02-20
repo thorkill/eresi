@@ -6,6 +6,6 @@
 int asm_mips_ddivu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"ddivu\n");
+   ins->instr = ASM_MIPS_DDIVU;
    return 777;
 }

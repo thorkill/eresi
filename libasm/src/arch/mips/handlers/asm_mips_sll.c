@@ -29,8 +29,8 @@ int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
          asm_mips_ssnop(ins,buf,len,proc);
          break;
       default:
-         fprintf(stderr,"sll\n");
-	 break;
+         ins->instr = ASM_MIPS_SLL;
+         break;
    }
    return 777;
 }

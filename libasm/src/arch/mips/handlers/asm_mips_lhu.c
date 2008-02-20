@@ -6,6 +6,6 @@
 int asm_mips_lhu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"lhu\n");
+   ins->instr = ASM_MIPS_LHU;
    return 777;
 }

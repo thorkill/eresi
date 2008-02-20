@@ -6,6 +6,6 @@
 int asm_mips_tnei(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"tnei\n");
+   ins->instr = ASM_MIPS_TNEI;
    return 777;
 }

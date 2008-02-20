@@ -6,6 +6,6 @@
 int asm_mips_msubu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"msubu\n");
+   ins->instr = ASM_MIPS_MSUBU;
    return 777;
 }

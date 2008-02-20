@@ -6,6 +6,6 @@
 int asm_mips_sllv(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"sllv\n");
+   ins->instr = ASM_MIPS_SLLV;
    return 777;
 }

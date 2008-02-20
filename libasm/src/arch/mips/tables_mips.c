@@ -226,8 +226,8 @@ struct e_mips_instr e_mips_instrs [] = {
 
 /* Coprocessor Branch Instructions - COP2 */
 
-  {"bc2f0"    ,ASM_MIPS_BC2F0     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x0,		asm_mips_bc2f},
-  {"bc2t0"    ,ASM_MIPS_BC2T0     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x1,		asm_mips_bc2t},
+  {"bc2f"    ,ASM_MIPS_BC2F      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x0,		asm_mips_bc2f},
+  {"bc2t"    ,ASM_MIPS_BC2T      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x1,		asm_mips_bc2t},
 
 
 /* Coprocessor Execute Instruction - COP2 */

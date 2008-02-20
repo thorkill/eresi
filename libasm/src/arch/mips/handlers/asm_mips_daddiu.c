@@ -6,6 +6,6 @@
 int asm_mips_daddiu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"daddiu\n");
+   ins->instr = ASM_MIPS_DADDIU;
    return 777;
 }

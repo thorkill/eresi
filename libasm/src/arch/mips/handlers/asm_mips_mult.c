@@ -6,6 +6,6 @@
 int asm_mips_mult(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"mult\n");
+   ins->instr = ASM_MIPS_MULT;
    return 777;
 }

@@ -6,6 +6,6 @@
 int asm_mips_lwr(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"lwr\n");
+   ins->instr = ASM_MIPS_LWR;
    return 777;
 }

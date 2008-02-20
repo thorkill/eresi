@@ -6,6 +6,6 @@
 int asm_mips_slt(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"slt\n");
+   ins->instr = ASM_MIPS_SLT;
    return 777;
 }

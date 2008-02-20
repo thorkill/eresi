@@ -6,6 +6,6 @@
 int asm_mips_xor(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"xor\n");
+   ins->instr = ASM_MIPS_XOR;
    return 777;
 }

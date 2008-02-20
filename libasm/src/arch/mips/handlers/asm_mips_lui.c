@@ -6,6 +6,6 @@
 int asm_mips_lui(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"lui\n");
+   ins->instr = ASM_MIPS_LUI;
    return 777;
 }

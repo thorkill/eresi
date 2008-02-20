@@ -6,6 +6,6 @@
 int asm_mips_blez(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"blez\n");
+   ins->instr = ASM_MIPS_BLEZ;
    return 777;
 }

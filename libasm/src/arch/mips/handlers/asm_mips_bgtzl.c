@@ -6,6 +6,6 @@
 int asm_mips_bgtzl(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"bgtzl\n");
+   ins->instr = ASM_MIPS_BGTZL;
    return 777;
 }

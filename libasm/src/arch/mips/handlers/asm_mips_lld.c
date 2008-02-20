@@ -6,6 +6,6 @@
 int asm_mips_lld(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"lld\n");
+   ins->instr = ASM_MIPS_LLD;
    return 777;
 }

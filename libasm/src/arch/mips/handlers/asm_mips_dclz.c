@@ -6,6 +6,6 @@
 int asm_mips_dclz(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"dclz\n");
+   ins->instr = ASM_MIPS_DCLZ;
    return 777;
 }

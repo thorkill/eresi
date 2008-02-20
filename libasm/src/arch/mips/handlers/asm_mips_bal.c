@@ -6,6 +6,6 @@
 int asm_mips_bal(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"bal\n");
+   ins->instr = ASM_MIPS_BAL;
    return 777;
 }

@@ -6,6 +6,6 @@
 int asm_mips_maddu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"maddu\n");
+   ins->instr = ASM_MIPS_MADDU;
    return 777;
 }

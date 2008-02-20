@@ -6,6 +6,6 @@
 int asm_mips_mflo(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"mflo\n");
+   ins->instr = ASM_MIPS_MFLO;
    return 777;
 }

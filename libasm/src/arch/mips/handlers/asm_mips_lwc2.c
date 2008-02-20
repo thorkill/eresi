@@ -6,6 +6,6 @@
 int asm_mips_lwc2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"lwc2\n");
+   ins->instr = ASM_MIPS_LWC2;
    return 777;
 }

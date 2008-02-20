@@ -6,6 +6,6 @@
 int asm_mips_pref(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"pref\n");
+   ins->instr = ASM_MIPS_PREF;
    return 777;
 }

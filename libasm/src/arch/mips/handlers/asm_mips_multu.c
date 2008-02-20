@@ -6,6 +6,6 @@
 int asm_mips_multu(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"multu\n");
+   ins->instr = ASM_MIPS_MULTU;
    return 777;
 }

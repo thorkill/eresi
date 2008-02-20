@@ -6,6 +6,6 @@
 int asm_mips_bc2t(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"bc2t\n");
+   ins->instr = ASM_MIPS_BC2T;
    return 777;
 }

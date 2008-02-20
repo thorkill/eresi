@@ -6,6 +6,6 @@
 int asm_mips_syscall(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"syscall\n");
+   ins->instr = ASM_MIPS_SYSCALL;
    return 777;
 }

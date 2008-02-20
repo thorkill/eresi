@@ -6,6 +6,6 @@
 int asm_mips_mtlo(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"mtlo\n");
+   ins->instr = ASM_MIPS_MTLO;
    return 777;
 }

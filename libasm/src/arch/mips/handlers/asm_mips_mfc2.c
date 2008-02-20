@@ -6,6 +6,6 @@
 int asm_mips_mfc2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"mfc2\n");
+   ins->instr = ASM_MIPS_MFC2;
    return 777;
 }
