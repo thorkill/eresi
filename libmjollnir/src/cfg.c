@@ -38,6 +38,7 @@ int			mjr_trace_control(mjrcontext_t *context,
   int			ilen;
   container_t		*fun;
   elfsh_Addr		dstaddr;
+  elfsh_Addr		retaddr;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -97,6 +98,18 @@ int			mjr_trace_control(mjrcontext_t *context,
       /* For delay slot */
       addend = (context->proc.type == ASM_PROC_SPARC ? 4 : 0);
 
+      /* If call occured at the end of a section */
+      if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
+
+#if __DEBUG_FLOW__
+      fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
+	      __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
+#endif
+
+	  retaddr = NULL;
+      else
+	retaddr = curvaddr + ilen + addend;
+
       /* 20070102
        * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
        * Possible libasm or mjollnir bug.
@@ -104,10 +117,10 @@ int			mjr_trace_control(mjrcontext_t *context,
       if (dstaddr && dstaddr != (elfsh_Addr) -1)
     	{
 	  /* Link block layer */
-	  mjr_link_block_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
+	  mjr_link_block_call(context, curvaddr, dstaddr, retaddr);
 
 	  /* Link function layer */
-	  mjr_link_func_call(context, curvaddr, dstaddr, curvaddr + ilen + addend);
+	  mjr_link_func_call(context, curvaddr, dstaddr, retaddr);
 	  context->calls_found++;
     	}
     }

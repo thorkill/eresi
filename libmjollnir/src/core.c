@@ -17,7 +17,6 @@
 int		mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   container_t	*cntnr;
-  elfshsect_t   *sct;
   asm_instr	instr;
   unsigned char	*ptr;
   unsigned long	curr, len;
@@ -33,30 +32,36 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
 	  __FUNCTION__, section_name);
 #endif
 
+  /* We just started here so we can clear the current section in context */
+  sess->cur->cursct = NULL;
+
   if (!section_name)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section name empty", -1);
   
-  sct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
-  if (!sct)
+  sess->cur->cursct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
+  if (!sess->cur->cursct)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section not found", -1);
       
 #if __DEBUG_CALLS__
   fprintf(D_DESC, "[__DEBUG_CALLS__] %s: vaddr:%x size:%d foff:%d\n",
-	  __FUNCTION__, sct->shdr->sh_addr, sct->shdr->sh_size, sct->shdr->sh_offset);
+	  __FUNCTION__, sess->cur->cursct->shdr->sh_addr, 
+	  sess->cur->cursct->shdr->sh_size, 
+	  sess->cur->cursct->shdr->sh_offset);
 #endif
   
   /* Setup initial conditions */
-  ptr      = elfsh_get_raw(sct);
-  len      = sct->shdr->sh_size;
+  ptr      = elfsh_get_raw(sess->cur->cursct);
+  len      = sess->cur->cursct->shdr->sh_size;
   curr     = 0;
-  vaddr    = sct->shdr->sh_addr;
+  vaddr    = sess->cur->cursct->shdr->sh_addr;
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
 
   /* Create block pointing to this section */
-  if (sct->shdr->sh_addr == e_point)
+  if (sess->cur->cursct->shdr->sh_addr == e_point)
     {
       printf(" [*] Entry point: " AFMT "\n", e_point);
-      main_addr = mjr_trace_start(sess->cur, ptr, sct->shdr->sh_size, e_point);
+      main_addr = mjr_trace_start(sess->cur, ptr, 
+				  sess->cur->cursct->shdr->sh_size, e_point);
       printf(" [*] main located at " AFMT "\n", main_addr);
     }
   else

@@ -461,6 +461,10 @@ int		revm_graph_function(container_t	*cntnr,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  if (!cntnr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "No container found", -1);
+
   fnc = (mjrfunc_t *)cntnr->data;
   vaddr_str =_vaddr2str(fnc->vaddr);
 

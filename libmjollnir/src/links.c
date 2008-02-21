@@ -20,7 +20,7 @@
  */
 int			mjr_link_func_call(mjrcontext_t *ctxt, 
 					   elfsh_Addr src, 
-					   elfsh_Addr dst, 
+					   elfsh_Addr dst,
 					   elfsh_Addr ret)
 {
   container_t		*fun;
@@ -108,24 +108,28 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
-  /* search and/or split - return block */
-  if (!(cret = mjr_block_split(ctxt, ret, 0)))
-    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		 "Could not split the ret", 0);
-  
+  if (ret)
+    /* search and/or split - return block */
+    if (!(cret = mjr_block_split(ctxt, ret, 0)))
+      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		   "Could not split the ret", 0);
+
   /* link src and dst */
   mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
   mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
 
-  /* link dst and ret */
-  mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_OUT);
-  mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
+  if (ret)
+    {
+      /* link dst and ret */
+      mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
 
-  // mjr_block_relink_cond_always(csrc,cret,CONTAINER_LINK_OUT);
-  // mjr_block_relink_cond_always(cret,csrc,CONTAINER_LINK_IN);
+      // mjr_block_relink_cond_always(csrc,cret,CONTAINER_LINK_OUT);
+      // mjr_block_relink_cond_always(cret,csrc,CONTAINER_LINK_IN);
 
-  mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_OUT);
-  mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_IN);
+    }
 
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);

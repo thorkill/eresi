@@ -264,7 +264,6 @@ int			mjr_function_symbol(mjrcontext_t *ctxt, container_t *csrc)
 {
   mjrfunc_t		*func;
   elfsh_Sym		bsym;
-  elfsh_Sym		*sym;
   char			*prefix;
   char			buffer[BUFSIZ];
 

@@ -85,6 +85,7 @@ typedef struct		s_history
 typedef struct		_mjrContext 
 {
   elfshobj_t		*obj;			/* !< @brief ELF binary object */
+  elfshsect_t		*cursct;		/* !< @brief Current analysed section */
   asm_processor		proc;			/* !< @brief ASM processor */
   container_t		*curblock;		/* !< @brief Current working block */
   container_t		*curfunc;		/* !< @brief Current working function */
