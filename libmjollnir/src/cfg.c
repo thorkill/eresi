@@ -1,5 +1,5 @@
 /*
-** (C) 2006-2007 Devhell Labs / Asgard Labs 
+** (C) 2006-2008 Devhell Labs / Asgard Labs 
 **  - sk, jfv, thorolf, strauss
 **
 ** @file libmjollnir/types.c
@@ -100,13 +100,14 @@ int			mjr_trace_control(mjrcontext_t *context,
 
       /* If call occured at the end of a section */
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
-
+	{
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
 	      __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
 
 	  retaddr = NULL;
+	}
       else
 	retaddr = curvaddr + ilen + addend;
 
