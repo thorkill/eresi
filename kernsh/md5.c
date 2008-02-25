@@ -12,6 +12,7 @@ int		cmd_kmd5()
 {
   int		ret;
   revmlist_t    *actual, *second;
+  revmexpr_t	*expr;
   revmobj_t     *obj;
   char          buff[BUFSIZ];
   elfsh_Addr    vaddr;
@@ -38,7 +39,9 @@ int		cmd_kmd5()
       /* Get the value of the object */
       else
 	{
-	  obj = revm_lookup_param(actual->rname);
+	  expr = revm_lookup_param(actual->rname);
+
+	  obj = expr->value;
 
 	  switch (obj->otype->type)
 	    {
@@ -170,8 +173,9 @@ int		cmd_kcmd5()
   char  buff[BUFSIZ], buff2[256];
   char	*param, *str;
   unsigned long addr;
+  revmexpr_t *expr;
   revmobj_t *obj;
-  
+
   unsigned char md5buffer[BUFSIZ];
   unsigned char cmd5buffer[BUFSIZ];
 
@@ -188,7 +192,9 @@ int		cmd_kcmd5()
   
   if (param != NULL)
     {
-      obj = revm_lookup_param(param);
+      expr = revm_lookup_param(param);
+      obj = expr->value;
+
       if (obj->otype->type == ASPECT_TYPE_STR)
 	{
 	  str = (obj->immed ? obj->immed_val.str : 

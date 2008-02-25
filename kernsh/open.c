@@ -13,11 +13,6 @@ int		export_var(char *name,
 			   char *valstr,
 			   int choice)
 {
-  
-  revmobj_t             *o1;
-  revmobj_t             *o2;
-  int                   error;
-  int                   errvar;
   char			param1[BUFSIZ];
   char			param2[BUFSIZ];
 
@@ -62,32 +57,8 @@ int		export_var(char *name,
   world.curjob->curcmd->param[0] = param1;
   world.curjob->curcmd->param[1] = param2;
 
-  error  = -1;
-  errvar = 0;
-  if (revm_preconds_atomics(&o1, &o2) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Invalid variable transaction", (-1));
-  errvar = revm_object_set(o1, o2);
-  if (errvar < 0)
-    {
-      if (errvar != -2)
-        errvar = 0;
-      goto err;
-    }
- err:
-  if (!o2->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__, o2);
-  if (!o1->perm)
-    XFREE(__FILE__, __FUNCTION__, __LINE__, o1);
-
-  /* We have 2 different possible errors here */
-  if (errvar < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Error while setting result variable", -1);
-  else if (error < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unable to set object", -1);
-
+  cmd_set();
+ 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
  
