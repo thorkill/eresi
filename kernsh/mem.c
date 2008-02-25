@@ -18,7 +18,7 @@ int		cmd_sct()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
   elist_init(h, "cmd_sct_list", ASPECT_TYPE_UNKNOW);
   ret = kernsh_sct(h);
@@ -48,8 +48,7 @@ int		cmd_sct()
   
   revm_output("\n");
   elist_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get syscalltable", -1);
@@ -68,7 +67,7 @@ int		cmd_idt()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
   elist_init(h, "cmd_idt_list", ASPECT_TYPE_UNKNOW);
   ret = kernsh_idt(h);
@@ -97,8 +96,7 @@ int		cmd_idt()
 
   revm_output("\n");
   elist_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get idt", -1);
@@ -118,7 +116,7 @@ int		cmd_gdt()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
 
   elist_init(h, "cmd_gdt_list", ASPECT_TYPE_UNKNOW);
@@ -151,8 +149,7 @@ int		cmd_gdt()
 	     
   revm_output("\n");
   elist_destroy(h);
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get gdt", -1);
@@ -168,7 +165,6 @@ int		cmd_ksym()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -191,8 +187,6 @@ int		cmd_ksym()
       revm_setvar_long("_", addr);
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -204,7 +198,7 @@ int		cmd_kmodule()
   char	buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   memset(buff, '\0', sizeof(buff));
 
   param = world.curjob->curcmd->param[0];
@@ -267,7 +261,5 @@ int		cmd_kmodule()
 	}
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

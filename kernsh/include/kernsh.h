@@ -36,6 +36,7 @@
 #define CMD_AUTOTYPES		"autotypes"
 #define CMD_KMD5		"kmd5"
 #define CMD_KCMD5		"kcmd5"
+#define CMD_KVIRTM		"kvirtm"
 
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
@@ -53,9 +54,15 @@ int	cmd_kmodule();
 int	cmd_autotypes();
 int	cmd_kmd5();
 int	cmd_kcmd5();
+int	cmd_kvirtm();
 
+int	kernsh_virtm_dump_elf(pid_t, char *);
 int	export_var(char *, unsigned long, int, char *, int);
-int	extract_info(char *, unsigned long *, int *, int *, int *, 
+int	extract_info(char *, 
+		     unsigned long *, 
+		     int *, 
+		     int *, 
+		     int *, 
 		     unsigned char *, size_t);
 
 int	kernsh_config();

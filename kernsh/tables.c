@@ -75,6 +75,12 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_KCMD5);
 
+
+  revm_command_add(CMD_KVIRTM, (void *)cmd_kvirtm, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM);
+
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 
 		   1, 

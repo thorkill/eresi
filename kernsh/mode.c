@@ -14,7 +14,6 @@ int		cmd_kmode()
   char		buf[256];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -62,7 +61,6 @@ int		cmd_kmode()
     }
   
   revm_endline();
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

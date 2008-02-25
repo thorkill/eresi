@@ -16,7 +16,6 @@ int		cmd_closemem()
   time_t        uloadt;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
 
   /* Close memory */
   ret = kernsh_closemem();
@@ -62,7 +61,6 @@ int		cmd_closemem()
 	   revm_colorfieldstr("[+] CLOSE MEMORY"));
   revm_output(buff);
   revm_endline();
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+ 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -90,7 +90,6 @@ int		cmd_openmem()
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
 
   /* Check if no static is set */
   if (!(int) config_get_data(LIBKERNSH_VMCONFIG_WITHOUT_KERNEL))
@@ -141,7 +140,6 @@ int		cmd_openmem()
   revm_output(buff);
   revm_endline();
   export_vars();
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

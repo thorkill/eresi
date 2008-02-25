@@ -34,5 +34,6 @@
 				"Parameter format : format, file\n"\
 				"- format : addr:mode:size:off:md5\n"\
 				"- file : filename\n\n"
+#define HLP_KVIRTM		"hand kernel virtual memory"
 
 #endif

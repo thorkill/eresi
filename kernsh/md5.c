@@ -20,7 +20,7 @@ int		cmd_kmd5()
   unsigned char md5buffer[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   memset(buff, '\0', sizeof(buff));
   vaddr = -1;  
   actual = world.curjob->curcmd->disasm + 0;
@@ -109,8 +109,6 @@ int		cmd_kmd5()
 	}
     }
   
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -182,7 +180,6 @@ int		cmd_kcmd5()
   FILE *fd;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
   
   val = 0;
   memset(buff, '\0', sizeof(buff));
@@ -333,8 +330,6 @@ int		cmd_kcmd5()
 	}
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   revm_setvar_int("_", val);  
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);

@@ -16,7 +16,7 @@ int		cmd_kalloc()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   param = world.curjob->curcmd->param[0];
   if (param)
     {
@@ -39,8 +39,6 @@ int		cmd_kalloc()
       revm_setvar_long("_", addr);
     }
    
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -54,7 +52,7 @@ int		cmd_kfree()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -77,8 +75,6 @@ int		cmd_kfree()
       revm_setvar_int("_", 0);
     }
 
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -92,7 +88,7 @@ int		cmd_kallocnc()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -116,8 +112,6 @@ int		cmd_kallocnc()
       revm_setvar_long("_", addr);
     }
   
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -130,7 +124,7 @@ int		cmd_kfreenc()
   unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_callback_handler_remove();
+
   param = world.curjob->curcmd->param[0];
 
   if (param)
@@ -153,7 +147,5 @@ int		cmd_kfreenc()
       revm_setvar_int("_", 0);
     }
  
-  revm_callback_handler_install(revm_get_prompt(), revm_line_handler);
-  revm_column_update();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
