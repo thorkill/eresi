@@ -90,8 +90,8 @@ int asm_register_mips()
 
   /* Initializing MIPS operand handler vector */
   /* This section is just a stub for when the operand vector is actually
-   * implemented.
-   
+  * implemented. */
+
   dims = malloc(1 * sizeof (u_int));
 
   if (!dims)
@@ -104,15 +104,13 @@ int asm_register_mips()
       goto out;
     }
   
-  dims[0] = ???;
+  dims[0] = ASM_MIPS_OTYPE_LAST;
 
   dimstr[0] = "OPERAND";
   
   aspect_register_vector(LIBASM_VECTOR_OPERAND_MIPS,  asm_operand_fetch_default,
 			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
 
-  */
-  
   asm_register_mips_opcodes();
   asm_register_mips_operands();
 
@@ -124,8 +122,21 @@ int asm_register_mips()
  * Register mips operand handlers.
  * This is currently not implemented.
  */
+
 int asm_register_mips_operands()
 {
-   return (1);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_NONE, (unsigned long) asm_mips_operand_none);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_REGISTER, (unsigned long) asm_mips_operand_r);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_IMMEDIATE, (unsigned long) asm_mips_operand_i);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_JUMP, (unsigned long) asm_mips_operand_j);
+  return 1;
+}
+
+
+int asm_register_mips_operand(unsigned int type, unsigned long func)
+{
+  LIBASM_PROFILE_FIN();
+  asm_register_operand(LIBASM_VECTOR_OPERAND_MIPS, type, func);
+  LIBASM_PROFILE_FOUT(1);
 }
 

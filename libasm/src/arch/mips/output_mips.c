@@ -4,6 +4,7 @@
  * @ingroup output_mips
  *
  */
+/* Fix by Adam 'pi3' Zabrocki */
 /* Manuel Martin - 2007 */
 
 #include <libasm.h>
@@ -50,7 +51,79 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 
    return buf;
   */
-  return ("unimplemented");
+  static char bufer[32];
+  asm_operand *op = &ins->op[0];
+  struct s_mips_decode_reg temp;
+  u_char *helper;
+
+  bzero(&temp,sizeof(temp));
+  bzero(bufer,sizeof(bufer));
+  helper = (u_char*)&op->scale;
+
+  switch(op->type) {
+  
+     case ASM_MIPS_OTYPE_NONE:
+
+        snprintf(bufer,sizeof(bufer),"NOT YET!");
+	break;
+
+     case ASM_MIPS_OTYPE_REGISTER:
+
+        mips_convert_format_r(&temp,helper);
+        switch (ins->instr) {
+	
+	   case ASM_MIPS_CLO:
+	   case ASM_MIPS_CLZ:
+	   case ASM_MIPS_DCLO:
+	   case ASM_MIPS_DCLZ:
+	   
+	      snprintf(bufer,sizeof(bufer),"%4s,%4s",e_mips_registers[temp.rd].ext_mnemonic,\
+                      e_mips_registers[temp.rs].ext_mnemonic);
+	      break;
+
+           case ASM_MIPS_DSLLV:
+	   case ASM_MIPS_DSRAV:
+	   case ASM_MIPS_DSRLV:
+	   case ASM_MIPS_SLLV:
+	   case ASM_MIPS_SRAV:
+	   case ASM_MIPS_SRLV:
+	   
+	      snprintf(bufer,sizeof(bufer),"%4s,%4s,%4s",e_mips_registers[temp.rd].ext_mnemonic,\
+                      e_mips_registers[temp.rt].ext_mnemonic,e_mips_registers[temp.rs].ext_mnemonic);
+	      break;
+
+	   case ASM_MIPS_MADD:
+	   case ASM_MIPS_MADDU:
+	   case ASM_MIPS_MSUB:
+	   case ASM_MIPS_MSUBU:
+	   case ASM_MIPS_MULT:
+	   case ASM_MIPS_MULTU:
+	   case ASM_MIPS_TEQ:
+	   case ASM_MIPS_TGE:
+	   case ASM_MIPS_TGEU:
+	   case ASM_MIPS_TLT:
+	   case ASM_MIPS_TLTU:
+	   case ASM_MIPS_TNE:
+	   
+	      snprintf(bufer,sizeof(bufer),"%4s,%4s",e_mips_registers[temp.rs].ext_mnemonic,\
+                      e_mips_registers[temp.rt].ext_mnemonic);
+	      break;
+
+           default:
+
+              snprintf(bufer,sizeof(bufer),"%4s,%4s,%4s",e_mips_registers[temp.rd].ext_mnemonic,\
+                      e_mips_registers[temp.rs].ext_mnemonic,e_mips_registers[temp.rt].ext_mnemonic);
+//              snprintf(bufer,sizeof(bufer),"%2d,%2d,%2d",temp.rd,temp.rs,temp.rt);
+              break;
+
+	}
+
+        break;
+
+  }
+  
+  return bufer;
+
 }
 
 /**
@@ -91,9 +164,9 @@ char *asm_mips_display_instr(asm_instr *ins,int addr)
   */
 //  return ("unimplemented");
    static char buf[32];
-
+   
    bzero(buf,sizeof(buf));
-   snprintf(buf,32,"%s",e_mips_instrs[ins->instr].mnemonic);
+   snprintf(buf,32,"%s\t%s",e_mips_instrs[ins->instr].mnemonic,asm_mips_display_operand(ins,0x0,addr));
    return buf;
 }
 

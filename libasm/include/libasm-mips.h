@@ -12,6 +12,7 @@
 #define LIBASM_MIPS_H_
 
 #include <libasm.h>
+#include <libasm-mips-structs.h>
 
 /**
  * @todo XXX: Rename fetch_mips to asm_fetch_mips.
@@ -25,11 +26,16 @@
 #define ASM_CONFIG_MIPS_EXTENDED_REGISTERS 1
 
 char	*asm_mips_display_instr(asm_instr *, int);
+void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf);
+void    mips_convert_format_i(struct s_mips_decode_imm  *opcode, u_char *buf);
+void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf);
+
 int	fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
 
 int	asm_register_mips();
 int	asm_register_mips_opcodes();
 int	asm_register_mips_operands();
+int     asm_register_mips_operand(unsigned int type, unsigned long func);
 
 #define Ob(x)  ((unsigned)Ob_(0 ## x ## uL))
 #define Ob_(x) ((x & 1) | ((x >> 2) & 2) | ((x >> 4) & 4) | ((x >> 6) & 8) |    \
@@ -587,7 +593,10 @@ enum e_mips_operand_type
 {
    ASM_MIPS_OTYPE_NONE,
    ASM_MIPS_OTYPE_REGISTER,
-   ASM_MIPS_OTYPE_IMMEDIATE
+   ASM_MIPS_OTYPE_IMMEDIATE,
+   ASM_MIPS_OTYPE_JUMP,
+   
+   ASM_MIPS_OTYPE_LAST
 };
 
 /**
@@ -633,6 +642,17 @@ extern struct e_mips_instr e_mips_instrs[];
 extern struct e_mips_register e_mips_registers[];
 
 #endif
+
+
+/* Operands */
+
+void    asm_mips_operand_none(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_i(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_j(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_r(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+
+
+/* Opcodes */
 
 int asm_mips_add(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_addi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

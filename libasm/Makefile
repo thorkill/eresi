@@ -33,6 +33,7 @@ SRCS_libasm 	=				\
 		src/arch/mips/init_mips.c	\
 		src/arch/mips/output_mips.c	\
 		src/arch/mips/tables_mips.c	\
+		src/arch/mips/mips_convert.c	\
 		src/arch/mips/register_mips.c
 
 #		src/arch/mips/mips_convert.c	\

@@ -6,6 +6,6 @@
 int asm_mips_jr_hb(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   fprintf(stderr,"jr.hb\n");
+   ins->instr = ASM_MIPS_JR;
    return 777;
 }
