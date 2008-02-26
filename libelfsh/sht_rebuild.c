@@ -419,7 +419,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      printf("@" XFMT " => SECT SIZE: %x %d bytes\n", sect_addr - base_addr, sect_size, sect_size);
+      printf("@" XFMT " => SECT SIZE: %x %ld bytes\n", sect_addr - base_addr, sect_size, sect_size);
      
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,
