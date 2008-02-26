@@ -24,7 +24,7 @@ void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
      opcode->sa = (converted >> 6) & 0x1F;
      opcode->fn = (converted >> 0) & 0x3F;
   } else {
-     printf("Where am I ?!?!?!\n");
+     printf("[CONV_R] Where am I ?!?!?!\n");
      exit(-1);
   }
 
@@ -38,7 +38,7 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
 
   if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-
+  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;
@@ -46,7 +46,7 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
 //     opcode->im = (converted >> 0) & 0xFFFFFF;
      opcode->im = (converted >> 0) & 0xFFFF;
   } else {
-     printf("Where am I ?!?!?!\n");
+     printf("[CONV_I] Where am I ?!?!?!\n");
      exit(-1);
   }
 
@@ -66,7 +66,7 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
      opcode->op = (converted >> 26) & 0x3F;
      opcode->ta = (converted >> 0) & 0x3FFFFFF;
   } else {
-     printf("Where am I ?!?!?!\n");
+     printf("[CONV_J] Where am I ?!?!?!\n");
      exit(-1);
   }
 

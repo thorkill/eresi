@@ -7,5 +7,7 @@ int asm_mips_bne(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_BNE;
+   asm_mips_operand_i(&ins->op[0], buf, ASM_MIPS_OTYPE_IMMEDIATE, ins);
+
    return 777;
 }

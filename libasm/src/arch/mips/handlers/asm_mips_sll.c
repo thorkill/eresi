@@ -16,7 +16,7 @@ int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
      for(i=0;i<4;i++)
         *(for_help + i) = *(buf + 3 - i);
    } else {
-     printf("Where am I ?!?!?!\n");
+     printf("[SLL] Where am I ?!?!?!\n");
      exit(-1);
    }
 

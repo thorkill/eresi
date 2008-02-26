@@ -19,44 +19,14 @@
  */
 char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 {
-  /**
-  static char buf[32];
-   asm_operand *op;
-
-   switch(num) {
-      case 1: op = &ins->op[0]; break;
-      case 2: op = &ins->op[1]; break;
-      case 3: op = &ins->op[2]; break;
-      default: return NULL;
-   }
-
-   switch(op->type)
-   {
-      case ASM_MIPS_OTYPE_REGISTER:
-         if(op->imm < 10)
-            sprintf(buf,"%i",op->imm);
-         else
-            sprintf(buf,"0x%x",op->imm);
-         break;
-      case ASM_MIPS_OTYPE_IMMEDIATE:
-         sprintf(buf,"%s",
-            config_get_data(ASM_CONFIG_MIPS_REGISTER_FLAVOUR) ==
-		 ASM_CONFIG_MIPS_EXTENDED_REGISTERS) ? 
-            e_mips_registers[reg].ext_mnemonic : 
-            e_mips_registers[reg].mnemonic;
-         break;
-      default:
-         return "err";
-   }
-
-   return buf;
-  */
   static char bufer[32];
   asm_operand *op = &ins->op[0];
   struct s_mips_decode_reg temp;
+  struct s_mips_decode_imm temp2;
   u_char *helper;
 
   bzero(&temp,sizeof(temp));
+  bzero(&temp2,sizeof(temp2));
   bzero(bufer,sizeof(bufer));
   helper = (u_char*)&op->scale;
 
@@ -120,6 +90,103 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 
         break;
 
+     case ASM_MIPS_OTYPE_IMMEDIATE:
+
+        mips_convert_format_i(&temp2,helper);
+	switch (ins->instr) {
+	
+	   case ASM_MIPS_B:
+           case ASM_MIPS_BAL:
+
+              snprintf(bufer,sizeof(bufer),"0x%x",temp2.im);
+	      break;
+
+	   case ASM_MIPS_BEQ:
+           case ASM_MIPS_BEQL:
+	   case ASM_MIPS_BNE:
+	   case ASM_MIPS_BNEL:
+
+              snprintf(bufer,sizeof(bufer),"%4s,%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,\
+                      e_mips_registers[temp2.rt].ext_mnemonic,temp2.im);
+	      break;
+
+           case ASM_MIPS_BGEZ:
+	   case ASM_MIPS_BGEZAL:
+	   case ASM_MIPS_BGEZALL:
+	   case ASM_MIPS_BGEZL:
+	   case ASM_MIPS_BGTZ:
+	   case ASM_MIPS_BGTZL:
+	   case ASM_MIPS_BLEZ:
+	   case ASM_MIPS_BLEZL:
+	   case ASM_MIPS_BLTZ:
+	   case ASM_MIPS_BLTZAL:
+	   case ASM_MIPS_BLTZALL:
+	   case ASM_MIPS_BLTZL:
+	   case ASM_MIPS_TEQI:
+	   case ASM_MIPS_TGEI:
+	   case ASM_MIPS_TGEIU:
+	   case ASM_MIPS_TLTI:
+	   case ASM_MIPS_TLTIU:
+	   case ASM_MIPS_TNEI:
+
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,temp2.im);
+	      break;
+
+/*
+           case ASM_MIPS_CACHE:
+
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp.rs].ext_mnemonic,temp.im);
+	      break;
+*/
+
+           case ASM_MIPS_LB:
+	   case ASM_MIPS_LBU:
+	   case ASM_MIPS_LD:
+	   case ASM_MIPS_LDC2:
+	   case ASM_MIPS_LDL:
+	   case ASM_MIPS_LDR:
+	   case ASM_MIPS_LH:
+	   case ASM_MIPS_LHU:
+	   case ASM_MIPS_LL:
+	   case ASM_MIPS_LLD:
+           case ASM_MIPS_LW:
+	   case ASM_MIPS_LWC2:
+	   case ASM_MIPS_LWL:
+	   case ASM_MIPS_LWR:
+	   case ASM_MIPS_LWU:
+	   case ASM_MIPS_PREF:
+	   case ASM_MIPS_SB:
+	   case ASM_MIPS_SC:
+	   case ASM_MIPS_SCD:
+	   case ASM_MIPS_SD:
+	   case ASM_MIPS_SDC2:
+	   case ASM_MIPS_SDL:
+	   case ASM_MIPS_SDR:
+	   case ASM_MIPS_SH:
+	   case ASM_MIPS_SW:
+	   case ASM_MIPS_SWC2:
+	   case ASM_MIPS_SWL:
+	   case ASM_MIPS_SWR:
+
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x(%4s)",e_mips_registers[temp2.rt].ext_mnemonic,\
+	              temp2.im,e_mips_registers[temp2.rs].ext_mnemonic);
+	      break;
+
+           case ASM_MIPS_LUI:
+
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rt].ext_mnemonic,temp2.im);
+	      break;
+
+	   default:
+
+              snprintf(bufer,sizeof(bufer),"%4s,%4s,0x%x",e_mips_registers[temp2.rt].ext_mnemonic,\
+                      e_mips_registers[temp2.rs].ext_mnemonic,temp2.im);
+	      break;
+	      
+	}
+
+	break;
+
   }
   
   return bufer;
@@ -135,38 +202,10 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
  */
 char *asm_mips_display_instr(asm_instr *ins,int addr)
 {
-  /*
-    static char buf[32];
-
-    switch(ins->nb_op)
-    {
-    case 1:
-    sprintf(buf,"%s %s",
-    e_mips_instrs[ins->instr],
-    asm_mips_display_operand(ins,1,addr));
-    break;
-    case 2:
-    sprintf(buf,"%s %s,%s",
-    e_mips_instrs[ins->instr],
-    asm_mips_display_operand(ins,1,addr),
-    asm_mips_display_operand(ins,2,addr));
-    break;
-    case 3:
-    sprintf(buf,"%s %s,%s,%s",
-    e_mips_instrs[ins->instr],
-    asm_mips_display_operand(ins,1,addr),
-    asm_mips_display_operand(ins,2,addr),
-    asm_mips_display_operand(ins,3,addr));
-    break;
-    }
-
-    return buf;
-  */
-//  return ("unimplemented");
    static char buf[32];
    
    bzero(buf,sizeof(buf));
-   snprintf(buf,32,"%s\t%s",e_mips_instrs[ins->instr].mnemonic,asm_mips_display_operand(ins,0x0,addr));
+   snprintf(buf,32,"%s %s",e_mips_instrs[ins->instr].mnemonic,asm_mips_display_operand(ins,0x0,addr));
    return buf;
 }
 
