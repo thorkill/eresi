@@ -58,6 +58,43 @@ int kernsh_init_ia32(char *os, char *release)
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_DEFAULT_FENDSIZE);
 
+  config_add_item(LIBKERNSH_VMCONFIG_USEVM,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 0);
+
+  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+
+  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+
+  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+
+  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+
+#if defined(__linux__)
+ config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+#endif
+
+  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_SCT,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) "0x0");
+
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {

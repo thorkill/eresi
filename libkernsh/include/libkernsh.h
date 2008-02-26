@@ -118,6 +118,15 @@ enum
 #define LIBKERNSH_VMCONFIG_KLOAD		"libkernsh.kload"
 #define LIBKERNSH_VMCONFIG_KUNLOAD		"libkernsh.kunload"
 #define LIBKERNSH_VMCONFIG_FENDSIZE		"libkernsh.fendsize"
+#define LIBKERNSH_VMCONFIG_USEVM		"libkernsh.usevm"
+#define LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE	"libkernsh.specify_idtbase"
+#define LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT	"libkernsh.specify_idtlimit"
+#define LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE	"libkernsh.specify_gdtbase"
+#define LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT	"libkernsh.specify_gdtlimit"
+#define LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL	"libkernsh.specify_systemcall"
+#define LIBKERNSH_VMCONFIG_SPECIFY_SCT		"libkernsh.specify_sct"
+
+
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"

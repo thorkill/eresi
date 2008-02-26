@@ -80,7 +80,11 @@ lib:	$(OBJS_libasm)
 	@echo "[RANLIB] ${NAME_libasm}"
 	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
 	@echo "[CC -shared] libasm.so"
+ifeq ($(IRIX),1)
 	@$(LD) ${OBJS_libasm} -o libasm.so -shared
+else
+	@$(CC) ${OBJS_libasm} -o libasm.so -shared
+endif
 
 clean:
 	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc

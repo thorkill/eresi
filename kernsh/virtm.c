@@ -30,6 +30,14 @@ int		cmd_kvirtm()
 	{
 	  kernsh_virtm_dump_elf(atoi(param2), param3);
 	}
+      if (param2 && !strcmp(param, "-v"))
+	{
+	  kernsh_virtm_view_vmaps(atoi(param2));
+	}
+      if (param2 && !strcmp(param, "-s"))
+	{
+	  kernsh_virtm_get_virtaddr(atoi(param2));
+	}
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -53,8 +61,8 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
     }
 
   len = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_FILENAME) + 
+    strlen(PROC_ENTRY_KERNSH_VIRTM) +
+    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
     2;
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
@@ -67,31 +75,15 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
   snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
 	   PROC_ENTRY_ROOT, 
 	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_PID);
+	   PROC_ENTRY_KERNSH_VIRTM_INFO);
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d", pid);
+  snprintf(buff, sizeof(buff), "%d:%s", pid, filename);
   ret = write(fd, buff, strlen(buff));
   if (ret != strlen(buff))
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set pid",
-		   -1);
-    }
-
-  XCLOSE(fd, -1);
-
-  snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_FILENAME);
-
-  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  ret = write(fd, filename, strlen(filename));
-  if (ret != strlen(filename))
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set filename",
+		   "Impossible to set info",
 		   -1);
     }
 
@@ -130,3 +122,79 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+int		kernsh_virtm_view_vmaps(pid_t pid)
+{
+  int fd, len, ret;
+  char *proc_entry_root_tmp;
+  char	buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  memset(buff, '\0', sizeof(buff));
+
+  len = strlen(PROC_ENTRY_ROOT) + 
+    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
+    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
+    2;
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 proc_entry_root_tmp, 
+	 len, 
+	 -1);
+  
+  memset(proc_entry_root_tmp, '\0', len);
+ 
+  snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
+	   PROC_ENTRY_ROOT, 
+	   PROC_ENTRY_KERNSH_VIRTM,
+	   PROC_ENTRY_KERNSH_VIRTM_INFO);
+ 
+  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
+  snprintf(buff, sizeof(buff), "%d:", pid);
+  ret = write(fd, buff, strlen(buff));
+  if (ret != strlen(buff))
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to set pid",
+		   -1);
+    }
+
+  XCLOSE(fd, -1);
+
+  snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
+	   PROC_ENTRY_ROOT, 
+	   PROC_ENTRY_KERNSH_VIRTM,
+	   PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF);
+
+  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
+  snprintf(buff, sizeof(buff), "2");
+  ret = write(fd, buff, strlen(buff));
+  XCLOSE(fd, -1);
+
+  XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_virtm_get_virtaddr(pid_t pid)
+{
+  struct mem_addr tmp;
+  unsigned int arg[2];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  memset(&tmp, '\0', sizeof(tmp));
+
+  arg[0] = (unsigned int)&pid;
+  arg[1] = (unsigned int)&tmp;
+
+  printf("VM_START 0x%lx\n", tmp.vm_start);
+
+  kernsh_syscall(221, 2, arg);
+
+  printf("VM_START 0x%lx\n", tmp.vm_start);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+

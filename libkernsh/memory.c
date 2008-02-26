@@ -14,7 +14,7 @@ int kernsh_openmem()
 {
   int ret, mmap, mmap_size;
 
-  char *device, *mode;
+  char *device, *mode, *value;
   u_int         dim[4];
   vector_t      *mem;
   int          (*fct)();
@@ -132,7 +132,30 @@ int kernsh_openmem()
   if(ret == 0)
     {
       libkernshworld.open = 1;
-      kernsh_info();
+      int vm = (int) config_get_data(LIBKERNSH_VMCONFIG_USEVM);
+      if (vm == 0)
+	kernsh_info();
+      else
+	{
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE);
+	  libkernshworld.idt_base = strtoull(value, NULL, 16);
+
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT);
+	  libkernshworld.idt_limit = strtoull(value, NULL, 16);
+
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE);
+	  libkernshworld.gdt_base = strtoull(value, NULL, 16);
+
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT);
+	  libkernshworld.gdt_limit = strtoull(value, NULL, 16);
+
+#if defined(__linux__)
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL);
+	  libkernshworld.system_call = strtoull(value, NULL, 16);
+#endif
+	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_SCT);
+	  libkernshworld.sct = strtoull(value, NULL, 16);
+	}
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);

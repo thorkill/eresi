@@ -7,6 +7,7 @@
 #include <asm/uaccess.h>
 #include <linux/proc_fs.h>
 #include <linux/threads.h>
+#include <linux/string.h>
 
 #include "../include/virtm.h"
 
@@ -17,13 +18,14 @@ MODULE_LICENSE("GPL");
 static pid_t current_pid;
 
 static struct proc_dir_entry *proc_entry_kernsh_virtm;
-static struct proc_dir_entry *proc_entry_kernsh_virtm_pid;
-static struct proc_dir_entry *proc_entry_kernsh_virtm_filename;
 static struct proc_dir_entry *proc_entry_kernsh_virtm_dump_elf;
+static struct proc_dir_entry *proc_entry_kernsh_virtm_info;
+
 
 static char current_filename[256];
 
 int kernsh_get_elf_image(pid_t, const char *);
+int kernsh_view_vmaps(pid_t);
 
 static int my_atoi(const char *name)
 {
@@ -115,6 +117,11 @@ ssize_t kernsh_virtm_dump_elf_write(struct file *filp,
 	return -EFAULT;
     }
 
+  if (dump == 2)
+    {
+      kernsh_view_vmaps(current_pid);
+    }
+
   return len;
 }
 
@@ -123,6 +130,73 @@ int kernsh_virtm_dump_elf_read(char *page, char **start, off_t off, int count, i
   int len;
 
   len = sprintf(page, "Please write 1 to dump elf file\n");
+
+  return len;
+}
+
+ssize_t kernsh_virtm_info_write(struct file *filp, 
+				const char __user *buff, 
+				unsigned long len, 
+				void *data)
+{
+  char *token;
+  char *new_buff;
+  int i, j;
+  pid_t new_pid;
+
+  new_buff = kmalloc(len, GFP_KERNEL);
+  if (copy_from_user(new_buff, buff, len)) 
+    {
+      return -EFAULT;
+    }
+
+  i = 0;
+  while((token = strsep(&new_buff, ":")) != NULL) 
+    {
+      switch(i)
+	{
+	case 0 :
+	  new_pid = my_atoi(token);
+	  if (new_pid > 0 && new_pid <= PID_MAX_DEFAULT)
+	    {
+	      current_pid = new_pid;
+	    }
+	  else
+	    {
+	      kfree(new_buff);
+	      return -EFAULT;
+	    }
+	  break;
+	case 1 :
+	  if (strlen(token) <= 0 || strlen(token) >= sizeof(current_filename))
+	    {
+	      kfree(new_buff);
+	      return -EFAULT;
+	    }
+	  
+	  memcpy(current_filename, token, strlen(token));
+
+	  j = 0;
+	  while(j < strlen(token) && current_filename[j] != '\n')
+	    j++;
+	  if (current_filename[j] == '\n')
+	    current_filename[j] = '\0';
+
+	  break;
+	}
+
+      i++;
+    }
+
+  kfree(new_buff);
+  return len;
+}
+
+int kernsh_virtm_info_read(char *page, char **start, off_t off, int count, int *eof, void *data)
+{
+  int len;
+
+  len = sprintf(page, "PID = %d\nFILENAME = %s\n", current_pid, current_filename);
 
   return len;
 }
@@ -152,7 +226,7 @@ int kernsh_get_elf_image(pid_t pid, const char *filename)
   int i;
   mm_segment_t fs;
 
-  if (filename == NULL)
+  if (filename == NULL || strlen(filename) == 0)
     return -1;
 
   printk(KERN_ALERT "DUMP pid %d @ %s\n", pid, filename);
@@ -185,13 +259,12 @@ int kernsh_get_elf_image(pid_t pid, const char *filename)
     {
       for(vma = mm->mmap; vma; vma = vma->vm_next)
 	{
-	  /*printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
+	  printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
 		 vma->vm_start, 
 		 vma->vm_end,
 		 vma->vm_flags,
 		 (unsigned long)vma->vm_file);
-	  */
-
+	 
 	  if((vma->vm_flags & VM_EXECUTABLE) && 
 	     (vma->vm_flags & VM_EXEC) &&
 	     (vma->vm_file))
@@ -224,6 +297,58 @@ int kernsh_get_elf_image(pid_t pid, const char *filename)
   return 0;
 }
 
+int kernsh_view_vmaps(pid_t pid)
+{
+  struct task_struct *task;
+  struct mm_struct *mm;
+  struct vm_area_struct *vma;
+
+  task = find_task_by_pid(pid);
+  if (task == NULL)
+    {
+      printk(KERN_ALERT "Couldn't find pid %d\n", pid);
+      return -1;
+    }
+
+  if (task->mm == NULL)
+    return -1;
+  
+  mm = task->mm;
+
+  if (mm)
+    {
+      for(vma = mm->mmap; vma; vma = vma->vm_next)
+	{
+	  printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
+		 vma->vm_start, 
+		 vma->vm_end,
+		 vma->vm_flags,
+		 (unsigned long)vma->vm_file);
+	}
+    }
+
+  return 0;
+}
+
+int asmlinkage kernsh_get_virtaddr(pid_t pid, struct mem_addr * temmem)
+{
+  struct task_struct *task;
+
+  if (temmem == NULL)
+    return -EFAULT;
+
+  task = find_task_by_pid(pid);
+  if (task == NULL)
+    {
+      printk(KERN_ALERT "Couldn't find pid %d\n", pid);
+      return -1;
+    }
+
+  temmem->vm_start = task->mm->mmap->vm_start;
+
+  return 0;
+}
+
 static int kernsh_virtm_init(void)
 {
   printk(KERN_ALERT "Kernsh Virtm Init\n");
@@ -239,33 +364,27 @@ static int kernsh_virtm_init(void)
       return -1;
     }
   
-  proc_entry_kernsh_virtm_pid = 
-    create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_PID, 0644, proc_entry_kernsh_virtm);
-  proc_entry_kernsh_virtm_filename = 
-    create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_FILENAME, 0644, proc_entry_kernsh_virtm);
   proc_entry_kernsh_virtm_dump_elf = 
     create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF, 0644, proc_entry_kernsh_virtm);
+  proc_entry_kernsh_virtm_info = 
+    create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_INFO, 0644, proc_entry_kernsh_virtm);
 
-  if (proc_entry_kernsh_virtm_pid == NULL || 
-      proc_entry_kernsh_virtm_filename == NULL ||
-      proc_entry_kernsh_virtm_dump_elf == NULL)
+
+  if (proc_entry_kernsh_virtm_dump_elf == NULL ||
+      proc_entry_kernsh_virtm_info == NULL)
     {
       printk(KERN_ALERT "Couldn't create sub proc entry\n");
       return -1;
     }
   
   
-  proc_entry_kernsh_virtm_pid->read_proc = kernsh_virtm_pid_read;
-  proc_entry_kernsh_virtm_pid->write_proc = kernsh_virtm_pid_write;
-  proc_entry_kernsh_virtm_pid->owner = THIS_MODULE;  
-
-  proc_entry_kernsh_virtm_filename->read_proc = kernsh_virtm_filename_read;
-  proc_entry_kernsh_virtm_filename->write_proc = kernsh_virtm_filename_write;
-  proc_entry_kernsh_virtm_filename->owner = THIS_MODULE;  
-
   proc_entry_kernsh_virtm_dump_elf->read_proc = kernsh_virtm_dump_elf_read;
   proc_entry_kernsh_virtm_dump_elf->write_proc = kernsh_virtm_dump_elf_write;
   proc_entry_kernsh_virtm_dump_elf->owner = THIS_MODULE; 
+
+  proc_entry_kernsh_virtm_info->read_proc = kernsh_virtm_info_read;
+  proc_entry_kernsh_virtm_info->write_proc = kernsh_virtm_info_write;
+  proc_entry_kernsh_virtm_info->owner = THIS_MODULE;
 
   return 0;
 }
@@ -274,11 +393,10 @@ static void kernsh_virtm_exit(void)
 {
   printk(KERN_ALERT "Kernsh Virtm Exit\n");
 
-  remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_PID, proc_entry_kernsh_virtm);
-  remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_FILENAME, proc_entry_kernsh_virtm);
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF, proc_entry_kernsh_virtm);
+  remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_INFO, proc_entry_kernsh_virtm);
 
-   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM, &proc_root);
+  remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM, &proc_root);
 }
 
 
