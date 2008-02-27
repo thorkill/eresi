@@ -6,19 +6,9 @@
 int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   u_int i, converted = 0;
-   u_char *for_help;
+   u_int converted = 0;
 
-   if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
-      memcpy((char *)&converted,buf,sizeof(converted));
-   } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
-     for_help = (u_char*)&converted;
-     for(i=0;i<4;i++)
-        *(for_help + i) = *(buf + 3 - i);
-   } else {
-     printf("[SLL] Where am I ?!?!?!\n");
-     exit(-1);
-   }
+   memcpy((char *)&converted,buf,sizeof(converted));
 
    switch ((converted >> 6) & 0xFFFFF) {
 
