@@ -98,7 +98,7 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_B:
            case ASM_MIPS_BAL:
 
-              snprintf(bufer,sizeof(bufer),"0x%x",temp2.im);
+              snprintf(bufer,sizeof(bufer),"0x%x",(short)(addr+((temp2.im+1)*4)));
 	      break;
 
 	   case ASM_MIPS_BEQ:
@@ -107,7 +107,7 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_BNEL:
 
               snprintf(bufer,sizeof(bufer),"%4s,%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,\
-                      e_mips_registers[temp2.rt].ext_mnemonic,temp2.im);
+                      e_mips_registers[temp2.rt].ext_mnemonic,(short)(addr+((temp2.im+1)*4)));
 	      break;
 
            case ASM_MIPS_BGEZ:
@@ -122,6 +122,11 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_BLTZAL:
 	   case ASM_MIPS_BLTZALL:
 	   case ASM_MIPS_BLTZL:
+
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,\
+	              (short)(addr+((temp2.im+1)*4)));
+	      break;
+
 	   case ASM_MIPS_TEQI:
 	   case ASM_MIPS_TGEI:
 	   case ASM_MIPS_TGEIU:
@@ -129,7 +134,7 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_TLTIU:
 	   case ASM_MIPS_TNEI:
 
-              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,temp2.im);
+              snprintf(bufer,sizeof(bufer),"%4s,%d",e_mips_registers[temp2.rs].ext_mnemonic,(short)temp2.im);
 	      break;
 
 /*
@@ -168,19 +173,19 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_SWL:
 	   case ASM_MIPS_SWR:
 
-              snprintf(bufer,sizeof(bufer),"%4s,0x%x(%4s)",e_mips_registers[temp2.rt].ext_mnemonic,\
-	              temp2.im,e_mips_registers[temp2.rs].ext_mnemonic);
+              snprintf(bufer,sizeof(bufer),"%4s,%d(%4s)" /* 0x%x(%4s) */,e_mips_registers[temp2.rt].ext_mnemonic,\
+	              (short)temp2.im,e_mips_registers[temp2.rs].ext_mnemonic);
 	      break;
 
            case ASM_MIPS_LUI:
 
-              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rt].ext_mnemonic,temp2.im);
+              snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rt].ext_mnemonic,(short)temp2.im);
 	      break;
 
 	   default:
 
-              snprintf(bufer,sizeof(bufer),"%4s,%4s,0x%x",e_mips_registers[temp2.rt].ext_mnemonic,\
-                      e_mips_registers[temp2.rs].ext_mnemonic,temp2.im);
+              snprintf(bufer,sizeof(bufer),"%4s,%4s,%d"/* 0x%x */,e_mips_registers[temp2.rt].ext_mnemonic,\
+                      e_mips_registers[temp2.rs].ext_mnemonic,(short)temp2.im);
 	      break;
 	      
 	}
@@ -208,5 +213,3 @@ char *asm_mips_display_instr(asm_instr *ins,int addr)
    snprintf(buf,32,"%s %s",e_mips_instrs[ins->instr].mnemonic,asm_mips_display_operand(ins,0x0,addr));
    return buf;
 }
-
-
