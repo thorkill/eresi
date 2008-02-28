@@ -23,10 +23,12 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
   asm_operand *op = &ins->op[0];
   struct s_mips_decode_reg temp;
   struct s_mips_decode_imm temp2;
+  struct s_mips_decode_trap temp3;
   u_char *helper;
 
   bzero(&temp,sizeof(temp));
   bzero(&temp2,sizeof(temp2));
+  bzero(&temp3,sizeof(temp3));
   bzero(bufer,sizeof(bufer));
   helper = (u_char*)&op->scale;
 
@@ -66,17 +68,16 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_MADDU:
 	   case ASM_MIPS_MSUB:
 	   case ASM_MIPS_MSUBU:
-	   case ASM_MIPS_MULT:
-	   case ASM_MIPS_MULTU:
-	   case ASM_MIPS_TEQ:
-	   case ASM_MIPS_TGE:
-	   case ASM_MIPS_TGEU:
-	   case ASM_MIPS_TLT:
-	   case ASM_MIPS_TLTU:
-	   case ASM_MIPS_TNE:
-	   
+
 	      snprintf(bufer,sizeof(bufer),"%4s,%4s",e_mips_registers[temp.rs].ext_mnemonic,\
                       e_mips_registers[temp.rt].ext_mnemonic);
+	      break;
+
+
+           case ASM_MIPS_JALR:
+	   case ASM_MIPS_JR:
+
+              snprintf(bufer,sizeof(bufer),"%4s",e_mips_registers[temp.rs].ext_mnemonic);
 	      break;
 
            default:
@@ -97,8 +98,12 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	
 	   case ASM_MIPS_B:
            case ASM_MIPS_BAL:
+	   case ASM_MIPS_BC2F:
+	   case ASM_MIPS_BC2T:
+	   case ASM_MIPS_BC2FL:
+	   case ASM_MIPS_BC2TL:
 
-              snprintf(bufer,sizeof(bufer),"0x%x",(short)(addr+((temp2.im+1)*4)));
+              snprintf(bufer,sizeof(bufer),"0x%x",(addr+(((short)temp2.im+1)*4)));
 	      break;
 
 	   case ASM_MIPS_BEQ:
@@ -107,7 +112,7 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_BNEL:
 
               snprintf(bufer,sizeof(bufer),"%4s,%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,\
-                      e_mips_registers[temp2.rt].ext_mnemonic,(short)(addr+((temp2.im+1)*4)));
+                      e_mips_registers[temp2.rt].ext_mnemonic,(addr+(((short)temp2.im+1)*4)));
 	      break;
 
            case ASM_MIPS_BGEZ:
@@ -124,7 +129,7 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	   case ASM_MIPS_BLTZL:
 
               snprintf(bufer,sizeof(bufer),"%4s,0x%x",e_mips_registers[temp2.rs].ext_mnemonic,\
-	              (short)(addr+((temp2.im+1)*4)));
+	              (addr+(((short)temp2.im+1)*4)));
 	      break;
 
 	   case ASM_MIPS_TEQI:
@@ -189,6 +194,39 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 	      break;
 	      
 	}
+
+	break;
+
+     case ASM_MIPS_OTYPE_NOOP:
+
+        snprintf(bufer,sizeof(bufer)," ");
+	break;
+
+     case ASM_MIPS_OTYPE_TRAP:
+
+        mips_convert_format_t(&temp3,helper);
+        switch (ins->instr) {
+
+           case ASM_MIPS_BREAK:
+	   case ASM_MIPS_SYSCALL:
+	   
+	      snprintf(bufer,sizeof(bufer)," ");
+	      break;
+
+           case ASM_MIPS_MTHI:
+	   case ASM_MIPS_MTLO:
+
+	      snprintf(bufer,sizeof(bufer),"%4s",e_mips_registers[temp3.rs].ext_mnemonic);
+	      break;
+
+
+           default:
+
+	      snprintf(bufer,sizeof(bufer),"%4s,%4s",e_mips_registers[temp3.rs].ext_mnemonic,\
+                      e_mips_registers[temp3.rt].ext_mnemonic);
+	      break;
+
+        }
 
 	break;
 

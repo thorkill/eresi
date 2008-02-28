@@ -71,3 +71,24 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
   }
 
 }
+
+void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
+			      u_char *buf)
+{
+  u_int32_t	converted;
+
+  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+     memcpy(opcode, buf, 4);
+  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+     memcpy(&converted, buf, 4);
+     opcode->op = (converted >> 26) & 0x3F;
+     opcode->rs = (converted >> 21) & 0x1F;
+     opcode->rt = (converted >> 16) & 0x1F;
+     opcode->code = (converted >> 6) & 0x3FF;
+     opcode->fn = (converted >> 0) & 0x3F;
+  } else {
+     printf("[CONV_T] Where am I ?!?!?!\n");
+     exit(-1);
+  }
+
+}

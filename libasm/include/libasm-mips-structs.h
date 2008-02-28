@@ -39,4 +39,18 @@ struct s_mips_decode_jump
   u_int32_t	ta:26;	/*! target to jump to		*/
 };
 
+/**
+ * Structure used to decode format trap
+  instructions
+ */
+struct s_mips_decode_trap
+{
+  u_int32_t	op:6;
+  u_int32_t	rs:5;
+  u_int32_t	rt:5;
+  u_int32_t	code:10;
+  u_int32_t	fn:6;
+};
+
+
 #endif
