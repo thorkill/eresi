@@ -30,6 +30,8 @@ void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf);
 void    mips_convert_format_i(struct s_mips_decode_imm  *opcode, u_char *buf);
 void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf);
 void    mips_convert_format_t(struct s_mips_decode_trap *opcode, u_char *buf);
+void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf);
+void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf);
 
 int	fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
 
@@ -598,6 +600,8 @@ enum e_mips_operand_type
    ASM_MIPS_OTYPE_JUMP,
    ASM_MIPS_OTYPE_NOOP,
    ASM_MIPS_OTYPE_TRAP,
+   ASM_MIPS_OTYPE_COP2,
+   ASM_MIPS_OTYPE_MOV,
 
    ASM_MIPS_OTYPE_LAST
 };
@@ -655,6 +659,8 @@ void    asm_mips_operand_j(asm_operand *op, u_char *opcode, int otype, asm_instr
 void    asm_mips_operand_r(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 void    asm_mips_operand_t(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 void    asm_mips_operand_noop(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_cop2(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_mov(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 
 
 /* Opcodes */

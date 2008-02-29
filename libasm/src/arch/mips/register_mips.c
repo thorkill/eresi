@@ -129,6 +129,11 @@ int asm_register_mips_operands()
   asm_register_mips_operand(ASM_MIPS_OTYPE_REGISTER, (unsigned long) asm_mips_operand_r);
   asm_register_mips_operand(ASM_MIPS_OTYPE_IMMEDIATE, (unsigned long) asm_mips_operand_i);
   asm_register_mips_operand(ASM_MIPS_OTYPE_JUMP, (unsigned long) asm_mips_operand_j);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_NOOP, (unsigned long) asm_mips_operand_noop);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_TRAP, (unsigned long) asm_mips_operand_t);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_COP2, (unsigned long) asm_mips_operand_cop2);
+  asm_register_mips_operand(ASM_MIPS_OTYPE_MOV, (unsigned long) asm_mips_operand_mov);
+
   return 1;
 }
 

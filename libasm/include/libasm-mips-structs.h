@@ -1,6 +1,8 @@
 /**
  * $Id: libasm-mips-structs.h,v 1.1 2007/01/23 09:53:03 heroine Exp $
  *
+ * fix and fill                                                                                                                                  
+ *          - Adam 'pi3' Zabrocki
  *
  */
 #ifndef LIBASM_MIPS_STRUCTS_H
@@ -40,8 +42,7 @@ struct s_mips_decode_jump
 };
 
 /**
- * Structure used to decode format trap
-  instructions
+ * Structure used to decode format trap instructions
  */
 struct s_mips_decode_trap
 {
@@ -52,5 +53,32 @@ struct s_mips_decode_trap
   u_int32_t	fn:6;
 };
 
+/**
+ * Structure used to decode format mov* instructions
+ */
+struct s_mips_decode_mov
+{
+  u_int32_t	op:6;
+  u_int32_t	rs:5;
+  u_int32_t	cc:3;
+  u_int32_t	b1:1;
+  u_int32_t	tf:1;
+  u_int32_t	rd:5;
+  u_int32_t	b2:5;
+  u_int32_t	fn:6;
+};
+
+/**
+ * Structure used to decode some coprocesor2 instructions
+ */
+struct s_mips_decode_cop2
+{
+  u_int32_t	op:6;
+  u_int32_t	rs:5;
+  u_int32_t	rt:5;
+  u_int32_t	rd:5;
+  u_int32_t	fn:8;
+  u_int32_t	sl:3;
+};
 
 #endif

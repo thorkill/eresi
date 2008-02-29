@@ -1,7 +1,7 @@
 /**
  * $Id: mips_decode.c,v 1.3 2007/10/14 00:01:41 heroine Exp $
  *
- *
+ * Adam 'pi3' Zabrocki was here ;p
  *
  */
 
