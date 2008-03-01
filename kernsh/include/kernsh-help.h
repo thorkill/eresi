@@ -34,6 +34,11 @@
 				"Parameter format : format, file\n"\
 				"- format : addr:mode:size:off:md5\n"\
 				"- file : filename\n\n"
-#define HLP_KVIRTM		"hand kernel virtual memory"
+#define HLP_KVIRTM_INFO		"handle kernel virtual memory"
+#define HLP_KVIRTM_READ		"handle kernel virtual memory"
+#define HLP_KVIRTM_WRITE	"handle kernel virtual memory"
+#define HLP_KVIRTM_READ_MEM	"handle kernel virtual memory"
+#define HLP_KVIRTM_WRITE_MEM	"handle kernel virtual memory"
+#define HLP_KVIRTM_DUMP		"handle kernel virtual memory"
 
 #endif

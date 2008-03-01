@@ -94,6 +94,13 @@ enum
     LIBKERNSH_STATIC_MODE
   } libkernsh_e_debug_type;
 
+enum
+  {
+    LIBKERNSH_PROC_MODE,
+    LIBKERNSH_SYSCALL_MODE,
+    LIBKERNSH_VIRTMNUM
+  } libkernsh_e_virtm_type;
+
 #define	__DEBUG_KERNSH__			0
 
 #define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
@@ -125,8 +132,7 @@ enum
 #define LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT	"libkernsh.specify_gdtlimit"
 #define LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL	"libkernsh.specify_systemcall"
 #define LIBKERNSH_VMCONFIG_SPECIFY_SCT		"libkernsh.specify_sct"
-
-
+#define LIBKERNSH_VMCONFIG_VIRTM		"libkernsh.virtm"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -155,27 +161,29 @@ enum
 #define GFP_KERNEL				208
 #define NAMESIZ					64
 
-#define LIBKERNSH_VECTOR_NAME_OPENMEM		"openmem"
-#define LIBKERNSH_VECTOR_NAME_CLOSEMEM		"closemem"
-#define LIBKERNSH_VECTOR_NAME_READMEM		"readmem"
-#define LIBKERNSH_VECTOR_NAME_WRITEMEM		"writemem"
-#define LIBKERNSH_VECTOR_NAME_SCT		"sct"
-#define LIBKERNSH_VECTOR_NAME_IDT		"idt"
-#define LIBKERNSH_VECTOR_NAME_GDT		"gdt"
-#define LIBKERNSH_VECTOR_NAME_INFO		"info"
-#define LIBKERNSH_VECTOR_NAME_DECOMPKERNEL	"decompkernel"
-#define LIBKERNSH_VECTOR_NAME_ADDRBYNAME	"addr_by_name"
-#define LIBKERNSH_VECTOR_NAME_NAMEBYADDR	"name_by_addr"
-#define LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS	"alloc_contiguous"
+#define LIBKERNSH_VECTOR_NAME_OPENMEM			"openmem"
+#define LIBKERNSH_VECTOR_NAME_CLOSEMEM			"closemem"
+#define LIBKERNSH_VECTOR_NAME_READMEM			"readmem"
+#define LIBKERNSH_VECTOR_NAME_WRITEMEM			"writemem"
+#define LIBKERNSH_VECTOR_NAME_SCT			"sct"
+#define LIBKERNSH_VECTOR_NAME_IDT			"idt"
+#define LIBKERNSH_VECTOR_NAME_GDT			"gdt"
+#define LIBKERNSH_VECTOR_NAME_INFO			"info"
+#define LIBKERNSH_VECTOR_NAME_DECOMPKERNEL		"decompkernel"
+#define LIBKERNSH_VECTOR_NAME_ADDRBYNAME		"addr_by_name"
+#define LIBKERNSH_VECTOR_NAME_NAMEBYADDR		"name_by_addr"
+#define LIBKERNSH_VECTOR_NAME_ALLOCCONTIGUOUS		"alloc_contiguous"
 #define LIBKERNSH_VECTOR_NAME_ALLOCNONCONTIGUOUS	"alloc_noncontiguous"
-#define LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS	"free_contiguous"
-#define LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS	"free_noncontiguous"
-#define LIBKERNSH_VECTOR_NAME_AUTOTYPES		"autotypes"
-#define LIBKERNSH_VECTOR_NAME_RELINKMODULE	"relink_module"
-#define LIBKERNSH_VECTOR_NAME_INFECTMODULE	"infect_module"
-#define LIBKERNSH_VECTOR_NAME_KLOADMODULE	"kload_module"
-#define LIBKERNSH_VECTOR_NAME_KUNLOADMODULE	"kunload_module"
-#define LIBKERNSH_VECTOR_NAME_CALLSC		"call_syscall"
+#define LIBKERNSH_VECTOR_NAME_FREECONTIGUOUS		"free_contiguous"
+#define LIBKERNSH_VECTOR_NAME_FREENONCONTIGUOUS		"free_noncontiguous"
+#define LIBKERNSH_VECTOR_NAME_AUTOTYPES			"autotypes"
+#define LIBKERNSH_VECTOR_NAME_RELINKMODULE		"relink_module"
+#define LIBKERNSH_VECTOR_NAME_INFECTMODULE		"infect_module"
+#define LIBKERNSH_VECTOR_NAME_KLOADMODULE		"kload_module"
+#define LIBKERNSH_VECTOR_NAME_KUNLOADMODULE		"kunload_module"
+#define LIBKERNSH_VECTOR_NAME_CALLSC			"call_syscall"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM		"kvirtm_read_virtm"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM		"kvirtm_read_mem"
 
 /* Idtr segment struct */
 struct 
@@ -388,7 +396,8 @@ int	kernsh_register_relink(u_int, void *);
 int	kernsh_register_infect(u_int, void *);
 int	kernsh_register_kload(u_int, void *);
 int	kernsh_register_kunload(u_int, void *);
-
+int	kernsh_register_kvirtm_read_virtm(u_int, u_int, void *);
+int	kernsh_register_kvirtm_read_mem(u_int, u_int, void *);
 
 /* Memory */
 int	kernsh_openmem();
@@ -522,6 +531,10 @@ int	kernsh_decompkernel_linux();
 /* Kvirtm */
 
 int kernsh_kvirtm_read_virtm(pid_t, unsigned long, char *, int);
+int kernsh_kvirtm_read_virtm_proc_linux(pid_t, unsigned long, char *, int);
+
+int kernsh_kvirtm_read_mem(unsigned long, char *, int);
+int kernsh_kvirtm_read_mem_proc_linux(unsigned long, char *, int);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

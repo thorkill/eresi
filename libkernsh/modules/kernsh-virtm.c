@@ -21,6 +21,7 @@ static pid_t current_pid;
 static struct proc_dir_entry *proc_entry_kernsh_virtm;
 static struct proc_dir_entry *proc_entry_kernsh_virtm_dump_elf;
 static struct proc_dir_entry *proc_entry_kernsh_virtm_vio;
+static struct proc_dir_entry *proc_entry_kernsh_virtm_vio_info;
 static struct proc_dir_entry *proc_entry_kernsh_virtm_info;
 
 static kvirtm_action_t current_kvirtm;
@@ -36,6 +37,10 @@ int kernsh_get_elf_image(pid_t, const char *);
 int kernsh_view_vmaps(pid_t);
 int asmlinkage kernsh_read_virtm(pid_t, unsigned long, char *, int);
 int asmlinkage kernsh_read_virtm_proc(pid_t, unsigned long, char *, int);
+
+
+int asmlinkage kernsh_read_mem(unsigned long, char *, int);
+
 
 static int my_atoi(const char *name)
 {
@@ -146,15 +151,18 @@ int kernsh_virtm_info_read(char *page, char **start, off_t off, int count, int *
   return len;
 }
 
-ssize_t kernsh_virtm_vio_input(struct file *filp, 
-			       const char __user *buff, 
-			       unsigned long len, 
-			       void *data)
+ssize_t kernsh_virtm_vio_info_input(struct file *filp, 
+				    const char __user *buff, 
+				    unsigned long len, 
+				    void *data)
 {
   char *token;
   char *new_buff;
   int i;
   pid_t new_pid;
+
+  printk(KERN_ALERT "kernsh_virtm_vio_info_input ENTER !!\n"); 
+  printk(KERN_ALERT "BUFFER %s\n", buff);
 
   new_buff = kmalloc(len, GFP_KERNEL);
   if (copy_from_user(new_buff, buff, len))
@@ -194,15 +202,11 @@ ssize_t kernsh_virtm_vio_input(struct file *filp,
 	    }
 	  break;
 	case 4 :
-	  if (strlen(token) <= 0 || strlen(token) >= sizeof(current_kvirtm.filename))
+	  if (strlen(token) > 0 && strlen(token) <= sizeof(current_kvirtm.filename))
 	    {
-	      kfree(new_buff);
-	      return -EFAULT;
+	      memset(current_kvirtm.filename, '\0', sizeof(current_kvirtm.filename));
+	      memcpy(current_kvirtm.filename, token, strlen(token));
 	    }
-	  
-	  memset(current_kvirtm.filename, '\0', sizeof(current_kvirtm.filename));
-	  memcpy(current_kvirtm.filename, token, strlen(token));
-
 	  break;
 	default :
 	  break;
@@ -220,6 +224,19 @@ ssize_t kernsh_virtm_vio_input(struct file *filp,
   kfree(new_buff);
   return len;
 }
+int kernsh_virtm_vio_info_output(char *page, char **start, off_t off, int count, int *eof, void *data)
+{
+
+  return 0;
+}
+
+ssize_t kernsh_virtm_vio_input(struct file *filp, 
+			       const char __user *buff, 
+			       unsigned long len, 
+			       void *data)
+{
+  return len;
+}
 
 int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int *eof, void *data)
 {
@@ -235,15 +252,20 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
   switch (current_kvirtm.action)
     {
     case LIBKERNSH_VIRTM_READ_MEM : 
+      new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
+      kernsh_read_mem(current_kvirtm.addr,
+		      new_buff,
+		      current_kvirtm.len);
+      len = current_kvirtm.len;
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM :
       break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
       kernsh_read_virtm_proc(current_kvirtm.pid,
-			current_kvirtm.addr,
-			new_buff,
-			current_kvirtm.len);
+			     current_kvirtm.addr,
+			     new_buff,
+			     current_kvirtm.len);
       len = current_kvirtm.len;
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM_PID :
@@ -252,8 +274,6 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
       break;
     }
   
-  //  len = sprintf(page, "PID = %d\nFILENAME = %s\n", current_pid, current_filename);
-
   memcpy(page, new_buff, len);
   kfree(new_buff);
   return len;
@@ -623,10 +643,53 @@ int asmlinkage kernsh_get_virtaddr(pid_t pid, struct mem_addr * temmem)
   return 0;
 }
 
+static inline int valid_phys_addr_range(unsigned long addr, size_t count)
+{
+  if (addr + count > __pa(high_memory))
+    return 0;
+  
+  return 1;
+}
+
 int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len)
 {
+  ssize_t read, sz;
+  char *ptr; 
+  unsigned long p = addr - 0xc0000000;
 
-  return 0;
+  printk(KERN_ALERT "[+] kernsh_read_mem ENTER !!\n");
+
+  if (!valid_phys_addr_range(p, len))
+    return -EFAULT;
+
+  read = 0;
+  while (len > 0) {
+    /*
+     * Handle first page in case it's not aligned
+     */
+    if (-p & (PAGE_SIZE - 1))
+      sz = -p & (PAGE_SIZE - 1);
+    else
+      sz = PAGE_SIZE;
+    
+    sz = min_t(unsigned long, sz, len);
+    
+    ptr = xlate_dev_mem_ptr(p);
+
+    printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
+    memcpy(buffer, ptr, sz);
+    buffer += sz;
+    p += sz;
+    len -= sz;
+    read += sz;
+
+    //    if (copy_to_user(buffer, ptr, sz))
+    // return -EFAULT;
+  }
+
+  printk(KERN_ALERT "[+] kernsh_read_mem EXIT !!\n");
+
+  return read;
 }
 
 int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len)
@@ -659,10 +722,12 @@ static int kernsh_virtm_init(void)
     create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_INFO, 0644, proc_entry_kernsh_virtm);
   proc_entry_kernsh_virtm_vio =
     create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_VIO, 0644, proc_entry_kernsh_virtm);
-
+  proc_entry_kernsh_virtm_vio_info =
+    create_proc_entry(PROC_ENTRY_KERNSH_VIRTM_VIO_INFO, 0644, proc_entry_kernsh_virtm);
 
   if (proc_entry_kernsh_virtm_dump_elf == NULL ||
       proc_entry_kernsh_virtm_info == NULL ||
+      proc_entry_kernsh_virtm_vio_info == NULL ||
       proc_entry_kernsh_virtm_vio == NULL)
     {
       printk(KERN_ALERT "Couldn't create sub proc entry\n");
@@ -677,6 +742,10 @@ static int kernsh_virtm_init(void)
   proc_entry_kernsh_virtm_info->read_proc = kernsh_virtm_info_read;
   proc_entry_kernsh_virtm_info->write_proc = kernsh_virtm_info_write;
   proc_entry_kernsh_virtm_info->owner = THIS_MODULE;
+
+  proc_entry_kernsh_virtm_vio_info->read_proc = kernsh_virtm_vio_info_output;
+  proc_entry_kernsh_virtm_vio_info->write_proc = kernsh_virtm_vio_info_input;
+  proc_entry_kernsh_virtm_vio_info->owner = THIS_MODULE;
 
   proc_entry_kernsh_virtm_vio->read_proc = kernsh_virtm_vio_output;
   proc_entry_kernsh_virtm_vio->write_proc = kernsh_virtm_vio_input;
@@ -694,6 +763,7 @@ static void kernsh_virtm_exit(void)
 
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF, proc_entry_kernsh_virtm);
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_INFO, proc_entry_kernsh_virtm);
+  remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_VIO_INFO, proc_entry_kernsh_virtm);
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_VIO, proc_entry_kernsh_virtm);
 
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM, &proc_root);

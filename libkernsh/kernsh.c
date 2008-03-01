@@ -95,6 +95,11 @@ int kernsh_init_ia32(char *os, char *release)
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
+  config_add_item(LIBKERNSH_VMCONFIG_VIRTM,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) 0);
+
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {

@@ -262,6 +262,30 @@ int kernsh_kunload_module_default()
 	       "kunload module default !", -1);
 }
 
+int kernsh_kvirtm_read_virtm_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KVIRTM READ VIRTM DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kvirtm read virtm default !", -1);
+}
+
+int kernsh_kvirtm_read_mem_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KVIRTM READ MEM DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kvirtm read mem default !", -1);
+}
+
 /* Init vectors */
 int kernsh_init_vectors()
 {
@@ -517,6 +541,28 @@ int kernsh_init_vectors()
                          kernsh_kunload_module_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
 
+#if __DEBUG_KERNSH__
+  printf("KVIRTM READ * VECTORS\n");
+#endif
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
+
+  dims[0]    = LIBKERNSH_OSNUM;
+  dims[1]    = LIBKERNSH_VIRTMNUM;
+
+  strdims[0] = "OSTYPE";
+  strdims[1] = "VIRTMTYPE";
+
+  /* Register kvirtm read * default vectors */
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM, 
+                         kernsh_kvirtm_read_virtm_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM, 
+                         kernsh_kvirtm_read_mem_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -687,6 +733,22 @@ int kernsh_register_vectors()
 			  kernsh_kunload_module_linux);
   kernsh_register_kunload(LIBKERNSH_OS_LINUX_2_4, 
 			  kernsh_kunload_module_linux);
+
+  kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_6,
+				    LIBKERNSH_PROC_MODE,
+				    kernsh_kvirtm_read_virtm_proc_linux);
+
+  kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
+				    LIBKERNSH_PROC_MODE,
+				    kernsh_kvirtm_read_virtm_proc_linux);
+
+  kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
+				  LIBKERNSH_PROC_MODE,
+				  kernsh_kvirtm_read_mem_proc_linux);
+
+  kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
+				  LIBKERNSH_PROC_MODE,
+				  kernsh_kvirtm_read_mem_proc_linux);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -1159,6 +1221,50 @@ int kernsh_register_kunload(u_int ostype, void *fct)
 #endif
 
   aspect_vectors_insert(kunload, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kvirtm_read_virtm(u_int ostype, u_int virtmtype, void *fct)
+{
+  vector_t *sct;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM);
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = ostype;
+  dim[1] = virtmtype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KVIRTM READ VIRTM\n");
+#endif
+
+  aspect_vectors_insert(sct, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
+{
+  vector_t *sct;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM);
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = ostype;
+  dim[1] = virtmtype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KVIRTM READ MEM\n");
+#endif
+
+  aspect_vectors_insert(sct, dim, (int)fct);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

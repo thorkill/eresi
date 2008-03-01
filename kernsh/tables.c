@@ -76,10 +76,35 @@ void	setup_local_cmdhash()
 		   HLP_KCMD5);
 
 
-  revm_command_add(CMD_KVIRTM, (void *)cmd_kvirtm, 
+  revm_command_add(CMD_KVIRTM_INFO, (void *)cmd_kvirtm_info, 
 		   (void*) revm_getvarparams,
 		   0,
-		   HLP_KVIRTM);
+		   HLP_KVIRTM_INFO);
+
+  revm_command_add(CMD_KVIRTM_READ, (void *)cmd_kvirtm_read, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_READ);
+  
+  revm_command_add(CMD_KVIRTM_WRITE, (void *)cmd_kvirtm_write, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_WRITE);
+
+  revm_command_add(CMD_KVIRTM_READ_MEM, (void *)cmd_kvirtm_read_mem, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_READ_MEM);
+  
+  revm_command_add(CMD_KVIRTM_WRITE_MEM, (void *)cmd_kvirtm_write_mem, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_WRITE_MEM);
+
+  revm_command_add(CMD_KVIRTM_DUMP, (void *)cmd_kvirtm_dump, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_DUMP);
 
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 
