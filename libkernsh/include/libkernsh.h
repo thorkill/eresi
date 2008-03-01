@@ -519,10 +519,15 @@ int kernsh_autotask_offsetlist_linux_2_6(char *, size_t);
 int	kernsh_decompkernel();
 int	kernsh_decompkernel_linux();
 
+/* Kvirtm */
+
+int kernsh_kvirtm_read_virtm(pid_t, unsigned long, char *, int);
+
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);
 int	kernsh_resolve_systemmap(unsigned long, char *, size_t);
 int	kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
 int	kernsh_find_end(unsigned long);
+void	kernsh_hexdump(unsigned char *, unsigned int, size_t);
 
 #endif

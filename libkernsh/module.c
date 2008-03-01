@@ -64,7 +64,8 @@ int kernsh_kload_module_linux(char *name)
 
   if(fork() == 0)
     ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_KLOAD), params, environ);
-
+  else
+    wait(NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -115,7 +116,8 @@ int kernsh_kunload_module_linux(char *name)
 
   if(fork() == 0)
     ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_KUNLOAD), params, environ);
-
+  else
+    wait(NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -192,6 +194,8 @@ int kernsh_relink_module_linux(char *orig, char *injec, char *evil)
 
   if(fork() == 0)
     ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_LD), params, environ);
+  else
+    wait(NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

@@ -2,7 +2,7 @@ include ../config.h
 #
 # Architecture source files
 #
-SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c md5.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c
+SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c md5.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c kvirtm.c
 
 OBJS32_libkernsh	=	${SRCS_libkernsh:.c=.32.o} 
 OBJS64_libkernsh	=	${SRCS_libkernsh:.64.c=.o}
@@ -27,7 +27,7 @@ CC 		?= 	gcc
 LD		?=	ld
 CP 		= 	cp
 
-all:	all32 all64
+all:	all32 lkm
 
 symbs :
 	@cd symbols && $(MAKE)
@@ -43,7 +43,11 @@ all32: 	symbs $(OBJS32_libkernsh)
 
 all64:
 
+lkm	:
+	@cd modules && $(MAKE)
+
 clean:
+	@cd modules && $(MAKE) clean
 	@$(RM) *.o
 	@cd symbols && $(MAKE) clean
 	#@find .   -name '*~' -exec rm -f {} \;
@@ -51,6 +55,7 @@ clean:
 	@echo "Cleaning source tree"
 
 fclean: clean
+	@cd modules && $(MAKE) fclean
 	@$(RM) *.a *.so
 
 #tags:

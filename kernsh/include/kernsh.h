@@ -59,6 +59,7 @@ int	cmd_kvirtm();
 int	kernsh_virtm_dump_elf(pid_t, char *);
 int	kernsh_virtm_view_vmaps(pid_t);
 int	kernsh_virtm_get_virtaddr(pid_t);
+int	kernsh_virtm_read(pid_t, unsigned long, int);
 
 int	export_var(char *, unsigned long, int, char *, int);
 int	extract_info(char *, 

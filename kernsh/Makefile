@@ -61,7 +61,7 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
 			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
-all			: all32 lkm 
+all			: all32 
 
 all32			: $(OBJ32) 
 			$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) $(STATOPT)
@@ -69,16 +69,11 @@ all32			: $(OBJ32)
 all64			: $(OBJ64) 
 			@$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) $(STATOPT)
 
-lkm			:
-			@cd modules && $(MAKE)
-
 clean		       :
-		       @cd modules && $(MAKE) clean
 		       @$(RM) $(OBJ) *~ \#* *\# .\#* *.32.o *.64.o
 		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
 
 fclean		       : clean
-		       @cd modules && $(MAKE) fclean
 		       @$(RM) $(NAME) $(NAME32) $(NAME64) $(OBJ_DYN)
 
 %.32.o : %.c
