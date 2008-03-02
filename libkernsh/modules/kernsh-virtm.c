@@ -16,6 +16,22 @@ MODULE_DESCRIPTION("Kernsh Virtual Memory !");
 MODULE_AUTHOR("pouik@kernsh.org");
 MODULE_LICENSE("GPL");
 
+#define FREE_SYSCALL_DEFAULT 17
+#define SYS_CALL_TABLE_DEFAULT 0xc02aa440
+
+static int hijack_sct;
+static unsigned long sct_value;
+static int free_syscall;
+
+module_param(hijack_sct, int, 0);
+MODULE_PARM_DESC(hijack_sct, "Hijack sct");
+
+module_param(sct_value, long, 0);
+MODULE_PARM_DESC(sct_value, "sct_value");
+
+module_param(free_syscall, int, 0);
+MODULE_PARM_DESC(free_syscall, "free_syscall");
+
 static pid_t current_pid;
 
 static struct proc_dir_entry *proc_entry_kernsh_virtm;
@@ -27,20 +43,18 @@ static struct proc_dir_entry *proc_entry_kernsh_virtm_info;
 static kvirtm_action_t current_kvirtm;
 static char current_filename[256];
 
-//static unsigned long sys_call_table;
-#define SYS_CALL_TABLE 0xc02aa440
-static void **sys_call_table = SYS_CALL_TABLE;
+static void **sys_call_table;
 
 int asmlinkage (*o_syscallnill)(void);
 
 int kernsh_get_elf_image(pid_t, const char *);
 int kernsh_view_vmaps(pid_t);
-int asmlinkage kernsh_read_virtm(pid_t, unsigned long, char *, int);
-int asmlinkage kernsh_read_virtm_proc(pid_t, unsigned long, char *, int);
 
+int asmlinkage kernsh_read_virtm(pid_t, unsigned long, char *, int, int);
+int asmlinkage kernsh_read_mem(unsigned long, char *, int, int);
 
-int asmlinkage kernsh_read_mem(unsigned long, char *, int);
-
+int asmlinkage kernsh_read_virtm_syscall(pid_t, unsigned long, char *, int);
+int asmlinkage kernsh_read_mem_syscall(unsigned long, char *, int);
 
 static int my_atoi(const char *name)
 {
@@ -162,7 +176,6 @@ ssize_t kernsh_virtm_vio_info_input(struct file *filp,
   pid_t new_pid;
 
   printk(KERN_ALERT "kernsh_virtm_vio_info_input ENTER !!\n"); 
-  printk(KERN_ALERT "BUFFER %s\n", buff);
 
   new_buff = kmalloc(len, GFP_KERNEL);
   if (copy_from_user(new_buff, buff, len))
@@ -195,11 +208,6 @@ ssize_t kernsh_virtm_vio_info_input(struct file *filp,
 	    {
 	      current_kvirtm.pid = new_pid;
 	    }
-	  else
-	    {
-	      kfree(new_buff);
-	      return -EFAULT;
-	    }
 	  break;
 	case 4 :
 	  if (strlen(token) > 0 && strlen(token) <= sizeof(current_kvirtm.filename))
@@ -224,6 +232,7 @@ ssize_t kernsh_virtm_vio_info_input(struct file *filp,
   kfree(new_buff);
   return len;
 }
+
 int kernsh_virtm_vio_info_output(char *page, char **start, off_t off, int count, int *eof, void *data)
 {
 
@@ -255,17 +264,19 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
       kernsh_read_mem(current_kvirtm.addr,
 		      new_buff,
-		      current_kvirtm.len);
+		      current_kvirtm.len,
+		      LIBKERNSH_PROC_MODE);
       len = current_kvirtm.len;
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM :
       break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
-      kernsh_read_virtm_proc(current_kvirtm.pid,
-			     current_kvirtm.addr,
-			     new_buff,
-			     current_kvirtm.len);
+      kernsh_read_virtm(current_kvirtm.pid,
+			current_kvirtm.addr,
+			new_buff,
+			current_kvirtm.len,
+			LIBKERNSH_PROC_MODE);
       len = current_kvirtm.len;
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM_PID :
@@ -517,7 +528,7 @@ struct page *kernsh_get_page_from_task(struct task_struct *task, unsigned long a
   return page_at_addr;
 }
 
-int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
+int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -554,67 +565,22 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
 
   printk(KERN_ALERT "[+] KMAP_ATOMIC\n");
   kaddr = kmap_atomic(mypage, smp_processor_id());
-  if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
-    {
-      printk(KERN_ALERT "[-] copy_from_user error\n");
-      kunmap_atomic(kaddr, smp_processor_id());
-      return -EFAULT;
-    }
-
-  kunmap_atomic(kaddr, smp_processor_id());
-  printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
-
-  printk(KERN_ALERT "[+] kernsh_read_virtm EXIT !!\n");
-
-  return 0;
-}
-
-int asmlinkage kernsh_read_virtm_proc(pid_t pid, unsigned long addr, char *buffer, int len)
-{
-  struct task_struct *task;
-  struct page *mypage;
-  void *kaddr;
-
-  printk(KERN_ALERT "[+] kernsh_read_virtm ENTER !!\n");
-
-  printk(KERN_ALERT "Kernsh Read Virtm PID %d @ 0x%lx strlen(%d) in 0x%lx\n", 
-	 pid, 
-	 addr, 
-	 len, 
-	 (unsigned long)buffer);
- 
-  if (addr <= 0)
-    {
-      printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
-      return -1;
-    }
   
-  task = find_task_by_pid(pid);
-   
-  if (task == NULL)
+  switch(mode)
     {
-      printk(KERN_ALERT "[-] Couldn't find pid %d\n", pid);
-      return -1;
-    }
-  
-  mypage = kernsh_get_page_from_task(task, addr);
-  if (mypage == NULL)
-    {
-      printk(KERN_ALERT "[-] PAGE NULL\n");	
-      return -EFAULT;
+    case LIBKERNSH_PROC_MODE :
+      memcpy(buffer, kaddr + (addr & ~PAGE_MASK), len);
+      break;
+    case LIBKERNSH_SYSCALL_MODE :
+      if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
+	{
+	  printk(KERN_ALERT "[-] copy_from_user error\n");
+	  kunmap_atomic(kaddr, smp_processor_id());
+	  return -EFAULT;
+	}
+      break;
     }
 
-  printk(KERN_ALERT "[+] KMAP_ATOMIC\n");
-  kaddr = kmap_atomic(mypage, smp_processor_id());
-  memcpy(buffer, kaddr + (addr & ~PAGE_MASK), len);
-  /*
-  if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
-    {
-      printk(KERN_ALERT "[-] copy_from_user error\n");
-      kunmap_atomic(kaddr, smp_processor_id());
-      return -EFAULT;
-    }
-  */
   kunmap_atomic(kaddr, smp_processor_id());
   printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
 
@@ -651,11 +617,11 @@ static inline int valid_phys_addr_range(unsigned long addr, size_t count)
   return 1;
 }
 
-int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len)
+int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mode)
 {
   ssize_t read, sz;
   char *ptr; 
-  unsigned long p = addr - 0xc0000000;
+  unsigned long p = addr;
 
   printk(KERN_ALERT "[+] kernsh_read_mem ENTER !!\n");
 
@@ -677,14 +643,21 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len)
     ptr = xlate_dev_mem_ptr(p);
 
     printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
-    memcpy(buffer, ptr, sz);
+    switch(mode)
+      {
+      case LIBKERNSH_PROC_MODE :
+	memcpy(buffer, ptr, sz);
+	break;
+      case LIBKERNSH_SYSCALL_MODE :
+	if (copy_to_user(buffer, ptr, sz))
+	  return -EFAULT;
+	break;
+      }
+
     buffer += sz;
     p += sz;
     len -= sz;
     read += sz;
-
-    //    if (copy_to_user(buffer, ptr, sz))
-    // return -EFAULT;
   }
 
   printk(KERN_ALERT "[+] kernsh_read_mem EXIT !!\n");
@@ -698,6 +671,40 @@ int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len)
   return 0;
 }
 
+int asmlinkage kernsh_read_virtm_syscall(pid_t pid, unsigned long addr, char *buffer, int len)
+{
+  return kernsh_read_virtm(pid, addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
+}
+
+int asmlinkage kernsh_read_mem_syscall(unsigned long addr, char *buffer, int len)
+{
+  return kernsh_read_mem(addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
+}
+
+int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid, 
+					     unsigned long addr, 
+					     char *buffer, 
+					     int len, 
+					     int type)
+{
+  printk(KERN_ALERT "[+] kernsh_kvirtm_syscall_wrapper\n");
+
+  switch (type)
+    {
+    case LIBKERNSH_VIRTM_READ_MEM :
+      kernsh_read_mem_syscall(addr, buffer, len);
+      break;
+    case LIBKERNSH_VIRTM_WRITE_MEM :
+      break;
+    case LIBKERNSH_VIRTM_READ_MEM_PID :
+      kernsh_read_virtm_syscall(pid, addr, buffer, len);
+      break;
+    case LIBKERNSH_VIRTM_WRITE_MEM_PID :
+      break;
+    }
+
+  return -1;
+}
 
 static int kernsh_virtm_init(void)
 {
@@ -751,8 +758,22 @@ static int kernsh_virtm_init(void)
   proc_entry_kernsh_virtm_vio->write_proc = kernsh_virtm_vio_input;
   proc_entry_kernsh_virtm_vio->owner = THIS_MODULE;
 
-  //  o_syscallnill = sys_call_table[17];
-  //sys_call_table[17] = &kernsh_read_virtm;//kernsh_get_virtaddr;
+  if (hijack_sct)
+    {
+      if (!sct_value)
+	sct_value = SYS_CALL_TABLE_DEFAULT;
+
+      printk(KERN_ALERT "HIJACK sys_call_table @ 0x%lx ", sct_value);
+      sys_call_table = (void **)sct_value;
+
+      if (!free_syscall)
+	free_syscall = FREE_SYSCALL_DEFAULT;
+
+      printk(KERN_ALERT "and use syscall %d\n", free_syscall);
+
+      o_syscallnill = sys_call_table[free_syscall];
+      sys_call_table[free_syscall] = &kernsh_kvirtm_syscall_wrapper;
+    }
 
   return 0;
 }
@@ -768,7 +789,11 @@ static void kernsh_virtm_exit(void)
 
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM, &proc_root);
 
-  //  sys_call_table[17] = o_syscallnill;
+  if (hijack_sct)
+    {
+      printk(KERN_ALERT "UNHIJACK sys_call_table @ 0x%lx\n", sct_value);
+      sys_call_table[free_syscall] = o_syscallnill;
+    }
 }
 
 

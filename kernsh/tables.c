@@ -60,6 +60,16 @@ void	setup_local_cmdhash()
 		   0, 
 		   HLP_KMODULE);
 
+  revm_command_add(CMD_KMODULE_LOAD, (void *)cmd_kmodule_load, 
+		   (void*) revm_getvarparams, 
+		   0, 
+		   HLP_KMODULE_LOAD);
+
+  revm_command_add(CMD_KMODULE_UNLOAD, (void *)cmd_kmodule_unload, 
+		   (void*) revm_getvarparams, 
+		   0, 
+		   HLP_KMODULE_UNLOAD);
+
   revm_command_add(CMD_AUTOTYPES, (void *)cmd_autotypes, 
 		   (void *) NULL,
 		   0,
@@ -80,16 +90,21 @@ void	setup_local_cmdhash()
 		   (void*) revm_getvarparams,
 		   0,
 		   HLP_KVIRTM_INFO);
-
-  revm_command_add(CMD_KVIRTM_READ, (void *)cmd_kvirtm_read, 
-		   (void*) revm_getvarparams,
-		   0,
-		   HLP_KVIRTM_READ);
   
-  revm_command_add(CMD_KVIRTM_WRITE, (void *)cmd_kvirtm_write, 
+  revm_command_add(CMD_KVIRTM_LOADME, (void *)cmd_kvirtm_loadme, 
 		   (void*) revm_getvarparams,
 		   0,
-		   HLP_KVIRTM_WRITE);
+		   HLP_KVIRTM_LOADME);
+
+  revm_command_add(CMD_KVIRTM_READ_PID, (void *)cmd_kvirtm_read_pid, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_READ_PID);
+  
+  revm_command_add(CMD_KVIRTM_WRITE_PID, (void *)cmd_kvirtm_write_pid, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_WRITE_PID);
 
   revm_command_add(CMD_KVIRTM_READ_MEM, (void *)cmd_kvirtm_read_mem, 
 		   (void*) revm_getvarparams,

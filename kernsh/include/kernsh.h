@@ -33,12 +33,15 @@
 #define CMD_KFREENC		"kfreenc"
 #define CMD_KSYM		"ksym"
 #define CMD_KMODULE		"kmodule"
+#define CMD_KMODULE_LOAD	"kmodule_load"
+#define CMD_KMODULE_UNLOAD	"kmodule_unload"
 #define CMD_AUTOTYPES		"autotypes"
 #define CMD_KMD5		"kmd5"
 #define CMD_KCMD5		"kcmd5"
 #define CMD_KVIRTM_INFO		"kvirtm_info"
-#define CMD_KVIRTM_READ		"kvirtm_read"
-#define CMD_KVIRTM_WRITE	"kvirtm_write"
+#define CMD_KVIRTM_LOADME	"kvirtm_loadme"
+#define CMD_KVIRTM_READ_PID	"kvirtm_read_pid"
+#define CMD_KVIRTM_WRITE_PID	"kvirtm_write_pid"
 #define CMD_KVIRTM_READ_MEM	"kvirtm_read_mem"
 #define CMD_KVIRTM_WRITE_MEM	"kvirtm_write_mem"
 #define CMD_KVIRTM_DUMP		"kvirtm_dump"
@@ -57,12 +60,15 @@ int	cmd_kallocnc();
 int	cmd_kfreenc();
 int	cmd_ksym();
 int	cmd_kmodule();
+int	cmd_kmodule_load();
+int	cmd_kmodule_unload();
 int	cmd_autotypes();
 int	cmd_kmd5();
 int	cmd_kcmd5();
 int	cmd_kvirtm_info();
-int	cmd_kvirtm_read();
-int	cmd_kvirtm_write();
+int	cmd_kvirtm_loadme();
+int	cmd_kvirtm_read_pid();
+int	cmd_kvirtm_write_pid();
 int	cmd_kvirtm_read_mem();
 int	cmd_kvirtm_write_mem();
 int	cmd_kvirtm_dump();
@@ -70,7 +76,7 @@ int	cmd_kvirtm_dump();
 int	kernsh_virtm_dump_elf(pid_t, char *);
 int	kernsh_virtm_view_vmaps(pid_t);
 int	kernsh_virtm_get_virtaddr(pid_t);
-int	kernsh_virtm_read(pid_t, unsigned long, int);
+int	kernsh_virtm_read_pid(pid_t, unsigned long, int);
 int	kernsh_virtm_read_mem(unsigned long, int);
 
 int	export_var(char *, unsigned long, int, char *, int);

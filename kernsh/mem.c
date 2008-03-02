@@ -208,30 +208,7 @@ int		cmd_kmodule()
 
   if (param)
     {
-      if (param2 && !strcmp(param, "-l"))
-	{
-	  ret = kernsh_kload_module(param2);
-	  if (ret == 0)
-	    {
-	      snprintf(buff, sizeof(buff), 
-		       "Module %s is loaded\n\n",
-		       revm_colorstr(param2));
-	      revm_output(buff);
-	    }
-	    
-	}
-      else if (param2 && !strcmp(param, "-u"))
-	{
-	  ret = kernsh_kunload_module(param2);
-	  if (ret == 0)
-	    {
-	      snprintf(buff, sizeof(buff), 
-		       "Module %s is unloaded\n\n",
-		       revm_colorstr(param2));
-	      revm_output(buff);
-	    }
-	}
-      else if (param2 && param3 && !strcmp(param, "-r"))
+      if (param2 && param3 && !strcmp(param, "-r"))
 	{
 	  ret = kernsh_relink_module(param2, param3, param4);
 	  if (ret == 0)
@@ -258,6 +235,60 @@ int		cmd_kmodule()
 		       revm_colorstr(param2));
 	      revm_output(buff);
 	    }
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		cmd_kmodule_load()
+{
+  int	ret;
+  char  *filename;
+  char	buff[BUFSIZ];
+
+  ret = -1;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  filename = world.curjob->curcmd->param[0];
+
+  if (filename)
+    {
+      ret = kernsh_kload_module(filename);
+      if (ret == 0)
+	{
+	  snprintf(buff, sizeof(buff), 
+		   "Module %s is loaded\n\n",
+		   revm_colorstr(filename));
+	  revm_output(buff);
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		cmd_kmodule_unload()
+{
+  int	ret;
+  char  *filename;
+  char	buff[BUFSIZ];
+
+  ret = -1;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  filename = world.curjob->curcmd->param[0];
+
+  if (filename)
+    {
+      ret = kernsh_kunload_module(filename);
+      if (ret == 0)
+	{
+	  snprintf(buff, sizeof(buff), 
+		   "Module %s is unloaded\n\n",
+		   revm_colorstr(filename));
+	  revm_output(buff);
 	}
     }
 

@@ -6,10 +6,9 @@
 #define PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF		"dump_elf"
 #define PROC_ENTRY_KERNSH_VIRTM_VIO_INFO		"vio_info"
 #define PROC_ENTRY_KERNSH_VIRTM_VIO			"vio"
-#define PROC_ENTRY_KERNSH_VIRTM_SYSCALL_TABLE		"sys_call_table"
 #define PROC_ENTRY_KERNSH_VIRTM_INFO			"info"
 
-#define PROC_ENTRY_KERNSH_VIRTM_MAX PROC_ENTRY_KERNSH_VIRTM_SYSCALL_TABLE
+#define PROC_ENTRY_KERNSH_VIRTM_MAX PROC_ENTRY_KERNSH_VIRTM
 
 enum
   {
@@ -18,6 +17,17 @@ enum
     LIBKERNSH_VIRTM_READ_MEM_PID,
     LIBKERNSH_VIRTM_WRITE_MEM_PID
   } libkernsh_e_virtm_action_type;
+
+#ifndef __LIBKERNSH_H__
+
+enum
+  {
+    LIBKERNSH_PROC_MODE,
+    LIBKERNSH_SYSCALL_MODE,
+    LIBKERNSH_VIRTMNUM
+  } libkernsh_e_virtm_type;
+
+#endif
 
 struct mem_addr {
   unsigned long vm_start;

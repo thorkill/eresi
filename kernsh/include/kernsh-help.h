@@ -20,6 +20,9 @@
 #define HLP_KFREENC		"free non contiguous kernel memory"
 #define HLP_KSYM		"search kernel symbol"
 #define HLP_KMODULE		"handle kernel module"
+#define HLP_KMODULE_LOAD	"handle kernel module"
+#define HLP_KMODULE_UNLOAD	"handle kernel module"
+
 #define HLP_AUTOTYPES		"autotypes"
 #define HLP_KMD5		"Make md5 at a specific addr\n\n"\
 				"kmd5 parameter\n\n"\
@@ -35,8 +38,9 @@
 				"- format : addr:mode:size:off:md5\n"\
 				"- file : filename\n\n"
 #define HLP_KVIRTM_INFO		"handle kernel virtual memory"
-#define HLP_KVIRTM_READ		"handle kernel virtual memory"
-#define HLP_KVIRTM_WRITE	"handle kernel virtual memory"
+#define HLP_KVIRTM_LOADME      	"handle kernel virtual memory"
+#define HLP_KVIRTM_READ_PID	"handle kernel virtual memory"
+#define HLP_KVIRTM_WRITE_PID	"handle kernel virtual memory"
 #define HLP_KVIRTM_READ_MEM	"handle kernel virtual memory"
 #define HLP_KVIRTM_WRITE_MEM	"handle kernel virtual memory"
 #define HLP_KVIRTM_DUMP		"handle kernel virtual memory"

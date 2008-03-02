@@ -156,6 +156,8 @@ enum
 #define LIBKERNSH_I386_LINUX_START		0xc0000000      
 #define LIBKERNSH_I386_LINUX_END	      	0xc1000000
 
+#define LIBKERNSH_PROC_ENTRY_SIZE		1024
+
 #define LIBKERNSH_PAGE_I386_LINUX_OFFSET	0xc0000000
 
 #define GFP_KERNEL				208
@@ -535,6 +537,7 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t, unsigned long, char *, int);
 
 int kernsh_kvirtm_read_mem(unsigned long, char *, int);
 int kernsh_kvirtm_read_mem_proc_linux(unsigned long, char *, int);
+int kernsh_kvirtm_read_mem_syscall_linux(unsigned long, char *, int);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

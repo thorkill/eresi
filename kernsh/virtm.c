@@ -19,6 +19,41 @@ int		cmd_kvirtm_info()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+int		cmd_kvirtm_loadme()
+{
+  int	ret;
+  char	buff[BUFSIZ];
+  char	buff2[BUFSIZ];
+  char *filename;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = -1;
+  memset(buff, '\0', sizeof(buff));
+  memset(buff2, '\0', sizeof(buff2));
+
+  filename = world.curjob->curcmd->param[0];
+
+  if (filename != NULL)
+    {
+      snprintf(buff, sizeof(buff), "%s %s hijack_sct=1 sct_value=0x%lx free_syscall=%d",
+	       (char *)config_get_data(LIBKERNSH_VMCONFIG_KLOAD),
+	       filename,
+	       libkernshworld.sct,
+	       (int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL));
+      
+      snprintf(buff2, sizeof(buff2),
+	       "Loading %s with : %s\n\n",
+	       filename,
+	       revm_colorstr(buff));
+      revm_output(buff2);
+
+      ret = revm_system(buff);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
 int		cmd_kvirtm_dump()
 {
   int ret;
@@ -42,7 +77,7 @@ int		cmd_kvirtm_dump()
   return 0;
 }
 
-int		cmd_kvirtm_read()
+int		cmd_kvirtm_read_pid()
 {
   int ret;
   char *pid, *addr, *len;
@@ -58,7 +93,7 @@ int		cmd_kvirtm_read()
 
   if (pid && addr && len)
     {
-      ret = kernsh_virtm_read(atoi(pid), strtoul(addr, NULL, 16), atoi(len));
+      ret = kernsh_virtm_read_pid(atoi(pid), strtoul(addr, NULL, 16), atoi(len));
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -71,7 +106,7 @@ int		cmd_kvirtm_read_mem()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ret = -1;
+  ret = 0;
   addr = len = NULL;
 
   addr = world.curjob->curcmd->param[0];
@@ -82,7 +117,14 @@ int		cmd_kvirtm_read_mem()
       ret = kernsh_virtm_read_mem(strtoul(addr, NULL, 16), atoi(len));
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  if (ret)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to read mem",
+		   -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_kvirtm_write_mem()
@@ -91,7 +133,7 @@ int		cmd_kvirtm_write_mem()
   return 0;
 }
 
-int		cmd_kvirtm_write()
+int		cmd_kvirtm_write_pid()
 {
 
   return 0;
@@ -232,7 +274,7 @@ int		kernsh_virtm_view_vmaps(pid_t pid)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_virtm_read(pid_t pid, unsigned long addr, int len)
+int kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
 {
   char *new_buff;
 

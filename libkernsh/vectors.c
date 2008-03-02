@@ -750,6 +750,14 @@ int kernsh_register_vectors()
 				  LIBKERNSH_PROC_MODE,
 				  kernsh_kvirtm_read_mem_proc_linux);
 
+  kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
+				  LIBKERNSH_SYSCALL_MODE,
+				  kernsh_kvirtm_read_mem_syscall_linux);
+
+  kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
+				  LIBKERNSH_SYSCALL_MODE,
+				  kernsh_kvirtm_read_mem_syscall_linux);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
