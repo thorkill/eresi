@@ -268,7 +268,9 @@ struct e_mips_instr e_mips_instrs [] = {
   /**
    * @todo Replace -1 by NULL to avoid compiler warning.
    */
-  {-1,-1,-1,-1,-1,-1}
+//  {-1,-1,-1,-1,-1,-1}
+     /* mnemonic          code     index1   index 2   index 3   func pointer */
+   { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }
 };
 
 struct e_mips_register e_mips_registers [] = {
@@ -304,6 +306,8 @@ struct e_mips_register e_mips_registers [] = {
    {"sp","r29",ASM_MIPS_REG_SP},
    {"fp","r30",ASM_MIPS_REG_FP},
    {"ra","r31",ASM_MIPS_REG_RA},
-   {-1,-1,-1}
+//   {-1,-1,-1}
+    /* ext_mnemonic         mnemonic         code  */
+   { (const char *) -1, (const char *) -1, (int) -1 }
 };
 

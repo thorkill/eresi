@@ -51,7 +51,7 @@ int asm_register_mips_opcodes()
   insns = e_mips_instrs;
   for(i=0;insns[i].code != ASM_MIPS_TABLE_END;i++)
     {
-      asm_register_mips_opcode(insns[i].index1,insns[i].index2,insns[i].index3, insns[i].func_op);
+      asm_register_mips_opcode(insns[i].index1,insns[i].index2,insns[i].index3, (unsigned long) insns[i].func_op);
     }
   return (1);
 }
