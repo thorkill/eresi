@@ -5,7 +5,7 @@ include ../config.h
 SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c md5.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c kvirtm.c
 
 OBJS32_libkernsh	=	${SRCS_libkernsh:.c=.32.o} 
-OBJS64_libkernsh	=	${SRCS_libkernsh:.64.c=.o}
+OBJS64_libkernsh	=	${SRCS_libkernsh:.c=.64.o}
 
 NAME32_libkernsh 	= 	libkernsh32.a
 NAME32_libkernsh_o	=	libkernsh32.o
@@ -27,7 +27,7 @@ CC 		?= 	gcc
 LD		?=	ld
 CP 		= 	cp
 
-all:	all32 lkm
+all:	all32 all64 lkm
 
 symbs :
 	@cd symbols && $(MAKE)
@@ -41,7 +41,14 @@ all32: 	symbs $(OBJS32_libkernsh)
 	@echo "[CC -shared] libkernsh32.so"
 	@${CC} ${OBJS32_libkernsh} -o libkernsh32.so -shared
 
-all64:
+all64: 	symbs $(OBJS64_libkernsh)
+	@ar rc ${NAME64_libkernsh} ${OBJS64_libkernsh}
+	@echo "[AR] ${NAME64_libkernsh}"
+	@${RANLIB} ${NAME64_libkernsh}
+	@echo "[RANLIB] ${NAME64_libkernsh}"
+	@$(LD) -r $(OBJS64_libkernsh) -o ${NAME64_libkernsh_o}
+	@echo "[CC -shared] libkernsh64.so"
+	@${CC} ${OBJS64_libkernsh} -o libkernsh64.so -shared
 
 lkm	:
 	@cd modules && $(MAKE)
@@ -66,7 +73,7 @@ fclean: clean
 	@$(CC) $(CFLAGS32) ${DBGFLAGS} -c $*.c -o $*.32.o
 	@echo "[CC] $*.32.o"
 
-%.64.c.o:
+%.64.o: %.c
 	@$(CC) $(CFLAGS64) ${DBGFLAGS} -c $*.c -o $*.64.o
 	@echo "[CC] $*.64.o"
 docs:
