@@ -1,17 +1,20 @@
-/*
-** tables.c for etrace
-**
-** This file contains all command and objects definitions for scripting
-**
-** Started on  Sat Jan 25 07:48:41 2003 mxatone
-**
-** $Id: tables.c,v 1.6 2007-07-17 18:11:24 may Exp $
-**
-*/
+/**
+ ** tables.c for etrace
+ **
+ ** @file tables.c
+ ** This file contains all command and objects definitions for scripting
+ **
+ ** Started on  Sat Jan 25 07:48:41 2003 mxatone
+ **
+ ** $Id: tables.c,v 1.6 2007-07-17 18:11:24 may Exp $
+ **
+ */
 #include "etrace.h"
 
 
-/* Setup the command hash table */
+/**
+ * Setup the command hash table 
+ */
 void	setup_local_cmdhash()
 {
 

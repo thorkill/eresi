@@ -1,6 +1,6 @@
 /*
 ** cleanup.c for etrace
-**
+** @file cleanup.c
 ** This command cleanup a file by marking as removed all injected sections
 **
 ** Started on  Sat May 31 23:48:41 2005 mxatone
@@ -10,9 +10,9 @@
 */
 #include "etrace.h"
 
-
-
-
+/**
+ * Need doxygen comments.
+ */
 int		cmd_cleanup()
 {
   elfshobj_t	*obj;

@@ -1,13 +1,13 @@
-/*
-** readlnheap.c for etrace
-** 
-** Handle the readline malloc/free to avoid messing with the alloc proxy
-**
-** Started on  Sat Jul 1 10:10:53 2006 mxatone
-**
-** $Id: rlheap.c,v 1.3 2007-07-17 18:11:24 may Exp $
-**
-*/
+/**
+ ** readlnheap.c for etrace
+ ** @file readlnheap.c
+ ** Handle the readline malloc/free to avoid messing with the alloc proxy
+ **
+ ** Started on  Sat Jul 1 10:10:53 2006 mxatone
+ **
+ ** $Id: rlheap.c,v 1.3 2007-07-17 18:11:24 may Exp $
+ **
+ */
 #include "etrace.h"
 
 

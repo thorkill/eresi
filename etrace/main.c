@@ -1,6 +1,6 @@
 /*
 ** main.c for etrace
-**
+** @file main.c
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
 ** $Id: main.c,v 1.12 2007-07-31 23:30:35 may Exp $
@@ -8,7 +8,9 @@
 */
 #include "etrace.h"
 
-/* Prompt related functions */
+/**
+ * Prompt related functions 
+*/
 void		etrace_setup_quit_msg()
 {
   char		logbuf[BUFSIZ];
@@ -18,6 +20,11 @@ void		etrace_setup_quit_msg()
   revm_quitmsg_set(logbuf);
 }
 
+/**
+ * Create etrace prompt.
+ * @param buf
+ * @param size
+ */
 void		etrace_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
@@ -36,12 +43,17 @@ void		etrace_create_prompt(char *buf, u_int size)
   revm_endline();
 }
 
+/**
+ * Setup etrace prompt
+ */
 void 		etrace_setup_prompt()
 {
   revm_set_prompt(etrace_create_prompt);
 }
 
-/* Print the etrace banner */
+/**
+ * Print the etrace banner
+ */
 void		etrace_banner_print()
 {
   char		logbuf[BUFSIZ];
@@ -65,7 +77,11 @@ void		etrace_banner_print()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* The real main function */
+/**
+ * The real main function 
+ * @param ac Number of arguments
+ * @param av Array of arguments
+ */
 int		etrace_main(int ac, char **av)
 {
   char		logbuf[BUFSIZ];
@@ -172,7 +188,11 @@ int		etrace_main(int ac, char **av)
 }
 
 
-/* The main Etrace routine */
+/**
+ *  The main Etrace routine 
+ * @param ac Number of arguments
+ * @param av Array of arguments
+ */
 int		main(int ac, char **av)
 {
   return (etrace_main(ac, av));
