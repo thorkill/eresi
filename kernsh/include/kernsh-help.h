@@ -41,8 +41,12 @@
 #define HLP_KVIRTM_LOADME      	"handle kernel virtual memory"
 #define HLP_KVIRTM_READ_PID	"handle kernel virtual memory"
 #define HLP_KVIRTM_WRITE_PID	"handle kernel virtual memory"
-#define HLP_KVIRTM_READ_MEM	"handle kernel virtual memory"
-#define HLP_KVIRTM_WRITE_MEM	"handle kernel virtual memory"
+#define HLP_KVIRTM_DISASM_PID	"handle kernel virtual memory"
 #define HLP_KVIRTM_DUMP		"handle kernel virtual memory"
+
+
+#define HLP_KMEM_READ   	"handle kernel memory"
+#define HLP_KMEM_WRITE	        "handle kernel memory"
+#define HLP_KMEM_DISASM	        "handle kernel memory"
 
 #endif

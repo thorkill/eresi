@@ -574,7 +574,7 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
     case LIBKERNSH_SYSCALL_MODE :
       if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
 	{
-	  printk(KERN_ALERT "[-] copy_from_user error\n");
+	  printk(KERN_ALERT "[-] copy_to_user error\n");
 	  kunmap_atomic(kaddr, smp_processor_id());
 	  return -EFAULT;
 	}
@@ -585,6 +585,73 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
   printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
 
   printk(KERN_ALERT "[+] kernsh_read_virtm EXIT !!\n");
+
+  return 0;
+}
+
+int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
+{
+  struct task_struct *task;
+  struct page *mypage;
+  void *kaddr;
+
+  printk(KERN_ALERT "[+] kernsh_write_virtm ENTER !!\n");
+
+  printk(KERN_ALERT "Kernsh Write Virtm PID %d @ 0x%lx strlen(%d) to 0x%lx\n", 
+	 pid, 
+	 addr, 
+	 len, 
+	 (unsigned long)buffer);
+ 
+  if (addr <= 0)
+    {
+      printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
+      return -1;
+    }
+  
+  task = find_task_by_pid(pid);
+   
+  if (task == NULL)
+    {
+      printk(KERN_ALERT "[-] Couldn't find pid %d\n", pid);
+      return -1;
+    }
+  
+  mypage = kernsh_get_page_from_task(task, addr);
+  if (mypage == NULL)
+    {
+      printk(KERN_ALERT "[-] PAGE NULL\n");	
+      return -EFAULT;
+    }
+
+  if (PageReserved(mypage))
+    {
+      printk(KERN_ALERT "[-] PAGE RESERVED\n");	
+      return -EFAULT;
+    }
+    
+  printk(KERN_ALERT "[+] KMAP_ATOMIC\n");
+  kaddr = kmap_atomic(mypage, smp_processor_id());
+  
+  switch(mode)
+    {
+    case LIBKERNSH_PROC_MODE :
+      memcpy(kaddr + (addr & ~PAGE_MASK), buffer, len);
+      break;
+    case LIBKERNSH_SYSCALL_MODE :
+      if(copy_from_user(kaddr + (addr & ~PAGE_MASK), buffer, len))
+	{
+	  printk(KERN_ALERT "[-] copy_from_user error\n");
+	  kunmap_atomic(kaddr, smp_processor_id());
+	  return -EFAULT;
+	}
+      break;
+    }
+
+  kunmap_atomic(kaddr, smp_processor_id());
+  printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
+
+  printk(KERN_ALERT "[+] kernsh_write_virtm EXIT !!\n");
 
   return 0;
 }
@@ -643,6 +710,7 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
     ptr = xlate_dev_mem_ptr(p);
 
     printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
+
     switch(mode)
       {
       case LIBKERNSH_PROC_MODE :
@@ -665,7 +733,7 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
   return read;
 }
 
-int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len)
+int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len, int mode)
 {
 
   return 0;
@@ -692,12 +760,12 @@ int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid,
   switch (type)
     {
     case LIBKERNSH_VIRTM_READ_MEM :
-      kernsh_read_mem_syscall(addr, buffer, len);
+      return kernsh_read_mem_syscall(addr, buffer, len);
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM :
       break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
-      kernsh_read_virtm_syscall(pid, addr, buffer, len);
+      return kernsh_read_virtm_syscall(pid, addr, buffer, len);
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM_PID :
       break;

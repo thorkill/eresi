@@ -589,7 +589,13 @@ int kernsh_register_vectors()
   kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
 			  LIBKERNSH_DEVICE_MEM, 
 			  kernsh_openmem_netbsd);
-  
+  kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, 
+			  LIBKERNSH_DEVICE_KVIRTM,
+			  kernsh_kvirtm_openmem);
+  kernsh_register_openmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, 
+			  LIBKERNSH_DEVICE_KVIRTM,
+			  kernsh_kvirtm_openmem);
+
   kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			   LIBKERNSH_DEVICE_KMEM, 
 			   kernsh_closemem_kmem_linux_2_6);
@@ -608,6 +614,12 @@ int kernsh_register_vectors()
   kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
 			   LIBKERNSH_DEVICE_MEM,
 			   kernsh_closemem_netbsd);
+  kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
+			   LIBKERNSH_DEVICE_KVIRTM, 
+			   kernsh_kvirtm_closemem);
+  kernsh_register_closemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_KVIRTM, 
+			   kernsh_kvirtm_closemem);
 
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			  LIBKERNSH_DEVICE_KMEM, 
@@ -627,6 +639,12 @@ int kernsh_register_vectors()
   kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
 			  LIBKERNSH_DEVICE_MEM, 
 			  kernsh_readmem_netbsd);
+  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
+			  LIBKERNSH_DEVICE_KVIRTM, 
+			  kernsh_kvirtm_readmem);
+  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			  LIBKERNSH_DEVICE_KVIRTM, 
+			  kernsh_kvirtm_readmem);
 
   kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 			   LIBKERNSH_DEVICE_KMEM, 
@@ -744,19 +762,19 @@ int kernsh_register_vectors()
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
 				  LIBKERNSH_PROC_MODE,
-				  kernsh_kvirtm_read_mem_proc_linux);
+				  kernsh_kvirtm_readmem_proc_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
 				  LIBKERNSH_PROC_MODE,
-				  kernsh_kvirtm_read_mem_proc_linux);
+				  kernsh_kvirtm_readmem_proc_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
 				  LIBKERNSH_SYSCALL_MODE,
-				  kernsh_kvirtm_read_mem_syscall_linux);
+				  kernsh_kvirtm_readmem_syscall_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
 				  LIBKERNSH_SYSCALL_MODE,
-				  kernsh_kvirtm_read_mem_syscall_linux);
+				  kernsh_kvirtm_readmem_syscall_linux);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -14,7 +14,7 @@ void		kernsh_setup_quit_msg()
   char		logbuf[BUFSIZ];
 
   snprintf(logbuf, BUFSIZ - 1, "\t .:: Bye -:: The %s %s \n",
-	   KERNSH_NAME, KERNSH_VERSION);
+	   KERNSH_NAME, REVM_VERSION);
   revm_quitmsg_set(logbuf);
 }
 
@@ -25,11 +25,11 @@ void		kernsh_create_prompt(char *buf, u_int size)
 	   revm_colorget("%s", "pspecial", "("),
 	   revm_colorget("%s", "psname" , KERNSH_SNAME),
 	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pversion", KERNSH_VERSION),
+	   revm_colorget("%s", "pversion", REVM_VERSION),
 	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "prelease", KERNSH_RELEASE),
+	   revm_colorget("%s", "prelease", REVM_RELEASE),
 	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pedition", KERNSH_EDITION),
+	   revm_colorget("%s", "pedition", REVM_EDITION),
 	   revm_colorget("%s", "pspecial", "@"),
 	   revm_colorget("%s", "psname", world.curjob->ws.name),
 	   revm_colorget("%s", "pspecial", ")"));
@@ -83,7 +83,7 @@ void		kernsh_banner_print()
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   KERNSH_NAME,
-	   KERNSH_VERSION,
+	   REVM_VERSION,
 #if defined(ERESI32)
 	   "32 bits built",
 #elif defined(ERESI64)

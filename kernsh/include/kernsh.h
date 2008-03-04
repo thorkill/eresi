@@ -15,9 +15,6 @@
 
 #define KERNSH_SNAME	       	"kernsh"
 #define KERNSH_NAME		"Kernel shell"
-#define KERNSH_VERSION 		"0.8"
-#define KERNSH_RELEASE		"a"
-#define KERNSH_EDITION		"dev"
 #define KERNSH_CONFIG		".kernshrc"
 
 /* Commands */
@@ -38,14 +35,17 @@
 #define CMD_AUTOTYPES		"autotypes"
 #define CMD_KMD5		"kmd5"
 #define CMD_KCMD5		"kcmd5"
+
 #define CMD_KVIRTM_INFO		"kvirtm_info"
 #define CMD_KVIRTM_LOADME	"kvirtm_loadme"
 #define CMD_KVIRTM_READ_PID	"kvirtm_read_pid"
 #define CMD_KVIRTM_WRITE_PID	"kvirtm_write_pid"
-#define CMD_KVIRTM_READ_MEM	"kvirtm_read_mem"
-#define CMD_KVIRTM_WRITE_MEM	"kvirtm_write_mem"
+#define CMD_KVIRTM_DISASM_PID	"kvirtm_disasm_pid"
 #define CMD_KVIRTM_DUMP		"kvirtm_dump"
 
+#define CMD_KMEM_READ		"kmem_read"
+#define CMD_KMEM_WRITE		"kmem_write"
+#define CMD_KMEM_DISASM		"kmem_disasm"
 
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
@@ -69,15 +69,18 @@ int	cmd_kvirtm_info();
 int	cmd_kvirtm_loadme();
 int	cmd_kvirtm_read_pid();
 int	cmd_kvirtm_write_pid();
-int	cmd_kvirtm_read_mem();
-int	cmd_kvirtm_write_mem();
+int	cmd_kvirtm_disasm_pid();
 int	cmd_kvirtm_dump();
+
+int	cmd_kmem_read();
+int	cmd_kmem_write();
+int	cmd_kmem_disasm();
 
 int	kernsh_virtm_dump_elf(pid_t, char *);
 int	kernsh_virtm_view_vmaps(pid_t);
 int	kernsh_virtm_get_virtaddr(pid_t);
 int	kernsh_virtm_read_pid(pid_t, unsigned long, int);
-int	kernsh_virtm_read_mem(unsigned long, int);
+int	kernsh_virtm_disasm_pid(pid_t, unsigned long, int);
 
 int	export_var(char *, unsigned long, int, char *, int);
 int	extract_info(char *, 
@@ -86,6 +89,9 @@ int	extract_info(char *,
 		     int *, 
 		     int *, 
 		     unsigned char *, size_t);
+
+int kernsh_hexdump(unsigned char *, unsigned int, size_t);
+int kernsh_disasm(char *, int, unsigned long);
 
 int	kernsh_config();
 

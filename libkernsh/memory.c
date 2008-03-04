@@ -70,6 +70,10 @@ int kernsh_openmem()
 	{
 	  libkernshworld.device = LIBKERNSH_DEVICE_KCORE;
 	}
+      else if (!strcmp(device, LIBKERNSH_STRING_DEVICE_KVIRTM))
+	{
+	  libkernshworld.device = LIBKERNSH_DEVICE_KVIRTM;
+	}
       else
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid device", -1);

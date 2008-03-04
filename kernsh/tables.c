@@ -106,20 +106,30 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_KVIRTM_WRITE_PID);
 
-  revm_command_add(CMD_KVIRTM_READ_MEM, (void *)cmd_kvirtm_read_mem, 
+  revm_command_add(CMD_KVIRTM_DISASM_PID, (void *)cmd_kvirtm_disasm_pid, 
 		   (void*) revm_getvarparams,
 		   0,
-		   HLP_KVIRTM_READ_MEM);
-  
-  revm_command_add(CMD_KVIRTM_WRITE_MEM, (void *)cmd_kvirtm_write_mem, 
-		   (void*) revm_getvarparams,
-		   0,
-		   HLP_KVIRTM_WRITE_MEM);
+		   HLP_KVIRTM_DISASM_PID);
 
   revm_command_add(CMD_KVIRTM_DUMP, (void *)cmd_kvirtm_dump, 
 		   (void*) revm_getvarparams,
 		   0,
 		   HLP_KVIRTM_DUMP);
+
+  revm_command_add(CMD_KMEM_READ, (void *)cmd_kmem_read, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KMEM_READ);
+  
+  revm_command_add(CMD_KMEM_WRITE, (void *)cmd_kmem_write, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KMEM_WRITE);
+
+  revm_command_add(CMD_KMEM_DISASM, (void *)cmd_kmem_disasm, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KMEM_DISASM);
 
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 

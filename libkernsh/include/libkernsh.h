@@ -85,6 +85,7 @@ enum
     LIBKERNSH_DEVICE_KMEM,
     LIBKERNSH_DEVICE_MEM,
     LIBKERNSH_DEVICE_KCORE,
+    LIBKERNSH_DEVICE_KVIRTM,
     LIBKERNSH_DEVICENUM
   } libkernsh_e_device_type;
 
@@ -151,6 +152,7 @@ enum
 #define LIBKERNSH_STRING_DEVICE_MEM		"/dev/mem"
 #define LIBKERNSH_STRING_DEVICE_KMEM		"/dev/kmem"
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
+#define LIBKERNSH_STRING_DEVICE_KVIRTM		"kvirtm"
 #define LIBKERNSH_STRING_REL_GNU		".rel.gnu.linkonce.this_module"
 
 #define LIBKERNSH_I386_LINUX_START		0xc0000000      
@@ -535,15 +537,17 @@ int	kernsh_decompkernel_linux();
 int kernsh_kvirtm_read_virtm(pid_t, unsigned long, char *, int);
 int kernsh_kvirtm_read_virtm_proc_linux(pid_t, unsigned long, char *, int);
 
-int kernsh_kvirtm_read_mem(unsigned long, char *, int);
-int kernsh_kvirtm_read_mem_proc_linux(unsigned long, char *, int);
-int kernsh_kvirtm_read_mem_syscall_linux(unsigned long, char *, int);
+int kernsh_kvirtm_openmem();
+int kernsh_kvirtm_closemem();
+
+int kernsh_kvirtm_readmem(unsigned long, char *, int);
+int kernsh_kvirtm_readmem_proc_linux(unsigned long, char *, int);
+int kernsh_kvirtm_readmem_syscall_linux(unsigned long, char *, int);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);
 int	kernsh_resolve_systemmap(unsigned long, char *, size_t);
 int	kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
 int	kernsh_find_end(unsigned long);
-void	kernsh_hexdump(unsigned char *, unsigned int, size_t);
 
 #endif

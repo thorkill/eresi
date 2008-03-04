@@ -94,7 +94,29 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_kvirtm_read_mem(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_openmem()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNSH__  
+  printf("OPEN KVIRTM OPEN MEM\n");
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_kvirtm_closemem()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNSH__  
+  printf("OPEN KVIRTM CLOSE MEM\n");
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
   u_int         dim[3];
@@ -137,10 +159,11 @@ int kernsh_kvirtm_read_mem(unsigned long addr, char *buffer, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-int kernsh_kvirtm_read_mem_syscall_linux(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
+  int rlen;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -148,18 +171,23 @@ int kernsh_kvirtm_read_mem_syscall_linux(unsigned long addr, char *buffer, int l
   printf("kernsh_kvirtm_read_mem_syscall_linux\n");
 #endif
 
+  ret = 0;
+
   arg[0] = (unsigned int)0;
   arg[1] = (unsigned int)(addr - libkernshworld.kernel_start);
   arg[2] = (unsigned int)buffer;
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM;
     
-  ret = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL), 5, arg);
+
+  if (rlen != len)
+    ret = -1;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-int kernsh_kvirtm_read_mem_proc_linux(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;

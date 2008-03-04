@@ -99,44 +99,33 @@ int		cmd_kvirtm_read_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-int		cmd_kvirtm_read_mem()
-{
-  int ret;
-  char *addr, *len;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  ret = 0;
-  addr = len = NULL;
-
-  addr = world.curjob->curcmd->param[0];
-  len = world.curjob->curcmd->param[1];
-
-  if (addr && len)
-    {
-      ret = kernsh_virtm_read_mem(strtoul(addr, NULL, 16), atoi(len));
-    }
-
-  if (ret)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to read mem",
-		   -1);
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-int		cmd_kvirtm_write_mem()
-{
-
-  return 0;
-}
 
 int		cmd_kvirtm_write_pid()
 {
 
   return 0;
+}
+
+int		cmd_kvirtm_disasm_pid()
+{
+  int ret;
+  char *pid, *addr, *len;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = -1;
+  pid = addr = len = NULL;
+
+  pid = world.curjob->curcmd->param[0];
+  addr = world.curjob->curcmd->param[1];
+  len = world.curjob->curcmd->param[2];
+
+  if (pid && addr && len)
+    {
+      ret = kernsh_virtm_disasm_pid(atoi(pid), strtoul(addr, NULL, 16), atoi(len));
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
@@ -296,7 +285,7 @@ int kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_virtm_read_mem(unsigned long addr, int len)
+int kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
 {
   char *new_buff;
 
@@ -309,9 +298,9 @@ int kernsh_virtm_read_mem(unsigned long addr, int len)
 
   memset(new_buff, '\0', len);
 
-  kernsh_kvirtm_read_mem(addr, new_buff, len);
+  kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
 
-  kernsh_hexdump((unsigned char *)new_buff, len, addr);
+  kernsh_disasm(new_buff, len, addr);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
 

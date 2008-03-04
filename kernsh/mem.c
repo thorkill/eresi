@@ -294,3 +294,99 @@ int		cmd_kmodule_unload()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
+
+int		cmd_kmem_read()
+{
+  int ret;
+  char *addr, *len;
+  char *new_buff;
+  int rlen;
+  unsigned long raddr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+  addr = len = NULL;
+
+  addr = world.curjob->curcmd->param[0];
+  len = world.curjob->curcmd->param[1];
+
+  if (addr && len)
+    {
+      rlen = atoi(len);
+      raddr = strtoul(addr, NULL, 16);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     new_buff,
+	     rlen,
+	     -1);
+
+      memset(new_buff, '\0', rlen);
+
+      ret = kernsh_readmem(raddr, new_buff, rlen);
+
+      kernsh_hexdump((unsigned char *)new_buff, rlen, raddr);
+
+      XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
+    }
+
+  if (ret)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to read mem",
+		   -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int		cmd_kmem_write()
+{
+
+  return 0;
+}
+
+int		cmd_kmem_disasm()
+{
+  int ret;
+  char *addr, *len;
+  char *new_buff;
+  int rlen;
+  unsigned long raddr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+  addr = len = NULL;
+
+  addr = world.curjob->curcmd->param[0];
+  len = world.curjob->curcmd->param[1];
+
+  if (addr && len)
+    {
+      rlen = atoi(len);
+      raddr = strtoul(addr, NULL, 16);
+
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	     new_buff,
+	     rlen,
+	     -1);
+
+      memset(new_buff, '\0', rlen);
+
+      ret = kernsh_readmem(raddr, new_buff, rlen);
+
+      kernsh_disasm(new_buff, rlen, raddr);
+
+      XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
+    }
+
+  if (ret)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to read mem",
+		   -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
