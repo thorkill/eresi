@@ -208,7 +208,7 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 
 
 /** 
- * @brief Recursive function to lookup data from its type path 
+ * @brief Recursive function to lookup data from its typed data flow path 
  */
 static aspectype_t	*revm_field_get(aspectype_t *type, char *param, 
 					void **data, char translateaddr)
@@ -243,13 +243,17 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 		      "Cannot find field", NULL);
   *data = (char *) *data + off;
 
-  /* Dereference pointers */
-  if (child->isptr)
+  /* Dereference pointer (struct.ptr->to.other.field) */
+  if (child->isptr && *data)
     {
-      *data = (void *) *(elfsh_Addr *) *data;
+      *data = (void *) *(u_long *) *data;
       if (translateaddr)
 	*data = revm_get_raw(*data);
     }
+
+  if (!*data)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Cannot find dereference NULL field", NULL);
 
   child = revm_field_get(child, next, data, translateaddr);
   if (!child)
@@ -275,7 +279,7 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   path->root     = (void *) type;
 
   /* Lookup again in the file if we are dealing with a pointer */
-  if (type->type == ASPECT_TYPE_STR || type->isptr)
+  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
     {
       data = (void *) *(elfsh_Addr *) data;
       if (translateaddr)

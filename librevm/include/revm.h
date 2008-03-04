@@ -87,7 +87,7 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
-#define	__DEBUG_EXPRS__		0
+#define	__DEBUG_EXPRS__		1
 #define	__DEBUG_EXPRS_MORE__	0
 
 /* Parsing related defines */

@@ -2,24 +2,19 @@
 
 # This create on-demand the block instruction list in the eresi runtime
 
-#vlist
-#exec sleep 120
-#profile disable warn
-
 set $curaddr $1
 D $curaddr
 reflect $curaddr
+tables instrlists
 
-print $curaddr
-
-#profile enable warn
+type instr
 
 # Start the transformation
 foreach $instr of $hash[instrlists:$curaddr]
 
 print Transforming instruction: $instr
 
-profile enable warn
+#profile enable warn
 
 rewrite $instr into
 

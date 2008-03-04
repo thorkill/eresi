@@ -404,6 +404,7 @@ int		cmd_default()
   /* Execute parameter command */
   cur = world.curjob->curcmd;
   world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
+
   if (revm_execmd() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Default command execution failed", -1);

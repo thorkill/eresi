@@ -113,7 +113,7 @@ int		cmd_reflect()
       elist_add(instrlist, strdup(logbuf), expr);
     }
 
-  /* Inverse the list and add it */
+  /* Reverse instrlist and add it to the hash of lists */
   instrlist = elist_reverse(instrlist);
   hash_add(&instrlists_hash, strdup(logbuf), instrlist);
 
@@ -127,7 +127,10 @@ int		cmd_reflect()
     }
 
   /* Put the current bloc in the last result variable */
+  /*
   revm_expr_destroy(REVM_VAR_RESULT);
   revm_expr_copy(expr, REVM_VAR_RESULT);
+  */
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

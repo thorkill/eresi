@@ -2,7 +2,7 @@
 
 print Now entered cfg-walk
 
-profile enable warn
+#profile enable warn
 
 cmp $# 1
 jne end
@@ -16,7 +16,7 @@ sym FUNC
 tables blocks
 #
 
-profile enable warn
+#profile enable warn
 
 set $block $hash[blocks:$1]
 print $1

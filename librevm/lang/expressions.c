@@ -588,11 +588,18 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
       /* Copy children structure */
       if (source->childs)
 	{
-	  type = source->childs->type;
+
+	  // XXX: this is the type of the first field in child ! not what we want in some cases ...
+	  //type = source->childs->type; 
+	  type = source->type;
+
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), -1);
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
-	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest->childs, 0, 0);
+
+	  //revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest->childs, 0, 0);
+	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
+
 	  ret = revm_expr_copyrec(source->type, dest->childs, source->childs, newname, 
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
@@ -609,6 +616,12 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->value, sizeof(revmobj_t), -1);
 	  type = source->value->otype;
 	  dest->value = revm_object_lookup_real(parentype, newname, source->label, 0);
+	  if (!dest->value)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, dest);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Failed to lookup terminal object", -1);
+	    }
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
 	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
@@ -1106,8 +1119,6 @@ revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *val
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
-
-
 
 
 /* Read the requested type for an expression in ascii form */
