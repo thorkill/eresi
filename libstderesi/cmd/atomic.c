@@ -18,6 +18,10 @@ int			cmd_set()
   int                   error;
   int			errvar;
 
+  revmexpr_t		*last;
+
+  //revmexpr_t		*res;
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Resolve all possible case between expressions and objects */
@@ -26,6 +30,12 @@ int			cmd_set()
   e1 = revm_expr_get(world.curjob->curcmd->param[0]);
   e2 = revm_expr_get(world.curjob->curcmd->param[1]);
 
+  /* The $_ variable is updated as well */
+  last = revm_expr_get(REVM_VAR_RESULT);
+  if (last == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get result variable", -2);
+
   /* Assignment between existing expressions */
   if (e1 && e2)
     {
@@ -33,6 +43,13 @@ int			cmd_set()
       if (errvar < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set expressions", (-1));
+
+      revm_expr_destroy(last->label);
+      last = revm_expr_copy(e2, REVM_VAR_RESULT);
+      if (!last)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set result expression", (-1));
+      
       if (!world.state.revm_quiet)
 	revm_output(" [*] Expression set succesfully \n\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -109,6 +126,13 @@ int			cmd_set()
 		       "Unable to set expression", (-1));
 	}
     }
+
+  /* Copy the result in the last result variable */
+  revm_expr_destroy(last->label);
+  last = revm_expr_copy(e2, REVM_VAR_RESULT);
+  if (!last)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to set result expression", (-1));
 
   /* Everything OK */
   if (e1->value && !e1->value->perm)

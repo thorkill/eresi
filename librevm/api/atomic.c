@@ -431,8 +431,6 @@ int			revm_elist_set(char *table, char *elmname, void *obj, u_int type)
 /* o1 = destination, o2 = source */
 int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 {
-  revmexpr_t		*last;
-  revmobj_t		*res;
   revmobj_t		*o1;
   revmobj_t		*o2;
   char                  *str;
@@ -446,15 +444,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   o1 = e1->value;
   o2 = e2->value;
-
-  /* The $_ variable is updated as well */
-  last = revm_expr_get(REVM_VAR_RESULT);
-  if (last == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to get result variable", -2);
-  res = last->value;
-  last->type = o1->otype;
-  res->otype = o1->otype;
 
   /* Do the real assignation */
   switch (o1->otype->type)
@@ -481,7 +470,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to set string variable", -1);
 	}
-      res->immed_val.str = strdup(str);
       break;
 
     case ASPECT_TYPE_BYTE:
@@ -500,7 +488,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       else if (o1->set_obj(o1->parent, val8) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set byte variable", -1);
-      res->immed_val.byte = val8;
       break;
 
     case ASPECT_TYPE_SHORT:
@@ -520,7 +507,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       else if (o1->set_obj(o1->parent, val16) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set short variable", -1);
-      res->immed_val.half = val16;
       break;
 
     case ASPECT_TYPE_INT:
@@ -540,7 +526,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       else if (o1->set_obj(o1->parent, val32) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set integer variable", -1);
-      res->immed_val.word = val32;
       break;
 
     case ASPECT_TYPE_CADDR:
@@ -563,7 +548,6 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       else if (o1->set_obj(o1->parent, val64) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set long variable", -1);
-      res->immed_val.ent = val64;
       break;
 
     case ASPECT_TYPE_HASH:
@@ -642,20 +626,6 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
     }
   str = NULL;
 
-  /* Set the last result variable */
-  last = revm_expr_get(REVM_VAR_RESULT);
-  if (!last || !last->value)
-    {
-      if (!o2->perm && o2->immed && 
-	  o2->otype->type == ASPECT_TYPE_STR && str != NULL)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unable to get last result variable", -1);
-    }
-  res = last->value;
-  res->otype = aspect_type_get_by_id(ASPECT_TYPE_INT);
-  last->type = res->otype;
-
   /* Do the real assignation */
   switch (o1->otype->type)
     {
@@ -681,8 +651,24 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Uncomparable parameter type", -1);
     }
+  
+  /* Set the last result variable */
+  last = revm_expr_get(REVM_VAR_RESULT);
+  if (!last)
+    {
+      if (!o2->perm && o2->immed && o2->otype->type == ASPECT_TYPE_STR && str != NULL)
+	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Unable to get last result variable", -1);
+    }
+  revm_expr_destroy(REVM_VAR_RESULT);
+  res = revm_create_IMMED(ASPECT_TYPE_INT, 1, *val);
+  last = revm_expr_create_from_object(res, REVM_VAR_RESULT);
+  if (!last)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to set result expression", (-1));
 
-  res->immed_val.ent = *val;
+  /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 

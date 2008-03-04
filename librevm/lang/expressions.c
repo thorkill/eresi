@@ -1072,7 +1072,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
 }
 
 
-/* Simply create an expression from an revmobj_t */
+/* Simply create an expression from a constant value */
 revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value)
 {
   revmexpr_t	*expr;
