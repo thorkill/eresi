@@ -744,7 +744,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
  * Match a special regular expression 
  */
 int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
-				 revmlist_t *actual)
+				   revmlist_t *actual)
 {
   elfsh_Sym	*sym;
   char		*name;
@@ -813,6 +813,7 @@ int             cmd_disasm()
 {
   revmlist_t	*actual;
   elfshobj_t	*file;
+  revmexpr_t	*expr;
   int		matchs;
   elfsh_Addr	vaddr;
   char		logbuf[BUFSIZ];
@@ -858,14 +859,22 @@ int             cmd_disasm()
   /* If the regex contains a vaddr instead of a symbol name */
   if (actual->rname)
     {
-      if (IS_VADDR(actual->rname))
+      if (*actual->rname == REVM_VAR_PREFIX)
+	{
+	  expr = revm_expr_get(actual->rname);
+	  if (!expr || !expr->value || !expr->value->immed_val.ent)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Invalid requested address expression", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+			     revm_match_special(file, expr->value->immed_val.ent, actual));
+	}
+      else if (IS_VADDR(actual->rname))
 	{
 	  if (sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Invalid virtual address requested", 
-			      -1);
+			 "Invalid virtual address requested", -1);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     revm_match_special(file, vaddr, actual));
+			revm_match_special(file, vaddr, actual));
 	}
   
       /* else if it contains a file offset */

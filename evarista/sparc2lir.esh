@@ -7,6 +7,7 @@
 #profile disable warn
 
 set $curaddr $1
+D $curaddr
 reflect $curaddr
 
 print $curaddr

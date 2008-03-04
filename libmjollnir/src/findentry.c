@@ -156,11 +156,20 @@ elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
   printf(" [*] _start found at 0x%lx\n", (unsigned long) vaddr);
 #endif
 
-  main_addr = mjr_find_main(context->obj, &context->proc, buf, len, vaddr, &dis);
+  sym = elfsh_get_symbol_by_name(context->obj, "main");
+  if (sym && sym->st_value)
+    main_addr = sym->st_value;
+  else
+    main_addr = mjr_find_main(context->obj, &context->proc, buf, len, vaddr, &dis);
+
   tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
   mjr_function_register(context, vaddr, tmpcntnr);
+
+  fprintf(stderr, "CREATING MAIN FUNC at %llX\n", main_addr);  
+
   main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
   mjr_function_register(context, main_addr, main_container);
+
   mjr_container_add_link(context, tmpcntnr, main_container->id, 
 			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
   mjr_container_add_link(context, main_container, tmpcntnr->id, 
@@ -169,14 +178,11 @@ elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
 
   /* Create symbols for main */
   /* Then we create the symbol for the bloc and returns */
-  sym = elfsh_get_symbol_by_name(context->obj, "main");
   if (!sym || !sym->st_value)
     {
       bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
       elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
     }
-  else
-    main_addr = sym->st_value;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

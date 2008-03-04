@@ -214,7 +214,7 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_FUNCS__
+#if 1 //__DEBUG_FUNCS__
   fprintf(D_DESC, "[D] %s: vaddr:%x ID:%d\n",
 	  __FUNCTION__, vaddr, fun->id);
 #endif

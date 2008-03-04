@@ -14,6 +14,8 @@ sym FUNC
 tables blocks
 #
 
+profile enable warn
+
 set $block $hash[blocks:$1]
 print $1
 set $hash[visitedblocks:$1] 1
