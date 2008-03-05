@@ -11,6 +11,7 @@
 
 /** 
  * Find the right sht type name 
+ * @param typenum
  */
 char		*revm_fetch_sht_typedesc(elfsh_Word typenum)
 {
@@ -34,6 +35,10 @@ char		*revm_fetch_sht_typedesc(elfsh_Word typenum)
 
 /** 
  * Display The Section header table (SHT) 
+ * @param shdr
+ * @param num
+ * @param rtflag
+ * @return
  */
 int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
 {

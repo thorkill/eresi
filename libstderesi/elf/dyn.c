@@ -33,6 +33,13 @@ void		revm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * Need doxygen comment.
+ * @param file
+ * @param entry
+ * @param info
+ * @return
+ */
 void      revm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
@@ -53,6 +60,12 @@ void      revm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * Need doxygen comment.
+ * @param file
+ * @param entry
+ * @param info
+ */
 void      revm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
@@ -73,6 +86,12 @@ void      revm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * Need doxygen comment.
+ * @param file
+ * @param entry
+ * @param info
+ */
 void      revm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
@@ -93,6 +112,12 @@ void      revm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * Need doxygen comment.
+ * @param file
+ * @param entry
+ * @param info
+ */
 void      revm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
   u_int		cnt;
@@ -115,7 +140,12 @@ void      revm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 
 
 
-/* Provide human readable output for .dynamic entries */
+/** 
+ * Provide human readable output for .dynamic entries.
+ * @param file
+ * @param entry
+ * @param info
+ */
 void		revm_dynentinfo(elfshobj_t	*file, 
 			      elfsh_Dyn		*entry, 
 			      char		*info)
@@ -283,7 +313,8 @@ void		revm_dynentinfo(elfshobj_t	*file,
 
 
 /** 
- * GNU and SUN extensions for the dynamic section 
+ * GNU and SUN extensions for the dynamic section.
+ * @param type
  */
 char		*revm_getdyntype(u_int type)
 {
@@ -300,7 +331,8 @@ char		*revm_getdyntype(u_int type)
 
 
 /** 
- * GNU and Sun extensions for the dynamic section 
+ * GNU and Sun extensions for the dynamic section.
+ * @param type
  */
 char		*revm_getdyntype_short(u_int type)
 {

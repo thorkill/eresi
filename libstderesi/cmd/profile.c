@@ -10,7 +10,11 @@
 #include "libstderesi.h"
 
 
-/* Print state of a given flag */
+/**
+ * Print state of a given flag 
+ * @param mask
+ * @param feat
+ */
 void		revm_profile_print(u_char mask, char *feat)
 {
   char		buf[BUFSIZ];

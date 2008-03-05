@@ -12,7 +12,9 @@
 */
 #include "libstderesi.h"
 
-
+/**
+ *
+ */
 int		cmd_info()
 {
   char		*str;

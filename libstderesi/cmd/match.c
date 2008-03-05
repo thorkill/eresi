@@ -10,7 +10,10 @@
 #include "libstderesi.h"
 
 
-/** Format arguments of case command */
+/** 
+ * Format arguments of case command 
+ * @param cmdargs
+ */
 static int	revm_case_format(revmargv_t *cmdargs)
 {
   int		index;
@@ -60,7 +63,12 @@ static int	revm_case_format(revmargv_t *cmdargs)
 }
 
 
-/* Propagate the link between 2 objects */
+/** 
+ * Propagate the link between 2 objects 
+ * @param dest
+ * @param source
+ *
+ */
 static int	revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
 {
   char		srcname[BUFSIZ];
@@ -133,7 +141,12 @@ static int	revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Perform the transformation (can be called from case or into commands) */
+/** 
+ * Perform the transformation (can be called from case or into commands) 
+ * @param matchme
+ * @param destvalue
+ * @return
+*/
 static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 {
   u_int		dstnbr;
@@ -216,7 +229,10 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 }
 
 
-/** Execute side-effects command at some transformation point */
+/** 
+ * Execute side-effects command at some transformation point 
+ * @param str
+ */
 static int	revm_case_execmd(char *str)
 {
   revmargv_t	*curcmd;
@@ -234,7 +250,9 @@ static int	revm_case_execmd(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Translate in destination type */
+/** 
+ * Translate in destination type 
+ */
 int		cmd_into()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -253,7 +271,9 @@ int		cmd_into()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Perform pre-side-effects */
+/** 
+ * Perform pre-side-effects 
+ */
 int		cmd_pre()
 {
   char		*str;
@@ -274,7 +294,9 @@ int		cmd_pre()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Perform pre-side-effects */
+/** 
+ * Perform pre-side-effects 
+ */
 int		cmd_post()
 {
   char		*str;
@@ -296,7 +318,9 @@ int		cmd_post()
 }
 
 
-/** Check input type, translate if matching */
+/** 
+ * Check input type, translate if matching 
+ */
 int		cmd_case()
 {
   aspectype_t	*exprtype;
@@ -358,7 +382,9 @@ int		cmd_case()
 }
 
 
-/** Beginning of the transform command, open a transformation switch */
+/** 
+ * Beginning of the transform command, open a transformation switch 
+ */
 int			cmd_match()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -380,7 +406,9 @@ int			cmd_match()
 }
 
 
-/* End of match. Do nothing. */
+/** 
+ * End of match. Do nothing. 
+ */
 int		cmd_matchend()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -389,7 +417,9 @@ int		cmd_matchend()
 }
 
 
-/* Default case of a match when nothing else has matched */
+/** 
+ * Default case of a match when nothing else has matched 
+ */
 int		cmd_default()
 {
   char		*str;

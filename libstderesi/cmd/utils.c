@@ -56,7 +56,9 @@ int             cmd_edit()
 }
 
 
-/* Stop the scripting and pass in interactive mode */
+/** 
+ * Stop the scripting and pass in interactive mode 
+ */
 int	cmd_stop()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -100,14 +102,22 @@ char	*revm_ascii_type(hash_t *cur)
   return (aspect_typename_get(cur->type));
 }
 
-/* Get ASCII string for hash table */
+/**
+ * Get ASCII string for hash table 
+ * @param cur
+ * @return
+*/
 char	*revm_ascii_ltype(list_t *cur)
 {
   return (aspect_typename_get(cur->type));
 }
 
 
-/* Get ASCII string for hash table */
+/**
+ * Get ASCII string for hash table 
+ * @param cur
+ * @return
+*/
 char	*revm_ascii_vtype(vector_t *cur)
 {
   return (aspect_typename_get(cur->type));

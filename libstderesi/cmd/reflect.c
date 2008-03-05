@@ -10,7 +10,9 @@
 #include "libstderesi.h"
 
 
-/* Reflect command disassemble the block cache of the parameter and create a list of instr exprs */
+/**
+ * Reflect command disassemble the block cache of the parameter and create a list of instr exprs 
+ */
 int		cmd_reflect()
 {
   container_t	*container;

@@ -1,6 +1,6 @@
 /**
  * notes.c for elfsh
- * 
+ * @file notes.c
  * Started on Fri Jan 26 21:00:33 BRST 2007
  *
  *
@@ -9,6 +9,11 @@
  */
 #include "libstderesi.h"
 
+/**
+ * Return string associated to a signal
+ * @param sig
+ * @return A string describing a signal.
+ */
 char *get_signal(int sig)
 {
   switch(sig) 

@@ -10,7 +10,9 @@
 #include "libstderesi.h"
 
 
-/* Run network initialisation */
+/** 
+ * Run network initialisation 
+ */
 int		cmd_network()
 {
   revmjob_t	*job;
@@ -59,7 +61,9 @@ int		cmd_network()
 
 
 
-/* print the list of net-client */
+/** 
+ * print the list of net-client 
+ */
 int		cmd_netlist()
 {
   int		i = 0;
@@ -100,7 +104,9 @@ int		cmd_netlist()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* kill a client by its ip address */
+/** 
+ * kill a client by its ip address 
+ */
 int		cmd_netkill()
 {
   char		*tokill;
@@ -136,7 +142,9 @@ int		cmd_netkill()
 }
 
 
-/* print the list of dump neighbors */
+/** 
+ * print the list of dump neighbors 
+ */
 int		cmd_peerslist()
 {
   int           i = 0;
@@ -172,7 +180,9 @@ int		cmd_peerslist()
 }
 
 
-/* connect to a dump node */
+/** 
+ * connect to a dump node 
+ */
 int		cmd_connect()
 {
 #if defined(ELFSHNET)
@@ -216,7 +226,9 @@ int		cmd_connect()
 }
 
 
-/* disconnect from a dump node */
+/** 
+ * disconnect from a dump node 
+ */
 int		cmd_discon()
 {
 #if defined(ELFSHNET)
@@ -257,7 +269,9 @@ int		cmd_discon()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* send a command to a remote elfsh node */
+/** 
+ * send a command to a remote elfsh node 
+ */
 int			cmd_rcmd()
 {
 #if defined(ELFSHNET)

@@ -9,7 +9,9 @@
 #include "libstderesi.h"
 
 
-/* Change the current object */
+/** 
+ * Change the current object 
+ */
 int             cmd_doswitch()
 {
   char          logbuf[BUFSIZ];

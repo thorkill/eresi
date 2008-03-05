@@ -11,7 +11,9 @@
 
 
 
-/* Change the VM state as QUIET */
+/** 
+ * Change the VM state as QUIET 
+ */
 int		cmd_quiet()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -20,7 +22,9 @@ int		cmd_quiet()
 }
 
 
-/* Change the VM state as VERBOSE (default) */
+/** 
+ * Change the VM state as VERBOSE (default) 
+ */
 int		cmd_verb()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -28,7 +32,9 @@ int		cmd_verb()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Turn on the FORCE flag */
+/** 
+ * Turn on the FORCE flag 
+ */
 int             cmd_force()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -36,7 +42,9 @@ int             cmd_force()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Precise a general weak bounded regex for all options */
+/** 
+ * Precise a general weak bounded regex for all options 
+ */
 int		cmd_glregx()
 {
   char		*str;
@@ -62,7 +70,9 @@ int		cmd_glregx()
 }
 
 
-/* Read the sorting parameter */
+/** 
+ * Read the sorting parameter 
+ */
 int		cmd_sort()
 {
   char		logbuf[BUFSIZ];
@@ -89,7 +99,9 @@ int		cmd_sort()
 
 
 
-/* Set the share flag */
+/** 
+ * Set the share flag 
+ */
 int		cmd_shared()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

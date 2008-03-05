@@ -10,6 +10,19 @@
  */
 #include "libstderesi.h"
 
+/**
+ * Need doxygen comment.
+ * @param pneed
+ * @param pdef
+ * @param auxid
+ * @param index
+ * @param id
+ * @param name
+ * @param type
+ * @param regx
+ * @return
+ */
+
 int			revm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
 					u_int auxid, u_int index, char *id, 
 					char *name, char *type, regex_t	*regx)
@@ -59,6 +72,17 @@ int			revm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+/**
+ * Need doxygen comment.
+ * @param pdef
+ * @param auxid
+ * @param index
+ * @param id
+ * @param name
+ * @param type
+ * @param regx
+ */
 int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
 					u_int index, char *id, char *name, 
 					char *type, regex_t *regx)
@@ -121,6 +145,17 @@ int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment
+ * @param pneed
+ * @param auxid
+ * @param index
+ * @param id
+ * @param name
+ * @param type
+ * @param regx
+ * @return
+ */
 int			revm_version_pneed(hashneed_t *pneed, u_int auxid, 
 					 u_int index, char *id, char *name, 
 					 char *type, regex_t *regx)
@@ -177,6 +212,16 @@ int			revm_version_pneed(hashneed_t *pneed, u_int auxid,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comments
+ * @param sym_table
+ * @param dsym_table
+ * @param symsize
+ * @param t_need
+ * @param t_def
+ * @param tmp
+ * @return
+ */
 int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table, 
 					 u_int symsize, hash_t *t_need, hash_t *t_def,
 					 regex_t *tmp)
@@ -242,6 +287,9 @@ int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, index > 0 ? 0 : -1);
 }
 
+/**
+ * Need doxygen comment
+ */
 int 			cmd_version()
 {
   elfshsect_t		*sect;
@@ -333,6 +381,9 @@ int 			cmd_version()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment
+ */
 int 			cmd_verneed()
 {
   elfshsect_t		*sect;
@@ -447,6 +498,9 @@ int 			cmd_verneed()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment
+ */
 int 			cmd_verdef()
 {
   elfshsect_t		*sect;

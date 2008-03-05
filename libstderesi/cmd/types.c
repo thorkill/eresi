@@ -11,7 +11,9 @@
 
 
 
-/* Types management command */
+/**
+ * Types management command 
+ */
 int		cmd_type()
 {
   int		nocmd;
@@ -80,7 +82,9 @@ int		cmd_type()
 }
 
 
-/* Typedef command function */
+/**
+ * Typedef command function 
+ */
 int  		cmd_typedef()
 {
   int		ret;

@@ -10,6 +10,7 @@
 
 /** 
  * return 1 if a file named 'name' is in the workspace 
+ * @param name
  */
 int		revm_is_loaded(char *name)
 {
@@ -49,6 +50,11 @@ int		revm_is_loaded(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment.
+ * @param file
+ * @param name
+ */
 int		revm_load_init_dephash(elfshobj_t *file, char *name)
 {
   char		logbuf[BUFSIZ];
@@ -68,6 +74,10 @@ int		revm_load_init_dephash(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment.
+ * @param regex
+ */
 int		revm_file_loads(char *regex)
 {
   // split for dir/files part
@@ -78,7 +88,13 @@ int		revm_file_loads(char *regex)
   return (0);
 }
 
-/* Load a file in elfsh */
+/** 
+ * Load a file in elfsh 
+ * @param name 
+ * @param base
+ * @param lm
+ * @return
+ */
 int		revm_file_load(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
 {
   elfshobj_t	*new;
@@ -188,7 +204,9 @@ int		revm_file_load(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
 
 
 
-/* Insert an object in the list of opened elfsh descriptors */
+/**
+ *  Insert an object in the list of opened elfsh descriptors 
+ */
 int		cmd_load()
 {
   revmexpr_t	*expr;

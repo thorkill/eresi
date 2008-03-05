@@ -20,6 +20,11 @@ char *var_title = NULL;
 
 int matched;
 
+/**
+ * @todo Complete doxygen tag
+ * @param type
+ * @return
+ */
 static char 	*revm_debug_typename(u_int type)
 {
   char 			*str;
@@ -61,6 +66,12 @@ static char 	*revm_debug_typename(u_int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, str);
 }
 
+/**
+ * @todo Complete doxygen tags
+ * @param vars
+ * @param rx
+ * @return
+ */
 static int		revm_debug_print_var(edfmtvar_t *vars, regex_t *rx)
 {
   edfmtvar_t		*var;
@@ -102,6 +113,14 @@ static int		revm_debug_print_var(edfmtvar_t *vars, regex_t *rx)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+/**
+ * @todo Complete doxygen tags
+ * @param types
+ * @param tab
+ * @param rx
+ * @return
+ */
 
 static int		revm_debug_print_type(edfmttype_t *types, u_int tab, regex_t *rx)
 {

@@ -1404,6 +1404,9 @@ int 			cmd_traceexclude()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen brief tag
+ */
 int			cmd_tracerun()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

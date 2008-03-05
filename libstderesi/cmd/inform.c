@@ -12,7 +12,9 @@
 
 
 
-/** Inform a given type */
+/** 
+ * Inform a given type 
+ */
 int		cmd_inform()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -51,7 +53,9 @@ int		cmd_inform()
 
 
 
-/** Uninform a given type */
+/** 
+ * Uninform a given type 
+ */
 int		cmd_uninform()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

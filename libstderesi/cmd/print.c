@@ -12,6 +12,7 @@
 
 /** 
  * Print an object 
+ * @param obj
  */
 void		revm_object_print(revmobj_t *obj)
 {
@@ -112,7 +113,9 @@ void		revm_object_print(revmobj_t *obj)
 
 
 
-/* Print a string */
+/**
+ * Print a string 
+ */
 int			cmd_print()
 {
   revmexpr_t		*expr;

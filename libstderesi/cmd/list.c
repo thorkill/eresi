@@ -8,7 +8,10 @@
 */
 #include "libstderesi.h"
 
-/* Print dependence */
+/** 
+ * Print dependence 
+ * @param obj
+ */
 static int	revm_dolist_dep(elfshobj_t *obj)
 {
   elfshobj_t	*actual;
@@ -39,7 +42,9 @@ static int	revm_dolist_dep(elfshobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* List all the loaded objects */
+/** 
+ * List all the loaded objects 
+ */
 int		cmd_dolist()
 {
   elfshobj_t	*actual;

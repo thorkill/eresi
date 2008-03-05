@@ -10,6 +10,7 @@
 
 /** 
  * Get numbers of vector dimensions requested for the display 
+ * @param str
  */
 int		revm_vectors_getdimnbr(char *str)
 {
@@ -28,6 +29,8 @@ int		revm_vectors_getdimnbr(char *str)
 
 /** 
  * Get numbers of vector dimensions requested for the display 
+ * @param str
+ * @param dims
  */
 int		revm_vectors_getdims(char *str, unsigned int *dims)
 {
@@ -60,6 +63,10 @@ int		revm_vectors_getdims(char *str, unsigned int *dims)
 
 /** 
  * Check vectors dimensions 
+ * @param vect
+ * @param dims
+ * @param dimnbr
+ * @return
  */
 int		revm_vector_bad_dims(vector_t *vect, unsigned int *dims,
 				   unsigned int dimnbr)
@@ -78,6 +85,7 @@ int		revm_vector_bad_dims(vector_t *vect, unsigned int *dims,
 
 /** 
  * Modify a value inside a vector 
+ * @return
  */
 static int	revm_vector_modify()
 {
@@ -134,6 +142,8 @@ static int	revm_vector_modify()
 
 /** 
  * Print a vector entry with its resolve 
+ * @param vaddr
+ * @param def
  */
 static void	revm_vector_entry_display(elfsh_Addr vaddr, elfsh_Addr def)
 {
@@ -168,6 +178,13 @@ static void	revm_vector_entry_display(elfsh_Addr vaddr, elfsh_Addr def)
 
 /** 
  * Display the vector recursively 
+ * @param tab
+ * @param dims
+ * @param index
+ * @param depth
+ * @patram dimsz
+ * @param name
+ * @param def
  */
 static void	revm_vector_recdisplay(unsigned long *tab,  unsigned int *dims, 
 				     unsigned int *index, unsigned int depth, 
@@ -207,6 +224,9 @@ static void	revm_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 
 /** 
  * Display vector 
+ * @param cur
+ * @param name
+ *
  */
 static void	 revm_vector_print(vector_t *cur, char *name)
 {

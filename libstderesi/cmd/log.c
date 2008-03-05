@@ -57,7 +57,9 @@ int			cmd_log()
 }
 
 
-/* Export in environment command */
+/** 
+ * Export in environment command 
+ */
 int		cmd_export()
 {
   int		err;

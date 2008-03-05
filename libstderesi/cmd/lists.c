@@ -9,7 +9,10 @@
 #include "libstderesi.h"
 
 
-/* Display the content of a list */
+/** 
+ * Display the content of a list 
+ * @param name 
+ */
 int		revm_list_display_content(char *name)
 {
   list_t	*h;
@@ -76,7 +79,9 @@ int		revm_list_display(list_t *list, char *name)
 
 
 
-/* Display the content of all hash tables that match the regex */
+/** 
+ * Display the content of all hash tables that match the regex 
+ */
 static int	revm_list_display_regx(char *regx)
 {
   regex_t	rx;
@@ -121,7 +126,9 @@ static int	revm_list_display_regx(char *regx)
 
 
 
-/* Display the content of a hash table */
+/** 
+ * Display the content of a hash table 
+ */
 static void	revm_lists_display()
 {
   char		**keys;
@@ -142,7 +149,9 @@ static void	revm_lists_display()
 }
 
 
-/* Print and modify internal lists */
+/** 
+ * Print and modify internal lists 
+ */
 int		cmd_lists()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

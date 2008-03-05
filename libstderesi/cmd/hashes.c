@@ -12,7 +12,10 @@
 #include "libstderesi.h"
 
 
-/* Display the content of a hash table  */
+/** 
+ * Display the content of a hash table  
+ * @param name
+ */
 int		revm_table_display_content(char *name)
 {
   hash_t	*h;
@@ -51,7 +54,11 @@ int		revm_table_display_content(char *name)
 }
 
 
-/* Display the header of a hash table */
+/**
+ * Display the header of a hash table 
+ * @param table
+ * @param name
+ */
 int		revm_table_display(hash_t *table, char *name)
 {
   char		logbuf[BUFSIZ];
@@ -71,7 +78,10 @@ int		revm_table_display(hash_t *table, char *name)
 
 
 
-/* Display the content of all hash tables that match the regex */
+/** 
+ * Display the content of all hash tables that match the regex 
+ * @param regx 
+ */
 static int	revm_table_display_regx(char *regx)
 {
   regex_t	rx;
@@ -116,7 +126,9 @@ static int	revm_table_display_regx(char *regx)
 
 
 
-/* Display the content of a hash table */
+/**
+ * Display the content of a hash table 
+ */
 static void	revm_tables_display()
 {
   char		**keys;
@@ -137,7 +149,9 @@ static void	revm_tables_display()
 }
 
 
-/* Print and modify internal hash tables */
+/**
+ *  Print and modify internal hash tables 
+ */
 int		cmd_tables()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -166,7 +180,9 @@ int		cmd_tables()
 
 
 
-/* Empty a hash table */
+/**
+ * Empty a hash table 
+ */
 int		cmd_empty()
 {
   char		buf[BUFSIZ];

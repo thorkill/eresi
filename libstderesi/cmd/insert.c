@@ -13,9 +13,11 @@
 
 
 
-/* sect name maptype size align */
-/* sym  name value size */
-/* phdr type value size */
+/**
+ * sect name maptype size align
+ * sym  name value size 
+ * phdr type value size 
+ */
 int		cmd_insert()
 {
   elfshsect_t	*sct;

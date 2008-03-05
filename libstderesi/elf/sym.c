@@ -14,6 +14,13 @@
 
 /** 
  * Print the chosen symbol table 
+ * @param file
+ * @param sect
+ * @param tab
+ * @param num
+ * @param regx
+ * @param get_symname
+ * @return
  */
 int		ds(elfshobj_t	*file,
 		   elfshsect_t	*sect,

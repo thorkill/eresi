@@ -12,6 +12,7 @@
 
 /**
  * @brief Choose relocation tables strings array giving the architecture 
+ * @param file
  */
 revmconst_t    *revm_getrelascii(elfshobj_t *file)
 {
@@ -51,6 +52,7 @@ revmconst_t    *revm_getrelascii(elfshobj_t *file)
 
 /** 
  * @brief Return the max number of relocation type for this architecture 
+ * @param file
  */
 int           revm_getmaxrelnbr(elfshobj_t *file)
 {

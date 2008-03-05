@@ -15,7 +15,11 @@ static revmlist_t* second = NULL;
 
 /**
  * Resolve symbol in one file or all (mapped) if we are in e2dbg
- * Runtime compatible 
+ * Runtime compatible.
+ * @param file
+ * @param addr
+ * @param roffset
+ * @return
 */
 char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr, 
 			    elfsh_SAddr *roffset)
@@ -121,8 +125,12 @@ char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr,
 
 
 /**
- *  Symbol resolving handler for libasm
+ *  Symbol resolving handler for libasm.
  * Runtime compatible 
+ * @param data
+ * @param vaddr
+ * @param buf
+ * @param maxlen
  */
 void		asm_do_resolve(void *data, elfsh_Addr vaddr, 
 			       char *buf, u_int maxlen)
@@ -170,8 +178,16 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr,
 
 
 /** 
- * Display An instruction 
+ * Display An instruction.
  * Runtime compatible 
+ * @param fd
+ * @param index
+ * @param vaddr
+ * @param foffset
+ * @param size
+ * @param name
+ * @param nindex
+ * @param buff
  */
 u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr, 
 				 u_int foffset, u_int size, char *name, 
@@ -298,7 +314,16 @@ u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr,
 
 
 /** 
- * Disassemble a function 
+ * Disassemble a function.
+ * @param parent
+ * @param sym
+ * @param size
+ * @param off
+ * @param foffset
+ * @param vaddr
+ * @param name
+ * @param otype
+ * @return
  */
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
 				  u_int off, u_int foffset, elfsh_Addr vaddr, 
@@ -543,7 +568,11 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 
 
 /** 
- * Print all variables and functions of the section 
+ * Print all variables and functions of the section.
+ * @param s
+ * @param name
+ * @param re
+ * @return
  */
 int		revm_section_display(elfshsect_t	*s, 
 				   char		*name, 
@@ -617,7 +646,11 @@ int		revm_section_display(elfshsect_t	*s,
 
 
 /** 
- * Match regular expressions in a SHT (SHT or RSHT) 
+ * Match regular expressions in a SHT (SHT or RSHT).
+ * @param file
+ * @param l
+ * @param actual
+ * @return
  */
 int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual)
 {
@@ -657,6 +690,11 @@ int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual)
 
 /** 
  * Match regular expressions in the symbol tables 
+ * @param file
+ * @param symtab
+ * @param actual
+ * @param flag
+ * @return
  */
 int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
 				revmlist_t *actual, int flag)
@@ -741,7 +779,11 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
 
 
 /** 
- * Match a special regular expression 
+ * Match a special regular expression.
+ * @param file
+ * @param vaddr
+ * @param actual
+ * @return
  */
 int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
 				   revmlist_t *actual)
@@ -802,13 +844,9 @@ int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
 }
 
 
-
-
-
-
-
-
-/* Display ASM code for a given function, or every functions of a section */
+/**
+ * Display ASM code for a given function, or every functions of a section 
+ */
 int             cmd_disasm()
 {
   revmlist_t	*actual;

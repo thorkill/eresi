@@ -11,13 +11,15 @@
 u_char quit_msg_setup = 0;
 char	quit_msg[512];
 
-
+/**
+ * Need doxygen tag.
+ * @param msg
+ */
 void    revm_quitmsg_set(char *msg)
 {
   strncpy(quit_msg, msg, sizeof(quit_msg) - 1);
   quit_msg_setup = 1;
 }
-
 
 /**
  * Unload all the loaded object and exit the shell 

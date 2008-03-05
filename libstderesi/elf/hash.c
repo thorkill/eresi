@@ -10,6 +10,11 @@
 */
 #include "libstderesi.h"
 
+/**
+ * Need doxygen comment
+ * @param index
+ * @return
+ */
 int		revm_hashunk(int index)
 {
   char		logbuf[BUFSIZ];
@@ -26,6 +31,17 @@ int		revm_hashunk(int index)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment.
+ * @param type
+ * @param index
+ * @param symid
+ * @param name
+ * @param rhash
+ * @param hash
+ * @param check
+ * @return
+ */
 
 int		revm_hashbucket_print(int type, int index, int symid, 
 				   char *name, int rhash, int hash, int check)
@@ -61,6 +77,15 @@ int		revm_hashbucket_print(int type, int index, int symid,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment.
+ * @param index
+ * @param symid
+ * @param name
+ * @param rhash
+ * @param hash
+ * @return
+ */
 int		revm_hashchain_print(int index, int symid, char *name, 
 				  int rhash, int hash)
 {
@@ -89,6 +114,13 @@ int		revm_hashchain_print(int index, int symid, char *name,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment
+ * @param sect
+ * @param sym
+ * @param nbr
+ * @return
+ */
 int		revm_hashprint(elfshsect_t *sect, elfsh_Sym *sym, int nbr)
 {
   void		*data;
@@ -180,6 +212,11 @@ int		revm_hashprint(elfshsect_t *sect, elfsh_Sym *sym, int nbr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen comment.
+ *
+ *
+ */
 int 		cmd_hashx()
 {
   elfshsect_t	*sect;

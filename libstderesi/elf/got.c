@@ -11,7 +11,9 @@
 
 
 
-/* Command handler for GOT command */
+/** 
+ * Command handler for GOT command 
+ */
 int		cmd_got()
 {
   regex_t	*tmp;

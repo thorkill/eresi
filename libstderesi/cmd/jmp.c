@@ -13,7 +13,9 @@
 #include "libstderesi.h"
 
 
-
+/**
+ * Handler for the jmp instruction
+ */ 
 int		cmd_jmp()
 {
   int		ret;
@@ -23,6 +25,9 @@ int		cmd_jmp()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+/**
+ * Handler for the je instruction
+ */ 
 int		cmd_je()
 {
   revmexpr_t	*last;
@@ -44,6 +49,10 @@ int		cmd_je()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+/**
+ * Handler for the jne instruction
+ */ 
 
 int		cmd_jne()
 {
@@ -67,6 +76,10 @@ int		cmd_jne()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Handler for the jg instruction
+ */ 
+
 int		cmd_jg()
 {
   revmexpr_t	*last;
@@ -89,6 +102,9 @@ int		cmd_jg()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Handler for the jl instruction
+ */ 
 int		cmd_jl()
 {
   revmexpr_t	*last;
@@ -111,6 +127,10 @@ int		cmd_jl()
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+/**
+ * Handler for the jge instruction
+ */ 
 int		cmd_jge()
 {
   revmexpr_t	*last;
@@ -133,6 +153,9 @@ int		cmd_jge()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Handler for the jle instruction
+ */ 
 int		cmd_jle()
 {
   revmexpr_t	*last;

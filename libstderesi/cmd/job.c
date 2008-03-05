@@ -8,6 +8,9 @@
 */
 #include "libstderesi.h"
 
+/**
+ * Need doxygen comment
+ */
 int		cmd_workspace()
 {
   revmjob_t	*job;
@@ -123,7 +126,9 @@ int		cmd_workspace()
     }
 }
 
-/* Switch to the next workspace */
+/** 
+ * Switch to the next workspace 
+ */
 int		cmd_next_workspace()
 {
   int		ret;

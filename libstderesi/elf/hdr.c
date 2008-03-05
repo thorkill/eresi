@@ -11,7 +11,10 @@
 
 
 
-/* Change ELFCLASS and ELFMAGIC if necessary */
+/** 
+ * Change ELFCLASS and ELFMAGIC if necessary 
+ * @param header
+ */
 static void	*revm_hdrfixup(elfsh_Ehdr *header)
 {
   char		c;
@@ -42,6 +45,11 @@ static void	*revm_hdrfixup(elfsh_Ehdr *header)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (h));
 }
 
+/**
+ * Need doxygen comment
+ * @param file
+ * @return
+ */
 
 static char	*revm_printostype(elfshobj_t *file)
 {
@@ -68,7 +76,9 @@ static char	*revm_printostype(elfshobj_t *file)
 }
 
 
-/* Display the elf header */
+/** 
+ * Display the elf header 
+ */
 int		cmd_elf()
 {
   elfsh_Ehdr	*header;

@@ -13,8 +13,10 @@
 */
 #include "libstderesi.h"
 
-
-
+/**
+ * Need doxygen comment.
+ *
+ */
 int		cmd_flush()
 {
   elfshsect_t	*plt;

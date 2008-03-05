@@ -14,6 +14,9 @@
 
 /** 
  * Our own pow 
+ * @param a
+ * @param b
+ * @return
  */
 static int	__eint_pow(int a, int b)
 {
@@ -37,6 +40,9 @@ static int	__eint_pow(int a, int b)
 
 /** 
  * Find a different element than 'file' in the parent hash table 
+ * @param hash
+ * @param file
+ * @return
  */
 static void*	revm_get_another_parent(hash_t *hash, elfshobj_t *file) 
 {
@@ -62,6 +68,11 @@ static void*	revm_get_another_parent(hash_t *hash, elfshobj_t *file)
  * Merge the root dependences information for all the children, when a new
  * program with dependences is (un)loaded and some dependences also depends
  * from other roots.
+ * @param child
+ * @param root
+ * @param dephash
+ * @param action
+ * @return
  */
 static int	revm_update_depinfo(elfshobj_t	*child, 
 				    elfshobj_t	*root,
@@ -112,7 +123,14 @@ static int	revm_update_depinfo(elfshobj_t	*child,
 
 
 
-/* Enum dependences */
+/** 
+ * Enum dependences 
+ * @param obj
+ * @param rechash
+ * @param dephash
+ * @return
+ *
+ */
 static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *dephash)
 {
   elfsh_Dyn	*dyn_entrie;
@@ -184,7 +202,11 @@ static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *depha
 
 
 
-/* This is a front end function for the recursive function above */
+/** 
+ * This is a front end function for the recursive function above 
+ * @param obj
+ * @return
+ */
 int		revm_load_enumdep(elfshobj_t *obj)
 {
   hash_t	rechash;
@@ -204,6 +226,8 @@ int		revm_load_enumdep(elfshobj_t *obj)
 
 /** 
  * Search the lib path for a specific file 
+ * @param name Filename to search
+ * @return
  */
 char	     	*revm_load_searchlib(char *name)
 {
@@ -269,11 +293,12 @@ char	     	*revm_load_searchlib(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-  
-
-
-
-/* Search a dependence from an id and a loaded object */
+/** 
+ * Search a dependence from an id and a loaded object. 
+ * @param obj
+ * @param id
+ * @return 
+ */
 elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id)
 {
   elfshobj_t	*child;
@@ -329,7 +354,12 @@ elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id)
 
 
 
-/* Search a dependence from a lib name and a loaded object */
+/** 
+ * Search a dependence from a lib name and a loaded object 
+ * @param obj
+ * @param path
+ * @return
+ */
 elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
 {
   char		**hashkeys;
@@ -363,10 +393,15 @@ elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);  
 }
 
-
-
-
-/* Load a dependence which is different from a normal file */
+/** 
+ * Load a dependence which is different from a normal file.
+ * @param parent
+ * @param name
+ * @param base
+ * @param lm
+ * @param dephash
+ * @return
+ */
 int		revm_load_dep(elfshobj_t *parent, char *name, 
 			      elfsh_Addr base, elfshlinkmap_t *lm,
 			      hash_t *dephash)
@@ -446,9 +481,14 @@ int		revm_load_dep(elfshobj_t *parent, char *name,
 }
 
 
-
-
-/* Unload all dependence for an object */
+/** 
+ * Unload all dependence for an object.
+ * @param obj
+ * @param root
+ * @param rechash
+ * @param dephash
+ * @return
+ */
 static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root, 
 				    hash_t *rechash, hash_t *dephash)
 {
@@ -529,7 +569,12 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This is a front end function for the recursive function above */
+/** 
+ * This is a front end function for the recursive function above.
+ * @param obj
+ * @param root
+ * @return Always 0
+ */
 int		revm_unload_dep(elfshobj_t *obj, elfshobj_t *root)
 {
   hash_t	rechash;

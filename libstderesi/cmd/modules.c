@@ -9,7 +9,9 @@
 #include "libstderesi.h"
 
 
-/* Guess if the file is an ELFsh module or not */
+/** 
+ * Guess if the file is an ELFsh module or not 
+ */
 int		cmd_modload()
 {
   revmmod_t	*new;
@@ -96,7 +98,9 @@ int		cmd_modload()
 }
 
 
-/* Unload an elfsh module */
+/** 
+ * Unload an elfsh module 
+ */
 int		cmd_modunload()
 {
   revmmod_t	*cur;

@@ -11,8 +11,10 @@
 #include "libstderesi.h"
 
 
-/* Script used as command function */
-/* Note : this function does not work properly in a script ! */
+/**
+ * Script used as command function.
+ * Note : this function does not work properly in a script ! 
+*/
 int			cmd_script()
 {
   int                   idx;
@@ -52,7 +54,10 @@ int			cmd_script()
 }
 
 
-/* Set then scriptsdir directory and add cmd corresponding to scripts */
+/**
+ *  Set then scriptsdir directory and add cmd corresponding to scripts 
+ * @param dir_name
+ */
 int		revm_add_script_cmd(char *dir_name)
 {
   DIR		*dir;
@@ -129,7 +134,9 @@ int		revm_add_script_cmd(char *dir_name)
 }
 
 
-/* Elfsh/E2dbg command for revm_add_script_cmd() */
+/** 
+ * Elfsh/E2dbg command for revm_add_script_cmd() 
+ */
 int	cmd_scriptsdir()
 {
   char	str[BUFSIZ];
@@ -163,6 +170,9 @@ int	cmd_scriptsdir()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * Need doxygen tag
+ */
 int		cmd_lscripts()
 {
   char		str[BUFSIZ];

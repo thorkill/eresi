@@ -13,6 +13,7 @@
 
 /** 
  * @brief Display description for extended PHT types 
+ * @param type
  */
 char		*revm_display_pdesc(u_int type)
 {
@@ -32,6 +33,7 @@ char		*revm_display_pdesc(u_int type)
 
 /** 
  * @brief Display name for extended PHT types 
+ * @param type
  */
 char		*revm_display_pname(u_int type)
 {
@@ -51,6 +53,9 @@ char		*revm_display_pname(u_int type)
 
 /** 
  * @brief Display a PHT 
+ * @param phdr
+ * @param num
+ * @param base
  */
 void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
 {

@@ -11,7 +11,11 @@
 
 
 /** 
- * @brief Print a buffer with a resolved virtual address and offset to a symbol name 
+ * @brief Print a buffer with a resolved virtual address and offset 
+ * to a symbol name.
+ * @param file
+ * @param vaddr
+ * @return
  */
 char		*revm_reverse(elfshobj_t *file, u_int vaddr)
 {
@@ -38,9 +42,6 @@ char		*revm_reverse(elfshobj_t *file, u_int vaddr)
  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
-
-
 
 
 #if 0		/* WIP */
@@ -73,10 +74,12 @@ static int		revm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
 }
 
 /** 
- * Say wether or not this entry is a false positive
+ * Say wether or not this entry is a false positive.
  * We are using architecture dependant heuristics :
  * - Instruction alignement
  * - Operand alignement 
+ * @param dat
+ * @param dword
  */
 static int	        revm_catch_relocfp(char *dat, u_int dword)
 {
@@ -111,12 +114,6 @@ static __inline__ int	revm_catch_relocfp(char *dat, u_int word)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 #endif
-
-
-
-
-
-
 
 
 /** 

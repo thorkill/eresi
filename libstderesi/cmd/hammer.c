@@ -11,7 +11,9 @@
 #include "libstderesi.h"
 
 
-/* To rebuild symtab use this command */
+/** 
+ * To rebuild symtab use this command 
+ */
 int	cmd_unstrip() 
 {
   char logbuf[BUFSIZ];
@@ -30,7 +32,9 @@ int	cmd_unstrip()
 }
 
 
-/* This command fill the blocks hash */
+/** 
+ * This command fill the blocks hash 
+ */
 int		cmd_analyse() 
 {
  char		logbuf[BUFSIZ];
@@ -97,7 +101,9 @@ int		cmd_analyse()
 
 
 
-/* Shortcut command to rename symbols */
+/** 
+ * Shortcut command to rename symbols 
+ */
 int	cmd_rename() 
 {
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

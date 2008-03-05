@@ -8,7 +8,9 @@
 #include "libstderesi.h"
 
 
-/* The ELFsh modules Help command */
+/** 
+ * The ELFsh modules Help command 
+ */
 int		cmd_modhelp()
 {
   revmmod_t	*mod;
@@ -46,7 +48,9 @@ int		cmd_modhelp()
 }
 
 
-/* The Help command */
+/** 
+ * The Help command 
+ */
 int		cmd_help()
 {
   int		ret;

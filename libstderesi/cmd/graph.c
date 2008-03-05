@@ -14,7 +14,13 @@
 static hash_t   dumped;
 
 
-/* Generate the legend for the graph in HTML format */
+/** 
+ * Generate the legend for the graph in HTML format 
+ * @param fd
+ * @param fnc
+ * @param min
+ * @param max
+ */
 void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
 {
   char	buf[BUFSIZ];
@@ -41,7 +47,11 @@ void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
 }
 
 
-/* Disassemble a block */
+/**
+ * Disassemble a block 
+ * @param fd
+ * @param blk
+ */
 void		revm_disasm_block(int fd, mjrblock_t *blk)
 {
   char		*buffer;
@@ -88,6 +98,7 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
 
 /**
  * Create .dot -> .png files and execute the graphic viewer
+ * @param dotfile
  */
 int revm_graph_compile_graphic(char *dotfile)
 {
@@ -114,6 +125,7 @@ int revm_graph_compile_graphic(char *dotfile)
 
 /**
  * Returns converted path name into string without '.'
+ * @param path
  */
 char		*revm_flattern_path(char *path)
 {
@@ -172,6 +184,9 @@ int		revm_prepare_storage_dir(void)
 
 /**
  * This function prepares a path string to .dot file
+ * @param opt
+ * @param prefix
+ * @return
  */
 char		*revm_get_dotfile_name(char *opt,char *prefix)
 {
@@ -207,6 +222,8 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
 /**
  * Converts string to vaddr by looking up the symbol name
  * or converting it to hex
+ * @param s
+ * @return
  */
 u_int		revm_get_vaddr(char *s)
 {
@@ -439,9 +456,12 @@ int		revm_graph_blocks(container_t *cntnr,
 
 /**
  * This function does dump a function container in graphviz format
+ * @param fd
  * @param direction input/output
  * @param type 0 - we are dumping only out, 1 - we generate .dot file for
  *			both directions
+ * @param maxdepth
+ * @param curdepth
  */
 int		revm_graph_function(container_t	*cntnr,
 				    int			fd,
@@ -532,7 +552,12 @@ int		revm_graph_function(container_t	*cntnr,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Open the file for putting the dot description */
+/** 
+ * Open the file for putting the dot description 
+ * @param dotfile
+ * @param fd
+ * @returm
+ */
 int	revm_open_dot_file(char *dotfile, int *fd)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

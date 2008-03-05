@@ -13,7 +13,10 @@
 
 
 
-/* Some API that needs to be moved in another file ! */
+/** 
+ * Some API that needs to be moved in another file ! 
+ * @param id
+ */
 elfsh_Addr	revm_get_block_vaddr_by_id(int id)
 {
   container_t *container;
@@ -26,7 +29,9 @@ elfsh_Addr	revm_get_block_vaddr_by_id(int id)
 }
 
 
-/* Inspect command for basic blocks */
+/** 
+ * Inspect command for basic blocks 
+ */
 int			cmd_inspect() 
 {
   elfshobj_t		*obj;
