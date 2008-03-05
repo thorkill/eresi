@@ -1,13 +1,16 @@
 /* Adam 'pi3' Zabrocki */
 /* Manuel Martin - 2007 */
 
-#include "libasm.h"
+#include <libasm.h>
 
 int asm_mips_ctc2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_CTC2;
-   asm_mips_operand_cop2(&ins->op[0], buf, ASM_MIPS_OTYPE_COP2, ins);
+   ins->type = ASM_TYPE_ARCH;
+   asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_COP2, ins);
+
+   /* Exceptions: Coprocessor Unusable, Reserved instruction */
 
    return 777;
 }

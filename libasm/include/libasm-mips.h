@@ -591,7 +591,9 @@ enum e_mips_register_types
    ASM_MIPS_REG_RA  /* Return Address */
 };
 
-/*  operand types */
+/**
+ *  operand types 
+ */
 enum e_mips_operand_type
 {
    ASM_MIPS_OTYPE_NONE,
@@ -649,6 +651,11 @@ extern struct e_mips_instr e_mips_instrs[];
 extern struct e_mips_register e_mips_registers[];
 
 #endif
+
+
+/* Operands fetch */
+
+int asm_mips_operand_fetch(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 
 
 /* Operands */
