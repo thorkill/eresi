@@ -1,5 +1,6 @@
 /*
-** memory.c for libkernsh
+ * @file memory.c
+** @brief memory.c for libkernsh
 **
 ** $Id: memory.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
@@ -7,7 +8,10 @@
 #include "libkernsh.h"
 #include "libaspect.h"
 
-/* Open kernel memory						*/
+/** Open kernel memory						
+ * @param 
+ * @return
+ */
 /* Configure : Device = "/dev/kmem", "/dev/mem", "/proc/kcore"	*/
 /*          Mode = "read", "write"				*/
 int kernsh_openmem()
@@ -198,7 +202,13 @@ int kernsh_closemem()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Read kernel memory */
+/**
+ * Read kernel memory
+ * @param offset
+ * @param buf
+ * @param size
+ * @return size
+ */
 int kernsh_readmem(unsigned long offset, void *buf, int size)
 {
   int ret;

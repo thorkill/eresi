@@ -81,7 +81,6 @@ u_int		kernsh_instr_display(u_int index, elfsh_Addr vaddr,
   char		logbuf[BUFSIZ];
   char		c1[2];
   char		c2[2];
-  u_int		strsz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -97,9 +96,9 @@ u_int		kernsh_instr_display(u_int index, elfsh_Addr vaddr,
 
   s = (!ret ? "(bad)" : asm_display_instr_att(&ptr, (vaddr)));
 
-  snprintf(buf, sizeof(buf), "%s  ", 
+  snprintf(buf, sizeof(buf), "%s", 
 	   revm_coloraddress(XFMT, vaddr + index));
-  size = snprintf(logbuf, BUFSIZ, "%-10s %-30s ", 
+  size = snprintf(logbuf, BUFSIZ, "%-40s %-30s ", 
 		  buf, revm_colorinstr(s));
   
   /* Print bytes in hexa for this instruction */

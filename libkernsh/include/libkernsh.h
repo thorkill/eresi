@@ -66,7 +66,7 @@
 
 enum
   {
-    LIBKERNSH_ARCH_I386,
+    LIBKERNSH_ARCH_I386, 
     LIBKERNSH_ARCH_X86_64,
     LIBKERNSH_ARCHNUM
   } libkernsh_e_arch_type;
@@ -212,7 +212,9 @@ struct
 	unsigned long base;
 } __attribute__ ((packed))gdtr;
 
-/* Kmalloc struct */
+/**
+ * @brief Kmalloc struct
+ */
 typedef struct s_libkernshkma 
 {
 	unsigned long ( *kexec )( size_t, int );     /* Execution of kmalloc */
@@ -221,14 +223,18 @@ typedef struct s_libkernshkma
 	unsigned long mem; /* The address where the allocation has been done */
 } libkernshkma_t ;
 
-/* Kfree struct */
+/**
+ * @brief Kfree struct 
+ */
 typedef struct s_libkernshkfr 
 {
 	unsigned long ( *kexec )( const void * );     /* Execution of kfree */
 	const void * address;			      /* Address to be free */
 } libkernshkfr_t;
 
-/* Vmalloc struct */
+/**
+ * @brief Vmalloc struct 
+ */
 typedef struct s_libkernshvma 
 {
 	unsigned long ( *kexec )( size_t );	/* Execution of vmalloc */
@@ -236,28 +242,36 @@ typedef struct s_libkernshvma
 	unsigned long mem; /* The address where the allocation has been done */
 } libkernshvma_t;
 
-/* Vfree struct */
+/**
+ * @brief Vfree struct 
+ */
 typedef struct s_libkernshvfr 
 {
 	unsigned long ( *kexec )( void * );	/* Execution of vfree */
 	void * address;				/* Address to be free */
 } libkernshvfr_t;
 
-/* Syscall struct */
+/**
+ * @brief Syscall struct 
+ */
 typedef struct s_libkernshsyscall
 {
 	unsigned long addr;
 	char name[NAMESIZ];
 } libkernshsyscall_t;
 
-/* Interrupt struct */
+/**
+ * @brief Interrupt struct 
+ */
 typedef struct s_libkernshint
 {
 	unsigned long addr;
 	char name[NAMESIZ];
 } libkernshint_t;
 
-/* Gdt segment struct */
+/**
+ * @brief Gdt segment struct 
+ */
 typedef struct s_libkernshsgdt
 {
 	unsigned long addr;
@@ -265,7 +279,9 @@ typedef struct s_libkernshsgdt
 	unsigned long fin;
 } libkernshsgdt_t;
 
-
+/** 
+ * @brief md5 context
+ */
 typedef struct s_libkernshmd5context
 {
   unsigned long buf[4];
@@ -274,6 +290,9 @@ typedef struct s_libkernshmd5context
 } libkernshmd5context_t;
 
 
+/**
+ * @brief dec task
+ */
 typedef struct s_dectask
 {
 	int dec_list;
@@ -281,6 +300,9 @@ typedef struct s_dectask
 	int dec_uid;
 } dectask_t;
 
+/**
+ * @brief auto task
+ */  
 typedef struct s_autotask
 {
 	int offset_name;
@@ -292,7 +314,9 @@ typedef struct s_autotask
 	dectask_t dectask;
 } autotask_t;
 
-/* World kernsh struct */
+/**
+ * @brief World kernsh struct 
+ */
 typedef struct s_libkernshworld
 {
 	u_int arch;	/* Arch type */
@@ -306,7 +330,7 @@ typedef struct s_libkernshworld
 
 	char *release;	/* Release name */
 
-	int fd;		/* File descriptor for the memory */
+	int fd;		/* !< @brief File descriptor for the memory */
 	int fdmode;	/* Mode to open memory (read/write) */
 	int protmode;	/* Protection mode to mmap */
 	int flagsmode;	/* Flags mode to mmap */
