@@ -9,7 +9,10 @@ int asm_mips_movn(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_MOVN;
-   asm_mips_operand_r(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+   ins->type = ASM_TYPE_ARCH;
+   asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+
+   /* Exceptions: None */
 
    return 777;
 }
