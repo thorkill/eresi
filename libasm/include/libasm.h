@@ -160,15 +160,6 @@ enum e_op_types
     ASM_OPTYPE_MEM  = 0x4  //!< Memory access operand type
   };
 
-/* this is needed for mips implementation */
-#define ASM_CONFIG_ENDIAN_FLAG "libasm.endian.flag"
-#define ASM_CONFIG_LITTLE_ENDIAN 0
-#define ASM_CONFIG_BIG_ENDIAN 1
-
-#define ASM_CONFIG_ATT_MARGIN_DEFAULT	14
-#define ASM_CONFIG_ATT_MARGIN_FLAG "libasm.output.att.margin"
-
-
 #define LIBASM_HANDLER_FETCH(fcn)	int	(*fcn)(asm_instr *, u_char *, u_int, asm_processor *)
 #define LIBASM_HANDLER_DISPLAY(fcn)	char	*(*fcn)(asm_instr *, int)
 

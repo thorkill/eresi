@@ -323,10 +323,11 @@ int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
  */
 
 char	*asm_ia32_display_instr_att(asm_instr *instr, 
-			       int addr) {
+				    int addr) 
+{
   static char	buffer[1024];
   int		len;
-
+  
   if (!instr)
     return (0);
 
@@ -346,33 +347,24 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
       else
 	sprintf(buffer + strlen(buffer), "missing");
     }  
-else 
+  else 
     {
       sprintf(buffer + strlen(buffer), "out_of_range");
       return (buffer);
     }
-  
-  
-  if (instr->op[0].type) {
-    //instr->op[0].proc = instr->proc;
 
+  if (instr->op[0].type) {
     /* Add spaces */
     len = strlen(buffer);
-    while(len++ < (int)config_get_data(ASM_CONFIG_ATT_MARGIN_FLAG))
+    while(len++ < (int)config_get_data(CONFIG_ASM_ATT_MARGIN_FLAG))
       strcat(buffer, " ");
 
     if (instr->op[2].type) {
-      //instr->op[2].proc = instr->proc;
       asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
-      /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op[2],
-		       addr + instr->len);
-      */    
       strcat(buffer, ",");
     }
  
     if (instr->op[1].type) {
-      //instr->op[1].proc = instr->proc;
       switch(instr->op[1].prefix & ASM_PREFIX_SEG) {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");
@@ -381,14 +373,13 @@ else
 	strcat(buffer, "%ds:");
 	break;
       }
+
       asm_operand_get_att(instr, 2, addr, buffer + strlen(buffer));
-      /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op[1], 
-		       addr + instr->len);
-      */
       strcat(buffer, ",");
     }
-      switch(instr->op[0].prefix & ASM_PREFIX_SEG) {
+    
+    switch(instr->op[0].prefix & ASM_PREFIX_SEG) 
+      {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");
 	break;
@@ -396,8 +387,9 @@ else
 	strcat(buffer, "%ds:");
 	break;
       }
-      
-      switch (instr->prefix & ASM_PREFIX_MASK) {
+    
+    switch (instr->prefix & ASM_PREFIX_MASK) 
+      {
       case ASM_PREFIX_CS:
 	strcat(buffer, "%cs:");
 	break;
@@ -417,11 +409,7 @@ else
 	strcat(buffer, "%ss:");
 	break;
       }
-      asm_operand_get_att(instr, 1, addr, buffer + strlen(buffer));
-      /*
-      att_dump_operand(buffer + strlen(buffer), &instr->op[0], 
-		       addr + instr->len);
-      */
+    asm_operand_get_att(instr, 1, addr, buffer + strlen(buffer));
   }
   
   return(buffer);

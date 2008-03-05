@@ -379,7 +379,7 @@ void	asm_instruction_debug(asm_instr *ins, FILE *out)
  */
 void asm_config_set_endian(int mode)
 {
-  config_update_key(ASM_CONFIG_ENDIAN_FLAG,(void *) mode);
+  config_update_key(CONFIG_ASM_ENDIAN_FLAG,(void *) mode);
 }
 
 /**
@@ -387,7 +387,7 @@ void asm_config_set_endian(int mode)
  */
 int asm_config_get_endian()
 {
-  return (int) config_get_data(ASM_CONFIG_ENDIAN_FLAG);
+  return (int) config_get_data(CONFIG_ASM_ENDIAN_FLAG);
 }
 
 /**

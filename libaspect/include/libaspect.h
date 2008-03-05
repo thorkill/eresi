@@ -255,6 +255,15 @@ typedef struct	s_container
 #define		CONFIG_SAFEMODE_OFF	0
 #define		CONFIG_SAFEMODE_ON	1
 
+/**
+ * @brief libasm related config 
+ */
+#define		CONFIG_ASM_ENDIAN_FLAG "libasm.endian.flag"
+#define		CONFIG_ASM_LITTLE_ENDIAN 0
+#define		CONFIG_ASM_BIG_ENDIAN 1
+
+#define		CONFIG_ASM_ATT_MARGIN_DEFAULT	14
+#define		CONFIG_ASM_ATT_MARGIN_FLAG "libasm.output.att.margin"
 
 /* A configuration item */
 typedef struct	s_config_item

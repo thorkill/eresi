@@ -73,6 +73,7 @@ int asm_init_ia32(asm_processor *proc)
   inter = proc->internals = malloc(sizeof (struct s_asm_proc_i386));
   inter->opsize = inter->addsize = 0;
   inter->mode = INTEL_PROT;
+
   return (1);
 }
 

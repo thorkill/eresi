@@ -68,39 +68,6 @@ int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
 #endif
 
 /**
- * @brief Intialize the disasm and operand vectors.
- * @param proc Pointer to the processor structure
- * @return 1 on success, 0 on error
- */
-int	asm_init_vectors(asm_processor *proc)
-{
-  int	to_ret;
-  
-
-  /**
-   * XXX: This is probably dead code. Remove if exit/printf below is never run.
-   */
-  
-  LIBASM_PROFILE_IN();
-  aspect_init();
-  to_ret = -1;
-  
-  config_add_item(ASM_CONFIG_ENDIAN_FLAG,
-            		  CONFIG_TYPE_INT,
-            		  CONFIG_MODE_RW,
-            		  (void *)ASM_CONFIG_LITTLE_ENDIAN);
-
-  config_add_item(ASM_CONFIG_ATT_MARGIN_FLAG,
-            		  CONFIG_TYPE_INT,
-            		  CONFIG_MODE_RW,
-            		  (void *)ASM_CONFIG_ATT_MARGIN_DEFAULT);
- 
-  // out:
-   LIBASM_PROFILE_FOUT(to_ret);
-}
-
-
-/**
  * @brief Return handler associated with an opcode
  * @param vector_name Name of the vector.
  * @param opcode

@@ -13,9 +13,9 @@ void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
 {
   u_int32_t	converted;
   
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;
@@ -36,9 +36,9 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
 {
   u_int32_t	converted;
 
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;
@@ -59,9 +59,9 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
 
   u_int32_t	converted;
 
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->ta = (converted >> 0) & 0x3FFFFFF;
@@ -78,9 +78,9 @@ void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
 {
   u_int32_t	converted;
 
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;
@@ -100,9 +100,9 @@ void	mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode,
 {
   u_int32_t	converted;
 
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;
@@ -123,9 +123,9 @@ void	mips_convert_format_mov(struct s_mips_decode_mov *opcode,
 {
   u_int32_t	converted;
 
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      memcpy(&converted, buf, 4);
      opcode->op = (converted >> 26) & 0x3F;
      opcode->rs = (converted >> 21) & 0x1F;

@@ -39,9 +39,9 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 //      ((char *)(&converted))[3-i] = *(buf + i);
 //  }
 //#else
-  if (asm_config_get_endian() == ASM_CONFIG_BIG_ENDIAN) {
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy((char *)&converted,buf,sizeof(converted));
-  } else if (asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
      for_help = (u_char*)&converted;
      for(i=0;i<4;i++)
        *(for_help + i) = *(buf + 3 - i);

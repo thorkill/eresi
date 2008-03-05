@@ -124,8 +124,18 @@ static void	aspect_config_init()
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  CONFIG_SAFEMODE_OFF);
-}
 
+  config_add_item(CONFIG_ASM_ENDIAN_FLAG,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *)CONFIG_ASM_LITTLE_ENDIAN);
+
+ config_add_item(CONFIG_ASM_ATT_MARGIN_FLAG,
+		 CONFIG_TYPE_INT,
+		 CONFIG_MODE_RW,
+		 (void *)CONFIG_ASM_ATT_MARGIN_DEFAULT);
+
+}
 
 /** @brief Initialize everything Libaspect */
 int		aspect_init()
