@@ -11,7 +11,8 @@ SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm \
-	-L../../../libaspect/ -laspect32 -L../../../liballocproxy -lallocproxy
+	-L../../../libaspect/ -laspect32 -L../../../liballocproxy \
+        -lallocproxy -L../../../libetrace/ -letrace32
 NAM	= etrel_injecter
 
 HOSTSRC	= host.c
