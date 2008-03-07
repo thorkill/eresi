@@ -140,7 +140,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_FOREND  , (void *) cmd_forend  , (void *) NULL              , 0, HLP_FOREND);
   revm_command_add(CMD_MATCH   , (void *) cmd_match   , (void *) revm_getmatchparams, 0, HLP_MATCH);
   revm_command_add(CMD_MATCHEND, (void *) cmd_matchend, (void *) NULL              , 0, HLP_MATCHEND);
-  revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getvarparams , 0, HLP_CASE);
+  revm_command_add(CMD_CASE    , (void *) cmd_case    , (void *) revm_getcaseparams , 0, HLP_CASE);
 
   revm_command_add(CMD_PRE    , (void *) cmd_pre    , (void *) revm_getvarparams , 0, HLP_PRE);
   revm_command_add(CMD_POST    , (void *) cmd_post   , (void *) revm_getvarparams , 0, HLP_POST);

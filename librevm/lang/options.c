@@ -182,8 +182,55 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
 }
 
 
+/**
+ * Format the input of a case command
+ */
+int		revm_getcaseparams(u_int index, u_int argc, char **argv)
+{
+  u_int		idx;
+  char		tokens[3][BUFSIZ];
+  int		curtok;
+  int		curidx;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  curidx = curtok = 0;
+  for (world.curjob->curcmd->argc = idx = 0; 
+       idx < 254 && index + idx + 1 < argc;
+       idx++)
+    {
+      if (!strcmp(argv[index + idx + 1], REVM_CASE_ARROW))
+	{
+	  if (curtok != 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Invalid syntax for case command", (-1));
+	  curtok++;
+	  curidx = 0;
+	  continue;
+	}
+      else if (!strcmp(argv[index + idx + 1], REVM_CASE_QMARK))
+	{
+	  if (curtok != 1)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Invalid syntax for case command", (-1));
+	  curtok++;
+	  curidx = 0;
+	  continue;
+	}
+
+      curidx += snprintf(&tokens[curtok][curidx], BUFSIZ - curidx, "%s", argv[index + idx + 1]);
+    }
+
+  for (idx = 0; idx < curtok + 1; idx++)
+    world.curjob->curcmd->param[idx] = strdup(tokens[idx]);
+  world.curjob->curcmd->argc = curtok + 1;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
+}
+
+
+
 /** 
- * Format the input of a match 
+ * Format the input of a match/rewrite command
  */
 int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 {

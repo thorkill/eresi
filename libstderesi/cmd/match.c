@@ -9,137 +9,70 @@
 */
 #include "libstderesi.h"
 
-
 /** 
- * Format arguments of case command 
- * @param cmdargs
+ * Copy a field value from one expression to another (provided destination indeed has that field)
+ * @param dest Destination expression to add field to
+ * @param source Source expression tocopy field from
+ * @param fname Name of field to copy from source to destination
+ * @return 0 for success and -1 for error
  */
-static int	revm_case_format(revmargv_t *cmdargs)
+static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fname)
 {
-  int		index;
-  u_char	hasarrow;
-  u_char	hasqmark;
-  char		inputstr[BUFSIZ];
-  char		outputstr[BUFSIZ];
-  char		cmdstr[BUFSIZ];
-  u_int		len;
-  char		*curstr;
+  char		srcname[BUFSIZ];
+  char		dstname[BUFSIZ];
+  revmexpr_t	*dst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (world.curjob->curcmd->argc < 3)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Missing parameters for command", -1);
-  curstr = inputstr;
 
-  /* Now pack parameters */
-  for (len = hasarrow = hasqmark = index = 0; index < cmdargs->argc; index++)
-    if (!strcmp(cmdargs->param[index], "->"))
-      {
-	hasarrow = 1;
-	curstr = outputstr;
-	len = 0;
-      }
-    else if (!strcmp(cmdargs->param[index], "?"))
-      {
-	hasqmark = 1;
-	curstr = cmdstr;
-	len = 0;
-      }
-    else
-      len += snprintf(curstr + len, BUFSIZ - len, "%s", cmdargs->param[index]);
+  /* Propagate input links */
+  snprintf(srcname, sizeof(srcname), "%s.%s", source->label, fname);
+  snprintf(dstname, sizeof(dstname), "%s.%s", dest->label, fname);
+  dst = revm_expr_get(dstname);
+  source = revm_expr_get(srcname);
+  if (!source)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  /* Finished parsing and reporting potential errors */
-  if (!*inputstr || (hasqmark && !hasarrow))
+  /* If destination expression has no field, create it now */
+  if (!dst)
+    {
+      dst = revm_expr_copy(source, dstname);
+      dst->next = dest->childs;
+      dest->childs = dst;
+    }
+  else if (source->value && revm_object_set(dest, source) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid format for parameters", -1);
-  if (hasqmark && !*cmdstr)
-    hasqmark = 0;
-  if (hasarrow && !*outputstr)
-    hasarrow = 0;
-  cmdargs->param[0] = strdup(inputstr);
-  cmdargs->param[1] = (hasarrow ? strdup(outputstr) : NULL);
-  cmdargs->param[2] = (hasqmark ? strdup(cmdstr) : NULL);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hasqmark);
+		 "Failed to copy expression field", -1);
+  else if (revm_expr_set(dst, source) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to copy expression fields", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
 }
 
 
 /** 
  * Propagate the link between 2 objects 
- * @param dest
- * @param source
- *
+ * @param dest  Destination expression to copy links to
+ * @param source Source expression to copy links from
+ * @return 0 for success and -1 for error
  */
 static int	revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
 {
-  char		srcname[BUFSIZ];
-  char		dstname[BUFSIZ];
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Propagate input links */
-  snprintf(srcname, sizeof(srcname), "%s.inlinks", source->label);
-  snprintf(dstname, sizeof(dstname), "%s.inlinks", dest->label);
-  dest = revm_expr_get(dstname);
-  source = revm_expr_get(srcname);
-  if (!dest && !source)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  else if (!dest || !source)
+  if (revm_field_propagate(dest, source, "inlinks") < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "One expression should be in container", -1);
-  else if (!dest->value || !source->value)
+		 "Failed to copy expression INLINKS field", -1);
+  if (revm_field_propagate(dest, source, "outlinks") < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Input links list should be a pointer", -1);
-  if (revm_object_set(dest, source) < 0)
+		 "Failed to copy expression OUTLINKS field", -1);
+  if (revm_field_propagate(dest, source, "nbrinlinks") < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to copy input links list", -1);
-
-  /* Propagate output links */
-  snprintf(srcname, sizeof(srcname), "%s.outlinks", source->label);
-  snprintf(dstname, sizeof(dstname), "%s.outlinks", dest->label);
-  dest = revm_expr_get(dstname);
-  source = revm_expr_get(srcname);
-  if (!dest || !source)
+		 "Failed to copy expression NBRINLINKS field", -1);
+  if (revm_field_propagate(dest, source, "nbroutlinks") < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "One expression should be in container", -1);
-  else if (!dest->value || !source->value)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Output links list should be a pointer", -1);
-  if (revm_object_set(dest, source) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to copy output links list", -1);
-
-  /* Propagate input links size */
-  snprintf(srcname, sizeof(srcname), "%s.nbrinlinks", source->label);
-  snprintf(dstname, sizeof(dstname), "%s.nbrinlinks", dest->label);
-  dest = revm_expr_get(dstname);
-  source = revm_expr_get(srcname);
-  if (!dest || !source)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "One expression should be in container", -1);
-  else if (!dest->value || !source->value)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "InLinks size should be a scalar", -1);
-  if (revm_object_set(dest, source) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to copy inlinks list size", -1);
-
-  /* Propagate output links size */
-  snprintf(srcname, sizeof(srcname), "%s.nbroutlinks", source->label);
-  snprintf(dstname, sizeof(dstname), "%s.nbroutlinks", dest->label);
-  dest = revm_expr_get(dstname);
-  source = revm_expr_get(srcname);
-  if (!dest || !source)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "One expression should be in container", -1);
-  else if (!dest->value || !source->value)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "OutLinks size should be a scalar", -1);
-  if (revm_object_set(dest, source) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to copy outlinks list size", -1);
-
+		 "Failed to copy expression NBROUTLINKS field", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 /** 
  * Perform the transformation (can be called from case or into commands) 
@@ -153,7 +86,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   char		*curptr;
   char		*foundptr;
   u_int		curidx;
-  list_t	exprlist;
+  list_t	*exprlist;
   aspectype_t	*type;
   char		namebuf[BUFSIZ];
   char		*rname;
@@ -163,7 +96,8 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
   /* We matched : first find how many elements there is in the target (list) type */
   dstnbr = 1;
-  elist_init(&exprlist, "curdestlist", ASPECT_TYPE_EXPR);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, exprlist, sizeof(list_t), -1);
+  elist_init(exprlist, "curdestlist", ASPECT_TYPE_EXPR);
   for (curidx = *world.curjob->iter.curindex - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
@@ -176,7 +110,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
-      elist_add(&exprlist, rname, candid);
+      elist_add(exprlist, rname, candid);
     }
 
   /* FIXME: The rewritten element is not part of any list */
@@ -196,16 +130,15 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Just one element to swap */
   else if (dstnbr == 1)
     {
-      elist_destroy(&exprlist);
+      elist_destroy(exprlist);
 
       /* No transformation, keep the original expression */
       if (!strcmp(destvalue, "."))
 	candid = matchme;
       else
 	{
-	  rname  = strdup(matchme->label);
+	  rname = revm_tmpvar_create();
 	  type   = revm_exprtype_get(destvalue);
-	  revm_expr_destroy(matchme->label);
 	  candid = revm_expr_create(type, rname, destvalue);
 	  if (!candid)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -214,15 +147,20 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Error while propagating dataflow links", -1);
 	  elist_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
+	  rname = strdup(matchme->label);
+	  revm_expr_destroy(matchme->label);
+	  revm_expr_copy(candid, rname);
+	  revm_expr_destroy(candid->label);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
 	}
     }
 
   /* Insert a list at a certain offset of the list */
   else
     {
-      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, &exprlist);
-      *world.curjob->iter.curindex += exprlist.elmnbr - 1;
-      elist_destroy(&exprlist);
+      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, exprlist);
+      *world.curjob->iter.curindex += exprlist->elmnbr - 1;
+      elist_destroy(exprlist);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -236,8 +174,14 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 static int	revm_case_execmd(char *str)
 {
   revmargv_t	*curcmd;
+  char          actual[26];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  world.curjob->sourced++;
+  snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
+  hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
+
   if (revm_exec_str(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Side-effects preparation failed", -1);
@@ -247,6 +191,11 @@ static int	revm_case_execmd(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Side-effects execution failed", -1);
   world.curjob->curcmd = curcmd;
+
+  world.curjob->script[world.curjob->sourced] = NULL;
+  hash_destroy(&labels_hash[world.curjob->sourced]);
+  world.curjob->sourced--;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -327,12 +276,12 @@ int		cmd_case()
   revmexpr_t	*matchme;
   revmexpr_t	*candid;
   int		ret;
-  u_int		qmark;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!world.curjob->rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Case is not in a match", -1);
+
   exprtype = aspect_type_get_by_id(ASPECT_TYPE_EXPR);
   if (!exprtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -347,19 +296,13 @@ int		cmd_case()
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  /* Call a small parser for parameters */
-  qmark = revm_case_format(world.curjob->curcmd);
-  if (qmark < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid syntax for case parameters", -1);
-
   /* Check if we match */
   matchme = (revmexpr_t *) world.curjob->rwrt.matchexpr;
   if (!matchme->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type for matchme expression", -1);
   candid = revm_expr_create(matchme->type, "$candid", world.curjob->curcmd->param[0]);
-  ret = (!candid ? 1 : revm_expr_match(matchme, candid));
+  ret = (!candid ? 1 : revm_expr_match(candid, matchme));
   
   /* No match or bad match : nothing happens */
   if (ret)
@@ -370,6 +313,8 @@ int		cmd_case()
 
   /* Matched : transform and execute post side effects if any */
   world.curjob->rwrt.matched = 1;
+
+  /* Sometimes the case command comes directly with appended post side-effects */
   if (!world.curjob->curcmd->param[1])
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   revm_case_transform(matchme, world.curjob->curcmd->param[1]);
@@ -396,10 +341,10 @@ int			cmd_match()
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Match/Rewrite can only works on expressions", -1);
 
-      fprintf(stderr, "We -ARE- matching on a list \n");
+      fprintf(stderr, "We -ARE- matching elements of a list \n");
     }
   else
-    fprintf(stderr, "We are -NOT- matching on a list \n");
+    fprintf(stderr, "We are -NOT- matching elements of a list \n");
 
   world.curjob->rwrt.matchexpr = revm_lookup_param(world.curjob->curcmd->param[0]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -424,21 +369,29 @@ int		cmd_default()
 {
   char		*str;
   revmargv_t	*cur;
+  char          actual[26];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  cur = world.curjob->curcmd;
+
+  /* Execute parameter command */
+  world.curjob->sourced++;
+  snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
+  hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
   str = revm_string_get(world.curjob->curcmd->param);
   if (revm_exec_str(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Display execrequest failed", -1);
-  
-  /* Execute parameter command */
-  cur = world.curjob->curcmd;
   world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
-
   if (revm_execmd() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Default command execution failed", -1);
+
+  /* Restore previous context */
   world.curjob->curcmd = cur;
+  world.curjob->script[world.curjob->sourced] = NULL;
+  hash_destroy(&labels_hash[world.curjob->sourced]);
+  world.curjob->sourced--;
 
   /* Jump to end of the match construct */
   revm_move_pc(world.curjob->curcmd->endlabel);

@@ -16,12 +16,14 @@ static char		*looplabels[REVM_MAXNEST_LOOP];
 static char		*endlabl     = NULL;
 static u_int		nextlabel    = 0;
 static revmargv_t	*forend      = NULL;
-static revmargv_t	*defaultcmd  = NULL;
 
 /* Pending label information : support labels */
 static u_int		pendinglabel = 0;
 static revmargv_t	*newcmd      = NULL;
 
+/* Global variables for rewrite/case/endwrt parsing */
+static list_t		*condcmdlist = NULL;
+static u_char		isdefault    = 0;
 
 /**
  * Create a fresh label name 
@@ -96,16 +98,21 @@ int			revm_parse_construct(char *curtok)
       looplabels[curnest++] = labl;
     }
 
-  /* when we find a default, fill endlabel but do not create any label */
-  else if (!strcmp(curtok, CMD_DEFAULT))
+  /* Maintain a list of commands that may have a conditional continuation during a rewrite */
+  else if (!strcmp(curtok, CMD_DEFAULT) || !strcmp(curtok, CMD_CASE))
     {
       if (curnest == 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Incorrectly nested endmatch statement", -1);
+		     "Incorrect default or case statement", -1);
       if (!strstr(looplabels[curnest - 1], "match"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested match-ending statement", -1);
-      defaultcmd = newcmd;
+      if (!condcmdlist)
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, condcmdlist, sizeof(list_t), -1);
+	  elist_init(condcmdlist, "parser_condcmdlist", ASPECT_TYPE_UNKNOW);
+	}
+      elist_add(condcmdlist, strdup(curtok), newcmd);
     }
   
   /* At forend, delay the label insertion to the next command */
@@ -118,14 +125,17 @@ int			revm_parse_construct(char *curtok)
       
       if (!strstr(looplabels[curnest - 1], "match"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Incorrectly nested match-ending statement", -1);
-      
+		     "Incorrectly nested match-ending statement", -1);      
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
     }
   
-  
+  /* This flag says if the command opens a new scope just for its arguments */
+  isdefault = ((!strcmp(curtok, CMD_DEFAULT) || 
+		!strcmp(curtok, CMD_PRE) || 
+		!strcmp(curtok, CMD_POST)) ? 1 : 0);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -143,6 +153,8 @@ int			revm_parseopt(int argc, char **argv)
   int			ret;
   volatile revmcmd_t	*actual;
   volatile revmargv_t   *loopstart;
+  listent_t		*curcondcmd;
+  revmargv_t		*condcmd;
   char			*name;
   char			label[16];
   char			c;
@@ -182,16 +194,38 @@ int			revm_parseopt(int argc, char **argv)
 
 	  /* If there is a forend/matchend label waiting, insert it here */
 	  /* The forend label must point on the -following- command */
-	  /* Inform the foreach and default command (if any) about the end label too */
+	  /* Annotate meta-command foreach, case, and default with  the "end label" */
 	  if (nextlabel)
 	    {
 	      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
-	      loopstart = hash_get(&labels_hash[world.curjob->sourced],
-				   looplabels[curnest]);
-	      loopstart->endlabel = endlabl;
-	      nextlabel = 0;
-	      if (defaultcmd)
-		defaultcmd->endlabel = endlabl;
+	      loopstart = hash_get(&labels_hash[world.curjob->sourced], looplabels[curnest]);
+
+	      /* If we are executing "default", we search for the loop start in the parent scope */
+	      if (world.curjob->sourced && isdefault)
+		for (ret = 0; world.curjob->sourced >= ret; ret++)
+		  {
+		    loopstart = hash_get(&labels_hash[world.curjob->sourced - ret], looplabels[curnest]);
+		    if (loopstart)
+		      break;
+		  }
+	      if (!loopstart)
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			     "Invalid nesting of language construct", -1);
+	      loopstart->endlabel = strdup(endlabl);
+	      isdefault = nextlabel = 0;
+	      if (condcmdlist && condcmdlist->head)
+		{
+		  for (curcondcmd = condcmdlist->head; curcondcmd; curcondcmd = curcondcmd->next)
+		    {
+		      condcmd = (revmargv_t *) curcondcmd->data;
+		      condcmd->endlabel = strdup(endlabl);
+		      
+		      fprintf(stderr, "*** Adding endlabel %s to command %s ! **** \n", 
+			      endlabl, condcmd->name);
+		    }
+		  elist_destroy(condcmdlist);
+		  condcmdlist = NULL;
+		}
 	    }
 
 	  /* Dont call registration handler if there is not (0 param commands) */
@@ -203,6 +237,7 @@ int			revm_parseopt(int argc, char **argv)
 			     "Command not found", 
 			     (revm_doerror(revm_badparam, argv[index])));
 	    }
+	  else ret = 0;
 
 	  /* Handle control flow constructs of the eresi script */
 	  if (revm_parse_construct(argv[index]) < 0)
@@ -224,8 +259,7 @@ int			revm_parseopt(int argc, char **argv)
 	      continue;
 	    }
 	  
-	  /* No label matched, enable lazy evaluation */
-	  /* because it may be a module command */
+	  /* No command matched, enable runtime lookup : module could be loaded later */
 	  ret = revm_getvarparams(index - 1, argc, argv);
 	  index += ret;
 	}
@@ -248,6 +282,14 @@ int			revm_parseopt(int argc, char **argv)
 	  world.curjob->lstcmd[world.curjob->sourced] = newcmd;
 	}
     }
+
+  /*
+  if (condcmdlist)
+    {
+      hash_destroy(condcmdlist);
+      condcmdlist = NULL;
+    }
+  */
 
   /* Return success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -141,7 +141,8 @@ void		hash_destroy(hash_t *h)
   for (idx = 0; idx < keynbr; idx++)
     if (keys[idx])
       XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
-  hash_free_keys(keys);
+  if (keys)
+    hash_free_keys(keys);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h->ent);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -320,8 +321,14 @@ char		**hash_get_keys(hash_t *h, int *n)
   listent_t	*entry;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  keys = NULL;
-  for (i = j = 0; j < h->size; j++) 
+  if (!h || !h->elmnbr)
+    {
+      if (n)
+	*n = 0;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid NULL parameters", NULL);
+    }
+  for (keys = NULL, i = j = 0; j < h->size; j++) 
     {
       entry = &h->ent[j];
       while (entry != NULL && entry->key != NULL) 
@@ -357,7 +364,8 @@ char		**hash_get_keys(hash_t *h, int *n)
 void    hash_free_keys(char **keys)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
+  if (keys)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

@@ -34,13 +34,15 @@ static revmexpr_t *revm_expr_read(char **datavalue)
       if (expr)
 	{
 
-#if __DEBUG_EXPRS__
+#if 1 //__DEBUG_EXPRS__
 	  fprintf(stderr, " [D] FOUND REVMEXPR = %s :: %s (recursing!) \n", 
 		  expr->label, expr->strval);
 #endif
 
-	  datastr = strdup(expr->strval);
-	  expr = revm_expr_read(&datastr);
+	  //datastr = strdup(expr->strval);
+	  //expr = revm_expr_read(&datastr);
+	  expr = revm_expr_copy(expr, revm_tmpvar_create());
+
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 	}
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -100,7 +102,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 		 *datastr-- = 0x00)
  	      *namend++ = 0x00;
 
-#if __DEBUG_EXPRS__
+#if 1 //__DEBUG_EXPRS__
 	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n", 
 		    expr->label, expr->strval);
 #endif
@@ -119,7 +121,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	   *datastr-- = 0x00)
 	*namend++ = 0x00;
       
-#if __DEBUG_EXPRS__
+#if 1 //__DEBUG_EXPRS__
       fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
 	      expr->label, expr->strval);
 #endif
@@ -175,7 +177,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 #endif
 
   /* Construct the expression until end of ascii string */
-  while (*datavalue)
+  while (datavalue && *datavalue)
     {
       
 #if __DEBUG_EXPRS__
@@ -223,6 +225,13 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
       else
 	toplevel = 0;
 
+      /* If the substructure is initialized with the value of another expression, no need to
+	 do any additional read, init or inform on the current field */
+      if (*newexpr->label == REVM_VAR_PREFIX)
+	{
+	  datavalue = NULL;
+	  goto loopend;
+	}
 
       /* Else we check if the field has children */
       childtype = aspect_type_get_child(curtype, newexpr->label);
@@ -330,6 +339,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	}
 
       /* Link next field of current structure */
+    loopend:
       if (curexpr)
 	{
 	  rootexpr = curexpr;
@@ -588,18 +598,11 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
       /* Copy children structure */
       if (source->childs)
 	{
-
-	  // XXX: this is the type of the first field in child ! not what we want in some cases ...
-	  //type = source->childs->type; 
 	  type = source->type;
-
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), -1);
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
-
-	  //revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest->childs, 0, 0);
 	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
-
 	  ret = revm_expr_copyrec(source->type, dest->childs, source->childs, newname, 
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
@@ -1137,7 +1140,8 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
   for (curexprvalue = exprvalue, typenamelen = 0; *curexprvalue != '('; typenamelen++)
     curexprvalue++;
   typename = alloca(typenamelen + 1);
-  strcpy(typename, exprvalue);
+  strncpy(typename, exprvalue, typenamelen);
+  typename[typenamelen] = 0x00;
   type = aspect_type_get_by_name(typename);
   if (!type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

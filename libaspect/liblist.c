@@ -134,7 +134,8 @@ void		elist_destroy(list_t *h)
   keys = elist_get_keys(h, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
-  elist_free_keys(keys);
+  if (keys)
+    elist_free_keys(keys);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -332,9 +333,13 @@ char**		elist_get_keys(list_t *h, int* n)
   int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!h)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid NULL parameters", NULL);
+  if (!h || !h->elmnbr)
+    {
+      if (n) 
+	*n = 0;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid NULL parameters", NULL);
+    }
   XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
 	 sizeof(char *) * h->elmnbr, NULL);
   for (idx = 0, curelem = h->head; curelem; curelem = curelem->next, idx++)

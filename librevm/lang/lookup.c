@@ -34,15 +34,18 @@ revmexpr_t		*revm_lookup_var(char *param)
     {
       snprintf(namebuf, sizeof(namebuf), "$%s", param);
       e = revm_expr_get(namebuf);
-      if (!e || !e->value)
+      if (!e)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown variable", NULL);
       ptr = e->value;
       if (indir)
 	{
+	  if (!ptr)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Malformed variable", (NULL));
 	  if (revm_convert_object(e, ASPECT_TYPE_STR) < 0 || !ptr->immed)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unknown variable", (NULL));
+			 "Cannot convert variable to string", (NULL));
 	  param = ptr->immed_val.str;
 	}
     }

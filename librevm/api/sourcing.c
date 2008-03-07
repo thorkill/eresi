@@ -132,7 +132,7 @@ int		revm_source(char **params)
   world.state.revm_mode       = REVM_STATE_SCRIPT;
   world.curjob->ws.io.input    = revm_stdinput;
 
-  /* A simple dedicated interpretation loop on the script file */
+  /* First we parse the script file */
   do {
     av = revm_input(&ac, NULL);
     if (av == ((char **) REVM_INPUT_VOID))
@@ -142,7 +142,6 @@ int		revm_source(char **params)
 	world.state.revm_sourcing = 0;
 	break;
       }
-
     if (revm_parseopt(ac, av) < 0)
       {
 	XFREE(__FILE__, __FUNCTION__, __LINE__,av);
@@ -151,7 +150,7 @@ int		revm_source(char **params)
       }
   } while (1);
   
-  /* We execute the parsed script and restore the original context */
+  /* We then execute the parsed script */
   world.curjob->curcmd = world.curjob->script[world.curjob->sourced];
 
   /* If we are executing a debugger script, do not clear everything yet */
@@ -243,10 +242,9 @@ int	       revm_context_restore(int		savedfd,
   elist_destroy(lastframe);
   elist_del(&frames_list, buf);
   elist_free_keys(keys);
+
   world.curjob->script[world.curjob->sourced] = NULL;
-
   hash_destroy(&labels_hash[world.curjob->sourced]);
-
   world.curjob->sourced--;
   
   /* Return OK */

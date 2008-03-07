@@ -86,9 +86,6 @@
 #define	CMD_TYPE		"type"
 #define	CMD_UNION		"union"
 #define	CMD_TYPEDEF		"typedef"
-
-#define	CMD_PRE			"pre"
-#define	CMD_POST		"post"
 #define	CMD_INTO		"into"
 
 #define CMD_INSERT		"insert"
@@ -144,7 +141,6 @@
 #define	CMD_JG			"jg"
 #define	CMD_JLE			"jle"
 #define	CMD_JGE			"jge"
-#define	CMD_CASE		"case"
 #define	CMD_REFLECT		"reflect"
 
 /* Prefixes */

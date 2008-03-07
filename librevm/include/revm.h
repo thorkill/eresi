@@ -74,7 +74,7 @@
  
 extern asm_processor	proc;
 
-/* Now comes DEBUGGING variables for various part of the code */
+/* Now come INTERNAL DEBUGGING VARIABLES for various part of the ERESI code */
 #define	__DEBUG_DISASM__	0
 #define	__DEBUG_SIGHANDLER__	0
 #define	__DEBUG_LANG__		0
@@ -87,13 +87,13 @@ extern asm_processor	proc;
 #define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
-#define	__DEBUG_EXPRS__		1
+#define	__DEBUG_EXPRS__		0
 #define	__DEBUG_EXPRS_MORE__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
 
-/* XXX: REVM still needs those definition somewhere ... modularity weaknesses */
+/* XXX: REVM still needs those definition somewhere ... modularity weaknesses w/ libstderesi */
 #define	E2DBG_NAME		"Embedded ELF Debugger"
 #define	E2DBG_ARGV0		"e2dbg"
 #define	CMD_CONTINUE		"continue"
@@ -108,6 +108,9 @@ extern asm_processor	proc;
 #define	CMD_MATCH		"rewrite"
 #define	CMD_MATCHEND		"rwtend"
 #define	CMD_DEFAULT		"default"
+#define	CMD_CASE		"case"
+#define	CMD_PRE			"pre"
+#define	CMD_POST		"post"
 
 /* Special cmd_ return values that indicate special events */
 #define	REVM_SCRIPT_ERROR	(-1)
@@ -139,6 +142,9 @@ extern asm_processor	proc;
 #define	REVM_VAR_ESHLEVEL	"$ESHLVL"
 #define	REVM_VAR_PREFIX		'$'
 
+/* Some constant tokens for case command */
+#define	REVM_CASE_ARROW		"->"
+#define	REVM_CASE_QMARK		"?"
 
 /* REVM atomic operations */
 #define	REVM_OP_UNKNOW		0
@@ -374,7 +380,7 @@ typedef struct		s_revmcontext
 
 
 
-/* This structure stores the last iteration state for a job */
+/* This structure stores the current FOREACH iteration state for a job */
 typedef struct		s_revmiteration
 {
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
@@ -384,7 +390,7 @@ typedef struct		s_revmiteration
   list_t		*list;		/* Current list being iterated */
 }			revmiter_t;  
 
-/* This structure stores the transformation state for a job */
+/* This structure stores the current REWRITE transformation state for a job */
 typedef struct	      s_revmrewrite
 {
   revmexpr_t	      *matchexpr;	/* Expression to rewrite */
@@ -547,6 +553,7 @@ int		revm_gethexa(u_int index, u_int argc, char **argv);
 int		revm_getvarparams(u_int index, u_int argc, char **argv);
 int		revm_getforparams(u_int index, u_int argc,  char **argv);
 int		revm_getmatchparams(u_int index, u_int argc, char **argv);
+int		revm_getcaseparams(u_int index, u_int argc, char **argv);
 
 /* Libasm resolve handlers */
 void		asm_do_resolve(void *data, elfsh_Addr vaddr, char *, u_int);
