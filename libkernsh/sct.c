@@ -6,7 +6,11 @@
 */
 #include "libkernsh.h"
 
-/* Put syscalls inside the list lsct */
+/**
+ * @brief Get the sct
+ * @param lsct List to store the sct
+ * @return 0 on success, -1 on return
+ */
 int kernsh_sct(list_t *lsct)
 {
   int ret;
@@ -33,8 +37,13 @@ int kernsh_sct(list_t *lsct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-/* Get syscalls on Linux */
+/**
+ * @brief Get the sct on Linux\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_NB_SYSCALLS
+ * @param lsct List to store the sct
+ * @return 0 on success, -1 on return
+ */
 int kernsh_sct_linux(list_t *lsct)
 {
   int i;
@@ -146,18 +155,35 @@ int kernsh_sct_linux(list_t *lsct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 
+/**
+ * @brief Get the sct on Netbsd
+ * @param lsct List to store the sct
+ * @return 0 on success, -1 on return
+ */
 int kernsh_sct_netbsd(list_t *lsct)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get the sct on Freebsd
+ * @param lsct List to store the sct
+ * @return 0 on success, -1 on return
+ */
 int kernsh_sct_freebsd(list_t *lsct)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Call a system call
+ * @param num Number of the syscall
+ * @param argc Number of arguments
+ * @param argv Arguments
+ * @return return syscall value
+ */
 int kernsh_syscall(int num, int argc, unsigned int argv[])
 {
   int ret;
@@ -177,6 +203,13 @@ int kernsh_syscall(int num, int argc, unsigned int argv[])
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Call a system call on Linux
+ * @param num Number of the syscall
+ * @param argc Number of arguments
+ * @param argv Arguments
+ * @return return syscall value
+ */
 int kernsh_syscall_linux(int num, int argc, unsigned int argv[])
 {
   int __ret = 0;

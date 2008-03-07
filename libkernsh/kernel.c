@@ -5,10 +5,11 @@
 **
 */
 #include "libkernsh.h"
-#include "libaspect.h"
-#include "libaspect-profiler.h"
 
-/* Extract/Gunzip the kernel */
+/**
+ * @brief Extract and gunzip the kernel 
+ * @return 0 on success, -1 on error 
+ */
 int kernsh_decompkernel()
 {
   int ret;
@@ -33,7 +34,12 @@ int kernsh_decompkernel()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Extract/Gunzip the kernel on Linux */
+/**
+ * @brief Extract and gunzip the linux kernel\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_KERNEL, LIBKERNSH_VMCONFIG_STORAGE_PATH, LIBKERNSH_VMCONFIG_KERNELGZ, LIBKERNSH_VMCONFIG_KERNELELF, LIBKERNSH_VMCONFIG_OBJCOPY, LIBKERNSH_VMCONFIG_GZIP
+ * @return 0 on success, -1 on error 
+ */
 int kernsh_decompkernel_linux()
 {
   char magic[] = { 0x1f, 0x8b, 0x08 };

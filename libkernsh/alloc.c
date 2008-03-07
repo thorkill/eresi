@@ -8,9 +8,14 @@
 #include "libkernsh-symbols.h"
 #include "libkernsh-info.h"
 
-/* Auto alloc with libkernsh.alloc => 0 : contiguous
-				   => 1 : non contiguous
-*/
+/**
+ * @brief Allocate contiguous/non contiguous kernel memory\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_ALLOC
+ * @param size Allocate size bytes
+ * @param addr Address of the new allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_alloc(size_t size, unsigned long *addr)
 {
   int mode, ret;
@@ -26,9 +31,13 @@ int kernsh_alloc(size_t size, unsigned long *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Auto free with libkernsh.alloc => 0 : contiguous
-				  => 1 : non contiguous
-*/
+/**
+ * @brief Free contiguous/non contiguous kernel memory\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_ALLOC
+ * @param addr Address of the allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_free(unsigned long addr)
 {
   int mode, ret;
@@ -44,7 +53,12 @@ int kernsh_free(unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Alloc contiguous memory */
+/**
+ * @brief Allocate contiguous kernel memory
+ * @param size Allocate size bytes
+ * @param addr Address of the new allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
 {
   int ret;
@@ -70,7 +84,12 @@ int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Alloc non contiguous memory */
+/**
+ * @brief Allocate non contiguous kernel memory
+ * @param size Allocate size bytes
+ * @param addr Address of the new allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_alloc_noncontiguous(size_t size, unsigned long *addr)
 {
   int ret;
@@ -96,7 +115,11 @@ int kernsh_alloc_noncontiguous(size_t size, unsigned long *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Free contiguous memory */
+/**
+ * @brief Free contiguous kernel memory
+ * @param addr Address of the allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_free_contiguous(unsigned long addr)
 {
   int ret;
@@ -122,7 +145,11 @@ int kernsh_free_contiguous(unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Free non contiguous memory */
+/**
+ * @brief Free non contiguous kernel memory
+ * @param addr Address of the allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_free_noncontiguous(unsigned long addr)
 {
   int ret;
@@ -148,6 +175,14 @@ int kernsh_free_noncontiguous(unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Allocate contiguous kernel memory on Linux\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_NIL_SYSCALL
+ * @param size Allocate size bytes
+ * @param addr Address of the new allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_alloc_contiguous_linux(size_t size, unsigned long *addr)
 {
   int ret;
@@ -214,6 +249,13 @@ int kernsh_alloc_contiguous_linux(size_t size, unsigned long *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Free contiguous kernel memory on Linux\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_NIL_SYSCALL
+ * @param addr Address of the allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_free_contiguous_linux(unsigned long addr)
 {
   int ret;
@@ -271,6 +313,14 @@ int kernsh_free_contiguous_linux(unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Allocate non contiguous kernel memory on Linux\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_NIL_SYSCALL
+ * @param size Allocate size bytes
+ * @param addr Address of the new allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_alloc_noncontiguous_linux(size_t size, unsigned long *addr)
 {
   int ret;
@@ -331,6 +381,13 @@ int kernsh_alloc_noncontiguous_linux(size_t size, unsigned long *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Free non contiguous kernel memory on Linux\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_NIL_SYSCALL
+ * @param addr Address of the allocation
+ * @return 0 on success, -1 on return
+ */
 int kernsh_free_noncontiguous_linux(unsigned long addr)
 {
   int ret;

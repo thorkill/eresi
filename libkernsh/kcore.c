@@ -7,6 +7,10 @@
 #define _LARGEFILE64_SOURCE
 #include "libkernsh.h"
 
+/**
+ * @brief Open /proc/kcore on Linux
+ * @return 0 on success, -1 on return
+ */
 int kernsh_openmem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -39,6 +43,10 @@ int kernsh_openmem_kcore_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Close /proc/kcore on Linux
+ * @return 0 on success, -1 on return
+ */
 int kernsh_closemem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -61,13 +69,18 @@ int kernsh_closemem_kcore_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Read /proc/kcore on Linux
+ * @param offset Offset to read memory
+ * @param buf Read memory into the buf
+ * @param size Count bytes to read
+ * @return size on success, -1 on error
+ */
 int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("READ KCORE 2.6\n");
 
   roffset = offset - libkernshworld.kernel_start + 0x1000;
 
@@ -90,13 +103,18 @@ int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Write into /proc/kcore
+ * @param offset Offset to write memory
+ * @param buf Write buf into memoryr
+ * @param size Count bytes to write
+ * @return size on success, -1 on error
+ */
 int kernsh_writemem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("WRITE KCORE 2.6\n");
 
   roffset = offset - libkernshworld.kernel_start + 0x1000;
 

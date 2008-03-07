@@ -10,7 +10,10 @@
 
 #include "libkernsh.h"
 
-/* Open /dev/kmem on Linux 2.6.X */
+/**
+ * @brief Open /dev/kmem on Linux 2.6.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_openmem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -34,7 +37,10 @@ int kernsh_openmem_kmem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Close /dev/kmem on Linux 2.6 */
+/**
+ * @brief Close /dev/kmem on Linux 2.6.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_closemem_kmem_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -48,12 +54,16 @@ int kernsh_closemem_kmem_linux_2_6()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read /dev/kmem on Linux 2.6.X */
+/**
+ * @brief Read /dev/kmem on Linux 2.6.X
+ * @param offset Offset to read memory
+ * @param buf Read memory into the buf
+ * @param size Count bytes to read
+ * @return size on success, -1 on error
+ */
 int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("READ KMEM 2.6\n");
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
@@ -64,12 +74,16 @@ int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Write in /dev/kmem on Linux 2.6.X */
+/**
+ * @brief Write in /dev/kmem on Linux 2.6.X
+ * @param offset Offset to write memory
+ * @param buf Write buf into memoryr
+ * @param size Count bytes to write
+ * @return size on success, -1 on error
+ */
 int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("WRITE KMEM 2.6\n");
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
@@ -80,7 +94,10 @@ int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Open /dev/kmem on Linux 2.4.X */
+/**
+ * @brief Open /dev/kmem on Linux 2.4.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_openmem_kmem_linux_2_4()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -112,7 +129,10 @@ int kernsh_openmem_kmem_linux_2_4()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Close /dev/kmem on Linux 2.4 */
+/**
+ * @brief Close /dev/kmem on Linux 2.4.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_closemem_kmem_linux_2_4()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -133,13 +153,16 @@ int kernsh_closemem_kmem_linux_2_4()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read /dev/kmem on Linux 2.4.X */
+/**
+ * @brief Read /dev/kmem on Linux 2.4.X
+ * @param offset Offset to read memory
+ * @param buf Read memory into the buf
+ * @param size Count bytes to read
+ * @return size on success, -1 on error
+ */
 int kernsh_readmem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("READ KMEM 2.4\n");
-
 
   if (libkernshworld.mmap)
     {
@@ -160,12 +183,16 @@ int kernsh_readmem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Write in /dev/kmem on Linux 2.4.X */
+/**
+ * @brief Write in /dev/kmem on Linux 2.4.X
+ * @param offset Offset to write memory
+ * @param buf Write buf into memoryr
+ * @param size Count bytes to write
+ * @return size on success, -1 on error
+ */
 int kernsh_writemem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("WRITE KMEM 2.4\n");
 
   if (libkernshworld.mmap)
     {

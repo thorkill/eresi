@@ -5,11 +5,15 @@
 **
 */
 #include "libkernsh.h"
-#include "libaspect-profiler.h"
 
 libkernshworld_t libkernshworld;
 
-/* Init kernsh for ia32 */
+/**
+ * @brief Initialise kernsh for ia32
+ * @param os Operating System
+ * @param release Release of the OS
+ * @return 0 on success, -1 on error 
+ */
 int kernsh_init_ia32(char *os, char *release)
 {
   char buffer[256];
@@ -231,7 +235,10 @@ int kernsh_init_ia32(char *os, char *release)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/**
+ * @brief Delete kernsh for ia32
+ * @return 0 on success, -1 on error 
+ */
 int kernsh_del_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -241,6 +248,10 @@ int kernsh_del_ia32()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Kernsh is in memory mode ?
+ * @return 1 on memory mode, 0 on error 
+ */
 int kernsh_is_mem_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -249,6 +260,10 @@ int kernsh_is_mem_mode()
 		(libkernshworld.mem == LIBKERNSH_MEM_MODE));
 }
 
+/**
+ * @brief Set kernsh in memory mode
+ * @return 0 on sucess, -1 on error 
+ */
 int kernsh_set_mem_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -260,6 +275,10 @@ int kernsh_set_mem_mode()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Kernsh is in static mode ?
+ * @return 1 on static mode, 0 on error 
+ */
 int kernsh_is_static_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -268,6 +287,10 @@ int kernsh_is_static_mode()
 		(libkernshworld.mem == LIBKERNSH_STATIC_MODE));
 }
 
+/**
+ * @brief Set kernsh in static mode
+ * @return 0 on sucess, -1 on error 
+ */
 int kernsh_set_static_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -280,6 +303,10 @@ int kernsh_set_static_mode()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get kernsh mode
+ * @return return the mode 
+ */
 int kernsh_get_mode()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -287,6 +314,11 @@ int kernsh_get_mode()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, libkernshworld.mem);
 }
 
+/**
+ * @brief Set kernsh mode
+ * @param mode The mode
+ * @return 0 on sucess, -1 on error 
+ */
 int kernsh_set_mode(int mode)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -309,7 +341,10 @@ int kernsh_set_mode(int mode)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* This function is called in elfsh_get_raw to interact with the memory */
+/**
+ * @brief Called in elfsh_get_raw to interact with the memory
+ * @param sect The section
+ */
 void *kernsh_elfsh_get_raw(elfshsect_t *sect)
 {
   void *dataptr;
@@ -360,7 +395,10 @@ void *kernsh_elfsh_get_raw(elfshsect_t *sect)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* This function is called in elfsh_get_raw to interact with the memory */
+/**
+ * @brief Called in revm_get_raw to interact with the memory
+ * @param addr The address
+ */
 void *kernsh_revm_get_raw(void *addr)
 {
   void *dataptr;
@@ -384,7 +422,10 @@ void *kernsh_revm_get_raw(void *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
-/* Get some information about the kernel */
+/**
+ * @brief Get some information about the kernel
+ * @return 0 on sucess, -1 on error
+ */
 int kernsh_info()
 {
   int ret;
@@ -405,6 +446,10 @@ int kernsh_info()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Get some information about the linux kernel
+ * @return 0 on sucess, -1 on error
+ */
 int kernsh_info_linux()
 {
   unsigned long system_call;
@@ -470,6 +515,10 @@ int kernsh_info_linux()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get some information about the netbsd kernel
+ * @return 0 on sucess, -1 on error
+ */
 int kernsh_info_netbsd()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -477,6 +526,10 @@ int kernsh_info_netbsd()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get some information about the freebsd kernel
+ * @return 0 on sucess, -1 on error
+ */
 int kernsh_info_freebsd()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -484,6 +537,11 @@ int kernsh_info_freebsd()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Load elf file
+ * @param name The path of the file to load
+ * @return 0 on sucess, -1 on error
+ */
 elfshobj_t *kernsh_load_file(char *name)
 {
   elfshobj_t *ret;
@@ -495,6 +553,10 @@ elfshobj_t *kernsh_load_file(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Unload elf file
+ * @param file  The elf object
+ */
 void kernsh_unload_file(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -504,6 +566,14 @@ void kernsh_unload_file(elfshobj_t *file)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * @brief Write raw in the kernel memory
+ * @param file The elf object
+ * @param foffset Offset to write memory
+ * @param src_buff Write buf into memoryr
+ * @param len Count bytes to write
+ * @return len on success, -1 on error
+ */
 int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -511,8 +581,9 @@ int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
   if (kernsh_is_mem_mode())
     {
       kernsh_writemem(elfsh_get_vaddr_from_foffset(file, foffset), 
-			  src_buff, 
-			  len);
+		      src_buff, 
+		      len);
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
     }
 
@@ -520,6 +591,14 @@ int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 	       "Mode is wrong", -1);
 }
 
+/**
+ * @brief Read raw kernel memory
+ * @param file The elf object
+ * @param foffset Offset to read memory
+ * @param dest_buff Read memory into the buf
+ * @param len Count bytes to read
+ * @return len on success, -1 on error
+ */
 int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -537,6 +616,9 @@ int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
 	       "Mode is wrong", -1);
 }
 
+/**
+ * @brief Set kernsh's present
+ */
 void kernsh_present_set()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -546,6 +628,10 @@ void kernsh_present_set()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/**
+ * @brief Get kernsh's present
+ * @return 1 on success, 0 on error
+ */
 int kernsh_is_present()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

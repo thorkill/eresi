@@ -11,7 +11,13 @@
 #include <linux/module.h>
 #endif
 
-/* Get an addr by name */
+/**
+ * @brief Get a symbol's address
+ * @param name Symbol's name
+ * @param addr Symbol's address
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 {
   int ret;
@@ -20,8 +26,6 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("SYMBS ABN\n");
 
   if (!libkernshworld.open)
     {
@@ -40,7 +44,13 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Get a name by an addr */
+/**
+ * @brief Get a symbol's name
+ * @param addr Symbol's address
+ * @param name Symbol's name
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
 {
   int ret;
@@ -49,8 +59,6 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-//  printf("SYMBS NBA\n");
 
   if (!libkernshworld.open)
     {
@@ -69,8 +77,13 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This function resolve a symbol with kstrtab method : 
-   based on phalanx rootkit :) */
+/**
+ * @brief Get a symbol's address with kstrtab method, based on phalanx rootkit :)
+ * @param symbol Symbol's name
+ * @param addr Symbol's address
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
 {
   char srch[512];
@@ -162,14 +175,18 @@ int kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
 		       "Unable to find symbol", -1);
 }
 
-/* This function find an addr by name on Linux 2.6.X */
+/**
+ * @brief Get a symbol's address on Linux 2.6.X
+ * @param name Symbol's name
+ * @param addr Symbol's address
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_addr_by_name_linux_2_6(char *name, unsigned long *addr, size_t size)
 {
   int ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("SYMBS ABN LINUX 2.6\n");
 
   /* First, check if mmap is active, find a symbol by kstrtab */
   if(libkernshworld.mmap)
@@ -190,20 +207,31 @@ int kernsh_get_addr_by_name_linux_2_6(char *name, unsigned long *addr, size_t si
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This function find a name by an addr on Linux 2.6.X */
+/**
+ * @brief Get a symbol's name on Linux 2.6.X
+ * @param addr Symbol's address
+ * @param name Symbol's name
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_name_by_addr_linux_2_6(unsigned long addr, char *name, size_t size)
 {
   int ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //  printf("SYMBS NBA LINUX 2.6\n");
-
   ret = kernsh_resolve_systemmap(addr, name, size);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Get a symbol's address with kernel syms
+ * @param name Symbol's name
+ * @param addr Symbol's address
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_kernel_syms(char *name, unsigned long *addr, size_t size)
 {
 #if defined(__linux__)
@@ -240,14 +268,18 @@ int kernsh_get_kernel_syms(char *name, unsigned long *addr, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 }
 
-/* This function find an addr by name on Linux 2.4.X */
+/**
+ * @brief Get a symbol's address on Linux 2.4.X
+ * @param name Symbol's name
+ * @param addr Symbol's address
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_addr_by_name_linux_2_4(char *name, unsigned long *addr, size_t size)
 {
   int ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("SYMBS ABN LINUX 2.4\n");
 
   ret = kernsh_get_kernel_syms(name, addr, size);
 
@@ -257,14 +289,18 @@ int kernsh_get_addr_by_name_linux_2_4(char *name, unsigned long *addr, size_t si
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This function find a name by an addr on Linux 2.4.X */
+/**
+ * @brief Get a symbol's name on Linux 2.4.X
+ * @param addr Symbol's address
+ * @param name Symbol's name
+ * @param size Symbol's name size
+ * @return 0 on success, -1 on return
+ */
 int kernsh_get_name_by_addr_linux_2_4(unsigned long addr, char *name, size_t size)
 {
   int ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("SYMBS NBA LINUX 2.4\n");
 
   ret = kernsh_resolve_systemmap(addr, name, size);
 

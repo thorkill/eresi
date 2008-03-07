@@ -6,6 +6,11 @@
 */
 #include "libkernsh.h"
 
+/**
+ * @brief Get the gdt
+ * @param lgdt List to store the gdt
+ * @return 0 on success, -1 on return
+ */
 /* Put interrupts inside the list lgdt */
 int kernsh_gdt(list_t *lgdt)
 {
@@ -33,7 +38,11 @@ int kernsh_gdt(list_t *lgdt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This function get the gdt segement on Linux */
+/**
+ * @brief Get the gdt on Linux
+ * @param lgdt List to store the gdt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_gdt_linux(list_t *lgdt)
 {
   int i;
@@ -105,6 +114,11 @@ int kernsh_gdt_linux(list_t *lgdt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 
+/**
+ * @brief Get the gdt on Netbsd
+ * @param lgdt List to store the gdt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_gdt_netbsd(list_t *lgdt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -112,6 +126,11 @@ int kernsh_gdt_netbsd(list_t *lgdt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get the gdt on Freebsd
+ * @param lgdt List to store the gdt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_gdt_freebsd(list_t *lgdt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

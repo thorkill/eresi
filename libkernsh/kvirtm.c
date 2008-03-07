@@ -1,13 +1,23 @@
 /*
- * ** kvirtm.c for libkernsh
- * ** 
- * ** $Id: kvirtm.c,v 1.0 2008-02-25 20:05:00 pouik Exp $
- * **
- * */
+** kvirtm.c for libkernsh
+** 
+** $Id: kvirtm.c,v 1.0 2008-02-25 20:05:00 pouik Exp $
+**
+*/
 
 #include "libkernsh.h"
 #include "libkernsh-virtm.h"
 
+/**
+ * @brief Read virtual memory of a pid\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VIRTM
+ * @param pid The process id
+ * @param addr The address to read
+ * @param buffer Read virtual memory into the buffer
+ * @param len Count bytes to read
+ * @return len on success, -1 on return
+ */
 int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   int		ret, get;
@@ -30,6 +40,14 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Read virtual memory of a pid in /proc
+ * @param pid The process id
+ * @param addr The address to read
+ * @param buffer Read virtual memory into the buffer
+ * @param len Count bytes to read
+ * @return len on success, -1 on return
+ */
 int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   int fd, ret, nlen;
@@ -94,6 +112,10 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Open kernsh-virtm module
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kvirtm_openmem()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -105,6 +127,10 @@ int kernsh_kvirtm_openmem()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Close kernsh-virtm module
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kvirtm_closemem()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -116,6 +142,13 @@ int kernsh_kvirtm_closemem()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Read kernel memory with kernsh-virtm module
+ * @param addr Address to read memory
+ * @param buffer Read memory into the buffer
+ * @param len Count bytes to read
+ * @return len on success, -1 on error
+ */
 int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
@@ -159,6 +192,13 @@ int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Read kernel memory with kernsh-virtm module thought syscall
+ * @param addr Address to read memory
+ * @param buffer Read memory into the buffer
+ * @param len Count bytes to read
+ * @return len on success, -1 on error
+ */
 int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int len)
 {
   int ret;
@@ -187,6 +227,13 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int le
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Read kernel memory with kernsh-virtm module thought /proc
+ * @param addr Address to read memory
+ * @param buffer Read memory into the buffer
+ * @param len Count bytes to read
+ * @return len on success, -1 on error
+ */
 int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 {
   int fd, ret, nlen;

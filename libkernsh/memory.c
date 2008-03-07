@@ -6,14 +6,14 @@
 **
 */
 #include "libkernsh.h"
-#include "libaspect.h"
 
-/** Open kernel memory						
- * @param 
- * @return
+/**
+ * @brief Open kernel memory\n
+ * Configure : \n
+ * LIBKERNSH_VMCONFIG_KERNEL_START, LIBKERNSH_VMCONFIG_KERNEL_END, LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_MODE, LIBKERNSH_VMCONFIG_MMAP, LIBKERNSH_VMCONFIG_MMAP_SIZE, LIBKERNSH_VMCONFIG_SYSTEMMAP, LIBKERNSH_VMCONFIG_USEVM
+ * 
+ * @return 0 on success, -1 on return
  */
-/* Configure : Device = "/dev/kmem", "/dev/mem", "/proc/kcore"	*/
-/*          Mode = "read", "write"				*/
 int kernsh_openmem()
 {
   int ret, mmap, mmap_size;
@@ -169,7 +169,10 @@ int kernsh_openmem()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Close kernel memory */
+/**
+ * @brief Close kernel memory 
+ * @return 0 on success, -1 on error 
+ */
 int kernsh_closemem()
 {
   int ret;
@@ -203,11 +206,11 @@ int kernsh_closemem()
 }
 
 /**
- * Read kernel memory
- * @param offset
- * @param buf
- * @param size
- * @return size
+ * @brief Read kernel memory
+ * @param offset Offset to read memory
+ * @param buf Read memory into the buf
+ * @param size Count bytes to read
+ * @return size on success, -1 on error
  */
 int kernsh_readmem(unsigned long offset, void *buf, int size)
 {
@@ -242,7 +245,13 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Write in kernel memory */
+/**
+ * @brief Write into kernel memory
+ * @param offset Offset to write memory
+ * @param buf Write buf into memoryr
+ * @param size Count bytes to write
+ * @return size on success, -1 on error
+ */
 int kernsh_writemem(unsigned long offset, void *buf, int size)
 {
   int ret;

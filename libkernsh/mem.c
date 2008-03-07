@@ -10,7 +10,10 @@
 
 #include "libkernsh.h"
 
-/* Open /dev/mem on Linux 2.X */
+/**
+ * @brief Open /dev/mem on Linux 2.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_openmem_mem_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -45,7 +48,10 @@ int kernsh_openmem_mem_linux()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Close /dev/mem on Linux 2.X */
+/**
+ * @brief Close /dev/mem on Linux 2.X
+ * @return 0 on success, -1 on return
+ */
 int kernsh_closemem_mem_linux()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -66,14 +72,18 @@ int kernsh_closemem_mem_linux()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Read /dev/mem on Linux 2.X */
+/**
+ * @brief Read /dev/mem on Linux 2.X
+ * @param offset Offset to read memory
+ * @param buf Read memory into the buf
+ * @param size Count bytes to read
+ * @return size on success, -1 on error
+ */
 int kernsh_readmem_mem_linux(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("READ MEM 2.X\n");
 
   /* We must subtrack kernel_start(page_offset) to get the physical address */
   roffset = offset - libkernshworld.kernel_start;
@@ -97,14 +107,18 @@ int kernsh_readmem_mem_linux(unsigned long offset, void *buf, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Write in /dev/mem on Linux 2.X */
+/**
+ * @brief Write into /dev/mem on Linux 2.X
+ * @param offset Offset to write memory
+ * @param buf Write buf into memoryr
+ * @param size Count bytes to write
+ * @return size on success, -1 on error
+ */
 int kernsh_writemem_mem_linux(unsigned long offset, void *buf, int size)
 {
   unsigned long roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //  printf("WRITE MEM 2.X\n");
 
   /* We must subtrack kernel_start (page_offset) to get the physical address */
   roffset = offset - libkernshworld.kernel_start;

@@ -6,6 +6,11 @@
 */
 #include "libkernsh.h"
 
+/**
+ * @brief Load a loadable kernel module
+ * @param name Module's pathname
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kload_module(char *name)
 {
   int		ret;
@@ -50,6 +55,13 @@ int kernsh_kload_module(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Load a linux loadable kernel module\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_KLOAD
+ * @param name Module's pathname
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kload_module_linux(char *name)
 {
   int ret = 0;
@@ -70,6 +82,11 @@ int kernsh_kload_module_linux(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Unload a loadable kernel module
+ * @param name Module's name
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kunload_module(char *name)
 {
   int		ret;
@@ -102,6 +119,13 @@ int kernsh_kunload_module(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Unload a linux loadable kernel module\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_KUNLOAD
+ * @param name Module's name
+ * @return 0 on success, -1 on return
+ */
 int kernsh_kunload_module_linux(char *name)
 {
   int ret = 0;
@@ -122,6 +146,13 @@ int kernsh_kunload_module_linux(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Relink a loadable kernel module
+ * @param orig Original module's pathname
+ * @param injec Injected module's pathname
+ * @param evil New module's pathname
+ * @return 0 on success, -1 on return
+ */
 int kernsh_relink_module(char *orig, char *injec, char *evil)
 {
   int		ret;
@@ -180,6 +211,13 @@ int kernsh_relink_module(char *orig, char *injec, char *evil)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Relink a linux loadable kernel module
+ * @param orig Original module's pathname
+ * @param injec Injected module's pathname
+ * @param evil New module's pathname
+ * @return 0 on success, -1 on return
+ */
 int kernsh_relink_module_linux(char *orig, char *injec, char *evil)
 {
   int ret = 0;
@@ -200,6 +238,13 @@ int kernsh_relink_module_linux(char *orig, char *injec, char *evil)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Replace a function in a loadable kernel module
+ * @param module Module's pathname
+ * @param original_fname Original function's name
+ * @param evil_fname New function's name
+ * @return 0 on success, -1 on return
+ */
 int kernsh_infect_module(char *module, 
 			 char *original_fname, char *evil_fname)
 {
@@ -250,9 +295,7 @@ int kernsh_infect_module(char *module,
 
   ret = fct(module, mod, original_fname, evil_fname);
 
-  /* FIXME : Little trick because elfsh_save_obj segfault with a ET_REL */
   kernsh_unload_file(mod);
-  /* END FIXME */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -276,7 +319,14 @@ int get_symbol_idx(elfshobj_t *file, elfsh_Sym *table, int num, char *symbol)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
-
+/**
+ * @brief Replace a function in a linux 2.6.X loadable kernel module
+ * @param module Module's pathname
+ * @param mod Module's elf object
+ * @param original_fname Original function's name
+ * @param evil_fname New function's name
+ * @return 0 on success, -1 on return
+ */
 int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
 				   char *original_fname, char *evil_fname)
 {
@@ -378,6 +428,14 @@ int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Replace a function in a linux 2.4.X loadable kernel module
+ * @param module Module's pathname
+ * @param mod Module's elf object
+ * @param original_fname Original function's name
+ * @param evil_fname New function's name
+ * @return 0 on success, -1 on return
+ */
 int kernsh_infect_module_linux_2_4(char *module, elfshobj_t *mod,
 				   char *original_fname, char *evil_fname)
 {

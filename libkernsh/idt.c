@@ -6,7 +6,11 @@
 */
 #include "libkernsh.h"
 
-/* Put interrupts inside the list lidt */
+/**
+ * @brief Get the idt
+ * @param lidt List to store the idt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_idt(list_t *lidt)
 {
   int ret;
@@ -33,7 +37,11 @@ int kernsh_idt(list_t *lidt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* This function get the interrupts on Linux */
+/**
+ * @brief Get the idt on Linux
+ * @param lidt List to store the idt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_idt_linux(list_t *lidt)
 {
   int i;
@@ -102,6 +110,11 @@ int kernsh_idt_linux(list_t *lidt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
 }
 
+/**
+ * @brief Get the idt on Netbsd
+ * @param lidt List to store the idt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_idt_netbsd(list_t *lidt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -109,6 +122,11 @@ int kernsh_idt_netbsd(list_t *lidt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @brief Get the idt on Freebsd
+ * @param lidt List to store the idt
+ * @return 0 on success, -1 on return
+ */
 int kernsh_idt_freebsd(list_t *lidt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

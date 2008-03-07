@@ -5,10 +5,8 @@
 **
 */
 #include "libkernsh.h"
-#include "libaspect.h"
 
 libkernshworld_t libkernshworld;
-
 
 int kernsh_openmem_default()
 {
@@ -286,7 +284,10 @@ int kernsh_kvirtm_read_mem_default()
 	       "kvirtm read mem default !", -1);
 }
 
-/* Init vectors */
+/**
+ * @brief Initialise kernsh's vectors
+ * @return 0 on success, -1 on return
+ */
 int kernsh_init_vectors()
 {
   u_int *dims;
@@ -566,7 +567,10 @@ int kernsh_init_vectors()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/**
+ * @brief Register kernsh's vectors
+ * @return 0 on success, -1 on return
+ */
 int kernsh_register_vectors()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
