@@ -5,12 +5,7 @@
  */
 
 /**
- * @mainpage
- * @section Introduction
- *
- * Libasm is a library designed to.
- *
- * @section State of the project.
+ * State of the project.
  *
  * Libasm developpement is not regular. Some time is spent on documenting it.
  * Some time to fix bugs. Some time to implement.

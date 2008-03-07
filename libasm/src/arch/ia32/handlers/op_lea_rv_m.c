@@ -1,5 +1,5 @@
 /**
- * @file op_lea_rv_m
+ * @file op_lea_rv_m.c
  * @ingroup handlers_ia32
  * $Id: op_lea_rv_m.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
  *
@@ -11,7 +11,7 @@
  *
  *
   <instruction func="op_lea_rv_m" opcode="0x8d"/>
-*/
+ */
 
 int op_lea_rv_m(asm_instr *new, u_char *opcode, u_int len,
                 asm_processor *proc)

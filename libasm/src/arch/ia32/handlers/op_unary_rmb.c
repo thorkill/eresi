@@ -10,7 +10,7 @@
 
 /**
  * @brief Handler for instruction unary rmb opcode 0xf6
- * @param instr Pointer to instruction structure.
+ * @param new Pointer to instruction structure.
  * @param opcode Pointer to data to disassemble.
  * @param len Length of data to disassemble.
  * @param proc Pointer to processor structure.

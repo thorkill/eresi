@@ -1,11 +1,10 @@
 /**
- * $Id: register.c,v 1.1 2007/10/14 00:01:41 heroine Exp $
- *
  * @file register.c
  * @ingroup ia32
  * @brief Registration of the ia32 disassembling vector.
  *
  */
+
 #include <libasm.h>
 #include <libasm-int.h>
 

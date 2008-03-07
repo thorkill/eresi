@@ -24,33 +24,47 @@
 #include "libmjollnir-objects.h"
 #include "libmjollnir-int.h"
 
-/* Some defined  values for containers array */
+/**
+ * @brief Some defined  values for containers array 
+ */
 #define MJR_CNTNRS_INCREMENT 	200
 #define MJR_MAX_INCREMENTS	200
 
-/* Input and Output links */
+/**
+ * @brief Input and Output links 
+ */
 #define CONTAINER_LINK_IN	0
 #define CONTAINER_LINK_OUT	1
 
-/* Size of temp buffers */
+/**
+ * @brief Size of temp buffers 
+ */
 #define BSIZE_SMALL		32
 #define BSIZE			4096 
 
-/* Names used in config hash */
+/**
+ * @brief Names used in config hash 
+ */
 #define MJR_CONFIG_BLOC_PREFIX	"mjr.bloc_prefix"
 #define MJR_CONFIG_FUNC_PREFIX	"mjr.func_prefix"
 #define	MJR_CONFIG_BLOC_POSTFIX	"mjr.bloc_postfix"
 
-/* Default subroutines prefix in symbol recovery */
+/**
+ * @brief Default subroutines prefix in symbol recovery 
+ */
 #define	MJR_FUNC_PREFIX		"sub_"
 #define	MJR_BLOC_PREFIX		"bloc_"
 #define	MJR_BLOC_POSTFIX	"_unseen"
 
-/* OS for which we are able to match the entry point */
+/**
+ * @brief OS for which we are able to match the entry point 
+ */
 #define	MJR_BIN_LINUX		0
 #define	MJR_BIN_FREEBSD		1
 
-/* Fingerprinting types */
+/**
+ * @brief Fingerprinting types 
+ */
 #define	MJR_FPRINT_TYPE_MD5	0
 
 /**

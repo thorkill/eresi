@@ -15,7 +15,6 @@
  */
 
 /**
- * @file libasm.h
  * @brief It contains the main define types and prototypes.
  * @todo Reorganize include files content.
  */

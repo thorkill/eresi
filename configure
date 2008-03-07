@@ -981,13 +981,13 @@ echo "	@wc -l modules/*.c "					>> Makefile
 echo ""								>> Makefile
 
 echo "docs:"							>> Makefile
-echo "	(cd libasm && make docs)"				>> Makefile
-echo "	(cd libelfsh && make docs)"				>> Makefile
-echo "	(cd librevm && make docs)"				>> Makefile
-echo "	(cd libstderesi && make docs)"				>> Makefile
-echo "	(cd libmjollnir && make docs)"				>> Makefile
-echo "	(cd libui && make docs)"				>> Makefile
-echo "	(cd libedfmt && make docs)"				>> Makefile
+echo "	(cd libasm && \$(MAKE) docs)"				>> Makefile
+echo "	(cd libelfsh && \$(MAKE) docs)"				>> Makefile
+echo "	(cd librevm && \$(MAKE) docs)"				>> Makefile
+echo "	(cd libstderesi && \$(MAKE) docs)"				>> Makefile
+echo "	(cd libmjollnir && \$(MAKE) docs)"				>> Makefile
+echo "	(cd libui && \$(MAKE) docs)"				>> Makefile
+echo "	(cd libedfmt && \$(MAKE) docs)"				>> Makefile
 
 echo
 echo " Now make && make install"

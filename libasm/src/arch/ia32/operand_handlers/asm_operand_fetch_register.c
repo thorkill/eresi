@@ -1,5 +1,5 @@
 /**
- * @file asm_operand_fetch.c
+ * @file asm_operand_fetch_register.c
  * $Id: asm_operand_fetch_register.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
  */
 
