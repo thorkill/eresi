@@ -5,7 +5,6 @@
 **
 */
 #include "libkernsh.h"
-#include "libaspect.h"
 
 int kernsh_autotypes()
 {

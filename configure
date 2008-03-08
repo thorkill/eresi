@@ -988,7 +988,9 @@ echo "	(cd libstderesi && \$(MAKE) docs)"				>> Makefile
 echo "	(cd libmjollnir && \$(MAKE) docs)"				>> Makefile
 echo "	(cd libui && \$(MAKE) docs)"				>> Makefile
 echo "	(cd libedfmt && \$(MAKE) docs)"				>> Makefile
-
+if [ "$KERNSH" = "1" ]; then
+echo "	(cd libkernsh && \$(MAKE) docs)"				>> Makefile
+fi
 echo
 echo " Now make && make install"
 echo 
