@@ -6,6 +6,7 @@
 int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
+   struct s_mips_decode_reg temp;
    u_int converted = 0;
 
    memcpy((char *)&converted,buf,sizeof(converted));
@@ -21,7 +22,13 @@ int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
       default:
          ins->instr = ASM_MIPS_SLL;
          ins->type = ASM_TYPE_ARITH;
+         mips_convert_format_r(&temp, buf);
+         ins->op[0].baser = temp.rd;
          asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+         ins->op[1].baser = temp.rt;
+         asm_mips_operand_fetch(&ins->op[1], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+         ins->op[2].imm = temp.sa;
+         asm_mips_operand_fetch(&ins->op[2], buf, ASM_MIPS_OTYPE_IMMEDIATE, ins);
 
          /* Exceptions: None */
 

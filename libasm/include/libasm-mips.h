@@ -144,7 +144,7 @@ struct s_mips_insn_reg_deret
 #define MIPS_LEVEL1_OPCODES_NUM 224
 #define MIPS_LEVEL2_OPCODES_NUM 38
 
-#define ASM_MIPS_OTYPE_NUM 8
+
 
 #define ASM_MIPS_TABLE_END -1
 
@@ -601,12 +601,13 @@ enum e_mips_operand_type
    ASM_MIPS_OTYPE_IMMEDIATE,
    ASM_MIPS_OTYPE_JUMP,
    ASM_MIPS_OTYPE_NOOP,
-   ASM_MIPS_OTYPE_TRAP,
-   ASM_MIPS_OTYPE_COP2,
-   ASM_MIPS_OTYPE_MOV,
+   ASM_MIPS_OTYPE_BRANCH,
+   ASM_MIPS_OTYPE_REGBASE,
 
    ASM_MIPS_OTYPE_LAST
 };
+
+#define ASM_MIPS_OTYPE_NUM ASM_MIPS_OTYPE_LAST
 
 /**
  * Structure to declare a mips instruction in e_mips_instr table.
@@ -666,8 +667,8 @@ void    asm_mips_operand_j(asm_operand *op, u_char *opcode, int otype, asm_instr
 void    asm_mips_operand_r(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 void    asm_mips_operand_t(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 void    asm_mips_operand_noop(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
-void    asm_mips_operand_cop2(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
-void    asm_mips_operand_mov(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_branch(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+void    asm_mips_operand_regbase(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
 
 
 /* Opcodes */
