@@ -102,7 +102,12 @@ int kernsh_init_ia32(char *os, char *release)
   config_add_item(LIBKERNSH_VMCONFIG_VIRTM,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
-		  (void *) 0);
+		  (void *) LIBKERNSH_PROC_MODE);
+
+  config_add_item(LIBKERNSH_VMCONFIG_HASH,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) LIBKERNSH_HASH_MD5);
 
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
@@ -181,6 +186,11 @@ int kernsh_init_ia32(char *os, char *release)
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL);
+
+        config_add_item(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) LIBKERNSH_DEFAULT_LINUX_VIRTM_NIL_SYSCALL);
 
       config_add_item(LIBKERNSH_VMCONFIG_KERNEL_START,
 		      CONFIG_TYPE_INT,

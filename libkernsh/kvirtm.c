@@ -104,7 +104,6 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   read(fd, buffer, len);  
-  printf("LEN %d\n", len);
   XCLOSE(fd, -1);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
@@ -219,7 +218,7 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int le
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM;
     
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
   if (rlen != len)
     ret = -1;

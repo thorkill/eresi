@@ -1,96 +1,82 @@
 /*
-** md5.c for kernsh
+** hash.c for kernsh
 ** 
-** $Id: md5.c,v 1.4 2007-11-29 15:33:39 may Exp $
+** $Id: hash.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"
 #include "libkernsh.h"
 
-/* Make md5 ! */
-int		cmd_kmd5()
+/* Make hash ! */
+int		cmd_kmem_hash()
 {
-  int		ret;
+  int		i, fd, len, new_size;
   revmlist_t    *actual, *second;
-  revmexpr_t	*expr;
-  revmobj_t     *obj;
   char          buff[BUFSIZ];
+  char		buffhash[BUFSIZ];
   elfsh_Addr    vaddr;
-  int		fd;
-  unsigned char md5buffer[BUFSIZ];
+  unsigned char *hashbuffer;
+  char		*tmp;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   memset(buff, '\0', sizeof(buff));
+  memset(buffhash, '\0', sizeof(buffhash));
+
   vaddr = -1;  
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
 
   if (actual->rname)
     {
-      /* Is it directly an addr ? */
-      if (IS_VADDR(actual->rname))
-	{
-	  if (sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
-            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Invalid virtual address requested",
-			 -1);
-	}
-      /* Get the value of the object */
-      else
-	{
-	  expr = revm_lookup_param(actual->rname);
+      kernsh_addrlen(actual, &vaddr, &len);
 
-	  obj = expr->value;
+      hashbuffer = kernsh_hash(vaddr+actual->off, len, &new_size);
 
-	  switch (obj->otype->type)
-	    {
-	    case ASPECT_TYPE_LONG:
-	    case ASPECT_TYPE_CADDR:
-	    case ASPECT_TYPE_DADDR:
-	      vaddr = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-	      break;
-
-	    case ASPECT_TYPE_INT:
-	      vaddr = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
-	      break;
-	    }
-	}
-
-      /* Create the md5 */
-      ret = kernsh_md5(vaddr+actual->off, actual->size, md5buffer);
-      if (ret <= 0)
+      if (hashbuffer == NULL)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to make md5", -1);
 	}
+
+      i = 0;
+      tmp = buffhash;
+      while(hashbuffer[i] != '\0')
+	{
+	  sprintf(tmp, "%02x", hashbuffer[i]);
+	  i++;
+	  tmp += 2;
+	}
+
       snprintf(buff, sizeof(buff), 
 	       "MD5 @ %s : \n\t%s\n\n",
 	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
-	       revm_colorstr((char *)md5buffer));
+	       revm_colorstr((char *)buffhash));
       revm_output(buff);
       
       snprintf(buff, sizeof(buff),
-	       "%s:%s:%s:%s:%s\n\n",
+	       "%s:%s:%s:%s:%s:%s\n\n",
 	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
 	       revm_colornumber("%u", libkernshworld.mem),
-	       revm_colornumber("%u", ret),
+	       revm_colornumber("%u", (int)config_get_data(LIBKERNSH_VMCONFIG_HASH)),
+	       revm_colornumber("%u", new_size),
 	       revm_colornumber("%u", actual->off),
-	       revm_colorstr((char *)md5buffer));
+	       revm_colorstr((char *)buffhash));
       revm_output(buff);
 
       snprintf(buff, sizeof(buff),
-		   "0x%lx:%d:%d:%d:%s\n",
+		   "0x%lx:%d:%d:%d:%d:%s\n",
 		   (unsigned long) vaddr,
 		   libkernshworld.mem,
-		   ret,
+	       (int)config_get_data(LIBKERNSH_VMCONFIG_HASH),
+		   new_size,
 		   actual->off,
-		   md5buffer);
+		   buffhash);
 
 
-      revm_setvar_str("_", (char *)md5buffer);
+      revm_setvar_str(REVM_VAR_RESULT, (char *)buffhash);
 
-      export_var((char *)md5buffer, 0, 0, buff, 2);
+      export_var((char *)buffhash, 0, 0, buff, 2);
 
       if (second != NULL && second->rname != NULL)
 	{
@@ -98,17 +84,20 @@ int		cmd_kmd5()
 	  
 	  memset(buff, '\0', sizeof(buff));
 	  snprintf(buff, sizeof(buff),
-		   "0x%lx:%d:%d:%d:%s\n",
+		   "0x%lx:%d:%d:%d:%d:%s\n",
 		   (unsigned long) vaddr,
 		   libkernshworld.mem,
-		   ret,
+		   (int)config_get_data(LIBKERNSH_VMCONFIG_HASH),
+		   new_size,
 		   actual->off,
-		   md5buffer);
+		   buffhash);
 	  XWRITE(fd, buff, strlen(buff), -1);
 	  XCLOSE(fd, -1);
 	}
     }
-  
+
+  XFREE(__FILE__, __FUNCTION__, __LINE__, hashbuffer);
+
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -116,6 +105,7 @@ int		cmd_kmd5()
 int		extract_info(char *origbuf,
 			     unsigned long *addr, 
 			     int *mode, 
+			     int *type,
 			     int *size, 
 			     int *off, 
 			     unsigned char *buffer,
@@ -141,14 +131,18 @@ int		extract_info(char *origbuf,
 	  break;
 
 	case 2 :
+	  *type = atoi(p);
+	  break;
+
+	case 3 :
 	  *size = atoi(p);
 	  break;
 	  
-	case 3 :
+	case 4 :
 	  *off = atoi(p);
 	  break;
 	  
-	case 4 :
+	case 5 :
 	  memset(buffer, '\0', sizeb);
 	  memcpy(buffer, p, sizeb);
 	  break;
@@ -158,24 +152,26 @@ int		extract_info(char *origbuf,
       i++;
     }
 
-  if (i != 5)
+  if (i != 6)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Check an md5sum */
-int		cmd_kcmd5()
+int		cmd_kmem_chash()
 {
-  int	ret, mode, size, off, origmode, val;
+  int	i, ret, mode, stype, type, nsize, size, off, origmode, val;
   char  buff[BUFSIZ], buff2[256];
   char	*param, *str;
   unsigned long addr;
   revmexpr_t *expr;
   revmobj_t *obj;
 
-  unsigned char md5buffer[BUFSIZ];
-  unsigned char cmd5buffer[BUFSIZ];
+  unsigned char origbuffer[BUFSIZ];
+  char	buffhash[BUFSIZ];
+  unsigned char *hashbuffer;
+  char *tmp;
 
   FILE *fd;
 
@@ -186,7 +182,9 @@ int		cmd_kcmd5()
   memset(buff2, '\0', sizeof(buff2));
 
   param = world.curjob->curcmd->param[0];
-  
+
+  stype = (int)config_get_data(LIBKERNSH_VMCONFIG_HASH);
+
   if (param != NULL)
     {
       expr = revm_lookup_param(param);
@@ -201,7 +199,7 @@ int		cmd_kcmd5()
 	  param = buff2;
 	}
 
-      /* We must get md5 in a file ? */
+      /* We must get hash in a file ? */
       if (!strstr(param, ":"))
 	{
 	  fd = fopen(param, "r");
@@ -221,11 +219,12 @@ int		cmd_kcmd5()
 
 	      if (extract_info(buff, 
 			       &addr, 
-			       &mode, 
+			       &mode,
+			       &type,
 			       &size, 
 			       &off, 
-			       md5buffer, 
-			       sizeof(md5buffer)))
+			       origbuffer, 
+			       sizeof(origbuffer)))
 		{
 		  
 		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -234,20 +233,30 @@ int		cmd_kcmd5()
 	      /* Switch to the mode where the md5 has been done */
 	      origmode = kernsh_get_mode();
 	      kernsh_set_mode(mode);
-	      
-	      ret = kernsh_md5(addr+off, size, cmd5buffer);
-	      
+
+	      config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)type);
+	      hashbuffer = kernsh_hash(addr+off, size, &nsize);	      
+	      	      
 	      kernsh_set_mode(origmode);
+
+	      i = 0;
+	      tmp = buffhash;
+	      while((i < sizeof(buffhash)) && (hashbuffer[i] != '\0'))
+		{
+		  sprintf(tmp, "%02x", hashbuffer[i]);
+		  i++;
+		  tmp += 2;
+		}
 
 	      memset(buff, '\0', sizeof(buff));
 	      
-	      if (!strncmp((const char *)md5buffer, 
-			   (const char *)cmd5buffer, 
-			   sizeof(md5buffer)))
+	      if (!strncmp((const char *)origbuffer, 
+			   (const char *)buffhash, 
+			   sizeof(origbuffer)))
 		{
 		  snprintf(buff, sizeof(buff),
 			   "%s @ %s with size = %s and offset = %s\n",
-			   revm_colorstr("MD5 MATCH @ !"),
+			   revm_colorstr("HASH MATCH @ !"),
 			   revm_coloraddress(XFMT, (elfsh_Addr) addr),
 			   revm_colornumber("%u", size),
 			   revm_colornumber("%u", off));
@@ -258,12 +267,12 @@ int		cmd_kcmd5()
 		{
 		  snprintf(buff, sizeof(buff),
 			   "%s @ %s with size = %s and offset = %s\n %s != %s\n",
-			   revm_colorstr("MD5 MISMATCH @ !"),
+			   revm_colorstr("HASH MISMATCH @ !"),
 			   revm_coloraddress(XFMT, (elfsh_Addr) addr),
 			   revm_colornumber("%u", size),
 			   revm_colornumber("%u", off),
-			   revm_colorstr((char *)md5buffer),
-			   revm_colorstr((char *)cmd5buffer));
+			   revm_colorstr((char *)origbuffer),
+			   revm_colorstr((char *)buffhash));
 		  revm_output(buff);
 		  revm_endline();
 		  val++;
@@ -276,11 +285,12 @@ int		cmd_kcmd5()
 	{
 	  if (extract_info(param, 
 			   &addr, 
-			   &mode, 
+			   &mode,
+			   &type,
 			   &size, 
 			   &off, 
-			   md5buffer, 
-			   sizeof(md5buffer)))
+			   origbuffer, 
+			   sizeof(origbuffer)))
 	  {
 	    
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -289,26 +299,34 @@ int		cmd_kcmd5()
 
 	  origmode = kernsh_get_mode();
 	  kernsh_set_mode(mode);
-
-	  ret = kernsh_md5(addr+off, size, cmd5buffer);
+	  config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)type);
+	  hashbuffer = kernsh_hash(addr+off, size, &nsize);
 
 	  kernsh_set_mode(origmode);
+	  i = 0;
+	  tmp = buffhash;
+	  while((i < sizeof(buffhash)) && (hashbuffer[i] != '\0'))
+	    {
+	      sprintf(tmp, "%02x", hashbuffer[i]);
+	      i++;
+	      tmp += 2;
+	    }
 
-	  if (ret <= 0)
+	  if (hashbuffer == NULL)
 	    {
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Unable to make md5", -1);
+			   "Unable to make hash", -1);
 	    }
 
 	  memset(buff, '\0', sizeof(buff));
 
-	  if (!strncmp((const char *)md5buffer, 
-		       (const char *)cmd5buffer, 
-		       sizeof(md5buffer)))
+	  if (!strncmp((const char *)origbuffer, 
+		       (const char *)buffhash, 
+		       sizeof(origbuffer)))
 	    {
 	      snprintf(buff, sizeof(buff),
 		       "%s @ %s with size = %s and offset = %s\n\n",
-		       revm_colorstr("MD5 MATCH @ !"),
+		       revm_colorstr("HASH MATCH @ !"),
 		       revm_coloraddress(XFMT, (elfsh_Addr) addr),
 		       revm_colornumber("%u", size),
 		       revm_colornumber("%u", off));
@@ -318,19 +336,22 @@ int		cmd_kcmd5()
 	    {
 	      snprintf(buff, sizeof(buff),
 		       "%s @ %s with size = %s and offset = %s\n %s != %s\n\n",
-		       revm_colorstr("MD5 MISMATCH @ !"),
+		       revm_colorstr("HASH MISMATCH @ !"),
 		       revm_coloraddress(XFMT, (elfsh_Addr) addr),
 		       revm_colornumber("%u", size),
 		       revm_colornumber("%u", off),
-		       revm_colorstr((char *)md5buffer),
-		       revm_colorstr((char *)cmd5buffer));
+		       revm_colorstr((char *)origbuffer),
+		       revm_colorstr((char *)buffhash));
 	      revm_output(buff);
 	      val++;
 	    }
 	}
     }
 
-  revm_setvar_int("_", val);  
+  config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)stype);
+
+  revm_setvar_int(REVM_VAR_RESULT, val);  
+
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

@@ -55,10 +55,15 @@ void	setup_local_cmdhash()
 		   0, 
 		   HLP_KSYM);
 
-  revm_command_add(CMD_KMODULE, (void *)cmd_kmodule, 
+  revm_command_add(CMD_KMODULE_RELINK, (void *)cmd_kmodule_relink, 
 		   (void*) revm_getvarparams, 
 		   0, 
-		   HLP_KMODULE);
+		   HLP_KMODULE_RELINK);
+
+  revm_command_add(CMD_KMODULE_INFECT, (void *)cmd_kmodule_infect, 
+		   (void*) revm_getvarparams, 
+		   0, 
+		   HLP_KMODULE_INFECT);
 
   revm_command_add(CMD_KMODULE_LOAD, (void *)cmd_kmodule_load, 
 		   (void*) revm_getvarparams, 
@@ -75,15 +80,15 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_AUTOTYPES);
 
-  revm_command_add(CMD_KMD5, (void *)cmd_kmd5, 
+  revm_command_add(CMD_KMEM_HASH, (void *)cmd_kmem_hash, 
 		   (void *) revm_getdisasm,
 		   0,
-		   HLP_KMD5);
+		   HLP_KMEM_HASH);
 
-  revm_command_add(CMD_KCMD5, (void *)cmd_kcmd5, 
+  revm_command_add(CMD_KMEM_CHASH, (void *)cmd_kmem_chash, 
 		   (void*) revm_getvarparams,
 		   0,
-		   HLP_KCMD5);
+		   HLP_KMEM_CHASH);
 
 
   revm_command_add(CMD_KVIRTM_INFO, (void *)cmd_kvirtm_info, 
@@ -117,7 +122,7 @@ void	setup_local_cmdhash()
 		   HLP_KVIRTM_DUMP);
 
   revm_command_add(CMD_KMEM_READ, (void *)cmd_kmem_read, 
-		   (void*) revm_getvarparams,
+		   (void *) revm_getdisasm,
 		   0,
 		   HLP_KMEM_READ);
   
@@ -127,9 +132,14 @@ void	setup_local_cmdhash()
 		   HLP_KMEM_WRITE);
 
   revm_command_add(CMD_KMEM_DISASM, (void *)cmd_kmem_disasm, 
-		   (void*) revm_getvarparams,
+		   (void *) revm_getdisasm,
 		   0,
 		   HLP_KMEM_DISASM);
+
+  revm_command_add(CMD_KMEM_INFO, (void *)cmd_kmem_info, 
+		   (void *) NULL,
+		   0,
+		   HLP_KMEM_INFO);
 
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 

@@ -16,7 +16,7 @@ MODULE_DESCRIPTION("Kernsh Virtual Memory !");
 MODULE_AUTHOR("pouik@kernsh.org");
 MODULE_LICENSE("GPL");
 
-#define FREE_SYSCALL_DEFAULT 17
+#define FREE_SYSCALL_DEFAULT 31
 #define SYS_CALL_TABLE_DEFAULT 0xc02aa440
 
 static int hijack_sct;

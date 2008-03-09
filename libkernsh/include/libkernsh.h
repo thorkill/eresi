@@ -82,6 +82,12 @@ enum
 
 enum
   {
+    LIBKERNSH_HASH_MD5,
+    LIBKERNSH_HASH_SHA1
+  } libkernsh_e_hash_type;
+
+enum
+  {
     LIBKERNSH_DEVICE_KMEM,
     LIBKERNSH_DEVICE_MEM,
     LIBKERNSH_DEVICE_KCORE,
@@ -134,6 +140,8 @@ enum
 #define LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL	"libkernsh.specify_systemcall"
 #define LIBKERNSH_VMCONFIG_SPECIFY_SCT		"libkernsh.specify_sct"
 #define LIBKERNSH_VMCONFIG_VIRTM		"libkernsh.virtm"
+#define LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL	"libkernsh.virtm_nil_syscall"
+#define LIBKERNSH_VMCONFIG_HASH			"libkernsh.hash"
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -141,6 +149,7 @@ enum
 #define LIBKERNSH_DEFAULT_LINUX_KERNELELF	"vmlinux"
 #define LIBKERNSH_DEFAULT_LINUX_NB_SYSCALLS	320
 #define LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL	17
+#define LIBKERNSH_DEFAULT_LINUX_VIRTM_NIL_SYSCALL	31
 #define LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE	0x3e800000
 #define LIBKERNSH_DEFAULT_LINUX_INSMOD		"/sbin/insmod"
 #define LIBKERNSH_DEFAULT_LINUX_RMMOD		"/sbin/rmmod"
@@ -154,6 +163,8 @@ enum
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
 #define LIBKERNSH_STRING_DEVICE_KVIRTM		"kvirtm"
 #define LIBKERNSH_STRING_REL_GNU		".rel.gnu.linkonce.this_module"
+
+#define LIBKERNSH_HASH_MD5_SIZE			16
 
 #define LIBKERNSH_I386_LINUX_START		0xc0000000      
 #define LIBKERNSH_I386_LINUX_END	      	0xc1000000
@@ -523,6 +534,7 @@ int	kernsh_infect_module_linux_2_4(char *, elfshobj_t *, char *, char *);
 /* Hijack */
 
 /* MD5 */
+unsigned char *kernsh_hash(unsigned long, int, int *);
 
 int	kernsh_md5init(libkernshmd5context_t *);
 int	kernsh_md5update(libkernshmd5context_t *, 

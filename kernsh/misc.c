@@ -142,3 +142,54 @@ int kernsh_disasm(char *buffer, int len, unsigned long addr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+int kernsh_addrlen(revmlist_t *actual, elfsh_Addr *addr, int *len)
+{
+  revmexpr_t	*expr;
+  revmobj_t     *obj;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!actual)
+    {
+      *addr = 0;
+      *len = 0;
+
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid revmlist",
+		     -1);
+    }
+
+ /* Is it directly an addr ? */
+  if (IS_VADDR(actual->rname))
+    {
+      if (sscanf(actual->rname + 2, AFMT, addr) != 1)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid virtual address requested",
+		     -1);
+    }
+  /* Get the value of the object */
+  else
+    {
+      expr = revm_lookup_param(actual->rname);
+      
+      obj = expr->value;
+      
+      switch (obj->otype->type)
+	{
+	case ASPECT_TYPE_LONG:
+	case ASPECT_TYPE_CADDR:
+	case ASPECT_TYPE_DADDR:
+	  *addr = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
+	      break;
+	      
+	case ASPECT_TYPE_INT:
+	  *addr = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
+	  break;
+	}
+    }
+  
+  *len = actual->size;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

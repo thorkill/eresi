@@ -2,7 +2,7 @@ include ../config.h
 #
 # Architecture source files
 #
-SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c md5.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c kvirtm.c
+SRCS_libkernsh 	= kernsh.c vectors.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c kvirtm.c hash.c
 
 OBJS32_libkernsh	=	${SRCS_libkernsh:.c=.32.o} 
 OBJS64_libkernsh	=	${SRCS_libkernsh:.c=.64.o}
@@ -39,7 +39,7 @@ all32: 	symbs $(OBJS32_libkernsh)
 	@echo "[RANLIB] ${NAME32_libkernsh}"
 	@$(LD) -r $(OBJS32_libkernsh) -o ${NAME32_libkernsh_o}
 	@echo "[CC -shared] libkernsh32.so"
-	@${CC} ${OBJS32_libkernsh} -o libkernsh32.so -shared
+	@${CC} ${OBJS32_libkernsh} -o libkernsh32.so -shared -lcrypto
 
 all64: 	symbs $(OBJS64_libkernsh)
 	@ar rc ${NAME64_libkernsh} ${OBJS64_libkernsh}

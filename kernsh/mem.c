@@ -191,10 +191,10 @@ int		cmd_ksym()
 }
 
 /* Handle loadable kernel module */
-int		cmd_kmodule()
+int		cmd_kmodule_relink()
 {
   int	ret;
-  char  *param, *param2, *param3, *param4;
+  char  *param, *param2, *param3;
   char	buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -204,37 +204,51 @@ int		cmd_kmodule()
   param = world.curjob->curcmd->param[0];
   param2 = world.curjob->curcmd->param[1];
   param3 = world.curjob->curcmd->param[2];
-  param4 = world.curjob->curcmd->param[3];
 
-  if (param)
+  if (param && param2)
     {
-      if (param2 && param3 && !strcmp(param, "-r"))
+      ret = kernsh_relink_module(param, param2, param3);
+      if (ret == 0)
 	{
-	  ret = kernsh_relink_module(param2, param3, param4);
-	  if (ret == 0)
-	    {
-	      if (param4 == NULL)
-		param4 = param2;
-	      snprintf(buff, sizeof(buff), 
-		       "Module %s and %s is linked in %s\n\n",
-		       revm_colorstr(param2),
-		       revm_colorstr(param3),
-		       revm_colorstr(param4));
-	      revm_output(buff);
-	    }
+	  if (param3 == NULL)
+	    param3 = param;
+	  snprintf(buff, sizeof(buff), 
+		   "Module %s and %s is linked in %s\n\n",
+		   revm_colorstr(param),
+		   revm_colorstr(param2),
+		   revm_colorstr(param3));
+	  revm_output(buff);
 	}
-      else if (param2 && param3 && param4 && !strcmp(param, "-i"))
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		cmd_kmodule_infect()
+{
+  int	ret;
+  char  *param, *param2, *param3;
+  char	buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  memset(buff, '\0', sizeof(buff));
+
+  param = world.curjob->curcmd->param[0];
+  param2 = world.curjob->curcmd->param[1];
+  param3 = world.curjob->curcmd->param[2];
+
+  if (param && param2 && param3)
+    {
+      ret = kernsh_infect_module(param, param2, param3);
+      if (ret == 0)
 	{
-	  ret = kernsh_infect_module(param2, param3, param4);
-	  if (ret == 0)
-	    {
-	      snprintf(buff, sizeof(buff), 
-		       "%s have been replaced by %s in %s\n\n",
-		       revm_colorstr(param3),
-		       revm_colorstr(param4),
-		       revm_colorstr(param2));
-	      revm_output(buff);
-	    }
+	  snprintf(buff, sizeof(buff), 
+		   "%s have been replaced by %s in %s\n\n",
+		   revm_colorstr(param),
+		   revm_colorstr(param2),
+		   revm_colorstr(param3));
+	  revm_output(buff);
 	}
     }
 
@@ -295,37 +309,203 @@ int		cmd_kmodule_unload()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-int		cmd_kmem_read()
+int		cmd_kmem_info()
 {
-  int ret;
-  char *addr, *len;
-  char *new_buff;
-  int rlen;
-  unsigned long raddr;
+  char		buff[BUFSIZ];
+  char *data;
+  int val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ret = 0;
-  addr = len = NULL;
+  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_DEVICE);
+  snprintf(buff, sizeof(buff), 
+	   "DEVICE : %s\n",
+	   data);
+  revm_output(buff);
 
-  addr = world.curjob->curcmd->param[0];
-  len = world.curjob->curcmd->param[1];
+  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_MODE);
+  snprintf(buff, sizeof(buff), 
+	   "FLAGS : %s\n",
+	   data);
+  revm_output(buff);
 
-  if (addr && len)
+  switch(libkernshworld.mem)
     {
-      rlen = atoi(len);
-      raddr = strtoul(addr, NULL, 16);
+    case LIBKERNSH_MEM_MODE :
+      snprintf(buff, sizeof(buff), 
+	       "MODE : DYNAMIC\n");
+      break;
+    case LIBKERNSH_STATIC_MODE :
+      snprintf(buff, sizeof(buff), 
+	       "MODE : STATIC\n");
+      break;
+    }
+  revm_output(buff);
+
+  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP);
+  snprintf(buff, sizeof(buff), 
+	   "SYSTEMMAP : %s\n",
+	   data);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_MMAP);
+  switch (val)
+    {
+    case 0 :
+      snprintf(buff, sizeof(buff), 
+	       "MMAP : OFF\n");
+      break;
+    case 1 :
+      snprintf(buff, sizeof(buff), 
+	       "MMAP : ON\n");
+      break;
+    }
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_MMAP_SIZE);
+  snprintf(buff, sizeof(buff), 
+	   "MMAP_SIZE : 0x%lx\n",
+	   (unsigned long)val);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_KERNEL_START);
+  snprintf(buff, sizeof(buff), 
+	   "KERNEL_START : 0x%lx\n",
+	   (unsigned long)val);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_KERNEL_END);
+  snprintf(buff, sizeof(buff), 
+	   "KERNEL_END : 0x%lx\n",
+	   (unsigned long)val);
+  revm_output(buff);
+
+  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_KERNEL);
+  snprintf(buff, sizeof(buff), 
+	   "KERNEL : %s\n",
+	   data);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_USE_KERNEL);
+  switch (val)
+    {
+    case 0 :
+      snprintf(buff, sizeof(buff), 
+	       "USE_KERNEL : OFF\n");
+      break;
+    case 1 :
+      snprintf(buff, sizeof(buff), 
+	       "USE_KERNEL : ON\n");
+      break;
+    }
+  revm_output(buff);
+
+  
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_ALLOC);
+  switch (val)
+    {
+    case 0 :
+      snprintf(buff, sizeof(buff), 
+	       "ALLOC : CONTIGUOUS\n");
+      break;
+    case 1 :
+      snprintf(buff, sizeof(buff), 
+	       "ALLOC : NO CONTIGUOUS\n");
+      break;
+    }
+  revm_output(buff);
+  
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS);
+  snprintf(buff, sizeof(buff), 
+	   "NB_SYSCALLS : %d\n",
+	   val);
+  revm_output(buff);
+  
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL);
+  snprintf(buff, sizeof(buff), 
+	   "NIL_SYSCALL : %d\n",
+	   val);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_USEVM);
+  switch (val)
+    {
+    case 0 :
+      snprintf(buff, sizeof(buff), 
+	       "USE_VM : OFF\n");
+      break;
+    case 1 :
+      snprintf(buff, sizeof(buff), 
+	       "USE_VM : ON\n");
+      break;
+    }
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  switch (val)
+    {
+    case LIBKERNSH_PROC_MODE:
+      snprintf(buff, sizeof(buff), 
+	       "VIRTM : PROC\n");
+      break;
+    case LIBKERNSH_SYSCALL_MODE :
+      snprintf(buff, sizeof(buff), 
+	       "VIRTM : SYSCALL\n");
+      break;
+    }
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL);
+  snprintf(buff, sizeof(buff), 
+	   "VIRTM_NIL_SYSCALL : %d\n",
+	   val);
+  revm_output(buff);
+
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_HASH);
+  switch (val)
+    {
+    case LIBKERNSH_HASH_MD5:
+      snprintf(buff, sizeof(buff), 
+	       "HASH : MD5\n");
+      break;
+    case LIBKERNSH_HASH_SHA1 :
+      snprintf(buff, sizeof(buff), 
+	       "HASH : SHA1\n");
+      break;
+    }
+  revm_output(buff);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int		cmd_kmem_read()
+{
+  int ret, len;
+  char *new_buff;
+  elfsh_Addr addr;
+  revmlist_t *actual;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = len = 0;
+  addr = 0;
+
+  actual = world.curjob->curcmd->disasm + 0;
+
+  if (actual)
+    {
+      kernsh_addrlen(actual, &addr, &len);
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     new_buff,
-	     rlen,
+	     len,
 	     -1);
 
-      memset(new_buff, '\0', rlen);
+      memset(new_buff, '\0', len);
 
-      ret = kernsh_readmem(raddr, new_buff, rlen);
+      ret = kernsh_readmem(addr, new_buff, len);
 
-      kernsh_hexdump((unsigned char *)new_buff, rlen, raddr);
+      kernsh_hexdump((unsigned char *)new_buff, len, addr);
 
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
     }
@@ -348,35 +528,32 @@ int		cmd_kmem_write()
 
 int		cmd_kmem_disasm()
 {
-  int ret;
-  char *addr, *len;
+  int ret, len;
+  elfsh_Addr addr;
   char *new_buff;
-  int rlen;
-  unsigned long raddr;
+  revmlist_t *actual;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  ret = 0;
-  addr = len = NULL;
+  ret = len = 0;
+  addr = 0;
 
-  addr = world.curjob->curcmd->param[0];
-  len = world.curjob->curcmd->param[1];
+  actual = world.curjob->curcmd->disasm + 0;
 
-  if (addr && len)
+  if (actual)
     {
-      rlen = atoi(len);
-      raddr = strtoul(addr, NULL, 16);
+      kernsh_addrlen(actual, &addr, &len);
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     new_buff,
-	     rlen,
+	     len,
 	     -1);
 
-      memset(new_buff, '\0', rlen);
+      memset(new_buff, '\0', len);
 
-      ret = kernsh_readmem(raddr, new_buff, rlen);
+      ret = kernsh_readmem(addr, new_buff, len);
 
-      kernsh_disasm(new_buff, rlen, raddr);
+      kernsh_disasm(new_buff, len, addr);
 
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
     }

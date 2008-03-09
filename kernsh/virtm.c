@@ -40,7 +40,7 @@ int		cmd_kvirtm_loadme()
 	       (char *)config_get_data(LIBKERNSH_VMCONFIG_KLOAD),
 	       filename,
 	       libkernshworld.sct,
-	       (int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL));
+	       (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL));
       
       snprintf(buff2, sizeof(buff2),
 	       "Loading %s with : %s\n\n",
