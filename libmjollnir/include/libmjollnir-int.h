@@ -1,8 +1,7 @@
 /**
  * @file libmjollnir-int.h
- * (C) 2006-2007 Asgard Labs, thorolf
+ * (C) 2006-2008 Asgard Labs, thorolf
  * BSD License
- * $Id: libmjollnir-int.h,v 1.22 2007-10-01 01:13:08 may Exp $
  *
  */
 

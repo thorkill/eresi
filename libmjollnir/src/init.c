@@ -119,8 +119,6 @@ int		mjr_setup_processor(mjrsession_t *sess)
      asm_init_ia32(&sess->cur->proc);
      break;
    case EM_MIPS:
-   case EM_MIPS_RS3_LE:
-   case EM_MIPS_X:
      asm_init_mips(&sess->cur->proc);
      break;
    default:

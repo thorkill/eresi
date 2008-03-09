@@ -57,6 +57,7 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
 			  " [*] locating call to .init: %lx\n", 
 			  (unsigned long) init_addr);
 		  break;
+
 		}
 	    }
 	  else if (proc->type == ASM_PROC_SPARC) 
@@ -68,10 +69,20 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
 		  break;
 		}
 	    }
+	  else if (proc->type == ASM_PROC_MIPS)
+	    {
+	      // FIXME: this should be expanded
+	      arch_bin = MJR_BIN_LINUX;
+	    }
+
+	  else 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Architecture not supported", -1);
+
 	  // FIXME: This should go to librevm
 	  fprintf(stderr, " [*] %s-like start\n", arch_bin ? "FreeBSD" : "Linux");  
 	}
-      
+
     /* Now fingerprint depending on the architecture */
     if (proc->type == ASM_PROC_IA32)
       {  
@@ -120,7 +131,17 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
 	    stop = 1;
      	    break;      	
    	  }
-      }    
+      }
+    else if (proc->type == ASM_PROC_MIPS)
+      {
+	// FIXME: this should be expanded (WIP)
+	main_addr = vaddr;
+	stop = 1;
+      }
+    else
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Architecture not supported", -1);
+
   }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
@@ -161,6 +182,10 @@ elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
     main_addr = sym->st_value;
   else
     main_addr = mjr_find_main(context->obj, &context->proc, buf, len, vaddr, &dis);
+  
+  if (main_addr == -1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Could not find address of main", -1);
 
   tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
   mjr_function_register(context, vaddr, tmpcntnr);
