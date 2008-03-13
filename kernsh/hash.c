@@ -36,7 +36,7 @@ int		cmd_kmem_hash()
       if (hashbuffer == NULL)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unable to make md5", -1);
+		       "Unable to make hash", -1);
 	}
 
       i = 0;
@@ -158,7 +158,7 @@ int		extract_info(char *origbuf,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Check an md5sum */
+/* Check a hash */
 int		cmd_kmem_chash()
 {
   int	i, ret, mode, stype, type, nsize, size, off, origmode, val;
@@ -230,7 +230,7 @@ int		cmd_kmem_chash()
 		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			       "Bad format", -1);
 		}
-	      /* Switch to the mode where the md5 has been done */
+	      /* Switch to the mode where the hash has been done */
 	      origmode = kernsh_get_mode();
 	      kernsh_set_mode(mode);
 

@@ -284,6 +284,30 @@ int kernsh_kvirtm_read_mem_default()
 	       "kvirtm read mem default !", -1);
 }
 
+int kernsh_kvirtm_write_virtm_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KVIRTM WRITE VIRTM DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kvirtm write virtm default !", -1);
+}
+
+int kernsh_kvirtm_write_mem_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KVIRTM WRITE MEM DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kvirtm write mem default !", -1);
+}
+
 /**
  * @brief Initialise kernsh's vectors
  * @return 0 on success, -1 on return
@@ -564,6 +588,15 @@ int kernsh_init_vectors()
                          kernsh_kvirtm_read_mem_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
+   /* Register kvirtm write * default vectors */
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM, 
+                         kernsh_kvirtm_write_virtm_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM, 
+                         kernsh_kvirtm_write_mem_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -668,6 +701,13 @@ int kernsh_register_vectors()
   kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
 			   LIBKERNSH_DEVICE_MEM, kernsh_writemem_netbsd);
 
+  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
+			   LIBKERNSH_DEVICE_KVIRTM, 
+			   kernsh_kvirtm_writemem);
+  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
+			   LIBKERNSH_DEVICE_KVIRTM, 
+			   kernsh_kvirtm_writemem);
+
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
 		      kernsh_sct_linux);
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
@@ -756,14 +796,44 @@ int kernsh_register_vectors()
   kernsh_register_kunload(LIBKERNSH_OS_LINUX_2_4, 
 			  kernsh_kunload_module_linux);
 
+  /* kvirtm read/write virtm */
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_6,
 				    LIBKERNSH_PROC_MODE,
 				    kernsh_kvirtm_read_virtm_proc_linux);
-
+  
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
 				    LIBKERNSH_PROC_MODE,
 				    kernsh_kvirtm_read_virtm_proc_linux);
+  
+  kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_6,
+				    LIBKERNSH_SYSCALL_MODE,
+				    kernsh_kvirtm_read_virtm_syscall_linux);
+  
+   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
+				    LIBKERNSH_SYSCALL_MODE,
+				    kernsh_kvirtm_read_virtm_syscall_linux);
 
+  kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
+				    LIBKERNSH_SYSCALL_MODE,
+				    kernsh_kvirtm_read_virtm_syscall_linux);
+
+  kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_6,
+				     LIBKERNSH_PROC_MODE,
+				     kernsh_kvirtm_write_virtm_proc_linux);
+
+  kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_4,
+				     LIBKERNSH_PROC_MODE,
+				     kernsh_kvirtm_write_virtm_proc_linux);
+
+  kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_6,
+				     LIBKERNSH_SYSCALL_MODE,
+				     kernsh_kvirtm_write_virtm_syscall_linux);
+
+  kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_4,
+				     LIBKERNSH_SYSCALL_MODE,
+				     kernsh_kvirtm_write_virtm_syscall_linux);
+
+  /* kvirtm read/write mem */
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
 				  LIBKERNSH_PROC_MODE,
 				  kernsh_kvirtm_readmem_proc_linux);
@@ -780,6 +850,22 @@ int kernsh_register_vectors()
 				  LIBKERNSH_SYSCALL_MODE,
 				  kernsh_kvirtm_readmem_syscall_linux);
 
+  kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_6,
+				   LIBKERNSH_PROC_MODE,
+				   kernsh_kvirtm_writemem_proc_linux);
+
+  kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_4,
+				   LIBKERNSH_PROC_MODE,
+				   kernsh_kvirtm_writemem_proc_linux);
+
+  kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_6,
+				   LIBKERNSH_SYSCALL_MODE,
+				   kernsh_kvirtm_writemem_syscall_linux);
+  
+  kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_4,
+				   LIBKERNSH_SYSCALL_MODE,
+				   kernsh_kvirtm_writemem_syscall_linux);
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -1292,6 +1378,51 @@ int kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
 
 #if __DEBUG_KERNSH__
   printf("REGISTER KVIRTM READ MEM\n");
+#endif
+
+  aspect_vectors_insert(sct, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+int kernsh_register_kvirtm_write_virtm(u_int ostype, u_int virtmtype, void *fct)
+{
+  vector_t *sct;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM);
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = ostype;
+  dim[1] = virtmtype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KVIRTM WRITE VIRTM\n");
+#endif
+
+  aspect_vectors_insert(sct, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kvirtm_write_mem(u_int ostype, u_int virtmtype, void *fct)
+{
+  vector_t *sct;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM);
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = ostype;
+  dim[1] = virtmtype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KVIRTM WRITE MEM\n");
 #endif
 
   aspect_vectors_insert(sct, dim, (int)fct);

@@ -90,6 +90,7 @@ int	kernsh_virtm_dump_elf(pid_t, char *);
 int	kernsh_virtm_view_vmaps(pid_t);
 int	kernsh_virtm_get_virtaddr(pid_t);
 int	kernsh_virtm_read_pid(pid_t, unsigned long, int);
+int	kernsh_virtm_write_pid(pid_t, unsigned long, char *, int);
 int	kernsh_virtm_disasm_pid(pid_t, unsigned long, int);
 
 int	export_var(char *, unsigned long, int, char *, int);

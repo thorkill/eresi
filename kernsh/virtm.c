@@ -1,7 +1,6 @@
 /*
 ** virtm.c for kernsh
 ** 
-** $Id: virtm.c,v 1.0 2008-02-25 20:05:00 pouik Exp $
 **
 */
 
@@ -11,7 +10,7 @@
 
 int		cmd_kvirtm_info()
 {
-  int	ret;
+  int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -21,10 +20,10 @@ int		cmd_kvirtm_info()
 
 int		cmd_kvirtm_loadme()
 {
-  int	ret;
-  char	buff[BUFSIZ];
-  char	buff2[BUFSIZ];
-  char *filename;
+  int		ret;
+  char		buff[BUFSIZ];
+  char		buff2[BUFSIZ];
+  char		*filename;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -56,8 +55,8 @@ int		cmd_kvirtm_loadme()
 
 int		cmd_kvirtm_dump()
 {
-  int ret;
-  char *pid, *filename;
+  int		ret;
+  char		*pid, *filename;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -79,8 +78,8 @@ int		cmd_kvirtm_dump()
 
 int		cmd_kvirtm_read_pid()
 {
-  int ret;
-  char *pid, *addr, *len;
+  int		ret;
+  char		*pid, *addr, *len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -102,14 +101,94 @@ int		cmd_kvirtm_read_pid()
 
 int		cmd_kvirtm_write_pid()
 {
+  revmexpr_t	*e1;
+  revmexpr_t    *e2;
+  revmobj_t     *o1;
+  revmobj_t     *o2;
+  void          *dat;
+  int           ret, pid, size;
+  elfsh_Addr	addr;
 
-  return 0;
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Sanity checks */
+  if (world.curjob->curcmd->param[0] == NULL ||
+      world.curjob->curcmd->param[1] == NULL ||
+      world.curjob->curcmd->param[2] == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Needs 3 parameters", -1);
+
+  pid = atoi(world.curjob->curcmd->param[0]);
+
+  if (IS_VADDR(world.curjob->curcmd->param[1]))
+    {
+      if (sscanf(world.curjob->curcmd->param[1] + 2, AFMT, &addr) != 1)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid virtual address requested",
+		     -1);
+    }
+  else
+    {
+      e1 = revm_lookup_param(world.curjob->curcmd->param[1]);
+      o1 = e1->value;
+      switch (o1->otype->type)
+	{
+	case ASPECT_TYPE_LONG:
+	case ASPECT_TYPE_CADDR:
+	case ASPECT_TYPE_DADDR:
+	  addr = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
+	      break;
+	      
+	case ASPECT_TYPE_INT:
+	  addr = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
+	  break;
+	}
+    }
+
+  e2 = revm_lookup_param(world.curjob->curcmd->param[2]); 
+
+  o2 = e2->value;
+
+ /* Convert Integers into raw data */
+  if (o2->otype->type != ASPECT_TYPE_RAW && o2->otype->type != ASPECT_TYPE_STR)
+    if (revm_convert_object(e2, ASPECT_TYPE_RAW) < 0)
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                        "Unable to convert dest object to RAW", (-1));
+
+  /* Get the source buff */
+  dat = (o2->immed                ? o2->immed_val.str                  :
+         o2->otype->type == ASPECT_TYPE_STR ? o2->get_name(o2->root, o2->parent) :
+         o2->get_data(o2->parent, o2->off, o2->sizelem));
+
+  /* Set size */
+  size = o2->size;
+
+  if (size <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Source offset too big", -1);
+
+  printf("WRITE @ %d 0x%lx %d %d\n",
+	 pid,
+	 (unsigned long)addr,
+	 size,
+	 strlen(world.curjob->curcmd->param[2]));
+
+  ret = kernsh_virtm_write_pid(pid, addr, (char *)dat, size);
+
+  if (ret != size)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to write mem",
+		   -1);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 int		cmd_kvirtm_disasm_pid()
 {
-  int ret;
-  char *pid, *addr, *len;
+  int		ret;
+  char		*pid, *addr, *len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -130,9 +209,9 @@ int		cmd_kvirtm_disasm_pid()
 
 int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
 {
-  int fd, len, ret;
-  char *proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  int		fd, len, ret;
+  char		*proc_entry_root_tmp;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -211,9 +290,9 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
 /* Recupere les vmaps dans une liste */
 int		kernsh_virtm_view_vmaps(pid_t pid)
 {
-  int fd, len, ret;
-  char *proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  int		fd, len, ret;
+  char		*proc_entry_root_tmp;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -263,9 +342,9 @@ int		kernsh_virtm_view_vmaps(pid_t pid)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
+int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
 {
-  char *new_buff;
+  char		 *new_buff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -285,9 +364,24 @@ int kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
+int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len)
 {
-  char *new_buff;
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  kernsh_virtm_read_pid(pid, addr, len+10);
+
+  ret = kernsh_kvirtm_write_virtm(pid, addr, buffer, len);
+
+  kernsh_virtm_read_pid(pid, addr, len+10);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
+{
+  char		*new_buff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

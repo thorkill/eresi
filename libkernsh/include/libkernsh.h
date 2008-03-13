@@ -1,7 +1,6 @@
 /*
 ** libkernsh.h for libkernsh
 **
-** $Id: libkernsh.h,v 1.13 2007-10-11 18:25:17 pouik Exp $
 **
 */
 #ifndef __LIBKERNSH_H__
@@ -199,6 +198,8 @@ enum
 #define LIBKERNSH_VECTOR_NAME_CALLSC			"call_syscall"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM		"kvirtm_read_virtm"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM		"kvirtm_read_mem"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM		"kvirtm_write_virtm"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM		"kvirtm_write_mem"
 
 /* Idtr segment struct */
 struct 
@@ -437,6 +438,8 @@ int	kernsh_register_kload(u_int, void *);
 int	kernsh_register_kunload(u_int, void *);
 int	kernsh_register_kvirtm_read_virtm(u_int, u_int, void *);
 int	kernsh_register_kvirtm_read_mem(u_int, u_int, void *);
+int	kernsh_register_kvirtm_write_virtm(u_int, u_int, void *);
+int	kernsh_register_kvirtm_write_mem(u_int, u_int, void *);
 
 /* Memory */
 int	kernsh_openmem();
@@ -572,6 +575,11 @@ int	kernsh_decompkernel_linux();
 
 int kernsh_kvirtm_read_virtm(pid_t, unsigned long, char *, int);
 int kernsh_kvirtm_read_virtm_proc_linux(pid_t, unsigned long, char *, int);
+int kernsh_kvirtm_read_virtm_syscall_linux(pid_t, unsigned long, char *, int);
+
+int kernsh_kvirtm_write_virtm(pid_t, unsigned long, char *, int);
+int kernsh_kvirtm_write_virtm_proc_linux(pid_t, unsigned long, char *, int);
+int kernsh_kvirtm_write_virtm_syscall_linux(pid_t, unsigned long, char *, int);
 
 int kernsh_kvirtm_openmem();
 int kernsh_kvirtm_closemem();
@@ -579,6 +587,10 @@ int kernsh_kvirtm_closemem();
 int kernsh_kvirtm_readmem(unsigned long, char *, int);
 int kernsh_kvirtm_readmem_proc_linux(unsigned long, char *, int);
 int kernsh_kvirtm_readmem_syscall_linux(unsigned long, char *, int);
+
+int kernsh_kvirtm_writemem(unsigned long, char *, int);
+int kernsh_kvirtm_writemem_proc_linux(unsigned long, char *, int);
+int kernsh_kvirtm_writemem_syscall_linux(unsigned long, char *, int);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

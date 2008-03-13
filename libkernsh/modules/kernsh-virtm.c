@@ -52,9 +52,13 @@ int kernsh_view_vmaps(pid_t);
 
 int asmlinkage kernsh_read_virtm(pid_t, unsigned long, char *, int, int);
 int asmlinkage kernsh_read_mem(unsigned long, char *, int, int);
+int asmlinkage kernsh_write_virtm(pid_t, unsigned long, const char *, int, int);
+int asmlinkage kernsh_write_mem(unsigned long, char *, int, int);
 
 int asmlinkage kernsh_read_virtm_syscall(pid_t, unsigned long, char *, int);
 int asmlinkage kernsh_read_mem_syscall(unsigned long, char *, int);
+int asmlinkage kernsh_write_virtm_syscall(pid_t, unsigned long, const char *, int);
+int asmlinkage kernsh_write_mem_syscall(unsigned long, char *, int);
 
 static int my_atoi(const char *name)
 {
@@ -244,6 +248,22 @@ ssize_t kernsh_virtm_vio_input(struct file *filp,
 			       unsigned long len, 
 			       void *data)
 {
+
+  printk(KERN_ALERT "kernsh_virtm_vio_input buff 0x%lx COUNT 0x%lx\n", (unsigned long)buff, len);
+
+  switch (current_kvirtm.action)
+    {
+    case LIBKERNSH_VIRTM_WRITE_MEM_PID :
+      printk(KERN_ALERT "kvvo -> kernsh_write_virtm\n");
+      kernsh_write_virtm(current_kvirtm.pid,
+			 current_kvirtm.addr,
+			 buff,
+			 current_kvirtm.len,
+			 LIBKERNSH_PROC_MODE);
+      break;
+    }
+
+
   return len;
 }
 
@@ -256,11 +276,12 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
 
   new_buff = NULL;
 
-  printk(KERN_ALERT "PAGE 0x%lx COUNT %d\n", (unsigned long)page, count);
+  printk(KERN_ALERT "kernsh_virtm_vio_output PAGE 0x%lx COUNT %d\n", (unsigned long)page, count);
 
   switch (current_kvirtm.action)
     {
     case LIBKERNSH_VIRTM_READ_MEM : 
+      printk(KERN_ALERT "kvvo -> kernsh_read_mem\n");
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
       kernsh_read_mem(current_kvirtm.addr,
 		      new_buff,
@@ -271,6 +292,7 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
     case LIBKERNSH_VIRTM_WRITE_MEM :
       break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
+      printk(KERN_ALERT "kvvo -> kernsh_read_virtm\n");	    
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
       kernsh_read_virtm(current_kvirtm.pid,
 			current_kvirtm.addr,
@@ -407,6 +429,9 @@ int kernsh_view_vmaps(pid_t pid)
   
   mm = task->mm;
 
+  printk(KERN_ALERT "START CODE 0x%lx START END 0x%lx\n", mm->start_code, mm->end_code);
+  printk(KERN_ALERT "DATA CODE 0x%lx DATA END 0x%lx\n", mm->start_data, mm->end_data);
+
   if (mm)
     {
       for(vma = mm->mmap; vma; vma = vma->vm_next)
@@ -542,6 +567,8 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
 	 len, 
 	 (unsigned long)buffer);
  
+  kernsh_view_vmaps(pid);
+
   if (addr <= 0)
     {
       printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
@@ -589,7 +616,7 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
   return 0;
 }
 
-int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
+int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -735,8 +762,67 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
 
 int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len, int mode)
 {
+  unsigned long p = addr;
+  ssize_t written, sz;
+  unsigned long copied;
+  void *ptr;
+  
+  printk(KERN_ALERT "[+] kernsh_write_mem ENTER !!\n");
 
-  return 0;
+  if (!valid_phys_addr_range(p, len))
+    return -EFAULT;
+  
+  written = 0;
+  
+  while (len > 0) 
+    {
+      /*
+       * Handle first page in case it's not aligned
+       */
+      if (-p & (PAGE_SIZE - 1))
+	sz = -p & (PAGE_SIZE - 1);
+      else
+	sz = PAGE_SIZE;
+      
+      sz = min_t(unsigned long, sz, len);
+      
+      /*
+       * On ia64 if a page has been mapped somewhere as
+       * uncached, then it must also be accessed uncached
+       * by the kernel or data corruption may occur
+       */
+      ptr = xlate_dev_mem_ptr(p);
+      
+      switch(mode)
+	{
+	case LIBKERNSH_PROC_MODE :
+	  memcpy(ptr, buffer, sz);
+	  copied = sz;
+	  break;
+	case LIBKERNSH_SYSCALL_MODE :
+	  copied = copy_from_user(ptr, buffer, sz);
+	  break;
+	}
+      
+      //copied = copy_from_user(ptr, buffer, sz);
+      if (copied) 
+	{
+	  written += sz - copied;
+	  if (written)
+	    break;
+	  
+	  return -EFAULT;
+	}
+      
+      buffer += sz;
+      p += sz;
+      len -= sz;
+      written += sz;
+    }
+  
+  printk(KERN_ALERT "[+] kernsh_write_mem EXIT !!\n");
+
+  return written;
 }
 
 int asmlinkage kernsh_read_virtm_syscall(pid_t pid, unsigned long addr, char *buffer, int len)
@@ -744,9 +830,19 @@ int asmlinkage kernsh_read_virtm_syscall(pid_t pid, unsigned long addr, char *bu
   return kernsh_read_virtm(pid, addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
 }
 
+int asmlinkage kernsh_write_virtm_syscall(pid_t pid, unsigned long addr, const char *buffer, int len)
+{
+  return kernsh_write_virtm(pid, addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
+}
+
 int asmlinkage kernsh_read_mem_syscall(unsigned long addr, char *buffer, int len)
 {
   return kernsh_read_mem(addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
+}
+
+int asmlinkage kernsh_write_mem_syscall(unsigned long addr, char *buffer, int len)
+{
+  return kernsh_write_mem(addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
 }
 
 int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid, 
@@ -760,14 +856,20 @@ int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid,
   switch (type)
     {
     case LIBKERNSH_VIRTM_READ_MEM :
+      printk(KERN_ALERT "[+] kksw -> kernsh_read_mem_syscall\n");
       return kernsh_read_mem_syscall(addr, buffer, len);
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM :
+      printk(KERN_ALERT "[+] kksw -> kernsh_write_mem_syscall\n");
+      return kernsh_write_mem_syscall(addr, buffer, len);
       break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
+      printk(KERN_ALERT "[+] kksw -> kernsh_read_virtm_syscall\n");
       return kernsh_read_virtm_syscall(pid, addr, buffer, len);
       break;
     case LIBKERNSH_VIRTM_WRITE_MEM_PID :
+      printk(KERN_ALERT "[+] kksw -> kernsh_write_virtm_syscall\n");
+      return kernsh_write_virtm_syscall(pid, addr, buffer, len);
       break;
     }
 

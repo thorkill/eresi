@@ -5,13 +5,13 @@
 #include "kernsh.h"
 #include "libkernsh.h"
 
-int kernsh_hexdump(unsigned char * data, 
-		    unsigned int amount, 
-		    size_t addr)
+int		kernsh_hexdump(unsigned char * data, 
+			       unsigned int amount, 
+			       size_t addr)
 {
-  unsigned int dp;
-  unsigned int p;
-  const char trans[] =
+  unsigned int	dp;
+  unsigned int	p;
+  const char	trans[] =
     "................................ !\"#$%&'()*+,-./0123456789"
     ":;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklm"
     "nopqrstuvwxyz{|}~...................................."
@@ -123,10 +123,10 @@ u_int		kernsh_instr_display(u_int index, elfsh_Addr vaddr,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-int kernsh_disasm(char *buffer, int len, unsigned long addr)
+int		kernsh_disasm(char *buffer, int len, unsigned long addr)
 {
 
-  int index, value;
+  int		index, value;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -143,7 +143,7 @@ int kernsh_disasm(char *buffer, int len, unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_addrlen(revmlist_t *actual, elfsh_Addr *addr, int *len)
+int		kernsh_addrlen(revmlist_t *actual, elfsh_Addr *addr, int *len)
 {
   revmexpr_t	*expr;
   revmobj_t     *obj;
