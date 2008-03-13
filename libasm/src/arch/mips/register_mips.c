@@ -1,6 +1,7 @@
 /**
  * @file register_mips.c
- * $Id: register_mips.c,v 1.3 2007/11/28 00:21:37 strauss Exp $
+ * @brief Registration of the MIPS disassembling vectors.
+ * $Id: register_mips.c,v 1.3 2008/03/13 16:15:37 strauss & pi3 Exp $
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki
@@ -13,13 +14,12 @@
 
 /**
  * Register a mips opcode handler.
- * @param op1
- * @param op2
- * @param op3
- * @param fcn
+ * @param op1 First argument of instruction type.
+ * @param op2 Second argument of instruction type.
+ * @param op3 Third argument of instruction type.
+ * @param fcn Address for registered function.
  * @return Always 1
  */
-
 int asm_register_mips_opcode(int op1,int op2,int op3, unsigned long fcn)
 {
    vector_t *vec;
@@ -57,7 +57,8 @@ int asm_register_mips_opcodes()
 }
 
 /**
- *
+ * @brief Initialize the disassembling vector for MIPS.
+ * @return Always 1.
  *
  */
 int asm_register_mips()
@@ -118,11 +119,6 @@ int asm_register_mips()
     return (1);
 }
 
-/**
- * Register mips operand handlers.
- * This is currently not implemented.
- */
-
 int asm_register_mips_operands()
 {
   asm_register_mips_operand(ASM_MIPS_OTYPE_NONE, (unsigned long) asm_mips_operand_none);
@@ -137,10 +133,15 @@ int asm_register_mips_operands()
 }
 
 
+/**
+ * Register mips operand handlers.
+ * @param type Type of the operand to register.
+ * @param func Function pointer.
+ * @return 1 on success, 0 on error.
+ */
 int asm_register_mips_operand(unsigned int type, unsigned long func)
 {
   LIBASM_PROFILE_FIN();
   asm_register_operand(LIBASM_VECTOR_OPERAND_MIPS, type, func);
   LIBASM_PROFILE_FOUT(1);
 }
-

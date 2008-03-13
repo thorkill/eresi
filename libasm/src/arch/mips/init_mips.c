@@ -12,11 +12,13 @@
 
 /**
  * Mips main fetching handler.
- * This function is called by asm_read_instr
- * @param ins
- * @param buf
- * @param len
- * @param proc
+ * This function is called by asm_read_instr.
+ * Function pointer is stored in asm_processor structure.
+ *
+ * @param ins Pointer to instruction structure to fill.
+ * @param buf Pointer to data to disassemble.
+ * @param len Length of data to disassemble.
+ * @param proc Pointer to processor structure.
  * @return Lengh of instruction or 0 on error.
  */
 int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
@@ -26,19 +28,7 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   u_int dim[3];
   u_char *for_help;
   LIBASM_HANDLER_FETCH(fetch);
-  //int (*fetch)(asm_instr *,u_char *,u_int,asm_processor *) = 0;
-  
-  /* we have to convert to the endiannes of the architecture
-   * were libasm is running keeping in mind that the target
-   * object can be either in big or little endian. */
-//#if __BYTE_ORDER == __LITTLE_ENDIAN
-//  if(asm_config_get_endian() == ASM_CONFIG_LITTLE_ENDIAN) {
-//    memcpy((char *)&converted,buf,sizeof(converted));
-//  } else {
-//    for(i=0;i<4;i++)
-//      ((char *)(&converted))[3-i] = *(buf + i);
-//  }
-//#else
+
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy((char *)&converted,buf,sizeof(converted));
   } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
@@ -49,7 +39,6 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
      printf("[INIT] Where am I ?!?!?!\n");
      exit(-1);
   }
-//#endif
 
    ins->proc = proc;
    ins->len = 4;
@@ -74,7 +63,6 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
  *       dim[2] = 6-37 = BSHFL subclass : 32 combinations
  */
 
-//   dim[0] = converted >> 24;
    dim[0] = converted >> 26;
    dim[1] = 0;
    dim[2] = 0;
@@ -95,34 +83,21 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
             case MIPS_OPCODE_SRLV:
                dim[2] = ((converted & 0x40) >> 6) + 4;
                break;
-//	    case MIPS_OPCODE_SLL:
-//	       dim[2] = (converted >> 6) & 0xFFFFF;
-//	       break;
          }
          break;
       }
       case MIPS_OPCODE_REGIMM:
-/*
-         dim[1] = (converted & 0x3f) + 
-                  MIPS_SPECIAL_FUNCTION_NUM; 
-*/
+
          dim[1] = ((converted >> 16) & 0x1F);
          break;
+
       case MIPS_OPCODE_SPECIAL2:
-/*
-         dim[1] = (converted & 0x3f) + 
-                  MIPS_SPECIAL_FUNCTION_NUM +
-                  MIPS_REGIMM_FUNCTION_NUM;
-*/
+
          dim[1] = converted & 0x3F;
          break;
+
       case MIPS_OPCODE_SPECIAL3:
-/*
-         dim[1] = (converted & 0x3f) + 
-                  MIPS_SPECIAL_FUNCTION_NUM +
-                  MIPS_REGIMM_FUNCTION_NUM +
-                  MIPS_SPECIAL2_FUNCTION_NUM;
-*/
+
          dim[1] = converted & 0x3F;
          switch(dim[1])
          {
@@ -158,8 +133,8 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 }
 
 /**
- * Mips initialization function. 
- * @param proc
+ * Mips initialization function to disassemble.
+ * @param proc Pointer to a asm_processor structure.
  * @return Always 0
  */
 int	asm_init_mips(asm_processor *proc)
@@ -174,6 +149,3 @@ int	asm_init_mips(asm_processor *proc)
 
   return (0);
 }
-
-
-

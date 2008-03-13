@@ -12,12 +12,12 @@
 /**
  * Return ascii representation of a mips operand
  *
- * @param ins
- * @param num
- * @parram addr
+ * @param ins Pointer to asm_instr structure.
+ * @param num Now it unused.
+ * @parram addr Virtual Address of instruction.
  * @return A pointer to a static buffer or NULL on error.
  */
-char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
+char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 {
   unsigned int i;
   static char bufer[40];
@@ -74,10 +74,10 @@ char *asm_mips_display_operand(asm_instr *ins,int num,unsigned int addr)
 }
 
 /**
- * Return ascii representation of a mips instruction
+ * Return ascii representation of a mips instruction with operand.
  *
  * @param ins Pointer to instruction structure.
- * @param addr Virtual address of instruction.
+ * @param addr Virtual Address of instruction.
  * @return Pointer to a static buffer or NULL on error.
  */
 char *asm_mips_display_instr(asm_instr *ins,int addr)
