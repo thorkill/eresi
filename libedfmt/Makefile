@@ -24,8 +24,8 @@ CFLAGS32		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
 CFLAGS64		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/ -DELFSH_INTERN -DERESI64
 
-LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 \
-			-L../liballocproxy -lallocproxy
+LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 
+#			-L../liballocproxy -lallocproxy
 
 LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
 			-L../liballocproxy/ -lallocproxy

@@ -1,6 +1,6 @@
 /*
-** misc.c for libkernsh
-**
+** @file misc.c
+** @ingroup libkernsh
 ** $Id: misc.c,v 1.4 2007-09-02 21:47:25 pouik Exp $
 **
 */

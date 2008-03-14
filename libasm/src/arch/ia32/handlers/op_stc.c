@@ -1,4 +1,6 @@
-/*
+/**
+ * @file op_stc.c
+ * @ingroup handlers_ia32
 ** $Id: op_stc.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
 **
 */

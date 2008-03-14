@@ -11,7 +11,8 @@ SRC	= symtab_extend.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
-	-L../../libaspect/ -laspect32
+	-L../../libaspect/ -laspect32 \
+	-L../../libetrace/ -letrace32
 NAM	= symtab_extend
 RM	= rm -f 
 VULN	= main.c

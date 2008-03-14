@@ -1,6 +1,6 @@
 /*
-** kvirtm.c for libkernsh
-** 
+** @file kvirtm.c
+** @ingroup libkernsh
 ** $Id: kvirtm.c,v 1.0 2008-02-25 20:05:00 pouik Exp $
 **
 */

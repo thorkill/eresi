@@ -1,6 +1,6 @@
 /*
-** kernel.c for libkernsh
-**
+** @file kernel.c
+** @ingroup libkernsh
 ** $Id: kernel.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
 **
 */

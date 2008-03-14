@@ -1,4 +1,6 @@
-/*
+/**
+ * @file operand_ia32.c
+ * @ingroup libasm_ia32
 ** $Id: operand_ia32.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 ** Author  : <sk at devhell dot org>

@@ -1,4 +1,6 @@
-/*
+/**
+ * @file op_scasb.c
+ * @ingroup handlers_ia32
 ** $Id: op_scasb.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 */

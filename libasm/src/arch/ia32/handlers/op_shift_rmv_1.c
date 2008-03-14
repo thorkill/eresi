@@ -1,4 +1,6 @@
-/*
+/**
+ * @file op_shift_rmv_1.c
+ * @ingroup handlers_ia32
 ** $Id: op_shift_rmv_1.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
 **
 */

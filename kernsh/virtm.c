@@ -1,6 +1,10 @@
-/*
-** virtm.c for kernsh
-** 
+/**
+ * @defgroup kernsh Kernsh
+ */
+/**
+ *
+** @file virtm.c
+** @ingroup kernsh
 **
 */
 

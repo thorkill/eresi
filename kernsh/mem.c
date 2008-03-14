@@ -1,6 +1,6 @@
 /*
-** mem.c for kernsh
-** 
+** @file mem.c
+** @ingroup kernsh
 ** $Id: mem.c,v 1.14 2008-02-16 12:32:26 thor Exp $
 **
 */

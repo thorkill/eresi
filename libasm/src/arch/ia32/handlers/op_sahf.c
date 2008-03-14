@@ -1,4 +1,6 @@
-/*
+/**
+ * @file op_sahf.c
+ * @ingroup handlers_ia32
 ** $Id: op_sahf.c,v 1.4 2007/08/15 21:30:20 strauss Exp $
 **
 */

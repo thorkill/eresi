@@ -1,6 +1,9 @@
+/**
+ * @defgroup libkernsh libkernsh
+ */
 /*
-** vectors.c for libkernsh
-**
+** @file vectors.c
+** @ingroup libkernsh
 ** $Id: vectors.c,v 1.9 2007-09-23 17:53:35 pouik Exp $
 **
 */

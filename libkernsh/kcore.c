@@ -1,6 +1,6 @@
 /*
-** kcore.c for libkernsh
-**
+** @file kcore.c
+** @ingroup libkernsh
 ** $Id: kcore.c,v 1.4 2007-07-31 12:31:54 pouik Exp $
 **
 */

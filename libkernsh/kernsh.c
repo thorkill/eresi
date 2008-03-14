@@ -1,5 +1,7 @@
 /*
-** kernsh.c for libkernsh : initialisation, get_raw and mode switch
+** @file kernsh.c
+* @ingroup libkernsh
+* @brief initialisation, get_raw and mode switch
 **
 ** $Id: kernsh.c,v 1.14 2007-10-14 09:59:06 pouik Exp $
 **

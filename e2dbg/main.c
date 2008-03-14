@@ -1,6 +1,9 @@
+/**
+ * @defgroup e2dbg e2dbg
+ */
 /*
  * @file main.c
- *
+ * @ingroup e2dbg
  * The embedded ELF debugger
  *
  * Started on  Wed Feb 21 22:02:36 2001 jfv

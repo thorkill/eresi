@@ -1,6 +1,6 @@
 /*
-** mode.c for kernsh
-** 
+** @file mode.c
+** @ingroup kernsh
 ** $Id: mode.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */

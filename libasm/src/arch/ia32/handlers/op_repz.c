@@ -1,4 +1,6 @@
-/*
+/**
+ * @file op_repz.c
+ * @ingroup handlers_ia32
 ** $Id: op_repz.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
 **
 */

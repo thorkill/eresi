@@ -1,6 +1,6 @@
 /*
-** sct.c for libkernsh
-**
+** @file sct.c
+** @ingroup libkernsh
 ** $Id: sct.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */

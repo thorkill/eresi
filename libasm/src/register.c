@@ -1,7 +1,7 @@
 /**
  * $Id: register.c,v 1.10 2007/11/28 00:21:37 strauss Exp $
- *
  * @file register.c
+ * @ingroup libasm_engine
  * @brief Registration of instruction and operand handlers.
  */
 

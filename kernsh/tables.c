@@ -1,6 +1,6 @@
 /*
-** tables.c for kernsh
-**
+** @file tables.c
+** @ingroup kernsh
 ** $Id: tables.c,v 1.5 2007-09-02 21:47:25 pouik Exp $
 **
 */

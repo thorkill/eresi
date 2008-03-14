@@ -1,6 +1,6 @@
 /*
-** mem.c for libkernsh
-**
+** @file mem.c
+** @ingroup libkernsh
 ** $Id: mem.c,v 1.6 2007-07-31 12:31:54 pouik Exp $
 **
 */

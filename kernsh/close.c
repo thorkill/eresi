@@ -1,6 +1,6 @@
 /*
-** close.c for kernsh
-** 
+** @file close.c 
+** @ingroup kernsh
 ** $Id: close.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */

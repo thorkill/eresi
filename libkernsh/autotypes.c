@@ -1,6 +1,6 @@
 /*
-** autotypes.c for libkernsh
-**
+** @file autotypes.c
+** @ingroup libkernsh
 ** $Id: autotypes.c,v 1.4 2008-02-16 12:32:27 thor Exp $
 **
 */

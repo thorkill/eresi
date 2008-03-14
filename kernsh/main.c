@@ -1,6 +1,6 @@
 /*
-** main.c for kernsh
-**
+** @file main.c
+** @ingroup kernsh
 ** $Id: main.c,v 1.7 2007-10-11 18:25:17 pouik Exp $
 **
 */

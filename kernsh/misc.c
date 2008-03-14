@@ -1,6 +1,6 @@
 /*
-** misc.c for kernsh
-**
+** @file misc.c
+** @ingroup kernsh
 */
 #include "kernsh.h"
 #include "libkernsh.h"

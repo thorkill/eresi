@@ -1,6 +1,6 @@
 /*
-** idt.c for libkernsh
-**
+** @file idt.c
+** @ingroup libkernsh
 ** $Id: gdt.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 **
 */

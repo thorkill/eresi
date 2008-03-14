@@ -1,12 +1,13 @@
-/*
-** api.c for libedfmt (The Elf debug format library of ELFsh)
-**
-** Started Jan 26 2007 11:54:22 mxatone
-**
-**
-** $Id: api.c,v 1.15 2007-06-02 08:28:50 mxatone Exp $
-**
-*/
+/**
+ * @file api.c
+ *
+ * api.c for libedfmt (The Elf debug format library of ELFsh)
+ *
+ * Started Jan 26 2007 11:54:22 mxatone
+ *
+ * $Id: api.c,v 1.15 2007-06-02 08:28:50 mxatone Exp $
+ *
+ */
 
 #include "libedfmt.h"
 

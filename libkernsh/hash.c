@@ -1,6 +1,6 @@
 /*
-** hash.c for libkernsh
-** 
+** @file hash.c
+** @ingroup libkernsh
 ** $Id: hash.c,v 1.2 2008-08-02 20:43:00 pouik Exp $
 **
 */
