@@ -1,7 +1,4 @@
 /**
- * @defgroup librevm_api librevm API
- */
-/**
 * @file typing.c
 * @ingroup librevm_api
 * @brief Various API for manipulating types.

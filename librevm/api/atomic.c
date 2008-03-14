@@ -1,3 +1,6 @@
+/**
+ * @defgroup librevm_api librevm API
+ */
 /*
 ** @file atomic.c
 ** @ingroup librevm_api
