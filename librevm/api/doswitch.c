@@ -1,6 +1,7 @@
 /*
 ** @file doswitch.c
-** 
+** @ingroup librevm_api
+** @brief Do the switch. 
 ** Started on  Sat Jan 25 11:20:49 2003 jfv
 **
 ** $Id: doswitch.c,v 1.6 2008-02-16 12:32:27 thor Exp $

@@ -1,7 +1,7 @@
 /**
  * @file color.c
- *
- * All functions about colors
+ * @ingroup io
+ * @brief All functions about colors.
  *
  * Started on Sept 11 2005 mxatone
  *

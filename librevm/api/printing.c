@@ -1,7 +1,7 @@
 /*
  * @file printing.c
- * 
- * This file contains various printing facilities API
+ * @ingroup librevm_api
+ * @brief This file contains various printing facilities API.
  *
  * Started on  Wed Dec 05 23:02:04 2003 jfv
  * $Id: printing.c,v 1.2 2008-02-16 12:32:27 thor Exp $

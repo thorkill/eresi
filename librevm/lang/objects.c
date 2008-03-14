@@ -1,7 +1,7 @@
 /**
  * @file objects.c
- *
- * Methods for creation of objects
+ * @ingroup librevm_lang
+ * @brief Methods for creation of objects.
  *
  * See lts.c for Lazy Type System implementation
  * 

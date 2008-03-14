@@ -1,7 +1,7 @@
 /*
-** expressions.c for librevm in ERESI
-**
-** Implementation of scripting declarations for meta-language variables
+** @file expressions.c
+** @ingroup librevm_lang
+** @brief Implementation of scripting declarations for meta-language variables.
 **
 ** Started on Jun 23 2007 23:39:51 jfv
 ** $Id: expressions.c,v 1.21 2007-12-09 23:00:18 may Exp $

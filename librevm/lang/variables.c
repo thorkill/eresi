@@ -1,7 +1,10 @@
 /**
+ * @defgroup librevm_lang librevm Language
+ */
+/**
  * @file variables.c
- *
- * Contain functions for easy variables accesses
+ * @ingroup librevm_lang
+ * @brief Contain functions for easy variables accesses.
  *
  * Started September 16 2005 04:01:03 jfv
  *

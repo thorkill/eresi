@@ -1,6 +1,8 @@
 /*
 ** @file screen.c
-**
+** @ingroup librevm_api
+*/
+/*
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:22:11 2007 jfv
 **

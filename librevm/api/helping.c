@@ -1,6 +1,7 @@
 /*
 ** @file help.c for librevm in ERESI
-** 
+** @ingroup librevm_api
+** @brief The help command. 
 ** Started on  Sat Jan 25 11:19:18 2003 jfv
 ** $Id: helping.c,v 1.1 2007-11-29 14:08:47 may Exp $
 **

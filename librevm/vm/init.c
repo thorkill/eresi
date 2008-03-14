@@ -1,6 +1,6 @@
 /**
  * @file elfsh.c
- *
+ * @ingroup librevm_vm
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *

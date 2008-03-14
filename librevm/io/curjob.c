@@ -1,7 +1,7 @@
 /**
  * @file curjob.c
- *
- * Implement job API necessary for revm-io
+ * @ingroup io
+ * @brief Implement job API necessary for revm-io.
  *
  * Started September 16 03:11:04 2005 jfv
  *

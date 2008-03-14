@@ -1,7 +1,7 @@
 /**
  * @file prompt.c
- *
- * @brief Interface for prompt management
+ * @ingroup io
+ * @brief Interface for prompt management.
  * @ingroup io
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv

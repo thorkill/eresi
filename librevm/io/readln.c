@@ -1,7 +1,7 @@
 /**
  * @file readln.c
  * @ingroup io
- * @brief Interface readline with librevm
+ * @brief Interface readline with librevm.
  *
  * This allows us to only recompile this file
  * when the user recompiles enabling/disabling readline.
@@ -10,10 +10,6 @@
  * $Id: readln.c,v 1.2 2007-11-29 15:33:39 may Exp $
  */
 #include "revm.h"
-
-/**
- * @defgroup io librevm Readline-REVM-interface
- */
 
 /**
  * Reset lines counters and ignore output state 

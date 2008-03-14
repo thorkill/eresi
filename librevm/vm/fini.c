@@ -1,7 +1,7 @@
 /*
  * @file fini.c
- * 
- * Routines executed when leaving script mode
+ * @ingroup librevm_vm
+ * @brief Routines executed when leaving script mode.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
  * $Id: fini.c,v 1.1 2008-02-16 12:32:27 thor Exp $

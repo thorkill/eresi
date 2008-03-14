@@ -1,7 +1,7 @@
 /**
  * @file network.c
- *
- * The high-level network interface
+ * @ingroup io
+ * @brief The high-level network interface.
  *
  * Started Wed Feb 25 22:22:35 2004 yann_malcom
  * Updated Mon Mar 05 04:37:10 2007 jfv 

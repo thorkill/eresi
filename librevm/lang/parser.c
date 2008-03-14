@@ -1,6 +1,6 @@
 /**
  * @file parse.c
- *
+ * @@ingroup librevm_lang
  * The top level parser of the language
  *
  * Started on Wed Feb 28 19:19:04 2007 jfv

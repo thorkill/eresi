@@ -1,7 +1,7 @@
 /**
  * @file opt.c
- *
- * Implement the commands registration handlers
+ * @ingroup librevm_lang
+ * @brief Implement the commands registration handlers.
  * 
  * Started on  Fri Nov  2 15:17:02 2001 jfv
  *

@@ -1,7 +1,7 @@
 /*
 ** @file inform.c
-**
-** @brief API for annotating program objects
+** @ingroup librevm_api
+** @brief API for annotating program objects.
 **
 ** Started Jan 21 2007 12:57:03 jfv
 ** $Id: inform.c,v 1.7 2008-02-16 12:32:27 thor Exp $

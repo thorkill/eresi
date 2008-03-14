@@ -1,6 +1,6 @@
 /*
-** libui-color.h for libui
-** 
+** @file libui-color.h
+** @ingroup librevm_hdr
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
 ** $Id: librevm-color.h,v 1.7 2008-02-16 12:32:27 thor Exp $

@@ -1,7 +1,7 @@
 /**
 ** @file objects.c
-**
-** The implementation of the Lazy Abstract Type System (LATS)
+** @ingroup librevm_lang
+** @brief The implementation of the Lazy Abstract Type System (LATS).
 **
 ** It is the first rewrite of the type-system, in order to
 ** give it a really structured shape with clear type conversion

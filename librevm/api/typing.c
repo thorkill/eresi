@@ -1,8 +1,13 @@
 /**
+ * @defgroup librevm_api librevm API
+ */
+/**
 * @file typing.c
-* 
-* Various API for manipulating types
+* @ingroup librevm_api
+* @brief Various API for manipulating types.
 *
+*/
+
 * Started on Sun Jan 9 07:23:58 2007 jfv
 * $Id: typing.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **

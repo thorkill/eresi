@@ -1,7 +1,7 @@
 /**
  * @file log.c
  * @ingroup io
- * @brief Implement logging facilities 
+ * @brief Implement logging facilities.
  *
  * Started September 16 03:11:04 2005 jfv
  *

@@ -1,7 +1,10 @@
+/**
+ * @defgroup librevm_vm librevm VM
+ */
 /*
-** tables.c for elfsh
-**
-** This file contains all command and objects definitions for scripting
+** @file tables.c
+** @ingroup librevm_vm
+** @brief This file contains all command and objects definitions for scripting.
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
 **
