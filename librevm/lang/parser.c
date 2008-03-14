@@ -52,6 +52,8 @@ char			*revm_label_get(char *prefix)
 int			revm_parse_construct(char *curtok)
 {
   char			*labl;
+  listent_t		*curcondcmd;
+  revmargv_t		*condcmd;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 	  
@@ -128,7 +130,22 @@ int			revm_parse_construct(char *curtok)
 		     "Incorrectly nested match-ending statement", -1);      
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
-      nextlabel = 1;
+      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
+      
+      /* Now setting the end label to all waiting case/default commands */
+      if (condcmdlist && condcmdlist->head)
+	{
+	  for (curcondcmd = condcmdlist->head; curcondcmd; curcondcmd = curcondcmd->next)
+	    {
+	      condcmd = (revmargv_t *) curcondcmd->data;
+	      condcmd->endlabel = strdup(endlabl);
+	      
+	      fprintf(stderr, "*** Adding endlabel %s to command %s ! **** \n", 
+		      endlabl, condcmd->name);
+	    }
+	  elist_destroy(condcmdlist);
+	  condcmdlist = NULL;
+	}
     }
   
   /* This flag says if the command opens a new scope just for its arguments */
@@ -153,8 +170,6 @@ int			revm_parseopt(int argc, char **argv)
   int			ret;
   volatile revmcmd_t	*actual;
   volatile revmargv_t   *loopstart;
-  listent_t		*curcondcmd;
-  revmargv_t		*condcmd;
   char			*name;
   char			label[16];
   char			c;
@@ -201,6 +216,7 @@ int			revm_parseopt(int argc, char **argv)
 	      loopstart = hash_get(&labels_hash[world.curjob->sourced], looplabels[curnest]);
 
 	      /* If we are executing "default", we search for the loop start in the parent scope */
+	      /*
 	      if (world.curjob->sourced && isdefault)
 		for (ret = 0; world.curjob->sourced >= ret; ret++)
 		  {
@@ -208,24 +224,13 @@ int			revm_parseopt(int argc, char **argv)
 		    if (loopstart)
 		      break;
 		  }
+	      */
+
 	      if (!loopstart)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			     "Invalid nesting of language construct", -1);
 	      loopstart->endlabel = strdup(endlabl);
-	      isdefault = nextlabel = 0;
-	      if (condcmdlist && condcmdlist->head)
-		{
-		  for (curcondcmd = condcmdlist->head; curcondcmd; curcondcmd = curcondcmd->next)
-		    {
-		      condcmd = (revmargv_t *) curcondcmd->data;
-		      condcmd->endlabel = strdup(endlabl);
-		      
-		      fprintf(stderr, "*** Adding endlabel %s to command %s ! **** \n", 
-			      endlabl, condcmd->name);
-		    }
-		  elist_destroy(condcmdlist);
-		  condcmdlist = NULL;
-		}
+	      /* isdefault = */ nextlabel = 0;
 	    }
 
 	  /* Dont call registration handler if there is not (0 param commands) */
@@ -282,14 +287,6 @@ int			revm_parseopt(int argc, char **argv)
 	  world.curjob->lstcmd[world.curjob->sourced] = newcmd;
 	}
     }
-
-  /*
-  if (condcmdlist)
-    {
-      hash_destroy(condcmdlist);
-      condcmdlist = NULL;
-    }
-  */
 
   /* Return success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

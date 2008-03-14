@@ -36,7 +36,7 @@ int		cmd_return()
       if (!retval)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid return value", -1);
-      revm_expr_copy(retval, REVM_VAR_RESULT);
+      revm_expr_copy(retval, REVM_VAR_RESULT, 0);
     }
 
   /* Do not unload files if we were sourcing a script */

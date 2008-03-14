@@ -25,9 +25,8 @@ static revmexpr_t *revm_expr_read(char **datavalue)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, expr,
 	 sizeof(revmexpr_t), NULL);
 
-  /* Check if a variable is given as value */
-  /* FIXME: this is not good ! strval contains the initial value and not
-     the current value of the source variable */
+  /* Check if a variable is given as value of another variable */
+  /*
   if (*datastr == REVM_VAR_PREFIX)
     {
       expr = revm_expr_get(datastr);
@@ -35,19 +34,17 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	{
 
 #if 1 //__DEBUG_EXPRS__
-	  fprintf(stderr, " [D] FOUND REVMEXPR = %s :: %s (recursing!) \n", 
+	  fprintf(stderr, " [D] FOUND EXISTING INITIAL REVMEXPR = %s :: %s (recursing!) \n", 
 		  expr->label, expr->strval);
 #endif
 
-	  //datastr = strdup(expr->strval);
-	  //expr = revm_expr_read(&datastr);
-	  expr = revm_expr_copy(expr, revm_tmpvar_create());
-
+	  expr = revm_expr_copy(expr, revm_tmpvar_create(), 0);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 	}
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Unable to get root field or type name", NULL);
     }
+  */
 
   /* First get the field (or top-level type) name */
   expr->label = datastr;
@@ -102,7 +99,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 		 *datastr-- = 0x00)
  	      *namend++ = 0x00;
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
 	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n", 
 		    expr->label, expr->strval);
 #endif
@@ -121,7 +118,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 	   *datastr-- = 0x00)
 	*namend++ = 0x00;
       
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
       fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
 	      expr->label, expr->strval);
 #endif
@@ -147,7 +144,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
   static u_int	pathsize = 0;
   char		pathbuf[BUFSIZ + 1] = {0x00};
   char		*recpath;
-  revmexpr_t	*newexpr, *rootexpr, *prevexpr;
+  revmexpr_t	*newexpr, *rootexpr, *prevexpr, *expr;
   void		*childata;
   aspectype_t	*childtype;
   revmexpr_t	*curdata;
@@ -177,7 +174,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 #endif
 
   /* Construct the expression until end of ascii string */
-  while (datavalue && *datavalue)
+  while (*datavalue)
     {
       
 #if __DEBUG_EXPRS__
@@ -224,12 +221,40 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	}
       else
 	toplevel = 0;
-
+      
       /* If the substructure is initialized with the value of another expression, no need to
 	 do any additional read, init or inform on the current field */
-      if (*newexpr->label == REVM_VAR_PREFIX)
+      if (*newexpr->strval == REVM_VAR_PREFIX)
 	{
-	  datavalue = NULL;
+	  expr = revm_expr_get(newexpr->strval);
+	  if (!expr)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
+	      pathsize = 0;
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Unable to get root field or type name", NULL);
+	    }
+	  
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, " [D] FOUND EXISTING INITIAL REVMEXPR = %s :: %s (doing copy) \n", 
+		  expr->label, expr->strval);
+#endif
+	  
+	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,	".%s", newexpr->label);
+	  newexpr = revm_expr_copy(expr, recpath, 1);
+	  bzero(recpath + pathsize, len);
+	  if (!newexpr)
+	    {
+	      pathsize = 0;
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Unable to copy existing initial subexpression", NULL);
+	    }
+
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, " [D] COPIED EXISTING INITIAL REVMEXPR = %s :: %s (new name) \n", 
+		  newexpr->label, newexpr->strval);
+#endif
+	  
 	  goto loopend;
 	}
 
@@ -654,7 +679,7 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
 
 
 /* Copy an expression (set $e1 $e2) */
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
 {
   revmexpr_t	*dest;
   aspectype_t	*type;
@@ -662,39 +687,50 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
   char		newname[BUFSIZ] = {0x00};
   int		curoff;
   char		*copydata;
-  hash_t	*thash;
   revmannot_t	*annot;
+  char		*str, *str2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* First copy the data */
   type = source->type;
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copydata, type->size, NULL);
-  snprintf(newname, sizeof(newname), "type_%s", type->name);
-  thash = hash_find(newname);
-  annot = hash_get(thash, source->label);
 
   /* Constants are not annotated, we might not want to do anything here */
+  annot = revm_annot_get(source->label);
   if (annot)
     memcpy(copydata, (char *) annot->addr, type->size);
 
-  /* Create a temporary variable if necessary */
-  if (*dstname != REVM_VAR_PREFIX || 
+  /* Create a temporary variable if necessary (for constants) */
+  if ((!isfield && *dstname != REVM_VAR_PREFIX) || 
       !strncmp(dstname, "$hash", 5) || 
       !strncmp(dstname, "$list", 5))
     dstname = revm_tmpvar_create();
   else
     dstname = strdup(dstname);
 
-  /* Then copy the meta-data */
+  /* Then copy the expression meta-data */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, dest, sizeof(revmexpr_t), NULL);
   strncpy(newname, dstname, sizeof(newname));
   curoff = strlen(newname);
   if (source->strval)
     dest->strval = strdup(source->strval);
-  dest->label    = strdup(newname);
+
+  /* If we are copying a subexpression, make sure labels are copied relative */
+  if (isfield)
+    {
+      for (str = newname; 
+	   str && *str && (str2 = strchr(str, '.')); 
+	   str = str2 + 1);
+      if (!str || !*str)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to inform copy expression", NULL);
+    }
+  else
+    str = newname;
+  dest->label    = strdup(str);
   dest->type     = type;
-  if (!revm_inform_type_addr(type->name, dstname, (elfsh_Addr) copydata, dest, 0, 0))
+  if (!revm_inform_type_addr(type->name, strdup(dstname), (elfsh_Addr) copydata, dest, 0, 0))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to inform copy expression", NULL);
 
@@ -715,7 +751,6 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname)
       ret = revm_expr_copyrec(dest->type, dest->childs, source->childs, 
 			      newname, BUFSIZ, curoff, copydata);
     }
-
 
   /* Failure: no value or complex type for source expr ? */
   else
@@ -787,10 +822,10 @@ int		revm_expr_print(char *pathname)
   int		iter;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  expr = hash_get(&exprs_hash, pathname);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid name for expression", -1);    
+  expr = hash_get(&exprs_hash, pathname);
   if (!expr || !expr->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unknown expression name", -1);
@@ -1082,8 +1117,12 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
-
   revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0);
+
+  fprintf(stderr, "Now printing created expression ... \n");
+  revm_expr_print(expr->label);
+  fprintf(stderr, "END of created expression \n");
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
@@ -1155,6 +1194,8 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
 int		revm_expr_destroy(char *e)
 {
   revmexpr_t	*expr;
+  char		newname[BUFSIZ];
+  hash_t	*thash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e)
@@ -1171,7 +1212,15 @@ int		revm_expr_destroy(char *e)
 		 "Unknown expr parameter", -1);
   hash_del(&exprs_hash, e);
 
-  // XXX: must free recursively ! memory leak here
+  if (expr->type)
+    {
+      snprintf(newname, sizeof(newname), "type_%s", expr->type->name);
+      thash = hash_find(newname);
+      if (thash)
+	hash_del(thash, e);
+    }
+
+  // FIXME-XXX: must free recursively ! memory leak here
   if (expr->value)
     //revm_destroy_object(expr->value); // this was not copied/reallocated correctly somewhere
     XFREE(__FILE__, __FUNCTION__, __LINE__, expr->value);

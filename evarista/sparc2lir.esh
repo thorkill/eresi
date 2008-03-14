@@ -13,7 +13,7 @@ type instr
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 
-print Transforming instruction: $instr
+print TRANSFORMING instruction: $instr
 #profile enable warn
 #quiet
 
@@ -43,7 +43,7 @@ into IndCallR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
 # direct call (op1 addr) 									
 case instr(sem:c, nb_op:1, op1(sem:imm))
-into Call(addr:$curaddr, idest:Addr($instr.op1.imm))			 
+into Call(addr:$curaddr, dst:Addr($instr.op1.imm))			 
 
 # ta* (traps)
 case instr(sem:i)
@@ -55,8 +55,9 @@ into Return(addr:$curaddr, Immed(val:$instr.op1.imm))
 
 # save 												
 case instr(sem:p) 
-profile enable warn
+#profile enable warn
 into Prolog(addr:$curaddr) 				 
+#varlist instr
 
 # restore 												
 case instr(sem:e) 
@@ -95,6 +96,10 @@ into AssignIR(addr:$curaddr, dst(id:$instr.op1.baser), src(val:0))
 # clrx, clrh, clrb, clr (op1 = mem)  										 		
 case instr(sem:ar-wm, nb_op:1, op1(sem:mem)) 
 into AssignIM(addr:$curaddr, dst(name:$instr.op1.name base(id:$instr.op1.baser), off(val:$instr.op1.imm)), isrc(val:0)) 	 
+
+# set(hi)										 		
+case instr(sem:a, nb_op:2, op1(sem:reg), op2(sem:imm))
+into AssignIR(addr:$curaddr, dst(id:$instr.op1.baser), src(val:$instr.op2.imm))
 
 # btog immed 														
 case instr(sem:ar, nb_op:2, op1(sem:imm))
@@ -136,7 +141,14 @@ into CmpRI(addr:$curaddr, snd(id:$instr.op1.baser), snd(val:$instr.op2.imm))
 default print Unsupported instruction at address $curaddr	 
 
 rwtend
+
+#tables type_instr
+#tables type_Prolog
+
+print TRANSFORMED instruction: $instr
+
 add $curaddr 4 
+
 forend
 
 print

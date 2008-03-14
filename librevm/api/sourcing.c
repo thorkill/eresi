@@ -103,7 +103,7 @@ int		revm_source(char **params)
 	  actual, (expr->type ? expr->type->name : "UNKNOWN TYPE"));
 #endif
 
-      expr = revm_expr_copy(expr, actual);
+      expr = revm_expr_copy(expr, actual, 0);
     }
   argv[ac + 1] = NULL;
 

@@ -40,6 +40,8 @@ define sp-rm-wf sp  rm wf
 define sp-wm-rf sp  wm rf
 define wm-rm    wm  rm
 
+#return 0
+
 # Attributes for ASM operands
 define reg	ASM_OPTYPE_REG
 define imm	ASM_OPTYPE_IMM

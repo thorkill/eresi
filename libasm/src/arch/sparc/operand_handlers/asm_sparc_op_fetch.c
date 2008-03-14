@@ -1,6 +1,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
+
 /**
  * Main function, dispatch processing to handler.
  * @param op Pointer to operand to fill
@@ -9,9 +10,8 @@
  * @param proc Pointer to processor structure.
  * @return Operand length or -1 on error (should currently never occur)
  */
-
 int asm_sparc_op_fetch(asm_operand *op, u_char *opcode, int otype, 
-                 			  asm_instr *ins)
+		       asm_instr *ins)
 { 
   vector_t      *vec;
   u_int         dim[1];

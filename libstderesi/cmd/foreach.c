@@ -186,7 +186,7 @@ int		cmd_foreach()
 	{
 	  indname = strdup(indexpr->label);
 	  revm_expr_destroy(indexpr->label);
-	  indexpr = revm_expr_copy((revmexpr_t *) elem, indname);
+	  indexpr = revm_expr_copy((revmexpr_t *) elem, indname, 0);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 

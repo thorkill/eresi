@@ -45,7 +45,7 @@ int			cmd_set()
 		     "Unable to set expressions", (-1));
 
       revm_expr_destroy(last->label);
-      last = revm_expr_copy(e2, REVM_VAR_RESULT);
+      last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
       if (!last)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set result expression", (-1));
@@ -109,7 +109,7 @@ int			cmd_set()
       if (!e1->type)
 	{
 	  revm_expr_destroy(e1->label);
-	  e1 = revm_expr_copy(e2, world.curjob->curcmd->param[0]);
+	  e1 = revm_expr_copy(e2, world.curjob->curcmd->param[0], 0);
 	  if (!e1)
 	    {
 	      if (e2->value && !e2->value->perm)
@@ -129,7 +129,7 @@ int			cmd_set()
 
   /* Copy the result in the last result variable */
   revm_expr_destroy(last->label);
-  last = revm_expr_copy(e2, REVM_VAR_RESULT);
+  last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
   if (!last)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to set result expression", (-1));

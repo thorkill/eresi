@@ -844,6 +844,7 @@ int             revm_uninform_type(char *type, char *varname, u_char print);
 int		revm_type_copy(char *from, char *to);
 int		revm_type_hashcreate(char *name);
 int		revm_type_print(char *type, char mode);
+revmannot_t	*revm_annot_get(char *name);
 
 /* Expression related functions */
 revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *value);
@@ -858,7 +859,7 @@ int		revm_expr_compare_by_name(char *original, char *candidate, elfsh_Addr *val)
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname);
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
 int		revm_expr_destroy(char *e);
 
 /* May not be defined */

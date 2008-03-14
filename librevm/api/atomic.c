@@ -600,6 +600,9 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
   char			*str;
   char			*str2;
   elfsh_Addr	       	val2;
+  u_char		bval2;
+  u_short		hval2;
+  u_int			ival2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e2 || !e2)
@@ -645,8 +648,23 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
 	*val = strcmp(str, str2);
       break;
     case ASPECT_TYPE_BYTE:
+      bval2 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
+      *val  = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
+      *val -= bval2;
+      break;      
+
     case ASPECT_TYPE_SHORT:
+      hval2  = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
+      *val  = (o1->immed ? o1->immed_val.half : o1->get_obj(o1->parent));
+      *val -= hval2;
+      break;      
+
     case ASPECT_TYPE_INT:
+      ival2  = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
+      *val  = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
+      *val -= ival2;
+      break;      
+
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     case ASPECT_TYPE_LONG:
@@ -654,6 +672,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
       *val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       *val -= val2;
       break;      
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Uncomparable parameter type", -1);

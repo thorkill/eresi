@@ -10,6 +10,35 @@
 #include "libstderesi.h"
 
 /** 
+ * Retreive the annotation for a given expression
+ * @param name Expression name
+ * @return A pointer on the annotation, or NULL if failed.
+ */
+revmannot_t	*revm_annot_get(char *name)
+{
+  revmexpr_t	*expr;
+  aspectype_t	*type;
+  hash_t	*thash;
+  revmannot_t	*annot;
+  char		newname[BUFSIZ] = {0x00};
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  expr = revm_expr_get(name);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input expression name", NULL);
+  type = expr->type;
+  snprintf(newname, sizeof(newname), "type_%s", type->name);
+  thash = hash_find(newname);
+  annot = hash_get(thash, name);
+  if (!annot)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to find annotation for expression", NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, annot);
+}
+
+
+/** 
  * Copy a field value from one expression to another (provided destination indeed has that field)
  * @param dest Destination expression to add field to
  * @param source Source expression tocopy field from
@@ -21,28 +50,58 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
   char		srcname[BUFSIZ];
   char		dstname[BUFSIZ];
   revmexpr_t	*dst;
+  revmexpr_t	*child;
+  revmannot_t	*annot;
+  revmannot_t	*dstannot;
+  revmannot_t	*addedannot;
+  /*elfsh_Addr	addr;
+    char	*newdata;*/
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Propagate input links */
   snprintf(srcname, sizeof(srcname), "%s.%s", source->label, fname);
-  snprintf(dstname, sizeof(dstname), "%s.%s", dest->label, fname);
-  dst = revm_expr_get(dstname);
-  source = revm_expr_get(srcname);
-  if (!source)
+  child = revm_expr_get(srcname);
+  if (!child)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  /* If destination expression has no field, create it now */
+  snprintf(dstname, sizeof(dstname), "%s.%s", dest->label, fname);
+  dst = revm_expr_get(dstname);
+
+  /* If destination expression has no such field, create it now */
   if (!dst)
     {
-      dst = revm_expr_copy(source, dstname);
+      annot = revm_annot_get(child->label); // annot de lexpr a copier
+      dstannot = revm_annot_get(dest->label); // annot de lexpr mere destination
+      if (!annot || !dstannot)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to lookup annotations for input expressions", -1);
+
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, dstannot->addr, 
+	       (char *) dstannot->addr, dest->type->size + child->type->size, -1);
+      dst = revm_expr_copy(child, dstname, 1);
       dst->next = dest->childs;
       dest->childs = dst;
+      
+      addedannot = revm_annot_get(dstname);
+      if (!addedannot)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to add annotation on new field", -1);
+      memcpy((char *) dstannot->addr + dest->type->size, (char *) addedannot->addr, child->type->size);
+      addedannot->addr = dstannot->addr + dest->type->size;
+
+      /* XXX: annotations needs to be updated for childs of this type too ! */
+      /*
+	dest->type->size += child->type->size;
+	revm_inform_type_addr(dst->type->name, dstname, dstannot->addr + dest->type->size, dst, 0, 0);
+      */
     }
-  else if (source->value && revm_object_set(dest, source) < 0)
+
+  /* Else assign it */
+  else if (child->value && revm_object_set(dest, child) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to copy expression field", -1);
-  else if (revm_expr_set(dst, source) < 0)
+  else if (revm_expr_set(dst, child) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to copy expression fields", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);    
@@ -113,16 +172,14 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       elist_add(exprlist, rname, candid);
     }
 
-  /* FIXME: The rewritten element is not part of any list */
+  /* FIXME: The rewritten element is not part of any list or is part of an alien list */
   if (!world.curjob->iter.list)
-    {
-      if (dstnbr == 1)
-	;
-      else
-	;
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Rewriting of non-list element currently not supported", -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Rewriting of non-list element currently not supported", -1);
+  else if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Rewriting is currently only supported for expression lists", -1);
+
     
   /* Simply replace the current list element now */
   /* The type of the list (list_t->type) does not change : it still is a list of revmexpr_t */
@@ -140,17 +197,28 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  rname = revm_tmpvar_create();
 	  type   = revm_exprtype_get(destvalue);
 	  candid = revm_expr_create(type, rname, destvalue);
+
 	  if (!candid)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Malformed destination type", -1);
-	  if (revm_links_propagate(candid, matchme) < 0)
+
+	  /*
+	    XXX: Disabled for now -- do not remove
+	    if (revm_links_propagate(candid, matchme) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Error while propagating dataflow links", -1);
+	    "Error while propagating dataflow links", -1);
+	  */
+
+	  /* initialisation de subexpr par une autre expr est bugge ! */
+	  /* il nomme le field par le nom de la variable .. */
+
 	  elist_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
 	  rname = strdup(matchme->label);
+	  
 	  revm_expr_destroy(matchme->label);
-	  revm_expr_copy(candid, rname);
+	  matchme = revm_expr_copy(candid, rname, 0);
 	  revm_expr_destroy(candid->label);
+
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
 	}
     }
@@ -213,10 +281,13 @@ int		cmd_into()
   if (!world.curjob->rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot transform outside a rewrite", -1);
-  if (revm_case_transform(world.curjob->rwrt.matchexpr, world.curjob->curcmd->param[0]) < 0)
+  if (revm_case_transform(world.curjob->rwrt.matchexpr, 
+			  strdup(world.curjob->curcmd->param[0])) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to transform expression", -1);
   world.curjob->rwrt.replaced = 1;
+  if (!world.state.revm_quiet)
+    revm_output(" [*] Expression transformed succesfully \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -292,6 +363,7 @@ int		cmd_case()
      "case", so we only stop rewriting at the first case -following- a matchcase */
   if (world.curjob->rwrt.matched)
     {
+      fprintf(stderr, "\n *** ALREADY MATCHED ! QUITTING REWRITE.. *** \n");
       revm_move_pc(world.curjob->curcmd->endlabel);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -301,7 +373,7 @@ int		cmd_case()
   if (!matchme->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type for matchme expression", -1);
-  candid = revm_expr_create(matchme->type, "$candid", world.curjob->curcmd->param[0]);
+  candid = revm_expr_create(matchme->type, "$candid", strdup(world.curjob->curcmd->param[0]));
   ret = (!candid ? 1 : revm_expr_match(candid, matchme));
   
   /* No match or bad match : nothing happens */
@@ -317,8 +389,9 @@ int		cmd_case()
   /* Sometimes the case command comes directly with appended post side-effects */
   if (!world.curjob->curcmd->param[1])
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  revm_case_transform(matchme, world.curjob->curcmd->param[1]);
-  if (world.curjob->curcmd->param[2] && revm_case_execmd(world.curjob->curcmd->param[2]) < 0)
+  revm_case_transform(matchme, strdup(world.curjob->curcmd->param[1]));
+  if (world.curjob->curcmd->param[2] && 
+      revm_case_execmd(world.curjob->curcmd->param[2]) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Post-side-effects commands failed", -1);
   
@@ -340,11 +413,10 @@ int			cmd_match()
       if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Match/Rewrite can only works on expressions", -1);
-
-      fprintf(stderr, "We -ARE- matching elements of a list \n");
+      fprintf(stderr, "\n *** We -ARE- matching elements of a list *** \n");
     }
   else
-    fprintf(stderr, "We are -NOT- matching elements of a list \n");
+    fprintf(stderr, "\n *** We are -NOT- matching elements of a list *** \n");
 
   world.curjob->rwrt.matchexpr = revm_lookup_param(world.curjob->curcmd->param[0]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
