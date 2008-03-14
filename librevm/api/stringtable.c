@@ -2,10 +2,8 @@
 ** @file stringtable.c
 ** @ingroup librevm_api
 ** @brief All functions about string table management
-*/
-** Started on Sept 11 2005 mxatone
 **
-** $Id: stringtable.c,v 1.5 2008-02-16 12:32:27 thor Exp $
+** Started on Sept 11 2005 mxatone
 **
 */
 #include "revm.h"

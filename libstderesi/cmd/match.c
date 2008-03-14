@@ -179,8 +179,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   else if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Rewriting is currently only supported for expression lists", -1);
-
-    
+  
   /* Simply replace the current list element now */
   /* The type of the list (list_t->type) does not change : it still is a list of revmexpr_t */
 
@@ -188,7 +187,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   else if (dstnbr == 1)
     {
       elist_destroy(exprlist);
-
+      
       /* No transformation, keep the original expression */
       if (!strcmp(destvalue, "."))
 	candid = matchme;
@@ -363,7 +362,6 @@ int		cmd_case()
      "case", so we only stop rewriting at the first case -following- a matchcase */
   if (world.curjob->rwrt.matched)
     {
-      fprintf(stderr, "\n *** ALREADY MATCHED ! QUITTING REWRITE.. *** \n");
       revm_move_pc(world.curjob->curcmd->endlabel);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }

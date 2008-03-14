@@ -25,7 +25,7 @@ into IndBranchR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
 # direct always branch (b, bp) 										
 case instr(sem:b, nb_op:1, op1(sem:imm))
-into Branch(addr:$curaddr, dst:Immed($instr.op1.imm)) 			 
+into Branch(addr:$curaddr, dst:Immed($instr.op1.imm))
 
 # indirect conditional branch without link
 # XXX lacks flag translation
@@ -38,30 +38,30 @@ case instr(sem:cb, nb_op:1, op1(sem:imm))
 into Branch(addr:$curaddr, dst:Immed($instr.op1.imm))
 
 # indirect call (op1 reg) 								
-case instr(sem:c, nb_op:1, op1(sem:reg)) 
-into IndCallR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))			 
+case instr(sem:c, nb_op:1, op1(sem:reg))
+into IndCallR(addr:$curaddr, dst:Reg(id:$instr.op1.baser))
 
 # direct call (op1 addr) 									
 case instr(sem:c, nb_op:1, op1(sem:imm))
-into Call(addr:$curaddr, dst:Addr($instr.op1.imm))			 
+into Call(addr:$curaddr, dst:Addr($instr.op1.imm))
 
 # ta* (traps)
 case instr(sem:i)
-into Interrupt(addr:$curaddr, Immed(val:$instr.op1.imm))	 
+into Interrupt(addr:$curaddr, Immed(val:$instr.op1.imm))
 
 # ret, retl 									 		
-case instr(sem:r) 
-into Return(addr:$curaddr, Immed(val:$instr.op1.imm)) 	 
+case instr(sem:r)
+into Return(addr:$curaddr, Immed(val:$instr.op1.imm))
 
 # save 												
-case instr(sem:p) 
+case instr(sem:p)
 #profile enable warn
-into Prolog(addr:$curaddr) 				 
+into Prolog(addr:$curaddr)
 #varlist instr
 
 # restore 												
 case instr(sem:e) 
-into Epilog(addr:$curaddr)				 
+into Epilog(addr:$curaddr) 
 
 # illtrap 							 			
 case instr(sem:s) 

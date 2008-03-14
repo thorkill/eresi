@@ -316,46 +316,36 @@ listent_t *hash_get_head(hash_t *h, char *backup)
  */
 char		**hash_get_keys(hash_t *h, int *n)
 {
-  int		j, i;
   char		**keys;
-  listent_t	*entry;
+  listent_t	*curelem;
+  int		idx;
+  int		last;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !h->elmnbr)
     {
-      if (n)
+      if (n) 
 	*n = 0;
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Invalid NULL parameters", NULL);
     }
-  for (keys = NULL, i = j = 0; j < h->size; j++) 
-    {
-      entry = &h->ent[j];
-      while (entry != NULL && entry->key != NULL) 
-	{
-	  
-#if __DEBUG__
-	  printf("hash[%u:%u] key = %s\n", j, i, entry->key);
-#endif
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
+	 sizeof(char *) * h->elmnbr, NULL);
 
-	  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-		   keys, keys, (i + 1) * sizeof(char *), NULL);
-	  keys[i] = entry->key;
-	  entry   = entry->next;
-	  i++;
+  for (last = idx = 0; idx < h->size; idx++)
+    {
+      curelem = h->ent + idx;
+      while (curelem && curelem->key)
+	{
+	  keys[last] = curelem->key;
+	  curelem = curelem->next;
+	  last++;
 	}
     }
-  
-  XREALLOC(__FILE__, __FUNCTION__, __LINE__,
-	   keys, keys, (i + 1) * sizeof(char *), NULL);
-  
-  keys[i] = NULL;
   if (n)
-    *n = i;
-  
+    *n = h->elmnbr;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
-
 
 
 /** 

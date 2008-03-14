@@ -1119,9 +1119,9 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
 		 "Unable to create REVMEXPR", NULL);    
   revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0);
 
-  fprintf(stderr, "Now printing created expression ... \n");
+#if __DEBUG_EXPRS__
   revm_expr_print(expr->label);
-  fprintf(stderr, "END of created expression \n");
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
