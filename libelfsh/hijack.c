@@ -1,5 +1,6 @@
 /**
  * @file hijack.c
+ * @ingroup libelfsh
 ** hijack.c in elfsh
 ** 
 ** Started on  Tue Feb  4 14:41:34 2003 emsi

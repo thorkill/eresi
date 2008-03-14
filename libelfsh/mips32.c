@@ -1,5 +1,6 @@
 /**
  * @file mips32.c
+ * @ingroup libelfsh
 ** mips32.c for libelfsh
 **
 ** Started on  Sat Feb 26 23:25:37 2005 jfv

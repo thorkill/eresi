@@ -1,5 +1,6 @@
 /**
  * @file dtors.c
+ * @ingroup libelfsh
  *
  * Started on  Tue Feb 26 22:12:38 2002 jfv
  *
@@ -18,7 +19,7 @@
  */
 elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 {
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -28,30 +29,30 @@ elfsh_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
 		      "Invalid NULL parameter", NULL);
 
   /* Load dtors */
-  new = file->secthash[ELFSH_SECTION_DTORS];
-  if (new == NULL)
+  enew = file->secthash[ELFSH_SECTION_DTORS];
+  if (enew == NULL)
     {
-      new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DTORS, 
+      enew = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DTORS, 
 				      NULL, NULL, NULL);
-      if (NULL == new)
+      if (NULL == enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get DTORS by name", NULL);
     }
   
   /* Read dtors */
-  if (NULL == new->data)
+  if (NULL == enew->data)
     {
-      new->data = elfsh_load_section(file, new->shdr);
-      if (NULL == new->data)
+      enew->data = elfsh_load_section(file, enew->shdr);
+      if (NULL == enew->data)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load DTORS", NULL);
-      file->secthash[ELFSH_SECTION_DTORS] = new;
+      file->secthash[ELFSH_SECTION_DTORS] = enew;
     }
 
   /* Return data */
   if (num != NULL)
-    *num = new->shdr->sh_size / sizeof(elfsh_Addr);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
+    *num = enew->shdr->sh_size / sizeof(elfsh_Addr);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
 }
 
 

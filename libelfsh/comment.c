@@ -1,5 +1,6 @@
 /**
  * @file comment.c
+ * @ingroup libelfsh
 ** comment.c for elfsh in 
 ** 
 ** Made by jfv
@@ -21,7 +22,7 @@
  */
 elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
 {
-  elfshsect_t		*new;
+  elfshsect_t		*enew;
   int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -30,22 +31,22 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", NULL);
 
-  new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_COMMENT, 
+  enew = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_COMMENT, 
 				  NULL, NULL, &size);
-  if (NULL == new)
+  if (NULL == enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get .comment by name", NULL);
 
-  if (NULL == elfsh_get_raw(new))
+  if (NULL == elfsh_get_raw(enew))
     {
-      new->data = elfsh_load_section(file, new->shdr);
-      if (NULL == elfsh_get_raw(new))
+      enew->data = elfsh_load_section(file, enew->shdr);
+      if (NULL == elfsh_get_raw(enew))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .comment", NULL);
     }
 
-  file->secthash[ELFSH_SECTION_COMMENT] = new;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  file->secthash[ELFSH_SECTION_COMMENT] = enew;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
 
 

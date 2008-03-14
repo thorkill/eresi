@@ -1,5 +1,6 @@
 /**
  * @file relinject.c
+ * @ingroup libelfsh
 ** relinject.c for libelfsh
 ** 
 ** This file contains all functions for relocating a ET_REL
@@ -27,7 +28,7 @@
  * @param mod
  * @return
  */
-static int      elfsh_relocate_entry(elfshsect_t        *new,
+static int      elfsh_relocate_entry(elfshsect_t        *enew,
                                      void               *reloc,
 				     elfsh_Addr		*dword,
                                      elfsh_Addr         addr,
@@ -36,7 +37,7 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
   int		ret;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  ret = elfsh_rel(new->parent, new, reloc, dword, addr, mod);
+  ret = elfsh_rel(enew->parent, enew, reloc, dword, addr, mod);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to relocate object", -1);
@@ -46,7 +47,7 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
 
 /**
  * Find the host symbol we rely on for performing the relocation 
- * @param new
+ * @param enew
  * @param reltab
  * @param sym
  * @param name
@@ -54,7 +55,7 @@ static int      elfsh_relocate_entry(elfshsect_t        *new,
  * @param symtype
  * @return
  */
-static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
+static int	elfsh_find_relocsym(elfshsect_t *enew, elfshsect_t *reltab,
 				    elfsh_Sym **sym, char *name, char stage, 
 				    elfsh_Half symtype)
      
@@ -70,12 +71,12 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 #if __DEBUG_RELADD__
       printf("[DEBUG_RELADD] %s symbol not found at RELOC_STAGE1, continue\n", name);
 #endif
-      if (new->parent->nbrel < ELFSH_MAXREL)
+      if (enew->parent->nbrel < ELFSH_MAXREL)
 	{
-	  if (new->parent->listrel[new->parent->nbrel] != reltab->parent)
+	  if (enew->parent->listrel[enew->parent->nbrel] != reltab->parent)
 	    {
 
-	      new->parent->listrel[new->parent->nbrel++] = reltab->parent;
+	      enew->parent->listrel[enew->parent->nbrel++] = reltab->parent;
 #if __DEBUG_RELADD__
 	      printf("[DEBUG_RELADD] %s object relocation will have a second stage\n", 
 		     reltab->parent->name);
@@ -90,11 +91,11 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
   /* We have a different behavior depending on the symbol type */
   switch (symtype)
     {
-      /* The symbol is not found so we request a new PLT entry for it */
+      /* The symbol is not found so we request a enew PLT entry for it */
     case STT_NOTYPE:
-      if (!elfsh_static_file(new->parent))
+      if (!elfsh_static_file(enew->parent))
 	{
-	  *sym = elfsh_request_pltent(new->parent, name);
+	  *sym = elfsh_request_pltent(enew->parent, name);
 	  if (*sym)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 	}
@@ -117,10 +118,10 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 #if	__DEBUG_STATIC__	      
 	      printf("[DEBUG_STATIC] Loop in dependency detected -> STAGE2 relocation\n");
 #endif
-	      if (new->parent->nbrel < ELFSH_MAXREL &&
-		  new->parent->listrel[new->parent->nbrel] != reltab->parent)
+	      if (enew->parent->nbrel < ELFSH_MAXREL &&
+		  enew->parent->listrel[enew->parent->nbrel] != reltab->parent)
 		{
-		  new->parent->listrel[new->parent->nbrel++] = reltab->parent;
+		  enew->parent->listrel[enew->parent->nbrel++] = reltab->parent;
 #if	__DEBUG_STATIC__
 		  printf("[DEBUG_STATIC] %s object relocation will have a second stage\n", reltab->parent->name);
 #endif
@@ -131,7 +132,7 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 	    }
 
 	  /* symbol found, gonna try to inject et_rel */
-	  if (dep != NULL && dep != reltab->parent && elfsh_inject_etrel(new->parent, dep) < 0)
+	  if (dep != NULL && dep != reltab->parent && elfsh_inject_etrel(enew->parent, dep) < 0)
 	    {
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				"Unable to inject ET_REL dependence", -1);
@@ -171,12 +172,12 @@ static int	elfsh_find_relocsym(elfshsect_t *new, elfshsect_t *reltab,
 
 /**
  * Relocate the just injected section 
- * @param new
+ * @param enew
  * @param reltab
  * @param stage
  * @return
  */
-static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
+static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 					     elfshsect_t	*reltab,
 					     u_char		stage)
 {
@@ -210,12 +211,12 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	  sizeof(elfsh_Rela) : sizeof(elfsh_Rel));
   size = reltab->shdr->sh_size / size;
   
-  plt = elfsh_get_plt(new->parent, NULL);
-  if (NULL == plt && elfsh_dynamic_file(new->parent))
+  plt = elfsh_get_plt(enew->parent, NULL);
+  if (NULL == plt && elfsh_dynamic_file(enew->parent))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get plt", -1);
 
-  entsz = elfsh_get_pltentsz(new->parent);
+  entsz = elfsh_get_pltentsz(enew->parent);
   if (entsz < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to get pltentsz", -1);
@@ -225,10 +226,10 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 #if __DEBUG_RELADD__
       fprintf(stderr, "[DEBUG_RELADD] relocation loop stage %u for section %s index %u \n", 
-	      stage, new->name, index);
+	      stage, enew->name, index);
 #endif
 
-      /* We try a new relocation now that the ET_REL dependence is mapped */
+      /* We try a enew relocation now that the ET_REL dependence is mapped */
     retry:
 
       /* Get symbol value in ET_REL */
@@ -243,7 +244,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 			  "Unable to find symbol in ET_REL", -1);
 
       /* Grab a pointer on the dword that need to be relocated */
-      dword = (elfsh_Addr *) ((char *) elfsh_get_raw(new) + cur->r_offset);
+      dword = (elfsh_Addr *) ((char *) elfsh_get_raw(enew) + cur->r_offset);
 
       /*
       ** If symbol type is NOTYPE, we use ET_EXEC symtab, else if
@@ -259,10 +260,10 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 	  /* If the symbol is not found and we are still in
 	     the first stage relocation, just pass it */
-	  sym = elfsh_get_metasym_by_name(new->parent, name);
+	  sym = elfsh_get_metasym_by_name(enew->parent, name);
 	  if (!sym) 
 	    {
-	      switch (elfsh_find_relocsym(new, reltab, &sym, name, stage, symtype))
+	      switch (elfsh_find_relocsym(enew, reltab, &sym, name, stage, symtype))
 		{
 		case 2:
 #if	__DEBUG_STATIC__
@@ -313,7 +314,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 
 	  /* Find corresponding inserted section in ET_EXEC */
 	  snprintf(tmpname, sizeof(tmpname), "%s%s", reltab->parent->name, sect->name);
-	  sect = elfsh_get_section_by_name(new->parent, tmpname, NULL, NULL, NULL);
+	  sect = elfsh_get_section_by_name(enew->parent, tmpname, NULL, NULL, NULL);
 	  
 	  if (sect == NULL)
 	    {
@@ -345,7 +346,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*new,
 	}
 
       /* Perform relocation */
-      if (elfsh_relocate_entry(new, cur, dword, addr, reltab) < 0)
+      if (elfsh_relocate_entry(enew, cur, dword, addr, reltab) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to relocate entry", -1);
 
@@ -426,7 +427,7 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int mod)
 {
   elfsh_Shdr	hdr;
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
   char		*newname;
   char		writable;
   int		mode;
@@ -445,7 +446,7 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
 			  0, 0, sect->shdr->sh_size, 0, 0, 0, 0);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,newname, strlen(sect->parent->name) + strlen(sect->name) + 2, -1);
   sprintf(newname, "%s%s", sect->parent->name, sect->name);
-  new = elfsh_create_section(newname);
+  enew = elfsh_create_section(newname);
   
   /* Copy the data */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,data, sect->shdr->sh_size, -1);
@@ -467,13 +468,13 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
      }
 
 #if	__DEBUG_RELADD__
-  printf("[DEBUG_RELADD] Mapping new section %s with data = %p \n", new->name, data);
+  printf("[DEBUG_RELADD] Mapping new section %s with data = %p \n", enew->name, data);
 #endif
 
-  if (elfsh_insert_mapped_section(file, new, hdr, data, mode, modulo) < 0)
+  if (elfsh_insert_mapped_section(file, enew, hdr, data, mode, modulo) < 0)
     goto bad;
-  new = elfsh_get_section_by_name(file, newname, NULL, NULL, NULL);
-  if (new == NULL)
+  enew = elfsh_get_section_by_name(file, newname, NULL, NULL, NULL);
+  if (enew == NULL)
     goto bad;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

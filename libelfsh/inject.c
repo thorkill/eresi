@@ -1,5 +1,6 @@
 /**
  * @file inject.c
+ * @ingroup libelfsh
 ** inject.c for libelfsh
 ** 
 ** Contains all section injection API that can be used directly by the user

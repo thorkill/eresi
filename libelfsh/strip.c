@@ -1,6 +1,6 @@
 /**
  * @file strip.c
- * 
+ * @ingroup libelfsh
  * Made by jfv
  * Login   <jfv@devhell.org>
  * 

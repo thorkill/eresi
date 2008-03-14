@@ -1,6 +1,6 @@
 /**
  * @file ctors.c
- * ctors.c for libelfsh
+ * @ingroup libelfsh
  *
  * Started on  Tue Feb 26 22:11:12 2002 jfv
  *
@@ -19,7 +19,7 @@
  */
 elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 {
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -29,32 +29,32 @@ elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 		      "Invalid NULL parameter", NULL);
 
   /* Find ctors */
-  new = file->secthash[ELFSH_SECTION_CTORS];
-  if (new == NULL)
+  enew = file->secthash[ELFSH_SECTION_CTORS];
+  if (enew == NULL)
     {
-      new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_CTORS, 
+      enew = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_CTORS, 
 				      NULL, NULL, NULL);
-      if (NULL == new)
+      if (NULL == enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get CTORS by name", NULL);
     }
   
   /* Read ctors */
-  if (NULL == new->data)
+  if (NULL == enew->data)
     {
-      new->data = elfsh_load_section(file, new->shdr);
-      if (NULL == new->data)
+      enew->data = elfsh_load_section(file, enew->shdr);
+      if (NULL == enew->data)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load CTORS", NULL);
-      file->secthash[ELFSH_SECTION_CTORS] = new;
+      file->secthash[ELFSH_SECTION_CTORS] = enew;
     }
 
   /* Return data */
   if (num != NULL)
-    *num = new->shdr->sh_size / sizeof(elfsh_Addr);
+    *num = enew->shdr->sh_size / sizeof(elfsh_Addr);
 
   /* Return a pointer on the data. Also work in debug mode */
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
 }
 
 

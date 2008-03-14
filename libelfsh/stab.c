@@ -1,5 +1,6 @@
 /**
  * @file stabs.c
+ * @ingroup libelfsh
  * stabs.c for libelfsh
  * 
  * Started on  Mon Feb 26 04:14:06 2001 jfv

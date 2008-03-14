@@ -1,5 +1,6 @@
 /**
  * @file hash.c
+ * @ingroup libelfsh
 ** hash.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:15:44 2001 jfv
@@ -382,7 +383,7 @@ elfsh_Word     	elfsh_get_hashnbucket(const void *data)
  */
 void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
 {
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
   int		nbr;
   void		*ret;
 
@@ -390,17 +391,17 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
   
   if (file->secthash[ELFSH_SECTION_HASH] == NULL)
     {
-      new = elfsh_get_section_by_type(file, SHT_HASH, NULL, NULL, &nbr, 0);
-      if (new == NULL)
+      enew = elfsh_get_section_by_type(file, SHT_HASH, NULL, NULL, &nbr, 0);
+      if (enew == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get HASH by type", NULL);
       
-      new->data = elfsh_load_section(file, new->shdr);
-      if (!new->data)	
+      enew->data = elfsh_load_section(file, enew->shdr);
+      if (!enew->data)	
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No Hash table",  NULL);
 
-      file->secthash[ELFSH_SECTION_HASH] = new;
+      file->secthash[ELFSH_SECTION_HASH] = enew;
     }  
 
   ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_HASH]);

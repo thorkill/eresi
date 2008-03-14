@@ -1,5 +1,6 @@
 /**
  * @file sym_common.c
+ * @ingroup libelfsh
  * sym_common.c for elfsh
  * 
  * Started on  Tue Dec 31 10:19:01 2002 jfv
@@ -322,17 +323,17 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
 elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type, 
 				    int binding, int vis, int sctidx)
 {
-  elfsh_Sym	new;
+  elfsh_Sym	enew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  new.st_value = value;
-  new.st_size  = size;
-  new.st_info  = ELFSH_ST_INFO(binding, type);
-  new.st_other = vis;
-  new.st_shndx = sctidx;
-	new.st_name  = NULL;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  enew.st_value = value;
+  enew.st_size  = size;
+  enew.st_info  = ELFSH_ST_INFO(binding, type);
+  enew.st_other = vis;
+  enew.st_shndx = sctidx;
+	enew.st_name  = NULL;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
 
 
@@ -344,16 +345,16 @@ elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type,
  */
 elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
 {
-  elfsh_Sym	*new;
+  elfsh_Sym	*enew;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!data || !size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, size * ELFSH_SYMTAB_ENTRY_SIZE, NULL);
-  memcpy(new, data, size * ELFSH_SYMTAB_ENTRY_SIZE);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, size * ELFSH_SYMTAB_ENTRY_SIZE, NULL);
+  memcpy(enew, data, size * ELFSH_SYMTAB_ENTRY_SIZE);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
 
 /**

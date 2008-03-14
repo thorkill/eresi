@@ -1,5 +1,6 @@
 /**
  * @file altgot.c
+ * @ingroup libelfsh
 ** altgot.c for libelfsh
 ** 
 ** This file contain the architecture -dependant- code 

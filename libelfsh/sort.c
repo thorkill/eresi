@@ -1,5 +1,6 @@
 /**
  * @file sort.c
+ * @ingroup libelfsh
 ** sort.c for elfsh
 ** 
 ** Improved by spacewalker to use quicksort from libc

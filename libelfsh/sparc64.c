@@ -1,5 +1,6 @@
 /**
  * @file sparc64.c
+ * @ingroup libelfsh
  * sparc64.c for libelfsh
  * 
  * Started on  Sat Jan 15 14:25:37 2005 jfv

@@ -1,5 +1,6 @@
 /**
  * @file linkmap.c
+ * @ingroup libelfsh
 ** linkmap.c for libelfsh
 ** 
 ** TODO: Add linkmap object in scripting

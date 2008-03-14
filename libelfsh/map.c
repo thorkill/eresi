@@ -1,5 +1,6 @@
 /**
  * @file map.c
+ * @ingroup libelfsh
 ** map.c for libelfsh
 ** 
 ** Started on  Sat Mar  2 20:47:36 2002 jfv

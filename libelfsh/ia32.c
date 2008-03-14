@@ -1,5 +1,6 @@
 /**
  * @file ia32.c
+ * @ingroup libelfsh
  * ia32.c for libelfsh
  *
  * Started on  Fri Jan 11 03:05:37 2003 jfv

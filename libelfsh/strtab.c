@@ -1,5 +1,6 @@
 /**
  * @file strtab.c
+ * @ingroup libelfsh
  * strtab.c for libelfsh
  * 
  * Started on  Sun Mar 10 03:24:23 2002 jfv

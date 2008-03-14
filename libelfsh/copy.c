@@ -1,5 +1,6 @@
 /**
  * @file copy.c
+ * @ingroup libelfsh
 ** copy.c for elfsh
 ** 
 ** Started on  Tue Mar  4 01:15:23 2003 jfv
@@ -21,7 +22,7 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
 {
   elfshobj_t	*copy;
   elfshsect_t	*cur;
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
   elfshsect_t	*tmp;
   int		range;
   int		cnt;
@@ -66,62 +67,62 @@ elfshobj_t	*elfsh_copy_obj(elfshobj_t *file)
   /* Arrange sectlist. Partially ripped from elfsh_add_section() . */
   for (range = 0, cur = file->sectlist; cur; cur = cur->next, range++)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(elfshsect_t), NULL);
-      new->shdr = copy->sht + range;
-      new->parent = copy;
-      new->index = range;
-      new->name = strdup(cur->name);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, sizeof(elfshsect_t), NULL);
+      enew->shdr = copy->sht + range;
+      enew->parent = copy;
+      enew->index = range;
+      enew->name = strdup(cur->name);
  
-      new->flags = cur->flags;
+      enew->flags = cur->flags;
 
-      if (new->shdr->sh_size && cur->data)
+      if (enew->shdr->sh_size && cur->data)
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,new->data, new->shdr->sh_size, NULL);
-	  memcpy(new->data, cur->data, new->shdr->sh_size);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew->data, enew->shdr->sh_size, NULL);
+	  memcpy(enew->data, cur->data, enew->shdr->sh_size);
 	}
 
       /* Set phdr pointer */
-      for (index = 0, actual = new->parent->pht; index < new->parent->hdr->e_phnum;
+      for (index = 0, actual = enew->parent->pht; index < enew->parent->hdr->e_phnum;
 	   index++)
-	if (INTERVAL(actual[index].p_vaddr, new->shdr->sh_addr,
+	if (INTERVAL(actual[index].p_vaddr, enew->shdr->sh_addr,
 		     actual[index].p_vaddr + actual[index].p_memsz))
-	  new->phdr = actual + index;
+	  enew->phdr = actual + index;
 
-      new->curend = cur->curend;
+      enew->curend = cur->curend;
 
-      /* Insert new section in sectlist */
+      /* Insert enew section in sectlist */
       for (tmp = copy->sectlist; tmp != NULL && tmp->next != NULL; tmp = tmp->next)
 	if (tmp->index == range)
 	  {
-	    /* Insert the new section */
-	    new->prev = tmp->prev;
-	    new->next = tmp;
-	    if (new->prev != NULL)
-	      new->prev->next = new;
+	    /* Insert the enew section */
+	    enew->prev = tmp->prev;
+	    enew->next = tmp;
+	    if (enew->prev != NULL)
+	      enew->prev->next = enew;
 	    else
-	      copy->sectlist = new;
-	    tmp->prev = new;
+	      copy->sectlist = enew;
+	    tmp->prev = enew;
 	  }
       
       /* The section is the first one inserted */
       if (!tmp)
 	{
-	  copy->sectlist = new;
-	  copy->sectlist->prev = new;
+	  copy->sectlist = enew;
+	  copy->sectlist->prev = enew;
 	}
       
       /* The section must be inserted at the last place */
       else if (!tmp->next)
 	{
-	  tmp->next = new;
-	  new->prev = tmp;
-	  copy->sectlist->prev = new;
+	  tmp->next = enew;
+	  enew->prev = tmp;
+	  copy->sectlist->prev = enew;
 	}
 
       /* Fill secthash */
       for (cnt = 0; cnt < ELFSH_SECTION_MAX; cnt++)
 	if (file->secthash[cnt] == cur)
-	  copy->secthash[cnt] = new;
+	  copy->secthash[cnt] = enew;
       
     }
 

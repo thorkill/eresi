@@ -1,5 +1,6 @@
 /**
  * @file bss.c
+ * @ingroup libelfsh
 ** bss.c for elfsh
 **
 ** Contain various bss handling routines for injection
@@ -318,7 +319,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   elfshsect_t	*host_bss;
   elfshsect_t	*host_symtab;
   elfsh_Sym	*symtab;
-  elfsh_Sym	new;
+  elfsh_Sym	enew;
   int		size;
   u_int		index;
   char		*name;
@@ -364,13 +365,13 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
 
 
 	/* Create and inject symbol in ET_EXEC */
-	new = elfsh_create_symbol(bss_size,
+	enew = elfsh_create_symbol(bss_size,
 				  symtab[index].st_size,
 				  STT_OBJECT, STB_LOCAL,
 				  0, host_bss->index);
 
 	name = elfsh_get_symbol_name(rel, symtab + index);
-	elfsh_insert_symbol(host_symtab, &new, name);
+	elfsh_insert_symbol(host_symtab, &enew, name);
 	bss_size += symtab[index].st_size;
       }
 

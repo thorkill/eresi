@@ -1,5 +1,6 @@
 /**
  * @file altplt.c
+ * @ingroup libelfsh
 ** altplt.c for libelfsh
 ** 
 ** This file contain the architecture independant code 
@@ -27,7 +28,7 @@
  * @param diff
  * @return
  */
-int		elfsh_altplt_firstent(elfshsect_t	*new, 
+int		elfsh_altplt_firstent(elfshsect_t	*enew, 
 				      u_int		*off,
 				      elfshsect_t	*symtab, 
 				      elfshobj_t	*file, 
@@ -44,7 +45,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*new,
 
   /* Insert plt+0 symbol */
   entsz  = elfsh_get_pltentsz(file);
-  newsym = elfsh_create_symbol(new->shdr->sh_addr, entsz, STT_FUNC, 0, 0, 0);
+  newsym = elfsh_create_symbol(enew->shdr->sh_addr, entsz, STT_FUNC, 0, 0, 0);
   if (elfsh_insert_symbol(symtab, &newsym, "old_dlresolve") < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to insert old_dlresolve symbol", -1);
@@ -107,7 +108,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   elfshsect_t	*prolog;
   elfshsect_t	*extplt = NULL;
   elfshsect_t	*altgot = NULL; /* shut the nice talkative */
-  elfshsect_t	*new    = NULL; /* compiler also know as gcc */
+  elfshsect_t	*enew    = NULL; /* compiler also know as gcc */
   elfsh_Shdr	hdr;
   elfsh_Sym	*sym;
   elfsh_Sym	newsym;
@@ -191,11 +192,11 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.{plt,got}.prolog insertion failed", -1);
 
-      new = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
-      if (new == NULL)
+      enew = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
+      if (enew == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  ".alt.{plt,got}.prolog insertion failed", -1);
-      file->secthash[ELFSH_SECTION_ALTPLTPROLOG] = new; 
+      file->secthash[ELFSH_SECTION_ALTPLTPROLOG] = enew; 
     }
 
   /* Map .alt.plt (or .pad.got on MIPS)
@@ -208,7 +209,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   sz = plt->shdr->sh_size;
   if (FILE_IS_MIPS(file))
     {
-      addr = new->shdr->sh_addr + new->shdr->sh_size;
+      addr = enew->shdr->sh_addr + enew->shdr->sh_size;
       if ((addr - (got->shdr->sh_addr)) % 1024)
 	sz = 1024 - ((addr - (got->shdr->sh_addr)) % 1024);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
@@ -221,17 +222,17 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       memcpy(prologdata, elfsh_get_raw(plt), sz);
       name = ELFSH_SECTION_NAME_ALTPLT;
     }
-  new = elfsh_create_section(name);
+  enew = elfsh_create_section(name);
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 
 			  0, 0, sz, 0, 0, 0, 0);
-  if (elfsh_insert_mapped_section(file, new, hdr, prologdata, mode, mod) < 0)
+  if (elfsh_insert_mapped_section(file, enew, hdr, prologdata, mode, mod) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      ".alt.plt|.pad.got insertion failed", -1);
-  new = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
-  if (new == NULL)
+  enew = elfsh_get_section_by_name(file, name, NULL, NULL, NULL);
+  if (enew == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      ".alt.plt|.pad.got insertion failed", -1);
-  file->secthash[ELFSH_SECTION_ALTPLT] = new;
+  file->secthash[ELFSH_SECTION_ALTPLT] = enew;
    
 
   /* Map .alt.got (all architectures except SPARC) */
@@ -303,7 +304,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 	diff = 0;
 
       /* Special case for the first plt entry */
-      if (off == 0 && elfsh_altplt_firstent(new, &off, symtab, file, extplt, plt, diff) < 0)
+      if (off == 0 && elfsh_altplt_firstent(enew, &off, symtab, file, extplt, plt, diff) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "ALTPLT on first entry failed", -1);
       else if (off == 0)
@@ -333,7 +334,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       /* ... and we inject the 'old' occurence symbol pointing in 
 	 .alt.plt (.plt on MIPS) */
       if (!FILE_IS_MIPS(file))
-	addr = new->shdr->sh_addr + off;
+	addr = enew->shdr->sh_addr + off;
       else
 	addr = plt->shdr->sh_addr + off;
       
@@ -382,7 +383,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
     }
 
   /* Activate ALTGOT */
-  if (elfsh_redirect_pltgot(file, altgot, got, plt, new) < 0)
+  if (elfsh_redirect_pltgot(file, altgot, got, plt, enew) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "PLTGOT redirection failed", -1);
 
@@ -443,7 +444,7 @@ int		elfsh_build_plt(elfshobj_t *file)
   elfsh_Addr	pltend  = 0;
   elfsh_Shdr	start;
   elfsh_Shdr	plt;
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
   elfsh_Addr	lsize;
   unsigned int	size;
   char		*data;
@@ -502,12 +503,12 @@ int		elfsh_build_plt(elfshobj_t *file)
   start = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC,
 			    text->shdr->sh_addr, text->shdr->sh_offset,
 			    size, 0, 0, 0, 0);
-  new = elfsh_create_section(ELFSH_SECTION_NAME_START);
+  enew = elfsh_create_section(ELFSH_SECTION_NAME_START);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,data, size, -1);
   memcpy(data, tdata, size);
-  elfsh_insert_shdr(file, start, idx, new->name, 0);
-  elfsh_add_section(file, new, idx, data, ELFSH_SHIFTING_MIPSPLT);
-  file->secthash[ELFSH_SECTION_MIPSTART] = new;
+  elfsh_insert_shdr(file, start, idx, enew->name, 0);
+  elfsh_add_section(file, enew, idx, data, ELFSH_SHIFTING_MIPSPLT);
+  file->secthash[ELFSH_SECTION_MIPSTART] = enew;
 
   /* .plt */
   lsize = pltend - pltaddr;
@@ -516,11 +517,11 @@ int		elfsh_build_plt(elfshobj_t *file)
 			    start.sh_addr + start.sh_size, 
 			    start.sh_offset + start.sh_size,
 			    size, 0, 0, 0, 0);
-  new = elfsh_create_section(ELFSH_SECTION_NAME_PLT);
+  enew = elfsh_create_section(ELFSH_SECTION_NAME_PLT);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,data, size, -1);
   memcpy(data, tdata + start.sh_size, size);
-  elfsh_insert_shdr(file, plt, idx + 1, new->name, 0);
-  elfsh_add_section(file, new, idx + 1, data, ELFSH_SHIFTING_MIPSPLT);
+  elfsh_insert_shdr(file, plt, idx + 1, enew->name, 0);
+  elfsh_add_section(file, enew, idx + 1, data, ELFSH_SHIFTING_MIPSPLT);
 
   /* Shift .text data, sh_offset, sh_addr, and sh_size correctly */
   text->shdr->sh_offset += (start.sh_size + plt.sh_size);

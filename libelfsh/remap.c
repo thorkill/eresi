@@ -1,5 +1,6 @@
 /**
  * @file remap.c
+ * @ingroup libelfsh
 ** remap.c for elfsh
 ** 
 ** elfsh_reloc_pht/sht/symtab() are based on spacewalker's 

@@ -1,5 +1,6 @@
 /**
  * @file raw.c
+ * @ingroup libelfsh
 ** raw.c for libelfsh
 ** 
 ** Started on  Wed Feb 27 19:41:45 2002 jfv

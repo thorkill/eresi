@@ -1,5 +1,6 @@
 /**
  * @file fixup.c
+ * @ingroup libelfsh
 ** fixup.c for elfsh
 ** 
 ** Started on  Fri Jul 27 04:56:06 2001 jfv

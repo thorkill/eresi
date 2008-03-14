@@ -1,5 +1,6 @@
 /**
  * @file hooks.c
+ * @ingroup libelfsh
 ** hooks.c for libelfsh (The ELF shell library)
 ** 
 ** All the function pointers for all provided techniques.

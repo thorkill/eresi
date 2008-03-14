@@ -1,5 +1,6 @@
 /**
  * @file dumpregs.c
+ * @ingroup libelfsh
 ** dumpregs.c for elfsh
 ** 
 ** Started on  Wed Jul 27 04:08:52 2005 ym

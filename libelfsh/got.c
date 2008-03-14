@@ -1,5 +1,6 @@
 /**
  * @file got.c
+ * @ingroup libelfsh
 ** got.c for elfsh
 ** 
 ** Started on  Sun Jun 24 21:30:41 2001 jfv
@@ -94,7 +95,7 @@ int		elfsh_endianize_got(elfshsect_t *newsect)
  */
 elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 {
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -108,32 +109,32 @@ elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 
   /* Read GOT */
   /* Now called .got.plt on new ld */
-  new = file->secthash[ELFSH_SECTION_GOT];
-  if (new == NULL)
+  enew = file->secthash[ELFSH_SECTION_GOT];
+  if (enew == NULL)
     {
-      new = elfsh_get_gotsct(file);
-      if (new == NULL)
+      enew = elfsh_get_gotsct(file);
+      if (enew == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get GOT by name", NULL);
     }
  
   /* Load GOT data */
-  if (new->data == NULL)
+  if (enew->data == NULL)
     {
-      new->data = elfsh_load_section(file, new->shdr);
-      if (new->data == NULL)
+      enew->data = elfsh_load_section(file, enew->shdr);
+      if (enew->data == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load GOT", NULL);
-      file->secthash[ELFSH_SECTION_GOT] = new;
+      file->secthash[ELFSH_SECTION_GOT] = enew;
 
       /* Arrange endianess if necessary */
-      elfsh_endianize_got(new);
+      elfsh_endianize_got(enew);
     }
 
   /* Final things */
   if (num != NULL)
-    *num = new->shdr->sh_size / new->shdr->sh_entsize;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(new)));
+    *num = enew->shdr->sh_size / enew->shdr->sh_entsize;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
 }
  
  

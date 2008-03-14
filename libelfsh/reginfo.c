@@ -1,5 +1,6 @@
 /**
  * @file reginfo.c
+ * @ingroup libelfsh
 ** reginfo.c for libelfsh
 ** 
 ** Started on  Wed Mar 23 14:18:20 2005 ym

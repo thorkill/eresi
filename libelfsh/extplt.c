@@ -1,5 +1,6 @@
 /**
  * @file extplt.c
+ * @ingroup libelfsh
  * extplt.c for libelfsh
  * 
  * This file contain the architecture -dependant- code 
@@ -189,7 +190,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   elfshsect_t	*versym = NULL;
   elfshsect_t	*hash;
   elfshsect_t	*dynamic;
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
   elfsh_Dyn	*dynent;
   elfsh_Dyn   	*versyment;
   elfsh_Dyn   	*hashent;
@@ -253,14 +254,14 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 
 
   /* Copy a double sized .dynsym somewhere else */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
+  enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
 			     ELFSH_DATA_INJECTION, dynsym->shdr->sh_size * 4, 
 			     sizeof(elfsh_Addr));
-  if (!new)
+  if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSYM", -1);
-  new->shdr->sh_entsize = sizeof(elfsh_Sym);
-  data = elfsh_get_raw(new);
+  enew->shdr->sh_entsize = sizeof(elfsh_Sym);
+  data = elfsh_get_raw(enew);
 
   /* Take the fixed ondisk version of dynsym as original data */
   memcpy(data, dynsym->data, dynsym->shdr->sh_size);
@@ -269,125 +270,125 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DT_SYMTAB", -1);
-  elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
-  new->curend = dynsym->shdr->sh_size;
-  new->shdr->sh_type = dynsym->shdr->sh_type; 
-  file->secthash[ELFSH_SECTION_DYNSYM] = new;
-  elfsh_sync_sorted_symtab(new);
+  elfsh_set_dynentry_val(dynent, enew->shdr->sh_addr);
+  enew->curend = dynsym->shdr->sh_size;
+  enew->shdr->sh_type = dynsym->shdr->sh_type; 
+  file->secthash[ELFSH_SECTION_DYNSYM] = enew;
+  elfsh_sync_sorted_symtab(enew);
 
   /* Same for dynstr */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSTR, NULL,
+  enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSTR, NULL,
 			     ELFSH_DATA_INJECTION, dynstr->shdr->sh_size * 2, 
 			     sizeof(elfsh_Addr));
-  if (!new)
+  if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSTR", -1);
-  data = elfsh_get_raw(new);
+  data = elfsh_get_raw(enew);
   memcpy(data, elfsh_get_raw(dynstr), dynstr->shdr->sh_size);
 
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB);
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DT_STRTAB", -1);
-  elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
-  new->curend = dynstr->shdr->sh_size;
-  new->shdr->sh_type = dynstr->shdr->sh_type;
-  file->secthash[ELFSH_SECTION_DYNSTR] = new;
+  elfsh_set_dynentry_val(dynent, enew->shdr->sh_addr);
+  enew->curend = dynstr->shdr->sh_size;
+  enew->shdr->sh_type = dynstr->shdr->sh_type;
+  file->secthash[ELFSH_SECTION_DYNSTR] = enew;
 
   /* Cross references those last 2 sections */
-  elfsh_set_section_link(file->secthash[ELFSH_SECTION_DYNSYM]->shdr, new->index);
-  elfsh_set_section_link(new->shdr, file->secthash[ELFSH_SECTION_DYNSYM]->index);
+  elfsh_set_section_link(file->secthash[ELFSH_SECTION_DYNSYM]->shdr, enew->index);
+  elfsh_set_section_link(enew->shdr, file->secthash[ELFSH_SECTION_DYNSYM]->index);
   
   /* Same for .rel.got, if relgot is NULL then there is no .rel.got, its not an error */
   if (relgot)
     {
-      new = elfsh_insert_section(file, relgotname, NULL, ELFSH_DATA_INJECTION,
+      enew = elfsh_insert_section(file, relgotname, NULL, ELFSH_DATA_INJECTION,
 				 relgot->shdr->sh_size, sizeof(elfsh_Addr));
-      if (!new)
+      if (!enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to inject ALTRELGOT", -1);
 
-      data = elfsh_get_raw(new);
+      data = elfsh_get_raw(enew);
       memcpy(data, elfsh_get_raw(relgot), relgot->shdr->sh_size);
       dynent = elfsh_get_dynamic_entry_by_type(file, IS_REL(dynamic) ? DT_REL : DT_RELA);
       if (!dynent)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Unable to get DT_REL", -1);
-      elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
-      new->curend = relgot->shdr->sh_size;
-      new->shdr->sh_type = relgot->shdr->sh_type;
-      new->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
-      new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
+      elfsh_set_dynentry_val(dynent, enew->shdr->sh_addr);
+      enew->curend = relgot->shdr->sh_size;
+      enew->shdr->sh_type = relgot->shdr->sh_type;
+      enew->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
+      enew->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
     }
 
   /* Same for .rel.plt */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELPLT, NULL,
+  enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELPLT, NULL,
 			     ELFSH_DATA_INJECTION, relplt->shdr->sh_size * 4, 
 			     sizeof(elfsh_Addr));
-  if (!new)
+  if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTRELPLT", -1);
-  data = elfsh_get_raw(new);
+  data = elfsh_get_raw(enew);
   memcpy(data, elfsh_get_raw(relplt), relplt->shdr->sh_size);
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_JMPREL);
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get DT_RELPLT", -1);
-  elfsh_set_dynentry_val(dynent, new->shdr->sh_addr);
-  new->curend = relplt->shdr->sh_size;
-  new->shdr->sh_type = relplt->shdr->sh_type;
-  new->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
-  new->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
+  elfsh_set_dynentry_val(dynent, enew->shdr->sh_addr);
+  enew->curend = relplt->shdr->sh_size;
+  enew->shdr->sh_type = relplt->shdr->sh_type;
+  enew->shdr->sh_link = file->secthash[ELFSH_SECTION_DYNSYM]->index;
+  enew->shdr->sh_entsize = IS_REL(dynamic) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
 
   /* Versym expand is only for linux */
   if (elfsh_get_ostype(file) == ELFSH_OS_LINUX)
     {
       /* Same for .gnu.version */
-      new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTVERSYM, NULL,
+      enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTVERSYM, NULL,
 				 ELFSH_DATA_INJECTION, versym->shdr->sh_size * 4, 
 				 sizeof(elfsh_Addr));
-      if (!new)
+      if (!enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to inject ALTVERSYM", -1);
-      data = elfsh_get_raw(new);
+      data = elfsh_get_raw(enew);
       memcpy(data, elfsh_get_raw(versym), versym->shdr->sh_size);
 
-      new->curend = versym->shdr->sh_size;
-      new->shdr->sh_type = versym->shdr->sh_type;
-      new->shdr->sh_link = file->secthash[ELFSH_SECTION_GNUVERSYM]->index;
-      new->shdr->sh_entsize = sizeof(elfsh_Half);
-      file->secthash[ELFSH_SECTION_VERSYM] = new;
+      enew->curend = versym->shdr->sh_size;
+      enew->shdr->sh_type = versym->shdr->sh_type;
+      enew->shdr->sh_link = file->secthash[ELFSH_SECTION_GNUVERSYM]->index;
+      enew->shdr->sh_entsize = sizeof(elfsh_Half);
+      file->secthash[ELFSH_SECTION_VERSYM] = enew;
 
       /* Redirect on .dynamic section */
       versyment = elfsh_get_dynamic_entry_by_type(file, DT_VERSYM);
       if (!versyment)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to get DT_VERSYM", -1);
-      elfsh_set_dynentry_val(versyment, new->shdr->sh_addr);
+      elfsh_set_dynentry_val(versyment, enew->shdr->sh_addr);
     }
 
   /* Same for .hash */
-  new = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTHASH, NULL,
+  enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTHASH, NULL,
 			     ELFSH_DATA_INJECTION, hash->shdr->sh_size * 4, 
 			     sizeof(elfsh_Addr));
-  if (!new)
+  if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to inject ALTHASHM", -1);
-  data = elfsh_get_raw(new);
+  data = elfsh_get_raw(enew);
   memcpy(data, elfsh_get_raw(hash), hash->shdr->sh_size);
   
-  new->curend = hash->shdr->sh_size;
-  new->shdr->sh_type = hash->shdr->sh_type;
-  new->shdr->sh_link = file->secthash[ELFSH_SECTION_HASH]->index;
-  new->shdr->sh_entsize = sizeof(elfsh_Word);
-  file->secthash[ELFSH_SECTION_HASH] = new;
+  enew->curend = hash->shdr->sh_size;
+  enew->shdr->sh_type = hash->shdr->sh_type;
+  enew->shdr->sh_link = file->secthash[ELFSH_SECTION_HASH]->index;
+  enew->shdr->sh_entsize = sizeof(elfsh_Word);
+  file->secthash[ELFSH_SECTION_HASH] = enew;
 
   /* Redirect on .dynamic section */
   hashent = elfsh_get_dynamic_entry_by_type(file, DT_HASH);
   if (!hashent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get DT_HASH", -1);
-  elfsh_set_dynentry_val(hashent, new->shdr->sh_addr);
+  elfsh_set_dynentry_val(hashent, enew->shdr->sh_addr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

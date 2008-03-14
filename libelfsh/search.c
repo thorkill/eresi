@@ -1,5 +1,6 @@
 /**
  * @file search.c
+ * @ingroup libelfsh
 ** search.c for libelfsh
 ** 
 ** This function contains the research function inside the ELF structures

@@ -1,5 +1,6 @@
 /**
  * @file sht_rebuild.c
+ * @ingroup libelfsh
  ** sht_rebuild.c for elfsh
  ** 
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 

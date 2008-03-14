@@ -1,5 +1,6 @@
 /** 
  * @file interp.c
+ * @ingroup libelfsh
 ** interp.c for libelfsh
 ** 
 ** Started on  Sun Jun 10 20:29:18 2001 jfv
@@ -49,25 +50,25 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
  */
 char		*elfsh_get_interp(elfshobj_t *file)
 {
-  elfshsect_t	*new = NULL;
+  elfshsect_t	*enew = NULL;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_INTERP] == NULL)
     {
-      new = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_INTERP, 
+      enew = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_INTERP, 
 				      NULL, NULL, NULL);
-      if (new == NULL)
+      if (enew == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get .interp by name", NULL);
-      file->secthash[ELFSH_SECTION_INTERP] = new;
+      file->secthash[ELFSH_SECTION_INTERP] = enew;
     }
 
   if (file->secthash[ELFSH_SECTION_INTERP]->data == NULL)
     {
-      new->data = elfsh_load_section(file, 
+      enew->data = elfsh_load_section(file, 
 				     file->secthash[ELFSH_SECTION_INTERP]->shdr);
-      if (new->data == NULL)
+      if (enew->data == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .interp", NULL);
     }

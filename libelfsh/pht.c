@@ -1,5 +1,6 @@
 /**
  * @file pht.c
+ * @ingroup libelfsh
 ** pht.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:07:33 2001 jfv
@@ -423,7 +424,7 @@ int		elfsh_load_pht(elfshobj_t *file)
  * @param new
  * @return
  */
-elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
+elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *enew)
 {
   elfsh_Phdr	*actual;
   int		index;
@@ -432,24 +433,24 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *new)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  if (NULL == new || NULL == new->parent || NULL == file ||
-      (NULL == new->parent->pht && elfsh_load_pht(new->parent)) < 0)
+  if (NULL == enew || NULL == enew->parent || NULL == file ||
+      (NULL == enew->parent->pht && elfsh_load_pht(enew->parent)) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
 
   /* Try to find in pht */
-  for (index = 0, actual = new->parent->pht; index < new->parent->hdr->e_phnum;
+  for (index = 0, actual = enew->parent->pht; index < enew->parent->hdr->e_phnum;
        index++)
-      if (INTERVAL(actual[index].p_vaddr, new->shdr->sh_addr,
+      if (INTERVAL(actual[index].p_vaddr, enew->shdr->sh_addr,
 		 actual[index].p_vaddr + actual[index].p_memsz))
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (actual + index));
 
   /* Fix the address we look for depending on the file type and context */
-  addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(new) ? 
-	  file->rhdr.base + new->shdr->sh_addr : new->shdr->sh_addr);
+  addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(enew) ? 
+	  file->rhdr.base + enew->shdr->sh_addr : enew->shdr->sh_addr);
   
   /* Try to find in runtime pht */
-  for (index = 0, actual = new->parent->rpht; index < new->parent->rhdr.rphtnbr;
+  for (index = 0, actual = enew->parent->rpht; index < enew->parent->rhdr.rphtnbr;
        index++)
     {
 
@@ -592,7 +593,7 @@ elfsh_Phdr	elfsh_create_phdr(elfsh_Word t,
 elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
 {
   elfshsect_t	*cur;
-  elfsh_Phdr	*new;
+  elfsh_Phdr	*enew;
   elfsh_Phdr	*phdr;
   elfsh_Phdr	*curphdr;
   elfsh_SAddr	range;
@@ -611,9 +612,9 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
       if (!(phdr->p_filesz % elfsh_get_pagesize(file)) && 
 	  (file->hdr->e_phnum + 1) * file->hdr->e_phentsize <= phdr->p_filesz)
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, (file->hdr->e_phnum + 1) * elfsh_get_phentsize(file->hdr),
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, (file->hdr->e_phnum + 1) * elfsh_get_phentsize(file->hdr),
 		 NULL);
-	  memcpy(new, file->pht, 
+	  memcpy(enew, file->pht, 
 		 file->hdr->e_phnum * elfsh_get_phentsize(file->hdr));
 	  goto end;
 	}
@@ -632,12 +633,12 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
 		      "Cannot find +x PT_LOAD",  NULL);
 
   /* Copy beginning of new PHT */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, (file->hdr->e_phnum + 1) * elfsh_get_phentsize(file->hdr), NULL);
-  memcpy(new, file->pht, file->hdr->e_phnum * elfsh_get_phentsize(file->hdr));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, (file->hdr->e_phnum + 1) * elfsh_get_phentsize(file->hdr), NULL);
+  memcpy(enew, file->pht, file->hdr->e_phnum * elfsh_get_phentsize(file->hdr));
 
   /* Update it so that it covers the whole new PT_PHDR */
   pagesize = elfsh_get_pagesize(file);
-  phdr = new + (phdr - file->pht);
+  phdr = enew + (phdr - file->pht);
   phdr->p_filesz += pagesize;
   phdr->p_memsz  += pagesize;
   phdr->p_vaddr  -= pagesize;
@@ -649,7 +650,7 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
       cur->shdr->sh_offset += elfsh_get_pagesize(file);
 
   /* Update all PHT file offsets */
-  for (range = 0, curphdr = new; 
+  for (range = 0, curphdr = enew; 
        range < file->hdr->e_phnum; 
        range++, curphdr++)
     if (elfsh_get_segment_type(curphdr) == PT_PHDR)
@@ -677,13 +678,13 @@ elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h)
       cur = elfsh_get_parent_section(file, h->p_vaddr, &range);
       h->p_offset = cur->shdr->sh_offset + range;
     }
-  memcpy(new + file->hdr->e_phnum, h, elfsh_get_phentsize(file->hdr));
+  memcpy(enew + file->hdr->e_phnum, h, elfsh_get_phentsize(file->hdr));
 
   /* Everything OK */
   file->hdr->e_phnum++;
   XFREE(__FILE__, __FUNCTION__, __LINE__,file->pht);
-  file->pht = new;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new + (file->hdr->e_phnum - 1));
+  file->pht = enew;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, enew + (file->hdr->e_phnum - 1));
 }
 
 

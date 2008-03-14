@@ -1,5 +1,9 @@
 /**
+ * @defgroup libelfsh The libelfsh library
+ */
+/**
  * @file version.c
+ * @ingroup libelfsh
  * version.c for elfsh
  * 
  * Started     Nov 25 2003 jfv

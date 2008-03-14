@@ -1,5 +1,6 @@
 /**
  * @file alpha64.c
+ * @ingroup libelfsh
 ** Alpha64.c for libelfsh
 **
 ** Started on  Sat Feb 26 23:25:37 2005 jfv

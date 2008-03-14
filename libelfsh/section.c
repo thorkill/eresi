@@ -1,5 +1,6 @@
 /**
  * @file section.c
+ * @ingroup libelfsh
 ** section.c for libelfsh
 ** 
 ** @brief All handlers and lowlevel routines for sections management
@@ -553,17 +554,17 @@ void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
  */
 elfshsect_t	*elfsh_create_section(char *name)
 {
-  elfshsect_t	*new;
+  elfshsect_t	*enew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL name", NULL);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(elfshsect_t), NULL);
-  new->name = strdup(name);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, sizeof(elfshsect_t), NULL);
+  enew->name = strdup(name);
  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
 
 /**
@@ -846,7 +847,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   elfshsect_t		*todel;
   elfshsect_t		*cur;
   elfsh_Shdr		shdr;
-  elfsh_Shdr		*new;
+  elfsh_Shdr		*enew;
   elfsh_Phdr		*pht;
   elfsh_Sym		*sym;
   u_int			idx;
@@ -881,10 +882,10 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   if (size)
     memcpy(obj->sht + todel->index, obj->sht + todel->index + 1, size);
   obj->hdr->e_shnum--;
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, obj->hdr->e_shnum * sizeof(elfsh_Shdr), -1);
-  memcpy(new, obj->sht, obj->hdr->e_shnum * sizeof(elfsh_Shdr));
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, obj->hdr->e_shnum * sizeof(elfsh_Shdr), -1);
+  memcpy(enew, obj->sht, obj->hdr->e_shnum * sizeof(elfsh_Shdr));
   XFREE(__FILE__, __FUNCTION__, __LINE__,obj->sht);
-  obj->sht = new;
+  obj->sht = enew;
   elfsh_sync_sht(obj);
   elfsh_sync_sectnames(obj);
 

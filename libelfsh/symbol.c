@@ -1,5 +1,6 @@
 /**
  * @file symbol.c
+ * @ingroup libelfsh
  * symbol.c for libelfsh
  * 
  * Started on  Mon Feb 26 04:11:46 2001 jfv
@@ -537,7 +538,7 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 {
   elfsh_Sym	*ret;
   elfsh_Sym	*tab;
-  elfsh_Sym	*new;
+  elfsh_Sym	*enew;
   u_int   	off;
   u_int		movedsz;
   hash_t 	*uptable = NULL;
@@ -563,10 +564,10 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 	   movedsz);
   symtab->shdr->sh_size -= sizeof(elfsh_Sym);
   symtab->curend -= sizeof(elfsh_Sym);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, symtab->shdr->sh_size, -1);
-  memcpy(new, tab, symtab->shdr->sh_size);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, symtab->shdr->sh_size, -1);
+  memcpy(enew, tab, symtab->shdr->sh_size);
   XFREE(__FILE__, __FUNCTION__, __LINE__,tab);
-  symtab->data = new;
+  symtab->data = enew;
 
   /* We just cant remove the string because of ELF string table format */
   elfsh_sync_sorted_symtab(symtab);

@@ -1,5 +1,6 @@
 /**
  * @file elf.c
+ * @ingroup libelfsh
 ** elf.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:09:38 2001 jfv

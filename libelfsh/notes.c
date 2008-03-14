@@ -1,5 +1,6 @@
 /**
  * @file notes.c
+ * @ingroup libelfsh
 ** notes.c for libelfsh
 ** 
 ** Functions of this files are not intended to be used with e2dbg
