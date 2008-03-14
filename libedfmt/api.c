@@ -1,6 +1,6 @@
 /**
  * @file api.c
- *
+ * @ingroup libedfmt
  * api.c for libedfmt (The Elf debug format library of ELFsh)
  *
  * Started Jan 26 2007 11:54:22 mxatone

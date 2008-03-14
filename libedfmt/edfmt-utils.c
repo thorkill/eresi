@@ -1,5 +1,6 @@
 /*
-** edfmt-utils.c for libedfmt (The Elf debug format library of ELFsh)
+** @file edfmt-utils.c
+** @ingroup libedfmt
 **
 ** Started Jan 13 2007 18:09:02 mxatone
 **

@@ -1,5 +1,6 @@
 /*
-** stabs-trans.c for libedfmt (The Elf debug format library of ELFsh)
+** @file stabs-trans.c
+** @ingroup libedfmt
 **
 ** Started Fev 02 2007 14:35:03 mxatone
 **

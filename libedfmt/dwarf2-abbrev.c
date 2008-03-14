@@ -1,6 +1,6 @@
 /*
-** dwarf2-abbrev.c for libedfmt (The Elf debug format library of ELFsh)
-**
+** @file dwarf2-abbrev.c
+** @ingroup libedfmt
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **

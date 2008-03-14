@@ -1,6 +1,6 @@
 /*
-** stabs-utils.c for libedfmt (The Elf debug format library of ELFsh)
-**
+** @file stabs-utils.c
+** @ingroup libedfmt
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
