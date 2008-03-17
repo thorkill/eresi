@@ -1,14 +1,10 @@
 /*
-** (C) 2001-2007 Devhell Labs / Asgard Labs : thorolf / sk / jfv
+** (C) 2001-2008 Devhell Labs / Asgard Labs : thorolf / sk / jfv
 ** @file history.c
 ** 
-** $Id: history.c,v 1.16 2007-12-07 16:49:49 may Exp $
 */
+
 #include "libmjollnir.h"
-
-
-
-
 
 /* Oldest entry is entry 0 */
 /* It is the good way to do it */

@@ -4,9 +4,8 @@
 ** Started : Thu May 29 20:44:39 2003 sk
 ** Updated : Sun Dec 30 16:45:48 2006 jfv
 **
-** $Id: findentry.c,v 1.10 2008-02-16 12:32:27 thor Exp $
-**
 */
+
 #include "libmjollnir.h"
 
 

@@ -1,12 +1,12 @@
-/*
+/**
  * @file links.c
  *
  * @brief All the functions that deal with linking other objects, such
  * as functions, blocks, or others.
  *
  * Started on Fri Jun 22 2007 jfv
- * $Id: links.c,v 1.10 2008-02-17 13:35:11 thor Exp $
  */
+
 #include <libmjollnir.h>
 
 

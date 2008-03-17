@@ -7,9 +7,8 @@
 **
 ** Started on  Tue Jan 02 04:04:18 2006 jfv
 **
-** $Id: display.c,v 1.16 2007-08-07 07:13:27 may Exp $
-**
 */
+
 #include "libmjollnir.h"
 
 ///**

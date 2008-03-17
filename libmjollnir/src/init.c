@@ -1,11 +1,12 @@
-/*
- * (C) 2006-2007 Asgard Labs, thorolf
+/**
+ * (C) 2006-2008 Asgard Labs, thorolf
  * BSD License
- * $Id: init.c,v 1.28 2008-02-16 12:32:27 thor Exp $
+ *
  * @file init.c
  * @brief Initialization functions
  *
  */
+
 #include "libmjollnir.h"
 
 /**

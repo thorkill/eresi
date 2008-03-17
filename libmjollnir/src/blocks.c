@@ -1,12 +1,10 @@
 /*
 ** @file libmjollnir/src/blocks.c
-** 
+**
 ** Authors : sk, jfv, thorkill, strauss
 ** 
 ** Started : Thu May 29 20:39:14 2003 sk
 ** Updated : Fri Dec 15 01:09:47 2006 jfv
-**
-** $Id: blocks.c,v 1.72 2008-02-17 13:35:11 thor Exp $
 **
 */
 #include "libmjollnir.h"

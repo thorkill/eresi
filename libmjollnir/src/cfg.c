@@ -6,8 +6,6 @@
 ** 
 ** @brief Functions that use the typed instructions information in libasm
 **
-** $Id: cfg.c,v 1.10 2008-02-16 12:32:27 thor Exp $
-**
 */
 #include "libmjollnir.h"
 

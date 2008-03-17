@@ -1,11 +1,11 @@
-/*
+/**
  * 2001-2007 Devhell Labs, Rfdslabs, Asgardlabs
  *
  * @file container.c
  * @brief An API for generic containers data structures
  *
- * $Id: container.c,v 1.22 2008-02-17 13:35:11 thor Exp $
  */
+
 #include "libmjollnir.h"
 
 /**

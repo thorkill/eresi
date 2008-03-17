@@ -5,9 +5,8 @@
 **
 ** Started : Mon Jan 02 01:18:14 2007 jfv
 **
-** $Id: fingerprint.c,v 1.16 2007-08-07 07:13:27 may Exp $
-**
 */
+
 #include "libmjollnir.h"
 
 

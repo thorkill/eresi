@@ -4,9 +4,9 @@
 ** @brief Implement routines to store and load analysis data on disk
 **
 ** Started : Thu Jul 28 02:39:14 2003 jfv
-** $Id: ondisk.c,v 1.7 2008-02-17 13:35:11 thor Exp $
 **
 */
+
 #include "libmjollnir.h"
 
 

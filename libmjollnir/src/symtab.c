@@ -1,11 +1,11 @@
 /**
  * @file symtab.c
  *
- * (C) 2006 Asgard Labs, thorolf
+ * (C) 2006-2008 Asgard Labs, thorolf
  * BSD License
- * $Id: symtab.c,v 1.20 2007-08-07 07:13:27 may Exp $
  *
  */
+
 #include <libmjollnir.h>
 
 

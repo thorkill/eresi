@@ -1,12 +1,14 @@
-/*
- * (C) 2006-2007 Asgard Labs, thorolf
+/**
+ * @file function.c
+ * 
+ * @brief funtion containers related api
+ *
+ * (C) 2006-2008 Asgard Labs, thorolf
  *     2006-2007 devhell, jfv
  *     2007      rfd labs, strauss
- * @file function.c
- * BSD License
- * $Id: function.c,v 1.47 2008-02-16 12:32:27 thor Exp $
  *
  */
+ 
 #include <libmjollnir.h>
 
 

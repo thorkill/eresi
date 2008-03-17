@@ -1,11 +1,11 @@
 /*
-** (C) 2006-2007 The ERESI team
+** (C) 2006-2008 The ERESI team
 ** 
 ** @file core.c
 ** @brief Implement low-level functions of the libmjollnir library
 **
-** $Id: core.c,v 1.43 2008-02-16 12:32:27 thor Exp $
 */
+
 #include "libmjollnir.h"
 
 
