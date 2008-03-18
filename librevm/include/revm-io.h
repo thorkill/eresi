@@ -302,6 +302,7 @@ int             revm_getmaxfd();
 int             revm_clean_jobs();
 
 /* Readline interface */
+int             revm_init_history(int mode);
 int             revm_quit(int mode);
 void            revm_ctrl_set(int i, char c);
 void            revm_completion_install(char mode, char side);

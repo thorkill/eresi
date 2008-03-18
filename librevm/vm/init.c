@@ -64,6 +64,8 @@ int		revm_init()
 int		revm_setup(int ac, char **av, 
 			   char mode, char side)
 {
+  char buff[BUFSIZ];
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Detect the mode we are running in */
@@ -102,32 +104,32 @@ int		revm_setup(int ac, char **av,
     }
 
   /* on.load. */
-  config_add_item(ELFSH_VMCONFIG_ONLOAD_RCONTROL,
+  config_add_item(ERESI_VMCONFIG_ONLOAD_RCONTROL,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
   
-  config_add_item(ELFSH_VMCONFIG_GRAPH_STORAGEPATH,
+  config_add_item(ERESI_VMCONFIG_GRAPH_STORAGEPATH,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)"/tmp/");
 
-  config_add_item(ELFSH_VMCONFIG_GRAPH_VIEWCMD,
+  config_add_item(ERESI_VMCONFIG_GRAPH_VIEWCMD,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)"xzgv");
 
-  config_add_item(ELFSH_VMCONFIG_GRAPH_AUTOVIEW,
+  config_add_item(ERESI_VMCONFIG_GRAPH_AUTOVIEW,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
-  config_add_item(ELFSH_VMCONFIG_GRAPH_AUTOBUILD,
+  config_add_item(ERESI_VMCONFIG_GRAPH_AUTOBUILD,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
-  config_add_item(ELFSH_VMCONFIG_USE_MORE,
+  config_add_item(ERESI_VMCONFIG_USE_MORE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
@@ -136,6 +138,14 @@ int		revm_setup(int ac, char **av,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
+
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff), "%s/%s", getenv("HOME"),  ERESI_DEFAULT_HISTORY);
+
+  config_add_item(ERESI_VMCONFIG_HISTORY,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *)buff);
 
   revm_tables_setup();
   elfsh_setup_hooks();
@@ -185,6 +195,9 @@ int		revm_config(char *config)
   if (ret < 0)
     revm_output("\n [*] No configuration in ~/" REVM_CONFIG " \n\n");
   done = 1;
+
+  revm_init_history(world.state.revm_mode);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

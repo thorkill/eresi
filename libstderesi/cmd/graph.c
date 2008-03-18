@@ -106,16 +106,16 @@ int revm_graph_compile_graphic(char *dotfile)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if ((int) config_get_data(ELFSH_VMCONFIG_GRAPH_AUTOBUILD))
+  if ((int) config_get_data(ERESI_VMCONFIG_GRAPH_AUTOBUILD))
     {
       snprintf(buf,sizeof(buf),"dot -Tpng -o %s.png %s",dotfile,dotfile);
       system(buf);
 
-      if ((int) config_get_data(ELFSH_VMCONFIG_GRAPH_AUTOVIEW))
+      if ((int) config_get_data(ERESI_VMCONFIG_GRAPH_AUTOVIEW))
 	{
 	  snprintf(buf,sizeof(buf),
 		   "%s %s.png",
-		   (char *)config_get_data(ELFSH_VMCONFIG_GRAPH_VIEWCMD),
+		   (char *)config_get_data(ERESI_VMCONFIG_GRAPH_VIEWCMD),
 		   dotfile);
 	  system(buf);
 	}
@@ -165,7 +165,7 @@ int		revm_prepare_storage_dir(void)
   memset(tmp,0x00, BUFSIZ);
   memset(path,0x00, BUFSIZ);
 
-  snprintf(path,BUFSIZ-1,"%s/%s",(char *)config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH),
+  snprintf(path,BUFSIZ-1,"%s/%s",(char *)config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH),
 	   revm_flattern_path(world.mjr_session.cur->obj->name));
 
   for (token = strtok_r(path,sep,&brkt);
@@ -202,7 +202,7 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
   if (!prefix)
     prefix = "";
 
-  str1 = (char *) config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH);
+  str1 = (char *) config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH);
   str2 = revm_flattern_path(world.mjr_session.cur->obj->name);
   namelen = strlen(str1) + strlen(str2) + strlen(opt) + strlen(prefix) + 32;
 
@@ -212,7 +212,7 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
 		 "Cannot prepare storage directory", NULL);
   
   snprintf(dotfile,namelen,"%s%s/%s-%s.dot",
-	   (char *)config_get_data(ELFSH_VMCONFIG_GRAPH_STORAGEPATH),
+	   (char *)config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH),
 	   revm_flattern_path(world.mjr_session.cur->obj->name),
 	   prefix,opt);
 

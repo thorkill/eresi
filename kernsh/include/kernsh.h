@@ -17,6 +17,7 @@
 #define KERNSH_NAME		"Kernel shell"
 #define KERNSH_CONFIG		".kernshrc"
 
+
 /* Commands */
 #define	CMD_OPENMEM		"openmem"
 #define CMD_CLOSEMEM            "closemem"
@@ -108,8 +109,6 @@ int	extract_info(char *,
 int kernsh_hexdump(unsigned char *, unsigned int, size_t);
 int kernsh_disasm(char *, int, unsigned long);
 int kernsh_addrlen(revmlist_t *, elfsh_Addr *, int *);
-
-int	kernsh_config();
 
 /* Top skeleton functions */
 int	vm_main(int ac, char **av);

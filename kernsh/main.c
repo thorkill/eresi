@@ -41,45 +41,6 @@ void 		kernsh_setup_prompt()
   revm_set_prompt(kernsh_create_prompt);
 }
 
-int kernsh_config()
-{
-  char          buff[BUFSIZ];
-  char          *home;
-  int           ret;
-  revmargv_t    *new, *old;
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
- 
-  ret = -1;
-  home = getenv("HOME");
-  if (home)
-    {
-      memset(buff, '\0', sizeof(buff));
-
-      snprintf(buff, sizeof(buff), "%s/%s", home, KERNSH_CONFIG);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__,
-             new, sizeof(revmargv_t), -1);
-      memset(new, 0, sizeof(revmargv_t));
-      old = world.curjob->curcmd;
-      world.curjob->curcmd = new;
-      world.curjob->curcmd->param[0] = buff;
-      ret = revm_source(world.curjob->curcmd->param);
-      world.curjob->curcmd = NULL;
-
-      if (ret < 0)
-	revm_exit(-1);
-      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-      //	     "Failed to load script", -1);
-
-      XFREE(__FILE__, __FUNCTION__, __LINE__,new);
-    }
-
-  if (ret < 0)
-    revm_output("\n [*] No configuration in ~/" KERNSH_CONFIG " \n\n");
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 /* Print the kernsh banner */
 void		kernsh_banner_print()
 {

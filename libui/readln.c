@@ -16,10 +16,20 @@ rlcomp_t		comp;			/* Completion strings */
 rl_command_func_t	*rl_ctrll = NULL;
 char			readln_exited = 0;
 
+int		readln_init(int mode, char *history)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (mode >= 0)
+    read_history(history);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 /**
  * @brief Clean readline 
  */
-int		readln_quit(int mode)
+int		readln_quit(int mode, char *history)
 {
   int 		exited = readln_exited;
 
@@ -28,7 +38,7 @@ int		readln_quit(int mode)
   if (readln_exited == 0)
     {
       if (mode >= 0)
-	readln_history_dump(mode);
+	readln_history_dump(mode, history);
       
       rl_callback_handler_remove();
       readln_exited = 1;
@@ -521,12 +531,16 @@ void		readln_screen_change(u_short isnew, char prompt_display)
 /** 
  * @brief Write readline history on quit 
  */
-void		readln_history_dump(char mode)
+void		readln_history_dump(char mode, char *history)
 {
+  char buff[BUFSIZ];
+
   if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_DEBUGGER)
     {
-      revm_output(" [*] Writting history (.elfsh_history) \n");
-      write_history(".elfsh_history");
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff), "[*] Writting history (%s) \n", history);
+      revm_output(buff);
+      write_history(history);
     }
 
   rl_callback_handler_remove();

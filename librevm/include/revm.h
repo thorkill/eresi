@@ -245,13 +245,16 @@ extern asm_processor	proc;
 #define	REVM_CREATE_NEWID	(1 << 2)
 
 /* config strings */
-#define ELFSH_VMCONFIG_ONLOAD_RCONTROL	"onload.restore_control"
-#define ELFSH_VMCONFIG_GRAPH_STORAGEPATH "graph.storagepath"
-#define ELFSH_VMCONFIG_GRAPH_VIEWCMD	"graph.viewcmd"
-#define ELFSH_VMCONFIG_GRAPH_AUTOVIEW	"graph.autoview"
-#define ELFSH_VMCONFIG_GRAPH_AUTOBUILD	"graph.autobuild"
-#define ELFSH_VMCONFIG_USE_MORE         "vm.use_more"
-#define	ELFSH_VMCONFIG_USE_ASMDEBUG	"asm.debug"
+#define ERESI_VMCONFIG_ONLOAD_RCONTROL	"onload.restore_control"
+#define ERESI_VMCONFIG_GRAPH_STORAGEPATH "graph.storagepath"
+#define ERESI_VMCONFIG_GRAPH_VIEWCMD	"graph.viewcmd"
+#define ERESI_VMCONFIG_GRAPH_AUTOVIEW	"graph.autoview"
+#define ERESI_VMCONFIG_GRAPH_AUTOBUILD	"graph.autobuild"
+#define ERESI_VMCONFIG_USE_MORE         "vm.use_more"
+#define	ERESI_VMCONFIG_USE_ASMDEBUG	"asm.debug"
+#define ERESI_VMCONFIG_HISTORY		"history"
+
+#define ERESI_DEFAULT_HISTORY		".eresi_history"
 
 /* Manage string table */
 #define REVM_STRTABLE_GET(_out, _in) 	\

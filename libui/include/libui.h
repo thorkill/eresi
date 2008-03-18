@@ -34,7 +34,8 @@ typedef struct        s_comp
 }		      rlcomp_t;
 
 /* Prototypes for readline functions */
-int		readln_quit(int mode);
+int		readln_init(int mode, char *history);
+int		readln_quit(int mode, char *history);
 void		readln_ctrl_set(int i, char c);
 char            *readln_match(const char *text, int state);
 void            readln_completion_install(char mode, char side);
@@ -47,7 +48,7 @@ char            *readln_input_check();
 void            readln_input_log(char *str);
 void            readln_install_clearscreen();
 void            readln_screen_change(u_short isnew, char promptdisplay);
-void            readln_history_dump(char mode);
+void            readln_history_dump(char mode, char *history);
 void            readln_terminal_prepare(char mode);
 void            readln_terminal_unprepare(char mode);
 void		readln_ln_handler(char *c);

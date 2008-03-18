@@ -80,7 +80,7 @@ int		revm_output(char *str)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
       || world.curjob->sourced
-      || !(int)config_get_data(ELFSH_VMCONFIG_USE_MORE))
+      || !(int)config_get_data(ERESI_VMCONFIG_USE_MORE))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	 (world.curjob->ws.io.output(str)));
 
