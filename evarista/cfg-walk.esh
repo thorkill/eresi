@@ -28,13 +28,22 @@ print $hash[visitedblocks:$1]
 sparc2lir    $1
 #lir-dataflow $1
 
-foreach $nextblock of $block.outlist
+tables blocks
+print $block
+#tables expressions
+print $block.outlinks
+
+foreach $nextblock of $block.outlinks
+
+  print *nextblock
 
   set $addr  $nextblock.curaddr
   set $found $hash[visitedblocks:$curaddr]
   cmp $found 1
   je next
   cfg-walk $nextblock.curaddr
+
+  print *nextblock
 
 next: forend
 

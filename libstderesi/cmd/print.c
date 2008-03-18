@@ -93,13 +93,13 @@ void		revm_object_print(revmobj_t *obj)
   else
     switch (obj->otype->type)
       {
+      case ASPECT_TYPE_STR:
       case ASPECT_TYPE_BYTE:
       case ASPECT_TYPE_SHORT:
       case ASPECT_TYPE_LONG:
       case ASPECT_TYPE_CADDR:
       case ASPECT_TYPE_DADDR:
       case ASPECT_TYPE_INT:
-      case ASPECT_TYPE_STR:
       case ASPECT_TYPE_RAW:
       default:
 	val = (obj->immed || !obj->parent ? obj->immed_val.ent : obj->get_obj(obj->parent));

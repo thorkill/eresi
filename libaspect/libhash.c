@@ -160,10 +160,10 @@ int		hash_add(hash_t *h, char *key, void *data)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //Weaken the check : do not hash_get(h, key) check
-  if (!h || !key || !data)
+  //Weaken the check : do not hash_get(h, key) check and do not check !data
+  if (!h || !key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-     "Invalid NULL parameters", -1);
+		 "Invalid NULL parameters", -1);
   
   newent = NULL;
   for (index = 0, backup = key; *backup; backup++)
@@ -330,7 +330,7 @@ char		**hash_get_keys(hash_t *h, int *n)
 		   "Invalid NULL parameters", NULL);
     }
   XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
-	 sizeof(char *) * h->elmnbr, NULL);
+	 sizeof(char *) * (h->elmnbr + 1), NULL);
 
   for (last = idx = 0; idx < h->size; idx++)
     {
@@ -344,6 +344,7 @@ char		**hash_get_keys(hash_t *h, int *n)
     }
   if (n)
     *n = h->elmnbr;
+  keys[last] = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
 

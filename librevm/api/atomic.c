@@ -467,7 +467,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
 	}
-      else if (o1->parent == str)
+      else if (o1->parent == str || !o1->parent)
 	o1->parent = (str ? strdup(str) : NULL);
       else if (o1->set_name(o1->root, o1->parent, str) < 0)
 	{

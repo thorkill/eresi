@@ -22,6 +22,7 @@ int		container_linklists_create(container_t *container,
   aspectype_t  *type;
   char		bufname[BUFSIZ];
   char		*prefix;
+  list_t	*newlist;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -41,7 +42,7 @@ int		container_linklists_create(container_t *container,
 		     "Unable to find type of container", -1);
       prefix = type->name;
     }
-  
+
   /* Now really allocate the list */
   switch (linktype)
     {
@@ -82,10 +83,14 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
   if (!rtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown container element type", NULL);  
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newcntnr, sizeof(container_t) + rtype->size, NULL);
+
+  /* Make sure meta-data is initialized and contiguous with pointed data */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newcntnr, sizeof(container_t) + rtype->size, NULL);
   newcntnr->data = (char *) newcntnr + sizeof(container_t);
   newcntnr->type = type;
+  memcpy((char *) newcntnr->data, (char *) data, rtype->size);
+
+  /* Create lists if not specified */
   if (inlist)
     newcntnr->inlinks = elist_copy(inlist);
   else
@@ -96,6 +101,5 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
     container_linklists_create(newcntnr, CONTAINER_LINK_OUT);
   
   /* Make sure the container and contained data are contiguous */
-  memcpy((char *) newcntnr + sizeof(container_t), (char *) data, rtype->size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }

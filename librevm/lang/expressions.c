@@ -25,27 +25,6 @@ static revmexpr_t *revm_expr_read(char **datavalue)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, expr,
 	 sizeof(revmexpr_t), NULL);
 
-  /* Check if a variable is given as value of another variable */
-  /*
-  if (*datastr == REVM_VAR_PREFIX)
-    {
-      expr = revm_expr_get(datastr);
-      if (expr)
-	{
-
-#if 1 //__DEBUG_EXPRS__
-	  fprintf(stderr, " [D] FOUND EXISTING INITIAL REVMEXPR = %s :: %s (recursing!) \n", 
-		  expr->label, expr->strval);
-#endif
-
-	  expr = revm_expr_copy(expr, revm_tmpvar_create(), 0);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
-	}
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Unable to get root field or type name", NULL);
-    }
-  */
-
   /* First get the field (or top-level type) name */
   expr->label = datastr;
   while (*datastr && *datastr != '(' && *datastr != ':')
@@ -530,7 +509,8 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 
 	  /* Do not add offset if we are in union */
 	  if (expr->next && expr->next->type->off != curtype->off)
-	    typeoff += curtype->size;
+	    typeoff += (expr->type->isptr ? 4 : curtype->size);
+
 	  continue;
 	}
       
@@ -582,7 +562,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 
 	  /* Do not add size if we are in a union */
 	  if (expr->next->type->off != curtype->off)
-	    typeoff += curtype->size;
+	    typeoff += (curtype->isptr ? 4 : curtype->size);
 	}
       revm_endline();
     }
@@ -1079,6 +1059,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
 				  char		*datavalue) 
 {
   revmexpr_t	*expr;
+  revmexpr_t	*source;
   char		*data;
   char		*realname;
 
@@ -1098,9 +1079,17 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   else
     dataname = strdup(dataname);
 
+  /* In case the source value is an existing expression, lets find it now */
+  source = revm_expr_get(datavalue);
+  if (source)
+    {
+      expr = revm_expr_copy(source, dataname, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+    }
+  
+  /* Else we create and initialize a new expression */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname;
-
   revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0, 0);
 
   if (!datatype->next && datatype->childs)

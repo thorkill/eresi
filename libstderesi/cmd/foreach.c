@@ -27,14 +27,16 @@ int		cmd_foreach()
   int		upbound;
   u_int		typeid;
   elfsh_Addr	lastvalue;
-  char		*tablename;
-  revmexpr_t	*tablexpr;
-  revmobj_t	*tableobj;
+  char		*setname;
+  revmexpr_t	*setexpr;
+  revmobj_t	*setobj;
   char		*typename;
   char		*indname;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+  table = NULL;
+  list = NULL;
+
   /* Depends the mode we are in */
   flag = (world.curjob->curcmd->argc == 3   ? 1 : 
 	  world.curjob->curcmd->use_regx[0] ? 2 : 3);
@@ -59,40 +61,67 @@ int		cmd_foreach()
     case 1:
     case 2:
 
-      /* First try to lookup the table name */
-      tablexpr = revm_lookup_param(world.curjob->curcmd->param[2]);
-      tableobj = (tablexpr ? tablexpr->value : NULL);
-      tablename = NULL;
-      if (tableobj)
+      /* First try to lookup the container name */
+      setexpr = revm_lookup_param(world.curjob->curcmd->param[2]);
+      setobj = (setexpr && setexpr->type ? setexpr->value : NULL);
+      setname = NULL;
+      if (setobj)
 	{
-	  if (tableobj->otype->type == ASPECT_TYPE_STR)
-	    tablename = (tableobj->immed ? tableobj->immed_val.str : 
-			 tableobj->get_name(tableobj->root, tableobj->parent));
-	  else if (tableobj->otype->type == ASPECT_TYPE_HASH ||
-		   tableobj->otype->type == ASPECT_TYPE_LIST)
-	    tablename = (tableobj->kname ? tableobj->kname : tableobj->hname);
+	  if (setobj->otype->type == ASPECT_TYPE_STR)
+	    setname = (setobj->immed ? setobj->immed_val.str : 
+			 setobj->get_name(setobj->root, setobj->parent));
+	  else if (setobj->otype->type == ASPECT_TYPE_HASH ||
+		   setobj->otype->type == ASPECT_TYPE_LIST)
+	    {
+	      setname = (setobj->kname ? setobj->kname : setobj->hname);
+	      if (!setname && setobj->otype->isptr)
+		{
+		  if (setobj->otype->type == ASPECT_TYPE_HASH)
+		    {
+		      table = (hash_t *) (setobj->immed ? setobj->immed_val.ent : 
+					  setobj->get_obj(setobj->parent));
+		      if (!table)
+			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+				     "Unable to find table name", -1);
+		      setname = table->name;
+		    }
+		  else if (setobj->otype->type == ASPECT_TYPE_LIST)
+		    {
+		      list = (list_t *) (setobj->immed ? setobj->immed_val.ent : 
+					 setobj->get_obj(setobj->parent));
+		      if (!list)
+			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+				     "Unable to find list name", -1);
+		      setname = list->name;
+		    }
+		}
+	    }
 	}
       else
-	tablename = world.curjob->curcmd->param[2];
-      tablename = strdup(tablename);
+	setname = world.curjob->curcmd->param[2];
+      if (!setname)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find iterator name", -1);
+      setname = strdup(setname);
+      if (setexpr)
+	revm_expr_destroy(setexpr->label);
 
-      if (tablexpr)
-	revm_expr_destroy(tablexpr->label);
+      fprintf(stderr, "Found setname = %s in foreach ! \n", setname);
 
       /* Try to find a hash or a list out of this variable */
-      table = hash_find(tablename);
+      table = hash_find(setname);
       if (!table)
 	{
-	  list = elist_find(tablename);
+	  list = elist_find(setname);
 	  if (!list)
 	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to find hash table", -1);
 	    }
 	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && elist_linearity_get(list))
 	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Cannot iterate again on linearly typed list", -1);
 	    }
@@ -104,7 +133,7 @@ int		cmd_foreach()
 	{
 	  if (world.curjob->curcmd->listidx == REVM_IDX_UNINIT && hash_linearity_get(table))
 	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Cannot iterate again on linearly typed table", -1);
 	    }
@@ -160,7 +189,7 @@ int		cmd_foreach()
 	    elist_linearity_set(list, 0);
 	  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
 	  revm_move_pc(world.curjob->curcmd->endlabel);
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
@@ -195,12 +224,12 @@ int		cmd_foreach()
         revm_convert_object(indexpr, typeid);
       if (indexpr->type->type != typeid)
 	{
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid type for induction variable", -1);
 	}
 
-      /* Update depends if the type is simple or complex */
+      /* Update depending if the type is simple or complex */
       if (aspect_type_simple(indexpr->type->type) && !indexpr->type->next)
 	{
 	  var->immed = 1;
@@ -215,7 +244,7 @@ int		cmd_foreach()
 					  (elfsh_Addr) elem, NULL, 0, 1);
 	  if (!indexpr)
 	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, tablename);
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Unable to create expression for induction variable", -1);
 	    }

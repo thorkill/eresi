@@ -25,8 +25,8 @@ int elist_init(list_t *h, char *name, u_int type)
     }
   if (elist_find(name))
     {
-#if __DEBUG__
-      fprint(stderr, "List already exists\n");
+#if 1 //__DEBUG__
+      fprintf(stderr, "List %s already exists : NOT CREATING \n", name);
 #endif
       NOPROFILER_ROUT(1);
     }
@@ -341,11 +341,12 @@ char**		elist_get_keys(list_t *h, int* n)
 		   "Invalid NULL parameters", NULL);
     }
   XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
-	 sizeof(char *) * h->elmnbr, NULL);
+	 sizeof(char *) * (h->elmnbr + 1), NULL);
   for (idx = 0, curelem = h->head; curelem; curelem = curelem->next, idx++)
     keys[idx] = curelem->key;
   if (n)
     *n = h->elmnbr;
+  keys[idx] = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
 
