@@ -16,7 +16,7 @@
  * @param addr The address to read
  * @param buffer Read virtual memory into the buffer
  * @param len Count bytes to read
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -46,7 +46,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
  * @param addr The address to read
  * @param buffer Read virtual memory into the buffer
  * @param len Count bytes to read
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -117,7 +117,7 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
  * @param addr The address to read
  * @param buffer Read virtual memory into the buffer
  * @param len Count bytes to read
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -155,7 +155,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
  * @param addr The address to write
  * @param buffer Write buffer into virtual memory
  * @param len Count bytes to write
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -185,7 +185,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
  * @param addr The address to write
  * @param buffer Write buffer into virtual memory
  * @param len Count bytes to write
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -256,7 +256,7 @@ int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, unsigned long addr, char *bu
  * @param addr The address to write
  * @param buffer Write buffer into virtual memory
  * @param len Count bytes to write
- * @return len on success, -1 on return
+ * @return len on success, -1 on error
  */
 int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, unsigned long addr, char *buffer, int len)
 {
@@ -288,7 +288,7 @@ int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, unsigned long addr, char 
 
 /**
  * @brief Open kernsh-virtm module
- * @return 0 on success, -1 on return
+ * @return 0 on success, -1 on error
  */
 int kernsh_kvirtm_openmem()
 {
@@ -303,7 +303,7 @@ int kernsh_kvirtm_openmem()
 
 /**
  * @brief Close kernsh-virtm module
- * @return 0 on success, -1 on return
+ * @return 0 on success, -1 on error
  */
 int kernsh_kvirtm_closemem()
 {
@@ -395,10 +395,7 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int le
     
   rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
-  if (rlen != len)
-    ret = -1;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
 
 /**
@@ -466,20 +463,20 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 	   PROC_ENTRY_KERNSH_VIRTM_VIO);
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  read(fd, buffer, len);  
+  ret = read(fd, buffer, len);  
   XCLOSE(fd, -1);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 /**
- * @brief Write kernel memory with kernsh-virtm module
- * @param addr Address to read memory
- * @param buffer Read memory into the buffer
- * @param len Count bytes to read
+ * @brief Write into kernel memory with kernsh-virtm module
+ * @param addr Address to write buffer
+ * @param buffer Write buffer into memory
+ * @param len Count bytes to write
  * @return len on success, -1 on error
  */
 int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
@@ -526,10 +523,10 @@ int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
 }
 
 /**
- * @brief Write kernel memory with kernsh-virtm module thought syscall
- * @param addr Address to read memory
- * @param buffer Read memory into the buffer
- * @param len Count bytes to read
+ * @brief Write into kernel memory with kernsh-virtm module thought syscall
+ * @param addr Address to write buffer
+ * @param buffer Write buffer into memory
+ * @param len Count bytes to write
  * @return len on success, -1 on error
  */
 int kernsh_kvirtm_writemem_syscall_linux(unsigned long addr, char *buffer, int len)
@@ -554,17 +551,14 @@ int kernsh_kvirtm_writemem_syscall_linux(unsigned long addr, char *buffer, int l
     
   rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
-  if (rlen != len)
-    ret = -1;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
 
 /**
- * @brief Read kernel memory with kernsh-virtm module thought /proc
- * @param addr Address to read memory
- * @param buffer Read memory into the buffer
- * @param len Count bytes to read
+ * @brief Write kernel memory with kernsh-virtm module thought /proc
+ * @param addr Address to write buffer
+ * @param buffer Write buffer into memory
+ * @param len Count bytes to write
  * @return len on success, -1 on error
  */
 int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
@@ -605,7 +599,7 @@ int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   snprintf(buff, sizeof(buff), "%d:0x%lx:%d:", 
-	   LIBKERNSH_VIRTM_READ_MEM, 
+	   LIBKERNSH_VIRTM_WRITE_MEM, 
 	   (addr - libkernshworld.kernel_start),
 	   len);
 
@@ -625,10 +619,149 @@ int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
 	   PROC_ENTRY_KERNSH_VIRTM_VIO);
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  read(fd, buffer, len);  
+  ret = write(fd, buffer, len);
   XCLOSE(fd, -1);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/**
+ * @brief Task pid\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VIRTM
+ * @param pid The process id
+ * @param h The list
+ * @return 0 on success, -1 on error
+ */
+int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
+{
+  int		ret, get;
+  u_int         dim[3];
+  vector_t      *krv;
+  int          (*fct)();
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+
+#if __DEBUG_KERNSH__  
+  printf("kernsh_kvirtm_task_pid\n");
+#endif
+
+  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+
+  krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID);
+  dim[0] = libkernshworld.os;
+  dim[1] = get;
+
+  fct = aspect_vectors_select(krv, dim);
+
+  ret = fct(pid, h);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/**
+ * @brief Task pid thought /proc\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VIRTM
+ * @param pid The process id
+ * @param h The list
+ * @return 0 on success, -1 on error
+ */
+int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
+{
+  int		ret;
+  kvirtm_virtual_task_struct_t *kvtst;
+  char *key;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+
+  XALLOC(__FILE__, 
+		 __FUNCTION__, 
+		 __LINE__, 
+		 kvtst,
+		 sizeof(kvirtm_virtual_task_struct_t), 
+		 -1);
+
+  XALLOC(__FILE__, 
+	 __FUNCTION__, 
+	 __LINE__, 
+	 key,
+	 BUFSIZ, 
+	 -1);
+
+  memset(kvtst, '\1', sizeof(kvirtm_virtual_task_struct_t)); 
+  memset(key, '\0', BUFSIZ);
+  snprintf(key,
+	   BUFSIZ,
+	   "%d",
+	   pid);
+  
+  kvtst->state = 0x1;
+  kvtst->start_code = 0x08048000;
+
+  elist_add(h, key, (void *) kvtst);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/**
+ * @brief Task pid thought syscall\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VIRTM
+ * @param pid The process id
+ * @param h The list
+ * @return 0 on success, -1 on error
+ */
+int kernsh_kvirtm_task_pid_syscall_linux(pid_t pid, list_t *h)
+{
+  int		ret;
+  kvirtm_virtual_task_struct_t *kvtst;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+/**
+ * @brief Dump elf\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VIRTM
+ * @param pid The process id
+ * @param filename The output filename
+ * @return 0 on success, -1 on error
+ */
+int kernsh_kvirtm_dump_elf(pid_t pid, char *filename)
+{
+  int		ret, get;
+  u_int         dim[3];
+  vector_t      *krv;
+  int          (*fct)();
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ret = 0;
+
+#if __DEBUG_KERNSH__  
+  printf("kernsh_kvirtm_dump_elf\n");
+#endif
+
+  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+
+  krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMDUMPELF);
+  dim[0] = libkernshworld.os;
+  dim[1] = get;
+
+  fct = aspect_vectors_select(krv, dim);
+
+  ret = fct(pid, filename);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

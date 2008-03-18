@@ -509,7 +509,7 @@ int		cmd_kmem_read()
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
     }
 
-  if (ret)
+  if (ret != len)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Impossible to read mem",
@@ -635,7 +635,7 @@ int		cmd_kmem_disasm()
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
     }
 
-  if (ret)
+  if (ret != len)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Impossible to read mem",

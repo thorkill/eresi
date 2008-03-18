@@ -168,7 +168,7 @@ int			e2dbg_setup(char *name)
 
   e2dbg_setup_hooks();
   revm_initio();
-  revm_config();
+  revm_config(E2DBG_CONFIG);
   e2dbg_linkmap_load(name);
 
   /* Everything was OK */

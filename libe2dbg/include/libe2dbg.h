@@ -34,6 +34,7 @@
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
 #define		E2DBG_PROFILER_BUFLEN	256
 
+#define		E2DBG_CONFIG		".e2dbgrc"
 #define		E2DBG_HOOK_GETREGS	"hook_getregs"
 #define		E2DBG_HOOK_SETREGS	"hook_setregs"
 #define		E2DBG_HOOK_GETPC	"hook_getpc"

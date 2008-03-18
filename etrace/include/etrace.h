@@ -17,6 +17,7 @@
 
 #define ETRACE_NAME	       	"Embedded ELF Tracer"
 #define	ETRACE_SNAME		"etrace"
+#define ETRACE_CONFIG           ".etracerc"
 
 /* Commands */
 #define	CMD_STRIP		"strip"

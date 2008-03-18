@@ -49,6 +49,7 @@
 #define CMD_KVIRTM_WRITE_PID	"kvirtm_write_pid"
 #define CMD_KVIRTM_DISASM_PID	"kvirtm_disasm_pid"
 #define CMD_KVIRTM_DUMP		"kvirtm_dump"
+#define CMD_KVIRTM_TASK_PID	"kvirtm_task_pid"
 
 #define CMD_KMEM_READ		"kmem_read"
 #define CMD_KMEM_WRITE		"kmem_write"
@@ -80,6 +81,7 @@ int	cmd_kvirtm_read_pid();
 int	cmd_kvirtm_write_pid();
 int	cmd_kvirtm_disasm_pid();
 int	cmd_kvirtm_dump();
+int	cmd_kvirtm_task_pid();
 
 int	cmd_kmem_read();
 int	cmd_kmem_write();
@@ -92,6 +94,7 @@ int	kernsh_virtm_get_virtaddr(pid_t);
 int	kernsh_virtm_read_pid(pid_t, unsigned long, int);
 int	kernsh_virtm_write_pid(pid_t, unsigned long, char *, int);
 int	kernsh_virtm_disasm_pid(pid_t, unsigned long, int);
+int	kernsh_virtm_task_pid(pid_t, list_t *);
 
 int	export_var(char *, unsigned long, int, char *, int);
 int	extract_info(char *, 

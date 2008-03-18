@@ -200,6 +200,9 @@ enum
 #define LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM		"kvirtm_read_mem"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM		"kvirtm_write_virtm"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM		"kvirtm_write_mem"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID		"kvirtm_task_pid"
+#define LIBKERNSH_VECTOR_NAME_KVIRTMDUMPELF		"kvirtm_dump_elf"
+
 
 /* Idtr segment struct */
 struct 
@@ -440,6 +443,7 @@ int	kernsh_register_kvirtm_read_virtm(u_int, u_int, void *);
 int	kernsh_register_kvirtm_read_mem(u_int, u_int, void *);
 int	kernsh_register_kvirtm_write_virtm(u_int, u_int, void *);
 int	kernsh_register_kvirtm_write_mem(u_int, u_int, void *);
+int	kernsh_register_kvirtm_task_pid(u_int, u_int, void *);
 
 /* Memory */
 int	kernsh_openmem();
@@ -591,6 +595,10 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long, char *, int);
 int kernsh_kvirtm_writemem(unsigned long, char *, int);
 int kernsh_kvirtm_writemem_proc_linux(unsigned long, char *, int);
 int kernsh_kvirtm_writemem_syscall_linux(unsigned long, char *, int);
+
+int kernsh_kvirtm_task_pid(pid_t, list_t *);
+int kernsh_kvirtm_task_pid_proc_linux(pid_t, list_t *);
+int kernsh_kvirtm_task_pid_syscall_linux(pid_t, list_t *);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

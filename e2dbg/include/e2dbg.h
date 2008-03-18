@@ -12,6 +12,8 @@
 /* User defined configuration */
 #include "revm.h"
 
+#define E2DBG_CONFIG ".e2dbgrc"
+
 #if defined(__FreeBSD__) || defined(sun) || defined(__NetBSD__)
   extern char **environ;
 #endif

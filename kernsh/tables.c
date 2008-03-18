@@ -116,6 +116,11 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_KVIRTM_DISASM_PID);
 
+  revm_command_add(CMD_KVIRTM_TASK_PID, (void *)cmd_kvirtm_task_pid, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KVIRTM_TASK_PID);
+
   revm_command_add(CMD_KVIRTM_DUMP, (void *)cmd_kvirtm_dump, 
 		   (void*) revm_getvarparams,
 		   0,

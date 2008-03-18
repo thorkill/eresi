@@ -80,7 +80,7 @@ int		eva_main(int ac, char **av)
   if (world.state.revm_mode != REVM_STATE_CMDLINE)
     eva_banner_print(av[1]);
   
-  revm_config();
+  revm_config(EVARISTA_CONFIG);
   setup_local_cmdhash();
   revm_output(" [*] Type help for regular commands \n\n");
   return (revm_run(ac, av));

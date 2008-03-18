@@ -47,18 +47,20 @@ static void **sys_call_table;
 
 int asmlinkage (*o_syscallnill)(void);
 
-int kernsh_get_elf_image(pid_t, const char *);
+int kernsh_dump_elf_pid(pid_t, const char *);
 int kernsh_view_vmaps(pid_t);
 
 int asmlinkage kernsh_read_virtm(pid_t, unsigned long, char *, int, int);
 int asmlinkage kernsh_read_mem(unsigned long, char *, int, int);
 int asmlinkage kernsh_write_virtm(pid_t, unsigned long, const char *, int, int);
-int asmlinkage kernsh_write_mem(unsigned long, char *, int, int);
+int asmlinkage kernsh_write_mem(unsigned long, const char *, int, int);
 
 int asmlinkage kernsh_read_virtm_syscall(pid_t, unsigned long, char *, int);
 int asmlinkage kernsh_read_mem_syscall(unsigned long, char *, int);
 int asmlinkage kernsh_write_virtm_syscall(pid_t, unsigned long, const char *, int);
-int asmlinkage kernsh_write_mem_syscall(unsigned long, char *, int);
+int asmlinkage kernsh_write_mem_syscall(unsigned long, const char *, int);
+
+int asmlinkage kernsh_task_pid(pid_t, char *, int, int);
 
 static int my_atoi(const char *name)
 {
@@ -86,7 +88,7 @@ ssize_t kernsh_virtm_dump_elf_write(struct file *filp,
 
   if (dump == 1)
     {
-      if (kernsh_get_elf_image(current_pid, current_filename) < 0)
+      if (kernsh_dump_elf_pid(current_pid, current_filename) < 0)
 	return -EFAULT;
     }
 
@@ -261,6 +263,13 @@ ssize_t kernsh_virtm_vio_input(struct file *filp,
 			 current_kvirtm.len,
 			 LIBKERNSH_PROC_MODE);
       break;
+    case LIBKERNSH_VIRTM_WRITE_MEM :
+      printk(KERN_ALERT "kvvo -> kernsh_write_mem\n");
+      kernsh_write_mem(current_kvirtm.addr,
+		       buff,
+		       current_kvirtm.len,
+		       LIBKERNSH_PROC_MODE);
+      break;
     }
 
 
@@ -289,19 +298,22 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
 		      LIBKERNSH_PROC_MODE);
       len = current_kvirtm.len;
       break;
-    case LIBKERNSH_VIRTM_WRITE_MEM :
-      break;
     case LIBKERNSH_VIRTM_READ_MEM_PID :
       printk(KERN_ALERT "kvvo -> kernsh_read_virtm\n");	    
       new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
-      kernsh_read_virtm(current_kvirtm.pid,
-			current_kvirtm.addr,
-			new_buff,
-			current_kvirtm.len,
-			LIBKERNSH_PROC_MODE);
-      len = current_kvirtm.len;
+      len = kernsh_read_virtm(current_kvirtm.pid,
+			      current_kvirtm.addr,
+			      new_buff,
+			      current_kvirtm.len,
+			      LIBKERNSH_PROC_MODE);
       break;
-    case LIBKERNSH_VIRTM_WRITE_MEM_PID :
+    case LIBKERNSH_VIRTM_TASK_PID :
+      printk(KERN_ALERT "kvvo -> kernsh_task_pid\n");	    
+      new_buff = kmalloc(current_kvirtm.len, GFP_KERNEL);
+      len = kernsh_task_pid(current_kvirtm.pid, new_buff, current_kvirtm.len, LIBKERNSH_PROC_MODE);
+      break;
+    case LIBKERNSH_VIRTM_DUMP_ELF_PID :
+      len = kernsh_dump_elf_pid(current_kvirtm.pid, current_kvirtm.filename);
       break;
     default :
       break;
@@ -326,7 +338,7 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
  * Thanks : silvio, Liv Tyler (by thefly)
  */
 
-int kernsh_get_elf_image(pid_t pid, const char *filename)
+int kernsh_dump_elf_pid(pid_t pid, const char *filename)
 {
   struct task_struct *task;
   struct file *file;
@@ -442,6 +454,45 @@ int kernsh_view_vmaps(pid_t pid)
 		 vma->vm_flags,
 		 (unsigned long)vma->vm_file);
 	}
+    }
+
+  return 0;
+}
+
+int asmlinkage kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
+{
+  kvirtm_virtual_task_struct_t kvtst;
+  int write;
+  struct task_struct *task;
+  struct mm_struct *mm;
+  struct vm_area_struct *vma;
+  unsigned long *tmp;
+
+  task = find_task_by_pid(pid);
+  if (task == NULL)
+    {
+      printk(KERN_ALERT "Couldn't find pid %d\n", pid);
+      return -EFAULT;
+    }
+
+  if (task->mm == NULL)
+    {
+      printk(KERN_ALERT "Couldn't find mm_struct %d\n", pid);
+      return -EFAULT;
+    }
+
+  mm = task->mm;
+  memset(&kvtst, '\0', sizeof(kvirtm_virtual_task_struct_t));
+  kvtst.ptrace = task->ptrace;
+
+  write = 0;
+
+  tmp = (unsigned long *)&kvtst;
+  while (write <= len)
+    {
+      write += sprintf(buffer, "0x%lx:", *tmp);
+      tmp += sizeof(unsigned long);
+      buffer += write;
     }
 
   return 0;
@@ -723,44 +774,45 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
     return -EFAULT;
 
   read = 0;
-  while (len > 0) {
-    /*
-     * Handle first page in case it's not aligned
-     */
-    if (-p & (PAGE_SIZE - 1))
-      sz = -p & (PAGE_SIZE - 1);
-    else
-      sz = PAGE_SIZE;
-    
-    sz = min_t(unsigned long, sz, len);
-    
-    ptr = xlate_dev_mem_ptr(p);
-
-    printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
-
-    switch(mode)
-      {
-      case LIBKERNSH_PROC_MODE :
-	memcpy(buffer, ptr, sz);
-	break;
-      case LIBKERNSH_SYSCALL_MODE :
-	if (copy_to_user(buffer, ptr, sz))
-	  return -EFAULT;
-	break;
-      }
-
-    buffer += sz;
-    p += sz;
-    len -= sz;
-    read += sz;
-  }
-
+  while (len > 0) 
+    {
+      /*
+       * Handle first page in case it's not aligned
+       */
+      if (-p & (PAGE_SIZE - 1))
+	sz = -p & (PAGE_SIZE - 1);
+      else
+	sz = PAGE_SIZE;
+      
+      sz = min_t(unsigned long, sz, len);
+      
+      ptr = xlate_dev_mem_ptr(p);
+      
+      printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
+      
+      switch(mode)
+	{
+	case LIBKERNSH_PROC_MODE :
+	  memcpy(buffer, ptr, sz);
+	  break;
+	case LIBKERNSH_SYSCALL_MODE :
+	  if (copy_to_user(buffer, ptr, sz))
+	    return -EFAULT;
+	  break;
+	}
+      
+      buffer += sz;
+      p += sz;
+      len -= sz;
+      read += sz;
+    }
+  
   printk(KERN_ALERT "[+] kernsh_read_mem EXIT !!\n");
 
   return read;
 }
 
-int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len, int mode)
+int asmlinkage kernsh_write_mem(unsigned long addr, const char *buffer, int len, int mode)
 {
   unsigned long p = addr;
   ssize_t written, sz;
@@ -804,7 +856,6 @@ int asmlinkage kernsh_write_mem(unsigned long addr, char *buffer, int len, int m
 	  break;
 	}
       
-      //copied = copy_from_user(ptr, buffer, sz);
       if (copied) 
 	{
 	  written += sz - copied;
@@ -840,9 +891,19 @@ int asmlinkage kernsh_read_mem_syscall(unsigned long addr, char *buffer, int len
   return kernsh_read_mem(addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
 }
 
-int asmlinkage kernsh_write_mem_syscall(unsigned long addr, char *buffer, int len)
+int asmlinkage kernsh_write_mem_syscall(unsigned long addr, const char *buffer, int len)
 {
   return kernsh_write_mem(addr, buffer, len, LIBKERNSH_SYSCALL_MODE);
+}
+
+int asmlinkage kernsh_task_pid_syscall(pid_t pid, char *buffer, int len)
+{
+  return kernsh_task_pid(pid, buffer, len,  LIBKERNSH_SYSCALL_MODE);
+}
+
+int asmlinkage kernsh_dump_elf_pid_syscall(pid_t pid, const char *filename)
+{
+  return kernsh_dump_elf_pid(pid, filename);
 }
 
 int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid, 
@@ -870,6 +931,16 @@ int asmlinkage kernsh_kvirtm_syscall_wrapper(pid_t pid,
     case LIBKERNSH_VIRTM_WRITE_MEM_PID :
       printk(KERN_ALERT "[+] kksw -> kernsh_write_virtm_syscall\n");
       return kernsh_write_virtm_syscall(pid, addr, buffer, len);
+      break;
+    case LIBKERNSH_VIRTM_TASK_PID :
+      printk(KERN_ALERT "[+] kksw -> kernsh_task_pid_syscall\n");
+      return kernsh_task_pid_syscall(pid, buffer, len);
+      break;
+    case LIBKERNSH_VIRTM_DUMP_ELF_PID :
+      printk(KERN_ALERT "[+] kksw -> kernsh_dump_pid_syscall\n");
+      return kernsh_dump_elf_pid_syscall(pid, buffer);
+      break;
+    default :
       break;
     }
 
@@ -950,8 +1021,6 @@ static int kernsh_virtm_init(void)
 
 static void kernsh_virtm_exit(void)
 {
-  printk(KERN_ALERT "Kernsh Virtm Exit\n");
-
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF, proc_entry_kernsh_virtm);
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_INFO, proc_entry_kernsh_virtm);
   remove_proc_entry(PROC_ENTRY_KERNSH_VIRTM_VIO_INFO, proc_entry_kernsh_virtm);
@@ -964,6 +1033,8 @@ static void kernsh_virtm_exit(void)
       printk(KERN_ALERT "UNHIJACK sys_call_table @ 0x%lx\n", sct_value);
       sys_call_table[free_syscall] = o_syscallnill;
     }
+
+  printk(KERN_ALERT "Kernsh Virtm Exit\n");
 }
 
 

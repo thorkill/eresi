@@ -15,7 +15,9 @@ enum
     LIBKERNSH_VIRTM_READ_MEM,
     LIBKERNSH_VIRTM_WRITE_MEM,
     LIBKERNSH_VIRTM_READ_MEM_PID,
-    LIBKERNSH_VIRTM_WRITE_MEM_PID
+    LIBKERNSH_VIRTM_WRITE_MEM_PID,
+    LIBKERNSH_VIRTM_TASK_PID,
+    LIBKERNSH_VIRTM_DUMP_ELF_PID
   } libkernsh_e_virtm_action_type;
 
 #ifndef __LIBKERNSH_H__
@@ -28,6 +30,21 @@ enum
   } libkernsh_e_virtm_type;
 
 #endif
+
+typedef struct s_kvirtm_virtual_task_struct
+{
+  unsigned long state;
+  unsigned long flags;
+  unsigned long ptrace;
+
+
+  /* struct mm_struct *mm */
+  unsigned long mmap_base;
+  unsigned long task_size;
+  
+  unsigned long start_code, end_code, start_data, end_data;
+  
+} kvirtm_virtual_task_struct_t;
 
 struct mem_addr {
   unsigned long vm_start;

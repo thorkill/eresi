@@ -152,7 +152,7 @@ int		revm_setup(int ac, char **av,
 /** 
  * Open the .eresirc file and execute it 
  */
-int		revm_config()
+int		revm_config(char *config)
 {
   char		buff[BUFSIZ];
   char		*home;
@@ -168,7 +168,11 @@ int		revm_config()
   home = getenv("HOME");
   if (home)
     {
-      snprintf(buff, sizeof(buff), "%s/%s", home, REVM_CONFIG);
+      if (!config)
+	snprintf(buff, sizeof(buff), "%s/%s", home, REVM_CONFIG);
+      else
+	snprintf(buff, sizeof(buff), "%s/%s", home, config);
+      
       XALLOC(__FILE__, __FUNCTION__, __LINE__,
 	     new, sizeof(revmargv_t), -1);
       memset(new, 0, sizeof(revmargv_t));

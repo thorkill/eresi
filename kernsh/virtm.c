@@ -189,6 +189,36 @@ int		cmd_kvirtm_write_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+int		cmd_kvirtm_task_pid()
+{
+  int		ret;
+  char		buff[BUFSIZ];
+  char		*pid;
+  list_t	*h;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  ret = -1;
+  pid = NULL;
+
+  pid = world.curjob->curcmd->param[0];
+
+  memset(buff, '\0', sizeof(buff));
+
+  if (pid)
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
+      snprintf(buff, sizeof(buff), "kvirtm_list_task_pid_%d", atoi(pid));
+      elist_init(h, buff, ASPECT_TYPE_UNKNOW);
+
+      ret = kernsh_virtm_task_pid(atoi(pid), h);
+
+      elist_destroy(h);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
 int		cmd_kvirtm_disasm_pid()
 {
   int		ret;
@@ -348,43 +378,7 @@ int		kernsh_virtm_view_vmaps(pid_t pid)
 
 int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
 {
-  char		 *new_buff;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-	 new_buff,
-	 len,
-	 -1);
-
-  memset(new_buff, '\0', len);
-
-  kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
-
-  kernsh_hexdump((unsigned char *)new_buff, len, addr);
-
-  XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len)
-{
   int		ret;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  kernsh_virtm_read_pid(pid, addr, len+10);
-
-  ret = kernsh_kvirtm_write_virtm(pid, addr, buffer, len);
-
-  kernsh_virtm_read_pid(pid, addr, len+10);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
-{
   char		*new_buff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -396,13 +390,98 @@ int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
 
   memset(new_buff, '\0', len);
 
-  kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
+  ret = kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
+
+  kernsh_hexdump((unsigned char *)new_buff, len, addr);
+
+  XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  kernsh_virtm_read_pid(pid, addr, len);
+
+  ret = kernsh_kvirtm_write_virtm(pid, addr, buffer, len);
+
+  kernsh_virtm_read_pid(pid, addr, len);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		kernsh_sub_export_virtm_task_pid(pid_t pid, char *attr, unsigned long val)
+{
+  int		ret;
+  char		buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff), "hash[task_pid_%d:%s]", pid, attr);
+  printf("BUFF %s\n", buff);
+  ret = export_var(buff, val, 0, NULL, 1);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
+{
+  int		index, ret;
+  listent_t     *actual;
+  kvirtm_virtual_task_struct_t *kvtst;
+  char buff[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  memset(buff, '\0', sizeof(buff));
+
+  ret = kernsh_kvirtm_task_pid(pid, h);
+
+  for (index = 0, actual = h->head; 
+       index < h->elmnbr;
+       index++, actual = actual->next)
+    {
+      kvtst = (kvirtm_virtual_task_struct_t *) actual->data;
+      
+      kernsh_sub_export_virtm_task_pid(pid, "state", kvtst->state);
+      kernsh_sub_export_virtm_task_pid(pid, "flags", kvtst->flags);
+      kernsh_sub_export_virtm_task_pid(pid, "ptrace", kvtst->ptrace);
+      kernsh_sub_export_virtm_task_pid(pid, "start_code", kvtst->start_code);
+      kernsh_sub_export_virtm_task_pid(pid, "end_code", kvtst->end_code);
+      kernsh_sub_export_virtm_task_pid(pid, "start_data", kvtst->start_data);
+      kernsh_sub_export_virtm_task_pid(pid, "end_data", kvtst->end_data);
+      
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
+{
+  int		ret;
+  char		*new_buff;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	 new_buff,
+	 len,
+	 -1);
+
+  memset(new_buff, '\0', len);
+
+  ret = kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
 
   kernsh_disasm(new_buff, len, addr);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 /*int kernsh_virtm_get_virtaddr(pid_t pid)

@@ -15,6 +15,7 @@
 
 #define EVARISTA_NAME	       	"Evarista static analyzer"
 #define	EVARISTA_SNAME		"evarista"
+#define EVARISTA_CONFIG         ".evaristarc"
 
 /* Top skeleton functions */
 int	eva_main(int ac, char **av);

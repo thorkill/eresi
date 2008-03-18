@@ -19,6 +19,7 @@
 /* Constants */
 #define	ELFSH_NAME		"ELF shell"
 #define	ELFSH_SNAME		"elfsh"
+#define ELFSH_CONFIG		".elfshrc"
 
 /* Commands */
 #define	CMD_STRIP		"strip"

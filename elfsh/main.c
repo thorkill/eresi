@@ -94,7 +94,7 @@ int		esh_main(int ac, char **av)
   revm_setup(ac, av, 0, 0);
   if (world.state.revm_mode != REVM_STATE_CMDLINE)
     esh_banner_print(av[1]);
-  revm_config();
+  revm_config(ELFSH_CONFIG);
   setup_local_cmdhash();
   revm_output(" [*] Type help for regular commands \n\n");
   return (revm_run(ac, av));

@@ -718,7 +718,7 @@ int		revm_init() __attribute__((constructor));
 int		revm_loop(int argc, char **argv);
 int		revm_setup(int ac, char **av, char mode, char side);
 int		revm_run(int ac, char **av);
-int		revm_config();
+int		revm_config(char *config);
 void		revm_postexec(int retval);
 void		revm_cleanup();
 

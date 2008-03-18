@@ -311,6 +311,18 @@ int kernsh_kvirtm_write_mem_default()
 	       "kvirtm write mem default !", -1);
 }
 
+int kernsh_kvirtm_task_pid_default()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if __DEBUG_KERNEL__
+  printf("KVIRTM TASK PID DEFAULT!!!\n");
+#endif
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "kvirtm task pid default !", -1);
+}
+
 /**
  * @brief Initialise kernsh's vectors
  * @return 0 on success, -1 on return
@@ -600,6 +612,10 @@ int kernsh_init_vectors()
                          kernsh_kvirtm_write_mem_default,
                          dims, strdims, 2, ASPECT_TYPE_CADDR);
 
+  aspect_register_vector(LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID, 
+                         kernsh_kvirtm_task_pid_default,
+                         dims, strdims, 2, ASPECT_TYPE_CADDR);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -869,6 +885,22 @@ int kernsh_register_vectors()
 				   LIBKERNSH_SYSCALL_MODE,
 				   kernsh_kvirtm_writemem_syscall_linux);
   
+  kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_6,
+				  LIBKERNSH_PROC_MODE,
+				  kernsh_kvirtm_task_pid_proc_linux);
+  
+  kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_4,
+				  LIBKERNSH_PROC_MODE,
+				  kernsh_kvirtm_task_pid_proc_linux);
+
+  kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_6,
+				  LIBKERNSH_SYSCALL_MODE,
+				  kernsh_kvirtm_task_pid_syscall_linux);
+  
+  kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_4,
+				  LIBKERNSH_SYSCALL_MODE,
+				  kernsh_kvirtm_task_pid_syscall_linux);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -1426,6 +1458,28 @@ int kernsh_register_kvirtm_write_mem(u_int ostype, u_int virtmtype, void *fct)
 
 #if __DEBUG_KERNSH__
   printf("REGISTER KVIRTM WRITE MEM\n");
+#endif
+
+  aspect_vectors_insert(sct, dim, (int)fct);
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+int kernsh_register_kvirtm_task_pid(u_int ostype, u_int virtmtype, void *fct)
+{
+  vector_t *sct;
+  u_int *dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID);
+
+  dim    = alloca(sizeof(u_int) * 3);
+  dim[0] = ostype;
+  dim[1] = virtmtype;
+
+#if __DEBUG_KERNSH__
+  printf("REGISTER KVIRTM TASK PIDn");
 #endif
 
   aspect_vectors_insert(sct, dim, (int)fct);

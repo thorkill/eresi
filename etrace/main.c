@@ -181,7 +181,7 @@ int		etrace_main(int ac, char **av)
       av++;
     }
 
-  revm_config();
+  revm_config(ETRACE_CONFIG);
   setup_local_cmdhash();
   revm_output(" [*] Type help for regular commands \n\n");
   return (revm_run(ac, av));

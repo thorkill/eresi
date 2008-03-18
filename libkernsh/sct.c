@@ -58,7 +58,6 @@ int kernsh_sct_linux(list_t *lsct)
   printf("SCT LINUX\n");
 #endif
 
-
   /* Get syscalls in the static kernel */
   if (kernsh_is_static_mode())
     {

@@ -104,7 +104,7 @@ int kernsh_readmem_mem_linux(unsigned long offset, void *buf, int size)
       XREAD(libkernshworld.fd, buf, size, -1);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
 /**
@@ -139,7 +139,7 @@ int kernsh_writemem_mem_linux(unsigned long offset, void *buf, int size)
       XWRITE(libkernshworld.fd, buf, size, -1);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
 int kernsh_openmem_netbsd()

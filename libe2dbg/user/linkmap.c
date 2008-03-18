@@ -40,7 +40,7 @@ int			e2dbg_linkmap_load(char *name)
 #endif
 
   e2dbg_setup_hooks();
-  revm_config();
+  revm_config(E2DBG_CONFIG);
 
   /* Load debugged file */
   if (name)

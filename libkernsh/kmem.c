@@ -71,7 +71,7 @@ int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
   
   XREAD(libkernshworld.fd, buf, size, -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
 /**
@@ -91,7 +91,7 @@ int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
   
   XWRITE(libkernshworld.fd, buf, size, -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
 /**
@@ -180,7 +180,7 @@ int kernsh_readmem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
   XREAD(libkernshworld.fd, buf, size, -1);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
 /**
@@ -210,5 +210,5 @@ int kernsh_writemem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
   XWRITE(libkernshworld.fd, buf, size, -1);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
