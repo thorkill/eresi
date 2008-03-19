@@ -1186,6 +1186,7 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
 int		revm_expr_destroy(char *e)
 {
   revmexpr_t	*expr;
+  revmexpr_t	*child;
   char		newname[BUFSIZ];
   hash_t	*thash;
 
@@ -1194,7 +1195,7 @@ int		revm_expr_destroy(char *e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
 
-#if __DEBUG_EXPRS__
+#if 1 //__DEBUG_EXPRS__
   printf("\n [D] DestroyExpr %s \n", e);
 #endif
 
@@ -1212,10 +1213,19 @@ int		revm_expr_destroy(char *e)
 	hash_del(thash, e);
     }
 
-  // FIXME-XXX: must free recursively ! memory leak here
+  // FIXME: fault when calling destroy_object
+  // An object was not copied/reallocated correctly somewhere
   if (expr->value)
-    //revm_destroy_object(expr->value); // this was not copied/reallocated correctly somewhere
+    //revm_destroy_object(expr->value);
     XFREE(__FILE__, __FUNCTION__, __LINE__, expr->value);
+
+  for (child = expr->childs; child; child = child->next)
+    {
+      snprintf(newname, sizeof(newname), "%s.%s", e, child->label);
+      if (revm_expr_destroy(newname) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to destroy child expression", -1);
+    }
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

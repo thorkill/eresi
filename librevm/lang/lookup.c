@@ -285,11 +285,15 @@ char			*revm_lookup_string(char *param)
 {
   revmexpr_t		*expr;
   revmobj_t		*ptr;
+  char			*oldparam;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid NULL parameter", (NULL));
+
+  oldparam = param;
+  param = strdup(param);
 
   /* Support for lazy creation of variables */
   expr = revm_lookup_var(param);
@@ -303,8 +307,11 @@ char			*revm_lookup_string(char *param)
     {
       revm_convert_object(expr, ASPECT_TYPE_STR);
       if (ptr->otype->type != ASPECT_TYPE_STR)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unexpected object type", NULL);
+	{
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, param);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unexpected object type", NULL);
+	}
     }
   if (ptr->get_name)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 

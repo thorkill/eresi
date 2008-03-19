@@ -16,6 +16,7 @@
  * @param curexpr Currently constructed expression
  * @param type Type of the root node
  * @param addr Address of currently constructed object
+ * @param translateaddr Translate pointers between analyzed and analyzer address space
  * @return 
  */
 static revmexpr_t	*revm_inform_subtype(char		*curpath,
@@ -49,6 +50,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
       newexpr->type   = curtype;
       childaddr       = addr + curtype->off;
       newexpr->label  = curtype->fieldname;
+      newexpr->parent = curexpr;
 
       /* Recurse over record children. */
       /* Do not recurse on pointers else we get infinite loops ! */
@@ -230,9 +232,21 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   if (!straddr)
     straddr = varname;
 
+#if 1 //__DEBUG_EXPRS__
+  fprintf(stderr, "\n [D] Variable %40s LOOKED UP\n", varname);
+#endif
+
   /* The address is given, lookup it */
-  realname = revm_lookup_string(varname);
+  if (!hash_get(&exprs_hash, varname))
+    realname = revm_lookup_string(varname);
+  else
+    realname = varname;
   oaddr    = revm_lookup_addr(straddr);
+
+  /* Adding expression and its type to hash tables */
+#if 1 //__DEBUG_EXPRS__
+  fprintf(stderr, " [D] Variable %40s TO BE added to exprs_hash with type %s \n", realname, rtype->name);
+#endif
 
   /* Only check for addr range if print flag (manual inform) is on */
   if (print && (!oaddr || !revm_check_addr(world.curjob->curfile, oaddr)))
@@ -241,11 +255,6 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   if (!realname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid variable name", NULL);
-
-  /* Adding expression and its type to hash tables */
-#if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Variable %40s TO BE added to exprs_hash with type %s \n", realname, rtype->name);
-#endif
 
   if (hash_get(&exprs_hash, realname))
     hash_del(&exprs_hash, realname);
@@ -288,6 +297,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 	  expr->strval = NULL;
 	  expr->label  = realname;
 	  expr->type   = rtype;
+
+	  // XXX: changed NULL for expr (testing)
 	  expr->childs = revm_inform_subtype(realname, NULL, rtype, oaddr, print);
 	}
       else if (!rtype->childs)
@@ -303,8 +314,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */
-#if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Variable %40s added to exprs_hash with type %s \n", realname, rtype->name);
+#if 1 //__DEBUG_EXPRS__
+  fprintf(stderr, " [D] Variable %40s ADDED to exprs_hash with type %s \n", realname, rtype->name);
 #endif
 
   /* Success message and exit */
