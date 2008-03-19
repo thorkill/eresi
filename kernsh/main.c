@@ -93,9 +93,6 @@ int		kernsh_main(int ac, char **av)
   revm_setup(ac, av, 0, 0);
 
   setup_local_cmdhash();
-
-  if (world.state.revm_mode != REVM_STATE_CMDLINE)
-    kernsh_banner_print(av[1]);
   
   if (strstr(ARCH, "i"))
     {
@@ -120,6 +117,9 @@ int		kernsh_main(int ac, char **av)
     }
 
   revm_config(KERNSH_CONFIG);
+
+  if (world.state.revm_mode != REVM_STATE_CMDLINE)
+    kernsh_banner_print(av[1]);
 
   return (revm_run(ac, av));
 }

@@ -82,21 +82,22 @@ int		cmd_kvirtm_dump()
 
 int		cmd_kvirtm_read_pid()
 {
-  int		ret;
-  char		*pid, *addr, *len;
+  int		ret, len, pid, tmp;
+  elfsh_Addr    vaddr;
+  revmlist_t    *actual, *second;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = -1;
-  pid = addr = len = NULL;
 
-  pid = world.curjob->curcmd->param[0];
-  addr = world.curjob->curcmd->param[1];
-  len = world.curjob->curcmd->param[2];
+  actual = world.curjob->curcmd->disasm + 0;
+  second = world.curjob->curcmd->disasm + 1;
 
-  if (pid && addr && len)
+  if (actual->rname && second->rname)
     {
-      ret = kernsh_virtm_read_pid(atoi(pid), strtoul(addr, NULL, 16), atoi(len));
+      kernsh_addrlen(actual, (elfsh_Addr *)&pid, &tmp);
+      kernsh_addrlen(second, &vaddr, &len);
+      ret = kernsh_virtm_read_pid(pid, vaddr, len);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -321,61 +322,6 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* Recupere les vmaps dans une liste */
-int		kernsh_virtm_view_vmaps(pid_t pid)
-{
-  int		fd, len, ret;
-  char		*proc_entry_root_tmp;
-  char		buff[BUFSIZ];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  memset(buff, '\0', sizeof(buff));
-
-  len = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 len, 
-	 -1);
-  
-  memset(proc_entry_root_tmp, '\0', len);
- 
-  snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_INFO);
- 
-  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:", pid);
-  ret = write(fd, buff, strlen(buff));
-  if (ret != strlen(buff))
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set pid",
-		   -1);
-    }
-
-  XCLOSE(fd, -1);
-
-  snprintf(proc_entry_root_tmp, len, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_DUMP_ELF);
-
-  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "2");
-  ret = write(fd, buff, strlen(buff));
-  XCLOSE(fd, -1);
-
-  XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
 {
   int		ret;
@@ -391,6 +337,13 @@ int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
   memset(new_buff, '\0', len);
 
   ret = kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
+
+  if (ret != len)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Failed to read virtm",
+		   -1);
+    }
 
   kernsh_hexdump((unsigned char *)new_buff, len, addr);
 
@@ -409,23 +362,15 @@ int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len
 
   ret = kernsh_kvirtm_write_virtm(pid, addr, buffer, len);
 
+  if (ret != len)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Failed to write in virtm",
+		   -1);
+    }
+
   kernsh_virtm_read_pid(pid, addr, len);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-int		kernsh_sub_export_virtm_task_pid(pid_t pid, char *attr, unsigned long val)
-{
-  int		ret;
-  char		buff[BUFSIZ];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "hash[task_pid_%d:%s]", pid, attr);
-  printf("BUFF %s\n", buff);
-  ret = export_var(buff, val, 0, NULL, 1);
-  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -434,7 +379,8 @@ int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
   int		index, ret;
   listent_t     *actual;
   kvirtm_virtual_task_struct_t *kvtst;
-  char buff[BUFSIZ];
+  hash_t	*h1;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -442,20 +388,42 @@ int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
 
   ret = kernsh_kvirtm_task_pid(pid, h);
 
+  if (ret < 0)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Failed to get task pid",
+		   -1);
+    }
+
   for (index = 0, actual = h->head; 
        index < h->elmnbr;
        index++, actual = actual->next)
     {
       kvtst = (kvirtm_virtual_task_struct_t *) actual->data;
-      
-      kernsh_sub_export_virtm_task_pid(pid, "state", kvtst->state);
-      kernsh_sub_export_virtm_task_pid(pid, "flags", kvtst->flags);
-      kernsh_sub_export_virtm_task_pid(pid, "ptrace", kvtst->ptrace);
-      kernsh_sub_export_virtm_task_pid(pid, "start_code", kvtst->start_code);
-      kernsh_sub_export_virtm_task_pid(pid, "end_code", kvtst->end_code);
-      kernsh_sub_export_virtm_task_pid(pid, "start_data", kvtst->start_data);
-      kernsh_sub_export_virtm_task_pid(pid, "end_data", kvtst->end_data);
-      
+  
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     h1, 
+	     sizeof(hash_t),
+	     -1);
+
+      snprintf(buff, sizeof(buff), "task_pid_%d", pid);
+
+      hash_init(h1, 
+		buff, 
+		(sizeof(kvirtm_virtual_task_struct_t) / sizeof(unsigned long)) + 1, 
+		ASPECT_TYPE_UNKNOW);
+
+      hash_add(h1, "state",	 (void *)kvtst->state);
+      hash_add(h1, "flags",	 (void *)kvtst->flags);
+      hash_add(h1, "ptrace",	 (void *)kvtst->ptrace);
+      hash_add(h1, "mmap_base",  (void *)kvtst->mmap_base);
+      hash_add(h1, "task_size",  (void *)kvtst->task_size);
+      hash_add(h1, "start_code", (void *)kvtst->start_code);
+      hash_add(h1, "start_data", (void *)kvtst->start_data);
+      hash_add(h1, "end_code",	 (void *)kvtst->end_code);
+      hash_add(h1, "end_data",	 (void *)kvtst->end_data);
+
+      hash_print(h1);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -476,6 +444,12 @@ int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
   memset(new_buff, '\0', len);
 
   ret = kernsh_kvirtm_read_virtm(pid, addr, new_buff, len);
+  if (ret != len)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Failed to disasm virtm",
+		   -1);
+    }
 
   kernsh_disasm(new_buff, len, addr);
 
@@ -483,30 +457,3 @@ int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-/*int kernsh_virtm_get_virtaddr(pid_t pid)
-{
-  struct mem_addr tmp;
-  unsigned int arg[4];
-  char buffer[500];
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  memset(&tmp, '\0', sizeof(tmp));
-
-  arg[0] = (unsigned int)pid;
-  arg[1] = (unsigned int)0x08048000;
-  arg[2] = (unsigned int)buffer;
-  arg[3] = (unsigned int)sizeof(buffer);
-
-  //arg[1] = (unsigned int)&tmp;
-
-  //printf("VM_START 0x%lx\n", tmp.vm_start);
-
-  kernsh_syscall(17, 4, arg);
-  hexdump(buffer, sizeof(buffer), 0x08048000);
-  //printf("VM_START 0x%lx\n", tmp.vm_start);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-*/

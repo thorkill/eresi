@@ -462,11 +462,13 @@ int kernsh_view_vmaps(pid_t pid)
 int asmlinkage kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
 {
   kvirtm_virtual_task_struct_t kvtst;
-  int write;
+  int write, cur_write;
   struct task_struct *task;
   struct mm_struct *mm;
   struct vm_area_struct *vma;
   unsigned long *tmp;
+  unsigned long size;
+  char *ptr;
 
   task = find_task_by_pid(pid);
   if (task == NULL)
@@ -483,19 +485,35 @@ int asmlinkage kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
 
   mm = task->mm;
   memset(&kvtst, '\0', sizeof(kvirtm_virtual_task_struct_t));
+  
+  kvtst.state = task->state;
+  kvtst.flags = task->flags;
   kvtst.ptrace = task->ptrace;
+  kvtst.mmap_base = mm->mmap_base;
+  kvtst.task_size = mm->task_size;
+
+  kvtst.start_code = mm->start_code;
+  kvtst.end_code = mm->end_code;
+  kvtst.start_data = mm->start_data;
+  kvtst.end_data = mm->end_data;
+
 
   write = 0;
-
+    
   tmp = (unsigned long *)&kvtst;
-  while (write <= len)
-    {
-      write += sprintf(buffer, "0x%lx:", *tmp);
-      tmp += sizeof(unsigned long);
-      buffer += write;
-    }
+  ptr = buffer;
+  size = write = cur_write = 0;
 
-  return 0;
+  while (write < len && size < sizeof(kvirtm_virtual_task_struct_t))
+    {
+      cur_write = sprintf(ptr, "0x%lx:", *tmp);
+      size += sizeof(unsigned long);
+      tmp++;
+      ptr += cur_write;
+      write += cur_write;
+    }
+  
+  return write;
 }
 
 struct page *kernsh_get_page_from_task(struct task_struct *task, unsigned long addr)
@@ -618,8 +636,6 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
 	 len, 
 	 (unsigned long)buffer);
  
-  kernsh_view_vmaps(pid);
-
   if (addr <= 0)
     {
       printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
@@ -664,7 +680,7 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
 
   printk(KERN_ALERT "[+] kernsh_read_virtm EXIT !!\n");
 
-  return 0;
+  return len;
 }
 
 int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
@@ -731,7 +747,7 @@ int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buf
 
   printk(KERN_ALERT "[+] kernsh_write_virtm EXIT !!\n");
 
-  return 0;
+  return len;
 }
 
 int asmlinkage kernsh_get_virtaddr(pid_t pid, struct mem_addr * temmem)

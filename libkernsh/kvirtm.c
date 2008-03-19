@@ -101,14 +101,15 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
 	   PROC_ENTRY_ROOT, 
 	   PROC_ENTRY_KERNSH_VIRTM,
 	   PROC_ENTRY_KERNSH_VIRTM_VIO);
-
+  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  read(fd, buffer, len);  
+  ret = read(fd, buffer, len);  
   XCLOSE(fd, -1);
+  
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 /**
@@ -141,10 +142,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
     
   rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
-  if (rlen != len)
-    ret = -1;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
 
 /**
@@ -461,10 +459,11 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 	   PROC_ENTRY_ROOT, 
 	   PROC_ENTRY_KERNSH_VIRTM,
 	   PROC_ENTRY_KERNSH_VIRTM_VIO);
-
+    
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   ret = read(fd, buffer, len);  
   XCLOSE(fd, -1);
+  
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
@@ -673,20 +672,22 @@ int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
  */
 int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
 {
-  int		ret;
+  int fd, ret, nlen, blen;
   kvirtm_virtual_task_struct_t *kvtst;
-  char *key;
+  char *key, *proc_entry_root_tmp, *buffer, *p;
+  char	buff[BUFSIZ];
+  unsigned long *pkvtst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = 0;
 
   XALLOC(__FILE__, 
-		 __FUNCTION__, 
-		 __LINE__, 
-		 kvtst,
-		 sizeof(kvirtm_virtual_task_struct_t), 
-		 -1);
+	 __FUNCTION__, 
+	 __LINE__, 
+	 kvtst,
+	 sizeof(kvirtm_virtual_task_struct_t), 
+	 -1);
 
   XALLOC(__FILE__, 
 	 __FUNCTION__, 
@@ -695,15 +696,70 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
 	 BUFSIZ, 
 	 -1);
 
-  memset(kvtst, '\1', sizeof(kvirtm_virtual_task_struct_t)); 
+  memset(kvtst, '\0', sizeof(kvirtm_virtual_task_struct_t)); 
   memset(key, '\0', BUFSIZ);
-  snprintf(key,
-	   BUFSIZ,
-	   "%d",
-	   pid);
+  snprintf(key,	BUFSIZ, "%d", pid);
   
-  kvtst->state = 0x1;
-  kvtst->start_code = 0x08048000;
+  memset(buff, '\0', sizeof(buff));
+  
+  nlen = strlen(PROC_ENTRY_ROOT) + 
+    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
+    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
+    2;
+  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 proc_entry_root_tmp, 
+	 nlen, 
+	 -1);
+  
+  memset(proc_entry_root_tmp, '\0', nlen);
+ 
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
+	   PROC_ENTRY_ROOT, 
+	   PROC_ENTRY_KERNSH_VIRTM,
+	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
+   
+  blen = sizeof(kvirtm_virtual_task_struct_t) * 2 + 
+    (sizeof(kvirtm_virtual_task_struct_t) / sizeof(unsigned long)) * 3;
+
+  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
+  snprintf(buff, sizeof(buff), "%d:0x0:%d:%d:", 
+	   LIBKERNSH_VIRTM_TASK_PID, 
+	   blen,
+	   pid);
+
+  ret = write(fd, buff, strlen(buff));
+  if (ret != strlen(buff))
+    {
+      XCLOSE(fd, -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Impossible to set vio",
+		   -1);
+    }
+  XCLOSE(fd, -1);
+  
+
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
+	   PROC_ENTRY_ROOT, 
+	   PROC_ENTRY_KERNSH_VIRTM,
+	   PROC_ENTRY_KERNSH_VIRTM_VIO);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 buffer, 
+	 blen + 1, 
+	 -1);
+
+  XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
+  ret = read(fd, buffer, blen);  
+  XCLOSE(fd, -1);
+
+  for (p = (char *)strtok(buffer, ":"), pkvtst = (unsigned long *)kvtst; 
+       p;  
+       p = (char *)strtok(NULL, ":"), pkvtst++)
+    {
+      *pkvtst = strtoul(p, NULL, 16);
+    }
 
   elist_add(h, key, (void *) kvtst);
 
@@ -721,7 +777,7 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
 int kernsh_kvirtm_task_pid_syscall_linux(pid_t pid, list_t *h)
 {
   int		ret;
-  kvirtm_virtual_task_struct_t *kvtst;
+  //  kvirtm_virtual_task_struct_t *kvtst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

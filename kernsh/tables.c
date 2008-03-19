@@ -102,7 +102,7 @@ void	setup_local_cmdhash()
 		   HLP_KVIRTM_LOADME);
 
   revm_command_add(CMD_KVIRTM_READ_PID, (void *)cmd_kvirtm_read_pid, 
-		   (void*) revm_getvarparams,
+		   (void*) revm_getdisasm,
 		   0,
 		   HLP_KVIRTM_READ_PID);
   
