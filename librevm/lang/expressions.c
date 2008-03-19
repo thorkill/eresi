@@ -112,7 +112,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 }
 
 
-/* Initialize a (potentially record) ERESI variable */
+/* Initialize an ERESI expression */
 static revmexpr_t	*revm_expr_init(char		*curpath, 
 					revmexpr_t	*curexpr,
 					aspectype_t	*curtype, 

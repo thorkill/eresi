@@ -165,6 +165,12 @@ int		hash_add(hash_t *h, char *key, void *data)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
   
+  /* If the element already exist, make sure we erase the existing one */
+  actual = hash_get(h, key);
+  if (actual)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+		  hash_set(h, key, data));
+
   newent = NULL;
   for (index = 0, backup = key; *backup; backup++)
     index += *backup;

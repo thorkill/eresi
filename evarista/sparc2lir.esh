@@ -8,10 +8,6 @@ D $curaddr
 reflect $curaddr
 tables instrlists
 
-type instr
-type op
-exec sleep 10
-
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 
@@ -102,6 +98,9 @@ into AssignIM(addr:$curaddr, dst(name:$instr.op1.name base(rid:$instr.op1.name),
 
 # set(hi)										 		
 case instr(sem:a, nb_op:2, op1(sem:reg), op2(sem:imm))
+pre print $instr.op2.imm
+pre tables expressions
+pre exec sleep 20
 into AssignIR(addr:$curaddr, dst(rid:$instr.op1.name), src(val:$instr.op2.imm))
 
 # btog immed 														
