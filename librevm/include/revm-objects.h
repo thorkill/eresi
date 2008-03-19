@@ -68,9 +68,10 @@ typedef struct		s_revm_expr
   char			*label;		/*! Relative current field name */
   char			*strval;	/*! ASCII form of current expression object */
   aspectype_t		*type;		/*! Expression type */
-  revmobj_t		*value;		/*! The meta-object, if terminal */
-  struct s_revm_expr	*childs;	/*! Child objects list, if non-terminal */
-  struct s_revm_expr	*next;		/*! Next object if in record */
+  revmobj_t		*value;		/*! Expression field value */
+  struct s_revm_expr	*parent;	/*! Parent expression */
+  struct s_revm_expr	*childs;	/*! Child expressions list, if non-terminal */
+  struct s_revm_expr	*next;		/*! Next expression if curexpr is in record */
 }			revmexpr_t;
 
 
@@ -84,7 +85,7 @@ typedef struct 		s_revm_annotation
 #define EDFMT_SCOPE_FUNC   2
   u_char 		scope;		/*! XXX: Unused for now ? */
   elfsh_Addr 		addr; 		/*! Global address */
-  u_int			typenum;	/*! Type id */
+  u_int			typenum;	/*! Type id associated to this annotation */
   u_int 		reg;   		/*! Function reg id base (stack) */
   int 			relvalue;     	/*! Relative value based on reg */
   int			nameoff;	/*! Name offset in string table */

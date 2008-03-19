@@ -344,6 +344,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
       /* Link next field of current structure */
     loopend:
+      newexpr->parent = curexpr;
       if (curexpr)
 	{
 	  rootexpr = curexpr;
@@ -368,6 +369,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  else
 	    rootexpr = prevexpr = newexpr;
 	}
+      
 
     }
 
@@ -573,7 +575,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 
 
 /* Recursive copy of an expression */
-static int		revm_expr_copyrec(aspectype_t	*parentype,
+static int		revm_expr_copyrec(revmexpr_t    *parent,
 					  revmexpr_t	*dest, 
 					  revmexpr_t	*source,
 					  char		*newname,
@@ -599,6 +601,7 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
 	dest->label = strdup(source->label);
       if (source->strval)
 	dest->strval = strdup(source->strval);
+      dest->parent = parent;
       
       /* Copy children structure */
       if (source->childs)
@@ -608,7 +611,7 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
 	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
-	  ret = revm_expr_copyrec(source->type, dest->childs, source->childs, newname, 
+	  ret = revm_expr_copyrec(dest, dest->childs, source->childs, newname, 
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -623,7 +626,7 @@ static int		revm_expr_copyrec(aspectype_t	*parentype,
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->value, sizeof(revmobj_t), -1);
 	  type = source->value->otype;
-	  dest->value = revm_object_lookup_real(parentype, newname, source->label, 0);
+	  dest->value = revm_object_lookup_real(parent->type, newname, source->label, 0);
 	  if (!dest->value)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, dest);
@@ -728,7 +731,7 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
   else if (source->childs) 
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), NULL);
-      ret = revm_expr_copyrec(dest->type, dest->childs, source->childs, 
+      ret = revm_expr_copyrec(dest, dest->childs, source->childs, 
 			      newname, BUFSIZ, curoff, copydata);
     }
 

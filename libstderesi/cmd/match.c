@@ -66,7 +66,7 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   snprintf(dstname, sizeof(dstname), "%s.%s", dest->label, fname);
-  dst = revm_expr_get(dstname);
+   dst = revm_expr_get(dstname);
 
   /* If destination expression has no such field, create it now */
   if (!dst)
@@ -90,7 +90,7 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
       memcpy((char *) dstannot->addr + dest->type->size, (char *) addedannot->addr, child->type->size);
       addedannot->addr = dstannot->addr + dest->type->size;
 
-      /* XXX: annotations needs to be updated for childs of this type too ! */
+      /* XXX-FIXME: annotations needs to be updated for childs of this type too.... */
       /*
 	dest->type->size += child->type->size;
 	revm_inform_type_addr(dst->type->name, dstname, dstannot->addr + dest->type->size, dst, 0, 0);
@@ -249,10 +249,12 @@ static int	revm_case_execmd(char *str)
   snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
   hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
 
+  curcmd = world.curjob->curcmd;
+
   if (revm_exec_str(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Side-effects preparation failed", -1);
-  curcmd = world.curjob->curcmd;
+
   world.curjob->curcmd = world.curjob->script[world.curjob->sourced];
   if (revm_execmd() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -449,6 +451,7 @@ int		cmd_default()
   snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
   hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
   str = revm_string_get(world.curjob->curcmd->param);
+  cur = world.curjob->curcmd;
   if (revm_exec_str(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Display execrequest failed", -1);

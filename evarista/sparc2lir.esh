@@ -98,10 +98,12 @@ into AssignIM(addr:$curaddr, dst(name:$instr.op1.name base(rid:$instr.op1.name),
 
 # set(hi)										 		
 case instr(sem:a, nb_op:2, op1(sem:reg), op2(sem:imm))
+pre profile enable warn
 pre print $instr.op2.imm
-pre tables expressions
-pre exec sleep 20
+pre exec sleep 30
 into AssignIR(addr:$curaddr, dst(rid:$instr.op1.name), src(val:$instr.op2.imm))
+post print $instr.op2.imm
+post exec sleep 10
 
 # btog immed 														
 case instr(sem:ar, nb_op:2, op1(sem:imm))
