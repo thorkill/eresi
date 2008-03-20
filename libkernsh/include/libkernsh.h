@@ -600,6 +600,10 @@ int kernsh_kvirtm_task_pid(pid_t, list_t *);
 int kernsh_kvirtm_task_pid_proc_linux(pid_t, list_t *);
 int kernsh_kvirtm_task_pid_syscall_linux(pid_t, list_t *);
 
+/* Dump */
+
+int kernsh_dump_kvirtm_elf(pid_t, char *);
+
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);
 int	kernsh_resolve_systemmap(unsigned long, char *, size_t);

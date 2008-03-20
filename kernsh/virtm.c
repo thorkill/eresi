@@ -84,6 +84,7 @@ int		cmd_kvirtm_read_pid()
 {
   int		ret, len, pid, tmp;
   elfsh_Addr    vaddr;
+  char		buff[BUFSIZ];
   revmlist_t    *actual, *second;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -97,6 +98,14 @@ int		cmd_kvirtm_read_pid()
     {
       kernsh_addrlen(actual, (elfsh_Addr *)&pid, &tmp);
       kernsh_addrlen(second, &vaddr, &len);
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "Reading %s %s %s strlen(%s)\n", 
+	       revm_colornumber("pid:%u", (unsigned int)pid),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_colornumber("%u", len));
+      revm_output(buff);
       ret = kernsh_virtm_read_pid(pid, vaddr, len);
     }
 
@@ -113,6 +122,7 @@ int		cmd_kvirtm_write_pid()
   void          *dat;
   int           ret, pid, size;
   elfsh_Addr	addr;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -172,11 +182,14 @@ int		cmd_kvirtm_write_pid()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Source offset too big", -1);
 
-  printf("WRITE @ %d 0x%lx %d %d\n",
-	 pid,
-	 (unsigned long)addr,
-	 size,
-	 strlen(world.curjob->curcmd->param[2]));
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff),
+	   "Writing into %s %s %s strlen(%s)\n", 
+	   revm_colornumber("pid:%u", (unsigned int)pid),
+	   revm_colorstr("@"),
+	   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	   revm_colornumber("%u", size));
+  revm_output(buff);
 
   ret = kernsh_virtm_write_pid(pid, addr, (char *)dat, size);
 
@@ -209,8 +222,14 @@ int		cmd_kvirtm_task_pid()
   if (pid)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
-      snprintf(buff, sizeof(buff), "kvirtm_list_task_pid_%d", atoi(pid));
+      snprintf(buff, sizeof(buff), "list_task_pid_%d", atoi(pid));
       elist_init(h, buff, ASPECT_TYPE_UNKNOW);
+
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "Getting task_struct %s\n\n", 
+	       revm_colornumber("pid:%u", (unsigned int)pid));
+      revm_output(buff);
 
       ret = kernsh_virtm_task_pid(atoi(pid), h);
 
@@ -222,21 +241,34 @@ int		cmd_kvirtm_task_pid()
 
 int		cmd_kvirtm_disasm_pid()
 {
-  int		ret;
-  char		*pid, *addr, *len;
+  int		ret, pid, len, tmp;
+  elfsh_Addr	vaddr;
+  revmlist_t    *actual, *second;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = -1;
-  pid = addr = len = NULL;
+  pid = vaddr = len = 0;
 
-  pid = world.curjob->curcmd->param[0];
-  addr = world.curjob->curcmd->param[1];
-  len = world.curjob->curcmd->param[2];
+  actual = world.curjob->curcmd->disasm + 0;
+  second = world.curjob->curcmd->disasm + 1;
 
-  if (pid && addr && len)
+  if (actual->rname && second->rname)
     {
-      ret = kernsh_virtm_disasm_pid(atoi(pid), strtoul(addr, NULL, 16), atoi(len));
+      kernsh_addrlen(actual, (elfsh_Addr *)&pid, &tmp);
+      kernsh_addrlen(second, &vaddr, &len);
+
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "Disasambling %s %s %s strlen(%s)\n", 
+	       revm_colornumber("pid:%u", (unsigned int)pid),
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_colornumber("%u", len));
+      revm_output(buff);
+
+      ret = kernsh_virtm_disasm_pid(pid, vaddr, len);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -380,7 +412,7 @@ int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
   listent_t     *actual;
   kvirtm_virtual_task_struct_t *kvtst;
   hash_t	*h1;
-  char		buff[BUFSIZ];
+  char		buff[BUFSIZ], buff2[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -422,6 +454,12 @@ int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
       hash_add(h1, "start_data", (void *)kvtst->start_data);
       hash_add(h1, "end_code",	 (void *)kvtst->end_code);
       hash_add(h1, "end_data",	 (void *)kvtst->end_data);
+
+      memset(buff2, '\0', sizeof(buff2));
+      snprintf(buff2, sizeof(buff2),
+	       "... in hash table %s\n\n", 
+	       revm_colorstr(buff));
+      revm_output(buff2);
 
       hash_print(h1);
     }

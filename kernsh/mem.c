@@ -483,6 +483,7 @@ int		cmd_kmem_read()
   char		*new_buff;
   elfsh_Addr	addr;
   revmlist_t	*actual;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -501,6 +502,14 @@ int		cmd_kmem_read()
 	     -1);
 
       memset(new_buff, '\0', len);
+      
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "Reading kernel memory %s %s strlen(%s)\n\n", 
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	       revm_colornumber("%u", len));
+      revm_output(buff);
 
       ret = kernsh_readmem(addr, new_buff, len);
 
@@ -528,6 +537,7 @@ int		cmd_kmem_write()
   void          *dat;
   int           ret, size;
   elfsh_Addr	addr;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -590,6 +600,14 @@ int		cmd_kmem_write()
 	 strlen(world.curjob->curcmd->param[1]),
 	 world.curjob->curcmd->param[1]);
 
+  memset(buff, '\0', sizeof(buff));
+  snprintf(buff, sizeof(buff),
+	   "Writing into kernel memory %s %s strlen(%s)\n\n", 
+	   revm_colorstr("@"),
+	   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	   revm_colornumber("%u", size));
+  revm_output(buff);
+
   kernsh_hexdump((unsigned char *)dat, size, (unsigned int)dat);
   ret = kernsh_writemem(addr, dat, size);
 
@@ -609,6 +627,7 @@ int		cmd_kmem_disasm()
   elfsh_Addr	addr;
   char		*new_buff;
   revmlist_t	*actual;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -629,6 +648,14 @@ int		cmd_kmem_disasm()
       memset(new_buff, '\0', len);
 
       ret = kernsh_readmem(addr, new_buff, len);
+
+      memset(buff, '\0', sizeof(buff));
+      snprintf(buff, sizeof(buff),
+	       "Disassembling kernel memory %s %s strlen(%s)\n\n", 
+	       revm_colorstr("@"),
+	       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	       revm_colornumber("%u", len));
+      revm_output(buff);
 
       kernsh_disasm(new_buff, len, addr);
 

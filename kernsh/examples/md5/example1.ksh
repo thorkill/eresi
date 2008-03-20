@@ -14,12 +14,12 @@ mode dynamic
 set $save_addr 1.example1[toto].sys[17]
 print $save_addr
 
-kmd5 $sct%1280
+kmem_hash $sct%1280
 set $md5save $$_
 
 print "Hijack syscall 17"
 set 1.example1[toto].sys[17] 0x44444444
-kcmd5 $md5save
+kmem_chash $md5save
 
 print "CMP MD5"
 cmp $_ 0

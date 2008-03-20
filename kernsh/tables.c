@@ -1,7 +1,6 @@
 /*
 ** @file tables.c
 ** @ingroup kernsh
-** $Id: tables.c,v 1.5 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #include "kernsh.h"
@@ -112,7 +111,7 @@ void	setup_local_cmdhash()
 		   HLP_KVIRTM_WRITE_PID);
 
   revm_command_add(CMD_KVIRTM_DISASM_PID, (void *)cmd_kvirtm_disasm_pid, 
-		   (void*) revm_getvarparams,
+		   (void*) revm_getdisasm,
 		   0,
 		   HLP_KVIRTM_DISASM_PID);
 

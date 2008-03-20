@@ -1,7 +1,6 @@
 /*
 ** @file kvirtm.c
 ** @ingroup libkernsh
-** $Id: kvirtm.c,v 1.0 2008-02-25 20:05:00 pouik Exp $
 **
 */
 
@@ -20,7 +19,7 @@
  */
 int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
-  int		ret, get;
+  int		ret, get, i, j, max_size;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -28,6 +27,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM);
   dim[0] = libkernshworld.os;
@@ -35,7 +35,23 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
 
   fct = aspect_vectors_select(krv, dim);
 
-  ret = fct(pid, addr, buffer, len);
+  ret = -1;
+
+  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+    {
+      i = len / max_size;
+      for (j = 0; j < i; j++)
+	{
+	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
+	}
+
+      if ((max_size*i) < len)
+	{
+	  ret += fct(pid, addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
+	}
+    }
+  else
+    ret = fct(pid, addr, buffer, len);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -157,7 +173,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
  */
 int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
-  int		ret, get;
+  int		ret, get, i, j, max_size;;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -165,6 +181,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM);
   dim[0] = libkernshworld.os;
@@ -172,7 +189,23 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
 
   fct = aspect_vectors_select(krv, dim);
 
-  ret = fct(pid, addr, buffer, len);
+  ret = -1;
+
+  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+    {
+      i = len / max_size;
+      for (j = 0; j < i; j++)
+	{
+	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
+	}
+      
+      if ((max_size*i) < len)
+	{
+	  ret += fct(pid, addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
+	}
+    }
+  else
+    ret = fct(pid, addr, buffer, len);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -782,42 +815,6 @@ int kernsh_kvirtm_task_pid_syscall_linux(pid_t pid, list_t *h)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = 0;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-/**
- * @brief Dump elf\n
- * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
- * @param pid The process id
- * @param filename The output filename
- * @return 0 on success, -1 on error
- */
-int kernsh_kvirtm_dump_elf(pid_t pid, char *filename)
-{
-  int		ret, get;
-  u_int         dim[3];
-  vector_t      *krv;
-  int          (*fct)();
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  ret = 0;
-
-#if __DEBUG_KERNSH__  
-  printf("kernsh_kvirtm_dump_elf\n");
-#endif
-
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
-
-  krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMDUMPELF);
-  dim[0] = libkernshworld.os;
-  dim[1] = get;
-
-  fct = aspect_vectors_select(krv, dim);
-
-  ret = fct(pid, filename);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
