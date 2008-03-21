@@ -1,5 +1,6 @@
 /**
  * @file init_mips.c
+ * @brief This file have function for initializing and fetch code for MIPS architecture.
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki
@@ -11,7 +12,9 @@
 
 
 /**
- * Mips main fetching handler.
+ * @fn int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+ * @brief MIPS main fetching handler.
+ *
  * This function is called by asm_read_instr.
  * Function pointer is stored in asm_processor structure.
  *
@@ -21,7 +24,7 @@
  * @param proc Pointer to processor structure.
  * @return Lengh of instruction or 0 on error.
  */
-int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 {
   vector_t *vec = 0;
   u_int i = 0, converted = 0;
@@ -133,13 +136,18 @@ int fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 }
 
 /**
- * Mips initialization function to disassemble.
+ * @fn int     asm_init_mips(asm_processor *proc)
+ * @brief MIPS initialization function to disassemble.
+ *
+ * This function fill asm_processor structure and call
+ * for register vectors.
+ *
  * @param proc Pointer to a asm_processor structure.
  * @return Always 0
  */
 int	asm_init_mips(asm_processor *proc)
 {
-  proc->fetch = fetch_mips;
+  proc->fetch = asm_fetch_mips;
   proc->display_handle = asm_mips_display_instr;
   proc->internals = 0;
   proc->type = ASM_PROC_MIPS;

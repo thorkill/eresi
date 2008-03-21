@@ -14,10 +14,6 @@
 #include <libasm.h>
 #include <libasm-mips-structs.h>
 
-/**
- * @todo XXX: Rename fetch_mips to asm_fetch_mips.
- */
-
 //LIBASM_HANDLER_DISPLAY(asm_mips_display_instr);
 //LIBASM_HANDLER_FETCH(fetch_mips);
 
@@ -33,7 +29,7 @@ void    mips_convert_format_t(struct s_mips_decode_trap *opcode, u_char *buf);
 void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf);
 void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf);
 
-int	fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
+int	asm_fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
 
 int	asm_register_mips();
 int	asm_register_mips_opcodes();
@@ -76,64 +72,64 @@ int     asm_register_mips_operand(unsigned int type, unsigned long func);
 
 /* Immediate/(I-type) instruction 
  * used to work with immediate values (up to 16 bits) */
-struct s_mips_insn_imm
-{
-   u_int32_t opcode:6;
-   u_int32_t rs:5;
-   u_int32_t rt:5; /* operation (sometimes) */
-   u_int32_t immediate:16;
-};
+//struct s_mips_insn_imm
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t rs:5;
+//   u_int32_t rt:5; /* operation (sometimes) */
+//   u_int32_t immediate:16;
+//};
 
 /* This is a subtype of the type inmmediate, it's used
  * in some branch-conditional instructions*/
-struct s_mips_insn_imm_bc
-{
-   u_int32_t opcode:6;
-   u_int32_t rs:5; /* operation */
-   u_int32_t cc:3; /* condition code*/
-   u_int32_t nd:1; /* nullify delay slot*/ 
-   u_int32_t tf:1; /* true/false*/
-   u_int32_t offset:16;
-};
+//struct s_mips_insn_imm_bc
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t rs:5; /* operation */
+//   u_int32_t cc:3; /* condition code*/
+//   u_int32_t nd:1; /* nullify delay slot*/ 
+//   u_int32_t tf:1; /* true/false*/
+//   u_int32_t offset:16;
+//};
 
 /* Jump/(J-type) instruction
  * used for jumps/branches */
-struct s_mips_insn_jump
-{
-   u_int32_t opcode:6;
-   u_int32_t instr_index:26;
-};
+//struct s_mips_insn_jump
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t instr_index:26;
+//};
 
 /* Register/(R-type) instruction
  * used to transfer data between registers */
-struct s_mips_insn_reg
-{
-   u_int32_t opcode:6;
-   u_int32_t rs:5;
-   u_int32_t rt:5;
-   u_int32_t rd:5;
-   u_int32_t sa:5;
-   u_int32_t function:6;
-};
+//struct s_mips_insn_reg
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t rs:5;
+//   u_int32_t rt:5;
+//   u_int32_t rd:5;
+//   u_int32_t sa:5;
+//   u_int32_t function:6;
+//};
 
 /* This is a subtype of the register type, it's
  * used only for the BREAK and SYSCALL instructions */
-struct s_mips_insn_reg_break_syscall
-{
-   u_int32_t opcode:6;
-   u_int32_t code:20;
-   u_int32_t function:6;
-};
+//struct s_mips_insn_reg_break_syscall
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t code:20;
+//   u_int32_t function:6;
+//};
 
 /* This is a subtype of the register type, it's
  * used only for the DERET insn*/
-struct s_mips_insn_reg_deret
-{
-   u_int32_t opcode:6;
-   u_int32_t co:1;
-   u_int32_t zero:19;
-   u_int32_t function:6;
-};
+//struct s_mips_insn_reg_deret
+//{
+//   u_int32_t opcode:6;
+//   u_int32_t co:1;
+//   u_int32_t zero:19;
+//   u_int32_t function:6;
+//};
 
 #define MIPS_SPECIAL_FUNCTION_NUM 64
 #define MIPS_REGIMM_FUNCTION_NUM 32

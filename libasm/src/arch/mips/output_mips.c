@@ -1,16 +1,18 @@
 /**
- * @defgroup output_mips Mips Ascii output engine
  * @file output_mips.c
- * @ingroup output_mips
+ * @brief This file respond for MIPS ASCII output engine...
+ *
+ * fix and fill
+ *          - Adam 'pi3' Zabrocki
  *
  */
-/* Fix and fill by Adam 'pi3' Zabrocki */
 /* Manuel Martin - 2007 */
 
 #include <libasm.h>
 
 /**
- * Return ascii representation of a mips operand
+ * @fn char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
+ * @brief Return ASCII representation of a mips operand
  *
  * @param ins Pointer to asm_instr structure.
  * @param num Now it unused.
@@ -74,7 +76,8 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 }
 
 /**
- * Return ascii representation of a mips instruction with operand.
+ * @fn char *asm_mips_display_instr(asm_instr *ins,int addr)
+ * @brief Return ASCII representation of a mips instruction with operand.
  *
  * @param ins Pointer to instruction structure.
  * @param addr Virtual Address of instruction.

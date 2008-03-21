@@ -13,7 +13,11 @@
 #include <libasm.h>
 
 /**
- * Register a mips opcode handler.
+ * @fn int asm_register_mips_opcode(int op1,int op2,int op3, unsigned long fcn)
+ * @brief Register MIPS opcode handler.
+ *
+ * This function is called by asm_register_mips_opcodes()
+ *
  * @param op1 First argument of instruction type.
  * @param op2 Second argument of instruction type.
  * @param op3 Third argument of instruction type.
@@ -37,7 +41,9 @@ int asm_register_mips_opcode(int op1,int op2,int op3, unsigned long fcn)
 }
 
 /**
- * Register mips opcode handlers.
+ * @fn int asm_register_mips_opcodes()
+ * @brief Register MIPS opcode handlers.
+ *
  * @return 1 on success
  */
 int asm_register_mips_opcodes()
@@ -45,9 +51,6 @@ int asm_register_mips_opcodes()
   int i = 0;
   struct e_mips_instr	*insns;
 
-  /**
-   * @todo This is supposed to be working this way.... Check this
-   */
   insns = e_mips_instrs;
   for(i=0;insns[i].code != ASM_MIPS_TABLE_END;i++)
     {
@@ -57,9 +60,10 @@ int asm_register_mips_opcodes()
 }
 
 /**
+ * @fn int asm_register_mips()
  * @brief Initialize the disassembling vector for MIPS.
- * @return Always 1.
  *
+ * @return Always 1.
  */
 int asm_register_mips()
 {
@@ -119,6 +123,12 @@ int asm_register_mips()
     return (1);
 }
 
+/**
+ * @fn int asm_register_mips()
+ * @brief Register MIPS operand handlers.
+ *
+ * @return Always 1.
+ */
 int asm_register_mips_operands()
 {
   asm_register_mips_operand(ASM_MIPS_OTYPE_NONE, (unsigned long) asm_mips_operand_none);
@@ -134,7 +144,11 @@ int asm_register_mips_operands()
 
 
 /**
- * Register mips operand handlers.
+ * @fn int asm_register_mips_operand(unsigned int type, unsigned long func)
+ * @brief Register MIPS operand handler.
+ *
+ * This function is called by asm_register_mips_operands()
+ *
  * @param type Type of the operand to register.
  * @param func Function pointer.
  * @return 1 on success, 0 on error.

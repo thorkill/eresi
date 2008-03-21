@@ -12,7 +12,11 @@
 #include <libasm.h>
 
 /**
+ * @fn void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf)
+ * @brief Convert 'type r' instruction.
+ *
  * Fill structure for 'type r' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */
@@ -39,7 +43,11 @@ void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
 }
 
 /**
+ * @fn void    mips_convert_format_i(struct s_mips_decode_imm *opcode, u_char *buf)
+ * @brief Convert 'type i' instruction.
+ *
  * Fill structure for 'type i' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */
@@ -64,7 +72,11 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
 }
 
 /**
+ * @fn void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf)
+ * @brief Convert 'type j' instruction.
+ *
  * Fill structure for 'type j' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */
@@ -88,7 +100,11 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
 }
 
 /**
+ * @fn void    mips_convert_format_t(struct s_mips_decode_trap *opcode, u_char *buf)
+ * @brief Convert 'trap' instruction.
+ * 
  * Fill structure for 'trap' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */
@@ -114,7 +130,11 @@ void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
 }
 
 /**
+ * @fn void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf)
+ * @brief Convert instrction from second coprocesor
+ *
  * Fill structure for 'second coprocesor' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */
@@ -141,7 +161,11 @@ void	mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode,
 }
 
 /**
+ * @fn void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf)
+ * @brief Convert *mov* instruction.
+ *
  * Fill structure for 'mov' MIPS instruction.
+ *
  * @param opcode Pointer to structure which will be fill.
  * @param buf Pointer to data -> instruction.
  */

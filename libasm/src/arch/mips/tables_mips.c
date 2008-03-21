@@ -12,6 +12,18 @@
 
 #include <libasm.h>
 
+/**
+ * @struct e_mips_instrs
+ * @brieg Fill in "struct e_mips_instr"
+ *
+ * This structure have filled "struct e_mips_instr"
+ * and it is used in register vectors for opcodes.
+ *
+ * First field have name for instruction.
+ * Second field have something like unique ID (ASM_MIPS_xxx)
+ * Third, Fourth and Fifth field have unequivocal identify instruction (0x0 when unused)
+ * Sixth field have pointer to handler.
+ */
 struct e_mips_instr e_mips_instrs [] = {
 
 
@@ -276,6 +288,16 @@ struct e_mips_instr e_mips_instrs [] = {
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }
 };
 
+/**
+ * @struct e_mips_registers
+ * @brieg Fill in "struct e_mips_register"
+ *
+ * This structure have filled "struct e_mips_instr"
+ *
+ * First field have name for register.
+ * Second field have alternative name for register.
+ * Third field have unique ID (ASM_MIPS_REG_xxx)
+ */
 struct e_mips_register e_mips_registers [] = {
    {"zero","r0",ASM_MIPS_REG_ZERO},
    {"at","r1",ASM_MIPS_REG_AT},
