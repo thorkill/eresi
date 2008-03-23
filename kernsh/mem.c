@@ -474,6 +474,20 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
+  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VMA);
+  switch (val)
+    {
+    case LIBKERNSH_VMA_USERLAND:
+      snprintf(buff, sizeof(buff), 
+	       "VMA : USERLAND\n");
+      break;
+    case LIBKERNSH_VMA_KERNELLAND :
+      snprintf(buff, sizeof(buff), 
+	       "VMA : KERNELLAND\n");
+      break;
+    }
+  revm_output(buff);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

@@ -77,4 +77,7 @@
 
 #define HLP_KMEM_INFO	        "Kernel memory informations"
 
+#define HLP_KDUMP_GET_VMA	"vma"
+#define HLP_KDUMP_VMA		"vma"
+
 #endif

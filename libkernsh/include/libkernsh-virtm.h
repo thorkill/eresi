@@ -46,6 +46,14 @@ typedef struct s_kvirtm_virtual_task_struct
   
 } kvirtm_virtual_task_struct_t;
 
+typedef struct s_vma_struct
+{
+
+  unsigned long vm_start;
+  unsigned long vm_end;
+
+} vma_struct_t;
+
 struct mem_addr {
   unsigned long vm_start;
   unsigned long vm_end;

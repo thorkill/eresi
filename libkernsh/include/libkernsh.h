@@ -20,6 +20,8 @@
 
 #if defined(__linux__)
 
+#include <sys/ptrace.h>
+
 #define SYSCALL0(num) asm volatile \
 ( "\n\tint $0x80" : "=a"(__ret) : "0"(num) );
 
@@ -107,6 +109,13 @@ enum
     LIBKERNSH_VIRTMNUM
   } libkernsh_e_virtm_type;
 
+enum
+  {
+    LIBKERNSH_VMA_USERLAND,
+    LIBKERNSH_VMA_KERNELLAND,
+    LIBKERNSH_VMANUM
+  } libkernsh_e_vma_type;
+
 #define	__DEBUG_KERNSH__			0
 
 #define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
@@ -141,6 +150,10 @@ enum
 #define LIBKERNSH_VMCONFIG_VIRTM		"libkernsh.virtm"
 #define LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL	"libkernsh.virtm_nil_syscall"
 #define LIBKERNSH_VMCONFIG_HASH			"libkernsh.hash"
+#define LIBKERNSH_VMCONFIG_VMA			"libkernsh.vma"
+#define LIBKERNSH_VMCONFIG_VMA_PREFIX		"libkernsh.vma_prefix"
+#define LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX	"libkernsh.dump_vma_prefix"
+
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
 #define LIBKERNSH_DEFAULT_LINUX_MAP		"/boot/System.map"
@@ -162,6 +175,8 @@ enum
 #define LIBKERNSH_STRING_DEVICE_KCORE		"/proc/kcore"
 #define LIBKERNSH_STRING_DEVICE_KVIRTM		"kvirtm"
 #define LIBKERNSH_STRING_REL_GNU		".rel.gnu.linkonce.this_module"
+#define LIBKERNSH_DEFAULT_VMA_PREFIX		"vma"
+#define LIBKERNSH_DEFAULT_DUMP_VMA_PREFIX	"kernsh_dump"
 
 #define LIBKERNSH_HASH_MD5_SIZE			16
 
@@ -202,6 +217,8 @@ enum
 #define LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM		"kvirtm_write_mem"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID		"kvirtm_task_pid"
 #define LIBKERNSH_VECTOR_NAME_KVIRTMDUMPELF		"kvirtm_dump_elf"
+#define LIBKERNSH_VECTOR_NAME_KDUMPGETVMA		"kdump_get_vma"
+#define LIBKERNSH_VECTOR_NAME_KDUMPVMA			"kdump_vma"
 
 
 /* Idtr segment struct */
@@ -415,6 +432,37 @@ int kernsh_is_present();
 int kernsh_raw_write(elfshobj_t *, u_int, void *, int);
 int kernsh_raw_read(elfshobj_t *,  u_int, void *, int);
 
+/* Default vectors */
+
+int kernsh_openmem_default();
+int kernsh_closemem_default();
+int kernsh_readmem_default();
+int kernsh_writemem_default();
+int kernsh_sct_default();
+int kernsh_callsc_default();
+int kernsh_idt_default();
+int kernsh_gdt_default();
+int kernsh_info_default();
+int kernsh_decompkernel_default();
+int kernsh_loadkernel_default();
+int kernsh_autotypes_default();
+int kernsh_symbs_default();
+int kernsh_alloc_contiguous_default();
+int kernsh_alloc_noncontiguous_default();
+int kernsh_free_contiguous_default();
+int kernsh_free_noncontiguous_default();
+int kernsh_relink_module_default();
+int kernsh_infect_module_default();
+int kernsh_kload_module_default();
+int kernsh_kunload_module_default();
+int kernsh_kvirtm_read_virtm_default();
+int kernsh_kvirtm_read_mem_default();
+int kernsh_kvirtm_write_virtm_default();
+int kernsh_kvirtm_write_mem_default();
+int kernsh_kvirtm_task_pid_default();
+int kernsh_kdump_get_vma_default();
+int kernsh_kdump_vma_default();
+
 /* Init vectors */
 int	kernsh_init_vectors();
 int	kernsh_register_vectors();
@@ -444,6 +492,8 @@ int	kernsh_register_kvirtm_read_mem(u_int, u_int, void *);
 int	kernsh_register_kvirtm_write_virtm(u_int, u_int, void *);
 int	kernsh_register_kvirtm_write_mem(u_int, u_int, void *);
 int	kernsh_register_kvirtm_task_pid(u_int, u_int, void *);
+int	kernsh_register_kdump_get_vma(u_int, u_int, void *);
+int	kernsh_register_kdump_vma(u_int, u_int, void *);
 
 /* Memory */
 int	kernsh_openmem();
@@ -603,6 +653,12 @@ int kernsh_kvirtm_task_pid_syscall_linux(pid_t, list_t *);
 /* Dump */
 
 int kernsh_dump_kvirtm_elf(pid_t, char *);
+list_t *kernsh_kdump_get_vma(pid_t);
+int kernsh_kdump_get_vma_userland_linux(pid_t, list_t *);
+
+int kernsh_kdump_vma(pid_t);
+int kernsh_kdump_vma_userland_linux(pid_t, hash_t *);
+int kernsh_kdump_vma_kernelland_linux(pid_t, hash_t *);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);

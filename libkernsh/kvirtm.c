@@ -42,7 +42,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
       i = len / max_size;
       for (j = 0; j < i; j++)
 	{
-	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
+	  ret += fct(pid, addr+(max_size*j), buffer+(max_size*j), max_size);
 	}
 
       if ((max_size*i) < len)
@@ -196,7 +196,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
       i = len / max_size;
       for (j = 0; j < i; j++)
 	{
-	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
+	  ret += fct(pid, addr+(max_size*j), buffer+(max_size*j), max_size);
 	}
       
       if ((max_size*i) < len)

@@ -111,6 +111,21 @@ int kernsh_init_ia32(char *os, char *release)
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_HASH_MD5);
 
+  config_add_item(LIBKERNSH_VMCONFIG_VMA,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) LIBKERNSH_VMA_USERLAND);
+
+  config_add_item(LIBKERNSH_VMCONFIG_VMA_PREFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) LIBKERNSH_DEFAULT_VMA_PREFIX);
+
+  config_add_item(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  (char *) LIBKERNSH_DEFAULT_DUMP_VMA_PREFIX);
+  
   /* We are on Linux ! */
   if (!strcmp(os, "Linux"))
     {

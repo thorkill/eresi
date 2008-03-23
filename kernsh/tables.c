@@ -145,6 +145,16 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_KMEM_INFO);
 
+  revm_command_add(CMD_KDUMP_GET_VMA, (void *)cmd_kdump_get_vma, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KDUMP_GET_VMA);
+  
+  revm_command_add(CMD_KDUMP_VMA, (void *)cmd_kdump_vma, 
+		   (void*) revm_getvarparams,
+		   0,
+		   HLP_KDUMP_VMA);
+
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
 		   revm_getregxoption, 
 		   1, 

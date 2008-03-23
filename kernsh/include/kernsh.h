@@ -57,6 +57,9 @@
 #define CMD_KMEM_DISASM		"kmem_disasm"
 #define CMD_KMEM_INFO		"kmem_info"
 
+#define CMD_KDUMP_GET_VMA	"kdump_get_vma"
+#define CMD_KDUMP_VMA		"kdump_vma"
+
 /* Commands execution handlers, each in their respective file */
 int	cmd_openmem();
 int     cmd_closemem();
@@ -88,6 +91,9 @@ int	cmd_kmem_read();
 int	cmd_kmem_write();
 int	cmd_kmem_disasm();
 int	cmd_kmem_info();
+
+int	cmd_kdump_get_vma();
+int	cmd_kdump_vma();
 
 int	kernsh_virtm_dump_elf(pid_t, char *);
 int	kernsh_virtm_view_vmaps(pid_t);

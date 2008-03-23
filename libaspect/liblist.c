@@ -25,7 +25,7 @@ int elist_init(list_t *h, char *name, u_int type)
     }
   if (elist_find(name))
     {
-#if 1 //__DEBUG__
+#if __DEBUG__
       fprintf(stderr, "List %s already exists : NOT CREATING \n", name);
 #endif
       NOPROFILER_ROUT(1);
@@ -91,6 +91,8 @@ list_t		*elist_empty(char *name)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 newname, strlen(name) + 1, NULL);
   strcpy(newname, name);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+  	 list, sizeof(list_t), NULL);
   elist_init(list, newname, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
