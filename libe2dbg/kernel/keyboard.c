@@ -407,7 +407,7 @@ void		ke2dbg_keyb_enter()
     }
   if (revm_parseopt(argc, argv) < 0)
     {
-      XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
+      //XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
       return;
     }
 

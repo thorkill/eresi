@@ -50,6 +50,12 @@ int		cmd_kdump_get_vma()
 	}
     }
 
+  snprintf(buff, sizeof(buff),
+	   "Vma for pid %s is in list %s\n\n",
+	   revm_colornumber("%u", atoi(world.curjob->curcmd->param[0])),
+	   revm_colorstr(l->name));
+  revm_output(buff);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -64,7 +70,7 @@ int		cmd_kdump_vma()
     {
       ret = kernsh_kdump_vma(atoi(world.curjob->curcmd->param[0]));
 
-      if (ret != 0)
+      if (ret < 0)
 	{
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Failed to dump vma", -1);
@@ -72,6 +78,13 @@ int		cmd_kdump_vma()
 
       snprintf(buff, sizeof(buff),
                "Dumped into %s%s%s%s\n\n",
+               revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH)),
+	       revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX)),
+	       revm_colorstr("_"),
+	       revm_colornumber("%u", atoi(world.curjob->curcmd->param[0])));
+      revm_output(buff);
+      snprintf(buff, sizeof(buff),
+               "Check the metadata file %s%s%s%s/metadata*\n\n",
                revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH)),
 	       revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX)),
 	       revm_colorstr("_"),

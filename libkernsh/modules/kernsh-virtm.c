@@ -316,11 +316,15 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
       len = kernsh_dump_elf_pid(current_kvirtm.pid, current_kvirtm.filename);
       break;
     default :
+      return -EFAULT;
       break;
     }
-  
-  memcpy(page, new_buff, len);
+ 
+  if (len > 0)
+    memcpy(page, new_buff, len);
+
   kfree(new_buff);
+
   return len;
 }
 

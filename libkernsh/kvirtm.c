@@ -35,7 +35,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
 
   fct = aspect_vectors_select(krv, dim);
 
-  ret = -1;
+  ret = 0;
 
   if (len > max_size && get == LIBKERNSH_PROC_MODE)
     {
@@ -189,7 +189,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
 
   fct = aspect_vectors_select(krv, dim);
 
-  ret = -1;
+  ret = 0;
 
   if (len > max_size && get == LIBKERNSH_PROC_MODE)
     {

@@ -171,7 +171,7 @@ int kernsh_kdump_get_vma_kernelland_linux(pid_t pid, list_t *l)
 
 int kernsh_kdump_vma(pid_t pid)
 {
-  int ret, fd, index, get;
+  int ret, tret, fd, index, get;
   listent_t *actual;
   list_t *l;
   hash_t *h;
@@ -234,19 +234,20 @@ int kernsh_kdump_vma(pid_t pid)
 	{
 	  memset(meta, '\0', sizeof(meta));
 
-	  ret += fct(pid, h);
+	  tret = fct(pid, h);
+	  ret += tret;
 
 	  meta_start = (int)hash_get(h, "vm_start");
 	  meta_end = (int)hash_get(h, "vm_end");
 	  meta_size = meta_end - meta_start;
 
-	  snprintf(meta, sizeof(meta), "%s[%d] 0x%lx ... 0x%lx strlen(0x%lx) ==> [%d]\n", 
+	  snprintf(meta, sizeof(meta), "%s[%d] 0x%lx ... 0x%lx strlen(0x%lx) ==> [0x%lx]\n", 
 		   l->name, 
 		   index,
 		   meta_start,
 		   meta_end,
 		   meta_size,
-		   ret);
+		   (unsigned long)tret);
 	  XWRITE(fd, meta, strlen(meta), -1);  
 	}
       printf("\n");
@@ -294,7 +295,11 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 
 #if defined(__linux__)
   for (i=0; i < size; i++)
-    new_vma[i]=(char)ptrace(PTRACE_PEEKTEXT, pid, vm_start+i, 0);
+    {
+      new_vma[i]=(char)ptrace(PTRACE_PEEKTEXT, pid, vm_start+i, 0);
+      if (errno == 0)
+	ret++;
+    }
 #endif
 
 #if defined(__linux__)
@@ -341,7 +346,7 @@ int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
   memset(new_vma, '\0', size);
 
   ret = kernsh_kvirtm_read_virtm(pid, vm_start, new_vma, (int)size);
-  if (ret != size)
+  if (ret <= 0)
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_vma);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

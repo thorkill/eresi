@@ -17,6 +17,7 @@
 #endif
 
 
+#define         KE2DBG_CONFIG            ".e2dbgrc"
 
 /* We check whether an ASM style has been chosen */
 #if defined(_MSC_VER) && defined(__GNUC__)
