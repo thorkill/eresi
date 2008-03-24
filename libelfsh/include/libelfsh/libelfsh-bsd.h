@@ -1,13 +1,13 @@
-/*
-** libelfsh-bsd.h
-** 
-** Various undefined macros on BSD
-** 
-** Last update Mon Feb 26 05:05:27 2005 jfv
-**
-** $Id: libelfsh-bsd.h,v 1.10 2008-02-16 13:44:47 thor Exp $
-**
-*/
+/**
+ * @file libelfsh-bsd.h
+ * @ingroup libelfsh
+ * @brief Various undefined macros on BSD
+ * 
+ * Last update Mon Feb 26 05:05:27 2005 jfv
+ *
+ * $Id$
+ *
+ */
 
 // TODO USE GOOD ELFSH TYPE
 /* #include "libelfsh-irix.h" */
@@ -18,6 +18,8 @@
 #include <sys/param.h>
 #if defined(__NetBSD__)
 #include <elf.h>
+#elif defined(__OpenBSD__)
+#include <sys/exec_elf.h>
 #else
 #include <sys/elf_common.h>
 #endif
@@ -48,6 +50,17 @@ typedef struct		link_map
   struct link_map	*l_next, *l_prev;       /* linked list of of mapped libs */
 }			Link_map;
 
+/**
+ * Extracted from sys/queue.h on Linux
+ */
+
+#if defined(__OpenBSD__)
+#define STAILQ_ENTRY(type)				\
+struct {						\
+	struct type *stqe_next; /* next element */	\
+}
+#endif
+
 
 /**
  * Lists of shared objects 
@@ -58,7 +71,9 @@ typedef struct				Struct_Objlist_Entry
   struct Struct_Obj_Entry		*obj;
 }					Objlist_Entry;
 
+#if !defined(__OpenBSD__)
 typedef STAILQ_HEAD(Struct_Objlist, Struct_Objlist_Entry) Objlist;
+#endif
 
 #if defined(__FreeBSD__)
 /**
@@ -296,7 +311,7 @@ typedef struct
 #define	VER_NDX_LORESERVE	0xff00	/* Beginning of reserved entries.  */
 #define	VER_NDX_ELIMINATE	0xff01	/* Symbol is to be eliminated.  */
 
-#if ! __FreeBSD_version > 505100
+#if (! (__FreeBSD_version > 505100)) || defined(__OpenBSD__)
 /* Legal values for vd_flags (version information flags).  */
 #define VER_FLG_BASE	0x1		/* Version definition of file itself */
 #define VER_FLG_WEAK	0x2		/* Weak version identifier */
@@ -379,7 +394,7 @@ typedef struct
 #define VER_NEED_NUM	 2		/* Given version number */
 
 
-#if ! __FreeBSD_version > 505100
+#if (!( __FreeBSD_version > 505100)) || defined(__OpenBSD__)
 /**
  * Auxiliary needed version information.
  */
@@ -682,6 +697,11 @@ typedef struct
 #if !defined(STT_NUM)
  #define STT_NUM	7
 #endif
+
+#if !defined(PT_TLS)
+  #define PT_TLS          7               /* Thread-local storage segment */
+#endif
+
 
 
 /* 32bit */

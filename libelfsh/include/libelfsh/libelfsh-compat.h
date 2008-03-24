@@ -4,7 +4,7 @@
 ** Started on  Tue Feb 18 04:15:42 2003 jfv
 ** Last update Mon Feb 23 16:23:43 2004 jfv
 **
-** $Id: libelfsh-compat.h,v 1.12 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 

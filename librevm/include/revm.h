@@ -38,7 +38,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 #define __USE_GNU
+#if !defined(__OpenBSD__)
 #include <sys/ucontext.h>
+#endif
 #include <pthread.h>
 #include <stdarg.h> 
 #include <regex.h>

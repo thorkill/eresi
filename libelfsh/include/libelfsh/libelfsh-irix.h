@@ -5,7 +5,7 @@
 **
 ** Last update Mon Aug 23 05:05:27 2005 ym
 **
-** $Id: libelfsh-irix.h,v 1.3 2007-04-22 22:58:14 thor Exp $
+** $Id$
 **
 */
 

@@ -109,6 +109,7 @@ static void	e2dbg_stack_get(e2dbgthread_t *cur)
 
   getrlimit(RLIMIT_STACK, &rlp);
   cur->stacksize = rlp.rlim_cur;
+
   cur->stackaddr = (elfsh_Addr) environ;
 
   for (index = 0; environ[index]; index++)

@@ -44,7 +44,9 @@
 #define __USE_GNU
 #endif
 
+#if ! defined(__OpenBSD__)
 #include <sys/ucontext.h>
+#endif
 
 #if !defined(sgi)
 #include <sys/user.h>
@@ -52,7 +54,7 @@
 
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
-#else
+#elif ! (defined(__OpenBSD__))
 #include <sys/procfs.h>
 #endif
 

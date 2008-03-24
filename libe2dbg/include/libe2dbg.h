@@ -11,6 +11,13 @@
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
 
+#if defined(__OpenBSD__)
+#include <sys/time.h>
+/**
+ * environ is not defined in unistd.h
+ */
+extern char **environ;
+#endif
 #include <sys/resource.h>
 #include <sys/types.h>
 #include "revm.h"

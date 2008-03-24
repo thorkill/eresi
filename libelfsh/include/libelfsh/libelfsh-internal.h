@@ -4,7 +4,7 @@
 ** Started on  Wed Jan  1 07:51:24 2003 jfv
 ** Last update Thu Mar 20 06:19:53 2003 jfv
 **
-** $Id: libelfsh-internal.h,v 1.8 2007-07-31 03:28:47 may Exp $
+** $Id$
 **
 */
 

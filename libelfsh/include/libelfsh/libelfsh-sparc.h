@@ -7,7 +7,7 @@
 ** Last update Sat Feb 27 16:57:02 2005 jfv
 ** 
 **
-** $Id: libelfsh-sparc.h,v 1.3 2007-07-31 03:28:47 may Exp $
+** $Id$
 **
 */
 

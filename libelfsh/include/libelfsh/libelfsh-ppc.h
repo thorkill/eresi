@@ -7,7 +7,7 @@
 ** Last update Sat Feb 26 20:57:27 2005 jfv
 ** 
 **
-** $Id: libelfsh-ppc.h,v 1.3 2007-07-31 03:28:47 may Exp $
+** $Id$
 **
 */
 

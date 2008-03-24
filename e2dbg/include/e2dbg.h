@@ -14,7 +14,7 @@
 
 #define E2DBG_CONFIG ".e2dbgrc"
 
-#if defined(__FreeBSD__) || defined(sun) || defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(sun) || defined(__NetBSD__) || defined(__OpenBSD__)
   extern char **environ;
 #endif
 

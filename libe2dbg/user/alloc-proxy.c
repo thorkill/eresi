@@ -132,7 +132,7 @@ void		*valloc(size_t t)
  * @param nbr
  * @return
  */
-#if __FreeBSD__ > 5
+#if __FreeBSD__ > 5 || defined(__OpenBSD__)
 void		*calloc(size_t t, size_t nbr)
 #else
 void		*calloc(size_t t, u_int nbr)

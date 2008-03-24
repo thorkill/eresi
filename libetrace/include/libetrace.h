@@ -27,7 +27,10 @@
 
 //#include "elfsh-libc.h"
 
+#if !defined(__OpenBSD__)
 #include <elf.h>
+#endif
+
 #include "libaspect.h"
 #include "libelfsh.h"
 //#include <libelfsh/libelfsh-compat.h>
@@ -40,15 +43,17 @@
 #define __USE_GNU
 #endif
 
+#if !defined(__OpenBSD__)
 #include <sys/ucontext.h>
+#endif
 
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__OpenBSD__)
 #include <sys/user.h>
 #endif
 
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
-#else
+#elif !defined(__OpenBSD__)
 #include <sys/procfs.h>
 #endif
 

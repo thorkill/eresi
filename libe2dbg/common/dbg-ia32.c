@@ -21,7 +21,7 @@
 void		  e2dbg_get_regvars_ia32_bsd()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   E2DBG_GETREG(E2DBG_EAX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   E2DBG_GETREG(E2DBG_EBX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   E2DBG_GETREG(E2DBG_ECX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -71,7 +71,7 @@ void		  e2dbg_get_regvars_ia32_sysv()
 void		  e2dbg_set_regvars_ia32_bsd()
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   E2DBG_SETREG(E2DBG_EAX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   E2DBG_SETREG(E2DBG_EBX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   E2DBG_SETREG(E2DBG_ECX_VAR, e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -123,7 +123,7 @@ void		  e2dbg_set_regvars_ia32_sysv()
 elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_eip);
 #elif defined(__NetBSD__)
@@ -150,7 +150,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		    &e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
 #elif defined(__NetBSD__)
@@ -177,7 +177,7 @@ elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
 void		  e2dbg_setstep_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags |= 0x100;
 #elif defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EFL] |= 0x100;
@@ -209,7 +209,7 @@ void		  e2dbg_resetstep_sysv_ia32()
 void		  e2dbg_resetstep_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) || defined (__OpenBSD__)
+#if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
   e2dbgworld.curthread->context->uc_mcontext.mc_eflags &= ~0x100;
 #elif defined(__NetBSD__)
   e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EFL] &= ~0x100;

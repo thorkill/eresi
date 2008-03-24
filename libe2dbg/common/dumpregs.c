@@ -46,7 +46,7 @@ int		cmd_dumpregs()
 
 #if defined(__amd64__) && defined(__FreeBSD__)
   #error "Register context not filled on FreeBSD / AMD64"
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) //|| defined(__OpenBSD__)
   e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.mc_eax);
   e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
   e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
@@ -103,7 +103,7 @@ int		cmd_dumpregs()
   e2dbg_register_dump("MDHI", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_MDHI]);
   e2dbg_register_dump("EPC", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_EPC]);
   e2dbg_register_dump("SR", e2dbgworld.curthread->context->uc_mcontext.__gregs[CTX_SR]);
-#elif defined(__i386__)
+#elif defined(__i386__) && !(defined(__OpenBSD__))
   e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
   e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
   e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
