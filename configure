@@ -981,15 +981,16 @@ echo "	@wc -l modules/*.c "					>> Makefile
 echo ""								>> Makefile
 
 echo "docs:"							>> Makefile
-echo "	(cd libasm && \$(MAKE) docs)"				>> Makefile
-echo "	(cd libelfsh && \$(MAKE) docs)"				>> Makefile
-echo "	(cd librevm && \$(MAKE) docs)"				>> Makefile
-echo "	(cd libstderesi && \$(MAKE) docs)"				>> Makefile
-echo "	(cd libmjollnir && \$(MAKE) docs)"				>> Makefile
-echo "	(cd libui && \$(MAKE) docs)"				>> Makefile
-echo "	(cd libedfmt && \$(MAKE) docs)"				>> Makefile
+echo "	doxygen doc/doxygen.conf"				>> Makefile
+echo "	#(cd libasm && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libelfsh && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd librevm && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libstderesi && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libmjollnir && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libui && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libedfmt && \$(MAKE) docs)"				>> Makefile
 if [ "$KERNSH" = "1" ]; then
-echo "	(cd libkernsh && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libkernsh && \$(MAKE) docs)"				>> Makefile
 fi
 echo
 echo " Now make && make install"
