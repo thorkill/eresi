@@ -95,7 +95,7 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
   char buff[BUFSIZ];
   char line[BUFSIZ];
   char *tok, *subtok, *brk, *subbrk, *subsubtok, *subsubbrk, *key;
-  vma_struct_t *vst;
+  libkernshvma_struct_t *vst;
   hash_t *h;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -120,7 +120,7 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
        tok; 
        tok = strtok_r(NULL, "\n", &brk), j++)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, vst, sizeof(vma_struct_t), -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, vst, sizeof(libkernshvma_struct_t), -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(hash_t), -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, key, BUFSIZ, -1);
 

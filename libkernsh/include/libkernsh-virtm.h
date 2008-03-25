@@ -10,7 +10,7 @@
 
 #define PROC_ENTRY_KERNSH_VIRTM_MAX PROC_ENTRY_KERNSH_VIRTM
 
-enum
+enum libkernsh_e_virtm_action_type
   {
     LIBKERNSH_VIRTM_READ_MEM,
     LIBKERNSH_VIRTM_WRITE_MEM,
@@ -18,16 +18,16 @@ enum
     LIBKERNSH_VIRTM_WRITE_MEM_PID,
     LIBKERNSH_VIRTM_TASK_PID,
     LIBKERNSH_VIRTM_DUMP_ELF_PID
-  } libkernsh_e_virtm_action_type;
+  };
 
 #ifndef __LIBKERNSH_H__
 
-enum
+enum libkernsh_e_virtm_type
   {
     LIBKERNSH_PROC_MODE,
     LIBKERNSH_SYSCALL_MODE,
     LIBKERNSH_VIRTMNUM
-  } libkernsh_e_virtm_type;
+  };
 
 #endif
 
@@ -46,35 +46,13 @@ typedef struct s_kvirtm_virtual_task_struct
   
 } kvirtm_virtual_task_struct_t;
 
-typedef struct s_vma_struct
+typedef struct s_libkernshvma_struct
 {
 
   unsigned long vm_start;
   unsigned long vm_end;
 
-} vma_struct_t;
-
-struct mem_addr {
-  unsigned long vm_start;
-  unsigned long vm_end;
-  unsigned long vm_start_cache;
-  unsigned long vm_end_cache;
-  int map_count;
-  unsigned long startcode;
-  unsigned long endcode;
-  unsigned long startdata;
-  unsigned long enddata;
-  unsigned long startbrk;
-  unsigned long startstack;
-  unsigned long arg_start;
-  unsigned long arg_end;
-  unsigned long env_start;
-  unsigned long env_end;
-  unsigned long rss;
-  unsigned long total_vm;
-  unsigned long locked_vm;
-  unsigned long swap_address;
-};
+} libkernshvma_struct_t;
 
 typedef struct s_kvirtm_action
 {

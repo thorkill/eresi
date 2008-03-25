@@ -1,5 +1,12 @@
+EXTRA_CFLAGS	:= 	-g3 -Wall -I/usr/include -I$(src)/include \
+			-I$(src)/../include -I$(src)/../kernel/include \
+			-DERESI32 -Wno-strict-prototypes
 
-obj-m	:= kernsh-virtm.o
+EXTRAOBJ	:= ../kernel/libkernsh-kernel.o
+
+kernsh-virtm-linux-y	:= kernsh-virtm.o $(EXTRAOBJ)
+
+obj-m	:= kernsh-virtm-linux.o 
 
 all:
 	$(MAKE) -C /lib/modules/`uname -r`/build M=`pwd`/

@@ -23,7 +23,7 @@ EXTRAOBJ     := ../../libasm/libasm.o ../../libmjollnir/libmjollnir32.o      \
 		../../libe2dbg/common/*.32.o 
 
 ke2dbg-y	:= kern-bp.o kentry.o video.o buffering.o utils.o pci.o page.o \
-		interrupts.o ports.o commands.o keyboard.o idt.o $(EXTRAOBJ)
+		interrupts.o ports.o commands.o keyboard.o idt.o syscalls.o $(EXTRAOBJ)
 
 obj-m		:= ke2dbg.o
 

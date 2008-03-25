@@ -1,68 +1,69 @@
 include ../config.h
-#
-# Architecture source files
-#
-SRCS_libkernsh 	= kernsh.c vectors.c vectors_default.c vectors_register.c memory.c mem.c kmem.c kcore.c sct.c idt.c gdt.c module.c symbs.c alloc.c autotypes.c misc.c kernel.c kvirtm.c hash.c dump.c
 
-OBJS32_libkernsh	=	${SRCS_libkernsh:.c=.32.o} 
-OBJS64_libkernsh	=	${SRCS_libkernsh:.c=.64.o}
+NAME32_libkernsh 	= 	libkernsh32
+NAME64_libkernsh        =       libkernsh64
 
-NAME32_libkernsh 	= 	libkernsh32.a
-NAME32_libkernsh_o	=	libkernsh32.o
+LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
+LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 
-NAME64_libkernsh        =       libkernsh64.a
-NAME64_libkernsh_o      =       libkernsh64.o
+EXTRAOBJ32 		= ../libasm/libasm.o ../libmjollnir/libmjollnir32.o \
+			  ../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o \
+			  ../libaspect/libaspect32.o
 
-CFLAGS32	= 	-Iinclude -Isrc/include -Wall -g3 -DERESI32 \
-			-I../libaspect/include -I../libasm/include  \
-			-I../libelfsh/include -I../libedfmt/include \
-			-I../libmjollnir/include -O2
-CFLAGS64	=	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI64 \
-			-I../libaspect/include -I../libasm/include        \
-			-I../libelfsh/include -I../libedfmt/include       \
-			-I../libmjollnir/include -O2
+EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o \
+                          ../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o \
+			  ../libaspect/libaspect64.o
+
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc
 LD		?=	ld
 CP 		= 	cp
+AR		=	ar rc
 
-all:	all32 all64 lkm
+COBJ32                  = common/*.32.o
+COBJ64                  = common/*.64.o
+KOBJ32                  = kernel/*.32.o
+KOBJ64                  = kernel/*.64.o
+UOBJ32                  = user/*.32.o
+UOBJ64                  = user/*.64.o
 
-symbs :
-	@cd symbols && $(MAKE)
+all:	all32 all64 
 
-all32: 	symbs $(OBJS32_libkernsh)
-	@ar rc ${NAME32_libkernsh} ${OBJS32_libkernsh}
-	@echo "[AR] ${NAME32_libkernsh}"
-	@${RANLIB} ${NAME32_libkernsh}
-	@echo "[RANLIB] ${NAME32_libkernsh}"
-	@$(LD) -r $(OBJS32_libkernsh) -o ${NAME32_libkernsh_o}
-	@echo "[CC -shared] libkernsh32.so"
-	@${CC} ${OBJS32_libkernsh} -o libkernsh32.so -shared -lcrypto
+all32: 	mod32 lib32
 
-all64: 	symbs $(OBJS64_libkernsh)
-	@ar rc ${NAME64_libkernsh} ${OBJS64_libkernsh}
-	@echo "[AR] ${NAME64_libkernsh}"
-	@${RANLIB} ${NAME64_libkernsh}
-	@echo "[RANLIB] ${NAME64_libkernsh}"
-	@$(LD) -r $(OBJS64_libkernsh) -o ${NAME64_libkernsh_o}
-	@echo "[CC -shared] libkernsh64.so"
-	@${CC} ${OBJS64_libkernsh} -o libkernsh64.so -shared
+mod32:	
+	$(MAKE) -C common all32
+	$(MAKE) -C user   all32
+	$(MAKE) -C kernel
 
-lkm	:
-	@cd modules && $(MAKE)
+lib32:
+	@$(CC) -shared -lcrypto $(COBJ32) $(EXTRAOBJ32) $(UOBJ32)  $(LDFLAGS32) -o $(NAME32_libkernsh).so
+	@${AR} ${NAME32_libkernsh}.a ${COBJ32} $(UOBJ32)
+	@${RANLIB} ${NAME32_libkernsh}.a
+
+all64:	mod64 lib64
+
+mod64:  
+	$(MAKE) -C common all64
+	$(MAKE) -C user   all64
+	$(MAKE) -C kernel
+
+lib64:
+	$(CC) -shared -lcrypto $(COBJ64) $(EXTRAOBJ64) $(UOBJ64)  $(LDFLAGS64) -o $(NAME64_libkernsh).so
+	@${AR} ${NAME64_libkernsh}.a ${COBJ4} $(UOBJ64)
+	@${RANLIB} ${NAME64_libkernsh}.a
 
 clean:
-	@cd modules && $(MAKE) clean
-	@$(RM) *.o
-	@cd symbols && $(MAKE) clean
-	#@find .   -name '*~' -exec rm -f {} \;
-	#@find src -name '*.o' -exec rm -rf {} \;
-	@echo "Cleaning source tree"
+	@$(MAKE) -C common clean
+	@$(MAKE) -C kernel clean
+	@$(MAKE) -C user   clean
+	@$(RM) *~ \#* *\# .\#*	
 
 fclean: clean
-	@cd modules && $(MAKE) fclean
+	@$(MAKE) -C common fclean
+	@$(MAKE) -C kernel fclean
+	@$(MAKE) -C user   fclean
 	@$(RM) *.a *.so
 
 #tags:
