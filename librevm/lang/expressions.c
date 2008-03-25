@@ -803,6 +803,7 @@ int		revm_expr_print(char *pathname)
   int		ret;
   char		buf[BUFSIZ];
   int		iter;
+  aspectype_t	*type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
@@ -814,6 +815,7 @@ int		revm_expr_print(char *pathname)
 		 "Unknown expression name", -1);
 
   /* Make sure we only print the subrecord if requested */
+  type = expr->type;
   if (expr->childs)
     {
       expr = expr->childs;
@@ -823,14 +825,16 @@ int		revm_expr_print(char *pathname)
     iter = (aspect_type_simple(expr->type->type) ? 0 : 1);
 
   /* If we are printing a simple type or a subtype expression, we need to print a top level */
-  if (!iter || expr->next)
+  if (type->next || (type->childs && type->childs->next))
     {
-      snprintf(buf, BUFSIZ, "  %-20s %s", revm_colorfunction(pathname), revm_colorwarn("= {"));
+      snprintf(buf, BUFSIZ, " %s %s \t %s", 
+	       revm_colorfunction(type->name),
+	       revm_colorfunction(pathname), revm_colorwarn("= {"));
       revm_output(buf);
       revm_endline();
     }
   revm_expr_printrec(expr, (!iter || !expr->next ? strlen(pathname) + 6 : 1), 0, iter);
-  if (!iter || expr->next)
+  if (type->next || (type->childs && type->childs->next))
     revm_output(revm_colorwarn("}"));
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -1195,7 +1199,7 @@ int		revm_expr_destroy(char *e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   printf("\n [D] DestroyExpr %s \n", e);
 #endif
 

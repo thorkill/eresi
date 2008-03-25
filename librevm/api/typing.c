@@ -11,36 +11,30 @@
 
 
 /**
- * Copy a designed type 
- * @param from Source
- * @param to Destination
+ * Do a copy meta-representation of a datatype 
+ * @param from Source type name to copy from
+ * @param to Destination type name to copy into
  * @return 0 on success, or < 0 on error.
  */
 int		revm_type_copy(char *from, char *to)
 {
   aspectype_t	*tocopy, *newtype;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   tocopy = (aspectype_t *) hash_get(&types_hash, from);
   if (!tocopy)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Type not found", -1);
-
   newtype = (aspectype_t *) hash_get(&types_hash, to);
-
   if (newtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Type destination already exist", -1);    
-
-  newtype = aspect_type_copy(tocopy, tocopy->off, 
-			     tocopy->isptr, tocopy->dimnbr,
-			     strdup(to), tocopy->elemnbr);
-  if (!newtype)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to create a new type", -2);
-
-  hash_add(&types_hash, newtype->fieldname, (void *) newtype);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+	 newtype, sizeof(aspectype_t), -1);
+  memcpy(newtype, tocopy, sizeof(aspectype_t));
+  newtype->name = strdup(to);
+  aspect_type_register_real(newtype->name, newtype);
+  revm_type_hashcreate(newtype->name);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -54,15 +48,18 @@ int		revm_type_hashcreate(char *name)
 {
   char		hashname[BUFSIZ];
   hash_t	*newhash;
+  aspectype_t	*type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Create the hash table for objects of that type */
-  snprintf(hashname, sizeof(hashname), "type_%s", 
-	   name);
+  type = aspect_type_get_by_name(name);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Type subject does not exist", -1);    
+  snprintf(hashname, sizeof(hashname), "type_%s",  name);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newhash, sizeof(hash_t), -1);
-  hash_init(newhash, strdup(hashname), 11, ASPECT_TYPE_UNKNOW);
-
+  hash_init(newhash, strdup(hashname), 11, type->type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

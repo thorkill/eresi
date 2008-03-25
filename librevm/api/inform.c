@@ -232,7 +232,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   if (!straddr)
     straddr = varname;
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   fprintf(stderr, "\n [D] Variable %40s LOOKED UP\n", varname);
 #endif
 
@@ -244,7 +244,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   oaddr    = revm_lookup_addr(straddr);
 
   /* Adding expression and its type to hash tables */
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Variable %40s TO BE added to exprs_hash with type %s \n", realname, rtype->name);
 #endif
 
@@ -314,7 +314,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Variable %40s ADDED to exprs_hash with type %s \n", realname, rtype->name);
 #endif
 

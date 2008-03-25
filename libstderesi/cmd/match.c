@@ -196,7 +196,6 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  rname = revm_tmpvar_create();
 	  type   = revm_exprtype_get(destvalue);
 	  candid = revm_expr_create(type, rname, destvalue);
-
 	  if (!candid)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Malformed destination type", -1);
@@ -210,15 +209,15 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
 	  /* initialisation de subexpr par une autre expr est bugge ! */
 	  /* il nomme le field par le nom de la variable .. */
-
 	  elist_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
 	  rname = strdup(matchme->label);
-	  
 	  revm_expr_destroy(matchme->label);
 	  matchme = revm_expr_copy(candid, rname, 0);
 	  revm_expr_destroy(candid->label);
-
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
+	  if (!matchme)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Unable to write back list element", -1);
 	}
     }
 

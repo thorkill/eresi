@@ -74,18 +74,13 @@ int			revm_parse_construct(char *curtok)
       if (curnest == 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested forend statement", -1);
-
       endlabl = revm_label_get("forend");
-
       if (!strstr(looplabels[curnest - 1], "foreach"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested loop-ending statement", -1);
-
       forend = newcmd;
       forend->endlabel = looplabels[--curnest];
       nextlabel = 1;
-
-      //fprintf(stderr, "Forend END label = %s \n", forend->endlabel);
     }
 
   /* Here the match parser */
@@ -139,9 +134,6 @@ int			revm_parse_construct(char *curtok)
 	    {
 	      condcmd = (revmargv_t *) curcondcmd->data;
 	      condcmd->endlabel = strdup(endlabl);
-	      
-	      fprintf(stderr, "*** Adding endlabel %s to command %s ! **** \n", 
-		      endlabl, condcmd->name);
 	    }
 	  elist_destroy(condcmdlist);
 	  condcmdlist = NULL;
