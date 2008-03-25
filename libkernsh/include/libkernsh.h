@@ -10,6 +10,8 @@
 #include "libelfsh.h"
 #include "libasm.h"
 
+#include "libkernsh-virtm.h"
+
 #if defined(__NetBSD__)
 #include <kvm.h>
 #include <nlist.h>
@@ -101,13 +103,6 @@ enum
     LIBKERNSH_MEM_MODE,
     LIBKERNSH_STATIC_MODE
   } libkernsh_e_debug_type;
-
-enum
-  {
-    LIBKERNSH_PROC_MODE,
-    LIBKERNSH_SYSCALL_MODE,
-    LIBKERNSH_VIRTMNUM
-  } libkernsh_e_virtm_type;
 
 enum
   {

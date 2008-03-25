@@ -1,5 +1,16 @@
+/*
+** @file page.c
+** @ingroup libkernsh_kernel
+**
+*/
 #include "libkernsh-kernel.h"
 
+/**
+ * @brief Get a page of a process id
+ * @param task The task_struct
+ * @param addr The addr to get the page
+ * @return page on success, NULL on error
+ */
 struct page *kernsh_get_page_from_task(struct task_struct *task, unsigned long addr)
 {
   struct mm_struct *mm;

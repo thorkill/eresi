@@ -1,7 +1,6 @@
 /*
 ** @file symbs.c
-** @ingroup libkernsh
-** $Id: symbs.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
+** @ingroup libkernsh_user
 **
 */
 #include "libkernsh.h"

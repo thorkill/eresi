@@ -1,9 +1,6 @@
-/**
- * @defgroup libkernsh libkernsh
- */
 /*
 ** @file vectors_register.c
-** @ingroup libkernsh
+** @ingroup libkernsh_common
 **
 */
 #include "libkernsh.h"

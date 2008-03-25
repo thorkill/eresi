@@ -1,7 +1,6 @@
 /*
 ** @file module.c 
-** @ingroup libkernsh
-** $Id: module.c,v 1.3 2007-10-15 13:04:07 pouik Exp $
+** @ingroup libkernsh_user
 **
 */
 #include "libkernsh.h"

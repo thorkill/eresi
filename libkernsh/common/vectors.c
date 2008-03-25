@@ -1,10 +1,9 @@
 /**
- * @defgroup libkernsh libkernsh
+ * @defgroup libkernsh_common libkernsh_common
  */
 /*
 ** @file vectors.c
-** @ingroup libkernsh
-** $Id: vectors.c,v 1.9 2007-09-23 17:53:35 pouik Exp $
+** @ingroup libkernsh_common
 **
 */
 #include "libkernsh.h"
@@ -526,88 +525,88 @@ int kernsh_register_vectors()
 
   /* kvirtm read/write virtm */
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_6,
-				    LIBKERNSH_PROC_MODE,
+				    LIBKERNSH_KERNEL_MODE,
 				    kernsh_kvirtm_read_virtm_proc_linux);
   
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
-				    LIBKERNSH_PROC_MODE,
+				    LIBKERNSH_KERNEL_MODE,
 				    kernsh_kvirtm_read_virtm_proc_linux);
   
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_6,
-				    LIBKERNSH_SYSCALL_MODE,
+				    LIBKERNSH_USER_MODE,
 				    kernsh_kvirtm_read_virtm_syscall_linux);
   
    kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
-				    LIBKERNSH_SYSCALL_MODE,
+				    LIBKERNSH_USER_MODE,
 				    kernsh_kvirtm_read_virtm_syscall_linux);
 
   kernsh_register_kvirtm_read_virtm(LIBKERNSH_OS_LINUX_2_4,
-				    LIBKERNSH_SYSCALL_MODE,
+				    LIBKERNSH_USER_MODE,
 				    kernsh_kvirtm_read_virtm_syscall_linux);
 
   kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_6,
-				     LIBKERNSH_PROC_MODE,
+				     LIBKERNSH_KERNEL_MODE,
 				     kernsh_kvirtm_write_virtm_proc_linux);
 
   kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_4,
-				     LIBKERNSH_PROC_MODE,
+				     LIBKERNSH_KERNEL_MODE,
 				     kernsh_kvirtm_write_virtm_proc_linux);
 
   kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_6,
-				     LIBKERNSH_SYSCALL_MODE,
+				     LIBKERNSH_USER_MODE,
 				     kernsh_kvirtm_write_virtm_syscall_linux);
 
   kernsh_register_kvirtm_write_virtm(LIBKERNSH_OS_LINUX_2_4,
-				     LIBKERNSH_SYSCALL_MODE,
+				     LIBKERNSH_USER_MODE,
 				     kernsh_kvirtm_write_virtm_syscall_linux);
 
   /* kvirtm read/write mem */
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
-				  LIBKERNSH_PROC_MODE,
+				  LIBKERNSH_KERNEL_MODE,
 				  kernsh_kvirtm_readmem_proc_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
-				  LIBKERNSH_PROC_MODE,
+				  LIBKERNSH_KERNEL_MODE,
 				  kernsh_kvirtm_readmem_proc_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_6,
-				  LIBKERNSH_SYSCALL_MODE,
+				  LIBKERNSH_USER_MODE,
 				  kernsh_kvirtm_readmem_syscall_linux);
 
   kernsh_register_kvirtm_read_mem(LIBKERNSH_OS_LINUX_2_4,
-				  LIBKERNSH_SYSCALL_MODE,
+				  LIBKERNSH_USER_MODE,
 				  kernsh_kvirtm_readmem_syscall_linux);
 
   kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_6,
-				   LIBKERNSH_PROC_MODE,
+				   LIBKERNSH_KERNEL_MODE,
 				   kernsh_kvirtm_writemem_proc_linux);
 
   kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_4,
-				   LIBKERNSH_PROC_MODE,
+				   LIBKERNSH_KERNEL_MODE,
 				   kernsh_kvirtm_writemem_proc_linux);
 
   kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_6,
-				   LIBKERNSH_SYSCALL_MODE,
+				   LIBKERNSH_USER_MODE,
 				   kernsh_kvirtm_writemem_syscall_linux);
   
   kernsh_register_kvirtm_write_mem(LIBKERNSH_OS_LINUX_2_4,
-				   LIBKERNSH_SYSCALL_MODE,
+				   LIBKERNSH_USER_MODE,
 				   kernsh_kvirtm_writemem_syscall_linux);
   
   kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_6,
-				  LIBKERNSH_PROC_MODE,
+				  LIBKERNSH_KERNEL_MODE,
 				  kernsh_kvirtm_task_pid_proc_linux);
   
   kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_4,
-				  LIBKERNSH_PROC_MODE,
+				  LIBKERNSH_KERNEL_MODE,
 				  kernsh_kvirtm_task_pid_proc_linux);
 
   kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_6,
-				  LIBKERNSH_SYSCALL_MODE,
+				  LIBKERNSH_USER_MODE,
 				  kernsh_kvirtm_task_pid_syscall_linux);
   
   kernsh_register_kvirtm_task_pid(LIBKERNSH_OS_LINUX_2_4,
-				  LIBKERNSH_SYSCALL_MODE,
+				  LIBKERNSH_USER_MODE,
 				  kernsh_kvirtm_task_pid_syscall_linux);
 
   kernsh_register_kdump_get_vma(LIBKERNSH_OS_LINUX_2_6,

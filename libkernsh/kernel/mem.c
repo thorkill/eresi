@@ -1,13 +1,18 @@
+/*
+** @file mem.c
+** @ingroup libkernsh_kernel
+**
+*/
 #include "libkernsh-kernel.h"
 
-int valid_phys_addr_range(unsigned long addr, size_t count)
-{
-  if (addr + count > __pa(high_memory))
-    return 0;
-  
-  return 1;
-}
-
+/**
+ * @brief Read kernel memory
+ * @param addr Address to read memory
+ * @param buffer Read memory into the buffer
+ * @param len Count bytes to read
+ * @param mode The mode to write into the buffer
+ * @return len on success, -1 on error
+ */
 int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mode)
 {
   ssize_t read, sz;
@@ -38,10 +43,10 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
       
       switch(mode)
 	{
-	case LIBKERNSH_PROC_MODE :
+	case LIBKERNSH_KERNEL_MODE :
 	  memcpy(buffer, ptr, sz);
 	  break;
-	case LIBKERNSH_SYSCALL_MODE :
+	case LIBKERNSH_USER_MODE :
 	  if (copy_to_user(buffer, ptr, sz))
 	    return -EFAULT;
 	  break;
@@ -58,6 +63,14 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
   return read;
 }
 
+/**
+ * @brief Write into kernel memory
+ * @param addr Address to write buffer
+ * @param buffer Write buffer into memory
+ * @param len Count bytes to write
+ * @param mode The mode to write into the buffer
+ * @return len on success, -1 on error
+ */
 int asmlinkage kernsh_write_mem(unsigned long addr, const char *buffer, int len, int mode)
 {
   unsigned long p = addr;
@@ -93,11 +106,11 @@ int asmlinkage kernsh_write_mem(unsigned long addr, const char *buffer, int len,
       
       switch(mode)
 	{
-	case LIBKERNSH_PROC_MODE :
+	case LIBKERNSH_KERNEL_MODE :
 	  memcpy(ptr, buffer, sz);
 	  copied = sz;
 	  break;
-	case LIBKERNSH_SYSCALL_MODE :
+	case LIBKERNSH_USER_MODE :
 	  copied = copy_from_user(ptr, buffer, sz);
 	  break;
 	}

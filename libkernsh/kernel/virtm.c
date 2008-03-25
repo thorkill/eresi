@@ -1,3 +1,9 @@
+/*
+** @file virtm.c
+** @ingroup libkernsh_kernel
+**
+*/
+
 #include "libkernsh-kernel.h"
 
 /*
@@ -14,6 +20,12 @@
  * Thanks : silvio, Liv Tyler (by thefly)
  */
 
+/**
+ * @brief Dump elf binary of a pid into a file
+ * @param pid The process id
+ * @param filename The filename to write elf binary
+ * @return 0 on success, -1 on error
+ */
 int kernsh_dump_elf_pid(pid_t pid, const char *filename)
 {
   struct task_struct *task;
@@ -99,42 +111,15 @@ int kernsh_dump_elf_pid(pid_t pid, const char *filename)
   return 0;
 }
 
-int kernsh_view_vmaps(pid_t pid)
-{
-  struct task_struct *task;
-  struct mm_struct *mm;
-  struct vm_area_struct *vma;
-  
-  task = find_task_by_pid(pid);
-  if (task == NULL)
-    {
-      printk(KERN_ALERT "Couldn't find pid %d\n", pid);
-      return -1;
-    }
-  
-  if (task->mm == NULL)
-    return -1;
-  
-  mm = task->mm;
-  
-  printk(KERN_ALERT "START CODE 0x%lx START END 0x%lx\n", mm->start_code, mm->end_code);
-  printk(KERN_ALERT "DATA CODE 0x%lx DATA END 0x%lx\n", mm->start_data, mm->end_data);
-  
-  if (mm)
-    {
-      for(vma = mm->mmap; vma; vma = vma->vm_next)
-	{
-	  printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
-		 vma->vm_start, 
-		 vma->vm_end,
-		 vma->vm_flags,
-		 (unsigned long)vma->vm_file);
-	        }
-    }
-  
-  return 0;
-}
-
+/**
+ * @brief Read virtual memory of a pid
+ * @param pid The process id
+ * @param addr The address to read
+ * @param buffer Read virtual memory into the buffer
+ * @param len Count bytes to read
+ * @param mode The mode to write into the buffer
+ * @return 0 on success, -1 on error
+ */
 int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
 {
   struct task_struct *task;
@@ -175,10 +160,10 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
   
   switch(mode)
     {
-    case LIBKERNSH_PROC_MODE :
+    case LIBKERNSH_KERNEL_MODE :
       memcpy(buffer, kaddr + (addr & ~PAGE_MASK), len);
       break;
-    case LIBKERNSH_SYSCALL_MODE :
+    case LIBKERNSH_USER_MODE :
       if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
 	{
 	  printk(KERN_ALERT "[-] copy_to_user error\n");
@@ -196,6 +181,15 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
   return len;
 }
 
+/**
+ * @brief Write virtual memory of a pid
+ * @param pid The process id
+ * @param addr The address to write
+ * @param buffer Write buffer into virtual memory
+ * @param len Count bytes to write
+ * @param mode The mode to write into the buffer
+ * @return len on success, -1 on error
+ */
 int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
 {
   struct task_struct *task;
@@ -242,10 +236,10 @@ int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buf
   
   switch(mode)
     {
-    case LIBKERNSH_PROC_MODE :
+    case LIBKERNSH_KERNEL_MODE :
       memcpy(kaddr + (addr & ~PAGE_MASK), buffer, len);
       break;
-    case LIBKERNSH_SYSCALL_MODE :
+    case LIBKERNSH_USER_MODE :
       if(copy_from_user(kaddr + (addr & ~PAGE_MASK), buffer, len))
 	{
 	  printk(KERN_ALERT "[-] copy_from_user error\n");

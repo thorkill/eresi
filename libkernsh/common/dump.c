@@ -1,11 +1,10 @@
 /*
 ** @file dump.c
-** @ingroup libkernsh
+** @ingroup libkernsh_common
 **
 */
 
 #include "libkernsh.h"
-#include "libkernsh-virtm.h"
 
 /**
  * @brief Dump elf\n
@@ -43,6 +42,13 @@ int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Get vma of a process id\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA
+ * @param pid The process id
+ * @return list_t on success, NULL on error
+ */
 list_t *kernsh_kdump_get_vma(pid_t pid)
 {
   int ret, get;
@@ -89,6 +95,14 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, l);
 }
 
+/**
+ * @brief Get vma of a process id from userland\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX
+ * @param pid The process id
+ * @param l list_t to store vma
+ * @return 0 on success, -1 on error
+ */
 int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
 {
   int ret, fd, i, j;
@@ -162,13 +176,28 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Get vma of a process id from kernelland\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX
+ * @param pid The process id
+ * @param l list_t to store vma
+ * @return 0 on success, -1 on error
+ */
 int kernsh_kdump_get_vma_kernelland_linux(pid_t pid, list_t *l)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
 }
 
+/**
+ * @brief Dump vma of a process id\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * @param pid The process id
+ * @return 0 on success, -1 on error
+ */
 int kernsh_kdump_vma(pid_t pid)
 {
   int ret, tret, fd, index, get;
@@ -263,6 +292,14 @@ int kernsh_kdump_vma(pid_t pid)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Dump vma of a process id from userland\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * @param pid The process id
+ * @param h the hash table to store vma struct
+ * @return 0 on success, -1 on error
+ */
 int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 {
   int ret, fd, i;
@@ -324,6 +361,14 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @brief Dump vma of a process id from kernelland\n
+ * Configure :\n
+ * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * @param pid The process id
+ * @param h the hash table to store vma struct
+ * @return 0 on success, -1 on error
+ */
 int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
 {
   int ret, fd;

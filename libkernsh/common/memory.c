@@ -1,8 +1,7 @@
 /*
  * @file memory.c
 ** @brief memory.c for libkernsh.
-** @ingroup libkersh
-** $Id: memory.c,v 1.7 2007-09-23 17:53:35 pouik Exp $
+** @ingroup libkernsh_common
 **
 */
 #include "libkernsh.h"

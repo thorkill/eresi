@@ -20,16 +20,12 @@ enum libkernsh_e_virtm_action_type
     LIBKERNSH_VIRTM_DUMP_ELF_PID
   };
 
-#ifndef __LIBKERNSH_H__
-
 enum libkernsh_e_virtm_type
   {
-    LIBKERNSH_PROC_MODE,
-    LIBKERNSH_SYSCALL_MODE,
+    LIBKERNSH_KERNEL_MODE,
+    LIBKERNSH_USER_MODE,
     LIBKERNSH_VIRTMNUM
   };
-
-#endif
 
 typedef struct s_kvirtm_virtual_task_struct
 {

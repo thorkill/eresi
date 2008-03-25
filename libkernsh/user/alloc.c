@@ -1,8 +1,7 @@
 /*
 ** @file alloc.c
-** @ingroup libkernsh
+** @ingroup libkernsh_user
 ** @brief allocation contiguous/non contiguous.
-** $Id: alloc.c,v 1.5 2007-09-23 17:53:35 pouik Exp $
 **
 */
 #include "libkernsh.h"

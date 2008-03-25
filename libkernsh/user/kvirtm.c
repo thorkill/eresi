@@ -1,11 +1,10 @@
 /*
 ** @file kvirtm.c
-** @ingroup libkernsh
+** @ingroup libkernsh_user
 **
 */
 
 #include "libkernsh.h"
-#include "libkernsh-virtm.h"
 
 /**
  * @brief Read virtual memory of a pid\n
@@ -37,7 +36,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
 
   ret = 0;
 
-  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+  if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
       for (j = 0; j < i; j++)
@@ -191,7 +190,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
 
   ret = 0;
 
-  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+  if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
       for (j = 0; j < i; j++)
@@ -378,7 +377,7 @@ int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
 
   fct = aspect_vectors_select(krv, dim);
 
-  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+  if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
       for (j = 0; j < i; j++)
@@ -535,7 +534,7 @@ int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
 
   fct = aspect_vectors_select(krv, dim);
 
-  if (len > max_size && get == LIBKERNSH_PROC_MODE)
+  if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
       for (j = 0; j < i; j++)

@@ -1,9 +1,10 @@
+/**
+ * @defgroup libkernsh_user libkernsh_user
+ */
 /*
 ** @file kernsh.c
-* @ingroup libkernsh
+* @ingroup libkernsh_user
 * @brief initialisation, get_raw and mode switch
-**
-** $Id: kernsh.c,v 1.14 2007-10-14 09:59:06 pouik Exp $
 **
 */
 #include "libkernsh.h"
@@ -104,7 +105,7 @@ int kernsh_init_ia32(char *os, char *release)
   config_add_item(LIBKERNSH_VMCONFIG_VIRTM,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
-		  (void *) LIBKERNSH_PROC_MODE);
+		  (void *) LIBKERNSH_KERNEL_MODE);
 
   config_add_item(LIBKERNSH_VMCONFIG_HASH,
 		  CONFIG_TYPE_INT,
