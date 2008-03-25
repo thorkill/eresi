@@ -38,7 +38,7 @@ mod32:
 	$(MAKE) -C kernel
 
 lib32:
-	@$(CC) -shared -lcrypto $(COBJ32) $(EXTRAOBJ32) $(UOBJ32)  $(LDFLAGS32) -o $(NAME32_libkernsh).so
+	@$(CC) -shared -lcrypto $(COBJ32) $(UOBJ32)  $(LDFLAGS32) -o $(NAME32_libkernsh).so
 	@${AR} ${NAME32_libkernsh}.a ${COBJ32} $(UOBJ32)
 	@${RANLIB} ${NAME32_libkernsh}.a
 
@@ -50,7 +50,7 @@ mod64:
 	$(MAKE) -C kernel
 
 lib64:
-	$(CC) -shared -lcrypto $(COBJ64) $(EXTRAOBJ64) $(UOBJ64)  $(LDFLAGS64) -o $(NAME64_libkernsh).so
+	$(CC) -shared -lcrypto $(COBJ64) $(UOBJ64)  $(LDFLAGS64) -o $(NAME64_libkernsh).so
 	@${AR} ${NAME64_libkernsh}.a ${COBJ4} $(UOBJ64)
 	@${RANLIB} ${NAME64_libkernsh}.a
 
