@@ -8,11 +8,17 @@
 #
 MYDISASM=./mydisasm
 
+function debugPrint
+{
+    echo "$1"
+}
+
 function init_test
 {
-
+    debugPrint "### Build testsuite"
     for i in *.asm; do 
-	as $i -o ${i/asm/o} 2> /dev/null 
+	debugPrint "as $i -o ${i/asm/o}"
+	as $i -o ${i/asm/o} #2> /dev/null
 	if ! ld ${i/asm/o} -o ${i/.asm/} 2> /dev/null ; then 
 	    echo "[ER] Failed compiling $i"
 	fi
@@ -24,7 +30,8 @@ function diff_test
 {
     for i in *.asm ; do
 	echo -n "[Testing] $i:"
-	if perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/} 2> /dev/null
+	if python ../parse.py ${i/.asm/}
+	#if perl ../../../libmjollnir/tools/desDiff.pl ${i/.asm/} 2> /dev/null
 	    then
 	    echo "[OK] Test ok"
 	else
@@ -51,6 +58,7 @@ EOF
 
 function purge_test
 {
+    debugPrint "### Cleaning up test directory"
     for i in *.asm; do
 	rm ${i/asm/o} ${i/.asm/}
     done
@@ -67,4 +75,8 @@ fi
 
 init_test $ARG
 diff_test $ARG
-purge_test $ARG
+echo -n "Purge testsuite directory ? [y/N]"
+read val
+if [ "$val" == "y" ] ; then
+    purge_test $ARG
+fi
