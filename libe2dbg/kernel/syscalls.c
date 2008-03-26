@@ -1,6 +1,7 @@
 /** 
  ** @file libe2dbg/kernel/syscalls.c
  **/
+
 #include "ke2dbg.h"
 #include "ke2dbg-syscalls.h"
 
@@ -17,6 +18,19 @@ int ke2dbg_init_syscalltable(unsigned long value)
   ke2dbg_sys_readdir	= ke2dbg_syscalltable[__NR_readdir];
   ke2dbg_sys_fork	= ke2dbg_syscalltable[__NR_fork];
   ke2dbg_sys_exit	= ke2dbg_syscalltable[__NR_exit];
+  ke2dbg_sys_rename	= ke2dbg_syscalltable[__NR_rename];
+  ke2dbg_sys_munmap	= ke2dbg_syscalltable[__NR_munmap];
+  ke2dbg_sys_mmap2	= ke2dbg_syscalltable[__NR_mmap2];
+  ke2dbg_sys_unlink	= ke2dbg_syscalltable[__NR_unlink];
+  ke2dbg_sys_mprotect	= ke2dbg_syscalltable[__NR_mprotect];
+  ke2dbg_sys_wait4	= ke2dbg_syscalltable[__NR_wait4];
+  ke2dbg_sys_waitpid	= ke2dbg_syscalltable[__NR_waitpid];
+  ke2dbg_sys_access	= ke2dbg_syscalltable[__NR_access];
+  ke2dbg_sys_select	= ke2dbg_syscalltable[__NR_select];
+  ke2dbg_sys_dup2	= ke2dbg_syscalltable[__NR_dup2];
+  ke2dbg_sys_lseek	= ke2dbg_syscalltable[__NR_lseek];
+  ke2dbg_sys_mkdir	= ke2dbg_syscalltable[__NR_mkdir];
+  ke2dbg_sys_nanosleep	= ke2dbg_syscalltable[__NR_nanosleep];
 
   return 0;
 }
@@ -37,7 +51,7 @@ asmlinkage ssize_t sys_read(int fd, void *buf, size_t count)
 
 asmlinkage ssize_t sys_write(int fd, const void *buf, size_t count)
 {
-  int r;
+  ssize_t r;
   mm_segment_t oldfs = get_fs();
 
   set_fs(KERNEL_DS);
@@ -149,7 +163,7 @@ asmlinkage int sys_fork(struct pt_regs regs)
 
 asmlinkage long sys_exit(int error_code)
 {
-  int r;
+  long r;
   mm_segment_t oldfs = get_fs();
 
   set_fs(KERNEL_DS);
@@ -161,27 +175,187 @@ asmlinkage long sys_exit(int error_code)
   return r;
 }
 
-/*
+asmlinkage long sys_rename(const char *oldname, const char *newname)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
 
-OK signal
-??? execvp
-OK fsync
-OK readdir
-OK fork
-OK exit
-rename
-munmap
-unlink
-mprotect
-closedir
-mmap
-wait
-access
-select
-dup2
-lseek
-opendir
-mkdir
-sleep
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_rename(oldname, newname);
 
- */
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_munmap(unsigned long addr, size_t len)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_munmap(addr, len);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
+                          unsigned long prot, unsigned long flags,
+                          unsigned long fd, unsigned long pgoff)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_mmap2(addr, len, prot, flags, fd, pgoff);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_unlink(const char *pathname)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_unlink(pathname);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_mprotect(unsigned long start, size_t len, unsigned long prot)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_mprotect(start, len, prot);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_wait4(pid_t pid, int *stat_addr, int options, struct rusage *ru)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_wait4(pid, stat_addr, options, ru);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_waitpid(pid_t pid, int *stat_addr, int options)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_waitpid(pid, stat_addr, options);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_access(const char *filename, int mode)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_access(filename, mode);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_select(int n, fd_set *inp, fd_set *outp,
+			   fd_set *exp, struct timeval *tvp)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_select(n, inp, outp, exp, tvp);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_dup2(unsigned int oldfd, unsigned int newfd)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_dup2(oldfd, newfd);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage off_t sys_lseek(unsigned int fd, off_t offset, unsigned int origin)
+{
+  off_t r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_lseek(fd, offset, origin);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_mkdir(const char *pathname, int mode)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_mkdir(pathname, mode);
+
+  set_fs(oldfs);
+  
+  return r;
+}
+
+asmlinkage long sys_nanosleep(struct timespec *rqtp, struct timespec *rmtp)
+{
+  long r;
+  mm_segment_t oldfs = get_fs();
+
+  set_fs(KERNEL_DS);
+  
+  r = ke2dbg_sys_nanosleep(rqtp, rmtp);
+
+  set_fs(oldfs);
+  
+  return r;
+}
