@@ -44,12 +44,12 @@ static char current_filename[256];
 
 static void **sys_call_table;
 
-int asmlinkage (*o_syscallnill)(void);
+asmlinkage int (*o_syscallnill)(void);
 
-int asmlinkage kernsh_read_virtm_syscall(pid_t, unsigned long, char *, int);
-int asmlinkage kernsh_read_mem_syscall(unsigned long, char *, int);
-int asmlinkage kernsh_write_virtm_syscall(pid_t, unsigned long, const char *, int);
-int asmlinkage kernsh_write_mem_syscall(unsigned long, const char *, int);
+asmlinkage int kernsh_read_virtm_syscall(pid_t, unsigned long, char *, int);
+asmlinkage int kernsh_read_mem_syscall(unsigned long, char *, int);
+asmlinkage int kernsh_write_virtm_syscall(pid_t, unsigned long, const char *, int);
+asmlinkage int kernsh_write_mem_syscall(unsigned long, const char *, int);
 
 ssize_t kernsh_virtm_info_write(struct file *filp, 
 				const char __user *buff, 
@@ -270,32 +270,32 @@ int kernsh_virtm_vio_output(char *page, char **start, off_t off, int count, int 
   return len;
 }
 
-int asmlinkage kernsh_read_virtm_syscall(pid_t pid, unsigned long addr, char *buffer, int len)
+asmlinkage int kernsh_read_virtm_syscall(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   return kernsh_read_virtm(pid, addr, buffer, len, LIBKERNSH_USER_MODE);
 }
 
-int asmlinkage kernsh_write_virtm_syscall(pid_t pid, unsigned long addr, const char *buffer, int len)
+asmlinkage int kernsh_write_virtm_syscall(pid_t pid, unsigned long addr, const char *buffer, int len)
 {
   return kernsh_write_virtm(pid, addr, buffer, len, LIBKERNSH_USER_MODE);
 }
 
-int asmlinkage kernsh_read_mem_syscall(unsigned long addr, char *buffer, int len)
+asmlinkage int kernsh_read_mem_syscall(unsigned long addr, char *buffer, int len)
 {
   return kernsh_read_mem(addr, buffer, len, LIBKERNSH_USER_MODE);
 }
 
-int asmlinkage kernsh_write_mem_syscall(unsigned long addr, const char *buffer, int len)
+asmlinkage int kernsh_write_mem_syscall(unsigned long addr, const char *buffer, int len)
 {
   return kernsh_write_mem(addr, buffer, len, LIBKERNSH_USER_MODE);
 }
 
-int asmlinkage kernsh_task_pid_syscall(pid_t pid, char *buffer, int len)
+asmlinkage int kernsh_task_pid_syscall(pid_t pid, char *buffer, int len)
 {
   return kernsh_task_pid(pid, buffer, len,  LIBKERNSH_USER_MODE);
 }
 
-int asmlinkage kernsh_dump_elf_pid_syscall(pid_t pid, const char *filename)
+asmlinkage int kernsh_dump_elf_pid_syscall(pid_t pid, const char *filename)
 {
   return kernsh_dump_elf_pid(pid, filename);
 }

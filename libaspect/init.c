@@ -120,6 +120,11 @@ static void	aspect_config_init()
 
   aspectworld.proflevel = PROFILE_NONE;
 
+  config_add_item(CONFIG_CFGDEPTH,
+                  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  CONFIG_CFGDEPTH_DEFAULT);
+
   config_add_item(CONFIG_NAME_SAFEMODE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,

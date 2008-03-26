@@ -8,6 +8,103 @@
 
 #include "libmjollnir.h"
 
+/**
+ * @brief Core control flow analysis function at a given address
+ * @param sess Mjollnir session
+ * @param ptr Code buffer pointer to analyse
+ * @param vaddr Entry point address for analysis
+ * @param len Size of code to analyse
+ */
+static int mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr vaddr, int len)
+{
+  asm_instr	instr;
+  unsigned long curr, ilen;
+  int		limit;
+  u_int		curiter;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Check if we have reached the limit bound */
+  limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
+
+  /* Read all instructions of the section */
+  for (curiter = 0; curr < len; curiter++) 
+    {
+      if (curiter >= limit)
+        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+      ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
+      
+#if __DEBUG_READ__
+      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", __FUNCTION__, __FILE__, __LINE__, ilen);
+#endif
+      
+      if (ilen > 0) 
+	{
+	  mjr_history_shift(sess->cur, instr, vaddr + curr);
+	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
+	} 
+      else
+	{
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "asm_read_instr returned <= 0 lenght", -1);
+	}
+      curr += ilen;
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+ 
+/**
+ * @brief Analyse control flow at a given address
+ * @param sess Mjollnir session
+ * @param addr Entry point address for analysis
+ * @param flags <FIXME:NotImplemented>
+ */
+static int mjr_analyse_addr(mjrsession_t *sess, elfsh_Addr addr, int flags) 
+{
+  elfshsect_t	*parent;
+  elfsh_SAddr   offset;
+  container_t	*block;
+  unsigned char *ptr;
+  unsigned long len;
+  
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  ptr      = elfsh_get_raw(sess->cur->cursct);
+  len      = sess->cur->cursct->shdr->sh_size;
+  
+  if (!addr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Failed to analyse control flow", -1);
+
+  parent = elfsh_get_parent_section(sess->cur->obj, addr, &offset);
+  if (!parent)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find parent section", -1);
+
+  block = mjr_create_block_container(sess->cur, 0, addr, 
+				     parent->shdr->sh_size - offset, 1);
+  if (!block)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to create parent container", -1);
+
+  hash_add(&sess->cur->blkhash, _vaddr2str(addr), block);
+
+
+  ptr      = elfsh_get_raw(sess->cur->cursct);
+  len      = parent->shdr->sh_size - offset ;
+  
+  if (mjr_analyse_code(sess, ptr + offset, addr, len) < 0)
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		  "Error during code analysis", -1);
+
+  if (mjr_analyse_finished(sess) < 0)
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		  "Error during storage of analysis info", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /**
  * @brief This function will find calls including calls trought a pointer 
@@ -17,10 +114,8 @@
 int		mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   container_t	*cntnr;
-  asm_instr	instr;
   unsigned char	*ptr;
-  unsigned long	curr, len;
-  u_int		ilen;
+  unsigned long	len;
   elfsh_Addr	e_point, vaddr;
   elfsh_Addr	main_addr;
 
@@ -52,7 +147,6 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
   /* Setup initial conditions */
   ptr      = elfsh_get_raw(sess->cur->cursct);
   len      = sess->cur->cursct->shdr->sh_size;
-  curr     = 0;
   vaddr    = sess->cur->cursct->shdr->sh_addr;
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
 
@@ -71,31 +165,57 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
       mjr_function_register(sess->cur,vaddr, cntnr);
     }
 
+
   /* Read all instructions of the section */
-  while (curr < len) 
-    {
+  if (mjr_analyse_code(sess, ptr, vaddr, len) < 0)
+     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		  "Error during code analysis", -1);
+ 
+  /*  
+      while (curr < len) 
+      {
       ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
       
-#if __DEBUG_READ__
+      #if __DEBUG_READ__
       fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", __FUNCTION__, __FILE__, __LINE__, ilen);
-#endif
+      #endif
       
       if (ilen > 0) 
-	{
-	  mjr_history_shift(sess->cur, instr, vaddr + curr);
-	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
-	} 
+      {
+      mjr_history_shift(sess->cur, instr, vaddr + curr);
+      mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
+      } 
       else
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "asm_read_instr returned <= 0 lenght", -1);
-	}
+      {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+      "asm_read_instr returned <= 0 lenght", -1);
+      }
       curr += ilen;
-    }
-  
+      }
+  */
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
+int		mjr_analyse_finished(mjrsession_t *sess)
+{      
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Store analyzed functions in file */
+  if (mjr_flow_store(sess->cur, ASPECT_TYPE_FUNC) <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to store functions in file", -1);
+  
+  /* Store analyzed blocks in file */
+  if (mjr_flow_store(sess->cur, ASPECT_TYPE_BLOC) <= 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to store blocks in file", -1);
+  
+  /* Set the flag and return */
+  sess->cur->analysed = 1;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
 /**
@@ -103,7 +223,7 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
  * @param sess Mjollnir session strucutre
  * @param flags <FIXME:NotImplemented>
  */
-int		mjr_analyse(mjrsession_t *sess, int flags) 
+int		mjr_analyse(mjrsession_t *sess, elfsh_Addr entry, int flags) 
 {
   char		*shtName;
   elfsh_Shdr	*shtlist, *shdr;
@@ -114,6 +234,7 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   int		index, blocksize;
   elfsh_Addr	addr;
   char		c;
+  int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -150,6 +271,16 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
   fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
 #endif
 
+  /* In case we are provided an entry point */
+  if (entry)
+    {
+      ret = mjr_analyse_addr(sess, entry, flags);
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to analyse control flow by addr", -1);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);      
+    }
+
   /* 
   ** First run, create blocks starting at section vaddr
   ** and in size of the section 
@@ -177,13 +308,13 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 	    __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
 #endif
 
-    fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, sct->shdr->sh_size, 1);
+    fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, 
+				      sct->shdr->sh_size, 1);
     if (!fcnt)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Can't create initial blocks", -1);
 
     hash_add(&sess->cur->blkhash, _vaddr2str(sct->shdr->sh_addr), fcnt);
-
   }
   
 
@@ -229,18 +360,10 @@ int		mjr_analyse(mjrsession_t *sess, int flags)
 
 	}
     }
-       
-  /* Store analyzed functions in file */
-  if (mjr_flow_store(sess->cur, ASPECT_TYPE_FUNC) <= 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to store functions in file", -1);
-  
-  /* Store analyzed blocks in file */
-  if (mjr_flow_store(sess->cur, ASPECT_TYPE_BLOC) <= 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to store blocks in file", -1);
-  
-  /* Set the flag and return */
-  sess->cur->analysed = 1;
+
+ if (mjr_analyse_finished(sess) < 0)
+   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		"Error during storage of analysis info", -1);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

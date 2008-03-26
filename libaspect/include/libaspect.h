@@ -248,12 +248,14 @@ typedef struct	s_container
  */
 #define		CONFIG_NAME_SAFEMODE	"safemode"
 #define		CONFIG_USE_ASMDEBUG	"asm.debug"
+#define         CONFIG_CFGDEPTH         "mjr.cfg_depth"
 
 /** 
  * @brief Config flags 
  */
 #define		CONFIG_SAFEMODE_OFF	0
 #define		CONFIG_SAFEMODE_ON	1
+#define         CONFIG_CFGDEPTH_DEFAULT 30
 
 /**
  * @brief libasm related config 

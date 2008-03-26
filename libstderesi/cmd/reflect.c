@@ -40,7 +40,7 @@ int		cmd_reflect()
   /* Analyse the binary if not already done */
   if (!world.mjr_session.cur->analysed)
     {
-      ret = mjr_analyse(&world.mjr_session, 0);
+      ret = mjr_analyse(&world.mjr_session, 0, 0);
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed analyzing current object", -1);

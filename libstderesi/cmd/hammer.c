@@ -44,6 +44,9 @@ int		cmd_analyse()
  int		nbr;
  container_t	*container;
  aspectype_t	*curtype;
+ elfsh_Addr     addr;
+ revmexpr_t     *expr; 
+ revmobj_t      *obj;
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -52,8 +55,30 @@ int		cmd_analyse()
  snprintf(logbuf, BUFSIZ - 1, " [*] Now performing Control Flow Analysis\n");
  revm_output(logbuf);
  memset(logbuf, 0x0, BUFSIZ);
- ret = mjr_analyse(&world.mjr_session, 0);
 
+ if (world.curjob->curcmd->param[0])
+   {
+     expr = revm_lookup_var(world.curjob->curcmd->param[0]);
+     obj = expr->value;
+     
+     switch (obj->otype->type)
+       {
+       case ASPECT_TYPE_LONG:
+       case ASPECT_TYPE_CADDR:
+       case ASPECT_TYPE_DADDR:
+         addr = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
+         break;
+	 
+       case ASPECT_TYPE_INT:
+         addr = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
+         break;
+       }
+   }
+ else
+   addr = 0;
+
+ ret = mjr_analyse(&world.mjr_session, addr, 0);
+ 
  snprintf(logbuf, BUFSIZ - 1, " [*] Control Flow Analysis %s.\n",
 	  (!ret ? "completed successfully" : "failed"));
  revm_output(logbuf);

@@ -13,7 +13,7 @@
  * @param mode The mode to write into the buffer
  * @return len on success, -1 on error
  */
-int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mode)
+asmlinkage int kernsh_read_mem(unsigned long addr, char *buffer, int len, int mode)
 {
   ssize_t read, sz;
   char *ptr; 
@@ -71,7 +71,7 @@ int asmlinkage kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
  * @param mode The mode to write into the buffer
  * @return len on success, -1 on error
  */
-int asmlinkage kernsh_write_mem(unsigned long addr, const char *buffer, int len, int mode)
+asmlinkage int kernsh_write_mem(unsigned long addr, const char *buffer, int len, int mode)
 {
   unsigned long p = addr;
   ssize_t written, sz;

@@ -38,7 +38,7 @@ int kernsh_atoi(const char *name)
  * @param mode The mode to write into the buffer
  * @return 0 on success, -1 on error
  */
-int asmlinkage kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
+asmlinkage int kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
 {
   kvirtm_virtual_task_struct_t kvtst;
   int write, cur_write;

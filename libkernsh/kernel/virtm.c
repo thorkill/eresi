@@ -120,7 +120,7 @@ int kernsh_dump_elf_pid(pid_t pid, const char *filename)
  * @param mode The mode to write into the buffer
  * @return 0 on success, -1 on error
  */
-int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
+asmlinkage int kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -190,7 +190,7 @@ int asmlinkage kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
  * @param mode The mode to write into the buffer
  * @return len on success, -1 on error
  */
-int asmlinkage kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
+asmlinkage int kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;

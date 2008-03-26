@@ -79,8 +79,9 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *);
 
 /* core.c */
-int		mjr_analyse(mjrsession_t *sess, int flags);
+int		mjr_analyse(mjrsession_t *sess, elfsh_Addr addr, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
+int	        mjr_analyse_finished(mjrsession_t *sess);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);
