@@ -192,3 +192,35 @@ void	mips_convert_format_mov(struct s_mips_decode_mov *opcode,
   }
 
 }
+
+/**
+ * @fn void    mips_convert_format_cop1x(struct s_mips_decode_mov *opcode, u_char *buf)
+ * @brief Convert COP1X instruction.
+ *
+ * Fill structure for MIPS COP1X instruction.
+ *
+ * @param opcode Pointer to structure which will be fill.
+ * @param buf Pointer to data -> instruction.
+ */
+void	mips_convert_format_cop1x(struct s_mips_decode_cop1x *opcode,
+			      u_char *buf)
+{
+  u_int32_t	converted;
+
+  if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
+     memcpy(opcode, buf, 4);
+  } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
+     memcpy(&converted, buf, 4);
+     opcode->op  = (converted >> 26) & 0x3F;
+     opcode->bs  = (converted >> 21) & 0x1F;
+     opcode->in  = (converted >> 16) & 0x1F;
+     opcode->f1  = (converted >> 11) & 0x1F;
+     opcode->f2  = (converted >> 6) & 0x1F;
+     opcode->fn  = (converted >> 3) & 0x3;
+     opcode->fmt = (converted >> 0) & 0x3;
+  } else {
+     printf("[CONV_MOV] Where am I ?!?!?!\n");
+     exit(-1);
+  }
+
+}

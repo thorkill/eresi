@@ -91,7 +91,7 @@ struct s_asm_instr
   /* number of operand */
   int nb_op;
   /* Array of operands */
-  asm_operand	op[3];
+  asm_operand	op[4];
   /* instruction/operands full lengh */
   u_int len;   
 };

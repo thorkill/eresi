@@ -23,7 +23,5 @@ int asm_mips_operand_fetch(asm_operand *op, u_char *opcode, int otype,
     	     otype);
   }
 
-//  op->name = asm_sparc_get_op_name(op);
-
   return (ret);
 }

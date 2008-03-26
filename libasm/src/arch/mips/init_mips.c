@@ -126,7 +126,10 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 	    }
 	 } while(0);
          break;
+
       case MIPS_OPCODE_COP1X:
+
+         dim[1] = converted & 0x3F;
          break;
 
    }

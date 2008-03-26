@@ -34,7 +34,7 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 
         case ASM_MIPS_OTYPE_REGISTER:
 
-           snprintf(temp[i],sizeof(temp[i]),(i) ? ",%s" : "%s",e_mips_registers[op->baser].ext_mnemonic);
+           snprintf(temp[i],sizeof(temp[i]),(i) ? ",%s" : "%s",(op->regset) ? e_mips_registers[op->baser].fpu_mnemonic : e_mips_registers[op->baser].ext_mnemonic);
            break;
 
         case ASM_MIPS_OTYPE_IMMEDIATE:
@@ -61,7 +61,7 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 
         case ASM_MIPS_OTYPE_REGBASE:
 
-           snprintf(temp[i],sizeof(temp[i]),"(%s)",e_mips_registers[op->baser].ext_mnemonic);
+           snprintf(temp[i],sizeof(temp[i]),"(%s)",(op->regset) ? e_mips_registers[op->baser].fpu_mnemonic : e_mips_registers[op->baser].ext_mnemonic);
 	   break;
 
      }

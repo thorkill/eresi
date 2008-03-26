@@ -21,6 +21,8 @@
 #define ASM_CONFIG_MIPS_STANDARD_REGISTERS 0
 #define ASM_CONFIG_MIPS_EXTENDED_REGISTERS 1
 
+#define ASM_MIPS_REG_FPU ASM_CONFIG_MIPS_EXTENDED_REGISTERS
+
 char	*asm_mips_display_instr(asm_instr *, int);
 void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf);
 void    mips_convert_format_i(struct s_mips_decode_imm  *opcode, u_char *buf);
@@ -28,6 +30,7 @@ void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf);
 void    mips_convert_format_t(struct s_mips_decode_trap *opcode, u_char *buf);
 void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf);
 void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf);
+void    mips_convert_format_cop1x(struct s_mips_decode_cop1x *opcode, u_char *buf);
 
 int	asm_fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
 
@@ -339,8 +342,36 @@ enum COP2_func {
    MIPS_OPCODE_MT = Ob(00100),
    MIPS_OPCODE_DMT,
    MIPS_OPCODE_CT,
-   MIPS_OPCODE_BC = Ob(01000),
+   MIPS_OPCODE_BC = Ob(01000)
 };
+
+enum COP1X_func {
+   MIPS_OPCODE_LWXC1 = Ob(000000),
+   MIPS_OPCODE_LDXC1,
+   MIPS_OPCODE_LUXC1 = Ob(000101),
+   MIPS_OPCODE_SWXC1 = Ob(001000),
+   MIPS_OPCODE_SDXC1,
+   MIPS_OPCODE_SUXC1 = Ob(001101),
+   MIPS_OPCODE_PREFX = Ob(001111),
+   MIPS_OPCODE_ALNV_PS = Ob(011110),
+
+   MIPS_OPCODE_MADD_S = Ob(100000),
+   MIPS_OPCODE_MADD_D,
+   MIPS_OPCODE_MADD_PS = Ob(100110),
+
+   MIPS_OPCODE_MSUB_S = Ob(101000),
+   MIPS_OPCODE_MSUB_D,
+   MIPS_OPCODE_MSUB_PS = Ob(101110),
+   
+   MIPS_OPCODE_NMADD_S = Ob(110000),
+   MIPS_OPCODE_NMADD_D,
+   MIPS_OPCODE_NMADD_PS = Ob(110110),
+
+   MIPS_OPCODE_NMSUB_S = Ob(111000),
+   MIPS_OPCODE_NMSUB_D,
+   MIPS_OPCODE_NMSUB_PS = Ob(111110)
+};
+
 
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
@@ -540,9 +571,30 @@ enum e_mips_instr_types
    ASM_MIPS_MTC2,
    ASM_MIPS_BC2FL,
    ASM_MIPS_BC2TL,
+
+   /* COP1X Instructions */
+   ASM_MIPS_LWXC1,
+   ASM_MIPS_LDXC1,
+   ASM_MIPS_LUXC1,
+   ASM_MIPS_SWXC1,
+   ASM_MIPS_SDXC1,
+   ASM_MIPS_SUXC1,
+   ASM_MIPS_PREFX,
+   ASM_MIPS_ALNV_PS,
+   ASM_MIPS_MADD_S,
+   ASM_MIPS_MADD_D,
+   ASM_MIPS_MADD_PS,
+   ASM_MIPS_MSUB_S,
+   ASM_MIPS_MSUB_D,
+   ASM_MIPS_MSUB_PS,
+   ASM_MIPS_NMADD_S,
+   ASM_MIPS_NMADD_D,
+   ASM_MIPS_NMADD_PS,
+   ASM_MIPS_NMSUB_S,
+   ASM_MIPS_NMSUB_D,
+   ASM_MIPS_NMSUB_PS,
    /*TODO:
     * - FPU insns
-    * - COP2 insns
     * - privileged insns
     * */
 
@@ -625,6 +677,7 @@ struct e_mips_register
 {
   const char *ext_mnemonic;
   const char *mnemonic;
+  const char *fpu_mnemonic;
   e_mips_register_type code;
 };
 
@@ -835,3 +888,27 @@ int asm_mips_mfc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_mtc2(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_bc2fl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_bc2tl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+
+// COP1X functions...
+
+int asm_mips_lwxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ldxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_luxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_swxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_suxc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_prefx(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_alnv_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_madd_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_madd_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_madd_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_msub_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_msub_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_msub_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmadd_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmadd_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmadd_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmsub_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmsub_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_nmsub_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

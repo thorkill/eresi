@@ -81,4 +81,18 @@ struct s_mips_decode_cop2
   u_int32_t	sl:3;
 };
 
+/**
+ * Structure used to decode COP1X format instructions
+ */
+struct s_mips_decode_cop1x
+{
+  u_int32_t	op:6;
+  u_int32_t	bs:5;
+  u_int32_t	in:5;
+  u_int32_t	f1:5;
+  u_int32_t	f2:5;
+  u_int32_t	fn:3;
+  u_int32_t	fmt:3;
+};
+
 #endif
