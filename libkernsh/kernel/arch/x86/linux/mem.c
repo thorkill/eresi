@@ -40,7 +40,7 @@ asmlinkage int kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
       
       sz = min_t(unsigned long, sz, len);
       
-      ptr = xlate_dev_mem_ptr(p);
+      ptr = __va(p);
       
 #if __DEBUG_LIBKERNSH_KERNEL__
       printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
@@ -111,7 +111,7 @@ asmlinkage int kernsh_write_mem(unsigned long addr, const char *buffer, int len,
        * uncached, then it must also be accessed uncached
        * by the kernel or data corruption may occur
        */
-      ptr = xlate_dev_mem_ptr(p);
+      ptr = __va(p);
       
       switch(mode)
 	{
