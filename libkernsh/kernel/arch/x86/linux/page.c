@@ -24,7 +24,9 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 
   page_at_addr = NULL;
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_get_page_from_task ENTER !!\n");
+#endif
 
   task = find_task_by_pid(pid);
 
@@ -54,7 +56,10 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
   spin_lock(&mm->page_table_lock);
   task_unlock(task);
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PGD ENTER\n");
+#endif
+
   pgd = pgd_offset(mm, addr);
   if (pgd_none(*pgd))
     {
@@ -67,9 +72,12 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
       pgd_clear(pgd);
       goto kernsh_get_page_from_task_error;
     }
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PGD EXIT\n");
 
   printk(KERN_ALERT "[+] PUD ENTER\n");
+#endif
+
   pud = pud_offset(pgd, addr);
   if (pud_none(*pud))
     {
@@ -82,9 +90,12 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
       pud_clear(pud);
       goto kernsh_get_page_from_task_error;
     }
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PUD EXIT\n");
 
   printk(KERN_ALERT "[+] PMD ENTER\n");
+#endif
+
   pmd = pmd_offset(pud, addr);
   if (pmd_none(*pmd))
     {
@@ -96,17 +107,21 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
       pmd_clear(pmd);
       goto kernsh_get_page_from_task_error;
     }
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PMD EXIT\n");
 
   printk(KERN_ALERT "[+] PTE ENTER\n");
+#endif
+
   pte = pte_offset_kernel(pmd, addr);
   if (!pte_present(*pte)) 
     {
       printk(KERN_ALERT "[-] PTE_PRESENT\n");
       goto kernsh_get_page_from_task_error;
     }
-
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PTE EXIT\n");
+#endif
 
   page_at_addr = (struct page *)pte_page(*pte);
 
@@ -116,7 +131,9 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
   atomic_dec(&mm->mm_users);
   task_unlock(task);
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_get_page_from_task EXIT !!\n");
+#endif
 
   return page_at_addr;
 }

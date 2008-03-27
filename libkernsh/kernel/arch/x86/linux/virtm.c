@@ -41,7 +41,9 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
   if (filename == NULL || strlen(filename) == 0)
     return -1;
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "DUMP pid %d @ %s\n", pid, filename);
+#endif
 
   task = find_task_by_pid(pid);
   if (task == NULL)
@@ -71,12 +73,14 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
     {
       for(vma = mm->mmap; vma; vma = vma->vm_next)
 	{
+#if __DEBUG_LIBKERNSH_KERNEL__
 	  printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
 		 vma->vm_start, 
 		 vma->vm_end,
 		 vma->vm_flags,
 		 (unsigned long)vma->vm_file);
-	 
+#endif
+
 	  if((vma->vm_flags & VM_EXECUTABLE) && 
 	     (vma->vm_flags & VM_EXEC) &&
 	     (vma->vm_file))
@@ -127,6 +131,7 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
   struct page *mypage;
   void *kaddr;
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_read_virtm ENTER !!\n");
 
   printk(KERN_ALERT "Kernsh Read Virtm PID %d @ 0x%lx strlen(%d) in 0x%lx\n", 
@@ -134,6 +139,7 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
 	 addr, 
 	 len, 
 	 (unsigned long)buffer);
+#endif
  
   if (addr <= 0)
     {
@@ -156,7 +162,10 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
       return -EFAULT;
     }
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] KMAP_ATOMIC\n");
+#endif
+
   kaddr = kmap_atomic(mypage, smp_processor_id());
   
   switch(mode)
@@ -175,9 +184,11 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
     }
 
   kunmap_atomic(kaddr, smp_processor_id());
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
 
   printk(KERN_ALERT "[+] kernsh_read_virtm EXIT !!\n");
+#endif
 
   return len;
 }
@@ -197,6 +208,7 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
   struct page *mypage;
   void *kaddr;
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_write_virtm ENTER !!\n");
 
   printk(KERN_ALERT "Kernsh Write Virtm PID %d @ 0x%lx strlen(%d) to 0x%lx\n", 
@@ -204,6 +216,7 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
 	 addr, 
 	 len, 
 	 (unsigned long)buffer);
+#endif
  
   if (addr <= 0)
     {
@@ -231,8 +244,11 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
       printk(KERN_ALERT "[-] PAGE RESERVED\n");	
       return -EFAULT;
     }
-    
+
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] KMAP_ATOMIC\n");
+#endif
+
   kaddr = kmap_atomic(mypage, smp_processor_id());
   
   switch(mode)
@@ -251,9 +267,11 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
     }
 
   kunmap_atomic(kaddr, smp_processor_id());
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] KUNMAP_ATOMIC\n");
 
   printk(KERN_ALERT "[+] kernsh_write_virtm EXIT !!\n");
+#endif
 
   return len;
 }

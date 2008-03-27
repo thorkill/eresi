@@ -163,8 +163,8 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
 		       "Failed to initialize hash", -1);
 	}
 
-      hash_add(h, "vm_start", (void *)vst->vm_start);
-      hash_add(h, "vm_end",   (void *)vst->vm_end);
+      hash_add(h, LIBKERNSH_STRING_VM_START, (void *)vst->vm_start);
+      hash_add(h, LIBKERNSH_STRING_VM_END,   (void *)vst->vm_end);
 
       XFREE(__FILE__, __FUNCTION__, __LINE__, vst);
 
@@ -266,8 +266,8 @@ int kernsh_kdump_vma(pid_t pid)
 	  tret = fct(pid, h);
 	  ret += tret;
 
-	  meta_start = (int)hash_get(h, "vm_start");
-	  meta_end = (int)hash_get(h, "vm_end");
+	  meta_start = (int)hash_get(h, LIBKERNSH_STRING_VM_START);
+	  meta_end = (int)hash_get(h, LIBKERNSH_STRING_VM_END);
 	  meta_size = meta_end - meta_start;
 
 	  snprintf(meta, sizeof(meta), "%s[%d] 0x%lx ... 0x%lx strlen(0x%lx) ==> [0x%lx]\n", 
@@ -320,8 +320,8 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
   waitpid(pid, NULL, WUNTRACED);
 #endif
 
-  vm_start = (int)hash_get(h, "vm_start");
-  vm_end = (int)hash_get(h, "vm_end");
+  vm_start = (int)hash_get(h, LIBKERNSH_STRING_VM_START);
+  vm_end = (int)hash_get(h, LIBKERNSH_STRING_VM_END);
 
   size = vm_end - vm_start;
 
@@ -380,8 +380,8 @@ int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
 
   ret = 0;
 
-  vm_start = (int)hash_get(h, "vm_start");
-  vm_end = (int)hash_get(h, "vm_end");
+  vm_start = (int)hash_get(h, LIBKERNSH_STRING_VM_START);
+  vm_end = (int)hash_get(h, LIBKERNSH_STRING_VM_END);
 
   size = vm_end - vm_start;
 

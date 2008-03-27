@@ -3,6 +3,8 @@
 
 #include "libkernsh-virtm.h"
 
+#define __DEBUG_LIBKERNSH_KERNEL__                        1
+
 #if defined(__linux__)
 #include <linux/linkage.h>
 #endif

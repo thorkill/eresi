@@ -10,6 +10,9 @@
 
 #define PROC_ENTRY_KERNSH_VIRTM_MAX PROC_ENTRY_KERNSH_VIRTM
 
+#define LIBKERNSH_STRING_VM_START	"vm_start"
+#define LIBKERNSH_STRING_VM_END		"vm_end"
+
 enum libkernsh_e_virtm_action_type
   {
     LIBKERNSH_VIRTM_READ_MEM,

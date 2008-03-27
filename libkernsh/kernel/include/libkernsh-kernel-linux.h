@@ -8,9 +8,11 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <asm/uaccess.h>
+#include <asm/io.h>
 #include <linux/proc_fs.h>
 #include <linux/threads.h>
 #include <linux/string.h>
 #include <linux/bio.h>
+
 
 #endif /* __LIBKERNSH_KERNEL_LINUX_H_ */

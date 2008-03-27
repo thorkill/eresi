@@ -20,7 +20,9 @@ asmlinkage int kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
   char *ptr; 
   unsigned long p = addr;
 
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_read_mem ENTER !!\n");
+#endif
 
   if (!valid_phys_addr_range(p, len))
     return -EFAULT;
@@ -40,8 +42,10 @@ asmlinkage int kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
       
       ptr = xlate_dev_mem_ptr(p);
       
+#if __DEBUG_LIBKERNSH_KERNEL__
       printk(KERN_ALERT "SZ %d PTR 0x%lx\n", sz, (unsigned long)ptr);
-      
+#endif
+
       switch(mode)
 	{
 	case LIBKERNSH_KERNEL_MODE :
@@ -59,7 +63,9 @@ asmlinkage int kernsh_read_mem(unsigned long addr, char *buffer, int len, int mo
       read += sz;
     }
   
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_read_mem EXIT !!\n");
+#endif
 
   return read;
 }
@@ -79,7 +85,9 @@ asmlinkage int kernsh_write_mem(unsigned long addr, const char *buffer, int len,
   unsigned long copied;
   void *ptr;
   
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_write_mem ENTER !!\n");
+#endif
 
   if (!valid_phys_addr_range(p, len))
     return -EFAULT;
@@ -131,7 +139,9 @@ asmlinkage int kernsh_write_mem(unsigned long addr, const char *buffer, int len,
       written += sz;
     }
   
+#if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_write_mem EXIT !!\n");
+#endif
 
   return written;
 }
