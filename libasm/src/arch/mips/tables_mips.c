@@ -14,7 +14,7 @@
 
 /**
  * @struct e_mips_instrs
- * @brieg Fill in "struct e_mips_instr"
+ * @brief Fill in "struct e_mips_instr"
  *
  * This structure have filled "struct e_mips_instr"
  * and it is used in register vectors for opcodes.
@@ -310,7 +310,7 @@ struct e_mips_instr e_mips_instrs [] = {
 
 /**
  * @struct e_mips_registers
- * @brieg Fill in "struct e_mips_register"
+ * @brief Fill in "struct e_mips_register"
  *
  * This structure have filled "struct e_mips_instr"
  *

@@ -36,10 +36,6 @@ SRCS_libasm 	=				\
 		src/arch/mips/mips_convert.c	\
 		src/arch/mips/register_mips.c
 
-#		src/arch/mips/mips_convert.c	\
-#		src/arch/mips/mips_decode.c	\
-
-
 
 
 OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
@@ -108,7 +104,7 @@ docs:
 	doxygen doc/doxygen.conf
 
 mydisasm:
-	$(CC) -g3 -I../libelfsh/include/ -I../elibc/include/ -I../libaspect/include/ -I./include/ \
+	$(CC) -g3 -I../libelfsh/include/ -I../libaspect/include/ -I./include/ \
 	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
 	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32
 

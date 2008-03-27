@@ -22,12 +22,12 @@
 char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 {
   unsigned int i;
-  static char bufer[40];
-  char temp[3][12];
+  static char bufer[80];
+  char temp[4][20];
 
   asm_operand *op;
   memset(bufer,0x0,sizeof(bufer));
-  for (i=0;i<3;i++) {
+  for (i=0;i<4;i++) {
      op = &ins->op[i];
      memset(&temp[i][0],0x0,sizeof(temp[i]));
      switch(op->type) {
@@ -67,7 +67,7 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
      }
   }
 
-  for (i=0;i<3;i++)
+  for (i=0;i<4;i++)
      if (temp[i][0])
         strcat(bufer,temp[i]);
 
@@ -85,7 +85,7 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
  */
 char *asm_mips_display_instr(asm_instr *ins,int addr)
 {
-   static char buf[32+40];
+   static char buf[32+80];
    char *tmp = asm_mips_display_operand(ins,0x0,addr);
 
    bzero(buf,sizeof(buf));
