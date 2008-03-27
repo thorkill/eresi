@@ -7,9 +7,11 @@ all:
 	$(MAKE) -C arch/x86
 
 clean:
+	@$(RM) *.o *.ko
 	$(MAKE) -C arch/x86 clean
 
 fclean:
+	@$(RM) *.o *.ko
 	$(MAKE) -C arch/x86 fclean
 
 endif

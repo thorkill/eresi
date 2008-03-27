@@ -443,11 +443,11 @@ int		cmd_kmem_info()
   val = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
   switch (val)
     {
-    case LIBKERNSH_PROC_MODE:
+    case LIBKERNSH_KERNEL_MODE:
       snprintf(buff, sizeof(buff), 
 	       "VIRTM : PROC\n");
       break;
-    case LIBKERNSH_SYSCALL_MODE :
+    case LIBKERNSH_USER_MODE :
       snprintf(buff, sizeof(buff), 
 	       "VIRTM : SYSCALL\n");
       break;

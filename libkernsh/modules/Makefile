@@ -1,27 +1,17 @@
+ARCH	:= $(shell uname -m | sed -e s/i.86/x86/)
 OS	:= $(shell uname -s | sed -e s/Linux*/Linux/)
-RELEASE	:= $(shell uname -r | sed -e s/2.6.*/2.6/ -e s/2.4.*/2.4/)
+RELEASE := $(shell uname -r | sed -e s/2.6.*/2.6/ -e s/2.4.*/2.4/)
 
-ifeq ($(OS),Linux)
-ifeq ($(RELEASE),2.6)
-
-EXTRA_CFLAGS	:= 	-g3 -Wall -I/usr/include -I$(src)/include \
-			-I$(src)/../include -I$(src)/../kernel/include \
-			-DERESI32 -Wno-strict-prototypes
-
-EXTRAOBJ	:= ../kernel/libkernsh-kernel.o
-
-kernsh-virtm-linux-y	:= kernsh-virtm.o $(EXTRAOBJ)
-
-obj-m	:= kernsh-virtm-linux.o 
-
+ifeq ($(ARCH),x86)
 all:
-	$(MAKE) -C /lib/modules/`uname -r`/build M=`pwd`/
+	$(MAKE) -C arch/x86
 
 clean:
-	@$(RM) *.o *~ \#* *\# .\#* *.symvers *.mod.c
-	@$(RM) include/*~ include/\#* include/*\# include/.\#*
+	@$(RM) *.o *.ko
+	$(MAKE) -C arch/x86 clean
 
-fclean: clean
-	@$(RM) *.ko
-endif
+fclean:
+	@$(RM) *.o *.ko
+	$(MAKE) -C arch/x86 fclean
+
 endif
