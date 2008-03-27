@@ -7,6 +7,7 @@
 **
 */
 #include "libkernsh-kernel.h"
+#include "libkernsh-kernel-linux.h"
 
 /**
  * @brief Convert a string to an integer
@@ -38,7 +39,7 @@ int kernsh_atoi(const char *name)
  * @param mode The mode to write into the buffer
  * @return 0 on success, -1 on error
  */
-asmlinkage int kernsh_task_pid(pid_t pid, char *buffer, int len, int mode)
+asmlinkage int kernsh_task_pid(int pid, char *buffer, int len, int mode)
 {
   kvirtm_virtual_task_struct_t kvtst;
   int write, cur_write;
@@ -140,7 +141,7 @@ int kernsh_view_vmaps(pid_t pid)
  * @param count 
  * @return 0 on success, -1 on error
  */
-int valid_phys_addr_range(unsigned long addr, size_t count)
+int valid_phys_addr_range(unsigned long addr, int count)
 {
   if (addr + count > __pa(high_memory))
     return 0;

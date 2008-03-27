@@ -4,6 +4,7 @@
 **
 */
 #include "libkernsh-kernel.h"
+#include "libkernsh-kernel-linux.h"
 
 /**
  * @brief Get a page of a process id
@@ -11,8 +12,9 @@
  * @param addr The addr to get the page
  * @return page on success, NULL on error
  */
-struct page *kernsh_get_page_from_task(struct task_struct *task, unsigned long addr)
+struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 {
+  struct task_struct *task;
   struct mm_struct *mm;
   struct page *page_at_addr;
   pgd_t * pgd;
@@ -23,6 +25,8 @@ struct page *kernsh_get_page_from_task(struct task_struct *task, unsigned long a
   page_at_addr = NULL;
 
   printk(KERN_ALERT "[+] kernsh_get_page_from_task ENTER !!\n");
+
+  task = find_task_by_pid(pid);
 
   if (task == NULL)
     {

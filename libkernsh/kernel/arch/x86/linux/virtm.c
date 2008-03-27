@@ -5,6 +5,7 @@
 */
 
 #include "libkernsh-kernel.h"
+#include "libkernsh-kernel-linux.h"
 
 /*
  * Dictracy Loadable Kernel Module
@@ -26,7 +27,7 @@
  * @param filename The filename to write elf binary
  * @return 0 on success, -1 on error
  */
-int kernsh_dump_elf_pid(pid_t pid, const char *filename)
+int kernsh_dump_elf_pid(int pid, const char *filename)
 {
   struct task_struct *task;
   struct file *file;
@@ -120,7 +121,7 @@ int kernsh_dump_elf_pid(pid_t pid, const char *filename)
  * @param mode The mode to write into the buffer
  * @return 0 on success, -1 on error
  */
-asmlinkage int kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len, int mode)
+asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -148,7 +149,7 @@ asmlinkage int kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
       return -1;
     }
   
-  mypage = kernsh_get_page_from_task(task, addr);
+  mypage = kernsh_get_page_from_pid(pid, addr);
   if (mypage == NULL)
     {
       printk(KERN_ALERT "[-] PAGE NULL\n");	
@@ -190,7 +191,7 @@ asmlinkage int kernsh_read_virtm(pid_t pid, unsigned long addr, char *buffer, in
  * @param mode The mode to write into the buffer
  * @return len on success, -1 on error
  */
-asmlinkage int kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buffer, int len, int mode)
+asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -218,7 +219,7 @@ asmlinkage int kernsh_write_virtm(pid_t pid, unsigned long addr, const char *buf
       return -1;
     }
   
-  mypage = kernsh_get_page_from_task(task, addr);
+  mypage = kernsh_get_page_from_pid(pid, addr);
   if (mypage == NULL)
     {
       printk(KERN_ALERT "[-] PAGE NULL\n");	

@@ -55,7 +55,7 @@ typedef struct s_kvirtm_action
   int action;
   unsigned long addr;
   int len;
-  pid_t pid;
+  int pid;
   char filename[256];
 
 } kvirtm_action_t;

@@ -4,6 +4,7 @@
 **
 */
 #include "libkernsh-kernel.h"
+#include "libkernsh-kernel-linux.h"
 
 /**
  * @brief Read kernel memory

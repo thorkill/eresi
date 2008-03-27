@@ -1,3 +1,9 @@
+OS	:= $(shell uname -s | sed -e s/Linux*/Linux/)
+RELEASE	:= $(shell uname -r | sed -e s/2.6.*/2.6/ -e s/2.4.*/2.4/)
+
+ifeq ($(OS),Linux)
+ifeq ($(RELEASE),2.6)
+
 EXTRA_CFLAGS	:= 	-g3 -Wall -I/usr/include -I$(src)/include \
 			-I$(src)/../include -I$(src)/../kernel/include \
 			-DERESI32 -Wno-strict-prototypes
@@ -17,3 +23,5 @@ clean:
 
 fclean: clean
 	@$(RM) *.ko
+endif
+endif
