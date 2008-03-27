@@ -11,10 +11,63 @@
 */
 #include "libstderesi.h"
 
+/** 
+ * Display an element of a hash table
+ * @param h Hash table 
+ * @param key Hash key of object to be printed
+ */
+int		revm_table_display_element(hash_t *h, char *key, u_char inside)
+{
+  void		*data;
+  char		logbuf[BUFSIZ];
+  revmexpr_t	*newexpr;
+  aspectype_t	*type;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  data = hash_get(h, key);
+  if (h->type == ASPECT_TYPE_UNKNOW || !inside)
+    {
+      snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
+	       key, (elfsh_Addr) data);
+      revm_output(logbuf);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+  if (*key == REVM_VAR_PREFIX)
+    strncpy(logbuf, key, sizeof(logbuf));
+  else
+    snprintf (logbuf, sizeof(logbuf), "$%s", key);
+  newexpr = revm_expr_get(logbuf);
+  if (newexpr)
+    {
+      revm_output("\t");
+      revm_expr_print(logbuf);
+      revm_output("\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  revm_output("\t");
+  if (h->type == ASPECT_TYPE_EXPR)
+    {
+      newexpr = (elfsh_Addr) data;
+      revm_expr_print(newexpr->label);
+    }
+  else
+    {
+      type = aspect_type_get_by_id(h->type);
+      newexpr = revm_inform_type_addr(type->name, strdup(logbuf), (elfsh_Addr) data, NULL, 0, 1);
+      if (!newexpr)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to reflect hash element to expression", -1);
+      revm_expr_print(logbuf);
+    }
+  revm_output("\n");
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /** 
  * Display the content of a hash table  
- * @param name
+ * @param name Hash table name to display
  */
 int		revm_table_display_content(char *name)
 {
@@ -23,7 +76,6 @@ int		revm_table_display_content(char *name)
   int		keynbr;
   int		index;
   char		logbuf[BUFSIZ];
-  void		*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   h = hash_get(hash_hash, name);
@@ -41,17 +93,16 @@ int		revm_table_display_content(char *name)
 
   /* Display pointers */
   for (index = 0; index < keynbr; index++)
-    {
-      data = hash_get(h, keys[index]);
-      snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
-	       keys[index], (elfsh_Addr) data);
-      revm_output(logbuf);
-    }
+    revm_table_display_element(h, keys[index], 0);
+
   snprintf(logbuf, sizeof(logbuf), 
 	   "\n [*] Displayed %u entries of table %s \n\n", keynbr, name);
   revm_output(logbuf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
 
 
 /**
@@ -75,6 +126,76 @@ int		revm_table_display(hash_t *table, char *name)
   revm_output(logbuf);  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+/**
+ * Display the content of a hash table 
+ */
+static void	revm_tables_display()
+{
+  char		**keys;
+  int		keynbr;
+  int		index;
+  hash_t	*cur;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  revm_output("  .:: Registered tables \n\n");
+  keys = hash_get_keys(hash_hash, &keynbr);
+  for (index = 0; index < keynbr; index++)
+    {
+      cur = hash_get(hash_hash, keys[index]);
+      revm_table_display(cur, keys[index]);
+    }
+  revm_output("\n Type 'help tables' for more table details.\n\n");
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+
+
+/** 
+ * Display the content of all hash tables that match the regex 
+ * @param tableregx Regular expression matching table names
+ * @param elemregx Regular expression matching element keys
+ */
+static int	revm_table_display_regx2(char *tableregx, char *elemregx)
+{
+  regex_t	rx, ex;
+  int		keynbr, keynbr2;
+  char		**keys, **keys2;
+  int		index, index2;
+  hash_t	*cur;
+  u_int		match;
+  char		logbuf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (regcomp(&rx, tableregx, REG_EXTENDED) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to compute regex", -1);
+  if (regcomp(&ex, elemregx, REG_EXTENDED) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to compute regex", -1);
+
+  /* Look for matching tables */
+  keys = hash_get_keys(hash_hash, &keynbr);
+  for (match = index = 0; index < keynbr; index++)
+    if (!regexec(&rx, keys[index], 0, 0, 0))
+      {
+	cur = hash_get(hash_hash, keys[index]);
+	keys2 = hash_get_keys(cur, &keynbr2);
+	for (index2 = 0; index2 < keynbr2; index2++)
+	  if (!regexec(&ex, keys2[index2], 0, 0, 0))
+	    {
+	      match++;
+	      revm_table_display_element(cur, keys2[index2], 1);
+	    }
+      }
+  snprintf(logbuf, sizeof(logbuf), 
+	   "\n [*] Matched %u entries in all tables\n\n", match);
+  revm_output(logbuf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 
 
@@ -125,30 +246,6 @@ static int	revm_table_display_regx(char *regx)
 }
 
 
-
-/**
- * Display the content of a hash table 
- */
-static void	revm_tables_display()
-{
-  char		**keys;
-  int		keynbr;
-  int		index;
-  hash_t	*cur;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  revm_output("  .:: Registered tables \n\n");
-  keys = hash_get_keys(hash_hash, &keynbr);
-  for (index = 0; index < keynbr; index++)
-    {
-      cur = hash_get(hash_hash, keys[index]);
-      revm_table_display(cur, keys[index]);
-    }
-  revm_output("\n Type 'help tables' for more table details.\n\n");
-  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
-}
-
-
 /**
  *  Print and modify internal hash tables 
  */
@@ -168,6 +265,14 @@ int		cmd_tables()
       if (revm_table_display_regx(world.curjob->curcmd->param[0]) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to print matching tables", -1);
+      break;
+
+      /* Print an element from a table */
+    case 2:
+      if (revm_table_display_regx2(world.curjob->curcmd->param[0],
+				   world.curjob->curcmd->param[1]) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to print matching tables's elements", -1);
       break;
 
       /* Unknown mode */

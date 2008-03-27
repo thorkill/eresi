@@ -68,9 +68,7 @@ into Stop(addr:$curaddr)
 
 # nop											 		
 case instr(sem:n)
-pre profile enable warn
 into Nop(addr:$curaddr)
-post profile disable warn
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg)				 		
 # XXX: lack flags translation

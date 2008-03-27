@@ -77,7 +77,7 @@ int		cmd_analyse()
  else
    addr = 0;
 
- ret = mjr_analyse(&world.mjr_session, addr, 0);
+ ret = mjr_analyse(&world.mjr_session, 0, 0); //addr, 0);
  
  snprintf(logbuf, BUFSIZ - 1, " [*] Control Flow Analysis %s.\n",
 	  (!ret ? "completed successfully" : "failed"));
@@ -94,7 +94,7 @@ int		cmd_analyse()
  revm_output(logbuf);
 
  /* Now informing about all existing blocks and functions */
- curtype = aspect_type_get_by_name("container_t");
+ curtype = aspect_type_get_by_name("container");
  if (curtype)
    {
      keys = hash_get_keys(&world.mjr_session.cur->funchash, &nbr);
@@ -117,6 +117,7 @@ int		cmd_analyse()
 	 revm_inform_type_addr(curtype->name, logbuf, (elfsh_Addr) container, NULL, 0, 1);
        }
      hash_free_keys(keys);
+     revm_output(" [*] Reflected succesfully all basic blocks and function meta-data \n\n");
    }
  else
    revm_output(" [*] No reflection was performed (no container type definition found)\n\n");

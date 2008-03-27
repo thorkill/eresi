@@ -8,10 +8,10 @@
  #define __LIBSTDERESI_H_
 
 /* User defined configuration */
-#include <revm.h>
+#include "revm.h"
 
 /* Help strings */
-#include <libstderesi-help.h>
+#include "libstderesi-help.h"
 
 /* Commands */
 #define	CMD_DEFINE		"define"

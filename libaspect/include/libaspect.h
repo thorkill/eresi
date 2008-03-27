@@ -21,6 +21,9 @@
 #include <string.h>
 #include <strings.h>
 
+/* Debug flags */
+#define		__DEBUG_LIST__	1
+
 #ifdef  __BEOS__
  #include <image.h>
  #include <bsd_mem.h>

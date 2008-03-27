@@ -66,8 +66,12 @@ struct s_asm_op
 
 struct s_asm_instr 
 {
+  /* pointer to instruction buffer -- please let this field in first if using containers */
+  u_char *ptr_instr;
   /* internal processor structure */
   asm_processor	*proc;
+  /* instruction name */
+  char *name;
   /* instruction id */
   int instr;
   /* instruction type */
@@ -82,8 +86,6 @@ struct s_asm_instr
   int	flagsread;
   /* Pointer to instruction prefix (ia32 only)	*/
   void *ptr_prefix;  
-  /* pointer to instruction buffer */
-  u_char *ptr_instr;
   /* annul bit (sparc only) */
   int annul;
   /* prediction bit (sparc only) */

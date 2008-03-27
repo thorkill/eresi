@@ -48,13 +48,26 @@ int		container_linklists_create(container_t *container,
     {
     case CONTAINER_LINK_IN:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "inputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), -1);
-      elist_init(container->inlinks, strdup(bufname), container->type);
+      newlist = elist_find(bufname);
+      if (newlist)
+	container->inlinks = newlist;
+      else
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), -1);
+	  elist_init(container->inlinks, strdup(bufname), container->type);
+	}
+
       break;
     case CONTAINER_LINK_OUT:
       snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "outputs");
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), -1);
-      elist_init(container->outlinks, strdup(bufname), container->type);
+      newlist = elist_find(bufname);
+      if (newlist)
+	container->outlinks = newlist;
+      else
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), -1);
+	  elist_init(container->outlinks, strdup(bufname), container->type);
+	}
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -85,6 +98,9 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
 		 "Unknown container element type", NULL);  
 
   /* Make sure meta-data is initialized and contiguous with pointed data */
+  fprintf(stderr, "Allocating sizeof(container) + (%s type->size = %u) \n", 
+	  rtype->name, rtype->size);
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newcntnr, sizeof(container_t) + rtype->size, NULL);
   newcntnr->data = (char *) newcntnr + sizeof(container_t);
   newcntnr->type = type;

@@ -29,6 +29,7 @@ int	asm_read_instr(asm_instr *instr, u_char *buf,
   memset(instr, 0, sizeof (asm_instr));
   instr->proc = proc;
   to_ret = proc->fetch(instr, buf, len, proc);
+  instr->name = instr->proc->instr_table[instr->instr];
   
   /* Print debug information if requested */
   if ((int) config_get_data(CONFIG_USE_ASMDEBUG))

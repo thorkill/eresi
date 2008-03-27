@@ -16,6 +16,8 @@ hash_t  *hash_lists = NULL;
  */
 int elist_init(list_t *h, char *name, u_int type)
 {
+  list_t	*exist;
+
   NOPROFILER_IN();
   if (type >= aspect_type_nbr)
     {
@@ -23,13 +25,19 @@ int elist_init(list_t *h, char *name, u_int type)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Unable to initialize list", -1);
     }
-  if (elist_find(name))
+  exist = elist_find(name);
+  if (exist)
     {
-#if __DEBUG__
-      fprintf(stderr, "List %s already exists : NOT CREATING \n", name);
+#if 1 //__LIST_DEBUG__
+      fprintf(stderr, "DEBUG: List %s (%p) already exists in hash with addr %p : NOT CREATING \n", 
+	      name, h, exist);
 #endif
       NOPROFILER_ROUT(1);
     }
+#if 1 //__LIST_DEBUG__
+  else
+    fprintf(stderr, "DEBUG: List %s allocated at %p does not exists in hash : CREATING \n", name, h);
+#endif
 
   bzero(h, sizeof(list_t));
   h->type   = type;
@@ -131,6 +139,8 @@ void		elist_destroy(list_t *h)
   int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  fprintf(stderr, "DEBUG: Destroying list %s at addr %p \n", h->name, h);
 
   /* We should not destroy the elements as they might be in other hashes */
   keys = elist_get_keys(h, &keynbr);
@@ -138,6 +148,7 @@ void		elist_destroy(list_t *h)
     XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   if (keys)
     elist_free_keys(keys);
+  hash_del(hash_lists, h->name);
   XFREE(__FILE__, __FUNCTION__, __LINE__, h);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

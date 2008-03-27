@@ -544,21 +544,18 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
 	  size = alloca(50);
 	  snprintf(size, 50, "%s", revm_colorwarn(" = "));
 	}
-
-      /* Format the offset */
-      snprintf(offset, sizeof(offset), "@ off(%s)", 
-	       revm_colornumber("%u", typeoff));
       
       /* Print everything in order */
       revm_output(buf);
       revm_output(size);
       if (expr->value)
 	revm_object_print(expr->value);
-      revm_output(offset);
 
-      /* Next field ! */
+      /* Next field ! Print offset .. */
       if (iter && expr->next)
 	{
+	  snprintf(offset, sizeof(offset), "@ off(%s)", revm_colornumber("%u", typeoff));
+	  revm_output(offset);
 	  revm_output(revm_colorwarn(",\n"));
 	  revm_output(pad);      
 

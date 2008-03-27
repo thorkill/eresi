@@ -517,6 +517,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       break;
 
     case ASPECT_TYPE_INT:
+    intcopy:
       val32 = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
       if (o1->immed)
 	o1->immed_val.word = val32;
@@ -535,9 +536,11 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 		     "Unable to set integer variable", -1);
       break;
 
+    case ASPECT_TYPE_LONG:
+      if (sizeof(u_long) == 4)
+	goto intcopy;
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-    case ASPECT_TYPE_LONG:
     ptrcopy:
       val64 = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       if (o1->immed)
@@ -650,24 +653,37 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
     case ASPECT_TYPE_BYTE:
       bval2 = (o2->immed ? o2->immed_val.byte : o2->get_obj(o2->parent));
       *val  = (o1->immed ? o1->immed_val.byte : o1->get_obj(o1->parent));
+      *val = *val & 0x000000FF;
       *val -= bval2;
       break;      
 
     case ASPECT_TYPE_SHORT:
       hval2  = (o2->immed ? o2->immed_val.half : o2->get_obj(o2->parent));
       *val  = (o1->immed ? o1->immed_val.half : o1->get_obj(o1->parent));
+      *val = *val & 0x0000FFFF;
       *val -= hval2;
       break;      
 
     case ASPECT_TYPE_INT:
       ival2  = (o2->immed ? o2->immed_val.word : o2->get_obj(o2->parent));
       *val  = (o1->immed ? o1->immed_val.word : o1->get_obj(o1->parent));
+      *val = *val & 0xFFFFFFFF;
       *val -= ival2;
+      break;      
+
+    case ASPECT_TYPE_LONG:
+      val2  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
+      *val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
+      if (sizeof(u_long) == 4)
+	{
+	  val2 = val2 & 0xFFFFFFFF;
+	  *val = *val & 0xFFFFFFFF;
+	}
+      *val -= val2;
       break;      
 
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-    case ASPECT_TYPE_LONG:
       val2  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       *val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
       *val -= val2;

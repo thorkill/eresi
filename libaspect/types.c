@@ -28,9 +28,9 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_STR     , sizeof(u_long)	},
     {ASPECT_TYPENAME_SHORT   , sizeof(u_short)	},
     {ASPECT_TYPENAME_INT     , sizeof(u_int)	},
-    {ASPECT_TYPENAME_LONG    , sizeof(u_long)	},
-    {ASPECT_TYPENAME_DADDR   , sizeof(u_long)	},
-    {ASPECT_TYPENAME_CADDR   , sizeof(u_long)	},
+    {ASPECT_TYPENAME_LONG    , sizeof(u_long) },
+    {ASPECT_TYPENAME_DADDR   , sizeof(u_long) },
+    {ASPECT_TYPENAME_CADDR   , sizeof(u_long) },
     {ASPECT_TYPENAME_BIT     , sizeof(u_char)	},
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
@@ -443,7 +443,7 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		{
 		  isptr = 1;
 		  childtype = newtype;
-		  off = sizeof(unsigned long);
+		  off = sizeof(u_long);
 		}
 	      
 	      /* If we point on a unknown type, mark is as unknown */
@@ -465,7 +465,7 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		}
 	    }
 	  else
-	    off = (isptr ? sizeof(unsigned long) : childtype->size);
+	    off = (isptr ? sizeof(u_long) : childtype->size);
 	}
       
       /* Copy an existing base type for this child and change type offset */

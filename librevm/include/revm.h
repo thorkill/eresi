@@ -48,9 +48,10 @@
  #include "../../libregex/regex.h"
 #endif
 
-#include <libelfsh.h>
-//#include <libetrace.h>
-#include <libedfmt.h>
+#include "libelfsh.h"
+//#include "libetrace.h"
+#include "libedfmt.h"
+#include "libaspect.h"
 
 #if defined(ELFSHNET)
  #include <libdump.h>

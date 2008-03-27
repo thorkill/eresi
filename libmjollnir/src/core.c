@@ -15,24 +15,20 @@
  * @param vaddr Entry point address for analysis
  * @param len Size of code to analyse
  */
-static int mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr vaddr, int len)
+static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr vaddr, int len)
 {
   asm_instr	instr;
-  unsigned long curr, ilen;
-  int		limit;
-  u_int		curiter;
+  unsigned int	curr, ilen;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we have reached the limit bound */
-  limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
+  //limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
+  // Please use this config variable when doing CFG recursive analysis
 
   /* Read all instructions of the section */
-  for (curiter = 0; curr < len; curiter++) 
+  for (curr = 0; curr < len; curr += ilen)
     {
-      if (curiter >= limit)
-        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
       ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
       
 #if __DEBUG_READ__
@@ -45,11 +41,8 @@ static int mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr v
 	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
 	} 
       else
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "asm_read_instr returned <= 0 lenght", -1);
-	}
-      curr += ilen;
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "asm_read_instr returned <= 0 lenght", -1);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -170,29 +163,6 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
   if (mjr_analyse_code(sess, ptr, vaddr, len) < 0)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during code analysis", -1);
- 
-  /*  
-      while (curr < len) 
-      {
-      ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
-      
-      #if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", __FUNCTION__, __FILE__, __LINE__, ilen);
-      #endif
-      
-      if (ilen > 0) 
-      {
-      mjr_history_shift(sess->cur, instr, vaddr + curr);
-      mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
-      } 
-      else
-      {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-      "asm_read_instr returned <= 0 lenght", -1);
-      }
-      curr += ilen;
-      }
-  */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

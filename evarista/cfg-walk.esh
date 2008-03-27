@@ -33,6 +33,9 @@ print $block
 #tables expressions
 print $block.outlinks
 
+tables expressions 100A34
+exec sleep 10
+
 foreach $nextblock of $block.outlinks
 
   print *nextblock

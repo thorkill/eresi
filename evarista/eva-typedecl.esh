@@ -10,7 +10,7 @@ type hash             = ent:*listent size:int elmnbr:int type:int linearity:byte
 type container        = id:int type:int nbrinlinks:int nbroutlinks:int inlinks:*list outlinks:*list data:long 
 type op               = len:int ptr:*byte sem:int name:string size:int content:int regset:int prefix:int imm:int baser:int indexr:int sbaser:string sindex:string address_space:int scale:int
 
-type instr::container = proc%4 icode:int sem:int prefix:int spdiff:int flagswritten:int flagsread:int ptr_prefix:*byte ptr_instr:*byte annul:int prediction:int nb_op:int op1:op op2:op op3:op len:int 
+type instr::container = ptrins:*byte proc%4 name:string icode:int sem:int prefix:int spdiff:int flagswritten:int flagsread:int ptr_prefix:*byte annul:int prediction:int nb_op:int op1:op op2:op op3:op len:int 
 type bloc::container  = vaddr:long size:int symoff:int seen:byte
 type func::container  = vaddr:long size:int name:byte[64] first:*bloc md5:byte[34]
 
