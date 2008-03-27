@@ -202,7 +202,7 @@ void		*elfsh_get_symtab(elfshobj_t *file, int *num)
  * @return
  */
 char		*elfsh_reverse_symbol(elfshobj_t	*file,
-				      elfsh_Addr       	value,
+				      eresi_Addr       	value,
 				      elfsh_SAddr      	*offset)
 {
   elfshsect_t	*sect;
@@ -497,7 +497,7 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
 
 #if __DEBUG_RELADD__
   fprintf(stderr, "[DEBUG_RELADD] Injected symbol %-20s [" AFMT "] \n",
-	  name, (elfsh_Addr) sym->st_value);
+	  name, (eresi_Addr) sym->st_value);
 #endif
 
   /* Insert symbol in .symtab */
@@ -632,7 +632,7 @@ int		elfsh_get_symbol_foffset(elfshobj_t *file, elfsh_Sym *sym)
  * @return
  */
 elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
-					     elfsh_Addr	vaddr,
+					     eresi_Addr	vaddr,
 					     int	*off,
 					     int	mode)
 {
@@ -659,7 +659,7 @@ elfsh_Sym	  *elfsh_get_symbol_by_value(elfshobj_t	*file,
  * @param inc
  * @return
  */
-int		elfsh_shift_symtab(elfshobj_t *file, elfsh_Addr limit, int inc)
+int		elfsh_shift_symtab(elfshobj_t *file, eresi_Addr limit, int inc)
 {
   elfshsect_t	*actual;
   int		err;
@@ -703,7 +703,7 @@ int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
 
 #if __DEBUG_RELADD__
   printf("[DEBUG_RELADD] Inserted STT_SECT symbol %s [" AFMT "] sz:%u cur:%u \n",
-	 sect->name, (elfsh_Addr) sect->shdr->sh_addr, 
+	 sect->name, (eresi_Addr) sect->shdr->sh_addr, 
 	 sect->shdr->sh_size, sect->curend);
 #endif
 
@@ -721,7 +721,7 @@ int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
  * @return
  */
 int		elfsh_insert_funcsym(elfshobj_t *file, char *name, 
-				     elfsh_Addr vaddr, 
+				     eresi_Addr vaddr, 
 				     uint32_t sz, uint32_t sctidx)
 {
   elfsh_Sym	new;

@@ -114,7 +114,7 @@ int	extract_info(char *,
 
 int kernsh_hexdump(unsigned char *, unsigned int, size_t);
 int kernsh_disasm(char *, int, unsigned long);
-int kernsh_addrlen(revmlist_t *, elfsh_Addr *, int *);
+int kernsh_addrlen(revmlist_t *, eresi_Addr *, int *);
 
 /* Top skeleton functions */
 int	vm_main(int ac, char **av);

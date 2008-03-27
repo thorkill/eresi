@@ -21,7 +21,7 @@ void		*revm_get_raw(void *addr)
 #endif
 
   sect = elfsh_get_parent_section(world.curjob->curfile, 
-				  (elfsh_Addr) addr, &offset);
+				  (eresi_Addr) addr, &offset);
 
 #if defined(KERNSH)
   dataptr = kernsh_revm_get_raw(addr);
@@ -281,7 +281,7 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   /* Lookup again in the file if we are dealing with a pointer */
   if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
     {
-      data = (void *) *(elfsh_Addr *) data;
+      data = (void *) *(eresi_Addr *) data;
       if (translateaddr)
 	data = revm_get_raw(data);
     }
@@ -438,17 +438,17 @@ int		revm_generic_setname(void *type, void *data, void *newdata)
   return (0);
 }
 
-elfsh_Addr	revm_generic_getobj(void *data)
+eresi_Addr	revm_generic_getobj(void *data)
 {
-  return (*(elfsh_Addr *) data);
+  return (*(eresi_Addr *) data);
 }
 
-elfsh_Addr	revm_hash_getobj(void *data)
+eresi_Addr	revm_hash_getobj(void *data)
 {
-  return ((elfsh_Addr) data);
+  return ((eresi_Addr) data);
 }
 
-int		revm_byte_setobj(void *data, elfsh_Addr value)
+int		revm_byte_setobj(void *data, eresi_Addr value)
 {
   unsigned char	*byte;
 
@@ -457,7 +457,7 @@ int		revm_byte_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		revm_short_setobj(void *data, elfsh_Addr value)
+int		revm_short_setobj(void *data, eresi_Addr value)
 {
   u_short	*half;
 
@@ -466,7 +466,7 @@ int		revm_short_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		revm_int_setobj(void *data, elfsh_Addr value)
+int		revm_int_setobj(void *data, eresi_Addr value)
 {
   unsigned int	*val;
 
@@ -475,11 +475,11 @@ int		revm_int_setobj(void *data, elfsh_Addr value)
   return (0);
 }
 
-int		revm_long_setobj(void *data, elfsh_Addr value)
+int		revm_long_setobj(void *data, eresi_Addr value)
 {
-  elfsh_Addr	*dst;
+  eresi_Addr	*dst;
 
-  dst = (elfsh_Addr *) data;
+  dst = (eresi_Addr *) data;
   *dst = value;
   return (0);
 }

@@ -37,7 +37,7 @@ u_char	elfsh_ostype[5] = {
  */
 int	elfsh_default_plthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
-				 elfsh_Addr null3)
+				 eresi_Addr null3)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -55,7 +55,7 @@ int	elfsh_default_plthandler(elfshobj_t *null,
  */
 int	elfsh_default_encodeplthandler(elfshobj_t *file, 
 				       elfshsect_t *sect, 
-				       elfsh_Addr diff)
+				       eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -73,7 +73,7 @@ int	elfsh_default_encodeplthandler(elfshobj_t *file,
 int	elfsh_default_encodeplt1handler(elfshobj_t *file, 
 					elfshsect_t *sect,
 					elfshsect_t *sect2,
-					elfsh_Addr diff)
+					eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -90,8 +90,8 @@ int	elfsh_default_encodeplt1handler(elfshobj_t *file,
  */
 int	elfsh_default_relhandler(elfshsect_t *null, 
 				 elfsh_Rel  * null2, 
-				 elfsh_Addr * null3, 
-				 elfsh_Addr   null4,
+				 eresi_Addr * null3, 
+				 eresi_Addr   null4,
 				 elfshsect_t *null5)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -110,7 +110,7 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   char		*nulls,
 				   elfsh_Sym    *null2,
-				   elfsh_Addr	null3)
+				   eresi_Addr	null3)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -145,7 +145,7 @@ int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d,
  */
 int	elfsh_void_altplthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
-				 elfsh_Addr null3)
+				 eresi_Addr null3)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -156,7 +156,7 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
  * @param addr
  * @return
  */
-int	elfsh_default_argchandler(elfsh_Addr addr)
+int	elfsh_default_argchandler(eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -1006,7 +1006,7 @@ void	elfsh_setup_hooks()
  * @return
  */
 int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r, 
-			    elfsh_Addr *l, elfsh_Addr a, elfshsect_t *m)
+			    eresi_Addr *l, eresi_Addr a, elfshsect_t *m)
 {
   u_char        archtype;
   u_char        elftype;
@@ -1014,13 +1014,13 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
   int		ret;
   vector_t	*rel;
 
-  //elfsh_Addr	***hook;
+  //eresi_Addr	***hook;
   u_int		dim[3];
 
   int		(*fct)(elfshsect_t *n,
 		       elfsh_Rel  *n2,
-		       elfsh_Addr *n3,
-		       elfsh_Addr  n4,
+		       eresi_Addr *n3,
+		       eresi_Addr  n4,
 		       elfshsect_t *n5);
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1058,14 +1058,14 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
  * @return
  */
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old, 
-			    elfsh_Addr new)
+			    eresi_Addr new)
 {
   vector_t	*cflow;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, elfsh_Addr n4);
+  int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, eresi_Addr n4);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1100,14 +1100,14 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
  * @param new
  * @return
  */
-int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
+int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
   vector_t	*plt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfsh_Sym *s, elfsh_Addr a);
+  int		(*fct)(elfshobj_t *f, elfsh_Sym *s, eresi_Addr a);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1146,14 +1146,14 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
  * @return
  */
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
-				elfsh_Addr diff, u_int off)
+				eresi_Addr diff, u_int off)
 {
   vector_t	*encodeplt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfsh_Addr a, u_int off);
+  int		(*fct)(elfshobj_t *f, elfshsect_t *s, eresi_Addr a, u_int off);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1193,7 +1193,7 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
  * @return
  */
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
-				 elfshsect_t *extplt, elfsh_Addr diff)
+				 elfshsect_t *extplt, eresi_Addr diff)
 {
   vector_t	*encodeplt1;
   u_char        archtype;
@@ -1201,7 +1201,7 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   u_char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfshsect_t *s2,
-		       elfsh_Addr a);
+		       eresi_Addr a);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1238,14 +1238,14 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
  * @param new
  * @return
  */
-int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr new)
+int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
   vector_t	*altplt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *file, elfsh_Sym *s, elfsh_Addr a);
+  int		(*fct)(elfshobj_t *file, elfsh_Sym *s, eresi_Addr a);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1326,13 +1326,13 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
  * @param vaddr
  * @return
  */
-int		  *elfsh_args_count(elfshobj_t *file, u_int off, elfsh_Addr vaddr)
+int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
 {
   vector_t	*argch;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
-  int		*(*fct)(elfshobj_t *file, u_int off, elfsh_Addr vaddr);
+  int		*(*fct)(elfshobj_t *file, u_int off, eresi_Addr vaddr);
   u_int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

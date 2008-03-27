@@ -31,12 +31,12 @@
 int			mjr_trace_control(mjrcontext_t *context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
-					  elfsh_Addr	curvaddr)
+					  eresi_Addr	curvaddr)
 {
   int			ilen;
   container_t		*fun;
-  elfsh_Addr		dstaddr;
-  elfsh_Addr		retaddr;
+  eresi_Addr		dstaddr;
+  eresi_Addr		retaddr;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -77,7 +77,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F: NULL \n", curvaddr, dstaddr);
 #endif
 
-      if (dstaddr != (elfsh_Addr) -1)
+      if (dstaddr != (eresi_Addr) -1)
 	mjr_link_block_jump(context, curvaddr, dstaddr, 0);
 
     }
@@ -113,7 +113,7 @@ int			mjr_trace_control(mjrcontext_t *context,
        * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
        * Possible libasm or mjollnir bug.
        */
-      if (dstaddr && dstaddr != (elfsh_Addr) -1)
+      if (dstaddr && dstaddr != (eresi_Addr) -1)
     	{
 	  /* Link block layer */
 	  mjr_link_block_call(context, curvaddr, dstaddr, retaddr);
@@ -169,11 +169,11 @@ int			mjr_trace_control(mjrcontext_t *context,
  *
  * FIXME : this function must be ported to the SPARC architecture
  */
-elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
+eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 {
   char		tmp[255];
   char		*ret;
-  elfsh_Addr	dest;
+  eresi_Addr	dest;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
@@ -200,7 +200,7 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid target vaddr for function pointer",
-		       (elfsh_Addr) -1);
+		       (eresi_Addr) -1);
 	}
 
 #if __DEBUG_MJOLLNIR__
@@ -232,7 +232,7 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
       printf(" [*] UNABLE to resolve function pointer called from 0x%08lx\n", 
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Unable to compute function pointer target", (elfsh_Addr) -1);
+		   "Unable to compute function pointer target", (eresi_Addr) -1);
     }
 
   dest = strtol(ret, (char **) NULL, 16);
@@ -256,10 +256,10 @@ elfsh_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
  * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
  */
-elfsh_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
+eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
 {
   int		ilen;
-  elfsh_Addr	dest;
+  eresi_Addr	dest;
   asm_instr	*ins;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -304,10 +304,10 @@ elfsh_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
  * @brief Resolve the destination address of current jmp instruction
  * @param context mjollnir context structure
  */
-elfsh_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
+eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 {
   int		ilen;
-  elfsh_Addr	dest;
+  eresi_Addr	dest;
   asm_instr	*ins;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

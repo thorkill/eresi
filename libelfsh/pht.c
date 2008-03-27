@@ -54,7 +54,7 @@ int	elfsh_segment_is_executable(elfsh_Phdr *p)
  * @param flags
  * @return
  */
-int	elfsh_set_segment_flags(elfsh_Phdr *p, elfsh_Addr flags)
+int	elfsh_set_segment_flags(elfsh_Phdr *p, eresi_Addr flags)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -87,7 +87,7 @@ elfsh_Word	elfsh_get_segment_flags(elfsh_Phdr *p)
  * @param align
  * @return
  */
-int	elfsh_set_segment_align(elfsh_Phdr *p, elfsh_Addr align)
+int	elfsh_set_segment_align(elfsh_Phdr *p, eresi_Addr align)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -118,7 +118,7 @@ elfsh_Word	elfsh_get_segment_align(elfsh_Phdr *p)
  * @param memsz
  * @return
  */
-int	elfsh_set_segment_memsz(elfsh_Phdr *p, elfsh_Addr memsz)
+int	elfsh_set_segment_memsz(elfsh_Phdr *p, eresi_Addr memsz)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -150,7 +150,7 @@ elfsh_Word	elfsh_get_segment_memsz(elfsh_Phdr *p)
  * @param filesz
  * @return
  */
-int	elfsh_set_segment_filesz(elfsh_Phdr *p, elfsh_Addr filesz)
+int	elfsh_set_segment_filesz(elfsh_Phdr *p, eresi_Addr filesz)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -182,7 +182,7 @@ elfsh_Word	elfsh_get_segment_filesz(elfsh_Phdr *p)
  * @param paddr
  * @return
  */
-int	elfsh_set_segment_paddr(elfsh_Phdr *p, elfsh_Addr paddr)
+int	elfsh_set_segment_paddr(elfsh_Phdr *p, eresi_Addr paddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -198,7 +198,7 @@ int	elfsh_set_segment_paddr(elfsh_Phdr *p, elfsh_Addr paddr)
  * @param p
  * @return
  */
-elfsh_Addr	elfsh_get_segment_paddr(elfsh_Phdr *p)
+eresi_Addr	elfsh_get_segment_paddr(elfsh_Phdr *p)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -214,7 +214,7 @@ elfsh_Addr	elfsh_get_segment_paddr(elfsh_Phdr *p)
  * @param vaddr
  * @return
  */
-int	elfsh_set_segment_vaddr(elfsh_Phdr *p, elfsh_Addr vaddr)
+int	elfsh_set_segment_vaddr(elfsh_Phdr *p, eresi_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -230,7 +230,7 @@ int	elfsh_set_segment_vaddr(elfsh_Phdr *p, elfsh_Addr vaddr)
  * @param p
  * @return
  */
-elfsh_Addr	elfsh_get_segment_vaddr(elfsh_Phdr *p)
+eresi_Addr	elfsh_get_segment_vaddr(elfsh_Phdr *p)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -246,7 +246,7 @@ elfsh_Addr	elfsh_get_segment_vaddr(elfsh_Phdr *p)
  * @param type
  * @return
  */
-int		elfsh_set_segment_type(elfsh_Phdr *p, elfsh_Addr type)
+int		elfsh_set_segment_type(elfsh_Phdr *p, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -278,7 +278,7 @@ elfsh_Word	elfsh_get_segment_type(elfsh_Phdr *p)
  * @param offset
  * @return
  */
-int		elfsh_set_segment_offset(elfsh_Phdr *p, elfsh_Addr offset)
+int		elfsh_set_segment_offset(elfsh_Phdr *p, eresi_Addr offset)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -428,7 +428,7 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *enew)
 {
   elfsh_Phdr	*actual;
   int		index;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -497,11 +497,11 @@ int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
  * @param file
  * @return
  */
-elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
+eresi_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
 {
   int					nbr;
   u_int				index;
-  elfsh_Addr  vaddr;
+  eresi_Addr  vaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -512,7 +512,7 @@ elfsh_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot read PHT", -1);
 
-  vaddr = (elfsh_Addr) -1;
+  vaddr = (eresi_Addr) -1;
   for (index = 0; index < nbr; index++)
     if (file->pht[index].p_type == PT_LOAD && file->pht[index].p_vaddr < vaddr)
       vaddr = file->pht[index].p_vaddr;
@@ -549,7 +549,7 @@ void	*elfsh_get_pht(elfshobj_t *file, int *num)
  * @return
  */
 elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht, 
-					      elfsh_Addr index)
+					      eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (pht + index));
@@ -566,7 +566,7 @@ elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht,
  * @return
  */
 elfsh_Phdr	elfsh_create_phdr(elfsh_Word t, 
-				  elfsh_Addr a, 
+				  eresi_Addr a, 
 				  elfsh_Off z, 
 				  elfsh_Word al)
 {

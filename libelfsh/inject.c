@@ -43,7 +43,7 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
   int		err;
   elfshsect_t	*relsect;
   int		check;
-  elfsh_Addr	entrypoint;
+  eresi_Addr	entrypoint;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -181,7 +181,7 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
     {
       for (index = 0; 1; index++)
 	{
-	  relsect = elfsh_get_reloc(file, (elfsh_Addr) index, NULL);
+	  relsect = elfsh_get_reloc(file, (eresi_Addr) index, NULL);
 	  if (!relsect)
 	    {
 	      if (!index)
@@ -465,8 +465,8 @@ int		elfsh_insert_data_section(elfshobj_t	*file,
   last->phdr = phdr;											
 													
   /* Avoid unaligned accesses */									
-  if ((last->shdr->sh_addr + last->shdr->sh_size) % sizeof(elfsh_Addr))
-    pad = sizeof(elfsh_Addr) - ((last->shdr->sh_addr + last->shdr->sh_size) % sizeof(elfsh_Addr));
+  if ((last->shdr->sh_addr + last->shdr->sh_size) % sizeof(eresi_Addr))
+    pad = sizeof(eresi_Addr) - ((last->shdr->sh_addr + last->shdr->sh_size) % sizeof(eresi_Addr));
       
 #if __DEBUG_RELADD__
   if (pad)

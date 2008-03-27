@@ -226,9 +226,9 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
  * @param parent
  * @return
  */
-void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
+void		bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   int		off;
   char		*name;
   elfshsect_t	*sect;
@@ -238,7 +238,7 @@ void		bpdebug(char *str, elfshbp_t *bp, elfsh_Addr pc, elfshobj_t *parent)
   addr = (bp ? bp->addr : pc - off);
   
   fprintf(stderr, "%s (PC = %08X) ::: parent = %s (BP DESCRIPTOR = %08X) \n",
-	  str, pc, (parent ? parent->name : "NONE !!!!"), (elfsh_Addr) bp);
+	  str, pc, (parent ? parent->name : "NONE !!!!"), (eresi_Addr) bp);
   if (!bp)
     return;
   
@@ -265,8 +265,8 @@ void			e2dbg_do_breakpoint()
   int			ret;
   asm_instr		ptr;
   char			*s;
-  elfsh_Addr		*pc; 
-  elfsh_Addr		savedpc;
+  eresi_Addr		*pc; 
+  eresi_Addr		savedpc;
   u_int			bpsz;
   elfshsect_t		*sect;
   elfshobj_t		*parent;
@@ -283,7 +283,7 @@ void			e2dbg_do_breakpoint()
   e2dbg_getregs(); 
   pc = e2dbg_getpc();
 
-  parent = e2dbg_get_parent_object((elfsh_Addr) *pc);
+  parent = e2dbg_get_parent_object((eresi_Addr) *pc);
   bpsz = elfsh_get_breaksize(parent);
 
   /* Print variables and registers on breakpoints */
@@ -320,18 +320,18 @@ void			e2dbg_do_breakpoint()
 	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
 	  if (!ret)
 	    ret++;
-	  sect   = elfsh_get_parent_section(parent, (elfsh_Addr) *pc, NULL);
-	  name   = revm_resolve(parent, (elfsh_Addr) *pc, &off);
-	  sym    = elfsh_get_metasym_by_value(parent, (elfsh_Addr) *pc, 
+	  sect   = elfsh_get_parent_section(parent, (eresi_Addr) *pc, NULL);
+	  name   = revm_resolve(parent, (eresi_Addr) *pc, &off);
+	  sym    = elfsh_get_metasym_by_value(parent, (eresi_Addr) *pc, 
 					      &off, ELFSH_LOWSYM);
 
 #if __DEBUG_BP__
 	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) \n", 
-		 (elfsh_Addr) parent, parent->name, name, sect->name);
+		 (eresi_Addr) parent, parent->name, name, sect->name);
 #endif
 
 	  revm_object_display(sect, sym, ret, 0, off, 
-			    ((elfsh_Addr) *pc), name, REVM_VIEW_DISASM);
+			    ((eresi_Addr) *pc), name, REVM_VIEW_DISASM);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);
@@ -420,7 +420,7 @@ void			e2dbg_do_breakpoint()
   /* Breakpoint case */
   else
     {
-      name = revm_resolve(parent, (elfsh_Addr) *pc - bpsz, &off);
+      name = revm_resolve(parent, (eresi_Addr) *pc - bpsz, &off);
       s    = (e2dbg_is_watchpoint(bp) ? "Watch" : "Break");
 
 
@@ -452,7 +452,7 @@ void			e2dbg_do_breakpoint()
       bp->tid                         = (uint32_t) e2dbgworld.stoppedthread->tid;
 
 #if __DEBUG_BP__
-      bpdebug("AFTER RESET BREAK", bp, (elfsh_Addr) *pc + bpsz, parent);
+      bpdebug("AFTER RESET BREAK", bp, (eresi_Addr) *pc + bpsz, parent);
 #endif
 
 #if __DEBUG_BP__

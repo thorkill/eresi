@@ -18,7 +18,7 @@
  * @param flags
  * @return
  */
-int		elfsh_set_paxflags(elfsh_Ehdr *hdr, elfsh_Addr flags)
+int		elfsh_set_paxflags(elfsh_Ehdr *hdr, eresi_Addr flags)
 {
   u_short	*pax_flags;
 
@@ -58,7 +58,7 @@ elfsh_Word	elfsh_get_paxflags(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_pageexec(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_pageexec(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 
@@ -102,7 +102,7 @@ char		elfsh_get_pax_pageexec(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_emultramp(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_emultramp(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 
@@ -144,7 +144,7 @@ char		elfsh_get_pax_emultramp(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_mprotect(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_mprotect(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 
@@ -186,7 +186,7 @@ char		elfsh_get_pax_mprotect(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_randmmap(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_randmmap(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 
@@ -229,7 +229,7 @@ char		elfsh_get_pax_randmmap(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_randexec(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_randexec(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 
@@ -271,7 +271,7 @@ char		elfsh_get_pax_randexec(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-char		elfsh_set_pax_segmexec(elfsh_Ehdr *hdr, elfsh_Addr off)
+char		elfsh_set_pax_segmexec(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   u_short	*pax_flags;
 

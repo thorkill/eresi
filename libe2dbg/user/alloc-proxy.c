@@ -54,7 +54,7 @@ void		*malloc(size_t t)
 #if __DEBUG_EMALLOC__
       len = snprintf(buf, sizeof(buf), 
 		     "E2DBG malloc used [ret = %08X, len = %u] \n", 
-		     (elfsh_Addr) chunk, t);
+		     (eresi_Addr) chunk, t);
       write(2, buf, len);
 #endif
     }
@@ -193,7 +193,7 @@ void		*calloc(size_t t, u_int nbr)
 	char buff[256];
 	len = snprintf(buff, sizeof(buff), 
 		       "Calling LIBC calloc at addr %08X\n", 
-		       (elfsh_Addr) callocptr);
+		       (eresi_Addr) callocptr);
 	write(2, buff, len);
       } 
 #endif
@@ -232,7 +232,7 @@ void		*calloc(size_t t, u_int nbr)
       char buff[256];
       len = snprintf(buff, sizeof(buff), 
 		     " Calloc (%u * %u sz) returned %08X\n", 
-		     t, nbr, (elfsh_Addr) chunk);
+		     t, nbr, (eresi_Addr) chunk);
       write(2, buff, len);
     }
   write(2, "Finished HOOKED calloc \n", 24);

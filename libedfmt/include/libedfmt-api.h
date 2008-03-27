@@ -56,7 +56,7 @@ typedef struct		s_evar
 #define EDFMT_SCOPE_FUNC    2
   u_char		scope;
 
-  elfsh_Addr 		addr;		/* Global address */
+  eresi_Addr 		addr;		/* Global address */
   u_int 		reg;		/* Func reg base */
   int 			stackpos;	/* Func stack position */
   
@@ -86,8 +86,8 @@ typedef struct		s_efunc
 
   edfmttype_t		*rettype;	/* Return type */
 
-  elfsh_Addr		start;		/* Start address */
-  elfsh_Addr		end;		/* End address */
+  eresi_Addr		start;		/* Start address */
+  eresi_Addr		end;		/* End address */
 
   struct s_efunc	*next;
 }			edfmtfunc_t;
@@ -97,8 +97,8 @@ struct			s_efile
 {
   char			name[EDFMT_NAME_SIZE];
 
-  elfsh_Addr		start;		/* Start address */
-  elfsh_Addr		end;		/* End address */
+  eresi_Addr		start;		/* Start address */
+  eresi_Addr		end;		/* End address */
 
   /* Types */
   edfmttype_t		*types;

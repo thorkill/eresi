@@ -50,13 +50,13 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 {
   int		prot;
   int		*reloc;
-  elfsh_Addr	gotent;
+  eresi_Addr	gotent;
   elfsh_Rel	r;
   char		*ent;
   u_int		relentsz;
   elfshsect_t	*plt;
   elfshsect_t	*got;
-  elfsh_Addr	diff;
+  eresi_Addr	diff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -68,7 +68,7 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
       got = elfsh_get_gotsct(extplt->parent);
       if (got)
 	{
-	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
+	  diff = (eresi_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
 	  elfsh_reencode_pltentry_ia32(extplt->parent, extplt, diff, extplt->curend);
 	}
     }
@@ -88,17 +88,17 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
   ent = elfsh_get_raw(extplt) + extplt->curend;
   reloc  = (int *) ((char *) ent + 7);
   prot = elfsh_munprotect(extplt->parent, 
-			  (elfsh_Addr) reloc, 
+			  (eresi_Addr) reloc, 
 			  (char *) reloc - (char *) elfsh_get_raw(extplt));
   *reloc = relplt->curend;
-  elfsh_mprotect((elfsh_Addr) reloc, 
+  elfsh_mprotect((eresi_Addr) reloc, 
 		 (char *) reloc - (char *) elfsh_get_raw(extplt), prot);
   extplt->curend += elfsh_get_pltentsz(extplt->parent);
 
   /* Insert relocation entry pointing on the new PLT entry */
   relentsz = IS_REL(extplt) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
   r = elfsh_create_relent(R_386_JMP_SLOT, dynsym->curend / sizeof(elfsh_Sym), 
-			  altgot->shdr->sh_addr + altgot->curend - sizeof(elfsh_Addr));
+			  altgot->shdr->sh_addr + altgot->curend - sizeof(eresi_Addr));
   memcpy(elfsh_get_raw(relplt) + relplt->curend, &r, relentsz);
   relplt->curend += relentsz;
 
@@ -238,7 +238,7 @@ int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
 int		elfsh_encodeplt1_ia32(elfshobj_t *file, 
 				      elfshsect_t *plt, 
 				      elfshsect_t *extplt,
-				      elfsh_Addr diff)
+				      eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (elfsh_reencode_first_pltentry_ia32(file, plt, diff) < 0)
@@ -265,7 +265,7 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
  */
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
 				     elfshsect_t *plt, 
-				     elfsh_Addr diff, 
+				     eresi_Addr diff, 
 				     u_int      off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -288,7 +288,7 @@ int		elfsh_encodeplt_ia32(elfshobj_t *file,
 int			elfsh_cflow_ia32(elfshobj_t	*file,
 					 char		*name,
 					 elfsh_Sym	*symbol,
-					 elfsh_Addr	addr)
+					 eresi_Addr	addr)
 {
   elfshsect_t		*hooks;
   elfshsect_t		*source;
@@ -340,14 +340,14 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
     ret += asm_read_instr(instrs + idx, buff + ret, 32 - ret, &proc);
 
   /* Create the hook for this function */
-  prot = elfsh_munprotect(file, (elfsh_Addr) hook, 16);
+  prot = elfsh_munprotect(file, (eresi_Addr) hook, 16);
   memset(hook, 0x90, 40);
   memcpy(hook, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hook + 1) = addr - (hooks->shdr->sh_addr + (hook + 1 - (char *) elfsh_get_raw(hooks)) + 4);
   memcpy(hook + 5, buff, ret);
   memcpy(hook + 5 + ret, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hook + 6 + ret) = symbol->st_value - (hooks->shdr->sh_addr + hooks->curend + 10);
-  elfsh_mprotect((elfsh_Addr) hook, 16, prot);
+  elfsh_mprotect((eresi_Addr) hook, 16, prot);
 
   /* We need to grab the parent section to compute the remaining offset */
   source = elfsh_get_parent_section_by_foffset(file, off, NULL);
@@ -408,7 +408,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
  */
 int		elfsh_hijack_plt_ia32(elfshobj_t *file, 
 				      elfsh_Sym *symbol,
-				      elfsh_Addr addr)
+				      eresi_Addr addr)
 {
   int		foffset;
   uint8_t	opcode; 
@@ -462,8 +462,8 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
  */
 int      elfsh_relocate_ia32(elfshsect_t	*new,
 			     elfsh_Rel		*cur,
-			     elfsh_Addr		*dword,
-			     elfsh_Addr		addr,
+			     eresi_Addr		*dword,
+			     eresi_Addr		addr,
 			     elfshsect_t	*mod)
 {
   elfsh_Shdr *section;
@@ -710,7 +710,7 @@ static int    elfsh_ac_largs_add(int add)
 /*
 Used with Forward analysis
 TODO: Keep it ?
-static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh_Addr *before)
+static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi_Addr *before)
 {
   u_int 	index;
   asm_instr   	i;
@@ -719,7 +719,7 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
   elfsh_Word	len;
   elfshsect_t	*text;
   char		*data;
-  elfsh_Addr	base_vaddr, last_vaddr;
+  eresi_Addr	base_vaddr, last_vaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -778,7 +778,7 @@ static elfsh_Addr elfsh_ac_foundcallto(elfshobj_t *file, elfsh_Addr vaddr, elfsh
  * @param vaddr
  * @return
  */
-static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
+static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, eresi_Addr vaddr)
 {
   elfshsect_t	*sect;
   elfsh_SAddr	foffset;
@@ -805,7 +805,7 @@ static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, elfsh_Addr vaddr)
  * @param vaddr
  * @return
  */
-int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Addr vaddr)
+int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Addr vaddr)
 {
   int         	index;
   int         	ret;
@@ -814,7 +814,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
   const int    	asm_len = 1024;
   //int         	len = 0;
   int	      	*final_args;
-  //elfsh_Addr  	f_vaddr, up_vaddr;
+  //eresi_Addr  	f_vaddr, up_vaddr;
   asm_instr   	i;
   char      	*data;
   int		op;
@@ -1018,18 +1018,18 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	         stack state. Problem found in setupterm() */
 	      if (i.instr == ASM_PUSH) 
 		{
-		  reserv += sizeof(elfsh_Addr);
+		  reserv += sizeof(eresi_Addr);
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
-			 sizeof(elfsh_Addr), reserv);
+			 sizeof(eresi_Addr), reserv);
 #endif
 		}
 	      else if (i.instr == ASM_POP)
 		{
-		  reserv -= sizeof(elfsh_Addr);
+		  reserv -= sizeof(eresi_Addr);
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
-			 sizeof(elfsh_Addr), reserv);
+			 sizeof(eresi_Addr), reserv);
 #endif
 		}
 	      else
@@ -1102,10 +1102,10 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
       /* Last entry */
       if (index + 1 == arg_count)
 	{
-	  /* Can't know last argument size, presume elfsh_Addr
+	  /* Can't know last argument size, presume eresi_Addr
 	     size. This issue seems impossible to resolve without
 	     an advanced analyse engine */
-	  args[index] = (int) sizeof(elfsh_Addr);
+	  args[index] = (int) sizeof(eresi_Addr);
 	}
       else
 	{
@@ -1114,9 +1114,9 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, elfsh_Add
 	}
 
       /* Aligned on address size (at least) */
-      if (args[index] < (int) sizeof(elfsh_Addr)
+      if (args[index] < (int) sizeof(eresi_Addr)
 	  || args[index] > ELFSH_IA32_ARG_MAXSIZE)
-	args[index] = (int) sizeof(elfsh_Addr);
+	args[index] = (int) sizeof(eresi_Addr);
     }
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, final_args, 

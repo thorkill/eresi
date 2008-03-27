@@ -56,7 +56,7 @@ unsigned int mjr_register_container(mjrcontext_t *ctx, container_t *cntnr)
 
 #if __DEBUG_CNTNR__
   fprintf(D_DESC,"[D] %s: %x registred id: %d type: %d\n",
-	  __FUNCTION__, *(elfsh_Addr *) cntnr->data, cntnr->id, cntnr->type);
+	  __FUNCTION__, *(eresi_Addr *) cntnr->data, cntnr->id, cntnr->type);
 #endif
 
   return ctx->next_id++;
@@ -85,7 +85,7 @@ unsigned int mjr_register_container_id(mjrcontext_t *ctx, container_t *cntnr)
 
 #if __DEBUG_CNTNR__
   fprintf(D_DESC,"[D] %s: %x registred id: %d\n",
-	  __FUNCTION__, *(elfsh_Addr *) cntnr->data, cntnr->id);
+	  __FUNCTION__, *(eresi_Addr *) cntnr->data, cntnr->id);
 #endif
 
   return cntnr->id;
@@ -234,7 +234,7 @@ int		match_block(void *elem, void *match)
  */
 container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
 					    u_int		symoff,
-					    elfsh_Addr		vaddr,
+					    eresi_Addr		vaddr,
 					    u_int		size,
 					    u_char		seen)
 {
@@ -280,7 +280,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
  * Creates function container
  */
 container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
-					       elfsh_Addr	vaddr,
+					       eresi_Addr	vaddr,
 					       u_int		size,
 					       char		*name,
 					       mjrblock_t	*first,
@@ -331,7 +331,7 @@ container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
  * @brief This function should be used only for debug
  * It is O(n) since this api doesn't know about hashes in the mjr context
  */
-container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int type)
+container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, eresi_Addr vaddr, int type)
 {
   container_t	*cur;
   u_int		idx;
@@ -339,7 +339,7 @@ container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, elfsh_Addr vaddr, int
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
   for (idx = 1, cur = ctx->reg_containers[idx]; cur; cur = ctx->reg_containers[++idx])
-    if (cur->type == type && *(elfsh_Addr *) cur->data == vaddr)
+    if (cur->type == type && *(eresi_Addr *) cur->data == vaddr)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cur);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);    

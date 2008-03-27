@@ -30,25 +30,25 @@ typedef struct _bp_struct
 
 typedef struct reg_struct 
 {
-  elfsh_Addr reg_EDI;
-  elfsh_Addr reg_ESI;
-  elfsh_Addr reg_EBP;
-  elfsh_Addr reg_ESP_;
-  elfsh_Addr reg_EBX;
-  elfsh_Addr reg_EDX;
-  elfsh_Addr reg_ECX;
-  elfsh_Addr reg_EAX;
-  elfsh_Addr reg_ES;
-  elfsh_Addr reg_FS;
-  elfsh_Addr reg_GS;
-  elfsh_Addr reg_DS;
-  elfsh_Addr reg_dummy_ret;
-  elfsh_Addr reg_ERROR;
-  elfsh_Addr reg_EIP;
-  elfsh_Addr reg_CS;
-  elfsh_Addr reg_EFLAG;
-  elfsh_Addr reg_ESP;
-  elfsh_Addr reg_SS;
+  eresi_Addr reg_EDI;
+  eresi_Addr reg_ESI;
+  eresi_Addr reg_EBP;
+  eresi_Addr reg_ESP_;
+  eresi_Addr reg_EBX;
+  eresi_Addr reg_EDX;
+  eresi_Addr reg_ECX;
+  eresi_Addr reg_EAX;
+  eresi_Addr reg_ES;
+  eresi_Addr reg_FS;
+  eresi_Addr reg_GS;
+  eresi_Addr reg_DS;
+  eresi_Addr reg_dummy_ret;
+  eresi_Addr reg_ERROR;
+  eresi_Addr reg_EIP;
+  eresi_Addr reg_CS;
+  eresi_Addr reg_EFLAG;
+  eresi_Addr reg_ESP;
+  eresi_Addr reg_SS;
 } Reg_struct;
 
 
@@ -157,7 +157,7 @@ unsigned char ke2dbg_true_byte_bp(unsigned char *);
 
 //int parse_inst(unsigned int , unsigned int , insn*);
 
-void ke2dbg_printf_disasm(elfsh_Addr, elfsh_Addr);
+void ke2dbg_printf_disasm(eresi_Addr, eresi_Addr);
 
 unsigned int ke2dbg_dr0_get(void);
 unsigned int ke2dbg_dr1_get(void);
@@ -312,7 +312,7 @@ void print_char(unsigned char , unsigned int , unsigned int );
 void Put_String(char* , unsigned int , unsigned int );
 void PutString(unsigned long ,unsigned long ,char *,char );
 void ke2dbg_screen_dump(void);
-void ke2dbg_data_dump(elfsh_Addr selector, elfsh_Addr ptr);
+void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr);
 void ke2dbg_screen_restore(int);
 void ke2dbg_message_display(char *);
 void WriteVCon(unsigned int ,unsigned ,char *);
@@ -380,8 +380,8 @@ int		cmd_rr0d_print();
 
 /* Extern variables */
 
-extern elfsh_Addr	adresse_ret_1;
-extern elfsh_Addr	adresse_ret_2;
+extern eresi_Addr	adresse_ret_1;
+extern eresi_Addr	adresse_ret_2;
 extern int		hook_rdtsc;
 extern unsigned int	edit_mode;
 

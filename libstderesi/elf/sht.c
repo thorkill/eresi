@@ -22,7 +22,7 @@ char		*revm_fetch_sht_typedesc(elfsh_Word typenum)
 
   for (index = 0; index < ELFSH_SHTYPE_MAX; index++)
     {
-      if (elfsh_sh_type[index].val == (elfsh_Addr) typenum)
+      if (elfsh_sh_type[index].val == (eresi_Addr) typenum)
 	{
 	  ret = (char *) elfsh_sh_type[index].desc;
 	  break;
@@ -50,7 +50,7 @@ int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
   u_int		index;
   elfsh_Word   	typenum;
   char		type_unk[ELFSH_MEANING + 1];
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   

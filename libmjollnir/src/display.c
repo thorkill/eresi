@@ -142,7 +142,7 @@ void		 mjr_funcs_display(mjrcontext_t *c)
 /**
  * @brief Shortcut for vaddr 2 string with allocation .. 
  */
-char	*_vaddr2str(elfsh_Addr addr)
+char	*_vaddr2str(eresi_Addr addr)
 {
   char *tmp;
   

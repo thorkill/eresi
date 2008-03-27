@@ -57,7 +57,7 @@ char		*revm_display_pname(u_int type)
  * @param num
  * @param base
  */
-void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
+void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base)
 {
   elfsh_Shdr	*shdr;
   int		shtnum;
@@ -72,8 +72,8 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, elfsh_Addr base)
   char		logbuf[BUFSIZ];
   int		check;
   
-  elfsh_Addr	addr;
-  elfsh_Addr	addr_end;
+  eresi_Addr	addr;
+  eresi_Addr	addr_end;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

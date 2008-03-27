@@ -24,7 +24,7 @@
  */
 typedef struct	s_iblock 
 {
-  elfsh_Addr	vaddr;		/* !< @brief block starting virtual address    */
+  eresi_Addr	vaddr;		/* !< @brief block starting virtual address    */
   u_int		size;		/* !< @brief block code size                   */
   u_int		symoff;		/* !< @brief block name offset in string table */
   u_char	seen;		/* !< @brief block live status (0 means dead)  */
@@ -35,7 +35,7 @@ typedef struct	s_iblock
  */
 typedef struct	s_function 
 {
-  elfsh_Addr	vaddr;		/* !< @brief Function virtual address */
+  eresi_Addr	vaddr;		/* !< @brief Function virtual address */
   u_int		size;		/* !< @brief Function size */
   char		name[64];	/* !< @brief Function name */
   mjrblock_t	*first;		/* !< @brief First function block */
@@ -75,7 +75,7 @@ typedef	struct	s_link
  */
 typedef struct		s_history
 {
-  elfsh_Addr  		vaddr;
+  eresi_Addr  		vaddr;
   asm_instr		instr;
 }			mjrhistory_t;
 

@@ -441,9 +441,9 @@ void *kernsh_revm_get_raw(void *addr)
     {
       /* We use physical memory ? */
       if (libkernshworld.physical)
-	dataptr = libkernshworld.ptr + ((elfsh_Addr) addr - libkernshworld.kernel_start);
+	dataptr = libkernshworld.ptr + ((eresi_Addr) addr - libkernshworld.kernel_start);
       else
-	dataptr = libkernshworld.ptr + (elfsh_Addr) addr;
+	dataptr = libkernshworld.ptr + (eresi_Addr) addr;
 
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }

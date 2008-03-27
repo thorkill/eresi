@@ -54,7 +54,7 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
  * else return block if vaddr belong to block
  */
 container_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt, 
-					elfsh_Addr   	vaddr, 
+					eresi_Addr   	vaddr, 
 					int		mode)
 {
   container_t	*ret;
@@ -157,7 +157,7 @@ int		mjr_block_dump(mjrcontext_t* ctxt, container_t *c)
  * @return Always 0
  */
 int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc, 
-					 elfsh_Addr curaddr, u_char resize)
+					 eresi_Addr curaddr, u_char resize)
 {
   mjrblock_t		*block;
   elfsh_Sym		bsym;

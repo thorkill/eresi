@@ -31,11 +31,11 @@ stabs_ent[stabs_index]
  */
 typedef struct	s_stabsent
 {
-  elfsh_Addr   	strindex; 	/*!< The index to find the string on the string stab section */
+  eresi_Addr   	strindex; 	/*!< The index to find the string on the string stab section */
   u_char       	type;		/*!< Type id */
   u_char	other;		/*!< Never use, already @ 0 */
   u_short	desc;		/*!< Used to store short information like line */
-  elfsh_Addr  	value;		/*!< Used to store addr aligned informations */
+  eresi_Addr  	value;		/*!< Used to store addr aligned informations */
 }	     	edfmtstabsent_t;
 
 /* Forward declaration */
@@ -128,8 +128,8 @@ typedef struct	s_stabsarray
 typedef struct 	s_stabsfunc
 {
   u_int		s_line; /* Start line */
-  elfsh_Addr	s_addr; /* Start address */
-  elfsh_Addr	e_addr; /* End address */
+  eresi_Addr	s_addr; /* Start address */
+  eresi_Addr	e_addr; /* End address */
 
   edfmtstabsdata_t *args[STABS_MAX_ARGUMENTS];
 
@@ -221,9 +221,9 @@ struct		s_stabsdata
 
   /* This union depend of the scope field */
   union {
-    elfsh_Addr addr;
-    elfsh_Addr stackpos;
-    elfsh_Addr reg;
+    eresi_Addr addr;
+    eresi_Addr stackpos;
+    eresi_Addr reg;
     edfmtstabsfunc_t func;
     double fl;
     int i;
@@ -238,7 +238,7 @@ struct		s_stabsdata
 typedef struct	s_stabsline
 {
   u_int		line;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   struct s_stabsline *next;
 }		edfmtstabsline_t;
@@ -259,8 +259,8 @@ typedef struct 	s_stabsfile
   char	      	*path;
   char		*file;
 
-  elfsh_Addr	s_addr;
-  elfsh_Addr	e_addr;
+  eresi_Addr	s_addr;
+  eresi_Addr	e_addr;
 
   /* Function pointers */
   edfmtstabsfunc_t *func;

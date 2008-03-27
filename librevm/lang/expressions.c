@@ -264,7 +264,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,			
 			 ".%s", childtype->fieldname);
 	  revm_inform_type_addr(childtype->name, recpath, 
-				(elfsh_Addr) childata, newexpr, 0, 0);
+				(eresi_Addr) childata, newexpr, 0, 0);
 	  pathsize += len;
 
 	  /* Insert child where necessary */ 
@@ -338,7 +338,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,		
 			 ".%s", childtype->fieldname);			
 	  revm_inform_type_addr(childtype->name, recpath,		
-				(elfsh_Addr) childata, newexpr, 0, 0); 
+				(eresi_Addr) childata, newexpr, 0, 0); 
 	  bzero(recpath + pathsize, len);				
 	}
 
@@ -394,7 +394,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 					 u_char		op)
 {
   int			ret;
-  elfsh_Addr		cmpval;
+  eresi_Addr		cmpval;
   revmexpr_t		*cursource;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -607,7 +607,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), -1);
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
-	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
+	  revm_inform_type_addr(type->name, strdup(newname), (eresi_Addr) childata, dest, 0, 0);
 	  ret = revm_expr_copyrec(dest, dest->childs, source->childs, newname, 
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
@@ -632,7 +632,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 	    }
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
-	  revm_inform_type_addr(type->name, strdup(newname), (elfsh_Addr) childata, dest, 0, 0);
+	  revm_inform_type_addr(type->name, strdup(newname), (eresi_Addr) childata, dest, 0, 0);
 	  bzero(newname + nameoff, len);
 	  if (revm_object_set(dest, source) < 0)
 	    {
@@ -710,7 +710,7 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
     str = newname;
   dest->label    = strdup(str);
   dest->type     = type;
-  if (!revm_inform_type_addr(type->name, strdup(dstname), (elfsh_Addr) copydata, dest, 0, 0))
+  if (!revm_inform_type_addr(type->name, strdup(dstname), (eresi_Addr) copydata, dest, 0, 0))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to inform copy expression", NULL);
 
@@ -777,7 +777,7 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name)
       if (!data)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to dereference object", NULL);
-      if (!revm_inform_type_addr(type->name, name, (elfsh_Addr) data, dest, 0, 1))
+      if (!revm_inform_type_addr(type->name, name, (eresi_Addr) data, dest, 0, 1))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to create expression from complex object", NULL);
     }
@@ -931,7 +931,7 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 
 
 /* Compare 2 typed expressions */
-int		revm_expr_compare_by_name(char *original, char *candidate, elfsh_Addr *val)
+int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val)
 {
   revmexpr_t	*candid;
   revmexpr_t	*orig;
@@ -952,7 +952,7 @@ int		revm_expr_compare_by_name(char *original, char *candidate, elfsh_Addr *val)
 }
 
 /* Compare 2 typed expressions */
-int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, elfsh_Addr *val)
+int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
 {
   int		ret;
 
@@ -1019,7 +1019,7 @@ int		revm_expr_match_by_name(char *original, char *candidate)
 int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
 {
   int		ret;
-  elfsh_Addr	*val;
+  eresi_Addr	*val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!candid || !orig)
@@ -1094,7 +1094,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   /* Else we create and initialize a new expression */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, datatype->size, NULL);
   realname = dataname;
-  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, NULL, 0, 0);
+  revm_inform_type_addr(datatype->name, realname, (eresi_Addr) data, NULL, 0, 0);
 
   if (!datatype->next && datatype->childs)
     {
@@ -1110,7 +1110,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
-  revm_inform_type_addr(datatype->name, realname, (elfsh_Addr) data, expr, 0, 0);
+  revm_inform_type_addr(datatype->name, realname, (eresi_Addr) data, expr, 0, 0);
 
 #if __DEBUG_EXPRS__
   revm_expr_print(expr->label);

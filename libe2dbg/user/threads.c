@@ -189,7 +189,7 @@ void	pthread_exit(void *retval)
   fct = (void *) e2dbgworld.syms.pthreadexit;
 
 #if __DEBUG_THREADS__
-  printf(" [D] PTHREAD_EXIT ! Calling back original at %08X \n", (elfsh_Addr) fct);
+  printf(" [D] PTHREAD_EXIT ! Calling back original at %08X \n", (eresi_Addr) fct);
 #endif
 
   e2dbgworld.threadnbr--;
@@ -214,7 +214,7 @@ __sighandler_t		signal(int signum, __sighandler_t fctptr)
 
 #if __DEBUG_THREADS__
   printf(" [D] THREAD %u SIGNAL (SIGNUM %u) Calling back original at %08X \n", 
-  (unsigned int) pthread_self(), signum, (elfsh_Addr) fct);
+  (unsigned int) pthread_self(), signum, (eresi_Addr) fct);
 #endif
   
   return ((*fct)(signum, fctptr));
@@ -277,7 +277,7 @@ void		e2dbg_threads_print()
 	  default:
 	    state = "UNKNOWN";
 	  }
-	entry = revm_resolve(world.curjob->curfile, (elfsh_Addr) cur->entry, NULL);
+	entry = revm_resolve(world.curjob->curfile, (eresi_Addr) cur->entry, NULL);
 	snprintf(logbuf, BUFSIZ, 
 		 " Thread ID %10u %c %8s --[ started on %s from %s \n", 
 		 (unsigned int) cur->tid, c, state, stime, entry);

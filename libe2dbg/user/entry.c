@@ -86,8 +86,8 @@ int			e2dbg_fake_main(int argc, char **argv, char **aux)
 #if __DEBUG_E2DBG__
   len = snprintf(logbuf, BUFSIZ, 
 		 "[e2dbg_fake_main] Calling main %08X curthr %08X id %u\n", 
-		 (elfsh_Addr) e2dbgworld.real_main, 
-		 (elfsh_Addr) e2dbgworld.curthread, 
+		 (eresi_Addr) e2dbgworld.real_main, 
+		 (eresi_Addr) e2dbgworld.curthread, 
 		 (unsigned int) getpid());
   write(1, logbuf, len);
 #endif
@@ -135,7 +135,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 			  void (*rtld_fini) (void), 
 			  void *__unbounded stack_end)
 {
-  elfsh_Addr		orig;
+  eresi_Addr		orig;
   int			(*libcstartmain)();
   int			ret;
 
@@ -148,7 +148,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 #endif
 
   /* Find the real symbol in libc */
-  orig = (elfsh_Addr) e2dbg_dlsym("__libc_start_main");
+  orig = (eresi_Addr) e2dbg_dlsym("__libc_start_main");
   if (!orig)
     {
       write(1, "Error : Orig __libc_start_main not found\n", 41);
@@ -235,7 +235,7 @@ int				e2dbg_get_args(char **args)
  */
 int				atexit(void (*fini)(void))
 {
-  elfsh_Addr			orig;
+  eresi_Addr			orig;
   int				(*libc_atexit)();
   char				*args[42];
   static short int		bFusible = 0;
@@ -251,7 +251,7 @@ int				atexit(void (*fini)(void))
 #endif
 
   /* Find the real symbol */
-  orig = (elfsh_Addr) e2dbg_dlsym("atexit");
+  orig = (eresi_Addr) e2dbg_dlsym("atexit");
   if (!orig)
     {
       write(1, "Error : Orig atexit not found\n", 30);
@@ -262,7 +262,7 @@ int				atexit(void (*fini)(void))
   libc_atexit = (void *) orig;
   
 #if __DEBUG_E2DBG__
-  printf("[(e2dbg)atexit 2 : envp = %08X \n", (elfsh_Addr) environ);
+  printf("[(e2dbg)atexit 2 : envp = %08X \n", (eresi_Addr) environ);
 #endif
 
   /* Initialize a "fake" thread if we are debugging a monothread program */
@@ -310,7 +310,7 @@ int				atexit(void (*fini)(void))
 /*
   void			__fpstart(int argc, char **ubp_av)
   {
-  elfsh_Addr		orig;
+  eresi_Addr		orig;
   int			(*realfpstart)();
   char			*argv[3];
   e2dbgparams_t		params;
@@ -322,7 +322,7 @@ int				atexit(void (*fini)(void))
   #endif
   
   //Find the real symbol
-  orig = (elfsh_Addr) e2dbg_dlsym("__fpstart");
+  orig = (eresi_Addr) e2dbg_dlsym("__fpstart");
   if (!orig)
   {
   write(1, "Error : Orig __fpstart not found\n", 33);

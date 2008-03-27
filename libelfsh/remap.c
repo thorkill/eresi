@@ -21,11 +21,11 @@
  * @param diff
  * @return
  */
-int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
+int		elfsh_reloc_pht(elfshobj_t *file, eresi_Addr diff)
 {
   u_int		i;
   u_int		count;
-  elfsh_Addr	base;
+  eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -57,11 +57,11 @@ int		elfsh_reloc_pht(elfshobj_t *file, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
+int		elfsh_reloc_sht(elfshobj_t *file, eresi_Addr diff)
 {
   u_int		i;
   u_int		count;
-  elfsh_Addr	base;
+  eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -85,13 +85,13 @@ int		elfsh_reloc_sht(elfshobj_t *file, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
+int		elfsh_reloc_symtab(elfshsect_t *s, eresi_Addr diff)
 {
   elfsh_Sym	*symtab;
   u_int		i;
-  elfsh_Addr   	vaddr;
+  eresi_Addr   	vaddr;
   u_int		count;
-  elfsh_Addr	base;
+  eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -126,10 +126,10 @@ int		elfsh_reloc_symtab(elfshsect_t *s, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
+int		elfsh_reloc_raw(elfshsect_t *cur, eresi_Addr diff)
 {
   u_int		index;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   elfshsect_t	*target;
   char		*str;
 
@@ -158,7 +158,7 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
 
 	str = elfsh_get_raw(cur) + cur->rel[index].off_src;
 	addr = target->shdr->sh_addr + cur->rel[index].off_dst + diff;
-	memcpy(str, &addr, sizeof(elfsh_Addr));
+	memcpy(str, &addr, sizeof(eresi_Addr));
 
 	/* Do not relocate */
       case ELFSH_RELOC_FP:
@@ -175,13 +175,13 @@ int		elfsh_reloc_raw(elfshsect_t *cur, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_dynamic(elfshsect_t *sect, eresi_Addr diff)
 {
   elfshsect_t	*parent;
   elfsh_Dyn	*dyn;
   u_int		index;
   u_int		count;
-  elfsh_Addr	val;
+  eresi_Addr	val;
   u_int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -215,7 +215,7 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_rel(elfshsect_t *sect, eresi_Addr diff)
 {
   elfshsect_t	*parent;
   elfsh_Rel	*rel;
@@ -257,9 +257,9 @@ int		elfsh_reloc_rel(elfshsect_t *sect, elfsh_Addr diff)
  * @return
  */
 int		elfsh_reloc_array(elfshobj_t *file, 
-				  elfsh_Addr *array, 
+				  eresi_Addr *array, 
 				  u_int      size, 
-				  elfsh_Addr diff)
+				  eresi_Addr diff)
 {
   elfshsect_t	*parent;
   u_int		index;
@@ -289,7 +289,7 @@ int		elfsh_reloc_array(elfshobj_t *file,
  * @param diff
  * @return
  */
-int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_got(elfshsect_t *sect, eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -302,7 +302,7 @@ int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
 		      "Unexpected section name", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
-			    sect->shdr->sh_size / sizeof(elfsh_Addr), diff)));
+			    sect->shdr->sh_size / sizeof(eresi_Addr), diff)));
 }
 
 /**
@@ -311,7 +311,7 @@ int		elfsh_reloc_got(elfshsect_t *sect, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_ctors(elfshsect_t *sect, eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -324,7 +324,7 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
 		      "Unexpected section name", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
-			    sect->shdr->sh_size / sizeof(elfsh_Addr), 
+			    sect->shdr->sh_size / sizeof(eresi_Addr), 
 			    diff)));
 }
 
@@ -334,7 +334,7 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_dtors(elfshsect_t *sect, eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -347,7 +347,7 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
 		      "Unexpected section name", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
-			    sect->shdr->sh_size / sizeof(elfsh_Addr), 
+			    sect->shdr->sh_size / sizeof(eresi_Addr), 
 			    diff)));
 }
 
@@ -358,7 +358,7 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_reloc_hash(elfshsect_t *sect, eresi_Addr diff)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -371,7 +371,7 @@ int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
 		      "Section is not HASH", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
-			    sect->shdr->sh_size / sizeof(elfsh_Addr), diff)));
+			    sect->shdr->sh_size / sizeof(eresi_Addr), diff)));
 }
 
 
@@ -381,7 +381,7 @@ int		elfsh_reloc_hash(elfshsect_t *sect, elfsh_Addr diff)
  * @param diff
  * @return
  */
-int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
+int		elfsh_relocate_section(elfshsect_t *sect, eresi_Addr diff)
 {
   int		ret;
 
@@ -430,10 +430,10 @@ int		elfsh_relocate_section(elfshsect_t *sect, elfsh_Addr diff)
  * @param new_addr
  * @return
  */
-int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
+int		elfsh_remap(elfshobj_t *file, eresi_Addr new_addr)
 {
   elfshsect_t	*sect;
-  elfsh_Addr	diff;
+  eresi_Addr	diff;
   u_int		count;
   int		ret;
 
@@ -449,7 +449,7 @@ int		elfsh_remap(elfshobj_t *file, elfsh_Addr new_addr)
 		      "Unable to read object", -1);
 
   diff = elfsh_get_object_baseaddr(file);
-  if (diff == (elfsh_Addr) -1);
+  if (diff == (eresi_Addr) -1);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Object base address is NULL", -1);
 

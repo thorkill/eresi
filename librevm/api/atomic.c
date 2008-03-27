@@ -61,8 +61,8 @@ int                     revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2)
 /* Used by add, sub, mul, div, mod */
 int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
 {
-  elfsh_Addr		src;
-  elfsh_Addr		dst;
+  eresi_Addr		src;
+  eresi_Addr		dst;
   char			buf[BUFSIZ];
   revmobj_t		*res;
   revmobj_t		*o1;
@@ -165,7 +165,7 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
 /* API for adding in hash */
 int			revm_hash_add(hash_t *h, revmexpr_t *e)
 {
-  elfsh_Addr		elem;
+  eresi_Addr		elem;
   u_char		*key;
   hash_t		*src;
   revmobj_t		*o;
@@ -212,7 +212,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
 		 "Incompatible types between objects", -1);
    
   /* Add it to the hash table */
-  elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  elem = (eresi_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
   hash_add(h, (char *) key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -222,7 +222,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
 /* API for adding in hash */
 int			revm_elist_add(list_t *h, revmexpr_t *e)
 {
-  elfsh_Addr		elem;
+  eresi_Addr		elem;
   char			*key;
   list_t		*src;
   revmobj_t		*copy;
@@ -275,7 +275,7 @@ int			revm_elist_add(list_t *h, revmexpr_t *e)
 		 "Incompatible types between objects", -1);
    
   /* Add it to the hash table */
-  elem = (elfsh_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  elem = (eresi_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
   elist_add(h, key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -437,7 +437,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
   revmobj_t		*o1;
   revmobj_t		*o2;
   char                  *str;
-  elfsh_Addr            val64;
+  eresi_Addr            val64;
   u_int                 val32;
   u_char                val8;
   u_short               val16;
@@ -487,7 +487,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (elfsh_Addr) val8, ASPECT_TYPE_BYTE);
+			(void *) (eresi_Addr) val8, ASPECT_TYPE_BYTE);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
@@ -505,10 +505,10 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+			(void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (elfsh_Addr) val16, ASPECT_TYPE_SHORT);
+			(void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
 	    
 	}
       else if (o1->set_obj(o1->parent, val16) < 0)
@@ -525,10 +525,10 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+			(void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (elfsh_Addr) val32, ASPECT_TYPE_INT);
+			(void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
 
 	}
       else if (o1->set_obj(o1->parent, val32) < 0)
@@ -594,7 +594,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 
 
 /* Comparison function */
-int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
+int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
 {
   revmexpr_t		*last;
   revmobj_t		*res;
@@ -602,7 +602,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, elfsh_Addr *val)
   revmobj_t		*o2;
   char			*str;
   char			*str2;
-  elfsh_Addr	       	val2;
+  eresi_Addr	       	val2;
   u_char		bval2;
   u_short		hval2;
   u_int			ival2;
@@ -723,8 +723,8 @@ int			revm_testbit(revmexpr_t *e1, revmexpr_t *e2, u_int *result)
   revmobj_t		*o2;
   revmobj_t		*res;
   revmexpr_t		*last;
-  elfsh_Addr	       	val;
-  elfsh_Addr	       	val2;
+  eresi_Addr	       	val;
+  eresi_Addr	       	val2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e1 || !e2)

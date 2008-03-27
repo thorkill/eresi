@@ -8,7 +8,7 @@
 
 /* Oldest entry is entry 0 */
 /* It is the good way to do it */
-void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
+void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, eresi_Addr addr)
 {
   int i;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -32,7 +32,7 @@ void	mjr_history_shift(mjrcontext_t *cur, asm_instr inst, elfsh_Addr addr)
 }
 
 /* Write an entry of history */
-void	mjr_history_write(mjrcontext_t *cur, asm_instr *i, elfsh_Addr a, int idx)
+void	mjr_history_write(mjrcontext_t *cur, asm_instr *i, eresi_Addr a, int idx)
 {
   if (idx >= MJR_HISTORY_LEN)
     return;

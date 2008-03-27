@@ -32,7 +32,7 @@
  * @param diff
  * @return
  */
-void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
+void			elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff)
 {
   uint32_t		*dword;
   uint32_t		*dword2;
@@ -58,8 +58,8 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, elfsh_Addr diff)
 		      ((char*) dword  - (char *) current->data) > 0x100) ? 0 : 1);
 	    str = (patch ? "patching" : "not patching");
 	    printf("[DEBUG_SHIFTMIPS] Found dw/dw2 at address " XFMT " / " XFMT " (%s) -> %s \n", 
-		   (elfsh_Addr) current->shdr->sh_addr + ((char*) dword  - (char *) current->data),
-		   (elfsh_Addr) current->shdr->sh_addr + ((char*) dword2 - (char *) current->data),
+		   (eresi_Addr) current->shdr->sh_addr + ((char*) dword  - (char *) current->data),
+		   (eresi_Addr) current->shdr->sh_addr + ((char*) dword2 - (char *) current->data),
 		   current->name, str);
 	    
 	    if (patch)
@@ -88,7 +88,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file,
 {
   u_int			entsz;
   elfsh_Rela		*rel;
-  elfsh_Addr		addr;
+  eresi_Addr		addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -110,7 +110,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file,
 #endif	  
   
   /* Compute the new value */
-  addr = altgot->shdr->sh_addr + (((off - 8) / entsz) * sizeof(elfsh_Addr));
+  addr = altgot->shdr->sh_addr + (((off - 8) / entsz) * sizeof(eresi_Addr));
   
 #if __DEBUG_COPYPLT__	  
   printf("[DEBUG_COPYPLT] Setting relocation entry to " AFMT " \n", addr);
@@ -132,7 +132,7 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file,
  * @return
  */
 int			elfsh_shift_generic_relocs(elfshobj_t *file, 
-						   elfsh_Addr diff, 
+						   eresi_Addr diff, 
 						   elfshsect_t *relplt)
 {
   elfsh_Rela		*l;
@@ -160,13 +160,13 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file,
  * @return
  */
 int			elfsh_shift_ia32_relocs(elfshobj_t *file, 
-						elfsh_Addr  diff,
+						eresi_Addr  diff,
 						elfshsect_t *relplt,
-						elfsh_Addr  limit)
+						eresi_Addr  limit)
 {
   elfsh_Rel		*l;
   int			index;
-  elfsh_Addr		reloff;
+  eresi_Addr		reloff;
   elfshsect_t		*parent;
   elfsh_SAddr		off;
 
@@ -187,7 +187,7 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
 	  if (strstr(parent->name, "got") || strstr(parent->name, "bss") ||
 	      strstr(parent->name, "elfsh"))
 	    continue;
-	  *(elfsh_Addr *) ((char *) parent->data + off) += diff;
+	  *(eresi_Addr *) ((char *) parent->data + off) += diff;
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -202,7 +202,7 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
  * @return
  */
 int			elfsh_shift_sparc_relocs(elfshobj_t	*file, 
-						 elfsh_Addr	diff, 
+						 eresi_Addr	diff, 
 						 elfshsect_t	*relplt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

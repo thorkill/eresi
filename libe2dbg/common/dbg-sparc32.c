@@ -102,7 +102,7 @@ void		  e2dbg_set_regvars_sparc32_sysv()
 
 
 /* Get Program Counter register */
-elfsh_Addr*	  e2dbg_getpc_bsd_sparc32()
+eresi_Addr*	  e2dbg_getpc_bsd_sparc32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(SPARC) && (defined(__FreeBSD__) || defined (__OpenBSD__))
@@ -117,12 +117,12 @@ elfsh_Addr*	  e2dbg_getpc_bsd_sparc32()
 
 
 /* Get Program Counter register on Sys V */
-elfsh_Addr*	  e2dbg_getpc_sysv_sparc32()
+eresi_Addr*	  e2dbg_getpc_sysv_sparc32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(SPARC) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		(elfsh_Addr *) &e2dbgworld.curthread->context->uc_mcontext.gregs[REG_PC]);
+		(eresi_Addr *) &e2dbgworld.curthread->context->uc_mcontext.gregs[REG_PC]);
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
@@ -130,7 +130,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_sparc32()
 
 
 /* Get Program Counter register */
-elfsh_Addr*	  e2dbg_getfp_bsd_sparc32()
+eresi_Addr*	  e2dbg_getfp_bsd_sparc32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(SPARC) && (defined(__FreeBSD__) || defined (__OpenBSD__))
@@ -146,12 +146,12 @@ elfsh_Addr*	  e2dbg_getfp_bsd_sparc32()
 
 /* Get Program Stack Pointer register on Sys V */
 /* On SPARC, we use SP and not FP in that handler */
-elfsh_Addr*	  e2dbg_getfp_sysv_sparc32()
+eresi_Addr*	  e2dbg_getfp_sysv_sparc32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(SPARC) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		(elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_O6]);
+		(eresi_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_O6]);
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }

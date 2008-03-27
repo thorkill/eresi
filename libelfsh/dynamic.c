@@ -114,7 +114,7 @@ elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d)
  * @param tag
  * @return
  */
-int		elfsh_set_dynentry_type(elfsh_Dyn *d, elfsh_Addr tag)
+int		elfsh_set_dynentry_type(elfsh_Dyn *d, eresi_Addr tag)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -147,7 +147,7 @@ elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
  * @param val
  * @return
  */
-int		elfsh_set_dynentry_val(elfsh_Dyn *d, elfsh_Addr val)
+int		elfsh_set_dynentry_val(elfsh_Dyn *d, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -228,7 +228,7 @@ elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file,
  * @return
  */
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, 
-						  elfsh_Addr index)
+						  eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dynamic + index));

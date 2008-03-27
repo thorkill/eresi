@@ -17,7 +17,7 @@
  */
 int		cmd_delete()
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   elfshbp_t	*bp;
   char		*name;
   int		prot;

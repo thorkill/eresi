@@ -154,7 +154,7 @@ int			cmd_cmp()
   revmexpr_t		*e2;
   char			logbuf[BUFSIZ];
   int			res;
-  elfsh_Addr		val;
+  eresi_Addr		val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

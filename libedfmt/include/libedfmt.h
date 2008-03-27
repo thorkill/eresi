@@ -56,7 +56,7 @@ int		edfmt_change_type_nfile(edfmttype_t *type);
 edfmtfile_t   	*edfmt_restore_parent_file();
 edfmtfile_t	*edfmt_get_current_file();
 edfmtfile_t	*edfmt_get_inc_file(edfmtfile_t *file, char *name);
-edfmtfile_t    	*edfmt_add_file(edfmtfile_t *parent_file, char *name, elfsh_Addr start, elfsh_Addr end);
+edfmtfile_t    	*edfmt_add_file(edfmtfile_t *parent_file, char *name, eresi_Addr start, eresi_Addr end);
 int		edfmt_reset_file();
 int		edfmt_reactive_file();
 edfmtinfo_t    	*edfmt_get_uniinfo(elfshobj_t *file);
@@ -72,9 +72,9 @@ edfmttype_t	*edfmt_add_type_void(char *name);
 edfmttype_t	*edfmt_add_type_link(char *name, edfmttype_t *type);
 
 edfmtvar_t	*edfmt_add_var_global(edfmttype_t *type, char *name, 
-				      elfsh_Addr addr);
+				      eresi_Addr addr);
 edfmtfunc_t	*edfmt_add_func(char *name, edfmttype_t *ret, 
-				elfsh_Addr start, elfsh_Addr end);
+				eresi_Addr start, eresi_Addr end);
 edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
 			       u_int reg, int pos, edfmttype_t *type);
 edfmttype_t	*edfmt_check_type(char *name);
@@ -88,8 +88,8 @@ elfshsect_t    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 /* edfmt-utils.c */
 char 		*edfmt_ckey(char *buf, u_int size, long key);
 char 		*edfmt_cline(char *buf, u_int size, u_int line, char *file);
-char 		*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr);
-elfsh_Addr     	edfmt_lookup_addr(elfshobj_t *file, char *param);
+char 		*edfmt_caddr(char *buf, u_int size, eresi_Addr addr);
+eresi_Addr     	edfmt_lookup_addr(elfshobj_t *file, char *param);
 void 	       	*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
 				  int astep, int nsize);
 int 		edfmt_clean_pool(char **pool);
@@ -134,7 +134,7 @@ long 		edfmt_read_leb128(void *data, u_int *bread);
 /* dwarf2-abbrev.c */
 int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size);
 int		edfmt_dwarf2_line(u_long offset);
-int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, elfsh_Addr addr, u_int fid);
+int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, eresi_Addr addr, u_int fid);
 int		edfmt_dwarf2_mac(u_long offset);
 int		edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *abbent, u_long pos, u_long ipos);
 int		edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table);

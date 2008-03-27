@@ -29,7 +29,7 @@ void		      elfsh_fixup(elfshobj_t *file)
   /* .got sht entsize fixup */
   got = elfsh_get_sht_entry_by_name(file, ELFSH_SECTION_NAME_GOT);
   if (got != NULL && got->sh_entsize == 0)
-    got->sh_entsize = sizeof(elfsh_Addr);
+    got->sh_entsize = sizeof(eresi_Addr);
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

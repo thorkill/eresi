@@ -19,7 +19,7 @@
  * @param range
  * @return
  */
-elfshsect_t		*elfsh_get_notes(elfshobj_t *file, elfsh_Addr range)
+elfshsect_t		*elfsh_get_notes(elfshobj_t *file, eresi_Addr range)
 {
   elfshsect_t		*notes;
   elfshnotent_t		*e;

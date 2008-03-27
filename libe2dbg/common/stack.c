@@ -11,7 +11,7 @@
 
 
 /* Symbol matching on the stack content. Always useful */
-int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start)
+int		e2dbg_stack_dump(uint32_t size, eresi_Addr start)
 {
   long		*i;
   char		logbuf[BUFSIZ];
@@ -25,7 +25,7 @@ int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start)
   /* Just a simple loop that dump resolved stack content */
   for (i = (long *) start; i < (long *) start + size; i++)
     {
-      if ((elfsh_Addr) i >= E2DBG_KERNELBASE)
+      if ((eresi_Addr) i >= E2DBG_KERNELBASE)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Cannot dump anymore : end of stack", -1);
 
@@ -34,10 +34,10 @@ int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start)
 	name = "?";
       if (off)
 	snprintf(logbuf, BUFSIZ - 1, " " XFMT " " XFMT " <%s + " DFMT "> \n", 
-		 (elfsh_Addr) i, (elfsh_Addr) *i, name, off);
+		 (eresi_Addr) i, (eresi_Addr) *i, name, off);
       else
 	snprintf(logbuf, BUFSIZ - 1, " " XFMT " " XFMT " <%s> \n", 
-		 (elfsh_Addr) i, (elfsh_Addr) *i, name);      
+		 (eresi_Addr) i, (eresi_Addr) *i, name);      
       e2dbg_output(logbuf);
     }
   e2dbg_output("\n");
@@ -50,7 +50,7 @@ int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start)
 int		cmd_stack()
 {
   char		*param;
-  elfsh_Addr	  size;
+  eresi_Addr	  size;
   revmobj_t	*ssp;
   revmexpr_t	*expr;
 
@@ -91,7 +91,7 @@ int		cmd_stack()
 int		cmd_dbgstack()
 {
   char		*param;
-  elfsh_Addr	  size;
+  eresi_Addr	  size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -113,7 +113,7 @@ int		cmd_dbgstack()
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid argument", (-1));
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-			 e2dbg_stack_dump(size, (elfsh_Addr) &param));
+			 e2dbg_stack_dump(size, (eresi_Addr) &param));
     }  
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Invalid parameter", -1);

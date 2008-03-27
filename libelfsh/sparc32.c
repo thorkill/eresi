@@ -24,7 +24,7 @@
 int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    char	*name,
 					    elfsh_Sym	*symbol,
-					    elfsh_Addr  addr)
+					    eresi_Addr  addr)
 {
   u_int			ret;
   int			off;
@@ -69,7 +69,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 #define SPARC32_NOP 0x01000000
 
   /* Create the hook for this function */
-  prot = elfsh_munprotect(file, (elfsh_Addr) hook, 28);
+  prot = elfsh_munprotect(file, (eresi_Addr) hook, 28);
 
   diff = addr - (hooks->shdr->sh_addr + (hook - (char *) elfsh_get_raw(hooks)));
   opcode[0] = SPARC32_B_OPCODE(diff); // b <redirect function>
@@ -84,7 +84,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
   opcode[5] = SPARC32_B_OPCODE(diff); // b <original function+8>
   opcode[6] = SPARC32_NOP;
 
-  elfsh_mprotect((elfsh_Addr) hook, 28, prot);
+  elfsh_mprotect((eresi_Addr) hook, 28, prot);
 
   opcode = (void *) buff;
 
@@ -129,7 +129,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
  */
 int		elfsh_hijack_plt_sparc32(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
-					 elfsh_Addr addr)
+					 eresi_Addr addr)
 {
   int		foffset;
   uint32_t	addrh, addrl;
@@ -172,7 +172,7 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
  */
 int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file, 
 						elfsh_Sym *symbol,
-						elfsh_Addr addr)
+						eresi_Addr addr)
 {
   int		foffset;
   uint32_t	addrh, addrl;
@@ -239,7 +239,7 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
  */
 int		elfsh_hijack_altplt_sparc32(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
-					    elfsh_Addr addr)
+					    eresi_Addr addr)
 {
   int		foffset;
   uint32_t	addrh, addrl;
@@ -324,12 +324,12 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1
  */
 int       elfsh_relocate_sparc32(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
-				 elfsh_Addr        *dword,
-				 elfsh_Addr         addr,
+				 eresi_Addr        *dword,
+				 eresi_Addr         addr,
 				 elfshsect_t	   *mod)		
 {
   int		retval;
-  elfsh_Addr	result;
+  eresi_Addr	result;
   uint32_t	*word;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

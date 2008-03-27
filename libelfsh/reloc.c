@@ -30,8 +30,8 @@ static char	isrel = 1;
  * @param off
  * @return
  */
-elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym, 
-				    elfsh_Addr off)
+elfsh_Rel	elfsh_create_relent(eresi_Addr type, eresi_Addr sym, 
+				    eresi_Addr off)
 {
   elfsh_Rel	r;
 
@@ -51,8 +51,8 @@ elfsh_Rel	elfsh_create_relent(elfsh_Addr type, elfsh_Addr sym,
  * @param add
  * @return
  */
-elfsh_Rela	elfsh_create_relaent(elfsh_Addr type, elfsh_Addr sym, 
-				     elfsh_Addr off, elfsh_Addr add)
+elfsh_Rela	elfsh_create_relaent(eresi_Addr type, eresi_Addr sym, 
+				     eresi_Addr off, eresi_Addr add)
 {
   elfsh_Rela	r;
   elfsh_Rela	*enta;
@@ -89,7 +89,7 @@ u_int	elfsh_get_reltype(elfsh_Rel *r)
  * @param type
  * @return
  */
-u_int	elfsh_set_reltype(elfsh_Rel *r, elfsh_Addr type)
+u_int	elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -121,7 +121,7 @@ u_int	elfsh_get_relsym(elfsh_Rel *r)
  * @param sym
  * @return
  */
-u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
+u_int	elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -138,7 +138,7 @@ u_int	elfsh_set_relsym(elfsh_Rel *r, elfsh_Addr sym)
  * @param r
  * @return
  */
-elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
+eresi_Addr	elfsh_get_reloffset(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -154,7 +154,7 @@ elfsh_Addr	elfsh_get_reloffset(elfsh_Rel *r)
  * @param off
  * @return
  */
-int		elfsh_set_reloffset(elfsh_Rel *r, elfsh_Addr off)
+int		elfsh_set_reloffset(elfsh_Rel *r, eresi_Addr off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -187,7 +187,7 @@ elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r)
  * @param val
  * @return
  */
-int     elfsh_set_reladdend(elfsh_Rela *r, elfsh_Addr val)
+int     elfsh_set_reladdend(elfsh_Rela *r, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -255,7 +255,7 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
  * @return
  */
 elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, 
-				 elfsh_Addr range, 
+				 eresi_Addr range, 
 				 u_int *nbr)
 {
   elfshsect_t	*s;
@@ -427,7 +427,7 @@ void		elfsh_setrel(char b)
  * @param index
  * @return
  */
-elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, elfsh_Addr index)
+elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, eresi_Addr index)
 {
   elfsh_Rela	*atable;
   
@@ -501,7 +501,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   elfshrel_t	*rel;
   int		*dword;
   char		*str;
-  elfsh_Addr   	vaddr;
+  eresi_Addr   	vaddr;
   u_int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -567,7 +567,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
       if (target != NULL)
 	{
 	  vaddr = sect->shdr->sh_addr + 
-	    (elfsh_Addr) ((char *) str - (char *) elfsh_get_raw(sect));
+	    (eresi_Addr) ((char *) str - (char *) elfsh_get_raw(sect));
 	  rel[index].idx_src = sect->index;
 	  rel[index].off_src = vaddr - sect->shdr->sh_addr;
 	  rel[index].idx_dst = target->index;

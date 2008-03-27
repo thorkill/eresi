@@ -44,7 +44,7 @@ int		cmd_analyse()
  int		nbr;
  container_t	*container;
  aspectype_t	*curtype;
- elfsh_Addr     addr;
+ eresi_Addr     addr;
  revmexpr_t     *expr; 
  revmobj_t      *obj;
 
@@ -103,8 +103,8 @@ int		cmd_analyse()
 	 container = hash_get(&world.mjr_session.cur->funchash, keys[index]);
 	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
 		  (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX),
-		  *(elfsh_Addr *) container->data);
-	 revm_inform_type_addr(curtype->name, logbuf, (elfsh_Addr) container, NULL, 0, 1);
+		  *(eresi_Addr *) container->data);
+	 revm_inform_type_addr(curtype->name, logbuf, (eresi_Addr) container, NULL, 0, 1);
        }
      hash_free_keys(keys);
      keys = hash_get_keys(&world.mjr_session.cur->blkhash, &nbr);
@@ -113,8 +113,8 @@ int		cmd_analyse()
 	 container = hash_get(&world.mjr_session.cur->blkhash, keys[index]);
 	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
 		  (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX),
-		  *(elfsh_Addr *) container->data);
-	 revm_inform_type_addr(curtype->name, logbuf, (elfsh_Addr) container, NULL, 0, 1);
+		  *(eresi_Addr *) container->data);
+	 revm_inform_type_addr(curtype->name, logbuf, (eresi_Addr) container, NULL, 0, 1);
        }
      hash_free_keys(keys);
      revm_output(" [*] Reflected succesfully all basic blocks and function meta-data \n\n");

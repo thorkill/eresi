@@ -26,7 +26,7 @@
 int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 			    char	*name,
 			    elfsh_Sym	*sym,
-			    elfsh_Addr	addr)
+			    eresi_Addr	addr)
 {
   // uint32_t	cur;
   
@@ -77,9 +77,9 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
  */
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
-					    elfsh_Addr addr)
+					    eresi_Addr addr)
 {
-  elfsh_Addr	result, result2;
+  eresi_Addr	result, result2;
   uint32_t      opcode[12];
   uint32_t      off;
   elfshsect_t   *altplt;
@@ -175,7 +175,7 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
  */
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
-					 elfsh_Addr addr)
+					 eresi_Addr addr)
 {
   int           foffset;
   uint32_t      opcode[3];
@@ -239,15 +239,15 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
  * @param addr
  * @return
  */
-elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
+eresi_Addr	elfsh_modgot_find(elfshsect_t *modgot, eresi_Addr addr)
 {
   unsigned int	idx;
-  elfsh_Addr	*cur;
+  eresi_Addr	*cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   cur = elfsh_get_raw(modgot);
-  for (idx = 0; idx < modgot->shdr->sh_size / sizeof(elfsh_Addr); idx++)
+  for (idx = 0; idx < modgot->shdr->sh_size / sizeof(eresi_Addr); idx++)
     {
 
       //printf("[modgot_find] Compare entries %016lX - %016lX \n", 
@@ -256,7 +256,7 @@ elfsh_Addr	elfsh_modgot_find(elfshsect_t *modgot, elfsh_Addr addr)
       if (cur[idx] == addr)
 	{
 	  printf("returned success in modgot_find \n");
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot->shdr->sh_addr + idx * sizeof(elfsh_Addr)));
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (modgot->shdr->sh_addr + idx * sizeof(eresi_Addr)));
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -282,7 +282,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   unsigned int	needed;
   char		*data;
   elfsh_Shdr	hdr;
-  elfsh_Addr	*got;
+  eresi_Addr	*got;
   elfsh_Sym	*sym;
   char		*name;
   char		tmpname[BUFSIZ];
@@ -322,9 +322,9 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   ** Inject section. Here we are sure that it was loaded in last 
   ** for this module and all ET_REL symbols have been injected.  
   */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, needed * sizeof(elfsh_Addr), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,data, needed * sizeof(eresi_Addr), NULL);
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_WRITE | SHF_ALLOC,
-			  0, 0, needed * sizeof(elfsh_Addr), 0, 0, 0, 0);
+			  0, 0, needed * sizeof(eresi_Addr), 0, 0, 0, 0);
 
   if (elfsh_insert_mapped_section(infile->parent, modgot, hdr,
 				  data, ELFSH_DATA_INJECTION, 0) < 0)
@@ -424,17 +424,17 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
  */
 int       elfsh_relocate_alpha64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
-				 elfsh_Addr        *dword,
-				 elfsh_Addr        addr,
+				 eresi_Addr        *dword,
+				 eresi_Addr        addr,
 				 elfshsect_t	   *mod)
 {
   elfshsect_t	*modgot;
-  elfsh_Addr     result;
+  eresi_Addr     result;
   int	         retval;
   uint32_t	*dw;
   uint32_t	off;
   uint16_t	hi, low;
-  elfsh_Addr	val;
+  eresi_Addr	val;
 
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

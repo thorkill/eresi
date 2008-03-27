@@ -49,7 +49,7 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 {
   u_char		cfa, cfa_data, scfa, c_low, c_high;
   int			data, reg;
-  elfsh_Addr		nloc;
+  eresi_Addr		nloc;
   edfmtdw2cfastate_t 	save_stack[20];
   int			isave_pos = 0;
   int      		cie;
@@ -164,8 +164,8 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	state->reg[data] = header->init.reg[data];
 	break;
       case DW_CFA_set_loc:
-	nloc = *(elfsh_Addr *) dwarf2_a_pos(frame);
-	dwarf2_inc_pos(frame, sizeof(elfsh_Addr));
+	nloc = *(eresi_Addr *) dwarf2_a_pos(frame);
+	dwarf2_inc_pos(frame, sizeof(eresi_Addr));
 	if (nloc > state->addr)
 	  {
 	    if (!init)
@@ -207,7 +207,7 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
 	dwarf2_iuleb128(data, frame);
 
 	state->cfa_reg = reg;
-	state->cfa_offset = (elfsh_Addr) data;
+	state->cfa_offset = (eresi_Addr) data;
 	break;
       case DW_CFA_def_cfa_register:
 	dwarf2_iuleb128(reg, frame);
@@ -217,7 +217,7 @@ static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state,
       case DW_CFA_def_cfa_offset:
 	dwarf2_iuleb128(data, frame);
 	  
-	state->cfa_offset = (elfsh_Addr) data;
+	state->cfa_offset = (eresi_Addr) data;
 	break;
       case DW_CFA_nop:
 	break;

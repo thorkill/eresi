@@ -19,7 +19,7 @@
  * @return
  */
 
-elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
+eresi_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!lm)
@@ -35,7 +35,7 @@ elfsh_Addr	elfsh_linkmap_get_laddr(elfshlinkmap_t *lm)
  * @param laddr
  * @return
  */
-void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, elfsh_Addr laddr)
+void		elfsh_linkmap_set_laddr(elfshlinkmap_t *lm, eresi_Addr laddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!lm)

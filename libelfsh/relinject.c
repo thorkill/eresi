@@ -30,8 +30,8 @@
  */
 static int      elfsh_relocate_entry(elfshsect_t        *enew,
                                      void               *reloc,
-				     elfsh_Addr		*dword,
-                                     elfsh_Addr         addr,
+				     eresi_Addr		*dword,
+                                     eresi_Addr         addr,
 				     elfshsect_t	*mod)
 {
   int		ret;
@@ -185,8 +185,8 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
   u_int		index;
   elfsh_Sym	*sym;
   u_int		size;
-  elfsh_Addr	*dword;
-  elfsh_Addr   	addr;
+  eresi_Addr	*dword;
+  eresi_Addr   	addr;
   char		*name;
   char		tmpname[BUFSIZ];
   elfshsect_t	*sect;
@@ -244,7 +244,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 			  "Unable to find symbol in ET_REL", -1);
 
       /* Grab a pointer on the dword that need to be relocated */
-      dword = (elfsh_Addr *) ((char *) elfsh_get_raw(enew) + cur->r_offset);
+      dword = (eresi_Addr *) ((char *) elfsh_get_raw(enew) + cur->r_offset);
 
       /*
       ** If symbol type is NOTYPE, we use ET_EXEC symtab, else if
@@ -286,7 +286,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
  
 #if	__DEBUG_RELADD__
 	  fprintf(stderr, "[DEBUG_RELADD] Relocate using existing symbol %-20s " AFMT "]\n",
-		  name, (elfsh_Addr) addr);
+		  name, (eresi_Addr) addr);
 #endif
 
 	}
@@ -339,7 +339,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 
 #if __DEBUG_RELADD__
 	  fprintf(stderr, "[DEBUG_RELADD] Relocate using section %-20s base [-> " AFMT "] \n",
-		  sect->name, (elfsh_Addr) addr);
+		  sect->name, (eresi_Addr) addr);
 #endif
 
 
@@ -459,12 +459,12 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   ELFSH_SELECT_INJECTION(file,writable,mode);
 
    if (mode == ELFSH_DATA_INJECTION)
-      modulo = sizeof(elfsh_Addr);
+      modulo = sizeof(eresi_Addr);
    else
      {
        /* modulo = mod; (to be uncommented one day) */
        //modulo = elfsh_get_pagesize(file);
-       modulo = sizeof(elfsh_Addr);
+       modulo = sizeof(eresi_Addr);
      }
 
 #if	__DEBUG_RELADD__
@@ -537,7 +537,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
 #if __DEBUG_RELADD__
       printf("[DEBUG_RELADD] Injected ET_REL symbol %-20s ["XFMT"] \n",
 	     elfsh_get_symbol_name(rel, sym + index),
-	     (elfsh_Addr) (sect->shdr->sh_addr + sym[index].st_value));
+	     (eresi_Addr) (sect->shdr->sh_addr + sym[index].st_value));
 #endif
 
       /* Add symbol in host file */
@@ -664,7 +664,7 @@ int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
   
   /* compute the inject modulo */
   mod = elfsh_get_pagesize(file);
-  //mod = sizeof(elfsh_Addr);
+  //mod = sizeof(eresi_Addr);
       
   /* Do a copy of the procedure linkage table for eventual redirection */
   if (!elfsh_static_file(file) && elfsh_copy_plt(file, mod) < 0)

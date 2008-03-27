@@ -44,7 +44,7 @@ int		mjr_symtab_rebuild(mjrsession_t *sess)
  * @brief This function inserts new symbol as a function. Shortcut for insert/set 
  */
 int		mjr_symbol_add(mjrsession_t	*sess, 
-			       elfsh_Addr	vaddr, 
+			       eresi_Addr	vaddr, 
 			       char		*fname)
 {
   elfshsect_t	*sect;

@@ -38,9 +38,9 @@ int		elfsh_set_phdr_prot(u_int mode)
  * @param segment
  * @return
  */
-elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
+eresi_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   int		prot = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -81,7 +81,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 		      "Failed to open /dev/zero", 
 		      ELFSH_INVALID_ADDR);
 
- addr = (elfsh_Addr) mmap((void *) 0, segment->p_memsz, 
+ addr = (eresi_Addr) mmap((void *) 0, segment->p_memsz, 
 			   prot,
 			   //elfsh_get_segment_flags(segment), 
 			   MAP_PRIVATE, 
@@ -89,7 +89,7 @@ elfsh_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
  close(zero);
 }
 #else  
-  addr = (elfsh_Addr) mmap((void *) 0, segment->p_memsz, 
+  addr = (eresi_Addr) mmap((void *) 0, segment->p_memsz, 
 			   prot,
 			   MAP_PRIVATE | MAP_ANONYMOUS, 
 			   0, 0);
@@ -141,7 +141,7 @@ int		elfsh_runtime_unmap(elfsh_Phdr *segment)
  */
 int		elfsh_runtime_remap(elfsh_Phdr *segment, uint32_t moresize)
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -177,7 +177,7 @@ int		elfsh_runtime_sync()
  * @return
  */
 int		elfsh_munprotect(elfshobj_t *file, 
-				 elfsh_Addr addr, 
+				 eresi_Addr addr, 
 				 uint32_t sz)
 {
   elfshsect_t	*sect;
@@ -234,7 +234,7 @@ int		elfsh_munprotect(elfshobj_t *file,
  * @param prot
  * @return
  */
-int		elfsh_mprotect(elfsh_Addr addr, uint32_t sz, int prot)
+int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot)
 {
   int		retval;
 

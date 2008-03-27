@@ -20,7 +20,7 @@ static u_char	watchflag;
 int		elfsh_bp_add(hash_t	*bps, 
 			     elfshobj_t *file, 
 			     char	*resolv, 
-			     elfsh_Addr addr, 
+			     eresi_Addr addr, 
 			     u_char	flags)
 {
   static int	lastbpid = 1;
@@ -64,7 +64,7 @@ int		elfsh_bp_add(hash_t	*bps,
 
 
 /* Add a breakpoint without using a script command */
-int		e2dbg_breakpoint_add(elfsh_Addr addr, u_char flags)
+int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags)
 {
   int		err;
   char		buf[BUFSIZ];
@@ -136,7 +136,7 @@ elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid)
 /* Find a breakpoint by various ways */
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   elfsh_Sym	*sym;
   elfshbp_t	*bp;
   uint16_t	bpid;
@@ -216,7 +216,7 @@ elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
 
 /* Find the correct location for a breakpoint. Avoid putting breakpoints 
    on plt entries when possible */
-elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
+eresi_Addr	e2dbg_breakpoint_find_addr(char *str)
 {
   elfsh_Sym	*sym;
   elfsh_Sym	*bsym;
@@ -225,7 +225,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
   char		**keys;
   int		keynbr;
   int		index;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   sym = bsym = NULL;
@@ -294,7 +294,7 @@ elfsh_Addr	e2dbg_breakpoint_find_addr(char *str)
 	}
 
 #if __DEBUG_BP__
-      printf("BPSym after %-30s = %08X \n", parent->name, (elfsh_Addr) sym);
+      printf("BPSym after %-30s = %08X \n", parent->name, (eresi_Addr) sym);
 #endif
 
     }
@@ -332,7 +332,7 @@ int		cmd_bp()
 {
   char		*str;
   int		ret;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		logbuf[BUFSIZ];
   int		idx;
   int		index;
@@ -362,7 +362,7 @@ int		cmd_bp()
 	{
 	  cur = hash_get(&e2dbgworld.bp, keys[index]);
 	  name = revm_resolve(world.curjob->curfile, 
-			    (elfsh_Addr) cur->addr, &off);
+			    (eresi_Addr) cur->addr, &off);
 	  if (off)
 	    snprintf(logbuf, BUFSIZ, " %c [%02u] " XFMT " <%s + " UFMT ">\n", 
 		     (e2dbg_is_watchpoint(cur) ? 'W' : 'B'),

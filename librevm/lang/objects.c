@@ -41,7 +41,7 @@ revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
 /**
  * @brief Create constant object 
  */
-revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_LONG(char perm, eresi_Addr val)
 {
   revmobj_t	*new;
 
@@ -61,7 +61,7 @@ revmobj_t	*revm_create_LONG(char perm, elfsh_Addr val)
 /** 
  * @brief Create constant object 
  */
-revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_CADDR(char perm, eresi_Addr val)
 {
   revmobj_t	*new;
 
@@ -84,7 +84,7 @@ revmobj_t	*revm_create_CADDR(char perm, elfsh_Addr val)
  * @param val
  * @return
  */
-revmobj_t	*revm_create_DADDR(char perm, elfsh_Addr val)
+revmobj_t	*revm_create_DADDR(char perm, eresi_Addr val)
 {
   revmobj_t	*new;
 
@@ -168,7 +168,7 @@ revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
  * @brief Create a redirection abstract object 
  */
 elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
-				 elfsh_Addr saddr, elfsh_Addr daddr)
+				 eresi_Addr saddr, eresi_Addr daddr)
 {
   elfshredir_t	*redir;
 

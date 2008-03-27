@@ -67,7 +67,7 @@ int		kernsh_hexdump(unsigned char * data,
 }
 
 
-u_int		kernsh_instr_display(u_int index, elfsh_Addr vaddr, 
+u_int		kernsh_instr_display(u_int index, eresi_Addr vaddr, 
 				     u_int foffset, u_int size, char *name, 
 				     u_int nindex, char *buff)
 			      
@@ -143,7 +143,7 @@ int		kernsh_disasm(char *buffer, int len, unsigned long addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int		kernsh_addrlen(revmlist_t *actual, elfsh_Addr *addr, int *len)
+int		kernsh_addrlen(revmlist_t *actual, eresi_Addr *addr, int *len)
 {
   revmexpr_t	*expr;
   revmobj_t     *obj;

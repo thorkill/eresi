@@ -112,8 +112,8 @@ u_int	elfsh_get_stab_type(elfshstabent_t *s)
  * @param s
  * @return
  */
-elfsh_Addr	elfsh_get_stab_offset(elfshstabent_t *s)
+eresi_Addr	elfsh_get_stab_offset(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (((elfsh_Addr) (s->value))));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (((eresi_Addr) (s->value))));
 }

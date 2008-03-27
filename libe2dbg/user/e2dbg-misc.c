@@ -18,7 +18,7 @@
  * @param addr
  * @return
  */
-elfshobj_t      *e2dbg_get_parent_object(elfsh_Addr addr)
+elfshobj_t      *e2dbg_get_parent_object(eresi_Addr addr)
 {
   elfsh_Phdr    *cur;
   elfshobj_t    *curfile;
@@ -110,14 +110,14 @@ static void	e2dbg_stack_get(e2dbgthread_t *cur)
   getrlimit(RLIMIT_STACK, &rlp);
   cur->stacksize = rlp.rlim_cur;
 
-  cur->stackaddr = (elfsh_Addr) environ;
+  cur->stackaddr = (eresi_Addr) environ;
 
   for (index = 0; environ[index]; index++)
     {
-      if ((elfsh_Addr) environ[index] > cur->stackaddr)
-	cur->stackaddr = (elfsh_Addr) environ[index];
-      if ((elfsh_Addr) (environ + index) > cur->stackaddr)
-	cur->stackaddr = (elfsh_Addr) environ + index;
+      if ((eresi_Addr) environ[index] > cur->stackaddr)
+	cur->stackaddr = (eresi_Addr) environ[index];
+      if ((eresi_Addr) (environ + index) > cur->stackaddr)
+	cur->stackaddr = (eresi_Addr) environ + index;
     }
 
   cur->stackaddr = cur->stackaddr - cur->stacksize;
@@ -126,7 +126,7 @@ static void	e2dbg_stack_get(e2dbgthread_t *cur)
   ret = snprintf(logbuf, BUFSIZ, 
 		 "\n [D] Thread ID %u has stack at addr %08X with size %u (environ = %08X) max = %08X\n",
 		 (unsigned int) cur->tid, cur->stackaddr, cur->stacksize, 
-		 (elfsh_Addr) environ, (elfsh_Addr) (cur->stackaddr + cur->stacksize));
+		 (eresi_Addr) environ, (eresi_Addr) (cur->stackaddr + cur->stacksize));
   write(1, logbuf, ret);
 #endif
 

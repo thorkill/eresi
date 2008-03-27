@@ -424,7 +424,7 @@ elfshsect_t		*elfsh_get_section_by_type(elfshobj_t	*file,
  * @return
  */
 elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
-						    elfsh_Addr	index,
+						    eresi_Addr	index,
 						    int		*strindex,
 						    int		*num)
 {
@@ -467,7 +467,7 @@ elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
  * @return
  */
 elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
-						    elfsh_Addr	index,
+						    eresi_Addr	index,
 						    int		*strindex,
 						    int		*num)
 {
@@ -575,7 +575,7 @@ elfshsect_t	*elfsh_create_section(char *name)
  * @return
  */
 elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
-					  elfsh_Addr   	value,
+					  eresi_Addr   	value,
 					  elfsh_SAddr   *offset)
 {
   elfshsect_t	*s;
@@ -1090,7 +1090,7 @@ elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
  * @return
  */
 elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list, 
-						  elfsh_Addr index)
+						  eresi_Addr index)
 {
   u_int			cur;
 

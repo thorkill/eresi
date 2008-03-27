@@ -54,7 +54,7 @@ int		cmd_got()
       for (index = 0; index < size; index++)
 	{
 
-	  name = revm_resolve(world.curjob->curfile, *((elfsh_Addr *) data + index), &offset);
+	  name = revm_resolve(world.curjob->curfile, *((eresi_Addr *) data + index), &offset);
 
 	  if (off != NULL)
 	    snprintf(off, sizeof(off), " %s %s", 
@@ -63,9 +63,9 @@ int		cmd_got()
 
 
 	  snprintf(buff, sizeof(buff), "%s : %s %s \t <%s%s>\n", 
-		   revm_coloraddress(XFMT, got->shdr->sh_addr + (index * sizeof(elfsh_Addr))),
+		   revm_coloraddress(XFMT, got->shdr->sh_addr + (index * sizeof(eresi_Addr))),
 		   revm_colornumber("[%02u]", index), 
-		   revm_coloraddress(XFMT, (elfsh_Addr) ((elfsh_Addr *) data)[index]), 
+		   revm_coloraddress(XFMT, (eresi_Addr) ((eresi_Addr *) data)[index]), 
 		   (name != NULL ? revm_colorstr(name) : revm_colorwarn("?")), 
 		   (off[0] && name && offset ? off : ""));
 

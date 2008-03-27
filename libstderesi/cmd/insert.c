@@ -29,7 +29,7 @@ int		cmd_insert()
   char		*name;
   char		type;
   elfsh_Word	ptype;
-  elfsh_Addr	val;
+  eresi_Addr	val;
   u_int		modulo;
   char		*param0, *param1, *param2, *param3, *param4;
   char		logbuf[BUFSIZ];

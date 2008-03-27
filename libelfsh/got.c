@@ -29,7 +29,7 @@ int		elfsh_shift_got(elfshobj_t *file,
   elfshsect_t	*got;
   int		nbr;
   u_int		idx;
-  elfsh_Addr	*addr;
+  eresi_Addr	*addr;
 
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -42,7 +42,7 @@ int		elfsh_shift_got(elfshobj_t *file,
   if (!got)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Cannot retreive GOT in ET_DYN", -1);
-  nbr = nbr / sizeof(elfsh_Addr);
+  nbr = nbr / sizeof(eresi_Addr);
   for (idx = 0; idx < nbr; idx++)
     {
       addr = elfsh_get_got_entry_by_index(got->data, idx);
@@ -61,7 +61,7 @@ int		elfsh_shift_got(elfshobj_t *file,
  */
 int		elfsh_endianize_got(elfshsect_t *newsect)
 {
-  elfsh_Addr	*cur;  
+  eresi_Addr	*cur;  
   int		idx;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -93,7 +93,7 @@ int		elfsh_endianize_got(elfshsect_t *newsect)
  * @param num
  * @return
  */
-elfsh_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
+eresi_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
 {
   elfshsect_t	*enew;
 
@@ -183,14 +183,14 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
  * @return
  */
 elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, 
-				      elfsh_Addr range, 
+				      eresi_Addr range, 
 				      u_int	 *nbr)
 {
   elfshsect_t	*got;
   elfshsect_t	*cursect;
   u_int		idx;
   char		*name;
-  elfsh_Addr	rank = 0;
+  eresi_Addr	rank = 0;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -261,10 +261,10 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
  */
 int		elfsh_set_got_entry_by_index(elfshobj_t *file, 
 					     int i, 
-					     elfsh_Addr n)
+					     eresi_Addr n)
 {
   int		nbr;
-  elfsh_Addr	*got;
+  eresi_Addr	*got;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -292,9 +292,9 @@ int		elfsh_set_got_entry_by_index(elfshobj_t *file,
  */
 int		elfsh_set_got_entry_by_name(elfshobj_t *f, 
 					    char *n, 
-					    elfsh_Addr a)
+					    eresi_Addr a)
 {
-  elfsh_Addr	*got;
+  eresi_Addr	*got;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -317,8 +317,8 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *f,
  * @param index
  * @return
  */
-elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got, 
-					      elfsh_Addr index)
+eresi_Addr     	*elfsh_get_got_entry_by_index(eresi_Addr *got, 
+					      eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -337,11 +337,11 @@ elfsh_Addr     	*elfsh_get_got_entry_by_index(elfsh_Addr *got,
  * @param name
  * @return
  */
-elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
+eresi_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 {
   int		nbr;
   u_int		index;
-  elfsh_Addr	*got;
+  eresi_Addr	*got;
   elfsh_Sym	*sym;
   u_int		sz;
 
@@ -384,7 +384,7 @@ elfsh_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
  * @param vaddr
  * @return
  */
-int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
+int		elfsh_set_got_entry(eresi_Addr *got, eresi_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -404,7 +404,7 @@ int		elfsh_set_got_entry(elfsh_Addr *got, elfsh_Addr vaddr)
  * @param got
  * @return
  */
-elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
+eresi_Addr		elfsh_get_got_entry(eresi_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -422,7 +422,7 @@ elfsh_Addr		elfsh_get_got_entry(elfsh_Addr *got)
  * @param got
  * @return
  */
-elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
+eresi_Addr		elfsh_get_got_val(eresi_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -440,7 +440,7 @@ elfsh_Addr		elfsh_get_got_val(elfsh_Addr *got)
  * @param got
  * @return
  */
-elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
+eresi_Addr		elfsh_get_got_addr(eresi_Addr *got)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -459,7 +459,7 @@ elfsh_Addr		elfsh_get_got_addr(elfsh_Addr *got)
  * @param val
  * @return
  */
-u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
+u_int			elfsh_set_got_val(eresi_Addr *got, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -479,7 +479,7 @@ u_int			elfsh_set_got_val(elfsh_Addr *got, elfsh_Addr val)
  * @param val
  * @return
  */
-u_int			elfsh_set_got_addr(elfsh_Addr *got, elfsh_Addr val)
+u_int			elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

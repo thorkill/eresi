@@ -410,7 +410,7 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
      WORK IN PROGRESS.
   */
   elfsh_Dyn *dyn;
-  elfsh_Addr sect_addr;
+  eresi_Addr sect_addr;
   elfsh_Word sect_size, ent_size;
 
 #if 1

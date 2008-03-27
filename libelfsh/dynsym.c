@@ -190,7 +190,7 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
  * @return
  */
 elfsh_Sym	  *elfsh_get_dynsymbol_by_value(elfshobj_t	*file,
-						elfsh_Addr	vaddr,
+						eresi_Addr	vaddr,
 						int	*off,
 						int	mode)
 {
@@ -219,7 +219,7 @@ elfsh_Sym	  *elfsh_get_dynsymbol_by_value(elfshobj_t	*file,
  * @return
  */
 char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
-					 elfsh_Addr	value, 
+					 eresi_Addr	value, 
 					 elfsh_SAddr    *offset)
 {
   elfshsect_t	*sect;
@@ -234,7 +234,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  if (!value || value == (elfsh_Addr) -1)
+  if (!value || value == (eresi_Addr) -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameters", NULL);  
   if (file == NULL)
@@ -391,7 +391,7 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
  * @param inc
  * @return
  */
-int		elfsh_shift_dynsym(elfshobj_t *file, elfsh_Addr limit, int inc)
+int		elfsh_shift_dynsym(elfshobj_t *file, eresi_Addr limit, int inc)
 {
   elfshsect_t	*actual;
   int		err;

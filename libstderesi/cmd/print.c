@@ -19,7 +19,7 @@ void		revm_object_print(revmobj_t *obj)
   u_char	byte;
   uint16_t	half;
   uint32_t	word;
-  elfsh_Addr   	val;
+  eresi_Addr   	val;
   char		*str;
   char		logbuf[BUFSIZ];
   u_int		idx;

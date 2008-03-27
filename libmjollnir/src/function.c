@@ -144,7 +144,7 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
  * @brief Finger print a function using X method 
  */
 void			*mjr_fingerprint_function(mjrcontext_t  *ctx, 
-						  elfsh_Addr	addr, 
+						  eresi_Addr	addr, 
 						  int		type) {
 
   MD5_CTX		md5ctx;

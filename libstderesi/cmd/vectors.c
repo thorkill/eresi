@@ -92,7 +92,7 @@ static int	revm_vector_modify()
   vector_t	*cur;
   int		dimnbr;
   unsigned int	*dims;
-  elfsh_Addr	value;
+  eresi_Addr	value;
   char		logbuf[BUFSIZ];
   int		len;
   int		index;
@@ -106,7 +106,7 @@ static int	revm_vector_modify()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid update value for vector", -1);
   value = (obj->immed ? obj->immed_val.ent : 
-	   (elfsh_Addr) obj->get_obj(obj->parent));
+	   (eresi_Addr) obj->get_obj(obj->parent));
   
   /* Lookup vector indexes */
   if (strchr(world.curjob->curcmd->param[0], ':'))
@@ -145,7 +145,7 @@ static int	revm_vector_modify()
  * @param vaddr
  * @param def
  */
-static void	revm_vector_entry_display(elfsh_Addr vaddr, elfsh_Addr def)
+static void	revm_vector_entry_display(eresi_Addr vaddr, eresi_Addr def)
 {
   Dl_info	info;
   char		*bsep;
@@ -207,7 +207,7 @@ static void	revm_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
 	for (idx2 = 0; idx2 < depth; idx2++)
 	  len += snprintf(log + len, sz - len, "[%02u]", index[idx2]);
 	revm_output(log);
-	revm_vector_entry_display((elfsh_Addr) tab[idx], (elfsh_Addr) def);
+	revm_vector_entry_display((eresi_Addr) tab[idx], (eresi_Addr) def);
       }
 
   /* Otherwise recurse more */
@@ -288,7 +288,7 @@ static int	 revm_vector_display()
   vector_t	*cur;
   int		dimnbr;
   unsigned int	*dims;
-  elfsh_Addr	value;
+  eresi_Addr	value;
   char		logbuf[BUFSIZ];
   int		len;
   int		index;
@@ -310,13 +310,13 @@ static int	 revm_vector_display()
       if (revm_vector_bad_dims(cur, dims, dimnbr))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Requested vector with bad dimensions", -1);
-      value = (elfsh_Addr) aspect_vectors_select(cur, dims);
+      value = (eresi_Addr) aspect_vectors_select(cur, dims);
       len = snprintf(logbuf, sizeof(logbuf), "\n [*] Vector[%s]", 
 		     world.curjob->curcmd->param[0]);
       for (index = 0; index < dimnbr; index++)
 	len += snprintf(logbuf + len, sizeof(logbuf) - len, "[%u]", dims[index]);
       revm_output(logbuf);
-      revm_vector_entry_display((elfsh_Addr) value, (elfsh_Addr) cur->default_func);
+      revm_vector_entry_display((eresi_Addr) value, (eresi_Addr) cur->default_func);
       revm_output("\n");
     }
   else

@@ -96,7 +96,7 @@ int kernsh_sct_linux(list_t *lsct)
 
 	  memcpy(syscall->name, 
 		 elfsh_reverse_symbol(libkernshworld.root, 
-				      (elfsh_Addr) syscall->addr, 
+				      (eresi_Addr) syscall->addr, 
 				      &offset),
 		 sizeof(syscall->name));
 

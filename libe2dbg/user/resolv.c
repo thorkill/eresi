@@ -25,8 +25,8 @@ int			reference = 42;
  * @param refsym
  * @return
  */
-elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve, 
-				     elfsh_Addr refaddr, char *refsym)
+eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve, 
+				     eresi_Addr refaddr, char *refsym)
 {
   e2dbgobj_t		obj;
   elfsh_Phdr		*pht;
@@ -34,9 +34,9 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   u_int			nbr, nbr2;
   elfsh_Sym		cursym;
   char			*strtab;
-  elfsh_Addr		got;
+  eresi_Addr		got;
   u_int			curoff;
-  elfsh_Addr		found_ref = 0;
+  eresi_Addr		found_ref = 0;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
@@ -97,7 +97,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
       else if (dyn[nbr2].d_tag == DT_STRSZ)
 	obj.strsz = dyn[nbr2].d_un.d_val;
       else if (dyn[nbr2].d_tag == DT_PLTGOT)
-	got = (elfsh_Addr) dyn[nbr2].d_un.d_val;
+	got = (eresi_Addr) dyn[nbr2].d_un.d_val;
     }
 
 #if __DEBUG_E2DBG__
@@ -188,7 +188,7 @@ elfsh_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
  * @param sym2resolve
  * @return
  */
-elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
+eresi_Addr		e2dbg_dlsym(char *sym2resolve)
 {
   e2dbgobj_t		obj;
   elfsh_Dyn		*dyn;
@@ -196,7 +196,7 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
   elfsh_Sym		cursym;
   char			*strtab;
   u_int			curoff;
-  elfsh_Addr		found_sym = 0;
+  eresi_Addr		found_sym = 0;
   elfshlinkmap_t	*curobj;
   elfsh_Ehdr		hdr;
 
@@ -325,9 +325,9 @@ elfsh_Addr		e2dbg_dlsym(char *sym2resolve)
  */
 elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 {
-  elfsh_Addr		baseaddr;
+  eresi_Addr		baseaddr;
   char			path[BUFSIZ];
-  elfsh_Addr		*got;
+  eresi_Addr		*got;
   elfshlinkmap_t	*lm;
   char			*version;
 #if defined(__FreeBSD__) || defined(__NetBSD__)
@@ -360,10 +360,10 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
 #if defined(linux)
   baseaddr = e2dbg_dlsect(path, ".got.plt", 
-			  (elfsh_Addr) &reference, "reference");
+			  (eresi_Addr) &reference, "reference");
 #else
   baseaddr = e2dbg_dlsect(path, ".got", 
-			  (elfsh_Addr) &reference, "reference");
+			  (eresi_Addr) &reference, "reference");
 #endif
 
 #if __DEBUG_E2DBG__
@@ -371,10 +371,10 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   write(2, buf, len);
 #endif
 
-  got = (elfsh_Addr *) baseaddr;
+  got = (eresi_Addr *) baseaddr;
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] GOT address = %08X\n", (elfsh_Addr) got);
+  len = sprintf(buf, " [*] GOT address = %08X\n", (eresi_Addr) got);
   write(2, buf, len);
 #endif
 
@@ -391,7 +391,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #if __DEBUG_E2DBG__
   len = sprintf(buf, 
 		" [*] Guessed Linkmap address = %08X \n--------------\n", 
-		(elfsh_Addr) lm);
+		(eresi_Addr) lm);
   write(2, buf, len);
 #endif
 
@@ -435,7 +435,7 @@ int		e2dbg_dlsym_init()
   e2dbgworld.syms.map = e2dbg_linkmap_getaddr();
 
   /* Only use our own dlsym here, do not use the libc handler */
-  e2dbgworld.syms.mallocsym = (elfsh_Addr) e2dbg_dlsym("malloc");
+  e2dbgworld.syms.mallocsym = (eresi_Addr) e2dbg_dlsym("malloc");
   if (!e2dbgworld.syms.mallocsym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig malloc not found", (-1));
@@ -447,7 +447,7 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  e2dbgworld.syms.callocsym = (elfsh_Addr) e2dbg_dlsym("calloc");
+  e2dbgworld.syms.callocsym = (eresi_Addr) e2dbg_dlsym("calloc");
   if (!e2dbgworld.syms.callocsym)
     {
       dlerror();
@@ -462,7 +462,7 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  e2dbgworld.syms.reallocsym = (elfsh_Addr) e2dbg_dlsym("realloc");
+  e2dbgworld.syms.reallocsym = (eresi_Addr) e2dbg_dlsym("realloc");
   if (!e2dbgworld.syms.reallocsym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig realloc not found", (-1));
@@ -474,7 +474,7 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  e2dbgworld.syms.freesym = (elfsh_Addr) e2dbg_dlsym("free");
+  e2dbgworld.syms.freesym = (eresi_Addr) e2dbg_dlsym("free");
   if (!e2dbgworld.syms.freesym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig free not found", (-1));
@@ -485,7 +485,7 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  e2dbgworld.syms.vallocsym = (elfsh_Addr) e2dbg_dlsym("valloc");
+  e2dbgworld.syms.vallocsym = (eresi_Addr) e2dbg_dlsym("valloc");
   if (!e2dbgworld.syms.vallocsym)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Orig valloc not found", (-1));
@@ -497,7 +497,7 @@ int		e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-  e2dbgworld.syms.signal        = (elfsh_Addr) e2dbg_dlsym("signal");
+  e2dbgworld.syms.signal        = (eresi_Addr) e2dbg_dlsym("signal");
   if (!e2dbgworld.syms.signal)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Orig signal not found", (-1));
@@ -511,9 +511,9 @@ int		e2dbg_dlsym_init()
 
 
   /* Non fatal symbols, especially on BSD */
-  e2dbgworld.syms.memalignsym = (elfsh_Addr) e2dbg_dlsym("memalign");
-  e2dbgworld.syms.pthreadcreate = (elfsh_Addr) e2dbg_dlsym("pthread_create");
-  e2dbgworld.syms.pthreadexit   = (elfsh_Addr) e2dbg_dlsym("pthread_exit");
+  e2dbgworld.syms.memalignsym = (eresi_Addr) e2dbg_dlsym("memalign");
+  e2dbgworld.syms.pthreadcreate = (eresi_Addr) e2dbg_dlsym("pthread_create");
+  e2dbgworld.syms.pthreadexit   = (eresi_Addr) e2dbg_dlsym("pthread_exit");
 
   /* Now we can use malloc cause allocation symbols are resolved */
   /* The allocator proxy will select between legit or alternative syms */
@@ -531,7 +531,7 @@ int		e2dbg_dlsym_init()
      the linkmap address in its second entry */
 #if !defined(__FreeBSD__)
   handle = dlopen(NULL, RTLD_LAZY);
-  e2dbgworld.syms.piebase  = (elfsh_Addr) dlsym(handle, "_end");
+  e2dbgworld.syms.piebase  = (eresi_Addr) dlsym(handle, "_end");
   dlclose(handle);
 #endif
 

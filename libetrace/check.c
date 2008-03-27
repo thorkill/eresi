@@ -25,7 +25,7 @@
  * @see etrace_tracable
  */
 static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
-						  int num, u_char dynsym, elfsh_Addr *vaddr)
+						  int num, u_char dynsym, eresi_Addr *vaddr)
 {
   u_int			index;
   elfshsect_t		*sect;
@@ -89,8 +89,8 @@ static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
  * @param addr function address
  * @param vaddr returned virtual address
  */
-int			etrace_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
-						 elfsh_Addr *vaddr, u_char *dynsym)
+int			etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
+						 eresi_Addr *vaddr, u_char *dynsym)
 {
   int			retvalue;
 
@@ -120,7 +120,7 @@ int			etrace_valid_faddr(elfshobj_t *file, elfsh_Addr addr,
  * @see etrace_tracable_sym
  */
 int 			etrace_tracable(elfshobj_t *file, char *name,
-					      elfsh_Addr *vaddr, u_char *external)
+					      eresi_Addr *vaddr, u_char *external)
 {
   elfsh_Sym		*symtab, *dynsym;
   int			symnum = 0, dynsymnum = 0;

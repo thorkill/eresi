@@ -15,7 +15,7 @@
  * Thats needed for the mprotect stuff inside the breakpoint handler 
  * @param addr
  */
-elfshobj_t      *revm_get_parent_object(elfsh_Addr addr)
+elfshobj_t      *revm_get_parent_object(eresi_Addr addr)
 {
   elfsh_Phdr    *cur;
   elfshobj_t    *curfile;

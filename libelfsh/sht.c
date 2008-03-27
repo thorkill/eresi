@@ -452,7 +452,7 @@ elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
 					  elfsh_Word type,
 					  elfsh_Word flags,
-					  elfsh_Addr addr,
+					  eresi_Addr addr,
 					  elfsh_Off offset,
 					  elfsh_Word size,
 					  elfsh_Word link,
@@ -792,7 +792,7 @@ char	elfsh_get_section_allocflag(elfsh_Shdr *s)
  * @param f
  * @return
  */
-char	elfsh_set_section_allocflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_allocflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -828,7 +828,7 @@ char	elfsh_get_section_writableflag(elfsh_Shdr *s)
  * @param f
  * @return
  */
-char	elfsh_set_section_writableflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_writableflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -864,7 +864,7 @@ char	elfsh_get_section_execflag(elfsh_Shdr *s)
  * @param f
  * @return
  */
-char	elfsh_set_section_execflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_execflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -900,7 +900,7 @@ char	elfsh_get_section_mergeableflag(elfsh_Shdr *s)
  * @param f
  * @return
  */
-char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_mergeableflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -936,7 +936,7 @@ char	elfsh_get_section_strflag(elfsh_Shdr *s)
  * @param f
  * @return
  */
-char	elfsh_set_section_strflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_strflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -974,7 +974,7 @@ char	elfsh_get_section_linkflag(elfsh_Shdr *s)
  * @return
  */
 
-char	elfsh_set_section_linkflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_linkflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1011,7 +1011,7 @@ char	elfsh_get_section_orderflag(elfsh_Shdr *s)
  * @return
  */
 
-char	elfsh_set_section_orderflag(elfsh_Shdr *s, elfsh_Addr f)
+char	elfsh_set_section_orderflag(elfsh_Shdr *s, eresi_Addr f)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1046,7 +1046,7 @@ elfsh_Word		elfsh_get_section_info(elfsh_Shdr *s)
  * @param info
  * @return
  */
-int		elfsh_set_section_info(elfsh_Shdr *s, elfsh_Addr info)
+int		elfsh_set_section_info(elfsh_Shdr *s, eresi_Addr info)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1078,7 +1078,7 @@ elfsh_Word		elfsh_get_section_entsize(elfsh_Shdr *s)
  * @param entsize
  * @return
  */
-int		elfsh_set_section_entsize(elfsh_Shdr *s, elfsh_Addr entsize)
+int		elfsh_set_section_entsize(elfsh_Shdr *s, eresi_Addr entsize)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1110,7 +1110,7 @@ elfsh_Word	elfsh_get_section_link(elfsh_Shdr *s)
  * @param link
  * @return
  */
-int		elfsh_set_section_link(elfsh_Shdr *s, elfsh_Addr link)
+int		elfsh_set_section_link(elfsh_Shdr *s, eresi_Addr link)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1142,7 +1142,7 @@ elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
  * @param offset
  * @return
  */
-int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
+int	elfsh_set_section_foffset(elfsh_Shdr *s, eresi_Addr offset)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1158,7 +1158,7 @@ int	elfsh_set_section_foffset(elfsh_Shdr *s, elfsh_Addr offset)
  * @param s Pointer to section structure.
  * @return Return section address or -1 on error.
  */
-elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
+eresi_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1174,7 +1174,7 @@ elfsh_Addr	elfsh_get_section_addr(elfsh_Shdr *s)
  * @param addr New address of section
  * @return Returns 0 on success or -1 on error.
  */
-int	elfsh_set_section_addr(elfsh_Shdr *s, elfsh_Addr addr)
+int	elfsh_set_section_addr(elfsh_Shdr *s, eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1206,7 +1206,7 @@ elfsh_Word	elfsh_get_section_align(elfsh_Shdr *s)
  * @param align
  * @return
  */
-int	elfsh_set_section_align(elfsh_Shdr *s, elfsh_Addr align)
+int	elfsh_set_section_align(elfsh_Shdr *s, eresi_Addr align)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1238,7 +1238,7 @@ elfsh_Word	elfsh_get_section_size(elfsh_Shdr *s)
  * @param size New size of section.
  * @return Returns 0 on success or -1 on error.
  */
-int	elfsh_set_section_size(elfsh_Shdr *s, elfsh_Addr size)
+int	elfsh_set_section_size(elfsh_Shdr *s, eresi_Addr size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1270,7 +1270,7 @@ elfsh_Word	elfsh_get_section_type(elfsh_Shdr *s)
  * @param type
  * @return Returns 0 on success or -1 on error.
  */
-int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
+int	elfsh_set_section_type(elfsh_Shdr *s, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1296,7 +1296,7 @@ int	elfsh_set_section_type(elfsh_Shdr *s, elfsh_Addr type)
  * @return Pointer to a section structure.
  */
 elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s, 
-						      elfsh_Addr index)
+						      eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s + index));

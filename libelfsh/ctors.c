@@ -17,7 +17,7 @@
  * @param num
  * @return
  */
-elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
+eresi_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 {
   elfshsect_t	*enew;
 
@@ -51,7 +51,7 @@ elfsh_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
 
   /* Return data */
   if (num != NULL)
-    *num = enew->shdr->sh_size / sizeof(elfsh_Addr);
+    *num = enew->shdr->sh_size / sizeof(eresi_Addr);
 
   /* Return a pointer on the data. Also work in debug mode */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
@@ -71,7 +71,7 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
   elfshsect_t	*ctors;
   int		nbr;
   u_int		idx;
-  elfsh_Addr	*addr;
+  eresi_Addr	*addr;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ctors = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_CTORS, 
@@ -79,7 +79,7 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
   if (!ctors)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Cannot retreive CTORS in ET_DYN", -1);
-  nbr = nbr / sizeof(elfsh_Addr);
+  nbr = nbr / sizeof(eresi_Addr);
   for (idx = 0; idx < nbr; idx++)
     {
       addr = elfsh_get_ctors_entry_by_index(ctors->data, idx);
@@ -100,9 +100,9 @@ int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
  */
 int		elfsh_set_ctors_entry_by_index(elfshobj_t	*file, 
 					       int		index, 
-					       elfsh_Addr     	addr)
+					       eresi_Addr     	addr)
 {
-  elfsh_Addr	*ctors;
+  eresi_Addr	*ctors;
   int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -131,9 +131,9 @@ int		elfsh_set_ctors_entry_by_index(elfshobj_t	*file,
  */
 int		elfsh_set_ctors_entry_by_name(elfshobj_t	*file, 
 					      char		*name,
-					      elfsh_Addr       	new_addr)
+					      eresi_Addr       	new_addr)
 {
-  elfsh_Addr	*ctors;
+  eresi_Addr	*ctors;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -153,7 +153,7 @@ int		elfsh_set_ctors_entry_by_name(elfshobj_t	*file,
  * @param index
  * @return
  */
-elfsh_Addr     	*elfsh_get_ctors_entry_by_index(elfsh_Addr *ctors, elfsh_Addr index)
+eresi_Addr     	*elfsh_get_ctors_entry_by_index(eresi_Addr *ctors, eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -171,10 +171,10 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid NULL parameter",
  * @param name
  * @return
  */
-elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
+eresi_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Sym	*sym;
-  elfsh_Addr	*ctors;
+  eresi_Addr	*ctors;
   int		nbr;
   u_int		idx;
 
@@ -206,7 +206,7 @@ elfsh_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
  * @param vaddr
  * @return
  */
-int		elfsh_set_ctors_entry(elfsh_Addr *ctors, elfsh_Addr vaddr)
+int		elfsh_set_ctors_entry(eresi_Addr *ctors, eresi_Addr vaddr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,7 +222,7 @@ int		elfsh_set_ctors_entry(elfsh_Addr *ctors, elfsh_Addr vaddr)
  * @param ctors
  * @return
  */
-elfsh_Addr     	elfsh_get_ctors_entry(elfsh_Addr *ctors)
+eresi_Addr     	elfsh_get_ctors_entry(eresi_Addr *ctors)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

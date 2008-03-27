@@ -35,7 +35,7 @@ elfsh_Sword	elfsh_get_gpvalue(elfshobj_t* file)
  * @param gp
  * @return
  */
-int		elfsh_set_gpvalue(elfshobj_t* file, elfsh_Addr gp)
+int		elfsh_set_gpvalue(elfshobj_t* file, eresi_Addr gp)
 {
   elfsh_Sword	rgp;
   elfsh_Sword	*agp;

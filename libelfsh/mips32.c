@@ -29,7 +29,7 @@
 int			elfsh_cflow_mips32(elfshobj_t *file,
 					   char	      *name,
 					   elfsh_Sym  *symbol,
-					   elfsh_Addr  addr)
+					   eresi_Addr  addr)
 {
   elfshsect_t		*hooks;
   elfshsect_t		*source;
@@ -126,7 +126,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   /* Insert the old symbol on the original saved bytes */
   //name = elfsh_get_symbol_name(file, symbo);
   snprintf(bufname, BUFSIZ, "old_%s", name); 
-  elfsh_insert_funcsym(file, bufname, (elfsh_Addr) hook,
+  elfsh_insert_funcsym(file, bufname, (eresi_Addr) hook,
 		       ret + 0x10, hooks->index);
 
   /*  
@@ -177,7 +177,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
  */
 int		elfsh_hijack_plt_mips32(elfshobj_t *file, 
 					elfsh_Sym *symbol,
-					elfsh_Addr addr)
+					eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -208,7 +208,7 @@ int		elfsh_hijack_plt_mips32(elfshobj_t *file,
  */
 int		elfsh_hijack_altplt_mips32(elfshobj_t *file, 
 					   elfsh_Sym *symbol,
-					   elfsh_Addr addr)
+					   eresi_Addr addr)
 {
   elfshsect_t   *altgotprolog, *altgot, *padgot, *got, *start;
   elfshsect_t	*dynsym, *dynamic;
@@ -262,7 +262,7 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   
   dynent2 = elfsh_get_dynamic_entry_by_type(file, DT_MIPS_LOCAL_GOTNO); 
   gotno  = (dynent2 ? elfsh_get_dynentry_val(dynent2) : 0);
-  gotnbr = got->shdr->sh_size / sizeof(elfsh_Addr);
+  gotnbr = got->shdr->sh_size / sizeof(eresi_Addr);
   if (gotnbr < gotno)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GOT smaller than DT_MIPS_GOTSYM", -1);
@@ -315,8 +315,8 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
 	
 	printf("Using GOT index %u \n", gotindex);
 	
-	opcode[opcodendx++] = 0x8d0a0000 | (uint16_t) gotindex * sizeof(elfsh_Addr);
-	opcode[opcodendx++] = 0xad2a0000 | (uint16_t) gotindex * sizeof(elfsh_Addr);
+	opcode[opcodendx++] = 0x8d0a0000 | (uint16_t) gotindex * sizeof(eresi_Addr);
+	opcode[opcodendx++] = 0xad2a0000 | (uint16_t) gotindex * sizeof(eresi_Addr);
 	varindex++;
       }
 
@@ -345,17 +345,17 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
  */
 int			elfsh_relocate_mips32(elfshsect_t       *new,
 					      elfsh_Rel         *cur,
-					      elfsh_Addr        *dword,
-					      elfsh_Addr        addr,
+					      eresi_Addr        *dword,
+					      eresi_Addr        addr,
 					      elfshsect_t	*mod)
 {
   int			retval;
   static u_int		HI16_todo = 0;
   static elfsh_Rel	*HI16_cur = NULL; 
-  static elfsh_Addr	*HI16_dword = NULL;
-  static elfsh_Addr	HI16_addr = NULL;
+  static eresi_Addr	*HI16_dword = NULL;
+  static eresi_Addr	HI16_addr = NULL;
 
-  elfsh_Addr		old_HI16_dword = NULL;
+  eresi_Addr		old_HI16_dword = NULL;
 
 
 #define VERIFY16(x)     (((x) & (0xFFFFFFFF << 16)) ? 1 : 0)

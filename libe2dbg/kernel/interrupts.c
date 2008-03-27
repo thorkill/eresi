@@ -48,22 +48,22 @@ unsigned int gdt_limit;
 unsigned long idt_[2];
 unsigned long gdt_[2];
 unsigned long ldt_[1];
-elfsh_Addr	data_ptr;
+eresi_Addr	data_ptr;
 unsigned int old_data_ptr;
 unsigned int update_disasm=1;
 unsigned int force_disasm=0;
-elfsh_Addr	code_ptr;
-elfsh_Addr	old_code_ptr;
+eresi_Addr	code_ptr;
+eresi_Addr	old_code_ptr;
 Reg_struct current_reg_stack;
 Reg_struct *reg_stack;
-elfsh_Addr	stack_ptr;
+eresi_Addr	stack_ptr;
 unsigned int oo;
 unsigned int saved_eflag;
-elfsh_Addr current_CS;
-elfsh_Addr current_DS;
-elfsh_Addr ring0_ES;
-elfsh_Addr ring0_FS;
-elfsh_Addr ring0_GS;
+eresi_Addr current_CS;
+eresi_Addr current_DS;
+eresi_Addr ring0_ES;
+eresi_Addr ring0_FS;
+eresi_Addr ring0_GS;
 unsigned int mycr2;
 
 volatile unsigned int ooooooo;
@@ -287,7 +287,7 @@ void ke2dbg_keystate_print (unsigned int oo)
  * @param selector
  * @param current_eip                                               
  */
-void ke2dbg_printf_disasm(elfsh_Addr selector, elfsh_Addr current_eip)
+void ke2dbg_printf_disasm(eresi_Addr selector, eresi_Addr current_eip)
 {
   unsigned int i, ii;
   unsigned int vic;
@@ -295,7 +295,7 @@ void ke2dbg_printf_disasm(elfsh_Addr selector, elfsh_Addr current_eip)
   unsigned int x=0;
   unsigned int index_chaine=0;
 
-  elfsh_Addr	virtual_eip;
+  eresi_Addr	virtual_eip;
 
   unsigned char *symbol_name;
   unsigned int	j;
@@ -431,10 +431,10 @@ void ke2dbg_printf_disasm(elfsh_Addr selector, elfsh_Addr current_eip)
  * @param selecter
  * @param ptr
  */
-void ke2dbg_data_dump(elfsh_Addr selector, elfsh_Addr ptr)
+void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
 {
   unsigned int i, ii;
-  elfsh_Addr    virtual_eip;
+  eresi_Addr    virtual_eip;
   unsigned char buff[1024];
   unsigned int index_chaine;
 	

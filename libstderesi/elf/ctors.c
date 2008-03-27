@@ -18,7 +18,7 @@
 int		cmd_ctors()
 {
   regex_t	*tmp;
-  elfsh_Addr	*ctors;
+  eresi_Addr	*ctors;
   int		size;
   int		index;
   elfsh_SAddr  	offset;
@@ -59,7 +59,7 @@ int		cmd_ctors()
       
       snprintf(buff, sizeof(buff), " %s  %s \t <%s%s>\n", 
 	       revm_colornumber("[%02u]", index), 
-	       revm_coloraddress(XFMT, (elfsh_Addr) ctors[index]), 
+	       revm_coloraddress(XFMT, (eresi_Addr) ctors[index]), 
 	       (name ? revm_colorstr(name) : revm_colorwarn("?")), 
 	       (name && offset ? off : ""));
       

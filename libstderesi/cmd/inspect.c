@@ -17,7 +17,7 @@
  * Some API that needs to be moved in another file ! 
  * @param id
  */
-elfsh_Addr	revm_get_block_vaddr_by_id(int id)
+eresi_Addr	revm_get_block_vaddr_by_id(int id)
 {
   container_t *container;
   mjrblock_t	 *block;
@@ -73,7 +73,7 @@ int			cmd_inspect()
       if (!cntnr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to find block symbol or address", -1);
-      name = elfsh_reverse_metasym(world.curjob->curfile, *(elfsh_Addr *) cntnr->data, &off);
+      name = elfsh_reverse_metasym(world.curjob->curfile, *(eresi_Addr *) cntnr->data, &off);
     }
   else
     {

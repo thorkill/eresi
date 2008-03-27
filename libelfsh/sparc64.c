@@ -31,7 +31,7 @@
 int	elfsh_cflow_sparc64(elfshobj_t  *null,
 			    char	*snull,
 			    elfsh_Sym	*null2,
-			    elfsh_Addr	null3)
+			    eresi_Addr	null3)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -47,7 +47,7 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
  */
 int		elfsh_hijack_plt_sparc64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
-					 elfsh_Addr addr)
+					 eresi_Addr addr)
 {
   int		foffset;
   uint32_t	addrh, addrl;
@@ -108,7 +108,7 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
  */
 int		elfsh_hijack_altplt_sparc64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
-					    elfsh_Addr addr)
+					    eresi_Addr addr)
 {
   int		foffset;
   uint32_t	addrh, addrl;
@@ -178,8 +178,8 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
  */
 int       elfsh_relocate_sparc64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
-				 elfsh_Addr        *dword,
-				 elfsh_Addr        addr,
+				 eresi_Addr        *dword,
+				 eresi_Addr        addr,
 				 elfshsect_t	   *mod)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

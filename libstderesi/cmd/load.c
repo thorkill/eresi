@@ -95,7 +95,7 @@ int		revm_file_loads(char *regex)
  * @param lm
  * @return
  */
-int		revm_file_load(char *name, elfsh_Addr base, elfshlinkmap_t *lm)
+int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
 {
   elfshobj_t	*new;
   revmexpr_t	*expr;

@@ -119,7 +119,7 @@ static char	*revm_colornothing(char *sp, void *object)
     NOPROFILER_ROUT((char *) object);
 
   if (strchr(sp, 's') == NULL)
-    snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, *(elfsh_Addr *) object);
+    snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, *(eresi_Addr *) object);
   else
     snprintf(tokens[curtok], COLOR_TOKEN_LEN - 1, sp, object);
 
@@ -205,11 +205,11 @@ char 		*revm_colorget(char *sp, char *type, void *object)
       NOPROFILER_ROUT(NULL);
     }
 
-  //printf("Before token = %016llX \n", (elfsh_Addr *) object);
+  //printf("Before token = %016llX \n", (eresi_Addr *) object);
   
   //snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
   if (strchr(sp, 's') == NULL)
-    snprintf(text, COLOR_TOKEN_LEN - 1, sp, *(elfsh_Addr *) object);
+    snprintf(text, COLOR_TOKEN_LEN - 1, sp, *(eresi_Addr *) object);
   else
     snprintf(text, COLOR_TOKEN_LEN - 1, sp, object);
 
@@ -308,7 +308,7 @@ char *revm_colorwarn_fmt(char *pattern, char *text)
   return revm_colorget(pattern, "warnstring", text); 
 }
 
-char *revm_coloraddress(char *pattern, elfsh_Addr addr) 		
+char *revm_coloraddress(char *pattern, eresi_Addr addr) 		
 { 
   return revm_colorget(pattern, "address", &addr); 
 }

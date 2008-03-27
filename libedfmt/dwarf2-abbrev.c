@@ -543,7 +543,7 @@ int			edfmt_dwarf2_mac(u_long offset)
 int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 {
   u_int			i, spos, bsize, tmp_op;
-  elfsh_Addr		tmp_value;
+  eresi_Addr		tmp_value;
   edfmtdw2loc_t		stack[75];
   int			bra;
 
@@ -570,13 +570,13 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
       switch(buf[i])
 	{
 	case DW_OP_addr:
-	  stack[spos].value = *(elfsh_Addr *) (buf + (++i));
-	  i += sizeof(elfsh_Addr) - 1;
+	  stack[spos].value = *(eresi_Addr *) (buf + (++i));
+	  i += sizeof(eresi_Addr) - 1;
 	  break;
 	case DW_OP_deref:
 	  stack[spos].op = DW_OP_addr;
 	  if (stack[spos].value != NULL)
-	    stack[spos].value = *(elfsh_Addr *) stack[spos].value;
+	    stack[spos].value = *(eresi_Addr *) stack[spos].value;
 	  break;
 	case DW_OP_const1u:
 	  stack[spos].value = *(u_char *) (buf + (++i));
@@ -901,7 +901,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
  */
 static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 {
-  elfsh_Addr  		addr;
+  eresi_Addr  		addr;
   u_int			file;
   u_int			line;
   u_int			column;
@@ -964,7 +964,7 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      for (i = 0; i < current_cu->addr_size; i++)
 			dwarf2_ipos(read_addr[i], line, u_char);
 
-		      addr = *(elfsh_Addr *) read_addr;
+		      addr = *(eresi_Addr *) read_addr;
 		      break;
 		    case DW_LNE_define_file:
 		      header->files_number++;
@@ -1127,7 +1127,7 @@ int			edfmt_dwarf2_line(u_long offset)
  * Record a new line entry
  */
 int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, 
-					      elfsh_Addr addr, u_int fid)
+					      eresi_Addr addr, u_int fid)
 {
   edfmtdw2line_t 	*pline;
 

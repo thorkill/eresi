@@ -425,7 +425,7 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
  * @param num number of entities (optional)
  * @return section pointer
  */
-elfshsect_t	*elfsh_get_hashtable_by_range(elfshobj_t *file, elfsh_Addr range, int *num)
+elfshsect_t	*elfsh_get_hashtable_by_range(elfshobj_t *file, eresi_Addr range, int *num)
 {
   elfshsect_t	*new;
   int		nbr;

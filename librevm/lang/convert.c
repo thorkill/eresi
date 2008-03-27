@@ -34,7 +34,7 @@ int		revm_convert2str(revmobj_t *obj)
   u_char	val8;
   u_short	val16;
   u_int		val32;
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
   char		tmp[30];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -103,7 +103,7 @@ int		revm_convert2str(revmobj_t *obj)
  */
 int		revm_convert2int(revmobj_t *obj)
 {
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
   u_int		val32;
   u_short	val16;
   u_char	val8;
@@ -148,7 +148,7 @@ int		revm_convert2int(revmobj_t *obj)
     case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-      val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : 
+      val64 = (eresi_Addr) (obj->immed ? obj->immed_val.ent : 
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.word = (int) val64;
@@ -170,7 +170,7 @@ int		revm_convert2int(revmobj_t *obj)
  */
 int		revm_convert2addr(revmobj_t *obj, u_int type)
 {
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -183,7 +183,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
       obj->immed_val.ent = val64;
       obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
-      obj->size = sizeof(elfsh_Addr);
+      obj->size = sizeof(eresi_Addr);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_SHORT:
@@ -193,7 +193,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
       obj->immed_val.ent = val64;
       obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
-      obj->size = sizeof(elfsh_Addr);
+      obj->size = sizeof(eresi_Addr);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_STR:
@@ -206,7 +206,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
       obj->immed_val.ent = val64;
       obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
-      obj->size = sizeof(elfsh_Addr);
+      obj->size = sizeof(eresi_Addr);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_INT:
@@ -215,7 +215,7 @@ int		revm_convert2addr(revmobj_t *obj, u_int type)
       obj->immed_val.ent = val64;
       obj->otype = aspect_type_get_by_id(type);
       obj->immed = 1;
-      obj->size = sizeof(elfsh_Addr);
+      obj->size = sizeof(eresi_Addr);
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_CADDR:
@@ -261,7 +261,7 @@ int		revm_convert2raw(revmobj_t *obj)
   u_char	val8;
   u_short	val16;
   u_int		val32;
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -313,7 +313,7 @@ int		revm_convert2raw(revmobj_t *obj)
       memcpy(obj->immed_val.str, &val64, sizeof(val64)); // FIXME: Take care of endianess !
       obj->otype = aspect_type_get_by_id(ASPECT_TYPE_RAW);
       obj->immed = 1;
-      obj->size = sizeof(elfsh_Addr);
+      obj->size = sizeof(eresi_Addr);
       obj->sizelem = 0;
       break;
     default:
@@ -331,7 +331,7 @@ int		revm_convert2byte(revmobj_t *obj)
   u_char	val8;
   u_short	val16;
   int		val32;
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -372,7 +372,7 @@ int		revm_convert2byte(revmobj_t *obj)
     case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-      val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : 
+      val64 = (eresi_Addr) (obj->immed ? obj->immed_val.ent : 
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.byte = (u_char) val64;
@@ -396,7 +396,7 @@ int		revm_convert2short(revmobj_t *obj)
   u_char	val8;
   u_short	val16;
   int		val32;
-  elfsh_Addr	val64;
+  eresi_Addr	val64;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -438,7 +438,7 @@ int		revm_convert2short(revmobj_t *obj)
     case ASPECT_TYPE_LONG:
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
-      val64 = (elfsh_Addr) (obj->immed ? obj->immed_val.ent : 
+      val64 = (eresi_Addr) (obj->immed ? obj->immed_val.ent : 
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
       obj->immed_val.half = (u_short) val64;

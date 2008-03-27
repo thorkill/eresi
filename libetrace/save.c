@@ -297,7 +297,7 @@ int			etrace_save(elfshobj_t *file)
   int			idx;
   int			rs = 0, fd;
   struct stat		s;
-  elfsh_Addr		addr;
+  eresi_Addr		addr;
   elfsh_Sym		*dst;
   int			err;
   char			*system[6];
@@ -577,13 +577,13 @@ int			etrace_save(elfshobj_t *file)
   fwrite(buf, strlen(buf), sizeof(char), fp);
 
   /* Setup structures */
-  for (index = sizeof(elfsh_Addr); index < 512; index++)
+  for (index = sizeof(eresi_Addr); index < 512; index++)
     {
-      if (index > sizeof(elfsh_Addr))
+      if (index > sizeof(eresi_Addr))
 	{
 	  snprintf(buf, BUFSIZ - 1, 
 		   "typedef struct trace_s_%1$d { void *ptr; char elm[%2$d]; } trace_arg_%1$d;\n",
-		   index, index - sizeof(elfsh_Addr));
+		   index, index - sizeof(eresi_Addr));
 	}
       else
 	{

@@ -1305,7 +1305,7 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
  * @param num set entitie number (optional)
  * @return founded section
  */
-elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, elfsh_Addr range, 
+elfshsect_t		*elfsh_get_versymtab_by_range(elfshobj_t *file, eresi_Addr range, 
 						      int *num)
 {
   elfshsect_t		*sect;
@@ -1441,7 +1441,7 @@ void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
  * @parma set entity number (optional)
  * @retrun section element
  */
-elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, elfsh_Addr range, int *num)
+elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, eresi_Addr range, int *num)
 {
   elfsh_Verdef		*table;
   void			*ps;

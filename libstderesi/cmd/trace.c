@@ -143,7 +143,7 @@ static int		revm_traces_match_in_symtable(elfshsect_t	*sect,
  */
 static int		revm_traces_match_in_addrtable(char ***func_list, u_int *count)
 {
-  elfsh_Addr		*alist = NULL;
+  eresi_Addr		*alist = NULL;
   u_int			index;
   char			**f_list;
   u_int			cnum;
@@ -224,7 +224,7 @@ static int		revm_traces_match_funcname(char *funcname, char ***func_list)
   char			funcreg[256];
   char			addrname[256];
   size_t		len;
-  elfsh_Addr		addr;
+  eresi_Addr		addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -468,7 +468,7 @@ edfmtfunc_t 		*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name,
  * @see revm_traces_createargs
  */
 static int		revm_traces_build_args(elfshobj_t *file, elfshtraces_t *ent, 
-					     edfmtfunc_t *func, elfsh_Addr vaddr, 
+					     edfmtfunc_t *func, eresi_Addr vaddr, 
 					     u_char external)
 {
   u_int			index;
@@ -518,8 +518,8 @@ static int		revm_traces_build_args(elfshobj_t *file, elfshtraces_t *ent,
 	  if (arg->type->size > 0)
 	    ent->arguments[index].size = arg->type->size; 
 	  
-	  if (ent->arguments[index].size < sizeof(elfsh_Addr))
-	    ent->arguments[index].size = sizeof(elfsh_Addr); 
+	  if (ent->arguments[index].size < sizeof(eresi_Addr))
+	    ent->arguments[index].size = sizeof(eresi_Addr); 
 	}
 
       ent->argc = func->argc;
@@ -538,7 +538,7 @@ static int		revm_traces_build_args(elfshobj_t *file, elfshtraces_t *ent,
  * @see revm_traces_build_args
  */
 elfshtraces_t		*revm_traces_createargs(elfshobj_t *file, char *name,
-					      edfmtfunc_t *func, elfsh_Addr vaddr,
+					      edfmtfunc_t *func, eresi_Addr vaddr,
 					      u_char external)
 {
   elfshtraces_t 	*newtrace;
@@ -577,14 +577,14 @@ int		traces_add(elfshobj_t *file, char *name, char **optarg)
 {
   elfshtraces_t 	*traces;
   edfmtfunc_t		*func = NULL;
-  elfsh_Addr		vaddr = 0;
+  eresi_Addr		vaddr = 0;
   u_char		external = 0;
   char			**func_list;
   u_int			index, traced = 0;
   char			*trace_name;
   int			ret;
   char			*current_name;
-  elfsh_Addr		addr = 0;
+  eresi_Addr		addr = 0;
   u_char		cont = 0;
   u_char		multiaddr = 0;
   size_t		prelen;

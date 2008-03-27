@@ -21,7 +21,7 @@ int		cmd_reflect()
   asm_instr	*cur;
   elfsh_Half	machine;
   char		logbuf[BUFSIZ];
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   int		off;
   int		ret;
   aspectype_t	*curtype;
@@ -111,7 +111,7 @@ int		cmd_reflect()
       instrcontainer = container_create(curtype->type, cur, NULL, NULL);
       snprintf(logbuf, sizeof (logbuf), "$instr-"XFMT, curblock->vaddr + off); 
       expr = revm_inform_type_addr(curtype->name, strdup(logbuf),
-				   (elfsh_Addr) instrcontainer, NULL, 0, 1);
+				   (eresi_Addr) instrcontainer, NULL, 0, 1);
       elist_add(instrlist, strdup(logbuf), expr);
     }
 

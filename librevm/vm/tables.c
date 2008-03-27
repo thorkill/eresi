@@ -120,7 +120,7 @@ static void	setup_L1hash()
 							  elfsh_get_got_entry_by_index,
        							  elfsh_get_got_entry,
 							  elfsh_set_got_entry,
-							  sizeof (elfsh_Addr)));
+							  sizeof (eresi_Addr)));
 
 
   hash_add(&L1_hash, "dynamic" , (void *) revm_create_L1ENT(elfsh_get_dynamic,
@@ -137,7 +137,7 @@ static void	setup_L1hash()
 							  elfsh_get_ctors_entry_by_index,
 							  elfsh_get_ctors_entry,
 							  elfsh_set_ctors_entry,
-							  sizeof (elfsh_Addr)));
+							  sizeof (eresi_Addr)));
 
   hash_add(&L1_hash, "dtors"   , (void *) revm_create_L1ENT(elfsh_get_dtors,
 							  NULL, 
@@ -146,7 +146,7 @@ static void	setup_L1hash()
 							  elfsh_get_dtors_entry_by_index,
 							  elfsh_get_dtors_entry,
 							  elfsh_set_dtors_entry,
-							  sizeof (elfsh_Addr)));
+							  sizeof (eresi_Addr)));
   
   hash_add(&L1_hash, "rel"     , (void *) revm_create_L1ENT(NULL,
 							  elfsh_get_reloc, // slot 2

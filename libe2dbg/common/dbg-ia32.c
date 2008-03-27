@@ -120,7 +120,7 @@ void		  e2dbg_set_regvars_ia32_sysv()
 
 
 /* Get Program Counter register */
-elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
+eresi_Addr*	  e2dbg_getpc_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
@@ -134,12 +134,12 @@ elfsh_Addr*	  e2dbg_getpc_bsd_ia32()
 }
 
 /* Get Program Counter register on Sys V */
-elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
+eresi_Addr*	  e2dbg_getpc_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__i386__) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
+		     (eresi_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
@@ -147,7 +147,7 @@ elfsh_Addr*	  e2dbg_getpc_sysv_ia32()
 
 
 /* Get Program Counter register */
-elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
+eresi_Addr*	  e2dbg_getfp_bsd_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if !defined(sun) && !defined(__amd64__) && defined(__FreeBSD__) //|| defined (__OpenBSD__)
@@ -162,12 +162,12 @@ elfsh_Addr*	  e2dbg_getfp_bsd_ia32()
 }
 
 /* Get Program Counter register on Sys V */
-elfsh_Addr*	  e2dbg_getfp_sysv_ia32()
+eresi_Addr*	  e2dbg_getfp_sysv_ia32()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(__i386__) && (defined(__linux__) || defined(sun))
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		     (elfsh_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
+		     (eresi_Addr *)&e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }

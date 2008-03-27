@@ -16,21 +16,21 @@
  * symbol for the main function. This is a separate function so that it
  * can be called frmo the tracer and benefit from the main symbol presence
  */
-elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
+eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
 				 asm_processor	*proc,
 				 u_char		*buf,
 				 u_int		len,
-				 elfsh_Addr	vaddr,
+				 eresi_Addr	vaddr,
 				 u_int		*dis)
 {
   int		   stop;
   elfsh_Sym	   *sym;
   u_int		   ilen;
-  elfsh_Addr	   init_addr;
+  eresi_Addr	   init_addr;
   asm_instr	   ins;
   int		   arch_bin;
   int		   fetch_next = 0;
-  elfsh_Addr	   main_addr;
+  eresi_Addr	   main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -151,12 +151,12 @@ elfsh_Addr	   mjr_find_main(elfshobj_t	*obj,
  * a call is found. This allow to fetch the main address in an OS-dependent 
  * manner 
  */
-elfsh_Addr	mjr_trace_start(mjrcontext_t	*context,
+eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
 				u_char		*buf,
 				u_int		len,
-				elfsh_Addr	vaddr)
+				eresi_Addr	vaddr)
 {
-  elfsh_Addr	main_addr;
+  eresi_Addr	main_addr;
   container_t   *main_container;
   container_t   *tmpcntnr;
   u_int		dis;

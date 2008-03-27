@@ -18,7 +18,7 @@ int			e2dbg_linkmap_load(char *name)
 {
   static int		done	= 0;
   elfshsect_t		*got;
-  elfsh_Addr		*linkmap_entry;
+  eresi_Addr		*linkmap_entry;
   void			*data;
 #if defined(sun)
   Link_map		*actual;
@@ -82,7 +82,7 @@ int			e2dbg_linkmap_load(char *name)
 
       endsym = elfsh_get_symbol_by_name(world.curjob->curfile, "_end");
 
-      fprintf(stderr, "endsym = " AFMT " \n", (elfsh_Addr) endsym);
+      fprintf(stderr, "endsym = " AFMT " \n", (eresi_Addr) endsym);
       sleep(1);
 
 #if __DEBUG_LINKMAP__
@@ -247,8 +247,8 @@ int		 e2dbg_linkmap_print(elfshobj_t *file)
     {
       snprintf(logbuf, BUFSIZ - 1, 
 	       " [%02u] addr : " XFMT " dyn : " XFMT " - %s\n", i, 
-	       (elfsh_Addr) elfsh_linkmap_get_laddr(actual), 
-	       (elfsh_Addr) elfsh_linkmap_get_lld(actual),
+	       (eresi_Addr) elfsh_linkmap_get_laddr(actual), 
+	       (eresi_Addr) elfsh_linkmap_get_lld(actual),
 	       elfsh_linkmap_get_lname(actual));
       e2dbg_output(logbuf);
     }
@@ -258,8 +258,8 @@ int		 e2dbg_linkmap_print(elfshobj_t *file)
     {
       snprintf(logbuf, BUFSIZ - 1, 
 	       " [%02u] addr : "XFMT" dyn : "XFMT" - %s\n", i, 
-	       (elfsh_Addr) elfsh_linkmap_get_laddr(actual), 
-	       (elfsh_Addr) elfsh_linkmap_get_lld(actual),
+	       (eresi_Addr) elfsh_linkmap_get_laddr(actual), 
+	       (eresi_Addr) elfsh_linkmap_get_lld(actual),
 	       elfsh_linkmap_get_lname(actual));
       e2dbg_output(logbuf);
     }

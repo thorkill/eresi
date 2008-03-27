@@ -26,7 +26,7 @@ int		cmd_foreach()
   int		infbound;
   int		upbound;
   u_int		typeid;
-  elfsh_Addr	lastvalue;
+  eresi_Addr	lastvalue;
   char		*setname;
   revmexpr_t	*setexpr;
   revmobj_t	*setobj;
@@ -233,15 +233,15 @@ int		cmd_foreach()
       if (aspect_type_simple(indexpr->type->type) && !indexpr->type->next)
 	{
 	  var->immed = 1;
-	  var->immed_val.ent = (elfsh_Addr) elem;
-	  //fprintf(stderr, "Setting indvar->immed_val.ent = %X \n", (elfsh_Addr) elem);
+	  var->immed_val.ent = (eresi_Addr) elem;
+	  //fprintf(stderr, "Setting indvar->immed_val.ent = %X \n", (eresi_Addr) elem);
 	}
       else 
 	{
 	  typename = indexpr->type->name;
 	  revm_expr_destroy(world.curjob->curcmd->param[0]);
 	  indexpr = revm_inform_type_addr(typename, world.curjob->curcmd->param[0], 
-					  (elfsh_Addr) elem, NULL, 0, 1);
+					  (eresi_Addr) elem, NULL, 0, 1);
 	  if (!indexpr)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, setname);

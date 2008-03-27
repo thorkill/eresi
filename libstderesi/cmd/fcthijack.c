@@ -15,7 +15,7 @@
 int		cmd_hijack()
 {
   elfsh_Sym	*dst;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   int		err;
   char		*rev;
   char		logbuf[BUFSIZ];
@@ -25,7 +25,7 @@ int		cmd_hijack()
   int		idx;
   int		idx2;
   int		printed;
-  elfsh_Addr	hookedaddr;
+  eresi_Addr	hookedaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -87,7 +87,7 @@ int		cmd_hijack()
   if (dst == NULL)
     {
       err = sscanf(world.curjob->curcmd->param[1], XFMT, 
-		   (elfsh_Addr *) &addr);
+		   (eresi_Addr *) &addr);
       
       /* If the hook function is not supplied as an address */
       if (err != 1 && elfsh_dynamic_file(world.curjob->curfile))
@@ -154,7 +154,7 @@ int		cmd_hijack()
     {
       snprintf(logbuf, BUFSIZ - 1,
 	       "\n [*] Function %s redirected to addr " XFMT " <%s> \n\n", 
-	       world.curjob->curcmd->param[0], (elfsh_Addr) addr, 
+	       world.curjob->curcmd->param[0], (eresi_Addr) addr, 
 	       (rev == NULL ? world.curjob->curcmd->param[1] : rev));
       revm_output(logbuf);
     }

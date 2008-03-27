@@ -15,7 +15,7 @@
  * @param vaddr Entry point address for analysis
  * @param len Size of code to analyse
  */
-static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr vaddr, int len)
+static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, eresi_Addr vaddr, int len)
 {
   asm_instr	instr;
   unsigned int	curr, ilen;
@@ -54,7 +54,7 @@ static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, elfsh_Addr v
  * @param addr Entry point address for analysis
  * @param flags <FIXME:NotImplemented>
  */
-static int mjr_analyse_addr(mjrsession_t *sess, elfsh_Addr addr, int flags) 
+static int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int flags) 
 {
   elfshsect_t	*parent;
   elfsh_SAddr   offset;
@@ -109,8 +109,8 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
   container_t	*cntnr;
   unsigned char	*ptr;
   unsigned long	len;
-  elfsh_Addr	e_point, vaddr;
-  elfsh_Addr	main_addr;
+  eresi_Addr	e_point, vaddr;
+  eresi_Addr	main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -193,7 +193,7 @@ int		mjr_analyse_finished(mjrsession_t *sess)
  * @param sess Mjollnir session strucutre
  * @param flags <FIXME:NotImplemented>
  */
-int		mjr_analyse(mjrsession_t *sess, elfsh_Addr entry, int flags) 
+int		mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int flags) 
 {
   char		*shtName;
   elfsh_Shdr	*shtlist, *shdr;
@@ -202,7 +202,7 @@ int		mjr_analyse(mjrsession_t *sess, elfsh_Addr entry, int flags)
   container_t	*fcnt;
   int		num_sht, idx_sht;
   int		index, blocksize;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		c;
   int		ret;
 

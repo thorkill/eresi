@@ -65,7 +65,7 @@ char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
  * @param addr address to transform
  * @return the modified pointer or NULL
  */
-char 			*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr)
+char 			*edfmt_caddr(char *buf, u_int size, eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -84,12 +84,12 @@ char 			*edfmt_caddr(char *buf, u_int size, elfsh_Addr addr)
  * @param param name to search
  * @return addresse found or 0
  */
-elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
+eresi_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 {
   elfsh_Sym		*sym;
   char			eol;
   int			ret;
-  elfsh_Addr	       	val;
+  eresi_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -116,7 +116,7 @@ elfsh_Addr		edfmt_lookup_addr(elfshobj_t *file, char *param)
 
   /* No match -- returns ERR */
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to lookup address object", (elfsh_Addr) 0);
+		    "Unable to lookup address object", (eresi_Addr) 0);
 }
 
 

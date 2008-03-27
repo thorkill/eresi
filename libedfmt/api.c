@@ -483,7 +483,7 @@ edfmtfile_t		*edfmt_get_inc_file(edfmtfile_t *file, char *name)
  * @return created file
  */
 edfmtfile_t		*edfmt_add_file(edfmtfile_t *parent_file, char *name, 
-					elfsh_Addr start, elfsh_Addr end)
+					eresi_Addr start, eresi_Addr end)
 {
   edfmtfile_t 		*file, *already_file;
 
@@ -821,7 +821,7 @@ edfmttype_t		*edfmt_add_type_link(char *name, edfmttype_t *type)
  * @param addr variable address
  * @return result variable
  */
-edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr)
+edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, eresi_Addr addr)
 {
   edfmtvar_t		*lvar;
 
@@ -848,7 +848,7 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, elfsh_Addr addr
  * @return result function
  */
 edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret, 
-					elfsh_Addr start, elfsh_Addr end)
+					eresi_Addr start, eresi_Addr end)
 {
   edfmtfunc_t		*lfunc;
 

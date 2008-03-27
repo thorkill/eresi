@@ -222,7 +222,7 @@ int 		cmd_hashx()
   elfshsect_t	*sect;
   elfsh_Sym	*sym;
   char		logbuf[BUFSIZ];
-  elfsh_Addr	range = 0;
+  eresi_Addr	range = 0;
   int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

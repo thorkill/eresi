@@ -34,7 +34,7 @@ int		cmd_kalloc()
 	       revm_colorfieldstr("octet(s)"),
 	       revm_colorfieldstr("OF CONTIGUOUS MEMORY"),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) addr));
       revm_output(buff);
       revm_setvar_long("_", addr);
     }
@@ -70,7 +70,7 @@ int		cmd_kfree()
 	       revm_colorfieldstr("FREE"),
 	       revm_colorfieldstr("CONTIGUOUS MEMORY"),
 		   revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) addr));
       revm_output(buff);
       revm_setvar_int("_", 0);
     }
@@ -107,7 +107,7 @@ int		cmd_kallocnc()
 	       revm_colorfieldstr("octet(s)"),
 	       revm_colorfieldstr("OF NON CONTIGUOUS MEMORY"),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) addr));
       revm_output(buff);
       revm_setvar_long("_", addr);
     }
@@ -142,7 +142,7 @@ int		cmd_kfreenc()
 	       revm_colorfieldstr("FREE"),
 	       revm_colorfieldstr("NONCONTIGUOUS MEMORY"),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) addr));
       revm_output(buff);
       revm_setvar_int("_", 0);
     }

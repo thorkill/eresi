@@ -33,7 +33,7 @@ elfsh_Word	elfsh_get_symbol_size(elfsh_Sym *s)
  * @param size New size of symbol
  * @return 0 on success or -1 on error.
  */
-int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
+int	elfsh_set_symbol_size(elfsh_Sym *s, eresi_Addr size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -49,7 +49,7 @@ int	elfsh_set_symbol_size(elfsh_Sym *s, elfsh_Addr size)
  * @param s
  * @return
  */
-elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
+eresi_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -65,7 +65,7 @@ elfsh_Addr	elfsh_get_symbol_value(elfsh_Sym *s)
  * @param value
  * @return
  */
-int	elfsh_set_symbol_value(elfsh_Sym *s, elfsh_Addr value)
+int	elfsh_set_symbol_value(elfsh_Sym *s, eresi_Addr value)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -98,7 +98,7 @@ u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
  * @param opt
  * @return
  */
-u_char	elfsh_set_symbol_bind(elfsh_Sym *s, elfsh_Addr opt)
+u_char	elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -130,7 +130,7 @@ u_char	elfsh_get_symbol_type(elfsh_Sym *s)
  * @param type
  * @return
  */
-u_char	elfsh_set_symbol_type(elfsh_Sym *s, elfsh_Addr type)
+u_char	elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -163,7 +163,7 @@ u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
  * @return
  * 
  */
-u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, elfsh_Addr vis)
+u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -195,7 +195,7 @@ u_int	elfsh_get_symbol_link(elfsh_Sym *s)
  * @param val
  * @return
  */
-u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
+u_int	elfsh_set_symbol_link(elfsh_Sym *s, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -215,7 +215,7 @@ u_int	elfsh_set_symbol_link(elfsh_Sym *s, elfsh_Addr val)
  * @return
  */
 elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file, 
-					    elfsh_Addr vaddr, 
+					    eresi_Addr vaddr, 
 					    int *off, int mode)
 {
   elfsh_Sym	*dynsym;
@@ -250,7 +250,7 @@ elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file,
  * @return
  */
 elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num, 
-					  elfsh_Addr vaddr, int *off, int mode)
+					  eresi_Addr vaddr, int *off, int mode)
 {
   elfsh_Sym	  *low;
   elfsh_Sym	  *high;
@@ -320,7 +320,7 @@ elfsh_Sym	  *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
  * @param sctidx
  * @return
  */
-elfsh_Sym	elfsh_create_symbol(elfsh_Addr value, int size, int type, 
+elfsh_Sym	elfsh_create_symbol(eresi_Addr value, int size, int type, 
 				    int binding, int vis, int sctidx)
 {
   elfsh_Sym	enew;
@@ -364,7 +364,7 @@ elfsh_Sym	*elfsh_copy_symtab(void *data, int size)
  * @return
  */
 elfsh_Sym		*elfsh_get_symbol_by_index(elfsh_Sym *symtab, 
-						   elfsh_Addr index)
+						   eresi_Addr index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -400,7 +400,7 @@ elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name)
  * @return Returns a pointer to the resolved symbol.
  */
 char		*elfsh_reverse_metasym(elfshobj_t *file, 
-				       elfsh_Addr vaddr, elfsh_SAddr *off)
+				       eresi_Addr vaddr, elfsh_SAddr *off)
 {
   elfshsect_t	*parent;
 
@@ -474,7 +474,7 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
  */
   int		elfsh_shift_syms(elfshobj_t *file, 
 				 elfshsect_t *symtab, 
-				 elfsh_Addr limit, int inc)
+				 eresi_Addr limit, int inc)
 {
 #if	__DEBUG_RELADD__
   static u_int	totshift = 0;
@@ -493,7 +493,7 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
   totshift += inc;
   printf("[DEBUG_RELADD] Shifting symtab [LIM " AFMT 
 	 " .::. INC %08u .::. TOT %08u] \n",
-	 (elfsh_Addr) limit, inc, totshift);
+	 (eresi_Addr) limit, inc, totshift);
 #endif
 
 
@@ -506,8 +506,8 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 #if __DEBUG_RELADD__
 	printf("[DEBUG_RELADD] Shifted symbol *%-20s* [" AFMT "-> " AFMT "]\n",
 	       elfsh_get_symbol_name(file, sym),
-	       (elfsh_Addr) sym[idx].st_value,
-	       (elfsh_Addr) sym[idx].st_value + inc);
+	       (eresi_Addr) sym[idx].st_value,
+	       (eresi_Addr) sym[idx].st_value + inc);
 #endif
 
 	sym[idx].st_value += inc;
@@ -526,8 +526,8 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
  * @param vaddrout returned virtual address
  * @return
  */
-int			elfsh_resolv_remote_function(elfshobj_t *filein, elfsh_Addr vaddrin,
-						     elfshobj_t **fileout, elfsh_Addr *vaddrout)
+int			elfsh_resolv_remote_function(elfshobj_t *filein, eresi_Addr vaddrin,
+						     elfshobj_t **fileout, eresi_Addr *vaddrout)
 {
   elfshobj_t		*file;
   elfshsect_t		*sect;

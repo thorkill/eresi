@@ -21,7 +21,7 @@ static revmlist_t* second = NULL;
  * @param roffset
  * @return
 */
-char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr, 
+char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, 
 			    elfsh_SAddr *roffset)
 {
   listent_t	*ent;
@@ -132,7 +132,7 @@ char		*revm_resolve(elfshobj_t *file, elfsh_Addr addr,
  * @param buf
  * @param maxlen
  */
-void		asm_do_resolve(void *data, elfsh_Addr vaddr, 
+void		asm_do_resolve(void *data, eresi_Addr vaddr, 
 			       char *buf, u_int maxlen)
 {
   elfshobj_t	*file;
@@ -189,7 +189,7 @@ void		asm_do_resolve(void *data, elfsh_Addr vaddr,
  * @param nindex
  * @param buff
  */
-u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr, 
+u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr, 
 				 u_int foffset, u_int size, char *name, 
 				 u_int nindex, char *buff)
 			      
@@ -326,7 +326,7 @@ u_int		revm_instr_display(int fd, u_int index, elfsh_Addr vaddr,
  * @return
  */
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				  u_int off, u_int foffset, elfsh_Addr vaddr, 
+				  u_int off, u_int foffset, eresi_Addr vaddr, 
 				  char *name, char otype)
 {
   char		*buff;
@@ -334,7 +334,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   elfsh_SAddr   idx_bytes;
   char		buf[256];
   char		base[16] = "0123456789ABCDEF";
-  elfsh_Addr    loff;
+  eresi_Addr    loff;
   char		str[256];
   elfshsect_t	*targ;
   char		*s;
@@ -385,10 +385,10 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   if (sym && 
       (elfsh_get_symbol_type(sym) == STT_OBJECT  ||
        elfsh_get_symbol_type(sym) == STT_COMMON) && 
-      !(sym->st_size % sizeof(elfsh_Addr)))
+      !(sym->st_size % sizeof(eresi_Addr)))
     {
       
-      for (index = 0; index * sizeof(elfsh_Addr) < sym->st_size; index++)
+      for (index = 0; index * sizeof(eresi_Addr) < sym->st_size; index++)
 	{
 	  
 	  /* Do not print more than 250 entries at a time */
@@ -409,17 +409,17 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	    parent->parent->rhdr.base = 0;
 #endif
 
-	  tmpbuff += index * sizeof(elfsh_Addr);
-	  loff     = * (elfsh_Addr *) tmpbuff;
+	  tmpbuff += index * sizeof(eresi_Addr);
+	  loff     = * (eresi_Addr *) tmpbuff;
 	  
 	  snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
 		   elfsh_is_debug_mode() ? 
-		   parent->parent->rhdr.base + vaddr + index * sizeof(elfsh_Addr) :
-		   vaddr   + index * sizeof(elfsh_Addr), 
-		   foffset + index * sizeof(elfsh_Addr), 
+		   parent->parent->rhdr.base + vaddr + index * sizeof(eresi_Addr) :
+		   vaddr   + index * sizeof(eresi_Addr), 
+		   foffset + index * sizeof(eresi_Addr), 
 		   name, 
-		   ((sym->st_size / sizeof(elfsh_Addr)) < 100  ? 2 : 
-		    (sym->st_size / sizeof(elfsh_Addr)) < 1000 ? 3 : 4),
+		   ((sym->st_size / sizeof(eresi_Addr)) < 100  ? 2 : 
+		    (sym->st_size / sizeof(eresi_Addr)) < 1000 ? 3 : 4),
 		   index,
 		   loff);
 
@@ -504,7 +504,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  if (world.state.revm_quiet)
 	    {
 	      sprintf(buf, " %s %s + %s", 
-		      revm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
+		      revm_coloraddress(AFMT, (eresi_Addr) vaddr + index), 
 		      revm_colorstr(name), revm_colornumber("%u", index));
 	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
 	      revm_output(logbuf);
@@ -512,7 +512,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  else
 	    {
 	      sprintf(buf, " %s [%s %s] %s + %s", 
-		      revm_coloraddress(AFMT, (elfsh_Addr) vaddr + index), 
+		      revm_coloraddress(AFMT, (eresi_Addr) vaddr + index), 
 		      revm_colorfieldstr("foff:"),
 		      revm_colornumber(DFMT, foffset + index), 
 		      revm_colorstr(name), revm_colornumber("%u", index));
@@ -586,7 +586,7 @@ int		revm_section_display(elfshsect_t	*s,
   char		*symname;
   char		logbuf[BUFSIZ];
   int		err;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -704,7 +704,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
   int		matchs = 0;
   u_int		saved_size;
   elfsh_Sym	*sym;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   int		index;
 #if __DEBUG_DISASM__
   char		logbuf[BUFSIZ];
@@ -785,7 +785,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
  * @param actual
  * @return
  */
-int		revm_match_special(elfshobj_t *file, elfsh_Addr vaddr,
+int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
 				   revmlist_t *actual)
 {
   elfsh_Sym	*sym;
@@ -853,7 +853,7 @@ int             cmd_disasm()
   elfshobj_t	*file;
   revmexpr_t	*expr;
   int		matchs;
-  elfsh_Addr	vaddr;
+  eresi_Addr	vaddr;
   char		logbuf[BUFSIZ];
   elfsh_Half	machine;
 

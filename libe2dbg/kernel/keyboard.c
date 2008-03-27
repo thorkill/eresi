@@ -26,8 +26,8 @@ unsigned int led = 1;
 unsigned int led_wait=0;
 char led_tab[] = {2, 4, 1};
 
-elfsh_Addr	adresse_ret_1;
-elfsh_Addr	adresse_ret_2;
+eresi_Addr	adresse_ret_1;
+eresi_Addr	adresse_ret_2;
 
 /* FIXME-XXX: originally this variable was negated at some point, but it disapeared
    See original rr0d code to understand what to do with that flag */

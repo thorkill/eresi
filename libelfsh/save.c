@@ -327,7 +327,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 			printf("[DEBUG_MAP] Writing identified section %15s (hdr: %-15s "
 					"vaddr = " AFMT ", idx %02u, foff %08u, size %08u, data = %08X)\n",	 
 					actual->name, elfsh_get_section_name(file, actual), 
-					(elfsh_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
+					(eresi_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
 					(u_int) elfsh_get_section_foffset(actual->shdr),
 					elfsh_get_section_size(actual->shdr),
 					(u_int) actual->data);
@@ -343,7 +343,7 @@ int		elfsh_save_obj(elfshobj_t *file, char *name)
 			printf("[DEBUG_MAP] PASSING identified section %15s (hdr: %-15s "
 					"vaddr = " AFMT " , idx %02u, foff %08u, size %08u, data = %08X)\n", 
 					actual->name, elfsh_get_section_name(file, actual), 
-					(elfsh_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
+					(eresi_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
 					(u_int) elfsh_get_section_foffset(actual->shdr),
 					elfsh_get_section_size(actual->shdr),
 					(u_int) actual->data);

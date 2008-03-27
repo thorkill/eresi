@@ -22,13 +22,13 @@
 static revmexpr_t	*revm_inform_subtype(char		*curpath,
 					     revmexpr_t		*curexpr,
 					     aspectype_t	*type,
-					     elfsh_Addr		addr,
+					     eresi_Addr		addr,
 					     char		translateaddr)
 {
   char			pathbuf[BUFSIZ];
   aspectype_t		*curtype;
   revmexpr_t		*newexpr, *rootexpr, *prevexpr;
-  elfsh_Addr		childaddr;
+  eresi_Addr		childaddr;
   u_int			len;
   static u_int		pathsize = 0;
 
@@ -164,7 +164,7 @@ int		revm_informed_print(char *name)
 /**
  * @brief Check the validity of an address 
  */
-int		revm_check_addr(elfshobj_t *obj, elfsh_Addr addr)
+int		revm_check_addr(elfshobj_t *obj, eresi_Addr addr)
 {
   elfsh_Phdr	*phdr;
   int		index;
@@ -182,7 +182,7 @@ int		revm_check_addr(elfshobj_t *obj, elfsh_Addr addr)
 /* Add an elemnt to the inform table for a given type, by real address */
 revmexpr_t	*revm_inform_type_addr(char		*type, 
 				       char		*varname, 
-				       elfsh_Addr	addr, 
+				       eresi_Addr	addr, 
 				       revmexpr_t	*expr,
 				       u_char		print,
 				       u_char		rec)
@@ -210,8 +210,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 {
   hash_t	*hash;
   char		buf[BUFSIZ];
-  elfsh_Addr	addr;
-  elfsh_Addr	oaddr;
+  eresi_Addr	addr;
+  eresi_Addr	oaddr;
   char		*realname;
   char		*symname;
   revmannot_t	*annot;

@@ -56,7 +56,7 @@ revmexpr_t		*revm_lookup_var(char *param)
 /** 
  * @brief Get address value 
  */
-elfsh_Addr		revm_lookup_addr(char *param)
+eresi_Addr		revm_lookup_addr(char *param)
 {
   elfsh_Sym		*sym;
   revmconst_t		*actual;
@@ -64,7 +64,7 @@ elfsh_Addr		revm_lookup_addr(char *param)
   int			ret;
   revmobj_t		*ptr;
   revmexpr_t		*expr;
-  elfsh_Addr	       	val;
+  eresi_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
@@ -91,7 +91,7 @@ elfsh_Addr		revm_lookup_addr(char *param)
 	  ptr->otype->type == ASPECT_TYPE_DADDR)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 		      (ptr->immed ? ptr->immed_val.ent : 
-		       (elfsh_Addr) ptr->get_obj(ptr->parent)));
+		       (eresi_Addr) ptr->get_obj(ptr->parent)));
     }
 
   /* Lookup a constant */
@@ -124,7 +124,7 @@ revmobj_t		*revm_lookup_immed(char *param)
   char			lbuf[4096];
   revmobj_t		*ptr;
   revmexpr_t		*expr;
-  elfsh_Addr	       	val;
+  eresi_Addr	       	val;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
@@ -227,7 +227,7 @@ u_int     		revm_lookup_index(char *param)
   revmexpr_t		*expr;
   char			eol;
   int			ret;
-  elfsh_Addr	       	val;
+  eresi_Addr	       	val;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)

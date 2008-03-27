@@ -54,7 +54,7 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
   revmannot_t	*annot;
   revmannot_t	*dstannot;
   revmannot_t	*addedannot;
-  /*elfsh_Addr	addr;
+  /*eresi_Addr	addr;
     char	*newdata;*/
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

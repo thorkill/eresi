@@ -45,7 +45,7 @@ typedef struct s_dw2cu edfmtdw2cu_t;
 typedef struct	s_dw2loc
 {
   u_int		op;
-  elfsh_Addr	value;
+  eresi_Addr	value;
 }		edfmtdw2loc_t;
 
 /* Describe an abbrev attribute */
@@ -114,7 +114,7 @@ typedef struct 	s_dw2cfareg
 #define DW2_CFA_T_ARCH    4
   int		type;
   union {
-    elfsh_Addr	offset;
+    eresi_Addr	offset;
     int		reg;
   } u;
 }		edfmtdw2cfareg_t;
@@ -125,11 +125,11 @@ typedef struct 	s_dw2cfareg
  */
 typedef struct 	s_dw2cfastate
 {
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		caddr[EDFMT_CADDR_SIZE];
 
   int 		cfa_reg;
-  elfsh_Addr	cfa_offset;
+  eresi_Addr	cfa_offset;
   
 #define DW2_CFA_MAX_REG 16
 #define CFA_C_REG(_a) (DW2_CFA_MAX_REG > _a)
@@ -196,7 +196,7 @@ typedef struct	s_dw2linehead
 typedef struct 	s_dw2line
 {
   /* Main informations */
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   u_int		line;
   u_int		column;
 

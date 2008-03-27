@@ -304,7 +304,7 @@ char *revm_colorwarn_fmt(char *pattern, char *text)
   return revm_colorget(pattern, "warnstring", text); 
 }
 
-char *revm_coloraddress(char *pattern, elfsh_Addr addr) 		
+char *revm_coloraddress(char *pattern, eresi_Addr addr) 		
 { 
   return revm_colorget(pattern, "address", &addr); 
 }

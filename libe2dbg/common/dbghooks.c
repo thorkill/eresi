@@ -25,14 +25,14 @@ void		  e2dbg_default_setregs()
 }
 
 /* Error handler by default for them */
-elfsh_Addr*	  e2dbg_default_getpc()
+eresi_Addr*	  e2dbg_default_getpc()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "GETPC unimplemented on this architecture", NULL);
 }
 
-elfsh_Addr*	  e2dbg_default_getfp()
+eresi_Addr*	  e2dbg_default_getfp()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -53,14 +53,14 @@ void		e2dbg_default_resetstep()
 		     "RESETSTEP unimplemented on this architecture"); 
 }
 
-elfsh_Addr	e2dbg_default_nextfphandler(elfsh_Addr a)
+eresi_Addr	e2dbg_default_nextfphandler(eresi_Addr a)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
-elfsh_Addr	e2dbg_default_getrethandler(elfsh_Addr a)
+eresi_Addr	e2dbg_default_getrethandler(eresi_Addr a)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -786,15 +786,15 @@ int		  e2dbg_setregs()
 }
 
 /* Call the getpc hook */
-elfsh_Addr*     e2dbg_getpc()
+eresi_Addr*     e2dbg_getpc()
 {
-  elfsh_Addr	*pc;
+  eresi_Addr	*pc;
   u_char        archtype;
   u_char        hosttype;
   u_char        ostype;
   u_int		dim[3];
   vector_t	*getpc;
-  elfsh_Addr	*(*fct)();
+  eresi_Addr	*(*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
@@ -822,15 +822,15 @@ elfsh_Addr*     e2dbg_getpc()
 
 
 /* Call the getfp hook */
-elfsh_Addr*     e2dbg_getfp()
+eresi_Addr*     e2dbg_getfp()
 {
-  elfsh_Addr	*fp;
+  eresi_Addr	*fp;
   u_char        archtype;
   u_char        hosttype;
   u_char        ostype;
   u_int		dim[3];
   vector_t	*getfp;
-  elfsh_Addr	*(*fct)();
+  eresi_Addr	*(*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
@@ -922,7 +922,7 @@ int		  e2dbg_resetstep()
 
 
 /* Call the getregs hook */
-elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
+eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
 {
   u_char        archtype;
   u_char        hosttype;
@@ -930,7 +930,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
   int		ret;
   u_int		dim[3];
   vector_t	*nextfp;
-  int		(*fct)(elfsh_Addr addr);
+  int		(*fct)(eresi_Addr addr);
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
@@ -959,7 +959,7 @@ elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr)
 
 
 /* Call the getregs hook */
-elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
+eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 {
   u_char        archtype;
   u_char        hosttype;
@@ -967,7 +967,7 @@ elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr)
   int		ret;
   u_int		dim[3];
   vector_t	*getret;
-  int		(*fct)(elfsh_Addr addr);
+  int		(*fct)(eresi_Addr addr);
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getret = aspect_vector_get(E2DBG_HOOK_GETRET);

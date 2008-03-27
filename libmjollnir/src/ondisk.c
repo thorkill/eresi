@@ -150,7 +150,7 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   void			*curunit;
   container_t		*container;
   u_int			unitsize;
-  elfsh_Addr		addr;
+  eresi_Addr		addr;
   u_int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -173,8 +173,8 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   curunit = cur->data;
 
   /* This is why addr and size fields should always be in first in mjrblock/mjrfunc */
-  addr    = *(elfsh_Addr *) curunit;
-  size    = *(u_int      *) ((char *) curunit + sizeof(elfsh_Addr));
+  addr    = *(eresi_Addr *) curunit;
+  size    = *(u_int      *) ((char *) curunit + sizeof(eresi_Addr));
   
 #if __DEBUG_ONDISK__
   fprintf(D_DESC," [*] Saving data unit %s\n", buf);
@@ -298,14 +298,14 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
       tmpcntnr->data = tmpunit;
 
       /* Because of this line, we need to make sure the addr is always in first in all structs */
-      snprintf(name, sizeof(name), AFMT, *(elfsh_Addr *) tmpunit);
+      snprintf(name, sizeof(name), AFMT, *(eresi_Addr *) tmpunit);
       
 #if __DEBUG_ONDISK__
       fprintf(D_DESC,"[__DEBUG_ONDISK__] %s: add new unit name: %s \n", __FUNCTION__, name);
 #endif
 
       mjr_register_container_id(ctxt, tmpcntnr);
-      hash_add(table, _vaddr2str(*(elfsh_Addr *) tmpunit), tmpcntnr);
+      hash_add(table, _vaddr2str(*(eresi_Addr *) tmpunit), tmpcntnr);
     }
 
   /* Relink containers in this second run */
@@ -447,21 +447,21 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
 	 anything and it kept for intelligence purpose */
       if (typeid == ASPECT_TYPE_BLOC && mjr_block_funcstart(container))
 	{
-	  container = mjr_function_get_by_vaddr(ctxt, *(elfsh_Addr *) curunit);
+	  container = mjr_function_get_by_vaddr(ctxt, *(eresi_Addr *) curunit);
 
 	  /* Can happens rarely - should not be fatal */
 	  if (container == NULL || container->data == NULL)
 	    {
 #if __DEBUG_ONDISK__
 	      fprintf(stderr, " [*] Failed to find parent function at 0x%08lx \n", 
-		      (unsigned long) *(elfsh_Addr *) curunit);
+		      (unsigned long) *(eresi_Addr *) curunit);
 #endif
 	      continue;
 	    }
 
 #if __DEBUG_ONDISK__
 	  fprintf(stderr, " [*] Found block start for function 0x%08lx \n", 
-		  (unsigned long) *(elfsh_Addr *) curunit);
+		  (unsigned long) *(eresi_Addr *) curunit);
 #endif
 
 	}

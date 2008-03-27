@@ -186,15 +186,15 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
  * @param vbuf buffer that store the addresse
  * @return the addresse or 0
  */
-elfsh_Addr		edfmt_dwarf2_getaddr(char *vbuf)
+eresi_Addr		edfmt_dwarf2_getaddr(char *vbuf)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!vbuf)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid parameters", (elfsh_Addr) 0);
+		      "Invalid parameters", (eresi_Addr) 0);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, *(elfsh_Addr *) vbuf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, *(eresi_Addr *) vbuf);
 }
 
 /**
@@ -210,7 +210,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   u_long		iref, itref;
   edfmtdw2abbent_t	ref, tref;
   edfmtdw2abbattr_t	*attr;
-  elfsh_Addr		low = 0, high = 0;
+  eresi_Addr		low = 0, high = 0;
   int			fileid, inc = 0, addtype = 1, base = 0, op = 0;
   edfmtfunc_t		*func;
 
@@ -471,10 +471,10 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
       /* Try to read addresses */
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_low_pc, u.vbuf, 0);
       if (vbuf)
-	low = *(elfsh_Addr *) vbuf;
+	low = *(eresi_Addr *) vbuf;
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_high_pc, u.vbuf, 0);
       if (vbuf)
-	high = *(elfsh_Addr *) vbuf;
+	high = *(eresi_Addr *) vbuf;
       
       /* Resolve return type */
       DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);

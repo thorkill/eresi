@@ -19,15 +19,15 @@
  * @param ret return address
  */
 int			mjr_link_func_call(mjrcontext_t *ctxt, 
-					   elfsh_Addr src, 
-					   elfsh_Addr dst,
-					   elfsh_Addr ret)
+					   eresi_Addr src, 
+					   eresi_Addr dst,
+					   eresi_Addr ret)
 {
   container_t		*fun;
   mjrfunc_t		*tmpfunc;
   char			*tmpstr;
   char			*md5;
-  elfsh_Addr		tmpaddr;
+  eresi_Addr		tmpaddr;
   elfshsect_t		*dstsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -78,9 +78,9 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
  * @brief Create a link between blocks on a call 
  */
 int			mjr_link_block_call(mjrcontext_t *ctxt,
-					    elfsh_Addr src,
-					    elfsh_Addr dst,
-					    elfsh_Addr ret)
+					    eresi_Addr src,
+					    eresi_Addr dst,
+					    eresi_Addr ret)
 {
   container_t		*csrc,*cdst,*cret;
   elfshsect_t		*dstsect;
@@ -145,9 +145,9 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
  * @brief This function does prepare linking of blocks on conditional jumps
  */
 int		mjr_link_block_jump(mjrcontext_t *ctxt,
-				    elfsh_Addr	 src,
-				    elfsh_Addr   dst,
-				    elfsh_Addr   ret)
+				    eresi_Addr	 src,
+				    eresi_Addr   dst,
+				    eresi_Addr   ret)
 {
   container_t	*csrc, *cdst, *cret;
   
@@ -236,7 +236,7 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
  * @param link_with link splitted blocks with specified link type
  */
 container_t		*mjr_block_split(mjrcontext_t	*ctxt,
-					 elfsh_Addr	dst,
+					 eresi_Addr	dst,
 					 u_int		link_with)
 {
   container_t		*tmpdst,*dstend;

@@ -17,7 +17,7 @@
  * @param flags
  * @return
  */
-int		elfsh_set_flags(elfsh_Ehdr *hdr, elfsh_Addr flags)
+int		elfsh_set_flags(elfsh_Ehdr *hdr, eresi_Addr flags)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -49,7 +49,7 @@ elfsh_Word	elfsh_get_flags(elfsh_Ehdr *hdr)
  * @param off
  * @return
  */
-int		elfsh_set_shtoff(elfsh_Ehdr *hdr, elfsh_Addr off)
+int		elfsh_set_shtoff(elfsh_Ehdr *hdr, eresi_Addr off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -82,7 +82,7 @@ elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
  * @param num
  * @return
  */
-int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
+int		elfsh_set_shtnbr(elfsh_Ehdr *hdr, eresi_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -115,7 +115,7 @@ elfsh_Half	elfsh_get_shtnbr(elfsh_Ehdr *hdr)
  * @param num
  * @return
  */
-int		elfsh_set_phtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
+int		elfsh_set_phtoff(elfsh_Ehdr *hdr, eresi_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -147,7 +147,7 @@ elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
  * @param num
  * @return 
  */
-int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, elfsh_Addr num)
+int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, eresi_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -180,7 +180,7 @@ elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
  * @param num
  * @return 
  */
-int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, elfsh_Addr num)
+int	elfsh_set_phtnbr(elfsh_Ehdr *hdr, eresi_Addr num)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -212,7 +212,7 @@ elfsh_Half	elfsh_get_phtnbr(elfsh_Ehdr *hdr)
  * @param addr
  * @return 
  */
-int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
+int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -228,13 +228,13 @@ int		elfsh_set_entrypoint(elfsh_Ehdr *hdr, elfsh_Addr addr)
  * @param hdr
  * @return 
  */
-elfsh_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
+eresi_Addr	elfsh_get_entrypoint(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (elfsh_Addr) -1);
+		 "Invalid NULL parameter", (eresi_Addr) -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_entry));
 }
 
@@ -260,7 +260,7 @@ elfsh_Half	elfsh_get_arch(elfsh_Ehdr *hdr)
  * @param val
  * @return 
  */
-u_int	elfsh_set_arch(elfsh_Ehdr *hdr, elfsh_Addr val)
+u_int	elfsh_set_arch(elfsh_Ehdr *hdr, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -292,7 +292,7 @@ elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *hdr)
  * @param val
  * @return 
  */
-u_int	elfsh_set_objtype(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_objtype(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -324,7 +324,7 @@ elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -341,7 +341,7 @@ u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, elfsh_Addr val)
  * @param val
  * @return 
  */
-u_int	elfsh_set_version(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_version(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -373,7 +373,7 @@ elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_ehsize(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_ehsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -405,7 +405,7 @@ elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_phentsize(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_phentsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -437,7 +437,7 @@ elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_shentsize(elfsh_Ehdr *e, elfsh_Addr val)
+u_int	elfsh_set_shentsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -485,7 +485,7 @@ int		elfsh_get_encoding(elfsh_Ehdr *hdr)
  * @param type
  * @return 
  */
-int		elfsh_set_encoding(elfsh_Ehdr *hdr, elfsh_Addr type)
+int		elfsh_set_encoding(elfsh_Ehdr *hdr, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -517,7 +517,7 @@ int		elfsh_get_magic(elfsh_Ehdr *hdr)
  * @param mag
  * @return 
  */
-int		elfsh_set_magic(elfsh_Ehdr *hdr, elfsh_Addr mag)
+int		elfsh_set_magic(elfsh_Ehdr *hdr, eresi_Addr mag)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -549,7 +549,7 @@ int		elfsh_get_class(elfsh_Ehdr *hdr)
  * @param eclass
  * @return 
  */
-int		elfsh_set_class(elfsh_Ehdr *hdr, elfsh_Addr eclass)
+int		elfsh_set_class(elfsh_Ehdr *hdr, eresi_Addr eclass)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

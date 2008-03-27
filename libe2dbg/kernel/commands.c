@@ -194,7 +194,7 @@ int		cmd_rr0d_unfoolmode()
  */
 int		cmd_rr0d_print()
 {
-  elfsh_Addr	val;
+  eresi_Addr	val;
 
   switch(adresse_ret_2)
     {

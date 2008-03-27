@@ -26,7 +26,7 @@ int		revm_list_display_element(list_t *l, char *key, u_char inside)
   if (l->type == ASPECT_TYPE_UNKNOW || !inside)
     {
       snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
-	       key, (elfsh_Addr) data);
+	       key, (eresi_Addr) data);
       revm_output(logbuf);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -46,13 +46,13 @@ int		revm_list_display_element(list_t *l, char *key, u_char inside)
   revm_output("\t");
   if (l->type == ASPECT_TYPE_EXPR)
     {
-      newexpr = (elfsh_Addr) data;
+      newexpr = (eresi_Addr) data;
       revm_expr_print(newexpr->label);
     }
   else
     {
       type = aspect_type_get_by_id(l->type);
-      newexpr = revm_inform_type_addr(type->name, strdup(logbuf), (elfsh_Addr) data, NULL, 0, 1);
+      newexpr = revm_inform_type_addr(type->name, strdup(logbuf), (eresi_Addr) data, NULL, 0, 1);
       if (!newexpr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to reflect hash element to expression", -1);

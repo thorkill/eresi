@@ -221,7 +221,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file,
 
   /* Avoid unaligned accesses on ALPHA */
   if (elfsh_get_archtype(bss->parent) == ELFSH_ARCH_ALPHA64)
-    size2 = sizeof(elfsh_Addr) - (bss->shdr->sh_size % sizeof(elfsh_Addr));
+    size2 = sizeof(eresi_Addr) - (bss->shdr->sh_size % sizeof(eresi_Addr));
   else
     size2 = 0;
 
@@ -324,7 +324,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   u_int		index;
   char		*name;
   char		buff[BUFSIZ];
-  elfsh_Addr	bss_size;
+  eresi_Addr	bss_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -15,7 +15,7 @@ int		cmd_kmem_hash()
   revmlist_t    *actual, *second;
   char          buff[BUFSIZ];
   char		buffhash[BUFSIZ];
-  elfsh_Addr    vaddr;
+  eresi_Addr    vaddr;
   unsigned char *hashbuffer;
   char		*tmp;
 
@@ -51,13 +51,13 @@ int		cmd_kmem_hash()
 
       snprintf(buff, sizeof(buff), 
 	       "MD5 @ %s : \n\t%s\n\n",
-	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_coloraddress(XFMT, (eresi_Addr) vaddr),
 	       revm_colorstr((char *)buffhash));
       revm_output(buff);
       
       snprintf(buff, sizeof(buff),
 	       "%s:%s:%s:%s:%s:%s\n\n",
-	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_coloraddress(XFMT, (eresi_Addr) vaddr),
 	       revm_colornumber("%u", libkernshworld.mem),
 	       revm_colornumber("%u", (int)config_get_data(LIBKERNSH_VMCONFIG_HASH)),
 	       revm_colornumber("%u", new_size),
@@ -258,7 +258,7 @@ int		cmd_kmem_chash()
 		  snprintf(buff, sizeof(buff),
 			   "%s @ %s with size = %s and offset = %s\n",
 			   revm_colorstr("HASH MATCH @ !"),
-			   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+			   revm_coloraddress(XFMT, (eresi_Addr) addr),
 			   revm_colornumber("%u", size),
 			   revm_colornumber("%u", off));
 		  revm_output(buff);
@@ -269,7 +269,7 @@ int		cmd_kmem_chash()
 		  snprintf(buff, sizeof(buff),
 			   "%s @ %s with size = %s and offset = %s\n %s != %s\n",
 			   revm_colorstr("HASH MISMATCH @ !"),
-			   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+			   revm_coloraddress(XFMT, (eresi_Addr) addr),
 			   revm_colornumber("%u", size),
 			   revm_colornumber("%u", off),
 			   revm_colorstr((char *)origbuffer),
@@ -328,7 +328,7 @@ int		cmd_kmem_chash()
 	      snprintf(buff, sizeof(buff),
 		       "%s @ %s with size = %s and offset = %s\n\n",
 		       revm_colorstr("HASH MATCH @ !"),
-		       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+		       revm_coloraddress(XFMT, (eresi_Addr) addr),
 		       revm_colornumber("%u", size),
 		       revm_colornumber("%u", off));
 	      revm_output(buff);
@@ -338,7 +338,7 @@ int		cmd_kmem_chash()
 	      snprintf(buff, sizeof(buff),
 		       "%s @ %s with size = %s and offset = %s\n %s != %s\n\n",
 		       revm_colorstr("HASH MISMATCH @ !"),
-		       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+		       revm_coloraddress(XFMT, (eresi_Addr) addr),
 		       revm_colornumber("%u", size),
 		       revm_colornumber("%u", off),
 		       revm_colorstr((char *)origbuffer),

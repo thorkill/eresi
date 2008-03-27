@@ -56,9 +56,9 @@ int		elfsh_raw_write(elfshobj_t	*file,
 
   if (elfsh_is_debug_mode())
     {
-      prot = elfsh_munprotect(file, (elfsh_Addr) dst + sect_off, len);
+      prot = elfsh_munprotect(file, (eresi_Addr) dst + sect_off, len);
       memcpy(dst + sect_off, src_buff, len);
-      elfsh_mprotect((elfsh_Addr) dst + sect_off, len, prot);
+      elfsh_mprotect((eresi_Addr) dst + sect_off, len, prot);
     }
   else
     memcpy(dst + sect_off, src_buff, len);
@@ -116,7 +116,7 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
  * @param vaddr
  * @return
  */
-int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, elfsh_Addr vaddr)
+int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr)
 {
   elfshsect_t	*actual;
   

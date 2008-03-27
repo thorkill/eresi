@@ -256,7 +256,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   /* Copy a double sized .dynsym somewhere else */
   enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
 			     ELFSH_DATA_INJECTION, dynsym->shdr->sh_size * 4, 
-			     sizeof(elfsh_Addr));
+			     sizeof(eresi_Addr));
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSYM", -1);
@@ -279,7 +279,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   /* Same for dynstr */
   enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSTR, NULL,
 			     ELFSH_DATA_INJECTION, dynstr->shdr->sh_size * 2, 
-			     sizeof(elfsh_Addr));
+			     sizeof(eresi_Addr));
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSTR", -1);
@@ -303,7 +303,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (relgot)
     {
       enew = elfsh_insert_section(file, relgotname, NULL, ELFSH_DATA_INJECTION,
-				 relgot->shdr->sh_size, sizeof(elfsh_Addr));
+				 relgot->shdr->sh_size, sizeof(eresi_Addr));
       if (!enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to inject ALTRELGOT", -1);
@@ -324,7 +324,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   /* Same for .rel.plt */
   enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTRELPLT, NULL,
 			     ELFSH_DATA_INJECTION, relplt->shdr->sh_size * 4, 
-			     sizeof(elfsh_Addr));
+			     sizeof(eresi_Addr));
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTRELPLT", -1);
@@ -346,7 +346,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       /* Same for .gnu.version */
       enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTVERSYM, NULL,
 				 ELFSH_DATA_INJECTION, versym->shdr->sh_size * 4, 
-				 sizeof(elfsh_Addr));
+				 sizeof(eresi_Addr));
       if (!enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to inject ALTVERSYM", -1);
@@ -370,7 +370,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   /* Same for .hash */
   enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTHASH, NULL,
 			     ELFSH_DATA_INJECTION, hash->shdr->sh_size * 4, 
-			     sizeof(elfsh_Addr));
+			     sizeof(eresi_Addr));
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to inject ALTHASHM", -1);
@@ -530,7 +530,7 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "No room anymore in DYNSTR copy", NULL);
     }
-  if (altgot->curend + sizeof(elfsh_Addr) > altgot->shdr->sh_size)
+  if (altgot->curend + sizeof(eresi_Addr) > altgot->shdr->sh_size)
     {
       if (altgot->shdr->sh_offset + altgot->curend + sz <
 	  altgot->next->shdr->sh_offset)

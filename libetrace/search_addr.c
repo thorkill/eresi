@@ -59,7 +59,7 @@ static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)
  * @param file target file
  * @param addr address list
  */
-int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
+int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
 {
   int 			ret;
   int			index;
@@ -68,10 +68,10 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
   elfsh_Word		len;
   char			*base;
   asm_processor		proc;
-  elfsh_Addr		base_vaddr, caddr;
+  eresi_Addr		base_vaddr, caddr;
   u_char		found = 0;
   elfshsect_t		*text;
-  elfsh_Addr		*vaddr;
+  eresi_Addr		*vaddr;
   const int		astep = 20;
   u_int			apos = 0;
   btree_t		*broot = NULL;
@@ -107,7 +107,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed during proc structure setup", -1);
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, vaddr, sizeof(elfsh_Addr)*astep, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, vaddr, sizeof(eresi_Addr)*astep, -1);
   
   /* Despite the fact that we choose the right architecture to init asm,
      Our approach is totally architecture independant as we search using
@@ -142,10 +142,10 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
 		  if ((apos+1) % astep == 0)
 		    {
 		      XREALLOC(__FILE__, __FUNCTION__, __LINE__, vaddr, vaddr,
-			       sizeof(elfsh_Addr)*(apos+1+astep), -1);
+			       sizeof(eresi_Addr)*(apos+1+astep), -1);
 
 		      /* Blank new elements */
-		      memset(&vaddr[apos], 0x00, astep*sizeof(elfsh_Addr));
+		      memset(&vaddr[apos], 0x00, astep*sizeof(eresi_Addr));
 		    }
 
 		  vaddr[apos++] = caddr;
@@ -180,7 +180,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr)
  * @param file target file
  * @param addr supose to be a function
  */
-int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
+int			elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr)
 {
   int 			ret;
   int			index;
@@ -189,7 +189,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr)
   elfsh_Word		len;
   char			*base;
   asm_processor		proc;
-  elfsh_Addr		base_vaddr;
+  eresi_Addr		base_vaddr;
   u_char		found = 0;
   elfshsect_t		*text;
 

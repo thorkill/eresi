@@ -40,7 +40,7 @@ int		cmd_sct()
 	       revm_colornumber("id:%-10u", (unsigned int)index),
 	       revm_colortypestr_fmt("%s", sct->name),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) sct->addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) sct->addr));
       revm_output(buff);
       revm_endline();
       
@@ -89,7 +89,7 @@ int		cmd_idt()
 	       revm_colornumber("id:%-10u", (unsigned int)index),
 	       revm_colortypestr_fmt("%s", dint->name),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) dint->addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) dint->addr));
       revm_output(buff);
       revm_endline();
     }
@@ -137,10 +137,10 @@ int		cmd_gdt()
       
       snprintf(buff, sizeof(buff),
 	       "%s%s %s %s\n",
-	       revm_coloraddress("%.8lX", (elfsh_Addr) sgdt->deb),
-	       revm_coloraddress("%.8lX", (elfsh_Addr) sgdt->fin),
+	       revm_coloraddress("%.8lX", (eresi_Addr) sgdt->deb),
+	       revm_coloraddress("%.8lX", (eresi_Addr) sgdt->fin),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) sgdt->addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) sgdt->addr));
 
       revm_output(buff);
       
@@ -182,7 +182,7 @@ int		cmd_ksym()
 	       revm_colorstr(param),
 	       revm_colorfieldstr("is"),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr));
+	       revm_coloraddress(XFMT, (eresi_Addr) addr));
       revm_output(buff);
       revm_setvar_long("_", addr);
     }
@@ -495,7 +495,7 @@ int		cmd_kmem_read()
 {
   int		ret, len;
   char		*new_buff;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   revmlist_t	*actual;
   char		buff[BUFSIZ];
 
@@ -521,7 +521,7 @@ int		cmd_kmem_read()
       snprintf(buff, sizeof(buff),
 	       "Reading kernel memory %s %s strlen(%s)\n\n", 
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	       revm_coloraddress(XFMT, (eresi_Addr) addr),
 	       revm_colornumber("%u", len));
       revm_output(buff);
 
@@ -550,7 +550,7 @@ int		cmd_kmem_write()
   revmobj_t     *o2;
   void          *dat;
   int           ret, size;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -618,7 +618,7 @@ int		cmd_kmem_write()
   snprintf(buff, sizeof(buff),
 	   "Writing into kernel memory %s %s strlen(%s)\n\n", 
 	   revm_colorstr("@"),
-	   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	   revm_coloraddress(XFMT, (eresi_Addr) addr),
 	   revm_colornumber("%u", size));
   revm_output(buff);
 
@@ -638,7 +638,7 @@ int		cmd_kmem_write()
 int		cmd_kmem_disasm()
 {
   int		ret, len;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		*new_buff;
   revmlist_t	*actual;
   char		buff[BUFSIZ];
@@ -667,7 +667,7 @@ int		cmd_kmem_disasm()
       snprintf(buff, sizeof(buff),
 	       "Disassembling kernel memory %s %s strlen(%s)\n\n", 
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	       revm_coloraddress(XFMT, (eresi_Addr) addr),
 	       revm_colornumber("%u", len));
       revm_output(buff);
 

@@ -403,7 +403,7 @@ elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
  * @return
  */
 int		revm_load_dep(elfshobj_t *parent, char *name, 
-			      elfsh_Addr base, elfshlinkmap_t *lm,
+			      eresi_Addr base, elfshlinkmap_t *lm,
 			      hash_t *dephash)
 {
   elfshobj_t	*new;

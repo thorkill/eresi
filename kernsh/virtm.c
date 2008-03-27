@@ -83,7 +83,7 @@ int		cmd_kvirtm_dump()
 int		cmd_kvirtm_read_pid()
 {
   int		ret, len, pid, tmp;
-  elfsh_Addr    vaddr;
+  eresi_Addr    vaddr;
   char		buff[BUFSIZ];
   revmlist_t    *actual, *second;
 
@@ -96,14 +96,14 @@ int		cmd_kvirtm_read_pid()
 
   if (actual->rname && second->rname)
     {
-      kernsh_addrlen(actual, (elfsh_Addr *)&pid, &tmp);
+      kernsh_addrlen(actual, (eresi_Addr *)&pid, &tmp);
       kernsh_addrlen(second, &vaddr, &len);
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff),
 	       "Reading %s %s %s strlen(%s)\n", 
 	       revm_colornumber("pid:%u", (unsigned int)pid),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_coloraddress(XFMT, (eresi_Addr) vaddr),
 	       revm_colornumber("%u", len));
       revm_output(buff);
       ret = kernsh_virtm_read_pid(pid, vaddr, len);
@@ -121,7 +121,7 @@ int		cmd_kvirtm_write_pid()
   revmobj_t     *o2;
   void          *dat;
   int           ret, pid, size;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -187,7 +187,7 @@ int		cmd_kvirtm_write_pid()
 	   "Writing into %s %s %s strlen(%s)\n", 
 	   revm_colornumber("pid:%u", (unsigned int)pid),
 	   revm_colorstr("@"),
-	   revm_coloraddress(XFMT, (elfsh_Addr) addr),
+	   revm_coloraddress(XFMT, (eresi_Addr) addr),
 	   revm_colornumber("%u", size));
   revm_output(buff);
 
@@ -242,7 +242,7 @@ int		cmd_kvirtm_task_pid()
 int		cmd_kvirtm_disasm_pid()
 {
   int		ret, pid, len, tmp;
-  elfsh_Addr	vaddr;
+  eresi_Addr	vaddr;
   revmlist_t    *actual, *second;
   char		buff[BUFSIZ];
 
@@ -256,7 +256,7 @@ int		cmd_kvirtm_disasm_pid()
 
   if (actual->rname && second->rname)
     {
-      kernsh_addrlen(actual, (elfsh_Addr *)&pid, &tmp);
+      kernsh_addrlen(actual, (eresi_Addr *)&pid, &tmp);
       kernsh_addrlen(second, &vaddr, &len);
 
       memset(buff, '\0', sizeof(buff));
@@ -264,7 +264,7 @@ int		cmd_kvirtm_disasm_pid()
 	       "Disasambling %s %s %s strlen(%s)\n", 
 	       revm_colornumber("pid:%u", (unsigned int)pid),
 	       revm_colorstr("@"),
-	       revm_coloraddress(XFMT, (elfsh_Addr) vaddr),
+	       revm_coloraddress(XFMT, (eresi_Addr) vaddr),
 	       revm_colornumber("%u", len));
       revm_output(buff);
 

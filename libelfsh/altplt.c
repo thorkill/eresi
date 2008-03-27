@@ -39,7 +39,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*enew,
   u_int		entsz;
   elfsh_Sym	newsym;
   elfsh_Sym	*sym;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -116,12 +116,12 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   u_int		off;
   u_int		entsz;
   int		mode;
-  elfsh_Addr	addr;
+  eresi_Addr	addr;
   char		*prologdata;
   u_int		sz;
   char		*name;
   u_char	ostype;
-  elfsh_Addr	diff;
+  eresi_Addr	diff;
   u_int		extplt_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -241,11 +241,11 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
     {
       sz = (FILE_IS_MIPS(file) ? got->shdr->sh_size     : 
 	    FILE_IS_IA32(file) ? got->shdr->sh_size * 4 : 
-	    plt->shdr->sh_size / elfsh_get_pltentsz(file) * sizeof(elfsh_Addr));
+	    plt->shdr->sh_size / elfsh_get_pltentsz(file) * sizeof(eresi_Addr));
 
       altgot = elfsh_create_section(ELFSH_SECTION_NAME_ALTGOT);
       hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE, 
-			      0, 0, sz, 0, 0, 0, sizeof(elfsh_Addr));
+			      0, 0, sz, 0, 0, 0, sizeof(eresi_Addr));
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
       memcpy(prologdata, elfsh_get_raw(got), got->shdr->sh_size);
@@ -263,7 +263,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
       file->secthash[ELFSH_SECTION_ALTGOT] = altgot;
       altgot->curend = got->shdr->sh_size;
       memset(elfsh_get_raw(altgot) + got->shdr->sh_size, 0x00, got->shdr->sh_size);
-      altgot->shdr->sh_entsize = sizeof(elfsh_Addr);
+      altgot->shdr->sh_entsize = sizeof(eresi_Addr);
     }
   
 
@@ -371,12 +371,12 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 	 is not yet supported. For those we do not enter the hook */
       if (FILE_IS_IA32(file))
 	{
-	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
+	  diff = (eresi_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr;
 	  elfsh_encodeplt(file, plt, diff, off);
 	  if (file->hdr->e_type == ET_DYN)
 	    elfsh_encodeplt(file, file->secthash[ELFSH_SECTION_ALTPLT], 
 			    diff, off);
-	  diff = (elfsh_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr + 
+	  diff = (eresi_Addr) altgot->shdr->sh_addr - got->shdr->sh_addr + 
 	    got->shdr->sh_size;
 	  elfsh_encodeplt(file, extplt, diff, off);
 	}
@@ -440,12 +440,12 @@ int		elfsh_build_plt(elfshobj_t *file)
   elfshsect_t	*text;
   elfsh_SAddr	off;
   char		buff[16] = {0x00};
-  elfsh_Addr	pltaddr = 0;
-  elfsh_Addr	pltend  = 0;
+  eresi_Addr	pltaddr = 0;
+  eresi_Addr	pltend  = 0;
   elfsh_Shdr	start;
   elfsh_Shdr	plt;
   elfshsect_t	*enew;
-  elfsh_Addr	lsize;
+  eresi_Addr	lsize;
   unsigned int	size;
   char		*data;
   char		*tdata;

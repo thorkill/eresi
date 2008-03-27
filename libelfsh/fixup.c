@@ -31,7 +31,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   elfsh_Shdr	hdr;
   elfsh_Sym	newent;
   elfsh_Sym	*actual;
-  elfsh_Addr	startaddr;
+  eresi_Addr	startaddr;
   u_int		index;
   char		*str;
 
@@ -229,7 +229,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       
 #if __DEBUG_COPYPLT__
       printf("[DEBUG_COPYPLT] Cannot find symbol at PLT OFFSET + %u (.plt + off = " XFMT " ) object %s \n", 
-	     off, (elfsh_Addr) plt->shdr->sh_addr + off, plt->parent->name);
+	     off, (eresi_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -238,7 +238,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 
 #if __DEBUG_COPYPLT__
       printf("[DEBUG_COPYPLT] Found symbol [%s] for PLT OFFSET + %u (.plt + off = " XFMT " ) object %s\n", 
-	     elfsh_get_dynsymbol_name(file, sym), off, (elfsh_Addr) plt->shdr->sh_addr + off, plt->parent->name);
+	     elfsh_get_dynsymbol_name(file, sym), off, (eresi_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
 

@@ -352,8 +352,8 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
 /* A recursive function for graphing in dot format */
 int		revm_graph_blocks(container_t *cntnr,
 				  int		 fd,
-				  elfsh_Addr	min,
-				  elfsh_Addr	max,
+				  eresi_Addr	min,
+				  eresi_Addr	max,
 				  int		dir,
 				  int		maxdepth,
 				  int		curdepth)

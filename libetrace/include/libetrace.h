@@ -131,9 +131,9 @@ hash_t		*etrace_createtrace(char *trace);
 hash_t		*etrace_gettrace(char *trace);
 
 /* check.c */
-int		etrace_valid_faddr(elfshobj_t *file, elfsh_Addr addr, elfsh_Addr *vaddr, u_char *dynsym);
+int		etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr, eresi_Addr *vaddr, u_char *dynsym);
 int 		etrace_tracable(elfshobj_t *file, char *name,
-				      elfsh_Addr *vaddr, u_char *dynsym);
+				      eresi_Addr *vaddr, u_char *dynsym);
 /* check_untracable.c */
 int		etrace_untracable(elfshobj_t *file, char *name);
 
@@ -169,8 +169,8 @@ int		etrace_save(elfshobj_t *file);
 elfshobj_t   	*etrace_search_sym(elfshobj_t *file, char *name);
 
 /* search_addr.c */
-int		elfsh_addr_get_func_list(elfshobj_t *file, elfsh_Addr **addr);
-int		elfsh_addr_is_called(elfshobj_t *file, elfsh_Addr addr);
+int		elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr);
+int		elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr);
 
 /* errfunc.c */
 char		*etrace_geterrfunc();

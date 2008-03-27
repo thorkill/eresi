@@ -25,8 +25,8 @@
 int		elfsh_hijack_function_by_name(elfshobj_t *file, 
 					      uint32_t	 type,
 					      char	 *name, 
-					      elfsh_Addr addr,
-					      elfsh_Addr *hooked)
+					      eresi_Addr addr,
+					      eresi_Addr *hooked)
 {
   elfsh_Sym	*symbol;
   elfsh_Sym	*symbol2;

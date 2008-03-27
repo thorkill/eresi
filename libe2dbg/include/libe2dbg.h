@@ -55,7 +55,7 @@ extern char **environ;
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
 #define		E2DBG_SIGTRAMP_RETADDR	(0xFFFFE440)
-#define		E2DBG_KERNELBASE	((elfsh_Addr) 0xC0000000)
+#define		E2DBG_KERNELBASE	((eresi_Addr) 0xC0000000)
 
 /* Generic register names */
 #define	        E2DBG_SSP_VAR		"ssp"	/* Saved stack ptr */
@@ -244,7 +244,7 @@ typedef struct		s_thread
 #define			E2DBG_BREAK_MAX		3
   int			count;			/* State when breakpointing */
 
-  elfsh_Addr		past;			/* Previous opcode instead of break */
+  eresi_Addr		past;			/* Previous opcode instead of break */
   u_char		step;			/* Is this thread beeing stepped ? */
   u_char		was_step;		/* Is this thread was just beeing stepped ? */
   u_char		trace;			/* Is the thread beeing itraced ? */
@@ -255,9 +255,9 @@ typedef struct		s_thread
   time_t		stime;			/* Creation time */
   time_t		etime;			/* Ending time */
 
-  elfsh_Addr		tlsaddr;		/* Address of TLS data */
+  eresi_Addr		tlsaddr;		/* Address of TLS data */
   unsigned int		tlsize;			/* Size of TLS data */
-  elfsh_Addr		stackaddr;		/* Address of stack */
+  eresi_Addr		stackaddr;		/* Address of stack */
   unsigned int		stacksize;		/* Size of stack */
 
 }			e2dbgthread_t;
@@ -266,19 +266,19 @@ typedef struct		s_thread
 /* Hold all resolved symbols that we need in pre-malloc stage */
 typedef struct		s_e2dbgsyms
 {
-  elfsh_Addr		piebase;		/* Computed base address for PIE */
-  elfsh_Addr		mallocsym;		/* Resolved libc malloc */
-  elfsh_Addr		vallocsym;		/* Resolved libc valloc */
-  elfsh_Addr		callocsym;		/* Resolved libc calloc */
-  elfsh_Addr		reallocsym;		/* Resolved libc realloc */
-  elfsh_Addr		memalignsym;		/* Resolved libc memalign*/
-  elfsh_Addr		freesym;		/* Resolved libc free */
-  elfsh_Addr		mallochooksym;		/* Resolved libc malloc hook */
-  elfsh_Addr		memalignhooksym;        /* Resolved libc memalign hook */
-  elfsh_Addr		pthstartupsym;		/* Resolved __libc_malloc_pthread_startup */
-  elfsh_Addr		pthreadcreate;		/* Resolved pthread_create */
-  elfsh_Addr		pthreadexit;		/* Resolved pthread_exit */
-  elfsh_Addr		signal;			/* Resolved signal function */
+  eresi_Addr		piebase;		/* Computed base address for PIE */
+  eresi_Addr		mallocsym;		/* Resolved libc malloc */
+  eresi_Addr		vallocsym;		/* Resolved libc valloc */
+  eresi_Addr		callocsym;		/* Resolved libc calloc */
+  eresi_Addr		reallocsym;		/* Resolved libc realloc */
+  eresi_Addr		memalignsym;		/* Resolved libc memalign*/
+  eresi_Addr		freesym;		/* Resolved libc free */
+  eresi_Addr		mallochooksym;		/* Resolved libc malloc hook */
+  eresi_Addr		memalignhooksym;        /* Resolved libc memalign hook */
+  eresi_Addr		pthstartupsym;		/* Resolved __libc_malloc_pthread_startup */
+  eresi_Addr		pthreadcreate;		/* Resolved pthread_create */
+  eresi_Addr		pthreadexit;		/* Resolved pthread_exit */
+  eresi_Addr		signal;			/* Resolved signal function */
 #if defined(sun)
   Link_map		*map;			/* Linkmap has a different format on solaris */
 #else
@@ -336,7 +336,7 @@ extern e2dbgworld_t	e2dbgworld;
 /* Default hook handler */
 void            e2dbg_default_getregs();
 void            e2dbg_default_setregs();
-elfsh_Addr*     e2dbg_default_getpc();
+eresi_Addr*     e2dbg_default_getpc();
 void            e2dbg_default_setstep();
 void            e2dbg_default_resetstep();
 void            e2dbg_setup_hooks();
@@ -344,12 +344,12 @@ void            e2dbg_setup_hooks();
 /* libe2dbg.hooks */
 int		e2dbg_getregs();
 int		e2dbg_setregs();
-elfsh_Addr*     e2dbg_getpc();
+eresi_Addr*     e2dbg_getpc();
 int             e2dbg_setstep();
 int             e2dbg_resetstep();
-elfsh_Addr	e2dbg_getret(elfshobj_t *file, elfsh_Addr addr);
-elfsh_Addr	e2dbg_nextfp(elfshobj_t *file, elfsh_Addr addr);
-elfsh_Addr*     e2dbg_getfp();
+eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr);
+eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr);
+eresi_Addr*     e2dbg_getfp();
 int		e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp);
 
 /* Backend for ia32 */
@@ -357,14 +357,14 @@ void            e2dbg_get_regvars_ia32_bsd();
 void            e2dbg_get_regvars_ia32_sysv();
 void            e2dbg_set_regvars_ia32_bsd();
 void            e2dbg_set_regvars_ia32_sysv();
-elfsh_Addr*     e2dbg_getpc_bsd_ia32();
-elfsh_Addr*     e2dbg_getpc_sysv_ia32();
+eresi_Addr*     e2dbg_getpc_bsd_ia32();
+eresi_Addr*     e2dbg_getpc_sysv_ia32();
 void            e2dbg_setstep_bsd_ia32();
 void            e2dbg_setstep_sysv_ia32();
 void            e2dbg_resetstep_sysv_ia32();
 void            e2dbg_resetstep_bsd_ia32();
-elfsh_Addr*	e2dbg_getfp_sysv_ia32();
-elfsh_Addr*	e2dbg_getfp_bsd_ia32();
+eresi_Addr*	e2dbg_getfp_sysv_ia32();
+eresi_Addr*	e2dbg_getfp_bsd_ia32();
 void            *e2dbg_bt_ia32(void *frame);
 void            *e2dbg_getret_ia32(void *frame);
 int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
@@ -375,10 +375,10 @@ void            e2dbg_get_regvars_sparc32_bsd();
 void            e2dbg_get_regvars_sparc32_sysv();
 void            e2dbg_set_regvars_sparc32_bsd();
 void            e2dbg_set_regvars_sparc32_sysv();
-elfsh_Addr*     e2dbg_getpc_bsd_sparc32();
-elfsh_Addr*     e2dbg_getpc_sysv_sparc32();
-elfsh_Addr*     e2dbg_getfp_bsd_sparc32();
-elfsh_Addr*     e2dbg_getfp_sysv_sparc32();
+eresi_Addr*     e2dbg_getpc_bsd_sparc32();
+eresi_Addr*     e2dbg_getpc_sysv_sparc32();
+eresi_Addr*     e2dbg_getfp_bsd_sparc32();
+eresi_Addr*     e2dbg_getfp_sysv_sparc32();
 void            e2dbg_setstep_bsd_sparc32();
 void            e2dbg_setstep_sysv_sparc32();
 void            e2dbg_resetstep_sysv_sparc32();
@@ -413,15 +413,15 @@ elfshlinkmap_t*	e2dbg_linkmap_getaddr();
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
 elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid);
-int		e2dbg_breakpoint_add(elfsh_Addr addr, u_char flags);
+int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags);
 int		e2dbg_display(char **cmd, u_int nbr);
 int		e2dbg_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name);
-elfsh_Addr	e2dbg_breakpoint_find_addr(char *str);
+eresi_Addr	e2dbg_breakpoint_find_addr(char *str);
 
 /* Stack API */
 int		e2dbg_bt();
-int		e2dbg_stack_dump(uint32_t size, elfsh_Addr start);
+int		e2dbg_stack_dump(uint32_t size, eresi_Addr start);
 
 /* Mutex API */
 int		e2dbg_mutex_init(elfshmutex_t *m);
@@ -439,8 +439,8 @@ int		e2dbg_output();
 
 /* Early symbol / parent object resolving API */
 int		e2dbg_dlsym_init();
-elfsh_Addr	e2dbg_dlsym(char *sym2resolve);
-elfshobj_t	*e2dbg_get_parent_object(elfsh_Addr addr);
+eresi_Addr	e2dbg_dlsym(char *sym2resolve);
+elfshobj_t	*e2dbg_get_parent_object(eresi_Addr addr);
 
 /* Signal handling */
 void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *context);

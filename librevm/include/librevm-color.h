@@ -76,7 +76,7 @@ char 		*revm_colorfilename(char *text);
 /* Advanced */
 char 		*revm_coloradv(char *ty, char *p, char *te);
 char		*revm_colorinstr_fmt(char* p, char *t);
-char            *revm_coloraddress(char *p, elfsh_Addr a);
+char            *revm_coloraddress(char *p, eresi_Addr a);
 char            *revm_colornumber(char *p, elfsh_Off n);
 char            *revm_colorstr_fmt(char *p, char *t);
 char            *revm_colorfieldstr_fmt(char *p, char *t);
