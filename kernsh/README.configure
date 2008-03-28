@@ -1,0 +1,165 @@
+------[ Kernsh Configure ]------
+
+[+] Options :
+
+An option can be set directly in the shell or in the .kernshrc :
+	configure libkernsh.OPTION VALUE
+
+[
+ legends : (D) => default, 
+	   (L) => specific to Linux,
+	   (N) => specific to Netbsd,
+           (F) => specific to Freebsd 
+	   
+	   [S*] => any string value
+	   [I*] => any integer value
+	   [L*] => any long value
+]
+	
+	- libkernsh.device : The memory device which will be opened
+		- /dev/mem (D)
+		- /dev/kmem (L)
+		- /proc/kcore (L)
+		- kvirtm (L)
+
+	- libkernsh.mode : The mode to open the memory
+		- read
+		- write (D)
+	
+	- libkernsh.mmap : Mmap the memory
+		- 0
+		- 1 (D)
+
+	- libkernsh.mmap_size : Mmap's size of the main memory
+		- 1000 * 1024 * 1024 (D)
+		- [I*]
+	
+	- libkernsh.systemmap : (L) Path of the system map
+		- /boot/System.map-`uname -r` (D)
+		- [S*]
+
+	- libkernsh.kernel : Path of the gzip kernel
+		- /boot/vmlinuz (D) (L)
+		- [S*]
+
+	- libkernsh.gzipcmd : Which is the gzid command
+		- /bin/gzip (D) (L)
+		- [S*]
+
+	- libkernsh.objcopycmd : Which is the objcopy command
+		- /bin/objcopy (D) (L)
+		- [S*]
+
+	
+	- libkernsh.ldcmd : Which is the ld command
+		- /bin/ld (D) (L)
+		- [S*]
+
+	- libkernsh.kload : Which is the insert kernel module command
+		- /bin/insmod (D) (L)
+		- [S*]
+
+	- libkernsh.kunload : Which is the remove kernel module command
+		- /bin/rmmod (D) (L)
+		- [S*]
+
+	- libkernsh.kernelgz : The name to save the extract gzip kernel
+		- vmlinuz.gz (D) (L)
+		- [S*]		
+
+	- libkernsh.kernelelf : The name of the extract/gunzip kernel
+		- vmlinux (D) (L)
+		- [S*]
+
+	- libkernsh.storagepath : A path to store kernel and to 
+				  open debug kernel
+		- /tmp/ (D)
+		- [S*]
+
+	- libkernsh.nbsyscalls : The number of syscalls
+		- 320 (D) (L)
+		- [I*]
+
+	- libkernsh.nilsyscalls : A position inside the syscall table 
+				  of a free syscall
+		- 17 (D) (L)
+		- [I*]	
+
+	- libkernsh.use_kernel : use the full debug kernel(not the gzip kernel)
+		- 0 (D)
+		- 1
+
+	- libkernsh.without_kernel : not use the kernel, only memory
+		- 0 (D)
+		- 1
+
+	- libkernsh.kernel_start : address of kernel start
+		- 0xc0000000 (D) (L)
+		- [L*]
+
+	- libkernsh.kernel_end : address of kernel end
+		- 0xc1000000 (D) (L)
+		- [L*]
+
+	- libkernsh.alloc : alloc/free contiguous memory(0) 
+			    or non contiguous(1) 
+		- 0 (D)
+		- 1
+
+	- libkernsh.fendsize : maximum size of a function
+		- 0x1000 (D)
+		- [L*]
+
+	- libkernsh.usevm : To inform kernsh that we are in a virtual machine
+	  	- 0 (D)
+		- 1
+
+	- libkernsh.specify_idtbase : Specify idt base address and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.specify_idtlimit : Specify idt limit value and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.specify_gdtbase : Specify gdt base address and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.specify_gdtlimit : Specify gdt limit value  and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.specify_systemcall : Specify system call address and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.specify_sct : Specify syscall table address and not allow libkernsh to search
+		- 0 (D)
+		- [L*]
+
+	- libkernsh.virtm : Communication type (/proc or syscall) with kernsh-virtm module
+		- LIBKERNSH_KERNEL_MODE 0 (D) {/proc}
+		- LIBKERNSH_USER_MODE 1	{syscall}
+
+	- libkernsh.virtm_nil_syscall : A position inside the syscall table of a free syscall for virtm
+	  	- 31 (D) (L)
+		- [I*]
+		      
+	- libkernsh.hash : The type of hash
+		- LIBKERNSH_HASH_MD5 0 (D)
+		- LIBKERNSH_HASH_SHA1 1
+
+	- libkernsh.vma : In which context(kernel/user) to use VMA
+		- LIBKERNSH_VMA_USERLAND 0 (D)
+		- LIBKERNSH_VMA_KERNELLAND 1
+
+	- libkernsh.vma_prefix : VMA prefix string to export list_t (and hash_t)
+		- vma (D)
+		- [S*]
+
+	- libkernsh.dump_vma_prefix : Dump VMA prefix to export dump file
+		- kernsh_dump (D)
+		- [S*]
+
+Add new configure ? No problems, send me mail (or your patch :)) !

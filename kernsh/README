@@ -1,4 +1,4 @@
-                        	]=------ kernsh ------=[
+                        	]=------ Kernsh ------=[
 
 
 Kernsh uses Libkernsh which is a library to play with kernel image in real 
@@ -11,19 +11,21 @@ You can profite of eresi's language to define you own structure and
 communicate with the kernel.
 
 Features :
-    - Read/Write anywhere in the kernel (static/memory), 
-	direcly in ERESI language
+    - Read/Write anywhere in the kernel (static/memory {/dev/(k)mem, /proc/kcore, lkm (/proc, syscall)), 
+      direcly in ERESI language
     - Display syscalls, idt, gdt, symbols..
     - Disassembling kernel memory
     - Read and modify the static kernel image
     - Alloc/Free kernel memory (contiguous and non contiguous)
     - Inject new compiled LKM code into a static kernel or kernel memory
-    - Make md5 of kernel function and portion of code
+    - Make hash of kernel function and portion of code
     - Redirect initialisation of loadable kernel module
     - Redir function
+    - Read/Write into process virtual memory (/proc, syscall)
+    - Dump Virtual Memory Areas of process id (/proc, syscall)
 
-Depends libkernsh : libaspect, libelfsh
-Depends kernsh : librevm, libaspect
+Depends libkernsh : libaspect, libstderesi, libelfsh
+Depends kernsh : libkernsh, librevm, libaspect, libstderesi
 
 
 [+] Installation
@@ -43,14 +45,13 @@ By default, Libkernsh do the following action :
 			- Extract/Gunzip it
 			- Open the final kernel
 
-	- Open memory device in libkernsh.device with mode libkernsh.mode 
+	- Open memory device in libkernsh.device with mode libkernsh.mode
 		and mmap it if libkernsh.mmap is set to 1 (with a size of 
-		libkernsh.mmap_size). Mmap is necessary to use all features.
+		libkernsh.mmap_size).
 
 	- Have fun !
 
-You can define all the libkernsh.*, see section Options below.
-
+You can configure all libkernsh.*, see file README.configure
 
 [+] Portability :
 
@@ -64,10 +65,10 @@ You can define all the libkernsh.*, see section Options below.
 |  LINUX 2.6  |  DONE  |   UT    |   UT    |   UT   |   UT    |
 |             |        |         |         |        |         |
  -------------------------------------------------------------
-|    NETBSD   |  WIP   |         |         |        |         |
+|    NETBSD   |  WIP   |    /    |    /    |    /   |    /    |
 |             |        |         |         |        |         |
  -------------------------------------------------------------
-|   FREEBSD   |  WIP   |         |         |        |         |
+|   FREEBSD   |  WIP   |   /     |    /    |    /   |    /    |
 |             |        |         |         |        |         |
  -------------------------------------------------------------
 
@@ -80,137 +81,233 @@ You can define all the libkernsh.*, see section Options below.
 
 
 [+] Commands : 
-	- openmem :
-		func 	: open kernel memory and by default 
+	- openmem : Done
+		func	: open kernel memory and by default 
 			  gzip static kernel	
-		args 	: no
+		args	: no
 		return 	: /
-		options :
+		configure : LIBKERNSH_VMCONFIG_KERNEL_START, LIBKERNSH_VMCONFIG_KERNEL_END, 
+			    LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_MODE, 
+			    LIBKERNSH_VMCONFIG_MMAP, LIBKERNSH_VMCONFIG_MMAP_SIZE, 
+			    LIBKERNSH_VMCONFIG_SYSTEMMAP, LIBKERNSH_VMCONFIG_USEVM,
+			    LIBKERNSH_VMCONFIG_VIRTM
 		mode	: /
 
-	- closemem :
+	- closemem : Done
 		func	: close kernel memory and static kernel
 		args 	: no
 		return	: int
-		options : /
+		configure : LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_VIRTM
 		mode	: /
 
-	- mode :
+	- mode : Done
 		func	: with no args display the mode
 		args	: yes (not obligatory), "static" and "dynamic"
 		return  : /
-		options :	
+		configure :	
+		mode	: /
+
+	- kmem_read : Done
+	  	func	: Read kernel memory
+		args	: sa%size
+				- sa : Symbol or addr
+				- size : Bytes number limit
+
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
 	
-	- sct :
+	- kmem_write : Done
+	  	func	: Write in kernel memory
+		args	: sa buffer
+				- sa : Symbol or addr
+				- buffer : the string to write
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- kmem_disasm : Done
+	  	func	: Disasm kernel memory
+		args	: sa%size 
+				- sa : Symbol or addr
+				- size : Bytes number limit
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- kmem_info : Done
+	  	func	: Display configure in human mode :)
+		args	: /
+		return  : /
+		configure : /
+		mode	: /
+
+	- sct : Done
 		func	: handle the syscall table
-		args	: -d : display syscall table
-			  -n : create new syscall table
+		args	: display syscall table
 		return	: /
-		options : /
+		configure : LIBKERNSH_VMCONFIG_NB_SYSCALLS
 		mode	: static/dynamic
 
-	- idt :
+	- idt : Done
 		func	: handle the idt
-		args	: -d : display the idt
+		args	: display the idt
 		return	: /
 		options : /
 		mode	: dynamic
 
-	- gdt :
+	- gdt : Done
 		func	: handle the gdt
-		args	: -d : display the gdt
+		args	: display the gdt
 		return	: no
 		options : /
 		mode	: static/dynamic
 		
-	- alloc :
+	- alloc : Done
 		func	: alloc contiguous kernel memory
 		args	: size (mandatory)
 		return	: $_ is set with the return address
-		options : /
+		configure : LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL
 		mode	: dynamic
 
-	- free :
+	- free : Done
 		func	: free contiguous kernel memory
 		args	: addr (mandatory)
 		return	: $_ is set with the return value  
-		options : /
+		configure : LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL
 		mode	: dynamic
 
-	- alloc_nc :
+	- alloc_nc : Done
 		func	: alloc non contiguous kernel memory
 		args	: size (mandatory)
 		return	: $_ is set with the return address
-		options : /
+		configure : LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL
 		mode	: dynamic
 
-	- free_nc : 
+	- free_nc : Done
 		func	: free non contiguous kernel memory
 		args	: addr (mandatory)
 		return	: $_ is set with the return value
-		options : /
+		configure : LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL
 		mode	: dynamic
 
-	- kmodule : 
-		func : handle kernel module
-		args : 
-			-l : load a module with insmod
-				sub args : module
-				- module : module's pathname (mandatory)
-			return	:
-			options :
-			mode	: static
-			-u : unload a module with rmmod
-				sub args : module
-				- module : module's pathname (mandatory)
-			return	:
-			options :
-			mode	: static
-			
-			-r : link module with another
-				sub args : module1 module2 moduleres
+	- kmodule_relink : Done
+	  	func	: link module with another
+		args	: module1 module2 moduleres
 				- module1 : first module's pathname (mandatory)
 				- module2 : second module's pathname (mandatory)
 				- moduleres : result of two modules (mandatory)
-			return	:
-			options :
-			mode	: static
-			-i : infect a module
-				sub args : module original_name evil_name
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_LD
+		mode	: /
+
+	- kmodule_infect : Done
+	  	func	: infect a module
+		args	: module original_name evil_name
 				- module : module's pathname (mandatory)
 				- original_name : name of the hijacked function
 				- evil_name : name of the hijack function
-			return	:
-			options :
-			mode	: static
+		return  : /
+ 		configure : /
+		mode	: static
 
-	- ksym :
+	- kmodule_load : Done
+		func	: load a module
+		args	: module
+				- module : module's pathname (mandatory)
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_KLOAD
+		mode	: /
+
+	- kmodule_unload : Done
+		func	: unload a module
+		args	: module
+				- module : module's name (mandatory)
+		return  : /
+		configure : LIBKERNSH_VMCONFIG_KUNLOAD
+		mode	: /
+
+	- ksym : Done
 		func	: get an address of a kernel symbol
 		args	: symbol's name
 		return	: $_ is set with the return address
-		options : /
+		configure : /
 		mode	: dynamic
 		
-	- virtm : IN PROGRESS
-		func	:
-		args	:
-		return	:
-		options :
-		mode	:
+	- autotypes : WIP
+		func	: /
+		args	: /
+		return	: /
+		configure : /
+		mode	: /
 
-	- process : IN PROGRESS
-		func	:
-		args	: 
-			-d : display linked list
-			-c : check hidden process			
-		return	:
-		options :
-		mode	:
+	- kvirtm_info : WIP 
+		func	: /
+		args	: /
+		return	: /
+		configure : /
+		mode	: /
 
-	- kmd5 :
-		func	:
-		args	:  sa output, sa:rva output, sa%rva%size output, 
-			   sa%size output
+	- kvirtm_loadme : Done
+		func	: Load kernsh virtm module automatically with hijack syscall table !
+		args	: module
+				- module : module's pathname (mandatory)
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_KLOAD, LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL
+		mode	: /
+
+	- kvirtm_read_pid : Done
+		func	: Read virtual memory of a pid
+		args	: pid sa%size
+				- pid : process id 
+				- sa : Symbol or addr
+				- size : Bytes number limit
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- kvirtm_write_pid : Done
+		func	: Write virtual memory of a pid
+		args	: pid sa buffer
+			      	- pid : process id
+				- sa : Symbol or addr
+				- buffer : the string to write
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- kvirtm_disasm_pid : Done
+		func	: Disasm virtual memory of a pid
+		args	: pid sa%size 
+			        - pid : process id
+				- sa : Symbol or addr
+				- size : Bytes number limit
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- kvirtm_dump : Done
+		func	: Dump elf binary pid
+		args	: pid filename
+			      - pid : process id
+			      - filename : dump's path
+		return	: /
+		configure : /
+		mode	: dynamic
+
+	- kvirtm_task_pid : Done
+		func	: Get task struct of a process id
+		args	: pid
+				- pid : process id
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VIRTM
+		mode	: dynamic
+
+	- process : WIP
+	
+	- kmem_hash :
+		func	: Make a hash message digest
+		args	: sa output, sa:rva output, sa%rva%size output, sa%size output
 				- sa : Symbol or addr
 				- rva : Byte offset form the beginning (optional) 
 				- size : Bytes number limit (optional)
@@ -218,134 +315,40 @@ You can define all the libkernsh.*, see section Options below.
 					  the end of the function.
 				- output : file output (optional)
 			
-		return	: $_ contains the md5 and $md5 contains the format
+		return	: $_ contains the hash and $hash contains the format
 		options : /
 		mode	: static/dynamic
 
-	- kcmd5 : 
-		func	:
-		args	:  format, file
-				- format : addr:mode:size:off:md5
+	- kmem_chash : 
+		func	: Check a hash message diges
+		args	: format, file
+				- format : addr:mode:size:off:hash
 				- file : filename
 		return	: $_ is egal to the number of mismatch
 		options	: /
 		mode	: static/dynamic
 
-	- kcore	: IN PROGRESS
+	- kdump_get_vma	: WIP
+		func	: Get vma of a process id
+		args	: pid
+				- pid : process id
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA
+		mode	: dynamic
 
-[+] Options :
-
-An option can be set directly in the shell or in the .kernshrc :
-	configure libkernsh.option VALUE
-
-[
- legends : (D) => default, 
-	   (L) => specific to Linux, 
-	   (N) => specific to Netbsd,
-           (F) => specific to Freebsd 
-	   
-	   [S*] => any string value
-	   [I*] => any integer value 
-	   [L*] => any long value
-]
-	
-	- libkernsh.device : The memory device which will be opened
-		- /dev/mem (D)
-		- /dev/kmem (L)
-		- /proc/kcore (L)
-
-	- libkernsh.mode : The mode to open the memory
-		- read
-		- write (D)
-	
-	- libkernsh.mmap : Mmap the memory (Must be USED to have all features)
-		- 0
-		- 1 (D)
-
-	- libkernsh.mmap_size : Mmap's size of the main memory
-		- 1000 * 1024 * 1024 (D)
-		- [I*]
-	
-	- libkernsh.systemmap : (L) Path of the system map
-		- /boot/System.map-`uname -r` (D)
-		- [S*]
-
-	- libkernsh.kernel : Path of the gzip kernel
-		- /boot/vmlinuz (D) (L)
-		- [S*]
-
-	- libkernsh.gzipcmd : Which is the gzid command
-		- /bin/gzip (D) (L)
-		- [S*]
-
-	- libkernsh.objcopycmd : Which is the objcopy command
-		- /bin/objcopy (D) (L)
-		- [S*]
-
-	
-	- libkernsh.ldcmd : Which is the ld command
-		- /bin/ld (D) (L)
-		- [S*]
-
-	- libkernsh.kload : Which is the insert kernel module command
-		- /bin/insmod (D) (L)
-		- [S*]
-
-	- libkernsh.kunload : Which is the remove kernel module command
-		- /bin/rmmod (D) (L)
-		- [S*]
-
-	- libkernsh.kernelgz : The name to save the extract gzip kernel
-		- vmlinuz.gz (D) (L)
-		- [S*]		
-
-	- libkernsh.kernelelf : The name of the extract/gunzip kernel
-		- vmlinux (D) (L)
-		- [S*]
-
-	- libkernsh.storagepath : A path to store kernel and to 
-				  open debug kernel
-		- /tmp/ (D)
-		- [S*]
-
-	- libkernsh.nbsyscalls : The number of syscalls
-		- 320 (D) (L)
-		- [I*]
-
-	- libkernsh.nilsyscalls : A position inside the syscall table 
-				  of a free syscall
-		- 17 (D) (L)
-		- [I*]	
-
-	- libkernsh.use_kernel : use the full debug kernel(not the gzip kernel)
-		- 0 (D)
-		- 1
-
-	- libkernsh.without_kernel : not use the kernel, only memory
-		- 0 (D)
-		- 1
-
-	- libkernsh.kernel_start : address of kernel start
-		- 0xc0000000 (D) (L)
-		- [L*]
-
-	- libkernsh.kernel_end : address of kernel end
-		- 0xc1000000 (D) (L)
-		- [L*]
-
-	- libkernsh.alloc : alloc/free contiguous memory(0) 
-			    or non contiguous(1) 
-		- 0 (D)
-		- 1
-
-	- libkernsh.fendsize : maximum size of a function
-		- 0x1000 (D)
-		- [L*]
+	- kdump_vma : Done
+		func	: Dump vma of a process id
+		args	: pid
+				- pid : process id
+		return	: /
+		configure : LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA, 
+			    LIBKERNSH_VMCONFIG_STORAGE_PATH
+		mode	: dynamic
 
 [+] Variables
 
 Some variables are available when the memory device is opened :
-	$sys_call_table (D)
+	$sct (D)
 	$idt_base (D)
 	$idt_limit (D)
 	$gdt_base (D)
@@ -354,8 +357,7 @@ Some variables are available when the memory device is opened :
 
 [+] Kernshrc 
 
-You can use a .kernshrc in your home directory. There is some kernshrc in doc
-directory.
+You can use a .kernshrc in your home directory. There is some kernshrc in doc directory.
 
 [+] Examples
 
@@ -363,32 +365,34 @@ See examples directory.
 
 [+] Authors 
 
-Original version (0.1 => 0.2c) started in 2001 and original authors : 
+Original version (0.1 => 0.2c) started in 2001 and original authors (Thanks !) : 
 	sauron, zorgon, kstat
 
 The project has been transfered to pouik in 2007.
 
 [+] Contacts
 
-Information about kernsh : support at -nospam-kernsh.org
-
-author's mail : pouik at -nospam-kernsh.org
+Information about kernsh : desnos at -nospam-eresi-project.org
 
 [+] Bugs
 
-Please use http://bts.eresi-project.org/
+Please use trac's ticket at http://www.eresi-project.org/
 
 Compile libkernsh in debug mode, change in libkernsh/include/libkernsh.h 
 the define :
 	#define	__DEBUG_KERNSH__			0
-in
+=>
 	#define	__DEBUG_KERNSH__			1
 	
+and in libkernsh/kernel/include/libkernsh-kernel.h the define :
+	#define __DEBUG_LIBKERNSH_KERNEL__              0
+=>
+	#define __DEBUG_LIBKERNSH_KERNEL__              1
+
+and with --enable-testing to avoid old library
 
 [+] Url
 
 eresi : http://www.eresi-project.org
 
 kernsh : http://www.kernsh.org
-
-blog : http://blog.kernsh.org
