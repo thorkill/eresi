@@ -37,7 +37,8 @@ NAME64			= libelfsh64
 
 all			: all32 all64
 
-all32			: $(OBJ32)
+
+libelfsh32.so		: $(OBJ32)
 			@$(CC) -L../liballocproxy/ -lallocproxy \
                         -L../libaspect/ -laspect32 -DERESI32 \
 			$(KERNSHLIB32) -shared $(OBJ32) -o $(NAME32).so
@@ -45,13 +46,18 @@ all32			: $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
-all64			:  $(OBJ64)
+all32: libelfsh32.so
+
+
+libelfsh64.so		:  $(OBJ64)
 			@$(CC) -L../liballocproxy/ -lallocproxy \
                         -L../libaspect/ -laspect64 -DERESI64 \
 			$(KERNSHLIB64) -shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o
+
+all64:	libelfsh64.so
 
 clean			: 
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \

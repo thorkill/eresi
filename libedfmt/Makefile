@@ -32,17 +32,20 @@ LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
 
 all			: all32 all64
 
-all32			: $(OBJ32)
+libedfmt32.so			: $(OBJ32)
 			@$(CC) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
+all32: libedfmt32.so
 
-all64			: $(OBJ64)
+libedfmt64.so		: $(OBJ64)
 			@$(CC) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o
+
+all64: libedfmt64.so
 
 clean			: 
 			@$(RM) \#* *\# *~ *.o .\#* include/\#* include/*\#  \

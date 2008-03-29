@@ -43,7 +43,7 @@ mod32			:
 			$(MAKE) -C elf  all32
 			$(MAKE) -C cmd  all32
 
-lib32			:
+$(NAME32).so			:
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
@@ -51,11 +51,14 @@ lib32			:
 			$(LD) -r $(OBJ32) -o $(NAME32).o
 			@echo LINKED LIBSTDERESI32
 
+lib32: $(NAME32).so
+lib64: $(NAME364).so
+
 mod64			:
 			$(MAKE) -C elf  all64
 			$(MAKE) -C cmd  all64
 
-lib64			:
+$(NAME64).so			:
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME64}.a ${OBJ64} 

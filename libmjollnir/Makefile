@@ -40,18 +40,22 @@ LDFLAGS64 = -L. -L../libasm/ -L../libelfsh/ -L../liballocproxy   \
 
 all	: all32 all64
 
-all32	: $(OBJ32)
+$(NAME32).so	: $(OBJ32)
 	@$(CC) $(BITS) -shared $(OBJ32) -o $(NAME32).so -lcrypto $(LDFLAGS32)
 	@ar rc ${NAME32}.a ${OBJ32} 
 	@${RANLIB} ${NAME32}.a
 #	$(CC) $(CFLAGS32) $(LDFLAGS32) $(SRCT) -o $(OBJT) $(STATOPT) -lmjollnir32
 	@$(LD) -r $(OBJ32) -o $(NAME32).o
 
-all64	: $(OBJ64)
+all32: $(NAME32).so
+
+$(NAME64).so	: $(OBJ64)
 	@$(CC) $(BITS) -shared $(OBJ64) -o $(NAME64).so -lcrypto $(LDFLAGS64)
 	@ar rc ${NAME64}.a ${OBJ64} 
 	@${RANLIB} ${NAME64}.a
 	@$(LD) -r $(OBJ64) -o $(NAME64).o
+
+all64: $(NAME64).so
 
 docs:
 	doxygen doc/doxygen.conf

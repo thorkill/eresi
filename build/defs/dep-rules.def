@@ -1,0 +1,85 @@
+
+dep-liballocproxy:
+	@echo 'Building liballocproxy ..' 
+	@cd liballocproxy && $(MAKE) 
+	@echo 'Liballoc-proxy has been built successfully.' 
+
+dep-libaspect:
+	@echo 'Building libaspect..' 
+	@cd libaspect && $(MAKE) $(BUILD_TARGET)
+	@echo 'Libaspect has been built successfully.' 
+
+dep-libasm:	dep-libaspect
+	@echo 'Building libasm...' 
+	@cd libasm && sh configure 
+	@cd libasm && $(MAKE) 
+	@echo 'Libasm has been built successfully.' 
+
+dep-libelfsh: dep-liballocproxy dep-libaspect
+	@echo 'Building libelfsh...' 
+	@cd libelfsh && $(MAKE) $(BUILD_TARGET)
+	@echo 'Libelfsh has been built successfully.' 
+
+dep-libetrace:	dep-liballocproxy
+	@echo 'Building libetrace...' 
+	@cd libetrace && $(MAKE) $(BUILD_TARGET)
+	@echo 'Libetrace has been built successfully.' 
+
+dep-libedfmt: dep-liballocproxy dep-libelfsh dep-libaspect
+	@echo 'Building libedfmt...'                     
+	@cd libedfmt && $(MAKE) $(BUILD_TARGET)        
+	@echo 'Libedfmt has been built successfully.'    
+
+dep-libkernsh:
+	@echo 'Building libkernsh...'                   
+	@cd libkernsh && $(MAKE) $(BUILD_TARGET)      
+	@echo 'Libkernsh has been built successfully.'  
+
+dep-libui:
+	@echo 'Building libui...'			
+	@cd libui && $(MAKE) $(BUILD_TARGET)		
+	@echo 'Libui has been built successfully.' 	
+
+dep-libmjollnir:
+	@echo 'Building libmjollnir...'			
+	@cd libmjollnir && $(MAKE) $(BUILD_TARGET)	
+	@echo 'Libmjollnir has been built successfully.'
+
+dep-librevm:
+	@echo 'Building librevm...'			
+	@cd librevm && $(MAKE) $(BUILD_TARGET)	
+	@echo 'Librevm has been built successfully.'
+
+dep-libstderesi:	dep-libasm dep-libmjollnir dep-libetrace dep-librevm
+	@echo 'Building libstderesi...'			
+	@cd libstderesi && $(MAKE) $(BUILD_TARGET)	
+	@echo 'Libstderesi has been built successfully.'
+
+dep-libe2dbg:
+	@echo 'Building libe2dbg...'			
+	@cd libe2dbg && $(MAKE) $(BUILD_TARGET)	
+	@echo 'Libe2dbg has been built successfully.'
+dep-elfsh: dep-libstderesi
+	@echo 'Building ELFsh ET_EXEC'			
+	@cd elfsh && $(MAKE)	$(BUILD_TARGET)     	
+	@echo 'ELFsh ET_EXEC has been built successfully.' 
+
+dep-e2dbg:
+	@echo 'Building E2dbg' 
+	@cd e2dbg && $(MAKE) $(BUILD_TARGET)	     	
+	@echo 'E2dbg has been built successfully.' 
+
+dep-etrace: dep-libedfmt dep-libstderesi dep-libelfsh dep-libui
+	@echo 'Building Etrace'				
+	@cd etrace && $(MAKE)	$(BUILD_TARGET)     	
+	@echo 'ETrace has been built successfully.' 	
+
+dep-evarista:
+	@echo 'Building Evarista'			
+	@cd evarista && $(MAKE) $(BUILD_TARGET)     	
+	@echo 'Evarista has been built successfully.' 	
+
+dep-kernsh:	dep-libkernsh
+	@echo 'Building kernsh...'                      
+	@cd kernsh && $(MAKE) $(BUILD_TARGET)         
+	@echo 'Kernsh has been built successfully.'     

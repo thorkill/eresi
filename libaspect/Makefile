@@ -22,19 +22,24 @@ NAME64		= libaspect64
 
 all		: all32 all64
 
-all32		: $(OBJ32)
+libaspect32.so		: $(OBJ32)
 		@$(CC) -L../liballocproxy/ -lallocproxy \
 		$(DLOPT) -shared $(OBJ32) -o $(NAME32).so
 		@$(AR) $(NAME32).a $(OBJ32)
 		@$(RANLIB) $(NAME32).a
 		$(LD) -r $(OBJ32) -o $(NAME32).o
 
-all64		: $(OBJ64)
+all32:	libaspect32.so
+
+libaspect64.so		: $(OBJ64)
 		@$(LD) -L../liballocproxy/ -lallocproxy \
 		$(DLOPT) -shared $(OBJ64) -o $(NAME64).so
 		@$(AR) $(NAME64).a $(OBJ64)
 		@$(RANLIB) $(NAME64).a
 		$(LD) -r $(OBJ64) -o $(NAME64).o
+
+all64: libaspect64.so
+
 
 clean		: 
 		@$(RM) \#* *\# *~ $(OBJ) $(OBJ32) $(OBJ64) .\#* include/\#* \

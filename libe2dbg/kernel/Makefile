@@ -29,8 +29,10 @@ obj-m		:= ke2dbg.o
 
 else
 
-all::
+ke2dbg.ko:
 	$(MAKE) -C /lib/modules/`uname -r`/build M=`pwd`/
+
+all:	ke2dbg.ko
 
 clean::
 	@$(RM) *.o *~ \#* *\# .\#*

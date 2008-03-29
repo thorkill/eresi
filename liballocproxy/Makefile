@@ -18,10 +18,12 @@ NAME	= allocproxy
 
 all	: heap
 
-heap	: $(OBJ)
+lib$(NAME).o	: $(OBJ)
 	$(AR) rc lib$(NAME).a $(OBJ)
 	$(RANLIB) lib$(NAME).a
 	$(LD) -r $(OBJ) -o lib$(NAME).o
+
+heap:	lib$(NAME).o
 
 clean	:
 	rm -f $(OBJ) *~ \#* *\#

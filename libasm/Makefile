@@ -56,7 +56,7 @@ CC 		?= 	gcc -E
 LD		?=	ld
 CP 		= 	cp
 
-all:	dep lib
+all:	libasm.so
 
 
 install:
@@ -69,7 +69,7 @@ dep:
 	@sh configure
 	@rm -f src/build.o
 
-lib:	$(OBJS_libasm)
+libasm.so:	$(OBJS_libasm)
 	@ar rc ${NAME_libasm} ${OBJS_libasm}
 	@echo "[AR] ${NAME_libasm}"
 	@${RANLIB} ${NAME_libasm}
@@ -109,7 +109,7 @@ mydisasm:
 	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32
 
 test:
-	(cd testsuite/ia32 && sh launch_test.sh)
+	(cd testsuite/ia32 && ${SHELL} launch_test.sh)
 
 Makefile.inc:	
 	$(SHELL) configure

@@ -49,15 +49,20 @@ LD		= gcc
 
 all		: all32 all64
 
-all32		: $(OBJ32)
+$(NAME32).so		: $(OBJ32)
 		@$(LD) $(LDFLAGS32) $(BITS) -shared $(OBJ32) -o $(NAME32).so
 		@$(AR) $(NAME32).a $(OBJ32)
 		@$(RANLIB) $(NAME32).a
 
-all64		: $(OBJ64)
+all32: $(NAME32).so
+
+
+$(NAME64).so		: $(OBJ64)
 		@$(LD) $(LDFLAGS64) $(BITS) -shared $(OBJ64) -o $(NAME64).so
 		@$(AR) $(NAME64).a $(OBJ64)
 		@$(RANLIB) $(NAME64).a
+
+all64:	$(NAME64).so
 
 clean		: 
 		@$(RM) \#* *\# *~ .\#* include/\#* include/*\#  \

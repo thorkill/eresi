@@ -46,12 +46,14 @@ mod32			:
 			$(MAKE) -C io   all32
 			$(MAKE) -C api  all32
 
-lib32			:
+$(NAME32).so			:
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
 			@$(RANLIB) ${NAME32}.a
 			@echo LINKED LIBREVM32
+
+lib32: $(NAME32).so
 
 mod64			:
 			$(MAKE) -C lang all64

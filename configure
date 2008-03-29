@@ -14,15 +14,60 @@ TESTING="0"
 GSTABS=""
 PREFIX=""
 OSVER=`uname -r | cut -d "." -f1`
+OSNAME=`uname -s`
 CONFIGFILE="config.h"
 VARSFILE="librevm/include/revm-vars.h"
 LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
 SHELL=`which bash`
 
+function printHelp 
+{
+    echo "Error: you MUST specify --enable-32, --enable-64 OR --enable-32-64."
+    echo
+    echo "   Available parameters :" 
+    echo
+    echo "   --enable-32-64    : Build both ELF32/64 capable shell."
+    echo "   --enable-32       : Build a ELF32 capable shell."
+    echo "   --enable-64       : Build a ELF64 capable shell."
+    echo "   --enable-readline : Link with readline"
+#    echo "   --enable-network  : Build the distributed extension."
+    echo "   --enable-static   : Link in static."
+    echo "   --enable-testing  : Test ERESI without install"
+    echo "   --enable-dmalloc  : Link with Electric Fence."
+    echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
+    echo "   --enable-gstabs+  : Enable gstabs+ support"
+    echo "   --enable-kernsh   : Build kernsh and libkernsh (linux only)"
+    echo "   --enable-ke2dbg   : Build ke2dbg kernel debugger (linux only)"
+    echo "   --use-etags       : Use etags"
+    echo "   --use-ctags       : Use ctags"
+    echo "   --use-cpp         : Build the project as C++"
+    echo
+    echo "   Available variables :"
+    echo
+    echo "   --set-shell       : Set your UNIX shell path."
+    echo "   --set-compiler    : Set your compiler path."
+    echo "   --set-editor      : Set your editor path."
+    echo "   --set-modpath     : Set your ELFsh modules path."
+    echo "   --prefix          : Set prefix."
+    echo
+    echo "   All options are disabled by default."
+    echo
+    exit
+}
+
+for helpopt in "-h" "--help"
+do
+  if [ "$1" == $helpopt ] ; then
+    printHelp
+  fi
+done
+
 echo > $LIBVARSFILE
 echo > $VARSFILE
 echo > $CONFIGFILE
+
+
 
 while [ $# -ne 0 ]; do
 
@@ -61,6 +106,7 @@ BUILD_TARGET=all64
 MOD_TARGET=mod64
 ;;
 
+
 --enable-32*)
 if [ $CHOSENBIT = "1" ]; then
     echo
@@ -97,8 +143,11 @@ TESTING="1"
 --enable-readline*)
 echo  " [*] Enabling readline support"
 READLN="1"
-echo  "READLNOPT	= -DUSE_READLN -I/opt/sfw/include/"     >> $CONFIGFILE
+if [ "${OSNAME}" != OpenBSD ] ; then
 echo  "LDREADLNOPT      = -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
+else
+echo  "LDREADLNOPT      = -lreadline -ltermcap"			>> $CONFIGFILE
+fi
 echo  "LDUIOPT32	= -L../libui -lui32"                    >> $CONFIGFILE
 echo  "LDUIOPT64	= -L../libui -lui64"                    >> $CONFIGFILE
 ;;
@@ -273,38 +322,7 @@ echo "MAKE=gmake" >> $CONFIGFILE
 fi
 
 if [ $CHOSENBIT = "0" ]; then
-    echo "Error: you MUST specify --enable-32, --enable-64 OR --enable-32-64."
-    echo
-    echo "   Available parameters :" 
-    echo
-    echo "   --enable-32-64    : Build both ELF32/64 capable shell."
-    echo "   --enable-32       : Build a ELF32 capable shell."
-    echo "   --enable-64       : Build a ELF64 capable shell."
-    echo "   --enable-readline : Link with readline"
-#    echo "   --enable-network  : Build the distributed extension."
-    echo "   --enable-static   : Link in static."
-    echo "   --enable-testing  : Test ERESI without install"
-    echo "   --enable-dmalloc  : Link with Electric Fence."
-    echo "   --enable-m64      : Build ELFsh itself as 64bits binary (default: 32bits)"
-    echo "   --enable-gstabs+  : Enable gstabs+ support"
-    echo "   --enable-kernsh   : Build kernsh and libkernsh (linux only)"
-    echo "   --enable-ke2dbg   : Build ke2dbg kernel debugger (linux only)"
-    echo "   --use-etags       : Use etags"
-    echo "   --use-ctags       : Use ctags"
-    echo "   --use-cpp         : Build the project as C++"
-    echo
-    echo "   Available variables :"
-    echo
-    echo "   --set-shell       : Set your UNIX shell path."
-    echo "   --set-compiler    : Set your compiler path."
-    echo "   --set-editor      : Set your editor path."
-    echo "   --set-modpath     : Set your ELFsh modules path."
-    echo "   --prefix          : Set prefix."
-    echo
-    echo "   All options are disabled by default."
-    echo
-    rm -f $CONFIGFILE $VARSFILE Makefile
-    exit
+    printHelp
 fi
 
 #if  [ $READLN = "1" -a $ELFSHNET = "1" ]; then
@@ -507,9 +525,23 @@ echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
 echo "#define LIBPATH          \"$PREFIX/usr/local/lib/\""	>> $VARSFILE
 echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "RM      = rm -f "                                		>> Makefile
-
 echo ""								>> Makefile
 echo "all     : world modules tags"				>> Makefile
+
+cat >> Makefile <<EOF
+
+ifdef NAME
+include  build/defs/dep-rules.def
+component:	dep-\$(NAME)
+else
+component:
+	@echo Precise which component by specifying a NAME option.
+	@echo gmake component NAME=component-name
+	@echo component names are mostly subdirectories
+endif
+
+EOF
+
 echo "world   : "						>> Makefile
 echo "	@echo 'Building liballocproxy ..' "			>> Makefile
 echo "	@cd liballocproxy && \$(MAKE) "				>> Makefile
@@ -561,10 +593,10 @@ echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 # If we compiled librevm with readline, we need to compile it a second
 # time without it, to be linked with libe2dbg in the embedded debugger
 if [ "$READLN" = "1" ]; then
-  echo "	cp config.h config.back"                       >> Makefile
-  echo "	cat $CONFIGFILE | grep -v READLN > t && mv t $CONFIGFILE" >> Makefile
-  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile
-  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile
+#  echo "	cp config.h config.back"                       >> Makefile
+#  echo "	cat $CONFIGFILE | grep -v READLN > t && mv t $CONFIGFILE" >> Makefile
+#  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile
+#  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile
   echo "	@cd librevm/io/ && \$(MAKE) \$(BUILD_TARGET)  "	>> Makefile
   echo "	cp config.back config.h"                        >> Makefile
   echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
