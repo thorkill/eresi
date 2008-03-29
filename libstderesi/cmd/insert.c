@@ -1,7 +1,7 @@
 /*
 ** @file insert.c
-**
-** First insert functions for easy scripting
+** @ingroup libstderesi
+** @brief First insert functions for easy scripting.
 **
 ** Started     Nov 22 01:26:01 2003 jfv
 **

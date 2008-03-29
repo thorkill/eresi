@@ -1,6 +1,6 @@
 /**
 ** @file modules.c
-**
+** @ingroup libstderesi
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **
 ** $Id: modules.c,v 1.1 2007-11-29 14:01:56 may Exp $

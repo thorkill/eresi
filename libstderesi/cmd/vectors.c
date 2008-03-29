@@ -1,6 +1,6 @@
 /**
  * @file vectors.c
- *
+ * @ingroup libstderesi
  * Started on  Sat Jan 06 06:43:11 2007 jfv
  *
  * $Id: vectors.c,v 1.1 2007-11-29 14:01:56 may Exp $

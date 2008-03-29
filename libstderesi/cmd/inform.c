@@ -1,6 +1,6 @@
 /*
 ** @file inform.c
-**
+** @ingroup libstderesi
 ** @brief Commands for doing annotations on program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv

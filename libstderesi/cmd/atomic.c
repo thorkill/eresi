@@ -1,6 +1,6 @@
 /**
  ** @file atomic.c
- ** 
+ ** @ingroup libstderesi
  ** @brief Implement arithmetic operations
  **
  ** Started on  Sun Feb  9 22:43:34 2003 jfv

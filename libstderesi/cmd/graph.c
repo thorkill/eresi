@@ -1,6 +1,6 @@
 /*
 ** @file graph.c
-**
+** @ingroup libstderesi
 ** @brief Dump graphviz output
 **
 ** Started : Fri Mar  7 07:18:03 2003 jfv

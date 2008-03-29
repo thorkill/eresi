@@ -1,6 +1,6 @@
 /*
 ** @file info.c
-** 
+** @ingroup libstderesi
 ** Made by jfv
 ** Login   <jfv@devhell.org>
 ** 

@@ -1,6 +1,6 @@
 /*
 ** @file inspect.c
-** 
+** @ingroup libstderesi
 ** @brief Inspect the content of a basic block
 **
 ** Original author  : <sk at devhell dot org>

@@ -1,6 +1,6 @@
 /**
-** @file source.c for libstderesi in ERESI
-** 
+** @file source.c
+** @ingroup libstderesi
 ** Started on  Fri May 16 15:18:35 2005 jfv
 ** $Id: source.c,v 1.1 2007-11-29 14:01:56 may Exp $
 */

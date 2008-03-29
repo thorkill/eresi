@@ -1,7 +1,7 @@
 /*
 ** @file declare.c
-** 
-** Command used to declare a new typed variable in the environment
+** @ingroup libstderesi
+** @brief Command used to declare a new typed variable in the environment
 **
 ** Started on Fri Jun 22 07:23:58 2007 jfv
 ** $Id: declare.c,v 1.1 2007-11-29 14:01:56 may Exp $

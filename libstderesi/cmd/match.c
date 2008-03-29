@@ -1,6 +1,6 @@
 /**
 ** @file match.c 
-**
+** @ingroup libstderesi
 ** @brief Implementation of program transformation in ERESI
 **
 ** Start on Wed May 23 13:55:45 2007 jfv

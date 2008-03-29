@@ -1,6 +1,6 @@
 /**
  * @file relinject.c
- * 
+ * @ingroup libstderesi
  * Started on  Fri Mar 28 14:58:57 2003 jfv
  * Last update Thu Mar 11 14:39:48 2004 jfv
  *

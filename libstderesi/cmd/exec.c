@@ -1,6 +1,6 @@
 /**
 ** @file exec.c
-** 
+** @ingroup libstderesi
 ** Started on  Tue Feb 18 13:03:14 2003 jfv
 **
 ** $Id: exec.c,v 1.1 2007-11-29 14:01:56 may Exp $

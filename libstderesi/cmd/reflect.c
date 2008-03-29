@@ -1,7 +1,7 @@
 /*
-** match.c for librevm in ERESI
-**
-** Handle the match construct
+** @file match.c
+** @ingroup libstderesi
+** @brief Handle the match construct.
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **

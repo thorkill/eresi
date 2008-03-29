@@ -1,6 +1,6 @@
 /*
 ** @file job.c
-** 
+** @ingroup libstderesi
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **
 ** $Id: job.c,v 1.2 2008-02-16 12:32:27 thor Exp $

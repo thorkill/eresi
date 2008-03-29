@@ -1,9 +1,9 @@
 /**
 ** @file flow.c
-** 
+** @ingroup libstderesi
 ** Original author : sk for the modflow of elfsh
 **
-** Merged in the ELFsh VM by the ELFsh crew.
+** @brief Merged in the ELFsh VM by the ELFsh crew.
 **
 **
 ** $Id: flow.c,v 1.2 2008-02-16 12:32:27 thor Exp $

@@ -1,6 +1,6 @@
 /**
 ** @file color.c
-**
+** @ingroup libstderesi
 ** @brief All functions about colors
 **
 ** Started on Sept 11 2005 mxatone

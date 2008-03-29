@@ -1,6 +1,6 @@
 /**
 ** @file lists.c 
-**
+** @ingroup libstderesi
 ** @brief Pretty printing for ERESI lists
 **
 ** Started Jul 13 2007 18:57:03 jfv
