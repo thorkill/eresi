@@ -593,12 +593,12 @@ echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
 # If we compiled librevm with readline, we need to compile it a second
 # time without it, to be linked with libe2dbg in the embedded debugger
 if [ "$READLN" = "1" ]; then
-#  echo "	cp config.h config.back"                       >> Makefile
+#  echo "	test -f config.h && cp config.h config.back"                       >> Makefile
 #  echo "	cat $CONFIGFILE | grep -v READLN > t && mv t $CONFIGFILE" >> Makefile
 #  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile
 #  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile
   echo "	@cd librevm/io/ && \$(MAKE) \$(BUILD_TARGET)  "	>> Makefile
-  echo "	cp config.back config.h"                        >> Makefile
+#  echo "	cp config.back config.h"                        >> Makefile
   echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
 fi
 
