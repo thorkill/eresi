@@ -144,9 +144,10 @@ TESTING="1"
 echo  " [*] Enabling readline support"
 READLN="1"
 if [ "${OSNAME}" != OpenBSD ] ; then
-echo  "LDREADLNOPT      = -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
+echo  "READLNOPT	= -DUSE_READLN"				>> $CONFIGFILE
+echo  "LDREADLNOPT	= -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
 else
-echo  "LDREADLNOPT      = -lreadline -ltermcap"			>> $CONFIGFILE
+echo  "LDREADLNOPT	= -lreadline -ltermcap"			>> $CONFIGFILE
 fi
 echo  "LDUIOPT32	= -L../libui -lui32"                    >> $CONFIGFILE
 echo  "LDUIOPT64	= -L../libui -lui64"                    >> $CONFIGFILE
@@ -598,7 +599,7 @@ if [ "$READLN" = "1" ]; then
 #  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile
 #  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile
   echo "	@cd librevm/io/ && \$(MAKE) \$(BUILD_TARGET)  "	>> Makefile
-#  echo "	cp config.back config.h"                        >> Makefile
+# echo "	cp config.back config.h"                        >> Makefile
   echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
 fi
 

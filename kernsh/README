@@ -1,4 +1,4 @@
-                        	]=------ Kernsh ------=[
+                      	]=------ Kernsh ------=[
 
 
 Kernsh uses Libkernsh which is a library to play with kernel image in real 
@@ -11,18 +11,21 @@ You can profite of eresi's language to define you own structure and
 communicate with the kernel.
 
 Features :
-    - Read/Write anywhere in the kernel (static/memory {/dev/(k)mem, /proc/kcore, lkm (/proc, syscall)), 
-      direcly in ERESI language
-    - Display syscalls, idt, gdt, symbols..
+    - Read/Write anywhere in the kernel (static/memory ((/dev/(k)mem, 
+    	/proc/kcore, lkm (/proc, syscall))), direcly in ERESI language
+    - Consultation and modification of Linux 2.4 and 2.6 kernel structures 
+    	(syscall table, etc) and symbols
+    - Consultation and modification of INTEL specific kernel structures 
+    	(IDT, GDT, etc)
     - Disassembling kernel memory
     - Read and modify the static kernel image
     - Alloc/Free kernel memory (contiguous and non contiguous)
     - Inject new compiled LKM code into a static kernel or kernel memory
     - Make hash of kernel function and portion of code
     - Redirect initialisation of loadable kernel module
-    - Redir function
+    - Kernel function redirection
     - Read/Write into process virtual memory (/proc, syscall)
-    - Dump Virtual Memory Areas of process id (/proc, syscall)
+    - Dump Virtual Memory Area of process id (/proc, syscall)
 
 Depends libkernsh : libaspect, libstderesi, libelfsh
 Depends kernsh : libkernsh, librevm, libaspect, libstderesi

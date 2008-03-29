@@ -4,6 +4,7 @@
 - Finish kernsh_get_vma and kernsh_task_pid
 - Fix len at PAGE_SIZE to read/write in process virtual memory with syscall
 - Fix Dump
+- Socket
 - Use libmjollnir
 - Handle compressed kernel
 - Finish autotypes
