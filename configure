@@ -19,9 +19,9 @@ CONFIGFILE="config.h"
 VARSFILE="librevm/include/revm-vars.h"
 LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
-SHELL=`which bash`
+SHELL=`which sh`
 
-function printHelp 
+printHelp() 
 {
     echo "Error: you MUST specify --enable-32, --enable-64 OR --enable-32-64."
     echo
@@ -56,12 +56,9 @@ function printHelp
     exit
 }
 
-for helpopt in "-h" "--help"
-do
-  if [ "$1" == $helpopt ] ; then
-    printHelp
-  fi
-done
+if [ "$1" = "-h" -o "$1" = "--help" ] ; then
+	printHelp
+fi
 
 echo > $LIBVARSFILE
 echo > $VARSFILE
@@ -71,7 +68,7 @@ echo > $CONFIGFILE
 
 while [ $# -ne 0 ]; do
 
-case $1 in
+case "$1" in
 
 --enable-32-64*)
 if [ $CHOSENBIT = "1" ]; then
