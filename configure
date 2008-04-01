@@ -19,7 +19,11 @@ CONFIGFILE="config.h"
 VARSFILE="librevm/include/revm-vars.h"
 LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
-SHELL=`which sh`
+SHELL=`which bash`
+
+if [ $0 = "bash" ]; then
+ function printHelp
+fi
 
 printHelp() 
 {
