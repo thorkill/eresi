@@ -52,7 +52,7 @@ $(NAME32).so			:
 			@echo LINKED LIBSTDERESI32
 
 lib32: $(NAME32).so
-lib64: $(NAME364).so
+lib64: $(NAME64).so
 
 mod64			:
 			$(MAKE) -C elf  all64

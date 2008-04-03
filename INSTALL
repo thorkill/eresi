@@ -8,6 +8,9 @@ How to build the ERESI framework. This includes:
 
 You will need openssl headers. Debian users should install openssl-dev.
 
+Make sure you have enough free space on your filesystem,
+build of 32-64 objects can take up to 800MB!
+
 1. ./configure --help (select your options)
 2. make
 3. make install (optional, you can test from e2dbg/e2dbg and vm/elfsh)

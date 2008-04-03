@@ -24,6 +24,10 @@
 #include <sys/elf_common.h>
 #endif
 
+#if defined(__FreeBSD__)
+ #define __WORDSIZE __ELF_WORD_SIZE
+#endif
+
 /**
  * Lists of shared object dependencies 
  */
