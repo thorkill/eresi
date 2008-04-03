@@ -16,7 +16,7 @@
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <sys/param.h>
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || defined(__FreeBSD__)
 #include <elf.h>
 #elif defined(__OpenBSD__)
 #include <sys/exec_elf.h>
@@ -24,7 +24,7 @@
 #include <sys/elf_common.h>
 #endif
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) 
  #define __WORDSIZE __ELF_WORD_SIZE
 #endif
 
@@ -270,8 +270,12 @@ typedef struct Struct_Obj_Entry {
 #define SHT_GNU_versym	  0x6fffffff	/* Version symbol table.  */
 
 
-#if __FreeBSD_version > 505100
+#if __FreeBSD_version >= 603100
 #else
+
+ typedef uint16_t        Elf32_Half;
+ typedef uint32_t        Elf32_Word;
+
 /**
  * Version definition sections (32Bit)
  */
@@ -315,7 +319,7 @@ typedef struct
 #define	VER_NDX_LORESERVE	0xff00	/* Beginning of reserved entries.  */
 #define	VER_NDX_ELIMINATE	0xff01	/* Symbol is to be eliminated.  */
 
-#if (! (__FreeBSD_version > 505100)) || defined(__OpenBSD__)
+#if __FreeBSD_version < 603100
 /* Legal values for vd_flags (version information flags).  */
 #define VER_FLG_BASE	0x1		/* Version definition of file itself */
 #define VER_FLG_WEAK	0x2		/* Weak version identifier */
@@ -336,7 +340,6 @@ typedef struct
   Elf64_Word	vda_next;		/* Offset in bytes to next verdaux
 					   entry */
 } Elf64_Verdaux;
-
 
 /**
  * Version dependency section.
@@ -369,7 +372,7 @@ typedef struct
  * Note section contents.  Each entry in the note section begins with
  * a header of a fixed form.
  */
-#if defined(__NetBSD__) || __FreeBSD_version > 505100
+#if defined(__NetBSD__) || __FreeBSD_version >= 603100
 /*
  * Note section are not necessary since residing in <elf.h> already
  * we avoid conflicting types
@@ -398,7 +401,7 @@ typedef struct
 #define VER_NEED_NUM	 2		/* Given version number */
 
 
-#if (!( __FreeBSD_version > 505100)) || defined(__OpenBSD__)
+#if (__FreeBSD_version < 603100) || defined(__OpenBSD__)
 /**
  * Auxiliary needed version information.
  */

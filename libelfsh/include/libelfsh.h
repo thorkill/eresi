@@ -26,9 +26,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <regex.h>
-#if ! __FreeBSD_version > 505100
-#include <elf.h>
-#endif
 #endif
 
 #include "libaspect.h"
