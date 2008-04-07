@@ -21,10 +21,6 @@ LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
 SHELL=`which bash`
 
-if [ $0 = "bash" ]; then
- function printHelp
-fi
-
 printHelp() 
 {
     echo "Error: you MUST specify --enable-32, --enable-64 OR --enable-32-64."
