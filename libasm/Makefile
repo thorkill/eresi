@@ -6,11 +6,14 @@
 ##
 
 #DBGFLAGS	=	-ggdb -DDEBUG_SPARC
-include Makefile.inc
+#include Makefile.inc
 include ../config.h
 #
 # Architecture source files
 #
+
+
+
 SRCS_libasm 	=				\
 		src/generic.c			\
 		src/output.c			\
@@ -36,7 +39,18 @@ SRCS_libasm 	=				\
 		src/arch/mips/mips_convert.c	\
 		src/arch/mips/register_mips.c
 
-
+SRCS_libasm    += $(foreach dir,src/arch/ia32/handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/ia32/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/mips/handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/mips/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/sparc/handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/sparc/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
 
 OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
 OBJS_libasm	+=	${SRCS_hdl:.c=.o}
