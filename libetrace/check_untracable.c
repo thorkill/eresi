@@ -1,8 +1,8 @@
 /**
  * @file check_func.c
-** check_func.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief All functions that help check, remote untracable content 
+** @brief All functions that help check, remote untracable content.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
@@ -15,6 +15,11 @@
 #include "libasm.h"
 #include "libetrace.h"
 
+/**
+ * @brief Fix this doxygen tag.
+ * @param name
+ * @return
+ */
 static int		etrace_add_untracable(char *name)
 {
   NOPROFILER_IN();
@@ -24,6 +29,12 @@ static int		etrace_add_untracable(char *name)
   NOPROFILER_ROUT(0);
 }
 
+/**
+ * @brief Fix this doxygen tag.
+ * @param file
+ * @param name
+ * @return
+ */
 int		etrace_untracable(elfshobj_t *file, char *name)
 {
   u_char		ostype;

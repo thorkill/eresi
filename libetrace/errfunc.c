@@ -2,7 +2,7 @@
  * @file errfunc.c
 ** @ingroup libetrace
 **
-** @brief This file contain one function for error collection
+** @brief This file contain one function for error collection.
 **
 **
 ** $Id: errfunc.c,v 1.2 2007-11-29 10:25:02 rival Exp $

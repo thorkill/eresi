@@ -1,6 +1,6 @@
 /**
  * @file func_add.c
-** func_add.c for libetrace
+** @ingroup libetrace
 ** 
 ** @brief add function to a trace table
 ** 
@@ -17,6 +17,7 @@
 
 /**
  * Setup asm_processor structure correctly
+ * @param file Pointer to elfsh object.
  * @param proc pointer to asm_processor structure
  */
 static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)

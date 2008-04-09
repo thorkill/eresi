@@ -1,6 +1,6 @@
 /**
  * @file delete.c
-** delete.c for libetrace
+** @ingroup libetrace
 ** 
 ** @brief trace deletion function
 ** 

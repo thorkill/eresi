@@ -1,8 +1,8 @@
 /**
  * @file func_add.c
-** func_add.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief add function to a trace table
+** @brief add function to a trace table.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 

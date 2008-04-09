@@ -1,8 +1,8 @@
 /**
  * @file func_disable.c
-** func_disable.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief trace table disable functions
+** @brief trace table disable functions.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 

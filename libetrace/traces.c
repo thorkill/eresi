@@ -1,8 +1,12 @@
 /**
+ * @defgroup libetrace Libetrace Reference
+ */
+/**
  * @file traces.c
-** traces.c for libelfsh
+ * @ingroup libetrace
 ** 
-** @brief All functions that help to trace content
+** 
+** @brief All functions that help to trace content.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
@@ -42,7 +46,9 @@ hash_t			*etrace_createtrace(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newhash);
 }
 
-/* Init the table and add the default trace (global) */
+/**
+ * @brief Init the table and add the default trace (global) .
+ */
 int			*etrace_inittrace()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 

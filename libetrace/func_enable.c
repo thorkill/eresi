@@ -1,8 +1,8 @@
 /**
  * @file func_enable.c
-** func_enable.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief trace table enable functions
+** @brief trace table enable functions.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 

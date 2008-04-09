@@ -1,8 +1,8 @@
 /**
  * @file check.c
-** check.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief check functions, valid faddr or is tracable ?
+** @brief check functions, valid faddr or is tracable.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 

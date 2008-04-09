@@ -1,8 +1,8 @@
 /**
  * @file func_remove.c
-** func_remove.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief trace table remove functions 
+** @brief trace table remove functions.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 

@@ -1,8 +1,8 @@
 /**
  * @file search.c
-** search.c for libetrace
+** @ingroup libetrace
 ** 
-** @brief Symbol trace search function 
+** @brief Symbol trace search function.
 ** 
 ** Started Jul 2 2005 00:03:44 mxatone
 ** 
