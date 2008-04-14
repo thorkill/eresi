@@ -10,7 +10,41 @@
 
 
 /**
- * Initialize instruction level vector
+ * Wrapper for Architecture initialization.
+ *
+ * This function create an abstraction to enable partial building
+ * of libasm depending on needs.
+ * @param proc Pointer to asm_processor structure.
+ * @param arch Architecture: ASM_PROC_IA32
+ */
+
+int	asm_init_arch(asm_processor *proc, int arch)
+{
+  switch(arch)
+    {
+#if LIBASM_ENABLE_IA32
+    case ASM_ARCH_IA32:
+      return asm_init_ia32(proc);
+      break;
+#endif
+#if LIBASM_ENABLE_SPARC
+    case ASM_ARCH_SPARC:
+      return asm_init_sparc(proc);
+      break;
+#endif
+#if LIBASM_ENABLE_MIPS
+    case ASM_ARCH_MIPS:
+      return asm_init_mips(proc);
+      break;
+#endif
+    default:
+      return (0);
+    }
+  return (0);
+}
+
+/**
+ * Initialize instruction level vector.
  * @param proc Pointer to processor structure
  * @param machine Currently not used.
  * @return 1 on success, 0 on error
@@ -20,28 +54,32 @@ int	asm_arch_register(asm_processor *proc, int machine)
   int	to_ret;
   
   LIBASM_PROFILE_FIN();
+  
+  to_ret = 0;
+#if LIBASM_ENABLE_IA32
   if (proc->type == ASM_PROC_IA32) 
     {
       asm_register_ia32(proc);
+      to_ret = 1;
     }  
-  else if (proc->type == ASM_PROC_SPARC) 
+#endif
+#if LIBASM_ENABLE_SPARC 
+  if (proc->type == ASM_PROC_SPARC) 
     {
       asm_register_sparc();
+      to_ret = 1;
     }
-  else if (proc->type == ASM_PROC_MIPS)
+#endif
+#if LIBASM_ENABLE_MIPS
+  if (proc->type == ASM_PROC_MIPS)
     {
       asm_register_mips();
+      to_ret = 1;
     }
+#endif
   //
   // Add your architecture handler here.
   // 
-  else
-    {
-      to_ret = 0;
-      goto out;
-    }
-  to_ret = 1;
- out:
   LIBASM_PROFILE_FOUT(to_ret);
 }
 

@@ -22,35 +22,49 @@ SRCS_libasm 	=				\
 		src/instruction.c		\
 		src/register.c			\
 		src/build.c			\
-		src/vectors.c			\
+		src/vectors.c
+
+ifeq ($(LIBASM_ENABLE_IA32), 1)
+SRCS_libasm +=	\
 		src/arch/ia32/init_i386.c	\
 		src/arch/ia32/register.c	\
 		src/arch/ia32/tables_i386.c	\
 		src/arch/ia32/output_ia32.c	\
-		src/arch/ia32/operand_ia32.c	\
+		src/arch/ia32/operand_ia32.c
+SRCS_libasm    += $(foreach dir,src/arch/ia32/handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/ia32/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
+CFLAGS += -DLIBASM_ENABLE_IA32
+endif
+
+ifeq ($(LIBASM_ENABLE_SPARC), 1)
+SRCS_libasm += 	\
 		src/arch/sparc/init_sparc.c	\
 		src/arch/sparc/register.c	\
 		src/arch/sparc/tables_sparc.c	\
 		src/arch/sparc/output_sparc.c	\
-		src/arch/sparc/sparc_convert.c	\
+		src/arch/sparc/sparc_convert.c
+SRCS_libasm    += $(foreach dir,src/arch/sparc/handlers/,\
+	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/sparc/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
+CFLAGS += -DLIBASM_ENABLE_SPARC
+endif
+
+ifeq ($(LIBASM_ENABLE_MIPS), 1)
+SRCS_libasm +=	\
 		src/arch/mips/init_mips.c	\
 		src/arch/mips/output_mips.c	\
 		src/arch/mips/tables_mips.c	\
 		src/arch/mips/mips_convert.c	\
 		src/arch/mips/register_mips.c
-
-SRCS_libasm    += $(foreach dir,src/arch/ia32/handlers/,\
-	$(wildcard $(dir)/*.c))
-SRCS_libasm    += $(foreach dir,src/arch/ia32/operand_handlers/,\
-	$(wildcard $(dir)/*.c))
 SRCS_libasm    += $(foreach dir,src/arch/mips/handlers/,\
 	$(wildcard $(dir)/*.c))
 SRCS_libasm    += $(foreach dir,src/arch/mips/operand_handlers/,\
 	$(wildcard $(dir)/*.c))
-SRCS_libasm    += $(foreach dir,src/arch/sparc/handlers/,\
-	$(wildcard $(dir)/*.c))
-SRCS_libasm    += $(foreach dir,src/arch/sparc/operand_handlers/,\
-	$(wildcard $(dir)/*.c))
+CFLAGS += -DLIBASM_ENABLE_MIPS
+endif
 
 OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
 OBJS_libasm	+=	${SRCS_hdl:.c=.o}

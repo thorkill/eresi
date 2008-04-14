@@ -1,7 +1,8 @@
 /*
 ** @file libhash.c
+** @ingroup libaspect
 ** 
-** @brief Contain ELFsh internal hashtables library calls
+** @brief Contain ELFsh internal hashtables library calls.
 **
 ** Started on  Fri Jan 24 20:26:18 2003 jfv
 ** $Id: libhash.c,v 1.41 2007-11-28 08:18:17 may Exp $

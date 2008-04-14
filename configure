@@ -43,6 +43,10 @@ printHelp()
     echo "   --use-ctags       : Use ctags"
     echo "   --use-cpp         : Build the project as C++"
     echo
+    echo "   --libasm-ia32     : Enable libasm ia32 engine"
+    echo "   --libasm-sparc    : Enable libasm sparc engine"
+    echo "   --libasm-mips     : Enable libasm mips engine"
+    echo
     echo "   Available variables :"
     echo
     echo "   --set-shell       : Set your UNIX shell path."
@@ -130,6 +134,25 @@ MOD_TARGET=mod32
 #echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
 #BITS=$BITS" -DELFSHNET"
 #;;
+
+
+--libasm-ia32)
+echo " [*] Libasm IA32 engine"
+echo "LIBASM_ENABLE_IA32 = 1" >> $CONFIGFILE
+LIBASM_ENABLE_CHOOSEN=1
+;;
+
+--libasm-sparc)
+echo " [*] Libasm SPARC engine"
+echo "LIBASM_ENABLE_SPARC = 1" >> $CONFIGFILE
+LIBASM_ENABLE_CHOOSEN=1
+;;
+
+--libasm-mips)
+echo " [*] Libasm MIPS engine"
+echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
+LIBASM_ENABLE_CHOOSEN=1
+;;
 
 --enable-testing*)
 echo " [*] Enable compilation without install"
@@ -301,7 +324,7 @@ break;
 *)
 echo "Invalid configure '$1' option. Try --help."
 echo
-rm -f $CONFIGFILE Makefile
+rm -f $CONFIGFILE Makefile.gen
 exit
 
 esac;
@@ -310,6 +333,15 @@ shift
 
 done
 
+if [ ! "$LIBASM_ENABLE_CHOOSEN" == 1 ];
+then
+echo " [*] Libasm IA32 engine"
+echo " [*] Libasm SPARC engine"
+echo " [*] Libasm MIPS engine"
+echo "LIBASM_ENABLE_IA32 = 1" >> $CONFIGFILE
+echo "LIBASM_ENABLE_SPARC = 1" >> $CONFIGFILE
+echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
+fi
 #
 # test for make/gmake support
 #
@@ -492,41 +524,41 @@ fi
 #;;;
 #esac
 
-echo "##"							 > Makefile 
-echo "## Makefile "						>> Makefile
-echo "## "							>> Makefile
-echo "## Started on  Fri Dec  7 06:54:35 2001 jfv"		>> Makefile
-echo "## Automatically generated from the configure script"	>> Makefile
-echo "## "							>> Makefile
-echo ""								>> Makefile
-echo "include ./$CONFIGFILE " 					>> Makefile
-echo ""								>> Makefile
-echo "CC      = gcc "						>> Makefile
-echo "RM      = rm -f "						>> Makefile
-echo "ETAGS   = etags "					        >> Makefile
-echo "CTAGS   = ctags "						>> Makefile
-echo "DESTDIR = $PREFIX"                       			>> Makefile
-echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile
-echo "MOD_TARGET = $MOD_TARGET"					>> Makefile
+echo "##"							 > Makefile.gen 
+echo "## Makefile "						>> Makefile.gen
+echo "## "							>> Makefile.gen
+echo "## Started on  Fri Dec  7 06:54:35 2001 jfv"		>> Makefile.gen
+echo "## Automatically generated from the configure script"	>> Makefile.gen
+echo "## "							>> Makefile.gen
+echo ""								>> Makefile.gen
+echo "include ./$CONFIGFILE " 					>> Makefile.gen
+echo ""								>> Makefile.gen
+echo "CC      = gcc "						>> Makefile.gen
+echo "RM      = rm -f "						>> Makefile.gen
+echo "ETAGS   = etags "					        >> Makefile.gen
+echo "CTAGS   = ctags "						>> Makefile.gen
+echo "DESTDIR = $PREFIX"                       			>> Makefile.gen
+echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile.gen
+echo "MOD_TARGET = $MOD_TARGET"					>> Makefile.gen
 
 if [ "$FREEBSD" = "1" ]; then
-echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
-echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
+echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile.gen
+echo "MANPATH = \$(BASEPATH)/man"				>> Makefile.gen
 else
-echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
-echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
+echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile.gen
+echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile.gen
 fi
 
-echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
-echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile
-echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
+echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile.gen
+echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile.gen
+echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile.gen
 echo "#define LIBPATH          \"$PREFIX/usr/local/lib/\""	>> $VARSFILE
-echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
-echo "RM      = rm -f "                                		>> Makefile
-echo ""								>> Makefile
-echo "all     : world modules tags"				>> Makefile
+echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile.gen
+echo "RM      = rm -f "                                		>> Makefile.gen
+echo ""								>> Makefile.gen
+echo "all     : world modules tags"				>> Makefile.gen
 
-cat >> Makefile <<EOF
+cat >> Makefile.gen <<EOF
 
 ifdef NAME
 include  build/defs/dep-rules.def
@@ -540,487 +572,487 @@ endif
 
 EOF
 
-echo "world   : "						>> Makefile
-echo "	@echo 'Building liballocproxy ..' "			>> Makefile
-echo "	@cd liballocproxy && \$(MAKE) "				>> Makefile
-echo "	@echo 'Liballoc-proxy has been built successfully.' "	>> Makefile
-echo "	@echo 'Building libaspect..' "			        >> Makefile
-echo "	@cd libaspect && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
-echo "	@echo 'Libaspect has been built successfully.' "	>> Makefile
-echo "	@echo 'Building libasm...' "				>> Makefile
-echo "	@cd libasm && sh configure "				>> Makefile
-echo "	@cd libasm && \$(MAKE) "				>> Makefile
-echo "	@echo 'Libasm has been built successfully.' "		>> Makefile
+echo "world   : "						>> Makefile.gen
+echo "	@echo 'Building liballocproxy ..' "			>> Makefile.gen
+echo "	@cd liballocproxy && \$(MAKE) "				>> Makefile.gen
+echo "	@echo 'Liballoc-proxy has been built successfully.' "	>> Makefile.gen
+echo "	@echo 'Building libaspect..' "			        >> Makefile.gen
+echo "	@cd libaspect && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile.gen
+echo "	@echo 'Libaspect has been built successfully.' "	>> Makefile.gen
+echo "	@echo 'Building libasm...' "				>> Makefile.gen
+echo "	@cd libasm && sh configure "				>> Makefile.gen
+echo "	@cd libasm && \$(MAKE) "				>> Makefile.gen
+echo "	@echo 'Libasm has been built successfully.' "		>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	@echo 'Building libkernsh...'                   "       >> Makefile
-echo "	@cd libkernsh && \$(MAKE) \$(BUILD_TARGET)      "       >> Makefile
-echo "	@echo 'Libkernsh has been built successfully.'  "       >> Makefile
+echo "	@echo 'Building libkernsh...'                   "       >> Makefile.gen
+echo "	@cd libkernsh && \$(MAKE) \$(BUILD_TARGET)      "       >> Makefile.gen
+echo "	@echo 'Libkernsh has been built successfully.'  "       >> Makefile.gen
 fi
-echo "	@echo 'Building libelfsh...' "				>> Makefile
-echo "	@cd libelfsh && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
-echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile
+echo "	@echo 'Building libelfsh...' "				>> Makefile.gen
+echo "	@cd libelfsh && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile.gen
+echo "	@echo 'Libelfsh has been built successfully.' "		>> Makefile.gen
 
-echo "	@echo 'Building libetrace...' "				>> Makefile
-echo "	@cd libetrace && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
-echo "	@echo 'Libetrace has been built successfully.' "		>> Makefile
+echo "	@echo 'Building libetrace...' "				>> Makefile.gen
+echo "	@cd libetrace && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile.gen
+echo "	@echo 'Libetrace has been built successfully.' "		>> Makefile.gen
 
-echo "	@echo 'Building libedfmt...'                     "	>> Makefile
-echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile
-echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
+echo "	@echo 'Building libedfmt...'                     "	>> Makefile.gen
+echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile.gen
+echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile.gen
 
 if [ "$ELFSHNET" = "1" ]; then
 
-echo "	@echo 'Building libdump...' "				>> Makefile
-echo "	@cd libdump && \$(MAKE) -s "				>> Makefile
-echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
+echo "	@echo 'Building libdump...' "				>> Makefile.gen
+echo "	@cd libdump && \$(MAKE) -s "				>> Makefile.gen
+echo "	@echo 'Libdump has been built successfully.' "		>> Makefile.gen
 
 fi
 
-echo "	@echo 'Building libui...'			"      	>> Makefile	
-echo "	@cd libui && \$(MAKE) \$(BUILD_TARGET)		"	>> Makefile
-echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile
+echo "	@echo 'Building libui...'			"      	>> Makefile.gen	
+echo "	@cd libui && \$(MAKE) \$(BUILD_TARGET)		"	>> Makefile.gen
+echo "	@echo 'Libui has been built successfully.' 	"	>> Makefile.gen
 
-echo "	@echo 'Building libmjollnir...'			"      	>> Makefile
-echo "	@cd libmjollnir && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
-echo "	@echo 'Libmjollnir has been built successfully.'"	>> Makefile
+echo "	@echo 'Building libmjollnir...'			"      	>> Makefile.gen
+echo "	@cd libmjollnir && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile.gen
+echo "	@echo 'Libmjollnir has been built successfully.'"	>> Makefile.gen
 
-echo "	@echo 'Building librevm...'			"      	>> Makefile
-echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
-echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile
+echo "	@echo 'Building librevm...'			"      	>> Makefile.gen
+echo "	@cd librevm && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile.gen
+echo "	@echo 'Librevm has been built successfully.'"	        >> Makefile.gen
 
 # If we compiled librevm with readline, we need to compile it a second
 # time without it, to be linked with libe2dbg in the embedded debugger
 if [ "$READLN" = "1" ]; then
-#  echo "	test -f config.h && cp config.h config.back"                       >> Makefile
-#  echo "	cat $CONFIGFILE | grep -v READLN > t && mv t $CONFIGFILE" >> Makefile
-#  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile
-#  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile
-  echo "	@cd librevm/io/ && \$(MAKE) \$(BUILD_TARGET)  "	>> Makefile
-# echo "	cp config.back config.h"                        >> Makefile
-  echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile
+#  echo "	test -f config.h && cp config.h config.back"                       >> Makefile.gen
+#  echo "	cat $CONFIGFILE | grep -v READLN > t && mv t $CONFIGFILE" >> Makefile.gen
+#  echo "	@echo 'Rebuilding librevm/io/ without readline'">> Makefile.gen
+#  echo "	@cd librevm/io/ && \$(MAKE) clean	    "	>> Makefile.gen
+  echo "	@cd librevm/io/ && \$(MAKE) \$(BUILD_TARGET)  "	>> Makefile.gen
+# echo "	cp config.back config.h"                        >> Makefile.gen
+  echo "	@echo 'Librevm has been rebuilt successfully.'"	>> Makefile.gen
 fi
 
-echo "	@echo 'Building libstderesi...'			"      	>> Makefile
-echo "	@cd libstderesi && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
-echo "	@echo 'Libstderesi has been built successfully.'"	>> Makefile
+echo "	@echo 'Building libstderesi...'			"      	>> Makefile.gen
+echo "	@cd libstderesi && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile.gen
+echo "	@echo 'Libstderesi has been built successfully.'"	>> Makefile.gen
 
-echo "	@echo 'Building libe2dbg...'			"      	>> Makefile
-echo "	@cd libe2dbg && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile
-echo "	@echo 'Libe2dbg has been built successfully.'"	        >> Makefile
+echo "	@echo 'Building libe2dbg...'			"      	>> Makefile.gen
+echo "	@cd libe2dbg && \$(MAKE) \$(BUILD_TARGET)	"	>> Makefile.gen
+echo "	@echo 'Libe2dbg has been built successfully.'"	        >> Makefile.gen
 
-echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile
-echo "	@cd elfsh && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
-echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'Building ELFsh ET_EXEC'			"	>> Makefile.gen
+echo "	@cd elfsh && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile.gen
+echo "	@echo 'ELFsh ET_EXEC has been built successfully.' "	>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "	@echo 'Building E2dbg' "				>> Makefile
-echo "	@cd e2dbg && \$(MAKE) \$(BUILD_TARGET)	     	"       >> Makefile
-echo "	@echo 'E2dbg has been built successfully.' "		>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'Building E2dbg' "				>> Makefile.gen
+echo "	@cd e2dbg && \$(MAKE) \$(BUILD_TARGET)	     	"       >> Makefile.gen
+echo "	@echo 'E2dbg has been built successfully.' "		>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "	@echo 'Building Etrace'				"	>> Makefile
-echo "	@cd etrace && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile
-echo "	@echo 'ETrace has been built successfully.' 	"	>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'Building Etrace'				"	>> Makefile.gen
+echo "	@cd etrace && \$(MAKE)	\$(BUILD_TARGET)     	"       >> Makefile.gen
+echo "	@echo 'ETrace has been built successfully.' 	"	>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "	@echo 'Building Evarista'			"	>> Makefile
-echo "	@cd evarista && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile
-echo "	@echo 'Evarista has been built successfully.' 	"	>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'Building Evarista'			"	>> Makefile.gen
+echo "	@cd evarista && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile.gen
+echo "	@echo 'Evarista has been built successfully.' 	"	>> Makefile.gen
+echo ""								>> Makefile.gen
 
 if [ "$KERNSH" = "1" ]; then
-echo "	@echo 'Building kernsh...'                      "       >> Makefile
-echo "	@cd kernsh && \$(MAKE) \$(BUILD_TARGET)         "       >> Makefile
-echo "	@echo 'Kernsh has been built successfully.'     "       >> Makefile
+echo "	@echo 'Building kernsh...'                      "       >> Makefile.gen
+echo "	@cd kernsh && \$(MAKE) \$(BUILD_TARGET)         "       >> Makefile.gen
+echo "	@echo 'Kernsh has been built successfully.'     "       >> Makefile.gen
 fi
 
 if [ ! -e ~/.eresirc ]; then
-echo "	@cp doc/eresirc.example ~/.eresirc "                    >> Makefile
+echo "	@cp doc/eresirc.example ~/.eresirc "                    >> Makefile.gen
 fi
 
-echo ".PHONY: modules "						>> Makefile
-echo "modules: "						>> Makefile
-echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile
-echo "#	@cd modules && \$(MAKE) "				>> Makefile
-echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile
-echo ""								>> Makefile
+echo ".PHONY: modules "						>> Makefile.gen
+echo "modules: "						>> Makefile.gen
+echo "#	@echo 'Building ELFsh modules suite...' "		>> Makefile.gen
+echo "#	@cd modules && \$(MAKE) "				>> Makefile.gen
+echo "#	@echo 'ELFsh modules suite built successfully.' "	>> Makefile.gen
+echo ""								>> Makefile.gen
 
 if [ "$TESTING" = "1" ]; then
-  echo "	@echo"						>> Makefile
-  echo "	@echo Now source env.sh"			>> Makefile
-  echo "	@echo"						>> Makefile
+  echo "	@echo"						>> Makefile.gen
+  echo "	@echo Now source env.sh"			>> Makefile.gen
+  echo "	@echo"						>> Makefile.gen
 fi
 
 # Create links for 64bits mode
-echo "install64 :"						       >> Makefile
-echo "	@ln -sf \$(BINPATH)elfsh64         \$(BINPATH)elfsh"	       >> Makefile
-echo "	@ln -sf \$(BINPATH)e2dbg64         \$(BINPATH)e2dbg"	       >> Makefile
-echo "	@ln -sf \$(BINPATH)etrace64        \$(BINPATH)etrace"	       >> Makefile
-echo "	@ln -sf \$(BINPATH)evarista64      \$(BINPATH)evarista"	       >> Makefile
-echo "	@ln -sf \$(LIBPATH)libaspect64.a   \$(LIBPATH)libaspect.a"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libelfsh64.a    \$(LIBPATH)libelfsh.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libe2dbg64.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libmjollnir64.a \$(LIBPATH)libmjollnir.a"  >> Makefile
-echo "	@ln -sf \$(LIBPATH)librevm64.a     \$(LIBPATH)librevm.a"      >> Makefile
-echo "	@ln -sf \$(LIBPATH)libstderesi64.a \$(LIBPATH)libstderesi.a"  >> Makefile
-echo "	@ln -sf \$(LIBPATH)libedfmt64.a    \$(LIBPATH)libedfmt.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libui64.a       \$(LIBPATH)libui.a"        >> Makefile
+echo "install64 :"						       >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)elfsh64         \$(BINPATH)elfsh"	       >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)e2dbg64         \$(BINPATH)e2dbg"	       >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)etrace64        \$(BINPATH)etrace"	       >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)evarista64      \$(BINPATH)evarista"	       >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libaspect64.a   \$(LIBPATH)libaspect.a"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libelfsh64.a    \$(LIBPATH)libelfsh.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libe2dbg64.a    \$(LIBPATH)libe2dbg.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libmjollnir64.a \$(LIBPATH)libmjollnir.a"  >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)librevm64.a     \$(LIBPATH)librevm.a"      >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libstderesi64.a \$(LIBPATH)libstderesi.a"  >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libedfmt64.a    \$(LIBPATH)libedfmt.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libui64.a       \$(LIBPATH)libui.a"        >> Makefile.gen
 
-echo "	@ln -sf \$(LIBPATH)libaspect64.so   \$(LIBPATH)libaspect.so"   >> Makefile
-echo "	@ln -sf \$(LIBPATH)libelfsh64.so    \$(LIBPATH)libelfsh.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libetrace64.so    \$(LIBPATH)libetrace.so"  >> Makefile
-echo "	@ln -sf \$(LIBPATH)libe2dbg64.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libmjollnir64.so \$(LIBPATH)libmjollnir.so" >> Makefile
-echo "	@ln -sf \$(LIBPATH)librevm64.so     \$(LIBPATH)librevm.so"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libstderesi64.so \$(LIBPATH)libstderesi.so" >> Makefile
-echo "	@ln -sf \$(LIBPATH)libedfmt64.so    \$(LIBPATH)libedfmt.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libui64.so       \$(LIBPATH)libui.so"       >> Makefile
+echo "	@ln -sf \$(LIBPATH)libaspect64.so   \$(LIBPATH)libaspect.so"   >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libelfsh64.so    \$(LIBPATH)libelfsh.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libetrace64.so    \$(LIBPATH)libetrace.so"  >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libe2dbg64.so    \$(LIBPATH)libe2dbg.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libmjollnir64.so \$(LIBPATH)libmjollnir.so" >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)librevm64.so     \$(LIBPATH)librevm.so"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libstderesi64.so \$(LIBPATH)libstderesi.so" >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libedfmt64.so    \$(LIBPATH)libedfmt.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libui64.so       \$(LIBPATH)libui.so"       >> Makefile.gen
 
-echo "install : prepareDir #mod_install "			>> Makefile
-echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
-echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile
-echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
-echo "	@cp evarista/evarista?? \$(BINPATH)/ "			>> Makefile
-echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
-echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
-echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libetrace/libetrace*.a libetrace/libetrace*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libe2dbg/libe2dbg*.a libe2dbg/libe2dbg*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libasm/libasm.a libasm/libasm.so \$(LIBPATH) "	>> Makefile
-echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile
-echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile
-echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile
-echo "	@cp libstderesi/libstderesi*.a libstderesi/libstderesi*.so \$(LIBPATH)" >> Makefile
-echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile
-echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile
+echo "install : prepareDir #mod_install "			>> Makefile.gen
+echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile.gen
+echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile.gen
+echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile.gen
+echo "	@cp evarista/evarista?? \$(BINPATH)/ "			>> Makefile.gen
+echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile.gen
+echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp libetrace/libetrace*.a libetrace/libetrace*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp libe2dbg/libe2dbg*.a libe2dbg/libe2dbg*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp libasm/libasm.a libasm/libasm.so \$(LIBPATH) "	>> Makefile.gen
+echo "	@cp libmjollnir/libmjollnir*.a \$(LIBPATH) "		>> Makefile.gen
+echo "	@cp libmjollnir/libmjollnir*.so \$(LIBPATH) "		>> Makefile.gen
+echo "	@cp librevm/librevm*.a librevm/librevm*.so \$(LIBPATH)" >> Makefile.gen
+echo "	@cp libstderesi/libstderesi*.a libstderesi/libstderesi*.so \$(LIBPATH)" >> Makefile.gen
+echo "	@cp libedfmt/libedfmt*.a libedfmt/libedfmt*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp libui/libui*.a libui/libui*.so \$(LIBPATH) "	>> Makefile.gen
 
 if [ "$KERNSH" = "1" ]; then
-echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
-echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "                      >> Makefile
+echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile.gen
+echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "                      >> Makefile.gen
 fi
 
 
 # Create links
-echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
-echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile
-echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile
-echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefile
-echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"        >> Makefile
-echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libetrace32.a    \$(LIBPATH)libetrace.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libmjollnir32.a \$(LIBPATH)libmjollnir.a"  >> Makefile
-echo "	@ln -sf \$(LIBPATH)librevm32.a     \$(LIBPATH)librevm.a"      >> Makefile
-echo "	@ln -sf \$(LIBPATH)libstderesi32.a \$(LIBPATH)libstderesi.a"      >> Makefile
-echo "	@ln -sf \$(LIBPATH)libedfmt32.a    \$(LIBPATH)libedfmt.a"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"        >> Makefile
-echo "	@ln -sf \$(LIBPATH)libaspect32.so   \$(LIBPATH)libaspect.so"   >> Makefile
-echo "	@ln -sf \$(LIBPATH)libelfsh32.so    \$(LIBPATH)libelfsh.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libetrace32.so    \$(LIBPATH)libetrace.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libe2dbg32.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libmjollnir32.so \$(LIBPATH)libmjollnir.so" >> Makefile
-echo "	@ln -sf \$(LIBPATH)librevm32.so     \$(LIBPATH)librevm.so"     >> Makefile
-echo "	@ln -sf \$(LIBPATH)libstderesi32.so \$(LIBPATH)libstderesi.so" >> Makefile
-echo "	@ln -sf \$(LIBPATH)libedfmt32.so    \$(LIBPATH)libedfmt.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libui32.so       \$(LIBPATH)libui.so"       >> Makefile
-echo "	@ln -sf \$(LIBPATH)libkernsh32.a   \$(LIBPATH)libkernsh.a"   >> Makefile
-echo "	@ln -sf \$(LIBPATH)libkernsh32.so   \$(LIBPATH)libkernsh.so"   >> Makefile
+echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefile.gen
+echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"        >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libetrace32.a    \$(LIBPATH)libetrace.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libe2dbg32.a    \$(LIBPATH)libe2dbg.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libmjollnir32.a \$(LIBPATH)libmjollnir.a"  >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)librevm32.a     \$(LIBPATH)librevm.a"      >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libstderesi32.a \$(LIBPATH)libstderesi.a"      >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libedfmt32.a    \$(LIBPATH)libedfmt.a"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"        >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libaspect32.so   \$(LIBPATH)libaspect.so"   >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libelfsh32.so    \$(LIBPATH)libelfsh.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libetrace32.so    \$(LIBPATH)libetrace.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libe2dbg32.so    \$(LIBPATH)libe2dbg.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libmjollnir32.so \$(LIBPATH)libmjollnir.so" >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)librevm32.so     \$(LIBPATH)librevm.so"     >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libstderesi32.so \$(LIBPATH)libstderesi.so" >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libedfmt32.so    \$(LIBPATH)libedfmt.so"    >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libui32.so       \$(LIBPATH)libui.so"       >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libkernsh32.a   \$(LIBPATH)libkernsh.a"   >> Makefile.gen
+echo "	@ln -sf \$(LIBPATH)libkernsh32.so   \$(LIBPATH)libkernsh.so"   >> Makefile.gen
 
 # Install headers
-echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
-echo "	@cp -R libetrace/include/* \$(INCPATH) "			>> Makefile
-echo "	@cp libasm/include/*.h \$(INCPATH)"		        >> Makefile
-echo "	@cp libaspect/include/*.h \$(INCPATH)"		        >> Makefile
-echo "	@cp librevm/include/*.h \$(INCPATH)"		        >> Makefile
-echo "	@cp libstderesi/include/*.h \$(INCPATH)"		>> Makefile
-echo "	@cp libedfmt/include/*.h \$(INCPATH) "			>> Makefile
-echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile
-echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile
+echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile.gen
+echo "	@cp -R libetrace/include/* \$(INCPATH) "			>> Makefile.gen
+echo "	@cp libasm/include/*.h \$(INCPATH)"		        >> Makefile.gen
+echo "	@cp libaspect/include/*.h \$(INCPATH)"		        >> Makefile.gen
+echo "	@cp librevm/include/*.h \$(INCPATH)"		        >> Makefile.gen
+echo "	@cp libstderesi/include/*.h \$(INCPATH)"		>> Makefile.gen
+echo "	@cp libedfmt/include/*.h \$(INCPATH) "			>> Makefile.gen
+echo "	@cp libui/include/libui.h \$(INCPATH) "			>> Makefile.gen
+echo "	@cp libmjollnir/include/libmjollnir*.h \$(INCPATH) "	>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	@cp libkernsh/include/libkernsh.h \$(INCPATH) "         >> Makefile
+echo "	@cp libkernsh/include/libkernsh.h \$(INCPATH) "         >> Makefile.gen
 fi
 
 # Install mans
-echo "	@cp doc/eresi.1 \$(MANPATH)/man1/ "			>> Makefile
-echo "	@chmod 644 \$(MANPATH)/man1/eresi.1 "			>> Makefile
+echo "	@cp doc/eresi.1 \$(MANPATH)/man1/ "			>> Makefile.gen
+echo "	@chmod 644 \$(MANPATH)/man1/eresi.1 "			>> Makefile.gen
 
 # Put rights
-echo "	@chmod 755 \$(BINPATH)elfsh?? "				>> Makefile
-echo "	@chmod 755 \$(BINPATH)e2dbg??"				>> Makefile
-echo "	@chmod 755 \$(BINPATH)etrace?? "		        >> Makefile
-echo "	@chmod 755 \$(BINPATH)evarista?? "		        >> Makefile
+echo "	@chmod 755 \$(BINPATH)elfsh?? "				>> Makefile.gen
+echo "	@chmod 755 \$(BINPATH)e2dbg??"				>> Makefile.gen
+echo "	@chmod 755 \$(BINPATH)etrace?? "		        >> Makefile.gen
+echo "	@chmod 755 \$(BINPATH)evarista?? "		        >> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	@chmod 755 \$(BINPATH)kernsh?? "                        >> Makefile
-echo "	@chmod 644 \$(LIBPATH)libkernsh*.so "                   >> Makefile
-echo "	@chmod 644 \$(INCPATH)libkernsh*.h "                    >> Makefile
+echo "	@chmod 755 \$(BINPATH)kernsh?? "                        >> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libkernsh*.so "                   >> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libkernsh*.h "                    >> Makefile.gen
 fi
-echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libetrace*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libaspect*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)librevm*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)librevm*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libstderesi*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libstderesi*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libedfmt*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libedfmt*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libui*.so "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libui*.a "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libui.h "				>> Makefile
-echo "	@chmod 644 \$(INCPATH)libelfsh*.h "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libelfsh*.a "			>> Makefile
-echo "	@chmod 644 \$(LIBPATH)libasm.a "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libedfmt*.h "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libasm*.h "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libmjollnir.h "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libaspect*.h "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)librevm*.h "			>> Makefile
-echo "	@chmod 644 \$(INCPATH)libstderesi*.h "			>> Makefile
-echo ""	                        				>> Makefile
-echo "prepareDir: " 						>> Makefile
-echo "	@mkdir -p \$(BINPATH) || true"  			>> Makefile
-echo "	@mkdir -p \$(LIBPATH) || true"  			>> Makefile
-echo "	@mkdir -p \$(INCPATH) || true"  			>> Makefile
-echo "	@mkdir -p \$(MANPATH)/man1/ || true"    	        >> Makefile
-echo "	@mkdir -p \$(MODPATH) || true"  			>> Makefile
+echo "	@chmod 644 \$(LIBPATH)libelfsh*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libetrace*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libe2dbg*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libaspect*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libaspect*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)librevm*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)librevm*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libstderesi*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libstderesi*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libedfmt*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libedfmt*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libui*.so "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libui*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libui.h "				>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libelfsh*.h "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libelfsh*.a "			>> Makefile.gen
+echo "	@chmod 644 \$(LIBPATH)libasm.a "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libedfmt*.h "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libasm*.h "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libmjollnir.h "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libaspect*.h "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)librevm*.h "			>> Makefile.gen
+echo "	@chmod 644 \$(INCPATH)libstderesi*.h "			>> Makefile.gen
+echo ""	                        				>> Makefile.gen
+echo "prepareDir: " 						>> Makefile.gen
+echo "	@mkdir -p \$(BINPATH) || true"  			>> Makefile.gen
+echo "	@mkdir -p \$(LIBPATH) || true"  			>> Makefile.gen
+echo "	@mkdir -p \$(INCPATH) || true"  			>> Makefile.gen
+echo "	@mkdir -p \$(MANPATH)/man1/ || true"    	        >> Makefile.gen
+echo "	@mkdir -p \$(MODPATH) || true"  			>> Makefile.gen
 
 if [ "$FREEBSD" = "1" ]; then
-    echo "	@ldconfig -R"                                   >> Makefile
+    echo "	@ldconfig -R"                                   >> Makefile.gen
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, Libe2dbg, \\" >> Makefile
-echo "Libmjollnir, Libasm, Libedfmt, Libui, Librevm, Libstderesi \\"   >> Makefile
-echo "and Libaspect installed successfully .'"			       >> Makefile
-echo "	@echo Default installation is 32bits : make install64 if requested" >> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, Libe2dbg, \\" >> Makefile.gen
+echo "Libmjollnir, Libasm, Libedfmt, Libui, Librevm, Libstderesi \\"   >> Makefile.gen
+echo "and Libaspect installed successfully .'"			       >> Makefile.gen
+echo "	@echo Default installation is 32bits : make install64 if requested" >> Makefile.gen
 
-echo "mod_install: "						>> Makefile
-echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile
-echo "	@cp modules/*.so \$(MODPATH) "				>> Makefile
-echo "	@chmod -R 755 \$(MODPATH) "				>> Makefile
-echo ""								>> Makefile
+echo "mod_install: "						>> Makefile.gen
+echo "	@mkdir \$(MODPATH) 2>/dev/null || true "		>> Makefile.gen
+echo "	@cp modules/*.so \$(MODPATH) "				>> Makefile.gen
+echo "	@chmod -R 755 \$(MODPATH) "				>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "uninstall: "						>> Makefile
-echo "	rm -f  \$(BINPATH)/elfsh*"				>> Makefile
-echo "	rm -f  \$(BINPATH)/e2dbg*"				>> Makefile
-echo "	rm -f  \$(BINPATH)/etrace*"				>> Makefile
-echo "	rm -f  \$(BINPATH)/evarista*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libelfsh*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libetrace*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libe2dbg*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/liballocproxy*"			>> Makefile
-echo "	rm -f  \$(LIBPATH)/libmjollnir*"			>> Makefile
-echo "	rm -f  \$(LIBPATH)/libaspect*"			        >> Makefile
-echo "	rm -f  \$(LIBPATH)/librevm*"			        >> Makefile
-echo "	rm -f  \$(LIBPATH)/libstderesi*"			>> Makefile
-echo "	rm -f  \$(LIBPATH)/libedfmt*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libasm*"				>> Makefile
-echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg*"			>> Makefile
-echo "	rm -fr \$(MODPATH) "					>> Makefile
-echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
-echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
-echo "	rm -f  \$(INCPATH)/libmjollnir*.h "		        >> Makefile
-echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
-echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
-echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
-echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
-echo "	rm -fr \$(INCPATH)/libstderesi*"         		>> Makefile
-echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
+echo "uninstall: "						>> Makefile.gen
+echo "	rm -f  \$(BINPATH)/elfsh*"				>> Makefile.gen
+echo "	rm -f  \$(BINPATH)/e2dbg*"				>> Makefile.gen
+echo "	rm -f  \$(BINPATH)/etrace*"				>> Makefile.gen
+echo "	rm -f  \$(BINPATH)/evarista*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libelfsh*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libetrace*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libe2dbg*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libui*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/liballocproxy*"			>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libmjollnir*"			>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libaspect*"			        >> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/librevm*"			        >> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libstderesi*"			>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libedfmt*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libasm*"				>> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg*"			>> Makefile.gen
+echo "	rm -fr \$(MODPATH) "					>> Makefile.gen
+echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile.gen
+echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile.gen
+echo "	rm -f  \$(INCPATH)/libmjollnir*.h "		        >> Makefile.gen
+echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile.gen
+echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile.gen
+echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile.gen
+echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile.gen
+echo "	rm -fr \$(INCPATH)/libstderesi*"         		>> Makefile.gen
+echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	rm -f  \$(BINPATH)/kernsh*"                             >> Makefile
-echo "	rm -f  \$(LIBPATH)/libkernsh*"                          >> Makefile
-echo "	rm -f  \$(INCPATH)/libkernsh*"                          >> Makefile
+echo "	rm -f  \$(BINPATH)/kernsh*"                             >> Makefile.gen
+echo "	rm -f  \$(LIBPATH)/libkernsh*"                          >> Makefile.gen
+echo "	rm -f  \$(INCPATH)/libkernsh*"                          >> Makefile.gen
 fi
 
-echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, \\"    >> Makefile
-echo "Libmjollnir, Libaspect, Libedfmt, Libe2dbg, Libui, \\"    >> Makefile
-echo "Libstderesi and Libasm uninstalled successfully' "	>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'ELFsh, E2dbg, Etrace, Evarista, Libelfsh, \\"    >> Makefile.gen
+echo "Libmjollnir, Libaspect, Libedfmt, Libe2dbg, Libui, \\"    >> Makefile.gen
+echo "Libstderesi and Libasm uninstalled successfully' "	>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "clean   : cleandoc "					>> Makefile
-echo "	@echo 'Cleaning tree ...' "				>> Makefile
-echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
-echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
-echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
-echo "	cd evarista  && \$(MAKE) -s clean "			>> Makefile
+echo "clean   : cleandoc "					>> Makefile.gen
+echo "	@echo 'Cleaning tree ...' "				>> Makefile.gen
+echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd evarista  && \$(MAKE) -s clean "			>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	cd kernsh && \$(MAKE) -s clean"                         >> Makefile
-echo "	cd libkernsh && \$(MAKE) -s clean"                      >> Makefile
+echo "	cd kernsh && \$(MAKE) -s clean"                         >> Makefile.gen
+echo "	cd libkernsh && \$(MAKE) -s clean"                      >> Makefile.gen
 fi
-echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libetrace && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile
-echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libstderesi && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libedfmt  && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libaspect && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libmjollnir && \$(MAKE) -s clean "		        >> Makefile
-echo "	cd libasm    && sh configure "				>> Makefile
-echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile
-echo "	cd liballocproxy && \$(MAKE) -s clean "			>> Makefile
-echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile
-echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile
-echo "	@echo 'Tree cleaned .' "				>> Makefile
-echo ""								>> Makefile
+echo "	cd libelfsh  && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libetrace && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libe2dbg  && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd librevm   && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libstderesi && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libedfmt  && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libaspect && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libui     && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libmjollnir && \$(MAKE) -s clean "		        >> Makefile.gen
+echo "	cd libasm    && sh configure "				>> Makefile.gen
+echo "	cd libasm    && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd liballocproxy && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd libdump   && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	cd modules   && \$(MAKE) -s clean "			>> Makefile.gen
+echo "	@echo 'Tree cleaned .' "				>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "fclean  : cleandoc "					>> Makefile
-echo "	@echo 'Fcleaning tree ...' "				>> Makefile
-echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd evarista  && \$(MAKE) -s fclean "			>> Makefile
+echo "fclean  : cleandoc "					>> Makefile.gen
+echo "	@echo 'Fcleaning tree ...' "				>> Makefile.gen
+echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd evarista  && \$(MAKE) -s fclean "			>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	cd kernsh && \$(MAKE) -s fclean"                        >> Makefile
-echo "	cd libkernsh && \$(MAKE) -s fclean"                     >> Makefile
+echo "	cd kernsh && \$(MAKE) -s fclean"                        >> Makefile.gen
+echo "	cd libkernsh && \$(MAKE) -s fclean"                     >> Makefile.gen
 fi
-echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libetrace && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libasm    && sh configure "				>> Makefile
-echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libstderesi && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libedfmt  && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libaspect && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd liballocproxy && \$(MAKE) -s fclean "	        >> Makefile
-echo "	cd libmjollnir && \$(MAKE) -s fclean "		        >> Makefile
-echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd libui     && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
-echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
+echo "	cd libelfsh  && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libetrace && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libe2dbg  && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libasm    && sh configure "				>> Makefile.gen
+echo "	cd libasm    && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd librevm   && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libstderesi && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libedfmt  && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libaspect && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd liballocproxy && \$(MAKE) -s fclean "	        >> Makefile.gen
+echo "	cd libmjollnir && \$(MAKE) -s fclean "		        >> Makefile.gen
+echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd libui     && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile.gen
+echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile.gen   
 
-echo "	@echo 'Tree cleaned .' "				>> Makefile
-echo ""								>> Makefile
+echo "	@echo 'Tree cleaned .' "				>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "cleandoc: "						>> Makefile
-echo "	@rm -f *~ *\# \#* .\#* "				>> Makefile
-echo "	@rm -f doc/*~ doc/*\# doc/\#* doc/.\#* "		>> Makefile
-echo "	@rm -f doc/research/*~ doc/research/*\# "		>> Makefile
-echo "	@rm -f doc/research/\#* doc/research/.\#* "		>> Makefile
-echo ""								>> Makefile
+echo "cleandoc: "						>> Makefile.gen
+echo "	@rm -f *~ *\# \#* .\#* "				>> Makefile.gen
+echo "	@rm -f doc/*~ doc/*\# doc/\#* doc/.\#* "		>> Makefile.gen
+echo "	@rm -f doc/research/*~ doc/research/*\# "		>> Makefile.gen
+echo "	@rm -f doc/research/\#* doc/research/.\#* "		>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "tags    : "						>> Makefile
-echo "	@echo Doing tags ... "					>> Makefile
+echo "tags    : "						>> Makefile.gen
+echo "	@echo Doing tags ... "					>> Makefile.gen
 if [ "$ETAGS" = "1" ]; then
-echo "	@\$(ETAGS) elfsh/*.c elfsh/include/*.h libelfsh/*.c \\"	>> Makefile
-echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
-echo "	libetrace/*.c libetrace/include/*.h \\"		>> Makefile
-echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
-echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
-echo "	libaspect/*.c libe2dbg/*/*.c libaspect/include/*.h \\"  >> Makefile
-echo "	librevm/*/*.c librevm/include/*.h libe2dbg/include/*.h \\" >> Makefile
-echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
-echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
-echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
-echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
-echo "  etrace/*.c evarista/*.c libstderesi/*/*.c \\"		>> Makefile
-echo "  libstderesi/include/*.h \\"                             >> Makefile
+echo "	@\$(ETAGS) elfsh/*.c elfsh/include/*.h libelfsh/*.c \\"	>> Makefile.gen
+echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile.gen
+echo "	libetrace/*.c libetrace/include/*.h \\"		>> Makefile.gen
+echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile.gen
+echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile.gen
+echo "	libaspect/*.c libe2dbg/*/*.c libaspect/include/*.h \\"  >> Makefile.gen
+echo "	librevm/*/*.c librevm/include/*.h libe2dbg/include/*.h \\" >> Makefile.gen
+echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile.gen
+echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile.gen
+echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile.gen
+echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile.gen
+echo "  etrace/*.c evarista/*.c libstderesi/*/*.c \\"		>> Makefile.gen
+echo "  libstderesi/include/*.h \\"                             >> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
+echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile.gen
 echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Mafefile
 fi
-echo "  etrace/include/*.h evarista/include/*.h "		>> Makefile
+echo "  etrace/include/*.h evarista/include/*.h "		>> Makefile.gen
 fi
 
 if [ "$CTAGS" = "1" ]; then
-echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile
-echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile
-echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c \\">> Makefile
-echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile
-echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile
-echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile
-echo "  libelfsh/include/*.h \\"    				>> Makefile
-echo "  libetrace/include/*.h \\"    				>> Makefile
-echo "  libetrace/*.c \\" 					>> Makefile
-echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile
-echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile
-echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
-echo "  libelfsh/include/libelfsh/*.h\\"    			>> Makefile
-echo "  libelfsh/*.c \\" 					>> Makefile
-echo "  liballocproxy/*.c liballocproxy/include/*.h \\" 	>> Makefile
-echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile
-echo "  libstderesi/include/*.h libstderesi/*/*.c \\"		>> Makefile
-echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
-echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
-echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
+echo "	@\$(CTAGS) e2dbg/*.c e2dbg/include/*.h \\"		>> Makefile.gen
+echo "	libasm/include/*.h libasm/src/*.c \\"   		>> Makefile.gen
+echo "  libasm/src/arch/ia32/*.c libasm/src/arch/*/handlers/*.c \\">> Makefile.gen
+echo "  libasm/src/arch/sparc/*.c\\"    			>> Makefile.gen
+echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile.gen
+echo "	libdump/include/*.h libdump/*.c\\"			>> Makefile.gen
+echo "  libelfsh/include/*.h \\"    				>> Makefile.gen
+echo "  libetrace/include/*.h \\"    				>> Makefile.gen
+echo "  libetrace/*.c \\" 					>> Makefile.gen
+echo "	libaspect/*.c libaspect/include/*.h \\"		        >> Makefile.gen
+echo "	librevm/*/*.c librevm/include/*.h \\"		        >> Makefile.gen
+echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile.gen
+echo "  libelfsh/include/libelfsh/*.h\\"    			>> Makefile.gen
+echo "  libelfsh/*.c \\" 					>> Makefile.gen
+echo "  liballocproxy/*.c liballocproxy/include/*.h \\" 	>> Makefile.gen
+echo "  libmjollnir/include/*.h libmjollnir/src/*.c \\" 	>> Makefile.gen
+echo "  libstderesi/include/*.h libstderesi/*/*.c \\"		>> Makefile.gen
+echo "  libui/*.c libui/include/*.h \\" 			>> Makefile.gen
+echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile.gen
+echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
+echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile.gen
 echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Mafefile
 fi
-echo "  evarista/*.c evarista/include/*.h "			>> Makefile
-echo ""								>> Makefile
+echo "  evarista/*.c evarista/include/*.h "			>> Makefile.gen
+echo ""								>> Makefile.gen
 fi
 
-echo "info    : "						>> Makefile
-echo "	@echo '###############' TOTAL '###############'"	>> Makefile
-echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile
-echo "	libetrace/*.c libetrace/include/*.h                \\"	>> Makefile
-echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile
-echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile
-echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile
-echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile
-echo "  libstderesi/*/*.c libstderesi/include/*.h  \\"	        >> Makefile
-echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile
-echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile
-echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile
-echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"         >> Makefile
-echo "  evarista/*.c evarista/include/*.h"                      >> Makefile
-echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile
-echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile
-echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile
-echo "  libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*/*.c \\" >> Makefile
-echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile
-echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"		>> Makefile
-echo "  evarista/*.c libstderesi/*/*.c"				>> Makefile
-echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile
-echo "	@wc -l libaspect/*.c "					>> Makefile
-echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile
-echo "	@wc -l libelfsh/*.c "					>> Makefile
-echo "	@echo '#############' LIBETRACE ONLY '#######'"	        >> Makefile
-echo "	@wc -l libetrace/*.c "					>> Makefile
-echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile
-echo "	@wc -l libe2dbg/*/*.c "					>> Makefile
-echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile
-echo "	@wc -l libasm/src/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile
-echo "  libasm/src/arch/sparc/*.c"				>> Makefile
-echo "	@echo '###############' LIBMJOLLNIR ONLY '##########'"	>> Makefile
-echo "	@wc -l libmjollnir/src/*.c "				>> Makefile
-echo "	@echo '###############' LIBREVM ONLY '##########'"	>> Makefile
-echo "	@wc -l librevm/*/*.c "					>> Makefile
-echo "	@echo '###############' LIBSTDERESI ONLY '##########'"	>> Makefile
-echo "	@wc -l libstderesi/*/*.c "				>> Makefile
-echo "	@echo '###############' LIBEDFMT ONLY '##########'"	>> Makefile
-echo "	wc -l libedfmt/*.c "					>> Makefile
-echo "	@echo '###############' LIBUI ONLY '##########'"	>> Makefile
-echo "	@wc -l libui/*.c "					>> Makefile
-echo "	@echo '###############' LIBDUMP ONLY '##########'"	>> Makefile
-echo "	@wc -l libdump/*.c "					>> Makefile
-echo "	@echo '###############' ELFSH only '#############'"	>> Makefile
-echo "	@wc -l elfsh/*.c "					>> Makefile
-echo "	@echo '###############' E2DBG only '#############'"	>> Makefile
-echo "	@wc -l e2dbg/*.c "				        >> Makefile
-echo "	@echo '###############' ETRACE only '#############'"	>> Makefile
-echo "	@wc -l etrace/*.c "					>> Makefile
-echo "	@echo '###############' EVARISTA only '#############'"	>> Makefile
-echo "	@wc -l evarista/*.c "					>> Makefile
-echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile
-echo "	@wc -l modules/*.c "					>> Makefile
-echo ""								>> Makefile
+echo "info    : "						>> Makefile.gen
+echo "	@echo '###############' TOTAL '###############'"	>> Makefile.gen
+echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile.gen
+echo "	libetrace/*.c libetrace/include/*.h                \\"	>> Makefile.gen
+echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile.gen
+echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile.gen
+echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile.gen
+echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile.gen
+echo "  libstderesi/*/*.c libstderesi/include/*.h  \\"	        >> Makefile.gen
+echo "  libe2dbg/*/*.c libe2dbg/include/*.h \\"			>> Makefile.gen
+echo "  libmjollnir/include/*.h libui/include/*.h libui/*.c \\" >> Makefile.gen
+echo "  libedfmt/include/*.h libelfsh/include/*/*.h \\"         >> Makefile.gen
+echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"         >> Makefile.gen
+echo "  evarista/*.c evarista/include/*.h"                      >> Makefile.gen
+echo "	@echo '#########' TOTAL WITHOUT HEADERS '#######'"	>> Makefile.gen
+echo "	@wc -l elfsh/*.c libelfsh/*.c modules/*.c e2dbg/*.c \\"	>> Makefile.gen
+echo "	libaspect/*.c libasm/src/arch/ia32/*.c libui/*.c\\"	>> Makefile.gen
+echo "  libasm/src/*.c libasm/src/arch/sparc/*.c libe2dbg/*/*.c \\" >> Makefile.gen
+echo "	librevm/*/*.c libmjollnir/src/*.c libdump/*.c \\"	>> Makefile.gen
+echo "  libasm/src/arch/*/handlers/*.c libedfmt/*.c \\"		>> Makefile.gen
+echo "  evarista/*.c libstderesi/*/*.c"				>> Makefile.gen
+echo "	@echo '############' LIBASPECT ONLY '############'"	>> Makefile.gen
+echo "	@wc -l libaspect/*.c "					>> Makefile.gen
+echo "	@echo '#############' LIBELFSH ONLY '#######'"	        >> Makefile.gen
+echo "	@wc -l libelfsh/*.c "					>> Makefile.gen
+echo "	@echo '#############' LIBETRACE ONLY '#######'"	        >> Makefile.gen
+echo "	@wc -l libetrace/*.c "					>> Makefile.gen
+echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile.gen
+echo "	@wc -l libe2dbg/*/*.c "					>> Makefile.gen
+echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l libasm/src/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile.gen
+echo "  libasm/src/arch/sparc/*.c"				>> Makefile.gen
+echo "	@echo '###############' LIBMJOLLNIR ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l libmjollnir/src/*.c "				>> Makefile.gen
+echo "	@echo '###############' LIBREVM ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l librevm/*/*.c "					>> Makefile.gen
+echo "	@echo '###############' LIBSTDERESI ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l libstderesi/*/*.c "				>> Makefile.gen
+echo "	@echo '###############' LIBEDFMT ONLY '##########'"	>> Makefile.gen
+echo "	wc -l libedfmt/*.c "					>> Makefile.gen
+echo "	@echo '###############' LIBUI ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l libui/*.c "					>> Makefile.gen
+echo "	@echo '###############' LIBDUMP ONLY '##########'"	>> Makefile.gen
+echo "	@wc -l libdump/*.c "					>> Makefile.gen
+echo "	@echo '###############' ELFSH only '#############'"	>> Makefile.gen
+echo "	@wc -l elfsh/*.c "					>> Makefile.gen
+echo "	@echo '###############' E2DBG only '#############'"	>> Makefile.gen
+echo "	@wc -l e2dbg/*.c "				        >> Makefile.gen
+echo "	@echo '###############' ETRACE only '#############'"	>> Makefile.gen
+echo "	@wc -l etrace/*.c "					>> Makefile.gen
+echo "	@echo '###############' EVARISTA only '#############'"	>> Makefile.gen
+echo "	@wc -l evarista/*.c "					>> Makefile.gen
+echo "	@echo '###############' MODULES ONLY '########'"	>> Makefile.gen
+echo "	@wc -l modules/*.c "					>> Makefile.gen
+echo ""								>> Makefile.gen
 
-echo "docs:"							>> Makefile
-echo "	doxygen doc/doxygen.conf"				>> Makefile
-echo "	#(cd libasm && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd libelfsh && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd librevm && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd libstderesi && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd libmjollnir && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd libui && \$(MAKE) docs)"				>> Makefile
-echo "	#(cd libedfmt && \$(MAKE) docs)"				>> Makefile
+echo "docs:"							>> Makefile.gen
+echo "	doxygen doc/doxygen.conf"				>> Makefile.gen
+echo "	#(cd libasm && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd libelfsh && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd librevm && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd libstderesi && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd libmjollnir && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd libui && \$(MAKE) docs)"				>> Makefile.gen
+echo "	#(cd libedfmt && \$(MAKE) docs)"				>> Makefile.gen
 if [ "$KERNSH" = "1" ]; then
-echo "	#(cd libkernsh && \$(MAKE) docs)"				>> Makefile
+echo "	#(cd libkernsh && \$(MAKE) docs)"				>> Makefile.gen
 fi
 echo
 echo " Now make && make install"

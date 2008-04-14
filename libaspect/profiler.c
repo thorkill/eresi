@@ -1,5 +1,6 @@
 /**
 ** @file error.c
+** @ingroup libaspect
 ** 
 ** Started on  Thu Nov 08 02:08:28 2001 mm
 ** Last update Wed Jun 08 10:01:42 2005 mm

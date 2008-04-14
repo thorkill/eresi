@@ -25,9 +25,11 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
 {
   int	to_ret;
   LIBASM_PROFILE_FIN();
+#if LIBASM_ENABLE_SPARC
   if (proc->type == ASM_PROC_SPARC)
     to_ret = asm_sparc_illegal(ins, opcode, len, proc);
   else	
+#endif
     to_ret = -1;
   LIBASM_PROFILE_FOUT(to_ret);
 }
@@ -37,10 +39,12 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
 {
   int	to_ret;
   LIBASM_PROFILE_FIN();
+#if LIBASM_ENABLE_SPARC
   if (proc->type == ASM_PROC_SPARC)
     to_ret = asm_sparc_illegal(ins, opcode, len, proc);
   else	
     to_ret = -1;
+#endif
   LIBASM_PROFILE_FOUT(to_ret);
 }
 #endif
