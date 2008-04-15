@@ -258,7 +258,7 @@ int kernsh_init_ia32(char *os, char *release)
   kernsh_register_vectors();
   kernsh_present_set();
 
-  asm_init_sparc(&libkernshworld.proc, ASM_PROC_IA32);
+  asm_init_arch(&libkernshworld.proc, ASM_PROC_IA32);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
