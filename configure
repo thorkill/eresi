@@ -57,7 +57,7 @@ printHelp()
     echo
     echo "   All options are disabled by default."
     echo
-    exit
+    exit 1
 }
 
 if [ "$1" = "-h" -o "$1" = "--help" ] ; then
@@ -325,7 +325,7 @@ break;
 echo "Invalid configure '$1' option. Try --help."
 echo
 rm -f $CONFIGFILE Makefile.gen
-exit
+exit 1
 
 esac;
 
