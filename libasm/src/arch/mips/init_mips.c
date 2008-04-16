@@ -110,7 +110,16 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
          break;
 
       case MIPS_OPCODE_COP0:
+         do {
+	    u_int tmp = (converted >> 3) & 0xFF;
+	    
+	    if (!tmp)
+	       dim[1] = tmp;
+	    else
+	       dim[1] = converted & 0x3F;
+	 } while(0);
          break;
+
       case MIPS_OPCODE_COP1:
          break;
       case MIPS_OPCODE_COP2:
@@ -121,7 +130,7 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 	       dim[1] = tmp;
 	    else {
                dim[1] = (converted >> 21) & 0x1F;
-	       if (dim[1] == MIPS_OPCODE_BC)
+	       if (dim[1] == MIPS_OPCODE_BCC2)
 	          dim[2] = (converted >> 16) & 0x3;
 	    }
 	 } while(0);
