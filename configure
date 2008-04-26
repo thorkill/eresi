@@ -46,6 +46,7 @@ printHelp()
     echo "   --libasm-ia32     : Enable libasm ia32 engine"
     echo "   --libasm-sparc    : Enable libasm sparc engine"
     echo "   --libasm-mips     : Enable libasm mips engine"
+    echo "   --libasm-packed   : Pack handlers in a single file"
     echo
     echo "   Available variables :"
     echo
@@ -152,6 +153,11 @@ LIBASM_ENABLE_CHOOSEN=1
 echo " [*] Libasm MIPS engine"
 echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
 LIBASM_ENABLE_CHOOSEN=1
+;;
+
+--libasm-packed)
+echo " [*] Libasm Packed handlers"
+echo "LIBASM_PACKED_HANDLERS = 1" >> $CONFIGFILE
 ;;
 
 --enable-testing*)
