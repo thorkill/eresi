@@ -23,17 +23,20 @@ int	asm_init_arch(asm_processor *proc, int arch)
   switch(arch)
     {
 #if LIBASM_ENABLE_IA32
-    case ASM_ARCH_IA32:
+      //#warning Enabling IA32 support
+    case ASM_PROC_IA32:
       return asm_init_ia32(proc);
       break;
 #endif
 #if LIBASM_ENABLE_SPARC
-    case ASM_ARCH_SPARC:
+      //#warning Enabling SPARC support
+    case ASM_PROC_SPARC:
       return asm_init_sparc(proc);
       break;
 #endif
 #if LIBASM_ENABLE_MIPS
-    case ASM_ARCH_MIPS:
+      //#warning Enabling MIPS support
+    case ASM_PROC_MIPS:
       return asm_init_mips(proc);
       break;
 #endif

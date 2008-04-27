@@ -6,13 +6,13 @@
 ##
 
 #DBGFLAGS	=	-ggdb -DDEBUG_SPARC
-#include Makefile.inc
 include ../config.h
 #
 # Architecture source files
 #
 
-
+#CFLAGS += -ggdb
+CFLAGS += $(CFLAGS_libasm)
 
 SRCS_libasm 	=				\
 		src/generic.c			\
@@ -62,10 +62,11 @@ SRCS_libasm += 	\
 		src/arch/sparc/output_sparc.c	\
 		src/arch/sparc/sparc_convert.c
 ifeq ($(LIBASM_PACKED_HANDLERS),1)
-$(info SPARC Unpacked)
+$(info SPARC Packed)
 PACKED_ARCH += packed_sparc
 SRCS_libasm += src/arch/sparc/packed_handlers.c
 else
+$(info SPARC Unpacked)
 SRCS_libasm    += $(foreach dir,src/arch/sparc/handlers/,\
 	$(wildcard $(dir)/*.c))
 SRCS_libasm    += $(foreach dir,src/arch/sparc/operand_handlers/,\
@@ -109,7 +110,7 @@ SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
-CFLAGS 		= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
+CFLAGS 		+= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
 			-I../libaspect/include
 #CFLAGS		+=	-O2
 RM 		= 	rm -f
@@ -136,36 +137,37 @@ dep:
 	@rm -f src/build.o
 
 libasm.so: $(PACKED_ARCH) $(OBJS_libasm)
-	@ar rc ${NAME_libasm} ${OBJS_libasm}
-	@echo "[AR] ${NAME_libasm}"
-	@${RANLIB} ${NAME_libasm}
-	@echo "[RANLIB] ${NAME_libasm}"
-	@$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
-	@echo "[CC -shared] libasm.so"
+	$(LD) -L../libaspect/ -laspect32 -shared ${OBJS_libasm} -o libasm.so
+	ar rc ${NAME_libasm} ${OBJS_libasm}
+#echo "[AR] ${NAME_libasm}"
+	${RANLIB} ${NAME_libasm}
+#echo "[RANLIB] ${NAME_libasm}"
+	$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
+#echo "[CC -shared] libasm.so"
 ifeq ($(IRIX),1)
-	@$(LD) ${OBJS_libasm} -o libasm.so -shared
+	$(LD) ${OBJS_libasm} -o libasm.so -shared
 else
 	$(CC) ${OBJS_libasm} -o libasm.so -shared
 endif
 
 clean:
-	@$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
-	@find .   -name '*~' -exec rm -f {} \;
-	@find src -name '*.o' -exec rm -rf {} \;
-	@find src -name 'packed_handlers.c' -exec rm -rf {} \;
+	$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
+	find .   -name '*~' -exec rm -f {} \;
+	find src -name '*.o' -exec rm -rf {} \;
+	find src -name 'packed_handlers.c' -exec rm -rf {} \;
 
 fclean: clean
-	@$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump}
-	@$(RM) *.so *.o *.a
-	@$(RM) mydisasm
+	$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump}
+	$(RM) *.so *.o *.a
+	$(RM) mydisasm
 
 tags:
-	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
-	@echo TAGS generated succesfully
+	$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
+	echo TAGS generated succesfully
 
 .c.o:
-	@$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
-	@echo "[CC] $*.o"
+	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
+#echo "[CC] $*.o"
 
 docs:
 	doxygen doc/doxygen.conf
@@ -173,7 +175,7 @@ docs:
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../libaspect/include/ -I./include/ \
 	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
-	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32
+	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32 -static
 
 test:
 	(cd testsuite/ia32 && ${SHELL} launch_test.sh)

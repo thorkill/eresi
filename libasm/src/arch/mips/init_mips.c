@@ -146,7 +146,7 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
  * for register vectors.
  *
  * @param proc Pointer to a asm_processor structure.
- * @return Always 0
+ * @return Always 1
  */
 int	asm_init_mips(asm_processor *proc)
 {
@@ -158,5 +158,5 @@ int	asm_init_mips(asm_processor *proc)
 
   asm_arch_register(proc, 0);
 
-  return (0);
+  return (1);
 }
