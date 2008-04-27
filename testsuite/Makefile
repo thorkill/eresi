@@ -8,6 +8,11 @@
 ## Last update Sat May 24 17:45:46 2003 jfv
 ##
 
+TESTSUITE = $(foreach dir,$(wildcard *_*),$(dir))
+
+main:   ${TESTSUITE}
+	echo ${TESTSUITE}
+
 all	:
 	@cd ctors_hijack       && $(MAKE)
 	@cd dtors_hijack       && $(MAKE)
@@ -52,3 +57,5 @@ fclean	: clean
 	@cd etrel_inject       && $(MAKE) fclean
 	@cd e2dbg_multithreads && $(MAKE) fclean
 
+.PHONY: ${TESTSUITE}
+	$(foreach dir,lol,pouet,echo $dir)

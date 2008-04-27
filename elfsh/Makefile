@@ -82,3 +82,6 @@ fclean		       : clean
 			$(CC) $(CFLAGS32) -c -o $@ $<
 %.64.o : %.c
 			$(CC) $(CFLAGS64) -c -o $@ $<
+
+
+#include depends.mk

@@ -140,18 +140,21 @@ MOD_TARGET=mod32
 --libasm-ia32)
 echo " [*] Libasm IA32 engine"
 echo "LIBASM_ENABLE_IA32 = 1" >> $CONFIGFILE
+echo "CFLAGS_libasm += -DLIBASM_ENABLE_IA32=1" >> $CONFIGFILE
 LIBASM_ENABLE_CHOOSEN=1
 ;;
 
 --libasm-sparc)
 echo " [*] Libasm SPARC engine"
 echo "LIBASM_ENABLE_SPARC = 1" >> $CONFIGFILE
+echo "CFLAGS_libasm += -DLIBASM_ENABLE_SPARC=1" >> $CONFIGFILE
 LIBASM_ENABLE_CHOOSEN=1
 ;;
 
 --libasm-mips)
 echo " [*] Libasm MIPS engine"
 echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
+echo "CFLAGS_libasm += -DLIBASM_ENABLE_MIPS=1" >> $CONFIGFILE
 LIBASM_ENABLE_CHOOSEN=1
 ;;
 
