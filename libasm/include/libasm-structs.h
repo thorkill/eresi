@@ -70,11 +70,11 @@ struct s_asm_instr
   u_char *ptr_instr;
   /* internal processor structure */
   asm_processor	*proc;
+  /* instruction name */
+  char *name;
   /* instruction id */
   int instr;
-  /* Instruction mnemonic */
-  char	*name;
-  /* Instruction type */
+  /* instruction type */
   int type;
   /* instruction prefix (ia32 only) */
   int prefix;

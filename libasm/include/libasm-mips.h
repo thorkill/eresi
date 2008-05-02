@@ -32,6 +32,8 @@ void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf)
 void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf);
 void    mips_convert_format_cop1x(struct s_mips_decode_cop1x *opcode, u_char *buf);
 
+#define mips_convert_format_priv mips_convert_format_cop2
+
 int	asm_fetch_mips(asm_instr *, u_char *, u_int, asm_processor *);
 
 int	asm_register_mips();
@@ -336,13 +338,13 @@ enum BSHFL_sa_field_encoding {
 };
 
 enum COP2_func {
-   MIPS_OPCODE_MF,
-   MIPS_OPCODE_DMF,
-   MIPS_OPCODE_CF,
-   MIPS_OPCODE_MT = Ob(00100),
-   MIPS_OPCODE_DMT,
-   MIPS_OPCODE_CT,
-   MIPS_OPCODE_BC = Ob(01000)
+   MIPS_OPCODE_MFC2,
+   MIPS_OPCODE_DMFC2,
+   MIPS_OPCODE_CFC2,
+   MIPS_OPCODE_MTC2 = Ob(00100),
+   MIPS_OPCODE_DMTC2,
+   MIPS_OPCODE_CTC2,
+   MIPS_OPCODE_BCC2 = Ob(01000)
 };
 
 enum COP1X_func {
@@ -372,6 +374,19 @@ enum COP1X_func {
    MIPS_OPCODE_NMSUB_PS = Ob(111110)
 };
 
+enum COP0_func {
+   MIPS_OPCODE_MFC0,
+   MIPS_OPCODE_DMFC0,
+   MIPS_OPCODE_TLBWI,
+   MIPS_OPCODE_MTC0 = Ob(00100),
+   MIPS_OPCODE_DMTC0,
+   MIPS_OPCODE_TLBWR,
+   MIPS_OPCODE_ERET = Ob(011000),
+   MIPS_OPCODE_TLBP = Ob(001000),
+   MIPS_OPCODE_TLBR = Ob(000001),
+   MIPS_OPCODE_DERET = Ob(011111),
+   MIPS_OPCODE_WAIT,
+};
 
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
@@ -593,9 +608,27 @@ enum e_mips_instr_types
    ASM_MIPS_NMSUB_S,
    ASM_MIPS_NMSUB_D,
    ASM_MIPS_NMSUB_PS,
+   
+   /* Chuj doklikalem to bo sie wkurwilem, jebane gowno - zycie to bagno... */
+   /* Privileged instructions... */
+   ASM_MIPS_CACHE,
+   ASM_MIPS_DMFC0,
+   ASM_MIPS_DMTC0,
+   ASM_MIPS_ERET,
+   ASM_MIPS_MFC0,
+   ASM_MIPS_MTC0,
+   ASM_MIPS_TLBP,
+   ASM_MIPS_TLBR,
+   ASM_MIPS_TLBWI,
+   ASM_MIPS_TLBWR,
+   ASM_MIPS_WAIT,
+
+   /* EJTAG Instructions... */
+   ASM_MIPS_DERET,
+   ASM_MIPS_SDBBP,
+
    /*TODO:
     * - FPU insns
-    * - privileged insns
     * */
 
    ASM_MIPS_BAD
@@ -912,3 +945,19 @@ int asm_mips_nmadd_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 int asm_mips_nmsub_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_nmsub_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_nmsub_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// Privilaged Instructions - COP0
+
+int asm_mips_mfc0(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmfc0(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlbwi(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mtc0(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmtc0(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlbwr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_eret(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlbp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_tlbr(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_wait(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_deret(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdbbp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+

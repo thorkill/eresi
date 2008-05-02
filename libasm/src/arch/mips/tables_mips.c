@@ -241,8 +241,8 @@ struct e_mips_instr e_mips_instrs [] = {
 
 /* Coprocessor Branch Instructions - COP2 */
 
-  {"bc2f"    ,ASM_MIPS_BC2F      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC         ,0x0		,asm_mips_bc2f},
-  {"bc2t"    ,ASM_MIPS_BC2T      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC         ,0x1		,asm_mips_bc2t},
+  {"bc2f"    ,ASM_MIPS_BC2F      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BCC2       ,0x0		,asm_mips_bc2f},
+  {"bc2t"    ,ASM_MIPS_BC2T      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BCC2       ,0x1		,asm_mips_bc2t},
 
 
 /* Coprocessor Execute Instruction - COP2 */
@@ -260,19 +260,19 @@ struct e_mips_instr e_mips_instrs [] = {
 
 /* Coprocessor Move Instructions - COP2 */
 
-  {"cfc2"     ,ASM_MIPS_CFC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_CF        ,0x0		,asm_mips_cfc2},
-  {"ctc2"     ,ASM_MIPS_CTC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_CT        ,0x0		,asm_mips_ctc2},
-  {"dmfc2"    ,ASM_MIPS_DMFC2     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_DMF       ,0x0		,asm_mips_dmfc2},
-  {"dmtc2"    ,ASM_MIPS_DMTC2     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_DMT       ,0x0		,asm_mips_dmtc2},
-  {"mfc2"     ,ASM_MIPS_MFC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_MF        ,0x0		,asm_mips_mfc2},
-  {"mtc2"     ,ASM_MIPS_MTC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_MT        ,0x0		,asm_mips_mtc2},
+  {"cfc2"     ,ASM_MIPS_CFC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_CFC2      ,0x0		,asm_mips_cfc2},
+  {"ctc2"     ,ASM_MIPS_CTC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_CTC2      ,0x0		,asm_mips_ctc2},
+  {"dmfc2"    ,ASM_MIPS_DMFC2     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_DMFC2     ,0x0		,asm_mips_dmfc2},
+  {"dmtc2"    ,ASM_MIPS_DMTC2     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_DMTC2     ,0x0		,asm_mips_dmtc2},
+  {"mfc2"     ,ASM_MIPS_MFC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_MFC2      ,0x0		,asm_mips_mfc2},
+  {"mtc2"     ,ASM_MIPS_MTC2      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_MTC2      ,0x0		,asm_mips_mtc2},
 
 
 
 /* Obsolute Coprocessor Branch Instructions - COP2 */
 
-  {"bc2fl"    ,ASM_MIPS_BC2FL     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x2		,asm_mips_bc2fl},
-  {"bc2tl"    ,ASM_MIPS_BC2TL     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BC        ,0x3		,asm_mips_bc2tl},
+  {"bc2fl"    ,ASM_MIPS_BC2FL     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BCC2      ,0x2		,asm_mips_bc2fl},
+  {"bc2tl"    ,ASM_MIPS_BC2TL     ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BCC2      ,0x3		,asm_mips_bc2tl},
 
 
 /* COP1X Instructions */
@@ -299,9 +299,27 @@ struct e_mips_instr e_mips_instrs [] = {
   {"nmsub.ps" ,ASM_MIPS_NMSUB_PS  ,MIPS_OPCODE_COP1X         ,MIPS_OPCODE_NMSUB_PS  ,0x0		,asm_mips_nmsub_ps},
 
 
+/* Privileged Instructions - COP0 */
+
+  {"mfc0"     ,ASM_MIPS_MFC0      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_MFC0      ,0x0		,asm_mips_mfc0},  // !
+  {"dmfc0"    ,ASM_MIPS_DMFC0     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_DMFC0     ,0x0		,asm_mips_dmfc0}, // !
+  {"tlbwi"    ,ASM_MIPS_TLBWI     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_TLBWI     ,0x0		,asm_mips_tlbwi},
+  {"mtc0"     ,ASM_MIPS_MTC0      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_MTC0      ,0x0		,asm_mips_mtc0},  // !
+  {"dmtc0"    ,ASM_MIPS_DMTC0     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_DMTC0     ,0x0		,asm_mips_dmtc0}, // !
+  {"tlbwr"    ,ASM_MIPS_TLBWR     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_TLBWR     ,0x0		,asm_mips_tlbwr},
+  {"eret"     ,ASM_MIPS_ERET      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_ERET      ,0x0		,asm_mips_eret},
+  {"tlbp"     ,ASM_MIPS_TLBP      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_TLBP      ,0x0		,asm_mips_tlbp},
+  {"tlbr"     ,ASM_MIPS_TLBR      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_TLBR      ,0x0		,asm_mips_tlbr},
+  {"wait"     ,ASM_MIPS_WAIT      ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_WAIT      ,0x0		,asm_mips_wait},
+
+/* EJTAG Instruction... */
+
+  {"deret"    ,ASM_MIPS_DERET     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_DERET     ,0x0		,asm_mips_deret},
+  {"sdbbp"    ,ASM_MIPS_SDBBP     ,MIPS_OPCODE_COP0          ,MIPS_OPCODE_SDBBP     ,0x0		,asm_mips_sdbbp},
+
+
   /*TODO
    * - FPU insns
-   * - privileged insns
    */
   
      /* mnemonic          code     index1   index 2   index 3   func pointer */

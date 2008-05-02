@@ -115,8 +115,7 @@ int	main(int ac, char **av) {
       asm_init_sparc(&proc);
       break;
     case EM_386:
-      asm_init_arch(&proc, ASM_PROC_IA32);
-      //asm_init_ia32(&proc);
+      asm_init_ia32(&proc);
       break;
     case EM_MIPS:
       asm_init_mips(&proc);
