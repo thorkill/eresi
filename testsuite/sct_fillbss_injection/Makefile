@@ -11,7 +11,8 @@ SRC	= section_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
-	-L../../libaspect/ -laspect32
+	-L../../libaspect/ -laspect32	\
+	-L../../libetrace/ -letrace32
 NAM	= sct_injecter
 RM	= rm -f 
 VULN	= main.c
@@ -20,8 +21,8 @@ OPT	= -O2 -I../../libelfsh/include/ \
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)
-	@$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
-	@$(CC) $(OPT) $(VULN)
+	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
+	$(CC) $(OPT) $(VULN)
 
 clean	:
 	$(RM) $(OBJ) *~ \#* *\#
