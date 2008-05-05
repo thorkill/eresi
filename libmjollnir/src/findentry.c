@@ -178,7 +178,10 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
 
   sym = elfsh_get_symbol_by_name(context->obj, "main");
   if (sym && sym->st_value)
-    main_addr = sym->st_value;
+    {
+      main_addr = sym->st_value;
+      dis = 0;
+    }
   else
     main_addr = mjr_find_main(context->obj, &context->proc, buf, len, vaddr, &dis);
   
