@@ -1,6 +1,7 @@
 /**
 ** 
 ** @file libbtree.c
+** @ingroup libaspect
 ** 
 ** Author  : <087432084750432042>
 ** Started : Fri Oct 17 14:29:24 2003

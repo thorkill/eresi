@@ -1,7 +1,8 @@
 /**
 ** @file liblist.c
+** @ingroup libaspect
 ** 
-** Contain ELFsh internal lists related API
+** @brief Contain ELFsh internal lists related API.
 **
 ** Started on  Fri Jul 13 20:26:18 2007 jfv
 ** $Id: liblist.c,v 1.9 2008-02-16 12:32:27 thor Exp $

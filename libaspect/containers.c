@@ -1,7 +1,8 @@
 /*
 ** @file containers.c
+** @ingroup libaspect
 ** 
-** @brief Implement generic routines for containers
+** @brief Implement generic routines for containers.
 **
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
 ** $Id: containers.c,v 1.3 2008-02-16 12:32:27 thor Exp $
