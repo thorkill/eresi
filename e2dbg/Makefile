@@ -60,20 +60,20 @@ LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 all			: all32 all64
 
 all32			: ${OBJ32}
-			@$(CC) $(OBJ32) $(LDFLAGS32) -o $(DBGNAME32)
+			$(CC) $(OBJ32) $(LDFLAGS32) -o $(DBGNAME32)
 
 all64			: ${OBJ64}
-			@$(CC) $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64)
+			$(CC) $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64)
 
 clean		       :
-		       @$(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
-		       @$(RM) include/*~ include/\#* include/*\# include/.\#*
-		       @$(RM) *.??.o
+		       $(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+		       $(RM) include/*~ include/\#* include/*\# include/.\#*
+		       $(RM) *.??.o
 
 fclean		       : clean
-		       @$(RM) $(NAME) $(OBJ_DYN) $(DBGNAME)
-		       @$(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32)
-		       @$(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64)
+		       $(RM) $(NAME) $(OBJ_DYN) $(DBGNAME)
+		       $(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32)
+		       $(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64)
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

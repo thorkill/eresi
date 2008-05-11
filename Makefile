@@ -53,6 +53,9 @@ world   :
 	@cd libasm && sh configure 
 	@cd libasm && $(MAKE) 
 	@echo 'Libasm has been built successfully.' 
+#
+# TODO
+#
 ifneq ($(KERNSH),)
 	@echo 'Building libkernsh...'
 	@cd libkernsh && $(MAKE) $(BUILD_TARGET)
@@ -76,9 +79,15 @@ endif
 	@echo 'Building librevm...'			
 	@cd librevm && $(MAKE) $(BUILD_TARGET)	
 	@echo 'Librevm has been built successfully.'
-	@cd librevm/io/ && $(MAKE) $(BUILD_TARGET)  
-	@test -f config.back && cp config.back config.h
+ifeq ($(READLN),1)
+	@cp config.h config.back
+	@cat config.h | grep -v READLN > t && mv t config.h
+	@echo 'Rebuilding librevm/io/ without readline'
+	@cd librevm/io/ && $(MAKE) clean
+	@cd librevm/io/ && $(MAKE) $(BUILD_TARGET)
+	cp config.back config.h
 	@echo 'Librevm has been rebuilt successfully.'
+endif
 	@echo 'Building libstderesi...'			
 	@cd libstderesi && $(MAKE) $(BUILD_TARGET)	
 	@echo 'Libstderesi has been built successfully.'

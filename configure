@@ -47,6 +47,7 @@ printHelp()
     echo "   --libasm-sparc    : Enable libasm sparc engine"
     echo "   --libasm-mips     : Enable libasm mips engine"
     echo "   --libasm-packed   : Pack handlers in a single file"
+    echo "   --libasm-unpacked : Keep handlers per source file"
     echo
     echo "   Available variables :"
     echo
@@ -159,8 +160,11 @@ LIBASM_ENABLE_CHOOSEN=1
 ;;
 
 --libasm-packed)
-echo " [*] Libasm Packed handlers"
-echo "LIBASM_PACKED_HANDLERS = 1" >> $CONFIGFILE
+LIBASM_PACKED_HANDLERS=1
+;;
+
+--libasm-unpacked)
+LIBASM_PACKED_HANDLERS=0
 ;;
 
 --enable-testing*)
@@ -173,6 +177,7 @@ TESTING="1"
 echo  " [*] Enabling readline support"
 READLN="1"
 if [ "${OSNAME}" != OpenBSD ] ; then
+echo  "READLN	        = 1"					>> $CONFIGFILE
 echo  "READLNOPT	= -DUSE_READLN"				>> $CONFIGFILE
 echo  "LDREADLNOPT	= -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
 else
@@ -351,6 +356,16 @@ echo "LIBASM_ENABLE_IA32 = 1" >> $CONFIGFILE
 echo "LIBASM_ENABLE_SPARC = 1" >> $CONFIGFILE
 echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
 fi
+
+echo $LIBASM_PACKED_HANDLERS
+if [ "$LIBASM_PACKED_HANDLERS" != "0" ] ; then
+echo " [*] Libasm Packed handlers"
+echo "LIBASM_PACKED_HANDLERS = 1" >> $CONFIGFILE
+else
+echo " [*] Libasm Unpacked handlers"
+echo "LIBASM_PACKED_HANDLERS = 0" >> $CONFIGFILE
+fi
+
 #
 # test for make/gmake support
 #
