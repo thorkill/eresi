@@ -333,7 +333,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   /* Determine the minimal aligned length */
   if (!proc_init)
     {
-      asm_init_ia32(&proc);
+      asm_init_arch(&proc, ASM_PROC_IA32);
       proc_init = 1;
     }
   for (idx = ret = 0; ret < 5 && idx < 5; idx++)
@@ -827,7 +827,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
 
   if (!proc_init)
     {
-      asm_init_ia32(&proc);
+      asm_init_arch(&proc, ASM_PROC_IA32);
       proc_init = 1;
     }
   max_arg_offset = 0;

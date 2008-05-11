@@ -37,15 +37,15 @@ static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)
     case EM_SPARC:
     case EM_SPARCV9:
     case EM_SPARC32PLUS:
-      asm_init_sparc(proc);
+      asm_init_arch(proc, ASM_PROC_SPARC);
       break;
     case EM_386:
-      asm_init_ia32(proc);
+      asm_init_arch(proc, ASM_PROC_IA32);
       break;
     case EM_MIPS:
     case EM_MIPS_RS3_LE:
     case EM_MIPS_X:
-      asm_init_mips(proc);
+      asm_init_arch(proc, ASM_PROC_MIPS);
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

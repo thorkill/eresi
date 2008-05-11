@@ -114,13 +114,13 @@ int		mjr_setup_processor(mjrsession_t *sess)
    case EM_SPARC:
    case EM_SPARCV9:
    case EM_SPARC32PLUS:
-     asm_init_sparc(&sess->cur->proc);
+     asm_init_arch(&sess->cur->proc, ASM_PROC_SPARC);
      break;
    case EM_386:
-     asm_init_ia32(&sess->cur->proc);
+     asm_init_arch(&sess->cur->proc, ASM_PROC_IA32);
      break;
    case EM_MIPS:
-     asm_init_mips(&sess->cur->proc);
+     asm_init_arch(&sess->cur->proc, ASM_PROC_MIPS);
      break;
    default:
      fprintf(D_DESC," [E] Libmjollnir unsupported architecture\n");

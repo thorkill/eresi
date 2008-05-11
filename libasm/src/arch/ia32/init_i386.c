@@ -30,10 +30,15 @@ int	fetch_i386(asm_instr *instr, u_char *buf, u_int len,
 {
   u_char	opcode;
   int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
+  int		to_ret;
   
   opcode = *buf;
   fetch = asm_opcode_fetch(LIBASM_VECTOR_OPCODE_IA32, opcode);
-  return (fetch(instr, buf, len, proc));
+  to_ret = fetch(instr, buf, len, proc);
+  if (to_ret > 0)
+    instr->name = proc->instr_table[instr->instr];
+  return (to_ret);
+  
 }
 
 int	asm_init_i386(asm_processor *proc)

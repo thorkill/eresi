@@ -633,15 +633,15 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	case EM_SPARC32PLUS:
 	case EM_SPARC:
 	case EM_SPARCV9:
-	  asm_init_sparc(&proc);
+	  asm_init_arch(&proc, ASM_PROC_SPARC);
 	  break;
 	case EM_386:
-	  asm_init_ia32(&proc);
+	  asm_init_arch(&proc, ASM_PROC_IA32);
 	  break;
 	case EM_MIPS:
 	case EM_MIPS_RS3_LE:
 	case EM_MIPS_X:
-	  asm_init_mips(&proc);
+	  asm_init_arch(&proc, ASM_PROC_MIPS);
 	  break;
 	}
       
@@ -702,13 +702,13 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
 	case EM_SPARC32PLUS:
 	case EM_SPARC:
 	case EM_SPARCV9:
-	  asm_init_sparc(&proc);
+	  asm_init_arch(&proc, ASM_PROC_SPARC);
 	  break;
 	case EM_386:
-	  asm_init_ia32(&proc);
+	  asm_init_arch(&proc, ASM_PROC_IA32);
 	  break;
 	case EM_MIPS:
-	  asm_init_mips(&proc);
+	  asm_init_arch(&proc, ASM_PROC_MIPS);
 	  break;
 	}
       

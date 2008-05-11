@@ -204,6 +204,16 @@ int	asm_init_sparc(asm_processor *proc);
 int	asm_init_mips(asm_processor *proc);
 
 /**
+ * Intialize an asm_processor structure.
+ *
+ * Architectures currently availables are ASM_PROC_IA32, ASM_PROC_SPARC and ASM_PROC_MIPS
+ * @param proc Pointer to asm_processor structure.
+ * @param arch Architecture to initialize (ASM_PROC_<arch>)
+ * @return 1 on success, 0 on error.
+ */
+int	asm_init_arch(asm_processor *proc, int arch);
+
+/**
  * Return endianess
  */
 int asm_config_get_endian();
