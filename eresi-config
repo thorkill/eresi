@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# @todo
+#
+#
+#
+#
+TESTING=1
+TESTING_ROOT=${HOME}/devhell/eresi.trunk/
+INCDIR=/usr/local/include
+LIBDIR=/usr/local/lib
+
+# @todo check if argument is --help
+# 
+#echo "Usage "
+
+# Libasm require following modules:
+# libaspect
+#
+
+if [ $TESTING = 1 ] ; then
+LIBASM_CFLAGS="-I ${TESTING_ROOT}/libasm/include"
+LIBASM_DEFINES=
+LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm"
+
+
+LIBASPECT_CFLAGS="-I ${TESTING_ROOT}/libaspect/include"
+LIBASPECT_DEFINES=
+LIBASPECT_LIBS="-L ${TESTING_ROOT}/libaspect/ -laspect32"
+else
+LIBASM_CFLAGS="-I ${INCDIR}"
+LIBASM_DEFINES=
+LIBASM_LIBS="-L ${LIBDIR} -lasm"
+
+LIBASPECT_CFLAGS="-I ${INCDIR}"
+LIBASPECT_DEFINES=
+LIBASPECT_LIBS="-L ${LIBDIR} -laspect32"
+
+fi
+
+#
+# Loop throught arguments
+#
+
+while [ "_$1" != "_" ] ; do
+    case "$1" in 
+    libasm)
+    LIBASM=1
+    ;;
+
+    --libs)
+    showLIBS=1
+    ;;
+
+    --cflags)
+    showCFLAGS=1
+    ;;
+
+    --defines)
+    showDEFINES=1
+    ;;
+    esac
+    shift 1
+done
+
+#
+# Print required arguments.
+#
+
+if [ "$LIBASM" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+fi
+
+fi
