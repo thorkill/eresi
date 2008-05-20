@@ -3,10 +3,18 @@
 # @todo
 #
 #
+
 #
-#
+# If TESTING is set to 1, eresi-config will be usable without installing eresi.
+# TESTING_ROOT is then the path to your working directory.
+
 TESTING=1
-TESTING_ROOT=${HOME}/devhell/eresi.trunk/
+TESTING_ROOT=
+
+#
+# Those variables are path were eresi headers and libraries were installed.
+#
+
 INCDIR=/usr/local/include
 LIBDIR=/usr/local/lib
 
@@ -14,27 +22,42 @@ LIBDIR=/usr/local/lib
 # 
 #echo "Usage "
 
-# Libasm require following modules:
-# libaspect
 #
+# Command lines options for each component without dependancies.
+# Dependancies is managed next in the ouput part of the script.
 
 if [ $TESTING = 1 ] ; then
 LIBASM_CFLAGS="-I ${TESTING_ROOT}/libasm/include"
 LIBASM_DEFINES=
 LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm"
 
-
-LIBASPECT_CFLAGS="-I ${TESTING_ROOT}/libaspect/include"
+LIBASPECT_CFLAGS="-D ERESI32 -I ${TESTING_ROOT}/libaspect/include"
 LIBASPECT_DEFINES=
 LIBASPECT_LIBS="-L ${TESTING_ROOT}/libaspect/ -laspect32"
+
+LIBELFSH_CFLAGS="-I ${TESTING_ROOT}/libelfsh/include"
+LIBELFSH_DEFINES=
+LIBELFSH_LIBS="-L ${TESTING_ROOT}/libelfsh/ -lelfsh32"
+
+LIBETRACE_CFLAGS="-I ${TESTING_ROOT}/libetrace/include"
+LIBETRACE_DEFINES=
+LIBETRACE_LIBS="-L ${TESTING_ROOT}/libetrace/ -letrace32"
 else
-LIBASM_CFLAGS="-I ${INCDIR}"
+LIBASM_CFLAGS="-D ERESI32 -I ${INCDIR}"
 LIBASM_DEFINES=
 LIBASM_LIBS="-L ${LIBDIR} -lasm"
 
 LIBASPECT_CFLAGS="-I ${INCDIR}"
 LIBASPECT_DEFINES=
 LIBASPECT_LIBS="-L ${LIBDIR} -laspect32"
+
+LIBASPECT_CFLAGS="-I ${INCDIR}"
+LIBASPECT_DEFINES=
+LIBASPECT_LIBS="-L ${LIBDIR} -lelfsh32"
+
+LIBETRACE_CFLAGS="-I ${INCDIR}"
+LIBETRACE_DEFINES=
+LIBETRACE_LIBS="-L ${LIBDIR} -letrace32"
 
 fi
 
@@ -69,13 +92,13 @@ done
 
 if [ "$LIBASM" = 1 ] ; then
 if [ "$showCFLAGS" = 1 ] ; then
-	echo ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+	echo ${LIBELFSH_CFLAGS} ${LIBETRACE_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
 fi
 if [ "$showLIBS" = 1 ] ; then
-	echo ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+	echo ${LIBELFSH_LIBS} ${LIBETRACE_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
 fi
 if [ "$showDEFINES" = 1 ] ; then
-	echo ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+	echo ${LIBELFSH_DEFINES} ${LIBETRACE_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
 fi
 
 fi

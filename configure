@@ -584,6 +584,8 @@ echo "all     : world modules tags"				>> Makefile.gen
 
 cat >> Makefile.gen <<EOF
 
+sed -ie "s%TESTING_ROOT=.*%TESTING_ROOT=`pwd`/%" eresi-config
+
 ifdef NAME
 include  build/defs/dep-rules.def
 component:	dep-\$(NAME)
