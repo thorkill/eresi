@@ -86,7 +86,9 @@ char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)
 char *asm_mips_display_instr(asm_instr *ins,int addr)
 {
    static char buf[32+80];
-   char *tmp = asm_mips_display_operand(ins,0x0,addr);
+   char *tmp = NULL;
+   
+   tmp = asm_mips_display_operand(ins,0x0,addr);
 
    bzero(buf,sizeof(buf));
 

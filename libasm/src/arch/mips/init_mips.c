@@ -121,6 +121,15 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
          break;
 
       case MIPS_OPCODE_COP1:
+         do {
+	
+	    u_int tmp = (converted >> 0) & 0x3F;
+	    u_int fmt = (converted >> 21) & 0x1F;
+	
+	    dim[1] = tmp;
+	    dim[2] = fmt;
+	
+	 } while(0);
          break;
       case MIPS_OPCODE_COP2:
          do {

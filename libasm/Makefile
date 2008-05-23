@@ -175,7 +175,7 @@ docs:
 mydisasm:
 	$(CC) -g3 -I../libelfsh/include/ -I../libaspect/include/ -I./include/ \
 	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
-	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32 -static
+	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32
 
 test:
 	(cd testsuite/ia32 && ${SHELL} launch_test.sh)

@@ -385,9 +385,23 @@ enum COP0_func {
    MIPS_OPCODE_TLBP = Ob(001000),
    MIPS_OPCODE_TLBR = Ob(000001),
    MIPS_OPCODE_DERET = Ob(011111),
-   MIPS_OPCODE_WAIT,
+   MIPS_OPCODE_WAIT
 };
 
+enum COP1_func {
+
+   MIPS_OPCODE_F_ADD,
+   MIPS_OPCODE_ABS = Ob(000101)
+
+};
+
+enum COP1_fmt {
+
+   MIPS_OPCODE_FMT_S = Ob(10000),
+   MIPS_OPCODE_FMT_D,
+   MIPS_OPCODE_FMT_PS = Ob(10110)
+
+};
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
 enum {} COP0_rs_field_encoding;
@@ -611,16 +625,16 @@ enum e_mips_instr_types
    
    /* Chuj doklikalem to bo sie wkurwilem, jebane gowno - zycie to bagno... */
    /* Privileged instructions... */
-   ASM_MIPS_CACHE,
-   ASM_MIPS_DMFC0,
-   ASM_MIPS_DMTC0,
-   ASM_MIPS_ERET,
+//   ASM_MIPS_CACHE,
    ASM_MIPS_MFC0,
+   ASM_MIPS_DMFC0,
+   ASM_MIPS_TLBWI,
    ASM_MIPS_MTC0,
+   ASM_MIPS_DMTC0,
+   ASM_MIPS_TLBWR,
+   ASM_MIPS_ERET,
    ASM_MIPS_TLBP,
    ASM_MIPS_TLBR,
-   ASM_MIPS_TLBWI,
-   ASM_MIPS_TLBWR,
    ASM_MIPS_WAIT,
 
    /* EJTAG Instructions... */
@@ -630,6 +644,69 @@ enum e_mips_instr_types
    /*TODO:
     * - FPU insns
     * */
+
+   /* FPU arithmetics */
+   ASM_MIPS_ABS_S,
+   ASM_MIPS_ABS_D,
+   ASM_MIPS_ABS_PS,
+   ASM_MIPS_ADD_S,
+   ASM_MIPS_ADD_D,
+   ASM_MIPS_ADD_PS,
+/*
+   ASM_MIPS_DIV.fmt,
+   ASM_MIPS_MADD.fmt,
+   ASM_MIPS_MSUB.fmt,
+   ASM_MIPS_MUL.fmt,
+   ASM_MIPS_NEG.fmt,
+   ASM_MIPS_NMADD.fmt,
+   ASM_MIPS_NMSUB.fmt,
+   ASM_MIPS_RECIP.fmt,
+   ASM_MIPS_RSQRT.fmt,
+   ASM_MIPS_SQRT,
+   ASM_MIPS_SUB.fmt,
+*/
+   /* FPU Branch Instructions */
+/*
+   ASM_MIPS_BC1F,
+   ASM_MIPS_BC1T,
+*/
+   /* FPU Compare Instruction */
+//   ASM_MIPS_C.cond.fmt,
+
+   /* FPU Convert Instructions */
+/*
+   ASM_MIPS_CEIL_W.fmt,
+   ASM_MIPS_CVT_D.fmt,
+   ASM_MIPS_CVT_S.fmt,
+   ASM_MIPS_CVT_W.fmt,
+   ASM_MIPS_FLOOR_W.fmt,
+   ASM_MIPS_ROUND_W.fmt,
+   ASM_MIPS_TRUNC_W.fmt,
+*/
+   /* FPU Load, Store and Memory Control Instructions */
+/*
+   ASM_MIPS_LDC1,
+   ASM_MIPS_LWC1,
+   ASM_MIPS_SDC1,
+   ASM_MIPS_SWC1,
+*/
+   /* FPU Move Instructions */
+/*
+   ASM_MIPS_CFC1,
+   ASM_MIPS_CTC1,
+   ASM_MIPS_MFC1,
+   ASM_MIPS_MOV.fmt,
+   ASM_MIPS_MOVF.fmt,
+   ASM_MIPS_MOVN.fmt,
+   ASM_MIPS_MOVT.fmt,
+   ASM_MIPS_MOVZ.fmt,
+   ASM_MIPS_MTC1,
+*/
+   /* FPU Absolute Branch Instructions */
+/*
+   ASM_MIPS_BC1FL,
+   ASM_MIPS_BC1TL,
+*/
 
    ASM_MIPS_BAD
 };
@@ -961,3 +1038,10 @@ int asm_mips_wait(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_deret(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_sdbbp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 
+// FPU - arithmetic...
+int asm_mips_abs_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_abs_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_abs_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_add_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_add_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_add_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

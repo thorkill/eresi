@@ -223,22 +223,6 @@ struct e_mips_instr e_mips_instrs [] = {
   {"bnel"     ,ASM_MIPS_BNEL      ,MIPS_OPCODE_BNEL          ,0x0                   ,0x0		,asm_mips_bnel},
 
 
-/*
-
-// FPU Arithmetic:
-
-   abs.dmt
-   add.fmt
-   div.fmt
-   madd.fmt
-   msub.fmt
-   mul.fmt
-   ...
-   ...
-*/
-
-
-
 /* Coprocessor Branch Instructions - COP2 */
 
   {"bc2f"    ,ASM_MIPS_BC2F      ,MIPS_OPCODE_COP2          ,MIPS_OPCODE_BCC2       ,0x0		,asm_mips_bc2f},
@@ -321,7 +305,16 @@ struct e_mips_instr e_mips_instrs [] = {
   /*TODO
    * - FPU insns
    */
-  
+
+/* FPU arithmetics */
+
+  {"abs.s"    ,ASM_MIPS_ABS_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_ABS       ,MIPS_OPCODE_FMT_S	,asm_mips_abs_s},  // !
+  {"abs.d"    ,ASM_MIPS_ABS_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_ABS       ,MIPS_OPCODE_FMT_D	,asm_mips_abs_d},  // !
+  {"abs.ps"   ,ASM_MIPS_ABS_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_ABS       ,MIPS_OPCODE_FMT_PS	,asm_mips_abs_ps},
+  {"add.s"    ,ASM_MIPS_ADD_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_S	,asm_mips_add_s},  // !
+  {"add.d"    ,ASM_MIPS_ADD_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_D	,asm_mips_add_d},  // !
+  {"add.ps"   ,ASM_MIPS_ADD_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_PS	,asm_mips_add_ps},
+
      /* mnemonic          code     index1   index 2   index 3   func pointer */
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }
 };
