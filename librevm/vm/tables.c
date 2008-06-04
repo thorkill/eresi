@@ -350,7 +350,7 @@ static void	setup_shthash()
   hash_init(&sht_L2_hash, "shtL2objects", 29, ASPECT_TYPE_UNKNOW);
   hash_add(&sht_L2_hash, "type"     , revm_create_L2ENT(elfsh_get_section_type, 
 						      elfsh_set_section_type, 
-						      0, NULL, NULL, NULL, NULL));
+						      ASPECT_TYPE_SHORT, NULL, NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "addr"     , revm_create_L2ENT(elfsh_get_section_addr, 
 						      elfsh_set_section_addr, 
 						      ASPECT_TYPE_LONG, NULL, 
@@ -365,10 +365,10 @@ static void	setup_shthash()
 						      NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "link"     , revm_create_L2ENT(elfsh_get_section_link, 
 						      elfsh_set_section_link, 
-						      0, NULL, NULL, NULL, NULL));
+						      ASPECT_TYPE_SHORT, NULL, NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "info"     , revm_create_L2ENT(elfsh_get_section_info, 
 						      elfsh_set_section_info, 
-						      0, NULL, NULL, NULL, NULL));
+						      ASPECT_TYPE_SHORT, NULL, NULL, NULL, NULL));
   hash_add(&sht_L2_hash, "align"    , revm_create_L2ENT(elfsh_get_section_align, 
 						      elfsh_set_section_align, 
 						      ASPECT_TYPE_LONG, NULL,
@@ -415,7 +415,7 @@ static void	setup_phthash()
   hash_init(&pht_L2_hash, "phtL2objects", 29, ASPECT_TYPE_UNKNOW);
   hash_add(&pht_L2_hash, "type"  , revm_create_L2ENT(elfsh_get_segment_type, 
 						   elfsh_set_segment_type, 
-						   0, NULL, NULL, NULL, NULL));
+						   ASPECT_TYPE_SHORT, NULL, NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "offset", revm_create_L2ENT(elfsh_get_segment_offset, 
 						   elfsh_set_segment_offset, 
 						   ASPECT_TYPE_LONG, NULL,
@@ -438,7 +438,7 @@ static void	setup_phthash()
 						   NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "flags" , revm_create_L2ENT(elfsh_get_segment_flags, 
 						   elfsh_set_segment_flags, 
-						   0, NULL, NULL, NULL, NULL));
+						   ASPECT_TYPE_SHORT, NULL, NULL, NULL, NULL));
   hash_add(&pht_L2_hash, "align" , revm_create_L2ENT(elfsh_get_segment_align, 
 						   elfsh_set_segment_align, 
 						   ASPECT_TYPE_LONG, NULL, 
