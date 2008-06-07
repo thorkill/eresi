@@ -1,0 +1,14 @@
+#!../../e2dbg/e2dbg32
+
+b malloc
+b free
+start
+stack 20
+cont
+dbgstack 15
+cont
+delete malloc
+cont
+quit
+
+

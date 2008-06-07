@@ -17,8 +17,6 @@
 
 char		*version;
 
-//#undef ELFSH_DBGPATH
-//#define ELFSH_DBGPATH	"/home/enioreh/devhell/eresi/libe2dbg"
 
 /**
  * Setup LD_PRELOAD for dynamic binaries debugging 
@@ -32,7 +30,8 @@ void		revm_debugger_preload()
   char		buf[BUFSIZ / 2];
   char		*str;
 
-  /* Prepare the new LD_PRELOAD */
+  /* Prepare the new LD_PRELOAD -- 
+     use --enable-testing to test e2dbg without install */
   str = getenv("LD_PRELOAD");
   if (!str || !*str)
     snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so", ELFSH_DBGPATH, version);

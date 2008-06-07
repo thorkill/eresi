@@ -347,7 +347,7 @@ shift
 
 done
 
-if [ ! "$LIBASM_ENABLE_CHOOSEN" == 1 ];
+if [ ! "$LIBASM_ENABLE_CHOOSEN" = 1 ];
 then
 echo " [*] Libasm IA32 engine"
 echo " [*] Libasm SPARC engine"
@@ -1018,6 +1018,7 @@ echo "	@wc -l elfsh/*.c libelfsh/*.c libelfsh/include/*.h \\"	>> Makefile.gen
 echo "	libetrace/*.c libetrace/include/*.h                \\"	>> Makefile.gen
 echo "	elfsh/include/*.h modules/*.c libasm/src/*.c \\"	>> Makefile.gen
 echo "  libasm/src/arch/*/*.c e2dbg/*.c e2dbg/include/*.h \\"   >> Makefile.gen
+echo "  libasm/src/arch/*/*/*.c                           \\"   >> Makefile.gen
 echo "  libaspect/*.c libmjollnir/src/*.c libaspect/*/*.h \\"   >> Makefile.gen
 echo "  librevm/*/*.c librevm/include/*.h libdump/*.c \\"	>> Makefile.gen
 echo "  libstderesi/*/*.c libstderesi/include/*.h  \\"	        >> Makefile.gen
@@ -1042,8 +1043,8 @@ echo "	@wc -l libetrace/*.c "					>> Makefile.gen
 echo "	@echo '#############' LIBE2DBG ONLY '#######'"	        >> Makefile.gen
 echo "	@wc -l libe2dbg/*/*.c "					>> Makefile.gen
 echo "	@echo '###############' LIBASM ONLY '##########'"	>> Makefile.gen
-echo "	@wc -l libasm/src/*.c libasm/src/arch/ia32/*.c \\"	>> Makefile.gen
-echo "  libasm/src/arch/sparc/*.c"				>> Makefile.gen
+echo "	@wc -l libasm/src/*.c libasm/src/arch/*/*.c \\"		>> Makefile.gen
+echo "  libasm/src/arch/*/*/*.c                              "  >> Makefile.gen
 echo "	@echo '###############' LIBMJOLLNIR ONLY '##########'"	>> Makefile.gen
 echo "	@wc -l libmjollnir/src/*.c "				>> Makefile.gen
 echo "	@echo '###############' LIBREVM ONLY '##########'"	>> Makefile.gen

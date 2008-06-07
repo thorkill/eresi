@@ -20,8 +20,10 @@ int			cmd_write()
   revmobj_t		*o2;
   elfshsect_t		*cur;
   void			*dat;
+  void			*sdata;
   int			size;
   char			logbuf[BUFSIZ];
+  int			off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -37,16 +39,37 @@ int			cmd_write()
 		 "Parameters must be initialized scalar objects", -1);
   o1 = e1->value;
   o2 = e2->value;
+  off = 0;
+  sdata = NULL;
+
+  /* If first parameter is an address */
+  if (o1->otype->type == ASPECT_TYPE_LONG)
+    {
+      cur = elfsh_get_parent_section(world.curjob->curfile, o1->immed_val.ent, &off);
+      if (cur)
+	{
+	  sdata  = elfsh_get_raw(cur);
+	  sdata += off;
+	}
+
+      /* FIXME: Mapped test should be done */
+      else if (e2dbg_presence_get())
+	sdata = (void *) o1->immed_val.ent; 
+      else
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Invalid destination address", -1);
+    }
 
   /* Type checking */
-  if (o1->otype->type != ASPECT_TYPE_RAW && o1->otype->type != ASPECT_TYPE_STR)
+  else if (o1->otype->type != ASPECT_TYPE_RAW && o1->otype->type != ASPECT_TYPE_STR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parameters must be STR or RAW typed",
-		      -1);
+		 "Parameters must be STR or RAW typed",
+		 -1);
   else if (o1->immed)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Dest. param. must not be a constant", -1);
-
+		 "Destination param must not be a constant", 
+		 -1);
+  
   /* Convert Integers into raw data */
   if (o2->otype->type != ASPECT_TYPE_RAW && o2->otype->type != ASPECT_TYPE_STR)
     if (revm_convert_object(e2, ASPECT_TYPE_RAW) < 0)
@@ -67,9 +90,12 @@ int			cmd_write()
   if (size <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Source offset too big", -1);
-  
-  /* Write the destination buff */
-  if (o1->set_data(o1->parent, o1->off, dat, size, o1->sizelem) < 0)
+
+  /* Write raw ondisk or in memory */
+  if (sdata)
+    memcpy(sdata, dat, size);  
+  /* Write in the destination section */
+  else if (o1->set_data(o1->parent, o1->off, dat, size, o1->sizelem) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to set data", (-1));
 

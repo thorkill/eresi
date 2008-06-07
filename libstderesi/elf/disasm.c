@@ -22,7 +22,7 @@ static revmlist_t* second = NULL;
  * @return
 */
 char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, 
-			    elfsh_SAddr *roffset)
+			      elfsh_SAddr *roffset)
 {
   listent_t	*ent;
   int		index;
@@ -331,6 +331,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 {
   char		*buff;
   u_int		index;
+  u_int		curidx;
   elfsh_SAddr   idx_bytes;
   char		buf[256];
   char		base[16] = "0123456789ABCDEF";
@@ -345,15 +346,17 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   char		c1[2], c2[2];
   char		*pStr;
   void		*tmpbuff;
+  eresi_Addr	vaddr2;
+  int		nbrinstr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!parent)
+  if (!parent && !elfsh_is_debug_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "parent section is NULL", -1);
 
   /* Special case if the symbol is a plt entry */
-  if (sym && elfsh_is_pltentry(parent->parent, sym) == 1 && 
+  if (parent && sym && elfsh_is_pltentry(parent->parent, sym) == 1 && 
       size > ELFSH_PLT_ENTRY_SIZE)
     size = ELFSH_PLT_ENTRY_SIZE;
 
@@ -367,9 +370,17 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 #endif
 
   /* Get the pointer on relevant data */
-  buff  = elfsh_get_raw(parent);
-  index = off;
-  buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
+  if (parent)
+    {
+      buff  = elfsh_get_raw(parent);
+      buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
+      index = off;
+    }
+  else
+    {
+      buff = (void *) vaddr;
+      index = 0;
+    }
 
 #if defined(KERNSH)  
   if (kernsh_is_mem_mode())
@@ -377,7 +388,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 #endif  
 
   /* Filter requests on void sections (ex: bss when not inserted in file) */
-  if (!parent || !parent->data)
+  if (!elfsh_is_debug_mode() && (!parent || !parent->data))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"No data at this address", -1);
   
@@ -401,27 +412,37 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  
 	  /* For each entry of the array */
 	  /* Dont forget the section offset at the end */
-	  tmpbuff  = elfsh_get_raw(parent);
-	  tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
+	  if (!parent)
+	    tmpbuff = buff;
+	  else
+	    {
+	      tmpbuff  = elfsh_get_raw(parent);
+	      tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
+	    }
 
 #if defined(KERNSH)
 	  if (kernsh_is_mem_mode())
 	    parent->parent->rhdr.base = 0;
 #endif
-
+	  
 	  tmpbuff += index * sizeof(eresi_Addr);
 	  loff     = * (eresi_Addr *) tmpbuff;
-	  
+	  vaddr2   = vaddr + index * sizeof(eresi_Addr);
+
 	  snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
-		   elfsh_is_debug_mode() ? 
-		   parent->parent->rhdr.base + vaddr + index * sizeof(eresi_Addr) :
-		   vaddr   + index * sizeof(eresi_Addr), 
-		   foffset + index * sizeof(eresi_Addr), 
-		   name, 
+		   (elfsh_is_debug_mode() && parent ? parent->parent->rhdr.base + vaddr2 : vaddr2),
+		   foffset + index * sizeof(eresi_Addr), name,
 		   ((sym->st_size / sizeof(eresi_Addr)) < 100  ? 2 : 
 		    (sym->st_size / sizeof(eresi_Addr)) < 1000 ? 3 : 4),
-		   index,
-		   loff);
+		   index, loff);
+	  
+	  /* If the object was given as address, dont try to resolve array entries 
+	     -- FIXME: we could try to find if the entries are valid (mapped) on any object */
+	  if (!parent)
+	    {
+	      revm_output(buf);
+	      continue;
+	    }
 
 	  /* If the target pointer is not valid */
 	  targ = elfsh_get_parent_section(parent->parent, loff, 
@@ -474,13 +495,21 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
       if (!kernsh_is_present() && elfsh_is_debug_mode())
 	  vaddr += parent->parent->rhdr.base;
 #else
-      if (elfsh_is_debug_mode())
+      if (elfsh_is_debug_mode() && parent)
 	vaddr += parent->parent->rhdr.base;
 #endif
 
+      /*
+      if (!parent)
+	idx_bytes = index + off;
+      else if (!sym)
+	idx_bytes = index;
+      else
+	idx_bytes = vaddr + index - sym->st_value;
+      */
       idx_bytes = (sym ? vaddr + index - sym->st_value : index);
       
-      while (index < size && size > 0)
+      for (nbrinstr = 0; nbrinstr < size && size > 0; nbrinstr++)
 	{
 	  value = revm_instr_display(-1, index, vaddr, 
 				   foffset, size, name,
@@ -498,24 +527,29 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
       if (name == NULL || !*name)
 	name = ELFSH_NULL_STRING;
 
+      vaddr2 = vaddr;
+      curidx = 0;
       while (index < size && size > 0)
 	{
+
 	  /* Take care of quiet mode */
 	  if (world.state.revm_quiet)
 	    {
 	      sprintf(buf, " %s %s + %s", 
-		      revm_coloraddress(AFMT, (eresi_Addr) vaddr + index), 
-		      revm_colorstr(name), revm_colornumber("%u", index));
+		      revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
+		      revm_colorstr(name), 
+		      revm_colornumber("%u", (parent ? index : index + off)));
 	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
 	      revm_output(logbuf);
 	    }
 	  else
 	    {
 	      sprintf(buf, " %s [%s %s] %s + %s", 
-		      revm_coloraddress(AFMT, (eresi_Addr) vaddr + index), 
+		      revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
 		      revm_colorfieldstr("foff:"),
-		      revm_colornumber(DFMT, foffset + index), 
-		      revm_colorstr(name), revm_colornumber("%u", index));
+		      revm_colornumber(DFMT, foffset + curidx), 
+		      revm_colorstr(name), 
+		      revm_colornumber("%u", (parent ? index : index + off)));
 	      snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + revm_color_size(buf), buf);
 	      revm_output(logbuf);
 	    }
@@ -529,8 +563,8 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	      c1[0] = c2[0] = ' ';
 	      if (index + loff < size)
 		{
-		  c1[0] = base[(buff[index + loff] >> 4) & 0x0F];
-		  c2[0] = base[(buff[index + loff] >> 0) & 0x0F];
+		  c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
+		  c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
 		}
 	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
 	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
@@ -544,9 +578,9 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  /* Print ascii */
 	  for (loff = 0; loff < ret; loff++)
 	    {
-	      c1[0] = buff[index + loff];
+	      c1[0] = buff[curidx + loff];
 	      pStr = (index + loff >= size ? " " : 
-		      (PRINTABLE(buff[index + loff]) ? c1 : "."));
+		      (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
 	      if (strlen(tmp) + 1 < BUFSIZ)
 		strcat(tmp, pStr);
 	    }
@@ -555,6 +589,8 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  revm_endline();
 	  revm_output("\n");
 	  index += ret;
+	  vaddr2 += ret;
+	  curidx += ret;
 	}
   }
 
@@ -830,15 +866,21 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
 #endif
 
   s = elfsh_get_parent_section(file, vaddr, NULL);
-  if (!s)
+  if (!s && !elfsh_is_debug_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No matching section for address", -1);
+		 "No matching section for address", -1);
 
-  if (!actual->size)
+  if (!s)
+    {
+      actual->size = sizeof(unsigned long);
+      //actual->off = 0;
+    }
+  else if (!actual->size)
     actual->size = s->shdr->sh_size;
+
   revm_object_display(s, sym, actual->size, actual->off,
-		    elfsh_get_foffset_from_vaddr(file, vaddr),
-		    vaddr, name, actual->otype);
+		      elfsh_get_foffset_from_vaddr(file, vaddr),
+		      vaddr, name, actual->otype);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

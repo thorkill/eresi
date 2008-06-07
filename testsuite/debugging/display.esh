@@ -1,0 +1,15 @@
+#!../../e2dbg/e2dbg32
+
+b malloc
+display 1 got malloc
+b free
+display 2 got free
+start
+cont
+delete free
+cont
+delete malloc
+cont
+quit
+
+

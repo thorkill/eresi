@@ -1,0 +1,16 @@
+#!../../e2dbg/e2dbg32
+
+b malloc
+b free
+start
+threads
+cont
+bt
+threads 2
+bt
+delete free
+delete malloc
+cont
+quit
+
+

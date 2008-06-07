@@ -1,0 +1,16 @@
+#!../../e2dbg/e2dbg32
+
+b malloc
+b free
+start
+dumpregs
+set $eax 0x42424242
+dumpregs
+cont
+delete free
+cont
+delete malloc
+cont
+quit
+
+
