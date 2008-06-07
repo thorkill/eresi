@@ -617,6 +617,8 @@ int             revm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id,
 int             revm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
 
 /* Disassembling and hexadecimal view functions */
+int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buf, eresi_Addr vaddr,
+				   char *name, u_int foffset);
 u_int		revm_instr_display(int, u_int, eresi_Addr, u_int, u_int,
 				 char *, u_int, char *);
 int		revm_section_display(elfshsect_t *s, char *name, revmlist_t *re);
@@ -627,6 +629,8 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr, revmlist_t*);
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
 				  u_int off, u_int foffset, eresi_Addr vaddr, 
 				  char *name, char otype);
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
+				  u_int size, u_int off, char *buff, u_int foffset);
 
 /* Parsing / Scanning functions */
 char		*revm_filter_param(char *buf, char *ptr);

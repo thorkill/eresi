@@ -313,8 +313,239 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
 }
 
 
+
+
 /** 
- * Disassemble a function.
+ * @brief Display the content of an objet in hexadecimal and ascii format
+ * @param parent The parent section for the object
+ * @param name The name of the object
+ * @param vaddr The virtual address where the object stands
+ * @param index The offset where to start display
+ * @param size  Number of bytes to display
+ * @param off  The buffer offset be skipped at the beginning (duplicate!)
+ * @param sym The symbol associated to this object
+ * @param buff The data pointer of the object
+ * @param foffset The file offset where the object data stands at.
+ * @return Always 0.
+ */
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
+				  u_int size, u_int off, char *buff, u_int foffset)
+{
+  eresi_Addr	vaddr2;
+  u_int		curidx;
+  char		buf[256];
+  char		logbuf[BUFSIZ];
+  char		tmp[BUFSIZ];
+  char		c1[2], c2[2];
+  u_int		ret;
+  u_int		loff;  
+  char		*pStr;
+  char		base[16] = "0123456789ABCDEF";
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);      
+   if (name == NULL || !*name)
+     name = ELFSH_NULL_STRING;
+   vaddr2 = vaddr;
+   curidx = 0;
+
+   
+   while (index < size && size > 0)
+     {
+       
+       /* Take care of quiet mode */
+       if (world.state.revm_quiet)
+	 {
+	   sprintf(buf, " %s %s + %s", 
+		   revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
+		   revm_colorstr(name), 
+		   revm_colornumber("%u", (parent ? index : index + off)));
+	   snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
+	   revm_output(logbuf);
+	 }
+       else
+	 {
+	   sprintf(buf, " %s [%s %s] %s + %s", 
+		   revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
+		   revm_colorfieldstr("foff:"),
+		   revm_colornumber(DFMT, foffset + curidx), 
+		   revm_colorstr(name), 
+		   revm_colornumber("%u", (parent ? index : index + off)));
+	   snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + revm_color_size(buf), buf);
+	   revm_output(logbuf);
+	 }
+       revm_endline();
+       ret = (world.state.revm_quiet ? 8 : 16);
+       tmp[0] = c1[1] = c2[1] = 0x00;
+       
+       /* Print hexa */
+       for (loff = 0; loff < ret; loff++)
+	 {
+	   c1[0] = c2[0] = ' ';
+	      if (index + loff < size)
+		{
+		  c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
+		  c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
+		}
+	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
+	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
+		strcat(tmp, logbuf);
+	 }
+       
+       revm_output(revm_colorfieldstr(tmp));
+       revm_endline();
+       tmp[0] = 0x00;
+       
+       /* Print ascii */
+       for (loff = 0; loff < ret; loff++)
+	 {
+	      c1[0] = buff[curidx + loff];
+	      pStr = (index + loff >= size ? " " : 
+		      (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
+	      if (strlen(tmp) + 1 < BUFSIZ)
+		strcat(tmp, pStr);
+	 }
+       
+       revm_output(revm_colorstr(tmp));
+       revm_endline();
+       revm_output("\n");
+       index += ret;
+       vaddr2 += ret;
+       curidx += ret;
+     }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+/** 
+ * @brief Display the content of an array object
+ * @param parent The parent section for the array object
+ * @param sym The symbol associated to this array
+ * @param buff The data pointer of the array
+ * @param vaddr The virtual address where the array stands
+ * @param name The name of the array
+ * @param foffset The file offset of the array data in ELF
+ * @return Always 0.
+ */
+int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_Addr vaddr,
+				   char *name, u_int foffset)
+{
+  char		buf[256];
+  char		str[256];
+  char		logbuf[BUFSIZ];
+  char		*tmpbuff;
+  eresi_Addr	vaddr2;
+  eresi_Addr	loff;
+  elfshsect_t	*targ;
+  u_int		index;
+  u_int		off;
+  char		*s;
+  elfsh_SAddr	idx_bytes;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);      
+  for (index = 0; index * sizeof(eresi_Addr) < sym->st_size; index++)
+    {
+      
+      /* Do not print more than 250 entries at a time */
+      /* Use an offset for more dumping */
+      if (index >= 250)
+	{
+	  revm_output("-- symbol size is bigger (use an offset) --\n");
+	  break;
+	}
+      
+      /* For each entry of the array */
+      /* Dont forget the section offset at the end */
+      if (!parent)
+	tmpbuff = buff;
+      else
+	{
+	  tmpbuff  = elfsh_get_raw(parent);
+	  tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
+	}
+      
+#if defined(KERNSH)
+      if (kernsh_is_mem_mode())
+	parent->parent->rhdr.base = 0;
+#endif
+      
+      tmpbuff += index * sizeof(eresi_Addr);
+      loff     = * (eresi_Addr *) tmpbuff;
+      vaddr2   = vaddr + index * sizeof(eresi_Addr);
+      
+      snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
+	       (elfsh_is_debug_mode() && parent ? parent->parent->rhdr.base + vaddr2 : vaddr2),
+	       foffset + index * sizeof(eresi_Addr), name,
+	       ((sym->st_size / sizeof(eresi_Addr)) < 100  ? 2 : 
+		(sym->st_size / sizeof(eresi_Addr)) < 1000 ? 3 : 4),
+	       index, loff);
+      
+      /* If the object was given as address, dont try to resolve array entries 
+	 -- FIXME: we could try to find if the entries are valid (mapped) on any object */
+      if (!parent)
+	{
+	  revm_output(buf);
+	  continue;
+	}
+      
+      /* If the target pointer is not valid */
+      targ = elfsh_get_parent_section(parent->parent, loff, 
+				      (elfsh_SAddr *) &off);
+      if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
+	{
+	  s = elfsh_reverse_symbol(parent->parent, loff, &idx_bytes);
+	  if (NULL == s || idx_bytes > 1000)
+	    s = elfsh_reverse_dynsymbol(parent->parent, loff, &idx_bytes);
+	  if (NULL == s || idx_bytes > 1000)
+	    {
+	      if (targ != NULL)
+		{
+		  s = targ->name;
+		  idx_bytes = off;
+		}
+	      else
+		idx_bytes = 0;
+	    }
+	  if (idx_bytes)
+	    snprintf(str, sizeof(str), "%s + %u", 
+		     (s ? s : "<?>"), (u_int) idx_bytes);
+	  else
+	    snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
+	  snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
+	}
+      
+      /* else if yes, print the pointed data too */
+      else
+	{
+	  s = elfsh_get_raw(targ);
+	  s += off;
+	  memcpy(str, s, 
+		 (sizeof(str) > (targ->shdr->sh_size - off)) ?
+		 targ->shdr->sh_size - off : sizeof(str));   
+	  snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
+	}
+      
+      /* maybe the user asked to quit the display */
+      revm_output(logbuf);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+}
+
+
+
+
+/** 
+ * @brief Display the content of a binary object (wrapper function)
  * @param parent
  * @param sym
  * @param size
@@ -331,22 +562,8 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 {
   char		*buff;
   u_int		index;
-  u_int		curidx;
   elfsh_SAddr   idx_bytes;
-  char		buf[256];
-  char		base[16] = "0123456789ABCDEF";
-  eresi_Addr    loff;
-  char		str[256];
-  elfshsect_t	*targ;
-  char		*s;
-  u_int		ret;
   int		value;
-  char		logbuf[BUFSIZ];
-  char		tmp[BUFSIZ];
-  char		c1[2], c2[2];
-  char		*pStr;
-  void		*tmpbuff;
-  eresi_Addr	vaddr2;
   int		nbrinstr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -398,117 +615,26 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
        elfsh_get_symbol_type(sym) == STT_COMMON) && 
       !(sym->st_size % sizeof(eresi_Addr)))
     {
-      
-      for (index = 0; index * sizeof(eresi_Addr) < sym->st_size; index++)
-	{
-	  
-	  /* Do not print more than 250 entries at a time */
-	  /* Use an offset for more dumping */
-	  if (index >= 250)
-	    {
-	      revm_output("-- symbol size is bigger (use an offset) --\n");
-	      break;
-	    }
-	  
-	  /* For each entry of the array */
-	  /* Dont forget the section offset at the end */
-	  if (!parent)
-	    tmpbuff = buff;
-	  else
-	    {
-	      tmpbuff  = elfsh_get_raw(parent);
-	      tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
-	    }
-
-#if defined(KERNSH)
-	  if (kernsh_is_mem_mode())
-	    parent->parent->rhdr.base = 0;
-#endif
-	  
-	  tmpbuff += index * sizeof(eresi_Addr);
-	  loff     = * (eresi_Addr *) tmpbuff;
-	  vaddr2   = vaddr + index * sizeof(eresi_Addr);
-
-	  snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
-		   (elfsh_is_debug_mode() && parent ? parent->parent->rhdr.base + vaddr2 : vaddr2),
-		   foffset + index * sizeof(eresi_Addr), name,
-		   ((sym->st_size / sizeof(eresi_Addr)) < 100  ? 2 : 
-		    (sym->st_size / sizeof(eresi_Addr)) < 1000 ? 3 : 4),
-		   index, loff);
-	  
-	  /* If the object was given as address, dont try to resolve array entries 
-	     -- FIXME: we could try to find if the entries are valid (mapped) on any object */
-	  if (!parent)
-	    {
-	      revm_output(buf);
-	      continue;
-	    }
-
-	  /* If the target pointer is not valid */
-	  targ = elfsh_get_parent_section(parent->parent, loff, 
-					  (elfsh_SAddr *) &off);
-	  if (targ == NULL || strcmp(targ->name, ELFSH_SECTION_NAME_RODATA))
-	    {
-	      s = elfsh_reverse_symbol(parent->parent, loff, &idx_bytes);
-	      if (NULL == s || idx_bytes > 1000)
-		s = elfsh_reverse_dynsymbol(parent->parent, loff, &idx_bytes);
-	      if (NULL == s || idx_bytes > 1000)
-		{
-		  if (targ != NULL)
-		    {
-		      s = targ->name;
-		      idx_bytes = off;
-		    }
-		  else
-		    idx_bytes = 0;
-		}
-	      if (idx_bytes)
-		snprintf(str, sizeof(str), "%s + %u", 
-			 (s ? s : "<?>"), (u_int) idx_bytes);
-	      else
-		snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
-	      snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
-	    }
-
-	  /* else if yes, print the pointed data too */
-	  else
-	    {
-	      s = elfsh_get_raw(targ);
-	      s += off;
-	      memcpy(str, s, 
-		     (sizeof(str) > (targ->shdr->sh_size - off)) ?
-		     targ->shdr->sh_size - off : sizeof(str));   
-	      snprintf(logbuf, BUFSIZ - 1, "%-75s \"%s\" \n", buf, str);
-	    }
-	  
-	  /* maybe the user asked to quit the display */
-	  revm_output(logbuf);
-	}
+      revm_array_display(parent, sym, buff, vaddr, name, foffset);
+      revm_output("\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
-  
-  
-  /* We want asm + hexa output of the code */
-  else if (otype == REVM_VIEW_DISASM)
+  /* We want assembly + hexa, or only hexa + ascii ? */  
+  switch (otype)
     {
+
+      /* We want assembly and hexa */
+    case REVM_VIEW_DISASM:
 #if defined(KERNSH)
       if (!kernsh_is_present() && elfsh_is_debug_mode())
-	  vaddr += parent->parent->rhdr.base;
+	vaddr += parent->parent->rhdr.base;
 #else
       if (elfsh_is_debug_mode() && parent)
 	vaddr += parent->parent->rhdr.base;
 #endif
-
-      /*
-      if (!parent)
-	idx_bytes = index + off;
-      else if (!sym)
-	idx_bytes = index;
-      else
-	idx_bytes = vaddr + index - sym->st_value;
-      */
-      idx_bytes = (sym ? vaddr + index - sym->st_value : index);
       
+      idx_bytes = (sym ? vaddr + index - sym->st_value : index);
       for (nbrinstr = 0; nbrinstr < size && size > 0; nbrinstr++)
 	{
 	  value = revm_instr_display(-1, index, vaddr, 
@@ -519,81 +645,13 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	  index += value;
 	  idx_bytes += value;
 	}
-    }
+      break;
 
   /* We want hexa + ascii output of the data */
-  else if (REVM_VIEW_HEX == otype)
-    {
-      if (name == NULL || !*name)
-	name = ELFSH_NULL_STRING;
-
-      vaddr2 = vaddr;
-      curidx = 0;
-      while (index < size && size > 0)
-	{
-
-	  /* Take care of quiet mode */
-	  if (world.state.revm_quiet)
-	    {
-	      sprintf(buf, " %s %s + %s", 
-		      revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
-		      revm_colorstr(name), 
-		      revm_colornumber("%u", (parent ? index : index + off)));
-	      snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
-	      revm_output(logbuf);
-	    }
-	  else
-	    {
-	      sprintf(buf, " %s [%s %s] %s + %s", 
-		      revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
-		      revm_colorfieldstr("foff:"),
-		      revm_colornumber(DFMT, foffset + curidx), 
-		      revm_colorstr(name), 
-		      revm_colornumber("%u", (parent ? index : index + off)));
-	      snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + revm_color_size(buf), buf);
-	      revm_output(logbuf);
-	    }
-	  revm_endline();
-	  ret = (world.state.revm_quiet ? 8 : 16);
-	  tmp[0] = c1[1] = c2[1] = 0x00;
-
-	  /* Print hexa */
-	  for (loff = 0; loff < ret; loff++)
-	    {
-	      c1[0] = c2[0] = ' ';
-	      if (index + loff < size)
-		{
-		  c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
-		  c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
-		}
-	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
-	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
-		strcat(tmp, logbuf);
-	    }
-
-	  revm_output(revm_colorfieldstr(tmp));
-	  revm_endline();
-	  tmp[0] = 0x00;
-
-	  /* Print ascii */
-	  for (loff = 0; loff < ret; loff++)
-	    {
-	      c1[0] = buff[curidx + loff];
-	      pStr = (index + loff >= size ? " " : 
-		      (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
-	      if (strlen(tmp) + 1 < BUFSIZ)
-		strcat(tmp, pStr);
-	    }
-
-	  revm_output(revm_colorstr(tmp));
-	  revm_endline();
-	  revm_output("\n");
-	  index += ret;
-	  vaddr2 += ret;
-	  curidx += ret;
-	}
-  }
-
+    case REVM_VIEW_HEX:
+      revm_hexa_display(parent, name, vaddr, index, size, off, buff, foffset);
+    }
+  
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -611,8 +669,8 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
  * @return
  */
 int		revm_section_display(elfshsect_t	*s, 
-				   char		*name, 
-				   revmlist_t	*re)
+				     char		*name, 
+				     revmlist_t		*re)
 {
   elfsh_Sym	*actual;
   int		size, symtab_size;
@@ -897,33 +955,8 @@ int             cmd_disasm()
   int		matchs;
   eresi_Addr	vaddr;
   char		logbuf[BUFSIZ];
-  elfsh_Half	machine;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* First check the architecture */
-  switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
-    {
-    case EM_386:
-      world.curjob->proc = &world.proc;
-      break;
-    case EM_SPARC32PLUS:
-    case EM_SPARC:
-    case EM_SPARCV9:
-      world.curjob->proc = &world.proc_sparc;
-      break;
-    case EM_MIPS:
-    case EM_MIPS_RS3_LE:
-    case EM_MIPS_X:
-      world.curjob->proc = &world.proc_mips;
-      break;
-    default:
-      snprintf(logbuf, sizeof (logbuf) - 1, 
-	       "Architecture %s not supported. No disassembly available\n",
-	       elfsh_get_machine_string(machine));
-      revm_output(logbuf);
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
 
   /* Make sure we get symtabs of current object */
   elfsh_get_symtab(world.curjob->curfile, NULL);
