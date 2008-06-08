@@ -99,7 +99,7 @@ list_t		*elist_empty(char *name)
   elist_destroy(list);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	 newname, strlen(name) + 1, NULL);
-  strcpy(newname, name);
+  strncpy(newname, name, strlen(name));
   XALLOC(__FILE__, __FUNCTION__, __LINE__,
   	 list, sizeof(list_t), NULL);
   elist_init(list, newname, type);

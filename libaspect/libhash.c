@@ -121,7 +121,7 @@ hash_t    *hash_empty(char *name)
   hash_destroy(hash);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
    newname, strlen(name) + 1, NULL);
-  strcpy(newname, name);
+  strncpy(newname, name, strlen(name));
   hash_init(hash, newname, size, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hash);
 }
