@@ -744,7 +744,7 @@ int			elfsh_set_section_name(elfshobj_t	*file,
 
   /* Do not allocate new place if possible */
   if (len >= new_len)
-    strcpy(str, name);
+    strncpy(str, name, new_len);
 
   /* Append the name to the section string table */
   else if (!elfsh_section_is_runtime(s))

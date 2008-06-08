@@ -36,7 +36,7 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "New INTERP path too long", -1);
 
-  strcpy(elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP]), interp);
+  strncpy(elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP]), interp, size1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
