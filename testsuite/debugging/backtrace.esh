@@ -3,10 +3,8 @@
 b malloc
 b free
 start
-threads
-cont
 bt
-threads 2
+cont
 bt
 delete free
 delete malloc

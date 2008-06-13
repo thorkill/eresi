@@ -10,22 +10,17 @@ print Parameter 1  = $1
 
 b $1
 display 1 got $1
-display 1 print Reached breakpoint !
+display 1 print Reached breakpoint at $1 !
 
 start
-set $idx 0
 step
 
-loop:
-cont
-add $idx 1
-cmp $idx 5
-je  end
-jmp loop
+foreach $idx of 0 until 5
+ cont
+forend
 
-end:
 print Stepped 5 instructions ! 
-#delete 1
+delete 1
 step
 quit
 
