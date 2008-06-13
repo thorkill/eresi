@@ -5,22 +5,20 @@
 ##
 ##
 
-include ../../../config.h
+include ../../../../config.h
 
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh -L../../../libhash/ -lhashelfsh -L../../../libasm -lasm
-
 HOSTSRC	= host.c
 RELSRC	= rel.c
 RELOBJ	= rel.o
 
-OPT	= -g3 -O2 -I../../../libelfsh/include/ $(BITS)
+OPT	= -g3 -O2 -I../../../../libelfsh/include/ $(BITS)
 RM	= rm -f
-CFLAGS	= $(OPT) -I../../../libhash/include/
+CFLAGS	= $(OPT) -I../../../../libhash/include/
 
 all	: 
-	$(MAKE) -C ../../../
-	@/sbin/paxctl -m ../../../vm/elfsh
+	$(MAKE) -C ../../../../
+	#@/sbin/paxctl -m ../../../../vm/elfsh
 	$(CC) $(OPT) $(HOSTSRC) -static
 	#@strip a.out
 

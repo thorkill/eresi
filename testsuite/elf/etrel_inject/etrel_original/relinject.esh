@@ -1,4 +1,4 @@
-#!../../../elfsh/elfsh32
+#!../../../../elfsh/elfsh32
 
 profile enable warn
 load a.out

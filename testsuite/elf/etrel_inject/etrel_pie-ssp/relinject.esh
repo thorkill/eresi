@@ -1,4 +1,4 @@
-#!../../../elfsh/elfsh32
+#!../../../../elfsh/elfsh32
 
 load a.out
 load simple.o

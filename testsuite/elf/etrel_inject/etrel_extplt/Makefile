@@ -5,17 +5,17 @@
 ##
 ##
 
-include ../../../config.h
+include ../../../../config.h
 
 SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm    \
-	-L../../../liballocproxy -lallocproxy -L../../../libaspect/ \
-	-laspect32 -lpthread -L../../../libetrace -letrace32
-OPT	= -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
-	-I../../../libaspect/include/ $(BITS) -g3
+LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm    \
+	-L../../../../liballocproxy -lallocproxy -L../../../../libaspect/ \
+	-laspect32 -lpthread -L../../../../libetrace -letrace32
+OPT	= -O2 -I../../../../libelfsh/include/ -I../../../../libmjollnir/include/ \
+	-I../../../../libaspect/include/ $(BITS) -g3
 
 NAM	= etrel_injecter
 HOSTSRC	= host.c
@@ -32,9 +32,9 @@ all	: $(OBJ)
 	#@strip a.out
 	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c #-m64
 
-	@$(PAXCTL) -m -s -p -r -x ../../../vm/elfsh 2>/dev/null || \
+	@$(PAXCTL) -m -s -p -r -x ../../../../vm/elfsh 2>/dev/null || \
 	echo Test compiled succesfully. You can also install paxctl for pax tests.
-	@$(PAXCTL) -v ../../../vm/elfsh 2>/dev/null || true
+	@$(PAXCTL) -v ../../../../vm/elfsh 2>/dev/null || true
 
 clean	:
 	$(RM) $(OBJ) *~ \#* *\# $(RELOBJ)

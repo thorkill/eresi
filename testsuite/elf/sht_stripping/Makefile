@@ -5,19 +5,19 @@
 ## Last update Sun Dec 15 01:56:52 2002 jfv
 ##
 
-include ../../config.h
+include ../../../config.h
 
 SRC	= sht_removing.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
-	-L../../libaspect/ -laspect32	\
-	-L../../libetrace/ -letrace32
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm \
+	-L../../../libaspect/ -laspect32	\
+	-L../../../libetrace/ -letrace32
 NAM	= sht_remover
 RM	= rm -f 
 VULN	= main.c
-OPT	= -O2 -I../../libelfsh/include/ \
-	-I../../libaspect/include $(BITS)
+OPT	= -O2 -I../../../libelfsh/include/ \
+	-I../../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

@@ -1,4 +1,4 @@
-ELFSH=../../elfsh/elfsh32
+ELFSH=../../../elfsh/elfsh32
 
 test:	bin
 	@ echo ===================================

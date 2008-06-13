@@ -5,19 +5,19 @@
 ## Last update Sun Dec 15 01:56:15 2002 jfv
 ##
 
-include ../../config.h
+include ../../../config.h
 
 SRC	= section_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../libelfsh/ -lelfsh32 -L../../libasm -lasm \
-	-L../../libaspect/ -laspect32	\
-	-L../../libetrace/ -letrace32
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm \
+	-L../../../libaspect/ -laspect32	\
+	-L../../../libetrace/ -letrace32
 NAM	= sct_injecter
 RM	= rm -f 
 VULN	= main.c
-OPT	= -O2 -I../../libelfsh/include/ \
-	-I../../libaspect/include $(BITS)
+OPT	= -O2 -I../../../libelfsh/include/ \
+	-I../../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
 all	: $(OBJ)

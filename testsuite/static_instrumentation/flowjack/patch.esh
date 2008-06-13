@@ -1,4 +1,4 @@
-#! /usr/bin/elfsh
+#!../../../elfsh/elfsh32
 ## 
 ## patch.esh in 
 ## 
@@ -11,9 +11,8 @@ exec gcc -c infected.c
 exec gcc -o target target.c
 load target
 load infected.o
-modload modflow
 switch 1
-flow
+analyse
 reladd 1 2
 flowjack subfunc hijacked
 save target.hijacked

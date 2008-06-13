@@ -1,15 +1,14 @@
-#!../../elfsh/elfsh32
+#!../../../elfsh/elfsh32
 
 # Created: Tue Jan  2 22:44:33 CET 2007
 
 # Load all types
-load ../../elfsh/elfsh32
-unload ../../elfsh/elfsh32
+load ../../../elfsh/elfsh32
+unload ../../../elfsh/elfsh32
 
 # Analyse
 load /bin/ls
 analyse
-exec sleep 10
 
 save ls.saved
 load ls.saved

@@ -9,12 +9,13 @@ include ../../config.h
 SRC 	= tracer.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32
+LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32 \
+	-L../../libetrace/ -letrace32 -L../../libaspect/ -laspect32
 NAM	= tracer
 RM	= rm -f 
-OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ \
-	-I../../libasm/include/ -I../../elibc/include/ -I../../libaspect/include/ \
-	-I../../libmjollnir/include/ -I../../libedfmt/include/ $(BITS)
+OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 		\
+	-I../../libasm/include/ -I../../libaspect/include/ -I../../libmjollnir/include/ \
+	-I../../libedfmt/include/ $(BITS) -I../../libetrace/include/
 CFLAGS	= $(OPT)
 
 HOSTSRC	= host.c

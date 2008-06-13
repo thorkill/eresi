@@ -5,7 +5,7 @@
 ##
 ##
 
-include ../../../config.h
+include ../../../../config.h
 
 PAXCTL	= /sbin/paxctl
 CC	= gcc
@@ -15,7 +15,7 @@ PIESRC	= host.c
 PIEOBJ	= host.o
 
 RM	= rm -f
-CFLAGS	= -fPIC -I../../libhash/include/
+CFLAGS	= -fPIC
 
 all	: $(PIEOBJ) $(RELOBJ)
 	$(CC) -g3 $(PIEOBJ) -pie
