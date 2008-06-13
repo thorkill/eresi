@@ -1,0 +1,11 @@
+#!../../elfsh/elfsh32
+
+
+load /bin/ls
+setcolor warnstring fg red
+alert gnu
+s
+alert sym
+s
+quit
+

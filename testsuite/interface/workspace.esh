@@ -1,0 +1,20 @@
+#!../../elfsh/elfsh32
+#
+#
+# The workspace is an interactive command. See help workspace.
+#
+
+load /bin/ls
+e
+workspace
+workspace second
+exec sleep 3
+workspace
+p
+exec sleep 3
+workspace local
+exec sleep 3
+workspace second
+exec sleep 3
+quit
+
