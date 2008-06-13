@@ -1,0 +1,21 @@
+#!/usr/bin/elfsh
+
+set $addr 1.sht[.plt].addr
+D $addr%20
+X $addr%20
+write $addr \x90\x90\x90\x90
+D $addr%20
+X $addr%20
+
+set $addr 1.sht[.bss].addr
+add $addr 1.sht[.bss].size
+add $addr 4
+
+D $addr%20
+X $addr%20
+write $addr \x90\x90\x90\x90
+D $addr%20
+X $addr%20
+
+quit
+
