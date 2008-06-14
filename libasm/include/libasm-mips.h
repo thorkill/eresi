@@ -424,6 +424,12 @@ enum COP1_func {
    MIPS_OPCODE_F_CEIL_W = Ob(001110),
    MIPS_OPCODE_F_RECIP = Ob(010101),
    MIPS_OPCODE_F_RSQRT,
+   MIPS_OPCODE_F_CVT_S = Ob(100000),
+   MIPS_OPCODE_F_CVT_D,// = Ob(100001),
+   MIPS_OPCODE_F_CVT_W = Ob(100100),
+   MIPS_OPCODE_F_CVT_L,// = Ob(100101),
+   MIPS_OPCODE_F_CVT_PS_S,
+   MIPS_OPCODE_F_CVT_S_PL = Ob(101000)
 
 };
 
@@ -431,7 +437,9 @@ enum COP1_fmt {
 
    MIPS_OPCODE_FMT_S = Ob(10000),
    MIPS_OPCODE_FMT_D,
-   MIPS_OPCODE_FMT_PS = Ob(10110)
+   MIPS_OPCODE_FMT_W = Ob(10100),
+   MIPS_OPCODE_FMT_L,// = Ob(10101),
+   MIPS_OPCODE_FMT_PS// = Ob(10110)
 
 };
 /* XXX: privileged and fpu stuff.. not implemented yet*/
@@ -718,10 +726,26 @@ enum e_mips_instr_types
    ASM_MIPS_CEIL_W_S,
    ASM_MIPS_CEIL_W_D,
 
+   ASM_MIPS_CVT_D_S,
+   ASM_MIPS_CVT_D_W,
+   ASM_MIPS_CVT_D_L,
+   
+   ASM_MIPS_CVT_L_S,
+   ASM_MIPS_CVT_L_D,
+
+   ASM_MIPS_CVT_PS_S,
+   
+   ASM_MIPS_CVT_S_D,
+   ASM_MIPS_CVT_S_W,
+   ASM_MIPS_CVT_S_L,
+
+   ASM_MIPS_CVT_S_PL,
+   ASM_MIPS_CVT_S_PU,
+
+   ASM_MIPS_CVT_W_S,
+   ASM_MIPS_CVT_W_D,
+
 /*
-   ASM_MIPS_CVT_D.fmt,
-   ASM_MIPS_CVT_S.fmt,
-   ASM_MIPS_CVT_W.fmt,
    ASM_MIPS_FLOOR_W.fmt,
    ASM_MIPS_ROUND_W.fmt,
    ASM_MIPS_TRUNC_W.fmt,
@@ -1115,3 +1139,16 @@ int asm_mips_ceil_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 int asm_mips_ceil_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_ceil_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_ceil_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_d_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_d_w(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_d_l(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_ps_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_s_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_s_w(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_s_l(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_s_pl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_s_pu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_cvt_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

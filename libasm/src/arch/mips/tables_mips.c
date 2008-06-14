@@ -345,6 +345,25 @@ struct e_mips_instr e_mips_instrs [] = {
   {"ceil.w.s" ,ASM_MIPS_CEIL_W_S  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_W  ,MIPS_OPCODE_FMT_S	,asm_mips_ceil_w_s},
   {"ceil.w.d" ,ASM_MIPS_CEIL_W_D  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_W  ,MIPS_OPCODE_FMT_D	,asm_mips_ceil_w_d},
 
+  {"cvt.d.s"  ,ASM_MIPS_CVT_D_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_d_s},
+  {"cvt.d.w"  ,ASM_MIPS_CVT_D_W   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_W	,asm_mips_cvt_d_w},
+  {"cvt.d.l"  ,ASM_MIPS_CVT_D_L   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_L	,asm_mips_cvt_d_l},
+
+  {"cvt.l.s"  ,ASM_MIPS_CVT_L_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_L   ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_l_s},
+  {"cvt.l.d"  ,ASM_MIPS_CVT_L_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_L   ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_l_d},
+
+  {"cvt.ps.s" ,ASM_MIPS_CVT_PS_S  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_PS_S ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_ps_s},
+
+  {"cvt.s.d"  ,ASM_MIPS_CVT_S_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_s_d},
+  {"cvt.s.w"  ,ASM_MIPS_CVT_S_W   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_W	,asm_mips_cvt_s_w},
+  {"cvt.s.l"  ,ASM_MIPS_CVT_S_L   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_L	,asm_mips_cvt_s_l},
+
+  {"cvt.s.pl" ,ASM_MIPS_CVT_S_PL  ,MIPS_OPCODE_COP1        ,MIPS_OPCODE_F_CVT_S_PL ,MIPS_OPCODE_FMT_PS  ,asm_mips_cvt_s_pl},
+  {"cvt.s.pu" ,ASM_MIPS_CVT_S_PU  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S  ,MIPS_OPCODE_FMT_PS	,asm_mips_cvt_s_pu},
+
+  {"cvt.w.s"  ,ASM_MIPS_CVT_W_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_W  ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_w_s},
+  {"cvt.w.d"  ,ASM_MIPS_CVT_W_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_W  ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_w_d},
+
 
      /* mnemonic          code     index1   index 2   index 3   func pointer */
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }
