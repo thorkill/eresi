@@ -150,6 +150,7 @@ int     asm_register_mips_operand(unsigned int type, unsigned long func);
 #define ASM_MIPS_TABLE_END -1
 
 enum opcode_field_encoding {
+
    MIPS_OPCODE_SPECIAL, /* class */
    MIPS_OPCODE_REGIMM, /* class */
    MIPS_OPCODE_J,
@@ -213,9 +214,11 @@ enum opcode_field_encoding {
    MIPS_OPCODE_SD = Ob(111111),
    MIPS_OPCODE_SDL = Ob(101100),
    MIPS_OPCODE_SDR
+
 };
 
 enum SPECIAL_function_field_encoding {
+
    MIPS_OPCODE_SLL,
    MIPS_OPCODE_MOVCI, /* class */
    MIPS_OPCODE_SRL, /* class */
@@ -272,9 +275,11 @@ enum SPECIAL_function_field_encoding {
    MIPS_OPCODE_DSRA32,
    MIPS_OPCODE_DSRLV = Ob(010110),
    MIPS_OPCODE_DSRAV
+
 };
 
 enum REGIMM_rt_field_encoding {
+
    MIPS_OPCODE_BLTZ,
    MIPS_OPCODE_BGEZ,
    MIPS_OPCODE_BLTZL, /* obsolete */
@@ -290,9 +295,11 @@ enum REGIMM_rt_field_encoding {
    MIPS_OPCODE_BLTZALL, /* obsolete */
    MIPS_OPCODE_BGEZALL, /* obsolete */
    MIPS_OPCODE_SYNCI = Ob(11111) /* release 2 */
+
 };
 
 enum SPECIAL2_function_field_encoding {
+
    MIPS_OPCODE_MADD,
    MIPS_OPCODE_MADDU,
    MIPS_OPCODE_MUL,
@@ -304,40 +311,52 @@ enum SPECIAL2_function_field_encoding {
    
    MIPS_OPCODE_DCLZ = Ob(100100),
    MIPS_OPCODE_DCLO
+
 };
 
 /* only for release 2*/
 enum SPECIAL3_function_field_encoding {
+
    MIPS_OPCODE_EXT,
    MIPS_OPCODE_INS = Ob(000100),
    MIPS_OPCODE_BSHFL = Ob(100000), /* class */
    MIPS_OPCODE_RDHWR = Ob(111011),
+
 };
 
 enum MOVCI_tf_field_encoding {
+
    MIPS_OPCODE_MOVF,
    MIPS_OPCODE_MOVT
+
 };
 
 enum SRL_shiftrotate_field_encoding {
+
   // XXX: _42 was added to allow compiling because MIPS_OPCODE_SRL is already in an other enum.
   MIPS_OPCODE_SRL_42,
   MIPS_OPCODE_ROTR
+
 };
 
 enum SRLV_shiftrotate_field_ecoding {
+
   // XXX: _42 was added to allow compiling because MIPS_OPCODE_SRL is already in an other enum.
    MIPS_OPCODE_SRLV_42,
    MIPS_OPCODE_ROTRV
+
 };
 
 enum BSHFL_sa_field_encoding {
+
    MIPS_OPCODE_WSBH = Ob(00010),
    MIPS_OPCODE_SEB = Ob(10000),
    MIPS_OPCODE_SEH = Ob(11000)
+
 };
 
 enum COP2_func {
+
    MIPS_OPCODE_MFC2,
    MIPS_OPCODE_DMFC2,
    MIPS_OPCODE_CFC2,
@@ -345,9 +364,11 @@ enum COP2_func {
    MIPS_OPCODE_DMTC2,
    MIPS_OPCODE_CTC2,
    MIPS_OPCODE_BCC2 = Ob(01000)
+
 };
 
 enum COP1X_func {
+
    MIPS_OPCODE_LWXC1 = Ob(000000),
    MIPS_OPCODE_LDXC1,
    MIPS_OPCODE_LUXC1 = Ob(000101),
@@ -372,9 +393,11 @@ enum COP1X_func {
    MIPS_OPCODE_NMSUB_S = Ob(111000),
    MIPS_OPCODE_NMSUB_D,
    MIPS_OPCODE_NMSUB_PS = Ob(111110)
+
 };
 
 enum COP0_func {
+
    MIPS_OPCODE_MFC0,
    MIPS_OPCODE_DMFC0,
    MIPS_OPCODE_TLBWI,
@@ -391,7 +414,16 @@ enum COP0_func {
 enum COP1_func {
 
    MIPS_OPCODE_F_ADD,
-   MIPS_OPCODE_ABS = Ob(000101)
+   MIPS_OPCODE_F_SUB,
+   MIPS_OPCODE_F_MUL,// = Ob(000010),
+   MIPS_OPCODE_F_DIV,
+   MIPS_OPCODE_F_SQRT,
+   MIPS_OPCODE_ABS,// = Ob(000101),
+   MIPS_OPCODE_F_NEG = Ob(000111),
+   MIPS_OPCODE_F_CEIL_L = Ob(001010),
+   MIPS_OPCODE_F_CEIL_W = Ob(001110),
+   MIPS_OPCODE_F_RECIP = Ob(010101),
+   MIPS_OPCODE_F_RSQRT,
 
 };
 
@@ -652,30 +684,41 @@ enum e_mips_instr_types
    ASM_MIPS_ADD_S,
    ASM_MIPS_ADD_D,
    ASM_MIPS_ADD_PS,
-/*
-   ASM_MIPS_DIV.fmt,
-   ASM_MIPS_MADD.fmt,
-   ASM_MIPS_MSUB.fmt,
-   ASM_MIPS_MUL.fmt,
-   ASM_MIPS_NEG.fmt,
-   ASM_MIPS_NMADD.fmt,
-   ASM_MIPS_NMSUB.fmt,
-   ASM_MIPS_RECIP.fmt,
-   ASM_MIPS_RSQRT.fmt,
-   ASM_MIPS_SQRT,
-   ASM_MIPS_SUB.fmt,
-*/
+
+   ASM_MIPS_DIV_S,
+   ASM_MIPS_DIV_D,
+   ASM_MIPS_MUL_S,
+   ASM_MIPS_MUL_D,
+   ASM_MIPS_MUL_PS,
+   ASM_MIPS_NEG_S,
+   ASM_MIPS_NEG_D,
+   ASM_MIPS_NEG_PS,
+   ASM_MIPS_RECIP_S,
+   ASM_MIPS_RECIP_D,
+   ASM_MIPS_RSQRT_S,
+   ASM_MIPS_RSQRT_D,
+   ASM_MIPS_SQRT_S,
+   ASM_MIPS_SQRT_D,
+   ASM_MIPS_SUB_S,
+   ASM_MIPS_SUB_D,
+   ASM_MIPS_SUB_PS,
+
    /* FPU Branch Instructions */
-/*
+
    ASM_MIPS_BC1F,
    ASM_MIPS_BC1T,
-*/
+
    /* FPU Compare Instruction */
 //   ASM_MIPS_C.cond.fmt,
 
    /* FPU Convert Instructions */
+
+   ASM_MIPS_CEIL_L_S,
+   ASM_MIPS_CEIL_L_D,
+   ASM_MIPS_CEIL_W_S,
+   ASM_MIPS_CEIL_W_D,
+
 /*
-   ASM_MIPS_CEIL_W.fmt,
    ASM_MIPS_CVT_D.fmt,
    ASM_MIPS_CVT_S.fmt,
    ASM_MIPS_CVT_W.fmt,
@@ -1045,3 +1088,30 @@ int asm_mips_abs_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 int asm_mips_add_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_add_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_add_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_div_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_div_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mul_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mul_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mul_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_neg_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_neg_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_neg_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_recip_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_recip_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_rsqrt_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_rsqrt_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sqrt_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sqrt_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sub_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sub_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sub_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// FPU Branch Instructions
+int asm_mips_bc1f(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bc1t(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// FPU Convert Instructions
+int asm_mips_ceil_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ceil_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ceil_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ceil_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

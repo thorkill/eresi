@@ -314,6 +314,37 @@ struct e_mips_instr e_mips_instrs [] = {
   {"add.s"    ,ASM_MIPS_ADD_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_S	,asm_mips_add_s},  // !
   {"add.d"    ,ASM_MIPS_ADD_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_D	,asm_mips_add_d},  // !
   {"add.ps"   ,ASM_MIPS_ADD_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ADD     ,MIPS_OPCODE_FMT_PS	,asm_mips_add_ps},
+// <--- START --->
+  {"div.s"    ,ASM_MIPS_DIV_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_DIV     ,MIPS_OPCODE_FMT_S	,asm_mips_div_s},
+  {"div.d"    ,ASM_MIPS_DIV_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_DIV     ,MIPS_OPCODE_FMT_D	,asm_mips_div_d},
+  {"mul.s"    ,ASM_MIPS_MUL_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MUL     ,MIPS_OPCODE_FMT_S	,asm_mips_mul_s},  // !
+  {"mul.d"    ,ASM_MIPS_MUL_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MUL     ,MIPS_OPCODE_FMT_D	,asm_mips_mul_d},  // !
+  {"mul.ps"   ,ASM_MIPS_MUL_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MUL     ,MIPS_OPCODE_FMT_PS	,asm_mips_mul_ps},
+  {"neg.s"    ,ASM_MIPS_NEG_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_NEG     ,MIPS_OPCODE_FMT_S	,asm_mips_neg_s},  // !
+  {"neg.d"    ,ASM_MIPS_NEG_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_NEG     ,MIPS_OPCODE_FMT_D	,asm_mips_neg_d},  // !
+  {"neg.ps"   ,ASM_MIPS_NEG_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_NEG     ,MIPS_OPCODE_FMT_PS	,asm_mips_neg_ps},
+  {"recip.s"  ,ASM_MIPS_RECIP_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_RECIP   ,MIPS_OPCODE_FMT_S	,asm_mips_recip_s},
+  {"recip.d"  ,ASM_MIPS_RECIP_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_RECIP   ,MIPS_OPCODE_FMT_D	,asm_mips_recip_d},
+  {"rsqrt.s"  ,ASM_MIPS_RSQRT_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_RSQRT   ,MIPS_OPCODE_FMT_S	,asm_mips_rsqrt_s},
+  {"rsqrt.d"  ,ASM_MIPS_RSQRT_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_RSQRT   ,MIPS_OPCODE_FMT_D	,asm_mips_rsqrt_d},
+  {"sqrt.s"   ,ASM_MIPS_SQRT_S    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_SQRT    ,MIPS_OPCODE_FMT_S	,asm_mips_sqrt_s},
+  {"sqrt.d"   ,ASM_MIPS_SQRT_D    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_SQRT    ,MIPS_OPCODE_FMT_D	,asm_mips_sqrt_d},
+  {"sub.s"    ,ASM_MIPS_SUB_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_SUB     ,MIPS_OPCODE_FMT_S	,asm_mips_sub_s},  // !
+  {"sub.d"    ,ASM_MIPS_SUB_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_SUB     ,MIPS_OPCODE_FMT_D	,asm_mips_sub_d},  // !
+  {"sub.ps"   ,ASM_MIPS_SUB_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_SUB     ,MIPS_OPCODE_FMT_PS	,asm_mips_sub_ps},
+
+/* FPU Branch Instructions */
+
+  {"bc1f"     ,ASM_MIPS_BC1F      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x0		,asm_mips_bc1f},
+  {"bc1t"     ,ASM_MIPS_BC1T      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x1		,asm_mips_bc1t},
+
+/* FPU Convert Instructions */
+
+  {"ceil.l.s" ,ASM_MIPS_CEIL_L_S  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_L  ,MIPS_OPCODE_FMT_S	,asm_mips_ceil_l_s},
+  {"ceil.l.d" ,ASM_MIPS_CEIL_L_D  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_L  ,MIPS_OPCODE_FMT_D	,asm_mips_ceil_l_d},
+  {"ceil.w.s" ,ASM_MIPS_CEIL_W_S  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_W  ,MIPS_OPCODE_FMT_S	,asm_mips_ceil_w_s},
+  {"ceil.w.d" ,ASM_MIPS_CEIL_W_D  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CEIL_W  ,MIPS_OPCODE_FMT_D	,asm_mips_ceil_w_d},
+
 
      /* mnemonic          code     index1   index 2   index 3   func pointer */
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }

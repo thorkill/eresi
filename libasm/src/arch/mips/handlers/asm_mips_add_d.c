@@ -22,7 +22,7 @@ int asm_mips_add_d(asm_instr *ins, u_char *buf, u_int len,
    asm_mips_operand_fetch(&ins->op[2], buf, ASM_MIPS_OTYPE_REGISTER, ins);
 
    /* Exception: Reserved Instruction, Coprocessor Unusable */
-   /* FPU Exceptions: Unimplemented Operation, Invalid Operation */
+   /* FPU Exceptions: Inexact, Unimplemented Operation, Invalid Operation, Overflow, Underflow */
 
    return 777;
 }
