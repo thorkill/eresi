@@ -3,6 +3,13 @@
 # Environment script for using ERESI without install
 #
 
+if [ ! "_$ERESI_ENV" == "_" ] ; 
+then
+echo Eresi env already set to $ERESI_ENV
+else
+
+export ERESI_ENV=`pwd`
+
 export LD_LIBRARY_PATH=`pwd`/libelfsh
 export LD_LIBRARY_PATH=`pwd`/libetrace:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libstderesi:$LD_LIBRARY_PATH
@@ -22,5 +29,6 @@ export PATH=`pwd`/elfsh:$PATH
 export PATH=`pwd`/etrace:$PATH
 export PATH=`pwd`/e2dbg:$PATH
 export PATH=`pwd`/kernsh:$PATH
-
+export PATH=`pwd`:$PATH
 echo Environment now ready for testing ERESI without install
+fi
