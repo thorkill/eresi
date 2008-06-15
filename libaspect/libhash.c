@@ -161,7 +161,7 @@ void		hash_destroy(hash_t *hash)
       XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   if (keys)
     hash_free_keys(keys);
-  hash_del(hash_hash, h->name);
+  hash_del(hash_hash, hash->name);
   XFREE(__FILE__, __FUNCTION__, __LINE__, hash->ent);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
