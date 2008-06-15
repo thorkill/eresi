@@ -41,7 +41,13 @@ LIBELFSH_LIBS="-L ${TESTING_ROOT}/libelfsh/ -lelfsh32"
 LIBETRACE_CFLAGS="-I ${TESTING_ROOT}/libetrace/include"
 LIBETRACE_DEFINES=
 LIBETRACE_LIBS="-L ${TESTING_ROOT}/libetrace/ -letrace32"
+
+LIBMJOLLNIR_CFLAGS="-I ${TESTING_ROOT}/libmjollnir/include"
+LIBMJOLLNIR_DEFINES=
+LIBMJOLLNIR_LIBS="-L ${TESTING_ROOT}/libmjollnir/ -lmjollnir32"
+
 else
+
 LIBASM_CFLAGS="-D ERESI32 -I ${INCDIR}"
 LIBASM_DEFINES=
 LIBASM_LIBS="-L ${LIBDIR} -lasm"
@@ -58,6 +64,10 @@ LIBETRACE_CFLAGS="-I ${INCDIR}"
 LIBETRACE_DEFINES=
 LIBETRACE_LIBS="-L ${LIBDIR} -letrace32"
 
+LIBMJOLLNIR_CFLAGS="-I ${INCDIR}"
+LIBMJOLLNIR_DEFINES=
+LIBMJOLLNIR_LIBS="-L ${LIBDIR} -lmjollnir32"
+
 fi
 
 #
@@ -71,6 +81,9 @@ while [ "_$1" != "_" ] ; do
     ;;
     libelfsh)
     LIBELFSH=1
+    ;;
+    libmjollnir)
+    LIBMJOLLNIR=1
     ;;
 
     --libs)
@@ -91,6 +104,21 @@ done
 #
 # Print required arguments.
 #
+
+##########################################
+############ LIBMJOLLNIR ####################
+
+if [ "$LIBMJOLLNIR" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBELFSH_CFLAGS} ${LIBETRACE_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS}  ${LIBMJOLLNIR_CFLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBELFSH_LIBS} ${LIBETRACE_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}  ${LIBMJOLLNIR_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBELFSH_DEFINES} ${LIBETRACE_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES} ${LIBMJOLLNIR_DEFINES}
+fi
+fi
 
 ##########################################
 ############ LIBASM ####################
