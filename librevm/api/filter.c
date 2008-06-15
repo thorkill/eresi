@@ -76,7 +76,7 @@ char		*revm_filter_param(char *buf, char *ptr)
       buf = ptr + 4;
 
       /* and copy the data, strcpy put NUL at the end */
-      strcpy(ptr + 1, buf);
+      strncpy(ptr + 1, buf, strlen(buf));
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
     }
 

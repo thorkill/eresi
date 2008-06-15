@@ -134,7 +134,7 @@ int		revm_type_print(char *type, char mode)
 		sz += 20;
 	      size = alloca(sz);
 	      for (sz = idx = 0; idx < child->dimnbr; idx++)
-		sz += sprintf(size + sz, "%s%s%s", 
+		sz += snprintf(size + sz, sz, "%s%s%s", 
 			      revm_colorfieldstr("["),
 			      revm_colornumber("%u", child->elemnbr[idx]),
 			      revm_colorfieldstr("]"));
