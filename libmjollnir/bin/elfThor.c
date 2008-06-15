@@ -82,7 +82,7 @@ int		main(int ac, char **av)
   
   if (opt_A) 
     {
-      mjr_analyse(&sess,NULL);
+      mjr_analyse(&sess,NULL, 0);
       printf("seen: %d found %d\n",
 	     sess.cur->calls_seen,
 	     sess.cur->calls_found);
