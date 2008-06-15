@@ -1,12 +1,12 @@
-/*
-** @file libhash.c
-** @ingroup libaspect
-** 
-** @brief Contain ELFsh internal hashtables library calls.
-**
-** Started on  Fri Jan 24 20:26:18 2003 jfv
-** $Id: libhash.c,v 1.41 2007-11-28 08:18:17 may Exp $
-*/
+/**
+ * @file libhash.c
+ * @ingroup libaspect
+ * 
+ * @brief Contain ELFsh internal hashtables library calls.
+ *
+ * Started on  Fri Jan 24 20:26:18 2003 jfv
+ * $Id: libhash.c,v 1.41 2007-11-28 08:18:17 may Exp $
+ */
 #include "libaspect.h"
 
 
@@ -15,6 +15,11 @@ hash_t  *hash_hash = NULL;
 
 /** 
  * @brief Initialize the hash table 
+ * @param h Pointer to the hash to initialize
+ * @param name Name of the hash.
+ * @param size Size to document
+ * @param type Type to document
+ * @param Returns 0 on success, -1 on error or 1 if hash already exists.
  */
 int hash_init(hash_t *h, char *name, int size, u_int type)
 {
@@ -62,6 +67,8 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
 
 /** 
  * @brief Return a hash table by its name 
+ * @param name Name of the hash to retrieve.
+ * @return A pointer to a hash_t structure  or NULL on error.
  */
 hash_t  *hash_find(char *name)
 {
@@ -70,9 +77,14 @@ hash_t  *hash_find(char *name)
   return ((hash_t *) hash_get(hash_hash, name));
 }
 
-/* Return a hash table pointer by its name */
-/* Overwrite existing table if there was one sharing that name, only
-   if both tables have the same elements type */
+/**
+ * Return a hash table pointer by its name.
+ * Overwrite existing table if there was one sharing that name, only
+ *  if both tables have the same elements type 
+ * @param table
+ * @param name
+ * @return
+ */
 int		hash_register(hash_t *table, char *name)
 {
   hash_t	*h;
@@ -101,6 +113,8 @@ int		hash_register(hash_t *table, char *name)
 
 /** 
  * @brief Empty a hash table 
+ * @param name Name of the ash table to empty.
+ * @param returrn a pointer to the hash table or NULL on error.
  */
 hash_t    *hash_empty(char *name)
 {
@@ -128,8 +142,11 @@ hash_t    *hash_empty(char *name)
 
 
 
-/* Destroy a hash table */
-void		hash_destroy(hash_t *h)
+/** 
+ * Destroy a hash table.
+ * @param hash Pointer to the hash to destroy
+ */
+void		hash_destroy(hash_t *hash)
 {
   char		**keys;
   int		idx;
@@ -138,20 +155,24 @@ void		hash_destroy(hash_t *h)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We should not destroy the elements as they might be in other hashes */
-  keys = hash_get_keys(h, &keynbr);
+  keys = hash_get_keys(hash, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     if (keys[idx])
       XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
   if (keys)
     hash_free_keys(keys);
   hash_del(hash_hash, h->name);
-  XFREE(__FILE__, __FUNCTION__, __LINE__, h->ent);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, hash->ent);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /** 
- * @brief Add an entry to the hash table 
+ * @brief Add an entry to the hash table.
+ * @param h Hash table.
+ * @param key Key of the new entry.
+ * @param data Value associated with the key.
+ * @return Returns an index (to document)
  */
 int		hash_add(hash_t *h, char *key, void *data)
 {
@@ -200,9 +221,9 @@ int		hash_add(hash_t *h, char *key, void *data)
 
 
 
-
 /** 
- * @brief Delete an entry from the hash table 
+ * @brief Delete an entry from the hash table.
+ * @param
  */
 int		hash_del(hash_t *h, char *key)
 {
@@ -249,6 +270,9 @@ int		hash_del(hash_t *h, char *key)
 
 /** 
  * @brief Retrieve the metadata for a given key 
+ *
+ * @param h
+ * @param key
  */
 void		*hash_get(hash_t *h, char *key)
 {
@@ -262,7 +286,12 @@ void		*hash_get(hash_t *h, char *key)
   return (actual != NULL ? actual->data : NULL);
 }
 
-/* Retrieve the data pointer for a given key */
+/** 
+ * Retrieve the data pointer for a given key 
+ *
+ * @param h
+ * @param key
+ */
 void		*hash_select(hash_t *h, char *key)
 {
   listent_t	*actual;
@@ -277,7 +306,13 @@ void		*hash_select(hash_t *h, char *key)
 
 
 
-/* Change the metadata for an existing entry, giving its key */
+/**
+ * Change the metadata for an existing entry, giving its key 
+ * @param h
+ * @param key
+ * @param data
+ * @return
+ */
 int		hash_set(hash_t *h, char *key, void *data)
 {
   listent_t	*ent;
@@ -292,6 +327,9 @@ int		hash_set(hash_t *h, char *key, void *data)
 
 /**
  * @brief Retrieve the -entry- for a given key 
+ * @param h
+ * @param key
+ * @return
  */
 listent_t   *hash_get_ent(hash_t *h, char *key)
 {
@@ -305,9 +343,12 @@ listent_t   *hash_get_ent(hash_t *h, char *key)
   return (actual);
 }
 
-
-
-/* Retreive a Hash entry head giving the key */
+/** 
+ * Retreive a Hash entry head giving the key *
+ * @param h
+ * @param backup
+ * @return
+ */
 listent_t *hash_get_head(hash_t *h, char *backup)
 {
   u_int   index;
@@ -321,6 +362,9 @@ listent_t *hash_get_head(hash_t *h, char *backup)
 
 /** 
  * @brief Used to create arrays of keys for completion 
+ * @param h
+ * @param n
+ * @return
  */
 char		**hash_get_keys(hash_t *h, int *n)
 {
@@ -368,7 +412,10 @@ void    hash_free_keys(char **keys)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/* Print the hash table (DEBUG PURPOSE) */
+/**
+ * Print the hash table (DEBUG PURPOSE) 
+ * @param h Hash table.
+ */
 void            hash_print(hash_t *h)
 {
   listent_t     *actual;
@@ -388,7 +435,11 @@ void            hash_print(hash_t *h)
 }
 
 /** 
- * @brief Apply func all entries 
+ * @brief Apply func all entries .
+ * @param h
+ * @param ptr
+ * @param func
+ * @return
 */
 int   hash_apply(hash_t      *h, 
 		 void        *ptr, 
@@ -492,7 +543,11 @@ int   hash_size(hash_t *hash)
   return (hash ? hash->elmnbr : 0);
 }
 
-/* Return the only element of this hash */
+/**
+ * @brief Return the only element of this hash .
+ * @param hash Hash table.
+ * @return NULL on error.
+ */
 void		*hash_get_single(hash_t *hash)
 {
   char		**keys;
@@ -504,8 +559,13 @@ void		*hash_get_single(hash_t *hash)
   return (hash_get(hash, keys[0]));
 }
 
-/* Return an element of this hash */
-/* The choice is non-deterministic */
+/**
+ * Return an element of this hash 
+ * The choice is non-deterministic.
+ *
+ * @param hash
+ * @return
+ */
 void*		hash_get_one(hash_t *hash)
 {
   char		**keys;
@@ -518,7 +578,10 @@ void*		hash_get_one(hash_t *hash)
 }
 
 
-/* Linear typing of list API */
+/**
+ * Linear typing of list API.
+ * @param h Hash table.
+ */
 u_char		hash_linearity_get(hash_t *h)
 {
   if (!h)
@@ -526,7 +589,11 @@ u_char		hash_linearity_get(hash_t *h)
   return (h->linearity);
 }
 
-/* Linear typing of list API */
+/** 
+ * Linear typing of list API .
+ * @param h
+ * @param val
+ */
 void		hash_linearity_set(hash_t *h, u_char val)
 {
   if (!h)

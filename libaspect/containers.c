@@ -99,9 +99,10 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
 		 "Unknown container element type", NULL);  
 
   /* Make sure meta-data is initialized and contiguous with pointed data */
+#if defined(DEBUG_LIBASPECT)
   fprintf(stderr, "Allocating sizeof(container) + (%s type->size = %u) \n", 
 	  rtype->name, rtype->size);
-
+#endif
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newcntnr, sizeof(container_t) + rtype->size, NULL);
   newcntnr->data = (char *) newcntnr + sizeof(container_t);
   newcntnr->type = type;
