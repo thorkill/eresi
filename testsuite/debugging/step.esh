@@ -1,16 +1,15 @@
 #!/usr/bin/elfsh
 
-print Number of parameters : $#
-print Param 1 : $1
+#print Number of parameters : $#
+#print Param 1 : $1
+#cmp 1 $#
+#jne bad
+#print Parameter 1  = $1 
+#profile enable warn
 
-cmp 2 $#
-jne bad
-
-print Parameter 1  = $1 
-
-b $1
-display 1 got $1
-display 1 print Reached breakpoint at $1 !
+b malloc
+display 1 got malloc
+display 1 print Reached breakpoint at malloc !
 
 start
 step

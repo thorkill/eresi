@@ -9,44 +9,6 @@
  */
 #include "revm.h"
 
-/**
- * @brief Get the buffered address from the real virtual address 
- */
-void		*revm_get_raw(void *addr)
-{
-  elfshsect_t	*sect;
-  elfsh_SAddr	offset;
-#if defined(KERNSH)
-  void		*dataptr;
-#endif
-
-  sect = elfsh_get_parent_section(world.curjob->curfile, 
-				  (eresi_Addr) addr, &offset);
-
-#if defined(KERNSH)
-  dataptr = kernsh_revm_get_raw(addr);
-  if (dataptr != NULL)
-    return dataptr;
-#endif
-
-  /* This happens when the object is a ERESI variable */
-  if (!sect)
-    return (addr);
-
-  if (elfsh_is_debug_mode())
-    {
-      if (!elfsh_section_is_runtime(sect))
-	return ((void *) (sect->parent->rhdr.base + sect->shdr->sh_addr + offset));
-      else if (!sect->shdr->sh_addr)
-	return ((void *) (char *) sect->data + offset);
-      else
-	return ((void *) (sect->shdr->sh_addr + offset));
-    }
-  else
-    return ((void *) (char *) sect->data + offset);
-
-}
-
 
 /**
  * @brief Return the index for an array access giving a string
@@ -248,7 +210,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
     {
       *data = (void *) *(u_long *) *data;
       if (translateaddr)
-	*data = revm_get_raw(*data);
+	*data = elfsh_get_raw_by_addr(world.curjob->curfile, *data);
     }
 
   if (!*data)
@@ -283,7 +245,7 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
     {
       data = (void *) *(eresi_Addr *) data;
       if (translateaddr)
-	data = revm_get_raw(data);
+	data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
     }
 
   /* Fill type specific object handlers */
@@ -362,7 +324,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 		      "Cannot find requested data object", NULL);
   data = (void *) annot->addr;
   if (translateaddr)
-    data = revm_get_raw(data);
+    data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
 
   /* Get recursively the leaf type and data pointer */
   /* If the objpath is empty, its a scalar that was requested */

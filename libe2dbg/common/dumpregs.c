@@ -44,6 +44,9 @@ int		cmd_dumpregs()
   
   e2dbg_output(" .:: Registers ::. \n\n");
 
+  /* Synchronize the context structure with the state of current expressions */
+  e2dbg_setregs();
+
 #if defined(__amd64__) && defined(__FreeBSD__)
   #error "Register context not filled on FreeBSD / AMD64"
 #elif defined(__FreeBSD__) //|| defined(__OpenBSD__)

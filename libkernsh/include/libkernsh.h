@@ -400,8 +400,8 @@ int	kernsh_init_ia32(char *, char *);
 int	kernsh_del_ia32();
 
 /* Get raw */
-void	*kernsh_elfsh_get_raw(elfshsect_t *);
-void	*kernsh_revm_get_raw(void *);
+void	*kernsh_get_raw(elfshsect_t *);
+void	*kernsh_get_raw_by_addr(void *);
 
 /* Information about kernel */
 int	kernsh_info();

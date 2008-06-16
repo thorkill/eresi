@@ -58,18 +58,18 @@ extern char **environ;
 #define		E2DBG_KERNELBASE	((eresi_Addr) 0xC0000000)
 
 /* Generic register names */
-#define	        E2DBG_SSP_VAR		"ssp"	/* Saved stack ptr */
-#define		E2DBG_SP_VAR		"sp"
-#define		E2DBG_FP_VAR		"fp"
-#define	        E2DBG_PC_VAR		"pc"
+#define	        E2DBG_SSP_VAR		"$ssp"	/* Saved stack ptr */
+#define		E2DBG_SP_VAR		"$sp"
+#define		E2DBG_FP_VAR		"$fp"
+#define	        E2DBG_PC_VAR		"$pc"
 
 /* IA32 registers names */
-#define		E2DBG_EAX_VAR		"eax"
-#define		E2DBG_EBX_VAR		"ebx"
-#define		E2DBG_ECX_VAR		"ecx"
-#define		E2DBG_EDX_VAR		"edx"
-#define	        E2DBG_ESI_VAR		"esi"
-#define	        E2DBG_EDI_VAR		"edi"
+#define		E2DBG_EAX_VAR		"$eax"
+#define		E2DBG_EBX_VAR		"$ebx"
+#define		E2DBG_ECX_VAR		"$ecx"
+#define		E2DBG_EDX_VAR		"$edx"
+#define	        E2DBG_ESI_VAR		"$esi"
+#define	        E2DBG_EDI_VAR		"$edi"
 
 /* ia32 under solaris */
 #if (defined(__i386) && defined(sun))
@@ -87,24 +87,24 @@ extern char **environ;
 #endif
 
 /* SPARC registers name */
-#define		E2DBG_TSTATE_VAR	"tstate"
-#define		E2DBG_NPC_VAR		"npc"
-#define		E2DBG_Y_VAR		"y"
-#define		E2DBG_G1_VAR		"g1"
-#define		E2DBG_G2_VAR		"g2"
-#define		E2DBG_G3_VAR		"g3"
-#define		E2DBG_G4_VAR		"g4"
-#define		E2DBG_G5_VAR		"g5"
-#define		E2DBG_G6_VAR		"g6"
-#define		E2DBG_G7_VAR		"g7"
-#define		E2DBG_O0_VAR		"o0"
-#define		E2DBG_O1_VAR		"o1"
-#define		E2DBG_O2_VAR		"o2"
-#define		E2DBG_O3_VAR		"o3"
-#define		E2DBG_O4_VAR		"o4"
-#define		E2DBG_O5_VAR		"o5"
-#define		E2DBG_O6_VAR		"o6"
-#define		E2DBG_O7_VAR		"o7"
+#define		E2DBG_TSTATE_VAR	"$tstate"
+#define		E2DBG_NPC_VAR		"$npc"
+#define		E2DBG_Y_VAR		"$y"
+#define		E2DBG_G1_VAR		"$g1"
+#define		E2DBG_G2_VAR		"$g2"
+#define		E2DBG_G3_VAR		"$g3"
+#define		E2DBG_G4_VAR		"$g4"
+#define		E2DBG_G5_VAR		"$g5"
+#define		E2DBG_G6_VAR		"$g6"
+#define		E2DBG_G7_VAR		"$g7"
+#define		E2DBG_O0_VAR		"$o0"
+#define		E2DBG_O1_VAR		"$o1"
+#define		E2DBG_O2_VAR		"$o2"
+#define		E2DBG_O3_VAR		"$o3"
+#define		E2DBG_O4_VAR		"$o4"
+#define		E2DBG_O5_VAR		"$o5"
+#define		E2DBG_O6_VAR		"$o6"
+#define		E2DBG_O7_VAR		"$o7"
 
 
 /* Debugger commands */
@@ -138,6 +138,8 @@ extern char **environ;
  signal(SIGINT, SIG_IGN);				\
  signal(SIGTRAP, SIG_IGN);				\
  signal(SIGUSR2, SIG_IGN);				\
+ signal(SIGSEGV, SIG_IGN);				\
+ signal(SIGBUS, SIG_IGN);				\
 }		while (0);
 
 #define		SETSIG					\
@@ -153,6 +155,10 @@ do							\
  sigaction(SIGINT, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_thread_sigusr2;		\
  sigaction(SIGUSR2, &ac, NULL);				\
+ ac.sa_sigaction   = e2dbg_sigsegv_handler;		\
+ sigaction(SIGSEGV, &ac, NULL);				\
+ ac.sa_sigaction   = e2dbg_sigsegv_handler;		\
+ sigaction(SIGBUS, &ac, NULL);				\
 } while (0)
 
 

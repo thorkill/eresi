@@ -1258,7 +1258,6 @@ int             elfsh_add_runtime_section(elfshobj_t *file, elfshsect_t *sct, u_
 
 int		elfsh_write_section_data(elfshsect_t *sect, u_int off, char *data, u_int size, u_int sizelem);
 elfshsect_t	*elfsh_get_section_by_nam(elfshobj_t *file, char *name);
-void		*elfsh_get_raw(elfshsect_t *sect);
 int		elfsh_section_is_runtime(elfshsect_t *sect);
 elfshsect_t     *elfsh_get_rsection_by_index(elfshobj_t *file, eresi_Addr idx, int *stridx, int *num);
 
@@ -1412,6 +1411,8 @@ int		elfsh_raw_write(elfshobj_t *file, u_int dst, void *src, int len);
 int		elfsh_raw_read(elfshobj_t *file, u_int dst, void *src, int len);
 int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr);
 int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset);
+void		*elfsh_get_raw_by_addr(elfshobj_t *current, void *addr);
+void		*elfsh_get_raw(elfshsect_t *sect);
 
 /* remap.c */
 int             elfsh_reloc_pht(elfshobj_t *file, eresi_Addr diff);

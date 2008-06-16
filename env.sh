@@ -18,12 +18,11 @@ export LD_LIBRARY_PATH=`pwd`/libui/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/librevm/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/e2dbg:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libmjollnir:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=`pwd`/testsuite/e2dbg-multithread:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libaspect:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libedfmt/:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=`pwd`/testsuite/e2dbg_multithreads/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/lib/debug/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libkernsh/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=`pwd`/testsuite/debugging/binaries-multithreads/:$LD_LIBRARY_PATH
 
 export PATH=`pwd`/elfsh:$PATH
 export PATH=`pwd`/etrace:$PATH

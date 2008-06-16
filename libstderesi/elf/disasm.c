@@ -24,7 +24,6 @@ static revmlist_t* second = NULL;
 char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, 
 			      elfsh_SAddr *roffset)
 {
-  listent_t	*ent;
   int		index;
   elfshobj_t	*actual;
   char		*name = NULL;
@@ -36,10 +35,10 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr,
   elfshobj_t	*bestfile;
   char		buf[BUFSIZ];
   char		*str;
-
+  char		**keys;
+  int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL argument", NULL);
@@ -58,47 +57,48 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr,
   bestname = name;
   bestoffset = offset;
   bestfile = actual;
-  
 
 #if __DEBUG_RESOLVE__
-  printf("[elfsh:resolve] file : %s name %s %d\n", actual->name, name, offset);
+  printf("[elfsh:resolve] First found file : %s name %s %d\n", actual->name, name, offset);
 #endif
   
   /* Find the best symbol by searching in all the objects of the process */
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
-      for (index = 0; index < world.curjob->loaded.size; index++)
-	for (ent = &world.curjob->loaded.ent[index];
-	     ent != NULL && ent->key != NULL;
-	     ent = ent->next)
-	  {
-	    actual = ent->data;
-	    if (!actual->linkmap)
+  if (e2dbg_presence_get())
+    {
+      keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+      for (index = 0; index < keynbr; index++)
+	{
+	  actual = hash_get(&world.curjob->loaded, keys[index]);
+	  if (!actual->linkmap)
 	      continue;
-	    
-	    name = elfsh_reverse_symbol(actual, addr, &offset);
-	    dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
-	    
-	    if (!name || (offset < 0) || 
-		(dname && doffset < offset && doffset >= 0))
-	      {
-		name = dname;
-		offset = doffset;
-	      }  
-	    
-	    if (!bestname || 
-		(bestoffset < 0) || (name && offset < bestoffset && offset >= 0))
-	      {
-		bestname = name;
-		bestoffset = offset;
-		bestfile = actual;
-	      }
-	    
+	  
+	  name = elfsh_reverse_symbol(actual, addr, &offset);
+	  dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
+	  
+	  if (!name || (offset < 0) || 
+	      (dname && doffset < offset && doffset >= 0))
+	    {
+	      name = dname;
+	      offset = doffset;
+	    }  
+	  
+	  if (!bestname || 
+	      (bestoffset < 0) || (name && (offset < bestoffset) && offset >= 0))
+	    {
+	      bestname = name;
+	      bestoffset = offset;
+	      bestfile = actual;
+
 #if __DEBUG_RESOLVE__
-	    printf("[elfsh:resolve] file : %s name %s %d\n", 
-		   actual->name, name, offset);
+	      fprintf(stderr, "[elfsh:resolve] Changed best : file %s name %s %d\n", 
+		  actual->name, name, offset);
 #endif
-	  }
-  
+
+	    }
+	  
+	}
+    }
+
 #if __DEBUG_RESOLVE__
   printf("[elfsh:resolve] BEST name %s %d\n", bestname, bestoffset);
 #endif
@@ -634,7 +634,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 	vaddr += parent->parent->rhdr.base;
 #endif
       
-      idx_bytes = (sym ? vaddr + index - sym->st_value : index);
+      idx_bytes = (sym && sym->st_value ? vaddr + index - sym->st_value : index);
       for (nbrinstr = 0; nbrinstr < size && size > 0; nbrinstr++)
 	{
 	  value = revm_instr_display(-1, index, vaddr, 

@@ -3,8 +3,10 @@
 b malloc
 b free
 start
+linkmap
 bt
 cont
+linkmap
 bt
 delete free
 delete malloc

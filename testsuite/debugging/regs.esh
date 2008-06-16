@@ -4,7 +4,7 @@ b malloc
 b free
 start
 dumpregs
-set $eax 0x42424242
+set $EAX 0x42424242
 dumpregs
 cont
 delete free

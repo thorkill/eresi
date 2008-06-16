@@ -12,6 +12,83 @@
 #include "libelfsh.h"
 
 
+/**
+ * @brief Get the buffered address from the real virtual address 
+ */
+void		*elfsh_get_raw_by_addr(elfshobj_t *current, void *addr)
+{
+  elfshsect_t	*sect;
+  elfsh_SAddr	offset;
+#if defined(KERNSH)
+  void		*dataptr;
+#endif
+
+  sect = elfsh_get_parent_section(current, (eresi_Addr) addr, &offset);
+
+#if defined(KERNSH)
+  dataptr = kernsh_get_raw_by_addr(addr);
+  if (dataptr != NULL)
+    return dataptr;
+#endif
+
+  /* This happens when the object is a ERESI variable */
+  if (!sect)
+    return (addr);
+
+  if (elfsh_is_debug_mode())
+    {
+      if (!elfsh_section_is_runtime(sect))
+	return ((void *) (sect->parent->rhdr.base + sect->shdr->sh_addr + offset));
+      else if (!sect->shdr->sh_addr)
+	return ((void *) (char *) sect->data + offset);
+      else
+	return ((void *) (sect->shdr->sh_addr + offset));
+    }
+  else
+    return ((void *) (char *) sect->data + offset);
+  
+}
+
+
+/**
+ * @brief Nice embedded debugging trick : return a pointer on the section data.
+ * @brief This function makes the difference between static data and runtime data.
+ * @param sect Section to return the data buffer from.
+ */
+void			*elfsh_get_raw(elfshsect_t *sect)
+{
+  void			*dataptr = 0;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+#if defined(KERNSH)
+  dataptr = kernsh_get_raw(sect);
+  if (dataptr != NULL)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
+#endif
+  
+  if (elfsh_is_debug_mode())
+    {
+
+      /* The address of the section */
+      dataptr = (void *) sect->shdr->sh_addr;
+      
+      /* For runtime injected sections, do not add the base address of the object */
+      if (!elfsh_section_is_runtime(sect))
+	dataptr += sect->parent->rhdr.base;
+
+      /* For unmapped sections */
+      if (!dataptr)
+	dataptr = sect->data;
+
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
+    }
+  if (sect)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->data));
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid parameter", NULL);
+}
+
 
 /**
  * Perform a raw write on the object cache data 

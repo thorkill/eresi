@@ -160,7 +160,7 @@
 #define	CMD_UNLOAD		 "unload"
 #define	CMD_SAVE		 "save"
 #define	CMD_SWITCH		 "switch"
-#define	CMD_LIST		 "list"
+#define	CMD_LIST		 "flist"
 #define	CMD_LIST2		 "l"
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"

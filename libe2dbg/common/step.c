@@ -15,7 +15,7 @@
 int		e2dbg_step()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* Checking stepping flag in the thread structure */
   if (e2dbgworld.curthread->step)
     {

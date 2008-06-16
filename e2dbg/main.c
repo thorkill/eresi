@@ -202,7 +202,7 @@ int		e2dbg_main(int ac, char **av)
 
 
 /**
- * The main ELFsh routine 
+ * The starting E2dbg routine 
  * @param ac
  * @param av
  * @return

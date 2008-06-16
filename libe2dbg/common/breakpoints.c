@@ -167,29 +167,14 @@ elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
     }
 
   /* Resolve symbol */
-  /* Sometimes we fix symbols on the disk only */
-  /* This avoid a mprotect */
-   else
-    {
-      sym = elfsh_get_metasym_by_name(world.curjob->curfile, 
-				      name);
-      if (!sym || !sym->st_value)
-	{
-	  elfsh_toggle_mode();
-	  sym = elfsh_get_metasym_by_name(world.curjob->curfile,
-					  name);
-	  elfsh_toggle_mode();
-	}
-      if (!sym)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "No symbol by that name in the current file", 
-			  NULL);
-      
-      if (!sym->st_value)
+  /* Here we fix symbols on the disk only ! This avoid a mprotect */
+  else
+    {      
+      addr = e2dbg_breakpoint_find_addr(name);
+      if (!addr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Requested symbol address unknown",
 			  NULL);
-      addr = sym->st_value;
     }
 
   /* Get the breakpoint */
@@ -436,7 +421,7 @@ int		cmd_bp()
 
 
 
-/* Watchpoint command */
+/* Watchpoint command -- FIXME: need to use debug registers ! */
 int		cmd_watch()
 {
   int		err;

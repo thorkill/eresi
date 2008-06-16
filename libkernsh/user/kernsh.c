@@ -373,14 +373,14 @@ int kernsh_set_mode(int mode)
  * @brief Called in elfsh_get_raw to interact with the memory
  * @param sect The section
  */
-void *kernsh_elfsh_get_raw(elfshsect_t *sect)
+void *kernsh_get_raw(elfshsect_t *sect)
 {
   void *dataptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_KERNSH__
-  printf("kernsh_elfsh_get_raw\n");
+  printf("kernsh_get_raw\n");
 #endif
 
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
@@ -424,17 +424,17 @@ void *kernsh_elfsh_get_raw(elfshsect_t *sect)
 }
 
 /**
- * @brief Called in revm_get_raw to interact with the memory
+ * @brief Called in elfsh_get_raw_by_addr to interact with the memory
  * @param addr The address
  */
-void *kernsh_revm_get_raw(void *addr)
+void *kernsh_get_raw_by_addr(void *addr)
 {
   void *dataptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_KERNSH__
-  printf("kernsh_revm_get_raw\n");
+  printf("kernsh_get_raw_by_addr\n");
 #endif
 
   if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)

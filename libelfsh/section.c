@@ -953,45 +953,6 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/**
- * Nice embedded debugging trick
- * Return a pointer on the section data
- * This function makes the difference between data and pdata, beeing the process data 
- * @param sect
- */
-void			*elfsh_get_raw(elfshsect_t *sect)
-{
-  void			*dataptr = 0;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(KERNSH)
-  dataptr = kernsh_elfsh_get_raw(sect);
-  if (dataptr != NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
-#endif
-  
-  if (elfsh_is_debug_mode())
-    {
-
-      /* The address of the section */
-      dataptr = (void *) sect->shdr->sh_addr;
-      
-      /* For runtime injected sections, do not add the base address of the object */
-      if (!elfsh_section_is_runtime(sect))
-	dataptr += sect->parent->rhdr.base;
-
-      /* For unmapped sections */
-      if (!dataptr)
-	dataptr = sect->data;
-
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
-    }
-  if (sect)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->data));
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid parameter", NULL);
-}
 
 /**
  * Return the last section of the list 

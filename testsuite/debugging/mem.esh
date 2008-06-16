@@ -1,6 +1,6 @@
 #!/usr/bin/elfsh
 
-set $addr 1.sht[.plt].addr
+set $addr 1.sht[.data].addr
 D $addr%20
 X $addr%20
 write $addr \x90\x90\x90\x90

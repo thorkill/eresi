@@ -31,7 +31,18 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
 
-  fprintf(stderr, "\n\n ******* Segfault, entering E2dbg ******** \n\n");
+  switch (signum)
+    {
+    case SIGSEGV:
+      fprintf(stderr, "\n\n ******* SIGSEGV: entering E2dbg ******** \n\n");
+      break;
+    case SIGBUS:
+      fprintf(stderr, "\n\n ******* SIGBUS : entering E2dbg ******** \n\n");
+      break;
+    default:
+      fprintf(stderr, "\n\n ******* SIGNAL : entering E2dbg ******** \n\n");
+      break;
+    }
   sleep(1);
 
   params.ac = 1;
@@ -245,7 +256,7 @@ void		bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
   sect   = elfsh_get_parent_section(parent, addr, NULL);
   name   = revm_resolve(parent, addr, &off);
   sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
-  revm_object_display(sect, sym, 16, 0, off, addr, name, REVM_VIEW_DISASM);
+  revm_object_display(sect, sym, 16, off, 0, addr, name, REVM_VIEW_DISASM);
 }
 #endif
 
@@ -315,30 +326,34 @@ void			e2dbg_do_breakpoint()
       /* We are single-stepping, display the instruction at $pc */
       if (e2dbgworld.stoppedthread->step)
 	{
+
+#if __DEBUG_BP__
 	  fprintf(stderr, "Single-stepping -IS- enabled \n");
+#endif
 
 	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
 	  if (!ret)
 	    ret++;
 	  sect   = elfsh_get_parent_section(parent, (eresi_Addr) *pc, NULL);
 	  name   = revm_resolve(parent, (eresi_Addr) *pc, &off);
+	  off = 0;
 	  sym    = elfsh_get_metasym_by_value(parent, (eresi_Addr) *pc, 
 					      &off, ELFSH_LOWSYM);
 
 #if __DEBUG_BP__
-	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) \n", 
-		 (eresi_Addr) parent, parent->name, name, sect->name);
+	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) off = %u\n", 
+		 (eresi_Addr) parent, parent->name, name, sect->name, off);
 #endif
 
-	  revm_object_display(sect, sym, ret, 0, off, 
-			    ((eresi_Addr) *pc), name, REVM_VIEW_DISASM);
+	  revm_instr_display(-1, 0, *pc, 0, 20, name, off, (char *) *pc);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);
 	}
+#if __DEBUG_BP__
       else
 	fprintf(stderr, "Single-stepping is -NOT- enabled \n");
-      
+#endif
 
       /* Here starts the real stuff 
       **

@@ -3,6 +3,7 @@
 b malloc
 b free
 start
+profile enable warn
 stack 20
 cont
 dbgstack 15
