@@ -31,7 +31,7 @@ printHelp()
     echo "   --enable-32       : Build a ELF32 capable shell."
     echo "   --enable-64       : Build a ELF64 capable shell."
     echo "   --enable-readline : Link with readline"
-#    echo "   --enable-network  : Build the distributed extension."
+    echo "   --enable-network  : Build the distributed extension."
     echo "   --enable-static   : Link in static."
     echo "   --enable-testing  : Test ERESI without install"
     echo "   --enable-dmalloc  : Link with Electric Fence."
@@ -379,13 +379,13 @@ if [ $CHOSENBIT = "0" ]; then
     printHelp
 fi
 
-#if  [ $READLN = "1" -a $ELFSHNET = "1" ]; then
-#    echo
-#    echo "Error: Readline and Distributed ELFsh are incompatible."
-#    echo
-#    rm -f $CONFIGFILE $VARSFILE
-#    exit
-#fi
+if  [ $READLN = "1" -a $ELFSHNET = "1" ]; then
+    echo
+    echo "Error: Readline and Distributed ELFsh are incompatible."
+    echo
+    rm -f $CONFIGFILE $VARSFILE
+    exit
+fi
 
 # Now do the OS dependant configuration
 case `uname` in

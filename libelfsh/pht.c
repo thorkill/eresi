@@ -712,3 +712,24 @@ int		elfsh_remove_phdr(elfshobj_t *current, int index)
   current->hdr->e_phnum--;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+
+
+
+/**
+ * @brief Set PHT entry rights from elfsh section mode.
+ * @param mode ELFSH_CODE_INJECTION or ELFSH_DATA_INJECTION.
+ * @return The same rights in PF_* flags format.
+ */
+int		elfsh_set_phdr_prot(u_int mode)
+{
+  elfsh_Word	flags;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  flags = PF_R | PF_W;
+  //  if (mode == ELFSH_CODE_INJECTION)
+  flags |= PF_X;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
+}

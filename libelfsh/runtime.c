@@ -17,23 +17,6 @@
 
 
 /**
- * @brief Set PHT entry rights from elfsh section mode 
- * @param mode
- * @return
- */
-int		elfsh_set_phdr_prot(u_int mode)
-{
-  elfsh_Word	flags;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  flags = PF_R | PF_W;
-  //  if (mode == ELFSH_CODE_INJECTION)
-  flags |= PF_X;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (flags));
-}
-
-/**
  * @brief Map a new area in memory 
  * @param segment
  * @return
