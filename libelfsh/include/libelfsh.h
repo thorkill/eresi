@@ -88,7 +88,8 @@
 #define		ELFSH_ARCH_MIPS32		9
 #define		ELFSH_ARCH_MIPS64		10	/* No hooks yet */
 #define         ELFSH_ARCH_ARM                  11
-#define         ELFSH_ARCHNUM                   12
+#define		ELFSH_ARCH_AMD64		12
+#define         ELFSH_ARCHNUM                   13
 #define		ELFSH_ARCH_ERROR		0xFF
 
 /* ELFsh ELF types */

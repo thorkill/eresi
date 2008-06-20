@@ -3,10 +3,11 @@
 # Environment script for using ERESI without install
 #
 
-if [ ! "_$ERESI_ENV" == "_" ] ; 
-then
-echo Eresi env already set to $ERESI_ENV
-else
+# Doesnt work properly
+#if [ ! "_$ERESI_ENV" == "_" ] ; 
+#then
+#echo Eresi env already set to $ERESI_ENV
+#else
 
 export ERESI_ENV=`pwd`
 
@@ -33,4 +34,5 @@ export PATH=`pwd`/evarista:$PATH
 export PATH=`pwd`:$PATH
 
 echo Environment now ready for testing ERESI without install
-fi
+
+#fi

@@ -13,13 +13,14 @@
 
 #if defined(__OpenBSD__)
 #include <sys/time.h>
-/**
- * environ is not defined in unistd.h
- */
+
+/* Environ is not defined in unistd.h */
 extern char **environ;
 #endif
+
 #include <sys/resource.h>
 #include <sys/types.h>
+
 #include "revm.h"
 #include "aproxy.h"
 #include "libstderesi.h"
@@ -31,6 +32,9 @@ extern char **environ;
 #if defined(sun)
  #include <sys/link.h>
 #endif
+
+#define __USE_GNU
+#include <sys/ucontext.h>
 
 #define		__DEBUG_E2DBG__	        0
 #define		__DEBUG_BP__		0
@@ -71,7 +75,7 @@ extern char **environ;
 #define	        E2DBG_ESI_VAR		"$esi"
 #define	        E2DBG_EDI_VAR		"$edi"
 
-/* ia32 under solaris */
+/* IA32 under solaris */
 #if (defined(__i386) && defined(sun))
 #define		REG_UESP	UESP
 #define		REG_EIP		EIP
@@ -105,6 +109,30 @@ extern char **environ;
 #define		E2DBG_O5_VAR		"$o5"
 #define		E2DBG_O6_VAR		"$o6"
 #define		E2DBG_O7_VAR		"$o7"
+
+/* AMD64 registers name */
+#define		E2DBG_R8_VAR		"$r8"
+#define		E2DBG_R9_VAR		"$r9"
+#define		E2DBG_R10_VAR		"$r10"
+#define		E2DBG_R11_VAR		"$r11"
+#define		E2DBG_R12_VAR		"$r12"
+#define		E2DBG_R13_VAR		"$r13"
+#define		E2DBG_R14_VAR		"$r14"
+#define		E2DBG_R15_VAR		"$r15"
+#define		E2DBG_RDI_VAR		"$rdi"
+#define		E2DBG_RSI_VAR		"$rsi"
+#define		E2DBG_RBP_VAR		"$rbp"
+#define		E2DBG_RBX_VAR		"$rbx"
+#define		E2DBG_RAX_VAR		"$rax"
+#define		E2DBG_RDX_VAR		"$rdx"
+#define		E2DBG_RCX_VAR		"$rcx"
+#define		E2DBG_RSP_VAR		"$rsp"
+#define		E2DBG_RIP_VAR		"$rip"
+#define		E2DBG_EFLAGS_VAR	"$eflags"
+#define		E2DBG_CS_VAR		"$cs"
+#define		E2DBG_GS_VAR		"$gs"
+#define		E2DBG_FS_VAR		"$fs"
+#define		E2DBG_CR2_VAR		"$cr2"
 
 
 /* Debugger commands */
@@ -374,6 +402,23 @@ eresi_Addr*	e2dbg_getfp_bsd_ia32();
 void            *e2dbg_bt_ia32(void *frame);
 void            *e2dbg_getret_ia32(void *frame);
 int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
+
+/* Backend for AMD64 */
+void            e2dbg_get_regvars_amd64_bsd();
+void            e2dbg_get_regvars_amd64_sysv();
+void            e2dbg_set_regvars_amd64_bsd();
+void            e2dbg_set_regvars_amd64_sysv();
+eresi_Addr*     e2dbg_getpc_bsd_amd64();
+eresi_Addr*     e2dbg_getpc_sysv_amd64();
+void            e2dbg_setstep_bsd_amd64();
+void            e2dbg_setstep_sysv_amd64();
+void            e2dbg_resetstep_sysv_amd64();
+void            e2dbg_resetstep_bsd_amd64();
+eresi_Addr*	e2dbg_getfp_sysv_amd64();
+eresi_Addr*	e2dbg_getfp_bsd_amd64();
+void            *e2dbg_bt_amd64(void *frame);
+void            *e2dbg_getret_amd64(void *frame);
+int             e2dbg_break_amd64(elfshobj_t *f, elfshbp_t *bp);
 
 
 /* Backend for sparc32 */

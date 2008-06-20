@@ -8,7 +8,8 @@
 include ../../config.h
 
 SRC			= backtrace.c breakpoints.c display.c mode.c stack.c \
-			step.c dumpregs.c dbghooks.c mutex.c dbg-ia32.c dbg-sparc32.c
+			step.c dumpregs.c dbghooks.c mutex.c dbg-ia32.c dbg-sparc32.c \
+			dbg-amd64.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

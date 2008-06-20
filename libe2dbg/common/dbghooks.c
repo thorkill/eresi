@@ -1,5 +1,5 @@
 /*
-** vmhooks.c for e2dbg in the ELF shell framework
+** dbghooks.c for e2dbg in the ERESI framework
 **
 ** The interface hooking system
 **
@@ -400,6 +400,26 @@ void		e2dbg_setup_hooks()
     PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
   aspect_init();
   e2dbg_register_vectors();
+
+  /* Linux / AMD64 target */
+  e2dbg_register_gregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+			   ELFSH_OS_LINUX, e2dbg_get_regvars_amd64_sysv);
+  e2dbg_register_sregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+			   ELFSH_OS_LINUX, e2dbg_set_regvars_amd64_sysv);
+  e2dbg_register_getpchook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+			   ELFSH_OS_LINUX, e2dbg_getpc_sysv_amd64);
+  e2dbg_register_setstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+			     ELFSH_OS_LINUX, e2dbg_setstep_sysv_amd64);
+  e2dbg_register_resetstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+			       ELFSH_OS_LINUX, e2dbg_resetstep_sysv_amd64);
+  e2dbg_register_nextfphook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+			    ELFSH_OS_LINUX, e2dbg_bt_amd64);
+  e2dbg_register_getfphook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_amd64);
+  e2dbg_register_getrethook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+			    ELFSH_OS_LINUX, e2dbg_getret_amd64);
+  e2dbg_register_breakhook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN,   
+			   ELFSH_OS_LINUX, e2dbg_break_amd64);  
 
   /* Initialize vectors */
   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 

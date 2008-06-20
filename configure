@@ -20,6 +20,7 @@ VARSFILE="librevm/include/revm-vars.h"
 LIBVARSFILE="libelfsh/include/libvars.h"
 LPTHREAD="-lpthread"
 SHELL=`which bash`
+GENTOO=` uname -a | grep gentoo` 
 
 printHelp() 
 {
@@ -176,12 +177,21 @@ TESTING="1"
 --enable-readline*)
 echo  " [*] Enabling readline support"
 READLN="1"
+
+echo GENTOO variable is *$GENTOO*
+
+if [ -z "$GENTOO" ] ; then
+TERMCAP="-ltermcap"
+else
+TERMCAP=""
+fi
+
 if [ "${OSNAME}" != OpenBSD ] ; then
 echo  "READLN	        = 1"					>> $CONFIGFILE
 echo  "READLNOPT	= -DUSE_READLN"				>> $CONFIGFILE
-echo  "LDREADLNOPT	= -L/opt/sfw/lib/ -lreadline -ltermcap" >> $CONFIGFILE
+echo  "LDREADLNOPT	= -L/opt/sfw/lib/ -lreadline $TERMCAP"  >> $CONFIGFILE
 else
-echo  "LDREADLNOPT	= -lreadline -ltermcap"			>> $CONFIGFILE
+echo  "LDREADLNOPT	= -lreadline $TERMCAP"			>> $CONFIGFILE
 fi
 echo  "LDUIOPT32	= -L../libui -lui32"                    >> $CONFIGFILE
 echo  "LDUIOPT64	= -L../libui -lui64"                    >> $CONFIGFILE
