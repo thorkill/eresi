@@ -348,22 +348,70 @@ struct e_mips_instr e_mips_instrs [] = {
   {"cvt.d.s"  ,ASM_MIPS_CVT_D_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_d_s},
   {"cvt.d.w"  ,ASM_MIPS_CVT_D_W   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_W	,asm_mips_cvt_d_w},
   {"cvt.d.l"  ,ASM_MIPS_CVT_D_L   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_D   ,MIPS_OPCODE_FMT_L	,asm_mips_cvt_d_l},
-
   {"cvt.l.s"  ,ASM_MIPS_CVT_L_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_L   ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_l_s},
   {"cvt.l.d"  ,ASM_MIPS_CVT_L_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_L   ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_l_d},
-
   {"cvt.ps.s" ,ASM_MIPS_CVT_PS_S  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_PS_S ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_ps_s},
-
   {"cvt.s.d"  ,ASM_MIPS_CVT_S_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_s_d},
   {"cvt.s.w"  ,ASM_MIPS_CVT_S_W   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_W	,asm_mips_cvt_s_w},
   {"cvt.s.l"  ,ASM_MIPS_CVT_S_L   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S   ,MIPS_OPCODE_FMT_L	,asm_mips_cvt_s_l},
-
   {"cvt.s.pl" ,ASM_MIPS_CVT_S_PL  ,MIPS_OPCODE_COP1        ,MIPS_OPCODE_F_CVT_S_PL ,MIPS_OPCODE_FMT_PS  ,asm_mips_cvt_s_pl},
   {"cvt.s.pu" ,ASM_MIPS_CVT_S_PU  ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_S  ,MIPS_OPCODE_FMT_PS	,asm_mips_cvt_s_pu},
-
   {"cvt.w.s"  ,ASM_MIPS_CVT_W_S   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_W  ,MIPS_OPCODE_FMT_S	,asm_mips_cvt_w_s},
   {"cvt.w.d"  ,ASM_MIPS_CVT_W_D   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CVT_W  ,MIPS_OPCODE_FMT_D	,asm_mips_cvt_w_d},
 
+  {"floor.l.s",ASM_MIPS_FLOOR_L_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_FLOOR_L,MIPS_OPCODE_FMT_S	,asm_mips_floor_l_s},
+  {"floor.l.d",ASM_MIPS_FLOOR_L_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_FLOOR_L,MIPS_OPCODE_FMT_D	,asm_mips_floor_l_d},
+  {"floor.w.s",ASM_MIPS_FLOOR_W_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_FLOOR_W,MIPS_OPCODE_FMT_S	,asm_mips_floor_w_s},
+  {"floor.w.d",ASM_MIPS_FLOOR_W_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_FLOOR_W,MIPS_OPCODE_FMT_D	,asm_mips_floor_w_d},
+
+  {"round.l.s",ASM_MIPS_ROUND_L_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ROUND_L,MIPS_OPCODE_FMT_S	,asm_mips_round_l_s},
+  {"round.l.d",ASM_MIPS_ROUND_L_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ROUND_L,MIPS_OPCODE_FMT_D	,asm_mips_round_l_d},
+  {"round.w.s",ASM_MIPS_ROUND_W_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ROUND_W,MIPS_OPCODE_FMT_S	,asm_mips_round_w_s},
+  {"round.w.d",ASM_MIPS_ROUND_W_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_ROUND_W,MIPS_OPCODE_FMT_D	,asm_mips_round_w_d},
+
+  {"trunc.l.s",ASM_MIPS_TRUNC_L_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_TRUNC_L,MIPS_OPCODE_FMT_S	,asm_mips_trunc_l_s},
+  {"trunc.l.d",ASM_MIPS_TRUNC_L_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_TRUNC_L,MIPS_OPCODE_FMT_D	,asm_mips_trunc_l_d},
+  {"trunc.w.s",ASM_MIPS_TRUNC_W_S ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_TRUNC_W,MIPS_OPCODE_FMT_S	,asm_mips_trunc_w_s},
+  {"trunc.w.d",ASM_MIPS_TRUNC_W_D ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_TRUNC_W,MIPS_OPCODE_FMT_D	,asm_mips_trunc_w_d},
+
+  /* FPU Load, Store and Memory Control Instructions */
+
+  {"ldc1"     ,ASM_MIPS_LDC1      ,MIPS_OPCODE_LDC1          ,0x0                   ,0x0		,asm_mips_ldc1},
+  {"lwc1"     ,ASM_MIPS_LWC1      ,MIPS_OPCODE_LWC1          ,0x0                   ,0x0		,asm_mips_lwc1},
+  {"sdc1"     ,ASM_MIPS_SDC1      ,MIPS_OPCODE_SDC1          ,0x0                   ,0x0		,asm_mips_sdc1},
+  {"swc1"     ,ASM_MIPS_SWC1      ,MIPS_OPCODE_SWC1          ,0x0                   ,0x0		,asm_mips_swc1},
+
+  /* FPU Move Instructions */
+
+  {"cfc1"     ,ASM_MIPS_CFC1      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CFC1    ,0x0		,asm_mips_cfc1},
+  {"ctc1"     ,ASM_MIPS_CTC1      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_CTC1    ,0x0		,asm_mips_ctc1},
+  {"mfc1"     ,ASM_MIPS_MFC1      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MFC1    ,0x0		,asm_mips_mfc1},
+  {"mtc1"     ,ASM_MIPS_MTC1      ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MTC1    ,0x0		,asm_mips_mtc1},
+
+  {"mov.s"    ,ASM_MIPS_MOV_S     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOV     ,MIPS_OPCODE_FMT_S	,asm_mips_mov_s},
+  {"mov.d"    ,ASM_MIPS_MOV_D     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOV     ,MIPS_OPCODE_FMT_D	,asm_mips_mov_d},
+  {"mov.ps"   ,ASM_MIPS_MOV_PS    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOV     ,MIPS_OPCODE_FMT_PS	,asm_mips_mov_ps},
+
+  {"movf.s"   ,ASM_MIPS_MOVF_S    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_S	,asm_mips_movcf_s},
+  {"movf.d"   ,ASM_MIPS_MOVF_D    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_D	,asm_mips_movcf_d},
+  {"movf.ps"  ,ASM_MIPS_MOVF_PS   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_PS ,asm_mips_movcf_ps},
+
+  {"movt.s"   ,ASM_MIPS_MOVT_S    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_S	,asm_mips_movcf_s},
+  {"movt.d"   ,ASM_MIPS_MOVT_D    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_D	,asm_mips_movcf_d},
+  {"movt.ps"  ,ASM_MIPS_MOVT_PS   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVCF   ,MIPS_OPCODE_FMT_PS ,asm_mips_movcf_ps},
+
+  {"movn.s"   ,ASM_MIPS_MOVN_S    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVN    ,MIPS_OPCODE_FMT_S	,asm_mips_movn_s},
+  {"movn.d"   ,ASM_MIPS_MOVN_D    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVN    ,MIPS_OPCODE_FMT_D	,asm_mips_movn_d},
+  {"movn.ps"  ,ASM_MIPS_MOVN_PS   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVN    ,MIPS_OPCODE_FMT_PS	,asm_mips_movn_ps},
+
+  {"movz.s"   ,ASM_MIPS_MOVZ_S    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVZ    ,MIPS_OPCODE_FMT_S	,asm_mips_movz_s},
+  {"movz.d"   ,ASM_MIPS_MOVZ_D    ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVZ    ,MIPS_OPCODE_FMT_D	,asm_mips_movz_d},
+  {"movz.ps"  ,ASM_MIPS_MOVZ_PS   ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_F_MOVZ    ,MIPS_OPCODE_FMT_PS	,asm_mips_movz_ps},
+
+  /* FPU Absolute Branch Instructions */
+
+  {"bc1fl"    ,ASM_MIPS_BC1FL     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x2		,asm_mips_bc1fl},
+  {"bc1tl"    ,ASM_MIPS_BC1TL     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x3		,asm_mips_bc1tl},
 
      /* mnemonic          code     index1   index 2   index 3   func pointer */
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }

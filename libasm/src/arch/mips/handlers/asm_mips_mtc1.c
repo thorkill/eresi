@@ -3,21 +3,22 @@
 
 #include <libasm.h>
 
-int asm_mips_ctc2(asm_instr *ins, u_char *buf, u_int len,
+/* MTC1 rt,rd */
+
+int asm_mips_mtc1(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   struct s_mips_decode_cop2 temp;
+   struct s_mips_decode_priv temp;
 
-   ins->instr = ASM_MIPS_CTC2;
+   ins->instr = ASM_MIPS_MTC1;
    ins->type = ASM_TYPE_ARCH;
-   mips_convert_format_cop2(&temp,buf);
+   mips_convert_format_priv(&temp, buf);
    ins->op[0].baser = temp.rt;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
    ins->op[1].baser = temp.rd;
    asm_mips_operand_fetch(&ins->op[1], buf, ASM_MIPS_OTYPE_REGISTER, ins);
 
-   /* Exceptions: Coprocessor Unusable, Reserved instruction */
-   /* FPU Exceptions: Unimplemented Operation, Invalid Operation, Division-by-zero, Inexact, Overflow, Underflow */
+   /* Exceptions: Coprocessor Unusable */
 
    return 777;
 }

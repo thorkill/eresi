@@ -419,17 +419,31 @@ enum COP1_func {
    MIPS_OPCODE_F_DIV,
    MIPS_OPCODE_F_SQRT,
    MIPS_OPCODE_ABS,// = Ob(000101),
-   MIPS_OPCODE_F_NEG = Ob(000111),
+   MIPS_OPCODE_F_MOV, //=Ob(000110)
+   MIPS_OPCODE_F_NEG,// = Ob(000111),
+   MIPS_OPCODE_F_ROUND_L,
+   MIPS_OPCODE_F_TRUNC_L,
+   MIPS_OPCODE_F_ROUND_W = Ob(001100),
+   MIPS_OPCODE_F_TRUNC_W,
    MIPS_OPCODE_F_CEIL_L = Ob(001010),
+   MIPS_OPCODE_F_FLOOR_L,
    MIPS_OPCODE_F_CEIL_W = Ob(001110),
+   MIPS_OPCODE_F_FLOOR_W,
    MIPS_OPCODE_F_RECIP = Ob(010101),
    MIPS_OPCODE_F_RSQRT,
+   MIPS_OPCODE_F_MOVCF = Ob(010001),
+   MIPS_OPCODE_F_MOVZ,
+   MIPS_OPCODE_F_MOVN,
    MIPS_OPCODE_F_CVT_S = Ob(100000),
    MIPS_OPCODE_F_CVT_D,// = Ob(100001),
    MIPS_OPCODE_F_CVT_W = Ob(100100),
    MIPS_OPCODE_F_CVT_L,// = Ob(100101),
    MIPS_OPCODE_F_CVT_PS_S,
-   MIPS_OPCODE_F_CVT_S_PL = Ob(101000)
+   MIPS_OPCODE_F_CVT_S_PL = Ob(101000),
+   MIPS_OPCODE_F_MFC1 = Ob(00000),
+   MIPS_OPCODE_F_CFC1 = Ob(00010),
+   MIPS_OPCODE_F_MTC1 = Ob(00100),
+   MIPS_OPCODE_F_CTC1 = Ob(00110)
 
 };
 
@@ -729,51 +743,71 @@ enum e_mips_instr_types
    ASM_MIPS_CVT_D_S,
    ASM_MIPS_CVT_D_W,
    ASM_MIPS_CVT_D_L,
-   
    ASM_MIPS_CVT_L_S,
    ASM_MIPS_CVT_L_D,
-
    ASM_MIPS_CVT_PS_S,
-   
    ASM_MIPS_CVT_S_D,
    ASM_MIPS_CVT_S_W,
    ASM_MIPS_CVT_S_L,
-
    ASM_MIPS_CVT_S_PL,
    ASM_MIPS_CVT_S_PU,
-
    ASM_MIPS_CVT_W_S,
    ASM_MIPS_CVT_W_D,
 
-/*
-   ASM_MIPS_FLOOR_W.fmt,
-   ASM_MIPS_ROUND_W.fmt,
-   ASM_MIPS_TRUNC_W.fmt,
-*/
+   ASM_MIPS_FLOOR_L_S,
+   ASM_MIPS_FLOOR_L_D,
+   ASM_MIPS_FLOOR_W_S,
+   ASM_MIPS_FLOOR_W_D,
+
+   ASM_MIPS_ROUND_L_S,
+   ASM_MIPS_ROUND_L_D,
+   ASM_MIPS_ROUND_W_S,
+   ASM_MIPS_ROUND_W_D,
+
+   ASM_MIPS_TRUNC_L_S,
+   ASM_MIPS_TRUNC_L_D,
+   ASM_MIPS_TRUNC_W_S,
+   ASM_MIPS_TRUNC_W_D,
+
    /* FPU Load, Store and Memory Control Instructions */
-/*
+
    ASM_MIPS_LDC1,
    ASM_MIPS_LWC1,
    ASM_MIPS_SDC1,
    ASM_MIPS_SWC1,
-*/
+
    /* FPU Move Instructions */
-/*
+
    ASM_MIPS_CFC1,
    ASM_MIPS_CTC1,
    ASM_MIPS_MFC1,
-   ASM_MIPS_MOV.fmt,
-   ASM_MIPS_MOVF.fmt,
-   ASM_MIPS_MOVN.fmt,
-   ASM_MIPS_MOVT.fmt,
-   ASM_MIPS_MOVZ.fmt,
    ASM_MIPS_MTC1,
-*/
+
+   ASM_MIPS_MOV_S,
+   ASM_MIPS_MOV_D,
+   ASM_MIPS_MOV_PS,
+
+   ASM_MIPS_MOVF_S,
+   ASM_MIPS_MOVF_D,
+   ASM_MIPS_MOVF_PS,
+
+   ASM_MIPS_MOVT_S,
+   ASM_MIPS_MOVT_D,
+   ASM_MIPS_MOVT_PS,
+
+   ASM_MIPS_MOVN_S,
+   ASM_MIPS_MOVN_D,
+   ASM_MIPS_MOVN_PS,
+
+   ASM_MIPS_MOVZ_S,
+   ASM_MIPS_MOVZ_D,
+   ASM_MIPS_MOVZ_PS,
+
    /* FPU Absolute Branch Instructions */
-/*
+
    ASM_MIPS_BC1FL,
    ASM_MIPS_BC1TL,
-*/
+
 
    ASM_MIPS_BAD
 };
@@ -1152,3 +1186,43 @@ int asm_mips_cvt_s_pl(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 int asm_mips_cvt_s_pu(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_cvt_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_cvt_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_floor_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_floor_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_floor_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_floor_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_round_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_round_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_round_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_round_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_trunc_l_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_trunc_l_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_trunc_w_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_trunc_w_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// FPU Load, Store and Memory Control Instructions
+int asm_mips_ldc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_lwc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_sdc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_swc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// FPU Move Instructions
+int asm_mips_cfc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_ctc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mfc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mtc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mov_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mov_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_mov_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movcf_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movcf_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movcf_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movn_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movn_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movn_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movz_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movz_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_movz_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// FPU Absolute Branch Instructions
+int asm_mips_bc1fl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_bc1tl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

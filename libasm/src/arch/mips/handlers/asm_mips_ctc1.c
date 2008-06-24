@@ -3,12 +3,12 @@
 
 #include <libasm.h>
 
-int asm_mips_ctc2(asm_instr *ins, u_char *buf, u_int len,
+int asm_mips_ctc1(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    struct s_mips_decode_cop2 temp;
 
-   ins->instr = ASM_MIPS_CTC2;
+   ins->instr = ASM_MIPS_CTC1;
    ins->type = ASM_TYPE_ARCH;
    mips_convert_format_cop2(&temp,buf);
    ins->op[0].baser = temp.rt;
