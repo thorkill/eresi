@@ -1,7 +1,9 @@
 #!../../evarista/evarista32
 
 sdir .
-quiet
+#quiet
+profile enable warn
+
 
 cmp $# 2
 jne end

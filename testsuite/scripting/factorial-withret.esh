@@ -3,7 +3,8 @@
 cmp $ESHLVL 0
 jne factstart
 sdir .
-quiet
+#quiet
+profile enable warn
 
 factstart:
 cmp $# 2

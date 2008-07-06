@@ -44,12 +44,16 @@ int			cmd_set()
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to set expressions", (-1));
 
-      revm_expr_destroy(last->label);
-      last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
-      if (!last)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to set result expression", (-1));
-      
+      /* Dont copy the result variable over itself if we use $_ as a source variable */
+      if (strcmp(e2->label, REVM_VAR_RESULT))
+	{
+	  revm_expr_destroy(last->label);
+	  last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
+	  if (!last)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to set result expression", (-1));
+	}
+
       if (!world.state.revm_quiet)
 	revm_output(" [*] Expression set succesfully \n\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -128,11 +132,14 @@ int			cmd_set()
     }
 
   /* Copy the result in the last result variable */
-  revm_expr_destroy(last->label);
-  last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
-  if (!last)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to set result expression", (-1));
+  if (e2->type->type != ASPECT_TYPE_HASH && e2->type->type != ASPECT_TYPE_LIST)
+    {
+      revm_expr_destroy(last->label);
+      last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
+      if (!last)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to set result expression", (-1));
+    }
 
   /* Everything OK */
   if (e1->value && !e1->value->perm)

@@ -139,8 +139,12 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
     o1->immed_val.ent = dst;
   else
     o1->set_obj(o1->parent, dst);
-
+  
   /* Store last-result variable */
+  if (o1->otype->type == ASPECT_TYPE_HASH ||
+      o1->otype->type == ASPECT_TYPE_LIST)
+    goto end;
+  
   last               = revm_expr_get(REVM_VAR_RESULT);
   res		     = last->value;
   res->otype         = o1->otype;
@@ -153,6 +157,8 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
       revm_output(buf);
     }
   
+ end:
+
   /* If the object was a string, translate it back */
   if (o1->otype->type != oldtype)
     revm_convert_object(e1, oldtype);
