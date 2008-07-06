@@ -26,7 +26,7 @@ int			etrace_deletetrace(char *trace)
 
   etrace_funcrmall(trace);
 
-  table = etrace_gettrace(trace);
+  table = etrace_get(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

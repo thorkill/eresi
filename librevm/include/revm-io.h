@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.81"
-#define	REVM_RELEASE	"a10"
+#define	REVM_RELEASE	"a11"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -242,9 +242,9 @@ typedef struct        s_state
   char                revm_use_alert;   /*! Is an alert regx available ? */
   regex_t	      revm_alert;       /*! Alert regx */
   char                *revm_salert;     /*! ALert regx in string format */
-  char                *sort;          /*! Actual sorting choice */
-  char                *input;         /*! Implicit File input (-f option) */
-  char                *output;        /*! Implicit File output (-w option) */
+  char                *sort;            /*! Actual sorting choice */
+  char                *input;           /*! Implicit File input (-f option) */
+  char                *output;          /*! Implicit File output (-w option) */
 #define       REVM_STATE_CMDLINE	0
 #define       REVM_STATE_SCRIPT		1
 #define       REVM_STATE_INTERACTIVE    2
@@ -257,8 +257,8 @@ typedef struct        s_state
   char		      revm_sourcing;    /*! Are we sourcing a script ? */
   char                revm_stopped;     /*! We are in a signal handler */
   char                revm_shared;      /*! Next opened object must be shared */
-  char                revm_net;         /*! We are a node connected to the elf network */
-  u_int               lastid;         /*! Last Object ID */
+  char                revm_net;         /*! We are a node connected to the ERESI network */
+  u_int               lastid;           /*! Last Object ID */
 }		       revmstate_t;
 
 /* Extern variables */

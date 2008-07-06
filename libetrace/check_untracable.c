@@ -10,10 +10,12 @@
 ** $Id: check_untracable.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
+
+/* Hash table of untracable functions */
+hash_t		traces_untracable;
+u_char		untracable_ostype;
+
 
 /**
  * @brief Fix this doxygen tag.

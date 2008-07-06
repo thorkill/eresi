@@ -1,4 +1,4 @@
-#!/usr/local/bin/elfsh
+#!../../elfsh/elfsh32
 
 load /bin/ls
 print Parameter 1 : $1

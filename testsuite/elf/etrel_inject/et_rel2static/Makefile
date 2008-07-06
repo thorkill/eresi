@@ -16,8 +16,9 @@ OPT	= -g3 -O2 -I../../../../libelfsh/include/ $(BITS)
 RM	= rm -f
 CFLAGS	= $(OPT) -I../../../../libhash/include/
 
+all32: all
 all	: 
-	$(MAKE) -C ../../../../
+	#$(MAKE) -C ../../../../
 	#@/sbin/paxctl -m ../../../../vm/elfsh
 	$(CC) $(OPT) $(HOSTSRC) -static
 	#@strip a.out

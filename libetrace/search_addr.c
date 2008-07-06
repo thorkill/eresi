@@ -10,10 +10,8 @@
 ** $Id: search_addr.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
-#include "libetrace-extern.h"
+
 
 /**
  * Setup asm_processor structure correctly

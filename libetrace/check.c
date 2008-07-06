@@ -90,7 +90,7 @@ static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
  * @param vaddr returned virtual address
  */
 int			etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
-						 eresi_Addr *vaddr, u_char *dynsym)
+					   eresi_Addr *vaddr, u_char *dynsym)
 {
   int			retvalue;
 
@@ -112,15 +112,16 @@ int			etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
 
 
 /**
- * Check if a function can be traced or not 
- * @param file target file
- * @param name function name
- * @param vaddr pointer where save the function virtual address
- * @param external pointer where save the status internal / external of the function
+ * @brief Check if a function can be traced or not.
+ * @param file Target file.
+ * @param name Function name.
+ * @param vaddr Pointer where to save the function virtual address.
+ * @param external Pointer where to save function status (internal / external).
+ * @return Tracable (0), Untracable (-2) or Error (-1).
  * @see etrace_tracable_sym
  */
 int 			etrace_tracable(elfshobj_t *file, char *name,
-					      eresi_Addr *vaddr, u_char *external)
+					eresi_Addr *vaddr, u_char *external)
 {
   elfsh_Sym		*symtab, *dynsym;
   int			symnum = 0, dynsymnum = 0;

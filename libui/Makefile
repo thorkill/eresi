@@ -31,14 +31,12 @@ CFLAGS64	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32	+= -L../libelfsh/ -lelfsh32 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../libasm/ -lasm					\
-		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
+		$(LPTHREAD) -L../liballocproxy -lallocproxy -g3    \
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64	+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ 	\
-		$(LPTHREAD) -L../libasm/ -lasm					\
-		-L../liballocproxy -lallocproxy -g3 $(LDASMOPT) 		\
+		$(LPTHREAD) -L../liballocproxy -lallocproxy -g3 \
 		$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)  \
 		$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 

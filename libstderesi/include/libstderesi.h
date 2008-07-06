@@ -9,6 +9,7 @@
 
 /* User defined configuration */
 #include "revm.h"
+#include "libetrace.h"
 
 /* Help strings */
 #include "libstderesi-help.h"
@@ -186,6 +187,18 @@
 #define	CMD_RSHT		"rsht"
 #define	CMD_RPHT		"rpht"
 
+/* Structures for subcommands provided by libetrace */
+
+/* Sub-commands, for now only used by the tracer */
+typedef struct		s_revmtraces
+{
+  int			(*exec)(elfshobj_t*, char *, char **);	/* Function used */
+
+  /* Unexistant (0), optional (1), needed (2) */
+  char			flagName;	/* Need a first argument */
+  char			flagArg;       	/* Need a second argument */
+}			tracecmd_t;
+
 /* Extern variables */
 extern char	quit_msg[512];
 extern void	(*prompt_token_setup)(char *name, u_int size);
@@ -354,6 +367,20 @@ int		cmd_undisplay();
 
 /* Debug format functions */
 int		cmd_debug();
+
+/* Trace functions */
+int             traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);   
+int             traces_add(elfshobj_t *file, char *name, char **optarg);  
+int             traces_rm(elfshobj_t *file, char *name, char **optarg);  
+int             traces_exclude(elfshobj_t *file, char *freg, char **oreg);  
+int             traces_rmexclude(elfshobj_t *file, char *freg, char **oreg);  
+int             traces_enable(elfshobj_t *file, char *name, char **optarg);  
+int             traces_disable(elfshobj_t *file, char *name, char **optarg);  
+int             traces_create(elfshobj_t *file, char *name, char **optarg);  
+int             traces_delete(elfshobj_t *file, char *name, char **optarg);  
+int             traces_flush(elfshobj_t *file, char *name, char **optarg);  
+int             traces_list(elfshobj_t *file, char *name, char **optarg);  
+int             traces_run(elfshobj_t *file, char **argv, int argc);
 
 #endif /* __LIBSTDERESI_H_ */
 

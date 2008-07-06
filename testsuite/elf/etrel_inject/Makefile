@@ -8,17 +8,17 @@
 ## Last update Sat May 24 17:45:46 2003 jfv
 ##
 
+all32: all
 all	:
 	@cd et_rel2static      && $(MAKE) 
-	@cd etrel_memory       && $(MAKE)  
 	@cd etrel_original     && $(MAKE) 
 	@cd etrel_pie-ssp      && $(MAKE) 
 	@cd etrel_static       && $(MAKE) 
 	@cd etrel_extplt       && $(MAKE)
 
+
 clean	:
 	@cd et_rel2static      && $(MAKE) clean
-	@cd etrel_memory       && $(MAKE) clean
 	@cd etrel_original     && $(MAKE) clean
 	@cd etrel_pie-ssp      && $(MAKE) clean
 	@cd etrel_static       && $(MAKE) clean
@@ -26,7 +26,6 @@ clean	:
 
 fclean	: clean
 	@cd et_rel2static      && $(MAKE) fclean
-	@cd etrel_memory       && $(MAKE) fclean
 	@cd etrel_original     && $(MAKE) fclean
 	@cd etrel_pie-ssp      && $(MAKE) fclean
 	@cd etrel_static       && $(MAKE) fclean

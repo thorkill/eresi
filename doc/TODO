@@ -5,8 +5,11 @@
                                                 ########
 					################
 				########################
-				ELFsh TODO phile       #
+				ERESI TODO File        #
                                 ########################
+
+This file is grouping a couple of features that could be implemented
+in the future. 
 
 	. TLS variables API
 	. Use MMAP_FIXED mappings in debugger heap

@@ -1,54 +1,70 @@
 ##
-## Makefile for elfsh testsuite in 
-## 
-## Made by jfv
-## Login   <jfv@epita.fr>
-## 
-## Started on  Sun Dec 15 01:34:42 2002 jfv
-## Last update Sat May 24 17:45:46 2003 jfv
+## Makefile for librevm in ERESI
+##
+## Started on  Fri Nov  2 16:32:29 2001 jfv
+## Updated on  Wed Nov 28 12:57:38 2001 jfv
 ##
 
-all	:
-	@cd ctors_hijack       && $(MAKE)
-	@cd dtors_hijack       && $(MAKE)
-	@cd got_hijack         && $(MAKE)
-	@cd hash_retreive      && $(MAKE)
-	@cd sct_fillbss_injection  && $(MAKE)
-	@cd sct_top_injection      && $(MAKE)
-	@cd sct_unmapped_injection && $(MAKE)
-	@cd sht_rebuild	       && $(MAKE)
-	@cd sht_stripping      && $(MAKE)
-	@cd symtab_extend      && $(MAKE)
-	@cd etrel_inject       && $(MAKE)
-	@cd e2dbg_multithreads && $(MAKE)
+include ../../config.h
 
-clean	:
-	@echo -n 'Cleaning testsuite ...'
-	@cd ctors_hijack       && $(MAKE) clean
-	@cd dtors_hijack       && $(MAKE) clean
-	@cd got_hijack         && $(MAKE) clean
-	@cd hash_retreive      && $(MAKE) clean
-	@cd sct_fillbss_injection  && $(MAKE) clean
-	@cd sct_top_injection      && $(MAKE) clean
-	@cd sct_unmapped_injection && $(MAKE) clean
-	@cd sht_rebuild	       && $(MAKE) clean
-	@cd sht_stripping      && $(MAKE) clean
-	@cd symtab_extend      && $(MAKE) clean
-	@cd etrel_inject       && $(MAKE) clean
-	@cd e2dbg_multithreads && $(MAKE) clean
-	@echo 'Testsuite cleaned .'
+all			: all32 all64
 
-fclean	: clean
-	@cd ctors_hijack       && $(MAKE) fclean
-	@cd dtors_hijack       && $(MAKE) fclean
-	@cd got_hijack         && $(MAKE) fclean
-	@cd hash_retreive      && $(MAKE) fclean
-	@cd sct_fillbss_injection  && $(MAKE) fclean
-	@cd sct_top_injection      && $(MAKE) fclean
-	@cd sct_unmapped_injection && $(MAKE) fclean
-	@cd sht_rebuild	       && $(MAKE) fclean
-	@cd sht_stripping      && $(MAKE) fclean
-	@cd symtab_extend      && $(MAKE) fclean
-	@cd etrel_inject       && $(MAKE) fclean
-	@cd e2dbg_multithreads && $(MAKE) fclean
+all32			: 
+			$(MAKE) -C ctors_hijack all32
+			$(MAKE) -C dtors_hijack all32
+			$(MAKE) -C extract_raw_data all32
+			$(MAKE) -C etrel_inject all32
+			$(MAKE) -C hash_retreive all32
+			$(MAKE) -C got_hijack all32
+			$(MAKE) -C sct_index_injection all32
+			$(MAKE) -C sct_fillbss_injection all32
+			$(MAKE) -C sct_top_injection all32
+			$(MAKE) -C sct_unmapped_injection all32
+			$(MAKE) -C sht_stripping all32
+			$(MAKE) -C sht_rebuild all32
+			$(MAKE) -C symtab_extend all32
 
+all64			: 
+			$(MAKE) -C ctors_hijack all64
+			$(MAKE) -C dtors_hijack all64
+			$(MAKE) -C extract_raw_data all64
+			$(MAKE) -C etrel_inject all64
+			$(MAKE) -C hash_retreive all64
+			$(MAKE) -C got_hijack all64
+			$(MAKE) -C sct_index_injection all64
+			$(MAKE) -C sct_fillbss_injection all64
+			$(MAKE) -C sct_top_injection all64
+			$(MAKE) -C sct_unmapped_injection all64
+			$(MAKE) -C sht_stripping all64
+			$(MAKE) -C sht_rebuild all64
+			$(MAKE) -C symtab_extend all64
+
+clean		       :
+			$(MAKE) -C ctors_hijack clean
+			$(MAKE) -C dtors_hijack clean
+			$(MAKE) -C extract_raw_data clean
+			$(MAKE) -C etrel_inject clean
+			$(MAKE) -C hash_retreive clean
+			$(MAKE) -C got_hijack clean
+			$(MAKE) -C sct_index_injection clean
+			$(MAKE) -C sct_fillbss_injection clean
+			$(MAKE) -C sct_top_injection clean
+			$(MAKE) -C sct_unmapped_injection clean
+			$(MAKE) -C sht_stripping clean
+			$(MAKE) -C sht_rebuild clean
+			$(MAKE) -C symtab_extend clean
+
+fclean		       : clean
+			$(MAKE) -C ctors_hijack fclean
+			$(MAKE) -C dtors_hijack fclean
+			$(MAKE) -C extract_raw_data fclean
+			$(MAKE) -C etrel_inject fclean
+			$(MAKE) -C hash_retreive fclean
+			$(MAKE) -C got_hijack fclean
+			$(MAKE) -C sct_index_injection fclean
+			$(MAKE) -C sct_fillbss_injection fclean
+			$(MAKE) -C sct_top_injection fclean
+			$(MAKE) -C sct_unmapped_injection fclean
+			$(MAKE) -C sht_stripping fclean
+			$(MAKE) -C sht_rebuild fclean
+			$(MAKE) -C symtab_extend fclean

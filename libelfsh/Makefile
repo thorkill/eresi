@@ -12,13 +12,11 @@ LD			?= ld
 RM			= rm -f 
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../libetrace/include         \
-			-I../libaspect/include/ $(KERNSHINC)		    \
-			$(KERNSH) -DERESI32 $(BUILDOP)
+			-I../libasm/include/ -I../libaspect/include/        \
+			$(KERNSHINC) $(KERNSH) -DERESI32 $(BUILDOP)
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
-			-I../libasm/include/ -I../libetrace/include/        \
-			-I../libaspect/include/ $(KERNSHINC)		    \
-			$(KERNSH) -DERESI64 $(BUILDOP)
+			-I../libasm/include/ -I../libaspect/include/        \
+			$(KERNSHINC) $(KERNSH) -DERESI64 $(BUILDOP)
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c stab.c         \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \

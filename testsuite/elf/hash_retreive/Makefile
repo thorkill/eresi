@@ -10,9 +10,8 @@ include ../../../config.h
 SRC	= hash_read.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm \
-	-L../../../libaspect/ -laspect32	\
-	-L../../../libetrace/ -letrace32
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
+	-L../../../libaspect/ -laspect32
 NAM	= hash_reader
 RM	= rm -f 
 VULN	= main.c
@@ -20,6 +19,7 @@ OPT	= -O2 -I../../../libelfsh/include/ \
 	-I../../../libaspect/include $(BITS)
 CFLAGS	= $(OPT)
 
+all32: all
 all	: $(OBJ)
 	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
 	$(CC) $(OPT) $(VULN)

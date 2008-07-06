@@ -10,10 +10,8 @@
 ** $Id: func_status.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
-#include "libetrace-extern.h"
+
 
 /**
  * Change the status of a whole trace 
@@ -27,7 +25,7 @@ int			etrace_funcsetstatus(hash_t *table, int status)
   u_int			index;
   int			keynbr;
   char			**keys;
-  elfshtraces_t		*ret_trace;
+  trace_t		*ret_trace;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -35,7 +33,7 @@ int			etrace_funcsetstatus(hash_t *table, int status)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  etrace_inittrace();
+  etrace_init_trace();
 
   keys = hash_get_keys(table, &keynbr);
 
@@ -43,7 +41,7 @@ int			etrace_funcsetstatus(hash_t *table, int status)
     {
       for (index = 0; index < keynbr; index++)
 	{
-	  ret_trace = (elfshtraces_t *) hash_get(table, keys[index]);
+	  ret_trace = (trace_t *) hash_get(table, keys[index]);
 	  
 	  if (ret_trace)
 	    {

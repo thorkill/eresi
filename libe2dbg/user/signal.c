@@ -547,8 +547,8 @@ void			e2dbg_generic_breakpoint(int		signum,
   /* We do this only at the first state (count = 0) of the breakpoint */
   if (!e2dbgworld.stoppedthread->count)
     {
-      e2dbg_thread_stopall(SIGUSR2);
-      usleep(100000);
+      if (e2dbg_thread_stopall(SIGUSR2))
+	usleep(100000);
     }
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
   else

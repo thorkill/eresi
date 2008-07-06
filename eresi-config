@@ -9,7 +9,9 @@
 # TESTING_ROOT is then the path to your working directory.
 
 TESTING=1
-TESTING_ROOT=${HOME}/eresi/eresi.trunk/
+
+# FIXME: incorrect ! ERESI can be present anywhere, or even already installed
+TESTING_ROOT=${HOME}/eresi/
 
 # Those variables are path were eresi headers and libraries were installed.
 #
@@ -28,7 +30,7 @@ LIBDIR=/usr/local/lib
 if [ $TESTING = 1 ] ; then
 LIBASM_CFLAGS="-I ${TESTING_ROOT}/libasm/include"
 LIBASM_DEFINES=
-LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm"
+LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm32"
 
 LIBASPECT_CFLAGS="-D ERESI32 -I ${TESTING_ROOT}/libaspect/include"
 LIBASPECT_DEFINES=
@@ -50,7 +52,7 @@ else
 
 LIBASM_CFLAGS="-D ERESI32 -I ${INCDIR}"
 LIBASM_DEFINES=
-LIBASM_LIBS="-L ${LIBDIR} -lasm"
+LIBASM_LIBS="-L ${LIBDIR} -lasm32"
 
 LIBASPECT_CFLAGS="-I ${INCDIR}"
 LIBASPECT_DEFINES=
@@ -125,13 +127,13 @@ fi
 
 if [ "$LIBASM" = 1 ] ; then
 if [ "$showCFLAGS" = 1 ] ; then
-	echo ${LIBELFSH_CFLAGS} ${LIBETRACE_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+	echo ${LIBELFSH_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
 fi
 if [ "$showLIBS" = 1 ] ; then
-	echo ${LIBELFSH_LIBS} ${LIBETRACE_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+	echo ${LIBELFSH_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
 fi
 if [ "$showDEFINES" = 1 ] ; then
-	echo ${LIBELFSH_DEFINES} ${LIBETRACE_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+	echo ${LIBELFSH_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
 fi
 fi
 
@@ -140,13 +142,13 @@ fi
 
 if [ "$LIBELFSH" = 1 ] ; then
 if [ "$showCFLAGS" = 1 ] ; then
-	echo ${LIBELFSH_CFLAGS} ${LIBETRACE_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+	echo ${LIBELFSH_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
 fi
 if [ "$showLIBS" = 1 ] ; then
-	echo ${LIBELFSH_LIBS} ${LIBETRACE_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+	echo ${LIBELFSH_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
 fi
 if [ "$showDEFINES" = 1 ] ; then
-	echo ${LIBELFSH_DEFINES} ${LIBETRACE_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+	echo ${LIBELFSH_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
 fi
 
 fi

@@ -121,7 +121,8 @@ int		kernsh_main(int ac, char **av)
   if (world.state.revm_mode != REVM_STATE_CMDLINE)
     kernsh_banner_print(av[1]);
 
-  return (revm_run(ac, av));
+  revm_run(ac, av);
+  return (0);
 }
 
 

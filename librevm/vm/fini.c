@@ -25,8 +25,6 @@ void		revm_cleanup()
 void		revm_postexec(int retval)
 {
   int		ret;
-  char		*buggyfunc;
-  char		logbuf[256];
 
   if (!world.state.revm_quiet && world.state.revm_mode == REVM_STATE_SCRIPT)
     {
@@ -36,32 +34,7 @@ void		revm_postexec(int retval)
 	revm_output("\n [*] Script execution ended succesfully \n\n");
     }
 
-  /* Implicit unload or save if we are not in interactive mode */
-  if ((world.state.revm_mode == REVM_STATE_CMDLINE 
-       || world.state.revm_mode == REVM_STATE_TRACER) && world.curjob->curfile)
-    {
-      /* Start tracing if we are on tracer state (etrace) */
-      if (world.state.revm_mode == REVM_STATE_TRACER)
-	{
-	  profiler_error_reset();
-	  if (traces_run(world.curjob->curfile, NULL, 0) < 0)
-	    {
-	      buggyfunc = etrace_geterrfunc();
-	      
-	      /* Not NULL if issue occurs when we iterate though functions */
-	      if (buggyfunc)
-		{
-		  snprintf(logbuf, 255, " [!] There is an issue with the function: %s\n",
-			   buggyfunc);
-		  revm_output(logbuf);
-		}
-
-	      profiler_error();
-	    }
-	}
-
-      ret = revm_workfiles_unload();
-    }
+  /* Implicit unload or save if we are not in interactive mode or in tracer mode */
+  if (world.state.revm_mode == REVM_STATE_CMDLINE && world.curjob->curfile)
+    ret = revm_workfiles_unload();
 }
-
-

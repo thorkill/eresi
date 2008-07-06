@@ -17,6 +17,7 @@ PIEOBJ	= host.o
 RM	= rm -f
 CFLAGS	= -fPIC
 
+all32: all
 all	: $(PIEOBJ) $(RELOBJ)
 	$(CC) -g3 $(PIEOBJ) -pie
 

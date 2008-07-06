@@ -1,18 +1,26 @@
 #!../../../../elfsh/elfsh32
 
+profile disable all
+#profile enable trace
+
 load a.out
 load rel.o
 
 #stop
 #profile enable warn
 #profile enable trace
-quiet
+#quiet
 
 reladd 1 2
 
-dynsym puts
-sym puts
+#dynsym puts
+#sym puts
+e
+s
+X ^.strtab
+sym
 #profile enable warn
+
 redir puts puts_troj
 redir legit_func hook_func
 

@@ -19,12 +19,14 @@ CFLAGS	= -I../librevm/include/ -I../libhash/include/ -I../libui/include/      \
 	  -I../libdump/include/ -I../libelfsh/include/  -I../libaspect/include \
 	  -I../libasm/include/ -I../e2dbg/include/ -I../libc/include/          \
 	  -I../libmjollnir/include/ -I../libedfmt/include/ -I../libstderesi/include/ \
-	  -Wall -g3 -O2 -fPIC -DELFSH_INTERN $(DYNOPT) $(BITS) $(NCURSESLNOPT) \
-          $(READLNOPT) $(BUILDOP)
+	  -I../libetrace/include/ -Wall -g3 -O2 -fPIC -DELFSH_INTERN $(DYNOPT) \
+	  $(BITS) $(NCURSESLNOPT) $(READLNOPT) $(BUILDOP)
 
 CC	= gcc
 LD	= gcc
 
+all64	: all
+all32	: all
 all	: test remap
 
 test	: $(OBJ)

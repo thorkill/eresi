@@ -182,12 +182,12 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 					     u_char		stage)
 {
   elfsh_Rel	*cur;
-  u_int		index;
+  volatile u_int		index;
   elfsh_Sym	*sym;
-  u_int		size;
+  volatile u_int		size;
   eresi_Addr	*dword;
   eresi_Addr   	addr;
-  char		*name;
+  volatile char	*name;
   char		tmpname[BUFSIZ];
   elfshsect_t	*sect;
   u_int		entsz;

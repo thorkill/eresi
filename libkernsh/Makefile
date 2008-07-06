@@ -1,7 +1,13 @@
+##
+## Makefile for libkernsh in the ERESI project
+##
+## Created by the ERESI team
+##
+
 include ../config.h
 
-NAME32_libkernsh 	= 	libkernsh32
-NAME64_libkernsh        =       libkernsh64
+NAME32_libkernsh 	= libkernsh32
+NAME64_libkernsh        = libkernsh64
 
 LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
@@ -14,12 +20,12 @@ EXTRAOBJ64		= ../libasm/libasm.o ../libmjollnir/libmjollnir64.o \
                           ../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o \
 			  ../libaspect/libaspect64.o
 
-RM 		= 	rm -f
-ETAGS 		= 	etags
-CC 		?= 	gcc
-LD		?=	ld
-CP 		= 	cp
-AR		=	ar rc
+RM			= 	rm -f
+ETAGS			= 	etags
+CC			?= 	gcc
+LD			?=	ld
+CP			= 	cp
+AR			=	ar rc
 
 COBJ32                  = common/*.32.o
 COBJ64                  = common/*.64.o
@@ -41,6 +47,7 @@ lib32:
 	@$(CC) -shared -lcrypto $(COBJ32) $(UOBJ32)  $(LDFLAGS32) -o $(NAME32_libkernsh).so
 	@${AR} ${NAME32_libkernsh}.a ${COBJ32} $(UOBJ32)
 	@${RANLIB} ${NAME32_libkernsh}.a
+	@$(LD) -r $(COBJ32) $(UOBJ32) -o $(NAME32_libkernsh).o
 
 all64:	mod64 lib64
 
@@ -53,6 +60,7 @@ lib64:
 	$(CC) -shared -lcrypto $(COBJ64) $(UOBJ64)  $(LDFLAGS64) -o $(NAME64_libkernsh).so
 	@${AR} ${NAME64_libkernsh}.a ${COBJ4} $(UOBJ64)
 	@${RANLIB} ${NAME64_libkernsh}.a
+	@$(LD) -r $(COBJ64) $(UOBJ64) -o $(NAME64_libkernsh).o
 
 clean:
 	@$(MAKE) -C common clean

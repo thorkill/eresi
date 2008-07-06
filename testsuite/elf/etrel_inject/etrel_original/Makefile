@@ -10,9 +10,8 @@ include ../../../../config.h
 SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm \
-	-L../../../../libaspect/ -laspect32 -L../../../../liballocproxy \
-        -lallocproxy -L../../../../libetrace/ -letrace32
+LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm32 \
+	-L../../../../libaspect/ -laspect32
 NAM	= etrel_injecter
 
 HOSTSRC	= host.c
@@ -24,6 +23,7 @@ OPT	= -O2 -I../../../../libelfsh/include/ \
 RM	= rm -f
 CFLAGS	= $(OPT)
 
+all32: all
 all	: $(OBJ)
 	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
 	$(CC) $(OPT) $(HOSTSRC) #-m64

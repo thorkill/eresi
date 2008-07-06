@@ -17,8 +17,8 @@ NAME64			= libstderesi64
 LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD)       	  \
-			-L../libasm/ -lasm $(LDUIOPT32) -g3		          \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../libasm/ -lasm32 $(LDUIOPT32) -g3		          \
+			-L../liballocproxy -L../libmjollnir/                      \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace32 -L../librevm -lrevm32          \
 			$(KERNSHLIB32)                                            \
@@ -27,8 +27,8 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 
 LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/           \
-                        -lmjollnir64 $(LPTHREAD) -L../libasm/ -lasm $(LDUIOPT64)  \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+                        -lmjollnir64 $(LPTHREAD) -L../libasm/ -lasm64             \
+			-L../liballocproxy -L../libmjollnir/ $(LDUIOPT64)         \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace64 -L../librevm -lrevm64          \
 			$(KERNSHLIB64) -g3					  \

@@ -24,19 +24,17 @@ LD	?= ld
 NAME32	= libmjollnir32
 NAME64	= libmjollnir64
 
-CFLAGS32 = -fPIC -I./include/ -I../libasm/include/       \
-	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-	 -Wall -DERESI32 -DELFSH_INTERN -g3
+CFLAGS32 = -fPIC -I./include/ -I../libasm/include/ -I../libelfsh/include/ \
+	   -I../libaspect/include -Wall -DERESI32 -DELFSH_INTERN -g3
 
-CFLAGS64 = -fPIC -I./include/ -I../libasm/include/ 	     \
-	 -I../libelfsh/include/ -I../libhash/include/ -I../libaspect/include \
-	 -Wall -DERESI64 -DELFSH_INTERN -g3
+CFLAGS64 = -fPIC -I./include/ -I../libasm/include/ -I../libelfsh/include/ \
+	 -I../libaspect/include  -Wall -DERESI64 -DELFSH_INTERN -g3
 
 LDFLAGS32 = -L. -L../libasm/ -L../libelfsh/ -L../liballocproxy   \
-	  -L../libaspect/ -lelfsh32 -laspect32 -lasm -lallocproxy $(LPTHREAD)
+	  -L../libaspect/ -lelfsh32 -laspect32 -lasm32 -lallocproxy $(LPTHREAD)
 
 LDFLAGS64 = -L. -L../libasm/ -L../libelfsh/ -L../liballocproxy   \
-	  -L../libaspect/ -lelfsh64 -laspect64 -lasm -lallocproxy $(LPTHREAD)
+	  -L../libaspect/ -lelfsh64 -laspect64 -lasm64 -lallocproxy $(LPTHREAD)
 
 all	: all32 all64
 

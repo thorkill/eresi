@@ -16,7 +16,7 @@ NAME32		= ../revm-lang.32.o
 NAME64		= ../revm-lang.64.o
 
 CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
-		 -I../../libelfsh/include/ -I../../elibc/include/         \
+		 -I../../libelfsh/include/ \
 		 -I../../libdump/include/ -I../../libasm/include/         \
 		 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)   \
 		 -I../../libmjollnir/include/ -I../../libaspect/include/  \
@@ -26,7 +26,7 @@ CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
 		-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64	+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
-		 -I../../libelfsh/include/ -I../../elibc/include/	  \
+		 -I../../libelfsh/include/ \
 		 -I../../libdump/include/ -I../../libasm/include/         \
 		 -I/usr/pkg/include/  -I../../libaspect/include/          \
 		 -I../../libui/include/ -I../../libmjollnir/include/      \

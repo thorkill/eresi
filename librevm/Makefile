@@ -17,10 +17,9 @@ NAME64			= librevm64
 LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD)       	  \
-			-L../libasm/ -lasm $(LDUIOPT32) -g3		          \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../libasm/ -lasm32 $(LDUIOPT32) -g3		          \
+			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
-			-L../libetrace/ -letrace32				  \
 			$(KERNSHLIB32)                                            \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
@@ -28,10 +27,9 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD)      	  \
-			-L../libasm/ -lasm $(LDUIOPT64) -g3		          \
-			$(LDASMOPT) -L../liballocproxy -L../libmjollnir/          \
+			-L../libasm/ -lasm64 $(LDUIOPT64) -g3		          \
+			-L../liballocproxy -L../libmjollnir/          		  \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
-			-L../libetrace/ -letrace64				  \
 			$(KERNSHLIB64)						  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
@@ -53,7 +51,7 @@ $(NAME32).so			:
 			@$(RANLIB) ${NAME32}.a
 			@echo LINKED LIBREVM32
 
-lib32: $(NAME32).so
+lib32: 			$(NAME32).so
 
 mod64			:
 			$(MAKE) -C lang all64

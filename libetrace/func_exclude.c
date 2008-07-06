@@ -10,10 +10,8 @@
 ** $Id: func_exclude.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
-//#include "libetrace-extern.h"
+
 
 /**
  * Exclude functions by regex during the last stage
@@ -71,5 +69,83 @@ int			etrace_funcrmexclude(char *regstr)
   if (exclude_table.ent)
     hash_del(&exclude_table, regstr);
 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/**
+ * Exclude functions by regexec during the last stage
+ * @param file target
+ * @param freg first reg
+ * @param oreg others reg list
+ */
+int		traces_exclude(elfshobj_t *file, char *freg, char **oreg)
+{
+  u_int		index;
+  char		buf[BUFSIZ];
+  const char	pattern[] = "\n\t[*] Exclude function %s successfully\n\n";
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (!freg || !freg[0])
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  /* Exclude first argument */
+  if (etrace_funcexclude(freg) < 0)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+
+  snprintf(buf, BUFSIZ - 1, pattern, freg);
+  aspectworld.profile(buf);
+
+  if (oreg)
+    {
+      for (index = 0; oreg[index] != NULL; index++)
+	{
+	  if (etrace_funcexclude(oreg[index]) < 0)
+	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, -1);
+
+	    snprintf(buf, BUFSIZ - 1, pattern, oreg[index]);
+	    aspectworld.profile(buf);
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * Delete excluded functions by regexec during the last stage
+ * @param file target
+ * @param freg first reg
+ * @param oreg others reg list
+ */
+int		traces_rmexclude(elfshobj_t *file, char *freg, char **oreg)
+{
+  u_int		index;
+  const char	pattern[] = "\n\t[*] Delete excluded function %s successfully\n\n";
+  char		buf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!freg || !freg[0])
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  etrace_funcrmexclude(freg);
+
+  snprintf(buf, BUFSIZ - 1, pattern, freg);
+  aspectworld.profile(buf);
+
+  if (oreg)
+    {
+      for (index = 0; oreg[index] != NULL; index++)
+	{
+	  etrace_funcrmexclude(oreg[index]);
+
+	  snprintf(buf, BUFSIZ - 1, pattern, oreg[index]);
+	  aspectworld.profile(buf);
+	}
+    }
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

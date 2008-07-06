@@ -192,7 +192,7 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
   mjr_function_register(context, vaddr, tmpcntnr);
 
-  fprintf(stderr, "CREATING MAIN FUNC at %llX\n", main_addr);  
+  fprintf(stderr, "CREATING MAIN FUNC at " XFMT "\n", main_addr);  
 
   main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
   mjr_function_register(context, main_addr, main_container);

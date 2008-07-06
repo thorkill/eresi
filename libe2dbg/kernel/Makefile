@@ -14,7 +14,7 @@ EXTRA_CFLAGS :=  -g3 -Wall -I/usr/include -I$(src)/include -I$(src)/../include \
 		-I$(src)/../../libedfmt/include/ -DELFSH_INTERN  -DE2DBG_INTERN \
                 -DERESI32 -Wno-strict-prototypes
 
-EXTRAOBJ     := ../../libasm/libasm.o ../../libmjollnir/libmjollnir32.o      \
+EXTRAOBJ     := ../../libasm/libasm32.o ../../libmjollnir/libmjollnir32.o    \
 		../../libelfsh/libelfsh32.o ../../libedfmt/libedfmt32.o      \
 		../../librevm/revm-api.32.o ../../libaspect/libaspect32.o    \
 		../../librevm/revm-machine.32.o ../../librevm/revm-lang.32.o \

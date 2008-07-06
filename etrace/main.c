@@ -84,6 +84,7 @@ void		etrace_banner_print()
  */
 int		etrace_main(int ac, char **av)
 {
+  elfshobj_t	*last;
   char		logbuf[BUFSIZ];
   int		ret;
   char		**argv;
@@ -94,6 +95,7 @@ int		etrace_main(int ac, char **av)
   char		**exav = NULL;
   int		exac;
   u_int		index;
+  char		*bugfunc;
 
   /* Interface tweak */
   etrace_setup_quit_msg();
@@ -169,9 +171,9 @@ int		etrace_main(int ac, char **av)
       
       if (ret < 0)
 	return ret;
-      
+  
       if (argc > 1)
-	revm_traces_add_arguments(argc - 1, argv+1);
+	trace_param_add(argc - 1, argv+1);
       
       XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
 
@@ -184,7 +186,21 @@ int		etrace_main(int ac, char **av)
   revm_config(ETRACE_CONFIG);
   setup_local_cmdhash();
   revm_output(" [*] Type help for regular commands \n\n");
-  return (revm_run(ac, av));
+  last = revm_run(ac, av);
+
+  /* Register binary files to work on */
+  elfsh_register_working_objects(&world.curjob->loaded,
+				 &world.shared_hash);
+
+  bugfunc = etrace_start_tracing(last);
+  if (bugfunc)
+    {
+      snprintf(logbuf, BUFSIZ, " [!] There is an issue with tracing this function: %s\n",
+	       bugfunc);
+      revm_output(logbuf);
+      return (-1);
+    }
+  return (0);
 }
 
 

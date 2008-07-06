@@ -10,15 +10,15 @@ include	../../../config.h
 SRC	= ctors_hijack.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm \
-	-L../../../libaspect/ -laspect32 \
-	-L../../../libetrace/ -letrace32
+LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
+	-L../../../libaspect/ -laspect32 
 NAM	= ctors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
 OPT	= -O2 -I../../../libelfsh/include/ -I../../../libaspect/include $(BITS)
 CFLAGS	= $(OPT) 
 
+all32: all
 all	: $(OBJ)
 	@$(CC) $(OPT) $(OBJ) -o $(NAM) $(LIB)
 	@$(CC) $(OPT) $(VULN)

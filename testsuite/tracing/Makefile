@@ -10,21 +10,25 @@ SRC 	= tracer.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32 \
-	-L../../libetrace/ -letrace32 -L../../libaspect/ -laspect32
+	-L../../libetrace/ -letrace32 -L../../libaspect/ -laspect32 \
+	-L../../libstderesi -lstderesi32
 NAM	= tracer
 RM	= rm -f 
-OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 		\
+OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 	\
+	$(BITS) -I../../libstderesi/include/ \
 	-I../../libasm/include/ -I../../libaspect/include/ -I../../libmjollnir/include/ \
-	-I../../libedfmt/include/ $(BITS) -I../../libetrace/include/
+	-I../../libedfmt/include/ $(BITS) -I../../libetrace/include/ 
 CFLAGS	= $(OPT)
 
 HOSTSRC	= host.c
 HOSTOBJ	= host.o
 HOSTLIB = -lcrypt
 
+all32: all
+
 all	: $(OBJ)
-	@$(CC) $(OPT) $(HOSTLIB) $(HOSTSRC)
-	@$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
+	$(CC) $(HOSTLIB) $(HOSTSRC)
+	$(CC) $(OBJ) $(LIB) -o $(NAM)
 
 clean	:
 	$(RM) $(OBJ) $(HOSTOBJ) *~ \#* *\#

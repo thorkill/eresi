@@ -206,7 +206,7 @@ int		revm_config(char *config)
 /** 
  * Interface initialisation && loop entry point 
  */
-int		revm_run(int ac, char **av)
+elfshobj_t	*revm_run(int ac, char **av)
 {
 
   /* Do not handle signals in debugger mode */
@@ -227,5 +227,8 @@ int		revm_run(int ac, char **av)
   revm_prompt_log();
 
   /* Now run f0r3st */
-  return (revm_loop(ac, av));
+  revm_loop(ac, av);
+
+  /* Always return the current working object */
+  return (world.curjob->curfile);
 }

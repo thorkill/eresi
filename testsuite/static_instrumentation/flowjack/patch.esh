@@ -1,14 +1,8 @@
 #!../../../elfsh/elfsh32
 ## 
-## patch.esh in 
+## patch.esh in testsuite for ERESI
 ## 
-## Author  : <sk at devhell dot org>
-## Started : Tue Oct  7 02:32:30 2003
-## Updated : Tue Oct  7 02:39:15 2003
-##
 
-exec gcc -c infected.c
-exec gcc -o target target.c
 load target
 load infected.o
 switch 1

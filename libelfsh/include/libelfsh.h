@@ -876,47 +876,8 @@ typedef struct	s_bp
   u_char	flags;		/* !< @brief Breakpoint flags */
 }		elfshbp_t;
 
-/**
- * Trace structure 
- */
-typedef struct 	s_traces_args
-{
-  char		*name;
-  char		*typename;
-  int		size;
-}		elfshtracesargs_t;
-
-/**
- * Documentation missing.
- */
-typedef struct 	s_traces
-{
-#define ELFSH_TRACES_TYPE_DEFAULT "global"
-#define ELFSH_TRACES_FUNC_SIZE 256
-  char	       	funcname[ELFSH_TRACES_FUNC_SIZE];
-  elfshobj_t	*file;
-  u_char	enable;
-  u_int		offset;
-
-#define ELFSH_ARG_INTERN 0
-#define ELFSH_ARG_EXTERN 1
-  u_char	scope;
-
-#define	ELFSH_ARG_SIZE_BASED 0
-#define ELFSH_ARG_TYPE_BASED 1
-  u_char	type;
-
-  eresi_Addr	vaddr;
-
-#define ELFSH_TRACES_MAX_ARGS 20
-  elfshtracesargs_t arguments[ELFSH_TRACES_MAX_ARGS];
-  u_int		argc;
-}		elfshtraces_t;
-
 /* Extern data */
 extern libworld_t	dbgworld;
-extern hash_t 		traces_table;
-extern hash_t		exclude_table;
 
 #if defined(KERNSH)
 #include "libkernsh.h"
@@ -1010,6 +971,8 @@ int		elfsh_shift_syms(elfshobj_t *file, elfshsect_t *symtab,
                        eresi_Addr limit, int inc);
 int		elfsh_resolv_remote_function(elfshobj_t *filein, eresi_Addr vaddrin,
 					     elfshobj_t **fileout, eresi_Addr *vaddrout);
+elfshobj_t   	*elfsh_symbol_search(elfshobj_t *file, char *name);
+
 
 /* obj.c */
 elfshobj_t	*elfsh_load_obj(char *name);
@@ -1438,6 +1401,8 @@ elfshsect_t *   elfsh_fixup_sctndx(elfshsect_t *symtab);
 /* save.c */
 int		elfsh_save_relocate(elfshobj_t *file);
 int		elfsh_save_obj(elfshobj_t *file, char *name);
+elfshobj_t	*elfsh_save_preconds(elfshobj_t *file);
+int		elfsh_store_obj(elfshobj_t *file, char *name);
 
 /* copy.c */
 elfshobj_t	*elfsh_copy_obj(elfshobj_t *file);

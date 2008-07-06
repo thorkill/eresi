@@ -13,25 +13,30 @@ RM			= rm -f
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
 			-I../libasm/include/ -I../libaspect/include/        \
-                        -I../libelfsh/include/ -DERESI32 $(BUILDOP)
+                        -I../libelfsh/include/ -DERESI32 $(BUILDOP)         \
+			-I../libedfmt/include/
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DELFSH_INTERN     \
 			-I../libasm/include/ -I../libaspect/include/        \
-                        -I../libelfsh/include/ -DERESI64 $(BUILDOP)
-SRC			= errfunc.c save.c search.c search_addr.c delete.c  \
+                        -I../libelfsh/include/ -DERESI64 $(BUILDOP)	    \
+			-I../libedfmt/include/
+SRC			= errfunc.c save.c search_addr.c delete.c  \
 			check.c check_untracable.c func_add.c func_remove.c \
 			func_exclude.c func_enable.c func_disable.c	    \
-			func_status.c traces.c
+			func_status.c trace_create.c func_search.c          \
+			trace_list.c trace_flush.c trace_run.c func_match.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 NAME32			= libetrace32
 NAME64			= libetrace64
+
+LDFLAGS			= 
 
 all			: all32 all64
 
 all32			: $(OBJ32)
 			@$(CC) -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect32 -DERESI32 \
-			-lelfsh32 -L../libelfsh/ -shared $(OBJ32) -o $(NAME32).so
+			-L../libelfsh/ -lelfsh32 -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
@@ -39,7 +44,7 @@ all32			: $(OBJ32)
 all64			:  $(OBJ64)
 			@$(CC) -L../liballocproxy/ \
 			-lallocproxy -L../libaspect/ -laspect64 -DERESI64 \
-			-lelfsh64 -L../libelfsh/ -shared $(OBJ64) -o $(NAME64).so 
+			-L../libelfsh/ -lelfsh64 -shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o

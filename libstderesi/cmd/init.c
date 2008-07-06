@@ -7,6 +7,11 @@
 */
 #include <libstderesi.h>
 
+/* The command hash table : hash the command name and returns a revmcmd_t */
+hash_t		cmd_hash;
+
+/* Tracing subcommands hash */
+hash_t		traces_cmd_hash;
 
 /** 
  * @brief Setup the command hash table 
@@ -18,6 +23,7 @@ void		eresi_commands_init()
   unsigned int	index;
 
   hash_init(&cmd_hash, "commands", 101, ASPECT_TYPE_UNKNOW);
+  hash_init(&traces_cmd_hash  , "traces", 11, ASPECT_TYPE_UNKNOW);
 
   /* Interactive mode / Scripting mode commands */
   if (world.state.revm_mode != REVM_STATE_CMDLINE)
@@ -196,6 +202,17 @@ void		eresi_commands_init()
   revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
   revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
   revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+
+  /* Setup all used sub functions */
+  traces_addcmd("add"      , (void *) traces_add      , 2, 1);
+  traces_addcmd("rm"       , (void *) traces_rm       , 2, 1);
+  traces_addcmd("exclude"  , (void *) traces_exclude  , 2, 1);
+  traces_addcmd("rmexclude", (void *) traces_rmexclude, 2, 1);
+  traces_addcmd("enable"   , (void *) traces_enable   , 2, 1);
+  traces_addcmd("disable"  , (void *) traces_disable  , 2, 1);
+  traces_addcmd("create"   , (void *) traces_create   , 2, 1);
+  traces_addcmd("delete"   , (void *) traces_delete   , 2, 0);
+  traces_addcmd("flush"    , (void *) traces_flush    , 2, 0);
 
   /* Base type declarations commands */
   typeinfo = aspect_basetype_get(&typenbr);

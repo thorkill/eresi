@@ -11,9 +11,8 @@ SRC	= etrel_inject.c
 OBJ	= $(SRC:.c=.o)
 CC	= gcc
 
-LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm    \
-	-L../../../../liballocproxy -lallocproxy -L../../../../libaspect/ \
-	-laspect32 -lpthread -L../../../../libetrace -letrace32
+LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm32    \
+	-L../../../../libaspect/ -laspect32 -lpthread
 OPT	= -O2 -I../../../../libelfsh/include/ -I../../../../libmjollnir/include/ \
 	-I../../../../libaspect/include/ $(BITS) -g3
 
@@ -26,11 +25,11 @@ RM	= rm -f
 CFLAGS	= $(OPT)
 PAXCTL	= /sbin/paxctl
 
+all32: all
 all	: $(OBJ)
 	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
-	$(CC) $(OPT) $(HOSTSRC) #-m64
-	#@strip a.out
-	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c #-m64
+	$(CC) $(OPT) $(HOSTSRC)
+	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c
 
 	@$(PAXCTL) -m -s -p -r -x ../../../../vm/elfsh 2>/dev/null || \
 	echo Test compiled succesfully. You can also install paxctl for pax tests.

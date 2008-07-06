@@ -10,10 +10,8 @@
 ** $Id: func_enable.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
-#include "libetrace-extern.h"
+
 
 /**
  * Enable the function from the trace table 
@@ -22,7 +20,7 @@
  */
 int			etrace_funcenable(char *trace, char *name)
 {
-  elfshtraces_t		*ret_trace;
+  trace_t		*ret_trace;
   hash_t		*table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -31,7 +29,7 @@ int			etrace_funcenable(char *trace, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  table = etrace_gettrace(trace);
+  table = etrace_get(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -68,7 +66,7 @@ int			etrace_funcenableall(char *trace)
   if (!trace)
     trace = ELFSH_TRACES_TYPE_DEFAULT;
 
-  etrace_inittrace();
+  etrace_init_trace();
 
   keys = hash_get_keys(&traces_table, &keynbr);
 
@@ -84,6 +82,41 @@ int			etrace_funcenableall(char *trace)
 
       hash_free_keys(keys);
     }  
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+/**
+ * Enable a function from a trace 
+ * @param file target
+ * @param name function name
+ * @param optarg trace name (optional)
+ */
+int		traces_enable(elfshobj_t *file, char *name, char **optarg)
+{
+  char		buf[BUFSIZ];  
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!strcmp(name, "all"))
+    {
+      if (etrace_funcenableall(optarg ? *optarg : NULL) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Enable all functions failed", -1);      
+    }
+  else
+    {
+      if (etrace_funcenable(optarg ? *optarg : NULL, name) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Enable function failed", -1);
+    }
+
+  snprintf(buf, BUFSIZ - 1, "\t[*] Enabled function %s successfully from trace %s\n\n",
+	   name, optarg && *optarg ? *optarg : ELFSH_TRACES_TYPE_DEFAULT);
+  aspectworld.profile(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -17,7 +17,6 @@ NAME64		= ../revm-io.64.o
 
 CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)           \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
-		-I../../elibc/include/					     \
 		-I../../libui/include/ -I../../libasm/include/               \
 		-I../../libmjollnir/include/ -I../../libaspect/include/      \
 		 -I../../libdump/include/ $(BUILDOP) -DELFSH_INTERN          \
@@ -25,7 +24,6 @@ CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)           \
 
 CFLAGS64	+= -fPIC -g3 -Wall -I../include -Iinclude $(DYNOPT) \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
-		-I../../elibc/include/					     \
 		-I../../libui/include/ -I../../libasm/include/               \
 		-I../../libmjollnir/include/ -I../../libaspect/include/      \
 		 -I../../libdump/include/ -DELFSH_INTERN $(STATOPT2)         \

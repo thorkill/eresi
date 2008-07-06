@@ -49,7 +49,6 @@
 #endif
 
 #include "libelfsh.h"
-//#include "libetrace.h"
 #include "libedfmt.h"
 #include "libaspect.h"
 
@@ -87,7 +86,6 @@ extern asm_processor	proc;
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
-#define __DEBUG_TRACE__		0
 #define	__DEBUG_GRAPH__		0
 #define __DEBUG_ARG_COUNT__	0
 #define	__DEBUG_EXPRS__		0
@@ -128,9 +126,7 @@ extern asm_processor	proc;
 #define RET(a)			PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, a)
 #define RETERR(a)		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, a, -1)
 #define	PERROR_RET(a, b)	{ perror(a); RETERR (b);		      }
-#define	PRINTABLE(c)		(c >= 32 && c <= 126)
 #define REGX_IS_USED(a)		a
-#define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	IS_BLANK(c)		(c == ' ' || c == '\t')
 
 #define	REVM_VAR_ARGC		"$#"
@@ -228,9 +224,6 @@ extern asm_processor	proc;
 #define	REVM_CONFIG		".eresirc"
 #define	REVM_FIFO_C2S		"/tmp/.revm.io.c2s"
 #define	REVM_FIFO_S2C		"/tmp/.revm.io.s2c"
-
-/* Traces directory */
-#define	REVM_TRACE_REP		".etrace"
 
 /* For revm_object_display() */
 #define	REVM_VIEW_HEX		0
@@ -331,22 +324,7 @@ typedef struct		s_args
   struct s_args		*prev;
 }			revmargv_t;
 
-
-/* Trace structures, used by the tracer */
-typedef struct		s_revmtraces
-{
-  int			(*exec)(elfshobj_t*, char *, char **);	/* Function used */
-
-  /* Unexistant (0), optional (1), needed (2) */
-  char			flagName;	/* Need a first argument */
-  char			flagArg;       	/* Need a second argument */
-}			revmtraces_t;
-
-
-
 #include <libmjollnir.h>
-
-
 
 /* REVM module structure */
 typedef struct	      s_module
@@ -493,7 +471,7 @@ extern hash_t           bg_color_hash; 	/* colors def */
 extern hash_t           fg_color_hash; 	/* colors def */
 extern hash_t           t_color_hash;  	/* colors type */
 
-extern hash_t		traces_cmd_hash;/* trace cmd table */
+//extern hash_t		traces_cmd_hash;/* trace cmd table */
 extern hash_t		goto_hash;	/* goto hash */
 
 /* Lattice for I/O */
@@ -646,25 +624,8 @@ char            **revm_doargv(u_int nbr, u_int *argc, char *buf);
 /* String functions */
 int		revm_strtable_add(char *string);
 
-/* Trace functions */
-int             traces_addcmd(char *cmd, void *exec, char flagName, char flagArg);   
-int             traces_add(elfshobj_t *file, char *name, char **optarg);  
-int             traces_rm(elfshobj_t *file, char *name, char **optarg);  
-int             traces_exclude(elfshobj_t *file, char *freg, char **oreg);  
-int             traces_rmexclude(elfshobj_t *file, char *freg, char **oreg);  
-int             traces_enable(elfshobj_t *file, char *name, char **optarg);  
-int             traces_disable(elfshobj_t *file, char *name, char **optarg);  
-int             traces_create(elfshobj_t *file, char *name, char **optarg);  
-int             traces_delete(elfshobj_t *file, char *name, char **optarg);  
-int             traces_flush(elfshobj_t *file, char *name, char **optarg);  
-int             traces_list(elfshobj_t *file, char *name, char **optarg);  
-int             traces_run(elfshobj_t *file, char **argv, int argc);
-
 int		revm_traces_add_arguments(int argc, char **argv);
 edfmtfunc_t 	*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
-elfshtraces_t  	*revm_traces_createargs(elfshobj_t *file, char *name,
-					 edfmtfunc_t *func, eresi_Addr vaddr,
-					 u_char external);
 
 /* Hash functions */
 int             revm_hashunk(int i);
@@ -727,7 +688,7 @@ elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id);
 int		revm_init() __attribute__((constructor));
 int		revm_loop(int argc, char **argv);
 int		revm_setup(int ac, char **av, char mode, char side);
-int		revm_run(int ac, char **av);
+elfshobj_t	*revm_run(int ac, char **av);
 int		revm_config(char *config);
 void		revm_postexec(int retval);
 void		revm_cleanup();

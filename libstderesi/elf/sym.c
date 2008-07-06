@@ -10,8 +10,6 @@
 #include "libstderesi.h"
 
 
-
-
 /** 
  * Print the chosen symbol table 
  * @param file
@@ -176,6 +174,7 @@ int		cmd_sym()
   regex_t	*tmp;
   int		num;
   char		logbuf[BUFSIZ];
+  int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -186,13 +185,17 @@ int		cmd_sym()
 
   sct = elfsh_get_section_by_type(world.curjob->curfile, 
 				  SHT_SYMTAB, 0, NULL, NULL, 0);
-  snprintf(logbuf, BUFSIZ - 1, " [SYMBOL TABLE]\n [Object %s]\n\n",
+  snprintf(logbuf, BUFSIZ, " [SYMBOL TABLE]\n [Object %s]\n\n",
 	   world.curjob->curfile->name);
   revm_output(logbuf);
   FIRSTREGX(tmp);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     ds(world.curjob->curfile, sct, symtab, 
-			num, tmp, elfsh_get_symbol_name));
+  
+  ret = ds(world.curjob->curfile, sct, symtab, 
+	   num, tmp, elfsh_get_symbol_name);
+
+  fprintf(stderr, "IN CMD_SYM\n");
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 

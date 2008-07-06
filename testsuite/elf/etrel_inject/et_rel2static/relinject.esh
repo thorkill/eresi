@@ -1,4 +1,4 @@
-#!../../../vm/elfsh
+#!../../../../elfsh/elfsh32
 
 load a.out
 load rel.o

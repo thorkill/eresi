@@ -10,10 +10,8 @@
 ** $Id: func_remove.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-#include "libelfsh.h"
-#include "libasm.h"
 #include "libetrace.h"
-#include "libetrace-extern.h"
+
 
 /**
  * Delete the function from the trace table 
@@ -22,7 +20,7 @@
  */
 int			etrace_funcrm(char *trace, char *name)
 {
-  elfshtraces_t		*ret_trace;
+  trace_t		*ret_trace;
   hash_t		*table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -31,7 +29,7 @@ int			etrace_funcrm(char *trace, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
-  table = etrace_gettrace(trace);
+  table = etrace_get(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -58,12 +56,12 @@ int			etrace_funcrmall(char *trace)
   char			**keys;
   u_int			index;
   int			keynbr;
-  elfshtraces_t		*ret_trace;
+  trace_t		*ret_trace;
   hash_t		*table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  table = etrace_gettrace(trace);
+  table = etrace_get(trace);
 
   if (!table)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -75,7 +73,7 @@ int			etrace_funcrmall(char *trace)
     {
       for (index = 0; index < keynbr; index++)
 	{
-	  ret_trace = (elfshtraces_t *) hash_get(table, keys[index]);
+	  ret_trace = (trace_t *) hash_get(table, keys[index]);
 	  hash_del(table, keys[index]);
 
 	  if (ret_trace)
@@ -84,6 +82,35 @@ int			etrace_funcrmall(char *trace)
 
       hash_free_keys(keys);
     }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+ 
+/** 
+ * Delete a function from a trace 
+ * @param file target
+ * @param name function name
+ * @param optarg trace name (optional)
+ */
+int		traces_rm(elfshobj_t *file, char *name, char **optarg)
+{
+  char		buf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (!name || !name[0])
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid parameters", -1);
+
+  if (etrace_funcrm(optarg ? *optarg : NULL, name) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Delete function failed", -1);
+
+  snprintf(buf, BUFSIZ - 1, "\t[*] Deleted function %s successfully from trace %s\n\n",
+	   name, optarg && *optarg ? *optarg : ELFSH_TRACES_TYPE_DEFAULT);
+  aspectworld.profile(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

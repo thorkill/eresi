@@ -1,9 +1,9 @@
 /*
 ** @file libetrace.h
 **
+** Libetrace header file in the ERESI project
+**
 ** Started on  Sat Nov 17 12:10:12 2007 eau
-**
-**
 ** $Id: libetrace.h,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
@@ -25,15 +25,14 @@
 #include <sys/mman.h>
 #include <regex.h>
 
-//#include "elfsh-libc.h"
-
 #if !defined(__OpenBSD__)
 #include <elf.h>
 #endif
 
 #include "libaspect.h"
 #include "libelfsh.h"
-//#include <libelfsh/libelfsh-compat.h>
+#include "libasm.h"
+#include "libedfmt.h"
 
 #ifdef __BEOS__
 #include <bsd_mem.h>
@@ -57,11 +56,9 @@
 #include <sys/procfs.h>
 #endif
 
-#define TRACES_CFLOW 	1
-#define TRACES_PLT 	2
-#define TRACES_GOT 	3
-
-char buf[BUFSIZ];
+#define TRACES_CFLOW			1
+#define TRACES_PLT			2
+#define TRACES_GOT			3
 
 #define TRACE_USED_longjmp		0
 #define TRACE_USED__setjmp		1
@@ -73,23 +70,78 @@ char buf[BUFSIZ];
 #define TRACE_USED_exit			7
 #define TRACE_USED_MAX			8
 
-#define TRACE_UNTRACABLE_NAME "untracable"
+#define	TRACE_MATCH_ALLOCSTEP		10
 
-typedef struct _trace_used
+#define TRACE_UNTRACABLE_NAME		"untracable"
+#define TRACE_ADDR_TABLE		"addrtable"
+#define TRACE_PRE_FUNC			"func_"
+#define ELFSH_TRACES_TABLE_NAME 	"etrace_table"
+#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "etrace_exclude_table"
+#define ELFSH_TRACES_PATTERN 		"traces_%s"
+#define	REVM_TRACE_REP			".etrace"		/* Traces directory */
+
+
+typedef struct	s_trace_used
 {
-  char *name;
-  u_char exist;
-} trace_used, *ptrace_used;
+  char		*name;
+  u_char	exist;
+}		trace_used;
 
-/* Untracable table */
-hash_t traces_untracable;
-u_char untracable_ostype;
+/**
+ * Trace structure 
+ */
+typedef struct 	s_traces_args
+{
+  char		*name;
+  char		*typename;
+  int		size;
+}		traceargs_t;
 
-#define TRACE_FUNCTIONS_ADD(_name) \
-{ #_name, 0 }
 
-#define FUNC_BEGIN(_name) \
-(trace_functions[TRACE_USED_##_name].exist ? "old_" : "")
+/**
+ * Documentation missing.
+ */
+typedef struct 	s_traces
+{
+#define ELFSH_TRACES_TYPE_DEFAULT "global"
+#define ELFSH_TRACES_FUNC_SIZE 256
+  char	       	funcname[ELFSH_TRACES_FUNC_SIZE];
+  elfshobj_t	*file;
+  u_char	enable;
+  u_int		offset;
+
+#define ELFSH_ARG_INTERN 0
+#define ELFSH_ARG_EXTERN 1
+  u_char	scope;
+
+#define	ELFSH_ARG_SIZE_BASED 0
+#define ELFSH_ARG_TYPE_BASED 1
+  u_char	type;
+
+  eresi_Addr	vaddr;
+
+#define ELFSH_TRACES_MAX_ARGS 20
+  traceargs_t arguments[ELFSH_TRACES_MAX_ARGS];
+  u_int		argc;
+}		trace_t;
+
+
+/* Global variables for libetrace */
+extern hash_t		traces_table;
+extern hash_t		exclude_table;
+extern char		*last_parsed_function;
+extern trace_used	trace_functions[];
+extern int		trace_enabled_count;
+extern char		trace_file_base[];
+extern hash_t		traces_cmd_hash;
+extern hash_t		cmd_hash;
+
+#define TRACE_FUNCTIONS_ADD(_name)		{ #_name, 0 }
+#define FUNC_BEGIN(nam)				(trace_functions[TRACE_USED_##nam].exist ? "old_" : "")
+#define TRACE_GET_FUNC_NAME(_buf, _size, _addr) snprintf(_buf, _size, TRACE_PRE_FUNC "%s", _addr + 2)
+#define TRACE_MATCH_ALL(_funcname)		(!strcmp(_funcname, ".*"))
+
+
 
 /*
 trace_used trace_functions[] = 
@@ -107,28 +159,19 @@ trace_used trace_functions[] =
   */
 
 /**
- * @brief Store every traces, this table store another hash table for each key 
- */
-hash_t traces_table;
-
-/**
- * @brief Exclude hash table which contain regex
- */
-hash_t exclude_table;
-
-/**
  * @brief Whole active elements 
  */
-/* int trace_enabled_count = 0;*/
 
-#define ELFSH_TRACES_TABLE_NAME 	"etrace_table"
-#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "etrace_exclude_table"
-#define ELFSH_TRACES_PATTERN 		"traces_%s"
+/* trace_create.c */
+int		*etrace_init_trace();
+hash_t		*etrace_create_trace(char *trace);
+hash_t		*etrace_get(char *trace);
+char		*etrace_start_tracing(elfshobj_t *file);
+trace_t		*trace_param_create(elfshobj_t *file, char *name,
+				    edfmtfunc_t *func, eresi_Addr vaddr,
+				    u_char external);
+edfmtfunc_t 	*trace_func_debug_get(elfshobj_t *file, char *func_name, u_char external);
 
-/* traces.c */
-int		*etrace_inittrace();
-hash_t		*etrace_createtrace(char *trace);
-hash_t		*etrace_gettrace(char *trace);
 
 /* check.c */
 int		etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr, eresi_Addr *vaddr, u_char *dynsym);
@@ -138,7 +181,8 @@ int 		etrace_tracable(elfshobj_t *file, char *name,
 int		etrace_untracable(elfshobj_t *file, char *name);
 
 /* func_add.c */
-elfshtraces_t 	*etrace_funcadd(char *trace, char *name, elfshtraces_t *newtrace);
+trace_t 	*etrace_func_add(char *trace, char *name, trace_t *newtrace);
+int		traces_add(elfshobj_t *file, char *name, char **optarg);
 
 /* func_remove.c */
 int		etrace_funcrm(char *trace, char *name);
@@ -159,14 +203,23 @@ int		etrace_funcdisableall(char *trace);
 /* func_status.c */
 int		etrace_funcsetstatus(hash_t *table, int status);
 
+/* func_match.c */
+int		trace_match_funcname(elfshobj_t *file, char *funcname, char ***func_list);
+int		trace_match_addrtable(elfshobj_t *file, char ***func_list, u_int *count);
+
+/* func_search.c */
+edfmtfunc_t    	*trace_search_uni(elfshobj_t *file, char *name);
+edfmtfunc_t	*trace_search_unifile(edfmtfile_t *files, char *name);
+
 /* delete.c */
 int		etrace_deletetrace(char *trace);
 
 /* save.c */
-int		etrace_save(elfshobj_t *file);
+int		etrace_save_tracing(elfshobj_t *file);
+int		etrace_save_obj(elfshobj_t *file, char *name);
 
 /* search.c */
-elfshobj_t   	*etrace_search_sym(elfshobj_t *file, char *name);
+elfshobj_t   	*elfsh_symbol_search(elfshobj_t *file, char *name);
 
 /* search_addr.c */
 int		elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr);
@@ -174,5 +227,12 @@ int		elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr);
 
 /* errfunc.c */
 char		*etrace_geterrfunc();
+
+/* trace_run.c */
+int		traces_run(elfshobj_t *file, char **argv, int argc);
+int		trace_param_add(int argc, char **argv);
+
+/* trace_list.c */
+int		traces_list_detail(hash_t *table, char *name);
 
 #endif

@@ -21,8 +21,9 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
-			$(KERNSHINCINC) $(KERNSH) -DE2DBG_PRESENT			 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI32
+			-I../../libetrace/include/ $(KERNSHINCINC) $(KERNSH)     \
+			-DE2DBG_PRESENT -DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT)  \
+			-DERESI32
 
 CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libelfsh/include/ -I../../libdump/include/       \
@@ -30,8 +31,9 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
-			$(KERNSHINC) $(KERNSH) -DE2DBG_PRESENT			 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) -DERESI64
+			-I../../libetrace/include $(KERNSHINC) $(KERNSH)         \
+			-DE2DBG_PRESENT -DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT)  \
+			-DERESI64
 
 all			: all32 all64
 

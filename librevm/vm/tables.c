@@ -22,9 +22,6 @@ list_t		frames_list;
 /* Eresi expressions hash and expressions type hash */
 hash_t		exprs_hash;
 
-/* The command hash table : hash the command name and returns a revmcmd_t */
-hash_t		cmd_hash;
-
 /* The constants hash tables : ascii defines from elf.h and revm.h */
 hash_t		const_hash;
 
@@ -60,9 +57,6 @@ hash_t          t_color_hash;
 
 /* Grammar parser hash */
 hash_t		parser_hash;
-
-/* Trace hash */
-hash_t		traces_cmd_hash;
 
 /* Lib path store variable */
 char	       elfsh_libpath[BUFSIZ];
@@ -1000,21 +994,6 @@ void setup_color_type()
 }
 
 
-/** 
- * Setup all used sub functions 
- */
-void setup_traces_table()
-{
-  traces_addcmd("add"      , (void *) traces_add      , 2, 1);
-  traces_addcmd("rm"       , (void *) traces_rm       , 2, 1);
-  traces_addcmd("exclude"  , (void *) traces_exclude  , 2, 1);
-  traces_addcmd("rmexclude", (void *) traces_rmexclude, 2, 1);
-  traces_addcmd("enable"   , (void *) traces_enable   , 2, 1);
-  traces_addcmd("disable"  , (void *) traces_disable  , 2, 1);
-  traces_addcmd("create"   , (void *) traces_create   , 2, 1);
-  traces_addcmd("delete"   , (void *) traces_delete   , 2, 0);
-  traces_addcmd("flush"    , (void *) traces_flush    , 2, 0);
-}
 
 
 /** 
@@ -1034,7 +1013,6 @@ void		revm_tables_setup()
   hash_init(&fg_color_hash    , "fgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&bg_color_hash    , "bgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
-  hash_init(&traces_cmd_hash  , "traces"     , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
   hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
@@ -1052,7 +1030,6 @@ void		revm_tables_setup()
   setup_L2hash();
   setup_color();
   setup_color_type();
-  setup_traces_table();
   setup_grammar();
   aspect_init();
 }

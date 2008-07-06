@@ -29,8 +29,7 @@ SRCS_libasm 	=				\
 #
 
 ifeq ($(LIBASM_ENABLE_IA32), 1)
-SRCS_libasm +=	\
-		src/arch/ia32/init_i386.c	\
+SRCS_libasm +=	src/arch/ia32/init_i386.c	\
 		src/arch/ia32/register.c	\
 		src/arch/ia32/tables_i386.c	\
 		src/arch/ia32/output_ia32.c	\
@@ -55,8 +54,7 @@ endif
 
 ifeq ($(LIBASM_ENABLE_SPARC), 1)
 PACKED_ARCH += packed_sparc
-SRCS_libasm += 	\
-		src/arch/sparc/init_sparc.c	\
+SRCS_libasm += 	src/arch/sparc/init_sparc.c	\
 		src/arch/sparc/register.c	\
 		src/arch/sparc/tables_sparc.c	\
 		src/arch/sparc/output_sparc.c	\
@@ -81,8 +79,7 @@ endif
 
 ifeq ($(LIBASM_ENABLE_MIPS), 1)
 PACKED_ARCH += packed_mips
-SRCS_libasm +=	\
-		src/arch/mips/init_mips.c	\
+SRCS_libasm +=	src/arch/mips/init_mips.c	\
 		src/arch/mips/output_mips.c	\
 		src/arch/mips/tables_mips.c	\
 		src/arch/mips/mips_convert.c	\
@@ -101,18 +98,23 @@ endif
 CFLAGS += -DLIBASM_ENABLE_MIPS
 endif
 
-OBJS_libasm 	=	${SRCS_libasm:.c=.o} 
-OBJS_libasm	+=	${SRCS_hdl:.c=.o}
-NAME_libasm 	= 	libasm.a
-NAME_libasm_o	=	libasm.o
+OBJS32_libasm 	=	${SRCS_libasm:.c=.32.o} 
+OBJS32_libasm	+=	${SRCS_hdl:.c=.32.o}		
+OBJS64_libasm 	=	${SRCS_libasm:.c=.64.o} 
+OBJS64_libasm	+=	${SRCS_hdl:.c=.64.o}		
+
+NAME32_libasm 	= 	libasm32.a
+NAME32_libasm_o	=	libasm32.o
+NAME64_libasm 	= 	libasm64.a
+NAME64_libasm_o	=	libasm64.o
 
 SRCS_sparc	=	tools/sparc_mydisasm.c
 OBJS_sparc	=	${SRCS_sparc:.c=.o}
 NAME_sparc	=	test_sparc
 
-CFLAGS 		+= 	-Iinclude -Isrc/include -Wall -g3 -fPIC -DERESI32 \
-			-I../libaspect/include
-#CFLAGS		+=	-O2
+CFLAGS32 	= $(CFLAGS) -Iinclude -Isrc/include -Wall -g3 -fPIC -I../libaspect/include -DERESI32
+CFLAGS64 	= $(CFLAGS) -Iinclude -Isrc/include -Wall -g3 -fPIC -I../libaspect/include -DERESI64
+
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc -E
@@ -120,8 +122,9 @@ LD		?=	ld
 CP 		= 	cp
 
 
-
-all:	libasm.so
+all:	all32 all64
+all32: 	libasm32.so
+all64: 	libasm64.so
 
 #src/arch/ia32/packed_handlers.c:
 #	cat ${SRCS_IA32} > src/arch/ia32/packed_handlers.c
@@ -136,28 +139,42 @@ dep:
 	@sh configure
 	@rm -f src/build.o
 
-libasm.so: $(PACKED_ARCH) $(OBJS_libasm)
-	$(LD) -L../libaspect/ -laspect32 -shared ${OBJS_libasm} -o libasm.so
-	ar rc ${NAME_libasm} ${OBJS_libasm}
-#echo "[AR] ${NAME_libasm}"
-	${RANLIB} ${NAME_libasm}
+libasm32.so: $(PACKED_ARCH) $(OBJS32_libasm)
+	$(LD) -L../libaspect/ -laspect32 -shared ${OBJS32_libasm} -o libasm32.so
+	ar rc ${NAME32_libasm} ${OBJS32_libasm}
+#echo "[AR] ${NAME32_libasm}"
+	${RANLIB} ${NAME32_libasm}
 #echo "[RANLIB] ${NAME_libasm}"
-	$(LD) -r $(OBJS_libasm) -o ${NAME_libasm_o}
-#echo "[CC -shared] libasm.so"
+	$(LD) -r $(OBJS32_libasm) -o ${NAME32_libasm_o}
+#echo "[CC -shared] libasm32.so"
 ifeq ($(IRIX),1)
-	$(LD) ${OBJS_libasm} -o libasm.so -shared
+	$(LD) ${OBJS32_libasm} -o libasm32.so -shared
 else
-	$(CC) ${OBJS_libasm} -o libasm.so -shared
+	$(CC) ${OBJS32_libasm} -o libasm32.so -shared
+endif
+
+libasm64.so: $(PACKED_ARCH) $(OBJS64_libasm)
+	$(LD) -L../libaspect/ -laspect64 -shared ${OBJS64_libasm} -o libasm64.so
+	ar rc ${NAME64_libasm} ${OBJS64_libasm}
+#echo "[AR] ${NAME64_libasm}"
+	${RANLIB} ${NAME64_libasm}
+#echo "[RANLIB] ${NAME64_libasm}"
+	$(LD) -r $(OBJS64_libasm) -o ${NAME64_libasm_o}
+#echo "[CC -shared] libasm64.so"
+ifeq ($(IRIX),1)
+	$(LD) ${OBJS64_libasm} -o libasm64.so -shared
+else
+	$(CC) ${OBJS64_libasm} -o libasm64.so -shared
 endif
 
 clean:
-	$(RM) ${OBJS_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
+	$(RM) ${OBJS32_libasm} ${OBJ64_libasm} ${OBJS_mydisasm} ${OBJS_cmpdump} Makefile.inc
 	find .   -name '*~' -exec rm -f {} \;
 	find src -name '*.o' -exec rm -rf {} \;
 	find src -name 'packed_handlers.c' -exec rm -rf {} \;
 
 fclean: clean
-	$(RM) ${NAME_libasm} ${NAME_libasm_o} ${NAME_mydisasm} ${NAME_cmpdump}
+	$(RM) ${NAME32_libasm} ${NAME64_libasm} ${NAME_mydisasm} ${NAME_cmpdump}
 	$(RM) *.so *.o *.a
 	$(RM) mydisasm
 
@@ -165,17 +182,22 @@ tags:
 	$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
 	echo TAGS generated succesfully
 
-.c.o:
-	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
+#.c.o:
+#	$(CC) $(CFLAGS) ${DBGFLAGS} -c $*.c -o $*.o
 #echo "[CC] $*.o"
 
 docs:
 	doxygen doc/doxygen.conf
 
-mydisasm:
+mydisasm32:
 	$(CC) -g3 -I../libelfsh/include/ -I../libaspect/include/ -I./include/ \
 	tools/mydisasm.c -DERESI32 -o ./mydisasm -L ../libelfsh/ -lelfsh32 \
-	-L../libaspect/ -laspect32 -L./ -lasm -L../libetrace/ -letrace32
+	-L../libaspect/ -laspect32 -L./ -lasm32
+
+mydisasm64:
+	$(CC) -g3 -I../libelfsh/include/ -I../libaspect/include/ -I./include/ \
+	tools/mydisasm.c -DERESI64 -o ./mydisasm -L ../libelfsh/ -lelfsh64 \
+	-L../libaspect/ -laspect64 -L./ -lasm64
 
 test:
 	(cd testsuite/ia32 && ${SHELL} launch_test.sh)
@@ -183,10 +205,15 @@ test:
 Makefile.inc:	
 	$(SHELL) configure
 
-
 packed_ia32:
 	cat src/arch/ia32/handlers/*.c src/arch/ia32/operand_handlers/*.c > src/arch/ia32/packed_handlers.c
 packed_sparc:
 	cat src/arch/sparc/handlers/*.c src/arch/sparc/operand_handlers/*.c > src/arch/sparc/packed_handlers.c
 packed_mips:
 	cat src/arch/mips/handlers/*.c src/arch/mips/operand_handlers/*.c > src/arch/mips/packed_handlers.c
+
+%.32.o 		: %.c
+		$(CC) $(CFLAGS32) -c -o $@ $<
+
+%.64.o 		: %.c
+		$(CC) $(CFLAGS64) -c -o $@ $<

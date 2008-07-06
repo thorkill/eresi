@@ -4,16 +4,11 @@
 **
 ** @brief This file contain trace save function.
 **
-**
 ** $Id: save.c,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
-
 #include "libetrace.h"
-#include "libetrace-extern.h"
 
-/* This buffers are used to generate the file */
-char		bufex[BUFSIZ];
 
 /**
  * Check if this function name is excluded
@@ -81,7 +76,7 @@ static int		elfsh_check_trace_functions(elfshobj_t *file)
 }
 
 /* Queue pointers */
-elfshtraces_t **trace_queue = NULL;
+trace_t **trace_queue = NULL;
 int queue_count = 0;
 #define ELFSH_TRACES_DEFAULT_STEP 20
 int queue_step = 0;
@@ -91,10 +86,10 @@ int queue_step = 0;
  * The aglorithm is two differents function then I don't wanna
  * recheck which function must be traced.
  * @param elm function to queue
- * @see etrace_save_table
- * @see etrace_save
+ * @see etrace_save_tracing_table
+ * @see etrace_save_tracing
  */
-static int		etrace_queue_add(elfshtraces_t *elm)
+static int		etrace_queue_add(trace_t *elm)
 {
   u_int			index;
 
@@ -104,7 +99,7 @@ static int		etrace_queue_add(elfshtraces_t *elm)
     {
       queue_step = ELFSH_TRACES_DEFAULT_STEP;
       XALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, 
-	     sizeof(elfshtraces_t)*queue_step, -1);
+	     sizeof(trace_t)*queue_step, -1);
     }
   else
     {
@@ -118,7 +113,7 @@ static int		etrace_queue_add(elfshtraces_t *elm)
       
       queue_step += ELFSH_TRACES_DEFAULT_STEP;
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, trace_queue,
-	     sizeof(elfshtraces_t)*queue_step, -1);
+	     sizeof(trace_t)*queue_step, -1);
     }
 
   trace_queue[queue_count++] = elm;
@@ -149,16 +144,18 @@ static int		etrace_queue_clean()
  * @param file object (target)
  * @param table a trace hash table
  */
-static int		etrace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
+static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
 {
   int			z = 0;
   u_int			index;
   int			keynbr;
   char			**keys;
-  elfshtraces_t		*ret_trace;
+  trace_t		*ret_trace;
   char			*start;
   int			ret;
   u_char		typed;
+  char			bufex[BUFSIZ];
+
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -282,7 +279,7 @@ static int		etrace_save_table(FILE *fp, elfshobj_t *file, hash_t *table)
  * @param file target file that is a copy of the original
  * @see cmd_save
  */
-int			etrace_save(elfshobj_t *file)
+int			etrace_save_tracing(elfshobj_t *file)
 {
   u_int			index;
   int			keynbr;
@@ -301,6 +298,7 @@ int			etrace_save(elfshobj_t *file)
   elfsh_Sym		*dst;
   int			err;
   char			*system[6];
+  char			buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -603,7 +601,7 @@ int			etrace_save(elfshobj_t *file)
       table = hash_get(&traces_table, keys[index]);
       
       if (table)
-	etrace_save_table(fp, file, table);
+	etrace_save_tracing_table(fp, file, table);
     }
 
   hash_free_keys(keys);
@@ -712,5 +710,40 @@ int			etrace_save(elfshobj_t *file)
   /* Ask for rewrite the SHT */
   file->hdr->e_shoff = 0;
   
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/**
+ * @brief Save a binary file on disk for tracing (interface function).
+ * @param file The file to be traced
+ * @param name Name for saved file (full path).
+ * @return Success (0) or Error (-1).
+ */
+int		etrace_save_obj(elfshobj_t *file, char *name)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Sanity checks */
+  if (file == NULL || file->sht == NULL || file->sectlist == NULL ||
+      (file->pht == NULL && elfsh_get_objtype(file->hdr) != ET_REL))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid elfshobj_t parameter",  -1);
+
+  file = elfsh_save_preconds(file);
+  if (!file)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to prepare file for saving",  -1);
+  
+  /* Apply awaiting function tracing hooks */
+  if (file->hdr->e_type != ET_REL && etrace_save_tracing(file) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Tracing failed", -1);
+  
+  if (elfsh_store_obj(file, name) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to save object", -1);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

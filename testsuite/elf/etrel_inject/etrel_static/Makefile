@@ -7,6 +7,8 @@
 .PHONY: libc libcnonshared libpthread libpthreadnonshared libnsl
 
 
+all64: all
+all32: all
 all: 	libc libcnonshared libpthread libpthreadnonshared libnsl
 	rm -f load_lib.esh
 	echo "#!../../../vm/elfsh" > load_lib.esh

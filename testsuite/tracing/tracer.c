@@ -49,7 +49,7 @@ int		main(int argc, char **argv)
   traces_add(host, "testcrypt", mainnode);
 
   /* Save it */
-  if (elfsh_save_obj(host, TRACED_FILE) < 0)
+  if (etrace_save_obj(host, TRACED_FILE) < 0)
     goto err;
 
   printf("[*] %s traced into %s\n", HOST_FILE, TRACED_FILE);
