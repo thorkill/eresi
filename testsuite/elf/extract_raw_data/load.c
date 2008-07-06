@@ -41,6 +41,7 @@ int	test_binary(char *binary)
   int		ret;
   int		foffset;
   int		to_ret;
+  elfshsect_t	*sect;
 
   char	*sym_name = ".text";
 
@@ -61,9 +62,17 @@ int	test_binary(char *binary)
     }
   
   len = sym->st_size;
+
   /** Get file offset from that symbol */
   printf("INFO vaddr = %08X size = %i\n", sym->st_value, sym->st_size);
-  foffset = elfsh_get_foffset_from_vaddr(obj, sym->st_value);
+  sect = elfsh_get_section_by_name(obj, sym_name, NULL, NULL, NULL);
+  if (!sect)
+    {
+      printf("ERR failed loading section %s", sym_name);
+      return (-1);
+    }
+
+  foffset = sect->shdr->sh_offset;
   printf("INFO file offset of %s = %08X\n", sym_name, foffset);
 
   ptr = malloc(len);
@@ -72,6 +81,7 @@ int	test_binary(char *binary)
   if (len != ret)
     {
       printf("ERR error : read only %i bytes on %i\n", ret, len);
+      profiler_error();
       to_ret = 0;
       goto leave;
     }

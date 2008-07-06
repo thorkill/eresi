@@ -13,12 +13,12 @@ $(info Using LDFLAGS = $(LDFLAGS))
 
 all32: all
 all:	$(OBJS)
-	cc -o $(NAME) $(OBJS) $(LDFLAGS)
+	$(CC) -o $(NAME) $(OBJS) $(LDFLAGS)
 
 fclean: clean
 	$(RM) $(NAME)
 clean:
 	$(RM) $(OBJS) *~
 
-%.c:%.o
-	$(CC) -c $< -o $@ $(CFLAGS) 
+%.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS) -g

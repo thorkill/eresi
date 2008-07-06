@@ -3,11 +3,9 @@
  * @ingroup libelfsh
 ** section.c for libelfsh
 ** 
-** @brief All handlers and lowlevel routines for sections management
+** @brief All handlers and lowlevel routines for sections management.
 ** 
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
-** 
-**
 ** $Id: section.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
@@ -193,13 +191,12 @@ int		elfsh_add_section(elfshobj_t	*file,
 
 
 /**
- * @brief Add a runtime section
- * This function is internal, do not use it directly 
- * @param file
- * @param sct
- * @param range
- * @param dat
- * @return
+ * @brief Add a runtime section. This function is internal, do not use it directly.
+ * @param file The host file to add a section to.
+ * @param sct The section descriptor to add.
+ * @param range The index where to add the section.
+ * @param dat The data to put in the section.
+ * @return Success (0) or Error (-1).
  */
 int             elfsh_add_runtime_section(elfshobj_t    *file,
 					  elfshsect_t   *sct,
@@ -502,18 +499,18 @@ elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
 }
 
 /**
- * Load the code of a section giving its header
- * Should be called after a elfsh_get_section_by_{name,type} to load the code
- * @param file
- * @param shdr
- * @return
+ * @brief Load the code of a section giving its header. This function should be called after 
+ * a elfsh_get_section_by_{name,type} to load the code.
+ * @param file Parent file.
+ * @param shdr Section header indicating where to load the section data from.
+ * @return Return a pointer on the loaded section descriptor (elfshsect_t) or NULL if error.
  */
 void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr)
 {
   void		*sct;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   if (shdr == NULL || !shdr->sh_size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot load NULL section", NULL);
@@ -525,10 +522,10 @@ void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr)
 }
 
 /**
- * Fill an anonymous (unknown content) section 
- * @param file
- * @param sect
- * @return
+ * @brief Load an anonymous (unknown content) section.
+ * @param file The parent file.
+ * @param sect The section to be loaded.
+ * @return Return a pointer on the loaded section descriptor (elfshsect_t) or NULL if error.
  */
 void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 {
@@ -548,9 +545,9 @@ void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 }
 
 /**
- * Creation a new orphelin section
- * @param name
- * @return
+ * @brief Create a new orphelin section from its name.
+ * @param name The name of the section to create.
+ * @return The descriptor of the newly created function.
  */
 elfshsect_t	*elfsh_create_section(char *name)
 {
@@ -568,11 +565,11 @@ elfshsect_t	*elfsh_create_section(char *name)
 }
 
 /**
- * Return the parent section for this virtual address 
- * @param file
- * @param value
- * @param offset
- * @return
+ * @brief Return the parent section for its address.
+ * @param file The parent file.
+ * @param value The virtual address.
+ * @param offset Will be filled to indicate the offset within the section we want to read to.
+ * @return The section descriptor, or NULL if error.
  */
 elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 					  eresi_Addr   	value,
@@ -582,7 +579,7 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  if (file == NULL || NULL == value)
+  if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid parameter", NULL);    
 
@@ -1000,7 +997,7 @@ elfshsect_t		*elfsh_get_tail_rsection(elfshobj_t *file)
 */
 
 /**
- * Return the section list 
+ * @brief Return the section list 
  * @param file
  * @param num
  * @return
@@ -1022,7 +1019,7 @@ elfshsect_t		*elfsh_get_section_list(elfshobj_t *file, int *num)
 }
 
 /**
- * Return the section list 
+ * @brief Return the section list 
  * @param file
  * @param num
  * @return
@@ -1045,7 +1042,7 @@ elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
 
 
 /**
- * Return the section giving its index 
+ * @brief Return the section giving its index 
  * @param list
  * @param index
  * @return
@@ -1063,10 +1060,10 @@ elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list,
 }
 
 /**
- * Return the section giving its name 
- * @param file
- * @param name
- * @return
+ * @brief Return the section giving its name (internal handler).
+ * @param file The parent file where to read the section.
+ * @param name The name of the section.
+ * @return The section descriptor or NULL if error.
  */
 elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
 {
@@ -1077,11 +1074,11 @@ elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
 }
 
 /**
- * Section objects 'raw' child read access 
- * @param obj
- * @param off
- * @param sizelem
- * @return
+ * @brief Raw read access to a section data.
+ * @param obj The section to read.
+ * @param off The object index to read in the section, or 1 if reading raw.
+ * @param sizelem The object size within this section, or 1 if reading raw.
+ * @return A pointer on the section's data or NULL if error.
  */
 void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, 
 					u_int sizelem)
@@ -1109,13 +1106,13 @@ void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
 }
 
 /**
- * Section objects 'raw' child write access 
- * @param sect
- * @param off
- * @param data
- * @param size
- * @param sizelem
- * @return
+ * @brief Raw acess to section data.
+ * @param sect The section to access.
+ * @param off The offset within the section where to write.
+ * @param data The data to write (raw format).
+ * @param size The number of elements to write.
+ * @param sizelem The size of elements to write.
+ * @return Error (-1) or Success (0).
  */
 int		elfsh_write_section_data(elfshsect_t		*sect,
 					 u_int			off,
@@ -1143,9 +1140,9 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
 }
 
 /**
- * Is it a runtime section ?
- * @param sect
- * @return
+ * @brief Tell if a section exists on disk.
+ * @param sect The section
+ * @return Exist (0) or does not exist (1) on disk.
  */
 int		elfsh_section_is_runtime(elfshsect_t *sect)
 {
