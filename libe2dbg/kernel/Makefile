@@ -12,7 +12,7 @@ EXTRA_CFLAGS :=  -g3 -Wall -I/usr/include -I$(src)/include -I$(src)/../include \
                 -I$(src)/../../libstderesi/include/ -I$(src)/../../libmjollnir/include/  \
 		-I$(src)/../../libaspect/include -I$(src)/../../librevm/include/       \
 		-I$(src)/../../libedfmt/include/ -DELFSH_INTERN  -DE2DBG_INTERN \
-                -DERESI32 -Wno-strict-prototypes
+                -I$(src)/../../libetrace/include/ -DERESI32 -Wno-strict-prototypes
 
 EXTRAOBJ     := ../../libasm/libasm32.o ../../libmjollnir/libmjollnir32.o    \
 		../../libelfsh/libelfsh32.o ../../libedfmt/libedfmt32.o      \

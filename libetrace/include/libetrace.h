@@ -13,6 +13,8 @@
 
 #include "libvars.h"
 
+#ifndef __KERNEL__
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -28,11 +30,6 @@
 #if !defined(__OpenBSD__)
 #include <elf.h>
 #endif
-
-#include "libaspect.h"
-#include "libelfsh.h"
-#include "libasm.h"
-#include "libedfmt.h"
 
 #ifdef __BEOS__
 #include <bsd_mem.h>
@@ -55,6 +52,13 @@
 #elif !defined(__OpenBSD__)
 #include <sys/procfs.h>
 #endif
+
+#endif /* __KERNEL__ */
+
+#include "libaspect.h"
+#include "libelfsh.h"
+#include "libasm.h"
+#include "libedfmt.h"
 
 #define TRACES_CFLOW			1
 #define TRACES_PLT			2

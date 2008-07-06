@@ -11,7 +11,6 @@
 **
 */
 
-
 #ifndef EM_MIPS
  #define EM_MIPS 8
 #endif

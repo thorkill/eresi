@@ -217,10 +217,12 @@ typedef int32_t		elfsh_SAddr;
 
 #endif	/* BITS */
 
+
+
 /**
  * MIPS reginfo structure
  */
-typedef		struct 
+typedef		struct s_reginfo
 {
   elfsh_Word	ri_gprmask;
   elfsh_Word	ri_cprmask[4];

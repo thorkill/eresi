@@ -88,7 +88,7 @@ if [ $CHOSENBIT = "1" ]; then
 fi
 
 echo  " [*] Enabling ELF64/ELF32 support"
-BITS="-DELFSH64"
+BITS="-DERESI64"
 echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=""

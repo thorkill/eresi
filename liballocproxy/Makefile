@@ -1,7 +1,5 @@
 #
-# Makefile for libmalloc-e2dbg
-#
-# The ELF shell project 
+# Makefile for liballocproxy in the ERESI project
 #
 # Started Tue Oct 04 15:13:19 2005 mm
 # 
