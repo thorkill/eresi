@@ -190,7 +190,7 @@ extern asm_processor	proc;
 #define	ELFSH_DYNAMIC_MAX	35
 #define	ELFSH_EXTDYN_MAX	19
 #define ELFSH_MIPSDYN_MAX	43
-#define	ELFSH_ARCHTYPE_MAX	56
+#define	ELFSH_ARCHTYPE_MAX	95
 #define	ELFSH_EXTSEG_MAX	5
 #define	ELFSH_RELOC_i386_MAX	11
 #define	ELFSH_RELOC_IA64_MAX	81

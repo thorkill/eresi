@@ -43,7 +43,7 @@ all64: libaspect64.so
 
 clean		: 
 		@$(RM) \#* *\# *~ $(OBJ) $(OBJ32) $(OBJ64) .\#* include/\#* \
-		include/*\# include/*~ include/.\#*
+		include/*\# include/*~ include/.\#* $(NAME32).o $(NAME64).o
 
 fclean		: clean
 		@$(RM) *.so *.a

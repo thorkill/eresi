@@ -16,12 +16,13 @@ all32			:
 			$(MAKE) -C static_analysis all32
 			$(MAKE) -C static_instrumentation all32
 
-all64			: 
-			$(MAKE) -C debugging all64
-			$(MAKE) -C elf all64
-			$(MAKE) -C tracing all64
-			$(MAKE) -C static_analysis all64
-			$(MAKE) -C static_instrumentation all64
+all64			:
+			echo "Testsuite needs to be ported on 64 bits ! FIXME !"
+			#$(MAKE) -C debugging all64
+			#$(MAKE) -C elf all64
+			#$(MAKE) -C tracing all64
+			#$(MAKE) -C static_analysis all64
+			#$(MAKE) -C static_instrumentation all64
 
 clean		       :
 			$(MAKE) -C debugging clean

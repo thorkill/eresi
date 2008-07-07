@@ -1401,6 +1401,8 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_MIPS32));
     case EM_ARM:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ARM));
+    case EM_X86_64:
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_AMD64));
     default:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_ARCH_ERROR));
     }

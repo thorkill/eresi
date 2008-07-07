@@ -70,7 +70,7 @@ mod64			:
 			$(MAKE) -C user   all64
 
 $(DBGNAME64O)			:
-			@$(CC) -shared $(OBJ64) $(EXTRAOBJ64) $(UOBJ64) $(LDFLAGS64) \
+			@$(CC) -shared $(COBJ64) $(EXTRAOBJ64) $(UOBJ64) $(LDFLAGS64) \
 			$(KERNSHLIB64) -o $(DBGNAME64).so
 			@$(AR) $(DBGNAME64).a $(OBJ64)
 			@$(RANLIB) $(DBGNAME64).a
