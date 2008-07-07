@@ -2,9 +2,6 @@
 ** @file libmjollnir/src/blocks.c
 **
 ** Authors : sk, jfv, thorkill, strauss
-** 
-** Started : Thu May 29 20:39:14 2003 sk
-** Updated : Fri Dec 15 01:09:47 2006 jfv
 **
 */
 #include "libmjollnir.h"

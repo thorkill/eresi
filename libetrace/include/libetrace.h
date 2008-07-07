@@ -43,7 +43,7 @@
 #include <sys/ucontext.h>
 #endif
 
-#if !defined(sgi) && !defined(__OpenBSD__)
+#if !defined(sgi) && !defined(__OpenBSD__) && !defined(__FreeBSD__)
 #include <sys/user.h>
 #endif
 
