@@ -9,7 +9,7 @@ int asm_mips_prefx(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_cop1x temp;
 
    ins->instr = ASM_MIPS_PREFX;
-   ins->type = ASM_TYPE_LOAD | ASM_TYPE_ARCH;
+   ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_ARCH;
    mips_convert_format_cop1x(&temp, buf);
    ins->op[0].baser = temp.f1;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);

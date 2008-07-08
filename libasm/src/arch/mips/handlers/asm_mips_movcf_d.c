@@ -15,7 +15,7 @@ int asm_mips_movcf_d(asm_instr *ins, u_char *buf, u_int len,
       ins->instr = ASM_MIPS_MOVT_D;
    else
       ins->instr = ASM_MIPS_MOVF_D;
-   ins->type = ASM_TYPE_ARITH | ASM_TYPE_ARCH;
+   ins->type = ASM_TYPE_ARITH | ASM_TYPE_ARCH | ASM_TYPE_ASSIGN;
    mips_convert_format_r(&temp, buf);
    ins->op[0].regset = ASM_MIPS_REG_FPU;
    ins->op[0].baser = temp.sa;

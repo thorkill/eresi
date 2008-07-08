@@ -9,7 +9,7 @@ int asm_mips_dmtc2(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_cop2 temp;
 
    ins->instr = ASM_MIPS_DMTC2;
-   ins->type = ASM_TYPE_ARCH;
+   ins->type = ASM_TYPE_ARCH | ASM_TYPE_ASSIGN;
    mips_convert_format_cop2(&temp,buf);
    ins->op[0].baser = temp.rt;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);

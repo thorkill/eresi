@@ -9,7 +9,7 @@ int asm_mips_teqi(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_imm temp;
 
    ins->instr = ASM_MIPS_TEQI;
-   ins->type = ASM_TYPE_ARCH | ASM_TYPE_COMPARISON;
+   ins->type = ASM_TYPE_ARCH | ASM_TYPE_COMPARISON | ASM_TYPE_INT;
    mips_convert_format_i(&temp, buf);
    ins->op[0].baser = temp.rs;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);

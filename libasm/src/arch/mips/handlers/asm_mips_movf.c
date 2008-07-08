@@ -9,7 +9,7 @@ int asm_mips_movf(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_mov temp;
 
    ins->instr = ASM_MIPS_MOVF;
-   ins->type = ASM_TYPE_ARCH;
+   ins->type = ASM_TYPE_ARCH | ASM_TYPE_ASSIGN;
    mips_convert_format_mov(&temp,buf);
    ins->op[0].baser = temp.rd;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
