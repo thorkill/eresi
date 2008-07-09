@@ -16,12 +16,12 @@
 
 
 /**
- * Static hooking for Alpha64
+ * @brief Static hooking for Alpha64 (UNIMPLEMENTED)
  * @param sect elfsh section object
  * @param name the name of the section
  * @param sym the name of symbol
  * @param addr the address
- * @return
+ * @return Always -1 (UNIMPLEMENTED)
  */
 int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 			    char	*name,
@@ -51,7 +51,9 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
 
 
 
-/** ALTPLT hijacking on ALPHA64 
+/** 
+ * @brief ALTPLT hijacking on ALPHA64 
+ *
  * On ALPHA we dont have any relative operands while those
  * bytes are copied.
 
@@ -70,10 +72,10 @@ int	elfsh_cflow_alpha64(elfshobj_t  *sect,
  * If we dont do this ALTPLT hijack, we cannot call the original 
  * function from the hook function that was setup in PLT.
  *
- * @param file elfshobj
- * @param symbol elfsh symbol sturcture
- * @param addr address
- * @return
+ * @param file The parent file where redirection will take place.
+ * @param symbol Unused.
+ * @param addr Unused.
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_hijack_altplt_alpha64(elfshobj_t *file, 
 					    elfsh_Sym *symbol,
@@ -167,11 +169,11 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
 
 
 /**
- * PLT hijacking on ALPHA64 
- * @param file elfshobj
- * @param symbol elfsh symbol sturcture
- * @param addr address
- * @return
+ * @brief PLT redirection on ALPHA64 
+ * @param file The parent file where redirection take place.
+ * @param symbol Symbol indicating address to redirect.
+ * @param addr Address to redirect to.
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_hijack_plt_alpha64(elfshobj_t *file, 
 					 elfsh_Sym *symbol,
@@ -233,11 +235,10 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
 
 
 /**
- * Find the address of modgot entry for this value 
- *
- * @param modgot
- * @param addr
- * @return
+ * @brief Find the address of modgot entry from its value.
+ * @param modgot Section descriptor for .mod.o.got
+ * @param addr Address to find.
+ * @return The address of the correspinding MODGOT slot, or NULL if not found.
  */
 eresi_Addr	elfsh_modgot_find(elfshsect_t *modgot, eresi_Addr addr)
 {
@@ -263,11 +264,10 @@ eresi_Addr	elfsh_modgot_find(elfshsect_t *modgot, eresi_Addr addr)
 }
 
 /**
- * Handle the mod.o.got section 
- *
- * @param infile
- * @param modrel
- * @return
+ * @brief Create the mod.o.got section for a newly injected ET_REL object.
+ * @param infile Host file where the injection takes place.
+ * @param modrel Relocation section for the injected ET_REL object.
+ * @return Descriptor on the injected mod.o.got section or NULL if error.
  */
 elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 {
@@ -315,8 +315,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 	    needed++;
 	}
 
-
-  printf("Size for modgot = %u entries \n", needed);
+  //printf("Size for modgot = %u entries \n", needed);
 
   /* 
   ** Inject section. Here we are sure that it was loaded in last 
@@ -412,15 +411,15 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
 
 
 /**
- * Perform relocation on entry for ALPHA64 architecture.
+ * @brief Perform relocation on entry for ALPHA64 architecture.
  * Only the types that are needed for relocating ET_REL objects 
  * are filled, others might come on the need.
- * @param new
- * @param cur
- * @param dword
- * @param addr
- * @param mod
- * @return
+ * @param new The section to relocate within the host file.
+ * @param cur The relocation entry to perform.
+ * @param dword The location of the dword to relocate.
+ * @param addr Address value needed for performing relocation.
+ * @param mod Relocation section from the ET_REL object.
+ * @return Success (0) or Error (-1).
  */
 int       elfsh_relocate_alpha64(elfshsect_t       *new,
 				 elfsh_Rela        *cur,
@@ -651,8 +650,8 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
       break;
 
     default:
-PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
-		     -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unsupported relocation type",
+		   -1);
       break;
     }
   

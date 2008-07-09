@@ -16,17 +16,15 @@
 
 
 /**
- * The first PLT entry is always a special case and it is handled by this 
- * function 
- *
- * @param new
+ * @brief Patch the first PLT entry (a special case which must handled by this function).
+ * @param enew
  * @param off
- * @param symtab
- * @param file
- * @param extplt
- * @param plt
+ * @param symtab Section descriptor for the symbol table.
+ * @param file Host file.
+ * @param extplt Section descriptor for the previously injected .elfsh.extplt 
+ * @param plt Section descriptor for the .plt section.
  * @param diff
- * @return
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_altplt_firstent(elfshsect_t	*enew, 
 				      u_int		*off,
@@ -92,12 +90,11 @@ int		elfsh_altplt_firstent(elfshsect_t	*enew,
 
 
 /**
- * Copy the PLT of an ET_EXEC object for the ALTPLT technique.
- * Copy the GOT of an ET_EXEC object for the ALTGOT technique.
- *
- * @param file
- * @param mod
- * @return
+ * @brief Copy the PLT of an ET_EXEC object for the ALTPLT technique.
+ * and the GOT of an ET_EXEC object for the ALTGOT technique.
+ * @param file Host file.
+ * @param mod Always inject sections with size being a multiple of mod.
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 {
@@ -413,7 +410,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
 
 /** 
- * On MIPS there is no .plt section : call to libraries are done
+ * @brief On MIPS there is no .plt section : call to libraries are done
  * using an indirect jump on .got value directly from .text. If 
  * we want to be able to call the original function from the hook 
  * function, we need to create a plt-like section and mirror the
@@ -432,8 +429,8 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
  * technique (call's the original functions using the injected 'old_' 
  * symbol) just like ALTPLT redirection on other architectures. -mm
  *
- * @param file
- * @return
+ * @param file Host file.
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_build_plt(elfshobj_t *file)
 {
@@ -538,11 +535,10 @@ int		elfsh_build_plt(elfshobj_t *file)
 
 
 /**
- * This is the main entry point for the ALTPLT, ALTGOT, and EXTPLT techniques 
- *
- * @param file
- * @param modulo
- * @return
+ * @brief Main function performing ALTPLT, ALTGOT, and EXTPLT techniques.
+ * @param file The host file.
+ * @param modulo Always inject sections with a size being a multiple of mod.
+ * @return Success (0) or Error (-1).
  */
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo)
 {

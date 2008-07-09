@@ -1,18 +1,44 @@
 /*
 ** @file graph.c
 ** @ingroup libstderesi
-** @brief Dump graphviz output
+** @brief Dump graphviz output of call graph and control flow graph.
 **
 ** Started : Fri Mar  7 07:18:03 2003 jfv
-** Updated : Fri Dec 10 02:04:19 2006 jfv
-**
 ** $Id: graph.c,v 1.2 2008-02-16 12:32:27 thor Exp $
-**
 */
 #include "libstderesi.h"
 
 static hash_t   dumped;
 
+/**
+ * @brief Same than system() but gives hand without waiting.
+ * @param cmd The command to execute.
+ * @return Executed (0) or Failed (-1)
+ */
+int		revm_system_nowait(char *cmd)
+{
+  char		**argv;
+  int		blanks;
+  int		argc;
+  int		ret;
+
+  blanks = revm_findblanks(cmd);
+  argv = revm_doargv(blanks, &argc, cmd);
+  argv++;
+  switch (fork())
+    {
+    case 0:
+      ret = execvp(argv[0], argv);
+      printf("Failed to execute system(%s) without wait (line = %s) \n", 
+	     argv[0], cmd);
+      exit(ret);
+      break;
+    case -1:
+      return (-1);
+    default:
+      return (0);
+    }
+}
 
 /** 
  * Generate the legend for the graph in HTML format 
@@ -100,9 +126,9 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
  * Create .dot -> .png files and execute the graphic viewer
  * @param dotfile
  */
-int revm_graph_compile_graphic(char *dotfile)
+int	revm_graph_compile_graphic(char *dotfile)
 {
-  char buf[BUFSIZ];
+  char	buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -117,11 +143,12 @@ int revm_graph_compile_graphic(char *dotfile)
 		   "%s %s.png",
 		   (char *)config_get_data(ERESI_VMCONFIG_GRAPH_VIEWCMD),
 		   dotfile);
-	  system(buf);
+	  revm_system_nowait(buf);
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(1));
 }
+
 
 /**
  * Returns converted path name into string without '.'
@@ -350,7 +377,7 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
 }
 
 /* A recursive function for graphing in dot format */
-int		revm_graph_blocks(container_t *cntnr,
+int		revm_graph_blocks(container_t   *cntnr,
 				  int		 fd,
 				  eresi_Addr	min,
 				  eresi_Addr	max,
@@ -367,6 +394,8 @@ int		revm_graph_blocks(container_t *cntnr,
   mjrblock_t	*nextblk;    
   list_t	*linklist;
   listent_t	*curent;
+  char		*name;
+  elfsh_SAddr    offset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -380,6 +409,12 @@ int		revm_graph_blocks(container_t *cntnr,
   hash_add(&dumped, vaddr_str, cntnr);
 
   linklist = cntnr->outlinks;
+
+  /*
+  name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &offset);
+  if (!name)
+    name = "unresolved";
+  */
 
   snprintf(buf, sizeof(buf),
     	   "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
@@ -593,14 +628,14 @@ u_int		revm_get_min_param(void)
 
 
 /* Graph the binary */
-int			cmd_graph(void)
+int		cmd_graph(void)
 {
   container_t	*cntnr;
-  int			fd;
-  char		        buf[BUFSIZ];
-  u_int		        min;
-  u_int		        max;
-  char		        *dotfile;
+  int		fd;
+  char		buf[BUFSIZ];
+  u_int		min;
+  u_int		max;
+  char		*dotfile;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -617,14 +652,14 @@ int			cmd_graph(void)
     {
     case 0:
       
-      dotfile = revm_get_dotfile_name(NULL,"object");
+      dotfile = revm_get_dotfile_name(NULL, "object");
       
       revm_open_dot_file(dotfile, &fd);
 
       snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
       write(fd,buf,strlen(buf));
       
-      printf(" [*] Dumping %d functions\n", 
+      printf(" [*] Dumping %d functions\n\n", 
 	     world.mjr_session.cur->funchash.elmnbr);
       
       cntnr = mjr_get_container_by_vaddr(world.mjr_session.cur, 
@@ -697,17 +732,14 @@ int			cmd_graph(void)
 
 	    revm_graph_compile_graphic(dotfile);
 
-  	    printf(" [*] Dump function blocks\n");
+  	    revm_output(" [*] Dump function blocks\n\n");
   	  }
 	else
-  	  {
-  	    printf(" [!] Use help\n");
-  	  }
-	
+	  revm_output(" [!] Invalid syntax: help graph\n");
 	break;
 
     default:
-    	printf(" [!] use help \n");
+    	revm_output(" [!] Invalid syntax: use help \n");
     
   }
 

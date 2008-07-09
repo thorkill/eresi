@@ -13,8 +13,8 @@ OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 LD			?= ld
 RM			= rm -f
-NAME32			= ../revm-elf.32.o
-NAME64			= ../revm-elf.64.o
+NAME32			= ../std-elf.32.o
+NAME64			= ../std-elf.64.o
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
 			 -I../../libelfsh/include/ -I../../libetrace/include/     \

@@ -79,6 +79,9 @@ int		cmd_analyse()
 
  ret = mjr_analyse(&world.mjr_session, 0, 0); //addr, 0);
  
+ /* We certainly have inserted many new symbols */
+ elfsh_sync_sorted_symtab(world.curjob->curfile->secthash[ELFSH_SECTION_SYMTAB]);
+
  snprintf(logbuf, BUFSIZ - 1, " [*] Control Flow Analysis %s.\n",
 	  (!ret ? "completed successfully" : "failed"));
  revm_output(logbuf);

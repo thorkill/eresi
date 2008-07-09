@@ -18,8 +18,8 @@ OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 LD			?= ld
 RM			= rm -f
-NAME32			= ../revm-commands.32.o
-NAME64			= ../revm-commands.64.o
+NAME32			= ../std-cmd.32.o
+NAME64			= ../std-cmd.64.o
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
 			 -I../../libelfsh/include/ \
@@ -43,10 +43,10 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	          \
 
 all			: all32 all64
 
-$(NAME32)			: $(OBJ32)
+$(NAME32)		: $(OBJ32)
 			$(LD) -r $(OBJ32) -o $(NAME32)
 
-$(NAME64)			: $(OBJ64)
+$(NAME64)		: $(OBJ64)
 			$(LD) -r $(OBJ64) -o $(NAME64)
 all32: $(NAME32)
 all64: $(NAME64)

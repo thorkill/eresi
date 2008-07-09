@@ -4,10 +4,14 @@
 ## 
 
 load target
+analyse
 load infected.o
 switch 1
-analyse
 reladd 1 2
+
+tables block
+profile enable warn
+
 flowjack subfunc hijacked
 save target.hijacked
 quit

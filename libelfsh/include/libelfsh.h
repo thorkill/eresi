@@ -313,7 +313,8 @@
 #define	DUMPABLE(sym)	 (elfsh_get_symbol_type(sym) == STT_FUNC  || \
                          elfsh_get_symbol_type(sym) == STT_OBJECT || \
                          elfsh_get_symbol_type(sym) == STT_COMMON || \
-                         elfsh_get_symbol_type(sym) == STT_SECTION)
+                         elfsh_get_symbol_type(sym) == STT_SECTION || \
+			  elfsh_get_symbol_type(sym) == STT_BLOCK)
 
 #define	FILE_IS_SPARC(obj)   (FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
 #define FILE_IS_SPARC32(obj) (((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \

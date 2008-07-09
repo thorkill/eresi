@@ -42,7 +42,7 @@ int			cmd_flowjack(void)
 				   ELFSH_SECTION_NAME_EDFMT_BLOCKS, 
 				   0, 0, 0);
 
-  if (!sect || !world.mjr_session.cur->analysed)
+  if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Control flow section not found"
 		 " : use analyse command", -1);
@@ -71,7 +71,7 @@ int			cmd_flowjack(void)
 		      "Unable to resolve second parameter", -1);
   
   /* Retreive bloc to be hijacked */
-  printf(" * patch blocks calling %08x\n", (int) addr);
+  printf(" * patch blocks calling " XFMT " in %s \n", (int) addr, world.curjob->curfile->name);
   cntnr_to_hijack = mjr_block_get_by_vaddr(world.mjr_session.cur, addr, 0);
   if (!cntnr_to_hijack)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

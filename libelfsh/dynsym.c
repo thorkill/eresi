@@ -276,7 +276,8 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 				    file->secthash[ELFSH_SECTION_DYNSYM]);
       if (pltsym)
 	{
-	  *offset = 0;
+	  if (offset)
+	    *offset = 0;
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 			     (elfsh_get_dynsymbol_name(file, pltsym)));
 	}                                                                                                                                   

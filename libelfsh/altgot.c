@@ -7,19 +7,16 @@
 ** of the ALTGOT technique.
 **
 ** Started on  Wed Jun 08 21:20:07 2005 mm
-**
-**
 ** $Id: altgot.c,v 1.7 2008-02-16 12:32:27 thor Exp $
-**
 */
 #include "libelfsh.h"
 
 
 
 /**
- * Shift the relocation HI16 and L16 for mips binaries
+ * @brief Shift the relocation HI16 and L16 for mips binaries
  * We have to do that using a signature since no relocation 
- * tables are available in ET_EXEC files on mips.
+ * tables are available in ET_EXEC files on MIPS.
  *
  * 3c1c0000        lui     gp,0x0
  * 279c0000        addiu   gp,gp,0
@@ -28,9 +25,9 @@
  * .alt.got address that we need to add to the HI16 relocations 
  * matching the signature.
  *
- * @param file
- * @param diff
- * @return
+ * @param file Parent file.
+ * @param diff Absolute difference to shift with.
+ * @return Nothing.
  */
 void			elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff)
 {
@@ -73,18 +70,17 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff)
 
 
 /**
- * Shift the ALPHA relocations 
- *
- * @param file
- * @param name
- * @param altgot
+ * @brief Shift the ALPHA relocation table.
+ * @param file The file where to relocate the table.
+ * @param name Name of symbol for which to relocate entry.
+ * @param altgot Descriptor for the ALTGOT section.
  * @param off
- * @return
+ * @return Success (0) or Error (-1).
  */
-int			elfsh_shift_alpha_relocs(elfshobj_t *file, 
-						 char *name, 
-						 elfshsect_t *altgot, 
-						 u_int off)
+int			elfsh_shift_alpha_relocs(elfshobj_t	*file, 
+						 char		*name, 
+						 elfshsect_t	*altgot, 
+						 u_int		off)
 {
   u_int			entsz;
   elfsh_Rela		*rel;
@@ -124,12 +120,11 @@ int			elfsh_shift_alpha_relocs(elfshobj_t *file,
 
 
 /**
- * Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt 
- *
- * @param file
- * @param diff
- * @param relplt
- * @return
+ * @brief Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt 
+ * @param file The host file where shift must happens.
+ * @param diff Absolute difference to shift to.
+ * @param relplt Section descriptor for the .relplt section.
+ * @return Always 0.
  */
 int			elfsh_shift_generic_relocs(elfshobj_t *file, 
 						   eresi_Addr diff, 
@@ -150,14 +145,13 @@ int			elfsh_shift_generic_relocs(elfshobj_t *file,
 
 
 /**
- * Shift relocation tables at some point for allowing non-present symbol resolving 
- * mostly applied on section injection for ET_DYN objects
- *
- * @param file
- * @param diff
- * @param relplt
- * @param limit
- * @return
+ * @brief Shift relocation tables at some point for allowing non-present symbol resolving 
+ * mostly applied on section injection for ET_DYN objects.
+ * @param file The host file where shift must happens.
+ * @param diff Absolute difference to shift to.
+ * @param relplt Section descriptor for the .relplt section.
+ * @param limit Upper limit address beyond which shifting must not be performed (or ELFSH_NOLIMIT)
+ * @return Always 0.
  */
 int			elfsh_shift_ia32_relocs(elfshobj_t *file, 
 						eresi_Addr  diff,
@@ -194,12 +188,11 @@ int			elfsh_shift_ia32_relocs(elfshobj_t *file,
 }
 
 /**
- * Same arch independant code for the SPARC case 
- *
- * @param file
- * @param diff
- * @param relplt
- * @return
+ * @brief Shift relocations on the SPARC architecture.
+ * @param file Host file.
+ * @param diff Difference for shift.
+ * @param relplt Descriptor for the .relplt section.
+ * @return Always 0.
  */
 int			elfsh_shift_sparc_relocs(elfshobj_t	*file, 
 						 eresi_Addr	diff, 
@@ -214,15 +207,14 @@ int			elfsh_shift_sparc_relocs(elfshobj_t	*file,
 
 
 /**
- * Change the DT_PLTGOT entry in the .dynamic
- * section to change the relocation base address
- *
- * @param file
- * @param altgot
- * @param got
- * @param plt
- * @param altplt
- * @return
+ * @brief Change the DT_PLTGOT entry in the .dynamic section to change 
+ * the relocation base address.
+ * @param file The host file.
+ * @param altgot Section descriptor for the .elfsh.altgot section.
+ * @param got Section descriptor for the .got section.
+ * @param plt Section descriptor for the .plt section.
+ * @param altplt Section descriptor for the .elfsh.altplt section.
+ * @return Success (0) or Error (-1).
  */
 int			elfsh_redirect_pltgot(elfshobj_t *file, 
 					      elfshsect_t *altgot, 
