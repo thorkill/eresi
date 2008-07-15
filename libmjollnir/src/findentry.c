@@ -176,7 +176,8 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   printf(" [*] _start found at 0x%lx\n", (unsigned long) vaddr);
 #endif
 
-  sym = elfsh_get_symbol_by_name(context->obj, "main");
+//  sym = elfsh_get_symbol_by_name(context->obj, "main");
+  sym = elfsh_get_metasym_by_name(context->obj, "main");
   if (sym && sym->st_value)
     {
       main_addr = sym->st_value;

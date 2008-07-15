@@ -67,7 +67,7 @@ int			mjr_trace_control(mjrcontext_t *context,
       mjr_link_block_jump(context, curvaddr, dstaddr, curvaddr + ilen);
     
     }
-  else if (curins->type == ASM_TYPE_IMPBRANCH)
+  else if (curins->type & ASM_TYPE_IMPBRANCH)
     {
       dstaddr = mjr_get_jmp_destaddr(context);
       
@@ -293,6 +293,20 @@ eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
     	else /* Indirect call (special case of JMPL) */
     	  dest = -1;
     }
+  }
+  else if (context->proc.type == ASM_PROC_MIPS)
+  {
+     if (ins->instr == ASM_MIPS_JAL) {
+        dest = (ins->op[0].imm << 2) | ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+     } else if (ins->instr == ASM_MIPS_JALR) {
+        dest = -1;
+     } else if (ins->instr == ASM_MIPS_BAL) {
+        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
+     } else {
+        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
+     }
+//     } else
+//        dest = -1;
   }
   else
     dest = -1;
