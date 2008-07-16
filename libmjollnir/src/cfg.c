@@ -93,8 +93,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       
       context->calls_seen++;
 
-      /* For delay slot */
-      addend = (context->proc.type == ASM_PROC_SPARC ? 4 : 0);
+      /* SPARC and MIPS use delay slots */
+      addend = (context->proc.type == ASM_PROC_SPARC || 
+		context->proc.type == ASM_PROC_MIPS ? 4 : 0);
 
       /* If call occured at the end of a section */
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)

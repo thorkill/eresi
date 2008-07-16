@@ -402,6 +402,7 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 				       eresi_Addr vaddr, elfsh_SAddr *off)
 {
   elfshsect_t	*parent;
+  char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -414,10 +415,17 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find parent section", NULL);
 
-  if (file->secthash[ELFSH_SECTION_PLT] != NULL &&
-      parent->index == file->secthash[ELFSH_SECTION_PLT]->index)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		       (elfsh_reverse_dynsymbol(file, vaddr, off)));
+  if ((file->secthash[ELFSH_SECTION_PLT] != NULL &&
+       parent->index == file->secthash[ELFSH_SECTION_PLT]->index) ||
+      (file->secthash[ELFSH_SECTION_INIT] != NULL && 
+       parent->index == file->secthash[ELFSH_SECTION_INIT]->index) ||
+      (file->secthash[ELFSH_SECTION_FINI] != NULL && 
+       parent->index == file->secthash[ELFSH_SECTION_FINI]->index))
+    {
+      name = elfsh_reverse_dynsymbol(file, vaddr, off);
+      if (name)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name);
+    }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (elfsh_reverse_symbol(file, vaddr, off)));
 }

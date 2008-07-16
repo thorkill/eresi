@@ -209,15 +209,15 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       break;  
     case ASM_SP_OTYPE_IMMEDIATE:
       if (op->imm < 10)
-		sprintf(buf, "%i", op->imm);
+	sprintf(buf, "%i", op->imm);
       else
-		sprintf(buf, "0x%x", op->imm);
+	sprintf(buf, "0x%x", op->imm);
       break;
     case ASM_SP_OTYPE_SETHI:
       if (op->imm)
-		sprintf(buf, "%%hi(0x%x)", op->imm << 10);
+	sprintf(buf, "%%hi(0x%x)", op->imm << 10);
       else
-		sprintf(buf, "%%hi(%x)", op->imm << 10);
+	sprintf(buf, "%%hi(%x)", op->imm << 10);
       break;
     case ASM_SP_OTYPE_DISPLACEMENT:
       address = addr + (op->imm << 2);
@@ -241,11 +241,10 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
     case ASM_SP_OTYPE_REG_ADDRESS:
       if (op->indexr > 0)
         sprintf(buf, "[ %s + %s ]", get_sparc_register(op->baser),
-      								get_sparc_register(op->indexr));
-      								
-	  else
-	    sprintf(buf, "[ %s ]", get_sparc_register(op->baser));
-      								
+		get_sparc_register(op->indexr));
+      else
+	sprintf(buf, "[ %s ]", get_sparc_register(op->baser));
+      
       if (op->address_space != ASM_SP_ASI_P)
         sprintf(buf+strlen(buf), " 0x%x", op->address_space);								
       break;

@@ -47,7 +47,7 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr,
   name = elfsh_reverse_symbol(actual, addr, &offset);
   dname = elfsh_reverse_dynsymbol(actual, addr, &doffset);
 
-#if 1 //__DEBUG_RESOLVE__
+#if __DEBUG_RESOLVE__
   printf("[elfsh:resolve] First found file : %s name = %s:%d / dname = %s:%d ("XFMT") \n", 
 	 actual->name, name, offset, dname, doffset, addr);
 #endif

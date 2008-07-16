@@ -19,6 +19,9 @@ print
 
 load $1
 analyse
+graph
+graph bloc 0x100A34
+exec sleep 30
 
 sym main
 set $mainaddr main

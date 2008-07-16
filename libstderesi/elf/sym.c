@@ -192,8 +192,6 @@ int		cmd_sym()
   
   ret = ds(world.curjob->curfile, sct, symtab, 
 	   num, tmp, elfsh_get_symbol_name);
-
-  fprintf(stderr, "IN CMD_SYM\n");
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
