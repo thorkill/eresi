@@ -48,7 +48,7 @@ int			mjr_trace_control(mjrcontext_t *context,
   fun = mjr_function_get_by_vaddr(context, curvaddr);
   if (fun)
     context->curfunc = fun;
-  else 
+  else
     mjr_asm_check_function_start(context);
   fun = NULL;
 
@@ -126,7 +126,7 @@ int			mjr_trace_control(mjrcontext_t *context,
     }
   else if (curins->type == ASM_TYPE_RETPROC)
     {
-      
+
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
 	      __FUNCTION__, curvaddr);
@@ -357,7 +357,27 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
     	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       }
   }
-  else
+  else if (context->proc.type == ASM_PROC_MIPS) {
+     unsigned int i = 0;
+
+     if ( (ins->instr & ASM_MIPS_BEQ) || (ins->instr & ASM_MIPS_BEQL) 
+        || (ins->instr & ASM_MIPS_BNE) || (ins->instr & ASM_MIPS_BNEL) )
+        i = 2;
+     else if ( (ins->instr & ASM_MIPS_BGEZAL) || (ins->instr & ASM_MIPS_BGEZALL)
+             || (ins->instr & ASM_MIPS_BGEZ) || (ins->instr & ASM_MIPS_BGEZL)
+	     || (ins->instr & ASM_MIPS_BGTZ) || (ins->instr & ASM_MIPS_BGTZL)
+	     || (ins->instr & ASM_MIPS_BLEZ) || (ins->instr & ASM_MIPS_BLEZL)
+	     || (ins->instr & ASM_MIPS_BLTZAL) || (ins->instr & ASM_MIPS_BLTZALL)
+	     || (ins->instr & ASM_MIPS_BLTZ) || (ins->instr & ASM_MIPS_BLTZL) )
+        i = 1;
+
+     if (ins->op[i].type & ASM_MIPS_OTYPE_BRANCH) {
+        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[i].imm+1)*4));
+     } else if (ins->op[i].type & ASM_MIPS_OTYPE_JUMP) {
+        dest = (ins->op[i].imm << 2) | ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+     } else
+        dest = -1; /* Jump to register - not yet */
+  } else
     dest = -1;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
@@ -414,6 +434,23 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
   	}
   }
+  else if (ctxt->proc.type == ASM_PROC_MIPS)
+  {
+    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
+    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
+      {
+	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
+	tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
+
+#if __DEBUG_FLOW__
+	fprintf(D_DESC,"[pi3] -> [D] %s: function start found at %x for %x\n",
+		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+#endif
+	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+	mjr_function_register(ctxt, tmpaddr, fun);
+	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+      }
+  }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

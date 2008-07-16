@@ -9,10 +9,14 @@ int asm_mips_jr(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_reg temp;
 
    ins->instr = ASM_MIPS_JR;
-   ins->type = ASM_TYPE_IMPBRANCH;
    mips_convert_format_r(&temp, buf);
    ins->op[0].baser = temp.rs;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+
+   if (temp.rs == ASM_MIPS_REG_RA)
+      ins->type = ASM_TYPE_RETPROC;
+   else
+      ins->type = ASM_TYPE_IMPBRANCH;
 
    /* Exceptions: None */
 
