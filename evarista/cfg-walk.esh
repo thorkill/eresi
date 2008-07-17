@@ -30,11 +30,16 @@ sparc2lir    $1
 
 tables blocks
 print $block
-#tables expressions
-print $block.outlinks
 
-tables expressions 100A34
-exec sleep 10
+#tables expressions
+
+print $block.outlinks
+print $block.nbroutlinks
+
+#tables expressions 100A34
+#exec sleep 60
+
+profile enable warn
 
 foreach $nextblock of $block.outlinks
 
