@@ -1,21 +1,19 @@
 ##
-## Makefile for cmd in libstderesi for the ERESI project
+## Makefile for lang in libstderesi for the ERESI project
 ##
 ## Started on  Fri Nov  2 16:32:29 2001 jfv
 ## $Id
 ##
 include ../../config.h
 
-SRC			= cat.c help.c prefixes.c profile.c source.c info.c      \
-			  net.c print.c quit.c script.c utils.c configure.c      \
-			  color.c log.c modules.c exec.c job.c define.c init.c
+SRC			= atomic.c foreach.c jmp.c return.c vlist.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 LD			?= ld
 RM			= rm -f
-NAME32			= ../std-cmd.32.o
-NAME64			= ../std-cmd.64.o
+NAME32			= ../std-lang.32.o
+NAME64			= ../std-lang.64.o
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
 			 -I../../libelfsh/include/ \

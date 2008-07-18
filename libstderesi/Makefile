@@ -42,8 +42,12 @@ all64			: mod64 lib64
 mod32			:
 			$(MAKE) -C elf  all32
 			$(MAKE) -C cmd  all32
+			$(MAKE) -C type all32
+			$(MAKE) -C lang all32
+			$(MAKE) -C analysis all32
+			$(MAKE) -C files all32
 
-$(NAME32).so			:
+$(NAME32).so		:
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
@@ -57,6 +61,10 @@ lib64: $(NAME64).so
 mod64			:
 			$(MAKE) -C elf  all64
 			$(MAKE) -C cmd  all64
+			$(MAKE) -C type all64
+			$(MAKE) -C lang all64
+			$(MAKE) -C analysis all64
+			$(MAKE) -C files all64
 
 $(NAME64).so			:
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) \
@@ -69,6 +77,10 @@ $(NAME64).so			:
 clean		       :
 			$(MAKE) -C elf  clean
 			$(MAKE) -C cmd  clean
+			$(MAKE) -C type clean
+			$(MAKE) -C lang clean
+			$(MAKE) -C files clean
+			$(MAKE) -C analysis clean
 		        @$(RM) *~ \#* *\# .\#*
 		        @$(RM) include/*~ include/\#* include/*\# include/.\#*
 

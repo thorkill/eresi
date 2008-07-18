@@ -41,6 +41,13 @@ print $block.nbroutlinks
 
 profile enable warn
 
+tables expressions link_67
+tables list link_67
+type
+
+
+exec sleep 30
+
 foreach $nextblock of $block.outlinks
 
   print *nextblock

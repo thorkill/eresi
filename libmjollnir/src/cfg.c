@@ -219,8 +219,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
   /* Instead we have a hash table that we can add element to using the 'addgoto'
      command of elfsh. That allow to tell which is the target address manually
-     and make the graph continuous even with complex address construction */
-
+     and connect two graphs even with complex address construction */
   /* Happens when an address was manually inserted in the routing table */
   /* This allow to avoid the control flow graph to be broken if elfsh
      is not capable to recompute the target address */
