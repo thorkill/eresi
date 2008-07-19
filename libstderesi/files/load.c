@@ -236,6 +236,13 @@ int		cmd_load()
 		   "Unknown file to load", (-1));
     }
   tmp = expr->value;
+  if (!tmp->otype)
+    {
+      revm_expr_destroy(expr->label);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Missing parameter", (-1));
+    }
+
   if (tmp->otype->type != ASPECT_TYPE_STR)
     {
       revm_convert_object(expr, ASPECT_TYPE_STR);
