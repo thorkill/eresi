@@ -129,4 +129,7 @@ print $mystruct2c.field3.field2
 print $mystruct2c.field5.field1
 print $mystruct2c.field5.field2
 
+set $val $mystruct2c.field3.field1
+print $val
+
 quit

@@ -26,19 +26,21 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_UNKNOW  , 0	      	},
     {ASPECT_TYPENAME_RAW     , 0	  	},
     {ASPECT_TYPENAME_BYTE    , sizeof(u_char)	},
-    {ASPECT_TYPENAME_STR     , sizeof(u_long)	},
+    {ASPECT_TYPENAME_STR     , sizeof(u_long) },
     {ASPECT_TYPENAME_SHORT   , sizeof(u_short)	},
     {ASPECT_TYPENAME_INT     , sizeof(u_int)	},
     {ASPECT_TYPENAME_LONG    , sizeof(u_long) },
-    {ASPECT_TYPENAME_DADDR   , sizeof(u_long) },
-    {ASPECT_TYPENAME_CADDR   , sizeof(u_long) },
+    {ASPECT_TYPENAME_DADDR   , sizeof(eresi_Addr) },
+    {ASPECT_TYPENAME_CADDR   , sizeof(eresi_Addr) },
     {ASPECT_TYPENAME_BIT     , sizeof(u_char)	},
+    {ASPECT_TYPENAME_OID     , sizeof(u_int)    },
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
     {ASPECT_TYPENAME_EXPR    , 24		}, /* XXX: should be sizeof(revmexpr_t) */
     {ASPECT_TYPENAME_BLOC    , 16		}, /* XXX: should be sizeof(mjrblock_t) */
     {ASPECT_TYPENAME_FUNC    , 111		}, /* XXX: should be sizeof(mjrfunc_t) */
+    {ASPECT_TYPENAME_LINK    , 8                }, /* XXX: should be sizeof(mjrlink_t) */
   };
 
 /**
@@ -462,7 +464,7 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype->name);
 		  XFREE(__FILE__, __FUNCTION__, __LINE__, newtype);
 		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				    "Invalid type structure", NULL);
+			       "Invalid type structure", NULL);
 		}
 	    }
 	  else

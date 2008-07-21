@@ -241,10 +241,10 @@ typedef	struct	s_eobj
 {
   int		fd;
   elfsh_Ehdr	e;
-  elfsh_Off	dynoff;
-  elfsh_Off	symoff;
-  elfsh_Off	stroff;
-  elfsh_Off	strsz;
+  eresi_Off	dynoff;
+  eresi_Off	symoff;
+  eresi_Off	stroff;
+  eresi_Off	strsz;
 }		e2dbgobj_t;
 
 /* The parameter structure for e2dbg_entry in a dedicated thread */

@@ -6,9 +6,7 @@
 ** Started : Thu Jul 28 02:39:14 2003 jfv
 **
 */
-
 #include "libmjollnir.h"
-
 
 
 /**

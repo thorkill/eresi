@@ -248,6 +248,12 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
 	data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
     }
 
+  /* In case of list or hashes */
+  if (type->isptr && (type->type == ASPECT_TYPE_LIST || type->type == ASPECT_TYPE_HASH))
+    path->get_obj  = (void *) revm_hash_getobj;
+  else
+    path->get_obj  = (void *) revm_generic_getobj;
+
   /* Fill type specific object handlers */
   path->parent   = (void *) data;
   if (type->type == ASPECT_TYPE_STR)
@@ -260,7 +266,6 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
       path->get_data = (void *) revm_generic_getdata;
       path->set_data = (void *) revm_generic_setdata;
     }
-  path->get_obj  = (void *) revm_generic_getobj;
 
   /* This handler is size dependant */
   if (type)

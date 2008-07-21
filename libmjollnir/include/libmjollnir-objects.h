@@ -102,6 +102,8 @@ typedef struct		_mjrContext
 
   hash_t		funchash;		/* !< @brief functions hash table */
   hash_t		blkhash;		/* !< @brief blocks hash table for this obj */
+  hash_t		linkhash;		/* !< @brief links hash table */
+
   unsigned char		analysed;		/* !< @brief do we analysed it */
   u_int			calls_seen;		/* !< @brief how many CALL we have seen */
   u_int			calls_found;		/* !< @brief how many dest has beed resolved */

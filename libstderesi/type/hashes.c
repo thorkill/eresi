@@ -25,6 +25,7 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   data = hash_get(h, key);
+
   if (h->type == ASPECT_TYPE_UNKNOW || !inside)
     {
       snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
@@ -48,7 +49,7 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
   revm_output("\t");
   if (h->type == ASPECT_TYPE_EXPR)
     {
-      newexpr = (eresi_Addr) data;
+      newexpr = (revmexpr_t *) data;
       revm_expr_print(newexpr->label);
     }
   else

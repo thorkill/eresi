@@ -394,8 +394,6 @@ int		revm_graph_blocks(container_t   *cntnr,
   mjrblock_t	*nextblk;    
   list_t	*linklist;
   listent_t	*curent;
-  char		*name;
-  elfsh_SAddr    offset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -409,12 +407,6 @@ int		revm_graph_blocks(container_t   *cntnr,
   hash_add(&dumped, vaddr_str, cntnr);
 
   linklist = cntnr->outlinks;
-
-  /*
-  name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &offset);
-  if (!name)
-    name = "unresolved";
-  */
 
   snprintf(buf, sizeof(buf),
     	   "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",

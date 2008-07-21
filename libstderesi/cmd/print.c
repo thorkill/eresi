@@ -33,7 +33,7 @@ void		revm_object_print(revmobj_t *obj)
 
   /* Print a non-pointer type */
   if (!obj->otype)
-    snprintf(logbuf, BUFSIZ - 1, "UNKKNOW_OBJECT_TYPE_0");
+    snprintf(logbuf, BUFSIZ - 1, "UNKNOW_OBJECT_TYPE_0");
   else
     switch (obj->otype->type)
       {
@@ -58,6 +58,7 @@ void		revm_object_print(revmobj_t *obj)
 		 revm_colornumber("%d", val), revm_colornumber("0x%X", val));
 	break;
       case ASPECT_TYPE_INT:
+      case ASPECT_TYPE_OID:
 	word = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
 	snprintf(logbuf, BUFSIZ - 1, "%s (%s) ", 
 		 revm_colornumber("%d", word), revm_colornumber("0x%X", word));
@@ -79,7 +80,7 @@ void		revm_object_print(revmobj_t *obj)
 	
 	/* When the object type is unknown */
       default:
-	snprintf(logbuf, BUFSIZ - 1, "UNKKNOW_OBJECT_TYPE_%u ", obj->otype->type);
+	snprintf(logbuf, BUFSIZ - 1, "UNKNOW_OBJECT_TYPE_%u ", obj->otype->type);
 	break;
       }
   revm_output(logbuf);
@@ -89,7 +90,7 @@ void		revm_object_print(revmobj_t *obj)
   /* Now print a pointer */
  isptr:
   if (!obj->otype)
-    snprintf(logbuf, BUFSIZ - 1, "UNKKNOW_PTR_OBJECT_TYPE_0");
+    snprintf(logbuf, BUFSIZ - 1, "UNKNOW_PTR_OBJECT_TYPE_0");
   else
     switch (obj->otype->type)
       {

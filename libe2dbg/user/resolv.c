@@ -167,7 +167,7 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 #if __DEBUG_E2DBG__
   write(2, " Success !\n", 11);
   len = snprintf(buf, sizeof(buf), 
-		 " [*] REFADDR = %08X and FOUNDREF = %08X and GOT = %08X \n", 
+		 " [*] REFADDR = " XFMT " / FOUNDREF = " XFMT " / GOT = " XFMT " \n", 
 		 refaddr, found_ref, got);
   write(2, buf, len);
 #endif
@@ -280,7 +280,7 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
       
 #if __DEBUG_E2DBG__
       len = snprintf(buf, sizeof(buf), 
-		     " [*] SYMOFF = %u (%08X), STROFF = %u (%08X), STRSZ = %u \n",
+		     " [*] SYMOFF = "UFMT" ("XFMT"), STROFF = "UFMT" ("XFMT"), STRSZ = "UFMT" \n",
 		     obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
       write(2, buf, len);
 #endif
@@ -290,7 +290,7 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
       /* XXX: Assume that dynamic strtab is always just after dynamic symtab */
       for (curoff = 0; obj.symoff + curoff < obj.stroff; curoff += sizeof(elfsh_Sym))
 	{
-	  memcpy(&cursym, (void *)obj.symoff + curoff, sizeof(elfsh_Sym));
+	  memcpy(&cursym, (void *) obj.symoff + curoff, sizeof(elfsh_Sym));
 	  if (cursym.st_name >= obj.strsz)
 	    continue;
 	  if (!strcmp(strtab + cursym.st_name, sym2resolve) && 
@@ -300,7 +300,7 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
       
 #if __DEBUG_E2DBG__
 	      len = snprintf(buf, sizeof(buf), 
-			     " [*] FOUNDSYM (%s) = %08X \n", 
+			     " [*] FOUNDSYM (%s) = " XFMT "\n", 
 			     strtab + cursym.st_name, found_sym);
 	      write(2, buf, len);
 #endif
@@ -367,14 +367,14 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] Base address - 1st = %08X\n", baseaddr);
+  len = sprintf(buf, " [*] Base address - 1st = " XFMT "\n", baseaddr);
   write(2, buf, len);
 #endif
 
   got = (eresi_Addr *) baseaddr;
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] GOT address = %08X\n", (eresi_Addr) got);
+  len = sprintf(buf, " [*] GOT address = " XFMT "\n", (eresi_Addr) got);
   write(2, buf, len);
 #endif
 
@@ -390,7 +390,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
 #if __DEBUG_E2DBG__
   len = sprintf(buf, 
-		" [*] Guessed Linkmap address = %08X \n--------------\n", 
+		" [*] Guessed Linkmap address = " XFMT " \n--------------\n", 
 		(eresi_Addr) lm);
   write(2, buf, len);
 #endif
@@ -442,7 +442,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc MALLOC() sym = %08X \n", 
+		 " [*] Libc MALLOC() sym = " XFMT " \n", 
 		 e2dbgworld.syms.mallocsym);
   write(2, buf, len);
 #endif
@@ -457,7 +457,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc CALLOC() sym = %08X \n", 
+		 " [*] Libc CALLOC() sym = " XFMT "\n", 
 		 e2dbgworld.syms.callocsym);
   write(2, buf, len);
 #endif
@@ -469,7 +469,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc REALLOC() sym = %08X \n", 
+		 " [*] Libc REALLOC() sym = " XFMT "\n", 
 		 e2dbgworld.syms.reallocsym);
   write(2, buf, len);
 #endif
@@ -481,7 +481,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc FREE() sym = %08X \n", e2dbgworld.syms.freesym);
+		 " [*] Libc FREE() sym = " XFMT " \n", e2dbgworld.syms.freesym);
   write(2, buf, len);
 #endif
 
@@ -492,7 +492,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc VALLOC() sym = %08X \n", 
+		 " [*] Libc VALLOC() sym = " XFMT " \n", 
 		 e2dbgworld.syms.vallocsym);
   write(2, buf, len);
 #endif
@@ -504,7 +504,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] Libc SIGNAL() sym = %08X \n", 
+		 " [*] Libc SIGNAL() sym = " XFMT "\n", 
 		 e2dbgworld.syms.signal);
   write(2, buf, len);
 #endif
@@ -540,7 +540,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   len = snprintf(buf, sizeof(buf), 
-		 " [*] PIE _end resolved = %08X \n", 
+		 " [*] PIE _end resolved = " XFMT " \n", 
 		 e2dbgworld.syms.piebase);
   write(2, buf, len);
 #endif

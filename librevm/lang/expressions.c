@@ -897,7 +897,7 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
     adst = adst->childs;
 
   /* Necessary for assignment of scalar values */
-  if (adst->value && asrc->value && !asrc->next)
+  if (adst->value && asrc->value && (!asrc->next || !adst->next))
     {
       /* See if object conversion is necessary and/or possible */
       if (revm_nextconds_atomics(adst, asrc) < 0)
@@ -1230,4 +1230,34 @@ int		revm_expr_destroy(char *e)
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+
+/* This function lookup an expression from an object id */
+revmexpr_t	*revm_expr_lookup(u_int oid)
+{
+  revmexpr_t	*expr;
+  container_t	*cont;
+  char		logbuf[BUFSIZ];
+  aspectype_t	*type;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (oid >= world.mjr_session.cur->next_id)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid id for container", NULL);  
+  cont = world.mjr_session.cur->reg_containers[oid];
+  type = aspect_type_get_by_id(cont->type);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid type for container", NULL);  
+  snprintf(logbuf, sizeof(logbuf), "%c%s_"AFMT, 
+	   REVM_VAR_PREFIX, type->name, *(eresi_Addr *) cont->data);
+  expr = revm_expr_get(logbuf);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid name for expression", NULL);  
+  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

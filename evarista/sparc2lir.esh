@@ -112,6 +112,7 @@ into TernopR3(addr:$curaddr, dst:Reg(rid:$instr.op2.name), src1:Reg(rid:$instr.o
 
 # ld,ldd,ldub,ldx,lduw,lduh,ldsw,ldsb  									 		
 case instr(sem:a-rm)
+profile enable warn
 into AssignMR(addr:$curaddr, src(name:$instr.op1.name base(rid:$instr.op1.name), off(val:$instr.op1.imm)), dst(rid:$instr.op2.name))  
 
 # st,stb,stw,sth,std,stx (src = reg)

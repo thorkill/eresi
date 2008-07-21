@@ -207,7 +207,7 @@ int	elfsh_merge_shtentry(elfshobj_t *file,
  * @param num
  * @return
  */
-static int elfsh_init_sht(elfshobj_t *file, u_int num)
+static int	elfsh_init_sht(elfshobj_t *file, u_int num)
 {
   elfsh_Shdr	shdr;
   elfshsect_t	*sect;
@@ -216,7 +216,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
   void	  	*data;
   unsigned int	nnames,lnames,dnames;
   unsigned int	tlsnames,ehnames,snames;
-  long		type, total, section_offset, base_addr = 0, dyn_addr = 0, dyn_size = 0;
+  unsigned int	dyn_size = 0;
+  long		type, total, section_offset, base_addr = 0, dyn_addr = 0;
   int		flags;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -420,7 +421,8 @@ static int elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      printf("@" XFMT " => SECT SIZE: %x %ld bytes\n", sect_addr - base_addr, sect_size, sect_size);
+      printf("@" XFMT " => SECT SIZE: " XFMT " %ld bytes\n", 
+	     sect_addr - base_addr, sect_size, sect_size);
      
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,

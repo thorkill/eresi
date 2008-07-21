@@ -33,17 +33,15 @@ int	cmd_unstrip()
 
 
 /** 
- * This command fill the blocks hash 
+ * This command construct the call graph and the control flow graph for each function.
+ * Additionally, it reflects all analysed objects in the ERESI language.
  */
 int		cmd_analyse() 
 {
  char		logbuf[BUFSIZ];
  int		ret;
- char		**keys;
- int		index;
- int		nbr;
- container_t	*container;
  aspectype_t	*curtype;
+ aspectype_t	*linktype;
  eresi_Addr     addr;
  revmexpr_t     *expr; 
  revmobj_t      *obj;
@@ -56,6 +54,7 @@ int		cmd_analyse()
  revm_output(logbuf);
  memset(logbuf, 0x0, BUFSIZ);
 
+ /* Resolve the parameter */
  if (world.curjob->curcmd->param[0])
    {
      expr = revm_lookup_var(world.curjob->curcmd->param[0]);
@@ -100,30 +99,22 @@ int		cmd_analyse()
  curtype = aspect_type_get_by_name("container");
  if (curtype)
    {
-     keys = hash_get_keys(&world.mjr_session.cur->funchash, &nbr);
-     for (index = 1; index < nbr; index++)
-       {
-	 container = hash_get(&world.mjr_session.cur->funchash, keys[index]);
-	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
-		  (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX),
-		  *(eresi_Addr *) container->data);
-	 revm_inform_type_addr(curtype->name, logbuf, (eresi_Addr) container, NULL, 0, 1);
-       }
-     hash_free_keys(keys);
-     keys = hash_get_keys(&world.mjr_session.cur->blkhash, &nbr);
-     for (index = 1; index < nbr; index++)
-       {
-	 container = hash_get(&world.mjr_session.cur->blkhash, keys[index]);
-	 snprintf(logbuf, sizeof(logbuf), "%s"AFMT, 
-		  (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX),
-		  *(eresi_Addr *) container->data);
-	 revm_inform_type_addr(curtype->name, logbuf, (eresi_Addr) container, NULL, 0, 1);
-       }
-     hash_free_keys(keys);
-     revm_output(" [*] Reflected succesfully all basic blocks and function meta-data \n\n");
+     revm_type_reflect(&world.mjr_session.cur->funchash, "func");
+     revm_type_reflect(&world.mjr_session.cur->blkhash , "bloc");
+     revm_output(" [*] Reflected succesfully all basic blocks and functions.\n\n");
    }
  else
-   revm_output(" [*] No reflection was performed (no container type definition found)\n\n");
+   revm_output(" [*] No CONTAINER reflection was performed (type definition not found)\n\n");
+
+ /* Now informing about all existing links */
+ linktype = aspect_type_get_by_name("link");
+ if (linktype)
+   {
+     revm_type_reflect(&world.mjr_session.cur->linkhash, linktype->name);
+     revm_output(" [*] Reflected succesfully all blocks links and function links.\n\n");
+   }
+ else
+   revm_output(" [*] No LINK reflection was performed (type definition not found)\n\n");
 
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

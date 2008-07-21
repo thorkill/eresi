@@ -125,7 +125,7 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
   listent_t	*listent;
   listent_t	*savednext;
   mjrlink_t	*link;
-  container_t *cnt;
+  container_t	*cnt;
   char		linkname[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -168,8 +168,8 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
 	    {
 
 #if __DEBUG_CNTNR__
-	      fprintf(D_DESC,"[D] %s: removing old link id:%d from type:%d to %d\n",
-		      __FUNCTION__,id, link->type,link_type);
+	      fprintf(D_DESC,"[D] %s: removing old unconditional link id:%d for condlink type %d\n",
+		      __FUNCTION__, id, link_type);
 #endif
 
 	      elist_del(linklist, listent->key);
@@ -186,8 +186,9 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
   XALLOC(__FILE__, __FUNCTION__, __LINE__, link, sizeof(mjrlink_t), NULL);
   link->id   = id;
   link->type = link_type;
-  snprintf(linkname, sizeof(linkname), "link_%u", id);
+  snprintf(linkname, sizeof(linkname), "%u_%u", cntnr->id, id);
   elist_add(linklist, strdup(linkname), link);
+  hash_add(&ctx->linkhash, strdup(linkname), link);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
 }
 

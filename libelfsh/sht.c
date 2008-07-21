@@ -453,7 +453,7 @@ elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
 					  elfsh_Word type,
 					  elfsh_Word flags,
 					  eresi_Addr addr,
-					  elfsh_Off offset,
+					  eresi_Off offset,
 					  elfsh_Word size,
 					  elfsh_Word link,
 					  elfsh_Word info,
@@ -1126,7 +1126,7 @@ int		elfsh_set_section_link(elfsh_Shdr *s, eresi_Addr link)
  * @param s
  * @return
  */
-elfsh_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
+eresi_Off	elfsh_get_section_foffset(elfsh_Shdr *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1149,7 +1149,7 @@ int	elfsh_set_section_foffset(elfsh_Shdr *s, eresi_Addr offset)
   if (NULL == s)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter ", -1);
-  s->sh_offset = (elfsh_Off) offset;
+  s->sh_offset = (eresi_Off) offset;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

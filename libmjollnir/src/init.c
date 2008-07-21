@@ -33,6 +33,10 @@ int		mjr_init_session(mjrsession_t *sess)
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  MJR_FUNC_PREFIX);
+  config_add_item(MJR_CONFIG_LINK_PREFIX,
+		  CONFIG_TYPE_STR,
+		  CONFIG_MODE_RW,
+		  MJR_LINK_PREFIX);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
@@ -91,11 +95,12 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  XALLOC(__FILE__, __FUNCTION__, __LINE__,ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash, "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
- hash_init(&ctx->blkhash , "blocks"   , mjrHashLarge    , ASPECT_TYPE_BLOC);
+ hash_init(&ctx->funchash , "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
+ hash_init(&ctx->blkhash  , "blocks"   , mjrHashLarge    , ASPECT_TYPE_BLOC);
+ hash_init(&ctx->linkhash  , "links"    , mjrHashLarge    , ASPECT_TYPE_LINK);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
  ctx->next_id = 1;
- ctx->block_btree=NULL;
+ ctx->block_btree = NULL;
  mjr_init_containers(ctx);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }

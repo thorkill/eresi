@@ -47,13 +47,16 @@
  */
 #define MJR_CONFIG_BLOC_PREFIX	"mjr.bloc_prefix"
 #define MJR_CONFIG_FUNC_PREFIX	"mjr.func_prefix"
+#define	MJR_CONFIG_LINK_PREFIX	"mjr.link_prefix"
+
 #define	MJR_CONFIG_BLOC_POSTFIX	"mjr.bloc_postfix"
 
 /**
  * @brief Default subroutines prefix in symbol recovery 
  */
-#define	MJR_FUNC_PREFIX		"sub_"
+#define	MJR_FUNC_PREFIX		"func_"
 #define	MJR_BLOC_PREFIX		"bloc_"
+#define	MJR_LINK_PREFIX		"link_"
 #define	MJR_BLOC_POSTFIX	"_unseen"
 
 /**

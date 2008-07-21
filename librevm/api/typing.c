@@ -247,3 +247,26 @@ int		revm_type_prints()
   revm_output(buf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+/* This function reflect a data structure */
+int		revm_type_reflect(hash_t *hash, char *typename)
+{
+ char		**keys;
+ int		index;
+ int		nbr;
+ void		*data;
+ char		logbuf[BUFSIZ];
+
+ PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+ keys = hash_get_keys(hash, &nbr);
+ for (index = 1; index < nbr; index++)
+   {
+     data = hash_get(hash, keys[index]);
+     snprintf(logbuf, sizeof(logbuf), "%c%s_%s", 
+	      REVM_VAR_PREFIX, typename, keys[index]);
+     revm_inform_type_addr(typename, logbuf, (eresi_Addr) data, NULL, 0, 1);
+   }
+ hash_free_keys(keys);
+ PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}

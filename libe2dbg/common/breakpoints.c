@@ -137,7 +137,6 @@ elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid)
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
 {
   eresi_Addr	addr;
-  elfsh_Sym	*sym;
   elfshbp_t	*bp;
   uint16_t	bpid;
   char		straddr[32];
@@ -279,7 +278,7 @@ eresi_Addr	e2dbg_breakpoint_find_addr(char *str)
 	}
 
 #if __DEBUG_BP__
-      printf("BPSym after %-30s = %08X \n", parent->name, (eresi_Addr) sym);
+      printf("BPSym after %-30s = " XFMT "\n", parent->name, (eresi_Addr) sym);
 #endif
 
     }
@@ -296,13 +295,13 @@ eresi_Addr	e2dbg_breakpoint_find_addr(char *str)
   if (elfsh_get_objtype(parent->hdr) == ET_DYN)
     {
 #if __DEBUG_BP__
-      printf(" [*] Adding base addr %08X \n", parent->rhdr.base);
+      printf(" [*] Adding base addr " XFMT "\n", parent->rhdr.base);
 #endif
       addr += parent->rhdr.base;
     }
   
 #if __DEBUG_BP__
-  printf(" [*] Will set breakpoint on %08X (parent = %s) \n", 
+  printf(" [*] Will set breakpoint on " XFMT " (parent = %s) \n", 
 	 addr, parent->name);
 #endif
 

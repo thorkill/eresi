@@ -23,7 +23,7 @@ int			cmd_write()
   void			*sdata;
   int			size;
   char			logbuf[BUFSIZ];
-  int			off;
+  elfsh_SAddr		off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

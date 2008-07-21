@@ -13,6 +13,7 @@ type op               = len:int ptr:*byte sem:int name:string size:int content:i
 type instr::container = ptrins:*byte proc%4 name:string icode:int sem:int prefix:int spdiff:int flagswritten:int flagsread:int ptr_prefix:*byte annul:int prediction:int nb_op:int op1:op op2:op op3:op len:int 
 type bloc::container  = vaddr:long size:int symoff:int seen:byte
 type func::container  = vaddr:long size:int name:byte[64] first:*bloc md5:byte[34]
+type link = id:oid type:int
 
 source lir-definition.esh
 

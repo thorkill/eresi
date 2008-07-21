@@ -124,7 +124,7 @@ static void	aspect_config_init()
   config_add_item(CONFIG_CFGDEPTH,
                   CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
-		  CONFIG_CFGDEPTH_DEFAULT);
+		  (void *) CONFIG_CFGDEPTH_DEFAULT);
 
   config_add_item(CONFIG_NAME_SAFEMODE,
 		  CONFIG_TYPE_INT,
@@ -134,12 +134,12 @@ static void	aspect_config_init()
   config_add_item(CONFIG_ASM_ENDIAN_FLAG,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
-		  (void *)CONFIG_ASM_LITTLE_ENDIAN);
+		  (void *) CONFIG_ASM_LITTLE_ENDIAN);
 
  config_add_item(CONFIG_ASM_ATT_MARGIN_FLAG,
 		 CONFIG_TYPE_INT,
 		 CONFIG_MODE_RW,
-		 (void *)CONFIG_ASM_ATT_MARGIN_DEFAULT);
+		 (void *) CONFIG_ASM_ATT_MARGIN_DEFAULT);
 
 }
 

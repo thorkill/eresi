@@ -28,37 +28,41 @@ print $hash[visitedblocks:$1]
 sparc2lir    $1
 #lir-dataflow $1
 
-tables blocks
-print $block
-
+#tables ^blocks
+#tables ^funcs
+#exec sleep 30
 #tables expressions
-
-print $block.outlinks
-print $block.nbroutlinks
-
+#print $block.outlinks
+#print $block.nbroutlinks
 #tables expressions 100A34
 #exec sleep 60
+#profile enable warn
+#tables expressions link_67
+#tables list link_67
+#type
+#print $bloc_00100A34_outputs
+#exec sleep 10
 
-profile enable warn
+foreach $link of $block.outlinks
 
-tables expressions link_67
-tables list link_67
-type
+  #print $link
+  set $nextblock $link.id
+  print $nextblock
+  print $nextblock.vaddr
 
+  #exec sleep 30
+  #profile enable warn
 
-exec sleep 30
-
-foreach $nextblock of $block.outlinks
-
-  print *nextblock
-
-  set $addr  $nextblock.curaddr
-  set $found $hash[visitedblocks:$curaddr]
+  set $addr $nextblock.vaddr
+  set $found $hash[visitedblocks:$addr]
   cmp $found 1
   je next
-  cfg-walk $nextblock.curaddr
 
-  print *nextblock
+  exec sleep 10
+
+  cfg-walk $addr
+
+  print $nextblock
 
 next: forend
 

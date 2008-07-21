@@ -313,7 +313,7 @@ char *revm_coloraddress(char *pattern, eresi_Addr addr)
   return revm_colorget(pattern, "address", &addr); 
 }
 
-char *revm_colornumber(char *pattern, elfsh_Off numb) 		
+char *revm_colornumber(char *pattern, eresi_Off numb) 		
 { 
   return revm_colorget(pattern, "number", &numb); 
 }

@@ -285,7 +285,7 @@ int		elfsh_set_segment_offset(elfsh_Phdr *p, eresi_Addr offset)
   if (!p)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL argument", -1);
-  p->p_offset = (elfsh_Off) offset;
+  p->p_offset = (eresi_Off) offset;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -294,7 +294,7 @@ int		elfsh_set_segment_offset(elfsh_Phdr *p, eresi_Addr offset)
  * @param p
  * @return
  */
-elfsh_Off	elfsh_get_segment_offset(elfsh_Phdr *p)
+eresi_Off	elfsh_get_segment_offset(elfsh_Phdr *p)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -567,7 +567,7 @@ elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht,
  */
 elfsh_Phdr	elfsh_create_phdr(elfsh_Word t, 
 				  eresi_Addr a, 
-				  elfsh_Off z, 
+				  eresi_Off z, 
 				  elfsh_Word al)
 {
   elfsh_Phdr	new;

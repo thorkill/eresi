@@ -55,7 +55,7 @@ int		container_linklists_create(container_t *container,
       else
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, container->inlinks, sizeof(list_t), -1);
-	  elist_init(container->inlinks, strdup(bufname), container->type);
+	  elist_init(container->inlinks, strdup(bufname), ASPECT_TYPE_LINK);
 	}
 
       break;
@@ -67,7 +67,7 @@ int		container_linklists_create(container_t *container,
       else
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, container->outlinks, sizeof(list_t), -1);
-	  elist_init(container->outlinks, strdup(bufname), container->type);
+	  elist_init(container->outlinks, strdup(bufname), ASPECT_TYPE_LINK);
 	}
       break;
     default:

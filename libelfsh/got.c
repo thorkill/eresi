@@ -509,7 +509,7 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
    u_int       index, got_rel_index;
    u_int       entsz;
    int         got_index;
-   elfsh_Off   off;
+   eresi_Off   off;
    void		*data;
    
    PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

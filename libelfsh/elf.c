@@ -56,7 +56,7 @@ int		elfsh_set_shtoff(elfsh_Ehdr *hdr, eresi_Addr off)
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  hdr->e_shoff = (elfsh_Off) off;
+  hdr->e_shoff = (eresi_Off) off;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -65,13 +65,13 @@ int		elfsh_set_shtoff(elfsh_Ehdr *hdr, eresi_Addr off)
  * @param hdr
  * @return
  */
-elfsh_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
+eresi_Off	elfsh_get_shtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (elfsh_Off) -1);
+		 "Invalid NULL parameter", (eresi_Off) -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_shoff));
 }
 
@@ -122,7 +122,7 @@ int		elfsh_set_phtoff(elfsh_Ehdr *hdr, eresi_Addr num)
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  hdr->e_phoff = (elfsh_Off) num;
+  hdr->e_phoff = (eresi_Off) num;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -131,13 +131,13 @@ int		elfsh_set_phtoff(elfsh_Ehdr *hdr, eresi_Addr num)
  * @param hdr
  * @return
  */
-elfsh_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
+eresi_Off	 elfsh_get_phtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (elfsh_Off) -1);
+		 "Invalid NULL parameter", (eresi_Off) -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_phoff));
 }
 
@@ -154,7 +154,7 @@ int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, eresi_Addr num)
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  *((elfsh_Off *) hdr->e_ident + EI_RPHT) =  (elfsh_Off) num;
+  *((eresi_Off *) hdr->e_ident + EI_RPHT) =  (eresi_Off) num;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -163,15 +163,15 @@ int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, eresi_Addr num)
  * @param hdr
  * @return 
  */
-elfsh_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
+eresi_Off	 elfsh_get_rphtoff(elfsh_Ehdr *hdr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (elfsh_Off) -1);
+		 "Invalid NULL parameter", (eresi_Off) -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		(*(elfsh_Off *) hdr->e_ident + EI_RPHT));
+		(*(eresi_Off *) hdr->e_ident + EI_RPHT));
 }
 
 /**
@@ -670,7 +670,7 @@ int elfsh_check_hdr_phoff(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (file->hdr->e_phoff > (elfsh_Off) file->fstat.st_size) 
+  if (file->hdr->e_phoff > (eresi_Off) file->fstat.st_size) 
     {
     file->hdr->e_phoff = ET_NONE;
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -689,7 +689,7 @@ int elfsh_check_hdr_shoff(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (file->hdr->e_shoff > (elfsh_Off) file->fstat.st_size) 
+  if (file->hdr->e_shoff > (eresi_Off) file->fstat.st_size) 
     {
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "file->hdr->e_shoff > file length", NULL);

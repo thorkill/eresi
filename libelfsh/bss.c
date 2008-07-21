@@ -170,7 +170,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file,
   elfshsect_t	*next;
   elfshsect_t	*actual;
   u_int		size;
-  elfsh_Off	size2;
+  eresi_Off	size2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

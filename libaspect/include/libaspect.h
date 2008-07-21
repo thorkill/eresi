@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <strings.h>
+#include <stdint.h>
 
 /* Debug flags */
 #define		__DEBUG_LIST__	1
@@ -116,6 +117,18 @@
 	((uint64_t)(((uint64_t)x) & (uint64_t) 0xff00000000000000ULL) >> 56)))
 #endif
 
+/* The size of an address depends on if we analyse 32bits or 64bits objects */
+#if defined(ERESI32)
+ typedef uint32_t	eresi_Addr;
+ typedef uint32_t	eresi_Off;
+#elif defined(ERESI64)
+ typedef uint64_t	eresi_Addr;
+ typedef uint64_t	eresi_Off;
+#else
+ #error "You must define either ERESI32 or ERESI64 built"
+#endif
+
+
 /* Include this here since it contains an allocation too */
 #ifndef __KERNEL__
  #include "aproxy.h"
@@ -136,20 +149,22 @@
 #define         ASPECT_TYPE_DADDR        7  /*!< 4 or 8 bytes      */
 #define         ASPECT_TYPE_CADDR        8  /*!< 4 or 8 bytes      */
 #define		ASPECT_TYPE_BIT		 9  /*!< just 1 bit        */
-#define		ASPECT_TYPE_CORENUM	10  /*!< Core types number */
+#define		ASPECT_TYPE_OID		10  /*!< object identifier */
+#define		ASPECT_TYPE_CORENUM	11  /*!< Core types number */
 
 /* Vectors, tables and hash are considered simple types : 
    you cannot copy them or look inside them without foreach */
-#define	        ASPECT_TYPE_VECT	10  /*!< Vector type	   */
-#define		ASPECT_TYPE_HASH	11  /*!< Hash table type   */
-#define		ASPECT_TYPE_LIST	12  /*!< List type         */
-#define		ASPECT_TYPE_SIMPLENUM	13  /*!< SIMPLE TYPES NUMBER */
+#define	        ASPECT_TYPE_VECT	11  /*!< Vector type	   */
+#define		ASPECT_TYPE_HASH	12  /*!< Hash table type   */
+#define		ASPECT_TYPE_LIST	13  /*!< List type         */
+#define		ASPECT_TYPE_SIMPLENUM	14  /*!< SIMPLE TYPES NUMBER */
 
 /* Now come complex types which are part of the base types */
-#define		ASPECT_TYPE_EXPR	13  /*!< Expression type   */
-#define		ASPECT_TYPE_BLOC	14  /*!< Block type        */
-#define		ASPECT_TYPE_FUNC	15  /*!< Function type     */
-#define         ASPECT_TYPE_BASENUM     16  /*!< BASE TYPES NUMBER */
+#define		ASPECT_TYPE_EXPR	14  /*!< Expression type   */
+#define		ASPECT_TYPE_BLOC	15  /*!< Block type        */
+#define		ASPECT_TYPE_FUNC	16  /*!< Function type     */
+#define		ASPECT_TYPE_LINK	17
+#define         ASPECT_TYPE_BASENUM     18  /*!< BASE TYPES NUMBER */
 
 /* Type names */
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
@@ -162,6 +177,7 @@
 #define		ASPECT_TYPENAME_LONG	"long"    
 #define		ASPECT_TYPENAME_DADDR	"daddr"   
 #define		ASPECT_TYPENAME_CADDR	"caddr" 
+#define		ASPECT_TYPENAME_OID	"oid"
   
 #define		ASPECT_TYPENAME_VECT	"vector" 
 #define		ASPECT_TYPENAME_HASH	"hash"
@@ -169,6 +185,8 @@
 #define		ASPECT_TYPENAME_EXPR	"expr"
 #define		ASPECT_TYPENAME_BLOC	"bloc"
 #define		ASPECT_TYPENAME_FUNC	"func"
+#define		ASPECT_TYPENAME_LINK	"link"
+
 
 /* Max pointer depth for a compound type */
 #define		ASPECT_TYPE_MAXPTRDEPTH	1
@@ -329,8 +347,8 @@ typedef struct	s_aspectworld
   /* Advanced */
   char 		*(*coloradv)(char *ty, char *p, char *te);
   char		*(*colorinstr_fmt)(char* p, char *t);
-  char          *(*coloraddress)(char *p, u_long a);
-  char          *(*colornumber)(char *p, u_int n);
+  char          *(*coloraddress)(char *p, eresi_Addr a);
+  char          *(*colornumber)(char *p, eresi_Off n);
   char          *(*colorstr_fmt)(char *p, char *t);
   char          *(*colorfieldstr_fmt)(char *p, char *t);
   char          *(*colortypestr_fmt)(char *p, char *t);
@@ -467,9 +485,9 @@ void		profiler_setmorecolor(char *(*coloradv)(char *ty,
 				      char *(*colorinstr_fmt)(char* p, 
 							      char *t),
 				      char *(*coloraddress)(char *p,
-							    u_long a),
+							    eresi_Addr a),
 				      char *(*colornumber)(char *p, 
-							   u_int n),
+							   eresi_Off n),
 				      char *(*colorstr_fmt)(char *p, 
 							    char *t),
 				      char *(*colorfieldstr_fmt)(char *p,

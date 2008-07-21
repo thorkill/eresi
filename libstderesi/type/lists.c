@@ -46,7 +46,7 @@ int		revm_list_display_element(list_t *l, char *key, u_char inside)
   revm_output("\t");
   if (l->type == ASPECT_TYPE_EXPR)
     {
-      newexpr = (eresi_Addr) data;
+      newexpr = (revmexpr_t *) data;
       revm_expr_print(newexpr->label);
     }
   else

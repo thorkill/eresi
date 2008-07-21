@@ -717,6 +717,7 @@ int		revm_type_prints();
 int		revm_type_print_regex(char *regex);
 int		revm_type_copy(char *from, char *to);
 int		revm_type_hashcreate(char *name);
+int		revm_type_reflect(hash_t *hash, char *typename);
 
 /* Data access related functions */
 aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
@@ -832,6 +833,7 @@ aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
 int		revm_expr_destroy(char *e);
+revmexpr_t	*revm_expr_lookup(u_int oid);
 
 /* May not be defined */
 #ifndef __KERNEL__

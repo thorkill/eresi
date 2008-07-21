@@ -17,11 +17,9 @@ int			cmd_set()
   revmexpr_t		*e2;
   int                   error;
   int			errvar;
-
   revmexpr_t		*last;
+  u_int			oid;
 
-  //revmexpr_t		*res;
-  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Resolve all possible case between expressions and objects */
@@ -35,6 +33,16 @@ int			cmd_set()
   if (last == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get result variable", -2);
+
+  /* Make sure we lookup an expression with container if given by ID */
+  if (e2 && e2->value && e2->type->type == ASPECT_TYPE_OID)
+    {
+      oid = (e2->value->immed ? e2->value->immed_val.word : e2->value->get_obj(e2->value->parent));
+      e2 = revm_expr_lookup(oid);
+      if (!e2)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to get expression from id", -1);
+    }
 
   /* Assignment between existing expressions */
   if (e1 && e2)

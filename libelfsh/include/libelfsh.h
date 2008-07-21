@@ -982,9 +982,9 @@ void		elfsh_unload_obj(elfshobj_t *file);
 /* elf.c */
 int		elfsh_load_hdr(elfshobj_t *file);
 void		*elfsh_get_hdr(elfshobj_t *file);
-elfsh_Off       elfsh_get_shtoff(elfsh_Ehdr *e);
+eresi_Off       elfsh_get_shtoff(elfsh_Ehdr *e);
 elfsh_Half      elfsh_get_shtnbr(elfsh_Ehdr *e);
-elfsh_Off       elfsh_get_phtoff(elfsh_Ehdr *e);
+eresi_Off       elfsh_get_phtoff(elfsh_Ehdr *e);
 elfsh_Half      elfsh_get_phtnbr(elfsh_Ehdr *e);
 eresi_Addr      elfsh_get_entrypoint(elfsh_Ehdr *e);
 elfsh_Half      elfsh_get_arch(elfsh_Ehdr *e);
@@ -1019,7 +1019,7 @@ void		elfsh_endianize_elfhdr(elfsh_Ehdr *e, char byteorder);
 int		elfsh_static_file(elfshobj_t *file);
 int		elfsh_dynamic_file(elfshobj_t *file);
 int		elfsh_set_rphtoff(elfsh_Ehdr *hdr, eresi_Addr num);
-elfsh_Off	elfsh_get_rphtoff(elfsh_Ehdr *hdr);
+eresi_Off	elfsh_get_rphtoff(elfsh_Ehdr *hdr);
 int		elfsh_get_core_notes(elfshobj_t *file);
 
 
@@ -1056,7 +1056,7 @@ elfsh_Sym	*elfsh_get_sym_from_shtentry(elfshobj_t *file, elfsh_Shdr *hdr);
 elfsh_Word      elfsh_get_section_info(elfsh_Shdr *s);
 elfsh_Word      elfsh_get_section_entsize(elfsh_Shdr *s);
 elfsh_Word      elfsh_get_section_link(elfsh_Shdr *s);
-elfsh_Off       elfsh_get_section_foffset(elfsh_Shdr *s);
+eresi_Off       elfsh_get_section_foffset(elfsh_Shdr *s);
 eresi_Addr      elfsh_get_section_addr(elfsh_Shdr *s);
 elfsh_Word      elfsh_get_section_align(elfsh_Shdr *s);
 elfsh_Word      elfsh_get_section_size(elfsh_Shdr *s);
@@ -1088,7 +1088,7 @@ void		elfsh_remove_sht(elfshobj_t *file);
 int		elfsh_set_section_name(elfshobj_t *file, elfshsect_t *sect, char *name);
 char		*elfsh_get_section_name(elfshobj_t *file, elfshsect_t *s);
 elfsh_Shdr	elfsh_create_shdr(elfsh_Word name, elfsh_Word type, elfsh_Word flags,
-                              eresi_Addr addr, elfsh_Off offset, elfsh_Word size,
+                              eresi_Addr addr, eresi_Off offset, elfsh_Word size,
                               elfsh_Word link, elfsh_Word info, elfsh_Word align,
                               elfsh_Word entsize);
 int		elfsh_insert_runtime_shdr(elfshobj_t *f, elfsh_Shdr hdr, u_int r, char *name, char sf);
@@ -1125,11 +1125,11 @@ elfsh_Word      elfsh_get_segment_filesz(elfsh_Phdr *p);
 eresi_Addr      elfsh_get_segment_paddr(elfsh_Phdr *p);
 eresi_Addr      elfsh_get_segment_vaddr(elfsh_Phdr *p);
 elfsh_Word	elfsh_get_segment_type(elfsh_Phdr *p);
-elfsh_Off	elfsh_get_segment_offset(elfsh_Phdr *p);
+eresi_Off	elfsh_get_segment_offset(elfsh_Phdr *p);
 elfsh_Phdr	*elfsh_get_pht_entry_by_index(elfsh_Phdr *pht, eresi_Addr index);
 eresi_Addr	elfsh_get_object_baseaddr(elfshobj_t *file);
 void		elfsh_endianize_pht(elfsh_Phdr *pht, char byteorder, uint16_t sz);
-elfsh_Phdr	elfsh_create_phdr(elfsh_Word t, eresi_Addr a, elfsh_Off z, elfsh_Word al);
+elfsh_Phdr	elfsh_create_phdr(elfsh_Word t, eresi_Addr a, eresi_Off z, elfsh_Word al);
 elfsh_Phdr	*elfsh_insert_phdr(elfshobj_t *file, elfsh_Phdr *h);
 int		elfsh_remove_phdr(elfshobj_t *current, int index);
 
@@ -1337,7 +1337,7 @@ int		elfsh_get_first_pltentsz(elfshobj_t *file);
 int		elfsh_relink_plt(elfshobj_t *file, u_int modulo);
 int		elfsh_copy_plt(elfshobj_t *file, u_int modulo);
 int		elfsh_get_plt_symbol_offset(elfshobj_t *file, uint8 *name,
-                                  elfsh_Off *off);
+                                  eresi_Off *off);
 int		elfsh_build_plt(elfshobj_t *file);
 int		elfsh_altplt_firstent(elfshsect_t	*created, 
                             u_int		*off,

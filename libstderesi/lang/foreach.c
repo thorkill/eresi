@@ -80,10 +80,8 @@ int		cmd_foreach()
 		{
 		  if (setobj->otype->type == ASPECT_TYPE_HASH)
 		    {
-		      addr = (u_long) (setobj->immed ? setobj->immed_val.ent : 
-				       setobj->get_obj(setobj->parent));
-		      table = (hash_t *) *(u_long *) addr;
-		      
+		      table = (hash_t *) (setobj->immed ? setobj->immed_val.ent : 
+					  setobj->get_obj(setobj->parent));
 		      if (!table)
 			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				     "Unable to find table name", -1);
@@ -91,9 +89,8 @@ int		cmd_foreach()
 		    }
 		  else if (setobj->otype->type == ASPECT_TYPE_LIST)
 		    {
-		      addr = (u_long) (setobj->immed ? setobj->immed_val.ent : 
-				       setobj->get_obj(setobj->parent));
-		      list = (list_t *) *(u_long *) addr;
+		      list = (list_t *) (setobj->immed ? setobj->immed_val.ent : 
+					 setobj->get_obj(setobj->parent));
 		      if (!list)
 			PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 				     "Unable to find list name", -1);
@@ -114,7 +111,7 @@ int		cmd_foreach()
       fprintf(stderr, "Found setname = %s in foreach ! \n", setname);
 
       /* Try to find a hash or a list out of this variable, if not already found */
-      if (!addr)
+      if (!table && !list)
 	{
 	  table = hash_find(setname);
 	  if (!table)
