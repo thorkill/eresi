@@ -412,10 +412,15 @@ int			cmd_match()
       if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Match/Rewrite can only works on expressions", -1);
+#if __DEBUG_REWRITE__
       fprintf(stderr, "\n *** We -ARE- matching elements of a list *** \n");
+#endif
     }
+#if __DEBUG_REWRITE__
   else
     fprintf(stderr, "\n *** We are -NOT- matching elements of a list *** \n");
+#endif
+    
 
   world.curjob->rwrt.matchexpr = revm_lookup_param(world.curjob->curcmd->param[0]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

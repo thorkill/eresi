@@ -141,7 +141,7 @@ void		elist_destroy(list_t *h)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  fprintf(stderr, "DEBUG: Destroying list %s at addr %p \n", h->name, h);
+  //fprintf(stderr, "DEBUG: Destroying list %s at addr %p \n", h->name, h);
 
   /* We should not destroy the elements as they might be in other hashes */
   keys = elist_get_keys(h, &keynbr);

@@ -8,12 +8,12 @@ cmp $# 1
 jne end
 
 # debug
-print $1
-sym main
-sort a
-sym bloc
-sym FUNC
-tables blocks
+#print $1
+#sym main
+#sort a
+#sym bloc
+#sym FUNC
+#tables blocks
 #
 
 #profile enable warn
@@ -58,7 +58,7 @@ foreach $link of $block.outlinks
   cmp $found 1
   je next
 
-  exec sleep 10
+  #exec sleep 10
 
   cfg-walk $addr
 

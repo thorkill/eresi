@@ -388,7 +388,7 @@ typedef struct        s_job
   revmworkspace_t     ws;		/* The job workspace */
 
   /* Scripting machine job context */
-#define		      REVM_MAXSRCNEST  10
+#define		      REVM_MAXSRCNEST  50
   revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
   revmargv_t         *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
   u_int               sourced;          /* script depth (if beeing sourced) */
@@ -443,7 +443,7 @@ extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
 extern hash_t		exprs_hash;	 /* ERESI expressions types hash */ 
-extern hash_t		labels_hash[10]; /* Scripting labels hash table */
+extern hash_t		labels_hash[REVM_MAXSRCNEST]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
 extern hash_t		L1_hash;	/* For HDR, SHT, PHT, GOT, DTORS, CTORS, DYNAMIC, SECTIONS */

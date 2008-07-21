@@ -11,10 +11,10 @@ tables instrlists
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 
-print TRANSFORMING instruction
-print $instr
+#print TRANSFORMING instruction
+#print $instr
 #profile enable warn
-#quiet
+quiet
 
 rewrite $instr into
 
@@ -112,8 +112,7 @@ into TernopR3(addr:$curaddr, dst:Reg(rid:$instr.op2.name), src1:Reg(rid:$instr.o
 
 # ld,ldd,ldub,ldx,lduw,lduh,ldsw,ldsb  									 		
 case instr(sem:a-rm)
-profile enable warn
-into AssignMR(addr:$curaddr, src(name:$instr.op1.name base(rid:$instr.op1.name), off(val:$instr.op1.imm)), dst(rid:$instr.op2.name))  
+into AssignMR(addr:$curaddr, dst(name:$instr.op2.name, base(rid:$instr.op2.name), off(val:$instr.op2.imm)), src(rid:$instr.op1.name))
 
 # st,stb,stw,sth,std,stx (src = reg)
 case instr(sem:a-wm, op1(sem:reg))
@@ -144,8 +143,8 @@ default print Unsupported instruction at address $curaddr
 
 rwtend
 
-print TRANSFORMED instruction:
-print $instr
+#print TRANSFORMED instruction:
+#print $instr
 
 add $curaddr 4 
 

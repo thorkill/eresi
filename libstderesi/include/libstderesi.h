@@ -7,6 +7,9 @@
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
 
+/* Debug flags for libstderesi */
+#define	__DEBUG_REWRITE__ 0
+
 /* User defined configuration */
 #include "revm.h"
 #include "libetrace.h"

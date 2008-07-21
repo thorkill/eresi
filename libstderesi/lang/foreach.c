@@ -107,8 +107,8 @@ int		cmd_foreach()
       setname = strdup(setname);
       if (setexpr)
 	revm_expr_destroy(setexpr->label);
-
-      fprintf(stderr, "Found setname = %s in foreach ! \n", setname);
+      
+      //fprintf(stderr, "Found setname = %s in foreach ! \n", setname);
 
       /* Try to find a hash or a list out of this variable, if not already found */
       if (!table && !list)
