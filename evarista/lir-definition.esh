@@ -3,6 +3,8 @@
 # Definition for the ELIR form
 #
 
+verb
+
 # Attributes for ASM instructions
 define b	ASM_TYPE_IMPBRANCH
 define cb	ASM_TYPE_CONDBRANCH
@@ -105,3 +107,5 @@ typedef Ins FlagW
 typedef Ins Epilog
 typedef Ins Stop
 typedef Ins Nop
+
+quiet

@@ -15,7 +15,7 @@ asm_sparc_stfsr(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
   
-  ins->type = ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_STORE | ASM_TYPE_ASSIGN;
 
   if (opcode.rd == 0)
     ins->instr = ASM_SP_LDFSR;

@@ -15,7 +15,7 @@ asm_sparc_stba(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op3_table[opcode.op3];
 
-  ins->type = ASM_TYPE_STORE;
+  ins->type = ASM_TYPE_STORE | ASM_TYPE_ASSIGN;
 
   ins->nb_op = 2;
   if (opcode.i) {

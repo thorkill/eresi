@@ -11,10 +11,12 @@ tables instrlists
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 
-#print TRANSFORMING instruction
-#print $instr
+print TRANSFORMING instruction
+print $instr
+
 #profile enable warn
-quiet
+#quiet
+verb
 
 rewrite $instr into
 
@@ -149,5 +151,7 @@ rwtend
 add $curaddr 4 
 
 forend
+
+quiet
 
 print
