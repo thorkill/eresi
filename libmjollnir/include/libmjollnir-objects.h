@@ -57,6 +57,7 @@ typedef struct	s_function
    we hope to do any shape analysis in ERESI */
 typedef	struct	s_link 
 {
+  unsigned int	id;
 #define MJR_LINK_FUNC_CALL		0 /* !< @brief a call between functions	*/
 #define MJR_LINK_FUNC_RET		1 /* !< @brief a function returning control */
 #define MJR_LINK_BLOCK_COND_TRUE	2 /* !< @brief 'true' condition of a branch */
@@ -64,8 +65,11 @@ typedef	struct	s_link
 #define MJR_LINK_BLOCK_COND_ALWAYS	4 /* !< @brief uncoditional branch */
 #define MJR_LINK_TYPE_DELAY		5 /* !< @brief generally ignored but useful */
 #define	MJR_LINK_UNKNOWN		6 /* !< @brief unknown type */
-  unsigned int	id;
-  int		type;
+  u_char	type;
+#define MJR_LINK_SCOPE_UNKNOWN		0 /* !< @brief Link type is unknown */
+#define MJR_LINK_SCOPE_LOCAL	        1 /* !< @brief Link within the current parent object */
+#define MJR_LINK_SCOPE_GLOBAL		2 /* !< @brief Link outside the current parent object */
+  u_char	scope;
 }		mjrlink_t;
 
 

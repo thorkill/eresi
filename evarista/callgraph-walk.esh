@@ -1,0 +1,45 @@
+#!evarista/evarista32
+
+print ENTERED CALLGRAPH-WALK
+
+cmp $# 1
+jne end
+
+set $func $hash[functions:$1]
+print $1
+set $hash[visitedfuncs:$1] 1
+print Entering FUNCTION: $func
+
+verb
+#profile enable warn
+
+cfg-walk $func.vaddr
+
+foreach $link of $func.outlinks
+
+  print $link
+  profile enable warn
+
+  # Dont analyse extern functions
+  cmp $link.scope SCOPE_GLOBAL
+  je next
+
+  set $nextfunc $link.id
+  print NEXTFUNC: $nextfunc
+
+  set $addr $nextfunc.vaddr
+  set $found $hash[visitedfuncs:$addr]
+  cmp $found 1
+  je next
+
+  # Parse the CFG for this function then recurse on the next function
+  cfg-walk $addr  
+  callgraph-walk $addr
+
+  print $nextfunc
+
+next: forend
+
+end:
+print This function needs two parameters
+quit

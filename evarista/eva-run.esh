@@ -5,6 +5,7 @@ cmp  $# 1
 jne end
 sdir .
 
+quiet
 eva-typedecl 42
 
 print 
@@ -25,12 +26,12 @@ print Main-Function found at addr $mainaddr
 
 set $mainfunc $hash[functions:$mainaddr]
 
-tables expressions
-print $hash[functions:$mainaddr]
-print $mainfunc
-print $mainfunc.vaddr
+#tables expressions
+#print $hash[functions:$mainaddr]
+#print $mainfunc
+#print $mainfunc.vaddr
 
-cfg-walk $mainfunc.vaddr
+callgraph-walk $mainfunc.vaddr
 
 quiet
 print 

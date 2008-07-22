@@ -136,7 +136,7 @@ int		mjr_flow_store(mjrcontext_t *c, u_int datatypeid);
 int		mjr_link_block_call(mjrcontext_t *, eresi_Addr, eresi_Addr, eresi_Addr);
 int		mjr_link_block_jump(mjrcontext_t *, eresi_Addr, eresi_Addr, eresi_Addr);
 int		mjr_link_func_call(mjrcontext_t *ctxt, eresi_Addr src, eresi_Addr dst, eresi_Addr ret);
-container_t	*mjr_block_split(mjrcontext_t *ctxt, eresi_Addr	dst, u_int link_with);
+container_t	*mjr_block_split(mjrcontext_t *ctxt, eresi_Addr	dst, u_char link_with);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, eresi_Addr a);
@@ -163,7 +163,8 @@ container_t	*mjr_create_function_container(mjrcontext_t*,
 mjrlink_t	*mjr_container_add_link(mjrcontext_t *ctxt,
 					container_t *cntnr, 
 					u_int id, 
-					int link_type, 
+					u_char link_type, 
+					u_char link_scope,
 					int link_direction);
 
 /* findentry.c	*/

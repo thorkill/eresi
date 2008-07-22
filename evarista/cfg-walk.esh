@@ -1,22 +1,9 @@
 #!evarista/evarista32
 
-print Now entered cfg-walk
-
-#profile enable warn
+print ENTERED CFG-WALK
 
 cmp $# 1
 jne end
-
-# debug
-#print $1
-#sym main
-#sort a
-#sym bloc
-#sym FUNC
-#tables blocks
-#
-
-#profile enable warn
 
 set $block $hash[blocks:$1]
 print $1
@@ -28,37 +15,20 @@ print $hash[visitedblocks:$1]
 sparc2lir    $1
 #lir-dataflow $1
 
-#tables ^blocks
-#tables ^funcs
-#exec sleep 30
-#tables expressions
-#print $block.outlinks
-#print $block.nbroutlinks
-#tables expressions 100A34
-#exec sleep 60
-#profile enable warn
-#tables expressions link_67
-#tables list link_67
-#type
-#print $bloc_00100A34_outputs
-#exec sleep 10
-
 foreach $link of $block.outlinks
 
-  #print $link
+  # Dont analyse blocks outside current function
+  cmp $link.scope SCOPE_GLOBAL
+  je next
+
   set $nextblock $link.id
   print $nextblock
   print $nextblock.vaddr
-
-  #exec sleep 30
-  #profile enable warn
 
   set $addr $nextblock.vaddr
   set $found $hash[visitedblocks:$addr]
   cmp $found 1
   je next
-
-  #exec sleep 10
 
   cfg-walk $addr
 

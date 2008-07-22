@@ -178,34 +178,7 @@ extern asm_processor	proc;
 #define ELFSH_VERTYPE_DEF     3
 #define ELFSH_VERENTRY_MAX    4
 
-/* Used to store ascii description for different structures types in data.c */
-#define	ELFSH_INSTRTYPE_MAX	24
-#define	ELFSH_OPTYPE_MAX	4
-#define ELFSH_SEGTYPE_MAX	7
-#define	ELFSH_SHTYPE_MAX	16
-#define	ELFSH_OBJTYPE_MAX	5
-#define	ELFSH_SYMBIND_MAX	3
-#define	ELFSH_SYMTYPE_MAX	STT_NUM + 1
-#define	ELFSH_ENCODING_MAX	3
-#define	ELFSH_DYNAMIC_MAX	35
-#define	ELFSH_EXTDYN_MAX	19
-#define ELFSH_MIPSDYN_MAX	43
-#define	ELFSH_ARCHTYPE_MAX	95
-#define	ELFSH_EXTSEG_MAX	5
-#define	ELFSH_RELOC_i386_MAX	11
-#define	ELFSH_RELOC_IA64_MAX	81
-#define	ELFSH_RELOC_SPARC_MAX	55
-#define ELFSH_RELOC_SPARC64_MAX	55
-#define	ELFSH_RELOC_ALPHA_MAX	43
-#define	ELFSH_RELOC_MIPS_MAX	35
-
 #define ELFSH_RELOC_MAX(file)   revm_getmaxrelnbr(file)
-
-#define	ELFSH_FEATURE_MAX	2
-#define	ELFSH_POSFLAG_MAX	2
-#define	ELFSH_FLAGS_MAX		4
-#define	ELFSH_FLAGS1_MAX	15
-#define ELFSH_MIPSFLAGS_MAX	16
 
 /* REVM general parameters */
 #define	REVM_MAXARGC		128
@@ -477,33 +450,6 @@ extern hash_t		goto_hash;	/* goto hash */
 /* Lattice for I/O */
 extern char		*(*hooks_input[REVM_IO_NUM])();
 extern int		(*hooks_output[REVM_IO_NUM])(char *buf);
-
-/* Data value/string/description arrays */
-extern revmconst_t     asm_instr_type[ELFSH_INSTRTYPE_MAX];
-extern revmconst_t     asm_operand_type[ELFSH_OPTYPE_MAX];
-
-extern revmconst_t     elfsh_extseg_type[ELFSH_EXTSEG_MAX];
-extern revmconst_t     elfsh_seg_type[ELFSH_SEGTYPE_MAX];
-extern revmconst_t     elfsh_sh_type[ELFSH_SHTYPE_MAX];
-extern revmconst_t     elfsh_obj_type[ELFSH_OBJTYPE_MAX];
-extern revmconst_t     elfsh_sym_bind[ELFSH_SYMBIND_MAX];
-extern revmconst_t     elfsh_sym_type[ELFSH_SYMTYPE_MAX];
-extern revmconst_t     elfsh_dynentry_type[ELFSH_DYNAMIC_MAX];
-extern revmconst_t     elfsh_encoding[ELFSH_ENCODING_MAX];
-extern revmconst_t     elfsh_extdyn_type[ELFSH_EXTDYN_MAX];
-extern revmconst_t     elfsh_mipsdyn_type[ELFSH_MIPSDYN_MAX];
-extern char	       *elfsh_arch_type[ELFSH_ARCHTYPE_MAX];
-extern revmconst_t     elfsh_feature1[ELFSH_FEATURE_MAX];
-extern revmconst_t     elfsh_posflag1[ELFSH_POSFLAG_MAX];
-extern revmconst_t     elfsh_flags[ELFSH_FLAGS_MAX];
-extern revmconst_t     elfsh_flags1[ELFSH_FLAGS1_MAX];
-extern revmconst_t     elfsh_mipsflags[ELFSH_MIPSFLAGS_MAX];
-extern revmconst_t     elfsh_rel_type_i386[ELFSH_RELOC_i386_MAX];
-extern revmconst_t     elfsh_rel_type_ia64[ELFSH_RELOC_IA64_MAX];
-extern revmconst_t     elfsh_rel_type_sparc[ELFSH_RELOC_SPARC64_MAX];
-extern revmconst_t     elfsh_rel_type_alpha[ELFSH_RELOC_ALPHA_MAX];
-extern revmconst_t     elfsh_rel_type_mips[ELFSH_RELOC_MIPS_MAX];
-extern revmconst_t     elfsh_verentry_type[ELFSH_VERENTRY_MAX];
 
 /* This has to be prototyped in libelfsh and not put in extern ! */
 extern int 		elfsh_load_core_info(elfshobj_t *);

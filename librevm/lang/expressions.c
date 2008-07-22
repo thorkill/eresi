@@ -734,8 +734,10 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
 
   /* Failure: no value or complex type for source expr ? */
   else
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to copy expression in impossible default case", NULL);
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unable to copy invalid expression (childs = NULL, value = NULL)", NULL);
+    }
 
   /* Return error or success */
   if (ret < 0)

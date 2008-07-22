@@ -66,8 +66,10 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
 
       memcpy(buf->data + buf->maxlen, (char *) &curlink->id , sizeof(unsigned int));
       buf->maxlen += sizeof(unsigned int);
-      memcpy(buf->data + buf->maxlen, (char *) &curlink->type , sizeof(unsigned int));
-      buf->maxlen += sizeof(unsigned int);
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->type, sizeof(unsigned char));
+      buf->maxlen++;
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->scope, sizeof(unsigned char));
+      buf->maxlen++;
       
       cur = cur->next;
     }
@@ -90,7 +92,8 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
 {
   u_int		off;
   u_int		tmpid;
-  u_int		tmptype;
+  u_char	tmptype;
+  u_char	tmpscope;
   u_int		tmpnbr;
   u_int		findex;
 
@@ -119,17 +122,19 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
     {	 
       tmpid     = *(unsigned int *) ((char *) sectdata + off + *curoff);
       *curoff  += sizeof (unsigned int);
-      tmptype   = *(unsigned int *) ((char *) sectdata + off + *curoff);
-      *curoff  += sizeof (unsigned int);
+      tmptype   = *(unsigned char *) sectdata + off + *curoff;
+      *curoff  += sizeof (unsigned char);
+      tmpscope  = *(unsigned char *) sectdata + off + *curoff;
+      *curoff  += sizeof (unsigned char);
       
 #if __DEBUG_ONDISK__
-      fprintf(D_DESC," [__DEBUG_ONDISK__] Restored link: (%d/%d) sid:%u did:%u type:%u\n", 
-	      findex, tmpnbr, container->id, tmpid, tmptype);
+      fprintf(D_DESC," [__DEBUG_ONDISK__] Restored link: (%d/%d) sid:%u did:%u type:%u scope:%u\n", 
+	      findex, tmpnbr, container->id, tmpid, tmptype, tmpscope);
 #endif
       
       /* This function increments linklist->elmnbr */
       if (tmpid)
-	mjr_container_add_link(ctxt, container, tmpid, tmptype, linktype);
+	mjr_container_add_link(ctxt, container, tmpid, tmptype, tmpscope, linktype);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

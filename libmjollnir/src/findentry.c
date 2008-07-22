@@ -199,9 +199,9 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   mjr_function_register(context, main_addr, main_container);
 
   mjr_container_add_link(context, tmpcntnr, main_container->id, 
-			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
+			 MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
   mjr_container_add_link(context, main_container, tmpcntnr->id, 
-			 MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
+			 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
   mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
 
   /* Create symbols for main */

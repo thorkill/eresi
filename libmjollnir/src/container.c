@@ -118,7 +118,8 @@ container_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
 mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
 					container_t	*cntnr,
 					unsigned int	id,
-					int		link_type,
+					u_char		link_type,
+					u_char		link_scope,
 					int		link_direction)
 {
   list_t	*linklist;
@@ -186,6 +187,7 @@ mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
   XALLOC(__FILE__, __FUNCTION__, __LINE__, link, sizeof(mjrlink_t), NULL);
   link->id   = id;
   link->type = link_type;
+  link->scope = link_scope;
   snprintf(linkname, sizeof(linkname), "%u_%u", cntnr->id, id);
   elist_add(linklist, strdup(linkname), link);
   hash_add(&ctx->linkhash, strdup(linkname), link);

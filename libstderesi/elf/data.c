@@ -1029,6 +1029,30 @@ char		*elfsh_stab_type[] =
 
 
 
+/**
+ *  Control flow analysis link types
+ */
+revmconst_t			elfsh_link_type[] = 
+{
+  {"", "FUNC_CALL"    , MJR_LINK_FUNC_CALL},
+  {"", "FUNC_RET"     , MJR_LINK_FUNC_RET},
+  {"", "BLOC_TRUE"    , MJR_LINK_BLOCK_COND_TRUE},
+  {"", "BLOC_FALSE"   , MJR_LINK_BLOCK_COND_FALSE},
+  {"", "BLOC_DELAY"   , MJR_LINK_TYPE_DELAY},
+  {"", "BLOC_ALWAYS"  , MJR_LINK_BLOCK_COND_ALWAYS},
+  {"", "LINK_UNKNOW"  , MJR_LINK_UNKNOWN},
+};
+
+
+/**
+ *  Control flow analysis link scopes
+ */
+revmconst_t			elfsh_link_scope[] = 
+{
+  {"", "SCOPE_UNKNOW"   , MJR_LINK_SCOPE_UNKNOWN},
+  {"", "SCOPE_LOCAL"    , MJR_LINK_SCOPE_LOCAL},
+  {"", "SCOPE_GLOBAL"   , MJR_LINK_SCOPE_GLOBAL},
+};
 
 
 

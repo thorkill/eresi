@@ -13,6 +13,129 @@ hash_t		cmd_hash;
 /* Tracing subcommands hash */
 hash_t		traces_cmd_hash;
 
+/* The constants hash tables : ASCII shortcuts for ERESI */
+hash_t		const_hash;
+
+/**
+ * Setup ELF constants hash tables 
+ */
+static void	eresi_constants_init()
+{
+  u_int		index;
+
+  hash_init(&const_hash, "constants", 51, ASPECT_TYPE_STR);
+
+  for (index = 0; index < ELFSH_SEGTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_seg_type[index].name, 
+	     elfsh_seg_type + index);
+
+  for (index = 0; index < ELFSH_EXTSEG_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_extseg_type[index].name, 
+	     elfsh_extseg_type + index);
+
+  for (index = 0; index < ELFSH_ENCODING_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_encoding[index].name, 
+	     elfsh_encoding + index);
+  for (index = 0; index < ELFSH_SHTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_sh_type[index].name, 
+	     elfsh_sh_type + index);
+  for (index = 0; index < ELFSH_OBJTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_obj_type[index].name, 
+	     elfsh_obj_type + index);
+  for (index = 0; index < ELFSH_SYMBIND_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_sym_bind[index].name, 
+	     elfsh_sym_bind + index);
+  for (index = 0; index < ELFSH_SYMTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_sym_type[index].name, 
+	     elfsh_sym_type + index);
+  for (index = 0; index < ELFSH_RELOC_i386_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_rel_type_i386[index].name, 
+	     elfsh_rel_type_i386 + index);
+
+  for (index = 0; index < ELFSH_RELOC_SPARC64_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_rel_type_sparc[index].name, 
+	     elfsh_rel_type_sparc + index);
+
+  for (index = 0; index < ELFSH_RELOC_IA64_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_rel_type_ia64[index].name, 
+	     elfsh_rel_type_ia64 + index);
+
+  for (index = 0; index < ELFSH_RELOC_ALPHA_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_rel_type_alpha[index].name, 
+	     elfsh_rel_type_alpha + index);
+
+  for (index = 0; index < ELFSH_RELOC_MIPS_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_rel_type_mips[index].name, 
+	     elfsh_rel_type_mips + index);
+
+     
+  for (index = 0; index < ELFSH_DYNAMIC_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_dynentry_type[index].name, 
+	     elfsh_dynentry_type + index);
+  for (index = 0; index < ELFSH_EXTDYN_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_extdyn_type[index].name, 
+	     elfsh_extdyn_type + index);
+  for (index = 0; index < ELFSH_MIPSDYN_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_mipsdyn_type[index].name, 
+	     elfsh_mipsdyn_type + index);
+  for (index = 0; index < ELFSH_FEATURE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_feature1[index].name, 
+	     elfsh_feature1 + index);
+  for (index = 0; index < ELFSH_POSFLAG_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_posflag1[index].name, 
+	     elfsh_posflag1 + index);
+  for (index = 0; index < ELFSH_FLAGS_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_flags[index].name, 
+	     elfsh_flags + index);
+  for (index = 0; index < ELFSH_FLAGS1_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_flags1[index].name, 
+	     elfsh_flags1 + index);
+  for (index = 0; index < ELFSH_MIPSFLAGS_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_mipsflags[index].name, 
+	     elfsh_mipsflags + index);
+
+  for (index = 0; index < ELFSH_INSTRTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) asm_instr_type[index].name, 
+	     asm_instr_type + index);
+
+  for (index = 0; index < ELFSH_OPTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) asm_operand_type[index].name, 
+	     asm_operand_type + index);
+
+  for (index = 0; index < ELFSH_LINKTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_link_type[index].name, 
+	     elfsh_link_type + index);
+
+  for (index = 0; index < ELFSH_LINKSCOPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_link_scope[index].name, 
+	     elfsh_link_scope + index);
+}
+
+
 /** 
  * @brief Setup the command hash table 
  */
@@ -24,6 +147,7 @@ void		eresi_commands_init()
 
   hash_init(&cmd_hash, "commands", 101, ASPECT_TYPE_UNKNOW);
   hash_init(&traces_cmd_hash  , "traces", 11, ASPECT_TYPE_UNKNOW);
+  eresi_constants_init();
 
   /* Interactive mode / Scripting mode commands */
   if (world.state.revm_mode != REVM_STATE_CMDLINE)

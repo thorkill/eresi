@@ -29,6 +29,7 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
   char			*md5;
   eresi_Addr		tmpaddr;
   elfshsect_t		*dstsect;
+  u_char		scope;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -41,6 +42,8 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
   dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
   if (!dstsect || !dstsect->data)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  scope = (!dstsect || !strcmp(dstsect->name, ELFSH_SECTION_NAME_PLT) ? 
+	   MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
 
   /* Link/Prepare function layer. We use an intermediate variable, else
    the compiler optimize too hard and that make segfault (bug in gcc ?) */
@@ -59,9 +62,9 @@ int			mjr_link_func_call(mjrcontext_t *ctxt,
   if (ctxt->curfunc)
     {
       mjr_container_add_link(ctxt, fun, ctxt->curfunc->id, 
-			     MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
+			     MJR_LINK_FUNC_RET, scope, CONTAINER_LINK_IN);
       mjr_container_add_link(ctxt, ctxt->curfunc, fun->id, 
-			     MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
+			     MJR_LINK_FUNC_CALL, scope, CONTAINER_LINK_OUT);
     }
 
   /* Fingerprint function */
@@ -104,31 +107,37 @@ int			mjr_link_block_call(mjrcontext_t *ctxt,
   mjr_block_symbol(ctxt, csrc, src, 0);
 
   /* search and/or split destination block */
-  if (!(cdst = mjr_block_split(ctxt, dst, 0)))
+  if (!(cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
 
   if (ret)
     /* search and/or split - return block */
-    if (!(cret = mjr_block_split(ctxt, ret, 0)))
+    if (!(cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET)))
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		   "Could not split the ret", 0);
 
   /* link src and dst */
-  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_OUT);
-  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_FUNC_CALL, CONTAINER_LINK_IN);
+  mjr_container_add_link(ctxt, csrc, cdst->id, 
+			 MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, 
+			 MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
 
   if (ret)
     {
       /* link dst and ret */
-      mjr_container_add_link(ctxt, cdst, cret->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, cret, cdst->id, MJR_LINK_FUNC_RET, CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, cdst, cret->id, 
+			     MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, cdst->id, 
+			     MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
 
       // mjr_block_relink_cond_always(csrc,cret,CONTAINER_LINK_OUT);
       // mjr_block_relink_cond_always(cret,csrc,CONTAINER_LINK_IN);
 
-      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_TYPE_DELAY, CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cret->id, 
+			     MJR_LINK_TYPE_DELAY, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, csrc->id, 
+			     MJR_LINK_TYPE_DELAY, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
     }
 
 #if __DEBUG_BLOCKS__
@@ -165,21 +174,26 @@ int		mjr_link_block_jump(mjrcontext_t *ctxt,
   mjr_block_symbol(ctxt, csrc, src, 0);
 
   /* Now split destination blocks */
-  if (!(cdst = mjr_block_split(ctxt,dst,MJR_LINK_BLOCK_COND_ALWAYS)))
+  if (!(cdst = mjr_block_split(ctxt,dst, MJR_LINK_BLOCK_COND_ALWAYS)))
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		 "Could not split the dst",0);
   cret = NULL;
   if (ret)
-    if (!(cret = mjr_block_split(ctxt,ret,MJR_LINK_BLOCK_COND_ALWAYS)))
+    if (!(cret = mjr_block_split(ctxt,ret, MJR_LINK_BLOCK_COND_ALWAYS)))
       PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		   "Could not split the ret",0);
   
-  mjr_container_add_link(ctxt, csrc, cdst->id, MJR_LINK_BLOCK_COND_TRUE, CONTAINER_LINK_OUT);
-  mjr_container_add_link(ctxt, cdst, csrc->id, MJR_LINK_BLOCK_COND_TRUE, CONTAINER_LINK_IN);  
+  mjr_container_add_link(ctxt, csrc, cdst->id, 
+			 MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+  mjr_container_add_link(ctxt, cdst, csrc->id, 
+			 MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);  
+
   if (cret)
     {
-      mjr_container_add_link(ctxt, csrc, cret->id, MJR_LINK_BLOCK_COND_FALSE, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, cret, csrc->id, MJR_LINK_BLOCK_COND_FALSE, CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cret->id, 
+			     MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cret, csrc->id, 
+			     MJR_LINK_BLOCK_COND_FALSE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -217,7 +231,7 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
     {
       savednext = curent->next;
       lnk = (mjrlink_t *) curent->data;
-      mjr_container_add_link(ctx, dst, lnk->id, lnk->type, direction);
+      mjr_container_add_link(ctx, dst, lnk->id, lnk->type, lnk->scope, direction);
       elist_del(linklist, curent->key);
     }
 
@@ -237,12 +251,13 @@ static int	mjr_block_relink(mjrcontext_t *ctx,
  */
 container_t		*mjr_block_split(mjrcontext_t	*ctxt,
 					 eresi_Addr	dst,
-					 u_int		link_with)
+					 u_char		link_with)
 {
   container_t		*tmpdst,*dstend;
   mjrblock_t		*blkdst;
   int			new_size;
   elfsh_Sym		*sym;
+  u_char		scope;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -285,11 +300,12 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
       sym->st_size = blkdst->size;
       mjr_block_symbol(ctxt, dstend, NULL, 0);
 
-      if (link_with)
+      if (link_with != MJR_LINK_FUNC_CALL)
 	{
+	  scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
 	  mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
-	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, CONTAINER_LINK_OUT);
-	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, CONTAINER_LINK_IN);
+	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
+	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
 	}
     } 
   else 
