@@ -138,19 +138,21 @@ into AssignIM(addr:$curaddr, src(val:$instr.op2.imm), dst(name:$instr.op1.name b
 
 # bset (op1 immed) 																
 case instr(sem:bs, op1(sem:reg), op2(sem:imm))
-into BitSet(addr:$curaddr, src(val:$instr.op2.imm), dst(rid:$instr.op1.name))		 
+into BitSet(addr:$curaddr, src(val:$instr.op2.imm), dst(rid:$instr.op1.name))
 
 # tst (implicit 2e operand = immed 0 !) 											 		
 case instr(sem:cmp, nb_op:1, op1(sem:reg)) 
 into CmpRI(addr:$curaddr, snd(rid:$instr.op1.name), fst(val:0))				 
 
 # cmp (op2 register)
-case instr(sem:cmp, nb_op:2, op1(sem:reg), op2(sem:reg))
+# XXX lacks flag translation
+case instr(sem:cmp-wf, nb_op:2, op1(sem:reg), op2(sem:reg))
 into CmpRR(addr:$curaddr, fst(rid:$instr.op1.name), snd(rid:$instr.op2.name))			 
 
 # cmp (op2 immed) 										 		
-case instr(sem:cmp, nb_op:2, op1(sem:reg), op2(sem:imm))
-into CmpRI(addr:$curaddr, snd(rid:$instr.op1.name), snd(val:$instr.op2.imm))	 		 
+# XXX lacks flag translation
+case instr(sem:cmp-wf, nb_op:2, op1(sem:imm), op2(sem:reg))
+into CmpRI(addr:$curaddr, snd(rid:$instr.op2.name), fst(val:$instr.op1.imm))
 
 # Defaultcase 													
 default print Unsupported instruction at address $curaddr $instr
