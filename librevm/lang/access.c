@@ -189,8 +189,12 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
     {
       child = revm_fieldoff_get(type, param, &off);
       if (off == REVM_INVALID_FIELD)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Cannot find terminal field", NULL);
+	{
+	  printf("Cannot find field %s in type %s\n", param, type->name);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot find terminal field", NULL);
+	}
+
       *data = (char *) *data + off;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
     }

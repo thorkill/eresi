@@ -79,8 +79,8 @@ type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
 # Assignments
 type AssignIR::Ins  = dst:Reg src:Immed
 type AssignIM::Ins  = dst:Mem src:Immed
-type AssignMR::Ins  = dst:Mem src:Reg
-type AssignRM::Ins  = dst:Reg src:Mem
+type AssignMR::Ins  = dst:Reg src:Mem
+type AssignRM::Ins  = dst:Mem src:Reg
 type AssignMM::Ins  = dst:Mem src:Mem
 type AssignRR::Ins  = dst:Reg src:Reg
 

@@ -6,12 +6,11 @@ cmp $# 1
 jne end
 
 set $block $hash[blocks:$1]
-print $1
+#print $1
 set $hash[visitedblocks:$1] 1
-print $block
+#print $block
 print Now ASM to ELIR on block at $block.vaddr
-print $hash[visitedblocks:$1]
-
+#print $hash[visitedblocks:$1]
 sparc2lir    $1
 #lir-dataflow $1
 
@@ -22,8 +21,8 @@ foreach $link of $block.outlinks
   je next
 
   set $nextblock $link.id
-  print $nextblock
-  print $nextblock.vaddr
+  #print $nextblock
+  #print $nextblock.vaddr
 
   set $addr $nextblock.vaddr
   set $found $hash[visitedblocks:$addr]
@@ -32,7 +31,7 @@ foreach $link of $block.outlinks
 
   cfg-walk $addr
 
-  print $nextblock
+  #print $nextblock
 
 next: forend
 
