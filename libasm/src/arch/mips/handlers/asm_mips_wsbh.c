@@ -7,5 +7,5 @@ int asm_mips_wsbh(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_WSBH;
-   return 777;
+   return 4;
 }

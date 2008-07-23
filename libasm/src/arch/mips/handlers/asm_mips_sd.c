@@ -20,5 +20,5 @@ int asm_mips_sd(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: TLB Refill, TLB Invalid, TLB Modified, Address Error, Reserved Instruction */
 
-   return 777;
+   return 4;
 }

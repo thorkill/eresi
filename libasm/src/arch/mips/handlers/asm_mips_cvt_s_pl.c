@@ -21,5 +21,5 @@ int asm_mips_cvt_s_pl(asm_instr *ins, u_char *buf, u_int len,
    /* Exception: Reserved Instruction, Coprocessor Unusable */
    /* FPU Exceptions: Inexact, Unimplemented Operation, Invalid Operation, Overflow, Underflow */
 
-   return 777;
+   return 4;
 }

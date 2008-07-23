@@ -16,5 +16,5 @@ int asm_mips_jal(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: None */
 
-   return 777;
+   return 4;
 }

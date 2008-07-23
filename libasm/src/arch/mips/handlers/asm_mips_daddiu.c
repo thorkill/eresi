@@ -20,5 +20,5 @@ int asm_mips_daddiu(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Reserved Instruction */
 
-   return 777;
+   return 4;
 }

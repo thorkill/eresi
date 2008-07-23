@@ -20,5 +20,5 @@ int asm_mips_mtc2(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Coprocessor Unusable */
 
-   return 777;
+   return 4;
 }

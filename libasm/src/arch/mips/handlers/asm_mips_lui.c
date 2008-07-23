@@ -18,5 +18,5 @@ int asm_mips_lui(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: None */
 
-   return 777;
+   return 4;
 }

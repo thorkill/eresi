@@ -7,5 +7,5 @@ int asm_mips_rotrv(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_ROTRV;
-   return 777;
+   return 4;
 }

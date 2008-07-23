@@ -29,5 +29,5 @@ int asm_mips_movcf_s(asm_instr *ins, u_char *buf, u_int len,
    /* Exception: Reserved Instruction, Coprocessor Unusable */
    /* FPU Exceptions: Unimplemented Operation */
 
-   return 777;
+   return 4;
 }

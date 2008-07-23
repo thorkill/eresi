@@ -24,5 +24,5 @@ int asm_mips_div_d(asm_instr *ins, u_char *buf, u_int len,
    /* Exception: Reserved Instruction, Coprocessor Unusable */
    /* FPU Exceptions: Unimplemented Operation, Invalid Operation, Division-by-zero, Overflow, Underflow */
 
-   return 777;
+   return 4;
 }

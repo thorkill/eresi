@@ -7,5 +7,5 @@ int asm_mips_synci(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_SYNCI;
-   return 777;
+   return 4;
 }

@@ -18,5 +18,5 @@ int asm_mips_tgeiu(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Trap */
 
-   return 777;
+   return 4;
 }

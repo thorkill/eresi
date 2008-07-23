@@ -19,5 +19,5 @@ int asm_mips_ctc1(asm_instr *ins, u_char *buf, u_int len,
    /* Exceptions: Coprocessor Unusable, Reserved instruction */
    /* FPU Exceptions: Unimplemented Operation, Invalid Operation, Division-by-zero, Inexact, Overflow, Underflow */
 
-   return 777;
+   return 4;
 }

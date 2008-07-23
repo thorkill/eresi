@@ -12,5 +12,5 @@ int asm_mips_break(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Breakpoint */
 
-   return 777;
+   return 4;
 }

@@ -105,6 +105,7 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
 	{
 	  cur = revm_instr_display(fd, index, blk->vaddr, 0, blk->size,
 				 name, index + off, buffer);
+
 	  if (cur <= 0)
 	    goto end;
 

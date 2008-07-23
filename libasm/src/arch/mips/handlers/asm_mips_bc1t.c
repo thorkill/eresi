@@ -17,5 +17,5 @@ int asm_mips_bc1t(asm_instr *ins, u_char *buf, u_int len,
    /* Exceptions: Coprocessor Unusable, Reserved instruction */
    /* FPU Exceptions: Unimplemented Operation */
 
-   return 777;
+   return 4;
 }

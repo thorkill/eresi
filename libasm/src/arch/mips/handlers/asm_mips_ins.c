@@ -7,5 +7,5 @@ int asm_mips_ins(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_INS;
-   return 777;
+   return 4;
 }

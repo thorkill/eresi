@@ -20,5 +20,5 @@ int asm_mips_and(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exception: None */
 
-   return 777;
+   return 4;
 }

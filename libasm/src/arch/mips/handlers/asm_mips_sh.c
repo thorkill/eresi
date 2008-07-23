@@ -20,5 +20,5 @@ int asm_mips_sh(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: TLB Refill, TLB Invalid, TLB Modified, Address Error */
 
-   return 777;
+   return 4;
 }

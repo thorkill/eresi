@@ -22,5 +22,5 @@ int asm_mips_dmfc0(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Coprocessor Unusable, Reserved Instruction */
 
-   return 777;
+   return 4;
 }

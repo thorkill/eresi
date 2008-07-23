@@ -16,5 +16,5 @@ int asm_mips_bc2t(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Coprocessor Unusable, Reserved instruction */
 
-   return 777;
+   return 4;
 }

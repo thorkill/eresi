@@ -20,5 +20,5 @@ int asm_mips_daddi(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Integer overflow, Reserved instruction */
 
-   return 777;
+   return 4;
 }

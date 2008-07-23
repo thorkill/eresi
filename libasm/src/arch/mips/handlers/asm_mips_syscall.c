@@ -12,5 +12,5 @@ int asm_mips_syscall(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: System Call */
 
-   return 777;
+   return 4;
 }

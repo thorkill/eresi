@@ -10,5 +10,5 @@ int asm_mips_jr_hb(asm_instr *ins, u_char *buf, u_int len,
 //   asm_mips_operand_r(&ins->op[0], buf, ASM_MIPS_OTYPE_IMMEDIATE, ins);
    asm_mips_jr(ins, buf, len, proc);
 
-   return 777;
+   return 4;
 }

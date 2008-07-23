@@ -14,5 +14,5 @@ int asm_mips_wait(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Coprocessor Unusable */
 
-   return 777;
+   return 4;
 }

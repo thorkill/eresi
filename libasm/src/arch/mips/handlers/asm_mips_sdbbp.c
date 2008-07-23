@@ -18,5 +18,5 @@ int asm_mips_sdbbp(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Debug Breakpoint Exception */
 
-   return 777;
+   return 4;
 }

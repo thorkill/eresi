@@ -20,5 +20,5 @@ int asm_mips_movt(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Reserved Instruction, Coprocessor Unusable */
 
-   return 777;
+   return 4;
 }

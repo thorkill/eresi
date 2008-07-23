@@ -20,5 +20,5 @@ int asm_mips_sdc1(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exceptions: Coprocessor Unusable, Reserved Instruction, TLB Refill, TLB Invalid, TLB Modified, Address Error */
 
-   return 777;
+   return 4;
 }

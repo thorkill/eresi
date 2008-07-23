@@ -21,5 +21,5 @@ int asm_mips_swxc1(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exception: TLB Refill, TLB Invalid, TLB Modified, Address Error, Reserved Instruction, Coprocessor Unusable */
 
-   return 777;
+   return 4;
 }

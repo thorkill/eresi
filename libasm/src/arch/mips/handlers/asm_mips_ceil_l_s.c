@@ -21,5 +21,5 @@ int asm_mips_ceil_l_s(asm_instr *ins, u_char *buf, u_int len,
    /* Exception: Reserved Instruction, Coprocessor Unusable */
    /* FPU Exceptions: Inexact, Unimplemented Operation, Invalid Operation, Overflow */
 
-   return 777;
+   return 4;
 }

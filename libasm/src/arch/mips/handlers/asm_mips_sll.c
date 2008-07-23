@@ -34,5 +34,5 @@ int asm_mips_sll(asm_instr *ins, u_char *buf, u_int len,
 
          break;
    }
-   return 777;
+   return 4;
 }

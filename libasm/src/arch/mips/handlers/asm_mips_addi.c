@@ -20,5 +20,5 @@ int asm_mips_addi(asm_instr *ins, u_char *buf, u_int len,
 
    /* Exception: Integer Overflow */
 
-   return 777;
+   return 4;
 }
