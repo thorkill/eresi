@@ -162,9 +162,10 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
        curptr = foundptr + 2, curidx++, dstnbr++)
     {
       foundptr = strstr(curptr, "::");
-      if (!foundptr)
-	break;                                                          
-      *foundptr = 0x00;
+      if (!foundptr && dstnbr == 1)
+	break;
+      if (foundptr)
+	*foundptr = 0x00;
       type   = revm_exprtype_get(curptr);
       snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
       rname = strdup(namebuf);
@@ -176,6 +177,8 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 		       "Invalid target type(s) for transformation", -1);
 	}
       elist_add(exprlist, rname, candid);
+      if (!foundptr)
+	break;
     }
 
   /* FIXME: The rewritten element is not part of any list or is part of an alien list */
@@ -230,7 +233,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Insert a list at a certain offset of the list */
   else
     {
-      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, exprlist);
+      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, elist_copy(exprlist));
       *world.curjob->iter.curindex += exprlist->elmnbr - 1;
       elist_destroy(exprlist);
     }
