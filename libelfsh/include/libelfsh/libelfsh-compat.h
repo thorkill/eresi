@@ -77,6 +77,14 @@ typedef char uint8;
  #define STT_NUM	7
 #endif
 
+#ifndef EM_486
+ #define EM_486		6
+#endif
+
+#ifndef EM_NCUBE
+ #define EM_NCUBE	16
+#endif
+
 /* ELFOSABI index in e_ident[] */
 #ifndef EI_OSABI
 #define	EI_OSABI		7

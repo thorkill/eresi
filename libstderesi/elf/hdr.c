@@ -134,7 +134,7 @@ int		cmd_elf()
   enconum = elfsh_get_encoding(header);
   arch = (char *) (archnum >= ELFSH_ARCHTYPE_MAX ?
 		   revm_build_unknown(arch_unk, "type", archnum) :
-		   elfsh_arch_type[archnum]);
+		   elfsh_arch_type[archnum].desc);
   type = (char *) (typenum >= ELFSH_OBJTYPE_MAX  ?
 		   revm_build_unknown(type_unk, "type", typenum) :
 		   elfsh_obj_type[typenum].desc);

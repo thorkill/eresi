@@ -252,7 +252,7 @@ extern revmconst_t     elfsh_dynentry_type[ELFSH_DYNAMIC_MAX];
 extern revmconst_t     elfsh_encoding[ELFSH_ENCODING_MAX];
 extern revmconst_t     elfsh_extdyn_type[ELFSH_EXTDYN_MAX];
 extern revmconst_t     elfsh_mipsdyn_type[ELFSH_MIPSDYN_MAX];
-extern char	       *elfsh_arch_type[ELFSH_ARCHTYPE_MAX];
+extern revmconst_t     elfsh_arch_type[ELFSH_ARCHTYPE_MAX];
 extern revmconst_t     elfsh_feature1[ELFSH_FEATURE_MAX];
 extern revmconst_t     elfsh_posflag1[ELFSH_POSFLAG_MAX];
 extern revmconst_t     elfsh_flags[ELFSH_FLAGS_MAX];

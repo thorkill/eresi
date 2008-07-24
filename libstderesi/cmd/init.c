@@ -133,6 +133,11 @@ static void	eresi_constants_init()
     hash_add(&const_hash, 
 	     (char *) elfsh_link_scope[index].name, 
 	     elfsh_link_scope + index);
+
+  for (index = 0; index < ELFSH_ARCHTYPE_MAX; index++)
+    hash_add(&const_hash, 
+	     (char *) elfsh_arch_type[index].name, 
+	     elfsh_arch_type + index);
 }
 
 
