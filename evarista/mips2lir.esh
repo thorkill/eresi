@@ -1,0 +1,39 @@
+#!evarista/evarista32
+
+# This create on-demand the block instruction list in the eresi runtime
+
+quiet
+set $curaddr $1
+set $begaddr $1
+reflect $curaddr
+
+#tables instrlists
+
+# Start the transformation
+foreach $instr of $hash[instrlists:$begaddr]
+
+#print TRANSFORMING instruction
+#D $curaddr%1
+#print $instr
+
+#profile enable warn
+#quiet
+#verb
+
+rewrite $instr into
+
+# Defaultcase 													
+default print Unsupported instruction at address $curaddr $instr
+
+rwtend
+
+#print TRANSFORMED instruction:
+#print $instr
+
+add $curaddr 4 
+
+forend
+
+quiet
+
+print

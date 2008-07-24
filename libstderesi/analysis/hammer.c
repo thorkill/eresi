@@ -101,10 +101,10 @@ int		cmd_analyse()
    {
      revm_type_reflect(&world.mjr_session.cur->funchash, "func");
      revm_type_reflect(&world.mjr_session.cur->blkhash , "bloc");
-     revm_output(" [*] Reflected succesfully all basic blocks and functions.\n\n");
+     revm_output(" [*] Reflected succesfully all basic blocks and functions.\n");
    }
  else
-   revm_output(" [*] No CONTAINER reflection was performed (type definition not found)\n\n");
+   revm_output(" [*] No CONTAINER reflection was performed (type definition not found)\n");
 
  /* Now informing about all existing links */
  linktype = aspect_type_get_by_name("link");

@@ -9,9 +9,12 @@ set $block $hash[blocks:$1]
 #print $1
 set $hash[visitedblocks:$1] 1
 #print $block
+
 print Now ASM to ELIR on block at $block.vaddr
 #print $hash[visitedblocks:$1]
-sparc2lir    $1
+
+bin2lir $1
+
 #lir-dataflow $1
 
 foreach $link of $block.outlinks

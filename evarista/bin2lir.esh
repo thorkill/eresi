@@ -1,0 +1,42 @@
+#!evarista/evarista32
+
+quiet
+
+cmp 1.hdr.machine EM_SPARC
+je sparc
+cmp 1.hdr.machine EM_SPARC32PLUS
+je sparc
+cmp 1.hdr.machine EM_SPARCV9
+je sparc
+
+print 1.hdr.machine
+print EM_386
+print EM_486
+
+cmp 1.hdr.machine EM_386
+je intel
+cmp 1.hdr.machine EM_486
+je intel
+
+cmp 1.hdr.machine EM_MIPS
+je mips
+cmp 1.hdr.machine EM_MIPS_RS3_LE
+je mips
+
+print Unsupported architecture in Evarista. Quitting.
+quit
+
+sparc: 
+print Detected SPARC architecture
+sparc2lir $1
+return 0
+
+intel: 
+print Detected INTEL architecture
+intel2lir $1
+return 0
+
+mips: 
+print Detected MIPS architecture
+mips2lir $1
+return 0
