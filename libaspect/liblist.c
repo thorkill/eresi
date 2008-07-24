@@ -327,7 +327,7 @@ int		elist_replace(list_t *h, char *key, list_t *newlist)
 	else
 	  prev->next = newlist->head;
 	lastent->next = cur->next;	
-	h->elmnbr += newlist->elmnbr;
+	h->elmnbr += newlist->elmnbr - 1;
 	XFREE(__FILE__, __FUNCTION__, __LINE__, cur->data);
 	XFREE(__FILE__, __FUNCTION__, __LINE__, cur);
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

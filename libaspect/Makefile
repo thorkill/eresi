@@ -10,7 +10,7 @@ LD		= ld
 RM		= rm -f 
 AR		= ar rc
 CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI32
-CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI64
+CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI64 -fno-stack-protector
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
 		config.c profiler.c liblist.c containers.c
 

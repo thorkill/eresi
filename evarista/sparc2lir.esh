@@ -48,7 +48,9 @@ into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
 # direct always branch (bcc, bpcc) with 2 args 					
 # XXX lacks flag translation
 case instr(sem:cb, nb_op:2, op1(sem:imm))
-into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
+into Branch(addr:$curaddr, dst(val:$instr.op1.imm))::
+     Nop(addr:$curaddr)
+post exec sleep 30
 
 # indirect call (op1 reg) 								
 case instr(sem:c, nb_op:1, op1(sem:reg))

@@ -169,6 +169,12 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
+      if (!candid)
+	{
+	  elist_destroy(exprlist);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid target type(s) for transformation", -1);
+	}
       elist_add(exprlist, rname, candid);
     }
 
@@ -201,7 +207,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 			 "Malformed destination type", -1);
 
 	  /*
-	    XXX: Disabled for now -- do not remove
+	    XXX: Disabled -- do not remove -- to renable when SSA transform is ready to be done
 	    if (revm_links_propagate(candid, matchme) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	    "Error while propagating dataflow links", -1);

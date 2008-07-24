@@ -75,11 +75,12 @@ char		*revm_read_input()
 {
   char		tmpbuf[BUFSIZ + 1];
   int		len;
+  u_char	wantmore;
 
   NOPROFILER_IN();
   
   /* In case we are scripting, even readline will use a read */
-  for (len = 0; len < BUFSIZ; len++)
+  for (wantmore = len = 0; len < BUFSIZ; len++)
     switch (read(world.curjob->ws.io.input_fd, tmpbuf + len, 1))
       {
       case 1:
@@ -90,6 +91,12 @@ char		*revm_read_input()
 		//fprintf(stderr, "Read length 0 ... \n");
 		NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
 	      }
+	    if (wantmore)
+	      {
+		len--;
+		wantmore = 0;
+		continue;
+	      }
 	    if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
 		world.state.revm_side == REVM_SIDE_CLIENT)
 	      tmpbuf[len + 1] = 0x00;
@@ -97,6 +104,10 @@ char		*revm_read_input()
 	      tmpbuf[len] = 0x00;
 	    goto end;
 	  }
+	else if (tmpbuf[len] == ':')
+	  wantmore = 1;
+	else
+	  wantmore = 0;
 	continue;
       default:
 	*tmpbuf = 0x00;
@@ -131,22 +142,22 @@ char		*revm_fifoinput()
       world.curjob->ws.io.input_fd = world.fifo_c2s;
       break;
     }
- 
- ret = revm_read_input();
- world.curjob->ws.io.input_fd = fd;
- world.curjob->ws.io.input = world.curjob->ws.io.old_input;
- 
- /* Just debugging */ 
- switch (world.state.revm_side)
-   {
+  
+  ret = revm_read_input();
+  world.curjob->ws.io.input_fd = fd;
+  world.curjob->ws.io.input = world.curjob->ws.io.old_input;
+  
+  /* Just debugging */ 
+  switch (world.state.revm_side)
+    {
    case REVM_SIDE_CLIENT:
      //fprintf(stderr, "BACK from reading fifo (client legit) ... (%s)\n");      
      break;
-   case REVM_SIDE_SERVER:
-     //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
-     break;
-   }
-
+    case REVM_SIDE_SERVER:
+      //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
+      break;
+    }
+  
   return (ret);
 }
 

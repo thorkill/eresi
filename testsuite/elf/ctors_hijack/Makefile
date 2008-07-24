@@ -16,7 +16,7 @@ NAM	= ctors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
 OPT	= -O2 -I../../../libelfsh/include/ -I../../../libaspect/include $(BITS)
-CFLAGS	= $(OPT) 
+CFLAGS	= $(OPT) -g3
 
 all32: all
 all	: $(OBJ)
