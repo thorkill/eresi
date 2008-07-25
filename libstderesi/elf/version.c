@@ -116,7 +116,7 @@ int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
 	       revm_colornumber("%02u", pdef->def->vd_cnt),
 	       revm_colorfieldstr("hash:"),
 	       revm_colornumber("%08x", pdef->def->vd_hash),
-	       (dauxnames && dauxnames[0] != NULL ? 
+	       (dauxnames[0] != NULL ? 
 		revm_colorstr_fmt("%-14s", dauxnames[0]) : ""),
 	       (dauxnames[1] != NULL ? 
 		revm_colorstr(dauxnames[1]) : ""));
@@ -133,7 +133,7 @@ int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
 	       id,
 	       revm_colorfieldstr("nume:"),
 	       revm_colornumber("%02u", pdef->def->vd_cnt),
-	       (dauxnames && dauxnames[0] != NULL ? 
+	       (dauxnames[0] != NULL ? 
 		revm_colorstr_fmt("%-10s", dauxnames[0]) : ""));
     }
      if (regx == NULL || 

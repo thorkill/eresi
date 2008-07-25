@@ -192,7 +192,7 @@
 #define		ASPECT_TYPE_MAXPTRDEPTH	1
 
 /* Some general purpose macros */
-#define	IS_VADDR(s)		(s && s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
+#define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	PRINTABLE(c)		(c >= 32 && c <= 126)
 
 /* A structure for the type information */

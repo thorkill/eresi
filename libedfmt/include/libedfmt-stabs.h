@@ -17,8 +17,7 @@
 #define STABS_FILE_IT       20
 
 /* Some define shortcut */
-#define STABS_IVD_STR(_str) \
-(!_str || !*_str || !**_str)
+#define STABS_IVD_STR(_str) (!*_str || !**_str)
 
 #define stabs_c_ent \
 stabs_ent[stabs_index]

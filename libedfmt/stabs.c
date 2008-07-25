@@ -287,8 +287,7 @@ int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 	  break;
 	}
       
-      /* Ok we have a max arguments, but if you got more than 20 arguments, 
-	 blame yourself !! */
+      /* Ok we have a max arguments, but if you got more than 20 arguments, blame yourself !! */
       if (arg_index < STABS_MAX_ARGUMENTS)
 	{
 	  my_str = stabs_c_str;

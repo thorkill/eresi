@@ -219,6 +219,9 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
   unsigned int	dyn_size = 0;
   long		type, total, section_offset, base_addr = 0, dyn_addr = 0;
   int		flags;
+  elfsh_Dyn	*dyn;
+  eresi_Addr	sect_addr;
+  elfsh_Word	sect_size, ent_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -405,14 +408,10 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       section_offset += strlen(sect->name)+1;
     }
 #endif
+
   /* final round for the sht reconstruction 
      extract data from the .dynamic section 
-
-     WORK IN PROGRESS.
   */
-  elfsh_Dyn *dyn;
-  eresi_Addr sect_addr;
-  elfsh_Word sect_size, ent_size;
 
 #if 1
   /* .dynstr */
@@ -421,9 +420,9 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      printf("@" XFMT " => SECT SIZE: " XFMT " %ld bytes\n", 
+      printf("@" XFMT " => SECT SIZE: " XFMT " %hd bytes\n", 
 	     sect_addr - base_addr, sect_size, sect_size);
-     
+      
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,
 			       0);

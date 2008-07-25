@@ -176,7 +176,7 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!funcreg || !func_list)
+  if (!funcname || !func_list)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 

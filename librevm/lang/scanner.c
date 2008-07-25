@@ -50,7 +50,7 @@ int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!str || !str[0])
+  if (!in || !ac || !av || !*av || !**av)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
 
