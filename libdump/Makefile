@@ -12,8 +12,8 @@ OBJ32	  = $(SRC:.c=.32.o)
 OBJ64	  = $(SRC:.c=.64.o)
 CFLAGS32  = -Wall -g3 -Iinclude -I../libaspect/include/ -DERESI_INTERNAL -fPIC -DERESI32
 CFLAGS64  = -Wall -g3 -Iinclude -I../libaspect/include/ -DERESI_INTERNAL -fPIC -DERESI64
-LDFLAGS32 = -L../libaspect -laspect32 $(EXTRAOPT)
-LDFLAGS64 = -L../libaspect -laspect64 $(EXTRAOPT)
+LDFLAGS32 = $(EXTRAOPT)
+LDFLAGS64 = $(EXTRAOPT)
 NAME32	  = libdump32
 NAME64	  = libdump64
 
