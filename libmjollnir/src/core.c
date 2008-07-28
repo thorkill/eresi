@@ -11,39 +11,83 @@
 /**
  * @brief Core control flow analysis function at a given address
  * @param sess Mjollnir session
- * @param ptr Code buffer pointer to analyse
+ * @param ptr Code buffer pointer to analyze
+ * @param offset Offset into the code buffer to analyze
  * @param vaddr Entry point address for analysis
  * @param len Size of code to analyse
+ * @param curdepth current depth of cfg being analyzed
+ * @param maxdepth depth limit of analysis (== MJR_NO_DEPTH for limitless)
  */
-static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, eresi_Addr vaddr, int len)
+int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, 
+                            unsigned int offset, eresi_Addr vaddr, int len, 
+                            int curdepth, int maxdepth)
 {
   asm_instr	instr;
   unsigned int	curr, ilen;
+  eresi_Addr dstaddr, retaddr;
+  container_t *curblock;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we have reached the limit bound */
+  if (curdepth == maxdepth)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    
   //limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
   // Please use this config variable when doing CFG recursive analysis
+  
+  dstaddr = retaddr = -1;
+
+  curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
+  assert(curblock != NULL);
+
+  /* Avoid loops */
+  if (((mjrblock_t *) curblock->data)->seen)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  ((mjrblock_t *) curblock->data)->seen = 1;
 
   /* Read all instructions of the section */
-  for (curr = 0; curr < len; curr += ilen)
-    {
-      ilen = asm_read_instr(&instr, ptr + curr, len - curr, &sess->cur->proc);
+  for (curr = 0; curr + offset < len; curr += ilen)
+  {
+    ilen = asm_read_instr(&instr, ptr + offset + curr, 
+                          len - curr - offset, &sess->cur->proc);
       
 #if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", __FUNCTION__, __FILE__, __LINE__, ilen);
+  fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", 
+          __FUNCTION__, __FILE__, __LINE__, ilen);
 #endif
       
-      if (ilen > 0) 
-	{
-	  mjr_history_shift(sess->cur, instr, vaddr + curr);
-	  mjr_trace_control(sess->cur, sess->cur->obj, &instr, vaddr + curr);
-	} 
-      else
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "asm_read_instr returned <= 0 lenght", -1);
-    }
+    if (ilen > 0) 
+	  {
+      ((mjrblock_t *) curblock->data)->size += ilen;
+
+	    mjr_history_shift(sess->cur, instr, vaddr + curr);
+	    mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
+                        vaddr + curr, &dstaddr, &retaddr);
+
+      if (dstaddr != -1) {
+        unsigned int newoff = offset + (dstaddr - vaddr);
+
+        mjr_analyse_code(sess, ptr + newoff, newoff, dstaddr, 
+                        len, curdepth + 1, maxdepth);
+
+        if (retaddr != -1) {
+          newoff = offset + (retaddr - vaddr);
+          mjr_analyse_code(sess, ptr + newoff, newoff, retaddr, 
+                          len, curdepth + 1, maxdepth);
+        }
+
+        break;
+      }
+      else if (instr.type == ASM_TYPE_RETPROC)
+        break;
+
+	  } 
+    else
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		              "asm_read_instr returned <= 0 lenght", -1);
+  }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -52,9 +96,11 @@ static int	mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, eresi_Addr v
  * @brief Analyse control flow at a given address
  * @param sess Mjollnir session
  * @param addr Entry point address for analysis
+ * @param maxdepth Maximum depth of the analysis in the CFG
  * @param flags <FIXME:NotImplemented>
  */
-static int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int flags) 
+int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, 
+                            int maxdepth, int flags)
 {
   elfshsect_t	*parent;
   elfsh_SAddr   offset;
@@ -64,9 +110,6 @@ static int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int flags)
   
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  ptr      = elfsh_get_raw(sess->cur->cursct);
-  len      = sess->cur->cursct->shdr->sh_size;
   
   if (!addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Failed to analyse control flow", -1);
@@ -75,19 +118,17 @@ static int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int flags)
   if (!parent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find parent section", -1);
 
-  block = mjr_create_block_container(sess->cur, 0, addr, 
-				     parent->shdr->sh_size - offset, 1);
+  block = mjr_create_block_container(sess->cur, 0, addr, 0, 0);
   if (!block)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create parent container", -1);
 
   hash_add(&sess->cur->blkhash, _vaddr2str(addr), block);
 
-
-  ptr      = elfsh_get_raw(sess->cur->cursct);
-  len      = parent->shdr->sh_size - offset ;
+  ptr      = elfsh_get_raw(parent);
+  len      = parent->shdr->sh_size;
   
-  if (mjr_analyse_code(sess, ptr + offset, addr, len) < 0)
+  if (mjr_analyse_code(sess, ptr, offset, addr, len, 0, maxdepth) < 0)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during code analysis", -1);
 
@@ -107,6 +148,7 @@ static int mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int flags)
 int		mjr_analyse_section(mjrsession_t *sess, char *section_name) 
 {
   container_t	*cntnr;
+  container_t *block;
   unsigned char	*ptr;
   unsigned long	len;
   eresi_Addr	e_point, vaddr;
@@ -124,7 +166,7 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
   sess->cur->cursct = NULL;
 
   if (!section_name)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section name empty", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section name empty", -1);
   
   sess->cur->cursct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
   if (!sess->cur->cursct)
@@ -158,9 +200,8 @@ int		mjr_analyse_section(mjrsession_t *sess, char *section_name)
       mjr_function_register(sess->cur,vaddr, cntnr);
     }
 
-
   /* Read all instructions of the section */
-  if (mjr_analyse_code(sess, ptr, vaddr, len) < 0)
+  if (mjr_analyse_code(sess, ptr, 0, vaddr, len, 0, MJR_NO_DEPTH) < 0)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during code analysis", -1);
 
@@ -191,9 +232,11 @@ int		mjr_analyse_finished(mjrsession_t *sess)
 /**
  * @brief Main analysis function 
  * @param sess Mjollnir session strucutre
+ * @param entry Address of starting point to analyze
+ * @param maxdepth Maximum depth of the analysis in the CFG
  * @param flags <FIXME:NotImplemented>
  */
-int		mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int flags) 
+int		mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, int flags) 
 {
   char		*shtName;
   elfsh_Shdr	*shtlist, *shdr;
@@ -243,13 +286,14 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int flags)
 
   /* In case we are provided an entry point */
   if (entry)
-    {
-      ret = mjr_analyse_addr(sess, entry, flags);
-      if (ret < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  {
+    ret = mjr_analyse_addr(sess, entry, maxdepth, flags);
+    if (ret < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to analyse control flow by addr", -1);
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);      
-    }
+
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);      
+  }
 
   /* 
   ** First run, create blocks starting at section vaddr
@@ -278,8 +322,7 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int flags)
 	    __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
 #endif
 
-    fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, 
-				      sct->shdr->sh_size, 1);
+    fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, 0, 0);
     if (!fcnt)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Can't create initial blocks", -1);

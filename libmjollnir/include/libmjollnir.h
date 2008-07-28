@@ -82,9 +82,16 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *);
 
 /* core.c */
-int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int flags);
+/**
+ * @brief Analysis of unlimited depth
+ */
+#define	MJR_NO_DEPTH -1
+
+int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
-int	        mjr_analyse_finished(mjrsession_t *sess);
+int   mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
+int	  mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, unsigned int offset, eresi_Addr vaddr, int len, int curdepth, int maxdepth);
+int   mjr_analyse_finished(mjrsession_t *sess);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);
@@ -107,8 +114,7 @@ void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
 /* cfg.c */
-int		mjr_trace_control(mjrcontext_t *c, elfshobj_t *, 
-				  asm_instr *, eresi_Addr a);
+int       	mjr_trace_control(mjrcontext_t *context, elfshobj_t *obj, asm_instr *curins, eresi_Addr curvaddr, eresi_Addr *dstaddr, eresi_Addr *retaddr);
 eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
 eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context);
 eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context);

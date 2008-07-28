@@ -265,7 +265,7 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
   tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
   if (!tmpdst)
     {
-      tmpdst = mjr_create_block_container(ctxt, 0, dst, 1, 1);
+      tmpdst = mjr_create_block_container(ctxt, 0, dst, 0, 0);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
     }
@@ -281,33 +281,33 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
 
   /* Recompute sizes */
   if (blkdst->vaddr != dst)
-    {
-      new_size	    = blkdst->size - (dst - blkdst->vaddr);
+  {
+    new_size	    = blkdst->size - (dst - blkdst->vaddr);
 
 #if __DEBUG_LINKS__
-      fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
-      fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
+    fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
+    fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
-      blkdst->size -= new_size;
+    blkdst->size -= new_size;
 
-      assert(new_size > 0);
-      assert(blkdst->size > 0);
+    assert(new_size > 0);
+    assert(blkdst->size > 0);
       
-      dstend = mjr_create_block_container(ctxt, 0, dst, new_size, 1);
-      hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
+    dstend = mjr_create_block_container(ctxt, 0, dst, new_size, 1);
+    hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
       
-      /* Correct existing symbol size and add new symbol */
-      sym->st_size = blkdst->size;
-      mjr_block_symbol(ctxt, dstend, NULL, 0);
+    /* Correct existing symbol size and add new symbol */
+    sym->st_size = blkdst->size;
+    mjr_block_symbol(ctxt, dstend, NULL, 0);
 
-      if (link_with != MJR_LINK_FUNC_CALL)
-	{
-	  scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
-	  mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
-	  mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
-	  mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
-	}
-    } 
+    if (link_with != MJR_LINK_FUNC_CALL)
+	  {
+	    scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
+	    mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
+	    mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
+	    mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
+	  }
+  } 
   else 
     dstend = tmpdst;
 

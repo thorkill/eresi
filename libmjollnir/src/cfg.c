@@ -31,12 +31,12 @@
 int			mjr_trace_control(mjrcontext_t *context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
-					  eresi_Addr	curvaddr)
+					  eresi_Addr	  curvaddr,
+            eresi_Addr    *dstaddr,
+            eresi_Addr    *retaddr)
 {
   int			ilen;
   container_t		*fun;
-  eresi_Addr		dstaddr;
-  eresi_Addr		retaddr;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -44,101 +44,105 @@ int			mjr_trace_control(mjrcontext_t *context,
   context->obj = obj;
   mjr_history_write(context, curins, curvaddr, MJR_HISTORY_CUR);
   mjr_history_write(context, curins, curvaddr, 0);
+
   ilen = asm_instr_len(curins);  
   fun = mjr_function_get_by_vaddr(context, curvaddr);
+
   if (fun)
     context->curfunc = fun;
   else
     mjr_asm_check_function_start(context);
-  fun = NULL;
 
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
-    {
-      dstaddr = mjr_get_jmp_destaddr(context);
+  {
+    *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
 	    "[D] %s: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", __FUNCTION__, curvaddr, dstaddr, curvaddr + ilen);
+	    " F:" XFMT"\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen);
 #endif
 
-    if (dstaddr != -1)
-      mjr_link_block_jump(context, curvaddr, dstaddr, curvaddr + ilen);
-    
+    if (*dstaddr != -1) {
+      mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen);
+
+      *retaddr = curvaddr + ilen;
     }
+
+  }
   else if (curins->type & ASM_TYPE_IMPBRANCH)
-    {
-      dstaddr = mjr_get_jmp_destaddr(context);
+  {
+    *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[D] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
-	      " F: NULL \n", curvaddr, dstaddr);
+	      " F: NULL \n", curvaddr, *dstaddr);
 #endif
 
-      if (dstaddr != (eresi_Addr) -1)
-	mjr_link_block_jump(context, curvaddr, dstaddr, 0);
+    if (*dstaddr != (eresi_Addr) -1)
+	    mjr_link_block_jump(context, curvaddr, *dstaddr, 0);
 
-    }
+  }
   else if (curins->type & ASM_TYPE_CALLPROC)
-    {
-      dstaddr = mjr_get_call_destaddr(context);
+  {
+    *dstaddr = mjr_get_call_destaddr(context);
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[D] %s: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
-	      " F:" XFMT "\n", __FUNCTION__, curvaddr, dstaddr, curvaddr + ilen);
+	      " F:" XFMT "\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen);
 #endif
       
-      context->calls_seen++;
+    context->calls_seen++;
 
-      /* SPARC and MIPS use delay slots */
-      addend = (context->proc.type == ASM_PROC_SPARC || 
-		context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+    /* SPARC and MIPS use delay slots */
+    addend = (context->proc.type == ASM_PROC_SPARC || 
+		          context->proc.type == ASM_PROC_MIPS ? 4 : 0);
 
-      /* If call occured at the end of a section */
-      if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
-	{
+    /* If call occured at the end of a section */
+    if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
+	  {
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
 	      __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
 
-	  retaddr = NULL;
-	}
-      else
-	retaddr = curvaddr + ilen + addend;
+	    *retaddr = -1;
+	  }
+    else
+	    *retaddr = curvaddr + ilen + addend;
 
       /* 20070102
-       * FIXME: we should be able to resolve CALL 0x0 (dstaddr == 0), 
+       * FIXME: we should be able to resolve CALL 0x0 (*dstaddr == 0), 
        * Possible libasm or mjollnir bug.
        */
-      if (dstaddr && dstaddr != (eresi_Addr) -1)
-    	{
-	  /* Link block layer */
-	  mjr_link_block_call(context, curvaddr, dstaddr, retaddr);
-
-	  /* Link function layer */
-	  mjr_link_func_call(context, curvaddr, dstaddr, retaddr);
-	  context->calls_found++;
-    	}
-    }
-  else if (curins->type == ASM_TYPE_RETPROC)
+    if (*dstaddr && *dstaddr != (eresi_Addr) -1)
     {
+	    /* Link block layer */
+	    mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
+
+	    /* Link function layer */
+	    mjr_link_func_call(context, curvaddr, *dstaddr, *retaddr);
+	    context->calls_found++;
+    }
+  }
+  else if (curins->type == ASM_TYPE_RETPROC)
+  {
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
 	      __FUNCTION__, curvaddr);
 #endif
-    }
+  }
   else
-    {
+  {
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", 
 	      __FUNCTION__, curvaddr, curins->type);
 #endif
-    }
+  }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
