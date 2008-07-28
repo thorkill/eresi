@@ -50,10 +50,8 @@ int		cmd_network()
           revm_command_add(CMD_LIST    , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
           revm_command_add(CMD_LIST2   , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
           revm_command_add(CMD_STOP    , (void *) cmd_stop     , (void *) NULL, 0, HLP_STOP);
-
-          // NEED A SWITCH
 	}
-      revm_output(" [*] Started ELFsh network connection \n\n");
+      revm_output(" [*] Started ERESI network stack\n\n");
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -70,36 +68,34 @@ int		cmd_netlist()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if defined(ELFSHNET)
-  listent_t	*actual;
+#if defined(ERESI_NET)
   int		index;
   char		buf[BUFSIZ];
   char		*addr;
+  revmjob_t	*curjob;
+  char		**keys;
+  int		keynbr;
 
   revm_output(" .::. Net client list .::. \n");
-  for (index = 0; index < world.jobs.size; index++)
+  keys = hash_get_keys(&world.jobs, &keynbr);
+  for (index = 0; index < keynbr; index++)
     {
-      for (actual = &world.jobs.ent[index];
-	   actual != NULL && actual->key != NULL;
-	   actual = actual->next)
-        {
-	  if (!((revmjob_t *) actual->data)->active)
-	    continue;
-
-	  if (((revmjob_t *) actual->data)->io.type == ELFSH_IONET)
-            {
-	      addr = inet_ntoa(((revmjob_t *) actual->data)->sock.addr.sin_addr);
-	      snprintf(buf, BUFSIZ - 1, " [%.3d] IP %s\n", i, addr);
-	      revm_output(buf);
-	      i++;
-            }
-        }
+      curjob = (revmjob_t *) hash_get(&world.jobs, keys[index]);
+      if (!curjob->ws.active)
+	continue;
+      if (curjob->ws.io.type == REVM_IO_NET)
+	{
+	  addr = inet_ntoa(curjob->ws.io.sock.addr.sin_addr);
+	  snprintf(buf, BUFSIZ - 1, " [%.3d] IP %s\n", i, addr);
+	  revm_output(buf);
+	  i++;
+	}
     }
+  hash_free_keys(keys);
 #endif
 
   if (i == 0)
     revm_output(" [*] No client\n");
-
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -149,7 +145,7 @@ int		cmd_peerslist()
 {
   int           i = 0;
 
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
   listent_t     *actual;
   int           index;
   char          buf[BUFSIZ];
@@ -185,22 +181,24 @@ int		cmd_peerslist()
  */
 int		cmd_connect()
 {
-#if defined(ELFSHNET)
-
+#if defined(ERESI_NET)
   char          *toconnect;
   char          buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   toconnect = world.curjob->curcmd->param[0];
-
   toconnect = revm_lookup_string(toconnect);
 
+  /*
   if (world.state.revm_net != 1)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      revm_output(" [*] First enable network support.\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+  */
 
-
-  if (world.curjob->ws.io.type == ELFSH_IONET)
+  if (world.curjob->ws.io.type == REVM_IO_NET)
     {
       revm_output(" [*] You can't add DUMP connection.\n");
       revm_output("\n");
@@ -218,11 +216,12 @@ int		cmd_connect()
   snprintf(buf, BUFSIZ - 1, " [*] connection to %s established.\n", toconnect);
   revm_output(buf);
   revm_output("\n");
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 #else
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#endif
-
+  revm_output(" [*] This version of ERESI was compiled without network support.\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+#endif
 }
 
 
@@ -231,7 +230,7 @@ int		cmd_connect()
  */
 int		cmd_discon()
 {
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
 
   char          *todisconnect;
   char          buf[BUFSIZ];
@@ -245,7 +244,7 @@ int		cmd_discon()
   if (world.state.revm_net != 1)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  if (world.curjob->ws.io.type == ELFSH_IONET)
+  if (world.curjob->ws.io.type == REVM_IO_NET)
     {
       revm_output(" [*] You can't remove DUMP connection.\n");
       revm_output("\n");
@@ -274,7 +273,7 @@ int		cmd_discon()
  */
 int			cmd_rcmd()
 {
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
 
   int			idx;
   char			*to;

@@ -108,7 +108,7 @@ int		revm_system(char *cmd)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.curjob->io.type == ELFSH_IONET)
+  if (world.curjob->io.type == REVM_IO_NET)
     snprintf(buf, BUFSIZ, "%s <&%u >&0 2>&0 ", cmd, world.curjob->io.output_fd);
   else
     snprintf(buf, BUFSIZ, "%s ", cmd);

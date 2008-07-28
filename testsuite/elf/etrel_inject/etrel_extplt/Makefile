@@ -14,7 +14,7 @@ CC	= gcc
 LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm32    \
 	-L../../../../libaspect/ -laspect32 -lpthread
 OPT	= -O2 -I../../../../libelfsh/include/ -I../../../../libmjollnir/include/ \
-	-I../../../../libaspect/include/ $(BITS) -g3
+	-I../../../../libaspect/include/ $(BITS) -DERESI32 -g3
 
 NAM	= etrel_injecter
 HOSTSRC	= host.c

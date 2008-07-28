@@ -23,7 +23,7 @@ int	dump_send_real(int s, pkt_t *pkt)
   if (pkt == NULL)
     {
       /* ERROR error handling */
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] dump_send_real illegal argument");
 #endif 
       return (-1);
@@ -53,7 +53,7 @@ int	dump_send_real(int s, pkt_t *pkt)
   if (ret < 0)
     {
       /* ERROR error handling */
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] send failed");
 #endif
       exit(-1);

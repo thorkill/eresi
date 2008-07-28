@@ -52,7 +52,7 @@
 #include "libedfmt.h"
 #include "libaspect.h"
 
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
  #include <libdump.h>
 #endif
 

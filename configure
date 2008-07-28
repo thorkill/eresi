@@ -2,13 +2,13 @@
 #
 # Homemade configure file for the ERESI project
 #
-# The ELFsh crew.
+# The ERESI team 2001-2008
 #
 
 CHOSENBIT="0"
 STATIC="0"
 READLN="0"
-ELFSHNET="0"
+ERESI_NET="0"
 LIBMJOLLNIR="1"
 TESTING="0"
 GSTABS=""
@@ -32,7 +32,7 @@ printHelp()
     echo "   --enable-32       : Build a ELF32 capable shell."
     echo "   --enable-64       : Build a ELF64 capable shell."
     echo "   --enable-readline : Link with readline"
-    echo "   --enable-network  : Build the distributed extension."
+    echo "   --enable-network  : Build eresi server capability"
     echo "   --enable-static   : Link in static."
     echo "   --enable-testing  : Test ERESI without install"
     echo "   --enable-dmalloc  : Link with Electric Fence."
@@ -88,8 +88,8 @@ if [ $CHOSENBIT = "1" ]; then
 fi
 
 echo  " [*] Enabling ELF64/ELF32 support"
-BITS="-DERESI64"
-echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
+#BITS="-DERESI64"
+#echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=""
 ;;
@@ -103,8 +103,8 @@ if [ $CHOSENBIT = "1" ]; then
     exit
 fi
 echo  " [*] Enabling ELF64 support"
-BITS="-DERESI64"
-echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
+#BITS="-DERESI64"
+#echo  "//#define ELFSH64 1"			>> $LIBVARSFILE
 CHOSENBIT="1"
 BUILD_TARGET=all64
 MOD_TARGET=mod64
@@ -120,7 +120,7 @@ if [ $CHOSENBIT = "1" ]; then
     exit
 fi
 echo  " [*] Enabling ELF32 support"
-BITS="-DERESI32"
+#BITS="-DERESI32"
 
 echo  "//#define ELFSH32 1"		>> $LIBVARSFILE
 CHOSENBIT="1"
@@ -129,15 +129,15 @@ MOD_TARGET=mod32
 ;;
 
 
-#Not supported anymore at least since version 0.78
-#--enable-network*)
-#echo  " [*] Enable distributed ELFsh"
-#ELFSHNET="1"
-#echo  "LDDUMPOPT		= -ldump"		>> $CONFIGFILE
-#echo  "LDDUMPOBJ		= ../libdump/libdump.o"	>> $CONFIGFILE
-#BITS=$BITS" -DELFSHNET"
-#;;
-
+--enable-network*)
+echo  " [*] Enable ERESI client/server capability"
+ERESI_NET="1"
+echo  "LDDUMPOPT32		= -ldump32"		>> $CONFIGFILE
+echo  "LDDUMPOBJ32		= ../libdump/libdump.o"	>> $CONFIGFILE
+echo  "LDDUMPOPT64		= -ldump64"		>> $CONFIGFILE
+echo  "LDDUMPOBJ64		= ../libdump/libdump.o"	>> $CONFIGFILE
+BITS=$BITS" -DERESI_NET"
+;;
 
 --libasm-ia32)
 echo " [*] Libasm IA32 engine"
@@ -387,7 +387,7 @@ if [ $CHOSENBIT = "0" ]; then
     printHelp
 fi
 
-if  [ $READLN = "1" -a $ELFSHNET = "1" ]; then
+if  [ $READLN = "1" -a $ERESI_NET = "1" ]; then
     echo
     echo "Error: Readline and Distributed ELFsh are incompatible."
     echo
@@ -420,7 +420,7 @@ if [ "$STATIC" = "0" ]; then
     echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
 fi
 
-if [ "$ELFSHNET" = "1" ]; then
+if [ "$ERESI_NET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
     echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
@@ -437,7 +437,7 @@ if [ "$STATIC" = "0" ]; then
     echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
 fi
 
-if [ "$ELFSHNET" = "1" ]; then
+if [ "$ERESI_NET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
     echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
@@ -491,7 +491,7 @@ if [ "$STATIC" = "0" ]; then
     echo  "DYNOPT                = -rdynamic"   >> $CONFIGFILE
 fi
 
-if [ "$ELFSHNET" = "1" ]; then
+if [ "$ERESI_NET" = "1" ]; then
     EXTRAOPT="$EXTRAOPT -lutil"
     echo "EXTRAOPT = " $EXTRAOPT		>> $CONFIGFILE
 fi
@@ -636,10 +636,10 @@ echo "	@echo 'Building libedfmt...'                     "	>> Makefile
 echo "	@cd libedfmt && \$(MAKE) \$(BUILD_TARGET)        "	>> Makefile
 echo "	@echo 'Libedfmt has been built successfully.'    "	>> Makefile
 
-if [ "$ELFSHNET" = "1" ]; then
+if [ "$ERESI_NET" = "1" ]; then
 
 echo "	@echo 'Building libdump...' "				>> Makefile
-echo "	@cd libdump && \$(MAKE) -s "				>> Makefile
+echo "	@cd libdump && \$(MAKE) \$(BUILD_TARGET)"		>> Makefile
 echo "	@echo 'Libdump has been built successfully.' "		>> Makefile
 
 fi

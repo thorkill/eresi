@@ -19,7 +19,7 @@ RELSRC	= rel.c
 RELOBJ	= rel.o
 
 OPT	= -O2 -I../../../../libelfsh/include/ \
-	-I../../../../libaspect/include $(BITS)
+	-I../../../../libaspect/include $(BITS) -DERESI32
 RM	= rm -f
 CFLAGS	= $(OPT)
 

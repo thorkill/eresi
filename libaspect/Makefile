@@ -9,8 +9,8 @@ CC		?= gcc
 LD		= ld
 RM		= rm -f 
 AR		= ar rc
-CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI32
-CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ELFSH_INTERN -DERESI64 #-fno-stack-protector
+CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ERESI_INTERNAL -DERESI32
+CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DASPECT_ERESI_INTERNAL -DERESI64 #-fno-stack-protector
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
 		config.c profiler.c liblist.c containers.c
 
@@ -22,18 +22,16 @@ NAME64		= libaspect64
 
 all		: all32 all64
 
-libaspect32.so		: $(OBJ32)
-		@$(CC) -L../liballocproxy/ -lallocproxy \
-		$(DLOPT) -shared $(OBJ32) -o $(NAME32).so
+libaspect32.so	: $(OBJ32)
+		@$(CC) -L../liballocproxy/ -lallocproxy $(DLOPT) -shared $(OBJ32) -o $(NAME32).so
 		@$(AR) $(NAME32).a $(OBJ32)
 		@$(RANLIB) $(NAME32).a
 		$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all32:	libaspect32.so
 
-libaspect64.so		: $(OBJ64)
-		@$(LD) -L../liballocproxy/ -lallocproxy \
-		$(DLOPT) -shared $(OBJ64) -o $(NAME64).so
+libaspect64.so	: $(OBJ64)
+		@$(LD) -L../liballocproxy/ -lallocproxy $(DLOPT) -shared $(OBJ64) -o $(NAME64).so
 		@$(AR) $(NAME64).a $(OBJ64)
 		@$(RANLIB) $(NAME64).a
 		$(LD) -r $(OBJ64) -o $(NAME64).o

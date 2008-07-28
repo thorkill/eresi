@@ -19,7 +19,7 @@
 
 #include "librevm-color.h"
 
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
  #include <libdump.h>
 #endif
 
@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.81"
-#define	REVM_RELEASE	"a15"
+#define	REVM_RELEASE	"a16"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -119,9 +119,7 @@
 #define REVM_INPUT_EXIT		(-2)
 #define	REVM_INPUT_TRANSFERED	(-3)
 
-/** 
- * Elfsh Output Caching structure 
- */
+/** ERESI outut caching structure */
 typedef struct          s_outbuf
 {
   int			nblines;
@@ -130,47 +128,7 @@ typedef struct          s_outbuf
   char                  ignore;
 }			revmoutbuf_t;
 
-
-/** 
- * Input / Output template for ELFsh 
- */
-typedef struct	s_io
-{  
-#define		REVM_IO_STD     1
-#define		REVM_IO_NET     2
-#define		REVM_IO_DUMP    3
-#define		REVM_IO_NUM     4
-  char		type;                   /*! IO type           */
-  int		input_fd;               /*! Input file        */
-  int		output_fd;              /*! Output file       */
-  char		*(*input)();            /*! Read Input data   */
-  char		*(*old_input)();        /*! Old Input handler */
-  int		(*output)(char *buf);   /*! Write output data */
-  revmoutbuf_t	outcache;
-
-  /* Readline IO specific */
-  char		*buf;                  /*! readline line */
-  char		*savebuf;
-  int		rl_point;
-  int		rl_end;
-
-  /* DUMP IO specific */
-  int		new;                   /*! 0 if already used */
-
-#if defined(ELFSHNET)
-  pkt_t		*pkt;                  /*! Last received dump */
-#else
-  void		*pkt;		       /*! Unused else */
-#endif
-
-}               revmio_t;
-
-
-
-
-/** 
- * REVM socket structure 
- */
+/** REVM socket structure */
 typedef struct       s_socket
 {
   int                socket;      /*! The socket */
@@ -190,6 +148,40 @@ typedef struct       s_socket
 
 }                    revmsock_t;
 
+
+/** ERESI INPUT/OUTPUT abstraction */
+typedef struct	s_io
+{  
+#define		REVM_IO_STD     1
+#define		REVM_IO_NET     2
+#define		REVM_IO_DUMP    3
+#define		REVM_IO_GDB	4
+#define		REVM_IO_NUM     5
+  char		type;                   /*! IO type           */
+  int		input_fd;               /*! Input file        */
+  int		output_fd;              /*! Output file       */
+  char		*(*input)();            /*! Read Input data   */
+  char		*(*old_input)();        /*! Old Input handler */
+  int		(*output)(char *buf);   /*! Write output data */
+  revmoutbuf_t	outcache;
+
+  /* Readline IO specific */
+  char		*buf;                  /*! readline line */
+  char		*savebuf;
+  int		rl_point;
+  int		rl_end;
+
+  /* DUMP IO specific */
+  int		new;                   /*! 0 if already used */
+
+#if defined(ERESI_NET)
+  pkt_t		*pkt;                  /*! Last received dump */
+#else
+  void		*pkt;		       /*! Unused else */
+#endif
+
+  revmsock_t	sock;		       /* Socket information */
+}               revmio_t;
 
 
 /**
@@ -211,7 +203,6 @@ typedef struct        s_screen
 typedef struct		s_workspace
 {
   char			*name;		  /*! Name of the job */
-  revmsock_t		sock;		  /*! Unused in initial job */
   u_char		active;		  /*! Is the workspace active ? */
   time_t		createtime;       /*! Workspace creation time */
   int			logfd;            /*! Log file descriptor */
@@ -263,7 +254,6 @@ typedef struct        s_state
 
 /* Extern variables */
 extern int		 elfsh_net_client_count;
-
 
 /* Parsing, Scanning, I/O functions */
 char            *revm_getln();

@@ -12,7 +12,7 @@
 #ifndef _LIBDUMP_H_
 #define _LIBDUMP_H_ 1
 
-#include "libelfsh.h"
+#include "libaspect.h"
 
 #include <stdio.h>
 #include <stdlib.h>

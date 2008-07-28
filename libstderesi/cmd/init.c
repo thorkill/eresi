@@ -309,7 +309,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_INFORM2  , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
   revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
   
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
   /* DUMP network commands */
   revm_command_add(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
   revm_command_add(CMD_NETWORK2  , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);

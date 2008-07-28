@@ -12,7 +12,7 @@ HOSTSRC	= host.c
 RELSRC	= rel.c
 RELOBJ	= rel.o
 
-OPT	= -g3 -O2 -I../../../../libelfsh/include/ $(BITS)
+OPT	= -g3 -O2 -I../../../../libelfsh/include/ $(BITS) -DERESI32
 RM	= rm -f
 CFLAGS	= $(OPT) -I../../../../libhash/include/
 

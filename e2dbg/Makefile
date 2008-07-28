@@ -24,7 +24,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
+			-DERESI_INTERNAL -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DERESI32
 
 CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
@@ -34,7 +34,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \
-			-DELFSH_INTERN -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
+			-DERESI_INTERNAL -DE2DBG_INTERN $(ASMOPT) $(READLNOPT)     \
 			-DERESI64
 
 LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
@@ -44,8 +44,8 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			-L../libmjollnir -lmjollnir32 -g3 \
 			-L../libui/ -lui32 -L../libedfmt -ledfmt32  	    \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
-			-DERESI32 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB32)\
-			$(NCURSESLNOPT) $(READLNOPT)
+			-DERESI32 $(EXTRAOPT) $(LDDUMPOPT32) $(LPTHREAD)            \
+			$(LDMJOLLNIR) $(KERNSHLIB32) $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libetrace/ -letrace64 -L../libstderesi -lstderesi64    \
@@ -54,8 +54,8 @@ LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libmjollnir -lmjollnir64 -g3 \
 			-L../libui/ -lui64 -L../libedfmt -ledfmt64 \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
-			-DERESI64 $(EXTRAOPT) $(LDDUMPOPT) $(LPTHREAD) $(LDMJOLLNIR) $(KERNSHLIB64)\
-			$(NCURSESLNOPT) $(READLNOPT)
+			-DERESI64 $(EXTRAOPT) $(LDDUMPOPT64) $(LPTHREAD)            \
+			$(LDMJOLLNIR) $(KERNSHLIB64) $(NCURSESLNOPT) $(READLNOPT)
 
 all			: all32 all64
 

@@ -15,7 +15,7 @@ LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
 NAM	= ctors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -O2 -I../../../libelfsh/include/ -I../../../libaspect/include $(BITS)
+OPT	= -O2 -I../../../libelfsh/include/ -I../../../libaspect/include $(BITS) -DERESI32
 CFLAGS	= $(OPT) -g3
 
 all32: all

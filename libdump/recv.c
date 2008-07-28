@@ -35,7 +35,7 @@ pkt_t	*dump_recv_pkt(int s)
       /* connection closed */
       if (tmp2 == 0)
         {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	  printf("[WW] Connection closed by remote host (1)\n");
 #endif
 	  XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
@@ -56,7 +56,7 @@ pkt_t	*dump_recv_pkt(int s)
 		}
 	      continue;
 	    }
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	  printf("[EE] Error while reading on socket (1)\n");
 	  perror("recv");
 #endif
@@ -88,7 +88,7 @@ pkt_t	*dump_recv_pkt(int s)
 	  /* connection closed */
 	  if (tmp2 == 0)
             {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	      printf("[WW] Connection closed by remote host (2)\n");
 #endif
 	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg);
@@ -110,7 +110,7 @@ pkt_t	*dump_recv_pkt(int s)
 		    }
 		  continue;
 		}
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	      printf("[EE] Error while reading on socket (2)\n");
 	      perror("recv");
 #endif
@@ -143,7 +143,7 @@ pkt_t	*dump_recv_pkt(int s)
 	  /* connection closed */
 	  if (tmp2 == 0)
             {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	      printf("[WW] Connection closed by remote host (3)\n");
 #endif
 	      XFREE(__FILE__, __FUNCTION__, __LINE__,msg->path);
@@ -168,7 +168,7 @@ pkt_t	*dump_recv_pkt(int s)
 		    }
 		  continue;
 		}
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	      printf("[EE] Error while reading on socket (3)\n");
 	      perror("recv");
 #endif
@@ -239,7 +239,7 @@ int		dump_receive_RR(pkt_t *pkt)
 		       dump_lookup_neighbor(prev), 
 		       0) < 0)
         {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	  fprintf(stderr, "dump_send_Rr error (1)\n");
 #endif
 	  XFREE(__FILE__, __FUNCTION__, __LINE__,npath);
@@ -277,7 +277,7 @@ int		dump_receive_RR(pkt_t *pkt)
 				 (long) actual->data, 
 				 pkt->id) < 0)
 		  {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 		    printf("[EE] dump_send_RR error (2)\n");
 #endif
 		    XFREE(__FILE__, __FUNCTION__, __LINE__,npath);
@@ -285,7 +285,7 @@ int		dump_receive_RR(pkt_t *pkt)
 		  }
 	      }
 
-#if __DEBUG_DUMP__ && !defined(ELFSH_INTERN)
+#if __DEBUG_DUMP__ && !defined(ERESI_INTERNAL)
 	    else
 	      {
 		printf("[DUMP] dump_receive_RR :"
@@ -342,7 +342,7 @@ int	dump_receive_Rr(pkt_t *pkt)
 	  if (next_hop_socket == 0)
 	    {
 	      /* ERROR improve that */
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	      fprintf(stderr, "[EE] error while sending packet\n");
 #endif
 	      exit(-1); 
@@ -386,7 +386,7 @@ int	dump_receive_Rr(pkt_t *pkt)
 				   dump_lookup_neighbor(pkt->path[i - 1]), 
 				   pkt->id) < 0)
 		    {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 		      printf("[EE] error occurs while forwarding Rr packet\n");
 #endif
 		      return (-1); 
@@ -439,7 +439,7 @@ pkt_t	*dump_receive_DATA(pkt_t *pkt)
 	      if (next_hop_socket == 0)
 		{
 		  /* ERROR improve that */
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 		  printf("[EE] error while forwarding packet\n");
 #endif
 		  return (pkt_t *) (-1);
@@ -448,7 +448,7 @@ pkt_t	*dump_receive_DATA(pkt_t *pkt)
 	      
 	      if (dump_send_real(next_hop_socket, pkt) < 0)
 		{
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 		  printf("[EE] error occurs while forwarding DATA packet\n");
 #endif
 		  return (pkt_t *) (-1);
@@ -507,7 +507,7 @@ void	*dump_receive_cb(int s)
 	case DATA:
 	  pkt = dump_receive_DATA(pkt);
 	  /* need some mem free */
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	  if (pkt < 0)
 	    {
 	      printf("[EE] error while forwaring data\n");
@@ -516,7 +516,7 @@ void	*dump_receive_cb(int s)
 	  return pkt;
 	  break;
 	default:
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
 	  fprintf(stderr, "[EE] Unknown packet type %u \n", ntohs(pkt->type));
 #endif
 	  /* XXX anything to add ? */

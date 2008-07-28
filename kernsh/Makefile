@@ -17,7 +17,7 @@ NAME32			= kernsh32
 NAME64			= kernsh64
 
 CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
-			 -I../libelfsh/include/ -DELFSH_INTERN $(STATOPT2)   \
+			 -I../libelfsh/include/ -DERESI_INTERNAL $(STATOPT2)   \
 			 -I../libdump/include/ -I../libasm/include/          \
 			 -I../e2dbg/include/ -I/usr/pkg/include/             \
 			-I../libui/include/ -I../libmjollnir/include/        \
@@ -33,7 +33,7 @@ CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../libui/include/ -I../libmjollnir/include/      \
 			-I../libaspect/include/ -I../librevm/include/      \
 			-I../libedfmt/include/  -I../libstderesi/include/  \
-			-I../libkernsh/include/ -DELFSH_INTERN $(STATOPT2) \
+			-I../libkernsh/include/ -DERESI_INTERNAL $(STATOPT2) \
 			$(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
@@ -45,7 +45,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			-L../libkernsh/ -lkernsh32 -L../libstderesi/ -lstderesi32 \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT) -g3  	          \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
-			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
+			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) 	          \
@@ -56,7 +56,7 @@ LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
 			-L../libkernsh/ -lkernsh64 -L../libstderesi/ -lstderesi64 \
 			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
 			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
-			$(EXTRAOPT) $(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT)
+			$(EXTRAOPT) $(LDDUMPOPT64) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 all			: all32 
 

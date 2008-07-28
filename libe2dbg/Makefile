@@ -25,13 +25,13 @@ EXTRAOBJ32		= ../libasm/libasm32.o ../libmjollnir/libmjollnir32.o     \
 			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o         \
 			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	  \
 			../libaspect/libaspect32.o ../libstderesi/libstderesi32.o \
-			../libetrace/libetrace32.o $(LDDUMPOBJ)
+			../libetrace/libetrace32.o $(LDDUMPOBJ32)
 
 EXTRAOBJ64		= ../libasm/libasm64.o ../libmjollnir/libmjollnir64.o     \
 			../libelfsh/libelfsh64.o ../libedfmt/libedfmt64.o         \
 			../liballocproxy/liballocproxy.o ../librevm/revm-*.64.o	  \
 			../libaspect/libaspect64.o ../libstderesi/libstderesi64.o \
-			../libetrace/libetrace64.o $(LDDUMPOBJ)
+			../libetrace/libetrace64.o $(LDDUMPOBJ64)
 
 COBJ32			= common/*.32.o
 COBJ64			= common/*.64.o

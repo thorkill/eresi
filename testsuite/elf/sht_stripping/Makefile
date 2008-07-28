@@ -16,7 +16,7 @@ NAM	= sht_remover
 RM	= rm -f 
 VULN	= main.c
 OPT	= -O2 -I../../../libelfsh/include/ \
-	-I../../../libaspect/include $(BITS)
+	-I../../../libaspect/include $(BITS) -DERESI32
 CFLAGS	= $(OPT)
 
 all32: all

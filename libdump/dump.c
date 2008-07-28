@@ -8,7 +8,6 @@
 ** $Id: dump.c,v 1.5 2007-08-03 18:05:03 may Exp $
 **
 */
-
 #include "libdump.h"
 
 /**************************/
@@ -508,7 +507,7 @@ int			dump_disconnect_host(char *host)
 
   if (h == NULL)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] Unknown host '%s'\n", host);
 #endif
       return (-1);
@@ -537,7 +536,7 @@ int			dump_connect_to(char *host, u_int port)
 
   if (h == NULL)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] Unknown host '%s'\n", host);
 #endif
       return 0;
@@ -551,7 +550,7 @@ int			dump_connect_to(char *host, u_int port)
 
   if (dump_lookup_neighbor(serv_addr.sin_addr) != 0)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] Already connected to %s\n", host);
 #endif
       return (-1);
@@ -559,7 +558,7 @@ int			dump_connect_to(char *host, u_int port)
 
   if (dump_is_myid(serv_addr.sin_addr) == 1 )
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] Attempt to connect to local node\n");
 #endif
       return (-1);
@@ -569,7 +568,7 @@ int			dump_connect_to(char *host, u_int port)
   sd = socket(AF_INET, SOCK_STREAM, 0);
   if (sd < 0)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       perror("cannot open socket ");
 #endif
       return (-1);
@@ -583,7 +582,7 @@ int			dump_connect_to(char *host, u_int port)
   rc = bind(sd, (struct sockaddr *) &local_addr, sizeof (local_addr));
   if (rc < 0)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       printf("[EE] Cannot bind port TCP %u\n", port);
       perror("error ");
 #endif
@@ -594,7 +593,7 @@ int			dump_connect_to(char *host, u_int port)
   rc = connect(sd, (struct sockaddr *) &serv_addr, sizeof (serv_addr));
   if (rc < 0)
     {
-#if !defined(ELFSH_INTERN)
+#if !defined(ERESI_INTERNAL)
       perror("[EE] Cannot connect ");
       return (-1);
 #endif

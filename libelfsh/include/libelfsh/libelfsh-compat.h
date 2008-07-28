@@ -41,7 +41,7 @@ typedef char uint8;
  #include "libelfsh-bsd.h"	/* Various BSD need this */
 #endif
 
-#if defined(ELFSH_INTERN)
+#if defined(ERESI_INTERNAL)
  #include "libelfsh-internal.h"
 #endif
 

@@ -15,7 +15,7 @@ LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
 NAM	= sht_rebuilder
 RM	= rm -f 
 OPT	= -O2 -I../../../libelfsh/include/ \
-	-I../../../libaspect/include $(BITS)
+	-I../../../libaspect/include $(BITS) -DERESI32
 CFLAGS	= $(OPT)
 
 all32: all

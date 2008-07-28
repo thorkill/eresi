@@ -8,11 +8,11 @@
 **
 */
 
-#ifndef __LIBELFSH_INTERN_
- #define __LIBELFSH_INTERN_
+#ifndef __LIBERESI_INTERNAL_
+ #define __LIBERESI_INTERNAL_
 
 // To remove one day
 #define	ELFSH_SETERROR(msg, ret)	ELFSH_PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, msg, ret)
 
-#endif /* __LIBELFSH_INTERN_ */
+#endif /* __LIBERESI_INTERNAL_ */
 

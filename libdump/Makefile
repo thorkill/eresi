@@ -1,35 +1,47 @@
 ##
-## Makefile for libdump in elfsh 
+## Makefile for libdump in ERESI
 ## 
 ## Started on  Sat Jan 25 05:41:19 2003 jfv
-## Last update Tue Feb 15 12:58:45 2005 ym
+## $Id
 ##
 
 include ../config.h
 
-SRC	= dump.c recv.c send.c
-OBJ	= dump.o recv.o send.o
-CFLAGS	= -Wall $(BITS) -g3 -Iinclude -I../libc/include/ -I../libelfsh/include/ \
-	-I../libaspect/include/ -DELFSH_INTERN -fPIC
-LDFLAGS = -L./ -L../libelfsh/ -lelfsh -ldump -L/usr/pkg/lib/ -laspect $(BITS) \
-	$(EXTRAOPT)
+SRC	  = dump.c recv.c send.c
+OBJ32	  = $(SRC:.c=.32.o)
+OBJ64	  = $(SRC:.c=.64.o)
+CFLAGS32  = -Wall -g3 -Iinclude -I../libaspect/include/ -DERESI_INTERNAL -fPIC -DERESI32
+CFLAGS64  = -Wall -g3 -Iinclude -I../libaspect/include/ -DERESI_INTERNAL -fPIC -DERESI64
+LDFLAGS32 = -L../libaspect -laspect32 $(EXTRAOPT)
+LDFLAGS64 = -L../libaspect -laspect64 $(EXTRAOPT)
+NAME32	  = libdump32
+NAME64	  = libdump64
+
 CC	?= gcc
 LD	?= ld
 AR	= ar rc
-NAME	= libdump
 
-all	: $(OBJ)
-	$(AR) $(NAME).a $(OBJ)
-	$(RANLIB) $(NAME).a
-	$(LD) -r $(OBJ) -o $(NAME).o
+all	: all32 all64
 
-test:   all dump_main.o
-	gcc  -Wall -DERESI32 -g3 -Iinclude -DELFSH_INTERN -L../libelfsh/ -lelfsh \
-	$(OBJ) dump_main.c -o dump_main
+all32:	$(OBJ32)
+	$(AR) $(NAME32).a $(OBJ32)
+	$(RANLIB) $(NAME32).a
+	$(LD) -r $(OBJ32) -o $(NAME32).o $(LDFLAGS32)
+
+all64:	$(OBJ64)
+	$(AR) $(NAME64).a $(OBJ64)
+	$(RANLIB) $(NAME64).a
+	$(LD) -r $(OBJ64) -o $(NAME64).o $(LDFLAGS64)
 
 clean	:
-	@rm -f $(OBJ) *~ *\# \#* .\#* dump_main.o
+	@rm -f $(OBJ32) $(OBJ64) *~ *\# \#* .\#* dump_main.o
 	@rm -f include/*~ include/*\# include/\#* include/.\#* 
 
 fclean	: clean
-	@rm -f $(NAME).a $(NAME).o dump_main
+	@rm -f $(NAME32).a $(NAME32).o dump_main* $(NAME64).a $(NAME64).o
+
+%.32.o 	: %.c
+	$(CC) $(CFLAGS32) -c -o $@ $<
+
+%.64.o 	: %.c
+	$(CC) $(CFLAGS64) -c -o $@ $<

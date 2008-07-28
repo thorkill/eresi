@@ -83,11 +83,11 @@ int		cmd_return()
       revm_output(quit_msg);
       
       /* Now the ugly code depending on the compilation options */
-#if defined(ELFSHNET)
-      if (world.curjob->ws.io.type == ELFSH_IONET &&
-	  revm_socket_del(inet_ntoa(world.curjob->ws.sock.addr.sin_addr)) < 0)
+#if defined(ERESI_NET)
+      if (world.curjob->ws.io.type == REVM_IO_NET &&
+	  revm_socket_del(inet_ntoa(world.curjob->ws.io.sock.addr.sin_addr)) < 0)
 	fprintf(stderr, "error on quit from client on socket %d\n",
-		world.curjob->ws.sock.socket);
+		world.curjob->ws.io.sock.socket);
       else      
 #endif
 	{ 

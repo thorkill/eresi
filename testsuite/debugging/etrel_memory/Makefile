@@ -18,7 +18,7 @@ RTOBJ	= myputs.o
 PIEBIN	= pie-test
 
 OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
-	-I../../../libaspect/include/ $(BITS)
+	-I../../../libaspect/include/ $(BITS) -DERESI32
 CFLAGS	= $(OPT) 
 
 all32: all

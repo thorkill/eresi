@@ -18,7 +18,7 @@ int  	       elfsh_net_client_count = 0;
 
 
 /* Is net support enable ? */
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
 /**
  * @brief Add a client socket to the elfsh_net_client_list. 
  * @ingroup io
@@ -46,10 +46,10 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof (revmjob_t), NULL);
 
-  new->ws.sock.addr    = *addr;
-  new->ws.sock.socket  = socket;
-  new->ws.sock.recvd   = NULL;
-  new->ws.sock.recvd_f = OLD;
+  new->ws.io.sock.addr    = *addr;
+  new->ws.io.sock.socket  = socket;
+  new->ws.io.sock.recvd   = NULL;
+  new->ws.io.sock.recvd_f = OLD;
   elfsh_net_client_count++;
 
   new->ws.io.type      = REVM_IO_NET;
@@ -114,20 +114,20 @@ int		revm_socket_get_nb_recvd(char *inet)
 	    }
 	}
 
-      if (tmp->ws.sock.recvd_f == OLD)
+      if (tmp->ws.io.sock.recvd_f == OLD)
         {
 	  /* recvd data have already been read so we forget them */
-	  tmp->ws.sock.recvd = NULL;
+	  tmp->ws.io.sock.recvd = NULL;
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
         }
       else
         {
 	  /* we have to count them */
-	  if (tmp->ws.sock.recvd != NULL)
+	  if (tmp->ws.io.sock.recvd != NULL)
             {
 	      /* There might be data */
 	      i = 0;
-	      while (tmp->ws.sock.recvd[i] != NULL)
+	      while (tmp->ws.io.sock.recvd[i] != NULL)
                 {
 		  i++;
                 }
@@ -216,17 +216,17 @@ int		 revm_socket_del(char *inet_addr)
 	}
     }
   
-  if (revm_socket_close(tmp->ws.sock.socket) < 0)
+  if (revm_socket_close(tmp->ws.io.sock.socket) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to close socket", (-1));
 
   //elfsh_net_client_count--;
-  if (tmp->ws.sock.recvd_f == NEW)
+  if (tmp->ws.io.sock.recvd_f == NEW)
     {
       /* We assume that buffer are not referenced, and so won't be used */
-      nbargc = revm_socket_get_nb_recvd(inet_ntoa(tmp->ws.sock.addr.sin_addr));
+      nbargc = revm_socket_get_nb_recvd(inet_ntoa(tmp->ws.io.sock.addr.sin_addr));
       for (i = 0 ; i < nbargc ; i++)
-	XFREE (__FILE__, __FUNCTION__, __LINE__, tmp->ws.sock.recvd[i]);
+	XFREE (__FILE__, __FUNCTION__, __LINE__, tmp->ws.io.sock.recvd[i]);
 
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[DEBUG NETWORK] We are deleting a socket struct which has"
@@ -234,7 +234,7 @@ int		 revm_socket_del(char *inet_addr)
 #endif
     }
 
-  XFREE(__FILE__, __FUNCTION__, __LINE__,tmp->ws.sock.recvd);
+  XFREE(__FILE__, __FUNCTION__, __LINE__,tmp->ws.io.sock.recvd);
   hash_del(&world.jobs, inet_addr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -618,7 +618,7 @@ int			revm_net_accept()
 
   temp_addr_len = sizeof (struct sockaddr_in);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, temp_addr, temp_addr_len, -1);
-  temp_sock = accept(init->ws.sock.socket, 
+  temp_sock = accept(init->ws.io.sock.socket, 
 		     (struct sockaddr *) temp_addr, &temp_addr_len);
 
   if (temp_sock >= 0)
@@ -697,12 +697,12 @@ int			revm_net_recvd(fd_set *sel_sockets)
 	  if (!((revmjob_t *) actual->data)->ws.active)
 	    continue;
 
-	  temp_socket = &((revmjob_t *) actual->data)->ws.sock;
+	  temp_socket = &((revmjob_t *) actual->data)->ws.io.sock;
 
-	  if (((revmjob_t *) actual->data)->ws.io.type != REVM_IO_NET)
-	    continue;
+	    if (((revmjob_t *) actual->data)->ws.io.type != REVM_IO_NET)
+	      continue;
 
-	  if (temp_socket->socket == init->ws.sock.socket ||
+	  if (temp_socket->socket == init->ws.io.sock.socket ||
 	      temp_socket->socket == 0)
 	    continue;
 
@@ -917,11 +917,11 @@ char			*revm_net_input()
 	  if (!((revmjob_t *) actual->data)->ws.active)
 	    continue;
 
-	  temp_socket = & ((revmjob_t *) actual->data)->ws.sock;
+	  temp_socket = & ((revmjob_t *) actual->data)->ws.io.sock;
 
 
-	  if (temp_socket->recvd_f == NEW &&
-	      temp_socket->ready_f == YES)
+	    if (temp_socket->recvd_f == NEW &&
+		temp_socket->ready_f == YES)
             {
 #if __DEBUG_NETWORK__
 	      fprintf(stderr, "[DEBUG NETWORK] revm_network_input "
@@ -972,8 +972,8 @@ int			revm_net_init()
 		 "Cannot find initial net job", (-1));
 
   /* remote client main socket */
-  if (revm_create_server(&(init->ws.sock.socket), 
-		       &(init->ws.sock.addr), REVM_PORT) < 0)
+  if (revm_create_server(&(init->ws.io.sock.socket), 
+		       &(init->ws.io.sock.addr), REVM_PORT) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to create net server", (-1));
 
@@ -1015,7 +1015,7 @@ int		      revm_net_stop()
 	   actual != NULL && actual->key != NULL;
 	   actual = actual->next)
         {  
-	  temp_socket = &((revmjob_t *) actual->data)->ws.sock;
+	  temp_socket = &((revmjob_t *) actual->data)->ws.io.sock;
 
 #if __DEBUG_NETWORK__
 	  fprintf(stderr, "[DEBUG NETWORK] Closing "
@@ -1036,7 +1036,7 @@ int		      revm_net_stop()
 
 #if __DEBUG_NETWORK__
   fprintf(stderr, "[DEBUG NETWORK] Closing socket : %d \n", 
-	  serv->ws.sock.socket);
+	  serv->ws.io.sock.socket);
 #endif
 
   /* Closing DUMP connections */
@@ -1052,7 +1052,7 @@ int		      revm_net_stop()
 
   /* Closing DUMP main socket */
   close(dump_world.sock);
-  if (serv == NULL || revm_socket_close(serv->ws.sock.socket) < 0)
+  if (serv == NULL || revm_socket_close(serv->ws.io.sock.socket) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to close socket", (-1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -17,7 +17,7 @@
  * @brief Return the greatest socket from the elfsh_net_client_list and sock. 
  * @ingroup io
  */
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
 int             revm_getmaxfd()
 {
   int           index;
@@ -26,13 +26,14 @@ int             revm_getmaxfd()
   u_long	port;
   int           ret;
   revmjob_t    *serv;
+  int		fd;
 
   /* If the network is not UP, the biggest fd is 0 */
   ret  = 0;
   serv = hash_get(&world.jobs, "net_init");
   if (serv == NULL)
     return (ret);
-  ret = serv->ws.sock.socket;
+  ret = serv->ws.io.sock.socket;
   ret = (ret > dump_world.sock) ? ret : dump_world.sock;
   keys = hash_get_keys(&dump_world.ports, &keynbr);
 
@@ -55,8 +56,8 @@ int             revm_getmaxfd()
       serv = hash_get(&world.jobs, keys[index]);
       if (!serv->ws.active)
 	continue;
-      if (serv->ws.sock.socket > ret)
-	ret = serv->ws.sock.socket;
+      if (serv->ws.io.sock.socket > ret)
+	ret = serv->ws.io.sock.socket;
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
 	      serv->sock.socket, keys[index]);
@@ -64,8 +65,19 @@ int             revm_getmaxfd()
     }
 
   hash_free_keys(keys);
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER && world.fifofd > ret)
-    ret = world.fifofd;
+  
+  switch (world.state.revm_side)
+    {
+    case REVM_SIDE_CLIENT:
+      fd = world.fifo_s2c;
+      break;
+    case REVM_SIDE_SERVER:
+      fd = world.fifo_c2s;
+      break;
+    }
+
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER && fd > ret)
+    return (fd);
   return (ret);
 }
 #endif
@@ -86,7 +98,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
   char		**keys;
   int		keynbr;
   revmjob_t	*job;
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
   u_long	port;
 
   keys = hash_get_keys(&dump_world.ports, &keynbr);
@@ -118,11 +130,11 @@ int		revm_prepare_select(fd_set *sel_sockets)
 	      job->ws.sock.socket);
 #endif
 
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
       if (job->ws.io.type == REVM_IO_DUMP)
 	continue;
       if (job->ws.io.type == REVM_IO_NET)
-	FD_SET(job->ws.sock.socket, sel_sockets);
+	FD_SET(job->ws.io.sock.socket, sel_sockets);
 #endif
       
       if (job->ws.io.type == REVM_IO_STD)
@@ -151,7 +163,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
 void			revm_check_net_select(fd_set *sel_sockets, 
 					    int cursock)
 {
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
   // Read net command if any.
   if (revm_net_recvd(sel_sockets) < 0)
     fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
@@ -199,7 +211,8 @@ int			revm_socket_getnew()
 	  return (1);
 	}
       if (cur->ws.io.type == REVM_IO_NET && 
-	  cur->ws.sock.recvd_f == NEW && cur->ws.sock.ready_f == YES)
+	  cur->ws.io.sock.recvd_f == NEW && 
+	  cur->ws.io.sock.ready_f == YES)
 	{
 	  world.curjob = cur;
 	  return (1);
@@ -264,10 +277,10 @@ int                     revm_select()
     {
       FD_ZERO(&sel_sockets);
 
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
       if (world.state.revm_net && init)
         {
-          FD_SET(init->ws.sock.socket, &sel_sockets);
+          FD_SET(init->ws.io.sock.socket, &sel_sockets);
 	  FD_SET(dump_world.sock, &sel_sockets);
         }
 #endif
@@ -287,11 +300,11 @@ int                     revm_select()
       
 
       /* Select which command will be proceded */
-#if defined(ELFSHNET)
+#if defined(ERESI_NET)
       if (world.state.revm_net)
 	{
 	  if (init)
-	    revm_check_net_select(&sel_sockets, init->ws.sock.socket);
+	    revm_check_net_select(&sel_sockets, init->ws.io.sock.socket);
 	  
 	  if (revm_socket_getnew())
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));

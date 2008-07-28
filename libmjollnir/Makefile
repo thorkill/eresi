@@ -25,10 +25,10 @@ NAME32	= libmjollnir32
 NAME64	= libmjollnir64
 
 CFLAGS32 = -fPIC -I./include/ -I../libasm/include/ -I../libelfsh/include/ \
-	   -I../libaspect/include -Wall -DERESI32 -DELFSH_INTERN -g3
+	   -I../libaspect/include -Wall -DERESI32 -DERESI_INTERNAL -g3
 
 CFLAGS64 = -fPIC -I./include/ -I../libasm/include/ -I../libelfsh/include/ \
-	 -I../libaspect/include  -Wall -DERESI64 -DELFSH_INTERN -g3
+	 -I../libaspect/include  -Wall -DERESI64 -DERESI_INTERNAL -g3
 
 LDFLAGS32 = -L. -L../libasm/ -L../libelfsh/ -L../liballocproxy   \
 	  -L../libaspect/ -lelfsh32 -laspect32 -lasm32 -lallocproxy $(LPTHREAD)
