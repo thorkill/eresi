@@ -132,10 +132,10 @@ MOD_TARGET=mod32
 --enable-network*)
 echo  " [*] Enable ERESI client/server capability"
 ERESI_NET="1"
-echo  "LDDUMPOPT32		= -ldump32"		>> $CONFIGFILE
-echo  "LDDUMPOBJ32		= ../libdump/libdump.o"	>> $CONFIGFILE
-echo  "LDDUMPOPT64		= -ldump64"		>> $CONFIGFILE
-echo  "LDDUMPOBJ64		= ../libdump/libdump.o"	>> $CONFIGFILE
+echo  "LDDUMPOPT32		= -ldump32"			>> $CONFIGFILE
+echo  "LDDUMPOBJ32		= ../libdump/libdump32.o"	>> $CONFIGFILE
+echo  "LDDUMPOPT64		= -ldump64"			>> $CONFIGFILE
+echo  "LDDUMPOBJ64		= ../libdump/libdump64.o"	>> $CONFIGFILE
 BITS=$BITS" -DERESI_NET"
 ;;
 
