@@ -85,8 +85,8 @@ int		mjr_setup_processor(mjrsession_t *);
 /**
  * @brief Analysis of unlimited depth
  */
-#define	MJR_MAX_DEPTH		-1
-#define	MJR_BLOCK_INVALID	((eresi_Addr) -1)
+#define		MJR_MAX_DEPTH		-1
+#define		MJR_BLOCK_INVALID	((eresi_Addr) -1)
 
 int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);

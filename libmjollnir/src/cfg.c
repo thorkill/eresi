@@ -63,8 +63,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
-	    "[D] %s: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen + addend);
+	    "[D] %s:%d " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
+	    " F:" XFMT"\n", __FUNCTION__, __LINE__, 
+	    curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
 
     mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
@@ -90,8 +91,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[D] %s: " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
-	      " F:" XFMT "\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen);
+	      "[D] %s:%d " XFMT " ASM_TYPE_CALLPROC  T:" XFMT
+	      " F:" XFMT "\n", __FUNCTION__, __LINE__, 
+	      curvaddr, *dstaddr, curvaddr + ilen);
 #endif
       
       context->calls_seen++;

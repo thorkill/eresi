@@ -164,8 +164,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
 
 #if __DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s: linking JMP %x TRUE %x FALSE %x\n",
-          __FUNCTION__,
-          src,dst,ret);
+          __FUNCTION__, src, dst, ret);
 #endif
 
   /* Insert symbol on terminated block */

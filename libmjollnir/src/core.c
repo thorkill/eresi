@@ -211,6 +211,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
       cntnr = mjr_create_function_container(sess->cur, vaddr, 0, _vaddr2str(vaddr), 0, NULL);
       sess->cur->curfunc = cntnr;
       mjr_function_register(sess->cur,vaddr, cntnr);
+      main_addr = 0;
     }
 
   /* Read all instructions of the section */
@@ -219,7 +220,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
 		  "Error during section entry code analysis", -1);
 
   /* Also analyse the main code -- it is generally not directly linked with the entry point */
-  if (mjr_analyse_code(sess, ptr, 0, main_addr, len, 0, MJR_MAX_DEPTH) < 0)
+  if (main_addr && mjr_analyse_code(sess, ptr, 0, main_addr, len, 0, MJR_MAX_DEPTH) < 0)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during main code analysis", -1);
 
