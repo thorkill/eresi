@@ -19,10 +19,10 @@ NAME32			= libedfmt32
 NAME64			= libedfmt64
 
 CFLAGS32		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
-			-I../libelfsh/include/ -DERESI_INTERNAL -DERESI32
+			-I../libelfsh/include/  -DERESI32
 
 CFLAGS64		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
-			-I../libelfsh/include/ -DERESI_INTERNAL -DERESI64
+			-I../libelfsh/include/  -DERESI64
 
 LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 
 #			-L../liballocproxy -lallocproxy

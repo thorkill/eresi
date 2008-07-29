@@ -41,10 +41,6 @@ typedef char uint8;
  #include "libelfsh-bsd.h"	/* Various BSD need this */
 #endif
 
-#if defined(ERESI_INTERNAL)
- #include "libelfsh-internal.h"
-#endif
-
 /* Portability Stuffs */
 #ifdef __KERNEL__
  #include "libelfsh-versions.h"

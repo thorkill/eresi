@@ -23,7 +23,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
 			 -I../../libmjollnir/include/ -I../../libaspect/include/  \
 			 -I../../libedfmt/include/ -I../../librevm/include/	  \
 			 $(KERNSHINCINC) $(KERNSH)				  \
-			-DERESI_INTERNAL $(STATOPT2) $(ASMOPT) -DERESI32 		  \
+			 $(STATOPT2) $(ASMOPT) -DERESI32 		  \
 			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
@@ -33,7 +33,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
 			 -I../../libui/include/ -I../../libmjollnir/include/      \
 			 -I../../libedfmt/include/ -I../../librevm/include/	  \
 			 $(KERNSHINCINC) $(KERNSH)				  \
-			-DERESI_INTERNAL $(STATOPT2) $(ASMOPT) -DERESI64 $(BUILDOP) \
+			 $(STATOPT2) $(ASMOPT) -DERESI64 $(BUILDOP) \
 			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 all			: all32 all64

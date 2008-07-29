@@ -17,7 +17,7 @@ NAME32			= kernsh32
 NAME64			= kernsh64
 
 CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
-			 -I../libelfsh/include/ -DERESI_INTERNAL $(STATOPT2)   \
+			 -I../libelfsh/include/  $(STATOPT2)   \
 			 -I../libdump/include/ -I../libasm/include/          \
 			 -I../e2dbg/include/ -I/usr/pkg/include/             \
 			-I../libui/include/ -I../libmjollnir/include/        \
@@ -33,7 +33,7 @@ CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			-I../libui/include/ -I../libmjollnir/include/      \
 			-I../libaspect/include/ -I../librevm/include/      \
 			-I../libedfmt/include/  -I../libstderesi/include/  \
-			-I../libkernsh/include/ -DERESI_INTERNAL $(STATOPT2) \
+			-I../libkernsh/include/  $(STATOPT2) \
 			$(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \

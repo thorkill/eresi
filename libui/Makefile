@@ -18,7 +18,7 @@ CFLAGS32	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../libdump/include/                    \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/  			\
-		-I../libetrace/include/ -I../libedfmt/include/ -DERESI_INTERNAL 	\
+		-I../libetrace/include/ -I../libedfmt/include/  	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DERESI32		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 
@@ -26,7 +26,7 @@ CFLAGS64	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../libdump/include/                    \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/			\
-		-I../libetrace/include/ -I../libedfmt/include/ -DERESI_INTERNAL 	\
+		-I../libetrace/include/ -I../libedfmt/include/  	\
 		-I../libaspect/include/ $(STATOPT2) $(ASMOPT) -DERESI64		\
 		-I../librevm/include/ $(NCURSESLNOPT) $(READLNOPT)
 

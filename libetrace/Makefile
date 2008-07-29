@@ -11,11 +11,11 @@ CC			?= gcc
 LD			?= ld
 RM			= rm -f 
 AR			= ar rc
-CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 -DERESI_INTERNAL     \
+CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2      \
 			-I../libasm/include/ -I../libaspect/include/        \
                         -I../libelfsh/include/ -DERESI32 $(BUILDOP)         \
 			-I../libedfmt/include/
-CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 -DERESI_INTERNAL     \
+CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2      \
 			-I../libasm/include/ -I../libaspect/include/        \
                         -I../libelfsh/include/ -DERESI64 $(BUILDOP)	    \
 			-I../libedfmt/include/

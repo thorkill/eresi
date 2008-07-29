@@ -19,14 +19,14 @@ CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)           \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
 		-I../../libui/include/ -I../../libasm/include/               \
 		-I../../libmjollnir/include/ -I../../libaspect/include/      \
-		 -I../../libdump/include/ $(BUILDOP) -DERESI_INTERNAL          \
+		 -I../../libdump/include/ $(BUILDOP)           \
 		$(STATOPT2) $(ASMOPT) $(BITS) -DERESI32 $(READLNOPT)			
 
 CFLAGS64	+= -fPIC -g3 -Wall -I../include -Iinclude $(DYNOPT) \
 		-I../../libelfsh/include/ -I../../libedfmt/include/          \
 		-I../../libui/include/ -I../../libasm/include/               \
 		-I../../libmjollnir/include/ -I../../libaspect/include/      \
-		 -I../../libdump/include/ -DERESI_INTERNAL $(STATOPT2)         \
+		 -I../../libdump/include/  $(STATOPT2)         \
 		$(ASMOPT) $(BITS) -DERESI64 $(BUILDOP) $(READLNOPT)
 
 all		: all32 all64
