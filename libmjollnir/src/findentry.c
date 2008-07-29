@@ -188,7 +188,7 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   
   if (main_addr == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Could not find address of main", -1);
+		 "Could not find address of main", 0);
 
   tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
   mjr_function_register(context, vaddr, tmpcntnr);

@@ -1,10 +1,10 @@
 /*
 ** (C) 2006-2008 Devhell Labs / Asgard Labs 
-**  - sk, jfv, thorolf, strauss
+**  - sk, jfv, thorolf, strauss, pi3
 **
 ** @file libmjollnir/types.c
 ** 
-** @brief Functions that use the typed instructions information in libasm
+** @brief Top-level functions for control-flow analysis
 **
 */
 #include "libmjollnir.h"
@@ -80,7 +80,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F: NULL \n", curvaddr, *dstaddr);
 #endif
 
-    if (*dstaddr != (eresi_Addr) -1)
+    if (*dstaddr != MJR_BLOCK_INVALID)
       mjr_link_block_jump(context, curvaddr, *dstaddr, 0);
   }
   
@@ -102,12 +102,14 @@ int			mjr_trace_control(mjrcontext_t *context,
       /* If call occured at the end of a section */
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
 	{
+
 #if __DEBUG_FLOW__
 	  fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
-		  __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
+		  __FUNCTION__, curvaddr + ilen + addend, 
+		  context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
 	  
-	  *retaddr = -1;
+	  *retaddr = MJR_BLOCK_INVALID;
 	}
       else
 	*retaddr = curvaddr + ilen + addend;
@@ -116,7 +118,7 @@ int			mjr_trace_control(mjrcontext_t *context,
        * FIXME: we should be able to resolve CALL 0x0 (*dstaddr == 0), 
        * Possible libasm or mjollnir bug.
        */
-      if (*dstaddr && *dstaddr != (eresi_Addr) -1)
+      if (*dstaddr && *dstaddr != MJR_BLOCK_INVALID)
 	{
 	  /* Link block layer */
 	  mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
@@ -203,7 +205,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid target vaddr for function pointer",
-		       (eresi_Addr) -1);
+		       MJR_BLOCK_INVALID);
 	}
 
 #if __DEBUG_MJOLLNIR__
@@ -234,7 +236,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
       printf(" [*] UNABLE to resolve function pointer called from 0x%08lx\n", 
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Unable to compute function pointer target", (eresi_Addr) -1);
+		   "Unable to compute function pointer target", MJR_BLOCK_INVALID);
     }
 
   dest = strtol(ret, (char **) NULL, 16);
@@ -269,50 +271,51 @@ eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
   if (context->proc.type == ASM_PROC_IA32)
-  {
-  	/* The target block is called directly */
-    if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
-    {    
-    	ilen = asm_instr_len(ins);
-    	asm_operand_get_immediate(ins, 1, 0, &dest);
-    	dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
-    }
-    /* The target block is called indirectly : if we find a pattern that correspond 
-       to an easy to predict function pointer, then we compute it */
-    else if (ins->op[0].content & ASM_OP_BASE)
-      dest = mjr_compute_fctptr(context);
-    else
-      dest = -1;
-  }
-  else if (context->proc.type == ASM_PROC_SPARC)
-  {
-    if (ins->instr == ASM_SP_CALL)
     {
-    	if (ins->op[0].content & ASM_SP_OTYPE_DISP30)
-   	  {
-  	    dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
-   	  }
-    	else /* Indirect call (special case of JMPL) */
-    	  dest = -1;
+      /* The target block is called directly */
+      if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
+	{    
+	  ilen = asm_instr_len(ins);
+	  asm_operand_get_immediate(ins, 1, 0, &dest);
+	  dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+	}
+      /* The target block is called indirectly : if we find a pattern that correspond 
+	 to an easy to predict function pointer, then we compute it */
+      else if (ins->op[0].content & ASM_OP_BASE)
+	dest = mjr_compute_fctptr(context);
+      else
+	dest = MJR_BLOCK_INVALID;
     }
-  }
+  else if (context->proc.type == ASM_PROC_SPARC)
+    {
+      if (ins->instr == ASM_SP_CALL)
+	{
+	  if (ins->op[0].content & ASM_SP_OTYPE_DISP30)
+	    {
+	      dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+	    }
+	  else /* Indirect call (special case of JMPL) */
+	    dest = MJR_BLOCK_INVALID;
+	}
+    }
   else if (context->proc.type == ASM_PROC_MIPS)
-  {
-     if (ins->instr == ASM_MIPS_JAL) {
-        dest = (ins->op[0].imm << 2) | ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
-     } else if (ins->instr == ASM_MIPS_JALR) {
-        dest = -1;
-     } else if (ins->instr == ASM_MIPS_BAL) {
-        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
-     } else {
-        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
-     }
-//     } else
-//        dest = -1;
-  }
+    {
+      switch (ins->instr)
+	{
+	case ASM_MIPS_JAL:
+	  dest = (ins->op[0].imm << 2) | 
+	    ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+	case ASM_MIPS_JALR:
+	  dest = MJR_BLOCK_INVALID;
+	case ASM_MIPS_BAL:
+	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
+	default:
+	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
+	}
+    }
   else
-    dest = -1;
-
+    dest = MJR_BLOCK_INVALID;
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
@@ -325,61 +328,61 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
   int		ilen;
   eresi_Addr	dest;
   asm_instr	*ins;
+  unsigned int	i;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
   if (context->proc.type == ASM_PROC_IA32)
-  {
-  	/* The target block is called directly */
-    if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
-    {    
-    	ilen = asm_instr_len(ins);
-    	asm_operand_get_immediate(ins, 1, 0, &dest);
-    	dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
-    }
-    
-    /* The target block is called indirectly : if we find a pattern that correspond 
+    {
+      /* The target block is called directly */
+      if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
+	{    
+	  ilen = asm_instr_len(ins);
+	  asm_operand_get_immediate(ins, 1, 0, &dest);
+	  dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+	}
+      
+      /* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
-    else if (ins->op[0].content & ASM_OP_BASE)
-      dest = mjr_compute_fctptr(context);
-    else
-      dest = -1;
-  }
+      else if (ins->op[0].content & ASM_OP_BASE)
+	dest = mjr_compute_fctptr(context);
+      else
+	dest = MJR_BLOCK_INVALID;
+    }
   else if (context->proc.type == ASM_PROC_SPARC)
-  {
-    if (ins->instr & ASM_SP_JMPL) /* Indirect jump */
-      {
-    	dest = -1;
-      }
-    else if (ins->type & ASM_TYPE_CONDBRANCH)
-      {
-    	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
-      }
-  }
-  else if (context->proc.type == ASM_PROC_MIPS) {
-     unsigned int i = 0;
-
-     if ( (ins->instr & ASM_MIPS_BEQ) || (ins->instr & ASM_MIPS_BEQL) 
-        || (ins->instr & ASM_MIPS_BNE) || (ins->instr & ASM_MIPS_BNEL) )
-        i = 2;
-     else if ( (ins->instr & ASM_MIPS_BGEZAL) || (ins->instr & ASM_MIPS_BGEZALL)
-             || (ins->instr & ASM_MIPS_BGEZ) || (ins->instr & ASM_MIPS_BGEZL)
-	     || (ins->instr & ASM_MIPS_BGTZ) || (ins->instr & ASM_MIPS_BGTZL)
-	     || (ins->instr & ASM_MIPS_BLEZ) || (ins->instr & ASM_MIPS_BLEZL)
-	     || (ins->instr & ASM_MIPS_BLTZAL) || (ins->instr & ASM_MIPS_BLTZALL)
-	     || (ins->instr & ASM_MIPS_BLTZ) || (ins->instr & ASM_MIPS_BLTZL) )
+    {
+      if (ins->instr & ASM_SP_JMPL) /* Indirect jump */
+	dest = MJR_BLOCK_INVALID;
+      else if (ins->type & ASM_TYPE_CONDBRANCH)
+	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+    }
+  else if (context->proc.type == ASM_PROC_MIPS) 
+    {
+      i = 0;
+      
+      if ( (ins->instr & ASM_MIPS_BEQ) || (ins->instr & ASM_MIPS_BEQL) 
+	   || (ins->instr & ASM_MIPS_BNE) || (ins->instr & ASM_MIPS_BNEL) )
+	i = 2;
+      else if ( (ins->instr & ASM_MIPS_BGEZAL) || (ins->instr & ASM_MIPS_BGEZALL)
+		|| (ins->instr & ASM_MIPS_BGEZ) || (ins->instr & ASM_MIPS_BGEZL)
+		|| (ins->instr & ASM_MIPS_BGTZ) || (ins->instr & ASM_MIPS_BGTZL)
+		|| (ins->instr & ASM_MIPS_BLEZ) || (ins->instr & ASM_MIPS_BLEZL)
+		|| (ins->instr & ASM_MIPS_BLTZAL) || (ins->instr & ASM_MIPS_BLTZALL)
+		|| (ins->instr & ASM_MIPS_BLTZ) || (ins->instr & ASM_MIPS_BLTZL) )
         i = 1;
-
-     if (ins->op[i].type & ASM_MIPS_OTYPE_BRANCH) {
-        dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[i].imm+1)*4));
-     } else if (ins->op[i].type & ASM_MIPS_OTYPE_JUMP) {
-        dest = (ins->op[i].imm << 2) | ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
-     } else
-        dest = -1; /* Jump to register - not yet */
-  } else
-    dest = -1;
+      
+      if (ins->op[i].type & ASM_MIPS_OTYPE_BRANCH)
+        dest = (context->hist[MJR_HISTORY_CUR].vaddr + (((short)ins->op[i].imm+1) * 4));
+      else if (ins->op[i].type & ASM_MIPS_OTYPE_JUMP)
+        dest = (ins->op[i].imm << 2) | 
+	  ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+      else
+        dest = MJR_BLOCK_INVALID; /* Jump to register - not yet */
+    } 
+  else
+    dest = MJR_BLOCK_INVALID;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
@@ -392,7 +395,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
   u_int			tmpaddr;
-  container_t	*fun;
+  container_t		*fun;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

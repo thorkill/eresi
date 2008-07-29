@@ -85,13 +85,14 @@ int		mjr_setup_processor(mjrsession_t *);
 /**
  * @brief Analysis of unlimited depth
  */
-#define	MJR_NO_DEPTH -1
+#define	MJR_MAX_DEPTH		-1
+#define	MJR_BLOCK_INVALID	((eresi_Addr) -1)
 
 int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
-int   mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
-int	  mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, unsigned int offset, eresi_Addr vaddr, int len, int curdepth, int maxdepth);
-int   mjr_analyse_finished(mjrsession_t *sess);
+int		mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
+int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, unsigned int offset, eresi_Addr vaddr, int len, int curdepth, int maxdepth);
+int		mjr_analyse_finished(mjrsession_t *sess);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);

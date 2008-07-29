@@ -625,8 +625,7 @@ int			revm_net_accept()
     {
       // Somebody want to join us. We are so "attractive" ...
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Client "
-	      "accepted on socket %d.\n",temp_sock);
+      fprintf(stderr, "[DEBUG NETWORK] Client accepted on socket %d.\n",temp_sock);
 #endif
 
       curjob = revm_socket_add(temp_sock, temp_addr);
@@ -656,7 +655,7 @@ int			revm_net_accept()
     {
       oldjob = world.curjob;
       world.curjob = curjob;
-      revm_output("\n [*] Connection granted to ELFsh daemon\n\n");
+      revm_output("\n [*] Connection granted to ERESI server\n\n");
       revm_display_prompt();
       world.curjob = oldjob;
     }

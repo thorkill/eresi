@@ -43,7 +43,7 @@ int             revm_getmaxfd()
       if (port > ret)
 	ret = port;
 #if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) [%u] \n", port);
+      fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port);
 #endif
     }
   
@@ -60,7 +60,7 @@ int             revm_getmaxfd()
 	ret = serv->ws.io.sock.socket;
 #if __DEBUG_NETWORK__
       fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
-	      serv->sock.socket, keys[index]);
+	      serv->ws.io.sock.socket, keys[index]);
 #endif
     }
 
@@ -107,7 +107,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
 #if __DEBUG_NETWORK__
       fprintf(stderr, 
-	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : %d \n",
+	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
 	      port);
 #endif
       FD_SET(port, sel_sockets);

@@ -30,7 +30,7 @@ int		cmd_network()
   job->ws.createtime = time(&job->ws.createtime);
 
   hash_add(&world.jobs, "net_init", job);
-  //world.curjob = job;
+  world.curjob = job;				// to comment again ?
   world.state.revm_net = 1;
 
   if (revm_net_init() < 0)
@@ -190,13 +190,11 @@ int		cmd_connect()
   toconnect = world.curjob->curcmd->param[0];
   toconnect = revm_lookup_string(toconnect);
 
-  /*
   if (world.state.revm_net != 1)
     {
       revm_output(" [*] First enable network support.\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  */
 
   if (world.curjob->ws.io.type == REVM_IO_NET)
     {

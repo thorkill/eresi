@@ -290,17 +290,17 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
 
 #if __DEBUG_LINKS__
       fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
-      fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
+      fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", 
+	      __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
       blkdst->size -= new_size;
 
-      assert(new_size > 0);
+      //assert(new_size > 0);
       assert(blkdst->size > 0);
 
+      /* Correct existing symbol size and add new symbol pointing on new split block */      
       dstend = mjr_create_block_container(ctxt, 0, dst, new_size, 1);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
-
-      /* Correct existing symbol size and add new symbol */
       sym->st_size = blkdst->size;
       mjr_block_symbol(ctxt, dstend, NULL, 0);
 

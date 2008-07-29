@@ -161,10 +161,12 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc,
   elfsh_Sym		*sym;
   char			*prefix;
   char			buffer[BUFSIZ];
+  int			off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Insert new block symbol */
+  off = 0;
   block = (mjrblock_t *) csrc->data;
   prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
   if (resize)
@@ -174,8 +176,13 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc,
   sym = elfsh_get_symbol_by_name(ctxt->obj, buffer);
   if (!sym)
     {
+      off = ctxt->obj->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size;
       bsym = elfsh_create_symbol(block->vaddr, block->size, STT_BLOCK, 0, 0, 0);
       elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  else
+    printf(" [D] Block symbol %s was already inserted ! \n", 
+	   elfsh_get_symbol_name(ctxt->obj, sym));
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, off);
 }
