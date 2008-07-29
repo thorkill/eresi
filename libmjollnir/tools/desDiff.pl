@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 # (C) 2006-2007 Asgard Labs, thorolf
-# BSD License
-# $Id: desDiff.pl,v 1.8 2007-06-09 22:35:16 thor Exp $
 
 # the objects should be striped libraries
 # this script was 'designed' to search for differences in

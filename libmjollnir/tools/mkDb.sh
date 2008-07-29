@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # (C) 2006 Asgard Labs, thorolf
-# BSD License
 # $Id: mkDb.sh,v 1.3 2006-07-08 21:24:27 thor Exp $
 
 for x in `ls -1 /usr/lib/*.a`

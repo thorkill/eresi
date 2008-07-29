@@ -1,6 +1,5 @@
 /**
  * (C) 2006-2008 Asgard Labs, thorolf
- * BSD License
  *
  * @file init.c
  * @brief Initialization functions

@@ -3,8 +3,7 @@
 #
 # (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, jfv, thorolf)
 #
-# BSD License 
-#
+
 include ../config.h
 
 SRC	= src/blocks.c src/core.c src/history.c src/init.c src/symtab.c \

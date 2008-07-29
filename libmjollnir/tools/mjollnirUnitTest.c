@@ -1,8 +1,6 @@
 
 /*
  * (C) 2006 Asgard Labs, thorolf
- * BSD License
- * $Id: mjollnirUnitTest.c,v 1.4 2006-07-15 17:06:08 thor Exp $
  *
  */
 
