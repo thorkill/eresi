@@ -766,6 +766,54 @@ struct user_fpregs_struct64bit
 #define NT_VERSION      1               /* Contains a version string.  */
 
 /* Architectures undefined on BSD */
+#if __FreeBSD_version < 602000
+/* Values for e_machine. */
+#define EM_NONE         0       /* Unknown machine. */
+#define EM_M32          1       /* AT&T WE32100. */
+#define EM_SPARC        2       /* Sun SPARC. */
+#define EM_386          3       /* Intel i386. */
+#define EM_68K          4       /* Motorola 68000. */
+#define EM_88K          5       /* Motorola 88000. */
+#define EM_860          7       /* Intel i860. */
+#define EM_MIPS         8       /* MIPS R3000 Big-Endian only. */
+#define EM_S370         9       /* IBM System/370. */
+#define EM_MIPS_RS3_LE  10      /* MIPS R3000 Little-Endian. */
+#define EM_PARISC       15      /* HP PA-RISC. */
+#define EM_VPP500       17      /* Fujitsu VPP500. */
+#define EM_SPARC32PLUS  18      /* SPARC v8plus. */
+#define EM_960          19      /* Intel 80960. */
+#define EM_PPC          20      /* PowerPC 32-bit. */
+#define EM_PPC64        21      /* PowerPC 64-bit. */
+#define EM_S390         22      /* IBM System/390. */
+#define EM_V800         36      /* NEC V800. */
+#define EM_FR20         37      /* Fujitsu FR20. */
+#define EM_RH32         38      /* TRW RH-32. */
+#define EM_RCE          39      /* Motorola RCE. */
+#define EM_ARM          40      /* ARM. */
+#define EM_SH           42      /* Hitachi SH. */
+#define EM_SPARCV9      43      /* SPARC v9 64-bit. */
+#define EM_TRICORE      44      /* Siemens TriCore embedded processor. */
+#define EM_ARC          45      /* Argonaut RISC Core. */
+#define EM_H8_300       46      /* Hitachi H8/300. */
+#define EM_H8_300H      47      /* Hitachi H8/300H. */
+#define EM_H8S          48      /* Hitachi H8S. */
+#define EM_H8_500       49      /* Hitachi H8/500. */
+#define EM_IA_64        50      /* Intel IA-64 Processor. */
+#define EM_MIPS_X       51      /* Stanford MIPS-X. */
+#define EM_COLDFIRE     52      /* Motorola ColdFire. */
+#define EM_68HC12       53      /* Motorola M68HC12. */
+#define EM_MMA          54      /* Fujitsu MMA. */
+#define EM_PCP          55      /* Siemens PCP. */
+#define EM_NCPU         56      /* Sony nCPU. */
+#define EM_NDR1         57      /* Denso NDR1 microprocessor. */
+#define EM_STARCORE     58      /* Motorola Star*Core processor. */
+#define EM_ME16         59      /* Toyota ME16 processor. */
+#define EM_ST100        60      /* STMicroelectronics ST100 processor. */
+#define EM_TINYJ        61      /* Advanced Logic Corp. TinyJ processor. */
+#define EM_X86_64       62      /* Advanced Micro Devices x86-64 */
+
+#endif
+
 #define EM_FAKE_ALPHA   41              /* Digital Alpha */
 #define EM_PDSP         63              /* Sony DSP Processor */
 #define EM_FX66         66              /* Siemens FX66 microcontroller */
