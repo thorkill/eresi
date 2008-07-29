@@ -76,7 +76,7 @@ int		cmd_analyse()
  else
    addr = 0;
 
- ret = mjr_analyse(&world.mjr_session, 0, MJR_NO_DEPTH, 0); //addr, 0);
+ ret = mjr_analyse(&world.mjr_session, 0, MJR_MAX_DEPTH, 0); //addr, 0);
  
  /* We certainly have inserted many new symbols */
  elfsh_sync_sorted_symtab(world.curjob->curfile->secthash[ELFSH_SECTION_SYMTAB]);

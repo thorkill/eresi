@@ -16,7 +16,7 @@
  * @param vaddr Entry point address for analysis
  * @param len Size of code to analyse
  * @param curdepth current depth of cfg being analyzed
- * @param maxdepth depth limit of analysis (== MJR_NO_DEPTH for limitless)
+ * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
  */
 int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, 
 				 unsigned int offset, eresi_Addr vaddr, int len, 
