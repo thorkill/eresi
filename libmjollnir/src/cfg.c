@@ -32,8 +32,8 @@ int			mjr_trace_control(mjrcontext_t *context,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
 					  eresi_Addr	  curvaddr,
-            eresi_Addr    *dstaddr,
-            eresi_Addr    *retaddr)
+					  eresi_Addr	*dstaddr,
+					  eresi_Addr	*retaddr)
 {
   int			ilen;
   container_t		*fun;
@@ -56,20 +56,19 @@ int			mjr_trace_control(mjrcontext_t *context,
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
   {
+    /* MIPS use delay slots for jump instructions too */
+    addend = (context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+
     *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
     fprintf(D_DESC,
 	    "[D] %s: " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen);
+	    " F:" XFMT"\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
 
-    if (*dstaddr != -1) {
-      mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen);
-
-      *retaddr = curvaddr + ilen;
-    }
-
+    mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
+    *retaddr = curvaddr + ilen + addend;
   }
   else if (curins->type & ASM_TYPE_IMPBRANCH)
   {
@@ -82,12 +81,12 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
 
     if (*dstaddr != (eresi_Addr) -1)
-	    mjr_link_block_jump(context, curvaddr, *dstaddr, 0);
-
+      mjr_link_block_jump(context, curvaddr, *dstaddr, 0);
   }
+  
   else if (curins->type & ASM_TYPE_CALLPROC)
-  {
-    *dstaddr = mjr_get_call_destaddr(context);
+    {
+      *dstaddr = mjr_get_call_destaddr(context);
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
@@ -95,54 +94,53 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F:" XFMT "\n", __FUNCTION__, curvaddr, *dstaddr, curvaddr + ilen);
 #endif
       
-    context->calls_seen++;
-
-    /* SPARC and MIPS use delay slots */
-    addend = (context->proc.type == ASM_PROC_SPARC || 
-		          context->proc.type == ASM_PROC_MIPS ? 4 : 0);
-
-    /* If call occured at the end of a section */
-    if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
-	  {
+      context->calls_seen++;
+      
+      /* SPARC and MIPS use delay slots */
+      addend = (context->proc.type == ASM_PROC_SPARC || context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+      
+      /* If call occured at the end of a section */
+      if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
+	{
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
-	      __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
+	  fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
+		  __FUNCTION__, curvaddr + ilen + addend, context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
-
-	    *retaddr = -1;
-	  }
-    else
-	    *retaddr = curvaddr + ilen + addend;
-
+	  
+	  *retaddr = -1;
+	}
+      else
+	*retaddr = curvaddr + ilen + addend;
+      
       /* 20070102
        * FIXME: we should be able to resolve CALL 0x0 (*dstaddr == 0), 
        * Possible libasm or mjollnir bug.
        */
-    if (*dstaddr && *dstaddr != (eresi_Addr) -1)
-    {
-	    /* Link block layer */
-	    mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
-
-	    /* Link function layer */
-	    mjr_link_func_call(context, curvaddr, *dstaddr, *retaddr);
-	    context->calls_found++;
+      if (*dstaddr && *dstaddr != (eresi_Addr) -1)
+	{
+	  /* Link block layer */
+	  mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
+	  
+	  /* Link function layer */
+	  mjr_link_func_call(context, curvaddr, *dstaddr, *retaddr);
+	  context->calls_found++;
+	}
     }
-  }
-  else if (curins->type == ASM_TYPE_RETPROC)
-  {
-
+  else if (curins->type & ASM_TYPE_RETPROC)
+    {
+      
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
 	      __FUNCTION__, curvaddr);
 #endif
-  }
+    }
   else
-  {
+    {
 #if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", 
 	      __FUNCTION__, curvaddr, curins->type);
 #endif
-  }
+    }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

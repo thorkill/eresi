@@ -174,14 +174,18 @@ int		mjr_link_block_jump(mjrcontext_t *ctxt,
   mjr_block_symbol(ctxt, csrc, src, 0);
 
   /* Now split destination blocks */
-  if (!(cdst = mjr_block_split(ctxt,dst, MJR_LINK_BLOCK_COND_ALWAYS)))
+  cdst = mjr_block_split(ctxt,dst, MJR_LINK_BLOCK_COND_ALWAYS);
+  if (!cdst)
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		 "Could not split the dst",0);
+		 "Could not split destination block",0);
   cret = NULL;
   if (ret)
-    if (!(cret = mjr_block_split(ctxt,ret, MJR_LINK_BLOCK_COND_ALWAYS)))
-      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		   "Could not split the ret",0);
+    {
+      cret = mjr_block_split(ctxt,ret, MJR_LINK_BLOCK_COND_ALWAYS);
+      if (!cret)
+	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		     "Could not split return block",0);
+    }
   
   mjr_container_add_link(ctxt, csrc, cdst->id, 
 			 MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -282,7 +286,7 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
   /* Recompute sizes */
   if (blkdst->vaddr != dst)
   {
-    new_size	    = blkdst->size - (dst - blkdst->vaddr);
+    new_size = blkdst->size - (dst - blkdst->vaddr);
 
 #if __DEBUG_LINKS__
     fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
@@ -301,12 +305,12 @@ container_t		*mjr_block_split(mjrcontext_t	*ctxt,
     mjr_block_symbol(ctxt, dstend, NULL, 0);
 
     if (link_with != MJR_LINK_FUNC_CALL)
-	  {
-	    scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
-	    mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
-	    mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
-	    mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
-	  }
+      {
+	scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
+	mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
+	mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
+	mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
+      }
   } 
   else 
     dstend = tmpdst;
