@@ -1,8 +1,8 @@
 SRCS	= load.c
 OBJS	= $(SRCS:.c=.o)
 
-CFLAGS	=`eresi-config libelfsh --cflags`
-LDFLAGS	=`eresi-config libelfsh --libs`
+CFLAGS	=$(shell eresi-config libelfsh --cflags)
+LDFLAGS	=$(shell eresi-config libelfsh --libs)
 
 NAME	= load
 RM	= rm -fr 

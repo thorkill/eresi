@@ -394,3 +394,12 @@ char	*revm_string_get(char **params)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	       "Empty parameter", NULL);
 }
+
+
+/**
+ *  Get and Set fields of structures
+ */
+char     *revm_GetCurJobParameter(uint8 p)
+{
+  return world.curjob->curcmd->param[p];
+}

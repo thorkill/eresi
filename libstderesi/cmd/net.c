@@ -9,7 +9,6 @@
 */
 #include "libstderesi.h"
 
-
 /** 
  * Run network initialisation 
  */
@@ -44,20 +43,18 @@ int		cmd_network()
           revm_command_add(CMD_UNLOAD  , (void *) cmd_unload   , (void *) revm_getoption, 0, HLP_UNLOAD);
           revm_command_add(CMD_SAVE    , (void *) cmd_save     , (void *) revm_getoption, 1, HLP_SAVE);
           revm_command_add(CMD_SWITCH  , (void *) cmd_doswitch , (void *) revm_getoption, 1, HLP_SWITCH);
-          revm_command_add(CMD_METACMD , (void *) cmd_meta     , (void *) NULL, 0, HLP_METACMD);
-          revm_command_add(CMD_QUIT    , (void *) cmd_quit     , (void *) NULL, 0, HLP_QUIT);
-          revm_command_add(CMD_QUIT2   , (void *) cmd_quit     , (void *) NULL, 0, HLP_QUIT);
-          revm_command_add(CMD_LIST    , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
-          revm_command_add(CMD_LIST2   , (void *) cmd_dolist   , (void *) NULL, 0, HLP_LIST);
-          revm_command_add(CMD_STOP    , (void *) cmd_stop     , (void *) NULL, 0, HLP_STOP);
+          revm_command_add(CMD_METACMD , (void *) cmd_meta     , (void *) NULL,           0, HLP_METACMD);
+          revm_command_add(CMD_QUIT    , (void *) cmd_quit     , (void *) NULL,           0, HLP_QUIT);
+          revm_command_add(CMD_QUIT2   , (void *) cmd_quit     , (void *) NULL,           0, HLP_QUIT);
+          revm_command_add(CMD_LIST    , (void *) cmd_dolist   , (void *) NULL,           0, HLP_LIST);
+          revm_command_add(CMD_LIST2   , (void *) cmd_dolist   , (void *) NULL,           0, HLP_LIST);
+          revm_command_add(CMD_STOP    , (void *) cmd_stop     , (void *) NULL,           0, HLP_STOP);
 	}
       revm_output(" [*] Started ERESI network stack\n\n");
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /** 
  * print the list of net-client 
@@ -110,7 +107,7 @@ int		cmd_netkill()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tokill = world.curjob->curcmd->param[0];
+  tokill = revm_GetCurJobParameter(0);
 
   tokill = revm_lookup_string(tokill);
 
@@ -187,7 +184,7 @@ int		cmd_connect()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  toconnect = world.curjob->curcmd->param[0];
+  toconnect = revm_GetCurJobParameter(0);
   toconnect = revm_lookup_string(toconnect);
 
   if (world.state.revm_net != 1)
@@ -235,7 +232,7 @@ int		cmd_discon()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  todisconnect = world.curjob->curcmd->param[0];
+  todisconnect = revm_GetCurJobParameter(0);
 
   todisconnect = revm_lookup_string(todisconnect);
 
@@ -294,14 +291,14 @@ int			cmd_rcmd()
 
   sz -= 2;
 
-  for (idx = 1; world.curjob->curcmd->param[idx] != NULL; idx++)
+  for (idx = 1; revm_GetCurJobParameter(idx) != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
       if (sz < 2)
 	break;
-      strncat(data, world.curjob->curcmd->param[idx], sz - 1);
-      sz -= strlen(world.curjob->curcmd->param[idx]);
+      strncat(data, revm_GetCurJobParameter(idx), sz - 1);
+      sz -= strlen(revm_GetCurJobParameter(idx));
       if (sz < 2)
 	break;
     }
@@ -309,7 +306,7 @@ int			cmd_rcmd()
   if (idx < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid number of parameters", (-1));
 
-  to = world.curjob->curcmd->param[0];
+  to = revm_GetCurJobParameter(idx);
 
   to = revm_lookup_string(to);
 

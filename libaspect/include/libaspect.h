@@ -128,6 +128,10 @@
  #error "You must define either ERESI32 or ERESI64 built"
 #endif
 
+/* Define Boolean types */
+typedef  uint8_t        Bool;
+#define  TRUE           1
+#define  FALSE          0
 
 /* Include this here since it contains an allocation too */
 #ifndef __KERNEL__

@@ -17,7 +17,7 @@ RTSRC	= myputs.c
 RTOBJ	= myputs.o
 PIEBIN	= pie-test
 
-OPT	= -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
+OPT	= -fPIC -g3 -O2 -I../../../libelfsh/include/ -I../../../libmjollnir/include/ \
 	-I../../../libaspect/include/ $(BITS) -DERESI32
 CFLAGS	= $(OPT) 
 

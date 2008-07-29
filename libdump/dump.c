@@ -44,11 +44,8 @@ int	dump_init()
 int	dump_add_neighbor(int s, dump_id_t peer_addr)
 {
   char	*tmp;
-
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_add_neighbor : [%d,%s]\n", s, inet_ntoa(peer_addr));
-#endif
-
+  DEBUGPRINT(printf("[DUMP] dump_add_neighbor : [%d,%s]\n", s,
+		    inet_ntoa(peer_addr)));
   tmp = inet_ntoa(peer_addr);
 
   hash_add(&dump_world.ports, strdup(tmp), (void *) (int) s);
@@ -128,9 +125,7 @@ int	dump_lookup_RR_recently_seen(pkt_id_t id)
     
   if (hash_get(&dump_world.RRrecently_seen, str) != NULL)
     {
-#if __DEBUG_DUMP__
-      printf("[DUMP] DUP(RR)!!\n");
-#endif
+      DEBUGPRINT(printf("[DUMP] DUP(RR)!!\n"));
       return 1;
     }
   else
@@ -146,9 +141,7 @@ int	dump_lookup_Rr_recently_seen(pkt_id_t id)
 
   if (hash_get(&dump_world.RRrecently_seen, str) != NULL)
     {
-#if __DEBUG_DUMP__
-      printf("[DUMP] DUP(Rr)!!\n");
-#endif
+      DEBUGPRINT(printf("[DUMP] DUP(Rr)!!\n"));
       return 1;
     }
   else
@@ -201,38 +194,26 @@ int		dump_add_send_queue(pkt_t *pkt)
   pkt_wq_t	*new;
 
   NOPROFILER_IN();
-
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_add_send_queue \n");
-#endif
+  DEBUGPRINT(printf("[DUMP] dump_add_send_queue \n"));
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof (pkt_wq_t), -1);
 
   new->next = NULL;
   new->pkt = pkt;
 
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_add_send_queue : ");
-#endif
-
+  DEBUGPRINT(printf("[DUMP] dump_add_send_queue : "));
   if (tmp != NULL)
     {  
       while (tmp->next != NULL)
 	{
-#if __DEBUG_DUMP__
-	  printf(".");
-#endif
+	  DEBUGPRINT(printf("."));
 	  tmp = tmp->next;
 	}
       tmp->next = new;
     }
   else
     dump_world.send_wq = new;
-
-#if __DEBUG_DUMP__
-  printf("\n");
-#endif
-
+  DEBUGPRINT(printf("\n"));
   return 0;
 }
 
@@ -241,34 +222,24 @@ pkt_t		*dump_lookup_send_queue(dump_id_t dst)
 {
   pkt_wq_t	*tmp = dump_world.send_wq;
 
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_lookup_send_queue\n");    
-#endif
-
+  DEBUGPRINT(printf("[DUMP] dump_lookup_send_queue\n"));    
   if (tmp == NULL)
     {
-#if __DEBUG_DUMP__
-      printf("[DUMP] dump_lookup_send_queue -> nothing to send\n");
-#endif
+      DEBUGPRINT(printf("[DUMP] dump_lookup_send_queue -> nothing to send\n"));
       return NULL;
     }
 
   for (; tmp != NULL; tmp = tmp->next)
     {
-#if __DEBUG_DUMP__
-      printf("[DUMP] dump_lookup_send_queue "
-	     "-> proposed dst %s :\n", inet_ntoa(dst));
-      printf("[DUMP] dump_lookup_send_queue "
-	     "-> packet dst %s :\n", inet_ntoa(tmp->pkt->dst));
-#endif
-
+      DEBUGPRINT(printf("[DUMP] dump_lookup_send_queue "
+			"-> proposed dst %s :\n", inet_ntoa(dst)));
+      DEBUGPRINT(printf("[DUMP] dump_lookup_send_queue "
+			"-> packet dst %s :\n", inet_ntoa(tmp->pkt->dst)));
       if (memcmp(&(tmp->pkt->dst), &dst, sizeof (dump_id_t))==0)
 	return tmp->pkt;
     }
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_lookup_send_queue "
-	 "-> nothing matching this destination \n");
-#endif
+  DEBUGPRINT(printf("[DUMP] dump_lookup_send_queue "
+		    "-> nothing matching this destination \n"));
   return NULL;
 }
 
@@ -280,10 +251,7 @@ int		dump_del_send_queue(pkt_t *pkt)
   /*
    * DO NOT free pkt->path ...
    */
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_del_send_queue\n");    
-#endif
-
+  DEBUGPRINT(printf("[DUMP] dump_del_send_queue\n"));    
   for (; tmp != NULL; prev = tmp, tmp = tmp->next)
     {
       if (tmp->pkt == pkt)
@@ -379,9 +347,7 @@ int		dump_is_myid(dump_id_t id)
       {
 	if (!strcmp(actual->data, inet_ntoa(id)))
 	  {
-#if __DEBUG_DUMP__
-	    printf("[DUMP] dump_is_myid : IT'S ME\n");
-#endif
+	    DEBUGPRINT(printf("[DUMP] dump_is_myid : IT'S ME\n"));
 	    return 1;
 	  }
       }
@@ -407,9 +373,8 @@ dump_id_t	dump_get_myid(int s)
 	     actual != NULL && actual->key != NULL;
 	     actual = actual->next)
 	  {
-#if __DEBUG_DUMP__
-	    printf("[DUMP] dump_get_myid : default id : %s \n", (char *) actual->data);
-#endif
+	    DEBUGPRINT(printf("[DUMP] dump_get_myid : default id : %s \n",
+			      (char *) actual->data));
 	    inet_aton((char *)actual->data, &ret);
 	    return ret;
 	  } 
@@ -422,21 +387,16 @@ dump_id_t	dump_get_myid(int s)
   
   if (tmp2 == NULL)
     {
-#if __DEBUG_DUMP__
-      printf("[DUMP] dump_get_myid : id not found\n");
-#endif
+      DEBUGPRINT(printf("[DUMP] dump_get_myid : id not found\n"));
       ret.s_addr = htonl(INADDR_ANY);
       return ret;
     }
 
   inet_aton(tmp2, &ret);
-  
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_get_myid : using id -> %s\n", tmp2);
-#endif
-
+  DEBUGPRINT(printf("[DUMP] dump_get_myid : using id -> %s\n", tmp2));
   return ret;
 }
+
 
 /* add an id to myids hash table */
 int	dump_add_myid(dump_id_t id, int s)
@@ -448,6 +408,7 @@ int	dump_add_myid(dump_id_t id, int s)
   hash_add(&dump_world.myids, strdup(tmp), (void *) strdup(inet_ntoa(id)));
   return 0;
 }
+
 
 /* del an id from myids hash table */
 int	dump_del_myid(int s)
@@ -479,9 +440,7 @@ int		dump_disconnect(int s)
       {
 	if ((long) actual->data == s)
 	  {
-#if __DEBUG_DUMP__
-	    printf("[DUMP] dump_disconnect from : %s", actual->key);
-#endif 	    
+	    DEBUGPRINT(printf("[DUMP] dump_disconnect from : %s", actual->key));
 	    dump_del_myid(s);
 
 	    hash_del(&dump_world.ports, actual->key);
@@ -491,9 +450,8 @@ int		dump_disconnect(int s)
 	    return 0;
 	  }
       } 
-#if __DEBUG_DUMP__
-  printf("[DUMP] dump_disconnect : not connected on socket %d\n", s);
-#endif
+  DEBUGPRINT(printf("[DUMP] dump_disconnect : "
+		    "not connected on socket %d\n", s));
   return (-1);
 }
 
@@ -528,7 +486,8 @@ int			dump_connect_to(char *host, u_int port)
 {
   int                   sd, rc;
   struct hostent        *h;
-  struct sockaddr_in    local_addr, serv_addr;
+  struct sockaddr_in    local_addr;
+  struct sockaddr_in    serv_addr;
   struct sockaddr_in    loc;
   socklen_t             lloc = sizeof (struct sockaddr_in);
 
@@ -541,11 +500,12 @@ int			dump_connect_to(char *host, u_int port)
 #endif
       return 0;
     }
-
+  
   serv_addr.sin_family = h->h_addrtype;
   memcpy((char *) &serv_addr.sin_addr.s_addr,
 	 h->h_addr_list[0],
 	 h->h_length);
+
   serv_addr.sin_port = htons(port);
 
   if (dump_lookup_neighbor(serv_addr.sin_addr) != 0)
@@ -605,15 +565,11 @@ int			dump_connect_to(char *host, u_int port)
   /* add a new id (if not already registred) */
   /* get local id */
   getsockname(sd, (struct sockaddr *) &loc, &lloc);
-#if __DEBUG_DUMP__
-  printf("[+] local id : %s \n",
-	 inet_ntoa(((struct sockaddr_in *) &loc)->sin_addr));
+  DEBUGPRINT(printf("[+] local id : %s \n",
+		    inet_ntoa(((struct sockaddr_in *) &loc)->sin_addr)));
 
-  printf("[+] add new id : %s\n",
-	 inet_ntoa(((struct sockaddr_in *) &loc)->sin_addr));
-#endif
-
+  DEBUGPRINT(printf("[+] add new id : %s\n",
+		    inet_ntoa(((struct sockaddr_in *) &loc)->sin_addr)));
   dump_add_myid(((struct sockaddr_in *) &loc)->sin_addr, sd);
-
   return sd;
 }

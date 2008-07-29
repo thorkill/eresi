@@ -12,7 +12,7 @@ test:	bin
 
 bin:
 	cc -c bin.c
-	cc -shared -o libfunc.so libfunc.c
+	cc -fPIC -shared -o libfunc.so libfunc.c
 	cc -o bin bin.o -L. -lfunc
 
 fclean:
