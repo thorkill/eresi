@@ -42,17 +42,18 @@ typedef uint32_t socklen_t;
 #define DUMP_MAXTRY	5
 
 /* Debug flags */
-#define __DEBUG_DUMP__	TRUE
+#define __DEBUG_DUMP__	FALSE
 
+#ifdef __DEBUG_DUMP__
 #define DEBUGPRINT(_command)				\
-  do							\
-    {							\
-      if (__DEBUG_DUMP__)				\
-	{						\
-	  _command;					\
-	}						\
-    } while(0);
-
+   do							\
+      {							\
+         _command;					\
+      } while(0);
+#else
+#define DEBUGPRINT(_command)				
+#endif
+   
 /* DUMP error msg */
 char	*dump_error_msg;
 
