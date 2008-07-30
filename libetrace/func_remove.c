@@ -109,7 +109,7 @@ int		traces_rm(elfshobj_t *file, char *name, char **optarg)
 		 "Delete function failed", -1);
 
   snprintf(buf, BUFSIZ - 1, "\t[*] Deleted function %s successfully from trace %s\n\n",
-	   name, optarg && *optarg ? *optarg : ELFSH_TRACES_TYPE_DEFAULT);
+	   name, optarg && *optarg ? *optarg : ETRACE_TYPE_DEFAULT);
   aspectworld.profile(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -18,7 +18,7 @@
 char		*revm_display_pdesc(u_int type)
 {
   u_int		idx;
-  char		type_unk[ELFSH_MEANING + 1];
+  char		type_unk[ERESI_MEANING + 1];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

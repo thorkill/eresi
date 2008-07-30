@@ -356,7 +356,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
   exit(-1);
 #endif
 
-  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", ELFSH_DBGPATH, version);
+  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", E2DBG_PATH, version);
 
 #if defined(linux)
   baseaddr = e2dbg_dlsect(path, ".got.plt", 

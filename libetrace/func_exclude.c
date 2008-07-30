@@ -31,7 +31,7 @@ int			etrace_funcexclude(char *regstr)
 
   /* Init table if needed */
   if (exclude_table.ent == NULL)
-    hash_init(&exclude_table, ELFSH_TRACES_EXCLUDE_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
+    hash_init(&exclude_table, ETRACE_EXCLUDE_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
 
   len = strlen(regstr);
   snprintf(funcreg, 255, "%s%s%s", 

@@ -29,8 +29,8 @@
  */
 typedef struct        s_comp
 {
-#define		      ELFSH_COMPMAX   16
-  char		      **cmds[ELFSH_COMPMAX];         /* !< @brief Matchs list for readline */
+#define		      LIBUI_COMPMAX   16
+  char		      **cmds[LIBUI_COMPMAX];         /* !< @brief Matchs list for readline */
 }		      rlcomp_t;
 
 /* Prototypes for readline functions */

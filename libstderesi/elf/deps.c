@@ -247,7 +247,7 @@ char	     	*revm_load_searchlib(char *name)
   /* The variable doesn't exist */
   if (libpath == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "ELFSH_LIBPATH not found", NULL);
+		      "ERESI_LIBPATH not found", NULL);
 
   /* We copy data because we will make some modifications */
   strncpy(tmplibpath, libpath, BUFSIZ -1);

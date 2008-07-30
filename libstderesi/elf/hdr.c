@@ -90,9 +90,9 @@ int		cmd_elf()
   char		*enco;
   char		*name;
   elfsh_SAddr   offset;
-  char		enco_unk[ELFSH_MEANING + 1];
-  char		type_unk[ELFSH_MEANING + 1];
-  char		arch_unk[ELFSH_MEANING + 1];
+  char		enco_unk[ERESI_MEANING + 1];
+  char		type_unk[ERESI_MEANING + 1];
+  char		arch_unk[ERESI_MEANING + 1];
   u_int		magic;
   char		buf[BUFSIZ];
   char		logbuf[BUFSIZ];

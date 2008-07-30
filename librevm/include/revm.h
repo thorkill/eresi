@@ -203,7 +203,7 @@ extern asm_processor	proc;
 #define	REVM_VIEW_DISASM	1
 
 /* For elfsh/elfsh/modules.c:revm_change_handler() */
-#define	ELFSH_ORIG		((void *) -1)
+#define	ERESI_ORIG		((void *) -1)
 
 /* For lang/access.c */
 #define	REVM_INVALID_FIELD	((u_int) -1)

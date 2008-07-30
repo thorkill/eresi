@@ -50,11 +50,11 @@ int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 			"Supplied handler invalid", (-1));
     }
   act = ent->data;
-  if (reg != ELFSH_ORIG)
+  if (reg != ERESI_ORIG)
     act->reg = reg;
-  if (exec != ELFSH_ORIG)
+  if (exec != ERESI_ORIG)
     act->exec = exec;
-  if (needcur != (u_int) ELFSH_ORIG)
+  if (needcur != (u_int) ERESI_ORIG)
     act->wflags = needcur;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

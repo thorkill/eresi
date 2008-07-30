@@ -39,7 +39,7 @@ hash_t			*etrace_create_trace(char *trace)
   etrace_init_trace();
 
   /* Create a new trace tracename */
-  snprintf(buf, BUFSIZ - 1, ELFSH_TRACES_PATTERN, trace);
+  snprintf(buf, BUFSIZ - 1, ETRACE_PATTERN, trace);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newhash, sizeof(hash_t), NULL);
   hash_init(newhash, strdup(buf), 30, ASPECT_TYPE_UNKNOW);
   hash_add(&traces_table, strdup(trace), (void *) newhash);
@@ -56,8 +56,8 @@ int			*etrace_init_trace()
   /* Do we already set default table */
   if (traces_table.ent == NULL)
     {
-      hash_init(&traces_table, ELFSH_TRACES_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
-      etrace_create_trace(ELFSH_TRACES_TYPE_DEFAULT);
+      hash_init(&traces_table, ETRACE_TABLE_NAME, 30, ASPECT_TYPE_UNKNOW);
+      etrace_create_trace(ETRACE_TYPE_DEFAULT);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -78,7 +78,7 @@ hash_t			*etrace_get(char *trace)
 
   /* Default trace by default */
   if (!trace)
-    trace = ELFSH_TRACES_TYPE_DEFAULT;
+    trace = ETRACE_TYPE_DEFAULT;
 
   table = hash_get(&traces_table, trace);
   
@@ -215,7 +215,7 @@ trace_t		*trace_param_create(elfshobj_t *file, char *name,
 
   // Alloc the structure
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newtrace, sizeof(trace_t), NULL);
-  snprintf(newtrace->funcname, ELFSH_TRACES_FUNC_SIZE, "%s", name);
+  snprintf(newtrace->funcname, ETRACE_FUNC_SIZE, "%s", name);
   newtrace->file = file;
   newtrace->enable = 1;
   newtrace->vaddr = vaddr;

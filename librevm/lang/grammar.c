@@ -31,7 +31,7 @@ static int	parse_lookup_varlist(char *param, char *fmt, ...)
 revmobj_t	*parse_vector(char *param, char *fmt)
 {
   u_int		size;
-  char		index[ELFSH_MEANING];
+  char		index[ERESI_MEANING];
   vector_t	*cur;
   int		dimnbr;
   unsigned int	*dims;
@@ -81,7 +81,7 @@ revmobj_t	*parse_vector(char *param, char *fmt)
 revmobj_t	*parse_hash(char *param, char *fmt)
 {
   u_int		size;
-  char		index[ELFSH_MEANING];
+  char		index[ERESI_MEANING];
   hash_t	*hash;
   revmobj_t	*ret;
   char		*entryname;
@@ -188,7 +188,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 revmobj_t	*parse_list(char *param, char *fmt)
 {
   u_int		size;
-  char		index[ELFSH_MEANING];
+  char		index[ERESI_MEANING];
   list_t	*list;
   revmobj_t	*ret;
   char		*entryname;
@@ -252,9 +252,9 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
   u_int			size;
   u_int			real_index;
   revmobj_t		*pobj;
-  char			obj[ELFSH_MEANING];
-  char			L1field[ELFSH_MEANING];
-  char			index[ELFSH_MEANING];
+  char			obj[ERESI_MEANING];
+  char			L1field[ERESI_MEANING];
+  char			index[ERESI_MEANING];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (sep != 1)
@@ -356,9 +356,9 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
   void			*robj;
   revmobj_t		*pobj;
 
-  char			obj[ELFSH_MEANING];
-  char			L1field[ELFSH_MEANING];
-  char			L2field[ELFSH_MEANING];
+  char			obj[ERESI_MEANING];
+  char			L1field[ERESI_MEANING];
+  char			L2field[ERESI_MEANING];
   int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -430,12 +430,12 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   int			isversion;
   u_int			size;
   revmobj_t		*pobj;
-  char			obj[ELFSH_MEANING];
-  char			L1field[ELFSH_MEANING];
-  char			L2field[ELFSH_MEANING];
-  char			index[ELFSH_MEANING];
-  char			offfield[ELFSH_MEANING];
-  char			sizelemfield[ELFSH_MEANING];
+  char			obj[ERESI_MEANING];
+  char			L1field[ERESI_MEANING];
+  char			L2field[ERESI_MEANING];
+  char			index[ERESI_MEANING];
+  char			offfield[ERESI_MEANING];
+  char			sizelemfield[ERESI_MEANING];
   u_int			off;
   u_int			sizelem;
   int			ret;
@@ -587,11 +587,11 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   int			isversion;
   revmobj_t		*pobj;
   elfshsect_t		*sect;
-  char			obj[ELFSH_MEANING];
-  char			L1field[ELFSH_MEANING];
-  char			L2field[ELFSH_MEANING];
-  char			index[ELFSH_MEANING];
-  char			index2[ELFSH_MEANING];
+  char			obj[ERESI_MEANING];
+  char			L1field[ERESI_MEANING];
+  char			L2field[ERESI_MEANING];
+  char			index[ERESI_MEANING];
+  char			index2[ERESI_MEANING];
   int			ret;
 
 #if 0

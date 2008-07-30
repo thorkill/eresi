@@ -38,8 +38,8 @@ int		ds(elfshobj_t	*file,
   char		*sect_name;
   char		buff[512];
   char		off[20];
-  char		type_unk[ELFSH_MEANING + 1];
-  char		bind_unk[ELFSH_MEANING + 1];
+  char		type_unk[ERESI_MEANING + 1];
+  char		bind_unk[ERESI_MEANING + 1];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

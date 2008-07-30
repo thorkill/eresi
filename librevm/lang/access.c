@@ -312,7 +312,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
   revmannot_t	*annot;
   void		*data;
   revmobj_t	*path;
-  char		hashname[ELFSH_MEANING];
+  char		hashname[ERESI_MEANING];
   hash_t	*typehash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -356,9 +356,9 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
  */
 revmobj_t	*revm_object_lookup(char *str)
 {
-  char		filename[ELFSH_MEANING];
-  char		typename[ELFSH_MEANING];
-  char		objectname[ELFSH_MEANING];
+  char		filename[ERESI_MEANING];
+  char		typename[ERESI_MEANING];
+  char		objectname[ERESI_MEANING];
   int		ret;
   elfshobj_t	*obj;
   aspectype_t	*type;

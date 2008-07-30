@@ -370,7 +370,7 @@ int		cmd_dyn()
   char		*p;
   regex_t	*tmp;
   char		buff[256];
-  char		type_unk[ELFSH_MEANING + 1];
+  char		type_unk[ERESI_MEANING + 1];
   char		info[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

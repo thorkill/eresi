@@ -208,7 +208,7 @@ int			traces_add(elfshobj_t *file, char *name, char **optarg)
       if (!multiaddr)
 	{
 	  snprintf(buf, BUFSIZ - 1, "\t[*] Added function %s successfully into trace %s\n",
-		   current_name, trace_name ? trace_name : ELFSH_TRACES_TYPE_DEFAULT);
+		   current_name, trace_name ? trace_name : ETRACE_TYPE_DEFAULT);
 	  aspectworld.profile(buf);
 	}
 
@@ -228,7 +228,7 @@ int			traces_add(elfshobj_t *file, char *name, char **optarg)
   if (multiaddr)
     {
       snprintf(buf, BUFSIZ - 1, "\t[*] Added %d functions successfully into trace %s\n\n",
-	      traced, trace_name ? trace_name : ELFSH_TRACES_TYPE_DEFAULT);
+	      traced, trace_name ? trace_name : ETRACE_TYPE_DEFAULT);
       aspectworld.profile(buf);      
     }
 

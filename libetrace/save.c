@@ -78,7 +78,7 @@ static int		elfsh_check_trace_functions(elfshobj_t *file)
 /* Queue pointers */
 trace_t **trace_queue = NULL;
 int queue_count = 0;
-#define ELFSH_TRACES_DEFAULT_STEP 20
+#define ETRACE_DEFAULT_STEP 20
 int queue_step = 0;
 
 /**
@@ -97,7 +97,7 @@ static int		etrace_queue_add(trace_t *elm)
 
   if (trace_queue == NULL)
     {
-      queue_step = ELFSH_TRACES_DEFAULT_STEP;
+      queue_step = ETRACE_DEFAULT_STEP;
       XALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, 
 	     sizeof(trace_t)*queue_step, -1);
     }
@@ -111,7 +111,7 @@ static int		etrace_queue_add(trace_t *elm)
 			 "Already added", -1);
 	}
       
-      queue_step += ELFSH_TRACES_DEFAULT_STEP;
+      queue_step += ETRACE_DEFAULT_STEP;
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, trace_queue, trace_queue,
 	     sizeof(trace_t)*queue_step, -1);
     }
@@ -191,7 +191,7 @@ static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      /* Function arguments */
 	      if (ret_trace->argc > 0)
 		{
-		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		  for (z = 0; z < ret_trace->argc && z < ETRACE_MAX_ARGS; z++)
 		    {
 		      start = z == 0 ? "" : ", ";
 
@@ -216,7 +216,7 @@ static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      /* Printf arguments */
 	      if (ret_trace->argc > 0)
 		{
-		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		  for (z = 0; z < ret_trace->argc && z < ETRACE_MAX_ARGS; z++)
 		    {
 		      typed = (ret_trace->type == ELFSH_ARG_TYPE_BASED);
 
@@ -245,7 +245,7 @@ static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
 	      /* Send arguments */
 	      if (ret_trace->argc > 0)
 		{
-		  for (z = 0; z < ret_trace->argc && z < ELFSH_TRACES_MAX_ARGS; z++)
+		  for (z = 0; z < ret_trace->argc && z < ETRACE_MAX_ARGS; z++)
 		    {
 		      start = z == 0 ? "" : ", ";
 		      

@@ -48,7 +48,7 @@
 "\033[00;01;35mh"        \
 "\033[00;01;36m-"        \
 "\033[00;01;30m"         \
- ELFSH_VERSION           \
+ ERESI_VERSION           \
 "\033[00;01;35m-"        \
 "\033[05;01;35mcircus"   \
 "\033[00;01;35m-edition" \
@@ -61,18 +61,18 @@
  "\033[00;01;31melfsh"     \
  "\033[00;01;30m-"         \
  "\033[00;01;33m"          \
- ELFSH_VERSION             \
+ ERESI_VERSION             \
  "\033[00;01;30m-"         \
  "\033[00;01;33m"          \
- ELFSH_RELEASE             \
+ ERESI_RELEASE             \
  "\033[00;01;30m-"         \
  "\033[00;01;32mdevhell"   \
  "\033[00;01;30m)"         \
  "\033[00m " 
 
 /* Be original, do your own */
-#define  ELFSH_PROMPT ELFSH_CREW_PROMPT
-//#define ELFSH_PROMPT ELFSH_CIRCUS_PROMPT
+#define  ERESI_PROMPT ELFSH_CREW_PROMPT
+//#define ERESI_PROMPT ELFSH_CIRCUS_PROMPT
 
 /* Now some strings for graphviz/dot */
 #define GVZ_COLOR_BLUE		"\"blue\""

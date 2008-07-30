@@ -170,7 +170,7 @@ LIBASM_PACKED_HANDLERS=0
 
 --enable-testing*)
 echo " [*] Enable compilation without install"
-echo "#define ELFSH_DBGPATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
+echo "#define E2DBG_PATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
 TESTING="1"
 ;;
 
@@ -250,14 +250,14 @@ echo  "CC		= g++"			>> $CONFIGFILE
 --set-shell*)
 shift
 echo  " [*] Setting UNIX shell to " $1
-echo  "#define ELFSH_SHELL        " \"$1\"		>> $VARSFILE
+echo  "#define ERESI_EXTSHELL        " \"$1\"		>> $VARSFILE
 SHELLSET="1"
 ;;
 
 --set-editor*)
 shift
 echo  " [*] Setting editor to " $1
-echo  "#define ELFSH_EDITOR        " \"$1\"		>> $VARSFILE
+echo  "#define ERESI_EDITOR        " \"$1\"		>> $VARSFILE
 EDITORSET="1"
 ;;
 
@@ -271,21 +271,21 @@ COMPILERSET="1"
 --set-modpath*)
 shift
 echo " [*] Setting ELFsh modules path to " $1
-echo "#define ELFSH_MODPATH              " \"$1\"   >> $VARSFILE
+echo "#define ERESI_MODPATH              " \"$1\"   >> $VARSFILE
 MODPATHSET="1"
 ;;
 
 --set-lib-path*)
 shift
 echo " [*] Setting ELFsh library search path to " $1
-echo "#define ELFSH_LIBPATH    		 " \"$1\"  >> $VARSFILE
+echo "#define ERESI_LIBPATH    		 " \"$1\"  >> $VARSFILE
 LIBPATHSET="1"
 ;;
 
 --enable-stripped-log*)
 shift
 echo " [*] Enable stripped log"
-echo "#define ELFSH_SLOG 1" 		      >> $VARSFILE
+echo "#define ERESI_SLOG 1" 		      >> $VARSFILE
 SLOGSET="1";
 ;;
 
@@ -446,7 +446,7 @@ if [ "$OSVER" = "4" ]; then
  LPTHREAD="-lc_r"
 fi
 
-echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\" "   >> $VARSFILE
+echo "#define ERESI_MODPATH    \"/usr/local/share/eresi/\" "   >> $VARSFILE
 
 MODPATHSET="1";
 FREEBSD="1";
@@ -472,10 +472,10 @@ HP-UX*)
 ;;
 
 IRIX*)
-    echo "#define ELFSH_SHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
+    echo "#define ERESI_EXTSHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
 
 if [ "$SHELLSET" != "1" ]; then
-    echo "#define ELFSH_SHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
+    echo "#define ERESI_EXTSHELL      \"/usr/freeware/bin/bash\""               >> $VARSFILE
     SHELLSET="1"
 fi
     SHELL="/usr/freeware/bin/bash"
@@ -504,27 +504,27 @@ esac
 # Set default variables in case it was not precised
 
 if [ "$MODPATHSET" != "1" ]; then
-    echo "#define ELFSH_MODPATH    \"/usr/local/share/elfsh/\"" >> $VARSFILE
+    echo "#define ERESI_MODPATH    \"/usr/local/share/eresi/\"" >> $VARSFILE
 fi
 
 if [ "$LIBPATHSET" != "1" ]; then
-    echo "#define ELFSH_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
+    echo "#define ERESI_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
 fi
 
 if [ "$TESTING" != "1" ]; then
-    echo "#define ELFSH_DBGPATH    \"$PREFIX/usr/local/lib/\""  >> $VARSFILE
+    echo "#define E2DBG_PATH    \"$PREFIX/usr/local/lib/\""  >> $VARSFILE
 fi
 
 if [ "$SLOGSET" != "1" ]; then
-    echo "#define ELFSH_SLOG 0" 				>> $VARSFILE
+    echo "#define ERESI_SLOG 0" 				>> $VARSFILE
 fi
 
 if [ "$SHELLSET" != "1" ]; then
-    echo "#define ELFSH_SHELL      \"/bin/bash\""		>> $VARSFILE
+    echo "#define ERESI_EXTSHELL      \"/bin/bash\""		>> $VARSFILE
 fi
 
 if [ "$EDITORSET" != "1" ]; then
-    echo "#define ELFSH_EDITOR      \"emacs\""			>> $VARSFILE
+    echo "#define ERESI_EDITOR      \"emacs\""			>> $VARSFILE
 fi
 
 if [ "$BUILDOP" != "1" ];  then

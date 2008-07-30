@@ -236,7 +236,7 @@ int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table,
   hashneed_t		*pneed;
   hashdef_t		*pdef;
   char			*id;
-  char			type_unk[ELFSH_MEANING + 1];
+  char			type_unk[ERESI_MEANING + 1];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

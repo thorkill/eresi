@@ -34,9 +34,9 @@ void		revm_debugger_preload()
      use --enable-testing to test e2dbg without install */
   str = getenv("LD_PRELOAD");
   if (!str || !*str)
-    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so", ELFSH_DBGPATH, version);
+    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so", E2DBG_PATH, version);
   else
-    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so:%s", ELFSH_DBGPATH, version, str);
+    snprintf(buf, sizeof(buf), "%s/libe2dbg%s.so:%s", E2DBG_PATH, version, str);
 
 #if !defined(sun)
   ret = setenv("LD_PRELOAD", buf, 1);
@@ -68,15 +68,15 @@ char*		revm_debugger_inject(elfshobj_t *file)
   
   /* Map host file */
   ptr = ptr2 = NULL;
-  buflen = strlen(ELFSH_DBGPATH) + strlen(file->name) + 20;
+  buflen = strlen(E2DBG_PATH) + strlen(file->name) + 20;
   buf = calloc(buflen, 1);
-  snprintf(buf, buflen, "%s/e2dbg-rel%s.o", ELFSH_DBGPATH, version);
+  snprintf(buf, buflen, "%s/e2dbg-rel%s.o", E2DBG_PATH, version);
   reloc = elfsh_map_obj(buf);
   if (!reloc)
     {
       fprintf(stderr, 
 	      " [E] Static target and unable to load %s/e2dbg-rel%s.o \n",
-	      ELFSH_DBGPATH, version);
+	      E2DBG_PATH, version);
       return (NULL);
     }
   fprintf(stderr, " [*] Now injecting debugger in target binary .. please wait .. \n");

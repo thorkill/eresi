@@ -88,7 +88,7 @@ char		*readln_match(const char *text, int state)
     i++;
 
   /* Return the next name which partially matches any hash tables keys */
-  for (; tab < ELFSH_COMPMAX; i = 0, tab++)
+  for (; tab < LIBUI_COMPMAX; i = 0, tab++)
     if (comp.cmds[tab] != NULL)
       for (; comp.cmds[tab][i] != NULL; i++)
 	{

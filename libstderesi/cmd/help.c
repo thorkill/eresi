@@ -25,11 +25,11 @@ int		cmd_modhelp()
     {
       if (access(world.curjob->curcmd->param[0], R_OK) != 0)
 	{
-	  snprintf(buf, sizeof(buf), "%s%s", ELFSH_MODPATH, world.curjob->curcmd->param[0]);
+	  snprintf(buf, sizeof(buf), "%s%s", ERESI_MODPATH, world.curjob->curcmd->param[0]);
 	  if (access(buf, R_OK) != 0)
 	    {
 	      snprintf(buf, sizeof(buf), "%s%s.so",
-		       ELFSH_MODPATH, world.curjob->curcmd->param[0]);
+		       ERESI_MODPATH, world.curjob->curcmd->param[0]);
 	      if (access(buf, R_OK) != 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				  "Cannot find module", -1);

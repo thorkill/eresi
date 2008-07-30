@@ -234,7 +234,7 @@ char		*revm_build_unknown(char *buf, const char *str, u_long type)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  snprintf(buf, ELFSH_MEANING, "%s %08X", str, (u_int) type);
+  snprintf(buf, ERESI_MEANING, "%s %08X", str, (u_int) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 }

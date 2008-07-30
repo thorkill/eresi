@@ -744,7 +744,7 @@ static char	*get_libpath()
   char		*ldenv;
 
   /* Set default value */
-  strncpy(elfsh_libpath, ELFSH_LIBPATH, BUFSIZ);
+  strncpy(elfsh_libpath, ERESI_LIBPATH, BUFSIZ);
   elfsh_libpath[BUFSIZ - 1] = '\0';
 
   len = strlen(elfsh_libpath);
@@ -784,14 +784,14 @@ static void	setup_varshash()
   expr = revm_expr_create_from_object(f, REVM_VAR_LOAD);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
   expr = revm_expr_create_from_object(f, REVM_VAR_ERROR);
-  f = revm_create_IMMEDSTR(1, ELFSH_SHELL);
+  f = revm_create_IMMEDSTR(1, ERESI_EXTSHELL);
   expr = revm_expr_create_from_object(f, REVM_VAR_SHELL);
-  f = revm_create_IMMEDSTR(1, ELFSH_EDITOR);
+  f = revm_create_IMMEDSTR(1, ERESI_EDITOR);
   expr = revm_expr_create_from_object(f, REVM_VAR_EDITOR);
   str = get_libpath();
   f = revm_create_IMMEDSTR(1, str);
   expr = revm_expr_create_from_object(f, REVM_VAR_LIBPATH);
-  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, ELFSH_SLOG);
+  f = revm_create_IMMED(ASPECT_TYPE_INT, 1, ERESI_SLOG);
   expr = revm_expr_create_from_object(f, REVM_VAR_STRIPLOG);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
   expr = revm_expr_create_from_object(f, REVM_VAR_ESHLEVEL);

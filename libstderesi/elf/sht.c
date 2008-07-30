@@ -49,7 +49,7 @@ int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
   char		buff[BUFSIZ];
   u_int		index;
   elfsh_Word   	typenum;
-  char		type_unk[ELFSH_MEANING + 1];
+  char		type_unk[ERESI_MEANING + 1];
   eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

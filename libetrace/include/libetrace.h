@@ -79,9 +79,9 @@
 #define TRACE_UNTRACABLE_NAME		"untracable"
 #define TRACE_ADDR_TABLE		"addrtable"
 #define TRACE_PRE_FUNC			"func_"
-#define ELFSH_TRACES_TABLE_NAME 	"etrace_table"
-#define ELFSH_TRACES_EXCLUDE_TABLE_NAME "etrace_exclude_table"
-#define ELFSH_TRACES_PATTERN 		"traces_%s"
+#define ETRACE_TABLE_NAME 	"etrace_table"
+#define ETRACE_EXCLUDE_TABLE_NAME "etrace_exclude_table"
+#define ETRACE_PATTERN 		"traces_%s"
 #define	REVM_TRACE_REP			".etrace"		/* Traces directory */
 
 
@@ -107,9 +107,9 @@ typedef struct 	s_traces_args
  */
 typedef struct 	s_traces
 {
-#define ELFSH_TRACES_TYPE_DEFAULT "global"
-#define ELFSH_TRACES_FUNC_SIZE 256
-  char	       	funcname[ELFSH_TRACES_FUNC_SIZE];
+#define ETRACE_TYPE_DEFAULT "global"
+#define ETRACE_FUNC_SIZE 256
+  char	       	funcname[ETRACE_FUNC_SIZE];
   elfshobj_t	*file;
   u_char	enable;
   u_int		offset;
@@ -124,8 +124,8 @@ typedef struct 	s_traces
 
   eresi_Addr	vaddr;
 
-#define ELFSH_TRACES_MAX_ARGS 20
-  traceargs_t arguments[ELFSH_TRACES_MAX_ARGS];
+#define ETRACE_MAX_ARGS 20
+  traceargs_t arguments[ETRACE_MAX_ARGS];
   u_int		argc;
 }		trace_t;
 

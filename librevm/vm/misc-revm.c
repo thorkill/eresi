@@ -34,13 +34,13 @@ void	revm_create_default_prompt(char *name, u_int size)
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
 	   revm_colorget("%s", "pspecial", "("),
-	   (world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER ?
+	   (world.state.revm_mode == REVM_STATE_DEBUGGER ?
 	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
 	    revm_colorget("%s", "psname" , ELFSH_SNAME)),
 	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pversion", ELFSH_VERSION),
+	   revm_colorget("%s", "pversion", ERESI_VERSION),
 	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "prelease", ELFSH_RELEASE),
+	   revm_colorget("%s", "prelease", ERESI_RELEASE),
 	   revm_colorget("%s", "pspecial", "-"),
 	   revm_colorget("%s", "pedition", ELFSH_EDITION),
 	   revm_colorget("%s", "pspecial", "@"),
@@ -54,8 +54,8 @@ void	revm_create_default_prompt(char *name, u_int size)
  */
 char	*revm_get_prompt()
 {
-  if (world.state.revm_mode == ELFSH_VMSTATE_IMODE ||
-      world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_INTERACT ||
+      world.state.revm_mode == REVM_STATE_DEBUGGER)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
@@ -71,7 +71,7 @@ char	*revm_get_prompt()
       return (prompt_token);
     }
 
-  if (world.state.revm_mode == ELFSH_VMSTATE_SCRIPT)
+  if (world.state.revm_mode == REVM_STATE_SCRIPT)
     return "";
 
   return "UNKNOWN MODE> ";
@@ -86,7 +86,7 @@ char		*revm_modename_get()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.revm_mode == ELFSH_VMSTATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
     mode = E2DBG_NAME;
   else
     mode = ELFSH_NAME;
@@ -261,7 +261,7 @@ void		revm_banner_print()
   snprintf(logbuf, BUFSIZ - 1,
 	   "\n\n\t The %s %s (%s) .::. \n\n %s",
 	   revm_modename_get(),
-	   ELFSH_VERSION,
+	   ERESI_VERSION,
 #if defined(ERESI32)
 	   "32 bits built",
 #elif defined(ERESI64)
@@ -283,7 +283,7 @@ char		*revm_build_unknown(char *buf, const char *str, u_long type)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  snprintf(buf, ELFSH_MEANING, "%s %08X", str, (u_int) type);
+  snprintf(buf, ERESI_MEANING, "%s %08X", str, (u_int) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 }
@@ -377,7 +377,7 @@ int		revm_doerror(void (*fct)(char *str), char *str)
 int		revm_setshell(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (revm_setvar_str(ELFSH_SHELLVAR, str) < 0)
+  if (revm_setvar_str(ERESI_EXTSHELLVAR, str) < 0)
    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Cannot modify shell var", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

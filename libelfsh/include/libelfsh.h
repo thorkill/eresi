@@ -275,7 +275,7 @@
 #define		ELFSH_SORT_BY_NAME		'n'
 
 /* Dedicated to you know who */
-#define		ELFSH_MEANING			42
+#define		ERESI_MEANING			42
 
 #define		ELFSH_SECTION_FIRST		0
 #define		ELFSH_SECTION_LAST		0xFFFF
@@ -385,7 +385,7 @@ typedef struct	s_redir
 #define		ELFSH_REDIR_ALTGOT	2
   u_char	type;			       /* Redirection type                */
 
-#define		ELFSH_ORIG_FUNC	        0
+#define		ERESI_ORIG_FUNC	        0
 #define		ELFSH_HOOK_FUNC		1
   char		*name[2];		       /* Name of involved functions      */
   eresi_Addr	 addr[2];		       /* Redirection address             */
@@ -795,7 +795,7 @@ struct		 s_obj
   struct s_obj	 *listrel[ELFSH_MAXREL];/* !< @brief Array of injected ET_REL in this object */
   u_int		 nbrel;			/* !< @brief Number of injected ET_REL in this object */
   
-  char		 buff[ELFSH_MEANING];	/* !< @brief Internal buffer, sometimes used to avoid a malloc */
+  char		 buff[ERESI_MEANING];	/* !< @brief Internal buffer, sometimes used to avoid a malloc */
   const char	 *error;		/* !< @brief Last error string */
   struct s_obj	 *next;			/* !< @brief The list is simply linked */
   struct s_obj	 *original;		/* !< @brief Original file (if its a copy) */

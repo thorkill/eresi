@@ -64,7 +64,7 @@ int			etrace_funcenableall(char *trace)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!trace)
-    trace = ELFSH_TRACES_TYPE_DEFAULT;
+    trace = ETRACE_TYPE_DEFAULT;
 
   etrace_init_trace();
 
@@ -115,7 +115,7 @@ int		traces_enable(elfshobj_t *file, char *name, char **optarg)
     }
 
   snprintf(buf, BUFSIZ - 1, "\t[*] Enabled function %s successfully from trace %s\n\n",
-	   name, optarg && *optarg ? *optarg : ELFSH_TRACES_TYPE_DEFAULT);
+	   name, optarg && *optarg ? *optarg : ETRACE_TYPE_DEFAULT);
   aspectworld.profile(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
