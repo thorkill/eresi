@@ -43,16 +43,8 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
-  if (!curblock)
-    {
-      curblock = mjr_create_block_container(sess->cur, symoff, vaddr, 0, 0);
-      symoff = mjr_block_symbol(sess->cur, curblock, vaddr, 0);
-    }
-  else
-    symoff = 0;
+  assert(curblock != NULL);
   block = (mjrblock_t *) curblock->data;
-  if (symoff)
-    block->symoff = symoff;
   
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC, "[D] bloc %x: seen %d\n",
@@ -83,23 +75,31 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 
       block->size += ilen;	  
       mjr_history_shift(sess->cur, instr, vaddr + curr);
+
       mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
 			vaddr + curr, &dstaddr, &retaddr);
+
+#if __DEBUG_READ__
+      fprintf(stderr, " [D] curaddr analyzed: %08x (dstaddr = %08X, retaddr = %08X)\n",
+	      vaddr + curr, dstaddr, retaddr);
+#endif
+
       if (dstaddr != MJR_BLOCK_INVALID) 
 	{
 	  newoff = offset + (dstaddr - vaddr);
-	  mjr_analyse_code(sess, ptr + newoff, newoff, dstaddr, 
+	  mjr_analyse_code(sess, ptr, newoff, dstaddr, 
 			   len, curdepth + 1, maxdepth);
 	}	      
       if (retaddr != MJR_BLOCK_INVALID) 
 	{
 	  newoff = offset + (retaddr - vaddr);
-	  mjr_analyse_code(sess, ptr + newoff, newoff, retaddr, 
+	  mjr_analyse_code(sess, ptr, newoff, retaddr, 
 			   len, curdepth + 1, maxdepth);
 	}
       
       /* If we have recursed, the current block is over */
-      if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || instr.type == ASM_TYPE_RETPROC)
+      if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || 
+	  (instr.type & ASM_TYPE_RETPROC))
 	break;
     }
   

@@ -178,7 +178,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
                  "Could not split destination block",0);
   cret = NULL;
-  if (ret)
+  if (ret != MJR_BLOCK_INVALID)
     {
       cret = mjr_block_split(ctxt,ret, MJR_LINK_BLOCK_COND_ALWAYS);
       if (!cret)
@@ -261,6 +261,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   int                   new_size;
   elfsh_Sym             *sym;
   u_char                scope;
+  int			symoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -270,6 +271,9 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
     {
       tmpdst = mjr_create_block_container(ctxt, 0, dst, 0, 0);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
+
+      symoff = mjr_block_symbol(ctxt, tmpdst, dst, 0);
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
     }
 
@@ -298,7 +302,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
       assert(blkdst->size > 0);
 
       /* Correct existing symbol size and add new symbol pointing on new split block */      
-      dstend = mjr_create_block_container(ctxt, 0, dst, new_size, 1);
+      dstend = mjr_create_block_container(ctxt, 0, dst, new_size, (new_size ? 1 : 0));
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
       sym->st_size = blkdst->size;
       mjr_block_symbol(ctxt, dstend, NULL, 0);

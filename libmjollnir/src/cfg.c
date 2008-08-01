@@ -82,7 +82,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
 
     if (*dstaddr != MJR_BLOCK_INVALID)
-      mjr_link_block_jump(context, curvaddr, *dstaddr, 0);
+      mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
   }
   
   else if (curins->type & ASM_TYPE_CALLPROC)
