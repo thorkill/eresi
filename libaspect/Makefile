@@ -9,8 +9,8 @@ CC		?= gcc
 LD		= ld
 RM		= rm -f 
 AR		= ar rc
-CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DERESI32
-CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DERESI64
+CFLAGS32	+= -Iinclude -fPIC -g3 -DERESI32
+CFLAGS64	+= -Iinclude -fPIC -g3 -DERESI64
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
 		config.c profiler.c liblist.c containers.c
 

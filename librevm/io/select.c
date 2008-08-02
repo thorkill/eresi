@@ -29,22 +29,20 @@ int             revm_getmaxfd()
   int		fd;
 
   /* If the network is not UP, the biggest fd is 0 */
-  ret  = 0;
   serv = hash_get(&world.jobs, "net_init");
   if (serv == NULL)
-    return (ret);
+    return 0;
   ret = serv->ws.io.sock.socket;
-  ret = (ret > dump_world.sock) ? ret : dump_world.sock;
+  if (ret < dump_world.sock)
+    ret = dump_world.sock;
   keys = hash_get_keys(&dump_world.ports, &keynbr);
-
+  
   for (index = 0; index < keynbr; index++)
     {
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
       if (port > ret)
 	ret = port;
-#if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port);
-#endif
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port));
     }
   
   hash_free_keys(keys);
@@ -54,14 +52,18 @@ int             revm_getmaxfd()
   for (index = 0; index < keynbr; index++)
     {
       serv = hash_get(&world.jobs, keys[index]);
-      if (!serv->ws.active)
-	continue;
-      if (serv->ws.io.sock.socket > ret)
-	ret = serv->ws.io.sock.socket;
-#if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
-	      serv->ws.io.sock.socket, keys[index]);
-#endif
+      if (serv->ws.active)
+	{
+	  
+	  if (serv->ws.io.sock.socket > ret)
+	    {
+	      ret = serv->ws.io.sock.socket;
+	    }
+	  __asm__ __volatile__("int3");
+	  DEBUG_NET( fprintf(stderr, "[DEBUG NETWORK] Socket [%u] "
+			     "key = %10s \n",
+			     serv->ws.io.sock.socket, keys[index]));
+	}
     }
 
   hash_free_keys(keys);
@@ -74,6 +76,8 @@ int             revm_getmaxfd()
     case REVM_SIDE_SERVER:
       fd = world.fifo_c2s;
       break;
+    default:
+	assert(0);
     }
 
   if (world.state.revm_mode == REVM_STATE_DEBUGGER && fd > ret)
@@ -105,11 +109,8 @@ int		revm_prepare_select(fd_set *sel_sockets)
   for (index = 0; index < keynbr; index++)
     {
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
-#if __DEBUG_NETWORK__
-      fprintf(stderr, 
-	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
-	      port);
-#endif
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
+			port));
       FD_SET(port, sel_sockets);
     }
   hash_free_keys(keys);
@@ -125,10 +126,10 @@ int		revm_prepare_select(fd_set *sel_sockets)
       if (!job->ws.active)
 	continue;
       
-#if _DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
-	      job->ws.sock.socket);
-#endif
+      
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
+			job->ws.io.sock.socket));
+
 
 #if defined(ERESI_NET)
       if (job->ws.io.type == REVM_IO_DUMP)
@@ -309,10 +310,8 @@ int                     revm_select()
 	  if (revm_socket_getnew())
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 	  
-#if __DEBUG_NETWORK__
-	  fprintf(stderr, 
-		  "[DEBUG NETWORK] Select broken by a new connexion.\n");
-#endif
+	  DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Select broken by a new connexion.\n"));
+
 	  continue;
 	}
 #endif
@@ -341,14 +340,13 @@ int                     revm_select()
 	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
 	      world.curjob->ws.io.input = revm_fifoinput;
 	      
-#if __DEBUG_NETWORK__
-	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-		  world.state.revm_side == REVM_SIDE_CLIENT)
-		fprintf(stderr, "(client) Event appeared on fifo \n");
-	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-		       world.state.revm_side == REVM_SIDE_SERVER)
-		fprintf(stderr, "(server) Event appeared on fifo \n");
-#endif
+	      DEBUG_NET(if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+			    world.state.revm_side == REVM_SIDE_CLIENT)
+			  fprintf(stderr, "(client) Event appeared on fifo \n");
+			else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+				 world.state.revm_side == REVM_SIDE_SERVER)
+			  fprintf(stderr, "(server) Event appeared on fifo \n"));
+	      
 
 	    }
 	}

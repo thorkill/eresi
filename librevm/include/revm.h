@@ -157,6 +157,17 @@ extern asm_processor	proc;
 #define	REVM_OP_MATCH		8
 #define	REVM_OP_COPY		9
 
+/* Generic debug macros */
+#ifdef  __DEBUG_NETWORK__			
+#define DEBUG_NET(_x)				\
+  do						\
+  {						\
+  _x;						\
+  } while(0)					
+#else
+#define DEBUG_NET(_x)
+#endif
+
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
 			     &world.curjob->curcmd->regx[idx] :               \
