@@ -161,7 +161,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
  * @ingroup io
  */
 void			revm_check_net_select(fd_set *sel_sockets, 
-					    int cursock)
+					      int cursock)
 {
 #if defined(ERESI_NET)
   // Read net command if any.

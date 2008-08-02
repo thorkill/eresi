@@ -10,10 +10,10 @@ include ../config.h
 SRC	  = dump.c recv.c send.c
 OBJ32	  = $(SRC:.c=.32.o)
 OBJ64	  = $(SRC:.c=.64.o)
-CFLAGS32  = -Wall -g3 -Iinclude -I../libaspect/include/  -fPIC -DERESI32
-CFLAGS64  = -Wall -g3 -Iinclude -I../libaspect/include/  -fPIC -DERESI64
-LDFLAGS32 = $(EXTRAOPT)
-LDFLAGS64 = $(EXTRAOPT)
+CFLAGS32  = -Wall -g3 -Iinclude -I../libaspect/include/  -fPIC -DERESI32 $(EXTRAOPT)
+CFLAGS64  = -Wall -g3 -Iinclude -I../libaspect/include/  -fPIC -DERESI64 $(EXTRAOPT)
+LDFLAGS32 = 
+LDFLAGS64 = 
 NAME32	  = libdump32
 NAME64	  = libdump64
 
