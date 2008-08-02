@@ -246,7 +246,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_CNTNR__
+#if 1 //__DEBUG_CNTNR__
   newcntnr = mjr_get_container_by_vaddr(ctx, vaddr, ASPECT_TYPE_BLOC);
   if (newcntnr)
     {
@@ -267,7 +267,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create block container", NULL);  
 
-#if __DEBUG_CNTNR__
+#if 1 //__DEBUG_CNTNR__
   fprintf(D_DESC, "[D] %s: create block addr " XFMT " (sz %d)\n", __FUNCTION__, vaddr, size);
 #endif
 

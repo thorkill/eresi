@@ -87,6 +87,7 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
 {
   container_t           *csrc,*cdst,*cret;
   elfshsect_t           *dstsect;
+  elfshsect_t		*retsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -97,8 +98,7 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
 
   /* Check if we are not pointing into BSS */
   dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
-  if (!dstsect || !dstsect->data)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  retsect = elfsh_get_parent_section(ctxt->obj, ret, NULL);
 
   /* at this point we must have src block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
@@ -106,33 +106,38 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
   assert(csrc != NULL);
   mjr_block_symbol(ctxt, csrc, src, 0);
 
-  /* search and/or split destination block */
-  if (!(cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL)))
-    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-                 "Could not split the dst",0);
-
-  if (ret)
-    /* search and/or split - return block */
-    if (!(cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET)))
-      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-                   "Could not split the ret", 0);
-
   /* link src and dst */
-  mjr_container_add_link(ctxt, csrc, cdst->id,
-                         MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
-  mjr_container_add_link(ctxt, cdst, csrc->id,
-                         MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
-
-  if (ret)
+  /* XXX: test if dstsect is available and/or not BSS ? */
+  if (dst != MJR_BLOCK_INVALID && dstsect && dstsect->data)
     {
-      /* link dst and ret */
-      mjr_container_add_link(ctxt, cdst, cret->id,
-                             MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, cret, cdst->id,
-                             MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
+      cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL);
+      if (!cdst)
+	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		     "Could not split the dst", 0);
 
-      // mjr_block_relink_cond_always(csrc,cret,CONTAINER_LINK_OUT);
-      // mjr_block_relink_cond_always(cret,csrc,CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, csrc, cdst->id,
+			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, cdst, csrc->id,
+			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
+    }
+
+  /* Link src and ret */
+  /* XXX: test if retsect is available and/or not BSS ? */
+  if (ret != MJR_BLOCK_INVALID)
+    {
+      cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET);
+      if (!cret)
+	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		     "Could not split the ret", 0);
+
+      /* link dst and ret */
+      if (dst != MJR_BLOCK_INVALID)
+	{
+	  mjr_container_add_link(ctxt, cdst, cret->id,
+				 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
+	  mjr_container_add_link(ctxt, cret, cdst->id,
+				 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
+	}
 
       mjr_container_add_link(ctxt, csrc, cret->id,
                              MJR_LINK_TYPE_DELAY, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -142,7 +147,8 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
 
 #if __DEBUG_BLOCKS__
   mjr_block_dump(ctxt,csrc);
-  mjr_block_dump(ctxt,cdst);
+  if (dst != MJR_BLOCK_INVALID)
+    mjr_block_dump(ctxt,cdst);
   mjr_block_dump(ctxt,cret);
 #endif
 
@@ -282,7 +288,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   sym = elfsh_get_symbol_by_value(ctxt->obj, blkdst->vaddr, NULL, ELFSH_EXACTSYM);
   assert(sym != NULL);
 
-#if __DEBUG_LINKS__
+#if 1 //__DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s:%d: wanted dst:%x got:%x\n", __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
@@ -291,7 +297,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
     {
       new_size = blkdst->size - (dst - blkdst->vaddr);
 
-#if __DEBUG_LINKS__
+#if 1 //__DEBUG_LINKS__
       fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
       fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", 
 	      __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);

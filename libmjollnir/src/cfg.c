@@ -55,35 +55,35 @@ int			mjr_trace_control(mjrcontext_t *context,
 
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
-  {
-    /* MIPS use delay slots for jump instructions too */
-    addend = (context->proc.type == ASM_PROC_MIPS ? 4 : 0);
-
-    *dstaddr = mjr_get_jmp_destaddr(context);
+    {
+      /* MIPS use delay slots for jump instructions too */
+      addend = (context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+      
+      *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
-    fprintf(D_DESC,
-	    "[D] %s:%d " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
-	    " F:" XFMT"\n", __FUNCTION__, __LINE__, 
-	    curvaddr, *dstaddr, curvaddr + ilen + addend);
+      fprintf(D_DESC,
+	      "[D] %s:%d " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
+	      " F:" XFMT"\n", __FUNCTION__, __LINE__, 
+	      curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
-
-    mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
-    *retaddr = curvaddr + ilen + addend;
-  }
+      
+      mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
+      *retaddr = curvaddr + ilen + addend;
+    }
   else if (curins->type & ASM_TYPE_IMPBRANCH)
-  {
-    *dstaddr = mjr_get_jmp_destaddr(context);
+    {
+      *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
 	      "[D] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
 	      " F: NULL \n", curvaddr, *dstaddr);
 #endif
-
-    if (*dstaddr != MJR_BLOCK_INVALID)
-      mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
-  }
+      
+      if (*dstaddr != MJR_BLOCK_INVALID)
+	mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
+    }
   
   else if (curins->type & ASM_TYPE_CALLPROC)
     {
@@ -115,17 +115,13 @@ int			mjr_trace_control(mjrcontext_t *context,
 	}
       else
 	*retaddr = curvaddr + ilen + addend;
-      
-      /* 20070102
-       * FIXME: we should be able to resolve CALL 0x0 (*dstaddr == 0), 
-       * Possible libasm or mjollnir bug.
-       */
-      if (*dstaddr && *dstaddr != MJR_BLOCK_INVALID)
+
+      /* Link block layer */
+      mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
+
+      /* Link function layer */ 
+      if (*dstaddr != MJR_BLOCK_INVALID)
 	{
-	  /* Link block layer */
-	  mjr_link_block_call(context, curvaddr, *dstaddr, *retaddr);
-	  
-	  /* Link function layer */
 	  mjr_link_func_call(context, curvaddr, *dstaddr, *retaddr);
 	  context->calls_found++;
 	}

@@ -27,7 +27,6 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   eresi_Addr	dstaddr, retaddr;
   container_t	*curblock;
   mjrblock_t	*block;
-  int		symoff;
   int		newoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -43,9 +42,15 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
-  assert(curblock != NULL);
-  block = (mjrblock_t *) curblock->data;
   
+#if 1 //__DEBUG_MJOLLNIR__
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X\n", vaddr);
+#endif
+
+  assert(curblock != NULL);
+
+  block = (mjrblock_t *) curblock->data;
+
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC, "[D] bloc %x: seen %d\n",
           __FUNCTION__,
