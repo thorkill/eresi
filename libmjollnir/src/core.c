@@ -8,6 +8,8 @@
 
 #include "libmjollnir.h"
 
+#define __DEBUG_READ__ 1
+
 /**
  * @brief Core control flow analysis function at a given address
  * @param sess Mjollnir session
@@ -44,7 +46,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
   
 #if 1 //__DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X\n", vaddr);
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X offset %08x\n", vaddr, offset);
 #endif
 
   assert(curblock != NULL);
@@ -70,8 +72,8 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
                             len - curr - offset, &sess->cur->proc);
 
 #if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", 
-	      __FUNCTION__, __FILE__, __LINE__, ilen);
+      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d first byte=%02x\n", 
+	      __FUNCTION__, __FILE__, __LINE__, ilen, *(ptr+offset+curr));
 #endif
       
       if (ilen <= 0) 
@@ -225,7 +227,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
 		  "Error during section entry code analysis", -1);
 
   /* Also analyse the main code -- it is generally not directly linked with the entry point */
-  if (main_addr && mjr_analyse_code(sess, ptr, 0, main_addr, len, 0, MJR_MAX_DEPTH) < 0)
+  if (main_addr && mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH) < 0)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during main code analysis", -1);
 

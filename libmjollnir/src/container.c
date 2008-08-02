@@ -341,7 +341,7 @@ container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, eresi_Addr vaddr, int
 
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
-  for (idx = 1, cur = ctx->reg_containers[idx]; cur; cur = ctx->reg_containers[++idx])
+  for (idx = 1, cur = ctx->reg_containers[idx]; cur && idx < ctx->next_id; cur = ctx->reg_containers[++idx])
     if (cur->type == type && *(eresi_Addr *) cur->data == vaddr)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cur);
   
