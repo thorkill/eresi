@@ -104,7 +104,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
       
       /* If we have recursed, the current block is over */
       if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || 
-	  (instr.type & ASM_TYPE_RETPROC))
+	  (instr.type & ASM_TYPE_RETPROC) || (instr.type & ASM_TYPE_STOP))
 	break;
     }
   
