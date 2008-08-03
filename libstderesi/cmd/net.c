@@ -29,7 +29,7 @@ int		cmd_network()
   job->ws.createtime = time(&job->ws.createtime);
 
   hash_add(&world.jobs, "net_init", job);
-  world.curjob = job;				// to comment again ?
+/*   world.curjob = job;				// to comment again ? */
   world.state.revm_net = 1;
 
   if (revm_net_init() < 0)

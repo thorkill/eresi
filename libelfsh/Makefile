@@ -11,10 +11,10 @@ CC			?= gcc
 LD			?= ld
 RM			= rm -f 
 AR			= ar rc
-CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2      \
+CFLAGS32		+= -Iinclude -Wall -fPIC -g3 	      \
 			-I../libasm/include/ -I../libaspect/include/        \
 			$(KERNSHINC) $(KERNSH) -DERESI32 $(BUILDOP)
-CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2      \
+CFLAGS64		+= -Iinclude -Wall -fPIC -g3 	      \
 			-I../libasm/include/ -I../libaspect/include/        \
 			$(KERNSHINC) $(KERNSH) -DERESI64 $(BUILDOP)
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \

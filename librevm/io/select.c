@@ -7,10 +7,8 @@
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
 ** $Id: select.c,v 1.15 2007-11-29 14:01:56 may Exp $
-**
-*/
+**/
 #include "revm.h"
-
 
 
 /**
@@ -42,9 +40,7 @@ int             revm_getmaxfd()
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
       if (port > ret)
 	ret = port;
-#if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port);
-#endif
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port));
     }
   
   hash_free_keys(keys);
@@ -58,10 +54,10 @@ int             revm_getmaxfd()
 	continue;
       if (serv->ws.io.sock.socket > ret)
 	ret = serv->ws.io.sock.socket;
-#if __DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
-	      serv->ws.io.sock.socket, keys[index]);
-#endif
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
+			serv->ws.io.sock.socket, keys[index]);
+/* 		__asm__ __volatile__("int3"); */
+		);
     }
 
   hash_free_keys(keys);
@@ -105,11 +101,9 @@ int		revm_prepare_select(fd_set *sel_sockets)
   for (index = 0; index < keynbr; index++)
     {
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
-#if __DEBUG_NETWORK__
-      fprintf(stderr, 
-	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
-	      port);
-#endif
+      DEBUG_NET(fprintf(stderr, 
+			"[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
+			port));
       FD_SET(port, sel_sockets);
     }
   hash_free_keys(keys);
@@ -125,10 +119,9 @@ int		revm_prepare_select(fd_set *sel_sockets)
       if (!job->ws.active)
 	continue;
       
-#if _DEBUG_NETWORK__
-      fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
-	      job->ws.sock.socket);
-#endif
+
+      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
+			job->ws.io.sock.socket));
 
 #if defined(ERESI_NET)
       if (job->ws.io.type == REVM_IO_DUMP)
@@ -291,14 +284,12 @@ int                     revm_select()
       /* Display the prompt */
       revm_preselect_prompt();
       
-    retry:
-      err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
-      
-      /* Retry in case of error */
-      if (err < 1 && errno == EINTR)
-	goto retry;
-      
-
+      do
+	{
+	  err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
+	  /* Retry in case of error */
+	} while(err < 1 && errno == EINTR)
+	
       /* Select which command will be proceded */
 #if defined(ERESI_NET)
       if (world.state.revm_net)
@@ -309,10 +300,8 @@ int                     revm_select()
 	  if (revm_socket_getnew())
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
 	  
-#if __DEBUG_NETWORK__
-	  fprintf(stderr, 
-		  "[DEBUG NETWORK] Select broken by a new connexion.\n");
-#endif
+	  DEBUG_NET(fprintf(stderr, 
+			    "[DEBUG NETWORK] Select broken by a new connexion.\n"));
 	  continue;
 	}
 #endif
@@ -341,15 +330,13 @@ int                     revm_select()
 	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
 	      world.curjob->ws.io.input = revm_fifoinput;
 	      
-#if __DEBUG_NETWORK__
-	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-		  world.state.revm_side == REVM_SIDE_CLIENT)
-		fprintf(stderr, "(client) Event appeared on fifo \n");
-	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-		       world.state.revm_side == REVM_SIDE_SERVER)
-		fprintf(stderr, "(server) Event appeared on fifo \n");
-#endif
-
+	      DEBUG_NET(
+			if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+			    world.state.revm_side == REVM_SIDE_CLIENT)
+			  fprintf(stderr, "(client) Event appeared on fifo \n");
+			else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+				 world.state.revm_side == REVM_SIDE_SERVER)
+			  fprintf(stderr, "(server) Event appeared on fifo \n"));
 	    }
 	}
       revm_prompt_postselect_restore(&sel_sockets);

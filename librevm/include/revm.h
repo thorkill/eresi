@@ -77,19 +77,19 @@
 extern asm_processor	proc;
 
 /* Now come INTERNAL DEBUGGING VARIABLES for various part of the ERESI code */
-#define	__DEBUG_DISASM__	0
-#define	__DEBUG_SIGHANDLER__	0
-#define	__DEBUG_LANG__		0
-#define	__DEBUG_SCANNER__	0
-#define	__DEBUG_ASLR__		0
-#define __DEBUG_NETWORK__	1
-#define __DEBUG_RESOLVE__	0
-#define __DEBUG_HIJACK__	0
-#define __DEBUG_TEST__		0
-#define	__DEBUG_GRAPH__		0
-#define __DEBUG_ARG_COUNT__	0
-#define	__DEBUG_EXPRS__		0
-#define	__DEBUG_EXPRS_MORE__	0
+#define	__DEBUG_DISASM__	FALSE
+#define	__DEBUG_SIGHANDLER__	FALSE
+#define	__DEBUG_LANG__		FALSE
+#define	__DEBUG_SCANNER__	FALSE
+#define	__DEBUG_ASLR__		FALSE
+#define __DEBUG_NETWORK__	TRUE
+#define __DEBUG_RESOLVE__	FALSE
+#define __DEBUG_HIJACK__	FALSE
+#define __DEBUG_TEST__		FALSE
+#define	__DEBUG_GRAPH__		FALSE
+#define __DEBUG_ARG_COUNT__	FALSE
+#define	__DEBUG_EXPRS__		FALSE
+#define	__DEBUG_EXPRS_MORE__	FALSE
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
@@ -224,6 +224,17 @@ extern asm_processor	proc;
 #define ERESI_VMCONFIG_HISTORY		"history"
 
 #define ERESI_DEFAULT_HISTORY		".eresi_history"
+
+/* Debug fonctions */
+#if __DEBUG_NETWORK__
+#define DEBUG_NET(_x)				\
+  do						\
+    {						\
+      _x;					\
+    } while(0)
+#else
+#define DEBUG_NET(_x)
+#endif
 
 /* Manage string table */
 #define REVM_STRTABLE_GET(_out, _in) 	\

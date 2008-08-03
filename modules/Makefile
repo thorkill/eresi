@@ -23,7 +23,7 @@ CFLAGS	= -I../librevm/include/ -I../libhash/include/ -I../libui/include/		\
 	  -I../libdump/include/ -I../libelfsh/include/  -I../libaspect/include		\
 	  -I../libasm/include/ -I../e2dbg/include/ -I../libc/include/			\
 	  -I../libmjollnir/include/ -I../libedfmt/include/ -I../libstderesi/include/	\
-	  -I../libetrace/include/ -Wall -g3 -O2 -fPIC  $(DYNOPT)	\
+	  -I../libetrace/include/ -Wall -g3 -fPIC  $(DYNOPT)				\
 	  $(BITS) $(NCURSESLNOPT) $(READLNOPT) $(BUILDOP)
 
 CFLAGS32=$(CFLAGS) -DERESI32
