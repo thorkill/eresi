@@ -288,7 +288,7 @@ int                     revm_select()
 	{
 	  err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
 	  /* Retry in case of error */
-	} while(err < 1 && errno == EINTR)
+	} while(err < 1 && errno == EINTR);
 	
       /* Select which command will be proceded */
 #if defined(ERESI_NET)

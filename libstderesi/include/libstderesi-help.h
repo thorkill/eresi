@@ -143,7 +143,9 @@
 #define	HLP_CONNECT		"Add an DUMP connection to given host"
 #define	HLP_DISCON		"Kill the DUMP connection from IP"
 #define	HLP_PEERSLIST		"List connected DUMP peers"
-#define HLP_RCMD		"Execute a command on a remote machine"
+#define HLP_RCMD		"Execute a command on a remote machine\n\n\t" \
+                                CMD_RCMD" <command> <host>" 
+
 
 /* Flow analysis commands */
 #define HLP_GRAPH	        "Generate GVZ files:\n\n\t" \

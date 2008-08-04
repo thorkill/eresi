@@ -107,7 +107,7 @@ int		cmd_netkill()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tokill = revm_GetCurJobParameter(0);
+  tokill = revm_cur_job_param(0);
 
   tokill = revm_lookup_string(tokill);
 
@@ -184,7 +184,7 @@ int		cmd_connect()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  toconnect = revm_GetCurJobParameter(0);
+  toconnect = revm_cur_job_param(0);
   toconnect = revm_lookup_string(toconnect);
 
   if (world.state.revm_net != 1)
@@ -232,7 +232,7 @@ int		cmd_discon()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  todisconnect = revm_GetCurJobParameter(0);
+  todisconnect = revm_cur_job_param(0);
 
   todisconnect = revm_lookup_string(todisconnect);
 
@@ -284,21 +284,22 @@ int			cmd_rcmd()
   if (world.state.revm_net != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not in 'net' mode", (-1));
 
-
+  fprintf(stderr, " Hey man, we are YEAH in the rcmd :) ");
+  //__asm__ __volatile__("int3");
   /* 1 char for the REVM_DUMP_CMD */
   data[0] = ' ';
   data[1] = '\0';
 
   sz -= 2;
 
-  for (idx = 1; revm_GetCurJobParameter(idx) != NULL; idx++)
+  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
       if (sz < 2)
 	break;
-      strncat(data, revm_GetCurJobParameter(idx), sz - 1);
-      sz -= strlen(revm_GetCurJobParameter(idx));
+      strncat(data, revm_cur_job_param(idx), sz - 1);
+      sz -= strlen(revm_cur_job_param(idx));
       if (sz < 2)
 	break;
     }
@@ -306,7 +307,8 @@ int			cmd_rcmd()
   if (idx < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid number of parameters", (-1));
 
-  to = revm_GetCurJobParameter(idx);
+  fprintf(stderr, " Hey man: %s ", revm_cur_job_param(idx - 1));
+  to = revm_cur_job_param(idx - 1);
 
   to = revm_lookup_string(to);
 
