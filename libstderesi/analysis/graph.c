@@ -10,6 +10,7 @@
 
 static hash_t   dumped;
 
+
 /**
  * @brief Same than system() but gives hand without waiting.
  * @param cmd The command to execute.
@@ -19,7 +20,7 @@ int		revm_system_nowait(char *cmd)
 {
   char		**argv;
   int		blanks;
-  int		argc;
+  u_int		argc;
   int		ret;
 
   blanks = revm_findblanks(cmd);
@@ -391,10 +392,14 @@ int		revm_graph_blocks(container_t   *cntnr,
   char		buf[BUFSIZ];
   char		*vaddr_str;
   char		*col_arrow;
-  container_t *nextcnt;
+  container_t	*nextcnt;
   mjrblock_t	*nextblk;    
   list_t	*linklist;
   listent_t	*curent;
+  char		*name;
+  elfsh_SAddr	offset;
+  char		*sname;
+  elfsh_SAddr	soffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -409,10 +414,17 @@ int		revm_graph_blocks(container_t   *cntnr,
 
   linklist = cntnr->outlinks;
 
-  snprintf(buf, sizeof(buf),
-    	   "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
-      	   blk->vaddr, "\"grey\"", blk->vaddr);
+  name = elfsh_reverse_metasym(world.mjr_session.cur->obj, blk->vaddr, &offset);
 
+  if (name && !offset)
+    snprintf(buf, sizeof(buf),
+	     "\"%s\" [shape=\"box\" color=%s label=\"<%s>:\\l",
+	     name, "\"grey\"", name);
+  else
+    snprintf(buf, sizeof(buf),
+	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
+	     blk->vaddr, "\"grey\"", blk->vaddr);
+  
   write(fd,buf,strlen(buf));
 
   revm_disasm_block(fd, blk);
@@ -452,8 +464,25 @@ int		revm_graph_blocks(container_t   *cntnr,
 	  break;
 	}
 
-      snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"" AFMT "\" [color=%s];\n",
-	       blk->vaddr, cblk->vaddr, col_arrow);
+      sname = elfsh_reverse_metasym(world.mjr_session.cur->obj, cblk->vaddr, &soffset);
+      if (name && !offset)
+	{
+	  if (sname && !soffset)
+	    snprintf(buf, sizeof(buf), "\"%s\" -> \"%s\" [color=%s];\n",
+		     name, sname, col_arrow);
+	  else
+	    snprintf(buf, sizeof(buf), "\"%s\" -> \"" AFMT "\" [color=%s];\n",
+		     name, cblk->vaddr, col_arrow);
+	}
+      else
+	{
+	  if (sname && !soffset)
+	    snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"%s\" [color=%s];\n",
+		     blk->vaddr, sname, col_arrow);
+	  else
+	    snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"" AFMT "\" [color=%s];\n",
+		     blk->vaddr, cblk->vaddr, col_arrow);
+	}
 
 #if __DEBUG_GRAPH__
       fprintf(D_DESC,"[D] %s: " AFMT " -> " AFMT " %d\n",
@@ -491,7 +520,7 @@ int		revm_graph_blocks(container_t   *cntnr,
  * @param maxdepth
  * @param curdepth
  */
-int		revm_graph_function(container_t	*cntnr,
+int		revm_graph_function(container_t		*cntnr,
 				    int			fd,
 				    int			direction,
 				    int			type,
@@ -506,6 +535,7 @@ int		revm_graph_function(container_t	*cntnr,
   char		buf[BUFSIZ];
   list_t	*linklist;
   listent_t	*curent;
+  container_t	*child;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -515,6 +545,8 @@ int		revm_graph_function(container_t	*cntnr,
 
   fnc = (mjrfunc_t *)cntnr->data;
   vaddr_str =_vaddr2str(fnc->vaddr);
+
+  printf("Graph Recursing on function %s \n", fnc->name); 
 
   if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -526,7 +558,7 @@ int		revm_graph_function(container_t	*cntnr,
   ftype = revm_graph_get_function_type(fnc);
   
   snprintf(buf, sizeof(buf), "\"%s\" [color=%s];\n",
-      	   (n1 ? n1 : fnc->name), 
+      	   (n1 && !offset ? n1 : fnc->name), 
 	   revm_get_colored_str((n1) ? n1 : fnc->name, ftype));
   
   write(fd,buf,strlen(buf));
@@ -574,8 +606,8 @@ int		revm_graph_function(container_t	*cntnr,
   for (curent = linklist->head; curent; curent = curent->next)
     {
       curlnk = (mjrlink_t *) curent->data;
-      revm_graph_function(mjr_lookup_container(world.mjr_session.cur, curlnk->id), 
-			  fd, direction, type, maxdepth, curdepth + 1);
+      child = mjr_lookup_container(world.mjr_session.cur, curlnk->id);
+      revm_graph_function(child, fd, direction, type, maxdepth, curdepth + 1);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -590,7 +622,7 @@ int	revm_open_dot_file(char *dotfile, int *fd)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  printf(" [*] .dot file: %s\n", dotfile);
+  printf(" [*] .dot file: %s\n\n", dotfile);
 
   *fd = open(dotfile, O_RDWR | O_CREAT | O_TRUNC, 0644);
   if (*fd == -1)
@@ -599,6 +631,8 @@ int	revm_open_dot_file(char *dotfile, int *fd)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
+
+
 
 u_int		revm_get_min_param(void)
 {
@@ -629,6 +663,7 @@ int		cmd_graph(void)
   u_int		min;
   u_int		max;
   char		*dotfile;
+  u_int		maxdepth;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -659,6 +694,7 @@ int		cmd_graph(void)
 					 world.mjr_session.cur->obj->hdr->e_entry, 
 					 ASPECT_TYPE_FUNC);
 
+      //revm_graph_function(cntnr,fd,CONTAINER_LINK_IN,0, 0, 1);
       revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,0, 0, 1);
       
       write(fd,"}\n",2);
@@ -672,22 +708,20 @@ int		cmd_graph(void)
 
     	if (strcmp("func",world.curjob->curcmd->param[0]) == 0)
   	  {
-  	    /* resolve the block vaddr */
+	    /* resolve the block vaddr */
   	    min = revm_get_min_param();
 	    cntnr = hash_get(&world.mjr_session.cur->funchash,
-			      _vaddr2str(min));
-	    
+			     _vaddr2str(min));
 	    if (!cntnr)
 	      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 			   "Function not found",-1);
-
 	    
 	    dotfile = revm_get_dotfile_name(_vaddr2str(min),"function");
 	    revm_open_dot_file(dotfile, &fd);
 	    
   	    snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
   	    write(fd,buf,strlen(buf));
-	    
+
   	    revm_graph_function(cntnr,fd,CONTAINER_LINK_IN,1, 0, 1);
   	    revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,1, 0, 1);
 
@@ -718,6 +752,9 @@ int		cmd_graph(void)
   	    write(fd,buf,strlen(buf));
 
 	    revm_graph_legend(fd, "DEFAULT", min, max);
+
+	    /* FIXME: the function addr interval is not always well guessed
+	       which leads to truncated control flow graphs */
 	    revm_graph_blocks(cntnr,fd,min,max,0,0,1);
 
 	    write(fd,"}\n",2);
@@ -731,8 +768,19 @@ int		cmd_graph(void)
 	  revm_output(" [!] Invalid syntax: help graph\n");
 	break;
 
+	/* FIXME: graph <func|bloc> <sym|func> <in|out> */
+    case 3:
+      break;
+	
+      /* FIXME: graph <func|bloc> <sym|func> <in|out|all> <maxdepth> */
+    case 4:
+      break;
+
     default:
-    	revm_output(" [!] Invalid syntax: use help \n");
+      {
+    	revm_output(" [!] INVALID SYNTAX \n");
+	revm_output(HLP_GRAPH);
+      }
     
   }
 
