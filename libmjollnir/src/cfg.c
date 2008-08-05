@@ -67,9 +67,9 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F:" XFMT"\n", __FUNCTION__, __LINE__, 
 	      curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
-      
-      mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
-      *retaddr = curvaddr + ilen + addend;
+
+      *retaddr = curvaddr + ilen + addend;      
+      mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
     }
   else if (curins->type & ASM_TYPE_IMPBRANCH)
     {
@@ -82,7 +82,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
       
       if (*dstaddr != MJR_BLOCK_INVALID)
-	mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
+	mjr_link_block_jump(context, curvaddr, *dstaddr, MJR_BLOCK_INVALID);
     }
   
   else if (curins->type & ASM_TYPE_CALLPROC)

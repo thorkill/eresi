@@ -10,6 +10,7 @@
  */
 #include "libelfsh.h"
 
+
 #define ELFSH_SYMTAB_HASH_NAME 	"elfsh_symtab_hashbyname"
 
 /**
@@ -210,6 +211,7 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
   int		num;
   int		index;
   char		*str;
+  int		best;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -242,19 +244,22 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
     elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_SYMTAB]);
   sorted = file->secthash[ELFSH_SECTION_SYMTAB]->altdata;
 
-  for (index = 0; index < num; index++)
-    if (sorted[index].st_value <= value && DUMPABLE(sorted + index) &&
-        	(index + 1 >= num || sorted[index + 1].st_value > value))
-    {
-    	*offset = (elfsh_SAddr) (value - sorted[index].st_value);
+  /* Now find the best symbol -- type is more important than offset */
+  for (str = NULL, best = index = 0; index < num; index++)
+    if (sorted[index].st_value <= value && DUMPABLE(sorted + index))
+      {
+	if (best && !BESTYPE(sorted + index, sorted + best))
+	  continue;
 
-    	str = elfsh_get_symbol_name(file, sorted + index);
-    	if (!*str)
-    	  str = NULL;
+	*offset = (elfsh_SAddr) (value - sorted[index].st_value);
+	best = index;
+	str = elfsh_get_symbol_name(file, sorted + index);
+	if (!*str)
+	  str = NULL;
+      }
 
-    	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
-    }
-
+  if (str)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, str);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		    "No valid symbol interval", NULL);
 }
@@ -273,12 +278,17 @@ int		elfsh_init_symbol_hashtables(elfshobj_t *file)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+  // THIS FUNCTION IS DISABLED (TEST)
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
 
-  hash_init(&file->symhash, ELFSH_SYMHASH_NAME, 100, ASPECT_TYPE_UNKNOW);
-  hash_init(&file->dynsymhash, ELFSH_DYNSYMHASH_NAME, 100, ASPECT_TYPE_UNKNOW);
+  printf("Init symbol hash tables ! \n");
+
+  hash_init(&file->symhash, ELFSH_SYMHASH_NAME, 100, ASPECT_TYPE_INT);
+  hash_init(&file->dynsymhash, ELFSH_DYNSYMHASH_NAME, 100, ASPECT_TYPE_INT);
 
   /* Symtab */
   if (elfsh_get_symtab(file, &size))
@@ -350,16 +360,17 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get SYMTAB data", NULL);
 
+  /*
   if (file->symhash.ent)
     {
-      /* idx is the symbol number in the section */
+    //idx is the symbol number in the section
       idx = (int) hash_get(&file->symhash, name);
 
 #if __DEBUG_HASH_BY_NAME__
       printf("[DEBUG_HASH_BY_NAME] SYM HASH Search by name for %s => %d\n",
 	     name, idx);
 #else
-      /* Check if idx is in the section */
+//Check if idx is in the section
       if (idx <= 0 || idx >= sect->shdr->sh_size)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Symbol not found", NULL);
@@ -367,6 +378,7 @@ elfsh_Sym	*elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
 #endif
     }
+*/
  
 
   for (idx = 0; idx < size; idx++)
@@ -519,7 +531,7 @@ int		elfsh_insert_symbol(elfshsect_t *sect,
     }
 
   if (uptable && uptable->ent)
-    hash_add(uptable, strdup(name), (void *) (index / sizeof(elfsh_Sym)));
+    hash_add(uptable, strdup(name), (void *) index);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym->st_name);
 }

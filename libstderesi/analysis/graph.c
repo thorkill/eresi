@@ -378,6 +378,41 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ftype);
 }
 
+
+/* Write the header dot description for a node */
+char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr)
+{
+  char		buf[BUFSIZ];
+  char		*name;
+  elfsh_SAddr	offset;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  name = elfsh_reverse_metasym(obj, addr, &offset);
+  if (name && !offset)
+    snprintf(buf, sizeof(buf),
+	     "\"%s\" [shape=\"box\" color=%s label=\"<%s>:\\l",
+	     name, "\"grey\"", name);
+  else
+    snprintf(buf, sizeof(buf),
+	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
+	     addr, "\"grey\"", addr);
+  write(fd, buf, strlen(buf));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (!offset ? name : NULL));
+}
+
+/* Write the footer dot description for a node */
+int		revm_write_endnode(int fd)
+{
+  char		buf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  snprintf(buf, sizeof(buf), "\"];\n");
+  write(fd, buf, strlen(buf));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
 /* A recursive function for graphing in dot format */
 int		revm_graph_blocks(container_t   *cntnr,
 				  int		 fd,
@@ -397,7 +432,6 @@ int		revm_graph_blocks(container_t   *cntnr,
   list_t	*linklist;
   listent_t	*curent;
   char		*name;
-  elfsh_SAddr	offset;
   char		*sname;
   elfsh_SAddr	soffset;
 
@@ -414,24 +448,9 @@ int		revm_graph_blocks(container_t   *cntnr,
 
   linklist = cntnr->outlinks;
 
-  name = elfsh_reverse_metasym(world.mjr_session.cur->obj, blk->vaddr, &offset);
-
-  if (name && !offset)
-    snprintf(buf, sizeof(buf),
-	     "\"%s\" [shape=\"box\" color=%s label=\"<%s>:\\l",
-	     name, "\"grey\"", name);
-  else
-    snprintf(buf, sizeof(buf),
-	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
-	     blk->vaddr, "\"grey\"", blk->vaddr);
-  
-  write(fd,buf,strlen(buf));
-
+  name = revm_write_dotnode(fd, world.mjr_session.cur->obj, blk->vaddr);
   revm_disasm_block(fd, blk);
-
-  snprintf(buf, sizeof(buf), "\"];\n");
-
-  write(fd,buf,strlen(buf));
+  revm_write_endnode(fd);
 
   /* Print all links */
   for (curent = linklist->head; curent; curent = curent->next)
@@ -465,7 +484,7 @@ int		revm_graph_blocks(container_t   *cntnr,
 	}
 
       sname = elfsh_reverse_metasym(world.mjr_session.cur->obj, cblk->vaddr, &soffset);
-      if (name && !offset)
+      if (name)
 	{
 	  if (sname && !soffset)
 	    snprintf(buf, sizeof(buf), "\"%s\" -> \"%s\" [color=%s];\n",
@@ -496,7 +515,7 @@ int		revm_graph_blocks(container_t   *cntnr,
   for (curent = linklist->head; curent; curent = curent->next)
     {
       lnk = (mjrlink_t *) curent->data;
-      if (lnk->type == MJR_LINK_BLOCK_COND_ALWAYS)
+      if (lnk->scope == MJR_LINK_SCOPE_GLOBAL)
 	continue;
       
       nextcnt = mjr_lookup_container(world.mjr_session.cur, lnk->id);
@@ -545,8 +564,6 @@ int		revm_graph_function(container_t		*cntnr,
 
   fnc = (mjrfunc_t *)cntnr->data;
   vaddr_str =_vaddr2str(fnc->vaddr);
-
-  printf("Graph Recursing on function %s \n", fnc->name); 
 
   if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

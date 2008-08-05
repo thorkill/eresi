@@ -97,7 +97,7 @@ container_t	*mjr_block_get_by_vaddr(mjrcontext_t 	*ctxt,
 	      ret->id);
 #endif
 
-      if ((tmpblock->vaddr <= vaddr) && (vaddr <= tmpblock->vaddr + tmpblock->size))
+      if ((tmpblock->vaddr <= vaddr) && (vaddr < tmpblock->vaddr + tmpblock->size))
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 
       if (tmpblock->vaddr < vaddr)
@@ -153,8 +153,7 @@ int		mjr_block_dump(mjrcontext_t* ctxt, container_t *c)
  * @param resize 1 if current block size has to be computed from the value of curaddr
  * @return Always 0
  */
-int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc, 
-					 eresi_Addr curaddr, u_char resize)
+int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc)
 {
   mjrblock_t		*block;
   elfsh_Sym		bsym;
@@ -169,9 +168,6 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc,
   off = 0;
   block = (mjrblock_t *) csrc->data;
   prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
-  if (resize)
-    block->size = curaddr - block->vaddr + asm_instr_len(&ctxt->hist[MJR_HISTORY_CUR].instr);
-
   snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, block->vaddr);
   sym = elfsh_get_symbol_by_name(ctxt->obj, buffer);
   if (!sym)
@@ -180,9 +176,11 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc,
       bsym = elfsh_create_symbol(block->vaddr, block->size, STT_BLOCK, 0, 0, 0);
       elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
     }
+#if __DEBUG_BLOCKS__
   else
     printf(" [D] Block symbol %s was already inserted ! \n", 
 	   elfsh_get_symbol_name(ctxt->obj, sym));
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, off);
 }

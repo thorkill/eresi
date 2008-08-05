@@ -96,12 +96,12 @@ int		mjr_analyse_finished(mjrsession_t *sess);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);
-container_t* mjr_block_get_by_vaddr(mjrcontext_t *ctxt, eresi_Addr, int);
+container_t*	mjr_block_get_by_vaddr(mjrcontext_t *ctxt, eresi_Addr, int);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, eresi_Addr, eresi_Addr);
 char 		*_vaddr2str(eresi_Addr);
 int		mjr_block_relink_cond_always(container_t *, container_t *, int);
 int		mjr_block_dump(mjrcontext_t*, container_t *);
-int		mjr_block_symbol(mjrcontext_t*, container_t*, eresi_Addr curaddr, u_char resize);
+int		mjr_block_symbol(mjrcontext_t*, container_t*);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(container_t *cntnr);

@@ -102,12 +102,15 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
 
   /* at this point we must have src block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
-  fprintf(stderr, "Calling location source " XFMT "\n", src);
+
+#if __DEBUG_LINKS__
+  fprintf(stderr, "[D] Calling location source " XFMT "\n", src);
+#endif
+
   assert(csrc != NULL);
-  mjr_block_symbol(ctxt, csrc, src, 0);
+  mjr_block_symbol(ctxt, csrc);
 
   /* link src and dst */
-  /* XXX: test if dstsect is available and/or not BSS ? */
   if (dst != MJR_BLOCK_INVALID && dstsect && dstsect->data)
     {
       cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL);
@@ -121,23 +124,13 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
 			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
     }
 
-  /* Link src and ret */
-  /* XXX: test if retsect is available and/or not BSS ? */
-  if (ret != MJR_BLOCK_INVALID)
+  /* Link src and ret at the block level */
+  if (ret != MJR_BLOCK_INVALID && retsect && retsect->data)
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET);
       if (!cret)
 	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
 		     "Could not split the ret", 0);
-
-      /* link dst and ret */
-      if (dst != MJR_BLOCK_INVALID)
-	{
-	  mjr_container_add_link(ctxt, cdst, cret->id,
-				 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
-	  mjr_container_add_link(ctxt, cret, cdst->id,
-				 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
-	}
 
       mjr_container_add_link(ctxt, csrc, cret->id,
                              MJR_LINK_TYPE_DELAY, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -176,21 +169,22 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
   /* Insert symbol on terminated block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
   assert(csrc != NULL);
-  mjr_block_symbol(ctxt, csrc, src, 0);
+  mjr_block_symbol(ctxt, csrc);
 
   /* Now split destination blocks */
-  cdst = mjr_block_split(ctxt,dst, MJR_LINK_BLOCK_COND_ALWAYS);
+  cdst = mjr_block_split(ctxt, dst, MJR_LINK_BLOCK_COND_ALWAYS);
   if (!cdst)
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
                  "Could not split destination block",0);
-  cret = NULL;
   if (ret != MJR_BLOCK_INVALID)
     {
-      cret = mjr_block_split(ctxt,ret, MJR_LINK_BLOCK_COND_ALWAYS);
+      cret = mjr_block_split(ctxt, ret, MJR_LINK_BLOCK_COND_ALWAYS);
       if (!cret)
         PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
                      "Could not split return block",0);
     }
+  else
+    cret = NULL;
 
   mjr_container_add_link(ctxt, csrc, cdst->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -266,7 +260,6 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   mjrblock_t            *blkdst;
   int                   new_size;
   elfsh_Sym             *sym;
-  u_char                scope;
   int			symoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -277,10 +270,9 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
     {
       tmpdst = mjr_create_block_container(ctxt, 0, dst, 0, 0);
       hash_add(&ctxt->blkhash, _vaddr2str(dst), tmpdst);
-
-      symoff = mjr_block_symbol(ctxt, tmpdst, dst, 0);
-
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmpdst));
+      symoff = mjr_block_symbol(ctxt, tmpdst);
+      ((mjrblock_t *) tmpdst->data)->symoff = symoff;
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, tmpdst);
     }
 
   /* Find existing symbol for split bloc */
@@ -288,7 +280,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   sym = elfsh_get_symbol_by_value(ctxt->obj, blkdst->vaddr, NULL, ELFSH_EXACTSYM);
   assert(sym != NULL);
 
-#if 1 //__DEBUG_LINKS__
+#if __DEBUG_LINKS__
   fprintf(D_DESC,"[D] %s:%d: wanted dst:%x got:%x\n", __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
@@ -297,29 +289,26 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
     {
       new_size = blkdst->size - (dst - blkdst->vaddr);
 
-#if 1 //__DEBUG_LINKS__
+#if __DEBUG_LINKS__
       fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
       fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", 
 	      __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
-      blkdst->size -= new_size;
 
-      //assert(new_size > 0);
+      blkdst->size -= new_size;
+      sym->st_size = blkdst->size;
+
       assert(blkdst->size > 0);
 
       /* Correct existing symbol size and add new symbol pointing on new split block */      
       dstend = mjr_create_block_container(ctxt, 0, dst, new_size, (new_size ? 1 : 0));
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
-      sym->st_size = blkdst->size;
-      mjr_block_symbol(ctxt, dstend, NULL, 0);
-
-      if (link_with != MJR_LINK_FUNC_CALL)
-        {
-          scope = (link_with == MJR_LINK_FUNC_RET ? MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
-          mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
-          mjr_container_add_link(ctxt, tmpdst, dstend->id, link_with, scope, CONTAINER_LINK_OUT);
-          mjr_container_add_link(ctxt, dstend, tmpdst->id, link_with, scope, CONTAINER_LINK_IN);
-        }
+      mjr_block_symbol(ctxt, dstend);
+      mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, dstend, tmpdst->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
     }
   else
     dstend = tmpdst;

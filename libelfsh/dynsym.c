@@ -11,6 +11,7 @@
 */
 #include "libelfsh.h"
 
+
 /**
  * Return the dynsymbol name giving its index in the dynamic symbol string table 
  * @param file
@@ -344,16 +345,17 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to get DYNSYM section pointer", NULL);
 
+  /*
   if (file->dynsymhash.ent)
     {
-      /* idx is the symbol number in the section */
+    //idx is the symbol number in the section
       idx = (int) hash_get(&file->dynsymhash, name);
 
 #if __DEBUG_HASH_BY_NAME__
       printf("[DEBUG_HASH_BY_NAME] DYNSYM HASH Search by name for %s => %d\n",
 	     name, idx);
 #else
-      /* Check if idx is in the section */
+      //Check if idx is in the section
       if (idx <= 0 || idx >= sect->shdr->sh_size)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Symbol not found", NULL);
@@ -361,6 +363,7 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym + idx));
 #endif
     }
+*/
 
   for (idx = 0; idx < size; idx++)
     {

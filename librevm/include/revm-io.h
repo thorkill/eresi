@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.81"
-#define	REVM_RELEASE	"b1"
+#define	REVM_RELEASE	"b2"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -277,7 +277,7 @@ void		revm_set_prompt(void (*func) (char *name, u_int size));
 
 /* Network related functions */
 int		revm_net_init();
-void		revm_check_net_select(fd_set *sel_sockets, int sock);
+int		revm_check_net_select(fd_set *sel_sockets, int sock);
 int		revm_select();
 char*		revm_net_input();
 int		revm_net_output(char *buf);

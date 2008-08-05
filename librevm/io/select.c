@@ -160,19 +160,22 @@ int		revm_prepare_select(fd_set *sel_sockets)
  * @brief Check if we had any network event
  * @ingroup io
  */
-void			revm_check_net_select(fd_set *sel_sockets, 
-					    int cursock)
+int			revm_check_net_select(fd_set *sel_sockets, int cursock)
 {
 #if defined(ERESI_NET)
   // Read net command if any.
   if (revm_net_recvd(sel_sockets) < 0)
-    fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
-  
+    {
+      fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
+      return (1);
+    }
+
   /* Check remote clients */
   if (FD_ISSET(cursock, sel_sockets))
     {
       if (revm_net_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
+      return (1);
     }
   
   /* Check the DUMP connection */
@@ -180,8 +183,11 @@ void			revm_check_net_select(fd_set *sel_sockets,
     {
       if (revm_dump_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
+      return (1);
     }
 #endif
+
+  return (0);
 }
 
 
@@ -298,22 +304,23 @@ int                     revm_select()
       if (err < 1 && errno == EINTR)
 	goto retry;
       
-
       /* Select which command will be proceded */
 #if defined(ERESI_NET)
       if (world.state.revm_net)
 	{
 	  if (init)
-	    revm_check_net_select(&sel_sockets, init->ws.io.sock.socket);
-	  
-	  if (revm_socket_getnew())
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
-	  
+	    err = revm_check_net_select(&sel_sockets, init->ws.io.sock.socket);
+	  if (err)
+	    {
+	      if (revm_socket_getnew())
+		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
+	      
 #if __DEBUG_NETWORK__
-	  fprintf(stderr, 
-		  "[DEBUG NETWORK] Select broken by a new connexion.\n");
+	      fprintf(stderr, 
+		      "[DEBUG NETWORK] Select broken by a new connexion.\n");
 #endif
-	  continue;
+	      continue;
+	    }
 	}
 #endif
       

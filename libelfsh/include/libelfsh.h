@@ -316,6 +316,13 @@
                          elfsh_get_symbol_type(sym) == STT_SECTION || \
 			  elfsh_get_symbol_type(sym) == STT_BLOCK)
 
+#define	BESTYPE(cand, best)	(elfsh_get_symbol_type(cand)  == STT_FUNC    || \
+				 (elfsh_get_symbol_type(cand) == STT_SECTION && \
+				  elfsh_get_symbol_type(best) != STT_FUNC)   || \
+				 (elfsh_get_symbol_type(cand) == STT_BLOCK   && \
+				  elfsh_get_symbol_type(best) != STT_FUNC    && \
+				  elfsh_get_symbol_type(best) != STT_SECTION))
+
 #define	FILE_IS_SPARC(obj)   (FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
 #define FILE_IS_SPARC32(obj) (((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \
                              (elfsh_get_arch((obj)->hdr) == EM_SPARC32PLUS)) ? 1 : 0)

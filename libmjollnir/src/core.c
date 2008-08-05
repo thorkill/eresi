@@ -5,10 +5,8 @@
 ** @brief Implement low-level functions of the libmjollnir library
 **
 */
-
 #include "libmjollnir.h"
 
-#define __DEBUG_READ__ 1
 
 /**
  * @brief Core control flow analysis function at a given address
@@ -19,6 +17,7 @@
  * @param len Size of code to analyse
  * @param curdepth current depth of cfg being analyzed
  * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
+ * @return Success (0) or error (-1).
  */
 int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, 
 				 unsigned int offset, eresi_Addr vaddr, int len, 
@@ -45,7 +44,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
   
-#if 1 //__DEBUG_MJOLLNIR__
+#if __DEBUG_MJOLLNIR__
   fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X offset %08x\n", vaddr, offset);
 #endif
 
@@ -395,7 +394,9 @@ int             mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, 
           mjr_create_block_container(sess->cur, 0, addr, blocksize, 0);
           lastsym = sym;
 
+#if __DEBUG_MJOLLNIR__
           fprintf(stderr, " [D] Adding UNLINKED block at " XFMT " ! \n", addr);
+#endif
 
         }
     }

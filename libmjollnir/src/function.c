@@ -216,15 +216,16 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if 1 //__DEBUG_FUNCS__
+#if __DEBUG_FUNCS__
   fprintf(D_DESC, "[D] %s: vaddr:%x ID:%d\n",
 	  __FUNCTION__, vaddr, fun->id);
 #endif
 
   if (!mjr_function_get_by_vaddr(ctx, vaddr))
     {
+#if __DEBUG_FUNCS__
       fprintf(stderr, " [*] Registered new function starting at 0x%08X \n", vaddr);
-
+#endif
       tmpstr = _vaddr2str(vaddr);
       hash_add(&ctx->funchash, tmpstr, fun);
     }
