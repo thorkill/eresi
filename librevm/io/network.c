@@ -1047,6 +1047,56 @@ int			revm_clean_jobs()
 }
 
 
+/*******************************************************************************
+ *
+ *    -- revm_is_net_supported(void)
+ *
+ *   Function to know if the network support is supported, ie
+ *   ERESI_NET is enabled.
+ *
+ *
+ *   Return:
+ *
+ *   True if it is enabled, False otherwise.
+ *
+ *
+ *   Side effect(s):
+ *
+ *   None.
+ *
+ ******************************************************************************/   
+
+
+
+Bool            revm_is_net_supported(void)
+{
+#if defined(ERESI_NET)
+  return TRUE;
+#else
+  return FALSE;
+#endif
+}
+
+
+/*******************************************************************************
+ *
+ *    -- revm_is_net_enabled(void)
+ *
+ *   Function to know if the network support is enabled within eresi.
+ *
+ *
+ *   Return:
+ *
+ *   True if it is enabled. False otherwise.
+ *
+ *
+ *   Side effect(s):
+ *
+ *   None.
+ *
+ ******************************************************************************/   
+
+
 Bool            revm_is_net_enabled(void)
 {
    if (world.state.revm_net)
