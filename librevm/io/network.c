@@ -1047,6 +1047,13 @@ int			revm_clean_jobs()
 }
 
 
+Bool            revm_is_net_enabled(void)
+{
+   if (world.state.revm_net)
+      return TRUE;
+   else
+      return FALSE;
+}
 
 
 /* Case where the network is not enabled */
@@ -1209,6 +1216,15 @@ int		revm_net_init()
 int		revm_net_stop()
 {
   return (0);
+}
+
+/**
+ * @brief TO COMPLETE
+ * @ingroup io
+ */
+Bool            revm_is_net_enabled(void)
+{
+   return FALSE;
 }
 
 #endif

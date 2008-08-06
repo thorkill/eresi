@@ -281,18 +281,18 @@ int			cmd_rcmd()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.revm_net != 1)
+  /* NOT GOOD, to remove, should be able to connnect + rcmd without net */
+   if (!revm_is_net_enabled())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not in 'net' mode", (-1));
 
-  fprintf(stderr, " Hey man, we are YEAH in the rcmd :) ");
-  //__asm__ __volatile__("int3");
-  /* 1 char for the REVM_DUMP_CMD */
-  data[0] = ' ';
-  data[1] = '\0';
+   
+   data[0] = REVM_DUMP_CMD;
+   data[1] = '\0';
 
   sz -= 2;
 
-  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
+  fprintf(stderr, " Sizeof param: %#x ", strlen(revm_cur_job_param(0)));
+  for (idx = 0; revm_cur_job_param(idx) != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
@@ -326,8 +326,7 @@ int			cmd_rcmd()
   revm_output(buf);
   revm_output("\n");
 
-  data[0] = REVM_DUMP_CMD;
-
+ 
   ret = dump_send(serv_addr.sin_addr, strdup(data), 1 + strlen(data + 1) + 1);
  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));

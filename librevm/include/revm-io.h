@@ -224,6 +224,9 @@ typedef struct		s_workspace
  */
 typedef struct        s_state
 {
+
+   // some of them must be bool, not char.
+   
   char                revm_quiet;       /*! Quiet mode : 0 or 1 */
   char                revm_gvl;         /*! Graph verbose level : 0 or 1 */
   char                revm_force;       /*! Force mode : 0 or 1 */
@@ -248,7 +251,7 @@ typedef struct        s_state
   char		      revm_sourcing;    /*! Are we sourcing a script ? */
   char                revm_stopped;     /*! We are in a signal handler */
   char                revm_shared;      /*! Next opened object must be shared */
-  char                revm_net;         /*! We are a node connected to the ERESI network */
+  Bool                revm_net;         /*! We are a node connected to the ERESI network */
   u_int               lastid;           /*! Last Object ID */
 }		       revmstate_t;
 
@@ -322,5 +325,4 @@ int		revm_is_enabled();
 int		revm_is_stdinput();
 void		revm_callback_handler_install(char *prompt, void (*fct)(char *str));
 void		revm_line_handler(char *c);
-
 #endif

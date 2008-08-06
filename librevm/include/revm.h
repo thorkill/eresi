@@ -626,6 +626,7 @@ int		revm_help(char *command);
 void		revm_print_actual(revmargv_t *cur);
 int		revm_printscript(revmargv_t *start);
 char            *revm_cur_job_param(uint8 p);
+Bool            revm_is_net_enabled(void);
 
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);
