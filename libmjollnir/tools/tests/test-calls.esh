@@ -1,0 +1,7 @@
+#!/usr/local/bin/elfsh32
+
+load test-calls
+analyse
+graph
+
+
