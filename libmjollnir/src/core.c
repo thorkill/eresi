@@ -29,6 +29,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   container_t	*curblock;
   mjrblock_t	*block;
   int		newoff;
+  u_int		delayslotsize;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,12 +41,14 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   // Please use this config variable when doing CFG recursive analysis
 
   dstaddr = retaddr = MJR_BLOCK_INVALID;
+  delayslotsize = 0;
 
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
   
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X offset %08x\n", vaddr, offset);
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " offset %u\n", 
+	  vaddr, offset);
 #endif
 
   assert(curblock != NULL);
@@ -53,14 +56,12 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   block = (mjrblock_t *) curblock->data;
 
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] bloc %x: seen %d\n",
-          __FUNCTION__,
-          ((mjrblock_t *) curblock->data)->vaddr,
-          ((mjrblock_t *) curblock->data)->seen);
+  fprintf(D_DESC, "[D] %s: bloc " XFMT ": seen %hhd\n",
+          __FUNCTION__, block->vaddr, block->seen);
 #endif
 
   /* Avoid loops */
-  if (block->seen)
+  if (block->seen == 1)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   block->seen = 1;
 
@@ -82,8 +83,9 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
       block->size += ilen;	  
       mjr_history_shift(sess->cur, instr, vaddr + curr);
 
-      mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
-			vaddr + curr, &dstaddr, &retaddr);
+      /* Increase block size for delay slot if any */
+      delayslotsize = mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
+					vaddr + curr, &dstaddr, &retaddr);
 
 #if __DEBUG_READ__
       fprintf(stderr, " [D] curaddr analyzed: %08x (dstaddr = %08X, retaddr = %08X)\n",
@@ -106,7 +108,16 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
       /* If we have recursed, the current block is over */
       if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || 
 	  (instr.type & ASM_TYPE_RETPROC) || (instr.type & ASM_TYPE_STOP))
-	break;
+	{
+
+#if __DEBUG_MJOLLNIR__
+	  fprintf(D_DESC, "[D] core.c:analyse_code: bloc at vaddr " XFMT " with delayslot size %u\n", 
+		  block->vaddr, delayslotsize);
+#endif
+
+	  block->size += delayslotsize;
+	  break;
+	}
     }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -343,7 +354,7 @@ int             mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, 
 
 #if __DEBUG_MJOLLNIR__
       fprintf(D_DESC, "[__DEBUG__] %s: 1st run - Executable section name=(%14s) "
-              "index=(%02i) vaddr=(%x) size=(%d)\n",
+              "index=(%02i) vaddr=("XFMT") size=("DFMT")\n",
               __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
 #endif
 

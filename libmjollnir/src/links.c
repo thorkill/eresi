@@ -24,9 +24,9 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
                                            eresi_Addr ret)
 {
   container_t           *fun;
-  mjrfunc_t             *tmpfunc;
   char                  *tmpstr;
-  char                  *md5;
+  //mjrfunc_t             *tmpfunc;
+  //char                  *md5;
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
   u_char                scope;
@@ -34,7 +34,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC, "[D] %s: src:%x dst:%x ret:%x\n",
+  fprintf(D_DESC, "[D] %s: src:"XFMT" dst:"XFMT" ret:"XFMT"\n",
           __FUNCTION__, src, dst, ret);
 #endif
 
@@ -68,10 +68,16 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
     }
 
   /* Fingerprint function */
+  /* 
+  ** XXX: this segfaults on 64bits architecture - MAX_FUNC_LEN should
+  ** not be used. Instead, we should fingerprint all functions with 
+  ** their infered size at the moment of saving debug sections.
+  **
   md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
   tmpfunc = (mjrfunc_t *) fun->data;
   if (md5)
     memcpy(tmpfunc->md5, md5, sizeof(tmpfunc->md5));
+  */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -162,7 +168,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: linking JMP %x TRUE %x FALSE %x\n",
+  fprintf(D_DESC,"[D] %s: linking JMP "XFMT" TRUE "XFMT" FALSE "XFMT"\n",
           __FUNCTION__, src, dst, ret);
 #endif
 
@@ -281,7 +287,8 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   assert(sym != NULL);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s:%d: wanted dst:%x got:%x\n", __FUNCTION__, __LINE__, dst, blkdst->vaddr);
+  fprintf(D_DESC,"[D] %s:%d: wanted dst:"XFMT" got:"XFMT"\n", 
+	  __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
   /* Recompute sizes */
@@ -290,8 +297,8 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
       new_size = blkdst->size - (dst - blkdst->vaddr);
 
 #if __DEBUG_LINKS__
-      fprintf(D_DESC,"[D] %s:%d: new_size %d for %x\n", __FUNCTION__, __LINE__, new_size, dst);
-      fprintf(D_DESC,"[D] %s:%d: turncate %x to %d\n", 
+      fprintf(D_DESC,"[D] %s:%d: new_size %d for "XFMT"\n", __FUNCTION__, __LINE__, new_size, dst);
+      fprintf(D_DESC,"[D] %s:%d: turncate "XFMT" to %d\n", 
 	      __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
 

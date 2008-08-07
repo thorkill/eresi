@@ -208,6 +208,7 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   char		c2[2];
   u_int		strsz;
   elfsh_Half	machine;
+  u_int		delta;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,16 +223,19 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
 	{
 	case EM_386:
 	  world.curjob->proc = &world.proc;
+	  delta = 10;
 	  break;
 	case EM_SPARC:
 	case EM_SPARC32PLUS:
 	case EM_SPARCV9:
 	  world.curjob->proc = &world.proc_sparc;
+	  delta = 0;
 	  break;
 	case EM_MIPS:
 	case EM_MIPS_RS3_LE:
 	case EM_MIPS_X:
 	  world.curjob->proc = &world.proc_mips;
+	  delta = 0;
 	  break;
 	default:
 	  snprintf(logbuf, sizeof (logbuf) - 1, 
@@ -243,7 +247,7 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
     }
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + 10, 
+  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + delta, 
 		       world.curjob->proc);
   if (ret == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "asm_read_instruction faild (-1)", (ret));

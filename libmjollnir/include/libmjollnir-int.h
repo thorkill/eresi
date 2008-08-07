@@ -4,7 +4,7 @@
  *
  */
 
-#define __DEBUG_MJOLLNIR__	0
+#define __DEBUG_MJOLLNIR__	1
 #define __DEBUG_CALLS__		0
 #define __DEBUG_READ__		0
 #define __DEBUG_PTR__		0
@@ -18,7 +18,7 @@
 #define __DEBUG_FUCNS_LOOKUP__	0
 #define __DEBUG_FNG__		0
 #define	__DEBUG_ONDISK__	0
-#define	__DEBUG_LINKS__		0
+#define	__DEBUG_LINKS__		1
 
 /* Debug descriptor */
 #define D_DESC		stderr

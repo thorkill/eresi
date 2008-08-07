@@ -37,9 +37,9 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
-    {ASPECT_TYPENAME_EXPR    , 24		}, /* XXX: should be sizeof(revmexpr_t) */
-    {ASPECT_TYPENAME_BLOC    , 16		}, /* XXX: should be sizeof(mjrblock_t) */
-    {ASPECT_TYPENAME_FUNC    , 111		}, /* XXX: should be sizeof(mjrfunc_t) */
+    {ASPECT_TYPENAME_EXPR    , 28		}, /* XXX: should be sizeof(revmexpr_t) */
+    {ASPECT_TYPENAME_BLOC    , 13		}, /* XXX: should be sizeof(mjrblock_t) */
+    {ASPECT_TYPENAME_FUNC    , 110		}, /* XXX: should be sizeof(mjrfunc_t) */
     {ASPECT_TYPENAME_LINK    , 6                }, /* XXX: should be sizeof(mjrlink_t) */
   };
 

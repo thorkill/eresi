@@ -57,7 +57,8 @@ int			mjr_trace_control(mjrcontext_t *context,
   if (curins->type & ASM_TYPE_CONDBRANCH)
     {
       /* MIPS use delay slots for jump instructions too */
-      addend = (context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+      addend = (context->proc.type == ASM_PROC_MIPS || 
+		context->proc.type == ASM_PROC_SPARC ? 4 : 0);
       
       *dstaddr = mjr_get_jmp_destaddr(context);
       
@@ -105,8 +106,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
 	{
 
-#if __DEBUG_FLOW__
-	  fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
+#if 1 //__DEBUG_FLOW__
+	  fprintf(D_DESC,"[W] *** %s: unusual retaddr found - expected ret: "
+		  XFMT" section end: "XFMT" ***\n",
 		  __FUNCTION__, curvaddr + ilen + addend, 
 		  context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
@@ -141,8 +143,11 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      __FUNCTION__, curvaddr, curins->type);
 #endif
     }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Return the delay slot size if any */
+  addend = (context->proc.type == ASM_PROC_MIPS || 
+	    context->proc.type == ASM_PROC_SPARC ? 4 : 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addend);
 }
 
 
@@ -351,10 +356,24 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
     }
   else if (context->proc.type == ASM_PROC_SPARC)
     {
-      if (ins->instr & ASM_SP_JMPL) /* Indirect jump */
-	dest = MJR_BLOCK_INVALID;
-      else if (ins->type & ASM_TYPE_CONDBRANCH)
-	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+      /*
+      if (ins->instr & ASM_SP_JMPL)  //Indirect jump
+	{
+	  printf("INDIRECT BRANCH TYPE FOR SPARC at addr "XFMT" ! \n", 
+		 context->hist[MJR_HISTORY_CUR].vaddr);
+	  dest = MJR_BLOCK_INVALID;
+	}
+      */
+      if (ins->type & ASM_TYPE_CONDBRANCH || ins->type & ASM_TYPE_IMPBRANCH)
+	{
+	  dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+	}
+      else
+	{
+	  printf("UNKNOWN BRANCH FOR SPARC at addr "XFMT" ! \n", 
+		 context->hist[MJR_HISTORY_CUR].vaddr);
+	  dest = MJR_BLOCK_INVALID;
+	}
     }
   else if (context->proc.type == ASM_PROC_MIPS) 
     {

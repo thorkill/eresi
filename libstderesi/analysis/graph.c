@@ -521,7 +521,7 @@ int		revm_graph_blocks(container_t   *cntnr,
       nextcnt = mjr_lookup_container(world.mjr_session.cur, lnk->id);
       nextblk = (mjrblock_t *) nextcnt->data;
 
-      if ((nextblk->vaddr >= min) && (nextblk->vaddr <= max))
+      //if ((nextblk->vaddr >= min) && (nextblk->vaddr <= max))
 	revm_graph_blocks(nextcnt, fd, min, max, 0, 0, curdepth + 1);
     }
 

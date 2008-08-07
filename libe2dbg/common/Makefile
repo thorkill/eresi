@@ -22,7 +22,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
 			-I../../libetrace/include/ $(KERNSHINCINC) $(KERNSH)     \
-			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT)  \
+			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT) $(EXTRACFLAGS) \
 			-DERESI32
 
 CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
@@ -32,7 +32,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
 			-I../../libetrace/include $(KERNSHINC) $(KERNSH)         \
-			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT)  \
+			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT) $(EXTRACFLAGS) \
 			-DERESI64
 
 all			: all32 all64

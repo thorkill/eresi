@@ -12,7 +12,7 @@ include ../config.h
 #
 
 #CFLAGS += -ggdb
-CFLAGS += $(CFLAGS_libasm)
+CFLAGS += $(CFLAGS_libasm) $(EXTRACFLAGS)
 
 SRCS_libasm 	=				\
 		src/generic.c			\

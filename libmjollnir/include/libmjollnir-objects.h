@@ -27,7 +27,7 @@ typedef struct	s_iblock
   eresi_Addr	vaddr;		/* !< @brief block starting virtual address    */
   u_int		size;		/* !< @brief block code size                   */
   u_int		symoff;		/* !< @brief block name offset in string table */
-  u_char	seen;		/* !< @brief block live status (0 means dead)  */
+  u_char	seen;		/* !< @brief block live status (0 or 1)        */
 }		mjrblock_t;
 
 /** 
