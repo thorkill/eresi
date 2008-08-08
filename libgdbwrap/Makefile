@@ -1,23 +1,28 @@
 SRC       = gdbwrapper.c 
+CLIENT    = client.c
 OBJ       = $(SRC:.c=.o)
-CFLAGS    = -Iinclude -Wall -g3 -std=c89 -ansi -Werror
+CFLAGS    = -Iinclude/ -Wall -g3 -ansi -Werror
 NAME      = libgdbwrap
 
 CC      ?= gcc
 LD      ?= ld
+AR	= ar rc
+RANLIB  = ranlib
 
-all     : all32 
-
-all32:  $(OBJ)
+all:	$(OBJ)
+	$(AR) $(NAME).a $(OBJ)
+	$(RANLIB) $(NAME).a
 	$(LD) -r $(OBJ) -o $(NAME).o $(LDFLAGS)
 
-clean   :
-	@rm -f $(OBJ32) $(OBJ64) *~ *\# \#* .\#* 
-	@rm -f include/*~ include/*\# include/\#* include/.\#* 
+client:
+	$(CC) $(CLIENT) $(CFLAGS) libgdbwrap.a -o client
 
-fclean  : clean
-	@rm -f $(NAME).a $(NAME).o 
+clean:
+	rm -f $(OBJ) $(OBJ) *~ *\# \#* .\#* 
+	rm -f include/*~ include/*\# include/\#* include/.\#* 
 
-%.o     : %.c
+fclean:	clean
+	rm -f $(NAME).a $(NAME).o *.o client
+
+%.o:	%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-

@@ -102,15 +102,26 @@ int main( int argc, char **argv )
 
   do
     {
-/*       char * ret; */
-/*       ret = fgets(buffer, sizeof(buffer), stdin); */
-/*       assert(ret != NULL); */
-/*       send(sd, buffer, strlen(buffer), 0x0); */
-      gdbwrap_query_supported(&sd);
-      rval = recv( sd, buffer, sizeof(buffer), 0 );
-      fwrite( buffer, rval, 1, stdout );
-    } while(strcmp(buffer, "quit"));
+      char * ret;
+      char   minibuf[150];
       
+      ret = fgets(buffer, sizeof(buffer), stdin);
+      assert(ret != NULL);
+      if(!strncmp("hello", buffer, 5))
+	gdbwrap_send_data(sd, QSUPPORTED, minibuf);
+      else if(!strncmp("disconnect", buffer,  5))
+	{
+	  gdbwrap_send_data(sd, QUIT, minibuf);
+	  exit(0);
+	}
+      else 
+	{
+	  printf("not supported yet\n");
+	}
+      printf("%s\n", minibuf);
+    } while (strncmp("quit", buffer, 4));
+
+  
   close( sd );
   return (0);
 }
