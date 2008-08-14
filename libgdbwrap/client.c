@@ -103,22 +103,20 @@ int main( int argc, char **argv )
   do
     {
       char * ret;
-      char   minibuf[150];
-      
-      ret = fgets(buffer, sizeof(buffer), stdin);
+
+      ret = fgets(buffer, sizeof(buffer) - 1, stdin);
       assert(ret != NULL);
-      if(!strncmp("hello", buffer, 5))
-	gdbwrap_send_data(sd, QSUPPORTED, minibuf);
+      
+      if(!strncmp("hello", buffer,  5))
+	gdbwrap_hello(sd);
       else if(!strncmp("disconnect", buffer,  5))
 	{
-	  gdbwrap_send_data(sd, QUIT, minibuf);
+	  gdbwrap_bye();
 	  exit(0);
 	}
-      else 
-	{
-	  printf("not supported yet\n");
-	}
-      printf("%s\n", minibuf);
+      else
+	printf("not supported yet\n");
+
     } while (strncmp("quit", buffer, 4));
 
   
