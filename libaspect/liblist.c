@@ -214,6 +214,41 @@ int		elist_add(list_t *h, char *key, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/* 
+ * @brief Push an element on the list (used as a stack)
+ */
+int		elist_push(list_t *h, void *data)
+{
+  char		key[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!h || !data)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", -1);
+
+  snprintf(key, sizeof(key), "%s_%u", h->name, h->elmnbr);
+  elist_add(h, strdup(key), data);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* 
+ * @brief Pop an element off the list (used as a stack)
+ */
+int		elist_pop(list_t *h)
+{
+  listent_t	*next;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!h || !h->head)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input list", -1);
+  next = h->head;
+  h->head = h->head->next;
+  h->elmnbr--;
+  XFREE(__FILE__, __FUNCTION__, __LINE__, next);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /** 
  * @brief Delete an element from a list 
@@ -222,6 +257,7 @@ int		elist_del(list_t *h, char *key)
 {
   listent_t	*curelem;
   listent_t	*prevelem;
+  listent_t	*todel;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !key)
@@ -235,12 +271,19 @@ int		elist_del(list_t *h, char *key)
   if (!curelem)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   if (!prevelem)
-    h->head = h->head->next;
+    {
+      todel = h->head;
+      h->head = h->head->next;
+    }
   else
-    prevelem->next = prevelem->next->next;
+    {
+      todel = prevelem->next;
+      prevelem->next = prevelem->next->next;
+    }
   h->elmnbr--;
   if (!h->elmnbr)
     h->head = NULL;
+  XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -280,6 +323,14 @@ listent_t	*elist_get_head(list_t *h)
   if (!h)
     return (NULL);
   return (h->head);
+}
+
+/* Get the list head data */
+void		*elist_get_headptr(list_t *h)
+{
+  if (!h || !h->head)
+    return (NULL);
+  return (h->head->data);
 }
 
 /* Change the metadata for an existing entry, giving its key */
