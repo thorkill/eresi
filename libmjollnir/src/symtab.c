@@ -55,7 +55,7 @@ int		mjr_symbol_add(mjrsession_t	*sess,
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, NULL);
 
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjrSymbolAdd: [%10s] 0x%08x <%s>\n",
+  fprintf(D_DESC,"[__DEBUG_MJOLLNIR__] mjrSymbolAdd: [%10s] 0x"XFMT" <%s>\n",
 	  "SECNAME", vaddr, fname);
 #endif
 
@@ -96,7 +96,7 @@ int		mjr_symbol_rename(mjrsession_t  *sess,
   
 #if __DEBUG_MJOLLNIR__
  fprintf(D_DESC,
-	 "[__DEBUG_MJOLLNIR__] mjr_symbol_rename: %s (st_value: 0x%08x) -> %s \n", 
+	 "[__DEBUG_MJOLLNIR__] mjr_symbol_rename: %s (st_value: 0x"XFMT") -> %s \n", 
 	 old_name, sm->st_value, new_name);
 #endif
  

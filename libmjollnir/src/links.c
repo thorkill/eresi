@@ -25,7 +25,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
 {
   container_t           *fun;
   char                  *tmpstr;
-  //mjrfunc_t             *tmpfunc;
+  mjrfunc_t             *tmpfunc;
   //char                  *md5;
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
@@ -78,6 +78,16 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   if (md5)
     memcpy(tmpfunc->md5, md5, sizeof(tmpfunc->md5));
   */
+  
+  tmpfunc = fun->data;
+  if (scope == MJR_LINK_SCOPE_LOCAL)
+    {
+      elist_push(ctxt->func_stack, fun);
+      ctxt->curfunc = fun;
+      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", tmpfunc->name);
+    }
+  else
+    fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

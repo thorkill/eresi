@@ -3,6 +3,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 int funk1(int a){printf("%d\n",a);return 0;}
 int funk2(int a){printf("%d\n",a);funk1(a-1);return 1;}

@@ -236,10 +236,25 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during section entry code analysis", -1);
 
+  /* FIXME: Check if we have found a control flow inconsistency yet */
+  /* XXX: see depth */
+
   /* Also analyse the main code -- it is generally not directly linked with the entry point */
-  if (main_addr && mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH) < 0)
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Error during main code analysis", -1);
+  if (main_addr)
+    {
+
+      fprintf(stderr, " ******** NO EMPTYING FUNC STACK -- ANALYZING MAIN ****** \n");
+
+      elist_empty(sess->cur->func_stack->name);
+      cntnr = mjr_function_get_by_vaddr(sess->cur, main_addr);
+      sess->cur->curfunc = cntnr;
+      mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH);
+    }
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Error during main code analysis", -1);
+
+  /* FIXME: Check if we have found a control flow inconsistency yet */
+  /* XXX: see depth */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

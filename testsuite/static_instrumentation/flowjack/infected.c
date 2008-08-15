@@ -9,6 +9,7 @@
 ** $Id: infected.c,v 1.2 2007-03-07 16:45:36 thor Exp $
 **
 */
+#include <stdio.h>
 
 void	hijacked(int arg)
 {

@@ -1,6 +1,5 @@
 /*
-** (C) 2006-2008 Devhell Labs / Asgard Labs 
-**  - sk, jfv, thorolf, strauss, pi3
+** (C) 2006-2008 The ERESI team
 **
 ** @file libmjollnir/types.c
 ** 
@@ -8,6 +7,7 @@
 **
 */
 #include "libmjollnir.h"
+
 
 
 /** 
@@ -36,7 +36,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 					  eresi_Addr	*retaddr)
 {
   int			ilen;
-  container_t		*fun;
+  //container_t		*fun;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -46,12 +46,15 @@ int			mjr_trace_control(mjrcontext_t *context,
   mjr_history_write(context, curins, curvaddr, 0);
 
   ilen = asm_instr_len(curins);  
-  fun = mjr_function_get_by_vaddr(context, curvaddr);
 
+  /* We should not do that here */
+  /*
+  fun = mjr_function_get_by_vaddr(context, curvaddr);
   if (fun)
     context->curfunc = fun;
   else
-    mjr_asm_check_function_start(context);
+  */
+  mjr_asm_check_function_start(context);
 
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
@@ -130,9 +133,11 @@ int			mjr_trace_control(mjrcontext_t *context,
     }
   else if (curins->type & ASM_TYPE_RETPROC)
     {
-      
-#if __DEBUG_FLOW__
-      fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
+
+      context->curfunc = elist_pop(context->func_stack);
+
+#if 1 //__DEBUG_FLOW__
+      fprintf(stderr, " [D] ******** %s: " XFMT " ASM_TYPE_RETPROC : CURFUNC BACK \n",
 	      __FUNCTION__, curvaddr);
 #endif
     }
@@ -404,6 +409,7 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
+
 /**
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
@@ -411,30 +417,50 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
-  u_int			tmpaddr;
+  eresi_Addr		tmpaddr;
   container_t		*fun;
+  //elfshsect_t           *dstsect;
+  //u_char		scope;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* check function prologue */
+  /* FIXME: does not support function without frame pointer or without local variables,
+     - check func-without-fp signature
+     - check if history contains a call to us (to detect small functions)
+  */
   if (ctxt->proc.type == ASM_PROC_IA32)
   {
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
-    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
-    	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
+	ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
+	ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
       {
 	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
 	tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
-	
+
+	fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+	if (!fun)
+	  {
+	    fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+	    mjr_function_register(ctxt, tmpaddr, fun);
+	    mjr_function_symbol(ctxt, fun);
+	    mjr_container_add_link(ctxt, ctxt->curfunc, fun->id,
+				   MJR_LINK_FUNC_SLIDE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+	    elist_push(ctxt->func_stack, fun);
+	    ctxt->curfunc = fun;
+	    fprintf(stderr, " ******* ALLOCATED A STACK FRAME IN THE MIDDLE OF A FUNC ! \n");
+	    fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
+	  }
+
 #if __DEBUG_FLOW__
-	fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
-		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+	fprintf(D_DESC," [D] FUNCTION START FOUND at "XFMT" for "XFMT" (funcprev = %p)\n",
+		ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr, funcprev);
 #endif
-	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	mjr_function_register(ctxt, tmpaddr, fun);
-	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+
       }
   }
+
+  /* SPARC architecture */
   else if (ctxt->proc.type == ASM_PROC_SPARC)
   {
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
@@ -446,32 +472,70 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;
 
 #if __DEBUG_FLOW__
-  	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
+  	  fprintf(D_DESC," [D] %s: function start found at %x for %x\n",
         		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
 
-  	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	  mjr_function_register(ctxt, tmpaddr, fun);
   	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+	  if (!ctxt->curfunc)
+	    {
+	      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+	      mjr_function_register(ctxt, tmpaddr, fun);
+	      elist_push(ctxt->func_stack, ctxt->curfunc);
+	      ctxt->curfunc = fun;
+	      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
+	    }
   	}
   }
+  
+  /* MIPS architecture */
   else if (ctxt->proc.type == ASM_PROC_MIPS)
   {
     if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
-    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
+	ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
       {
 	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
 	tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
 
 #if __DEBUG_FLOW__
-	fprintf(D_DESC,"[pi3] -> [D] %s: function start found at %x for %x\n",
+	fprintf(D_DESC," [D] %s: function start found at %x for %x\n",
 		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	mjr_function_register(ctxt, tmpaddr, fun);
+
 	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+	if (!ctxt->curfunc)
+	  {
+	    fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+	    mjr_function_register(ctxt, tmpaddr, fun);
+	    elist_push(ctxt->func_stack, ctxt->curfunc);
+	    ctxt->curfunc = fun;
+
+	    fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
+
+	  }
       }
   }
+
+  //if (!funcprev)
+  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Now links functions */
+  /* FIXME: what if a prolog is found in the middle of an obfuscated function ? */
+  /*
+    dstsect = elfsh_get_parent_section(ctxt->obj, tmpaddr, NULL);
+  if (!dstsect || !dstsect->data)
+    {
+      fprintf(stderr, " [D] UNABLE TO FIND SECTION FOR NEW FUNCTION\n");
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  scope = (!strcmp(dstsect->name, ELFSH_SECTION_NAME_PLT) ?
+           MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
+  mjr_container_add_link(ctxt, ctxt->curfunc, funcprev->id,
+			 MJR_LINK_FUNC_RET, scope, CONTAINER_LINK_IN);
+  mjr_container_add_link(ctxt, funcprev, ctxt->curfunc->id,
+			 MJR_LINK_FUNC_CALL, scope, CONTAINER_LINK_OUT);
+  */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

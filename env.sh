@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Environment script for using ERESI without install
+# Envir script for using ERESI without install
 #
 
 # Doesnt work properly
@@ -32,7 +32,3 @@ export PATH=`pwd`/e2dbg:$PATH
 export PATH=`pwd`/kernsh:$PATH
 export PATH=`pwd`/evarista:$PATH
 export PATH=`pwd`:$PATH
-
-echo Environment now ready for testing ERESI without install
-
-#fi

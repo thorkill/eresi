@@ -234,19 +234,21 @@ int		elist_push(list_t *h, void *data)
 /* 
  * @brief Pop an element off the list (used as a stack)
  */
-int		elist_pop(list_t *h)
+void		*elist_pop(list_t *h)
 {
   listent_t	*next;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !h->head)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid input list", -1);
+		 "Invalid input list", NULL);
   next = h->head;
   h->head = h->head->next;
   h->elmnbr--;
   XFREE(__FILE__, __FUNCTION__, __LINE__, next);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (!h->head)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, h->head);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, h->head->data);
 }
 
 

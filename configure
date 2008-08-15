@@ -728,7 +728,7 @@ if [ "$TESTING" = "1" ]; then
 echo ""								>> Makefile
 echo ".PHONY: testsuite "					>> Makefile
 echo "testsuite:"						>> Makefile
-echo "	source env.sh"						>> Makefile
+echo "	\$(shell source env.sh)"			       	>> Makefile
 echo "	@echo 'Building ERESI testsuite...' "			>> Makefile
 echo "	cd testsuite && \$(MAKE) -s \$(BUILD_TARGET)"		>> Makefile 
 echo "	@echo 'ERESI testsuite built successfully.' "		>> Makefile  

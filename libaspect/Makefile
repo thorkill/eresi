@@ -9,6 +9,7 @@ CC		?= gcc
 LD		= ld
 RM		= rm -f 
 AR		= ar rc
+RANLIB		= ranlib
 CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DERESI32 $(EXTRACFLAGS)
 CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DERESI64 $(EXTRACFLAGS)
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
