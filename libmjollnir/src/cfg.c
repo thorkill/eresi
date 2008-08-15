@@ -137,8 +137,10 @@ int			mjr_trace_control(mjrcontext_t *context,
       context->curfunc = elist_pop(context->func_stack);
 
 #if 1 //__DEBUG_FLOW__
-      fprintf(stderr, " [D] ******** %s: " XFMT " ASM_TYPE_RETPROC : CURFUNC BACK \n",
-	      __FUNCTION__, curvaddr);
+      fprintf(stderr, " [D] ******** %s: " XFMT " ASM_TYPE_RETPROC : CURFUNC BACK to %s\n",
+	      __FUNCTION__, curvaddr, 
+	      (context->curfunc && context->curfunc->data ? 
+	       ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif
     }
   else

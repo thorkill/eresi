@@ -30,6 +30,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
   u_char                scope;
+  u_char		isnew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -56,7 +57,10 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
                                           tmpstr, NULL, NULL);
       mjr_function_register(ctxt, tmpaddr, fun);
       mjr_function_symbol(ctxt, fun);
+      isnew = 1;
     }
+  else
+    isnew = 0;
 
   /* Add links between functions */
   if (ctxt->curfunc)
@@ -80,14 +84,16 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   */
   
   tmpfunc = fun->data;
-  if (scope == MJR_LINK_SCOPE_LOCAL)
+  if (scope == MJR_LINK_SCOPE_LOCAL && isnew)
     {
       elist_push(ctxt->func_stack, fun);
       ctxt->curfunc = fun;
       fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", tmpfunc->name);
     }
-  else
+  else if (!isnew)
     fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
+  else
+    fprintf(stderr, " ******** ALREADY SEEN FUNCTION : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

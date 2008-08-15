@@ -248,6 +248,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
       elist_empty(sess->cur->func_stack->name);
       cntnr = mjr_function_get_by_vaddr(sess->cur, main_addr);
       sess->cur->curfunc = cntnr;
+      elist_push(sess->cur->func_stack, cntnr);
       mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH);
     }
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
